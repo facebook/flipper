@@ -1,8 +1,8 @@
 {
   "name": "sonar",
   "private": true,
-  "version": "0.6.4",
-  "versionDate": "2018-4-3",
+  "version": "0.6.6",
+  "versionDate": "2018-4-12",
   "description": "Mobile development tool",
   "productName": "Sonar",
   "author": "Facebook Inc",
