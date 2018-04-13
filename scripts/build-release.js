@@ -10,6 +10,20 @@ const Platform = builder.Platform;
 const metro = require('../static/node_modules/metro');
 const compilePlugins = require('../static/compilePlugins');
 
+function generateManifest(versionNumber) {
+  const filePath = path.join(__dirname, '..', 'dist');
+  if (!fs.existsSync(filePath)) {
+    fs.mkdirSync(filePath);
+  }
+  fs.writeFileSync(
+    path.join(__dirname, '../dist/manifest.json'),
+    JSON.stringify({
+      package: 'com.facebook.sonar',
+      version_name: versionNumber,
+    }),
+  );
+}
+
 function buildFolder() {
   // eslint-disable-next-line no-console
   console.log('Creating build directory');
@@ -55,7 +69,7 @@ function modifyPackageManifest(buildFolder) {
         if (err) {
           reject(err);
         } else {
-          resolve();
+          resolve(manifest.version);
         }
       },
     );
@@ -179,7 +193,8 @@ function compileDefaultPlugins(buildFolder) {
   await copyStaticFolder(dir);
   await compileDefaultPlugins(dir);
   await compile(dir);
-  await modifyPackageManifest(dir);
+  const versionNumber = await modifyPackageManifest(dir);
+  generateManifest(versionNumber);
   await buildDist(dir);
   // eslint-disable-next-line no-console
   console.log('✨  Done');
