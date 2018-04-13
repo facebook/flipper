@@ -1,0 +1,56 @@
+os: osx
+osx_image: xcode9.3
+
+matrix:
+  include:
+    - language: node_js
+      node_js:
+        - "8"
+
+      install:
+        - yarn
+        - cd website
+        - yarn
+        - cd ..
+
+      script:
+        - yarn lint
+        - yarn build macOnly build-number=$TRAVIS_BUILD_NUMBER
+        - cd website
+        - yarn build
+        - cd ..
+
+      before_deploy:
+        - export SONAR_VERSION="v$(plutil -p $TRAVIS_BUILD_DIR/dist/mac/Sonar.app/Contents/Info.plist | awk '/CFBundleShortVersionString/ {print substr($3, 2, length($3)-2)}')"
+
+      deploy:
+        - provider: pages
+          skip-cleanup: true
+          github-token: $GITHUB_TOKEN
+          fqdn: fbsonar.com
+          local-dir: website/build/sonar
+          keep-history: true
+          on:
+            branch: master
+        - provider: releases
+          api_key: $GITHUB_TOKEN
+          file: dist/Sonar.zip
+          name: $SONAR_VERSION
+          draft: true
+          skip_cleanup: true
+          on:
+            branch: master
+
+    - language: objective-c
+      
+      before_install:
+        - pod repo update
+
+      install:
+        - cd iOS/Sample
+        - pod install
+        - cd ../../
+
+      script:
+        - cd iOS/Sample
+        - xcodebuild clean build -workspace Sample.xcworkspace -scheme Pods-Sample

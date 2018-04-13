@@ -1,0 +1,19 @@
+{
+  "docs": {
+    "Using Sonar": ["getting-started", "understand", "stetho"],
+    "Built-in Plugins": ["logs-plugin", "layout-plugin", "network-plugin"],
+    "Plugins: Desktop part": [
+      "js-setup",
+      "communicating",
+      "create-table-plugin",
+      "ui-components",
+      "styling-components"
+    ],
+    "Plugins: Mobile part": [
+      "create-plugin",
+      "send-data",
+      "error-handling",
+      "testing"
+    ]
+  }
+}

@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="graphiql/graphiql.css">
+    <link rel="stylesheet" href="vis/vis.min.css">
+    <title>Sonar</title>
+
+    <style>
+      .__infinity-dev-box {
+        -webkit-app-region: drag;
+        z-index: 999999;
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        padding: 50px;
+        color: #fff;
+        overflow: auto;
+      }
+
+      .__infinity-dev-box-loading {
+        background-color: #333;
+      }
+
+      .__infinity-dev-box-error {
+        background-color: #000;
+        font-family: monospace;
+        white-space: pre;
+        font-size: 16px;
+      }
+
+      .__infinity-dev-box-text {
+        font-size: 30px;
+        line-height: 200px;
+        margin-top: -100px;
+        width: 100%;
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <div class="__infinity-dev-box __infinity-dev-box-loading">
+      <div class="__infinity-dev-box-text">Loading...</div>
+    </div>
+
+    <div class="__infinity-dev-box __infinity-dev-box-error" hidden>
+
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      (function() {
+        global.electronRequire = window.require;
+
+        let suppressErrors = false;
+
+        const socket = io(location.origin);
+
+        socket.on('refresh', () => {
+          location.reload();
+        });
+
+        socket.on('hasErrors', (html) => {
+          openError(html);
+          suppressErrors = true;
+        });
+
+        function openError(html) {
+          if (suppressErrors) {
+            return;
+          }
+
+          const box = document.querySelector('.__infinity-dev-box-error');
+          box.removeAttribute('hidden');
+          box.innerHTML = html;
+          onLoad();
+        }
+
+        function onLoad() {
+          document.querySelector('.__infinity-dev-box-loading').setAttribute('hidden', true);
+        }
+
+        function init() {
+          const script = document.createElement('script');
+          script.src = window.process.env.BUNDLE_URL;
+
+          script.onerror = () => {
+            openError('Script failure. Check Chrome console for more info.');
+          };
+
+          script.onload = onLoad;
+
+          document.body.appendChild(script);
+        }
+
+        init();
+      })();
+    </script>
+  </body>
+</html>

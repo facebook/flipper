@@ -1,0 +1,24 @@
+[ignore]
+.*/scripts/.*
+.*/coverage/.*
+.*/node_modules/.*
+.*/build/.*
+.*/dist/.*
+.*/static/.*
+<PROJECT_ROOT>/src/fb/plugins/relaydevtools/relay-devtools/DevtoolsUI.js$
+.*/website/.*
+
+[libs]
+lib
+flow-typed
+
+[options]
+esproposal.export_star_as=enable
+module.use_strict=true
+emoji=true
+all=true
+include_warnings=true
+module.name_mapper='sonar' -> '<PROJECT_ROOT>/src/index.js'
+
+[version]
+0.69.0

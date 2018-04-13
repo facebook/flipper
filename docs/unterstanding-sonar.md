@@ -1,0 +1,13 @@
+---
+id: understand
+title: Understanding Sonar
+sidebar_label: Understanding Sonar
+---
+
+The Sonar desktop app and the mobile native SDK establish an [rsocket](http://rsocket.io) connection which is used to send data to and from the device. Sonar does not make any restrictions on what kind of data is being sent. This enables a lot of different use-cases where you want to better understand what is going inside your app. For example you can visualize the state of local caches, events happening or trigger actions on your app from the desktop.
+
+## Plugins
+
+Sonar itself only provides the architectural platform. What makes it useful are the plugins built on top of it: [Logs](logs-plugin.md), [Layout Inspector](layout-plugin.md) and [Network Inspector](network-plugin.md) are all plugins. Plugins can be built very specific to your business logic and the use-cases you have in your app. We are shipping Sonar with a couple of built-in all-purpose plugins, but we encourage you to build your own.
+
+A plugin always consists of the native implementation sending and receiving data and the desktop plugin visualizing data. Learn more on how to [create a plugin](create-plugin.md). The native implementations are written in Java, Objective-C, or C++, the desktop UI is written in React.
