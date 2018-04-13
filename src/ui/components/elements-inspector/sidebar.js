@@ -1,0 +1,102 @@
+/**
+ * Copyright 2004-present Facebook. All Rights Reserved.
+ * @format
+ */
+
+import type {Element} from './ElementsInspector.js';
+import type {PluginClient} from '../../../plugin';
+import Panel from '../Panel.js';
+import ManagedDataInspector from '../data-inspector/ManagedDataInspector.js';
+import {Component} from 'react';
+import {Console} from '../console';
+import {GK} from 'sonar';
+
+const deepEqual = require('deep-equal');
+
+type OnValueChanged = (path: Array<string>, val: any) => void;
+
+type InspectorSidebarSectionProps = {
+  data: any,
+  id: string,
+  onValueChanged: ?OnValueChanged,
+};
+
+class InspectorSidebarSection extends Component<InspectorSidebarSectionProps> {
+  setValue = (path: Array<string>, value: any) => {
+    if (this.props.onValueChanged) {
+      this.props.onValueChanged([this.props.id, ...path], value);
+    }
+  };
+
+  shouldComponentUpdate(nextProps: InspectorSidebarSectionProps) {
+    return (
+      !deepEqual(nextProps, this.props) ||
+      this.props.id !== nextProps.id ||
+      this.props.onValueChanged !== nextProps.onValueChanged
+    );
+  }
+
+  extractValue = (val: any, depth: number) => {
+    if (val && val.__type__) {
+      return {
+        mutable: Boolean(val.__mutable__),
+        type: val.__type__ === 'auto' ? typeof val.value : val.__type__,
+        value: val.value,
+      };
+    } else {
+      return {
+        mutable: typeof val === 'object',
+        type: typeof val,
+        value: val,
+      };
+    }
+  };
+
+  render() {
+    const {id} = this.props;
+    return (
+      <Panel heading={id} floating={false} fill={false}>
+        <ManagedDataInspector
+          data={this.props.data}
+          setValue={this.props.onValueChanged ? this.setValue : undefined}
+          extractValue={this.extractValue}
+          expandRoot={true}
+          collapsed={true}
+        />
+      </Panel>
+    );
+  }
+}
+
+export function InspectorSidebar(props: {|
+  element: ?Element,
+  onValueChanged: ?OnValueChanged,
+  client: PluginClient,
+|}): any {
+  const {element} = props;
+  if (!element || !element.data) {
+    return null;
+  }
+
+  const sections = [];
+  for (const key in element.data) {
+    sections.push(
+      <InspectorSidebarSection
+        key={key}
+        id={key}
+        data={element.data[key]}
+        onValueChanged={props.onValueChanged}
+      />,
+    );
+  }
+
+  if (GK.get('sonar_show_console_plugin')) {
+    sections.push(
+      <Panel heading="JS Console" floating={false} fill={false}>
+        <Console client={props.client} getContext={() => element.id} />
+      </Panel>,
+    );
+  }
+
+  return sections;
+}

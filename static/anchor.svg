@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="34px" height="15px" viewBox="0 0 34 15" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <defs>
+        <path d="M15.7532039,0.628345697 C16.4715168,-0.209508324 17.6268814,-0.213619078 18.3523771,0.641069382 L25.4052507,8.94988484 C26.8378145,10.6375528 29.7993348,12.0206796 32.0012238,12.0390288 L33.999137,12.0556781 L0,12.0556781 L1.99762575,12.0390288 C4.20759939,12.0206096 7.16128831,10.6501222 8.60494516,8.96621291 L15.7532039,0.628345697 Z" id="path-1"></path>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Group" transform="translate(-0.000000, 2.000000)">
+            <rect id="Rectangle-Copy" fill="#FFFFFF" x="0" y="11" width="34" height="1"></rect>
+            <g id="Combined-Shape" fill-rule="nonzero">
+                <use fill="#FFFFFF" fill-rule="evenodd" xlink:href="#path-1"></use>
+                <path stroke="rgba(0,0,0,0.3)" stroke-width="1" d="M15.3736097,0.302910233 C16.2949805,-0.771794461 17.8118778,-0.76831469 18.7335645,0.317501454 L25.7864381,8.62631692 C27.1230664,10.2009657 29.9459429,11.521884 32.0053904,11.5390462 L34.0033036,11.5556955 L33.999137,12.5556781 L0,12.5556781 L-0.00416712734,11.5556955 L1.99345861,11.5390462 C4.06137191,11.521811 6.87731445,10.2131533 8.22535095,8.64077745 L15.3736097,0.30291024 Z"></path>
+            </g>
+            <rect id="Rectangle" fill="#FFFFFF" x="0" y="12" width="34" height="1"></rect>
+        </g>
+    </g>
+</svg>

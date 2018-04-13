@@ -1,0 +1,17 @@
+{
+  "name": "sonar-static",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "@babel/core": "^7.0.0-beta.40",
+    "@babel/generator": "^7.0.0-beta.40",
+    "babel-plugin-transform-class-properties": "^7.0.0-beta.3",
+    "babel-plugin-transform-es2015-modules-commonjs": "^7.0.0-beta.3",
+    "babel-plugin-transform-flow-strip-types": "^7.0.0-beta.3",
+    "babel-plugin-transform-object-rest-spread": "^7.0.0-beta.3",
+    "babel-preset-react": "^7.0.0-beta.3",
+    "babylon": "^7.0.0-beta.40",
+    "metro": "^0.28.0"
+  }
+}

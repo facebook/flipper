@@ -1,0 +1,165 @@
+/* your custom css */
+
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'San Francisco', -apple-system, BlinkMacSystemFont,
+    '.SFNSText-Regular', 'Helvetica Neue', Helvetica, sans-serif;
+  font-size: 17px;
+  font-weight: 400;
+}
+
+.fixedHeaderContainer header h2 {
+  font-family: 'San Francisco', -apple-system, BlinkMacSystemFont,
+    '.SFNSText-Regular', 'Helvetica Neue', Helvetica, sans-serif;
+  font-size: 17px;
+  font-weight: 400;
+}
+
+.splash {
+  min-height: 700px;
+  background: url(/sonar/img/screen.png), linear-gradient(#121020, #21233e);
+  background-size: 80%, 100%;
+  background-repeat: no-repeat;
+  background-position: center 350px, center;
+  text-align: center;
+  color: white;
+}
+
+.splash h1 {
+  color: white;
+  font-size: 44px;
+  line-height: 100%;
+  margin-top: 15px;
+  margin-bottom: 25px;
+  font-weight: 200;
+  letter-spacing: 1px;
+}
+
+.splash h2 {
+  opacity: 0.7;
+  font-weight: 300;
+  color: white;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 50px;
+  font-size: 20px;
+  line-height: 140%;
+  max-width: 750px;
+  letter-spacing: 1px;
+}
+
+.splash .btn {
+  color: white;
+  display: inline-block;
+  padding: 7px 20px;
+  border-radius: 6px;
+  margin: 0 10px;
+  border: 1px solid white;
+}
+
+.splash .btn.primary {
+  background-color: #008cf2;
+  border-color: #008cf2;
+}
+
+.content {
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 50px 15px;
+}
+
+.content.row {
+  display: flex;
+  flex-direction: row;
+  margin: 80px auto;
+}
+
+.content .col {
+  flex-basis: 0;
+  flex-grow: 1;
+  padding: 10px 20px;
+}
+
+.col h3 {
+  font-size: 28px;
+  font-weight: 300;
+  margin-bottom: 20px;
+}
+
+.col h4 {
+  font-weight: 500;
+  font-size: 0.8em;
+  opacity: 0.7;
+  text-transform: uppercase;
+}
+
+.col p {
+  opacity: 0.7;
+}
+
+footer.nav-footer {
+  box-shadow: none;
+  background: #121020;
+  font-size: 15px;
+}
+
+nav.toc .toggleNav,
+nav.toc .toggleNav .navGroup.navGroupActive {
+  background: transparent;
+}
+
+nav.toc .toggleNav .navGroup.navGroupActive ul {
+  padding: 0;
+  margin-bottom: 20px;
+}
+
+nav.toc .toggleNav ul li a {
+  margin: 0;
+  font-size: 1em;
+  opacity: 0.7;
+}
+
+nav.toc .toggleNav .navGroup.navGroupActive h3 {
+  background: none;
+  color: inherit;
+  font-weight: 500;
+  padding: 0;
+  margin: 0;
+}
+
+.button {
+  border-radius: 6px;
+  text-transform: none;
+}
+
+.sitemap {
+  width: 100%;
+}
+
+.docsNavContainer {
+  margin-top: 65px;
+}
+
+@media screen and (max-width: 736px) {
+  .docsNavContainer,
+  .docsSliderActive nav.toc .navBreadcrumb {
+    margin-top: 0;
+    background-color: #f5f7f9;
+    border-bottom: 1px solid #d9dde1;
+  }
+
+  .splash {
+    background-size: 100%, 100%;
+    background-position: center 450px, center;
+  }
+
+  .content.row {
+    flex-direction: column;
+  }
+}

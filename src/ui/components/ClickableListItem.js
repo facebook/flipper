@@ -1,0 +1,31 @@
+/**
+ * Copyright 2004-present Facebook. All Rights Reserved.
+ * @format
+ */
+
+import styled from '../styled/index.js';
+import {colors} from './colors.js';
+
+export default styled.view(
+  {
+    backgroundColor: ({active, windowFocused}) => {
+      if (active && windowFocused) {
+        return colors.macOSTitleBarIconSelected;
+      } else if (active && !windowFocused) {
+        return colors.macOSTitleBarBorderBlur;
+      } else {
+        return 'none';
+      }
+    },
+    color: ({active, windowFocused}) =>
+      active && windowFocused ? colors.white : colors.macOSSidebarSectionItem,
+    lineHeight: '25px',
+    padding: '0 10px',
+    '&[disabled]': {
+      color: 'rgba(0, 0, 0, 0.5)',
+    },
+  },
+  {
+    ignoreAttributes: ['active', 'windowFocused'],
+  },
+);

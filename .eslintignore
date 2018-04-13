@@ -1,0 +1,8 @@
+src/fb/plugins/relaydevtools/relay-devtools/*
+latest
+resources
+templates
+node_modules
+flow-typed
+lib
+!.eslintrc.js
