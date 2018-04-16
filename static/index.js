@@ -1,5 +1,7 @@
 /**
- * Copyright 2004-present Facebook. All Rights Reserved.
+ * Copyright 2004-present Facebook.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  * @format
  */
 const {app, BrowserWindow, autoUpdater, dialog} = require('electron');
