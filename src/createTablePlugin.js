@@ -27,6 +27,7 @@ type Props<T> = {|
   id: string,
   icon: string,
   method: string,
+  resetMethod?: string,
   columns: TableColumns,
   columnSizes: TableColumnSizes,
   renderSidebar: (row: T) => any,
@@ -40,7 +41,8 @@ type State<T> = {|
 |};
 
 type AppendAndUpdateAction<T> = {|type: 'AppendAndUpdate', datas: Array<T>|};
-type Actions<T> = AppendAndUpdateAction<T>;
+type ResetAndUpdateAction<T> = {|type: 'ResetAndUpdate', datas: Array<T>|};
+type Actions<T> = AppendAndUpdateAction<T> | ResetAndUpdateAction<T>;
 
 /**
  * createTablePlugin creates a Plugin class which handles fetching data from the client and
@@ -50,6 +52,10 @@ type Actions<T> = AppendAndUpdateAction<T>;
  * The plugin expects the be able to subscribe to the `method` argument and recieve either an array
  * of data objects or a single data object. Each data object represents a row in the table which is
  * build by calling the `buildRow` function argument.
+ *
+ * An optional resetMethod argument can be provided which will replace the current rows with the
+ * data provided. This is useful when connecting to sonar for this first time, or reconnecting to
+ * the client in an unknown state.
  */
 export function createTablePlugin<T: RowData>(props: Props<T>) {
   return class extends SonarPlugin<State<T>, Actions<T>> {
@@ -91,6 +97,24 @@ export function createTablePlugin<T: RowData>(props: Props<T>) {
           rows: [...state.rows, ...newRows],
         };
       },
+      ResetAndUpdate(state: State<T>, action: ResetAndUpdateAction<T>) {
+        const newRows = [];
+        const newData = {};
+
+        for (const data of action.datas.reverse()) {
+          if (data.id == null) {
+            console.warn('The data sent did not contain an ID.');
+          }
+          if (this.state.datas[data.id] == null) {
+            newData[data.id] = data;
+            newRows.push(props.buildRow(data));
+          }
+        }
+        return {
+          datas: newData,
+          rows: newRows,
+        };
+      },
     };
 
     init() {
@@ -100,6 +124,14 @@ export function createTablePlugin<T: RowData>(props: Props<T>) {
           datas: data instanceof Array ? data : [data],
         });
       });
+      if (props.resetMethod) {
+        this.client.subscribe(props.resetMethod, (data: Array<T>) => {
+          this.dispatchAction({
+            type: 'ResetAndUpdate',
+            datas: data instanceof Array ? data : [],
+          });
+        });
+      }
     }
 
     clear = () => {
