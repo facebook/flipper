@@ -1,10 +1,8 @@
 {
   "docs": {
-    "Docusaurus": ["doc1"],
-    "First Category": ["doc2"],
-    "Second Category": ["doc3"]
-  },
-  "docs-other": {
-    "First Category": ["doc4", "doc5"]
+    "Sonar": ["getting-started", "understand"],
+    "Plugins": ["logs", "layout", "network"],
+    "Developing Plugins": ["js-setup"],
+    "Developing Plugins": ["js-setup"]
   }
 }

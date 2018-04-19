@@ -30,45 +30,71 @@ class Index extends React.Component {
                 Learn more
               </a>
             </div>
-          </div>
-        </div>
-        <div className="content row">
-          <div className="col">image</div>
-          <div className="col">
-            <h4>Plugins</h4>
-            <h3>Extending Sonar</h3>
-            <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-              Suspendisse dolor urna, placerat sed condimentum commodo,
-              malesuada id quam. Vivamus vestibulum blandit turpis. Suspendisse
-              id cursus neque, sit amet pellentesque arcu.
-            </p>
+            <img
+              src="/img/splash.png"
+              srcSet="/img/splash.png 1x, /img/splash@2x.png 2x"
+              className="splashScreen"
+            />
+            <div className="shadow" />
           </div>
         </div>
         <div className="content row">
           <div className="col">
-            <h4>Plugins</h4>
-            <h3>Extending Sonar</h3>
-            <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-              Suspendisse dolor urna, placerat sed condimentum commodo,
-              malesuada id quam. Vivamus vestibulum blandit turpis. Suspendisse
-              id cursus neque, sit amet pellentesque arcu.
-            </p>
+            <img
+              src="/img/inspector.png"
+              srcSet="/img/inspector.png 1x, /img/inspector@2x.png 2x"
+            />
           </div>
-          <div className="col">image</div>
+          <div className="col">
+            <h4>Tools</h4>
+            <h3>Mobile development</h3>
+            <p>
+              Sonar aims to be your number one companion for mobile app
+              development on iOS and Android. Therefore, we provide a bunch of
+              useful tools, like a log viewer, interactive layout inspector and
+              network inspector.
+            </p>
+            <a className="learnmore">Learn more</a>
+          </div>
         </div>
         <div className="content row">
-          <div className="col">image</div>
           <div className="col">
             <h4>Plugins</h4>
             <h3>Extending Sonar</h3>
             <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-              Suspendisse dolor urna, placerat sed condimentum commodo,
-              malesuada id quam. Vivamus vestibulum blandit turpis. Suspendisse
-              id cursus neque, sit amet pellentesque arcu.
+              Sonar is built as a platform. That means, besides using the tools
+              already included, you can create your own plugins to visualize and
+              debug data from your mobile apps. Sonar takes care of sending data
+              back and forth, calling functions and listening for events on the
+              mobile app.
             </p>
+            <a className="learnmore">Learn more</a>
+          </div>
+          <div className="col center">
+            <img
+              src="/img/SonarKit.png"
+              srcSet="/img/SonarKit.png 1x, /img/SonarKit@2x.png 2x"
+            />
+          </div>
+        </div>
+        <div className="content row">
+          <div className="col">
+            <img
+              src="/img/plugins.png"
+              srcSet="/img/plugins.png 1x, /img/plugins@2x.png 2x"
+            />
+          </div>
+          <div className="col">
+            <h4>Open Source</h4>
+            <h3>Contributing to Sonar</h3>
+            <p>
+              Both, Sonar's desktop app and native mobile SDKs are open-source
+              and MIT licensed. This enables you to see and understand how we
+              are building plugins, and of course join our community and help
+              improving Sonar. We are excited to see what you will build upon
+              our platform.
+            </p>
+            <a className="learnmore">Learn more</a>
           </div>
         </div>
       </div>

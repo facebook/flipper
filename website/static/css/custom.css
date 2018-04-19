@@ -22,12 +22,11 @@ h6 {
 
 .splash {
   min-height: 700px;
-  background: url(/sonar/img/screen.png), linear-gradient(#121020, #21233e);
-  background-size: 80%, 100%;
-  background-repeat: no-repeat;
-  background-position: center 350px, center;
+  background: linear-gradient(#121020, #21233e);
   text-align: center;
   color: white;
+  position: relative;
+  overflow: hidden;
 }
 
 .splash h1 {
@@ -41,9 +40,8 @@ h6 {
 }
 
 .splash h2 {
-  opacity: 0.7;
+  color: rgba(255, 255, 255, 0.7);
   font-weight: 300;
-  color: white;
   margin-left: auto;
   margin-right: auto;
   margin-bottom: 50px;
@@ -67,6 +65,41 @@ h6 {
   border-color: #008cf2;
 }
 
+.splash .shadow {
+  position: absolute;
+  background-image: linear-gradient(to top, rgba(0, 0, 0, 0.1), transparent);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 15px;
+  z-index: 2;
+}
+
+.center {
+  text-align: center;
+}
+
+@keyframes slideIn {
+  0% {
+    transform: translate(-50%, -320px);
+    opacity: 0;
+  }
+  100% {
+    transform: translate(-50%, -360px);
+    opacity: 1;
+  }
+}
+
+.splashScreen {
+  width: 100%;
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  animation: 0.6s ease-out 0.2s 1 slideIn forwards;
+  width: 1116px;
+  max-width: 100%;
+}
+
 .content {
   max-width: 1000px;
   margin-left: auto;
@@ -84,6 +117,7 @@ h6 {
   flex-basis: 0;
   flex-grow: 1;
   padding: 10px 20px;
+  align-self: center;
 }
 
 .col h3 {
@@ -146,6 +180,54 @@ nav.toc .toggleNav .navGroup.navGroupActive h3 {
   margin-top: 65px;
 }
 
+a.learnmore {
+  display: inline-block;
+  margin-top: 10px;
+  color: $actionColor;
+}
+
+a.learnmore:hover {
+  opacity: 0.7;
+}
+
+code,
+pre code {
+  font-size: 0.85em;
+  margin-left: 2px;
+  margin-right: 2px;
+}
+
+pre code {
+  background: none;
+  box-shadow: none;
+  border-left-color: $accentColor;
+  margin-left: 0;
+  line-height: 1.4;
+}
+
+.mainContainer {
+  font-size: 1em;
+  line-height: 100%;
+}
+
+.mainContainer .wrapper .post h1,
+.mainContainer .wrapper .post h2,
+.mainContainer .wrapper .post h3 {
+  font-weight: 500;
+}
+
+.mainContainer .wrapper .post *:not(h2) + h2,
+.mainContainer .wrapper .post *:not(h2) + h3 {
+  margin-top: 40px;
+}
+
+.mainContainer .wrapper p,
+.blockElement p,
+.mainContainer .wrapper ul li,
+.mainContainer .wrapper ol li {
+  line-height: 1.4;
+}
+
 @media screen and (max-width: 736px) {
   .docsNavContainer,
   .docsSliderActive nav.toc .navBreadcrumb {
@@ -154,12 +236,33 @@ nav.toc .toggleNav .navGroup.navGroupActive h3 {
     border-bottom: 1px solid #d9dde1;
   }
 
-  .splash {
-    background-size: 100%, 100%;
-    background-position: center 450px, center;
+  .content.row {
+    flex-direction: column;
+  }
+
+  .splash .splashScreen {
+    margin-top: 20px;
   }
 
   .content.row {
-    flex-direction: column;
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+}
+
+@media screen and (max-width: 680px) {
+  .splash .splashScreen {
+    margin-top: 20px;
+    top: 120%;
+  }
+}
+
+@media only screen and (min-width: 736px) {
+  .navigationSlider .slidingNav ul li a {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+  .navigationSlider .slidingNav ul li:last-child a {
+    padding-right: 0;
   }
 }

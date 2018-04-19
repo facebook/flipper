@@ -22,9 +22,9 @@ const siteConfig = {
   baseUrl: '/' /* base url for your project */,
   projectName: 'sonar',
   headerLinks: [
-    {doc: 'doc1', label: 'Docs'},
-    {doc: 'doc4', label: 'API'},
-    {page: 'help', label: 'Help'},
+    {doc: 'getting-started', label: 'Getting Started'},
+    {doc: 'getting-started', label: 'Docs'},
+    {page: 'help', label: 'GitHub'},
   ],
   users,
   /* path to images for header/footer */
@@ -35,6 +35,8 @@ const siteConfig = {
   colors: {
     primaryColor: '#121020',
     secondaryColor: '#121020',
+    accentColor: '#785BA3',
+    actionColor: '#008cf2',
   },
   // This copyright info is used in /core/Footer.js and blog rss/atom feeds.
   copyright: 'Copyright © ' + new Date().getFullYear() + ' Facebook',
@@ -45,7 +47,7 @@ const siteConfig = {
     theme: 'default',
   },
   // You may provide arbitrary config keys to be used as needed by your template.
-  repoUrl: 'https://github.com/facebookincubator/sonar',
+  repoUrl: 'https://github.com/facebook/sonar',
   /* On page navigation for the current documentation page */
   // onPageNav: 'separate',
   stylesheets: [],
