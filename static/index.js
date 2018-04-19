@@ -16,7 +16,13 @@ const sonarDir = path.join(require('os').homedir(), '.sonar');
 if (!fs.existsSync(sonarDir)) {
   fs.mkdirSync(sonarDir);
 }
-const config = {pluginPaths: []};
+const configPath = path.join(sonarDir, 'config.json');
+let config = {pluginPaths: []};
+try {
+  config = JSON.parse(fs.readFileSync(configPath));
+} catch (e) {
+  fs.writeFileSync(configPath, JSON.stringify(config));
+}
 if (yargs.argv.dynamicPlugins) {
   config.pluginPaths = config.pluginPaths.concat(
     yargs.argv.dynamicPlugins.split(','),
