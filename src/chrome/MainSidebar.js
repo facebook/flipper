@@ -133,12 +133,16 @@ class PluginSidebarListItem extends Component<{
           name={Plugin.icon}
           backgroundColor={
             isActive
-              ? windowFocused ? colors.white : colors.macOSSidebarSectionTitle
+              ? windowFocused
+                ? colors.white
+                : colors.macOSSidebarSectionTitle
               : iconColor
           }
           color={
             isActive
-              ? windowFocused ? colors.macOSTitleBarIconSelected : colors.white
+              ? windowFocused
+                ? colors.macOSTitleBarIconSelected
+                : colors.white
               : colors.white
           }
         />
