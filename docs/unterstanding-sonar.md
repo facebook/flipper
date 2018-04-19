@@ -10,6 +10,6 @@ The Sonar desktop app and the mobile native SDK establish a web-socket connectio
 
 ## Plugins
 
-Sonar itself only provides the architectural platform. What makes it useful are the plugins built on top of this: Logs, layout or network inspector are all plugins. Plugins can be built very specific to your business logic and the use-cases you have in your app.
+Sonar itself only provides the architectural platform. What makes it useful are the plugins built on top of this: [Logs](logs-plugin.md), [Layout Inspector](layout-plugin.md) or [Network Inspector](network-plugin.md) are all plugins. Plugins can be built very specific to your business logic and the use-cases you have in your app. We are shipping Sonar with a couple of built in plugins, but you can also go ahead and build your own.
 
-A plugin always consists of the native implementation sending and receiving data and the desktop plugin visualizing data in most cases. Learn more on how to [create a plugin](). The native implementations are usually written in Java or Objective-C, the desktop UI is written in React.
+A plugin always consists of the native implementation sending and receiving data and the desktop plugin visualizing data in most cases. Learn more on how to [create a plugin](create-plugin.md). The native implementations are usually written in Java or Objective-C, the desktop UI is written in React.

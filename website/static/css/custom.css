@@ -190,6 +190,10 @@ a.learnmore:hover {
   opacity: 0.7;
 }
 
+nav.toc .toggleNav ul li a.navItemActive {
+  color: black;
+}
+
 code,
 pre code {
   font-size: 0.85em;
@@ -228,12 +232,24 @@ pre code {
   line-height: 1.4;
 }
 
+.mainContainer article a {
+  color: $accentColor;
+}
+
+.mainContainer article a:hover {
+  opacity: 0.8;
+}
+
 @media screen and (max-width: 736px) {
   .docsNavContainer,
   .docsSliderActive nav.toc .navBreadcrumb {
     margin-top: 0;
     background-color: #f5f7f9;
     border-bottom: 1px solid #d9dde1;
+  }
+
+  nav.toc section .navGroups {
+    padding: 50px 20px 60px;
   }
 
   .content.row {
@@ -245,8 +261,27 @@ pre code {
   }
 
   .content.row {
-    margin-top: 20px;
-    margin-bottom: 20px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+  }
+
+  footer .sitemap {
+    margin: 0;
+  }
+
+  footer .sitemap > div {
+    padding: 20px;
+  }
+
+  .splash h1 {
+    font-size: 36px;
+    margin-top: 0;
+  }
+
+  .fixedHeaderContainer a {
+    margin-left: auto;
+    margin-right: auto;
+    padding-right: 15px;
   }
 }
 

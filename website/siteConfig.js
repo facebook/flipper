@@ -4,16 +4,7 @@
  * LICENSE file in the root directory of this source tree.
  * @format
  */
-
-/* List of projects/orgs using your project for the users page */
-const users = [
-  {
-    caption: 'User1',
-    image: '/test-site/img/docusaurus.svg',
-    infoLink: 'https://www.facebook.com',
-    pinned: true,
-  },
-];
+const repoUrl = 'https://github.com/facebook/sonar';
 
 const siteConfig = {
   title: 'Sonar' /* title for your website */,
@@ -23,10 +14,9 @@ const siteConfig = {
   projectName: 'sonar',
   headerLinks: [
     {doc: 'getting-started', label: 'Getting Started'},
-    {doc: 'getting-started', label: 'Docs'},
-    {page: 'help', label: 'GitHub'},
+    {doc: 'understand', label: 'Docs'},
+    {page: repoUrl, label: 'GitHub'},
   ],
-  users,
   /* path to images for header/footer */
   headerIcon: 'img/icon.png',
   footerIcon: 'img/icon.png',
@@ -38,18 +28,12 @@ const siteConfig = {
     accentColor: '#785BA3',
     actionColor: '#008cf2',
   },
-  // This copyright info is used in /core/Footer.js and blog rss/atom feeds.
   copyright: 'Copyright © ' + new Date().getFullYear() + ' Facebook',
-  // organizationName: 'deltice', // or set an env variable ORGANIZATION_NAME
-  // projectName: 'test-site', // or set an env variable PROJECT_NAME
   highlight: {
-    // Highlight.js theme to use for syntax highlighting in code blocks
     theme: 'default',
   },
-  // You may provide arbitrary config keys to be used as needed by your template.
-  repoUrl: 'https://github.com/facebook/sonar',
-  /* On page navigation for the current documentation page */
-  // onPageNav: 'separate',
+  repoUrl,
+  scripts: ['https://buttons.github.io/buttons.js'],
   stylesheets: [],
 };
 

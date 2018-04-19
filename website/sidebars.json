@@ -1,8 +1,20 @@
 {
   "docs": {
-    "Sonar": ["getting-started", "understand"],
-    "Plugins": ["logs", "layout", "network"],
-    "Developing Plugins": ["js-setup"],
-    "Developing Plugins": ["js-setup"]
+    "Using Sonar": ["getting-started", "understand"],
+    "Built-in Plugins": ["logs-plugin", "layout-plugin", "network-plugin"],
+    "Plugins: Desktop part": [
+      "js-setup",
+      "communicating",
+      "create-table-plugin",
+      "ui-components",
+      "styling-components"
+    ],
+    "Plugins: Mobile part": [
+      "create-plugin",
+      "send-data",
+      "error-handling",
+      "testing"
+    ],
+    "New Platforms": ["platform-overview", "sonar-client", "layout-inspection"]
   }
 }

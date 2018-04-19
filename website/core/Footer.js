@@ -19,7 +19,6 @@ class Footer extends React.Component {
   }
 
   render() {
-    const currentYear = new Date().getFullYear();
     return (
       <footer className="nav-footer" id="footer">
         <section className="sitemap">
@@ -35,37 +34,25 @@ class Footer extends React.Component {
           </a>
           <div>
             <h5>Docs</h5>
-            <a href={this.docUrl('doc1.html', this.props.language)}>
-              Getting Started
-            </a>
-            <a href={this.docUrl('doc2.html', this.props.language)}>
-              Integrating Sonar
-            </a>
-            <a href={this.docUrl('doc3.html', this.props.language)}>
-              Creating Plugins
-            </a>
+            <a href="/docs/getting-started.html">Getting Started</a>
+            <a href="/docs/understand.html">Understanding Sonar</a>
+            <a href="/docs/js-setup.html">Creating Plugins</a>
           </div>
           <div>
             <h5>Plugins</h5>
-            <a href={this.pageUrl('users.html', this.props.language)}>
-              Log viewer
-            </a>
-            <a href={this.pageUrl('users.html', this.props.language)}>
-              Layout inspector
-            </a>
-            <a href={this.pageUrl('users.html', this.props.language)}>
-              Network inspector
-            </a>
+            <a href="/docs/logs-plugin.html">Log Viewer</a>
+            <a href="/docs/layout-plugin.html">Layout Inspector</a>
+            <a href="/docs/network-plugin.html">Network Inspector</a>
           </div>
           <div>
             <h5>More</h5>
-            <a href={this.props.config.baseUrl + 'blog'}>Twitter</a>
-            <a href="https://github.com/">GitHub</a>
+            <a href="https://twitter.com/fbsonar">Twitter</a>
+            <a href={this.props.config.repoUrl}>GitHub</a>
             <a
               className="github-button"
               href={this.props.config.repoUrl}
               data-icon="octicon-star"
-              data-count-href="/facebook/docusaurus/stargazers"
+              data-count-href="/facebook/sonar/stargazers"
               data-show-count={true}
               data-count-aria-label="# stargazers on GitHub"
               aria-label="Star this project on GitHub">
@@ -85,9 +72,7 @@ class Footer extends React.Component {
             height="45"
           />
         </a>
-        <section className="copyright">
-          Copyright &copy; {currentYear} Facebook Inc.
-        </section>
+        <section className="copyright">{this.props.config.copyright}</section>
       </footer>
     );
   }

@@ -13,7 +13,7 @@ class Index extends React.Component {
       <div>
         <div className="splash">
           <div className="content">
-            <h1>Extensible mobile app debugger</h1>
+            <h1>Extensible mobile app&nbsp;debugger</h1>
             <h2>
               Sonar is a platform for debugging your mobile apps on iOS and
               Android. You can visualize all kinds of data from the device and
@@ -23,10 +23,10 @@ class Index extends React.Component {
             <div className="row">
               <a
                 className="btn primary"
-                href="https://facebook.com/sonar/download/mac">
+                href="https://www.facebook.com/sonar/public/mac">
                 Download
               </a>
-              <a className="btn" href="">
+              <a className="btn" href="/docs/understand.html">
                 Learn more
               </a>
             </div>
