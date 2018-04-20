@@ -19,7 +19,7 @@ const siteConfig = {
   ],
   /* path to images for header/footer */
   headerIcon: 'img/icon.png',
-  footerIcon: 'img/icon.png',
+  footerIcon: 'img/mascot.png',
   favicon: 'img/icon.png',
   /* colors for website */
   colors: {

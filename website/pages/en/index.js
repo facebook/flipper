@@ -54,7 +54,9 @@ class Index extends React.Component {
               useful tools, like a log viewer, interactive layout inspector and
               network inspector.
             </p>
-            <a className="learnmore">Learn more</a>
+            <a className="learnmore" href="/docs/getting-started.html">
+              Learn more
+            </a>
           </div>
         </div>
         <div className="content row">
@@ -68,7 +70,9 @@ class Index extends React.Component {
               back and forth, calling functions and listening for events on the
               mobile app.
             </p>
-            <a className="learnmore">Learn more</a>
+            <a className="learnmore" href="/docs/understand.html">
+              Learn more
+            </a>
           </div>
           <div className="col center">
             <img
@@ -88,13 +92,15 @@ class Index extends React.Component {
             <h4>Open Source</h4>
             <h3>Contributing to Sonar</h3>
             <p>
-              Both, Sonar's desktop app and native mobile SDKs are open-source
+              Both Sonar's desktop app and native mobile SDKs are open-source
               and MIT licensed. This enables you to see and understand how we
               are building plugins, and of course join our community and help
               improving Sonar. We are excited to see what you will build upon
               our platform.
             </p>
-            <a className="learnmore">Learn more</a>
+            <a className="learnmore" href="/docs/js-setup.html">
+              Learn more
+            </a>
           </div>
         </div>
       </div>

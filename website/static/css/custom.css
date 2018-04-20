@@ -191,7 +191,8 @@ a.learnmore:hover {
 }
 
 nav.toc .toggleNav ul li a.navItemActive {
-  color: black;
+  color: $actionColor;
+  opacity: 1;
 }
 
 code,
@@ -204,9 +205,11 @@ pre code {
 pre code {
   background: none;
   box-shadow: none;
-  border-left-color: $accentColor;
+  border-left-color: #585760;
+  border-left-width: 3px;
   margin-left: 0;
   line-height: 1.4;
+  border-radius: 0;
 }
 
 .mainContainer {
@@ -217,7 +220,16 @@ pre code {
 .mainContainer .wrapper .post h1,
 .mainContainer .wrapper .post h2,
 .mainContainer .wrapper .post h3 {
-  font-weight: 500;
+  font-weight: 400;
+}
+
+.mainContainer .wrapper .post h2 {
+  font-weight: 300;
+  font-size: 28px;
+}
+
+.mainContainer .wrapper .post h1 {
+  font-weight: 300;
 }
 
 .mainContainer .wrapper .post *:not(h2) + h2,
@@ -233,11 +245,20 @@ pre code {
 }
 
 .mainContainer article a {
-  color: $accentColor;
+  color: $actionColor;
 }
 
 .mainContainer article a:hover {
   opacity: 0.8;
+}
+
+footer .sitemap .nav-home,
+footer .fbOpenSource {
+  opacity: 1;
+}
+
+footer iframe {
+  margin-top: 8px;
 }
 
 @media screen and (max-width: 736px) {
