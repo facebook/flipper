@@ -140,6 +140,7 @@ export default class App extends React.Component<{}, State> {
     // close socket before reloading
     window.addEventListener('beforeunload', () => {
       this.state.server.close();
+      this.portForwarder.kill();
     });
   }
 
@@ -354,7 +355,16 @@ export default class App extends React.Component<{}, State> {
     // start port forwarding server for real device connections
     this.portForwarder = child_process.exec(
       'PortForwardingMacApp.app/Contents/MacOS/PortForwardingMacApp -portForward=8088 -multiplexChannelPort=8078',
+      process.env.NODE_ENV === 'production'
+        ? {cwd: path.resolve(__dirname, '../app.asar.unpacked')}
+        : {},
+      err => {
+        if (err) {
+          console.error(err);
+        }
+      },
     );
+
     const querySimulatorDevices = (): Promise<IOSDeviceMap> => {
       return new Promise((resolve, reject) => {
         child_process.execFile(
