@@ -6,13 +6,13 @@
  */
 
 import type {
+  App,
   State,
   StatePluginInfo,
   StatePlugins,
   StateClientPlugins,
-} from './init.js';
+} from './App.js';
 import type {SonarBasePlugin} from 'sonar';
-import type Application from './init.js';
 import {devicePlugins} from './device-plugins/index.js';
 import {SonarPlugin, SonarDevicePlugin} from 'sonar';
 import {PluginStateContainer} from './plugin.js';
@@ -32,7 +32,7 @@ type TeardownClientAction = {|
 |};
 
 export function ActivatePlugin(
-  app: Application,
+  app: App,
   state: State,
   {appKey, pluginKey}: ActivatePluginAction,
 ) {
@@ -107,7 +107,7 @@ export function ActivatePlugin(
 
   // get target, this could be an app connection or a device
   const clientInfo = state.server.connections.get(appKey);
-  let target: Client | BaseDevice;
+  let target: void | Client | BaseDevice;
   if (clientInfo) {
     target = clientInfo.client;
     invariant(
@@ -116,7 +116,9 @@ export function ActivatePlugin(
       'expected plugin to be an app Plugin',
     );
   } else {
-    target = state.devices[appKey];
+    target = app.props.devices.find(
+      (device: BaseDevice) => device.serial === appKey,
+    );
     invariant(
       // $FlowFixMe prototype not known
       Plugin.prototype instanceof SonarDevicePlugin,
@@ -155,7 +157,7 @@ export function ActivatePlugin(
 }
 
 export function TeardownClient(
-  app: Application,
+  app: App,
   state: State,
   {appKey}: TeardownClientAction,
 ) {

@@ -6,7 +6,7 @@
  */
 
 import type {KeyboardActions} from './MenuBar.js';
-import type Application from './init.js';
+import type {App} from './App.js';
 import type {Client} from './server.js';
 
 import BaseDevice from './devices/BaseDevice.js';
@@ -65,7 +65,7 @@ export class SonarBasePlugin<State: Object = any, Actions = any> {
   reducers: {
     [actionName: string]: (state: State, actionData: Object) => $Shape<State>,
   } = {};
-  app: Application;
+  app: App;
   state: State;
   renderSidebar: ?() => ?React.Element<*>;
   renderIntro: ?() => ?React.Element<*>;
@@ -81,7 +81,7 @@ export class SonarBasePlugin<State: Object = any, Actions = any> {
   // methods to be overridden by subclasses
   _init(): void {}
   _teardown(): void {}
-  _setup(target: PluginTarget, app: Application) {
+  _setup(target: PluginTarget, app: App) {
     this.app = app;
   }
 
@@ -140,7 +140,7 @@ export class SonarDevicePlugin<
 > extends SonarBasePlugin<State, Actions> {
   device: BaseDevice;
 
-  _setup(target: PluginTarget, app: Application) {
+  _setup(target: PluginTarget, app: App) {
     invariant(target instanceof BaseDevice, 'expected instanceof Client');
     const device: BaseDevice = target;
 
@@ -197,7 +197,7 @@ export class SonarPlugin<
     return device;
   }
 
-  _setup(target: any, app: Application) {
+  _setup(target: any, app: App) {
     /* We have to type the above as `any` since if we import the actual Client we have an
        unresolvable dependency cycle */
 

@@ -1,0 +1,14 @@
+# BUILD FILE SYNTAX: SKYLARK
+load("@xplat//configurations/buck/android:fb_android_library.bzl", "fb_android_library")
+
+fb_android_library(
+    name = "common",
+    srcs = glob(["**/*.java"]),
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        "//java/com/facebook/sonar:sonar",
+        "//third-party/java/jsr-305:jsr-305",
+    ],
+)

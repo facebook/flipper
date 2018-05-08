@@ -6,7 +6,7 @@
  */
 
 import type BaseDevice from './devices/BaseDevice.js';
-import type Application from './init.js';
+import type {App} from './App.js';
 import type {SonarPlugin} from './plugin.js';
 import plugins from './plugins/index.js';
 
@@ -40,7 +40,7 @@ type RequestMetadata = {method: string, id: number, params: ?Object};
 
 export class Client extends EventEmitter {
   constructor(
-    app: Application,
+    app: App,
     id: string,
     query: ClientQuery,
     conn: ?WebSocketConnection,
@@ -70,7 +70,7 @@ export class Client extends EventEmitter {
   on: ((event: 'plugins-change', callback: () => void) => void) &
     ((event: 'close', callback: () => void) => void);
 
-  app: Application;
+  app: App;
   connected: boolean;
   id: string;
   query: ClientQuery;
@@ -301,7 +301,7 @@ export class Client extends EventEmitter {
 }
 
 export class Server extends EventEmitter {
-  constructor(app: Application) {
+  constructor(app: App) {
     super();
 
     this.app = app;
@@ -314,7 +314,7 @@ export class Server extends EventEmitter {
   connections: Map<string, ClientInfo>;
   id: number;
   server: WebSocketServer;
-  app: Application;
+  app: App;
 
   on: ((event: 'new-client', callback: (client: Client) => void) => void) &
     ((event: 'error', callback: (err: Error) => void) => void) &

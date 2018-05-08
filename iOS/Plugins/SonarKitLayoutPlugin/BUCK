@@ -1,0 +1,66 @@
+load("@xplat//configurations/buck/apple:flag_defs.bzl", "get_fbobjc_enable_exception_lang_compiler_flags", "get_fbobjc_xctest_tests_flags", "OBJC_ARC_PREPROCESSOR_FLAGS")
+load("@xplat//configurations/buck/apple:fb_apple_library.bzl", "fb_apple_library")
+load("@xplat//configurations/buck/apple:config_utils_defs.bzl", "get_fbobjc_xctest_tests", "fbobjc_configs")
+load("@xplat//configurations/buck/apple:ios_test.bzl", "ios_test")
+
+PUBLIC_HEADERS = ["SonarKitLayoutPlugin/" + x for x in [
+    "SonarKitLayoutPlugin.h",
+    "SKTouch.h",
+    "SKDescriptorMapper.h",
+    "SKNodeDescriptor.h",
+    "SKInvalidation.h",
+    "SKNamed.h",
+    "SKTapListener.h",
+    "SKObject.h",
+    "SKHighlightOverlay.h",
+    "UIColor+SKSonarValueCoder.h",
+    "utils/SKObjectHash.h",
+    "utils/SKSwizzle.h",
+    "utils/SKYogaKitHelper.h",
+]]
+
+fb_apple_library(
+    name = "SonarKitLayoutPlugin",
+    srcs = glob([
+        "SonarKitLayoutPlugin/**/*.m",
+        "SonarKitLayoutPlugin/**/*.mm",
+    ]),
+    headers = glob(
+        ["SonarKitLayoutPlugin/**/*.h"],
+        exclude = PUBLIC_HEADERS,
+    ),
+    exported_headers = PUBLIC_HEADERS,
+    frameworks = [
+        "$SDKROOT/System/Library/Frameworks/Foundation.framework",
+        "$SDKROOT/System/Library/Frameworks/UIKit.framework",
+    ],
+    lang_compiler_flags = get_fbobjc_enable_exception_lang_compiler_flags(),
+    preprocessor_flags = OBJC_ARC_PREPROCESSOR_FLAGS,
+    tests = [":SonarKitLayoutPluginTests"],
+    deps = [
+        "xplat//yoga/YogaKit:YogaKitApple",
+        "//Libraries/SonarKit:SonarKit",
+    ],
+)
+
+ios_test(
+    name = "SonarKitLayoutPluginTests",
+    srcs = glob([
+        "SonarKitLayoutPluginTests/*.m",
+        "SonarKitLayoutPluginTests/*.mm",
+    ]),
+    headers = glob(["SonarKitLayoutPluginTests/*.h"]),
+    configs = fbobjc_configs(get_fbobjc_xctest_tests()),
+    contacts = ["emilsj@fb.com"],
+    frameworks = [
+        "$PLATFORM_DIR/Developer/Library/Frameworks/XCTest.framework",
+    ],
+    info_plist = "xplat//configurations/buck/common_info_plists:Test-Info.plist",
+    inherited_buck_flags = get_fbobjc_xctest_tests_flags(),
+    deps = [
+        ":SonarKitLayoutPlugin",
+        "//Libraries/SonarKit:SonarKit",
+        "//Libraries/SonarKit:SonarKitTestUtils",
+        "//VendorLib/ComponentKit:ComponentKit",
+    ],
+)

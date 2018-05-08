@@ -6,8 +6,9 @@
  */
 
 import {FlexRow, Text, colors, LoadingIndicator, Glyph, Component} from 'sonar';
-import {ipcRenderer, remote} from 'electron';
+import {remote} from 'electron';
 import {isProduction} from '../utils/dynamicPluginLoading';
+import config from '../fb-stubs/config.js';
 const version = remote.app.getVersion();
 
 const VersionText = Text.extends({
@@ -23,9 +24,11 @@ const Container = FlexRow.extends({
 type State = {
   updater:
     | 'error'
+    | 'checking-for-update'
     | 'update-available'
     | 'update-not-available'
     | 'update-downloaded',
+  error?: string,
 };
 
 export default class AutoUpdateVersion extends Component<{}, State> {
@@ -34,12 +37,45 @@ export default class AutoUpdateVersion extends Component<{}, State> {
   };
 
   componentDidMount() {
-    ipcRenderer.on('updater', (event, data) => {
-      if (data.type === 'error') {
-        console.error(data.error);
-      }
-      this.setState({updater: data.type});
-    });
+    if (isProduction()) {
+      remote.autoUpdater.setFeedURL(
+        `${config.updateServer}?version=${version}`,
+      );
+
+      remote.autoUpdater.on('update-downloaded', () => {
+        this.setState({updater: 'update-downloaded'});
+
+        remote.dialog.showMessageBox(
+          {
+            title: 'Update available',
+            message: 'A new version of Sonar is available!',
+            detail: `You have Sonar ${version} which is outdated. Update to the latest version now.`,
+            buttons: ['Install and Restart'],
+          },
+          () => {
+            remote.autoUpdater.quitAndInstall();
+          },
+        );
+      });
+
+      remote.autoUpdater.on('error', error => {
+        this.setState({updater: 'error', error: error.toString()});
+      });
+
+      remote.autoUpdater.on('checking-for-update', () => {
+        this.setState({updater: 'checking-for-update'});
+      });
+
+      remote.autoUpdater.on('update-available', error => {
+        this.setState({updater: 'update-available'});
+      });
+
+      remote.autoUpdater.on('update-not-available', error => {
+        this.setState({updater: 'update-not-available'});
+      });
+
+      remote.autoUpdater.checkForUpdates();
+    }
   }
 
   render() {
@@ -51,7 +87,7 @@ export default class AutoUpdateVersion extends Component<{}, State> {
           </span>
         )}
         {this.state.updater === 'error' && (
-          <span title="Error fetching update">
+          <span title={`Error fetching update: ${this.state.error || ''}`}>
             <Glyph color={colors.light30} name="caution-triangle" />
           </span>
         )}

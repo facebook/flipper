@@ -1,0 +1,39 @@
+load("//Libraries/SonarKit:sonar_defs.bzl", "ios_app", "SONAR_OBJC_ARC_PREPROCESSOR_FLAGS")
+load("@xplat//configurations/buck/apple:flag_defs.bzl", "get_fbobjc_enable_exception_lang_compiler_flags", "OBJC_ARC_PREPROCESSOR_FLAGS")
+
+apple_asset_catalog(
+    name = "IconsAssetCatalog",
+    app_icon = "AppIcon",
+    dirs = ["Icons.xcassets"],
+)
+
+ios_app(
+    name = "Sample",
+    srcs = glob([
+        "*.m",
+        "*.mm",
+    ]),
+    headers = glob(["*.h"]),
+    frameworks = [
+        "$SDKROOT/System/Library/Frameworks/UIKit.framework",
+    ],
+    info_plist = "Info.plist",
+    linker_flags = ["-ObjC"],
+    preprocessor_flags = SONAR_OBJC_ARC_PREPROCESSOR_FLAGS,
+    visibility = ["PUBLIC"],
+    deps = [
+        "xplat//sonar-client:SonarApple",
+        ":IconsAssetCatalog",
+        "//Libraries/SonarKit:SonarKit",
+        "//Libraries/SonarKit/SonarKitPlugins/OSSPlugins/SonarKitLayoutPlugin:SonarKitLayoutPlugin",
+        "//Libraries/SonarKit/SonarKitPlugins/OSSPlugins/SonarKitLayoutPlugin/SonarKitLayoutComponentKitSupport:SonarKitLayoutComponentKitSupport",
+        "//Libraries/SonarKit/SonarKitPlugins/OSSPlugins/SonarKitNetworkPlugin/SKIOSNetworkPlugin:SKIOSNetworkPlugin",
+        "//VendorLib/ComponentKit:ComponentKit",
+    ],
+)
+
+xcode_workspace_config(
+    name = "workspace",
+    extra_tests = ["//Libraries/SonarKit:SonarKitTests"],
+    src_target = ":Sample",
+)

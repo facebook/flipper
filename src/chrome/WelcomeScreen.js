@@ -15,8 +15,8 @@ import {
   colors,
   brandColors,
 } from 'sonar';
-import {version} from '../../package.json';
-import {shell} from 'electron';
+import {isProduction} from '../utils/dynamicPluginLoading';
+import {shell, remote} from 'electron';
 
 const Container = FlexColumn.extends({
   height: '100%',
@@ -119,7 +119,11 @@ export default class WelcomeScreen extends PureComponent<Props, State> {
         <Welcome isMounted={this.state.isMounted}>
           <Logo src="./icon.png" />
           <Title>Welcome to Sonar</Title>
-          <Version>Version {version}</Version>
+          <Version>
+            {isProduction()
+              ? `Version ${remote.app.getVersion()}`
+              : 'Development Mode'}
+          </Version>
           <Item
             onClick={() =>
               shell.openExternal(

@@ -1,0 +1,14 @@
+# BUILD FILE SYNTAX: SKYLARK
+load("@xplat//configurations/buck/android:fb_android_library.bzl", "fb_android_library")
+load("//java/com/facebook/sonar:sonar_defs.bzl", "supported_apps")
+
+fb_android_library(
+    name = "formatters",
+    srcs = glob(["*.java"]),
+    visibility = ["//java/com/facebook/sonar/..."] + supported_apps,
+    deps = [
+        "//java/com/facebook/sonar/plugins/oss/network:network",
+        "//java/com/facebook/tools/flatbuffer:flatbuffer-android",
+        "//third-party/java/jsr-305:jsr-305",
+    ],
+)

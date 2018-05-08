@@ -6,19 +6,37 @@
  */
 import {Component, FlexColumn, Sidebar, colors} from 'sonar';
 import Intro from './ui/components/intro/intro.js';
+import {connect} from 'react-redux';
+import {
+  toggleRightSidebarAvailable,
+  toggleRightSidebarVisible,
+} from './reducers/application.js';
 import type {SonarBasePlugin} from './plugin.js';
-import PropTypes from 'prop-types';
 import type LogManager from './fb-stubs/Logger';
 
-type PluginContainerProps = {
+type Props = {
   plugin: SonarBasePlugin<>,
+  state?: any,
   logger: LogManager,
-  rightSidebarVisible: ?boolean,
-  onSetRightSidebarVisible: (visible: ?boolean) => void,
+  rightSidebarVisible: boolean,
+  rightSidebarAvailable: boolean,
+  toggleRightSidebarVisible: (available: ?boolean) => void,
+  toggleRightSidebarAvailable: (available: ?boolean) => void,
 };
 
-export default class PluginContainer extends Component<PluginContainerProps> {
-  _lastState: ?Object;
+type State = {
+  showIntro: boolean,
+};
+
+class PluginContainer extends Component<Props, State> {
+  state = {
+    showIntro:
+      typeof this.props.plugin.renderIntro === 'function' &&
+      window.localStorage.getItem(
+        `${this.props.plugin.constructor.id}.introShown`,
+      ) !== 'true',
+  };
+
   _sidebar: ?React$Node;
 
   static Container = FlexColumn.extends({
@@ -27,14 +45,6 @@ export default class PluginContainer extends Component<PluginContainerProps> {
     flexShrink: 1,
     backgroundColor: colors.white,
   });
-
-  static childContextTypes = {
-    plugin: PropTypes.string,
-  };
-
-  getChildContext() {
-    return {plugin: this.props.plugin.constructor.id};
-  }
 
   componentWillUnmount() {
     performance.mark(`init_${this.props.plugin.constructor.id}`);
@@ -46,7 +56,7 @@ export default class PluginContainer extends Component<PluginContainerProps> {
     );
   }
 
-  componentDidUpdate(prevProps: PluginContainerProps) {
+  componentDidUpdate(prevProps: Props) {
     if (prevProps.plugin !== this.props.plugin) {
       this.props.logger.trackTimeSince(
         `init_${this.props.plugin.constructor.id}`,
@@ -54,15 +64,7 @@ export default class PluginContainer extends Component<PluginContainerProps> {
     }
   }
 
-  shouldComponentUpdate(nextProps: PluginContainerProps) {
-    return (
-      nextProps.rightSidebarVisible !== this.props.rightSidebarVisible ||
-      nextProps.plugin !== this.props.plugin ||
-      this._lastState !== this.props.plugin.state
-    );
-  }
-
-  componentWillUpdate(nextProps: PluginContainerProps) {
+  componentWillUpdate(nextProps: Props) {
     if (this.props.plugin !== nextProps.plugin) {
       performance.mark(`init_${nextProps.plugin.constructor.id}`);
     }
@@ -73,35 +75,31 @@ export default class PluginContainer extends Component<PluginContainerProps> {
 
     if (sidebarContent == null) {
       this._sidebar = null;
-      nextProps.onSetRightSidebarVisible(null);
+      nextProps.toggleRightSidebarAvailable(false);
     } else {
       this._sidebar = (
         <Sidebar position="right" width={400} key="sidebar">
           {sidebarContent}
         </Sidebar>
       );
-      nextProps.onSetRightSidebarVisible(
-        nextProps.rightSidebarVisible !== false,
-      );
+      nextProps.toggleRightSidebarAvailable(true);
     }
   }
 
   onDismissIntro = () => {
     const {plugin} = this.props;
     window.localStorage.setItem(`${plugin.constructor.id}.introShown`, 'true');
-    this.forceUpdate();
+    this.setState({
+      showIntro: false,
+    });
   };
 
   render() {
     const {plugin} = this.props;
-    const showIntro =
-      typeof plugin.renderIntro === 'function' &&
-      window.localStorage.getItem(`${plugin.constructor.id}.introShown`) !==
-        'true';
-    this._lastState = plugin.state;
+
     return [
       <PluginContainer.Container key="plugin">
-        {showIntro ? (
+        {this.state.showIntro ? (
           <Intro
             title={plugin.constructor.title}
             icon={plugin.constructor.icon}
@@ -117,3 +115,14 @@ export default class PluginContainer extends Component<PluginContainerProps> {
     ];
   }
 }
+
+export default connect(
+  ({application: {rightSidebarVisible, rightSidebarAvailable}}) => ({
+    rightSidebarVisible,
+    rightSidebarAvailable,
+  }),
+  {
+    toggleRightSidebarAvailable,
+    toggleRightSidebarVisible,
+  },
+)(PluginContainer);

@@ -4,7 +4,7 @@
  * LICENSE file in the root directory of this source tree.
  * @format
  */
-const {app, BrowserWindow, autoUpdater, dialog} = require('electron');
+const {app, BrowserWindow} = require('electron');
 const path = require('path');
 const url = require('url');
 const fs = require('fs');
@@ -16,8 +16,10 @@ const sonarDir = path.join(require('os').homedir(), '.sonar');
 if (!fs.existsSync(sonarDir)) {
   fs.mkdirSync(sonarDir);
 }
+
 const configPath = path.join(sonarDir, 'config.json');
 let config = {pluginPaths: []};
+
 try {
   config = JSON.parse(fs.readFileSync(configPath));
 } catch (e) {
@@ -33,7 +35,6 @@ if (yargs.argv.dynamicPlugins) {
 let win;
 let appReady = false;
 let pluginsCompiled = false;
-const isProduction = !/node_modules[\\/]electron[\\/]/.test(process.execPath);
 
 // tracking
 setInterval(() => {
@@ -55,51 +56,6 @@ compilePlugins(
   pluginsCompiled = true;
   tryCreateWindow();
 });
-
-// setup autoUpdater in production on macOS
-if (isProduction && process.platform === 'darwin') {
-  autoUpdater.setFeedURL(
-    `https://www.facebook.com/sonar/download/latest.json?version=${app.getVersion()}`,
-  );
-  setTimeout(autoUpdater.checkForUpdates, 5000);
-
-  autoUpdater.on('update-downloaded', () => {
-    if (win) {
-      win.webContents.send('updater', {type: 'update-downloaded'});
-    }
-    dialog.showMessageBox(
-      {
-        title: 'Update available',
-        message: 'A new version of Sonar is available!',
-        detail: `You have Sonar ${app.getVersion()} which is outdated. Update to the latest version now.`,
-        buttons: ['Install and Restart'],
-      },
-      () => {
-        autoUpdater.quitAndInstall();
-      },
-    );
-  });
-
-  autoUpdater.on('error', error => {
-    if (win) {
-      win.webContents.send('updater', {type: 'error', error});
-    }
-  });
-
-  autoUpdater.on('checking-for-update', () => {
-    if (win) {
-      win.webContents.send('checking-for-update', {
-        type: 'checking-for-update',
-      });
-    }
-  });
-
-  autoUpdater.on('update-available', error => {
-    if (win) {
-      win.webContents.send('updater', {type: 'update-available'});
-    }
-  });
-}
 
 // check if we already have an instance of this app open
 const isSecondInstance = app.makeSingleInstance(
@@ -135,8 +91,10 @@ app.on('ready', function() {
     const {
       default: installExtension,
       REACT_DEVELOPER_TOOLS,
+      REDUX_DEVTOOLS,
     } = require('electron-devtools-installer');
     installExtension(REACT_DEVELOPER_TOOLS.id);
+    installExtension(REDUX_DEVTOOLS.id);
   }
 });
 function tryCreateWindow() {

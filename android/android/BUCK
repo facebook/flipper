@@ -1,0 +1,36 @@
+# BUILD FILE SYNTAX: SKYLARK
+load("//build_defs:fb_xplat_cxx_library.bzl", "fb_xplat_cxx_library")
+load("@xplat//configurations/buck/android:fb_android_library.bzl", "fb_android_library")
+load("//java/com/facebook/sonar:sonar_defs.bzl", "supported_apps")
+
+fb_android_library(
+    name = "android",
+    srcs = glob(["*.java"]),
+    visibility = ["//java/com/facebook/sonar:sonar"],
+    deps = [
+        "//java/com/facebook/jni:jni",
+        "//java/com/facebook/proguard/annotations:annotations",
+        "//java/com/facebook/sonar:build_config",
+        "//java/com/facebook/sonar/core:core",
+        "//libraries/soloader/java/com/facebook/soloader:soloader",
+        "//third-party/java/infer-annotations:infer-annotations",
+        "//third-party/java/jsr-305:jsr-305",
+    ],
+)
+
+fb_xplat_cxx_library(
+    name = "websocket",
+    srcs = glob(["*.cpp"]),
+    header_namespace = "",
+    compiler_flags = [
+        "-fexceptions",
+        "-std=c++14",
+    ],
+    soname = "libsonar.$(ext)",
+    visibility = supported_apps,
+    deps = [
+        "xplat//folly:molly",
+        "xplat//sonar-client:Sonar",
+        "//native/fb:fb",
+    ],
+)

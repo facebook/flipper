@@ -110,10 +110,10 @@ type StyledComponentState = {|
   lastBuiltRulesIsDynamic: boolean,
 |};
 
-class StylableComponent<Props = void, State = void> extends React.Component<
-  Props,
-  State,
-> {
+export class StylableComponent<
+  Props = void,
+  State = void,
+> extends React.Component<Props, State> {
   static extends(
     rules: RawRules,
     opts?: StyledComponentOpts,

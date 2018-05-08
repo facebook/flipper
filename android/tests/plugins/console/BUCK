@@ -1,0 +1,21 @@
+# BUILD FILE SYNTAX: SKYLARK
+load("//tools/build_defs:robolectric3_test.bzl", "robolectric3_test")
+
+robolectric3_test(
+    name = "console",
+    srcs = glob(["*.java"]),
+    visibility = ["PUBLIC"],
+    deps = [
+        "//java/com/facebook/common/stringformat:stringformat",
+        "//java/com/facebook/sonar:sonar",
+        "//java/com/facebook/sonar/plugins/oss/console:console",
+        "//java/com/facebook/sonar/plugins/oss/inspector:inspector",
+        "//java/com/facebook/sonar/testing:testing",
+        "//java/com/facebook/testing/robolectric/v3:v3",
+        "//third-party/java/hamcrest:hamcrest",
+        "//third-party/java/junit:junit",
+        "//third-party/java/mockito:mockito",
+        "//third-party/java/rhino:rhino",
+        "//third-party/java/robolectric3/robolectric:robolectric",
+    ],
+)

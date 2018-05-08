@@ -7,7 +7,6 @@
 
 import type {SonarBasePlugin} from '../plugin.js';
 import type {Client} from '../server.js';
-import type {Devices} from '../init.js';
 
 import {
   Component,
@@ -21,7 +20,7 @@ import {
   Glyph,
 } from 'sonar';
 import {devicePlugins} from '../device-plugins/index.js';
-import BaseDevice from '../devices/BaseDevice.js';
+import type BaseDevice from '../devices/BaseDevice.js';
 import PropTypes from 'prop-types';
 import plugins from '../plugins/index.js';
 
@@ -230,7 +229,7 @@ type MainSidebarProps = {|
   activePluginKey: ?string,
   activeAppKey: ?string,
   onActivatePlugin: (appKey: string, pluginKey: string) => void,
-  devices: Devices,
+  devices: Array<BaseDevice>,
   server: Server,
 |};
 
@@ -262,7 +261,7 @@ export default class MainSidebar extends Component<MainSidebarProps> {
       );
     });
 
-    let devices = ((Object.values(this.props.devices): any): Array<BaseDevice>);
+    let {devices} = this.props;
     devices = devices.sort((a, b) => {
       return (a.title || '').localeCompare(b.title);
     });

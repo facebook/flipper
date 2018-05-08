@@ -1,0 +1,55 @@
+load("@xplat//build_defs:fb_android_binary.bzl", "fb_android_binary")
+load("@xplat//configurations/buck/android:fb_android_library.bzl", "fb_android_library")
+load("//buck_imports:fb_android_resource.bzl", "fb_android_resource")
+load("//:LITHO_DEFS.bzl", "LITHO_WIDGET_TARGET")
+
+fb_android_binary(
+    name = "sonar",
+    aapt_mode = "aapt2",
+    keystore = ":debug_keystore",
+    manifest = "AndroidManifest.xml",
+    deps = [
+        ":res",
+        ":src",
+    ],
+)
+
+fb_android_library(
+    name = "src",
+    srcs = glob(["**/*.java"]),
+    visibility = [
+        "//apps/samples/sonar:sonar",
+    ],
+    deps = [
+        "//java/com/facebook/litho:litho",
+        "//java/com/facebook/sonar:sonar",
+        "//java/com/facebook/sonar/android:websocket",
+        "//java/com/facebook/sonar/plugins/oss/common:common",
+        "//java/com/facebook/sonar/plugins/oss/console:console",
+        "//java/com/facebook/sonar/plugins/oss/inspector:inspector",
+        "//java/com/facebook/sonar/plugins/oss/network:network",
+        LITHO_WIDGET_TARGET,
+        "//java/com/facebook/litho/sonar:sonar",
+        "//libraries/soloader/java/com/facebook/soloader:soloader",
+        "//third-party/android/support/v4:lib-support-v4",
+        "//third-party/android/support/v7/appcompat-orig:appcompat",
+        "//third-party/android/support/v7/recyclerview:recyclerview",
+        "//third-party/java/jsr-305:jsr-305",
+        "//third-party/java/okhttp:okhttp3",
+    ],
+)
+
+fb_android_resource(
+    name = "res",
+    package = "com.facebook.sonar.sample",
+    res = "res",
+    visibility = [
+        "//apps/samples/sonar:sonar",
+    ],
+)
+
+keystore(
+    name = "debug_keystore",
+    properties = "debug.keystore.properties",
+    store = "debug.keystore",
+)

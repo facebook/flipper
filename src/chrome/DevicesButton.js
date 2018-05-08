@@ -5,9 +5,8 @@
  * @format
  */
 
-import type {Devices} from '../init.js';
-
 import {Component, styled, Glyph, Button, colors} from 'sonar';
+import {connect} from 'react-redux';
 import BaseDevice from '../devices/BaseDevice.js';
 import child_process from 'child_process';
 import DevicesList from './DevicesList.js';
@@ -28,7 +27,7 @@ const Light = styled.view(
 );
 
 type Props = {|
-  devices: Devices,
+  devices: Array<BaseDevice>,
 |};
 
 type Emulator = {|
@@ -55,7 +54,7 @@ type IOSSimulatorList = {
   },
 };
 
-export default class DEvicesButton extends Component<Props, State> {
+class DevicesButton extends Component<Props, State> {
   state = {
     androidEmulators: [],
     iOSSimulators: [],
@@ -226,10 +225,7 @@ export default class DEvicesButton extends Component<Props, State> {
       glyph = 'mobile';
     }
 
-    // $FlowFixMe
-    const connectedDevices: Array<BaseDevice> = Object.values(
-      this.props.devices,
-    );
+    const connectedDevices = this.props.devices;
 
     return (
       <Button
@@ -289,3 +285,7 @@ export default class DEvicesButton extends Component<Props, State> {
     );
   }
 }
+
+export default connect(({devices}) => ({
+  devices,
+}))(DevicesButton);

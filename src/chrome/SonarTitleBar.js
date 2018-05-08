@@ -5,7 +5,6 @@
  * @format
  */
 
-import type {Devices} from '../init.js';
 import {
   colors,
   Button,
@@ -21,10 +20,16 @@ import {
   loadsDynamicPlugins,
   dynamicPluginPath,
 } from '../utils/dynamicPluginLoading.js';
+import {connect} from 'react-redux';
+import {
+  toggleBugDialogVisible,
+  toggleLeftSidebarVisible,
+  toggleRightSidebarVisible,
+  togglePluginManagerVisible,
+} from '../reducers/application.js';
 import DevicesButton from './DevicesButton.js';
 import Version from './Version.js';
 import AutoUpdateVersion from './AutoUpdateVersion.js';
-import PropTypes from 'prop-types';
 
 const TitleBar = FlexRow.extends(
   {
@@ -60,24 +65,22 @@ const Icon = FlexBox.extends({
 });
 
 type Props = {|
+  windowIsFocused: boolean,
   leftSidebarVisible: boolean,
-  onToggleLeftSidebar: () => void,
-  rightSidebarVisible: ?boolean,
-  devices: Devices,
+  rightSidebarVisible: boolean,
+  rightSidebarAvailable: boolean,
   pluginManagerVisible: boolean,
-  onToggleRightSidebar: () => void,
-  onTogglePluginManager: () => void,
-  onReportBug: () => void,
+  toggleBugDialogVisible: (visible?: boolean) => void,
+  toggleLeftSidebarVisible: (visible?: boolean) => void,
+  toggleRightSidebarVisible: (visible?: boolean) => void,
+  togglePluginManagerVisible: (visible?: boolean) => void,
 |};
 
-export default class SonarTitleBar extends Component<Props> {
-  static contextTypes = {
-    windowIsFocused: PropTypes.bool,
-  };
+class SonarTitleBar extends Component<Props> {
   render() {
     return (
-      <TitleBar focused={this.context.windowIsFocused} className="toolbar">
-        <DevicesButton devices={this.props.devices} />
+      <TitleBar focused={this.props.windowIsFocused} className="toolbar">
+        <DevicesButton />
         <Spacer />
         {loadsDynamicPlugins() && (
           <Icon
@@ -89,14 +92,14 @@ export default class SonarTitleBar extends Component<Props> {
         {process.platform === 'darwin' ? <AutoUpdateVersion /> : <Version />}
         <Button
           compact={true}
-          onClick={this.props.onReportBug}
+          onClick={() => this.props.toggleBugDialogVisible()}
           title="Report Bug"
           icon="bug"
         />
         {GK.get('sonar_dynamic_plugins') && (
           <Button
             compact={true}
-            onClick={this.props.onTogglePluginManager}
+            onClick={() => this.props.toggleBugDialogVisible()}
             selected={this.props.pluginManagerVisible}
             title="Plugin Manager"
             icon="apps"
@@ -106,22 +109,46 @@ export default class SonarTitleBar extends Component<Props> {
           <Button
             compact={true}
             selected={this.props.leftSidebarVisible}
-            onClick={this.props.onToggleLeftSidebar}
+            onClick={() => this.props.toggleLeftSidebarVisible()}
             icon="icons/sidebar_left.svg"
             iconSize={20}
             title="Toggle Plugins"
           />
           <Button
             compact={true}
-            selected={Boolean(this.props.rightSidebarVisible)}
-            onClick={this.props.onToggleRightSidebar}
+            selected={this.props.rightSidebarVisible}
+            onClick={() => this.props.toggleRightSidebarVisible()}
             icon="icons/sidebar_right.svg"
             iconSize={20}
             title="Toggle Details"
-            disabled={this.props.rightSidebarVisible == null}
+            disabled={!this.props.rightSidebarAvailable}
           />
         </ButtonGroup>
       </TitleBar>
     );
   }
 }
+
+export default connect(
+  ({
+    application: {
+      windowIsFocused,
+      leftSidebarVisible,
+      rightSidebarVisible,
+      rightSidebarAvailable,
+      pluginManagerVisible,
+    },
+  }) => ({
+    windowIsFocused,
+    leftSidebarVisible,
+    rightSidebarVisible,
+    rightSidebarAvailable,
+    pluginManagerVisible,
+  }),
+  {
+    toggleBugDialogVisible,
+    toggleLeftSidebarVisible,
+    toggleRightSidebarVisible,
+    togglePluginManagerVisible,
+  },
+)(SonarTitleBar);

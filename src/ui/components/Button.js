@@ -7,9 +7,11 @@
 
 import Glyph from './Glyph.js';
 import styled from '../styled/index.js';
+import type {StyledComponent} from '../styled/index.js';
 import {findDOMNode} from 'react-dom';
 import PropTypes from 'prop-types';
 import {colors} from './colors.js';
+import {connect} from 'react-redux';
 import electron from 'electron';
 
 const borderColor = props => {
@@ -123,6 +125,7 @@ const StyledButton = styled.view(
   },
   {
     ignoreAttributes: [
+      'dispatch',
       'compact',
       'large',
       'windowIsFocused',
@@ -231,10 +234,12 @@ type State = {
  * @example Disabled button
  *   <Button disabled={true}>Click me</Button>
  */
-export default class Button extends styled.StylableComponent<Props, State> {
+class Button extends styled.StylableComponent<
+  Props & {windowIsFocused: boolean},
+  State,
+> {
   static contextTypes = {
     inButtonGroup: PropTypes.bool,
-    windowIsFocused: PropTypes.bool,
   };
 
   state = {
@@ -276,9 +281,15 @@ export default class Button extends styled.StylableComponent<Props, State> {
   };
 
   render() {
-    const {icon, children, selected, iconSize, ...props} = this.props;
+    const {
+      icon,
+      children,
+      selected,
+      iconSize,
+      windowIsFocused,
+      ...props
+    } = this.props;
     const {active} = this.state;
-    const {windowIsFocused} = this.context;
 
     let color = colors.macOSTitleBarIcon;
     if (props.disabled === true) {
@@ -343,3 +354,10 @@ export default class Button extends styled.StylableComponent<Props, State> {
     );
   }
 }
+
+const ConnectedButton = connect(({application: {windowIsFocused}}) => ({
+  windowIsFocused,
+}))(Button);
+
+// $FlowFixMe
+export default (ConnectedButton: StyledComponent<Props>);
