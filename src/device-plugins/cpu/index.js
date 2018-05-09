@@ -178,7 +178,7 @@ export default class CPUFrequencyTable extends SonarDevicePlugin<CPUState> {
   };
 
   onStartMonitor = () => {
-    if (!this.intervalID) {
+    if (this.intervalID) {
       return;
     }
 
@@ -202,6 +202,7 @@ export default class CPUFrequencyTable extends SonarDevicePlugin<CPUState> {
       this.setState({
         monitoring: false,
       });
+      this.cleanup();
     }
   };
 
