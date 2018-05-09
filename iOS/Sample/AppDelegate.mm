@@ -13,6 +13,7 @@
 #import <SonarKitLayoutPlugin/SonarKitLayoutPlugin.h>
 #import <SonarKitNetworkPlugin/SonarKitNetworkPlugin.h>
 
+#import "MainViewController.h"
 #import "RootViewController.h"
 
 #if !FB_SONARKIT_ENABLED
@@ -37,9 +38,14 @@
   [[SonarClient sharedClient] addPlugin: [[SonarKitNetworkPlugin alloc] initWithNetworkAdapter:[SKIOSNetworkAdapter new]]];
   [[SonarClient sharedClient] start];
 
-  RootViewController *rootViewController = [RootViewController new];
+  UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"MainStoryBoard" bundle:nil];
+  MainViewController *mainViewController = [storyboard instantiateViewControllerWithIdentifier:@"MainViewController"];
 
-  [_window setRootViewController: [[UINavigationController alloc] initWithRootViewController: rootViewController]];
+  UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController: mainViewController];
+  navigationController.navigationBar.topItem.title = @"Sample";
+  navigationController.navigationBar.translucent = NO;
+
+  [_window setRootViewController: [[UINavigationController alloc] initWithRootViewController: mainViewController]];
   [_window makeKeyAndVisible];
   return YES;
 }

@@ -7,20 +7,24 @@
  */
 #import "RootViewController.h"
 
+#import <ComponentKit/CKBackgroundLayoutComponent.h>
 #import <ComponentKit/CKButtonComponent.h>
+#import <ComponentKit/CKComponent.h>
 #import <ComponentKit/CKComponentFlexibleSizeRangeProvider.h>
 #import <ComponentKit/CKComponentHostingView.h>
 #import <ComponentKit/CKComponentProvider.h>
+#import <ComponentKit/CKCompositeComponent.h>
 #import <ComponentKit/CKFlexboxComponent.h>
+#import <ComponentKit/CKImageComponent.h>
 #import <ComponentKit/CKInsetComponent.h>
 
-@interface RootViewController () //<CKComponentProvider>
+@interface RootViewController ()
+
+@property (strong, nonatomic) CKComponentHostingView *rootCKHostingView;
+
 @end
 
 @implementation RootViewController
-{
-  CKComponentHostingView *_rootCKHostingView;
-}
 
 - (instancetype)init
 {
@@ -30,93 +34,66 @@
                           sizeRangeProvider:
                           [CKComponentFlexibleSizeRangeProvider providerWithFlexibility:CKComponentSizeRangeFlexibleHeight]];
 
-    self.view = _rootCKHostingView;
-    [self setView:_rootCKHostingView];
+    [self.view addSubview:_rootCKHostingView];
     [self loadViewIfNeeded];
-
   }
   return self;
 }
 
+- (void)viewDidLoad {
+  [super viewDidLoad];
+  self.navigationItem.title = @"ComponentKit Layout";
+  self.edgesForExtendedLayout = UIRectEdgeNone;
+}
+
+- (void)viewDidLayoutSubviews
+{
+  [super viewDidLayoutSubviews];
+  _rootCKHostingView.frame = self.view.bounds;
+}
+
 + (CKComponent *)componentForModel:(id<NSObject>)model context:(id<NSObject>)context {
-  return [CKInsetComponent
-          newWithInsets: { .top = 70, .bottom = 70, .left = 20, .right = 20}
-          component:
-          [CKFlexboxComponent
-           newWithView: {}
-           size: {}
-           style: {.alignItems = CKFlexboxAlignItemsStart}
-           children: {
-             {
-               [CKButtonComponent
-                newWithAction:@selector(didClickGetRequest:)
-                options:{
-                  .titles = @"Hit a Get request",
-                }
-               ]
-             },
-             {
-               [CKButtonComponent
-                newWithAction:@selector(didClickPostRequest:)
-                options:{
-                  .titles = @"Hit a Post request",
-                }
-                ]
-             },
-             {
-               [CKButtonComponent
-                newWithAction:@selector(didTapFetchYogaInfo:)
-                options:{
-                  .titles = @"Fetch details of lib yoga",
-                }
-                ]
-             },
-           }]];
-}
-
-- (void)didTapFetchYogaInfo:(CKButtonComponent *)sender {
-  [[[NSURLSession sharedSession] dataTaskWithURL:[NSURL URLWithString:@"https://api.github.com/repos/facebook/yoga"] completionHandler:^(NSData *_Nullable data, NSURLResponse *_Nullable response, NSError *_Nullable error) {
-    if (error && !data) {
-      return;
+  return [CKBackgroundLayoutComponent
+   newWithComponent:
+   [CKFlexboxComponent
+    newWithView:{
     }
-    NSLog(@"Fetched yoga info");
-  }] resume];
+    size:{}
+    style:{}
+    children: {
+      {
+        [CKButtonComponent
+         newWithAction:nil
+         options:{
+           .titles = @"Purple",
+           .titleColors = UIColor.purpleColor,
+         }
+         ]
+      },
+      {
+        [CKButtonComponent
+         newWithAction:nil
+         options:{
+           .titles = @"Brown",
+           .titleColors = UIColor.brownColor,
+         }
+         ]
+      },
+      {
+        [CKButtonComponent
+         newWithAction:nil
+         options:{
+           .titles = @"Cyan",
+           .titleColors = UIColor.cyanColor,
+         }
+         ]
+      },
+    }]
+   background:
+   [CKImageComponent
+    newWithImage:[UIImage imageNamed:@"sonarpattern"]
+    attributes:{}
+    size:{}]];
 }
-
-- (void)didClickPostRequest:(CKButtonComponent *)sender {
-
-  NSString *post = @"https://demo9512366.mockable.io/SonarPost";
-  NSURL *url = [NSURL URLWithString:post];
-  NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL: url];
-  [urlRequest addValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
-  [urlRequest addValue:@"application/json" forHTTPHeaderField:@"Accept"];
-  NSDictionary *mapData = [[NSDictionary alloc] initWithObjectsAndKeys: @"Sonar", @"app",
-                           @"Its awesome", @"remarks",
-                           nil];
-  NSError *error = nil;
-  NSData *postData = [NSJSONSerialization dataWithJSONObject:mapData options:0 error:&error];
-  [urlRequest setHTTPBody:postData];
-  [urlRequest setHTTPMethod:@"POST"];
-  [[[NSURLSession sharedSession] dataTaskWithRequest:urlRequest completionHandler:^(NSData *_Nullable data, NSURLResponse *_Nullable response, NSError *_Nullable error) {
-    if (error && !data) {
-      return;
-    }
-    NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:data options:0 error:&error];
-    NSLog(@"MSG-POST: %@", dict[@"msg"]);
-
-  }] resume];
-
-}
-
-- (void)didClickGetRequest:(CKButtonComponent *)sender {
-  [[[NSURLSession sharedSession] dataTaskWithURL:[NSURL URLWithString:@"https://demo9512366.mockable.io/"] completionHandler:^(NSData *_Nullable data, NSURLResponse *_Nullable response, NSError *_Nullable error) {
-    if (error && !data) {
-      return;
-    }
-    NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:data options:0 error:&error];
-    NSLog(@"MSG-GET: %@", dict[@"msg"]);
-  }] resume];
-}
-
 
 @end
