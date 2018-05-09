@@ -6,7 +6,7 @@
  */
 
 import styled from '../styled/index.js';
-import {darkColors} from './colors.js';
+import {colors, darkColors} from './colors.js';
 
 const React = require('react');
 
@@ -52,8 +52,8 @@ const DesktopDropdownItemContainer = styled.view(
     padding: '0 20px',
 
     '&:hover': {
-      backgroundColor: (props, theme) =>
-        props.onClick || props.onHover ? theme.accent : '',
+      backgroundColor: props =>
+        props.onClick || props.onHover ? colors.highlight : '',
       color: props => (props.onClick || props.onHover ? '#fff' : 'inherit'),
     },
   },

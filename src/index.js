@@ -6,7 +6,6 @@
  */
 
 export {default as styled} from './ui/styled/index.js';
-export {ThemeProvider, ThemeCatcher} from './ui/styled/theme.js';
 export * from './ui/index.js';
 export * from './utils/index.js';
 

@@ -5,7 +5,6 @@
  * @format
  */
 export type {StyledComponent} from './styled/index.js';
-export type {Theme} from './styled/theme.js';
 
 //
 export {default as Button} from './components/Button.js';
@@ -16,12 +15,7 @@ export {
 export {default as ButtonGroup} from './components/ButtonGroup.js';
 
 //
-export {
-  colors,
-  defaultTheme,
-  darkColors,
-  brandColors,
-} from './components/colors.js';
+export {colors, darkColors, brandColors} from './components/colors.js';
 
 //
 export {default as Glyph, ColoredIcon} from './components/Glyph.js';

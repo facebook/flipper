@@ -6,13 +6,13 @@
  */
 
 import styled from '../styled/index.js';
+import {colors} from './colors.js';
 import {Component} from 'react';
 import {shell} from 'electron';
 
 const StyledLink = styled.text(
   {
-    color: (props, theme) => theme.accent,
-
+    color: colors.highlight,
     '&:hover': {
       cursor: 'pointer',
       textDecoration: 'underline',

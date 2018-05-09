@@ -7,10 +7,11 @@
 
 import {Component} from 'react';
 import Box from './Box.js';
+import {colors} from './colors';
 
 const FocusableBoxBorder = Box.extends(
   {
-    border: (props, theme) => `1px solid ${theme.accent}`,
+    border: `1px solid ${colors.highlight}`,
     bottom: '0',
     left: '0',
     pointerEvents: 'none',

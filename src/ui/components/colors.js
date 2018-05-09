@@ -5,8 +5,6 @@
  * @format
  */
 
-import type {Theme} from '../styled/theme.js';
-
 // Last updated: Jan 30 2016
 
 export const colors = {
@@ -259,16 +257,6 @@ export const colors = {
   info: '#5ACFEC',
 };
 
-export const defaultTheme: Theme = {
-  accent: colors.highlight,
-  danger: colors.red,
-  dark: false,
-  primary: colors.blue,
-  success: colors.green,
-  warning: colors.orange,
-};
-
-//
 export const darkColors = {
   activeBackground: colors.dark80,
   backgroundWash: colors.dark95,

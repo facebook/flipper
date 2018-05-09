@@ -6,7 +6,6 @@
  */
 
 import type {CSSPropertySet, CSSPropertyValue} from './types.js';
-import type {Theme} from './theme.js';
 
 const dashify = require('dashify');
 
@@ -162,14 +161,13 @@ export function buildKeyframeRules(
 export function buildRules(
   rules: BaseRules,
   props: NormalisedRules,
-  theme: Theme,
   context: Object,
 ): PlainRules {
   const style = {};
   for (const key in rules) {
     let val = rules[key];
     if (typeof val === 'function') {
-      val = val(props, theme, context);
+      val = val(props, context);
     }
     if (shouldAppendPixel(key, val)) {
       val += 'px';

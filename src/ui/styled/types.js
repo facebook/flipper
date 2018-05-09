@@ -5,8 +5,6 @@
  * @format
  */
 
-import type {Theme} from './theme.js';
-
 export type alignContent =
   | 'flex-start'
   | 'flex-end'
@@ -909,7 +907,7 @@ export type svgWritingMode = 'lr-tb' | 'rl-tb' | 'tb-rl' | 'lr' | 'rl' | 'tb';
 
 export type CSSPropertyValue<Value> =
   | Value
-  | ((props: Object, theme: Theme, context: Object) => Value);
+  | ((props: Object, context: Object) => Value);
 
 export type CSSPropertySet = {|
   alignContent?: CSSPropertyValue<alignContent>,

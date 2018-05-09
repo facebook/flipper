@@ -6,7 +6,6 @@
  */
 
 import type {BaseRules, KeyframeRules, RawRules} from './rules.js';
-import type {Theme} from './theme.js';
 import {buildKeyframeRules, buildRules, normaliseRules} from './rules.js';
 import assignDeep from '../../utils/assignDeep.js';
 import * as performance from '../../utils/performance.js';
@@ -14,7 +13,6 @@ import {GarbageCollector} from './gc.js';
 import {StyleSheet} from './sheet.js';
 import hash from './hash.js';
 
-const PropTypes = require('prop-types');
 const React = require('react');
 
 export type Tracker = Map<
@@ -44,7 +42,6 @@ function addRules(
   rules: BaseRules,
   namespace,
   props: Object,
-  theme: Theme,
   context: Object,
 ) {
   // if these rules have been cached to a className then retrieve it
@@ -55,7 +52,7 @@ function addRules(
 
   //
   const declarations = [];
-  const style = buildRules(rules, props, theme, context);
+  const style = buildRules(rules, props, context);
 
   // generate css declarations based on the style object
   for (const key in style) {
@@ -147,10 +144,6 @@ class StyledComponentBase<Props> extends React.PureComponent<
       lastBuiltRules: null,
     };
   }
-
-  context: {|
-    STYLED_THEME: Theme,
-  |};
 
   static defaultProps: ?$Shape<Props>;
 
@@ -310,7 +303,6 @@ function createStyledComponent(
         myBuiltRules !== this.state.lastBuiltRules ||
         this.state.lastBuiltRulesIsDynamic !== false
       ) {
-        const theme = this.context.STYLED_THEME;
         const prevClasses = this.state.classNames;
         const classNames = [];
 
@@ -321,7 +313,6 @@ function createStyledComponent(
             myBuiltRules[namespace],
             namespace,
             props,
-            theme,
             this.context,
           );
           classNames.push(className);
@@ -393,7 +384,6 @@ function createStyledComponent(
 
   Constructor.contextTypes = {
     ...contextTypes,
-    STYLED_THEME: PropTypes.any,
   };
 
   Object.defineProperty(Constructor, 'name', {

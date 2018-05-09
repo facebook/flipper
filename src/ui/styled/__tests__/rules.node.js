@@ -7,8 +7,6 @@
 
 import {buildRules, normaliseRules} from '../rules.js';
 
-const emptyTheme: any = {};
-
 describe('normaliseRules', () => {
   test('ensure top level values are expanded', () => {
     const normalisedRules = normaliseRules({height: '4px'});
@@ -40,7 +38,7 @@ describe('normaliseRules', () => {
 
 describe('buildRules', () => {
   test('ensure null values are left out', () => {
-    const builtRules = buildRules({height: (null: any)}, {}, emptyTheme, {});
+    const builtRules = buildRules({height: (null: any)}, {}, {});
     expect('height' in builtRules).toBe(false);
 
     const builtRules2 = buildRules(
@@ -50,31 +48,27 @@ describe('buildRules', () => {
         },
       },
       {},
-      emptyTheme,
       {},
     );
     expect('height' in builtRules2).toBe(false);
   });
 
   test('ensure numbers are appended with px', () => {
-    expect(buildRules({height: 40}, {}, emptyTheme, {}).height).toBe('40px');
+    expect(buildRules({height: 40}, {}, {}).height).toBe('40px');
   });
 
   test("ensure unitless numbers aren't appended with px", () => {
-    expect(buildRules({'z-index': 4}, {}, emptyTheme, {})['z-index']).toBe('4');
+    expect(buildRules({'z-index': 4}, {}, {})['z-index']).toBe('4');
   });
 
-  test('ensure functions are called with props and theme', () => {
+  test('ensure functions are called with props', () => {
     const thisProps = {};
-    const thisTheme: any = {};
     expect(
       buildRules(
         {
-          border: (props, theme) =>
-            props === thisProps && theme === thisTheme ? 'foo' : 'bar',
+          border: props => (props === thisProps ? 'foo' : 'bar'),
         },
         thisProps,
-        thisTheme,
         {},
       ).border,
     ).toBe('foo');
