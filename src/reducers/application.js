@@ -42,13 +42,19 @@ export default function reducer(
   state: State = INITAL_STATE,
   action: Action,
 ): State {
-  return {
-    ...state,
-    [action.type]:
-      typeof action.payload === 'undefined'
-        ? !state[action.type]
-        : action.payload,
-  };
+  const newValue =
+    typeof action.payload === 'undefined'
+      ? !state[action.type]
+      : action.payload;
+  if (state[action.type] === newValue) {
+    // value hasn't changed, do nothing
+    return state;
+  } else {
+    return {
+      ...state,
+      [action.type]: newValue,
+    };
+  }
 }
 
 export const toggleAction = (type: ActionType, payload?: boolean): Action => ({

@@ -24,6 +24,14 @@ const addIfNotAdded = plugin => {
   }
 };
 
+let disabledPlugins = [];
+try {
+  disabledPlugins =
+    JSON.parse(window.process.env.CONFIG || '{}').disabledPlugins || [];
+} catch (e) {
+  console.error(e);
+}
+
 // Load dynamic plugins
 try {
   JSON.parse(window.process.env.PLUGINS || '[]').forEach(addIfNotAdded);
@@ -47,9 +55,11 @@ bundledPlugins
 export default Array.from(plugins.values())
   .map(plugin => {
     if (
-      !plugin.gatekeeper ||
-      (plugin.gatekeeper && GK.get(plugin.gatekeeper))
+      (plugin.gatekeeper && !GK.get(plugin.gatekeeper)) ||
+      disabledPlugins.indexOf(plugin.name) > -1
     ) {
+      return null;
+    } else {
       try {
         return window.electronRequire(plugin.out);
       } catch (e) {

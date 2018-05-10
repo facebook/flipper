@@ -18,7 +18,7 @@ if (!fs.existsSync(sonarDir)) {
 }
 
 const configPath = path.join(sonarDir, 'config.json');
-let config = {pluginPaths: []};
+let config = {pluginPaths: [], disabledPlugins: []};
 
 try {
   config = JSON.parse(fs.readFileSync(configPath));
@@ -30,6 +30,7 @@ if (yargs.argv.dynamicPlugins) {
     yargs.argv.dynamicPlugins.split(','),
   );
 }
+process.env.CONFIG = JSON.stringify(config);
 
 // possible reference to main app window
 let win;
