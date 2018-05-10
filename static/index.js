@@ -18,7 +18,7 @@ if (!fs.existsSync(sonarDir)) {
 }
 
 const configPath = path.join(sonarDir, 'config.json');
-let config = {pluginPaths: [], disabledPlugins: []};
+let config = {pluginPaths: [], disabledPlugins: [], lastWindowPosition: {}};
 
 try {
   config = JSON.parse(fs.readFileSync(configPath));
@@ -98,12 +98,32 @@ app.on('ready', function() {
     installExtension(REDUX_DEVTOOLS.id);
   }
 });
+
+app.on('before-quit', () => {
+  if (win) {
+    const [x, y] = win.getPosition();
+    const [width, height] = win.getSize();
+    // save window position and size
+    fs.writeFileSync(
+      configPath,
+      JSON.stringify({
+        ...config,
+        lastWindowPosition: {
+          x,
+          y,
+          width,
+          height,
+        },
+      }),
+    );
+  }
+});
 function tryCreateWindow() {
   if (appReady && pluginsCompiled) {
     win = new BrowserWindow({
       title: 'Sonar',
-      width: 1400,
-      height: 1000,
+      width: config.lastWindowPosition.width || 1400,
+      height: config.lastWindowPosition.height || 1000,
       minWidth: 800,
       minHeight: 600,
       center: true,
@@ -117,6 +137,9 @@ function tryCreateWindow() {
       },
       vibrancy: 'sidebar',
     });
+    if (config.lastWindowPosition.x && config.lastWindowPosition.y) {
+      win.setPosition(config.lastWindowPosition.x, config.lastWindowPosition.y);
+    }
     const entryUrl =
       process.env.ELECTRON_URL ||
       url.format({
