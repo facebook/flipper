@@ -59,6 +59,9 @@ static CKFlexboxComponentChild findFlexboxLayoutParams(CKComponent *parent, CKCo
     if (layout.children != nullptr) {
       int index = 0;
       for (const auto &child : *layout.children) {
+        if (child.layout.component == nil) {
+          continue; // nil children are allowed, ignore them
+        }
         SKComponentLayoutWrapper *childWrapper = [[SKComponentLayoutWrapper alloc] initWithLayout:child.layout
                                                                                          position:child.position
                                                                                         parentKey:[_identifier stringByAppendingFormat:@"[%d].", index++]];

@@ -278,12 +278,13 @@
 
   NSDictionary *nodeDic =
   @{
-    @"id": [nodeDescriptor identifierForNode: node],
-    @"name": [nodeDescriptor nameForNode: node],
+    // We shouldn't get nil for id/name/decoration, but let's not crash if we do.
+    @"id": [nodeDescriptor identifierForNode: node] ?: @"(unknown)",
+    @"name": [nodeDescriptor nameForNode: node] ?: @"(unknown)",
     @"children": children,
     @"attributes": attributes,
     @"data": data,
-    @"decoration": [nodeDescriptor decorationForNode: node],
+    @"decoration": [nodeDescriptor decorationForNode: node] ?: @"(unknown)",
     };
 
   return nodeDic;
