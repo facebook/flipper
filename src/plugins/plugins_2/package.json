@@ -1,7 +1,0 @@
-{
-    "name": "sonar-plugin-plugins_2",
-    "version": "1.0.0",
-    "main": "index.js",
-    "license": "MIT",
-    "gatekeeper": "ios_plugins_sonar"
-  }
