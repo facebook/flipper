@@ -21,7 +21,7 @@ To create the desktop part of your plugin, initiate a new JavaScript project usi
 In `index.js` you can now create your plugin. We expect this file to have a default export of type `SonarPlugin`. A hello-world-plugin could look like this:
 
 ```js
-import { SonarPlugin } from 'sonar';
+import {SonarPlugin} from 'sonar';
 
 export default class extends SonarPlugin {
   render() {
@@ -30,7 +30,7 @@ export default class extends SonarPlugin {
 }
 ```
 
-Learn more on how to use [Sonar's UI components]().
+Learn more on how to use [Sonar's UI components](ui-components.md).
 
 ### Dynamically loading plugins
 

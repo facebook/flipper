@@ -24,10 +24,10 @@ import { FlexRow, FlexColumn } from 'sonar';
 </FlexColumn>
 ```
 
-To control other flexbox properties than the direction you can extend existing components, detailed in [Styling Components]().
+To control other flexbox properties than the direction you can extend existing components, detailed in [Styling Components](styling-components.md).
 
 ```javascript
-import { FlexRow, styled } from 'sonar';
+import {FlexRow, styled} from 'sonar';
 
 const CenterFlexRow = FlexRow.extends({
   justifyContent: 'center',
@@ -42,7 +42,7 @@ const CenterFlexRow = FlexRow.extends({
 The `Text` component is available to render any text in your plugin. To render headers and subtitle differently for example, we used the styled module. With this we can also change the color, text alignment, and any other properties typically found on a `span`.
 
 ```javascript
-import { Text, styled, colors } from 'sonar';
+import {Text, styled, colors} from 'sonar';
 
 const Title = Text.extends({
   color: colors.red,
@@ -56,7 +56,7 @@ const Title = Text.extends({
 Sonar comes with a couple of button styles built in! As always you can style then further using the styled module but we expect the pre-defined buttons to fit most UIs.
 
 ```javascript
-import { Button } from 'sonar';
+import {Button} from 'sonar';
 
 <Button onClick={this.onClick} icon="airport" compact={true}>
   Click Me!
@@ -70,8 +70,8 @@ You can create a group of buttons by surrounding it with `<ButtonGroup>`.
 The `Sidebar` component provides a nice abstraction around some common but complex behavior. The `Sidebar` is used by all major Sonar plugins and using it in your plugin will ensure your plugin behaves similarly, such as allowing for resizing.
 
 ```javascript
-import { FlexRow, Sidebar, colors, styled } from 'infinity-ui';
-import { SonarPlugin } from 'sonar';
+import {FlexRow, Sidebar, colors, styled} from 'infinity-ui';
+import {SonarPlugin} from 'sonar';
 
 type State = {};
 
@@ -163,7 +163,7 @@ export default class MySonarPlugin extends SonarPlugin<State> {
 The `DataInspector` component is used to unpack and display a javascript object. It is used to show View properties in the layout inspector, and to show event data in the analytics plugins.
 
 ```javascript
-import { FlexColumn, DataInspector, SonarPlugin } from 'sonar';
+import {FlexColumn, DataInspector, SonarPlugin} from 'sonar';
 
 type State = {};
 
@@ -192,7 +192,7 @@ export default class MySonarPlugin extends SonarPlugin<State> {
 The `Toolbar` component can display a toolbar with buttons, inputs, etc. A `<Spacer />` can be used to fill the space between items.
 
 ```javascript
-import { Toolbar, Spacer, Button, SonarPlugin } from 'sonar';
+import {Toolbar, Spacer, Button, SonarPlugin} from 'sonar';
 
 export default class MySonarPlugin extends SonarPlugin<State> {
   render() {
@@ -230,7 +230,7 @@ export default class MySonarPlugin extends SonarPlugin<State> {
 Add a native context menu to a component by wrapping it with the ContextMenu component.
 
 ```javascript
-import { ContextMenu, SonarPlugin } from 'sonar';
+import {ContextMenu, SonarPlugin} from 'sonar';
 
 export default class MySonarPlugin extends SonarPlugin<State> {
   contextMenuItems = [

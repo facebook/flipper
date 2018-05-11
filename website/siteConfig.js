@@ -15,7 +15,7 @@ const siteConfig = {
   headerLinks: [
     {doc: 'getting-started', label: 'Getting Started'},
     {doc: 'understand', label: 'Docs'},
-    {page: repoUrl, label: 'GitHub'},
+    {href: repoUrl, label: 'GitHub'},
   ],
   /* path to images for header/footer */
   headerIcon: 'img/icon.png',

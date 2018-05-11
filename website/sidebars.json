@@ -1,6 +1,6 @@
 {
   "docs": {
-    "Using Sonar": ["getting-started", "understand"],
+    "Using Sonar": ["getting-started", "understand", "stetho"],
     "Built-in Plugins": ["logs-plugin", "layout-plugin", "network-plugin"],
     "Plugins: Desktop part": [
       "js-setup",

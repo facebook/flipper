@@ -10,10 +10,10 @@ To make building these kinds of plugins as easy as possible we have created an a
 
 Below is a sample implementation of a desktop plugin based on `createTablePlugin`. It subscribes to updates from a client plugin with id `myplugin` sending rows to with the `newRow` method. A row can have any structure you want as long as it has a unique field `id` of type `string`.
 
-See []() for how to create the native counterpart for your plugin.
+See "[Create Plugin](create-plugin.md)" for how to create the native counterpart for your plugin.
 
 ```javascript
-import { ManagedDataInspector, Panel, Text, createTablePlugin } from 'sonar';
+import {ManagedDataInspector, Panel, Text, createTablePlugin} from 'sonar';
 
 type Id = string;
 
