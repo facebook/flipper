@@ -5,8 +5,4 @@
  * @format
  */
 
-import styled from '../styled/index.js';
-
-export default styled.view({
-  marginBottom: 10,
-});
+declare var React: $Exports<'react'>;
