@@ -21,7 +21,10 @@ const configPath = path.join(sonarDir, 'config.json');
 let config = {pluginPaths: [], disabledPlugins: [], lastWindowPosition: {}};
 
 try {
-  config = JSON.parse(fs.readFileSync(configPath));
+  config = {
+    ...config,
+    ...JSON.parse(fs.readFileSync(configPath)),
+  };
 } catch (e) {
   fs.writeFileSync(configPath, JSON.stringify(config));
 }
