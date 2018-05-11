@@ -265,27 +265,21 @@ function getTemplate(app: Object, shell: Object): Array<MenuItem> {
       role: 'help',
       submenu: [
         {
-          label: 'Sonar DEX',
+          label: 'Getting started',
           click: function() {
-            shell.openExternal(
-              'https://our.intern.facebook.com/intern/dex/sonar/',
-            );
+            shell.openExternal('https://fbsonar.com/docs/getting-started.html');
           },
         },
         {
-          label: 'Create plugin',
+          label: 'Create plugins',
           click: function() {
-            shell.openExternal(
-              'https://our.intern.facebook.com/intern/dex/sonar/development/',
-            );
+            shell.openExternal('https://fbsonar.com/docs/create-plugin.html');
           },
         },
         {
-          label: 'Sonar group',
+          label: 'Report problems',
           click: function() {
-            shell.openExternal(
-              'https://fb.facebook.com/groups/230455004101832/',
-            );
+            shell.openExternal('https://github.com/facebook/Sonar/issues');
           },
         },
       ],

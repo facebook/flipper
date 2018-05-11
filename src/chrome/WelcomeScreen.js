@@ -126,9 +126,7 @@ export default class WelcomeScreen extends PureComponent<Props, State> {
           </Version>
           <Item
             onClick={() =>
-              shell.openExternal(
-                'https://our.intern.facebook.com/intern/dex/sonar/using-sonar/',
-              )
+              shell.openExternal('https://fbsonar.com/docs/understand.html')
             }>
             <Icon size={20} name="rocket" color={brandColors.Sonar} />
             <FlexColumn>
@@ -140,9 +138,7 @@ export default class WelcomeScreen extends PureComponent<Props, State> {
           </Item>
           <Item
             onClick={() =>
-              shell.openExternal(
-                'https://our.intern.facebook.com/intern/dex/sonar/development/',
-              )
+              shell.openExternal('https://fbsonar.com/docs/create-plugin.html')
             }>
             <Icon size={20} name="magic-wand" color={brandColors.Sonar} />
             <FlexColumn>
@@ -153,7 +149,7 @@ export default class WelcomeScreen extends PureComponent<Props, State> {
           <Item
             onClick={() =>
               shell.openExternal(
-                'https://our.intern.facebook.com/intern/dex/sonar/adding-sonar-to-an-android-app/',
+                'https://fbsonar.com/docs/getting-started.html',
               )
             }>
             <Icon size={20} name="tools" color={brandColors.Sonar} />
@@ -164,15 +160,13 @@ export default class WelcomeScreen extends PureComponent<Props, State> {
           </Item>
           <Item
             onClick={() =>
-              shell.openExternal(
-                'https://fb.facebook.com/groups/230455004101832/',
-              )
+              shell.openExternal('https://github.com/facebook/Sonar/issues')
             }>
             <Icon size={20} name="posts" color={brandColors.Sonar} />
             <FlexColumn>
-              <ItemTitle>Ideas and Feedback</ItemTitle>
+              <ItemTitle>Contributing and Feedback</ItemTitle>
               <ItemSubTitle>
-                Join our group and help us improving Sonar
+                Report issues and help us improving Sonar
               </ItemSubTitle>
             </FlexColumn>
           </Item>
