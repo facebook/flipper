@@ -7,4 +7,5 @@
 
 export default {
   updateServer: 'https://www.facebook.com/sonar/public/latest.json',
+  bugReportButtonVisible: false,
 };

@@ -30,6 +30,7 @@ import {
 import DevicesButton from './DevicesButton.js';
 import Version from './Version.js';
 import AutoUpdateVersion from './AutoUpdateVersion.js';
+import config from '../fb-stubs/config.js';
 
 const TitleBar = FlexRow.extends(
   {
@@ -90,12 +91,14 @@ class SonarTitleBar extends Component<Props> {
           </Icon>
         )}
         {process.platform === 'darwin' ? <AutoUpdateVersion /> : <Version />}
-        <Button
-          compact={true}
-          onClick={() => this.props.toggleBugDialogVisible()}
-          title="Report Bug"
-          icon="bug"
-        />
+        {config.bugReportButtonVisible && (
+          <Button
+            compact={true}
+            onClick={() => this.props.toggleBugDialogVisible()}
+            title="Report Bug"
+            icon="bug"
+          />
+        )}
         {GK.get('sonar_dynamic_plugins') && (
           <Button
             compact={true}
