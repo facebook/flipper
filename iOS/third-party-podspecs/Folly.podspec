@@ -8,12 +8,8 @@ Pod::Spec.new do |spec|
   spec.source = { :git => 'https://github.com/facebook/folly.git',
                   :tag => "v#{spec.version}" }
   spec.module_name = 'folly'
-  # spec.dependency 'boost'
   spec.dependency 'boost-for-react-native'
   spec.dependency 'DoubleConversion'
-
-
-# -DFOLLY_FORCE_EXCEPTION_COUNT_USE_STD=1
   spec.compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_LIBGFLAGS=0 -DFOLLY_HAVE_LIBJEMALLOC=0 -DFOLLY_HAVE_PREADV=0 -DFOLLY_HAVE_PWRITEV=0 -DFOLLY_HAVE_TFO=0 -DFOLLY_USE_SYMBOLIZER=0  -frtti
     -fexceptions
     -std=c++14
@@ -25,8 +21,7 @@ Pod::Spec.new do |spec|
     -Wno-return-type
     -Wno-global-constructors'
 
-  spec.source_files = #-'folly/Executor.h',
-                      'folly/Executor.cpp',
+  spec.source_files = 'folly/Executor.cpp',
                       'folly/memory/detail/MallocImpl.cpp',
                       'folly/String.cpp',
                       'folly/*.cpp',
@@ -34,44 +29,6 @@ Pod::Spec.new do |spec|
                       'folly/lang/ColdClass.cpp',
                       'folly/lang/Assume.h',
                       'folly/lang/Assume.cpp'
-                      #dep of /Executor.h
-                      #- 'folly/Function.h',
-                      #-'folly/Utility.h',
-                      #dep of /Function.h
-                      #-'folly/CppAttributes.h',
-                      #dep of Traits.h
-                      #-'folly/Portability.h',
-                      #dep of Invoke.h
-                      #-'folly/Traits.h',
-                      #-'folly/functional/Invoke.h',
-                      #dep of Utility.h  and Portability.h
-                      #-'folly/CPortability.h',
-                      #dep of Portability.h
-                      #-'folly/portability/Config.h',
-                      #dep of folly/portability/Config.h
-                      # 'folly/folly-config.h',
-                      # 'folly/json.h',
-                      # 'folly/Range.h',
-                      #-'folly/dynamic.h',
-                      #dep of Range.
-                      # 'folly/hash/SpookyHashV2.h',
-                      # 'folly/lang/Exception.h',
-                      # 'folly/portability/Constexpr.h',
-                      # 'folly/portability/String.h',
-                      # 'folly/CpuId.h',
-                      # 'folly/Likely.h',
-                      # 'folly/detail/RangeCommon.h',
-                      # 'folly/detail/RangeSse42.h',
-                      #dep of dynamic.h
-                     #- 'folly/json_pointer.h',
-                      #dep of json_pointer
-                      #-'folly/Expected.h',
-                      #dep of Expected
-                      #-'folly/Preprocessor.h',
-                      #-'folly/Optional.h',
-                      #-'folly/Unit.h',
-                      #-'folly/Utility.h',
-                      #-'folly/lang/ColdClass.h'
 
   # workaround for https://github.com/facebook/react-native/issues/14326
   spec.preserve_paths = 'folly/*.h',
@@ -82,42 +39,53 @@ Pod::Spec.new do |spec|
                         'folly/hash/*.h',
                         'folly/memory/*.h',
                         'folly/**/*.h'
-                        # 'folly/functional/*.h',
-                        # 'folly/lang/*.h',
-                        # 'folly/memory/**/*.h',
-                        # 'folly/memory/*.h'
+
   spec.header_mappings_dir = 'folly'
   spec.header_dir = 'folly'
   spec.libraries           = "stdc++"
-  spec.private_header_files = 'folly/portability/Stdlib.h', 'folly/portability/Malloc.h', 'folly/portability/Stdlib.h', 'folly/portability/Stdio.h', 'folly/portability/PThread.h'
-  spec.public_header_files = 'folly/portability/Config.h', 'folly/Executor.h', 'folly/Function.h', 'folly/Utility.h', 'folly/Portability.h', 'folly/Traits.h', 'folly/functional/Invoke.h', 'folly/CPortability.h', 'folly/dynamic.h', 'folly/json_pointer.h', 'folly/Expected.h','folly/Preprocessor.h',
-  'folly/Optional.h',
-  'folly/Unit.h',
-  'folly/Utility.h',
-  'folly/lang/ColdClass.h',
-  'folly/CppAttributes.h',
-  'folly/json.h',
-  'folly/Range.h',
-  'folly/hash/SpookyHashV2.h',
-  'folly/lang/Exception.h',
-  'folly/portability/Constexpr.h',
-  'folly/CpuId.h',
-  'folly/Likely.h',
-  'folly/detail/RangeCommon.h',
-  'folly/detail/RangeSse42.h',
-  'folly/portability/String.h',
-  'folly/dynamic-inl.h',
-  'folly/Conv.h',
-  'folly/Demangle.h',
-  'folly/FBString.h',
-  'folly/hash/Hash.h',
-  'folly/memory/Malloc.h',
-  'folly/**/*.h',
-  'folly/memory/detail/MallocImpl.h',
-  'folly/String.h',
-  'folly/*.h'
+  spec.private_header_files = 'folly/portability/Stdlib.h',
+                              'folly/portability/Malloc.h',
+                              'folly/portability/Stdlib.h',
+                              'folly/portability/Stdio.h',
+                              'folly/portability/PThread.h'
+  spec.public_header_files = 'folly/portability/Config.h',
+                              'folly/Executor.h',
+                              'folly/Function.h',
+                              'folly/Utility.h',
+                              'folly/Portability.h',
+                              'folly/Traits.h',
+                              'folly/functional/Invoke.h',
+                              'folly/CPortability.h',
+                              'folly/dynamic.h',
+                              'folly/json_pointer.h',
+                              'folly/Expected.h',
+                              'folly/Preprocessor.h',
+                              'folly/Optional.h',
+                              'folly/Unit.h',
+                              'folly/Utility.h',
+                              'folly/lang/ColdClass.h',
+                              'folly/CppAttributes.h',
+                              'folly/json.h',
+                              'folly/Range.h',
+                              'folly/hash/SpookyHashV2.h',
+                              'folly/lang/Exception.h',
+                              'folly/portability/Constexpr.h',
+                              'folly/CpuId.h',
+                              'folly/Likely.h',
+                              'folly/detail/RangeCommon.h',
+                              'folly/detail/RangeSse42.h',
+                              'folly/portability/String.h',
+                              'folly/dynamic-inl.h',
+                              'folly/Conv.h',
+                              'folly/Demangle.h',
+                              'folly/FBString.h',
+                              'folly/hash/Hash.h',
+                              'folly/memory/Malloc.h',
+                              'folly/**/*.h',
+                              'folly/memory/detail/MallocImpl.h',
+                              'folly/String.h',
+                              'folly/*.h'
 
-  # spec.libraries           = "stdc++"
   spec.pod_target_xcconfig = { "USE_HEADERMAP" => "NO",
                                "CLANG_CXX_LANGUAGE_STANDARD" => "c++11",
                                "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)\" \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/DoubleConversion\"" }

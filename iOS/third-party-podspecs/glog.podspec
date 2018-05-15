@@ -15,7 +15,6 @@ Pod::Spec.new do |spec|
                       'src/utilities.cc',
                       'src/glog/*.h',
                       'src/glog/*.cc',
-                      #####
                       'src/base/mutex.h',
                       'src/base/mutex.cc',
                       'src/glog/*.h',
@@ -31,17 +30,12 @@ Pod::Spec.new do |spec|
                         'src/base/*.h'
   spec.exclude_files       = "src/windows/**/*"
   spec.libraries           = "c++"
-  # spec.private_header_files = 'src/*.h'
-
-  # "HEADER_SEARCH_PATHS" => "$(PODS_TARGET_SRCROOT)/src"
   spec.pod_target_xcconfig = { "USE_HEADERMAP" => "NO",
                                 "CLANG_CXX_LANGUAGE_STANDARD" => "c++11",
                                 "HEADER_SEARCH_PATHS" => "$(PODS_TARGET_SRCROOT)/src"
                                 }
-spec.compiler_flags = '-std=c++1y'
-spec.libraries           = "stdc++"
-
-  # Pinning to the same version as React.podspec.
+  spec.compiler_flags = '-std=c++1y'
+  spec.libraries           = "stdc++"
   spec.platforms = { :ios => "8.0", :tvos => "9.2" }
-
+  
 end
