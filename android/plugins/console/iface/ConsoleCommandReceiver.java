@@ -61,7 +61,10 @@ public class ConsoleCommandReceiver {
         new SonarReceiver() {
           @Override
           public void onReceive(SonarObject params, SonarResponder responder) throws Exception {
-            responder.success(new SonarObject.Builder().put("isEnabled", true).build());
+            responder.success(
+                new SonarObject.Builder()
+                    .put("isEnabled", scriptingEnvironment.isEnabled())
+                    .build());
           }
         };
 

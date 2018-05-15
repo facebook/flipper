@@ -50,4 +50,9 @@ public class JavascriptEnvironment implements ScriptingEnvironment {
     }
     mBoundVariables.put(name, object);
   }
+
+  @Override
+  public boolean isEnabled() {
+    return true;
+  }
 }

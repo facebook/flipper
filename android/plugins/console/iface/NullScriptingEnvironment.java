@@ -35,4 +35,9 @@ public class NullScriptingEnvironment implements ScriptingEnvironment {
     @Override
     public void close() {}
   }
+
+  @Override
+  public boolean isEnabled() {
+    return false;
+  }
 }

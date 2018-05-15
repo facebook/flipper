@@ -12,4 +12,6 @@ public interface ScriptingEnvironment {
   ScriptingSession startSession();
 
   void registerGlobalObject(String name, Object object);
+
+  boolean isEnabled();
 }

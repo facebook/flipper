@@ -38,6 +38,7 @@ type Props = {
   getContext: () => string,
 };
 type State = {
+  isConsoleEnabled: boolean,
   script: string,
   previousExecutions: Array<{
     command: string,
@@ -91,9 +92,10 @@ export class Console extends Component<Props, State> {
     width: '100%',
   });
 
-  constructor() {
-    super();
+  constructor(props: Props) {
+    super(props);
     this.state = {
+      isConsoleEnabled: false,
       script: '',
       previousExecutions: [],
     };

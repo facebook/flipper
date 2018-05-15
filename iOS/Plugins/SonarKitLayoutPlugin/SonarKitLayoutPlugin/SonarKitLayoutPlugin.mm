@@ -97,6 +97,10 @@
   [connection receive:@"setSearchActive" withBlock:^(NSDictionary *params, id<SonarResponder> responder) {
     SonarPerformBlockOnMainThread(^{ [weakSelf onCallSetSearchActive: [params[@"active"] boolValue] withConnection: connection]; });
   }];
+
+  [connection receive:@"isConsoleEnabled" withBlock:^(NSDictionary *params, id<SonarResponder> responder) {
+    SonarPerformBlockOnMainThread(^{ [responder success: @{@"isEnabled": @NO}];});
+  }];
 }
 
 - (void)didDisconnect {

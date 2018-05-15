@@ -70,35 +70,56 @@ class InspectorSidebarSection extends Component<InspectorSidebarSectionProps> {
   }
 }
 
-export function InspectorSidebar(props: {|
+type Props = {|
   element: ?Element,
   onValueChanged: ?OnValueChanged,
   client: PluginClient,
-|}): any {
-  const {element} = props;
-  if (!element || !element.data) {
-    return null;
+|};
+type State = {|
+  isConsoleEnabled: boolean,
+|};
+
+export class InspectorSidebar extends Component<Props, State> {
+  state = {
+    isConsoleEnabled: false,
+  };
+
+  componentDidUpdate(prevProps: Props, prevState: State) {
+    if (prevProps.client !== this.props.client) {
+      this.props.client
+        .call('isConsoleEnabled')
+        .then((result: {isEnabled: boolean}) => {
+          this.setState({isConsoleEnabled: result.isEnabled});
+        });
+    }
   }
 
-  const sections = [];
-  for (const key in element.data) {
-    sections.push(
-      <InspectorSidebarSection
-        key={key}
-        id={key}
-        data={element.data[key]}
-        onValueChanged={props.onValueChanged}
-      />,
-    );
-  }
+  render() {
+    const {element} = this.props;
+    if (!element || !element.data) {
+      return null;
+    }
 
-  if (GK.get('sonar_show_console_plugin')) {
-    sections.push(
-      <Panel heading="JS Console" floating={false} fill={false}>
-        <Console client={props.client} getContext={() => element.id} />
-      </Panel>,
-    );
-  }
+    const sections = [];
+    for (const key in element.data) {
+      sections.push(
+        <InspectorSidebarSection
+          key={key}
+          id={key}
+          data={element.data[key]}
+          onValueChanged={this.props.onValueChanged}
+        />,
+      );
+    }
 
-  return sections;
+    if (GK.get('sonar_show_console_plugin') && this.state.isConsoleEnabled) {
+      sections.push(
+        <Panel heading="JS Console" floating={false} fill={false}>
+          <Console client={this.props.client} getContext={() => element.id} />
+        </Panel>,
+      );
+    }
+
+    return sections;
+  }
 }
