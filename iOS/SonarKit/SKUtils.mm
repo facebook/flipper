@@ -5,7 +5,7 @@
  *  file in the root directory of this source tree.
  *
  */
-#include "Utils.h"
+#include "SKUtils.h"
 
 #include <math.h>
 
@@ -13,7 +13,7 @@
 
 using namespace facebook::sonar;
 
-@implementation Utils
+@implementation SKUtils
 
 + (folly::dynamic)convertIdToFollyDynamic:(id)json
 {

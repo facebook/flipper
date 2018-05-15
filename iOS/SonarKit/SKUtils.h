@@ -45,7 +45,7 @@ namespace facebook { namespace sonar {
 }
 }
 
-@interface Utils: NSObject
+@interface SKUtils: NSObject
 + (folly::dynamic)convertIdToFollyDynamic:(id)json;
 + (id)convertFollyDynamicToId:(const folly::dynamic &)dyn;
 
