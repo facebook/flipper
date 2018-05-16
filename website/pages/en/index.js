@@ -15,10 +15,9 @@ class Index extends React.Component {
           <div className="content">
             <h1>Extensible mobile app&nbsp;debugger</h1>
             <h2>
-              Sonar is a platform for debugging your mobile apps on iOS and
-              Android. You can visualize all kinds of data from the device and
-              create plugins to show the data on the desktop or use the plugins
-              we've already built.
+              Sonar is a platform for debugging mobile apps on iOS and Android.
+              Visualize, inspect, and control your apps from a simple desktop
+              interface. Use Sonar as is or extend it using the plugin API.
             </h2>
             <div className="row">
               <a
@@ -51,8 +50,8 @@ class Index extends React.Component {
             <p>
               Sonar aims to be your number one companion for mobile app
               development on iOS and Android. Therefore, we provide a bunch of
-              useful tools including a log viewer, interactive layout inspector and
-              network inspector.
+              useful tools including a log viewer, interactive layout inspector,
+              and network inspector.
             </p>
             <a className="learnmore" href="/docs/getting-started.html">
               Learn more
@@ -64,10 +63,10 @@ class Index extends React.Component {
             <h4>Plugins</h4>
             <h3>Extending Sonar</h3>
             <p>
-              Sonar is built as a platform. So in addition to using the tools
+              Sonar is built as a platform. In addition to using the tools
               already included, you can create your own plugins to visualize and
               debug data from your mobile apps. Sonar takes care of sending data
-              back and forth, calling functions and listening for events on the
+              back and forth, calling functions, and listening for events on the
               mobile app.
             </p>
             <a className="learnmore" href="/docs/understand.html">
@@ -94,9 +93,9 @@ class Index extends React.Component {
             <p>
               Both Sonar's desktop app and native mobile SDKs are open-source
               and MIT licensed. This enables you to see and understand how we
-              are building plugins, and of course join our community and help
-              improve Sonar. We are excited to see what you will build upon
-              our platform.
+              are building plugins, and of course join the community and help
+              improve Sonar. We are excited to see what you will build on this
+              platform.
             </p>
             <a className="learnmore" href="/docs/js-setup.html">
               Learn more
