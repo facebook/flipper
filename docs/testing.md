@@ -25,7 +25,7 @@ public class MySonarPluginTest {
 }
 ```
 
-There are three mock classes that are used to construct tests `SonarWebSocketMock`, `SonarConnectionMock`, and `SonarResponderMock`. Together these can be used to write very powerful tests to verify the end to end behavior of your plugin. For example we can test if for a given incoming message our plugin responds as we expect.
+There are two mock classes that are used to construct tests `SonarConnectionMock` and `SonarResponderMock`. Together these can be used to write very powerful tests to verify the end to end behavior of your plugin. For example we can test if for a given incoming message our plugin responds as we expect.
 
 ```java
 @Test
