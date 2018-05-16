@@ -177,7 +177,8 @@ function compilePlugin(
         .then(() => {
           changeExport(out);
           resolve(result);
-        });
+        })
+        .catch(console.error);
     }
   });
 }

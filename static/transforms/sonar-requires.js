@@ -5,14 +5,29 @@
  * @format
  */
 
-// $FlowFixMe
+// do not apply this transform for these paths
+const EXCLUDE_PATHS = [
+  '/node_modules/react-devtools-core/',
+  'relay-devtools/DevtoolsUI',
+];
+
+function isExcludedPath(path) {
+  for (const epath of EXCLUDE_PATHS) {
+    if (path.indexOf(epath) > -1) {
+      return true;
+    }
+  }
+  return false;
+} // $FlowFixMe
 module.exports = ({types: t}) => ({
   visitor: {
     // $FlowFixMe
     CallExpression(path, state) {
+      if (isExcludedPath(state.file.opts.filename)) {
+        return;
+      }
       const node = path.node;
       const args = node.arguments || [];
-
       if (
         node.callee.name === 'require' &&
         args.length === 1 &&
@@ -36,8 +51,12 @@ module.exports = ({types: t}) => ({
         path.replaceWith(t.identifier('window.ReactDOM'));
       }
     },
-    Identifier(path) {
-      if (path.node.name === 'React' && path.parentPath.node.id !== path.node) {
+    Identifier(path, state) {
+      if (
+        path.node.name === 'React' &&
+        path.parentPath.node.id !== path.node &&
+        !isExcludedPath(state.file.opts.filename)
+      ) {
         path.replaceWith(t.identifier('window.React'));
       }
     },
