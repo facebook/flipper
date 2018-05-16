@@ -16,17 +16,11 @@
     "Getting Started": "Getting Started",
     "js-setup": "JavaScript Setup",
     "JavaScript Setup": "JavaScript Setup",
-    "layout-inspection": "Layout Inspection Protocol",
-    "Layout Inspection": "Layout Inspection",
     "layout-plugin": "Layout Inspector",
     "logs-plugin": "Logs",
     "network-plugin": "Network",
-    "platform-overview": "Platform Overview",
-    "Platform Overview": "Platform Overview",
     "send-data": "Sending Data to Plugins",
     "Send Data": "Send Data",
-    "sonar-client": "Building a SonarClient",
-    "SonarClient": "SonarClient",
     "stetho": "Stetho Guidance",
     "Stetho Guidance": "Stetho Guidance",
     "styling-components": "Styling Components",
@@ -42,8 +36,7 @@
     "Using Sonar": "Using Sonar",
     "Built-in Plugins": "Built-in Plugins",
     "Plugins: Desktop part": "Plugins: Desktop part",
-    "Plugins: Mobile part": "Plugins: Mobile part",
-    "New Platforms": "New Platforms"
+    "Plugins: Mobile part": "Plugins: Mobile part"
   },
   "pages-strings": {
     "Help Translate|recruit community translators for your project": "Help Translate",

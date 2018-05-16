@@ -14,7 +14,6 @@
       "send-data",
       "error-handling",
       "testing"
-    ],
-    "New Platforms": ["platform-overview", "sonar-client", "layout-inspection"]
+    ]
   }
 }
