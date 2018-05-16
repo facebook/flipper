@@ -3,11 +3,11 @@ id: layout-plugin
 title: Layout Inspector
 ---
 
-The Layout Inspector in Sonar is useful for a ton of different debugging scenarios. First of all you can inspect what views the hierarchy is made up of as well as what properties each view has. This is incredibly useful when debugging why issues with your product.
+The Layout Inspector in Sonar is useful for a ton of different debugging scenarios. First of all you can inspect what views the hierarchy is made up of as well as what properties each view has. This is incredibly useful when debugging issues with your product.
 
-The Layout tab supports [Litho](https://fblitho.com) and [ComponentKit](https://componentkit.org) components as well! We integrate with these frameworks to present components in the hierarchy just as if they were native views. We show you all the layout properties, props, and state of the components.
+The Layout tab supports [Litho](https://fblitho.com) and [ComponentKit](https://componentkit.org) components as well! We integrate with these frameworks to present components in the hierarchy just as if they were native views. We show you all the layout properties, props, and state of the components. The layout inspector is further extensible to support other UI frameworks.
 
-If you hover over a view or component in Sonar we will highlight the corresponding item on screen on your emulator! This is perfect for debugging the bounds of your views and making sure you have the correct visual padding.
+If you hover over a view or component in Sonar we will highlight the corresponding item in your app! This is perfect for debugging the bounds of your views and making sure you have the correct visual padding.
 
 ![Layout plugin](/docs/assets/layout.png)
 
