@@ -28,11 +28,6 @@ public class MySonarPlugin implements SonarPlugin {
   public void onDisconnect() throws Exception {
     mConnection = null;
   }
-
-  @Override
-  boolean runOnMainThread() {
-    return true;
-  }
 }
 ```
 
