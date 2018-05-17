@@ -1,0 +1,579 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 48;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		53D19A2620A4BABA00A371E3 /* SonarClient.mm in Sources */ = {isa = PBXBuildFile; fileRef = 53D19A1220A4BAB900A371E3 /* SonarClient.mm */; };
+		53D19A2820A4BABA00A371E3 /* SonarUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 53D19A1420A4BAB900A371E3 /* SonarUtil.m */; };
+		53D19A2F20A4BABA00A371E3 /* SKPortForwardingServer.m in Sources */ = {isa = PBXBuildFile; fileRef = 53D19A1D20A4BABA00A371E3 /* SKPortForwardingServer.m */; };
+		53D19A3020A4BABA00A371E3 /* SonarCppBridgingConnection.mm in Sources */ = {isa = PBXBuildFile; fileRef = 53D19A1F20A4BABA00A371E3 /* SonarCppBridgingConnection.mm */; };
+		53D19A3320A4BABA00A371E3 /* SonarCppBridgingResponder.mm in Sources */ = {isa = PBXBuildFile; fileRef = 53D19A2220A4BABA00A371E3 /* SonarCppBridgingResponder.mm */; };
+		53D4C4FC20A5B20000613A96 /* SKUtils.mm in Sources */ = {isa = PBXBuildFile; fileRef = 53D4C4FA20A5B20000613A96 /* SKUtils.mm */; };
+		53D4C50620A5B72800613A96 /* SonarCppWrapperPlugin.h in Headers */ = {isa = PBXBuildFile; fileRef = 53D19A2020A4BABA00A371E3 /* SonarCppWrapperPlugin.h */; };
+		53D4C50720A5B72800613A96 /* SonarCppBridgingConnection.h in Headers */ = {isa = PBXBuildFile; fileRef = 53D19A2120A4BABA00A371E3 /* SonarCppBridgingConnection.h */; };
+		53D4C50820A5B72800613A96 /* SonarCppBridgingResponder.h in Headers */ = {isa = PBXBuildFile; fileRef = 53D19A2320A4BABA00A371E3 /* SonarCppBridgingResponder.h */; };
+		53D4C50920A5B72800613A96 /* SKMacros.h in Headers */ = {isa = PBXBuildFile; fileRef = 53D19A1020A4BAB900A371E3 /* SKMacros.h */; };
+		53D4C50A20A5B72800613A96 /* SonarClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 53D19A1120A4BAB900A371E3 /* SonarClient.h */; };
+		53D4C50B20A5B72800613A96 /* SonarConnection.h in Headers */ = {isa = PBXBuildFile; fileRef = 53D19A1820A4BAB900A371E3 /* SonarConnection.h */; };
+		53D4C50C20A5B72800613A96 /* SonarPlugin.h in Headers */ = {isa = PBXBuildFile; fileRef = 53D19A1620A4BAB900A371E3 /* SonarPlugin.h */; };
+		53D4C50D20A5B72800613A96 /* SonarResponder.h in Headers */ = {isa = PBXBuildFile; fileRef = 53D19A1320A4BAB900A371E3 /* SonarResponder.h */; };
+		53D4C50E20A5B72800613A96 /* SKUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 53D4C4F920A5B20000613A96 /* SKUtils.h */; };
+		53D4C50F20A5B72800613A96 /* SKPortForwardingServer.h in Headers */ = {isa = PBXBuildFile; fileRef = 53D19A1B20A4BABA00A371E3 /* SKPortForwardingServer.h */; };
+		53D4C51020A5B72800613A96 /* SKPortForwardingCommon.h in Headers */ = {isa = PBXBuildFile; fileRef = 53D19A1C20A4BABA00A371E3 /* SKPortForwardingCommon.h */; };
+		53D4C51220A5B89900613A96 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 53D4C51120A5B89900613A96 /* Foundation.framework */; };
+		6AE55F0A77A5644AADF2CEA6 /* libPods-SonarKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 104CB87D17FDFDC934630C14 /* libPods-SonarKit.a */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		104CB87D17FDFDC934630C14 /* libPods-SonarKit.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SonarKit.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		53D19A0520A4BA3600A371E3 /* SonarKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SonarKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		53D19A0820A4BA3600A371E3 /* SonarKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SonarKit.h; sourceTree = "<group>"; };
+		53D19A0920A4BA3600A371E3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		53D19A1020A4BAB900A371E3 /* SKMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKMacros.h; sourceTree = "<group>"; };
+		53D19A1120A4BAB900A371E3 /* SonarClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SonarClient.h; sourceTree = "<group>"; };
+		53D19A1220A4BAB900A371E3 /* SonarClient.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = SonarClient.mm; sourceTree = "<group>"; };
+		53D19A1320A4BAB900A371E3 /* SonarResponder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SonarResponder.h; sourceTree = "<group>"; };
+		53D19A1420A4BAB900A371E3 /* SonarUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SonarUtil.m; sourceTree = "<group>"; };
+		53D19A1620A4BAB900A371E3 /* SonarPlugin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SonarPlugin.h; sourceTree = "<group>"; };
+		53D19A1820A4BAB900A371E3 /* SonarConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SonarConnection.h; sourceTree = "<group>"; };
+		53D19A1B20A4BABA00A371E3 /* SKPortForwardingServer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKPortForwardingServer.h; sourceTree = "<group>"; };
+		53D19A1C20A4BABA00A371E3 /* SKPortForwardingCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKPortForwardingCommon.h; sourceTree = "<group>"; };
+		53D19A1D20A4BABA00A371E3 /* SKPortForwardingServer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKPortForwardingServer.m; sourceTree = "<group>"; };
+		53D19A1F20A4BABA00A371E3 /* SonarCppBridgingConnection.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = SonarCppBridgingConnection.mm; sourceTree = "<group>"; };
+		53D19A2020A4BABA00A371E3 /* SonarCppWrapperPlugin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SonarCppWrapperPlugin.h; sourceTree = "<group>"; };
+		53D19A2120A4BABA00A371E3 /* SonarCppBridgingConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SonarCppBridgingConnection.h; sourceTree = "<group>"; };
+		53D19A2220A4BABA00A371E3 /* SonarCppBridgingResponder.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = SonarCppBridgingResponder.mm; sourceTree = "<group>"; };
+		53D19A2320A4BABA00A371E3 /* SonarCppBridgingResponder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SonarCppBridgingResponder.h; sourceTree = "<group>"; };
+		53D4C4F920A5B20000613A96 /* SKUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SKUtils.h; path = SonarKit/SKUtils.h; sourceTree = SOURCE_ROOT; };
+		53D4C4FA20A5B20000613A96 /* SKUtils.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = SKUtils.mm; path = SonarKit/SKUtils.mm; sourceTree = SOURCE_ROOT; };
+		53D4C51120A5B89900613A96 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		5B3C0104984F1A2F624E5394 /* Pods-SonarKit.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SonarKit.release.xcconfig"; path = "Pods/Target Support Files/Pods-SonarKit/Pods-SonarKit.release.xcconfig"; sourceTree = "<group>"; };
+		C6253FA5661121EDD200B8A9 /* Pods-SonarKit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SonarKit.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SonarKit/Pods-SonarKit.debug.xcconfig"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		53D19A0120A4BA3600A371E3 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				53D4C51220A5B89900613A96 /* Foundation.framework in Frameworks */,
+				6AE55F0A77A5644AADF2CEA6 /* libPods-SonarKit.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		256B672257477FB71D3FAD20 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				C6253FA5661121EDD200B8A9 /* Pods-SonarKit.debug.xcconfig */,
+				5B3C0104984F1A2F624E5394 /* Pods-SonarKit.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
+		53D199FB20A4BA3600A371E3 = {
+			isa = PBXGroup;
+			children = (
+				53D19A0720A4BA3600A371E3 /* SonarKit */,
+				53D19A0620A4BA3600A371E3 /* Products */,
+				256B672257477FB71D3FAD20 /* Pods */,
+				716CE00064F59AEDC5DB6AA8 /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		53D19A0620A4BA3600A371E3 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				53D19A0520A4BA3600A371E3 /* SonarKit.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		53D19A0720A4BA3600A371E3 /* SonarKit */ = {
+			isa = PBXGroup;
+			children = (
+				53D19A1E20A4BABA00A371E3 /* CppBridge */,
+				53D19A1020A4BAB900A371E3 /* SKMacros.h */,
+				53D19A1120A4BAB900A371E3 /* SonarClient.h */,
+				53D19A1220A4BAB900A371E3 /* SonarClient.mm */,
+				53D19A1820A4BAB900A371E3 /* SonarConnection.h */,
+				53D19A1620A4BAB900A371E3 /* SonarPlugin.h */,
+				53D19A1320A4BAB900A371E3 /* SonarResponder.h */,
+				53D19A1420A4BAB900A371E3 /* SonarUtil.m */,
+				53D4C4F920A5B20000613A96 /* SKUtils.h */,
+				53D4C4FA20A5B20000613A96 /* SKUtils.mm */,
+				53D19A1920A4BABA00A371E3 /* Utilities */,
+				53D19A0820A4BA3600A371E3 /* SonarKit.h */,
+				53D19A0920A4BA3600A371E3 /* Info.plist */,
+			);
+			path = SonarKit;
+			sourceTree = "<group>";
+		};
+		53D19A1920A4BABA00A371E3 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				53D19A1A20A4BABA00A371E3 /* PortForwarding */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+		53D19A1A20A4BABA00A371E3 /* PortForwarding */ = {
+			isa = PBXGroup;
+			children = (
+				53D19A1B20A4BABA00A371E3 /* SKPortForwardingServer.h */,
+				53D19A1C20A4BABA00A371E3 /* SKPortForwardingCommon.h */,
+				53D19A1D20A4BABA00A371E3 /* SKPortForwardingServer.m */,
+			);
+			path = PortForwarding;
+			sourceTree = "<group>";
+		};
+		53D19A1E20A4BABA00A371E3 /* CppBridge */ = {
+			isa = PBXGroup;
+			children = (
+				53D19A1F20A4BABA00A371E3 /* SonarCppBridgingConnection.mm */,
+				53D19A2020A4BABA00A371E3 /* SonarCppWrapperPlugin.h */,
+				53D19A2120A4BABA00A371E3 /* SonarCppBridgingConnection.h */,
+				53D19A2220A4BABA00A371E3 /* SonarCppBridgingResponder.mm */,
+				53D19A2320A4BABA00A371E3 /* SonarCppBridgingResponder.h */,
+			);
+			path = CppBridge;
+			sourceTree = "<group>";
+		};
+		716CE00064F59AEDC5DB6AA8 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				53D4C51120A5B89900613A96 /* Foundation.framework */,
+				104CB87D17FDFDC934630C14 /* libPods-SonarKit.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		53D19A0220A4BA3600A371E3 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				53D4C50B20A5B72800613A96 /* SonarConnection.h in Headers */,
+				53D4C50D20A5B72800613A96 /* SonarResponder.h in Headers */,
+				53D4C50620A5B72800613A96 /* SonarCppWrapperPlugin.h in Headers */,
+				53D4C50720A5B72800613A96 /* SonarCppBridgingConnection.h in Headers */,
+				53D4C50820A5B72800613A96 /* SonarCppBridgingResponder.h in Headers */,
+				53D4C50920A5B72800613A96 /* SKMacros.h in Headers */,
+				53D4C50A20A5B72800613A96 /* SonarClient.h in Headers */,
+				53D4C50C20A5B72800613A96 /* SonarPlugin.h in Headers */,
+				53D4C50E20A5B72800613A96 /* SKUtils.h in Headers */,
+				53D4C50F20A5B72800613A96 /* SKPortForwardingServer.h in Headers */,
+				53D4C51020A5B72800613A96 /* SKPortForwardingCommon.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		53D19A0420A4BA3600A371E3 /* SonarKit */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 53D19A0D20A4BA3600A371E3 /* Build configuration list for PBXNativeTarget "SonarKit" */;
+			buildPhases = (
+				CC935574E023944658E3DB85 /* [CP] Check Pods Manifest.lock */,
+				53D19A0020A4BA3600A371E3 /* Sources */,
+				53D19A0120A4BA3600A371E3 /* Frameworks */,
+				53D19A0220A4BA3600A371E3 /* Headers */,
+				53D19A0320A4BA3600A371E3 /* Resources */,
+				A778AAD2811469F7AD5B996C /* [CP] Copy Pods Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SonarKit;
+			productName = SonarKit;
+			productReference = 53D19A0520A4BA3600A371E3 /* SonarKit.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		53D199FC20A4BA3600A371E3 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0940;
+				ORGANIZATIONNAME = Facebook;
+				TargetAttributes = {
+					53D19A0420A4BA3600A371E3 = {
+						CreatedOnToolsVersion = 9.2;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 53D199FF20A4BA3600A371E3 /* Build configuration list for PBXProject "SonarKit" */;
+			compatibilityVersion = "Xcode 8.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 53D199FB20A4BA3600A371E3;
+			productRefGroup = 53D19A0620A4BA3600A371E3 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				53D19A0420A4BA3600A371E3 /* SonarKit */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		53D19A0320A4BA3600A371E3 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		A778AAD2811469F7AD5B996C /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-SonarKit/Pods-SonarKit-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		CC935574E023944658E3DB85 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-SonarKit-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		53D19A0020A4BA3600A371E3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				53D19A3320A4BABA00A371E3 /* SonarCppBridgingResponder.mm in Sources */,
+				53D4C4FC20A5B20000613A96 /* SKUtils.mm in Sources */,
+				53D19A2F20A4BABA00A371E3 /* SKPortForwardingServer.m in Sources */,
+				53D19A3020A4BABA00A371E3 /* SonarCppBridgingConnection.mm in Sources */,
+				53D19A2620A4BABA00A371E3 /* SonarClient.mm in Sources */,
+				53D19A2820A4BABA00A371E3 /* SonarUtil.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		53D19A0B20A4BA3600A371E3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_CXX_LIBRARY = "compiler-default";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_CXX0X_EXTENSIONS = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = "compiler-default";
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		53D19A0C20A4BA3600A371E3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_CXX_LIBRARY = "compiler-default";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_CXX0X_EXTENSIONS = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = "compiler-default";
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		53D19A0E20A4BA3600A371E3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = C6253FA5661121EDD200B8A9 /* Pods-SonarKit.debug.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Automatic;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"COCOAPODS=1",
+				);
+				GCC_USE_STANDARD_INCLUDE_SEARCHING = YES;
+				HEADER_SEARCH_PATHS = (
+					"${SRCROOT}/SonarKit/**",
+					"${SRCROOT}/../xplat/**",
+					"$(inherited)",
+					"${PODS_ROOT}/Headers/Public/DoubleConversion",
+					"${PODS_ROOT}/boost-for-react-native",
+					"${PODS_ROOT}/Headers/Public/Folly",
+					"${PODS_ROOT}/DoubleConversion",
+					"${PODS_ROOT}/Headers/Public/glog",
+					"${PODS_ROOT}/Headers/Public/CocoaAsyncSocket",
+				);
+				INFOPLIST_FILE = SonarKit/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(OTHER_CFLAGS)",
+					"-DFOLLY_NO_CONFIG=1",
+					"-DFOLLY_USE_LIBCPP=1",
+					"-DFOLLY_MOBILE=1",
+					"-DFOLLY_HAVE_LIBGFLAGS=0",
+					"-DFOLLY_FORCE_EXCEPTION_COUNT_USE_STD=1",
+					"-DFOLLY_USE_SYMBOLIZER=0",
+					"-DFOLLY_HAVE_TFO=0",
+					"-DFOLLY_HAVE_PWRITEV=0",
+					"-DFOLLY_HAVE_PREADV=0",
+					"-DFOLLY_HAVE_LIBJEMALLOC=0",
+				);
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+					"-l\"DoubleConversion\"",
+					"-l\"Folly\"",
+					"-l\"glog\"",
+					"-l\"stdc++\"",
+					"-DFOLLY_NO_CONFIG=1",
+					"-DFOLLY_MOBILE=1",
+					"-DFOLLY_USE_LIBCPP=1",
+					"-DFOLLY_HAVE_LIBGFLAGS=0",
+					"-DFOLLY_HAVE_LIBJEMALLOC=0",
+					"-DFOLLY_HAVE_PREADV=0",
+					"-DFOLLY_HAVE_TFO=0",
+					"-DFOLLY_FORCE_EXCEPTION_COUNT_USE_STD=1",
+					"-DFOLLY_USE_SYMBOLIZER=0",
+					"-DFOLLY_HAVE_PWRITEV=0",
+				);
+				OTHER_LIBTOOLFLAGS = "";
+				PRODUCT_BUNDLE_IDENTIFIER = FB.SonarKit;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				USER_HEADER_SEARCH_PATHS = "";
+				"USER_HEADER_SEARCH_PATHS[arch=*]" = "${SRCROOT}/SonarKit/** ${SRCROOT}/../xplat/**";
+				USE_HEADERMAP = YES;
+			};
+			name = Debug;
+		};
+		53D19A0F20A4BA3600A371E3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 5B3C0104984F1A2F624E5394 /* Pods-SonarKit.release.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Automatic;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GCC_USE_STANDARD_INCLUDE_SEARCHING = YES;
+				HEADER_SEARCH_PATHS = (
+					"${SRCROOT}/SonarKit/**",
+					"${SRCROOT}/../xplat/**",
+					"$(inherited)",
+					"${PODS_ROOT}/Headers/Public/DoubleConversion",
+					"${PODS_ROOT}/boost-for-react-native",
+					"${PODS_ROOT}/Headers/Public/Folly",
+					"${PODS_ROOT}/DoubleConversion",
+					"${PODS_ROOT}/Headers/Public/glog",
+					"${PODS_ROOT}/Headers/Public/CocoaAsyncSocket",
+				);
+				INFOPLIST_FILE = SonarKit/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(OTHER_CFLAGS)",
+					"-DFOLLY_NO_CONFIG=1",
+					"-DFOLLY_USE_LIBCPP=1",
+					"-DFOLLY_MOBILE=1",
+					"-DFOLLY_HAVE_LIBGFLAGS=0",
+					"-DFOLLY_FORCE_EXCEPTION_COUNT_USE_STD=1",
+					"-DFOLLY_USE_SYMBOLIZER=0",
+					"-DFOLLY_HAVE_TFO=0",
+					"-DFOLLY_HAVE_PWRITEV=0",
+					"-DFOLLY_HAVE_PREADV=0",
+					"-DFOLLY_HAVE_LIBJEMALLOC=0",
+				);
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+					"-l\"DoubleConversion\"",
+					"-l\"Folly\"",
+					"-l\"glog\"",
+					"-l\"stdc++\"",
+					"-DFOLLY_NO_CONFIG=1",
+					"-DFOLLY_MOBILE=1",
+					"-DFOLLY_USE_LIBCPP=1",
+					"-DFOLLY_HAVE_LIBGFLAGS=0",
+					"-DFOLLY_HAVE_LIBJEMALLOC=0",
+					"-DFOLLY_HAVE_PREADV=0",
+					"-DFOLLY_HAVE_TFO=0",
+					"-DFOLLY_FORCE_EXCEPTION_COUNT_USE_STD=1",
+					"-DFOLLY_USE_SYMBOLIZER=0",
+					"-DFOLLY_HAVE_PWRITEV=0",
+				);
+				OTHER_LIBTOOLFLAGS = "";
+				PRODUCT_BUNDLE_IDENTIFIER = FB.SonarKit;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				USER_HEADER_SEARCH_PATHS = "";
+				USE_HEADERMAP = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		53D199FF20A4BA3600A371E3 /* Build configuration list for PBXProject "SonarKit" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				53D19A0B20A4BA3600A371E3 /* Debug */,
+				53D19A0C20A4BA3600A371E3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		53D19A0D20A4BA3600A371E3 /* Build configuration list for PBXNativeTarget "SonarKit" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				53D19A0E20A4BA3600A371E3 /* Debug */,
+				53D19A0F20A4BA3600A371E3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 53D199FC20A4BA3600A371E3 /* Project object */;
+}

@@ -1,3 +1,7 @@
 node_modules
 dist
 website/build
+iOS/Pods
+iOS/Podfile.lock
+iOS/SonarKit.xcworkspace
+.DS_Store
