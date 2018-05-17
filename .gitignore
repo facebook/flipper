@@ -1,3 +1,5 @@
 node_modules
 dist
 website/build
+/.gradle
+build/
