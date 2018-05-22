@@ -7,9 +7,11 @@ android {
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
         targetSdkVersion rootProject.targetSdkVersion
-        buildConfigField "Boolean", "IS_INTERNAL_BUILD", 'true'
+        buildConfigField "boolean", "IS_INTERNAL_BUILD", 'true'
     }
-
+    lintOptions {
+        abortOnError false
+    }
     sourceSets {
         main {
             manifest.srcFile './AndroidManifest.xml'
@@ -25,6 +27,7 @@ android {
     }
 }
 dependencies {
+    implementation project(':folly')
     implementation project(':fbjni')
     implementation deps.soloader
     compileOnly deps.lithoAnnotations
@@ -34,5 +37,8 @@ dependencies {
     implementation deps.supportAppCompat
     implementation deps.stetho
     implementation deps.okhttp3
+    implementation 'com.facebook.litho:litho-core:0.15.0'
+    implementation 'com.facebook.litho:litho-widget:0.15.0'
     implementation fileTree(dir: 'plugins/console/dependencies', include: ['*.jar'])
+    implementation project(':sonar')
 }

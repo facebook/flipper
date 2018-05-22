@@ -1,5 +1,5 @@
 node_modules
 dist
 website/build
-/.gradle
 build/
+.DS_Store

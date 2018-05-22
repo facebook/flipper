@@ -1,0 +1,7 @@
+cmake_minimum_required (VERSION 3.7.1)
+set(PACKAGE_NAME      "easywsclient")
+include_directories(./)
+set(SOURCES easywsclient.cpp)
+add_library(${PACKAGE_NAME} STATIC ${SOURCES})
+target_compile_features(${PACKAGE_NAME}  PUBLIC cxx_std_11)
+install(TARGETS ${PACKAGE_NAME}  DESTINATION /usr/local/lib)

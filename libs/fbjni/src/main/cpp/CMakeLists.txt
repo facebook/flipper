@@ -5,7 +5,7 @@
 # LICENSE file in the root directory of this source tree.
 #
 
-cmake_minimum_required(VERSION 3.4.1)
+cmake_minimum_required(VERSION 3.7.1)
 
 set(CMAKE_VERBOSE_MAKEFILE on)
 

@@ -12,6 +12,11 @@ rootProject.name = 'sonar'
 include ':android'
 include ':folly'
 include ':fbjni'
+include ':easywsclient'
+include ':sonar'
+
 
 project(':folly').projectDir = file('libs/folly')
 project(':fbjni').projectDir = file('libs/fbjni')
+project(':easywsclient').projectDir = file('libs/easywsclient')
+project(':sonar').projectDir = file('xplat')
