@@ -84,14 +84,23 @@ export class InspectorSidebar extends Component<Props, State> {
     isConsoleEnabled: false,
   };
 
+  constructor(props: Props) {
+    super(props);
+    this.checkIfConsoleIsEnabled();
+  }
+
   componentDidUpdate(prevProps: Props, prevState: State) {
     if (prevProps.client !== this.props.client) {
-      this.props.client
-        .call('isConsoleEnabled')
-        .then((result: {isEnabled: boolean}) => {
-          this.setState({isConsoleEnabled: result.isEnabled});
-        });
+      this.checkIfConsoleIsEnabled();
     }
+  }
+
+  checkIfConsoleIsEnabled() {
+    this.props.client
+      .call('isConsoleEnabled')
+      .then((result: {isEnabled: boolean}) => {
+        this.setState({isConsoleEnabled: result.isEnabled});
+      });
   }
 
   render() {

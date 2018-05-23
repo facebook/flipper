@@ -10,6 +10,7 @@ import {Component} from 'react';
 import Heading from './Heading.js';
 import Button from './Button.js';
 import View from './View.js';
+import LogManager from '../../fb-stubs/Logger.js';
 
 const ErrorBoundaryContainer = View.extends({
   overflow: 'auto',
@@ -23,6 +24,7 @@ const ErrorBoundaryStack = ErrorBlock.extends({
 type ErrorBoundaryProps = {
   buildHeading?: (err: Error) => string,
   heading?: string,
+  logger?: LogManager,
   showStack?: boolean,
   children?: React$Node,
 };
@@ -41,6 +43,8 @@ export default class ErrorBoundary extends Component<
   }
 
   componentDidCatch(err: Error) {
+    this.props.logger &&
+      this.props.logger.error(err.toString(), 'ErrorBoundary');
     this.setState({error: err});
   }
 

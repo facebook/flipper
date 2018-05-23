@@ -28,12 +28,15 @@ try {
 } catch (e) {
   fs.writeFileSync(configPath, JSON.stringify(config));
 }
-if (yargs.argv.dynamicPlugins) {
-  config.pluginPaths = config.pluginPaths.concat(
-    yargs.argv.dynamicPlugins.split(','),
-  );
-}
-process.env.CONFIG = JSON.stringify(config);
+
+const pluginPaths = config.pluginPaths.concat(
+  (yargs.argv.dynamicPlugins || '').split(',').filter(Boolean),
+);
+
+process.env.CONFIG = JSON.stringify({
+  ...config,
+  pluginPaths,
+});
 
 // possible reference to main app window
 let win;
@@ -53,7 +56,7 @@ compilePlugins(
       win.reload();
     }
   },
-  config.pluginPaths || [],
+  pluginPaths,
   path.join(require('os').homedir(), '.sonar', 'plugins'),
 ).then(dynamicPlugins => {
   process.env.PLUGINS = JSON.stringify(dynamicPlugins);
@@ -101,29 +104,10 @@ app.on('ready', function() {
     installExtension(REDUX_DEVTOOLS.id);
   }
 });
-
-app.on('before-quit', () => {
-  if (win) {
-    const [x, y] = win.getPosition();
-    const [width, height] = win.getSize();
-    // save window position and size
-    fs.writeFileSync(
-      configPath,
-      JSON.stringify({
-        ...config,
-        lastWindowPosition: {
-          x,
-          y,
-          width,
-          height,
-        },
-      }),
-    );
-  }
-});
 function tryCreateWindow() {
   if (appReady && pluginsCompiled) {
     win = new BrowserWindow({
+      show: false,
       title: 'Sonar',
       width: config.lastWindowPosition.width || 1400,
       height: config.lastWindowPosition.height || 1000,
@@ -138,7 +122,24 @@ function tryCreateWindow() {
         scrollBounce: true,
         experimentalFeatures: true,
       },
-      vibrancy: 'sidebar',
+    });
+    win.once('ready-to-show', () => win.show());
+    win.once('close', ({sender}) => {
+      const [x, y] = sender.getPosition();
+      const [width, height] = sender.getSize();
+      // save window position and size
+      fs.writeFileSync(
+        configPath,
+        JSON.stringify({
+          ...config,
+          lastWindowPosition: {
+            x,
+            y,
+            width,
+            height,
+          },
+        }),
+      );
     });
     if (config.lastWindowPosition.x && config.lastWindowPosition.y) {
       win.setPosition(config.lastWindowPosition.x, config.lastWindowPosition.y);

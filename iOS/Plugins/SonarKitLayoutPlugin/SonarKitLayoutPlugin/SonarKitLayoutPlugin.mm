@@ -257,12 +257,14 @@
 
   const auto *nodeAttributes = [nodeDescriptor attributesForNode: node];
   for (const SKNamed<NSString *> *namedPair in nodeAttributes) {
-    const NSDictionary *attribute = @{
-                                      @"name": namedPair.name,
-                                      @"value": namedPair.value ?: [NSNull null],
-                                      };
-
-    [attributes addObject: attribute];
+    const auto name = namedPair.name;
+    if (name) {
+      const NSDictionary *attribute = @{
+                                        @"name": name,
+                                        @"value": namedPair.value ?: [NSNull null],
+                                        };
+      [attributes addObject: attribute];
+    }
   }
 
   const auto *nodeData = [nodeDescriptor dataForNode: node];

@@ -12,3 +12,6 @@ docs/.bundle/
 .idea
 *.iml
 local.properties
+*.xcworkspace
+**/Pods/
+**/xcuserdata/

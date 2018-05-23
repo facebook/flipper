@@ -45,7 +45,8 @@ static CKFlexboxComponentChild findFlexboxLayoutParams(CKComponent *parent, CKCo
   [[SKComponentLayoutWrapper alloc] initWithLayout:layout
                                           position:CGPointMake(0, 0)
                                          parentKey:[NSString stringWithFormat: @"%p.", layout.component]];
-  objc_setAssociatedObject(layout.component, &kLayoutWrapperKey, wrapper, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+  if (layout.component)
+    objc_setAssociatedObject(layout.component, &kLayoutWrapperKey, wrapper, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
   return wrapper;
 }
 

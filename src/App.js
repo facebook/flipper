@@ -304,7 +304,8 @@ export class App extends React.Component<Props, State> {
           <ErrorBoundary
             heading={`Plugin "${
               plugin.constructor.title
-            }" encountered an error during render`}>
+            }" encountered an error during render`}
+            logger={this.logger}>
             <PluginContainer
               logger={this.logger}
               plugin={plugin}
