@@ -27,6 +27,8 @@ android {
     }
 }
 dependencies {
+    implementation project(':sonarjni')
+    implementation project(':sonar')
     implementation project(':folly')
     implementation project(':fbjni')
     implementation deps.soloader
@@ -40,5 +42,4 @@ dependencies {
     implementation 'com.facebook.litho:litho-core:0.15.0'
     implementation 'com.facebook.litho:litho-widget:0.15.0'
     implementation fileTree(dir: 'plugins/console/dependencies', include: ['*.jar'])
-    implementation project(':sonar')
 }

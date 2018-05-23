@@ -14,9 +14,14 @@ include ':folly'
 include ':fbjni'
 include ':easywsclient'
 include ':sonar'
+include ':sample'
+include ':sonarjni'
 
 
 project(':folly').projectDir = file('libs/folly')
 project(':fbjni').projectDir = file('libs/fbjni')
 project(':easywsclient').projectDir = file('libs/easywsclient')
 project(':sonar').projectDir = file('xplat')
+project(':sample').projectDir = file('sample')
+project(':android').projectDir = file('android')
+project(':sonarjni').projectDir = file('android/sonarjni')

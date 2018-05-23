@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 3.7.1)
+cmake_minimum_required (VERSION 3.6.0)
 project(sonar CXX C)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
@@ -7,7 +7,8 @@ link_directories(../libs/easywsclient/build/)
 
 include_directories(Sonar)
 
-add_compile_options(-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_LIBGFLAGS=0 -DFOLLY_HAVE_LIBJEMALLOC=0 -DFOLLY_HAVE_PREADV=0 -DFOLLY_HAVE_PWRITEV=0 -DFOLLY_HAVE_TFO=0 -DFOLLY_USE_SYMBOLIZER=0  -frtti
+#-DFOLLY_USE_LIBCPP=1 
+add_compile_options(-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_HAVE_LIBGFLAGS=0 -DFOLLY_HAVE_LIBJEMALLOC=0 -DFOLLY_HAVE_PREADV=0 -DFOLLY_HAVE_PWRITEV=0 -DFOLLY_HAVE_TFO=0 -DFOLLY_USE_SYMBOLIZER=0  -frtti
     -fexceptions
     -std=c++14
     -Wno-error

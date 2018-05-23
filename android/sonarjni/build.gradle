@@ -14,9 +14,10 @@ android {
 
         externalNativeBuild {
             cmake {
-                arguments '-DANDROID_TOOLCHAIN=clang'
+                arguments '-DANDROID_TOOLCHAIN=clang', '-DANDROID_STL=c++_static'
             }
         }
+
     }
 
     externalNativeBuild {
@@ -29,10 +30,5 @@ android {
         main {
             manifest.srcFile './AndroidManifest.xml'
         }
-    }
-
-    dependencies {
-        implementation project(':easywsclient')
-        implementation project(':folly')
     }
 }

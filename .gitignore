@@ -5,3 +5,10 @@ build/
 .DS_Store
 .gradle/
 .externalNativeBuild/
+# Output files
+docs/.bundle/
+
+# Android Studio/IntelliJ
+.idea
+*.iml
+local.properties
