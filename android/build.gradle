@@ -8,6 +8,11 @@ android {
         minSdkVersion rootProject.minSdkVersion
         targetSdkVersion rootProject.targetSdkVersion
         buildConfigField "boolean", "IS_INTERNAL_BUILD", 'true'
+        externalNativeBuild {
+            cmake {
+                arguments '-DANDROID_TOOLCHAIN=clang'
+            }
+        }
     }
     lintOptions {
         abortOnError false
@@ -25,21 +30,27 @@ android {
             }
         }
     }
-}
-dependencies {
-    implementation project(':sonarjni')
-    implementation project(':sonar')
-    implementation project(':folly')
-    implementation project(':fbjni')
-    implementation deps.soloader
-    compileOnly deps.lithoAnnotations
-    implementation 'org.glassfish:javax.annotation:10.0-b28'
-    implementation deps.guava
-    implementation deps.jsr305
-    implementation deps.supportAppCompat
-    implementation deps.stetho
-    implementation deps.okhttp3
-    implementation 'com.facebook.litho:litho-core:0.15.0'
-    implementation 'com.facebook.litho:litho-widget:0.15.0'
-    implementation fileTree(dir: 'plugins/console/dependencies', include: ['*.jar'])
+    externalNativeBuild {
+        cmake {
+            path './CMakeLists.txt'
+        }
+    }
+    
+    dependencies {
+        implementation project(':sonarjni')
+        implementation project(':sonar')
+        //implementation project(':folly')
+        implementation project(':fbjni')
+        implementation deps.soloader
+        compileOnly deps.lithoAnnotations
+        implementation 'org.glassfish:javax.annotation:10.0-b28'
+        implementation deps.guava
+        implementation deps.jsr305
+        implementation deps.supportAppCompat
+        implementation deps.stetho
+        implementation deps.okhttp3
+        implementation 'com.facebook.litho:litho-core:0.15.0'
+        implementation 'com.facebook.litho:litho-widget:0.15.0'
+        implementation fileTree(dir: 'plugins/console/dependencies', include: ['*.jar'])
+    }
 }

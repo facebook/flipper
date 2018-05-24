@@ -22,7 +22,7 @@ android {
 
     externalNativeBuild {
         cmake {
-            file 'CMakeLists.txt'
+            path './CMakeLists.txt'
         }
     }
 

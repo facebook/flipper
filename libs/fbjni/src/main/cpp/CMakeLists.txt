@@ -22,10 +22,12 @@ file(GLOB fb_SRC
     jni/*.cpp
     lyra/*.cpp)
 
+set(libjnihack_DIR ../../../../jni-hack/)
+
 add_library(fb SHARED
     ${fb_SRC})
 
 target_include_directories(fb PRIVATE
-    include)
+    include ${libjnihack_DIR})
 
-target_link_libraries(fb android log)
+target_link_libraries(fb)

@@ -1,0 +1,67 @@
+PODS:
+  - boost-for-react-native (1.63.0)
+  - CocoaAsyncSocket (7.6.3)
+  - DoubleConversion (3.0.0)
+  - EasyWSClient (1.0.0)
+  - Folly (2018.05.07.00):
+    - boost-for-react-native
+    - DoubleConversion
+    - glog
+  - glog (0.3.5)
+  - PeerTalk (0.0.2)
+  - Sonar (1.0.0):
+    - EasyWSClient
+    - Folly
+
+DEPENDENCIES:
+  - CocoaAsyncSocket
+  - DoubleConversion (from `third-party-podspecs/DoubleConversion.podspec`)
+  - EasyWSClient (from `third-party-podspecs/EasyWSClient.podspec`)
+  - Folly (from `third-party-podspecs/Folly.podspec`)
+  - glog (from `third-party-podspecs/glog.podspec`)
+  - PeerTalk (from `https://github.com/rsms/peertalk`)
+  - Sonar (from `../xplat/Sonar/SonarKitCPP.podspec`)
+
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - boost-for-react-native
+    - CocoaAsyncSocket
+
+EXTERNAL SOURCES:
+  DoubleConversion:
+    :podspec: third-party-podspecs/DoubleConversion.podspec
+  EasyWSClient:
+    :podspec: third-party-podspecs/EasyWSClient.podspec
+  Folly:
+    :podspec: third-party-podspecs/Folly.podspec
+  glog:
+    :podspec: third-party-podspecs/glog.podspec
+  PeerTalk:
+    :git: https://github.com/rsms/peertalk
+  Sonar:
+    :podspec: "../xplat/Sonar/SonarKitCPP.podspec"
+
+CHECKOUT OPTIONS:
+  EasyWSClient:
+    :commit: 9b87dc488048900a8cd684f51ddc98143682dbc3
+    :git: https://github.com/dhbaird/easywsclient.git
+  PeerTalk:
+    :commit: 588303b43efa5082d654b6f75d1b84a6ba4b5b9e
+    :git: https://github.com/rsms/peertalk
+  Sonar:
+    :commit: 3c376c4e168f363769dc2c0dacb7ef4eb76092e5
+    :git: https://github.com/facebook/Sonar.git
+
+SPEC CHECKSUMS:
+  boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
+  CocoaAsyncSocket: eafaa68a7e0ec99ead0a7b35015e0bf25d2c8987
+  DoubleConversion: 310ccd7cdf00175c32883664f84fe026025604df
+  EasyWSClient: 7ec8effe7d86f6061a47d19a55355769c9edfd2f
+  Folly: 2d29ed217455246ae583ff1980f9ce882af31e80
+  glog: f175af2df1f453be65bd355b287a07c842927a99
+  PeerTalk: f5389c286e4d477e59b73dfbf25c5c70a2464761
+  Sonar: 815b6c6357c78564d9132f6389605b285a06f052
+
+PODFILE CHECKSUM: 85522a377686277772fc83ef0fcc8a66a6b83e88
+
+COCOAPODS: 1.5.2

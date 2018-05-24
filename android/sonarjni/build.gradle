@@ -32,3 +32,8 @@ android {
         }
     }
 }
+
+//dependencies {
+//    implementation project(':sonar')
+//    implementation project(':fbjni')
+//}

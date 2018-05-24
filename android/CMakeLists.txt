@@ -4,8 +4,8 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 
 set(PACKAGE_NAME      "sonarjni")
 link_directories(/usr/local/lib/)
-link_directories(../../libs/fbjni/src/main/cpp/build/)
-link_directories(../../xplat/build/)
+link_directories(../libs/fbjni/src/main/cpp/build/)
+link_directories(../xplat/build/)
 
 
 # -DFOLLY_HAVE_MEMRCHR=1
@@ -37,12 +37,22 @@ add_compile_options(-DSONAR_JNI_EXTERNAL=1 -DFOLLY_OPENSSL_HAS_SNI=1 -DFOLLY_HAV
 file(GLOB SOURCES "./*.cpp")
 add_library(${PACKAGE_NAME} SHARED ${SOURCES})
 target_include_directories(${PACKAGE_NAME}  PUBLIC "./")
-set(libfolly_DIR ../../libs/folly/)
-set(libjnihack_DIR ../../libs/jni-hack/)
-set(libfbjni_DIR ../../libs/fbjni/src/main/cpp/include/)
-set(libsonar_DIR ../../xplat/)
+set(libfolly_DIR ../libs/folly/)
+set(libjnihack_DIR ../libs/jni-hack/)
+set(libfbjni_DIR ../libs/fbjni/src/main/cpp/include/)
+set(libsonar_DIR ../xplat/)
 set(OPENSSL_ROOT_DIR /usr/local/Cellar/openssl/1.0.2o_1)
 set(OPENSSL_INCLUDE_DIR /usr/local/Cellar/openssl/1.0.2o_1/include)
+
+#set(LIBGFLAGS_LIBRARY /usr/local/lib/)
+#set(LIBGFLAGS_INCLUDE_DIR /usr/local/include/gflags)
+#set(LIBGLOG_LIBRARY /usr/local/lib/)
+#set(LIBGLOG_INCLUDE_DIR /usr/local/include/glog)
+#set(DOUBLE_CONVERSION_LIBRARY /usr/local/lib/)
+#set(DOUBLE_CONVERSION_INCLUDE_DIR /usr/local/include/double-conversion)
+#set(LIBEVENT_LIBRARY /usr/local/lib/)
+#set(DOUBLE_CONVERSION_INCLUDE_DIR /usr/local/include/double-conversion)
+
 link_directories(${OPENSSL_ROOT_DIR}/lib)
 
 set(build_DIR ${CMAKE_SOURCE_DIR}/build)
