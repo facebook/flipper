@@ -104,7 +104,7 @@ class JSonarObject : public jni::JavaClass<JSonarObject> {
   }
 
   std::string toJsonString() {
-    static const auto method = javaClassStatic()->getMethod<std::string()>("toJsonString");
+    static auto method = javaClassStatic()->getMethod<std::string()>("toJsonString");
     return method(self())->toStdString();
   }
 };
@@ -118,7 +118,7 @@ class JSonarArray : public jni::JavaClass<JSonarArray> {
   }
 
   std::string toJsonString() {
-    static const auto method = javaClassStatic()->getMethod<std::string()>("toJsonString");
+    static auto method = javaClassStatic()->getMethod<std::string()>("toJsonString");
     return method(self())->toStdString();
   }
 };
@@ -164,7 +164,7 @@ class JSonarReceiver : public jni::JavaClass<JSonarReceiver> {
   constexpr static auto kJavaDescriptor = "Lcom/facebook/sonar/core/SonarReceiver;";
 
   void receive(const folly::dynamic params, std::shared_ptr<SonarResponder> responder) const {
-    static const auto method = javaClassStatic()->getMethod<void(jni::alias_ref<JSonarObject::javaobject>, jni::alias_ref<JSonarResponder::javaobject>)>("onReceive");
+    static auto method = javaClassStatic()->getMethod<void(jni::alias_ref<JSonarObject::javaobject>, jni::alias_ref<JSonarResponder::javaobject>)>("onReceive");
     method(self(), JSonarObject::create(std::move(params)), JSonarResponderImpl::newObjectCxxArgs(responder));
   }
 };
@@ -196,7 +196,9 @@ class JSonarConnectionImpl : public jni::HybridClass<JSonarConnectionImpl, JSona
   }
 
   void reportError(jni::alias_ref<jni::JThrowable> throwable) {
-    _connection->error(throwable->toString(), throwable->getStackTrace()->toString());
+    #if !defined(SONAR_JNI_EXTERNAL)
+        _connection->error(throwable->toString(), throwable->getStackTrace()->toString());
+    #endif
   }
 
   void receive(const std::string method, jni::alias_ref<JSonarReceiver> receiver) {
@@ -218,17 +220,17 @@ class JSonarPlugin : public jni::JavaClass<JSonarPlugin> {
   constexpr static auto kJavaDescriptor = "Lcom/facebook/sonar/core/SonarPlugin;";
 
   std::string identifier() const {
-    static const auto method = javaClassStatic()->getMethod<std::string()>("getId");
+    static auto method = javaClassStatic()->getMethod<std::string()>("getId");
     return method(self())->toStdString();
   }
 
   void didConnect(std::shared_ptr<SonarConnection> conn) {
-    static const auto method = javaClassStatic()->getMethod<void(jni::alias_ref<JSonarConnection::javaobject>)>("onConnect");
+    static auto method = javaClassStatic()->getMethod<void(jni::alias_ref<JSonarConnection::javaobject>)>("onConnect");
     method(self(), JSonarConnectionImpl::newObjectCxxArgs(conn));
   }
 
   void didDisconnect() {
-    static const auto method = javaClassStatic()->getMethod<void()>("onDisconnect");
+    static auto method = javaClassStatic()->getMethod<void()>("onDisconnect");
     method(self());
   }
 };

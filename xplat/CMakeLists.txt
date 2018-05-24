@@ -32,7 +32,6 @@ file(GLOB SOURCES Sonar/*.cpp)
 add_library(${PACKAGE_NAME} SHARED ${SOURCES})
 target_include_directories(${PACKAGE_NAME}  PUBLIC "./")
 set(libfolly_DIR ../libs/folly/)
-#set(libglog_DIR /usr/local/include/glog/)
 set(easywsclient_DIR ../libs/)
 set(OPENSSL_ROOT_DIR /usr/local/Cellar/openssl/1.0.2o_1)
 set(OPENSSL_INCLUDE_DIR /usr/local/Cellar/openssl/1.0.2o_1/include)
@@ -41,15 +40,11 @@ set(build_DIR ${CMAKE_SOURCE_DIR}/build)
 
 set(libfolly_build_DIR ${build_DIR}/libfolly/${ANDROID_ABI})
 set(easywsclient_build_DIR ${build_DIR}/easywsclient/${ANDROID_ABI})
-#set(libglog_build_DIR ${build_DIR}/glog/${ANDROID_ABI})
 
 file(MAKE_DIRECTORY ${build_DIR})
 
 add_subdirectory(${libfolly_DIR} ${libfolly_build_DIR})
-#add_subdirectory(${libglog_DIR} ${libglog_build_DIR})
 add_subdirectory(${easywsclient_DIR}/easywsclient ${easywsclient_build_DIR})
-
-#    ${libglog_DIR}
 
 target_include_directories(sonar PRIVATE
     ${libfolly_DIR}

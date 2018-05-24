@@ -34,13 +34,14 @@ add_compile_options(-DSONAR_JNI_EXTERNAL=1 -DFOLLY_OPENSSL_HAS_SNI=1 -DFOLLY_HAV
     -Wno-macro-redefined
     )
 
-file(GLOB SOURCES "./*.cpp")
+file(GLOB SOURCES "android/*.cpp")
 add_library(${PACKAGE_NAME} SHARED ${SOURCES})
 target_include_directories(${PACKAGE_NAME}  PUBLIC "./")
 set(libfolly_DIR ../libs/folly/)
 set(libjnihack_DIR ../libs/jni-hack/)
 set(libfbjni_DIR ../libs/fbjni/src/main/cpp/include/)
 set(libsonar_DIR ../xplat/)
+
 set(OPENSSL_ROOT_DIR /usr/local/Cellar/openssl/1.0.2o_1)
 set(OPENSSL_INCLUDE_DIR /usr/local/Cellar/openssl/1.0.2o_1/include)
 
