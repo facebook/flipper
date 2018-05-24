@@ -22,7 +22,7 @@ file(GLOB fb_SRC
     jni/*.cpp
     lyra/*.cpp)
 
-set(libjnihack_DIR ../../../../jni-hack/)
+set(libjnihack_DIR  ../../../../jni-hack/)
 
 add_library(fb SHARED
     ${fb_SRC})

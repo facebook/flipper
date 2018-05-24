@@ -31,8 +31,8 @@ android {
         }
     }
 
-    //dependencies {
-    //    api project(':easywsclient')
-    //    api project(':folly')
-    //}
+    dependencies {
+        api project(':easywsclient')
+        api project(':folly')
+    }
 }
