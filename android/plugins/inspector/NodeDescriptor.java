@@ -8,13 +8,14 @@
 
 package com.facebook.sonar.plugins.inspector;
 
+import com.facebook.sonar.core.SonarArray;
 import com.facebook.sonar.core.SonarConnection;
 import com.facebook.sonar.core.SonarDynamic;
 import com.facebook.sonar.core.SonarObject;
 import java.util.List;
 
 /**
- * A NodeDescriptor is an object which known how to expose an Object of type T to the Inspector.
+ * A NodeDescriptor is an object which known how to expose an Object of type T to the ew Inspector.
  * This class is the extension point for the Sonar inspector plugin and is how custom classes and
  * data can be exposed to the inspector.
  */
@@ -49,7 +50,12 @@ public abstract class NodeDescriptor<T> {
       new ErrorReportingRunnable() {
         @Override
         protected void runOrThrow() throws Exception {
-          mConnection.send("invalidate", new SonarObject.Builder().put("id", getId(node)).build());
+          SonarArray array =
+              new SonarArray.Builder()
+                  .put(new SonarObject.Builder().put("id", getId(node)).build())
+                  .build();
+          SonarObject params = new SonarObject.Builder().put("nodes", array).build();
+          mConnection.send("invalidate", params);
         }
       }.run();
     }

@@ -106,4 +106,10 @@ typedef void (^SKNodeUpdateData)(id value);
  */
 - (NSString *)decorationForNode:(T)node;
 
+/**
+ Whether the node matches the given query.
+ Used for layout search.
+ */
+- (BOOL)matchesQuery:(NSString *)query forNode:(T)node;
+
 @end

@@ -5,11 +5,11 @@
  * @format
  */
 
-import type {ElementID, Element} from 'sonar';
+import type {ElementID, Element, ElementSearchResultSet} from 'sonar';
 import {
   colors,
   Glyph,
-  FlexBox,
+  GK,
   FlexRow,
   FlexColumn,
   Toolbar,
@@ -17,6 +17,11 @@ import {
   ElementsInspector,
   InspectorSidebar,
   LoadingIndicator,
+  styled,
+  Component,
+  SearchBox,
+  SearchInput,
+  SearchIcon,
 } from 'sonar';
 
 // $FlowFixMe
@@ -28,6 +33,8 @@ export type InspectorState = {|
   root: ?ElementID,
   elements: {[key: ElementID]: Element},
   isSearchActive: boolean,
+  searchResults: ?ElementSearchResultSet,
+  outstandingSearchQuery: ?string,
 |};
 
 type SelectElementArgs = {|
@@ -55,11 +62,6 @@ type GetNodesResult = {|
   elements: Array<Element>,
 |};
 
-const Center = FlexRow.extends({
-  alignItems: 'center',
-  justifyContent: 'center',
-});
-
 type SearchResultTree = {|
   id: string,
   isMatch: Boolean,
@@ -67,7 +69,61 @@ type SearchResultTree = {|
   element: Element,
 |};
 
-export default class extends SonarPlugin<InspectorState> {
+const LoadingSpinner = LoadingIndicator.extends({
+  marginRight: 4,
+  marginLeft: 3,
+  marginTop: -1,
+});
+
+const Center = FlexRow.extends({
+  alignItems: 'center',
+  justifyContent: 'center',
+});
+
+const SearchIconContainer = styled.view({
+  marginRight: 6,
+  marginTop: -4,
+  marginLeft: 1,
+});
+
+class LayoutSearchInput extends Component<
+  {
+    onSubmit: string => void,
+  },
+  {
+    value: string,
+  },
+> {
+  static TextInput = styled.textInput({
+    width: '100%',
+    marginLeft: 6,
+  });
+
+  state = {
+    value: '',
+  };
+
+  render() {
+    return (
+      <SearchInput
+        placeholder={'Search'}
+        onChange={(e: SyntheticInputEvent<>) => {
+          this.setState({
+            value: e.target.value,
+          });
+        }}
+        onKeyDown={(e: SyntheticKeyboardEvent<>) => {
+          if (e.key === 'Enter') {
+            this.props.onSubmit(this.state.value);
+          }
+        }}
+        value={this.state.value}
+      />
+    );
+  }
+}
+
+export default class Layout extends SonarPlugin<InspectorState> {
   static title = 'Layout';
   static id = 'Inspector';
   static icon = 'target';
@@ -78,6 +134,8 @@ export default class extends SonarPlugin<InspectorState> {
     isSearchActive: false,
     root: null,
     selected: null,
+    searchResults: null,
+    outstandingSearchQuery: null,
   };
 
   reducers = {
@@ -143,6 +201,12 @@ export default class extends SonarPlugin<InspectorState> {
   };
 
   search(query: string) {
+    if (!query) {
+      return;
+    }
+    this.setState({
+      outstandingSearchQuery: query,
+    });
     this.client
       .call('getSearchResults', {query: query})
       .then(response => this.displaySearchResults(response));
@@ -181,11 +245,19 @@ export default class extends SonarPlugin<InspectorState> {
     });
   }
 
-  displaySearchResults({resultTree}: {resultTree: SearchResultTree}) {
-    const elements = this.getElementsFromSearchResultTree(resultTree);
+  displaySearchResults({
+    results,
+    query,
+  }: {
+    results: SearchResultTree,
+    query: string,
+  }) {
+    const elements = this.getElementsFromSearchResultTree(results);
     const idsToExpand = elements
       .filter(x => x.hasChildren)
       .map(x => x.element.id);
+
+    const finishedSearching = query === this.state.outstandingSearchQuery;
 
     this.dispatchAction({
       elements: elements.map(x => x.element),
@@ -194,6 +266,17 @@ export default class extends SonarPlugin<InspectorState> {
     this.dispatchAction({
       elements: idsToExpand,
       type: 'ExpandElements',
+    });
+    this.setState({
+      searchResults: {
+        matches: new Set(
+          elements.filter(x => x.isMatch).map(x => x.element.id),
+        ),
+        query: query,
+      },
+      outstandingSearchQuery: finishedSearching
+        ? null
+        : this.state.outstandingSearchQuery,
     });
   }
 
@@ -228,11 +311,16 @@ export default class extends SonarPlugin<InspectorState> {
       });
     });
 
-    this.client.subscribe('invalidate', ({id}: {id: ElementID}) => {
-      this.invalidate([id]).then((elements: Array<Element>) => {
-        this.dispatchAction({elements, type: 'UpdateElements'});
-      });
-    });
+    this.client.subscribe(
+      'invalidate',
+      ({nodes}: {nodes: Array<{id: ElementID}>}) => {
+        this.invalidate(nodes.map(node => node.id)).then(
+          (elements: Array<Element>) => {
+            this.dispatchAction({elements, type: 'UpdateElements'});
+          },
+        );
+      },
+    );
 
     this.client.subscribe('select', ({path}: {path: Array<ElementID>}) => {
       this.getNodesAndDirectChildren(path).then((elements: Array<Element>) => {
@@ -250,8 +338,6 @@ export default class extends SonarPlugin<InspectorState> {
         this.client.send('setSearchActive', {active: false});
       });
     });
-
-    window.search = this.search.bind(this);
   }
 
   invalidate(ids: Array<ElementID>): Promise<Array<Element>> {
@@ -419,12 +505,19 @@ export default class extends SonarPlugin<InspectorState> {
   };
 
   render() {
-    const {initialised, selected, root, elements, isSearchActive} = this.state;
+    const {
+      initialised,
+      selected,
+      root,
+      elements,
+      isSearchActive,
+      outstandingSearchQuery,
+    } = this.state;
 
     return (
       <FlexColumn fill={true}>
-        <Toolbar compact={true}>
-          <FlexBox
+        <Toolbar>
+          <SearchIconContainer
             onClick={this.onFindClick}
             role="button"
             tabIndex={-1}
@@ -432,14 +525,28 @@ export default class extends SonarPlugin<InspectorState> {
             <Glyph
               variant="outline"
               name="target"
-              size={16}
+              size={24}
               color={
                 isSearchActive
                   ? colors.macOSTitleBarIconSelected
                   : colors.macOSTitleBarIconActive
               }
             />
-          </FlexBox>
+          </SearchIconContainer>
+          {GK.get('sonar_layout_search') && (
+            <SearchBox tabIndex={-1}>
+              {outstandingSearchQuery ? (
+                <LoadingSpinner size={16} />
+              ) : (
+                <SearchIcon
+                  name="magnifying-glass"
+                  color={colors.macOSTitleBarIcon}
+                  size={16}
+                />
+              )}
+              <LayoutSearchInput onSubmit={this.search.bind(this)} />
+            </SearchBox>
+          )}
         </Toolbar>
         <FlexRow fill={true}>
           {initialised ? (
@@ -449,6 +556,7 @@ export default class extends SonarPlugin<InspectorState> {
               onElementExpanded={this.onElementExpanded}
               onValueChanged={this.onDataValueChanged}
               selected={selected}
+              searchResults={this.state.searchResults}
               root={root}
               elements={elements}
             />

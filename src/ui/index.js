@@ -135,7 +135,12 @@ export {default as Heading} from './components/Heading.js';
 export type {Filter} from './components/filter/types.js';
 
 //
-export {default as Searchable} from './components/searchable/Searchable.js';
+export {
+  SearchBox,
+  SearchInput,
+  SearchIcon,
+  default as Searchable,
+} from './components/searchable/Searchable.js';
 export {
   default as SearchableTable,
 } from './components/searchable/SearchableTable.js';
@@ -147,6 +152,7 @@ export type {
   ElementData,
   ElementAttribute,
   Element,
+  ElementSearchResultSet,
 } from './components/elements-inspector/ElementsInspector.js';
 export {
   default as ElementsInspector,

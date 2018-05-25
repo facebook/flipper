@@ -194,7 +194,14 @@ public class InspectorSonarPluginTest {
     assertThat(root.data.getString("prop"), equalTo("updated_value"));
     assertThat(
         connection.sent.get("invalidate"),
-        hasItem(new SonarObject.Builder().put("id", "test").build()));
+        hasItem(
+            new SonarObject.Builder()
+                .put(
+                    "nodes",
+                    new SonarArray.Builder()
+                        .put(new SonarObject.Builder().put("id", "test").build())
+                        .build())
+                .build()));
   }
 
   @Test
