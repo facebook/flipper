@@ -3,11 +3,8 @@ cmake_minimum_required (VERSION 3.6.0)
 PROJECT(doubleconversion CXX)
 enable_language(CXX)
 set(PACKAGE_NAME      doubleconversion)
-
 set(doubleconversion_DIR  double-conversion-3.0.0/double-conversion)
-
 include_directories(${doubleconversion_DIR})
-
 file(GLOB SRCFILES  ${doubleconversion_DIR}/*.cc)
 message(STATUS "SRC FILES :- " ${SRCFILES})
 add_library(${PACKAGE_NAME} SHARED ${SRCFILES})

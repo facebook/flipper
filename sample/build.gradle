@@ -9,7 +9,6 @@ android {
         testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
         applicationId "com.facebook.sonar.sample"
     }
-    //defaultConfig.applicationId "com.facebook.sonar.sample"
 
     lintOptions {
         abortOnError false
@@ -64,4 +63,5 @@ dependencies {
 
     implementation 'com.squareup.okhttp3:okhttp:3.10.0'
     implementation project(':android')
+    //implementation project(':sonar')
 }

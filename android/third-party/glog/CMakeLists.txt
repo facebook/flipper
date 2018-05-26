@@ -37,6 +37,6 @@ message(STATUS "src files => " ${src_files} )
 
 #file(GLOB SRCFILES  ${glog_DIR}/*.cc)
 
-add_library(${PACKAGE_NAME} STATIC ${src_files})
+add_library(${PACKAGE_NAME} SHARED ${src_files})
 install(TARGETS ${PACKAGE_NAME}  DESTINATION ./build/)
 target_link_libraries(${PACKAGE_NAME})

@@ -81,6 +81,6 @@ target_include_directories(${PACKAGE_NAME} PRIVATE
         ${easywsclient_DIR}
     )
 
-install(TARGETS ${PACKAGE_NAME}  DESTINATION ./build/)
+#install(TARGETS ${PACKAGE_NAME}  DESTINATION ./build/)
 
 target_link_libraries(sonar folly easywsclient glog double-conversion log)

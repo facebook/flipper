@@ -7,7 +7,7 @@
  * in the user guide at https://docs.gradle.org/4.7/userguide/multi_project_builds.html
  */
 
-rootProject.name = 'sonar'
+rootProject.name = 'sonar-kit'
 
 include ':android'
 include ':folly'

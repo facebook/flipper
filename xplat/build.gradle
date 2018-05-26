@@ -34,7 +34,5 @@ android {
     dependencies {
         implementation project(':easywsclient')
         implementation project(':folly')
-        //implementation project(':glog')
-        //implementation project(':doubleconversion')
     }
 }

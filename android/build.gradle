@@ -152,7 +152,6 @@ android {
 
     dependencies {
         implementation project(':fbjni')
-        implementation project(':sonar')
         implementation deps.soloader
         compileOnly deps.lithoAnnotations
         implementation 'org.glassfish:javax.annotation:10.0-b28'
