@@ -18,7 +18,7 @@ android {
             }
         }
     }
-
+//, '-DANDROID_STL=c++_shared'
     externalNativeBuild {
         cmake {
             path './CMakeLists.txt'
@@ -32,7 +32,9 @@ android {
     }
 
     dependencies {
-        api project(':easywsclient')
-        api project(':folly')
+        implementation project(':easywsclient')
+        implementation project(':folly')
+        //implementation project(':glog')
+        //implementation project(':doubleconversion')
     }
 }

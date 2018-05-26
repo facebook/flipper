@@ -30,4 +30,4 @@ add_library(fb SHARED
 target_include_directories(fb PRIVATE
     include ${libjnihack_DIR})
 
-target_link_libraries(fb)
+target_link_libraries(fb log)

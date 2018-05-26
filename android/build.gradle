@@ -88,9 +88,26 @@ task prepareBoost(dependsOn: [downloadBoost], type: Copy) {
     }
 }
 
-task prepareAllLibs(){
+task downloadFolly(dependsOn: createNativeDepsDirectories, type: Download) {
+    src 'https://github.com/facebook/folly/archive/v2018.05.21.00.tar.gz'
+    onlyIfNewer true
+    overwrite false
+    dest new File(downloadsDir, 'folly-2018.05.21.00.tar.gz');
+}
+
+task prepareFolly(dependsOn: [downloadFolly], type: Copy) {
+    from tarTree(downloadFolly.dest)
+    from './third-party/folly/'
+    include 'folly-2018.05.21.00/folly/**/*', 'build.gradle', 'CMakeLists.txt', 'ApplicationManifest.xml'
+    eachFile {fname -> fname.path = (fname.path - "folly-2018.05.21.00/")}
+    includeEmptyDirs = false
+    into "$thirdPartyNdkDir/folly"
+}
+
+task prepareAllLibs() {
     dependsOn prepareBoost
     dependsOn prepareDoubleConversion
+    dependsOn prepareFolly
 }
 
 android {
@@ -134,9 +151,8 @@ android {
     }
 
     dependencies {
-    //    implementation project(':folly')
         implementation project(':fbjni')
-    //    implementation project(':sonar')
+        implementation project(':sonar')
         implementation deps.soloader
         compileOnly deps.lithoAnnotations
         implementation 'org.glassfish:javax.annotation:10.0-b28'
