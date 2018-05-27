@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 3.6.0)
-project(sonar CXX)
+project(sonarcpp CXX)
 set(CMAKE_VERBOSE_MAKEFILE on)
-set(PACKAGE_NAME      sonar)
+set(PACKAGE_NAME      sonarcpp)
 
 #-DFOLLY_USE_LIBCPP=1
 #-DFOLLY_HAVE_MEMRCHR
@@ -14,8 +14,6 @@ set(easywsclient_DIR ../libs/)
 set(glog_DIR ${third_party_ndk}/glog)
 set(BOOST_DIR /usr/local/include/boost/)
 set(DOUBLECONVERSION_DIR ${third_party_ndk}/double-conversion/double-conversion-3.0.0/)
-
-
 
 #add_compile_options(-DFOLLY_HAVE_MEMRCHR -DFB_SONARKIT_ENABLED=1 -DFOLLY_HAVE_PTHREAD -DFOLLY_HAVE_PTHREAD_ATFORK -DFOLLY_USE_LIBCPP=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=0 -DFOLLY_HAVE_LIBGFLAGS=1  -frtti
 #    -fexceptions
@@ -83,4 +81,4 @@ target_include_directories(${PACKAGE_NAME} PRIVATE
 
 #install(TARGETS ${PACKAGE_NAME}  DESTINATION ./build/)
 
-target_link_libraries(sonar folly easywsclient glog double-conversion log)
+target_link_libraries(${PACKAGE_NAME}  folly easywsclient glog double-conversion log)

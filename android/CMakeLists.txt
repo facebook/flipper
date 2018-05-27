@@ -1,8 +1,8 @@
 cmake_minimum_required (VERSION 3.6.0)
-project(sonarjni CXX C)
+project(sonar CXX C)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-set(PACKAGE_NAME      "sonarjni")
+set(PACKAGE_NAME      "sonar")
 
 add_compile_options(-DFOLLY_NO_CONFIG
                     -DSONAR_JNI_EXTERNAL=1
@@ -24,7 +24,7 @@ add_compile_options(-DFOLLY_NO_CONFIG
                     -Wno-tautological-constant-compare
                     )
 
-file(GLOB SOURCES "android/*.cpp")
+file(GLOB SOURCES android/sonar.cpp)
 add_library(${PACKAGE_NAME} SHARED ${SOURCES})
 target_include_directories(${PACKAGE_NAME}  PUBLIC "./")
 
@@ -48,7 +48,7 @@ file(MAKE_DIRECTORY ${build_DIR})
 add_subdirectory(${libsonar_DIR} ${libsonar_build_DIR})
 add_subdirectory(${libfbjni_DIR}/../ ${fbjni_build_DIR})
 
-target_include_directories(sonarjni PRIVATE
+target_include_directories(${PACKAGE_NAME} PRIVATE
     ${libjnihack_DIR}
     ${libfbjni_DIR}
     ${libsonar_DIR}
@@ -60,4 +60,4 @@ target_include_directories(sonarjni PRIVATE
     ${BOOST_DIR}/../
     )
 
-target_link_libraries(sonarjni sonar fb)
+target_link_libraries(${PACKAGE_NAME} sonarcpp fb)
