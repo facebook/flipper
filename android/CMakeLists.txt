@@ -60,4 +60,4 @@ target_include_directories(${PACKAGE_NAME} PRIVATE
     ${BOOST_DIR}/../
     )
 
-target_link_libraries(${PACKAGE_NAME} sonarcpp fb)
+target_link_libraries(${PACKAGE_NAME} fb sonarcpp)

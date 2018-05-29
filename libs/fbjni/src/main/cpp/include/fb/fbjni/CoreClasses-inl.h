@@ -339,6 +339,34 @@ struct Convert<const char*> {
 };
 }
 
+// JStackTrace //////////////////////////////////////////////////////////////////////////////////////
+
+inline auto JStackTraceElement::create(
+    const std::string& declaringClass, const std::string& methodName, const std::string& file, int line)
+    -> local_ref<javaobject> {
+  return newInstance(declaringClass, methodName, file, line);
+}
+
+inline std::string JStackTraceElement::getClassName() const {
+  static auto meth = javaClassStatic()->getMethod<local_ref<JString>()>("getClassName");
+  return meth(self())->toStdString();
+}
+
+inline std::string JStackTraceElement::getMethodName() const {
+  static auto meth = javaClassStatic()->getMethod<local_ref<JString>()>("getMethodName");
+  return meth(self())->toStdString();
+}
+
+inline std::string JStackTraceElement::getFileName() const {
+  static auto meth = javaClassStatic()->getMethod<local_ref<JString>()>("getFileName");
+  return meth(self())->toStdString();
+}
+
+inline int JStackTraceElement::getLineNumber() const {
+  static auto meth = javaClassStatic()->getMethod<jint()>("getLineNumber");
+  return meth(self());
+}
+
 // jthrowable //////////////////////////////////////////////////////////////////////////////////////
 
 inline local_ref<JThrowable> JThrowable::initCause(alias_ref<JThrowable> cause) {

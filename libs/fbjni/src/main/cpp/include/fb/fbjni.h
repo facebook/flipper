@@ -13,6 +13,7 @@
 #include <fb/ALog.h>
 #include <fb/fbjni/Common.h>
 #include <fb/fbjni/Exceptions.h>
+#include <fb/fbjni/JThrowable.h>
 #include <fb/fbjni/ReferenceAllocators.h>
 #include <fb/fbjni/References.h>
 #include <fb/fbjni/Meta.h>
