@@ -53,4 +53,4 @@ matrix:
 
       script:
         - cd iOS/Sample
-        - xcodebuild clean build -workspace Sample.xcworkspace -scheme Sample
+        - xcodebuild clean build -workspace Sample.xcworkspace -scheme Pods-Sample
