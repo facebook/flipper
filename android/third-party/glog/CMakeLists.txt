@@ -31,11 +31,14 @@ include_directories(${dir_list})
     -D_END_GOOGLE_NAMESPACE_="}"
     )
 
-list(APPEND src_files ${glog_DIR}/src/demangle.cc ${glog_DIR}/src/logging.cc ${glog_DIR}/src/raw_logging.cc ${glog_DIR}/src/signalhandler.cc ${glog_DIR}/src/symbolize.cc ${glog_DIR}/src/utilities.cc ${glog_DIR}/src/vlog_is_on.cc)
-
-message(STATUS "src files => " ${src_files} )
-
-#file(GLOB SRCFILES  ${glog_DIR}/*.cc)
+list(APPEND src_files ${glog_DIR}/src/demangle.cc
+                      ${glog_DIR}/src/logging.cc
+                      ${glog_DIR}/src/raw_logging.cc
+                      ${glog_DIR}/src/signalhandler.cc
+                      ${glog_DIR}/src/symbolize.cc
+                      ${glog_DIR}/src/utilities.cc
+                      ${glog_DIR}/src/vlog_is_on.cc
+                      )
 
 add_library(${PACKAGE_NAME} SHARED ${src_files})
 install(TARGETS ${PACKAGE_NAME}  DESTINATION ./build/)

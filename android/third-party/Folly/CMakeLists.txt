@@ -14,7 +14,6 @@ list(APPEND dir_list ${FOLLY_DIR}/detail)
 list(APPEND dir_list ${FOLLY_DIR}/memory/detail)
 
 set(BOOST_DIR ../boost/boost_1_63_0/)
-#set(BOOST_DIR /usr/local/include/boost/)
 set(GLOG_DIR ../glog/)
 set(DOUBLECONVERSION_DIR ../double-conversion/double-conversion-3.0.0/)
 
@@ -29,10 +28,8 @@ list(APPEND dir_list ${BOOST_DIR}/../)
 file(GLOB_RECURSE DIR_LIST ${FOLLY_DIR})
 
 include_directories(${dir_list})
-#-DFOLLY_HAVE_PWRITEV=0 -DFOLLY_HAVE_TFO=0 -DFOLLY_USE_SYMBOLIZER=0     -DFOLLY_HAVE_LIBGFLAGS=0     -DFOLLY_NO_CONFIG=1
 
-
-  add_compile_options(
+add_compile_options(
     -DFOLLY_NO_CONFIG=1
     -DFOLLY_HAVE_MEMRCHR
     -DFOLLY_MOBILE=1
@@ -66,11 +63,6 @@ list(APPEND SRC_FILES ${FOLLY_DIR}/Executor.cpp
                       ${FOLLY_DIR}/FormatArg.cpp
                       ${FOLLY_DIR}/Format.cpp
                       )
-
-#file(GLOB_RECURSE SRC_FILES ${FOLLY_DIR}/*.cpp)
-
-#list(REMOVE_ITEM SRC_FILES ${FOLLY_DIR}/build/GenerateFingerprintTables.cpp)
-#list(REMOVE_ITEM SRC_FILES ${FOLLY_DIR}/Subprocess.cpp)
 
 message(STATUS "src files => " ${SRC_FILES} )
 #message(STATUS "want to remove this => " ${FOLLY_DIR}/build/GenerateFingerprintTables.cpp )

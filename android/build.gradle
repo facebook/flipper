@@ -63,7 +63,7 @@ task downloadDoubleConversion(dependsOn: createNativeDepsDirectories, type: Down
     dest new File(downloadsDir, 'double-conversion-3.0.0.tar.gz')
 }
 
-task prepareDoubleConversion(dependsOn: [downloadDoubleConversion, finalizeGlog], type: Copy) {
+task prepareDoubleConversion(dependsOn: [downloadDoubleConversion], type: Copy) {
     from tarTree(downloadDoubleConversion.dest)
     from './third-party/DoubleConversion/'
     include 'double-conversion-3.0.0/**/*', 'build.gradle', 'CMakeLists.txt', 'ApplicationManifest.xml'
@@ -105,8 +105,9 @@ task prepareFolly(dependsOn: [downloadFolly], type: Copy) {
 }
 
 task prepareAllLibs() {
-    dependsOn prepareBoost
+    dependsOn finalizeGlog
     dependsOn prepareDoubleConversion
+    dependsOn prepareBoost
     dependsOn prepareFolly
 }
 
