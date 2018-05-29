@@ -71,6 +71,15 @@ public class ObjectDescriptor extends NodeDescriptor<Object> {
   @Override
   public boolean matches(String query, Object node) throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(node.getClass());
+    final List<Named<String>> attributes = descriptor.getAttributes(node);
+    for (Named<String> namedString : attributes) {
+      if (namedString.getName().equals("id")) {
+        if (namedString.getValue().toLowerCase().contains(query)) {
+          return true;
+        }
+      }
+    }
+
     return descriptor.getName(node).toLowerCase().contains(query);
   }
 }

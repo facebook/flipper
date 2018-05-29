@@ -907,7 +907,7 @@ export type svgWritingMode = 'lr-tb' | 'rl-tb' | 'tb-rl' | 'lr' | 'rl' | 'tb';
 
 export type CSSPropertyValue<Value> =
   | Value
-  | ((props: Object, context: Object) => Value);
+  | ((props: Object, context: Object) => ?Value);
 
 export type CSSPropertySet = {|
   alignContent?: CSSPropertyValue<alignContent>,

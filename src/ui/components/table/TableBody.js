@@ -72,8 +72,7 @@ const TableBodyRowContainer = FlexRow.extends(
     color: props =>
       props.highlighted ? colors.white : props.color || 'inherit',
     '& *': {
-      color: props =>
-        props.highlighted ? `${colors.white} !important` : 'inherit',
+      color: props => (props.highlighted ? `${colors.white} !important` : null),
     },
     '& img': {
       backgroundColor: props =>

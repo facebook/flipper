@@ -169,7 +169,7 @@ export function buildRules(
     if (typeof val === 'function') {
       val = val(props, context);
     }
-    if (shouldAppendPixel(key, val)) {
+    if (val != null && shouldAppendPixel(key, val)) {
       val += 'px';
     }
     if (val != null) {

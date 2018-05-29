@@ -24,7 +24,7 @@ const SearchBar = Toolbar.extends({
   padding: 6,
 });
 
-const SearchBox = FlexBox.extends({
+export const SearchBox = FlexBox.extends({
   backgroundColor: colors.white,
   borderRadius: '999em',
   border: `1px solid ${colors.light15}`,
@@ -34,7 +34,7 @@ const SearchBox = FlexBox.extends({
   paddingLeft: 4,
 });
 
-const SearchInput = Input.extends({
+export const SearchInput = Input.extends({
   border: props => (props.focus ? '1px solid black' : 0),
   padding: 0,
   fontSize: '1em',
@@ -68,7 +68,7 @@ const Clear = Text.extends({
   },
 });
 
-const SearchIcon = Glyph.extends({
+export const SearchIcon = Glyph.extends({
   marginRight: 3,
   marginLeft: 3,
   marginTop: -1,

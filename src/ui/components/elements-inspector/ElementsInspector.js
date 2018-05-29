@@ -11,6 +11,11 @@ import {Elements} from './elements.js';
 
 export type ElementID = string;
 
+export type ElementSearchResultSet = {|
+  query: string,
+  matches: Set<ElementID>,
+|};
+
 export type ElementData = {
   [name: ElementID]: {
     [key: string]:
@@ -45,6 +50,7 @@ export default class ElementsInspector extends Component<{
   onElementHovered: ?(key: ?ElementID) => void,
   onValueChanged: ?(path: Array<string>, val: any) => void,
   selected: ?ElementID,
+  searchResults?: ?ElementSearchResultSet,
   root: ?ElementID,
   elements: {[key: ElementID]: Element},
   useAppSidebar?: boolean,
@@ -57,6 +63,7 @@ export default class ElementsInspector extends Component<{
       onElementExpanded,
       onElementSelected,
       onElementHovered,
+      searchResults,
     } = this.props;
 
     return (
@@ -66,6 +73,7 @@ export default class ElementsInspector extends Component<{
           onElementSelected={onElementSelected}
           onElementHovered={onElementHovered}
           selected={selected}
+          searchResults={searchResults}
           root={root}
           elements={elements}
         />

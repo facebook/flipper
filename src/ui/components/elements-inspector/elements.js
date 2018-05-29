@@ -5,7 +5,11 @@
  * @format
  */
 
-import type {ElementID, Element} from './ElementsInspector.js';
+import type {
+  ElementID,
+  Element,
+  ElementSearchResultSet,
+} from './ElementsInspector.js';
 import {reportInteraction} from '../../../utils/InteractionTracker';
 import ContextMenu from '../ContextMenu.js';
 import {PureComponent} from 'react';
@@ -110,17 +114,70 @@ const ElementsRowAttributeValue = styled.text({
   color: colors.slateDark3,
 });
 
+class PartialHighlight extends PureComponent<{
+  selected: boolean,
+  highlighted: ?string,
+  content: string,
+}> {
+  static HighlightedText = styled.text({
+    backgroundColor: '#ffff33',
+    color: props =>
+      props.selected ? `${colors.grapeDark3} !important` : 'auto',
+  });
+
+  render() {
+    const {highlighted, content, selected} = this.props;
+    let renderedValue;
+    if (
+      content &&
+      highlighted != null &&
+      highlighted != '' &&
+      content.toLowerCase().includes(highlighted.toLowerCase())
+    ) {
+      const highlightStart = content
+        .toLowerCase()
+        .indexOf(highlighted.toLowerCase());
+      const highlightEnd = highlightStart + highlighted.length;
+      const before = content.substring(0, highlightStart);
+      const match = content.substring(highlightStart, highlightEnd);
+      const after = content.substring(highlightEnd);
+      renderedValue = [
+        <span>
+          {before}
+          <PartialHighlight.HighlightedText selected={selected}>
+            {match}
+          </PartialHighlight.HighlightedText>
+          {after}
+        </span>,
+      ];
+    } else {
+      renderedValue = <span>{content}</span>;
+    }
+    return renderedValue;
+  }
+}
+
 class ElementsRowAttribute extends PureComponent<{
   name: string,
   value: string,
+  matchingSearchQuery: ?string,
+  selected: boolean,
 }> {
   render() {
-    const {name, value} = this.props;
+    const {name, value, matchingSearchQuery, selected} = this.props;
     return (
       <ElementsRowAttributeContainer code={true}>
         <ElementsRowAttributeKey>{name}</ElementsRowAttributeKey>
         =
-        <ElementsRowAttributeValue>{value}</ElementsRowAttributeValue>
+        <ElementsRowAttributeValue>
+          <PartialHighlight
+            content={value}
+            highlighted={
+              name === 'id' || name === 'addr' ? matchingSearchQuery : ''
+            }
+            selected={selected}
+          />
+        </ElementsRowAttributeValue>
       </ElementsRowAttributeContainer>
     );
   }
@@ -138,6 +195,7 @@ type ElementsRowProps = {
   id: ElementID,
   level: number,
   selected: boolean,
+  matchingSearchQuery: ?string,
   element: Element,
   even: boolean,
   onElementSelected: (key: ElementID) => void,
@@ -205,7 +263,15 @@ class ElementsRow extends PureComponent<ElementsRowProps, ElementsRowState> {
   };
 
   render() {
-    const {element, id, level, selected, style, even} = this.props;
+    const {
+      element,
+      id,
+      level,
+      selected,
+      style,
+      even,
+      matchingSearchQuery,
+    } = this.props;
     const hasChildren = element.children && element.children.length > 0;
 
     let arrow;
@@ -227,6 +293,8 @@ class ElementsRow extends PureComponent<ElementsRowProps, ElementsRowState> {
             key={attr.name}
             name={attr.name}
             value={attr.value}
+            matchingSearchQuery={matchingSearchQuery}
+            selected={selected}
           />
         ))
       : [];
@@ -259,6 +327,7 @@ class ElementsRow extends PureComponent<ElementsRowProps, ElementsRowState> {
         key={id}
         level={level}
         selected={selected}
+        matchingSearchQuery={matchingSearchQuery}
         even={even}
         onClick={this.onClick}
         onDoubleClick={this.onDoubleClick}
@@ -271,7 +340,11 @@ class ElementsRow extends PureComponent<ElementsRowProps, ElementsRowState> {
         </ElementsRowDecoration>
         <NoShrinkText code={true}>
           {decoration}
-          {element.name}
+          <PartialHighlight
+            content={element.name}
+            highlighted={matchingSearchQuery}
+            selected={selected}
+          />
         </NoShrinkText>
         {attributes}
       </ElementsRowContainer>
@@ -295,6 +368,7 @@ const ElementsBox = FlexColumn.extends({
 type ElementsProps = {|
   root: ?ElementID,
   selected: ?ElementID,
+  searchResults: ?ElementSearchResultSet,
   elements: {[key: ElementID]: Element},
   onElementSelected: (key: ElementID) => void,
   onElementExpanded: (key: ElementID, deep: boolean) => void,
@@ -458,6 +532,7 @@ export class Elements extends PureComponent<ElementsProps, ElementsState> {
       onElementHovered,
       onElementSelected,
       selected,
+      searchResults,
     } = this.props;
     const {flatElements} = this.state;
     const row = flatElements[index];
@@ -482,6 +557,11 @@ export class Elements extends PureComponent<ElementsProps, ElementsState> {
         onElementHovered={onElementHovered}
         onElementSelected={onElementSelected}
         selected={selected === row.key}
+        matchingSearchQuery={
+          searchResults && searchResults.matches.has(row.key)
+            ? searchResults.query
+            : null
+        }
         element={row.element}
         elements={elements}
         childrenCount={childrenCount}

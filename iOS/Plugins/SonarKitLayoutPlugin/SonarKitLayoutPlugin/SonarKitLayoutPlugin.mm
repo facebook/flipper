@@ -17,11 +17,18 @@
 #import "SKNodeDescriptor.h"
 #import "SKTapListener.h"
 #import "SKTapListenerImpl.h"
+#import "SKSearchResultNode.h"
+#import <mutex>
 
 @implementation SonarKitLayoutPlugin
 {
+
   NSMapTable<NSString *, id> *_trackedObjects;
   NSString *_lastHighlightedNode;
+  NSMutableSet *_invalidObjects;
+  Boolean _invalidateMessageQueued;
+  NSDate *_lastInvalidateMessage;
+  std::mutex invalidObjectsMutex;
 
   id<NSObject> _rootNode;
   id<SKTapListener> _tapListener;
@@ -45,6 +52,9 @@
     _descriptorMapper = mapper;
     _trackedObjects = [NSMapTable strongToWeakObjectsMapTable];
     _lastHighlightedNode = nil;
+    _invalidObjects = [NSMutableSet new];
+    _invalidateMessageQueued = false;
+    _lastInvalidateMessage = [NSDate date];
     _rootNode = rootNode;
     _tapListener = tapListener;
 
@@ -100,6 +110,10 @@
 
   [connection receive:@"isConsoleEnabled" withBlock:^(NSDictionary *params, id<SonarResponder> responder) {
     SonarPerformBlockOnMainThread(^{ [responder success: @{@"isEnabled": @NO}];});
+  }];
+
+  [connection receive:@"getSearchResults" withBlock:^(NSDictionary *params, id<SonarResponder> responder) {
+    SonarPerformBlockOnMainThread(^{ [weakSelf onCallGetSearchResults: params[@"query"] withResponder: responder]; });
   }];
 }
 
@@ -158,6 +172,17 @@
     updateDataForPath(value);
     [connection send: @"invalidate" withParams: @{ @"id": [descriptor identifierForNode: node] }];
   }
+}
+
+- (void)onCallGetSearchResults:(NSString *)query withResponder:(id<SonarResponder>)responder {
+  const auto alreadyAddedElements = [NSMutableSet<NSString *> new];
+  SKSearchResultNode *matchTree = [self searchForQuery:(NSString *)[query lowercaseString] fromNode:(id)_rootNode withElementsAlreadyAdded: alreadyAddedElements];
+
+  [responder success: @{
+                        @"results": [matchTree toNSDictionary] ?: [NSNull null],
+                        @"query": query
+                        }];
+  return;
 }
 
 - (void)onCallSetHighlighted:(NSString *)objectId withResponder:(id<SonarResponder>)responder {
@@ -223,10 +248,34 @@
   if (![_trackedObjects objectForKey: nodeId]) {
     return;
   }
-
   [descriptor invalidateNode: node];
 
-  [_connection send: @"invalidate" withParams: @{ @"id": nodeId }];
+  // Collect invalidate messages before sending in a batch
+  std::lock_guard<std::mutex> lock(invalidObjectsMutex);
+  [_invalidObjects addObject:nodeId];
+  if (_invalidateMessageQueued) {
+    return;
+  }
+  _invalidateMessageQueued = true;
+
+  if (_lastInvalidateMessage.timeIntervalSinceNow < -1) {
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 500 * NSEC_PER_MSEC), dispatch_get_main_queue(), ^{
+      [self reportInvalidatedObjects];
+    });
+  }
+}
+
+- (void)reportInvalidatedObjects {
+  std::lock_guard<std::mutex> lock(invalidObjectsMutex);
+  NSMutableArray *nodes = [NSMutableArray new];
+  for (NSString *nodeId in self->_invalidObjects) {
+   [nodes addObject: [NSDictionary dictionaryWithObject: nodeId forKey: @"id"]];
+  }
+  [self->_connection send: @"invalidate" withParams: [NSDictionary dictionaryWithObject: nodes forKey: @"nodes"]];
+  self->_lastInvalidateMessage = [NSDate date];
+  self->_invalidObjects = [NSMutableSet new];
+  self->_invalidateMessageQueued = false;
+  return;
 }
 
 - (void)updateNodeReference:(id<NSObject>)node {
@@ -237,6 +286,55 @@
 
   NSString *nodeId = [descriptor identifierForNode: node];
   [_trackedObjects setObject:node forKey:nodeId];
+}
+
+- (SKSearchResultNode *)searchForQuery:(NSString *)query fromNode:(id)node withElementsAlreadyAdded:(NSMutableSet<NSString *> *)alreadyAdded {
+  SKNodeDescriptor *descriptor = [_descriptorMapper descriptorForClass: [node class]];
+  if (node == nil || descriptor == nil) {
+    return nil;
+  }
+
+  NSMutableArray<SKSearchResultNode *> *childTrees = nil;
+  BOOL isMatch = [descriptor matchesQuery: query forNode: node];
+
+  NSString *nodeId = [self trackObject: node];
+
+  for (auto i = 0; i < [descriptor childCountForNode: node]; i++) {
+    id child = [descriptor childForNode: node atIndex: i];
+    if (child) {
+      SKSearchResultNode *childTree = [self searchForQuery: query fromNode: child withElementsAlreadyAdded:alreadyAdded];
+      if (childTree != nil) {
+        if (childTrees == nil) {
+          childTrees = [NSMutableArray new];
+        }
+        [childTrees addObject: childTree];
+      }
+    }
+  }
+
+  if (isMatch || childTrees != nil) {
+
+    NSDictionary *element = [self getNode: nodeId];
+    if (nodeId == nil || element == nil) {
+      return nil;
+    }
+    NSMutableArray<NSString *> *descriptorChildElements = [element objectForKey: @"children"];
+    NSMutableDictionary *newElement = [element mutableCopy];
+
+    NSMutableArray<NSString *> *childElementsToReturn = [NSMutableArray new];
+    for (NSString *child in descriptorChildElements) {
+      if (![alreadyAdded containsObject: child]) {
+        [alreadyAdded addObject: child]; //todo add all at end
+        [childElementsToReturn addObject: child];
+      }
+    }
+    [newElement setObject: childElementsToReturn forKey: @"children"];
+    return [[SKSearchResultNode alloc] initWithNode: nodeId
+                                            asMatch: isMatch
+                                        withElement: newElement
+                                        andChildren: childTrees];
+  }
+  return nil;
 }
 
 - (NSDictionary *)getNode:(NSString *)nodeId {

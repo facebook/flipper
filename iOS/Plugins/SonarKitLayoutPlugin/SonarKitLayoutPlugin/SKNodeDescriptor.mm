@@ -69,6 +69,15 @@
   return @"";
 }
 
+- (BOOL)matchesQuery:(NSString *)query forNode:(id)node {
+    NSString *name = [self nameForNode: node];
+  return [self string:name contains:query] || [self string:[self identifierForNode: node] contains: query];
+}
+
+- (BOOL)string:(NSString *)string contains:(NSString *)substring {
+  return string != nil && substring != nil && [string rangeOfString: substring options: NSCaseInsensitiveSearch].location != NSNotFound;
+}
+
 @end
 
 #endif
