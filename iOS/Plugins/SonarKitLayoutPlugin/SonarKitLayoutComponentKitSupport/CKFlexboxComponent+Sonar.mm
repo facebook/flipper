@@ -21,10 +21,10 @@ FB_LINKABLE(CKFlexboxComponent_Sonar)
 - (NSArray<SKNamed<NSDictionary<NSString *, NSObject *> *> *> *)sonar_getData
 {
   static NSDictionary<NSNumber *, NSString *> *CKFlexboxDirectionEnumMap = @{
-                                @(CKFlexboxDirectionVertical): @"vertical",
-                                @(CKFlexboxDirectionHorizontal): @"horizontal",
-                                @(CKFlexboxDirectionVerticalReverse): @"vertical-reverse",
-                                @(CKFlexboxDirectionHorizontalReverse): @"horizontal-reverse",
+                                @(CKFlexboxDirectionColumn): @"vertical",
+                                @(CKFlexboxDirectionRow): @"horizontal",
+                                @(CKFlexboxDirectionColumnReverse): @"vertical-reverse",
+                                @(CKFlexboxDirectionRowReverse): @"horizontal-reverse",
                                 };
 
   static NSDictionary<NSNumber *, NSString *> *CKFlexboxJustifyContentEnumMap = @{
