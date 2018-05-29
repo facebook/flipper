@@ -16,7 +16,7 @@
 #include <Sonar/SonarResponder.h>
 #include <memory>
 
-#if defined(SONAR_JNI_EXTERNAL) && SONAR_JNI_EXTERNAL
+#if defined(SONAR_JNI_EXTERNAL)
 #include <fb/fbjni/JThrowable.h>
 #endif
 
@@ -200,11 +200,11 @@ class JSonarConnectionImpl : public jni::HybridClass<JSonarConnectionImpl, JSona
   }
 
   void reportError(jni::alias_ref<jni::JThrowable> throwable) {
-    #if defined(SONAR_JNI_EXTERNAL) && SONAR_JNI_EXTERNAL
+    #if !defined(SONAR_JNI_EXTERNAL)
+        _connection->error(throwable->toString(), throwable->getStackTrace()->toString());
+    #else
         auto cast_throwable = jni::static_ref_cast<JThrowable::javaobject>(throwable);
         _connection->error(throwable->toString(), cast_throwable->getStackTrace());
-    #else
-        _connection->error(throwable->toString(), throwable->getStackTrace()->toString());
     #endif
   }
 
