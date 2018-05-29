@@ -13,7 +13,7 @@ include ':android'
 include ':folly'
 include ':fbjni'
 include ':easywsclient'
-include ':sonar'
+include ':sonarcpp'
 include ':sample'
 include ':doubleconversion'
 include ':glog'
@@ -21,7 +21,7 @@ include ':glog'
 
 project(':fbjni').projectDir = file('libs/fbjni')
 project(':easywsclient').projectDir = file('libs/easywsclient')
-project(':sonar').projectDir = file('xplat')
+project(':sonarcpp').projectDir = file('xplat')
 project(':sample').projectDir = file('sample')
 project(':android').projectDir = file('android')
 project(':doubleconversion').projectDir = file('android/build/third-party-ndk/double-conversion/')

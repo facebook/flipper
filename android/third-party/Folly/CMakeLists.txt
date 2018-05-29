@@ -13,8 +13,8 @@ list(APPEND dir_list ${FOLLY_DIR}/hash/)
 list(APPEND dir_list ${FOLLY_DIR}/detail)
 list(APPEND dir_list ${FOLLY_DIR}/memory/detail)
 
-#set(BOOST_DIR ../boost/boost_1_63_0/)
-set(BOOST_DIR /usr/local/include/boost/)
+set(BOOST_DIR ../boost/boost_1_63_0/)
+#set(BOOST_DIR /usr/local/include/boost/)
 set(GLOG_DIR ../glog/)
 set(DOUBLECONVERSION_DIR ../double-conversion/double-conversion-3.0.0/)
 

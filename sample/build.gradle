@@ -25,14 +25,10 @@ android {
         }
     }
     packagingOptions {
-        exclude 'META-INF/DEPENDENCIES'
-        exclude 'META-INF/LICENSE'
-        exclude 'META-INF/LICENSE.txt'
-        exclude 'META-INF/license.txt'
-        exclude 'META-INF/NOTICE'
-        exclude 'META-INF/NOTICE.txt'
-        exclude 'META-INF/notice.txt'
-        exclude 'META-INF/ASL2.0'
+        pickFirst 'lib/armeabi-v7a/libfb.so'
+        pickFirst 'lib/x86/libfb.so'
+        pickFirst 'lib/x86_64/libfb.so'
+        pickFirst 'lib/arm64-v8a/libfb.so'
     }
 }
 

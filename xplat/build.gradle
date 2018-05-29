@@ -18,7 +18,6 @@ android {
             }
         }
     }
-//, '-DANDROID_STL=c++_shared'
     externalNativeBuild {
         cmake {
             path './CMakeLists.txt'

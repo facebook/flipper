@@ -24,7 +24,7 @@ file(GLOB fb_SRC
 
 set(libjnihack_DIR  ../../../../jni-hack/)
 
-add_library(fb STATIC
+add_library(fb SHARED
     ${fb_SRC})
 
 target_include_directories(fb PRIVATE
