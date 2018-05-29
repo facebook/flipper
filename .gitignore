@@ -1,6 +1,17 @@
 node_modules
 dist
 website/build
+build/
+.DS_Store
+.gradle/
+.externalNativeBuild/
+# Output files
+docs/.bundle/
+
+# Android Studio/IntelliJ
+.idea
+*.iml
+local.properties
 *.xcworkspace
 **/Pods/
 **/xcuserdata/

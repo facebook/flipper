@@ -21,7 +21,8 @@ Pod::Spec.new do |spec|
     -Wno-comment
     -Wno-return-type
     -Wno-global-constructors'
-  spec.source_files = 'folly/Executor.cpp',
+  spec.source_files =
+                     'folly/Executor.cpp',
                       'folly/memory/detail/MallocImpl.cpp',
                       'folly/String.cpp',
                       'folly/*.cpp',

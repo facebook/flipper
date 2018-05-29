@@ -1,0 +1,61 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 26
+    defaultConfig {
+        applicationId "com.facebook.sonar.sample"
+        minSdkVersion 15
+        targetSdkVersion 26
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+//    buildTypes {
+//        release {
+//            minifyEnabled false
+//            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+//        }
+//    }
+
+// TODO(#62): Re-enable abort on error.
+   lintOptions {
+       abortOnError false
+   }
+
+   sourceSets {
+       main {
+           java {
+               srcDirs './'
+           }
+       }
+   }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.android.support:appcompat-v7:26.1.0'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.0'
+    implementation 'com.android.support:design:26.1.0'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    // ...
+    // Litho
+    implementation 'com.facebook.litho:litho-core:0.15.0'
+    implementation 'com.facebook.litho:litho-widget:0.15.0'
+    compileOnly 'com.facebook.litho:litho-annotations:0.15.0'
+
+    annotationProcessor 'com.facebook.litho:litho-processor:0.15.0'
+
+    // SoLoader
+    implementation 'com.facebook.soloader:soloader:0.4.1'
+
+    // For integration with Fresco
+    implementation 'com.facebook.litho:litho-fresco:0.15.0'
+
+    // For testing
+    testImplementation 'com.facebook.litho:litho-testing:0.15.0'
+
+    implementation 'com.squareup.okhttp3:okhttp:3.10.0'
+    implementation project(':android')
+}
