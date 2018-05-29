@@ -21,6 +21,7 @@
 @protocol SonarKitLayoutComponentKitOverrideInformalProtocol
 - (NSString *)sonar_componentNameOverride;
 - (NSString *)sonar_componentDecorationOverride;
+- (NSArray<SKNamed<NSDictionary<NSString *, NSObject *> *> *> *)sonar_additionalDataOverride;
 @end
 
 static BOOL AccessibilityContextIsDefault(CKComponentAccessibilityContext accessibilityContext) {
@@ -143,6 +144,10 @@ FB_LINKABLE(CKComponent_Sonar)
                              @"accessibilityContext": AccessibilityContextDict(accessibilityContext),
                              @"accessibilityEnabled": SKMutableObject(@(CK::Component::Accessibility::IsAccessibilityEnabled())),
                              }]];
+  }
+
+  if ([self respondsToSelector:@selector(sonar_additionalDataOverride)]) {
+    [data addObjectsFromArray:[(id)self sonar_additionalDataOverride]];
   }
 
   return data;

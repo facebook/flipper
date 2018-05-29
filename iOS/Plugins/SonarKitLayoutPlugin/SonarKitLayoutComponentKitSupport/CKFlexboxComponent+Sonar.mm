@@ -18,7 +18,7 @@
 FB_LINKABLE(CKFlexboxComponent_Sonar)
 @implementation CKFlexboxComponent (Sonar)
 
-- (NSArray<SKNamed<NSDictionary<NSString *, NSObject *> *> *> *)sonar_getData
+- (NSArray<SKNamed<NSDictionary<NSString *, NSObject *> *> *> *)sonar_additionalDataOverride
 {
   static NSDictionary<NSNumber *, NSString *> *CKFlexboxDirectionEnumMap = @{
                                 @(CKFlexboxDirectionColumn): @"vertical",
@@ -61,18 +61,18 @@ FB_LINKABLE(CKFlexboxComponent_Sonar)
   CKFlexboxComponentStyle style;
   [[self valueForKey: @"_style"] getValue: &style];
 
-  NSMutableArray<SKNamed<NSDictionary<NSString *, NSObject *> *> *> *data = [[NSMutableArray alloc] initWithArray: [super sonar_getData]];
-  [data addObject:[SKNamed newWithName:@"CKFlexboxComponent" withValue:@{
-                                                                         @"spacing": SKObject(@(style.spacing)),
-                                                                         @"direction": SKObject(CKFlexboxDirectionEnumMap[@(style.direction)]),
-                                                                         @"justifyContent": SKObject(CKFlexboxJustifyContentEnumMap[@(style.justifyContent)]),
-                                                                         @"alignItems": SKObject(CKFlexboxAlignItemsEnumMap[@(style.alignItems)]),
-                                                                         @"alignContent": SKObject(CKFlexboxAlignContentEnumMap[@(style.alignContent)]),
-                                                                         @"wrap": SKObject(CKFlexboxWrapEnumMap[@(style.wrap)]),
-                                                                         @"margin": SKObject(flexboxRect(style.margin)),
-                                                                         @"padding": SKObject(flexboxRect(style.padding)),
-                                                                         }]];
-  return data;
+  return @[[SKNamed
+            newWithName:@"CKFlexboxComponent"
+            withValue:@{
+              @"spacing": SKObject(@(style.spacing)),
+              @"direction": SKObject(CKFlexboxDirectionEnumMap[@(style.direction)]),
+              @"justifyContent": SKObject(CKFlexboxJustifyContentEnumMap[@(style.justifyContent)]),
+              @"alignItems": SKObject(CKFlexboxAlignItemsEnumMap[@(style.alignItems)]),
+              @"alignContent": SKObject(CKFlexboxAlignContentEnumMap[@(style.alignContent)]),
+              @"wrap": SKObject(CKFlexboxWrapEnumMap[@(style.wrap)]),
+              @"margin": SKObject(flexboxRect(style.margin)),
+              @"padding": SKObject(flexboxRect(style.padding)),
+            }]];
 }
 
 @end
