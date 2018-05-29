@@ -43,10 +43,13 @@ matrix:
 
     - language: objective-c
       
+      before_install:
+        - pod repo update
+
       install:
         - cd iOS/Sample
         - pod install
-        - ../../
+        - cd ../../
 
       script:
         - cd iOS/Sample
