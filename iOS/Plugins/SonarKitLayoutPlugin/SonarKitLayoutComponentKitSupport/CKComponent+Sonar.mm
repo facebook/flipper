@@ -17,6 +17,12 @@
 #import <SonarKitLayoutPlugin/SKNamed.h>
 #import <SonarKitLayoutPlugin/SKObject.h>
 
+/** This protocol isn't actually adopted anywhere, it just lets us use the SEL below */
+@protocol SonarKitLayoutComponentKitOverrideInformalProtocol
+- (NSString *)sonar_componentNameOverride;
+- (NSString *)sonar_componentDecorationOverride;
+@end
+
 static BOOL AccessibilityContextIsDefault(CKComponentAccessibilityContext accessibilityContext) {
   return accessibilityContext == CKComponentAccessibilityContext();
 }
@@ -49,11 +55,17 @@ FB_LINKABLE(CKComponent_Sonar)
 
 - (NSString *)sonar_getName
 {
+  if ([self respondsToSelector:@selector(sonar_componentNameOverride)]) {
+    return [(id)self sonar_componentNameOverride];
+  }
   return NSStringFromClass([self class]);
 }
 
 - (NSString *)sonar_getDecoration
 {
+  if ([self respondsToSelector:@selector(sonar_componentDecorationOverride)]) {
+    return [(id)self sonar_componentDecorationOverride];
+  }
   return @"componentkit";
 }
 
