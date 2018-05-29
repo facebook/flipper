@@ -165,3 +165,7 @@ android {
         implementation fileTree(dir: 'plugins/console/dependencies', include: ['*.jar'])
     }
 }
+
+project.afterEvaluate {
+    preBuild.dependsOn prepareAllLibs
+}

@@ -34,7 +34,7 @@ set(libsonar_DIR ${CMAKE_SOURCE_DIR}/../xplat/)
 set(third_party_ndk build/third-party-ndk)
 set(libfolly_DIR ${third_party_ndk}/folly/)
 set(glog_DIR ${third_party_ndk}/glog)
-set(BOOST_DIR /usr/local/include/boost/)
+set(BOOST_DIR ${third_party_ndk}/boost/boost_1_63_0/)
 
 
 set(build_DIR ${CMAKE_SOURCE_DIR}/build)

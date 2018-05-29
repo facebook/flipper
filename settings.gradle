@@ -22,7 +22,7 @@ include ':glog'
 project(':fbjni').projectDir = file('libs/fbjni')
 project(':easywsclient').projectDir = file('libs/easywsclient')
 project(':sonarcpp').projectDir = file('xplat')
-project(':sample').projectDir = file('sample')
+project(':sample').projectDir = file('android/sample')
 project(':android').projectDir = file('android')
 project(':doubleconversion').projectDir = file('android/build/third-party-ndk/double-conversion/')
 project(':glog').projectDir = file('android/build/third-party-ndk/glog/')
