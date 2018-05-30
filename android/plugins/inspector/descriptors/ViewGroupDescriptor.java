@@ -16,7 +16,7 @@ import static com.facebook.sonar.plugins.inspector.InspectorValue.Type.Enum;
 import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
-import com.facebook.R;
+import com.facebook.sonar.R;
 import com.facebook.sonar.core.SonarDynamic;
 import com.facebook.sonar.core.SonarObject;
 import com.facebook.sonar.plugins.inspector.HiddenNode;
