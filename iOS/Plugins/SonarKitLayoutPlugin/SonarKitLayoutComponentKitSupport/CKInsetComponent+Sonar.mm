@@ -17,13 +17,9 @@
 FB_LINKABLE(CKInsetComponent_Sonar)
 @implementation CKInsetComponent (Sonar)
 
-- (NSArray<SKNamed<NSDictionary<NSString *, NSObject *> *> *> *)sonar_getData
+- (NSArray<SKNamed<NSDictionary<NSString *, NSObject *> *> *> *)sonar_additionalDataOverride
 {
-  NSMutableArray<SKNamed<NSDictionary<NSString *, NSObject *> *> *> *data = [[NSMutableArray alloc] initWithArray: [super sonar_getData]];
-  [data addObject:[SKNamed newWithName:@"CKInsetComponent" withValue:@{
-                                                                       @"insets": SKObject([[self valueForKey: @"_insets"] UIEdgeInsetsValue]),
-                                                                       }]];
-  return data;
+  return @[[SKNamed newWithName:@"CKInsetComponent" withValue:@{@"insets": SKObject([[self valueForKey: @"_insets"] UIEdgeInsetsValue])}]];
 }
 
 @end
