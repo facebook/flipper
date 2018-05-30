@@ -18,14 +18,7 @@ set(GLOG_DIR ../glog/)
 set(DOUBLECONVERSION_DIR ../double-conversion/double-conversion-3.0.0/)
 
 list(APPEND dir_list ${BOOST_DIR})
-
 list(APPEND dir_list ${BOOST_DIR}/../)
-#list(APPEND dir_list ${GLOG_DIR}/../)
-#list(APPEND dir_list ${GLOG_DIR}/glog-0.3.5/src/)
-#list(APPEND dir_list ${DOUBLECONVERSION_DIR})
-
-
-file(GLOB_RECURSE DIR_LIST ${FOLLY_DIR})
 
 include_directories(${dir_list})
 
@@ -63,9 +56,6 @@ list(APPEND SRC_FILES ${FOLLY_DIR}/Executor.cpp
                       ${FOLLY_DIR}/FormatArg.cpp
                       ${FOLLY_DIR}/Format.cpp
                       )
-
-message(STATUS "src files => " ${SRC_FILES} )
-#message(STATUS "want to remove this => " ${FOLLY_DIR}/build/GenerateFingerprintTables.cpp )
 
 add_library(${PACKAGE_NAME} SHARED ${SRC_FILES})
 
