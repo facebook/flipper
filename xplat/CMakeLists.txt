@@ -47,7 +47,6 @@ file(MAKE_DIRECTORY ${build_DIR})
 add_subdirectory(${libfolly_DIR} ${libfolly_build_DIR})
 add_subdirectory(${easywsclient_DIR}/easywsclient ${easywsclient_build_DIR})
 
-message(STATUS "LOG_SEVERITY IS => " ${GLOG_DIR}/glog-0.3.5/src/)
 target_include_directories(${PACKAGE_NAME} PRIVATE
         ${libfolly_DIR}
         ${BOOST_DIR}
