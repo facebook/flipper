@@ -25,6 +25,7 @@ Pod::Spec.new do |spec|
                       'folly/memory/detail/MallocImpl.cpp',
                       'folly/String.cpp',
                       'folly/*.cpp',
+                      'folly/portability/*.cpp',
                       'folly/ScopeGuard.h',
                       'folly/lang/ColdClass.cpp',
                       'folly/lang/Assume.h',
@@ -44,10 +45,8 @@ Pod::Spec.new do |spec|
   spec.header_dir = 'folly'
   spec.libraries           = "stdc++"
   spec.private_header_files = 'folly/portability/Stdlib.h',
-                              'folly/portability/Malloc.h',
-                              'folly/portability/Stdlib.h',
-                              'folly/portability/Stdio.h',
-                              'folly/portability/PThread.h'
+                              'folly/portability/Stdio.h'
+
   spec.public_header_files = 'folly/portability/Config.h',
                               'folly/Executor.h',
                               'folly/Function.h',
@@ -81,14 +80,16 @@ Pod::Spec.new do |spec|
                               'folly/FBString.h',
                               'folly/hash/Hash.h',
                               'folly/memory/Malloc.h',
+                              'folly/io/async/AsyncTimeout.h',
                               'folly/**/*.h',
                               'folly/memory/detail/MallocImpl.h',
                               'folly/String.h',
-                              'folly/*.h'
+                              'folly/*.h',
+                              'folly/portability/PThread.h'
 
   spec.pod_target_xcconfig = { "USE_HEADERMAP" => "NO",
                                "CLANG_CXX_LANGUAGE_STANDARD" => "c++11",
-                               "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)\" \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/DoubleConversion\"" }
+                               "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)\" \"/usr/local/Cellar/openssl/1.0.2o_1/include\" \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/DoubleConversion\"" }
 
   # Pinning to the same version as React.podspec.
   spec.platforms = { :ios => "8.0", :tvos => "10.0" }

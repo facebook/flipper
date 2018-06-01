@@ -6,6 +6,7 @@ swift_version = "4.1"
 
 target 'Sample' do
 
+  pod 'RSocket', :podspec => '../third-party-podspecs/RSocket.podspec'
   pod 'EasyWSClient', :podspec => '../third-party-podspecs/EasyWSClient.podspec'
   pod 'DoubleConversion', :podspec => '../third-party-podspecs/DoubleConversion.podspec'
   pod 'glog', :podspec => '../third-party-podspecs/glog.podspec'
