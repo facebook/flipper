@@ -36,6 +36,6 @@ Pod::Spec.new do |spec|
                                 }
   spec.compiler_flags = '-std=c++1y'
   spec.libraries           = "stdc++"
-  spec.platforms = { :ios => "8.0", :tvos => "9.2" }
+  spec.platforms = { :ios => "8.0"}
 
 end

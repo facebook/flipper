@@ -112,5 +112,5 @@ Pod::Spec.new do |spec|
                                "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)\" \"/usr/local/include\" \"/usr/local/Cellar/openssl/1.0.2o_1/include\" \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/DoubleConversion\"" }
 
   # Pinning to the same version as React.podspec.
-  spec.platforms = { :ios => "8.0", :tvos => "10.0" }
+  spec.platforms = { :ios => "8.0"}
 end

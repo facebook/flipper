@@ -1,5 +1,5 @@
 folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_LIBGFLAGS=0 -DFOLLY_HAVE_LIBJEMALLOC=0 -DFOLLY_HAVE_PREADV=0 -DFOLLY_HAVE_PWRITEV=0 -DFOLLY_HAVE_TFO=0 -DFOLLY_USE_SYMBOLIZER=0'
-yoga_version = '1.8.1'
+yoga_version = '~> 1.8'
 yogakit_version = '1.8.1'
 
 Pod::Spec.new do |spec|
@@ -9,6 +9,7 @@ Pod::Spec.new do |spec|
   spec.homepage = 'https://github.com/facebook/Sonar'
   spec.summary = 'Sonar iOS podspec'
   spec.authors = 'Facebook'
+  spec.static_framework = true
   # spec.prepare_command = 'mv src double-conversion'
   spec.source = { :git => 'https://github.com/facebook/Sonar.git',
                   :branch=> "master" }
@@ -16,7 +17,7 @@ Pod::Spec.new do |spec|
   spec.dependency 'Folly'
   spec.dependency 'Sonar'
   spec.dependency 'CocoaAsyncSocket', '~> 7.6'
-  spec.dependency 'PeerTalk'
+  # spec.dependency 'PeerTalk', '~> 0.0'
   spec.dependency 'OpenSSL-Universal', '~> 1.0'
   spec.source_files = 'iOS/FBDefines/*.{h,cpp,m,mm}', 'iOS/SonarKit/**/*.{h,cpp,m,mm}', 'iOS/SonarKit/FBCxxUtils/*.{h, mm}',
   spec.public_header_files = 'iOS/SonarKit/CppBridge/*.{h}',
@@ -28,12 +29,10 @@ Pod::Spec.new do |spec|
                              'iOS/SonarKit/SonarConnection.h',
                              'iOS/SonarKit/SKMacros.h'
 
-  spec.private_header_files = 'iOS/Sample/'
   spec.compiler_flags = '-DFB_SONARKIT_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_LIBGFLAGS=0 -DFOLLY_HAVE_LIBJEMALLOC=0 -DFOLLY_HAVE_PREADV=0 -DFOLLY_HAVE_PWRITEV=0 -DFOLLY_HAVE_TFO=0 -DFOLLY_USE_SYMBOLIZER=0'
   spec.pod_target_xcconfig = { "USE_HEADERMAP" => "NO",
-                               "CLANG_CXX_LANGUAGE_STANDARD" => "c++14",
                                "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)\"/** \"$(PODS_ROOT)/boost-for-react-native\"  \"/usr/local/include\" \"/usr/local/Cellar/openssl/1.0.2o_1/include\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/ComponentKit\"/**" }
-  spec.platforms = { :ios => "8.0", :tvos => "9.2" }
+  spec.platforms = { :ios => "8.0" }
 
   spec.subspec "SonarKitLayoutPlugin" do |ss|
     ss.dependency             "Yoga", yoga_version
@@ -64,7 +63,6 @@ Pod::Spec.new do |spec|
 
     ss.source_files         = "iOS/Plugins/SonarKitLayoutPlugin/SonarKitLayoutComponentKitSupport/**/*.{h,cpp,m,mm}"
     ss.pod_target_xcconfig = { "USE_HEADERMAP" => "NO",
-                                 "CLANG_CXX_LANGUAGE_STANDARD" => "c++14",
                                  "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)\"" }
   end
 
@@ -75,7 +73,6 @@ Pod::Spec.new do |spec|
                              'iOS/Plugins/SonarKitNetworkPlugin/SonarKitNetworkPlugin/SKNetworkReporter.h'
     ss.source_files         = "iOS/Plugins/SonarKitNetworkPlugin/SonarKitNetworkPlugin/*.{h,cpp,m,mm}"
     ss.pod_target_xcconfig = { "USE_HEADERMAP" => "NO",
-                                 "CLANG_CXX_LANGUAGE_STANDARD" => "c++14",
                                  "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)\"" }
   end
 
@@ -86,7 +83,6 @@ Pod::Spec.new do |spec|
                              'iOS/Plugins/SonarKitNetworkPlugin/SonarKitNetworkPlugin/SKNetworkReporter.h'
     ss.source_files         = "iOS/Plugins/SonarKitNetworkPlugin/SonarKitNetworkPlugin/*.{h,cpp,m,mm}"
     ss.pod_target_xcconfig = { "USE_HEADERMAP" => "NO",
-                                 "CLANG_CXX_LANGUAGE_STANDARD" => "c++14",
                                  "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)\"" }
   end
 
@@ -95,7 +91,6 @@ Pod::Spec.new do |spec|
     ss.public_header_files = 'iOS/Plugins/SonarKitNetworkPlugin/SKIOSNetworkPlugin/SKIOSNetworkAdapter.h'
     ss.source_files         = "iOS/Plugins/SonarKitNetworkPlugin/SKIOSNetworkPlugin/**/*.{h,cpp,m,mm}"
     ss.pod_target_xcconfig = { "USE_HEADERMAP" => "NO",
-                                 "CLANG_CXX_LANGUAGE_STANDARD" => "c++14",
                                  "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)\"" }
   end
 end
