@@ -4,7 +4,7 @@ yogakit_version = '1.8.1'
 
 Pod::Spec.new do |spec|
   spec.name = 'SonarKit'
-  spec.version = '1.0.0'
+  spec.version = '0.0.1'
   spec.license = { :type => 'MIT' }
   spec.homepage = 'https://github.com/facebook/Sonar'
   spec.summary = 'Sonar iOS podspec'

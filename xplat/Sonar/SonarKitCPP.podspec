@@ -1,6 +1,6 @@
 Pod::Spec.new do |spec|
   spec.name = 'Sonar'
-  spec.version = '1.0.0'
+  spec.version = '0.0.1'
   spec.license = { :type => 'MIT' }
   spec.homepage = 'https://github.com/facebook/sonar'
   spec.summary = 'SonarKit core cpp code with network implementation'
