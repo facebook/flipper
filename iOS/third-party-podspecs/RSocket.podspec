@@ -12,7 +12,10 @@ Pod::Spec.new do |spec|
                       'rsocket/internal/*',
                       'rsocket/statemachine/*',
                       'rsocket/transports/*',
-                      'yarnpl/**/*'
+                      'rsocket/transports/**/*',
+                      'yarpl/observable/*',
+                      'yarpl/flowable/*',
+                      'rsocket/*'
 
   spec.libraries = "stdc++"
   spec.compiler_flags = '-std=c++1y'
@@ -33,12 +36,12 @@ Pod::Spec.new do |spec|
                         'rsocket/statemachine/*.h',
                         'rsocket/transports/*.h',
                         'rsocket/*.h',
-                        'yarnpl/flowable/*.h',
-                        'yarnpl/observable/*.h',
-                        'yarnpl/perf/*.h',
-                        'yarnpl/single/*.h',
-                        'yarnpl/utils/*.h',
-                        'yarnpl/*.h',
+                        'yarpl/flowable/*.h',
+                        'yarpl/observable/*.h',
+                        'yarpl/perf/*.h',
+                        'yarpl/single/*.h',
+                        'yarpl/utils/*.h',
+                        'yarpl/*.h',
                         '**/*.h'
   spec.header_mappings_dir = './*'
   spec.header_dir = './*'

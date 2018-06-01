@@ -11,12 +11,13 @@ Pod::Spec.new do |spec|
   spec.authors = 'Facebook'
   # spec.prepare_command = 'mv src double-conversion'
   spec.source = { :git => 'https://github.com/facebook/Sonar.git',
-                  :branch=> "master" }
+                  :branch=> "iOS-RSocket" }
   spec.module_name = 'SonarKit'
   spec.dependency 'Folly'
   spec.dependency 'Sonar'
   spec.dependency 'CocoaAsyncSocket', '~> 7.6'
   spec.dependency 'PeerTalk'
+  spec.dependency 'OpenSSL-Universal', '~> 1.0'
   spec.source_files = 'iOS/FBDefines/*.{h,cpp,m,mm}', 'iOS/SonarKit/**/*.{h,cpp,m,mm}', 'iOS/SonarKit/FBCxxUtils/*.{h, mm}',
   spec.public_header_files = 'iOS/SonarKit/CppBridge/*.{h}',
                              'iOS/SonarKit/FBCxxUtils/*.{h}',

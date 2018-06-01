@@ -18,7 +18,8 @@ target 'Sample' do
   pod 'SonarKit', :podspec => '../SonarKit.podspec'
   pod 'SonarKit/SonarKitLayoutComponentKitSupport', :podspec => '../SonarKit.podspec'
   pod 'SonarKit/SKIOSNetworkPlugin', :podspec => '../SonarKit.podspec'
-
+  pod 'OpenSSL-Universal', '~> 1.0'
+  pod 'CocoaLibEvent', '~> 1.0'
   post_install do |installer|
         installer.pods_project.targets.each do |target|
             if ['YogaKit'].include? target.name
