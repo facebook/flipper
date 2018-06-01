@@ -48,6 +48,13 @@ using WrapperPlugin = facebook::sonar::SonarCppWrapperPlugin;
     NSString *appId = appName;
     NSString *privateAppDirectory = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES)[0];
 
+    NSFileManager *manager = [NSFileManager defaultManager];
+
+    if ([manager fileExistsAtPath:privateAppDirectory isDirectory:NULL] == NO) {
+      //TODO: Handle errors properly
+      [manager createDirectoryAtPath:privateAppDirectory withIntermediateDirectories:YES attributes:nil error:nil];
+    }
+
 #if TARGET_OS_SIMULATOR
     deviceName = [NSString stringWithFormat:@"%@ %@", [[UIDevice currentDevice] model], @"Simulator"];
 #endif
