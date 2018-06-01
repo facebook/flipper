@@ -1,3 +1,0 @@
-[submodule "libs/folly"]
-	path = libs/folly
-	url = https://github.com/facebook/folly.git

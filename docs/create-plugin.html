@@ -1,0 +1,109 @@
+<html lang="en"><head><meta charset="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>Mobile Setup · Sonar</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta property="og:title" content="Mobile Setup · Sonar"/><meta property="og:type" content="website"/><meta property="og:url" content="https://fbsonar.com//index.html"/><meta property="og:description" content="## Implement SonarPlugin"/><link rel="shortcut icon" href="/img/icon.png"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css"/><script type="text/javascript" src="https://buttons.github.io/buttons.js"></script><link rel="stylesheet" href="/css/main.css"/></head><body class="sideNavVisible doc"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/"><img class="logo" src="/img/icon.png"/><h2 class="headerTitle">Sonar</h2></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li class="siteNavGroupActive"><a href="/docs/getting-started.html" target="_self">Getting Started</a></li><li class="siteNavGroupActive"><a href="/docs/understand.html" target="_self">Docs</a></li><li class=""><a href="https://github.com/facebook/sonar" target="_self">GitHub</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="container docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><i></i></div><h2><i>›</i><span>Plugins: Mobile part</span></h2></div><div class="navGroups"><div class="navGroup navGroupActive"><h3>Using Sonar</h3><ul><li class="navListItem"><a class="navItem" href="/docs/getting-started.html">Getting Started</a></li><li class="navListItem"><a class="navItem" href="/docs/understand.html">Understanding Sonar</a></li><li class="navListItem"><a class="navItem" href="/docs/stetho.html">Stetho Guidance</a></li></ul></div><div class="navGroup navGroupActive"><h3>Built-in Plugins</h3><ul><li class="navListItem"><a class="navItem" href="/docs/logs-plugin.html">Logs</a></li><li class="navListItem"><a class="navItem" href="/docs/layout-plugin.html">Layout Inspector</a></li><li class="navListItem"><a class="navItem" href="/docs/network-plugin.html">Network</a></li></ul></div><div class="navGroup navGroupActive"><h3>Plugins: Desktop part</h3><ul><li class="navListItem"><a class="navItem" href="/docs/js-setup.html">JavaScript Setup</a></li><li class="navListItem"><a class="navItem" href="/docs/communicating.html">Device Communication</a></li><li class="navListItem"><a class="navItem" href="/docs/create-table-plugin.html">Create Table Plugin</a></li><li class="navListItem"><a class="navItem" href="/docs/ui-components.html">UI Components</a></li><li class="navListItem"><a class="navItem" href="/docs/styling-components.html">Styling Components</a></li></ul></div><div class="navGroup navGroupActive"><h3>Plugins: Mobile part</h3><ul><li class="navListItem navListItemActive"><a class="navItem navItemActive" href="/docs/create-plugin.html">Mobile Setup</a></li><li class="navListItem"><a class="navItem" href="/docs/send-data.html">Send Data</a></li><li class="navListItem"><a class="navItem" href="/docs/error-handling.html">Error Handling</a></li><li class="navListItem"><a class="navItem" href="/docs/testing.html">Testing</a></li></ul></div></div></section></div><script>
+          var toggler = document.getElementById('navToggler');
+          var nav = document.getElementById('docsNav');
+          toggler.onclick = function() {
+            nav.classList.toggle('docsSliderActive');
+          };
+        </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><h1>Mobile Setup</h1></header><article><div><span><h2><a class="anchor" aria-hidden="true" id="implement-sonarplugin"></a><a href="#implement-sonarplugin" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Implement SonarPlugin</h2>
+<p>Create a class implementing <code>SonarPlugin</code>.</p>
+<h3><a class="anchor" aria-hidden="true" id="android"></a><a href="#android" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Android</h3>
+<pre><code class="hljs css java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MySonarPlugin</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">SonarPlugin</span> </span>{
+  <span class="hljs-keyword">private</span> SonarConnection mConnection;
+
+  <span class="hljs-meta">@Override</span>
+  <span class="hljs-function"><span class="hljs-keyword">public</span> String <span class="hljs-title">getId</span><span class="hljs-params">()</span> </span>{
+    <span class="hljs-keyword">return</span> <span class="hljs-string">"MySonarPlugin"</span>;
+  }
+
+  <span class="hljs-meta">@Override</span>
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">onConnect</span><span class="hljs-params">(SonarConnection connection)</span> <span class="hljs-keyword">throws</span> Exception </span>{
+    mConnection = connection;
+  }
+
+  <span class="hljs-meta">@Override</span>
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">onDisconnect</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> Exception </span>{
+    mConnection = <span class="hljs-keyword">null</span>;
+  }
+}
+</code></pre>
+<h3><a class="anchor" aria-hidden="true" id="ios"></a><a href="#ios" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>iOS</h3>
+<pre><code class="hljs css objective-c"><span class="hljs-class"><span class="hljs-keyword">@interface</span> <span class="hljs-title">MySonarPlugin</span> : <span class="hljs-title">NSObject</span>&lt;<span class="hljs-title">SonarPlugin</span>&gt;</span>
+<span class="hljs-keyword">@end</span>
+
+<span class="hljs-class"><span class="hljs-keyword">@implementation</span> <span class="hljs-title">MySonarPlugin</span></span>
+
+- (<span class="hljs-built_in">NSString</span>*)identifier { <span class="hljs-keyword">return</span> <span class="hljs-string">@"MySonarPlugin"</span>; }
+- (<span class="hljs-keyword">void</span>)didConnect:(SonarConnection*)connection {}
+- (<span class="hljs-keyword">void</span>)didDisonnect {}
+
+<span class="hljs-keyword">@end</span>
+</code></pre>
+<h3><a class="anchor" aria-hidden="true" id="c"></a><a href="#c" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>C++</h3>
+<pre><code class="hljs css c++"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MySonarPlugin</span> :</span> <span class="hljs-keyword">public</span> SonarPlugin {
+<span class="hljs-keyword">public</span>:
+  <span class="hljs-built_in">std</span>::<span class="hljs-function"><span class="hljs-built_in">string</span> <span class="hljs-title">identifier</span><span class="hljs-params">()</span> <span class="hljs-keyword">const</span> override </span>{ <span class="hljs-keyword">return</span> <span class="hljs-string">"MySonarPlugin"</span>; }
+  <span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">didConnect</span><span class="hljs-params">(<span class="hljs-built_in">std</span>::<span class="hljs-built_in">shared_ptr</span>&lt;SonarConnection&gt; conn)</span> override</span>;
+  <span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">didDisconnect</span><span class="hljs-params">()</span> override</span>;
+};
+</code></pre>
+<h2><a class="anchor" aria-hidden="true" id="using-sonarconnection"></a><a href="#using-sonarconnection" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Using SonarConnection</h2>
+<p>Using the <code>SonarConnection</code> object you can register a receiver of a desktop method call and respond with data.</p>
+<h3><a class="anchor" aria-hidden="true" id="android"></a><a href="#android" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Android</h3>
+<pre><code class="hljs css java">connection.receive(<span class="hljs-string">"getData"</span>, <span class="hljs-keyword">new</span> SonarReceiver() {
+  <span class="hljs-meta">@Override</span>
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">onReceive</span><span class="hljs-params">(SonarObject params, SonarResponder responder)</span> <span class="hljs-keyword">throws</span> Exception </span>{
+    responder.success(
+        <span class="hljs-keyword">new</span> SonarObject.Builder()
+            .put(<span class="hljs-string">"data"</span>, MyData.get())
+            .build());
+  }
+});
+</code></pre>
+<h3><a class="anchor" aria-hidden="true" id="ios"></a><a href="#ios" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>iOS</h3>
+<pre><code class="hljs css objective-c"><span class="hljs-meta">@interface</span> <span class="hljs-string">MySonarPlugin :</span> NSObject&lt;SonarPlugin&gt;
+<span class="hljs-meta">@end</span>
+
+<span class="hljs-meta">@implementation</span> MySonarPlugin
+
+- (NSString*)identifier { <span class="hljs-keyword">return</span> @<span class="hljs-string">"MySonarPlugin"</span>; }
+
+- (<span class="hljs-keyword">void</span>)<span class="hljs-string">didConnect:</span>(SonarConnection*)connection
+{
+  [connection <span class="hljs-string">receive:</span>@<span class="hljs-string">"getData"</span> <span class="hljs-string">withBlock:</span>^(NSDictionary *params, SonarResponder *responder) {
+    [responder <span class="hljs-string">success:</span>@{
+      @<span class="hljs-string">"data"</span>:[MyData get],
+    }];
+  }];
+}
+
+- (<span class="hljs-keyword">void</span>)didDisonnect {}
+
+<span class="hljs-meta">@end</span>
+</code></pre>
+<h3><a class="anchor" aria-hidden="true" id="c"></a><a href="#c" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>C++</h3>
+<pre><code class="hljs css c++"><span class="hljs-keyword">void</span> MySonarPlugin::didConnect(<span class="hljs-built_in">std</span>::<span class="hljs-built_in">shared_ptr</span>&lt;SonarConnection&gt; conn) {
+  conn-&gt;receive(<span class="hljs-string">"getData"</span>, [](<span class="hljs-keyword">const</span> folly::dynamic &amp;params,
+                             <span class="hljs-built_in">std</span>::<span class="hljs-built_in">unique_ptr</span>&lt;SonarResponder&gt; responder) {
+    dynamic response = folly::dynamic::object(<span class="hljs-string">"data"</span>, getMyData());
+    responder-&gt;success(response);
+  });
+}
+</code></pre>
+<h2><a class="anchor" aria-hidden="true" id="push-data-to-the-desktop"></a><a href="#push-data-to-the-desktop" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Push data to the desktop</h2>
+<p>You don't have to wait for the desktop to request data though, you can also push data directly to the desktop.</p>
+<h3><a class="anchor" aria-hidden="true" id="android"></a><a href="#android" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Android</h3>
+<pre><code class="hljs css java">connection.send(<span class="hljs-string">"MyMessage"</span>,
+    <span class="hljs-keyword">new</span> SonarObject.Builder()
+        .put(<span class="hljs-string">"message"</span>, <span class="hljs-string">"Hello"</span>)
+        .build()
+</code></pre>
+<h3><a class="anchor" aria-hidden="true" id="ios"></a><a href="#ios" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>iOS</h3>
+<pre><code class="hljs css objective-c">[connection send:@<span class="hljs-string">"getData"</span> withParams:@{@<span class="hljs-string">"message"</span>:@<span class="hljs-string">"hello"</span>}]<span class="hljs-comment">;</span>
+</code></pre>
+<h3><a class="anchor" aria-hidden="true" id="c"></a><a href="#c" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>C++</h3>
+<pre><code class="hljs css c++"><span class="hljs-keyword">void</span> MySonarPlugin::didConnect(<span class="hljs-built_in">std</span>::<span class="hljs-built_in">shared_ptr</span>&lt;SonarConnection&gt; conn) {
+  dynamic message = folly::dynamic::object(<span class="hljs-string">"message"</span>, <span class="hljs-string">"hello"</span>);
+  conn-&gt;send(<span class="hljs-string">"getData"</span>, message);
+}
+</code></pre>
+</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="styling-components.html">← Styling Components</a><a class="docs-next button" href="send-data.html">Sending Data to Plugins →</a></div></div></div></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/" class="nav-home"><img src="/img/mascot.png" alt="Sonar mascot" title="I&#x27;m a whale not a dolphin!" width="66" height="58"/></a><div><h5>Docs</h5><a href="/docs/getting-started.html">Getting Started</a><a href="/docs/understand.html">Understanding Sonar</a><a href="/docs/js-setup.html">Creating Plugins</a></div><div><h5>Plugins</h5><a href="/docs/logs-plugin.html">Log Viewer</a><a href="/docs/layout-plugin.html">Layout Inspector</a><a href="/docs/network-plugin.html">Network Inspector</a></div><div><h5>More</h5><a href="https://twitter.com/fbsonar">Twitter</a><a href="https://github.com/facebook/sonar">GitHub</a><a class="github-button" href="https://github.com/facebook/sonar" data-icon="octicon-star" data-count-href="/facebook/sonar/stargazers" data-show-count="true" data-count-aria-label="# stargazers on GitHub" aria-label="Star this project on GitHub">Star</a></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2018 Facebook</section></footer></div></body></html>
