@@ -122,10 +122,10 @@ CHECKOUT OPTIONS:
     :commit: 804eabc02afdec8756a16517e4513ec9301a3315
     :git: https://github.com/rsocket/rsocket-cpp.git
   Sonar:
-    :commit: 703c8a0829255f1962bd01d507074d9d3b4697ae
+    :commit: 9a6f612923b435846c62a96b9ef33f9128b7e9ae
     :git: https://github.com/facebook/Sonar.git
   SonarKit:
-    :commit: 703c8a0829255f1962bd01d507074d9d3b4697ae
+    :commit: 9a6f612923b435846c62a96b9ef33f9128b7e9ae
     :git: https://github.com/facebook/Sonar.git
 
 SPEC CHECKSUMS:
@@ -140,8 +140,8 @@ SPEC CHECKSUMS:
   OpenSSL-Universal: 401888162f11c33ebbd46f782d9229da35c61327
   PeerTalk: f5389c286e4d477e59b73dfbf25c5c70a2464761
   RSocket: 0b49004a22945bbf00a5760d9fd9e7e57be5478d
-  Sonar: 545507863c4238b9c016b8f6813f9829256fc2cc
-  SonarKit: f3d6be4f167b11e702dffd27c6e52529e510bbb6
+  Sonar: 059d1cf14e9cfa67a7103c666f875e62e8c285d7
+  SonarKit: eb72de3f8ec9fa7a2610b6ef1f6a480b99317fdc
   Yoga: e6f1fed82138c17da5332e15e5770abf0e9cc386
   YogaKit: bb90d11e297e06abef7e0cfb20e035a6bd00cdc4
 
