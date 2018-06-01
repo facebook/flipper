@@ -1,6 +1,0 @@
-node_modules
-dist
-website/build
-*.xcworkspace
-**/Pods/
-**/xcuserdata/
