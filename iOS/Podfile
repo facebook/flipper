@@ -18,5 +18,4 @@ target 'SonarKit' do
     pod 'Folly', :podspec => 'third-party-podspecs/Folly.podspec'
     pod 'Sonar', :podspec => '../xplat/Sonar/SonarKitCPP.podspec'
     pod 'CocoaAsyncSocket'
-    pod 'PeerTalk', :git => 'https://github.com/rsms/peertalk'
 end
