@@ -11,7 +11,7 @@ target 'Sample' do
   pod 'DoubleConversion', :podspec => '../third-party-podspecs/DoubleConversion.podspec'
   pod 'glog', :podspec => '../third-party-podspecs/glog.podspec'
   pod 'Folly', :podspec => '../third-party-podspecs/Folly.podspec'
-  # pod 'PeerTalk', :git => 'https://github.com/rsms/peertalk'
+  pod 'PeerTalk', :git => 'https://github.com/rsms/peertalk'
   pod 'ComponentKit', :podspec => '../third-party-podspecs/ComponentKit.podspec'
   pod 'Yoga','~>1.8.1', :modular_headers => true
   pod 'Sonar', :podspec => '../../xplat/Sonar/SonarKitCPP.podspec'
