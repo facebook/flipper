@@ -8,8 +8,10 @@ PODS:
   - EasyWSClient (1.0.0)
   - Folly (2018.05.28.00):
     - boost-for-react-native
+    - CocoaLibEvent (~> 1.0)
     - DoubleConversion
     - glog
+    - OpenSSL-Universal (~> 1.0)
   - glog (0.3.5)
   - OpenSSL-Universal (1.0.2.13)
   - PeerTalk (0.0.2)
@@ -64,13 +66,11 @@ PODS:
     - Yoga (~> 1.8.1)
 
 DEPENDENCIES:
-  - CocoaLibEvent (~> 1.0)
   - ComponentKit (from `../third-party-podspecs/ComponentKit.podspec`)
   - DoubleConversion (from `../third-party-podspecs/DoubleConversion.podspec`)
   - EasyWSClient (from `../third-party-podspecs/EasyWSClient.podspec`)
   - Folly (from `../third-party-podspecs/Folly.podspec`)
   - glog (from `../third-party-podspecs/glog.podspec`)
-  - OpenSSL-Universal (~> 1.0)
   - PeerTalk (from `https://github.com/rsms/peertalk`)
   - RSocket (from `../third-party-podspecs/RSocket.podspec`)
   - Sonar (from `../../xplat/Sonar/SonarKitCPP.podspec`)
@@ -135,16 +135,16 @@ SPEC CHECKSUMS:
   ComponentKit: 7bd0ad508946aeb68dd52ed8739ced9846ff3671
   DoubleConversion: 9bd61b1134a393694e95e0950c5bf3f99534817f
   EasyWSClient: 1527dd5e0c0eb849ece3ee489ac16a0d9316f752
-  Folly: 68567e4f7b526af34b4dd801c3ff76fc13e5294c
+  Folly: ce1c216bcb099ca6cda58fefbba02bf2e9fe0381
   glog: fdb5d40eb83acd6a4d5d61d95ecc583f5970a119
   OpenSSL-Universal: 401888162f11c33ebbd46f782d9229da35c61327
   PeerTalk: f5389c286e4d477e59b73dfbf25c5c70a2464761
-  RSocket: 706d7fb6d83c1befe57a55edffe525891b0d0674
-  Sonar: bcfc8dd5ef1046f4a9bd5f10d66594b4df66a6c2
-  SonarKit: a63bfd64d40c8196b30d7f51ba2794e3c17c725d
+  RSocket: 38b24504db9efbfb018a3b2b23a2d9500140a2a7
+  Sonar: 29d8fb9b010e56fa1358be996d68d4b436dd8c21
+  SonarKit: 85eb1b3ef1875279d44f73ec276e6bbef1b4fc80
   Yoga: e6f1fed82138c17da5332e15e5770abf0e9cc386
   YogaKit: bb90d11e297e06abef7e0cfb20e035a6bd00cdc4
 
-PODFILE CHECKSUM: 1904a24f0191377e3743dc726e5d7e52455b7ff4
+PODFILE CHECKSUM: 036ec88989af4c8db5dcfdcc2e58fa70ba4d0f22
 
 COCOAPODS: 1.5.2

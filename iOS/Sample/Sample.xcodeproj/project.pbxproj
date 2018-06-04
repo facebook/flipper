@@ -342,7 +342,6 @@
 					"\"${PODS_ROOT}/Headers/Public/boost-for-react-native\"",
 					"\"${PODS_ROOT}/Headers/Public/glog\"/**",
 					"\"${PODS_ROOT}/SonarKit\"/**",
-					"/usr/local/include\\ /usr/local/Cellar/openssl/1.0.2o_1/include",
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 11.3;
@@ -410,7 +409,6 @@
 					"\"${PODS_ROOT}/Headers/Public/boost-for-react-native\"",
 					"\"${PODS_ROOT}/Headers/Public/glog\"/**",
 					"\"${PODS_ROOT}/SonarKit\"/**",
-					"/usr/local/include\\ /usr/local/Cellar/openssl/1.0.2o_1/include",
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 11.3;

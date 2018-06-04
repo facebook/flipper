@@ -31,7 +31,7 @@ Pod::Spec.new do |spec|
 
   spec.compiler_flags = '-DFB_SONARKIT_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_LIBGFLAGS=0 -DFOLLY_HAVE_LIBJEMALLOC=0 -DFOLLY_HAVE_PREADV=0 -DFOLLY_HAVE_PWRITEV=0 -DFOLLY_HAVE_TFO=0 -DFOLLY_USE_SYMBOLIZER=0'
   spec.pod_target_xcconfig = { "USE_HEADERMAP" => "NO",
-                               "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)\"/** \"$(PODS_ROOT)/boost-for-react-native\"  \"/usr/local/include\" \"/usr/local/Cellar/openssl/1.0.2o_1/include\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/ComponentKit\"/**" }
+                               "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)\"/** \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/ComponentKit\"/**" }
   spec.platforms = { :ios => "8.0" }
 
   spec.subspec "SonarKitLayoutPlugin" do |ss|

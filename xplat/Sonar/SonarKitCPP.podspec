@@ -20,5 +20,6 @@ Pod::Spec.new do |spec|
   spec.platforms = { :ios => "8.0" }
   spec.pod_target_xcconfig = { "USE_HEADERMAP" => "NO",
                                "CLANG_CXX_LANGUAGE_STANDARD" => "c++14",
-                               "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)\" \"/usr/local/include\" \"/usr/local/Cellar/openssl/1.0.2o_1/include\" \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/RSocket\" \"$(PODS_ROOT)/DoubleConversion\"" }
+                               "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)\" \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/RSocket\" \"$(PODS_ROOT)/DoubleConversion\"" }
 end
+# \"/usr/local/include\" \"/usr/local/Cellar/openssl/1.0.2o_1/include\"
