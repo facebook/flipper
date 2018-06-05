@@ -10,7 +10,7 @@ target 'Sample' do
   pod 'DoubleConversion', :podspec => '../third-party-podspecs/DoubleConversion.podspec'
   pod 'glog', :podspec => '../third-party-podspecs/glog.podspec'
   pod 'Folly', :podspec => '../third-party-podspecs/Folly.podspec'
-  pod 'PeerTalkSonar', :podspec => '../third-party-podspecs/PeerTalkSonar.podspec'
+  pod 'PeerTalk', :podspec => '../third-party-podspecs/PeerTalk.podspec'
   pod 'ComponentKit', :podspec => '../third-party-podspecs/ComponentKit.podspec'
   pod 'Yoga','~>1.8.1', :modular_headers => true
   pod 'Sonar', :podspec => '../../xplat/Sonar/Sonar.podspec'

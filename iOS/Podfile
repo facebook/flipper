@@ -11,7 +11,7 @@ target 'SonarKit' do
 
   # Third party deps podspec link
     # pod 'PeerTalk', :git => 'https://github.com/rsms/peertalk'
-    pod 'PeerTalkSonar', :podspec => 'third-party-podspecs/PeerTalkSonar.podspec'
+    pod 'PeerTalk', :podspec => 'third-party-podspecs/PeerTalk.podspec'
     pod 'RSocket', :podspec => 'third-party-podspecs/RSocket.podspec'
     pod 'DoubleConversion', :podspec => 'third-party-podspecs/DoubleConversion.podspec'
     pod 'glog', :podspec => 'third-party-podspecs/glog.podspec'

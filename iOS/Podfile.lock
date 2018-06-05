@@ -11,7 +11,7 @@ PODS:
     - OpenSSL-Universal (~> 1.0)
   - glog (0.3.5)
   - OpenSSL-Universal (1.0.2.13)
-  - PeerTalk (0.0.2)
+  - PeerTalk (1.0.0)
   - RSocket (0.10.0):
     - Folly
   - Sonar (0.0.1):
@@ -23,9 +23,9 @@ DEPENDENCIES:
   - DoubleConversion (from `third-party-podspecs/DoubleConversion.podspec`)
   - Folly (from `third-party-podspecs/Folly.podspec`)
   - glog (from `third-party-podspecs/glog.podspec`)
-  - PeerTalk (from `https://github.com/rsms/peertalk`)
+  - PeerTalk (from `third-party-podspecs/PeerTalk.podspec`)
   - RSocket (from `third-party-podspecs/RSocket.podspec`)
-  - Sonar (from `../xplat/Sonar/SonarKitCPP.podspec`)
+  - Sonar (from `../xplat/Sonar/Sonar.podspec`)
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
@@ -42,18 +42,18 @@ EXTERNAL SOURCES:
   glog:
     :podspec: third-party-podspecs/glog.podspec
   PeerTalk:
-    :git: https://github.com/rsms/peertalk
+    :podspec: third-party-podspecs/PeerTalk.podspec
   RSocket:
     :podspec: third-party-podspecs/RSocket.podspec
   Sonar:
-    :podspec: "../xplat/Sonar/SonarKitCPP.podspec"
+    :podspec: "../xplat/Sonar/Sonar.podspec"
 
 CHECKOUT OPTIONS:
   PeerTalk:
     :commit: 588303b43efa5082d654b6f75d1b84a6ba4b5b9e
-    :git: https://github.com/rsms/peertalk
+    :git: https://github.com/rsms/PeerTalk.git
   RSocket:
-    :commit: f3531f877f26d13c81cfa9c73a07919d76a9dddd
+    :commit: 193002818e53e7a7d73ee362627ddf1fdabc4493
     :git: https://github.com/rsocket/rsocket-cpp.git
   Sonar:
     :commit: 8d48f5a3eb26c6e982abefa30f5a8e0c19b5b4a6
@@ -67,10 +67,10 @@ SPEC CHECKSUMS:
   Folly: ce1c216bcb099ca6cda58fefbba02bf2e9fe0381
   glog: fdb5d40eb83acd6a4d5d61d95ecc583f5970a119
   OpenSSL-Universal: 401888162f11c33ebbd46f782d9229da35c61327
-  PeerTalk: f5389c286e4d477e59b73dfbf25c5c70a2464761
+  PeerTalk: aadc42bc7d7f19e89f817b59ef8196305a711504
   RSocket: 38b24504db9efbfb018a3b2b23a2d9500140a2a7
   Sonar: 29d8fb9b010e56fa1358be996d68d4b436dd8c21
 
-PODFILE CHECKSUM: ea1c982eb3a27e26c91d456fff45930d31f3e115
+PODFILE CHECKSUM: a6a7b2201d324f787ef4956b045f021e7152fddf
 
 COCOAPODS: 1.5.2

@@ -13,7 +13,7 @@ PODS:
     - OpenSSL-Universal (~> 1.0)
   - glog (0.3.5)
   - OpenSSL-Universal (1.0.2.13)
-  - PeerTalkSonar (0.0.2)
+  - PeerTalk (1.0.0)
   - RSocket (0.10.0):
     - Folly
   - Sonar (0.0.1):
@@ -23,7 +23,7 @@ PODS:
     - CocoaAsyncSocket (~> 7.6)
     - Folly
     - OpenSSL-Universal (~> 1.0)
-    - PeerTalkSonar
+    - PeerTalk
     - Sonar
     - SonarKit/SKIOSNetworkPlugin (= 0.0.1)
     - SonarKit/SonarKitLayoutComponentKitSupport (= 0.0.1)
@@ -34,7 +34,7 @@ PODS:
     - CocoaAsyncSocket (~> 7.6)
     - Folly
     - OpenSSL-Universal (~> 1.0)
-    - PeerTalkSonar
+    - PeerTalk
     - Sonar
     - SonarKit/SonarKitNetworkPlugin
   - SonarKit/SonarKitLayoutComponentKitSupport (0.0.1):
@@ -42,7 +42,7 @@ PODS:
     - ComponentKit
     - Folly
     - OpenSSL-Universal (~> 1.0)
-    - PeerTalkSonar
+    - PeerTalk
     - Sonar
     - SonarKit/SonarKitLayoutPlugin
     - Yoga (~> 1.8)
@@ -50,7 +50,7 @@ PODS:
     - CocoaAsyncSocket (~> 7.6)
     - Folly
     - OpenSSL-Universal (~> 1.0)
-    - PeerTalkSonar
+    - PeerTalk
     - Sonar
     - Yoga (~> 1.8)
     - YogaKit (= 1.8.1)
@@ -58,7 +58,7 @@ PODS:
     - CocoaAsyncSocket (~> 7.6)
     - Folly
     - OpenSSL-Universal (~> 1.0)
-    - PeerTalkSonar
+    - PeerTalk
     - Sonar
   - Yoga (1.8.1)
   - YogaKit (1.8.1):
@@ -69,7 +69,7 @@ DEPENDENCIES:
   - DoubleConversion (from `../third-party-podspecs/DoubleConversion.podspec`)
   - Folly (from `../third-party-podspecs/Folly.podspec`)
   - glog (from `../third-party-podspecs/glog.podspec`)
-  - PeerTalkSonar (from `../third-party-podspecs/PeerTalkSonar.podspec`)
+  - PeerTalk (from `../third-party-podspecs/PeerTalk.podspec`)
   - RSocket (from `../third-party-podspecs/RSocket.podspec`)
   - Sonar (from `../../xplat/Sonar/Sonar.podspec`)
   - SonarKit (from `../../SonarKit.podspec`)
@@ -95,8 +95,8 @@ EXTERNAL SOURCES:
     :podspec: "../third-party-podspecs/Folly.podspec"
   glog:
     :podspec: "../third-party-podspecs/glog.podspec"
-  PeerTalkSonar:
-    :podspec: "../third-party-podspecs/PeerTalkSonar.podspec"
+  PeerTalk:
+    :podspec: "../third-party-podspecs/PeerTalk.podspec"
   RSocket:
     :podspec: "../third-party-podspecs/RSocket.podspec"
   Sonar:
@@ -106,13 +106,13 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   ComponentKit:
-    :commit: de618385741aacd659ce3eae5cb27bbf6b5a9963
+    :commit: 368a8b74e1940b9c86b1a883cd7668bc5a204536
     :git: https://github.com/facebook/ComponentKit.git
-  PeerTalkSonar:
+  PeerTalk:
     :commit: 588303b43efa5082d654b6f75d1b84a6ba4b5b9e
     :git: https://github.com/rsms/PeerTalk.git
   RSocket:
-    :commit: f3531f877f26d13c81cfa9c73a07919d76a9dddd
+    :commit: 193002818e53e7a7d73ee362627ddf1fdabc4493
     :git: https://github.com/rsocket/rsocket-cpp.git
   Sonar:
     :commit: 8d48f5a3eb26c6e982abefa30f5a8e0c19b5b4a6
@@ -130,13 +130,13 @@ SPEC CHECKSUMS:
   Folly: ce1c216bcb099ca6cda58fefbba02bf2e9fe0381
   glog: fdb5d40eb83acd6a4d5d61d95ecc583f5970a119
   OpenSSL-Universal: 401888162f11c33ebbd46f782d9229da35c61327
-  PeerTalkSonar: 648657ad6551ee1214555c8c3f1397a28c588156
+  PeerTalk: aadc42bc7d7f19e89f817b59ef8196305a711504
   RSocket: 38b24504db9efbfb018a3b2b23a2d9500140a2a7
   Sonar: 29d8fb9b010e56fa1358be996d68d4b436dd8c21
-  SonarKit: 1314be2c82396a24f9805818c731d931a7c7fef1
+  SonarKit: 748eeb4e6f10af7abe946e11d087dd2a2d5b514c
   Yoga: e6f1fed82138c17da5332e15e5770abf0e9cc386
   YogaKit: bb90d11e297e06abef7e0cfb20e035a6bd00cdc4
 
-PODFILE CHECKSUM: 4c4d2b2552aaa91add9481791c49206f4fce7974
+PODFILE CHECKSUM: 7c2600fc131a2b041c967e8d6ffc2bd1a0383733
 
 COCOAPODS: 1.5.2
