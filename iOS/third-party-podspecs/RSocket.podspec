@@ -43,8 +43,8 @@ Pod::Spec.new do |spec|
                         'yarpl/utils/*.h',
                         'yarpl/*.h',
                         '**/*.h'
-  spec.header_mappings_dir = './*'
-  spec.header_dir = './*'
+  spec.header_mappings_dir = 'rsocket'
+  spec.header_dir = 'rsocket'
   spec.pod_target_xcconfig = { "USE_HEADERMAP" => "NO",
                                "CLANG_CXX_LANGUAGE_STANDARD" => "c++14",
                                "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)\"/** \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/glog\" \"$(PODS_ROOT)/DoubleConversion\"/**" }
