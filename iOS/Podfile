@@ -10,12 +10,12 @@ target 'SonarKit' do
   # Pods for SonarKit
 
   # Third party deps podspec link
-    #pod 'EasyWSClient', :podspec => 'third-party-podspecs/EasyWSClient.podspec'
+    # pod 'PeerTalk', :git => 'https://github.com/rsms/peertalk'
+    pod 'PeerTalkSonar', :podspec => 'third-party-podspecs/PeerTalkSonar.podspec'
     pod 'RSocket', :podspec => 'third-party-podspecs/RSocket.podspec'
-    pod 'LibEvent', :podspec => 'third-party-podspecs/LibEvent.podspec'
     pod 'DoubleConversion', :podspec => 'third-party-podspecs/DoubleConversion.podspec'
     pod 'glog', :podspec => 'third-party-podspecs/glog.podspec'
     pod 'Folly', :podspec => 'third-party-podspecs/Folly.podspec'
-    pod 'Sonar', :podspec => '../xplat/Sonar/SonarKitCPP.podspec'
+    pod 'Sonar', :podspec => '../xplat/Sonar/Sonar.podspec'
     pod 'CocoaAsyncSocket'
 end
