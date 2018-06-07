@@ -23,9 +23,38 @@ Once you start Sonar and launch an emulator/simulator or connect a device, you w
 
 ### Setup your Android app
 
-TODO: Install dependencies
+#### Including Sonar via jcenter
 
-TODO: Add dependencies to your `build.gradle` file.
+**Sonar is still being deployed to jcenter so you may need to include the .aar manually.**
+
+Add dependencies to your `build.gradle` file.
+
+```
+repositories {
+  jcenter()
+}
+
+dependencies {
+  debugCompile 'com.facebook.sonar:sonar:0.0.1'
+}
+```
+
+#### Manually including sonar.aar
+
+Download the latest .aar from [GitHub releases](https://github.com/facebook/Sonar/releases) and put it in your app's libs/ folder.
+
+```
+repositories {
+  jcenter()
+  flatDir {
+    dirs 'libs'
+  }
+}
+
+dependencies {
+  debugCompile(name:'sonar-0.0.1', ext:'aar')
+}
+```
 
 Now you can initialize Sonar in your Application's `onCreate`-method like this:
 
@@ -51,11 +80,10 @@ To integrate with our iOS app, you can use [CocoaPods](https://cocoapods.org). A
 
 ```ruby
 platform :ios, '8.0'
-use_frameworks!
 
 target 'MyApp' do
-  pod 'Sonar', '~> 1.0'
-end
+  pod 'Sonar', '~> 0.0.1'
+en
 ```
 
 and install the dependencies by running `pod install`. When you open the Xcode workspace file for your app, you now can import and initialize Sonar in your AppDelegate.

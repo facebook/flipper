@@ -1,16 +1,26 @@
-Sonar is a desktop app and client API for real time debugging of mobile apps. Sonar enables developers to quickly build plugins which expose runtime information from Android and iOS apps in a easy to use desktop interface.
+# Sonar
 
-# Why should I build tools on top of Sonar?
+Sonar is a platform for debugging mobile apps on iOS and Android. Visualize, inspect, and control your apps from a simple desktop interface. Use Sonar as is or extend it using the plugin API.
 
-Sonar provides you with everything you need to quickly get your tools into people hands. Sonar provides a simple API for communicating with both Android and iOS devices, reconnecting if connection is lost as well as managing multiple connections. With Sonar's built in set of components it is easy to make good looking, easy to use, and powerful developer tools.
+## Mobile development
+
+Sonar aims to be your number one companion for mobile app development on iOS and Android. Therefore, we provide a bunch of useful tools including a log viewer, interactive layout inspector, and network inspector.
+
+## Extending Sonar
+
+Sonar is built as a platform. In addition to using the tools already included, you can create your own plugins to visualize and debug data from your mobile apps. Sonar takes care of sending data back and forth, calling functions, and listening for events on the mobile app.
+
+## Contributing to Sonar
+
+Both Sonar's desktop app and native mobile SDKs are open-source and MIT licensed. This enables you to see and understand how we are building plugins, and of course join the community and help improve Sonar. We are excited to see what you will build on this platform.
 
 # In this repo
 
 This repository includes all parts of Sonar. This includes:
 
 * Sonar's desktop app built using Electron (`/src`)
-* native Sonar SDKs for iOS
-* native Sonar SDKs for Android
+* native Sonar SDKs for iOS (`/iOS`)
+* native Sonar SDKs for Android (`/android`)
 * Plugins:
   * Logs (`/src/device-plugins/logs`)
   * Layout inspector (`/src/plugins/layout`)
@@ -18,6 +28,8 @@ This repository includes all parts of Sonar. This includes:
 * website and documentation (`/website` / `/docs`)
 
 # Getting started
+
+Please refer to our [Getting Started guide](https://fbsonar.com/docs/getting-started.html) to set up Sonar.
 
 ## Requirements
 
@@ -46,7 +58,7 @@ A binary for macOS is created in `dist/mac`. `macOnly` and `build-number` are op
 
 ## Documentation
 
-Find the full documentation for this project at [fbsonar.com](https://fbsonar.com/).
+Find the full documentation for this project at [fbsonar.com](https://fbsonar.com/docs).
 
 ## Contributing and license
 
