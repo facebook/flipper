@@ -4,3 +4,6 @@ website/build
 *.xcworkspace
 **/Pods/
 **/xcuserdata/
+.gradle/
+build/
+.externalNativeBuild/
