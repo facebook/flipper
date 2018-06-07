@@ -115,10 +115,10 @@ CHECKOUT OPTIONS:
     :commit: 89b368ce04d9b319593815c6a69ad0a681596146
     :git: https://github.com/rsocket/rsocket-cpp.git
   Sonar:
-    :commit: f1a3e6c1bdbae8df4fa787fb8f51a622baab0f5e
+    :commit: 03ffb3640a7ee21620fc62f9dcccb13b2f5af03c
     :git: https://github.com/facebook/Sonar.git
   SonarKit:
-    :commit: f1a3e6c1bdbae8df4fa787fb8f51a622baab0f5e
+    :commit: 03ffb3640a7ee21620fc62f9dcccb13b2f5af03c
     :git: https://github.com/facebook/Sonar.git
 
 SPEC CHECKSUMS:

@@ -8,9 +8,9 @@ PODS:
     - CocoaLibEvent (~> 1.0)
     - DoubleConversion
     - glog
-    - OpenSSL-Universal (~> 1.0)
+    - OpenSSL-Static (= 1.0.2.c1)
   - glog (0.3.5)
-  - OpenSSL-Universal (1.0.2.13)
+  - OpenSSL-Static (1.0.2.c1)
   - PeerTalk (1.0.0)
   - RSocket (0.10.0):
     - Folly
@@ -32,7 +32,7 @@ SPEC REPOS:
     - boost-for-react-native
     - CocoaAsyncSocket
     - CocoaLibEvent
-    - OpenSSL-Universal
+    - OpenSSL-Static
 
 EXTERNAL SOURCES:
   DoubleConversion:
@@ -53,10 +53,10 @@ CHECKOUT OPTIONS:
     :commit: 588303b43efa5082d654b6f75d1b84a6ba4b5b9e
     :git: https://github.com/rsms/PeerTalk.git
   RSocket:
-    :commit: 193002818e53e7a7d73ee362627ddf1fdabc4493
+    :commit: 89b368ce04d9b319593815c6a69ad0a681596146
     :git: https://github.com/rsocket/rsocket-cpp.git
   Sonar:
-    :commit: 8d48f5a3eb26c6e982abefa30f5a8e0c19b5b4a6
+    :commit: 03ffb3640a7ee21620fc62f9dcccb13b2f5af03c
     :git: https://github.com/facebook/Sonar.git
 
 SPEC CHECKSUMS:
@@ -64,12 +64,12 @@ SPEC CHECKSUMS:
   CocoaAsyncSocket: eafaa68a7e0ec99ead0a7b35015e0bf25d2c8987
   CocoaLibEvent: 2fab71b8bd46dd33ddb959f7928ec5909f838e3f
   DoubleConversion: 9bd61b1134a393694e95e0950c5bf3f99534817f
-  Folly: ce1c216bcb099ca6cda58fefbba02bf2e9fe0381
+  Folly: 551752534f77d816ebf69195405d9d0fbd3efcc0
   glog: fdb5d40eb83acd6a4d5d61d95ecc583f5970a119
-  OpenSSL-Universal: 401888162f11c33ebbd46f782d9229da35c61327
+  OpenSSL-Static: bd17e34564a8591ad76b740318683a6caa19a13e
   PeerTalk: aadc42bc7d7f19e89f817b59ef8196305a711504
   RSocket: e9ee232080f995ba8f403ccf4cb61238a5646cb6
-  Sonar: 29d8fb9b010e56fa1358be996d68d4b436dd8c21
+  Sonar: a7d8648c0536858abf352d481d57957adf01859b
 
 PODFILE CHECKSUM: a6a7b2201d324f787ef4956b045f021e7152fddf
 
