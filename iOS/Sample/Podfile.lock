@@ -106,19 +106,19 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   ComponentKit:
-    :commit: 368a8b74e1940b9c86b1a883cd7668bc5a204536
+    :commit: 73acd7995610ad6b009a9a74b8290a54dab7c716
     :git: https://github.com/facebook/ComponentKit.git
   PeerTalk:
     :commit: 588303b43efa5082d654b6f75d1b84a6ba4b5b9e
     :git: https://github.com/rsms/PeerTalk.git
   RSocket:
-    :commit: 193002818e53e7a7d73ee362627ddf1fdabc4493
+    :commit: 89b368ce04d9b319593815c6a69ad0a681596146
     :git: https://github.com/rsocket/rsocket-cpp.git
   Sonar:
-    :commit: 8d48f5a3eb26c6e982abefa30f5a8e0c19b5b4a6
+    :commit: f1a3e6c1bdbae8df4fa787fb8f51a622baab0f5e
     :git: https://github.com/facebook/Sonar.git
   SonarKit:
-    :commit: 8d48f5a3eb26c6e982abefa30f5a8e0c19b5b4a6
+    :commit: f1a3e6c1bdbae8df4fa787fb8f51a622baab0f5e
     :git: https://github.com/facebook/Sonar.git
 
 SPEC CHECKSUMS:
@@ -132,8 +132,8 @@ SPEC CHECKSUMS:
   OpenSSL-Static: bd17e34564a8591ad76b740318683a6caa19a13e
   PeerTalk: aadc42bc7d7f19e89f817b59ef8196305a711504
   RSocket: e9ee232080f995ba8f403ccf4cb61238a5646cb6
-  Sonar: 29d8fb9b010e56fa1358be996d68d4b436dd8c21
-  SonarKit: f127bb6582dd1d2590e91937bea9793e95d8a159
+  Sonar: a7d8648c0536858abf352d481d57957adf01859b
+  SonarKit: 926549191a4b239da9274539d8ff28b761b4b1f3
   Yoga: e6f1fed82138c17da5332e15e5770abf0e9cc386
   YogaKit: bb90d11e297e06abef7e0cfb20e035a6bd00cdc4
 
