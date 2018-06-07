@@ -139,6 +139,9 @@ android {
                 srcDir 'android'
                 srcDir 'core'
                 srcDir 'plugins'
+                exclude 'console/ConsoleSonarPlugin.java'
+                exclude 'console/JavascriptEnvironment.java'
+                exclude 'console/JavascriptSession.java'
             }
             res {
                 srcDir 'res'
