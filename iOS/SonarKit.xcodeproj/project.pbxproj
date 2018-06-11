@@ -12,7 +12,8 @@
 		53D19A2F20A4BABA00A371E3 /* SKPortForwardingServer.m in Sources */ = {isa = PBXBuildFile; fileRef = 53D19A1D20A4BABA00A371E3 /* SKPortForwardingServer.m */; };
 		53D19A3020A4BABA00A371E3 /* SonarCppBridgingConnection.mm in Sources */ = {isa = PBXBuildFile; fileRef = 53D19A1F20A4BABA00A371E3 /* SonarCppBridgingConnection.mm */; };
 		53D19A3320A4BABA00A371E3 /* SonarCppBridgingResponder.mm in Sources */ = {isa = PBXBuildFile; fileRef = 53D19A2220A4BABA00A371E3 /* SonarCppBridgingResponder.mm */; };
-		53D4C4FC20A5B20000613A96 /* SKUtils.mm in Sources */ = {isa = PBXBuildFile; fileRef = 53D4C4FA20A5B20000613A96 /* SKUtils.mm */; };
+		53D3BBD820C629230022EB45 /* FBCxxFollyDynamicConvert.mm in Sources */ = {isa = PBXBuildFile; fileRef = 53D3BBD620C629230022EB45 /* FBCxxFollyDynamicConvert.mm */; };
+		53D3BBD920C629230022EB45 /* FBCxxFollyDynamicConvert.h in Headers */ = {isa = PBXBuildFile; fileRef = 53D3BBD720C629230022EB45 /* FBCxxFollyDynamicConvert.h */; };
 		53D4C50620A5B72800613A96 /* SonarCppWrapperPlugin.h in Headers */ = {isa = PBXBuildFile; fileRef = 53D19A2020A4BABA00A371E3 /* SonarCppWrapperPlugin.h */; };
 		53D4C50720A5B72800613A96 /* SonarCppBridgingConnection.h in Headers */ = {isa = PBXBuildFile; fileRef = 53D19A2120A4BABA00A371E3 /* SonarCppBridgingConnection.h */; };
 		53D4C50820A5B72800613A96 /* SonarCppBridgingResponder.h in Headers */ = {isa = PBXBuildFile; fileRef = 53D19A2320A4BABA00A371E3 /* SonarCppBridgingResponder.h */; };
@@ -47,6 +48,8 @@
 		53D19A2120A4BABA00A371E3 /* SonarCppBridgingConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SonarCppBridgingConnection.h; sourceTree = "<group>"; };
 		53D19A2220A4BABA00A371E3 /* SonarCppBridgingResponder.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = SonarCppBridgingResponder.mm; sourceTree = "<group>"; };
 		53D19A2320A4BABA00A371E3 /* SonarCppBridgingResponder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SonarCppBridgingResponder.h; sourceTree = "<group>"; };
+		53D3BBD620C629230022EB45 /* FBCxxFollyDynamicConvert.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = FBCxxFollyDynamicConvert.mm; sourceTree = "<group>"; };
+		53D3BBD720C629230022EB45 /* FBCxxFollyDynamicConvert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FBCxxFollyDynamicConvert.h; sourceTree = "<group>"; };
 		53D4C4F920A5B20000613A96 /* SKUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SKUtils.h; path = SonarKit/SKUtils.h; sourceTree = SOURCE_ROOT; };
 		53D4C4FA20A5B20000613A96 /* SKUtils.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = SKUtils.mm; path = SonarKit/SKUtils.mm; sourceTree = SOURCE_ROOT; };
 		53D4C51120A5B89900613A96 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -97,6 +100,7 @@
 		53D19A0720A4BA3600A371E3 /* SonarKit */ = {
 			isa = PBXGroup;
 			children = (
+				53D3BBD520C629230022EB45 /* FBCxxUtils */,
 				53D19A1E20A4BABA00A371E3 /* CppBridge */,
 				53D19A1020A4BAB900A371E3 /* SKMacros.h */,
 				53D19A1120A4BAB900A371E3 /* SonarClient.h */,
@@ -143,6 +147,15 @@
 			path = CppBridge;
 			sourceTree = "<group>";
 		};
+		53D3BBD520C629230022EB45 /* FBCxxUtils */ = {
+			isa = PBXGroup;
+			children = (
+				53D3BBD620C629230022EB45 /* FBCxxFollyDynamicConvert.mm */,
+				53D3BBD720C629230022EB45 /* FBCxxFollyDynamicConvert.h */,
+			);
+			path = FBCxxUtils;
+			sourceTree = "<group>";
+		};
 		716CE00064F59AEDC5DB6AA8 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -166,6 +179,7 @@
 				53D4C50820A5B72800613A96 /* SonarCppBridgingResponder.h in Headers */,
 				53D4C50920A5B72800613A96 /* SKMacros.h in Headers */,
 				53D4C50A20A5B72800613A96 /* SonarClient.h in Headers */,
+				53D3BBD920C629230022EB45 /* FBCxxFollyDynamicConvert.h in Headers */,
 				53D4C50C20A5B72800613A96 /* SonarPlugin.h in Headers */,
 				53D4C50E20A5B72800613A96 /* SKUtils.h in Headers */,
 				53D4C50F20A5B72800613A96 /* SKPortForwardingServer.h in Headers */,
@@ -263,8 +277,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				53D3BBD820C629230022EB45 /* FBCxxFollyDynamicConvert.mm in Sources */,
 				53D19A3320A4BABA00A371E3 /* SonarCppBridgingResponder.mm in Sources */,
-				53D4C4FC20A5B20000613A96 /* SKUtils.mm in Sources */,
 				53D19A2F20A4BABA00A371E3 /* SKPortForwardingServer.m in Sources */,
 				53D19A3020A4BABA00A371E3 /* SonarCppBridgingConnection.mm in Sources */,
 				53D19A2620A4BABA00A371E3 /* SonarClient.mm in Sources */,

@@ -333,7 +333,6 @@
 					"\"${PODS_ROOT}/Headers/Public/CocoaAsyncSocket\"",
 					"\"${PODS_ROOT}/Headers/Public/ComponentKit\"",
 					"\"${PODS_ROOT}/Headers/Public/DoubleConversion\"",
-					"\"${PODS_ROOT}/Headers/Public/EasyWSClient\"",
 					"\"${PODS_ROOT}/Headers/Public/Folly\"",
 					"\"${PODS_ROOT}/Headers/Public/PeerTalk\"",
 					"\"${PODS_ROOT}/Headers/Public/Sonar\"/**",
@@ -342,7 +341,6 @@
 					"\"${PODS_ROOT}/Headers/Public/boost-for-react-native\"",
 					"\"${PODS_ROOT}/Headers/Public/glog\"/**",
 					"\"${PODS_ROOT}/SonarKit\"/**",
-					"/usr/local/include\\ /usr/local/Cellar/openssl/1.0.2o_1/include",
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 11.3;
@@ -362,7 +360,6 @@
 					"-l\"CocoaAsyncSocket\"",
 					"-l\"ComponentKit\"",
 					"-l\"DoubleConversion\"",
-					"-l\"EasyWSClient\"",
 					"-l\"Folly\"",
 					"-l\"PeerTalk\"",
 					"-l\"Sonar\"",
@@ -401,7 +398,6 @@
 					"\"${PODS_ROOT}/Headers/Public/CocoaAsyncSocket\"",
 					"\"${PODS_ROOT}/Headers/Public/ComponentKit\"",
 					"\"${PODS_ROOT}/Headers/Public/DoubleConversion\"",
-					"\"${PODS_ROOT}/Headers/Public/EasyWSClient\"",
 					"\"${PODS_ROOT}/Headers/Public/Folly\"",
 					"\"${PODS_ROOT}/Headers/Public/PeerTalk\"",
 					"\"${PODS_ROOT}/Headers/Public/Sonar\"/**",
@@ -410,7 +406,6 @@
 					"\"${PODS_ROOT}/Headers/Public/boost-for-react-native\"",
 					"\"${PODS_ROOT}/Headers/Public/glog\"/**",
 					"\"${PODS_ROOT}/SonarKit\"/**",
-					"/usr/local/include\\ /usr/local/Cellar/openssl/1.0.2o_1/include",
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 11.3;
@@ -430,7 +425,6 @@
 					"-l\"CocoaAsyncSocket\"",
 					"-l\"ComponentKit\"",
 					"-l\"DoubleConversion\"",
-					"-l\"EasyWSClient\"",
 					"-l\"Folly\"",
 					"-l\"PeerTalk\"",
 					"-l\"Sonar\"",
