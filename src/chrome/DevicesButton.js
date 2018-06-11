@@ -145,7 +145,7 @@ class DevicesButton extends Component<Props, State> {
   getEmulatorNames(): Promise<Array<string>> {
     return new Promise((resolve, reject) => {
       child_process.exec(
-        '/opt/android_sdk/tools/emulator -list-avds',
+        '$ANDROID_HOME/tools/emulator -list-avds',
         (error: ?Error, data: ?string) => {
           if (error == null && data != null) {
             resolve(data.split('\n').filter(name => name !== ''));
@@ -190,7 +190,7 @@ class DevicesButton extends Component<Props, State> {
 
   launchEmulator = (name: string) => {
     child_process.exec(
-      `/opt/android_sdk/tools/emulator @${name}`,
+      `$ANDROID_HOME/tools/emulator @${name}`,
       this.updateEmulatorState,
     );
   };
