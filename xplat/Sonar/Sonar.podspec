@@ -5,9 +5,8 @@ Pod::Spec.new do |spec|
   spec.homepage = 'https://github.com/facebook/sonar'
   spec.summary = 'SonarKit core cpp code with network implementation'
   spec.authors = 'Facebook'
-  # spec.prepare_command = 'mv src double-conversion'
   spec.source = { :git => 'https://github.com/facebook/Sonar.git',
-                  :branch => 'iOS-OSS' }
+                  :branch => 'master' }
   spec.module_name = 'Sonar'
   spec.public_header_files = 'xplat/Sonar/*.h'
   spec.source_files = 'xplat/Sonar/*.{h,cpp,m,mm}'
@@ -22,4 +21,3 @@ Pod::Spec.new do |spec|
                                "CLANG_CXX_LANGUAGE_STANDARD" => "c++14",
                                "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)\" \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/RSocket\" \"$(PODS_ROOT)/DoubleConversion\"" }
 end
-# \"/usr/local/include\" \"/usr/local/Cellar/openssl/1.0.2o_1/include\"

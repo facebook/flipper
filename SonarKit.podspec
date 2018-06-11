@@ -10,9 +10,8 @@ Pod::Spec.new do |spec|
   spec.summary = 'Sonar iOS podspec'
   spec.authors = 'Facebook'
   spec.static_framework = true
-  # spec.prepare_command = 'mv src double-conversion'
   spec.source = { :git => 'https://github.com/facebook/Sonar.git',
-                  :branch=> "iOS-OSS" }
+                  :branch=> "master" }
   spec.module_name = 'SonarKit'
   spec.dependency 'Folly'
   spec.dependency 'Sonar'

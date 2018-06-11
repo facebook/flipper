@@ -53,10 +53,10 @@ CHECKOUT OPTIONS:
     :commit: 588303b43efa5082d654b6f75d1b84a6ba4b5b9e
     :git: https://github.com/rsms/PeerTalk.git
   RSocket:
-    :commit: 89b368ce04d9b319593815c6a69ad0a681596146
+    :commit: 11491fb22aaaf29b2702a1723561db51b314dd0f
     :git: https://github.com/rsocket/rsocket-cpp.git
   Sonar:
-    :commit: 03ffb3640a7ee21620fc62f9dcccb13b2f5af03c
+    :commit: e6f1e3f018cb4eb8d1d1bfd09851a780f08656fd
     :git: https://github.com/facebook/Sonar.git
 
 SPEC CHECKSUMS:
@@ -69,8 +69,8 @@ SPEC CHECKSUMS:
   OpenSSL-Static: bd17e34564a8591ad76b740318683a6caa19a13e
   PeerTalk: aadc42bc7d7f19e89f817b59ef8196305a711504
   RSocket: e9ee232080f995ba8f403ccf4cb61238a5646cb6
-  Sonar: a7d8648c0536858abf352d481d57957adf01859b
+  Sonar: 29d8fb9b010e56fa1358be996d68d4b436dd8c21
 
-PODFILE CHECKSUM: a6a7b2201d324f787ef4956b045f021e7152fddf
+PODFILE CHECKSUM: c3be9232e8e3190250398e3f9b310c5585d7d26b
 
 COCOAPODS: 1.5.2
