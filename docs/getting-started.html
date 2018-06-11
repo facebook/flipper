@@ -16,28 +16,13 @@
 <p>Once you start Sonar and launch an emulator/simulator or connect a device, you will already be able to see the device logs in Sonar. To see app specific data, you need to integrate our native SDKs with your app.</p>
 <p><img src="/docs/assets/initial.png" alt="Logs plugin"></p>
 <h3><a class="anchor" aria-hidden="true" id="setup-your-android-app"></a><a href="#setup-your-android-app" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Setup your Android app</h3>
-<h4><a class="anchor" aria-hidden="true" id="including-sonar-via-jcenter"></a><a href="#including-sonar-via-jcenter" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Including Sonar via jcenter</h4>
-<p><strong>Sonar is still being deployed to jcenter so you may need to include the .aar manually.</strong></p>
-<p>Add dependencies to your <code>build.gradle</code> file.</p>
+<p>Sonar is distributed via JCenter. Add dependencies to your <code>build.gradle</code> file.</p>
 <pre><code class="hljs"><span class="hljs-keyword">repositories</span> {
   jcenter()
 }
 
 <span class="hljs-keyword">dependencies</span> {
   debugCompile <span class="hljs-string">'com.facebook.sonar:sonar:0.0.1'</span>
-}
-</code></pre>
-<h4><a class="anchor" aria-hidden="true" id="manually-including-sonaraar"></a><a href="#manually-including-sonaraar" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Manually including sonar.aar</h4>
-<p>Download the latest .aar from <a href="https://github.com/facebook/Sonar/releases">GitHub releases</a> and put it in your app's libs/ folder.</p>
-<pre><code class="hljs"><span class="hljs-keyword">repositories</span> {
-  jcenter()
-  <span class="hljs-keyword">flatDir</span> {
-    dirs <span class="hljs-string">'libs'</span>
-  }
-}
-
-<span class="hljs-keyword">dependencies</span> {
-  debugCompile(name:<span class="hljs-string">'sonar-0.0.1'</span>, ext:<span class="hljs-string">'aar'</span>)
 }
 </code></pre>
 <p>Now you can initialize Sonar in your Application's <code>onCreate</code>-method like this:</p>
@@ -56,12 +41,34 @@
 }
 </code></pre>
 <h3><a class="anchor" aria-hidden="true" id="setup-your-ios-app"></a><a href="#setup-your-ios-app" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Setup your iOS app</h3>
-<p>To integrate with our iOS app, you can use <a href="https://cocoapods.org">CocoaPods</a>. Add the mobile Sonar SDK to your <code>Podfile</code>:</p>
+<p>To integrate with an iOS app, you can use <a href="https://cocoapods.org">CocoaPods</a>. Add the mobile Sonar SDK and its dependencies to your <code>Podfile</code>:</p>
 <pre><code class="hljs css ruby">platform <span class="hljs-symbol">:ios</span>, <span class="hljs-string">'8.0'</span>
+swift_version = <span class="hljs-string">'4.1'</span>
 
 target <span class="hljs-string">'MyApp'</span> <span class="hljs-keyword">do</span>
-  pod <span class="hljs-string">'Sonar'</span>, <span class="hljs-string">'~&gt; 0.0.1'</span>
-en
+
+  pod <span class="hljs-string">'RSocket'</span>, <span class="hljs-symbol">:podspec</span> =&gt; <span class="hljs-string">'https://raw.githubusercontent.com/facebook/Sonar/master/iOS/third-party-podspecs/RSocket.podspec?token=ADr9NE_I05Vu8g7oq_g6g_9FLx784NFmks5bJ5LvwA%3D%3D'</span>
+  pod <span class="hljs-string">'DoubleConversion'</span>, <span class="hljs-symbol">:podspec</span> =&gt; <span class="hljs-string">'https://raw.githubusercontent.com/facebook/Sonar/master/iOS/third-party-podspecs/DoubleConversion.podspec?token=ADr9NOxtIEmr5ODP9PWq6-sht-Ye6UYGks5bJ5MjwA%3D%3D'</span>
+  pod <span class="hljs-string">'glog'</span>, <span class="hljs-symbol">:podspec</span> =&gt; <span class="hljs-string">'https://raw.githubusercontent.com/facebook/Sonar/master/iOS/third-party-podspecs/glog.podspec?token=ADr9NBHbrlbkFR3DQTPzj0CnZdria4jvks5bJ5M3wA%3D%3D'</span>
+  pod <span class="hljs-string">'Folly'</span>, <span class="hljs-symbol">:podspec</span> =&gt; <span class="hljs-string">'https://raw.githubusercontent.com/facebook/Sonar/master/iOS/third-party-podspecs/Folly.podspec?token=ADr9NNTjwJ8xqLFwc3Qz3xB3GsCk-Esmks5bJ5NGwA%3D%3D'</span>
+  pod <span class="hljs-string">'PeerTalk'</span>, <span class="hljs-symbol">:podspec</span> =&gt; <span class="hljs-string">'https://raw.githubusercontent.com/facebook/Sonar/master/iOS/third-party-podspecs/PeerTalk.podspec?token=ADr9NB8frQTrUWytsMXtdv_P8km7jV_Mks5bJ5NbwA%3D%3D'</span>
+  pod <span class="hljs-string">'Yoga'</span>,<span class="hljs-string">'~&gt;1.8.1'</span>, <span class="hljs-symbol">:modular_headers</span> =&gt; <span class="hljs-literal">true</span>
+  pod <span class="hljs-string">'Sonar'</span>, <span class="hljs-symbol">:podspec</span> =&gt; <span class="hljs-string">'https://raw.githubusercontent.com/facebook/Sonar/master/xplat/Sonar/Sonar.podspec?token=ADr9NFO7byH9uAuhGAIEYuoJeBNyBxf6ks5bJ5N8wA%3D%3D'</span>
+  pod <span class="hljs-string">'SonarKit'</span>, <span class="hljs-symbol">:podspec</span> =&gt; <span class="hljs-string">'https://raw.githubusercontent.com/facebook/Sonar/master/SonarKit.podspec?token=ADr9NBuYoodM_NeysQg899hkxXw0WZ7Xks5bJ5OVwA%3D%3D'</span>
+  pod <span class="hljs-string">'SonarKit/SonarKitLayoutComponentKitSupport'</span>, <span class="hljs-symbol">:podspec</span> =&gt; <span class="hljs-string">'https://raw.githubusercontent.com/facebook/Sonar/master/SonarKit.podspec?token=ADr9NBuYoodM_NeysQg899hkxXw0WZ7Xks5bJ5OVwA%3D%3D'</span>
+  pod <span class="hljs-string">'SonarKit/SKIOSNetworkPlugin'</span>, <span class="hljs-symbol">:podspec</span> =&gt; <span class="hljs-string">'https://raw.githubusercontent.com/facebook/Sonar/master/SonarKit.podspec?token=ADr9NBuYoodM_NeysQg899hkxXw0WZ7Xks5bJ5OVwA%3D%3D'</span>
+  pod <span class="hljs-string">'ComponentKit'</span>, <span class="hljs-symbol">:podspec</span> =&gt; <span class="hljs-string">'https://raw.githubusercontent.com/facebook/Sonar/master/iOS/third-party-podspecs/ComponentKit.podspec?token=ADr9NNV9gqkpFTUKaHpCiYOZIG3Ev-Hyks5bJ5O-wA%3D%3D'</span>
+  post_install <span class="hljs-keyword">do</span> <span class="hljs-params">|installer|</span>
+        installer.pods_project.targets.each <span class="hljs-keyword">do</span> <span class="hljs-params">|target|</span>
+            <span class="hljs-keyword">if</span> [<span class="hljs-string">'YogaKit'</span>].<span class="hljs-keyword">include</span>? target.name
+                target.build_configurations.each <span class="hljs-keyword">do</span> <span class="hljs-params">|config|</span>
+                    config.build_settings[<span class="hljs-string">'SWIFT_VERSION'</span>] = swift_version
+                <span class="hljs-keyword">end</span>
+            <span class="hljs-keyword">end</span>
+        <span class="hljs-keyword">end</span>
+    <span class="hljs-keyword">end</span>
+<span class="hljs-keyword">end</span>
+
 </code></pre>
 <p>and install the dependencies by running <code>pod install</code>. When you open the Xcode workspace file for your app, you now can import and initialize Sonar in your AppDelegate.</p>
 <pre><code class="hljs css objective-c"><span class="hljs-meta">#import <span class="hljs-meta-string">&lt;Sonar/SonarClient.h&gt;</span></span>
@@ -79,6 +86,7 @@ en
 }
 <span class="hljs-keyword">@end</span>
 </code></pre>
+<p>Note: We haven't released the dependency to CocoaPods, because we weren't able to successfully validate the podspec of SonarKit. You could help us out by fixing this <a href="https://github.com/facebook/Sonar/issues/11">issue</a> by submitting a PR to the repo. If you do not use CocoaPods as a dependency management tool then currently there is no way to integrate SonarKit other than manually including all the dependencies and building it.</p>
 <h2><a class="anchor" aria-hidden="true" id="ready-for-takeoff"></a><a href="#ready-for-takeoff" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Ready for takeoff</h2>
 <p>Finally you need to add plugins to your Sonar client. See <a href="/docs/network-plugin.html">Network Plugin</a> and <a href="/docs/layout-plugin.html">Layout Inspector Plugin</a> on how to add them.</p>
 </span></div></article></div><div class="docs-prevnext"><a class="docs-next button" href="understand.html">Understanding Sonar →</a></div></div></div></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/" class="nav-home"><img src="/img/mascot.png" alt="Sonar mascot" title="I&#x27;m a whale not a dolphin!" width="66" height="58"/></a><div><h5>Docs</h5><a href="/docs/getting-started.html">Getting Started</a><a href="/docs/understand.html">Understanding Sonar</a><a href="/docs/js-setup.html">Creating Plugins</a></div><div><h5>Plugins</h5><a href="/docs/logs-plugin.html">Log Viewer</a><a href="/docs/layout-plugin.html">Layout Inspector</a><a href="/docs/network-plugin.html">Network Inspector</a></div><div><h5>More</h5><a href="https://twitter.com/fb_sonar">Twitter</a><a href="https://github.com/facebook/sonar">GitHub</a><a class="github-button" href="https://github.com/facebook/sonar" data-icon="octicon-star" data-count-href="/facebook/sonar/stargazers" data-show-count="true" data-count-aria-label="# stargazers on GitHub" aria-label="Star this project on GitHub">Star</a></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2018 Facebook</section></footer></div></body></html>
