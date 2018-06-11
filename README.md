@@ -18,7 +18,7 @@ Both Sonar's desktop app and native mobile SDKs are open-source and MIT licensed
 
 This repository includes all parts of Sonar. This includes:
 
-* Sonar's desktop app built using Electron (`/src`)
+* Sonar's desktop app built using [Electron](https://electronjs.org) (`/src`)
 * native Sonar SDKs for iOS (`/iOS`)
 * native Sonar SDKs for Android (`/android`)
 * Plugins:
