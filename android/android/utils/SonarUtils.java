@@ -33,7 +33,7 @@ public final class SonarUtils {
     }
   }
 
-  private static boolean isMainProcess(Context context) {
+  public static boolean isMainProcess(Context context) {
     final int pid = android.os.Process.myPid();
     final ActivityManager manager =
         (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
