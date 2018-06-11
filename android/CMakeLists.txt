@@ -35,6 +35,7 @@ set(third_party_ndk build/third-party-ndk)
 set(libfolly_DIR ${third_party_ndk}/folly/)
 set(glog_DIR ${third_party_ndk}/glog)
 set(BOOST_DIR ${third_party_ndk}/boost/boost_1_63_0/)
+set(LIBEVENT_DIR ${third_party_ndk}/LibEvent/libevent-1.0.0/include/)
 
 
 set(build_DIR ${CMAKE_SOURCE_DIR}/build)
@@ -58,6 +59,7 @@ target_include_directories(${PACKAGE_NAME} PRIVATE
     ${glog_DIR}/glog-0.3.5/src/
     ${BOOST_DIR}
     ${BOOST_DIR}/../
+    ${LIBEVENT_DIR}
     )
 
 target_link_libraries(${PACKAGE_NAME} fb sonarcpp)

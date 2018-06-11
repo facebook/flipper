@@ -1,0 +1,13 @@
+cmake_minimum_required (VERSION 3.6.0)
+
+PROJECT(libevent C)
+enable_language(C)
+set(PACKAGE_NAME      libevent)
+set(LIBEVENT_DIR  libevent-release-2.1.8-stable/)
+list(APPEND DIR_LIST ${LIBEVENT_DIR} ${LIBEVENT_DIR}/include)
+include_directories(${DIR_LIST})
+file(GLOB SRCFILES  ${LIBEVENT_DIR}/*.c)
+message(STATUS "SRC FILES :- " ${SRCFILES})
+add_library(${PACKAGE_NAME} SHARED ${SRCFILES})
+install(TARGETS ${PACKAGE_NAME}  DESTINATION ./build/)
+target_link_libraries(${PACKAGE_NAME})

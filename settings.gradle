@@ -17,6 +17,7 @@ include ':sonarcpp'
 include ':sample'
 include ':doubleconversion'
 include ':glog'
+include ':libevent'
 
 
 project(':fbjni').projectDir = file('libs/fbjni')
@@ -27,3 +28,4 @@ project(':android').projectDir = file('android')
 project(':doubleconversion').projectDir = file('android/build/third-party-ndk/double-conversion/')
 project(':glog').projectDir = file('android/build/third-party-ndk/glog/')
 project(':folly').projectDir = file('android/build/third-party-ndk/folly/')
+project(':libevent').projectDir = file('android/build/third-party-ndk/LibEvent/')

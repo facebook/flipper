@@ -104,11 +104,28 @@ task prepareFolly(dependsOn: [downloadFolly], type: Copy) {
     into "$thirdPartyNdkDir/folly"
 }
 
+task downloadLibEvent(dependsOn: [prepareFolly], type: Download) {
+    src 'https://github.com/libevent/libevent/archive/release-2.1.8-stable.tar.gz'
+    onlyIfNewer true
+    overwrite false
+    dest new File(downloadsDir, 'libevent-release-2.1.8-stable.tar.gz');
+}
+
+task prepareLibEvent(dependsOn: [downloadLibEvent], type: Copy) {
+    from tarTree(downloadLibEvent.dest)
+    from './third-party/LibEvent/'
+    include 'libevent-release-2.1.8-stable/**/*', 'build.gradle', 'CMakeLists.txt', 'ApplicationManifest.xml'
+    includeEmptyDirs = false
+    into "$thirdPartyNdkDir/LibEvent"
+}
+
 task prepareAllLibs() {
     dependsOn finalizeGlog
     dependsOn prepareDoubleConversion
     dependsOn prepareBoost
     dependsOn prepareFolly
+    dependsOn downloadLibEvent
+    dependsOn prepareLibEvent
 }
 
 android {
