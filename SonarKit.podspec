@@ -75,16 +75,6 @@ Pod::Spec.new do |spec|
                                  "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)\"" }
   end
 
-  spec.subspec "SonarKitNetworkPlugin" do |ss|
-    ss.public_header_files = 'iOS/Plugins/SonarKitNetworkPlugin/SonarKitNetworkPlugin/SonarKitNetworkPlugin.h',
-                             'iOS/Plugins/SonarKitNetworkPlugin/SonarKitNetworkPlugin/SKBufferingPlugin.h',
-                             'iOS/Plugins/SonarKitNetworkPlugin/SonarKitNetworkPlugin/SKDispatchQueue.h',
-                             'iOS/Plugins/SonarKitNetworkPlugin/SonarKitNetworkPlugin/SKNetworkReporter.h'
-    ss.source_files         = "iOS/Plugins/SonarKitNetworkPlugin/SonarKitNetworkPlugin/*.{h,cpp,m,mm}"
-    ss.pod_target_xcconfig = { "USE_HEADERMAP" => "NO",
-                                 "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)\"" }
-  end
-
   spec.subspec "SKIOSNetworkPlugin" do |ss|
     ss.dependency  'SonarKit/SonarKitNetworkPlugin'
     ss.public_header_files = 'iOS/Plugins/SonarKitNetworkPlugin/SKIOSNetworkPlugin/SKIOSNetworkAdapter.h'
