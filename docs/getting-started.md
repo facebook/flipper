@@ -65,7 +65,7 @@ public class MyApplication extends Application {
   public void onCreate() {
     super.onCreate();
 
-    if (BuildConfig.DEBUG && SonarUtils.shouldEnableClient(this)) {
+    if (BuildConfig.DEBUG && SonarUtils.shouldEnableSonar(this)) {
       final SonarClient client = AndroidSonarClient.getInstance(this);
       client.addPlugin(new MySonarPlugin());
       client.start();
