@@ -35,7 +35,7 @@
 #define PRIVATE_KEY_FILE "privateKey.pem"
 
 static constexpr int reconnectIntervalSeconds = 2;
-static constexpr int connectionKeepaliveSeconds = 2;
+static constexpr int connectionKeepaliveSeconds = 10;
 static constexpr int securePort = 8088;
 static constexpr int insecurePort = 8089;
 
@@ -97,7 +97,7 @@ SonarWebSocketImpl::~SonarWebSocketImpl() {
 void SonarWebSocketImpl::start() {
   folly::makeFuture()
       .via(worker_->getEventBase())
-      .delayed(std::chrono::milliseconds(0))
+      .delayedUnsafe(std::chrono::milliseconds(0))
       .then([this]() { startSync(); });
 }
 
@@ -113,18 +113,13 @@ void SonarWebSocketImpl::startSync() {
     }
 
     connectSecurely();
-  } catch (const std::exception& e) {
-    std::string errors = folly::SSLContext::getErrors();
-    SONAR_LOG("Error connecting to sonar");
-    SONAR_LOG(e.what());
-    SONAR_LOG(errors.c_str());
+  } catch (const std::exception&) {
     failedConnectionAttempts_++;
     reconnect();
   }
 }
 
 void SonarWebSocketImpl::doCertificateExchange() {
-  SONAR_LOG("Starting certificate exchange");
 
   rsocket::SetupParameters parameters;
   folly::SocketAddress address;
@@ -187,7 +182,7 @@ void SonarWebSocketImpl::connectSecurely() {
 void SonarWebSocketImpl::reconnect() {
   folly::makeFuture()
       .via(worker_->getEventBase())
-      .delayed(std::chrono::seconds(reconnectIntervalSeconds))
+      .delayedUnsafe(std::chrono::seconds(reconnectIntervalSeconds))
       .then([this]() { startSync(); });
 }
 
@@ -216,11 +211,6 @@ void SonarWebSocketImpl::sendMessage(const folly::dynamic& message) {
 
 bool SonarWebSocketImpl::isCertificateExchangeNeeded() {
   if (failedConnectionAttempts_ >= 2) {
-    auto format =
-        "Requesting fresh certificate exchange after %d failed connection attempts";
-    char buff[strlen(format) + 1];
-    sprintf(buff, format, failedConnectionAttempts_);
-    SONAR_LOG(buff);
     return true;
   }
 
@@ -238,7 +228,6 @@ bool SonarWebSocketImpl::isCertificateExchangeNeeded() {
 }
 
 void SonarWebSocketImpl::requestSignedCertFromSonar() {
-  SONAR_LOG("Requesting new client certificate from Sonar");
   std::string csr = loadStringFromFile(absoluteFilePath(CSR_FILE_NAME));
   if (csr == "") {
     generateCertSigningRequest(

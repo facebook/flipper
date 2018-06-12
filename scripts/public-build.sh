@@ -11,11 +11,13 @@ function jsonValue() {
 
 git -c http.proxy=fwdproxy:8080 -c https.proxy=fwdproxy:8080 clone https://github.com/facebook/Sonar.git sonar-public
 cp sonar/scripts/sandcastle-build.sh sonar-public/scripts/sandcastle-build.sh
+# third-party dependencies are not on github, so we need to copy them in place
+cp -r sonar/third-party sonar-public/third-party
 cd sonar-public/scripts && ./sandcastle-build.sh "$(git rev-list HEAD --count || echo 0)"
 
 VERSION=$(plutil -p ./sonar-public/dist/mac/Sonar.app/Contents/Info.plist | awk '/CFBundleShortVersionString/ {print substr($3, 2, length($3)-2)}')
 
-RELEASE_JSON=$(curl $(fwdproxy-config curl) --silent --data '{
+RELEASE_JSON=$(curl -x fwdproxy:8080 --silent --data '{
   "tag_name": "v'$VERSION'",
   "target_commitish": "master",
   "name": "v'$VERSION'",
@@ -33,7 +35,7 @@ fi
 
 echo "Created GitHub release ID: $RELEASE_ID"
 UPLOAD_URL=$(echo $RELEASE_JSON | jsonValue upload_url| sed -e 's#{?name,label}##')
-ASSET_JSON=$(curl $(fwdproxy-config curl) --silent $UPLOAD_URL'?access_token='$TOKEN'&name=Sonar.zip' --header 'Content-Type: application/zip' --upload-file ./sonar-public/dist/Sonar.zip -X POST)
+ASSET_JSON=$(curl -x fwdproxy:8080 --silent $UPLOAD_URL'?access_token='$TOKEN'&name=Sonar.zip' --header 'Content-Type: application/zip' --upload-file ./sonar-public/dist/Sonar.zip -X POST)
 
 DOWNLOAD_URL=$(echo $ASSET_JSON | jsonValue browser_download_url)
 

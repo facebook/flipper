@@ -113,7 +113,7 @@ export default class VirtualList extends Component<
     // Overscan: render blocks of rows modulo an overscan row count
     // This dramatically reduces DOM writes during scrolling
     if (overscanCount) {
-      start = Math.max(0, start - start % overscanCount);
+      start = Math.max(0, start - (start % overscanCount));
       visibleRowCount += overscanCount;
     }
 

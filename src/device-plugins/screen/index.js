@@ -202,9 +202,11 @@ export default class ScreenPlugin extends SonarDevicePlugin<State> {
           pullingData: true,
         });
       })
-      .then((): Promise<string> => {
-        return self.pullFromDevice(`/sdcard/${VIDEO_FILE_NAME}`, VIDEO_PATH);
-      })
+      .then(
+        (): Promise<string> => {
+          return self.pullFromDevice(`/sdcard/${VIDEO_FILE_NAME}`, VIDEO_PATH);
+        },
+      )
       .then(openFile)
       .then(() => {
         self.executeShell(`rm /sdcard/${VIDEO_FILE_NAME}`);

@@ -31,7 +31,12 @@ type Electron$MenuRoles =
   | 'help'
   | 'services';
 
-type Electron$MenuType = 'normal' | 'separator' | 'submenu' | 'checkbox' | 'radio';
+type Electron$MenuType =
+  | 'normal'
+  | 'separator'
+  | 'submenu'
+  | 'checkbox'
+  | 'radio';
 
 type Electron$MenuItemOptions = {
   click?: (
@@ -54,25 +59,27 @@ type Electron$MenuItemOptions = {
 };
 
 declare class Electron$MenuItem {
-  constructor: (options: Electron$MenuItemOptions) => void,
-  enabled: boolean,
-  visible: boolean,
-  checked: boolean,
+  constructor: (options: Electron$MenuItemOptions) => void;
+  enabled: boolean;
+  visible: boolean;
+  checked: boolean;
 }
 
 declare class Electron$Menu {
-  static setApplicationMenu: (menu: Electron$Menu) => void,
-  static getApplicationMenu: () => ?Electron$Menu,
-  static sendActionToFirstResponder: (action: string) => void,
-  static buildFromTemplate: (templates: Array<Electron$MenuItemOptions>) => Electron$Menu,
+  static setApplicationMenu: (menu: Electron$Menu) => void;
+  static getApplicationMenu: () => ?Electron$Menu;
+  static sendActionToFirstResponder: (action: string) => void;
+  static buildFromTemplate: (
+    templates: Array<Electron$MenuItemOptions>,
+  ) => Electron$Menu;
   popup: (
     browserWindow: Object,
     x?: number,
     y?: number,
     positioningItem?: number,
-  ) => void,
-  popup: (x?: number, y?: number, positioningItem?: number) => void,
-  append: (menuItem: Electron$MenuItem) => void,
-  insert: (pos: number, menuItem: Electron$MenuItem) => void,
-  items: Array<Electron$MenuItem>,
+  ) => void;
+  popup: (x?: number, y?: number, positioningItem?: number) => void;
+  append: (menuItem: Electron$MenuItem) => void;
+  insert: (pos: number, menuItem: Electron$MenuItem) => void;
+  items: Array<Electron$MenuItem>;
 }

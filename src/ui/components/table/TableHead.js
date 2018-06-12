@@ -86,7 +86,7 @@ const TableHeadColumnContainer = styled.view(
 const RIGHT_RESIZABLE = {right: true};
 
 function calculatePercentage(parentWidth: number, selfWidth: number): string {
-  return `${100 / parentWidth * selfWidth}%`;
+  return `${(100 / parentWidth) * selfWidth}%`;
 }
 
 class TableHeadColumn extends PureComponent<{

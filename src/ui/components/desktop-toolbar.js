@@ -65,8 +65,8 @@ const DesktopDropdownItemContainer = styled.view(
 type DesktopDropdownItemState = {|hovered: boolean|};
 
 type DesktopDropdownItemProps = {
-  onClick?: false | ?(event: SyntheticMouseEvent<>) => void,
-  onHover?: false | ?() => React$Node,
+  onClick?: false | ?((event: SyntheticMouseEvent<>) => void),
+  onHover?: false | ?(() => React$Node),
   children?: React$Node,
   deactivate?: () => void,
 };

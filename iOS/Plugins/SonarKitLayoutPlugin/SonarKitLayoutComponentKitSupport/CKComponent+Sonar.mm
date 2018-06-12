@@ -115,14 +115,23 @@ FB_LINKABLE(CKComponent_Sonar)
           }
 
           for (auto responder : action.second) {
-            id initialTarget = _CKTypedComponentDebugInitialTarget(responder).get(self);
-            const CKActionInfo actionInfo = CKActionFind(responder.selector(), initialTarget);
-            [responders addObject: @{
-                                     @"initialTarget": SKObject(NSStringFromClass([initialTarget class])),
-                                     @"identifier": SKObject(@(responder.identifier().c_str())),
-                                     @"handler": SKObject(NSStringFromClass([actionInfo.responder class])),
-                                     @"selector": SKObject(NSStringFromSelector(responder.selector())),
-                                     }];
+            auto debugTarget = _CKTypedComponentDebugInitialTarget(responder);
+            if (debugTarget.isBlockBaseAction()) {
+              [responders addObject: @{
+                                       @"identifier": SKObject(@(responder.identifier().c_str())),
+                                       @"selector": SKObject(NSStringFromSelector(responder.selector())),
+                                       }];
+
+            } else {
+              id initialTarget = debugTarget.get(self);
+              const CKActionInfo actionInfo = CKActionFind(responder.selector(), initialTarget);
+              [responders addObject: @{
+                                       @"initialTarget": SKObject(NSStringFromClass([initialTarget class])),
+                                       @"identifier": SKObject(@(responder.identifier().c_str())),
+                                       @"handler": SKObject(NSStringFromClass([actionInfo.responder class])),
+                                       @"selector": SKObject(NSStringFromSelector(responder.selector())),
+                                       }];
+            }
           }
         }
 

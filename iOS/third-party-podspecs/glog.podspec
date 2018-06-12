@@ -5,7 +5,7 @@ Pod::Spec.new do |spec|
   spec.homepage = 'https://github.com/google/glog'
   spec.summary = 'Google logging module'
   spec.authors = 'Google'
-  spec.prepare_command = "#!/bin/bash\nset -e\n\nPLATFORM_NAME=\"${PLATFORM_NAME:-iphoneos}\"\nCURRENT_ARCH=\"${CURRENT_ARCH:-armv7}\"\n\nexport CC=\"$(xcrun -find -sdk $PLATFORM_NAME cc) -arch $CURRENT_ARCH -isysroot $(xcrun -sdk $PLATFORM_NAME --show-sdk-path)\"\nexport CXX=\"$CC\"\n\n# Remove automake symlink if it exists\nif [ -h \"test-driver\" ]; then\n    rm test-driver\nfi\n\n./configure --host arm-apple-darwin\n\n# Fix build for tvOS\ncat << EOF >> src/config.h\n\n/* Add in so we have Apple Target Conditionals */\n#ifdef __APPLE__\n#include <TargetConditionals.h>\n#include <Availability.h>\n#endif\n\n/* Special configuration for AppleTVOS */\n#if TARGET_OS_TV\n#undef HAVE_SYSCALL_H\n#undef HAVE_SYS_SYSCALL_H\n#undef OS_MACOSX\n#endif\n\n/* Special configuration for ucontext */\n#undef HAVE_UCONTEXT_H\n#undef PC_FROM_UCONTEXT\n#if defined(__x86_64__)\n#define PC_FROM_UCONTEXT uc_mcontext->__ss.__rip\n#elif defined(__i386__)\n#define PC_FROM_UCONTEXT uc_mcontext->__ss.__eip\n#endif\nEOF"
+  spec.prepare_command = File.read("../scripts/ios-configure-glog.sh")
   spec.source = { :git => 'https://github.com/google/glog.git',
                   :tag => "v#{spec.version}" }
   spec.module_name = 'glog'
@@ -36,6 +36,6 @@ Pod::Spec.new do |spec|
                                 }
   spec.compiler_flags = '-std=c++1y'
   spec.libraries           = "stdc++"
-  spec.platforms = { :ios => "8.0"}
+  spec.platforms = { :ios => "8.0", :tvos => "9.2" }
 
 end
