@@ -42,6 +42,8 @@ static constexpr int insecurePort = 8089;
 namespace facebook {
 namespace sonar {
 
+bool fileExists(std::string fileName);
+
 class ConnectionEvents : public rsocket::RSocketConnectionEvents {
  private:
   SonarWebSocketImpl* websocket_;
@@ -249,6 +251,9 @@ void SonarWebSocketImpl::requestSignedCertFromSonar() {
 }
 
 std::string SonarWebSocketImpl::loadStringFromFile(std::string fileName) {
+  if (!fileExists(fileName)) {
+    return "";
+  }
   std::stringstream buffer;
   std::ifstream stream;
   std::string line;
@@ -281,6 +286,11 @@ bool SonarWebSocketImpl::ensureSonarDirExists() {
                   .c_str());
     return false;
   }
+}
+
+bool fileExists(std::string fileName) {
+  struct stat buffer;
+  return stat(fileName.c_str(), &buffer) == 0;
 }
 
 } // namespace sonar
