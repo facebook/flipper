@@ -7,7 +7,7 @@
  */
 #import "SonarCppBridgingConnection.h"
 
-#import <FBCxxUtils/FBCxxFollyDynamicConvert.h>
+#import "SKUtils.h"
 
 #import "SonarCppBridgingResponder.h"
 
@@ -28,7 +28,7 @@
 
 - (void)send:(NSString *)method withParams:(NSDictionary *)params
 {
-  conn_->send([method UTF8String], facebook::cxxutils::convertIdToFollyDynamic(params));
+  conn_->send([method UTF8String], [SKUtils convertIdToFollyDynamic:params]);
 }
 
 - (void)receive:(NSString *)method withBlock:(SonarReceiver)receiver
@@ -37,7 +37,7 @@
                                  std::unique_ptr<facebook::sonar::SonarResponder> responder) {
     SonarCppBridgingResponder *const objCResponder =
         [[SonarCppBridgingResponder alloc] initWithCppResponder:std::move(responder)];
-    receiver(facebook::cxxutils::convertFollyDynamicToId(message), objCResponder);
+    receiver([SKUtils convertFollyDynamicToId:message], objCResponder);
   };
   conn_->receive([method UTF8String], lambda);
 }

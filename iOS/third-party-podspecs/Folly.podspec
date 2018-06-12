@@ -6,7 +6,7 @@ Pod::Spec.new do |spec|
   spec.summary = 'An open-source C++ library developed and used at Facebook.'
   spec.authors = 'Facebook'
   spec.source = { :git => 'https://github.com/facebook/folly.git',
-                  :tag => "v#{spec.version}" }
+                  :branch => "master" }
   spec.module_name = 'folly'
   spec.dependency 'boost-for-react-native'
   spec.dependency 'DoubleConversion'
