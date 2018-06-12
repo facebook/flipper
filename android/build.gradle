@@ -161,6 +161,7 @@ android {
         implementation deps.supportAppCompat
         implementation deps.stetho
         implementation deps.okhttp3
+        implementation deps.rhino
         implementation 'com.facebook.litho:litho-core:0.15.0'
         implementation 'com.facebook.litho:litho-widget:0.15.0'
         implementation fileTree(dir: 'plugins/console/dependencies', include: ['*.jar'])

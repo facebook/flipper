@@ -61,7 +61,7 @@ ext.deps = [
         guava              : 'com.google.guava:guava:20.0',
         robolectric        : 'org.robolectric:robolectric:3.0',
         junit              : 'junit:junit:4.12',
-        guava              : 'com.google.guava:guava:20.0',
+        rhino              : 'org.mozilla:rhino:1.7.10',
         stetho             : 'com.facebook.stetho:stetho:1.5.0',
         okhttp3            : 'com.squareup.okhttp3:okhttp:3.10.0'
 
