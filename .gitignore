@@ -4,3 +4,4 @@ website/build
 *.xcworkspace
 **/Pods/
 **/xcuserdata/
+yarn-error.log
