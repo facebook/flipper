@@ -1,6 +1,6 @@
 Pod::Spec.new do |spec|
   spec.name = 'Folly'
-  spec.version = '2018.05.07.00'
+  spec.version = '2018.05.28.00'
   spec.license = { :type => 'Apache License, Version 2.0' }
   spec.homepage = 'https://github.com/facebook/folly'
   spec.summary = 'An open-source C++ library developed and used at Facebook.'
@@ -11,7 +11,9 @@ Pod::Spec.new do |spec|
   spec.dependency 'boost-for-react-native'
   spec.dependency 'DoubleConversion'
   spec.dependency 'glog'
-  spec.compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_LIBGFLAGS=0 -DFOLLY_HAVE_LIBJEMALLOC=0 -DFOLLY_HAVE_PREADV=0 -DFOLLY_HAVE_PWRITEV=0 -DFOLLY_HAVE_TFO=0 -DFOLLY_USE_SYMBOLIZER=0  -frtti
+  spec.dependency 'OpenSSL-Static', '1.0.2.c1'
+  spec.dependency 'CocoaLibEvent', '~> 1.0'
+  spec.compiler_flags = '-DFOLLY_HAVE_PTHREAD=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_LIBGFLAGS=0 -DFOLLY_HAVE_LIBJEMALLOC=0 -DFOLLY_HAVE_PREADV=0 -DFOLLY_HAVE_PWRITEV=0 -DFOLLY_HAVE_TFO=0 -DFOLLY_USE_SYMBOLIZER=0  -frtti
     -fexceptions
     -std=c++14
     -Wno-error
@@ -25,10 +27,27 @@ Pod::Spec.new do |spec|
                       'folly/memory/detail/MallocImpl.cpp',
                       'folly/String.cpp',
                       'folly/*.cpp',
+                      'folly/detail/*.cpp',
+                      'folly/hash/*.cpp',
+                      'folly/portability/*.cpp',
                       'folly/ScopeGuard.h',
                       'folly/lang/ColdClass.cpp',
                       'folly/lang/Assume.h',
-                      'folly/lang/Assume.cpp'
+                      'folly/lang/Assume.cpp',
+                      'folly/io/async/*.cpp',
+                      'folly/io/async/ssl/*.cpp',
+                      'folly/io/*.cpp',
+                      'folly/synchronization/*.cpp',
+                      'folly/lang/*.cpp',
+                      'folly/memory/*.cpp',
+                      'folly/futures/*.cpp',
+                      'folly/futures/detail/*.cpp',
+                      'folly/experimental/hazptr/*.cpp',
+                      'folly/executors/*.cpp',
+                      'folly/concurrency/*.cpp',
+                      'folly/ssl/*.cpp',
+                      'folly/ssl/detail/*.cpp',
+                      'folly/system/*.cpp'
 
   # workaround for https://github.com/facebook/react-native/issues/14326
   spec.preserve_paths = 'folly/*.h',
@@ -38,16 +57,16 @@ Pod::Spec.new do |spec|
                         'folly/detail/*.h',
                         'folly/hash/*.h',
                         'folly/memory/*.h',
-                        'folly/**/*.h'
+                        'folly/**/*.h',
+                        'folly/futures/detail/*.h',
+                        'folly/futures/*.h'
 
   spec.header_mappings_dir = 'folly'
   spec.header_dir = 'folly'
   spec.libraries           = "stdc++"
   spec.private_header_files = 'folly/portability/Stdlib.h',
-                              'folly/portability/Malloc.h',
-                              'folly/portability/Stdlib.h',
-                              'folly/portability/Stdio.h',
-                              'folly/portability/PThread.h'
+                              'folly/portability/Stdio.h'
+
   spec.public_header_files = 'folly/portability/Config.h',
                               'folly/Executor.h',
                               'folly/Function.h',
@@ -81,15 +100,19 @@ Pod::Spec.new do |spec|
                               'folly/FBString.h',
                               'folly/hash/Hash.h',
                               'folly/memory/Malloc.h',
+                              'folly/io/async/AsyncTimeout.h',
                               'folly/**/*.h',
                               'folly/memory/detail/MallocImpl.h',
                               'folly/String.h',
-                              'folly/*.h'
+                              'folly/*.h',
+                              'folly/portability/PThread.h',
+                              'folly/futures/*.h',
+                              'folly/futures/detail/*.h'
 
   spec.pod_target_xcconfig = { "USE_HEADERMAP" => "NO",
                                "CLANG_CXX_LANGUAGE_STANDARD" => "c++11",
                                "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)\" \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/DoubleConversion\"" }
 
   # Pinning to the same version as React.podspec.
-  spec.platforms = { :ios => "8.0", :tvos => "10.0" }
+  spec.platforms = { :ios => "8.0"}
 end

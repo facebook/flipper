@@ -8,7 +8,10 @@
 import LogManager from '../fb-stubs/Logger';
 const fs = require('fs');
 const adb = require('adbkit-fb');
-import {openssl} from './openssl-wrapper-with-promises';
+import {
+  openssl,
+  isInstalled as opensslInstalled,
+} from './openssl-wrapper-with-promises';
 const path = require('path');
 
 // Desktop file paths
@@ -68,6 +71,7 @@ export default class CertificateProvider {
     os: string,
     appDirectory: string,
   ): Promise<void> {
+    this.ensureOpenSSLIsAvailable();
     if (!appDirectory.match(allowedAppDirectoryRegex)) {
       return Promise.reject(
         new Error(
@@ -98,6 +102,15 @@ export default class CertificateProvider {
       );
   }
 
+  ensureOpenSSLIsAvailable(): void {
+    if (!opensslInstalled()) {
+      const e = Error(
+        "It looks like you don't have OpenSSL installed. Please install it to continue.",
+      );
+      this.server.emit('error', e);
+    }
+  }
+
   getCACertificate(): Promise<string> {
     return new Promise((resolve, reject) => {
       fs.readFile(caCert, (err, data) => {
@@ -121,7 +134,7 @@ export default class CertificateProvider {
       CAkey: caKey,
       CAcreateserial: true,
     }).then(cert => {
-      fs.unlink(csrFile);
+      fs.unlinkSync(csrFile);
       return cert;
     });
   }

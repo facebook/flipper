@@ -6,6 +6,7 @@
  */
 
 import {exec as opensslWithCallback} from 'openssl-wrapper';
+const child_process = require('child_process');
 
 export function openssl(action: string, options: {}): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -16,4 +17,8 @@ export function openssl(action: string, options: {}): Promise<string> {
       resolve(buffer.toString());
     });
   });
+}
+
+export function isInstalled(): boolean {
+  return !child_process.spawnSync('openssl', ['version']).error;
 }

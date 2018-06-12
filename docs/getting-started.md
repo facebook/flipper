@@ -43,6 +43,7 @@ public class MyApplication extends Application {
   @Override
   public void onCreate() {
     super.onCreate();
+    SoLoader.init(this, 0);
 
     if (BuildConfig.DEBUG && SonarUtils.shouldEnableSonar(this)) {
       final SonarClient client = AndroidSonarClient.getInstance(this);

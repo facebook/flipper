@@ -15,7 +15,7 @@
 #import <UIKit/UIKit.h>
 
 #if !TARGET_OS_SIMULATOR
-#import "SKPortForwardingServer.h"
+//#import "SKPortForwardingServer.h"
 #endif
 
 using WrapperPlugin = facebook::sonar::SonarCppWrapperPlugin;
@@ -24,7 +24,7 @@ using WrapperPlugin = facebook::sonar::SonarCppWrapperPlugin;
   facebook::sonar::SonarClient *_cppClient;
   folly::ScopedEventBaseThread eventBaseThread;
 #if !TARGET_OS_SIMULATOR
-  SKPortForwardingServer *_server;
+ // SKPortForwardingServer *_server;
 #endif
 }
 
@@ -103,9 +103,9 @@ using WrapperPlugin = facebook::sonar::SonarCppWrapperPlugin;
 - (void)start;
 {
 #if !TARGET_OS_SIMULATOR
-  _server = [SKPortForwardingServer new];
-  [_server forwardConnectionsFromPort:8088];
-  [_server listenForMultiplexingChannelOnPort:8078];
+  // _server = [SKPortForwardingServer new];
+  // [_server forwardConnectionsFromPort:8088];
+  // [_server listenForMultiplexingChannelOnPort:8078];
 #endif
   _cppClient->start();
 }
@@ -114,8 +114,8 @@ using WrapperPlugin = facebook::sonar::SonarCppWrapperPlugin;
 {
   _cppClient->stop();
 #if !TARGET_OS_SIMULATOR
-  [_server close];
-  _server = nil;
+  // [_server close];
+  // _server = nil;
 #endif
 }
 

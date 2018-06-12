@@ -7,7 +7,7 @@
  */
 #import "SonarCppBridgingResponder.h"
 
-#import "SKUtils.h"
+#import <FBCxxUtils/FBCxxFollyDynamicConvert.h>
 
 @implementation SonarCppBridgingResponder {
   std::unique_ptr<facebook::sonar::SonarResponder> responder_;
@@ -28,8 +28,8 @@
 
 #pragma mark - SonarResponder
 
-- (void)success:(NSDictionary *)response { responder_->success([SKUtils convertIdToFollyDynamic:response]); }
+- (void)success:(NSDictionary *)response { responder_->success(facebook::cxxutils::convertIdToFollyDynamic(response)); }
 
-- (void)error:(NSDictionary *)response { responder_->error([SKUtils convertIdToFollyDynamic:response]); }
+- (void)error:(NSDictionary *)response { responder_->error(facebook::cxxutils::convertIdToFollyDynamic(response)); }
 
 @end
