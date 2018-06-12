@@ -4,7 +4,7 @@ title: UI Components
 sidebar_label: UI Components
 ---
 
-Sonar has a lot of built in React components to build UIs. You can find all of these in [`src/ui/components`](https://github.com/facebook/Sonar/tree/master/src/ui/components) and can import them directly using `import {Buttom} from 'sonar'`.
+Sonar has a lot of built in React components to build UIs. You can find all of these in [`src/ui/components`](https://github.com/facebook/Sonar/tree/master/src/ui/components) and can import them directly using `import {Button} from 'sonar'`.
 
 ## FlexBox
 
