@@ -228,15 +228,12 @@ bool SonarWebSocketImpl::isCertificateExchangeNeeded() {
 }
 
 void SonarWebSocketImpl::requestSignedCertFromSonar() {
+  generateCertSigningRequest(
+      deviceData_.appId.c_str(),
+      absoluteFilePath(CSR_FILE_NAME).c_str(),
+      absoluteFilePath(PRIVATE_KEY_FILE).c_str());
   std::string csr = loadStringFromFile(absoluteFilePath(CSR_FILE_NAME));
-  if (csr == "") {
-    generateCertSigningRequest(
-        deviceData_.appId.c_str(),
-        absoluteFilePath(CSR_FILE_NAME).c_str(),
-        absoluteFilePath(PRIVATE_KEY_FILE).c_str());
-    csr = loadStringFromFile(absoluteFilePath(CSR_FILE_NAME));
-  }
-  // Send CSR to Sonar desktop
+
   folly::dynamic message = folly::dynamic::object("method", "signCertificate")(
       "csr", csr.c_str())("destination", absoluteFilePath("").c_str());
   worker_->add([this, message]() {
