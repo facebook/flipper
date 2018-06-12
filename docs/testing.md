@@ -11,7 +11,7 @@ Developer tools are only used if they work. We have built APIs to test plugins.
 Start by creating your first test file in this directory `MySonarPluginTest.java`. In the test method body we create our plugin which we want to test as well as a `SonarConnectionMock`. In this contrived example we simply assert that our plugin's connected status is what we expect.
 
 ```java
-@RunWith(WithTestDefaultsRunner.class)
+@RunWith(RobolectricTestRunner.class)
 public class MySonarPluginTest {
 
   @Test
