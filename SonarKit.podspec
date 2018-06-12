@@ -13,6 +13,7 @@ Pod::Spec.new do |spec|
   spec.source = { :git => 'https://github.com/facebook/Sonar.git',
                   :branch=> "master" }
   spec.module_name = 'SonarKit'
+  spec.swift_version = '4.1'
   spec.dependency 'Folly'
   spec.dependency 'Sonar'
   spec.dependency 'CocoaAsyncSocket', '~> 7.6'
