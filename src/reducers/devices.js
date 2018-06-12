@@ -18,10 +18,10 @@ export type Action =
       payload: BaseDevice,
     };
 
-const INITAL_STATE: State = [];
+const INITIAL_STATE: State = [];
 
 export default function reducer(
-  state: State = INITAL_STATE,
+  state: State = INITIAL_STATE,
   action: Action,
 ): State {
   switch (action.type) {
