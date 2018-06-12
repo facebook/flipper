@@ -443,7 +443,7 @@ export class Server extends EventEmitter {
           this.certificateProvider.processCertificateSigningRequest(
             csr,
             connectionParameters.os,
-            destination
+            destination,
           );
         }
       },
