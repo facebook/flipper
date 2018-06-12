@@ -2212,3 +2212,9 @@ footer iframe {
     padding-right: 0;
   }
 }
+
+.warning {
+    background-color: rgb(253, 245, 212);
+    border-left: 4px solid rgb(241, 196, 15);
+    padding: 12px;
+}
