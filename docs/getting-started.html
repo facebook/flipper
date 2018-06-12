@@ -32,7 +32,7 @@
   <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">onCreate</span><span class="hljs-params">()</span> </span>{
     <span class="hljs-keyword">super</span>.onCreate();
 
-    <span class="hljs-keyword">if</span> (BuildConfig.DEBUG &amp;&amp; SonarUtils.isMainProcess(mApplicationContext)) {
+    <span class="hljs-keyword">if</span> (BuildConfig.DEBUG &amp;&amp; SonarUtils.shouldEnableSonar(<span class="hljs-keyword">this</span>)) {
       <span class="hljs-keyword">final</span> SonarClient client = AndroidSonarClient.getInstance(<span class="hljs-keyword">this</span>);
       client.addPlugin(<span class="hljs-keyword">new</span> MySonarPlugin());
       client.start();
