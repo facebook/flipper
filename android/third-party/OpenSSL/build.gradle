@@ -8,15 +8,14 @@ android {
         minSdkVersion rootProject.minSdkVersion
         targetSdkVersion rootProject.targetSdkVersion
         ndk {
-            abiFilters 'x86', 'armeabi-v7a', 'arm64-v8a' 'x86_64'
+            abiFilters 'x86', 'arm64-v8a'
         }
 
         externalNativeBuild {
             ndkBuild {
             arguments "NDK_APPLICATION_MK:=$projectDir/jni/Application.mk",
-                      "NDK_TOOLCHAIN_VERSION:=clang",
-                      "NDK_PROJECT_PATH:=openssl-android-1.0.0"
-            cppFlags "-fPIC"
+                      "NDK_TOOLCHAIN_VERSION:=clang"
+            cppFlags "-std=c++11"
             }
         }
     }
@@ -34,4 +33,3 @@ android {
         }
     }
 }
-#abiFilters 'x86', 'arm64-v8a', 'x86_64'

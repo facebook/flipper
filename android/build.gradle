@@ -134,10 +134,16 @@ task downloadOpenSSL(dependsOn: [], type: Download) {
 
 task prepareOpenSSL(dependsOn: [downloadOpenSSL], type: Copy) {
     from tarTree(downloadOpenSSL.dest)
-    from './third-party/OpenSSL/'
-    include 'openssl-android-1.0.0/**/*', 'build.gradle', 'ApplicationManifest.xml'
+    include 'openssl-android-1.0.0/**/*'
     includeEmptyDirs = false
     into "$thirdPartyNdkDir/OpenSSL/"
+}
+
+task finalizeOpenSSL(dependsOn: [prepareOpenSSL], type: Copy) {
+    from './third-party/OpenSSL/'
+    include 'build.gradle', 'ApplicationManifest.xml'
+    includeEmptyDirs = false
+    into "$thirdPartyNdkDir/OpenSSL/openssl-android-1.0.0/"
 }
 
 task prepareAllLibs() {
@@ -146,7 +152,7 @@ task prepareAllLibs() {
     dependsOn prepareBoost
     dependsOn prepareFolly
     dependsOn finalizeEvent
-    dependsOn prepareOpenSSL
+    dependsOn finalizeOpenSSL
 }
 
 android {
