@@ -104,7 +104,7 @@ task prepareFolly(dependsOn: [downloadFolly], type: Copy) {
     into "$thirdPartyNdkDir/folly"
 }
 
-task downloadLibEvent(dependsOn: [prepareFolly], type: Download) {
+task downloadLibEvent(dependsOn: [], type: Download) {
     src 'https://github.com/libevent/libevent/archive/release-2.1.8-stable.tar.gz'
     onlyIfNewer true
     overwrite false
@@ -119,13 +119,34 @@ task prepareLibEvent(dependsOn: [downloadLibEvent], type: Copy) {
     into "$thirdPartyNdkDir/LibEvent"
 }
 
+task finalizeEvent(dependsOn: [prepareLibEvent], type: Copy) {
+    from './third-party/LibEvent/'
+    include 'event-config.h'
+    includeEmptyDirs = false
+    into "$thirdPartyNdkDir/LibEvent/libevent-release-2.1.8-stable/include/event2/"
+}
+task downloadOpenSSL(dependsOn: [], type: Download) {
+    src 'https://github.com/priteshrnandgaonkar/openssl-android/archive/1.0.0.tar.gz'
+    onlyIfNewer true
+    overwrite false
+    dest new File(downloadsDir, 'openssl-android-1.0.0.tar.gz');
+}
+
+task prepareOpenSSL(dependsOn: [downloadOpenSSL], type: Copy) {
+    from tarTree(downloadOpenSSL.dest)
+    from './third-party/OpenSSL/'
+    include 'openssl-android-1.0.0/**/*', 'build.gradle', 'ApplicationManifest.xml'
+    includeEmptyDirs = false
+    into "$thirdPartyNdkDir/OpenSSL/"
+}
+
 task prepareAllLibs() {
     dependsOn finalizeGlog
     dependsOn prepareDoubleConversion
     dependsOn prepareBoost
     dependsOn prepareFolly
-    dependsOn downloadLibEvent
-    dependsOn prepareLibEvent
+    dependsOn finalizeEvent
+    dependsOn prepareOpenSSL
 }
 
 android {

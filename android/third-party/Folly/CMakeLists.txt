@@ -15,16 +15,23 @@ list(APPEND dir_list ${FOLLY_DIR}/memory/detail)
 
 set(BOOST_DIR ../boost/boost_1_63_0/)
 set(GLOG_DIR ../glog/)
-set(LIBEVENT_DIR ../LibEvent/libevent-1.0.0/include)
+set(OPENSSL_DIR ../OpenSSL/openssl-android-1.0.0/jni/openssl-android/)
+
+set(LIBEVENT_DIR ../LibEvent/libevent-release-2.1.8-stable/)
 set(DOUBLECONVERSION_DIR ../double-conversion/double-conversion-3.0.0/)
 
 list(APPEND dir_list ${BOOST_DIR})
 list(APPEND dir_list ${BOOST_DIR}/../)
 list(APPEND dir_list ${LIBEVENT_DIR}/)
+list(APPEND dir_list ${LIBEVENT_DIR}/include/)
+list(APPEND dir_list ${OPENSSL_DIR})
+list(APPEND dir_list ${OPENSSL_DIR}/include)
+list(APPEND dir_list ${OPENSSL_DIR}/include/openssl)
 
 include_directories(${dir_list})
-
+#    -DFOLLY_FORCE_CLOCK_GETTIME_DEFINITION=1
 add_compile_options(
+    -DFOLLY_HAVE_CLOCK_GETTIME=1
     -DFOLLY_HAVE_PTHREAD=1
     -DFOLLY_NO_CONFIG=1
     -DFOLLY_HAVE_MEMRCHR
@@ -44,8 +51,8 @@ add_compile_options(
     -Wno-tautological-constant-compare
     )
 
-file(GLOB SRC_FILES ${FOLLY_DIR}/*.cpp
-                    ${FOLLY_DIR}/detail/*.cpp
+# ${FOLLY_DIR}/*.cpp
+file(GLOB SRC_FILES ${FOLLY_DIR}/detail/*.cpp
                     ${FOLLY_DIR}/hash/*.cpp
                     ${FOLLY_DIR}/portability/*.cpp
                     ${FOLLY_DIR}/io/async/*.cpp
@@ -88,13 +95,18 @@ set(build_DIR ${CMAKE_SOURCE_DIR}/build)
 set(libglog_build_DIR ${build_DIR}/libglog/${ANDROID_ABI})
 set(doubleconversion_build_DIR ${build_DIR}/doubleconversion/${ANDROID_ABI})
 
+
 file(MAKE_DIRECTORY ${build_DIR})
 
 add_subdirectory(${GLOG_DIR} ${libglog_build_DIR})
 add_subdirectory(${DOUBLECONVERSION_DIR} ${doubleconversion_build_DIR})
 
 target_include_directories(${PACKAGE_NAME} PRIVATE
+    ${OPENSSL_DIR}
+    ${OPENSSL_DIR}/include
+    ${OPENSSL_DIR}/include/openssl
     ${LIBEVENT_DIR}
+    ${LIBEVENT_DIR}/include/
     ${LIBEVENT_DIR}/../
     ${BOOST_DIR}
     ${BOOST_DIR}/../
@@ -104,4 +116,4 @@ target_include_directories(${PACKAGE_NAME} PRIVATE
 
 
 install(TARGETS ${PACKAGE_NAME}  DESTINATION ./build/)
-target_link_libraries(${PACKAGE_NAME} glog double-conversion)
+target_link_libraries(${PACKAGE_NAME} glog double-conversion ssl crypto)
