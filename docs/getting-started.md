@@ -31,7 +31,7 @@ repositories {
 }
 
 dependencies {
-  debugCompile 'com.facebook.sonar:sonar:0.0.1'
+  debugImplementation 'com.facebook.sonar:sonar:0.0.1'
 }
 ```
 
