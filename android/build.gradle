@@ -134,7 +134,8 @@ task downloadOpenSSL(dependsOn: [], type: Download) {
 
 task prepareOpenSSL(dependsOn: [downloadOpenSSL], type: Copy) {
     from tarTree(downloadOpenSSL.dest)
-    include 'openssl-android-1.0.0/**/*'
+    from './third-party/OpenSSL/'
+    include 'openssl-android-1.0.0/**/*', 'libs/**/*'
     includeEmptyDirs = false
     into "$thirdPartyNdkDir/OpenSSL/"
 }
