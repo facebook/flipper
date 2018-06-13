@@ -152,7 +152,7 @@ task prepareAllLibs() {
     dependsOn prepareDoubleConversion
     dependsOn prepareBoost
     dependsOn prepareFolly
-    dependsOn finalizeEvent
+    dependsOn prepareLibEvent
     dependsOn finalizeOpenSSL
 }
 
