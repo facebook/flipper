@@ -39,6 +39,19 @@
     "Plugins: Mobile part": "Plugins: Mobile part"
   },
   "pages-strings": {
+    "Extensible mobile app debugger|no description given": "Extensible mobile app debugger",
+    "Sonar is a platform for debugging mobile apps on iOS and Android. Visualize, inspect, and control your apps from a simple desktop interface. Use Sonar as is or extend it using the plugin API.|no description given": "Sonar is a platform for debugging mobile apps on iOS and Android. Visualize, inspect, and control your apps from a simple desktop interface. Use Sonar as is or extend it using the plugin API.",
+    "Download|no description given": "Download",
+    "Learn more|no description given": "Learn more",
+    "Tools|no description given": "Tools",
+    "Mobile development|no description given": "Mobile development",
+    "Sonar aims to be your number one companion for mobile app development on iOS and Android. Therefore, we provide a bunch of useful tools including a log viewer, interactive layout inspector, and network inspector.|no description given": "Sonar aims to be your number one companion for mobile app development on iOS and Android. Therefore, we provide a bunch of useful tools including a log viewer, interactive layout inspector, and network inspector.",
+    "Plugins|no description given": "Plugins",
+    "Extending Sonar|no description given": "Extending Sonar",
+    "Sonar is built as a platform. In addition to using the tools already included, you can create your own plugins to visualize and debug data from your mobile apps. Sonar takes care of sending data back and forth, calling functions, and listening for events on the mobile app.|no description given": "Sonar is built as a platform. In addition to using the tools already included, you can create your own plugins to visualize and debug data from your mobile apps. Sonar takes care of sending data back and forth, calling functions, and listening for events on the mobile app.",
+    "Open Source|no description given": "Open Source",
+    "Contributing to Sonar|no description given": "Contributing to Sonar",
+    "Both Sonar's desktop app and native mobile SDKs are open-source and MIT licensed. This enables you to see and understand how we are building plugins, and of course join the community and help improve Sonar. We are excited to see what you will build on this platform.|no description given": "Both Sonar's desktop app and native mobile SDKs are open-source and MIT licensed. This enables you to see and understand how we are building plugins, and of course join the community and help improve Sonar. We are excited to see what you will build on this platform.",
     "Help Translate|recruit community translators for your project": "Help Translate",
     "Edit this Doc|recruitment message asking to edit the doc source": "Edit",
     "Translate this Doc|recruitment message asking to translate the docs": "Translate"

@@ -6,6 +6,7 @@
  */
 
 const React = require('react');
+const translate = require('../../server/translate.js').translate;
 
 class Index extends React.Component {
   render() {
@@ -13,20 +14,30 @@ class Index extends React.Component {
       <div>
         <div className="splash">
           <div className="content">
-            <h1>Extensible mobile app&nbsp;debugger</h1>
+            <h1>
+              <translate>
+                Extensible mobile app&nbsp;debugger
+              </translate>
+            </h1>
             <h2>
-              Sonar is a platform for debugging mobile apps on iOS and Android.
-              Visualize, inspect, and control your apps from a simple desktop
-              interface. Use Sonar as is or extend it using the plugin API.
+              <translate>
+                Sonar is a platform for debugging mobile apps on iOS and Android.
+                Visualize, inspect, and control your apps from a simple desktop
+                interface. Use Sonar as is or extend it using the plugin API.
+              </translate>
             </h2>
             <div className="row">
               <a
                 className="btn primary"
                 href="https://www.facebook.com/sonar/public/mac">
-                Download
+                <translate>
+                  Download
+                </translate>
               </a>
               <a className="btn" href="/docs/understand.html">
-                Learn more
+                <translate>
+                  Learn more
+                </translate>
               </a>
             </div>
             <img
@@ -45,32 +56,56 @@ class Index extends React.Component {
             />
           </div>
           <div className="col">
-            <h4>Tools</h4>
-            <h3>Mobile development</h3>
+            <h4>
+              <translate>
+                Tools
+              </translate>
+              </h4>
+            <h3>
+              <translate>
+                Mobile development
+              </translate>
+            </h3>
             <p>
-              Sonar aims to be your number one companion for mobile app
-              development on iOS and Android. Therefore, we provide a bunch of
-              useful tools including a log viewer, interactive layout inspector,
-              and network inspector.
+              <translate>
+                Sonar aims to be your number one companion for mobile app
+                development on iOS and Android. Therefore, we provide a bunch of
+                useful tools including a log viewer, interactive layout inspector,
+                and network inspector.
+              </translate>
             </p>
             <a className="learnmore" href="/docs/getting-started.html">
-              Learn more
+              <translate>
+                Learn more
+              </translate>
             </a>
           </div>
         </div>
         <div className="content row">
           <div className="col">
-            <h4>Plugins</h4>
-            <h3>Extending Sonar</h3>
+            <h4>
+              <translate>
+                Plugins
+              </translate>
+            </h4>
+            <h3>
+              <translate>
+                Extending Sonar
+              </translate>
+            </h3>
             <p>
-              Sonar is built as a platform. In addition to using the tools
-              already included, you can create your own plugins to visualize and
-              debug data from your mobile apps. Sonar takes care of sending data
-              back and forth, calling functions, and listening for events on the
-              mobile app.
+              <translate>
+                Sonar is built as a platform. In addition to using the tools
+                already included, you can create your own plugins to visualize and
+                debug data from your mobile apps. Sonar takes care of sending data
+                back and forth, calling functions, and listening for events on the
+                mobile app.
+              </translate>
             </p>
             <a className="learnmore" href="/docs/understand.html">
-              Learn more
+              <translate>
+                Learn more
+              </translate>
             </a>
           </div>
           <div className="col center">
@@ -88,17 +123,29 @@ class Index extends React.Component {
             />
           </div>
           <div className="col">
-            <h4>Open Source</h4>
-            <h3>Contributing to Sonar</h3>
+            <h4>
+              <translate>
+                Open Source
+              </translate>
+            </h4>
+            <h3>
+              <translate>
+                Contributing to Sonar
+              </translate>
+            </h3>
             <p>
-              Both Sonar's desktop app and native mobile SDKs are open-source
-              and MIT licensed. This enables you to see and understand how we
-              are building plugins, and of course join the community and help
-              improve Sonar. We are excited to see what you will build on this
-              platform.
+              <translate>
+                Both Sonar's desktop app and native mobile SDKs are open-source
+                and MIT licensed. This enables you to see and understand how we
+                are building plugins, and of course join the community and help
+                improve Sonar. We are excited to see what you will build on this
+                platform.
+              </translate>
             </p>
             <a className="learnmore" href="/docs/js-setup.html">
-              Learn more
+              <translate>
+                Learn more
+              </translate>
             </a>
           </div>
         </div>
