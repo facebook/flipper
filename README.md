@@ -51,10 +51,8 @@ yarn start
 ## Building the desktop app
 
 ```
-yarn build [macOnly] [build-number=$buildNumber]
+yarn build --mac --version $buildNumber
 ```
-
-A binary for macOS is created in `dist/mac`. `macOnly` and `build-number` are optional params.
 
 ## Documentation
 

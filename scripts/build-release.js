@@ -52,14 +52,11 @@ function modifyPackageManifest(buildFolder) {
   manifest.dependencies = manifestStatic.dependencies;
   manifest.main = 'index.js';
 
-  const BUILD_NUMBER_ARG = 'build-number=';
-  const buildNumber = (
-    process.argv.find(arg => arg.startsWith(BUILD_NUMBER_ARG)) || ''
-  ).replace(BUILD_NUMBER_ARG, '');
-  if (buildNumber) {
+  const buildNumber = process.argv.join(' ').match(/--version=(\d+)/);
+  if (buildNumber && buildNumber.length > 0) {
     manifest.version = [
       ...manifest.version.split('.').slice(0, 2),
-      buildNumber,
+      buildNumber[1],
     ].join('.');
   }
 
@@ -80,14 +77,18 @@ function modifyPackageManifest(buildFolder) {
 
 function buildDist(buildFolder) {
   const targetsRaw = [];
-  targetsRaw.push(Platform.MAC.createTarget(['zip']));
-  if (process.argv.slice(2).indexOf('macOnly') === -1) {
-    targetsRaw.push(Platform.LINUX.createTarget(['dir']));
-    targetsRaw.push(Platform.WINDOWS.createTarget(['dir']));
-  }
 
+  if (process.argv.indexOf('--mac') > -1) {
+    targetsRaw.push(Platform.MAC.createTarget(['zip']));
+  }
+  if (process.argv.indexOf('--linux') > -1) {
+    targetsRaw.push(Platform.LINUX.createTarget(['zip']));
+  }
+  if (process.argv.indexOf('--win') > -1) {
+    targetsRaw.push(Platform.WINDOWS.createTarget(['zip']));
+  }
   if (!targetsRaw.length) {
-    throw new Error('No targets specified. eg. --osx pkg,dmg --linux tar.gz');
+    throw new Error('No targets specified. eg. --mac, --win, or --linux');
   }
 
   // merge all target maps into a single map

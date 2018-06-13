@@ -13,7 +13,7 @@
   "build": {
     "appId": "sonar",
     "productName": "Sonar",
-    "artifactName": "Sonar.${ext}",
+    "artifactName": "Sonar-${os}.${ext}",
     "mac": {
       "category": "public.app-category.developer-tools"
     },
@@ -22,6 +22,7 @@
     }
   },
   "devDependencies": {
+    "7zip-bin-mac": "^1.0.1",
     "babel-eslint": "^8.2.1",
     "electron": "^2.0.1",
     "electron-builder": "^19.49.0",
