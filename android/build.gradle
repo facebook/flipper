@@ -125,6 +125,14 @@ task finalizeEvent(dependsOn: [prepareLibEvent], type: Copy) {
     includeEmptyDirs = false
     into "$thirdPartyNdkDir/LibEvent/libevent-release-2.1.8-stable/include/event2/"
 }
+
+task finalizeEvent2(dependsOn: [finalizeEvent], type: Copy) {
+    from './third-party/LibEvent/'
+    include 'libs/**/*'
+    includeEmptyDirs = false
+    into "$thirdPartyNdkDir/LibEvent/"
+}
+
 task downloadOpenSSL(dependsOn: [], type: Download) {
     src 'https://github.com/priteshrnandgaonkar/openssl-android/archive/1.0.0.tar.gz'
     onlyIfNewer true
@@ -152,7 +160,7 @@ task prepareAllLibs() {
     dependsOn prepareDoubleConversion
     dependsOn prepareBoost
     dependsOn prepareFolly
-    dependsOn prepareLibEvent
+    dependsOn finalizeEvent2
     dependsOn finalizeOpenSSL
 }
 

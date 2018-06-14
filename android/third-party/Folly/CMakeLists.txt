@@ -55,12 +55,11 @@ add_compile_options(
 # ${FOLLY_DIR}/portability/*.cpp
 #                     ${FOLLY_DIR}/detail/*.cpp
 #                     ${FOLLY_DIR}/hash/*.cpp
+# ${FOLLY_DIR}/io/async/*.cpp
 
-
- file(GLOB SRC_FILES ${FOLLY_DIR}/io/async/*.cpp
-                     ${FOLLY_DIR}/portability/*.cpp
+ file(GLOB SRC_FILES ${FOLLY_DIR}/portability/*.cpp
                      ${FOLLY_DIR}/io/async/ssl/*.cpp
-                     ${FOLLY_DIR}/io/*.cpp
+#                     ${FOLLY_DIR}/io/*.cpp
                      ${FOLLY_DIR}/detail/*.cpp
                      ${FOLLY_DIR}/synchronization/*.cpp
                      ${FOLLY_DIR}/lang/*.cpp
@@ -74,11 +73,26 @@ add_compile_options(
                      ${FOLLY_DIR}/concurrency/*.cpp
                      ${FOLLY_DIR}/ssl/*.cpp
                      ${FOLLY_DIR}/ssl/detail/*.cpp
-                     ${FOLLY_DIR}/system/*.cpp
+#                     ${FOLLY_DIR}/system/*.cpp
                      )
-
-list(APPEND SRC_FILES ${FOLLY_DIR}/SharedMutex.cpp
+# ${FOLLY_DIR}/io/async/AsyncServerSocket.cpp
+list(APPEND SRC_FILES ${FOLLY_DIR}/io/async/HHWheelTimer.cpp
+                      ${FOLLY_DIR}/io/async/AsyncPipe.cpp
+                      ${FOLLY_DIR}/io/async/AsyncTimeout.cpp
+                      ${FOLLY_DIR}/io/async/EventBaseManager.cpp
+                      ${FOLLY_DIR}/io/async/TimeoutManager.cpp
+                      ${FOLLY_DIR}/io/async/AsyncSocketException.cpp
+                      ${FOLLY_DIR}/io/async/Request.cpp
+                      ${FOLLY_DIR}/io/async/EventBase.cpp
+                      ${FOLLY_DIR}/io/async/EventHandler.cpp
+                      ${FOLLY_DIR}/io/async/VirtualEventBase.cpp
+                      ${FOLLY_DIR}/SharedMutex.cpp
                       ${FOLLY_DIR}/ExceptionWrapper.cpp
+                      ${FOLLY_DIR}/system/ThreadName.cpp
+                      ${FOLLY_DIR}/io/IOBuf.cpp
+                      ${FOLLY_DIR}/io/IOBufQueue.cpp
+#                      ${FOLLY_DIR}/system/MemoryMapping.cpp
+#                      ${FOLLY_DIR}/experimental/io/HugePages.cpp
                       ${FOLLY_DIR}/File.cpp
                       ${FOLLY_DIR}/Random.cpp
                       ${FOLLY_DIR}/Singleton.cpp
@@ -134,14 +148,17 @@ target_include_directories(${PACKAGE_NAME} PRIVATE
     ${GLOG_DIR}/glog-0.3.5/src/
     ${DOUBLECONVERSION_DIR})
 
-set(LINK_DIRECTORIES ${PROJECT_SOURCE_DIR}/../OpenSSL/libs/${ANDROID_ABI}/)
-find_path(OPENSSL_LIBRARY libssl.so HINTS ${LINK_DIRECTORIES})
-find_library(CRYPTO_LIBRARY crypto HINTS ${LINK_DIRECTORIES})
+set(OPENSSL_LINK_DIRECTORIES ${PROJECT_SOURCE_DIR}/../OpenSSL/libs/${ANDROID_ABI}/)
+find_path(OPENSSL_LIBRARY libssl.so HINTS ${OPENSSL_LINK_DIRECTORIES})
+find_library(CRYPTO_LIBRARY crypto HINTS ${OPENSSL_LINK_DIRECTORIES})
+
+set(LIBEVENT_LINK_DIRECTORIES ${PROJECT_SOURCE_DIR}/../LibEvent/libs/${ANDROID_ABI}/)
+find_path(LIBEVENT_LIBRARY libevent.a HINTS ${LIBEVENT_LINK_DIRECTORIES})
 
 #link_directories(${LINK_DIRECTORIES})
-message(STATUS "link_directories:- " ${LINK_DIRECTORIES})
+message(STATUS "link_directories:- " ${LIBEVENT_LINK_DIRECTORIES})
 
 install(TARGETS ${PACKAGE_NAME}  DESTINATION ./build/)
+# ${LIBEVENT_LINK_DIRECTORIES}/libevent.a
 
-
-target_link_libraries(${PACKAGE_NAME} glog double-conversion ${LINK_DIRECTORIES}/libssl.so ${LINK_DIRECTORIES}/libcrypto.so)
+target_link_libraries(${PACKAGE_NAME} glog double-conversion ${OPENSSL_LINK_DIRECTORIES}/libssl.so ${OPENSSL_LINK_DIRECTORIES}/libcrypto.so ${LIBEVENT_LINK_DIRECTORIES}/libevent.a)

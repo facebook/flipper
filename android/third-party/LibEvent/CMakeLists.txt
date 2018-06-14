@@ -7,7 +7,8 @@ set(LIBEVENT_DIR  libevent-release-2.1.8-stable)
 list(APPEND DIR_LIST ${LIBEVENT_DIR}/)
 list(APPEND DIR_LIST ${LIBEVENT_DIR}/include)
 include_directories(${DIR_LIST})
-list(APPEND SRCFILES ${LIBEVENT_DIR}/buffer.c
+list(APPEND SRCFILES ${LIBEVENT_DIR}/event.c
+                     ${LIBEVENT_DIR}/buffer.c
                      ${LIBEVENT_DIR}/bufferevent.c
                      ${LIBEVENT_DIR}/bufferevent_filter.c
                      ${LIBEVENT_DIR}/bufferevent_ratelim.c
@@ -15,7 +16,6 @@ list(APPEND SRCFILES ${LIBEVENT_DIR}/buffer.c
                      ${LIBEVENT_DIR}/epoll.c
                  	 ${LIBEVENT_DIR}/epoll_sub.c
                  	 ${LIBEVENT_DIR}/evdns.c
-                 	 ${LIBEVENT_DIR}/event.c
                  	 ${LIBEVENT_DIR}/event_tagging.c
                  	 ${LIBEVENT_DIR}/evmap.c
                    	 ${LIBEVENT_DIR}/evrpc.c
@@ -35,8 +35,8 @@ list(APPEND SRCFILES ${LIBEVENT_DIR}/buffer.c
 #file(GLOB SRCFILES  ${LIBEVENT_DIR}/*.c)
 
 message(STATUS "DIR_LIST :- " ${DIR_LIST})
-configure_file(${LIBEVENT_DIR}/evconfig-private.h.cmake ${LIBEVENT_DIR}/evconfig-private.h)
-configure_file(${LIBEVENT_DIR}/event-config.h.cmake ${LIBEVENT_DIR}/include/event2/event-config.h)
+#configure_file(${LIBEVENT_DIR}/evconfig-private.h.cmake ${LIBEVENT_DIR}/evconfig-private.h)
+#configure_file(${LIBEVENT_DIR}/event-config.h.cmake ${LIBEVENT_DIR}/include/event2/event-config.h)
 add_library(${PACKAGE_NAME} SHARED ${SRCFILES})
 install(TARGETS ${PACKAGE_NAME}  DESTINATION ./build/)
 target_link_libraries(${PACKAGE_NAME})
