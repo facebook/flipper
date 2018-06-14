@@ -13,27 +13,31 @@ set(LIBEVENT_DIR ${third_party_ndk}/LibEvent/libevent-release-2.1.9/)
 set(DOUBLECONVERSION_DIR ${third_party_ndk}/double-conversion/double-conversion-3.0.0/)
 set(OPENSSL_DIR ${third_party_ndk}/OpenSSL/openssl-android-1.0.0/)
 
-set(RSOCKET_DIR  ${PROJECT_SOURCE_DIR}/rsocket-cpp-0.10.1)
+set(RSOCKET_ROOT_DIR  ${PROJECT_SOURCE_DIR}/rsocket-cpp-0.10.1)
+set(RSOCKET_DIR  ${PROJECT_SOURCE_DIR}/rsocket-cpp-0.10.1/rsocket)
 
+list(APPEND dir_list ${RSOCKET_ROOT_DIR}/)
 list(APPEND dir_list ${RSOCKET_DIR}/)
-list(APPEND dir_list ${RSOCKET_DIR}/benchmarks)
+#list(APPEND dir_list ${RSOCKET_DIR}/benchmarks)
 list(APPEND dir_list ${RSOCKET_DIR}/framing)
 list(APPEND dir_list ${RSOCKET_DIR}/internal)
 list(APPEND dir_list ${RSOCKET_DIR}/statemachine)
 list(APPEND dir_list ${RSOCKET_DIR}/transports)
 list(APPEND dir_list ${RSOCKET_DIR}/transports/tcp)
-list(APPEND dir_list ${RSOCKET_DIR}/yarpl/flowable)
-list(APPEND dir_list ${RSOCKET_DIR}/yarpl/observable)
-
+list(APPEND dir_list ${RSOCKET_ROOT_DIR}/yarpl/flowable)
+list(APPEND dir_list ${RSOCKET_ROOT_DIR}/yarpl/observable)
+list(APPEND dir_list ${RSOCKET_ROOT_DIR}/yarpl/utils)
 
 file(GLOB SRC_FILES ${RSOCKET_DIR}/*.cpp
-                    ${RSOCKET_DIR}/benchmarks/*.cpp
+    #                ${RSOCKET_DIR}/benchmarks/*.cpp
+                    ${RSOCKET_DIR}/internal/*.cpp
                     ${RSOCKET_DIR}/framing/*.cpp
                     ${RSOCKET_DIR}/statemachine/*.cpp
                     ${RSOCKET_DIR}/transports/*.cpp
                     ${RSOCKET_DIR}/transports/tcp/*.cpp
-                    ${FOLLY_DIR}/hash/detail/*.cpp
-                    ${RSOCKET_DIR}/yarpl/observable/*.cpp
+                    ${RSOCKET_ROOT_DIR}/yarpl/observable/*.cpp
+                    ${RSOCKET_ROOT_DIR}/yarpl/flowable/*.cpp
+                    ${RSOCKET_ROOT_DIR}/yarpl/utils/*.cpp
                     )
 
 include_directories(${dir_list})
@@ -58,7 +62,6 @@ add_compile_options(
     -Wno-tautological-constant-compare
     )
 
-message(STATUS "DIR LIST RSocket => " ${dir_list} )
 #file(GLOB_RECURSE SRCFILES ${RSOCKET_DIR}/*.cpp)
 
 add_library(${PACKAGE_NAME} SHARED ${SRC_FILES})
@@ -83,13 +86,11 @@ target_include_directories(${PACKAGE_NAME} PRIVATE
         ${glog_DIR}
         ${glog_DIR}/../
         ${glog_DIR}/glog-0.3.5/src/
-        ${easywsclient_DIR}
     )
 
 
 #install(TARGETS ${PACKAGE_NAME}  DESTINATION ./build/)
 set(OPENSSL_LINK_DIRECTORIES ${third_party_ndk}/OpenSSL/libs/${ANDROID_ABI}/)
-message(STATUS "OPENSSL_LINK_DIRECTORIES RSocket => " ${OPENSSL_LINK_DIRECTORIES} )
 
 find_path(OPENSSL_LIBRARY libssl.so HINTS ${OPENSSL_LINK_DIRECTORIES})
 

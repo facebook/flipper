@@ -104,6 +104,13 @@ task prepareFolly(dependsOn: [downloadFolly], type: Copy) {
     into "$thirdPartyNdkDir/folly"
 }
 
+//TODO: Get rid off this hack.
+task finalizeFolly(dependsOn: [prepareFolly], type: Copy) {
+    from './third-party/folly/'
+    include 'AsyncServerSocket.cpp'
+    into "$thirdPartyNdkDir/folly/folly/io/async/"
+}
+
 task downloadLibEvent(dependsOn: [], type: Download) {
     src 'https://github.com/priteshrnandgaonkar/libevent/archive/release-2.1.9.tar.gz'
     onlyIfNewer true
@@ -174,7 +181,7 @@ task prepareAllLibs() {
     dependsOn finalizeGlog
     dependsOn prepareDoubleConversion
     dependsOn prepareBoost
-    dependsOn prepareFolly
+    dependsOn finalizeFolly
     dependsOn finalizeEvent
     dependsOn finalizeOpenSSL
     dependsOn prepareRSocket
@@ -189,7 +196,7 @@ android {
         targetSdkVersion rootProject.targetSdkVersion
         buildConfigField "boolean", "IS_INTERNAL_BUILD", 'true'
         ndk {
-            abiFilters 'x86', 'x86_64', 'armeabi-v7a', 'arm64-v8a'
+            abiFilters 'arm64-v8a', 'x86'
         }
 
         externalNativeBuild {

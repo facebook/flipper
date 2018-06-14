@@ -53,6 +53,7 @@ add_compile_options(
     )
  file(GLOB SRC_FILES ${FOLLY_DIR}/portability/*.cpp
                      ${FOLLY_DIR}/io/async/ssl/*.cpp
+                     ${FOLLY_DIR}/io/async/*.cpp
                      ${FOLLY_DIR}/detail/*.cpp
                      ${FOLLY_DIR}/synchronization/*.cpp
                      ${FOLLY_DIR}/lang/*.cpp
@@ -77,6 +78,7 @@ list(APPEND SRC_FILES ${FOLLY_DIR}/io/async/HHWheelTimer.cpp
                       ${FOLLY_DIR}/io/async/EventBase.cpp
                       ${FOLLY_DIR}/io/async/EventHandler.cpp
                       ${FOLLY_DIR}/io/async/VirtualEventBase.cpp
+                      ${FOLLY_DIR}/io/ShutdownSocketSet.cpp
                       ${FOLLY_DIR}/SharedMutex.cpp
                       ${FOLLY_DIR}/ExceptionWrapper.cpp
                       ${FOLLY_DIR}/system/ThreadName.cpp

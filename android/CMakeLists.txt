@@ -1,5 +1,7 @@
 cmake_minimum_required (VERSION 3.6.0)
-project(sonar CXX C)
+project(sonar CXX)
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
 set(PACKAGE_NAME      "sonar")
@@ -14,7 +16,6 @@ add_compile_options(-DFOLLY_NO_CONFIG
                     -DFOLLY_HAVE_PREADV=0
                     -frtti
                     -fexceptions
-                    -std=c++14
                     -Wno-error
                     -Wno-unused-local-typedefs
                     -Wno-unused-variable
