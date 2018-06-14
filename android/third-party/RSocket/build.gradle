@@ -1,0 +1,35 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion rootProject.compileSdkVersion
+    buildToolsVersion rootProject.buildToolsVersion
+
+    defaultConfig {
+        minSdkVersion rootProject.minSdkVersion
+        targetSdkVersion rootProject.targetSdkVersion
+        ndk {
+            abiFilters 'arm64-v8a', 'x86', 'armeabi-v7a'
+        }
+
+        externalNativeBuild {
+            cmake {
+                arguments '-DANDROID_TOOLCHAIN=clang'
+            }
+        }
+    }
+    lintOptions {
+        abortOnError false
+    }
+    sourceSets {
+        main {
+            manifest.srcFile './ApplicationManifest.xml'
+        }
+    }
+    externalNativeBuild {
+        cmake {
+            path './CMakeLists.txt'
+            //'rsocket-cpp-0.10.0/CMakeLists.txt'
+        }
+    }
+}
+//'x86', 'x86_64', 'armeabi-v7a',

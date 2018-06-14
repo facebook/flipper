@@ -155,6 +155,21 @@ task finalizeOpenSSL(dependsOn: [prepareOpenSSL], type: Copy) {
     into "$thirdPartyNdkDir/OpenSSL/openssl-android-1.0.0/"
 }
 
+task downloadRSocket(dependsOn: [], type: Download) {
+    src 'https://github.com/priteshrnandgaonkar/rsocket-cpp/archive/0.10.1.tar.gz'
+    onlyIfNewer true
+    overwrite false
+    dest new File(downloadsDir, 'rsocket-cpp-0.10.1.tar.gz');
+}
+
+task prepareRSocket(dependsOn: [downloadRSocket], type: Copy) {
+    from tarTree(downloadRSocket.dest)
+    from './third-party/RSocket/'
+    include 'rsocket-cpp-0.10.1/**/*', 'build.gradle', 'ApplicationManifest.xml', 'CMakeLists.txt'
+    includeEmptyDirs = false
+    into "$thirdPartyNdkDir/RSocket"
+}
+
 task prepareAllLibs() {
     dependsOn finalizeGlog
     dependsOn prepareDoubleConversion
@@ -162,6 +177,7 @@ task prepareAllLibs() {
     dependsOn prepareFolly
     dependsOn finalizeEvent
     dependsOn finalizeOpenSSL
+    dependsOn prepareRSocket
 }
 
 android {

@@ -19,6 +19,7 @@ include ':doubleconversion'
 include ':glog'
 include ':libevent'
 include ':openssl'
+include ':rsocket'
 
 
 
@@ -32,3 +33,4 @@ project(':glog').projectDir = file('android/build/third-party-ndk/glog/')
 project(':folly').projectDir = file('android/build/third-party-ndk/folly/')
 project(':libevent').projectDir = file('android/build/third-party-ndk/LibEvent/')
 project(':openssl').projectDir = file('android/build/third-party-ndk/OpenSSL/openssl-android-1.0.0')
+project(':rsocket').projectDir = file('android/build/third-party-ndk/RSocket')
