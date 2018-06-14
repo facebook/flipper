@@ -32,13 +32,13 @@ target_include_directories(${PACKAGE_NAME}  PUBLIC "./")
 set(libjnihack_DIR ${CMAKE_SOURCE_DIR}/../libs/jni-hack/)
 set(libfbjni_DIR ${CMAKE_SOURCE_DIR}/../libs/fbjni/src/main/cpp/include/)
 set(libsonar_DIR ${CMAKE_SOURCE_DIR}/../xplat/)
-set(third_party_ndk build/third-party-ndk)
+set(third_party_ndk ${PROJECT_SOURCE_DIR}/build/third-party-ndk)
 set(libfolly_DIR ${third_party_ndk}/folly/)
 set(glog_DIR ${third_party_ndk}/glog)
 set(BOOST_DIR ${third_party_ndk}/boost/boost_1_63_0/)
-set(LIBEVENT_DIR ${third_party_ndk}/LibEvent/libevent-1.0.0/include/)
+set(LIBEVENT_DIR ${third_party_ndk}/LibEvent/libevent-release-2.1.9/)
 
-
+message(STATUS "AAAANDROID LIBEVENT_DIR => "  ${LIBEVENT_DIR})
 set(build_DIR ${CMAKE_SOURCE_DIR}/build)
 
 set(fbjni_build_DIR ${build_DIR}/fbjni/${ANDROID_ABI})
@@ -60,7 +60,9 @@ target_include_directories(${PACKAGE_NAME} PRIVATE
     ${glog_DIR}/glog-0.3.5/src/
     ${BOOST_DIR}
     ${BOOST_DIR}/../
-    ${LIBEVENT_DIR}
+    ${LIBEVENT_DIR}/
+    ${LIBEVENT_DIR}/include/
+    ${LIBEVENT_DIR}/include/event2
     )
 
 target_link_libraries(${PACKAGE_NAME} fb sonarcpp)
