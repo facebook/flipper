@@ -4,3 +4,10 @@ website/build
 *.xcworkspace
 **/Pods/
 **/xcuserdata/
+
+# Android / Intellij
+local.properties
+*.iml
+.gradle/
+.idea
+.externalNativeBuild
