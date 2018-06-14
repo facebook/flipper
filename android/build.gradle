@@ -105,16 +105,16 @@ task prepareFolly(dependsOn: [downloadFolly], type: Copy) {
 }
 
 task downloadLibEvent(dependsOn: [], type: Download) {
-    src 'https://github.com/libevent/libevent/archive/release-2.1.8-stable.tar.gz'
+    src 'https://github.com/priteshrnandgaonkar/libevent/archive/release-2.1.9.tar.gz'
     onlyIfNewer true
     overwrite false
-    dest new File(downloadsDir, 'libevent-release-2.1.8-stable.tar.gz');
+    dest new File(downloadsDir, 'libevent-release-2.1.9.tar.gz');
 }
 
 task prepareLibEvent(dependsOn: [downloadLibEvent], type: Copy) {
     from tarTree(downloadLibEvent.dest)
     from './third-party/LibEvent/'
-    include 'libevent-release-2.1.8-stable/**/*', 'build.gradle', 'CMakeLists.txt', 'ApplicationManifest.xml'
+    include 'libevent-release-2.1.9/**/*', 'build.gradle', 'ApplicationManifest.xml'
     includeEmptyDirs = false
     into "$thirdPartyNdkDir/LibEvent"
 }
@@ -123,7 +123,7 @@ task finalizeEvent(dependsOn: [prepareLibEvent], type: Copy) {
     from './third-party/LibEvent/'
     include 'event-config.h'
     includeEmptyDirs = false
-    into "$thirdPartyNdkDir/LibEvent/libevent-release-2.1.8-stable/include/event2/"
+    into "$thirdPartyNdkDir/LibEvent/libevent-release-2.1.9/include/event2/"
 }
 
 task finalizeEvent2(dependsOn: [finalizeEvent], type: Copy) {
@@ -160,7 +160,7 @@ task prepareAllLibs() {
     dependsOn prepareDoubleConversion
     dependsOn prepareBoost
     dependsOn prepareFolly
-    dependsOn finalizeEvent2
+    dependsOn finalizeEvent
     dependsOn finalizeOpenSSL
 }
 
