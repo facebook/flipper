@@ -35,7 +35,9 @@ ext.deps = [
         supportAppCompat   : 'com.android.support:appcompat-v7:27.1.1',
         supportCoreUi      : 'com.android.support:support-core-ui:27.1.1',
         supportRecyclerView: 'com.android.support:recyclerview-v7:27.1.1',
+        supportConstraintLayout: 'com.android.support.constraint:constraint-layout:1.1.0',
         supportEspresso    : 'com.android.support.test.espresso:espresso-core:2.2.2',
+        supportDesign      : 'com.android.support:design:27.1.1',
         supportEspressoIntents : 'com.android.support.test.espresso:espresso-intents:2.2.2',
         supportTestRunner  : 'com.android.support.test:runner:1.0.2',
         // Arch
@@ -46,12 +48,17 @@ ext.deps = [
         // Annotations
         jsr305             : 'com.google.code.findbugs:jsr305:3.0.1',
         inferAnnotations   : 'com.facebook.infer.annotation:infer-annotation:0.11.2',
+        // Litho
         lithoAnnotations   : 'com.facebook.litho:litho-annotations:0.15.0',
+        lithoCore          : 'com.facebook.litho:litho-core:0.15.0',
+        lithoWidget        : 'com.facebook.litho:litho-widget:0.15.0',
+        lithoProcessor     : 'com.facebook.litho:litho-processor:0.15.0',
+        lithoFresco        : 'com.facebook.litho:litho-fresco:0.15.0',
+        lithoTesting       : 'com.facebook.litho:litho-testing:0.15.0',
         // Debugging and testing
         guava              : 'com.google.guava:guava:20.0',
         robolectric        : 'org.robolectric:robolectric:3.0',
         junit              : 'junit:junit:4.12',
         stetho             : 'com.facebook.stetho:stetho:1.5.0',
         okhttp3            : 'com.squareup.okhttp3:okhttp:3.10.0'
-
 ]
