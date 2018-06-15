@@ -71,9 +71,9 @@ target 'MyApp' do
   pod 'PeerTalk', :podspec => 'https://raw.githubusercontent.com/facebook/Sonar/master/iOS/third-party-podspecs/PeerTalk.podspec?token=ADr9NB8frQTrUWytsMXtdv_P8km7jV_Mks5bJ5NbwA%3D%3D'
   pod 'Yoga','~>1.8.1', :modular_headers => true
   pod 'Sonar', :podspec => 'https://raw.githubusercontent.com/facebook/Sonar/master/xplat/Sonar/Sonar.podspec?token=ADr9NFO7byH9uAuhGAIEYuoJeBNyBxf6ks5bJ5N8wA%3D%3D'
-  pod 'SonarKit', :podspec => 'https://raw.githubusercontent.com/facebook/Sonar/master/SonarKit.podspec?token=ADr9NBuYoodM_NeysQg899hkxXw0WZ7Xks5bJ5OVwA%3D%3D'
-  pod 'SonarKit/SonarKitLayoutComponentKitSupport', :podspec => 'https://raw.githubusercontent.com/facebook/Sonar/master/SonarKit.podspec?token=ADr9NBuYoodM_NeysQg899hkxXw0WZ7Xks5bJ5OVwA%3D%3D'
-  pod 'SonarKit/SKIOSNetworkPlugin', :podspec => 'https://raw.githubusercontent.com/facebook/Sonar/master/SonarKit.podspec?token=ADr9NBuYoodM_NeysQg899hkxXw0WZ7Xks5bJ5OVwA%3D%3D'
+  pod 'SonarKit', :podspec => 'https://raw.githubusercontent.com/facebook/Sonar/master/iOS/SonarKit.podspec?token=ADr9NBuYoodM_NeysQg899hkxXw0WZ7Xks5bJ5OVwA%3D%3D'
+  pod 'SonarKit/SonarKitLayoutComponentKitSupport', :podspec => 'https://raw.githubusercontent.com/facebook/Sonar/master/iOS/SonarKit.podspec?token=ADr9NBuYoodM_NeysQg899hkxXw0WZ7Xks5bJ5OVwA%3D%3D'
+  pod 'SonarKit/SKIOSNetworkPlugin', :podspec => 'https://raw.githubusercontent.com/facebook/Sonar/master/iOS/SonarKit.podspec?token=ADr9NBuYoodM_NeysQg899hkxXw0WZ7Xks5bJ5OVwA%3D%3D'
   pod 'ComponentKit', :podspec => 'https://raw.githubusercontent.com/facebook/Sonar/master/iOS/third-party-podspecs/ComponentKit.podspec?token=ADr9NNV9gqkpFTUKaHpCiYOZIG3Ev-Hyks5bJ5O-wA%3D%3D'
   post_install do |installer|
         installer.pods_project.targets.each do |target|
