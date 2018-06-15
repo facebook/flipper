@@ -28,7 +28,7 @@
 
 - (void)send:(NSString *)method withParams:(NSDictionary *)params
 {
-  conn_->send([method UTF8String], facebook::cxxutils::convertIdToFollyDynamic(params));
+  conn_->send([method UTF8String], facebook::cxxutils::convertIdToFollyDynamic(params, true));
 }
 
 - (void)receive:(NSString *)method withBlock:(SonarReceiver)receiver

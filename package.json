@@ -22,7 +22,6 @@
     }
   },
   "devDependencies": {
-    "7zip-bin-mac": "^1.0.1",
     "babel-eslint": "^8.2.1",
     "electron": "^2.0.1",
     "electron-builder": "^19.49.0",
@@ -83,5 +82,8 @@
     "build": "yarn rm-dist && NODE_ENV=production node scripts/build-release.js $@",
     "fix": "eslint . --fix",
     "lint": "eslint . && flow check"
+  },
+  "optionalDependencies": {
+    "7zip-bin-mac": "^1.0.1"
   }
 }
