@@ -31,7 +31,7 @@ import com.facebook.soloader.SoLoader;
 public class HybridData {
 
   static {
-    SoLoader.loadLibrary("fbjni");
+    SoLoader.loadLibrary("fb");
   }
 
   @DoNotStrip private Destructor mDestructor = new Destructor(this);

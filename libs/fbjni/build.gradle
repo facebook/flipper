@@ -37,5 +37,5 @@ dependencies {
     compileOnly deps.jsr305
     compileOnly deps.inferAnnotations
     compileOnly 'com.facebook.litho:litho-annotations:0.15.0'
-    compileOnly 'com.facebook.soloader:soloader:0.5.0'
+    implementation deps.soloader
 }
