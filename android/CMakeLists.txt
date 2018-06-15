@@ -6,7 +6,8 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 
 set(PACKAGE_NAME      "sonar")
 
-add_compile_options(-DFOLLY_NO_CONFIG
+add_compile_options(-DSONAR_OSS=1
+                    -DFOLLY_NO_CONFIG
                     -DSONAR_JNI_EXTERNAL=1
                     -DFB_SONARKIT_ENABLED=1
                     -DFOLLY_HAVE_MEMRCHR
@@ -30,7 +31,7 @@ add_library(${PACKAGE_NAME} SHARED ${SOURCES})
 target_include_directories(${PACKAGE_NAME}  PUBLIC "./")
 
 set(libjnihack_DIR ${CMAKE_SOURCE_DIR}/../libs/jni-hack/)
-set(libfbjni_DIR ${CMAKE_SOURCE_DIR}/../libs/fbjni/src/main/cpp/include/)
+set(libfbjni_DIR ${CMAKE_SOURCE_DIR}/../libs/fbjni/)
 set(libsonar_DIR ${CMAKE_SOURCE_DIR}/../xplat/)
 set(third_party_ndk ${PROJECT_SOURCE_DIR}/build/third-party-ndk)
 set(libfolly_DIR ${third_party_ndk}/folly/)
@@ -48,11 +49,14 @@ set(libfolly_build_DIR ${build_DIR}/libfolly/${ANDROID_ABI})
 file(MAKE_DIRECTORY ${build_DIR})
 
 add_subdirectory(${libsonar_DIR} ${libsonar_build_DIR})
-add_subdirectory(${libfbjni_DIR}/../ ${fbjni_build_DIR})
+add_subdirectory(${libfbjni_DIR} ${fbjni_build_DIR})
 
 target_include_directories(${PACKAGE_NAME} PRIVATE
     ${libjnihack_DIR}
-    ${libfbjni_DIR}
+    ${libfbjni_DIR}/cxx/
+    ${libfbjni_DIR}/cxx/fbjni
+    ${libfbjni_DIR}/cxx/fbjni/detail
+    ${libfbjni_DIR}/cxx/lyra
     ${libsonar_DIR}
     ${libfolly_DIR}
     ${glog_DIR}

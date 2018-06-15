@@ -6,6 +6,8 @@
 #
 
 cmake_minimum_required(VERSION 3.6.0)
+set(PACKAGE_NAME      "fb")
+project(${PACKAGE_NAME} CXX)
 
 set(CMAKE_VERBOSE_MAKEFILE on)
 
@@ -32,10 +34,10 @@ file(GLOB FBJNI_SRC
     ${FBJNI_CXX}/lyra/*.cpp)
 
 
-add_library(fb SHARED
+add_library(${PACKAGE_NAME} SHARED
     ${FBJNI_SRC})
 
 #target_include_directories(fb PRIVATE
 #    include ${libjnihack_DIR})
 
-target_link_libraries(fb log)
+target_link_libraries(${PACKAGE_NAME} log)
