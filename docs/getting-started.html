@@ -91,6 +91,7 @@ target <span class="hljs-string">'MyApp'</span> <span class="hljs-keyword">do</s
 <ul>
 <li>We haven't released the dependency to CocoaPods, because we weren't able to successfully validate the podspec of SonarKit. You could help us out by fixing this <a href="https://github.com/facebook/Sonar/issues/11">issue</a> by submitting a PR to the repo.</li>
 <li>If you do not use CocoaPods as a dependency management tool then currently there is no way to integrate SonarKit other than manually including all the dependencies and building it.</li>
+<li>For Android, Sonar works with both emulators and physical devices connected through USB. However on iOS, we don't yet support physical devices.</li>
 <li>Also Sonar doesn't work with swift projects as its written in C++ and had C++ dependencies. But we are working on supporting sonar for swift projects. You can find this issue <a href="https://github.com/facebook/Sonar/issues/13">here</a></li>
 </ul>
 </div>
