@@ -34,28 +34,28 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.android.support:appcompat-v7:26.1.0'
-    implementation 'com.android.support.constraint:constraint-layout:1.1.0'
-    implementation 'com.android.support:design:26.1.0'
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    implementation deps.supportAppCompat
+    implementation deps.supportConstraintLayout
+    implementation deps.supportDesign
+    testImplementation deps.junit
+    androidTestImplementation deps.supportTestRunner
+    androidTestImplementation deps.supportEspresso
     // Litho
-    implementation 'com.facebook.litho:litho-core:0.15.0'
-    implementation 'com.facebook.litho:litho-widget:0.15.0'
-    compileOnly 'com.facebook.litho:litho-annotations:0.15.0'
+    implementation deps.lithoCore
+    implementation deps.lithoWidget
+    compileOnly deps.lithoAnnotations
 
-    annotationProcessor 'com.facebook.litho:litho-processor:0.15.0'
+    annotationProcessor deps.lithoProcessor
 
     // SoLoader
-    implementation 'com.facebook.soloader:soloader:0.4.1'
+    implementation deps.soloader
 
     // For integration with Fresco
-    implementation 'com.facebook.litho:litho-fresco:0.15.0'
+    implementation deps.lithoFresco
 
     // For testing
-    testImplementation 'com.facebook.litho:litho-testing:0.15.0'
+    testImplementation deps.lithoTesting
 
-    implementation 'com.squareup.okhttp3:okhttp:3.10.0'
+    implementation deps.okhttp3
     implementation project(':android')
 }
