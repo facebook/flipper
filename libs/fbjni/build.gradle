@@ -7,9 +7,16 @@ android {
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
         targetSdkVersion rootProject.targetSdkVersion
-
+        sourceSets {
+            main {
+                manifest.srcFile './ApplicationManifest.xml'
+                java {
+                    srcDir 'java'
+                }
+            }
+        }
         ndk {
-            abiFilters 'arm64-v8a', 'x86'
+            abiFilters 'x86', 'x86_64', 'armeabi-v7a', 'arm64-v8a'
         }
 
         externalNativeBuild {
@@ -20,7 +27,7 @@ android {
     }
     externalNativeBuild {
         cmake {
-            path './src/main/cpp/CMakeLists.txt'
+            path './CMakeLists.txt'
         }
     }
 }
@@ -30,4 +37,5 @@ dependencies {
     compileOnly deps.jsr305
     compileOnly deps.inferAnnotations
     compileOnly 'com.facebook.litho:litho-annotations:0.15.0'
+    compileOnly 'com.facebook.soloader:soloader:0.5.0'
 }
