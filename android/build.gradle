@@ -121,11 +121,13 @@ android {
         buildConfigField "boolean", "IS_INTERNAL_BUILD", 'true'
         ndk {
             abiFilters 'x86', 'x86_64', 'armeabi-v7a', 'arm64-v8a'
+            stl 'c++_shared'
         }
 
         externalNativeBuild {
             cmake {
                 arguments '-DANDROID_TOOLCHAIN=clang'
+                arguments '-DANDROID_STL=c++_shared'
             }
         }
     }
@@ -163,7 +165,7 @@ android {
         implementation deps.okhttp3
         implementation 'com.facebook.litho:litho-core:0.15.0'
         implementation 'com.facebook.litho:litho-widget:0.15.0'
-        implementation fileTree(dir: 'plugins/console/dependencies', include: ['*.jar'])
+        implementation 'org.mozilla:rhino:1.7.10'
     }
 }
 

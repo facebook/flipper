@@ -13,7 +13,7 @@
   "build": {
     "appId": "sonar",
     "productName": "Sonar",
-    "artifactName": "Sonar.${ext}",
+    "artifactName": "Sonar-${os}.${ext}",
     "mac": {
       "category": "public.app-category.developer-tools"
     },
@@ -82,5 +82,8 @@
     "build": "yarn rm-dist && NODE_ENV=production node scripts/build-release.js $@",
     "fix": "eslint . --fix",
     "lint": "eslint . && flow check"
+  },
+  "optionalDependencies": {
+    "7zip-bin-mac": "^1.0.1"
   }
 }

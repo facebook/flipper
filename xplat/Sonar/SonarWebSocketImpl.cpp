@@ -127,7 +127,8 @@ void SonarWebSocketImpl::doCertificateExchange() {
   folly::SocketAddress address;
 
   parameters.payload = rsocket::Payload(
-      folly::toJson(folly::dynamic::object("os", deviceData_.os)));
+      folly::toJson(folly::dynamic::object("os", deviceData_.os)(
+          "device", deviceData_.device)("app", deviceData_.app)));
   address.setFromHostPort(deviceData_.host, insecurePort);
 
   connectionIsTrusted_ = false;

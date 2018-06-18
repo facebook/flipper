@@ -5,3 +5,10 @@ website/build
 **/Pods/
 **/xcuserdata/
 yarn-error.log
+
+# Android / Intellij
+local.properties
+*.iml
+.gradle/
+.idea
+.externalNativeBuild

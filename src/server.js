@@ -11,6 +11,7 @@ import type {SonarPlugin} from './plugin.js';
 import plugins from './plugins/index.js';
 import CertificateProvider from './utils/CertificateProvider';
 import type {SecureServerConfig} from './utils/CertificateProvider';
+import type Logger from './fb-stubs/Logger';
 
 import {RSocketServer, ReactiveSocket, PartialResponder} from 'rsocket-core';
 import RSocketTCPServer from 'rsocket-tcp-server';
@@ -315,6 +316,7 @@ export class Server extends EventEmitter {
   secureServer: RSocketServer;
   insecureServer: RSocketServer;
   certificateProvider: CertificateProvider;
+  connectionTracker: ConnectionTracker;
   app: App;
 
   constructor(app: App) {
@@ -322,6 +324,7 @@ export class Server extends EventEmitter {
     this.app = app;
     this.connections = new Map();
     this.certificateProvider = new CertificateProvider(this, app.logger);
+    this.connectionTracker = new ConnectionTracker(app.logger);
     this.init();
   }
 
@@ -389,7 +392,10 @@ export class Server extends EventEmitter {
   _trustedRequestHandler = (conn: RSocket, connectRequest: {data: string}) => {
     const server = this;
 
-    const client = this.addConnection(conn, connectRequest.data);
+    const clientData: ClientQuery = JSON.parse(connectRequest.data);
+    this.connectionTracker.logConnectionAttempt(clientData);
+
+    const client = this.addConnection(conn, clientData);
 
     conn.connectionStatus().subscribe({
       onNext(payload) {
@@ -413,7 +419,8 @@ export class Server extends EventEmitter {
     conn: RSocket,
     connectRequest: {data: string},
   ) => {
-    const connectionParameters = JSON.parse(connectRequest.data);
+    const clientData = JSON.parse(connectRequest.data);
+    this.connectionTracker.logConnectionAttempt(clientData);
 
     return {
       fireAndForget: (payload: {data: string}) => {
@@ -442,7 +449,7 @@ export class Server extends EventEmitter {
           const {csr, destination} = json;
           this.certificateProvider.processCertificateSigningRequest(
             csr,
-            connectionParameters.os,
+            clientData.os,
             destination,
           );
         }
@@ -459,13 +466,12 @@ export class Server extends EventEmitter {
     return null;
   }
 
-  addConnection(conn: ReactiveSocket, queryString: string): Client {
-    const query = JSON.parse(queryString);
+  addConnection(conn: ReactiveSocket, query: ClientQuery): Client {
     invariant(query, 'expected query');
 
-    this.app.logger.warn(`Device connected: ${queryString}`, 'connection');
-
     const id = `${query.app}-${query.os}-${query.device}`;
+    this.app.logger.warn(`Device connected: ${id}`, 'connection');
+
     const client = new Client(this.app, id, query, conn);
 
     const info = {
@@ -515,6 +521,37 @@ export class Server extends EventEmitter {
       info.client.emit('close');
       this.connections.delete(id);
       this.emit('clients-change');
+    }
+  }
+}
+
+class ConnectionTracker {
+  timeWindowMillis = 20 * 1000;
+  connectionProblemThreshold = 4;
+
+  // "${device}.${app}" -> [timestamp1, timestamp2...]
+  connectionAttempts: Map<string, Array<number>> = new Map();
+  logger: Logger;
+
+  constructor(logger: Logger) {
+    this.logger = logger;
+  }
+
+  logConnectionAttempt(client: ClientQuery) {
+    const key = `${client.os}-${client.device}-${client.app}`;
+    const time = Date.now();
+    var entry = this.connectionAttempts.get(key) || [];
+    entry.push(time);
+    entry = entry.filter(t => t >= time - this.timeWindowMillis);
+
+    this.connectionAttempts.set(key, entry);
+    if (entry.length >= this.connectionProblemThreshold) {
+      this.logger.error(
+        `Connection loop detected with ${key}. Connected ${
+          entry.length
+        } times in ${(time - entry[0]) / 1000}s.`,
+        'ConnectionTracker',
+      );
     }
   }
 }
