@@ -69,4 +69,4 @@ target_include_directories(${PACKAGE_NAME} PRIVATE
     ${LIBEVENT_DIR}/include/event2
     )
 
-target_link_libraries(${PACKAGE_NAME} fb sonarcpp)
+target_link_libraries(${PACKAGE_NAME} sonarfb sonarcpp)

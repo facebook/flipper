@@ -6,7 +6,7 @@
 #
 
 cmake_minimum_required(VERSION 3.6.0)
-set(PACKAGE_NAME      "fb")
+set(PACKAGE_NAME      "sonarfb")
 project(${PACKAGE_NAME} CXX)
 
 set(CMAKE_VERBOSE_MAKEFILE on)
@@ -37,7 +37,9 @@ file(GLOB FBJNI_SRC
 add_library(${PACKAGE_NAME} SHARED
     ${FBJNI_SRC})
 
-#target_include_directories(fb PRIVATE
-#    include ${libjnihack_DIR})
+target_include_directories(${PACKAGE_NAME} PRIVATE
+    include ${FBJNI_HDRS})
 
-target_link_libraries(${PACKAGE_NAME} log)
+#install(TARGETS ${PACKAGE_NAME}  DESTINATION ./build/)
+
+target_link_libraries(${PACKAGE_NAME} android log)

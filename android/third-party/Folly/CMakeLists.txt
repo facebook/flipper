@@ -125,9 +125,6 @@ file(MAKE_DIRECTORY ${build_DIR})
 add_subdirectory(${GLOG_DIR} ${libglog_build_DIR})
 add_subdirectory(${DOUBLECONVERSION_DIR} ${doubleconversion_build_DIR})
 add_subdirectory(${LIBEVENT_DIR} ${libevent_build_DIR})
-#    ${LIBEVENT_DIR}
-#    ${LIBEVENT_DIR}/include/
-#    ${LIBEVENT_DIR}/../
 target_include_directories(${PACKAGE_NAME} PRIVATE
     ${OPENSSL_DIR}/jni/openssl-android/
     ${OPENSSL_DIR}/jni/openssl-android/include
@@ -142,10 +139,6 @@ target_include_directories(${PACKAGE_NAME} PRIVATE
 set(LIBEXTRA_PATH /Users/prit91/LocalDevTesting/sonar-upstream-proper/Sonar/android/build/third-party-ndk/LibEvent/.externalNativeBuild/cmake/debug/${ANDROID_ABI}/lib)
 set(OPENSSL_LINK_DIRECTORIES ${PROJECT_SOURCE_DIR}/../OpenSSL/libs/${ANDROID_ABI}/)
 find_path(OPENSSL_LIBRARY libssl.so HINTS ${OPENSSL_LINK_DIRECTORIES})
-#find_library(CRYPTO_LIBRARY crypto HINTS ${OPENSSL_LINK_DIRECTORIES})
-#set(LIBEVENT_LINK_DIRECTORIES ${PROJECT_SOURCE_DIR}/../LibEvent/libs/${ANDROID_ABI}/)
-#find_path(LIBEVENT_LIBRARY libevent.a HINTS ${LIBEVENT_LINK_DIRECTORIES})
-#link_directories(${LINK_DIRECTORIES})
 message(STATUS "link_directories:- " ${LIBEVENT_LINK_DIRECTORIES})
 
 install(TARGETS ${PACKAGE_NAME}  DESTINATION ./build/)
