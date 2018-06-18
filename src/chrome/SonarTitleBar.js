@@ -28,7 +28,6 @@ import {
   togglePluginManagerVisible,
 } from '../reducers/application.js';
 import DevicesButton from './DevicesButton.js';
-import Version from './Version.js';
 import AutoUpdateVersion from './AutoUpdateVersion.js';
 import config from '../fb-stubs/config.js';
 
@@ -90,7 +89,7 @@ class SonarTitleBar extends Component<Props> {
             <Glyph color={colors.light30} name="flash-default" size={16} />
           </Icon>
         )}
-        {process.platform === 'darwin' ? <AutoUpdateVersion /> : <Version />}
+        {process.platform === 'darwin' ? <AutoUpdateVersion /> : null}
         {config.bugReportButtonVisible && (
           <Button
             compact={true}
