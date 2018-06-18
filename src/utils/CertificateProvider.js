@@ -34,6 +34,12 @@ const appNotDebuggableRegex = /debuggable/;
 const allowedAppNameRegex = /^[a-zA-Z0-9.\-]+$/;
 const allowedAppDirectoryRegex = /^\/[ a-zA-Z0-9.\-\/]+$/;
 const logTag = 'CertificateProvider';
+/*
+ * RFC2253 specifies the unamiguous x509 subject format.
+ * However, even when specifying this, different openssl implementations
+ * wrap it differently, e.g "subject=X" vs "subject= X".
+ */
+const x509SubjectCNRegex = /[=,]\s*CN=([^,]*)(,.*)?$/;
 
 export type SecureServerConfig = {|
   key: Buffer,
@@ -286,20 +292,23 @@ export default class CertificateProvider {
 
   extractAppNameFromCSR(csr: string): Promise<string> {
     const csrFile = this.writeToTempFile(csr);
-    return openssl('req', {in: csrFile, noout: true, subject: true})
+    return openssl('req', {
+      in: csrFile,
+      noout: true,
+      subject: true,
+      nameopt: true,
+      RFC2253: false,
+    })
       .then(subject => {
         fs.unlink(csrFile);
         return subject;
       })
       .then(subject => {
-        return subject
-          .split('/')
-          .filter(part => {
-            return part.startsWith('CN=');
-          })
-          .map(part => {
-            return part.split('=')[1].trim();
-          })[0];
+        const matches = subject.trim().match(x509SubjectCNRegex);
+        if (!matches || matches.length < 2) {
+          throw new Error(`Cannot extract CN from ${subject}`);
+        }
+        return matches[1];
       })
       .then(appName => {
         if (!appName.match(allowedAppNameRegex)) {
