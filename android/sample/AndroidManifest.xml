@@ -16,7 +16,8 @@
       android:label="@string/app_name"
       android:icon="@drawable/ic_launcher"
       android:allowBackup="false"
-      android:theme="@style/NoTitleBarWhiteBG">
+      android:theme="@style/NoTitleBarWhiteBG"
+      android:debuggable="true">
     <activity android:name=".MainActivity">
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>

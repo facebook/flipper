@@ -18,7 +18,6 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLifecycle;
 import com.facebook.litho.DebugComponent;
 import com.facebook.litho.DebugLayoutNode;
-import com.facebook.litho.EventHandler;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
@@ -269,7 +268,7 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
 
   @Nullable
   private static SonarObject getPropData(DebugComponent node) {
-    if (node.isInternalComponent()) {
+    if (node.canResolve()) {
       return null;
     }
 
@@ -328,7 +327,7 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
 
   @Nullable
   private static SonarObject getStateData(DebugComponent node) {
-    if (node.isInternalComponent()) {
+    if (node.canResolve()) {
       return null;
     }
 

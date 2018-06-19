@@ -1,20 +1,68 @@
 {
   "command": "SandcastleUniversalCommand",
   "args": {
-      "name": "Release public Sonar build",
-      "oncall": "danielbuechele",
-      "steps": [
-        {
-          "name": "sonar_release_public_build",
-          "required": true,
-          "shell": "cd ../xplat/sonar/scripts && ./public-build.sh"
-        }
-      ]
+    "name": "Release public Sonar build",
+    "oncall": "danielbuechele",
+    "steps": [
+      {
+        "name": "Clone from GitHub",
+        "required": true,
+        "shell": "git -c http.proxy=fwdproxy:8080 -c https.proxy=fwdproxy:8080 clone https://github.com/facebook/Sonar.git ../xplat/sonar-public"
+      },
+      {
+        "name": "Create Version",
+        "required": true,
+        "shell": "cat ../xplat/sonar-public/package.json | jq -r '.version' | sed -E 's/[0-9]+$/__VERSION__/g' > $SANDCASTLE_NEXUS/VERSION"
+      },
+      {
+        "name": "Copy Sandcastle script",
+        "required": true,
+        "shell": "cp ../xplat/sonar/scripts/sandcastle-build.sh ../xplat/sonar-public/scripts/sandcastle-build.sh"
+      },
+      {
+        "name": "Create build",
+        "required": true,
+        "shell": "cd ../xplat/sonar-public/scripts && ./sandcastle-build.sh $(cat $SANDCASTLE_NEXUS/VERSION)"
+      },
+      {
+        "name": "Copy artifacts for syncing",
+        "required": true,
+        "shell": "cp -R ../xplat/sonar-public/dist/Sonar-mac.zip $SANDCASTLE_NEXUS/Sonar-mac.zip"
+      },
+      {
+        "name": "Sync to local",
+        "step_type": "sync_step",
+        "from": "remote",
+        "to": "local",
+        "paths": [
+          "Sonar-mac.zip",
+          "VERSION"
+        ]
+      },
+      {
+        "name": "Publish to github",
+        "required": true,
+        "shell": "curl -o RELEASE.json -x fwdproxy:8080 --silent --data '{ \"tag_name\": \"v'$(cat $SANDCASTLE_NEXUS/VERSION)'\", \"target_commitish\": \"master\", \"name\": \"v'$(cat $SANDCASTLE_NEXUS/VERSION)'\", \"body\": \"\", \"draft\": false, \"prerelease\": false}' https://api.github.com/repos/facebook/Sonar/releases?access_token=$(secrets_tool get SONAR_GITHUB_TOKEN)",
+        "shell_type": "SandcastleLocalShell"
+      },
+      {
+        "name": "Upload",
+        "required": true,
+        "shell": "curl -x fwdproxy:8080 $(cat RELEASE.json | jq -r '.upload_url' | sed -e 's#{?name,label}##')'?access_token='$(secrets_tool get SONAR_GITHUB_TOKEN)'&name=Sonar.zip' --header 'Content-Type: application/zip' --upload-file $SANDCASTLE_NEXUS'/Sonar-mac.zip' -X POST",
+        "shell_type": "SandcastleLocalShell"
+      }
+    ]
   },
   "alias": "sonar_release_public_build",
   "capabilities": {
     "vcs": "fbcode-fbsource",
-    "type": "lego"
+    "type": "lego-mac"
   },
-  "hash": "master"
+  "hash": "master",
+  "report": [
+    {
+      "type": "chirp",
+      "users": ["__USER__"]
+    }
+  ]
 }

@@ -35,12 +35,14 @@
 #define PRIVATE_KEY_FILE "privateKey.pem"
 
 static constexpr int reconnectIntervalSeconds = 2;
-static constexpr int connectionKeepaliveSeconds = 2;
+static constexpr int connectionKeepaliveSeconds = 10;
 static constexpr int securePort = 8088;
 static constexpr int insecurePort = 8089;
 
 namespace facebook {
 namespace sonar {
+
+bool fileExists(std::string fileName);
 
 class ConnectionEvents : public rsocket::RSocketConnectionEvents {
  private:
@@ -97,7 +99,7 @@ SonarWebSocketImpl::~SonarWebSocketImpl() {
 void SonarWebSocketImpl::start() {
   folly::makeFuture()
       .via(worker_->getEventBase())
-      .delayed(std::chrono::milliseconds(0))
+      .delayedUnsafe(std::chrono::milliseconds(0))
       .then([this]() { startSync(); });
 }
 
@@ -113,24 +115,20 @@ void SonarWebSocketImpl::startSync() {
     }
 
     connectSecurely();
-  } catch (const std::exception& e) {
-    std::string errors = folly::SSLContext::getErrors();
-    SONAR_LOG("Error connecting to sonar");
-    SONAR_LOG(e.what());
-    SONAR_LOG(errors.c_str());
+  } catch (const std::exception&) {
     failedConnectionAttempts_++;
     reconnect();
   }
 }
 
 void SonarWebSocketImpl::doCertificateExchange() {
-  SONAR_LOG("Starting certificate exchange");
 
   rsocket::SetupParameters parameters;
   folly::SocketAddress address;
 
   parameters.payload = rsocket::Payload(
-      folly::toJson(folly::dynamic::object("os", deviceData_.os)));
+      folly::toJson(folly::dynamic::object("os", deviceData_.os)(
+          "device", deviceData_.device)("app", deviceData_.app)));
   address.setFromHostPort(deviceData_.host, insecurePort);
 
   connectionIsTrusted_ = false;
@@ -187,7 +185,7 @@ void SonarWebSocketImpl::connectSecurely() {
 void SonarWebSocketImpl::reconnect() {
   folly::makeFuture()
       .via(worker_->getEventBase())
-      .delayed(std::chrono::seconds(reconnectIntervalSeconds))
+      .delayedUnsafe(std::chrono::seconds(reconnectIntervalSeconds))
       .then([this]() { startSync(); });
 }
 
@@ -216,11 +214,6 @@ void SonarWebSocketImpl::sendMessage(const folly::dynamic& message) {
 
 bool SonarWebSocketImpl::isCertificateExchangeNeeded() {
   if (failedConnectionAttempts_ >= 2) {
-    auto format =
-        "Requesting fresh certificate exchange after %d failed connection attempts";
-    char buff[strlen(format) + 1];
-    sprintf(buff, format, failedConnectionAttempts_);
-    SONAR_LOG(buff);
     return true;
   }
 
@@ -238,16 +231,12 @@ bool SonarWebSocketImpl::isCertificateExchangeNeeded() {
 }
 
 void SonarWebSocketImpl::requestSignedCertFromSonar() {
-  SONAR_LOG("Requesting new client certificate from Sonar");
+  generateCertSigningRequest(
+      deviceData_.appId.c_str(),
+      absoluteFilePath(CSR_FILE_NAME).c_str(),
+      absoluteFilePath(PRIVATE_KEY_FILE).c_str());
   std::string csr = loadStringFromFile(absoluteFilePath(CSR_FILE_NAME));
-  if (csr == "") {
-    generateCertSigningRequest(
-        deviceData_.appId.c_str(),
-        absoluteFilePath(CSR_FILE_NAME).c_str(),
-        absoluteFilePath(PRIVATE_KEY_FILE).c_str());
-    csr = loadStringFromFile(absoluteFilePath(CSR_FILE_NAME));
-  }
-  // Send CSR to Sonar desktop
+
   folly::dynamic message = folly::dynamic::object("method", "signCertificate")(
       "csr", csr.c_str())("destination", absoluteFilePath("").c_str());
   worker_->add([this, message]() {
@@ -263,6 +252,9 @@ void SonarWebSocketImpl::requestSignedCertFromSonar() {
 }
 
 std::string SonarWebSocketImpl::loadStringFromFile(std::string fileName) {
+  if (!fileExists(fileName)) {
+    return "";
+  }
   std::stringstream buffer;
   std::ifstream stream;
   std::string line;
@@ -295,6 +287,11 @@ bool SonarWebSocketImpl::ensureSonarDirExists() {
                   .c_str());
     return false;
   }
+}
+
+bool fileExists(std::string fileName) {
+  struct stat buffer;
+  return stat(fileName.c_str(), &buffer) == 0;
 }
 
 } // namespace sonar

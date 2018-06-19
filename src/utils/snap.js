@@ -10,7 +10,7 @@ import type {Rect} from './geometry.js';
 export const SNAP_SIZE = 16;
 
 export function snapGrid(val: number): number {
-  return val - val % SNAP_SIZE;
+  return val - (val % SNAP_SIZE);
 }
 
 export function getPossibleSnappedPosition(

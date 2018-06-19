@@ -9,7 +9,6 @@ import type {ElementID, Element, ElementSearchResultSet} from 'sonar';
 import {
   colors,
   Glyph,
-  GK,
   FlexRow,
   FlexColumn,
   Toolbar,
@@ -540,17 +539,15 @@ export default class Layout extends SonarPlugin<InspectorState> {
               }
             />
           </SearchIconContainer>
-          {GK.get('sonar_layout_search') && (
-            <SearchBox tabIndex={-1}>
-              <SearchIcon
-                name="magnifying-glass"
-                color={colors.macOSTitleBarIcon}
-                size={16}
-              />
-              <LayoutSearchInput onSubmit={this.search.bind(this)} />
-              {outstandingSearchQuery && <LoadingSpinner size={16} />}
-            </SearchBox>
-          )}
+          <SearchBox tabIndex={-1}>
+            <SearchIcon
+              name="magnifying-glass"
+              color={colors.macOSTitleBarIcon}
+              size={16}
+            />
+            <LayoutSearchInput onSubmit={this.search.bind(this)} />
+            {outstandingSearchQuery && <LoadingSpinner size={16} />}
+          </SearchBox>
         </Toolbar>
         <FlexRow fill={true}>
           {initialised ? (

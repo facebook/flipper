@@ -8,7 +8,10 @@
 import LogManager from '../fb-stubs/Logger';
 const fs = require('fs');
 const adb = require('adbkit-fb');
-import {openssl} from './openssl-wrapper-with-promises';
+import {
+  openssl,
+  isInstalled as opensslInstalled,
+} from './openssl-wrapper-with-promises';
 const path = require('path');
 
 // Desktop file paths
@@ -30,6 +33,13 @@ const minCertExpiryWindowSeconds = 24 * 60 * 60;
 const appNotDebuggableRegex = /debuggable/;
 const allowedAppNameRegex = /^[a-zA-Z0-9.\-]+$/;
 const allowedAppDirectoryRegex = /^\/[ a-zA-Z0-9.\-\/]+$/;
+const logTag = 'CertificateProvider';
+/*
+ * RFC2253 specifies the unamiguous x509 subject format.
+ * However, even when specifying this, different openssl implementations
+ * wrap it differently, e.g "subject=X" vs "subject= X".
+ */
+const x509SubjectCNRegex = /[=,]\s*CN=([^,]*)(,.*)?$/;
 
 export type SecureServerConfig = {|
   key: Buffer,
@@ -68,6 +78,7 @@ export default class CertificateProvider {
     os: string,
     appDirectory: string,
   ): Promise<void> {
+    this.ensureOpenSSLIsAvailable();
     if (!appDirectory.match(allowedAppDirectoryRegex)) {
       return Promise.reject(
         new Error(
@@ -98,6 +109,15 @@ export default class CertificateProvider {
       );
   }
 
+  ensureOpenSSLIsAvailable(): void {
+    if (!opensslInstalled()) {
+      const e = Error(
+        "It looks like you don't have OpenSSL installed. Please install it to continue.",
+      );
+      this.server.emit('error', e);
+    }
+  }
+
   getCACertificate(): Promise<string> {
     return new Promise((resolve, reject) => {
       fs.readFile(caCert, (err, data) => {
@@ -111,7 +131,7 @@ export default class CertificateProvider {
   }
 
   generateClientCertificate(csr: string): Promise<string> {
-    this.logger.warn('Creating new client cert', 'CertificateProvider');
+    this.logger.warn('Creating new client cert', logTag);
     const csrFile = this.writeToTempFile(csr);
     // Create a certificate for the client, using the details in the CSR.
     return openssl('x509', {
@@ -121,7 +141,7 @@ export default class CertificateProvider {
       CAkey: caKey,
       CAcreateserial: true,
     }).then(cert => {
-      fs.unlink(csrFile);
+      fs.unlinkSync(csrFile);
       return cert;
     });
   }
@@ -132,40 +152,66 @@ export default class CertificateProvider {
     contents: string,
     csr: string,
     os: string,
-  ) {
+  ): Promise<void> {
     if (os === 'Android') {
-      this.extractAppNameFromCSR(csr).then(app => {
-        const client = adb.createClient();
-        client.listDevices().then((devices: Array<{id: string}>) => {
-          devices.forEach(d =>
-            // To find out which device requested the cert, search them
-            // all for a matching csr file.
-            // It's not important to keep these secret from other apps.
-            // Just need to make sure each app can find it's own one.
-            this.androidDeviceHasMatchingCSR(destination, d.id, app, csr)
-              .catch(e =>
-                this.logger.error(
-                  `Unable to check for matching CSR in ${d.id}:${app}`,
-                  'CertificateProvider',
-                ),
-              )
-              .then(isMatch => {
-                if (isMatch) {
-                  this.pushFileToAndroidDevice(
-                    d.id,
-                    app,
-                    destination + filename,
-                    contents,
-                  );
-                }
-              }),
-          );
-        });
-      });
+      const appNamePromise = this.extractAppNameFromCSR(csr);
+      const deviceIdPromise = appNamePromise.then(app =>
+        this.getTargetDeviceId(app, destination, csr),
+      );
+      return Promise.all([deviceIdPromise, appNamePromise]).then(
+        ([deviceId, appName]) =>
+          this.pushFileToAndroidDevice(
+            deviceId,
+            appName,
+            destination + filename,
+            contents,
+          ),
+      );
     }
     if (os === 'iOS') {
       fs.writeFileSync(destination + filename, contents);
+      return Promise.resolve();
     }
+    return Promise.reject(new Error(`Unsupported device os: ${os}`));
+  }
+
+  getTargetDeviceId(
+    appName: string,
+    deviceCsrFilePath: string,
+    csr: string,
+  ): Promise<string> {
+    const client = adb.createClient();
+    return client.listDevices().then((devices: Array<{id: string}>) => {
+      const deviceMatchList = devices.map(device =>
+        // To find out which device requested the cert, search them
+        // all for a matching csr file.
+        // It's not important to keep these secret from other apps.
+        // Just need to make sure each app can find it's own one.
+        this.androidDeviceHasMatchingCSR(
+          deviceCsrFilePath,
+          device.id,
+          appName,
+          csr,
+        )
+          .then(isMatch => {
+            return {id: device.id, isMatch};
+          })
+          .catch(e => {
+            this.logger.error(
+              `Unable to check for matching CSR in ${device.id}:${appName}`,
+              logTag,
+            );
+            return {id: device.id, isMatch: false};
+          }),
+      );
+      return Promise.all(deviceMatchList).then(devices => {
+        const matchingIds = devices.filter(m => m.isMatch).map(m => m.id);
+        if (matchingIds.length == 0) {
+          throw new Error(`No matching device found for app: ${appName}`);
+        }
+        return matchingIds[0];
+      });
+    });
   }
 
   androidDeviceHasMatchingCSR(
@@ -178,14 +224,19 @@ export default class CertificateProvider {
       deviceId,
       processName,
       `cat ${directory + csrFileName}`,
-    ).then(deviceCsr => {
-      return (
-        deviceCsr
-          .toString()
-          .replace(/\r/g, '')
-          .trim() === csr.replace(/\r/g, '').trim()
-      );
-    });
+    )
+      .then(deviceCsr => {
+        return (
+          deviceCsr
+            .toString()
+            .replace(/\r/g, '')
+            .trim() === csr.replace(/\r/g, '').trim()
+        );
+      })
+      .catch(err => {
+        this.logger.error(err, logTag);
+        return false;
+      });
   }
 
   pushFileToAndroidDevice(
@@ -194,10 +245,7 @@ export default class CertificateProvider {
     filename: string,
     contents: string,
   ): Promise<void> {
-    this.logger.warn(
-      `Deploying sonar certificate to ${deviceId}:${app}`,
-      'CertificateProvider',
-    );
+    this.logger.warn(`Deploying ${filename} to ${deviceId}:${app}`, logTag);
     return this.executeCommandOnAndroid(
       deviceId,
       app,
@@ -232,25 +280,35 @@ export default class CertificateProvider {
           throw e;
         }
         return output;
+      })
+      .catch(err => {
+        this.logger.error(
+          `Error executing command on android device ${deviceId}:${user}. Command: ${command}`,
+          logTag,
+        );
+        this.logger.error(err, logTag);
       });
   }
 
   extractAppNameFromCSR(csr: string): Promise<string> {
     const csrFile = this.writeToTempFile(csr);
-    return openssl('req', {in: csrFile, noout: true, subject: true})
+    return openssl('req', {
+      in: csrFile,
+      noout: true,
+      subject: true,
+      nameopt: true,
+      RFC2253: false,
+    })
       .then(subject => {
         fs.unlink(csrFile);
         return subject;
       })
       .then(subject => {
-        return subject
-          .split('/')
-          .filter(part => {
-            return part.startsWith('CN=');
-          })
-          .map(part => {
-            return part.split('=')[1].trim();
-          })[0];
+        const matches = subject.trim().match(x509SubjectCNRegex);
+        if (!matches || matches.length < 2) {
+          throw new Error(`Cannot extract CN from ${subject}`);
+        }
+        return matches[1];
       })
       .then(appName => {
         if (!appName.match(allowedAppNameRegex)) {
@@ -293,10 +351,7 @@ export default class CertificateProvider {
     })
       .then(output => undefined)
       .catch(e => {
-        this.logger.warn(
-          `Certificate will expire soon: ${filename}`,
-          'CertificateProvider',
-        );
+        this.logger.warn(`Certificate will expire soon: ${filename}`, logTag);
         throw e;
       });
   }
@@ -318,7 +373,7 @@ export default class CertificateProvider {
     if (!fs.existsSync(getFilePath(''))) {
       fs.mkdirSync(getFilePath(''));
     }
-    this.logger.info('Generating new CA', 'CertificateProvider');
+    this.logger.info('Generating new CA', logTag);
     return openssl('genrsa', {out: caKey, '2048': false})
       .then(_ =>
         openssl('req', {
@@ -351,7 +406,7 @@ export default class CertificateProvider {
   generateServerCertificate(): Promise<void> {
     return this.ensureCertificateAuthorityExists()
       .then(_ => {
-        this.logger.warn('Creating new server cert', 'CertificateProvider');
+        this.logger.warn('Creating new server cert', logTag);
       })
       .then(_ => openssl('genrsa', {out: serverKey, '2048': false}))
       .then(_ =>

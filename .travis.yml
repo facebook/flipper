@@ -15,13 +15,10 @@ matrix:
 
       script:
         - yarn lint
-        - yarn build macOnly build-number=$TRAVIS_BUILD_NUMBER
+        - yarn build --mac --version=$TRAVIS_BUILD_NUMBER
         - cd website
         - yarn build
         - cd ..
-
-      before_deploy:
-        - export SONAR_VERSION="v$(plutil -p $TRAVIS_BUILD_DIR/dist/mac/Sonar.app/Contents/Info.plist | awk '/CFBundleShortVersionString/ {print substr($3, 2, length($3)-2)}')"
 
       deploy:
         - provider: pages
@@ -32,17 +29,9 @@ matrix:
           keep-history: true
           on:
             branch: master
-        - provider: releases
-          api_key: $GITHUB_TOKEN
-          file: dist/Sonar.zip
-          name: $SONAR_VERSION
-          draft: true
-          skip_cleanup: true
-          on:
-            branch: master
 
     - language: objective-c
-      
+
       before_install:
         - pod repo update
 

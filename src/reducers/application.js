@@ -29,7 +29,7 @@ export type Action = {
   payload?: boolean,
 };
 
-const INITAL_STATE: State = {
+const INITIAL_STATE: State = {
   leftSidebarVisible: true,
   rightSidebarVisible: true,
   rightSidebarAvailable: false,
@@ -39,7 +39,7 @@ const INITAL_STATE: State = {
 };
 
 export default function reducer(
-  state: State = INITAL_STATE,
+  state: State = INITIAL_STATE,
   action: Action,
 ): State {
   const newValue =

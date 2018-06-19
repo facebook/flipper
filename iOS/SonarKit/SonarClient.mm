@@ -15,7 +15,7 @@
 #import <UIKit/UIKit.h>
 
 #if !TARGET_OS_SIMULATOR
-// #import "SKPortForwardingServer.h"
+//#import "SKPortForwardingServer.h"
 #endif
 
 using WrapperPlugin = facebook::sonar::SonarCppWrapperPlugin;
@@ -24,7 +24,7 @@ using WrapperPlugin = facebook::sonar::SonarCppWrapperPlugin;
   facebook::sonar::SonarClient *_cppClient;
   folly::ScopedEventBaseThread eventBaseThread;
 #if !TARGET_OS_SIMULATOR
-  // SKPortForwardingServer *_server;
+ // SKPortForwardingServer *_server;
 #endif
 }
 

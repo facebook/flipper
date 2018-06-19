@@ -2,6 +2,8 @@
 
 Sonar is a platform for debugging mobile apps on iOS and Android. Visualize, inspect, and control your apps from a simple desktop interface. Use Sonar as is or extend it using the plugin API.
 
+![Sonar](/website/static/img/splash@2x.png)
+
 ## Mobile development
 
 Sonar aims to be your number one companion for mobile app development on iOS and Android. Therefore, we provide a bunch of useful tools including a log viewer, interactive layout inspector, and network inspector.
@@ -18,7 +20,7 @@ Both Sonar's desktop app and native mobile SDKs are open-source and MIT licensed
 
 This repository includes all parts of Sonar. This includes:
 
-* Sonar's desktop app built using Electron (`/src`)
+* Sonar's desktop app built using [Electron](https://electronjs.org) (`/src`)
 * native Sonar SDKs for iOS (`/iOS`)
 * native Sonar SDKs for Android (`/android`)
 * Plugins:
@@ -51,10 +53,8 @@ yarn start
 ## Building the desktop app
 
 ```
-yarn build [macOnly] [build-number=$buildNumber]
+yarn build --mac --version $buildNumber
 ```
-
-A binary for macOS is created in `dist/mac`. `macOnly` and `build-number` are optional params.
 
 ## Documentation
 

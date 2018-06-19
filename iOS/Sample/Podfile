@@ -7,19 +7,16 @@ swift_version = "4.1"
 target 'Sample' do
 
   pod 'RSocket', :podspec => '../third-party-podspecs/RSocket.podspec'
-  pod 'EasyWSClient', :podspec => '../third-party-podspecs/EasyWSClient.podspec'
   pod 'DoubleConversion', :podspec => '../third-party-podspecs/DoubleConversion.podspec'
   pod 'glog', :podspec => '../third-party-podspecs/glog.podspec'
   pod 'Folly', :podspec => '../third-party-podspecs/Folly.podspec'
-  # pod 'PeerTalk', :git => 'https://github.com/rsms/peertalk'
+  pod 'PeerTalk', :podspec => '../third-party-podspecs/PeerTalk.podspec'
   pod 'ComponentKit', :podspec => '../third-party-podspecs/ComponentKit.podspec'
   pod 'Yoga','~>1.8.1', :modular_headers => true
-  pod 'Sonar', :podspec => '../../xplat/Sonar/SonarKitCPP.podspec'
+  pod 'Sonar', :podspec => '../../xplat/Sonar/Sonar.podspec'
   pod 'SonarKit', :podspec => '../SonarKit.podspec'
   pod 'SonarKit/SonarKitLayoutComponentKitSupport', :podspec => '../SonarKit.podspec'
   pod 'SonarKit/SKIOSNetworkPlugin', :podspec => '../SonarKit.podspec'
-  pod 'OpenSSL-Universal', '~> 1.0'
-  pod 'CocoaLibEvent', '~> 1.0'
   post_install do |installer|
         installer.pods_project.targets.each do |target|
             if ['YogaKit'].include? target.name

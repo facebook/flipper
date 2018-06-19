@@ -145,7 +145,7 @@ class DevicesButton extends Component<Props, State> {
   getEmulatorNames(): Promise<Array<string>> {
     return new Promise((resolve, reject) => {
       child_process.exec(
-        '/opt/android_sdk/tools/emulator -list-avds',
+        '$ANDROID_HOME/tools/emulator -list-avds',
         (error: ?Error, data: ?string) => {
           if (error == null && data != null) {
             resolve(data.split('\n').filter(name => name !== ''));
@@ -189,10 +189,16 @@ class DevicesButton extends Component<Props, State> {
   }
 
   launchEmulator = (name: string) => {
-    child_process.exec(
-      `/opt/android_sdk/tools/emulator @${name}`,
-      this.updateEmulatorState,
-    );
+    if (/^[a-zA-Z0-9-_\s]+$/.test(name)) {
+      child_process.exec(
+        `$ANDROID_HOME/tools/emulator -avd "${name}"`,
+        this.updateEmulatorState,
+      );
+    } else {
+      console.error(
+        `Can not launch emulator named ${name}, because it's name contains invalid characters.`,
+      );
+    }
   };
 
   createEmualtor = () => {};
