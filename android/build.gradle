@@ -89,17 +89,17 @@ task prepareBoost(dependsOn: [downloadBoost], type: Copy) {
 }
 
 task downloadFolly(dependsOn: createNativeDepsDirectories, type: Download) {
-    src 'https://github.com/facebook/folly/archive/v2018.05.21.00.tar.gz'
+    src 'https://github.com/facebook/folly/archive/v2018.06.18.00.tar.gz'
     onlyIfNewer true
     overwrite false
-    dest new File(downloadsDir, 'folly-2018.05.21.00.tar.gz');
+    dest new File(downloadsDir, 'folly-2018.06.18.00.tar.gz');
 }
 
 task prepareFolly(dependsOn: [downloadFolly], type: Copy) {
     from tarTree(downloadFolly.dest)
     from './third-party/folly/'
-    include 'folly-2018.05.21.00/folly/**/*', 'build.gradle', 'CMakeLists.txt', 'ApplicationManifest.xml'
-    eachFile {fname -> fname.path = (fname.path - "folly-2018.05.21.00/")}
+    include 'folly-2018.06.18.00/folly/**/*', 'build.gradle', 'CMakeLists.txt', 'ApplicationManifest.xml'
+    eachFile {fname -> fname.path = (fname.path - "folly-2018.06.18.00/")}
     includeEmptyDirs = false
     into "$thirdPartyNdkDir/folly"
 }
@@ -242,8 +242,8 @@ android {
         implementation deps.supportAppCompat
         implementation deps.stetho
         implementation deps.okhttp3
-        implementation 'com.facebook.litho:litho-core:0.15.0'
-        implementation 'com.facebook.litho:litho-widget:0.15.0'
+        implementation deps.lithoCore
+        implementation deps.lithoWidget
         implementation 'org.mozilla:rhino:1.7.10'
     }
 }

@@ -35,7 +35,7 @@ public class SonarSampleApplication extends Application {
     SoLoader.init(this, false);
     try {
         //SoLoader.loadLibrary("sonarfb");
-        System.loadLibrary("sonarcpp");
+        SoLoader.loadLibrary("sonarfb");
     } catch (Exception e) {
         throw new RuntimeException(e);
     }
