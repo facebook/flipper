@@ -32,11 +32,7 @@ list(APPEND SRCFILES ${LIBEVENT_DIR}/event.c
                  	 ${LIBEVENT_DIR}/strlcpy.c
 )
 
-#file(GLOB SRCFILES  ${LIBEVENT_DIR}/*.c)
-
 message(STATUS "DIR_LIST :- " ${DIR_LIST})
-#configure_file(${LIBEVENT_DIR}/evconfig-private.h.cmake ${LIBEVENT_DIR}/evconfig-private.h)
-#configure_file(${LIBEVENT_DIR}/event-config.h.cmake ${LIBEVENT_DIR}/include/event2/event-config.h)
 add_library(${PACKAGE_NAME} SHARED ${SRCFILES})
 install(TARGETS ${PACKAGE_NAME}  DESTINATION ./build/)
 target_link_libraries(${PACKAGE_NAME})

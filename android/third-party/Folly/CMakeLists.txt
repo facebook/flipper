@@ -25,12 +25,8 @@ list(APPEND dir_list ${BOOST_DIR}/../)
 list(APPEND dir_list ${LIBEVENT_DIR}/)
 list(APPEND dir_list ${LIBEVENT_DIR}/include/)
 list(APPEND dir_list ${OPENSSL_DIR})
-#list(APPEND dir_list ${OPENSSL_DIR}/include)
-#list(APPEND dir_list ${OPENSSL_DIR}/include/openssl)
 
 include_directories(${dir_list})
-#    -DFOLLY_FORCE_CLOCK_GETTIME_DEFINITION=1     -std=c++14
-
 
 add_compile_options(
     -DFOLLY_HAVE_CLOCK_GETTIME=1
@@ -142,7 +138,5 @@ find_path(OPENSSL_LIBRARY libssl.so HINTS ${OPENSSL_LINK_DIRECTORIES})
 message(STATUS "link_directories:- " ${LIBEVENT_LINK_DIRECTORIES})
 
 install(TARGETS ${PACKAGE_NAME}  DESTINATION ./build/)
-# ${LIBEVENT_LINK_DIRECTORIES}/libevent.a
 
-# event event_core event_extra
 target_link_libraries(${PACKAGE_NAME} glog double-conversion ${OPENSSL_LINK_DIRECTORIES}/libssl.so ${OPENSSL_LINK_DIRECTORIES}/libcrypto.so event event_extra event_core)
