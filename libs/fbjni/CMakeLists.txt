@@ -14,8 +14,11 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 add_compile_options(
     -fno-omit-frame-pointer
     -fexceptions
+    -O3
     -Wall
     -std=c++11
+    -frtti
+    -ffunction-sections
     -DDISABLE_CPUCAP
     -DDISABLE_XPLAT)
 
@@ -25,14 +28,16 @@ list(APPEND FBJNI_HDRS ${FBJNI_CXX})
 list(APPEND FBJNI_HDRS ${FBJNI_CXX}/fbjni/)
 list(APPEND FBJNI_HDRS ${FBJNI_CXX}/fbjni/detail)
 list(APPEND FBJNI_HDRS ${FBJNI_CXX}/lyra)
+list(APPEND FBJNI_HDRS ${FBJNI_CXX}/../../jni-hack)
+
 include_directories(${FBJNI_HDRS})
 
 message(STATUS "FBJNI_HDRS =>" ${FBJNI_HDRS})
 file(GLOB FBJNI_SRC
     ${FBJNI_CXX}/fbjni/*.cpp
     ${FBJNI_CXX}/fbjni/detail/*.cpp
-    ${FBJNI_CXX}/lyra/*.cpp)
-
+    ${FBJNI_CXX}/lyra/*.cpp
+    )
 
 add_library(${PACKAGE_NAME} SHARED
     ${FBJNI_SRC})
