@@ -189,10 +189,16 @@ class DevicesButton extends Component<Props, State> {
   }
 
   launchEmulator = (name: string) => {
-    child_process.exec(
-      `$ANDROID_HOME/tools/emulator @${name}`,
-      this.updateEmulatorState,
-    );
+    if (/^[a-zA-Z0-9-_\s]+$/.test(name)) {
+      child_process.exec(
+        `$ANDROID_HOME/tools/emulator -avd "${name}"`,
+        this.updateEmulatorState,
+      );
+    } else {
+      console.error(
+        `Can not launch emulator named ${name}, because it's name contains invalid characters.`,
+      );
+    }
   };
 
   createEmualtor = () => {};
