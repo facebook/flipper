@@ -97,7 +97,7 @@ task downloadFolly(dependsOn: createNativeDepsDirectories, type: Download) {
 
 task prepareFolly(dependsOn: [downloadFolly], type: Copy) {
     from tarTree(downloadFolly.dest)
-    from './third-party/folly/'
+    from './third-party/Folly/'
     include 'folly-2018.06.18.00/folly/**/*', 'build.gradle', 'CMakeLists.txt', 'ApplicationManifest.xml'
     eachFile {fname -> fname.path = (fname.path - "folly-2018.06.18.00/")}
     includeEmptyDirs = false
@@ -106,7 +106,7 @@ task prepareFolly(dependsOn: [downloadFolly], type: Copy) {
 
 //TODO: Get rid off this hack.
 task finalizeFolly(dependsOn: [prepareFolly], type: Copy) {
-    from './third-party/folly/'
+    from './third-party/Folly/'
     include 'AsyncServerSocket.cpp'
     into "$thirdPartyNdkDir/folly/folly/io/async/"
 }
