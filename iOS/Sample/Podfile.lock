@@ -1,53 +1,62 @@
 PODS:
   - boost-for-react-native (1.63.0)
   - CocoaAsyncSocket (7.6.3)
-  - ComponentKit (0.21):
-    - Yoga
+  - CocoaLibEvent (1.0.0)
+  - ComponentKit (0.22):
+    - Yoga (~> 1.6)
   - DoubleConversion (3.0.0)
-  - EasyWSClient (1.0.0)
-  - Folly (2018.05.07.00):
+  - Folly (1.0.0):
     - boost-for-react-native
+    - CocoaLibEvent (~> 1.0)
     - DoubleConversion
     - glog
+    - OpenSSL-Static (= 1.0.2.c1)
   - glog (0.3.5)
-  - PeerTalk (0.0.2)
-  - Sonar (1.0.0):
-    - EasyWSClient
+  - OpenSSL-Static (1.0.2.c1)
+  - PeerTalk (1.0.0)
+  - RSocket (0.10.0):
     - Folly
-  - SonarKit (1.0.0):
+  - Sonar (0.0.1):
+    - Folly
+    - RSocket
+  - SonarKit (0.0.1):
     - CocoaAsyncSocket (~> 7.6)
     - Folly
+    - OpenSSL-Static (= 1.0.2.c1)
     - PeerTalk
     - Sonar
-    - SonarKit/SKIOSNetworkPlugin (= 1.0.0)
-    - SonarKit/SonarKitLayoutComponentKitSupport (= 1.0.0)
-    - SonarKit/SonarKitLayoutPlugin (= 1.0.0)
-    - SonarKit/SonarKitNetworkPlugin (= 1.0.0)
-    - SonarKit/SonarKitNetworkPlugin (= 1.0.0)
-  - SonarKit/SKIOSNetworkPlugin (1.0.0):
+    - SonarKit/SKIOSNetworkPlugin (= 0.0.1)
+    - SonarKit/SonarKitLayoutComponentKitSupport (= 0.0.1)
+    - SonarKit/SonarKitLayoutPlugin (= 0.0.1)
+    - SonarKit/SonarKitNetworkPlugin (= 0.0.1)
+  - SonarKit/SKIOSNetworkPlugin (0.0.1):
     - CocoaAsyncSocket (~> 7.6)
     - Folly
+    - OpenSSL-Static (= 1.0.2.c1)
     - PeerTalk
     - Sonar
     - SonarKit/SonarKitNetworkPlugin
-  - SonarKit/SonarKitLayoutComponentKitSupport (1.0.0):
+  - SonarKit/SonarKitLayoutComponentKitSupport (0.0.1):
     - CocoaAsyncSocket (~> 7.6)
     - ComponentKit
     - Folly
+    - OpenSSL-Static (= 1.0.2.c1)
     - PeerTalk
     - Sonar
     - SonarKit/SonarKitLayoutPlugin
-    - Yoga (= 1.8.1)
-  - SonarKit/SonarKitLayoutPlugin (1.0.0):
+    - Yoga (~> 1.8)
+  - SonarKit/SonarKitLayoutPlugin (0.0.1):
     - CocoaAsyncSocket (~> 7.6)
     - Folly
+    - OpenSSL-Static (= 1.0.2.c1)
     - PeerTalk
     - Sonar
-    - Yoga (= 1.8.1)
+    - Yoga (~> 1.8)
     - YogaKit (= 1.8.1)
-  - SonarKit/SonarKitNetworkPlugin (1.0.0):
+  - SonarKit/SonarKitNetworkPlugin (0.0.1):
     - CocoaAsyncSocket (~> 7.6)
     - Folly
+    - OpenSSL-Static (= 1.0.2.c1)
     - PeerTalk
     - Sonar
   - Yoga (1.8.1)
@@ -57,11 +66,11 @@ PODS:
 DEPENDENCIES:
   - ComponentKit (from `../third-party-podspecs/ComponentKit.podspec`)
   - DoubleConversion (from `../third-party-podspecs/DoubleConversion.podspec`)
-  - EasyWSClient (from `../third-party-podspecs/EasyWSClient.podspec`)
   - Folly (from `../third-party-podspecs/Folly.podspec`)
   - glog (from `../third-party-podspecs/glog.podspec`)
-  - PeerTalk (from `https://github.com/rsms/peertalk`)
-  - Sonar (from `../../xplat/Sonar/SonarKitCPP.podspec`)
+  - PeerTalk (from `../third-party-podspecs/PeerTalk.podspec`)
+  - RSocket (from `../third-party-podspecs/RSocket.podspec`)
+  - Sonar (from `../../xplat/Sonar/Sonar.podspec`)
   - SonarKit (from `../SonarKit.podspec`)
   - SonarKit/SKIOSNetworkPlugin (from `../SonarKit.podspec`)
   - SonarKit/SonarKitLayoutComponentKitSupport (from `../SonarKit.podspec`)
@@ -71,6 +80,8 @@ SPEC REPOS:
   https://github.com/cocoapods/specs.git:
     - boost-for-react-native
     - CocoaAsyncSocket
+    - CocoaLibEvent
+    - OpenSSL-Static
     - Yoga
     - YogaKit
 
@@ -79,50 +90,55 @@ EXTERNAL SOURCES:
     :podspec: "../third-party-podspecs/ComponentKit.podspec"
   DoubleConversion:
     :podspec: "../third-party-podspecs/DoubleConversion.podspec"
-  EasyWSClient:
-    :podspec: "../third-party-podspecs/EasyWSClient.podspec"
   Folly:
     :podspec: "../third-party-podspecs/Folly.podspec"
   glog:
     :podspec: "../third-party-podspecs/glog.podspec"
   PeerTalk:
-    :git: https://github.com/rsms/peertalk
+    :podspec: "../third-party-podspecs/PeerTalk.podspec"
+  RSocket:
+    :podspec: "../third-party-podspecs/RSocket.podspec"
   Sonar:
-    :podspec: "../../xplat/Sonar/SonarKitCPP.podspec"
+    :podspec: "../../xplat/Sonar/Sonar.podspec"
   SonarKit:
     :podspec: "../SonarKit.podspec"
 
 CHECKOUT OPTIONS:
   ComponentKit:
-    :commit: f801317e71f88fbb5a398cd726fc0375255f43ba
+    :commit: 89c5e28e4ccc02927187a8aac6b7196f533cf86d
     :git: https://github.com/facebook/ComponentKit.git
-  EasyWSClient:
-    :commit: 9b87dc488048900a8cd684f51ddc98143682dbc3
-    :git: https://github.com/dhbaird/easywsclient.git
+  Folly:
+    :commit: 101ad63ea0519f76881e2aa089f3a31149117936
+    :git: https://github.com/facebook/folly.git
   PeerTalk:
     :commit: 588303b43efa5082d654b6f75d1b84a6ba4b5b9e
-    :git: https://github.com/rsms/peertalk
+    :git: https://github.com/rsms/PeerTalk.git
+  RSocket:
+    :commit: 7f4fc67b1dc085e41cd89193077a70d994cb8500
+    :git: https://github.com/rsocket/rsocket-cpp.git
   Sonar:
-    :commit: 26c298ad3401157ac2b7336218c1dde63260dc0c
+    :commit: 94f03f182b44bb658217ee38071702e375436883
     :git: https://github.com/facebook/Sonar.git
   SonarKit:
-    :commit: 26c298ad3401157ac2b7336218c1dde63260dc0c
+    :commit: 94f03f182b44bb658217ee38071702e375436883
     :git: https://github.com/facebook/Sonar.git
 
 SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   CocoaAsyncSocket: eafaa68a7e0ec99ead0a7b35015e0bf25d2c8987
-  ComponentKit: 7bd0ad508946aeb68dd52ed8739ced9846ff3671
-  DoubleConversion: 310ccd7cdf00175c32883664f84fe026025604df
-  EasyWSClient: 7ec8effe7d86f6061a47d19a55355769c9edfd2f
-  Folly: 2d29ed217455246ae583ff1980f9ce882af31e80
-  glog: f175af2df1f453be65bd355b287a07c842927a99
-  PeerTalk: f5389c286e4d477e59b73dfbf25c5c70a2464761
-  Sonar: 815b6c6357c78564d9132f6389605b285a06f052
-  SonarKit: 29b45073b54d7f5db13e53b7afe6fb6f36c6bea7
+  CocoaLibEvent: 2fab71b8bd46dd33ddb959f7928ec5909f838e3f
+  ComponentKit: 417e573b93fcb74648b8fc0ada8eb41965d3393d
+  DoubleConversion: 9bd61b1134a393694e95e0950c5bf3f99534817f
+  Folly: 65270e20aba2ebbb87febbf1f9052ccd28571ea4
+  glog: fdb5d40eb83acd6a4d5d61d95ecc583f5970a119
+  OpenSSL-Static: bd17e34564a8591ad76b740318683a6caa19a13e
+  PeerTalk: aadc42bc7d7f19e89f817b59ef8196305a711504
+  RSocket: e9ee232080f995ba8f403ccf4cb61238a5646cb6
+  Sonar: 29d8fb9b010e56fa1358be996d68d4b436dd8c21
+  SonarKit: 5f67fab955cfebd1d47e711606eff97d18f6013c
   Yoga: e6f1fed82138c17da5332e15e5770abf0e9cc386
   YogaKit: bb90d11e297e06abef7e0cfb20e035a6bd00cdc4
 
-PODFILE CHECKSUM: cab936292346d86ef8900c8f67d3c707dc421709
+PODFILE CHECKSUM: 6d021549fc806a559ec83f4086fadb9d8dc59e00
 
-COCOAPODS: 1.5.2
+COCOAPODS: 1.5.3
