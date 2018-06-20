@@ -5,6 +5,11 @@
  * @format
  */
 
+/*
+ * This class exists to allow error reporting to your own service.
+ * The recommended way to use this, is to instantiate it inside LogManager,
+ * so that all logged errors get reported to this class.
+ */
 export function cleanStack(stack: string, loc: ?string) {}
 import type ScribeLogger from './ScribeLogger';
 

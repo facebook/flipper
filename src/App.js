@@ -18,7 +18,6 @@ import {Server, Client} from './server.js';
 import * as reducers from './reducers.js';
 import React from 'react';
 import BugReporter from './fb-stubs/BugReporter.js';
-import ErrorReporter from './fb-stubs/ErrorReporter.js';
 import BugReporterDialog from './chrome/BugReporterDialog.js';
 import ErrorBar from './chrome/ErrorBar.js';
 import Logger from './fb-stubs/Logger.js';
@@ -75,14 +74,12 @@ export class App extends React.Component<Props, State> {
       server: this.initServer(),
     };
 
-    this.errorReporter = new ErrorReporter(this.logger.scribeLogger);
     this.bugReporter = new BugReporter(this.logger);
     this.commandLineArgs = yargs.parse(electron.remote.process.argv);
 
     setupMenu(this.sendKeyboardAction);
   }
 
-  errorReporter: ErrorReporter;
   bugReporter: BugReporter;
   logger: Logger;
   commandLineArgs: Object;
