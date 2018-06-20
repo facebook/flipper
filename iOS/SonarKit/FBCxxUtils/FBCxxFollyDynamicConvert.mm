@@ -45,7 +45,7 @@ id convertFollyDynamicToId(const folly::dynamic &dyn) {
   }
 }
 
-folly::dynamic convertIdToFollyDynamic(id json)
+folly::dynamic convertIdToFollyDynamic(id json, bool nullifyNanAndInf)
 {
   if (json == nil || json == (id)kCFNull) {
     return nullptr;
@@ -63,7 +63,11 @@ folly::dynamic convertIdToFollyDynamic(id json)
         if ([json isKindOfClass:[@YES class]]) {
           return (bool) [json boolValue];
         } else {
-          return [json longLongValue];
+          const auto value = [json longLongValue];
+          if (nullifyNanAndInf && (isnan(value) || isinf(value))) {
+            return nullptr;
+          }
+          return value;
         }
       case _C_UCHR:
       case _C_SHT:
@@ -73,12 +77,22 @@ folly::dynamic convertIdToFollyDynamic(id json)
       case _C_LNG:
       case _C_ULNG:
       case _C_LNG_LNG:
-      case _C_ULNG_LNG:
-        return [json longLongValue];
+      case _C_ULNG_LNG: {
+        const auto value = [json longLongValue];
+        if (nullifyNanAndInf && (isnan(value) || isinf(value))) {
+          return nullptr;
+        }
+        return value;
+      }
 
       case _C_FLT:
-      case _C_DBL:
-        return [json doubleValue];
+      case _C_DBL: {
+        const auto value = [json doubleValue];
+        if (nullifyNanAndInf && (isnan(value) || isinf(value))) {
+          return nullptr;
+        }
+        return value;
+      }
 
       // default:
       //   fall through
@@ -90,15 +104,15 @@ folly::dynamic convertIdToFollyDynamic(id json)
   } else if ([json isKindOfClass:[NSArray class]]) {
     folly::dynamic array = folly::dynamic::array;
     for (id element in json) {
-      array.push_back(convertIdToFollyDynamic(element));
+      array.push_back(convertIdToFollyDynamic(element, nullifyNanAndInf));
     }
     return array;
   } else if ([json isKindOfClass:[NSDictionary class]]) {
     __block folly::dynamic object = folly::dynamic::object();
 
     [json enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSString *value, __unused BOOL *stop) {
-      object.insert(convertIdToFollyDynamic(key),
-                    convertIdToFollyDynamic(value));
+      object.insert(convertIdToFollyDynamic(key, nullifyNanAndInf),
+                    convertIdToFollyDynamic(value, nullifyNanAndInf));
       }];
 
     return object;
