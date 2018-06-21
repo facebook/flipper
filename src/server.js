@@ -171,11 +171,12 @@ export class Client extends EventEmitter {
     if (id == null) {
       const {error} = data;
       if (error != null) {
-        this.app.logger.error(error.stacktrace || error.message, 'deviceError');
-        this.app.errorReporter.report({
-          message: error.message,
-          stack: error.stacktrace,
-        });
+        this.app.logger.error(
+          `Error received from device ${
+            method ? `when calling ${method}` : ''
+          }: ${error.message} + \nDevice Stack Trace: ${error.stacktrace}`,
+          'deviceError',
+        );
       } else if (method === 'refreshPlugins') {
         this.refreshPlugins();
       } else if (method === 'execute') {
