@@ -106,7 +106,6 @@ list(APPEND SRC_FILES ${FOLLY_DIR}/io/async/HHWheelTimer.cpp
                       ${FOLLY_DIR}/memory/detail/MallocImpl.cpp
                       )
 
-message(STATUS "SRC FILES:- " ${SRC_FILES})
 add_library(${PACKAGE_NAME} SHARED ${SRC_FILES})
 
 set(build_DIR ${CMAKE_SOURCE_DIR}/build)
@@ -135,7 +134,6 @@ target_include_directories(${PACKAGE_NAME} PRIVATE
 set(LIBEXTRA_PATH /Users/prit91/LocalDevTesting/sonar-upstream-proper/Sonar/android/build/third-party-ndk/LibEvent/.externalNativeBuild/cmake/debug/${ANDROID_ABI}/lib)
 set(OPENSSL_LINK_DIRECTORIES ${PROJECT_SOURCE_DIR}/../OpenSSL/libs/${ANDROID_ABI}/)
 find_path(OPENSSL_LIBRARY libssl.so HINTS ${OPENSSL_LINK_DIRECTORIES})
-message(STATUS "link_directories:- " ${LIBEVENT_LINK_DIRECTORIES})
 
 install(TARGETS ${PACKAGE_NAME}  DESTINATION ./build/)
 

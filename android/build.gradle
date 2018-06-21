@@ -196,7 +196,7 @@ android {
         targetSdkVersion rootProject.targetSdkVersion
         buildConfigField "boolean", "IS_INTERNAL_BUILD", 'true'
         ndk {
-            abiFilters 'arm64-v8a', 'x86'
+            abiFilters 'arm64-v8a', 'x86', 'armeabi-v7a'
             stl 'c++_shared'
         }
 

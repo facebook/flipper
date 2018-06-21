@@ -39,7 +39,6 @@ set(glog_DIR ${third_party_ndk}/glog)
 set(BOOST_DIR ${third_party_ndk}/boost/boost_1_63_0/)
 set(LIBEVENT_DIR ${third_party_ndk}/LibEvent/libevent-release-2.1.9/)
 
-message(STATUS "AAAANDROID LIBEVENT_DIR => "  ${LIBEVENT_DIR})
 set(build_DIR ${CMAKE_SOURCE_DIR}/build)
 
 set(fbjni_build_DIR ${build_DIR}/fbjni/${ANDROID_ABI})

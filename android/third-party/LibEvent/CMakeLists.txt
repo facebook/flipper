@@ -32,7 +32,6 @@ list(APPEND SRCFILES ${LIBEVENT_DIR}/event.c
                  	 ${LIBEVENT_DIR}/strlcpy.c
 )
 
-message(STATUS "DIR_LIST :- " ${DIR_LIST})
 add_library(${PACKAGE_NAME} SHARED ${SRCFILES})
 install(TARGETS ${PACKAGE_NAME}  DESTINATION ./build/)
 target_link_libraries(${PACKAGE_NAME})

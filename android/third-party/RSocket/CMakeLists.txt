@@ -18,7 +18,6 @@ set(RSOCKET_DIR  ${PROJECT_SOURCE_DIR}/rsocket-cpp-0.10.1/rsocket)
 
 list(APPEND dir_list ${RSOCKET_ROOT_DIR}/)
 list(APPEND dir_list ${RSOCKET_DIR}/)
-#list(APPEND dir_list ${RSOCKET_DIR}/benchmarks)
 list(APPEND dir_list ${RSOCKET_DIR}/framing)
 list(APPEND dir_list ${RSOCKET_DIR}/internal)
 list(APPEND dir_list ${RSOCKET_DIR}/statemachine)
@@ -29,7 +28,6 @@ list(APPEND dir_list ${RSOCKET_ROOT_DIR}/yarpl/observable)
 list(APPEND dir_list ${RSOCKET_ROOT_DIR}/yarpl/utils)
 
 file(GLOB SRC_FILES ${RSOCKET_DIR}/*.cpp
-    #                ${RSOCKET_DIR}/benchmarks/*.cpp
                     ${RSOCKET_DIR}/internal/*.cpp
                     ${RSOCKET_DIR}/framing/*.cpp
                     ${RSOCKET_DIR}/statemachine/*.cpp
@@ -62,8 +60,6 @@ add_compile_options(
     -Wno-tautological-constant-compare
     )
 
-#file(GLOB_RECURSE SRCFILES ${RSOCKET_DIR}/*.cpp)
-
 add_library(${PACKAGE_NAME} SHARED ${SRC_FILES})
 
 set(build_DIR ${CMAKE_SOURCE_DIR}/build)
@@ -89,7 +85,6 @@ target_include_directories(${PACKAGE_NAME} PRIVATE
     )
 
 
-#install(TARGETS ${PACKAGE_NAME}  DESTINATION ./build/)
 set(OPENSSL_LINK_DIRECTORIES ${third_party_ndk}/OpenSSL/libs/${ANDROID_ABI}/)
 
 find_path(OPENSSL_LIBRARY libssl.so HINTS ${OPENSSL_LINK_DIRECTORIES})

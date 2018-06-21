@@ -32,7 +32,6 @@ list(APPEND FBJNI_HDRS ${FBJNI_CXX}/../../jni-hack)
 
 include_directories(${FBJNI_HDRS})
 
-message(STATUS "FBJNI_HDRS =>" ${FBJNI_HDRS})
 file(GLOB FBJNI_SRC
     ${FBJNI_CXX}/fbjni/*.cpp
     ${FBJNI_CXX}/fbjni/detail/*.cpp
@@ -42,9 +41,6 @@ file(GLOB FBJNI_SRC
 add_library(${PACKAGE_NAME} SHARED
     ${FBJNI_SRC})
 
-target_include_directories(${PACKAGE_NAME} PRIVATE
-    include ${FBJNI_HDRS})
-
-#install(TARGETS ${PACKAGE_NAME}  DESTINATION ./build/)
+target_include_directories(${PACKAGE_NAME} PRIVATE ${FBJNI_HDRS})
 
 target_link_libraries(${PACKAGE_NAME} android log)

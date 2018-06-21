@@ -45,19 +45,19 @@ dependencies {
     androidTestImplementation deps.supportTestRunner
     androidTestImplementation deps.supportEspresso
     // Litho
-//    implementation deps.lithoCore
-//    implementation deps.lithoWidget
-//    compileOnly deps.lithoAnnotations
+    implementation deps.lithoCore
+    implementation deps.lithoWidget
+    compileOnly deps.lithoAnnotations
 
-//    annotationProcessor deps.lithoProcessor
+    annotationProcessor deps.lithoProcessor
 
     // SoLoader
     implementation deps.soloader
 
 // For integration with Fresco
-//    implementation deps.lithoFresco
+    implementation deps.lithoFresco
     // For testing
-//    testImplementation deps.lithoTesting
+    testImplementation deps.lithoTesting
 
     implementation deps.okhttp3
     implementation project(':android')
