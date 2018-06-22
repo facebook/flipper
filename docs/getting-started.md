@@ -59,7 +59,7 @@ public class MyApplication extends Application {
 To integrate with an iOS app, you can use [CocoaPods](https://cocoapods.org). Add the mobile Sonar SDK and its dependencies to your `Podfile`:
 
 ```ruby
-platform :ios, '8.0'
+platform :ios, '8.4'
 swift_version = '4.1'
 
 target 'MyApp' do
