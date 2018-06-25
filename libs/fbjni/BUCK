@@ -1,0 +1,81 @@
+load("//build_defs:fb_xplat_cxx_library.bzl", "fb_xplat_cxx_library")
+load("@xplat//build_defs:fb_java_library.bzl", "fb_java_library")
+
+ANNOTATIONS_SRCS = [
+    "java/com/facebook/jni/annotations/*.java",
+]
+
+fb_java_library(
+    name = "java_annotations",
+    srcs = glob(ANNOTATIONS_SRCS),
+    required_for_source_only_abi = True,
+)
+
+fb_java_library(
+    name = "java",
+    srcs = glob(
+        ["java/**/*.java"],
+        exclude = ANNOTATIONS_SRCS,
+    ),
+    required_for_source_only_abi = True,
+    visibility = ["PUBLIC"],
+    deps = [
+        "//libraries/soloader/java/com/facebook/soloader:soloader",
+        "//third-party/java/jsr-305:jsr-305",
+    ],
+    exported_deps = [
+        ":java_annotations",
+    ],
+)
+
+fb_xplat_cxx_library(
+    name = "fbjni",
+    srcs = glob([
+        "cxx/fbjni/**/*.cpp",
+    ]),
+    header_namespace = "",
+    exported_headers = subdir_glob([
+        ("cxx", "fbjni/**/*.h"),
+    ]),
+    allow_jni_merging = True,
+    compiler_flags = [
+        "-fexceptions",
+        "-fno-omit-frame-pointer",
+        "-frtti",
+        "-ffunction-sections",
+    ],
+    enable_static_variant = True,
+    exported_platform_headers = [
+        (
+            "^(?!android-arm$).*$",
+            subdir_glob([
+                ("cxx", "lyra/**/*.h"),
+            ]),
+        ),
+    ],
+    fbandroid_deps = [
+        "xplat//third-party/linker_lib:atomic",
+    ],
+    platform_srcs = [
+        (
+            "^(?!android-arm$).*$",
+            glob([
+                "cxx/lyra/*.cpp",
+            ]),
+        ),
+    ],
+    preprocessor_flags = [
+        "-DLOG_TAG=\"libfbjni\"",
+    ],
+    soname = "libfbjni.$(ext)",
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        "xplat//third-party/linker_lib:android",
+    ],
+    exported_deps = [
+        "xplat//third-party/linker_lib:log",
+        "//native/jni-hack:jni-hack",
+    ],
+)

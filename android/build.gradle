@@ -74,13 +74,13 @@ task prepareDoubleConversion(dependsOn: [downloadDoubleConversion], type: Copy) 
 task downloadBoost(dependsOn: createNativeDepsDirectories, type: Download) {
     src 'https://github.com/react-native-community/boost-for-react-native/releases/download/v1.63.0-0/boost_1_63_0.tar.gz'
     onlyIfNewer true
-    overwrite false
+    overwrite true
     dest new File(downloadsDir, 'boost_1_63_0.tar.gz')
 }
 
 task prepareBoost(dependsOn: [downloadBoost], type: Copy) {
     from tarTree(resources.gzip(downloadBoost.dest))
-    include 'boost_1_63_0/boost/**/*.hpp', 'boost/boost/**/*.hpp'
+    include 'boost_1_63_0/boost/**/*.hpp', 'boost_1_63_0/boost/**/*.h', 'boost/boost/**/*.hpp', 'boost/boost/**/*.h'
     includeEmptyDirs = false
     into "$thirdPartyNdkDir/boost"
     doLast {
@@ -89,26 +89,102 @@ task prepareBoost(dependsOn: [downloadBoost], type: Copy) {
 }
 
 task downloadFolly(dependsOn: createNativeDepsDirectories, type: Download) {
-    src 'https://github.com/facebook/folly/archive/v2018.05.21.00.tar.gz'
+    src 'https://github.com/facebook/folly/archive/v2018.06.18.00.tar.gz'
     onlyIfNewer true
     overwrite false
-    dest new File(downloadsDir, 'folly-2018.05.21.00.tar.gz');
+    dest new File(downloadsDir, 'folly-2018.06.18.00.tar.gz');
 }
 
 task prepareFolly(dependsOn: [downloadFolly], type: Copy) {
     from tarTree(downloadFolly.dest)
-    from './third-party/folly/'
-    include 'folly-2018.05.21.00/folly/**/*', 'build.gradle', 'CMakeLists.txt', 'ApplicationManifest.xml'
-    eachFile {fname -> fname.path = (fname.path - "folly-2018.05.21.00/")}
+    from './third-party/Folly/'
+    include 'folly-2018.06.18.00/folly/**/*', 'build.gradle', 'CMakeLists.txt', 'ApplicationManifest.xml'
+    eachFile {fname -> fname.path = (fname.path - "folly-2018.06.18.00/")}
     includeEmptyDirs = false
     into "$thirdPartyNdkDir/folly"
+}
+
+//TODO: Get rid off this hack.
+task finalizeFolly(dependsOn: [prepareFolly], type: Copy) {
+    from './third-party/Folly/'
+    include 'AsyncServerSocket.cpp'
+    into "$thirdPartyNdkDir/folly/folly/io/async/"
+}
+
+task downloadLibEvent(dependsOn: [], type: Download) {
+    src 'https://github.com/priteshrnandgaonkar/libevent/archive/release-2.1.9.tar.gz'
+    onlyIfNewer true
+    overwrite false
+    dest new File(downloadsDir, 'libevent-release-2.1.9.tar.gz');
+}
+
+task prepareLibEvent(dependsOn: [downloadLibEvent], type: Copy) {
+    from tarTree(downloadLibEvent.dest)
+    from './third-party/LibEvent/'
+    include 'libevent-release-2.1.9/**/*', 'build.gradle', 'ApplicationManifest.xml'
+    includeEmptyDirs = false
+    into "$thirdPartyNdkDir/LibEvent"
+}
+
+task finalizeEvent(dependsOn: [prepareLibEvent], type: Copy) {
+    from './third-party/LibEvent/'
+    include 'event-config.h'
+    includeEmptyDirs = false
+    into "$thirdPartyNdkDir/LibEvent/libevent-release-2.1.9/include/event2/"
+}
+
+task finalizeEvent2(dependsOn: [finalizeEvent], type: Copy) {
+    from './third-party/LibEvent/'
+    include 'libs/**/*'
+    includeEmptyDirs = false
+    into "$thirdPartyNdkDir/LibEvent/"
+}
+
+task downloadOpenSSL(dependsOn: [], type: Download) {
+    src 'https://github.com/priteshrnandgaonkar/openssl-android/archive/1.0.0.tar.gz'
+    onlyIfNewer true
+    overwrite false
+    dest new File(downloadsDir, 'openssl-android-1.0.0.tar.gz');
+}
+
+task prepareOpenSSL(dependsOn: [downloadOpenSSL], type: Copy) {
+    from tarTree(downloadOpenSSL.dest)
+    from './third-party/OpenSSL/'
+    include 'openssl-android-1.0.0/**/*', 'libs/**/*'
+    includeEmptyDirs = false
+    into "$thirdPartyNdkDir/OpenSSL/"
+}
+
+task finalizeOpenSSL(dependsOn: [prepareOpenSSL], type: Copy) {
+    from './third-party/OpenSSL/'
+    include 'build.gradle', 'ApplicationManifest.xml'
+    includeEmptyDirs = false
+    into "$thirdPartyNdkDir/OpenSSL/openssl-android-1.0.0/"
+}
+
+task downloadRSocket(dependsOn: [], type: Download) {
+    src 'https://github.com/priteshrnandgaonkar/rsocket-cpp/archive/0.10.1.tar.gz'
+    onlyIfNewer true
+    overwrite false
+    dest new File(downloadsDir, 'rsocket-cpp-0.10.1.tar.gz');
+}
+
+task prepareRSocket(dependsOn: [downloadRSocket], type: Copy) {
+    from tarTree(downloadRSocket.dest)
+    from './third-party/RSocket/'
+    include 'rsocket-cpp-0.10.1/**/*', 'build.gradle', 'ApplicationManifest.xml', 'CMakeLists.txt'
+    includeEmptyDirs = false
+    into "$thirdPartyNdkDir/RSocket"
 }
 
 task prepareAllLibs() {
     dependsOn finalizeGlog
     dependsOn prepareDoubleConversion
     dependsOn prepareBoost
-    dependsOn prepareFolly
+    dependsOn finalizeFolly
+    dependsOn finalizeEvent
+    dependsOn finalizeOpenSSL
+    dependsOn prepareRSocket
 }
 
 android {
@@ -120,7 +196,7 @@ android {
         targetSdkVersion rootProject.targetSdkVersion
         buildConfigField "boolean", "IS_INTERNAL_BUILD", 'true'
         ndk {
-            abiFilters 'x86', 'x86_64', 'armeabi-v7a', 'arm64-v8a'
+            abiFilters 'arm64-v8a', 'x86', 'armeabi-v7a'
             stl 'c++_shared'
         }
 
@@ -141,6 +217,9 @@ android {
                 srcDir 'android'
                 srcDir 'core'
                 srcDir 'plugins'
+                exclude 'console/ConsoleSonarPlugin.java'
+                exclude 'console/JavascriptEnvironment.java'
+                exclude 'console/JavascriptSession.java'
             }
             res {
                 srcDir 'res'
@@ -163,8 +242,8 @@ android {
         implementation deps.supportAppCompat
         implementation deps.stetho
         implementation deps.okhttp3
-        implementation 'com.facebook.litho:litho-core:0.15.0'
-        implementation 'com.facebook.litho:litho-widget:0.15.0'
+        implementation deps.lithoCore
+        implementation deps.lithoWidget
         implementation 'org.mozilla:rhino:1.7.10'
     }
 }

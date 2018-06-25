@@ -1,0 +1,35 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion rootProject.compileSdkVersion
+    buildToolsVersion rootProject.buildToolsVersion
+
+    defaultConfig {
+        minSdkVersion rootProject.minSdkVersion
+        targetSdkVersion rootProject.targetSdkVersion
+        ndk {
+            abiFilters 'arm64-v8a', 'x86', 'armeabi-v7a', 'armeabi'
+        }
+
+        externalNativeBuild {
+            ndkBuild {
+            arguments "NDK_APPLICATION_MK:=$projectDir/jni/Application.mk",
+                      "NDK_TOOLCHAIN_VERSION:=clang"
+            cppFlags "-std=c++11"
+            }
+        }
+    }
+    externalNativeBuild {
+     ndkBuild {
+        path "$projectDir/jni/Android.mk"
+     }
+    }
+    lintOptions {
+        abortOnError false
+    }
+    sourceSets {
+        main {
+            manifest.srcFile './ApplicationManifest.xml'
+        }
+    }
+}

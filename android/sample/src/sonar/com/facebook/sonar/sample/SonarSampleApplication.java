@@ -7,8 +7,13 @@ import android.net.Network;
 import android.support.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import android.widget.LinearLayout.LayoutParams;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import com.facebook.litho.sonar.LithoSonarDescriptors;
 import com.facebook.soloader.SoLoader;
+import com.facebook.sonar.plugins.inspector.DescriptorMapping;
+import com.facebook.sonar.plugins.inspector.InspectorSonarPlugin;
 import com.facebook.sonar.android.utils.SonarUtils;
 import com.facebook.sonar.android.AndroidSonarClient;
 import com.facebook.sonar.core.SonarClient;
@@ -46,5 +51,5 @@ public class SonarSampleApplication extends Application {
     client.addPlugin(new InspectorSonarPlugin(this, descriptorMapping));
     client.addPlugin(networkPlugin);
     client.start();
-}
+    }
 }

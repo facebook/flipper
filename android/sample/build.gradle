@@ -22,17 +22,21 @@ android {
             res {
                 srcDir 'res'
             }
+            jniLibs.srcDirs = ['../third-party/OpenSSL/libs']
         }
     }
-    packagingOptions {
-        pickFirst 'lib/armeabi-v7a/libfb.so'
-        pickFirst 'lib/x86/libfb.so'
-        pickFirst 'lib/x86_64/libfb.so'
-        pickFirst 'lib/arm64-v8a/libfb.so'
+
+   packagingOptions {
+        pickFirst 'lib/armeabi-v7a/libsonarfb.so'
+        pickFirst 'lib/x86/libsonarfb.so'
+        pickFirst 'lib/x86_64/libsonarfb.so'
+        pickFirst 'lib/arm64-v8a/libsonarfb.so'
     }
 }
 
+
 dependencies {
+
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation deps.supportAppCompat
     implementation deps.supportConstraintLayout
@@ -50,12 +54,12 @@ dependencies {
     // SoLoader
     implementation deps.soloader
 
-    // For integration with Fresco
+// For integration with Fresco
     implementation deps.lithoFresco
-
     // For testing
     testImplementation deps.lithoTesting
 
     implementation deps.okhttp3
     implementation project(':android')
+    implementation project(':fbjni')
 }

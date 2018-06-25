@@ -4,6 +4,7 @@ website/build
 *.xcworkspace
 **/Pods/
 **/xcuserdata/
+build/
 yarn-error.log
 
 # Android / Intellij

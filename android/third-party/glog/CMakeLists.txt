@@ -13,7 +13,6 @@ list(APPEND dir_list ${glog_DIR}/src)
 list(APPEND dir_list ${glog_DIR}/glog)
 list(APPEND dir_list ${glog_DIR}/base)
 
-message(STATUS "dir_list = " ${dir_list})
 include_directories(${dir_list})
 
   add_compile_options(

@@ -8,7 +8,11 @@
 
 #include <memory>
 
+#ifdef SONAR_OSS
+#include <fbjni/fbjni.h>
+#else
 #include <fb/fbjni.h>
+#endif
 
 #include <folly/json.h>
 #include <folly/io/async/EventBase.h>
@@ -275,10 +279,10 @@ class JSonarClient : public jni::HybridClass<JSonarClient> {
 
     SonarClient::init({
       {
-        std::move(host), 
-        std::move(os), 
-        std::move(device), 
-        std::move(deviceId), 
+        std::move(host),
+        std::move(os),
+        std::move(device),
+        std::move(deviceId),
         std::move(app),
         std::move(appId),
         std::move(privateAppDirectory)
