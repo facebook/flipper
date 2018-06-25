@@ -15,6 +15,7 @@ import {
   Glyph,
   colors,
   PureComponent,
+  SonarSidebar,
 } from 'sonar';
 
 import {SonarPlugin, SearchableTable} from 'sonar';
@@ -188,6 +189,7 @@ export default class extends SonarPlugin<State> {
           clear={this.clearLogs}
           onRowHighlighted={this.onRowHighlighted}
         />
+        <SonarSidebar>{this.renderSidebar()}</SonarSidebar>
       </FlexColumn>
     );
   }

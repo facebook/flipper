@@ -60,7 +60,16 @@ export type KeyboardActions = Array<DefaultKeyboardAction | KeyboardAction>;
 
 const menuItems: Map<string, Object> = new Map();
 
-export function setupMenu(actionHandler: (action: string) => void) {
+let pluginActionHandler;
+function actionHandler(action: string) {
+  if (pluginActionHandler) {
+    pluginActionHandler(action);
+  } else {
+    console.warn(`Unhandled keybaord action "${action}".`);
+  }
+}
+
+export function setupMenuBar() {
   const template = getTemplate(electron.remote.app, electron.remote.shell);
 
   // collect all keyboard actions from all plugins
@@ -126,20 +135,20 @@ function appendMenuItem(
   }
 }
 
-export function activateMenuItems(activePluginKey: ?string) {
-  const activePlugin: ?Class<SonarBasePlugin<>> = [
-    ...devicePlugins,
-    ...plugins,
-  ].find((plugin: Class<SonarBasePlugin<>>) => plugin.id === activePluginKey);
-
+export function activateMenuItems(activePlugin: SonarBasePlugin<>) {
   // disable all keyboard actions
   for (const item of menuItems) {
     item[1].enabled = false;
   }
 
+  // set plugin action handler
+  if (activePlugin.onKeyboardAction) {
+    pluginActionHandler = activePlugin.onKeyboardAction;
+  }
+
   // enable keyboard actions for the current plugin
-  if (activePlugin != null && activePlugin.keyboardActions != null) {
-    (activePlugin.keyboardActions || []).forEach(keyboardAction => {
+  if (activePlugin.constructor.keyboardActions != null) {
+    (activePlugin.constructor.keyboardActions || []).forEach(keyboardAction => {
       const action =
         typeof keyboardAction === 'string'
           ? keyboardAction

@@ -9,7 +9,6 @@
 .*/website/.*
 
 [libs]
-lib
 flow-typed
 
 [options]

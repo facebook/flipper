@@ -53,9 +53,9 @@ export default class BaseDevice {
   // possible src of icon to display next to the device title
   icon: ?string;
 
-  supportsPlugin(DevicePlugin: Class<SonarDevicePlugin<>>) {
+  supportsPlugin = (DevicePlugin: Class<SonarDevicePlugin<>>): boolean => {
     return this.supportedPlugins.includes(DevicePlugin.id);
-  }
+  };
 
   // ensure that we don't serialise devices
   toJSON() {

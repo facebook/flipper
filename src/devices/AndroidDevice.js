@@ -9,8 +9,6 @@ import type {DeviceType, DeviceShell, DeviceLogListener} from './BaseDevice.js';
 
 import {Priority} from 'adbkit-logcat-fb';
 import child_process from 'child_process';
-
-// TODO
 import BaseDevice from './BaseDevice.js';
 
 type ADBClient = any;
@@ -39,6 +37,7 @@ export default class AndroidDevice extends BaseDevice {
   os = 'Android';
   adb: ADBClient;
   pidAppMapping: {[key: number]: string} = {};
+  logReader: any;
 
   supportedColumns(): Array<string> {
     return ['date', 'pid', 'tid', 'tag', 'message', 'type', 'time'];

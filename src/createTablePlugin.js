@@ -11,7 +11,7 @@ import type {
   TableColumnSizes,
   TableColumns,
 } from 'sonar';
-import {FlexColumn, Button} from 'sonar';
+import {FlexColumn, Button, SonarSidebar} from 'sonar';
 import textContent from './utils/textContent.js';
 import createPaste from './utils/createPaste.js';
 import {SonarPlugin, SearchableTable} from 'sonar';
@@ -199,6 +199,7 @@ export function createTablePlugin<T: RowData>(props: Props<T>) {
             stickyBottom={true}
             actions={<Button onClick={this.clear}>Clear Table</Button>}
           />
+          <SonarSidebar>{this.renderSidebar()}</SonarSidebar>
         </FlexColumn>
       );
     }

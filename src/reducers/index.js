@@ -7,7 +7,8 @@
 
 import {combineReducers} from 'redux';
 import application from './application.js';
-import devices from './devices.js';
+import connections from './connections.js';
+import pluginStates from './pluginStates.js';
 import type {
   State as ApplicationState,
   Action as ApplicationAction,
@@ -15,15 +16,20 @@ import type {
 import type {
   State as DevicesState,
   Action as DevicesAction,
-} from './devices.js';
+} from './connections.js';
+import type {
+  State as PluginsState,
+  Action as PluginsAction,
+} from './pluginStates.js';
 import type {Store as ReduxStore} from 'redux';
 
 export type Store = ReduxStore<
   {
     application: ApplicationState,
-    devices: DevicesState,
+    connections: DevicesState,
+    pluginStates: PluginsState,
   },
-  ApplicationAction | DevicesAction,
+  ApplicationAction | DevicesAction | PluginsAction,
 >;
 
-export default combineReducers({application, devices});
+export default combineReducers({application, connections, pluginStates});

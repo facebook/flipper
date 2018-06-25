@@ -121,6 +121,13 @@ export default class ScreenPlugin extends SonarDevicePlugin<State> {
   device: AndroidDevice;
   adbClient: AdbClient;
 
+  state = {
+    pullingData: false,
+    recording: false,
+    recordingEnabled: false,
+    capturingScreenshot: false,
+  };
+
   init() {
     this.adbClient = this.device.adb;
 

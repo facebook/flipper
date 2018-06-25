@@ -4,11 +4,9 @@
  * LICENSE file in the root directory of this source tree.
  * @format
  */
-import {ErrorBoundary, FlexColumn, FlexRow} from 'sonar';
+import {FlexColumn, FlexRow} from 'sonar';
 import {connect} from 'react-redux';
 import {toggleBugDialogVisible} from './reducers/application.js';
-import {setupMenu, activateMenuItems} from './MenuBar.js';
-import {devicePlugins} from './device-plugins/index.js';
 import WelcomeScreen from './chrome/WelcomeScreen.js';
 import SonarTitleBar from './chrome/SonarTitleBar.js';
 import BaseDevice from './devices/BaseDevice.js';
@@ -16,7 +14,6 @@ import MainSidebar from './chrome/MainSidebar.js';
 import {SonarBasePlugin} from './plugin.js';
 import Server from './server.js';
 import Client from './Client.js';
-import * as reducers from './reducers.js';
 import React from 'react';
 import BugReporter from './fb-stubs/BugReporter.js';
 import BugReporterDialog from './chrome/BugReporterDialog.js';
@@ -47,7 +44,6 @@ export type State = {
   activeAppKey: ?string,
   plugins: StatePlugins,
   error: ?string,
-  server: Server,
 };
 
 type Props = {
@@ -55,6 +51,8 @@ type Props = {
   leftSidebarVisible: boolean,
   bugDialogVisible: boolean,
   pluginManagerVisible: boolean,
+  selectedDeviceIndex: number,
+  selectedApp: ?string,
   toggleBugDialogVisible: (visible?: boolean) => void,
 };
 
@@ -67,6 +65,7 @@ export class App extends React.Component<Props, State> {
     setupEnvironment();
     this.logger = new Logger();
     replaceGlobalConsole(this.logger);
+    this.server = this.initServer();
 
     this.state = {
       activeAppKey: null,
@@ -74,14 +73,13 @@ export class App extends React.Component<Props, State> {
       error: null,
       devices: {},
       plugins: {},
-      server: this.initServer(),
     };
 
     this.bugReporter = new BugReporter(this.logger);
     this.commandLineArgs = yargs.parse(electron.remote.process.argv);
-    setupMenu(this.sendKeyboardAction);
   }
 
+  server: Server;
   bugReporter: BugReporter;
   logger: Logger;
   commandLineArgs: Object;
@@ -92,14 +90,8 @@ export class App extends React.Component<Props, State> {
 
     // close socket before reloading
     window.addEventListener('beforeunload', () => {
-      this.state.server.close();
+      this.server.close();
     });
-  }
-
-  componentDidUpdate(prevProps: Props) {
-    if (prevProps.devices !== this.props.devices) {
-      this.ensurePluginSelected();
-    }
   }
 
   toJSON() {
@@ -108,24 +100,25 @@ export class App extends React.Component<Props, State> {
 
   initServer(): Server {
     const server = new Server(this);
-
     server.addListener('new-client', client => {
       client.addListener('close', () => {
-        this.setState(state =>
-          reducers.TeardownClient(this, state, {appKey: client.id}),
-        );
+        this.setState(state => {
+          this.forceUpdate();
+          // TODO:
+          //reducers.TeardownClient(this, state, {appKey: client.id}),
+        });
         if (this.state.activeAppKey === client.id) {
-          setTimeout(this.ensurePluginSelected);
+          this.forceUpdate();
         }
       });
 
       client.addListener('plugins-change', () => {
-        this.setState({}, this.ensurePluginSelected);
+        this.forceUpdate();
       });
     });
 
     server.addListener('clients-change', () => {
-      this.setState({}, this.ensurePluginSelected);
+      this.forceUpdate();
     });
 
     server.addListener('error', err => {
@@ -178,143 +171,21 @@ export class App extends React.Component<Props, State> {
     });
   };
 
-  sendKeyboardAction = (action: string) => {
-    const {activeAppKey, activePluginKey} = this.state;
-
-    if (activeAppKey != null && activePluginKey != null) {
-      const clientPlugins = this.state.plugins[activeAppKey];
-      const pluginInfo = clientPlugins && clientPlugins[activePluginKey];
-      const plugin = pluginInfo && pluginInfo.plugin;
-      if (plugin && typeof plugin.onKeyboardAction === 'function') {
-        plugin.onKeyboardAction(action);
-      }
-    }
-  };
-
-  getDevice = (id: string): ?BaseDevice => {
+  getDevice = (id: string): ?BaseDevice =>
     this.props.devices.find((device: BaseDevice) => device.serial === id);
-  };
-
-  ensurePluginSelected = () => {
-    // check if we need to rehydrate this client as it may have been previously active
-    const {activeAppKey, activePluginKey, server} = this.state;
-    const {devices} = this.props;
-
-    if (!this._hasActivatedPreferredPlugin) {
-      for (const connection of server.connections.values()) {
-        const {client} = connection;
-        const {plugins} = client;
-
-        for (const plugin of plugins) {
-          if (plugin !== this.commandLineArgs.plugin) {
-            continue;
-          }
-
-          this._hasActivatedPreferredPlugin = true;
-          this.onActivatePlugin(client.id, plugin);
-          return;
-        }
-      }
-
-      if (devices.length > 0) {
-        const device = devices[0];
-        for (const plugin of devicePlugins) {
-          if (plugin.id !== this.commandLineArgs.plugin) {
-            continue;
-          }
-
-          this._hasActivatedPreferredPlugin = true;
-          this.onActivatePlugin(device.serial, plugin.id);
-          return;
-        }
-      }
-    }
-
-    if (activeAppKey != null && activePluginKey != null) {
-      const client = this.getClient(activeAppKey);
-      if (client != null && client.plugins.includes(activePluginKey)) {
-        this.onActivatePlugin(client.id, activePluginKey);
-        return;
-      }
-
-      const device: ?BaseDevice = this.getDevice(activeAppKey);
-      if (device != null) {
-        this.onActivatePlugin(device.serial, activePluginKey);
-        return;
-      }
-    } else {
-      // No plugin selected, let's select one
-      const deviceList = ((Object.values(devices): any): Array<BaseDevice>);
-      if (deviceList.length > 0) {
-        const device = deviceList[0];
-        this.onActivatePlugin(device.serial, devicePlugins[0].id);
-        return;
-      }
-
-      const connections = Array.from(server.connections.values());
-      if (connections.length > 0) {
-        const client = connections[0].client;
-        const plugins = client.plugins;
-        if (plugins.length > 0) {
-          this.onActivatePlugin(client.id, client.plugins[0]);
-          return;
-        }
-      }
-    }
-  };
 
   getClient(appKey: ?string): ?Client {
     if (appKey == null) {
       return null;
     }
 
-    const info = this.state.server.connections.get(appKey);
+    const info = this.server.connections.get(appKey);
     if (info != null) {
       return info.client;
     }
   }
 
-  onActivatePlugin = (appKey: string, pluginKey: string) => {
-    activateMenuItems(pluginKey);
-
-    this.setState(state =>
-      reducers.ActivatePlugin(this, state, {
-        appKey,
-        pluginKey,
-      }),
-    );
-  };
-
   render() {
-    const {state} = this;
-    const hasDevices =
-      this.props.devices.length > 0 || state.server.connections.size > 0;
-    let mainView = null;
-
-    const {activeAppKey, activePluginKey} = state;
-    if (activeAppKey != null && activePluginKey != null) {
-      const clientPlugins = state.plugins[activeAppKey];
-      const pluginInfo = clientPlugins && clientPlugins[activePluginKey];
-      const plugin = pluginInfo && pluginInfo.plugin;
-      if (plugin) {
-        mainView = this.props.pluginManagerVisible ? (
-          <PluginManager />
-        ) : (
-          <ErrorBoundary
-            heading={`Plugin "${
-              plugin.constructor.title
-            }" encountered an error during render`}
-            logger={this.logger}>
-            <PluginContainer
-              logger={this.logger}
-              plugin={plugin}
-              state={plugin.state}
-            />
-          </ErrorBoundary>
-        );
-      }
-    }
-
     return (
       <FlexColumn fill={true}>
         <SonarTitleBar />
@@ -324,25 +195,26 @@ export class App extends React.Component<Props, State> {
             close={() => this.props.toggleBugDialogVisible(false)}
           />
         )}
-        {hasDevices ? (
+        {this.props.selectedDeviceIndex > -1 ? (
           <FlexRow fill={true}>
             {this.props.leftSidebarVisible && (
               <MainSidebar
-                activePluginKey={state.activePluginKey}
-                activeAppKey={state.activeAppKey}
-                devices={this.props.devices}
-                server={state.server}
-                onActivatePlugin={this.onActivatePlugin}
+                clients={Array.from(this.server.connections.values()).map(
+                  ({client}) => client,
+                )}
               />
             )}
-            {mainView}
+            <PluginContainer
+              logger={this.logger}
+              client={this.getClient(this.props.selectedApp)}
+            />
           </FlexRow>
         ) : this.props.pluginManagerVisible ? (
           <PluginManager />
         ) : (
           <WelcomeScreen />
         )}
-        <ErrorBar text={state.error} />
+        <ErrorBar text={this.state.error} />
       </FlexColumn>
     );
   }
@@ -351,12 +223,14 @@ export class App extends React.Component<Props, State> {
 export default connect(
   ({
     application: {pluginManagerVisible, bugDialogVisible, leftSidebarVisible},
-    devices,
+    connections: {devices, selectedDeviceIndex, selectedApp},
   }) => ({
     pluginManagerVisible,
     bugDialogVisible,
     leftSidebarVisible,
     devices,
+    selectedDeviceIndex,
+    selectedApp,
   }),
   {toggleBugDialogVisible},
 )(App);

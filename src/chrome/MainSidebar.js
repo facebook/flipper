@@ -5,24 +5,29 @@
  * @format
  */
 
-import type {SonarBasePlugin} from '../plugin.js';
+import type {
+  SonarPlugin,
+  SonarDevicePlugin,
+  SonarBasePlugin,
+} from '../plugin.js';
+import type BaseDevice from '../devices/BaseDevice.js';
 import type Client from '../Client.js';
 
 import {
   Component,
   Sidebar,
   FlexBox,
-  ClickableList,
   ClickableListItem,
   colors,
   brandColors,
   Text,
   Glyph,
 } from 'sonar';
+import React from 'react';
 import {devicePlugins} from '../device-plugins/index.js';
-import type BaseDevice from '../devices/BaseDevice.js';
-import PropTypes from 'prop-types';
 import plugins from '../plugins/index.js';
+import {selectPlugin} from '../reducers/connections.js';
+import {connect} from 'react-redux';
 
 const CustomClickableListItem = ClickableListItem.extends({
   paddingLeft: 10,
@@ -85,29 +90,17 @@ function PluginIcon({
 }
 
 class PluginSidebarListItem extends Component<{
-  activePluginKey: ?string,
-  activeAppKey: ?string,
-  onActivatePlugin: (appKey: string, pluginKey: string) => void,
-  appKey: string,
-  appName?: string,
+  onClick: () => void,
   isActive: boolean,
-  Plugin: Class<SonarBasePlugin<>>,
-  windowFocused: boolean,
+  plugin: Class<SonarBasePlugin<>>,
+  app?: ?string,
 }> {
-  onClick = () => {
-    const {props} = this;
-    props.onActivatePlugin(props.appKey, props.Plugin.id);
-  };
-
   render() {
-    const {isActive, Plugin, windowFocused, appKey, appName} = this.props;
+    const {isActive, plugin} = this.props;
+    const app = this.props.app || 'Facebook';
+    let iconColor = brandColors[app];
 
-    let iconColor;
-    if (appName != null) {
-      iconColor = brandColors[appName];
-    }
-
-    if (iconColor == null) {
+    if (!iconColor) {
       const pluginColors = [
         colors.seaFoam,
         colors.teal,
@@ -120,186 +113,121 @@ class PluginSidebarListItem extends Component<{
         colors.grape,
       ];
 
-      iconColor = pluginColors[parseInt(appKey, 36) % pluginColors.length];
+      iconColor = pluginColors[parseInt(app, 36) % pluginColors.length];
     }
 
     return (
-      <CustomClickableListItem
-        active={isActive}
-        onClick={this.onClick}
-        windowFocused={windowFocused}>
+      <CustomClickableListItem active={isActive} onClick={this.props.onClick}>
         <PluginIcon
-          name={Plugin.icon}
-          backgroundColor={
-            isActive
-              ? windowFocused
-                ? colors.white
-                : colors.macOSSidebarSectionTitle
-              : iconColor
-          }
-          color={
-            isActive
-              ? windowFocused
-                ? colors.macOSTitleBarIconSelected
-                : colors.white
-              : colors.white
-          }
+          name={plugin.icon}
+          backgroundColor={iconColor}
+          color={colors.white}
         />
-        <PluginName>{Plugin.title}</PluginName>
+        <PluginName>{plugin.title}</PluginName>
       </CustomClickableListItem>
     );
   }
 }
 
-function PluginSidebarList(props: {|
-  activePluginKey: ?string,
-  activeAppKey: ?string,
-  onActivatePlugin: (appKey: string, pluginKey: string) => void,
-  appKey: string,
-  appName?: string,
-  enabledPlugins: Array<Class<SonarBasePlugin<>>>,
-  windowFocused: boolean,
-|}) {
-  if (props.enabledPlugins.length === 0) {
-    return <Text>No available plugins for this device</Text>;
-  }
-
-  return (
-    <ClickableList>
-      {props.enabledPlugins.map(Plugin => {
-        const isActive =
-          props.activeAppKey === props.appKey &&
-          props.activePluginKey === Plugin.id;
-        return (
-          <PluginSidebarListItem
-            key={Plugin.id}
-            activePluginKey={props.activePluginKey}
-            activeAppKey={props.activeAppKey}
-            onActivatePlugin={props.onActivatePlugin}
-            appKey={props.appKey}
-            appName={props.appName}
-            isActive={isActive}
-            Plugin={Plugin}
-            windowFocused={props.windowFocused}
-          />
-        );
-      })}
-    </ClickableList>
-  );
-}
-
-function AppSidebarInfo(props: {|
-  client: Client,
-  appKey: string,
-  activePluginKey: ?string,
-  activeAppKey: ?string,
-  onActivatePlugin: (appKey: string, pluginKey: string) => void,
-  windowFocused: boolean,
-|}): any {
-  const {appKey, client, windowFocused} = props;
-
-  let enabledPlugins = [];
-  for (const Plugin of plugins) {
-    if (client.supportsPlugin(Plugin)) {
-      enabledPlugins.push(Plugin);
-    }
-  }
-  enabledPlugins = enabledPlugins.sort((a, b) => {
-    return (a.title || '').localeCompare(b.title);
-  });
-
-  return [
-    <SidebarHeader key={client.query.app}>{`${client.query.app} (${
-      client.query.os
-    }) - ${client.query.device}`}</SidebarHeader>,
-    <PluginSidebarList
-      key={`list-${appKey}`}
-      activePluginKey={props.activePluginKey}
-      activeAppKey={props.activeAppKey}
-      onActivatePlugin={props.onActivatePlugin}
-      appKey={appKey}
-      appName={client.query.app}
-      enabledPlugins={enabledPlugins}
-      windowFocused={windowFocused}
-    />,
-  ];
-}
-
 type MainSidebarProps = {|
-  activePluginKey: ?string,
-  activeAppKey: ?string,
-  onActivatePlugin: (appKey: string, pluginKey: string) => void,
+  selectedPlugin: ?string,
+  selectedApp: ?string,
+  selectedDeviceIndex: number,
+  selectPlugin: (payload: {
+    selectedPlugin: ?string,
+    selectedApp: ?string,
+  }) => void,
   devices: Array<BaseDevice>,
-  server: Server,
+  clients: Array<Client>,
 |};
 
-export default class MainSidebar extends Component<MainSidebarProps> {
-  static contextTypes = {
-    windowIsFocused: PropTypes.bool,
-  };
-
+class MainSidebar extends Component<MainSidebarProps> {
   render() {
-    const connections = Array.from(this.props.server.connections.values()).sort(
-      (a, b) => {
-        return (a.client.query.app || '').localeCompare(b.client.query.app);
-      },
-    );
+    const {
+      devices,
+      selectedDeviceIndex,
+      selectedPlugin,
+      selectedApp,
+      selectPlugin,
+    } = this.props;
+    let {clients} = this.props;
+    const device: BaseDevice = devices[selectedDeviceIndex];
 
-    const sidebarContent = connections.map(conn => {
-      const {client} = conn;
-
-      return (
-        <AppSidebarInfo
-          key={`app=${client.id}`}
-          client={client}
-          appKey={client.id}
-          activePluginKey={this.props.activePluginKey}
-          activeAppKey={this.props.activeAppKey}
-          onActivatePlugin={this.props.onActivatePlugin}
-          windowFocused={this.context.windowIsFocused}
-        />
-      );
-    });
-
-    let {devices} = this.props;
-    devices = devices.sort((a, b) => {
+    let enabledPlugins = [];
+    for (const devicePlugin of devicePlugins) {
+      if (device.supportsPlugin(devicePlugin)) {
+        enabledPlugins.push(devicePlugin);
+      }
+    }
+    enabledPlugins = enabledPlugins.sort((a, b) => {
       return (a.title || '').localeCompare(b.title);
     });
 
-    for (const device of devices) {
-      let enabledPlugins = [];
-      for (const DevicePlugin of devicePlugins) {
-        if (device.supportsPlugin(DevicePlugin)) {
-          enabledPlugins.push(DevicePlugin);
-        }
-      }
-      enabledPlugins = enabledPlugins.sort((a, b) => {
-        return (a.title || '').localeCompare(b.title);
-      });
-
-      sidebarContent.unshift([
-        <SidebarHeader key={device.title}>{device.title}</SidebarHeader>,
-        <PluginSidebarList
-          key={`list-${device.serial}`}
-          activePluginKey={this.props.activePluginKey}
-          activeAppKey={this.props.activeAppKey}
-          onActivatePlugin={this.props.onActivatePlugin}
-          appKey={device.serial}
-          enabledPlugins={enabledPlugins}
-          windowFocused={this.context.windowIsFocused}
-        />,
-      ]);
-    }
+    clients = clients
+      // currently we can't filter clients for a device, because all clients
+      // are reporting `unknown` as their deviceID, due to a change in Android's
+      // API.
+      //.filter((client: Client) => client.getDevice() === device)
+      .sort((a, b) => (a.query.app || '').localeCompare(b.query.app));
 
     return (
-      <Sidebar
-        position="left"
-        width={200}
-        backgroundColor={
-          this.context.windowIsFocused ? 'transparent' : '#f6f6f6'
-        }>
-        {sidebarContent}
+      <Sidebar position="left" width={200}>
+        {devicePlugins
+          .filter(device.supportsPlugin)
+          .map((plugin: Class<SonarDevicePlugin<>>) => (
+            <PluginSidebarListItem
+              key={plugin.id}
+              isActive={plugin.id === selectedPlugin}
+              onClick={() =>
+                selectPlugin({
+                  selectedPlugin: plugin.id,
+                  selectedApp: null,
+                })
+              }
+              plugin={plugin}
+            />
+          ))}
+        {clients.map((client: Client) => (
+          // $FlowFixMe: Flow doesn't know of React.Fragment yet
+          <React.Fragment key={client.id}>
+            <SidebarHeader>{client.query.app}</SidebarHeader>
+            {plugins
+              .filter(
+                (p: Class<SonarPlugin<>>) => client.plugins.indexOf(p.id) > -1,
+              )
+              .map((plugin: Class<SonarPlugin<>>) => (
+                <PluginSidebarListItem
+                  key={plugin.id}
+                  isActive={
+                    plugin.id === selectedPlugin && selectedApp === client.id
+                  }
+                  onClick={() =>
+                    selectPlugin({
+                      selectedPlugin: plugin.id,
+                      selectedApp: client.id,
+                    })
+                  }
+                  plugin={plugin}
+                  app={client.query.app}
+                />
+              ))}
+          </React.Fragment>
+        ))}
       </Sidebar>
     );
   }
 }
+
+export default connect(
+  ({
+    connections: {devices, selectedDeviceIndex, selectedPlugin, selectedApp},
+  }) => ({
+    devices,
+    selectedDeviceIndex,
+    selectedPlugin,
+    selectedApp,
+  }),
+  {
+    selectPlugin,
+  },
+)(MainSidebar);

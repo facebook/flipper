@@ -19,6 +19,7 @@ const ErrorBoundaryContainer = View.extends({
 
 const ErrorBoundaryStack = ErrorBlock.extends({
   marginBottom: 10,
+  whiteSpace: 'pre',
 });
 
 type ErrorBoundaryProps = {
@@ -43,8 +44,7 @@ export default class ErrorBoundary extends Component<
   }
 
   componentDidCatch(err: Error) {
-    this.props.logger &&
-      console.error(err.toString(), 'ErrorBoundary');
+    this.props.logger && console.error(err.toString(), 'ErrorBoundary');
     this.setState({error: err});
   }
 

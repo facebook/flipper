@@ -21,6 +21,7 @@ import {
   SearchBox,
   SearchInput,
   SearchIcon,
+  SonarSidebar,
 } from 'sonar';
 
 // $FlowFixMe
@@ -313,7 +314,7 @@ export default class Layout extends SonarPlugin<InspectorState> {
       this.dispatchAction({elements: [element], type: 'UpdateElements'});
       this.dispatchAction({root: element.id, type: 'SetRoot'});
       this.performInitialExpand(element).then(() => {
-        this.app.logger.trackTimeSince('LayoutInspectorInitialize');
+        this.props.logger.trackTimeSince('LayoutInspectorInitialize');
         this.setState({initialised: true});
       });
     });
@@ -400,7 +401,7 @@ export default class Layout extends SonarPlugin<InspectorState> {
       return this.client
         .call('getNodes', {ids})
         .then(({elements}: GetNodesResult) => {
-          this.app.logger.trackTimeSince('LayoutInspectorGetNodes');
+          this.props.logger.trackTimeSince('LayoutInspectorGetNodes');
           return Promise.resolve(elements);
         });
     } else {
@@ -425,7 +426,7 @@ export default class Layout extends SonarPlugin<InspectorState> {
     performance.mark('LayoutInspectorExpandElement');
     if (expand) {
       return this.getChildren(key).then((elements: Array<Element>) => {
-        this.app.logger.trackTimeSince('LayoutInspectorExpandElement');
+        this.props.logger.trackTimeSince('LayoutInspectorExpandElement');
         this.dispatchAction({elements, type: 'UpdateElements'});
         return Promise.resolve(elements);
       });
@@ -468,7 +469,7 @@ export default class Layout extends SonarPlugin<InspectorState> {
     } else {
       this.expandElement(key);
     }
-    this.app.logger.track('usage', 'layout:element-expanded', {
+    this.props.logger.track('usage', 'layout:element-expanded', {
       id: key,
       deep: deep,
     });
@@ -494,7 +495,7 @@ export default class Layout extends SonarPlugin<InspectorState> {
 
   onDataValueChanged = (path: Array<string>, value: any) => {
     this.client.send('setData', {id: this.state.selected, path, value});
-    this.app.logger.track('usage', 'layout:value-changed', {
+    this.props.logger.track('usage', 'layout:value-changed', {
       id: this.state.selected,
       value: value,
       path: path,
@@ -567,6 +568,7 @@ export default class Layout extends SonarPlugin<InspectorState> {
             </Center>
           )}
         </FlexRow>
+        <SonarSidebar>{this.renderSidebar()}</SonarSidebar>
       </FlexColumn>
     );
   }

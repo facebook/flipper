@@ -4,12 +4,15 @@
  * LICENSE file in the root directory of this source tree.
  * @format
  */
+
+import type {SonarDevicePlugin} from '../plugin.js';
+
 import {GK} from 'sonar';
 import logs from './logs/index.js';
 import cpu from './cpu/index.js';
 import screen from './screen/index.js';
 
-const plugins = [logs];
+const plugins: Array<Class<SonarDevicePlugin<any>>> = [logs];
 
 if (GK.get('sonar_uiperf')) {
   plugins.push(cpu);

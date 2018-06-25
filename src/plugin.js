@@ -7,8 +7,10 @@
 
 import type {KeyboardActions} from './MenuBar.js';
 import type {App} from './App.js';
+import type Logger from './fb-stubs/Logger.js';
 import type Client from './Client.js';
 
+import React from 'react';
 import BaseDevice from './devices/BaseDevice.js';
 import {AndroidDevice, IOSDevice} from 'sonar';
 
@@ -22,37 +24,20 @@ export type PluginClient = {|
 
 type PluginTarget = BaseDevice | Client;
 
-/**
- * This is a wrapper for a plugin instance and state. We have a special toJSON method that removes the plugin
- * instance and any state if it's not set to be persisted.
- */
-export class PluginStateContainer {
-  constructor(plugin: SonarBasePlugin<>, state: Object) {
-    this.plugin = plugin;
-    this.state = state;
-  }
+export type Props<T> = {
+  logger: Logger,
+  persistedState: T,
+  setPersistedState: (state: $Shape<T>) => void,
+};
 
-  plugin: ?SonarBasePlugin<>;
-  state: Object;
-
-  toJSON() {
-    return {
-      plugin: null,
-      state: this.plugin != null ? this.state : null,
-    };
-  }
-}
-
-export class SonarBasePlugin<State: Object = any, Actions = any> {
-  constructor() {
-    // $FlowFixMe: this is fine
-    this.state = {};
-  }
-
+export class SonarBasePlugin<
+  State = *,
+  Actions = *,
+  PersistedState = *,
+> extends React.Component<Props<PersistedState>, State> {
   static title: string = 'Unknown';
   static id: string = 'Unknown';
   static icon: string = 'apps';
-  static persist: boolean = true;
   static keyboardActions: ?KeyboardActions;
   static screenshot: ?string;
 
@@ -60,19 +45,18 @@ export class SonarBasePlugin<State: Object = any, Actions = any> {
   title: empty;
   id: empty;
   persist: empty;
+  icon: empty;
+  keyboardActions: empty;
+  screenshot: empty;
 
-  namespaceKey: string;
   reducers: {
     [actionName: string]: (state: State, actionData: Object) => $Shape<State>,
   } = {};
   app: App;
-  state: State;
-  renderSidebar: ?() => ?React.Element<*>;
-  renderIntro: ?() => ?React.Element<*>;
   onKeyboardAction: ?(action: string) => void;
 
   toJSON() {
-    return null;
+    return this.constructor.title;
   }
 
   // methods to be overriden by plugins
@@ -81,37 +65,7 @@ export class SonarBasePlugin<State: Object = any, Actions = any> {
   // methods to be overridden by subclasses
   _init(): void {}
   _teardown(): void {}
-  _setup(target: PluginTarget, app: App) {
-    this.app = app;
-  }
-
-  setState(
-    state: $Shape<State> | ((state: State) => $Shape<State>),
-    callback?: () => void,
-  ) {
-    if (typeof state === 'function') {
-      state = state(this.state);
-    }
-    this.state = Object.assign({}, this.state, state);
-
-    const pluginKey = this.constructor.id;
-    const namespaceKey = this.namespaceKey;
-    const appState = this.app.state;
-
-    // update app state
-    this.app.setState(
-      {
-        plugins: {
-          ...appState.plugins,
-          [namespaceKey]: {
-            ...(appState.plugins[namespaceKey] || {}),
-            [pluginKey]: new PluginStateContainer(this, this.state),
-          },
-        },
-      },
-      callback,
-    );
-  }
+  _setup(target: PluginTarget) {}
 
   dispatchAction(actionData: Actions) {
     // $FlowFixMe
@@ -128,29 +82,17 @@ export class SonarBasePlugin<State: Object = any, Actions = any> {
       throw new TypeError(`Reducer ${actionData.type} isn't a function`);
     }
   }
-
-  render(): any {
-    return null;
-  }
 }
 
-export class SonarDevicePlugin<
-  State: Object = any,
-  Actions = any,
-> extends SonarBasePlugin<State, Actions> {
+export class SonarDevicePlugin<S = *, A = *> extends SonarBasePlugin<S, A> {
   device: BaseDevice;
 
-  _setup(target: PluginTarget, app: App) {
+  _setup(target: PluginTarget) {
     invariant(target instanceof BaseDevice, 'expected instanceof Client');
     const device: BaseDevice = target;
 
-    this.namespaceKey = device.serial;
     this.device = device;
-    super._setup(device, app);
-  }
-
-  _teardown() {
-    this.teardown();
+    super._setup(device);
   }
 
   _init() {
@@ -158,10 +100,7 @@ export class SonarDevicePlugin<
   }
 }
 
-export class SonarPlugin<
-  State: Object = any,
-  Actions = any,
-> extends SonarBasePlugin<State, Actions> {
+export class SonarPlugin<S = *, A = *> extends SonarBasePlugin<S, A> {
   constructor() {
     super();
     this.subscriptions = [];
@@ -197,14 +136,13 @@ export class SonarPlugin<
     return device;
   }
 
-  _setup(target: any, app: App) {
+  _setup(target: any) {
     /* We have to type the above as `any` since if we import the actual Client we have an
        unresolvable dependency cycle */
 
     const realClient: Client = target;
     const id: string = this.constructor.id;
 
-    this.namespaceKey = realClient.id;
     this.realClient = realClient;
     this.client = {
       call: (method, params) => realClient.call(id, method, params),
@@ -218,7 +156,7 @@ export class SonarPlugin<
       },
     };
 
-    super._setup(realClient, app);
+    super._setup(realClient);
   }
 
   _teardown() {

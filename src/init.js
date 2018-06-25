@@ -14,6 +14,7 @@ import App from './App.js';
 import {createStore} from 'redux';
 import reducers from './reducers/index.js';
 import dispatcher from './dispatcher/index.js';
+import {setupMenuBar} from './MenuBar.js';
 const path = require('path');
 
 const store = createStore(
@@ -24,6 +25,7 @@ const store = createStore(
 dispatcher(store);
 
 GK.init();
+setupMenuBar();
 
 const AppFrame = () => (
   <ContextMenuProvider>

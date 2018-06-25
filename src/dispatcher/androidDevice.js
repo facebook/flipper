@@ -6,6 +6,7 @@
  */
 
 import AndroidDevice from '../devices/AndroidDevice';
+import child_process from 'child_process';
 import type {Store} from '../reducers/index.js';
 import type BaseDevice from '../devices/BaseDevice';
 const adb = require('adbkit-fb');
@@ -16,21 +17,52 @@ function createDecive(client, device): Promise<AndroidDevice> {
       device.type !== 'device' || device.id.startsWith('emulator')
         ? 'emulator'
         : 'physical';
-    client.getProperties(device.id).then(props => {
-      const androidDevice = new AndroidDevice(
-        device.id,
-        type,
-        props['ro.product.model'],
-        client,
-      );
+
+    client.getProperties(device.id).then(async props => {
+      let name = props['ro.product.model'];
+      if (type === 'emulator') {
+        name = (await getRunningEmulatorName(device.id)) || name;
+      }
+      const androidDevice = new AndroidDevice(device.id, type, name, client);
       androidDevice.reverse();
       resolve(androidDevice);
     });
   });
 }
 
+function getRunningEmulatorName(id: string): Promise<?string> {
+  return new Promise((resolve, reject) => {
+    const port = id.replace('emulator-', '');
+    child_process.exec(
+      `echo "avd name" | nc -w 1 localhost ${port}`,
+      (error: ?Error, data: ?string) => {
+        if (error == null && data != null) {
+          const match = data.trim().match(/(.*)\r\nOK$/);
+          resolve(match != null && match.length > 0 ? match[1] : null);
+        } else {
+          reject(error);
+        }
+      },
+    );
+  });
+}
+
 export default (store: Store) => {
   const client = adb.createClient();
+
+  // get emulators
+  child_process.exec(
+    '$ANDROID_HOME/tools/emulator -list-avds',
+    (error: ?Error, data: ?string) => {
+      if (error == null && data != null) {
+        const payload = data.split('\n').filter(Boolean);
+        store.dispatch({
+          type: 'REGISTER_ANDROID_EMULATORS',
+          payload,
+        });
+      }
+    },
+  );
 
   client
     .trackDevices()
@@ -38,8 +70,8 @@ export default (store: Store) => {
       tracker.on('error', err => {
         if (err.message === 'Connection closed') {
           // adb server has shutdown, remove all android devices
-          const {devices} = store.getState();
-          const deviceIDsToRemove: Array<string> = devices
+          const {connections} = store.getState();
+          const deviceIDsToRemove: Array<string> = connections.devices
             .filter((device: BaseDevice) => device instanceof AndroidDevice)
             .map((device: BaseDevice) => device.serial);
 
@@ -56,8 +88,8 @@ export default (store: Store) => {
       });
 
       tracker.on('add', async device => {
-        const androidDevice = await createDecive(client, device);
         if (device.type !== 'offline') {
+          const androidDevice = await createDecive(client, device);
           store.dispatch({
             type: 'REGISTER_DEVICE',
             payload: androidDevice,

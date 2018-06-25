@@ -4,125 +4,172 @@
  * LICENSE file in the root directory of this source tree.
  * @format
  */
-import {Component, FlexColumn, Sidebar, colors} from 'sonar';
-import Intro from './ui/components/intro/intro.js';
-import {connect} from 'react-redux';
-import {
-  toggleRightSidebarAvailable,
-  toggleRightSidebarVisible,
-} from './reducers/application.js';
-import type {SonarBasePlugin} from './plugin.js';
+import type {SonarPlugin, SonarBasePlugin} from './plugin.js';
 import type LogManager from './fb-stubs/Logger';
+import type Client from './Client.js';
+import type BaseDevice from './devices/BaseDevice.js';
+import type {Props as PluginProps} from './plugin.js';
+
+import {SonarDevicePlugin} from './plugin.js';
+import {ErrorBoundary, Component, FlexColumn, FlexRow, colors} from 'sonar';
+import React from 'react';
+import {connect} from 'react-redux';
+import {setPluginState} from './reducers/pluginStates.js';
+import {devicePlugins} from './device-plugins/index.js';
+import plugins from './plugins/index.js';
+import {activateMenuItems} from './MenuBar.js';
+
+const Container = FlexColumn.extends({
+  width: 0,
+  flexGrow: 1,
+  flexShrink: 1,
+  backgroundColor: colors.white,
+});
+
+const SidebarContainer = FlexRow.extends({
+  backgroundColor: colors.light02,
+  height: '100%',
+  overflow: 'scroll',
+});
 
 type Props = {
-  plugin: SonarBasePlugin<>,
-  state?: any,
   logger: LogManager,
-  rightSidebarVisible: boolean,
-  rightSidebarAvailable: boolean,
-  toggleRightSidebarVisible: (available: ?boolean) => void,
-  toggleRightSidebarAvailable: (available: ?boolean) => void,
+  selectedDeviceIndex: number,
+  selectedPlugin: ?string,
+  pluginStates: Object,
+  client: ?Client,
+  devices: Array<BaseDevice>,
+  setPluginState: (payload: {
+    pluginKey: string,
+    state: Object,
+  }) => void,
 };
 
 type State = {
-  showIntro: boolean,
+  activePlugin: ?Class<SonarBasePlugin<>>,
+  target: Client | BaseDevice | null,
+  pluginKey: string,
 };
 
-class PluginContainer extends Component<Props, State> {
-  state = {
-    showIntro:
-      typeof this.props.plugin.renderIntro === 'function' &&
-      window.localStorage.getItem(
-        `${this.props.plugin.constructor.id}.introShown`,
-      ) !== 'true',
+function withPluginLifecycleHooks(
+  PluginComponent: Class<SonarBasePlugin<>>,
+  target: Client | BaseDevice,
+) {
+  return class extends React.Component<PluginProps<any>> {
+    plugin: ?SonarBasePlugin<>;
+
+    static displayName = `${PluginComponent.title}Plugin`;
+
+    componentDidMount() {
+      const {plugin} = this;
+      if (plugin) {
+        activateMenuItems(plugin);
+        plugin._setup(target);
+        plugin._init();
+      }
+    }
+
+    componentWillUnmount() {
+      if (this.plugin) {
+        this.plugin._teardown();
+      }
+    }
+
+    render() {
+      return (
+        <PluginComponent
+          ref={(ref: ?SonarBasePlugin<>) => {
+            if (ref) {
+              this.plugin = ref;
+            }
+          }}
+          {...this.props}
+        />
+      );
+    }
   };
+}
 
-  _sidebar: ?React$Node;
-
-  static Container = FlexColumn.extends({
-    width: 0,
-    flexGrow: 1,
-    flexShrink: 1,
-    backgroundColor: colors.white,
-  });
-
-  componentWillUnmount() {
-    performance.mark(`init_${this.props.plugin.constructor.id}`);
-  }
-
-  componentDidMount() {
-    this.props.logger.trackTimeSince(
-      `init_${this.props.plugin.constructor.id}`,
+class PluginContainer extends Component<Props, State> {
+  static getDerivedStateFromProps(props: Props) {
+    let activePlugin = devicePlugins.find(
+      (p: Class<SonarDevicePlugin<>>) => p.id === props.selectedPlugin,
     );
-  }
-
-  componentDidUpdate(prevProps: Props) {
-    if (prevProps.plugin !== this.props.plugin) {
-      this.props.logger.trackTimeSince(
-        `init_${this.props.plugin.constructor.id}`,
-      );
-    }
-  }
-
-  componentWillUpdate(nextProps: Props) {
-    if (this.props.plugin !== nextProps.plugin) {
-      performance.mark(`init_${nextProps.plugin.constructor.id}`);
-    }
-    let sidebarContent;
-    if (typeof nextProps.plugin.renderSidebar === 'function') {
-      sidebarContent = nextProps.plugin.renderSidebar();
-    }
-
-    if (sidebarContent == null) {
-      this._sidebar = null;
-      nextProps.toggleRightSidebarAvailable(false);
+    const device: BaseDevice = props.devices[props.selectedDeviceIndex];
+    let target = device;
+    let pluginKey = 'unknown';
+    if (activePlugin) {
+      pluginKey = `${device.serial}#${activePlugin.id}`;
     } else {
-      this._sidebar = (
-        <Sidebar position="right" width={400} key="sidebar">
-          {sidebarContent}
-        </Sidebar>
+      activePlugin = plugins.find(
+        (p: Class<SonarPlugin<>>) => p.id === props.selectedPlugin,
       );
-      nextProps.toggleRightSidebarAvailable(true);
+      if (!activePlugin || !props.client) {
+        return null;
+      }
+      target = props.client;
+      pluginKey = `${target.id}#${activePlugin.id}`;
     }
+
+    return {
+      pluginKey,
+      activePlugin,
+      target,
+    };
   }
 
-  onDismissIntro = () => {
-    const {plugin} = this.props;
-    window.localStorage.setItem(`${plugin.constructor.id}.introShown`, 'true');
-    this.setState({
-      showIntro: false,
-    });
+  state = {
+    pluginKey: 'unknown',
+    activePlugin: null,
+    target: null,
   };
 
   render() {
-    const {plugin} = this.props;
+    const {pluginStates, setPluginState} = this.props;
+    const {activePlugin, pluginKey, target} = this.state;
 
-    return [
-      <PluginContainer.Container key="plugin">
-        {this.state.showIntro ? (
-          <Intro
-            title={plugin.constructor.title}
-            icon={plugin.constructor.icon}
-            screenshot={plugin.constructor.screenshot}
-            onDismiss={this.onDismissIntro}>
-            {typeof plugin.renderIntro === 'function' && plugin.renderIntro()}
-          </Intro>
-        ) : (
-          plugin.render()
-        )}
-      </PluginContainer.Container>,
-      this.props.rightSidebarVisible === false ? null : this._sidebar,
-    ];
+    if (!activePlugin || !target) {
+      return null;
+    }
+
+    return (
+      // $FlowFixMe: Flow doesn't know of React.Fragment yet
+      <React.Fragment>
+        <Container key="plugin">
+          <ErrorBoundary
+            heading={`Plugin "${
+              activePlugin.title
+            }" encountered an error during render`}
+            logger={this.props.logger}>
+            {React.createElement(
+              withPluginLifecycleHooks(activePlugin, target),
+              {
+                key: pluginKey,
+                logger: this.props.logger,
+                persistedState: pluginStates[pluginKey],
+                setPersistedState: state => setPluginState({pluginKey, state}),
+              },
+            )}
+          </ErrorBoundary>
+        </Container>
+        <SidebarContainer id="sonarSidebar" />
+      </React.Fragment>
+    );
   }
 }
 
 export default connect(
-  ({application: {rightSidebarVisible, rightSidebarAvailable}}) => ({
-    rightSidebarVisible,
-    rightSidebarAvailable,
+  ({
+    application: {rightSidebarVisible, rightSidebarAvailable},
+    connections: {selectedPlugin, devices, selectedDeviceIndex},
+    pluginStates,
+  }) => ({
+    selectedPlugin,
+    devices,
+    selectedDeviceIndex,
+    pluginStates,
   }),
   {
-    toggleRightSidebarAvailable,
-    toggleRightSidebarVisible,
+    setPluginState,
   },
 )(PluginContainer);

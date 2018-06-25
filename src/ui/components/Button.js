@@ -125,6 +125,7 @@ const StyledButton = styled.view(
   },
   {
     ignoreAttributes: [
+      'dropdown',
       'dispatch',
       'compact',
       'large',

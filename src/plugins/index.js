@@ -9,7 +9,7 @@ import {GK} from 'sonar';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import * as Sonar from 'sonar';
-import {SonarBasePlugin} from '../plugin.js';
+import {SonarPlugin, SonarBasePlugin} from '../plugin.js';
 
 const plugins = new Map();
 
@@ -52,7 +52,9 @@ bundledPlugins
   }))
   .forEach(addIfNotAdded);
 
-export default Array.from(plugins.values())
+const exportedPlugins: Array<Class<SonarPlugin<>>> = Array.from(
+  plugins.values(),
+)
   .map(plugin => {
     if (
       (plugin.gatekeeper && !GK.get(plugin.gatekeeper)) ||
@@ -70,3 +72,5 @@ export default Array.from(plugins.values())
   })
   .filter(Boolean)
   .filter(plugin => plugin.prototype instanceof SonarBasePlugin);
+
+export default exportedPlugins;

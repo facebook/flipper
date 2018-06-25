@@ -54,9 +54,8 @@ export default (store: Store) => {
   if (process.platform !== 'darwin') {
     return;
   }
-  let simulatorUpdateInterval = setInterval(() => {
-    const {devices} = store.getState();
-    clearInterval(simulatorUpdateInterval);
+  const simulatorUpdateInterval = setInterval(() => {
+    const {connections} = store.getState();
     querySimulatorDevices()
       .then((simulatorDevices: IOSDeviceMap) => {
         const simulators: Array<iOSSimulatorDevice> = Object.values(
@@ -65,7 +64,7 @@ export default (store: Store) => {
         ).reduce((acc, cv) => acc.concat(cv), []);
 
         const currentDeviceIDs: Set<string> = new Set(
-          devices
+          connections.devices
             .filter(device => device instanceof IOSDevice)
             .map(device => device.serial),
         );
