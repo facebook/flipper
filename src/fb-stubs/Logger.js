@@ -20,21 +20,11 @@ export default class LogManager {
 
   trackTimeSince(mark: string, eventName: ?string) {}
 
-  info(data: any, category: string) {
-    // eslint-disable-next-line
-    console.info(data, category);
-  }
+  info(data: any, category: string) {}
 
-  warn(data: any, category: string) {
-    console.warn(data, category);
-  }
+  warn(data: any, category: string) {}
 
-  error(data: any, category: string) {
-    console.error(data, category);
-  }
+  error(data: any, category: string) {}
 
-  debug(data: any, category: string) {
-    // eslint-disable-next-line
-    console.debug(data, category);
-  }
+  debug(data: any, category: string) {}
 }
