@@ -35,16 +35,14 @@ function querySimulatorDevices(): Promise<IOSDeviceMap> {
       {encoding: 'utf8'},
       (err, stdout) => {
         if (err) {
-          console.error('Failed to load iOS devices', err);
-          return resolve({});
+          reject(err);
         }
 
         try {
           const {devices} = JSON.parse(stdout.toString());
           resolve(devices);
         } catch (err) {
-          console.error('Failed to parse iOS device list', err);
-          resolve({});
+          reject(err);
         }
       },
     );
@@ -56,44 +54,54 @@ export default (store: Store) => {
   if (process.platform !== 'darwin') {
     return;
   }
-  setInterval(() => {
+  let simulatorUpdateInterval = setInterval(() => {
     const {devices} = store.getState();
-    querySimulatorDevices().then((simulatorDevices: IOSDeviceMap) => {
-      const simulators: Array<iOSSimulatorDevice> = Object.values(
-        simulatorDevices,
-        // $FlowFixMe
-      ).reduce((acc, cv) => acc.concat(cv), []);
+    clearInterval(simulatorUpdateInterval);
+    querySimulatorDevices()
+      .then((simulatorDevices: IOSDeviceMap) => {
+        const simulators: Array<iOSSimulatorDevice> = Object.values(
+          simulatorDevices,
+          // $FlowFixMe
+        ).reduce((acc, cv) => acc.concat(cv), []);
 
-      const currentDeviceIDs: Set<string> = new Set(
-        devices
-          .filter(device => device instanceof IOSDevice)
-          .map(device => device.serial),
-      );
+        const currentDeviceIDs: Set<string> = new Set(
+          devices
+            .filter(device => device instanceof IOSDevice)
+            .map(device => device.serial),
+        );
 
-      const deviceIDsToRemove = new Set();
-      simulators.forEach((simulator: iOSSimulatorDevice) => {
-        const isRunning =
-          simulator.state === 'Booted' &&
-          simulator.availability === '(available)';
+        const deviceIDsToRemove = new Set();
+        simulators.forEach((simulator: iOSSimulatorDevice) => {
+          const isRunning =
+            simulator.state === 'Booted' &&
+            simulator.availability === '(available)';
 
-        if (isRunning && !currentDeviceIDs.has(simulator.udid)) {
-          // create device
-          store.dispatch({
-            type: 'REGISTER_DEVICE',
-            payload: new IOSDevice(simulator.udid, 'emulator', simulator.name),
-          });
-        } else if (!isRunning && currentDeviceIDs.has(simulator.udid)) {
-          deviceIDsToRemove.add(simulator.udid);
-          // delete device
-        }
-      });
-
-      if (deviceIDsToRemove.size > 0) {
-        store.dispatch({
-          type: 'UNREGISTER_DEVICES',
-          payload: deviceIDsToRemove,
+          if (isRunning && !currentDeviceIDs.has(simulator.udid)) {
+            // create device
+            store.dispatch({
+              type: 'REGISTER_DEVICE',
+              payload: new IOSDevice(
+                simulator.udid,
+                'emulator',
+                simulator.name,
+              ),
+            });
+          } else if (!isRunning && currentDeviceIDs.has(simulator.udid)) {
+            deviceIDsToRemove.add(simulator.udid);
+            // delete device
+          }
         });
-      }
-    });
+
+        if (deviceIDsToRemove.size > 0) {
+          store.dispatch({
+            type: 'UNREGISTER_DEVICES',
+            payload: deviceIDsToRemove,
+          });
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        clearInterval(simulatorUpdateInterval);
+      });
   }, 3000);
 };

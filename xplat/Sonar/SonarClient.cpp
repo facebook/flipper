@@ -16,7 +16,7 @@
 #define SONAR_LOG(message) \
   __android_log_print(ANDROID_LOG_INFO, "sonar", "sonar: %s", message)
 #else
-#define SONAR_LOG(message) printf("sonar: %s", message)
+#define SONAR_LOG(message) printf("sonar: %s\n", message)
 #endif
 
 #if FB_SONARKIT_ENABLED

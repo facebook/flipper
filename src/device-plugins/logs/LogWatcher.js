@@ -95,7 +95,8 @@ export default class LogWatcher extends PureComponent<Props, State> {
   onAdd = () => {
     if (
       this.props.counters.findIndex(({label}) => label === this.state.input) >
-      -1
+        -1 ||
+      this.state.input.length === 0
     ) {
       // prevent duplicates
       return;
@@ -198,7 +199,11 @@ export default class LogWatcher extends PureComponent<Props, State> {
               onChange={this.onChange}
               onKeyDown={this.onSubmit}
             />
-            <Button onClick={this.onAdd}>Add counter</Button>
+            <Button
+              onClick={this.onAdd}
+              disabled={this.state.input.length === 0}>
+              Add counter
+            </Button>
           </Toolbar>
           <ManagedTable
             onRowHighlighted={this.onRowHighlighted}

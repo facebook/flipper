@@ -131,7 +131,7 @@ export default class CertificateProvider {
   }
 
   generateClientCertificate(csr: string): Promise<string> {
-    this.logger.warn('Creating new client cert', logTag);
+    console.warn('Creating new client cert', logTag);
     const csrFile = this.writeToTempFile(csr);
     // Create a certificate for the client, using the details in the CSR.
     return openssl('x509', {
@@ -197,7 +197,7 @@ export default class CertificateProvider {
             return {id: device.id, isMatch};
           })
           .catch(e => {
-            this.logger.error(
+            console.error(
               `Unable to check for matching CSR in ${device.id}:${appName}`,
               logTag,
             );
@@ -234,7 +234,7 @@ export default class CertificateProvider {
         );
       })
       .catch(err => {
-        this.logger.error(err, logTag);
+        console.error(err, logTag);
         return false;
       });
   }
@@ -245,7 +245,7 @@ export default class CertificateProvider {
     filename: string,
     contents: string,
   ): Promise<void> {
-    this.logger.warn(`Deploying ${filename} to ${deviceId}:${app}`, logTag);
+    console.warn(`Deploying ${filename} to ${deviceId}:${app}`, logTag);
     return this.executeCommandOnAndroid(
       deviceId,
       app,
@@ -282,11 +282,11 @@ export default class CertificateProvider {
         return output;
       })
       .catch(err => {
-        this.logger.error(
+        console.error(
           `Error executing command on android device ${deviceId}:${user}. Command: ${command}`,
           logTag,
         );
-        this.logger.error(err, logTag);
+        console.error(err, logTag);
       });
   }
 
@@ -351,7 +351,7 @@ export default class CertificateProvider {
     })
       .then(output => undefined)
       .catch(e => {
-        this.logger.warn(`Certificate will expire soon: ${filename}`, logTag);
+        console.warn(`Certificate will expire soon: ${filename}`, logTag);
         throw e;
       });
   }
@@ -373,7 +373,7 @@ export default class CertificateProvider {
     if (!fs.existsSync(getFilePath(''))) {
       fs.mkdirSync(getFilePath(''));
     }
-    this.logger.info('Generating new CA', logTag);
+    console.log('Generating new CA', logTag);
     return openssl('genrsa', {out: caKey, '2048': false})
       .then(_ =>
         openssl('req', {
@@ -406,7 +406,7 @@ export default class CertificateProvider {
   generateServerCertificate(): Promise<void> {
     return this.ensureCertificateAuthorityExists()
       .then(_ => {
-        this.logger.warn('Creating new server cert', logTag);
+        console.warn('Creating new server cert', logTag);
       })
       .then(_ => openssl('genrsa', {out: serverKey, '2048': false}))
       .then(_ =>

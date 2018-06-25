@@ -63,7 +63,9 @@ export class App extends React.Component<Props, State> {
     super();
     this.initTracking();
 
+    setupEnvironment();
     this.logger = new Logger();
+    replaceGlobalConsole(this.logger);
 
     this.state = {
       activeAppKey: null,
@@ -76,7 +78,6 @@ export class App extends React.Component<Props, State> {
 
     this.bugReporter = new BugReporter(this.logger);
     this.commandLineArgs = yargs.parse(electron.remote.process.argv);
-
     setupMenu(this.sendKeyboardAction);
   }
 
@@ -358,3 +359,28 @@ export default connect(
   }),
   {toggleBugDialogVisible},
 )(App);
+
+function replaceGlobalConsole(logger: Logger) {
+  const loggerMethods = {
+    log: logger.info,
+    warn: logger.warn,
+    error: logger.error,
+  };
+  const consoleHandler = {
+    get: function(obj, prop) {
+      return prop in loggerMethods
+        ? args => {
+            obj[prop] && obj[prop](args);
+            return loggerMethods[prop].bind(logger)(args);
+          }
+        : obj[prop];
+    },
+  };
+  window.console = new Proxy(console, consoleHandler);
+}
+
+function setupEnvironment() {
+  if (!process.env.ANDROID_HOME) {
+    process.env.ANDROID_HOME = '/opt/android_sdk';
+  }
+}

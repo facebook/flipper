@@ -26,7 +26,7 @@
 #define SONAR_LOG(message) \
   __android_log_print(ANDROID_LOG_INFO, "sonar", "sonar: %s", message)
 #else
-#define SONAR_LOG(message) printf("sonar: %s", message)
+#define SONAR_LOG(message) printf("sonar: %s\n", message)
 #endif
 
 #define CSR_FILE_NAME "app.csr"
@@ -99,7 +99,7 @@ SonarWebSocketImpl::~SonarWebSocketImpl() {
 void SonarWebSocketImpl::start() {
   folly::makeFuture()
       .via(worker_->getEventBase())
-      .delayed(std::chrono::milliseconds(0))
+      .delayedUnsafe(std::chrono::milliseconds(0))
       .then([this]() { startSync(); });
 }
 
@@ -185,7 +185,7 @@ void SonarWebSocketImpl::connectSecurely() {
 void SonarWebSocketImpl::reconnect() {
   folly::makeFuture()
       .via(worker_->getEventBase())
-      .delayed(std::chrono::seconds(reconnectIntervalSeconds))
+      .delayedUnsafe(std::chrono::seconds(reconnectIntervalSeconds))
       .then([this]() { startSync(); });
 }
 

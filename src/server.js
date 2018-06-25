@@ -152,7 +152,7 @@ export class Client extends EventEmitter {
     try {
       rawData = JSON.parse(msg);
     } catch (err) {
-      this.app.logger.error(`Invalid JSON: ${msg}`, 'clientMessage');
+      console.error(`Invalid JSON: ${msg}`, 'clientMessage');
       return;
     }
 
@@ -164,14 +164,14 @@ export class Client extends EventEmitter {
       error?: Object,
     |} = rawData;
 
-    this.app.logger.info(data, 'message:receive');
+    console.log(data, 'message:receive');
 
     const {id, method} = data;
 
     if (id == null) {
       const {error} = data;
       if (error != null) {
-        this.app.logger.error(
+        console.error(
           `Error received from device ${
             method ? `when calling ${method}` : ''
           }: ${error.message} + \nDevice Stack Trace: ${error.stacktrace}`,
@@ -266,7 +266,7 @@ export class Client extends EventEmitter {
         params,
       };
 
-      this.app.logger.info(data, 'message:call');
+      console.log(data, 'message:call');
       this.startTimingRequestResponse({method, id, params});
       this.connection.fireAndForget({data: JSON.stringify(data)});
     });
@@ -299,7 +299,7 @@ export class Client extends EventEmitter {
       method,
       params,
     };
-    this.app.logger.info(data, 'message:send');
+    console.log(data, 'message:send');
     this.connection.fireAndForget({data: JSON.stringify(data)});
   }
 
@@ -335,7 +335,7 @@ export class Server extends EventEmitter {
 
   init() {
     if (process.env.NODE_ENV === 'test') {
-      this.app.logger.warn(
+      console.warn(
         "rsocket server has not been started as we're in test mode",
         'server',
       );
@@ -361,13 +361,13 @@ export class Server extends EventEmitter {
       transportServer
         .on('error', err => {
           server.emit('error', err);
-          server.app.logger.error(
+          console.error(
             `Error opening server on port ${port}`,
             'server',
           );
         })
         .on('listening', () => {
-          server.app.logger.warn(
+          console.warn(
             `${
               sslConfig ? 'Secure' : 'Certificate'
             } server started on port ${port}`,
@@ -401,7 +401,7 @@ export class Server extends EventEmitter {
     conn.connectionStatus().subscribe({
       onNext(payload) {
         if (payload.kind == 'ERROR' || payload.kind == 'CLOSED') {
-          server.app.logger.warn(
+          console.warn(
             `Device disconnected ${client.id}`,
             'connection',
           );
@@ -433,7 +433,7 @@ export class Server extends EventEmitter {
         try {
           rawData = JSON.parse(payload.data);
         } catch (err) {
-          this.app.logger.error(
+          console.error(
             `Invalid JSON: ${payload.data}`,
             'clientMessage',
           );
@@ -446,7 +446,7 @@ export class Server extends EventEmitter {
           destination: string,
         |} = rawData;
         if (json.method === 'signCertificate') {
-          this.app.logger.warn('CSR received from device', 'server');
+          console.warn('CSR received from device', 'server');
           const {csr, destination} = json;
           this.certificateProvider.processCertificateSigningRequest(
             csr,
@@ -471,7 +471,7 @@ export class Server extends EventEmitter {
     invariant(query, 'expected query');
 
     const id = `${query.app}-${query.os}-${query.device}`;
-    this.app.logger.warn(`Device connected: ${id}`, 'connection');
+    console.warn(`Device connected: ${id}`, 'connection');
 
     const client = new Client(this.app, id, query, conn);
 
@@ -481,7 +481,7 @@ export class Server extends EventEmitter {
     };
 
     client.init().then(() => {
-      this.app.logger.info(
+      console.log(
         `Device client initialised: ${id}. Supported plugins: ${client.plugins.join(
           ', ',
         )}`,
@@ -547,7 +547,7 @@ class ConnectionTracker {
 
     this.connectionAttempts.set(key, entry);
     if (entry.length >= this.connectionProblemThreshold) {
-      this.logger.error(
+      console.error(
         `Connection loop detected with ${key}. Connected ${
           entry.length
         } times in ${(time - entry[0]) / 1000}s.`,
