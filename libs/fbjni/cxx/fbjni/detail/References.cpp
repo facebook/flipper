@@ -54,7 +54,10 @@ bool doesGetObjectRefTypeWork() {
 }
 
 bool isObjectRefType(jobject reference, jobjectRefType refType) {
-  static bool getObjectRefTypeWorks = doesGetObjectRefTypeWork();
+
+// TODO Rather than setting it true, use doesGetObjectRefTypeWork(). But it
+// causes sample app to freeze
+  static bool getObjectRefTypeWorks = true;
 
   return
     !reference ||

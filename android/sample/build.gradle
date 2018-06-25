@@ -61,5 +61,4 @@ dependencies {
 
     implementation deps.okhttp3
     implementation project(':android')
-    implementation project(':fbjni')
 }
