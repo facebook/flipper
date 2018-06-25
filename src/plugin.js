@@ -7,7 +7,7 @@
 
 import type {KeyboardActions} from './MenuBar.js';
 import type {App} from './App.js';
-import type {Client} from './server.js';
+import type Client from './Client.js';
 
 import BaseDevice from './devices/BaseDevice.js';
 import {AndroidDevice, IOSDevice} from 'sonar';

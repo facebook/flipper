@@ -6,7 +6,7 @@
  */
 
 import type {SonarBasePlugin} from '../plugin.js';
-import type {Client} from '../server.js';
+import type Client from '../Client.js';
 
 import {
   Component,

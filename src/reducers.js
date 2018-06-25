@@ -18,7 +18,7 @@ import {SonarPlugin, SonarDevicePlugin} from 'sonar';
 import {PluginStateContainer} from './plugin.js';
 import BaseDevice from './devices/BaseDevice.js';
 import plugins from './plugins/index.js';
-import {Client} from './server.js';
+import Client from './Client.js';
 
 const invariant = require('invariant');
 
