@@ -1,23 +1,15 @@
 project 'Sample.xcodeproj'
-
+source 'https://github.com/pkrmf/cocoapods-private-repo.git'
+source 'https://github.com/CocoaPods/Specs'
 # Uncomment the next line to define a global platform for your project
-# platform :ios, '9.0'
 swift_version = "4.1"
+
 
 target 'Sample' do
 
-  pod 'RSocket', :podspec => '../third-party-podspecs/RSocket.podspec'
-  pod 'DoubleConversion', :podspec => '../third-party-podspecs/DoubleConversion.podspec'
-  pod 'glog', :podspec => '../third-party-podspecs/glog.podspec'
-  pod 'Folly', :podspec => '../third-party-podspecs/Folly.podspec'
-  pod 'PeerTalk', :podspec => '../third-party-podspecs/PeerTalk.podspec'
-  pod 'ComponentKit', :podspec => '../third-party-podspecs/ComponentKit.podspec'
-  pod 'Yoga','~>1.8.1', :modular_headers => true
-  pod 'Sonar', :podspec => '../../xplat/Sonar/Sonar.podspec'
-  pod 'SonarKit', :podspec => '../SonarKit.podspec'
-  pod 'SonarKit/SonarKitLayoutComponentKitSupport', :podspec => '../SonarKit.podspec'
-  pod 'SonarKit/SKIOSNetworkPlugin', :podspec => '../SonarKit.podspec'
+  pod 'SonarKit', '~>0.0.1'
   post_install do |installer|
+
         installer.pods_project.targets.each do |target|
             if ['YogaKit'].include? target.name
                 target.build_configurations.each do |config|
