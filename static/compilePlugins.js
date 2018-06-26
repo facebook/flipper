@@ -8,7 +8,6 @@
 const path = require('path');
 const fs = require('fs');
 const metro = require('metro');
-const yargs = require('yargs');
 const HOME_DIR = require('os').homedir();
 
 module.exports = (reloadCallback, pluginPaths, pluginCache) => {
@@ -16,10 +15,7 @@ module.exports = (reloadCallback, pluginPaths, pluginCache) => {
   if (!fs.existsSync(pluginCache)) {
     fs.mkdirSync(pluginCache);
   }
-  if (yargs.argv.dynamicPlugins) {
-    // watch for changes on plugins if we are loading plugins dynamically
-    watchChanges(plugins, reloadCallback, pluginCache);
-  }
+  watchChanges(plugins, reloadCallback, pluginCache);
   return Promise.all(
     Object.values(plugins).map(plugin =>
       compilePlugin(plugin, false, pluginCache),
@@ -178,7 +174,12 @@ function compilePlugin(
           changeExport(out);
           resolve(result);
         })
-        .catch(console.error);
+        .catch(err => {
+          console.error(
+            `❌  Plugin ${name} is ignored, because it could not be compiled.`,
+          );
+          console.error(err);
+        });
     }
   });
 }

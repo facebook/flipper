@@ -8,11 +8,6 @@
 import type {SonarBasePlugin} from './plugin.js';
 
 import {devicePlugins} from './device-plugins/index.js';
-import {
-  isProduction,
-  loadsDynamicPlugins,
-  toggleDynamicPluginLoading,
-} from './utils/dynamicPluginLoading.js';
 import plugins from './plugins/index.js';
 import electron from 'electron';
 
@@ -331,15 +326,6 @@ function getTemplate(app: Object, shell: Object): Array<MenuItem> {
         },
         {
           type: 'separator',
-        },
-        {
-          label: `Restart in ${
-            loadsDynamicPlugins() ? 'Production' : 'Development'
-          } Mode`,
-          enabled: isProduction(),
-          click: function() {
-            toggleDynamicPluginLoading();
-          },
         },
         {
           label: 'Quit',

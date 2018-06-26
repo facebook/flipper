@@ -26,7 +26,6 @@ function launchElectron({bundleURL, electronURL}) {
   const args = [
     path.join(STATIC_DIR, 'index.js'),
     '--remote-debugging-port=9222',
-    '--dynamicPlugins=~/fbsource/xplat/sonar/src/plugins,~/fbsource/xplat/sonar/src/fb/plugins',
   ];
 
   const proc = child.spawn(electronBinary, args, {

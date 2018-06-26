@@ -15,7 +15,7 @@ import {
   colors,
   brandColors,
 } from 'sonar';
-import {isProduction} from '../utils/dynamicPluginLoading';
+import isProduction from '../utils/isProduction.js';
 import {shell, remote} from 'electron';
 
 const Container = FlexColumn.extends({

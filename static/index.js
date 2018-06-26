@@ -8,7 +8,6 @@ const {app, BrowserWindow} = require('electron');
 const path = require('path');
 const url = require('url');
 const fs = require('fs');
-const yargs = require('yargs');
 const compilePlugins = require('./compilePlugins.js');
 
 // ensure .sonar folder and config exist
@@ -29,9 +28,12 @@ try {
   fs.writeFileSync(configPath, JSON.stringify(config));
 }
 
-const pluginPaths = config.pluginPaths.concat(
-  (yargs.argv.dynamicPlugins || '').split(',').filter(Boolean),
-);
+const pluginPaths = config.pluginPaths
+  .concat(
+    path.join(__dirname, '..', 'src', 'plugins'),
+    path.join(__dirname, '..', 'src', 'fb', 'plugins'),
+  )
+  .filter(fs.existsSync);
 
 process.env.CONFIG = JSON.stringify({
   ...config,

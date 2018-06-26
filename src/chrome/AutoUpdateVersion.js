@@ -7,7 +7,7 @@
 
 import {FlexRow, Text, colors, LoadingIndicator, Glyph, Component} from 'sonar';
 import {remote} from 'electron';
-import {isProduction} from '../utils/dynamicPluginLoading';
+import isProduction from '../utils/isProduction.js';
 import config from '../fb-stubs/config.js';
 const version = remote.app.getVersion();
 

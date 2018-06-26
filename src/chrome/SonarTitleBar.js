@@ -10,16 +10,10 @@ import {
   Button,
   ButtonGroup,
   FlexRow,
-  FlexBox,
   Component,
   Spacer,
-  Glyph,
   GK,
 } from 'sonar';
-import {
-  loadsDynamicPlugins,
-  dynamicPluginPath,
-} from '../utils/dynamicPluginLoading.js';
 import {connect} from 'react-redux';
 import {
   toggleBugDialogVisible,
@@ -60,10 +54,6 @@ const TitleBar = FlexRow.extends(
   },
 );
 
-const Icon = FlexBox.extends({
-  marginRight: 3,
-});
-
 type Props = {|
   windowIsFocused: boolean,
   leftSidebarVisible: boolean,
@@ -82,13 +72,6 @@ class SonarTitleBar extends Component<Props> {
       <TitleBar focused={this.props.windowIsFocused} className="toolbar">
         <DevicesButton />
         <Spacer />
-        {loadsDynamicPlugins() && (
-          <Icon
-            title={`Plugins are loaded dynamically from ${dynamicPluginPath() ||
-              ''}`}>
-            <Glyph color={colors.light30} name="flash-default" size={16} />
-          </Icon>
-        )}
         {process.platform === 'darwin' ? <AutoUpdateVersion /> : null}
         {config.bugReportButtonVisible && (
           <Button
