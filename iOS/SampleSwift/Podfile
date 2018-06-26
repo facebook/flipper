@@ -1,10 +1,10 @@
-project 'Sample.xcodeproj'
+project 'SampleSwift.xcodeproj'
 
 # Uncomment the next line to define a global platform for your project
 # platform :ios, '9.0'
 swift_version = "4.1"
 
-target 'Sample' do
+target 'SampleSwift' do
 
   pod 'RSocket', :podspec => '../third-party-podspecs/RSocket.podspec'
   pod 'DoubleConversion', :podspec => '../third-party-podspecs/DoubleConversion.podspec'

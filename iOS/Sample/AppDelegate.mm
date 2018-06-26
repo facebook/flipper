@@ -7,11 +7,7 @@
  */
 #import "AppDelegate.h"
 
-#import <SKIOSNetworkPlugin/SKIOSNetworkAdapter.h>
 #import <SonarKit/SonarClient.h>
-#import <SonarKitLayoutComponentKitSupport/SonarKitLayoutComponentKitSupport.h>
-#import <SonarKitLayoutPlugin/SonarKitLayoutPlugin.h>
-#import <SonarKitNetworkPlugin/SonarKitNetworkPlugin.h>
 
 #import "MainViewController.h"
 #import "RootViewController.h"
@@ -30,13 +26,13 @@
 
   SonarClient *client = [SonarClient sharedClient];
 
-  SKDescriptorMapper *layoutDescriptorMapper = [[SKDescriptorMapper alloc] initWithDefaults];
-  [SonarKitLayoutComponentKitSupport setUpWithDescriptorMapper: layoutDescriptorMapper];
-  [client addPlugin: [[SonarKitLayoutPlugin alloc] initWithRootNode: application
-                                               withDescriptorMapper: layoutDescriptorMapper]];
-
-  [[SonarClient sharedClient] addPlugin: [[SonarKitNetworkPlugin alloc] initWithNetworkAdapter:[SKIOSNetworkAdapter new]]];
-  [[SonarClient sharedClient] start];
+//  SKDescriptorMapper *layoutDescriptorMapper = [[SKDescriptorMapper alloc] initWithDefaults];
+//  [SonarKitLayoutComponentKitSupport setUpWithDescriptorMapper: layoutDescriptorMapper];
+//  [client addPlugin: [[SonarKitLayoutPlugin alloc] initWithRootNode: application
+//                                               withDescriptorMapper: layoutDescriptorMapper]];
+//
+//  [[SonarClient sharedClient] addPlugin: [[SonarKitNetworkPlugin alloc] initWithNetworkAdapter:[SKIOSNetworkAdapter new]]];
+  [client start];
 
   UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"MainStoryBoard" bundle:nil];
   MainViewController *mainViewController = [storyboard instantiateViewControllerWithIdentifier:@"MainViewController"];
@@ -47,6 +43,8 @@
 
   [_window setRootViewController: [[UINavigationController alloc] initWithRootViewController: mainViewController]];
   [_window makeKeyAndVisible];
+
+  NSLog(@"Hello from Sonar in an Objc app!");
   return YES;
 }
 

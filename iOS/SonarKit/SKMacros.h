@@ -9,7 +9,7 @@
  #ifndef SKMACROS_H
  #define SKMACROS_H
 
- #import <FBDefines/FBMacros.h>
+ #import "FBMacros.h"
 
  #ifdef __cplusplus
  # define SK_EXTERN_C_BEGIN extern "C" {

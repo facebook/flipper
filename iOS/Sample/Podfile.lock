@@ -25,43 +25,7 @@ PODS:
     - OpenSSL-Static (= 1.0.2.c1)
     - PeerTalk
     - Sonar
-    - SonarKit/SKIOSNetworkPlugin (= 0.0.1)
-    - SonarKit/SonarKitLayoutComponentKitSupport (= 0.0.1)
-    - SonarKit/SonarKitLayoutPlugin (= 0.0.1)
-    - SonarKit/SonarKitNetworkPlugin (= 0.0.1)
-  - SonarKit/SKIOSNetworkPlugin (0.0.1):
-    - CocoaAsyncSocket (~> 7.6)
-    - Folly
-    - OpenSSL-Static (= 1.0.2.c1)
-    - PeerTalk
-    - Sonar
-    - SonarKit/SonarKitNetworkPlugin
-  - SonarKit/SonarKitLayoutComponentKitSupport (0.0.1):
-    - CocoaAsyncSocket (~> 7.6)
-    - ComponentKit
-    - Folly
-    - OpenSSL-Static (= 1.0.2.c1)
-    - PeerTalk
-    - Sonar
-    - SonarKit/SonarKitLayoutPlugin
-    - Yoga (~> 1.8)
-  - SonarKit/SonarKitLayoutPlugin (0.0.1):
-    - CocoaAsyncSocket (~> 7.6)
-    - Folly
-    - OpenSSL-Static (= 1.0.2.c1)
-    - PeerTalk
-    - Sonar
-    - Yoga (~> 1.8)
-    - YogaKit (= 1.8.1)
-  - SonarKit/SonarKitNetworkPlugin (0.0.1):
-    - CocoaAsyncSocket (~> 7.6)
-    - Folly
-    - OpenSSL-Static (= 1.0.2.c1)
-    - PeerTalk
-    - Sonar
   - Yoga (1.8.1)
-  - YogaKit (1.8.1):
-    - Yoga (~> 1.8.1)
 
 DEPENDENCIES:
   - ComponentKit (from `../third-party-podspecs/ComponentKit.podspec`)
@@ -72,8 +36,6 @@ DEPENDENCIES:
   - RSocket (from `../third-party-podspecs/RSocket.podspec`)
   - Sonar (from `../../xplat/Sonar/Sonar.podspec`)
   - SonarKit (from `../SonarKit.podspec`)
-  - SonarKit/SKIOSNetworkPlugin (from `../SonarKit.podspec`)
-  - SonarKit/SonarKitLayoutComponentKitSupport (from `../SonarKit.podspec`)
   - Yoga (~> 1.8.1)
 
 SPEC REPOS:
@@ -83,7 +45,6 @@ SPEC REPOS:
     - CocoaLibEvent
     - OpenSSL-Static
     - Yoga
-    - YogaKit
 
 EXTERNAL SOURCES:
   ComponentKit:
@@ -105,22 +66,22 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   ComponentKit:
-    :commit: 89c5e28e4ccc02927187a8aac6b7196f533cf86d
+    :commit: 152ae787423657ed650358830624c71e3139aca5
     :git: https://github.com/facebook/ComponentKit.git
   Folly:
-    :commit: 1ed5d00ca4f43d5c81f4d731119e71509179dc99
+    :commit: 01336b8656ac0ec50a41328f1eb15b8a883067ad
     :git: https://github.com/facebook/folly.git
   PeerTalk:
     :commit: 588303b43efa5082d654b6f75d1b84a6ba4b5b9e
     :git: https://github.com/rsms/PeerTalk.git
   RSocket:
-    :commit: 7f4fc67b1dc085e41cd89193077a70d994cb8500
+    :commit: 78aeb0f43c552769c6234efb7eda3d90d960cc0e
     :git: https://github.com/rsocket/rsocket-cpp.git
   Sonar:
-    :commit: 54fa6aa8f2777304d923a9e9425e53bd5a3eab43
+    :commit: 992c032fe77ee6a7bad16fd273c7b52e5472ac7d
     :git: https://github.com/facebook/Sonar.git
   SonarKit:
-    :commit: 54fa6aa8f2777304d923a9e9425e53bd5a3eab43
+    :commit: 992c032fe77ee6a7bad16fd273c7b52e5472ac7d
     :git: https://github.com/facebook/Sonar.git
 
 SPEC CHECKSUMS:
@@ -135,10 +96,9 @@ SPEC CHECKSUMS:
   PeerTalk: aadc42bc7d7f19e89f817b59ef8196305a711504
   RSocket: e9ee232080f995ba8f403ccf4cb61238a5646cb6
   Sonar: 29d8fb9b010e56fa1358be996d68d4b436dd8c21
-  SonarKit: 5f67fab955cfebd1d47e711606eff97d18f6013c
+  SonarKit: 042f44080b79611535c1627c2dec28898d296e55
   Yoga: e6f1fed82138c17da5332e15e5770abf0e9cc386
-  YogaKit: bb90d11e297e06abef7e0cfb20e035a6bd00cdc4
 
-PODFILE CHECKSUM: 6d021549fc806a559ec83f4086fadb9d8dc59e00
+PODFILE CHECKSUM: b4f2593ca5acb6e07cb30a9b1dea368be26f559a
 
-COCOAPODS: 1.5.2
+COCOAPODS: 1.5.3

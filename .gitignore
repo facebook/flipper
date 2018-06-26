@@ -1,11 +1,13 @@
 node_modules
 dist
 website/build
+yarn-error.log
+
+# iOS / Xcode
 *.xcworkspace
 **/Pods/
 **/xcuserdata/
 build/
-yarn-error.log
 
 # Android / Intellij
 local.properties
