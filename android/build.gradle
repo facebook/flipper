@@ -1,5 +1,5 @@
 apply plugin: 'com.android.library'
-
+apply plugin: 'maven'
 apply plugin: 'de.undercouch.download'
 
 import de.undercouch.gradle.tasks.download.Download
@@ -253,4 +253,11 @@ android {
 
 project.afterEvaluate {
     preBuild.dependsOn prepareAllLibs
+
+apply from: rootProject.file('gradle/release.gradle')
+
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
 }
+artifacts.add('archives', sourcesJar)}
