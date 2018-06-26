@@ -19,6 +19,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     window = UIWindow()
 
     let client = SonarClient.shared()
+    // Layout and network plugins are currently not supported for Swift apps.
 //    let layoutDescriptorMapper = SKDescriptorMapper(defaults: ())
 //    SonarKitLayoutComponentKitSupport.setUp(descriptorMapper: layoutDescriptorMapper)
 //    client.addPlugin(SonarKitLayoutPlugin(rootNode: application, descriptorMapper: layoutDescriptorMapper))
