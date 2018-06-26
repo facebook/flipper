@@ -30,12 +30,12 @@
 
   SonarClient *client = [SonarClient sharedClient];
 
-//  SKDescriptorMapper *layoutDescriptorMapper = [[SKDescriptorMapper alloc] initWithDefaults];
-//  [SonarKitLayoutComponentKitSupport setUpWithDescriptorMapper: layoutDescriptorMapper];
-//  [client addPlugin: [[SonarKitLayoutPlugin alloc] initWithRootNode: application
-//                                               withDescriptorMapper: layoutDescriptorMapper]];
-//
-//  [[SonarClient sharedClient] addPlugin: [[SonarKitNetworkPlugin alloc] initWithNetworkAdapter:[SKIOSNetworkAdapter new]]];
+  SKDescriptorMapper *layoutDescriptorMapper = [[SKDescriptorMapper alloc] initWithDefaults];
+  [SonarKitLayoutComponentKitSupport setUpWithDescriptorMapper: layoutDescriptorMapper];
+  [client addPlugin: [[SonarKitLayoutPlugin alloc] initWithRootNode: application
+                                               withDescriptorMapper: layoutDescriptorMapper]];
+
+  [[SonarClient sharedClient] addPlugin: [[SonarKitNetworkPlugin alloc] initWithNetworkAdapter:[SKIOSNetworkAdapter new]]];
   [client start];
 
   UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"MainStoryBoard" bundle:nil];

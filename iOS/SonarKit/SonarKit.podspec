@@ -18,8 +18,8 @@ Pod::Spec.new do |spec|
   spec.dependency 'CocoaAsyncSocket', '~> 7.6'
   spec.dependency 'PeerTalk'
   spec.dependency 'OpenSSL-Static', '1.0.2.c1'
-  spec.source_files = 'FBDefines/*.{h,cpp,m,mm}', '**/*.{h,cpp,m,mm}', 'FBCxxUtils/*.{h, mm}',
-  spec.public_header_files = '**/{SonarClient,SonarPlugin,SKMacros,FBMacros}.h'
+  spec.source_files = 'FBDefines/*.{h,cpp,m,mm}', 'CppBridge/*.{h,mm}', 'FBCxxUtils/*.{h,mm}', 'Utilities/**/*.{h,m}', '*.{h,m,mm}'
+  spec.public_header_files = '**/{SonarClient,SonarPlugin,SonarConnection,SonarResponder,SKMacros,FBMacros}.h'
 
   spec.compiler_flags = '-DFB_SONARKIT_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_LIBGFLAGS=0 -DFOLLY_HAVE_LIBJEMALLOC=0 -DFOLLY_HAVE_PREADV=0 -DFOLLY_HAVE_PWRITEV=0 -DFOLLY_HAVE_TFO=0 -DFOLLY_USE_SYMBOLIZER=0'
   spec.pod_target_xcconfig = { "USE_HEADERMAP" => "NO",
@@ -28,6 +28,7 @@ Pod::Spec.new do |spec|
   spec.platforms = { :ios => "8.0" }
 
   spec.subspec "SonarKitLayoutPlugin" do |ss|
+    ss.header_dir = "SonarKitLayoutPlugin"
     ss.dependency             "Yoga", yoga_version
     ss.dependency             'YogaKit', yogakit_version
     ss.compiler_flags       = folly_compiler_flags
@@ -48,18 +49,20 @@ Pod::Spec.new do |spec|
   end
 
   spec.subspec "SonarKitLayoutComponentKitSupport" do |ss|
+    ss.header_dir = "SonarKitLayoutComponentKitSupport"
     ss.dependency             "Yoga", yoga_version
     ss.dependency             "ComponentKit"
     ss.dependency             "SonarKit/SonarKitLayoutPlugin"
     ss.public_header_files = 'Plugins/SonarKitLayoutPlugin/SonarKitLayoutComponentKitSupport/SonarKitLayoutComponentKitSupport.h',
                              'Plugins/SonarKitLayoutPlugin/SonarKitLayoutComponentKitSupport/SKComponentLayoutWrapper.h'
 
-    ss.source_files         = "iOS/Plugins/SonarKitLayoutPlugin/SonarKitLayoutComponentKitSupport/**/*.{h,cpp,m,mm}"
+    ss.source_files         = "Plugins/SonarKitLayoutPlugin/SonarKitLayoutComponentKitSupport/**/*.{h,cpp,m,mm}"
     ss.pod_target_xcconfig = { "USE_HEADERMAP" => "NO",
                                  "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)\"" }
   end
 
   spec.subspec "SonarKitNetworkPlugin" do |ss|
+    ss.header_dir = "SonarKitNetworkPlugin"
     ss.public_header_files = 'Plugins/SonarKitNetworkPlugin/SonarKitNetworkPlugin/SonarKitNetworkPlugin.h',
                              'Plugins/SonarKitNetworkPlugin/SonarKitNetworkPlugin/SKBufferingPlugin.h',
                              'Plugins/SonarKitNetworkPlugin/SonarKitNetworkPlugin/SKDispatchQueue.h',
@@ -70,6 +73,7 @@ Pod::Spec.new do |spec|
   end
 
   spec.subspec "SKIOSNetworkPlugin" do |ss|
+    ss.header_dir = "SKIOSNetworkPlugin"
     ss.dependency  'SonarKit/SonarKitNetworkPlugin'
     ss.public_header_files = 'Plugins/SonarKitNetworkPlugin/SKIOSNetworkPlugin/SKIOSNetworkAdapter.h'
     ss.source_files         = "Plugins/SonarKitNetworkPlugin/SKIOSNetworkPlugin/**/*.{h,cpp,m,mm}"
