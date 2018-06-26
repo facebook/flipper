@@ -1,0 +1,53 @@
+/*
+ * Copyright 2014-present Facebook, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+// Configure the Android maven publication
+
+apply plugin: 'com.github.dcendents.android-maven'
+
+version = VERSION_NAME
+group = GROUP
+// Set the .aar / .jar base file name to match the artifact ID
+// in case the module has a different name
+project.archivesBaseName = POM_ARTIFACT_ID
+
+install {
+    repositories.mavenInstaller {
+        // This generates POM.xml with proper parameters
+        pom.project {
+            name POM_NAME
+            artifactId POM_ARTIFACT_ID
+            packaging POM_PACKAGING
+            description POM_DESCRIPTION
+            url projectUrl
+
+            scm {
+                url scmUrl
+                connection scmConnection
+                developerConnection scmDeveloperConnection
+            }
+
+            licenses projectLicenses
+
+            developers {
+                developer {
+                    id developerId
+                    name developerName
+                }
+            }
+        }
+    }
+}
