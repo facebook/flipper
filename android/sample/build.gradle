@@ -22,7 +22,6 @@ android {
             res {
                 srcDir 'res'
             }
-            jniLibs.srcDirs = ['../third-party/OpenSSL/libs']
         }
     }
 
