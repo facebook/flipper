@@ -1,0 +1,36 @@
+{
+  "name": "Yoga",
+  "version": "1.9",
+  "license": {
+    "type": "MIT",
+    "file": "LICENSE"
+  },
+  "homepage": "https://yogalayout.com/",
+  "documentation_url": "https://yogalayout.com/docs",
+  "summary": "Yoga is a cross-platform layout engine which implements Flexbox.",
+  "description": "Yoga is a cross-platform layout engine enabling maximum collaboration within your team by implementing an API many designers are familiar with, and opening it up to developers across different platforms.",
+  "authors": "Facebook",
+  "source": {
+    "git": "https://github.com/facebook/yoga.git",
+    "tag": "1.8.0"
+  },
+  "platforms": {
+    "ios": "8.0",
+    "tvos": "10.0"
+  },
+  "pod_target_xcconfig": {
+    "DEFINES_MODULE": "YES"
+  },
+  "module_name": "yoga",
+  "requires_arc": false,
+  "compiler_flags": [
+    "-fno-omit-frame-pointer",
+    "-fexceptions",
+    "-Wall",
+    "-Werror",
+    "-std=c++1y",
+    "-fPIC"
+  ],
+  "source_files": "yoga/**/*.{c,h,cpp}",
+  "public_header_files": "yoga/{Yoga,YGEnums,YGMacros}.h"
+}
