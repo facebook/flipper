@@ -224,6 +224,9 @@ android {
             res {
                 srcDir 'res'
             }
+            jniLibs {
+                srcDir 'third-party/OpenSSL/libs'
+            }
         }
     }
     externalNativeBuild {
