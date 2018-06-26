@@ -8,6 +8,10 @@
 #import "AppDelegate.h"
 
 #import <SonarKit/SonarClient.h>
+#import <SonarKitLayoutPlugin/SonarKitLayoutPlugin.h>
+#import <SonarKitNetworkPlugin/SonarKitNetworkPlugin.h>
+#import <SonarKitLayoutComponentKitSupport/SonarKitLayoutComponentKitSupport.h>
+#import <SKIOSNetworkPlugin/SKIOSNetworkAdapter.h>
 
 #import "MainViewController.h"
 #import "RootViewController.h"
