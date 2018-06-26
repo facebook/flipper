@@ -15,8 +15,8 @@ target 'SampleSwift' do
   pod 'Yoga', '~>1.8.1', :modular_headers => true
   pod 'Sonar', :path => '../../xplat/Sonar'
   pod 'SonarKit', :path => '../SonarKit'
-  # pod 'SonarKit/SonarKitLayoutComponentKitSupport', :path => '../SonarKit.podspec'
-  # pod 'SonarKit/SKIOSNetworkPlugin', :path => '../SonarKit.podspec'
+  pod 'SonarKit/SonarKitLayoutComponentKitSupport', :path => '../SonarKit'
+  pod 'SonarKit/SKIOSNetworkPlugin', :path => '../SonarKit'
   post_install do |installer|
         installer.pods_project.targets.each do |target|
             if ['YogaKit'].include? target.name
