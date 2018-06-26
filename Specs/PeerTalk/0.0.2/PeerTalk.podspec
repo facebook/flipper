@@ -6,7 +6,7 @@ Pod::Spec.new do |spec|
     spec.authors  = { 'Rasmus Andersson' => 'rasmus@notion.se' }
     spec.summary  = 'iOS and OS X Cocoa library for communicating over USB and TCP.'
 
-    spec.source   = { :git => "https://github.com/pkrmf/PeerTalk.git", :tag => '0.0.2' }
+    spec.source   = { :git => "https://github.com/rsms/peertalk.git" }
     spec.source_files = 'peertalk/*.{h,m}'
     spec.requires_arc = true
     spec.ios.deployment_target = '8.4'
