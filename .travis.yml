@@ -29,6 +29,22 @@ matrix:
           keep-history: true
           on:
             branch: master
+    - language: node_js
+      node_js:
+        - "10"
+
+      install:
+        - yarn
+        - cd website
+        - yarn
+        - cd ..
+
+      script:
+        - yarn lint
+        - yarn build --mac --version=$TRAVIS_BUILD_NUMBER
+        - cd website
+        - yarn build
+        - cd ..
 
     - language: objective-c
 
