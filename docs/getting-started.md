@@ -25,6 +25,10 @@ Once you start Sonar and launch an emulator/simulator or connect a device, you w
 
 Sonar is distributed via JCenter. Add dependencies to your `build.gradle` file.
 
+> Note: There are some problems with our current Android release. Check out [the
+> tracking Github issue](https://github.com/facebook/Sonar/issues/21) for
+> work-arounds while we're working on a solution.
+
 ```
 repositories {
   jcenter()
