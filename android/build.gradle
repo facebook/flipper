@@ -235,6 +235,10 @@ android {
         }
     }
 
+    packagingOptions {
+        exclude "**/libsonarfb.so"
+    }
+
     dependencies {
         implementation project(':fbjni')
         implementation deps.soloader
