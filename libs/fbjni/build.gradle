@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: 'maven'
 
 android {
     compileSdkVersion rootProject.compileSdkVersion
@@ -24,4 +25,16 @@ dependencies {
     compileOnly deps.inferAnnotations
     compileOnly deps.lithoAnnotations
     implementation deps.soloader
+}
+
+apply from: rootProject.file('gradle/release.gradle')
+
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+artifacts.add('archives', sourcesJar)
+
+tasks.withType(Javadoc).all {
+    enabled = false
 }

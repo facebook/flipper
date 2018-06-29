@@ -46,7 +46,7 @@ dependencies {
     // SoLoader
     implementation deps.soloader
 
-// For integration with Fresco
+    // For integration with Fresco
     implementation deps.lithoFresco
     // For testing
     testImplementation deps.lithoTesting
