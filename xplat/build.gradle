@@ -7,11 +7,6 @@ android {
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
         targetSdkVersion rootProject.targetSdkVersion
-
-        ndk {
-            abiFilters 'arm64-v8a', 'x86'
-        }
-
         externalNativeBuild {
             cmake {
                 arguments '-DANDROID_TOOLCHAIN=clang'
