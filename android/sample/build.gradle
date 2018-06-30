@@ -17,7 +17,7 @@ android {
         main {
             manifest.srcFile './AndroidManifest.xml'
             java {
-                srcDir 'src'
+                srcDir 'src/sonar'
             }
             res {
                 srcDir 'res'
