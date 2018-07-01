@@ -64,7 +64,8 @@ Pod::Spec.new do |spec|
                              'Plugins/SonarKitLayoutPlugin/SonarKitLayoutComponentKitSupport/SKComponentLayoutWrapper.h'
 
     ss.source_files         = "Plugins/SonarKitLayoutPlugin/SonarKitLayoutComponentKitSupport/**/*.{h,cpp,m,mm}"
-    ss.pod_target_xcconfig = { "USE_HEADERMAP" => "NO" }
+    ss.pod_target_xcconfig = { "USE_HEADERMAP" => "NO",
+                                "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)\"" }
   end
 
   spec.subspec "SonarKitNetworkPlugin" do |ss|
@@ -75,7 +76,8 @@ Pod::Spec.new do |spec|
                              'Plugins/SonarKitNetworkPlugin/SonarKitNetworkPlugin/SKDispatchQueue.h',
                              'Plugins/SonarKitNetworkPlugin/SonarKitNetworkPlugin/SKNetworkReporter.h'
     ss.source_files         = "Plugins/SonarKitNetworkPlugin/SonarKitNetworkPlugin/*.{h,cpp,m,mm}"
-    ss.pod_target_xcconfig = { "USE_HEADERMAP" => "NO" }
+    ss.pod_target_xcconfig = { "USE_HEADERMAP" => "NO",
+                                "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)\"" }
   end
 
   spec.subspec "SKIOSNetworkPlugin" do |ss|
@@ -84,6 +86,7 @@ Pod::Spec.new do |spec|
     ss.dependency  'SonarKit/SonarKitNetworkPlugin'
     ss.public_header_files = 'Plugins/SonarKitNetworkPlugin/SKIOSNetworkPlugin/SKIOSNetworkAdapter.h'
     ss.source_files         = "Plugins/SonarKitNetworkPlugin/SKIOSNetworkPlugin/**/*.{h,cpp,m,mm}"
-    ss.pod_target_xcconfig = { "USE_HEADERMAP" => "NO" }
+    ss.pod_target_xcconfig = { "USE_HEADERMAP" => "NO",
+                                "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)\"" }
   end
 end
