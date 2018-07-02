@@ -13,7 +13,7 @@ Pod::Spec.new do |spec|
   spec.source = { :git => 'https://github.com/facebook/Sonar.git',
                   :branch=> "master" }
   spec.module_name = 'SonarKit'
-  spec.platforms = { :ios => "8.4" }
+  spec.platforms = { :ios => "8.0" }
 
   spec.subspec "Core" do |ss|
     ss.dependency 'Folly', '~>1.0'
