@@ -21,8 +21,6 @@ include ':libevent'
 include ':openssl'
 include ':rsocket'
 
-
-
 project(':fbjni').projectDir = file('libs/fbjni')
 project(':easywsclient').projectDir = file('libs/easywsclient')
 project(':sonarcpp').projectDir = file('xplat')
