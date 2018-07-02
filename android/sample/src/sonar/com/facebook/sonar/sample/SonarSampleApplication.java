@@ -3,8 +3,10 @@
 package com.facebook.sonar.sample;
 
 import android.app.Application;
+import android.content.Context;
 import android.net.Network;
 import android.support.annotation.Nullable;
+import com.facebook.sonar.plugins.sharedpreferences.SharedPreferencesSonarPlugin;
 import java.util.ArrayList;
 import java.util.List;
 import android.widget.LinearLayout.LayoutParams;
@@ -50,6 +52,9 @@ public class SonarSampleApplication extends Application {
     LithoSonarDescriptors.add(descriptorMapping);
     client.addPlugin(new InspectorSonarPlugin(this, descriptorMapping));
     client.addPlugin(networkPlugin);
+    client.addPlugin(new SharedPreferencesSonarPlugin(this, "sample"));
     client.start();
-    }
+
+    getSharedPreferences("sample", Context.MODE_PRIVATE).edit().putString("Hello", "world").apply();
+  }
 }
