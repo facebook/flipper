@@ -30,9 +30,7 @@ android {
 
     dependencies {
         implementation project(':glog')
-        //implementation project(':libevent')
         implementation project(':doubleconversion')
-        implementation project(':openssl')
 
     }
 }

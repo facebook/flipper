@@ -140,26 +140,40 @@ task finalizeEvent2(dependsOn: [finalizeEvent], type: Copy) {
     into "$thirdPartyNdkDir/LibEvent/"
 }
 
-task downloadOpenSSL(dependsOn: [], type: Download) {
-    src 'https://github.com/priteshrnandgaonkar/openssl-android/archive/1.0.0.tar.gz'
+task downloadOpenSSLSource(dependsOn: [], type: Download) {
+    src 'https://www.openssl.org/source/openssl-1.1.0h.tar.gz'
     onlyIfNewer true
     overwrite false
     dest new File(downloadsDir, 'openssl-android-1.0.0.tar.gz');
 }
 
-task prepareOpenSSL(dependsOn: [downloadOpenSSL], type: Copy) {
-    from tarTree(downloadOpenSSL.dest)
+task downloadOpenSSLLibs(dependsOn: [], type: Download) {
+    src 'https://github.com/passy/openssl-android/releases/download/1.1.0h/openssl-1.1.0h-prebuilt.tar.gz'
+    onlyIfNewer true
+    overwrite false
+    dest new File(downloadsDir, 'openssl-1.1.0h-prebuilt.tar.gz');
+}
+
+task prepareOpenSSL(dependsOn: [downloadOpenSSLSource, downloadOpenSSLLibs], type: Copy) {
+    from tarTree(downloadOpenSSLSource.dest)
+    from tarTree(downloadOpenSSLLibs.dest)
     from './third-party/OpenSSL/'
-    include 'openssl-android-1.0.0/**/*', 'libs/**/*'
+    include 'openssl-1.1.0h/**/*'
+    include 'libs/**/*'
     includeEmptyDirs = false
     into "$thirdPartyNdkDir/OpenSSL/"
 }
 
-task finalizeOpenSSL(dependsOn: [prepareOpenSSL], type: Copy) {
-    from './third-party/OpenSSL/'
-    include 'build.gradle', 'ApplicationManifest.xml'
-    includeEmptyDirs = false
-    into "$thirdPartyNdkDir/OpenSSL/openssl-android-1.0.0/"
+task configureOpenSSL(dependsOn: [prepareOpenSSL], type: Exec) {
+    workingDir "$thirdPartyNdkDir/OpenSSL/openssl-1.1.0h/"
+    // This is only to generate a buildconfig.h in the next step. I **believe**
+    // that the options here don't really matter for that file.
+    commandLine './Configure', 'dist'
+}
+
+task finalizeOpenSSL(dependsOn: [configureOpenSSL], type: Exec) {
+    workingDir "$thirdPartyNdkDir/OpenSSL/openssl-1.1.0h/"
+    commandLine 'make', 'build_generated'
 }
 
 task downloadRSocket(dependsOn: [], type: Download) {
@@ -225,7 +239,7 @@ android {
                 srcDir 'res'
             }
             jniLibs {
-                srcDir 'third-party/OpenSSL/libs'
+                srcDir "$thirdPartyNdkDir/OpenSSL/libs/"
             }
         }
     }
