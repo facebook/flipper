@@ -47,6 +47,11 @@ add_compile_options(
     -Wno-return-type
     -Wno-tautological-constant-compare
     )
+
+if (CMAKE_ANDROID_ARCH_ABI STREQUAL "x86_64")
+    add_compile_options(-mpclmul)
+endif()
+
  file(GLOB SRC_FILES ${FOLLY_DIR}/portability/*.cpp
                      ${FOLLY_DIR}/io/async/ssl/*.cpp
                      ${FOLLY_DIR}/io/async/*.cpp
