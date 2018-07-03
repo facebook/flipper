@@ -1,7 +1,6 @@
 folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_LIBGFLAGS=0 -DFOLLY_HAVE_LIBJEMALLOC=0 -DFOLLY_HAVE_PREADV=0 -DFOLLY_HAVE_PWRITEV=0 -DFOLLY_HAVE_TFO=0 -DFOLLY_USE_SYMBOLIZER=0'
 yoga_version = '~> 1.8'
 yogakit_version = '1.8.1'
-header_search_paths = "\"$(PODS_TARGET_SRCROOT)\"/SonarKit/** \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/PeerTalkSonar\" \"$(PODS_ROOT)/ComponentKit\"/**"
 
 Pod::Spec.new do |spec|
   spec.name = 'SonarKit'
@@ -24,9 +23,12 @@ Pod::Spec.new do |spec|
     ss.dependency 'CocoaAsyncSocket', '~> 7.6'
     ss.dependency 'PeerTalk'
     ss.dependency 'OpenSSL-Static', '1.0.2.c1'
+
+
     ss.source_files = 'SonarKit/FBDefines/*.{h,cpp,m,mm}', 'SonarKit/CppBridge/*.{h,mm}', 'SonarKit/FBCxxUtils/*.{h,mm}', 'SonarKit/Utilities/**/*.{h,m}', 'SonarKit/*.{h,m,mm}'
     ss.public_header_files = 'SonarKit/**/{SonarClient,SonarPlugin,SonarConnection,SonarResponder,SKMacros,FBMacros}.h'
 
+    header_search_paths = "\"$(PODS_TARGET_SRCROOT)\"/SonarKit/** \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/PeerTalkSonar\""
     ss.pod_target_xcconfig = { "USE_HEADERMAP" => "NO",
                              "DEFINES_MODULE" => "YES",
                              "HEADER_SEARCH_PATHS" => header_search_paths }
