@@ -2,99 +2,64 @@ PODS:
   - boost-for-react-native (1.63.0)
   - CocoaAsyncSocket (7.6.3)
   - CocoaLibEvent (1.0.0)
-  - ComponentKit (0.21):
-    - Yoga
-  - DoubleConversion (3.0.0)
+  - DoubleConversion (1.1.5)
   - Folly (1.0.0):
     - boost-for-react-native
     - CocoaLibEvent (~> 1.0)
     - DoubleConversion
     - glog
     - OpenSSL-Static (= 1.0.2.c1)
-  - glog (0.3.5)
+  - glog (0.3.4)
   - OpenSSL-Static (1.0.2.c1)
-  - PeerTalk (1.0.0)
+  - PeerTalk (0.0.2)
   - RSocket (0.10.0):
     - Folly
   - Sonar (0.0.1):
     - Folly
     - RSocket
-  - SonarKit (0.0.1):
-    - SonarKit/Core (= 0.0.1)
-  - SonarKit/Core (0.0.1):
+  - SonarKit (0.0.2):
+    - SonarKit/Core (= 0.0.2)
+  - SonarKit/Core (0.0.2):
     - CocoaAsyncSocket (~> 7.6)
-    - Folly
+    - Folly (~> 1.0)
     - OpenSSL-Static (= 1.0.2.c1)
-    - PeerTalk
-    - Sonar
-  - Yoga (1.8.1)
+    - PeerTalk (~> 0.0.2)
+    - Sonar (~> 0.0.1)
 
 DEPENDENCIES:
-  - ComponentKit (from `../third-party-podspecs/ComponentKit.podspec`)
-  - DoubleConversion (from `../third-party-podspecs/DoubleConversion.podspec`)
-  - Folly (from `../third-party-podspecs/Folly.podspec`)
-  - glog (from `../third-party-podspecs/glog.podspec`)
-  - PeerTalk (from `../third-party-podspecs/PeerTalk.podspec`)
-  - RSocket (from `../third-party-podspecs/RSocket.podspec`)
-  - Sonar (from `../../xplat/Sonar`)
   - SonarKit (from `../`)
-  - Yoga (~> 1.8.1)
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
     - boost-for-react-native
     - CocoaAsyncSocket
     - CocoaLibEvent
+    - DoubleConversion
+    - glog
     - OpenSSL-Static
-    - Yoga
+  https://github.com/facebook/Sonar.git:
+    - Folly
+    - PeerTalk
+    - RSocket
+    - Sonar
 
 EXTERNAL SOURCES:
-  ComponentKit:
-    :podspec: "../third-party-podspecs/ComponentKit.podspec"
-  DoubleConversion:
-    :podspec: "../third-party-podspecs/DoubleConversion.podspec"
-  Folly:
-    :podspec: "../third-party-podspecs/Folly.podspec"
-  glog:
-    :podspec: "../third-party-podspecs/glog.podspec"
-  PeerTalk:
-    :podspec: "../third-party-podspecs/PeerTalk.podspec"
-  RSocket:
-    :podspec: "../third-party-podspecs/RSocket.podspec"
-  Sonar:
-    :path: "../../xplat/Sonar"
   SonarKit:
     :path: "../"
-
-CHECKOUT OPTIONS:
-  ComponentKit:
-    :commit: 3032a433f1666c88887e8122d1c0676ab6b4b3d6
-    :git: https://github.com/facebook/ComponentKit.git
-  Folly:
-    :commit: abef2f0708d8ddaf3dc5ea3ef4cc566618911367
-    :git: https://github.com/facebook/folly.git
-  PeerTalk:
-    :commit: 588303b43efa5082d654b6f75d1b84a6ba4b5b9e
-    :git: https://github.com/rsms/PeerTalk.git
-  RSocket:
-    :commit: 62442c0f57c3ad60c76faa22f7565c360377e390
-    :git: https://github.com/rsocket/rsocket-cpp.git
 
 SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   CocoaAsyncSocket: eafaa68a7e0ec99ead0a7b35015e0bf25d2c8987
   CocoaLibEvent: 2fab71b8bd46dd33ddb959f7928ec5909f838e3f
-  ComponentKit: 7bd0ad508946aeb68dd52ed8739ced9846ff3671
-  DoubleConversion: 9bd61b1134a393694e95e0950c5bf3f99534817f
-  Folly: 65270e20aba2ebbb87febbf1f9052ccd28571ea4
-  glog: fdb5d40eb83acd6a4d5d61d95ecc583f5970a119
+  DoubleConversion: e22e0762848812a87afd67ffda3998d9ef29170c
+  Folly: ac702dfbe9294be1002f9cddaa0c2ddb99b16288
+  glog: 1de0bb937dccdc981596d3b5825ebfb765017ded
   OpenSSL-Static: bd17e34564a8591ad76b740318683a6caa19a13e
-  PeerTalk: aadc42bc7d7f19e89f817b59ef8196305a711504
-  RSocket: e9ee232080f995ba8f403ccf4cb61238a5646cb6
-  Sonar: 1b1281d0080b67187656525680d3f7b4bad45f94
-  SonarKit: 36231587f4f6765c8082b6539c84fda41a58b063
-  Yoga: e6f1fed82138c17da5332e15e5770abf0e9cc386
+  PeerTalk: 77481b0a8136f226b90ccf828d6061f70139ffde
+  RSocket: 4fdb7e562db30a2d4fceddefdc601749ffc9ebe2
+  Sonar: 38a48b88369cfa48f1a36150d57e2a72ef6fd33c
+  SonarKit: 24fce90a694e3985ea78a2064b53d5ea701f50b2
 
-PODFILE CHECKSUM: e0971ff2a8f0360878819a5b8fb6043c5073a1cd
+PODFILE CHECKSUM: 1da6a6576eac10bb3c539f77be622b0b54ce212a
 
 COCOAPODS: 1.5.3
