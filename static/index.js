@@ -9,9 +9,10 @@ const path = require('path');
 const url = require('url');
 const fs = require('fs');
 const compilePlugins = require('./compilePlugins.js');
+const os = require('os');
 
 // ensure .sonar folder and config exist
-const sonarDir = path.join(require('os').homedir(), '.sonar');
+const sonarDir = path.join(os.homedir(), '.sonar');
 if (!fs.existsSync(sonarDir)) {
   fs.mkdirSync(sonarDir);
 }
@@ -33,6 +34,7 @@ const pluginPaths = config.pluginPaths
     path.join(__dirname, '..', 'src', 'plugins'),
     path.join(__dirname, '..', 'src', 'fb', 'plugins'),
   )
+  .map(p => p.replace(/^~/, os.homedir()))
   .filter(fs.existsSync);
 
 process.env.CONFIG = JSON.stringify({
