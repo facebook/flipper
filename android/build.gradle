@@ -168,7 +168,7 @@ task configureOpenSSL(dependsOn: [prepareOpenSSL], type: Exec) {
     workingDir "$thirdPartyNdkDir/OpenSSL/openssl-1.1.0h/"
     // This is only to generate a buildconfig.h in the next step. I **believe**
     // that the options here don't really matter for that file.
-    commandLine './Configure', 'android', 'shared', 'no-asm', '-m64', '-no-ssl2', '-no-ssl3', '-no-comp', '-no-hw'
+    commandLine './Configure', 'dist'
 }
 
 task finalizeOpenSSL(dependsOn: [configureOpenSSL], type: Exec) {
@@ -268,7 +268,7 @@ android {
 }
 
 project.afterEvaluate {
-    // preBuild.dependsOn prepareAllLibs
+    preBuild.dependsOn prepareAllLibs
 }
 
 apply from: rootProject.file('gradle/release.gradle')
