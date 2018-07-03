@@ -90,13 +90,13 @@ CHECKOUT OPTIONS:
     :commit: 9566efa9a11005ce64b4868cc5178479551c4e3b
     :git: https://github.com/facebook/ComponentKit.git
   Folly:
-    :commit: 110882c87800dc1d9ee472362ed3e8b6109cd082
+    :commit: 327cac1ea3e47ac307d60c21604106e754876f1b
     :git: https://github.com/facebook/folly.git
   PeerTalk:
     :commit: 588303b43efa5082d654b6f75d1b84a6ba4b5b9e
     :git: https://github.com/rsms/PeerTalk.git
   RSocket:
-    :commit: 2f707085edd9e3c9bfa3c9ca407b8d4e88e44653
+    :commit: 5e9fff83f19a07e27bf7d44a4d3fdbca785e0693
     :git: https://github.com/rsocket/rsocket-cpp.git
 
 SPEC CHECKSUMS:
@@ -111,7 +111,7 @@ SPEC CHECKSUMS:
   PeerTalk: aadc42bc7d7f19e89f817b59ef8196305a711504
   RSocket: e9ee232080f995ba8f403ccf4cb61238a5646cb6
   Sonar: 1b1281d0080b67187656525680d3f7b4bad45f94
-  SonarKit: 8bd7bdef575e2e922be6d7da254c8b8ac2894b62
+  SonarKit: 0a2108de7d55d516cf0122554e70f0706f5b307f
   Yoga: e6f1fed82138c17da5332e15e5770abf0e9cc386
   YogaKit: bb90d11e297e06abef7e0cfb20e035a6bd00cdc4
 

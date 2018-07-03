@@ -1,7 +1,7 @@
 folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_LIBGFLAGS=0 -DFOLLY_HAVE_LIBJEMALLOC=0 -DFOLLY_HAVE_PREADV=0 -DFOLLY_HAVE_PWRITEV=0 -DFOLLY_HAVE_TFO=0 -DFOLLY_USE_SYMBOLIZER=0'
 yoga_version = '~> 1.8'
 yogakit_version = '1.8.1'
-header_search_paths = "\"$(PODS_ROOT)/Headers/Public/SonarKit\" \"$(PODS_TARGET_SRCROOT)\"/** \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/PeerTalkSonar\" \"$(PODS_ROOT)/ComponentKit\"/**"
+header_search_paths = "\"$(PODS_TARGET_SRCROOT)\"/SonarKit/** \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/PeerTalkSonar\" \"$(PODS_ROOT)/ComponentKit\"/**"
 
 Pod::Spec.new do |spec|
   spec.name = 'SonarKit'
@@ -65,7 +65,7 @@ Pod::Spec.new do |spec|
 
     ss.source_files         = "Plugins/SonarKitLayoutPlugin/SonarKitLayoutComponentKitSupport/**/*.{h,cpp,m,mm}"
     ss.pod_target_xcconfig = { "USE_HEADERMAP" => "NO",
-                                "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)\"" }
+                                "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)\"/Plugins/**" }
   end
 
   spec.subspec "SonarKitNetworkPlugin" do |ss|
@@ -77,7 +77,7 @@ Pod::Spec.new do |spec|
                              'Plugins/SonarKitNetworkPlugin/SonarKitNetworkPlugin/SKNetworkReporter.h'
     ss.source_files         = "Plugins/SonarKitNetworkPlugin/SonarKitNetworkPlugin/*.{h,cpp,m,mm}"
     ss.pod_target_xcconfig = { "USE_HEADERMAP" => "NO",
-                                "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)\"" }
+                                "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)\"/Plugins/**" }
   end
 
   spec.subspec "SKIOSNetworkPlugin" do |ss|
@@ -87,6 +87,6 @@ Pod::Spec.new do |spec|
     ss.public_header_files = 'Plugins/SonarKitNetworkPlugin/SKIOSNetworkPlugin/SKIOSNetworkAdapter.h'
     ss.source_files         = "Plugins/SonarKitNetworkPlugin/SKIOSNetworkPlugin/**/*.{h,cpp,m,mm}"
     ss.pod_target_xcconfig = { "USE_HEADERMAP" => "NO",
-                                "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)\"" }
+                                "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)\"/Plugins/**" }
   end
 end
