@@ -7,6 +7,7 @@ Pod::Spec.new do |spec|
   spec.authors = 'Facebook'
   spec.source = { :git => 'https://github.com/rsocket/rsocket-cpp.git', :branch => "master"}
   spec.module_name = 'RSocket'
+  spec.static_framework = 'true'
   spec.source_files = 'rsocket/benchmarks/*',
                       'rsocket/framing/*',
                       'rsocket/internal/*',

@@ -33,6 +33,7 @@ const minCertExpiryWindowSeconds = 24 * 60 * 60;
 const appNotDebuggableRegex = /debuggable/;
 const allowedAppNameRegex = /^[a-zA-Z0-9.\-]+$/;
 const allowedAppDirectoryRegex = /^\/[ a-zA-Z0-9.\-\/]+$/;
+const operationNotPermittedRegex = /not permitted/;
 const logTag = 'CertificateProvider';
 /*
  * RFC2253 specifies the unamiguous x509 subject format.
@@ -106,7 +107,8 @@ export default class CertificateProvider {
           csr,
           os,
         ),
-      );
+      )
+      .catch(e => console.error(e));
   }
 
   ensureOpenSSLIsAvailable(): void {
@@ -271,22 +273,21 @@ export default class CertificateProvider {
       .then(adb.util.readAll)
       .then(buffer => buffer.toString())
       .then(output => {
-        const matches = output.match(appNotDebuggableRegex);
-        if (matches) {
+        if (output.match(appNotDebuggableRegex)) {
           const e = new Error(
             `Android app ${user} is not debuggable. To use it with sonar, add android:debuggable="true" to the application section of AndroidManifest.xml`,
           );
           this.server.emit('error', e);
           throw e;
         }
+        if (output.toLowerCase().match(operationNotPermittedRegex)) {
+          const e = new Error(
+            `Your android device (${deviceId}) does not support the adb shell run-as command. We're tracking this at https://github.com/facebook/Sonar/issues/92`,
+          );
+          this.server.emit('error', e);
+          throw e;
+        }
         return output;
-      })
-      .catch(err => {
-        console.error(
-          `Error executing command on android device ${deviceId}:${user}. Command: ${command}`,
-          logTag,
-        );
-        console.error(err, logTag);
       });
   }
 

@@ -8,7 +8,6 @@
 
 #include "SonarWebSocketImpl.h"
 #include <folly/String.h>
-#include <folly/executors/IOExecutor.h>
 #include <folly/futures/Future.h>
 #include <folly/io/async/SSLContext.h>
 #include <folly/json.h>
@@ -93,14 +92,15 @@ class Responder : public rsocket::RSocketResponder {
 SonarWebSocketImpl::SonarWebSocketImpl(SonarInitConfig config)
     : deviceData_(config.deviceData), worker_(config.worker) {}
 
-folly::IOExecutor* ioExecutor;
-
 SonarWebSocketImpl::~SonarWebSocketImpl() {
   stop();
 }
 
 void SonarWebSocketImpl::start() {
-  folly::makeFuture().via(ioExecutor).then([this]() { startSync(); });
+  folly::makeFuture()
+      .via(worker_->getEventBase())
+      .delayedUnsafe(std::chrono::milliseconds(0))
+      .then([this]() { startSync(); });
 }
 
 void SonarWebSocketImpl::startSync() {
@@ -184,8 +184,8 @@ void SonarWebSocketImpl::connectSecurely() {
 
 void SonarWebSocketImpl::reconnect() {
   folly::makeFuture()
-      .via(ioExecutor)
-      .delayed(std::chrono::seconds(reconnectIntervalSeconds))
+      .via(worker_->getEventBase())
+      .delayedUnsafe(std::chrono::seconds(reconnectIntervalSeconds))
       .then([this]() { startSync(); });
 }
 

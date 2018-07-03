@@ -1,10 +1,10 @@
-folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_LIBGFLAGS=0 -DFOLLY_HAVE_LIBJEMALLOC=0 -DFOLLY_HAVE_PREADV=0 -DFOLLY_HAVE_PWRITEV=0 -DFOLLY_HAVE_TFO=0 -DFOLLY_USE_SYMBOLIZER=0'
-yoga_version = '~> 1.8'
-yogakit_version = '1.8.1'
+folly_compiler_flags = '-DFB_SONARKIT_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_LIBGFLAGS=0 -DFOLLY_HAVE_LIBJEMALLOC=0 -DFOLLY_HAVE_PREADV=0 -DFOLLY_HAVE_PWRITEV=0 -DFOLLY_HAVE_TFO=0 -DFOLLY_USE_SYMBOLIZER=0'
+yoga_version = '~> 1.9'
+yogakit_version = '~>1.8'
 
 Pod::Spec.new do |spec|
   spec.name = 'SonarKit'
-  spec.version = '0.0.1'
+  spec.version = '0.0.2'
   spec.license = { :type => 'MIT' }
   spec.homepage = 'https://github.com/facebook/Sonar'
   spec.summary = 'Sonar iOS podspec'
@@ -13,21 +13,17 @@ Pod::Spec.new do |spec|
   spec.source = { :git => 'https://github.com/facebook/Sonar.git',
                   :branch=> "master" }
   spec.module_name = 'SonarKit'
-  spec.platforms = { :ios => "8.0" }
+  spec.platforms = { :ios => "8.4" }
   spec.default_subspecs = "Core"
-  spec.compiler_flags = '-DFB_SONARKIT_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_LIBGFLAGS=0 -DFOLLY_HAVE_LIBJEMALLOC=0 -DFOLLY_HAVE_PREADV=0 -DFOLLY_HAVE_PWRITEV=0 -DFOLLY_HAVE_TFO=0 -DFOLLY_USE_SYMBOLIZER=0'
 
   spec.subspec "Core" do |ss|
-    ss.dependency 'Folly'
-    ss.dependency 'Sonar'
+    ss.dependency 'Folly', '~>1.0'
+    ss.dependency 'Sonar', '~>0.0.1'
     ss.dependency 'CocoaAsyncSocket', '~> 7.6'
-    ss.dependency 'PeerTalk'
+    ss.dependency 'PeerTalk', '~>0.0.2'
     ss.dependency 'OpenSSL-Static', '1.0.2.c1'
-
-
     ss.source_files = 'SonarKit/FBDefines/*.{h,cpp,m,mm}', 'SonarKit/CppBridge/*.{h,mm}', 'SonarKit/FBCxxUtils/*.{h,mm}', 'SonarKit/Utilities/**/*.{h,m}', 'SonarKit/*.{h,m,mm}'
     ss.public_header_files = 'SonarKit/**/{SonarClient,SonarPlugin,SonarConnection,SonarResponder,SKMacros,FBMacros}.h'
-
     header_search_paths = "\"$(PODS_TARGET_SRCROOT)\"/SonarKit/** \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/PeerTalkSonar\""
     ss.pod_target_xcconfig = { "USE_HEADERMAP" => "NO",
                              "DEFINES_MODULE" => "YES",
@@ -59,9 +55,9 @@ Pod::Spec.new do |spec|
   spec.subspec "SonarKitLayoutComponentKitSupport" do |ss|
     ss.header_dir = "SonarKitLayoutComponentKitSupport"
     ss.dependency             'SonarKit/Core'
-    ss.dependency             "Yoga", yoga_version
-    ss.dependency             "ComponentKit"
-    ss.dependency             "SonarKit/SonarKitLayoutPlugin"
+    ss.dependency             'Yoga', yoga_version
+    ss.compiler_flags       = folly_compiler_flags
+    ss.dependency             'SonarKit/SonarKitLayoutPlugin'
     ss.public_header_files = 'Plugins/SonarKitLayoutPlugin/SonarKitLayoutComponentKitSupport/SonarKitLayoutComponentKitSupport.h',
                              'Plugins/SonarKitLayoutPlugin/SonarKitLayoutComponentKitSupport/SKComponentLayoutWrapper.h'
 
@@ -73,6 +69,7 @@ Pod::Spec.new do |spec|
   spec.subspec "SonarKitNetworkPlugin" do |ss|
     ss.header_dir = "SonarKitNetworkPlugin"
     ss.dependency             'SonarKit/Core'
+    ss.compiler_flags       = folly_compiler_flags
     ss.public_header_files = 'Plugins/SonarKitNetworkPlugin/SonarKitNetworkPlugin/SonarKitNetworkPlugin.h',
                              'Plugins/SonarKitNetworkPlugin/SonarKitNetworkPlugin/SKBufferingPlugin.h',
                              'Plugins/SonarKitNetworkPlugin/SonarKitNetworkPlugin/SKDispatchQueue.h',
@@ -86,6 +83,7 @@ Pod::Spec.new do |spec|
     ss.header_dir = "SKIOSNetworkPlugin"
     ss.dependency 'SonarKit/Core'
     ss.dependency  'SonarKit/SonarKitNetworkPlugin'
+    ss.compiler_flags       = folly_compiler_flags
     ss.public_header_files = 'Plugins/SonarKitNetworkPlugin/SKIOSNetworkPlugin/SKIOSNetworkAdapter.h'
     ss.source_files         = "Plugins/SonarKitNetworkPlugin/SKIOSNetworkPlugin/**/*.{h,cpp,m,mm}"
     ss.pod_target_xcconfig = { "USE_HEADERMAP" => "NO",
