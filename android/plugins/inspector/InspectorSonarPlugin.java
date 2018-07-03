@@ -38,6 +38,19 @@ public class InspectorSonarPlugin implements SonarPlugin {
   private String mHighlightedId;
   private TouchOverlayView mTouchOverlay;
   private SonarConnection mConnection;
+  private @Nullable List<ExtensionCommand> mExtensionCommands;
+
+  /** An interface for extensions to the Inspector Sonar plugin */
+  public interface ExtensionCommand {
+    /** The command to respond to */
+    String command();
+    /** The corresponding SonarReceiver for the command */
+    SonarReceiver receiver(ObjectTracker tracker, SonarConnection connection);
+  }
+
+  public InspectorSonarPlugin(Context context, DescriptorMapping descriptorMapping) {
+    this(context, descriptorMapping, new NullScriptingEnvironment());
+  }
 
   public InspectorSonarPlugin(
       Context context,
@@ -46,23 +59,45 @@ public class InspectorSonarPlugin implements SonarPlugin {
     this(
         new ApplicationWrapper((Application) context.getApplicationContext()),
         descriptorMapping,
-        scriptingEnvironment);
+        scriptingEnvironment,
+        null);
   }
 
-  public InspectorSonarPlugin(Context context, DescriptorMapping descriptorMapping) {
-    this(context, descriptorMapping, new NullScriptingEnvironment());
+  public InspectorSonarPlugin(
+      Context context,
+      DescriptorMapping descriptorMapping,
+      @Nullable List<ExtensionCommand> extensions) {
+    this(
+        new ApplicationWrapper((Application) context.getApplicationContext()),
+        descriptorMapping,
+        new NullScriptingEnvironment(),
+        extensions);
+  }
+
+  public InspectorSonarPlugin(
+      Context context,
+      DescriptorMapping descriptorMapping,
+      ScriptingEnvironment scriptingEnvironment,
+      @Nullable List<ExtensionCommand> extensions) {
+    this(
+        new ApplicationWrapper((Application) context.getApplicationContext()),
+        descriptorMapping,
+        scriptingEnvironment,
+        extensions);
   }
 
   // Package visible for testing
   InspectorSonarPlugin(
       ApplicationWrapper wrapper,
       DescriptorMapping descriptorMapping,
-      ScriptingEnvironment scriptingEnvironment) {
+      ScriptingEnvironment scriptingEnvironment,
+      @Nullable List<ExtensionCommand> extensions) {
     mDescriptorMapping = descriptorMapping;
 
     mObjectTracker = new ObjectTracker();
     mApplication = wrapper;
     mScriptingEnvironment = scriptingEnvironment;
+    mExtensionCommands = extensions;
   }
 
   @Override
@@ -91,6 +126,13 @@ public class InspectorSonarPlugin implements SonarPlugin {
     connection.receive("setHighlighted", mSetHighlighted);
     connection.receive("setSearchActive", mSetSearchActive);
     connection.receive("getSearchResults", mGetSearchResults);
+
+    if (mExtensionCommands != null) {
+      for (ExtensionCommand extensionCommand : mExtensionCommands) {
+        connection.receive(
+            extensionCommand.command(), extensionCommand.receiver(mObjectTracker, mConnection));
+      }
+    }
   }
 
   @Override
