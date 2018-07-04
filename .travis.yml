@@ -1,5 +1,5 @@
 os: osx
-osx_image: xcode9.3
+osx_image: xcode9.4
 
 matrix:
   include:
@@ -58,4 +58,5 @@ matrix:
 
       script:
         - cd iOS/Sample
-        - xcodebuild clean build -workspace Sample.xcworkspace -scheme Pods-Sample -sdk iphonesimulator11.2
+        - xcodebuild -showsdks
+        - xcodebuild clean build -workspace Sample.xcworkspace -scheme Pods-Sample -sdk iphonesimulator11.4
