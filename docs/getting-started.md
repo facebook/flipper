@@ -83,7 +83,6 @@ target 'MyApp' do
         end
     end
 end
-
 ```
 
 and install the dependencies by running `pod install`. When you open the Xcode workspace file for your app, you now can import and initialize Sonar in your AppDelegate.
