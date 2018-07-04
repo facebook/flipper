@@ -59,3 +59,28 @@ matrix:
       script:
         - cd iOS/Sample
         - xcodebuild clean build -workspace Sample.xcworkspace -scheme Pods-Sample -sdk iphonesimulator11.2
+
+    - language: android
+        os: linux
+        android:
+          components:
+            # Uncomment the lines below if you want to
+            # use the latest revision of Android SDK Tools
+            # - tools
+            # - platform-tools
+
+            # The BuildTools version used by your project
+            - build-tools-27.0.3
+
+            # The SDK version used to compile your project
+            - android-27
+
+            # Additional components
+            - extra-google-google_play_services
+            - extra-google-m2repository
+            - extra-android-m2repository
+            - addon-google_apis-google-27
+
+            # Specify at least one system image,
+            # if you need to run emulator(s) during your tests
+            - sys-img-armeabi-v7a-android-27
