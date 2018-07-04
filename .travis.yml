@@ -1,5 +1,5 @@
 os: osx
-osx_image: xcode9.3
+osx_image: xcode9.4
 
 matrix:
   include:
@@ -58,6 +58,7 @@ matrix:
 
       script:
         - cd iOS/Sample
+<<<<<<< HEAD
         - xcodebuild clean build -workspace Sample.xcworkspace -scheme Pods-Sample -sdk iphonesimulator11.2
 
     - language: android
@@ -84,3 +85,7 @@ matrix:
             # Specify at least one system image,
             # if you need to run emulator(s) during your tests
             - sys-img-armeabi-v7a-android-27
+=======
+        - xcodebuild -showsdks
+        - xcodebuild clean build -workspace Sample.xcworkspace -scheme Pods-Sample -sdk iphonesimulator11.4
+>>>>>>> ae196fa12acb39da02e37d21c8745890685a30ac

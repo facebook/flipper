@@ -63,17 +63,14 @@ public class MyApplication extends Application {
 To integrate with an iOS app, you can use [CocoaPods](https://cocoapods.org). Add the mobile Sonar SDK and its dependencies to your `Podfile`:
 
 ```ruby
-<<<<<<< HEAD
-
-project 'Sample.xcodeproj'
-=======
 project 'MyApp.xcodeproj'
->>>>>>> 5163f8b9a3c3cc3fbcd067257c42c69144135b44
 source 'https://github.com/facebook/Sonar.git'
 source 'https://github.com/CocoaPods/Specs'
 # Uncomment the next line to define a global platform for your project
 swift_version = "4.1"
+
 target 'MyApp' do
+
   pod 'SonarKit', '~>0.0.1'
   post_install do |installer|
 
