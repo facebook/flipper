@@ -48,23 +48,17 @@ work-arounds while we're working on a solution.</p>
 </code></pre>
 <h3><a class="anchor" aria-hidden="true" id="setup-your-ios-app"></a><a href="#setup-your-ios-app" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Setup your iOS app</h3>
 <p>To integrate with an iOS app, you can use <a href="https://cocoapods.org">CocoaPods</a>. Add the mobile Sonar SDK and its dependencies to your <code>Podfile</code>:</p>
-<pre><code class="hljs css ruby">platform <span class="hljs-symbol">:ios</span>, <span class="hljs-string">'8.0'</span>
-swift_version = <span class="hljs-string">'4.1'</span>
+<pre><code class="hljs css ruby">project <span class="hljs-string">'MyApp.xcodeproj'</span>
+source <span class="hljs-string">'https://github.com/facebook/Sonar.git'</span>
+source <span class="hljs-string">'https://github.com/CocoaPods/Specs'</span>
+<span class="hljs-comment"># Uncomment the next line to define a global platform for your project</span>
+swift_version = <span class="hljs-string">"4.1"</span>
 
 target <span class="hljs-string">'MyApp'</span> <span class="hljs-keyword">do</span>
 
-  pod <span class="hljs-string">'RSocket'</span>, <span class="hljs-symbol">:podspec</span> =&gt; <span class="hljs-string">'https://raw.githubusercontent.com/facebook/Sonar/master/iOS/third-party-podspecs/RSocket.podspec'</span>
-  pod <span class="hljs-string">'DoubleConversion'</span>, <span class="hljs-symbol">:podspec</span> =&gt; <span class="hljs-string">'https://raw.githubusercontent.com/facebook/Sonar/master/iOS/third-party-podspecs/DoubleConversion.podspec'</span>
-  pod <span class="hljs-string">'glog'</span>, <span class="hljs-symbol">:podspec</span> =&gt; <span class="hljs-string">'https://raw.githubusercontent.com/facebook/Sonar/master/iOS/third-party-podspecs/glog.podspec'</span>
-  pod <span class="hljs-string">'Folly'</span>, <span class="hljs-symbol">:podspec</span> =&gt; <span class="hljs-string">'https://raw.githubusercontent.com/facebook/Sonar/master/iOS/third-party-podspecs/Folly.podspec'</span>
-  pod <span class="hljs-string">'PeerTalk'</span>, <span class="hljs-symbol">:podspec</span> =&gt; <span class="hljs-string">'https://raw.githubusercontent.com/facebook/Sonar/master/iOS/third-party-podspecs/PeerTalk.podspec'</span>
-  pod <span class="hljs-string">'Yoga'</span>,<span class="hljs-string">'~&gt;1.8.1'</span>, <span class="hljs-symbol">:modular_headers</span> =&gt; <span class="hljs-literal">true</span>
-  pod <span class="hljs-string">'Sonar'</span>, <span class="hljs-symbol">:podspec</span> =&gt; <span class="hljs-string">'https://raw.githubusercontent.com/facebook/Sonar/master/xplat/Sonar/Sonar.podspec'</span>
-  pod <span class="hljs-string">'SonarKit'</span>, <span class="hljs-symbol">:podspec</span> =&gt; <span class="hljs-string">'https://raw.githubusercontent.com/facebook/Sonar/master/iOS/SonarKit.podspec'</span>
-  pod <span class="hljs-string">'SonarKit/SonarKitLayoutComponentKitSupport'</span>, <span class="hljs-symbol">:podspec</span> =&gt; <span class="hljs-string">'https://raw.githubusercontent.com/facebook/Sonar/master/iOS/SonarKit.podspec'</span>
-  pod <span class="hljs-string">'SonarKit/SKIOSNetworkPlugin'</span>, <span class="hljs-symbol">:podspec</span> =&gt; <span class="hljs-string">'https://raw.githubusercontent.com/facebook/Sonar/master/iOS/SonarKit.podspec'</span>
-  pod <span class="hljs-string">'ComponentKit'</span>, <span class="hljs-symbol">:podspec</span> =&gt; <span class="hljs-string">'https://raw.githubusercontent.com/facebook/Sonar/master/iOS/third-party-podspecs/ComponentKit.podspec'</span>
+  pod <span class="hljs-string">'SonarKit'</span>, <span class="hljs-string">'~&gt;0.0.1'</span>
   post_install <span class="hljs-keyword">do</span> <span class="hljs-params">|installer|</span>
+
         installer.pods_project.targets.each <span class="hljs-keyword">do</span> <span class="hljs-params">|target|</span>
             <span class="hljs-keyword">if</span> [<span class="hljs-string">'YogaKit'</span>].<span class="hljs-keyword">include</span>? target.name
                 target.build_configurations.each <span class="hljs-keyword">do</span> <span class="hljs-params">|config|</span>
@@ -94,7 +88,7 @@ target <span class="hljs-string">'MyApp'</span> <span class="hljs-keyword">do</s
 </code></pre>
 <div class='warning'>
 <ul>
-<li>We haven't released the dependency to CocoaPods, because we weren't able to successfully validate the podspec of SonarKit. You could help us out by fixing this <a href="https://github.com/facebook/Sonar/issues/11">issue</a> by submitting a PR to the repo.</li>
+<li>We haven't released the dependency to CocoaPods yet, here is the <a href="https://github.com/facebook/Sonar/issues/132">issue</a> by which you can track.</li>
 <li>If you do not use CocoaPods as a dependency management tool then currently there is no way to integrate SonarKit other than manually including all the dependencies and building it.</li>
 <li>For Android, Sonar works with both emulators and physical devices connected through USB. However on iOS, we don't yet support physical devices.</li>
 <li>Also Sonar doesn't work with swift projects as its written in C++ and had C++ dependencies. But we are working on supporting sonar for swift projects. You can find this issue <a href="https://github.com/facebook/Sonar/issues/13">here</a></li>
