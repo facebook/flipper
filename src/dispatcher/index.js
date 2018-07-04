@@ -8,7 +8,13 @@
 import androidDevice from './androidDevice';
 import iOSDevice from './iOSDevice';
 import application from './application';
+import tracking from './tracking';
+import server from './server';
+
+import type Logger from '../fb-stubs/Logger.js';
 import type {Store} from '../reducers/index.js';
 
-export default (store: Store) =>
-  [application, androidDevice, iOSDevice].forEach(fn => fn(store));
+export default (store: Store, logger: Logger) =>
+  [application, androidDevice, iOSDevice, tracking, server].forEach(fn =>
+    fn(store, logger),
+  );

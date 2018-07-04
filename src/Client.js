@@ -7,7 +7,8 @@
 
 import type {SonarPlugin} from './plugin.js';
 import type {App} from './App.js';
-import type BaseDevice from './devices/BaseDevice.js';
+import type Logger from './fb-stubs/Logger.js';
+
 import plugins from './plugins/index.js';
 import {ReactiveSocket, PartialResponder} from 'rsocket-core';
 
@@ -26,7 +27,12 @@ export type ClientQuery = {|
 type RequestMetadata = {method: string, id: number, params: ?Object};
 
 export default class Client extends EventEmitter {
-  constructor(app: App, id: string, query: ClientQuery, conn: ReactiveSocket) {
+  constructor(
+    id: string,
+    query: ClientQuery,
+    conn: ReactiveSocket,
+    logger: Logger,
+  ) {
     super();
 
     this.connected = true;
@@ -35,7 +41,7 @@ export default class Client extends EventEmitter {
     this.id = id;
     this.query = query;
     this.messageIdCounter = 0;
-    this.app = app;
+    this.logger = logger;
 
     this.broadcastCallbacks = new Map();
     this.requestCallbacks = new Map();
@@ -81,16 +87,6 @@ export default class Client extends EventEmitter {
       metadata: RequestMetadata,
     |},
   >;
-
-  getDevice(): ?BaseDevice {
-    const {device_id} = this.query;
-
-    if (device_id == null) {
-      return null;
-    } else {
-      return this.app.getDevice(device_id);
-    }
-  }
 
   supportsPlugin(Plugin: Class<SonarPlugin<>>): boolean {
     return this.plugins.includes(Plugin.id);
@@ -193,7 +189,7 @@ export default class Client extends EventEmitter {
   }
 
   toJSON() {
-    return null;
+    return `<Client#${this.id}>`;
   }
 
   subscribe(
@@ -257,7 +253,7 @@ export default class Client extends EventEmitter {
   finishTimingRequestResponse(data: RequestMetadata) {
     const mark = this.getPerformanceMark(data);
     const logEventName = this.getLogEventName(data);
-    this.app.logger.trackTimeSince(mark, logEventName);
+    this.logger.trackTimeSince(mark, logEventName);
   }
 
   getPerformanceMark(data: RequestMetadata): string {

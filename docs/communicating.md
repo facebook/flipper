@@ -4,7 +4,7 @@ title: Device Communication
 sidebar_label: Device Communication
 ---
 
-To start communicating with a client your plugin must implement the init function. Once this function has been called the active client can also be accessed via `this.client`. This `id` of the plugin in JavaScript much match the native plugin `id` to allow for them to communicate.
+To start communicating with a client your plugin must implement the init function. Once this function has been called the active client can also be accessed via `this.client`. This `id` of the plugin in JavaScript must match the native plugin `id` to allow for them to communicate.
 
 ```javascript
 class extends SonarPlugin {

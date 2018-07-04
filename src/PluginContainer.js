@@ -36,8 +36,9 @@ type Props = {
   logger: LogManager,
   selectedDeviceIndex: number,
   selectedPlugin: ?string,
+  selectedApp: ?string,
   pluginStates: Object,
-  client: ?Client,
+  clients: Array<Client>,
   devices: Array<BaseDevice>,
   setPluginState: (payload: {
     pluginKey: string,
@@ -101,13 +102,15 @@ class PluginContainer extends Component<Props, State> {
     if (activePlugin) {
       pluginKey = `${device.serial}#${activePlugin.id}`;
     } else {
+      target = props.clients.find(
+        (client: Client) => client.id === props.selectedApp,
+      );
       activePlugin = plugins.find(
         (p: Class<SonarPlugin<>>) => p.id === props.selectedPlugin,
       );
-      if (!activePlugin || !props.client) {
+      if (!activePlugin || !target) {
         return null;
       }
-      target = props.client;
       pluginKey = `${target.id}#${activePlugin.id}`;
     }
 
@@ -161,13 +164,16 @@ class PluginContainer extends Component<Props, State> {
 export default connect(
   ({
     application: {rightSidebarVisible, rightSidebarAvailable},
-    connections: {selectedPlugin, devices, selectedDeviceIndex},
+    connections: {selectedPlugin, devices, selectedDeviceIndex, selectedApp},
     pluginStates,
+    server: {clients},
   }) => ({
     selectedPlugin,
     devices,
     selectedDeviceIndex,
     pluginStates,
+    selectedApp,
+    clients,
   }),
   {
     setPluginState,

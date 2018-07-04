@@ -13,7 +13,9 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.Nullable;
 
-class ObjectTracker {
+public class ObjectTracker {
+  ObjectTracker() {}
+
   private final Map<String, WeakReference<Object>> mObjects = new HashMap<>();
 
   void put(String id, Object obj) {
@@ -21,7 +23,7 @@ class ObjectTracker {
   }
 
   @Nullable
-  Object get(String id) {
+  public Object get(String id) {
     final WeakReference<Object> weakObj = mObjects.get(id);
     if (weakObj == null) {
       return null;
