@@ -11,6 +11,10 @@ const fs = require('fs');
 const compilePlugins = require('./compilePlugins.js');
 const os = require('os');
 
+if (!process.env.ANDROID_HOME) {
+  process.env.ANDROID_HOME = '/opt/android_sdk';
+}
+
 // ensure .sonar folder and config exist
 const sonarDir = path.join(os.homedir(), '.sonar');
 if (!fs.existsSync(sonarDir)) {

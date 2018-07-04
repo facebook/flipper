@@ -7,6 +7,8 @@
 
 import type {ChildProcess} from 'child_process';
 import type {Store} from '../reducers/index.js';
+import type Logger from '../fb-stubs/Logger.js';
+
 import child_process from 'child_process';
 import IOSDevice from '../devices/IOSDevice';
 
@@ -49,7 +51,7 @@ function querySimulatorDevices(): Promise<IOSDeviceMap> {
   });
 }
 
-export default (store: Store) => {
+export default (store: Store, logger: Logger) => {
   // monitoring iOS devices only available on MacOS.
   if (process.platform !== 'darwin') {
     return;
