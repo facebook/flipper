@@ -63,18 +63,20 @@ public class MyApplication extends Application {
 To integrate with an iOS app, you can use [CocoaPods](https://cocoapods.org). Add the mobile Sonar SDK and its dependencies to your `Podfile`:
 
 ```ruby
+<<<<<<< HEAD
 
 project 'Sample.xcodeproj'
+=======
+project 'MyApp.xcodeproj'
+>>>>>>> 5163f8b9a3c3cc3fbcd067257c42c69144135b44
 source 'https://github.com/facebook/Sonar.git'
 source 'https://github.com/CocoaPods/Specs'
 # Uncomment the next line to define a global platform for your project
 swift_version = "4.1"
-
-
-target 'Sample' do
-
+target 'MyApp' do
   pod 'SonarKit', '~>0.0.1'
   post_install do |installer|
+
         installer.pods_project.targets.each do |target|
             if ['YogaKit'].include? target.name
                 target.build_configurations.each do |config|
@@ -106,6 +108,7 @@ and install the dependencies by running `pod install`. When you open the Xcode w
 ```
 <div class='warning'>
 
+* We haven't released the dependency to CocoaPods yet, here is the [issue](https://github.com/facebook/Sonar/issues/132) by which you can track.
 * If you do not use CocoaPods as a dependency management tool then currently there is no way to integrate SonarKit other than manually including all the dependencies and building it.
 * For Android, Sonar works with both emulators and physical devices connected through USB. However on iOS, we don't yet support physical devices.
 * Also Sonar doesn't work with swift projects as its written in C++ and had C++ dependencies. But we are working on supporting sonar for swift projects. You can find this issue [here](https://github.com/facebook/Sonar/issues/13)

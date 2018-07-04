@@ -58,4 +58,4 @@ matrix:
 
       script:
         - cd iOS/Sample
-        - xcodebuild clean build -workspace Sample.xcworkspace -scheme Pods-Sample
+        - xcodebuild clean build -workspace Sample.xcworkspace -scheme Pods-Sample -sdk iphonesimulator11.2

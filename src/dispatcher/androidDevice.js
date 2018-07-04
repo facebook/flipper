@@ -9,6 +9,7 @@ import AndroidDevice from '../devices/AndroidDevice';
 import child_process from 'child_process';
 import type {Store} from '../reducers/index.js';
 import type BaseDevice from '../devices/BaseDevice';
+import type Logger from '../fb-stubs/Logger.js';
 const adb = require('adbkit-fb');
 
 function createDecive(client, device): Promise<AndroidDevice> {
@@ -47,7 +48,7 @@ function getRunningEmulatorName(id: string): Promise<?string> {
   });
 }
 
-export default (store: Store) => {
+export default (store: Store, logger: Logger) => {
   const client = adb.createClient();
 
   // get emulators
