@@ -23,6 +23,21 @@ public class SharedPreferencesSonarPlugin implements SonarPlugin {
 
   private SonarConnection mConnection;
   private final SharedPreferences mSharedPreferences;
+  private final SharedPreferences.OnSharedPreferenceChangeListener onSharedPreferenceChangeListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+      if (mConnection != null) {
+        mConnection.send(
+            "sharedPreferencesChange",
+            new SonarObject.Builder()
+                .put("name", key)
+                .put("deleted", !mSharedPreferences.contains(key))
+                .put("time", System.currentTimeMillis())
+                .put("value", mSharedPreferences.getAll().get(key))
+                .build());
+      }
+    }
+  };
 
   /**
    * Creates a {@link android.content.SharedPreferences} plugin for Sonar
@@ -54,23 +69,7 @@ public class SharedPreferencesSonarPlugin implements SonarPlugin {
    */
   public SharedPreferencesSonarPlugin(Context context, String name, int mode) {
     mSharedPreferences = context.getSharedPreferences(name, mode);
-
-    mSharedPreferences.registerOnSharedPreferenceChangeListener(
-        new SharedPreferences.OnSharedPreferenceChangeListener() {
-          @Override
-          public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-            if (mConnection != null) {
-              mConnection.send(
-                  "sharedPreferencesChange",
-                  new SonarObject.Builder()
-                      .put("name", key)
-                      .put("deleted", !mSharedPreferences.contains(key))
-                      .put("time", System.currentTimeMillis())
-                      .put("value", mSharedPreferences.getAll().get(key))
-                      .build());
-            }
-          }
-        });
+    mSharedPreferences.registerOnSharedPreferenceChangeListener(onSharedPreferenceChangeListener);
   }
 
   @Override
