@@ -60,6 +60,7 @@ matrix:
         - cd iOS/Sample
         - xcodebuild -showsdks
         - xcodebuild clean build -workspace Sample.xcworkspace -scheme Pods-Sample -sdk iphonesimulator11.4
+
     - language: android
         os: linux
         before_cache:
