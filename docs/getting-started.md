@@ -105,10 +105,7 @@ and install the dependencies by running `pod install`. When you open the Xcode w
 ```
 <div class='warning'>
 
-<<<<<<< HEAD
-=======
 * We haven't released the dependency to CocoaPods yet, here is the [issue](https://github.com/facebook/Sonar/issues/132) by which you can track.
->>>>>>> 5163f8b9a3c3cc3fbcd067257c42c69144135b44
 * If you do not use CocoaPods as a dependency management tool then currently there is no way to integrate SonarKit other than manually including all the dependencies and building it.
 * For Android, Sonar works with both emulators and physical devices connected through USB. However on iOS, we don't yet support physical devices.
 * Also Sonar doesn't work with swift projects as its written in C++ and had C++ dependencies. But we are working on supporting sonar for swift projects. You can find this issue [here](https://github.com/facebook/Sonar/issues/13)
