@@ -134,7 +134,6 @@ target_include_directories(${PACKAGE_NAME} PRIVATE
     ${DOUBLECONVERSION_DIR})
 
 
-set(LIBEXTRA_PATH /Users/prit91/LocalDevTesting/sonar-upstream-proper/Sonar/android/build/third-party-ndk/LibEvent/.externalNativeBuild/cmake/debug/${ANDROID_ABI}/lib)
 set(OPENSSL_LINK_DIRECTORIES ${PROJECT_SOURCE_DIR}/../OpenSSL/libs/${ANDROID_ABI}/)
 find_path(OPENSSL_LIBRARY libssl.so HINTS ${OPENSSL_LINK_DIRECTORIES})
 
