@@ -62,7 +62,7 @@ public class InspectorSonarPluginTest {
   @Test
   public void testOnConnect() throws Exception {
     final InspectorSonarPlugin plugin =
-        new InspectorSonarPlugin(mApp, mDescriptorMapping, mScriptingEnvironment);
+        new InspectorSonarPlugin(mApp, mDescriptorMapping, mScriptingEnvironment, null);
     final SonarConnection connection = new SonarConnectionMock();
 
     plugin.onConnect(connection);
@@ -72,7 +72,7 @@ public class InspectorSonarPluginTest {
   @Test
   public void testOnDisconnect() throws Exception {
     final InspectorSonarPlugin plugin =
-        new InspectorSonarPlugin(mApp, mDescriptorMapping, mScriptingEnvironment);
+        new InspectorSonarPlugin(mApp, mDescriptorMapping, mScriptingEnvironment, null);
     final SonarConnection connection = new SonarConnectionMock();
 
     plugin.onConnect(connection);
@@ -83,7 +83,7 @@ public class InspectorSonarPluginTest {
   @Test
   public void testGetRoot() throws Exception {
     final InspectorSonarPlugin plugin =
-        new InspectorSonarPlugin(mApp, mDescriptorMapping, mScriptingEnvironment);
+        new InspectorSonarPlugin(mApp, mDescriptorMapping, mScriptingEnvironment, null);
     final SonarResponderMock responder = new SonarResponderMock();
     final SonarConnectionMock connection = new SonarConnectionMock();
     plugin.onConnect(connection);
@@ -109,7 +109,7 @@ public class InspectorSonarPluginTest {
   @Test
   public void testGetNodes() throws Exception {
     final InspectorSonarPlugin plugin =
-        new InspectorSonarPlugin(mApp, mDescriptorMapping, mScriptingEnvironment);
+        new InspectorSonarPlugin(mApp, mDescriptorMapping, mScriptingEnvironment, null);
     final SonarResponderMock responder = new SonarResponderMock();
     final SonarConnectionMock connection = new SonarConnectionMock();
     plugin.onConnect(connection);
@@ -145,7 +145,7 @@ public class InspectorSonarPluginTest {
   @Test
   public void testGetNodesThatDontExist() throws Exception {
     final InspectorSonarPlugin plugin =
-        new InspectorSonarPlugin(mApp, mDescriptorMapping, mScriptingEnvironment);
+        new InspectorSonarPlugin(mApp, mDescriptorMapping, mScriptingEnvironment, null);
     final SonarResponderMock responder = new SonarResponderMock();
     final SonarConnectionMock connection = new SonarConnectionMock();
     plugin.onConnect(connection);
@@ -171,7 +171,7 @@ public class InspectorSonarPluginTest {
   @Test
   public void testSetData() throws Exception {
     final InspectorSonarPlugin plugin =
-        new InspectorSonarPlugin(mApp, mDescriptorMapping, mScriptingEnvironment);
+        new InspectorSonarPlugin(mApp, mDescriptorMapping, mScriptingEnvironment, null);
     final SonarConnectionMock connection = new SonarConnectionMock();
     final SonarResponderMock responder = new SonarResponderMock();
     plugin.onConnect(connection);
@@ -207,7 +207,7 @@ public class InspectorSonarPluginTest {
   @Test
   public void testSetHighlighted() throws Exception {
     final InspectorSonarPlugin plugin =
-        new InspectorSonarPlugin(mApp, mDescriptorMapping, mScriptingEnvironment);
+        new InspectorSonarPlugin(mApp, mDescriptorMapping, mScriptingEnvironment, null);
     final SonarConnectionMock connection = new SonarConnectionMock();
     final SonarResponderMock responder = new SonarResponderMock();
     plugin.onConnect(connection);
@@ -236,7 +236,7 @@ public class InspectorSonarPluginTest {
   @Test
   public void testHitTest() throws Exception {
     final InspectorSonarPlugin plugin =
-        new InspectorSonarPlugin(mApp, mDescriptorMapping, mScriptingEnvironment);
+        new InspectorSonarPlugin(mApp, mDescriptorMapping, mScriptingEnvironment, null);
     final SonarConnectionMock connection = new SonarConnectionMock();
     plugin.onConnect(connection);
 
@@ -273,7 +273,7 @@ public class InspectorSonarPluginTest {
   @Test
   public void testSetSearchActive() throws Exception {
     final InspectorSonarPlugin plugin =
-        new InspectorSonarPlugin(mApp, mDescriptorMapping, mScriptingEnvironment);
+        new InspectorSonarPlugin(mApp, mDescriptorMapping, mScriptingEnvironment, null);
     final SonarConnectionMock connection = new SonarConnectionMock();
     final SonarResponderMock responder = new SonarResponderMock();
     plugin.onConnect(connection);
@@ -295,7 +295,7 @@ public class InspectorSonarPluginTest {
   @Test(expected = AssertionError.class)
   public void testNullChildThrows() throws Exception {
     final InspectorSonarPlugin plugin =
-        new InspectorSonarPlugin(mApp, mDescriptorMapping, mScriptingEnvironment);
+        new InspectorSonarPlugin(mApp, mDescriptorMapping, mScriptingEnvironment, null);
     final SonarResponderMock responder = new SonarResponderMock();
     final SonarConnectionMock connection = new SonarConnectionMock();
     plugin.onConnect(connection);

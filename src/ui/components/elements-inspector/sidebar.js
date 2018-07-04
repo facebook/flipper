@@ -12,6 +12,7 @@ import ManagedDataInspector from '../data-inspector/ManagedDataInspector.js';
 import {Component} from 'react';
 import {Console} from '../console';
 import {GK} from 'sonar';
+import SidebarExtensions from '../../../fb-stubs/LayoutInspectorSidebarExtensions.js';
 
 const deepEqual = require('deep-equal');
 
@@ -109,7 +110,10 @@ export class InspectorSidebar extends Component<Props, State> {
       return null;
     }
 
-    const sections = [];
+    const sections = SidebarExtensions.map(ext =>
+      ext(this.props.client, element.id),
+    );
+
     for (const key in element.data) {
       sections.push(
         <InspectorSidebarSection

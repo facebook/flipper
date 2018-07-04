@@ -5,7 +5,6 @@
  * @format
  */
 
-import type {App} from './App.js';
 import type {SecureServerConfig} from './utils/CertificateProvider';
 import type Logger from './fb-stubs/Logger';
 import type {ClientQuery} from './Client.js';
@@ -40,14 +39,14 @@ export default class Server extends EventEmitter {
   insecureServer: RSocketServer;
   certificateProvider: CertificateProvider;
   connectionTracker: ConnectionTracker;
-  app: App;
+  logger: Logger;
 
-  constructor(app: App) {
+  constructor(logger: Logger) {
     super();
-    this.app = app;
+    this.logger = logger;
     this.connections = new Map();
-    this.certificateProvider = new CertificateProvider(this, app.logger);
-    this.connectionTracker = new ConnectionTracker(app.logger);
+    this.certificateProvider = new CertificateProvider(this, logger);
+    this.connectionTracker = new ConnectionTracker(logger);
     this.init();
   }
 
@@ -186,7 +185,7 @@ export default class Server extends EventEmitter {
     const id = `${query.app}-${query.os}-${query.device}`;
     console.warn(`Device connected: ${id}`, 'connection');
 
-    const client = new Client(this.app, id, query, conn);
+    const client = new Client(id, query, conn, this.logger);
 
     const info = {
       client,
@@ -235,6 +234,7 @@ export default class Server extends EventEmitter {
       info.client.emit('close');
       this.connections.delete(id);
       this.emit('clients-change');
+      this.emit('removed-client', id);
     }
   }
 }

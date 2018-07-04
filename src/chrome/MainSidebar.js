@@ -221,11 +221,13 @@ class MainSidebar extends Component<MainSidebarProps> {
 export default connect(
   ({
     connections: {devices, selectedDeviceIndex, selectedPlugin, selectedApp},
+    server: {clients},
   }) => ({
     devices,
     selectedDeviceIndex,
     selectedPlugin,
     selectedApp,
+    clients,
   }),
   {
     selectPlugin,

@@ -16,7 +16,7 @@ list(APPEND dir_list ${FOLLY_DIR}/memory/detail)
 
 set(BOOST_DIR ../boost/boost_1_63_0/)
 set(GLOG_DIR ../glog/)
-set(OPENSSL_DIR ../OpenSSL/openssl-android-1.0.0/)
+set(OPENSSL_DIR ../OpenSSL/openssl-1.1.0h/)
 set(LIBEVENT_DIR ../LibEvent/libevent-release-2.1.9/)
 set(DOUBLECONVERSION_DIR ../double-conversion/double-conversion-3.0.0/)
 
@@ -24,7 +24,7 @@ list(APPEND dir_list ${BOOST_DIR})
 list(APPEND dir_list ${BOOST_DIR}/../)
 list(APPEND dir_list ${LIBEVENT_DIR}/)
 list(APPEND dir_list ${LIBEVENT_DIR}/include/)
-list(APPEND dir_list ${OPENSSL_DIR})
+list(APPEND dir_list ${OPENSSL_DIR}/include/)
 
 include_directories(${dir_list})
 
@@ -121,9 +121,7 @@ add_subdirectory(${GLOG_DIR} ${libglog_build_DIR})
 add_subdirectory(${DOUBLECONVERSION_DIR} ${doubleconversion_build_DIR})
 add_subdirectory(${LIBEVENT_DIR} ${libevent_build_DIR})
 target_include_directories(${PACKAGE_NAME} PRIVATE
-    ${OPENSSL_DIR}/jni/openssl-android/
-    ${OPENSSL_DIR}/jni/openssl-android/include
-    ${OPENSSL_DIR}/jni/openssl-android/include/openssl
+    ${OPENSSL_DIR}/include/
     ${BOOST_DIR}
     ${BOOST_DIR}/../
     ${GLOG_DIR}/../

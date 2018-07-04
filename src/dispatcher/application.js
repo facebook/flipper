@@ -7,8 +7,9 @@
 
 import {remote} from 'electron';
 import type {Store} from '../reducers/index.js';
+import type Logger from '../fb-stubs/Logger.js';
 
-export default (store: Store) => {
+export default (store: Store, logger: Logger) => {
   const currentWindow = remote.getCurrentWindow();
   currentWindow.on('focus', () =>
     store.dispatch({

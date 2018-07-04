@@ -10,7 +10,9 @@ import ReactDOM from 'react-dom';
 import {ContextMenuProvider} from 'sonar';
 import {precachedIcons} from './utils/icons.js';
 import GK from './fb-stubs/GK.js';
+import Logger from './fb-stubs/Logger.js';
 import App from './App.js';
+import BugReporter from './fb-stubs/BugReporter.js';
 import {createStore} from 'redux';
 import reducers from './reducers/index.js';
 import dispatcher from './dispatcher/index.js';
@@ -22,15 +24,16 @@ const store = createStore(
   window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(),
 );
 
-dispatcher(store);
-
+const logger = new Logger();
+const bugReporter = new BugReporter(logger);
+dispatcher(store, logger);
 GK.init();
 setupMenuBar();
 
 const AppFrame = () => (
   <ContextMenuProvider>
     <Provider store={store}>
-      <App />
+      <App logger={logger} bugReporter={bugReporter} />
     </Provider>
   </ContextMenuProvider>
 );
