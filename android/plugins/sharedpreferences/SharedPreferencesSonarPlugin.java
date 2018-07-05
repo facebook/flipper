@@ -26,16 +26,17 @@ public class SharedPreferencesSonarPlugin implements SonarPlugin {
   private final SharedPreferences.OnSharedPreferenceChangeListener onSharedPreferenceChangeListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-      if (mConnection != null) {
-        mConnection.send(
-            "sharedPreferencesChange",
-            new SonarObject.Builder()
-                .put("name", key)
-                .put("deleted", !mSharedPreferences.contains(key))
-                .put("time", System.currentTimeMillis())
-                .put("value", mSharedPreferences.getAll().get(key))
-                .build());
+      if (mConnection == null) {
+        return;
       }
+      mConnection.send(
+          "sharedPreferencesChange",
+          new SonarObject.Builder()
+              .put("name", key)
+              .put("deleted", !mSharedPreferences.contains(key))
+              .put("time", System.currentTimeMillis())
+              .put("value", mSharedPreferences.getAll().get(key))
+              .build());
     }
   };
 
