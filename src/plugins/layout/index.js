@@ -24,15 +24,20 @@ import {
   SonarSidebar,
 } from 'sonar';
 
+import {AXElementsInspector} from '../../fb-stubs/AXLayoutExtender.js';
+import config from '../../fb-stubs/config.js';
+
 // $FlowFixMe
 import debounce from 'lodash.debounce';
 
 export type InspectorState = {|
   initialised: boolean,
   selected: ?ElementID,
+  selectedAX: ?ElementID,
   root: ?ElementID,
   elements: {[key: ElementID]: Element},
   isSearchActive: boolean,
+  inAXMode: boolean,
   searchResults: ?ElementSearchResultSet,
   outstandingSearchQuery: ?string,
 |};
@@ -140,8 +145,10 @@ export default class Layout extends SonarPlugin<InspectorState> {
     elements: {},
     initialised: false,
     isSearchActive: false,
+    inAXMode: false,
     root: null,
     selected: null,
+    selectedAX: null,
     searchResults: null,
     outstandingSearchQuery: null,
   };
@@ -150,6 +157,12 @@ export default class Layout extends SonarPlugin<InspectorState> {
     SelectElement(state: InspectorState, {key}: SelectElementArgs) {
       return {
         selected: key,
+      };
+    },
+
+    SelectAXElement(state: InspectorState, {key}: SelectElementArgs) {
+      return {
+        selectedAX: key,
       };
     },
 
@@ -205,6 +218,10 @@ export default class Layout extends SonarPlugin<InspectorState> {
       {isSearchActive}: {isSearchActive: boolean},
     ) {
       return {isSearchActive};
+    },
+
+    SetAXMode(state: InspectorState, {inAXMode}: {inAXMode: boolean}) {
+      return {inAXMode};
     },
   };
 
@@ -481,8 +498,26 @@ export default class Layout extends SonarPlugin<InspectorState> {
     this.client.send('setSearchActive', {active: isSearchActive});
   };
 
+  onTestToggleAccessibility = () => {
+    const inAXMode = !this.state.inAXMode;
+    this.dispatchAction({inAXMode, type: 'SetAXMode'});
+    this.client
+      .call('testAccessibility', {active: inAXMode})
+      .then(({message}: {message: string}) => {
+        console.log(message);
+      });
+  };
+
   onElementSelected = debounce((key: ElementID) => {
     this.dispatchAction({key, type: 'SelectElement'});
+    this.client.send('setHighlighted', {id: key});
+    this.getNodes([key], true).then((elements: Array<Element>) => {
+      this.dispatchAction({elements, type: 'UpdateElements'});
+    });
+  });
+
+  onAXElementSelected = debounce((key: ElementID) => {
+    this.dispatchAction({key, type: 'SelectAXElement'});
     this.client.send('setHighlighted', {id: key});
     this.getNodes([key], true).then((elements: Array<Element>) => {
       this.dispatchAction({elements, type: 'UpdateElements'});
@@ -494,9 +529,12 @@ export default class Layout extends SonarPlugin<InspectorState> {
   });
 
   onDataValueChanged = (path: Array<string>, value: any) => {
-    this.client.send('setData', {id: this.state.selected, path, value});
+    const selected = this.state.inAXMode
+      ? this.state.selectedAX
+      : this.state.selected;
+    this.client.send('setData', {id: selected, path, value});
     this.props.logger.track('usage', 'layout:value-changed', {
-      id: this.state.selected,
+      id: selected,
       value: value,
       path: path,
     });
@@ -512,15 +550,41 @@ export default class Layout extends SonarPlugin<InspectorState> {
     ) : null;
   };
 
+  renderAXSidebar = () => {
+    return this.state.selectedAX != null ? (
+      <InspectorSidebar
+        element={this.state.elements[this.state.selectedAX]}
+        onValueChanged={this.onDataValueChanged}
+        client={this.client}
+      />
+    ) : null;
+  };
+
   render() {
     const {
       initialised,
       selected,
+      selectedAX,
       root,
       elements,
       isSearchActive,
+      inAXMode,
       outstandingSearchQuery,
     } = this.state;
+
+    const AXInspector = (
+      <AXElementsInspector
+        onElementSelected={this.onAXElementSelected}
+        onElementHovered={this.onElementHovered}
+        onElementExpanded={this.onElementExpanded}
+        onValueChanged={this.onDataValueChanged}
+        selected={selectedAX}
+        searchResults={this.state.searchResults}
+        root={root}
+        elements={elements}
+      />
+    );
+    const AXButtonVisible = AXInspector !== null;
 
     return (
       <FlexColumn fill={true}>
@@ -540,6 +604,23 @@ export default class Layout extends SonarPlugin<InspectorState> {
               }
             />
           </SearchIconContainer>
+          {AXButtonVisible ? (
+            <SearchIconContainer
+              onClick={this.onTestToggleAccessibility}
+              role="button"
+              tabIndex={-1}
+              title="Toggle accessibility mode within the LayoutInspector">
+              <Glyph
+                name="accessibility"
+                size={16}
+                color={
+                  inAXMode
+                    ? colors.macOSTitleBarIconSelected
+                    : colors.macOSTitleBarIconActive
+                }
+              />
+            </SearchIconContainer>
+          ) : null}
           <SearchBox tabIndex={-1}>
             <SearchIcon
               name="magnifying-glass"
@@ -567,8 +648,11 @@ export default class Layout extends SonarPlugin<InspectorState> {
               <LoadingIndicator />
             </Center>
           )}
+          {initialised && inAXMode ? AXInspector : null}
         </FlexRow>
-        <SonarSidebar>{this.renderSidebar()}</SonarSidebar>
+        <SonarSidebar>
+          {inAXMode ? this.renderAXSidebar() : this.renderSidebar()}
+        </SonarSidebar>
       </FlexColumn>
     );
   }
