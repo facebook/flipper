@@ -22,6 +22,7 @@ import {
   togglePluginManagerVisible,
 } from '../reducers/application.js';
 import DevicesButton from './DevicesButton.js';
+import ScreenCaptureButtons from './ScreenCaptureButtons.js';
 import AutoUpdateVersion from './AutoUpdateVersion.js';
 import config from '../fb-stubs/config.js';
 
@@ -71,6 +72,7 @@ class SonarTitleBar extends Component<Props> {
     return (
       <TitleBar focused={this.props.windowIsFocused} className="toolbar">
         <DevicesButton />
+        <ScreenCaptureButtons />
         <Spacer />
         {process.platform === 'darwin' ? <AutoUpdateVersion /> : null}
         {config.bugReportButtonVisible && (

@@ -10,16 +10,11 @@ import type {SonarDevicePlugin} from '../plugin.js';
 import {GK} from 'sonar';
 import logs from './logs/index.js';
 import cpu from './cpu/index.js';
-import screen from './screen/index.js';
 
 const plugins: Array<Class<SonarDevicePlugin<any>>> = [logs];
 
 if (GK.get('sonar_uiperf')) {
   plugins.push(cpu);
-}
-
-if (GK.get('sonar_screen_plugin')) {
-  plugins.push(screen);
 }
 
 export const devicePlugins = plugins;
