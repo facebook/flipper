@@ -22,20 +22,23 @@ import {
   SearchInput,
   SearchIcon,
   SonarSidebar,
+  VerticalRule,
 } from 'sonar';
 
 import {AXElementsInspector} from '../../fb-stubs/AXLayoutExtender.js';
-import config from '../../fb-stubs/config.js';
 
 // $FlowFixMe
 import debounce from 'lodash.debounce';
 
 export type InspectorState = {|
   initialised: boolean,
+  AXinitialised: boolean,
   selected: ?ElementID,
-  selectedAX: ?ElementID,
+  AXselected: ?ElementID,
   root: ?ElementID,
+  AXroot: ?ElementID,
   elements: {[key: ElementID]: Element},
+  AXelements: {[key: ElementID]: Element},
   isSearchActive: boolean,
   inAXMode: boolean,
   searchResults: ?ElementSearchResultSet,
@@ -143,12 +146,15 @@ export default class Layout extends SonarPlugin<InspectorState> {
 
   state = {
     elements: {},
+    AXelements: {},
     initialised: false,
+    AXinitialised: false,
     isSearchActive: false,
     inAXMode: false,
     root: null,
+    AXroot: null,
     selected: null,
-    selectedAX: null,
+    AXselected: null,
     searchResults: null,
     outstandingSearchQuery: null,
   };
@@ -162,7 +168,7 @@ export default class Layout extends SonarPlugin<InspectorState> {
 
     SelectAXElement(state: InspectorState, {key}: SelectElementArgs) {
       return {
-        selectedAX: key,
+        AXselected: key,
       };
     },
 
@@ -172,6 +178,18 @@ export default class Layout extends SonarPlugin<InspectorState> {
           ...state.elements,
           [key]: {
             ...state.elements[key],
+            expanded: expand,
+          },
+        },
+      };
+    },
+
+    ExpandAXElement(state: InspectorState, {expand, key}: ExpandElementArgs) {
+      return {
+        AXelements: {
+          ...state.AXelements,
+          [key]: {
+            ...state.AXelements[key],
             expanded: expand,
           },
         },
@@ -194,6 +212,22 @@ export default class Layout extends SonarPlugin<InspectorState> {
       return newState;
     },
 
+    ExpandAXElements(state: InspectorState, {elements}: ExpandElementsArgs) {
+      const expandedSet = new Set(elements);
+      const newState = {
+        AXelements: {
+          ...state.AXelements,
+        },
+      };
+      for (const key of Object.keys(state.AXelements)) {
+        newState.AXelements[key] = {
+          ...newState.AXelements[key],
+          expanded: expandedSet.has(key),
+        };
+      }
+      return newState;
+    },
+
     UpdateElements(state: InspectorState, {elements}: UpdateElementsArgs) {
       const updatedElements = state.elements;
 
@@ -209,8 +243,27 @@ export default class Layout extends SonarPlugin<InspectorState> {
       return {elements: updatedElements};
     },
 
+    UpdateAXElements(state: InspectorState, {elements}: UpdateElementsArgs) {
+      const updatedElements = state.AXelements;
+
+      for (const element of elements) {
+        const current = updatedElements[element.id] || {};
+        // $FlowFixMe
+        updatedElements[element.id] = {
+          ...current,
+          ...element,
+        };
+      }
+
+      return {AXelements: updatedElements};
+    },
+
     SetRoot(state: InspectorState, {root}: SetRootArgs) {
       return {root};
+    },
+
+    SetAXRoot(state: InspectorState, {root}: SetRootArgs) {
+      return {AXroot: root};
     },
 
     SetSearchActive(
@@ -240,7 +293,9 @@ export default class Layout extends SonarPlugin<InspectorState> {
   executeCommand(command: string) {
     return this.client.call('executeCommand', {
       command: command,
-      context: this.state.selected,
+      context: this.state.inAXMode
+        ? this.state.AXselected
+        : this.state.selected,
     });
   }
 
@@ -248,16 +303,23 @@ export default class Layout extends SonarPlugin<InspectorState> {
    * When opening the inspector for the first time, expand all elements that contain only 1 child
    * recursively.
    */
-  async performInitialExpand(element: Element): Promise<void> {
+  async performInitialExpand(element: Element, ax: boolean): Promise<void> {
     if (!element.children.length) {
       // element has no children so we're as deep as we can be
       return;
     }
 
-    this.dispatchAction({expand: true, key: element.id, type: 'ExpandElement'});
+    this.dispatchAction({
+      expand: true,
+      key: element.id,
+      type: ax ? 'ExpandAXElement' : 'ExpandElement',
+    });
 
-    return this.getChildren(element.id).then((elements: Array<Element>) => {
-      this.dispatchAction({elements, type: 'UpdateElements'});
+    return this.getChildren(element.id, ax).then((elements: Array<Element>) => {
+      this.dispatchAction({
+        elements,
+        type: ax ? 'UpdateAXElements' : 'UpdateElements',
+      });
 
       if (element.children.length >= 2) {
         // element has two or more children so we can stop expanding
@@ -265,7 +327,10 @@ export default class Layout extends SonarPlugin<InspectorState> {
       }
 
       return this.performInitialExpand(
-        this.state.elements[element.children[0]],
+        ax
+          ? this.state.AXelements[element.children[0]]
+          : this.state.elements[element.children[0]],
+        ax,
       );
     });
   }
@@ -330,9 +395,17 @@ export default class Layout extends SonarPlugin<InspectorState> {
     this.client.call('getRoot').then((element: Element) => {
       this.dispatchAction({elements: [element], type: 'UpdateElements'});
       this.dispatchAction({root: element.id, type: 'SetRoot'});
-      this.performInitialExpand(element).then(() => {
+      this.performInitialExpand(element, false).then(() => {
         this.props.logger.trackTimeSince('LayoutInspectorInitialize');
         this.setState({initialised: true});
+      });
+    });
+
+    this.client.call('getRoot').then((element: Element) => {
+      this.dispatchAction({elements: [element], type: 'UpdateAXElements'});
+      this.dispatchAction({root: element.id, type: 'SetAXRoot'});
+      this.performInitialExpand(element, true).then(() => {
+        this.setState({AXinitialised: true});
       });
     });
 
@@ -342,26 +415,30 @@ export default class Layout extends SonarPlugin<InspectorState> {
         this.invalidate(nodes.map(node => node.id)).then(
           (elements: Array<Element>) => {
             this.dispatchAction({elements, type: 'UpdateElements'});
+            // to be removed once trees are separate - will have own invalidate
+            this.dispatchAction({elements, type: 'UpdateAXElements'});
           },
         );
       },
     );
 
     this.client.subscribe('select', ({path}: {path: Array<ElementID>}) => {
-      this.getNodesAndDirectChildren(path).then((elements: Array<Element>) => {
-        const selected = path[path.length - 1];
+      this.getNodesAndDirectChildren(path, false).then(
+        (elements: Array<Element>) => {
+          const selected = path[path.length - 1];
 
-        this.dispatchAction({elements, type: 'UpdateElements'});
-        this.dispatchAction({key: selected, type: 'SelectElement'});
-        this.dispatchAction({isSearchActive: false, type: 'SetSearchActive'});
+          this.dispatchAction({elements, type: 'UpdateElements'});
+          this.dispatchAction({key: selected, type: 'SelectElement'});
+          this.dispatchAction({isSearchActive: false, type: 'SetSearchActive'});
 
-        for (const key of path) {
-          this.dispatchAction({expand: true, key, type: 'ExpandElement'});
-        }
+          for (const key of path) {
+            this.dispatchAction({expand: true, key, type: 'ExpandElement'});
+          }
 
-        this.client.send('setHighlighted', {id: selected});
-        this.client.send('setSearchActive', {active: false});
-      });
+          this.client.send('setHighlighted', {id: selected});
+          this.client.send('setSearchActive', {active: false});
+        },
+      );
     });
   }
 
@@ -370,7 +447,7 @@ export default class Layout extends SonarPlugin<InspectorState> {
       return Promise.resolve([]);
     }
 
-    return this.getNodes(ids, true).then((elements: Array<Element>) => {
+    return this.getNodes(ids, true, false).then((elements: Array<Element>) => {
       const children = elements
         .filter(element => {
           const prev = this.state.elements[element.id];
@@ -385,13 +462,16 @@ export default class Layout extends SonarPlugin<InspectorState> {
     });
   }
 
-  getNodesAndDirectChildren(ids: Array<ElementID>): Promise<Array<Element>> {
-    return this.getNodes(ids, false).then((elements: Array<Element>) => {
+  getNodesAndDirectChildren(
+    ids: Array<ElementID>,
+    ax: boolean,
+  ): Promise<Array<Element>> {
+    return this.getNodes(ids, false, ax).then((elements: Array<Element>) => {
       const children = elements
         .map(element => element.children)
         .reduce((acc, val) => acc.concat(val), []);
 
-      return Promise.all([elements, this.getNodes(children, false)]).then(
+      return Promise.all([elements, this.getNodes(children, false, ax)]).then(
         arr => {
           return arr.reduce((acc, val) => acc.concat(val), []);
         },
@@ -399,17 +479,24 @@ export default class Layout extends SonarPlugin<InspectorState> {
     });
   }
 
-  getChildren(key: ElementID): Promise<Array<Element>> {
-    return this.getNodes(this.state.elements[key].children, false);
+  getChildren(key: ElementID, ax: boolean): Promise<Array<Element>> {
+    return this.getNodes(
+      (ax ? this.state.AXelements : this.state.elements)[key].children,
+      false,
+      ax,
+    );
   }
 
   getNodes(
     ids: Array<ElementID> = [],
     force: boolean,
+    ax: boolean,
   ): Promise<Array<Element>> {
     if (!force) {
       ids = ids.filter(id => {
-        return this.state.elements[id] === undefined;
+        return (
+          (ax ? this.state.AXelements : this.state.elements)[id] === undefined
+        );
       });
     }
 
@@ -426,25 +513,35 @@ export default class Layout extends SonarPlugin<InspectorState> {
     }
   }
 
-  isExpanded(key: ElementID): boolean {
-    return this.state.elements[key].expanded;
+  isExpanded(key: ElementID, ax: boolean): boolean {
+    return ax
+      ? this.state.AXelements[key].expanded
+      : this.state.elements[key].expanded;
   }
 
-  expandElement = (key: ElementID): Promise<Array<Element>> => {
-    const expand = !this.isExpanded(key);
-    return this.setElementExpanded(key, expand);
+  expandElement = (key: ElementID, ax: boolean): Promise<Array<Element>> => {
+    const expand = !this.isExpanded(key, ax);
+    return this.setElementExpanded(key, expand, ax);
   };
 
   setElementExpanded = (
     key: ElementID,
     expand: boolean,
+    ax: boolean,
   ): Promise<Array<Element>> => {
-    this.dispatchAction({expand, key, type: 'ExpandElement'});
+    this.dispatchAction({
+      expand,
+      key,
+      type: ax ? 'ExpandAXElement' : 'ExpandElement',
+    });
     performance.mark('LayoutInspectorExpandElement');
     if (expand) {
-      return this.getChildren(key).then((elements: Array<Element>) => {
+      return this.getChildren(key, ax).then((elements: Array<Element>) => {
         this.props.logger.trackTimeSince('LayoutInspectorExpandElement');
-        this.dispatchAction({elements, type: 'UpdateElements'});
+        this.dispatchAction({
+          elements,
+          type: ax ? 'UpdateAXElements' : 'UpdateElements',
+        });
         return Promise.resolve(elements);
       });
     } else {
@@ -452,11 +549,11 @@ export default class Layout extends SonarPlugin<InspectorState> {
     }
   };
 
-  deepExpandElement = async (key: ElementID) => {
-    const expand = !this.isExpanded(key);
+  deepExpandElement = async (key: ElementID, ax: boolean) => {
+    const expand = !this.isExpanded(key, ax);
     if (!expand) {
       // we never deep unexpand
-      return this.setElementExpanded(key, false);
+      return this.setElementExpanded(key, false, ax);
     }
 
     // queue of keys to open
@@ -469,7 +566,7 @@ export default class Layout extends SonarPlugin<InspectorState> {
       const key = keys.shift();
 
       // expand current element
-      const children = await this.setElementExpanded(key, true);
+      const children = await this.setElementExpanded(key, true, ax);
 
       // and add it's children to the queue
       for (const child of children) {
@@ -482,9 +579,21 @@ export default class Layout extends SonarPlugin<InspectorState> {
 
   onElementExpanded = (key: ElementID, deep: boolean) => {
     if (deep) {
-      this.deepExpandElement(key);
+      this.deepExpandElement(key, false);
     } else {
-      this.expandElement(key);
+      this.expandElement(key, false);
+    }
+    this.props.logger.track('usage', 'layout:element-expanded', {
+      id: key,
+      deep: deep,
+    });
+  };
+
+  onAXElementExpanded = (key: ElementID, deep: boolean) => {
+    if (deep) {
+      this.deepExpandElement(key, true);
+    } else {
+      this.expandElement(key, true);
     }
     this.props.logger.track('usage', 'layout:element-expanded', {
       id: key,
@@ -498,20 +607,15 @@ export default class Layout extends SonarPlugin<InspectorState> {
     this.client.send('setSearchActive', {active: isSearchActive});
   };
 
-  onTestToggleAccessibility = () => {
+  onToggleAccessibility = () => {
     const inAXMode = !this.state.inAXMode;
     this.dispatchAction({inAXMode, type: 'SetAXMode'});
-    this.client
-      .call('testAccessibility', {active: inAXMode})
-      .then(({message}: {message: string}) => {
-        console.log(message);
-      });
   };
 
   onElementSelected = debounce((key: ElementID) => {
     this.dispatchAction({key, type: 'SelectElement'});
     this.client.send('setHighlighted', {id: key});
-    this.getNodes([key], true).then((elements: Array<Element>) => {
+    this.getNodes([key], true, false).then((elements: Array<Element>) => {
       this.dispatchAction({elements, type: 'UpdateElements'});
     });
   });
@@ -519,8 +623,8 @@ export default class Layout extends SonarPlugin<InspectorState> {
   onAXElementSelected = debounce((key: ElementID) => {
     this.dispatchAction({key, type: 'SelectAXElement'});
     this.client.send('setHighlighted', {id: key});
-    this.getNodes([key], true).then((elements: Array<Element>) => {
-      this.dispatchAction({elements, type: 'UpdateElements'});
+    this.getNodes([key], true, true).then((elements: Array<Element>) => {
+      this.dispatchAction({elements, type: 'UpdateAXElements'});
     });
   });
 
@@ -530,7 +634,7 @@ export default class Layout extends SonarPlugin<InspectorState> {
 
   onDataValueChanged = (path: Array<string>, value: any) => {
     const selected = this.state.inAXMode
-      ? this.state.selectedAX
+      ? this.state.AXselected
       : this.state.selected;
     this.client.send('setData', {id: selected, path, value});
     this.props.logger.track('usage', 'layout:value-changed', {
@@ -541,32 +645,41 @@ export default class Layout extends SonarPlugin<InspectorState> {
   };
 
   renderSidebar = () => {
-    return this.state.selected != null ? (
-      <InspectorSidebar
-        element={this.state.elements[this.state.selected]}
-        onValueChanged={this.onDataValueChanged}
-        client={this.client}
-      />
-    ) : null;
-  };
-
-  renderAXSidebar = () => {
-    return this.state.selectedAX != null ? (
-      <InspectorSidebar
-        element={this.state.elements[this.state.selectedAX]}
-        onValueChanged={this.onDataValueChanged}
-        client={this.client}
-      />
-    ) : null;
+    if (this.state.inAXMode) {
+      // empty if no element selected w/in AX node tree
+      return (
+        this.state.AXselected && (
+          <InspectorSidebar
+            element={this.state.AXelements[this.state.AXselected]}
+            onValueChanged={this.onDataValueChanged}
+            client={this.client}
+          />
+        )
+      );
+    } else {
+      // empty if no element selected w/in view tree
+      return (
+        this.state.selected != null && (
+          <InspectorSidebar
+            element={this.state.elements[this.state.selected]}
+            onValueChanged={this.onDataValueChanged}
+            client={this.client}
+          />
+        )
+      );
+    }
   };
 
   render() {
     const {
       initialised,
+      AXinitialised,
       selected,
-      selectedAX,
+      AXselected,
       root,
+      AXroot,
       elements,
+      AXelements,
       isSearchActive,
       inAXMode,
       outstandingSearchQuery,
@@ -576,12 +689,12 @@ export default class Layout extends SonarPlugin<InspectorState> {
       <AXElementsInspector
         onElementSelected={this.onAXElementSelected}
         onElementHovered={this.onElementHovered}
-        onElementExpanded={this.onElementExpanded}
+        onElementExpanded={this.onAXElementExpanded}
         onValueChanged={this.onDataValueChanged}
-        selected={selectedAX}
+        selected={AXselected}
         searchResults={this.state.searchResults}
-        root={root}
-        elements={elements}
+        root={AXroot}
+        elements={AXelements}
       />
     );
     const AXButtonVisible = AXInspector !== null;
@@ -590,7 +703,7 @@ export default class Layout extends SonarPlugin<InspectorState> {
       <FlexColumn fill={true}>
         <Toolbar>
           <SearchIconContainer
-            onClick={this.onFindClick}
+            onClick={inAXMode ? null : this.onFindClick}
             role="button"
             tabIndex={-1}
             title="Select an element on the device to inspect it">
@@ -606,7 +719,7 @@ export default class Layout extends SonarPlugin<InspectorState> {
           </SearchIconContainer>
           {AXButtonVisible ? (
             <SearchIconContainer
-              onClick={this.onTestToggleAccessibility}
+              onClick={this.onToggleAccessibility}
               role="button"
               tabIndex={-1}
               title="Toggle accessibility mode within the LayoutInspector">
@@ -648,11 +761,10 @@ export default class Layout extends SonarPlugin<InspectorState> {
               <LoadingIndicator />
             </Center>
           )}
-          {initialised && inAXMode ? AXInspector : null}
+          {AXinitialised && inAXMode ? <VerticalRule /> : null}
+          {AXinitialised && inAXMode ? AXInspector : null}
         </FlexRow>
-        <SonarSidebar>
-          {inAXMode ? this.renderAXSidebar() : this.renderSidebar()}
-        </SonarSidebar>
+        <SonarSidebar>{this.renderSidebar()}</SonarSidebar>
       </FlexColumn>
     );
   }
