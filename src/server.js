@@ -13,6 +13,7 @@ import CertificateProvider from './utils/CertificateProvider';
 import {RSocketServer, ReactiveSocket} from 'rsocket-core';
 import RSocketTCPServer from 'rsocket-tcp-server';
 import Client from './Client.js';
+import {RecurringError} from './utils/errors';
 
 const EventEmitter = (require('events'): any);
 const invariant = require('invariant');
@@ -261,10 +262,11 @@ class ConnectionTracker {
     this.connectionAttempts.set(key, entry);
     if (entry.length >= this.connectionProblemThreshold) {
       console.error(
-        `Connection loop detected with ${key}. Connected ${
-          entry.length
-        } times in ${(time - entry[0]) / 1000}s.`,
-        'ConnectionTracker',
+        new RecurringError(
+          `Connection loop detected with ${key}. Connected ${
+            this.connectionProblemThreshold
+          } times within ${this.timeWindowMillis / 1000}s.`,
+        ),
       );
     }
   }
