@@ -45,17 +45,11 @@ export default class AutoUpdateVersion extends Component<{}, State> {
       remote.autoUpdater.on('update-downloaded', () => {
         this.setState({updater: 'update-downloaded'});
 
-        remote.dialog.showMessageBox(
-          {
-            title: 'Update available',
-            message: 'A new version of Sonar is available!',
-            detail: `You have Sonar ${version} which is outdated. Update to the latest version now.`,
-            buttons: ['Install and Restart'],
-          },
-          () => {
-            remote.autoUpdater.quitAndInstall();
-          },
-        );
+        const notification = new window.Notification('Update available', {
+          body: 'Restart Sonar to update to the latest version.',
+          requireInteraction: true,
+        });
+        notification.onclick = remote.autoUpdater.quitAndInstall;
       });
 
       remote.autoUpdater.on('error', error => {
@@ -92,7 +86,9 @@ export default class AutoUpdateVersion extends Component<{}, State> {
           </span>
         )}
         {this.state.updater === 'update-downloaded' && (
-          <span title="Update available. Restart Sonar.">
+          <span
+            title="Update available. Restart Sonar."
+            onClick={remote.autoUpdater.quitAndInstall}>
             <Glyph color={colors.light30} name="breaking-news" />
           </span>
         )}
