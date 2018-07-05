@@ -62,35 +62,36 @@ matrix:
         - xcodebuild clean build -workspace Sample.xcworkspace -scheme Pods-Sample -sdk iphonesimulator11.4
 
     - language: android
-        os: linux
-        before_cache:
-            -rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
-            -rm -fr $HOME/.gradle/caches/*/plugin-resolution/
-        cache:
-            directories:
-                -$HOME/.gradle/caches/
-                -$HOME/.gradle/wrapper/
-        android:
-          components:
-            # Uncomment the lines below if you want to
-            # use the latest revision of Android SDK Tools
-            - tools
-            - platform-tools
+      os: linux
+      android:
+        components:
+          - tools
+          - platform-tools
+          - build-tools-27.0.3
+          - android-27
+          - extra-google-google_play_services
+          - extra-google-m2repository
+          - extra-android-m2repository
+          - addon-google_apis-google-27
 
-            # The BuildTools version used by your project
-            - build-tools-27.0.3
-
-            # The SDK version used to compile your project
-            - android-27
-
-            # Additional components
-            - extra-google-google_play_services
-            - extra-google-m2repository
-            - extra-android-m2repository
-            - addon-google_apis-google-27
-
-            # Specify at least one system image,
-            # if you need to run emulator(s) during your tests
-            - sys-img-armeabi-v7a-android-27
+        licenses:
+          - android-sdk-preview-license-.+
+          - android-sdk-license-.+
+          - google-gdk-license-.+
+      before_install:
+        - yes | sdkmanager "platforms;android-27"
+        - echo "y" | sdkmanager "cmake;3.6.4111459"
+        - wget https://dl.google.com/android/repository/android-ndk-r17b-linux-x86_64.zip
+        - mkdir -p temp-android-ndk
+        - mv ./android-ndk-r17b-linux-x86_64.zip temp-android-ndk
+        - cd temp-android-ndk
+        - unzip android-ndk-r17b-linux-x86_64.zip
+        - export ANDROID_NDK_HOME=`pwd`/android-ndk-r17b
+        - export PATH=${PATH}:${ANDROID_NDK_HOME}
+        - cd ../
       script:
         - ./gradlew :sample:build
+      after_success:
+        - rm -rf temp-android-ndk
+      after_failure:
+        - rm -rf temp-android-ndk
