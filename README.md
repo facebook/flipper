@@ -50,6 +50,8 @@ yarn
 yarn start
 ```
 
+NOTE: If you're on Windows, you need to use Yarn 1.5.1 until [this issue](https://github.com/yarnpkg/yarn/issues/6048) is resolved.
+
 ## Building the desktop app
 
 ```
