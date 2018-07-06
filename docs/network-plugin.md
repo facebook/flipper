@@ -5,7 +5,7 @@ title: Network
 
 Use the Network inspector to inspect outgoing network traffic our apps. You can easily browse all requests being made and their responses. The plugin also supports gzipped responses.
 
-![Netowrk plugin](/docs/assets/network.png)
+![Network plugin](/docs/assets/network.png)
 
 ## Setup
 
