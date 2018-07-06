@@ -27,7 +27,7 @@ PODS:
     - Sonar (~> 0.0.1)
 
 DEPENDENCIES:
-  - SonarKit (from `../`)
+  - SonarKit (from `../../`)
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
@@ -45,7 +45,7 @@ SPEC REPOS:
 
 EXTERNAL SOURCES:
   SonarKit:
-    :path: "../"
+    :path: "../../"
 
 SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
@@ -58,8 +58,8 @@ SPEC CHECKSUMS:
   PeerTalk: 77481b0a8136f226b90ccf828d6061f70139ffde
   RSocket: 4fdb7e562db30a2d4fceddefdc601749ffc9ebe2
   Sonar: 38a48b88369cfa48f1a36150d57e2a72ef6fd33c
-  SonarKit: 24fce90a694e3985ea78a2064b53d5ea701f50b2
+  SonarKit: 74f3b4467ed615b15abae6c92e2ed2f3cee94ee7
 
-PODFILE CHECKSUM: 1da6a6576eac10bb3c539f77be622b0b54ce212a
+PODFILE CHECKSUM: 6ea6f403d6bb1a9198f82da33647bb2b76ac103a
 
 COCOAPODS: 1.5.3

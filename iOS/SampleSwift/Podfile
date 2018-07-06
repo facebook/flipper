@@ -4,7 +4,7 @@ source 'https://github.com/CocoaPods/Specs'
 swift_version = "4.1"
 
 target 'SampleSwift' do
-  pod 'SonarKit', '~> 0.0.2'
+  pod 'SonarKit', :path => '../../'
   # Layout and network plugins are not yet supported for swift projects
   # pod 'SonarKit/SonarKitLayoutComponentKitSupport', '~> 0.0.2'
   # pod 'SonarKit/SKIOSNetworkPlugin', '~> 0.0.2'
