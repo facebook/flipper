@@ -1,13 +1,12 @@
 project 'Sample.xcodeproj'
-source '/Users/noahgilmore/CocoaPods/Local'
 source 'https://github.com/facebook/Sonar.git'
 source 'https://github.com/CocoaPods/Specs'
 swift_version = "4.1"
 
 target 'Sample' do
-  pod 'SonarKit', :path => '../../'
-  pod 'SonarKit/SonarKitLayoutComponentKitSupport', :path => '../../'
-  pod 'SonarKit/SKIOSNetworkPlugin', :path => '../../'
+  pod 'SonarKit', '~> 0.0.2'
+  pod 'SonarKit/SonarKitLayoutComponentKitSupport', '~> 0.0.2'
+  pod 'SonarKit/SKIOSNetworkPlugin', '~> 0.0.2'
 
   post_install do |installer|
 
