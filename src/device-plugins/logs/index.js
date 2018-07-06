@@ -486,7 +486,7 @@ export default class LogTable extends SonarDevicePlugin<LogsState> {
     createPaste(paste);
   };
 
-  setTableRef = (ref: React.ElementRef<*>) => {
+  setTableRef = (ref: React.ElementRef<typeof ManagedTable>) => {
     this.tableRef = ref;
   };
 

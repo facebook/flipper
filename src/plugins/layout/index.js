@@ -233,7 +233,6 @@ export default class Layout extends SonarPlugin<InspectorState> {
 
       for (const element of elements) {
         const current = updatedElements[element.id] || {};
-        // $FlowFixMe
         updatedElements[element.id] = {
           ...current,
           ...element,
@@ -248,7 +247,6 @@ export default class Layout extends SonarPlugin<InspectorState> {
 
       for (const element of elements) {
         const current = updatedElements[element.id] || {};
-        // $FlowFixMe
         updatedElements[element.id] = {
           ...current,
           ...element,
