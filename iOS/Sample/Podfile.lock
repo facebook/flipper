@@ -46,9 +46,9 @@ PODS:
     - Yoga (~> 1.8)
 
 DEPENDENCIES:
-  - SonarKit (~> 0.0.2)
-  - SonarKit/SKIOSNetworkPlugin (~> 0.0.2)
-  - SonarKit/SonarKitLayoutComponentKitSupport (~> 0.0.2)
+  - SonarKit (from `../../`)
+  - SonarKit/SKIOSNetworkPlugin (from `../../`)
+  - SonarKit/SonarKitLayoutComponentKitSupport (from `../../`)
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
@@ -59,14 +59,17 @@ SPEC REPOS:
     - DoubleConversion
     - glog
     - OpenSSL-Static
-  https://github.com/facebook/Sonar:
+  https://github.com/facebook/Sonar.git:
     - Folly
     - PeerTalk
     - RSocket
     - Sonar
-    - SonarKit
     - Yoga
     - YogaKit
+
+EXTERNAL SOURCES:
+  SonarKit:
+    :path: "../../"
 
 SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
@@ -80,10 +83,10 @@ SPEC CHECKSUMS:
   PeerTalk: 77481b0a8136f226b90ccf828d6061f70139ffde
   RSocket: 4fdb7e562db30a2d4fceddefdc601749ffc9ebe2
   Sonar: 38a48b88369cfa48f1a36150d57e2a72ef6fd33c
-  SonarKit: 8522d18ea6d2b6d9c00405eb00c002f707db58d8
+  SonarKit: 74f3b4467ed615b15abae6c92e2ed2f3cee94ee7
   Yoga: 73760f4a586236028db67df7f8373b30f3cf2bf5
   YogaKit: c3e9ab94d9fbb548d861eb65985aa01e3a1fffe6
 
-PODFILE CHECKSUM: c896f5d71d8c3e041a9dc9de64c71d143aecb515
+PODFILE CHECKSUM: c54ff9ff7ba2eaa89bd100f162edec3d230070e2
 
 COCOAPODS: 1.5.3

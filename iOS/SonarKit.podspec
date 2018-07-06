@@ -25,7 +25,7 @@ Pod::Spec.new do |spec|
     ss.compiler_flags = '-DFB_SONARKIT_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_LIBGFLAGS=0 -DFOLLY_HAVE_LIBJEMALLOC=0 -DFOLLY_HAVE_PREADV=0 -DFOLLY_HAVE_PWRITEV=0 -DFOLLY_HAVE_TFO=0 -DFOLLY_USE_SYMBOLIZER=0'
     ss.source_files = 'iOS/SonarKit/FBDefines/*.{h,cpp,m,mm}', 'iOS/SonarKit/CppBridge/*.{h,mm}', 'iOS/SonarKit/FBCxxUtils/*.{h,mm}', 'iOS/SonarKit/Utilities/**/*.{h,m}', 'iOS/SonarKit/*.{h,m,mm}'
     ss.public_header_files = 'iOS/SonarKit/**/{SonarClient,SonarPlugin,SonarConnection,SonarResponder,SKMacros,FBMacros}.h'
-    header_search_paths = "\"$(PODS_TARGET_SRCROOT)\"/SonarKit/** \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/PeerTalkSonar\""
+    header_search_paths = "\"$(PODS_ROOT)\"/Headers/Private/SonarKit/** \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/PeerTalkSonar\""
     ss.pod_target_xcconfig = { "USE_HEADERMAP" => "NO",
                              "DEFINES_MODULE" => "YES",
                              "HEADER_SEARCH_PATHS" => header_search_paths }
@@ -66,7 +66,7 @@ Pod::Spec.new do |spec|
 
     ss.source_files         = "iOS/Plugins/SonarKitLayoutPlugin/SonarKitLayoutComponentKitSupport/**/*.{h,cpp,m,mm}"
     ss.pod_target_xcconfig = { "USE_HEADERMAP" => "NO",
-                                "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)\"/Plugins/**" }
+                                "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)\"/Headers/Private/SonarKit/**" }
   end
 
   spec.subspec "SonarKitNetworkPlugin" do |ss|
@@ -79,7 +79,7 @@ Pod::Spec.new do |spec|
                              'iOS/Plugins/SonarKitNetworkPlugin/SonarKitNetworkPlugin/SKNetworkReporter.h'
     ss.source_files         = "iOS/Plugins/SonarKitNetworkPlugin/SonarKitNetworkPlugin/*.{h,cpp,m,mm}"
     ss.pod_target_xcconfig = { "USE_HEADERMAP" => "NO",
-                                "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)\"/Plugins/**" }
+                                "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)\"/Headers/Private/SonarKit/**" }
   end
 
   spec.subspec "SKIOSNetworkPlugin" do |ss|
@@ -90,6 +90,6 @@ Pod::Spec.new do |spec|
     ss.public_header_files = 'iOS/Plugins/SonarKitNetworkPlugin/SKIOSNetworkPlugin/SKIOSNetworkAdapter.h'
     ss.source_files         = "iOS/Plugins/SonarKitNetworkPlugin/SKIOSNetworkPlugin/**/*.{h,cpp,m,mm}"
     ss.pod_target_xcconfig = { "USE_HEADERMAP" => "NO",
-                                "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)\"/Plugins/**" }
+                                "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)\"/Headers/Private/SonarKit/**" }
   end
 end

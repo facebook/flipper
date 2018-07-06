@@ -7,7 +7,7 @@
  */
 #import "SonarCppBridgingResponder.h"
 
-#import <FBCxxUtils/FBCxxFollyDynamicConvert.h>
+#import "FBCxxFollyDynamicConvert.h"
 
 @implementation SonarCppBridgingResponder {
   std::unique_ptr<facebook::sonar::SonarResponder> responder_;
