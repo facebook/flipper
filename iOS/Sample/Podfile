@@ -5,8 +5,8 @@ swift_version = "4.1"
 
 target 'Sample' do
   pod 'SonarKit', '~> 0.0.2'
-  pod 'SonarKit/SonarKitLayoutComponentKitSupport', '~>0.0.1'
-  pod 'SonarKit/SKIOSNetworkPlugin', '~>0.0.1'
+  pod 'SonarKit/SonarKitLayoutComponentKitSupport', '~> 0.0.2'
+  pod 'SonarKit/SKIOSNetworkPlugin', '~> 0.0.2'
 
   post_install do |installer|
 
