@@ -57,7 +57,7 @@ function decodeBody(container: Request | Response): string {
   }
   const b64Decoded = atob(container.data);
   const encodingHeader = container.headers.find(
-    header => header.key === 'Content-Encoding',
+    header => header.key.toLowerCase() === 'content-encoding',
   );
 
   return encodingHeader && encodingHeader.value === 'gzip'
