@@ -8,8 +8,8 @@ Pod::Spec.new do |spec|
   spec.source = { :git => 'https://github.com/facebook/Sonar.git',
                   :branch => 'master' }
   spec.module_name = 'Sonar'
-  spec.public_header_files = '*.h'
-  spec.source_files = '*.{h,cpp,m,mm}'
+  spec.public_header_files = 'xplat/Sonar/*.h'
+  spec.source_files = 'xplat/Sonar/*.{h,cpp,m,mm}'
   spec.libraries = "stdc++"
   spec.dependency 'Folly'
   spec.dependency 'RSocket'
