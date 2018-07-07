@@ -1,4 +1,4 @@
-# Sonar
+# Sonar ![Travis](https://travis-ci.org/facebook/Sonar.svg?branch=master)
 
 Sonar is a platform for debugging mobile apps on iOS and Android. Visualize, inspect, and control your apps from a simple desktop interface. Use Sonar as is or extend it using the plugin API.
 
@@ -49,6 +49,8 @@ cd Sonar
 yarn
 yarn start
 ```
+
+NOTE: If you're on Windows, you need to use Yarn 1.5.1 until [this issue](https://github.com/yarnpkg/yarn/issues/6048) is resolved.
 
 ## Building the desktop app
 

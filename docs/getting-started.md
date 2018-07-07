@@ -25,17 +25,13 @@ Once you start Sonar and launch an emulator/simulator or connect a device, you w
 
 Sonar is distributed via JCenter. Add dependencies to your `build.gradle` file.
 
-> Note: If you run into issues building the Android integration, check out [the
-> tracking Github issue](https://github.com/facebook/Sonar/issues/21) for
-> work-arounds while we're working on a solution.
-
 ```
 repositories {
   jcenter()
 }
 
 dependencies {
-  debugImplementation 'com.facebook.sonar:sonar:0.0.8'
+  debugImplementation 'com.facebook.sonar:sonar:0.0.10'
 }
 ```
 
@@ -63,23 +59,17 @@ public class MyApplication extends Application {
 To integrate with an iOS app, you can use [CocoaPods](https://cocoapods.org). Add the mobile Sonar SDK and its dependencies to your `Podfile`:
 
 ```ruby
-platform :ios, '8.0'
-swift_version = '4.1'
+project 'MyApp.xcodeproj'
+source 'https://github.com/facebook/Sonar.git'
+source 'https://github.com/CocoaPods/Specs'
+# Uncomment the next line to define a global platform for your project
+swift_version = "4.1"
 
 target 'MyApp' do
 
-  pod 'RSocket', :podspec => 'https://raw.githubusercontent.com/facebook/Sonar/master/iOS/third-party-podspecs/RSocket.podspec'
-  pod 'DoubleConversion', :podspec => 'https://raw.githubusercontent.com/facebook/Sonar/master/iOS/third-party-podspecs/DoubleConversion.podspec'
-  pod 'glog', :podspec => 'https://raw.githubusercontent.com/facebook/Sonar/master/iOS/third-party-podspecs/glog.podspec'
-  pod 'Folly', :podspec => 'https://raw.githubusercontent.com/facebook/Sonar/master/iOS/third-party-podspecs/Folly.podspec'
-  pod 'PeerTalk', :podspec => 'https://raw.githubusercontent.com/facebook/Sonar/master/iOS/third-party-podspecs/PeerTalk.podspec'
-  pod 'Yoga','~>1.8.1', :modular_headers => true
-  pod 'Sonar', :podspec => 'https://raw.githubusercontent.com/facebook/Sonar/master/xplat/Sonar/Sonar.podspec'
-  pod 'SonarKit', :podspec => 'https://raw.githubusercontent.com/facebook/Sonar/master/iOS/SonarKit.podspec'
-  pod 'SonarKit/SonarKitLayoutComponentKitSupport', :podspec => 'https://raw.githubusercontent.com/facebook/Sonar/master/iOS/SonarKit.podspec'
-  pod 'SonarKit/SKIOSNetworkPlugin', :podspec => 'https://raw.githubusercontent.com/facebook/Sonar/master/iOS/SonarKit.podspec'
-  pod 'ComponentKit', :podspec => 'https://raw.githubusercontent.com/facebook/Sonar/master/iOS/third-party-podspecs/ComponentKit.podspec'
+  pod 'SonarKit', '~>0.0.1'
   post_install do |installer|
+
         installer.pods_project.targets.each do |target|
             if ['YogaKit'].include? target.name
                 target.build_configurations.each do |config|
@@ -89,7 +79,6 @@ target 'MyApp' do
         end
     end
 end
-
 ```
 
 and install the dependencies by running `pod install`. When you open the Xcode workspace file for your app, you now can import and initialize Sonar in your AppDelegate.
@@ -112,7 +101,7 @@ and install the dependencies by running `pod install`. When you open the Xcode w
 ```
 <div class='warning'>
 
-* We haven't released the dependency to CocoaPods, because we weren't able to successfully validate the podspec of SonarKit. You could help us out by fixing this [issue](https://github.com/facebook/Sonar/issues/11) by submitting a PR to the repo.
+* We haven't released the dependency to CocoaPods yet, here is the [issue](https://github.com/facebook/Sonar/issues/132) by which you can track.
 * If you do not use CocoaPods as a dependency management tool then currently there is no way to integrate SonarKit other than manually including all the dependencies and building it.
 * For Android, Sonar works with both emulators and physical devices connected through USB. However on iOS, we don't yet support physical devices.
 * The Sonar layout and network plugins aren't supported in Swift projects since they include C++ dependencies. We're working on supporting these plugins for Swift apps. You can join the discussion on the [issues page](https://github.com/facebook/Sonar/issues).
