@@ -5,7 +5,8 @@
       "logs-plugin",
       "layout-plugin",
       "network-plugin",
-      "sandbox-plugin"
+      "sandbox-plugin",
+      "shared-preferences-plugin"
     ],
     "Plugins: Desktop part": [
       "js-setup",
