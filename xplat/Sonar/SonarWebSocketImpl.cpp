@@ -99,7 +99,7 @@ SonarWebSocketImpl::~SonarWebSocketImpl() {
 void SonarWebSocketImpl::start() {
   folly::makeFuture()
       .via(sonarEventBase_->getEventBase())
-      .delayedUnsafe(std::chrono::milliseconds(0))
+      .delayed(std::chrono::milliseconds(0))
       .then([this]() { startSync(); });
 }
 
@@ -185,7 +185,7 @@ void SonarWebSocketImpl::connectSecurely() {
 void SonarWebSocketImpl::reconnect() {
   folly::makeFuture()
       .via(sonarEventBase_->getEventBase())
-      .delayedUnsafe(std::chrono::seconds(reconnectIntervalSeconds))
+      .delayed(std::chrono::seconds(reconnectIntervalSeconds))
       .then([this]() { startSync(); });
 }
 
