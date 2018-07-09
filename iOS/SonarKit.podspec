@@ -34,7 +34,7 @@ Pod::Spec.new do |spec|
   spec.subspec "SonarKitLayoutPlugin" do |ss|
     ss.header_dir = "SonarKitLayoutPlugin"
     ss.dependency             'SonarKit/Core'
-    ss.dependency             "Yoga", yoga_version
+    ss.dependency             'Yoga', yoga_version
     ss.dependency             'YogaKit', yogakit_version
     ss.compiler_flags       = folly_compiler_flags
     ss.public_header_files = 'iOS/Plugins/SonarKitLayoutPlugin/SonarKitLayoutPlugin/SonarKitLayoutPlugin.h',
