@@ -11,7 +11,7 @@ Pod::Spec.new do |spec|
   spec.authors = 'Facebook'
   spec.static_framework = true
   spec.source = { :git => 'https://github.com/facebook/Sonar.git',
-                  :tag => "SonarKit-v#{spec.version}", }
+                  :tag => "SonarKit-v#{spec.version.to_s}", }
   spec.module_name = 'SonarKit'
   spec.platforms = { :ios => "8.4" }
   spec.default_subspecs = "Core"
