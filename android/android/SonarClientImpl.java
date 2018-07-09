@@ -29,7 +29,8 @@ class SonarClientImpl implements SonarClient {
   }
 
   public static native void init(
-      EventBase eventBase,
+      EventBase callbackWorker,
+      EventBase connectionWorker,
       String host,
       String os,
       String device,

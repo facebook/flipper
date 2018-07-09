@@ -90,7 +90,7 @@ class Responder : public rsocket::RSocketResponder {
 };
 
 SonarWebSocketImpl::SonarWebSocketImpl(SonarInitConfig config)
-    : deviceData_(config.deviceData), worker_(config.worker) {}
+    : deviceData_(config.deviceData), sonarEventBase_(config.callbackWorker), connectionEventBase_(config.connectionWorker) {}
 
 SonarWebSocketImpl::~SonarWebSocketImpl() {
   stop();
@@ -98,7 +98,7 @@ SonarWebSocketImpl::~SonarWebSocketImpl() {
 
 void SonarWebSocketImpl::start() {
   folly::makeFuture()
-      .via(worker_->getEventBase())
+      .via(sonarEventBase_->getEventBase())
       .delayedUnsafe(std::chrono::milliseconds(0))
       .then([this]() { startSync(); });
 }
@@ -135,7 +135,7 @@ void SonarWebSocketImpl::doCertificateExchange() {
   client_ =
       rsocket::RSocket::createConnectedClient(
           std::make_unique<rsocket::TcpConnectionFactory>(
-              *worker_->getEventBase(), std::move(address)),
+              *connectionEventBase_->getEventBase(), std::move(address)),
           std::move(parameters),
           nullptr,
           std::chrono::seconds(connectionKeepaliveSeconds), // keepaliveInterval
@@ -170,7 +170,7 @@ void SonarWebSocketImpl::connectSecurely() {
   client_ =
       rsocket::RSocket::createConnectedClient(
           std::make_unique<rsocket::TcpConnectionFactory>(
-              *worker_->getEventBase(),
+              *connectionEventBase_->getEventBase(),
               std::move(address),
               std::move(sslContext)),
           std::move(parameters),
@@ -184,7 +184,7 @@ void SonarWebSocketImpl::connectSecurely() {
 
 void SonarWebSocketImpl::reconnect() {
   folly::makeFuture()
-      .via(worker_->getEventBase())
+      .via(sonarEventBase_->getEventBase())
       .delayedUnsafe(std::chrono::seconds(reconnectIntervalSeconds))
       .then([this]() { startSync(); });
 }
@@ -203,7 +203,7 @@ void SonarWebSocketImpl::setCallbacks(Callbacks* callbacks) {
 }
 
 void SonarWebSocketImpl::sendMessage(const folly::dynamic& message) {
-  worker_->add([this, message]() {
+  sonarEventBase_->add([this, message]() {
     if (client_) {
       client_->getRequester()
           ->fireAndForget(rsocket::Payload(folly::toJson(message)))
@@ -239,7 +239,7 @@ void SonarWebSocketImpl::requestSignedCertFromSonar() {
 
   folly::dynamic message = folly::dynamic::object("method", "signCertificate")(
       "csr", csr.c_str())("destination", absoluteFilePath("").c_str());
-  worker_->add([this, message]() {
+  sonarEventBase_->add([this, message]() {
     client_->getRequester()
         ->fireAndForget(rsocket::Payload(folly::toJson(message)))
         ->subscribe([this]() {

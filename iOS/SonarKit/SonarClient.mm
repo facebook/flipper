@@ -22,7 +22,7 @@ using WrapperPlugin = facebook::sonar::SonarCppWrapperPlugin;
 
 @implementation SonarClient {
   facebook::sonar::SonarClient *_cppClient;
-  folly::ScopedEventBaseThread eventBaseThread;
+  folly::ScopedEventBaseThread sonarThread;
 #if !TARGET_OS_SIMULATOR
  // SKPortForwardingServer *_server;
 #endif
@@ -69,7 +69,8 @@ using WrapperPlugin = facebook::sonar::SonarCppWrapperPlugin;
         [appId UTF8String],
         [privateAppDirectory UTF8String],
       },
-      eventBaseThread.getEventBase(),
+      sonarThread.getEventBase(),
+      sonarThread.getEventBase()
     });
     _cppClient = facebook::sonar::SonarClient::instance();
   }

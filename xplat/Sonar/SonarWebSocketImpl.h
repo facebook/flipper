@@ -47,7 +47,8 @@ class SonarWebSocketImpl : public SonarWebSocket {
   Callbacks* callbacks_;
   DeviceData deviceData_;
 
-  folly::EventBase* worker_;
+  folly::EventBase* sonarEventBase_;
+  folly::EventBase* connectionEventBase_;
   std::unique_ptr<rsocket::RSocketClient> client_;
   bool connectionIsTrusted_;
   int failedConnectionAttempts_ = 0;

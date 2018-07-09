@@ -25,6 +25,7 @@ public final class AndroidSonarClient {
       final Context app = context.getApplicationContext();
       SonarClientImpl.init(
           sSonarThread.getEventBase(),
+          sSonarThread.getEventBase(),
           getServerHost(app),
           "Android",
           getFriendlyDeviceName(),
