@@ -7,37 +7,32 @@
 
 import {ipcRenderer} from 'electron';
 
-import type BaseDevice from '../devices/BaseDevice.js';
 import type {Store} from '../reducers/index.js';
 import type Logger from '../fb-stubs/Logger.js';
 
 export default (store: Store, logger: Logger) => {
   ipcRenderer.on('trackUsage', () => {
     const {
-      devices,
-      selectedDeviceIndex,
+      selectedDevice,
       selectedPlugin,
       selectedApp,
     } = store.getState().connections;
 
-    const device: ?BaseDevice =
-      selectedDeviceIndex > -1 ? devices[selectedDeviceIndex] : null;
-    console.log(1, 2, 3);
-    if (!device || !selectedPlugin) {
+    if (!selectedDevice || !selectedPlugin) {
       return;
     }
     if (selectedApp) {
       logger.track('usage', 'ping', {
         app: selectedApp,
-        device,
-        os: device.os,
+        device: selectedDevice,
+        os: selectedDevice.os,
         plugin: selectedPlugin,
       });
     } else {
       logger.track('usage', 'ping', {
-        os: device.os,
+        os: selectedDevice.os,
         plugin: selectedPlugin,
-        device: device.title,
+        device: selectedDevice.title,
       });
     }
   });

@@ -34,12 +34,11 @@ const SidebarContainer = FlexRow.extends({
 
 type Props = {
   logger: LogManager,
-  selectedDeviceIndex: number,
+  selectedDevice: BaseDevice,
   selectedPlugin: ?string,
   selectedApp: ?string,
   pluginStates: Object,
   clients: Array<Client>,
-  devices: Array<BaseDevice>,
   setPluginState: (payload: {
     pluginKey: string,
     state: Object,
@@ -96,11 +95,10 @@ class PluginContainer extends Component<Props, State> {
     let activePlugin = devicePlugins.find(
       (p: Class<SonarDevicePlugin<>>) => p.id === props.selectedPlugin,
     );
-    const device: BaseDevice = props.devices[props.selectedDeviceIndex];
-    let target = device;
+    let target = props.selectedDevice;
     let pluginKey = 'unknown';
     if (activePlugin) {
-      pluginKey = `${device.serial}#${activePlugin.id}`;
+      pluginKey = `${props.selectedDevice.serial}#${activePlugin.id}`;
     } else {
       target = props.clients.find(
         (client: Client) => client.id === props.selectedApp,
@@ -164,13 +162,12 @@ class PluginContainer extends Component<Props, State> {
 export default connect(
   ({
     application: {rightSidebarVisible, rightSidebarAvailable},
-    connections: {selectedPlugin, devices, selectedDeviceIndex, selectedApp},
+    connections: {selectedPlugin, selectedDevice, selectedApp},
     pluginStates,
     server: {clients},
   }) => ({
     selectedPlugin,
-    devices,
-    selectedDeviceIndex,
+    selectedDevice,
     pluginStates,
     selectedApp,
     clients,

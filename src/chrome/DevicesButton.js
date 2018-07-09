@@ -12,10 +12,10 @@ import {selectDevice} from '../reducers/connections.js';
 import type BaseDevice from '../devices/BaseDevice.js';
 
 type Props = {
-  selectedDeviceIndex: number,
+  selectedDevice: ?BaseDevice,
   androidEmulators: Array<string>,
   devices: Array<BaseDevice>,
-  selectDevice: (i: number) => void,
+  selectDevice: (device: BaseDevice) => void,
 };
 
 class DevicesButton extends Component<Props> {
@@ -31,14 +31,14 @@ class DevicesButton extends Component<Props> {
     const {
       devices,
       androidEmulators,
-      selectedDeviceIndex,
+      selectedDevice,
       selectDevice,
     } = this.props;
     let text = 'No device selected';
     let icon = 'minus-circle';
 
-    if (selectedDeviceIndex > -1) {
-      text = devices[selectedDeviceIndex].title;
+    if (selectedDevice) {
+      text = selectedDevice.title;
       icon = 'mobile';
     }
 
@@ -50,9 +50,9 @@ class DevicesButton extends Component<Props> {
           label: 'Running devices',
           enabled: false,
         },
-        ...devices.map((device: BaseDevice, i: number) => ({
-          click: () => selectDevice(i),
-          checked: i === selectedDeviceIndex,
+        ...devices.map((device: BaseDevice) => ({
+          click: () => selectDevice(device),
+          checked: device === selectedDevice,
           label: `${device.deviceType === 'physical' ? '📱 ' : ''}${
             device.title
           }`,
@@ -91,10 +91,10 @@ class DevicesButton extends Component<Props> {
   }
 }
 export default connect(
-  ({connections: {devices, androidEmulators, selectedDeviceIndex}}) => ({
+  ({connections: {devices, androidEmulators, selectedDevice}}) => ({
     devices,
     androidEmulators,
-    selectedDeviceIndex,
+    selectedDevice,
   }),
   {selectDevice},
 )(DevicesButton);

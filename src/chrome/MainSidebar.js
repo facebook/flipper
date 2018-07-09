@@ -134,30 +134,27 @@ class PluginSidebarListItem extends Component<{
 type MainSidebarProps = {|
   selectedPlugin: ?string,
   selectedApp: ?string,
-  selectedDeviceIndex: number,
+  selectedDevice: BaseDevice,
   selectPlugin: (payload: {
     selectedPlugin: ?string,
     selectedApp: ?string,
   }) => void,
-  devices: Array<BaseDevice>,
   clients: Array<Client>,
 |};
 
 class MainSidebar extends Component<MainSidebarProps> {
   render() {
     const {
-      devices,
-      selectedDeviceIndex,
+      selectedDevice,
       selectedPlugin,
       selectedApp,
       selectPlugin,
     } = this.props;
     let {clients} = this.props;
-    const device: BaseDevice = devices[selectedDeviceIndex];
 
     let enabledPlugins = [];
     for (const devicePlugin of devicePlugins) {
-      if (device.supportsPlugin(devicePlugin)) {
+      if (selectedDevice.supportsPlugin(devicePlugin)) {
         enabledPlugins.push(devicePlugin);
       }
     }
@@ -168,9 +165,9 @@ class MainSidebar extends Component<MainSidebarProps> {
     clients = clients
       .filter((client: Client) => {
         if (
-          (device instanceof AndroidDevice &&
+          (selectedDevice instanceof AndroidDevice &&
             client.query.os.toLowerCase() !== 'android') ||
-          (device instanceof IOSDevice &&
+          (selectedDevice instanceof IOSDevice &&
             client.query.os.toLowerCase() !== 'ios')
         ) {
           return false;
@@ -183,7 +180,7 @@ class MainSidebar extends Component<MainSidebarProps> {
     return (
       <Sidebar position="left" width={200}>
         {devicePlugins
-          .filter(device.supportsPlugin)
+          .filter(selectedDevice.supportsPlugin)
           .map((plugin: Class<SonarDevicePlugin<>>) => (
             <PluginSidebarListItem
               key={plugin.id}
@@ -230,11 +227,10 @@ class MainSidebar extends Component<MainSidebarProps> {
 
 export default connect(
   ({
-    connections: {devices, selectedDeviceIndex, selectedPlugin, selectedApp},
+    connections: {selectedDevice, selectedPlugin, selectedApp},
     server: {clients},
   }) => ({
-    devices,
-    selectedDeviceIndex,
+    selectedDevice,
     selectedPlugin,
     selectedApp,
     clients,

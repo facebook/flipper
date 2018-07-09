@@ -19,6 +19,7 @@ import PluginManager from './chrome/PluginManager.js';
 
 import type Logger from './fb-stubs/Logger.js';
 import type BugReporter from './fb-stubs/BugReporter.js';
+import type BaseDevice from './devices/BaseDevice.js';
 
 type Props = {
   logger: Logger,
@@ -26,7 +27,7 @@ type Props = {
   leftSidebarVisible: boolean,
   bugDialogVisible: boolean,
   pluginManagerVisible: boolean,
-  selectedDeviceIndex: number,
+  selectedDevice: ?BaseDevice,
   error: ?string,
   toggleBugDialogVisible: (visible?: boolean) => void,
 };
@@ -51,7 +52,7 @@ export class App extends React.Component<Props> {
             close={() => this.props.toggleBugDialogVisible(false)}
           />
         )}
-        {this.props.selectedDeviceIndex > -1 ? (
+        {this.props.selectedDevice ? (
           <FlexRow fill={true}>
             {this.props.leftSidebarVisible && <MainSidebar />}
             <PluginContainer logger={this.props.logger} />
@@ -70,13 +71,13 @@ export class App extends React.Component<Props> {
 export default connect(
   ({
     application: {pluginManagerVisible, bugDialogVisible, leftSidebarVisible},
-    connections: {selectedDeviceIndex},
+    connections: {selectedDevice},
     server: {error},
   }) => ({
     pluginManagerVisible,
     bugDialogVisible,
     leftSidebarVisible,
-    selectedDeviceIndex,
+    selectedDevice,
     error,
   }),
   {toggleBugDialogVisible},

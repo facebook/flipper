@@ -29,8 +29,7 @@ import type BaseDevice from '../devices/BaseDevice';
 type PullTransfer = any;
 
 type Props = {|
-  devices: Array<BaseDevice>,
-  selectedDeviceIndex: number,
+  selectedDevice: ?BaseDevice,
 |};
 
 type State = {|
@@ -93,12 +92,11 @@ class ScreenCaptureButtons extends Component<Props, State> {
   }
 
   checkIfRecordingIsAvailable = (props: Props = this.props): void => {
-    const {devices, selectedDeviceIndex} = props;
-    const device: BaseDevice = devices[selectedDeviceIndex];
+    const {selectedDevice} = props;
 
-    if (device instanceof AndroidDevice) {
+    if (selectedDevice instanceof AndroidDevice) {
       this.executeShell(
-        device,
+        selectedDevice,
         `[ ! -f /system/bin/screenrecord ] && echo "File does not exist"`,
       ).then(output =>
         this.setState({
@@ -106,8 +104,8 @@ class ScreenCaptureButtons extends Component<Props, State> {
         }),
       );
     } else if (
-      device instanceof IOSDevice &&
-      device.deviceType === 'emulator'
+      selectedDevice instanceof IOSDevice &&
+      selectedDevice.deviceType === 'emulator'
     ) {
       this.setState({
         recordingEnabled: true,
@@ -120,16 +118,15 @@ class ScreenCaptureButtons extends Component<Props, State> {
   };
 
   captureScreenshot = () => {
-    const {devices, selectedDeviceIndex} = this.props;
-    const device: BaseDevice = devices[selectedDeviceIndex];
+    const {selectedDevice} = this.props;
 
-    if (device instanceof AndroidDevice) {
-      return device.adb
-        .screencap(device.serial)
+    if (selectedDevice instanceof AndroidDevice) {
+      return selectedDevice.adb
+        .screencap(selectedDevice.serial)
         .then(writePngStreamToFile)
         .then(openFile)
         .catch(console.error);
-    } else if (device instanceof IOSDevice) {
+    } else if (selectedDevice instanceof IOSDevice) {
       exec(
         `xcrun simctl io booted screenshot ${SCREENSHOT_PATH}`,
         (err, data) => {
@@ -144,15 +141,14 @@ class ScreenCaptureButtons extends Component<Props, State> {
   };
 
   startRecording = () => {
-    const {devices, selectedDeviceIndex} = this.props;
-    const device: BaseDevice = devices[selectedDeviceIndex];
+    const {selectedDevice} = this.props;
 
-    if (device instanceof AndroidDevice) {
+    if (selectedDevice instanceof AndroidDevice) {
       this.setState({
         recording: true,
       });
       this.executeShell(
-        device,
+        selectedDevice,
         `screenrecord --bugreport /sdcard/${VIDEO_FILE_NAME}`,
       )
         .then(output => {
@@ -169,7 +165,7 @@ class ScreenCaptureButtons extends Component<Props, State> {
         .then(
           (): Promise<string> => {
             return this.pullFromDevice(
-              device,
+              selectedDevice,
               `/sdcard/${VIDEO_FILE_NAME}`,
               VIDEO_PATH,
             );
@@ -177,7 +173,7 @@ class ScreenCaptureButtons extends Component<Props, State> {
         )
         .then(openFile)
         .then(() => {
-          this.executeShell(device, `rm /sdcard/${VIDEO_FILE_NAME}`);
+          this.executeShell(selectedDevice, `rm /sdcard/${VIDEO_FILE_NAME}`);
         })
         .then(() => {
           this.setState({
@@ -191,7 +187,7 @@ class ScreenCaptureButtons extends Component<Props, State> {
             pullingData: false,
           });
         });
-    } else if (device instanceof IOSDevice) {
+    } else if (selectedDevice instanceof IOSDevice) {
       this.setState({
         recording: true,
       });
@@ -218,10 +214,10 @@ class ScreenCaptureButtons extends Component<Props, State> {
   };
 
   stopRecording = () => {
-    const {devices, selectedDeviceIndex} = this.props;
-    const device: BaseDevice = devices[selectedDeviceIndex];
-    if (device instanceof AndroidDevice) {
-      this.executeShell(device, `pgrep 'screenrecord' -L 2`);
+    const {selectedDevice} = this.props;
+
+    if (selectedDevice instanceof AndroidDevice) {
+      this.executeShell(selectedDevice, `pgrep 'screenrecord' -L 2`);
     } else if (this.iOSRecorder) {
       this.iOSRecorder.kill();
       this.setState({
@@ -248,9 +244,7 @@ class ScreenCaptureButtons extends Component<Props, State> {
 
   render() {
     const {recordingEnabled} = this.state;
-    const {devices, selectedDeviceIndex} = this.props;
-    const device: ?BaseDevice =
-      selectedDeviceIndex > -1 ? devices[selectedDeviceIndex] : null;
+    const {selectedDevice} = this.props;
 
     return (
       <ButtonGroup>
@@ -259,7 +253,7 @@ class ScreenCaptureButtons extends Component<Props, State> {
           onClick={this.captureScreenshot}
           icon="camera"
           title="Take Screenshot"
-          disabled={!device}
+          disabled={!selectedDevice}
         />
         <Button
           compact={true}
@@ -268,14 +262,13 @@ class ScreenCaptureButtons extends Component<Props, State> {
           pulse={this.state.recording}
           selected={this.state.recording}
           title="Make Screen Recording"
-          disabled={!device || !recordingEnabled}
+          disabled={!selectedDevice || !recordingEnabled}
         />
       </ButtonGroup>
     );
   }
 }
 
-export default connect(({connections: {devices, selectedDeviceIndex}}) => ({
-  devices,
-  selectedDeviceIndex,
+export default connect(({connections: {selectedDevice}}) => ({
+  selectedDevice,
 }))(ScreenCaptureButtons);
