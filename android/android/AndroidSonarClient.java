@@ -16,16 +16,19 @@ import com.facebook.sonar.core.SonarClient;
 public final class AndroidSonarClient {
   private static boolean sIsInitialized = false;
   private static SonarThread sSonarThread;
+  private static SonarThread sConnectionThread;
 
   public static synchronized SonarClient getInstance(Context context) {
     if (!sIsInitialized) {
-      sSonarThread = new SonarThread();
+      sSonarThread = new SonarThread("SonarEventBaseThread");
       sSonarThread.start();
+      sConnectionThread = new SonarThread("SonarConnectionThread");
+      sConnectionThread.start();
 
       final Context app = context.getApplicationContext();
       SonarClientImpl.init(
           sSonarThread.getEventBase(),
-          sSonarThread.getEventBase(),
+          sConnectionThread.getEventBase(),
           getServerHost(app),
           "Android",
           getFriendlyDeviceName(),
