@@ -33,6 +33,8 @@
 #define SONAR_CA_FILE_NAME "sonarCA.crt"
 #define CLIENT_CERT_FILE_NAME "device.crt"
 #define PRIVATE_KEY_FILE "privateKey.pem"
+#define WRONG_THREAD_EXIT_MSG \
+  "ERROR: Aborting sonar initialization because it's not running in the sonar thread."
 
 static constexpr int reconnectIntervalSeconds = 2;
 static constexpr int connectionKeepaliveSeconds = 10;
@@ -104,6 +106,10 @@ void SonarWebSocketImpl::start() {
 }
 
 void SonarWebSocketImpl::startSync() {
+  if (!isRunningInOwnThread()) {
+    SONAR_LOG(WRONG_THREAD_EXIT_MSG);
+    return;
+  }
   if (isOpen()) {
     SONAR_LOG("Already connected");
     return;
@@ -287,6 +293,10 @@ bool SonarWebSocketImpl::ensureSonarDirExists() {
                   .c_str());
     return false;
   }
+}
+
+bool SonarWebSocketImpl::isRunningInOwnThread() {
+  return sonarEventBase_->isInEventBaseThread();
 }
 
 bool fileExists(std::string fileName) {
