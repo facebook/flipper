@@ -5,7 +5,7 @@
  * @format
  */
 
-import type {TableHighlightedRows, TableRows} from 'sonar';
+import type {TableHighlightedRows, TableRows, TableBodyRow} from 'sonar';
 
 import {
   ContextMenu,
@@ -17,19 +17,18 @@ import {
   PureComponent,
   SonarSidebar,
 } from 'sonar';
-
 import {SonarPlugin, SearchableTable} from 'sonar';
 import RequestDetails from './RequestDetails.js';
-
 import {URL} from 'url';
-// $FlowFixMe
-import sortBy from 'lodash.sortby';
 
 type RequestId = string;
 
-type State = {|
+type PersistedState = {|
   requests: {[id: RequestId]: Request},
   responses: {[id: RequestId]: Response},
+|};
+
+type State = {|
   selectedIds: Array<RequestId>,
 |};
 
@@ -109,7 +108,7 @@ const TextEllipsis = Text.extends({
   paddingTop: 4,
 });
 
-export default class extends SonarPlugin<State> {
+export default class extends SonarPlugin<State, *, PersistedState> {
   static title = 'Network';
   static id = 'Network';
   static icon = 'internet';
@@ -122,53 +121,39 @@ export default class extends SonarPlugin<State> {
   };
 
   state = {
-    requests: {},
-    responses: {},
     selectedIds: [],
   };
 
   init() {
     this.client.subscribe('newRequest', (request: Request) => {
-      this.dispatchAction({request, type: 'NewRequest'});
+      this.props.setPersistedState({
+        requests: {
+          ...this.props.persistedState.requests,
+          [request.id]: request,
+        },
+      });
     });
     this.client.subscribe('newResponse', (response: Response) => {
-      this.dispatchAction({response, type: 'NewResponse'});
+      this.props.setPersistedState({
+        responses: {
+          ...this.props.persistedState.responses,
+          [response.id]: response,
+        },
+      });
     });
   }
-
-  reducers = {
-    NewRequest(state: State, {request}: {request: Request}) {
-      return {
-        requests: {...state.requests, [request.id]: request},
-        responses: state.responses,
-      };
-    },
-
-    NewResponse(state: State, {response}: {response: Response}) {
-      return {
-        requests: state.requests,
-        responses: {...state.responses, [response.id]: response},
-      };
-    },
-
-    Clear(state: State) {
-      return {
-        requests: {},
-        responses: {},
-      };
-    },
-  };
 
   onRowHighlighted = (selectedIds: Array<RequestId>) =>
     this.setState({selectedIds});
 
   clearLogs = () => {
     this.setState({selectedIds: []});
-    this.dispatchAction({type: 'Clear'});
+    this.props.setPersistedState({responses: {}, requests: {}});
   };
 
   renderSidebar = () => {
-    const {selectedIds, requests, responses} = this.state;
+    const {requests, responses} = this.props.persistedState;
+    const {selectedIds} = this.state;
     const selectedId = selectedIds.length === 1 ? selectedIds[0] : null;
 
     return selectedId != null ? (
@@ -181,11 +166,13 @@ export default class extends SonarPlugin<State> {
   };
 
   render() {
+    const {requests, responses} = this.props.persistedState;
+
     return (
       <FlexColumn fill={true}>
         <NetworkTable
-          requests={this.state.requests}
-          responses={this.state.responses}
+          requests={requests || {}}
+          responses={responses || {}}
           clear={this.clearLogs}
           onRowHighlighted={this.onRowHighlighted}
         />
@@ -195,108 +182,128 @@ export default class extends SonarPlugin<State> {
   }
 }
 
-type NetworkTableProps = {|
+type NetworkTableProps = {
   requests: {[id: RequestId]: Request},
   responses: {[id: RequestId]: Response},
   clear: () => void,
   onRowHighlighted: (keys: TableHighlightedRows) => void,
-|};
+};
 
 type NetworkTableState = {|
   sortedRows: TableRows,
 |};
+
+function buildRow(request: Request, response: ?Response): ?TableBodyRow {
+  if (request == null) {
+    return;
+  }
+  const url = new URL(request.url);
+  const domain = url.host + url.pathname;
+  const friendlyName = getHeaderValue(request.headers, 'X-FB-Friendly-Name');
+
+  return {
+    columns: {
+      domain: {
+        value: (
+          <TextEllipsis>{friendlyName ? friendlyName : domain}</TextEllipsis>
+        ),
+        isFilterable: true,
+      },
+      method: {
+        value: <TextEllipsis>{request.method}</TextEllipsis>,
+        isFilterable: true,
+      },
+      status: {
+        value: (
+          <StatusColumn>{response ? response.status : undefined}</StatusColumn>
+        ),
+        isFilterable: true,
+      },
+      size: {
+        value: <SizeColumn response={response ? response : undefined} />,
+      },
+      duration: {
+        value: <DurationColumn request={request} response={response} />,
+      },
+    },
+    key: request.id,
+    filterValue: `${request.method} ${request.url}`,
+    sortKey: request.timestamp,
+    copyText: request.url,
+    highlightOnHover: true,
+  };
+}
+
+function calculateState(
+  props: {
+    requests: {[id: RequestId]: Request},
+    responses: {[id: RequestId]: Response},
+  },
+  nextProps: NetworkTableProps,
+  rows: TableRows = [],
+): NetworkTableState {
+  rows = [...rows];
+
+  if (Object.keys(nextProps.requests).length === 0) {
+    // cleared
+    rows = [];
+  } else if (props.requests !== nextProps.requests) {
+    // new request
+    for (const requestId in nextProps.requests) {
+      if (props.requests[requestId] == null) {
+        const newRow = buildRow(
+          nextProps.requests[requestId],
+          nextProps.responses[requestId],
+        );
+        if (newRow) {
+          rows.push(newRow);
+        }
+      }
+    }
+  } else if (props.responses !== nextProps.responses) {
+    // new response
+    for (const responseId in nextProps.responses) {
+      if (props.responses[responseId] == null) {
+        const newRow = buildRow(
+          nextProps.requests[responseId],
+          nextProps.responses[responseId],
+        );
+        const index = rows.findIndex(
+          r => r.key === nextProps.requests[responseId].id,
+        );
+        if (index > -1 && newRow) {
+          rows[index] = newRow;
+        }
+        break;
+      }
+    }
+  }
+
+  rows.sort((a, b) => (String(a.sortKey) > String(b.sortKey) ? 1 : -1));
+
+  return {
+    sortedRows: rows,
+  };
+}
 
 class NetworkTable extends PureComponent<NetworkTableProps, NetworkTableState> {
   static ContextMenu = ContextMenu.extends({
     flex: 1,
   });
 
-  state = {
-    sortedRows: [],
-  };
-
-  componentWillReceiveProps(nextProps: NetworkTableProps) {
-    if (Object.keys(nextProps.requests).length === 0) {
-      // cleared
-      this.setState({sortedRows: []});
-    } else if (this.props.requests !== nextProps.requests) {
-      // new request
-      for (const requestId in nextProps.requests) {
-        if (this.props.requests[requestId] == null) {
-          this.buildRow(nextProps.requests[requestId], null);
-          break;
-        }
-      }
-    } else if (this.props.responses !== nextProps.responses) {
-      // new response
-      for (const responseId in nextProps.responses) {
-        if (this.props.responses[responseId] == null) {
-          this.buildRow(
-            nextProps.requests[responseId],
-            nextProps.responses[responseId],
-          );
-          break;
-        }
-      }
-    }
+  constructor(props: NetworkTableProps) {
+    super(props);
+    this.state = calculateState(
+      {
+        requests: {},
+        responses: {},
+      },
+      props,
+    );
   }
 
-  buildRow(request: Request, response: ?Response) {
-    if (request == null) {
-      return;
-    }
-    const url = new URL(request.url);
-    const domain = url.host + url.pathname;
-    const friendlyName = getHeaderValue(request.headers, 'X-FB-Friendly-Name');
-
-    const newRow = {
-      columns: {
-        domain: {
-          value: (
-            <TextEllipsis>{friendlyName ? friendlyName : domain}</TextEllipsis>
-          ),
-          isFilterable: true,
-        },
-        method: {
-          value: <TextEllipsis>{request.method}</TextEllipsis>,
-          isFilterable: true,
-        },
-        status: {
-          value: (
-            <StatusColumn>
-              {response ? response.status : undefined}
-            </StatusColumn>
-          ),
-          isFilterable: true,
-        },
-        size: {
-          value: <SizeColumn response={response ? response : undefined} />,
-        },
-        duration: {
-          value: <DurationColumn request={request} response={response} />,
-        },
-      },
-      key: request.id,
-      filterValue: `${request.method} ${request.url}`,
-      sortKey: request.timestamp,
-      copyText: request.url,
-      highlightOnHover: true,
-    };
-
-    let rows;
-    if (response == null) {
-      rows = [...this.state.sortedRows, newRow];
-    } else {
-      const index = this.state.sortedRows.findIndex(r => r.key === request.id);
-      if (index > -1) {
-        rows = [...this.state.sortedRows];
-        rows[index] = newRow;
-      }
-    }
-
-    this.setState({
-      sortedRows: sortBy(rows, x => x.sortKey),
-    });
+  componentWillReceiveProps(nextProps: NetworkTableProps) {
+    this.setState(calculateState(this.props, nextProps, this.state.sortedRows));
   }
 
   contextMenuItems = [
