@@ -8,7 +8,6 @@ import type {SonarPlugin, SonarBasePlugin} from './plugin.js';
 import type LogManager from './fb-stubs/Logger';
 import type Client from './Client.js';
 import type BaseDevice from './devices/BaseDevice.js';
-import type {Props as PluginProps} from './plugin.js';
 
 import {SonarDevicePlugin} from './plugin.js';
 import {ErrorBoundary, Component, FlexColumn, FlexRow, colors} from 'sonar';
@@ -51,78 +50,67 @@ type State = {
   pluginKey: string,
 };
 
-function withPluginLifecycleHooks(
-  PluginComponent: Class<SonarBasePlugin<>>,
-  target: Client | BaseDevice,
-) {
-  return class extends React.Component<PluginProps<any>> {
-    plugin: ?SonarBasePlugin<>;
-
-    static displayName = `${PluginComponent.title}Plugin`;
-
-    componentDidMount() {
-      const {plugin} = this;
-      if (plugin) {
-        activateMenuItems(plugin);
-        plugin._setup(target);
-        plugin._init();
-      }
-    }
-
-    componentWillUnmount() {
-      if (this.plugin) {
-        this.plugin._teardown();
-      }
-    }
-
-    render() {
-      return (
-        <PluginComponent
-          ref={(ref: ?SonarBasePlugin<>) => {
-            if (ref) {
-              this.plugin = ref;
-            }
-          }}
-          {...this.props}
-        />
+function computeState(props: Props): State {
+  // plugin changed
+  let activePlugin = devicePlugins.find(
+    (p: Class<SonarDevicePlugin<>>) => p.id === props.selectedPlugin,
+  );
+  let target = props.selectedDevice;
+  let pluginKey = 'unknown';
+  if (activePlugin) {
+    pluginKey = `${props.selectedDevice.serial}#${activePlugin.id}`;
+  } else {
+    target = props.clients.find(
+      (client: Client) => client.id === props.selectedApp,
+    );
+    activePlugin = plugins.find(
+      (p: Class<SonarPlugin<>>) => p.id === props.selectedPlugin,
+    );
+    if (!activePlugin || !target) {
+      throw new Error(
+        `Plugin "${props.selectedPlugin || ''}" could not be found.`,
       );
     }
+    pluginKey = `${target.id}#${activePlugin.id}`;
+  }
+
+  return {
+    activePlugin,
+    target,
+    pluginKey,
   };
 }
 
 class PluginContainer extends Component<Props, State> {
-  static getDerivedStateFromProps(props: Props) {
-    let activePlugin = devicePlugins.find(
-      (p: Class<SonarDevicePlugin<>>) => p.id === props.selectedPlugin,
-    );
-    let target = props.selectedDevice;
-    let pluginKey = 'unknown';
-    if (activePlugin) {
-      pluginKey = `${props.selectedDevice.serial}#${activePlugin.id}`;
-    } else {
-      target = props.clients.find(
-        (client: Client) => client.id === props.selectedApp,
-      );
-      activePlugin = plugins.find(
-        (p: Class<SonarPlugin<>>) => p.id === props.selectedPlugin,
-      );
-      if (!activePlugin || !target) {
-        return null;
-      }
-      pluginKey = `${target.id}#${activePlugin.id}`;
-    }
+  plugin: ?SonarBasePlugin<>;
 
-    return {
-      pluginKey,
-      activePlugin,
-      target,
-    };
+  constructor(props: Props) {
+    super();
+    this.state = computeState(props);
   }
 
-  state = {
-    pluginKey: 'unknown',
-    activePlugin: null,
-    target: null,
+  componentWillReceiveProps(nextProps: Props) {
+    if (
+      nextProps.selectedDevice !== this.props.selectedDevice ||
+      nextProps.selectedApp !== this.props.selectedApp ||
+      nextProps.selectedPlugin !== this.props.selectedPlugin
+    ) {
+      this.setState(computeState(nextProps));
+    }
+  }
+
+  refChanged = (ref: ?SonarBasePlugin<>) => {
+    if (this.plugin) {
+      this.plugin._teardown();
+      this.plugin = null;
+    }
+    const {target} = this.state;
+    if (ref && target) {
+      activateMenuItems(ref);
+      ref._setup(target);
+      ref._init();
+      this.plugin = ref;
+    }
   };
 
   render() {
@@ -142,15 +130,13 @@ class PluginContainer extends Component<Props, State> {
               activePlugin.title
             }" encountered an error during render`}
             logger={this.props.logger}>
-            {React.createElement(
-              withPluginLifecycleHooks(activePlugin, target),
-              {
-                key: pluginKey,
-                logger: this.props.logger,
-                persistedState: pluginStates[pluginKey],
-                setPersistedState: state => setPluginState({pluginKey, state}),
-              },
-            )}
+            {React.createElement(activePlugin, {
+              key: pluginKey,
+              logger: this.props.logger,
+              persistedState: pluginStates[pluginKey] || {},
+              setPersistedState: state => setPluginState({pluginKey, state}),
+              ref: this.refChanged,
+            })}
           </ErrorBoundary>
         </Container>
         <SidebarContainer id="sonarSidebar" />
