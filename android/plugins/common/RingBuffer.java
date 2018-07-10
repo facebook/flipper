@@ -25,6 +25,10 @@ final class RingBuffer<T> {
     mBuffer.add(item);
   }
 
+  void clear() {
+    mBuffer.clear();
+  }
+
   List<T> asList() {
     return mBuffer;
   }

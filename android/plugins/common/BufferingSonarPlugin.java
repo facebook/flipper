@@ -49,9 +49,10 @@ public abstract class BufferingSonarPlugin implements SonarPlugin {
     if (mEventQueue == null) {
       mEventQueue = new RingBuffer<>(BUFFER_SIZE);
     }
-    mEventQueue.enqueue(new CachedSonarEvent(method, sonarObject));
     if (mConnection != null) {
       mConnection.send(method, sonarObject);
+    } else {
+      mEventQueue.enqueue(new CachedSonarEvent(method, sonarObject));
     }
   }
 
@@ -60,6 +61,7 @@ public abstract class BufferingSonarPlugin implements SonarPlugin {
       for (CachedSonarEvent cachedSonarEvent : mEventQueue.asList()) {
         mConnection.send(cachedSonarEvent.method, cachedSonarEvent.sonarObject);
       }
+      mEventQueue.clear();
     }
   }
 

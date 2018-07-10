@@ -128,6 +128,7 @@ export {default as ResizeSensor} from './components/ResizeSensor.js';
 
 // typhography
 export {default as HorizontalRule} from './components/HorizontalRule.js';
+export {default as VerticalRule} from './components/VerticalRule.js';
 export {default as Label} from './components/Label.js';
 export {default as Heading} from './components/Heading.js';
 
@@ -154,6 +155,7 @@ export type {
   Element,
   ElementSearchResultSet,
 } from './components/elements-inspector/ElementsInspector.js';
+export {Elements} from './components/elements-inspector/elements.js';
 export {
   default as ElementsInspector,
 } from './components/elements-inspector/ElementsInspector.js';

@@ -86,7 +86,7 @@ export class GarbageCollector {
     }
   }
 
-  getCollectionQueue() {
+  getCollectionQueue(): Array<string> {
     return Array.from(this.classRemovalQueue);
   }
 

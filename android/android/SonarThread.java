@@ -13,8 +13,8 @@ import javax.annotation.Nullable;
 class SonarThread extends Thread {
   private @Nullable EventBase mEventBase;
 
-  SonarThread() {
-    super("SonarEventBaseThread");
+  SonarThread(final String name) {
+    super(name);
   }
 
   @Override

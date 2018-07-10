@@ -51,6 +51,11 @@ export default class extends SonarPlugin<SharedPreferencesState> {
   static title = 'Shared Preferences Viewer';
   static id = 'Preferences';
 
+  state = {
+    changesList: [],
+    sharedPreferences: null,
+  };
+
   reducers = {
     UpdateSharedPreferences(state: SharedPreferencesState, results: Object) {
       return {
@@ -92,14 +97,6 @@ export default class extends SonarPlugin<SharedPreferencesState> {
         this.dispatchAction({results, type: 'UpdateSharedPreferences'});
       },
     );
-  }
-
-  constructor() {
-    super();
-    this.state = {
-      changesList: [],
-      sharedPreferences: null,
-    };
   }
 
   onSharedPreferencesChanged = (path: Array<string>, value: any) => {

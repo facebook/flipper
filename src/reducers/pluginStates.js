@@ -26,7 +26,10 @@ export default function reducer(
   if (action.type === 'SET_PLUGIN_STATE') {
     return {
       ...state,
-      [action.payload.pluginKey]: action.payload.state,
+      [action.payload.pluginKey]: {
+        ...state[action.payload.pluginKey],
+        ...action.payload.state,
+      },
     };
   } else {
     return state;

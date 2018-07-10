@@ -84,7 +84,11 @@ export class SonarBasePlugin<
   }
 }
 
-export class SonarDevicePlugin<S = *, A = *> extends SonarBasePlugin<S, A> {
+export class SonarDevicePlugin<S = *, A = *, P = *> extends SonarBasePlugin<
+  S,
+  A,
+  P,
+> {
   device: BaseDevice;
 
   _setup(target: PluginTarget) {
@@ -100,7 +104,7 @@ export class SonarDevicePlugin<S = *, A = *> extends SonarBasePlugin<S, A> {
   }
 }
 
-export class SonarPlugin<S = *, A = *> extends SonarBasePlugin<S, A> {
+export class SonarPlugin<S = *, A = *, P = *> extends SonarBasePlugin<S, A, P> {
   constructor() {
     super();
     this.subscriptions = [];

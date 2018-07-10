@@ -57,9 +57,8 @@ export default class BaseDevice {
     return this.supportedPlugins.includes(DevicePlugin.id);
   };
 
-  // ensure that we don't serialise devices
   toJSON() {
-    return null;
+    return `<${this.constructor.name}#${this.title}>`;
   }
 
   teardown() {}

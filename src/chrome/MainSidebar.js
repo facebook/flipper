@@ -28,6 +28,8 @@ import {devicePlugins} from '../device-plugins/index.js';
 import plugins from '../plugins/index.js';
 import {selectPlugin} from '../reducers/connections.js';
 import {connect} from 'react-redux';
+import AndroidDevice from '../devices/AndroidDevice.js';
+import IOSDevice from '../devices/IOSDevice.js';
 
 const CustomClickableListItem = ClickableListItem.extends({
   paddingLeft: 10,
@@ -132,30 +134,27 @@ class PluginSidebarListItem extends Component<{
 type MainSidebarProps = {|
   selectedPlugin: ?string,
   selectedApp: ?string,
-  selectedDeviceIndex: number,
+  selectedDevice: BaseDevice,
   selectPlugin: (payload: {
     selectedPlugin: ?string,
     selectedApp: ?string,
   }) => void,
-  devices: Array<BaseDevice>,
   clients: Array<Client>,
 |};
 
 class MainSidebar extends Component<MainSidebarProps> {
   render() {
     const {
-      devices,
-      selectedDeviceIndex,
+      selectedDevice,
       selectedPlugin,
       selectedApp,
       selectPlugin,
     } = this.props;
     let {clients} = this.props;
-    const device: BaseDevice = devices[selectedDeviceIndex];
 
     let enabledPlugins = [];
     for (const devicePlugin of devicePlugins) {
-      if (device.supportsPlugin(devicePlugin)) {
+      if (selectedDevice.supportsPlugin(devicePlugin)) {
         enabledPlugins.push(devicePlugin);
       }
     }
@@ -164,16 +163,24 @@ class MainSidebar extends Component<MainSidebarProps> {
     });
 
     clients = clients
-      // currently we can't filter clients for a device, because all clients
-      // are reporting `unknown` as their deviceID, due to a change in Android's
-      // API.
-      //.filter((client: Client) => client.getDevice() === device)
+      .filter((client: Client) => {
+        if (
+          (selectedDevice instanceof AndroidDevice &&
+            client.query.os.toLowerCase() !== 'android') ||
+          (selectedDevice instanceof IOSDevice &&
+            client.query.os.toLowerCase() !== 'ios')
+        ) {
+          return false;
+        } else {
+          return true;
+        }
+      })
       .sort((a, b) => (a.query.app || '').localeCompare(b.query.app));
 
     return (
       <Sidebar position="left" width={200}>
         {devicePlugins
-          .filter(device.supportsPlugin)
+          .filter(selectedDevice.supportsPlugin)
           .map((plugin: Class<SonarDevicePlugin<>>) => (
             <PluginSidebarListItem
               key={plugin.id}
@@ -220,11 +227,10 @@ class MainSidebar extends Component<MainSidebarProps> {
 
 export default connect(
   ({
-    connections: {devices, selectedDeviceIndex, selectedPlugin, selectedApp},
+    connections: {selectedDevice, selectedPlugin, selectedApp},
     server: {clients},
   }) => ({
-    devices,
-    selectedDeviceIndex,
+    selectedDevice,
     selectedPlugin,
     selectedApp,
     clients,

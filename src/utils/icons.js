@@ -6,7 +6,7 @@
  */
 
 // list of icons that are prefetched in the service worker when launching the app
-export const precachedIcons = [
+export const precachedIcons: Array<string> = [
   {
     name: 'arrow-right',
     size: 12,

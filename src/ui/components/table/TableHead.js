@@ -26,6 +26,8 @@ import FlexRow from '../FlexRow.js';
 
 const invariant = require('invariant');
 
+type MenuTemplate = Array<Electron$MenuItemOptions>;
+
 const TableHeaderArrow = styled.text({
   float: 'right',
 });
@@ -198,7 +200,7 @@ export default class TableHead extends PureComponent<{
   columnSizes: TableColumnSizes,
   onColumnResize: ?TableOnColumnResize,
 }> {
-  buildContextMenu = () => {
+  buildContextMenu = (): MenuTemplate => {
     return Object.keys(this.props.columns).map(key => {
       const visible = this.props.columnKeys.includes(key);
       return {

@@ -33,7 +33,12 @@ struct SonarInitConfig {
   /**
   EventBase on which client callbacks should be called.
   */
-  folly::EventBase* worker;
+  folly::EventBase* callbackWorker;
+
+  /**
+  EventBase to be used to maintain the network connection.
+  */
+  folly::EventBase* connectionWorker;
 };
 
 } // namespace sonar

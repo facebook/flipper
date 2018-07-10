@@ -33,6 +33,8 @@
 #define SONAR_CA_FILE_NAME "sonarCA.crt"
 #define CLIENT_CERT_FILE_NAME "device.crt"
 #define PRIVATE_KEY_FILE "privateKey.pem"
+#define WRONG_THREAD_EXIT_MSG \
+  "ERROR: Aborting sonar initialization because it's not running in the sonar thread."
 
 static constexpr int reconnectIntervalSeconds = 2;
 static constexpr int connectionKeepaliveSeconds = 10;
@@ -90,7 +92,7 @@ class Responder : public rsocket::RSocketResponder {
 };
 
 SonarWebSocketImpl::SonarWebSocketImpl(SonarInitConfig config)
-    : deviceData_(config.deviceData), worker_(config.worker) {}
+    : deviceData_(config.deviceData), sonarEventBase_(config.callbackWorker), connectionEventBase_(config.connectionWorker) {}
 
 SonarWebSocketImpl::~SonarWebSocketImpl() {
   stop();
@@ -98,12 +100,16 @@ SonarWebSocketImpl::~SonarWebSocketImpl() {
 
 void SonarWebSocketImpl::start() {
   folly::makeFuture()
-      .via(worker_->getEventBase())
-      .delayedUnsafe(std::chrono::milliseconds(0))
+      .via(sonarEventBase_->getEventBase())
+      .delayed(std::chrono::milliseconds(0))
       .then([this]() { startSync(); });
 }
 
 void SonarWebSocketImpl::startSync() {
+  if (!isRunningInOwnThread()) {
+    SONAR_LOG(WRONG_THREAD_EXIT_MSG);
+    return;
+  }
   if (isOpen()) {
     SONAR_LOG("Already connected");
     return;
@@ -135,7 +141,7 @@ void SonarWebSocketImpl::doCertificateExchange() {
   client_ =
       rsocket::RSocket::createConnectedClient(
           std::make_unique<rsocket::TcpConnectionFactory>(
-              *worker_->getEventBase(), std::move(address)),
+              *connectionEventBase_->getEventBase(), std::move(address)),
           std::move(parameters),
           nullptr,
           std::chrono::seconds(connectionKeepaliveSeconds), // keepaliveInterval
@@ -170,7 +176,7 @@ void SonarWebSocketImpl::connectSecurely() {
   client_ =
       rsocket::RSocket::createConnectedClient(
           std::make_unique<rsocket::TcpConnectionFactory>(
-              *worker_->getEventBase(),
+              *connectionEventBase_->getEventBase(),
               std::move(address),
               std::move(sslContext)),
           std::move(parameters),
@@ -184,8 +190,8 @@ void SonarWebSocketImpl::connectSecurely() {
 
 void SonarWebSocketImpl::reconnect() {
   folly::makeFuture()
-      .via(worker_->getEventBase())
-      .delayedUnsafe(std::chrono::seconds(reconnectIntervalSeconds))
+      .via(sonarEventBase_->getEventBase())
+      .delayed(std::chrono::seconds(reconnectIntervalSeconds))
       .then([this]() { startSync(); });
 }
 
@@ -203,7 +209,7 @@ void SonarWebSocketImpl::setCallbacks(Callbacks* callbacks) {
 }
 
 void SonarWebSocketImpl::sendMessage(const folly::dynamic& message) {
-  worker_->add([this, message]() {
+  sonarEventBase_->add([this, message]() {
     if (client_) {
       client_->getRequester()
           ->fireAndForget(rsocket::Payload(folly::toJson(message)))
@@ -239,7 +245,7 @@ void SonarWebSocketImpl::requestSignedCertFromSonar() {
 
   folly::dynamic message = folly::dynamic::object("method", "signCertificate")(
       "csr", csr.c_str())("destination", absoluteFilePath("").c_str());
-  worker_->add([this, message]() {
+  sonarEventBase_->add([this, message]() {
     client_->getRequester()
         ->fireAndForget(rsocket::Payload(folly::toJson(message)))
         ->subscribe([this]() {
@@ -287,6 +293,10 @@ bool SonarWebSocketImpl::ensureSonarDirExists() {
                   .c_str());
     return false;
   }
+}
+
+bool SonarWebSocketImpl::isRunningInOwnThread() {
+  return sonarEventBase_->isInEventBaseThread();
 }
 
 bool fileExists(std::string fileName) {

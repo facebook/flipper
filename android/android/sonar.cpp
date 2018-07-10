@@ -268,7 +268,8 @@ class JSonarClient : public jni::HybridClass<JSonarClient> {
 
   static void init(
       jni::alias_ref<jclass>,
-      JEventBase* jEventBase,
+      JEventBase* callbackWorker,
+      JEventBase* connectionWorker,
       const std::string host,
       const std::string os,
       const std::string device,
@@ -287,7 +288,8 @@ class JSonarClient : public jni::HybridClass<JSonarClient> {
         std::move(appId),
         std::move(privateAppDirectory)
       },
-      jEventBase->eventBase(),
+      callbackWorker->eventBase(),
+      connectionWorker->eventBase()
     });
   }
 

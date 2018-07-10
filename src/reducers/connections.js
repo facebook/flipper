@@ -9,7 +9,7 @@ import type BaseDevice from '../devices/BaseDevice';
 export type State = {
   devices: Array<BaseDevice>,
   androidEmulators: Array<string>,
-  selectedDeviceIndex: number,
+  selectedDevice: ?BaseDevice,
   selectedPlugin: ?string,
   selectedApp: ?string,
 };
@@ -29,7 +29,7 @@ export type Action =
     }
   | {
       type: 'SELECT_DEVICE',
-      payload: number,
+      payload: BaseDevice,
     }
   | {
       type: 'SELECT_PLUGIN',
@@ -44,7 +44,7 @@ const DEFAULT_PLUGIN = 'DeviceLogs';
 const INITAL_STATE: State = {
   devices: [],
   androidEmulators: [],
-  selectedDeviceIndex: -1,
+  selectedDevice: null,
   selectedApp: null,
   selectedPlugin: DEFAULT_PLUGIN,
 };
@@ -60,7 +60,7 @@ export default function reducer(
         ...state,
         selectedApp: null,
         selectedPlugin: DEFAULT_PLUGIN,
-        selectedDeviceIndex: payload,
+        selectedDevice: payload,
       };
     }
     case 'REGISTER_ANDROID_EMULATORS': {
@@ -73,10 +73,10 @@ export default function reducer(
     case 'REGISTER_DEVICE': {
       const {payload} = action;
       const devices = state.devices.concat(payload);
-      let {selectedDeviceIndex} = state;
+      let {selectedDevice} = state;
       let selection = {};
-      if (selectedDeviceIndex === -1) {
-        selectedDeviceIndex = devices.length - 1;
+      if (!selectedDevice) {
+        selectedDevice = payload;
         selection = {
           selectedApp: null,
           selectedPlugin: DEFAULT_PLUGIN,
@@ -86,17 +86,17 @@ export default function reducer(
         ...state,
         devices,
         // select device if none was selected before
-        selectedDeviceIndex,
+        selectedDevice,
         ...selection,
       };
     }
     case 'UNREGISTER_DEVICES': {
       const {payload} = action;
-      const {selectedDeviceIndex} = state;
+      const {selectedDevice} = state;
       let selectedDeviceWasRemoved = false;
-      const devices = state.devices.filter((device: BaseDevice, i: number) => {
+      const devices = state.devices.filter((device: BaseDevice) => {
         if (payload.has(device.serial)) {
-          if (selectedDeviceIndex === i) {
+          if (selectedDevice === device) {
             // removed device is the selected
             selectedDeviceWasRemoved = true;
           }
@@ -109,7 +109,7 @@ export default function reducer(
       let selection = {};
       if (selectedDeviceWasRemoved) {
         selection = {
-          selectedDeviceIndex: devices.length - 1,
+          selectedDevice: devices[devices.length - 1],
           selectedApp: null,
           selectedPlugin: DEFAULT_PLUGIN,
         };
@@ -134,7 +134,7 @@ export default function reducer(
   }
 }
 
-export const selectDevice = (payload: number): Action => ({
+export const selectDevice = (payload: BaseDevice): Action => ({
   type: 'SELECT_DEVICE',
   payload,
 });

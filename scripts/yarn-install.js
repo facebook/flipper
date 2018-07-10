@@ -9,8 +9,9 @@ const glob = require('glob');
 const path = require('path');
 const {spawn} = require('child_process');
 const PACKAGES = ['static', 'src/plugins/*', 'src/fb/plugins/*'];
+const WINDOWS = /^win/.test(process.platform);
 const YARN_PATH =
-  process.argv.length > 2 ? path.join(__dirname, process.argv[2]) : 'yarn';
+  process.argv.length > 2 ? path.join(__dirname, process.argv[2]) : 'yarn' + (WINDOWS ? '.cmd' : '');
 
 Promise.all(
   PACKAGES.map(
