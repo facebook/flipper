@@ -28,6 +28,7 @@ export type Props<T> = {
   logger: Logger,
   persistedState: T,
   setPersistedState: (state: $Shape<T>) => void,
+  target: PluginTarget,
 };
 
 export class SonarBasePlugin<
@@ -56,7 +57,7 @@ export class SonarBasePlugin<
   onKeyboardAction: ?(action: string) => void;
 
   toJSON() {
-    return this.constructor.title;
+    return `<${this.constructor.name}#${this.constructor.title}>`;
   }
 
   // methods to be overriden by plugins
@@ -65,7 +66,6 @@ export class SonarBasePlugin<
   // methods to be overridden by subclasses
   _init(): void {}
   _teardown(): void {}
-  _setup(target: PluginTarget) {}
 
   dispatchAction(actionData: Actions) {
     // $FlowFixMe
@@ -91,12 +91,9 @@ export class SonarDevicePlugin<S = *, A = *, P = *> extends SonarBasePlugin<
 > {
   device: BaseDevice;
 
-  _setup(target: PluginTarget) {
-    invariant(target instanceof BaseDevice, 'expected instanceof Client');
-    const device: BaseDevice = target;
-
-    this.device = device;
-    super._setup(device);
+  constructor(props: Props<*>) {
+    super(props);
+    this.device = props.target;
   }
 
   _init() {
@@ -105,9 +102,23 @@ export class SonarDevicePlugin<S = *, A = *, P = *> extends SonarBasePlugin<
 }
 
 export class SonarPlugin<S = *, A = *, P = *> extends SonarBasePlugin<S, A, P> {
-  constructor() {
-    super();
+  constructor(props: Props<*>) {
+    super(props);
+    const {id} = this.constructor;
     this.subscriptions = [];
+    // $FlowFixMe props.target will be instance of Client
+    this.realClient = props.target;
+    this.client = {
+      call: (method, params) => this.realClient.call(id, method, params),
+      send: (method, params) => this.realClient.send(id, method, params),
+      subscribe: (method, callback) => {
+        this.subscriptions.push({
+          method,
+          callback,
+        });
+        this.realClient.subscribe(id, method, callback);
+      },
+    };
   }
 
   subscriptions: Array<{
@@ -140,35 +151,11 @@ export class SonarPlugin<S = *, A = *, P = *> extends SonarBasePlugin<S, A, P> {
     return device;
   }
 
-  _setup(target: any) {
-    /* We have to type the above as `any` since if we import the actual Client we have an
-       unresolvable dependency cycle */
-
-    const realClient: Client = target;
-    const id: string = this.constructor.id;
-
-    this.realClient = realClient;
-    this.client = {
-      call: (method, params) => realClient.call(id, method, params),
-      send: (method, params) => realClient.send(id, method, params),
-      subscribe: (method, callback) => {
-        this.subscriptions.push({
-          method,
-          callback,
-        });
-        realClient.subscribe(id, method, callback);
-      },
-    };
-
-    super._setup(realClient);
-  }
-
   _teardown() {
     // automatically unsubscribe subscriptions
     for (const {method, callback} of this.subscriptions) {
       this.realClient.unsubscribe(this.constructor.id, method, callback);
     }
-
     // run plugin teardown
     this.teardown();
     if (this.realClient.connected) {

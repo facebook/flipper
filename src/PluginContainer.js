@@ -107,7 +107,6 @@ class PluginContainer extends Component<Props, State> {
     const {target} = this.state;
     if (ref && target) {
       activateMenuItems(ref);
-      ref._setup(target);
       ref._init();
       this.plugin = ref;
     }
@@ -135,6 +134,7 @@ class PluginContainer extends Component<Props, State> {
               logger: this.props.logger,
               persistedState: pluginStates[pluginKey] || {},
               setPersistedState: state => setPluginState({pluginKey, state}),
+              target,
               ref: this.refChanged,
             })}
           </ErrorBoundary>
