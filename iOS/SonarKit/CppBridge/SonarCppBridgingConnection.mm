@@ -6,7 +6,9 @@
  *
  */
 #import "SonarCppBridgingConnection.h"
-#import "FBCxxFollyDynamicConvert.h"
+
+#import <FBCxxUtils/FBCxxFollyDynamicConvert.h>
+
 #import "SonarCppBridgingResponder.h"
 
 @implementation SonarCppBridgingConnection

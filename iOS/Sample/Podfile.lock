@@ -27,6 +27,8 @@ PODS:
     - OpenSSL-Static (= 1.0.2.c1)
     - PeerTalk (~> 0.0.2)
     - Sonar (~> 0.0.1)
+    - SonarKit/FBDefines
+  - SonarKit/FBDefines (0.0.2)
   - SonarKit/SKIOSNetworkPlugin (0.0.2):
     - SonarKit/Core
     - SonarKit/SonarKitNetworkPlugin
@@ -83,10 +85,10 @@ SPEC CHECKSUMS:
   PeerTalk: 77481b0a8136f226b90ccf828d6061f70139ffde
   RSocket: 4fdb7e562db30a2d4fceddefdc601749ffc9ebe2
   Sonar: 38a48b88369cfa48f1a36150d57e2a72ef6fd33c
-  SonarKit: 74f3b4467ed615b15abae6c92e2ed2f3cee94ee7
+  SonarKit: 72c98c3153be23159b0e36f4e30a3ec281de2881
   Yoga: 73760f4a586236028db67df7f8373b30f3cf2bf5
   YogaKit: c3e9ab94d9fbb548d861eb65985aa01e3a1fffe6
 
-PODFILE CHECKSUM: c54ff9ff7ba2eaa89bd100f162edec3d230070e2
+PODFILE CHECKSUM: f03deacb40467262eb789c1f0b96a1154a1c1301
 
 COCOAPODS: 1.5.3

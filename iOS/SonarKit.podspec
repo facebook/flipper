@@ -16,19 +16,32 @@ Pod::Spec.new do |spec|
   spec.platforms = { :ios => "8.4" }
   spec.default_subspecs = "Core"
 
+  # This subspec is necessary since FBMacros.h is imported as <FBDefines/FBMacros.h>
+  # inside SKMacros.h, which is a public header file. Defining this directory as a
+  # subspec with header_dir = 'FBDefines' allows this to work, even though it wouldn't
+  # generally (you would need to import <SonarKit/FBDefines/FBMacros.h>)
+  spec.subspec 'FBDefines' do |ss|
+    ss.header_dir = 'FBDefines'
+    ss.compiler_flags = folly_compiler_flags
+    ss.source_files = 'iOS/SonarKit/FBDefines/**/*.h'
+    ss.public_header_files = 'iOS/SonarKit/FBDefines/**/*.h'
+  end
+
   spec.subspec "Core" do |ss|
+    ss.dependency 'SonarKit/FBDefines'
     ss.dependency 'Folly', '~>1.0'
     ss.dependency 'Sonar', '~>0.0.1'
     ss.dependency 'CocoaAsyncSocket', '~> 7.6'
     ss.dependency 'PeerTalk', '~>0.0.2'
     ss.dependency 'OpenSSL-Static', '1.0.2.c1'
-    ss.compiler_flags = '-DFB_SONARKIT_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_LIBGFLAGS=0 -DFOLLY_HAVE_LIBJEMALLOC=0 -DFOLLY_HAVE_PREADV=0 -DFOLLY_HAVE_PWRITEV=0 -DFOLLY_HAVE_TFO=0 -DFOLLY_USE_SYMBOLIZER=0'
+    ss.compiler_flags = folly_compiler_flags
     ss.source_files = 'iOS/SonarKit/FBDefines/*.{h,cpp,m,mm}', 'iOS/SonarKit/CppBridge/*.{h,mm}', 'iOS/SonarKit/FBCxxUtils/*.{h,mm}', 'iOS/SonarKit/Utilities/**/*.{h,m}', 'iOS/SonarKit/*.{h,m,mm}'
     ss.public_header_files = 'iOS/SonarKit/**/{SonarClient,SonarPlugin,SonarConnection,SonarResponder,SKMacros,FBMacros}.h'
-    header_search_paths = "\"$(PODS_ROOT)\"/Headers/Private/SonarKit/** \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/PeerTalkSonar\""
+    header_search_paths = "\"$(PODS_ROOT)/SonarKit/iOS/SonarKit\" \"$(PODS_ROOT)\"/Headers/Private/SonarKit/** \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/PeerTalkSonar\""
     ss.pod_target_xcconfig = { "USE_HEADERMAP" => "NO",
                              "DEFINES_MODULE" => "YES",
                              "HEADER_SEARCH_PATHS" => header_search_paths }
+    ss.preserve_paths = 'iOS/SonarKit/FBCccUtils/*.h', 'iOS/SonarKit/FBDefines/*.h'
   end
 
   spec.subspec "SonarKitLayoutPlugin" do |ss|
