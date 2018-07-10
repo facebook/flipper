@@ -87,6 +87,8 @@ export default class AutoUpdateVersion extends Component<{}, State> {
         )}
         {this.state.updater === 'update-downloaded' && (
           <span
+            tabIndex={-1}
+            role="button"
             title="Update available. Restart Sonar."
             onClick={remote.autoUpdater.quitAndInstall}>
             <Glyph color={colors.light30} name="breaking-news" />
