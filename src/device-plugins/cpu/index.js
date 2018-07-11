@@ -104,13 +104,13 @@ export default class CPUFrequencyTable extends SonarDevicePlugin<CPUState> {
   intervalID: ?IntervalID;
   device: AndroidDevice;
 
-  init() {
-    this.setState({
-      cpuFreq: [],
-      cpuCount: 0,
-      monitoring: false,
-    });
+  state = {
+    cpuFreq: [],
+    cpuCount: 0,
+    monitoring: false,
+  };
 
+  init() {
     this.adbClient = this.device.adb;
 
     // check how many cores we have on this device

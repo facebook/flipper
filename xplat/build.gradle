@@ -30,4 +30,3 @@ android {
         implementation project(':folly')
     }
 }
-//'armeabi-v7a'

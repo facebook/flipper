@@ -22,4 +22,4 @@ module.name_mapper='sonar' -> '<PROJECT_ROOT>/src/index.js'
 suppress_type=$FlowFixMe
 
 [version]
-0.70.0
+0.76.0

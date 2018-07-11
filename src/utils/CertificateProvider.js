@@ -171,7 +171,7 @@ export default class CertificateProvider {
           ),
       );
     }
-    if (os === 'iOS') {
+    if (os === 'iOS' || os === 'windows') {
       fs.writeFileSync(destination + filename, contents);
       return Promise.resolve();
     }

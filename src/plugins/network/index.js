@@ -81,7 +81,7 @@ const COLUMNS = {
   },
 };
 
-export function getHeaderValue(headers: Array<Header>, key: string) {
+export function getHeaderValue(headers: Array<Header>, key: string): string {
   for (const header of headers) {
     if (header.key.toLowerCase() === key.toLowerCase()) {
       return header.value;
