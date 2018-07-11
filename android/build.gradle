@@ -148,7 +148,7 @@ task downloadOpenSSLSource(dependsOn: [], type: Download) {
 }
 
 task downloadOpenSSLLibs(dependsOn: [], type: Download) {
-    src 'https://github.com/passy/openssl-android/releases/download/1.1.0h/openssl-1.1.0h-prebuilt.tar.gz'
+    src 'https://github.com/passy/openssl-android/releases/download/1.1.0h-r2/openssl-1.1.0h-r2-prebuilt.tar.gz'
     onlyIfNewer true
     overwrite false
     dest new File(downloadsDir, 'openssl-1.1.0h-prebuilt.tar.gz');
@@ -237,9 +237,6 @@ android {
             }
             res {
                 srcDir 'res'
-            }
-            jniLibs {
-                srcDir "$thirdPartyNdkDir/OpenSSL/libs/"
             }
         }
     }
