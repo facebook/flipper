@@ -121,7 +121,6 @@ class PluginContainer extends Component<Props, State> {
     }
 
     return (
-      // $FlowFixMe: Flow doesn't know of React.Fragment yet
       <React.Fragment>
         <Container key="plugin">
           <ErrorBoundary

@@ -1,5 +1,5 @@
-// flow-typed signature: f0e399a136d6e8dc8b1fbdc078e2850c
-// flow-typed version: ed397013d1/express_v4.x.x/flow_>=v0.32.x
+// flow-typed signature: 45384ed25d019e0595020cc30e78b80f
+// flow-typed version: d11eab7bb5/express_v4.x.x/flow_>=v0.32.x
 
 import type { Server } from 'http';
 import type { Socket } from 'net';
@@ -21,7 +21,7 @@ declare type express$RequestParams = {
 
 declare class express$Request extends http$IncomingMessage mixins express$RequestResponseBase {
   baseUrl: string;
-  body: any;
+  body: mixed;
   cookies: {[cookie: string]: string};
   connection: Socket;
   fresh: boolean;
@@ -161,20 +161,18 @@ declare class express$Router extends express$Route {
       id: string
     ) => mixed
   ): void;
-
-  // Can't use regular callable signature syntax due to https://github.com/facebook/flow/issues/3084
-  $call: (req: http$IncomingMessage, res: http$ServerResponse, next?: ?express$NextFunction) => void;
+  (req: http$IncomingMessage, res: http$ServerResponse, next?: ?express$NextFunction): void;
 }
 
 declare class express$Application extends express$Router mixins events$EventEmitter {
   constructor(): void;
   locals: {[name: string]: mixed};
   mountpath: string;
-  listen(port: number, hostname?: string, backlog?: number, callback?: (err?: ?Error) => mixed): Server;
-  listen(port: number, hostname?: string, callback?: (err?: ?Error) => mixed): Server;
-  listen(port: number, callback?: (err?: ?Error) => mixed): Server;
-  listen(path: string, callback?: (err?: ?Error) => mixed): Server;
-  listen(handle: Object, callback?: (err?: ?Error) => mixed): Server;
+  listen(port: number, hostname?: string, backlog?: number, callback?: (err?: ?Error) => mixed): ?Server;
+  listen(port: number, hostname?: string, callback?: (err?: ?Error) => mixed): ?Server;
+  listen(port: number, callback?: (err?: ?Error) => mixed): ?Server;
+  listen(path: string, callback?: (err?: ?Error) => mixed): ?Server;
+  listen(handle: Object, callback?: (err?: ?Error) => mixed): ?Server;
   disable(name: string): void;
   disabled(name: string): boolean;
   enable(name: string): express$Application;
@@ -187,6 +185,8 @@ declare class express$Application extends express$Router mixins events$EventEmit
   set(name: string, value: mixed): mixed;
   render(name: string, optionsOrFunction: {[name: string]: mixed}, callback: express$RenderCallback): void;
   handle(req: http$IncomingMessage, res: http$ServerResponse, next?: ?express$NextFunction): void;
+  // callable signature is not inherited
+  (req: http$IncomingMessage, res: http$ServerResponse, next?: ?express$NextFunction): void;
 }
 
 declare module 'express' {

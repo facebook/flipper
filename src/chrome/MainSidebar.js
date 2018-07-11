@@ -195,7 +195,6 @@ class MainSidebar extends Component<MainSidebarProps> {
             />
           ))}
         {clients.map((client: Client) => (
-          // $FlowFixMe: Flow doesn't know of React.Fragment yet
           <React.Fragment key={client.id}>
             <SidebarHeader>{client.query.app}</SidebarHeader>
             {plugins
