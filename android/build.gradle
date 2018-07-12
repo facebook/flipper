@@ -70,6 +70,8 @@ project.afterEvaluate {
     preBuild.dependsOn prepareAllLibs
 }
 
+project.clean.dependsOn cleanNative
+
 apply from: rootProject.file('gradle/release.gradle')
 
 task sourcesJar(type: Jar) {

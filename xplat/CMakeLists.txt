@@ -5,15 +5,15 @@ set(PACKAGE_NAME      sonarcpp)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-set(third_party_ndk ${PROJECT_SOURCE_DIR}/../android/build/third-party-ndk)
-set(libfolly_DIR ${third_party_ndk}/folly/)
-set(rsocket_DIR ${third_party_ndk}/RSocket/)
+set(external_DIR ${PROJECT_SOURCE_DIR}/../android/external)
+set(libfolly_DIR ${external_DIR}/folly/)
+set(rsocket_DIR ${external_DIR}/RSocket/)
 set(easywsclient_DIR ../libs/)
-set(glog_DIR ${third_party_ndk}/glog)
-set(BOOST_DIR ${third_party_ndk}/boost/boost_1_63_0/)
-set(LIBEVENT_DIR ${third_party_ndk}/LibEvent/libevent-release-2.1.9/)
-set(DOUBLECONVERSION_DIR ${third_party_ndk}/double-conversion/double-conversion-3.0.0/)
-set(OPENSSL_DIR ${third_party_ndk}/OpenSSL/openssl-1.1.0h/)
+set(glog_DIR ${external_DIR}/glog)
+set(BOOST_DIR ${external_DIR}/boost/boost_1_63_0/)
+set(LIBEVENT_DIR ${external_DIR}/LibEvent/libevent-release-2.1.9/)
+set(DOUBLECONVERSION_DIR ${external_DIR}/double-conversion/double-conversion-3.0.0/)
+set(OPENSSL_DIR ${external_DIR}/OpenSSL/openssl-1.1.0h/)
 
 list(APPEND dir_list ./)
 list(APPEND dir_list ./Sonar)
@@ -67,7 +67,7 @@ target_include_directories(${PACKAGE_NAME} PRIVATE
         ${glog_DIR}/glog-0.3.5/src/
     )
 
-set(OPENSSL_LINK_DIRECTORIES ${third_party_ndk}/OpenSSL/libs/${ANDROID_ABI}/)
+set(OPENSSL_LINK_DIRECTORIES ${external_DIR}/OpenSSL/libs/${ANDROID_ABI}/)
 find_path(OPENSSL_LIBRARY libssl.a HINTS ${OPENSSL_LINK_DIRECTORIES})
 
 target_link_libraries(${PACKAGE_NAME} folly rsocket glog double-conversion log event ${OPENSSL_LINK_DIRECTORIES}/libssl.a ${OPENSSL_LINK_DIRECTORIES}/libcrypto.a)

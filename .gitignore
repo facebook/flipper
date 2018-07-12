@@ -7,6 +7,8 @@ website/build
 build/
 yarn-error.log
 
+android/external/
+
 # Android / Intellij
 local.properties
 *.iml
