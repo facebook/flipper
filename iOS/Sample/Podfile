@@ -7,7 +7,7 @@ swift_version = "4.1"
 
 target 'Sample' do
 
-  pod 'SonarKit', '~>0.0.1'
+  pod 'SonarKit', '~>0.6'
   post_install do |installer|
 
         installer.pods_project.targets.each do |target|
