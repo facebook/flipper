@@ -23,3 +23,5 @@ export class AXElementsInspector extends Component<{
     return null;
   }
 }
+
+export const AXToggleButtonEnabled: boolean = false;
