@@ -1,15 +1,15 @@
-project 'Sample.xcodeproj'
+project 'SampleSwift.xcodeproj'
 source 'https://github.com/facebook/Sonar.git'
 source 'https://github.com/CocoaPods/Specs'
 swift_version = "4.1"
 
-target 'Sample' do
+target 'SampleSwift' do
   pod 'SonarKit', '~> 0.0.2'
-  pod 'SonarKit/SonarKitLayoutComponentKitSupport', '~> 0.0.2'
-  pod 'SonarKit/SKIOSNetworkPlugin', '~> 0.0.2'
+  # Layout and network plugins are not yet supported for swift projects
+  # pod 'SonarKit/SonarKitLayoutComponentKitSupport', '~> 0.0.2'
+  # pod 'SonarKit/SKIOSNetworkPlugin', '~> 0.0.2'
 
   post_install do |installer|
-
         installer.pods_project.targets.each do |target|
             if ['YogaKit'].include? target.name
                 target.build_configurations.each do |config|

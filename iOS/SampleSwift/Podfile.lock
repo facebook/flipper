@@ -2,8 +2,6 @@ PODS:
   - boost-for-react-native (1.63.0)
   - CocoaAsyncSocket (7.6.3)
   - CocoaLibEvent (1.0.0)
-  - ComponentKit (0.23):
-    - Yoga (~> 1.6)
   - DoubleConversion (1.1.5)
   - Folly (1.0.0):
     - boost-for-react-native
@@ -31,35 +29,15 @@ PODS:
     - SonarKit/FBDefines
   - SonarKit/FBCxxUtils (0.0.2)
   - SonarKit/FBDefines (0.0.2)
-  - SonarKit/SKIOSNetworkPlugin (0.0.2):
-    - SonarKit/Core
-    - SonarKit/SonarKitNetworkPlugin
-  - SonarKit/SonarKitLayoutComponentKitSupport (0.0.2):
-    - ComponentKit
-    - SonarKit/Core
-    - SonarKit/SonarKitLayoutPlugin
-    - Yoga (~> 1.9)
-  - SonarKit/SonarKitLayoutPlugin (0.0.2):
-    - SonarKit/Core
-    - Yoga (~> 1.9)
-    - YogaKit (~> 1.8)
-  - SonarKit/SonarKitNetworkPlugin (0.0.2):
-    - SonarKit/Core
-  - Yoga (1.9)
-  - YogaKit (1.9):
-    - Yoga (~> 1.8)
 
 DEPENDENCIES:
   - SonarKit (from `../../`)
-  - SonarKit/SKIOSNetworkPlugin (from `../../`)
-  - SonarKit/SonarKitLayoutComponentKitSupport (from `../../`)
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
     - boost-for-react-native
     - CocoaAsyncSocket
     - CocoaLibEvent
-    - ComponentKit
     - DoubleConversion
     - glog
     - OpenSSL-Static
@@ -68,8 +46,6 @@ SPEC REPOS:
     - PeerTalk
     - RSocket
     - Sonar
-    - Yoga
-    - YogaKit
 
 EXTERNAL SOURCES:
   SonarKit:
@@ -79,7 +55,6 @@ SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   CocoaAsyncSocket: eafaa68a7e0ec99ead0a7b35015e0bf25d2c8987
   CocoaLibEvent: 2fab71b8bd46dd33ddb959f7928ec5909f838e3f
-  ComponentKit: bf8b4c4e7448bd15b3a8e5a71174ea7aa6cea98d
   DoubleConversion: e22e0762848812a87afd67ffda3998d9ef29170c
   Folly: ac702dfbe9294be1002f9cddaa0c2ddb99b16288
   glog: 1de0bb937dccdc981596d3b5825ebfb765017ded
@@ -88,9 +63,7 @@ SPEC CHECKSUMS:
   RSocket: 4fdb7e562db30a2d4fceddefdc601749ffc9ebe2
   Sonar: 38a48b88369cfa48f1a36150d57e2a72ef6fd33c
   SonarKit: 28f4cddc1506597fd908193ec6f10417b4470dae
-  Yoga: 73760f4a586236028db67df7f8373b30f3cf2bf5
-  YogaKit: c3e9ab94d9fbb548d861eb65985aa01e3a1fffe6
 
-PODFILE CHECKSUM: f03deacb40467262eb789c1f0b96a1154a1c1301
+PODFILE CHECKSUM: 6ea6f403d6bb1a9198f82da33647bb2b76ac103a
 
 COCOAPODS: 1.5.3
