@@ -2,24 +2,22 @@
 
 package com.facebook.sonar.sample;
 
+import android.util.Log;
+import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
+import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.widget.Text;
-import okhttp3.Request;
-import okhttp3.Response;
-import okhttp3.RequestBody;
-import okhttp3.FormBody;
-import okhttp3.FormBody.Builder;
-import okhttp3.OkHttpClient;
+import java.io.IOException;
 import okhttp3.Call;
 import okhttp3.Callback;
-import com.facebook.litho.ClickEvent;
-import android.util.Log;
-import java.io.IOException;
-import com.facebook.litho.annotations.OnEvent;
+import okhttp3.FormBody;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 @LayoutSpec
 public class RootComponentSpec {
