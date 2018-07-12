@@ -166,11 +166,6 @@ export default class Layout extends SonarPlugin<InspectorState> {
     SelectElement(state: InspectorState, {key}: SelectElementArgs) {
       return {
         selected: key,
-      };
-    },
-
-    SelectAXElement(state: InspectorState, {key}: SelectElementArgs) {
-      return {
         AXselected: key,
       };
     },
@@ -402,7 +397,7 @@ export default class Layout extends SonarPlugin<InspectorState> {
     });
 
     if (AXToggleButtonEnabled) {
-      this.client.call('getRoot').then((element: Element) => {
+      this.client.call('getAXRoot').then((element: Element) => {
         this.dispatchAction({elements: [element], type: 'UpdateAXElements'});
         this.dispatchAction({root: element.id, type: 'SetAXRoot'});
         this.performInitialExpand(element, true).then(() => {
@@ -511,7 +506,7 @@ export default class Layout extends SonarPlugin<InspectorState> {
     if (ids.length > 0) {
       performance.mark('LayoutInspectorGetNodes');
       return this.client
-        .call('getNodes', {ids})
+        .call(ax ? 'getAXNodes' : 'getNodes', {ids})
         .then(({elements}: GetNodesResult) => {
           this.props.logger.trackTimeSince('LayoutInspectorGetNodes');
           return Promise.resolve(elements);
@@ -629,7 +624,7 @@ export default class Layout extends SonarPlugin<InspectorState> {
   });
 
   onAXElementSelected = debounce((key: ElementID) => {
-    this.dispatchAction({key, type: 'SelectAXElement'});
+    this.dispatchAction({key, type: 'SelectElement'});
     this.client.send('setHighlighted', {id: key});
     this.getNodes([key], true, true).then((elements: Array<Element>) => {
       this.dispatchAction({elements, type: 'UpdateAXElements'});

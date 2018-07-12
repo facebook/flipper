@@ -12,7 +12,9 @@ import com.facebook.sonar.core.SonarArray;
 import com.facebook.sonar.core.SonarConnection;
 import com.facebook.sonar.core.SonarDynamic;
 import com.facebook.sonar.core.SonarObject;
+import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nullable;
 
 /**
  * A NodeDescriptor is an object which known how to expose an Object of type T to the ew Inspector.
@@ -90,17 +92,32 @@ public abstract class NodeDescriptor<T> {
    */
   public abstract String getName(T node) throws Exception;
 
+  /** Gets name for AX tree. */
+  public String getAXName(T node) throws Exception {
+    return "";
+  }
+
   /** @return The number of children this node exposes in the inspector. */
   public abstract int getChildCount(T node) throws Exception;
 
   /** @return The child at index. */
   public abstract Object getChildAt(T node, int index) throws Exception;
 
+  /** Gets child at index for AX tree. Ignores non-view children. */
+  public @Nullable Object getAXChildAt(T node, int index) throws Exception {
+    return null;
+  }
+
   /**
    * Get the data to show for this node in the sidebar of the inspector. The object will be showen
    * in order and with a header matching the given name.
    */
   public abstract List<Named<SonarObject>> getData(T node) throws Exception;
+
+  /** Gets data for AX tree */
+  public List<Named<SonarObject>> getAXData(T node) throws Exception {
+    return Collections.EMPTY_LIST;
+  }
 
   /**
    * Set a value on the provided node at the given path. The path will match a key path in the data
@@ -114,6 +131,11 @@ public abstract class NodeDescriptor<T> {
    * up inline in the elements inspector. See {@link Named} for more information.
    */
   public abstract List<Named<String>> getAttributes(T node) throws Exception;
+
+  /** Gets attributes for AX tree */
+  public List<Named<String>> getAXAttributes(T node) throws Exception {
+    return Collections.EMPTY_LIST;
+  }
 
   /**
    * Highlight this node. Use {@link HighlightedOverlay} if possible. This is used to highlight a

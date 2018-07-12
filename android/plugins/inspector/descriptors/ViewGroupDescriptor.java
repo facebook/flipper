@@ -100,6 +100,12 @@ public class ViewGroupDescriptor extends NodeDescriptor<ViewGroup> {
   }
 
   @Override
+  public String getAXName(ViewGroup node) throws Exception {
+    NodeDescriptor descriptor = descriptorForClass(View.class);
+    return descriptor.getAXName(node);
+  }
+
+  @Override
   public int getChildCount(ViewGroup node) {
     int childCount = 0;
     for (int i = 0, count = node.getChildCount(); i < count; i++) {
@@ -124,6 +130,21 @@ public class ViewGroupDescriptor extends NodeDescriptor<ViewGroup> {
           return fragment;
         }
 
+        return child;
+      }
+    }
+    return null;
+  }
+
+  @Override
+  public @Nullable Object getAXChildAt(ViewGroup node, int index) {
+    for (int i = 0, count = node.getChildCount(); i < count; i++) {
+      final View child = node.getChildAt(i);
+      if (child instanceof HiddenNode) {
+        continue;
+      }
+
+      if (i >= index) {
         return child;
       }
     }
@@ -157,6 +178,14 @@ public class ViewGroupDescriptor extends NodeDescriptor<ViewGroup> {
 
     props.addAll(descriptor.getData(node));
 
+    return props;
+  }
+
+  @Override
+  public List<Named<SonarObject>> getAXData(ViewGroup node) throws Exception {
+    final List<Named<SonarObject>> props = new ArrayList<>();
+    final NodeDescriptor descriptor = descriptorForClass(View.class);
+    props.addAll(descriptor.getAXData(node));
     return props;
   }
 
@@ -198,6 +227,12 @@ public class ViewGroupDescriptor extends NodeDescriptor<ViewGroup> {
   public List<Named<String>> getAttributes(ViewGroup node) throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(View.class);
     return descriptor.getAttributes(node);
+  }
+
+  @Override
+  public List<Named<String>> getAXAttributes(ViewGroup node) throws Exception {
+    final NodeDescriptor descriptor = descriptorForClass(View.class);
+    return descriptor.getAXAttributes(node);
   }
 
   @Override

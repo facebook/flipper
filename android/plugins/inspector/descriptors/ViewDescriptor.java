@@ -18,6 +18,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.v4.view.MarginLayoutParamsCompat;
 import android.support.v4.view.ViewCompat;
+import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;
 import android.util.SparseArray;
 import android.view.Gravity;
 import android.view.View;
@@ -37,10 +38,12 @@ import com.facebook.sonar.plugins.inspector.NodeDescriptor;
 import com.facebook.sonar.plugins.inspector.Touch;
 import com.facebook.sonar.plugins.inspector.descriptors.utils.AccessibilityUtil;
 import com.facebook.sonar.plugins.inspector.descriptors.utils.EnumMapping;
+import com.facebook.sonar.plugins.inspector.descriptors.utils.ViewAccessibilityHelper;
 import com.facebook.stetho.common.android.ResourcesUtil;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nullable;
 
@@ -79,12 +82,28 @@ public class ViewDescriptor extends NodeDescriptor<View> {
   }
 
   @Override
+  public String getAXName(View node) {
+    AccessibilityNodeInfoCompat nodeInfo = ViewAccessibilityHelper.createNodeInfoFromView(node);
+    if (nodeInfo == null) {
+      return "NULL NODEINFO";
+    }
+    String name = nodeInfo.getClassName().toString();
+    nodeInfo.recycle();
+    return name;
+  }
+
+  @Override
   public int getChildCount(View node) {
     return 0;
   }
 
   @Override
   public @Nullable Object getChildAt(View node, int index) {
+    return null;
+  }
+
+  @Override
+  public @Nullable Object getAXChildAt(View node, int index) {
     return null;
   }
 
@@ -174,6 +193,11 @@ public class ViewDescriptor extends NodeDescriptor<View> {
     return Arrays.asList(
         new Named<>("View", viewProps.build()),
         new Named<>("Accessibility", getAccessibilityData(node)));
+  }
+
+  @Override
+  public List<Named<SonarObject>> getAXData(View node) {
+    return Arrays.asList(new Named<>("AX Properties", getAccessibilityData(node)));
   }
 
   private static SonarObject getAccessibilityData(View view) {
@@ -406,6 +430,10 @@ public class ViewDescriptor extends NodeDescriptor<View> {
     }
 
     return attributes;
+  }
+
+  public List<Named<String>> getAXAttributes(View node) throws Exception {
+    return Collections.EMPTY_LIST;
   }
 
   @Nullable
