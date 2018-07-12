@@ -3,11 +3,10 @@ apply plugin: 'maven'
 apply plugin: 'de.undercouch.download'
 
 import de.undercouch.gradle.tasks.download.Download
-import org.apache.tools.ant.taskdefs.condition.Os
 import org.apache.tools.ant.filters.ReplaceTokens
 
-def downloadsDir = new File("$buildDir/downloads")
-def thirdPartyNdkDir = new File("$buildDir/third-party-ndk")
+final def downloadsDir = new File("$buildDir/downloads")
+final def thirdPartyNdkDir = new File("$buildDir/third-party-ndk")
 
 task createNativeDepsDirectories {
     downloadsDir.mkdirs()
