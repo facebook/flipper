@@ -9,8 +9,11 @@ buildscript {
         classpath "com.github.dcendents:android-maven-gradle-plugin:${ANDROID_MAVEN_GRADLE_PLUGIN_VERSION}"
         classpath "com.github.ben-manes:gradle-versions-plugin:${GRADLE_VERSIONS_PLUGIN_VERSION}"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${KOTLIN_VERSION}"
-        classpath 'de.undercouch:gradle-download-task:3.1.2'
     }
+}
+
+plugins {
+    id 'de.undercouch.download' version '3.4.3' apply false
 }
 
 subprojects {
@@ -20,6 +23,7 @@ subprojects {
         mavenCentral()
         jcenter()
     }
+    apply plugin: 'de.undercouch.download'
 }
 
 ext {

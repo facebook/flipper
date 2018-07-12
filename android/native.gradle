@@ -1,0 +1,196 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
+final def downloadsDir = new File("$buildDir/downloads")
+final def thirdPartyNdkDir = new File("$buildDir/third-party-ndk")
+
+task createNativeDepsDirectories {
+    downloadsDir.mkdirs()
+    thirdPartyNdkDir.mkdirs()
+}
+
+task downloadGlog(dependsOn: createNativeDepsDirectories, type: Download) {
+    src 'https://github.com/google/glog/archive/v0.3.5.tar.gz'
+    onlyIfNewer true
+    overwrite false
+    dest new File(downloadsDir, 'glog-0.3.5.tar.gz')
+}
+
+task prepareGlog(dependsOn: [downloadGlog], type: Copy) {
+    from tarTree(downloadGlog.dest)
+    from './third-party/glog/'
+    include 'glog-0.3.5/src/**/*', 'Android.mk', 'config.h', 'build.gradle', 'CMakeLists.txt', 'ApplicationManifest.xml'
+    includeEmptyDirs = false
+    filesMatching('**/*.h.in') {
+        filter(ReplaceTokens, tokens: [
+                ac_cv_have_unistd_h: '1',
+                ac_cv_have_stdint_h: '1',
+                ac_cv_have_systypes_h: '1',
+                ac_cv_have_inttypes_h: '1',
+                ac_cv_have_libgflags: '0',
+                ac_google_start_namespace: 'namespace google {',
+                ac_cv_have_uint16_t: '1',
+                ac_cv_have_u_int16_t: '1',
+                ac_cv_have___uint16: '0',
+                ac_google_end_namespace: '}',
+                ac_cv_have___builtin_expect: '1',
+                ac_google_namespace: 'google',
+                ac_cv___attribute___noinline: '__attribute__ ((noinline))',
+                ac_cv___attribute___noreturn: '__attribute__ ((noreturn))',
+                ac_cv___attribute___printf_4_5: '__attribute__((__format__ (__printf__, 4, 5)))'
+        ])
+        it.path = (it.name - '.in')
+    }
+    into "$thirdPartyNdkDir/glog"
+}
+
+task finalizeGlog(dependsOn: [prepareGlog], type: Copy) {
+    from './third-party/glog/'
+    include 'logging.cc'
+    includeEmptyDirs = false
+    into "$thirdPartyNdkDir/glog/glog-0.3.5/src/"
+}
+
+task downloadDoubleConversion(dependsOn: createNativeDepsDirectories, type: Download) {
+    src 'https://github.com/google/double-conversion/archive/v3.0.0.tar.gz'
+    onlyIfNewer true
+    overwrite false
+    dest new File(downloadsDir, 'double-conversion-3.0.0.tar.gz')
+}
+
+task prepareDoubleConversion(dependsOn: [downloadDoubleConversion], type: Copy) {
+    from tarTree(downloadDoubleConversion.dest)
+    from './third-party/DoubleConversion/'
+    include 'double-conversion-3.0.0/**/*', 'build.gradle', 'CMakeLists.txt', 'ApplicationManifest.xml'
+    includeEmptyDirs = false
+    into "$thirdPartyNdkDir/double-conversion"
+}
+
+task downloadBoost(dependsOn: createNativeDepsDirectories, type: Download) {
+    src 'https://github.com/react-native-community/boost-for-react-native/releases/download/v1.63.0-0/boost_1_63_0.tar.gz'
+    onlyIfNewer true
+    overwrite true
+    dest new File(downloadsDir, 'boost_1_63_0.tar.gz')
+}
+
+task prepareBoost(dependsOn: [downloadBoost], type: Copy) {
+    from tarTree(resources.gzip(downloadBoost.dest))
+    include 'boost_1_63_0/boost/**/*.hpp', 'boost_1_63_0/boost/**/*.h', 'boost/boost/**/*.hpp', 'boost/boost/**/*.h'
+    includeEmptyDirs = false
+    into "$thirdPartyNdkDir/boost"
+    doLast {
+        file("$thirdPartyNdkDir/boost/boost").renameTo("$thirdPartyNdkDir/boost/boost_1_63_0")
+    }
+}
+
+task downloadFolly(dependsOn: createNativeDepsDirectories, type: Download) {
+    src 'https://github.com/facebook/folly/archive/v2018.06.18.00.tar.gz'
+    onlyIfNewer true
+    overwrite false
+    dest new File(downloadsDir, 'folly-2018.06.18.00.tar.gz');
+}
+
+task prepareFolly(dependsOn: [downloadFolly], type: Copy) {
+    from tarTree(downloadFolly.dest)
+    from './third-party/Folly/'
+    include 'folly-2018.06.18.00/folly/**/*', 'build.gradle', 'CMakeLists.txt', 'ApplicationManifest.xml'
+    eachFile {fname -> fname.path = (fname.path - "folly-2018.06.18.00/")}
+    includeEmptyDirs = false
+    into "$thirdPartyNdkDir/folly"
+}
+
+//TODO: Get rid off this hack.
+task finalizeFolly(dependsOn: [prepareFolly], type: Copy) {
+    from './third-party/Folly/'
+    include 'AsyncServerSocket.cpp'
+    into "$thirdPartyNdkDir/folly/folly/io/async/"
+}
+
+task downloadLibEvent(dependsOn: [], type: Download) {
+    src 'https://github.com/priteshrnandgaonkar/libevent/archive/release-2.1.9.tar.gz'
+    onlyIfNewer true
+    overwrite false
+    dest new File(downloadsDir, 'libevent-release-2.1.9.tar.gz');
+}
+
+task prepareLibEvent(dependsOn: [downloadLibEvent], type: Copy) {
+    from tarTree(downloadLibEvent.dest)
+    from './third-party/LibEvent/'
+    include 'libevent-release-2.1.9/**/*', 'build.gradle', 'ApplicationManifest.xml'
+    includeEmptyDirs = false
+    into "$thirdPartyNdkDir/LibEvent"
+}
+
+task finalizeEvent(dependsOn: [prepareLibEvent], type: Copy) {
+    from './third-party/LibEvent/'
+    include 'event-config.h'
+    includeEmptyDirs = false
+    into "$thirdPartyNdkDir/LibEvent/libevent-release-2.1.9/include/event2/"
+}
+
+task finalizeEvent2(dependsOn: [finalizeEvent], type: Copy) {
+    from './third-party/LibEvent/'
+    include 'libs/**/*'
+    includeEmptyDirs = false
+    into "$thirdPartyNdkDir/LibEvent/"
+}
+
+task downloadOpenSSLSource(dependsOn: [], type: Download) {
+    src 'https://www.openssl.org/source/openssl-1.1.0h.tar.gz'
+    onlyIfNewer true
+    overwrite false
+    dest new File(downloadsDir, 'openssl-android-1.0.0.tar.gz');
+}
+
+task downloadOpenSSLLibs(dependsOn: [], type: Download) {
+    src 'https://github.com/passy/openssl-android/releases/download/1.1.0h-r2/openssl-1.1.0h-r2-prebuilt.tar.gz'
+    onlyIfNewer true
+    overwrite false
+    dest new File(downloadsDir, 'openssl-1.1.0h-prebuilt.tar.gz');
+}
+
+task prepareOpenSSL(dependsOn: [downloadOpenSSLSource, downloadOpenSSLLibs], type: Copy) {
+    from tarTree(downloadOpenSSLSource.dest)
+    from tarTree(downloadOpenSSLLibs.dest)
+    from './third-party/OpenSSL/'
+    include 'openssl-1.1.0h/**/*'
+    include 'libs/**/*'
+    includeEmptyDirs = false
+    into "$thirdPartyNdkDir/OpenSSL/"
+}
+
+task configureOpenSSL(dependsOn: [prepareOpenSSL], type: Exec) {
+    workingDir "$thirdPartyNdkDir/OpenSSL/openssl-1.1.0h/"
+    // This is only to generate a buildconfig.h in the next step. I **believe**
+    // that the options here don't really matter for that file.
+    commandLine './Configure', 'dist'
+}
+
+task finalizeOpenSSL(dependsOn: [configureOpenSSL], type: Exec) {
+    workingDir "$thirdPartyNdkDir/OpenSSL/openssl-1.1.0h/"
+    commandLine 'make', 'build_generated'
+}
+
+task downloadRSocket(dependsOn: [], type: Download) {
+    src 'https://github.com/priteshrnandgaonkar/rsocket-cpp/archive/0.10.1.tar.gz'
+    onlyIfNewer true
+    overwrite false
+    dest new File(downloadsDir, 'rsocket-cpp-0.10.1.tar.gz');
+}
+
+task prepareRSocket(dependsOn: [downloadRSocket], type: Copy) {
+    from tarTree(downloadRSocket.dest)
+    from './third-party/RSocket/'
+    include 'rsocket-cpp-0.10.1/**/*', 'build.gradle', 'ApplicationManifest.xml', 'CMakeLists.txt'
+    includeEmptyDirs = false
+    into "$thirdPartyNdkDir/RSocket"
+}
+
+task prepareAllLibs() {
+    dependsOn finalizeGlog
+    dependsOn prepareDoubleConversion
+    dependsOn prepareBoost
+    dependsOn finalizeFolly
+    dependsOn finalizeEvent
+    dependsOn finalizeOpenSSL
+    dependsOn prepareRSocket
+}
