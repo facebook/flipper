@@ -247,10 +247,7 @@ android {
 
     dependencies {
         compileOnly deps.lithoAnnotations
-        compileOnly 'org.glassfish:javax.annotation:10.0-b28'
-
         implementation project(':fbjni')
-
         implementation deps.soloader
         implementation deps.guava
         implementation deps.jsr305
