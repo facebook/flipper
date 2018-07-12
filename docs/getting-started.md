@@ -23,6 +23,13 @@ Once you start Sonar and launch an emulator/simulator or connect a device, you w
 
 ### Setup your Android app
 
+Add the following permissions to your AndroidManifest.xml. The SDK needs these to communicate with the desktop app on localhost via adb. It won't make any external internet requests.
+
+```
+<uses-permission android:name="android.permission.INTERNET" />
+<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+```
+
 Sonar is distributed via JCenter. Add dependencies to your `build.gradle` file.
 
 ```
