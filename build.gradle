@@ -62,5 +62,7 @@ ext.deps = [
         robolectric        : 'org.robolectric:robolectric:3.0',
         junit              : 'junit:junit:4.12',
         stetho             : 'com.facebook.stetho:stetho:1.5.0',
-        okhttp3            : 'com.squareup.okhttp3:okhttp:3.10.0'
+        okhttp3            : 'com.squareup.okhttp3:okhttp:3.10.0',
+        // Plugin dependencies
+        rhino              : 'org.mozilla:rhino:1.7.10',
 ]
