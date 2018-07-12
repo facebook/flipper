@@ -25,6 +25,10 @@ PODS:
     - OpenSSL-Static (= 1.0.2.c1)
     - PeerTalk (~> 0.0.2)
     - Sonar (~> 0.0.1)
+    - SonarKit/FBCxxUtils
+    - SonarKit/FBDefines
+  - SonarKit/FBCxxUtils (0.0.2)
+  - SonarKit/FBDefines (0.0.2)
 
 DEPENDENCIES:
   - SonarKit (from `../../`)
@@ -58,7 +62,7 @@ SPEC CHECKSUMS:
   PeerTalk: 77481b0a8136f226b90ccf828d6061f70139ffde
   RSocket: 4fdb7e562db30a2d4fceddefdc601749ffc9ebe2
   Sonar: 38a48b88369cfa48f1a36150d57e2a72ef6fd33c
-  SonarKit: 74f3b4467ed615b15abae6c92e2ed2f3cee94ee7
+  SonarKit: 28f4cddc1506597fd908193ec6f10417b4470dae
 
 PODFILE CHECKSUM: 6ea6f403d6bb1a9198f82da33647bb2b76ac103a
 

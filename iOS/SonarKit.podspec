@@ -27,8 +27,18 @@ Pod::Spec.new do |spec|
     ss.public_header_files = 'iOS/SonarKit/FBDefines/**/*.h'
   end
 
+  spec.subspec 'FBCxxUtils' do |ss|
+    ss.header_dir = 'FBCxxUtils'
+    ss.compiler_flags = folly_compiler_flags
+    ss.source_files = 'iOS/SonarKit/FBCxxUtils/**/*.{h,mm}'
+    # We set these files as private headers since they only need to be accessed
+    # by other SonarKit source files
+    ss.private_header_files = 'iOS/SonarKit/FBCxxUtils/**/*.h'
+  end
+
   spec.subspec "Core" do |ss|
     ss.dependency 'SonarKit/FBDefines'
+    ss.dependency 'SonarKit/FBCxxUtils'
     ss.dependency 'Folly', '~>1.0'
     ss.dependency 'Sonar', '~>0.0.1'
     ss.dependency 'CocoaAsyncSocket', '~> 7.6'
@@ -36,12 +46,11 @@ Pod::Spec.new do |spec|
     ss.dependency 'OpenSSL-Static', '1.0.2.c1'
     ss.compiler_flags = folly_compiler_flags
     ss.source_files = 'iOS/SonarKit/FBDefines/*.{h,cpp,m,mm}', 'iOS/SonarKit/CppBridge/*.{h,mm}', 'iOS/SonarKit/FBCxxUtils/*.{h,mm}', 'iOS/SonarKit/Utilities/**/*.{h,m}', 'iOS/SonarKit/*.{h,m,mm}'
-    ss.public_header_files = 'iOS/SonarKit/**/{SonarClient,SonarPlugin,SonarConnection,SonarResponder,SKMacros,FBMacros}.h'
+    ss.public_header_files = 'iOS/SonarKit/**/{SonarClient,SonarPlugin,SonarConnection,SonarResponder,SKMacros}.h'
     header_search_paths = "\"$(PODS_ROOT)/SonarKit/iOS/SonarKit\" \"$(PODS_ROOT)\"/Headers/Private/SonarKit/** \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/PeerTalkSonar\""
     ss.pod_target_xcconfig = { "USE_HEADERMAP" => "NO",
                              "DEFINES_MODULE" => "YES",
                              "HEADER_SEARCH_PATHS" => header_search_paths }
-    ss.preserve_paths = 'iOS/SonarKit/FBCccUtils/*.h', 'iOS/SonarKit/FBDefines/*.h'
   end
 
   spec.subspec "SonarKitLayoutPlugin" do |ss|
