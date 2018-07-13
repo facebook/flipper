@@ -5,7 +5,7 @@ final def externalDir = new File("$projectDir/external")
 
 final def getDownloadFileName = { final URL src ->
     final def i = src.file.lastIndexOf('/')
-    return src.toString().substring(i + 1)
+    return src.file.substring(i + 1)
 }
 
 task createNativeDepsDirectories {
