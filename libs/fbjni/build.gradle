@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: 'maven'
 
 android {
     compileSdkVersion rootProject.compileSdkVersion
@@ -15,20 +16,6 @@ android {
                 }
             }
         }
-        ndk {
-            abiFilters 'arm64-v8a', 'x86', 'armeabi-v7a'
-        }
-
-        externalNativeBuild {
-            cmake {
-                arguments '-DANDROID_TOOLCHAIN=clang'
-            }
-        }
-    }
-    externalNativeBuild {
-        cmake {
-            path './CMakeLists.txt'
-        }
     }
 }
 
@@ -36,6 +23,18 @@ dependencies {
     // compileOnly dependencies
     compileOnly deps.jsr305
     compileOnly deps.inferAnnotations
-    compileOnly 'com.facebook.litho:litho-annotations:0.15.0'
+    compileOnly deps.lithoAnnotations
     implementation deps.soloader
+}
+
+apply from: rootProject.file('gradle/release.gradle')
+
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+artifacts.add('archives', sourcesJar)
+
+tasks.withType(Javadoc).all {
+    enabled = false
 }

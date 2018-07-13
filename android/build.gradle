@@ -3,11 +3,10 @@ apply plugin: 'maven'
 apply plugin: 'de.undercouch.download'
 
 import de.undercouch.gradle.tasks.download.Download
-import org.apache.tools.ant.taskdefs.condition.Os
 import org.apache.tools.ant.filters.ReplaceTokens
 
-def downloadsDir = new File("$buildDir/downloads")
-def thirdPartyNdkDir = new File("$buildDir/third-party-ndk")
+final def downloadsDir = new File("$buildDir/downloads")
+final def thirdPartyNdkDir = new File("$buildDir/third-party-ndk")
 
 task createNativeDepsDirectories {
     downloadsDir.mkdirs()
@@ -140,26 +139,40 @@ task finalizeEvent2(dependsOn: [finalizeEvent], type: Copy) {
     into "$thirdPartyNdkDir/LibEvent/"
 }
 
-task downloadOpenSSL(dependsOn: [], type: Download) {
-    src 'https://github.com/priteshrnandgaonkar/openssl-android/archive/1.0.0.tar.gz'
+task downloadOpenSSLSource(dependsOn: [], type: Download) {
+    src 'https://www.openssl.org/source/openssl-1.1.0h.tar.gz'
     onlyIfNewer true
     overwrite false
     dest new File(downloadsDir, 'openssl-android-1.0.0.tar.gz');
 }
 
-task prepareOpenSSL(dependsOn: [downloadOpenSSL], type: Copy) {
-    from tarTree(downloadOpenSSL.dest)
+task downloadOpenSSLLibs(dependsOn: [], type: Download) {
+    src 'https://github.com/passy/openssl-android/releases/download/1.1.0h-r2/openssl-1.1.0h-r2-prebuilt.tar.gz'
+    onlyIfNewer true
+    overwrite false
+    dest new File(downloadsDir, 'openssl-1.1.0h-prebuilt.tar.gz');
+}
+
+task prepareOpenSSL(dependsOn: [downloadOpenSSLSource, downloadOpenSSLLibs], type: Copy) {
+    from tarTree(downloadOpenSSLSource.dest)
+    from tarTree(downloadOpenSSLLibs.dest)
     from './third-party/OpenSSL/'
-    include 'openssl-android-1.0.0/**/*', 'libs/**/*'
+    include 'openssl-1.1.0h/**/*'
+    include 'libs/**/*'
     includeEmptyDirs = false
     into "$thirdPartyNdkDir/OpenSSL/"
 }
 
-task finalizeOpenSSL(dependsOn: [prepareOpenSSL], type: Copy) {
-    from './third-party/OpenSSL/'
-    include 'build.gradle', 'ApplicationManifest.xml'
-    includeEmptyDirs = false
-    into "$thirdPartyNdkDir/OpenSSL/openssl-android-1.0.0/"
+task configureOpenSSL(dependsOn: [prepareOpenSSL], type: Exec) {
+    workingDir "$thirdPartyNdkDir/OpenSSL/openssl-1.1.0h/"
+    // This is only to generate a buildconfig.h in the next step. I **believe**
+    // that the options here don't really matter for that file.
+    commandLine './Configure', 'dist'
+}
+
+task finalizeOpenSSL(dependsOn: [configureOpenSSL], type: Exec) {
+    workingDir "$thirdPartyNdkDir/OpenSSL/openssl-1.1.0h/"
+    commandLine 'make', 'build_generated'
 }
 
 task downloadRSocket(dependsOn: [], type: Download) {
@@ -195,15 +208,15 @@ android {
         minSdkVersion rootProject.minSdkVersion
         targetSdkVersion rootProject.targetSdkVersion
         buildConfigField "boolean", "IS_INTERNAL_BUILD", 'true'
+
         ndk {
-            abiFilters 'arm64-v8a', 'x86', 'armeabi-v7a'
-            stl 'c++_shared'
+            abiFilters 'x86', 'x86_64', 'armeabi-v7a', 'arm64-v8a'
         }
 
         externalNativeBuild {
             cmake {
-                arguments '-DANDROID_TOOLCHAIN=clang'
-                arguments '-DANDROID_STL=c++_shared'
+                arguments '-DANDROID_TOOLCHAIN=clang',
+                    '-DANDROID_STL=c++_shared'
             }
         }
     }
@@ -224,9 +237,6 @@ android {
             res {
                 srcDir 'res'
             }
-            jniLibs {
-                srcDir 'third-party/OpenSSL/libs'
-            }
         }
     }
     externalNativeBuild {
@@ -236,10 +246,9 @@ android {
     }
 
     dependencies {
+        compileOnly deps.lithoAnnotations
         implementation project(':fbjni')
         implementation deps.soloader
-        compileOnly deps.lithoAnnotations
-        implementation 'org.glassfish:javax.annotation:10.0-b28'
         implementation deps.guava
         implementation deps.jsr305
         implementation deps.supportAppCompat
@@ -253,6 +262,7 @@ android {
 
 project.afterEvaluate {
     preBuild.dependsOn prepareAllLibs
+}
 
 apply from: rootProject.file('gradle/release.gradle')
 
@@ -260,4 +270,5 @@ task sourcesJar(type: Jar) {
     from android.sourceSets.main.java.srcDirs
     classifier = 'sources'
 }
-artifacts.add('archives', sourcesJar)}
+
+artifacts.add('archives', sourcesJar)

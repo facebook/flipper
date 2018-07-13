@@ -45,12 +45,23 @@ public class TextViewDescriptor extends NodeDescriptor<TextView> {
   }
 
   @Override
+  public String getAXName(TextView node) throws Exception {
+    final NodeDescriptor descriptor = descriptorForClass(View.class);
+    return descriptor.getAXName(node);
+  }
+
+  @Override
   public int getChildCount(TextView node) {
     return 0;
   }
 
   @Override
   public @Nullable Object getChildAt(TextView node, int index) {
+    return null;
+  }
+
+  @Override
+  public @Nullable Object getAXChildAt(TextView node, int index) {
     return null;
   }
 
@@ -73,6 +84,14 @@ public class TextViewDescriptor extends NodeDescriptor<TextView> {
 
     props.addAll(descriptor.getData(node));
 
+    return props;
+  }
+
+  @Override
+  public List<Named<SonarObject>> getAXData(TextView node) throws Exception {
+    final List<Named<SonarObject>> props = new ArrayList<>();
+    final NodeDescriptor descriptor = descriptorForClass(View.class);
+    props.addAll(descriptor.getAXData(node));
     return props;
   }
 
@@ -104,6 +123,12 @@ public class TextViewDescriptor extends NodeDescriptor<TextView> {
   public List<Named<String>> getAttributes(TextView node) throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(View.class);
     return descriptor.getAttributes(node);
+  }
+
+  @Override
+  public List<Named<String>> getAXAttributes(TextView node) throws Exception {
+    final NodeDescriptor descriptor = descriptorForClass(View.class);
+    return descriptor.getAXAttributes(node);
   }
 
   @Override

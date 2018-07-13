@@ -1,5 +1,6 @@
 {
   "command": "SandcastleUniversalCommand",
+  "user": "__USER__",
   "args": {
     "name": "Release public Sonar build",
     "oncall": "danielbuechele",
@@ -10,11 +11,6 @@
         "shell": "git -c http.proxy=fwdproxy:8080 -c https.proxy=fwdproxy:8080 clone https://github.com/facebook/Sonar.git ../xplat/sonar-public"
       },
       {
-        "name": "Create Version",
-        "required": true,
-        "shell": "cat ../xplat/sonar-public/package.json | jq -r '.version' | sed -E 's/[0-9]+$/__VERSION__/g' > $SANDCASTLE_NEXUS/VERSION"
-      },
-      {
         "name": "Copy Sandcastle script",
         "required": true,
         "shell": "cp ../xplat/sonar/scripts/sandcastle-build.sh ../xplat/sonar-public/scripts/sandcastle-build.sh"
@@ -22,12 +18,12 @@
       {
         "name": "Create build",
         "required": true,
-        "shell": "cd ../xplat/sonar-public/scripts && ./sandcastle-build.sh $(cat $SANDCASTLE_NEXUS/VERSION)"
+        "shell": "cd ../xplat/sonar-public/scripts && ./sandcastle-build.sh __VERSION__"
       },
       {
         "name": "Copy artifacts for syncing",
         "required": true,
-        "shell": "cp -R ../xplat/sonar-public/dist/Sonar-mac.zip $SANDCASTLE_NEXUS/Sonar-mac.zip"
+        "shell": "cp -R ../xplat/sonar-public/dist/ $SANDCASTLE_NEXUS/"
       },
       {
         "name": "Sync to local",
@@ -36,13 +32,13 @@
         "to": "local",
         "paths": [
           "Sonar-mac.zip",
-          "VERSION"
+          "manifest.json"
         ]
       },
       {
         "name": "Publish to github",
         "required": true,
-        "shell": "curl -o RELEASE.json -x fwdproxy:8080 --silent --data '{ \"tag_name\": \"v'$(cat $SANDCASTLE_NEXUS/VERSION)'\", \"target_commitish\": \"master\", \"name\": \"v'$(cat $SANDCASTLE_NEXUS/VERSION)'\", \"body\": \"\", \"draft\": false, \"prerelease\": false}' https://api.github.com/repos/facebook/Sonar/releases?access_token=$(secrets_tool get SONAR_GITHUB_TOKEN)",
+        "shell": "curl -o RELEASE.json -x fwdproxy:8080 --silent --data '{ \"tag_name\": \"v'$(cat $SANDCASTLE_NEXUS/manifest.json | jq -r .version_name)'\", \"target_commitish\": \"master\", \"name\": \"v'$(cat $SANDCASTLE_NEXUS/manifest.json | jq -r .version_name)'\", \"body\": \"\", \"draft\": false, \"prerelease\": false}' https://api.github.com/repos/facebook/Sonar/releases?access_token=$(secrets_tool get SONAR_GITHUB_TOKEN)",
         "shell_type": "SandcastleLocalShell"
       },
       {
@@ -61,8 +57,8 @@
   "hash": "master",
   "report": [
     {
-      "type": "chirp",
-      "users": ["__USER__"]
+      "type": "email",
+      "report_to_owner": true
     }
   ]
 }

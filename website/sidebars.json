@@ -1,7 +1,13 @@
 {
   "docs": {
     "Using Sonar": ["getting-started", "understand", "stetho"],
-    "Built-in Plugins": ["logs-plugin", "layout-plugin", "network-plugin"],
+    "Built-in Plugins": [
+      "logs-plugin",
+      "layout-plugin",
+      "network-plugin",
+      "sandbox-plugin",
+      "shared-preferences-plugin"
+    ],
     "Plugins: Desktop part": [
       "js-setup",
       "communicating",

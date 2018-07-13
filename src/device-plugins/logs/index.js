@@ -486,7 +486,7 @@ export default class LogTable extends SonarDevicePlugin<LogsState> {
     createPaste(paste);
   };
 
-  setTableRef = (ref: React.ElementRef<*>) => {
+  setTableRef = (ref: React.ElementRef<typeof ManagedTable>) => {
     this.tableRef = ref;
   };
 
@@ -554,6 +554,7 @@ export default class LogTable extends SonarDevicePlugin<LogsState> {
           defaultFilters={DEFAULT_FILTERS}
           zebra={false}
           actions={<Button onClick={this.clearLogs}>Clear Logs</Button>}
+          stickyBottom={true}
         />
       </LogTable.ContextMenu>
     );

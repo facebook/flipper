@@ -11,7 +11,7 @@ set(glog_DIR ${third_party_ndk}/glog)
 set(BOOST_DIR ${third_party_ndk}/boost/boost_1_63_0/)
 set(LIBEVENT_DIR ${third_party_ndk}/LibEvent/libevent-release-2.1.9/)
 set(DOUBLECONVERSION_DIR ${third_party_ndk}/double-conversion/double-conversion-3.0.0/)
-set(OPENSSL_DIR ${third_party_ndk}/OpenSSL/openssl-android-1.0.0/)
+set(OPENSSL_DIR ${third_party_ndk}/OpenSSL/openssl-1.1.0h/)
 
 set(RSOCKET_ROOT_DIR  ${PROJECT_SOURCE_DIR}/rsocket-cpp-0.10.1)
 set(RSOCKET_DIR  ${PROJECT_SOURCE_DIR}/rsocket-cpp-0.10.1/rsocket)
@@ -76,9 +76,7 @@ target_include_directories(${PACKAGE_NAME} PRIVATE
         ${LIBEVENT_DIR}/
         ${LIBEVENT_DIR}/include/
         ${LIBEVENT_DIR}/include/event2
-        ${OPENSSL_DIR}/jni/openssl-android/
-        ${OPENSSL_DIR}/jni/openssl-android/include
-        ${OPENSSL_DIR}/jni/openssl-android/include/openssl
+        ${OPENSSL_DIR}/include/
         ${glog_DIR}
         ${glog_DIR}/../
         ${glog_DIR}/glog-0.3.5/src/
@@ -87,6 +85,6 @@ target_include_directories(${PACKAGE_NAME} PRIVATE
 
 set(OPENSSL_LINK_DIRECTORIES ${third_party_ndk}/OpenSSL/libs/${ANDROID_ABI}/)
 
-find_path(OPENSSL_LIBRARY libssl.so HINTS ${OPENSSL_LINK_DIRECTORIES})
+find_path(OPENSSL_LIBRARY libssl.a HINTS ${OPENSSL_LINK_DIRECTORIES})
 
-target_link_libraries(${PACKAGE_NAME}  folly glog double-conversion log event ${OPENSSL_LINK_DIRECTORIES}/libssl.so ${OPENSSL_LINK_DIRECTORIES}/libcrypto.so)
+target_link_libraries(${PACKAGE_NAME}  folly glog double-conversion log event ${OPENSSL_LINK_DIRECTORIES}/libssl.a ${OPENSSL_LINK_DIRECTORIES}/libcrypto.a)

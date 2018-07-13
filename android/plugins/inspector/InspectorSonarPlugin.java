@@ -38,6 +38,19 @@ public class InspectorSonarPlugin implements SonarPlugin {
   private String mHighlightedId;
   private TouchOverlayView mTouchOverlay;
   private SonarConnection mConnection;
+  private @Nullable List<ExtensionCommand> mExtensionCommands;
+
+  /** An interface for extensions to the Inspector Sonar plugin */
+  public interface ExtensionCommand {
+    /** The command to respond to */
+    String command();
+    /** The corresponding SonarReceiver for the command */
+    SonarReceiver receiver(ObjectTracker tracker, SonarConnection connection);
+  }
+
+  public InspectorSonarPlugin(Context context, DescriptorMapping descriptorMapping) {
+    this(context, descriptorMapping, new NullScriptingEnvironment());
+  }
 
   public InspectorSonarPlugin(
       Context context,
@@ -46,23 +59,45 @@ public class InspectorSonarPlugin implements SonarPlugin {
     this(
         new ApplicationWrapper((Application) context.getApplicationContext()),
         descriptorMapping,
-        scriptingEnvironment);
+        scriptingEnvironment,
+        null);
   }
 
-  public InspectorSonarPlugin(Context context, DescriptorMapping descriptorMapping) {
-    this(context, descriptorMapping, new NullScriptingEnvironment());
+  public InspectorSonarPlugin(
+      Context context,
+      DescriptorMapping descriptorMapping,
+      @Nullable List<ExtensionCommand> extensions) {
+    this(
+        new ApplicationWrapper((Application) context.getApplicationContext()),
+        descriptorMapping,
+        new NullScriptingEnvironment(),
+        extensions);
+  }
+
+  public InspectorSonarPlugin(
+      Context context,
+      DescriptorMapping descriptorMapping,
+      ScriptingEnvironment scriptingEnvironment,
+      @Nullable List<ExtensionCommand> extensions) {
+    this(
+        new ApplicationWrapper((Application) context.getApplicationContext()),
+        descriptorMapping,
+        scriptingEnvironment,
+        extensions);
   }
 
   // Package visible for testing
   InspectorSonarPlugin(
       ApplicationWrapper wrapper,
       DescriptorMapping descriptorMapping,
-      ScriptingEnvironment scriptingEnvironment) {
+      ScriptingEnvironment scriptingEnvironment,
+      @Nullable List<ExtensionCommand> extensions) {
     mDescriptorMapping = descriptorMapping;
 
     mObjectTracker = new ObjectTracker();
     mApplication = wrapper;
     mScriptingEnvironment = scriptingEnvironment;
+    mExtensionCommands = extensions;
   }
 
   @Override
@@ -91,6 +126,15 @@ public class InspectorSonarPlugin implements SonarPlugin {
     connection.receive("setHighlighted", mSetHighlighted);
     connection.receive("setSearchActive", mSetSearchActive);
     connection.receive("getSearchResults", mGetSearchResults);
+    connection.receive("getAXRoot", mGetAXRoot);
+    connection.receive("getAXNodes", mGetAXNodes);
+
+    if (mExtensionCommands != null) {
+      for (ExtensionCommand extensionCommand : mExtensionCommands) {
+        connection.receive(
+            extensionCommand.command(), extensionCommand.receiver(mObjectTracker, mConnection));
+      }
+    }
   }
 
   @Override
@@ -114,6 +158,28 @@ public class InspectorSonarPlugin implements SonarPlugin {
         }
       };
 
+  final SonarReceiver mGetAXRoot =
+      new MainThreadSonarReceiver(mConnection) {
+        @Override
+        public void onReceiveOnMainThread(SonarObject params, SonarResponder responder)
+            throws Exception {
+          List<View> viewRoots = mApplication.getViewRoots();
+          // for now only works if one view root
+          if (viewRoots.size() != 1) {
+            responder.error(
+                new SonarObject.Builder().put("message", "Too many view roots.").build());
+            return;
+          }
+          SonarObject response = getAXNode(trackObject(viewRoots.get(0)));
+          if (response == null) {
+            responder.error(
+                new SonarObject.Builder().put("message", "AX root node returned null.").build());
+            return;
+          }
+          responder.success(response);
+        }
+      };
+
   final SonarReceiver mGetNodes =
       new MainThreadSonarReceiver(mConnection) {
         @Override
@@ -125,6 +191,33 @@ public class InspectorSonarPlugin implements SonarPlugin {
           for (int i = 0, count = ids.length(); i < count; i++) {
             final String id = ids.getString(i);
             final SonarObject node = getNode(id);
+            if (node != null) {
+              result.put(node);
+            } else {
+              responder.error(
+                  new SonarObject.Builder()
+                      .put("message", "No node with given id")
+                      .put("id", id)
+                      .build());
+              return;
+            }
+          }
+
+          responder.success(new SonarObject.Builder().put("elements", result).build());
+        }
+      };
+
+  final SonarReceiver mGetAXNodes =
+      new MainThreadSonarReceiver(mConnection) {
+        @Override
+        public void onReceiveOnMainThread(final SonarObject params, final SonarResponder responder)
+            throws Exception {
+          final SonarArray ids = params.getArray("ids");
+          final SonarArray.Builder result = new SonarArray.Builder();
+
+          for (int i = 0, count = ids.length(); i < count; i++) {
+            final String id = ids.getString(i);
+            final SonarObject node = getAXNode(id);
             if (node != null) {
               result.put(node);
             } else {
@@ -390,6 +483,62 @@ public class InspectorSonarPlugin implements SonarPlugin {
         .put("children", children)
         .put("attributes", attributes)
         .put("decoration", descriptor.getDecoration(obj))
+        .build();
+  }
+
+  private @Nullable SonarObject getAXNode(String id) throws Exception {
+
+    final Object obj = mObjectTracker.get(id);
+    if (obj == null) {
+      return null;
+    }
+
+    final NodeDescriptor<Object> descriptor = descriptorForObject(obj);
+    if (descriptor == null) {
+      return null;
+    }
+
+    final SonarArray.Builder children = new SonarArray.Builder();
+    new ErrorReportingRunnable(mConnection) {
+      @Override
+      protected void runOrThrow() throws Exception {
+        for (int i = 0, count = descriptor.getChildCount(obj); i < count; i++) {
+          final Object child = assertNotNull(descriptor.getAXChildAt(obj, i));
+          children.put(trackObject(child));
+        }
+      }
+    }.run();
+
+    final SonarObject.Builder data = new SonarObject.Builder();
+    new ErrorReportingRunnable(mConnection) {
+      @Override
+      protected void runOrThrow() throws Exception {
+        for (Named<SonarObject> props : descriptor.getAXData(obj)) {
+          data.put(props.getName(), props.getValue());
+        }
+      }
+    }.run();
+
+    final SonarArray.Builder attributes = new SonarArray.Builder();
+    new ErrorReportingRunnable(mConnection) {
+      @Override
+      protected void runOrThrow() throws Exception {
+        for (Named<String> attribute : descriptor.getAXAttributes(obj)) {
+          attributes.put(
+              new SonarObject.Builder()
+                  .put("name", attribute.getName())
+                  .put("value", attribute.getValue())
+                  .build());
+        }
+      }
+    }.run();
+
+    return new SonarObject.Builder()
+        .put("id", descriptor.getId(obj))
+        .put("name", descriptor.getAXName(obj))
+        .put("data", data)
+        .put("children", children)
+        .put("attributes", attributes)
         .build();
   }
 

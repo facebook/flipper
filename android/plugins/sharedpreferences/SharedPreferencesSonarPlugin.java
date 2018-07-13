@@ -23,15 +23,14 @@ public class SharedPreferencesSonarPlugin implements SonarPlugin {
 
   private SonarConnection mConnection;
   private final SharedPreferences mSharedPreferences;
-
-  public SharedPreferencesSonarPlugin(Context context) {
-    mSharedPreferences = context.getSharedPreferences(context.getPackageName(), MODE_PRIVATE);
-
-    mSharedPreferences.registerOnSharedPreferenceChangeListener(
-        new SharedPreferences.OnSharedPreferenceChangeListener() {
-          @Override
-          public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-            if (mConnection != null) {
+  private final SharedPreferences.OnSharedPreferenceChangeListener
+      onSharedPreferenceChangeListener =
+          new SharedPreferences.OnSharedPreferenceChangeListener() {
+            @Override
+            public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+              if (mConnection == null) {
+                return;
+              }
               mConnection.send(
                   "sharedPreferencesChange",
                   new SonarObject.Builder()
@@ -41,8 +40,39 @@ public class SharedPreferencesSonarPlugin implements SonarPlugin {
                       .put("value", mSharedPreferences.getAll().get(key))
                       .build());
             }
-          }
-        });
+          };
+
+  /**
+   * Creates a {@link android.content.SharedPreferences} plugin for Sonar
+   *
+   * @param context The context to retrieve the file from. Will use the package name as the file
+   *     name with {@link Context#MODE_PRIVATE}.
+   */
+  public SharedPreferencesSonarPlugin(Context context) {
+    this(context, context.getPackageName());
+  }
+
+  /**
+   * Creates a {@link android.content.SharedPreferences} plugin for Sonar
+   *
+   * @param context The context to retrieve the file from. Will use the name as the file name with
+   *     {@link Context#MODE_PRIVATE}.
+   * @param name The preference file name.
+   */
+  public SharedPreferencesSonarPlugin(Context context, String name) {
+    this(context, name, MODE_PRIVATE);
+  }
+
+  /**
+   * Creates a {@link android.content.SharedPreferences} plugin for Sonar
+   *
+   * @param context The context to retrieve the file from.
+   * @param name The preference file name.
+   * @param mode The Context mode to utilize.
+   */
+  public SharedPreferencesSonarPlugin(Context context, String name, int mode) {
+    mSharedPreferences = context.getSharedPreferences(name, mode);
+    mSharedPreferences.registerOnSharedPreferenceChangeListener(onSharedPreferenceChangeListener);
   }
 
   @Override

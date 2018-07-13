@@ -6,6 +6,7 @@
  */
 
 import LogManager from '../fb-stubs/Logger';
+import {RecurringError} from './errors';
 const fs = require('fs');
 const adb = require('adbkit-fb');
 import {
@@ -33,6 +34,7 @@ const minCertExpiryWindowSeconds = 24 * 60 * 60;
 const appNotDebuggableRegex = /debuggable/;
 const allowedAppNameRegex = /^[a-zA-Z0-9.\-]+$/;
 const allowedAppDirectoryRegex = /^\/[ a-zA-Z0-9.\-\/]+$/;
+const operationNotPermittedRegex = /not permitted/;
 const logTag = 'CertificateProvider';
 /*
  * RFC2253 specifies the unamiguous x509 subject format.
@@ -81,7 +83,7 @@ export default class CertificateProvider {
     this.ensureOpenSSLIsAvailable();
     if (!appDirectory.match(allowedAppDirectoryRegex)) {
       return Promise.reject(
-        new Error(
+        new RecurringError(
           `Invalid appDirectory recieved from ${os} device: ${appDirectory}`,
         ),
       );
@@ -106,7 +108,8 @@ export default class CertificateProvider {
           csr,
           os,
         ),
-      );
+      )
+      .catch(e => console.error(e));
   }
 
   ensureOpenSSLIsAvailable(): void {
@@ -168,11 +171,11 @@ export default class CertificateProvider {
           ),
       );
     }
-    if (os === 'iOS') {
+    if (os === 'iOS' || os === 'windows') {
       fs.writeFileSync(destination + filename, contents);
       return Promise.resolve();
     }
-    return Promise.reject(new Error(`Unsupported device os: ${os}`));
+    return Promise.reject(new RecurringError(`Unsupported device os: ${os}`));
   }
 
   getTargetDeviceId(
@@ -207,7 +210,9 @@ export default class CertificateProvider {
       return Promise.all(deviceMatchList).then(devices => {
         const matchingIds = devices.filter(m => m.isMatch).map(m => m.id);
         if (matchingIds.length == 0) {
-          throw new Error(`No matching device found for app: ${appName}`);
+          throw new RecurringError(
+            `No matching device found for app: ${appName}`,
+          );
         }
         return matchingIds[0];
       });
@@ -259,11 +264,13 @@ export default class CertificateProvider {
     command: string,
   ): Promise<string> {
     if (!user.match(allowedAppNameRegex)) {
-      return Promise.reject(new Error(`Disallowed run-as user: ${user}`));
+      return Promise.reject(
+        new RecurringError(`Disallowed run-as user: ${user}`),
+      );
     }
     if (command.match(/[']/)) {
       return Promise.reject(
-        new Error(`Disallowed escaping command: ${command}`),
+        new RecurringError(`Disallowed escaping command: ${command}`),
       );
     }
     return this.adb
@@ -271,22 +278,21 @@ export default class CertificateProvider {
       .then(adb.util.readAll)
       .then(buffer => buffer.toString())
       .then(output => {
-        const matches = output.match(appNotDebuggableRegex);
-        if (matches) {
-          const e = new Error(
+        if (output.match(appNotDebuggableRegex)) {
+          const e = new RecurringError(
             `Android app ${user} is not debuggable. To use it with sonar, add android:debuggable="true" to the application section of AndroidManifest.xml`,
           );
           this.server.emit('error', e);
           throw e;
         }
+        if (output.toLowerCase().match(operationNotPermittedRegex)) {
+          const e = new RecurringError(
+            `Your android device (${deviceId}) does not support the adb shell run-as command. We're tracking this at https://github.com/facebook/Sonar/issues/92`,
+          );
+          this.server.emit('error', e);
+          throw e;
+        }
         return output;
-      })
-      .catch(err => {
-        console.error(
-          `Error executing command on android device ${deviceId}:${user}. Command: ${command}`,
-          logTag,
-        );
-        console.error(err, logTag);
       });
   }
 
@@ -306,13 +312,13 @@ export default class CertificateProvider {
       .then(subject => {
         const matches = subject.trim().match(x509SubjectCNRegex);
         if (!matches || matches.length < 2) {
-          throw new Error(`Cannot extract CN from ${subject}`);
+          throw new RecurringError(`Cannot extract CN from ${subject}`);
         }
         return matches[1];
       })
       .then(appName => {
         if (!appName.match(allowedAppNameRegex)) {
-          throw new Error(
+          throw new RecurringError(
             `Disallowed app name in CSR: ${appName}. Only alphanumeric characters and '.' allowed.`,
           );
         }
