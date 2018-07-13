@@ -13,7 +13,7 @@ buildscript {
 }
 
 plugins {
-    id 'de.undercouch.download' version '3.4.3' apply false
+    id 'de.undercouch.download' version '3.4.3'
 }
 
 subprojects {
@@ -23,7 +23,6 @@ subprojects {
         mavenCentral()
         jcenter()
     }
-    apply plugin: 'de.undercouch.download'
 }
 
 ext {

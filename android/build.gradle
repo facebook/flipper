@@ -1,6 +1,5 @@
 apply plugin: 'com.android.library'
 apply plugin: 'maven'
-apply from: 'native.gradle'
 
 android {
     compileSdkVersion rootProject.compileSdkVersion
@@ -54,6 +53,7 @@ android {
     dependencies {
         compileOnly deps.lithoAnnotations
         implementation project(':fbjni')
+        implementation project(':third-party')
         implementation deps.soloader
         implementation deps.guava
         implementation deps.jsr305
@@ -62,15 +62,11 @@ android {
         implementation deps.okhttp3
         implementation deps.lithoCore
         implementation deps.lithoWidget
-        implementation 'org.mozilla:rhino:1.7.10'
+        implementation deps.rhino
     }
 }
 
-project.afterEvaluate {
-    preBuild.dependsOn prepareAllLibs
-}
-
-project.clean.dependsOn cleanNative
+preBuild.dependsOn(tasks.getByPath(':third-party:prepare'))
 
 apply from: rootProject.file('gradle/release.gradle')
 

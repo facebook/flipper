@@ -26,7 +26,10 @@ android {
     }
 
     dependencies {
+        implementation project(':third-party')
         implementation project(':rsocket')
         implementation project(':folly')
     }
 }
+
+preBuild.dependsOn(tasks.getByPath(':third-party:prepare'))

@@ -5,7 +5,7 @@ set(PACKAGE_NAME      sonarcpp)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-set(external_DIR ${PROJECT_SOURCE_DIR}/../android/external)
+set(external_DIR ${PROJECT_SOURCE_DIR}/../android/third-party/external)
 set(libfolly_DIR ${external_DIR}/folly/)
 set(rsocket_DIR ${external_DIR}/RSocket/)
 set(easywsclient_DIR ../libs/)

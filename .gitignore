@@ -7,7 +7,7 @@ website/build
 build/
 yarn-error.log
 
-android/external/
+android/third-party/external/
 
 # Android / Intellij
 local.properties
