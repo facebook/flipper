@@ -33,7 +33,6 @@ const serverSubject = '/C=US/ST=CA/L=Menlo Park/O=Sonar/CN=localhost';
 const minCertExpiryWindowSeconds = 24 * 60 * 60;
 const appNotDebuggableRegex = /debuggable/;
 const allowedAppNameRegex = /^[a-zA-Z0-9.\-]+$/;
-const allowedAppDirectoryRegex = /^\/[ a-zA-Z0-9.\-\/]+$/;
 const operationNotPermittedRegex = /not permitted/;
 const logTag = 'CertificateProvider';
 /*
@@ -81,13 +80,6 @@ export default class CertificateProvider {
     appDirectory: string,
   ): Promise<void> {
     this.ensureOpenSSLIsAvailable();
-    if (!appDirectory.match(allowedAppDirectoryRegex)) {
-      return Promise.reject(
-        new RecurringError(
-          `Invalid appDirectory recieved from ${os} device: ${appDirectory}`,
-        ),
-      );
-    }
     return this.certificateSetup
       .then(_ => this.getCACertificate())
       .then(caCert =>
@@ -172,8 +164,18 @@ export default class CertificateProvider {
       );
     }
     if (os === 'iOS' || os === 'windows') {
-      fs.writeFileSync(destination + filename, contents);
-      return Promise.resolve();
+      return new Promise((resolve, reject) => {
+        fs.writeFile(destination + filename, contents, err => {
+          if (err) {
+            reject(
+              `Invalid appDirectory recieved from ${os} device: ${destination}: ` +
+                err.toString(),
+            );
+          } else {
+            resolve();
+          }
+        });
+      });
     }
     return Promise.reject(new RecurringError(`Unsupported device os: ${os}`));
   }
