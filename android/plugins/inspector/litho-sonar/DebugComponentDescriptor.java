@@ -12,7 +12,6 @@ import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.v4.util.Pair;
-import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;
 import android.view.View;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
@@ -32,7 +31,6 @@ import com.facebook.sonar.plugins.inspector.NodeDescriptor;
 import com.facebook.sonar.plugins.inspector.Touch;
 import com.facebook.sonar.plugins.inspector.descriptors.ObjectDescriptor;
 import com.facebook.sonar.plugins.inspector.descriptors.utils.AccessibilityUtil;
-import com.facebook.sonar.plugins.inspector.descriptors.utils.ViewAccessibilityHelper;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
@@ -126,17 +124,26 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
   }
 
   @Override
-  public String getAXName(DebugComponent node) {
-    View v = node.getComponentHost();
-    AccessibilityNodeInfoCompat nodeInfo = ViewAccessibilityHelper.createNodeInfoFromView(v);
-    String name = nodeInfo.getClassName().toString();
-    nodeInfo.recycle();
-    return name;
+  public String getAXName(DebugComponent node) throws Exception {
+    NodeDescriptor componentDescriptor = descriptorForClass(node.getComponent().getClass());
+    if (componentDescriptor.getClass() != ObjectDescriptor.class) {
+      return componentDescriptor.getAXName(node.getComponent());
+    }
+    return node.getComponent().getSimpleName();
   }
 
   @Override
   public int getChildCount(DebugComponent node) {
     if (node.getMountedView() != null || node.getMountedDrawable() != null) {
+      return 1;
+    } else {
+      return node.getChildComponents().size();
+    }
+  }
+
+  @Override
+  public int getAXChildCount(DebugComponent node) {
+    if (node.getMountedView() != null) {
       return 1;
     } else {
       return node.getChildComponents().size();
@@ -158,7 +165,7 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
   }
 
   @Override
-  public @Nullable Object getAXChildAt(DebugComponent node, int index) {
+  public Object getAXChildAt(DebugComponent node, int index) {
     final View mountedView = node.getMountedView();
 
     if (mountedView != null) {
@@ -201,7 +208,11 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
   }
 
   @Override
-  public List<Named<SonarObject>> getAXData(DebugComponent node) {
+  public List<Named<SonarObject>> getAXData(DebugComponent node) throws Exception {
+    NodeDescriptor componentDescriptor = descriptorForClass(node.getComponent().getClass());
+    if (componentDescriptor.getClass() != ObjectDescriptor.class) {
+      return componentDescriptor.getAXData(node.getComponent());
+    }
     final List<Named<SonarObject>> data = new ArrayList<>();
     final SonarObject accessibilityData = getAccessibilityData(node);
     if (accessibilityData != null) {

@@ -502,7 +502,7 @@ public class InspectorSonarPlugin implements SonarPlugin {
     new ErrorReportingRunnable(mConnection) {
       @Override
       protected void runOrThrow() throws Exception {
-        for (int i = 0, count = descriptor.getChildCount(obj); i < count; i++) {
+        for (int i = 0, count = descriptor.getAXChildCount(obj); i < count; i++) {
           final Object child = assertNotNull(descriptor.getAXChildAt(obj, i));
           children.put(trackObject(child));
         }

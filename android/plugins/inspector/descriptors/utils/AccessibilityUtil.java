@@ -23,6 +23,7 @@ import android.view.accessibility.AccessibilityManager;
 import android.widget.EditText;
 import com.facebook.sonar.core.SonarArray;
 import com.facebook.sonar.core.SonarObject;
+import com.facebook.sonar.plugins.inspector.InspectorValue;
 import javax.annotation.Nullable;
 
 /**
@@ -353,5 +354,47 @@ public final class AccessibilityUtil {
           .put("talkback-focusable-reasons", getTalkbackFocusableReasons(view))
           .put("talkback-description", getTalkbackDescription(view));
     }
+  }
+
+  public static SonarObject getViewAXData(View view) {
+    final SonarObject.Builder props = new SonarObject.Builder();
+
+    // This needs to be an empty string to be mutable. See t20470623.
+    CharSequence contentDescription =
+        view.getContentDescription() != null ? view.getContentDescription() : "";
+    props.put("content-description", InspectorValue.mutable(contentDescription));
+    props.put("focusable", InspectorValue.mutable(view.isFocusable()));
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+      props.put(
+          "important-for-accessibility",
+          AccessibilityUtil.sImportantForAccessibilityMapping.get(
+              view.getImportantForAccessibility()));
+    }
+
+    return props.build();
+  }
+
+  public static SonarObject getDerivedAXData(View view) {
+    final SonarObject.Builder props = new SonarObject.Builder();
+
+    if (!AccessibilityEvaluationUtil.isTalkbackFocusable(view)) {
+      String reason = getTalkbackIgnoredReasons(view);
+      props
+          .put("talkback-ignored", true)
+          .put("talkback-ignored-reasons", reason == null ? "" : reason);
+    } else {
+      String reason = getTalkbackFocusableReasons(view);
+      CharSequence description = getTalkbackDescription(view);
+      props
+          .put("talkback-focusable", true)
+          .put("talkback-focusable-reasons", reason == null ? "" : reason)
+          .put("talkback-description", description == null ? "" : description);
+    }
+
+    SonarObject axProps = getAccessibilityNodeInfoProperties(view);
+    props.put("node-info", axProps == null ? "null" : axProps);
+
+    return props.build();
   }
 }

@@ -36,6 +36,7 @@ import com.facebook.sonar.plugins.inspector.InspectorValue;
 import com.facebook.sonar.plugins.inspector.Named;
 import com.facebook.sonar.plugins.inspector.NodeDescriptor;
 import com.facebook.sonar.plugins.inspector.Touch;
+import com.facebook.sonar.plugins.inspector.descriptors.utils.AccessibilityRoleUtil;
 import com.facebook.sonar.plugins.inspector.descriptors.utils.AccessibilityUtil;
 import com.facebook.sonar.plugins.inspector.descriptors.utils.EnumMapping;
 import com.facebook.sonar.plugins.inspector.descriptors.utils.ViewAccessibilityHelper;
@@ -43,7 +44,6 @@ import com.facebook.stetho.common.android.ResourcesUtil;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nullable;
 
@@ -99,11 +99,6 @@ public class ViewDescriptor extends NodeDescriptor<View> {
 
   @Override
   public @Nullable Object getChildAt(View node, int index) {
-    return null;
-  }
-
-  @Override
-  public @Nullable Object getAXChildAt(View node, int index) {
     return null;
   }
 
@@ -197,7 +192,9 @@ public class ViewDescriptor extends NodeDescriptor<View> {
 
   @Override
   public List<Named<SonarObject>> getAXData(View node) {
-    return Arrays.asList(new Named<>("AX Properties", getAccessibilityData(node)));
+    return Arrays.asList(
+        new Named<>("Derived Props", AccessibilityUtil.getDerivedAXData(node)),
+        new Named<>("AX Props", AccessibilityUtil.getViewAXData(node)));
   }
 
   private static SonarObject getAccessibilityData(View view) {
@@ -225,7 +222,9 @@ public class ViewDescriptor extends NodeDescriptor<View> {
   @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
   @Override
   public void setValue(View node, String[] path, SonarDynamic value) {
-    if (path[0].equals("Accessibility")) {
+    if (path[0].equals("Accessibility")
+        || path[0].equals("AX Props")
+        || path[0].equals("Derived Props")) {
       setAccessibilityValue(node, path, value);
     }
 
@@ -433,7 +432,12 @@ public class ViewDescriptor extends NodeDescriptor<View> {
   }
 
   public List<Named<String>> getAXAttributes(View node) throws Exception {
-    return Collections.EMPTY_LIST;
+    List<Named<String>> attributes = new ArrayList<>();
+    String role = AccessibilityRoleUtil.getRole(node).toString();
+    if (!role.equals("NONE")) {
+      attributes.add(new Named<>("role", role));
+    }
+    return attributes;
   }
 
   @Nullable

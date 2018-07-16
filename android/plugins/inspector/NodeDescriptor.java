@@ -100,12 +100,17 @@ public abstract class NodeDescriptor<T> {
   /** @return The number of children this node exposes in the inspector. */
   public abstract int getChildCount(T node) throws Exception;
 
+  /** Gets child at index for AX tree. Ignores non-view children. */
+  public int getAXChildCount(T node) throws Exception {
+    return getChildCount(node);
+  }
+
   /** @return The child at index. */
   public abstract Object getChildAt(T node, int index) throws Exception;
 
   /** Gets child at index for AX tree. Ignores non-view children. */
   public @Nullable Object getAXChildAt(T node, int index) throws Exception {
-    return null;
+    return getChildAt(node, index);
   }
 
   /**
