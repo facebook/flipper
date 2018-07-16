@@ -7,7 +7,7 @@ android {
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
         testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
-        applicationId "com.facebook.sonar.sample"
+        applicationId 'com.facebook.sonar.sample'
     }
 
     lintOptions {
