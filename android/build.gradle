@@ -38,9 +38,6 @@ android {
                 exclude 'console/JavascriptEnvironment.java'
                 exclude 'console/JavascriptSession.java'
             }
-            res {
-                srcDir 'res'
-            }
         }
     }
 
