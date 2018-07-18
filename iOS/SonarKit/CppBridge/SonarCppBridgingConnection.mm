@@ -33,13 +33,15 @@
 
 - (void)receive:(NSString *)method withBlock:(SonarReceiver)receiver
 {
-  const auto lambda = [receiver](const folly::dynamic &message,
-                                 std::unique_ptr<facebook::sonar::SonarResponder> responder) {
-    SonarCppBridgingResponder *const objCResponder =
+    const auto lambda = [receiver](const folly::dynamic &message,
+                                   std::unique_ptr<facebook::sonar::SonarResponder> responder) {
+      @autoreleasepool {
+        SonarCppBridgingResponder *const objCResponder =
         [[SonarCppBridgingResponder alloc] initWithCppResponder:std::move(responder)];
-    receiver(facebook::cxxutils::convertFollyDynamicToId(message), objCResponder);
-  };
-  conn_->receive([method UTF8String], lambda);
+        receiver(facebook::cxxutils::convertFollyDynamicToId(message), objCResponder);
+      }
+    };
+    conn_->receive([method UTF8String], lambda);
 }
 
 @end
