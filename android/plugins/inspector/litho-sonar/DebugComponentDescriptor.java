@@ -30,6 +30,7 @@ import com.facebook.sonar.plugins.inspector.Named;
 import com.facebook.sonar.plugins.inspector.NodeDescriptor;
 import com.facebook.sonar.plugins.inspector.Touch;
 import com.facebook.sonar.plugins.inspector.descriptors.ObjectDescriptor;
+import com.facebook.sonar.plugins.inspector.descriptors.utils.AccessibilityRoleUtil;
 import com.facebook.sonar.plugins.inspector.descriptors.utils.AccessibilityUtil;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaDirection;
@@ -41,13 +42,15 @@ import com.facebook.yoga.YogaValue;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
 
 public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
+
+  private static final String axViewPropsTitle = "DebugLayoutNode";
+  private static final String axNodeInfoPropsTitle = "NodeInfo & TalkBack";
 
   private Map<String, List<Pair<String[], SonarDynamic>>> mOverrides = new HashMap<>();
   private DebugComponent.Overrider mOverrider =
@@ -97,7 +100,9 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
                     override.second);
               } catch (Exception ignored) {
               }
-            } else if (override.first[0].equals("Accessibility")) {
+            } else if (override.first[0].equals("Accessibility")
+                || override.first[0].equals(axViewPropsTitle)
+                || override.first[0].equals(axNodeInfoPropsTitle)) {
               applyAccessibilityOverride(node, override.first[1], override.second);
             }
           }
@@ -124,26 +129,8 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
   }
 
   @Override
-  public String getAXName(DebugComponent node) throws Exception {
-    NodeDescriptor componentDescriptor = descriptorForClass(node.getComponent().getClass());
-    if (componentDescriptor.getClass() != ObjectDescriptor.class) {
-      return componentDescriptor.getAXName(node.getComponent());
-    }
-    return node.getComponent().getSimpleName();
-  }
-
-  @Override
   public int getChildCount(DebugComponent node) {
     if (node.getMountedView() != null || node.getMountedDrawable() != null) {
-      return 1;
-    } else {
-      return node.getChildComponents().size();
-    }
-  }
-
-  @Override
-  public int getAXChildCount(DebugComponent node) {
-    if (node.getMountedView() != null) {
       return 1;
     } else {
       return node.getChildComponents().size();
@@ -159,17 +146,6 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
       return mountedView;
     } else if (mountedDrawable != null) {
       return mountedDrawable;
-    } else {
-      return node.getChildComponents().get(index);
-    }
-  }
-
-  @Override
-  public Object getAXChildAt(DebugComponent node, int index) {
-    final View mountedView = node.getMountedView();
-
-    if (mountedView != null) {
-      return mountedView;
     } else {
       return node.getChildComponents().get(index);
     }
@@ -213,12 +189,82 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
     if (componentDescriptor.getClass() != ObjectDescriptor.class) {
       return componentDescriptor.getAXData(node.getComponent());
     }
-    final List<Named<SonarObject>> data = new ArrayList<>();
-    final SonarObject accessibilityData = getAccessibilityData(node);
-    if (accessibilityData != null) {
-      data.add(new Named<>("Accessibility", accessibilityData));
+    final List<Named<SonarObject>> sections = new ArrayList<>();
+
+    final SonarObject derivedData = getDerivedAXData(node);
+    if (derivedData != null) {
+      sections.add(new Named<>(axNodeInfoPropsTitle, derivedData));
     }
-    return data;
+
+    final SonarObject viewData = getViewAXData(node);
+    if (viewData != null) {
+      sections.add(new Named<>(axViewPropsTitle, viewData));
+    }
+
+    return sections;
+  }
+
+  @Nullable
+  private static SonarObject getViewAXData(DebugComponent node) {
+    final DebugLayoutNode layout = node.getLayoutNode();
+    if (layout == null) {
+      return null;
+    }
+
+    final SonarObject.Builder props = new SonarObject.Builder();
+
+    // This needs to be an empty string to be mutable. See t20470623.
+    final CharSequence contentDescription =
+        layout.getContentDescription() != null ? layout.getContentDescription() : "";
+    props.put("content-description", InspectorValue.mutable(contentDescription));
+    props.put("focusable", InspectorValue.mutable(layout.getFocusable()));
+    props.put(
+        "important-for-accessibility",
+        AccessibilityUtil.sImportantForAccessibilityMapping.get(
+            layout.getImportantForAccessibility()));
+
+    return props.build();
+  }
+
+  @Nullable
+  private static SonarObject getDerivedAXData(DebugComponent node) {
+    final DebugLayoutNode layout = node.getLayoutNode();
+    if (layout == null) {
+      return null;
+    }
+
+    final View hostView = node.getComponentHost();
+    final SonarObject.Builder props = new SonarObject.Builder();
+
+    // No host view exists, so this component is inherently not accessible.  Add the reason why this
+    // is the case and then return.
+    if (hostView == node.getLithoView() || hostView == null) {
+      final int importantForAccessibility = layout.getImportantForAccessibility();
+      final boolean isAccessibilityEnabled =
+          AccessibilityUtil.isAccessibilityEnabled(node.getContext());
+      String ignoredReason;
+
+      if (!isAccessibilityEnabled) {
+        ignoredReason = "No accessibility service is running.";
+      } else if (importantForAccessibility == IMPORTANT_FOR_ACCESSIBILITY_NO) {
+        ignoredReason = "Component has importantForAccessibility set to NO.";
+      } else if (importantForAccessibility == IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS) {
+        ignoredReason = "Component has importantForAccessibility set to NO_HIDE_DESCENDANTS.";
+      } else {
+        ignoredReason = "Component does not have content, or accessibility handlers.";
+      }
+
+      props.put("talkback-ignored", true);
+      props.put("talkback-ignored-reasons", ignoredReason);
+
+      return props.build();
+    }
+
+    // host view exists so add node info and TalkBack properties
+    props.put("node-info", AccessibilityUtil.getAXNodeInfoProperties(hostView));
+    AccessibilityUtil.addTalkbackProperties(props, hostView);
+
+    return props.build();
   }
 
   @Nullable
@@ -503,7 +549,13 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
 
   @Override
   public List<Named<String>> getAXAttributes(DebugComponent node) {
-    return Collections.EMPTY_LIST;
+    final View hostView = node.getComponentHost();
+    List<Named<String>> attributes = new ArrayList<>();
+    String role = AccessibilityRoleUtil.getRole(hostView).toString();
+    if (!role.equals("NONE")) {
+      attributes.add(new Named<>("role", role));
+    }
+    return attributes;
   }
 
   @Override

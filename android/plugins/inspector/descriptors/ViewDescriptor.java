@@ -49,6 +49,9 @@ import javax.annotation.Nullable;
 
 public class ViewDescriptor extends NodeDescriptor<View> {
 
+  private static final String axViewPropsTitle = "Accessibility View";
+  private static final String axNodeInfoPropsTitle = "NodeInfo & TalkBack";
+
   private static Field sKeyedTagsField;
   private static Field sListenerInfoField;
   private static Field sOnClickListenerField;
@@ -193,8 +196,8 @@ public class ViewDescriptor extends NodeDescriptor<View> {
   @Override
   public List<Named<SonarObject>> getAXData(View node) {
     return Arrays.asList(
-        new Named<>("Derived Props", AccessibilityUtil.getDerivedAXData(node)),
-        new Named<>("AX Props", AccessibilityUtil.getViewAXData(node)));
+        new Named<>(axNodeInfoPropsTitle, AccessibilityUtil.getDerivedAXData(node)),
+        new Named<>(axViewPropsTitle, AccessibilityUtil.getViewAXData(node)));
   }
 
   private static SonarObject getAccessibilityData(View view) {
@@ -223,9 +226,10 @@ public class ViewDescriptor extends NodeDescriptor<View> {
   @Override
   public void setValue(View node, String[] path, SonarDynamic value) {
     if (path[0].equals("Accessibility")
-        || path[0].equals("AX Props")
-        || path[0].equals("Derived Props")) {
+        || path[0].equals(axViewPropsTitle)
+        || path[0].equals(axNodeInfoPropsTitle)) {
       setAccessibilityValue(node, path, value);
+      return;
     }
 
     if (!path[0].equals("View")) {
@@ -403,6 +407,15 @@ public class ViewDescriptor extends NodeDescriptor<View> {
         break;
       case "content-description":
         node.setContentDescription(value.asString());
+        break;
+      case "label-for":
+        node.setLabelFor(value.asInt());
+        break;
+      case "traversal-after":
+        node.setAccessibilityTraversalAfter(value.asInt());
+        break;
+      case "traversal-before":
+        node.setAccessibilityTraversalBefore(value.asInt());
         break;
     }
     invalidate(node);

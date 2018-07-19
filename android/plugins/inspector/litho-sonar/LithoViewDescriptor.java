@@ -52,13 +52,18 @@ public class LithoViewDescriptor extends NodeDescriptor<LithoView> {
   }
 
   @Override
+  public int getAXChildCount(LithoView node) {
+    return node.getChildCount();
+  }
+
+  @Override
   public Object getChildAt(LithoView node, int index) {
     return DebugComponent.getRootInstance(node);
   }
 
   @Override
   public @Nullable Object getAXChildAt(LithoView node, int index) {
-    return DebugComponent.getRootInstance(node);
+    return node.getChildAt(index);
   }
 
   @Override
