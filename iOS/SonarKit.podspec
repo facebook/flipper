@@ -1,7 +1,7 @@
 folly_compiler_flags = '-DFB_SONARKIT_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_LIBGFLAGS=0 -DFOLLY_HAVE_LIBJEMALLOC=0 -DFOLLY_HAVE_PREADV=0 -DFOLLY_HAVE_PWRITEV=0 -DFOLLY_HAVE_TFO=0 -DFOLLY_USE_SYMBOLIZER=0'
 yoga_version = '~> 1.9'
 yogakit_version = '~>1.8'
-
+sonarkit_version = '0.6.12'
 Pod::Spec.new do |spec|
   spec.name = 'SonarKit'
   spec.version = '0.6.12'
@@ -11,13 +11,13 @@ Pod::Spec.new do |spec|
   spec.authors = 'Facebook'
   spec.static_framework = true
   spec.source = { :git => 'https://github.com/facebook/Sonar.git',
-                  :tag=> "v0.6.12" }
+                  :tag=> "v"+sonarkit_version }
   spec.module_name = 'SonarKit'
   spec.platforms = { :ios => "8.4" }
 
   spec.subspec "Core" do |ss|
     ss.dependency 'Folly', '~>1.0'
-    ss.dependency 'Sonar', '~>0.6'
+    ss.dependency 'Sonar', '~>'+sonarkit_version
     ss.dependency 'CocoaAsyncSocket', '~> 7.6'
     ss.dependency 'PeerTalk', '~>0.0.2'
     ss.dependency 'OpenSSL-Static', '1.0.2.c1'
