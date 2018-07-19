@@ -52,10 +52,11 @@ source <span class="hljs-string">'https://github.com/facebook/Sonar.git'</span>
 source <span class="hljs-string">'https://github.com/CocoaPods/Specs'</span>
 <span class="hljs-comment"># Uncomment the next line to define a global platform for your project</span>
 swift_version = <span class="hljs-string">"4.1"</span>
+sonarkit_version = <span class="hljs-string">'0.6.12'</span>
 
 target <span class="hljs-string">'MyApp'</span> <span class="hljs-keyword">do</span>
 
-  pod <span class="hljs-string">'SonarKit'</span>, <span class="hljs-string">'~&gt;0.6'</span>
+  pod <span class="hljs-string">'SonarKit'</span>, <span class="hljs-string">'~&gt;'</span>+sonarkit_version
   post_install <span class="hljs-keyword">do</span> <span class="hljs-params">|installer|</span>
 
         installer.pods_project.targets.each <span class="hljs-keyword">do</span> <span class="hljs-params">|target|</span>
