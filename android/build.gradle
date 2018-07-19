@@ -50,7 +50,6 @@ android {
     dependencies {
         compileOnly deps.lithoAnnotations
         implementation project(':fbjni')
-        implementation project(':third-party')
         implementation deps.soloader
         implementation deps.guava
         implementation deps.jsr305
