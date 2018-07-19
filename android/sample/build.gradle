@@ -16,12 +16,6 @@ android {
     sourceSets {
         main {
             manifest.srcFile './AndroidManifest.xml'
-            java {
-                srcDir 'src'
-            }
-            res {
-                srcDir 'res'
-            }
         }
     }
 }
