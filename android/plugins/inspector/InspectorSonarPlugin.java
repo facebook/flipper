@@ -48,8 +48,14 @@ public class InspectorSonarPlugin implements SonarPlugin {
     SonarReceiver receiver(ObjectTracker tracker, SonarConnection connection);
   }
 
+  private static Application getAppContextFromContext(Context context) {
+    Context nonNullContext =
+        context.getApplicationContext() == null ? context : context.getApplicationContext();
+    return (Application) context;
+  }
+
   public InspectorSonarPlugin(Context context, DescriptorMapping descriptorMapping) {
-    this(context, descriptorMapping, new NullScriptingEnvironment());
+    this(getAppContextFromContext(context), descriptorMapping, new NullScriptingEnvironment());
   }
 
   public InspectorSonarPlugin(
@@ -57,7 +63,7 @@ public class InspectorSonarPlugin implements SonarPlugin {
       DescriptorMapping descriptorMapping,
       ScriptingEnvironment scriptingEnvironment) {
     this(
-        new ApplicationWrapper((Application) context.getApplicationContext()),
+        new ApplicationWrapper(getAppContextFromContext(context)),
         descriptorMapping,
         scriptingEnvironment,
         null);
@@ -68,7 +74,7 @@ public class InspectorSonarPlugin implements SonarPlugin {
       DescriptorMapping descriptorMapping,
       @Nullable List<ExtensionCommand> extensions) {
     this(
-        new ApplicationWrapper((Application) context.getApplicationContext()),
+        new ApplicationWrapper(getAppContextFromContext(context)),
         descriptorMapping,
         new NullScriptingEnvironment(),
         extensions);
@@ -79,8 +85,9 @@ public class InspectorSonarPlugin implements SonarPlugin {
       DescriptorMapping descriptorMapping,
       ScriptingEnvironment scriptingEnvironment,
       @Nullable List<ExtensionCommand> extensions) {
+
     this(
-        new ApplicationWrapper((Application) context.getApplicationContext()),
+        new ApplicationWrapper(getAppContextFromContext(context)),
         descriptorMapping,
         scriptingEnvironment,
         extensions);
