@@ -27,16 +27,8 @@ android {
 
     sourceSets {
         main {
-            manifest {
-                srcFile './AndroidManifest.xml'
-            }
             java {
-                srcDir 'android'
-                srcDir 'core'
                 srcDir 'plugins'
-                exclude 'console/ConsoleSonarPlugin.java'
-                exclude 'console/JavascriptEnvironment.java'
-                exclude 'console/JavascriptSession.java'
             }
         }
     }
