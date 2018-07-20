@@ -1,4 +1,4 @@
-sonarkit_version = '0.6.12'
+sonarkit_version = '0.6.13'
 Pod::Spec.new do |spec|
   spec.name = 'Sonar'
   spec.version = sonarkit_version

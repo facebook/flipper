@@ -1,13 +1,14 @@
 project 'Sample.xcodeproj'
 source 'https://github.com/facebook/Sonar.git'
 source 'https://github.com/CocoaPods/Specs'
-# Uncomment the next line to define a global platform for your project
 swift_version = "4.1"
 sonarkit_version = '0.6.12'
 
 target 'Sample' do
-
   pod 'SonarKit', '~>'+sonarkit_version
+  pod 'SonarKit/SonarKitLayoutComponentKitSupport', '~>'+sonarkit_version
+  pod 'SonarKit/SKIOSNetworkPlugin', '~>'+sonarkit_version
+
   post_install do |installer|
 
         installer.pods_project.targets.each do |target|

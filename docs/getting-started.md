@@ -112,9 +112,9 @@ and install the dependencies by running `pod install`. When you open the Xcode w
 * We haven't released the dependency to CocoaPods yet, here is the [issue](https://github.com/facebook/Sonar/issues/132) by which you can track.
 * If you do not use CocoaPods as a dependency management tool then currently there is no way to integrate SonarKit other than manually including all the dependencies and building it.
 * For Android, Sonar works with both emulators and physical devices connected through USB. However on iOS, we don't yet support physical devices.
-* Also Sonar doesn't work with swift projects as its written in C++ and had C++ dependencies. But we are working on supporting sonar for swift projects. You can find this issue [here](https://github.com/facebook/Sonar/issues/13)
+* The Sonar layout and network plugins aren't supported in Swift projects since they include C++ dependencies. We're working on supporting these plugins for Swift apps. You can join the discussion on the [issues page](https://github.com/facebook/Sonar/issues).
 </div>
 
 ## Ready for takeoff
 
-Finally you need to add plugins to your Sonar client. See [Network Plugin](network-plugin.md) and [Layout Inspector Plugin](layout-plugin.md) on how to add them.
+Finally, you need to add plugins to your Sonar client. See [Network Plugin](network-plugin.md) and [Layout Inspector Plugin](layout-plugin.md) for information on how to add them.

@@ -7,11 +7,11 @@
  */
 #import "AppDelegate.h"
 
-#import <SKIOSNetworkPlugin/SKIOSNetworkAdapter.h>
 #import <SonarKit/SonarClient.h>
-#import <SonarKitLayoutComponentKitSupport/SonarKitLayoutComponentKitSupport.h>
 #import <SonarKitLayoutPlugin/SonarKitLayoutPlugin.h>
 #import <SonarKitNetworkPlugin/SonarKitNetworkPlugin.h>
+#import <SonarKitLayoutComponentKitSupport/SonarKitLayoutComponentKitSupport.h>
+#import <SKIOSNetworkPlugin/SKIOSNetworkAdapter.h>
 
 #import "MainViewController.h"
 #import "RootViewController.h"
@@ -36,7 +36,7 @@
                                                withDescriptorMapper: layoutDescriptorMapper]];
 
   [[SonarClient sharedClient] addPlugin: [[SonarKitNetworkPlugin alloc] initWithNetworkAdapter:[SKIOSNetworkAdapter new]]];
-  [[SonarClient sharedClient] start];
+  [client start];
 
   UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"MainStoryBoard" bundle:nil];
   MainViewController *mainViewController = [storyboard instantiateViewControllerWithIdentifier:@"MainViewController"];
@@ -47,6 +47,8 @@
 
   [_window setRootViewController: [[UINavigationController alloc] initWithRootViewController: mainViewController]];
   [_window makeKeyAndVisible];
+
+  NSLog(@"Hello from Sonar in an Objc app!");
   return YES;
 }
 
