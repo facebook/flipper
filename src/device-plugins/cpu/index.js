@@ -19,7 +19,9 @@ import {
 } from 'sonar';
 
 type ADBClient = any;
-type AndroidDevice = any;
+type AndroidDevice = {
+  adb: ADBClient,
+};
 type TableRows = any;
 
 // we keep vairable name with underline for to physical path mappings on device
@@ -102,7 +104,6 @@ export default class CPUFrequencyTable extends SonarDevicePlugin<CPUState> {
 
   adbClient: ADBClient;
   intervalID: ?IntervalID;
-  device: AndroidDevice;
 
   state = {
     cpuFreq: [],
@@ -111,7 +112,8 @@ export default class CPUFrequencyTable extends SonarDevicePlugin<CPUState> {
   };
 
   init() {
-    this.adbClient = this.device.adb;
+    let device = ((this.device: any): AndroidDevice);
+    this.adbClient = device.adb;
 
     // check how many cores we have on this device
     this.executeShell((output: string) => {
