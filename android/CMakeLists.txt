@@ -26,7 +26,7 @@ add_compile_options(-DSONAR_OSS=1
                     -Wno-tautological-constant-compare
                     )
 
-file(GLOB SOURCES android/sonar.cpp)
+file(GLOB SOURCES src/main/cpp/sonar.cpp)
 add_library(${PACKAGE_NAME} SHARED ${SOURCES})
 target_include_directories(${PACKAGE_NAME}  PUBLIC "./")
 
