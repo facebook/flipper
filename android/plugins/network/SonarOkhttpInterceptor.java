@@ -39,10 +39,14 @@ public class SonarOkhttpInterceptor implements Interceptor {
     ResponseInfo responseInfo = convertResponse(response, body, randInt);
     plugin.reportResponse(responseInfo);
     // Creating new response as can't used response.body() more than once
-    return response
-        .newBuilder()
-        .body(ResponseBody.create(body.contentType(), responseInfo.body))
-        .build();
+    if (responseInfo.body != null) {
+        return response
+            .newBuilder()
+            .body(ResponseBody.create(body.contentType(), responseInfo.body))
+            .build();
+    } else {
+        return response;
+    }
   }
 
   private static byte[] bodyToByteArray(final Request request) {
