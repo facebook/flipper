@@ -25,7 +25,10 @@ import {
   VerticalRule,
 } from 'sonar';
 
-import {AXElementsInspector} from '../../fb-stubs/AXLayoutExtender.js';
+import {
+  AXElementsInspector,
+  AXToggleButtonEnabled,
+} from '../../fb-stubs/AXLayoutExtender.js';
 
 // $FlowFixMe
 import debounce from 'lodash.debounce';
@@ -163,11 +166,6 @@ export default class Layout extends SonarPlugin<InspectorState> {
     SelectElement(state: InspectorState, {key}: SelectElementArgs) {
       return {
         selected: key,
-      };
-    },
-
-    SelectAXElement(state: InspectorState, {key}: SelectElementArgs) {
-      return {
         AXselected: key,
       };
     },
@@ -252,7 +250,6 @@ export default class Layout extends SonarPlugin<InspectorState> {
           ...element,
         };
       }
-
       return {AXelements: updatedElements};
     },
 
@@ -399,22 +396,27 @@ export default class Layout extends SonarPlugin<InspectorState> {
       });
     });
 
-    this.client.call('getRoot').then((element: Element) => {
-      this.dispatchAction({elements: [element], type: 'UpdateAXElements'});
-      this.dispatchAction({root: element.id, type: 'SetAXRoot'});
-      this.performInitialExpand(element, true).then(() => {
-        this.setState({AXinitialised: true});
+    if (AXToggleButtonEnabled) {
+      this.client.call('getAXRoot').then((element: Element) => {
+        this.dispatchAction({elements: [element], type: 'UpdateAXElements'});
+        this.dispatchAction({root: element.id, type: 'SetAXRoot'});
+        this.performInitialExpand(element, true).then(() => {
+          this.setState({AXinitialised: true});
+        });
       });
-    });
+    }
 
     this.client.subscribe(
       'invalidate',
       ({nodes}: {nodes: Array<{id: ElementID}>}) => {
         this.invalidate(nodes.map(node => node.id)).then(
           (elements: Array<Element>) => {
-            this.dispatchAction({elements, type: 'UpdateElements'});
-            // to be removed once trees are separate - will have own invalidate
-            this.dispatchAction({elements, type: 'UpdateAXElements'});
+            if (this.state.inAXMode) {
+              // to be removed once trees are separate - will have own invalidate
+              this.dispatchAction({elements, type: 'UpdateAXElements'});
+            } else {
+              this.dispatchAction({elements, type: 'UpdateElements'});
+            }
           },
         );
       },
@@ -445,10 +447,13 @@ export default class Layout extends SonarPlugin<InspectorState> {
       return Promise.resolve([]);
     }
 
-    return this.getNodes(ids, true, false).then((elements: Array<Element>) => {
+    const ax = this.state.inAXMode;
+    return this.getNodes(ids, true, ax).then((elements: Array<Element>) => {
       const children = elements
         .filter(element => {
-          const prev = this.state.elements[element.id];
+          const prev = (ax ? this.state.AXelements : this.state.elements)[
+            element.id
+          ];
           return prev && prev.expanded;
         })
         .map(element => element.children)
@@ -462,7 +467,7 @@ export default class Layout extends SonarPlugin<InspectorState> {
 
   getNodesAndDirectChildren(
     ids: Array<ElementID>,
-    ax: boolean,
+    ax: boolean, // always false at the moment bc only used for select
   ): Promise<Array<Element>> {
     return this.getNodes(ids, false, ax).then((elements: Array<Element>) => {
       const children = elements
@@ -501,7 +506,7 @@ export default class Layout extends SonarPlugin<InspectorState> {
     if (ids.length > 0) {
       performance.mark('LayoutInspectorGetNodes');
       return this.client
-        .call('getNodes', {ids})
+        .call(ax ? 'getAXNodes' : 'getNodes', {ids})
         .then(({elements}: GetNodesResult) => {
           this.props.logger.trackTimeSince('LayoutInspectorGetNodes');
           return Promise.resolve(elements);
@@ -619,7 +624,7 @@ export default class Layout extends SonarPlugin<InspectorState> {
   });
 
   onAXElementSelected = debounce((key: ElementID) => {
-    this.dispatchAction({key, type: 'SelectAXElement'});
+    this.dispatchAction({key, type: 'SelectElement'});
     this.client.send('setHighlighted', {id: key});
     this.getNodes([key], true, true).then((elements: Array<Element>) => {
       this.dispatchAction({elements, type: 'UpdateAXElements'});
@@ -627,6 +632,10 @@ export default class Layout extends SonarPlugin<InspectorState> {
   });
 
   onElementHovered = debounce((key: ?ElementID) => {
+    this.client.send('setHighlighted', {id: key});
+  });
+
+  onAXElementHovered = debounce((key: ?ElementID) => {
     this.client.send('setHighlighted', {id: key});
   });
 
@@ -683,20 +692,6 @@ export default class Layout extends SonarPlugin<InspectorState> {
       outstandingSearchQuery,
     } = this.state;
 
-    const AXInspector = (
-      <AXElementsInspector
-        onElementSelected={this.onAXElementSelected}
-        onElementHovered={this.onElementHovered}
-        onElementExpanded={this.onAXElementExpanded}
-        onValueChanged={this.onDataValueChanged}
-        selected={AXselected}
-        searchResults={this.state.searchResults}
-        root={AXroot}
-        elements={AXelements}
-      />
-    );
-    const AXButtonVisible = AXInspector !== null;
-
     return (
       <FlexColumn fill={true}>
         <Toolbar>
@@ -715,7 +710,7 @@ export default class Layout extends SonarPlugin<InspectorState> {
               }
             />
           </SearchIconContainer>
-          {AXButtonVisible ? (
+          {AXToggleButtonEnabled ? (
             <SearchIconContainer
               onClick={this.onToggleAccessibility}
               role="button"
@@ -760,7 +755,18 @@ export default class Layout extends SonarPlugin<InspectorState> {
             </Center>
           )}
           {AXinitialised && inAXMode ? <VerticalRule /> : null}
-          {AXinitialised && inAXMode ? AXInspector : null}
+          {AXinitialised && inAXMode ? (
+            <AXElementsInspector
+              onElementSelected={this.onAXElementSelected}
+              onElementHovered={this.onAXElementHovered}
+              onElementExpanded={this.onAXElementExpanded}
+              onValueChanged={this.onDataValueChanged}
+              selected={AXselected}
+              searchResults={null}
+              root={AXroot}
+              elements={AXelements}
+            />
+          ) : null}
         </FlexRow>
         <SonarSidebar>{this.renderSidebar()}</SonarSidebar>
       </FlexColumn>

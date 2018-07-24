@@ -26,6 +26,9 @@ class SonarConnectionMock : public SonarConnection {
     receivers_[method] = receiver;
   }
 
+  void error(const std::string& message, const std::string& stacktrace)
+      override {}
+
   std::map<std::string, folly::dynamic> sent_;
   std::map<std::string, SonarReceiver> receivers_;
 };

@@ -139,6 +139,21 @@ export default class Server extends EventEmitter {
     const clientData = JSON.parse(connectRequest.data);
     this.connectionTracker.logConnectionAttempt(clientData);
 
+    if (
+      clientData.os === 'iOS' &&
+      !clientData.device.toLowerCase().includes('simulator')
+    ) {
+      this.emit(
+        'error',
+        new Error(
+          "Sonar doesn't currently support physical iOS devices. You can still use it to view logs, but for now to use the majority of the sonar plugins you'll have to use the Simulator.",
+        ),
+      );
+      console.warn(
+        'Physical iOS device detected. This is not currently supported by sonar.',
+      );
+    }
+
     return {
       fireAndForget: (payload: {data: string}) => {
         if (typeof payload.data !== 'string') {

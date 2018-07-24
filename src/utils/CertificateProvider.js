@@ -33,7 +33,6 @@ const serverSubject = '/C=US/ST=CA/L=Menlo Park/O=Sonar/CN=localhost';
 const minCertExpiryWindowSeconds = 24 * 60 * 60;
 const appNotDebuggableRegex = /debuggable/;
 const allowedAppNameRegex = /^[a-zA-Z0-9.\-]+$/;
-const allowedAppDirectoryRegex = /^\/[ a-zA-Z0-9.\-\/]+$/;
 const operationNotPermittedRegex = /not permitted/;
 const logTag = 'CertificateProvider';
 /*
@@ -81,13 +80,6 @@ export default class CertificateProvider {
     appDirectory: string,
   ): Promise<void> {
     this.ensureOpenSSLIsAvailable();
-    if (!appDirectory.match(allowedAppDirectoryRegex)) {
-      return Promise.reject(
-        new RecurringError(
-          `Invalid appDirectory recieved from ${os} device: ${appDirectory}`,
-        ),
-      );
-    }
     return this.certificateSetup
       .then(_ => this.getCACertificate())
       .then(caCert =>
@@ -172,8 +164,18 @@ export default class CertificateProvider {
       );
     }
     if (os === 'iOS' || os === 'windows') {
-      fs.writeFileSync(destination + filename, contents);
-      return Promise.resolve();
+      return new Promise((resolve, reject) => {
+        fs.writeFile(destination + filename, contents, err => {
+          if (err) {
+            reject(
+              `Invalid appDirectory recieved from ${os} device: ${destination}: ` +
+                err.toString(),
+            );
+          } else {
+            resolve();
+          }
+        });
+      });
     }
     return Promise.reject(new RecurringError(`Unsupported device os: ${os}`));
   }
@@ -351,6 +353,11 @@ export default class CertificateProvider {
     if (!fs.existsSync(filename)) {
       return Promise.reject();
     }
+    // openssl checkend is a nice feature but it only checks for certificates
+    // expiring in the future, not those that have already expired.
+    // So we need a separate check for certificates that have already expired
+    // but since this involves parsing date outputs from openssl, which is less
+    // reliable, keeping both checks for safety.
     return openssl('x509', {
       checkend: minCertExpiryWindowSeconds,
       in: filename,
@@ -359,6 +366,31 @@ export default class CertificateProvider {
       .catch(e => {
         console.warn(`Certificate will expire soon: ${filename}`, logTag);
         throw e;
+      })
+      .then(_ =>
+        openssl('x509', {
+          enddate: true,
+          in: filename,
+          noout: true,
+        }),
+      )
+      .then(endDateOutput => {
+        const dateString = endDateOutput
+          .trim()
+          .split('=')[1]
+          .trim();
+        const expiryDate = Date.parse(dateString);
+        if (isNaN(expiryDate)) {
+          console.error(
+            'Unable to parse certificate expiry date: ' + endDateOutput,
+          );
+          throw new Error(
+            'Cannot parse certificate expiry date. Assuming it has expired.',
+          );
+        }
+        if (expiryDate <= Date.now() + minCertExpiryWindowSeconds * 1000) {
+          throw new Error('Certificate has expired or will expire soon.');
+        }
       });
   }
 

@@ -13,6 +13,7 @@ import com.facebook.sonar.plugins.inspector.NodeDescriptor;
 import com.facebook.sonar.plugins.inspector.Touch;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nullable;
 
 public class LithoViewDescriptor extends NodeDescriptor<LithoView> {
 
@@ -40,13 +41,29 @@ public class LithoViewDescriptor extends NodeDescriptor<LithoView> {
   }
 
   @Override
+  public String getAXName(LithoView node) throws Exception {
+    final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
+    return descriptor.getAXName(node);
+  }
+
+  @Override
   public int getChildCount(LithoView node) {
     return DebugComponent.getRootInstance(node) == null ? 0 : 1;
   }
 
   @Override
+  public int getAXChildCount(LithoView node) {
+    return node.getChildCount();
+  }
+
+  @Override
   public Object getChildAt(LithoView node, int index) {
     return DebugComponent.getRootInstance(node);
+  }
+
+  @Override
+  public @Nullable Object getAXChildAt(LithoView node, int index) {
+    return node.getChildAt(index);
   }
 
   @Override
@@ -75,6 +92,14 @@ public class LithoViewDescriptor extends NodeDescriptor<LithoView> {
   }
 
   @Override
+  public List<Named<SonarObject>> getAXData(LithoView node) throws Exception {
+    final List<Named<SonarObject>> props = new ArrayList<>();
+    final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
+    props.addAll(descriptor.getAXData(node));
+    return props;
+  }
+
+  @Override
   public void setValue(LithoView node, String[] path, SonarDynamic value) throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
     descriptor.setValue(node, path, value);
@@ -84,6 +109,12 @@ public class LithoViewDescriptor extends NodeDescriptor<LithoView> {
   public List<Named<String>> getAttributes(LithoView node) throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
     return descriptor.getAttributes(node);
+  }
+
+  @Override
+  public List<Named<String>> getAXAttributes(LithoView node) throws Exception {
+    final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
+    return descriptor.getAXAttributes(node);
   }
 
   @Override

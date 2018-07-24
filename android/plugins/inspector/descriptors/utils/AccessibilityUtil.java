@@ -23,6 +23,7 @@ import android.view.accessibility.AccessibilityManager;
 import android.widget.EditText;
 import com.facebook.sonar.core.SonarArray;
 import com.facebook.sonar.core.SonarObject;
+import com.facebook.sonar.plugins.inspector.InspectorValue;
 import javax.annotation.Nullable;
 
 /**
@@ -336,6 +337,90 @@ public final class AccessibilityUtil {
   }
 
   /**
+   * Creates a {@link SonarObject} of useful properties of AccessibilityNodeInfo, to be shown in the
+   * Sonar Layout Inspector extension. All properties are immutable since they are all derived from
+   * various {@link View} properties. This is a more complete list than
+   * getAccessibilityNodeInfoProperties returns.
+   *
+   * @param view The {@link View} to derive the AccessibilityNodeInfo properties from.
+   * @return {@link SonarObject} containing the properties.
+   */
+  @Nullable
+  public static SonarObject getAXNodeInfoProperties(View view) {
+    final AccessibilityNodeInfoCompat nodeInfo =
+        ViewAccessibilityHelper.createNodeInfoFromView(view);
+    if (nodeInfo == null) {
+      return null;
+    }
+
+    final SonarObject.Builder nodeInfoProps = new SonarObject.Builder();
+    final Rect bounds = new Rect();
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      final SonarArray.Builder actionsArrayBuilder = new SonarArray.Builder();
+      for (AccessibilityNodeInfoCompat.AccessibilityActionCompat action :
+          nodeInfo.getActionList()) {
+        final String actionLabel = (String) action.getLabel();
+        if (actionLabel != null) {
+          actionsArrayBuilder.put(actionLabel);
+        } else {
+          actionsArrayBuilder.put(
+              AccessibilityUtil.sAccessibilityActionMapping.get(action.getId(), false));
+        }
+      }
+      nodeInfoProps.put("actions", actionsArrayBuilder.build());
+    }
+
+    nodeInfoProps
+        .put("checkable", nodeInfo.isCheckable())
+        .put("checked", nodeInfo.isChecked())
+        .put("clickable", nodeInfo.isClickable())
+        .put("content-description", nodeInfo.getContentDescription())
+        .put("content-invalid", nodeInfo.isContentInvalid())
+        .put("context-clickable", nodeInfo.isContextClickable())
+        .put("dismissable", nodeInfo.isDismissable())
+        .put("drawing-order", nodeInfo.getDrawingOrder())
+        .put("editable", nodeInfo.isEditable())
+        .put("enabled", nodeInfo.isEnabled())
+        .put("focusable", nodeInfo.isFocusable())
+        .put("focused", nodeInfo.isAccessibilityFocused())
+        .put("important-for-accessibility", nodeInfo.isImportantForAccessibility())
+        .put("long-clickable", nodeInfo.isLongClickable())
+        .put("multiline", nodeInfo.isMultiLine())
+        .put("password", nodeInfo.isPassword())
+        .put("scrollable", nodeInfo.isScrollable())
+        .put("selected", nodeInfo.isSelected())
+        .put("text", nodeInfo.getText())
+        .put("visible-to-user", nodeInfo.isVisibleToUser());
+
+    nodeInfo.getBoundsInParent(bounds);
+    nodeInfoProps.put(
+        "parent-bounds",
+        new SonarObject.Builder()
+            .put("width", bounds.width())
+            .put("height", bounds.height())
+            .put("top", bounds.top)
+            .put("left", bounds.left)
+            .put("bottom", bounds.bottom)
+            .put("right", bounds.right));
+
+    nodeInfo.getBoundsInScreen(bounds);
+    nodeInfoProps.put(
+        "screen-bounds",
+        new SonarObject.Builder()
+            .put("width", bounds.width())
+            .put("height", bounds.height())
+            .put("top", bounds.top)
+            .put("left", bounds.left)
+            .put("bottom", bounds.bottom)
+            .put("right", bounds.right));
+
+    nodeInfo.recycle();
+
+    return nodeInfoProps.build();
+  }
+
+  /**
    * Modifies a {@link SonarObject.Builder} to add Talkback-specific Accessibiltiy properties to be
    * shown in the Sonar Layout Inspector.
    *
@@ -353,5 +438,49 @@ public final class AccessibilityUtil {
           .put("talkback-focusable-reasons", getTalkbackFocusableReasons(view))
           .put("talkback-description", getTalkbackDescription(view));
     }
+  }
+
+  public static SonarObject getViewAXData(View view) {
+    final SonarObject.Builder props = new SonarObject.Builder();
+
+    // This needs to be an empty string to be mutable. See t20470623.
+    CharSequence contentDescription =
+        view.getContentDescription() != null ? view.getContentDescription() : "";
+    props.put("content-description", InspectorValue.mutable(contentDescription));
+    props.put("focusable", InspectorValue.mutable(view.isFocusable()));
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+      props.put(
+          "important-for-accessibility",
+          AccessibilityUtil.sImportantForAccessibilityMapping.get(
+              view.getImportantForAccessibility()));
+    }
+
+    return props.build();
+  }
+
+  public static SonarObject getDerivedAXData(View view) {
+    final SonarObject.Builder props = new SonarObject.Builder();
+
+    if (!AccessibilityEvaluationUtil.isTalkbackFocusable(view)) {
+      String reason = getTalkbackIgnoredReasons(view);
+      props
+          .put("talkback-ignored", true)
+          .put("talkback-ignored-reasons", reason == null ? "" : reason);
+    } else {
+      String reason = getTalkbackFocusableReasons(view);
+      CharSequence description = getTalkbackDescription(view);
+      props
+          .put("talkback-focusable", true)
+          .put("talkback-focusable-reasons", reason == null ? "" : reason)
+          .put("talkback-description", description == null ? "" : description);
+    }
+
+    SonarObject axNodeInfo = getAXNodeInfoProperties(view);
+    if (axNodeInfo != null) {
+      props.put("node-info", axNodeInfo);
+    }
+
+    return props.build();
   }
 }

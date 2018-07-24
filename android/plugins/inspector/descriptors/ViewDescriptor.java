@@ -18,6 +18,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.v4.view.MarginLayoutParamsCompat;
 import android.support.v4.view.ViewCompat;
+import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;
 import android.util.SparseArray;
 import android.view.Gravity;
 import android.view.View;
@@ -35,8 +36,10 @@ import com.facebook.sonar.plugins.inspector.InspectorValue;
 import com.facebook.sonar.plugins.inspector.Named;
 import com.facebook.sonar.plugins.inspector.NodeDescriptor;
 import com.facebook.sonar.plugins.inspector.Touch;
+import com.facebook.sonar.plugins.inspector.descriptors.utils.AccessibilityRoleUtil;
 import com.facebook.sonar.plugins.inspector.descriptors.utils.AccessibilityUtil;
 import com.facebook.sonar.plugins.inspector.descriptors.utils.EnumMapping;
+import com.facebook.sonar.plugins.inspector.descriptors.utils.ViewAccessibilityHelper;
 import com.facebook.stetho.common.android.ResourcesUtil;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -45,6 +48,9 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 public class ViewDescriptor extends NodeDescriptor<View> {
+
+  private static final String axViewPropsTitle = "Accessibility View";
+  private static final String axNodeInfoPropsTitle = "NodeInfo & TalkBack";
 
   private static Field sKeyedTagsField;
   private static Field sListenerInfoField;
@@ -76,6 +82,17 @@ public class ViewDescriptor extends NodeDescriptor<View> {
   @Override
   public String getName(View node) {
     return node.getClass().getSimpleName();
+  }
+
+  @Override
+  public String getAXName(View node) {
+    AccessibilityNodeInfoCompat nodeInfo = ViewAccessibilityHelper.createNodeInfoFromView(node);
+    if (nodeInfo == null) {
+      return "NULL NODEINFO";
+    }
+    String name = nodeInfo.getClassName().toString();
+    nodeInfo.recycle();
+    return name;
   }
 
   @Override
@@ -176,6 +193,13 @@ public class ViewDescriptor extends NodeDescriptor<View> {
         new Named<>("Accessibility", getAccessibilityData(node)));
   }
 
+  @Override
+  public List<Named<SonarObject>> getAXData(View node) {
+    return Arrays.asList(
+        new Named<>(axNodeInfoPropsTitle, AccessibilityUtil.getDerivedAXData(node)),
+        new Named<>(axViewPropsTitle, AccessibilityUtil.getViewAXData(node)));
+  }
+
   private static SonarObject getAccessibilityData(View view) {
     final SonarObject.Builder accessibilityProps = new SonarObject.Builder();
 
@@ -201,8 +225,11 @@ public class ViewDescriptor extends NodeDescriptor<View> {
   @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
   @Override
   public void setValue(View node, String[] path, SonarDynamic value) {
-    if (path[0].equals("Accessibility")) {
+    if (path[0].equals("Accessibility")
+        || path[0].equals(axViewPropsTitle)
+        || path[0].equals(axNodeInfoPropsTitle)) {
       setAccessibilityValue(node, path, value);
+      return;
     }
 
     if (!path[0].equals("View")) {
@@ -381,6 +408,15 @@ public class ViewDescriptor extends NodeDescriptor<View> {
       case "content-description":
         node.setContentDescription(value.asString());
         break;
+      case "label-for":
+        node.setLabelFor(value.asInt());
+        break;
+      case "traversal-after":
+        node.setAccessibilityTraversalAfter(value.asInt());
+        break;
+      case "traversal-before":
+        node.setAccessibilityTraversalBefore(value.asInt());
+        break;
     }
     invalidate(node);
   }
@@ -405,6 +441,15 @@ public class ViewDescriptor extends NodeDescriptor<View> {
       }
     }
 
+    return attributes;
+  }
+
+  public List<Named<String>> getAXAttributes(View node) throws Exception {
+    List<Named<String>> attributes = new ArrayList<>();
+    String role = AccessibilityRoleUtil.getRole(node).toString();
+    if (!role.equals("NONE")) {
+      attributes.add(new Named<>("role", role));
+    }
     return attributes;
   }
 

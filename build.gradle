@@ -4,13 +4,16 @@ buildscript {
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.1.2'
+        classpath 'com.android.tools.build:gradle:3.1.3'
         classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:${GRADLE_BINTRAY_PLUGIN_VERSION}"
         classpath "com.github.dcendents:android-maven-gradle-plugin:${ANDROID_MAVEN_GRADLE_PLUGIN_VERSION}"
         classpath "com.github.ben-manes:gradle-versions-plugin:${GRADLE_VERSIONS_PLUGIN_VERSION}"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${KOTLIN_VERSION}"
-        classpath 'de.undercouch:gradle-download-task:3.1.2'
     }
+}
+
+plugins {
+    id 'de.undercouch.download' version '3.4.3'
 }
 
 subprojects {
@@ -45,22 +48,24 @@ ext.deps = [
         // Arch
         archPaging         : 'android.arch.paging:runtime:1.0.0',
         // First-party
-        soloader           : 'com.facebook.soloader:soloader:0.4.1',
+        soloader           : 'com.facebook.soloader:soloader:0.5.1',
         screenshot         : 'com.facebook.testing.screenshot:core:0.5.0',
         // Annotations
         jsr305             : 'com.google.code.findbugs:jsr305:3.0.1',
         inferAnnotations   : 'com.facebook.infer.annotation:infer-annotation:0.11.2',
         // Litho
-        lithoAnnotations   : 'com.facebook.litho:litho-annotations:0.16.0',
-        lithoCore          : 'com.facebook.litho:litho-core:0.16.0',
-        lithoWidget        : 'com.facebook.litho:litho-widget:0.16.0',
-        lithoProcessor     : 'com.facebook.litho:litho-processor:0.16.0',
-        lithoFresco        : 'com.facebook.litho:litho-fresco:0.16.0',
-        lithoTesting       : 'com.facebook.litho:litho-testing:0.16.0',
+        lithoAnnotations   : "com.facebook.litho:litho-annotations:$LITHO_VERSION",
+        lithoCore          : "com.facebook.litho:litho-core:$LITHO_VERSION",
+        lithoWidget        : "com.facebook.litho:litho-widget:$LITHO_VERSION",
+        lithoProcessor     : "com.facebook.litho:litho-processor:$LITHO_VERSION",
+        lithoFresco        : "com.facebook.litho:litho-fresco:$LITHO_VERSION",
+        lithoTesting       : "com.facebook.litho:litho-testing:$LITHO_VERSION",
         // Debugging and testing
         guava              : 'com.google.guava:guava:20.0',
         robolectric        : 'org.robolectric:robolectric:3.0',
         junit              : 'junit:junit:4.12',
         stetho             : 'com.facebook.stetho:stetho:1.5.0',
-        okhttp3            : 'com.squareup.okhttp3:okhttp:3.10.0'
+        okhttp3            : 'com.squareup.okhttp3:okhttp:3.10.0',
+        // Plugin dependencies
+        rhino              : 'org.mozilla:rhino:1.7.10',
 ]

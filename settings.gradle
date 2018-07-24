@@ -7,8 +7,6 @@
  * in the user guide at https://docs.gradle.org/4.7/userguide/multi_project_builds.html
  */
 
-rootProject.name = 'sonar-kit'
-
 include ':android'
 include ':folly'
 include ':fbjni'
@@ -19,14 +17,16 @@ include ':doubleconversion'
 include ':glog'
 include ':libevent'
 include ':rsocket'
+include ':third-party'
 
 project(':fbjni').projectDir = file('libs/fbjni')
 project(':easywsclient').projectDir = file('libs/easywsclient')
 project(':sonarcpp').projectDir = file('xplat')
 project(':sample').projectDir = file('android/sample')
 project(':android').projectDir = file('android')
-project(':doubleconversion').projectDir = file('android/build/third-party-ndk/double-conversion/')
-project(':glog').projectDir = file('android/build/third-party-ndk/glog/')
-project(':folly').projectDir = file('android/build/third-party-ndk/folly/')
-project(':libevent').projectDir = file('android/build/third-party-ndk/LibEvent/')
-project(':rsocket').projectDir = file('android/build/third-party-ndk/RSocket')
+project(':doubleconversion').projectDir = file('android/third-party/external/double-conversion/')
+project(':glog').projectDir = file('android/third-party/external/glog/')
+project(':folly').projectDir = file('android/third-party/external/folly/')
+project(':libevent').projectDir = file('android/third-party/external/LibEvent/')
+project(':rsocket').projectDir = file('android/third-party/external/RSocket/')
+project(':third-party').projectDir = file('android/third-party/')

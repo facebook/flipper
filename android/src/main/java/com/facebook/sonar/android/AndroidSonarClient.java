@@ -25,7 +25,8 @@ public final class AndroidSonarClient {
       sConnectionThread = new SonarThread("SonarConnectionThread");
       sConnectionThread.start();
 
-      final Context app = context.getApplicationContext();
+      final Context app =
+          context.getApplicationContext() == null ? context : context.getApplicationContext();
       SonarClientImpl.init(
           sSonarThread.getEventBase(),
           sConnectionThread.getEventBase(),

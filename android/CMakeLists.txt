@@ -26,18 +26,18 @@ add_compile_options(-DSONAR_OSS=1
                     -Wno-tautological-constant-compare
                     )
 
-file(GLOB SOURCES android/sonar.cpp)
+file(GLOB SOURCES src/main/cpp/sonar.cpp)
 add_library(${PACKAGE_NAME} SHARED ${SOURCES})
 target_include_directories(${PACKAGE_NAME}  PUBLIC "./")
 
 set(libjnihack_DIR ${CMAKE_SOURCE_DIR}/../libs/jni-hack/)
 set(libfbjni_DIR ${CMAKE_SOURCE_DIR}/../libs/fbjni/)
 set(libsonar_DIR ${CMAKE_SOURCE_DIR}/../xplat/)
-set(third_party_ndk ${PROJECT_SOURCE_DIR}/build/third-party-ndk)
-set(libfolly_DIR ${third_party_ndk}/folly/)
-set(glog_DIR ${third_party_ndk}/glog)
-set(BOOST_DIR ${third_party_ndk}/boost/boost_1_63_0/)
-set(LIBEVENT_DIR ${third_party_ndk}/LibEvent/libevent-release-2.1.9/)
+set(external_DIR ${PROJECT_SOURCE_DIR}/third-party/external)
+set(libfolly_DIR ${external_DIR}/folly/)
+set(glog_DIR ${external_DIR}/glog)
+set(BOOST_DIR ${external_DIR}/boost/boost_1_63_0/)
+set(LIBEVENT_DIR ${external_DIR}/LibEvent/libevent-release-2.1.9/)
 
 set(build_DIR ${CMAKE_SOURCE_DIR}/build)
 

@@ -7,7 +7,7 @@ android {
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
         testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
-        applicationId "com.facebook.sonar.sample"
+        applicationId 'com.facebook.sonar.sample'
     }
 
     lintOptions {
@@ -16,41 +16,24 @@ android {
     sourceSets {
         main {
             manifest.srcFile './AndroidManifest.xml'
-            java {
-                srcDir 'src'
-            }
-            res {
-                srcDir 'res'
-            }
         }
     }
 }
 
 
 dependencies {
-
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    // Android Support Library
     implementation deps.supportAppCompat
-    implementation deps.supportConstraintLayout
-    implementation deps.supportDesign
-    testImplementation deps.junit
-    androidTestImplementation deps.supportTestRunner
-    androidTestImplementation deps.supportEspresso
+
     // Litho
     implementation deps.lithoCore
     implementation deps.lithoWidget
     compileOnly deps.lithoAnnotations
-
     annotationProcessor deps.lithoProcessor
 
-    // SoLoader
+    // Third-party
     implementation deps.soloader
-
-    // For integration with Fresco
-    implementation deps.lithoFresco
-    // For testing
-    testImplementation deps.lithoTesting
-
     implementation deps.okhttp3
+
     implementation project(':android')
 }
