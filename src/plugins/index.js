@@ -60,6 +60,11 @@ const exportedPlugins: Array<Class<SonarPlugin<>>> = Array.from(
       (plugin.gatekeeper && !GK.get(plugin.gatekeeper)) ||
       disabledPlugins.indexOf(plugin.name) > -1
     ) {
+      console.warn(
+        'Plugin %s will be ignored as user is not part of the gatekeeper "%s".',
+        plugin.name,
+        plugin.gatekeeper,
+      );
       return null;
     } else {
       try {
