@@ -27,6 +27,14 @@ Pod::Spec.new do |spec|
     ss.public_header_files = 'iOS/FBDefines/**/*.h'
   end
 
+  spec.subspec 'CppBridge' do |ss|
+    ss.header_dir = 'CppBridge'
+    ss.compiler_flags = folly_compiler_flags
+    ss.source_files = 'iOS/SonarKit/CppBridge/**/*.{h,mm}'
+    ss.public_header_files = 'iOS/SonarKit/CppBridge/**/*.h'
+    ss.preserve_path = 'SonarKit/CppBridge/**/*.h'
+  end
+
   spec.subspec 'FBCxxUtils' do |ss|
     ss.header_dir = 'FBCxxUtils'
     ss.compiler_flags = folly_compiler_flags
@@ -39,6 +47,7 @@ Pod::Spec.new do |spec|
   spec.subspec "Core" do |ss|
     ss.dependency 'SonarKit/FBDefines'
     ss.dependency 'SonarKit/FBCxxUtils'
+    ss.dependency 'SonarKit/CppBridge'
     ss.dependency 'Folly', '~>1.0'
     ss.dependency 'Sonar', '~>'+sonarkit_version
     ss.dependency 'CocoaAsyncSocket', '~> 7.6'

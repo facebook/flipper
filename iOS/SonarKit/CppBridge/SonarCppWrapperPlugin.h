@@ -10,7 +10,7 @@
 #endif
 
 #import <Sonar/SonarPlugin.h>
-#import <SonarKit/SonarCppBridgingConnection.h>
+#import <SonarKit/CppBridge/SonarCppBridgingConnection.h>
 #import <SonarKit/SonarPlugin.h>
 
 namespace facebook {
