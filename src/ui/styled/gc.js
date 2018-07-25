@@ -53,7 +53,7 @@ export class GarbageCollector {
     }
   }
 
-  // component has been unmounted so remove it's dependencies
+  // component has been unmounted so remove its dependencies
   deregisterClassUse(name: string) {
     let count = this.usedClasses.get(name);
     if (count == null) {

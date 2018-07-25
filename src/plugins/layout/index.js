@@ -571,7 +571,7 @@ export default class Layout extends SonarPlugin<InspectorState> {
       // expand current element
       const children = await this.setElementExpanded(key, true, ax);
 
-      // and add it's children to the queue
+      // and add its children to the queue
       for (const child of children) {
         keys.push(child.id);
       }

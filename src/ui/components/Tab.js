@@ -20,7 +20,7 @@ export default function Tab(props: {|
    */
   hidden?: boolean,
   /**
-   * Whether this tab should always be included in the DOM and have it's
+   * Whether this tab should always be included in the DOM and have its
    * visibility toggled.
    */
   persist?: boolean,

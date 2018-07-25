@@ -113,7 +113,7 @@ export default function Tabs(props: {|
   order?: Array<string>,
   /**
    * Whether to include the contents of every tab in the DOM and just toggle
-   * it's visibility.
+   * its visibility.
    */
   persist?: boolean,
   /**
@@ -186,7 +186,7 @@ export default function Tabs(props: {|
         );
       }
 
-      // this tab has been hidden from the tab bar but can still be selected if it's key is active
+      // this tab has been hidden from the tab bar but can still be selected if its key is active
       if (comp.props.hidden) {
         continue;
       }

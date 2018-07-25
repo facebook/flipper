@@ -34,7 +34,7 @@ Learn more on how to use [Sonar's UI components](ui-components.md).
 
 ### Dynamically loading plugins
 
-Once a plugin is created, Sonar can load it from it's folder. The path from where the plugins are loaded is specified in `~/.sonar/config.json`. Add the parent folder of your plugin to `pluginPaths` and start Sonar.
+Once a plugin is created, Sonar can load it from its folder. The path from where the plugins are loaded is specified in `~/.sonar/config.json`. Add the parent folder of your plugin to `pluginPaths` and start Sonar.
 
 ### npm dependencies
 

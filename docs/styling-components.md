@@ -4,7 +4,7 @@ title: Styling Components
 sidebar_label: Styling Components
 ---
 
-We use a styled-component based approach to styling our views. This means styles are defined in JavaScript and are written as CSS-stylesheets to the DOM. A component and it's styles are coupled. Styled components can extend another to inherit their styles.
+We use a styled-component based approach to styling our views. This means styles are defined in JavaScript and are written as CSS-stylesheets to the DOM. A component and its styles are coupled. Styled components can extend another to inherit their styles.
 
 ## Basic tags
 

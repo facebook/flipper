@@ -191,7 +191,7 @@ export default class CertificateProvider {
         // To find out which device requested the cert, search them
         // all for a matching csr file.
         // It's not important to keep these secret from other apps.
-        // Just need to make sure each app can find it's own one.
+        // Just need to make sure each app can find its own one.
         this.androidDeviceHasMatchingCSR(
           deviceCsrFilePath,
           device.id,
