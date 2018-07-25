@@ -41,7 +41,10 @@ Please refer to our [Getting Started guide](https://fbsonar.com/docs/getting-sta
 * iOS developer tools (for developing iOS plugins)
 * Android SDK and adb
 
-## Starting the desktop app
+# Building from Source
+
+## Desktop
+### Running from source
 
 ```
 git clone https://github.com/facebook/Sonar.git
@@ -52,13 +55,12 @@ yarn start
 
 NOTE: If you're on Windows, you need to use Yarn 1.5.1 until [this issue](https://github.com/yarnpkg/yarn/issues/6048) is resolved.
 
-## Building the desktop app
+### Building application
 
 ```
 yarn build --mac --version $buildNumber
 ```
-
-## Building the iOS SDK and Sample app
+## iOS SDK + Sample App
 
 ```
 cd iOS/Sample
@@ -67,7 +69,7 @@ open Sample.xcworkspace
 <Run app from xcode>
 ```
 
-## Building the Android SDK and Sample app
+## Android SDK + Sample app
 
 Start up an android emulator and run the following in the project root:
 ```
