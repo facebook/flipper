@@ -58,6 +58,15 @@ NOTE: If you're on Windows, you need to use Yarn 1.5.1 until [this issue](https:
 yarn build --mac --version $buildNumber
 ```
 
+## Building the iOS SDK and Sample app
+
+```
+cd Sonar/iOS/Sample
+pod install
+open Sample.xcworkspace
+<Run app from xcode>
+```
+
 ## Documentation
 
 Find the full documentation for this project at [fbsonar.com](https://fbsonar.com/docs).
