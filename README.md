@@ -61,10 +61,17 @@ yarn build --mac --version $buildNumber
 ## Building the iOS SDK and Sample app
 
 ```
-cd Sonar/iOS/Sample
+cd iOS/Sample
 pod install
 open Sample.xcworkspace
 <Run app from xcode>
+```
+
+## Building the Android SDK and Sample app
+
+Start up an android emulator and run the following in the project root:
+```
+./gradlew :sample:installDebug
 ```
 
 ## Documentation
