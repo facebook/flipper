@@ -163,6 +163,15 @@ public abstract class NodeDescriptor<T> {
   public abstract String getDecoration(T node) throws Exception;
 
   /**
+   * @return Extra data about the node indicating whether the node corresponds to a node in the
+   *     other tree or if it is not represented in the other tree bu has children that should show
+   *     up, etc.
+   */
+  public SonarObject getExtraInfo(T node) {
+    return new SonarObject.Builder().build();
+  }
+
+  /**
    * Test this node against a given query to see if it matches. This is used for finding search
    * results.
    */

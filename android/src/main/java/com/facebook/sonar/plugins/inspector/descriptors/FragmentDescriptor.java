@@ -77,6 +77,11 @@ public class FragmentDescriptor extends NodeDescriptor<Fragment> {
     return Arrays.asList(new Named<>("id", resourceId));
   }
 
+  @Override
+  public SonarObject getExtraInfo(Fragment node) {
+    return new SonarObject.Builder().put("nonAXWithAXChild", true).build();
+  }
+
   @Nullable
   private static String getResourceId(Fragment node) {
     final int id = node.getId();

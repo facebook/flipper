@@ -65,6 +65,12 @@ public class SupportDialogFragmentDescriptor extends NodeDescriptor<DialogFragme
   }
 
   @Override
+  public SonarObject getExtraInfo(DialogFragment node) {
+    final NodeDescriptor descriptor = descriptorForClass(Fragment.class);
+    return descriptor.getExtraInfo(node);
+  }
+
+  @Override
   public void setHighlighted(DialogFragment node, boolean selected) throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(Dialog.class);
     if (node.getDialog() != null) {

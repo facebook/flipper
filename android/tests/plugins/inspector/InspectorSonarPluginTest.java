@@ -103,6 +103,7 @@ public class InspectorSonarPluginTest {
                 .put("children", new SonarArray.Builder().put("test"))
                 .put("attributes", new SonarArray.Builder())
                 .put("decoration", (String) null)
+                .put("extraInfo", new SonarObject.Builder())
                 .build()));
   }
 
@@ -138,7 +139,8 @@ public class InspectorSonarPluginTest {
                                 .put("data", new SonarObject.Builder())
                                 .put("children", new SonarArray.Builder())
                                 .put("attributes", new SonarArray.Builder())
-                                .put("decoration", (String) null)))
+                                .put("decoration", (String) null)
+                                .put("extraInfo", new SonarObject.Builder())))
                 .build()));
   }
 

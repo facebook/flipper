@@ -490,6 +490,7 @@ public class InspectorSonarPlugin implements SonarPlugin {
         .put("children", children)
         .put("attributes", attributes)
         .put("decoration", descriptor.getDecoration(obj))
+        .put("extraInfo", descriptor.getExtraInfo(obj))
         .build();
   }
 

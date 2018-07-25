@@ -79,6 +79,11 @@ public class SupportFragmentDescriptor extends NodeDescriptor<Fragment> {
   }
 
   @Override
+  public SonarObject getExtraInfo(Fragment node) {
+    return new SonarObject.Builder().put("nonAXWithAXChild", true).build();
+  }
+
+  @Override
   public void setHighlighted(Fragment node, boolean selected) throws Exception {
     if (node.getView() == null) {
       return;

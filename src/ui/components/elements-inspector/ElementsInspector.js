@@ -34,6 +34,10 @@ export type ElementAttribute = {|
   value: string,
 |};
 
+export type ElementExtraInfo = {|
+  nonAXWithAXChild?: boolean,
+|};
+
 export type Element = {|
   id: ElementID,
   name: string,
@@ -42,6 +46,7 @@ export type Element = {|
   attributes: Array<ElementAttribute>,
   data: ElementData,
   decoration: string,
+  extraInfo: ElementExtraInfo,
 |};
 
 export default class ElementsInspector extends Component<{
