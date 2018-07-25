@@ -101,7 +101,7 @@ type DataInspectorProps = {
    */
   depth: number,
   /**
-   * An array containing the current location of the data relative to it's root.
+   * An array containing the current location of the data relative to its root.
    */
   path: Array<string>,
   /**
@@ -113,7 +113,7 @@ type DataInspectorProps = {
    */
   expanded: DataInspectorExpanded,
   /**
-   * An optional callback that will explode a value into it's type and value.
+   * An optional callback that will explode a value into its type and value.
    * Useful for inspecting serialised data.
    */
   extractValue?: DataValueExtractor,
@@ -462,7 +462,7 @@ export default class DataInspector extends Component<DataInspectorProps> {
     if (isExpandable && isExpanded) {
       const propertyNodes = [];
 
-      // ancestry of children, including it's owner object
+      // ancestry of children, including its owner object
       const childAncestry = ancestry.concat([value]);
 
       const diffValue = diff && resDiff ? resDiff.value : null;

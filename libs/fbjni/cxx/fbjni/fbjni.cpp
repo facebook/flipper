@@ -104,7 +104,7 @@ local_ref<JString> make_jstring(const char* utf8) {
     // The only difference between utf8 and modifiedUTF8 is in encoding 4-byte UTF8 chars
     // and '\0' that is encoded on 2 bytes.
     //
-    // Since modifiedUTF8-encoded string can be no shorter than it's UTF8 conterpart we
+    // Since modifiedUTF8-encoded string can be no shorter than its UTF8 conterpart we
     // know that if those two strings are of the same length we don't need to do any
     // conversion -> no 4-byte chars nor '\0'.
     result = env->NewStringUTF(utf8);

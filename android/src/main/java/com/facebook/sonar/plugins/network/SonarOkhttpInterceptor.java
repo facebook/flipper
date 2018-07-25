@@ -1,4 +1,10 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+/*
+ *  Copyright (c) 2004-present, Facebook, Inc.
+ *
+ *  This source code is licensed under the MIT license found in the LICENSE
+ *  file in the root directory of this source tree.
+ *
+ */
 package com.facebook.sonar.plugins.network;
 
 import android.util.Log;
@@ -39,10 +45,14 @@ public class SonarOkhttpInterceptor implements Interceptor {
     ResponseInfo responseInfo = convertResponse(response, body, randInt);
     plugin.reportResponse(responseInfo);
     // Creating new response as can't used response.body() more than once
-    return response
-        .newBuilder()
-        .body(ResponseBody.create(body.contentType(), responseInfo.body))
-        .build();
+    if (responseInfo.body != null) {
+      return response
+          .newBuilder()
+          .body(ResponseBody.create(body.contentType(), responseInfo.body))
+          .build();
+    } else {
+      return response;
+    }
   }
 
   private static byte[] bodyToByteArray(final Request request) {

@@ -127,7 +127,7 @@ test('should inherit component when passed as first arg to styled', () => {
   }
 });
 
-test("when passed class name of another styled component it's rules should be inherited", () => {
+test("when passed class name of another styled component its rules should be inherited", () => {
   let component;
 
   try {

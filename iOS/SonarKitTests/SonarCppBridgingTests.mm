@@ -9,7 +9,7 @@
 
 #if FB_SONARKIT_ENABLED
 
-#import <SonarKit/SonarCppWrapperPlugin.h>
+#import <SonarKit/CppBridge/SonarCppWrapperPlugin.h>
 #import <SonarKit/SonarPlugin.h>
 
 using facebook::sonar::SonarCppWrapperPlugin;
