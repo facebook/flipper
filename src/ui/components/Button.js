@@ -19,6 +19,8 @@ const borderColor = props => {
     return colors.macOSTitleBarButtonBorderBlur;
   } else if (props.type === 'danger') {
     return colors.red;
+  } else if (props.depressed) {
+    return colors.macOSTitleBarButtonBorderBottom;
   } else {
     return colors.macOSTitleBarButtonBorder;
   }
@@ -42,12 +44,23 @@ const StyledButton = styled.view(
         return colors.white;
       }
     },
-    backgroundImage: props =>
-      props.windowIsFocused
-        ? `linear-gradient(to bottom, transparent 0%,${
+    backgroundImage: props => {
+      if (props.windowIsFocused) {
+        if (props.depressed) {
+          return `linear-gradient(to bottom, ${
+            colors.macOSTitleBarBorderBlur
+          } 1px, ${colors.macOSTitleBarButtonBorderBlur} 0%, ${
+            colors.macOSTitleBarButtonBackgroundActive
+          } 100%)`;
+        } else {
+          return `linear-gradient(to bottom, transparent 0%,${
             colors.macOSTitleBarButtonBackground
-          } 100%)`
-        : 'none',
+          } 100%)`;
+        }
+      } else {
+        return 'none';
+      }
+    },
     borderStyle: 'solid',
     borderWidth: 1,
     borderColor,
@@ -192,6 +205,10 @@ type Props = {
    * URL to open in the browser on click
    */
   href?: string,
+  /**
+   * Whether the button should render depressed into its socket
+   */
+  depressed?: boolean,
 };
 
 type State = {
