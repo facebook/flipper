@@ -83,7 +83,7 @@ bool isSameObject(alias_ref<JObject> lhs, alias_ref<JObject> rhs) noexcept;
 //
 // While users of a JavaClass-type can lookup methods and fields through the
 // underlying JClass, those calls can only be checked at runtime. It is recommended
-// that the JavaClass-type instead explicitly expose it's methods as in the example
+// that the JavaClass-type instead explicitly expose its methods as in the example
 // above.
 
 namespace detail {

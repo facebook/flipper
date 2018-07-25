@@ -27,7 +27,7 @@ type ManagedDataInspectorProps = {|
    */
   expandRoot?: boolean,
   /**
-   * An optional callback that will explode a value into it's type and value.
+   * An optional callback that will explode a value into its type and value.
    * Useful for inspecting serialised data.
    */
   extractValue?: DataValueExtractor,
