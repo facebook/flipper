@@ -559,6 +559,29 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
   }
 
   @Override
+  public SonarObject getExtraInfo(DebugComponent node) {
+    SonarObject.Builder extraInfo = new SonarObject.Builder();
+    final NodeDescriptor descriptor = descriptorForClass(View.class);
+    final View hostView = node.getComponentHost();
+    final View lithoView = node.getLithoView();
+
+    if (hostView != null) {
+      try {
+        extraInfo.put("linkedAXNode", descriptor.getId(hostView));
+      } catch (Exception ignored) {
+        // doesn't have linked node descriptor
+      }
+    } else if (lithoView != null) {
+      try {
+        extraInfo.put("linkedAXNode", descriptor.getId(lithoView));
+      } catch (Exception ignored) {
+        // doesn't add linked node descriptor
+      }
+    }
+    return extraInfo.build();
+  }
+
+  @Override
   public void setHighlighted(DebugComponent node, boolean selected) {
     final LithoView lithoView = node.getLithoView();
     if (lithoView == null) {

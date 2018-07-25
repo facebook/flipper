@@ -46,6 +46,7 @@ export type InspectorState = {|
   inAXMode: boolean,
   searchResults: ?ElementSearchResultSet,
   outstandingSearchQuery: ?string,
+  AXtoNonAXMapping: {[key: ElementID]: ElementID},
 |};
 
 type SelectElementArgs = {|
@@ -160,14 +161,39 @@ export default class Layout extends SonarPlugin<InspectorState> {
     AXselected: null,
     searchResults: null,
     outstandingSearchQuery: null,
+    AXtoNonAXMapping: {},
   };
 
   reducers = {
     SelectElement(state: InspectorState, {key}: SelectElementArgs) {
-      return {
-        selected: key,
-        AXselected: key,
-      };
+      const linkedAXNode =
+        state.elements[key] && state.elements[key].extraInfo.linkedAXNode;
+
+      // element only in main tree with linkedAXNode selected
+      if (linkedAXNode) {
+        return {
+          selected: key,
+          AXselected: linkedAXNode,
+        };
+
+        // element only in AX tree with linked nonAX element selected
+      } else if (
+        (!state.elements[key] ||
+          state.elements[key].name === 'ComponentHost') &&
+        state.AXtoNonAXMapping[key]
+      ) {
+        return {
+          selected: state.AXtoNonAXMapping[key],
+          AXselected: key,
+        };
+
+        // keys are same for both trees or 'linked' element does not exist
+      } else {
+        return {
+          selected: key,
+          AXselected: key,
+        };
+      }
     },
 
     ExpandElement(state: InspectorState, {expand, key}: ExpandElementArgs) {
@@ -235,6 +261,7 @@ export default class Layout extends SonarPlugin<InspectorState> {
 
     UpdateElements(state: InspectorState, {elements}: UpdateElementsArgs) {
       const updatedElements = state.elements;
+      const updatedMapping = state.AXtoNonAXMapping;
 
       for (const element of elements) {
         const current = updatedElements[element.id] || {};
@@ -242,9 +269,13 @@ export default class Layout extends SonarPlugin<InspectorState> {
           ...current,
           ...element,
         };
+        const linked = element.extraInfo.linkedAXNode;
+        if (linked && !updatedMapping[linked]) {
+          updatedMapping[linked] = element.id;
+        }
       }
 
-      return {elements: updatedElements};
+      return {elements: updatedElements, AXtoNonAXMapping: updatedMapping};
     },
 
     UpdateAXElements(state: InspectorState, {elements}: UpdateElementsArgs) {
@@ -627,9 +658,11 @@ export default class Layout extends SonarPlugin<InspectorState> {
     this.getNodes([key], true, false).then((elements: Array<Element>) => {
       this.dispatchAction({elements, type: 'UpdateElements'});
     });
-    this.getNodes([key], true, true).then((elements: Array<Element>) => {
-      this.dispatchAction({elements, type: 'UpdateAXElements'});
-    });
+    if (AXToggleButtonEnabled) {
+      this.getNodes([key], true, true).then((elements: Array<Element>) => {
+        this.dispatchAction({elements, type: 'UpdateAXElements'});
+      });
+    }
   });
 
   onElementHovered = debounce((key: ?ElementID) => {
@@ -693,7 +726,7 @@ export default class Layout extends SonarPlugin<InspectorState> {
       <FlexColumn fill={true}>
         <Toolbar>
           <SearchIconContainer
-            onClick={inAXMode ? null : this.onFindClick}
+            onClick={this.onFindClick}
             role="button"
             tabIndex={-1}
             title="Select an element on the device to inspect it">

@@ -36,6 +36,7 @@ export type ElementAttribute = {|
 
 export type ElementExtraInfo = {|
   nonAXWithAXChild?: boolean,
+  linkedAXNode?: string,
 |};
 
 export type Element = {|

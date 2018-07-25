@@ -541,9 +541,12 @@ public class InspectorSonarPlugin implements SonarPlugin {
       }
     }.run();
 
+    String name = descriptor.getAXName(obj);
+    name = name.substring(name.lastIndexOf('.') + 1);
+
     return new SonarObject.Builder()
         .put("id", descriptor.getId(obj))
-        .put("name", descriptor.getAXName(obj))
+        .put("name", name)
         .put("data", data)
         .put("children", children)
         .put("attributes", attributes)
