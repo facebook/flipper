@@ -448,6 +448,14 @@ public final class AccessibilityUtil {
         view.getContentDescription() != null ? view.getContentDescription() : "";
     props.put("content-description", InspectorValue.mutable(contentDescription));
     props.put("focusable", InspectorValue.mutable(view.isFocusable()));
+    props.put("selected", InspectorValue.mutable(view.isSelected()));
+    props.put("long-clickable", InspectorValue.mutable(view.isLongClickable()));
+    props.put("clickable", InspectorValue.mutable(view.isClickable()));
+    props.put("focused", view.isFocused());
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      props.put("accessibility-focused", view.isAccessibilityFocused());
+    }
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
       props.put(

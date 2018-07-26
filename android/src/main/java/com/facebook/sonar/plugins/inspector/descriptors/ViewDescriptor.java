@@ -408,14 +408,14 @@ public class ViewDescriptor extends NodeDescriptor<View> {
       case "content-description":
         node.setContentDescription(value.asString());
         break;
-      case "label-for":
-        node.setLabelFor(value.asInt());
+      case "long-clickable":
+        node.setLongClickable(value.asBoolean());
         break;
-      case "traversal-after":
-        node.setAccessibilityTraversalAfter(value.asInt());
+      case "clickable":
+        node.setClickable(value.asBoolean());
         break;
-      case "traversal-before":
-        node.setAccessibilityTraversalBefore(value.asInt());
+      case "selected":
+        node.setSelected(value.asBoolean());
         break;
     }
     invalidate(node);
