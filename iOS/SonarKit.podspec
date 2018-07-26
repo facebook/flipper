@@ -1,7 +1,7 @@
 folly_compiler_flags = '-DFB_SONARKIT_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_LIBGFLAGS=0 -DFOLLY_HAVE_LIBJEMALLOC=0 -DFOLLY_HAVE_PREADV=0 -DFOLLY_HAVE_PWRITEV=0 -DFOLLY_HAVE_TFO=0 -DFOLLY_USE_SYMBOLIZER=0'
 yoga_version = '~> 1.9'
 yogakit_version = '~>1.8'
-sonarkit_version = '0.6.14'
+sonarkit_version = '0.6.13'
 Pod::Spec.new do |spec|
   spec.name = 'SonarKit'
   spec.version = sonarkit_version
