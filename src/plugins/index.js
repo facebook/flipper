@@ -76,6 +76,7 @@ const exportedPlugins: Array<Class<SonarPlugin<>>> = Array.from(
     }
   })
   .filter(Boolean)
-  .filter(plugin => plugin.prototype instanceof SonarBasePlugin);
+  .filter(plugin => plugin.prototype instanceof SonarBasePlugin)
+  .sort((a, b) => (a.title || '').localeCompare(b.title || ''));
 
 export default exportedPlugins;
