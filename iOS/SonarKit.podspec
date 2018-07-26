@@ -1,7 +1,7 @@
 folly_compiler_flags = '-DFB_SONARKIT_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_LIBGFLAGS=0 -DFOLLY_HAVE_LIBJEMALLOC=0 -DFOLLY_HAVE_PREADV=0 -DFOLLY_HAVE_PWRITEV=0 -DFOLLY_HAVE_TFO=0 -DFOLLY_USE_SYMBOLIZER=0'
 yoga_version = '~> 1.9'
 yogakit_version = '~>1.8'
-sonarkit_version = '0.6.13'
+sonarkit_version = '0.6.14'
 Pod::Spec.new do |spec|
   spec.name = 'SonarKit'
   spec.version = sonarkit_version
@@ -31,6 +31,8 @@ Pod::Spec.new do |spec|
     ss.header_dir = 'CppBridge'
     ss.compiler_flags = folly_compiler_flags
     ss.source_files = 'iOS/SonarKit/CppBridge/**/*.{h,mm}'
+    # We set these files as private headers since they only need to be accessed
+    # by other SonarKit source files
     ss.private_header_files = 'iOS/SonarKit/CppBridge/**/*.h'
     ss.preserve_path = 'SonarKit/CppBridge/**/*.h'
   end
@@ -55,6 +57,11 @@ Pod::Spec.new do |spec|
     ss.dependency 'OpenSSL-Static', '1.0.2.c1'
     ss.compiler_flags = folly_compiler_flags
     ss.source_files = 'iOS/SonarKit/FBDefines/*.{h,cpp,m,mm}', 'iOS/SonarKit/CppBridge/*.{h,mm}', 'iOS/SonarKit/FBCxxUtils/*.{h,mm}', 'iOS/SonarKit/Utilities/**/*.{h,m}', 'iOS/SonarKit/*.{h,m,mm}'
+    # Including FBMacros here is hacky since it causes cocoapods to copy
+    # FBMacros.h twice, but it's necessary since the "FBMacros.h" is always
+    # included in SonarKit-umbrella.h, but the actual path is "FBDefines/FBMacros.h",
+    # as defined by the FBDefines subspec. Copying the file an extra time allows
+    # the path in the umbrella header to resolve correctly.
     ss.public_header_files = 'iOS/FBDefines/FBMacros.h', 'iOS/SonarKit/**/{SonarClient,SonarPlugin,SonarConnection,SonarResponder,SKMacros}.h'
     header_search_paths = "\"$(PODS_ROOT)/SonarKit/iOS/SonarKit\" \"$(PODS_ROOT)\"/Headers/Private/SonarKit/** \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/PeerTalkSonar\""
     ss.pod_target_xcconfig = { "USE_HEADERMAP" => "NO",
