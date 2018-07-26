@@ -56,6 +56,9 @@ export {
 export {
   default as ManagedDataInspector,
 } from './components/data-inspector/ManagedDataInspector.js';
+export {
+  default as DataDescription,
+} from './components/data-inspector/DataDescription.js';
 
 // tabs
 export {default as Tabs} from './components/Tabs.js';
