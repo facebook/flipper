@@ -16,17 +16,6 @@ Pod::Spec.new do |spec|
   spec.platforms = { :ios => "8.4" }
   spec.default_subspecs = "Core"
 
-  # This subspec is necessary since FBMacros.h is imported as <FBDefines/FBMacros.h>
-  # inside SKMacros.h, which is a public header file. Defining this directory as a
-  # subspec with header_dir = 'FBDefines' allows this to work, even though it wouldn't
-  # generally (you would need to import <SonarKit/FBDefines/FBMacros.h>)
-  spec.subspec 'FBDefines' do |ss|
-    ss.header_dir = 'FBDefines'
-    ss.compiler_flags = folly_compiler_flags
-    ss.source_files = 'iOS/FBDefines/**/*.h'
-    ss.public_header_files = 'iOS/FBDefines/**/*.h'
-  end
-
   spec.subspec 'CppBridge' do |ss|
     ss.header_dir = 'CppBridge'
     ss.compiler_flags = folly_compiler_flags
@@ -47,7 +36,6 @@ Pod::Spec.new do |spec|
   end
 
   spec.subspec "Core" do |ss|
-    ss.dependency 'SonarKit/FBDefines'
     ss.dependency 'SonarKit/FBCxxUtils'
     ss.dependency 'SonarKit/CppBridge'
     ss.dependency 'Folly', '~>1.0'
