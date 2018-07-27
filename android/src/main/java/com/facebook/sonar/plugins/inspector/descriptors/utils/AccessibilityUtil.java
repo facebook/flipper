@@ -420,6 +420,18 @@ public final class AccessibilityUtil {
     return nodeInfoProps.build();
   }
 
+  public static boolean isAXFocused(View view) {
+    final AccessibilityNodeInfoCompat nodeInfo =
+            ViewAccessibilityHelper.createNodeInfoFromView(view);
+    if (nodeInfo == null) {
+      return false;
+    } else {
+      boolean focused = nodeInfo.isAccessibilityFocused();
+      nodeInfo.recycle();
+      return focused;
+    }
+  }
+
   /**
    * Modifies a {@link SonarObject.Builder} to add Talkback-specific Accessibiltiy properties to be
    * shown in the Sonar Layout Inspector.

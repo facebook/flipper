@@ -37,6 +37,7 @@ export type ElementAttribute = {|
 export type ElementExtraInfo = {|
   nonAXWithAXChild?: boolean,
   linkedAXNode?: string,
+  focused?: boolean,
 |};
 
 export type Element = {|

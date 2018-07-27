@@ -444,6 +444,7 @@ public class ViewDescriptor extends NodeDescriptor<View> {
     return attributes;
   }
 
+  @Override
   public List<Named<String>> getAXAttributes(View node) throws Exception {
     List<Named<String>> attributes = new ArrayList<>();
     String role = AccessibilityRoleUtil.getRole(node).toString();
@@ -451,6 +452,11 @@ public class ViewDescriptor extends NodeDescriptor<View> {
       attributes.add(new Named<>("role", role));
     }
     return attributes;
+  }
+
+  @Override
+  public SonarObject getExtraInfo(View node) {
+    return new SonarObject.Builder().put("focused", AccessibilityUtil.isAXFocused(node)).build();
   }
 
   @Nullable

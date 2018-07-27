@@ -236,6 +236,12 @@ public class ViewGroupDescriptor extends NodeDescriptor<ViewGroup> {
   }
 
   @Override
+  public SonarObject getExtraInfo(ViewGroup node) {
+    final NodeDescriptor descriptor = descriptorForClass(View.class);
+    return descriptor.getExtraInfo(node);
+  }
+
+  @Override
   public void setHighlighted(ViewGroup node, boolean selected) throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(View.class);
     descriptor.setHighlighted(node, selected);

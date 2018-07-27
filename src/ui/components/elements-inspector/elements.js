@@ -31,6 +31,8 @@ const ElementsRowContainer = ContextMenu.extends(
     backgroundColor: props => {
       if (props.selected) {
         return colors.macOSTitleBarIconSelected;
+      } else if (props.focused) {
+        return colors.lime;
       } else if (props.even) {
         return colors.light02;
       } else {
@@ -47,12 +49,20 @@ const ElementsRowContainer = ContextMenu.extends(
     position: 'relative',
 
     '& *': {
-      color: props => (props.selected ? `${colors.white} !important` : ''),
+      color: props =>
+        props.selected || props.focused ? `${colors.white} !important` : '',
     },
 
     '&:hover': {
-      backgroundColor: props =>
-        props.selected ? colors.macOSTitleBarIconSelected : '#EBF1FB',
+      backgroundColor: props => {
+        if (props.selected) {
+          return colors.macOSTitleBarIconSelected;
+        } else if (props.focused) {
+          return colors.lime;
+        } else {
+          return '#EBF1FB';
+        }
+      },
     },
   },
   {
@@ -122,7 +132,9 @@ class PartialHighlight extends PureComponent<{
   static HighlightedText = styled.text({
     backgroundColor: '#ffff33',
     color: props =>
-      props.selected ? `${colors.grapeDark3} !important` : 'auto',
+      props.selected || props.focused
+        ? `${colors.grapeDark3} !important`
+        : 'auto',
   });
 
   render() {
@@ -162,6 +174,7 @@ class ElementsRowAttribute extends PureComponent<{
   value: string,
   matchingSearchQuery: ?string,
   selected: boolean,
+  focused: boolean,
 }> {
   render() {
     const {name, value, matchingSearchQuery, selected} = this.props;
@@ -195,6 +208,7 @@ type ElementsRowProps = {
   id: ElementID,
   level: number,
   selected: boolean,
+  focused: boolean,
   matchingSearchQuery: ?string,
   element: Element,
   even: boolean,
@@ -268,6 +282,7 @@ class ElementsRow extends PureComponent<ElementsRowProps, ElementsRowState> {
       id,
       level,
       selected,
+      focused,
       style,
       even,
       matchingSearchQuery,
@@ -295,6 +310,7 @@ class ElementsRow extends PureComponent<ElementsRowProps, ElementsRowState> {
             value={attr.value}
             matchingSearchQuery={matchingSearchQuery}
             selected={selected}
+            focused={focused}
           />
         ))
       : [];
@@ -327,6 +343,7 @@ class ElementsRow extends PureComponent<ElementsRowProps, ElementsRowState> {
         key={id}
         level={level}
         selected={selected}
+        focused={focused}
         matchingSearchQuery={matchingSearchQuery}
         even={even}
         onClick={this.onClick}
@@ -368,6 +385,7 @@ const ElementsBox = FlexColumn.extends({
 type ElementsProps = {|
   root: ?ElementID,
   selected: ?ElementID,
+  focused?: ?ElementID,
   searchResults: ?ElementSearchResultSet,
   elements: {[key: ElementID]: Element},
   onElementSelected: (key: ElementID) => void,
@@ -532,6 +550,7 @@ export class Elements extends PureComponent<ElementsProps, ElementsState> {
       onElementHovered,
       onElementSelected,
       selected,
+      focused,
       searchResults,
     } = this.props;
     const {flatElements} = this.state;
@@ -557,6 +576,7 @@ export class Elements extends PureComponent<ElementsProps, ElementsState> {
         onElementHovered={onElementHovered}
         onElementSelected={onElementSelected}
         selected={selected === row.key}
+        focused={focused === row.key}
         matchingSearchQuery={
           searchResults && searchResults.matches.has(row.key)
             ? searchResults.query

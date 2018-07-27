@@ -38,6 +38,7 @@ export type InspectorState = {|
   AXinitialised: boolean,
   selected: ?ElementID,
   AXselected: ?ElementID,
+  AXfocused: ?ElementID,
   root: ?ElementID,
   AXroot: ?ElementID,
   elements: {[key: ElementID]: Element},
@@ -64,6 +65,15 @@ type ExpandElementsArgs = {|
 
 type UpdateElementsArgs = {|
   elements: Array<$Shape<Element>>,
+|};
+
+type UpdateAXElementsArgs = {|
+  elements: Array<$Shape<Element>>,
+  forFocusEvent: boolean,
+|};
+
+type AXFocusEventResult = {|
+  isFocus: boolean,
 |};
 
 type SetRootArgs = {|
@@ -159,6 +169,7 @@ export default class Layout extends SonarPlugin<InspectorState> {
     AXroot: null,
     selected: null,
     AXselected: null,
+    AXfocused: null,
     searchResults: null,
     outstandingSearchQuery: null,
     AXtoNonAXMapping: {},
@@ -278,17 +289,30 @@ export default class Layout extends SonarPlugin<InspectorState> {
       return {elements: updatedElements, AXtoNonAXMapping: updatedMapping};
     },
 
-    UpdateAXElements(state: InspectorState, {elements}: UpdateElementsArgs) {
+    UpdateAXElements(
+      state: InspectorState,
+      {elements, forFocusEvent}: UpdateAXElementsArgs,
+    ) {
       const updatedElements = state.AXelements;
 
+      // if focusEvent, previously focused element can be reset
+      let updatedFocus = forFocusEvent ? null : state.AXfocused;
+
       for (const element of elements) {
+        if (element.extraInfo.focused) {
+          updatedFocus = element.id;
+        }
         const current = updatedElements[element.id] || {};
         updatedElements[element.id] = {
           ...current,
           ...element,
         };
       }
-      return {AXelements: updatedElements};
+
+      return {
+        AXelements: updatedElements,
+        AXfocused: updatedFocus,
+      };
     },
 
     SetRoot(state: InspectorState, {root}: SetRootArgs) {
@@ -441,6 +465,34 @@ export default class Layout extends SonarPlugin<InspectorState> {
         });
       });
     }
+
+    this.client.subscribe('axFocusEvent', (focusEvent: AXFocusEventResult) => {
+      if (AXToggleButtonEnabled) {
+        // if focusing, need to update all elements in the tree because
+        // we don't know which one now has focus
+        const keys = focusEvent.isFocus
+          ? Object.keys(this.state.AXelements)
+          : [];
+
+        // if unfocusing and currently focused element exists, update only the
+        // focused element (and only if it is loaded in tree)
+        if (
+          !focusEvent.isFocus &&
+          this.state.AXfocused &&
+          this.state.AXelements[this.state.AXfocused]
+        ) {
+          keys.push(this.state.AXfocused);
+        }
+
+        this.getNodes(keys, true, true).then((elements: Array<Element>) => {
+          this.dispatchAction({
+            elements,
+            forFocusEvent: true,
+            type: 'UpdateAXElements',
+          });
+        });
+      }
+    });
 
     this.client.subscribe(
       'invalidate',
@@ -713,6 +765,7 @@ export default class Layout extends SonarPlugin<InspectorState> {
       AXinitialised,
       selected,
       AXselected,
+      AXfocused,
       root,
       AXroot,
       elements,
@@ -792,6 +845,7 @@ export default class Layout extends SonarPlugin<InspectorState> {
               onElementExpanded={this.onElementExpanded}
               onValueChanged={this.onDataValueChanged}
               selected={AXselected}
+              focused={AXfocused}
               searchResults={null}
               root={AXroot}
               elements={AXelements}

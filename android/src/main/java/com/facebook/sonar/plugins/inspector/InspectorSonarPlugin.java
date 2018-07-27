@@ -10,6 +10,8 @@ package com.facebook.sonar.plugins.inspector;
 
 import android.app.Application;
 import android.content.Context;
+import android.support.v4.view.ViewCompat;
+import android.view.accessibility.AccessibilityEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -170,20 +172,41 @@ public class InspectorSonarPlugin implements SonarPlugin {
         @Override
         public void onReceiveOnMainThread(SonarObject params, SonarResponder responder)
             throws Exception {
-          List<View> viewRoots = mApplication.getViewRoots();
-          // for now only works if one view root
-          if (viewRoots.size() != 1) {
-            responder.error(
-                new SonarObject.Builder().put("message", "Too many view roots.").build());
-            return;
+          final List<View> viewRoots = mApplication.getViewRoots();
+
+          ViewGroup root = null;
+          for (int i = viewRoots.size() - 1; i >= 0; i--) {
+            if (viewRoots.get(i) instanceof ViewGroup) {
+              root = (ViewGroup) viewRoots.get(i);
+              break;
+            }
           }
-          SonarObject response = getAXNode(trackObject(viewRoots.get(0)));
-          if (response == null) {
-            responder.error(
-                new SonarObject.Builder().put("message", "AX root node returned null.").build());
-            return;
+
+          if (root != null) {
+
+            // unlikely, but check to make sure accessibility functionality doesn't change
+            if (!ViewCompat.hasAccessibilityDelegate(root)) {
+              
+              // add delegate to root to catch accessibility events so we can update focus in sonar
+              root.setAccessibilityDelegate(new View.AccessibilityDelegate() {
+
+                @Override
+                public boolean onRequestSendAccessibilityEvent(ViewGroup host, View child, AccessibilityEvent event) {
+                  int eventType = event.getEventType();
+                  if (eventType == AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED || eventType == AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUS_CLEARED) {
+                    mConnection.send("axFocusEvent",
+                            new SonarObject.Builder()
+                                    .put("isFocus", eventType == AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED)
+                                    .build());
+                  }
+
+                  return super.onRequestSendAccessibilityEvent(host, child, event);
+                }
+              });
+            }
+
+            responder.success(getAXNode(trackObject(root)));
           }
-          responder.success(response);
         }
       };
 
@@ -550,6 +573,7 @@ public class InspectorSonarPlugin implements SonarPlugin {
         .put("data", data)
         .put("children", children)
         .put("attributes", attributes)
+        .put("extraInfo", descriptor.getExtraInfo(obj))
         .build();
   }
 

@@ -14,6 +14,7 @@ export class AXElementsInspector extends Component<{
   onElementHovered: ?(key: ?ElementID) => void,
   onValueChanged: ?(path: Array<string>, val: any) => void,
   selected: ?ElementID,
+  focused: ?ElementID,
   searchResults?: ?ElementSearchResultSet,
   root: ?ElementID,
   elements: {[key: ElementID]: Element},

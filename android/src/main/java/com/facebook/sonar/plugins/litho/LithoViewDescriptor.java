@@ -118,6 +118,12 @@ public class LithoViewDescriptor extends NodeDescriptor<LithoView> {
   }
 
   @Override
+  public SonarObject getExtraInfo(LithoView node) {
+    final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
+    return descriptor.getExtraInfo(node);
+  }
+
+  @Override
   public void setHighlighted(LithoView node, boolean selected) throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
     descriptor.setHighlighted(node, selected);

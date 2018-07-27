@@ -132,6 +132,12 @@ public class TextViewDescriptor extends NodeDescriptor<TextView> {
   }
 
   @Override
+  public SonarObject getExtraInfo(TextView node) {
+    final NodeDescriptor descriptor = descriptorForClass(View.class);
+    return descriptor.getExtraInfo(node);
+  }
+
+  @Override
   public void setHighlighted(TextView node, boolean selected) throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(View.class);
     descriptor.setHighlighted(node, selected);
