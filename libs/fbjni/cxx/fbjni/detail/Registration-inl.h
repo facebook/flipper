@@ -123,6 +123,7 @@ inline NativeMethodWrapper* exceptionWrapJNIMethod(R (*)(alias_ref<C>, Args... a
 
 template<typename M, M method, typename C, typename R, typename... Args>
 inline NativeMethodWrapper* exceptionWrapJNIMethod(R (C::*method0)(Args... args)) {
+  (void)method0;
   // This intentionally erases the real type; JNI will do it anyway
   return reinterpret_cast<NativeMethodWrapper*>(&(MethodWrapper<M, method, C, R, Args...>::call));
 }
