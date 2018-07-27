@@ -6,10 +6,9 @@
  *
  */
 
+// SKMacros
  #ifndef SKMACROS_H
  #define SKMACROS_H
-
- #import <FBDefines/FBMacros.h>
 
  #ifdef __cplusplus
  # define SK_EXTERN_C_BEGIN extern "C" {
@@ -23,5 +22,16 @@
 
  #define SKLog(...) NSLog(__VA_ARGS__)
  #define SKTrace(...) /*NSLog(__VA_ARGS__)*/
+
+#endif
+
+// FBMacros
+#ifndef FB_SK_MACROS_H
+#define FB_SK_MACROS_H
+
+#define FB_LINK_REQUIRE_(NAME, UNIQUE)
+#define FB_LINKABLE(NAME)
+#define FB_LINK_REQUIRE(NAME)
+#define FB_LINK_REQUIRE_EXT(NAME)
 
 #endif
