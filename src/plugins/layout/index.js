@@ -178,7 +178,9 @@ export default class Layout extends SonarPlugin<InspectorState> {
   reducers = {
     SelectElement(state: InspectorState, {key}: SelectElementArgs) {
       const linkedAXNode =
-        state.elements[key] && state.elements[key].extraInfo.linkedAXNode;
+        state.elements[key] &&
+        state.elements[key].extraInfo &&
+        state.elements[key].extraInfo.linkedAXNode;
 
       // element only in main tree with linkedAXNode selected
       if (linkedAXNode) {
@@ -280,7 +282,7 @@ export default class Layout extends SonarPlugin<InspectorState> {
           ...current,
           ...element,
         };
-        const linked = element.extraInfo.linkedAXNode;
+        const linked = element.extraInfo && element.extraInfo.linkedAXNode;
         if (linked && !updatedMapping[linked]) {
           updatedMapping[linked] = element.id;
         }
