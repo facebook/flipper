@@ -1,6 +1,6 @@
 {
   "docs": {
-    "Using Sonar": ["getting-started", "understand", "stetho"],
+    "Using Flipper": ["getting-started", "understand", "stetho"],
     "Built-in Plugins": [
       "logs-plugin",
       "layout-plugin",

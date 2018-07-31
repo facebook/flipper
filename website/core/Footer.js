@@ -26,7 +26,7 @@ class Footer extends React.Component {
             {this.props.config.footerIcon && (
               <img
                 src={this.props.config.baseUrl + this.props.config.footerIcon}
-                alt="Sonar mascot"
+                alt="Flipper mascot"
                 title="I'm a whale not a dolphin!"
                 width="66"
                 height="58"
@@ -36,7 +36,7 @@ class Footer extends React.Component {
           <div>
             <h5>Docs</h5>
             <a href="/docs/getting-started.html">Getting Started</a>
-            <a href="/docs/understand.html">Understanding Sonar</a>
+            <a href="/docs/understand.html">Understanding Flipper</a>
             <a href="/docs/js-setup.html">Creating Plugins</a>
           </div>
           <div>
@@ -47,13 +47,13 @@ class Footer extends React.Component {
           </div>
           <div>
             <h5>More</h5>
-            <a href="https://twitter.com/fb_sonar">Twitter</a>
+            <a href="https://twitter.com/fb_flipper">Twitter</a>
             <a href={this.props.config.repoUrl}>GitHub</a>
             <a
               className="github-button"
               href={this.props.config.repoUrl}
               data-icon="octicon-star"
-              data-count-href="/facebook/sonar/stargazers"
+              data-count-href="/facebook/flipper/stargazers"
               data-show-count={true}
               data-count-aria-label="# stargazers on GitHub"
               aria-label="Star this project on GitHub">

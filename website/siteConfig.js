@@ -4,14 +4,14 @@
  * LICENSE file in the root directory of this source tree.
  * @format
  */
-const repoUrl = 'https://github.com/facebook/sonar';
+const repoUrl = 'https://github.com/facebook/flipper';
 
 const siteConfig = {
-  title: 'Sonar' /* title for your website */,
+  title: 'Flipper' /* title for your website */,
   tagline: 'Extensible mobile app debugging',
-  url: 'https://fbsonar.com/' /* your website url */,
+  url: 'https://fbflipper.com/' /* your website url */,
   baseUrl: '/' /* base url for your project */,
-  projectName: 'sonar',
+  projectName: 'flipper',
   headerLinks: [
     {doc: 'getting-started', label: 'Getting Started'},
     {doc: 'understand', label: 'Docs'},
