@@ -1,6 +1,6 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 
-package com.facebook.sonar.sample;
+package com.facebook.flipper.sample;
 
 import android.util.Log;
 import com.facebook.litho.ClickEvent;
@@ -52,19 +52,19 @@ public class RootComponentSpec {
             .url("https://api.github.com/repos/facebook/yoga")
             .get()
             .build();
-       SonarSampleApplication.okhttpClient.newCall(request).enqueue(new Callback() {
+       FlipperSampleApplication.okhttpClient.newCall(request).enqueue(new Callback() {
            @Override
            public void onFailure(Call call, IOException e) {
                e.printStackTrace();
-               Log.d("Sonar", e.getMessage());
+               Log.d("Flipper", e.getMessage());
            }
 
            @Override
            public void onResponse(Call call, Response response) throws IOException {
                if (response.isSuccessful()) {
-                   Log.d("Sonar", response.body().string());
+                   Log.d("Flipper", response.body().string());
                } else {
-               Log.d("Sonar", "not successful");
+               Log.d("Flipper", "not successful");
            }
        }
    });
@@ -74,7 +74,7 @@ public class RootComponentSpec {
   static void hitPostRequest(ComponentContext c) {
 
       RequestBody formBody = new FormBody.Builder()
-              .add("app", "Sonar")
+              .add("app", "Flipper")
               .add("remarks", "Its awesome")
               .build();
 
@@ -83,19 +83,19 @@ public class RootComponentSpec {
             .post(formBody)
             .build();
 
-       SonarSampleApplication.okhttpClient.newCall(request).enqueue(new Callback() {
+       FlipperSampleApplication.okhttpClient.newCall(request).enqueue(new Callback() {
            @Override
            public void onFailure(Call call, IOException e) {
                e.printStackTrace();
-               Log.d("Sonar", e.getMessage());
+               Log.d("Flipper", e.getMessage());
            }
 
            @Override
            public void onResponse(Call call, Response response) throws IOException {
                if (response.isSuccessful()) {
-                   Log.d("Sonar", response.body().string());
+                   Log.d("Flipper", response.body().string());
                } else {
-               Log.d("Sonar", "not successful");
+               Log.d("Flipper", "not successful");
                }
            }
    });

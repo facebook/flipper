@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.facebook.sonar.sample">
+          package="com.facebook.flipper.sample">
   <uses-permission android:name="android.permission.INTERNET" />
   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
   <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
@@ -12,7 +12,7 @@
       />
 
   <application
-      android:name=".SonarSampleApplication"
+      android:name=".FlipperSampleApplication"
       android:label="@string/app_name"
       android:icon="@drawable/ic_launcher"
       android:allowBackup="false"

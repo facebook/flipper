@@ -1,6 +1,6 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 
-package com.facebook.sonar.sample;
+package com.facebook.flipper.sample;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;

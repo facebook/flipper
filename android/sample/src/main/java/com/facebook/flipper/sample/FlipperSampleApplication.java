@@ -1,6 +1,6 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 
-package com.facebook.sonar.sample;
+package com.facebook.flipper.sample;
 
 import android.app.Application;
 import android.content.Context;
@@ -16,7 +16,7 @@ import com.facebook.sonar.plugins.sharedpreferences.SharedPreferencesSonarPlugin
 import java.util.concurrent.TimeUnit;
 import okhttp3.OkHttpClient;
 
-public class SonarSampleApplication extends Application {
+public class FlipperSampleApplication extends Application {
 
   public static OkHttpClient okhttpClient;
 
