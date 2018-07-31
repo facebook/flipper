@@ -54,6 +54,7 @@
     "invariant": "^2.2.2",
     "jest": "^22.2.1",
     "mkdirp": "^0.5.1",
+    "needle": "2.1.1",
     "openssl-wrapper": "^0.3.4",
     "prop-types": "^15.6.0",
     "react": "16",
@@ -73,6 +74,7 @@
     "tmp": "^0.0.33",
     "websocket": "^1.0.24",
     "ws": "^4.0.0",
+    "xml2js": "^0.4.19",
     "yargs": "^11.0.0"
   },
   "scripts": {
