@@ -31,7 +31,9 @@ Pod::Spec.new do |spec|
     ss.header_dir = 'CppBridge'
     ss.compiler_flags = folly_compiler_flags
     ss.source_files = 'iOS/SonarKit/CppBridge/**/*.{h,mm}'
-    ss.public_header_files = 'iOS/SonarKit/CppBridge/**/*.h'
+    # We set these files as private headers since they only need to be accessed
+    # by other SonarKit source files
+    ss.private_header_files = 'iOS/SonarKit/CppBridge/**/*.h'
     ss.preserve_path = 'SonarKit/CppBridge/**/*.h'
   end
 
