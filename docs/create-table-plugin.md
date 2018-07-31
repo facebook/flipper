@@ -4,7 +4,7 @@ title: Create Table Plugin
 sidebar_label: Create Table Plugin
 ---
 
-A very common kind of Sonar plugin is a plugin which fetches some structured data from the device and presents it in a table.
+A very common kind of Flipper plugin is a plugin which fetches some structured data from the device and presents it in a table.
 
 To make building these kinds of plugins as easy as possible we have created an abstraction we call `createTablePlugin`. This is a function which manages the complexities of building a table plugin but still allows you to customize many things to suite your needs.
 

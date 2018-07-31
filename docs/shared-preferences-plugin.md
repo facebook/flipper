@@ -22,4 +22,4 @@ client.addPlugin(
 
 ## Usage
 
-All changes to the given shared preference file will automatically appear in Sonar. You may also edit the values in Sonar and have them synced to your device. This can be done by clicking on the value of the specific key you wish to edit, editing the value and then pressing enter.
+All changes to the given shared preference file will automatically appear in Flipper. You may also edit the values in Flipper and have them synced to your device. This can be done by clicking on the value of the specific key you wish to edit, editing the value and then pressing enter.

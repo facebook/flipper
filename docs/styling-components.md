@@ -28,9 +28,9 @@ But you can use any other HTML-tags like this:
 styled.customHTMLTag('canvas', { ... });
 ```
 
-## Extending Sonar Components
+## Extending Flipper Components
 
-It's very common for components to require customizing Sonar's components in some way. For example changing colors, alignment, or wrapping behavior. There is a `extends` method on all styled components which allows adding or overwriting existing style rules.
+It's very common for components to require customizing Flipper's components in some way. For example changing colors, alignment, or wrapping behavior. There is a `extends` method on all styled components which allows adding or overwriting existing style rules.
 
 For these use cases when a styled component is only used within the context of a single component we encourage declaring it as a inner static instance. This makes it clear where the component is used and avoids polluting the global namespace.
 
@@ -72,4 +72,4 @@ Pseudo-classes can be used like this:
 
 ## Colors
 
-The colors module contains all standard colors used by Sonar. All the available colors are defined in `src/ui/components/colors.js` with comments about suggested usage of them. And we strongly encourage to use them.
+The colors module contains all standard colors used by Flipper. All the available colors are defined in `src/ui/components/colors.js` with comments about suggested usage of them. And we strongly encourage to use them.

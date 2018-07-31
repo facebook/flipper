@@ -15,4 +15,4 @@ The search bar can be used to search for logs and filter for certain types. From
 
 The expression watcher in the sidebar can be used to watch for certain logs to happen and count how often the occur. An expression can be a simple string, or a regular expression which is matched against the logs.
 
-When the notify checkbox is enabled, Sonar will send notifications once the log is happening. This let's you know when the watcher triggered, even if Sonar is in the background.
+When the notify checkbox is enabled, Flipper will send notifications once the log is happening. This let's you know when the watcher triggered, even if Flipper is in the background.

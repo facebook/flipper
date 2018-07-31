@@ -4,20 +4,20 @@ title: Getting Started
 sidebar_label: Getting Started
 ---
 
-Sonar helps you debug Android and iOS apps running in an emulator/simulator or connected physical development devices. Sonar consists of two parts:
+Flipper helps you debug Android and iOS apps running in an emulator/simulator or connected physical development devices. Flipper consists of two parts:
 
 * The desktop app for macOS
 * The native mobile SDKs for Android and iOS
 
-To use Sonar, you need to add the mobile SDK to your app.
+To use Flipper, you need to add the mobile SDK to your app.
 
 ## Setup
 
 ### Desktop app
 
-The desktop part of Sonar doesn't need any particular setup. Simply [download the latest build](https://www.facebook.com/sonar/public/mac) of our app and launch it. The desktop app is available for macOS and requires a working installation of the Android/iOS development tools on your system.
+The desktop part of Flipper doesn't need any particular setup. Simply [download the latest build](https://www.facebook.com/sonar/public/mac) of our app and launch it. The desktop app is available for macOS and requires a working installation of the Android/iOS development tools on your system.
 
-Once you start Sonar and launch an emulator/simulator or connect a device, you will already be able to see the device logs in Sonar. To see app specific data, you need to integrate our native SDKs with your app.
+Once you start Flipper and launch an emulator/simulator or connect a device, you will already be able to see the device logs in Flipper. To see app specific data, you need to integrate our native SDKs with your app.
 
 ![Logs plugin](/docs/assets/initial.png)
 
@@ -30,7 +30,7 @@ Add the following permissions to your AndroidManifest.xml. The SDK needs these t
 <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 ```
 
-Sonar is distributed via JCenter. Add dependencies to your `build.gradle` file.
+Flipper is distributed via JCenter. Add dependencies to your `build.gradle` file.
 
 ```
 repositories {
@@ -42,7 +42,7 @@ dependencies {
 }
 ```
 
-Now you can initialize Sonar in your Application's `onCreate`-method like this:
+Now you can initialize Flipper in your Application's `onCreate`-method like this:
 
 ```java
 public class MyApplication extends Application {
@@ -63,7 +63,7 @@ public class MyApplication extends Application {
 
 ### Setup your iOS app
 
-To integrate with an iOS app, you can use [CocoaPods](https://cocoapods.org). Add the mobile Sonar SDK and its dependencies to your `Podfile`:
+To integrate with an iOS app, you can use [CocoaPods](https://cocoapods.org). Add the mobile Flipper SDK and its dependencies to your `Podfile`:
 
 ```ruby
 project 'MyApp.xcodeproj'
@@ -89,7 +89,7 @@ target 'MyApp' do
 end
 ```
 
-and install the dependencies by running `pod install`. When you open the Xcode workspace file for your app, you now can import and initialize Sonar in your AppDelegate.
+and install the dependencies by running `pod install`. When you open the Xcode workspace file for your app, you now can import and initialize Flipper in your AppDelegate.
 
 ```objective-c
 #import <SonarKit/SonarClient.h>
@@ -109,12 +109,12 @@ and install the dependencies by running `pod install`. When you open the Xcode w
 ```
 <div class='warning'>
 
-* We haven't released the dependency to CocoaPods yet, here is the [issue](https://github.com/facebook/Sonar/issues/132) by which you can track.
+* We haven't released the dependency to CocoaPods yet, here is the [issue](https://github.com/facebook/flipper/issues/132) by which you can track.
 * If you do not use CocoaPods as a dependency management tool then currently there is no way to integrate SonarKit other than manually including all the dependencies and building it.
-* For Android, Sonar works with both emulators and physical devices connected through USB. However on iOS, we don't yet support physical devices.
-* The Sonar layout and network plugins aren't supported in Swift projects since they include C++ dependencies. We're working on supporting these plugins for Swift apps. You can join the discussion on the [issues page](https://github.com/facebook/Sonar/issues).
+* For Android, Flipper works with both emulators and physical devices connected through USB. However on iOS, we don't yet support physical devices.
+* The Flipper layout and network plugins aren't supported in Swift projects since they include C++ dependencies. We're working on supporting these plugins for Swift apps. You can join the discussion on the [issues page](https://github.com/facebook/flipper/issues).
 </div>
 
 ## Ready for takeoff
 
-Finally, you need to add plugins to your Sonar client. See [Network Plugin](network-plugin.md) and [Layout Inspector Plugin](layout-plugin.md) for information on how to add them.
+Finally, you need to add plugins to your Flipper client. See [Network Plugin](network-plugin.md) and [Layout Inspector Plugin](layout-plugin.md) for information on how to add them.

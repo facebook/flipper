@@ -4,11 +4,11 @@ title: UI Components
 sidebar_label: UI Components
 ---
 
-Sonar has a lot of built in React components to build UIs. You can find all of these in [`src/ui/components`](https://github.com/facebook/Sonar/tree/master/src/ui/components) and can import them directly using `import {Button} from 'sonar'`.
+Flipper has a lot of built in React components to build UIs. You can find all of these in [`src/ui/components`](https://github.com/facebook/Flipper/tree/master/src/ui/components) and can import them directly using `import {Button} from 'sonar'`.
 
 ## FlexBox
 
-In Sonar we make heavy use of flexbox for layout. FlexBox is layout system on the web which has been specifically design for building application like UIs. Sonar provides two flexbox components `FlexRow` and `FlexColumn`. These are flexbox components with some sane defaults such as automatically scrolling content that overflows.
+In Flipper we make heavy use of flexbox for layout. FlexBox is layout system on the web which has been specifically design for building application like UIs. Flipper provides two flexbox components `FlexRow` and `FlexColumn`. These are flexbox components with some sane defaults such as automatically scrolling content that overflows.
 
 ```javascript
 import { FlexRow, FlexColumn } from 'sonar';
@@ -48,12 +48,12 @@ const Title = Text.extends({
   color: colors.red,
 });
 
-<Title code={true}>Sonar Subtitle</Title>;
+<Title code={true}>Flipper Subtitle</Title>;
 ```
 
 ## Buttons
 
-Sonar comes with a couple of button styles built in! As always you can style then further using the styled module but we expect the pre-defined buttons to fit most UIs.
+Flipper comes with a couple of button styles built in! As always you can style then further using the styled module but we expect the pre-defined buttons to fit most UIs.
 
 ```javascript
 import {Button} from 'sonar';
@@ -103,7 +103,7 @@ export default class MySonarPlugin extends SonarPlugin<State> {
 
 ## Panel
 
-Panels are a way to section data, and make it collapsible. They are often used in sidebars. Just give the Panel a heading and some content and it makes sure that it displays in the same style as the rest of Sonar.
+Panels are a way to section data, and make it collapsible. They are often used in sidebars. Just give the Panel a heading and some content and it makes sure that it displays in the same style as the rest of Flipper.
 
 ```javascript
 import {

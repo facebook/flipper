@@ -4,12 +4,12 @@ Below is an outline of how a connection is established between an app with with 
 
 ## Transport Protocol
 
-Sonar uses [RSocket](http://rsocket.io/) to communicate between the desktop and mobile apps. RSocket allows for bi-directional communication.
+Flipper uses [RSocket](http://rsocket.io/) to communicate between the desktop and mobile apps. RSocket allows for bi-directional communication.
 
 ## Client-Server relationship
 
 When the desktop app starts up, it opens a secure socket on port 8088.
-Any mobile app with the sonar SDK installed will continually attempt to connect to this port on localhost to establish a connection with the desktop app.
+Any mobile app with the Flipper SDK installed will continually attempt to connect to this port on localhost to establish a connection with the desktop app.
 
 ## Certificate Exchange
 

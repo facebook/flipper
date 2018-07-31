@@ -9,7 +9,7 @@ Use the Network inspector to inspect outgoing network traffic our apps. You can 
 
 ## Setup
 
-To use the network plugin, you need to add the plugin to your Sonar client instance.
+To use the network plugin, you need to add the plugin to your Flipper client instance.
 
 ### Android
 
@@ -32,7 +32,7 @@ new OkHttpClient.Builder()
     .build();
 ```
 
-As interceptors can modify the request and response, add the Sonar interceptor after all others to get an accurate view of the network traffic.
+As interceptors can modify the request and response, add the Flipper interceptor after all others to get an accurate view of the network traffic.
 
 ### iOS
 

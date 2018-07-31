@@ -37,7 +37,7 @@ this.client.send('methodName', DATA);
 
 ## Subscriptions
 
-A client is not only able to respond to method calls but also push data directly to the Sonar desktop app. With the subscribe API your plugin can subscribe to there pushes from the client. Pass the name of the method and the API it is part of as well as a callback function to start a subscription. Any time the client sends a push matching this method the callback will be called with any attached data as a javascript object.
+A client is not only able to respond to method calls but also push data directly to the Flipper desktop app. With the subscribe API your plugin can subscribe to there pushes from the client. Pass the name of the method and the API it is part of as well as a callback function to start a subscription. Any time the client sends a push matching this method the callback will be called with any attached data as a javascript object.
 
 ```javascript
 this.client.subscribe('methodName', data => {

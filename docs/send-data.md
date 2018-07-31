@@ -4,9 +4,9 @@ title: Sending Data to Plugins
 sidebar_label: Send Data
 ---
 
-It is often useful to get an instance of a sonar plugin to send data to it. Sonar makes this simple with built in support.
+It is often useful to get an instance of a flipper plugin to send data to it. Flipper makes this simple with built in support.
 
-Plugins should be treated as singleton instances as there can only be one `SonarClient` and each `SonarClient` can only have one instance of a certain plugin. The Sonar API makes this simple by offering a way to get the current client and query it for plugins.
+Plugins should be treated as singleton instances as there can only be one `SonarClient` and each `SonarClient` can only have one instance of a certain plugin. The Flipper API makes this simple by offering a way to get the current client and query it for plugins.
 
 Plugins are identified by the string that their identifier method returns, in this example, "MySonarPlugin":
 
@@ -47,4 +47,4 @@ myPlugin = client.getPlugin<MySonarPlugin>("MySonarPlugin");
 myPlugin->sendData(myData);
 ```
 
-Here, `sendData` is an example of a method that might be implemented by the sonar plugin.
+Here, `sendData` is an example of a method that might be implemented by the flipper plugin.

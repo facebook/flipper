@@ -30,15 +30,15 @@ export default class extends SonarPlugin {
 }
 ```
 
-Learn more on how to use [Sonar's UI components](ui-components.md).
+Learn more on how to use [Flipper's UI components](ui-components.md).
 
 ### Dynamically loading plugins
 
-Once a plugin is created, Sonar can load it from its folder. The path from where the plugins are loaded is specified in `~/.sonar/config.json`. Add the parent folder of your plugin to `pluginPaths` and start Sonar.
+Once a plugin is created, Flipper can load it from its folder. The path from where the plugins are loaded is specified in `~/.sonar/config.json`. Add the parent folder of your plugin to `pluginPaths` and start Flipper.
 
 ### npm dependencies
 
-If you need any dependencies in your plugin, you can install them using `yarn add`. The Sonar UI components exported from `sonar`, as well as `react` and `react-dom` don't need to be installed as dependencies. Our plugin-loader makes these dependencies available to your plugin.
+If you need any dependencies in your plugin, you can install them using `yarn add`. The Flipper UI components exported from `sonar`, as well as `react` and `react-dom` don't need to be installed as dependencies. Our plugin-loader makes these dependencies available to your plugin.
 
 ### ES6, babel-transforms and bundling
 
@@ -46,13 +46,13 @@ Our plugin-loader is capable of all ES6 goodness, flow annotations and JSX and a
 
 ## Working on the core
 
-If you only want to work on a plugin, you don't need to run the development build of Sonar, but you can use the production release. However, if you want to contribute to Sonar's core, add additional UI components, or do anything outside the scope of a single plugins this is how you run the development version of Sonar.
+If you only want to work on a plugin, you don't need to run the development build of Flipper, but you can use the production release. However, if you want to contribute to Flipper's core, add additional UI components, or do anything outside the scope of a single plugins this is how you run the development version of Flipper.
 
 Make sure you have a recent version of node.js and yarn installed on your system (node ≥ 8, yarn ≥ 1.5). Then run the following commands:
 
 ```
-git clone https://github.com/facebook/Sonar.git
-cd Sonar
+git clone https://github.com/facebook/flipper.git
+cd flipper
 yarn
 yarn start
 ```
