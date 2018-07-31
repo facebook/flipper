@@ -24,14 +24,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     let mainViewController = storyboard.instantiateViewController(withIdentifier: "MainViewController")
     let navigationController = UINavigationController(rootViewController: mainViewController)
 
-    navigationController.navigationBar.topItem?.title = "SampleSwift";
+    navigationController.navigationBar.topItem?.title = "SampleFlipper";
     navigationController.navigationBar.isTranslucent = false;
 
     window?.rootViewController = navigationController
     window?.makeKeyAndVisible()
 
-    // Use NSLog since Sonar doesn't capture print() by default
-    NSLog("Hello from Sonar in a Swift app!")
+    // Use NSLog since Flipepr doesn't capture print() by default
+    NSLog("Hello from Flipper in a Swift app!")
 
     return true
   }

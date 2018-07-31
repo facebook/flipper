@@ -377,7 +377,7 @@
 					"\"UIKit\"",
 					"-DFB_SONARKIT_ENABLED=1",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = FB.Sample;
+				PRODUCT_BUNDLE_IDENTIFIER = com.facebook.flipper;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -441,7 +441,7 @@
 					"\"UIKit\"",
 					"-DFB_SONARKIT_ENABLED=1",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = FB.Sample;
+				PRODUCT_BUNDLE_IDENTIFIER = com.facebook.flipper;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

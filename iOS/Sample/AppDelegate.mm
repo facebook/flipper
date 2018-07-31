@@ -48,7 +48,7 @@
   [_window setRootViewController: [[UINavigationController alloc] initWithRootViewController: mainViewController]];
   [_window makeKeyAndVisible];
 
-  NSLog(@"Hello from Sonar in an Objc app!");
+  NSLog(@"Hello from Flipper in an Objc app!");
   return YES;
 }
 
