@@ -6,12 +6,19 @@
  */
 
 import type BaseDevice from '../devices/BaseDevice';
+import type Client from '../Client';
+
 export type State = {
   devices: Array<BaseDevice>,
   androidEmulators: Array<string>,
   selectedDevice: ?BaseDevice,
   selectedPlugin: ?string,
   selectedApp: ?string,
+  userPreferredDevice: ?string,
+  userPreferredPlugin: ?string,
+  userPreferredApp: ?string,
+  error: ?string,
+  clients: Array<Client>,
 };
 
 export type Action =
@@ -37,6 +44,22 @@ export type Action =
         selectedPlugin: ?string,
         selectedApp: ?string,
       },
+    }
+  | {
+      type: 'SERVER_ERROR',
+      payload: ?string,
+    }
+  | {
+      type: 'NEW_CLIENT',
+      payload: Client,
+    }
+  | {
+      type: 'CLIENT_REMOVED',
+      payload: string,
+    }
+  | {
+      type: 'PREFER_DEVICE',
+      payload: string,
     };
 
 const DEFAULT_PLUGIN = 'DeviceLogs';
@@ -47,6 +70,11 @@ const INITAL_STATE: State = {
   selectedDevice: null,
   selectedApp: null,
   selectedPlugin: DEFAULT_PLUGIN,
+  userPreferredDevice: null,
+  userPreferredPlugin: null,
+  userPreferredApp: null,
+  error: null,
+  clients: [],
 };
 
 export default function reducer(
@@ -61,6 +89,7 @@ export default function reducer(
         selectedApp: null,
         selectedPlugin: DEFAULT_PLUGIN,
         selectedDevice: payload,
+        userPreferredDevice: payload.title,
       };
     }
     case 'REGISTER_ANDROID_EMULATORS': {
@@ -75,13 +104,17 @@ export default function reducer(
       const devices = state.devices.concat(payload);
       let {selectedDevice} = state;
       let selection = {};
+
       if (!selectedDevice) {
         selectedDevice = payload;
         selection = {
           selectedApp: null,
           selectedPlugin: DEFAULT_PLUGIN,
         };
+      } else if (payload.title === state.userPreferredDevice) {
+        selectedDevice = payload;
       }
+
       return {
         ...state,
         devices,
@@ -127,7 +160,58 @@ export default function reducer(
       return {
         ...state,
         ...payload,
+        userPreferredApp: payload.selectedApp,
+        userPreferredPlugin: payload.selectedPlugin,
       };
+    }
+
+    case 'NEW_CLIENT': {
+      const {payload} = action;
+      const {userPreferredApp, userPreferredPlugin} = state;
+      let {selectedApp, selectedPlugin} = state;
+
+      if (
+        userPreferredApp &&
+        userPreferredPlugin &&
+        payload.id === userPreferredApp &&
+        payload.plugins.includes(userPreferredPlugin)
+      ) {
+        // user preferred client did reconnect, so let's select it
+        selectedApp = userPreferredApp;
+        selectedPlugin = userPreferredPlugin;
+      }
+
+      return {
+        ...state,
+        clients: state.clients.concat(payload),
+        selectedApp,
+        selectedPlugin,
+      };
+    }
+    case 'CLIENT_REMOVED': {
+      const {payload} = action;
+
+      let selected = {};
+      if (state.selectedApp === payload) {
+        selected.selectedApp = null;
+        selected.selectedPlugin = DEFAULT_PLUGIN;
+      }
+
+      return {
+        ...state,
+        ...selected,
+        clients: state.clients.filter(
+          (client: Client) => client.id !== payload,
+        ),
+      };
+    }
+    case 'PREFER_DEVICE': {
+      const {payload: userPreferredDevice} = action;
+      return {...state, userPreferredDevice};
+    }
+    case 'SERVER_ERROR': {
+      const {payload} = action;
+      return {...state, error: payload};
     }
     default:
       return state;
@@ -136,6 +220,11 @@ export default function reducer(
 
 export const selectDevice = (payload: BaseDevice): Action => ({
   type: 'SELECT_DEVICE',
+  payload,
+});
+
+export const preferDevice = (payload: string): Action => ({
+  type: 'PREFER_DEVICE',
   payload,
 });
 

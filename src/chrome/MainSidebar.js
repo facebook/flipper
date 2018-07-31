@@ -225,10 +225,7 @@ class MainSidebar extends Component<MainSidebarProps> {
 }
 
 export default connect(
-  ({
-    connections: {selectedDevice, selectedPlugin, selectedApp},
-    server: {clients},
-  }) => ({
+  ({connections: {selectedDevice, selectedPlugin, selectedApp, clients}}) => ({
     selectedDevice,
     selectedPlugin,
     selectedApp,

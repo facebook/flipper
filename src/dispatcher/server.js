@@ -9,6 +9,7 @@ import Server from '../server.js';
 
 import type {Store} from '../reducers/index.js';
 import type Logger from '../fb-stubs/Logger.js';
+import type Client from '../Client.js';
 
 export default (store: Store, logger: Logger) => {
   const server = new Server(logger);

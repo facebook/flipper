@@ -147,9 +147,8 @@ class PluginContainer extends Component<Props, State> {
 export default connect(
   ({
     application: {rightSidebarVisible, rightSidebarAvailable},
-    connections: {selectedPlugin, selectedDevice, selectedApp},
+    connections: {selectedPlugin, selectedDevice, selectedApp, clients},
     pluginStates,
-    server: {clients},
   }) => ({
     selectedPlugin,
     selectedDevice,

@@ -71,8 +71,7 @@ export class App extends React.Component<Props> {
 export default connect(
   ({
     application: {pluginManagerVisible, bugDialogVisible, leftSidebarVisible},
-    connections: {selectedDevice},
-    server: {error},
+    connections: {selectedDevice, error},
   }) => ({
     pluginManagerVisible,
     bugDialogVisible,

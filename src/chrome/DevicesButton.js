@@ -7,8 +7,8 @@
 
 import {Component, Button} from 'sonar';
 import {connect} from 'react-redux';
-import {exec} from 'child_process';
-import {selectDevice} from '../reducers/connections.js';
+import {spawn} from 'child_process';
+import {selectDevice, preferDevice} from '../reducers/connections.js';
 import type BaseDevice from '../devices/BaseDevice.js';
 
 type Props = {
@@ -16,15 +16,21 @@ type Props = {
   androidEmulators: Array<string>,
   devices: Array<BaseDevice>,
   selectDevice: (device: BaseDevice) => void,
+  preferDevice: (device: string) => void,
 };
 
 class DevicesButton extends Component<Props> {
   launchEmulator = (name: string) => {
-    exec(`$ANDROID_HOME/tools/emulator @${name}`, error => {
-      if (error) {
-        console.error(error);
-      }
-    });
+    const child = spawn(
+      `${process.env.ANDROID_HOME || ''}/tools/emulator`,
+      [`@${name}`],
+      {
+        detached: true,
+        stdio: 'ignore',
+      },
+    );
+    child.on('error', console.error);
+    this.props.preferDevice(name);
   };
 
   render() {
@@ -96,5 +102,5 @@ export default connect(
     androidEmulators,
     selectedDevice,
   }),
-  {selectDevice},
+  {selectDevice, preferDevice},
 )(DevicesButton);
