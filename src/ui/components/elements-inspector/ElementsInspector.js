@@ -61,7 +61,11 @@ export default class ElementsInspector extends Component<{
   root: ?ElementID,
   elements: {[key: ElementID]: Element},
   useAppSidebar?: boolean,
+  alternateRowColor?: boolean,
 }> {
+  static defaultProps = {
+    alternateRowColor: true,
+  };
   render() {
     const {
       selected,
@@ -71,6 +75,7 @@ export default class ElementsInspector extends Component<{
       onElementSelected,
       onElementHovered,
       searchResults,
+      alternateRowColor,
     } = this.props;
 
     return (
@@ -83,6 +88,7 @@ export default class ElementsInspector extends Component<{
           searchResults={searchResults}
           root={root}
           elements={elements}
+          alternateRowColor={alternateRowColor}
         />
       </FlexRow>
     );

@@ -391,6 +391,7 @@ type ElementsProps = {|
   onElementSelected: (key: ElementID) => void,
   onElementExpanded: (key: ElementID, deep: boolean) => void,
   onElementHovered: ?(key: ?ElementID) => void,
+  alternateRowColor?: boolean,
 |};
 
 type ElementsState = {|
@@ -400,6 +401,9 @@ type ElementsState = {|
 |};
 
 export class Elements extends PureComponent<ElementsProps, ElementsState> {
+  static defaultProps = {
+    alternateRowColor: true,
+  };
   constructor(props: ElementsProps, context: Object) {
     super(props, context);
     this.state = {
@@ -566,12 +570,17 @@ export class Elements extends PureComponent<ElementsProps, ElementsState> {
       }
     }
 
+    let isEven = false;
+    if (this.props.alternateRowColor) {
+      isEven = index % 2 === 0;
+    }
+
     return (
       <ElementsRow
         level={row.level}
         id={row.key}
         key={row.key}
-        even={index % 2 === 0}
+        even={isEven}
         onElementExpanded={onElementExpanded}
         onElementHovered={onElementHovered}
         onElementSelected={onElementSelected}
