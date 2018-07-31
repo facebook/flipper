@@ -24,7 +24,7 @@ matrix:
         - provider: pages
           skip-cleanup: true
           github-token: $GITHUB_TOKEN
-          fqdn: fbsonar.com
+          fqdn: fbflipper.com
           local-dir: website/build/sonar
           keep-history: true
           on:
