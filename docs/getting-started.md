@@ -71,7 +71,7 @@ source 'https://github.com/facebook/Sonar.git'
 source 'https://github.com/CocoaPods/Specs'
 # Uncomment the next line to define a global platform for your project
 swift_version = "4.1"
-sonarkit_version = '0.6.12'
+sonarkit_version = '0.6.14'
 
 target 'MyApp' do
 
