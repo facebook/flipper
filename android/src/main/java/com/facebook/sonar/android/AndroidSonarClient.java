@@ -8,18 +8,24 @@
 package com.facebook.sonar.android;
 
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
+import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import com.facebook.sonar.core.SonarClient;
 
 public final class AndroidSonarClient {
   private static boolean sIsInitialized = false;
   private static SonarThread sSonarThread;
   private static SonarThread sConnectionThread;
+  private static final String[] REQUIRED_PERMISSIONS =
+      new String[] {"android.permission.INTERNET", "android.permission.ACCESS_WIFI_STATE"};
 
   public static synchronized SonarClient getInstance(Context context) {
     if (!sIsInitialized) {
+      checkRequiredPermissions(context);
       sSonarThread = new SonarThread("SonarEventBaseThread");
       sSonarThread.start();
       sConnectionThread = new SonarThread("SonarConnectionThread");
@@ -40,6 +46,16 @@ public final class AndroidSonarClient {
       sIsInitialized = true;
     }
     return SonarClientImpl.getInstance();
+  }
+
+  static void checkRequiredPermissions(Context context) {
+    // Don't terminate for compatibility reasons. Not all apps have ACCESS_WIFI_STATE permission.
+    for (String permission : REQUIRED_PERMISSIONS) {
+      if (ContextCompat.checkSelfPermission(context, permission)
+          == PackageManager.PERMISSION_DENIED) {
+        Log.e("Sonar", String.format("App needs permission \"%s\" to work with sonar", permission));
+      }
+    }
   }
 
   static boolean isRunningOnGenymotion() {
