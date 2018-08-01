@@ -45,7 +45,7 @@
 #pragma mark - SKNetworkReporterDelegate
 
 
-- (void)didObserveRequest:(RequestInfo *)request;
+- (void)didObserveRequest:(SKRequestInfo *)request;
 {
   NSMutableArray<NSDictionary<NSString *, id> *> *headers = [NSMutableArray new];
   for (NSString *key in [request.request.allHTTPHeaderFields allKeys]) {
@@ -69,7 +69,7 @@
                }];
 }
 
-- (void)didObserveResponse:(ResponseInfo)response
+- (void)didObserveResponse:(SKResponseInfo *)response
 {
   NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse*)response.response;
 
