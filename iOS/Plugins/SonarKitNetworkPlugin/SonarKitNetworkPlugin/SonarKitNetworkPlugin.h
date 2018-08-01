@@ -12,12 +12,11 @@
 
 #import "SKBufferingPlugin.h"
 #import "SKNetworkReporter.h"
-#import "SKDispatchQueue.h"
 
 @interface SonarKitNetworkPlugin : SKBufferingPlugin <SKNetworkReporterDelegate>
 
 - (instancetype)initWithNetworkAdapter:(id<SKNetworkAdapterDelegate>)adapter NS_DESIGNATED_INITIALIZER;
-- (instancetype)initWithNetworkAdapter:(id<SKNetworkAdapterDelegate>)adapter queue:(const std::shared_ptr<facebook::sonar::DispatchQueue> &)queue; //For test purposes
+- (instancetype)initWithNetworkAdapter:(id<SKNetworkAdapterDelegate>)adapter queue:(dispatch_queue_t)queue; //For test purposes
 
 @property (strong, nonatomic) id<SKNetworkAdapterDelegate> adapter;
 

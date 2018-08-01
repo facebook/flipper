@@ -13,11 +13,9 @@
 
 #import <memory>
 
-#import "SKDispatchQueue.h"
-
 @interface SKBufferingPlugin : NSObject<SonarPlugin>
 
-- (instancetype)initWithQueue:(const std::shared_ptr<facebook::sonar::DispatchQueue> &)queue NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithQueue:(dispatch_queue_t)queue NS_DESIGNATED_INITIALIZER;
 
 - (void)send:(NSString *)method sonarObject:(NSDictionary<NSString *, id> *)sonarObject;
 

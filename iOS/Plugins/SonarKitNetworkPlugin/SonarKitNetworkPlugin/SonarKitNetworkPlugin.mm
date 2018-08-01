@@ -34,8 +34,8 @@
   return self;
 }
 
-- (instancetype)initWithNetworkAdapter:(id<SKNetworkAdapterDelegate>)adapter queue:(const std::shared_ptr<facebook::sonar::DispatchQueue> &)queue; {
-  if (self = [super initWithQueue:queue]) {
+- (instancetype)initWithNetworkAdapter:(id<SKNetworkAdapterDelegate>)adapter queue:(dispatch_queue_t)queue; {
+  if (self = [super initWithQueue:std::make_shared<facebook::sonar::GCDQueue>(queue)]) {
     adapter.delegate = self;
     _adapter = adapter;
   }
