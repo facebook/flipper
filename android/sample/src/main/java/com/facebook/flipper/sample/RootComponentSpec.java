@@ -39,7 +39,7 @@ public class RootComponentSpec {
                 .clickHandler(RootComponent.hitPostRequest(c)))
         .child(
             Text.create(c)
-                .text("I m just a text")
+                .text("I'm just some text")
                 .key("3")
                 .textSizeSp(20))
         .build();
