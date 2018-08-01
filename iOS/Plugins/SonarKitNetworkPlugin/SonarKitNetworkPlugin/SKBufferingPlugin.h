@@ -11,8 +11,6 @@
 
 #import <SonarKit/SonarPlugin.h>
 
-#import <memory>
-
 @interface SKBufferingPlugin : NSObject<SonarPlugin>
 
 - (instancetype)initWithQueue:(dispatch_queue_t)queue NS_DESIGNATED_INITIALIZER;

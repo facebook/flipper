@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		924DEE555A91E1A826246BFA /* libPods-SampleSwift.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BBD13A47F2C2B5034F063822 /* libPods-SampleSwift.a */; };
+		954C73A9B7D4EA69F6DE05E1 /* libPods-SampleSwift.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FA93B2B47C917788BFB23D05 /* libPods-SampleSwift.a */; };
 		A19C402720E20023004BF1F7 /* Icons.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A19C402620E20023004BF1F7 /* Icons.xcassets */; };
 		A1EC522D20DED61B007C6977 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1EC522C20DED61B007C6977 /* AppDelegate.swift */; };
 		A1EC522F20DED61B007C6977 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1EC522E20DED61B007C6977 /* ViewController.swift */; };
@@ -16,8 +16,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		165E5A6DF36BB8865E363D20 /* Pods-SampleSwift.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SampleSwift.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SampleSwift/Pods-SampleSwift.debug.xcconfig"; sourceTree = "<group>"; };
-		20E52F22740D5FC8AE516930 /* Pods-SampleSwift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SampleSwift.release.xcconfig"; path = "Pods/Target Support Files/Pods-SampleSwift/Pods-SampleSwift.release.xcconfig"; sourceTree = "<group>"; };
+		9C8EBA34899DAE772E7CABE9 /* Pods-SampleSwift.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SampleSwift.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SampleSwift/Pods-SampleSwift.debug.xcconfig"; sourceTree = "<group>"; };
 		A19C402620E20023004BF1F7 /* Icons.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Icons.xcassets; sourceTree = SOURCE_ROOT; };
 		A1EC522920DED61B007C6977 /* SampleSwift.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SampleSwift.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1EC522C20DED61B007C6977 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -25,7 +24,8 @@
 		A1EC523620DED61C007C6977 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		A1EC523820DED61C007C6977 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A1EC523E20DEDC00007C6977 /* MainStoryBoard.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = MainStoryBoard.storyboard; sourceTree = "<group>"; };
-		BBD13A47F2C2B5034F063822 /* libPods-SampleSwift.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SampleSwift.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		FA93B2B47C917788BFB23D05 /* libPods-SampleSwift.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SampleSwift.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		FD9584D7C97B2197BC7923F2 /* Pods-SampleSwift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SampleSwift.release.xcconfig"; path = "Pods/Target Support Files/Pods-SampleSwift/Pods-SampleSwift.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -33,20 +33,37 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				924DEE555A91E1A826246BFA /* libPods-SampleSwift.a in Frameworks */,
+				954C73A9B7D4EA69F6DE05E1 /* libPods-SampleSwift.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		56299E7CC8822BD7A4B7312B /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				9C8EBA34899DAE772E7CABE9 /* Pods-SampleSwift.debug.xcconfig */,
+				FD9584D7C97B2197BC7923F2 /* Pods-SampleSwift.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
+		86214A24402D2DCD56D845D2 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				FA93B2B47C917788BFB23D05 /* libPods-SampleSwift.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		A1EC522020DED61B007C6977 = {
 			isa = PBXGroup;
 			children = (
 				A1EC522B20DED61B007C6977 /* SampleSwift */,
 				A1EC522A20DED61B007C6977 /* Products */,
-				EE4007CFD585C96CCA58C10C /* Pods */,
-				A9B650FB1B7071E0B22AD22E /* Frameworks */,
+				56299E7CC8822BD7A4B7312B /* Pods */,
+				86214A24402D2DCD56D845D2 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -71,23 +88,6 @@
 			path = SampleSwift;
 			sourceTree = "<group>";
 		};
-		A9B650FB1B7071E0B22AD22E /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				BBD13A47F2C2B5034F063822 /* libPods-SampleSwift.a */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		EE4007CFD585C96CCA58C10C /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				165E5A6DF36BB8865E363D20 /* Pods-SampleSwift.debug.xcconfig */,
-				20E52F22740D5FC8AE516930 /* Pods-SampleSwift.release.xcconfig */,
-			);
-			name = Pods;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -95,7 +95,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = A1EC523B20DED61C007C6977 /* Build configuration list for PBXNativeTarget "SampleSwift" */;
 			buildPhases = (
-				B9640A28F4B59ED1F629F478 /* [CP] Check Pods Manifest.lock */,
+				CE4BA5A2D2A92F09B4881DE0 /* [CP] Check Pods Manifest.lock */,
 				A1EC522520DED61B007C6977 /* Sources */,
 				A1EC522620DED61B007C6977 /* Frameworks */,
 				A1EC522720DED61B007C6977 /* Resources */,
@@ -156,7 +156,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		B9640A28F4B59ED1F629F478 /* [CP] Check Pods Manifest.lock */ = {
+		CE4BA5A2D2A92F09B4881DE0 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -316,7 +316,7 @@
 		};
 		A1EC523C20DED61C007C6977 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 165E5A6DF36BB8865E363D20 /* Pods-SampleSwift.debug.xcconfig */;
+			baseConfigurationReference = 9C8EBA34899DAE772E7CABE9 /* Pods-SampleSwift.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
@@ -340,6 +340,30 @@
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
+				);
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+					"-l\"CocoaAsyncSocket\"",
+					"-l\"DoubleConversion\"",
+					"-l\"Folly\"",
+					"-l\"PeerTalk\"",
+					"-l\"RSocket\"",
+					"-l\"Sonar\"",
+					"-l\"SonarKit\"",
+					"-l\"crypto\"",
+					"-l\"event\"",
+					"-l\"event_core\"",
+					"-l\"event_extra\"",
+					"-l\"event_pthreads\"",
+					"-l\"glog\"",
+					"-l\"ssl\"",
+					"-l\"stdc++\"",
+					"-framework",
+					"\"CFNetwork\"",
+					"-framework",
+					"\"Security\"",
+					"-DFB_SONARKIT_ENABLED=1",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.facebook.flipper.SampleSwift;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -350,7 +374,7 @@
 		};
 		A1EC523D20DED61C007C6977 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 20E52F22740D5FC8AE516930 /* Pods-SampleSwift.release.xcconfig */;
+			baseConfigurationReference = FD9584D7C97B2197BC7923F2 /* Pods-SampleSwift.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
@@ -374,6 +398,30 @@
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
+				);
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+					"-l\"CocoaAsyncSocket\"",
+					"-l\"DoubleConversion\"",
+					"-l\"Folly\"",
+					"-l\"PeerTalk\"",
+					"-l\"RSocket\"",
+					"-l\"Sonar\"",
+					"-l\"SonarKit\"",
+					"-l\"crypto\"",
+					"-l\"event\"",
+					"-l\"event_core\"",
+					"-l\"event_extra\"",
+					"-l\"event_pthreads\"",
+					"-l\"glog\"",
+					"-l\"ssl\"",
+					"-l\"stdc++\"",
+					"-framework",
+					"\"CFNetwork\"",
+					"-framework",
+					"\"Security\"",
+					"-DFB_SONARKIT_ENABLED=1",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.facebook.flipper.SampleSwift;
 				PRODUCT_NAME = "$(TARGET_NAME)";
