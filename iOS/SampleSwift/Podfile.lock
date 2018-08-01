@@ -1,0 +1,74 @@
+PODS:
+  - boost-for-react-native (1.63.0)
+  - CocoaAsyncSocket (7.6.3)
+  - CocoaLibEvent (1.0.0)
+  - DoubleConversion (1.1.5)
+  - Folly (1.0.0):
+    - boost-for-react-native
+    - CocoaLibEvent (~> 1.0)
+    - DoubleConversion
+    - glog
+    - OpenSSL-Static (= 1.0.2.c1)
+  - glog (0.3.4)
+  - OpenSSL-Static (1.0.2.c1)
+  - PeerTalk (0.0.2)
+  - RSocket (0.10.0):
+    - Folly
+  - Sonar (0.6.15):
+    - Folly (~> 1.0)
+    - RSocket (~> 0.10)
+  - SonarKit (0.6.15):
+    - SonarKit/Core (= 0.6.15)
+  - SonarKit/Core (0.6.15):
+    - CocoaAsyncSocket (~> 7.6)
+    - Folly (~> 1.0)
+    - OpenSSL-Static (= 1.0.2.c1)
+    - PeerTalk (~> 0.0.2)
+    - Sonar (~> 0.6.15)
+    - SonarKit/CppBridge
+    - SonarKit/FBCxxUtils
+    - SonarKit/FBDefines
+  - SonarKit/CppBridge (0.6.15)
+  - SonarKit/FBCxxUtils (0.6.15)
+  - SonarKit/FBDefines (0.6.15)
+  - SonarKit/SKIOSNetworkPlugin (0.6.15):
+    - SonarKit/Core
+    - SonarKit/SonarKitNetworkPlugin
+  - SonarKit/SonarKitNetworkPlugin (0.6.15):
+    - SonarKit/Core
+
+DEPENDENCIES:
+  - SonarKit (~> 0.6)
+  - SonarKit/SKIOSNetworkPlugin (~> 0.6)
+
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - boost-for-react-native
+    - CocoaAsyncSocket
+    - CocoaLibEvent
+    - DoubleConversion
+    - glog
+    - OpenSSL-Static
+  https://github.com/facebook/Sonar.git:
+    - Folly
+    - PeerTalk
+    - RSocket
+    - Sonar
+    - SonarKit
+
+SPEC CHECKSUMS:
+  boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
+  CocoaAsyncSocket: eafaa68a7e0ec99ead0a7b35015e0bf25d2c8987
+  CocoaLibEvent: 2fab71b8bd46dd33ddb959f7928ec5909f838e3f
+  DoubleConversion: e22e0762848812a87afd67ffda3998d9ef29170c
+  Folly: ac702dfbe9294be1002f9cddaa0c2ddb99b16288
+  glog: 1de0bb937dccdc981596d3b5825ebfb765017ded
+  OpenSSL-Static: bd17e34564a8591ad76b740318683a6caa19a13e
+  PeerTalk: 77481b0a8136f226b90ccf828d6061f70139ffde
+  RSocket: 4fdb7e562db30a2d4fceddefdc601749ffc9ebe2
+  Sonar: f9f8602746bdc6c4a038049a252b977bc03818f1
+  SonarKit: 5ae3f276cf6d9bfaad1a4bb7e53de42cf091a8ce
+
+PODFILE CHECKSUM: c8dbcce7fd65e8be6ea20d65c190d42823a48e6c
+
+COCOAPODS: 1.5.2

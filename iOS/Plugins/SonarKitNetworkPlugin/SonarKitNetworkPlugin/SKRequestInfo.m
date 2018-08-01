@@ -9,6 +9,10 @@
 #import "SKRequestInfo.h"
 
 @implementation SKRequestInfo
+@synthesize identifier = _identifier;
+@synthesize timestamp = _timestamp;
+@synthesize request = _request;
+@synthesize body = _body;
 
 - (instancetype)initWithIdentifier:(int64_t)identifier timestamp:(uint64_t)timestamp request:(NSURLRequest *)request data:(NSData *)data{
 

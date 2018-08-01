@@ -7,7 +7,7 @@ target 'SampleSwift' do
   pod 'SonarKit', '~> 0.6'
   # Layout and network plugins are not yet supported for swift projects
   # pod 'SonarKit/SonarKitLayoutComponentKitSupport', '~> 0.0.2'
-  # pod 'SonarKit/SKIOSNetworkPlugin', '~> 0.0.2'
+  pod 'SonarKit/SKIOSNetworkPlugin', '~> 0.6'
 
   post_install do |installer|
         installer.pods_project.targets.each do |target|

@@ -9,6 +9,10 @@
 #import "SKResponseInfo.h"
 
 @implementation SKResponseInfo
+@synthesize identifier = _identifier;
+@synthesize timestamp = _timestamp;
+@synthesize response = _response;
+@synthesize body = _body;
 
 - (instancetype)initWithIndentifier:(int64_t)identifier timestamp:(uint64_t)timestamp response:(NSURLResponse *)response data:(NSData *)data {
   if(self = [super init]) {
