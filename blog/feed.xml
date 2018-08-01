@@ -1,30 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <rss version="2.0">
     <channel>
-        <title>Sonar Blog</title>
-        <link>https://fbsonar.com//blog</link>
-        <description>The best place to stay up-to-date with the latest Sonar news and events.</description>
+        <title>Flipper Blog</title>
+        <link>https://fbflipper.com//blog</link>
+        <description>The best place to stay up-to-date with the latest Flipper news and events.</description>
         <lastBuildDate>Tue, 24 Oct 2017 06:00:00 GMT</lastBuildDate>
         <docs>http://blogs.law.harvard.edu/tech/rss</docs>
         <generator>Feed for Node.js</generator>
         <image>
-            <title>Sonar Blog</title>
-            <url>https://fbsonar.com//img/icon.png</url>
-            <link>https://fbsonar.com//blog</link>
+            <title>Flipper Blog</title>
+            <url>https://fbflipper.com//img/icon.png</url>
+            <link>https://fbflipper.com//blog</link>
         </image>
         <copyright>Copyright © 2018 Facebook</copyright>
         <item>
             <title><![CDATA[New Version 1.0.0]]></title>
-            <link>https://fbsonar.com//blog/2017/10/24/new-version-1.0.0.html</link>
-            <guid>https://fbsonar.com//blog/2017/10/24/new-version-1.0.0.html</guid>
+            <link>https://fbflipper.com//blog/2017/10/24/new-version-1.0.0.html</link>
+            <guid>https://fbflipper.com//blog/2017/10/24/new-version-1.0.0.html</guid>
             <pubDate>Tue, 24 Oct 2017 06:00:00 GMT</pubDate>
             <description><![CDATA[<p>This blog post will test file name parsing issues when periods are present.</p>
 ]]></description>
         </item>
         <item>
             <title><![CDATA[Adding RSS Support]]></title>
-            <link>https://fbsonar.com//blog/2017/09/26/adding-rss.html</link>
-            <guid>https://fbsonar.com//blog/2017/09/26/adding-rss.html</guid>
+            <link>https://fbflipper.com//blog/2017/09/26/adding-rss.html</link>
+            <guid>https://fbflipper.com//blog/2017/09/26/adding-rss.html</guid>
             <pubDate>Tue, 26 Sep 2017 06:00:00 GMT</pubDate>
             <description><![CDATA[<p>This is a test post.</p>
 <p>A whole bunch of other information.</p>
@@ -32,8 +32,8 @@
         </item>
         <item>
             <title><![CDATA[Adding RSS Support - RSS Truncation Test]]></title>
-            <link>https://fbsonar.com//blog/2017/09/25/testing-rss.html</link>
-            <guid>https://fbsonar.com//blog/2017/09/25/testing-rss.html</guid>
+            <link>https://fbflipper.com//blog/2017/09/25/testing-rss.html</link>
+            <guid>https://fbflipper.com//blog/2017/09/25/testing-rss.html</guid>
             <pubDate>Mon, 25 Sep 2017 06:00:00 GMT</pubDate>
             <description><![CDATA[<p>1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890</p>
 <p>This should be truncated.</p>
@@ -41,16 +41,16 @@
         </item>
         <item>
             <title><![CDATA[New Blog Post]]></title>
-            <link>https://fbsonar.com//blog/2017/04/10/blog-post-two.html</link>
-            <guid>https://fbsonar.com//blog/2017/04/10/blog-post-two.html</guid>
+            <link>https://fbflipper.com//blog/2017/04/10/blog-post-two.html</link>
+            <guid>https://fbflipper.com//blog/2017/04/10/blog-post-two.html</guid>
             <pubDate>Mon, 10 Apr 2017 06:00:00 GMT</pubDate>
             <description><![CDATA[<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque elementum dignissim ultricies. Fusce rhoncus ipsum tempor eros aliquam consequat. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus elementum massa eget nulla aliquet sagittis. Proin odio tortor, vulputate ut odio in, ultrices ultricies augue. Cras ornare ultrices lorem malesuada iaculis. Etiam sit amet libero tempor, pulvinar mauris sed, sollicitudin sapien.</p>
 ]]></description>
         </item>
         <item>
             <title><![CDATA[Blog Title]]></title>
-            <link>https://fbsonar.com//blog/2016/03/11/blog-post.html</link>
-            <guid>https://fbsonar.com//blog/2016/03/11/blog-post.html</guid>
+            <link>https://fbflipper.com//blog/2016/03/11/blog-post.html</link>
+            <guid>https://fbflipper.com//blog/2016/03/11/blog-post.html</guid>
             <pubDate>Fri, 11 Mar 2016 06:00:00 GMT</pubDate>
             <description><![CDATA[<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque elementum dignissim ultricies. Fusce rhoncus ipsum tempor eros aliquam consequat. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus elementum massa eget nulla aliquet sagittis. Proin odio tortor, vulputate ut odio in, ultrices ultricies augue. Cras ornare ultrices lorem malesuada iaculis. Etiam sit amet libero tempor, pulvinar mauris sed, sollicitudin sapien.</p>
 ]]></description>
