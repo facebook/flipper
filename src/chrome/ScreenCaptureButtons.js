@@ -12,17 +12,18 @@ import IOSDevice from '../devices/IOSDevice';
 import os from 'os';
 import fs from 'fs';
 import adb from 'adbkit-fb';
-import path from 'path';
 import {exec} from 'child_process';
+import {remote} from 'electron';
+import path from 'path';
 
-const SCREENSHOT_FILE_NAME = 'screen.png';
-const VIDEO_FILE_NAME = 'video.mp4';
-const SCREENSHOT_PATH = path.join(
-  os.homedir(),
-  '/.sonar/',
-  SCREENSHOT_FILE_NAME,
-);
-const VIDEO_PATH = path.join(os.homedir(), '.sonar', VIDEO_FILE_NAME);
+let CAPTURE_LOCATION = remote.app.getPath('desktop');
+try {
+  CAPTURE_LOCATION =
+    JSON.parse(window.process.env.CONFIG).screenCapturePath.replace(
+      /^~/,
+      os.homedir(),
+    ) || CAPTURE_LOCATION;
+} catch (e) {}
 
 import type BaseDevice from '../devices/BaseDevice';
 
@@ -39,9 +40,9 @@ type State = {|
   capturingScreenshot: boolean,
 |};
 
-function openFile(path: string): Promise<*> {
+function openFile(path: string): Promise<string> {
   return new Promise((resolve, reject) => {
-    exec(`${getOpenCommand()} ${path}`, (error, stdout, stderr) => {
+    exec(`${getOpenCommand()} "${path}"`, (error, stdout, stderr) => {
       if (error) {
         reject(error);
       } else {
@@ -63,18 +64,24 @@ function getOpenCommand(): string {
   }
 }
 
+function getFileName(extension: 'png' | 'mp4'): string {
+  return `Screen Capture ${new Date().toISOString()}.${extension}`;
+}
+
 function writePngStreamToFile(stream: PullTransfer): Promise<string> {
   return new Promise((resolve, reject) => {
+    const pngPath = path.join(CAPTURE_LOCATION, getFileName('png'));
     stream.on('end', () => {
-      resolve(SCREENSHOT_PATH);
+      resolve(pngPath);
     });
     stream.on('error', reject);
-    stream.pipe(fs.createWriteStream(SCREENSHOT_PATH));
+    stream.pipe(fs.createWriteStream(pngPath));
   });
 }
 
 class ScreenCaptureButtons extends Component<Props, State> {
   iOSRecorder: ?any;
+  videoPath: ?string;
 
   state = {
     pullingData: false,
@@ -117,7 +124,7 @@ class ScreenCaptureButtons extends Component<Props, State> {
     }
   };
 
-  captureScreenshot = () => {
+  captureScreenshot = (): ?Promise<string> => {
     const {selectedDevice} = this.props;
 
     if (selectedDevice instanceof AndroidDevice) {
@@ -127,29 +134,33 @@ class ScreenCaptureButtons extends Component<Props, State> {
         .then(openFile)
         .catch(console.error);
     } else if (selectedDevice instanceof IOSDevice) {
-      exec(
-        `xcrun simctl io booted screenshot ${SCREENSHOT_PATH}`,
-        (err, data) => {
-          if (err) {
-            console.error(err);
-          } else {
-            openFile(SCREENSHOT_PATH);
-          }
-        },
-      );
+      const screenshotPath = path.join(CAPTURE_LOCATION, getFileName('png'));
+      return new Promise((resolve, reject) => {
+        exec(
+          `xcrun simctl io booted screenshot "${screenshotPath}"`,
+          async (err, data) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve(await openFile(screenshotPath));
+            }
+          },
+        );
+      });
     }
   };
 
   startRecording = () => {
     const {selectedDevice} = this.props;
-
+    const videoPath = path.join(CAPTURE_LOCATION, getFileName('mp4'));
+    this.videoPath = videoPath;
     if (selectedDevice instanceof AndroidDevice) {
       this.setState({
         recording: true,
       });
       this.executeShell(
         selectedDevice,
-        `screenrecord --bugreport /sdcard/${VIDEO_FILE_NAME}`,
+        `screenrecord --bugreport /sdcard/video.mp4`,
       )
         .then(output => {
           if (output) {
@@ -166,14 +177,14 @@ class ScreenCaptureButtons extends Component<Props, State> {
           (): Promise<string> => {
             return this.pullFromDevice(
               selectedDevice,
-              `/sdcard/${VIDEO_FILE_NAME}`,
-              VIDEO_PATH,
+              `/sdcard/video.mp4`,
+              videoPath,
             );
           },
         )
         .then(openFile)
         .then(() => {
-          this.executeShell(selectedDevice, `rm /sdcard/${VIDEO_FILE_NAME}`);
+          this.executeShell(selectedDevice, `rm /sdcard/video.mp4`);
         })
         .then(() => {
           this.setState({
@@ -192,7 +203,7 @@ class ScreenCaptureButtons extends Component<Props, State> {
         recording: true,
       });
       this.iOSRecorder = exec(
-        `xcrun simctl io booted recordVideo ${VIDEO_PATH}`,
+        `xcrun simctl io booted recordVideo "${videoPath}"`,
       );
     }
   };
@@ -214,16 +225,18 @@ class ScreenCaptureButtons extends Component<Props, State> {
   };
 
   stopRecording = () => {
+    const {videoPath} = this;
     const {selectedDevice} = this.props;
+    this.videoPath = null;
 
     if (selectedDevice instanceof AndroidDevice) {
       this.executeShell(selectedDevice, `pgrep 'screenrecord' -L 2`);
-    } else if (this.iOSRecorder) {
+    } else if (this.iOSRecorder && videoPath) {
       this.iOSRecorder.kill();
       this.setState({
         recording: false,
       });
-      openFile(VIDEO_PATH);
+      openFile(videoPath);
     }
   };
 

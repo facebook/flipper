@@ -163,7 +163,7 @@ type Props = {
   /**
    * onClick handler.
    */
-  onClick?: (event: SyntheticMouseEvent<>) => void,
+  onClick?: (event: SyntheticMouseEvent<>) => any,
   /**
    * Whether this button is disabled.
    */
