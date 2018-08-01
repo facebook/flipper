@@ -21,13 +21,13 @@
 }
 
 - (instancetype)init {
-  if (self = [super initWithQueue:std::make_shared<facebook::sonar::GCDQueue>(dispatch_queue_create("com.sonarkit.network.buffer", DISPATCH_QUEUE_SERIAL))]) {
+  if (self = [super initWithQueue:dispatch_queue_create("com.sonarkit.network.buffer", DISPATCH_QUEUE_SERIAL)]) {
   }
   return self;
 }
 
 - (instancetype)initWithNetworkAdapter:(id<SKNetworkAdapterDelegate>)adapter {
-  if (self = [super initWithQueue:std::make_shared<facebook::sonar::GCDQueue>(dispatch_queue_create("com.sonarkit.network.buffer", DISPATCH_QUEUE_SERIAL))]) {
+  if (self = [super initWithQueue:dispatch_queue_create("com.sonarkit.network.buffer", DISPATCH_QUEUE_SERIAL)]) {
     adapter.delegate = self;
     _adapter = adapter;
   }
@@ -35,7 +35,7 @@
 }
 
 - (instancetype)initWithNetworkAdapter:(id<SKNetworkAdapterDelegate>)adapter queue:(dispatch_queue_t)queue; {
-  if (self = [super initWithQueue:std::make_shared<facebook::sonar::GCDQueue>(queue)]) {
+  if (self = [super initWithQueue:queue]) {
     adapter.delegate = self;
     _adapter = adapter;
   }

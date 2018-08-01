@@ -1,0 +1,58 @@
+PODS:
+  - boost-for-react-native (1.63.0)
+  - CocoaAsyncSocket (7.6.3)
+  - CocoaLibEvent (1.0.0)
+  - DoubleConversion (1.1.5)
+  - Folly (1.0.0):
+    - boost-for-react-native
+    - CocoaLibEvent (~> 1.0)
+    - DoubleConversion
+    - glog
+    - OpenSSL-Static (= 1.0.2.c1)
+  - glog (0.3.4)
+  - OpenSSL-Static (1.0.2.c1)
+  - PeerTalk (0.0.2)
+  - RSocket (0.10.0):
+    - Folly
+  - Sonar (0.0.1):
+    - Folly
+    - RSocket
+
+DEPENDENCIES:
+  - CocoaAsyncSocket (~> 7.6)
+  - DoubleConversion (~> 1.1)
+  - Folly (~> 1.0)
+  - glog (~> 0.3)
+  - PeerTalk (~> 0.0)
+  - RSocket (~> 0.10)
+  - Sonar (~> 0.0.1)
+
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - boost-for-react-native
+    - CocoaAsyncSocket
+    - CocoaLibEvent
+    - DoubleConversion
+    - glog
+    - OpenSSL-Static
+  https://github.com/facebook/Sonar.git:
+    - Folly
+    - PeerTalk
+    - RSocket
+    - Sonar
+
+SPEC CHECKSUMS:
+  boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
+  CocoaAsyncSocket: eafaa68a7e0ec99ead0a7b35015e0bf25d2c8987
+  CocoaLibEvent: 2fab71b8bd46dd33ddb959f7928ec5909f838e3f
+  DoubleConversion: e22e0762848812a87afd67ffda3998d9ef29170c
+  Folly: ac702dfbe9294be1002f9cddaa0c2ddb99b16288
+  glog: 1de0bb937dccdc981596d3b5825ebfb765017ded
+  OpenSSL-Static: bd17e34564a8591ad76b740318683a6caa19a13e
+  PeerTalk: 77481b0a8136f226b90ccf828d6061f70139ffde
+  RSocket: 4fdb7e562db30a2d4fceddefdc601749ffc9ebe2
+  Sonar: 38a48b88369cfa48f1a36150d57e2a72ef6fd33c
+
+PODFILE CHECKSUM: d3418576aca52cddf5a9c1c7f61e1b7c606caba4
+
+COCOAPODS: 1.5.2
