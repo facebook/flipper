@@ -35,23 +35,25 @@ import debounce from 'lodash.debounce';
 
 export type InspectorState = {|
   initialised: boolean,
-  AXinitialised: boolean,
   selected: ?ElementID,
-  AXselected: ?ElementID,
-  AXfocused: ?ElementID,
   root: ?ElementID,
-  AXroot: ?ElementID,
   elements: {[key: ElementID]: Element},
-  AXelements: {[key: ElementID]: Element},
   isSearchActive: boolean,
-  inAXMode: boolean,
   searchResults: ?ElementSearchResultSet,
   outstandingSearchQuery: ?string,
+  // properties for ax mode
+  AXinitialised: boolean,
+  AXselected: ?ElementID,
+  AXfocused: ?ElementID,
+  AXroot: ?ElementID,
+  AXelements: {[key: ElementID]: Element},
+  inAXMode: boolean,
   AXtoNonAXMapping: {[key: ElementID]: ElementID},
 |};
 
 type SelectElementArgs = {|
   key: ElementID,
+  AXkey: ElementID,
 |};
 
 type ExpandElementArgs = {|
@@ -82,6 +84,11 @@ type SetRootArgs = {|
 
 type GetNodesResult = {|
   elements: Array<Element>,
+|};
+
+type GetNodesOptions = {|
+  force: boolean,
+  ax: boolean,
 |};
 
 type SearchResultTree = {|
@@ -160,53 +167,28 @@ export default class Layout extends SonarPlugin<InspectorState> {
 
   state = {
     elements: {},
-    AXelements: {},
     initialised: false,
-    AXinitialised: false,
     isSearchActive: false,
-    inAXMode: false,
     root: null,
-    AXroot: null,
     selected: null,
-    AXselected: null,
-    AXfocused: null,
     searchResults: null,
     outstandingSearchQuery: null,
+    // properties for ax mode
+    inAXMode: false,
+    AXelements: {},
+    AXinitialised: false,
+    AXroot: null,
+    AXselected: null,
+    AXfocused: null,
     AXtoNonAXMapping: {},
   };
 
   reducers = {
-    SelectElement(state: InspectorState, {key}: SelectElementArgs) {
-      const linkedAXNode =
-        state.elements[key] &&
-        state.elements[key].extraInfo &&
-        state.elements[key].extraInfo.linkedAXNode;
-
-      // element only in main tree with linkedAXNode selected
-      if (linkedAXNode) {
-        return {
-          selected: key,
-          AXselected: linkedAXNode,
-        };
-
-        // element only in AX tree with linked nonAX element selected
-      } else if (
-        (!state.elements[key] ||
-          state.elements[key].name === 'ComponentHost') &&
-        state.AXtoNonAXMapping[key]
-      ) {
-        return {
-          selected: state.AXtoNonAXMapping[key],
-          AXselected: key,
-        };
-
-        // keys are same for both trees or 'linked' element does not exist
-      } else {
-        return {
-          selected: key,
-          AXselected: key,
-        };
-      }
+    SelectElement(state: InspectorState, {key, AXkey}: SelectElementArgs) {
+      return {
+        selected: key,
+        AXselected: AXkey,
+      };
     },
 
     ExpandElement(state: InspectorState, {expand, key}: ExpandElementArgs) {
@@ -215,13 +197,6 @@ export default class Layout extends SonarPlugin<InspectorState> {
           ...state.elements,
           [key]: {
             ...state.elements[key],
-            expanded: expand,
-          },
-        },
-        AXelements: {
-          ...state.AXelements,
-          [key]: {
-            ...state.AXelements[key],
             expanded: expand,
           },
         },
@@ -301,7 +276,7 @@ export default class Layout extends SonarPlugin<InspectorState> {
       let updatedFocus = forFocusEvent ? null : state.AXfocused;
 
       for (const element of elements) {
-        if (element.extraInfo.focused) {
+        if (element.extraInfo && element.extraInfo.focused) {
           updatedFocus = element.id;
         }
         const current = updatedElements[element.id] || {};
@@ -447,6 +422,47 @@ export default class Layout extends SonarPlugin<InspectorState> {
     return elements;
   }
 
+  axEnabled(): boolean {
+    // only visible internally for Android clients
+    return AXToggleButtonEnabled && this.realClient.query.os === 'Android';
+  }
+
+  initAX() {
+    this.client.call('getAXRoot').then((element: Element) => {
+      this.dispatchAction({elements: [element], type: 'UpdateAXElements'});
+      this.dispatchAction({root: element.id, type: 'SetAXRoot'});
+      this.performInitialExpand(element, true).then(() => {
+        this.setState({AXinitialised: true});
+      });
+    });
+
+    this.client.subscribe('axFocusEvent', (focusEvent: AXFocusEventResult) => {
+      // if focusing, need to update all elements in the tree because
+      // we don't know which one now has focus
+      const keys = focusEvent.isFocus ? Object.keys(this.state.AXelements) : [];
+
+      // if unfocusing and currently focused element exists, update only the
+      // focused element (and only if it is loaded in tree)
+      if (
+        !focusEvent.isFocus &&
+        this.state.AXfocused &&
+        this.state.AXelements[this.state.AXfocused]
+      ) {
+        keys.push(this.state.AXfocused);
+      }
+
+      this.getNodes(keys, {force: true, ax: true}).then(
+        (elements: Array<Element>) => {
+          this.dispatchAction({
+            elements,
+            forFocusEvent: true,
+            type: 'UpdateAXElements',
+          });
+        },
+      );
+    });
+  }
+
   init() {
     performance.mark('LayoutInspectorInitialize');
     this.client.call('getRoot').then((element: Element) => {
@@ -456,44 +472,6 @@ export default class Layout extends SonarPlugin<InspectorState> {
         this.props.logger.trackTimeSince('LayoutInspectorInitialize');
         this.setState({initialised: true});
       });
-    });
-
-    if (AXToggleButtonEnabled) {
-      this.client.call('getAXRoot').then((element: Element) => {
-        this.dispatchAction({elements: [element], type: 'UpdateAXElements'});
-        this.dispatchAction({root: element.id, type: 'SetAXRoot'});
-        this.performInitialExpand(element, true).then(() => {
-          this.setState({AXinitialised: true});
-        });
-      });
-    }
-
-    this.client.subscribe('axFocusEvent', (focusEvent: AXFocusEventResult) => {
-      if (AXToggleButtonEnabled) {
-        // if focusing, need to update all elements in the tree because
-        // we don't know which one now has focus
-        const keys = focusEvent.isFocus
-          ? Object.keys(this.state.AXelements)
-          : [];
-
-        // if unfocusing and currently focused element exists, update only the
-        // focused element (and only if it is loaded in tree)
-        if (
-          !focusEvent.isFocus &&
-          this.state.AXfocused &&
-          this.state.AXelements[this.state.AXfocused]
-        ) {
-          keys.push(this.state.AXfocused);
-        }
-
-        this.getNodes(keys, true, true).then((elements: Array<Element>) => {
-          this.dispatchAction({
-            elements,
-            forFocusEvent: true,
-            type: 'UpdateAXElements',
-          });
-        });
-      }
     });
 
     this.client.subscribe(
@@ -530,6 +508,10 @@ export default class Layout extends SonarPlugin<InspectorState> {
         },
       );
     });
+
+    if (this.axEnabled()) {
+      this.initAX();
+    }
   }
 
   invalidate(ids: Array<ElementID>): Promise<Array<Element>> {
@@ -538,53 +520,57 @@ export default class Layout extends SonarPlugin<InspectorState> {
     }
 
     const ax = this.state.inAXMode;
-    return this.getNodes(ids, true, ax).then((elements: Array<Element>) => {
-      const children = elements
-        .filter(element => {
-          const prev = (ax ? this.state.AXelements : this.state.elements)[
-            element.id
-          ];
-          return prev && prev.expanded;
-        })
-        .map(element => element.children)
-        .reduce((acc, val) => acc.concat(val), []);
+    return this.getNodes(ids, {force: true, ax}).then(
+      (elements: Array<Element>) => {
+        const children = elements
+          .filter(element => {
+            const prev = (ax ? this.state.AXelements : this.state.elements)[
+              element.id
+            ];
+            return prev && prev.expanded;
+          })
+          .map(element => element.children)
+          .reduce((acc, val) => acc.concat(val), []);
 
-      return Promise.all([elements, this.invalidate(children)]).then(arr => {
-        return arr.reduce((acc, val) => acc.concat(val), []);
-      });
-    });
+        return Promise.all([elements, this.invalidate(children)]).then(arr => {
+          return arr.reduce((acc, val) => acc.concat(val), []);
+        });
+      },
+    );
   }
 
   getNodesAndDirectChildren(
     ids: Array<ElementID>,
     ax: boolean, // always false at the moment bc only used for select
   ): Promise<Array<Element>> {
-    return this.getNodes(ids, false, ax).then((elements: Array<Element>) => {
-      const children = elements
-        .map(element => element.children)
-        .reduce((acc, val) => acc.concat(val), []);
+    return this.getNodes(ids, {force: false, ax}).then(
+      (elements: Array<Element>) => {
+        const children = elements
+          .map(element => element.children)
+          .reduce((acc, val) => acc.concat(val), []);
 
-      return Promise.all([elements, this.getNodes(children, false, ax)]).then(
-        arr => {
+        return Promise.all([
+          elements,
+          this.getNodes(children, {force: false, ax}),
+        ]).then(arr => {
           return arr.reduce((acc, val) => acc.concat(val), []);
-        },
-      );
-    });
+        });
+      },
+    );
   }
 
   getChildren(key: ElementID, ax: boolean): Promise<Array<Element>> {
     return this.getNodes(
       (ax ? this.state.AXelements : this.state.elements)[key].children,
-      false,
-      ax,
+      {force: false, ax},
     );
   }
 
   getNodes(
     ids: Array<ElementID> = [],
-    force: boolean,
-    ax: boolean,
+    options: GetNodesOptions,
   ): Promise<Array<Element>> {
+    const {force, ax} = options;
     if (!force) {
       ids = ids.filter(id => {
         return (
@@ -639,7 +625,7 @@ export default class Layout extends SonarPlugin<InspectorState> {
         if (this.state.inAXMode && !ax) {
           // expand child wrapper elements that aren't in the AX tree (e.g. fragments)
           for (const childElem of elements) {
-            if (childElem.extraInfo.nonAXWithAXChild) {
+            if (childElem.extraInfo && childElem.extraInfo.nonAXWithAXChild) {
               this.setElementExpanded(childElem.id, true, false);
             }
           }
@@ -707,15 +693,51 @@ export default class Layout extends SonarPlugin<InspectorState> {
   };
 
   onElementSelected = debounce((key: ElementID) => {
-    this.dispatchAction({key, type: 'SelectElement'});
-    this.client.send('setHighlighted', {id: key});
-    this.getNodes([key], true, false).then((elements: Array<Element>) => {
-      this.dispatchAction({elements, type: 'UpdateElements'});
+    let finalKey = key;
+    let finalAXkey = null;
+
+    if (this.axEnabled()) {
+      const linkedAXNode =
+        this.state.elements[key] &&
+        this.state.elements[key].extraInfo &&
+        this.state.elements[key].extraInfo.linkedAXNode;
+
+      // element only in main tree with linkedAXNode selected
+      if (linkedAXNode) {
+        finalAXkey = linkedAXNode;
+
+        // element only in AX tree with linked nonAX (litho) element selected
+      } else if (
+        (!this.state.elements[key] ||
+          this.state.elements[key].name === 'ComponentHost') &&
+        this.state.AXtoNonAXMapping[key]
+      ) {
+        finalKey = this.state.AXtoNonAXMapping[key];
+        finalAXkey = key;
+
+        // keys are same for both trees or 'linked' element does not exist
+      } else {
+        finalAXkey = key;
+      }
+    }
+
+    this.dispatchAction({
+      key: finalKey,
+      AXkey: finalAXkey,
+      type: 'SelectElement',
     });
-    if (AXToggleButtonEnabled) {
-      this.getNodes([key], true, true).then((elements: Array<Element>) => {
-        this.dispatchAction({elements, type: 'UpdateAXElements'});
-      });
+    this.client.send('setHighlighted', {id: key});
+    this.getNodes([finalKey], {force: true, ax: false}).then(
+      (elements: Array<Element>) => {
+        this.dispatchAction({elements, type: 'UpdateElements'});
+      },
+    );
+    if (this.axEnabled() && finalAXkey) {
+      this.getNodes([finalAXkey], {force: true, ax: true}).then(
+        (elements: Array<Element>) => {
+          this.dispatchAction({elements, type: 'UpdateAXElements'});
+        },
+      );
     }
   });
 
@@ -795,7 +817,7 @@ export default class Layout extends SonarPlugin<InspectorState> {
               }
             />
           </SearchIconContainer>
-          {AXToggleButtonEnabled ? (
+          {this.axEnabled() ? (
             <SearchIconContainer
               onClick={this.onToggleAccessibility}
               role="button"

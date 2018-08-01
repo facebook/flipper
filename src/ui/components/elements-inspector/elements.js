@@ -39,7 +39,8 @@ const ElementsRowContainer = ContextMenu.extends(
         return '';
       }
     },
-    color: props => (props.selected ? colors.white : colors.grapeDark3),
+    color: props =>
+      props.selected || props.focused ? colors.white : colors.grapeDark3,
     flexShrink: 0,
     flexWrap: 'nowrap',
     height: ROW_HEIGHT,
@@ -66,7 +67,7 @@ const ElementsRowContainer = ContextMenu.extends(
     },
   },
   {
-    ignoreAttributes: ['level', 'selected', 'even'],
+    ignoreAttributes: ['level', 'selected', 'even', 'focused'],
   },
 );
 
@@ -132,9 +133,7 @@ class PartialHighlight extends PureComponent<{
   static HighlightedText = styled.text({
     backgroundColor: '#ffff33',
     color: props =>
-      props.selected || props.focused
-        ? `${colors.grapeDark3} !important`
-        : 'auto',
+      props.selected ? `${colors.grapeDark3} !important` : 'auto',
   });
 
   render() {
@@ -174,7 +173,6 @@ class ElementsRowAttribute extends PureComponent<{
   value: string,
   matchingSearchQuery: ?string,
   selected: boolean,
-  focused: boolean,
 }> {
   render() {
     const {name, value, matchingSearchQuery, selected} = this.props;
@@ -296,7 +294,7 @@ class ElementsRow extends PureComponent<ElementsRowProps, ElementsRowState> {
           <Glyph
             size={8}
             name={element.expanded ? 'chevron-down' : 'chevron-right'}
-            color={selected ? 'white' : colors.light80}
+            color={selected || focused ? 'white' : colors.light80}
           />
         </span>
       );
