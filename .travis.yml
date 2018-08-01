@@ -25,7 +25,7 @@ matrix:
           skip-cleanup: true
           github-token: $GITHUB_TOKEN
           fqdn: fbflipper.com
-          local-dir: website/build/sonar
+          local-dir: website/build/flipper
           keep-history: true
           on:
             branch: master
