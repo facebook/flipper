@@ -6,21 +6,21 @@
 //  Copyright © 2018 Facebook. All rights reserved.
 //
 
-#import "SKResonseInfo.h"
+#import "SKResponseInfo.h"
 
-@implementation SKResonseInfo
+@implementation SKResponseInfo
 
 - (instancetype)initWithIndentifier:(int64_t)identifier timestamp:(uint64_t)timestamp response:(NSURLResponse *)response data:(NSData *)data {
   if(self = [super init]) {
     _identifier = identifier;
     _timestamp = timestamp;
     _response = response;
-    _body = [SKResponseInfo shouldStripReponseBody] ? nil : [data base64EncodedStringWithOptions: 0];
+    _body = [SKResponseInfo shouldStripReponseBodyWithResponse:response] ? nil : [data base64EncodedStringWithOptions: 0];
   }
   return self;
 }
 
-+ (BOOL) shouldStripReponseBody {
++ (BOOL) shouldStripReponseBodyWithResponse:(NSURLResponse *)response {
   NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse*)response;
   NSString *contentType = httpResponse.allHeaderFields[@"content-type"];
   if (!contentType) {

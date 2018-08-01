@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface SKResonseInfo : NSObject
+@interface SKResponseInfo : NSObject
 
 @property(assign, readwrite) int64_t identifier;
 @property(assign, readwrite) uint64_t timestamp;

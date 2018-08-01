@@ -45,7 +45,7 @@
 #pragma mark - SKNetworkReporterDelegate
 
 
-- (void)didObserveRequest:(RequestInfo)request;
+- (void)didObserveRequest:(RequestInfo *)request;
 {
   NSMutableArray<NSDictionary<NSString *, id> *> *headers = [NSMutableArray new];
   for (NSString *key in [request.request.allHTTPHeaderFields allKeys]) {

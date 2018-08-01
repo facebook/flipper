@@ -84,6 +84,8 @@
 		537A855E21123223004A52BB /* SKDescriptorMapper.h in Headers */ = {isa = PBXBuildFile; fileRef = 537A850A21123223004A52BB /* SKDescriptorMapper.h */; };
 		537A855F21123223004A52BB /* SKInvalidation.m in Sources */ = {isa = PBXBuildFile; fileRef = 537A850B21123223004A52BB /* SKInvalidation.m */; };
 		537A856021123223004A52BB /* SKTapListener.h in Headers */ = {isa = PBXBuildFile; fileRef = 537A850C21123223004A52BB /* SKTapListener.h */; };
+		537A856921123BDB004A52BB /* SKRequestInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 537A856721123BDB004A52BB /* SKRequestInfo.h */; };
+		537A856A21123BDB004A52BB /* SKRequestInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 537A856821123BDB004A52BB /* SKRequestInfo.m */; };
 		53D19A2620A4BABA00A371E3 /* SonarClient.mm in Sources */ = {isa = PBXBuildFile; fileRef = 53D19A1220A4BAB900A371E3 /* SonarClient.mm */; };
 		53D19A2820A4BABA00A371E3 /* SonarUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 53D19A1420A4BAB900A371E3 /* SonarUtil.m */; };
 		53D19A2F20A4BABA00A371E3 /* SKPortForwardingServer.m in Sources */ = {isa = PBXBuildFile; fileRef = 53D19A1D20A4BABA00A371E3 /* SKPortForwardingServer.m */; };
@@ -102,6 +104,8 @@
 		53D4C50F20A5B72800613A96 /* SKPortForwardingServer.h in Headers */ = {isa = PBXBuildFile; fileRef = 53D19A1B20A4BABA00A371E3 /* SKPortForwardingServer.h */; };
 		53D4C51020A5B72800613A96 /* SKPortForwardingCommon.h in Headers */ = {isa = PBXBuildFile; fileRef = 53D19A1C20A4BABA00A371E3 /* SKPortForwardingCommon.h */; };
 		53D4C51220A5B89900613A96 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 53D4C51120A5B89900613A96 /* Foundation.framework */; };
+		53EF578A211240540072E1EA /* SKResponseInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 53EF5788211240540072E1EA /* SKResponseInfo.h */; };
+		53EF578B211240540072E1EA /* SKResponseInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 53EF5789211240540072E1EA /* SKResponseInfo.m */; };
 		6AE55F0A77A5644AADF2CEA6 /* libPods-SonarKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 104CB87D17FDFDC934630C14 /* libPods-SonarKit.a */; };
 /* End PBXBuildFile section */
 
@@ -184,6 +188,8 @@
 		537A850A21123223004A52BB /* SKDescriptorMapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKDescriptorMapper.h; sourceTree = "<group>"; };
 		537A850B21123223004A52BB /* SKInvalidation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKInvalidation.m; sourceTree = "<group>"; };
 		537A850C21123223004A52BB /* SKTapListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKTapListener.h; sourceTree = "<group>"; };
+		537A856721123BDB004A52BB /* SKRequestInfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SKRequestInfo.h; sourceTree = "<group>"; };
+		537A856821123BDB004A52BB /* SKRequestInfo.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SKRequestInfo.m; sourceTree = "<group>"; };
 		53D19A0520A4BA3600A371E3 /* SonarKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SonarKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		53D19A0920A4BA3600A371E3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		53D19A1020A4BAB900A371E3 /* SKMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKMacros.h; sourceTree = "<group>"; };
@@ -204,6 +210,8 @@
 		53D3BBD620C629230022EB45 /* FBCxxFollyDynamicConvert.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = FBCxxFollyDynamicConvert.mm; sourceTree = "<group>"; };
 		53D3BBD720C629230022EB45 /* FBCxxFollyDynamicConvert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FBCxxFollyDynamicConvert.h; sourceTree = "<group>"; };
 		53D4C51120A5B89900613A96 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		53EF5788211240540072E1EA /* SKResponseInfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SKResponseInfo.h; sourceTree = "<group>"; };
+		53EF5789211240540072E1EA /* SKResponseInfo.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SKResponseInfo.m; sourceTree = "<group>"; };
 		5B3C0104984F1A2F624E5394 /* Pods-SonarKit.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SonarKit.release.xcconfig"; path = "Pods/Target Support Files/Pods-SonarKit/Pods-SonarKit.release.xcconfig"; sourceTree = "<group>"; };
 		C6253FA5661121EDD200B8A9 /* Pods-SonarKit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SonarKit.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SonarKit/Pods-SonarKit.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -257,6 +265,10 @@
 				537A84B421123223004A52BB /* SKNetworkReporter.h */,
 				537A84B521123223004A52BB /* SKBufferingPlugin.mm */,
 				537A84B621123223004A52BB /* SKBufferingPlugin.h */,
+				537A856721123BDB004A52BB /* SKRequestInfo.h */,
+				537A856821123BDB004A52BB /* SKRequestInfo.m */,
+				53EF5788211240540072E1EA /* SKResponseInfo.h */,
+				53EF5789211240540072E1EA /* SKResponseInfo.m */,
 			);
 			path = SonarKitNetworkPlugin;
 			sourceTree = "<group>";
@@ -505,6 +517,7 @@
 				537A855621123223004A52BB /* SKApplicationDescriptor.h in Headers */,
 				53D4C50720A5B72800613A96 /* SonarCppBridgingConnection.h in Headers */,
 				537A852C21123223004A52BB /* CKInsetComponent+Sonar.h in Headers */,
+				537A856921123BDB004A52BB /* SKRequestInfo.h in Headers */,
 				537A855721123223004A52BB /* SKTapListenerImpl.h in Headers */,
 				537A851C21123223004A52BB /* SKIOSNetworkAdapter.h in Headers */,
 				537A855121123223004A52BB /* SKButtonDescriptor.h in Headers */,
@@ -513,6 +526,7 @@
 				53D4C50920A5B72800613A96 /* SKMacros.h in Headers */,
 				537A854D21123223004A52BB /* SKViewControllerDescriptor.h in Headers */,
 				53D4C50A20A5B72800613A96 /* SonarClient.h in Headers */,
+				53EF578A211240540072E1EA /* SKResponseInfo.h in Headers */,
 				537A854321123223004A52BB /* SKYogaKitHelper.h in Headers */,
 				537A854121123223004A52BB /* SKHiddenWindow.h in Headers */,
 				537A855421123223004A52BB /* SKViewDescriptor.h in Headers */,
@@ -566,6 +580,7 @@
 				TargetAttributes = {
 					53D19A0420A4BA3600A371E3 = {
 						CreatedOnToolsVersion = 9.2;
+						LastSwiftMigration = 0920;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -632,6 +647,7 @@
 				537A855321123223004A52BB /* SKViewControllerDescriptor.m in Sources */,
 				537A852F21123223004A52BB /* SKComponentHostingViewDescriptor.mm in Sources */,
 				537A854E21123223004A52BB /* SKScrollViewDescriptor.m in Sources */,
+				537A856A21123BDB004A52BB /* SKRequestInfo.m in Sources */,
 				537A852821123223004A52BB /* Utils.mm in Sources */,
 				537A853921123223004A52BB /* SKNamed.mm in Sources */,
 				537A854F21123223004A52BB /* SKButtonDescriptor.mm in Sources */,
@@ -641,6 +657,7 @@
 				537A854B21123223004A52BB /* SKDescriptorMapper.mm in Sources */,
 				537A855521123223004A52BB /* SKViewDescriptor.mm in Sources */,
 				537A854421123223004A52BB /* SKSwizzle.mm in Sources */,
+				53EF578B211240540072E1EA /* SKResponseInfo.m in Sources */,
 				537A851121123223004A52BB /* SKBufferingPlugin.mm in Sources */,
 				537A855821123223004A52BB /* UIColor+SKSonarValueCoder.mm in Sources */,
 				537A854A21123223004A52BB /* SKObject.mm in Sources */,
@@ -794,6 +811,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
 				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = YES;
@@ -857,10 +875,13 @@
 				PRODUCT_BUNDLE_IDENTIFIER = FB.SonarKit;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "";
 				"USER_HEADER_SEARCH_PATHS[arch=*]" = "${SRCROOT}/SonarKit/** ${SRCROOT}/../xplat/**";
 				USE_HEADERMAP = YES;
+				VALID_ARCHS = "armv7s armv7 arm64";
 			};
 			name = Debug;
 		};
@@ -871,6 +892,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
 				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = YES;
@@ -930,9 +952,11 @@
 				PRODUCT_BUNDLE_IDENTIFIER = FB.SonarKit;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "";
 				USE_HEADERMAP = YES;
+				VALID_ARCHS = "armv7s armv7 arm64";
 			};
 			name = Release;
 		};

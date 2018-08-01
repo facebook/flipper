@@ -6,8 +6,8 @@ Pod::Spec.new do |spec|
   spec.homepage = 'https://github.com/facebook/sonar'
   spec.summary = 'SonarKit core cpp code with network implementation'
   spec.authors = 'Facebook'
-  spec.source = { :git => 'https://github.com/facebook/Sonar.git',
-                  :tag => 'v'+sonarkit_version }
+  spec.source = { :git => 'https://github.com/priteshrnandgaonkar/Sonar.git',
+                  :branch => 'update-sonarkit-proj' }
   spec.module_name = 'Sonar'
   spec.public_header_files = 'xplat/Sonar/*.h'
   spec.source_files = 'xplat/Sonar/*.{h,cpp,m,mm}'
