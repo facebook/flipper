@@ -39,7 +39,7 @@ Promise.all(
           new Promise((resolve, reject) => {
             const cwd = pkg.replace('/package.json', '');
             exec(
-              [YARN_PATH, '--mutex', 'file'].join(' '),
+              YARN_PATH,
               {
                 cwd,
               },
