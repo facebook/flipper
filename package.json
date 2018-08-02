@@ -23,7 +23,7 @@
   },
   "devDependencies": {
     "babel-eslint": "^8.2.1",
-    "electron": "^2.0.4",
+    "electron": "^3.0.0-beta.4",
     "electron-builder": "^19.49.0",
     "eslint": "^4.15.0",
     "eslint-config-fbjs": "^2.0.1",
