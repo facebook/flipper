@@ -24,6 +24,7 @@ public class LithoViewDescriptor extends NodeDescriptor<LithoView> {
           @Override
           public void onDirtyMount(LithoView view) {
             invalidate(view);
+            invalidateAX(view);
           }
         });
   }

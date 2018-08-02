@@ -22,7 +22,7 @@ import javax.annotation.Nullable;
  * data can be exposed to the inspector.
  */
 public abstract class NodeDescriptor<T> {
-  private SonarConnection mConnection;
+  protected SonarConnection mConnection;
   private DescriptorMapping mDescriptorMapping;
 
   void setConnection(SonarConnection connection) {
@@ -58,6 +58,26 @@ public abstract class NodeDescriptor<T> {
                   .build();
           SonarObject params = new SonarObject.Builder().put("nodes", array).build();
           mConnection.send("invalidate", params);
+        }
+      }.run();
+    }
+  }
+
+  /**
+   * Invalidate a node in the ax tree. This tells Sonar that this node is no longer valid and its properties and/or
+   * children have changed. This will trigger Sonar to re-query this node getting any new data.
+   */
+  protected final void invalidateAX(final T node) {
+    if (mConnection != null) {
+      new ErrorReportingRunnable() {
+        @Override
+        protected void runOrThrow() throws Exception {
+          SonarArray array =
+                  new SonarArray.Builder()
+                          .put(new SonarObject.Builder().put("id", getId(node)).build())
+                          .build();
+          SonarObject params = new SonarObject.Builder().put("nodes", array).build();
+          mConnection.send("invalidateAX", params);
         }
       }.run();
     }

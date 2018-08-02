@@ -27,6 +27,8 @@ import com.facebook.sonar.plugins.common.MainThreadSonarReceiver;
 import com.facebook.sonar.plugins.console.iface.ConsoleCommandReceiver;
 import com.facebook.sonar.plugins.console.iface.NullScriptingEnvironment;
 import com.facebook.sonar.plugins.console.iface.ScriptingEnvironment;
+import com.facebook.sonar.plugins.inspector.descriptors.ApplicationDescriptor;
+
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
@@ -153,6 +155,9 @@ public class InspectorSonarPlugin implements SonarPlugin {
       mHighlightedId = null;
     }
 
+    // remove any added accessibility delegates
+    ApplicationDescriptor.clearEditedDelegates();
+
     mObjectTracker.clear();
     mDescriptorMapping.onDisconnect();
     mConnection = null;
@@ -172,41 +177,8 @@ public class InspectorSonarPlugin implements SonarPlugin {
         @Override
         public void onReceiveOnMainThread(SonarObject params, SonarResponder responder)
             throws Exception {
-          final List<View> viewRoots = mApplication.getViewRoots();
-
-          ViewGroup root = null;
-          for (int i = viewRoots.size() - 1; i >= 0; i--) {
-            if (viewRoots.get(i) instanceof ViewGroup) {
-              root = (ViewGroup) viewRoots.get(i);
-              break;
-            }
-          }
-
-          if (root != null) {
-
-            // unlikely, but check to make sure accessibility functionality doesn't change
-            if (!ViewCompat.hasAccessibilityDelegate(root)) {
-              
-              // add delegate to root to catch accessibility events so we can update focus in sonar
-              root.setAccessibilityDelegate(new View.AccessibilityDelegate() {
-
-                @Override
-                public boolean onRequestSendAccessibilityEvent(ViewGroup host, View child, AccessibilityEvent event) {
-                  int eventType = event.getEventType();
-                  if (eventType == AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED || eventType == AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUS_CLEARED) {
-                    mConnection.send("axFocusEvent",
-                            new SonarObject.Builder()
-                                    .put("isFocus", eventType == AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED)
-                                    .build());
-                  }
-
-                  return super.onRequestSendAccessibilityEvent(host, child, event);
-                }
-              });
-            }
-
-            responder.success(getAXNode(trackObject(root)));
-          }
+          // applicationWrapper is not used by accessibility, but is a common ancestor for multiple view roots
+          responder.success(getAXNode(trackObject(mApplication)));
         }
       };
 
@@ -245,21 +217,42 @@ public class InspectorSonarPlugin implements SonarPlugin {
           final SonarArray ids = params.getArray("ids");
           final SonarArray.Builder result = new SonarArray.Builder();
 
+          // getNodes called to refresh accessibility focus
+          final boolean forFocusEvent = params.getBoolean("forFocusEvent");
+
           for (int i = 0, count = ids.length(); i < count; i++) {
             final String id = ids.getString(i);
             final SonarObject node = getAXNode(id);
-            if (node != null) {
-              result.put(node);
-            } else {
+
+            // sent request for non-existent node, potentially in error
+            if (node == null) {
+
+              // some nodes may be null since we are searching through all current and previous known nodes
+              if (forFocusEvent) {
+                continue;
+              }
+
               responder.error(
-                  new SonarObject.Builder()
-                      .put("message", "No node with given id")
-                      .put("id", id)
-                      .build());
+                      new SonarObject.Builder()
+                              .put("message", "No node with given id")
+                              .put("id", id)
+                              .build());
               return;
+            } else {
+
+              // only need to get the focused node in this case
+              if (forFocusEvent) {
+                if (node.getObject("extraInfo").getBoolean("focused")) {
+                  result.put(node);
+                  break;
+                }
+
+              // normal getNodes call, put any nodes in result
+              } else {
+                result.put(node);
+              }
             }
           }
-
           responder.success(new SonarObject.Builder().put("elements", result).build());
         }
       };

@@ -89,6 +89,7 @@ type GetNodesResult = {|
 type GetNodesOptions = {|
   force: boolean,
   ax: boolean,
+  forFocusEvent?: boolean,
 |};
 
 type SearchResultTree = {|
@@ -436,22 +437,22 @@ export default class Layout extends SonarPlugin<InspectorState> {
       });
     });
 
-    this.client.subscribe('axFocusEvent', (focusEvent: AXFocusEventResult) => {
+    this.client.subscribe('axFocusEvent', ({isFocus}: AXFocusEventResult) => {
       // if focusing, need to update all elements in the tree because
       // we don't know which one now has focus
-      const keys = focusEvent.isFocus ? Object.keys(this.state.AXelements) : [];
+      const keys = isFocus ? Object.keys(this.state.AXelements) : [];
 
       // if unfocusing and currently focused element exists, update only the
-      // focused element (and only if it is loaded in tree)
+      // focused element (and only if it is/was loaded in tree)
       if (
-        !focusEvent.isFocus &&
+        !isFocus &&
         this.state.AXfocused &&
         this.state.AXelements[this.state.AXfocused]
       ) {
         keys.push(this.state.AXfocused);
       }
 
-      this.getNodes(keys, {force: true, ax: true}).then(
+      this.getNodes(keys, {force: true, ax: true, forFocusEvent: true}).then(
         (elements: Array<Element>) => {
           this.dispatchAction({
             elements,
@@ -461,6 +462,17 @@ export default class Layout extends SonarPlugin<InspectorState> {
         },
       );
     });
+
+    this.client.subscribe(
+      'invalidateAX',
+      ({nodes}: {nodes: Array<{id: ElementID}>}) => {
+        this.invalidate(nodes.map(node => node.id), true).then(
+          (elements: Array<Element>) => {
+            this.dispatchAction({elements, type: 'UpdateAXElements'});
+          },
+        );
+      },
+    );
   }
 
   init() {
@@ -477,14 +489,9 @@ export default class Layout extends SonarPlugin<InspectorState> {
     this.client.subscribe(
       'invalidate',
       ({nodes}: {nodes: Array<{id: ElementID}>}) => {
-        this.invalidate(nodes.map(node => node.id)).then(
+        this.invalidate(nodes.map(node => node.id), false).then(
           (elements: Array<Element>) => {
-            if (this.state.inAXMode) {
-              // to be removed once trees are separate - will have own invalidate
-              this.dispatchAction({elements, type: 'UpdateAXElements'});
-            } else {
-              this.dispatchAction({elements, type: 'UpdateElements'});
-            }
+            this.dispatchAction({elements, type: 'UpdateElements'});
           },
         );
       },
@@ -514,12 +521,11 @@ export default class Layout extends SonarPlugin<InspectorState> {
     }
   }
 
-  invalidate(ids: Array<ElementID>): Promise<Array<Element>> {
+  invalidate(ids: Array<ElementID>, ax: boolean): Promise<Array<Element>> {
     if (ids.length === 0) {
       return Promise.resolve([]);
     }
 
-    const ax = this.state.inAXMode;
     return this.getNodes(ids, {force: true, ax}).then(
       (elements: Array<Element>) => {
         const children = elements
@@ -532,9 +538,11 @@ export default class Layout extends SonarPlugin<InspectorState> {
           .map(element => element.children)
           .reduce((acc, val) => acc.concat(val), []);
 
-        return Promise.all([elements, this.invalidate(children)]).then(arr => {
-          return arr.reduce((acc, val) => acc.concat(val), []);
-        });
+        return Promise.all([elements, this.invalidate(children, ax)]).then(
+          arr => {
+            return arr.reduce((acc, val) => acc.concat(val), []);
+          },
+        );
       },
     );
   }
@@ -570,7 +578,7 @@ export default class Layout extends SonarPlugin<InspectorState> {
     ids: Array<ElementID> = [],
     options: GetNodesOptions,
   ): Promise<Array<Element>> {
-    const {force, ax} = options;
+    const {force, ax, forFocusEvent} = options;
     if (!force) {
       ids = ids.filter(id => {
         return (
@@ -582,7 +590,10 @@ export default class Layout extends SonarPlugin<InspectorState> {
     if (ids.length > 0) {
       performance.mark('LayoutInspectorGetNodes');
       return this.client
-        .call(ax ? 'getAXNodes' : 'getNodes', {ids})
+        .call(ax ? 'getAXNodes' : 'getNodes', {
+          ids,
+          forFocusEvent,
+        })
         .then(({elements}: GetNodesResult) => {
           this.props.logger.trackTimeSince('LayoutInspectorGetNodes');
           return Promise.resolve(elements);

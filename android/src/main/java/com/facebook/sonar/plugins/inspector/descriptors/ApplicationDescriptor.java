@@ -9,14 +9,18 @@
 package com.facebook.sonar.plugins.inspector.descriptors;
 
 import android.app.Activity;
+import android.support.v4.view.ViewCompat;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.accessibility.AccessibilityEvent;
 import com.facebook.sonar.core.SonarDynamic;
 import com.facebook.sonar.core.SonarObject;
 import com.facebook.sonar.plugins.inspector.ApplicationWrapper;
 import com.facebook.sonar.plugins.inspector.Named;
 import com.facebook.sonar.plugins.inspector.NodeDescriptor;
 import com.facebook.sonar.plugins.inspector.Touch;
+
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nullable;
@@ -55,6 +59,50 @@ public class ApplicationDescriptor extends NodeDescriptor<ApplicationWrapper> {
     }
   }
 
+  private static List<ViewGroup> editedDelegates = new ArrayList<>();
+
+  private void setDelegates(ApplicationWrapper node) {
+    clearEditedDelegates();
+
+    for (View view : node.getViewRoots()) {
+      // unlikely, but check to make sure accessibility functionality doesn't change
+      if (view instanceof ViewGroup && !ViewCompat.hasAccessibilityDelegate(view)) {
+
+        // add delegate to root to catch accessibility events so we can update focus in sonar
+        view.setAccessibilityDelegate(new View.AccessibilityDelegate() {
+
+          @Override
+          public boolean onRequestSendAccessibilityEvent(ViewGroup host, View child, AccessibilityEvent event) {
+            if (mConnection != null) {
+
+              int eventType = event.getEventType();
+              if (eventType == AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED) {
+                mConnection.send("axFocusEvent",
+                        new SonarObject.Builder()
+                                .put("isFocus", true)
+                                .build());
+              } else if (eventType == AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUS_CLEARED) {
+                mConnection.send("axFocusEvent",
+                        new SonarObject.Builder()
+                                .put("isFocus", false)
+                                .build());
+              }
+            }
+            return super.onRequestSendAccessibilityEvent(host, child, event);
+          }
+        });
+        editedDelegates.add((ViewGroup) view);
+      }
+    }
+  }
+
+  public static void clearEditedDelegates() {
+    for (ViewGroup viewGroup : editedDelegates) {
+      viewGroup.setAccessibilityDelegate(null);
+    }
+    editedDelegates.clear();
+  }
+
   @Override
   public void init(final ApplicationWrapper node) {
     node.setListener(
@@ -62,6 +110,8 @@ public class ApplicationDescriptor extends NodeDescriptor<ApplicationWrapper> {
           @Override
           public void onActivityStackChanged(List<Activity> stack) {
             invalidate(node);
+            invalidateAX(node);
+            setDelegates(node);
           }
         });
 
@@ -73,6 +123,8 @@ public class ApplicationDescriptor extends NodeDescriptor<ApplicationWrapper> {
             if (connected()) {
               if (key.set(node)) {
                 invalidate(node);
+                invalidateAX(node);
+                setDelegates(node);
               }
               node.postDelayed(this, 1000);
             }
@@ -93,6 +145,11 @@ public class ApplicationDescriptor extends NodeDescriptor<ApplicationWrapper> {
   }
 
   @Override
+  public String getAXName(ApplicationWrapper node) throws Exception {
+    return "Application";
+  }
+
+  @Override
   public int getChildCount(ApplicationWrapper node) {
     return node.getViewRoots().size();
   }
@@ -108,6 +165,11 @@ public class ApplicationDescriptor extends NodeDescriptor<ApplicationWrapper> {
     }
 
     return view;
+  }
+
+  @Override
+  public Object getAXChildAt(ApplicationWrapper node, int index) {
+    return node.getViewRoots().get(index);
   }
 
   @Override

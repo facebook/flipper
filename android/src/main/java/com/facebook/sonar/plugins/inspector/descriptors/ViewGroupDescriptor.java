@@ -73,6 +73,7 @@ public class ViewGroupDescriptor extends NodeDescriptor<ViewGroup> {
             if (connected()) {
               if (key.set(node)) {
                 invalidate(node);
+                invalidateAX(node);
               }
 
               final boolean hasAttachedToWindow =

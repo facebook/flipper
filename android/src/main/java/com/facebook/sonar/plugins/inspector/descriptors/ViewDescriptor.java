@@ -19,6 +19,7 @@ import android.os.Build;
 import android.support.v4.view.MarginLayoutParamsCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.Gravity;
 import android.view.View;
@@ -85,14 +86,19 @@ public class ViewDescriptor extends NodeDescriptor<View> {
   }
 
   @Override
-  public String getAXName(View node) {
+  public String getAXName(View node) throws Exception {
     AccessibilityNodeInfoCompat nodeInfo = ViewAccessibilityHelper.createNodeInfoFromView(node);
-    if (nodeInfo == null) {
-      return "NULL NODEINFO";
+    if (nodeInfo != null) {
+
+      CharSequence name = nodeInfo.getClassName();
+      nodeInfo.recycle();
+
+      if (name != null) {
+        return name.toString();
+      }
     }
-    String name = nodeInfo.getClassName().toString();
-    nodeInfo.recycle();
-    return name;
+    return "NULL NODEINFO OR CLASSNAME";
+
   }
 
   @Override
@@ -418,7 +424,7 @@ public class ViewDescriptor extends NodeDescriptor<View> {
         node.setSelected(value.asBoolean());
         break;
     }
-    invalidate(node);
+    invalidateAX(node);
   }
 
   @Override
