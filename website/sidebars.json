@@ -6,7 +6,8 @@
       "layout-plugin",
       "network-plugin",
       "sandbox-plugin",
-      "shared-preferences-plugin"
+      "shared-preferences-plugin",
+      "leak-canary-plugin"
     ],
     "Plugins: Desktop part": [
       "js-setup",
