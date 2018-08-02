@@ -1,14 +1,8 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 
-
 import UIKit
 
 class NetworkViewController: UIViewController {
-
-
-  override func viewDidLoad() {
-    print("NetworkViewController was called")
-  }
 
   @IBAction func tappedGetAPI(_ sender: UIButton) {
     let getURL = URL(string: "https://demo9512366.mockable.io/FlipperGet")!
