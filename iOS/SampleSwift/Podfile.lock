@@ -67,7 +67,7 @@ SPEC CHECKSUMS:
   PeerTalk: 77481b0a8136f226b90ccf828d6061f70139ffde
   RSocket: 4fdb7e562db30a2d4fceddefdc601749ffc9ebe2
   Sonar: f9f8602746bdc6c4a038049a252b977bc03818f1
-  SonarKit: 51fae9d7c9f5e79b398623ce1eed9b30f8374a42
+  SonarKit: c54c25e388b381bf4eebc60b153eca8fa597ee99
 
 PODFILE CHECKSUM: c8dbcce7fd65e8be6ea20d65c190d42823a48e6c
 
