@@ -23,7 +23,7 @@ class Index extends React.Component {
             <div className="row">
               <a
                 className="btn primary"
-                href="https://www.facebook.com/flipper/public/mac">
+                href="https://www.facebook.com/fbflipper/public/mac">
                 Download
               </a>
               <a className="btn" href="/docs/understand.html">
