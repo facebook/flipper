@@ -38,9 +38,9 @@ export default class AutoUpdateVersion extends Component<{}, State> {
 
   componentDidMount() {
     if (isProduction()) {
-      remote.autoUpdater.setFeedURL(
-        `${config.updateServer}?version=${version}`,
-      );
+      remote.autoUpdater.setFeedURL({
+        url: `${config.updateServer}?version=${version}`,
+      });
 
       remote.autoUpdater.on('update-downloaded', () => {
         this.setState({updater: 'update-downloaded'});

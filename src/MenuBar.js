@@ -97,10 +97,13 @@ export function setupMenuBar() {
       const menu = applicationMenu.items.find(
         menuItem => menuItem.label === topLevelMenu,
       );
-      const menuItem = menu.submenu.items.find(
-        menuItem => menuItem.label === label,
-      );
-      menuItems.set(action, menuItem);
+      if (menu) {
+        // $FlowFixMe submenu is missing in electron API spec
+        const menuItem = menu.submenu.items.find(
+          menuItem => menuItem.label === label,
+        );
+        menuItems.set(action, menuItem);
+      }
     }
   });
 

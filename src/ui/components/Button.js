@@ -281,7 +281,8 @@ class Button extends styled.StylableComponent<
         position.x = parseInt(left, 10);
         position.y = parseInt(bottom + 6, 10);
       }
-      menu.popup(electron.remote.getCurrentWindow(), {
+      menu.popup({
+        window: electron.remote.getCurrentWindow(),
         async: true,
         ...position,
       });

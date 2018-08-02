@@ -161,7 +161,8 @@ export default class FilterToken extends PureComponent<Props> {
     }
     const menu = electron.remote.Menu.buildFromTemplate(menuTemplate);
     const {bottom, left} = this._ref ? this._ref.getBoundingClientRect() : {};
-    menu.popup(electron.remote.getCurrentWindow(), {
+    menu.popup({
+      window: electron.remote.getCurrentWindow(),
       async: true,
       x: parseInt(left, 10),
       y: parseInt(bottom, 10) + 8,

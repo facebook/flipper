@@ -11,16 +11,16 @@ import type Logger from '../fb-stubs/Logger.js';
 
 export default (store: Store, logger: Logger) => {
   const currentWindow = remote.getCurrentWindow();
-  currentWindow.on('focus', () =>
+  currentWindow.on('focus', () => {
     store.dispatch({
       type: 'windowIsFocused',
       payload: true,
-    }),
-  );
-  currentWindow.on('blur', () =>
+    });
+  });
+  currentWindow.on('blur', () => {
     store.dispatch({
       type: 'windowIsFocused',
       payload: false,
-    }),
-  );
+    });
+  });
 };

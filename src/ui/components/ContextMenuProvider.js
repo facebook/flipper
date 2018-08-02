@@ -37,7 +37,7 @@ export default class ContextMenuProvider extends Component<{|
   onContextMenu = () => {
     const menu = electron.remote.Menu.buildFromTemplate(this._menuTemplate);
     this._menuTemplate = [];
-    menu.popup(electron.remote.getCurrentWindow(), {async: true});
+    menu.popup({window: electron.remote.getCurrentWindow(), async: true});
   };
 
   render() {
