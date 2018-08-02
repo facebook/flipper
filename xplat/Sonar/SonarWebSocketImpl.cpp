@@ -102,7 +102,7 @@ void SonarWebSocketImpl::start() {
   folly::makeFuture()
       .via(sonarEventBase_->getEventBase())
       .delayed(std::chrono::milliseconds(0))
-      .then([this]() { startSync(); });
+      .thenValue([this](auto&&){ startSync(); });
 }
 
 void SonarWebSocketImpl::startSync() {
@@ -192,7 +192,7 @@ void SonarWebSocketImpl::reconnect() {
   folly::makeFuture()
       .via(sonarEventBase_->getEventBase())
       .delayed(std::chrono::seconds(reconnectIntervalSeconds))
-      .then([this]() { startSync(); });
+      .thenValue([this](auto&&){ startSync(); });
 }
 
 void SonarWebSocketImpl::stop() {
