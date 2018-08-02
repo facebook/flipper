@@ -7,6 +7,7 @@
 //
 
 #import "FLEXNetworkRecorder.h"
+
 #import "FLEXNetworkTransaction.h"
 #import "FLEXUtility.h"
 
@@ -194,7 +195,7 @@ NSString *const kFLEXNetworkRecorderResponseCacheLimitDefaultsKey = @"com.flex.r
         if (!transaction) {
             return;
         }
-      
+
       SKResponseInfo *responseInfo = [[SKResponseInfo alloc] initWithIndentifier:self.identifierDict[requestID].longLongValue timestamp:[NSDate timestamp] response:transaction.response data: nil];
       self.identifierDict[requestID] = nil; //Clear the entry
       [self.delegate didObserveResponse:responseInfo];
