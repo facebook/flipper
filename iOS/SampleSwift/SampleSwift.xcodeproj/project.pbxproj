@@ -332,7 +332,7 @@
 					"\"${PODS_ROOT}/Headers/Public/PeerTalk\"",
 					"\"${PODS_ROOT}/Headers/Public/RSocket\"",
 					"\"${PODS_ROOT}/Headers/Public/Sonar\"",
-					"\"${PODS_ROOT}/Headers/Public/SonarKit\"/**",
+					"\"${PODS_ROOT}/Headers/Public/SonarKit\"",
 					"\"${PODS_ROOT}/Headers/Public/Yoga\"",
 					"\"${PODS_ROOT}/Headers/Public/glog\"",
 				);
@@ -366,7 +366,7 @@
 					"\"${PODS_ROOT}/Headers/Public/PeerTalk\"",
 					"\"${PODS_ROOT}/Headers/Public/RSocket\"",
 					"\"${PODS_ROOT}/Headers/Public/Sonar\"",
-					"\"${PODS_ROOT}/Headers/Public/SonarKit\"/**",
+					"\"${PODS_ROOT}/Headers/Public/SonarKit\"",
 					"\"${PODS_ROOT}/Headers/Public/Yoga\"",
 					"\"${PODS_ROOT}/Headers/Public/glog\"",
 				);
