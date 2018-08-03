@@ -335,11 +335,11 @@
 					"\"${PODS_ROOT}/Headers/Public/DoubleConversion\"",
 					"\"${PODS_ROOT}/Headers/Public/Folly\"",
 					"\"${PODS_ROOT}/Headers/Public/PeerTalk\"",
-					"\"${PODS_ROOT}/Headers/Public/Sonar\"/**",
+					"\"${PODS_ROOT}/Headers/Public/Sonar\"",
 					"\"${PODS_ROOT}/Headers/Public/SonarKit\"",
 					"\"${PODS_ROOT}/Headers/Public/Yoga\"",
 					"\"${PODS_ROOT}/Headers/Public/boost-for-react-native\"",
-					"\"${PODS_ROOT}/Headers/Public/glog\"/**",
+					"\"${PODS_ROOT}/Headers/Public/glog\"",
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 11.3;
@@ -399,11 +399,11 @@
 					"\"${PODS_ROOT}/Headers/Public/DoubleConversion\"",
 					"\"${PODS_ROOT}/Headers/Public/Folly\"",
 					"\"${PODS_ROOT}/Headers/Public/PeerTalk\"",
-					"\"${PODS_ROOT}/Headers/Public/Sonar\"/**",
+					"\"${PODS_ROOT}/Headers/Public/Sonar\"",
 					"\"${PODS_ROOT}/Headers/Public/SonarKit\"",
 					"\"${PODS_ROOT}/Headers/Public/Yoga\"",
 					"\"${PODS_ROOT}/Headers/Public/boost-for-react-native\"",
-					"\"${PODS_ROOT}/Headers/Public/glog\"/**",
+					"\"${PODS_ROOT}/Headers/Public/glog\"",
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 11.3;
