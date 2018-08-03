@@ -47,14 +47,16 @@ void SonarClient::setStateListener(
 
 void SonarClient::addPlugin(std::shared_ptr<SonarPlugin> plugin) {
   SONAR_LOG(("SonarClient::addPlugin " + plugin->identifier()).c_str());
+  auto step = sonarState_->start("Add plugin " + plugin->identifier());
 
   std::lock_guard<std::mutex> lock(mutex_);
-  performAndReportError([this, plugin]() {
+  performAndReportError([this, plugin, step]() {
     if (plugins_.find(plugin->identifier()) != plugins_.end()) {
       throw std::out_of_range(
           "plugin " + plugin->identifier() + " already added.");
     }
     plugins_[plugin->identifier()] = plugin;
+    step->complete();
     if (connected_) {
       refreshPlugins();
     }
@@ -107,19 +109,22 @@ void SonarClient::refreshPlugins() {
 void SonarClient::onConnected() {
   SONAR_LOG("SonarClient::onConnected");
 
+  auto step = sonarState_->start("Connect");
   std::lock_guard<std::mutex> lock(mutex_);
   connected_ = true;
+  step->complete();
 }
 
 void SonarClient::onDisconnected() {
   SONAR_LOG("SonarClient::onDisconnected");
-
+  auto step = sonarState_->start("onDisconnected callbacks");
   std::lock_guard<std::mutex> lock(mutex_);
   connected_ = false;
-  performAndReportError([this]() {
+  performAndReportError([this, step]() {
     for (const auto& iter : plugins_) {
       disconnect(iter.second);
     }
+    step->complete();
   });
 }
 
