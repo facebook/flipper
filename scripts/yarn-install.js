@@ -22,10 +22,21 @@ Promise.all(
   ),
 )
   .then(async packages => {
-    for (const pkg of packages.reduce((acc, cv) => acc.concat(cv), [])) {
-      const {stderr} = await exec(YARN_PATH, {
-        cwd: pkg.replace('/package.json', ''),
-      });
+    packages = packages.reduce((acc, cv) => acc.concat(cv), []);
+    console.log(`Installing dependencies for ${packages.length} plugins`);
+    for (const pkg of packages) {
+      const {stderr} = await exec(
+        // This script is itself executed by yarn (as postinstall script),
+        // therefore another yarn instance is running, while we are trying to
+        // install the plugin dependencies. We are setting a different port
+        // for the mutex of this yarn instance to make sure, it is not blocked
+        // by the yarn instance which is executing this script. Otherwise this
+        // will cause a deadlock.
+        [YARN_PATH, '--mutex', 'network:30330'].join(' '),
+        {
+          cwd: pkg.replace('/package.json', ''),
+        },
+      );
       if (stderr) {
         console.warn(stderr);
       } else {

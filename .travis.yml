@@ -8,9 +8,13 @@ matrix:
       node_js:
         - "10"
 
-      script:
+      install:
         - cd website
         - yarn
+        - cd ..
+
+      script:
+        - cd website
         - yarn build
         - cd ..
 
