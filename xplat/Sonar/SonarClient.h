@@ -39,8 +39,9 @@ class SonarClient : public SonarWebSocket::Callbacks {
   /**
    Only public for testing
    */
-  SonarClient(std::unique_ptr<SonarWebSocket> socket, std::shared_ptr<SonarState> state)
-      : socket_(std::move(socket)), sonarState_(state) {
+  SonarClient(std::unique_ptr<SonarWebSocket> socket)
+      : socket_(std::move(socket)) {
+    sonarState_ = std::make_unique<SonarState>();
     auto step = sonarState_->start("Create client");
     socket_->setCallbacks(this);
     step->complete();
@@ -91,7 +92,7 @@ class SonarClient : public SonarWebSocket::Callbacks {
   std::map<std::string, std::shared_ptr<SonarPlugin>> plugins_;
   std::map<std::string, std::shared_ptr<SonarConnectionImpl>> connections_;
   std::mutex mutex_;
-  std::shared_ptr<SonarState> sonarState_;
+  std::unique_ptr<SonarState> sonarState_;
 
   void performAndReportError(const std::function<void()>& func);
   void disconnect(std::shared_ptr<SonarPlugin> plugin);
