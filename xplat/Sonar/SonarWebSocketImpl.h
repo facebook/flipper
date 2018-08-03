@@ -10,6 +10,7 @@
 
 #include <Sonar/SonarInitConfig.h>
 #include <Sonar/SonarWebSocket.h>
+#include <Sonar/SonarState.h>
 #include <folly/Executor.h>
 #include <folly/io/async/EventBase.h>
 #include <rsocket/RSocket.h>
@@ -26,7 +27,7 @@ class SonarWebSocketImpl : public SonarWebSocket {
   friend Responder;
 
  public:
-  SonarWebSocketImpl(SonarInitConfig config);
+  SonarWebSocketImpl(SonarInitConfig config, std::shared_ptr<SonarState> state);
 
   ~SonarWebSocketImpl();
 
@@ -46,6 +47,7 @@ class SonarWebSocketImpl : public SonarWebSocket {
   bool isOpen_ = false;
   Callbacks* callbacks_;
   DeviceData deviceData_;
+  std::shared_ptr<SonarState> sonarState_;
 
   folly::EventBase* sonarEventBase_;
   folly::EventBase* connectionEventBase_;
