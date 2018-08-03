@@ -10,7 +10,6 @@
 
 #include <memory>
 #include <string>
-#include <Sonar/SonarStep.h>
 
 class SonarStep;
 class SonarStateUpdateListener;

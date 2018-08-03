@@ -99,11 +99,10 @@ SonarWebSocketImpl::~SonarWebSocketImpl() {
 }
 
 void SonarWebSocketImpl::start() {
-  auto step = sonarState_->start("Start connection thread");
   folly::makeFuture()
       .via(sonarEventBase_->getEventBase())
       .delayed(std::chrono::milliseconds(0))
-      .thenValue([this, step](auto&&){ step->complete(); startSync(); });
+      .thenValue([this](auto&&){ startSync(); });
 }
 
 void SonarWebSocketImpl::startSync() {
@@ -138,7 +137,6 @@ void SonarWebSocketImpl::doCertificateExchange() {
           "device", deviceData_.device)("app", deviceData_.app)));
   address.setFromHostPort(deviceData_.host, insecurePort);
 
-  auto connectingInsecurely = sonarState_->start("Connect insecurely");
   connectionIsTrusted_ = false;
   client_ =
       rsocket::RSocket::createConnectedClient(
@@ -150,7 +148,6 @@ void SonarWebSocketImpl::doCertificateExchange() {
           nullptr, // stats
           std::make_shared<ConnectionEvents>(this))
           .get();
-  connectingInsecurely->complete();
 
   ensureSonarDirExists();
   requestSignedCertFromSonar();
@@ -175,7 +172,6 @@ void SonarWebSocketImpl::connectSecurely() {
       absoluteFilePath(PRIVATE_KEY_FILE).c_str());
   sslContext->authenticate(true, false);
 
-  auto connectingSecurely = sonarState_->start("Connect securely");
   connectionIsTrusted_ = true;
   client_ =
       rsocket::RSocket::createConnectedClient(
@@ -189,7 +185,6 @@ void SonarWebSocketImpl::connectSecurely() {
           nullptr, // stats
           std::make_shared<ConnectionEvents>(this))
           .get();
-  connectingSecurely->complete();
   failedConnectionAttempts_ = 0;
 }
 
@@ -224,7 +219,6 @@ void SonarWebSocketImpl::sendMessage(const folly::dynamic& message) {
 }
 
 bool SonarWebSocketImpl::isCertificateExchangeNeeded() {
-  auto step = sonarState_->start("Check required certificates are present");
   if (failedConnectionAttempts_ >= 2) {
     return true;
   }
@@ -238,29 +232,23 @@ bool SonarWebSocketImpl::isCertificateExchangeNeeded() {
   if (caCert == "" || clientCert == "" || privateKey == "") {
     return true;
   }
-  step->complete();
+
   return false;
 }
 
 void SonarWebSocketImpl::requestSignedCertFromSonar() {
-  auto generatingCSR = sonarState_->start("Generate CSR");
   generateCertSigningRequest(
       deviceData_.appId.c_str(),
       absoluteFilePath(CSR_FILE_NAME).c_str(),
       absoluteFilePath(PRIVATE_KEY_FILE).c_str());
-  generatingCSR->complete();
-  auto loadingCSR = sonarState_->start("Load CSR");
   std::string csr = loadStringFromFile(absoluteFilePath(CSR_FILE_NAME));
-  loadingCSR->complete();
 
   folly::dynamic message = folly::dynamic::object("method", "signCertificate")(
       "csr", csr.c_str())("destination", absoluteFilePath("").c_str());
-  auto sendingCSR = sonarState_->start("Send CSR to desktop");
-  sonarEventBase_->add([this, message, sendingCSR]() {
+  sonarEventBase_->add([this, message]() {
     client_->getRequester()
         ->fireAndForget(rsocket::Payload(folly::toJson(message)))
-        ->subscribe([this, sendingCSR]() {
-          sendingCSR->complete();
+        ->subscribe([this]() {
           // Disconnect after message sending is complete.
           // This will trigger a reconnect which should use the secure channel.
           client_ = nullptr;
