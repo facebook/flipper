@@ -136,8 +136,15 @@ export default class CertificateProvider {
       CAkey: caKey,
       CAcreateserial: true,
     }).then(cert => {
-      fs.unlinkSync(csrFile);
-      return cert;
+      return new Promise(function(resolve, reject) {
+        fs.unlink(csrFile, err => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(cert);
+          }
+        });
+      });
     });
   }
 
@@ -308,8 +315,15 @@ export default class CertificateProvider {
       RFC2253: false,
     })
       .then(subject => {
-        fs.unlink(csrFile);
-        return subject;
+        return new Promise(function(resolve, reject) {
+          fs.unlink(csrFile, err => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve(subject);
+            }
+          });
+        });
       })
       .then(subject => {
         const matches = subject.trim().match(x509SubjectCNRegex);
