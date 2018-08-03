@@ -13,7 +13,6 @@ import com.facebook.soloader.SoLoader;
 import com.facebook.sonar.BuildConfig;
 import com.facebook.sonar.core.SonarClient;
 import com.facebook.sonar.core.SonarPlugin;
-import com.facebook.sonar.core.SonarStateUpdateListener;
 
 @DoNotStrip
 class SonarClientImpl implements SonarClient {
@@ -56,13 +55,4 @@ class SonarClientImpl implements SonarClient {
 
   @Override
   public native void stop();
-
-  @Override
-  public native void subscribeForUpdates(SonarStateUpdateListener stateListener);
-
-  @Override
-  public native void unsubscribe();
-
-  @Override
-  public native String getState();
 }

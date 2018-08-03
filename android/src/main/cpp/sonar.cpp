@@ -22,7 +22,6 @@
 #include <Sonar/SonarWebSocket.h>
 #include <Sonar/SonarConnection.h>
 #include <Sonar/SonarResponder.h>
-#include <Sonar/SonarStateUpdateListener.h>
 
 using namespace facebook;
 using namespace facebook::sonar;
@@ -199,37 +198,6 @@ class JSonarPlugin : public jni::JavaClass<JSonarPlugin> {
   }
 };
 
-class JSonarStateUpdateListener : public jni::JavaClass<JSonarStateUpdateListener> {
- public:
-  constexpr static auto  kJavaDescriptor = "Lcom/facebook/sonar/core/SonarStateUpdateListener;";
-
-  void onUpdate() {
-    static const auto method = javaClassStatic()->getMethod<void()>("onUpdate");
-    method(self());
-  }
-  void onStepStarted(std::string step) {
-    static const auto method = javaClassStatic()->getMethod<void(std::string)>("onStepStarted");
-    method(self(), step);
-  }
-  void onStepSuccess(std::string step) {
-    static const auto method = javaClassStatic()->getMethod<void(std::string)>("onStepSuccess");
-    method(self(), step);
-  }
-  void onStepFailed(std::string step, std::string errorMessage) {
-    static const auto method = javaClassStatic()->getMethod<void(std::string, std::string)>("onStepFailed");
-    method(self(), step, errorMessage);
-  }
-};
-
-class AndroidSonarStateUpdateListener : public SonarStateUpdateListener {
- public:
-  AndroidSonarStateUpdateListener(jni::alias_ref<JSonarStateUpdateListener> stateListener);
-  void onUpdate();
-
-  private:
-   jni::global_ref<JSonarStateUpdateListener> jStateListener;
-};
-
 class JSonarPluginWrapper : public SonarPlugin {
  public:
   jni::global_ref<JSonarPlugin> jplugin;
@@ -261,10 +229,7 @@ class JSonarClient : public jni::HybridClass<JSonarClient> {
       makeNativeMethod("stop", JSonarClient::stop),
       makeNativeMethod("addPlugin", JSonarClient::addPlugin),
       makeNativeMethod("removePlugin", JSonarClient::removePlugin),
-      makeNativeMethod("subscribeForUpdates", JSonarClient::subscribeForUpdates),
-      makeNativeMethod("unsubscribe", JSonarClient::unsubscribe),
       makeNativeMethod("getPlugin", JSonarClient::getPlugin),
-      makeNativeMethod("getState", JSonarClient::getState),
     });
   }
 
@@ -289,22 +254,6 @@ class JSonarClient : public jni::HybridClass<JSonarClient> {
   void removePlugin(jni::alias_ref<JSonarPlugin> plugin) {
     auto client = SonarClient::instance();
     client->removePlugin(client->getPlugin(plugin->identifier()));
-  }
-
-  void subscribeForUpdates(jni::alias_ref<JSonarStateUpdateListener> stateListener) {
-    auto client = SonarClient::instance();
-    mStateListener = std::make_shared<AndroidSonarStateUpdateListener>(stateListener);
-    client->setStateListener(mStateListener);
-  }
-
-  void unsubscribe() {
-    auto client = SonarClient::instance();
-    mStateListener = nullptr;
-    client->setStateListener(nullptr);
-  }
-
-  std::string getState() {
-    return SonarClient::instance()->getState();
   }
 
   jni::alias_ref<JSonarPlugin> getPlugin(const std::string& identifier) {
@@ -346,7 +295,6 @@ class JSonarClient : public jni::HybridClass<JSonarClient> {
 
  private:
   friend HybridBase;
-  std::shared_ptr<SonarStateUpdateListener> mStateListener = nullptr;
 
   JSonarClient() {}
 };
@@ -360,12 +308,4 @@ jint JNI_OnLoad(JavaVM* vm, void*) {
     JSonarResponderImpl::registerNatives();
     JEventBase::registerNatives();
   });
-}
-
-AndroidSonarStateUpdateListener::AndroidSonarStateUpdateListener(jni::alias_ref<JSonarStateUpdateListener> stateListener) {
-  jStateListener = jni::make_global(stateListener);
-}
-
-void AndroidSonarStateUpdateListener::onUpdate() {
-  jStateListener->onUpdate();
 }

@@ -11,11 +11,9 @@
 #include <Sonar/SonarConnectionImpl.h>
 #include <Sonar/SonarInitConfig.h>
 #include <Sonar/SonarPlugin.h>
-#include <Sonar/SonarState.h>
 #include <Sonar/SonarWebSocket.h>
 #include <map>
 #include <mutex>
-#include "SonarStep.h"
 
 namespace facebook {
 namespace sonar {
@@ -41,7 +39,6 @@ class SonarClient : public SonarWebSocket::Callbacks {
    */
   SonarClient(std::unique_ptr<SonarWebSocket> socket)
       : socket_(std::move(socket)) {
-    sonarState_ = std::make_unique<SonarState>();
     socket_->setCallbacks(this);
   }
 
@@ -65,12 +62,7 @@ class SonarClient : public SonarWebSocket::Callbacks {
 
   void refreshPlugins();
 
-  void setStateListener(
-      std::shared_ptr<SonarStateUpdateListener> stateListener);
-
   std::shared_ptr<SonarPlugin> getPlugin(const std::string& identifier);
-
-  std::string getState();
 
   template <typename P>
   std::shared_ptr<P> getPlugin(const std::string& identifier) {
@@ -86,7 +78,6 @@ class SonarClient : public SonarWebSocket::Callbacks {
   std::map<std::string, std::shared_ptr<SonarPlugin>> plugins_;
   std::map<std::string, std::shared_ptr<SonarConnectionImpl>> connections_;
   std::mutex mutex_;
-  std::unique_ptr<SonarState> sonarState_;
 
   void performAndReportError(const std::function<void()>& func);
   void disconnect(std::shared_ptr<SonarPlugin> plugin);
