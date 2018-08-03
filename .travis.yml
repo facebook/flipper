@@ -4,19 +4,13 @@ osx_image: xcode9.4
 matrix:
   include:
     - language: node_js
+      os: linux
       node_js:
-        - "8"
-
-      install:
-        - yarn
-        - cd website
-        - yarn
-        - cd ..
+        - "10"
 
       script:
-        - yarn lint
-        - yarn build --mac --version=$TRAVIS_BUILD_NUMBER
         - cd website
+        - yarn
         - yarn build
         - cd ..
 
@@ -35,16 +29,10 @@ matrix:
 
       install:
         - yarn
-        - cd website
-        - yarn
-        - cd ..
 
       script:
         - yarn lint
         - yarn build --mac --version=$TRAVIS_BUILD_NUMBER
-        - cd website
-        - yarn build
-        - cd ..
 
     - language: objective-c
 

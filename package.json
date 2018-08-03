@@ -78,7 +78,7 @@
     "yargs": "^11.0.0"
   },
   "scripts": {
-    "postinstall": "node node_modules/electron/install.js && node scripts/yarn-install.js",
+    "postinstall": "node scripts/yarn-install.js",
     "rm-dist": "rm -rf dist",
     "rm-modules": "rm -rf node_modules static/node_modules",
     "rm-temp": "rm -rf $TMPDIR/jest* $TMPDIR/react-native-packager*",

@@ -5,9 +5,10 @@
  * @format
  */
 
-const glob = require('glob');
 const path = require('path');
-const {exec} = require('child_process');
+const util = require('util');
+const glob = util.promisify(require('glob'));
+const exec = util.promisify(require('child_process').exec);
 const PACKAGES = ['static', 'src/plugins/*', 'src/fb/plugins/*'];
 const WINDOWS = /^win/.test(process.platform);
 const YARN_PATH =
@@ -16,44 +17,25 @@ const YARN_PATH =
     : 'yarn' + (WINDOWS ? '.cmd' : '');
 
 Promise.all(
-  PACKAGES.map(
-    pattern =>
-      new Promise((resolve, reject) => {
-        glob(
-          path.join(__dirname, '..', pattern, 'package.json'),
-          (err, matches) => {
-            if (err) {
-              reject(err);
-            } else {
-              resolve(matches);
-            }
-          },
-        );
-      }),
+  PACKAGES.map(pattern =>
+    glob(path.join(__dirname, '..', pattern, 'package.json')),
   ),
 )
-  .then(packages =>
-    Promise.all(
-      packages.reduce((acc, cv) => acc.concat(cv), []).map(
-        pkg =>
-          new Promise((resolve, reject) => {
-            const cwd = pkg.replace('/package.json', '');
-            exec(
-              YARN_PATH,
-              {
-                cwd,
-              },
-              (err, stderr, stdout) => {
-                if (err) {
-                  reject(err);
-                } else {
-                  resolve(0);
-                }
-              },
-            );
-          }),
-      ),
-    ),
-  )
+  .then(async packages => {
+    for (const pkg of packages.reduce((acc, cv) => acc.concat(cv), [])) {
+      const {stderr} = await exec(YARN_PATH, {
+        cwd: pkg.replace('/package.json', ''),
+      });
+      if (stderr) {
+        console.warn(stderr);
+      } else {
+        console.log(`Installed dependencies for ${pkg}`);
+      }
+    }
+  })
   // eslint-disable-next-line
-  .then(() => console.log('📦  Installed all dependencies!'));
+  .then(() => console.log('📦  Installed all plugin dependencies!'))
+  .catch(err => {
+    console.error('❌  Installing plugin dependencies failed.');
+    console.error(err);
+  });
