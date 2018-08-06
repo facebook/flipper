@@ -582,7 +582,7 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
   }
 
   @Override
-  public void setHighlighted(DebugComponent node, boolean selected) {
+  public void setHighlighted(DebugComponent node, boolean selected, boolean isAlignmentMode) {
     final LithoView lithoView = node.getLithoView();
     if (lithoView == null) {
       return;
@@ -616,7 +616,7 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
             hasNode ? (int) layout.getResultPadding(YogaEdge.BOTTOM) : 0);
 
     final Rect contentBounds = node.getBoundsInLithoView();
-    HighlightedOverlay.setHighlighted(lithoView, margin, padding, contentBounds);
+    HighlightedOverlay.setHighlighted(lithoView, margin, padding, contentBounds, isAlignmentMode);
   }
 
   @Override

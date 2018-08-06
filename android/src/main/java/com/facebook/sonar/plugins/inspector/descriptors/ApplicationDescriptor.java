@@ -186,12 +186,12 @@ public class ApplicationDescriptor extends NodeDescriptor<ApplicationWrapper> {
   }
 
   @Override
-  public void setHighlighted(ApplicationWrapper node, boolean selected) throws Exception {
+  public void setHighlighted(ApplicationWrapper node, boolean selected, boolean isAlignmentMode) throws Exception {
     final int childCount = getChildCount(node);
     if (childCount > 0) {
       final Object topChild = getChildAt(node, childCount - 1);
       final NodeDescriptor descriptor = descriptorForClass(topChild.getClass());
-      descriptor.setHighlighted(topChild, selected);
+      descriptor.setHighlighted(topChild, selected, isAlignmentMode);
     }
   }
 

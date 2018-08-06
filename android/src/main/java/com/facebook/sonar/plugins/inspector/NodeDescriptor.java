@@ -167,7 +167,8 @@ public abstract class NodeDescriptor<T> {
    * node which is selected in the inspector. The plugin automatically takes care of de-selecting
    * the previously highlighted node.
    */
-  public abstract void setHighlighted(T node, boolean selected) throws Exception;
+  public abstract void setHighlighted(T node, boolean selected, boolean isAlignmentMode)
+      throws Exception;
 
   /**
    * Perform hit testing on the given node. Either continue the search in a child with {@link

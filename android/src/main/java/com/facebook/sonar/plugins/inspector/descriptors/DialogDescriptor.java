@@ -58,9 +58,9 @@ public class DialogDescriptor extends NodeDescriptor<Dialog> {
   }
 
   @Override
-  public void setHighlighted(Dialog node, boolean selected) throws Exception {
+  public void setHighlighted(Dialog node, boolean selected, boolean isAlignmentMode) throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(Window.class);
-    descriptor.setHighlighted(node.getWindow(), selected);
+    descriptor.setHighlighted(node.getWindow(), selected, isAlignmentMode);
   }
 
   @Override

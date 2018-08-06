@@ -125,9 +125,9 @@ public class LithoViewDescriptor extends NodeDescriptor<LithoView> {
   }
 
   @Override
-  public void setHighlighted(LithoView node, boolean selected) throws Exception {
+  public void setHighlighted(LithoView node, boolean selected, boolean isAlignmentMode) throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
-    descriptor.setHighlighted(node, selected);
+    descriptor.setHighlighted(node, selected, isAlignmentMode);
   }
 
   @Override

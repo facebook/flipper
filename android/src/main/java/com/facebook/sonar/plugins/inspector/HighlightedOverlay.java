@@ -30,12 +30,8 @@ public class HighlightedOverlay {
    * @param padding A {@link Rect} containing the padding values
    * @param contentBounds The {@link Rect} bounds of the content, which includes padding
    */
-  public static void setHighlighted(
-      View targetView, Rect margin, Rect padding, Rect contentBounds) {
-      setHighlightedAndAlignment(targetView, margin, padding, contentBounds, false);
-  }
 
-  public static void setHighlightedAndAlignment(
+  public static void setHighlighted(
       View targetView, Rect margin, Rect padding, Rect contentBounds, boolean isAlignmentMode) {
         if (!VIEW_OVERLAY_SUPPORT) {
           return;

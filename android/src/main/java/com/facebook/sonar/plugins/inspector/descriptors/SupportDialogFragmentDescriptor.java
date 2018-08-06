@@ -71,10 +71,10 @@ public class SupportDialogFragmentDescriptor extends NodeDescriptor<DialogFragme
   }
 
   @Override
-  public void setHighlighted(DialogFragment node, boolean selected) throws Exception {
+  public void setHighlighted(DialogFragment node, boolean selected, boolean isAlignmentMode) throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(Dialog.class);
     if (node.getDialog() != null) {
-      descriptor.setHighlighted(node.getDialog(), selected);
+      descriptor.setHighlighted(node.getDialog(), selected, isAlignmentMode);
     }
   }
 

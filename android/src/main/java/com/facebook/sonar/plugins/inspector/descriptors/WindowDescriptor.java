@@ -58,9 +58,10 @@ public class WindowDescriptor extends NodeDescriptor<Window> {
   }
 
   @Override
-  public void setHighlighted(Window node, boolean selected) throws Exception {
+  public void setHighlighted(Window node, boolean selected, boolean isAlignmentMode)
+      throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(View.class);
-    descriptor.setHighlighted(node.getDecorView(), selected);
+    descriptor.setHighlighted(node.getDecorView(), selected, isAlignmentMode);
   }
 
   @Override

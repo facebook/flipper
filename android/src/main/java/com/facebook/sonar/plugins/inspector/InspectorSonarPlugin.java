@@ -151,7 +151,7 @@ public class InspectorSonarPlugin implements SonarPlugin {
   @Override
   public void onDisconnect() throws Exception {
     if (mHighlightedId != null) {
-      setHighlighted(mHighlightedId, false);
+      setHighlighted(mHighlightedId, false, false);
       mHighlightedId = null;
     }
 
@@ -292,15 +292,15 @@ public class InspectorSonarPlugin implements SonarPlugin {
         public void onReceiveOnMainThread(final SonarObject params, SonarResponder responder)
             throws Exception {
           final String nodeId = params.getString("id");
+          final boolean isAlignmentMode = params.getBoolean("isAlignmentMode");
 
           if (mHighlightedId != null) {
-            setHighlighted(mHighlightedId, false);
+            setHighlighted(mHighlightedId, false, isAlignmentMode);
           }
 
           if (nodeId != null) {
-            setHighlighted(nodeId, true);
+            setHighlighted(nodeId, true, isAlignmentMode);
           }
-
           mHighlightedId = nodeId;
         }
       };
@@ -416,7 +416,7 @@ public class InspectorSonarPlugin implements SonarPlugin {
     descriptor.hitTest(mApplication, touch);
   }
 
-  private void setHighlighted(final String id, final boolean highlighted) throws Exception {
+  private void setHighlighted(final String id, final boolean highlighted, final boolean isAlignmentMode) throws Exception {
     final Object obj = mObjectTracker.get(id);
     if (obj == null) {
       return;
@@ -427,7 +427,7 @@ public class InspectorSonarPlugin implements SonarPlugin {
       return;
     }
 
-    descriptor.setHighlighted(obj, highlighted);
+    descriptor.setHighlighted(obj, highlighted, isAlignmentMode);
   }
 
   public SearchResultNode searchTree(String query, Object obj) throws Exception {

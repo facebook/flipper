@@ -94,13 +94,13 @@ public class FragmentDescriptor extends NodeDescriptor<Fragment> {
   }
 
   @Override
-  public void setHighlighted(Fragment node, boolean selected) throws Exception {
+  public void setHighlighted(Fragment node, boolean selected, boolean isAlignmentMode) throws Exception {
     if (node.getView() == null) {
       return;
     }
 
     final NodeDescriptor descriptor = descriptorForClass(View.class);
-    descriptor.setHighlighted(node.getView(), selected);
+    descriptor.setHighlighted(node.getView(), selected, isAlignmentMode);
   }
 
   @Override

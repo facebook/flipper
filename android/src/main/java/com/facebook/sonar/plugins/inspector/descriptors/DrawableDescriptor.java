@@ -107,7 +107,7 @@ public class DrawableDescriptor extends NodeDescriptor<Drawable> {
   }
 
   @Override
-  public void setHighlighted(Drawable node, boolean selected) {
+  public void setHighlighted(Drawable node, boolean selected, boolean isAlignmentMode) {
     // Ensure we handle wrapping drawable
     Drawable.Callback callbacks = node.getCallback();
     while (callbacks instanceof Drawable) {
@@ -122,7 +122,7 @@ public class DrawableDescriptor extends NodeDescriptor<Drawable> {
     if (selected) {
       final Rect zero = new Rect();
       final Rect bounds = node.getBounds();
-      HighlightedOverlay.setHighlighted(callbackView, zero, zero, bounds);
+      HighlightedOverlay.setHighlighted(callbackView, zero, zero, bounds, isAlignmentMode);
     } else {
       HighlightedOverlay.removeHighlight(callbackView);
     }

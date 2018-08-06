@@ -56,7 +56,7 @@ public class ObjectDescriptor extends NodeDescriptor<Object> {
   }
 
   @Override
-  public void setHighlighted(Object node, boolean selected) {}
+  public void setHighlighted(Object node, boolean selected, boolean isAlignmentMode) {}
 
   @Override
   public void hitTest(Object node, Touch touch) {

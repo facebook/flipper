@@ -477,7 +477,7 @@ public class ViewDescriptor extends NodeDescriptor<View> {
   }
 
   @Override
-  public void setHighlighted(View node, boolean selected) {
+  public void setHighlighted(View node, boolean selected, boolean isAlignmentMode) {
     // We need to figure out whether the given View has a parent View since margins are not
     // included within a View's bounds. So, in order to display the margin values for a particular
     // view, we need to apply an overlay on its parent rather than itself.
@@ -525,7 +525,7 @@ public class ViewDescriptor extends NodeDescriptor<View> {
       contentBounds.offset(-left, -top);
     }
 
-    HighlightedOverlay.setHighlighted(targetView, margin, padding, contentBounds);
+    HighlightedOverlay.setHighlighted(targetView, margin, padding, contentBounds, isAlignmentMode);
   }
 
   @Override

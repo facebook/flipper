@@ -49,6 +49,7 @@ export type InspectorState = {|
   AXelements: {[key: ElementID]: Element},
   inAXMode: boolean,
   AXtoNonAXMapping: {[key: ElementID]: ElementID},
+  isAlignmentMode: boolean,
 |};
 
 type SelectElementArgs = {|
@@ -182,6 +183,7 @@ export default class Layout extends SonarPlugin<InspectorState> {
     AXselected: null,
     AXfocused: null,
     AXtoNonAXMapping: {},
+    isAlignmentMode: false,
   };
 
   reducers = {
@@ -306,6 +308,13 @@ export default class Layout extends SonarPlugin<InspectorState> {
       {isSearchActive}: {isSearchActive: boolean},
     ) {
       return {isSearchActive};
+    },
+
+    SetAlignmentActive(
+      state: InspectorState,
+      {isAlignmentMode}: {isAlignmentMode: boolean},
+    ) {
+      return {isAlignmentMode};
     },
 
     SetAXMode(state: InspectorState, {inAXMode}: {inAXMode: boolean}) {
@@ -510,7 +519,10 @@ export default class Layout extends SonarPlugin<InspectorState> {
             this.dispatchAction({expand: true, key, type: 'ExpandElement'});
           }
 
-          this.client.send('setHighlighted', {id: selected});
+          this.client.send('setHighlighted', {
+            id: selected,
+            isAlignmentMode: this.state.isAlignmentMode,
+          });
           this.client.send('setSearchActive', {active: false});
         },
       );
@@ -702,6 +714,10 @@ export default class Layout extends SonarPlugin<InspectorState> {
     const inAXMode = !this.state.inAXMode;
     this.dispatchAction({inAXMode, type: 'SetAXMode'});
   };
+  onToggleAlignment = () => {
+    const isAlignmentMode = !this.state.isAlignmentMode;
+    this.dispatchAction({isAlignmentMode, type: 'SetAlignmentActive'});
+  };
 
   onElementSelected = debounce((key: ElementID) => {
     let finalKey = key;
@@ -737,7 +753,10 @@ export default class Layout extends SonarPlugin<InspectorState> {
       AXkey: finalAXkey,
       type: 'SelectElement',
     });
-    this.client.send('setHighlighted', {id: key});
+    this.client.send('setHighlighted', {
+      id: key,
+      isAlignmentMode: this.state.isAlignmentMode,
+    });
     this.getNodes([finalKey], {force: true, ax: false}).then(
       (elements: Array<Element>) => {
         this.dispatchAction({elements, type: 'UpdateElements'});
@@ -753,7 +772,10 @@ export default class Layout extends SonarPlugin<InspectorState> {
   });
 
   onElementHovered = debounce((key: ?ElementID) => {
-    this.client.send('setHighlighted', {id: key});
+    this.client.send('setHighlighted', {
+      id: key,
+      isAlignmentMode: this.state.isAlignmentMode,
+    });
   });
 
   onDataValueChanged = (path: Array<string>, value: any) => {
@@ -808,6 +830,7 @@ export default class Layout extends SonarPlugin<InspectorState> {
       isSearchActive,
       inAXMode,
       outstandingSearchQuery,
+      isAlignmentMode,
     } = this.state;
 
     return (
@@ -845,6 +868,21 @@ export default class Layout extends SonarPlugin<InspectorState> {
               />
             </SearchIconContainer>
           ) : null}
+          <SearchIconContainer
+            onClick={this.onToggleAlignment}
+            role="button"
+            tabIndex={-1}
+            title="Toggle AlignmentMode to show alignment lines">
+            <Glyph
+              name="borders"
+              size={16}
+              color={
+                isAlignmentMode
+                  ? colors.macOSTitleBarIconSelected
+                  : colors.macOSTitleBarIconActive
+              }
+            />
+          </SearchIconContainer>
           <SearchBox tabIndex={-1}>
             <SearchIcon
               name="magnifying-glass"

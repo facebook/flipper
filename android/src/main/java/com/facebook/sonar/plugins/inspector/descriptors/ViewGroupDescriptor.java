@@ -243,9 +243,9 @@ public class ViewGroupDescriptor extends NodeDescriptor<ViewGroup> {
   }
 
   @Override
-  public void setHighlighted(ViewGroup node, boolean selected) throws Exception {
+  public void setHighlighted(ViewGroup node, boolean selected, boolean isAlignmentMode) throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(View.class);
-    descriptor.setHighlighted(node, selected);
+    descriptor.setHighlighted(node, selected, isAlignmentMode);
   }
 
   @Override
