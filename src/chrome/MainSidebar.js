@@ -36,6 +36,7 @@ const CustomClickableListItem = ClickableListItem.extends({
   display: 'flex',
   alignItems: 'center',
   marginBottom: 2,
+  flexShrink: 0,
 });
 
 const SidebarHeader = FlexBox.extends({
