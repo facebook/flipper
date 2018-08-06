@@ -274,19 +274,21 @@ function getTemplate(app: Object, shell: Object): Array<MenuItem> {
         {
           label: 'Getting started',
           click: function() {
-            shell.openExternal('https://fbsonar.com/docs/getting-started.html');
+            shell.openExternal(
+              'https://fbflipper.com/docs/getting-started.html',
+            );
           },
         },
         {
           label: 'Create plugins',
           click: function() {
-            shell.openExternal('https://fbsonar.com/docs/create-plugin.html');
+            shell.openExternal('https://fbflipper.com/docs/create-plugin.html');
           },
         },
         {
           label: 'Report problems',
           click: function() {
-            shell.openExternal('https://github.com/facebook/Sonar/issues');
+            shell.openExternal('https://github.com/facebook/flipper/issues');
           },
         },
       ],

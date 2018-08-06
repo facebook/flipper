@@ -118,7 +118,7 @@ export default class WelcomeScreen extends PureComponent<Props, State> {
       <Container>
         <Welcome isMounted={this.state.isMounted}>
           <Logo src="./icon.png" />
-          <Title>Welcome to Sonar</Title>
+          <Title>Welcome to Flipper</Title>
           <Version>
             {isProduction()
               ? `Version ${remote.app.getVersion()}`
@@ -126,19 +126,21 @@ export default class WelcomeScreen extends PureComponent<Props, State> {
           </Version>
           <Item
             onClick={() =>
-              shell.openExternal('https://fbsonar.com/docs/understand.html')
+              shell.openExternal('https://fbflipper.com/docs/understand.html')
             }>
             <Icon size={20} name="rocket" color={brandColors.Sonar} />
             <FlexColumn>
-              <ItemTitle>Using Sonar</ItemTitle>
+              <ItemTitle>Using Flipper</ItemTitle>
               <ItemSubTitle>
-                Learn how Sonar can help you debugging your App
+                Learn how Flipper can help you debugging your App
               </ItemSubTitle>
             </FlexColumn>
           </Item>
           <Item
             onClick={() =>
-              shell.openExternal('https://fbsonar.com/docs/create-plugin.html')
+              shell.openExternal(
+                'https://fbflipper.com/docs/create-plugin.html',
+              )
             }>
             <Icon size={20} name="magic-wand" color={brandColors.Sonar} />
             <FlexColumn>
@@ -149,24 +151,24 @@ export default class WelcomeScreen extends PureComponent<Props, State> {
           <Item
             onClick={() =>
               shell.openExternal(
-                'https://fbsonar.com/docs/getting-started.html',
+                'https://fbflipper.com/docs/getting-started.html',
               )
             }>
             <Icon size={20} name="tools" color={brandColors.Sonar} />
             <FlexColumn>
-              <ItemTitle>Add Sonar support to your app</ItemTitle>
+              <ItemTitle>Add Flipper support to your app</ItemTitle>
               <ItemSubTitle>Get started with these pointers</ItemSubTitle>
             </FlexColumn>
           </Item>
           <Item
             onClick={() =>
-              shell.openExternal('https://github.com/facebook/Sonar/issues')
+              shell.openExternal('https://github.com/facebook/flipper/issues')
             }>
             <Icon size={20} name="posts" color={brandColors.Sonar} />
             <FlexColumn>
               <ItemTitle>Contributing and Feedback</ItemTitle>
               <ItemSubTitle>
-                Report issues and help us improving Sonar
+                Report issues and help us improving Flipper
               </ItemSubTitle>
             </FlexColumn>
           </Item>

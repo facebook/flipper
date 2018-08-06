@@ -6,6 +6,6 @@
  */
 
 export default {
-  updateServer: 'https://www.facebook.com/sonar/public/latest.json',
+  updateServer: 'https://www.facebook.com/fbflipper/public/latest.json',
   bugReportButtonVisible: false,
 };

@@ -2,23 +2,25 @@
   "command": "SandcastleUniversalCommand",
   "user": "__USER__",
   "args": {
-    "name": "Release public Sonar build",
+    "name": "Release public Flipper build",
     "oncall": "danielbuechele",
     "steps": [
       {
         "name": "Clone from GitHub",
         "required": true,
-        "shell": "git -c http.proxy=fwdproxy:8080 -c https.proxy=fwdproxy:8080 clone https://github.com/facebook/Sonar.git ../xplat/sonar-public"
+        "shell":
+          "git -c http.proxy=fwdproxy:8080 -c https.proxy=fwdproxy:8080 clone https://github.com/facebook/flipper.git ../xplat/sonar-public"
       },
       {
         "name": "Publish to github",
         "required": true,
-        "shell": "curl -o RELEASE.json -x fwdproxy:8080 --silent --data '{ \"tag_name\": \"v__VERSION__\", \"target_commitish\": \"master\", \"name\": \"v__VERSION__\", \"body\": \"\", \"draft\": false, \"prerelease\": true}' https://api.github.com/repos/facebook/Sonar/releases?access_token=$(secrets_tool get SONAR_GITHUB_TOKEN)",
+        "shell":
+          "curl -o RELEASE.json -x fwdproxy:8080 --silent --data '{ \"tag_name\": \"v__VERSION__\", \"target_commitish\": \"master\", \"name\": \"v__VERSION__\", \"body\": \"\", \"draft\": false, \"prerelease\": true}' https://api.github.com/repos/facebook/flipper/releases?access_token=$(secrets_tool get SONAR_GITHUB_TOKEN)",
         "shell_type": "SandcastleLocalShell"
       }
     ]
   },
-  "alias": "sonar_release_ios_public_build",
+  "alias": "flipper_release_ios_public_build",
   "capabilities": {
     "vcs": "fbcode-fbsource",
     "type": "lego-mac"

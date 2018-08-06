@@ -1,7 +1,7 @@
 #!/bin/bash
 
-echo "✨ Creating new Sonar release on GitHub..."
-MAJOR=$(curl -x fwdproxy:8080 --silent https://raw.githubusercontent.com/facebook/Sonar/master/package.json | jq -r '.version' | sed -E 's/[0-9]+$//g')
+echo "✨ Creating new Flipper release on GitHub..."
+MAJOR=$(curl -x fwdproxy:8080 --silent https://raw.githubusercontent.com/facebook/flipper/master/package.json | jq -r '.version' | sed -E 's/[0-9]+$//g')
 
 echo "What should the patch version of the next release be? (v${MAJOR}_)"
 

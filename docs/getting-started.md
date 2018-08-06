@@ -6,8 +6,8 @@ sidebar_label: Getting Started
 
 Flipper helps you debug Android and iOS apps running in an emulator/simulator or connected physical development devices. Flipper consists of two parts:
 
-* The desktop app for macOS
-* The native mobile SDKs for Android and iOS
+- The desktop app for macOS
+- The native mobile SDKs for Android and iOS
 
 To use Flipper, you need to add the mobile SDK to your app.
 
@@ -15,7 +15,7 @@ To use Flipper, you need to add the mobile SDK to your app.
 
 ### Desktop app
 
-The desktop part of Flipper doesn't need any particular setup. Simply [download the latest build](https://www.facebook.com/sonar/public/mac) of our app and launch it. The desktop app is available for macOS and requires a working installation of the Android/iOS development tools on your system.
+The desktop part of Sonar doesn't need any particular setup. Simply [download the latest build](https://www.facebook.com/fbflipper/public/mac) of our app and launch it. The desktop app is available for macOS and requires a working installation of the Android/iOS development tools on your system.
 
 Once you start Flipper and launch an emulator/simulator or connect a device, you will already be able to see the device logs in Flipper. To see app specific data, you need to integrate our native SDKs with your app.
 
@@ -107,13 +107,14 @@ and install the dependencies by running `pod install`. When you open the Xcode w
 }
 @end
 ```
+
 <div class='warning'>
 
-* We haven't released the dependency to CocoaPods yet, here is the [issue](https://github.com/facebook/flipper/issues/132) by which you can track.
-* If you do not use CocoaPods as a dependency management tool then currently there is no way to integrate SonarKit other than manually including all the dependencies and building it.
-* For Android, Flipper works with both emulators and physical devices connected through USB. However on iOS, we don't yet support physical devices.
-* The Flipper layout and network plugins aren't supported in Swift projects since they include C++ dependencies. We're working on supporting these plugins for Swift apps. You can join the discussion on the [issues page](https://github.com/facebook/flipper/issues).
-</div>
+- We haven't released the dependency to CocoaPods yet, here is the [issue](https://github.com/facebook/flipper/issues/132) by which you can track.
+- If you do not use CocoaPods as a dependency management tool then currently there is no way to integrate SonarKit other than manually including all the dependencies and building it.
+- For Android, Flipper works with both emulators and physical devices connected through USB. However on iOS, we don't yet support physical devices.
+- The Flipper layout and network plugins aren't supported in Swift projects since they include C++ dependencies. We're working on supporting these plugins for Swift apps. You can join the discussion on the [issues page](https://github.com/facebook/flipper/issues).
+  </div>
 
 ## Ready for takeoff
 
