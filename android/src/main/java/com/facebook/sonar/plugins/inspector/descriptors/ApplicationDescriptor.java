@@ -60,6 +60,15 @@ public class ApplicationDescriptor extends NodeDescriptor<ApplicationWrapper> {
   }
 
   private static List<ViewGroup> editedDelegates = new ArrayList<>();
+  private static boolean searchActive;
+
+  public static void setSearchActive(boolean active) {
+    searchActive = active;
+  }
+
+  public static boolean getSearchActive() {
+    return searchActive;
+  }
 
   private void setDelegates(ApplicationWrapper node) {
     clearEditedDelegates();
@@ -70,11 +79,16 @@ public class ApplicationDescriptor extends NodeDescriptor<ApplicationWrapper> {
 
         // add delegate to root to catch accessibility events so we can update focus in sonar
         view.setAccessibilityDelegate(new View.AccessibilityDelegate() {
-
           @Override
           public boolean onRequestSendAccessibilityEvent(ViewGroup host, View child, AccessibilityEvent event) {
             if (mConnection != null) {
 
+              // the touchOverlay will handle the event in this case
+              if (searchActive) {
+                return false;
+              }
+
+              // otherwise send the necessary focus event to the plugin
               int eventType = event.getEventType();
               if (eventType == AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED) {
                 mConnection.send("axFocusEvent",
@@ -87,6 +101,7 @@ public class ApplicationDescriptor extends NodeDescriptor<ApplicationWrapper> {
                                 .put("isFocus", false)
                                 .build());
               }
+
             }
             return super.onRequestSendAccessibilityEvent(host, child, event);
           }

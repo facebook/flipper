@@ -485,6 +485,12 @@ export default class Layout extends SonarPlugin<InspectorState> {
   }
 
   init() {
+    // persist searchActive state when moving between plugins to prevent multiple
+    // TouchOverlayViews since we can't edit the view heirarchy in onDisconnect
+    this.client.call('isSearchActive').then(({isSearchActive}) => {
+      this.dispatchAction({type: 'SetSearchActive', isSearchActive});
+    });
+
     performance.mark('LayoutInspectorInitialize');
     this.client.call('getRoot').then((element: Element) => {
       this.dispatchAction({elements: [element], type: 'UpdateElements'});
@@ -510,9 +516,10 @@ export default class Layout extends SonarPlugin<InspectorState> {
       this.getNodesAndDirectChildren(path, false).then(
         (elements: Array<Element>) => {
           const selected = path[path.length - 1];
+          const {key, AXkey} = this.getKeysFromSelected(selected);
 
           this.dispatchAction({elements, type: 'UpdateElements'});
-          this.dispatchAction({key: selected, type: 'SelectElement'});
+          this.dispatchAction({key, AXkey, type: 'SelectElement'});
           this.dispatchAction({isSearchActive: false, type: 'SetSearchActive'});
 
           for (const key of path) {
@@ -719,51 +726,57 @@ export default class Layout extends SonarPlugin<InspectorState> {
     this.dispatchAction({isAlignmentMode, type: 'SetAlignmentActive'});
   };
 
-  onElementSelected = debounce((key: ElementID) => {
-    let finalKey = key;
-    let finalAXkey = null;
+  getKeysFromSelected(selectedKey: ElementID) {
+    let key = selectedKey;
+    let AXkey = null;
 
     if (this.axEnabled()) {
       const linkedAXNode =
-        this.state.elements[key] &&
-        this.state.elements[key].extraInfo &&
-        this.state.elements[key].extraInfo.linkedAXNode;
+        this.state.elements[selectedKey] &&
+        this.state.elements[selectedKey].extraInfo &&
+        this.state.elements[selectedKey].extraInfo.linkedAXNode;
 
       // element only in main tree with linkedAXNode selected
       if (linkedAXNode) {
-        finalAXkey = linkedAXNode;
+        AXkey = linkedAXNode;
 
         // element only in AX tree with linked nonAX (litho) element selected
       } else if (
-        (!this.state.elements[key] ||
-          this.state.elements[key].name === 'ComponentHost') &&
-        this.state.AXtoNonAXMapping[key]
+        (!this.state.elements[selectedKey] ||
+          this.state.elements[selectedKey].name === 'ComponentHost') &&
+        this.state.AXtoNonAXMapping[selectedKey]
       ) {
-        finalKey = this.state.AXtoNonAXMapping[key];
-        finalAXkey = key;
+        key = this.state.AXtoNonAXMapping[selectedKey];
+        AXkey = selectedKey;
 
         // keys are same for both trees or 'linked' element does not exist
       } else {
-        finalAXkey = key;
+        AXkey = selectedKey;
       }
     }
 
+    return {key, AXkey};
+  }
+
+  onElementSelected = debounce((selectedKey: ElementID) => {
+    const {key, AXkey} = this.getKeysFromSelected(selectedKey);
+
     this.dispatchAction({
-      key: finalKey,
-      AXkey: finalAXkey,
+      key: key,
+      AXkey: AXkey,
       type: 'SelectElement',
     });
     this.client.send('setHighlighted', {
-      id: key,
+      id: selectedKey,
       isAlignmentMode: this.state.isAlignmentMode,
     });
-    this.getNodes([finalKey], {force: true, ax: false}).then(
+    this.getNodes([key], {force: true, ax: false}).then(
       (elements: Array<Element>) => {
         this.dispatchAction({elements, type: 'UpdateElements'});
       },
     );
-    if (this.axEnabled() && finalAXkey) {
-      this.getNodes([finalAXkey], {force: true, ax: true}).then(
+    if (AXkey) {
+      this.getNodes([AXkey], {force: true, ax: true}).then(
         (elements: Array<Element>) => {
           this.dispatchAction({elements, type: 'UpdateAXElements'});
         },

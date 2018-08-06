@@ -91,6 +91,16 @@ public final class AccessibilityUtil {
   }
 
   /**
+   * Given a {@link Context}, determine if an accessibility touch exploration service (TalkBack) is running.
+   *
+   * @param context The {@link Context} used to get the {@link AccessibilityManager}.
+   * @return {@code true} if an accessibility touch exploration service is currently running.
+   */
+  public static boolean isTalkbackEnabled(Context context) {
+    return ((AccessibilityManager) context.getSystemService(ACCESSIBILITY_SERVICE)).isTouchExplorationEnabled();
+  }
+
+  /**
    * Returns a sentence describing why a given {@link View} will be ignored by Google's TalkBack
    * screen reader.
    *

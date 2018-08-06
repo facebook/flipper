@@ -15,6 +15,7 @@ import android.view.accessibility.AccessibilityEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.accessibility.AccessibilityManager;
 import com.facebook.sonar.core.ErrorReportingRunnable;
 import com.facebook.sonar.core.SonarArray;
 import com.facebook.sonar.core.SonarConnection;
@@ -28,6 +29,7 @@ import com.facebook.sonar.plugins.console.iface.ConsoleCommandReceiver;
 import com.facebook.sonar.plugins.console.iface.NullScriptingEnvironment;
 import com.facebook.sonar.plugins.console.iface.ScriptingEnvironment;
 import com.facebook.sonar.plugins.inspector.descriptors.ApplicationDescriptor;
+import com.facebook.sonar.plugins.inspector.descriptors.utils.AccessibilityUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -136,6 +138,7 @@ public class InspectorSonarPlugin implements SonarPlugin {
     connection.receive("setData", mSetData);
     connection.receive("setHighlighted", mSetHighlighted);
     connection.receive("setSearchActive", mSetSearchActive);
+    connection.receive("isSearchActive", mIsSearchActive);
     connection.receive("getSearchResults", mGetSearchResults);
     connection.receive("getAXRoot", mGetAXRoot);
     connection.receive("getAXNodes", mGetAXNodes);
@@ -155,7 +158,7 @@ public class InspectorSonarPlugin implements SonarPlugin {
       mHighlightedId = null;
     }
 
-    // remove any added accessibility delegates
+    // remove any added accessibility delegates, leave isSearchActive untouched
     ApplicationDescriptor.clearEditedDelegates();
 
     mObjectTracker.clear();
@@ -234,7 +237,7 @@ public class InspectorSonarPlugin implements SonarPlugin {
 
               responder.error(
                       new SonarObject.Builder()
-                              .put("message", "No node with given id")
+                              .put("message", "No accessibility node with given id")
                               .put("id", id)
                               .build());
               return;
@@ -311,6 +314,7 @@ public class InspectorSonarPlugin implements SonarPlugin {
         public void onReceiveOnMainThread(final SonarObject params, SonarResponder responder)
             throws Exception {
           final boolean active = params.getBoolean("active");
+          ApplicationDescriptor.setSearchActive(active);
           final List<View> roots = mApplication.getViewRoots();
 
           ViewGroup root = null;
@@ -334,6 +338,15 @@ public class InspectorSonarPlugin implements SonarPlugin {
         }
       };
 
+  final SonarReceiver mIsSearchActive =
+          new MainThreadSonarReceiver(mConnection) {
+            @Override
+            public void onReceiveOnMainThread(final SonarObject params, SonarResponder responder)
+                    throws Exception {
+              responder.success(new SonarObject.Builder().put("isSearchActive", ApplicationDescriptor.getSearchActive()).build());
+            }
+          };
+
   final SonarReceiver mGetSearchResults =
       new MainThreadSonarReceiver(mConnection) {
         @Override
@@ -352,6 +365,30 @@ public class InspectorSonarPlugin implements SonarPlugin {
     public TouchOverlayView(Context context) {
       super(context);
       setBackgroundColor(BoundsDrawable.COLOR_HIGHLIGHT_CONTENT);
+    }
+
+    @Override
+    public boolean onHoverEvent(MotionEvent event) {
+
+      // if in layout inspector and talkback is running, override the first click to locate the clicked view
+      if (mConnection != null && AccessibilityUtil.isTalkbackEnabled(getContext()) && event.getPointerCount() == 1) {
+        final int action = event.getAction();
+        switch (action) {
+          case MotionEvent.ACTION_HOVER_ENTER: {
+            event.setAction(MotionEvent.ACTION_DOWN);
+          } break;
+          case MotionEvent.ACTION_HOVER_MOVE: {
+            event.setAction(MotionEvent.ACTION_MOVE);
+          } break;
+          case MotionEvent.ACTION_HOVER_EXIT: {
+            event.setAction(MotionEvent.ACTION_UP);
+          } break;
+        }
+        return onTouchEvent(event);
+      }
+
+      // otherwise use the default
+      return super.onHoverEvent(event);
     }
 
     @Override
