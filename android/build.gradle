@@ -51,6 +51,7 @@ android {
         implementation deps.lithoCore
         implementation deps.lithoWidget
         implementation deps.rhino
+        implementation deps.leakcanary
     }
 }
 
