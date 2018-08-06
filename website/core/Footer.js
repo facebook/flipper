@@ -27,7 +27,7 @@ class Footer extends React.Component {
               <img
                 src={this.props.config.baseUrl + this.props.config.footerIcon}
                 alt="Flipper mascot"
-                title="I'm a whale not a dolphin!"
+                title="I'm a dolphin not a whale!"
                 width="66"
                 height="58"
               />
