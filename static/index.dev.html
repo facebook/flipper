@@ -75,14 +75,14 @@
           suppressErrors = true;
         });
 
-        function openError(html) {
+        function openError(text) {
           if (suppressErrors) {
             return;
           }
 
           const box = document.querySelector('.__infinity-dev-box-error');
           box.removeAttribute('hidden');
-          box.innerHTML = html;
+          box.textContent = text;
           onLoad();
         }
 
