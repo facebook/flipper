@@ -201,14 +201,17 @@ const DEFAULT_FILTERS = [
   },
 ];
 
-const NonSelectableText = Text.extends({
+const HiddenScrollText = Text.extends({
   alignSelf: 'baseline',
   userSelect: 'none',
   lineHeight: '130%',
   marginTop: 6,
+  '&::-webkit-scrollbar': {
+    display: 'none',
+  },
 });
 
-const LogCount = NonSelectableText.extends(
+const LogCount = HiddenScrollText.extends(
   {
     backgroundColor: props => props.color,
     borderRadius: '999em',
@@ -225,12 +228,6 @@ const LogCount = NonSelectableText.extends(
     ignoreAttributes: ['color'],
   },
 );
-
-const HiddenScrollText = NonSelectableText.extends({
-  '&::-webkit-scrollbar': {
-    display: 'none',
-  },
-});
 
 function pad(chunk: mixed, len: number): string {
   let str = String(chunk);
@@ -343,29 +340,29 @@ export default class LogTable extends SonarDevicePlugin<LogsState> {
             },
             tag: {
               value: (
-                <NonSelectableText code={true}>{entry.tag}</NonSelectableText>
+                <HiddenScrollText code={true}>{entry.tag}</HiddenScrollText>
               ),
               isFilterable: true,
             },
             pid: {
               value: (
-                <NonSelectableText code={true}>
+                <HiddenScrollText code={true}>
                   {String(entry.pid)}
-                </NonSelectableText>
+                </HiddenScrollText>
               ),
               isFilterable: true,
             },
             tid: {
               value: (
-                <NonSelectableText code={true}>
+                <HiddenScrollText code={true}>
                   {String(entry.tid)}
-                </NonSelectableText>
+                </HiddenScrollText>
               ),
               isFilterable: true,
             },
             app: {
               value: (
-                <NonSelectableText code={true}>{entry.app}</NonSelectableText>
+                <HiddenScrollText code={true}>{entry.app}</HiddenScrollText>
               ),
               isFilterable: true,
             },
