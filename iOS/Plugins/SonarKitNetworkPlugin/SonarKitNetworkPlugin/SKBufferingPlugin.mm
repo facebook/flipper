@@ -11,6 +11,7 @@
 
 #import "SKBufferingPlugin.h"
 #import <SonarKit/SonarConnection.h>
+#import "SKDispatchQueue.h"
 
 struct CachedEvent {
   NSString *method;
@@ -27,10 +28,10 @@ static const NSUInteger bufferSize = 500;
   id<SonarConnection> _connection;
 }
 
-- (instancetype)initWithQueue:(const std::shared_ptr<facebook::sonar::DispatchQueue> &)queue {
+- (instancetype)initWithQueue:(dispatch_queue_t)queue {
   if (self = [super init]) {
     _ringBuffer.reserve(bufferSize);
-    _connectionAccessQueue = queue;
+    _connectionAccessQueue = std::make_shared<facebook::sonar::GCDQueue>(queue);
   }
   return self;
 }

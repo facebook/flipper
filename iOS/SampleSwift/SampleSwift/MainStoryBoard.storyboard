@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14113" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -31,7 +31,7 @@
                                     <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 </state>
                                 <connections>
-                                    <action selector="tappedNetworkInspector:" destination="2r2-64-LPh" eventType="touchUpInside" id="6Ta-mA-Ybz"/>
+                                    <segue destination="qMe-JX-czP" kind="push" id="Poz-iX-aCZ"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xh0-Q4-60g">
@@ -44,9 +44,6 @@
                                 <state key="normal" title="ComponentKit Layout">
                                     <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 </state>
-                                <connections>
-                                    <action selector="tappedComponentKitLayout:" destination="2r2-64-LPh" eventType="touchUpInside" id="amo-e0-rJv"/>
-                                </connections>
                             </button>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -72,7 +69,7 @@
         <!--Network View Controller-->
         <scene sceneID="Zgm-Mh-TPB">
             <objects>
-                <viewController storyboardIdentifier="NetworkViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="qMe-JX-czP" customClass="NetworkViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="NetworkViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="qMe-JX-czP" customClass="NetworkViewController" customModule="SampleSwift" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="1kD-re-kO3">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -93,7 +90,7 @@
                                             <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         </state>
                                         <connections>
-                                            <action selector="tappedGetAPI:" destination="qMe-JX-czP" eventType="touchUpInside" id="Xb9-5E-G2l"/>
+                                            <action selector="tappedGetAPI:" destination="qMe-JX-czP" eventType="touchUpInside" id="jq4-HI-nDK"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Fel-3h-2Ts">
@@ -107,7 +104,7 @@
                                             <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         </state>
                                         <connections>
-                                            <action selector="tappedPOSTAPI:" destination="qMe-JX-czP" eventType="touchUpInside" id="kv5-Bd-q86"/>
+                                            <action selector="tappedPOSTAPI:" destination="qMe-JX-czP" eventType="touchUpInside" id="gqv-I8-C9f"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cYg-iA-yAD">
@@ -122,7 +119,7 @@
                                             <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         </state>
                                         <connections>
-                                            <action selector="tappedGithubLitho:" destination="qMe-JX-czP" eventType="touchUpInside" id="SPR-ez-foo"/>
+                                            <action selector="tappedFetchFBLitho:" destination="qMe-JX-czP" eventType="touchUpInside" id="bLR-k5-ebI"/>
                                         </connections>
                                     </button>
                                 </subviews>
@@ -153,6 +150,7 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="dLV-zh-N2b"/>
                     </view>
+                    <navigationItem key="navigationItem" id="foE-rU-54N"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="jLg-IP-htV" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>

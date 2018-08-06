@@ -116,13 +116,7 @@ NSString *const kFLEXNetworkRecorderResponseCacheLimitDefaultsKey = @"com.flex.r
     }
 
     dispatch_async(self.queue, ^{
-        RequestInfo info = {
-          .identifier = self.identifierDict[requestID].longLongValue,
-          .timestamp = [NSDate timestamp],
-          .request = request,
-        };
-
-        info.setBody(request.HTTPBody);
+        SKRequestInfo *info = [[SKRequestInfo alloc] initWithIdentifier:self.identifierDict[requestID].longLongValue timestamp:[NSDate timestamp] request:request data:request.HTTPBody];
         [self.delegate didObserveRequest:info];
 
         FLEXNetworkTransaction *transaction = [FLEXNetworkTransaction new];
@@ -176,13 +170,7 @@ NSString *const kFLEXNetworkRecorderResponseCacheLimitDefaultsKey = @"com.flex.r
         }
         transaction.transactionState = FLEXNetworkTransactionStateFinished;
         transaction.duration = -[transaction.startTime timeIntervalSinceDate:finishedDate];
-        ResponseInfo responseInfo = {
-          .identifier = self.identifierDict[requestID].longLongValue,
-          .timestamp = [NSDate timestamp],
-          .response = transaction.response,
-          .body = nil,
-        };
-        responseInfo.setBody(responseBody);
+        SKResponseInfo *responseInfo = [[SKResponseInfo alloc] initWithIndentifier:self.identifierDict[requestID].longLongValue timestamp:[NSDate timestamp] response:transaction.response data:responseBody];
         self.identifierDict[requestID] = nil; //Clear the entry
         [self.delegate didObserveResponse:responseInfo];
 
@@ -207,12 +195,8 @@ NSString *const kFLEXNetworkRecorderResponseCacheLimitDefaultsKey = @"com.flex.r
         if (!transaction) {
             return;
         }
-      ResponseInfo responseInfo = {
-        .identifier = self.identifierDict[requestID].longLongValue,
-        .timestamp = [NSDate timestamp],
-        .response = transaction.response,
-        .body = nil,
-      };
+
+      SKResponseInfo *responseInfo = [[SKResponseInfo alloc] initWithIndentifier:self.identifierDict[requestID].longLongValue timestamp:[NSDate timestamp] response:transaction.response data: nil];
       self.identifierDict[requestID] = nil; //Clear the entry
       [self.delegate didObserveResponse:responseInfo];
         transaction.transactionState = FLEXNetworkTransactionStateFailed;
