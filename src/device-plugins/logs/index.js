@@ -24,6 +24,7 @@ import {
   ContextMenu,
   FlexColumn,
   Glyph,
+  SonarSidebar,
 } from 'sonar';
 import {SonarDevicePlugin, SearchableTable} from 'sonar';
 import textContent from '../../utils/textContent.js';
@@ -553,6 +554,7 @@ export default class LogTable extends SonarDevicePlugin<LogsState> {
           actions={<Button onClick={this.clearLogs}>Clear Logs</Button>}
           stickyBottom={true}
         />
+        <SonarSidebar>{this.renderSidebar()}</SonarSidebar>
       </LogTable.ContextMenu>
     );
   }
