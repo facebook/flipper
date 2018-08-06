@@ -11,26 +11,31 @@
 
 #import "SKBufferingPlugin.h"
 #import <SonarKit/SonarConnection.h>
-
-struct CachedEvent {
-  NSString *method;
-  NSDictionary<NSString *, id> *sonarObject;
-};
+#import "SKDispatchQueue.h"
+#import "SKBufferingPlugin+CPPInitialization.h"
 
 static const NSUInteger bufferSize = 500;
 
+@interface SKBufferingPlugin()
+
+@property(assign, nonatomic) std::vector<CachedEvent> ringBuffer;
+@property(assign, nonatomic) std::shared_ptr<facebook::sonar::DispatchQueue> connectionAccessQueue;
+@property(strong, nonatomic) id<SonarConnection> connection;
+
+@end
+
 @implementation SKBufferingPlugin
-{
-  std::vector<CachedEvent> _ringBuffer;
-  std::shared_ptr<facebook::sonar::DispatchQueue> _connectionAccessQueue;
+// {
+//   std::vector<CachedEvent> _ringBuffer;
+//   std::shared_ptr<facebook::sonar::DispatchQueue> _connectionAccessQueue;
+//
+//   id<SonarConnection> _connection;
+// }
 
-  id<SonarConnection> _connection;
-}
-
-- (instancetype)initWithQueue:(const std::shared_ptr<facebook::sonar::DispatchQueue> &)queue {
+- (instancetype)initWithQueue:(dispatch_queue_t)queue {
   if (self = [super init]) {
     _ringBuffer.reserve(bufferSize);
-    _connectionAccessQueue = queue;
+    _connectionAccessQueue = std::make_shared<facebook::sonar::GCDQueue>(queue);
   }
   return self;
 }
@@ -79,5 +84,23 @@ static const NSUInteger bufferSize = 500;
 }
 
 @end
+
+@implementation SKBufferingPlugin(CPPInitialization)
+
+- (instancetype)initWithVectorEventSize:(NSUInteger)size connectionAccessQueue:(std::shared_ptr<facebook::sonar::DispatchQueue>)connectionAccessQueue {
+    if (self = [super init]) {
+      _ringBuffer.reserve(size);
+      _connectionAccessQueue = connectionAccessQueue;
+    }
+    return self;
+}
+- (instancetype)initWithDispatchQueue:(std::shared_ptr<facebook::sonar::DispatchQueue>)queue {
+    return [self initWithVectorEventSize:bufferSize
+                      connectionAccessQueue:queue];
+
+}
+
+@end
+
 
 #endif

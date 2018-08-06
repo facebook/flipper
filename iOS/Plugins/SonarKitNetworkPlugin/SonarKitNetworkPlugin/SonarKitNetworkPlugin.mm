@@ -6,8 +6,14 @@
  *
  */
 #if FB_SONARKIT_ENABLED
+#import <vector>
+#import <iostream>
+#import <memory>
 #import "SonarKitNetworkPlugin.h"
 #import "SKNetworkReporter.h"
+#import "SonarKitNetworkPlugin+CPPInitialization.h"
+#import "SKBufferingPlugin+CPPInitialization.h"
+#import "SKDispatchQueue.h"
 
 @interface SonarKitNetworkPlugin ()
 
@@ -21,20 +27,20 @@
 }
 
 - (instancetype)init {
-  if (self = [super initWithQueue:std::make_shared<facebook::sonar::GCDQueue>(dispatch_queue_create("com.sonarkit.network.buffer", DISPATCH_QUEUE_SERIAL))]) {
+  if (self = [super initWithQueue:dispatch_queue_create("com.sonarkit.network.buffer", DISPATCH_QUEUE_SERIAL)]) {
   }
   return self;
 }
 
 - (instancetype)initWithNetworkAdapter:(id<SKNetworkAdapterDelegate>)adapter {
-  if (self = [super initWithQueue:std::make_shared<facebook::sonar::GCDQueue>(dispatch_queue_create("com.sonarkit.network.buffer", DISPATCH_QUEUE_SERIAL))]) {
+  if (self = [super initWithQueue:dispatch_queue_create("com.sonarkit.network.buffer", DISPATCH_QUEUE_SERIAL)]) {
     adapter.delegate = self;
     _adapter = adapter;
   }
   return self;
 }
 
-- (instancetype)initWithNetworkAdapter:(id<SKNetworkAdapterDelegate>)adapter queue:(const std::shared_ptr<facebook::sonar::DispatchQueue> &)queue; {
+- (instancetype)initWithNetworkAdapter:(id<SKNetworkAdapterDelegate>)adapter queue:(dispatch_queue_t)queue; {
   if (self = [super initWithQueue:queue]) {
     adapter.delegate = self;
     _adapter = adapter;
@@ -45,7 +51,7 @@
 #pragma mark - SKNetworkReporterDelegate
 
 
-- (void)didObserveRequest:(RequestInfo)request;
+- (void)didObserveRequest:(SKRequestInfo *)request;
 {
   NSMutableArray<NSDictionary<NSString *, id> *> *headers = [NSMutableArray new];
   for (NSString *key in [request.request.allHTTPHeaderFields allKeys]) {
@@ -69,7 +75,7 @@
                }];
 }
 
-- (void)didObserveResponse:(ResponseInfo)response
+- (void)didObserveResponse:(SKResponseInfo *)response
 {
   NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse*)response.response;
 
@@ -94,6 +100,18 @@
                @"data": body ? body : [NSNull null]
                }];
 
+}
+
+@end
+
+@implementation SonarKitNetworkPlugin (CPPInitialization)
+
+- (instancetype)initWithNetworkAdapter:(id<SKNetworkAdapterDelegate>)adapter dispatchQueue:(std::shared_ptr<facebook::sonar::DispatchQueue>)queue {
+    if (self = [super initWithDispatchQueue:queue]) {
+      adapter.delegate = self;
+      _adapter = adapter;
+    }
+    return self;
 }
 
 @end
