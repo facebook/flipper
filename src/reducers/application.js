@@ -42,18 +42,28 @@ export default function reducer(
   state: State = INITIAL_STATE,
   action: Action,
 ): State {
-  const newValue =
-    typeof action.payload === 'undefined'
-      ? !state[action.type]
-      : action.payload;
-  if (state[action.type] === newValue) {
-    // value hasn't changed, do nothing
-    return state;
+  const {payload, type} = action;
+  const newValue = typeof payload === 'undefined' ? !state[type] : payload;
+
+  if (
+    type === 'leftSidebarVisible' ||
+    type === 'rightSidebarVisible' ||
+    type === 'rightSidebarAvailable' ||
+    type === 'bugDialogVisible' ||
+    type === 'windowIsFocused' ||
+    type === 'pluginManagerVisible'
+  ) {
+    if (state[type] === newValue) {
+      // value hasn't changed
+      return state;
+    } else {
+      return {
+        ...state,
+        [type]: newValue,
+      };
+    }
   } else {
-    return {
-      ...state,
-      [action.type]: newValue,
-    };
+    return state;
   }
 }
 
