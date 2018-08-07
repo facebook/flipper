@@ -50,7 +50,7 @@ Pod::Spec.new do |spec|
     ss.dependency 'SonarKit/FBDefines'
     ss.dependency 'SonarKit/FBCxxUtils'
     ss.dependency 'SonarKit/CppBridge'
-    ss.dependency 'Folly', '~>1.0'
+    ss.dependency 'Folly', '~>1.1'
     ss.dependency 'Sonar', '~>'+sonarkit_version
     ss.dependency 'CocoaAsyncSocket', '~> 7.6'
     ss.dependency 'PeerTalk', '~>0.0.2'
