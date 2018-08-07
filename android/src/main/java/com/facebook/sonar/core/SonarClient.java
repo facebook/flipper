@@ -17,4 +17,10 @@ public interface SonarClient {
   void start();
 
   void stop();
+
+  void subscribeForUpdates(SonarStateUpdateListener stateListener);
+
+  void unsubscribe();
+
+  String getState();
 }

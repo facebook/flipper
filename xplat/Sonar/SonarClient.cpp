@@ -9,6 +9,8 @@
 #include "SonarClient.h"
 #include "SonarConnectionImpl.h"
 #include "SonarResponderImpl.h"
+#include "SonarState.h"
+#include "SonarStep.h"
 #include "SonarWebSocketImpl.h"
 
 #ifdef __ANDROID__
@@ -35,6 +37,12 @@ void SonarClient::init(SonarInitConfig config) {
 
 SonarClient* SonarClient::instance() {
   return kInstance;
+}
+
+void SonarClient::setStateListener(
+    std::shared_ptr<SonarStateUpdateListener> stateListener) {
+  SONAR_LOG("Setting state listener");
+  sonarState_->setUpdateListener(stateListener);
 }
 
 void SonarClient::addPlugin(std::shared_ptr<SonarPlugin> plugin) {
@@ -196,6 +204,10 @@ void SonarClient::performAndReportError(const std::function<void()>& func) {
       socket_->sendMessage(message);
     }
   }
+}
+
+std::string SonarClient::getState() {
+  return sonarState_->getState();
 }
 
 } // namespace sonar
