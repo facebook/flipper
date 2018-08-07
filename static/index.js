@@ -8,11 +8,27 @@ const {app, BrowserWindow} = require('electron');
 const path = require('path');
 const url = require('url');
 const fs = require('fs');
+const {exec} = require('child_process');
 const compilePlugins = require('./compilePlugins.js');
 const os = require('os');
 
 if (!process.env.ANDROID_HOME) {
   process.env.ANDROID_HOME = '/opt/android_sdk';
+}
+
+if (process.platform === 'darwin') {
+  // If we are running on macOS and the app is called Flipper, we add a comment
+  // with the old name, to make it findable via Spotlight using its old name.
+  const APP_NAME = 'Flipper.app';
+  const i = process.execPath.indexOf(`/${APP_NAME}/`);
+  if (i > -1) {
+    exec(
+      `osascript -e 'on run {f, c}' -e 'tell app "Finder" to set comment of (POSIX file f as alias) to c' -e end "${process.execPath.substr(
+        0,
+        i,
+      )}/${APP_NAME}" "sonar"`,
+    );
+  }
 }
 
 // ensure .sonar folder and config exist
