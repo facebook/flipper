@@ -48,6 +48,13 @@ public final class AndroidSonarClient {
     return SonarClientImpl.getInstance();
   }
 
+  public static synchronized SonarClient getInstanceIfInitialized() {
+    if (!sIsInitialized) {
+      return null;
+    }
+    return SonarClientImpl.getInstance();
+  }
+
   static void checkRequiredPermissions(Context context) {
     // Don't terminate for compatibility reasons. Not all apps have ACCESS_WIFI_STATE permission.
     for (String permission : REQUIRED_PERMISSIONS) {
