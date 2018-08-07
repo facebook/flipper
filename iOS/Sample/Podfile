@@ -2,7 +2,7 @@ project 'Sample.xcodeproj'
 source 'https://github.com/facebook/Sonar.git'
 source 'https://github.com/CocoaPods/Specs'
 swift_version = "4.1"
-sonarkit_version = '0.6.15'
+sonarkit_version = '0.6.16'
 
 target 'Sample' do
   pod 'SonarKit', '~>'+sonarkit_version
