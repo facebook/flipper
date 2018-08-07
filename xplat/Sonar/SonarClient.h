@@ -42,15 +42,21 @@ class SonarClient : public SonarWebSocket::Callbacks {
   SonarClient(std::unique_ptr<SonarWebSocket> socket)
       : socket_(std::move(socket)) {
     sonarState_ = std::make_unique<SonarState>();
+    auto step = sonarState_->start("Create client");
     socket_->setCallbacks(this);
+    step->complete();
   }
 
   void start() {
+    auto step = sonarState_->start("Start client");
     socket_->start();
+    step->complete();
   }
 
   void stop() {
+    auto step = sonarState_->start("Stop client");
     socket_->stop();
+    step->complete();
   }
 
   void onConnected() override;
