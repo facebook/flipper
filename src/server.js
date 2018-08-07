@@ -12,6 +12,7 @@ import type {ClientQuery} from './Client.js';
 import CertificateProvider from './utils/CertificateProvider';
 import {RSocketServer, ReactiveSocket} from 'rsocket-core';
 import RSocketTCPServer from 'rsocket-tcp-server';
+import {Single} from 'rsocket-flowable';
 import Client from './Client.js';
 import {RecurringError} from './utils/errors';
 
@@ -155,6 +156,48 @@ export default class Server extends EventEmitter {
     }
 
     return {
+      requestResponse: (payload: {data: string}) => {
+        if (typeof payload.data !== 'string') {
+          return;
+        }
+
+        let rawData;
+        try {
+          rawData = JSON.parse(payload.data);
+        } catch (err) {
+          console.error(`Invalid JSON: ${payload.data}`, 'clientMessage');
+          return;
+        }
+
+        const json: {|
+          method: 'signCertificate',
+          csr: string,
+          destination: string,
+        |} = rawData;
+        if (json.method === 'signCertificate') {
+          console.warn('CSR received from device', 'server');
+          const {csr, destination} = json;
+          return new Single(subscriber => {
+            subscriber.onSubscribe();
+            this.certificateProvider
+              .processCertificateSigningRequest(csr, clientData.os, destination)
+              .then(_ => {
+                subscriber.onComplete({
+                  data: JSON.stringify({}),
+                  metadata: '',
+                });
+              })
+              .catch(e => {
+                console.error(e);
+                subscriber.onError(e);
+              });
+          });
+        }
+      },
+
+      // Leaving this here for a while for backwards compatibility,
+      // but for up to date SDKs it will no longer used.
+      // We can delete it after the SDK change has been using requestResponse for a few weeks.
       fireAndForget: (payload: {data: string}) => {
         if (typeof payload.data !== 'string') {
           return;
@@ -176,11 +219,11 @@ export default class Server extends EventEmitter {
         if (json.method === 'signCertificate') {
           console.warn('CSR received from device', 'server');
           const {csr, destination} = json;
-          this.certificateProvider.processCertificateSigningRequest(
-            csr,
-            clientData.os,
-            destination,
-          );
+          this.certificateProvider
+            .processCertificateSigningRequest(csr, clientData.os, destination)
+            .catch(e => {
+              console.error(e);
+            });
         }
       },
     };

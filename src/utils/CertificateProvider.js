@@ -100,8 +100,7 @@ export default class CertificateProvider {
           csr,
           os,
         ),
-      )
-      .catch(e => console.error(e));
+      );
   }
 
   ensureOpenSSLIsAvailable(): void {
