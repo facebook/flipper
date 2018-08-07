@@ -52,11 +52,15 @@ source <span class="hljs-string">'https://github.com/facebook/Sonar.git'</span>
 source <span class="hljs-string">'https://github.com/CocoaPods/Specs'</span>
 <span class="hljs-comment"># Uncomment the next line to define a global platform for your project</span>
 swift_version = <span class="hljs-string">"4.1"</span>
-sonarkit_version = <span class="hljs-string">'0.6.15'</span>
+sonarkit_version = <span class="hljs-string">'0.6.16'</span>
 
 target <span class="hljs-string">'MyApp'</span> <span class="hljs-keyword">do</span>
 
   pod <span class="hljs-string">'SonarKit'</span>, <span class="hljs-string">'~&gt;'</span>+sonarkit_version
+  <span class="hljs-comment"># Layout and network plugins are not yet supported for swift projects</span>
+  pod <span class="hljs-string">'SonarKit/SonarKitLayoutComponentKitSupport'</span>, <span class="hljs-string">'~&gt;'</span> + sonarkit_version
+  pod <span class="hljs-string">'SonarKit/SKIOSNetworkPlugin'</span>, <span class="hljs-string">'~&gt;'</span> + sonarkit_version
+
   post_install <span class="hljs-keyword">do</span> <span class="hljs-params">|installer|</span>
 
         installer.pods_project.targets.each <span class="hljs-keyword">do</span> <span class="hljs-params">|target|</span>
@@ -90,7 +94,7 @@ target <span class="hljs-string">'MyApp'</span> <span class="hljs-keyword">do</s
 <li>We haven't released the dependency to CocoaPods yet, here is the <a href="https://github.com/facebook/flipper/issues/132">issue</a> by which you can track.</li>
 <li>If you do not use CocoaPods as a dependency management tool then currently there is no way to integrate SonarKit other than manually including all the dependencies and building it.</li>
 <li>For Android, Flipper works with both emulators and physical devices connected through USB. However on iOS, we don't yet support physical devices.</li>
-<li>The Flipper layout and network plugins aren't supported in Swift projects since they include C++ dependencies. We're working on supporting these plugins for Swift apps. You can join the discussion on the <a href="https://github.com/facebook/flipper/issues">issues page</a>.
+<li>The Flipper layout plugin isn't supported in Swift projects since they include C++ dependencies. We're working on supporting it for Swift apps. You can join the discussion on the <a href="https://github.com/facebook/flipper/issues">issues page</a>.
   </div>
 </li>
 </ul>
