@@ -34,10 +34,15 @@ function createDecive(client, device): Promise<AndroidDevice> {
 function getRunningEmulatorName(id: string): Promise<?string> {
   return new Promise((resolve, reject) => {
     const port = id.replace('emulator-', '');
+    // The GNU version of netcat doesn't terminate after 1s when
+    // specifying `-w 1`, so we kill it after a timeout. Because
+    // of that, even in case of an error, there may still be
+    // relevant data for us to parse.
     child_process.exec(
       `echo "avd name" | nc -w 1 localhost ${port}`,
-      (error: ?Error, data: ?string) => {
-        if (error == null && data != null) {
+      {timeout: 1000, encoding: 'utf-8'},
+      (error: ?Error, data) => {
+        if (data != null && typeof data === 'string') {
           const match = data.trim().match(/(.*)\r\nOK$/);
           resolve(match != null && match.length > 0 ? match[1] : null);
         } else {
