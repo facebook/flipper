@@ -91,8 +91,8 @@ class Responder : public rsocket::RSocketResponder {
   }
 };
 
-SonarWebSocketImpl::SonarWebSocketImpl(SonarInitConfig config)
-    : deviceData_(config.deviceData), sonarEventBase_(config.callbackWorker), connectionEventBase_(config.connectionWorker) {}
+SonarWebSocketImpl::SonarWebSocketImpl(SonarInitConfig config, std::shared_ptr<SonarState> state)
+    : deviceData_(config.deviceData), sonarState_(state), sonarEventBase_(config.callbackWorker), connectionEventBase_(config.connectionWorker) {}
 
 SonarWebSocketImpl::~SonarWebSocketImpl() {
   stop();

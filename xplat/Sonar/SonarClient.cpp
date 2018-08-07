@@ -31,8 +31,9 @@ static SonarClient* kInstance;
 using folly::dynamic;
 
 void SonarClient::init(SonarInitConfig config) {
+  auto state = std::make_shared<SonarState>();
   kInstance =
-      new SonarClient(std::make_unique<SonarWebSocketImpl>(std::move(config)));
+      new SonarClient(std::make_unique<SonarWebSocketImpl>(std::move(config), state), state);
 }
 
 SonarClient* SonarClient::instance() {
