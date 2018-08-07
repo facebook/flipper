@@ -38,7 +38,7 @@ repositories {
 }
 
 dependencies {
-  debugImplementation 'com.facebook.sonar:sonar:0.6.13'
+  debugImplementation 'com.facebook.flipper:flipper:0.6.16'
 }
 ```
 
