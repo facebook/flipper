@@ -283,6 +283,7 @@ public class InspectorSonarPlugin implements SonarPlugin {
         public void onReceiveOnMainThread(final SonarObject params, SonarResponder responder)
             throws Exception {
           final String nodeId = params.getString("id");
+          final boolean ax = params.getBoolean("ax");
           final SonarArray keyPath = params.getArray("path");
           final SonarDynamic value = params.getDynamic("value");
 
@@ -303,6 +304,7 @@ public class InspectorSonarPlugin implements SonarPlugin {
           }
 
           descriptor.setValue(obj, path, value);
+          responder.success(ax ? getAXNode(nodeId): null);
         }
       };
 
@@ -620,6 +622,7 @@ public class InspectorSonarPlugin implements SonarPlugin {
         .put("data", data)
         .put("children", children)
         .put("attributes", attributes)
+        .put("decoration", descriptor.getAXDecoration(obj))
         .put("extraInfo", descriptor.getExtraInfo(obj))
         .build();
   }

@@ -142,6 +142,12 @@ public class LithoViewDescriptor extends NodeDescriptor<LithoView> {
   }
 
   @Override
+  public String getAXDecoration(LithoView node) throws Exception {
+    final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
+    return descriptor.getAXDecoration(node);
+  }
+
+  @Override
   public boolean matches(String query, LithoView node) throws Exception {
     NodeDescriptor descriptor = descriptorForClass(Object.class);
     return descriptor.matches(query, node);

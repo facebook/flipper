@@ -37,6 +37,7 @@ import com.facebook.sonar.plugins.inspector.InspectorValue;
 import com.facebook.sonar.plugins.inspector.Named;
 import com.facebook.sonar.plugins.inspector.NodeDescriptor;
 import com.facebook.sonar.plugins.inspector.Touch;
+import com.facebook.sonar.plugins.inspector.descriptors.utils.AccessibilityEvaluationUtil;
 import com.facebook.sonar.plugins.inspector.descriptors.utils.AccessibilityRoleUtil;
 import com.facebook.sonar.plugins.inspector.descriptors.utils.AccessibilityUtil;
 import com.facebook.sonar.plugins.inspector.descriptors.utils.EnumMapping;
@@ -536,6 +537,11 @@ public class ViewDescriptor extends NodeDescriptor<View> {
   @Override
   public @Nullable String getDecoration(View obj) {
     return null;
+  }
+
+  @Override
+  public String getAXDecoration(View obj) {
+    return AccessibilityEvaluationUtil.isTalkbackFocusable(obj) ? "accessibility" : "";
   }
 
   @Override

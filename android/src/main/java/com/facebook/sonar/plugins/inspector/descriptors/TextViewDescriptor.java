@@ -156,6 +156,12 @@ public class TextViewDescriptor extends NodeDescriptor<TextView> {
   }
 
   @Override
+  public @Nullable String getAXDecoration(TextView node) throws Exception {
+    final NodeDescriptor descriptor = descriptorForClass(View.class);
+    return descriptor.getAXDecoration(node);
+  }
+
+  @Override
   public boolean matches(String query, TextView node) throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(Object.class);
     return descriptor.matches(query, node);

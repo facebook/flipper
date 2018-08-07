@@ -184,6 +184,14 @@ public abstract class NodeDescriptor<T> {
   public abstract String getDecoration(T node) throws Exception;
 
   /**
+   * @return A string indicating how this element should be decorated in the AX tree. Check with the Sonar desktop
+   *     app to see what values are supported.
+   */
+  public String getAXDecoration(T node) throws Exception {
+    return null;
+  }
+
+  /**
    * @return Extra data about the node indicating whether the node corresponds to a node in the
    *     other tree or if it is not represented in the other tree bu has children that should show
    *     up, etc.

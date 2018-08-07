@@ -292,6 +292,12 @@ public class ViewGroupDescriptor extends NodeDescriptor<ViewGroup> {
   }
 
   @Override
+  public @Nullable String getAXDecoration(ViewGroup obj) throws Exception {
+    final NodeDescriptor descriptor = descriptorForClass(View.class);
+    return descriptor.getAXDecoration(obj);
+  }
+
+  @Override
   public boolean matches(String query, ViewGroup node) throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(Object.class);
     return descriptor.matches(query, node);

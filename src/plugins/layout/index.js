@@ -803,15 +803,20 @@ export default class Layout extends SonarPlugin<InspectorState> {
   }
 
   onDataValueChanged = (path: Array<string>, value: any) => {
-    const selected = this.state.inAXMode
-      ? this.state.AXselected
-      : this.state.selected;
-    this.client.send('setData', {id: selected, path, value});
-    this.props.logger.track('usage', 'layout:value-changed', {
-      id: selected,
-      value: value,
-      path: path,
-    });
+    const ax = this.state.inAXMode;
+    const id = ax ? this.state.AXselected : this.state.selected;
+    this.client
+      .call('setData', {id, path, value, ax})
+      .then((element: Element) => {
+        if (ax) {
+          this.dispatchAction({
+            elements: [element],
+            type: 'UpdateAXElements',
+          });
+        }
+      });
+
+    this.props.logger.track('usage', 'layout:value-changed', {id, value, path});
   };
 
   renderSidebar = () => {
