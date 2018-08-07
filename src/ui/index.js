@@ -159,6 +159,9 @@ export type {
   ElementSearchResultSet,
 } from './components/elements-inspector/ElementsInspector.js';
 export {Elements} from './components/elements-inspector/elements.js';
+export type {
+  ContextMenuExtension,
+} from './components/elements-inspector/elements.js';
 export {
   default as ElementsInspector,
 } from './components/elements-inspector/ElementsInspector.js';

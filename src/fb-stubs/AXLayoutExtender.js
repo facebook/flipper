@@ -6,7 +6,12 @@
  */
 
 import {Component} from 'react';
-import type {Element, ElementID, ElementSearchResultSet} from 'sonar';
+import type {
+  Element,
+  ElementID,
+  ElementSearchResultSet,
+  ContextMenuExtension,
+} from 'sonar';
 
 export class AXElementsInspector extends Component<{
   onElementExpanded: (key: ElementID, deep: boolean) => void,
@@ -19,6 +24,7 @@ export class AXElementsInspector extends Component<{
   root: ?ElementID,
   elements: {[key: ElementID]: Element},
   useAppSidebar?: boolean,
+  contextMenuExtensions: Array<ContextMenuExtension>,
 }> {
   render() {
     return null;

@@ -791,6 +791,17 @@ export default class Layout extends SonarPlugin<InspectorState> {
     });
   });
 
+  getAXContextMenuExtensions() {
+    return [
+      {
+        label: 'Focus',
+        click: (id: ElementID) => {
+          this.client.send('onRequestAXFocus', {id});
+        },
+      },
+    ];
+  }
+
   onDataValueChanged = (path: Array<string>, value: any) => {
     const selected = this.state.inAXMode
       ? this.state.AXselected
@@ -935,6 +946,7 @@ export default class Layout extends SonarPlugin<InspectorState> {
               searchResults={null}
               root={AXroot}
               elements={AXelements}
+              contextMenuExtensions={this.getAXContextMenuExtensions()}
             />
           ) : null}
         </FlexRow>

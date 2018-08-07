@@ -142,6 +142,7 @@ public class InspectorSonarPlugin implements SonarPlugin {
     connection.receive("getSearchResults", mGetSearchResults);
     connection.receive("getAXRoot", mGetAXRoot);
     connection.receive("getAXNodes", mGetAXNodes);
+    connection.receive("onRequestAXFocus", mOnRequestAXFocus);
 
     if (mExtensionCommands != null) {
       for (ExtensionCommand extensionCommand : mExtensionCommands) {
@@ -259,6 +260,22 @@ public class InspectorSonarPlugin implements SonarPlugin {
           responder.success(new SonarObject.Builder().put("elements", result).build());
         }
       };
+
+  final SonarReceiver mOnRequestAXFocus =
+          new MainThreadSonarReceiver(mConnection) {
+            @Override
+            public void onReceiveOnMainThread(final SonarObject params, final SonarResponder responder)
+                    throws Exception {
+              final String nodeId = params.getString("id");
+
+              final Object obj = mObjectTracker.get(nodeId);
+              if (obj == null || !(obj instanceof View)) {
+                return;
+              }
+
+              ((View) obj).sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
+            }
+          };
 
   final SonarReceiver mSetData =
       new MainThreadSonarReceiver(mConnection) {

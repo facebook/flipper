@@ -215,6 +215,7 @@ type ElementsRowProps = {
   childrenCount: number,
   onElementHovered: ?(key: ?ElementID) => void,
   style: ?Object,
+  contextMenuExtensions: Array<ContextMenuExtension>,
 };
 
 type ElementsRowState = {|
@@ -232,7 +233,7 @@ class ElementsRow extends PureComponent<ElementsRowProps, ElementsRowState> {
 
   getContextMenu = (): Array<Electron$MenuItemOptions> => {
     const {props} = this;
-    return [
+    const items = [
       {
         type: 'separator',
       },
@@ -249,6 +250,15 @@ class ElementsRow extends PureComponent<ElementsRowProps, ElementsRowState> {
         },
       },
     ];
+
+    for (const extension of props.contextMenuExtensions) {
+      items.push({
+        label: extension.label,
+        click: () => extension.click(this.props.id),
+      });
+    }
+
+    return items;
   };
 
   onClick = () => {
@@ -390,12 +400,18 @@ type ElementsProps = {|
   onElementExpanded: (key: ElementID, deep: boolean) => void,
   onElementHovered: ?(key: ?ElementID) => void,
   alternateRowColor?: boolean,
+  contextMenuExtensions?: Array<ContextMenuExtension>,
 |};
 
 type ElementsState = {|
   flatKeys: Array<ElementID>,
   flatElements: FlatElements,
   maxDepth: number,
+|};
+
+export type ContextMenuExtension = {|
+  label: string,
+  click: ElementID => void,
 |};
 
 export class Elements extends PureComponent<ElementsProps, ElementsState> {
@@ -554,6 +570,7 @@ export class Elements extends PureComponent<ElementsProps, ElementsState> {
       selected,
       focused,
       searchResults,
+      contextMenuExtensions,
     } = this.props;
     const {flatElements} = this.state;
     const row = flatElements[index];
@@ -593,6 +610,7 @@ export class Elements extends PureComponent<ElementsProps, ElementsState> {
         elements={elements}
         childrenCount={childrenCount}
         style={style}
+        contextMenuExtensions={contextMenuExtensions || []}
       />
     );
   };
