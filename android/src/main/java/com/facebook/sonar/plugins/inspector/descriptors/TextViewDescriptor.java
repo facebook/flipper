@@ -150,6 +150,12 @@ public class TextViewDescriptor extends NodeDescriptor<TextView> {
   }
 
   @Override
+  public void axHitTest(TextView node, Touch touch) throws Exception {
+    final NodeDescriptor descriptor = descriptorForClass(View.class);
+    descriptor.axHitTest(node, touch);
+  }
+
+  @Override
   public @Nullable String getDecoration(TextView node) throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(View.class);
     return descriptor.getDecoration(node);

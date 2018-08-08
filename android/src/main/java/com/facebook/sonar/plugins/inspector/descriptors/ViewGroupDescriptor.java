@@ -248,13 +248,12 @@ public class ViewGroupDescriptor extends NodeDescriptor<ViewGroup> {
     descriptor.setHighlighted(node, selected, isAlignmentMode);
   }
 
-  @Override
-  public void hitTest(ViewGroup node, Touch touch) {
+  private void runHitTest(ViewGroup node, Touch touch) {
     for (int i = node.getChildCount() - 1; i >= 0; i--) {
       final View child = node.getChildAt(i);
       if (child instanceof HiddenNode
-          || child.getVisibility() != View.VISIBLE
-          || shouldSkip(child)) {
+              || child.getVisibility() != View.VISIBLE
+              || shouldSkip(child)) {
         continue;
       }
 
@@ -275,6 +274,16 @@ public class ViewGroupDescriptor extends NodeDescriptor<ViewGroup> {
     }
 
     touch.finish();
+  }
+
+  @Override
+  public void hitTest(ViewGroup node, Touch touch) {
+    runHitTest(node, touch);
+  }
+
+  @Override
+  public void axHitTest(ViewGroup node, Touch touch) {
+    runHitTest(node, touch);
   }
 
   private static boolean shouldSkip(View view) {

@@ -437,6 +437,48 @@ export default class Layout extends SonarPlugin<InspectorState> {
     return AXToggleButtonEnabled && this.realClient.query.os === 'Android';
   }
 
+  // expand tree and highlight click-to-inspect node that was found
+  onSelectResultsRecieved(path: Array<ElementID>, ax: boolean) {
+    this.getNodesAndDirectChildren(path, ax).then(
+      (elements: Array<Element>) => {
+        const selected = path[path.length - 1];
+
+        this.dispatchAction({
+          elements,
+          type: ax ? 'UpdateAXElements' : 'UpdateElements',
+        });
+
+        // select node from ax tree if in ax mode
+        // select node from main tree if not in ax mode
+        // (also selects corresponding node in other tree if it exists)
+        if ((ax && this.state.inAXMode) || (!ax && !this.state.inAXMode)) {
+          const {key, AXkey} = this.getKeysFromSelected(selected);
+          this.dispatchAction({key, AXkey, type: 'SelectElement'});
+        }
+
+        this.dispatchAction({
+          isSearchActive: false,
+          type: 'SetSearchActive',
+        });
+
+        for (const key of path) {
+          this.dispatchAction({
+            expand: true,
+            key,
+            type: ax ? 'ExpandAXElement' : 'ExpandElement',
+          });
+        }
+
+        this.client.send('setHighlighted', {
+          id: selected,
+          isAlignmentMode: this.state.isAlignmentMode,
+        });
+
+        this.client.send('setSearchActive', {active: false});
+      },
+    );
+  }
+
   initAX() {
     this.client.call('getAXRoot').then((element: Element) => {
       this.dispatchAction({elements: [element], type: 'UpdateAXElements'});
@@ -482,6 +524,10 @@ export default class Layout extends SonarPlugin<InspectorState> {
         );
       },
     );
+
+    this.client.subscribe('selectAX', ({path}: {path: Array<ElementID>}) => {
+      this.onSelectResultsRecieved(path, true);
+    });
   }
 
   init() {
@@ -513,26 +559,7 @@ export default class Layout extends SonarPlugin<InspectorState> {
     );
 
     this.client.subscribe('select', ({path}: {path: Array<ElementID>}) => {
-      this.getNodesAndDirectChildren(path, false).then(
-        (elements: Array<Element>) => {
-          const selected = path[path.length - 1];
-          const {key, AXkey} = this.getKeysFromSelected(selected);
-
-          this.dispatchAction({elements, type: 'UpdateElements'});
-          this.dispatchAction({key, AXkey, type: 'SelectElement'});
-          this.dispatchAction({isSearchActive: false, type: 'SetSearchActive'});
-
-          for (const key of path) {
-            this.dispatchAction({expand: true, key, type: 'ExpandElement'});
-          }
-
-          this.client.send('setHighlighted', {
-            id: selected,
-            isAlignmentMode: this.state.isAlignmentMode,
-          });
-          this.client.send('setSearchActive', {active: false});
-        },
-      );
+      this.onSelectResultsRecieved(path, false);
     });
 
     if (this.axEnabled()) {
@@ -568,7 +595,7 @@ export default class Layout extends SonarPlugin<InspectorState> {
 
   getNodesAndDirectChildren(
     ids: Array<ElementID>,
-    ax: boolean, // always false at the moment bc only used for select
+    ax: boolean,
   ): Promise<Array<Element>> {
     return this.getNodes(ids, {force: false, ax}).then(
       (elements: Array<Element>) => {
@@ -698,13 +725,22 @@ export default class Layout extends SonarPlugin<InspectorState> {
   };
 
   onElementExpanded = (key: ElementID, deep: boolean) => {
-    if (deep) {
-      this.deepExpandElement(key, false);
-      this.deepExpandElement(key, true);
-    } else {
-      this.expandElement(key, false);
-      this.expandElement(key, true);
+    if (this.state.elements[key]) {
+      if (deep) {
+        this.deepExpandElement(key, false);
+      } else {
+        this.expandElement(key, false);
+      }
     }
+
+    if (this.state.AXelements[key]) {
+      if (deep) {
+        this.deepExpandElement(key, true);
+      } else {
+        this.expandElement(key, true);
+      }
+    }
+
     this.props.logger.track('usage', 'layout:element-expanded', {
       id: key,
       deep: deep,

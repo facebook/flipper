@@ -210,12 +210,11 @@ public class ApplicationDescriptor extends NodeDescriptor<ApplicationWrapper> {
     }
   }
 
-  @Override
-  public void hitTest(ApplicationWrapper node, Touch touch) {
+  private void runHitTest(ApplicationWrapper node, Touch touch, boolean ax) throws Exception {
     final int childCount = getChildCount(node);
 
     for (int i = childCount - 1; i >= 0; i--) {
-      final Object child = getChildAt(node, i);
+      final Object child = ax ? getAXChildAt(node, i) : getChildAt(node, i);
       if (child instanceof Activity || child instanceof ViewGroup) {
         touch.continueWithOffset(i, 0, 0);
         return;
@@ -223,6 +222,16 @@ public class ApplicationDescriptor extends NodeDescriptor<ApplicationWrapper> {
     }
 
     touch.finish();
+  }
+
+  @Override
+  public void hitTest(ApplicationWrapper node, Touch touch) throws Exception{
+    runHitTest(node, touch, false);
+  }
+
+  @Override
+  public void axHitTest(ApplicationWrapper node, Touch touch) throws Exception {
+    runHitTest(node, touch, true);
   }
 
   @Override

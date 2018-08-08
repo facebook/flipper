@@ -178,6 +178,15 @@ public abstract class NodeDescriptor<T> {
   public abstract void hitTest(T node, Touch touch) throws Exception;
 
   /**
+   * Perform hit testing on the given ax node. Either continue the search in an ax child with {@link
+   * Touch#continueWithOffset(int, int, int, boolean)} or finish the hit testing on this ax node with {@link
+   * Touch#finish()}
+   */
+  public void axHitTest(T node, Touch touch) throws Exception {
+    touch.finish();
+  }
+
+  /**
    * @return A string indicating how this element should be decorated. Check with the Sonar desktop
    *     app to see what values are supported.
    */

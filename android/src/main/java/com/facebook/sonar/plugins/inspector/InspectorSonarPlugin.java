@@ -427,49 +427,61 @@ public class InspectorSonarPlugin implements SonarPlugin {
     }
   }
 
-  void hitTest(final int touchX, final int touchY) throws Exception {
+  private Touch createTouch(final int touchX, final int touchY, final boolean ax) throws Exception {
     final SonarArray.Builder path = new SonarArray.Builder();
     path.put(trackObject(mApplication));
 
-    final Touch touch =
-        new Touch() {
-          int x = touchX;
-          int y = touchY;
-          Object node = mApplication;
+    return new Touch() {
+      int x = touchX;
+      int y = touchY;
+      Object node = mApplication;
 
-          @Override
-          public void finish() {
-            mConnection.send("select", new SonarObject.Builder().put("path", path).build());
-          }
 
-          @Override
-          public void continueWithOffset(
+      @Override
+      public void finish() {
+        mConnection.send(ax ? "selectAX" : "select", new SonarObject.Builder().put("path", path).build());
+      }
+
+      @Override
+      public void continueWithOffset(
               final int childIndex, final int offsetX, final int offsetY) {
-            final Touch touch = this;
+        final Touch touch = this;
 
-            new ErrorReportingRunnable(mConnection) {
-              @Override
-              protected void runOrThrow() throws Exception {
-                x -= offsetX;
-                y -= offsetY;
-
-                node = assertNotNull(descriptorForObject(node).getChildAt(node, childIndex));
-                path.put(trackObject(node));
-
-                final NodeDescriptor<Object> descriptor = descriptorForObject(node);
-                descriptor.hitTest(node, touch);
-              }
-            }.run();
-          }
-
+        new ErrorReportingRunnable(mConnection) {
           @Override
-          public boolean containedIn(int l, int t, int r, int b) {
-            return x >= l && x <= r && y >= t && y <= b;
-          }
-        };
+          protected void runOrThrow() throws Exception {
+            x -= offsetX;
+            y -= offsetY;
 
+            if (ax) {
+              node = assertNotNull(descriptorForObject(node).getAXChildAt(node, childIndex));
+            } else {
+              node = assertNotNull(descriptorForObject(node).getChildAt(node, childIndex));
+            }
+
+            path.put(trackObject(node));
+            final NodeDescriptor<Object> descriptor = descriptorForObject(node);
+
+            if (ax) {
+              descriptor.axHitTest(node, touch);
+            } else {
+              descriptor.hitTest(node, touch);
+            }
+          }
+        }.run();
+      }
+
+      @Override
+      public boolean containedIn(int l, int t, int r, int b) {
+        return x >= l && x <= r && y >= t && y <= b;
+      }
+    };
+  }
+
+  void hitTest(final int touchX, final int touchY) throws Exception {
     final NodeDescriptor<Object> descriptor = descriptorForObject(mApplication);
-    descriptor.hitTest(mApplication, touch);
+    descriptor.hitTest(mApplication, createTouch(touchX, touchY, false));
+    descriptor.axHitTest(mApplication, createTouch(touchX, touchY, true));
   }
 
   private void setHighlighted(final String id, final boolean highlighted, final boolean isAlignmentMode) throws Exception {

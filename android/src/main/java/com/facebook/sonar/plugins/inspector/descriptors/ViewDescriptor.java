@@ -535,6 +535,11 @@ public class ViewDescriptor extends NodeDescriptor<View> {
   }
 
   @Override
+  public void axHitTest(View node, Touch touch) {
+    touch.finish();
+  }
+
+  @Override
   public @Nullable String getDecoration(View obj) {
     return null;
   }
