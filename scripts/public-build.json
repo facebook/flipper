@@ -14,14 +14,12 @@
       {
         "name": "Copy Sandcastle script",
         "required": true,
-        "shell":
-          "cp ../xplat/sonar/scripts/sandcastle-build.sh ../xplat/sonar-public/scripts/sandcastle-build.sh"
+        "shell": "cp -r ../xplat/sonar/scripts/facebook/ ../xplat/sonar-public/scripts/facebook"
       },
       {
         "name": "Create build",
         "required": true,
-        "shell":
-          "cd ../xplat/sonar-public/scripts && ./sandcastle-build.sh __VERSION__"
+        "shell": "cd ../xplat/sonar-public/scripts/facebook && ./sandcastle-build.sh __VERSION__"
       },
       {
         "name": "Copy artifacts for syncing",
