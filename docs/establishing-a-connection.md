@@ -1,3 +1,9 @@
+---
+id: establishing-a-connection
+title: Establishing a connection
+sidebar_label: Establishing a connection
+---
+
 # Establishing a Connection
 
 Below is an outline of how a connection is established between an app with with our SDK integrated, and the desktop app. This all goes on behind the scenes inside the mobile SDK, so users shouldn't need to worry about it.
