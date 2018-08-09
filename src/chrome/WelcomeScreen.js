@@ -132,7 +132,7 @@ export default class WelcomeScreen extends PureComponent<Props, State> {
             <FlexColumn>
               <ItemTitle>Using Flipper</ItemTitle>
               <ItemSubTitle>
-                Learn how Flipper can help you debugging your App
+                Learn how Flipper can help you debug your App
               </ItemSubTitle>
             </FlexColumn>
           </Item>
@@ -168,7 +168,7 @@ export default class WelcomeScreen extends PureComponent<Props, State> {
             <FlexColumn>
               <ItemTitle>Contributing and Feedback</ItemTitle>
               <ItemSubTitle>
-                Report issues and help us improving Flipper
+                Report issues and help us improve Flipper
               </ItemSubTitle>
             </FlexColumn>
           </Item>
