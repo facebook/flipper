@@ -21,6 +21,9 @@
       "send-data",
       "error-handling",
       "testing"
+    ],
+    "Flipper Internals": [
+      "establishing-a-connection"
     ]
   }
 }
