@@ -51,7 +51,7 @@ export default class AutoUpdateVersion extends Component<{}, State> {
         this.setState({updater: 'update-downloaded'});
 
         const notification = new window.Notification('Update available', {
-          body: 'Restart Sonar to update to the latest version.',
+          body: 'Restart Flipper to update to the latest version.',
           requireInteraction: true,
         });
         notification.onclick = remote.autoUpdater.quitAndInstall;

@@ -146,7 +146,7 @@ function tryCreateWindow() {
   if (appReady && pluginsCompiled) {
     win = new BrowserWindow({
       show: false,
-      title: 'Sonar',
+      title: 'Flipper',
       width: config.lastWindowPosition.width || 1400,
       height: config.lastWindowPosition.height || 1000,
       minWidth: 800,
