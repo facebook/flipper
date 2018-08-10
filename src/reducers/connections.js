@@ -156,12 +156,16 @@ export default function reducer(
     }
     case 'SELECT_PLUGIN': {
       const {payload} = action;
+      const {selectedPlugin} = payload;
+      if (selectedPlugin) {
+        performance.mark(`activePlugin-${selectedPlugin}`);
+      }
 
       return {
         ...state,
         ...payload,
         userPreferredApp: payload.selectedApp,
-        userPreferredPlugin: payload.selectedPlugin,
+        userPreferredPlugin: selectedPlugin,
       };
     }
 
