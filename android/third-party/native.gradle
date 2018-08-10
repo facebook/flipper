@@ -144,7 +144,7 @@ task finalizeEvent2(dependsOn: [finalizeEvent], type: Copy) {
 }
 
 task downloadOpenSSLSource(dependsOn: [], type: Download) {
-    src 'https://www.openssl.org/source/openssl-1.1.0h.tar.gz'
+    src 'https://github.com/passy/openssl-android/releases/download/1.1.0h/openssl-1.1.0h.tar.gz'
     onlyIfNewer true
     overwrite false
     dest new File(downloadsDir, getDownloadFileName(src))
