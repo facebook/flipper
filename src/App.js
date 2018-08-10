@@ -16,6 +16,7 @@ import BugReporterDialog from './chrome/BugReporterDialog.js';
 import ErrorBar from './chrome/ErrorBar.js';
 import PluginContainer from './PluginContainer.js';
 import PluginManager from './chrome/PluginManager.js';
+import {ipcRenderer} from 'electron';
 
 import type Logger from './fb-stubs/Logger.js';
 import type BugReporter from './fb-stubs/BugReporter.js';
@@ -33,13 +34,18 @@ type Props = {
 };
 
 export class App extends React.Component<Props> {
-  constructor(props: Props) {
-    performance.mark('init');
-    super(props);
-  }
-
   componentDidMount() {
-    this.props.logger.trackTimeSince('init');
+    // track time since launch
+    const [s, ns] = process.hrtime();
+    const launchEndTime = s * 1e3 + ns / 1e6;
+    ipcRenderer.on('getLaunchTime', (event, launchStartTime) => {
+      this.props.logger.track(
+        'performance',
+        'launchTime',
+        launchEndTime - launchStartTime,
+      );
+    });
+    ipcRenderer.send('getLaunchTime');
   }
 
   render() {
@@ -65,7 +71,6 @@ export class App extends React.Component<Props> {
     );
   }
 }
-
 export default connect(
   ({
     application: {pluginManagerVisible, bugDialogVisible, leftSidebarVisible},
@@ -77,5 +82,7 @@ export default connect(
     selectedDevice,
     error,
   }),
-  {toggleBugDialogVisible},
+  {
+    toggleBugDialogVisible,
+  },
 )(App);

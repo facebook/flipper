@@ -4,7 +4,11 @@
  * LICENSE file in the root directory of this source tree.
  * @format
  */
-const {app, BrowserWindow} = require('electron');
+
+const [s, ns] = process.hrtime();
+let launchStartTime = s * 1e3 + ns / 1e6;
+
+const {app, BrowserWindow, ipcMain} = require('electron');
 const path = require('path');
 const url = require('url');
 const fs = require('fs');
@@ -128,6 +132,16 @@ app.on('ready', function() {
     installExtension(REDUX_DEVTOOLS.id);
   }
 });
+
+ipcMain.on('getLaunchTime', event => {
+  if (launchStartTime) {
+    event.sender.send('getLaunchTime', launchStartTime);
+    // set launchTime to null to only report it once, to prevents reporting wrong
+    // launch times for example after reloading the renderer process
+    launchStartTime = null;
+  }
+});
+
 function tryCreateWindow() {
   if (appReady && pluginsCompiled) {
     win = new BrowserWindow({
