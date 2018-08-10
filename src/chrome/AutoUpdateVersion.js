@@ -38,9 +38,14 @@ export default class AutoUpdateVersion extends Component<{}, State> {
 
   componentDidMount() {
     if (isProduction()) {
-      remote.autoUpdater.setFeedURL({
-        url: `${config.updateServer}?version=${version}`,
-      });
+      // this will fail, if the app is not code signed
+      try {
+        remote.autoUpdater.setFeedURL({
+          url: `${config.updateServer}?version=${version}`,
+        });
+      } catch (e) {
+        console.error(e);
+      }
 
       remote.autoUpdater.on('update-downloaded', () => {
         this.setState({updater: 'update-downloaded'});
