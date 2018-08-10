@@ -23,7 +23,7 @@ const Container = FlexColumn.extends({
   width: '100%',
   justifyContent: 'center',
   alignItems: 'center',
-  backgroundImage: 'url(./pattern.gif)',
+  backgroundColor: colors.light02,
 });
 
 const Welcome = FlexColumn.extends(
@@ -104,12 +104,14 @@ export default class WelcomeScreen extends PureComponent<Props, State> {
   };
 
   componentDidMount() {
+    // waiting sometime before showing the welcome screen to allow Flipper to
+    // connect to devices, if there are any
     setTimeout(
       () =>
         this.setState({
           isMounted: true,
         }),
-      100,
+      2000,
     );
   }
 

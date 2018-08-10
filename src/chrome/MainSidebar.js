@@ -135,7 +135,8 @@ class PluginSidebarListItem extends Component<{
 type MainSidebarProps = {|
   selectedPlugin: ?string,
   selectedApp: ?string,
-  selectedDevice: BaseDevice,
+  selectedDevice: ?BaseDevice,
+  windowIsFocused: boolean,
   selectPlugin: (payload: {
     selectedPlugin: ?string,
     selectedApp: ?string,
@@ -150,12 +151,13 @@ class MainSidebar extends Component<MainSidebarProps> {
       selectedPlugin,
       selectedApp,
       selectPlugin,
+      windowIsFocused,
     } = this.props;
     let {clients} = this.props;
 
     let enabledPlugins = [];
     for (const devicePlugin of devicePlugins) {
-      if (selectedDevice.supportsPlugin(devicePlugin)) {
+      if (selectedDevice && selectedDevice.supportsPlugin(devicePlugin)) {
         enabledPlugins.push(devicePlugin);
       }
     }
@@ -179,22 +181,28 @@ class MainSidebar extends Component<MainSidebarProps> {
       .sort((a, b) => (a.query.app || '').localeCompare(b.query.app));
 
     return (
-      <Sidebar position="left" width={200}>
-        {devicePlugins
-          .filter(selectedDevice.supportsPlugin)
-          .map((plugin: Class<SonarDevicePlugin<>>) => (
-            <PluginSidebarListItem
-              key={plugin.id}
-              isActive={plugin.id === selectedPlugin}
-              onClick={() =>
-                selectPlugin({
-                  selectedPlugin: plugin.id,
-                  selectedApp: null,
-                })
-              }
-              plugin={plugin}
-            />
-          ))}
+      <Sidebar
+        position="left"
+        width={200}
+        backgroundColor={
+          process.platform === 'darwin' && windowIsFocused ? 'transparent' : ''
+        }>
+        {selectedDevice &&
+          devicePlugins
+            .filter(selectedDevice.supportsPlugin)
+            .map((plugin: Class<SonarDevicePlugin<>>) => (
+              <PluginSidebarListItem
+                key={plugin.id}
+                isActive={plugin.id === selectedPlugin}
+                onClick={() =>
+                  selectPlugin({
+                    selectedPlugin: plugin.id,
+                    selectedApp: null,
+                  })
+                }
+                plugin={plugin}
+              />
+            ))}
         {clients.map((client: Client) => (
           <React.Fragment key={client.id}>
             <SidebarHeader>{client.query.app}</SidebarHeader>
@@ -226,7 +234,11 @@ class MainSidebar extends Component<MainSidebarProps> {
 }
 
 export default connect(
-  ({connections: {selectedDevice, selectedPlugin, selectedApp, clients}}) => ({
+  ({
+    application: {windowIsFocused},
+    connections: {selectedDevice, selectedPlugin, selectedApp, clients},
+  }) => ({
+    windowIsFocused,
     selectedDevice,
     selectedPlugin,
     selectedApp,

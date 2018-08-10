@@ -8,6 +8,7 @@
 import type {StyledComponent} from '../styled/index.js';
 import Interactive from './Interactive.js';
 import FlexColumn from './FlexColumn.js';
+import {colors} from './colors';
 import {Component} from 'react';
 
 const SidebarInteractiveContainer = Interactive.extends({
@@ -21,7 +22,8 @@ const SidebarContainer: StyledComponent<{
   overflow?: boolean,
 }> = FlexColumn.extends(
   {
-    backgroundColor: props => props.backgroundColor || '#f7f7f7',
+    backgroundColor: props =>
+      props.backgroundColor || colors.macOSTitleBarBackgroundBlur,
     borderLeft: props =>
       props.position === 'right' ? '1px solid #b3b3b3' : 'none',
     borderTop: props =>
@@ -103,7 +105,11 @@ type SidebarState = {|
 export default class Sidebar extends Component<SidebarProps, SidebarState> {
   constructor(props: SidebarProps, context: Object) {
     super(props, context);
-    this.state = {userChange: false, width: props.width, height: props.height};
+    this.state = {
+      userChange: false,
+      width: props.width,
+      height: props.height,
+    };
   }
 
   static defaultProps = {

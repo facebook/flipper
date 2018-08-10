@@ -9,7 +9,8 @@
     <title>Sonar</title>
 
     <style>
-      .__infinity-dev-box {
+
+      #loading {
         -webkit-app-region: drag;
         z-index: 999999;
         position: absolute;
@@ -18,12 +19,13 @@
         bottom: 0;
         right: 0;
         padding: 50px;
-        color: #fff;
         overflow: auto;
-      }
-
-      .__infinity-dev-box-loading {
-        background-color: #333;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        color: #525252;
+        text-align: center;
       }
 
       .__infinity-dev-box-error {
@@ -33,25 +35,15 @@
         font-size: 16px;
       }
 
-      .__infinity-dev-box-text {
-        font-size: 30px;
-        line-height: 200px;
-        margin-top: -100px;
-        width: 100%;
-        position: absolute;
-        top: 50%;
-        left: 0;
-        right: 0;
-        text-align: center;
-      }
     </style>
   </head>
   <body>
-    <div id="root"></div>
-
-    <div class="__infinity-dev-box __infinity-dev-box-loading">
-      <div class="__infinity-dev-box-text">Loading...</div>
+    <div id="root">
+      <div id="loading">
+        Loading...
+      </div>
     </div>
+
 
     <div class="__infinity-dev-box __infinity-dev-box-error" hidden>
 
@@ -83,11 +75,6 @@
           const box = document.querySelector('.__infinity-dev-box-error');
           box.removeAttribute('hidden');
           box.textContent = text;
-          onLoad();
-        }
-
-        function onLoad() {
-          document.querySelector('.__infinity-dev-box-loading').setAttribute('hidden', true);
         }
 
         function init() {
@@ -97,8 +84,6 @@
           script.onerror = () => {
             openError('Script failure. Check Chrome console for more info.');
           };
-
-          script.onload = onLoad;
 
           document.body.appendChild(script);
         }

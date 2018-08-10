@@ -141,6 +141,7 @@ function tryCreateWindow() {
       fullscreenable: false,
       backgroundThrottling: false,
       titleBarStyle: 'hiddenInset',
+      vibrancy: 'sidebar',
       webPreferences: {
         webSecurity: false,
         scrollBounce: true,

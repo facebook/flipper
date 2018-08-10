@@ -52,16 +52,14 @@ export class App extends React.Component<Props> {
             close={() => this.props.toggleBugDialogVisible(false)}
           />
         )}
-        {this.props.selectedDevice ? (
-          <FlexRow fill={true}>
-            {this.props.leftSidebarVisible && <MainSidebar />}
+        <FlexRow fill={true}>
+          {this.props.leftSidebarVisible && <MainSidebar />}
+          {this.props.selectedDevice ? (
             <PluginContainer logger={this.props.logger} />
-          </FlexRow>
-        ) : this.props.pluginManagerVisible ? (
-          <PluginManager />
-        ) : (
-          <WelcomeScreen />
-        )}
+          ) : (
+            <WelcomeScreen />
+          )}
+        </FlexRow>
         <ErrorBar text={this.props.error} />
       </FlexColumn>
     );
