@@ -64,8 +64,8 @@ class ConnectionEvents : public rsocket::RSocketConnectionEvents {
     if (!websocket_->isOpen_)
       return;
     websocket_->isOpen_ = false;
-    websocket_->connectionIsTrusted_ = false;
     if (websocket_->connectionIsTrusted_) {
+      websocket_->connectionIsTrusted_ = false;
       websocket_->callbacks_->onDisconnected();
     }
     websocket_->reconnect();

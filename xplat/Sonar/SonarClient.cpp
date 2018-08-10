@@ -118,7 +118,7 @@ void SonarClient::onConnected() {
 
 void SonarClient::onDisconnected() {
   SONAR_LOG("SonarClient::onDisconnected");
-  auto step = sonarState_->start("onDisconnected callbacks");
+  auto step = sonarState_->start("Trigger onDisconnected callbacks");
   std::lock_guard<std::mutex> lock(mutex_);
   connected_ = false;
   performAndReportError([this, step]() {
