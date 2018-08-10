@@ -255,18 +255,49 @@ void SonarWebSocketImpl::requestSignedCertFromSonar() {
 
   folly::dynamic message = folly::dynamic::object("method", "signCertificate")(
       "csr", csr.c_str())("destination", absoluteFilePath("").c_str());
-  auto sendingCSR = sonarState_->start("Send CSR to desktop");
-  sonarEventBase_->add([this, message, sendingCSR]() {
+  auto gettingCert = sonarState_->start("Getting cert from desktop");
+
+  sonarEventBase_->add([this, message, gettingCert]() {
     client_->getRequester()
-        ->fireAndForget(rsocket::Payload(folly::toJson(message)))
-        ->subscribe([this, sendingCSR]() {
-          sendingCSR->complete();
+        ->requestResponse(rsocket::Payload(folly::toJson(message)))
+        ->subscribe([this, gettingCert](rsocket::Payload p) {
+          gettingCert->complete();
+          SONAR_LOG("Certificate exchange complete.");
           // Disconnect after message sending is complete.
           // This will trigger a reconnect which should use the secure channel.
+          // TODO: Connect immediately, without waiting for reconnect
           client_ = nullptr;
+        },
+        [this, message](folly::exception_wrapper e) {
+          e.handle(
+            [&](rsocket::ErrorWithPayload& errorWithPayload) {
+              std::string errorMessage = errorWithPayload.payload.moveDataToString();
+
+             if (errorMessage.compare("not implemented")) {
+               SONAR_LOG(("Desktop failed to provide certificates. Error from sonar desktop:\n" + errorMessage).c_str());
+             } else {
+              sendLegacyCertificateRequest(message);
+             }
+            },
+            [e](...) {
+             SONAR_LOG(("Error during certificate exchange:" + e.what()).c_str());
+            }
+          );
         });
   });
   failedConnectionAttempts_ = 0;
+}
+
+void SonarWebSocketImpl::sendLegacyCertificateRequest(folly::dynamic message) {
+  // Desktop is using an old version of Flipper.
+  // Fall back to fireAndForget, instead of requestResponse.
+  auto sendingRequest = sonarState_->start("Sending fallback certificate request");
+  client_->getRequester()
+   ->fireAndForget(rsocket::Payload(folly::toJson(message)))
+   ->subscribe([this, sendingRequest]() {
+     sendingRequest->complete();
+     client_ = nullptr;
+   });
 }
 
 std::string SonarWebSocketImpl::loadStringFromFile(std::string fileName) {
