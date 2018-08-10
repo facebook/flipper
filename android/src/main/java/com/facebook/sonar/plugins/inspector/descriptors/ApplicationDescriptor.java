@@ -75,7 +75,8 @@ public class ApplicationDescriptor extends NodeDescriptor<ApplicationWrapper> {
 
     for (View view : node.getViewRoots()) {
       // unlikely, but check to make sure accessibility functionality doesn't change
-      if (view instanceof ViewGroup && !ViewCompat.hasAccessibilityDelegate(view)) {
+      boolean hasDelegateAlready = ViewCompat.hasAccessibilityDelegate(view);
+      if (view instanceof ViewGroup && !hasDelegateAlready) {
 
         // add delegate to root to catch accessibility events so we can update focus in sonar
         view.setAccessibilityDelegate(new View.AccessibilityDelegate() {
@@ -107,6 +108,11 @@ public class ApplicationDescriptor extends NodeDescriptor<ApplicationWrapper> {
           }
         });
         editedDelegates.add((ViewGroup) view);
+      } else if (hasDelegateAlready) {
+        SonarObject params = new SonarObject.Builder()
+                .put("type", "usage")
+                .put("eventName", "accessibility:hasDelegateAlready").build();
+        mConnection.send("track", params);
       }
     }
   }

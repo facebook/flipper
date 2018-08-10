@@ -391,6 +391,11 @@ public class InspectorSonarPlugin implements SonarPlugin {
 
       // if in layout inspector and talkback is running, override the first click to locate the clicked view
       if (mConnection != null && AccessibilityUtil.isTalkbackEnabled(getContext()) && event.getPointerCount() == 1) {
+        SonarObject params = new SonarObject.Builder()
+                .put("type", "usage")
+                .put("eventName", "accessibility:clickToInspectTalkbackRunning").build();
+        mConnection.send("track", params);
+
         final int action = event.getAction();
         switch (action) {
           case MotionEvent.ACTION_HOVER_ENTER: {

@@ -25,6 +25,8 @@ import {
   VerticalRule,
 } from 'sonar';
 
+import type {TrackType} from '../../fb-stubs/Logger.js';
+
 import {
   AXElementsInspector,
   AXToggleButtonEnabled,
@@ -50,6 +52,7 @@ export type InspectorState = {|
   inAXMode: boolean,
   AXtoNonAXMapping: {[key: ElementID]: ElementID},
   isAlignmentMode: boolean,
+  logCounter: number,
 |};
 
 type SelectElementArgs = {|
@@ -91,6 +94,12 @@ type GetNodesOptions = {|
   force: boolean,
   ax: boolean,
   forFocusEvent?: boolean,
+|};
+
+type TrackArgs = {|
+  type: TrackType,
+  eventName: string,
+  data?: any,
 |};
 
 type SearchResultTree = {|
@@ -184,6 +193,7 @@ export default class Layout extends SonarPlugin<InspectorState> {
     AXfocused: null,
     AXtoNonAXMapping: {},
     isAlignmentMode: false,
+    logCounter: 0,
   };
 
   reducers = {
@@ -480,15 +490,22 @@ export default class Layout extends SonarPlugin<InspectorState> {
   }
 
   initAX() {
+    performance.mark('InitAXRoot');
     this.client.call('getAXRoot').then((element: Element) => {
       this.dispatchAction({elements: [element], type: 'UpdateAXElements'});
       this.dispatchAction({root: element.id, type: 'SetAXRoot'});
       this.performInitialExpand(element, true).then(() => {
+        this.props.logger.trackTimeSince('InitAXRoot', 'accessibility:getRoot');
         this.setState({AXinitialised: true});
       });
     });
 
     this.client.subscribe('axFocusEvent', ({isFocus}: AXFocusEventResult) => {
+      this.props.logger.track('usage', 'accessibility:focusEvent', {
+        isFocus,
+        inAXMode: this.state.inAXMode,
+      });
+
       // if focusing, need to update all elements in the tree because
       // we don't know which one now has focus
       const keys = isFocus ? Object.keys(this.state.AXelements) : [];
@@ -526,7 +543,14 @@ export default class Layout extends SonarPlugin<InspectorState> {
     );
 
     this.client.subscribe('selectAX', ({path}: {path: Array<ElementID>}) => {
+      if (this.state.inAXMode) {
+        this.props.logger.track('usage', 'accessibility:clickToInspect');
+      }
       this.onSelectResultsRecieved(path, true);
+    });
+
+    this.client.subscribe('track', ({type, eventName, data}: TrackArgs) => {
+      this.props.logger.track(type, eventName, data);
     });
   }
 
@@ -563,6 +587,7 @@ export default class Layout extends SonarPlugin<InspectorState> {
     });
 
     if (this.axEnabled()) {
+      this.props.logger.track('usage', 'accessibility:init');
       this.initAX();
     }
   }
@@ -626,22 +651,32 @@ export default class Layout extends SonarPlugin<InspectorState> {
   ): Promise<Array<Element>> {
     const {force, ax, forFocusEvent} = options;
     if (!force) {
+      const elems = ax ? this.state.AXelements : this.state.elements;
+      // always force undefined elements and elements that need to be expanded
+      // over in the main tree (e.g. fragments)
       ids = ids.filter(id => {
         return (
-          (ax ? this.state.AXelements : this.state.elements)[id] === undefined
+          !elems[id] ||
+          (elems[id].extraInfo && elems[id].extraInfo.nonAXWithAXChild)
         );
       });
     }
 
     if (ids.length > 0) {
-      performance.mark('LayoutInspectorGetNodes');
+      // prevents overlapping calls from interfering with each other's logging
+      const mark = 'LayoutInspectorGetNodes' + this.state.logCounter++;
+      const eventName = ax
+        ? 'accessibility:getNodes'
+        : 'LayoutInspectorGetNodes';
+
+      performance.mark(mark);
       return this.client
         .call(ax ? 'getAXNodes' : 'getNodes', {
           ids,
           forFocusEvent,
         })
         .then(({elements}: GetNodesResult) => {
-          this.props.logger.trackTimeSince('LayoutInspectorGetNodes');
+          this.props.logger.trackTimeSince(mark, eventName);
           return Promise.resolve(elements);
         });
     } else {
@@ -670,13 +705,20 @@ export default class Layout extends SonarPlugin<InspectorState> {
       key,
       type: ax ? 'ExpandAXElement' : 'ExpandElement',
     });
-    performance.mark('LayoutInspectorExpandElement');
+
+    const mark = ax ? 'ExpandAXElement' : 'LayoutInspectorExpandElement';
+    const eventName = ax
+      ? 'accessibility:expandElement'
+      : 'LayoutInspectorExpandElement';
+
+    performance.mark(mark);
     if (expand) {
       return this.getChildren(key, ax).then((elements: Array<Element>) => {
         this.dispatchAction({
           elements,
           type: ax ? 'UpdateAXElements' : 'UpdateElements',
         });
+        this.props.logger.trackTimeSince(mark, eventName);
 
         // only expand extra components in the main tree when in AX mode
         if (this.state.inAXMode && !ax) {
@@ -687,8 +729,6 @@ export default class Layout extends SonarPlugin<InspectorState> {
             }
           }
         }
-
-        this.props.logger.trackTimeSince('LayoutInspectorExpandElement');
         return Promise.resolve(elements);
       });
     } else {
@@ -731,6 +771,10 @@ export default class Layout extends SonarPlugin<InspectorState> {
       } else {
         this.expandElement(key, false);
       }
+      this.props.logger.track('usage', 'layout:element-expanded', {
+        id: key,
+        deep: deep,
+      });
     }
 
     if (this.state.AXelements[key]) {
@@ -739,12 +783,13 @@ export default class Layout extends SonarPlugin<InspectorState> {
       } else {
         this.expandElement(key, true);
       }
+      if (this.state.inAXMode) {
+        this.props.logger.track('usage', 'accessibility:elementExpanded', {
+          id: key,
+          deep: deep,
+        });
+      }
     }
-
-    this.props.logger.track('usage', 'layout:element-expanded', {
-      id: key,
-      deep: deep,
-    });
   };
 
   onFindClick = () => {
@@ -755,8 +800,10 @@ export default class Layout extends SonarPlugin<InspectorState> {
 
   onToggleAccessibility = () => {
     const inAXMode = !this.state.inAXMode;
+    this.props.logger.track('usage', 'accessibility:modeToggled', {inAXMode});
     this.dispatchAction({inAXMode, type: 'SetAXMode'});
   };
+
   onToggleAlignment = () => {
     const isAlignmentMode = !this.state.isAlignmentMode;
     this.dispatchAction({isAlignmentMode, type: 'SetAlignmentActive'});
@@ -778,11 +825,10 @@ export default class Layout extends SonarPlugin<InspectorState> {
 
         // element only in AX tree with linked nonAX (litho) element selected
       } else if (
-        (!this.state.elements[selectedKey] ||
-          this.state.elements[selectedKey].name === 'ComponentHost') &&
-        this.state.AXtoNonAXMapping[selectedKey]
+        !this.state.elements[selectedKey] ||
+        this.state.elements[selectedKey].name === 'ComponentHost'
       ) {
-        key = this.state.AXtoNonAXMapping[selectedKey];
+        key = this.state.AXtoNonAXMapping[selectedKey] || null;
         AXkey = selectedKey;
 
         // keys are same for both trees or 'linked' element does not exist
@@ -802,21 +848,30 @@ export default class Layout extends SonarPlugin<InspectorState> {
       AXkey: AXkey,
       type: 'SelectElement',
     });
+
     this.client.send('setHighlighted', {
       id: selectedKey,
       isAlignmentMode: this.state.isAlignmentMode,
     });
-    this.getNodes([key], {force: true, ax: false}).then(
-      (elements: Array<Element>) => {
-        this.dispatchAction({elements, type: 'UpdateElements'});
-      },
-    );
+
+    if (key) {
+      this.getNodes([key], {force: true, ax: false}).then(
+        (elements: Array<Element>) => {
+          this.dispatchAction({elements, type: 'UpdateElements'});
+        },
+      );
+    }
+
     if (AXkey) {
       this.getNodes([AXkey], {force: true, ax: true}).then(
         (elements: Array<Element>) => {
           this.dispatchAction({elements, type: 'UpdateAXElements'});
         },
       );
+    }
+
+    if (this.state.inAXMode) {
+      this.props.logger.track('usage', 'accessibility:selectElement');
     }
   });
 
@@ -852,7 +907,14 @@ export default class Layout extends SonarPlugin<InspectorState> {
         }
       });
 
-    this.props.logger.track('usage', 'layout:value-changed', {id, value, path});
+    const eventName = ax
+      ? 'accessibility:dataValueChanged'
+      : 'layout:value-changed';
+    this.props.logger.track('usage', eventName, {
+      id,
+      value,
+      path,
+    });
   };
 
   renderSidebar = () => {
