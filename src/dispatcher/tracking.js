@@ -11,29 +11,51 @@ import type {Store} from '../reducers/index.js';
 import type Logger from '../fb-stubs/Logger.js';
 
 export default (store: Store, logger: Logger) => {
+  let droppedFrames: number = 0;
+  function droppedFrameDetection(
+    past: DOMHighResTimeStamp,
+    isWindowFocused: () => boolean,
+  ) {
+    const now = performance.now();
+    requestAnimationFrame(() => droppedFrameDetection(now, isWindowFocused));
+    if (isWindowFocused()) {
+      droppedFrames += Math.max(0, Math.round(now - past / (1000 / 60) - 1));
+    }
+  }
+
+  droppedFrameDetection(
+    performance.now(),
+    () => store.getState().application.windowIsFocused,
+  );
+
   ipcRenderer.on('trackUsage', () => {
     const {
       selectedDevice,
       selectedPlugin,
       selectedApp,
+      clients,
     } = store.getState().connections;
 
     if (!selectedDevice || !selectedPlugin) {
       return;
     }
+    const info = {
+      droppedFrames,
+      os: selectedDevice.os,
+      device: selectedDevice.title,
+      plugin: selectedPlugin,
+    };
+    // reset dropped frames counter
+    droppedFrames = 0;
+
     if (selectedApp) {
-      logger.track('usage', 'ping', {
-        app: selectedApp,
-        device: selectedDevice,
-        os: selectedDevice.os,
-        plugin: selectedPlugin,
-      });
-    } else {
-      logger.track('usage', 'ping', {
-        os: selectedDevice.os,
-        plugin: selectedPlugin,
-        device: selectedDevice.title,
-      });
+      const client = clients.find((c: Client) => c.id === selectedApp);
+      if (client) {
+        // $FlowFixMe
+        info.app = client.query.app;
+      }
     }
+
+    logger.track('usage', 'ping', info);
   });
 };
