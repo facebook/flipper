@@ -1,4 +1,4 @@
-# Contributing to Sonar
+# Contributing to Flipper
 
 We want to make contributing to this project as easy and transparent as
 possible.
@@ -12,7 +12,7 @@ pushed to GitHub.
 For changes affecting both, native code and JavaScript, make sure to only create
 a single PR containing both parts of the code.
 
-Although the Sonar desktop app is only released for macOS right now, it is
+Although the Flipper desktop app is only released for macOS right now, it is
 possible to create Windows and Linux builds of the app. Please keep this in mind
 when dealing with platform-specific code.
 
@@ -51,5 +51,5 @@ run `yarn lint` and `yarn fix` to apply formatting fixes.
 
 ## License
 
-By contributing to Sonar, you agree that your contributions will be licensed
-under the LICENSE file in the root directory of this source tree.
+By contributing to Flipper, you agree that your contributions will be licensed
+under the [LICENSE](./LICENSE) file.
