@@ -8,7 +8,6 @@ buildscript {
         classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:${GRADLE_BINTRAY_PLUGIN_VERSION}"
         classpath "com.github.dcendents:android-maven-gradle-plugin:${ANDROID_MAVEN_GRADLE_PLUGIN_VERSION}"
         classpath "com.github.ben-manes:gradle-versions-plugin:${GRADLE_VERSIONS_PLUGIN_VERSION}"
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${KOTLIN_VERSION}"
     }
 }
 
