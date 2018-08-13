@@ -38,7 +38,7 @@ repositories {
 }
 
 dependencies {
-  debugImplementation 'com.facebook.flipper:flipper:0.6.16'
+  debugImplementation 'com.facebook.flipper:flipper:0.6.17'
 }
 ```
 
