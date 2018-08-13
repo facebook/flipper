@@ -181,7 +181,7 @@ task finalizeOpenSSL(dependsOn: [configureOpenSSL], type: Exec) {
 }
 
 task downloadRSocket(dependsOn: [], type: Download) {
-    src 'https://github.com/priteshrnandgaonkar/rsocket-cpp/archive/0.10.1.tar.gz'
+    src 'https://github.com/priteshrnandgaonkar/rsocket-cpp/archive/0.10.2.tar.gz'
     onlyIfNewer true
     overwrite false
     dest new File(downloadsDir, 'rsocket-' + getDownloadFileName(src))
@@ -190,7 +190,7 @@ task downloadRSocket(dependsOn: [], type: Download) {
 task prepareRSocket(dependsOn: [downloadRSocket], type: Copy) {
     from tarTree(downloadRSocket.dest)
     from './overrides/RSocket/'
-    include 'rsocket-cpp-0.10.1/**/*', 'build.gradle', 'ApplicationManifest.xml', 'CMakeLists.txt'
+    include 'rsocket-cpp-0.10.2/**/*', 'build.gradle', 'ApplicationManifest.xml', 'CMakeLists.txt'
     includeEmptyDirs = false
     into "$externalDir/RSocket"
 }

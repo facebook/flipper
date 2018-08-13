@@ -4,7 +4,7 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 set(PACKAGE_NAME      sonarcpp)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_EXTENSIONS OFF)
-
+set(RSOCKET_VERSION 0.10.2)
 set(external_DIR ${PROJECT_SOURCE_DIR}/../android/third-party/external)
 set(libfolly_DIR ${external_DIR}/folly/)
 set(rsocket_DIR ${external_DIR}/RSocket/)
@@ -58,7 +58,7 @@ target_include_directories(${PACKAGE_NAME} PRIVATE
         ${BOOST_DIR}
         ${BOOST_DIR}/../
         ${LIBEVENT_DIR}/
-        ${rsocket_DIR}/rsocket-cpp-0.10.1
+        ${rsocket_DIR}/rsocket-cpp-${RSOCKET_VERSION}
         ${LIBEVENT_DIR}/include/
         ${LIBEVENT_DIR}/include/event2
         ${OPENSSL_DIR}/include
