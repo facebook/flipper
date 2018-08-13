@@ -10,6 +10,25 @@ Flipper is a platform for debugging mobile apps on iOS and Android. Visualize, i
 
 ![Flipper](/website/static/img/splash@2x.png)
 
+## Table of Contents
+
+- [Mobile development](#mobile-development)
+- [Extending Flipper](#extending-flipper)
+- [Contributing to Flipper](#contributing-to-flipper)
+- [In this repo](#in-this-repo)
+- [Getting started](#getting-started)
+  - [Requirements](#requirements)
+- [Building from Source](#building-from-source)
+  - [Desktop](#desktop)
+    - [Running from source](#running-from-source)
+    - [Building standalone application](#building-standalone-application)
+  - [iOS SDK + Sample App](#ios-sdk--sample-app)
+  - [Android SDK + Sample app](#android-sdk--sample-app)
+  - [Documentation](#documentation)
+  - [Contributing](#contributing)
+  - [License](#license)
+
+
 ## Mobile development
 
 Flipper aims to be your number one companion for mobile app development on iOS and Android. Therefore, we provide a bunch of useful tools including a log viewer, interactive layout inspector, and network inspector.
@@ -86,7 +105,8 @@ Start up an android emulator and run the following in the project root:
 
 Find the full documentation for this project at [fbflipper.com](https://fbflipper.com/docs).
 
-## Contributing and license
+## Contributing
+See the [CONTRIBUTING](/CONTRIBUTING.md) file for how to help out.
 
-See the CONTRIBUTING file for how to help out.
-Flipper is MIT licensed, as found in the LICENSE file.
+## License
+Flipper is MIT licensed, as found in the [LICENSE](/LICENSE) file.
