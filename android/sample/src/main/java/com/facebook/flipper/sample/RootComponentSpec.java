@@ -2,6 +2,7 @@
 
 package com.facebook.flipper.sample;
 
+import android.content.Intent;
 import android.util.Log;
 import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Column;
@@ -11,6 +12,8 @@ import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.widget.Text;
+import com.facebook.sonar.android.diagnostics.SonarDiagnosticActivity;
+
 import java.io.IOException;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -37,8 +40,12 @@ public class RootComponentSpec {
                 .key("2")
                 .textSizeSp(20)
                 .clickHandler(RootComponent.hitPostRequest(c)))
-        .child(Text.create(c).text("I'm just some text").key("3").textSizeSp(20))
-        .build();
+            .child(Text.create(c)
+                .text("Diagnose connection issues")
+                .key("3")
+                .textSizeSp(20)
+                .clickHandler(RootComponent.openDiagnostics(c)))
+            .build();
   }
 
   @OnEvent(ClickEvent.class)
@@ -99,4 +106,10 @@ public class RootComponentSpec {
               }
             });
   }
+
+    @OnEvent(ClickEvent.class)
+    static void openDiagnostics(final ComponentContext c) {
+        Intent intent = new Intent(c, SonarDiagnosticActivity.class);
+        c.startActivity(intent);
+    }
 }
