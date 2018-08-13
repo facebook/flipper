@@ -86,6 +86,9 @@ public class AccessibilityRoleUtil {
   }
 
   public static AccessibilityRole getRole(View view) {
+    if (view == null) {
+      return AccessibilityRole.NONE;
+    }
     AccessibilityNodeInfoCompat nodeInfo = AccessibilityNodeInfoCompat.obtain();
     ViewCompat.onInitializeAccessibilityNodeInfo(view, nodeInfo);
     AccessibilityRole role = getRole(nodeInfo);

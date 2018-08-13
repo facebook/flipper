@@ -463,7 +463,10 @@ public class ViewDescriptor extends NodeDescriptor<View> {
 
   @Override
   public SonarObject getExtraInfo(View node) {
-    return new SonarObject.Builder().put("focused", AccessibilityUtil.isAXFocused(node)).build();
+    return new SonarObject.Builder()
+            .put("focused", AccessibilityUtil.isAXFocused(node))
+            .put("hasAXNode", true)
+            .build();
   }
 
   @Nullable

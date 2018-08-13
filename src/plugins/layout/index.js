@@ -107,6 +107,7 @@ type SearchResultTree = {|
   isMatch: Boolean,
   children: ?Array<SearchResultTree>,
   element: Element,
+  axElement: Element,
 |};
 
 const LoadingSpinner = LoadingIndicator.extends({
@@ -333,15 +334,17 @@ export default class Layout extends SonarPlugin<InspectorState> {
   };
 
   search(query: string) {
-    if (!query) {
-      return;
-    }
     this.setState({
       outstandingSearchQuery: query,
     });
-    this.client
-      .call('getSearchResults', {query: query})
-      .then(response => this.displaySearchResults(response));
+
+    if (!query) {
+      this.displaySearchResults({query: '', results: null});
+    } else {
+      this.client
+        .call('getSearchResults', {query: query, axEnabled: this.axEnabled()})
+        .then(response => this.displaySearchResults(response));
+    }
   }
 
   executeCommand(command: string) {
@@ -391,7 +394,7 @@ export default class Layout extends SonarPlugin<InspectorState> {
     results,
     query,
   }: {
-    results: SearchResultTree,
+    results: ?SearchResultTree,
     query: string,
   }) {
     const elements = this.getElementsFromSearchResultTree(results);
@@ -405,10 +408,29 @@ export default class Layout extends SonarPlugin<InspectorState> {
       elements: elements.map(x => x.element),
       type: 'UpdateElements',
     });
+
     this.dispatchAction({
       elements: idsToExpand,
       type: 'ExpandElements',
     });
+
+    if (this.axEnabled()) {
+      const AXelements = elements.filter(x => x.axElement);
+      const AXidsToExpand = AXelements.filter(x => x.hasChildren).map(
+        x => x.axElement.id,
+      );
+
+      this.dispatchAction({
+        elements: AXelements.map(x => x.axElement),
+        type: 'UpdateAXElements',
+      });
+
+      this.dispatchAction({
+        elements: AXidsToExpand,
+        type: 'ExpandAXElements',
+      });
+    }
+
     this.setState({
       searchResults: {
         matches: new Set(
@@ -422,7 +444,7 @@ export default class Layout extends SonarPlugin<InspectorState> {
     });
   }
 
-  getElementsFromSearchResultTree(tree: SearchResultTree) {
+  getElementsFromSearchResultTree(tree: ?SearchResultTree) {
     if (!tree) {
       return [];
     }
@@ -432,6 +454,7 @@ export default class Layout extends SonarPlugin<InspectorState> {
         isMatch: tree.isMatch,
         hasChildren: Boolean(tree.children),
         element: tree.element,
+        axElement: tree.axElement,
       },
     ];
     if (tree.children) {
@@ -842,12 +865,7 @@ export default class Layout extends SonarPlugin<InspectorState> {
 
   onElementSelected = debounce((selectedKey: ElementID) => {
     const {key, AXkey} = this.getKeysFromSelected(selectedKey);
-
-    this.dispatchAction({
-      key: key,
-      AXkey: AXkey,
-      type: 'SelectElement',
-    });
+    this.dispatchAction({key, AXkey, type: 'SelectElement'});
 
     this.client.send('setHighlighted', {
       id: selectedKey,

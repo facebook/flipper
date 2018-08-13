@@ -18,15 +18,17 @@ public class SearchResultNode {
   private final String id;
   private final boolean isMatch;
   private final SonarObject element;
+  private final SonarObject axElement;
   @Nullable
   private final List<SearchResultNode> children;
 
   SearchResultNode(
-      String id, boolean isMatch, SonarObject element, @Nullable List<SearchResultNode> children) {
+      String id, boolean isMatch, SonarObject element, List<SearchResultNode> children, SonarObject axElement) {
     this.id = id;
     this.isMatch = isMatch;
     this.element = element;
     this.children = children;
+    this.axElement = axElement;
   }
 
   SonarObject toSonarObject() {
@@ -44,6 +46,7 @@ public class SearchResultNode {
     return new SonarObject.Builder()
         .put("id", this.id)
         .put("isMatch", this.isMatch)
+        .put("axElement", this.axElement)
         .put("element", this.element)
         .put("children", childArray)
         .build();

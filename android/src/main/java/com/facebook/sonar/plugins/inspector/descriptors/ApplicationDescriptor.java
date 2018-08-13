@@ -207,6 +207,11 @@ public class ApplicationDescriptor extends NodeDescriptor<ApplicationWrapper> {
   }
 
   @Override
+  public SonarObject getExtraInfo(ApplicationWrapper node) {
+    return new SonarObject.Builder().put("hasAXNode", true).build();
+  }
+
+  @Override
   public void setHighlighted(ApplicationWrapper node, boolean selected, boolean isAlignmentMode) throws Exception {
     final int childCount = getChildCount(node);
     if (childCount > 0) {

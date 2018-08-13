@@ -372,7 +372,9 @@ public class InspectorSonarPlugin implements SonarPlugin {
         public void onReceiveOnMainThread(SonarObject params, SonarResponder responder)
             throws Exception {
           final String query = params.getString("query");
-          final SearchResultNode matchTree = searchTree(query.toLowerCase(), mApplication);
+          final boolean axEnabled = params.getBoolean("axEnabled");
+
+          final SearchResultNode matchTree = searchTree(query.toLowerCase(), mApplication, axEnabled);
           final SonarObject results = matchTree == null ? null : matchTree.toSonarObject();
           final SonarObject response =
               new SonarObject.Builder().put("results", results).put("query", query).build();
@@ -503,14 +505,19 @@ public class InspectorSonarPlugin implements SonarPlugin {
     descriptor.setHighlighted(obj, highlighted, isAlignmentMode);
   }
 
-  public SearchResultNode searchTree(String query, Object obj) throws Exception {
+  private boolean hasAXNode(SonarObject node) {
+    SonarObject extraInfo = node.getObject("extraInfo");
+    return extraInfo != null && extraInfo.getBoolean("hasAXNode");
+  }
+
+  public SearchResultNode searchTree(String query, Object obj, boolean axEnabled) throws Exception {
     final NodeDescriptor descriptor = descriptorForObject(obj);
     List<SearchResultNode> childTrees = null;
     boolean isMatch = descriptor.matches(query, obj);
 
     for (int i = 0; i < descriptor.getChildCount(obj); i++) {
       Object child = descriptor.getChildAt(obj, i);
-      SearchResultNode childNode = searchTree(query, child);
+      SearchResultNode childNode = searchTree(query, child, axEnabled);
       if (childNode != null) {
         if (childTrees == null) {
           childTrees = new ArrayList<>();
@@ -521,7 +528,8 @@ public class InspectorSonarPlugin implements SonarPlugin {
 
     if (isMatch || childTrees != null) {
       final String id = trackObject(obj);
-      return new SearchResultNode(id, isMatch, getNode(id), childTrees);
+      SonarObject node = getNode(id);
+      return new SearchResultNode(id, isMatch, node, childTrees, axEnabled && hasAXNode(node) ? getAXNode(id) : null);
     }
     return null;
   }
