@@ -108,7 +108,7 @@ class PluginContainer extends Component<Props, State> {
     if (ref && target) {
       activateMenuItems(ref);
       ref._init();
-      this.props.logger.trackTimeSince(`activePlugin-${ref.id}`);
+      this.props.logger.trackTimeSince(`activePlugin-${ref.constructor.id}`);
       this.plugin = ref;
     }
   };

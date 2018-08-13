@@ -18,8 +18,9 @@ export default (store: Store, logger: Logger) => {
   ) {
     const now = performance.now();
     requestAnimationFrame(() => droppedFrameDetection(now, isWindowFocused));
-    if (isWindowFocused()) {
-      droppedFrames += Math.max(0, Math.round(now - past / (1000 / 60) - 1));
+    const dropped = Math.round((now - past) / (1000 / 60) - 1);
+    if (dropped > 0 && isWindowFocused()) {
+      droppedFrames += dropped;
     }
   }
 
