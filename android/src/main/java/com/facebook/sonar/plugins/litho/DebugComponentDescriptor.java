@@ -19,7 +19,6 @@ import com.facebook.litho.ComponentLifecycle;
 import com.facebook.litho.DebugComponent;
 import com.facebook.litho.DebugLayoutNode;
 import com.facebook.litho.LithoView;
-import com.facebook.litho.StateContainer;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.reference.Reference;
@@ -72,7 +71,7 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
 
         @Override
         public void applyStateOverrides(
-            String key, StateContainer stateContainer) {
+            String key, ComponentLifecycle.StateContainer stateContainer) {
           final List<Pair<String[], SonarDynamic>> overrides = mOverrides.get(key);
           if (overrides == null) {
             return;
@@ -422,7 +421,7 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
       return null;
     }
 
-    final StateContainer stateContainer = node.getStateContainer();
+    final ComponentLifecycle.StateContainer stateContainer = node.getStateContainer();
     if (stateContainer == null) {
       return null;
     }
