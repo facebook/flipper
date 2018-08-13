@@ -65,7 +65,6 @@ class SonarWebSocketImpl : public SonarWebSocket {
   void requestSignedCertFromSonar();
   bool ensureSonarDirExists();
   bool isRunningInOwnThread();
-  void sendLegacyCertificateRequest(folly::dynamic message);
 };
 
 } // namespace sonar
