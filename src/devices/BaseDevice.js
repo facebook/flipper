@@ -53,6 +53,10 @@ export default class BaseDevice {
   // possible src of icon to display next to the device title
   icon: ?string;
 
+  supportsOS(os: string) {
+    return os.toLowerCase() === this.os.toLowerCase();
+  }
+
   supportsPlugin = (DevicePlugin: Class<SonarDevicePlugin<>>): boolean => {
     return this.supportedPlugins.includes(DevicePlugin.id);
   };

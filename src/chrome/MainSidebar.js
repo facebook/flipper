@@ -28,8 +28,6 @@ import {devicePlugins} from '../device-plugins/index.js';
 import plugins from '../plugins/index.js';
 import {selectPlugin} from '../reducers/connections.js';
 import {connect} from 'react-redux';
-import AndroidDevice from '../devices/AndroidDevice.js';
-import IOSDevice from '../devices/IOSDevice.js';
 
 const CustomClickableListItem = ClickableListItem.extends({
   paddingLeft: 10,
@@ -166,18 +164,10 @@ class MainSidebar extends Component<MainSidebarProps> {
     });
 
     clients = clients
-      .filter((client: Client) => {
-        if (
-          (selectedDevice instanceof AndroidDevice &&
-            client.query.os.toLowerCase() !== 'android') ||
-          (selectedDevice instanceof IOSDevice &&
-            client.query.os.toLowerCase() !== 'ios')
-        ) {
-          return false;
-        } else {
-          return true;
-        }
-      })
+      .filter(
+        (client: Client) =>
+          selectedDevice && selectedDevice.supportsOS(client.query.os),
+      )
       .sort((a, b) => (a.query.app || '').localeCompare(b.query.app));
 
     return (
