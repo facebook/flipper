@@ -24,7 +24,6 @@ android {
     externalNativeBuild {
         cmake {
             path './CMakeLists.txt'
-            //'rsocket-cpp-0.10.0/CMakeLists.txt'
         }
     }
 }

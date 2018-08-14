@@ -2,6 +2,7 @@ cmake_minimum_required (VERSION 3.6.0)
 
 PROJECT(rsocket CXX)
 set(PACKAGE_NAME      rsocket)
+set(RSOCKET_VERSION 0.10.2)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -13,8 +14,8 @@ set(LIBEVENT_DIR ${third_party_ndk}/LibEvent/libevent-release-2.1.9/)
 set(DOUBLECONVERSION_DIR ${third_party_ndk}/double-conversion/double-conversion-3.0.0/)
 set(OPENSSL_DIR ${third_party_ndk}/OpenSSL/openssl-1.1.0h/)
 
-set(RSOCKET_ROOT_DIR  ${PROJECT_SOURCE_DIR}/rsocket-cpp-0.10.1)
-set(RSOCKET_DIR  ${PROJECT_SOURCE_DIR}/rsocket-cpp-0.10.1/rsocket)
+set(RSOCKET_ROOT_DIR  ${PROJECT_SOURCE_DIR}/rsocket-cpp-${RSOCKET_VERSION})
+set(RSOCKET_DIR  ${PROJECT_SOURCE_DIR}/rsocket-cpp-${RSOCKET_VERSION}/rsocket)
 
 list(APPEND dir_list ${RSOCKET_ROOT_DIR}/)
 list(APPEND dir_list ${RSOCKET_DIR}/)
