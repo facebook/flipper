@@ -65,3 +65,7 @@ task sourcesJar(type: Jar) {
 }
 
 artifacts.add('archives', sourcesJar)
+
+dependencies {
+    testImplementation 'junit:junit:4.12'
+}
