@@ -138,7 +138,7 @@ export default class Client extends EventEmitter {
       error?: Object,
     |} = rawData;
 
-    console.log(data, 'message:receive');
+    console.debug(data, 'message:receive');
 
     const {id, method} = data;
 
@@ -240,7 +240,7 @@ export default class Client extends EventEmitter {
         params,
       };
 
-      console.log(data, 'message:call');
+      console.debug(data, 'message:call');
       this.startTimingRequestResponse({method, id, params});
       this.connection.fireAndForget({data: JSON.stringify(data)});
     });
@@ -273,7 +273,7 @@ export default class Client extends EventEmitter {
       method,
       params,
     };
-    console.log(data, 'message:send');
+    console.debug(data, 'message:send');
     this.connection.fireAndForget({data: JSON.stringify(data)});
   }
 

@@ -103,16 +103,24 @@ export default class WelcomeScreen extends PureComponent<Props, State> {
     isMounted: false,
   };
 
+  timer: ?TimeoutID;
+
   componentDidMount() {
     // waiting sometime before showing the welcome screen to allow Flipper to
     // connect to devices, if there are any
-    setTimeout(
+    this.timer = setTimeout(
       () =>
         this.setState({
           isMounted: true,
         }),
       2000,
     );
+  }
+
+  componentWillUnmount() {
+    if (this.timer) {
+      clearTimeout(this.timer);
+    }
   }
 
   render() {

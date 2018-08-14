@@ -87,7 +87,7 @@ export default class Server extends EventEmitter {
           console.error(`Error opening server on port ${port}`, 'server');
         })
         .on('listening', () => {
-          console.warn(
+          console.debug(
             `${
               sslConfig ? 'Secure' : 'Certificate'
             } server started on port ${port}`,
@@ -121,7 +121,7 @@ export default class Server extends EventEmitter {
     conn.connectionStatus().subscribe({
       onNext(payload) {
         if (payload.kind == 'ERROR' || payload.kind == 'CLOSED') {
-          console.warn(`Device disconnected ${client.id}`, 'connection');
+          console.debug(`Device disconnected ${client.id}`, 'connection');
           server.removeConnection(client.id);
         }
       },
@@ -175,7 +175,7 @@ export default class Server extends EventEmitter {
           destination: string,
         |} = rawData;
         if (json.method === 'signCertificate') {
-          console.warn('CSR received from device', 'server');
+          console.debug('CSR received from device', 'server');
           const {csr, destination} = json;
           return new Single(subscriber => {
             subscriber.onSubscribe();
@@ -217,7 +217,7 @@ export default class Server extends EventEmitter {
           destination: string,
         |} = rawData;
         if (json.method === 'signCertificate') {
-          console.warn('CSR received from device', 'server');
+          console.debug('CSR received from device', 'server');
           const {csr, destination} = json;
           this.certificateProvider
             .processCertificateSigningRequest(csr, clientData.os, destination)
@@ -242,7 +242,7 @@ export default class Server extends EventEmitter {
     invariant(query, 'expected query');
 
     const id = `${query.app}-${query.os}-${query.device}`;
-    console.warn(`Device connected: ${id}`, 'connection');
+    console.debug(`Device connected: ${id}`, 'connection');
 
     const client = new Client(id, query, conn, this.logger);
 
@@ -252,7 +252,7 @@ export default class Server extends EventEmitter {
     };
 
     client.init().then(() => {
-      console.log(
+      console.debug(
         `Device client initialised: ${id}. Supported plugins: ${client.plugins.join(
           ', ',
         )}`,

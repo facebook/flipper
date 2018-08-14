@@ -125,7 +125,7 @@ export default class CertificateProvider {
   }
 
   generateClientCertificate(csr: string): Promise<string> {
-    console.warn('Creating new client cert', logTag);
+    console.debug('Creating new client cert', logTag);
     const csrFile = this.writeToTempFile(csr);
     // Create a certificate for the client, using the details in the CSR.
     return openssl('x509', {
@@ -258,7 +258,7 @@ export default class CertificateProvider {
     filename: string,
     contents: string,
   ): Promise<void> {
-    console.warn(`Deploying ${filename} to ${deviceId}:${app}`, logTag);
+    console.debug(`Deploying ${filename} to ${deviceId}:${app}`, logTag);
     return this.executeCommandOnAndroid(
       deviceId,
       app,

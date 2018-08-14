@@ -16,6 +16,9 @@ const {exec} = require('child_process');
 const compilePlugins = require('./compilePlugins.js');
 const os = require('os');
 
+// disable electron security warnings: https://github.com/electron/electron/blob/master/docs/tutorial/security.md#security-native-capabilities-and-your-responsibility
+process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = true;
+
 if (!process.env.ANDROID_HOME) {
   process.env.ANDROID_HOME = '/opt/android_sdk';
 }

@@ -244,6 +244,9 @@ export default class LogTable extends SonarDevicePlugin<LogsState> {
   static icon = 'arrow-right';
   static keyboardActions = ['clear', 'goToBottom', 'createPaste'];
 
+  initTimer: ?TimeoutID;
+  batchTimer: ?TimeoutID;
+
   onKeyboardAction = (action: string) => {
     if (action === 'clear') {
       this.clearLogs();
@@ -384,7 +387,7 @@ export default class LogTable extends SonarDevicePlugin<LogsState> {
       if (!queued) {
         queued = true;
 
-        setTimeout(() => {
+        this.batchTimer = setTimeout(() => {
           const thisBatch = batch;
           batch = [];
           queued = false;
@@ -421,11 +424,20 @@ export default class LogTable extends SonarDevicePlugin<LogsState> {
       }
     });
 
-    setTimeout(() => {
+    this.initTimer = setTimeout(() => {
       this.setState({
         initialising: false,
       });
     }, 2000);
+  }
+
+  componentWillUnmount() {
+    if (this.initTimer) {
+      clearTimeout(this.initTimer);
+    }
+    if (this.batchTimer) {
+      clearTimeout(this.batchTimer);
+    }
   }
 
   addRowIfNeeded(
