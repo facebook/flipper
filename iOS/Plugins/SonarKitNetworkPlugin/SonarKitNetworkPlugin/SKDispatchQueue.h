@@ -30,6 +30,8 @@ namespace facebook {
         dispatch_async(_underlyingQueue, block);
       }
 
+      virtual ~GCDQueue() { }
+
     private:
       dispatch_queue_t _underlyingQueue;
     };
