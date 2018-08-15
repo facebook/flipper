@@ -9,8 +9,13 @@
 #include "SonarState.h"
 
 void SonarStep::complete() {
-  isCompleted = true;
+  isLogged = true;
   state->success(name);
+}
+
+void SonarStep::fail(std::string message) {
+  isLogged = true;
+  state->failed(name, message);
 }
 
 SonarStep::SonarStep(std::string step, SonarState* s) {
@@ -19,7 +24,7 @@ SonarStep::SonarStep(std::string step, SonarState* s) {
 }
 
 SonarStep::~SonarStep() {
-  if (!isCompleted) {
+  if (!isLogged) {
     state->failed(name, "");
   }
 }

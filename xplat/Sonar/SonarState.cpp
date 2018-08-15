@@ -41,7 +41,7 @@ void SonarState::success(std::string step) {
 }
 
 void SonarState::failed(std::string step, std::string errorMessage) {
-  log = log + "[Failed] " + step + "\n";
+  log = log + "[Failed] " + step + ": " + errorMessage + "\n";
   stateMap[step] = State::failed;
   if (mListener) {
     mListener->onUpdate();

@@ -123,19 +123,23 @@ void SonarWebSocketImpl::startSync() {
       doCertificateExchange();
       return;
     }
-    connectSecurely();
 
+    connectSecurely();
     connect->complete();
   } catch (const folly::AsyncSocketException& e) {
     if (e.getType() == folly::AsyncSocketException::NOT_OPEN) {
       // The expected code path when flipper desktop is not running.
+      // Don't count as a failed attempt.
+      connect->fail("Port not open");
     } else {
       SONAR_LOG(e.what());
       failedConnectionAttempts_++;
+      connect->fail(e.what());
     }
     reconnect();
   } catch (const std::exception& e) {
     SONAR_LOG(e.what());
+    connect->fail(e.what());
     failedConnectionAttempts_++;
     reconnect();
   }

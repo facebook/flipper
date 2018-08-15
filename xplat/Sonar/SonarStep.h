@@ -15,11 +15,12 @@ class SonarState;
 class SonarStep {
  public:
   void complete();
+  void fail(std::string message);
   SonarStep(std::string name, SonarState* state);
   ~SonarStep();
 
  private:
   std::string name;
-  bool isCompleted = false;
+  bool isLogged = false;
   SonarState* state;
 };
