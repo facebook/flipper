@@ -20,6 +20,7 @@
 #include <fstream>
 #include <iostream>
 #include <thread>
+#include <folly/io/async/AsyncSocketException.h>
 #include "CertificateUtils.h"
 
 #ifdef __ANDROID__
@@ -116,14 +117,25 @@ void SonarWebSocketImpl::startSync() {
     SONAR_LOG("Already connected");
     return;
   }
+  auto connect = sonarState_->start("Connect to desktop");
   try {
     if (isCertificateExchangeNeeded()) {
       doCertificateExchange();
       return;
     }
-
     connectSecurely();
-  } catch (const std::exception&) {
+
+    connect->complete();
+  } catch (const folly::AsyncSocketException& e) {
+    if (e.getType() == folly::AsyncSocketException::NOT_OPEN) {
+      // The expected code path when flipper desktop is not running.
+    } else {
+      SONAR_LOG(e.what());
+      failedConnectionAttempts_++;
+    }
+    reconnect();
+  } catch (const std::exception& e) {
+    SONAR_LOG(e.what());
     failedConnectionAttempts_++;
     reconnect();
   }
