@@ -7,6 +7,8 @@ import android.widget.Toast;
 import com.facebook.sonar.android.AndroidSonarClient;
 import com.facebook.sonar.core.SonarClient;
 import com.facebook.sonar.core.SonarStateUpdateListener;
+import com.facebook.sonar.core.StateSummary;
+import com.facebook.sonar.core.StateSummary.StateElement;
 import android.widget.LinearLayout;
 import android.view.View;
 import android.widget.TextView;
@@ -14,18 +16,22 @@ import android.widget.ScrollView;
 
 public class SonarDiagnosticActivity extends Activity implements SonarStateUpdateListener {
 
-  private TextView textView;
+  private TextView summaryView;
+  private TextView logView;
   private ScrollView scrollView;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    LinearLayout root = new LinearLayout(this);
+    final LinearLayout root = new LinearLayout(this);
+    root.setOrientation(LinearLayout.VERTICAL);
 
-    textView = new TextView(this);
+    summaryView = new TextView(this);
+    logView = new TextView(this);
     scrollView = new ScrollView(this);
-    scrollView.addView(textView);
+    scrollView.addView(logView);
+    root.addView(summaryView);
     root.addView(scrollView);
 
     setContentView(root);
@@ -33,9 +39,11 @@ public class SonarDiagnosticActivity extends Activity implements SonarStateUpdat
 
   protected void onStart() {
     super.onStart();
-    SonarClient client = AndroidSonarClient.getInstance(this);
+    final SonarClient client = AndroidSonarClient.getInstance(this);
     client.subscribeForUpdates(this);
-    textView.setText(client.getState());
+
+    summaryView.setText(getSummary());
+    logView.setText(client.getState());
   }
 
   protected void onResume() {
@@ -45,20 +53,39 @@ public class SonarDiagnosticActivity extends Activity implements SonarStateUpdat
 
 @Override
   public void onUpdate() {
-    final Context context = this;
-    final String state = AndroidSonarClient.getInstance(context).getState();
-    runOnUiThread(new Runnable() {
+    final String state = AndroidSonarClient.getInstance(this).getState();
+    final String summary = getSummary();
+
+   runOnUiThread(new Runnable() {
       @Override
       public void run() {
-        textView.setText(state);
+        summaryView.setText(summary);
+        logView.setText(state);
         scrollView.fullScroll(View.FOCUS_DOWN);
       }
     });
   }
 
+  private String getSummary() {
+    final Context context = this;
+    final StateSummary summary = AndroidSonarClient.getInstance(context).getStateSummary();
+    final StringBuilder stateText = new StringBuilder();
+    for (StateElement e: summary.mList) {
+      final String status;
+      switch(e.getState()) {
+        case IN_PROGRESS: status = "⏳"; break;
+        case SUCCESS: status = "✅"; break;
+        case FAILED: status = "❌"; break;
+        default: status = "❓";
+      }
+      stateText.append(status).append(e.getName()).append("\n");
+    }
+    return stateText.toString();
+  }
+
   protected void onStop() {
     super.onStop();
-    SonarClient client = AndroidSonarClient.getInstance(this);
+    final SonarClient client = AndroidSonarClient.getInstance(this);
     client.unsubscribe();
   }
 }
