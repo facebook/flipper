@@ -38,6 +38,7 @@ type CPUState = {|
   cpuFreq: Array<CPUFrequency>,
   cpuCount: number,
   monitoring: boolean,
+  hardwareInfo: string,
 |};
 
 type ShellCallBack = (output: string) => void;
@@ -109,11 +110,14 @@ export default class CPUFrequencyTable extends SonarDevicePlugin<CPUState> {
     cpuFreq: [],
     cpuCount: 0,
     monitoring: false,
+    hardwareInfo: '',
   };
 
   init() {
     let device = ((this.device: any): AndroidDevice);
     this.adbClient = device.adb;
+
+    this.updateHardwareInfo();
 
     // check how many cores we have on this device
     this.executeShell((output: string) => {
@@ -177,6 +181,41 @@ export default class CPUFrequencyTable extends SonarDevicePlugin<CPUState> {
     this.updateCoreFrequency(core, 'scaling_cur_freq');
     this.updateCoreFrequency(core, 'scaling_min_freq');
     this.updateCoreFrequency(core, 'scaling_max_freq');
+  };
+
+  updateHardwareInfo = () => {
+    this.executeShell((output: string) => {
+      let hwInfo = '';
+      if (
+        output.startsWith('msm') ||
+        output.startsWith('apq') ||
+        output.startsWith('sdm')
+      ) {
+        hwInfo = 'QUALCOMM ' + output.toUpperCase();
+      } else if (output.startsWith('exynos')) {
+        this.executeShell((output: string) => {
+          if (output != null) {
+            this.setState({
+              hardwareInfo: 'SAMSUMG ' + output.toUpperCase(),
+            });
+          }
+        }, 'getprop ro.chipname');
+        return;
+      } else if (output.startsWith('mt')) {
+        hwInfo = 'MEDIATEK ' + output.toUpperCase();
+      } else if (output.startsWith('sc')) {
+        hwInfo = 'SPREADTRUM ' + output.toUpperCase();
+      } else if (output.startsWith('hi') || output.startsWith('kirin')) {
+        hwInfo = 'HISILICON ' + output.toUpperCase();
+      } else if (output.startsWith('rk')) {
+        hwInfo = 'ROCKCHIP ' + output.toUpperCase();
+      } else if (output.startsWith('bcm')) {
+        hwInfo = 'BROADCOM ' + output.toUpperCase();
+      }
+      this.setState({
+        hardwareInfo: hwInfo,
+      });
+    }, 'getprop ro.board.platform');
   };
 
   onStartMonitor = () => {
@@ -308,6 +347,7 @@ export default class CPUFrequencyTable extends SonarDevicePlugin<CPUState> {
                 Start
               </Button>
             )}
+            &nbsp; {this.state.hardwareInfo}
           </Toolbar>
           <ManagedTable
             multiline={true}
