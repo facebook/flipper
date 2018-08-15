@@ -23,6 +23,7 @@
 #include <Sonar/SonarConnection.h>
 #include <Sonar/SonarResponder.h>
 #include <Sonar/SonarStateUpdateListener.h>
+#include <Sonar/SonarState.h>
 
 using namespace facebook;
 using namespace facebook::sonar;
@@ -249,6 +250,21 @@ class JSonarPluginWrapper : public SonarPlugin {
   JSonarPluginWrapper(jni::global_ref<JSonarPlugin> plugin): jplugin(plugin) {}
 };
 
+struct JStateSummary : public jni::JavaClass<JStateSummary> {
+public:
+  constexpr static auto kJavaDescriptor = "Lcom/facebook/sonar/core/StateSummary;";
+
+  static jni::local_ref<JStateSummary> create() {
+    return newInstance();
+  }
+
+  void addEntry(std::string name, std::string state) {
+    static const auto method = javaClassStatic()->getMethod<void(std::string, std::string)>("addEntry");
+    return method(self(), name, state);
+  }
+
+};
+
 class JSonarClient : public jni::HybridClass<JSonarClient> {
  public:
   constexpr static auto kJavaDescriptor = "Lcom/facebook/sonar/android/SonarClientImpl;";
@@ -265,6 +281,7 @@ class JSonarClient : public jni::HybridClass<JSonarClient> {
       makeNativeMethod("unsubscribe", JSonarClient::unsubscribe),
       makeNativeMethod("getPlugin", JSonarClient::getPlugin),
       makeNativeMethod("getState", JSonarClient::getState),
+      makeNativeMethod("getStateSummary", JSonarClient::getStateSummary),
     });
   }
 
@@ -307,6 +324,21 @@ class JSonarClient : public jni::HybridClass<JSonarClient> {
     return SonarClient::instance()->getState();
   }
 
+  jni::global_ref<JStateSummary::javaobject> getStateSummary() {
+    auto summary = jni::make_global(JStateSummary::create());
+    auto elements = SonarClient::instance()->getStateElements();
+    for (auto&& element : elements) {
+      std::string status;
+      switch (element.state_) {
+        case State::in_progress: status = "IN_PROGRESS"; break;
+        case State::failed: status = "FAILED"; break;
+        case State::success: status = "SUCCESS"; break;
+      }
+      summary->addEntry(element.name_, status);
+    }
+    return summary;
+  }
+
   jni::alias_ref<JSonarPlugin> getPlugin(const std::string& identifier) {
     auto plugin = SonarClient::instance()->getPlugin(identifier);
     if (plugin) {
@@ -347,7 +379,6 @@ class JSonarClient : public jni::HybridClass<JSonarClient> {
  private:
   friend HybridBase;
   std::shared_ptr<SonarStateUpdateListener> mStateListener = nullptr;
-
   JSonarClient() {}
 };
 

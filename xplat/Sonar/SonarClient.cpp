@@ -12,6 +12,7 @@
 #include "SonarState.h"
 #include "SonarStep.h"
 #include "SonarWebSocketImpl.h"
+#include <vector>
 
 #ifdef __ANDROID__
 #include <android/log.h>
@@ -110,10 +111,8 @@ void SonarClient::refreshPlugins() {
 void SonarClient::onConnected() {
   SONAR_LOG("SonarClient::onConnected");
 
-  auto step = sonarState_->start("Connect");
   std::lock_guard<std::mutex> lock(mutex_);
   connected_ = true;
-  step->complete();
 }
 
 void SonarClient::onDisconnected() {
@@ -214,6 +213,10 @@ void SonarClient::performAndReportError(const std::function<void()>& func) {
 
 std::string SonarClient::getState() {
   return sonarState_->getState();
+}
+
+std::vector<StateElement> SonarClient::getStateElements() {
+  return sonarState_->getStateElements();
 }
 
 } // namespace sonar

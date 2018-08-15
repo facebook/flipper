@@ -23,4 +23,6 @@ public interface SonarClient {
   void unsubscribe();
 
   String getState();
+
+  StateSummary getStateSummary();
 }

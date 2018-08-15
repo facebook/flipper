@@ -16,6 +16,7 @@
 #include <map>
 #include <mutex>
 #include "SonarStep.h"
+#include <vector>
 
 namespace facebook {
 namespace sonar {
@@ -76,6 +77,8 @@ class SonarClient : public SonarWebSocket::Callbacks {
   std::shared_ptr<SonarPlugin> getPlugin(const std::string& identifier);
 
   std::string getState();
+
+  std::vector<StateElement> getStateElements();
 
   template <typename P>
   std::shared_ptr<P> getPlugin(const std::string& identifier) {

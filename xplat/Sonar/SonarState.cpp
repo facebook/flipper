@@ -8,34 +8,41 @@
 #include "SonarState.h"
 #include "SonarStateUpdateListener.h"
 #include "SonarStep.h"
+#include <vector>
+
+using namespace facebook::sonar;
 
 /* Class responsible for collecting state updates and combining them into a
  * view of the current state of the sonar client. */
 
-SonarState::SonarState() {
-  stateUpdates = "";
-}
+
+SonarState::SonarState(): log("") {}
 void SonarState::setUpdateListener(
     std::shared_ptr<SonarStateUpdateListener> listener) {
   mListener = listener;
 }
 
 void SonarState::started(std::string step) {
-  stateUpdates = stateUpdates + "[Started] " + step + "\n";
+  if (stateMap.find(step) == stateMap.end()) {
+    insertOrder.push_back(step);
+  }
+  stateMap[step] = State::in_progress;
   if (mListener) {
     mListener->onUpdate();
   }
 }
 
 void SonarState::success(std::string step) {
-  stateUpdates = stateUpdates + "[Success] " + step + "\n";
+  log = log + "[Success] " + step + "\n";
+  stateMap[step] = State::success;
   if (mListener) {
     mListener->onUpdate();
   }
 }
 
 void SonarState::failed(std::string step, std::string errorMessage) {
-  stateUpdates = stateUpdates + "[Failed] " + step + "\n";
+  log = log + "[Failed] " + step + "\n";
+  stateMap[step] = State::failed;
   if (mListener) {
     mListener->onUpdate();
   }
@@ -45,7 +52,15 @@ void SonarState::failed(std::string step, std::string errorMessage) {
 // representation of the current state so the UI can show it in a more intuitive
 // way
 std::string SonarState::getState() {
-  return stateUpdates;
+  return log;
+}
+
+std::vector<StateElement> SonarState::getStateElements() {
+  std::vector<StateElement> v;
+  for (auto stepName : insertOrder) {
+    v.push_back(StateElement(stepName, stateMap[stepName]));
+  }
+  return v;
 }
 
 std::shared_ptr<SonarStep> SonarState::start(std::string step_name) {

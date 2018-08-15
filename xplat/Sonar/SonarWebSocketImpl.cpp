@@ -7,6 +7,7 @@
  */
 
 #include "SonarWebSocketImpl.h"
+#include "SonarStep.h"
 #include <folly/String.h>
 #include <folly/futures/Future.h>
 #include <folly/io/async/SSLContext.h>
@@ -224,11 +225,12 @@ void SonarWebSocketImpl::sendMessage(const folly::dynamic& message) {
 }
 
 bool SonarWebSocketImpl::isCertificateExchangeNeeded() {
-  auto step = sonarState_->start("Check required certificates are present");
+
   if (failedConnectionAttempts_ >= 2) {
     return true;
   }
 
+  auto step = sonarState_->start("Check required certificates are present");
   std::string caCert = loadStringFromFile(absoluteFilePath(SONAR_CA_FILE_NAME));
   std::string clientCert =
       loadStringFromFile(absoluteFilePath(CLIENT_CERT_FILE_NAME));

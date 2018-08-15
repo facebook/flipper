@@ -14,6 +14,7 @@ import com.facebook.sonar.BuildConfig;
 import com.facebook.sonar.core.SonarClient;
 import com.facebook.sonar.core.SonarPlugin;
 import com.facebook.sonar.core.SonarStateUpdateListener;
+import com.facebook.sonar.core.StateSummary;
 
 @DoNotStrip
 class SonarClientImpl implements SonarClient {
@@ -65,4 +66,7 @@ class SonarClientImpl implements SonarClient {
 
   @Override
   public native String getState();
+
+  @Override
+  public native StateSummary getStateSummary();
 }

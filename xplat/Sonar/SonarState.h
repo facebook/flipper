@@ -10,10 +10,26 @@
 
 #include <memory>
 #include <string>
-#include <Sonar/SonarStep.h>
+#include <vector>
+#include <map>
 
 class SonarStep;
 class SonarStateUpdateListener;
+
+namespace facebook {
+namespace sonar {
+
+enum State { success, in_progress, failed };
+
+class StateElement {
+public:
+  StateElement(std::string name, State state): name_(name), state_(state) {};
+  std::string name_;
+  State state_;
+};
+
+}
+}
 
 class SonarState {
   friend SonarStep;
@@ -22,6 +38,7 @@ class SonarState {
   SonarState();
   void setUpdateListener(std::shared_ptr<SonarStateUpdateListener>);
   std::string getState();
+  std::vector<facebook::sonar::StateElement> getStateElements();
 
   /* To record a state update, call start() with the name of the step to get a
    SonarStep object. Call complete on this to register it successful,
@@ -33,6 +50,9 @@ class SonarState {
   void success(std::string);
   void failed(std::string, std::string);
   void started(std::string);
+
   std::shared_ptr<SonarStateUpdateListener> mListener = nullptr;
-  std::string stateUpdates;
+  std::string log;
+  std::vector<std::string> insertOrder;
+  std::map<std::string, facebook::sonar::State> stateMap;
 };
