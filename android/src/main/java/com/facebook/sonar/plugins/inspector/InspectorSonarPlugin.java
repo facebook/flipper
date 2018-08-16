@@ -15,7 +15,6 @@ import android.view.accessibility.AccessibilityEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.accessibility.AccessibilityManager;
 import com.facebook.sonar.core.ErrorReportingRunnable;
 import com.facebook.sonar.core.SonarArray;
 import com.facebook.sonar.core.SonarConnection;

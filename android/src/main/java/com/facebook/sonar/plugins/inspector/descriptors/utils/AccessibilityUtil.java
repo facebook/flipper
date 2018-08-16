@@ -548,7 +548,7 @@ public final class AccessibilityUtil {
         .put("clickable", nodeInfo.isClickable())
         .put("content-description", nodeInfo.getContentDescription())
         .put("text", nodeInfo.getText())
-        .put("focused", nodeInfo.isAccessibilityFocused())
+        .put("accessibility-focused", nodeInfo.isAccessibilityFocused())
         .put("long-clickable", nodeInfo.isLongClickable())
         .put("focusable", nodeInfo.isFocusable());
 
@@ -581,7 +581,7 @@ public final class AccessibilityUtil {
 
   /**
    * Creates a {@link SonarObject} of useful properties of AccessibilityNodeInfo, to be shown in the
-   * Sonar Layout Inspector extension. All properties are immutable since they are all derived from
+   * Sonar Layout Inspector accessibility extension. All properties are immutable since they are all derived from
    * various {@link View} properties. This is a more complete list than
    * getAccessibilityNodeInfoProperties returns.
    *
@@ -589,7 +589,7 @@ public final class AccessibilityUtil {
    * @return {@link SonarObject} containing the properties.
    */
   @Nullable
-  public static SonarObject getAXNodeInfoProperties(View view) {
+  public static SonarObject getAccessibilityNodeInfoData(View view) {
     final AccessibilityNodeInfoCompat nodeInfo =
         ViewAccessibilityHelper.createNodeInfoFromView(view);
     if (nodeInfo == null) {
@@ -615,6 +615,7 @@ public final class AccessibilityUtil {
     }
 
     nodeInfoProps
+        .put("accessibility-focused", nodeInfo.isAccessibilityFocused())
         .put("checkable", nodeInfo.isCheckable())
         .put("checked", nodeInfo.isChecked())
         .put("clickable", nodeInfo.isClickable())
@@ -625,9 +626,9 @@ public final class AccessibilityUtil {
         .put("drawing-order", nodeInfo.getDrawingOrder())
         .put("editable", nodeInfo.isEditable())
         .put("enabled", nodeInfo.isEnabled())
-        .put("focusable", nodeInfo.isFocusable())
-        .put("focused", nodeInfo.isAccessibilityFocused())
         .put("important-for-accessibility", nodeInfo.isImportantForAccessibility())
+        .put("focusable", nodeInfo.isFocusable())
+        .put("focused", nodeInfo.isFocused())
         .put("long-clickable", nodeInfo.isLongClickable())
         .put("multiline", nodeInfo.isMultiLine())
         .put("password", nodeInfo.isPassword())
@@ -702,12 +703,13 @@ public final class AccessibilityUtil {
     // This needs to be an empty string to be mutable. See t20470623.
     CharSequence contentDescription =
         view.getContentDescription() != null ? view.getContentDescription() : "";
-    props.put("content-description", InspectorValue.mutable(contentDescription));
-    props.put("focusable", InspectorValue.mutable(view.isFocusable()));
-    props.put("selected", InspectorValue.mutable(view.isSelected()));
-    props.put("long-clickable", InspectorValue.mutable(view.isLongClickable()));
-    props.put("clickable", InspectorValue.mutable(view.isClickable()));
-    props.put("focused", view.isFocused());
+    props.put("content-description", InspectorValue.mutable(contentDescription))
+            .put("focusable", InspectorValue.mutable(view.isFocusable()))
+            .put("selected", InspectorValue.mutable(view.isSelected()))
+            .put("enabled", InspectorValue.mutable(view.isEnabled()))
+            .put("long-clickable", InspectorValue.mutable(view.isLongClickable()))
+            .put("clickable", InspectorValue.mutable(view.isClickable()))
+            .put("focused", view.isFocused());
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       props.put("accessibility-focused", view.isAccessibilityFocused());
@@ -723,30 +725,23 @@ public final class AccessibilityUtil {
     return props.build();
   }
 
-  public static SonarObject getDerivedAXData(View view) {
-    final SonarObject.Builder props = new SonarObject.Builder();
-
+  public static SonarObject getTalkbackData(View view) {
     if (!AccessibilityEvaluationUtil.isTalkbackFocusable(view)) {
       String reason = getTalkbackIgnoredReasons(view);
-      props
-          .put("talkback-ignored", true)
-          .put("talkback-ignored-reasons", reason == null ? "" : reason);
+      return new SonarObject.Builder()
+              .put("talkback-ignored", true)
+              .put("talkback-ignored-reasons", reason == null ? "" : reason)
+              .build();
     } else {
       String reason = getTalkbackFocusableReasons(view);
       CharSequence description = getTalkbackDescription(view);
       CharSequence hint = getTalkbackHint(view);
-      props
-          .put("talkback-focusable", true)
-          .put("talkback-focusable-reasons", reason)
-          .put("talkback-output", description)
-          .put("talkback-hint", hint);
+      return new SonarObject.Builder()
+              .put("talkback-focusable", true)
+              .put("talkback-focusable-reasons", reason)
+              .put("talkback-output", description)
+              .put("talkback-hint", hint)
+              .build();
     }
-
-    SonarObject axNodeInfo = getAXNodeInfoProperties(view);
-    if (axNodeInfo != null) {
-      props.put("node-info", axNodeInfo);
-    }
-
-    return props.build();
   }
 }

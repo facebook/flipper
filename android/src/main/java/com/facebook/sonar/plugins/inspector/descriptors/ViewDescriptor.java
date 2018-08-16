@@ -50,8 +50,9 @@ import javax.annotation.Nullable;
 
 public class ViewDescriptor extends NodeDescriptor<View> {
 
-  private static final String axViewPropsTitle = "Accessibility View";
-  private static final String axNodeInfoPropsTitle = "NodeInfo & TalkBack";
+  private static final String axViewPropsTitle = "View";
+  private static final String axNodeInfoPropsTitle = "AccessibilityNodeInfo";
+  private static final String axTalkbackPropsTitle = "Talkback";
 
   private static Field sKeyedTagsField;
   private static Field sListenerInfoField;
@@ -202,7 +203,8 @@ public class ViewDescriptor extends NodeDescriptor<View> {
   @Override
   public List<Named<SonarObject>> getAXData(View node) {
     return Arrays.asList(
-        new Named<>(axNodeInfoPropsTitle, AccessibilityUtil.getDerivedAXData(node)),
+        new Named<>(axNodeInfoPropsTitle, AccessibilityUtil.getAccessibilityNodeInfoData(node)),
+        new Named<>(axTalkbackPropsTitle, AccessibilityUtil.getTalkbackData(node)),
         new Named<>(axViewPropsTitle, AccessibilityUtil.getViewAXData(node)));
   }
 
@@ -233,7 +235,8 @@ public class ViewDescriptor extends NodeDescriptor<View> {
   public void setValue(View node, String[] path, SonarDynamic value) {
     if (path[0].equals("Accessibility")
         || path[0].equals(axViewPropsTitle)
-        || path[0].equals(axNodeInfoPropsTitle)) {
+        || path[0].equals(axNodeInfoPropsTitle)
+        || path[0].equals(axTalkbackPropsTitle)) {
       setAccessibilityValue(node, path, value);
       return;
     }

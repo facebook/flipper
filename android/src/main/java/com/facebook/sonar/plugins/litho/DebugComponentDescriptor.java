@@ -261,7 +261,7 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
     }
 
     // host view exists so add node info and TalkBack properties
-    props.put("node-info", AccessibilityUtil.getAXNodeInfoProperties(hostView));
+    props.put("node-info", AccessibilityUtil.getAccessibilityNodeInfoData(hostView));
     AccessibilityUtil.addTalkbackProperties(props, hostView);
 
     return props.build();
