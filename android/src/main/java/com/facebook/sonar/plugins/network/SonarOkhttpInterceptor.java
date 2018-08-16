@@ -39,7 +39,7 @@ public class SonarOkhttpInterceptor implements Interceptor {
   @Override
   public Response intercept(Interceptor.Chain chain) throws IOException {
     Request request = chain.request();
-    int identifier = randIdentifier();
+    String identifier = UUID.randomUUID().toString();
     plugin.reportRequest(convertRequest(request, identifier));
     Response response = chain.proceed(request);
     ResponseBody body = response.body();
@@ -107,9 +107,5 @@ public class SonarOkhttpInterceptor implements Interceptor {
       list.add(new NetworkReporter.Header(key, headers.get(key)));
     }
     return list;
-  }
-
-  private String randIdentifier() {
-    return UUID.randomUUID().toString();
   }
 }
