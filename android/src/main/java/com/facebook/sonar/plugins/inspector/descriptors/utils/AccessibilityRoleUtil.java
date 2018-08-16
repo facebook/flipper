@@ -25,51 +25,60 @@ public class AccessibilityRoleUtil {
    * date with their implementation. Details can be seen in their source code here:
    *
    * <p>https://github.com/google/talkback/blob/master/utils/src/main/java/Role.java
+   *
+   * The roles spoken by Talkback (roleStrings) should also be kept up to date and are found here:
+   *
+   * <p>https://github.com/google/talkback/compositor/src/main/res/values/strings.xml
+   * <p>https://github.com/google/talkback/compositor/src/main/res/raw/compositor.json
    */
   public enum AccessibilityRole {
-    NONE(null),
-    BUTTON("android.widget.Button"),
-    CHECK_BOX("android.widget.CompoundButton"),
-    DROP_DOWN_LIST("android.widget.Spinner"),
-    EDIT_TEXT("android.widget.EditText"),
-    GRID("android.widget.GridView"),
-    IMAGE("android.widget.ImageView"),
-    IMAGE_BUTTON("android.widget.ImageView"),
-    LIST("android.widget.AbsListView"),
-    PAGER("android.support.v4.view.ViewPager"),
-    RADIO_BUTTON("android.widget.RadioButton"),
-    SEEK_CONTROL("android.widget.SeekBar"),
-    SWITCH("android.widget.Switch"),
-    TAB_BAR("android.widget.TabWidget"),
-    TOGGLE_BUTTON("android.widget.ToggleButton"),
-    VIEW_GROUP("android.view.ViewGroup"),
-    WEB_VIEW("android.webkit.WebView"),
-    CHECKED_TEXT_VIEW("android.widget.CheckedTextView"),
-    PROGRESS_BAR("android.widget.ProgressBar"),
-    ACTION_BAR_TAB("android.app.ActionBar$Tab"),
-    DRAWER_LAYOUT("android.support.v4.widget.DrawerLayout"),
-    SLIDING_DRAWER("android.widget.SlidingDrawer"),
-    ICON_MENU("com.android.internal.view.menu.IconMenuView"),
-    TOAST("android.widget.Toast$TN"),
-    DATE_PICKER_DIALOG("android.app.DatePickerDialog"),
-    TIME_PICKER_DIALOG("android.app.TimePickerDialog"),
-    DATE_PICKER("android.widget.DatePicker"),
-    TIME_PICKER("android.widget.TimePicker"),
-    NUMBER_PICKER("android.widget.NumberPicker"),
-    SCROLL_VIEW("android.widget.ScrollView"),
-    HORIZONTAL_SCROLL_VIEW("android.widget.HorizontalScrollView"),
-    KEYBOARD_KEY("android.inputmethodservice.Keyboard$Key");
+    NONE(null, ""),
+    BUTTON("android.widget.Button", "Button"),
+    CHECK_BOX("android.widget.CompoundButton", "Check box"),
+    DROP_DOWN_LIST("android.widget.Spinner", "Drop down list"),
+    EDIT_TEXT("android.widget.EditText", "Edit box"),
+    GRID("android.widget.GridView", "Grid"),
+    IMAGE("android.widget.ImageView", "Image"),
+    IMAGE_BUTTON("android.widget.ImageView", "Button"),
+    LIST("android.widget.AbsListView", "List"),
+    PAGER("android.support.v4.view.ViewPager", "Multi-page view"),
+    RADIO_BUTTON("android.widget.RadioButton", "Radio button"),
+    SEEK_CONTROL("android.widget.SeekBar", "Seek control"),
+    SWITCH("android.widget.Switch", "Switch"),
+    TAB_BAR("android.widget.TabWidget", "Tab bar"),
+    TOGGLE_BUTTON("android.widget.ToggleButton", "Switch"),
+    VIEW_GROUP("android.view.ViewGroup", ""),
+    WEB_VIEW("android.webkit.WebView", "Webview"),
+    CHECKED_TEXT_VIEW("android.widget.CheckedTextView", ""),
+    PROGRESS_BAR("android.widget.ProgressBar", "Progress bar"),
+    ACTION_BAR_TAB("android.app.ActionBar$Tab", ""),
+    DRAWER_LAYOUT("android.support.v4.widget.DrawerLayout", ""),
+    SLIDING_DRAWER("android.widget.SlidingDrawer", ""),
+    ICON_MENU("com.android.internal.view.menu.IconMenuView", ""),
+    TOAST("android.widget.Toast$TN", ""),
+    DATE_PICKER_DIALOG("android.app.DatePickerDialog", ""),
+    TIME_PICKER_DIALOG("android.app.TimePickerDialog", ""),
+    DATE_PICKER("android.widget.DatePicker", ""),
+    TIME_PICKER("android.widget.TimePicker", ""),
+    NUMBER_PICKER("android.widget.NumberPicker", ""),
+    SCROLL_VIEW("android.widget.ScrollView", ""),
+    HORIZONTAL_SCROLL_VIEW("android.widget.HorizontalScrollView", ""),
+    KEYBOARD_KEY("android.inputmethodservice.Keyboard$Key", "");
 
     @Nullable private final String mValue;
+    private final String mRoleString;
 
-    AccessibilityRole(String type) {
+    AccessibilityRole(String type, String roleString) {
       mValue = type;
+      mRoleString = roleString;
     }
 
     @Nullable
     public String getValue() {
       return mValue;
     }
+
+    public String getRoleString() { return mRoleString; }
 
     public static AccessibilityRole fromValue(String value) {
       for (AccessibilityRole role : AccessibilityRole.values()) {
@@ -119,5 +128,12 @@ public class AccessibilityRoleUtil {
     }
 
     return role;
+  }
+
+  public static String getTalkbackRoleString(View view) {
+    if (view == null) {
+      return "";
+    }
+    return getRole(view).getRoleString();
   }
 }
