@@ -102,17 +102,27 @@ export default function reducer(
     case 'REGISTER_DEVICE': {
       const {payload} = action;
       const devices = state.devices.concat(payload);
-      let {selectedDevice} = state;
-      let selection = {};
+      let {selectedDevice, selectedPlugin} = state;
+
+      // select the default plugin
+      let selection = {
+        selectedApp: null,
+        selectedPlugin: DEFAULT_PLUGIN,
+      };
 
       if (!selectedDevice) {
         selectedDevice = payload;
-        selection = {
-          selectedApp: null,
-          selectedPlugin: DEFAULT_PLUGIN,
-        };
+        if (selectedPlugin) {
+          // We already had a plugin selected, but no device. This is happening
+          // when the Client connected before the Device.
+          selection = {};
+        }
       } else if (payload.title === state.userPreferredDevice) {
         selectedDevice = payload;
+      } else {
+        // We didn't select the newly connected device, so we don't want to
+        // change the plugin.
+        selection = {};
       }
 
       return {
