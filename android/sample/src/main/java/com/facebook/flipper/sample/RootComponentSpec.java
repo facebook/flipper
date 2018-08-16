@@ -83,6 +83,8 @@ public class RootComponentSpec {
     final Request request =
         new Request.Builder()
             .url("https://demo9512366.mockable.io/SonarPost")
+            .addHeader("h1", "h")
+            .addHeader("h1", "1")
             .post(formBody)
             .build();
 

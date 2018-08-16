@@ -103,7 +103,9 @@ public class SonarOkhttpInterceptor implements Interceptor {
 
     Set<String> keys = headers.names();
     for (String key : keys) {
-      list.add(new NetworkReporter.Header(key, headers.get(key)));
+      for (String value: headers.values(key)) {
+        list.add(new NetworkReporter.Header(key, value));
+      }
     }
     return list;
   }
