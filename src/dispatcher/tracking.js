@@ -12,6 +12,7 @@ import type Logger from '../fb-stubs/Logger.js';
 
 export default (store: Store, logger: Logger) => {
   let droppedFrames: number = 0;
+  let largeFrameDrops: number = 0;
   function droppedFrameDetection(
     past: DOMHighResTimeStamp,
     isWindowFocused: () => boolean,
@@ -19,8 +20,12 @@ export default (store: Store, logger: Logger) => {
     const now = performance.now();
     requestAnimationFrame(() => droppedFrameDetection(now, isWindowFocused));
     const dropped = Math.round((now - past) / (1000 / 60) - 1);
-    if (dropped > 0 && isWindowFocused()) {
-      droppedFrames += dropped;
+    if (!isWindowFocused() || dropped < 1) {
+      return;
+    }
+    droppedFrames += dropped;
+    if (dropped > 3) {
+      largeFrameDrops++;
     }
   }
 
@@ -42,12 +47,14 @@ export default (store: Store, logger: Logger) => {
     }
     const info = {
       droppedFrames,
+      largeFrameDrops,
       os: selectedDevice.os,
       device: selectedDevice.title,
       plugin: selectedPlugin,
     };
     // reset dropped frames counter
     droppedFrames = 0;
+    largeFrameDrops = 0;
 
     if (selectedApp) {
       const client = clients.find((c: Client) => c.id === selectedApp);
