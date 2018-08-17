@@ -54,7 +54,7 @@ public class MyApplication extends Application {
 
     if (BuildConfig.DEBUG && SonarUtils.shouldEnableSonar(this)) {
       final SonarClient client = AndroidSonarClient.getInstance(this);
-      client.addPlugin(new MySonarPlugin());
+      client.addPlugin(new InspectorSonarPlugin(this, DescriptorMapping.withDefaults()));
       client.start();
     }
   }
@@ -103,7 +103,9 @@ and install the dependencies by running `pod install`. When you open the Xcode w
 {
 #if DEBUG
   SonarClient *client = [SonarClient sharedClient];
-  [client addPlugin:[MySonarPlugin new]];
+  SKDescriptorMapper *layoutDescriptorMapper = [[SKDescriptorMapper alloc] initWithDefaults];
+  [client addPlugin:[[SonarKitLayoutPlugin alloc] initWithRootNode: application
+                                                  withDescriptorMapper: layoutDescriptorMapper]];
   [client start];
 #endif
   ...
@@ -121,4 +123,4 @@ and install the dependencies by running `pod install`. When you open the Xcode w
 
 ## Ready for takeoff
 
-Finally, you need to add plugins to your Flipper client. See [Network Plugin](network-plugin.md) and [Layout Inspector Plugin](layout-plugin.md) for information on how to add them.
+Finally, you need to add plugins to your Flipper client. Above we have only added the Layout Inspector plugin to get you started. See [Network Plugin](network-plugin.md) and [Layout Inspector Plugin](layout-plugin.md) for information on how to add them, and also enable Litho or ComponentKit support. You can check the sample apps in the [GitHub repo](https://github.com/facebook/flipper) for examples of integrating other plugins.
