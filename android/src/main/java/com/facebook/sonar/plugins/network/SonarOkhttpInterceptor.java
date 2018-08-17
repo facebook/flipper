@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.UUID;
 import javax.annotation.Nullable;
 import okhttp3.Headers;
 import okhttp3.Interceptor;
@@ -38,11 +39,11 @@ public class SonarOkhttpInterceptor implements Interceptor {
   @Override
   public Response intercept(Interceptor.Chain chain) throws IOException {
     Request request = chain.request();
-    int randInt = randInt(1, Integer.MAX_VALUE);
-    plugin.reportRequest(convertRequest(request, randInt));
+    String identifier = UUID.randomUUID().toString();
+    plugin.reportRequest(convertRequest(request, identifier));
     Response response = chain.proceed(request);
     ResponseBody body = response.body();
-    ResponseInfo responseInfo = convertResponse(response, body, randInt);
+    ResponseInfo responseInfo = convertResponse(response, body, identifier);
     plugin.reportResponse(responseInfo);
     // Creating new response as can't used response.body() more than once
     if (responseInfo.body != null) {
@@ -67,10 +68,10 @@ public class SonarOkhttpInterceptor implements Interceptor {
     }
   }
 
-  private RequestInfo convertRequest(Request request, int identifier) {
+  private RequestInfo convertRequest(Request request, String identifier) {
     List<NetworkReporter.Header> headers = convertHeader(request.headers());
     RequestInfo info = new RequestInfo();
-    info.requestId = String.valueOf(identifier);
+    info.requestId = identifier;
     info.timeStamp = System.currentTimeMillis();
     info.headers = headers;
     info.method = request.method();
@@ -82,11 +83,11 @@ public class SonarOkhttpInterceptor implements Interceptor {
     return info;
   }
 
-  private ResponseInfo convertResponse(Response response, ResponseBody body, int identifier) {
+  private ResponseInfo convertResponse(Response response, ResponseBody body, String identifier) {
 
     List<NetworkReporter.Header> headers = convertHeader(response.headers());
     ResponseInfo info = new ResponseInfo();
-    info.requestId = String.valueOf(identifier);
+    info.requestId = identifier;
     info.timeStamp = response.receivedResponseAtMillis();
     info.statusCode = response.code();
     info.headers = headers;
@@ -106,11 +107,5 @@ public class SonarOkhttpInterceptor implements Interceptor {
       list.add(new NetworkReporter.Header(key, headers.get(key)));
     }
     return list;
-  }
-
-  private int randInt(int min, int max) {
-    Random rand = new Random();
-    int randomNum = rand.nextInt((max - min) + 1) + min;
-    return randomNum;
   }
 }
