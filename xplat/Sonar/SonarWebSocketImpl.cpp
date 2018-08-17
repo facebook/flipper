@@ -218,7 +218,9 @@ void SonarWebSocketImpl::reconnect() {
 }
 
 void SonarWebSocketImpl::stop() {
-  client_->disconnect();
+  if (client_) {
+    client_->disconnect();
+  }
   client_ = nullptr;
 }
 
