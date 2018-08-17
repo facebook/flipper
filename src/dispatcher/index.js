@@ -7,6 +7,7 @@
 
 import androidDevice from './androidDevice';
 import iOSDevice from './iOSDevice';
+import remoteDevice from './remoteDevice';
 import windowsDevice from './windowsDevice';
 import application from './application';
 import tracking from './tracking';
@@ -20,6 +21,7 @@ export default (store: Store, logger: Logger) =>
     application,
     androidDevice,
     iOSDevice,
+    remoteDevice,
     windowsDevice,
     tracking,
     server,

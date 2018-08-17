@@ -12,9 +12,12 @@ import type {ClientQuery} from './Client.js';
 import CertificateProvider from './utils/CertificateProvider';
 import {RSocketServer, ReactiveSocket} from 'rsocket-core';
 import RSocketTCPServer from 'rsocket-tcp-server';
+import RSocketWebSocketServer from 'rsocket-websocket-server';
 import {Single} from 'rsocket-flowable';
 import Client from './Client.js';
 import {RecurringError} from './utils/errors';
+
+import Bonjour from 'bonjour';
 
 const EventEmitter = (require('events'): any);
 const invariant = require('invariant');
@@ -23,6 +26,7 @@ const net = require('net');
 
 const SECURE_PORT = 8088;
 const INSECURE_PORT = 8089;
+const WEBSOCKET_PORT = 8090;
 
 type RSocket = {|
   fireAndForget(payload: {data: string}): void,
@@ -39,6 +43,7 @@ export default class Server extends EventEmitter {
   connections: Map<string, ClientInfo>;
   secureServer: RSocketServer;
   insecureServer: RSocketServer;
+  websocketServer: RSocketServer;
   certificateProvider: CertificateProvider;
   connectionTracker: ConnectionTracker;
   logger: Logger;
@@ -68,12 +73,17 @@ export default class Server extends EventEmitter {
     this.certificateProvider
       .loadSecureServerConfig()
       .then(
-        options => (this.secureServer = this.startServer(SECURE_PORT, options)),
+        options => (this.secureServer = this.startServer(SECURE_PORT, false, false, options)),
       );
-    this.insecureServer = this.startServer(INSECURE_PORT);
+    this.insecureServer = this.startServer(INSECURE_PORT, false, true);
+
+    // TODO optionally enable via a preference
+    this.websocketServer = this.startServer(WEBSOCKET_PORT, true, false);
+    const bonjour = new Bonjour();
+    bonjour.publish({ name: 'Flipper', type: 'flipper', port: WEBSOCKET_PORT });
   }
 
-  startServer(port: number, sslConfig?: SecureServerConfig) {
+  startServer(port: number, websocket: boolean, certificateServer: boolean, sslConfig?: SecureServerConfig) {
     const server = this;
     const serverFactory = onConnect => {
       const transportServer = sslConfig
@@ -84,26 +94,31 @@ export default class Server extends EventEmitter {
       transportServer
         .on('error', err => {
           server.emit('error', err);
-          console.error(`Error opening server on port ${port}`, 'server');
+          console.log(`Error opening server on port ${port}`, 'server');
         })
         .on('listening', () => {
           console.debug(
             `${
-              sslConfig ? 'Secure' : 'Certificate'
+              certificateServer ? 'Certificate' : 'Secure'
             } server started on port ${port}`,
             'server',
           );
         });
       return transportServer;
     };
+    const transport = websocket
+      ? new RSocketWebSocketServer({
+          port: port,
+        })
+      : new RSocketTCPServer({
+          port: port,
+          serverFactory: serverFactory,
+        });
     const rsServer = new RSocketServer({
-      getRequestHandler: sslConfig
-        ? this._trustedRequestHandler
-        : this._untrustedRequestHandler,
-      transport: new RSocketTCPServer({
-        port: port,
-        serverFactory: serverFactory,
-      }),
+      getRequestHandler: certificateServer
+        ? this._untrustedRequestHandler
+        : this._trustedRequestHandler,
+      transport: transport,
     });
 
     rsServer.start();
@@ -232,6 +247,7 @@ export default class Server extends EventEmitter {
   close() {
     this.secureServer.stop();
     this.insecureServer.stop();
+    this.websocketServer.stop();
   }
 
   toJSON() {
