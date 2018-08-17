@@ -41,6 +41,7 @@ task downloadGlog(dependsOn: createNativeDepsDirectories, type: Download) {
 }
 
 task prepareGlog(dependsOn: [downloadGlog], type: Copy) {
+    onlyIf { isCacheOutOfDate(CACHE_REVISION) }
     from tarTree(downloadGlog.dest)
     from './overrides/glog/'
     include 'glog-0.3.5/src/**/*', 'Android.mk', 'config.h', 'build.gradle', 'CMakeLists.txt', 'ApplicationManifest.xml'
@@ -115,6 +116,7 @@ task downloadFolly(dependsOn: createNativeDepsDirectories, type: Download) {
 }
 
 task prepareFolly(dependsOn: [downloadFolly], type: Copy) {
+    onlyIf { isCacheOutOfDate(CACHE_REVISION) }
     from tarTree(downloadFolly.dest)
     from './overrides/Folly/'
     include 'folly-2018.06.18.00/folly/**/*', 'build.gradle', 'CMakeLists.txt', 'ApplicationManifest.xml'
@@ -138,6 +140,7 @@ task downloadLibEvent(dependsOn: [], type: Download) {
 }
 
 task prepareLibEvent(dependsOn: [downloadLibEvent], type: Copy) {
+    onlyIf { isCacheOutOfDate(CACHE_REVISION) }
     from tarTree(downloadLibEvent.dest)
     from './overrides/LibEvent/'
     include 'libevent-release-2.1.9/**/*', 'build.gradle', 'ApplicationManifest.xml', 'CMakeLists.txt'
@@ -167,6 +170,7 @@ task downloadOpenSSLLibs(dependsOn: [], type: Download) {
 }
 
 task prepareOpenSSL(dependsOn: [downloadOpenSSLSource, downloadOpenSSLLibs], type: Copy) {
+    onlyIf { isCacheOutOfDate(CACHE_REVISION) }
     from tarTree(downloadOpenSSLSource.dest)
     from tarTree(downloadOpenSSLLibs.dest)
     from './overrides/OpenSSL/'
@@ -177,6 +181,7 @@ task prepareOpenSSL(dependsOn: [downloadOpenSSLSource, downloadOpenSSLLibs], typ
 }
 
 task configureOpenSSL(dependsOn: [prepareOpenSSL], type: Exec) {
+    onlyIf { isCacheOutOfDate(CACHE_REVISION) }
     workingDir "$externalDir/OpenSSL/openssl-1.1.0h/"
     // This is only to generate a buildconfig.h in the next step. I **believe**
     // that the options here don't really matter for that file.
