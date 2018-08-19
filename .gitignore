@@ -8,7 +8,6 @@ yarn-error.log
 **/Pods/
 **/xcuserdata/
 build/
-*.lock
 
 android/third-party/external/
 
