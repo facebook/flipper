@@ -133,6 +133,10 @@ type DataInspectorProps = {
    * Ancestry of parent objects, used to avoid recursive objects.
    */
   ancestry: Array<Object>,
+  /**
+   * Object of properties that will have tooltips
+   */
+  tooltips?: Object,
 };
 
 const defaultValueExtractor: DataValueExtractor = (value: any) => {
@@ -408,6 +412,7 @@ export default class DataInspector extends Component<DataInspectorProps> {
       path,
       ancestry,
       collapsed,
+      tooltips,
     } = this.props;
 
     // the data inspector makes values read only when setValue isn't set so we just need to set it
@@ -493,6 +498,7 @@ export default class DataInspector extends Component<DataInspectorProps> {
               name={key}
               data={metadata.data}
               diff={metadata.diff}
+              tooltips={tooltips}
             />
           );
 
@@ -523,7 +529,11 @@ export default class DataInspector extends Component<DataInspectorProps> {
     // create name components
     const nameElems = [];
     if (typeof name !== 'undefined') {
-      nameElems.push(<InspectorName key="name">{name}</InspectorName>);
+      nameElems.push(
+        <InspectorName key="name" title={(tooltips && tooltips[name]) || ''}>
+          {name}
+        </InspectorName>,
+      );
       nameElems.push(<span key="sep">: </span>);
     }
 
@@ -549,6 +559,7 @@ export default class DataInspector extends Component<DataInspectorProps> {
         />
       );
     }
+
     descriptionOrPreview = (
       <span>
         {nameElems}

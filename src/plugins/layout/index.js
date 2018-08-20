@@ -935,6 +935,27 @@ export default class Layout extends SonarPlugin<InspectorState> {
     });
   };
 
+  // returns object with all sidebar elements that should show more information
+  // on hover (needs to be kept up-to-date if names of properties change)
+  getAccessibilityTooltips() {
+    return {
+      'accessibility-focused':
+        'True if this element has the focus of an accessibility service',
+      'content-description':
+        'Text to label the content/functionality of this element ',
+      'important-for-accessibility':
+        'Marks this element as important to accessibility services, one of AUTO, YES, NO, NO_HIDE_DESCENDANTS',
+      'talkback-focusable': 'True if Talkback can focus on this element',
+      'talkback-focusable-reasons': 'Why Talkback can focus on this element',
+      'talkback-ignored': 'True if Talkback cannot focus on this element',
+      'talkback-ignored-reasons': 'Why Talkback cannot focus on the element',
+      'talkback-output':
+        'What Talkback will say when this element is focused (derived from role, content-description, and state of the element)',
+      'talkback-hint':
+        'What Talkback will say after output if hints are enabled',
+    };
+  }
+
   renderSidebar = () => {
     if (this.state.inAXMode) {
       // empty if no element selected w/in AX node tree
@@ -942,6 +963,7 @@ export default class Layout extends SonarPlugin<InspectorState> {
         this.state.AXselected && (
           <InspectorSidebar
             element={this.state.AXelements[this.state.AXselected]}
+            tooltips={this.getAccessibilityTooltips()}
             onValueChanged={this.onDataValueChanged}
             client={this.client}
           />
@@ -1001,7 +1023,7 @@ export default class Layout extends SonarPlugin<InspectorState> {
               onClick={this.onToggleAccessibility}
               role="button"
               tabIndex={-1}
-              title="Toggle accessibility mode within the LayoutInspector">
+              title="Toggle to see the accessibility hierarchy">
               <Glyph
                 name="accessibility"
                 size={16}

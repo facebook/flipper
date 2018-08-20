@@ -686,7 +686,7 @@ public final class AccessibilityUtil {
   public static void addTalkbackProperties(SonarObject.Builder props, View view) {
     if (!AccessibilityEvaluationUtil.isTalkbackFocusable(view)) {
       props
-          .put("talkback-ignored", true)
+          .put("talkback-focusable", false)
           .put("talkback-ignored-reasons", getTalkbackIgnoredReasons(view));
     } else {
       props
@@ -729,7 +729,7 @@ public final class AccessibilityUtil {
     if (!AccessibilityEvaluationUtil.isTalkbackFocusable(view)) {
       String reason = getTalkbackIgnoredReasons(view);
       return new SonarObject.Builder()
-              .put("talkback-ignored", true)
+              .put("talkback-focusable", false)
               .put("talkback-ignored-reasons", reason == null ? "" : reason)
               .build();
     } else {

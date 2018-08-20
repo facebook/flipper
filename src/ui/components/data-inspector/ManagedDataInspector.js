@@ -39,6 +39,10 @@ type ManagedDataInspectorProps = {|
    * Whether all objects and arrays should be collapsed by default.
    */
   collapsed?: boolean,
+  /**
+   * Object of all properties that will have tooltips
+   */
+  tooltips?: Object,
 |};
 
 type ManagedDataInspectorState = {|
@@ -99,6 +103,7 @@ export default class ManagedDataInspector extends PureComponent<
         onExpanded={this.onExpanded}
         expandRoot={this.props.expandRoot}
         collapsed={this.props.collapsed}
+        tooltips={this.props.tooltips}
       />
     );
   }

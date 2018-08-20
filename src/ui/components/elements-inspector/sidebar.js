@@ -22,6 +22,7 @@ type InspectorSidebarSectionProps = {
   data: any,
   id: string,
   onValueChanged: ?OnValueChanged,
+  tooltips?: Object,
 };
 
 class InspectorSidebarSection extends Component<InspectorSidebarSectionProps> {
@@ -65,6 +66,7 @@ class InspectorSidebarSection extends Component<InspectorSidebarSectionProps> {
           extractValue={this.extractValue}
           expandRoot={true}
           collapsed={true}
+          tooltips={this.props.tooltips}
         />
       </Panel>
     );
@@ -73,6 +75,7 @@ class InspectorSidebarSection extends Component<InspectorSidebarSectionProps> {
 
 type Props = {|
   element: ?Element,
+  tooltips?: Object,
   onValueChanged: ?OnValueChanged,
   client: PluginClient,
 |};
@@ -117,6 +120,7 @@ export class InspectorSidebar extends Component<Props, State> {
     for (const key in element.data) {
       sections.push(
         <InspectorSidebarSection
+          tooltips={this.props.tooltips}
           key={key}
           id={key}
           data={element.data[key]}
