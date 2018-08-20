@@ -129,7 +129,7 @@ export {default as Tooltip} from './components/Tooltip.js';
 export {default as TooltipProvider} from './components/TooltipProvider.js';
 export {default as ResizeSensor} from './components/ResizeSensor.js';
 
-// typhography
+// typography
 export {default as HorizontalRule} from './components/HorizontalRule.js';
 export {default as VerticalRule} from './components/VerticalRule.js';
 export {default as Label} from './components/Label.js';
