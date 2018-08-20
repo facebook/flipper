@@ -7,11 +7,13 @@
  */
 #ifdef FB_SONARKIT_ENABLED
 
+#include "FlipperStateUpdateListener.h"
 #import <UIKit/UIKit.h>
 
-@interface FlipperDiagnosticsViewController : UIViewController
+@interface FlipperDiagnosticsViewController : UIViewController <FlipperStateUpdateListener>
 @property(strong, nonatomic) UIScrollView *scrollView;
 @property(strong, nonatomic) UILabel *stateLabel;
+- (void)onUpdate;
 @end
 
 #endif

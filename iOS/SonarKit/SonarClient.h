@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #import "SonarPlugin.h"
+#import "FlipperStateUpdateListener.h"
 
 /**
 Represents a connection between the Sonar desktop och client side. Manages the lifecycle of attached
@@ -49,6 +50,11 @@ Stop the connection to the Sonar desktop.
 Get the current state of the sonar client
 */
 - (NSString *)getState;
+
+/**
+Subscribe a ViewController to state update change notifications
+*/
+- (void)subscribeForUpdates:(id<FlipperStateUpdateListener>)controller;
 
 // initializers are disabled. You must use `+[SonarClient sharedClient]` instance.
 - (instancetype)init NS_UNAVAILABLE;

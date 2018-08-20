@@ -13,6 +13,8 @@
 #include <folly/io/async/EventBase.h>
 #include <folly/io/async/ScopedEventBaseThread.h>
 #import <UIKit/UIKit.h>
+#include "SKStateUpdateCPPWrapper.h"
+#import "FlipperDiagnosticsViewController.h"
 
 #if !TARGET_OS_SIMULATOR
 //#import "SKPortForwardingServer.h"
@@ -123,6 +125,11 @@ using WrapperPlugin = facebook::sonar::SonarCppWrapperPlugin;
 
 - (NSString *)getState {
   return @(_cppClient->getState().c_str());
+}
+
+- (void)subscribeForUpdates:(id<FlipperStateUpdateListener>)controller {
+  auto stateListener = std::make_shared<SKStateUpdateCPPWrapper>(controller);
+  _cppClient->setStateListener(stateListener);
 }
 
 @end
