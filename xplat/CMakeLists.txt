@@ -48,7 +48,6 @@ set(rsocket_build_DIR ${build_DIR}/rsocket/${ANDROID_ABI})
 
 file(MAKE_DIRECTORY ${build_DIR})
 
-#add_subdirectory(${libfolly_DIR} ${libfolly_build_DIR})
 add_subdirectory(${rsocket_DIR} ${rsocket_build_DIR})
 
 message(STATUS "RSocket DIR:- " ${rsocket_DIR})
