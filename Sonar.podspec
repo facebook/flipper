@@ -1,0 +1,1 @@
+xplat/Sonar/Sonar.podspec
