@@ -1,11 +1,27 @@
 import org.apache.tools.ant.filters.ReplaceTokens
 
-final def downloadsDir = new File("$buildDir/downloads")
+// !!!
+// Increment this when making changes to any of the native
+// dependencies.
+// !!!
+final def CACHE_REVISION = 0
+
 final def externalDir = new File("$projectDir/external")
+final def downloadsDir = new File("$buildDir/downloads")
+final def revisionFile = new File("$buildDir/external_cache_revision.txt")
 
 final def getDownloadFileName = { final URL src ->
     final def i = src.file.lastIndexOf('/')
     return src.file.substring(i + 1)
+}
+
+final def isCacheOutOfDate = { final Integer revision ->
+    if (!revisionFile.exists()) {
+        return true
+    } else {
+        final def content = revisionFile.text
+        return !content.isInteger() || content as Integer != revision
+    }
 }
 
 task createNativeDepsDirectories {
@@ -25,6 +41,7 @@ task downloadGlog(dependsOn: createNativeDepsDirectories, type: Download) {
 }
 
 task prepareGlog(dependsOn: [downloadGlog], type: Copy) {
+    onlyIf { isCacheOutOfDate(CACHE_REVISION) }
     from tarTree(downloadGlog.dest)
     from './overrides/glog/'
     include 'glog-0.3.5/src/**/*', 'Android.mk', 'config.h', 'build.gradle', 'CMakeLists.txt', 'ApplicationManifest.xml'
@@ -99,6 +116,7 @@ task downloadFolly(dependsOn: createNativeDepsDirectories, type: Download) {
 }
 
 task prepareFolly(dependsOn: [downloadFolly], type: Copy) {
+    onlyIf { isCacheOutOfDate(CACHE_REVISION) }
     from tarTree(downloadFolly.dest)
     from './overrides/Folly/'
     include 'folly-2018.06.18.00/folly/**/*', 'build.gradle', 'CMakeLists.txt', 'ApplicationManifest.xml'
@@ -122,25 +140,19 @@ task downloadLibEvent(dependsOn: [], type: Download) {
 }
 
 task prepareLibEvent(dependsOn: [downloadLibEvent], type: Copy) {
+    onlyIf { isCacheOutOfDate(CACHE_REVISION) }
     from tarTree(downloadLibEvent.dest)
     from './overrides/LibEvent/'
-    include 'libevent-release-2.1.9/**/*', 'build.gradle', 'ApplicationManifest.xml'
+    include 'libevent-release-2.1.9/**/*', 'build.gradle', 'ApplicationManifest.xml', 'CMakeLists.txt'
     includeEmptyDirs = false
     into "$externalDir/LibEvent"
 }
 
-task finalizeEvent(dependsOn: [prepareLibEvent], type: Copy) {
+task finalizeLibEvent(dependsOn: [prepareLibEvent], type: Copy) {
     from './overrides/LibEvent/'
     include 'event-config.h'
     includeEmptyDirs = false
     into "$externalDir/LibEvent/libevent-release-2.1.9/include/event2/"
-}
-
-task finalizeEvent2(dependsOn: [finalizeEvent], type: Copy) {
-    from './overrides/LibEvent/'
-    include 'libs/**/*'
-    includeEmptyDirs = false
-    into "$externalDir/LibEvent/"
 }
 
 task downloadOpenSSLSource(dependsOn: [], type: Download) {
@@ -158,6 +170,7 @@ task downloadOpenSSLLibs(dependsOn: [], type: Download) {
 }
 
 task prepareOpenSSL(dependsOn: [downloadOpenSSLSource, downloadOpenSSLLibs], type: Copy) {
+    onlyIf { isCacheOutOfDate(CACHE_REVISION) }
     from tarTree(downloadOpenSSLSource.dest)
     from tarTree(downloadOpenSSLLibs.dest)
     from './overrides/OpenSSL/'
@@ -168,6 +181,7 @@ task prepareOpenSSL(dependsOn: [downloadOpenSSLSource, downloadOpenSSLLibs], typ
 }
 
 task configureOpenSSL(dependsOn: [prepareOpenSSL], type: Exec) {
+    onlyIf { isCacheOutOfDate(CACHE_REVISION) }
     workingDir "$externalDir/OpenSSL/openssl-1.1.0h/"
     // This is only to generate a buildconfig.h in the next step. I **believe**
     // that the options here don't really matter for that file.
@@ -195,12 +209,28 @@ task prepareRSocket(dependsOn: [downloadRSocket], type: Copy) {
     into "$externalDir/RSocket"
 }
 
+task writeCacheRevision() {
+    doLast {
+        revisionFile.text = CACHE_REVISION.toString()
+    }
+}
+
+def allTasks = [
+    finalizeGlog,
+    prepareDoubleConversion,
+    prepareBoost,
+    finalizeFolly,
+    finalizeLibEvent,
+    finalizeOpenSSL,
+    prepareRSocket,
+    writeCacheRevision,
+]
+
+allTasks.each { i ->
+    i.onlyIf { isCacheOutOfDate(CACHE_REVISION) }
+}
+
 task prepareAllLibs() {
-    dependsOn finalizeGlog
-    dependsOn prepareDoubleConversion
-    dependsOn prepareBoost
-    dependsOn finalizeFolly
-    dependsOn finalizeEvent
-    dependsOn finalizeOpenSSL
-    dependsOn prepareRSocket
+    onlyIf { isCacheOutOfDate(CACHE_REVISION) }
+    dependsOn allTasks
 }
