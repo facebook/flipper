@@ -45,6 +45,11 @@ Stop the connection to the Sonar desktop.
 */
 - (void)stop;
 
+/**
+Get the current state of the sonar client
+*/
+- (NSString *)getState;
+
 // initializers are disabled. You must use `+[SonarClient sharedClient]` instance.
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)new NS_UNAVAILABLE;

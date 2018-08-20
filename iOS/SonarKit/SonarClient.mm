@@ -121,6 +121,10 @@ using WrapperPlugin = facebook::sonar::SonarCppWrapperPlugin;
 #endif
 }
 
+- (NSString *)getState {
+  return @(_cppClient->getState().c_str());
+}
+
 @end
 
 #endif
