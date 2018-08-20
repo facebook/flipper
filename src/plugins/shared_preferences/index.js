@@ -5,7 +5,15 @@
  * @format
  */
 
-import {ManagedTable, Text, Panel, colors, FlexRow, DataInspector} from 'sonar';
+import {
+  ManagedTable,
+  Text,
+  Heading,
+  FlexColumn,
+  colors,
+  FlexRow,
+  DataInspector,
+} from 'sonar';
 import {SonarPlugin} from 'sonar';
 
 const {clone} = require('lodash');
@@ -39,13 +47,23 @@ const CHANGELOG_COLUMNS = {
 };
 
 const CHANGELOG_COLUMN_SIZES = {
-  event: '20%',
-  name: '40%',
-  value: '40%',
+  event: '30%',
+  name: '30%',
+  value: '30%',
 };
 
 const UPDATED_LABEL = <Text color={colors.lime}>Updated</Text>;
 const DELETED_LABEL = <Text color={colors.cherry}>Deleted</Text>;
+
+const InspectorColumn = FlexColumn.extends({
+  flexGrow: 0.2,
+  padding: '16px',
+});
+
+const ChangelogColumn = FlexColumn.extends({
+  flexGrow: 0.8,
+  padding: '16px',
+});
 
 export default class extends SonarPlugin<SharedPreferencesState> {
   static title = 'Shared Preferences Viewer';
@@ -124,16 +142,19 @@ export default class extends SonarPlugin<SharedPreferencesState> {
 
     return (
       <FlexRow fill={true} scrollable={true}>
-        <Panel heading="Inspector">
+        <InspectorColumn>
+          <Heading>Inspector</Heading>
           <DataInspector
             data={this.state.sharedPreferences}
             setValue={this.onSharedPreferencesChanged}
           />
-        </Panel>
-        <Panel heading="Changelog">
+        </InspectorColumn>
+        <ChangelogColumn>
+          <Heading>Changelog</Heading>
           <ManagedTable
             columnSizes={CHANGELOG_COLUMN_SIZES}
             columns={CHANGELOG_COLUMNS}
+            rowLineHeight={26}
             rows={this.state.changesList.map((element, index) => {
               return {
                 columns: {
@@ -152,7 +173,7 @@ export default class extends SonarPlugin<SharedPreferencesState> {
               };
             })}
           />
-        </Panel>
+        </ChangelogColumn>
       </FlexRow>
     );
   }
