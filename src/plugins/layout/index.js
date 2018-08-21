@@ -966,6 +966,7 @@ export default class Layout extends SonarPlugin<InspectorState> {
             tooltips={this.getAccessibilityTooltips()}
             onValueChanged={this.onDataValueChanged}
             client={this.client}
+            logger={this.props.logger}
           />
         )
       );
@@ -977,6 +978,7 @@ export default class Layout extends SonarPlugin<InspectorState> {
             element={this.state.elements[this.state.selected]}
             onValueChanged={this.onDataValueChanged}
             client={this.client}
+            logger={this.props.logger}
           />
         )
       );

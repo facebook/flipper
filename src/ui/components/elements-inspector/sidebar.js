@@ -7,6 +7,7 @@
 
 import type {Element} from './ElementsInspector.js';
 import type {PluginClient} from '../../../plugin';
+import type Logger from '../../../fb-stubs/Logger.js';
 import Panel from '../Panel.js';
 import ManagedDataInspector from '../data-inspector/ManagedDataInspector.js';
 import {Component} from 'react';
@@ -78,6 +79,7 @@ type Props = {|
   tooltips?: Object,
   onValueChanged: ?OnValueChanged,
   client: PluginClient,
+  logger: Logger,
 |};
 type State = {|
   isConsoleEnabled: boolean,
@@ -114,7 +116,7 @@ export class InspectorSidebar extends Component<Props, State> {
     }
 
     const sections = SidebarExtensions.map(ext =>
-      ext(this.props.client, element.id),
+      ext(this.props.client, element.id, this.props.logger),
     );
 
     for (const key in element.data) {
