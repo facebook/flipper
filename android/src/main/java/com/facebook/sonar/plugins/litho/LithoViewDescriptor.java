@@ -1,6 +1,6 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 
-package com.facebook.litho.sonar;
+package com.facebook.sonar.plugins.litho;
 
 import android.graphics.Rect;
 import android.view.ViewGroup;
