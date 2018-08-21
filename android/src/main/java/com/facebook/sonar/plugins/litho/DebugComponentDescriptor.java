@@ -1,6 +1,6 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 
-package com.facebook.litho.sonar;
+package com.facebook.sonar.plugins.litho;
 
 import static com.facebook.litho.annotations.ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_NO;
 import static com.facebook.litho.annotations.ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS;
@@ -15,7 +15,6 @@ import android.support.v4.util.Pair;
 import android.view.View;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentLifecycle;
 import com.facebook.litho.DebugComponent;
 import com.facebook.litho.DebugLayoutNode;
 import com.facebook.litho.LithoView;

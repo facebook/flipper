@@ -4,13 +4,13 @@ package com.facebook.flipper.sample;
 
 import android.app.Application;
 import android.content.Context;
-import com.facebook.litho.sonar.LithoSonarDescriptors;
 import com.facebook.soloader.SoLoader;
 import com.facebook.sonar.android.AndroidSonarClient;
 import com.facebook.sonar.core.SonarClient;
 import com.facebook.sonar.plugins.inspector.DescriptorMapping;
 import com.facebook.sonar.plugins.inspector.InspectorSonarPlugin;
 import com.facebook.sonar.plugins.leakcanary.LeakCanarySonarPlugin;
+import com.facebook.sonar.plugins.litho.LithoSonarDescriptors;
 import com.facebook.sonar.plugins.network.NetworkSonarPlugin;
 import com.facebook.sonar.plugins.network.SonarOkhttpInterceptor;
 import com.facebook.sonar.plugins.sharedpreferences.SharedPreferencesSonarPlugin;
