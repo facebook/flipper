@@ -20,6 +20,7 @@
   [self.scrollView addSubview:self.stateLabel];
   self.scrollView.contentSize = self.stateLabel.frame.size;
   [self.view addSubview:self.scrollView];
+  self.view.backgroundColor = [UIColor whiteColor];
 }
 
 - (void)onUpdate {
