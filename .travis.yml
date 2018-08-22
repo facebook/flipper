@@ -51,7 +51,7 @@ matrix:
       script:
         - cd iOS/Sample
         - xcodebuild -showsdks
-        - xcodebuild clean build -workspace Sample.xcworkspace -scheme Pods-Sample -sdk iphonesimulator11.4
+        - xcodebuild clean build -workspace Sample.xcworkspace -scheme Sample -sdk iphonesimulator11.4
 
     - language: android
       os: linux
