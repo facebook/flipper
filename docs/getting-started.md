@@ -30,6 +30,12 @@ Add the following permissions to your AndroidManifest.xml. The SDK needs these t
 <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 ```
 
+It's recommended that you add the following activity to the manifest too, which can help diagnose integration issues and other problems:
+```
+<activity android:name="com.facebook.sonar.android.diagnostics.SonarDiagnosticActivity"
+        android:exported="true"/>
+```
+
 Flipper is distributed via JCenter. Add dependencies to your `build.gradle` file.
 
 ```
