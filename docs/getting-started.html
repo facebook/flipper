@@ -20,6 +20,10 @@
 <pre><code class="hljs">&lt;uses-permission android:<span class="hljs-built_in">name</span>=<span class="hljs-string">"android.permission.INTERNET"</span> /&gt;
 &lt;uses-permission android:<span class="hljs-built_in">name</span>=<span class="hljs-string">"android.permission.ACCESS_WIFI_STATE"</span> /&gt;
 </code></pre>
+<p>It's recommended that you add the following activity to the manifest too, which can help diagnose integration issues and other problems:</p>
+<pre><code class="hljs">&lt;activity android:<span class="hljs-attribute">name</span>=<span class="hljs-string">"com.facebook.sonar.android.diagnostics.SonarDiagnosticActivity"</span>
+        android:<span class="hljs-attribute">exported</span>=<span class="hljs-string">"true"</span>/&gt;
+</code></pre>
 <p>Flipper is distributed via JCenter. Add dependencies to your <code>build.gradle</code> file.</p>
 <pre><code class="hljs"><span class="hljs-keyword">repositories</span> {
   jcenter()
