@@ -26,6 +26,7 @@ import {
 } from 'sonar';
 
 import type {TrackType} from '../../fb-stubs/Logger.js';
+import SidebarExtensions from '../../fb-stubs/LayoutInspectorSidebarExtensions.js';
 
 import {
   AXElementsInspector,
@@ -979,6 +980,7 @@ export default class Layout extends SonarPlugin<InspectorState> {
             onValueChanged={this.onDataValueChanged}
             client={this.client}
             logger={this.props.logger}
+            extensions={SidebarExtensions}
           />
         )
       );

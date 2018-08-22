@@ -13,7 +13,6 @@ import ManagedDataInspector from '../data-inspector/ManagedDataInspector.js';
 import {Component} from 'react';
 import {Console} from '../console';
 import {GK} from 'sonar';
-import SidebarExtensions from '../../../fb-stubs/LayoutInspectorSidebarExtensions.js';
 
 const deepEqual = require('deep-equal');
 
@@ -80,7 +79,9 @@ type Props = {|
   onValueChanged: ?OnValueChanged,
   client: PluginClient,
   logger: Logger,
+  extensions?: Array<any>,
 |};
+
 type State = {|
   isConsoleEnabled: boolean,
 |};
@@ -110,14 +111,17 @@ export class InspectorSidebar extends Component<Props, State> {
   }
 
   render() {
-    const {element} = this.props;
+    const {element, extensions} = this.props;
     if (!element || !element.data) {
       return null;
     }
 
-    const sections = SidebarExtensions.map(ext =>
-      ext(this.props.client, element.id, this.props.logger),
-    );
+    const sections =
+      (extensions &&
+        extensions.map(ext =>
+          ext(this.props.client, element.id, this.props.logger),
+        )) ||
+      [];
 
     for (const key in element.data) {
       sections.push(
