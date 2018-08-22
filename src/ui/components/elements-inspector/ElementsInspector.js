@@ -8,6 +8,7 @@
 import {Component} from 'react';
 import FlexRow from '../FlexRow.js';
 import {Elements} from './elements.js';
+import type {ContextMenuExtension} from 'sonar';
 
 export type ElementID = string;
 
@@ -57,11 +58,13 @@ export default class ElementsInspector extends Component<{
   onElementHovered: ?(key: ?ElementID) => void,
   onValueChanged: ?(path: Array<string>, val: any) => void,
   selected: ?ElementID,
+  focused?: ?ElementID,
   searchResults?: ?ElementSearchResultSet,
   root: ?ElementID,
   elements: {[key: ElementID]: Element},
   useAppSidebar?: boolean,
   alternateRowColor?: boolean,
+  contextMenuExtensions?: Array<ContextMenuExtension>,
 }> {
   static defaultProps = {
     alternateRowColor: true,
@@ -69,6 +72,7 @@ export default class ElementsInspector extends Component<{
   render() {
     const {
       selected,
+      focused,
       elements,
       root,
       onElementExpanded,
@@ -76,6 +80,7 @@ export default class ElementsInspector extends Component<{
       onElementHovered,
       searchResults,
       alternateRowColor,
+      contextMenuExtensions,
     } = this.props;
 
     return (
@@ -85,10 +90,12 @@ export default class ElementsInspector extends Component<{
           onElementSelected={onElementSelected}
           onElementHovered={onElementHovered}
           selected={selected}
+          focused={focused}
           searchResults={searchResults}
           root={root}
           elements={elements}
           alternateRowColor={alternateRowColor}
+          contextMenuExtensions={contextMenuExtensions}
         />
       </FlexRow>
     );

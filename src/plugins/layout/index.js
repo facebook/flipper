@@ -28,11 +28,6 @@ import {
 import type {TrackType} from '../../fb-stubs/Logger.js';
 import SidebarExtensions from '../../fb-stubs/LayoutInspectorSidebarExtensions.js';
 
-import {
-  AXElementsInspector,
-  AXToggleButtonEnabled,
-} from '../../fb-stubs/AXLayoutExtender.js';
-
 // $FlowFixMe
 import debounce from 'lodash.debounce';
 
@@ -468,7 +463,7 @@ export default class Layout extends SonarPlugin<InspectorState> {
 
   axEnabled(): boolean {
     // only visible internally for Android clients
-    return AXToggleButtonEnabled && this.realClient.query.os === 'Android';
+    return this.realClient.query.os === 'Android';
   }
 
   // expand tree and highlight click-to-inspect node that was found
@@ -1083,14 +1078,13 @@ export default class Layout extends SonarPlugin<InspectorState> {
           )}
           {AXinitialised && inAXMode ? <VerticalRule /> : null}
           {AXinitialised && inAXMode ? (
-            <AXElementsInspector
+            <ElementsInspector
               onElementSelected={this.onElementSelected}
               onElementHovered={this.onElementHovered}
               onElementExpanded={this.onElementExpanded}
               onValueChanged={this.onDataValueChanged}
               selected={AXselected}
               focused={AXfocused}
-              searchResults={null}
               root={AXroot}
               elements={AXelements}
               contextMenuExtensions={this.getAXContextMenuExtensions()}

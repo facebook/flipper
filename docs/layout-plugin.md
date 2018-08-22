@@ -43,6 +43,8 @@ The Layout Inspector not only allows you to view the hierarchy and inspect each 
 
 Enable target mode by clicking on the crosshairs icon. Now, you can touch any view on the device and Layout Inspector will jump to the correct position within your layout hierarchy.
 
+Tip: Target mode also works with Talkback running.
+
 ### Blocking fullscreen views (Android only)
 
 The issue is that if you have some view that occupies big part of the screen but draws nothing and its Z-position is higher than your main content, then selecting view/component through Layout Inspector doesn't work as you intended, as it will always hit that transparent view and you need to manually navigate to the view you need which is time-consuming and should not be necessary.
@@ -52,3 +54,12 @@ Add the following tag to your view to skip it from Flipper's view picker. The vi
 ```java
 view.setTag("sonar_skip_view_traversal", true);
 ```
+
+## Accessibility mode (Android-only)
+
+Enable accessibility mode by clicking on the accessibility icon. This shows the accessibility view hierarchy next to the normal hierarchy. In the hierarchy, the currently accessibility-focused view is highlighted in green and any accessibility-focusable elements have a green icon next to their name. The hierarchy's context menu also allows you to focus accessibility services on certain elements. When selecting an element in one hierarchy, the corresponding element in the other will also be highlighted. The hierarchies expand and collapse in sync, and searching through the main hierarchy works in accessibility mode as well.
+
+When accessibility mode is enabled, the sidebar will show special properties that are used by accessibility services to determine their functionality. This includes things like content-description, clickable, focusable, and long-clickable among others.
+
+### Talkback
+The accessibility mode sidebar also includes a panel with properties derived specifically to show Talkback's interpretation of a view (with logic ported over from Google's Talkback source). While generally accurate, this is not guaranteed to be accurate for all situations. It is always better to turn Talkback on for verification.
