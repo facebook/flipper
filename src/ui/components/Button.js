@@ -136,7 +136,7 @@ const StyledButton = styled('div')(props => ({
   },
 
   '&:hover::before': {
-    content: props.dropdown ? "''" : '',
+    content: props.dropdown ? "''" : 'normal',
     position: 'absolute',
     bottom: 1,
     right: 2,

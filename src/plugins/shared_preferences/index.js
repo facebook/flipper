@@ -13,6 +13,7 @@ import {
   colors,
   FlexRow,
   DataInspector,
+  styled,
 } from 'sonar';
 import {SonarPlugin} from 'sonar';
 
@@ -55,12 +56,12 @@ const CHANGELOG_COLUMN_SIZES = {
 const UPDATED_LABEL = <Text color={colors.lime}>Updated</Text>;
 const DELETED_LABEL = <Text color={colors.cherry}>Deleted</Text>;
 
-const InspectorColumn = FlexColumn.extends({
+const InspectorColumn = styled(FlexColumn)({
   flexGrow: 0.2,
   padding: '16px',
 });
 
-const ChangelogColumn = FlexColumn.extends({
+const ChangelogColumn = styled(FlexColumn)({
   flexGrow: 0.8,
   padding: '16px',
 });

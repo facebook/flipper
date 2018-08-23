@@ -19,7 +19,7 @@ export const StyledButton = styled('div')(props => ({
   position: 'relative',
   marginLeft: '15px',
   '&::after': {
-    content: `''`,
+    content: '""',
     position: 'absolute',
     top: '3px',
     left: props.toggled ? '18px' : '3px',
