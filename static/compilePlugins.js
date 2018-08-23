@@ -8,6 +8,8 @@
 const path = require('path');
 const fs = require('fs');
 const metro = require('metro');
+const util = require('util');
+const recursiveReaddir = require('recursive-readdir');
 const HOME_DIR = require('os').homedir();
 
 module.exports = (reloadCallback, pluginPaths, pluginCache) => {
@@ -135,6 +137,15 @@ function changeExport(path) {
     );
   fs.writeFileSync(path, file);
 }
+function mostRecentlyChanged(dir) {
+  return util
+    .promisify(recursiveReaddir)(dir)
+    .then(files =>
+      files
+        .map(f => fs.lstatSync(f).ctime)
+        .reduce((a, b) => (a > b ? a : b), new Date(0)),
+    );
+}
 function compilePlugin(
   {rootDir, name, entry, packageJSON},
   force,
@@ -145,41 +156,43 @@ function compilePlugin(
     const out = path.join(pluginCache, fileName);
     const result = Object.assign({}, packageJSON, {rootDir, name, entry, out});
     // check if plugin needs to be compiled
-    if (
-      !force &&
-      fs.existsSync(out) &&
-      fs.lstatSync(rootDir).atime < fs.lstatSync(out).ctime
-    ) {
-      // eslint-disable-next-line no-console
-      console.log(`🥫  Using cached version of ${name}...`);
-      resolve(result);
-    } else {
-      console.log(`⚙️  Compiling ${name}...`); // eslint-disable-line no-console
-      metro
-        .runBuild({
-          config: {
-            getProjectRoots: () => [rootDir, path.join(__dirname, '..')],
-            getTransformModulePath: () =>
-              path.join(__dirname, 'transforms', 'index.js'),
-            // a custom hash function is required, because by default metro starts
-            // numbering the modules by 1. This means all plugins would start at
-            // ID 1, which causes a clash. This is why we have a custom IDFactory.
-            createModuleIdFactory,
-          },
-          dev: false,
-          entry,
-          out,
-        })
-        .then(() => {
-          changeExport(out);
-          resolve(result);
-        })
-        .catch(err => {
-          console.error(
-            `❌  Plugin ${name} is ignored, because it could not be compiled.`,
-          );
-          console.error(err);
-        });
-    }
+    mostRecentlyChanged(rootDir).then(rootDirCtime => {
+      if (
+        !force &&
+        fs.existsSync(out) &&
+        rootDirCtime < fs.lstatSync(out).ctime
+      ) {
+        // eslint-disable-next-line no-console
+        console.log(`🥫  Using cached version of ${name}...`);
+        resolve(result);
+      } else {
+        console.log(`⚙️  Compiling ${name}...`); // eslint-disable-line no-console
+        metro
+          .runBuild({
+            config: {
+              getProjectRoots: () => [rootDir, path.join(__dirname, '..')],
+              getTransformModulePath: () =>
+                path.join(__dirname, 'transforms', 'index.js'),
+              // a custom hash function is required, because by default metro starts
+              // numbering the modules by 1. This means all plugins would start at
+              // ID 1, which causes a clash. This is why we have a custom IDFactory.
+              createModuleIdFactory,
+            },
+            dev: false,
+            entry,
+            out,
+          })
+          .then(() => {
+            changeExport(out);
+            resolve(result);
+          })
+          .catch(err => {
+            console.error(
+              `❌  Plugin ${name} is ignored, because it could not be compiled.`,
+            );
+            console.error(err);
+          });
+      }
+    });
   });
 }
