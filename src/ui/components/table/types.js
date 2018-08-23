@@ -16,8 +16,6 @@ type TableColumnOrderVal = {
   visible: boolean,
 };
 
-export type TableColumnRawOrder = Array<string | TableColumnOrderVal>;
-
 export type TableColumnOrder = Array<TableColumnOrderVal>;
 
 export type TableColumnSizes = {

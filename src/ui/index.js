@@ -41,7 +41,6 @@ export type {
   TableColumnOrder,
   TableColumnSizes,
 } from './components/table/types.js';
-export {default as Table} from './components/table/Table.js';
 export {default as ManagedTable} from './components/table/ManagedTable.js';
 export type {ManagedTableProps} from './components/table/ManagedTable.js';
 

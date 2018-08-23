@@ -71,9 +71,6 @@ class SearchableManagedTable extends PureComponent<Props, State> {
   }
 
   componentWillReceiveProps(nextProps: Props) {
-    // ManagedTable is a PureComponent and does not update when this.filterRows
-    // would return a different value. This is why we update the funtion reference
-    // once the results of the function changed.
     if (
       nextProps.searchTerm !== this.props.searchTerm ||
       !deepEqual(this.props.filters, nextProps.filters)
@@ -90,13 +87,16 @@ class SearchableManagedTable extends PureComponent<Props, State> {
       searchTerm: _searchTerm,
       filters: _filters,
       innerRef,
+      rows,
       ...props
     } = this.props;
+
     return (
       // $FlowFixMe
       <ManagedTable
         {...props}
         filter={this.state.filterRows}
+        rows={rows.filter(this.state.filterRows)}
         onAddFilter={addFilter}
         ref={innerRef}
       />

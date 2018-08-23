@@ -6,7 +6,6 @@
  */
 
 import type {
-  TableColumnKeys,
   TableColumnOrder,
   TableColumnSizes,
   TableColumns,
@@ -193,7 +192,6 @@ class TableHeadColumn extends PureComponent<{
 export default class TableHead extends PureComponent<{
   columnOrder: TableColumnOrder,
   onColumnOrder: ?(order: TableColumnOrder) => void,
-  columnKeys: TableColumnKeys,
   columns: TableColumns,
   sortOrder: ?TableRowSortOrder,
   onSort: ?TableOnSort,
@@ -201,8 +199,15 @@ export default class TableHead extends PureComponent<{
   onColumnResize: ?TableOnColumnResize,
 }> {
   buildContextMenu = (): MenuTemplate => {
+    const visibles = this.props.columnOrder
+      .map(c => (c.visible ? c.key : null))
+      .filter(Boolean)
+      .reduce((acc, cv) => {
+        acc.add(cv);
+        return acc;
+      }, new Set());
     return Object.keys(this.props.columns).map(key => {
-      const visible = this.props.columnKeys.includes(key);
+      const visible = visibles.has(key);
       return {
         label: this.props.columns[key].value,
         click: () => {
