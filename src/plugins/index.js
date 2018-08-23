@@ -10,8 +10,11 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import * as Sonar from 'sonar';
 import {SonarPlugin, SonarBasePlugin} from '../plugin.js';
+import {remote} from 'electron';
 
 const plugins = new Map();
+// $FlowFixMe process.env not defined in electron API spec
+const remoteEnv = remote.process.env;
 
 // expose Sonar and exact globally for dynamically loaded plugins
 window.React = React;
@@ -26,15 +29,14 @@ const addIfNotAdded = plugin => {
 
 let disabledPlugins = [];
 try {
-  disabledPlugins =
-    JSON.parse(window.process.env.CONFIG || '{}').disabledPlugins || [];
+  disabledPlugins = JSON.parse(remoteEnv.CONFIG || '{}').disabledPlugins || [];
 } catch (e) {
   console.error(e);
 }
 
 // Load dynamic plugins
 try {
-  JSON.parse(window.process.env.PLUGINS || '[]').forEach(addIfNotAdded);
+  JSON.parse(remoteEnv.PLUGINS || '[]').forEach(addIfNotAdded);
 } catch (e) {
   console.error(e);
 }
