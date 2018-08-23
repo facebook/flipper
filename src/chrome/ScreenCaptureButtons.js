@@ -232,7 +232,7 @@ class ScreenCaptureButtons extends Component<Props, State> {
     if (selectedDevice instanceof AndroidDevice) {
       this.executeShell(selectedDevice, `pgrep 'screenrecord' -L 2`);
     } else if (this.iOSRecorder && videoPath) {
-      this.iOSRecorder.kill();
+      this.iOSRecorder.kill('SIGINT');
       this.setState({
         recording: false,
       });
