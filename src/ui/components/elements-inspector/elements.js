@@ -19,8 +19,9 @@ import Glyph from '../Glyph.js';
 import {colors} from '../colors.js';
 import Text from '../Text.js';
 import styled from '../../styled/index.js';
-import {FixedList} from '../../virtualized/index.js';
 import {clipboard} from 'electron';
+import AutoSizer from 'react-virtualized-auto-sizer';
+import {FixedSizeList as List} from 'react-window';
 
 const ROW_HEIGHT = 23;
 
@@ -617,24 +618,23 @@ export class Elements extends PureComponent<ElementsProps, ElementsState> {
     );
   };
 
-  keyMapper = (index: number): string => {
-    return this.state.flatElements[index].key;
-  };
-
   render() {
     const items = this.state.flatElements;
 
     return (
       <ElementsBox>
         <ElementsContainer tabIndex="0" onKeyDown={this.onKeyDown}>
-          <FixedList
-            pureData={items}
-            keyMapper={this.keyMapper}
-            rowCount={items.length}
-            rowHeight={ROW_HEIGHT}
-            rowRenderer={this.buildRow}
-            sideScrollable={true}
-          />
+          <AutoSizer>
+            {({width, height}) => (
+              <List
+                itemCount={items.length}
+                itemSize={ROW_HEIGHT}
+                width={width}
+                height={height}>
+                {e => this.buildRow(e)}
+              </List>
+            )}
+          </AutoSizer>
         </ElementsContainer>
       </ElementsBox>
     );
