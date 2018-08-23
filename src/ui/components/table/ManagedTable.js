@@ -26,6 +26,8 @@ import TableRow from './TableRow.js';
 import ContextMenu from '../ContextMenu.js';
 import FlexColumn from '../FlexColumn.js';
 import createPaste from '../../../utils/createPaste.js';
+import debounceRender from 'react-debounce-render';
+import debounce from 'lodash.debounce';
 import {DEFAULT_ROW_HEIGHT} from './types';
 
 export type ManagedTableProps = {|
@@ -121,7 +123,7 @@ type ManagedTableState = {|
  * If you require lower level access to the state then use [`<Table>`]()
  * directly.
  */
-export default class ManagedTable extends styled.StylableComponent<
+class ManagedTable extends styled.StylableComponent<
   ManagedTableProps,
   ManagedTableState,
 > {
@@ -396,34 +398,37 @@ export default class ManagedTable extends styled.StylableComponent<
       .join('\n');
   };
 
-  onScroll = ({
-    scrollDirection,
-    scrollOffset,
-  }: {
-    scrollDirection: 'forward' | 'backward',
-    scrollOffset: number,
-    scrollUpdateWasRequested: boolean,
-  }) => {
-    const {current} = this.scrollRef;
-    const parent = current ? current.parentElement : null;
-    if (
-      this.props.stickyBottom &&
-      scrollDirection === 'forward' &&
-      !this.state.shouldScrollToBottom &&
-      current &&
-      parent instanceof HTMLElement &&
-      current.offsetHeight - (scrollOffset + parent.offsetHeight) <
-        parent.offsetHeight
-    ) {
-      this.setState({shouldScrollToBottom: true});
-    } else if (
-      this.props.stickyBottom &&
-      scrollDirection === 'backward' &&
-      this.state.shouldScrollToBottom
-    ) {
-      this.setState({shouldScrollToBottom: false});
-    }
-  };
+  onScroll = debounce(
+    ({
+      scrollDirection,
+      scrollOffset,
+    }: {
+      scrollDirection: 'forward' | 'backward',
+      scrollOffset: number,
+      scrollUpdateWasRequested: boolean,
+    }) => {
+      const {current} = this.scrollRef;
+      const parent = current ? current.parentElement : null;
+      if (
+        this.props.stickyBottom &&
+        scrollDirection === 'forward' &&
+        !this.state.shouldScrollToBottom &&
+        current &&
+        parent instanceof HTMLElement &&
+        current.offsetHeight - (scrollOffset + parent.offsetHeight) <
+          parent.offsetHeight
+      ) {
+        this.setState({shouldScrollToBottom: true});
+      } else if (
+        this.props.stickyBottom &&
+        scrollDirection === 'backward' &&
+        this.state.shouldScrollToBottom
+      ) {
+        this.setState({shouldScrollToBottom: false});
+      }
+    },
+    100,
+  );
 
   render() {
     const {
@@ -459,7 +464,7 @@ export default class ManagedTable extends styled.StylableComponent<
             {({width, height}) => (
               <ContextMenu buildItems={this.buildContextMenuItems}>
                 <List
-                  itemCount={this.props.rows.length}
+                  itemCount={rows.length}
                   itemSize={index =>
                     (rows[index] && rows[index].height) ||
                     rowLineHeight ||
@@ -474,6 +479,7 @@ export default class ManagedTable extends styled.StylableComponent<
                   height={height}>
                   {({index, style}) => (
                     <TableRow
+                      key={rows[index].key}
                       columnSizes={columnSizes}
                       columnKeys={columnKeys}
                       onMouseDown={e => this.onHighlight(e, rows[index], index)}
@@ -499,3 +505,5 @@ export default class ManagedTable extends styled.StylableComponent<
     );
   }
 }
+
+export default debounceRender(ManagedTable, 150, {maxTime: 200});

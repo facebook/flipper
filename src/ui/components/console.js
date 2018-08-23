@@ -81,9 +81,6 @@ export class Console extends Component<Props, State> {
     },
   };
 
-  static CommandsTable = ManagedTable.extends({
-    flexGrow: 1,
-  });
   static Window = FlexColumn.extends({
     padding: '15px',
     flexGrow: 1,
@@ -184,7 +181,7 @@ export class Console extends Component<Props, State> {
       )
       .reduce((x, y) => x.concat(y), []);
     return rows.length ? (
-      <Console.CommandsTable
+      <ManagedTable
         columns={Console.TableColumns}
         rows={rows}
         multiline={true}

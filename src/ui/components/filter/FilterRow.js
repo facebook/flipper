@@ -79,7 +79,7 @@ export default class FilterRow extends PureComponent<Props> {
       <ContextMenu
         items={this.menuItems}
         component={FilterText}
-        onClick={this.onClick}
+        onMouseDown={this.onClick}
         {...props}>
         {children}
       </ContextMenu>
