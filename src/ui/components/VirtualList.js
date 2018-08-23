@@ -8,33 +8,24 @@
 import FlexColumn from './FlexColumn.js';
 import {Component} from 'react';
 import View from './View.js';
+import styled from '../styled/index.js';
 
-const Inner = FlexColumn.extends(
-  {
-    alignItems: 'flex-start',
-    height: props => props.height,
-    minHeight: '100%',
-    minWidth: '100%',
-    overflow: 'visible',
-    width: '100%',
-  },
-  {
-    ignoreAttributes: ['height'],
-  },
-);
+const Inner = styled(FlexColumn)(({height}) => ({
+  alignItems: 'flex-start',
+  height,
+  minHeight: '100%',
+  minWidth: '100%',
+  overflow: 'visible',
+  width: '100%',
+}));
 
-const Content = FlexColumn.extends(
-  {
-    alignItems: 'flex-start',
-    height: '100%',
-    marginTop: props => props.top,
-    minWidth: '100%',
-    overflow: 'visible',
-  },
-  {
-    ignoreAttributes: ['top'],
-  },
-);
+const Content = styled(FlexColumn)(({top}) => ({
+  alignItems: 'flex-start',
+  height: '100%',
+  marginTop: top,
+  minWidth: '100%',
+  overflow: 'visible',
+}));
 
 type VirtualListProps = {|
   data: Array<any>,

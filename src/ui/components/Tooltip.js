@@ -12,7 +12,7 @@ import {Component} from 'react';
 
 const PropTypes = require('prop-types');
 
-const TooltipContainer = styled.view({
+const TooltipContainer = styled('div')({
   display: 'contents',
 });
 

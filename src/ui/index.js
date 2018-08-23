@@ -4,9 +4,7 @@
  * LICENSE file in the root directory of this source tree.
  * @format
  */
-export type {StyledComponent} from './styled/index.js';
 
-//
 export {default as Button} from './components/Button.js';
 export {default as ToggleButton} from './components/ToggleSwitch.js';
 export {
@@ -25,10 +23,6 @@ export {default as LoadingIndicator} from './components/LoadingIndicator.js';
 
 //
 export {default as Popover} from './components/Popover.js';
-
-//
-export {default as ClickableList} from './components/ClickableList.js';
-export {default as ClickableListItem} from './components/ClickableListItem.js';
 
 //
 export type {

@@ -7,7 +7,7 @@
 
 import {styled, colors} from 'sonar';
 
-const ErrorBarContainer = styled.view({
+const ErrorBarContainer = styled('div')({
   backgroundColor: colors.cherry,
   bottom: 0,
   color: '#fff',

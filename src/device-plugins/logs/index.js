@@ -25,6 +25,7 @@ import {
   FlexColumn,
   Glyph,
   SonarSidebar,
+  styled,
 } from 'sonar';
 import {SonarDevicePlugin, SearchableTable} from 'sonar';
 import textContent from '../../utils/textContent.js';
@@ -47,7 +48,7 @@ type LogsState = {|
   counters: Array<Counter>,
 |};
 
-const Icon = Glyph.extends({
+const Icon = styled(Glyph)({
   marginTop: 5,
 });
 
@@ -202,7 +203,7 @@ const DEFAULT_FILTERS = [
   },
 ];
 
-const HiddenScrollText = Text.extends({
+const HiddenScrollText = styled(Text)({
   alignSelf: 'baseline',
   userSelect: 'none',
   lineHeight: '130%',
@@ -212,23 +213,18 @@ const HiddenScrollText = Text.extends({
   },
 });
 
-const LogCount = HiddenScrollText.extends(
-  {
-    backgroundColor: props => props.color,
-    borderRadius: '999em',
-    fontSize: 11,
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 4,
-    width: 16,
-    height: 16,
-    color: colors.white,
-  },
-  {
-    ignoreAttributes: ['color'],
-  },
-);
+const LogCount = styled(HiddenScrollText)(({color}) => ({
+  backgroundColor: color,
+  borderRadius: '999em',
+  fontSize: 11,
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  marginTop: 4,
+  width: 16,
+  height: 16,
+  color: colors.white,
+}));
 
 function pad(chunk: mixed, len: number): string {
   let str = String(chunk);
@@ -529,7 +525,7 @@ export default class LogTable extends SonarDevicePlugin<LogsState> {
     );
   };
 
-  static ContextMenu = ContextMenu.extends({
+  static ContextMenu = styled(ContextMenu)({
     flex: 1,
   });
 

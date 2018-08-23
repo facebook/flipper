@@ -10,7 +10,7 @@ import FlexColumn from './FlexColumn.js';
 import styled from '../styled/index.js';
 import {colors} from './colors.js';
 
-const Anchor = styled.image({
+const Anchor = styled('img')({
   zIndex: 6,
   position: 'absolute',
   bottom: 0,
@@ -18,7 +18,7 @@ const Anchor = styled.image({
   transform: 'translate(-50%, calc(100% + 2px))',
 });
 
-const PopoverContainer = FlexColumn.extends({
+const PopoverContainer = styled(FlexColumn)({
   backgroundColor: colors.white,
   borderRadius: 7,
   border: '1px solid rgba(0,0,0,0.3)',

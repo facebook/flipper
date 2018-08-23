@@ -20,7 +20,7 @@ import {
   styled,
 } from 'sonar';
 
-const Container = FlexColumn.extends({
+const Container = styled(FlexColumn)({
   padding: 10,
 });
 
@@ -29,7 +29,7 @@ const textareaStyle = {
   marginBottom: 10,
 };
 
-const DialogContainer = styled.view({
+const DialogContainer = styled('div')({
   width: 400,
   height: 300,
   position: 'absolute',
@@ -45,25 +45,25 @@ const DialogContainer = styled.view({
   boxShadow: '0 1px 10px rgba(0, 0, 0, 0.1)',
 });
 
-const TitleInput = Input.extends({
+const TitleInput = styled(Input)({
   ...textareaStyle,
   height: 30,
 });
 
-const DescriptionTextarea = Textarea.extends({
+const DescriptionTextarea = styled(Textarea)({
   ...textareaStyle,
   flexGrow: 1,
 });
 
-const SubmitButtonContainer = styled.view({
+const SubmitButtonContainer = styled('div')({
   marginLeft: 'auto',
 });
 
-const Footer = FlexRow.extends({
+const Footer = styled(FlexRow)({
   lineHeight: '24px',
 });
 
-const CloseDoneButton = Button.extends({
+const CloseDoneButton = styled(Button)({
   width: 50,
   margin: '10px auto',
 });

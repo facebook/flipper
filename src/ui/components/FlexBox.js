@@ -6,13 +6,9 @@
  */
 
 import View from './View.js';
+import styled from '../styled/index.js';
 
-export default View.extends(
-  {
-    display: 'flex',
-    flexShrink: props => (props.shrink == null || props.shrink ? 1 : 0),
-  },
-  {
-    ignoreAttributes: ['shrink'],
-  },
-);
+export default styled(View)(({shrink}) => ({
+  display: 'flex',
+  flexShrink: shrink == null || shrink ? 1 : 0,
+}));

@@ -8,7 +8,7 @@
 import styled from '../styled/index.js';
 import {Component} from 'react';
 
-const Overlay = styled.view({
+const Overlay = styled('div')({
   alignItems: 'center',
   backgroundColor: 'rgba(0, 0, 0, 0.6)',
   bottom: 0,

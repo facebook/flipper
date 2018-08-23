@@ -10,18 +10,13 @@ import {colors} from './colors.js';
 import {Component} from 'react';
 import {shell} from 'electron';
 
-const StyledLink = styled.text(
-  {
-    color: colors.highlight,
-    '&:hover': {
-      cursor: 'pointer',
-      textDecoration: 'underline',
-    },
+const StyledLink = styled('span')({
+  color: colors.highlight,
+  '&:hover': {
+    cursor: 'pointer',
+    textDecoration: 'underline',
   },
-  {
-    ignoreAttributes: [],
-  },
-);
+});
 
 export default class Link extends Component<{
   href: string,

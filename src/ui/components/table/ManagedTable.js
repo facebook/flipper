@@ -117,13 +117,11 @@ type ManagedTableState = {|
   shouldScrollToBottom: boolean,
 |};
 
-/**
- * Wrapper around `Table` that handles row state.
- *
- * If you require lower level access to the state then use [`<Table>`]()
- * directly.
- */
-class ManagedTable extends styled.StylableComponent<
+const Container = styled(FlexColumn)({
+  flexGrow: 1,
+});
+
+class ManagedTable extends React.Component<
   ManagedTableProps,
   ManagedTableState,
 > {
@@ -446,7 +444,7 @@ class ManagedTable extends styled.StylableComponent<
       .filter(Boolean);
 
     return (
-      <FlexColumn style={{flexGrow: 1}}>
+      <Container>
         <TableHead
           columnOrder={columnOrder}
           onColumnOrder={this.onColumnOrder}
@@ -456,10 +454,7 @@ class ManagedTable extends styled.StylableComponent<
           columnSizes={columnSizes}
           onSort={this.onSort}
         />
-        <FlexColumn
-          style={{
-            flexGrow: 1,
-          }}>
+        <Container>
           <AutoSizer>
             {({width, height}) => (
               <ContextMenu buildItems={this.buildContextMenuItems}>
@@ -500,8 +495,8 @@ class ManagedTable extends styled.StylableComponent<
               </ContextMenu>
             )}
           </AutoSizer>
-        </FlexColumn>
-      </FlexColumn>
+        </Container>
+      </Container>
     );
   }
 }

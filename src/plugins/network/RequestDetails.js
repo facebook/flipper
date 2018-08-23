@@ -23,7 +23,7 @@ import {getHeaderValue} from './index.js';
 
 import querystring from 'querystring';
 
-const WrappingText = Text.extends({
+const WrappingText = styled(Text)({
   wordWrap: 'break-word',
   width: '100%',
   lineHeight: '125%',
@@ -84,7 +84,7 @@ function decompress(body: string): string {
 }
 
 export default class RequestDetails extends Component<RequestDetailsProps> {
-  static Container = FlexColumn.extends({
+  static Container = styled(FlexColumn)({
     height: '100%',
     overflow: 'auto',
   });
@@ -274,7 +274,7 @@ class HeaderInspector extends Component<
   }
 }
 
-const BodyContainer = styled.view({
+const BodyContainer = styled('div')({
   paddingTop: 10,
   paddingBottom: 20,
 });
@@ -338,7 +338,7 @@ class ResponseBodyInspector extends Component<{
   }
 }
 
-const MediaContainer = FlexColumn.extends({
+const MediaContainer = styled(FlexColumn)({
   alignItems: 'center',
   justifyContent: 'center',
   width: '100%',
@@ -354,14 +354,14 @@ type ImageWithSizeState = {
 };
 
 class ImageWithSize extends Component<ImageWithSizeProps, ImageWithSizeState> {
-  static Image = styled.image({
+  static Image = styled('img')({
     objectFit: 'scale-down',
     maxWidth: 500,
     maxHeight: 500,
     marginBottom: 10,
   });
 
-  static Text = Text.extends({
+  static Text = styled(Text)({
     color: colors.dark70,
     fontSize: 14,
   });
@@ -408,7 +408,7 @@ class ImageFormatter {
 }
 
 class VideoFormatter {
-  static Video = styled.customHTMLTag('video', {
+  static Video = styled('video')({
     maxWidth: 500,
     maxHeight: 500,
   });

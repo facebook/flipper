@@ -63,18 +63,18 @@ type State = {
   searchCompleted: boolean,
 };
 
-const Container = FlexBox.extends({
+const Container = styled(FlexBox)({
   width: '100%',
   flexGrow: 1,
   background: colors.light02,
   overflowY: 'scroll',
 });
 
-const Title = Text.extends({
+const Title = styled(Text)({
   fontWeight: 500,
 });
 
-const Plugin = FlexColumn.extends({
+const Plugin = styled(FlexColumn)({
   backgroundColor: colors.white,
   borderRadius: 4,
   padding: 15,
@@ -82,20 +82,20 @@ const Plugin = FlexColumn.extends({
   boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
 });
 
-const SectionTitle = styled.text({
+const SectionTitle = styled('span')({
   fontWeight: 'bold',
   fontSize: 24,
   margin: 15,
   marginLeft: 20,
 });
 
-const Loading = FlexBox.extends({
+const Loading = styled(FlexBox)({
   padding: 50,
   alignItems: 'center',
   justifyContent: 'center',
 });
 
-const RestartRequired = FlexBox.extends({
+const RestartRequired = styled(FlexBox)({
   textAlign: 'center',
   justifyContent: 'center',
   fontWeight: 500,
@@ -105,22 +105,22 @@ const RestartRequired = FlexBox.extends({
   cursor: 'pointer',
 });
 
-const TitleRow = FlexRow.extends({
+const TitleRow = styled(FlexRow)({
   alignItems: 'center',
   marginBottom: 10,
   fontSize: '1.1em',
 });
 
-const Description = FlexRow.extends({
+const Description = styled(FlexRow)({
   marginBottom: 15,
   lineHeight: '130%',
 });
 
-const PluginGlyph = Glyph.extends({
+const PluginGlyph = styled(Glyph)({
   marginRight: 5,
 });
 
-const PluginLoading = LoadingIndicator.extends({
+const PluginLoading = styled(LoadingIndicator)({
   marginLeft: 5,
   marginTop: 5,
 });

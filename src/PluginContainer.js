@@ -10,7 +10,14 @@ import type Client from './Client.js';
 import type BaseDevice from './devices/BaseDevice.js';
 
 import {SonarDevicePlugin} from './plugin.js';
-import {ErrorBoundary, Component, FlexColumn, FlexRow, colors} from 'sonar';
+import {
+  ErrorBoundary,
+  Component,
+  FlexColumn,
+  FlexRow,
+  colors,
+  styled,
+} from 'sonar';
 import React from 'react';
 import {connect} from 'react-redux';
 import {setPluginState} from './reducers/pluginStates.js';
@@ -18,14 +25,14 @@ import {devicePlugins} from './device-plugins/index.js';
 import plugins from './plugins/index.js';
 import {activateMenuItems} from './MenuBar.js';
 
-const Container = FlexColumn.extends({
+const Container = styled(FlexColumn)({
   width: 0,
   flexGrow: 1,
   flexShrink: 1,
   backgroundColor: colors.white,
 });
 
-const SidebarContainer = FlexRow.extends({
+const SidebarContainer = styled(FlexRow)({
   backgroundColor: colors.light02,
   height: '100%',
   overflow: 'scroll',

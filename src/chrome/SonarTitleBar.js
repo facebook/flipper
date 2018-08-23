@@ -13,6 +13,7 @@ import {
   Component,
   Spacer,
   GK,
+  styled,
 } from 'sonar';
 import {connect} from 'react-redux';
 import {
@@ -26,34 +27,24 @@ import ScreenCaptureButtons from './ScreenCaptureButtons.js';
 import AutoUpdateVersion from './AutoUpdateVersion.js';
 import config from '../fb-stubs/config.js';
 
-const TitleBar = FlexRow.extends(
-  {
-    background: props =>
-      props.focused
-        ? `linear-gradient(to bottom, ${
-            colors.macOSTitleBarBackgroundTop
-          } 0%, ${colors.macOSTitleBarBackgroundBottom} 100%)`
-        : colors.macOSTitleBarBackgroundBlur,
-    borderBottom: props =>
-      `1px solid ${
-        props.focused
-          ? colors.macOSTitleBarBorder
-          : colors.macOSTitleBarBorderBlur
-      }`,
-    height: 38,
-    flexShrink: 0,
-    width: '100%',
-    alignItems: 'center',
-    paddingLeft: 80,
-    paddingRight: 10,
-    justifyContent: 'space-between',
-    // $FlowFixMe
-    WebkitAppRegion: 'drag',
-  },
-  {
-    ignoreAttributes: ['focused'],
-  },
-);
+const TitleBar = styled(FlexRow)(({focused}) => ({
+  background: focused
+    ? `linear-gradient(to bottom, ${colors.macOSTitleBarBackgroundTop} 0%, ${
+        colors.macOSTitleBarBackgroundBottom
+      } 100%)`
+    : colors.macOSTitleBarBackgroundBlur,
+  borderBottom: `1px solid ${
+    focused ? colors.macOSTitleBarBorder : colors.macOSTitleBarBorderBlur
+  }`,
+  height: 38,
+  flexShrink: 0,
+  width: '100%',
+  alignItems: 'center',
+  paddingLeft: 80,
+  paddingRight: 10,
+  justifyContent: 'space-between',
+  WebkitAppRegion: 'drag',
+}));
 
 type Props = {|
   windowIsFocused: boolean,

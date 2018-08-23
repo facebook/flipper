@@ -10,7 +10,7 @@ import {Component} from 'react';
 
 const PropTypes = require('prop-types');
 
-const ButtonGroupContainer = styled.view({
+const ButtonGroupContainer = styled('div')({
   display: 'inline-flex',
   marginLeft: 10,
   '&:first-child': {

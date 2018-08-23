@@ -16,6 +16,7 @@ import {
   colors,
   PureComponent,
   SonarSidebar,
+  styled,
 } from 'sonar';
 import {SonarPlugin, SearchableTable} from 'sonar';
 import RequestDetails from './RequestDetails.js';
@@ -100,7 +101,7 @@ export function formatBytes(count: number): string {
   return count + ' B';
 }
 
-const TextEllipsis = Text.extends({
+const TextEllipsis = styled(Text)({
   overflowX: 'hidden',
   textOverflow: 'ellipsis',
   maxWidth: '100%',
@@ -287,7 +288,7 @@ function calculateState(
 }
 
 class NetworkTable extends PureComponent<NetworkTableProps, NetworkTableState> {
-  static ContextMenu = ContextMenu.extends({
+  static ContextMenu = styled(ContextMenu)({
     flex: 1,
   });
 
@@ -338,7 +339,7 @@ class NetworkTable extends PureComponent<NetworkTableProps, NetworkTableState> {
   }
 }
 
-const Icon = Glyph.extends({
+const Icon = styled(Glyph)({
   marginTop: -3,
   marginRight: 3,
 });
@@ -367,7 +368,7 @@ class DurationColumn extends PureComponent<{
   request: Request,
   response: ?Response,
 }> {
-  static Text = Text.extends({
+  static Text = styled(Text)({
     flex: 1,
     textAlign: 'right',
     paddingRight: 10,
@@ -389,7 +390,7 @@ class DurationColumn extends PureComponent<{
 class SizeColumn extends PureComponent<{
   response: ?Response,
 }> {
-  static Text = Text.extends({
+  static Text = styled(Text)({
     flex: 1,
     textAlign: 'right',
     paddingRight: 10,

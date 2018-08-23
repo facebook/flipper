@@ -7,7 +7,7 @@
 
 import styled from '../styled/index.js';
 
-export default styled.view({
+export default styled('div')({
   fontSize: 12,
   fontWeight: 'bold',
 });

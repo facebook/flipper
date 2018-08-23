@@ -5,10 +5,10 @@
  * @format
  */
 
-import type {StyledComponent} from '../styled/index.js';
 import styled from '../styled/index.js';
+import {keyframes} from 'react-emotion';
 
-const animation = styled.keyframes({
+const animation = keyframes({
   '0%': {
     transform: 'rotate(0deg)',
   },
@@ -17,23 +17,16 @@ const animation = styled.keyframes({
   },
 });
 
-const LoadingIndicator: StyledComponent<{
-  size?: number,
-}> = styled.view(
-  {
-    animation: `${animation} 1s infinite linear`,
-    width: props => props.size,
-    height: props => props.size,
-    minWidth: props => props.size,
-    minHeight: props => props.size,
-    borderRadius: '50%',
-    border: props => `${props.size / 6}px solid rgba(0, 0, 0, 0.2)`,
-    borderLeftColor: 'rgba(0, 0, 0, 0.4)',
-  },
-  {
-    ignoreAttributes: ['size'],
-  },
-);
+const LoadingIndicator = styled('div')(props => ({
+  animation: `${animation} 1s infinite linear`,
+  width: props.size,
+  height: props.size,
+  minWidth: props.size,
+  minHeight: props.size,
+  borderRadius: '50%',
+  border: `${props.size / 6}px solid rgba(0, 0, 0, 0.2)`,
+  borderLeftColor: 'rgba(0, 0, 0, 0.4)',
+}));
 
 LoadingIndicator.defaultProps = {
   size: 50,

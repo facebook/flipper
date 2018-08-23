@@ -16,6 +16,7 @@ import {
   Checkbox,
   SonarPlugin,
   Button,
+  styled,
 } from 'sonar';
 import type {ElementID, Element} from 'sonar';
 import {processLeaks} from './processLeakString';
@@ -42,12 +43,12 @@ export type Leak = {
   retainedSize: string,
 };
 
-const Window = FlexRow.extends({
+const Window = styled(FlexRow)({
   height: '100%',
   flex: 1,
 });
 
-const ToolbarItem = FlexRow.extends({
+const ToolbarItem = styled(FlexRow)({
   alignItems: 'center',
   marginLeft: '8px',
 });

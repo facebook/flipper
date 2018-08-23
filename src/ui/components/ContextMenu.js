@@ -6,7 +6,6 @@
  */
 
 import FlexColumn from './FlexColumn.js';
-import styled from '../styled/index.js';
 import PropTypes from 'prop-types';
 
 type MenuTemplate = Array<Electron$MenuItemOptions>;
@@ -18,7 +17,7 @@ type Props = {
   component: React.ComponentType<any> | string,
 };
 
-export default class ContextMenu extends styled.StylablePureComponent<Props> {
+export default class ContextMenu extends React.Component<Props> {
   static defaultProps = {
     component: FlexColumn,
   };

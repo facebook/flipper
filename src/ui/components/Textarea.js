@@ -8,15 +8,9 @@
 import styled from '../styled/index.js';
 import {inputStyle} from './Input.js';
 
-export default styled.customHTMLTag(
-  'textarea',
-  {
-    ...inputStyle,
-    lineHeight: 'normal',
-    padding: props => (props.compact ? '5px' : '8px'),
-    resize: 'none',
-  },
-  {
-    ignoreAttributes: ['compact'],
-  },
-);
+export default styled('textarea')(({compact}) => ({
+  ...inputStyle(compact),
+  lineHeight: 'normal',
+  padding: compact ? '5px' : '8px',
+  resize: 'none',
+}));

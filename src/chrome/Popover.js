@@ -16,7 +16,7 @@ import {
   colors,
 } from 'sonar';
 
-const Anchor = styled.image({
+const Anchor = styled('img')({
   zIndex: 6,
   position: 'absolute',
   bottom: 0,
@@ -24,7 +24,7 @@ const Anchor = styled.image({
   transform: 'translate(-50%, calc(100% + 2px))',
 });
 
-const PopoverContainer = FlexColumn.extends({
+const PopoverContainer = styled(FlexColumn)({
   backgroundColor: colors.white,
   borderRadius: 7,
   border: '1px solid rgba(0,0,0,0.3)',
@@ -50,7 +50,7 @@ const PopoverContainer = FlexColumn.extends({
   },
 });
 
-const Heading = Text.extends({
+const Heading = styled(Text)({
   display: 'block',
   backgroundColor: colors.white,
   color: colors.light30,
@@ -60,7 +60,7 @@ const Heading = Text.extends({
   padding: '4px 8px 0',
 });
 
-const PopoverItem = FlexRow.extends({
+const PopoverItem = styled(FlexRow)({
   alignItems: 'center',
   borderBottom: `1px solid ${colors.light05}`,
   height: 50,
@@ -69,7 +69,7 @@ const PopoverItem = FlexRow.extends({
   },
 });
 
-const ItemTitle = Text.extends({
+const ItemTitle = styled(Text)({
   display: 'block',
   fontSize: 14,
   fontWeight: 400,
@@ -80,7 +80,7 @@ const ItemTitle = Text.extends({
   marginBottom: 1,
 });
 
-const ItemSubtitle = Text.extends({
+const ItemSubtitle = styled(Text)({
   display: 'block',
   fontWeight: 400,
   fontSize: 11,
@@ -91,27 +91,27 @@ const ItemSubtitle = Text.extends({
   whiteSpace: 'nowrap',
 });
 
-const ItemImage = FlexBox.extends({
+const ItemImage = styled(FlexBox)({
   alignItems: 'center',
   justifyContent: 'center',
   width: 40,
   flexShrink: 0,
 });
 
-const ItemContent = styled.view({
+const ItemContent = styled('div')({
   minWidth: 0,
   paddingRight: 5,
   flexGrow: 1,
 });
 
-const Section = styled.view({
+const Section = styled('div')({
   borderBottom: `1px solid ${colors.light05}`,
   '&:last-child': {
     borderBottom: 'none',
   },
 });
 
-const Action = Button.extends({
+const Action = styled(Button)({
   border: `1px solid ${colors.macOSTitleBarButtonBorder}`,
   background: 'transparent',
   color: colors.macOSTitleBarIconSelected,

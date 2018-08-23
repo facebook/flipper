@@ -18,7 +18,7 @@ import {
   PureComponent,
 } from 'sonar';
 
-const Containter = FlexColumn.extends({
+const Containter = styled(FlexColumn)({
   fontSize: 17,
   justifyContent: 'center',
   marginLeft: 60,
@@ -30,12 +30,12 @@ const Containter = FlexColumn.extends({
   minWidth: 450,
 });
 
-const TitleRow = FlexRow.extends({
+const TitleRow = styled(FlexRow)({
   alignItems: 'center',
   marginBottom: 40,
 });
 
-const Icon = FlexBox.extends({
+const Icon = styled(FlexBox)({
   justifyContent: 'center',
   alignItems: 'center',
   backgroundColor: brandColors.Sonar,
@@ -45,13 +45,13 @@ const Icon = FlexBox.extends({
   borderRadius: 6,
 });
 
-const Title = Text.extends({
+const Title = styled(Text)({
   fontSize: 30,
   fontWeight: 300,
   paddingLeft: 10,
 });
 
-const Button = View.extends({
+const Button = styled(View)({
   marginTop: 40,
   marginBottom: 30,
   borderRadius: 6,
@@ -64,7 +64,7 @@ const Button = View.extends({
   alignSelf: 'flex-start',
 });
 
-const Screenshot = styled.customHTMLTag('img', {
+const Screenshot = styled('img')({
   alignSelf: 'center',
   boxShadow: '0 5px 35px rgba(0,0,0,0.3)',
   borderRadius: 5,

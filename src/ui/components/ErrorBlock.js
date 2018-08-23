@@ -6,9 +6,10 @@
  */
 
 import styled from '../styled/index.js';
+import React from 'react';
 import CodeBlock from './CodeBlock.js';
 
-const ErrorBlockContainer = CodeBlock.extends({
+const ErrorBlockContainer = styled(CodeBlock)({
   backgroundColor: '#f2dede',
   border: '1px solid #ebccd1',
   borderRadius: 4,
@@ -17,7 +18,7 @@ const ErrorBlockContainer = CodeBlock.extends({
   padding: 10,
 });
 
-export default class ErrorBlock extends styled.StylableComponent<{
+export default class ErrorBlock extends React.Component<{
   error: Error | string | void,
   className?: string,
 }> {

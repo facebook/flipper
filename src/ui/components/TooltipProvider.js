@@ -10,25 +10,20 @@ import {Component} from 'react';
 
 const PropTypes = require('prop-types');
 
-const TooltipBubble = styled.view(
-  {
-    backgroundColor: '#000',
-    lineHeight: '25px',
-    padding: '0 6px',
-    borderRadius: 4,
-    position: 'absolute',
-    width: 'auto',
-    top: props => props.top,
-    left: props => props.left,
-    zIndex: 99999999999,
-    pointerEvents: 'none',
-    color: '#fff',
-    marginTop: '-30px',
-  },
-  {
-    ignoreAttributes: ['top', 'left'],
-  },
-);
+const TooltipBubble = styled('div')(props => ({
+  backgroundColor: '#000',
+  lineHeight: '25px',
+  padding: '0 6px',
+  borderRadius: 4,
+  position: 'absolute',
+  width: 'auto',
+  top: props.top,
+  left: props.left,
+  zIndex: 99999999999,
+  pointerEvents: 'none',
+  color: '#fff',
+  marginTop: '-30px',
+}));
 
 type TooltipProps = {
   children: React$Node,

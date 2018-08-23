@@ -17,11 +17,11 @@ import {
   Component,
   Sidebar,
   FlexBox,
-  ClickableListItem,
   colors,
   brandColors,
   Text,
   Glyph,
+  styled,
 } from 'sonar';
 import React from 'react';
 import {devicePlugins} from '../device-plugins/index.js';
@@ -29,15 +29,22 @@ import plugins from '../plugins/index.js';
 import {selectPlugin} from '../reducers/connections.js';
 import {connect} from 'react-redux';
 
-const CustomClickableListItem = ClickableListItem.extends({
+const ListItem = styled('div')(({active}) => ({
   paddingLeft: 10,
   display: 'flex',
   alignItems: 'center',
   marginBottom: 2,
   flexShrink: 0,
-});
+  backgroundColor: active ? colors.macOSTitleBarIconSelected : 'none',
+  color: active ? colors.white : colors.macOSSidebarSectionItem,
+  lineHeight: '25px',
+  padding: '0 10px',
+  '&[disabled]': {
+    color: 'rgba(0, 0, 0, 0.5)',
+  },
+}));
 
-const SidebarHeader = FlexBox.extends({
+const SidebarHeader = styled(FlexBox)({
   display: 'block',
   alignItems: 'center',
   padding: 3,
@@ -51,23 +58,18 @@ const SidebarHeader = FlexBox.extends({
   flexShrink: 0,
 });
 
-const PluginShape = FlexBox.extends(
-  {
-    marginRight: 5,
-    backgroundColor: props => props.backgroundColor,
-    borderRadius: 3,
-    flexShrink: 0,
-    width: 18,
-    height: 18,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  {
-    ignoreAttributes: ['backgroundColor'],
-  },
-);
+const PluginShape = styled(FlexBox)(({backgroundColor}) => ({
+  marginRight: 5,
+  backgroundColor,
+  borderRadius: 3,
+  flexShrink: 0,
+  width: 18,
+  height: 18,
+  justifyContent: 'center',
+  alignItems: 'center',
+}));
 
-const PluginName = Text.extends({
+const PluginName = styled(Text)({
   minWidth: 0,
   textOverflow: 'ellipsis',
   whiteSpace: 'nowrap',
@@ -75,17 +77,19 @@ const PluginName = Text.extends({
 });
 
 function PluginIcon({
+  isActive,
   backgroundColor,
   name,
   color,
 }: {
+  isActive: boolean,
   backgroundColor: string,
   name: string,
   color: string,
 }) {
   return (
     <PluginShape backgroundColor={backgroundColor}>
-      <Glyph size={12} name={name} color={color} />
+      <Glyph size={12} name={name} color={isActive ? colors.white : color} />
     </PluginShape>
   );
 }
@@ -118,14 +122,15 @@ class PluginSidebarListItem extends Component<{
     }
 
     return (
-      <CustomClickableListItem active={isActive} onClick={this.props.onClick}>
+      <ListItem active={isActive} onClick={this.props.onClick}>
         <PluginIcon
+          isActive={isActive}
           name={plugin.icon}
           backgroundColor={iconColor}
           color={colors.white}
         />
         <PluginName>{plugin.title}</PluginName>
-      </CustomClickableListItem>
+      </ListItem>
     );
   }
 }

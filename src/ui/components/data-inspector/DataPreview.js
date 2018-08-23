@@ -12,7 +12,7 @@ import styled from '../../styled/index.js';
 import {getSortedKeys} from './utils.js';
 import {PureComponent} from 'react';
 
-const PreviewContainer = styled.text({
+const PreviewContainer = styled('span')({
   fontStyle: 'italic',
 });
 

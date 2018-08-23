@@ -20,81 +20,60 @@ import {colors} from '../colors.js';
 import {normaliseColumnWidth} from './utils.js';
 import {DEFAULT_ROW_HEIGHT} from './types';
 
-const TableBodyRowContainer = FlexRow.extends(
-  {
-    backgroundColor: props => {
-      if (props.highlighted) {
-        if (props.highlightedBackgroundColor) {
-          return props.highlightedBackgroundColor;
-        } else {
-          return colors.macOSTitleBarIconSelected;
-        }
-      } else {
-        if (props.backgroundColor) {
-          return props.backgroundColor;
-        } else if (props.even && props.zebra) {
-          return colors.light02;
-        } else {
-          return 'transparent';
-        }
-      }
-    },
-    boxShadow: props => (props.zebra ? 'none' : 'inset 0 -1px #E9EBEE'),
-    color: props =>
-      props.highlighted ? colors.white : props.color || 'inherit',
-    '& *': {
-      color: props => (props.highlighted ? `${colors.white} !important` : null),
-    },
-    '& img': {
-      backgroundColor: props =>
-        props.highlighted ? `${colors.white} !important` : 'none',
-    },
-    height: props => (props.multiline ? 'auto' : props.rowLineHeight),
-    lineHeight: props =>
-      `${String(props.rowLineHeight || DEFAULT_ROW_HEIGHT)}px`,
-    fontWeight: props => props.fontWeight || 'inherit',
-    overflow: 'hidden',
-    width: '100%',
-    userSelect: 'none',
-    flexShrink: 0,
-    '&:hover': {
-      backgroundColor: props =>
-        !props.highlighted && props.highlightOnHover ? colors.light02 : 'none',
-    },
-  },
-  {
-    ignoreAttributes: [
-      'highlightedBackgroundColor',
-      'highlightOnHover',
-      'backgroundColor',
-      'rowLineHeight',
-      'highlighted',
-      'multiline',
-      'hasHover',
-      'zebra',
-      'even',
-    ],
-  },
-);
+const backgroundColor = props => {
+  if (props.highlighted) {
+    if (props.highlightedBackgroundColor) {
+      return props.highlightedBackgroundColor;
+    } else {
+      return colors.macOSTitleBarIconSelected;
+    }
+  } else {
+    if (props.backgroundColor) {
+      return props.backgroundColor;
+    } else if (props.even && props.zebra) {
+      return colors.light02;
+    } else {
+      return 'transparent';
+    }
+  }
+};
 
-const TableBodyColumnContainer = styled.view(
-  {
-    display: 'flex',
-    flexShrink: props => (props.width === 'flex' ? 1 : 0),
-    overflow: 'hidden',
-    padding: '0 8px',
-    userSelect: 'none',
-    textOverflow: 'ellipsis',
-    verticalAlign: 'top',
-    whiteSpace: props => (props.multiline ? 'normal' : 'nowrap'),
-    wordWrap: props => (props.multiline ? 'break-word' : 'normal'),
-    width: props => (props.width === 'flex' ? '100%' : props.width),
-    maxWidth: '100%',
+const TableBodyRowContainer = styled(FlexRow)(props => ({
+  backgroundColor: backgroundColor(props),
+  boxShadow: props.zebra ? 'none' : 'inset 0 -1px #E9EBEE',
+  color: props.highlighted ? colors.white : props.color || 'inherit',
+  '& *': {
+    color: props.highlighted ? `${colors.white} !important` : null,
   },
-  {
-    ignoreAttributes: ['multiline', 'width'],
+  '& img': {
+    backgroundColor: props.highlighted ? `${colors.white} !important` : 'none',
   },
-);
+  height: props.multiline ? 'auto' : props.rowLineHeight,
+  lineHeight: `${String(props.rowLineHeight || DEFAULT_ROW_HEIGHT)}px`,
+  fontWeight: props.fontWeight || 'inherit',
+  overflow: 'hidden',
+  width: '100%',
+  userSelect: 'none',
+  flexShrink: 0,
+  '&:hover': {
+    backgroundColor:
+      !props.highlighted && props.highlightOnHover ? colors.light02 : 'none',
+  },
+}));
+
+const TableBodyColumnContainer = styled('div')(props => ({
+  display: 'flex',
+  flexShrink: props.width === 'flex' ? 1 : 0,
+  overflow: 'hidden',
+  padding: '0 8px',
+  userSelect: 'none',
+  textOverflow: 'ellipsis',
+  verticalAlign: 'top',
+  whiteSpace: props.multiline ? 'normal' : 'nowrap',
+  wordWrap: props.multiline ? 'break-word' : 'normal',
+  width: props.width === 'flex' ? '100%' : props.width,
+  maxWidth: '100%',
+}));
 
 type Props = {
   columnSizes: TableColumnSizes,

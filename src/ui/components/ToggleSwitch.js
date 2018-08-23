@@ -9,11 +9,11 @@ import React from 'react';
 import styled from '../styled/index.js';
 import {colors} from './colors.js';
 
-export const StyledButton = styled.view({
+export const StyledButton = styled('div')(props => ({
   cursor: 'pointer',
   width: '30px',
   height: '16px',
-  background: props => (props.toggled ? colors.green : colors.grey),
+  background: props.toggled ? colors.green : colors.grey,
   display: 'block',
   borderRadius: '100px',
   position: 'relative',
@@ -22,14 +22,14 @@ export const StyledButton = styled.view({
     content: `''`,
     position: 'absolute',
     top: '3px',
-    left: props => (props.toggled ? '18px' : '3px'),
+    left: props.toggled ? '18px' : '3px',
     width: '10px',
     height: '10px',
     background: 'white',
     borderRadius: '100px',
     transition: 'all cubic-bezier(0.3, 1.5, 0.7, 1) 0.3s',
   },
-});
+}));
 
 type Props = {
   /**
@@ -52,7 +52,7 @@ type Props = {
  * <ToggleButton onClick={handler} toggled={boolean}/>
  * ```
  */
-export default class ToggleButton extends styled.StylableComponent<Props> {
+export default class ToggleButton extends React.Component<Props> {
   render() {
     return (
       <StyledButton toggled={this.props.toggled} onClick={this.props.onClick} />

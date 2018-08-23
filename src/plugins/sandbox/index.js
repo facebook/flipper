@@ -20,13 +20,13 @@ type SandboxState = {|
   showFeedback: boolean,
 |};
 
-const BigButton = Button.extends({
+const BigButton = styled(Button)({
   flexGrow: 1,
   fontSize: 24,
   padding: 20,
 });
 
-const ButtonContainer = FlexColumn.extends({
+const ButtonContainer = styled(FlexColumn)({
   alignItems: 'center',
   padding: 20,
 });
@@ -42,7 +42,7 @@ export default class SandboxView extends SonarPlugin<SandboxState> {
   static id = 'Sandbox';
   static icon = 'translate';
 
-  static TextInput = styled.textInput({
+  static TextInput = styled('input')({
     border: `1px solid ${colors.light10}`,
     fontSize: '1em',
     padding: '0 5px',
@@ -52,13 +52,13 @@ export default class SandboxView extends SonarPlugin<SandboxState> {
     flexGrow: 1,
   });
 
-  static FeedbackMessage = styled.text({
+  static FeedbackMessage = styled('span')({
     fontSize: '1.2em',
     paddingTop: '10px',
     color: 'green',
   });
 
-  static TextInputLayout = FlexColumn.extends({
+  static TextInputLayout = styled(FlexColumn)({
     float: 'left',
     justifyContent: 'center',
     flexGrow: 1,

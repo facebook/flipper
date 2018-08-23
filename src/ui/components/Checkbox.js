@@ -13,7 +13,7 @@ type CheckboxProps = {
   onChange: (checked: boolean) => void,
 };
 
-const CheckboxContainer = styled.textInput({
+const CheckboxContainer = styled('input')({
   display: 'inline-block',
   marginRight: 5,
   verticalAlign: 'middle',

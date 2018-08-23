@@ -106,18 +106,18 @@ type SearchResultTree = {|
   axElement: Element,
 |};
 
-const LoadingSpinner = LoadingIndicator.extends({
+const LoadingSpinner = styled(LoadingIndicator)({
   marginRight: 4,
   marginLeft: 3,
   marginTop: -1,
 });
 
-const Center = FlexRow.extends({
+const Center = styled(FlexRow)({
   alignItems: 'center',
   justifyContent: 'center',
 });
 
-const SearchIconContainer = styled.view({
+const SearchIconContainer = styled('div')({
   marginRight: 9,
   marginTop: -3,
   marginLeft: 4,
@@ -131,7 +131,7 @@ class LayoutSearchInput extends Component<
     value: string,
   },
 > {
-  static TextInput = styled.textInput({
+  static TextInput = styled('input')({
     width: '100%',
     marginLeft: 6,
   });

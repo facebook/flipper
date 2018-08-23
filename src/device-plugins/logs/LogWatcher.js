@@ -15,6 +15,7 @@ import {
   ManagedTable,
   Button,
   colors,
+  styled,
 } from 'sonar';
 
 export type Counter = {
@@ -55,7 +56,7 @@ const Columns = {
   },
 };
 
-const Count = Text.extends({
+const Count = styled(Text)({
   alignSelf: 'center',
   background: colors.macOSHighlightActive,
   color: colors.white,
@@ -68,7 +69,7 @@ const Count = Text.extends({
   marginLeft: 'auto',
 });
 
-const Checkbox = Input.extends({
+const Checkbox = styled(Input)({
   lineHeight: '100%',
   padding: 0,
   margin: 0,
@@ -76,11 +77,11 @@ const Checkbox = Input.extends({
   alignSelf: 'center',
 });
 
-const ExpressionInput = Input.extends({
+const ExpressionInput = styled(Input)({
   flexGrow: 1,
 });
 
-const WatcherPanel = Panel.extends({
+const WatcherPanel = styled(Panel)({
   minHeight: 200,
 });
 

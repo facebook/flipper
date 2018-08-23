@@ -18,7 +18,7 @@ import {
 import isProduction from '../utils/isProduction.js';
 import {shell, remote} from 'electron';
 
-const Container = FlexColumn.extends({
+const Container = styled(FlexColumn)({
   height: '100%',
   width: '100%',
   justifyContent: 'center',
@@ -26,23 +26,18 @@ const Container = FlexColumn.extends({
   backgroundColor: colors.light02,
 });
 
-const Welcome = FlexColumn.extends(
-  {
-    width: 460,
-    background: colors.white,
-    borderRadius: 10,
-    boxShadow: '0 1px 3px rgba(0,0,0,0.25)',
-    overflow: 'hidden',
-    opacity: props => (props.isMounted ? 1 : 0),
-    transform: props => `translateY(${props.isMounted ? 0 : 20}px)`,
-    transition: '0.6s all ease-out',
-  },
-  {
-    ignoreAttributes: ['isMounted'],
-  },
-);
+const Welcome = styled(FlexColumn)(({isMounted}) => ({
+  width: 460,
+  background: colors.white,
+  borderRadius: 10,
+  boxShadow: '0 1px 3px rgba(0,0,0,0.25)',
+  overflow: 'hidden',
+  opacity: isMounted ? 1 : 0,
+  transform: `translateY(${isMounted ? 0 : 20}px)`,
+  transition: '0.6s all ease-out',
+}));
 
-const Title = Text.extends({
+const Title = styled(Text)({
   fontSize: 24,
   fontWeight: 300,
   textAlign: 'center',
@@ -50,7 +45,7 @@ const Title = Text.extends({
   marginBottom: 16,
 });
 
-const Version = Text.extends({
+const Version = styled(Text)({
   textAlign: 'center',
   fontSize: 11,
   fontWeight: 300,
@@ -58,7 +53,7 @@ const Version = Text.extends({
   marginBottom: 60,
 });
 
-const Item = FlexRow.extends({
+const Item = styled(FlexRow)({
   padding: 10,
   cursor: 'pointer',
   alignItems: 'center',
@@ -69,23 +64,23 @@ const Item = FlexRow.extends({
   },
 });
 
-const ItemTitle = Text.extends({
+const ItemTitle = styled(Text)({
   color: colors.light50,
   fontSize: 15,
 });
 
-const ItemSubTitle = Text.extends({
+const ItemSubTitle = styled(Text)({
   color: colors.light30,
   fontSize: 11,
   marginTop: 2,
 });
 
-const Icon = Glyph.extends({
+const Icon = styled(Glyph)({
   marginRight: 11,
   marginLeft: 6,
 });
 
-const Logo = styled.image({
+const Logo = styled('img')({
   width: 128,
   height: 128,
   alignSelf: 'center',

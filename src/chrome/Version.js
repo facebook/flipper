@@ -5,7 +5,7 @@
  * @format
  */
 
-import {Component, FlexRow, colors, LoadingIndicator} from 'sonar';
+import {Component, FlexRow, colors, LoadingIndicator, styled} from 'sonar';
 import {version} from '../../package.json';
 import {remote} from 'electron';
 import * as path from 'path';
@@ -24,7 +24,7 @@ export default class Version extends Component<{}, VersionState> {
     status: 'unknown',
   };
 
-  static Container = FlexRow.extends({
+  static Container = styled(FlexRow)({
     alignItems: 'center',
     marginRight: 7,
     marginLeft: 7,
@@ -32,7 +32,7 @@ export default class Version extends Component<{}, VersionState> {
     color: colors.light50,
   });
 
-  static UpdatedContainer = FlexRow.extends({
+  static UpdatedContainer = styled(FlexRow)({
     backgroundColor: colors.blackAlpha10,
     borderRadius: '999em',
     padding: '2px 6px',
