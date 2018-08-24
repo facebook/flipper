@@ -101,6 +101,12 @@ public class ApplicationDescriptor extends NodeDescriptor<ApplicationWrapper> {
                         new SonarObject.Builder()
                                 .put("isFocus", false)
                                 .build());
+              } else if (eventType == AccessibilityEvent.TYPE_VIEW_CLICKED) {
+                mConnection.send("axFocusEvent",
+                        new SonarObject.Builder()
+                                .put("isFocus", false)
+                                .put("isClick", true)
+                                .build());
               }
 
             }

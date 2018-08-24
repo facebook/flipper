@@ -76,6 +76,7 @@ type UpdateAXElementsArgs = {|
 
 type AXFocusEventResult = {|
   isFocus: boolean,
+  isClick?: boolean,
 |};
 
 type SetRootArgs = {|
@@ -89,7 +90,7 @@ type GetNodesResult = {|
 type GetNodesOptions = {|
   force: boolean,
   ax: boolean,
-  forFocusEvent?: boolean,
+  forAccessibilityEvent?: boolean,
 |};
 
 type TrackArgs = {|
@@ -519,36 +520,51 @@ export default class Layout extends SonarPlugin<InspectorState> {
       });
     });
 
-    this.client.subscribe('axFocusEvent', ({isFocus}: AXFocusEventResult) => {
-      this.props.logger.track('usage', 'accessibility:focusEvent', {
-        isFocus,
-        inAXMode: this.state.inAXMode,
-      });
+    this.client.subscribe(
+      'axFocusEvent',
+      ({isFocus, isClick}: AXFocusEventResult) => {
+        this.props.logger.track('usage', 'accessibility:focusEvent', {
+          isFocus,
+          isClick,
+          inAXMode: this.state.inAXMode,
+        });
 
-      // if focusing, need to update all elements in the tree because
-      // we don't know which one now has focus
-      const keys = isFocus ? Object.keys(this.state.AXelements) : [];
+        // if focusing, need to update all elements in the tree because
+        // we don't know which one now has focus
+        const keys = isFocus ? Object.keys(this.state.AXelements) : [];
 
-      // if unfocusing and currently focused element exists, update only the
-      // focused element (and only if it is/was loaded in tree)
-      if (
-        !isFocus &&
-        this.state.AXfocused &&
-        this.state.AXelements[this.state.AXfocused]
-      ) {
-        keys.push(this.state.AXfocused);
-      }
+        // if unfocusing, update only the focused and selected elements and
+        // only if they have been loaded into tree
+        if (!isFocus) {
+          if (
+            this.state.AXfocused &&
+            this.state.AXelements[this.state.AXfocused]
+          ) {
+            keys.push(this.state.AXfocused);
+          }
 
-      this.getNodes(keys, {force: true, ax: true, forFocusEvent: true}).then(
-        (elements: Array<Element>) => {
+          // also update current selected element live, so data shown is not invalid
+          if (
+            this.state.AXselected &&
+            this.state.AXelements[this.state.AXselected]
+          ) {
+            keys.push(this.state.AXselected);
+          }
+        }
+
+        this.getNodes(keys, {
+          force: true,
+          ax: true,
+          forAccessibilityEvent: true,
+        }).then((elements: Array<Element>) => {
           this.dispatchAction({
             elements,
-            forFocusEvent: true,
+            forFocusEvent: !isClick,
             type: 'UpdateAXElements',
           });
-        },
-      );
-    });
+        });
+      },
+    );
 
     this.client.subscribe(
       'invalidateAX',
@@ -668,7 +684,7 @@ export default class Layout extends SonarPlugin<InspectorState> {
     ids: Array<ElementID> = [],
     options: GetNodesOptions,
   ): Promise<Array<Element>> {
-    const {force, ax, forFocusEvent} = options;
+    const {force, ax, forAccessibilityEvent} = options;
     if (!force) {
       const elems = ax ? this.state.AXelements : this.state.elements;
       // always force undefined elements and elements that need to be expanded
@@ -692,7 +708,8 @@ export default class Layout extends SonarPlugin<InspectorState> {
       return this.client
         .call(ax ? 'getAXNodes' : 'getNodes', {
           ids,
-          forFocusEvent,
+          forAccessibilityEvent,
+          selected: this.state.AXselected,
         })
         .then(({elements}: GetNodesResult) => {
           this.props.logger.trackTimeSince(mark, eventName);

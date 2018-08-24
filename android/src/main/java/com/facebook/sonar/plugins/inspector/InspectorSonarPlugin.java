@@ -221,7 +221,8 @@ public class InspectorSonarPlugin implements SonarPlugin {
           final SonarArray.Builder result = new SonarArray.Builder();
 
           // getNodes called to refresh accessibility focus
-          final boolean forFocusEvent = params.getBoolean("forFocusEvent");
+          final boolean forAccessibilityEvent = params.getBoolean("forAccessibilityEvent");
+          final String selected = params.getString("selected");
 
           for (int i = 0, count = ids.length(); i < count; i++) {
             final String id = ids.getString(i);
@@ -231,7 +232,7 @@ public class InspectorSonarPlugin implements SonarPlugin {
             if (node == null) {
 
               // some nodes may be null since we are searching through all current and previous known nodes
-              if (forFocusEvent) {
+              if (forAccessibilityEvent) {
                 continue;
               }
 
@@ -243,11 +244,11 @@ public class InspectorSonarPlugin implements SonarPlugin {
               return;
             } else {
 
-              // only need to get the focused node in this case
-              if (forFocusEvent) {
-                if (node.getObject("extraInfo").getBoolean("focused")) {
+              // always add currently selected node for live updates to the sidebar
+              // also add focused node for updates
+              if (forAccessibilityEvent) {
+                if (id.equals(selected) || node.getObject("extraInfo").getBoolean("focused")) {
                   result.put(node);
-                  break;
                 }
 
               // normal getNodes call, put any nodes in result
