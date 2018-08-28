@@ -7,6 +7,7 @@
 
 import LogManager from '../fb-stubs/Logger';
 import {RecurringError} from './errors';
+import {promisify} from 'util';
 const fs = require('fs');
 const adb = require('adbkit-fb');
 import {
@@ -14,6 +15,7 @@ import {
   isInstalled as opensslInstalled,
 } from './openssl-wrapper-with-promises';
 const path = require('path');
+const tmpFile = promisify(require('tmp').file);
 
 // Desktop file paths
 const os = require('os');
@@ -126,23 +128,14 @@ export default class CertificateProvider {
 
   generateClientCertificate(csr: string): Promise<string> {
     console.debug('Creating new client cert', logTag);
-    const csrFile = this.writeToTempFile(csr);
-    // Create a certificate for the client, using the details in the CSR.
-    return openssl('x509', {
-      req: true,
-      in: csrFile,
-      CA: caCert,
-      CAkey: caKey,
-      CAcreateserial: true,
-    }).then(cert => {
-      return new Promise(function(resolve, reject) {
-        fs.unlink(csrFile, err => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(cert);
-          }
-        });
+
+    return this.writeToTempFile(csr).then(path => {
+      return openssl('x509', {
+        req: true,
+        in: path,
+        CA: caCert,
+        CAkey: caKey,
+        CAcreateserial: true,
       });
     });
   }
@@ -305,17 +298,21 @@ export default class CertificateProvider {
   }
 
   extractAppNameFromCSR(csr: string): Promise<string> {
-    const csrFile = this.writeToTempFile(csr);
-    return openssl('req', {
-      in: csrFile,
-      noout: true,
-      subject: true,
-      nameopt: true,
-      RFC2253: false,
-    })
-      .then(subject => {
+    return this.writeToTempFile(csr)
+      .then(path =>
+        openssl('req', {
+          in: path,
+          noout: true,
+          subject: true,
+          nameopt: true,
+          RFC2253: false,
+        }).then(subject => {
+          return [path, subject];
+        }),
+      )
+      .then(([path, subject]) => {
         return new Promise(function(resolve, reject) {
-          fs.unlink(csrFile, err => {
+          fs.unlink(path, err => {
             if (err) {
               reject(err);
             } else {
@@ -481,10 +478,10 @@ export default class CertificateProvider {
       .then(_ => undefined);
   }
 
-  writeToTempFile(content: string): string {
-    const fileName = getFilePath(`deviceCSR-${Math.random() * 1000000}`);
-    fs.writeFileSync(fileName, content);
-    return fileName;
+  writeToTempFile(content: string): Promise<string> {
+    return tmpFile().then((path, fd, cleanupCallback) =>
+      promisify(fs.writeFile)(path, content).then(_ => path),
+    );
   }
 }
 
