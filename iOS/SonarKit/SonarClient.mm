@@ -127,6 +127,37 @@ using WrapperPlugin = facebook::sonar::SonarCppWrapperPlugin;
   return @(_cppClient->getState().c_str());
 }
 
+- (NSArray *)getStateElements {
+  NSMutableArray<NSDictionary<NSString *, NSString *>*> *const array = [NSMutableArray array];
+
+  for (facebook::sonar::StateElement element: _cppClient->getStateElements()) {
+    facebook::sonar::State state = element.state_;
+    NSString *stateString;
+    switch (state) {
+      case facebook::sonar::in_progress:
+        stateString = @"⏳ ";
+        break;
+
+      case facebook::sonar::success:
+        stateString = @"✅ ";
+        break;
+
+      case facebook::sonar::failed:
+        stateString = @"❌ ";
+        break;
+
+      default:
+        stateString = @"❓ ";
+        break;
+    }
+    [array addObject:@{
+                       @"name": [NSString stringWithUTF8String:element.name_.c_str()],
+                       @"state": stateString
+                       }];
+  }
+  return array;
+}
+
 - (void)subscribeForUpdates:(id<FlipperStateUpdateListener>)controller {
   auto stateListener = std::make_shared<SKStateUpdateCPPWrapper>(controller);
   _cppClient->setStateListener(stateListener);

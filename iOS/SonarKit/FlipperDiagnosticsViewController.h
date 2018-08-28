@@ -10,9 +10,17 @@
 #include "FlipperStateUpdateListener.h"
 #import <UIKit/UIKit.h>
 
+@interface StateTableDataSource : NSObject <UITableViewDataSource>
+@property (strong, nonatomic) NSArray<NSDictionary *> *elements;
+@end
+
 @interface FlipperDiagnosticsViewController : UIViewController <FlipperStateUpdateListener>
-@property(strong, nonatomic) UIScrollView *scrollView;
+@property(strong, nonatomic) StateTableDataSource *tableDataSource;
 @property(strong, nonatomic) UILabel *stateLabel;
+@property(strong, nonatomic) UITableView *stateTable;
+@property(strong, nonatomic) UIScrollView *scrollView;
+@property(strong, nonatomic) UILabel *logLabel;
+
 - (void)onUpdate;
 @end
 

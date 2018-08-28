@@ -5,8 +5,9 @@
  *  file in the root directory of this source tree.
  *
  */
-#import <Foundation/Foundation.h>
+#ifdef FB_SONARKIT_ENABLED
 
+#import <Foundation/Foundation.h>
 #import "SonarPlugin.h"
 #import "FlipperStateUpdateListener.h"
 
@@ -47,9 +48,14 @@ Stop the connection to the Sonar desktop.
 - (void)stop;
 
 /**
-Get the current state of the sonar client
+Get the log of state changes from the sonar client
 */
 - (NSString *)getState;
+
+/**
+ Get the current summarized state of the sonar client
+ */
+- (NSArray<NSDictionary *> *)getStateElements;
 
 /**
 Subscribe a ViewController to state update change notifications
@@ -61,3 +67,5 @@ Subscribe a ViewController to state update change notifications
 + (instancetype)new NS_UNAVAILABLE;
 
 @end
+
+#endif
