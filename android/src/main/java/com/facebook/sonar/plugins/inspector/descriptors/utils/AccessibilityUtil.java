@@ -512,75 +512,6 @@ public final class AccessibilityUtil {
 
   /**
    * Creates a {@link SonarObject} of useful properties of AccessibilityNodeInfo, to be shown in the
-   * Sonar Layout Inspector. All properties are immutable since they are all derived from various
-   * {@link View} properties.
-   *
-   * @param view The {@link View} to derive the AccessibilityNodeInfo properties from.
-   * @return {@link SonarObject} containing the properties.
-   */
-  @Nullable
-  public static SonarObject getAccessibilityNodeInfoProperties(View view) {
-    final AccessibilityNodeInfoCompat nodeInfo =
-        ViewAccessibilityHelper.createNodeInfoFromView(view);
-    if (nodeInfo == null) {
-      return null;
-    }
-
-    final SonarObject.Builder nodeInfoProps = new SonarObject.Builder();
-    final Rect bounds = new Rect();
-
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      final SonarArray.Builder actionsArrayBuilder = new SonarArray.Builder();
-      for (AccessibilityNodeInfoCompat.AccessibilityActionCompat action :
-          nodeInfo.getActionList()) {
-        final String actionLabel = (String) action.getLabel();
-        if (actionLabel != null) {
-          actionsArrayBuilder.put(actionLabel);
-        } else {
-          actionsArrayBuilder.put(
-              AccessibilityUtil.sAccessibilityActionMapping.get(action.getId(), false));
-        }
-      }
-      nodeInfoProps.put("actions", actionsArrayBuilder.build());
-    }
-
-    nodeInfoProps
-        .put("clickable", nodeInfo.isClickable())
-        .put("content-description", nodeInfo.getContentDescription())
-        .put("text", nodeInfo.getText())
-        .put("accessibility-focused", nodeInfo.isAccessibilityFocused())
-        .put("long-clickable", nodeInfo.isLongClickable())
-        .put("focusable", nodeInfo.isFocusable());
-
-    nodeInfo.getBoundsInParent(bounds);
-    nodeInfoProps.put(
-        "parent-bounds",
-        new SonarObject.Builder()
-            .put("width", bounds.width())
-            .put("height", bounds.height())
-            .put("top", bounds.top)
-            .put("left", bounds.left)
-            .put("bottom", bounds.bottom)
-            .put("right", bounds.right));
-
-    nodeInfo.getBoundsInScreen(bounds);
-    nodeInfoProps.put(
-        "screen-bounds",
-        new SonarObject.Builder()
-            .put("width", bounds.width())
-            .put("height", bounds.height())
-            .put("top", bounds.top)
-            .put("left", bounds.left)
-            .put("bottom", bounds.bottom)
-            .put("right", bounds.right));
-
-    nodeInfo.recycle();
-
-    return nodeInfoProps.build();
-  }
-
-  /**
-   * Creates a {@link SonarObject} of useful properties of AccessibilityNodeInfo, to be shown in the
    * Sonar Layout Inspector accessibility extension. All properties are immutable since they are all derived from
    * various {@link View} properties. This is a more complete list than
    * getAccessibilityNodeInfoProperties returns.
@@ -697,7 +628,7 @@ public final class AccessibilityUtil {
     }
   }
 
-  public static SonarObject getViewAXData(View view) {
+  public static SonarObject getViewData(View view) {
     final SonarObject.Builder props = new SonarObject.Builder();
 
     // This needs to be an empty string to be mutable. See t20470623.

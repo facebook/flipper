@@ -196,8 +196,7 @@ public class ViewDescriptor extends NodeDescriptor<View> {
     }
 
     return Arrays.asList(
-        new Named<>("View", viewProps.build()),
-        new Named<>("Accessibility", getAccessibilityData(node)));
+        new Named<>("View", viewProps.build()));
   }
 
   @Override
@@ -205,36 +204,13 @@ public class ViewDescriptor extends NodeDescriptor<View> {
     return Arrays.asList(
         new Named<>(axNodeInfoPropsTitle, AccessibilityUtil.getAccessibilityNodeInfoData(node)),
         new Named<>(axTalkbackPropsTitle, AccessibilityUtil.getTalkbackData(node)),
-        new Named<>(axViewPropsTitle, AccessibilityUtil.getViewAXData(node)));
-  }
-
-  private static SonarObject getAccessibilityData(View view) {
-    final SonarObject.Builder accessibilityProps = new SonarObject.Builder();
-
-    // This needs to be an empty string to be mutable. See t20470623.
-    CharSequence contentDescription =
-        view.getContentDescription() != null ? view.getContentDescription() : "";
-    accessibilityProps.put("content-description", InspectorValue.mutable(contentDescription));
-    accessibilityProps.put("focusable", InspectorValue.mutable(view.isFocusable()));
-    accessibilityProps.put("node-info", AccessibilityUtil.getAccessibilityNodeInfoProperties(view));
-
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-      accessibilityProps.put(
-          "important-for-accessibility",
-          AccessibilityUtil.sImportantForAccessibilityMapping.get(
-              view.getImportantForAccessibility()));
-    }
-
-    AccessibilityUtil.addTalkbackProperties(accessibilityProps, view);
-
-    return accessibilityProps.build();
+        new Named<>(axViewPropsTitle, AccessibilityUtil.getViewData(node)));
   }
 
   @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
   @Override
   public void setValue(View node, String[] path, SonarDynamic value) {
-    if (path[0].equals("Accessibility")
-        || path[0].equals(axViewPropsTitle)
+    if (path[0].equals(axViewPropsTitle)
         || path[0].equals(axNodeInfoPropsTitle)
         || path[0].equals(axTalkbackPropsTitle)) {
       setAccessibilityValue(node, path, value);
