@@ -180,7 +180,7 @@ class ManagedTable extends React.Component<
     }
 
     if (
-      nextProps.filter !== this.props.filter &&
+      this.props.rows.length > nextProps.rows.length &&
       this.tableRef &&
       this.tableRef.current
     ) {
