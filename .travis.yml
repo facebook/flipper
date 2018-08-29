@@ -90,3 +90,9 @@ matrix:
         - cd ../
       script:
         - ./gradlew :sample:build
+      deploy:
+        - provider: script
+          script: "scripts/publish-android-snapshot.sh"
+          skip_cleanup: true
+          on:
+            branch: master
