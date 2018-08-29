@@ -40,11 +40,6 @@ export type ManagedTableProps = {|
    */
   rows: TableRows,
   /**
-   * Whether to use a virtual list. Items visible in the viewport are the only
-   * included in the DOM. This can have a noticable performance improvement.
-   */
-  virtual?: boolean,
-  /**
    * Whether the table has a border.
    */
   floating?: boolean,
@@ -125,6 +120,12 @@ class ManagedTable extends React.Component<
   ManagedTableProps,
   ManagedTableState,
 > {
+  static defaultProps = {
+    highlightableRows: true,
+    multiHighlight: false,
+    autoHeight: false,
+  };
+
   getTableKey = (): string => {
     return (
       'TABLE_COLUMNS_' +
@@ -214,7 +215,10 @@ class ManagedTable extends React.Component<
       e.keyCode === 67
     ) {
       this.onCopy();
-    } else if (e.keyCode === 38 || e.keyCode === 40) {
+    } else if (
+      (e.keyCode === 38 || e.keyCode === 40) &&
+      !this.props.highlightableRows
+    ) {
       // arrow navigation
       const {rows} = this.props;
       const {highlightedRows} = this.state;
@@ -230,12 +234,23 @@ class ManagedTable extends React.Component<
         highlightedRows.clear();
       }
       highlightedRows.add(rows[newIndex].key);
-      this.setState({highlightedRows}, () => {
+      this.onRowHighlighted(highlightedRows, () => {
         const {current} = this.tableRef;
         if (current) {
           current.scrollToItem(newIndex);
         }
       });
+    }
+  };
+
+  onRowHighlighted = (highlightedRows: Set<string>, cb?: Function) => {
+    if (!this.props.highlightableRows) {
+      return;
+    }
+    this.setState({highlightedRows}, cb);
+    const {onRowHighlighted} = this.props;
+    if (onRowHighlighted) {
+      onRowHighlighted(Array.from(highlightedRows));
     }
   };
 
@@ -268,7 +283,7 @@ class ManagedTable extends React.Component<
     row: TableBodyRow,
     index: number,
   ) => {
-    if (e.button !== 0) {
+    if (e.button !== 0 || !this.props.highlightableRows) {
       // Only highlight rows when using primary mouse button,
       // otherwise do nothing, to not interfere context menus.
       return;
@@ -284,11 +299,12 @@ class ManagedTable extends React.Component<
     document.addEventListener('mouseup', this.onStopDragSelecting);
 
     if (
-      (e.metaKey && process.platform === 'darwin') ||
-      (e.ctrlKey && process.platform !== 'darwin')
+      ((e.metaKey && process.platform === 'darwin') ||
+        (e.ctrlKey && process.platform !== 'darwin')) &&
+      this.props.multiHighlight
     ) {
       highlightedRows.add(row.key);
-    } else if (e.shiftKey) {
+    } else if (e.shiftKey && this.props.multiHighlight) {
       // range select
       const lastItemKey = Array.from(this.state.highlightedRows).pop();
       highlightedRows = new Set([
@@ -301,7 +317,7 @@ class ManagedTable extends React.Component<
       this.state.highlightedRows.add(row.key);
     }
 
-    this.setState({highlightedRows});
+    this.onRowHighlighted(highlightedRows);
   };
 
   onStopDragSelecting = () => {
@@ -345,13 +361,16 @@ class ManagedTable extends React.Component<
   ) => {
     const {dragStartIndex} = this;
     const {current} = this.tableRef;
-    if (dragStartIndex && current) {
+    if (
+      dragStartIndex &&
+      current &&
+      this.props.multiHighlight &&
+      this.props.highlightableRows
+    ) {
       current.scrollToItem(index + 1);
       const startKey = this.props.rows[dragStartIndex].key;
       const highlightedRows = new Set(this.selectInRange(startKey, row.key));
-      this.setState({
-        highlightedRows,
-      });
+      this.onRowHighlighted(highlightedRows);
     }
   };
 
@@ -428,20 +447,35 @@ class ManagedTable extends React.Component<
     100,
   );
 
-  render() {
-    const {
-      onAddFilter,
-      columns,
-      multiline,
-      zebra,
-      rows,
-      rowLineHeight,
-    } = this.props;
-
+  getRow = ({index, style}) => {
+    const {onAddFilter, multiline, zebra, rows} = this.props;
     const {columnOrder, columnSizes, highlightedRows} = this.state;
     const columnKeys = columnOrder
       .map(k => (k.visible ? k.key : null))
       .filter(Boolean);
+
+    return (
+      <TableRow
+        key={rows[index].key}
+        columnSizes={columnSizes}
+        columnKeys={columnKeys}
+        onMouseDown={e => this.onHighlight(e, rows[index], index)}
+        onMouseEnter={e => this.onMouseEnterRow(e, rows[index], index)}
+        multiline={multiline}
+        rowLineHeight={24}
+        highlighted={highlightedRows.has(rows[index].key)}
+        row={rows[index]}
+        index={index}
+        style={style}
+        onAddFilter={onAddFilter}
+        zebra={zebra}
+      />
+    );
+  };
+
+  render() {
+    const {columns, rows, rowLineHeight} = this.props;
+    const {columnOrder, columnSizes} = this.state;
 
     return (
       <Container>
@@ -455,46 +489,32 @@ class ManagedTable extends React.Component<
           onSort={this.onSort}
         />
         <Container>
-          <AutoSizer>
-            {({width, height}) => (
-              <ContextMenu buildItems={this.buildContextMenuItems}>
-                <List
-                  itemCount={rows.length}
-                  itemSize={index =>
-                    (rows[index] && rows[index].height) ||
-                    rowLineHeight ||
-                    DEFAULT_ROW_HEIGHT
-                  }
-                  ref={this.tableRef}
-                  width={width}
-                  estimatedItemSize={rowLineHeight || DEFAULT_ROW_HEIGHT}
-                  overscanCount={5}
-                  innerRef={this.scrollRef}
-                  onScroll={this.onScroll}
-                  height={height}>
-                  {({index, style}) => (
-                    <TableRow
-                      key={rows[index].key}
-                      columnSizes={columnSizes}
-                      columnKeys={columnKeys}
-                      onMouseDown={e => this.onHighlight(e, rows[index], index)}
-                      onMouseEnter={e =>
-                        this.onMouseEnterRow(e, rows[index], index)
-                      }
-                      multiline={multiline}
-                      rowLineHeight={24}
-                      highlighted={highlightedRows.has(rows[index].key)}
-                      row={rows[index]}
-                      index={index}
-                      style={style}
-                      onAddFilter={onAddFilter}
-                      zebra={zebra}
-                    />
-                  )}
-                </List>
-              </ContextMenu>
-            )}
-          </AutoSizer>
+          {this.props.autoHeight ? (
+            this.props.rows.map((_, index) => this.getRow({index, style: {}}))
+          ) : (
+            <AutoSizer>
+              {({width, height}) => (
+                <ContextMenu buildItems={this.buildContextMenuItems}>
+                  <List
+                    itemCount={rows.length}
+                    itemSize={index =>
+                      (rows[index] && rows[index].height) ||
+                      rowLineHeight ||
+                      DEFAULT_ROW_HEIGHT
+                    }
+                    ref={this.tableRef}
+                    width={width}
+                    estimatedItemSize={rowLineHeight || DEFAULT_ROW_HEIGHT}
+                    overscanCount={5}
+                    innerRef={this.scrollRef}
+                    onScroll={this.onScroll}
+                    height={height}>
+                    {this.getRow}
+                  </List>
+                </ContextMenu>
+              )}
+            </AutoSizer>
+          )}
         </Container>
       </Container>
     );
