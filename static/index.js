@@ -38,13 +38,19 @@ if (process.platform === 'darwin') {
   }
 }
 
-// ensure .sonar folder and config exist
+// ensure .flipper folder and config exist
 const sonarDir = path.join(os.homedir(), '.sonar');
-if (!fs.existsSync(sonarDir)) {
+const flipperDir = path.join(os.homedir(), '.flipper');
+if (fs.existsSync(flipperDir)) {
+  // nothing to do
+} else if (fs.existsSync(sonarDir)) {
+  // move .sonar to .flipper
+  fs.renameSync(sonarDir, flipperDir);
+} else {
   fs.mkdirSync(sonarDir);
 }
 
-const configPath = path.join(sonarDir, 'config.json');
+const configPath = path.join(flipperDir, 'config.json');
 let config = {pluginPaths: [], disabledPlugins: [], lastWindowPosition: {}};
 
 try {
@@ -88,7 +94,7 @@ compilePlugins(
     }
   },
   pluginPaths,
-  path.join(require('os').homedir(), '.sonar', 'plugins'),
+  path.join(flipperDir, 'plugins'),
 ).then(dynamicPlugins => {
   process.env.PLUGINS = JSON.stringify(dynamicPlugins);
   pluginsCompiled = true;

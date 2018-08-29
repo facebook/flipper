@@ -23,7 +23,7 @@ const {spawn} = require('child_process');
 const path = require('path');
 const {app, shell} = require('electron').remote;
 
-const SONAR_PLUGIN_PATH = path.join(app.getPath('home'), '.sonar');
+const SONAR_PLUGIN_PATH = path.join(app.getPath('home'), '.flipper');
 const DYNAMIC_PLUGINS = JSON.parse(window.process.env.PLUGINS || '[]');
 
 type NPMModule = {

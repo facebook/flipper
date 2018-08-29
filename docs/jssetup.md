@@ -34,7 +34,7 @@ Learn more on how to use [Flipper's UI components](ui-components.md).
 
 ### Dynamically loading plugins
 
-Once a plugin is created, Flipper can load it from its folder. The path from where the plugins are loaded is specified in `~/.sonar/config.json`. Add the parent folder of your plugin to `pluginPaths` and start Flipper.
+Once a plugin is created, Flipper can load it from its folder. The path from where the plugins are loaded is specified in `~/.flipper/config.json`. Add the parent folder of your plugin to `pluginPaths` and start Flipper.
 
 ### npm dependencies
 

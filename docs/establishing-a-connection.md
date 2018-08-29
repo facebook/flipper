@@ -23,7 +23,7 @@ In order for the mobile app to know which certificates it can trust, it conducts
 This is achieved through the following steps:
 * Desktop app starts an insecure server on port 8089.
 * Mobile app connects to localhost:8089 and sends a Certificate Signing Request to the desktop app.
-* Desktop app uses it's private key (this is generated once and stored in ~/.sonar) to sign a client certificate for the mobile app.
+* Desktop app uses it's private key (this is generated once and stored in ~/.flipper) to sign a client certificate for the mobile app.
 * The desktop uses ADB (for android), or the mounted file system (for iOS simulators) to write the following files to the mobile app's private data partition
   * Server certificate that the mobile app can now trust.
   * Client certificate for the mobile app to use going forward.

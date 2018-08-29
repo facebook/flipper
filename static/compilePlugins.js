@@ -69,7 +69,7 @@ const createModuleIdFactory = () => filePath => {
   return id;
 };
 function pluginEntryPoints(additionalPaths = []) {
-  const defaultPluginPath = path.join(HOME_DIR, '.sonar', 'node_modules');
+  const defaultPluginPath = path.join(HOME_DIR, '.flipper', 'node_modules');
   const entryPoints = entryPointForPluginFolder(defaultPluginPath);
   if (typeof additionalPaths === 'string') {
     additionalPaths = [additionalPaths];
