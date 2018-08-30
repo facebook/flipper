@@ -272,9 +272,19 @@ class ManagedTable extends React.Component<
   };
 
   scrollToBottom() {
-    const {current} = this.tableRef;
-    if (current && this.props.rows.length > 1) {
-      current.scrollToItem(this.props.rows.length - 1);
+    const {current: tableRef} = this.tableRef;
+    const {current: scrollRef} = this.scrollRef;
+    if (!tableRef || !scrollRef) {
+      return;
+    }
+
+    // only call scrollToItem if the list is actually scrollable (height of the
+    // content is bigger than it's container). Otherwise this might cause
+    // problems: https://github.com/bvaughn/react-window/issues/49
+    const isScrollable = tableRef.props.height < scrollRef.offsetHeight;
+
+    if (tableRef && this.props.rows.length > 1 && isScrollable) {
+      tableRef.scrollToItem(this.props.rows.length - 1);
     }
   }
 
