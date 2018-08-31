@@ -181,9 +181,11 @@ export default class Server extends EventEmitter {
             subscriber.onSubscribe();
             this.certificateProvider
               .processCertificateSigningRequest(csr, clientData.os, destination)
-              .then(_ => {
+              .then(result => {
                 subscriber.onComplete({
-                  data: JSON.stringify({}),
+                  data: JSON.stringify({
+                    deviceId: result.deviceId,
+                  }),
                   metadata: '',
                 });
               })
@@ -241,7 +243,7 @@ export default class Server extends EventEmitter {
   addConnection(conn: ReactiveSocket, query: ClientQuery): Client {
     invariant(query, 'expected query');
 
-    const id = `${query.app}-${query.os}-${query.device}`;
+    const id = `${query.app}-${query.os}-${query.device}-${query.device_id}`;
     console.debug(`Device connected: ${id}`, 'connection');
 
     const client = new Client(id, query, conn, this.logger);

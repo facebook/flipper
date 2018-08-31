@@ -21,7 +21,7 @@ export type ClientQuery = {|
   app: string,
   os: string,
   device: string,
-  device_id: ?string,
+  device_id: string,
 |};
 
 type RequestMetadata = {method: string, id: number, params: ?Object};

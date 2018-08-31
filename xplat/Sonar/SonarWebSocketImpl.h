@@ -66,6 +66,7 @@ class SonarWebSocketImpl : public SonarWebSocket {
   bool ensureSonarDirExists();
   bool isRunningInOwnThread();
   void sendLegacyCertificateRequest(folly::dynamic message);
+  std::string getDeviceId();
 };
 
 } // namespace sonar

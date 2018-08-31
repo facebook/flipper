@@ -80,7 +80,7 @@ export default class CertificateProvider {
     csr: string,
     os: string,
     appDirectory: string,
-  ): Promise<void> {
+  ): Promise<{|deviceId: string|}> {
     this.ensureOpenSSLIsAvailable();
     return this.certificateSetup
       .then(_ => this.getCACertificate())
@@ -102,7 +102,36 @@ export default class CertificateProvider {
           csr,
           os,
         ),
-      );
+      )
+      .then(_ => this.extractAppNameFromCSR(csr))
+      .then(appName => this.getTargetDeviceId(os, appName, appDirectory, csr))
+      .then(deviceId => {
+        return {
+          deviceId,
+        };
+      });
+  }
+
+  getTargetDeviceId(
+    os: string,
+    appName: string,
+    appDirectory: string,
+    csr: string,
+  ): Promise<string> {
+    if (os === 'Android') {
+      return this.getTargetAndroidDeviceId(appName, appDirectory, csr);
+    } else if (os === 'iOS') {
+      const matches = /\/Devices\/([^/]+)\//.exec(appDirectory);
+      if (matches === null || matches.length < 2) {
+        return Promise.reject(
+          new Error(
+            `iOS simulator directory doesn't match expected format: ${appDirectory}`,
+          ),
+        );
+      }
+      return Promise.resolve(matches[1]);
+    }
+    return Promise.resolve('unknown');
   }
 
   ensureOpenSSLIsAvailable(): void {
@@ -150,7 +179,7 @@ export default class CertificateProvider {
     if (os === 'Android') {
       const appNamePromise = this.extractAppNameFromCSR(csr);
       const deviceIdPromise = appNamePromise.then(app =>
-        this.getTargetDeviceId(app, destination, csr),
+        this.getTargetAndroidDeviceId(app, destination, csr),
       );
       return Promise.all([deviceIdPromise, appNamePromise]).then(
         ([deviceId, appName]) =>
@@ -179,7 +208,7 @@ export default class CertificateProvider {
     return Promise.reject(new RecurringError(`Unsupported device os: ${os}`));
   }
 
-  getTargetDeviceId(
+  getTargetAndroidDeviceId(
     appName: string,
     deviceCsrFilePath: string,
     csr: string,

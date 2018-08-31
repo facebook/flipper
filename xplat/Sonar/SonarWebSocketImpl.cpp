@@ -35,6 +35,7 @@
 #define SONAR_CA_FILE_NAME "sonarCA.crt"
 #define CLIENT_CERT_FILE_NAME "device.crt"
 #define PRIVATE_KEY_FILE "privateKey.pem"
+#define CONNECTION_CONFIG_FILE "connection_config.json"
 #define WRONG_THREAD_EXIT_MSG \
   "ERROR: Aborting sonar initialization because it's not running in the sonar thread."
 
@@ -47,6 +48,7 @@ namespace facebook {
 namespace sonar {
 
 bool fileExists(std::string fileName);
+void writeStringToFile(std::string content, std::string fileName);
 
 class ConnectionEvents : public rsocket::RSocketConnectionEvents {
  private:
@@ -176,9 +178,12 @@ void SonarWebSocketImpl::doCertificateExchange() {
 void SonarWebSocketImpl::connectSecurely() {
   rsocket::SetupParameters parameters;
   folly::SocketAddress address;
+
+  auto deviceId = getDeviceId();
+
   parameters.payload = rsocket::Payload(folly::toJson(folly::dynamic::object(
       "os", deviceData_.os)("device", deviceData_.device)(
-      "device_id", deviceData_.deviceId)("app", deviceData_.app)));
+      "device_id", deviceId)("app", deviceData_.app)));
   address.setFromHostPort(deviceData_.host, securePort);
 
   std::shared_ptr<folly::SSLContext> sslContext =
@@ -242,6 +247,27 @@ void SonarWebSocketImpl::sendMessage(const folly::dynamic& message) {
   });
 }
 
+std::string SonarWebSocketImpl::getDeviceId() {
+  /* On android we can't reliably get the serial of the current device
+     So rely on our locally written config, which is provided by the
+     desktop app.
+     For backwards compatibility, when this isn't present, fall back to the
+     unreliable source. */
+  auto gettingDeviceId = sonarState_->start("Get deviceId");
+  std::string config = loadStringFromFile(absoluteFilePath(CONNECTION_CONFIG_FILE));
+  auto maybeDeviceId = folly::parseJson(config)["deviceId"];
+  std::string deviceId;
+  if (maybeDeviceId.isString()) {
+    deviceId = maybeDeviceId.getString();
+  } else {
+    deviceId = deviceData_.deviceId;
+  }
+  if (deviceId.compare("unknown")) {
+    gettingDeviceId->complete();
+  }
+  return deviceId;
+}
+
 bool SonarWebSocketImpl::isCertificateExchangeNeeded() {
 
   if (failedConnectionAttempts_ >= 2) {
@@ -281,6 +307,8 @@ void SonarWebSocketImpl::requestSignedCertFromSonar() {
     client_->getRequester()
         ->requestResponse(rsocket::Payload(folly::toJson(message)))
         ->subscribe([this, gettingCert](rsocket::Payload p) {
+          auto response = p.moveDataToString();
+          writeStringToFile(response, absoluteFilePath(CONNECTION_CONFIG_FILE));
           gettingCert->complete();
           SONAR_LOG("Certificate exchange complete.");
           // Disconnect after message sending is complete.
@@ -336,6 +364,11 @@ std::string SonarWebSocketImpl::loadStringFromFile(std::string fileName) {
   buffer << stream.rdbuf();
   std::string s = buffer.str();
   return s;
+}
+
+void writeStringToFile(std::string content, std::string fileName) {
+  std::ofstream out(fileName);
+  out << content;
 }
 
 std::string SonarWebSocketImpl::absoluteFilePath(const char* filename) {
