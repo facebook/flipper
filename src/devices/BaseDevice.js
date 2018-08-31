@@ -8,15 +8,24 @@
 import type stream from 'stream';
 import {SonarDevicePlugin} from 'sonar';
 
-export type DeviceLogEntry = {
+export type LogLevel =
+  | 'unknown'
+  | 'verbose'
+  | 'debug'
+  | 'info'
+  | 'warn'
+  | 'error'
+  | 'fatal';
+
+export type DeviceLogEntry = {|
   date: Date,
   pid: number,
   tid: number,
   app?: string,
-  type: 'unknown' | 'verbose' | 'debug' | 'info' | 'warn' | 'error' | 'fatal',
+  type: LogLevel,
   tag: string,
   message: string,
-};
+|};
 
 export type DeviceShell = {
   stdout: stream.Readable,
