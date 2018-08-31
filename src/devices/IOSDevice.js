@@ -5,12 +5,7 @@
  * @format
  */
 
-import type {
-  DeviceType,
-  LogLevel,
-  DeviceLogEntry,
-  DeviceLogListener,
-} from './BaseDevice.js';
+import type {DeviceType, LogLevel, DeviceLogEntry} from './BaseDevice.js';
 import child_process from 'child_process';
 import BaseDevice from './BaseDevice.js';
 import JSONStream from 'JSONStream';
@@ -47,7 +42,7 @@ export default class IOSDevice extends BaseDevice {
     super(serial, deviceType, title);
 
     this.buffer = '';
-    this.log = null;
+    this.log = this.startLogListener();
   }
 
   teardown() {
@@ -60,7 +55,7 @@ export default class IOSDevice extends BaseDevice {
     return ['date', 'pid', 'tid', 'tag', 'message', 'type', 'time'];
   }
 
-  addLogListener(callback: DeviceLogListener, retries: number = 3) {
+  startLogListener(retries: number = 3) {
     if (retries === 0) {
       console.error('Attaching iOS log listener continuously failed.');
       return;
@@ -102,14 +97,15 @@ export default class IOSDevice extends BaseDevice {
         .pipe(new StripLogPrefix())
         .pipe(JSONStream.parse('*'))
         .on('data', (data: RawLogEntry) => {
-          callback(IOSDevice.parseLogEntry(data));
+          const entry = IOSDevice.parseLogEntry(data);
+          this.notifyLogListeners(entry);
         });
     } catch (e) {
       console.error('Could not parse iOS log stream.', e);
       // restart log stream
       this.log.kill();
       this.log = null;
-      this.addLogListener(callback, retries - 1);
+      this.startLogListener(retries - 1);
     }
   }
 

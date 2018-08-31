@@ -8,6 +8,7 @@ import type {SonarPlugin, SonarBasePlugin} from './plugin.js';
 import type LogManager from './fb-stubs/Logger';
 import type Client from './Client.js';
 import type BaseDevice from './devices/BaseDevice.js';
+import type {Props as PluginProps} from './plugin';
 
 import {SonarDevicePlugin} from './plugin.js';
 import {
@@ -43,7 +44,9 @@ type Props = {
   selectedDevice: BaseDevice,
   selectedPlugin: ?string,
   selectedApp: ?string,
-  pluginStates: Object,
+  pluginStates: {
+    [pluginKey: string]: Object,
+  },
   clients: Array<Client>,
   setPluginState: (payload: {
     pluginKey: string,
@@ -128,6 +131,15 @@ class PluginContainer extends Component<Props, State> {
       return null;
     }
 
+    const props: PluginProps<Object> = {
+      key: pluginKey,
+      logger: this.props.logger,
+      persistedState: pluginStates[pluginKey] || {},
+      setPersistedState: state => setPluginState({pluginKey, state}),
+      target,
+      ref: this.refChanged,
+    };
+
     return (
       <React.Fragment>
         <Container key="plugin">
@@ -136,14 +148,7 @@ class PluginContainer extends Component<Props, State> {
               activePlugin.title
             }" encountered an error during render`}
             logger={this.props.logger}>
-            {React.createElement(activePlugin, {
-              key: pluginKey,
-              logger: this.props.logger,
-              persistedState: pluginStates[pluginKey] || {},
-              setPersistedState: state => setPluginState({pluginKey, state}),
-              target,
-              ref: this.refChanged,
-            })}
+            {React.createElement(activePlugin, props)}
           </ErrorBoundary>
         </Container>
         <SidebarContainer id="sonarSidebar" />

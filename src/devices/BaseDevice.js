@@ -62,6 +62,9 @@ export default class BaseDevice {
   // possible src of icon to display next to the device title
   icon: ?string;
 
+  logListeners: Map<Symbol, DeviceLogListener> = new Map();
+  logEntries: Array<DeviceLogEntry> = [];
+
   supportsOS(os: string) {
     return os.toLowerCase() === this.os.toLowerCase();
   }
@@ -80,8 +83,22 @@ export default class BaseDevice {
     throw new Error('unimplemented');
   }
 
-  addLogListener(listener: DeviceLogListener) {
-    throw new Error('unimplemented');
+  addLogListener(callback: DeviceLogListener): Symbol {
+    const id = Symbol();
+    this.logListeners.set(id, callback);
+    this.logEntries.map(callback);
+    return id;
+  }
+
+  notifyLogListeners(entry: DeviceLogEntry) {
+    this.logEntries.push(entry);
+    if (this.logListeners.size > 0) {
+      this.logListeners.forEach(listener => listener(entry));
+    }
+  }
+
+  removeLogListener(id: Symbol) {
+    this.logListeners.delete(id);
   }
 
   spawnShell(): DeviceShell {
