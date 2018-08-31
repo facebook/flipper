@@ -217,7 +217,7 @@ class ManagedTable extends React.Component<
       this.onCopy();
     } else if (
       (e.keyCode === 38 || e.keyCode === 40) &&
-      !this.props.highlightableRows
+      this.props.highlightableRows
     ) {
       // arrow navigation
       const {rows} = this.props;
