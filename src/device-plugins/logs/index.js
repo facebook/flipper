@@ -290,8 +290,7 @@ export default class LogTable extends SonarDevicePlugin<LogsState> {
     );
 
     this.device.addLogListener((entry: DeviceLogEntry) => {
-      const {icon, style} =
-        LOG_TYPES[(entry.type: string)] || LOG_TYPES.verbose;
+      const {icon, style} = LOG_TYPES[(entry.type: string)] || LOG_TYPES.debug;
 
       // clean message
       const message = entry.message.trim();
@@ -450,9 +449,16 @@ export default class LogTable extends SonarDevicePlugin<LogsState> {
       entry.tag === previousEntry.tag &&
       previousRow.type != null
     ) {
-      const count = (previousRow.columns.time.value.props.count || 1) + 1;
+      // duplicate log, increase counter
+      const count =
+        previousRow.columns.type.value &&
+        previousRow.columns.type.value.props &&
+        typeof previousRow.columns.type.value.props.children === 'number'
+          ? previousRow.columns.type.value.props.children + 1
+          : 2;
+      const type = LOG_TYPES[previousRow.type] || LOG_TYPES.debug;
       previousRow.columns.type.value = (
-        <LogCount color={LOG_TYPES[previousRow.type].color}>{count}</LogCount>
+        <LogCount color={type.color}>{count}</LogCount>
       );
     } else {
       rows.push(row);
