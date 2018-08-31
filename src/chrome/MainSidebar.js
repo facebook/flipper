@@ -198,31 +198,41 @@ class MainSidebar extends Component<MainSidebarProps> {
                 plugin={plugin}
               />
             ))}
-        {clients.map((client: Client) => (
-          <React.Fragment key={client.id}>
-            <SidebarHeader>{client.query.app}</SidebarHeader>
-            {plugins
-              .filter(
-                (p: Class<SonarPlugin<>>) => client.plugins.indexOf(p.id) > -1,
-              )
-              .map((plugin: Class<SonarPlugin<>>) => (
-                <PluginSidebarListItem
-                  key={plugin.id}
-                  isActive={
-                    plugin.id === selectedPlugin && selectedApp === client.id
-                  }
-                  onClick={() =>
-                    selectPlugin({
-                      selectedPlugin: plugin.id,
-                      selectedApp: client.id,
-                    })
-                  }
-                  plugin={plugin}
-                  app={client.query.app}
-                />
-              ))}
-          </React.Fragment>
-        ))}
+        {clients
+          .filter(
+            (client: Client) =>
+              (selectedDevice &&
+                client.query.device_id === selectedDevice.serial) ||
+              // Old android sdk versions don't know their device_id
+              // Display their plugins under all selected devices until they die out
+              client.query.device_id === 'unknown',
+          )
+          .map((client: Client) => (
+            <React.Fragment key={client.id}>
+              <SidebarHeader>{client.query.app}</SidebarHeader>
+              {plugins
+                .filter(
+                  (p: Class<SonarPlugin<>>) =>
+                    client.plugins.indexOf(p.id) > -1,
+                )
+                .map((plugin: Class<SonarPlugin<>>) => (
+                  <PluginSidebarListItem
+                    key={plugin.id}
+                    isActive={
+                      plugin.id === selectedPlugin && selectedApp === client.id
+                    }
+                    onClick={() =>
+                      selectPlugin({
+                        selectedPlugin: plugin.id,
+                        selectedApp: client.id,
+                      })
+                    }
+                    plugin={plugin}
+                    app={client.query.app}
+                  />
+                ))}
+            </React.Fragment>
+          ))}
       </Sidebar>
     );
   }
