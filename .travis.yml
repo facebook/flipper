@@ -89,7 +89,7 @@ matrix:
         - export PATH=${PATH}:${ANDROID_NDK_HOME}
         - cd ../
       script:
-        - ./gradlew :sample:build -q
+        - ./gradlew :sample:build
       deploy:
         - provider: script
           script: "scripts/publish-android-snapshot.sh"
