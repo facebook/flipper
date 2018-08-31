@@ -1,0 +1,8 @@
+version: 2.0
+jobs:
+  test:
+    docker:
+      - image: circleci/android:api-27-alpha
+        steps:
+          - checkout
+          - run: ./gradlew :sample:assembleDebug
