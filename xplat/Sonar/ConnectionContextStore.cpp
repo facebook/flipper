@@ -5,12 +5,6 @@
 #include <fstream>
 #include <folly/json.h>
 
-#define CSR_FILE_NAME "app.csr"
-#define SONAR_CA_FILE_NAME "sonarCA.crt"
-#define CLIENT_CERT_FILE_NAME "device.crt"
-#define PRIVATE_KEY_FILE "privateKey.pem"
-#define CONNECTION_CONFIG_FILE "connection_config.json"
-
 #ifdef __ANDROID__
 #include <android/log.h>
 #define SONAR_LOG(message) \
@@ -20,6 +14,12 @@
 #endif
 
 using namespace facebook::sonar;
+
+static constexpr auto CSR_FILE_NAME = "app.csr";
+static constexpr auto SONAR_CA_FILE_NAME = "sonarCA.crt";
+static constexpr auto CLIENT_CERT_FILE_NAME = "device.crt";
+static constexpr auto PRIVATE_KEY_FILE = "privateKey.pem";
+static constexpr auto CONNECTION_CONFIG_FILE = "connection_config.json";
 
 bool fileExists(std::string fileName);
 std::string loadStringFromFile(std::string fileName);
