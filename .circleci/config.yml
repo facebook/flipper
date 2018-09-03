@@ -7,7 +7,7 @@ jobs:
       - checkout
       - run:
         name: build and deploy
-      - command: |
+        command: |
           ./gradlew :sample:assembleDebug
           scripts/publish-android-snapshot.sh
 
