@@ -8,8 +8,8 @@ jobs:
       - run:
         name: build and deploy
       - command: |
-        ./gradlew :sample:assembleDebug
-        scripts/publish-android-snapshot.sh
+          ./gradlew :sample:assembleDebug
+          scripts/publish-android-snapshot.sh
 
 workflows:
   version: 2
