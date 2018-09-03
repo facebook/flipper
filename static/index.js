@@ -161,7 +161,6 @@ function tryCreateWindow() {
       minWidth: 800,
       minHeight: 600,
       center: true,
-      fullscreenable: false,
       backgroundThrottling: false,
       titleBarStyle: 'hiddenInset',
       vibrancy: 'sidebar',
