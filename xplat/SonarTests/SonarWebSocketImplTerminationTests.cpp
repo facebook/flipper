@@ -7,6 +7,7 @@
  */
 
 #include <Sonar/SonarWebSocketImpl.h>
+#include <SonarTestLib/ConnectionContextStoreMock.h>
 
 #include <gtest/gtest.h>
 
@@ -18,10 +19,14 @@ using folly::EventBase;
 
 class SonarWebSocketImplTerminationTest : public ::testing::Test {
 protected:
+  std::shared_ptr<SonarState> state;
+  std::shared_ptr<ConnectionContextStore> contextStore;
   void SetUp() override {
     // Folly singletons must be registered before they are used.
     // Without this, test fails in phabricator.
     folly::SingletonVault::singleton()->registrationComplete();
+    state = std::make_shared<SonarState>();
+    contextStore = std::make_shared<ConnectionContextStoreMock>();
   }
 };
 
@@ -31,7 +36,10 @@ TEST_F(SonarWebSocketImplTerminationTest, testNullEventBaseGetsRejected) {
       DeviceData {},
       nullptr,
       new EventBase()
-    }, std::make_shared<SonarState>());
+    },
+    state,
+    contextStore
+    );
     FAIL();
   } catch (std::invalid_argument& e) {
     // Pass test
@@ -41,7 +49,10 @@ TEST_F(SonarWebSocketImplTerminationTest, testNullEventBaseGetsRejected) {
       DeviceData {},
       new EventBase(),
       nullptr
-    }, std::make_shared<SonarState>());
+    },
+    state,
+    contextStore
+    );
     FAIL();
   } catch (std::invalid_argument& e) {
     // Pass test
@@ -54,8 +65,7 @@ TEST_F(SonarWebSocketImplTerminationTest, testNonStartedEventBaseDoesntHang) {
     new EventBase(),
     new EventBase()
   };
-  auto state = std::make_shared<SonarState>();
-  auto instance = std::make_shared<SonarWebSocketImpl>(config, state);
+  auto instance = std::make_shared<SonarWebSocketImpl>(config, state, contextStore);
   instance->start();
 }
 
@@ -73,8 +83,7 @@ TEST_F(SonarWebSocketImplTerminationTest, testStartedEventBaseDoesntHang) {
     sonarEventBase,
     connectionEventBase
   };
-  auto state = std::make_shared<SonarState>();
-  auto instance = std::make_shared<SonarWebSocketImpl>(config, state);
+  auto instance = std::make_shared<SonarWebSocketImpl>(config, state, contextStore);
 
   instance->start();
 

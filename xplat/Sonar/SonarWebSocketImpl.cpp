@@ -8,6 +8,7 @@
 
 #include "SonarWebSocketImpl.h"
 #include "SonarStep.h"
+#include "ConnectionContextStore.h"
 #include <folly/String.h>
 #include <folly/futures/Future.h>
 #include <folly/io/async/SSLContext.h>
@@ -15,14 +16,9 @@
 #include <rsocket/Payload.h>
 #include <rsocket/RSocket.h>
 #include <rsocket/transports/tcp/TcpConnectionFactory.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <fstream>
-#include <iostream>
 #include <thread>
 #include <folly/io/async/AsyncSocketException.h>
 #include <stdexcept>
-#include "CertificateUtils.h"
 
 #ifdef __ANDROID__
 #include <android/log.h>
@@ -32,11 +28,6 @@
 #define SONAR_LOG(message) printf("sonar: %s\n", message)
 #endif
 
-#define CSR_FILE_NAME "app.csr"
-#define SONAR_CA_FILE_NAME "sonarCA.crt"
-#define CLIENT_CERT_FILE_NAME "device.crt"
-#define PRIVATE_KEY_FILE "privateKey.pem"
-#define CONNECTION_CONFIG_FILE "connection_config.json"
 #define WRONG_THREAD_EXIT_MSG \
   "ERROR: Aborting sonar initialization because it's not running in the sonar thread."
 
@@ -47,9 +38,6 @@ static constexpr int insecurePort = 8089;
 
 namespace facebook {
 namespace sonar {
-
-bool fileExists(std::string fileName);
-void writeStringToFile(std::string content, std::string fileName);
 
 class ConnectionEvents : public rsocket::RSocketConnectionEvents {
  private:
@@ -96,8 +84,8 @@ class Responder : public rsocket::RSocketResponder {
   }
 };
 
-SonarWebSocketImpl::SonarWebSocketImpl(SonarInitConfig config, std::shared_ptr<SonarState> state)
-    : deviceData_(config.deviceData), sonarState_(state), sonarEventBase_(config.callbackWorker), connectionEventBase_(config.connectionWorker) {
+SonarWebSocketImpl::SonarWebSocketImpl(SonarInitConfig config, std::shared_ptr<SonarState> state, std::shared_ptr<ConnectionContextStore> contextStore)
+    : deviceData_(config.deviceData), sonarState_(state), sonarEventBase_(config.callbackWorker), connectionEventBase_(config.connectionWorker), contextStore_(contextStore) {
       CHECK_THROW(config.callbackWorker, std::invalid_argument);
       CHECK_THROW(config.connectionWorker, std::invalid_argument);
     }
@@ -175,7 +163,6 @@ void SonarWebSocketImpl::doCertificateExchange() {
           .get();
   connectingInsecurely->complete();
 
-  ensureSonarDirExists();
   requestSignedCertFromSonar();
 }
 
@@ -183,24 +170,17 @@ void SonarWebSocketImpl::connectSecurely() {
   rsocket::SetupParameters parameters;
   folly::SocketAddress address;
 
-  auto deviceId = getDeviceId();
-
+  auto loadingDeviceId = sonarState_->start("Load Device Id");
+  auto deviceId = contextStore_->getDeviceId();
+  if (deviceId.compare("unknown")) {
+    loadingDeviceId->complete();
+  }
   parameters.payload = rsocket::Payload(folly::toJson(folly::dynamic::object(
       "os", deviceData_.os)("device", deviceData_.device)(
       "device_id", deviceId)("app", deviceData_.app)));
   address.setFromHostPort(deviceData_.host, securePort);
 
-  std::shared_ptr<folly::SSLContext> sslContext =
-      std::make_shared<folly::SSLContext>();
-  sslContext->loadTrustedCertificates(
-      absoluteFilePath(SONAR_CA_FILE_NAME).c_str());
-  sslContext->setVerificationOption(
-      folly::SSLContext::SSLVerifyPeerEnum::VERIFY);
-  sslContext->loadCertKeyPairFromFiles(
-      absoluteFilePath(CLIENT_CERT_FILE_NAME).c_str(),
-      absoluteFilePath(PRIVATE_KEY_FILE).c_str());
-  sslContext->authenticate(true, false);
-
+  std::shared_ptr<folly::SSLContext> sslContext = contextStore_->getSSLContext();
   auto connectingSecurely = sonarState_->start("Connect securely");
   connectionIsTrusted_ = true;
   client_ =
@@ -251,27 +231,6 @@ void SonarWebSocketImpl::sendMessage(const folly::dynamic& message) {
   });
 }
 
-std::string SonarWebSocketImpl::getDeviceId() {
-  /* On android we can't reliably get the serial of the current device
-     So rely on our locally written config, which is provided by the
-     desktop app.
-     For backwards compatibility, when this isn't present, fall back to the
-     unreliable source. */
-  auto gettingDeviceId = sonarState_->start("Get deviceId");
-  std::string config = loadStringFromFile(absoluteFilePath(CONNECTION_CONFIG_FILE));
-  auto maybeDeviceId = folly::parseJson(config)["deviceId"];
-  std::string deviceId;
-  if (maybeDeviceId.isString()) {
-    deviceId = maybeDeviceId.getString();
-  } else {
-    deviceId = deviceData_.deviceId;
-  }
-  if (deviceId.compare("unknown")) {
-    gettingDeviceId->complete();
-  }
-  return deviceId;
-}
-
 bool SonarWebSocketImpl::isCertificateExchangeNeeded() {
 
   if (failedConnectionAttempts_ >= 2) {
@@ -279,32 +238,20 @@ bool SonarWebSocketImpl::isCertificateExchangeNeeded() {
   }
 
   auto step = sonarState_->start("Check required certificates are present");
-  std::string caCert = loadStringFromFile(absoluteFilePath(SONAR_CA_FILE_NAME));
-  std::string clientCert =
-      loadStringFromFile(absoluteFilePath(CLIENT_CERT_FILE_NAME));
-  std::string privateKey =
-      loadStringFromFile(absoluteFilePath(PRIVATE_KEY_FILE));
-
-  if (caCert == "" || clientCert == "" || privateKey == "") {
-    return true;
+  bool hasRequiredFiles = contextStore_->hasRequiredFiles();
+  if (hasRequiredFiles) {
+    step->complete();
   }
-  step->complete();
-  return false;
+  return !hasRequiredFiles;
 }
 
 void SonarWebSocketImpl::requestSignedCertFromSonar() {
   auto generatingCSR = sonarState_->start("Generate CSR");
-  generateCertSigningRequest(
-      deviceData_.appId.c_str(),
-      absoluteFilePath(CSR_FILE_NAME).c_str(),
-      absoluteFilePath(PRIVATE_KEY_FILE).c_str());
+  std::string csr = contextStore_->createCertificateSigningRequest();
   generatingCSR->complete();
-  auto loadingCSR = sonarState_->start("Load CSR");
-  std::string csr = loadStringFromFile(absoluteFilePath(CSR_FILE_NAME));
-  loadingCSR->complete();
 
   folly::dynamic message = folly::dynamic::object("method", "signCertificate")(
-      "csr", csr.c_str())("destination", absoluteFilePath("").c_str());
+      "csr", csr.c_str())("destination", contextStore_->getCertificateDirectoryPath().c_str());
   auto gettingCert = sonarState_->start("Getting cert from desktop");
 
   sonarEventBase_->add([this, message, gettingCert]() {
@@ -312,7 +259,10 @@ void SonarWebSocketImpl::requestSignedCertFromSonar() {
         ->requestResponse(rsocket::Payload(folly::toJson(message)))
         ->subscribe([this, gettingCert](rsocket::Payload p) {
           auto response = p.moveDataToString();
-          writeStringToFile(response, absoluteFilePath(CONNECTION_CONFIG_FILE));
+          if (!response.empty()) {
+            folly::dynamic config = folly::parseJson(response);
+            contextStore_->storeConnectionConfig(config);
+          }
           gettingCert->complete();
           SONAR_LOG("Certificate exchange complete.");
           // Disconnect after message sending is complete.
@@ -352,56 +302,8 @@ void SonarWebSocketImpl::sendLegacyCertificateRequest(folly::dynamic message) {
    });
 }
 
-std::string SonarWebSocketImpl::loadStringFromFile(std::string fileName) {
-  if (!fileExists(fileName)) {
-    return "";
-  }
-  std::stringstream buffer;
-  std::ifstream stream;
-  std::string line;
-  stream.open(fileName.c_str());
-  if (!stream) {
-    SONAR_LOG(
-        std::string("ERROR: Unable to open ifstream: " + fileName).c_str());
-    return "";
-  }
-  buffer << stream.rdbuf();
-  std::string s = buffer.str();
-  return s;
-}
-
-void writeStringToFile(std::string content, std::string fileName) {
-  std::ofstream out(fileName);
-  out << content;
-}
-
-std::string SonarWebSocketImpl::absoluteFilePath(const char* filename) {
-  return std::string(deviceData_.privateAppDirectory + "/sonar/" + filename);
-}
-
-bool SonarWebSocketImpl::ensureSonarDirExists() {
-  std::string dirPath = absoluteFilePath("");
-  struct stat info;
-  if (stat(dirPath.c_str(), &info) != 0) {
-    int ret = mkdir(dirPath.c_str(), S_IRUSR | S_IWUSR | S_IXUSR);
-    return ret == 0;
-  } else if (info.st_mode & S_IFDIR) {
-    return true;
-  } else {
-    SONAR_LOG(std::string(
-                  "ERROR: Sonar path exists but is not a directory: " + dirPath)
-                  .c_str());
-    return false;
-  }
-}
-
 bool SonarWebSocketImpl::isRunningInOwnThread() {
   return sonarEventBase_->isInEventBaseThread();
-}
-
-bool fileExists(std::string fileName) {
-  struct stat buffer;
-  return stat(fileName.c_str(), &buffer) == 0;
 }
 
 } // namespace sonar

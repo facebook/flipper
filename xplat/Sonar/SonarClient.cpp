@@ -12,6 +12,7 @@
 #include "SonarState.h"
 #include "SonarStep.h"
 #include "SonarWebSocketImpl.h"
+#include "ConnectionContextStore.h"
 #include <vector>
 
 #ifdef __ANDROID__
@@ -33,8 +34,9 @@ using folly::dynamic;
 
 void SonarClient::init(SonarInitConfig config) {
   auto state = std::make_shared<SonarState>();
+  auto context = std::make_shared<ConnectionContextStore>(config.deviceData);
   kInstance =
-      new SonarClient(std::make_unique<SonarWebSocketImpl>(std::move(config), state), state);
+      new SonarClient(std::make_unique<SonarWebSocketImpl>(std::move(config), state, context), state);
 }
 
 SonarClient* SonarClient::instance() {

@@ -20,6 +20,7 @@ namespace facebook {
 namespace sonar {
 
 class ConnectionEvents;
+class ConnectionContextStore;
 class Responder;
 
 class SonarWebSocketImpl : public SonarWebSocket {
@@ -27,7 +28,7 @@ class SonarWebSocketImpl : public SonarWebSocket {
   friend Responder;
 
  public:
-  SonarWebSocketImpl(SonarInitConfig config, std::shared_ptr<SonarState> state);
+  SonarWebSocketImpl(SonarInitConfig config, std::shared_ptr<SonarState> state, std::shared_ptr<ConnectionContextStore> contextStore);
 
   ~SonarWebSocketImpl();
 
@@ -54,16 +55,13 @@ class SonarWebSocketImpl : public SonarWebSocket {
   std::unique_ptr<rsocket::RSocketClient> client_;
   bool connectionIsTrusted_;
   int failedConnectionAttempts_ = 0;
+  std::shared_ptr<ConnectionContextStore> contextStore_;
 
   void startSync();
   void doCertificateExchange();
   void connectSecurely();
-  std::string loadCSRFromFile();
-  std::string loadStringFromFile(std::string fileName);
-  std::string absoluteFilePath(const char* relativeFilePath);
   bool isCertificateExchangeNeeded();
   void requestSignedCertFromSonar();
-  bool ensureSonarDirExists();
   bool isRunningInOwnThread();
   void sendLegacyCertificateRequest(folly::dynamic message);
   std::string getDeviceId();
