@@ -6,10 +6,10 @@ jobs:
     steps:
       - checkout
       - run:
-        name: build and deploy
-        command: |
-          ./gradlew :sample:assembleDebug
-          scripts/publish-android-snapshot.sh
+          name: build and deploy
+          command: |
+            ./gradlew :sample:assembleDebug
+            scripts/publish-android-snapshot.sh
 
 workflows:
   version: 2
