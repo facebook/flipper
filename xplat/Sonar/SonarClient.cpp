@@ -13,15 +13,8 @@
 #include "SonarStep.h"
 #include "SonarWebSocketImpl.h"
 #include "ConnectionContextStore.h"
+#include "Log.h"
 #include <vector>
-
-#ifdef __ANDROID__
-#include <android/log.h>
-#define SONAR_LOG(message) \
-  __android_log_print(ANDROID_LOG_INFO, "sonar", "sonar: %s", message)
-#else
-#define SONAR_LOG(message) printf("sonar: %s\n", message)
-#endif
 
 #if FB_SONARKIT_ENABLED
 
@@ -45,12 +38,12 @@ SonarClient* SonarClient::instance() {
 
 void SonarClient::setStateListener(
     std::shared_ptr<SonarStateUpdateListener> stateListener) {
-  SONAR_LOG("Setting state listener");
+  log("Setting state listener");
   sonarState_->setUpdateListener(stateListener);
 }
 
 void SonarClient::addPlugin(std::shared_ptr<SonarPlugin> plugin) {
-  SONAR_LOG(("SonarClient::addPlugin " + plugin->identifier()).c_str());
+  log("SonarClient::addPlugin " + plugin->identifier());
   auto step = sonarState_->start("Add plugin " + plugin->identifier());
 
   std::lock_guard<std::mutex> lock(mutex_);
@@ -68,7 +61,7 @@ void SonarClient::addPlugin(std::shared_ptr<SonarPlugin> plugin) {
 }
 
 void SonarClient::removePlugin(std::shared_ptr<SonarPlugin> plugin) {
-  SONAR_LOG(("SonarClient::removePlugin " + plugin->identifier()).c_str());
+  log("SonarClient::removePlugin " + plugin->identifier());
 
   std::lock_guard<std::mutex> lock(mutex_);
   performAndReportError([this, plugin]() {
@@ -111,14 +104,14 @@ void SonarClient::refreshPlugins() {
 }
 
 void SonarClient::onConnected() {
-  SONAR_LOG("SonarClient::onConnected");
+  log("SonarClient::onConnected");
 
   std::lock_guard<std::mutex> lock(mutex_);
   connected_ = true;
 }
 
 void SonarClient::onDisconnected() {
-  SONAR_LOG("SonarClient::onDisconnected");
+  log("SonarClient::onDisconnected");
   auto step = sonarState_->start("Trigger onDisconnected callbacks");
   std::lock_guard<std::mutex> lock(mutex_);
   connected_ = false;

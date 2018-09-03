@@ -1,17 +1,10 @@
 #include "ConnectionContextStore.h"
 #include "CertificateUtils.h"
+#include "Log.h"
 #include <sys/stat.h>
 #include <iostream>
 #include <fstream>
 #include <folly/json.h>
-
-#ifdef __ANDROID__
-#include <android/log.h>
-#define SONAR_LOG(message) \
-  __android_log_print(ANDROID_LOG_INFO, "sonar", "sonar: %s", message)
-#else
-#define SONAR_LOG(message) printf("sonar: %s\n", message)
-#endif
 
 using namespace facebook::sonar;
 
@@ -98,9 +91,7 @@ bool ConnectionContextStore::ensureSonarDirExists() {
   } else if (info.st_mode & S_IFDIR) {
     return true;
   } else {
-    SONAR_LOG(std::string(
-                  "ERROR: Sonar path exists but is not a directory: " + dirPath)
-                  .c_str());
+    log("ERROR: Sonar path exists but is not a directory: " + dirPath);
     return false;
   }
 }
@@ -114,8 +105,7 @@ std::string loadStringFromFile(std::string fileName) {
   std::string line;
   stream.open(fileName.c_str());
   if (!stream) {
-    SONAR_LOG(
-        std::string("ERROR: Unable to open ifstream: " + fileName).c_str());
+    log("ERROR: Unable to open ifstream: " + fileName);
     return "";
   }
   buffer << stream.rdbuf();

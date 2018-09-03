@@ -9,6 +9,7 @@
 #include "SonarWebSocketImpl.h"
 #include "SonarStep.h"
 #include "ConnectionContextStore.h"
+#include "Log.h"
 #include <folly/String.h>
 #include <folly/futures/Future.h>
 #include <folly/io/async/SSLContext.h>
@@ -19,14 +20,6 @@
 #include <thread>
 #include <folly/io/async/AsyncSocketException.h>
 #include <stdexcept>
-
-#ifdef __ANDROID__
-#include <android/log.h>
-#define SONAR_LOG(message) \
-  __android_log_print(ANDROID_LOG_INFO, "sonar", "sonar: %s", message)
-#else
-#define SONAR_LOG(message) printf("sonar: %s\n", message)
-#endif
 
 #define WRONG_THREAD_EXIT_MSG \
   "ERROR: Aborting sonar initialization because it's not running in the sonar thread."
@@ -104,11 +97,11 @@ void SonarWebSocketImpl::start() {
 
 void SonarWebSocketImpl::startSync() {
   if (!isRunningInOwnThread()) {
-    SONAR_LOG(WRONG_THREAD_EXIT_MSG);
+    log(WRONG_THREAD_EXIT_MSG);
     return;
   }
   if (isOpen()) {
-    SONAR_LOG("Already connected");
+    log("Already connected");
     return;
   }
   auto connect = sonarState_->start("Connect to desktop");
@@ -126,13 +119,13 @@ void SonarWebSocketImpl::startSync() {
       // Don't count as a failed attempt.
       connect->fail("Port not open");
     } else {
-      SONAR_LOG(e.what());
+      log(e.what());
       failedConnectionAttempts_++;
       connect->fail(e.what());
     }
     reconnect();
   } catch (const std::exception& e) {
-    SONAR_LOG(e.what());
+    log(e.what());
     connect->fail(e.what());
     failedConnectionAttempts_++;
     reconnect();
@@ -264,7 +257,7 @@ void SonarWebSocketImpl::requestSignedCertFromSonar() {
             contextStore_->storeConnectionConfig(config);
           }
           gettingCert->complete();
-          SONAR_LOG("Certificate exchange complete.");
+          log("Certificate exchange complete.");
           // Disconnect after message sending is complete.
           // This will trigger a reconnect which should use the secure channel.
           // TODO: Connect immediately, without waiting for reconnect
@@ -276,13 +269,13 @@ void SonarWebSocketImpl::requestSignedCertFromSonar() {
               std::string errorMessage = errorWithPayload.payload.moveDataToString();
 
              if (errorMessage.compare("not implemented")) {
-               SONAR_LOG(("Desktop failed to provide certificates. Error from sonar desktop:\n" + errorMessage).c_str());
+               log("Desktop failed to provide certificates. Error from sonar desktop:\n" + errorMessage);
              } else {
               sendLegacyCertificateRequest(message);
              }
             },
             [e](...) {
-             SONAR_LOG(("Error during certificate exchange:" + e.what()).c_str());
+             log(("Error during certificate exchange:" + e.what()).c_str());
             }
           );
         });
