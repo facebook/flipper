@@ -21,6 +21,7 @@
 #include <iostream>
 #include <thread>
 #include <folly/io/async/AsyncSocketException.h>
+#include <stdexcept>
 #include "CertificateUtils.h"
 
 #ifdef __ANDROID__
@@ -96,7 +97,10 @@ class Responder : public rsocket::RSocketResponder {
 };
 
 SonarWebSocketImpl::SonarWebSocketImpl(SonarInitConfig config, std::shared_ptr<SonarState> state)
-    : deviceData_(config.deviceData), sonarState_(state), sonarEventBase_(config.callbackWorker), connectionEventBase_(config.connectionWorker) {}
+    : deviceData_(config.deviceData), sonarState_(state), sonarEventBase_(config.callbackWorker), connectionEventBase_(config.connectionWorker) {
+      CHECK_THROW(config.callbackWorker, std::invalid_argument);
+      CHECK_THROW(config.connectionWorker, std::invalid_argument);
+    }
 
 SonarWebSocketImpl::~SonarWebSocketImpl() {
   stop();
