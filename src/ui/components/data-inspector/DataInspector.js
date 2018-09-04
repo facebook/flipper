@@ -8,6 +8,7 @@
 import DataDescription from './DataDescription.js';
 import {Component} from 'react';
 import ContextMenu from '../ContextMenu.js';
+import Tooltip from '../Tooltip.js';
 import styled from '../../styled/index.js';
 import DataPreview from './DataPreview.js';
 import createPaste from '../../../utils/createPaste.js';
@@ -51,6 +52,11 @@ const ExpandControl = styled('span')({
 export const InspectorName = styled('span')({
   color: colors.grapeDark1,
 });
+
+const nameTooltipOptions = {
+  position: 'toLeft',
+  showTail: true,
+};
 
 export type DataValueExtractor = (
   value: any,
@@ -525,9 +531,12 @@ export default class DataInspector extends Component<DataInspectorProps> {
     const nameElems = [];
     if (typeof name !== 'undefined') {
       nameElems.push(
-        <InspectorName key="name" title={(tooltips && tooltips[name]) || ''}>
-          {name}
-        </InspectorName>,
+        <Tooltip
+          title={tooltips && tooltips[name]}
+          key="name"
+          options={nameTooltipOptions}>
+          <InspectorName>{name}</InspectorName>
+        </Tooltip>,
       );
       nameElems.push(<span key="sep">: </span>);
     }

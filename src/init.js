@@ -21,6 +21,7 @@ import autoMergeLevel2 from 'redux-persist/lib/stateReconciler/autoMergeLevel2';
 import reducers from './reducers/index.js';
 import dispatcher from './dispatcher/index.js';
 import {setupMenuBar} from './MenuBar.js';
+import TooltipProvider from './ui/components/TooltipProvider.js';
 const path = require('path');
 
 const reducer: typeof reducers = persistReducer(
@@ -52,11 +53,13 @@ GK.init();
 setupMenuBar();
 
 const AppFrame = () => (
-  <ContextMenuProvider>
-    <Provider store={store}>
-      <App logger={logger} bugReporter={bugReporter} />
-    </Provider>
-  </ContextMenuProvider>
+  <TooltipProvider>
+    <ContextMenuProvider>
+      <Provider store={store}>
+        <App logger={logger} bugReporter={bugReporter} />
+      </Provider>
+    </ContextMenuProvider>
+  </TooltipProvider>
 );
 
 // $FlowFixMe: this element exists!

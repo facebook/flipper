@@ -955,9 +955,9 @@ export default class Layout extends SonarPlugin<InspectorState> {
       'accessibility-focused':
         'True if this element has the focus of an accessibility service',
       'content-description':
-        'Text to label the content/functionality of this element ',
+        'Text to label the content or functionality of this element ',
       'important-for-accessibility':
-        'Marks this element as important to accessibility services, one of AUTO, YES, NO, NO_HIDE_DESCENDANTS',
+        'Marks this element as important to accessibility services; one of AUTO, YES, NO, NO_HIDE_DESCENDANTS',
       'talkback-focusable': 'True if Talkback can focus on this element',
       'talkback-focusable-reasons': 'Why Talkback can focus on this element',
       'talkback-ignored': 'True if Talkback cannot focus on this element',
