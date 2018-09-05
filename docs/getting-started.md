@@ -25,20 +25,21 @@ Once you start Flipper and launch an emulator/simulator or connect a device, you
 
 Add the following permissions to your AndroidManifest.xml. The SDK needs these to communicate with the desktop app on localhost via adb. It won't make any external internet requests.
 
-```
+```xml
 <uses-permission android:name="android.permission.INTERNET" />
 <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 ```
 
 It's recommended that you add the following activity to the manifest too, which can help diagnose integration issues and other problems:
-```
+
+```xml
 <activity android:name="com.facebook.sonar.android.diagnostics.SonarDiagnosticActivity"
         android:exported="true"/>
 ```
 
 Flipper is distributed via JCenter. Add dependencies to your `build.gradle` file.
 
-```
+```groovy
 repositories {
   jcenter()
 }
