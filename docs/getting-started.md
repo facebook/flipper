@@ -68,6 +68,23 @@ public class MyApplication extends Application {
 }
 ```
 
+### Android Snapshots
+
+Feeling adventurous? We publish Android snapshot releases directly off of `master`.
+
+You can get the latest version by adding the Maven Snapshot repository to your sources
+and pointing to the most recent `-SNAPSHOT` version.
+
+```groovy
+repositories {
+  maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+}
+
+dependencies {
+  debugImplementation 'com.facebook.flipper:flipper:0.6.19-SNAPSHOT'
+}
+```
+
 ### Setup your iOS app
 
 To integrate with an iOS app, you can use [CocoaPods](https://cocoapods.org). Add the mobile Flipper SDK and its dependencies to your `Podfile`:
@@ -120,13 +137,14 @@ and install the dependencies by running `pod install`. When you open the Xcode w
 @end
 ```
 
-<div class='warning'>
+<div class="warning">
 
 - We haven't released the dependency to CocoaPods yet, here is the [issue](https://github.com/facebook/flipper/issues/132) by which you can track.
 - If you do not use CocoaPods as a dependency management tool then currently there is no way to integrate SonarKit other than manually including all the dependencies and building it.
 - For Android, Flipper works with both emulators and physical devices connected through USB. However on iOS, we don't yet support physical devices.
 - The Flipper layout plugin isn't supported in Swift projects since they include C++ dependencies. We're working on supporting it for Swift apps. You can join the discussion on the [issues page](https://github.com/facebook/flipper/issues).
-  </div>
+
+</div>
 
 ## Ready for takeoff
 
