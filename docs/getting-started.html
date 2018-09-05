@@ -17,19 +17,19 @@
 <p><img src="/docs/assets/initial.png" alt="Logs plugin"></p>
 <h3><a class="anchor" aria-hidden="true" id="setup-your-android-app"></a><a href="#setup-your-android-app" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Setup your Android app</h3>
 <p>Add the following permissions to your AndroidManifest.xml. The SDK needs these to communicate with the desktop app on localhost via adb. It won't make any external internet requests.</p>
-<pre><code class="hljs">&lt;uses-permission android:<span class="hljs-built_in">name</span>=<span class="hljs-string">"android.permission.INTERNET"</span> /&gt;
-&lt;uses-permission android:<span class="hljs-built_in">name</span>=<span class="hljs-string">"android.permission.ACCESS_WIFI_STATE"</span> /&gt;
+<pre><code class="hljs css xml"><span class="hljs-tag">&lt;<span class="hljs-name">uses-permission</span> <span class="hljs-attr">android:name</span>=<span class="hljs-string">"android.permission.INTERNET"</span> /&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">uses-permission</span> <span class="hljs-attr">android:name</span>=<span class="hljs-string">"android.permission.ACCESS_WIFI_STATE"</span> /&gt;</span>
 </code></pre>
 <p>It's recommended that you add the following activity to the manifest too, which can help diagnose integration issues and other problems:</p>
-<pre><code class="hljs">&lt;activity android:<span class="hljs-attribute">name</span>=<span class="hljs-string">"com.facebook.sonar.android.diagnostics.SonarDiagnosticActivity"</span>
-        android:<span class="hljs-attribute">exported</span>=<span class="hljs-string">"true"</span>/&gt;
+<pre><code class="hljs css xml"><span class="hljs-tag">&lt;<span class="hljs-name">activity</span> <span class="hljs-attr">android:name</span>=<span class="hljs-string">"com.facebook.sonar.android.diagnostics.SonarDiagnosticActivity"</span>
+        <span class="hljs-attr">android:exported</span>=<span class="hljs-string">"true"</span>/&gt;</span>
 </code></pre>
 <p>Flipper is distributed via JCenter. Add dependencies to your <code>build.gradle</code> file.</p>
-<pre><code class="hljs"><span class="hljs-keyword">repositories</span> {
+<pre><code class="hljs css groovy">repositories {
   jcenter()
 }
 
-<span class="hljs-keyword">dependencies</span> {
+dependencies {
   debugImplementation <span class="hljs-string">'com.facebook.flipper:flipper:0.6.18'</span>
 }
 </code></pre>
@@ -47,6 +47,18 @@
       client.start();
     }
   }
+}
+</code></pre>
+<h3><a class="anchor" aria-hidden="true" id="android-snapshots"></a><a href="#android-snapshots" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Android Snapshots</h3>
+<p>Feeling adventurous? We publish Android snapshot releases directly off of <code>master</code>.</p>
+<p>You can get the latest version by adding the Maven Snapshot repository to your sources
+and pointing to the most recent <code>-SNAPSHOT</code> version.</p>
+<pre><code class="hljs css groovy">repositories {
+  maven { url <span class="hljs-string">'https://oss.sonatype.org/content/repositories/snapshots/'</span> }
+}
+
+dependencies {
+  debugImplementation <span class="hljs-string">'com.facebook.flipper:flipper:0.6.19-SNAPSHOT'</span>
 }
 </code></pre>
 <h3><a class="anchor" aria-hidden="true" id="setup-your-ios-app"></a><a href="#setup-your-ios-app" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Setup your iOS app</h3>
@@ -94,15 +106,14 @@ target <span class="hljs-string">'MyApp'</span> <span class="hljs-keyword">do</s
 }
 <span class="hljs-keyword">@end</span>
 </code></pre>
-<div class='warning'>
+<div class="warning">
 <ul>
 <li>We haven't released the dependency to CocoaPods yet, here is the <a href="https://github.com/facebook/flipper/issues/132">issue</a> by which you can track.</li>
 <li>If you do not use CocoaPods as a dependency management tool then currently there is no way to integrate SonarKit other than manually including all the dependencies and building it.</li>
 <li>For Android, Flipper works with both emulators and physical devices connected through USB. However on iOS, we don't yet support physical devices.</li>
-<li>The Flipper layout plugin isn't supported in Swift projects since they include C++ dependencies. We're working on supporting it for Swift apps. You can join the discussion on the <a href="https://github.com/facebook/flipper/issues">issues page</a>.
-  </div>
-</li>
+<li>The Flipper layout plugin isn't supported in Swift projects since they include C++ dependencies. We're working on supporting it for Swift apps. You can join the discussion on the <a href="https://github.com/facebook/flipper/issues">issues page</a>.</li>
 </ul>
+</div>
 <h2><a class="anchor" aria-hidden="true" id="ready-for-takeoff"></a><a href="#ready-for-takeoff" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Ready for takeoff</h2>
 <p>Finally, you need to add plugins to your Flipper client. Above we have only added the Layout Inspector plugin to get you started. See <a href="/docs/network-plugin.html">Network Plugin</a> and <a href="/docs/layout-plugin.html">Layout Inspector Plugin</a> for information on how to add them, and also enable Litho or ComponentKit support. You can check the sample apps in the <a href="https://github.com/facebook/flipper">GitHub repo</a> for examples of integrating other plugins.</p>
 </span></div></article></div><div class="docs-prevnext"><a class="docs-next button" href="understand.html">Understanding Flipper →</a></div></div></div></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/" class="nav-home"><img src="/img/mascot.png" alt="Flipper mascot" title="I&#x27;m a dolphin not a whale!" width="66" height="58"/></a><div><h5>Docs</h5><a href="/docs/getting-started.html">Getting Started</a><a href="/docs/understand.html">Understanding Flipper</a><a href="/docs/js-setup.html">Creating Plugins</a></div><div><h5>Plugins</h5><a href="/docs/logs-plugin.html">Log Viewer</a><a href="/docs/layout-plugin.html">Layout Inspector</a><a href="/docs/network-plugin.html">Network Inspector</a></div><div><h5>More</h5><a href="https://twitter.com/flipper_fb">Twitter</a><a href="https://github.com/facebook/flipper">GitHub</a><a class="github-button" href="https://github.com/facebook/flipper" data-icon="octicon-star" data-count-href="/facebook/flipper/stargazers" data-show-count="true" data-count-aria-label="# stargazers on GitHub" aria-label="Star this project on GitHub">Star</a></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2018 Facebook</section></footer></div></body></html>
