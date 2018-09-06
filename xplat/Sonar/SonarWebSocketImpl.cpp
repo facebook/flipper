@@ -291,6 +291,8 @@ void SonarWebSocketImpl::sendLegacyCertificateRequest(folly::dynamic message) {
    ->fireAndForget(rsocket::Payload(folly::toJson(message)))
    ->subscribe([this, sendingRequest]() {
      sendingRequest->complete();
+     folly::dynamic config = folly::dynamic::object();
+     contextStore_->storeConnectionConfig(config);
      client_ = nullptr;
    });
 }
