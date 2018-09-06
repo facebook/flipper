@@ -64,9 +64,13 @@ std::string ConnectionContextStore::getDeviceId() {
      desktop app.
      For backwards compatibility, when this isn't present, fall back to the
      unreliable source. */
-  std::string config = loadStringFromFile(absoluteFilePath(CONNECTION_CONFIG_FILE));
-  auto maybeDeviceId = folly::parseJson(config)["deviceId"];
-  return maybeDeviceId.isString() ? maybeDeviceId.getString() : deviceData_.deviceId;
+   try {
+     std::string config = loadStringFromFile(absoluteFilePath(CONNECTION_CONFIG_FILE));
+     auto maybeDeviceId = folly::parseJson(config)["deviceId"];
+     return maybeDeviceId.isString() ? maybeDeviceId.getString() : deviceData_.deviceId;
+   } catch (std::exception& e) {
+     return deviceData_.deviceId;
+   }
 }
 
 void ConnectionContextStore::storeConnectionConfig(folly::dynamic& config) {
