@@ -121,7 +121,7 @@ export default class Server extends EventEmitter {
     conn.connectionStatus().subscribe({
       onNext(payload) {
         if (payload.kind == 'ERROR' || payload.kind == 'CLOSED') {
-          console.debug(`Device disconnected ${client.id}`, 'connection');
+          console.debug(`Device disconnected ${client.id}`, 'server');
           server.removeConnection(client.id);
         }
       },
@@ -152,6 +152,7 @@ export default class Server extends EventEmitter {
       );
       console.warn(
         'Physical iOS device detected. This is not currently supported by sonar.',
+        'server',
       );
     }
 
@@ -165,7 +166,11 @@ export default class Server extends EventEmitter {
         try {
           rawData = JSON.parse(payload.data);
         } catch (err) {
-          console.error(`Invalid JSON: ${payload.data}`, 'clientMessage');
+          console.error(
+            `Invalid JSON: ${payload.data}`,
+            'clientMessage',
+            'server',
+          );
           return;
         }
 
@@ -190,7 +195,7 @@ export default class Server extends EventEmitter {
                 });
               })
               .catch(e => {
-                console.error(e);
+                console.error(e, 'server');
                 subscriber.onError(e);
               });
           });
@@ -209,7 +214,7 @@ export default class Server extends EventEmitter {
         try {
           rawData = JSON.parse(payload.data);
         } catch (err) {
-          console.error(`Invalid JSON: ${payload.data}`, 'clientMessage');
+          console.error(`Invalid JSON: ${payload.data}`, 'server');
           return;
         }
 
@@ -244,7 +249,7 @@ export default class Server extends EventEmitter {
     invariant(query, 'expected query');
 
     const id = `${query.app}-${query.os}-${query.device}-${query.device_id}`;
-    console.debug(`Device connected: ${id}`, 'connection');
+    console.debug(`Device connected: ${id}`, 'server');
 
     const client = new Client(id, query, conn, this.logger);
 
@@ -258,7 +263,7 @@ export default class Server extends EventEmitter {
         `Device client initialised: ${id}. Supported plugins: ${client.plugins.join(
           ', ',
         )}`,
-        'connection',
+        'server',
       );
 
       /* If a device gets disconnected without being cleaned up properly,
@@ -327,6 +332,7 @@ class ConnectionTracker {
             this.connectionProblemThreshold
           } times within ${this.timeWindowMillis / 1000}s.`,
         ),
+        'server',
       );
     }
   }
