@@ -32,6 +32,7 @@ import com.facebook.sonar.plugins.inspector.descriptors.utils.AccessibilityUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 import javax.annotation.Nullable;
 
 public class InspectorSonarPlugin implements SonarPlugin {
@@ -44,6 +45,7 @@ public class InspectorSonarPlugin implements SonarPlugin {
   private TouchOverlayView mTouchOverlay;
   private SonarConnection mConnection;
   private @Nullable List<ExtensionCommand> mExtensionCommands;
+  private boolean mShowLithoAccessibilitySettings;
 
   /** An interface for extensions to the Inspector Sonar plugin */
   public interface ExtensionCommand {
@@ -110,6 +112,7 @@ public class InspectorSonarPlugin implements SonarPlugin {
     mApplication = wrapper;
     mScriptingEnvironment = scriptingEnvironment;
     mExtensionCommands = extensions;
+    mShowLithoAccessibilitySettings = false;
   }
 
   @Override
@@ -142,9 +145,13 @@ public class InspectorSonarPlugin implements SonarPlugin {
     connection.receive("getAXRoot", mGetAXRoot);
     connection.receive("getAXNodes", mGetAXNodes);
     connection.receive("onRequestAXFocus", mOnRequestAXFocus);
+    connection.receive("shouldShowLithoAccessibilitySettings", mShouldShowLithoAccessibilitySettings);
 
     if (mExtensionCommands != null) {
       for (ExtensionCommand extensionCommand : mExtensionCommands) {
+        if (extensionCommand.command().equals("forceLithoAXRender")) {
+          mShowLithoAccessibilitySettings = true;
+        }
         connection.receive(
             extensionCommand.command(), extensionCommand.receiver(mObjectTracker, mConnection));
       }
@@ -165,6 +172,15 @@ public class InspectorSonarPlugin implements SonarPlugin {
     mDescriptorMapping.onDisconnect();
     mConnection = null;
   }
+
+  final SonarReceiver mShouldShowLithoAccessibilitySettings =
+          new MainThreadSonarReceiver(mConnection) {
+            @Override
+            public void onReceiveOnMainThread(SonarObject params, SonarResponder responder)
+                    throws Exception {
+              responder.success(new SonarObject.Builder().put("showLithoAccessibilitySettings", mShowLithoAccessibilitySettings).build());
+            }
+          };
 
   final SonarReceiver mGetRoot =
       new MainThreadSonarReceiver(mConnection) {

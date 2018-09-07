@@ -23,6 +23,8 @@ import {
   SearchIcon,
   SonarSidebar,
   VerticalRule,
+  Popover,
+  ToggleButton,
 } from 'sonar';
 
 import type {TrackType} from '../../fb-stubs/Logger.js';
@@ -45,7 +47,11 @@ export type InspectorState = {|
   AXroot: ?ElementID,
   AXelements: {[key: ElementID]: Element},
   inAXMode: boolean,
+  forceLithoAXRender: boolean,
   AXtoNonAXMapping: {[key: ElementID]: ElementID},
+  accessibilitySettingsOpen: boolean,
+  showLithoAccessibilitySettings: boolean,
+  //
   isAlignmentMode: boolean,
   logCounter: number,
 |};
@@ -121,6 +127,18 @@ const SearchIconContainer = styled('div')({
   marginRight: 9,
   marginTop: -3,
   marginLeft: 4,
+  position: 'relative', // for settings popover positioning
+});
+
+const SettingsItem = styled('div')({
+  display: 'flex',
+  flexDirection: 'row',
+  alignItems: 'center',
+});
+
+const SettingsLabel = styled('div')({
+  marginLeft: 5,
+  marginRight: 15,
 });
 
 class LayoutSearchInput extends Component<
@@ -183,12 +201,16 @@ export default class Layout extends SonarPlugin<InspectorState> {
     outstandingSearchQuery: null,
     // properties for ax mode
     inAXMode: false,
+    forceLithoAXRender: true,
     AXelements: {},
     AXinitialised: false,
     AXroot: null,
     AXselected: null,
     AXfocused: null,
+    accessibilitySettingsOpen: false,
     AXtoNonAXMapping: {},
+    showLithoAccessibilitySettings: false,
+    //
     isAlignmentMode: false,
     logCounter: 0,
   };
@@ -326,6 +348,20 @@ export default class Layout extends SonarPlugin<InspectorState> {
 
     SetAXMode(state: InspectorState, {inAXMode}: {inAXMode: boolean}) {
       return {inAXMode};
+    },
+
+    SetLithoRenderMode(
+      state: InspectorState,
+      {forceLithoAXRender}: {forceLithoAXRender: boolean},
+    ) {
+      return {forceLithoAXRender};
+    },
+
+    SetAccessibilitySettingsOpen(
+      state: InspectorState,
+      {accessibilitySettingsOpen}: {accessibilitySettingsOpen: boolean},
+    ) {
+      return {accessibilitySettingsOpen};
     },
   };
 
@@ -509,6 +545,15 @@ export default class Layout extends SonarPlugin<InspectorState> {
   }
 
   initAX() {
+    // TODO: uncomment once Litho open source updates
+    // this.client
+    //   .call('shouldShowLithoAccessibilitySettings')
+    //   .then((showLithoAccessibilitySettings: boolean) => {
+    //     this.setState({
+    //       showLithoAccessibilitySettings,
+    //     });
+    //   });
+
     performance.mark('InitAXRoot');
     this.client.call('getAXRoot').then((element: Element) => {
       this.dispatchAction({elements: [element], type: 'UpdateAXElements'});
@@ -835,8 +880,48 @@ export default class Layout extends SonarPlugin<InspectorState> {
 
   onToggleAccessibility = () => {
     const inAXMode = !this.state.inAXMode;
+    const {
+      forceLithoAXRender,
+      AXroot,
+      showLithoAccessibilitySettings,
+    } = this.state;
     this.props.logger.track('usage', 'accessibility:modeToggled', {inAXMode});
     this.dispatchAction({inAXMode, type: 'SetAXMode'});
+
+    // only force render if litho accessibility is included in app
+    if (showLithoAccessibilitySettings) {
+      this.client.send('forceLithoAXRender', {
+        forceLithoAXRender: inAXMode && forceLithoAXRender,
+        applicationId: AXroot,
+      });
+    }
+  };
+
+  onToggleForceLithoAXRender = () => {
+    // only force render if litho accessibility is included in app
+    if (this.state.showLithoAccessibilitySettings) {
+      const forceLithoAXRender = !this.state.forceLithoAXRender;
+      const applicationId = this.state.AXroot;
+      this.dispatchAction({forceLithoAXRender, type: 'SetLithoRenderMode'});
+      this.client.send('forceLithoAXRender', {
+        forceLithoAXRender: forceLithoAXRender,
+        applicationId,
+      });
+    }
+  };
+
+  onOpenAccessibilitySettings = () => {
+    this.dispatchAction({
+      accessibilitySettingsOpen: true,
+      type: 'SetAccessibilitySettingsOpen',
+    });
+  };
+
+  onCloseAccessibilitySettings = () => {
+    this.dispatchAction({
+      accessibilitySettingsOpen: false,
+      type: 'SetAccessibilitySettingsOpen',
+    });
   };
 
   onToggleAlignment = () => {
@@ -998,6 +1083,22 @@ export default class Layout extends SonarPlugin<InspectorState> {
     }
   };
 
+  getAccessibilitySettingsPopover(forceLithoAXRender: boolean) {
+    return (
+      <Popover
+        onDismiss={this.onCloseAccessibilitySettings}
+        forceOpts={{skewLeft: true, minWidth: 280}}>
+        <SettingsItem>
+          <ToggleButton
+            onClick={this.onToggleForceLithoAXRender}
+            toggled={forceLithoAXRender}
+          />
+          <SettingsLabel>Force Litho Accessibility Rendering</SettingsLabel>
+        </SettingsItem>
+      </Popover>
+    );
+  }
+
   render() {
     const {
       initialised,
@@ -1011,8 +1112,11 @@ export default class Layout extends SonarPlugin<InspectorState> {
       AXelements,
       isSearchActive,
       inAXMode,
+      forceLithoAXRender,
       outstandingSearchQuery,
       isAlignmentMode,
+      accessibilitySettingsOpen,
+      showLithoAccessibilitySettings,
     } = this.state;
 
     return (
@@ -1074,6 +1178,24 @@ export default class Layout extends SonarPlugin<InspectorState> {
             <LayoutSearchInput onSubmit={this.search.bind(this)} />
             {outstandingSearchQuery && <LoadingSpinner size={16} />}
           </SearchBox>
+          {inAXMode &&
+            showLithoAccessibilitySettings && (
+              <SearchIconContainer
+                onClick={this.onOpenAccessibilitySettings}
+                role="button">
+                <Glyph
+                  name="settings"
+                  size={16}
+                  color={
+                    accessibilitySettingsOpen
+                      ? colors.macOSTitleBarIconSelected
+                      : colors.macOSTitleBarIconActive
+                  }
+                />
+                {accessibilitySettingsOpen &&
+                  this.getAccessibilitySettingsPopover(forceLithoAXRender)}
+              </SearchIconContainer>
+            )}
         </Toolbar>
         <FlexRow fill={true}>
           {initialised ? (
