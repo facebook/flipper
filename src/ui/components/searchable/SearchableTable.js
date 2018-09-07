@@ -92,7 +92,6 @@ class SearchableManagedTable extends PureComponent<Props, State> {
     } = this.props;
 
     return (
-      // $FlowFixMe
       <ManagedTable
         {...props}
         filter={this.state.filterRows}

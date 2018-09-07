@@ -28,7 +28,6 @@ import {
 import type {TrackType} from '../../fb-stubs/Logger.js';
 import SidebarExtensions from '../../fb-stubs/LayoutInspectorSidebarExtensions.js';
 
-// $FlowFixMe
 import debounce from 'lodash.debounce';
 
 export type InspectorState = {|
