@@ -47,7 +47,7 @@ if (fs.existsSync(flipperDir)) {
   // move .sonar to .flipper
   fs.renameSync(sonarDir, flipperDir);
 } else {
-  fs.mkdirSync(sonarDir);
+  fs.mkdirSync(flipperDir);
 }
 
 const configPath = path.join(flipperDir, 'config.json');
