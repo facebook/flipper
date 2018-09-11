@@ -47,7 +47,6 @@ using WrapperPlugin = facebook::sonar::SonarCppWrapperPlugin;
     UIDevice *device = [UIDevice currentDevice];
     NSString *deviceName = [device name];
     NSString *appName = [[NSBundle mainBundle] objectForInfoDictionaryKey:(NSString *)kCFBundleNameKey];
-    NSString *deviceId = [[device identifierForVendor]UUIDString];
     NSString *appId = appName;
     NSString *privateAppDirectory = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES)[0];
 
@@ -67,7 +66,7 @@ using WrapperPlugin = facebook::sonar::SonarCppWrapperPlugin;
         "localhost",
         "iOS",
         [deviceName UTF8String],
-        [deviceId UTF8String],
+        "unknown",
         [appName UTF8String],
         [appId UTF8String],
         [privateAppDirectory UTF8String],
