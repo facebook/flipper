@@ -5,17 +5,45 @@
             nav.classList.toggle('docsSliderActive');
           };
         </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><h1>Layout Inspector</h1></header><article><div><span><p>The Layout Inspector in Flipper is useful for a ton of different debugging scenarios. First of all, you can inspect what views the hierarchy is made up of as well as what properties each view has. This is incredibly useful when debugging issues with your product.</p>
-<p>The Layout tab supports <a href="https://fblitho.com">Litho</a> and <a href="https://componentkit.org">ComponentKit</a> components as well! We integrate with these frameworks to present components in the hierarchy just as if they were native views. We show you all the layout properties, props, and state of the components. The layout inspector is further extensible to support other UI frameworks.</p>
-<p>If you hover over a view or component in Flipper we will highlight the corresponding item in your app! This is perfect for debugging the bounds of your views and making sure you have the correct visual padding.</p>
+<p>The Layout tab supports <a href="https://fblitho.com">Litho</a> and <a href="https://componentkit.org">ComponentKit</a> components as well. We integrate with these frameworks to present components in the hierarchy just as if they were native views. We show you all the layout properties, props, and state of the components. The layout inspector is further extensible to support other UI frameworks.</p>
+<p>If you hover over a view or component in Flipper we will highlight the corresponding item in your app. This is perfect for debugging the bounds of your views and making sure you have the correct visual padding.</p>
 <p><img src="/docs/assets/layout.png" alt="Layout plugin"></p>
 <h2><a class="anchor" aria-hidden="true" id="setup"></a><a href="#setup" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Setup</h2>
 <p>To use the layout inspector plugin, you need to add the plugin to your Flipper client instance.</p>
 <h3><a class="anchor" aria-hidden="true" id="android"></a><a href="#android" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Android</h3>
+<p><strong>Standard Android View Only</strong></p>
 <pre><code class="hljs css java"><span class="hljs-keyword">import</span> com.facebook.sonar.plugins.inspector.DescriptorMapping;
 <span class="hljs-keyword">import</span> com.facebook.sonar.plugins.inspector.InspectorSonarPlugin;
 
 <span class="hljs-keyword">final</span> DescriptorMapping descriptorMapping = DescriptorMapping.withDefaults();
 client.addPlugin(<span class="hljs-keyword">new</span> InspectorSonarPlugin(mApplicationContext, descriptorMapping));
+</code></pre>
+<p><strong>With Litho Support</strong></p>
+<p>If you want to enable Litho support in the layout inspector, you need to augment
+the descriptor with Litho-specific settings and add some addition dependencies.</p>
+<pre><code class="hljs css java"><span class="hljs-keyword">import</span> com.facebook.litho.config.ComponentsConfiguration;
+<span class="hljs-keyword">import</span> com.facebook.sonar.plugins.inspector.DescriptorMapping;
+<span class="hljs-keyword">import</span> com.facebook.sonar.plugins.inspector.InspectorSonarPlugin;
+<span class="hljs-keyword">import</span> com.facebook.sonar.plugins.litho.LithoSonarDescriptors;
+
+<span class="hljs-comment">// Instead of hard-coding this setting, it's a good practice to tie</span>
+<span class="hljs-comment">// this to a BuildConfig flag, that you only enable for debug builds</span>
+<span class="hljs-comment">// of your application.</span>
+ComponentsConfiguration.isDebugModeEnabled = <span class="hljs-keyword">true</span>;
+
+<span class="hljs-keyword">final</span> DescriptorMapping descriptorMapping = DescriptorMapping.withDefaults();
+<span class="hljs-comment">// This adds Litho capabilities to the layout inspector.</span>
+LithoSonarDescriptors.add(descriptorMapping);
+
+client.addPlugin(<span class="hljs-keyword">new</span> InspectorSonarPlugin(mApplicationContext, descriptorMapping));
+</code></pre>
+<p>You also need to compile in the <code>litho-annotations</code> package, as Flipper reflects
+on them at runtime. So ensure to not just include them as <code>compileOnly</code> in your
+gradle configuration:</p>
+<pre><code class="hljs css groovy">dependencies {
+  debugImplementation <span class="hljs-string">'com.facebook.litho:litho-annotations:0.19.0'</span>
+  <span class="hljs-comment">// ...</span>
+}
 </code></pre>
 <h3><a class="anchor" aria-hidden="true" id="ios"></a><a href="#ios" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>iOS</h3>
 <pre><code class="hljs css objective-c"><span class="hljs-meta">#import <span class="hljs-meta-string">&lt;SonarKitLayoutPlugin/SonarKitLayoutPlugin.h&gt;</span></span>
@@ -25,7 +53,7 @@ client.addPlugin(<span class="hljs-keyword">new</span> InspectorSonarPlugin(mApp
 [client addPlugin:[[SonarKitLayoutPlugin alloc] initWithRootNode:context.application withDescriptorMapper:mapper]]
 </code></pre>
 <h2><a class="anchor" aria-hidden="true" id="quick-edits"></a><a href="#quick-edits" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Quick edits</h2>
-<p>The Layout Inspector not only allows you to view the hierarchy and inspect each item's properties, but it also allows you to edit things such as layout attributes, background colors, props, and state. Most things actually! This allows you to quickly tweak paddings, margins, and colors until you are happy with them, all without re-compiling. This can save you many hours implementing a new design.</p>
+<p>The Layout Inspector not only allows you to view the hierarchy and inspect each item's properties, but it also allows you to edit things such as layout attributes, background colors, props, and state. Most things actually. This allows you to quickly tweak paddings, margins, and colors until you are happy with them, all without re-compiling. This can save you many hours implementing a new design.</p>
 <h2><a class="anchor" aria-hidden="true" id="target-mode"></a><a href="#target-mode" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Target mode</h2>
 <p>Enable target mode by clicking on the crosshairs icon. Now, you can touch any view on the device and Layout Inspector will jump to the correct position within your layout hierarchy.</p>
 <p>Tip: Target mode also works with Talkback running.</p>
