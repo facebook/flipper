@@ -27,7 +27,7 @@ dependencies {
     // Litho
     implementation deps.lithoCore
     implementation deps.lithoWidget
-    compileOnly deps.lithoAnnotations
+    implementation deps.lithoAnnotations
     annotationProcessor deps.lithoProcessor
 
     // Third-party

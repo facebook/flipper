@@ -4,6 +4,7 @@ package com.facebook.flipper.sample;
 
 import android.app.Application;
 import android.content.Context;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.soloader.SoLoader;
 import com.facebook.sonar.android.AndroidSonarClient;
 import com.facebook.sonar.core.SonarClient;
@@ -39,6 +40,9 @@ public class FlipperSampleApplication extends Application {
     .writeTimeout(10, TimeUnit.MINUTES)
     .build();
 
+    // Normally, you would want to make this dependent on a BuildConfig flag, but
+    // for this demo application we can safely assume that you always want to debug.
+    ComponentsConfiguration.isDebugModeEnabled = true;
     LithoSonarDescriptors.add(descriptorMapping);
     client.addPlugin(new InspectorSonarPlugin(this, descriptorMapping));
     client.addPlugin(networkPlugin);
