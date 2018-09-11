@@ -5,9 +5,9 @@ title: Layout Inspector
 
 The Layout Inspector in Flipper is useful for a ton of different debugging scenarios. First of all, you can inspect what views the hierarchy is made up of as well as what properties each view has. This is incredibly useful when debugging issues with your product.
 
-The Layout tab supports [Litho](https://fblitho.com) and [ComponentKit](https://componentkit.org) components as well! We integrate with these frameworks to present components in the hierarchy just as if they were native views. We show you all the layout properties, props, and state of the components. The layout inspector is further extensible to support other UI frameworks.
+The Layout tab supports [Litho](https://fblitho.com) and [ComponentKit](https://componentkit.org) components as well. We integrate with these frameworks to present components in the hierarchy just as if they were native views. We show you all the layout properties, props, and state of the components. The layout inspector is further extensible to support other UI frameworks.
 
-If you hover over a view or component in Flipper we will highlight the corresponding item in your app! This is perfect for debugging the bounds of your views and making sure you have the correct visual padding.
+If you hover over a view or component in Flipper we will highlight the corresponding item in your app. This is perfect for debugging the bounds of your views and making sure you have the correct visual padding.
 
 ![Layout plugin](/docs/assets/layout.png)
 
@@ -17,12 +17,48 @@ To use the layout inspector plugin, you need to add the plugin to your Flipper c
 
 ### Android
 
+**Standard Android View Only**
+
 ```java
 import com.facebook.sonar.plugins.inspector.DescriptorMapping;
 import com.facebook.sonar.plugins.inspector.InspectorSonarPlugin;
 
 final DescriptorMapping descriptorMapping = DescriptorMapping.withDefaults();
 client.addPlugin(new InspectorSonarPlugin(mApplicationContext, descriptorMapping));
+```
+
+**With Litho Support**
+
+If you want to enable Litho support in the layout inspector, you need to augment
+the descriptor with Litho-specific settings and add some addition dependencies.
+
+```java
+import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.sonar.plugins.inspector.DescriptorMapping;
+import com.facebook.sonar.plugins.inspector.InspectorSonarPlugin;
+import com.facebook.sonar.plugins.litho.LithoSonarDescriptors;
+
+// Instead of hard-coding this setting, it's a good practice to tie
+// this to a BuildConfig flag, that you only enable for debug builds
+// of your application.
+ComponentsConfiguration.isDebugModeEnabled = true;
+
+final DescriptorMapping descriptorMapping = DescriptorMapping.withDefaults();
+// This adds Litho capabilities to the layout inspector.
+LithoSonarDescriptors.add(descriptorMapping);
+
+client.addPlugin(new InspectorSonarPlugin(mApplicationContext, descriptorMapping));
+```
+
+You also need to compile in the `litho-annotations` package, as Flipper reflects
+on them at runtime. So ensure to not just include them as `compileOnly` in your
+gradle configuration:
+
+```groovy
+dependencies {
+  debugImplementation 'com.facebook.litho:litho-annotations:0.19.0'
+  // ...
+}
 ```
 
 ### iOS
@@ -37,7 +73,7 @@ SKDescriptorMapper *mapper = [[SKDescriptorMapper alloc] initWithDefaults];
 
 ## Quick edits
 
-The Layout Inspector not only allows you to view the hierarchy and inspect each item's properties, but it also allows you to edit things such as layout attributes, background colors, props, and state. Most things actually! This allows you to quickly tweak paddings, margins, and colors until you are happy with them, all without re-compiling. This can save you many hours implementing a new design.
+The Layout Inspector not only allows you to view the hierarchy and inspect each item's properties, but it also allows you to edit things such as layout attributes, background colors, props, and state. Most things actually. This allows you to quickly tweak paddings, margins, and colors until you are happy with them, all without re-compiling. This can save you many hours implementing a new design.
 
 ## Target mode
 
