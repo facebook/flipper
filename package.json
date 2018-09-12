@@ -1,7 +1,7 @@
 {
   "name": "sonar",
   "private": true,
-  "version": "0.6.6",
+  "version": "0.7.0",
   "versionDate": "2018-4-12",
   "description": "Mobile development tool",
   "productName": "Flipper",

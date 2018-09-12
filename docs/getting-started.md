@@ -45,7 +45,7 @@ repositories {
 }
 
 dependencies {
-  debugImplementation 'com.facebook.flipper:flipper:0.6.18'
+  debugImplementation 'com.facebook.flipper:flipper:0.7.0'
 }
 ```
 
@@ -81,7 +81,7 @@ repositories {
 }
 
 dependencies {
-  debugImplementation 'com.facebook.flipper:flipper:0.6.19-SNAPSHOT'
+  debugImplementation 'com.facebook.flipper:flipper:0.7.0'
 }
 ```
 
@@ -94,7 +94,7 @@ project 'MyApp.xcodeproj'
 source 'https://github.com/facebook/Sonar.git'
 source 'https://github.com/CocoaPods/Specs'
 swift_version = "4.1"
-sonarkit_version = '0.6.16'
+sonarkit_version = '0.7.0'
 
 target 'MyApp' do
 
