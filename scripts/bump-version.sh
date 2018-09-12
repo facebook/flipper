@@ -6,14 +6,17 @@ case "$(uname)" in
   Darwin*) darwin=true ;;
 esac
 
-if $darwin; then
-  sedi="sed -i ''"
-else
-  sedi="sed -i"
+if ! jq --version > /dev/null; then
+   echo -e "jq is not installed! Should the script install it for you? (y/n) \\c"
+   read -r REPLY
+   if [ "$REPLY" = "y" ]; then
+      brew install jq
+    else
+      exit 1
+   fi
 fi
 
-echo "Checking for any uncommited changes..."
-
+echo "Checking for any uncommitted changes..."
 CHANGES=$(hg st)
 echo "$CHANGES"
 
@@ -42,12 +45,19 @@ echo "Updating version $VERSION in podspecs, podfiles and in getting started doc
 
 # Update Podspec files and podfiles with correct version
 echo "Updating $SONARKIT_PODSPEC_PATH"
-$sedi "s/${SONARKIT_VERSION_TAG} = ${OLD_VERSION}/${SONARKIT_VERSION_TAG} = '${VERSION}'/" "$SONARKIT_PODSPEC_PATH"
+if $darwin; then
+sed -i '' "s/${SONARKIT_VERSION_TAG} = ${OLD_VERSION}/${SONARKIT_VERSION_TAG} = '${VERSION}'/" "$SONARKIT_PODSPEC_PATH"
 echo "Updating $SONAR_PODSPEC_PATH"
-$sedi "s/${SONARKIT_VERSION_TAG} = ${OLD_VERSION}/${SONARKIT_VERSION_TAG} = '${VERSION}'/" "$SONAR_PODSPEC_PATH"
+sed -i '' "s/${SONARKIT_VERSION_TAG} = ${OLD_VERSION}/${SONARKIT_VERSION_TAG} = '${VERSION}'/" "$SONAR_PODSPEC_PATH"
 echo "Updating $SONAR_GETTING_STARTED_DOC"
-$sedi "s/${SONARKIT_VERSION_TAG} = ${OLD_VERSION}/${SONARKIT_VERSION_TAG} = '${VERSION}'/" "$SONAR_GETTING_STARTED_DOC"
-
+sed -i '' "s/${SONARKIT_VERSION_TAG} = ${OLD_VERSION}/${SONARKIT_VERSION_TAG} = '${VERSION}'/" "$SONAR_GETTING_STARTED_DOC"
+else
+  sed -i "s/${SONARKIT_VERSION_TAG} = ${OLD_VERSION}/${SONARKIT_VERSION_TAG} = '${VERSION}'/" "$SONARKIT_PODSPEC_PATH"
+  echo "Updating $SONAR_PODSPEC_PATH"
+  sed -i "s/${SONARKIT_VERSION_TAG} = ${OLD_VERSION}/${SONARKIT_VERSION_TAG} = '${VERSION}'/" "$SONAR_PODSPEC_PATH"
+  echo "Updating $SONAR_GETTING_STARTED_DOC"
+  sed -i "s/${SONARKIT_VERSION_TAG} = ${OLD_VERSION}/${SONARKIT_VERSION_TAG} = '${VERSION}'/" "$SONAR_GETTING_STARTED_DOC"
+fi
 # Copy Podfiles
 mkdir "$SPECS_DIR/SonarKit/$VERSION"  # New Specs dir for SonarKit podspec
 mkdir "$SPECS_DIR/Sonar/$VERSION"     # New Specs dir for Sonar podspec
