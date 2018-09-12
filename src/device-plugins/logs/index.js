@@ -15,6 +15,7 @@ import type {Counter} from './LogWatcher.js';
 import type {DeviceLogEntry} from '../../devices/BaseDevice.js';
 import type {Props as PluginProps} from '../../plugin';
 
+import * as React from 'react';
 import {
   Text,
   ManagedTable,
@@ -24,9 +25,10 @@ import {
   FlexColumn,
   Glyph,
   SonarSidebar,
+  SonarDevicePlugin,
+  SearchableTable,
   styled,
 } from 'sonar';
-import {SonarDevicePlugin, SearchableTable} from 'sonar';
 import textContent from '../../utils/textContent.js';
 import createPaste from '../../utils/createPaste.js';
 import LogWatcher from './LogWatcher';

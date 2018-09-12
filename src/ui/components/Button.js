@@ -5,13 +5,14 @@
  * @format
  */
 
+import * as React from 'react';
 import Glyph from './Glyph.js';
-import styled from '../styled/index.js';
-import {findDOMNode} from 'react-dom';
 import PropTypes from 'prop-types';
+import electron from 'electron';
+import styled from '../styled/index.js';
 import {colors} from './colors.js';
 import {connect} from 'react-redux';
-import electron from 'electron';
+import {findDOMNode} from 'react-dom';
 import {keyframes} from 'react-emotion';
 
 const borderColor = props => {

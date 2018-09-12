@@ -5,6 +5,7 @@
  * @format
  */
 
+import * as React from 'react';
 import FlexColumn from './FlexColumn.js';
 import PropTypes from 'prop-types';
 
