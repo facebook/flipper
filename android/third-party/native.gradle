@@ -4,7 +4,7 @@ import org.apache.tools.ant.filters.ReplaceTokens
 // Increment this when making changes to any of the native
 // dependencies.
 // !!!
-final def CACHE_REVISION = 1
+final def CACHE_REVISION = 2
 
 final def externalDir = new File("$projectDir/external")
 final def downloadsDir = new File("$buildDir/downloads")
@@ -202,7 +202,7 @@ task finalizeOpenSSL(dependsOn: [configureOpenSSL], type: Exec) {
 }
 
 task downloadRSocket(dependsOn: [], type: Download) {
-    src 'https://github.com/priteshrnandgaonkar/rsocket-cpp/archive/0.10.2.tar.gz'
+    src 'https://github.com/priteshrnandgaonkar/rsocket-cpp/archive/0.10.3.tar.gz'
     onlyIfNewer true
     overwrite false
     dest new File(downloadsDir, 'rsocket-' + getDownloadFileName(src))
@@ -211,7 +211,7 @@ task downloadRSocket(dependsOn: [], type: Download) {
 task prepareRSocket(dependsOn: [downloadRSocket], type: Copy) {
     from tarTree(downloadRSocket.dest)
     from './overrides/RSocket/'
-    include 'rsocket-cpp-0.10.2/**/*', 'build.gradle', 'ApplicationManifest.xml', 'CMakeLists.txt'
+    include 'rsocket-cpp-0.10.3/**/*', 'build.gradle', 'ApplicationManifest.xml', 'CMakeLists.txt'
     includeEmptyDirs = false
     into "$externalDir/RSocket"
 }
