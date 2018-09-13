@@ -14,9 +14,10 @@ export {SonarBasePlugin, SonarPlugin, SonarDevicePlugin} from './plugin.js';
 export {createTablePlugin} from './createTablePlugin.js';
 export {default as SonarSidebar} from './chrome/SonarSidebar.js';
 
-export * from './init.js';
-export {default} from './init.js';
-
 export {default as AndroidDevice} from './devices/AndroidDevice.js';
 export {default as Device} from './devices/BaseDevice.js';
 export {default as IOSDevice} from './devices/IOSDevice.js';
+
+import init from './init.js';
+
+init();
