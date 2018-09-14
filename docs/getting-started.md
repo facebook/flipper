@@ -149,3 +149,7 @@ and install the dependencies by running `pod install`. When you open the Xcode w
 ## Ready for takeoff
 
 Finally, you need to add plugins to your Flipper client. Above we have only added the Layout Inspector plugin to get you started. See [Network Plugin](network-plugin.md) and [Layout Inspector Plugin](layout-plugin.md) for information on how to add them, and also enable Litho or ComponentKit support. You can check the sample apps in the [GitHub repo](https://github.com/facebook/flipper) for examples of integrating other plugins.
+
+## Having trouble?
+
+See the [troubleshooting page](troubleshooting.html) for help with known problems.

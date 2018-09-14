@@ -1,6 +1,6 @@
 {
   "docs": {
-    "Using Flipper": ["getting-started", "understand", "stetho"],
+    "Using Flipper": ["getting-started", "understand", "stetho", "troubleshooting"],
     "Built-in Plugins": [
       "logs-plugin",
       "layout-plugin",
