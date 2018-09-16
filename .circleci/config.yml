@@ -11,8 +11,22 @@ jobs:
             ./gradlew :sample:assembleDebug
             scripts/publish-android-snapshot.sh
 
+  release:
+    docker:
+      - image: circleci/android:api-28-ndk-r17b
+    steps:
+      - checkout
+      - run:
+          name: build and deploy
+          command: scripts/publish-android-release.sh
+
 workflows:
   version: 2
   build:
     jobs:
       - build
+      - release
+        filters:
+          tags:
+            - only: /^v.*/
+
