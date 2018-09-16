@@ -25,7 +25,7 @@ workflows:
   build:
     jobs:
       - build
-      - release
+      - release:
           filters:
             tags:
               - only: /^v.*/
