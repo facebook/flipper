@@ -30,7 +30,7 @@ workflows:
     jobs:
       - release
           filters:
-            branches:
-              - only: master
             tags:
               - only: /^v.*/
+            branches:
+              ignore: /.*/
