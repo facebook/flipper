@@ -90,12 +90,12 @@ class JFlipperArray : public jni::JavaClass<JFlipperArray> {
   }
 };
 
-class JSonarResponder : public jni::JavaClass<JSonarResponder> {
+class JFlipperResponder : public jni::JavaClass<JFlipperResponder> {
  public:
   constexpr static auto kJavaDescriptor = "Lcom/facebook/sonar/core/SonarResponder;";
 };
 
-class JSonarResponderImpl : public jni::HybridClass<JSonarResponderImpl, JSonarResponder> {
+class JSonarResponderImpl : public jni::HybridClass<JSonarResponderImpl, JFlipperResponder> {
  public:
   constexpr static auto kJavaDescriptor = "Lcom/facebook/sonar/android/SonarResponderImpl;";
 
@@ -131,7 +131,7 @@ class JSonarReceiver : public jni::JavaClass<JSonarReceiver> {
   constexpr static auto kJavaDescriptor = "Lcom/facebook/sonar/core/SonarReceiver;";
 
   void receive(const folly::dynamic params, std::shared_ptr<SonarResponder> responder) const {
-    static const auto method = javaClassStatic()->getMethod<void(jni::alias_ref<JFlipperObject::javaobject>, jni::alias_ref<JSonarResponder::javaobject>)>("onReceive");
+    static const auto method = javaClassStatic()->getMethod<void(jni::alias_ref<JFlipperObject::javaobject>, jni::alias_ref<JFlipperResponder::javaobject>)>("onReceive");
     method(self(), JFlipperObject::create(std::move(params)), JSonarResponderImpl::newObjectCxxArgs(responder));
   }
 };
