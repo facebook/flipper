@@ -27,12 +27,10 @@ workflows:
       - build
 
   release:
-    triggers:
-      - schedule:
+    jobs:
+      - release
           filters:
             branches:
               - only: master
             tags:
               - only: /^v.*/
-    jobs:
-      - release
