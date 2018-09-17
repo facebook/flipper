@@ -200,7 +200,7 @@ class JFlipperPlugin : public jni::JavaClass<JFlipperPlugin> {
   }
 };
 
-class JSonarStateUpdateListener : public jni::JavaClass<JSonarStateUpdateListener> {
+class JFlipperStateUpdateListener : public jni::JavaClass<JFlipperStateUpdateListener> {
  public:
   constexpr static auto  kJavaDescriptor = "Lcom/facebook/sonar/core/SonarStateUpdateListener;";
 
@@ -224,11 +224,11 @@ class JSonarStateUpdateListener : public jni::JavaClass<JSonarStateUpdateListene
 
 class AndroidSonarStateUpdateListener : public SonarStateUpdateListener {
  public:
-  AndroidSonarStateUpdateListener(jni::alias_ref<JSonarStateUpdateListener> stateListener);
+  AndroidSonarStateUpdateListener(jni::alias_ref<JFlipperStateUpdateListener> stateListener);
   void onUpdate();
 
   private:
-   jni::global_ref<JSonarStateUpdateListener> jStateListener;
+   jni::global_ref<JFlipperStateUpdateListener> jStateListener;
 };
 
 class JSonarPluginWrapper : public SonarPlugin {
@@ -308,7 +308,7 @@ class JSonarClient : public jni::HybridClass<JSonarClient> {
     client->removePlugin(client->getPlugin(plugin->identifier()));
   }
 
-  void subscribeForUpdates(jni::alias_ref<JSonarStateUpdateListener> stateListener) {
+  void subscribeForUpdates(jni::alias_ref<JFlipperStateUpdateListener> stateListener) {
     auto client = SonarClient::instance();
     mStateListener = std::make_shared<AndroidSonarStateUpdateListener>(stateListener);
     client->setStateListener(mStateListener);
@@ -393,7 +393,7 @@ jint JNI_OnLoad(JavaVM* vm, void*) {
   });
 }
 
-AndroidSonarStateUpdateListener::AndroidSonarStateUpdateListener(jni::alias_ref<JSonarStateUpdateListener> stateListener) {
+AndroidSonarStateUpdateListener::AndroidSonarStateUpdateListener(jni::alias_ref<JFlipperStateUpdateListener> stateListener) {
   jStateListener = jni::make_global(stateListener);
 }
 
