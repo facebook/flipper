@@ -85,6 +85,10 @@
             openError('Script failure. Check Chrome console for more info.');
           };
 
+          script.onload = () => {
+            global.Sonar.init();
+          };
+
           document.body.appendChild(script);
         }
 
