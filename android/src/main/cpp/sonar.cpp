@@ -231,7 +231,7 @@ class AndroidFlipperStateUpdateListener : public SonarStateUpdateListener {
    jni::global_ref<JFlipperStateUpdateListener> jStateListener;
 };
 
-class JSonarPluginWrapper : public SonarPlugin {
+class JFlipperPluginWrapper : public SonarPlugin {
  public:
   jni::global_ref<JFlipperPlugin> jplugin;
 
@@ -247,7 +247,7 @@ class JSonarPluginWrapper : public SonarPlugin {
     jplugin->didDisconnect();
   }
 
-  JSonarPluginWrapper(jni::global_ref<JFlipperPlugin> plugin): jplugin(plugin) {}
+  JFlipperPluginWrapper(jni::global_ref<JFlipperPlugin> plugin): jplugin(plugin) {}
 };
 
 struct JStateSummary : public jni::JavaClass<JStateSummary> {
@@ -299,7 +299,7 @@ class JSonarClient : public jni::HybridClass<JSonarClient> {
   }
 
   void addPlugin(jni::alias_ref<JFlipperPlugin> plugin) {
-    auto wrapper = std::make_shared<JSonarPluginWrapper>(make_global(plugin));
+    auto wrapper = std::make_shared<JFlipperPluginWrapper>(make_global(plugin));
     SonarClient::instance()->addPlugin(wrapper);
   }
 
@@ -342,7 +342,7 @@ class JSonarClient : public jni::HybridClass<JSonarClient> {
   jni::alias_ref<JFlipperPlugin> getPlugin(const std::string& identifier) {
     auto plugin = SonarClient::instance()->getPlugin(identifier);
     if (plugin) {
-      auto wrapper = std::static_pointer_cast<JSonarPluginWrapper>(plugin);
+      auto wrapper = std::static_pointer_cast<JFlipperPluginWrapper>(plugin);
       return wrapper->jplugin;
     } else {
       return nullptr;
