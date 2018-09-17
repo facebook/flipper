@@ -12,7 +12,7 @@
 #import <SonarKit/CppBridge/SonarCppWrapperPlugin.h>
 #import <SonarKit/SonarPlugin.h>
 
-using facebook::sonar::SonarCppWrapperPlugin;
+using facebook::flipper::SonarCppWrapperPlugin;
 
 @interface DummyPlugin : NSObject <SonarPlugin>
 @end

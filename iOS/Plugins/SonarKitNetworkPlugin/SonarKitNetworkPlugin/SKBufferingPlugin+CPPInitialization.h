@@ -21,8 +21,8 @@ struct CachedEvent {
 
 @interface SKBufferingPlugin(CPPInitialization)
 
-- (instancetype)initWithVectorEventSize:(NSUInteger)size connectionAccessQueue:(std::shared_ptr<facebook::sonar::DispatchQueue>)connectionAccessQueue;
-- (instancetype)initWithDispatchQueue:(std::shared_ptr<facebook::sonar::DispatchQueue>)queue;
+- (instancetype)initWithVectorEventSize:(NSUInteger)size connectionAccessQueue:(std::shared_ptr<facebook::flipper::DispatchQueue>)connectionAccessQueue;
+- (instancetype)initWithDispatchQueue:(std::shared_ptr<facebook::flipper::DispatchQueue>)queue;
 
 @end
 

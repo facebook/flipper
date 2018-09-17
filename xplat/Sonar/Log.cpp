@@ -5,7 +5,7 @@
 #endif
 
 namespace facebook {
-namespace sonar {
+namespace flipper {
 
   void log(const std::string& message) {
   #ifdef __ANDROID__

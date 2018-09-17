@@ -8,7 +8,7 @@
 using namespace folly;
 
 namespace facebook {
-namespace sonar {
+namespace flipper {
 
 class ConnectionContextStore {
 

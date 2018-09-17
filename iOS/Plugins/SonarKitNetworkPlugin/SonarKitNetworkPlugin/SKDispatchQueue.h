@@ -12,7 +12,7 @@
 #import <dispatch/dispatch.h>
 
 namespace facebook {
-  namespace sonar {
+  namespace flipper {
     class DispatchQueue
     {
     public:

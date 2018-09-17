@@ -20,10 +20,10 @@
 //#import "SKPortForwardingServer.h"
 #endif
 
-using WrapperPlugin = facebook::sonar::SonarCppWrapperPlugin;
+using WrapperPlugin = facebook::flipper::SonarCppWrapperPlugin;
 
 @implementation SonarClient {
-  facebook::sonar::SonarClient *_cppClient;
+  facebook::flipper::SonarClient *_cppClient;
   folly::ScopedEventBaseThread sonarThread;
   folly::ScopedEventBaseThread connectionThread;
 #if !TARGET_OS_SIMULATOR
@@ -61,7 +61,7 @@ using WrapperPlugin = facebook::sonar::SonarCppWrapperPlugin;
     deviceName = [NSString stringWithFormat:@"%@ %@", [[UIDevice currentDevice] model], @"Simulator"];
 #endif
 
-    facebook::sonar::SonarClient::init({
+    facebook::flipper::SonarClient::init({
       {
         "localhost",
         "iOS",
@@ -74,7 +74,7 @@ using WrapperPlugin = facebook::sonar::SonarCppWrapperPlugin;
       sonarThread.getEventBase(),
       connectionThread.getEventBase()
     });
-    _cppClient = facebook::sonar::SonarClient::instance();
+    _cppClient = facebook::flipper::SonarClient::instance();
   }
   return self;
 }
@@ -129,19 +129,19 @@ using WrapperPlugin = facebook::sonar::SonarCppWrapperPlugin;
 - (NSArray *)getStateElements {
   NSMutableArray<NSDictionary<NSString *, NSString *>*> *const array = [NSMutableArray array];
 
-  for (facebook::sonar::StateElement element: _cppClient->getStateElements()) {
-    facebook::sonar::State state = element.state_;
+  for (facebook::flipper::StateElement element: _cppClient->getStateElements()) {
+    facebook::flipper::State state = element.state_;
     NSString *stateString;
     switch (state) {
-      case facebook::sonar::in_progress:
+      case facebook::flipper::in_progress:
         stateString = @"⏳ ";
         break;
 
-      case facebook::sonar::success:
+      case facebook::flipper::success:
         stateString = @"✅ ";
         break;
 
-      case facebook::sonar::failed:
+      case facebook::flipper::failed:
         stateString = @"❌ ";
         break;
 

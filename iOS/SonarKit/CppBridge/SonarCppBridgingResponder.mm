@@ -10,10 +10,10 @@
 #import <FBCxxUtils/FBCxxFollyDynamicConvert.h>
 
 @implementation SonarCppBridgingResponder {
-  std::unique_ptr<facebook::sonar::SonarResponder> responder_;
+  std::unique_ptr<facebook::flipper::SonarResponder> responder_;
 }
 
-- (instancetype)initWithCppResponder:(std::unique_ptr<facebook::sonar::SonarResponder>)responder
+- (instancetype)initWithCppResponder:(std::unique_ptr<facebook::flipper::SonarResponder>)responder
 {
   if (!responder) {
     return nil;
