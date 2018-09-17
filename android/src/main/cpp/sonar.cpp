@@ -95,15 +95,15 @@ class JFlipperResponder : public jni::JavaClass<JFlipperResponder> {
   constexpr static auto kJavaDescriptor = "Lcom/facebook/sonar/core/SonarResponder;";
 };
 
-class JSonarResponderImpl : public jni::HybridClass<JSonarResponderImpl, JFlipperResponder> {
+class JFlipperResponderImpl : public jni::HybridClass<JFlipperResponderImpl, JFlipperResponder> {
  public:
   constexpr static auto kJavaDescriptor = "Lcom/facebook/sonar/android/SonarResponderImpl;";
 
   static void registerNatives() {
     registerHybrid({
-      makeNativeMethod("successObject", JSonarResponderImpl::successObject),
-      makeNativeMethod("successArray", JSonarResponderImpl::successArray),
-      makeNativeMethod("error", JSonarResponderImpl::error),
+      makeNativeMethod("successObject", JFlipperResponderImpl::successObject),
+      makeNativeMethod("successArray", JFlipperResponderImpl::successArray),
+      makeNativeMethod("error", JFlipperResponderImpl::error),
     });
   }
 
@@ -123,7 +123,7 @@ class JSonarResponderImpl : public jni::HybridClass<JSonarResponderImpl, JFlippe
   friend HybridBase;
   std::shared_ptr<SonarResponder> _responder;
 
-  JSonarResponderImpl(std::shared_ptr<SonarResponder> responder): _responder(std::move(responder)) {}
+  JFlipperResponderImpl(std::shared_ptr<SonarResponder> responder): _responder(std::move(responder)) {}
 };
 
 class JSonarReceiver : public jni::JavaClass<JSonarReceiver> {
@@ -132,7 +132,7 @@ class JSonarReceiver : public jni::JavaClass<JSonarReceiver> {
 
   void receive(const folly::dynamic params, std::shared_ptr<SonarResponder> responder) const {
     static const auto method = javaClassStatic()->getMethod<void(jni::alias_ref<JFlipperObject::javaobject>, jni::alias_ref<JFlipperResponder::javaobject>)>("onReceive");
-    method(self(), JFlipperObject::create(std::move(params)), JSonarResponderImpl::newObjectCxxArgs(responder));
+    method(self(), JFlipperObject::create(std::move(params)), JFlipperResponderImpl::newObjectCxxArgs(responder));
   }
 };
 
@@ -388,7 +388,7 @@ jint JNI_OnLoad(JavaVM* vm, void*) {
   return jni::initialize(vm, [] {
     JSonarClient::registerNatives();
     JSonarConnectionImpl::registerNatives();
-    JSonarResponderImpl::registerNatives();
+    JFlipperResponderImpl::registerNatives();
     JEventBase::registerNatives();
   });
 }
