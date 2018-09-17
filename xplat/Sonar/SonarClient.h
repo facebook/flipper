@@ -19,7 +19,7 @@
 #include <vector>
 
 namespace facebook {
-namespace sonar {
+namespace flipper {
 
 class SonarClient : public SonarWebSocket::Callbacks {
  public:

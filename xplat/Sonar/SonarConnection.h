@@ -14,7 +14,7 @@
 #include <string>
 
 namespace facebook {
-namespace sonar {
+namespace flipper {
 
 /**
 Represents a connection between the Desktop and mobile plugins

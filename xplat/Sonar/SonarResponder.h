@@ -11,7 +11,7 @@
 #include <folly/json.h>
 
 namespace facebook {
-namespace sonar {
+namespace flipper {
 
 /**
  * SonarResponder is used to asynchronously respond to messages

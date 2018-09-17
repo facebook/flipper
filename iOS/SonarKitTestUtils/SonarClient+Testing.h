@@ -16,6 +16,6 @@
 
 @interface SonarClient (Testing)
 
-- (instancetype)initWithCppClient:(facebook::sonar::SonarClient *)cppClient;
+- (instancetype)initWithCppClient:(facebook::flipper::SonarClient *)cppClient;
 
 @end

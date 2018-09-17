@@ -13,7 +13,7 @@
 #include <folly/json.h>
 
 namespace facebook {
-namespace sonar {
+namespace flipper {
 
 class SonarResponderImpl : public SonarResponder {
  public:
