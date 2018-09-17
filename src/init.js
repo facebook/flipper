@@ -62,18 +62,16 @@ const AppFrame = () => (
   </TooltipProvider>
 );
 
-export default function init() {
-  // $FlowFixMe: this element exists!
-  ReactDOM.render(<AppFrame />, document.getElementById('root'));
-  // $FlowFixMe: service workers exist!
-  navigator.serviceWorker
-    .register(
-      process.env.NODE_ENV === 'production'
-        ? path.join(__dirname, 'serviceWorker.js')
-        : './serviceWorker.js',
-    )
-    .then(r => {
-      (r.installing || r.active).postMessage({precachedIcons});
-    })
-    .catch(console.error);
-}
+// $FlowFixMe: this element exists!
+ReactDOM.render(<AppFrame />, document.getElementById('root'));
+// $FlowFixMe: service workers exist!
+navigator.serviceWorker
+  .register(
+    process.env.NODE_ENV === 'production'
+      ? path.join(__dirname, 'serviceWorker.js')
+      : './serviceWorker.js',
+  )
+  .then(r => {
+    (r.installing || r.active).postMessage({precachedIcons});
+  })
+  .catch(console.error);
