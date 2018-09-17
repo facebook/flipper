@@ -22,13 +22,10 @@ jobs:
 
 workflows:
   version: 2
-  build:
+  build-and-deploy:
     jobs:
       - build
-
-  release:
-    jobs:
-      - release
+      - release:
           filters:
             tags:
               - only: /^v.*/
