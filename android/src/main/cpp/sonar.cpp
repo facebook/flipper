@@ -62,11 +62,11 @@ class JEventBase : public jni::HybridClass<JEventBase> {
   folly::EventBase eventBase_;
 };
 
-class JSonarObject : public jni::JavaClass<JSonarObject> {
+class JFlipperObject : public jni::JavaClass<JFlipperObject> {
  public:
   constexpr static auto kJavaDescriptor = "Lcom/facebook/sonar/core/SonarObject;";
 
-  static jni::local_ref<JSonarObject> create(const folly::dynamic& json) {
+  static jni::local_ref<JFlipperObject> create(const folly::dynamic& json) {
     return newInstance(folly::toJson(json));
   }
 
@@ -107,7 +107,7 @@ class JSonarResponderImpl : public jni::HybridClass<JSonarResponderImpl, JSonarR
     });
   }
 
-  void successObject(jni::alias_ref<JSonarObject> json) {
+  void successObject(jni::alias_ref<JFlipperObject> json) {
     _responder->success(json ? folly::parseJson(json->toJsonString()) : folly::dynamic::object());
   }
 
@@ -115,7 +115,7 @@ class JSonarResponderImpl : public jni::HybridClass<JSonarResponderImpl, JSonarR
     _responder->success(json ? folly::parseJson(json->toJsonString()) : folly::dynamic::object());
   }
 
-  void error(jni::alias_ref<JSonarObject> json) {
+  void error(jni::alias_ref<JFlipperObject> json) {
     _responder->error(json ? folly::parseJson(json->toJsonString()) : folly::dynamic::object());
   }
 
@@ -131,8 +131,8 @@ class JSonarReceiver : public jni::JavaClass<JSonarReceiver> {
   constexpr static auto kJavaDescriptor = "Lcom/facebook/sonar/core/SonarReceiver;";
 
   void receive(const folly::dynamic params, std::shared_ptr<SonarResponder> responder) const {
-    static const auto method = javaClassStatic()->getMethod<void(jni::alias_ref<JSonarObject::javaobject>, jni::alias_ref<JSonarResponder::javaobject>)>("onReceive");
-    method(self(), JSonarObject::create(std::move(params)), JSonarResponderImpl::newObjectCxxArgs(responder));
+    static const auto method = javaClassStatic()->getMethod<void(jni::alias_ref<JFlipperObject::javaobject>, jni::alias_ref<JSonarResponder::javaobject>)>("onReceive");
+    method(self(), JFlipperObject::create(std::move(params)), JSonarResponderImpl::newObjectCxxArgs(responder));
   }
 };
 
@@ -154,7 +154,7 @@ class JSonarConnectionImpl : public jni::HybridClass<JSonarConnectionImpl, JSona
     });
   }
 
-  void sendObject(const std::string method, jni::alias_ref<JSonarObject> json) {
+  void sendObject(const std::string method, jni::alias_ref<JFlipperObject> json) {
     _connection->send(std::move(method), json ? folly::parseJson(json->toJsonString()) : folly::dynamic::object());
   }
 
