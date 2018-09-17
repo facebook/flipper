@@ -222,9 +222,9 @@ class JFlipperStateUpdateListener : public jni::JavaClass<JFlipperStateUpdateLis
   }
 };
 
-class AndroidSonarStateUpdateListener : public SonarStateUpdateListener {
+class AndroidFlipperStateUpdateListener : public SonarStateUpdateListener {
  public:
-  AndroidSonarStateUpdateListener(jni::alias_ref<JFlipperStateUpdateListener> stateListener);
+  AndroidFlipperStateUpdateListener(jni::alias_ref<JFlipperStateUpdateListener> stateListener);
   void onUpdate();
 
   private:
@@ -310,7 +310,7 @@ class JSonarClient : public jni::HybridClass<JSonarClient> {
 
   void subscribeForUpdates(jni::alias_ref<JFlipperStateUpdateListener> stateListener) {
     auto client = SonarClient::instance();
-    mStateListener = std::make_shared<AndroidSonarStateUpdateListener>(stateListener);
+    mStateListener = std::make_shared<AndroidFlipperStateUpdateListener>(stateListener);
     client->setStateListener(mStateListener);
   }
 
@@ -393,10 +393,10 @@ jint JNI_OnLoad(JavaVM* vm, void*) {
   });
 }
 
-AndroidSonarStateUpdateListener::AndroidSonarStateUpdateListener(jni::alias_ref<JFlipperStateUpdateListener> stateListener) {
+AndroidFlipperStateUpdateListener::AndroidFlipperStateUpdateListener(jni::alias_ref<JFlipperStateUpdateListener> stateListener) {
   jStateListener = jni::make_global(stateListener);
 }
 
-void AndroidSonarStateUpdateListener::onUpdate() {
+void AndroidFlipperStateUpdateListener::onUpdate() {
   jStateListener->onUpdate();
 }
