@@ -14,7 +14,7 @@
 #import <SonarKit/SonarPlugin.h>
 
 namespace facebook {
-namespace sonar {
+namespace flipper {
 
 using ObjCPlugin = NSObject<SonarPlugin> *;
 
@@ -23,14 +23,14 @@ SonarCppWrapperPlugin is a simple C++ wrapper around Objective-C Sonar plugins
 that can be passed to SonarClient. This class allows developers to write pure
 Objective-C plugins if they want.
 */
-class SonarCppWrapperPlugin final : public facebook::sonar::SonarPlugin {
+class SonarCppWrapperPlugin final : public facebook::flipper::SonarPlugin {
 public:
   // Under ARC copying objCPlugin *does* increment its retain count
   SonarCppWrapperPlugin(ObjCPlugin objCPlugin) : _objCPlugin(objCPlugin) {}
 
   std::string identifier() const override { return [[_objCPlugin identifier] UTF8String]; }
 
-  void didConnect(std::shared_ptr<facebook::sonar::SonarConnection> conn) override
+  void didConnect(std::shared_ptr<facebook::flipper::SonarConnection> conn) override
   {
     SonarCppBridgingConnection *const bridgingConn = [[SonarCppBridgingConnection alloc] initWithCppConnection:conn];
     [_objCPlugin didConnect:bridgingConn];
@@ -44,5 +44,5 @@ private:
   ObjCPlugin _objCPlugin;
 };
 
-} // namespace sonar
+} // namespace flipper
 } // namespace facebook

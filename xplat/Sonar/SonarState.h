@@ -17,7 +17,7 @@ class SonarStep;
 class SonarStateUpdateListener;
 
 namespace facebook {
-namespace sonar {
+namespace flipper {
 
 enum State { success, in_progress, failed };
 
@@ -38,7 +38,7 @@ class SonarState {
   SonarState();
   void setUpdateListener(std::shared_ptr<SonarStateUpdateListener>);
   std::string getState();
-  std::vector<facebook::sonar::StateElement> getStateElements();
+  std::vector<facebook::flipper::StateElement> getStateElements();
 
   /* To record a state update, call start() with the name of the step to get a
    SonarStep object. Call complete on this to register it successful,
@@ -54,5 +54,5 @@ class SonarState {
   std::shared_ptr<SonarStateUpdateListener> mListener = nullptr;
   std::string log;
   std::vector<std::string> insertOrder;
-  std::map<std::string, facebook::sonar::State> stateMap;
+  std::map<std::string, facebook::flipper::State> stateMap;
 };

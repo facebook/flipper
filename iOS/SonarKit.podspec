@@ -64,7 +64,7 @@ Pod::Spec.new do |spec|
                              'iOS/Plugins/SonarKitNetworkPlugin/SonarKitNetworkPlugin/SKResponseInfo.h',
                              'iOS/Plugins/SonarKitNetworkPlugin/SonarKitNetworkPlugin/SonarKitNetworkPlugin.h',
                              'iOS/FBDefines/FBMacros.h',
-                             'iOS/SonarKit/**/{FlipperStateUpdateListener,SonarClient,SonarPlugin,SonarConnection,SonarResponder,SKMacros}.h'
+                             'iOS/SonarKit/**/{FlipperStateUpdateListener,SonarClient,SonarPlugin,SonarConnection,FlipperResponder,SKMacros}.h'
     header_search_paths = "\"$(PODS_ROOT)/SonarKit/iOS/SonarKit\" \"$(PODS_ROOT)\"/Headers/Private/SonarKit/** \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/PeerTalkSonar\""
     ss.pod_target_xcconfig = { "USE_HEADERMAP" => "NO",
                              "DEFINES_MODULE" => "YES",

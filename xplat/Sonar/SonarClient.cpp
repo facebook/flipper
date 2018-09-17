@@ -19,7 +19,7 @@
 #if FB_SONARKIT_ENABLED
 
 namespace facebook {
-namespace sonar {
+namespace flipper {
 
 static SonarClient* kInstance;
 

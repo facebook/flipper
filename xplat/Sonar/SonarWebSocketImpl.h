@@ -17,7 +17,7 @@
 #include <mutex>
 
 namespace facebook {
-namespace sonar {
+namespace flipper {
 
 class ConnectionEvents;
 class ConnectionContextStore;

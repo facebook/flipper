@@ -106,7 +106,7 @@
 
 @implementation SonarKitNetworkPlugin (CPPInitialization)
 
-- (instancetype)initWithNetworkAdapter:(id<SKNetworkAdapterDelegate>)adapter dispatchQueue:(std::shared_ptr<facebook::sonar::DispatchQueue>)queue {
+- (instancetype)initWithNetworkAdapter:(id<SKNetworkAdapterDelegate>)adapter dispatchQueue:(std::shared_ptr<facebook::flipper::DispatchQueue>)queue {
     if (self = [super initWithDispatchQueue:queue]) {
       adapter.delegate = self;
       _adapter = adapter;

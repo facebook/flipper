@@ -13,10 +13,10 @@
 
 @implementation SonarCppBridgingConnection
 {
-  std::shared_ptr<facebook::sonar::SonarConnection> conn_;
+  std::shared_ptr<facebook::flipper::SonarConnection> conn_;
 }
 
-- (instancetype)initWithCppConnection:(std::shared_ptr<facebook::sonar::SonarConnection>)conn
+- (instancetype)initWithCppConnection:(std::shared_ptr<facebook::flipper::SonarConnection>)conn
 {
   if (self = [super init]) {
     conn_ = conn;
@@ -34,7 +34,7 @@
 - (void)receive:(NSString *)method withBlock:(SonarReceiver)receiver
 {
     const auto lambda = [receiver](const folly::dynamic &message,
-                                   std::unique_ptr<facebook::sonar::SonarResponder> responder) {
+                                   std::unique_ptr<facebook::flipper::FlipperResponder> responder) {
       @autoreleasepool {
         SonarCppBridgingResponder *const objCResponder =
         [[SonarCppBridgingResponder alloc] initWithCppResponder:std::move(responder)];

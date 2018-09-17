@@ -30,7 +30,7 @@ static constexpr int securePort = 8088;
 static constexpr int insecurePort = 8089;
 
 namespace facebook {
-namespace sonar {
+namespace flipper {
 
 class ConnectionEvents : public rsocket::RSocketConnectionEvents {
  private:

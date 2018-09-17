@@ -3,7 +3,7 @@
 #include <string>
 
 namespace facebook {
-namespace sonar {
+namespace flipper {
 
   void log(const std::string& message);
 

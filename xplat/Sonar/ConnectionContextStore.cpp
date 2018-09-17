@@ -6,7 +6,7 @@
 #include <fstream>
 #include <folly/json.h>
 
-using namespace facebook::sonar;
+using namespace facebook::flipper;
 
 static constexpr auto CSR_FILE_NAME = "app.csr";
 static constexpr auto SONAR_CA_FILE_NAME = "sonarCA.crt";

@@ -8,13 +8,13 @@
 
 #pragma once
 
-#include <Sonar/SonarResponder.h>
+#include <Sonar/FlipperResponder.h>
 #include <folly/json.h>
 #include <functional>
 #include <string>
 
 namespace facebook {
-namespace sonar {
+namespace flipper {
 
 /**
 Represents a connection between the Desktop and mobile plugins
@@ -23,7 +23,7 @@ with corresponding identifiers.
 class SonarConnection {
  public:
   using SonarReceiver = std::function<
-      void(const folly::dynamic&, std::unique_ptr<SonarResponder>)>;
+      void(const folly::dynamic&, std::unique_ptr<FlipperResponder>)>;
 
   virtual ~SonarConnection() {}
 
