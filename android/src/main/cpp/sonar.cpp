@@ -141,16 +141,16 @@ class JFlipperConnection : public jni::JavaClass<JFlipperConnection> {
   constexpr static auto kJavaDescriptor = "Lcom/facebook/sonar/core/SonarConnection;";
 };
 
-class JSonarConnectionImpl : public jni::HybridClass<JSonarConnectionImpl, JFlipperConnection> {
+class JFlipperConnectionImpl : public jni::HybridClass<JFlipperConnectionImpl, JFlipperConnection> {
  public:
   constexpr static auto kJavaDescriptor = "Lcom/facebook/sonar/android/SonarConnectionImpl;";
 
   static void registerNatives() {
     registerHybrid({
-      makeNativeMethod("sendObject", JSonarConnectionImpl::sendObject),
-      makeNativeMethod("sendArray", JSonarConnectionImpl::sendArray),
-      makeNativeMethod("reportError", JSonarConnectionImpl::reportError),
-      makeNativeMethod("receive", JSonarConnectionImpl::receive),
+      makeNativeMethod("sendObject", JFlipperConnectionImpl::sendObject),
+      makeNativeMethod("sendArray", JFlipperConnectionImpl::sendArray),
+      makeNativeMethod("reportError", JFlipperConnectionImpl::reportError),
+      makeNativeMethod("receive", JFlipperConnectionImpl::receive),
     });
   }
 
@@ -177,7 +177,7 @@ class JSonarConnectionImpl : public jni::HybridClass<JSonarConnectionImpl, JFlip
   friend HybridBase;
   std::shared_ptr<SonarConnection> _connection;
 
-  JSonarConnectionImpl(std::shared_ptr<SonarConnection> connection): _connection(std::move(connection)) {}
+  JFlipperConnectionImpl(std::shared_ptr<SonarConnection> connection): _connection(std::move(connection)) {}
 };
 
 class JSonarPlugin : public jni::JavaClass<JSonarPlugin> {
@@ -191,7 +191,7 @@ class JSonarPlugin : public jni::JavaClass<JSonarPlugin> {
 
   void didConnect(std::shared_ptr<SonarConnection> conn) {
     static const auto method = javaClassStatic()->getMethod<void(jni::alias_ref<JFlipperConnection::javaobject>)>("onConnect");
-    method(self(), JSonarConnectionImpl::newObjectCxxArgs(conn));
+    method(self(), JFlipperConnectionImpl::newObjectCxxArgs(conn));
   }
 
   void didDisconnect() {
@@ -387,7 +387,7 @@ class JSonarClient : public jni::HybridClass<JSonarClient> {
 jint JNI_OnLoad(JavaVM* vm, void*) {
   return jni::initialize(vm, [] {
     JSonarClient::registerNatives();
-    JSonarConnectionImpl::registerNatives();
+    JFlipperConnectionImpl::registerNatives();
     JFlipperResponderImpl::registerNatives();
     JEventBase::registerNatives();
   });
