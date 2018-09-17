@@ -9,7 +9,7 @@ package com.facebook.sonar.android.utils;
 
 import android.app.ActivityManager;
 import android.content.Context;
-import com.facebook.sonar.BuildConfig;
+import com.facebook.flipper.BuildConfig;
 import java.util.List;
 
 public final class SonarUtils {

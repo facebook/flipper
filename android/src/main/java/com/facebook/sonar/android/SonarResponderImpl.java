@@ -10,7 +10,7 @@ package com.facebook.sonar.android;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.soloader.SoLoader;
-import com.facebook.sonar.BuildConfig;
+import com.facebook.flipper.BuildConfig;
 import com.facebook.sonar.core.SonarArray;
 import com.facebook.sonar.core.SonarObject;
 import com.facebook.sonar.core.SonarResponder;

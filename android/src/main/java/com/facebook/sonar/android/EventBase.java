@@ -10,7 +10,7 @@ package com.facebook.sonar.android;
 import com.facebook.jni.HybridClassBase;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.soloader.SoLoader;
-import com.facebook.sonar.BuildConfig;
+import com.facebook.flipper.BuildConfig;
 
 @DoNotStrip
 class EventBase extends HybridClassBase {
