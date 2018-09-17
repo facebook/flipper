@@ -76,11 +76,11 @@ class JFlipperObject : public jni::JavaClass<JFlipperObject> {
   }
 };
 
-class JSonarArray : public jni::JavaClass<JSonarArray> {
+class JFlipperArray : public jni::JavaClass<JFlipperArray> {
  public:
   constexpr static auto kJavaDescriptor = "Lcom/facebook/sonar/core/SonarArray;";
 
-  static jni::local_ref<JSonarArray> create(const folly::dynamic& json) {
+  static jni::local_ref<JFlipperArray> create(const folly::dynamic& json) {
     return newInstance(folly::toJson(json));
   }
 
@@ -111,7 +111,7 @@ class JSonarResponderImpl : public jni::HybridClass<JSonarResponderImpl, JSonarR
     _responder->success(json ? folly::parseJson(json->toJsonString()) : folly::dynamic::object());
   }
 
-  void successArray(jni::alias_ref<JSonarArray> json) {
+  void successArray(jni::alias_ref<JFlipperArray> json) {
     _responder->success(json ? folly::parseJson(json->toJsonString()) : folly::dynamic::object());
   }
 
@@ -158,7 +158,7 @@ class JSonarConnectionImpl : public jni::HybridClass<JSonarConnectionImpl, JSona
     _connection->send(std::move(method), json ? folly::parseJson(json->toJsonString()) : folly::dynamic::object());
   }
 
-  void sendArray(const std::string method, jni::alias_ref<JSonarArray> json) {
+  void sendArray(const std::string method, jni::alias_ref<JFlipperArray> json) {
     _connection->send(std::move(method), json ? folly::parseJson(json->toJsonString()) : folly::dynamic::object());
   }
 
