@@ -126,7 +126,7 @@ class JFlipperResponderImpl : public jni::HybridClass<JFlipperResponderImpl, JFl
   JFlipperResponderImpl(std::shared_ptr<SonarResponder> responder): _responder(std::move(responder)) {}
 };
 
-class JSonarReceiver : public jni::JavaClass<JSonarReceiver> {
+class JFlipperReceiver : public jni::JavaClass<JFlipperReceiver> {
  public:
   constexpr static auto kJavaDescriptor = "Lcom/facebook/sonar/core/SonarReceiver;";
 
@@ -166,7 +166,7 @@ class JSonarConnectionImpl : public jni::HybridClass<JSonarConnectionImpl, JSona
     _connection->error(throwable->toString(), throwable->getStackTrace()->toString());
   }
 
-  void receive(const std::string method, jni::alias_ref<JSonarReceiver> receiver) {
+  void receive(const std::string method, jni::alias_ref<JFlipperReceiver> receiver) {
     auto global = make_global(receiver);
     _connection->receive(std::move(method), [global] (const folly::dynamic& params, std::unique_ptr<SonarResponder> responder) {
       global->receive(params, std::move(responder));
