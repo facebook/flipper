@@ -180,7 +180,7 @@ class JFlipperConnectionImpl : public jni::HybridClass<JFlipperConnectionImpl, J
   JFlipperConnectionImpl(std::shared_ptr<SonarConnection> connection): _connection(std::move(connection)) {}
 };
 
-class JSonarPlugin : public jni::JavaClass<JSonarPlugin> {
+class JFlipperPlugin : public jni::JavaClass<JFlipperPlugin> {
  public:
   constexpr static auto kJavaDescriptor = "Lcom/facebook/sonar/core/SonarPlugin;";
 
@@ -233,7 +233,7 @@ class AndroidSonarStateUpdateListener : public SonarStateUpdateListener {
 
 class JSonarPluginWrapper : public SonarPlugin {
  public:
-  jni::global_ref<JSonarPlugin> jplugin;
+  jni::global_ref<JFlipperPlugin> jplugin;
 
   virtual std::string identifier() const override {
     return jplugin->identifier();
@@ -247,7 +247,7 @@ class JSonarPluginWrapper : public SonarPlugin {
     jplugin->didDisconnect();
   }
 
-  JSonarPluginWrapper(jni::global_ref<JSonarPlugin> plugin): jplugin(plugin) {}
+  JSonarPluginWrapper(jni::global_ref<JFlipperPlugin> plugin): jplugin(plugin) {}
 };
 
 struct JStateSummary : public jni::JavaClass<JStateSummary> {
@@ -298,12 +298,12 @@ class JSonarClient : public jni::HybridClass<JSonarClient> {
   	SonarClient::instance()->stop();
   }
 
-  void addPlugin(jni::alias_ref<JSonarPlugin> plugin) {
+  void addPlugin(jni::alias_ref<JFlipperPlugin> plugin) {
     auto wrapper = std::make_shared<JSonarPluginWrapper>(make_global(plugin));
     SonarClient::instance()->addPlugin(wrapper);
   }
 
-  void removePlugin(jni::alias_ref<JSonarPlugin> plugin) {
+  void removePlugin(jni::alias_ref<JFlipperPlugin> plugin) {
     auto client = SonarClient::instance();
     client->removePlugin(client->getPlugin(plugin->identifier()));
   }
@@ -339,7 +339,7 @@ class JSonarClient : public jni::HybridClass<JSonarClient> {
     return summary;
   }
 
-  jni::alias_ref<JSonarPlugin> getPlugin(const std::string& identifier) {
+  jni::alias_ref<JFlipperPlugin> getPlugin(const std::string& identifier) {
     auto plugin = SonarClient::instance()->getPlugin(identifier);
     if (plugin) {
       auto wrapper = std::static_pointer_cast<JSonarPluginWrapper>(plugin);
