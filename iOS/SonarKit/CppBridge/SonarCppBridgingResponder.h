@@ -5,7 +5,7 @@
  *  file in the root directory of this source tree.
  *
  */
-#import <Sonar/SonarResponder.h>
+#import <Sonar/FlipperResponder.h>
 #import <SonarKit/SonarResponder.h>
 
 /**
@@ -14,5 +14,5 @@ that forwards messages to the underlying C++ responder. This class allows
 pure Objective-C plugins to send messages to the underlying responder.
 */
 @interface SonarCppBridgingResponder : NSObject <SonarResponder>
-- (instancetype)initWithCppResponder:(std::unique_ptr<facebook::flipper::SonarResponder>)responder;
+- (instancetype)initWithCppResponder:(std::unique_ptr<facebook::flipper::FlipperResponder>)responder;
 @end

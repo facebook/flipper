@@ -21,7 +21,7 @@
 #include <Sonar/SonarClient.h>
 #include <Sonar/SonarWebSocket.h>
 #include <Sonar/SonarConnection.h>
-#include <Sonar/SonarResponder.h>
+#include <Sonar/FlipperResponder.h>
 #include <Sonar/SonarStateUpdateListener.h>
 #include <Sonar/SonarState.h>
 
@@ -92,7 +92,7 @@ class JFlipperArray : public jni::JavaClass<JFlipperArray> {
 
 class JFlipperResponder : public jni::JavaClass<JFlipperResponder> {
  public:
-  constexpr static auto kJavaDescriptor = "Lcom/facebook/sonar/core/SonarResponder;";
+  constexpr static auto kJavaDescriptor = "Lcom/facebook/sonar/core/FlipperResponder;";
 };
 
 class JFlipperResponderImpl : public jni::HybridClass<JFlipperResponderImpl, JFlipperResponder> {
@@ -121,16 +121,16 @@ class JFlipperResponderImpl : public jni::HybridClass<JFlipperResponderImpl, JFl
 
  private:
   friend HybridBase;
-  std::shared_ptr<SonarResponder> _responder;
+  std::shared_ptr<FlipperResponder> _responder;
 
-  JFlipperResponderImpl(std::shared_ptr<SonarResponder> responder): _responder(std::move(responder)) {}
+  JFlipperResponderImpl(std::shared_ptr<FlipperResponder> responder): _responder(std::move(responder)) {}
 };
 
 class JFlipperReceiver : public jni::JavaClass<JFlipperReceiver> {
  public:
   constexpr static auto kJavaDescriptor = "Lcom/facebook/sonar/core/SonarReceiver;";
 
-  void receive(const folly::dynamic params, std::shared_ptr<SonarResponder> responder) const {
+  void receive(const folly::dynamic params, std::shared_ptr<FlipperResponder> responder) const {
     static const auto method = javaClassStatic()->getMethod<void(jni::alias_ref<JFlipperObject::javaobject>, jni::alias_ref<JFlipperResponder::javaobject>)>("onReceive");
     method(self(), JFlipperObject::create(std::move(params)), JFlipperResponderImpl::newObjectCxxArgs(responder));
   }
@@ -168,7 +168,7 @@ class JFlipperConnectionImpl : public jni::HybridClass<JFlipperConnectionImpl, J
 
   void receive(const std::string method, jni::alias_ref<JFlipperReceiver> receiver) {
     auto global = make_global(receiver);
-    _connection->receive(std::move(method), [global] (const folly::dynamic& params, std::unique_ptr<SonarResponder> responder) {
+    _connection->receive(std::move(method), [global] (const folly::dynamic& params, std::unique_ptr<FlipperResponder> responder) {
       global->receive(params, std::move(responder));
     });
   }

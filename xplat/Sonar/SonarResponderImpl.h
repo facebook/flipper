@@ -8,14 +8,14 @@
 
 #pragma once
 
-#include <Sonar/SonarResponder.h>
+#include <Sonar/FlipperResponder.h>
 #include <Sonar/SonarWebSocket.h>
 #include <folly/json.h>
 
 namespace facebook {
 namespace flipper {
 
-class SonarResponderImpl : public SonarResponder {
+class SonarResponderImpl : public FlipperResponder {
  public:
   SonarResponderImpl(SonarWebSocket* socket, int64_t responseID)
       : socket_(socket), responseID_(responseID) {}
