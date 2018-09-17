@@ -265,27 +265,27 @@ public:
 
 };
 
-class JSonarClient : public jni::HybridClass<JSonarClient> {
+class JFlipperClient : public jni::HybridClass<JFlipperClient> {
  public:
   constexpr static auto kJavaDescriptor = "Lcom/facebook/sonar/android/SonarClientImpl;";
 
   static void registerNatives() {
     registerHybrid({
-      makeNativeMethod("init", JSonarClient::init),
-      makeNativeMethod("getInstance", JSonarClient::getInstance),
-      makeNativeMethod("start", JSonarClient::start),
-      makeNativeMethod("stop", JSonarClient::stop),
-      makeNativeMethod("addPlugin", JSonarClient::addPlugin),
-      makeNativeMethod("removePlugin", JSonarClient::removePlugin),
-      makeNativeMethod("subscribeForUpdates", JSonarClient::subscribeForUpdates),
-      makeNativeMethod("unsubscribe", JSonarClient::unsubscribe),
-      makeNativeMethod("getPlugin", JSonarClient::getPlugin),
-      makeNativeMethod("getState", JSonarClient::getState),
-      makeNativeMethod("getStateSummary", JSonarClient::getStateSummary),
+      makeNativeMethod("init", JFlipperClient::init),
+      makeNativeMethod("getInstance", JFlipperClient::getInstance),
+      makeNativeMethod("start", JFlipperClient::start),
+      makeNativeMethod("stop", JFlipperClient::stop),
+      makeNativeMethod("addPlugin", JFlipperClient::addPlugin),
+      makeNativeMethod("removePlugin", JFlipperClient::removePlugin),
+      makeNativeMethod("subscribeForUpdates", JFlipperClient::subscribeForUpdates),
+      makeNativeMethod("unsubscribe", JFlipperClient::unsubscribe),
+      makeNativeMethod("getPlugin", JFlipperClient::getPlugin),
+      makeNativeMethod("getState", JFlipperClient::getState),
+      makeNativeMethod("getStateSummary", JFlipperClient::getStateSummary),
     });
   }
 
-  static jni::alias_ref<JSonarClient::javaobject> getInstance(jni::alias_ref<jclass>) {
+  static jni::alias_ref<JFlipperClient::javaobject> getInstance(jni::alias_ref<jclass>) {
     static auto client = make_global(newObjectCxxArgs());
   	return client;
   }
@@ -379,14 +379,14 @@ class JSonarClient : public jni::HybridClass<JSonarClient> {
  private:
   friend HybridBase;
   std::shared_ptr<SonarStateUpdateListener> mStateListener = nullptr;
-  JSonarClient() {}
+  JFlipperClient() {}
 };
 
 } // namespace
 
 jint JNI_OnLoad(JavaVM* vm, void*) {
   return jni::initialize(vm, [] {
-    JSonarClient::registerNatives();
+    JFlipperClient::registerNatives();
     JFlipperConnectionImpl::registerNatives();
     JFlipperResponderImpl::registerNatives();
     JEventBase::registerNatives();
