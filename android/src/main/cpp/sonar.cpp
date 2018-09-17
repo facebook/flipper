@@ -136,12 +136,12 @@ class JFlipperReceiver : public jni::JavaClass<JFlipperReceiver> {
   }
 };
 
-class JSonarConnection : public jni::JavaClass<JSonarConnection> {
+class JFlipperConnection : public jni::JavaClass<JFlipperConnection> {
  public:
   constexpr static auto kJavaDescriptor = "Lcom/facebook/sonar/core/SonarConnection;";
 };
 
-class JSonarConnectionImpl : public jni::HybridClass<JSonarConnectionImpl, JSonarConnection> {
+class JSonarConnectionImpl : public jni::HybridClass<JSonarConnectionImpl, JFlipperConnection> {
  public:
   constexpr static auto kJavaDescriptor = "Lcom/facebook/sonar/android/SonarConnectionImpl;";
 
@@ -190,7 +190,7 @@ class JSonarPlugin : public jni::JavaClass<JSonarPlugin> {
   }
 
   void didConnect(std::shared_ptr<SonarConnection> conn) {
-    static const auto method = javaClassStatic()->getMethod<void(jni::alias_ref<JSonarConnection::javaobject>)>("onConnect");
+    static const auto method = javaClassStatic()->getMethod<void(jni::alias_ref<JFlipperConnection::javaobject>)>("onConnect");
     method(self(), JSonarConnectionImpl::newObjectCxxArgs(conn));
   }
 
