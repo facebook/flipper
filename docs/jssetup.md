@@ -18,12 +18,12 @@ To create the desktop part of your plugin, initiate a new JavaScript project usi
 }
 ```
 
-In `index.js` you can now create your plugin. We expect this file to have a default export of type `SonarPlugin`. A hello-world-plugin could look like this:
+In `index.js` you can now create your plugin. We expect this file to have a default export of type `FlipperPlugin`. A hello-world-plugin could look like this:
 
 ```js
-import {SonarPlugin} from 'sonar';
+import {FlipperPlugin} from 'flipper';
 
-export default class extends SonarPlugin {
+export default class extends FlipperPlugin {
   render() {
     return 'hello world';
   }
@@ -38,7 +38,7 @@ Once a plugin is created, Flipper can load it from its folder. The path from whe
 
 ### npm dependencies
 
-If you need any dependencies in your plugin, you can install them using `yarn add`. The Flipper UI components exported from `sonar`, as well as `react` and `react-dom` don't need to be installed as dependencies. Our plugin-loader makes these dependencies available to your plugin.
+If you need any dependencies in your plugin, you can install them using `yarn add`. The Flipper UI components exported from `flipper`, as well as `react` and `react-dom` don't need to be installed as dependencies. Our plugin-loader makes these dependencies available to your plugin.
 
 ### ES6, babel-transforms and bundling
 

@@ -15,7 +15,7 @@ To use Flipper, you need to add the mobile SDK to your app.
 
 ### Desktop app
 
-The desktop part of Sonar doesn't need any particular setup. Simply [download the latest build](https://www.facebook.com/fbflipper/public/mac) of our app and launch it. The desktop app is available for macOS and requires a working installation of the Android/iOS development tools on your system.
+The desktop part of Flipper doesn't need any particular setup. Simply [download the latest build](https://www.facebook.com/fbflipper/public/mac) of our app and launch it. The desktop app is available for macOS and requires a working installation of the Android/iOS development tools on your system.
 
 Once you start Flipper and launch an emulator/simulator or connect a device, you will already be able to see the device logs in Flipper. To see app specific data, you need to integrate our native SDKs with your app.
 
@@ -91,7 +91,7 @@ To integrate with an iOS app, you can use [CocoaPods](https://cocoapods.org). Ad
 
 ```ruby
 project 'MyApp.xcodeproj'
-source 'https://github.com/facebook/Sonar.git'
+source 'https://github.com/facebook/flipper.git'
 source 'https://github.com/CocoaPods/Specs'
 swift_version = "4.1"
 sonarkit_version = '0.7.2'

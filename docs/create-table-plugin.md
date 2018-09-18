@@ -13,7 +13,7 @@ Below is a sample implementation of a desktop plugin based on `createTablePlugin
 See "[Create Plugin](create-plugin.md)" for how to create the native counterpart for your plugin.
 
 ```javascript
-import {ManagedDataInspector, Panel, Text, createTablePlugin} from 'sonar';
+import {ManagedDataInspector, Panel, Text, createTablePlugin} from 'flipper';
 
 type Id = string;
 
