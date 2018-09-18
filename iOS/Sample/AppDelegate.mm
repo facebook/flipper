@@ -7,7 +7,7 @@
  */
 #import "AppDelegate.h"
 
-#import <SonarKit/SonarClient.h>
+#import <SonarKit/FlipperClient.h>
 #import <SonarKitLayoutPlugin/SonarKitLayoutPlugin.h>
 #import <SonarKitNetworkPlugin/SonarKitNetworkPlugin.h>
 #import <SonarKitLayoutComponentKitSupport/SonarKitLayoutComponentKitSupport.h>
@@ -28,14 +28,14 @@
 {
   _window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 
-  SonarClient *client = [SonarClient sharedClient];
+  FlipperClient *client = [FlipperClient sharedClient];
 
   SKDescriptorMapper *layoutDescriptorMapper = [[SKDescriptorMapper alloc] initWithDefaults];
   [SonarKitLayoutComponentKitSupport setUpWithDescriptorMapper: layoutDescriptorMapper];
   [client addPlugin: [[SonarKitLayoutPlugin alloc] initWithRootNode: application
                                                withDescriptorMapper: layoutDescriptorMapper]];
 
-  [[SonarClient sharedClient] addPlugin: [[SonarKitNetworkPlugin alloc] initWithNetworkAdapter:[SKIOSNetworkAdapter new]]];
+  [[FlipperClient sharedClient] addPlugin: [[SonarKitNetworkPlugin alloc] initWithNetworkAdapter:[SKIOSNetworkAdapter new]]];
   [client start];
 
   UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"MainStoryBoard" bundle:nil];

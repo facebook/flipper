@@ -9,7 +9,7 @@
 
 #import "SonarKitLayoutPlugin.h"
 
-#import <SonarKit/SonarClient.h>
+#import <SonarKit/FlipperClient.h>
 #import <SonarKit/SonarConnection.h>
 #import <SonarKit/SonarResponder.h>
 #import <SonarKit/SKMacros.h>

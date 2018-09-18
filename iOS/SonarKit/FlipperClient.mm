@@ -7,7 +7,7 @@
  */
 #if FB_SONARKIT_ENABLED
 
-#import "SonarClient.h"
+#import "FlipperClient.h"
 #import "SonarCppWrapperPlugin.h"
 #import <Sonar/SonarClient.h>
 #include <folly/io/async/EventBase.h>
@@ -22,7 +22,7 @@
 
 using WrapperPlugin = facebook::flipper::SonarCppWrapperPlugin;
 
-@implementation SonarClient {
+@implementation FlipperClient {
   facebook::flipper::SonarClient *_cppClient;
   folly::ScopedEventBaseThread sonarThread;
   folly::ScopedEventBaseThread connectionThread;
@@ -33,7 +33,7 @@ using WrapperPlugin = facebook::flipper::SonarCppWrapperPlugin;
 
 + (instancetype)sharedClient
 {
-  static SonarClient *sharedClient = nil;
+  static FlipperClient *sharedClient = nil;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     sharedClient = [[self alloc] init];

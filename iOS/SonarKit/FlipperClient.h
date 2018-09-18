@@ -15,10 +15,10 @@
 Represents a connection between the Sonar desktop och client side. Manages the lifecycle of attached
 plugin instances.
 */
-@interface SonarClient : NSObject
+@interface FlipperClient : NSObject
 
 /**
-The shared singleton SonarClient instance. It is an error to call this on non-debug builds to avoid leaking data.
+The shared singleton FlipperClient instance. It is an error to call this on non-debug builds to avoid leaking data.
 */
 + (instancetype)sharedClient;
 
@@ -62,7 +62,7 @@ Subscribe a ViewController to state update change notifications
 */
 - (void)subscribeForUpdates:(id<FlipperStateUpdateListener>)controller;
 
-// initializers are disabled. You must use `+[SonarClient sharedClient]` instance.
+// initializers are disabled. You must use `+[FlipperClient sharedClient]` instance.
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)new NS_UNAVAILABLE;
 

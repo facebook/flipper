@@ -12,9 +12,9 @@
 #import <Foundation/Foundation.h>
 
 #import <Sonar/SonarClient.h>
-#import <SonarKit/SonarClient.h>
+#import <SonarKit/FlipperClient.h>
 
-@interface SonarClient (Testing)
+@interface FlipperClient (Testing)
 
 - (instancetype)initWithCppClient:(facebook::flipper::SonarClient *)cppClient;
 

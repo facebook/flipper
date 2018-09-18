@@ -1,7 +1,7 @@
 #ifdef FB_SONARKIT_ENABLED
 
 #import "FlipperDiagnosticsViewController.h"
-#import "SonarClient.h"
+#import "FlipperClient.h"
 
 #define STATE_VIEW_HEIGHT 300
 
@@ -45,7 +45,7 @@ static NSString *const kSKCellIdentifier = @"FlipperDiagnosticStateTableStableCe
   self.stateTable = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, STATE_VIEW_HEIGHT)];
   [self.stateTable registerClass:[UITableViewCell class] forCellReuseIdentifier:kSKCellIdentifier];
   self.stateTable.rowHeight = 14;
-  self.tableDataSource = [[StateTableDataSource alloc] initWithElements:[[SonarClient sharedClient] getStateElements]];
+  self.tableDataSource = [[StateTableDataSource alloc] initWithElements:[[FlipperClient sharedClient] getStateElements]];
   self.stateTable.dataSource = self.tableDataSource;
 
   [self updateLogView];
@@ -64,12 +64,12 @@ static NSString *const kSKCellIdentifier = @"FlipperDiagnosticStateTableStableCe
 }
 
 - (void)updateStateTable {
-  self.tableDataSource.elements = [[SonarClient sharedClient] getStateElements];
+  self.tableDataSource.elements = [[FlipperClient sharedClient] getStateElements];
   [self.stateTable reloadData];
 }
 
 - (void)updateLogView {
-  NSString *state = [[SonarClient sharedClient] getState];
+  NSString *state = [[FlipperClient sharedClient] getState];
   self.logLabel.text = state;
   [self.logLabel sizeToFit];
   self.scrollView.contentSize = self.logLabel.frame.size;
@@ -82,7 +82,7 @@ static NSString *const kSKCellIdentifier = @"FlipperDiagnosticStateTableStableCe
 - (void)viewWillAppear:(BOOL)animated {
   [super viewWillAppear:animated];
   id<FlipperStateUpdateListener> weakSelf = self;
-  [[SonarClient sharedClient] subscribeForUpdates:weakSelf];
+  [[FlipperClient sharedClient] subscribeForUpdates:weakSelf];
 }
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations {
