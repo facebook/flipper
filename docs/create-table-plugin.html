@@ -8,7 +8,7 @@
 <p>To make building these kinds of plugins as easy as possible we have created an abstraction we call <code>createTablePlugin</code>. This is a function which manages the complexities of building a table plugin but still allows you to customize many things to suite your needs.</p>
 <p>Below is a sample implementation of a desktop plugin based on <code>createTablePlugin</code>. It subscribes to updates from a client plugin with id <code>myplugin</code> sending rows to with the <code>newRow</code> method. A row can have any structure you want as long as it has a unique field <code>id</code> of type <code>string</code>.</p>
 <p>See &quot;<a href="/docs/create-plugin.html">Create Plugin</a>&quot; for how to create the native counterpart for your plugin.</p>
-<pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> {ManagedDataInspector, Panel, Text, createTablePlugin} <span class="hljs-keyword">from</span> <span class="hljs-string">'sonar'</span>;
+<pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> {ManagedDataInspector, Panel, Text, createTablePlugin} <span class="hljs-keyword">from</span> <span class="hljs-string">'flipper'</span>;
 
 type Id = string;
 
