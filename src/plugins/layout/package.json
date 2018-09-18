@@ -1,5 +1,5 @@
 {
-  "name": "sonar-plugin-layout",
+  "name": "flipper-plugin-layout",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",

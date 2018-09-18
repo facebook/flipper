@@ -90,7 +90,7 @@ function entryPointForPluginFolder(pluginPath) {
   return fs
     .readdirSync(pluginPath)
     .filter(name =>
-      /*name.startsWith('sonar-plugin') && */ fs
+      /*name.startsWith('flipper-plugin') && */ fs
         .lstatSync(path.join(pluginPath, name))
         .isDirectory(),
     )

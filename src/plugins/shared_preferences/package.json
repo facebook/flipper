@@ -1,5 +1,5 @@
 {
-  "name": "sonar-plugin-sharedpreferences",
+  "name": "flipper-plugin-sharedpreferences",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",

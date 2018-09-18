@@ -1,5 +1,5 @@
 {
-  "name": "sonar-plugin-leakcanary",
+  "name": "flipper-plugin-leakcanary",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",

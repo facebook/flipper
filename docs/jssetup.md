@@ -6,11 +6,11 @@ sidebar_label: JavaScript Setup
 
 ## Creating the plugin UI
 
-To create the desktop part of your plugin, initiate a new JavaScript project using `yarn init` and make sure your package name starts with `sonar-plugin-` and a file called `index.js`, which is the entry point to your plugin. A sample `package.json`-file could look like this:
+To create the desktop part of your plugin, initiate a new JavaScript project using `yarn init` and make sure your package name starts with `flipper-plugin-` and a file called `index.js`, which is the entry point to your plugin. A sample `package.json`-file could look like this:
 
 ```
 {
-  "name": "sonar-plugin-myplugin",
+  "name": "flipper-plugin-myplugin",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
