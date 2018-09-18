@@ -13,7 +13,7 @@ SK_EXTERN_C_BEGIN
 void SonarPerformBlockOnMainThread(void(^block)());
 SK_EXTERN_C_END
 
-@protocol SonarConnection;
+@protocol FlipperConnection;
 
 @protocol FlipperPlugin
 
@@ -28,7 +28,7 @@ Called when a connection has been established between this plugin and the corres
 the Sonar desktop app. The provided connection can be used to register method receivers as well
 as send messages back to the desktop app.
 */
-- (void)didConnect:(id<SonarConnection>)connection;
+- (void)didConnect:(id<FlipperConnection>)connection;
 
 /**
 Called when a plugin has been disconnected and the SonarConnection provided in didConnect is no

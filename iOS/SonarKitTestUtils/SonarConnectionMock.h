@@ -7,9 +7,9 @@
  */
 #import <Foundation/Foundation.h>
 
-#import <SonarKit/SonarConnection.h>
+#import <SonarKit/FlipperConnection.h>
 
-@interface SonarConnectionMock : NSObject<SonarConnection>
+@interface SonarConnectionMock : NSObject<FlipperConnection>
 
 @property (nonatomic, assign, getter=isConnected) BOOL connected;
 @property (nonatomic, readonly) NSDictionary<NSString *, SonarReceiver> *receivers;

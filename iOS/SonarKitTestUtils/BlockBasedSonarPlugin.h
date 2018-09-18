@@ -9,9 +9,9 @@
 
 #import <SonarKit/FlipperPlugin.h>
 
-@protocol SonarConnection;
+@protocol FlipperConnection;
 
-typedef void (^ConnectBlock)(id<SonarConnection>);
+typedef void (^ConnectBlock)(id<FlipperConnection>);
 typedef void (^DisconnectBlock)();
 
 @interface BlockBasedSonarPlugin : NSObject<FlipperPlugin>

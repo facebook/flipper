@@ -10,7 +10,7 @@
 #import <vector>
 
 #import "SKBufferingPlugin.h"
-#import <SonarKit/SonarConnection.h>
+#import <SonarKit/FlipperConnection.h>
 #import "SKDispatchQueue.h"
 #import "SKBufferingPlugin+CPPInitialization.h"
 
@@ -20,7 +20,7 @@ static const NSUInteger bufferSize = 500;
 
 @property(assign, nonatomic) std::vector<CachedEvent> ringBuffer;
 @property(assign, nonatomic) std::shared_ptr<facebook::flipper::DispatchQueue> connectionAccessQueue;
-@property(strong, nonatomic) id<SonarConnection> connection;
+@property(strong, nonatomic) id<FlipperConnection> connection;
 
 @end
 
@@ -29,7 +29,7 @@ static const NSUInteger bufferSize = 500;
 //   std::vector<CachedEvent> _ringBuffer;
 //   std::shared_ptr<facebook::flipper::DispatchQueue> _connectionAccessQueue;
 //
-//   id<SonarConnection> _connection;
+//   id<FlipperConnection> _connection;
 // }
 
 - (instancetype)initWithQueue:(dispatch_queue_t)queue {
@@ -45,7 +45,7 @@ static const NSUInteger bufferSize = 500;
   return @"Network";
 }
 
-- (void)didConnect:(id<SonarConnection>)connection {
+- (void)didConnect:(id<FlipperConnection>)connection {
   _connectionAccessQueue->async(^{
     self->_connection = connection;
     [self sendBufferedEvents];

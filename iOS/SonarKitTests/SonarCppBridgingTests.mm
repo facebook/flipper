@@ -19,7 +19,7 @@ using facebook::flipper::SonarCppWrapperPlugin;
 
 @implementation DummyPlugin
 - (NSString *)identifier { return @"Dummy"; }
-- (void)didConnect:(id<SonarConnection>)connection {}
+- (void)didConnect:(id<FlipperConnection>)connection {}
 - (void)didDisconnect {}
 @end
 

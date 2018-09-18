@@ -15,7 +15,7 @@ typedef void (^SonarReceiver)(NSDictionary*, id<SonarResponder>);
 /**
 Represents a connection between the Desktop and mobile plugins with corresponding identifiers.
 */
-@protocol SonarConnection
+@protocol FlipperConnection
 
 /**
 Invoke a method on the Sonar desktop plugin with with a matching identifier.

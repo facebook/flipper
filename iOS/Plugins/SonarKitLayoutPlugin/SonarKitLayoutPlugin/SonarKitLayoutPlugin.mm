@@ -10,7 +10,7 @@
 #import "SonarKitLayoutPlugin.h"
 
 #import <SonarKit/FlipperClient.h>
-#import <SonarKit/SonarConnection.h>
+#import <SonarKit/FlipperConnection.h>
 #import <SonarKit/SonarResponder.h>
 #import <SonarKit/SKMacros.h>
 #import "SKDescriptorMapper.h"
@@ -33,7 +33,7 @@
   id<NSObject> _rootNode;
   id<SKTapListener> _tapListener;
 
-  id<SonarConnection> _connection;
+  id<FlipperConnection> _connection;
 
   NSMutableSet *_registeredDelegates;
 }
@@ -70,7 +70,7 @@
   return @"Inspector";
 }
 
-- (void)didConnect:(id<SonarConnection>)connection {
+- (void)didConnect:(id<FlipperConnection>)connection {
   _connection = connection;
 
   [SKInvalidation enableInvalidations];
@@ -147,7 +147,7 @@
 - (void)onCallSetData:(NSString *)objectId
              withPath:(NSArray<NSString *> *)path
               toValue:(id<NSObject>)value
-       withConnection:(id<SonarConnection>)connection {
+       withConnection:(id<FlipperConnection>)connection {
   id node = [_trackedObjects objectForKey: objectId];
   if (node == nil) {
     SKLog(@"node is nil, trying to setData: \
@@ -215,7 +215,7 @@
   _lastHighlightedNode = objectId;
 }
 
-- (void)onCallSetSearchActive:(BOOL)active withConnection:(id<SonarConnection>)connection {
+- (void)onCallSetSearchActive:(BOOL)active withConnection:(id<FlipperConnection>)connection {
   if (active) {
     [_tapListener mountWithFrame: [[UIScreen mainScreen] bounds]];
     __block id<NSObject> rootNode = _rootNode;
