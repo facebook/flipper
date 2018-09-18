@@ -1,15 +1,15 @@
 #include "ConnectionContextStore.h"
+#include <folly/json.h>
+#include <sys/stat.h>
+#include <fstream>
+#include <iostream>
 #include "CertificateUtils.h"
 #include "Log.h"
-#include <sys/stat.h>
-#include <iostream>
-#include <fstream>
-#include <folly/json.h>
 
 using namespace facebook::sonar;
 
 static constexpr auto CSR_FILE_NAME = "app.csr";
-static constexpr auto SONAR_CA_FILE_NAME = "sonarCA.crt";
+static constexpr auto FLIPPER_CA_FILE_NAME = "flipperCA.crt";
 static constexpr auto CLIENT_CERT_FILE_NAME = "device.crt";
 static constexpr auto PRIVATE_KEY_FILE = "privateKey.pem";
 static constexpr auto CONNECTION_CONFIG_FILE = "connection_config.json";
@@ -18,10 +18,12 @@ bool fileExists(std::string fileName);
 std::string loadStringFromFile(std::string fileName);
 void writeStringToFile(std::string content, std::string fileName);
 
-ConnectionContextStore::ConnectionContextStore(DeviceData deviceData): deviceData_(deviceData) {}
+ConnectionContextStore::ConnectionContextStore(DeviceData deviceData)
+    : deviceData_(deviceData) {}
 
 bool ConnectionContextStore::hasRequiredFiles() {
-  std::string caCert = loadStringFromFile(absoluteFilePath(SONAR_CA_FILE_NAME));
+  std::string caCert =
+      loadStringFromFile(absoluteFilePath(FLIPPER_CA_FILE_NAME));
   std::string clientCert =
       loadStringFromFile(absoluteFilePath(CLIENT_CERT_FILE_NAME));
   std::string privateKey =
@@ -39,7 +41,7 @@ std::string ConnectionContextStore::createCertificateSigningRequest() {
       deviceData_.appId.c_str(),
       absoluteFilePath(CSR_FILE_NAME).c_str(),
       absoluteFilePath(PRIVATE_KEY_FILE).c_str());
-      std::string csr = loadStringFromFile(absoluteFilePath(CSR_FILE_NAME));
+  std::string csr = loadStringFromFile(absoluteFilePath(CSR_FILE_NAME));
 
   return csr;
 }
@@ -48,7 +50,7 @@ std::shared_ptr<SSLContext> ConnectionContextStore::getSSLContext() {
   std::shared_ptr<folly::SSLContext> sslContext =
       std::make_shared<folly::SSLContext>();
   sslContext->loadTrustedCertificates(
-      absoluteFilePath(SONAR_CA_FILE_NAME).c_str());
+      absoluteFilePath(FLIPPER_CA_FILE_NAME).c_str());
   sslContext->setVerificationOption(
       folly::SSLContext::SSLVerifyPeerEnum::VERIFY);
   sslContext->loadCertKeyPairFromFiles(
@@ -64,13 +66,15 @@ std::string ConnectionContextStore::getDeviceId() {
      desktop app.
      For backwards compatibility, when this isn't present, fall back to the
      unreliable source. */
-   try {
-     std::string config = loadStringFromFile(absoluteFilePath(CONNECTION_CONFIG_FILE));
-     auto maybeDeviceId = folly::parseJson(config)["deviceId"];
-     return maybeDeviceId.isString() ? maybeDeviceId.getString() : deviceData_.deviceId;
-   } catch (std::exception& e) {
-     return deviceData_.deviceId;
-   }
+  try {
+    std::string config =
+        loadStringFromFile(absoluteFilePath(CONNECTION_CONFIG_FILE));
+    auto maybeDeviceId = folly::parseJson(config)["deviceId"];
+    return maybeDeviceId.isString() ? maybeDeviceId.getString()
+                                    : deviceData_.deviceId;
+  } catch (std::exception& e) {
+    return deviceData_.deviceId;
+  }
 }
 
 void ConnectionContextStore::storeConnectionConfig(folly::dynamic& config) {
