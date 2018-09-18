@@ -27,7 +27,7 @@ import ScreenCaptureButtons from './ScreenCaptureButtons.js';
 import AutoUpdateVersion from './AutoUpdateVersion.js';
 import config from '../fb-stubs/config.js';
 
-const TitleBar = styled(FlexRow)(({focused}) => ({
+const AppTitleBar = styled(FlexRow)(({focused}) => ({
   background: focused
     ? `linear-gradient(to bottom, ${colors.macOSTitleBarBackgroundTop} 0%, ${
         colors.macOSTitleBarBackgroundBottom
@@ -58,10 +58,10 @@ type Props = {|
   togglePluginManagerVisible: (visible?: boolean) => void,
 |};
 
-class SonarTitleBar extends Component<Props> {
+class TitleBar extends Component<Props> {
   render() {
     return (
-      <TitleBar focused={this.props.windowIsFocused} className="toolbar">
+      <AppTitleBar focused={this.props.windowIsFocused} className="toolbar">
         <DevicesButton />
         <ScreenCaptureButtons />
         <Spacer />
@@ -102,7 +102,7 @@ class SonarTitleBar extends Component<Props> {
             disabled={!this.props.rightSidebarAvailable}
           />
         </ButtonGroup>
-      </TitleBar>
+      </AppTitleBar>
     );
   }
 }
@@ -129,4 +129,4 @@ export default connect(
     toggleRightSidebarVisible,
     togglePluginManagerVisible,
   },
-)(SonarTitleBar);
+)(TitleBar);
