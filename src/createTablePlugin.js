@@ -11,7 +11,7 @@ import type {
   TableColumnSizes,
   TableColumns,
 } from 'flipper';
-import {FlexColumn, Button, SonarSidebar} from 'flipper';
+import {FlexColumn, Button, DetailSidebar} from 'flipper';
 import textContent from './utils/textContent.js';
 import createPaste from './utils/createPaste.js';
 import {FlipperPlugin, SearchableTable} from 'flipper';
@@ -199,7 +199,7 @@ export function createTablePlugin<T: RowData>(props: Props<T>) {
             stickyBottom={true}
             actions={<Button onClick={this.clear}>Clear Table</Button>}
           />
-          <SonarSidebar>{this.renderSidebar()}</SonarSidebar>
+          <DetailSidebar>{this.renderSidebar()}</DetailSidebar>
         </FlexColumn>
       );
     }

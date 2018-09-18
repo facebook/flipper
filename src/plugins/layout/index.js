@@ -21,7 +21,7 @@ import {
   SearchBox,
   SearchInput,
   SearchIcon,
-  SonarSidebar,
+  DetailSidebar,
   VerticalRule,
   Popover,
   ToggleButton,
@@ -1229,7 +1229,7 @@ export default class Layout extends FlipperPlugin<InspectorState> {
             />
           ) : null}
         </FlexRow>
-        <SonarSidebar>{this.renderSidebar()}</SonarSidebar>
+        <DetailSidebar>{this.renderSidebar()}</DetailSidebar>
       </FlexColumn>
     );
   }

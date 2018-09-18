@@ -151,7 +151,7 @@ class PluginContainer extends Component<Props, State> {
             {React.createElement(activePlugin, props)}
           </ErrorBoundary>
         </Container>
-        <SidebarContainer id="sonarSidebar" />
+        <SidebarContainer id="detailsSidebar" />
       </React.Fragment>
     );
   }

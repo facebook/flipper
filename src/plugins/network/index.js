@@ -15,7 +15,7 @@ import {
   Glyph,
   colors,
   PureComponent,
-  SonarSidebar,
+  DetailSidebar,
   styled,
 } from 'flipper';
 import {FlipperPlugin, SearchableTable} from 'flipper';
@@ -177,7 +177,7 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
           clear={this.clearLogs}
           onRowHighlighted={this.onRowHighlighted}
         />
-        <SonarSidebar>{this.renderSidebar()}</SonarSidebar>
+        <DetailSidebar>{this.renderSidebar()}</DetailSidebar>
       </FlexColumn>
     );
   }

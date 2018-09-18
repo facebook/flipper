@@ -18,7 +18,7 @@ type Props = {
   toggleRightSidebarAvailable: (visible: boolean) => void,
 };
 
-class SonarSidebar extends React.Component<Props> {
+class DetailSidebar extends React.Component<Props> {
   componentDidMount() {
     this.updateSidebarAvailablility();
   }
@@ -35,7 +35,7 @@ class SonarSidebar extends React.Component<Props> {
   }
 
   render() {
-    const domNode = document.getElementById('sonarSidebar');
+    const domNode = document.getElementById('detailsSidebar');
     return (
       this.props.children &&
       this.props.rightSidebarVisible &&
@@ -58,4 +58,4 @@ export default connect(
   {
     toggleRightSidebarAvailable,
   },
-)(SonarSidebar);
+)(DetailSidebar);

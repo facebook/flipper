@@ -24,7 +24,7 @@ import {
   ContextMenu,
   FlexColumn,
   Glyph,
-  SonarSidebar,
+  DetailSidebar,
   FlipperDevicePlugin,
   SearchableTable,
   styled,
@@ -565,7 +565,7 @@ export default class LogTable extends FlipperDevicePlugin<
           actions={<Button onClick={this.clearLogs}>Clear Logs</Button>}
           stickyBottom={true}
         />
-        <SonarSidebar>{this.renderSidebar()}</SonarSidebar>
+        <DetailSidebar>{this.renderSidebar()}</DetailSidebar>
       </LogTable.ContextMenu>
     );
   }
