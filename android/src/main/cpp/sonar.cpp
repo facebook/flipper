@@ -21,7 +21,7 @@
 #include <Sonar/SonarClient.h>
 #include <Sonar/SonarWebSocket.h>
 #include <Sonar/SonarConnection.h>
-#include <Sonar/SonarResponder.h>
+#include <Sonar/FlipperResponder.h>
 #include <Sonar/SonarStateUpdateListener.h>
 #include <Sonar/SonarState.h>
 
@@ -62,11 +62,11 @@ class JEventBase : public jni::HybridClass<JEventBase> {
   folly::EventBase eventBase_;
 };
 
-class JSonarObject : public jni::JavaClass<JSonarObject> {
+class JFlipperObject : public jni::JavaClass<JFlipperObject> {
  public:
   constexpr static auto kJavaDescriptor = "Lcom/facebook/sonar/core/SonarObject;";
 
-  static jni::local_ref<JSonarObject> create(const folly::dynamic& json) {
+  static jni::local_ref<JFlipperObject> create(const folly::dynamic& json) {
     return newInstance(folly::toJson(json));
   }
 
@@ -76,11 +76,11 @@ class JSonarObject : public jni::JavaClass<JSonarObject> {
   }
 };
 
-class JSonarArray : public jni::JavaClass<JSonarArray> {
+class JFlipperArray : public jni::JavaClass<JFlipperArray> {
  public:
   constexpr static auto kJavaDescriptor = "Lcom/facebook/sonar/core/SonarArray;";
 
-  static jni::local_ref<JSonarArray> create(const folly::dynamic& json) {
+  static jni::local_ref<JFlipperArray> create(const folly::dynamic& json) {
     return newInstance(folly::toJson(json));
   }
 
@@ -90,75 +90,75 @@ class JSonarArray : public jni::JavaClass<JSonarArray> {
   }
 };
 
-class JSonarResponder : public jni::JavaClass<JSonarResponder> {
+class JFlipperResponder : public jni::JavaClass<JFlipperResponder> {
  public:
-  constexpr static auto kJavaDescriptor = "Lcom/facebook/sonar/core/SonarResponder;";
+  constexpr static auto kJavaDescriptor = "Lcom/facebook/sonar/core/FlipperResponder;";
 };
 
-class JSonarResponderImpl : public jni::HybridClass<JSonarResponderImpl, JSonarResponder> {
+class JFlipperResponderImpl : public jni::HybridClass<JFlipperResponderImpl, JFlipperResponder> {
  public:
   constexpr static auto kJavaDescriptor = "Lcom/facebook/sonar/android/SonarResponderImpl;";
 
   static void registerNatives() {
     registerHybrid({
-      makeNativeMethod("successObject", JSonarResponderImpl::successObject),
-      makeNativeMethod("successArray", JSonarResponderImpl::successArray),
-      makeNativeMethod("error", JSonarResponderImpl::error),
+      makeNativeMethod("successObject", JFlipperResponderImpl::successObject),
+      makeNativeMethod("successArray", JFlipperResponderImpl::successArray),
+      makeNativeMethod("error", JFlipperResponderImpl::error),
     });
   }
 
-  void successObject(jni::alias_ref<JSonarObject> json) {
+  void successObject(jni::alias_ref<JFlipperObject> json) {
     _responder->success(json ? folly::parseJson(json->toJsonString()) : folly::dynamic::object());
   }
 
-  void successArray(jni::alias_ref<JSonarArray> json) {
+  void successArray(jni::alias_ref<JFlipperArray> json) {
     _responder->success(json ? folly::parseJson(json->toJsonString()) : folly::dynamic::object());
   }
 
-  void error(jni::alias_ref<JSonarObject> json) {
+  void error(jni::alias_ref<JFlipperObject> json) {
     _responder->error(json ? folly::parseJson(json->toJsonString()) : folly::dynamic::object());
   }
 
  private:
   friend HybridBase;
-  std::shared_ptr<SonarResponder> _responder;
+  std::shared_ptr<FlipperResponder> _responder;
 
-  JSonarResponderImpl(std::shared_ptr<SonarResponder> responder): _responder(std::move(responder)) {}
+  JFlipperResponderImpl(std::shared_ptr<FlipperResponder> responder): _responder(std::move(responder)) {}
 };
 
-class JSonarReceiver : public jni::JavaClass<JSonarReceiver> {
+class JFlipperReceiver : public jni::JavaClass<JFlipperReceiver> {
  public:
   constexpr static auto kJavaDescriptor = "Lcom/facebook/sonar/core/SonarReceiver;";
 
-  void receive(const folly::dynamic params, std::shared_ptr<SonarResponder> responder) const {
-    static const auto method = javaClassStatic()->getMethod<void(jni::alias_ref<JSonarObject::javaobject>, jni::alias_ref<JSonarResponder::javaobject>)>("onReceive");
-    method(self(), JSonarObject::create(std::move(params)), JSonarResponderImpl::newObjectCxxArgs(responder));
+  void receive(const folly::dynamic params, std::shared_ptr<FlipperResponder> responder) const {
+    static const auto method = javaClassStatic()->getMethod<void(jni::alias_ref<JFlipperObject::javaobject>, jni::alias_ref<JFlipperResponder::javaobject>)>("onReceive");
+    method(self(), JFlipperObject::create(std::move(params)), JFlipperResponderImpl::newObjectCxxArgs(responder));
   }
 };
 
-class JSonarConnection : public jni::JavaClass<JSonarConnection> {
+class JFlipperConnection : public jni::JavaClass<JFlipperConnection> {
  public:
   constexpr static auto kJavaDescriptor = "Lcom/facebook/sonar/core/SonarConnection;";
 };
 
-class JSonarConnectionImpl : public jni::HybridClass<JSonarConnectionImpl, JSonarConnection> {
+class JFlipperConnectionImpl : public jni::HybridClass<JFlipperConnectionImpl, JFlipperConnection> {
  public:
   constexpr static auto kJavaDescriptor = "Lcom/facebook/sonar/android/SonarConnectionImpl;";
 
   static void registerNatives() {
     registerHybrid({
-      makeNativeMethod("sendObject", JSonarConnectionImpl::sendObject),
-      makeNativeMethod("sendArray", JSonarConnectionImpl::sendArray),
-      makeNativeMethod("reportError", JSonarConnectionImpl::reportError),
-      makeNativeMethod("receive", JSonarConnectionImpl::receive),
+      makeNativeMethod("sendObject", JFlipperConnectionImpl::sendObject),
+      makeNativeMethod("sendArray", JFlipperConnectionImpl::sendArray),
+      makeNativeMethod("reportError", JFlipperConnectionImpl::reportError),
+      makeNativeMethod("receive", JFlipperConnectionImpl::receive),
     });
   }
 
-  void sendObject(const std::string method, jni::alias_ref<JSonarObject> json) {
+  void sendObject(const std::string method, jni::alias_ref<JFlipperObject> json) {
     _connection->send(std::move(method), json ? folly::parseJson(json->toJsonString()) : folly::dynamic::object());
   }
 
-  void sendArray(const std::string method, jni::alias_ref<JSonarArray> json) {
+  void sendArray(const std::string method, jni::alias_ref<JFlipperArray> json) {
     _connection->send(std::move(method), json ? folly::parseJson(json->toJsonString()) : folly::dynamic::object());
   }
 
@@ -166,9 +166,9 @@ class JSonarConnectionImpl : public jni::HybridClass<JSonarConnectionImpl, JSona
     _connection->error(throwable->toString(), throwable->getStackTrace()->toString());
   }
 
-  void receive(const std::string method, jni::alias_ref<JSonarReceiver> receiver) {
+  void receive(const std::string method, jni::alias_ref<JFlipperReceiver> receiver) {
     auto global = make_global(receiver);
-    _connection->receive(std::move(method), [global] (const folly::dynamic& params, std::unique_ptr<SonarResponder> responder) {
+    _connection->receive(std::move(method), [global] (const folly::dynamic& params, std::unique_ptr<FlipperResponder> responder) {
       global->receive(params, std::move(responder));
     });
   }
@@ -177,10 +177,10 @@ class JSonarConnectionImpl : public jni::HybridClass<JSonarConnectionImpl, JSona
   friend HybridBase;
   std::shared_ptr<SonarConnection> _connection;
 
-  JSonarConnectionImpl(std::shared_ptr<SonarConnection> connection): _connection(std::move(connection)) {}
+  JFlipperConnectionImpl(std::shared_ptr<SonarConnection> connection): _connection(std::move(connection)) {}
 };
 
-class JSonarPlugin : public jni::JavaClass<JSonarPlugin> {
+class JFlipperPlugin : public jni::JavaClass<JFlipperPlugin> {
  public:
   constexpr static auto kJavaDescriptor = "Lcom/facebook/sonar/core/SonarPlugin;";
 
@@ -190,8 +190,8 @@ class JSonarPlugin : public jni::JavaClass<JSonarPlugin> {
   }
 
   void didConnect(std::shared_ptr<SonarConnection> conn) {
-    static const auto method = javaClassStatic()->getMethod<void(jni::alias_ref<JSonarConnection::javaobject>)>("onConnect");
-    method(self(), JSonarConnectionImpl::newObjectCxxArgs(conn));
+    static const auto method = javaClassStatic()->getMethod<void(jni::alias_ref<JFlipperConnection::javaobject>)>("onConnect");
+    method(self(), JFlipperConnectionImpl::newObjectCxxArgs(conn));
   }
 
   void didDisconnect() {
@@ -200,7 +200,7 @@ class JSonarPlugin : public jni::JavaClass<JSonarPlugin> {
   }
 };
 
-class JSonarStateUpdateListener : public jni::JavaClass<JSonarStateUpdateListener> {
+class JFlipperStateUpdateListener : public jni::JavaClass<JFlipperStateUpdateListener> {
  public:
   constexpr static auto  kJavaDescriptor = "Lcom/facebook/sonar/core/SonarStateUpdateListener;";
 
@@ -222,18 +222,18 @@ class JSonarStateUpdateListener : public jni::JavaClass<JSonarStateUpdateListene
   }
 };
 
-class AndroidSonarStateUpdateListener : public SonarStateUpdateListener {
+class AndroidFlipperStateUpdateListener : public SonarStateUpdateListener {
  public:
-  AndroidSonarStateUpdateListener(jni::alias_ref<JSonarStateUpdateListener> stateListener);
+  AndroidFlipperStateUpdateListener(jni::alias_ref<JFlipperStateUpdateListener> stateListener);
   void onUpdate();
 
   private:
-   jni::global_ref<JSonarStateUpdateListener> jStateListener;
+   jni::global_ref<JFlipperStateUpdateListener> jStateListener;
 };
 
-class JSonarPluginWrapper : public SonarPlugin {
+class JFlipperPluginWrapper : public SonarPlugin {
  public:
-  jni::global_ref<JSonarPlugin> jplugin;
+  jni::global_ref<JFlipperPlugin> jplugin;
 
   virtual std::string identifier() const override {
     return jplugin->identifier();
@@ -247,7 +247,7 @@ class JSonarPluginWrapper : public SonarPlugin {
     jplugin->didDisconnect();
   }
 
-  JSonarPluginWrapper(jni::global_ref<JSonarPlugin> plugin): jplugin(plugin) {}
+  JFlipperPluginWrapper(jni::global_ref<JFlipperPlugin> plugin): jplugin(plugin) {}
 };
 
 struct JStateSummary : public jni::JavaClass<JStateSummary> {
@@ -265,27 +265,27 @@ public:
 
 };
 
-class JSonarClient : public jni::HybridClass<JSonarClient> {
+class JFlipperClient : public jni::HybridClass<JFlipperClient> {
  public:
   constexpr static auto kJavaDescriptor = "Lcom/facebook/sonar/android/SonarClientImpl;";
 
   static void registerNatives() {
     registerHybrid({
-      makeNativeMethod("init", JSonarClient::init),
-      makeNativeMethod("getInstance", JSonarClient::getInstance),
-      makeNativeMethod("start", JSonarClient::start),
-      makeNativeMethod("stop", JSonarClient::stop),
-      makeNativeMethod("addPlugin", JSonarClient::addPlugin),
-      makeNativeMethod("removePlugin", JSonarClient::removePlugin),
-      makeNativeMethod("subscribeForUpdates", JSonarClient::subscribeForUpdates),
-      makeNativeMethod("unsubscribe", JSonarClient::unsubscribe),
-      makeNativeMethod("getPlugin", JSonarClient::getPlugin),
-      makeNativeMethod("getState", JSonarClient::getState),
-      makeNativeMethod("getStateSummary", JSonarClient::getStateSummary),
+      makeNativeMethod("init", JFlipperClient::init),
+      makeNativeMethod("getInstance", JFlipperClient::getInstance),
+      makeNativeMethod("start", JFlipperClient::start),
+      makeNativeMethod("stop", JFlipperClient::stop),
+      makeNativeMethod("addPlugin", JFlipperClient::addPlugin),
+      makeNativeMethod("removePlugin", JFlipperClient::removePlugin),
+      makeNativeMethod("subscribeForUpdates", JFlipperClient::subscribeForUpdates),
+      makeNativeMethod("unsubscribe", JFlipperClient::unsubscribe),
+      makeNativeMethod("getPlugin", JFlipperClient::getPlugin),
+      makeNativeMethod("getState", JFlipperClient::getState),
+      makeNativeMethod("getStateSummary", JFlipperClient::getStateSummary),
     });
   }
 
-  static jni::alias_ref<JSonarClient::javaobject> getInstance(jni::alias_ref<jclass>) {
+  static jni::alias_ref<JFlipperClient::javaobject> getInstance(jni::alias_ref<jclass>) {
     static auto client = make_global(newObjectCxxArgs());
   	return client;
   }
@@ -298,19 +298,19 @@ class JSonarClient : public jni::HybridClass<JSonarClient> {
   	SonarClient::instance()->stop();
   }
 
-  void addPlugin(jni::alias_ref<JSonarPlugin> plugin) {
-    auto wrapper = std::make_shared<JSonarPluginWrapper>(make_global(plugin));
+  void addPlugin(jni::alias_ref<JFlipperPlugin> plugin) {
+    auto wrapper = std::make_shared<JFlipperPluginWrapper>(make_global(plugin));
     SonarClient::instance()->addPlugin(wrapper);
   }
 
-  void removePlugin(jni::alias_ref<JSonarPlugin> plugin) {
+  void removePlugin(jni::alias_ref<JFlipperPlugin> plugin) {
     auto client = SonarClient::instance();
     client->removePlugin(client->getPlugin(plugin->identifier()));
   }
 
-  void subscribeForUpdates(jni::alias_ref<JSonarStateUpdateListener> stateListener) {
+  void subscribeForUpdates(jni::alias_ref<JFlipperStateUpdateListener> stateListener) {
     auto client = SonarClient::instance();
-    mStateListener = std::make_shared<AndroidSonarStateUpdateListener>(stateListener);
+    mStateListener = std::make_shared<AndroidFlipperStateUpdateListener>(stateListener);
     client->setStateListener(mStateListener);
   }
 
@@ -339,10 +339,10 @@ class JSonarClient : public jni::HybridClass<JSonarClient> {
     return summary;
   }
 
-  jni::alias_ref<JSonarPlugin> getPlugin(const std::string& identifier) {
+  jni::alias_ref<JFlipperPlugin> getPlugin(const std::string& identifier) {
     auto plugin = SonarClient::instance()->getPlugin(identifier);
     if (plugin) {
-      auto wrapper = std::static_pointer_cast<JSonarPluginWrapper>(plugin);
+      auto wrapper = std::static_pointer_cast<JFlipperPluginWrapper>(plugin);
       return wrapper->jplugin;
     } else {
       return nullptr;
@@ -379,24 +379,24 @@ class JSonarClient : public jni::HybridClass<JSonarClient> {
  private:
   friend HybridBase;
   std::shared_ptr<SonarStateUpdateListener> mStateListener = nullptr;
-  JSonarClient() {}
+  JFlipperClient() {}
 };
 
 } // namespace
 
 jint JNI_OnLoad(JavaVM* vm, void*) {
   return jni::initialize(vm, [] {
-    JSonarClient::registerNatives();
-    JSonarConnectionImpl::registerNatives();
-    JSonarResponderImpl::registerNatives();
+    JFlipperClient::registerNatives();
+    JFlipperConnectionImpl::registerNatives();
+    JFlipperResponderImpl::registerNatives();
     JEventBase::registerNatives();
   });
 }
 
-AndroidSonarStateUpdateListener::AndroidSonarStateUpdateListener(jni::alias_ref<JSonarStateUpdateListener> stateListener) {
+AndroidFlipperStateUpdateListener::AndroidFlipperStateUpdateListener(jni::alias_ref<JFlipperStateUpdateListener> stateListener) {
   jStateListener = jni::make_global(stateListener);
 }
 
-void AndroidSonarStateUpdateListener::onUpdate() {
+void AndroidFlipperStateUpdateListener::onUpdate() {
   jStateListener->onUpdate();
 }

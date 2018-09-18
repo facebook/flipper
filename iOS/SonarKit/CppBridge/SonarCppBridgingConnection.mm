@@ -34,7 +34,7 @@
 - (void)receive:(NSString *)method withBlock:(SonarReceiver)receiver
 {
     const auto lambda = [receiver](const folly::dynamic &message,
-                                   std::unique_ptr<facebook::flipper::SonarResponder> responder) {
+                                   std::unique_ptr<facebook::flipper::FlipperResponder> responder) {
       @autoreleasepool {
         SonarCppBridgingResponder *const objCResponder =
         [[SonarCppBridgingResponder alloc] initWithCppResponder:std::move(responder)];

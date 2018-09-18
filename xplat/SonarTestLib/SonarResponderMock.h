@@ -8,14 +8,14 @@
 
 #pragma once
 
-#include <Sonar/SonarResponder.h>
+#include <Sonar/FlipperResponder.h>
 #include <folly/json.h>
 #include <vector>
 
 namespace facebook {
 namespace flipper {
 
-class SonarResponderMock : public SonarResponder {
+class SonarResponderMock : public FlipperResponder {
  public:
   SonarResponderMock(
       std::vector<folly::dynamic>* successes = nullptr,

@@ -8,7 +8,7 @@
 package com.facebook.sonar.core;
 
 /**
- * SonarResponder is used to asyncronously response to a messaged recieved from the Sonar desktop
+ * FlipperResponder is used to asyncronously response to a messaged recieved from the Sonar desktop
  * app. The Sonar Responder will automatically wrap the response in an approriate object depending
  * on if it is an error or not.
  */

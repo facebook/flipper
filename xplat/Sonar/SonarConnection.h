@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <Sonar/SonarResponder.h>
+#include <Sonar/FlipperResponder.h>
 #include <folly/json.h>
 #include <functional>
 #include <string>
@@ -23,7 +23,7 @@ with corresponding identifiers.
 class SonarConnection {
  public:
   using SonarReceiver = std::function<
-      void(const folly::dynamic&, std::unique_ptr<SonarResponder>)>;
+      void(const folly::dynamic&, std::unique_ptr<FlipperResponder>)>;
 
   virtual ~SonarConnection() {}
 

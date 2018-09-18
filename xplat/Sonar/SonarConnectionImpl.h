@@ -24,7 +24,7 @@ class SonarConnectionImpl : public SonarConnection {
   void call(
       const std::string& method,
       const folly::dynamic& params,
-      std::unique_ptr<SonarResponder> responder) {
+      std::unique_ptr<FlipperResponder> responder) {
     if (receivers_.find(method) == receivers_.end()) {
       throw std::out_of_range("receiver " + method + " not found.");
     }

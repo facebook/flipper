@@ -207,7 +207,7 @@ TEST(SonarClientTests, testExecute) {
 
   const auto connectionCallback = [](std::shared_ptr<SonarConnection> conn) {
     const auto receiver = [](const dynamic &params,
-                             std::unique_ptr<SonarResponder> responder) {
+                             std::unique_ptr<FlipperResponder> responder) {
       dynamic payload = dynamic::object("message", "yes_i_hear_u");
       responder->success(payload);
     };
@@ -236,7 +236,7 @@ TEST(SonarClientTests, testExecuteWithParams) {
 
   const auto connectionCallback = [&](std::shared_ptr<SonarConnection> conn) {
     const auto receiver = [](const dynamic &params,
-                             std::unique_ptr<SonarResponder> responder) {
+                             std::unique_ptr<FlipperResponder> responder) {
       const auto &first = params["first"].asString();
       const auto &second = params["second"].asString();
       std::map<std::string, std::string> m{{"dog", "woof"}, {"cat", "meow"}};
