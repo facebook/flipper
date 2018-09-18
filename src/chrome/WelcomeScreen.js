@@ -133,7 +133,7 @@ export default class WelcomeScreen extends PureComponent<Props, State> {
             onClick={() =>
               shell.openExternal('https://fbflipper.com/docs/understand.html')
             }>
-            <Icon size={20} name="rocket" color={brandColors.Sonar} />
+            <Icon size={20} name="rocket" color={brandColors.Flipper} />
             <FlexColumn>
               <ItemTitle>Using Flipper</ItemTitle>
               <ItemSubTitle>
@@ -147,7 +147,7 @@ export default class WelcomeScreen extends PureComponent<Props, State> {
                 'https://fbflipper.com/docs/create-plugin.html',
               )
             }>
-            <Icon size={20} name="magic-wand" color={brandColors.Sonar} />
+            <Icon size={20} name="magic-wand" color={brandColors.Flipper} />
             <FlexColumn>
               <ItemTitle>Create your own plugin</ItemTitle>
               <ItemSubTitle>Get started with these pointers</ItemSubTitle>
@@ -159,7 +159,7 @@ export default class WelcomeScreen extends PureComponent<Props, State> {
                 'https://fbflipper.com/docs/getting-started.html',
               )
             }>
-            <Icon size={20} name="tools" color={brandColors.Sonar} />
+            <Icon size={20} name="tools" color={brandColors.Flipper} />
             <FlexColumn>
               <ItemTitle>Add Flipper support to your app</ItemTitle>
               <ItemSubTitle>Get started with these pointers</ItemSubTitle>
@@ -169,7 +169,7 @@ export default class WelcomeScreen extends PureComponent<Props, State> {
             onClick={() =>
               shell.openExternal('https://github.com/facebook/flipper/issues')
             }>
-            <Icon size={20} name="posts" color={brandColors.Sonar} />
+            <Icon size={20} name="posts" color={brandColors.Flipper} />
             <FlexColumn>
               <ItemTitle>Contributing and Feedback</ItemTitle>
               <ItemSubTitle>

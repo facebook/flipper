@@ -54,7 +54,7 @@ type Actions<T> = AppendAndUpdateAction<T> | ResetAndUpdateAction<T>;
  * build by calling the `buildRow` function argument.
  *
  * An optional resetMethod argument can be provided which will replace the current rows with the
- * data provided. This is useful when connecting to sonar for this first time, or reconnecting to
+ * data provided. This is useful when connecting to Flipper for this first time, or reconnecting to
  * the client in an unknown state.
  */
 export function createTablePlugin<T: RowData>(props: Props<T>) {

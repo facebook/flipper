@@ -147,11 +147,11 @@ export default class Server extends EventEmitter {
       this.emit(
         'error',
         new Error(
-          "Sonar doesn't currently support physical iOS devices. You can still use it to view logs, but for now to use the majority of the sonar plugins you'll have to use the Simulator.",
+          "Flipper doesn't currently support physical iOS devices. You can still use it to view logs, but for now to use the majority of the Flipper plugins you'll have to use the Simulator.",
         ),
       );
       console.warn(
-        'Physical iOS device detected. This is not currently supported by sonar.',
+        'Physical iOS device detected. This is not currently supported by Flipper.',
         'server',
       );
     }
@@ -267,7 +267,7 @@ export default class Server extends EventEmitter {
       );
 
       /* If a device gets disconnected without being cleaned up properly,
-       * sonar won't be aware until it attempts to reconnect.
+       * Flipper won't be aware until it attempts to reconnect.
        * When it does we need to terminate the zombie connection.
       */
       if (this.connections.has(id)) {

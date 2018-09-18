@@ -23,7 +23,7 @@ const {spawn} = require('child_process');
 const path = require('path');
 const {app, shell} = require('electron').remote;
 
-const SONAR_PLUGIN_PATH = path.join(app.getPath('home'), '.flipper');
+const FLIPPER_PLUGIN_PATH = path.join(app.getPath('home'), '.flipper');
 const DYNAMIC_PLUGINS = JSON.parse(window.process.env.PLUGINS || '[]');
 
 type NPMModule = {
@@ -133,7 +133,7 @@ const getLatestVersion = (name: string): Promise<NPMModule> => {
 
 const getPluginList = (): Promise<Array<NPMModule>> => {
   return fetch(
-    'http://registry.npmjs.org/-/v1/search?text=keywords:sonar&size=250',
+    'http://registry.npmjs.org/-/v1/search?text=keywords:flipper&size=250',
   )
     .then(res => res.json())
     .then(res => res.objects.map(o => o.package));
@@ -161,7 +161,7 @@ class PluginItem extends PureComponent<
     const {name, status: initialStatus} = this.props.plugin;
     this.setState({working: true});
     const npm = spawn('npm', [action, name], {
-      cwd: SONAR_PLUGIN_PATH,
+      cwd: FLIPPER_PLUGIN_PATH,
     });
 
     npm.stderr.on('data', e => {
@@ -203,7 +203,7 @@ class PluginItem extends PureComponent<
         <FlexRow>
           {managed ? (
             <Text size="0.9em" color={colors.light30}>
-              This plugin is not managed by Sonar, but loaded from{' '}
+              This plugin is not managed by Flipper, but loaded from{' '}
               <Text size="1em" code={true}>
                 {rootDir}
               </Text>
@@ -255,7 +255,7 @@ class PluginManager extends PureComponent<Props, State> {
     plugins: DYNAMIC_PLUGINS.reduce((acc, plugin) => {
       acc[plugin.name] = {
         ...plugin,
-        managed: !(plugin.entry, '').startsWith(SONAR_PLUGIN_PATH),
+        managed: !(plugin.entry, '').startsWith(FLIPPER_PLUGIN_PATH),
         status: 'installed',
       };
       return acc;

@@ -102,7 +102,7 @@ export default class AutoUpdateVersion extends Component<{}, State> {
           <span
             tabIndex={-1}
             role="button"
-            title="Update available. Restart Sonar."
+            title="Update available. Restart Flipper."
             onClick={remote.autoUpdater.quitAndInstall}>
             <Glyph color={colors.light30} name="breaking-news" />
           </span>

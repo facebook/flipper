@@ -38,7 +38,7 @@ const TitleRow = styled(FlexRow)({
 const Icon = styled(FlexBox)({
   justifyContent: 'center',
   alignItems: 'center',
-  backgroundColor: brandColors.Sonar,
+  backgroundColor: brandColors.Flipper,
   width: 32,
   height: 32,
   flexShrink: 0,
@@ -57,7 +57,7 @@ const Button = styled(View)({
   borderRadius: 6,
   color: colors.white,
   border: 'none',
-  background: brandColors.Sonar,
+  background: brandColors.Flipper,
   padding: '10px 30px',
   fontWeight: 500,
   fontSize: '1em',

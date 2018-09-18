@@ -16,7 +16,7 @@ const plugins = new Map();
 // $FlowFixMe process.env not defined in electron API spec
 const remoteEnv = remote.process.env;
 
-// expose Sonar and exact globally for dynamically loaded plugins
+// expose Flipper and exact globally for dynamically loaded plugins
 window.React = React;
 window.ReactDOM = ReactDOM;
 window.Flipper = Flipper;
