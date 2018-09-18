@@ -5,7 +5,7 @@
  * @format
  */
 
-import {styled, colors} from 'sonar';
+import {styled, colors} from 'flipper';
 
 const ErrorBarContainer = styled('div')({
   backgroundColor: colors.cherry,

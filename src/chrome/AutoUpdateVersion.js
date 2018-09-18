@@ -13,7 +13,7 @@ import {
   Glyph,
   Component,
   styled,
-} from 'sonar';
+} from 'flipper';
 import {remote} from 'electron';
 import isProduction from '../utils/isProduction.js';
 import config from '../fb-stubs/config.js';

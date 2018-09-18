@@ -32,9 +32,9 @@ module.exports = ({types: t}) => ({
         node.callee.name === 'require' &&
         args.length === 1 &&
         t.isStringLiteral(args[0]) &&
-        args[0].value === 'sonar'
+        args[0].value === 'flipper'
       ) {
-        path.replaceWith(t.identifier('window.Sonar'));
+        path.replaceWith(t.identifier('window.Flipper'));
       } else if (
         node.callee.name === 'require' &&
         args.length > 0 &&

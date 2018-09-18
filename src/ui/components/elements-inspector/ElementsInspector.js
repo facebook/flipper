@@ -8,7 +8,7 @@
 import {Component} from 'react';
 import FlexRow from '../FlexRow.js';
 import {Elements} from './elements.js';
-import type {ContextMenuExtension} from 'sonar';
+import type {ContextMenuExtension} from 'flipper';
 
 export type ElementID = string;
 

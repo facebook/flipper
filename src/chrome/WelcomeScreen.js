@@ -14,7 +14,7 @@ import {
   Glyph,
   colors,
   brandColors,
-} from 'sonar';
+} from 'flipper';
 import isProduction from '../utils/isProduction.js';
 import {shell, remote} from 'electron';
 

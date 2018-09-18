@@ -5,7 +5,7 @@
  * @format
  */
 
-import type {ElementID, Element, ElementSearchResultSet} from 'sonar';
+import type {ElementID, Element, ElementSearchResultSet} from 'flipper';
 import {
   colors,
   Glyph,
@@ -25,7 +25,7 @@ import {
   VerticalRule,
   Popover,
   ToggleButton,
-} from 'sonar';
+} from 'flipper';
 
 import type {TrackType} from '../../fb-stubs/Logger.js';
 import SidebarExtensions from '../../fb-stubs/LayoutInspectorSidebarExtensions.js';

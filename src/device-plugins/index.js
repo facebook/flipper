@@ -7,7 +7,7 @@
 
 import type {FlipperDevicePlugin} from '../plugin.js';
 
-import {GK} from 'sonar';
+import {GK} from 'flipper';
 import logs from './logs/index.js';
 import cpu from './cpu/index.js';
 

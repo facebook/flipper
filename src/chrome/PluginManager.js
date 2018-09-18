@@ -18,7 +18,7 @@ import {
   FlexRow,
   styled,
   Searchable,
-} from 'sonar';
+} from 'flipper';
 const {spawn} = require('child_process');
 const path = require('path');
 const {app, shell} = require('electron').remote;

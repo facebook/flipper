@@ -5,10 +5,10 @@
  * @format
  */
 
-import {GK} from 'sonar';
+import {GK} from 'flipper';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import * as Sonar from 'sonar';
+import * as Flipper from 'flipper';
 import {FlipperPlugin, FlipperBasePlugin} from '../plugin.js';
 import {remote} from 'electron';
 
@@ -19,7 +19,7 @@ const remoteEnv = remote.process.env;
 // expose Sonar and exact globally for dynamically loaded plugins
 window.React = React;
 window.ReactDOM = ReactDOM;
-window.Sonar = Sonar;
+window.Flipper = Flipper;
 
 const addIfNotAdded = plugin => {
   if (!plugins.has(plugin.name)) {

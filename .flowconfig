@@ -17,7 +17,7 @@ module.use_strict=true
 emoji=true
 all=true
 include_warnings=true
-module.name_mapper='sonar' -> '<PROJECT_ROOT>/src/index.js'
+module.name_mapper='flipper' -> '<PROJECT_ROOT>/src/index.js'
 
 suppress_type=$FlowFixMe
 

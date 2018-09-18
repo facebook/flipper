@@ -5,7 +5,7 @@
  * @format
  */
 
-import {FlipperDevicePlugin} from 'sonar';
+import {FlipperDevicePlugin} from 'flipper';
 var adb = require('adbkit-fb');
 
 import {
@@ -16,7 +16,7 @@ import {
   Text,
   ManagedTable,
   colors,
-} from 'sonar';
+} from 'flipper';
 
 type ADBClient = any;
 type AndroidDevice = {

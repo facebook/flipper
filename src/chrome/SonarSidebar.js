@@ -7,7 +7,7 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {Sidebar} from 'sonar';
+import {Sidebar} from 'flipper';
 import {connect} from 'react-redux';
 import {toggleRightSidebarAvailable} from '../reducers/application.js';
 

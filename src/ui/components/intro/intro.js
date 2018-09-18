@@ -16,7 +16,7 @@ import {
   colors,
   brandColors,
   PureComponent,
-} from 'sonar';
+} from 'flipper';
 
 const Containter = styled(FlexColumn)({
   fontSize: 17,

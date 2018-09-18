@@ -6,7 +6,7 @@
  */
 
 import React from 'react';
-import {FlexColumn, FlexRow} from 'sonar';
+import {FlexColumn, FlexRow} from 'flipper';
 import {connect} from 'react-redux';
 import {toggleBugDialogVisible} from './reducers/application.js';
 import WelcomeScreen from './chrome/WelcomeScreen.js';

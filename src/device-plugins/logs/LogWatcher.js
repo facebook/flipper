@@ -16,7 +16,7 @@ import {
   Button,
   colors,
   styled,
-} from 'sonar';
+} from 'flipper';
 
 export type Counter = {
   expression: RegExp,

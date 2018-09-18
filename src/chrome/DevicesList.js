@@ -14,7 +14,7 @@ import {
   Popover,
   styled,
   colors,
-} from 'sonar';
+} from 'flipper';
 
 const Heading = styled(Text)({
   display: 'block',

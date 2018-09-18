@@ -7,7 +7,7 @@
  */
 
 import type {Leak} from './index.js';
-import type {Element} from 'sonar';
+import type {Element} from 'flipper';
 
 /**
  * Creates an Element (for ElementsInspector) representing a single Object in

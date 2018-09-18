@@ -18,7 +18,7 @@ import {
   Text,
   FlexCenter,
   styled,
-} from 'sonar';
+} from 'flipper';
 
 const Container = styled(FlexColumn)({
   padding: 10,

@@ -48,7 +48,7 @@ type Props = {
  * **Usage**
  *
  * ```jsx
- * import {ToggleButton} from 'sonar';
+ * import {ToggleButton} from 'flipper';
  * <ToggleButton onClick={handler} toggled={boolean}/>
  * ```
  */

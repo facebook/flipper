@@ -5,9 +5,9 @@
  * @format
  */
 
-import {FlipperPlugin} from 'sonar';
-import {FlexColumn} from 'sonar';
-import {ButtonGroup, Button, styled, colors} from 'sonar';
+import {FlipperPlugin} from 'flipper';
+import {FlexColumn} from 'flipper';
+import {ButtonGroup, Button, styled, colors} from 'flipper';
 
 export type Sandbox = {
   name: string,

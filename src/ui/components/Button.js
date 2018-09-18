@@ -215,7 +215,7 @@ type State = {
  * **Usage**
  *
  * ```jsx
- * import {Button} from 'sonar';
+ * import {Button} from 'flipper';
  * <Button onClick={handler}>Click me</Button>
  * ```
  *

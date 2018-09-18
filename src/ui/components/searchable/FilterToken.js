@@ -5,7 +5,7 @@
  * @format
  */
 
-import type {Filter} from 'sonar';
+import type {Filter} from 'flipper';
 import {PureComponent} from 'react';
 import Text from '../Text.js';
 import styled from '../../styled/index.js';

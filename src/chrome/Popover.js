@@ -14,7 +14,7 @@ import {
   Button,
   styled,
   colors,
-} from 'sonar';
+} from 'flipper';
 
 const Anchor = styled('img')({
   zIndex: 6,

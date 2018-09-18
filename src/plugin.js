@@ -12,7 +12,7 @@ import type Client from './Client.js';
 
 import React from 'react';
 import BaseDevice from './devices/BaseDevice.js';
-import {AndroidDevice, IOSDevice} from 'sonar';
+import {AndroidDevice, IOSDevice} from 'flipper';
 
 const invariant = require('invariant');
 

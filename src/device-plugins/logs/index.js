@@ -10,7 +10,7 @@ import type {
   TableColumnOrder,
   TableColumnSizes,
   TableColumns,
-} from 'sonar';
+} from 'flipper';
 import type {Counter} from './LogWatcher.js';
 import type {DeviceLogEntry} from '../../devices/BaseDevice.js';
 import type {Props as PluginProps} from '../../plugin';
@@ -28,7 +28,7 @@ import {
   FlipperDevicePlugin,
   SearchableTable,
   styled,
-} from 'sonar';
+} from 'flipper';
 import textContent from '../../utils/textContent.js';
 import createPaste from '../../utils/createPaste.js';
 import LogWatcher from './LogWatcher';

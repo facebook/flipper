@@ -18,7 +18,7 @@ import {
   Panel,
   styled,
   colors,
-} from 'sonar';
+} from 'flipper';
 import {getHeaderValue} from './index.js';
 
 import querystring from 'querystring';

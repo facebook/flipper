@@ -5,7 +5,7 @@
  * @format
  */
 
-import {Button, ButtonGroup, Component} from 'sonar';
+import {Button, ButtonGroup, Component} from 'flipper';
 import {connect} from 'react-redux';
 import AndroidDevice from '../devices/AndroidDevice';
 import IOSDevice from '../devices/IOSDevice';

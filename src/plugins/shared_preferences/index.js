@@ -14,8 +14,8 @@ import {
   FlexRow,
   DataInspector,
   styled,
-} from 'sonar';
-import {FlipperPlugin} from 'sonar';
+} from 'flipper';
+import {FlipperPlugin} from 'flipper';
 
 const {clone} = require('lodash');
 

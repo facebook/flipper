@@ -16,7 +16,7 @@ import {
   View,
 } from '../index';
 import styled from '../styled/index';
-import type {TableBodyRow, TableRows} from 'sonar';
+import type {TableBodyRow, TableRows} from 'flipper';
 import type {PluginClient} from '../../plugin';
 
 type ValueWithType = {|

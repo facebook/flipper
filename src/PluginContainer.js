@@ -18,7 +18,7 @@ import {
   FlexRow,
   colors,
   styled,
-} from 'sonar';
+} from 'flipper';
 import React from 'react';
 import {connect} from 'react-redux';
 import {setPluginState} from './reducers/pluginStates.js';

@@ -5,7 +5,7 @@
  * @format
  */
 
-import type {TableHighlightedRows, TableRows, TableBodyRow} from 'sonar';
+import type {TableHighlightedRows, TableRows, TableBodyRow} from 'flipper';
 
 import {
   ContextMenu,
@@ -17,8 +17,8 @@ import {
   PureComponent,
   SonarSidebar,
   styled,
-} from 'sonar';
-import {FlipperPlugin, SearchableTable} from 'sonar';
+} from 'flipper';
+import {FlipperPlugin, SearchableTable} from 'flipper';
 import RequestDetails from './RequestDetails.js';
 import {URL} from 'url';
 

@@ -7,7 +7,7 @@
 
 import {Provider} from 'react-redux';
 import ReactDOM from 'react-dom';
-import {ContextMenuProvider} from 'sonar';
+import {ContextMenuProvider} from 'flipper';
 import {precachedIcons} from './utils/icons.js';
 import GK from './fb-stubs/GK.js';
 import Logger from './fb-stubs/Logger.js';

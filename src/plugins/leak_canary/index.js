@@ -17,8 +17,8 @@ import {
   FlipperPlugin,
   Button,
   styled,
-} from 'sonar';
-import type {ElementID, Element} from 'sonar';
+} from 'flipper';
+import type {ElementID, Element} from 'flipper';
 import {processLeaks} from './processLeakString';
 
 type State = {

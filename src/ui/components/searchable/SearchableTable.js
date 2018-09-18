@@ -5,7 +5,7 @@
  * @format
  */
 
-import type {ManagedTableProps, TableBodyRow, Filter} from 'sonar';
+import type {ManagedTableProps, TableBodyRow, Filter} from 'flipper';
 import type {SearchableProps} from './Searchable.js';
 import {PureComponent} from 'react';
 import ManagedTable from '../table/ManagedTable.js';

@@ -10,11 +10,11 @@ import type {
   TableRows,
   TableColumnSizes,
   TableColumns,
-} from 'sonar';
-import {FlexColumn, Button, SonarSidebar} from 'sonar';
+} from 'flipper';
+import {FlexColumn, Button, SonarSidebar} from 'flipper';
 import textContent from './utils/textContent.js';
 import createPaste from './utils/createPaste.js';
-import {FlipperPlugin, SearchableTable} from 'sonar';
+import {FlipperPlugin, SearchableTable} from 'flipper';
 
 type ID = string;
 

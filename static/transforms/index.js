@@ -12,7 +12,7 @@ const metro = require('metro');
 
 exports.transform = function({filename, options, src}) {
   const presets = [require('../node_modules/babel-preset-react')];
-  const isSonarPlugin = !__dirname.startsWith(options.projectRoot);
+  const isPlugin = !__dirname.startsWith(options.projectRoot);
 
   let ast = babylon.parse(src, {
     filename,
@@ -29,8 +29,8 @@ exports.transform = function({filename, options, src}) {
     require('./fb-stubs.js'),
     require('./dynamic-requires.js'),
   ];
-  if (isSonarPlugin) {
-    plugins.push(require('./sonar-requires.js'));
+  if (isPlugin) {
+    plugins.push(require('./flipper-requires.js'));
   } else {
     plugins.push(require('./import-react.js'));
   }

@@ -14,7 +14,7 @@ import {
   Spacer,
   GK,
   styled,
-} from 'sonar';
+} from 'flipper';
 import {connect} from 'react-redux';
 import {
   toggleBugDialogVisible,

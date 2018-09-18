@@ -5,7 +5,7 @@
  * @format
  */
 
-import type {Filter} from 'sonar';
+import type {Filter} from 'flipper';
 import {PureComponent} from 'react';
 import Toolbar from '../Toolbar.js';
 import FlexRow from '../FlexRow.js';

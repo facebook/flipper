@@ -22,7 +22,7 @@ import {
   Text,
   Glyph,
   styled,
-} from 'sonar';
+} from 'flipper';
 import React from 'react';
 import {devicePlugins} from '../device-plugins/index.js';
 import plugins from '../plugins/index.js';

@@ -13,7 +13,7 @@ import {
   maybeSnapTop,
   SNAP_SIZE,
 } from '../../utils/snap.js';
-import {styled} from 'sonar';
+import {styled} from 'flipper';
 
 const invariant = require('invariant');
 const React = require('react');

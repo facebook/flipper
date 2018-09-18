@@ -5,7 +5,7 @@
  * @format
  */
 
-import {Component, Button} from 'sonar';
+import {Component, Button} from 'flipper';
 import {connect} from 'react-redux';
 import {spawn} from 'child_process';
 import {selectDevice, preferDevice} from '../reducers/connections.js';
