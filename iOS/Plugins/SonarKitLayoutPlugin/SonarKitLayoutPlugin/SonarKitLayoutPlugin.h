@@ -9,13 +9,13 @@
 
 #import <Foundation/Foundation.h>
 
-#import <SonarKit/SonarPlugin.h>
+#import <SonarKit/FlipperPlugin.h>
 
 #import "SKTapListener.h"
 #import "SKInvalidation.h"
 #import "SKDescriptorMapper.h"
 
-@interface SonarKitLayoutPlugin : NSObject<SonarPlugin, SKInvalidationDelegate>
+@interface SonarKitLayoutPlugin : NSObject<FlipperPlugin, SKInvalidationDelegate>
 
 - (instancetype)initWithRootNode:(id<NSObject>)rootNode
             withDescriptorMapper:(SKDescriptorMapper *)mapper;

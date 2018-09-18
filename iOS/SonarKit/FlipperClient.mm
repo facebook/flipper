@@ -84,17 +84,17 @@ using WrapperPlugin = facebook::flipper::SonarCppWrapperPlugin;
   _cppClient->refreshPlugins();
 }
 
-- (void)addPlugin:(NSObject<SonarPlugin> *)plugin
+- (void)addPlugin:(NSObject<FlipperPlugin> *)plugin
 {
   _cppClient->addPlugin(std::make_shared<WrapperPlugin>(plugin));
 }
 
-- (void)removePlugin:(NSObject<SonarPlugin> *)plugin
+- (void)removePlugin:(NSObject<FlipperPlugin> *)plugin
 {
   _cppClient->removePlugin(std::make_shared<WrapperPlugin>(plugin));
 }
 
-- (NSObject<SonarPlugin> *)pluginWithIdentifier:(NSString *)identifier
+- (NSObject<FlipperPlugin> *)pluginWithIdentifier:(NSString *)identifier
 {
   auto cppPlugin = _cppClient->getPlugin([identifier UTF8String]);
   if (auto wrapper = dynamic_cast<WrapperPlugin *>(cppPlugin.get())) {

@@ -11,12 +11,12 @@
 
 #import <Sonar/SonarPlugin.h>
 #import <SonarKit/CppBridge/SonarCppBridgingConnection.h>
-#import <SonarKit/SonarPlugin.h>
+#import <SonarKit/FlipperPlugin.h>
 
 namespace facebook {
 namespace flipper {
 
-using ObjCPlugin = NSObject<SonarPlugin> *;
+using ObjCPlugin = NSObject<FlipperPlugin> *;
 
 /**
 SonarCppWrapperPlugin is a simple C++ wrapper around Objective-C Sonar plugins

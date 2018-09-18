@@ -15,7 +15,7 @@ SK_EXTERN_C_END
 
 @protocol SonarConnection;
 
-@protocol SonarPlugin
+@protocol FlipperPlugin
 
 /**
 The plugin's identifier. This should map to a javascript plugin with the same identifier to ensure

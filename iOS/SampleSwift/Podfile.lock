@@ -14,27 +14,27 @@ PODS:
   - PeerTalk (0.0.2)
   - RSocket (0.10.0):
     - Folly
-  - Sonar (0.6.16):
+  - Sonar (0.7.2):
     - Folly (~> 1.1)
     - RSocket (~> 0.10)
-  - SonarKit (0.6.16):
-    - SonarKit/Core (= 0.6.16)
-  - SonarKit/Core (0.6.16):
+  - SonarKit (0.7.2):
+    - SonarKit/Core (= 0.7.2)
+  - SonarKit/Core (0.7.2):
     - CocoaAsyncSocket (~> 7.6)
     - Folly (~> 1.1)
     - OpenSSL-Static (= 1.0.2.c1)
     - PeerTalk (~> 0.0.2)
-    - Sonar (~> 0.6.16)
+    - Sonar (~> 0.7.2)
     - SonarKit/CppBridge
     - SonarKit/FBCxxUtils
     - SonarKit/FBDefines
-  - SonarKit/CppBridge (0.6.16)
-  - SonarKit/FBCxxUtils (0.6.16)
-  - SonarKit/FBDefines (0.6.16)
-  - SonarKit/SKIOSNetworkPlugin (0.6.16):
+  - SonarKit/CppBridge (0.7.2)
+  - SonarKit/FBCxxUtils (0.7.2)
+  - SonarKit/FBDefines (0.7.2)
+  - SonarKit/SKIOSNetworkPlugin (0.7.2):
     - SonarKit/Core
     - SonarKit/SonarKitNetworkPlugin
-  - SonarKit/SonarKitNetworkPlugin (0.6.16):
+  - SonarKit/SonarKitNetworkPlugin (0.7.2):
     - SonarKit/Core
 
 DEPENDENCIES:
@@ -71,9 +71,9 @@ SPEC CHECKSUMS:
   OpenSSL-Static: bd17e34564a8591ad76b740318683a6caa19a13e
   PeerTalk: 77481b0a8136f226b90ccf828d6061f70139ffde
   RSocket: 4fdb7e562db30a2d4fceddefdc601749ffc9ebe2
-  Sonar: 74d1e3a853f1453511108ac1b3e7469a2b2ade92
-  SonarKit: 99c7f51f670c6203c225f509ca5b6f85c6ce734a
+  Sonar: cfbef2d6119e92563d51bf3cdd9ae34f4eda068b
+  SonarKit: 34ede518cc5ebc9678acd0b09403674cab04a991
 
 PODFILE CHECKSUM: bfd82cb10666824db61b62e1ff7196e0b2305f0c
 
-COCOAPODS: 1.5.2
+COCOAPODS: 1.5.3

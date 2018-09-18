@@ -6,7 +6,7 @@
  *
  */
 #import <Foundation/Foundation.h>
-#import "SonarPlugin.h"
+#import "FlipperPlugin.h"
 
 void SonarPerformBlockOnMainThread(void(^block)())
 {

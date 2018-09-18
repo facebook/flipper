@@ -16,36 +16,36 @@ PODS:
   - PeerTalk (0.0.2)
   - RSocket (0.10.0):
     - Folly
-  - Sonar (0.7.1):
+  - Sonar (0.7.2):
     - Folly (~> 1.1)
     - RSocket (~> 0.10)
-  - SonarKit (0.7.1):
-    - SonarKit/Core (= 0.7.1)
-  - SonarKit/Core (0.7.1):
+  - SonarKit (0.7.2):
+    - SonarKit/Core (= 0.7.2)
+  - SonarKit/Core (0.7.2):
     - CocoaAsyncSocket (~> 7.6)
     - Folly (~> 1.1)
     - OpenSSL-Static (= 1.0.2.c1)
     - PeerTalk (~> 0.0.2)
-    - Sonar (~> 0.7.1)
+    - Sonar (~> 0.7.2)
     - SonarKit/CppBridge
     - SonarKit/FBCxxUtils
     - SonarKit/FBDefines
-  - SonarKit/CppBridge (0.7.1)
-  - SonarKit/FBCxxUtils (0.7.1)
-  - SonarKit/FBDefines (0.7.1)
-  - SonarKit/SKIOSNetworkPlugin (0.7.1):
+  - SonarKit/CppBridge (0.7.2)
+  - SonarKit/FBCxxUtils (0.7.2)
+  - SonarKit/FBDefines (0.7.2)
+  - SonarKit/SKIOSNetworkPlugin (0.7.2):
     - SonarKit/Core
     - SonarKit/SonarKitNetworkPlugin
-  - SonarKit/SonarKitLayoutComponentKitSupport (0.7.1):
+  - SonarKit/SonarKitLayoutComponentKitSupport (0.7.2):
     - ComponentKit
     - SonarKit/Core
     - SonarKit/SonarKitLayoutPlugin
     - Yoga (~> 1.9)
-  - SonarKit/SonarKitLayoutPlugin (0.7.1):
+  - SonarKit/SonarKitLayoutPlugin (0.7.2):
     - SonarKit/Core
     - Yoga (~> 1.9)
     - YogaKit (~> 1.8)
-  - SonarKit/SonarKitNetworkPlugin (0.7.1):
+  - SonarKit/SonarKitNetworkPlugin (0.7.2):
     - SonarKit/Core
   - Yoga (1.9.0)
   - YogaKit (1.9.0):
@@ -90,8 +90,8 @@ SPEC CHECKSUMS:
   OpenSSL-Static: bd17e34564a8591ad76b740318683a6caa19a13e
   PeerTalk: 77481b0a8136f226b90ccf828d6061f70139ffde
   RSocket: 4fdb7e562db30a2d4fceddefdc601749ffc9ebe2
-  Sonar: 63e5e5d1f217b691a528b68bb88ddc545dc808d5
-  SonarKit: f457030ca47e09e714a7eadd64c9d0837c6a6b52
+  Sonar: cfbef2d6119e92563d51bf3cdd9ae34f4eda068b
+  SonarKit: 34ede518cc5ebc9678acd0b09403674cab04a991
   Yoga: aaae8abea68951f60bee05f6277d3eed90bb91bb
   YogaKit: d447a9bb808718e6f58e52a2255a8050081a3ead
 

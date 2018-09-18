@@ -9,9 +9,9 @@
 
 #import <Foundation/Foundation.h>
 
-#import <SonarKit/SonarPlugin.h>
+#import <SonarKit/FlipperPlugin.h>
 
-@interface SKBufferingPlugin : NSObject<SonarPlugin>
+@interface SKBufferingPlugin : NSObject<FlipperPlugin>
 
 - (instancetype)initWithQueue:(dispatch_queue_t)queue NS_DESIGNATED_INITIALIZER;
 

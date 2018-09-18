@@ -8,7 +8,7 @@
 #if FB_SONARKIT_ENABLED
 #import <Foundation/Foundation.h>
 
-#import <SonarKit/SonarPlugin.h>
+#import <SonarKit/FlipperPlugin.h>
 
 #import "SKBufferingPlugin.h"
 #import "SKNetworkReporter.h"

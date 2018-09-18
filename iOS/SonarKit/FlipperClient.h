@@ -8,7 +8,7 @@
 #ifdef FB_SONARKIT_ENABLED
 
 #import <Foundation/Foundation.h>
-#import "SonarPlugin.h"
+#import "FlipperPlugin.h"
 #import "FlipperStateUpdateListener.h"
 
 /**
@@ -25,17 +25,17 @@ The shared singleton FlipperClient instance. It is an error to call this on non-
 /**
 Register a plugin with the client.
 */
-- (void)addPlugin:(NSObject<SonarPlugin> *)plugin;
+- (void)addPlugin:(NSObject<FlipperPlugin> *)plugin;
 
 /**
 Unregister a plugin with the client.
 */
-- (void)removePlugin:(NSObject<SonarPlugin> *)plugin;
+- (void)removePlugin:(NSObject<FlipperPlugin> *)plugin;
 
 /**
 Retrieve the plugin with a given identifier which was previously registered with this client.
 */
-- (NSObject<SonarPlugin> *)pluginWithIdentifier:(NSString *)identifier;
+- (NSObject<FlipperPlugin> *)pluginWithIdentifier:(NSString *)identifier;
 
 /**
 Establish a connection to the Sonar desktop.
