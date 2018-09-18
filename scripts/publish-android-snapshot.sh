@@ -9,8 +9,8 @@ if [ "$ANDROID_PUBLISH_KEY" == "" ]; then
   exit
 elif [ "$IS_SNAPSHOT" != "" ]; then
   echo "Build appears to be a SNAPSHOT release, but this is a script for building stable releases. Skipping ..."
-  exit 1
+  exit 0
 else
   openssl aes-256-cbc -d -in scripts/bintray-publish-keys.enc -k "$ANDROID_PUBLISH_KEY" >> "$BASEDIR/gradle.properties"
-  "$BASEDIR"/gradlew bintrayUpload --info -PdryRun=false
+  "$BASEDIR"/gradlew bintrayUpload --quiet -PdryRun=false
 fi
