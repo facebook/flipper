@@ -31,7 +31,7 @@ export type Props<T> = {
   target: PluginTarget,
 };
 
-export class SonarBasePlugin<
+export class FlipperBasePlugin<
   State = *,
   Actions = *,
   PersistedState = *,
@@ -84,7 +84,7 @@ export class SonarBasePlugin<
   }
 }
 
-export class SonarDevicePlugin<S = *, A = *, P = *> extends SonarBasePlugin<
+export class FlipperDevicePlugin<S = *, A = *, P = *> extends FlipperBasePlugin<
   S,
   A,
   P,
@@ -101,7 +101,11 @@ export class SonarDevicePlugin<S = *, A = *, P = *> extends SonarBasePlugin<
   }
 }
 
-export class SonarPlugin<S = *, A = *, P = *> extends SonarBasePlugin<S, A, P> {
+export class FlipperPlugin<S = *, A = *, P = *> extends FlipperBasePlugin<
+  S,
+  A,
+  P,
+> {
   constructor(props: Props<*>) {
     super(props);
     const {id} = this.constructor;

@@ -25,7 +25,7 @@ import {
   FlexColumn,
   Glyph,
   SonarSidebar,
-  SonarDevicePlugin,
+  FlipperDevicePlugin,
   SearchableTable,
   styled,
 } from 'sonar';
@@ -238,7 +238,7 @@ function pad(chunk: mixed, len: number): string {
   return str;
 }
 
-export default class LogTable extends SonarDevicePlugin<
+export default class LogTable extends FlipperDevicePlugin<
   State,
   Actions,
   PersistedState,

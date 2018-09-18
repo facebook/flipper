@@ -5,7 +5,7 @@
  * @format
  */
 
-import type {SonarPlugin} from './plugin.js';
+import type {FlipperPlugin} from './plugin.js';
 import type {App} from './App.js';
 import type Logger from './fb-stubs/Logger.js';
 
@@ -88,7 +88,7 @@ export default class Client extends EventEmitter {
     |},
   >;
 
-  supportsPlugin(Plugin: Class<SonarPlugin<>>): boolean {
+  supportsPlugin(Plugin: Class<FlipperPlugin<>>): boolean {
     return this.plugins.includes(Plugin.id);
   }
 

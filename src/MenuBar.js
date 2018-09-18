@@ -5,7 +5,7 @@
  * @format
  */
 
-import type {SonarBasePlugin} from './plugin.js';
+import type {FlipperBasePlugin} from './plugin.js';
 
 import {devicePlugins} from './device-plugins/index.js';
 import plugins from './plugins/index.js';
@@ -70,7 +70,7 @@ export function setupMenuBar() {
   // collect all keyboard actions from all plugins
   const registeredActions: Set<?KeyboardAction> = new Set(
     [...devicePlugins, ...plugins]
-      .map((plugin: Class<SonarBasePlugin<>>) => plugin.keyboardActions || [])
+      .map((plugin: Class<FlipperBasePlugin<>>) => plugin.keyboardActions || [])
       .reduce((acc: KeyboardActions, cv) => acc.concat(cv), [])
       .map(
         (action: DefaultKeyboardAction | KeyboardAction) =>
@@ -133,7 +133,7 @@ function appendMenuItem(
   }
 }
 
-export function activateMenuItems(activePlugin: SonarBasePlugin<>) {
+export function activateMenuItems(activePlugin: FlipperBasePlugin<>) {
   // disable all keyboard actions
   for (const item of menuItems) {
     item[1].enabled = false;

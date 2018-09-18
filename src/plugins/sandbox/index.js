@@ -5,7 +5,7 @@
  * @format
  */
 
-import {SonarPlugin} from 'sonar';
+import {FlipperPlugin} from 'sonar';
 import {FlexColumn} from 'sonar';
 import {ButtonGroup, Button, styled, colors} from 'sonar';
 
@@ -31,7 +31,7 @@ const ButtonContainer = styled(FlexColumn)({
   padding: 20,
 });
 
-export default class SandboxView extends SonarPlugin<SandboxState> {
+export default class SandboxView extends FlipperPlugin<SandboxState> {
   state = {
     sandboxes: [],
     customSandbox: '',

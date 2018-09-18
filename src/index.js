@@ -10,7 +10,11 @@ export * from './ui/index.js';
 export * from './utils/index.js';
 
 export {default as GK} from './fb-stubs/GK.js';
-export {SonarBasePlugin, SonarPlugin, SonarDevicePlugin} from './plugin.js';
+export {
+  FlipperBasePlugin,
+  FlipperPlugin,
+  FlipperDevicePlugin,
+} from './plugin.js';
 export {createTablePlugin} from './createTablePlugin.js';
 export {default as SonarSidebar} from './chrome/SonarSidebar.js';
 

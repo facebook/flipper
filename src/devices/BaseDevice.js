@@ -6,7 +6,7 @@
  */
 
 import type stream from 'stream';
-import {SonarDevicePlugin} from 'sonar';
+import {FlipperDevicePlugin} from 'sonar';
 
 export type LogLevel =
   | 'unknown'
@@ -69,7 +69,7 @@ export default class BaseDevice {
     return os.toLowerCase() === this.os.toLowerCase();
   }
 
-  supportsPlugin = (DevicePlugin: Class<SonarDevicePlugin<>>): boolean => {
+  supportsPlugin = (DevicePlugin: Class<FlipperDevicePlugin<>>): boolean => {
     return this.supportedPlugins.includes(DevicePlugin.id);
   };
 

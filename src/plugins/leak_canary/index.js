@@ -14,7 +14,7 @@ import {
   Sidebar,
   Toolbar,
   Checkbox,
-  SonarPlugin,
+  FlipperPlugin,
   Button,
   styled,
 } from 'sonar';
@@ -53,7 +53,7 @@ const ToolbarItem = styled(FlexRow)({
   marginLeft: '8px',
 });
 
-export default class LeakCanary extends SonarPlugin<State> {
+export default class LeakCanary extends FlipperPlugin<State> {
   static title = 'LeakCanary';
   static id = 'LeakCanary';
   static icon = 'bird';

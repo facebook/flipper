@@ -14,7 +14,7 @@ import type {
 import {FlexColumn, Button, SonarSidebar} from 'sonar';
 import textContent from './utils/textContent.js';
 import createPaste from './utils/createPaste.js';
-import {SonarPlugin, SearchableTable} from 'sonar';
+import {FlipperPlugin, SearchableTable} from 'sonar';
 
 type ID = string;
 
@@ -58,7 +58,7 @@ type Actions<T> = AppendAndUpdateAction<T> | ResetAndUpdateAction<T>;
  * the client in an unknown state.
  */
 export function createTablePlugin<T: RowData>(props: Props<T>) {
-  return class extends SonarPlugin<State<T>, Actions<T>> {
+  return class extends FlipperPlugin<State<T>, Actions<T>> {
     static title = props.title;
     static id = props.id;
     static icon = props.icon;

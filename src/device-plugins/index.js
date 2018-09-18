@@ -5,13 +5,13 @@
  * @format
  */
 
-import type {SonarDevicePlugin} from '../plugin.js';
+import type {FlipperDevicePlugin} from '../plugin.js';
 
 import {GK} from 'sonar';
 import logs from './logs/index.js';
 import cpu from './cpu/index.js';
 
-const plugins: Array<Class<SonarDevicePlugin<any>>> = [logs];
+const plugins: Array<Class<FlipperDevicePlugin<any>>> = [logs];
 
 if (GK.get('sonar_uiperf')) {
   plugins.push(cpu);

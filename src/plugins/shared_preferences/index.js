@@ -15,7 +15,7 @@ import {
   DataInspector,
   styled,
 } from 'sonar';
-import {SonarPlugin} from 'sonar';
+import {FlipperPlugin} from 'sonar';
 
 const {clone} = require('lodash');
 
@@ -66,7 +66,7 @@ const ChangelogColumn = styled(FlexColumn)({
   padding: '16px',
 });
 
-export default class extends SonarPlugin<SharedPreferencesState> {
+export default class extends FlipperPlugin<SharedPreferencesState> {
   static title = 'Shared Preferences Viewer';
   static id = 'Preferences';
 

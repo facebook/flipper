@@ -9,7 +9,7 @@ import {GK} from 'sonar';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import * as Sonar from 'sonar';
-import {SonarPlugin, SonarBasePlugin} from '../plugin.js';
+import {FlipperPlugin, FlipperBasePlugin} from '../plugin.js';
 import {remote} from 'electron';
 
 const plugins = new Map();
@@ -54,7 +54,7 @@ bundledPlugins
   }))
   .forEach(addIfNotAdded);
 
-const exportedPlugins: Array<Class<SonarPlugin<>>> = Array.from(
+const exportedPlugins: Array<Class<FlipperPlugin<>>> = Array.from(
   plugins.values(),
 )
   .map(plugin => {
@@ -78,7 +78,7 @@ const exportedPlugins: Array<Class<SonarPlugin<>>> = Array.from(
     }
   })
   .filter(Boolean)
-  .filter(plugin => plugin.prototype instanceof SonarBasePlugin)
+  .filter(plugin => plugin.prototype instanceof FlipperBasePlugin)
   .sort((a, b) => (a.title || '').localeCompare(b.title || ''));
 
 export default exportedPlugins;

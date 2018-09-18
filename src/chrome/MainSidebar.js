@@ -6,9 +6,9 @@
  */
 
 import type {
-  SonarPlugin,
-  SonarDevicePlugin,
-  SonarBasePlugin,
+  FlipperPlugin,
+  FlipperDevicePlugin,
+  FlipperBasePlugin,
 } from '../plugin.js';
 import type BaseDevice from '../devices/BaseDevice.js';
 import type Client from '../Client.js';
@@ -97,7 +97,7 @@ function PluginIcon({
 class PluginSidebarListItem extends Component<{
   onClick: () => void,
   isActive: boolean,
-  plugin: Class<SonarBasePlugin<>>,
+  plugin: Class<FlipperBasePlugin<>>,
   app?: ?string,
 }> {
   render() {
@@ -185,7 +185,7 @@ class MainSidebar extends Component<MainSidebarProps> {
         {selectedDevice &&
           devicePlugins
             .filter(selectedDevice.supportsPlugin)
-            .map((plugin: Class<SonarDevicePlugin<>>) => (
+            .map((plugin: Class<FlipperDevicePlugin<>>) => (
               <PluginSidebarListItem
                 key={plugin.id}
                 isActive={plugin.id === selectedPlugin}
@@ -212,10 +212,10 @@ class MainSidebar extends Component<MainSidebarProps> {
               <SidebarHeader>{client.query.app}</SidebarHeader>
               {plugins
                 .filter(
-                  (p: Class<SonarPlugin<>>) =>
+                  (p: Class<FlipperPlugin<>>) =>
                     client.plugins.indexOf(p.id) > -1,
                 )
-                .map((plugin: Class<SonarPlugin<>>) => (
+                .map((plugin: Class<FlipperPlugin<>>) => (
                   <PluginSidebarListItem
                     key={plugin.id}
                     isActive={

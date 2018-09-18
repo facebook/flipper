@@ -18,7 +18,7 @@ import {
   SonarSidebar,
   styled,
 } from 'sonar';
-import {SonarPlugin, SearchableTable} from 'sonar';
+import {FlipperPlugin, SearchableTable} from 'sonar';
 import RequestDetails from './RequestDetails.js';
 import {URL} from 'url';
 
@@ -109,7 +109,7 @@ const TextEllipsis = styled(Text)({
   paddingTop: 4,
 });
 
-export default class extends SonarPlugin<State, *, PersistedState> {
+export default class extends FlipperPlugin<State, *, PersistedState> {
   static title = 'Network';
   static id = 'Network';
   static icon = 'internet';

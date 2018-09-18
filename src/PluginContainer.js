@@ -4,13 +4,13 @@
  * LICENSE file in the root directory of this source tree.
  * @format
  */
-import type {SonarPlugin, SonarBasePlugin} from './plugin.js';
+import type {FlipperPlugin, FlipperBasePlugin} from './plugin.js';
 import type LogManager from './fb-stubs/Logger';
 import type Client from './Client.js';
 import type BaseDevice from './devices/BaseDevice.js';
 import type {Props as PluginProps} from './plugin';
 
-import {SonarDevicePlugin} from './plugin.js';
+import {FlipperDevicePlugin} from './plugin.js';
 import {
   ErrorBoundary,
   Component,
@@ -55,7 +55,7 @@ type Props = {
 };
 
 type State = {
-  activePlugin: ?Class<SonarBasePlugin<>>,
+  activePlugin: ?Class<FlipperBasePlugin<>>,
   target: Client | BaseDevice | null,
   pluginKey: string,
 };
@@ -63,7 +63,7 @@ type State = {
 function computeState(props: Props): State {
   // plugin changed
   let activePlugin = devicePlugins.find(
-    (p: Class<SonarDevicePlugin<>>) => p.id === props.selectedPlugin,
+    (p: Class<FlipperDevicePlugin<>>) => p.id === props.selectedPlugin,
   );
   let target = props.selectedDevice;
   let pluginKey = 'unknown';
@@ -74,7 +74,7 @@ function computeState(props: Props): State {
       (client: Client) => client.id === props.selectedApp,
     );
     activePlugin = plugins.find(
-      (p: Class<SonarPlugin<>>) => p.id === props.selectedPlugin,
+      (p: Class<FlipperPlugin<>>) => p.id === props.selectedPlugin,
     );
     if (!activePlugin || !target) {
       throw new Error(
@@ -92,7 +92,7 @@ function computeState(props: Props): State {
 }
 
 class PluginContainer extends Component<Props, State> {
-  plugin: ?SonarBasePlugin<>;
+  plugin: ?FlipperBasePlugin<>;
 
   constructor(props: Props) {
     super();
@@ -109,7 +109,7 @@ class PluginContainer extends Component<Props, State> {
     }
   }
 
-  refChanged = (ref: ?SonarBasePlugin<>) => {
+  refChanged = (ref: ?FlipperBasePlugin<>) => {
     if (this.plugin) {
       this.plugin._teardown();
       this.plugin = null;

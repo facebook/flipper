@@ -12,7 +12,7 @@ import {
   FlexRow,
   FlexColumn,
   Toolbar,
-  SonarPlugin,
+  FlipperPlugin,
   ElementsInspector,
   InspectorSidebar,
   LoadingIndicator,
@@ -186,7 +186,7 @@ class LayoutSearchInput extends Component<
   }
 }
 
-export default class Layout extends SonarPlugin<InspectorState> {
+export default class Layout extends FlipperPlugin<InspectorState> {
   static title = 'Layout';
   static id = 'Inspector';
   static icon = 'target';
