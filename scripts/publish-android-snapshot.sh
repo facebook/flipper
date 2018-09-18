@@ -12,5 +12,5 @@ elif [ "$IS_SNAPSHOT" != "" ]; then
   exit 0
 else
   openssl aes-256-cbc -d -in scripts/bintray-publish-keys.enc -k "$ANDROID_PUBLISH_KEY" >> "$BASEDIR/gradle.properties"
-  "$BASEDIR"/gradlew bintrayUpload --quiet -PdryRun=false
+  "$BASEDIR"/gradlew :android:uploadArchives --quiet -PdryRun=false
 fi
