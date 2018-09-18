@@ -13,7 +13,7 @@
 #include <string>
 
 namespace facebook {
-namespace sonar {
+namespace flipper {
 
 class SonarConnectionMock : public SonarConnection {
  public:
@@ -33,5 +33,5 @@ class SonarConnectionMock : public SonarConnection {
   std::map<std::string, SonarReceiver> receivers_;
 };
 
-} // namespace sonar
+} // namespace flipper
 } // namespace facebook

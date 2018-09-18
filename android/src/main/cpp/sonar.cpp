@@ -26,7 +26,7 @@
 #include <Sonar/SonarState.h>
 
 using namespace facebook;
-using namespace facebook::sonar;
+using namespace facebook::flipper;
 
 namespace {
 

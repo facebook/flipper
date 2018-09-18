@@ -17,7 +17,7 @@
 #include <mutex>
 
 namespace facebook {
-namespace sonar {
+namespace flipper {
 
 class ConnectionEvents;
 class ConnectionContextStore;
@@ -67,5 +67,5 @@ class SonarWebSocketImpl : public SonarWebSocket {
   std::string getDeviceId();
 };
 
-} // namespace sonar
+} // namespace flipper
 } // namespace facebook

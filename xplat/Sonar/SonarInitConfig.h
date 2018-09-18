@@ -12,7 +12,7 @@
 #include <map>
 
 namespace facebook {
-namespace sonar {
+namespace flipper {
 
 struct DeviceData {
   std::string host;
@@ -41,5 +41,5 @@ struct SonarInitConfig {
   folly::EventBase* connectionWorker;
 };
 
-} // namespace sonar
+} // namespace flipper
 } // namespace facebook

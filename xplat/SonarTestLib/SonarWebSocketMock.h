@@ -11,7 +11,7 @@
 #include <Sonar/SonarWebSocket.h>
 
 namespace facebook {
-namespace sonar {
+namespace flipper {
 namespace test {
 
 class SonarWebSocketMock : public SonarWebSocket {
@@ -51,5 +51,5 @@ class SonarWebSocketMock : public SonarWebSocket {
 };
 
 } // namespace test
-} // namespace sonar
+} // namespace flipper
 } // namespace facebook

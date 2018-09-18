@@ -11,7 +11,7 @@
 #include <folly/json.h>
 
 namespace facebook {
-namespace sonar {
+namespace flipper {
 
 class SonarWebSocket {
  public:
@@ -59,5 +59,5 @@ class SonarWebSocket::Callbacks {
   virtual void onMessageReceived(const folly::dynamic& message) = 0;
 };
 
-} // namespace sonar
+} // namespace flipper
 } // namespace facebook

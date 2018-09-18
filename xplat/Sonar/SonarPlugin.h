@@ -11,7 +11,7 @@
 #include <string>
 
 namespace facebook {
-namespace sonar {
+namespace flipper {
 
 class SonarPlugin {
  public:
@@ -38,5 +38,5 @@ class SonarPlugin {
   virtual void didDisconnect() = 0;
 };
 
-} // namespace sonar
+} // namespace flipper
 } // namespace facebook

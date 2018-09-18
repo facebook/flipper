@@ -14,7 +14,7 @@
 #include <gtest/gtest.h>
 
 namespace facebook {
-namespace sonar {
+namespace flipper {
 namespace test {
 
 using folly::dynamic;
@@ -290,5 +290,5 @@ TEST(SonarClientTests, testExceptionUnknownApi) {
 }
 
 } // namespace test
-} // namespace sonar
+} // namespace flipper
 } // namespace facebook

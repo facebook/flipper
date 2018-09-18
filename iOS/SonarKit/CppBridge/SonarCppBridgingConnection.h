@@ -14,5 +14,5 @@ that forwards messages to the underlying C++ connection. This class allows
 pure Objective-C plugins to send messages to the underlying connection.
 */
 @interface SonarCppBridgingConnection : NSObject <SonarConnection>
-- (instancetype)initWithCppConnection:(std::shared_ptr<facebook::sonar::SonarConnection>)conn;
+- (instancetype)initWithCppConnection:(std::shared_ptr<facebook::flipper::SonarConnection>)conn;
 @end

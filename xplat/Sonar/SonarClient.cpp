@@ -19,7 +19,7 @@
 #if FB_SONARKIT_ENABLED
 
 namespace facebook {
-namespace sonar {
+namespace flipper {
 
 static SonarClient* kInstance;
 
@@ -214,7 +214,7 @@ std::vector<StateElement> SonarClient::getStateElements() {
   return sonarState_->getStateElements();
 }
 
-} // namespace sonar
+} // namespace flipper
 } // namespace facebook
 
 #endif

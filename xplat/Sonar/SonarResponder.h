@@ -11,7 +11,7 @@
 #include <folly/json.h>
 
 namespace facebook {
-namespace sonar {
+namespace flipper {
 
 /**
  * SonarResponder is used to asynchronously respond to messages
@@ -32,5 +32,5 @@ class SonarResponder {
   virtual void error(const folly::dynamic& response) const = 0;
 };
 
-} // namespace sonar
+} // namespace flipper
 } // namespace facebook

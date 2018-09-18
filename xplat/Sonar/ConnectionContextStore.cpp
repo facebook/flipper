@@ -6,7 +6,7 @@
 #include "CertificateUtils.h"
 #include "Log.h"
 
-using namespace facebook::sonar;
+using namespace facebook::flipper;
 
 static constexpr auto CSR_FILE_NAME = "app.csr";
 static constexpr auto FLIPPER_CA_FILE_NAME = "flipperCA.crt";

@@ -13,6 +13,6 @@
 #import <memory>
 
 @interface SonarKitNetworkPlugin(CPPInitialization)
-- (instancetype)initWithNetworkAdapter:(id<SKNetworkAdapterDelegate>)adapter dispatchQueue:(std::shared_ptr<facebook::sonar::DispatchQueue>)queue;
+- (instancetype)initWithNetworkAdapter:(id<SKNetworkAdapterDelegate>)adapter dispatchQueue:(std::shared_ptr<facebook::flipper::DispatchQueue>)queue;
 @end
 #endif

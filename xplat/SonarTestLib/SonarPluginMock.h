@@ -11,7 +11,7 @@
 #include <Sonar/SonarPlugin.h>
 
 namespace facebook {
-namespace sonar {
+namespace flipper {
 namespace test {
 
 class SonarPluginMock : public SonarPlugin {
@@ -58,5 +58,5 @@ class SonarPluginMock : public SonarPlugin {
 };
 
 } // namespace test
-} // namespace sonar
+} // namespace flipper
 } // namespace facebook

@@ -1,7 +1,7 @@
 #include <Sonar/ConnectionContextStore.h>
 
 namespace facebook {
-namespace sonar {
+namespace flipper {
 namespace test {
 
   class ConnectionContextStoreMock : public ConnectionContextStore {

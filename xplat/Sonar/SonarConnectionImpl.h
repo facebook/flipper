@@ -14,7 +14,7 @@
 #include <string>
 
 namespace facebook {
-namespace sonar {
+namespace flipper {
 
 class SonarConnectionImpl : public SonarConnection {
  public:
@@ -57,5 +57,5 @@ class SonarConnectionImpl : public SonarConnection {
   std::map<std::string, SonarReceiver> receivers_;
 };
 
-} // namespace sonar
+} // namespace flipper
 } // namespace facebook

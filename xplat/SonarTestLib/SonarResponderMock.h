@@ -13,7 +13,7 @@
 #include <vector>
 
 namespace facebook {
-namespace sonar {
+namespace flipper {
 
 class SonarResponderMock : public SonarResponder {
  public:
@@ -39,5 +39,5 @@ class SonarResponderMock : public SonarResponder {
   std::vector<folly::dynamic>* errors_;
 };
 
-} // namespace sonar
+} // namespace flipper
 } // namespace facebook

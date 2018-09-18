@@ -10,7 +10,7 @@
 #include "SonarStep.h"
 #include <vector>
 
-using namespace facebook::sonar;
+using namespace facebook::flipper;
 
 /* Class responsible for collecting state updates and combining them into a
  * view of the current state of the sonar client. */

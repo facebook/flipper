@@ -13,7 +13,7 @@
 #include <folly/json.h>
 
 namespace facebook {
-namespace sonar {
+namespace flipper {
 
 class SonarResponderImpl : public SonarResponder {
  public:
@@ -37,5 +37,5 @@ class SonarResponderImpl : public SonarResponder {
   int64_t responseID_;
 };
 
-} // namespace sonar
+} // namespace flipper
 } // namespace facebook

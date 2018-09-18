@@ -14,7 +14,7 @@
 #include <string>
 
 namespace facebook {
-namespace sonar {
+namespace flipper {
 
 /**
 Represents a connection between the Desktop and mobile plugins
@@ -50,5 +50,5 @@ class SonarConnection {
       const SonarReceiver& receiver) = 0;
 };
 
-} // namespace sonar
+} // namespace flipper
 } // namespace facebook

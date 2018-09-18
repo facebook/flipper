@@ -12,7 +12,7 @@
 #include <gtest/gtest.h>
 
 namespace facebook {
-namespace sonar {
+namespace flipper {
 namespace test {
 
 using folly::EventBase;
@@ -95,5 +95,5 @@ TEST_F(SonarWebSocketImplTerminationTest, testStartedEventBaseDoesntHang) {
 }
 
 } // namespace test
-} // namespace sonar
+} // namespace flipper
 } // namespace facebook

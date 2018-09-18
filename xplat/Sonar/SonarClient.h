@@ -19,7 +19,7 @@
 #include <vector>
 
 namespace facebook {
-namespace sonar {
+namespace flipper {
 
 class SonarClient : public SonarWebSocket::Callbacks {
  public:
@@ -100,5 +100,5 @@ class SonarClient : public SonarWebSocket::Callbacks {
   void disconnect(std::shared_ptr<SonarPlugin> plugin);
 };
 
-} // namespace sonar
+} // namespace flipper
 } // namespace facebook

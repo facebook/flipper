@@ -14,5 +14,5 @@ that forwards messages to the underlying C++ responder. This class allows
 pure Objective-C plugins to send messages to the underlying responder.
 */
 @interface SonarCppBridgingResponder : NSObject <SonarResponder>
-- (instancetype)initWithCppResponder:(std::unique_ptr<facebook::sonar::SonarResponder>)responder;
+- (instancetype)initWithCppResponder:(std::unique_ptr<facebook::flipper::SonarResponder>)responder;
 @end

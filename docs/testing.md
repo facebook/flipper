@@ -61,7 +61,7 @@ Start by creating your first test file in this directory `MySonarPluginTests.cpp
 #include <gtest/gtest.h>
 
 namespace facebook {
-namespace sonar {
+namespace flipper {
 namespace test {
 
 TEST(MySonarPluginTests, testDummy) {
@@ -69,7 +69,7 @@ TEST(MySonarPluginTests, testDummy) {
 }
 
 } // namespace test
-} // namespace sonar
+} // namespace flipper
 } // namespace facebook
 ```
 
