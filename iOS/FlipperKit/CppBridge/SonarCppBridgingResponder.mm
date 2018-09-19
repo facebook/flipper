@@ -26,7 +26,7 @@
   return self;
 }
 
-#pragma mark - SonarResponder
+#pragma mark - FlipperResponder
 
 - (void)success:(NSDictionary *)response { responder_->success(facebook::cxxutils::convertIdToFollyDynamic(response, true)); }
 

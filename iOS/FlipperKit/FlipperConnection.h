@@ -7,10 +7,10 @@
  */
 #import <Foundation/Foundation.h>
 
-@protocol SonarResponder;
+@protocol FlipperResponder;
 @protocol SonarWebSocket;
 
-typedef void (^SonarReceiver)(NSDictionary*, id<SonarResponder>);
+typedef void (^SonarReceiver)(NSDictionary*, id<FlipperResponder>);
 
 /**
 Represents a connection between the Desktop and mobile plugins with corresponding identifiers.

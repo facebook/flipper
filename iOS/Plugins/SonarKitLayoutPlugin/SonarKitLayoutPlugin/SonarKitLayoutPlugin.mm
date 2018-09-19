@@ -11,7 +11,7 @@
 
 #import <FlipperKit/FlipperClient.h>
 #import <FlipperKit/FlipperConnection.h>
-#import <FlipperKit/SonarResponder.h>
+#import <FlipperKit/FlipperResponder.h>
 #import <FlipperKit/SKMacros.h>
 #import "SKDescriptorMapper.h"
 #import "SKNodeDescriptor.h"
@@ -83,15 +83,15 @@
   // In order to avoid a retain cycle (Connection -> Block -> SonarKitLayoutPlugin -> Connection ...)
   __weak SonarKitLayoutPlugin *weakSelf = self;
 
-  [connection receive:@"getRoot" withBlock:^(NSDictionary *params, id<SonarResponder> responder) {
+  [connection receive:@"getRoot" withBlock:^(NSDictionary *params, id<FlipperResponder> responder) {
     FlipperPerformBlockOnMainThread(^{ [weakSelf onCallGetRoot: responder]; });
   }];
 
-  [connection receive:@"getNodes" withBlock:^(NSDictionary *params, id<SonarResponder> responder) {
+  [connection receive:@"getNodes" withBlock:^(NSDictionary *params, id<FlipperResponder> responder) {
     FlipperPerformBlockOnMainThread(^{ [weakSelf onCallGetNodes: params[@"ids"] withResponder: responder]; });
   }];
 
-  [connection receive:@"setData" withBlock:^(NSDictionary *params, id<SonarResponder> responder) {
+  [connection receive:@"setData" withBlock:^(NSDictionary *params, id<FlipperResponder> responder) {
     FlipperPerformBlockOnMainThread(^{
       [weakSelf onCallSetData: params[@"id"]
                  withPath: params[@"path"]
@@ -100,19 +100,19 @@
     });
   }];
 
-  [connection receive:@"setHighlighted" withBlock:^(NSDictionary *params, id<SonarResponder> responder) {
+  [connection receive:@"setHighlighted" withBlock:^(NSDictionary *params, id<FlipperResponder> responder) {
     FlipperPerformBlockOnMainThread(^{ [weakSelf onCallSetHighlighted: params[@"id"] withResponder: responder]; });
   }];
 
-  [connection receive:@"setSearchActive" withBlock:^(NSDictionary *params, id<SonarResponder> responder) {
+  [connection receive:@"setSearchActive" withBlock:^(NSDictionary *params, id<FlipperResponder> responder) {
     FlipperPerformBlockOnMainThread(^{ [weakSelf onCallSetSearchActive: [params[@"active"] boolValue] withConnection: connection]; });
   }];
 
-  [connection receive:@"isConsoleEnabled" withBlock:^(NSDictionary *params, id<SonarResponder> responder) {
+  [connection receive:@"isConsoleEnabled" withBlock:^(NSDictionary *params, id<FlipperResponder> responder) {
     FlipperPerformBlockOnMainThread(^{ [responder success: @{@"isEnabled": @NO}];});
   }];
 
-  [connection receive:@"getSearchResults" withBlock:^(NSDictionary *params, id<SonarResponder> responder) {
+  [connection receive:@"getSearchResults" withBlock:^(NSDictionary *params, id<FlipperResponder> responder) {
     FlipperPerformBlockOnMainThread(^{ [weakSelf onCallGetSearchResults: params[@"query"] withResponder: responder]; });
   }];
 }
@@ -124,13 +124,13 @@
   [self onCallSetSearchActive: NO withConnection: nil];
 }
 
-- (void)onCallGetRoot:(id<SonarResponder>)responder {
+- (void)onCallGetRoot:(id<FlipperResponder>)responder {
   const auto rootNode= [self getNode: [self trackObject: _rootNode]];
 
   [responder success: rootNode];
 }
 
-- (void)onCallGetNodes:(NSArray<NSDictionary *> *)nodeIds withResponder:(id<SonarResponder>)responder {
+- (void)onCallGetNodes:(NSArray<NSDictionary *> *)nodeIds withResponder:(id<FlipperResponder>)responder {
   NSMutableArray<NSDictionary *> *elements = [NSMutableArray new];
 
   for (id nodeId in nodeIds) {
@@ -174,7 +174,7 @@
   }
 }
 
-- (void)onCallGetSearchResults:(NSString *)query withResponder:(id<SonarResponder>)responder {
+- (void)onCallGetSearchResults:(NSString *)query withResponder:(id<FlipperResponder>)responder {
   const auto alreadyAddedElements = [NSMutableSet<NSString *> new];
   SKSearchResultNode *matchTree = [self searchForQuery:(NSString *)[query lowercaseString] fromNode:(id)_rootNode withElementsAlreadyAdded: alreadyAddedElements];
 
@@ -185,7 +185,7 @@
   return;
 }
 
-- (void)onCallSetHighlighted:(NSString *)objectId withResponder:(id<SonarResponder>)responder {
+- (void)onCallSetHighlighted:(NSString *)objectId withResponder:(id<FlipperResponder>)responder {
   if (_lastHighlightedNode != nil) {
     id lastHighlightedObject = [_trackedObjects objectForKey: _lastHighlightedNode];
     if (lastHighlightedObject == nil) {
