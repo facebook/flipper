@@ -6,7 +6,7 @@
  *
  */
 #import <ComponentKit/CKComponent.h>
-#import <SonarKit/SKMacros.h>
+#import <FlipperKit/SKMacros.h>
 #import <SonarKitLayoutPlugin/SKNamed.h>
 #import <SonarKitLayoutPlugin/SKNodeDescriptor.h>
 

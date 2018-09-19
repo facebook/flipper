@@ -10,8 +10,8 @@
 #endif
 
 #import <Sonar/SonarPlugin.h>
-#import <SonarKit/CppBridge/SonarCppBridgingConnection.h>
-#import <SonarKit/FlipperPlugin.h>
+#import <FlipperKit/CppBridge/SonarCppBridgingConnection.h>
+#import <FlipperKit/FlipperPlugin.h>
 
 namespace facebook {
 namespace flipper {

@@ -10,7 +10,7 @@
 #import <vector>
 
 #import "SKBufferingPlugin.h"
-#import <SonarKit/FlipperConnection.h>
+#import <FlipperKit/FlipperConnection.h>
 #import "SKDispatchQueue.h"
 #import "SKBufferingPlugin+CPPInitialization.h"
 

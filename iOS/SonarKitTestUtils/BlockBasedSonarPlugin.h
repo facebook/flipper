@@ -7,7 +7,7 @@
  */
 #import <Foundation/Foundation.h>
 
-#import <SonarKit/FlipperPlugin.h>
+#import <FlipperKit/FlipperPlugin.h>
 
 @protocol FlipperConnection;
 

@@ -9,8 +9,8 @@
 
 #if FB_SONARKIT_ENABLED
 
-#import <SonarKit/CppBridge/SonarCppWrapperPlugin.h>
-#import <SonarKit/FlipperPlugin.h>
+#import <FlipperKit/CppBridge/SonarCppWrapperPlugin.h>
+#import <FlipperKit/FlipperPlugin.h>
 
 using facebook::flipper::SonarCppWrapperPlugin;
 

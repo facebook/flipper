@@ -1,7 +1,7 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 
 import UIKit
-import SonarKit
+import FlipperKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {

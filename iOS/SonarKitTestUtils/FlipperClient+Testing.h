@@ -12,7 +12,7 @@
 #import <Foundation/Foundation.h>
 
 #import <Sonar/SonarClient.h>
-#import <SonarKit/FlipperClient.h>
+#import <FlipperKit/FlipperClient.h>
 
 @interface FlipperClient (Testing)
 

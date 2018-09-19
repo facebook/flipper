@@ -7,7 +7,7 @@
  */
 #import <UIKit/UIKit.h>
 
-#import <SonarKit/SKMacros.h>
+#import <FlipperKit/SKMacros.h>
 
 #import "SKObject.h"
 

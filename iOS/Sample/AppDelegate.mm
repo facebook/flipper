@@ -7,7 +7,7 @@
  */
 #import "AppDelegate.h"
 
-#import <SonarKit/FlipperClient.h>
+#import <FlipperKit/FlipperClient.h>
 #import <SonarKitLayoutPlugin/SonarKitLayoutPlugin.h>
 #import <SonarKitNetworkPlugin/SonarKitNetworkPlugin.h>
 #import <SonarKitLayoutComponentKitSupport/SonarKitLayoutComponentKitSupport.h>

@@ -6,7 +6,7 @@
  *
  */
 #import <ComponentKit/CKInsetComponent.h>
-#import <SonarKit/SKMacros.h>
+#import <FlipperKit/SKMacros.h>
 
 FB_LINK_REQUIRE(CKInsetComponent_Sonar)
 @interface CKInsetComponent (Sonar)

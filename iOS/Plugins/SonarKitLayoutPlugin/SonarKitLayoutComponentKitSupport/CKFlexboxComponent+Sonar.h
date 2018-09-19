@@ -6,7 +6,7 @@
  *
  */
 #import <ComponentKit/CKFlexboxComponent.h>
-#import <SonarKit/SKMacros.h>
+#import <FlipperKit/SKMacros.h>
 
 FB_LINK_REQUIRE(CKFlexboxComponent_Sonar)
 @interface CKFlexboxComponent (Sonar)

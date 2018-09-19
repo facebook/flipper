@@ -3,7 +3,7 @@ yoga_version = '~> 1.9'
 yogakit_version = '~>1.8'
 sonarkit_version = '0.7.2'
 Pod::Spec.new do |spec|
-  spec.name = 'SonarKit'
+  spec.name = 'FlipperKit'
   spec.version = sonarkit_version
   spec.license = { :type => 'MIT' }
   spec.homepage = 'https://github.com/facebook/Sonar'
@@ -12,14 +12,14 @@ Pod::Spec.new do |spec|
   spec.static_framework = true
   spec.source = { :git => 'https://github.com/facebook/Sonar.git',
                   :tag=> "v"+sonarkit_version }
-  spec.module_name = 'SonarKit'
+  spec.module_name = 'FlipperKit'
   spec.platforms = { :ios => "8.4" }
   spec.default_subspecs = "Core"
 
   # This subspec is necessary since FBMacros.h is imported as <FBDefines/FBMacros.h>
   # inside SKMacros.h, which is a public header file. Defining this directory as a
   # subspec with header_dir = 'FBDefines' allows this to work, even though it wouldn't
-  # generally (you would need to import <SonarKit/FBDefines/FBMacros.h>)
+  # generally (you would need to import <FlipperKit/t/FBDefines/FBMacros.h>)
   spec.subspec 'FBDefines' do |ss|
     ss.header_dir = 'FBDefines'
     ss.compiler_flags = folly_compiler_flags
@@ -30,33 +30,33 @@ Pod::Spec.new do |spec|
   spec.subspec 'CppBridge' do |ss|
     ss.header_dir = 'CppBridge'
     ss.compiler_flags = folly_compiler_flags
-    ss.source_files = 'iOS/SonarKit/CppBridge/**/*.{h,mm}'
+    ss.source_files = 'iOS/FlipperKit/CppBridge/**/*.{h,mm}'
     # We set these files as private headers since they only need to be accessed
     # by other SonarKit source files
-    ss.private_header_files = 'iOS/SonarKit/CppBridge/**/*.h'
-    ss.preserve_path = 'SonarKit/CppBridge/**/*.h'
+    ss.private_header_files = 'iOS/FlipperKit/CppBridge/**/*.h'
+    ss.preserve_path = 'FlipperKit/CppBridge/**/*.h'
   end
 
   spec.subspec 'FBCxxUtils' do |ss|
     ss.header_dir = 'FBCxxUtils'
     ss.compiler_flags = folly_compiler_flags
-    ss.source_files = 'iOS/SonarKit/FBCxxUtils/**/*.{h,mm}'
+    ss.source_files = 'iOS/FlipperKit/FBCxxUtils/**/*.{h,mm}'
     # We set these files as private headers since they only need to be accessed
     # by other SonarKit source files
-    ss.private_header_files = 'iOS/SonarKit/FBCxxUtils/**/*.h'
+    ss.private_header_files = 'iOS/FlipperKit/FBCxxUtils/**/*.h'
   end
 
   spec.subspec "Core" do |ss|
-    ss.dependency 'SonarKit/FBDefines'
-    ss.dependency 'SonarKit/FBCxxUtils'
-    ss.dependency 'SonarKit/CppBridge'
+    ss.dependency 'FlipperKit/FBDefines'
+    ss.dependency 'FlipperKit/FBCxxUtils'
+    ss.dependency 'FlipperKit/CppBridge'
     ss.dependency 'Folly', '~>1.1'
     ss.dependency 'Sonar', '~>'+sonarkit_version
     ss.dependency 'CocoaAsyncSocket', '~> 7.6'
     ss.dependency 'PeerTalk', '~>0.0.2'
     ss.dependency 'OpenSSL-Static', '1.0.2.c1'
     ss.compiler_flags = folly_compiler_flags
-    ss.source_files = 'iOS/SonarKit/FBDefines/*.{h,cpp,m,mm}', 'iOS/SonarKit/CppBridge/*.{h,mm}', 'iOS/SonarKit/FBCxxUtils/*.{h,mm}', 'iOS/SonarKit/Utilities/**/*.{h,m}', 'iOS/SonarKit/*.{h,m,mm}'
+    ss.source_files = 'iOS/FlipperKit/FBDefines/*.{h,cpp,m,mm}', 'iOS/FlipperKit/CppBridge/*.{h,mm}', 'iOS/FlipperKit/FBCxxUtils/*.{h,mm}', 'iOS/FlipperKit/Utilities/**/*.{h,m}', 'iOS/FlipperKit/*.{h,m,mm}'
     ss.public_header_files = 'iOS/Plugins/SonarKitNetworkPlugin/SKIOSNetworkPlugin/SKIOSNetworkAdapter.h',
                              'iOS/Plugins/SonarKitNetworkPlugin/SonarKitNetworkPlugin/SKBufferingPlugin.h',
                              'iOS/Plugins/SonarKitNetworkPlugin/SonarKitNetworkPlugin/SKNetworkReporter.h',
@@ -64,8 +64,8 @@ Pod::Spec.new do |spec|
                              'iOS/Plugins/SonarKitNetworkPlugin/SonarKitNetworkPlugin/SKResponseInfo.h',
                              'iOS/Plugins/SonarKitNetworkPlugin/SonarKitNetworkPlugin/SonarKitNetworkPlugin.h',
                              'iOS/FBDefines/FBMacros.h',
-                             'iOS/SonarKit/**/{FlipperStateUpdateListener,FlipperClient,FlipperPlugin,FlipperConnection,SonarResponder,SKMacros}.h'
-    header_search_paths = "\"$(PODS_ROOT)/SonarKit/iOS/SonarKit\" \"$(PODS_ROOT)\"/Headers/Private/SonarKit/** \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/PeerTalkSonar\""
+                             'iOS/FlipperKit/**/{FlipperStateUpdateListener,FlipperClient,FlipperPlugin,FlipperConnection,SonarResponder,SKMacros}.h'
+    header_search_paths = "\"$(PODS_ROOT)/FlipperKit/iOS/FlipperKit\" \"$(PODS_ROOT)\"/Headers/Private/FlipperKit/** \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/PeerTalkSonar\""
     ss.pod_target_xcconfig = { "USE_HEADERMAP" => "NO",
                              "DEFINES_MODULE" => "YES",
                              "HEADER_SEARCH_PATHS" => header_search_paths }
@@ -73,7 +73,7 @@ Pod::Spec.new do |spec|
 
   spec.subspec "SonarKitLayoutPlugin" do |ss|
     ss.header_dir = "SonarKitLayoutPlugin"
-    ss.dependency             'SonarKit/Core'
+    ss.dependency             'FlipperKit/Core'
     ss.dependency             'Yoga', yoga_version
     ss.dependency             'YogaKit', yogakit_version
     ss.compiler_flags       = folly_compiler_flags
@@ -95,23 +95,23 @@ Pod::Spec.new do |spec|
 
   spec.subspec "SonarKitLayoutComponentKitSupport" do |ss|
     ss.header_dir = "SonarKitLayoutComponentKitSupport"
-    ss.dependency             'SonarKit/Core'
+    ss.dependency             'FlipperKit/Core'
     ss.dependency             'Yoga', yoga_version
     ss.dependency             'ComponentKit'
-    ss.dependency             'SonarKit/SonarKitLayoutPlugin'
+    ss.dependency             'FlipperKit/SonarKitLayoutPlugin'
     ss.compiler_flags       = folly_compiler_flags
-    ss.dependency             'SonarKit/SonarKitLayoutPlugin'
+    ss.dependency             'FlipperKit/SonarKitLayoutPlugin'
     ss.public_header_files = 'iOS/Plugins/SonarKitLayoutPlugin/SonarKitLayoutComponentKitSupport/SonarKitLayoutComponentKitSupport.h',
                              'iOS/Plugins/SonarKitLayoutPlugin/SonarKitLayoutComponentKitSupport/SKComponentLayoutWrapper.h'
 
     ss.source_files         = "iOS/Plugins/SonarKitLayoutPlugin/SonarKitLayoutComponentKitSupport/**/*.{h,cpp,m,mm}"
     ss.pod_target_xcconfig = { "USE_HEADERMAP" => "NO",
-                                "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)\"/Headers/Private/SonarKit/**" }
+                                "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)\"/Headers/Private/FlipperKit/**" }
   end
 
   spec.subspec "SonarKitNetworkPlugin" do |ss|
     ss.header_dir = "SonarKitNetworkPlugin"
-    ss.dependency             'SonarKit/Core'
+    ss.dependency             'FlipperKit/Core'
     ss.compiler_flags       = folly_compiler_flags
     ss.public_header_files = 'iOS/Plugins/SonarKitNetworkPlugin/SonarKitNetworkPlugin/SKBufferingPlugin.h',
                              'iOS/Plugins/SonarKitNetworkPlugin/SonarKitNetworkPlugin/SKNetworkReporter.h',
@@ -119,16 +119,16 @@ Pod::Spec.new do |spec|
                              'iOS/Plugins/SonarKitNetworkPlugin/SonarKitNetworkPlugin/SKResponseInfo.h',
                              'iOS/Plugins/SonarKitNetworkPlugin/SonarKitNetworkPlugin/SonarKitNetworkPlugin.h'
     ss.source_files         = "iOS/Plugins/SonarKitNetworkPlugin/SonarKitNetworkPlugin/*.{h,cpp,m,mm}"
-    ss.pod_target_xcconfig = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)\"/Headers/Private/SonarKit/**" }
+    ss.pod_target_xcconfig = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)\"/Headers/Private/FlipperKit/**" }
   end
 
   spec.subspec "SKIOSNetworkPlugin" do |ss|
     ss.header_dir = "SKIOSNetworkPlugin"
-    ss.dependency 'SonarKit/Core'
-    ss.dependency 'SonarKit/SonarKitNetworkPlugin'
+    ss.dependency 'FlipperKit/Core'
+    ss.dependency 'FlipperKit/SonarKitNetworkPlugin'
     ss.compiler_flags       = folly_compiler_flags
     ss.public_header_files = 'iOS/Plugins/SonarKitNetworkPlugin/SKIOSNetworkPlugin/SKIOSNetworkAdapter.h'
     ss.source_files         = "iOS/Plugins/SonarKitNetworkPlugin/SKIOSNetworkPlugin/**/*.{h,cpp,m,mm}"
-    ss.pod_target_xcconfig = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)\"/Headers/Private/SonarKit/**" }
+    ss.pod_target_xcconfig = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)\"/Headers/Private/FlipperKit/**" }
   end
 end

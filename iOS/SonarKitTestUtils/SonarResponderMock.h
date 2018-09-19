@@ -7,7 +7,7 @@
  */
 #import <Foundation/Foundation.h>
 
-#import <SonarKit/SonarResponder.h>
+#import <FlipperKit/SonarResponder.h>
 
 @interface SonarResponderMock : NSObject<SonarResponder>
 

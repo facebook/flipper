@@ -6,7 +6,7 @@
  *
  */
 #import <Sonar/FlipperResponder.h>
-#import <SonarKit/SonarResponder.h>
+#import <FlipperKit/SonarResponder.h>
 
 /**
 SonarCppBridgingResponder is a simple ObjC wrapper around SonarResponder

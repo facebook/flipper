@@ -5,6 +5,34 @@ PODS:
   - ComponentKit (0.23):
     - Yoga (~> 1.6)
   - DoubleConversion (1.1.5)
+  - FlipperKit (0.7.2):
+    - FlipperKit/Core (= 0.7.2)
+  - FlipperKit/Core (0.7.2):
+    - CocoaAsyncSocket (~> 7.6)
+    - FlipperKit/CppBridge
+    - FlipperKit/FBCxxUtils
+    - FlipperKit/FBDefines
+    - Folly (~> 1.1)
+    - OpenSSL-Static (= 1.0.2.c1)
+    - PeerTalk (~> 0.0.2)
+    - Sonar (~> 0.7.2)
+  - FlipperKit/CppBridge (0.7.2)
+  - FlipperKit/FBCxxUtils (0.7.2)
+  - FlipperKit/FBDefines (0.7.2)
+  - FlipperKit/SKIOSNetworkPlugin (0.7.2):
+    - FlipperKit/Core
+    - FlipperKit/SonarKitNetworkPlugin
+  - FlipperKit/SonarKitLayoutComponentKitSupport (0.7.2):
+    - ComponentKit
+    - FlipperKit/Core
+    - FlipperKit/SonarKitLayoutPlugin
+    - Yoga (~> 1.9)
+  - FlipperKit/SonarKitLayoutPlugin (0.7.2):
+    - FlipperKit/Core
+    - Yoga (~> 1.9)
+    - YogaKit (~> 1.8)
+  - FlipperKit/SonarKitNetworkPlugin (0.7.2):
+    - FlipperKit/Core
   - Folly (1.1.0):
     - boost-for-react-native
     - CocoaLibEvent (~> 1.0)
@@ -19,43 +47,15 @@ PODS:
   - Sonar (0.7.2):
     - Folly (~> 1.1)
     - RSocket (~> 0.10)
-  - SonarKit (0.7.2):
-    - SonarKit/Core (= 0.7.2)
-  - SonarKit/Core (0.7.2):
-    - CocoaAsyncSocket (~> 7.6)
-    - Folly (~> 1.1)
-    - OpenSSL-Static (= 1.0.2.c1)
-    - PeerTalk (~> 0.0.2)
-    - Sonar (~> 0.7.2)
-    - SonarKit/CppBridge
-    - SonarKit/FBCxxUtils
-    - SonarKit/FBDefines
-  - SonarKit/CppBridge (0.7.2)
-  - SonarKit/FBCxxUtils (0.7.2)
-  - SonarKit/FBDefines (0.7.2)
-  - SonarKit/SKIOSNetworkPlugin (0.7.2):
-    - SonarKit/Core
-    - SonarKit/SonarKitNetworkPlugin
-  - SonarKit/SonarKitLayoutComponentKitSupport (0.7.2):
-    - ComponentKit
-    - SonarKit/Core
-    - SonarKit/SonarKitLayoutPlugin
-    - Yoga (~> 1.9)
-  - SonarKit/SonarKitLayoutPlugin (0.7.2):
-    - SonarKit/Core
-    - Yoga (~> 1.9)
-    - YogaKit (~> 1.8)
-  - SonarKit/SonarKitNetworkPlugin (0.7.2):
-    - SonarKit/Core
   - Yoga (1.9.0)
   - YogaKit (1.9.0):
     - Yoga (~> 1.9)
 
 DEPENDENCIES:
+  - FlipperKit (from `../../SonarKit.podspec`)
+  - FlipperKit/SKIOSNetworkPlugin (from `../../SonarKit.podspec`)
+  - FlipperKit/SonarKitLayoutComponentKitSupport (from `../../SonarKit.podspec`)
   - Sonar (from `../../Sonar.podspec`)
-  - SonarKit (from `../../SonarKit.podspec`)
-  - SonarKit/SKIOSNetworkPlugin (from `../../SonarKit.podspec`)
-  - SonarKit/SonarKitLayoutComponentKitSupport (from `../../SonarKit.podspec`)
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
@@ -74,10 +74,10 @@ SPEC REPOS:
     - RSocket
 
 EXTERNAL SOURCES:
+  FlipperKit:
+    :path: "../../SonarKit.podspec"
   Sonar:
     :path: "../../Sonar.podspec"
-  SonarKit:
-    :path: "../../SonarKit.podspec"
 
 SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
@@ -85,16 +85,16 @@ SPEC CHECKSUMS:
   CocoaLibEvent: 2fab71b8bd46dd33ddb959f7928ec5909f838e3f
   ComponentKit: bf8b4c4e7448bd15b3a8e5a71174ea7aa6cea98d
   DoubleConversion: e22e0762848812a87afd67ffda3998d9ef29170c
+  FlipperKit: d8fb90df50d14c0022f5a931b93c437dfced0530
   Folly: dd92f69322d8535b9df98d7c91e442b0fce2fff2
   glog: 1de0bb937dccdc981596d3b5825ebfb765017ded
   OpenSSL-Static: bd17e34564a8591ad76b740318683a6caa19a13e
   PeerTalk: 77481b0a8136f226b90ccf828d6061f70139ffde
   RSocket: 4fdb7e562db30a2d4fceddefdc601749ffc9ebe2
   Sonar: cfbef2d6119e92563d51bf3cdd9ae34f4eda068b
-  SonarKit: fe6e84d73807d07900d47020170290674d931de7
   Yoga: aaae8abea68951f60bee05f6277d3eed90bb91bb
   YogaKit: d447a9bb808718e6f58e52a2255a8050081a3ead
 
-PODFILE CHECKSUM: b1786f878ef1a53893b6a0f9d79d4987b72bc916
+PODFILE CHECKSUM: 2d236f86027b17bd45e744bcf9d2dd0302d93033
 
 COCOAPODS: 1.5.3

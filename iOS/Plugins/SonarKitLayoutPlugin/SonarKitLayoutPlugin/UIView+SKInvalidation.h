@@ -5,7 +5,7 @@
  *  file in the root directory of this source tree.
  *
  */
-#import <SonarKit/SKMacros.h>
+#import <FlipperKit/SKMacros.h>
 
 FB_LINK_REQUIRE(UIView_SKInvalidation)
 @interface UIView (SKInvalidation)

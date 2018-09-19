@@ -7,7 +7,7 @@
  */
 #import <UIKit/UIKit.h>
 
-#import <SonarKit/SKMacros.h>
+#import <FlipperKit/SKMacros.h>
 
 FB_LINK_REQUIRE(UICollectionView_SKInvalidation)
 @interface UICollectionView (SKInvalidation)

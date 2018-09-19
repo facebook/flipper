@@ -6,7 +6,7 @@
  *
  */
 #import <Sonar/SonarConnection.h>
-#import <SonarKit/FlipperConnection.h>
+#import <FlipperKit/FlipperConnection.h>
 
 /**
 SonarCppBridgingConnection is a simple ObjC wrapper around SonarConnection

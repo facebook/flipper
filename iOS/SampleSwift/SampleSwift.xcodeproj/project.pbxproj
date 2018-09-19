@@ -358,7 +358,7 @@
 					"-l\"PeerTalk\"",
 					"-l\"RSocket\"",
 					"-l\"Sonar\"",
-					"-l\"SonarKit\"",
+					"-l\"FlipperKit\"",
 					"-l\"crypto\"",
 					"-l\"event\"",
 					"-l\"event_core\"",
@@ -373,7 +373,7 @@
 					"\"Security\"",
 					"-DFB_SONARKIT_ENABLED=1",
 				);
-				OTHER_SWIFT_FLAGS = "$(inherited) -Xcc -fmodule-map-file=\"${PODS_ROOT}/Headers/Public/SonarKit/SonarKit.modulemap\" -Xcc -DFB_SONARKIT_ENABLED";
+				OTHER_SWIFT_FLAGS = "$(inherited) -Xcc -fmodule-map-file=\"${PODS_ROOT}/Headers/Public/FlipperKit/FlipperKit.modulemap\" -Xcc -DFB_SONARKIT_ENABLED";
 				PRODUCT_BUNDLE_IDENTIFIER = com.facebook.flipper.SampleSwift;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
@@ -422,7 +422,7 @@
 					"-l\"PeerTalk\"",
 					"-l\"RSocket\"",
 					"-l\"Sonar\"",
-					"-l\"SonarKit\"",
+					"-l\"FlipperKit\"",
 					"-l\"crypto\"",
 					"-l\"event\"",
 					"-l\"event_core\"",
@@ -437,7 +437,7 @@
 					"\"Security\"",
 					"-DFB_SONARKIT_ENABLED=1",
 				);
-				OTHER_SWIFT_FLAGS = "$(inherited) -Xcc -fmodule-map-file=\"${PODS_ROOT}/Headers/Public/SonarKit/SonarKit.modulemap\" -Xcc -DFB_SONARKIT_ENABLED";
+				OTHER_SWIFT_FLAGS = "$(inherited) -Xcc -fmodule-map-file=\"${PODS_ROOT}/Headers/Public/FlipperKit/FlipperKit.modulemap\" -Xcc -DFB_SONARKIT_ENABLED";
 				PRODUCT_BUNDLE_IDENTIFIER = com.facebook.flipper.SampleSwift;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;

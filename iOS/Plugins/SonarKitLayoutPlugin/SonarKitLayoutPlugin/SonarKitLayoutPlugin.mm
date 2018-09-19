@@ -9,10 +9,10 @@
 
 #import "SonarKitLayoutPlugin.h"
 
-#import <SonarKit/FlipperClient.h>
-#import <SonarKit/FlipperConnection.h>
-#import <SonarKit/SonarResponder.h>
-#import <SonarKit/SKMacros.h>
+#import <FlipperKit/FlipperClient.h>
+#import <FlipperKit/FlipperConnection.h>
+#import <FlipperKit/SonarResponder.h>
+#import <FlipperKit/SKMacros.h>
 #import "SKDescriptorMapper.h"
 #import "SKNodeDescriptor.h"
 #import "SKTapListener.h"

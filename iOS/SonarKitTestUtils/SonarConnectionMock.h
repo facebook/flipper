@@ -7,7 +7,7 @@
  */
 #import <Foundation/Foundation.h>
 
-#import <SonarKit/FlipperConnection.h>
+#import <FlipperKit/FlipperConnection.h>
 
 @interface SonarConnectionMock : NSObject<FlipperConnection>
 
