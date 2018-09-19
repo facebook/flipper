@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 #import "FlipperPlugin.h"
 
-void SonarPerformBlockOnMainThread(void(^block)())
+void FlipperPerformBlockOnMainThread(void(^block)())
 {
   if ([NSThread isMainThread]) {
     block();

@@ -84,15 +84,15 @@
   __weak SonarKitLayoutPlugin *weakSelf = self;
 
   [connection receive:@"getRoot" withBlock:^(NSDictionary *params, id<SonarResponder> responder) {
-    SonarPerformBlockOnMainThread(^{ [weakSelf onCallGetRoot: responder]; });
+    FlipperPerformBlockOnMainThread(^{ [weakSelf onCallGetRoot: responder]; });
   }];
 
   [connection receive:@"getNodes" withBlock:^(NSDictionary *params, id<SonarResponder> responder) {
-    SonarPerformBlockOnMainThread(^{ [weakSelf onCallGetNodes: params[@"ids"] withResponder: responder]; });
+    FlipperPerformBlockOnMainThread(^{ [weakSelf onCallGetNodes: params[@"ids"] withResponder: responder]; });
   }];
 
   [connection receive:@"setData" withBlock:^(NSDictionary *params, id<SonarResponder> responder) {
-    SonarPerformBlockOnMainThread(^{
+    FlipperPerformBlockOnMainThread(^{
       [weakSelf onCallSetData: params[@"id"]
                  withPath: params[@"path"]
                   toValue: params[@"value"]
@@ -101,19 +101,19 @@
   }];
 
   [connection receive:@"setHighlighted" withBlock:^(NSDictionary *params, id<SonarResponder> responder) {
-    SonarPerformBlockOnMainThread(^{ [weakSelf onCallSetHighlighted: params[@"id"] withResponder: responder]; });
+    FlipperPerformBlockOnMainThread(^{ [weakSelf onCallSetHighlighted: params[@"id"] withResponder: responder]; });
   }];
 
   [connection receive:@"setSearchActive" withBlock:^(NSDictionary *params, id<SonarResponder> responder) {
-    SonarPerformBlockOnMainThread(^{ [weakSelf onCallSetSearchActive: [params[@"active"] boolValue] withConnection: connection]; });
+    FlipperPerformBlockOnMainThread(^{ [weakSelf onCallSetSearchActive: [params[@"active"] boolValue] withConnection: connection]; });
   }];
 
   [connection receive:@"isConsoleEnabled" withBlock:^(NSDictionary *params, id<SonarResponder> responder) {
-    SonarPerformBlockOnMainThread(^{ [responder success: @{@"isEnabled": @NO}];});
+    FlipperPerformBlockOnMainThread(^{ [responder success: @{@"isEnabled": @NO}];});
   }];
 
   [connection receive:@"getSearchResults" withBlock:^(NSDictionary *params, id<SonarResponder> responder) {
-    SonarPerformBlockOnMainThread(^{ [weakSelf onCallGetSearchResults: params[@"query"] withResponder: responder]; });
+    FlipperPerformBlockOnMainThread(^{ [weakSelf onCallGetSearchResults: params[@"query"] withResponder: responder]; });
   }];
 }
 

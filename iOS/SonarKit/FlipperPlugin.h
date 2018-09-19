@@ -10,7 +10,7 @@
 #import "SKMacros.h"
 
 SK_EXTERN_C_BEGIN
-void SonarPerformBlockOnMainThread(void(^block)());
+void FlipperPerformBlockOnMainThread(void(^block)());
 SK_EXTERN_C_END
 
 @protocol FlipperConnection;
