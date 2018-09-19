@@ -9,7 +9,7 @@
 using namespace facebook::flipper;
 
 static constexpr auto CSR_FILE_NAME = "app.csr";
-static constexpr auto FLIPPER_CA_FILE_NAME = "flipperCA.crt";
+static constexpr auto FLIPPER_CA_FILE_NAME = "sonarCA.crt";
 static constexpr auto CLIENT_CERT_FILE_NAME = "device.crt";
 static constexpr auto PRIVATE_KEY_FILE = "privateKey.pem";
 static constexpr auto CONNECTION_CONFIG_FILE = "connection_config.json";
