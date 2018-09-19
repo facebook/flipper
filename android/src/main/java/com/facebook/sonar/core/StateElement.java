@@ -1,4 +1,4 @@
-package com.facebook.sonar.core;
+package com.facebook.flipper.core;
 
 public class StateElement {
     private final String mName;

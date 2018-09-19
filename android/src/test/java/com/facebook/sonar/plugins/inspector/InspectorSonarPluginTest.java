@@ -5,7 +5,7 @@
  *  file in the root directory of this source tree.
  *
  */
-package com.facebook.sonar.plugins.inspector;
+package com.facebook.flipper.plugins.inspector;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItem;
@@ -16,16 +16,16 @@ import android.graphics.Rect;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import com.facebook.sonar.core.SonarArray;
-import com.facebook.sonar.core.SonarConnection;
-import com.facebook.sonar.core.SonarDynamic;
-import com.facebook.sonar.core.SonarObject;
-import com.facebook.sonar.plugins.console.iface.NullScriptingEnvironment;
-import com.facebook.sonar.plugins.console.iface.ScriptingEnvironment;
-import com.facebook.sonar.plugins.inspector.InspectorSonarPlugin.TouchOverlayView;
-import com.facebook.sonar.plugins.inspector.descriptors.ApplicationDescriptor;
-import com.facebook.sonar.testing.SonarConnectionMock;
-import com.facebook.sonar.testing.SonarResponderMock;
+import com.facebook.flipper.core.SonarArray;
+import com.facebook.flipper.core.SonarConnection;
+import com.facebook.flipper.core.SonarDynamic;
+import com.facebook.flipper.core.SonarObject;
+import com.facebook.flipper.plugins.console.iface.NullScriptingEnvironment;
+import com.facebook.flipper.plugins.console.iface.ScriptingEnvironment;
+import com.facebook.flipper.plugins.inspector.InspectorSonarPlugin.TouchOverlayView;
+import com.facebook.flipper.plugins.inspector.descriptors.ApplicationDescriptor;
+import com.facebook.flipper.testing.SonarConnectionMock;
+import com.facebook.flipper.testing.SonarResponderMock;
 import com.facebook.testing.robolectric.v3.WithTestDefaultsRunner;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -49,7 +49,7 @@ public class InspectorSonarPluginTest {
   public void setup() {
     final Application app = Mockito.spy(RuntimeEnvironment.application);
     Mockito.when(app.getApplicationContext()).thenReturn(app);
-    Mockito.when(app.getPackageName()).thenReturn("com.facebook.sonar");
+    Mockito.when(app.getPackageName()).thenReturn("com.facebook.flipper");
 
     mDescriptorMapping = new DescriptorMapping();
     mApplicationDescriptor = new MockApplicationDescriptor();
@@ -97,8 +97,8 @@ public class InspectorSonarPluginTest {
         responder.successes,
         hasItem(
             new SonarObject.Builder()
-                .put("id", "com.facebook.sonar")
-                .put("name", "com.facebook.sonar")
+                .put("id", "com.facebook.flipper")
+                .put("name", "com.facebook.flipper")
                 .put("data", new SonarObject.Builder())
                 .put("children", new SonarArray.Builder().put("test"))
                 .put("attributes", new SonarArray.Builder())
@@ -220,7 +220,7 @@ public class InspectorSonarPluginTest {
 
     plugin.mGetRoot.onReceive(null, responder);
     plugin.mSetHighlighted.onReceive(
-        new SonarObject.Builder().put("id", "com.facebook.sonar").build(), responder);
+        new SonarObject.Builder().put("id", "com.facebook.flipper").build(), responder);
 
     assertThat(mApplicationDescriptor.highlighted, equalTo(true));
 
@@ -268,7 +268,7 @@ public class InspectorSonarPluginTest {
         hasItem(
             new SonarObject.Builder()
                 .put(
-                    "path", new SonarArray.Builder().put("com.facebook.sonar").put("test").put("3"))
+                    "path", new SonarArray.Builder().put("com.facebook.flipper").put("test").put("3"))
                 .build()));
   }
 

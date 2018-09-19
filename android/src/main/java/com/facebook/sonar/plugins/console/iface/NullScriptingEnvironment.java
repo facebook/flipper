@@ -5,7 +5,7 @@
  *  file in the root directory of this source tree.
  *
  */
-package com.facebook.sonar.plugins.console.iface;
+package com.facebook.flipper.plugins.console.iface;
 
 import org.json.JSONException;
 import org.json.JSONObject;

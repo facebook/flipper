@@ -1,4 +1,4 @@
-package com.facebook.sonar.core;
+package com.facebook.flipper.core;
 
 import java.util.List;
 import java.util.ArrayList;

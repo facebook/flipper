@@ -6,7 +6,7 @@
  *
  */
 
-package com.facebook.sonar.plugins.inspector.descriptors.utils;
+package com.facebook.flipper.plugins.inspector.descriptors.utils;
 
 import static android.content.Context.ACCESSIBILITY_SERVICE;
 
@@ -21,9 +21,9 @@ import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.view.accessibility.AccessibilityManager;
 import android.widget.EditText;
-import com.facebook.sonar.core.SonarArray;
-import com.facebook.sonar.core.SonarObject;
-import com.facebook.sonar.plugins.inspector.InspectorValue;
+import com.facebook.flipper.core.SonarArray;
+import com.facebook.flipper.core.SonarObject;
+import com.facebook.flipper.plugins.inspector.InspectorValue;
 import javax.annotation.Nullable;
 
 /**

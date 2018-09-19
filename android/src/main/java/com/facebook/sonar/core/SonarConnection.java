@@ -5,7 +5,7 @@
  *  file in the root directory of this source tree.
  *
  */
-package com.facebook.sonar.core;
+package com.facebook.flipper.core;
 
 /**
  * A connection between a SonarPlugin and the desktop Sonar application. Register request handlers

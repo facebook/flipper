@@ -5,7 +5,7 @@
  *  file in the root directory of this source tree.
  *
  */
-package com.facebook.sonar.android.utils;
+package com.facebook.flipper.android.utils;
 
 import android.app.ActivityManager;
 import android.content.Context;

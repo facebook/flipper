@@ -5,7 +5,7 @@
  *  file in the root directory of this source tree.
  *
  */
-package com.facebook.sonar.android;
+package com.facebook.flipper.android;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -14,7 +14,7 @@ import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
-import com.facebook.sonar.core.SonarClient;
+import com.facebook.flipper.core.SonarClient;
 
 public final class AndroidSonarClient {
   private static boolean sIsInitialized = false;

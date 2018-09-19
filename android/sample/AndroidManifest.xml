@@ -24,7 +24,7 @@
         <category android:name="android.intent.category.LAUNCHER"/>
       </intent-filter>
     </activity>
-    <activity android:name="com.facebook.sonar.android.diagnostics.SonarDiagnosticActivity"
+    <activity android:name="com.facebook.flipper.android.diagnostics.SonarDiagnosticActivity"
         android:exported="true"/>
   </application>
 

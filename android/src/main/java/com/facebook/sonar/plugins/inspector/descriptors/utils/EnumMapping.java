@@ -6,12 +6,12 @@
  *
  */
 
-package com.facebook.sonar.plugins.inspector.descriptors.utils;
+package com.facebook.flipper.plugins.inspector.descriptors.utils;
 
-import static com.facebook.sonar.plugins.inspector.InspectorValue.Type.Enum;
+import static com.facebook.flipper.plugins.inspector.InspectorValue.Type.Enum;
 
 import android.support.v4.util.SimpleArrayMap;
-import com.facebook.sonar.plugins.inspector.InspectorValue;
+import com.facebook.flipper.plugins.inspector.InspectorValue;
 
 public class EnumMapping {
   private final SimpleArrayMap<String, Integer> mMapping = new SimpleArrayMap<>();

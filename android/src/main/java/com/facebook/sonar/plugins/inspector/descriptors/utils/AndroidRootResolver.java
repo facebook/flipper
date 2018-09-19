@@ -6,7 +6,7 @@
  *
  */
 
-package com.facebook.sonar.plugins.inspector.descriptors.utils;
+package com.facebook.flipper.plugins.inspector.descriptors.utils;
 
 import static android.view.WindowManager.LayoutParams;
 

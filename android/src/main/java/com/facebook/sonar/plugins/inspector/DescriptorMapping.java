@@ -6,7 +6,7 @@
  *
  */
 
-package com.facebook.sonar.plugins.inspector;
+package com.facebook.flipper.plugins.inspector;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -15,20 +15,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.TextView;
-import com.facebook.sonar.core.SonarConnection;
-import com.facebook.sonar.plugins.inspector.descriptors.ActivityDescriptor;
-import com.facebook.sonar.plugins.inspector.descriptors.ApplicationDescriptor;
-import com.facebook.sonar.plugins.inspector.descriptors.DialogDescriptor;
-import com.facebook.sonar.plugins.inspector.descriptors.DialogFragmentDescriptor;
-import com.facebook.sonar.plugins.inspector.descriptors.DrawableDescriptor;
-import com.facebook.sonar.plugins.inspector.descriptors.FragmentDescriptor;
-import com.facebook.sonar.plugins.inspector.descriptors.ObjectDescriptor;
-import com.facebook.sonar.plugins.inspector.descriptors.SupportDialogFragmentDescriptor;
-import com.facebook.sonar.plugins.inspector.descriptors.SupportFragmentDescriptor;
-import com.facebook.sonar.plugins.inspector.descriptors.TextViewDescriptor;
-import com.facebook.sonar.plugins.inspector.descriptors.ViewDescriptor;
-import com.facebook.sonar.plugins.inspector.descriptors.ViewGroupDescriptor;
-import com.facebook.sonar.plugins.inspector.descriptors.WindowDescriptor;
+import com.facebook.flipper.core.SonarConnection;
+import com.facebook.flipper.plugins.inspector.descriptors.ActivityDescriptor;
+import com.facebook.flipper.plugins.inspector.descriptors.ApplicationDescriptor;
+import com.facebook.flipper.plugins.inspector.descriptors.DialogDescriptor;
+import com.facebook.flipper.plugins.inspector.descriptors.DialogFragmentDescriptor;
+import com.facebook.flipper.plugins.inspector.descriptors.DrawableDescriptor;
+import com.facebook.flipper.plugins.inspector.descriptors.FragmentDescriptor;
+import com.facebook.flipper.plugins.inspector.descriptors.ObjectDescriptor;
+import com.facebook.flipper.plugins.inspector.descriptors.SupportDialogFragmentDescriptor;
+import com.facebook.flipper.plugins.inspector.descriptors.SupportFragmentDescriptor;
+import com.facebook.flipper.plugins.inspector.descriptors.TextViewDescriptor;
+import com.facebook.flipper.plugins.inspector.descriptors.ViewDescriptor;
+import com.facebook.flipper.plugins.inspector.descriptors.ViewGroupDescriptor;
+import com.facebook.flipper.plugins.inspector.descriptors.WindowDescriptor;
 import java.util.HashMap;
 import java.util.Map;
 

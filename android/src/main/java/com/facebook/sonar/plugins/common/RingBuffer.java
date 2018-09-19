@@ -5,7 +5,7 @@
  *  file in the root directory of this source tree.
  *
  */
-package com.facebook.sonar.plugins.common;
+package com.facebook.flipper.plugins.common;
 
 import java.util.LinkedList;
 import java.util.List;

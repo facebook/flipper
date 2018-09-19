@@ -6,24 +6,24 @@
  *
  */
 
-package com.facebook.sonar.plugins.inspector.descriptors;
+package com.facebook.flipper.plugins.inspector.descriptors;
 
 import static android.support.v4.view.ViewGroupCompat.LAYOUT_MODE_CLIP_BOUNDS;
 import static android.support.v4.view.ViewGroupCompat.LAYOUT_MODE_OPTICAL_BOUNDS;
-import static com.facebook.sonar.plugins.inspector.InspectorValue.Type.Boolean;
-import static com.facebook.sonar.plugins.inspector.InspectorValue.Type.Enum;
+import static com.facebook.flipper.plugins.inspector.InspectorValue.Type.Boolean;
+import static com.facebook.flipper.plugins.inspector.InspectorValue.Type.Enum;
 
 import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
 import com.facebook.flipper.R;
-import com.facebook.sonar.core.SonarDynamic;
-import com.facebook.sonar.core.SonarObject;
-import com.facebook.sonar.plugins.inspector.HiddenNode;
-import com.facebook.sonar.plugins.inspector.InspectorValue;
-import com.facebook.sonar.plugins.inspector.Named;
-import com.facebook.sonar.plugins.inspector.NodeDescriptor;
-import com.facebook.sonar.plugins.inspector.Touch;
+import com.facebook.flipper.core.SonarDynamic;
+import com.facebook.flipper.core.SonarObject;
+import com.facebook.flipper.plugins.inspector.HiddenNode;
+import com.facebook.flipper.plugins.inspector.InspectorValue;
+import com.facebook.flipper.plugins.inspector.Named;
+import com.facebook.flipper.plugins.inspector.NodeDescriptor;
+import com.facebook.flipper.plugins.inspector.Touch;
 import com.facebook.stetho.common.android.FragmentCompatUtil;
 import java.util.ArrayList;
 import java.util.List;

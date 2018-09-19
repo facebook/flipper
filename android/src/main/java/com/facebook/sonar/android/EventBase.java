@@ -5,7 +5,7 @@
  *  file in the root directory of this source tree.
  *
  */
-package com.facebook.sonar.android;
+package com.facebook.flipper.android;
 
 import com.facebook.jni.HybridClassBase;
 import com.facebook.proguard.annotations.DoNotStrip;

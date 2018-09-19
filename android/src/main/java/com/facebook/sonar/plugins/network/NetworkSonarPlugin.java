@@ -6,13 +6,13 @@
  *
  */
 
-package com.facebook.sonar.plugins.network;
+package com.facebook.flipper.plugins.network;
 
 import android.util.Base64;
-import com.facebook.sonar.core.ErrorReportingRunnable;
-import com.facebook.sonar.core.SonarArray;
-import com.facebook.sonar.core.SonarObject;
-import com.facebook.sonar.plugins.common.BufferingSonarPlugin;
+import com.facebook.flipper.core.ErrorReportingRunnable;
+import com.facebook.flipper.core.SonarArray;
+import com.facebook.flipper.core.SonarObject;
+import com.facebook.flipper.plugins.common.BufferingSonarPlugin;
 import java.util.List;
 
 public class NetworkSonarPlugin extends BufferingSonarPlugin implements NetworkReporter {

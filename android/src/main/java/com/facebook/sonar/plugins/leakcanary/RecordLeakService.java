@@ -5,12 +5,12 @@
  *  file in the root directory of this source tree.
  *
  */
-package com.facebook.sonar.plugins.leakcanary;
+package com.facebook.flipper.plugins.leakcanary;
 
 import static com.squareup.leakcanary.LeakCanary.leakInfo;
 
-import com.facebook.sonar.android.AndroidSonarClient;
-import com.facebook.sonar.core.SonarClient;
+import com.facebook.flipper.android.AndroidSonarClient;
+import com.facebook.flipper.core.SonarClient;
 import com.squareup.leakcanary.AbstractAnalysisResultService;
 import com.squareup.leakcanary.AnalysisResult;
 import com.squareup.leakcanary.HeapDump;

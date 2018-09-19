@@ -6,19 +6,19 @@
  *
  */
 
-package com.facebook.sonar.plugins.inspector.descriptors;
+package com.facebook.flipper.plugins.inspector.descriptors;
 
 import android.app.Activity;
 import android.support.v4.view.ViewCompat;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
-import com.facebook.sonar.core.SonarDynamic;
-import com.facebook.sonar.core.SonarObject;
-import com.facebook.sonar.plugins.inspector.ApplicationWrapper;
-import com.facebook.sonar.plugins.inspector.Named;
-import com.facebook.sonar.plugins.inspector.NodeDescriptor;
-import com.facebook.sonar.plugins.inspector.Touch;
+import com.facebook.flipper.core.SonarDynamic;
+import com.facebook.flipper.core.SonarObject;
+import com.facebook.flipper.plugins.inspector.ApplicationWrapper;
+import com.facebook.flipper.plugins.inspector.Named;
+import com.facebook.flipper.plugins.inspector.NodeDescriptor;
+import com.facebook.flipper.plugins.inspector.Touch;
 
 import java.util.ArrayList;
 import java.util.Collections;

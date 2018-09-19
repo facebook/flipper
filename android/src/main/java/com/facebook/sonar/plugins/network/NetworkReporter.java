@@ -6,7 +6,7 @@
  *
  */
 
-package com.facebook.sonar.plugins.network;
+package com.facebook.flipper.plugins.network;
 
 import java.util.ArrayList;
 import java.util.List;

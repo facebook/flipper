@@ -6,10 +6,10 @@
  *
  */
 
-package com.facebook.sonar.plugins.inspector.descriptors;
+package com.facebook.flipper.plugins.inspector.descriptors;
 
-import static com.facebook.sonar.plugins.inspector.InspectorValue.Type.Color;
-import static com.facebook.sonar.plugins.inspector.InspectorValue.Type.Enum;
+import static com.facebook.flipper.plugins.inspector.InspectorValue.Type.Color;
+import static com.facebook.flipper.plugins.inspector.InspectorValue.Type.Enum;
 
 import android.annotation.TargetApi;
 import android.graphics.Rect;
@@ -29,18 +29,18 @@ import android.view.ViewGroup.MarginLayoutParams;
 import android.view.ViewParent;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import com.facebook.sonar.core.SonarDynamic;
-import com.facebook.sonar.core.SonarObject;
-import com.facebook.sonar.plugins.inspector.HighlightedOverlay;
-import com.facebook.sonar.plugins.inspector.InspectorValue;
-import com.facebook.sonar.plugins.inspector.Named;
-import com.facebook.sonar.plugins.inspector.NodeDescriptor;
-import com.facebook.sonar.plugins.inspector.Touch;
-import com.facebook.sonar.plugins.inspector.descriptors.utils.AccessibilityEvaluationUtil;
-import com.facebook.sonar.plugins.inspector.descriptors.utils.AccessibilityRoleUtil;
-import com.facebook.sonar.plugins.inspector.descriptors.utils.AccessibilityUtil;
-import com.facebook.sonar.plugins.inspector.descriptors.utils.EnumMapping;
-import com.facebook.sonar.plugins.inspector.descriptors.utils.ViewAccessibilityHelper;
+import com.facebook.flipper.core.SonarDynamic;
+import com.facebook.flipper.core.SonarObject;
+import com.facebook.flipper.plugins.inspector.HighlightedOverlay;
+import com.facebook.flipper.plugins.inspector.InspectorValue;
+import com.facebook.flipper.plugins.inspector.Named;
+import com.facebook.flipper.plugins.inspector.NodeDescriptor;
+import com.facebook.flipper.plugins.inspector.Touch;
+import com.facebook.flipper.plugins.inspector.descriptors.utils.AccessibilityEvaluationUtil;
+import com.facebook.flipper.plugins.inspector.descriptors.utils.AccessibilityRoleUtil;
+import com.facebook.flipper.plugins.inspector.descriptors.utils.AccessibilityUtil;
+import com.facebook.flipper.plugins.inspector.descriptors.utils.EnumMapping;
+import com.facebook.flipper.plugins.inspector.descriptors.utils.ViewAccessibilityHelper;
 import com.facebook.stetho.common.android.ResourcesUtil;
 import java.lang.reflect.Field;
 import java.util.ArrayList;

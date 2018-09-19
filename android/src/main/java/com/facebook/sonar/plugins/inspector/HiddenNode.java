@@ -6,7 +6,7 @@
  *
  */
 
-package com.facebook.sonar.plugins.inspector;
+package com.facebook.flipper.plugins.inspector;
 
 /** Marker interface to identify nodes which should not be traversed. */
 public interface HiddenNode {}

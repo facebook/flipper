@@ -5,7 +5,7 @@
  *  file in the root directory of this source tree.
  *
  */
-package com.facebook.sonar.core;
+package com.facebook.flipper.core;
 
 /**
  * A SonarPlugin is an object which exposes an API to the Desktop Sonar application. When a

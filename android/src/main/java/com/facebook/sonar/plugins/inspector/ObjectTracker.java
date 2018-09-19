@@ -6,7 +6,7 @@
  *
  */
 
-package com.facebook.sonar.plugins.inspector;
+package com.facebook.flipper.plugins.inspector;
 
 import java.lang.ref.WeakReference;
 import java.util.HashMap;

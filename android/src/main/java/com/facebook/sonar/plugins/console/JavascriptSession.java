@@ -5,9 +5,9 @@
  *  file in the root directory of this source tree.
  *
  */
-package com.facebook.sonar.plugins.console;
+package com.facebook.flipper.plugins.console;
 
-import com.facebook.sonar.plugins.console.iface.ScriptingSession;
+import com.facebook.flipper.plugins.console.iface.ScriptingSession;
 import java.io.Closeable;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;

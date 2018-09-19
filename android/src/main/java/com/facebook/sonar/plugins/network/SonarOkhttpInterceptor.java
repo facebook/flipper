@@ -5,11 +5,11 @@
  *  file in the root directory of this source tree.
  *
  */
-package com.facebook.sonar.plugins.network;
+package com.facebook.flipper.plugins.network;
 
 import android.util.Log;
-import com.facebook.sonar.plugins.network.NetworkReporter.RequestInfo;
-import com.facebook.sonar.plugins.network.NetworkReporter.ResponseInfo;
+import com.facebook.flipper.plugins.network.NetworkReporter.RequestInfo;
+import com.facebook.flipper.plugins.network.NetworkReporter.ResponseInfo;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;

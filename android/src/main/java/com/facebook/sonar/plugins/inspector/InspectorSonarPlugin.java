@@ -6,7 +6,7 @@
  *
  */
 
-package com.facebook.sonar.plugins.inspector;
+package com.facebook.flipper.plugins.inspector;
 
 import android.app.Application;
 import android.content.Context;
@@ -15,20 +15,20 @@ import android.view.accessibility.AccessibilityEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import com.facebook.sonar.core.ErrorReportingRunnable;
-import com.facebook.sonar.core.SonarArray;
-import com.facebook.sonar.core.SonarConnection;
-import com.facebook.sonar.core.SonarDynamic;
-import com.facebook.sonar.core.SonarObject;
-import com.facebook.sonar.core.SonarPlugin;
-import com.facebook.sonar.core.SonarReceiver;
-import com.facebook.sonar.core.SonarResponder;
-import com.facebook.sonar.plugins.common.MainThreadSonarReceiver;
-import com.facebook.sonar.plugins.console.iface.ConsoleCommandReceiver;
-import com.facebook.sonar.plugins.console.iface.NullScriptingEnvironment;
-import com.facebook.sonar.plugins.console.iface.ScriptingEnvironment;
-import com.facebook.sonar.plugins.inspector.descriptors.ApplicationDescriptor;
-import com.facebook.sonar.plugins.inspector.descriptors.utils.AccessibilityUtil;
+import com.facebook.flipper.core.ErrorReportingRunnable;
+import com.facebook.flipper.core.SonarArray;
+import com.facebook.flipper.core.SonarConnection;
+import com.facebook.flipper.core.SonarDynamic;
+import com.facebook.flipper.core.SonarObject;
+import com.facebook.flipper.core.SonarPlugin;
+import com.facebook.flipper.core.SonarReceiver;
+import com.facebook.flipper.core.SonarResponder;
+import com.facebook.flipper.plugins.common.MainThreadSonarReceiver;
+import com.facebook.flipper.plugins.console.iface.ConsoleCommandReceiver;
+import com.facebook.flipper.plugins.console.iface.NullScriptingEnvironment;
+import com.facebook.flipper.plugins.console.iface.ScriptingEnvironment;
+import com.facebook.flipper.plugins.inspector.descriptors.ApplicationDescriptor;
+import com.facebook.flipper.plugins.inspector.descriptors.utils.AccessibilityUtil;
 
 import java.util.ArrayList;
 import java.util.List;

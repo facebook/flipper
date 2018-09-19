@@ -6,17 +6,17 @@
  *
  */
 
-package com.facebook.sonar.plugins.sharedpreferences;
+package com.facebook.flipper.plugins.sharedpreferences;
 
 import static android.content.Context.MODE_PRIVATE;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import com.facebook.sonar.core.SonarConnection;
-import com.facebook.sonar.core.SonarObject;
-import com.facebook.sonar.core.SonarPlugin;
-import com.facebook.sonar.core.SonarReceiver;
-import com.facebook.sonar.core.SonarResponder;
+import com.facebook.flipper.core.SonarConnection;
+import com.facebook.flipper.core.SonarObject;
+import com.facebook.flipper.core.SonarPlugin;
+import com.facebook.flipper.core.SonarReceiver;
+import com.facebook.flipper.core.SonarResponder;
 import java.util.Map;
 
 public class SharedPreferencesSonarPlugin implements SonarPlugin {

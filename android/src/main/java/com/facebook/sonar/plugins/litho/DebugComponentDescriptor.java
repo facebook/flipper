@@ -1,10 +1,10 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 
-package com.facebook.sonar.plugins.litho;
+package com.facebook.flipper.plugins.litho;
 
-import static com.facebook.sonar.plugins.inspector.InspectorValue.Type.Color;
-import static com.facebook.sonar.plugins.inspector.InspectorValue.Type.Enum;
-import static com.facebook.sonar.plugins.inspector.InspectorValue.Type.Number;
+import static com.facebook.flipper.plugins.inspector.InspectorValue.Type.Color;
+import static com.facebook.flipper.plugins.inspector.InspectorValue.Type.Enum;
+import static com.facebook.flipper.plugins.inspector.InspectorValue.Type.Number;
 
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
@@ -20,14 +20,14 @@ import com.facebook.litho.StateContainer;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.reference.Reference;
-import com.facebook.sonar.core.SonarDynamic;
-import com.facebook.sonar.core.SonarObject;
-import com.facebook.sonar.plugins.inspector.HighlightedOverlay;
-import com.facebook.sonar.plugins.inspector.InspectorValue;
-import com.facebook.sonar.plugins.inspector.Named;
-import com.facebook.sonar.plugins.inspector.NodeDescriptor;
-import com.facebook.sonar.plugins.inspector.Touch;
-import com.facebook.sonar.plugins.inspector.descriptors.ObjectDescriptor;
+import com.facebook.flipper.core.SonarDynamic;
+import com.facebook.flipper.core.SonarObject;
+import com.facebook.flipper.plugins.inspector.HighlightedOverlay;
+import com.facebook.flipper.plugins.inspector.InspectorValue;
+import com.facebook.flipper.plugins.inspector.Named;
+import com.facebook.flipper.plugins.inspector.NodeDescriptor;
+import com.facebook.flipper.plugins.inspector.Touch;
+import com.facebook.flipper.plugins.inspector.descriptors.ObjectDescriptor;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;

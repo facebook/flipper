@@ -5,7 +5,7 @@
  *  file in the root directory of this source tree.
  *
  */
-package com.facebook.sonar.plugins.inspector.descriptors.utils;
+package com.facebook.flipper.plugins.inspector.descriptors.utils;
 
 import android.graphics.Rect;
 import android.support.v4.view.ViewCompat;
@@ -14,7 +14,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
-import com.facebook.sonar.plugins.inspector.descriptors.utils.AccessibilityRoleUtil.AccessibilityRole;
+import com.facebook.flipper.plugins.inspector.descriptors.utils.AccessibilityRoleUtil.AccessibilityRole;
 import java.util.List;
 import javax.annotation.Nullable;
 

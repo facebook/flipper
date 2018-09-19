@@ -5,14 +5,14 @@
  *  file in the root directory of this source tree.
  *
  */
-package com.facebook.sonar.plugins.sandbox;
+package com.facebook.flipper.plugins.sandbox;
 
-import com.facebook.sonar.core.SonarArray;
-import com.facebook.sonar.core.SonarConnection;
-import com.facebook.sonar.core.SonarObject;
-import com.facebook.sonar.core.SonarPlugin;
-import com.facebook.sonar.core.SonarReceiver;
-import com.facebook.sonar.core.SonarResponder;
+import com.facebook.flipper.core.SonarArray;
+import com.facebook.flipper.core.SonarConnection;
+import com.facebook.flipper.core.SonarObject;
+import com.facebook.flipper.core.SonarPlugin;
+import com.facebook.flipper.core.SonarReceiver;
+import com.facebook.flipper.core.SonarResponder;
 import java.util.Map;
 
 public class SandboxSonarPlugin implements SonarPlugin {

@@ -5,11 +5,11 @@
  *  file in the root directory of this source tree.
  *
  */
-package com.facebook.sonar.testing;
+package com.facebook.flipper.testing;
 
-import com.facebook.sonar.core.SonarArray;
-import com.facebook.sonar.core.SonarObject;
-import com.facebook.sonar.core.SonarResponder;
+import com.facebook.flipper.core.SonarArray;
+import com.facebook.flipper.core.SonarObject;
+import com.facebook.flipper.core.SonarResponder;
 import java.util.LinkedList;
 import java.util.List;
 

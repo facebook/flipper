@@ -1,10 +1,10 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 
-package com.facebook.sonar.plugins.litho;
+package com.facebook.flipper.plugins.litho;
 
 import com.facebook.litho.DebugComponent;
 import com.facebook.litho.LithoView;
-import com.facebook.sonar.plugins.inspector.DescriptorMapping;
+import com.facebook.flipper.plugins.inspector.DescriptorMapping;
 
 public final class LithoSonarDescriptors {
 

@@ -5,7 +5,7 @@
  *  file in the root directory of this source tree.
  *
  */
-package com.facebook.sonar.core;
+package com.facebook.flipper.core;
 
 /**
  * FlipperResponder is used to asyncronously response to a messaged recieved from the Sonar desktop

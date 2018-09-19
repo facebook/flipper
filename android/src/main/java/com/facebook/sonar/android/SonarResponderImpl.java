@@ -5,15 +5,15 @@
  *  file in the root directory of this source tree.
  *
  */
-package com.facebook.sonar.android;
+package com.facebook.flipper.android;
 
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.soloader.SoLoader;
 import com.facebook.flipper.BuildConfig;
-import com.facebook.sonar.core.SonarArray;
-import com.facebook.sonar.core.SonarObject;
-import com.facebook.sonar.core.SonarResponder;
+import com.facebook.flipper.core.SonarArray;
+import com.facebook.flipper.core.SonarObject;
+import com.facebook.flipper.core.SonarResponder;
 
 @DoNotStrip
 class SonarResponderImpl implements SonarResponder {

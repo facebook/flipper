@@ -6,10 +6,10 @@
  *
  */
 
-package com.facebook.sonar.plugins.inspector;
+package com.facebook.flipper.plugins.inspector;
 
-import com.facebook.sonar.core.SonarObject;
-import com.facebook.sonar.core.SonarValue;
+import com.facebook.flipper.core.SonarObject;
+import com.facebook.flipper.core.SonarValue;
 
 public class InspectorValue<T> implements SonarValue {
 

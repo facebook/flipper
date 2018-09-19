@@ -6,11 +6,11 @@
  *
  */
 
-package com.facebook.sonar.plugins.inspector;
+package com.facebook.flipper.plugins.inspector;
 
 import android.support.annotation.Nullable;
-import com.facebook.sonar.core.SonarArray;
-import com.facebook.sonar.core.SonarObject;
+import com.facebook.flipper.core.SonarArray;
+import com.facebook.flipper.core.SonarObject;
 import java.util.List;
 
 public class SearchResultNode {

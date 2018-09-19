@@ -6,7 +6,7 @@
  *
  */
 
-package com.facebook.sonar.plugins.inspector.descriptors.utils;
+package com.facebook.flipper.plugins.inspector.descriptors.utils;
 
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;

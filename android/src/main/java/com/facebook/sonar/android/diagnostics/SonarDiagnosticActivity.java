@@ -1,14 +1,14 @@
-package com.facebook.sonar.android.diagnostics;
+package com.facebook.flipper.android.diagnostics;
 
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.widget.Toast;
-import com.facebook.sonar.android.AndroidSonarClient;
-import com.facebook.sonar.core.SonarClient;
-import com.facebook.sonar.core.SonarStateUpdateListener;
-import com.facebook.sonar.core.StateSummary;
-import com.facebook.sonar.core.StateSummary.StateElement;
+import com.facebook.flipper.android.AndroidSonarClient;
+import com.facebook.flipper.core.SonarClient;
+import com.facebook.flipper.core.SonarStateUpdateListener;
+import com.facebook.flipper.core.StateSummary;
+import com.facebook.flipper.core.StateSummary.StateElement;
 import android.widget.LinearLayout;
 import android.view.View;
 import android.widget.TextView;

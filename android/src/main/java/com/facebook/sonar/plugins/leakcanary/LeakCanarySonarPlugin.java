@@ -6,14 +6,14 @@
  *
  */
 
-package com.facebook.sonar.plugins.leakcanary;
+package com.facebook.flipper.plugins.leakcanary;
 
 import android.util.Log;
-import com.facebook.sonar.core.SonarConnection;
-import com.facebook.sonar.core.SonarObject;
-import com.facebook.sonar.core.SonarPlugin;
-import com.facebook.sonar.core.SonarReceiver;
-import com.facebook.sonar.core.SonarResponder;
+import com.facebook.flipper.core.SonarConnection;
+import com.facebook.flipper.core.SonarObject;
+import com.facebook.flipper.core.SonarPlugin;
+import com.facebook.flipper.core.SonarReceiver;
+import com.facebook.flipper.core.SonarResponder;
 import java.util.ArrayList;
 import java.util.List;
 import org.json.JSONArray;

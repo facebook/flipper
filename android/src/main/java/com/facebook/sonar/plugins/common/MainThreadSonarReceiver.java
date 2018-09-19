@@ -5,15 +5,15 @@
  *  file in the root directory of this source tree.
  *
  */
-package com.facebook.sonar.plugins.common;
+package com.facebook.flipper.plugins.common;
 
 import android.os.Handler;
 import android.os.Looper;
-import com.facebook.sonar.core.ErrorReportingRunnable;
-import com.facebook.sonar.core.SonarConnection;
-import com.facebook.sonar.core.SonarObject;
-import com.facebook.sonar.core.SonarReceiver;
-import com.facebook.sonar.core.SonarResponder;
+import com.facebook.flipper.core.ErrorReportingRunnable;
+import com.facebook.flipper.core.SonarConnection;
+import com.facebook.flipper.core.SonarObject;
+import com.facebook.flipper.core.SonarReceiver;
+import com.facebook.flipper.core.SonarResponder;
 
 public abstract class MainThreadSonarReceiver implements SonarReceiver {
 

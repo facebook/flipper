@@ -6,7 +6,7 @@
  *
  */
 
-package com.facebook.sonar.plugins.inspector;
+package com.facebook.flipper.plugins.inspector;
 
 /**
  * Used to collect the path from the root node to the node at point [x, y]. This is used for

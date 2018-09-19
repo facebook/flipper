@@ -5,11 +5,11 @@
  *  file in the root directory of this source tree.
  *
  */
-package com.facebook.sonar.plugins.common;
+package com.facebook.flipper.plugins.common;
 
-import com.facebook.sonar.core.SonarConnection;
-import com.facebook.sonar.core.SonarObject;
-import com.facebook.sonar.core.SonarPlugin;
+import com.facebook.flipper.core.SonarConnection;
+import com.facebook.flipper.core.SonarObject;
+import com.facebook.flipper.core.SonarPlugin;
 import javax.annotation.Nullable;
 
 /**

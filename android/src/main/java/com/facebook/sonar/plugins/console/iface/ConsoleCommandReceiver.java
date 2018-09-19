@@ -5,14 +5,14 @@
  *  file in the root directory of this source tree.
  *
  */
-package com.facebook.sonar.plugins.console.iface;
+package com.facebook.flipper.plugins.console.iface;
 
 import android.support.annotation.Nullable;
-import com.facebook.sonar.core.SonarConnection;
-import com.facebook.sonar.core.SonarObject;
-import com.facebook.sonar.core.SonarReceiver;
-import com.facebook.sonar.core.SonarResponder;
-import com.facebook.sonar.plugins.common.MainThreadSonarReceiver;
+import com.facebook.flipper.core.SonarConnection;
+import com.facebook.flipper.core.SonarObject;
+import com.facebook.flipper.core.SonarReceiver;
+import com.facebook.flipper.core.SonarResponder;
+import com.facebook.flipper.plugins.common.MainThreadSonarReceiver;
 import org.json.JSONObject;
 
 /**

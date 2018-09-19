@@ -6,7 +6,7 @@
  *
  */
 
-package com.facebook.sonar.plugins.inspector;
+package com.facebook.flipper.plugins.inspector;
 
 public abstract class SelfRegisteringNodeDescriptor<T> extends NodeDescriptor<T> {
 

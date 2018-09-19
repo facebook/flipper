@@ -5,7 +5,7 @@
  *  file in the root directory of this source tree.
  *
  */
-package com.facebook.sonar.core;
+package com.facebook.flipper.core;
 
 public abstract class ErrorReportingRunnable implements Runnable {
 

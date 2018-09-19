@@ -6,12 +6,12 @@
  *
  */
 
-package com.facebook.sonar.plugins.inspector;
+package com.facebook.flipper.plugins.inspector;
 
-import com.facebook.sonar.core.SonarArray;
-import com.facebook.sonar.core.SonarConnection;
-import com.facebook.sonar.core.SonarDynamic;
-import com.facebook.sonar.core.SonarObject;
+import com.facebook.flipper.core.SonarArray;
+import com.facebook.flipper.core.SonarConnection;
+import com.facebook.flipper.core.SonarDynamic;
+import com.facebook.flipper.core.SonarObject;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nullable;
@@ -88,7 +88,7 @@ public abstract class NodeDescriptor<T> {
   }
 
   protected abstract class ErrorReportingRunnable
-      extends com.facebook.sonar.core.ErrorReportingRunnable {
+      extends com.facebook.flipper.core.ErrorReportingRunnable {
     public ErrorReportingRunnable() {
       super(mConnection);
     }

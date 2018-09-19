@@ -6,7 +6,7 @@
  *
  */
 
-package com.facebook.sonar.plugins.inspector;
+package com.facebook.flipper.plugins.inspector;
 
 import android.app.Activity;
 import android.app.Application;
@@ -14,8 +14,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
-import com.facebook.sonar.plugins.inspector.descriptors.utils.AndroidRootResolver;
-import com.facebook.sonar.plugins.inspector.descriptors.utils.AndroidRootResolver.Root;
+import com.facebook.flipper.plugins.inspector.descriptors.utils.AndroidRootResolver;
+import com.facebook.flipper.plugins.inspector.descriptors.utils.AndroidRootResolver.Root;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;

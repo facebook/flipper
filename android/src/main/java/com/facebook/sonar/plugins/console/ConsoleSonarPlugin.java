@@ -5,11 +5,11 @@
  *  file in the root directory of this source tree.
  *
  */
-package com.facebook.sonar.plugins.console;
+package com.facebook.flipper.plugins.console;
 
-import com.facebook.sonar.core.SonarConnection;
-import com.facebook.sonar.core.SonarPlugin;
-import com.facebook.sonar.plugins.console.iface.ConsoleCommandReceiver;
+import com.facebook.flipper.core.SonarConnection;
+import com.facebook.flipper.core.SonarPlugin;
+import com.facebook.flipper.plugins.console.iface.ConsoleCommandReceiver;
 
 public class ConsoleSonarPlugin implements SonarPlugin {
 

@@ -5,7 +5,7 @@
  *  file in the root directory of this source tree.
  *
  */
-package com.facebook.sonar.core;
+package com.facebook.flipper.core;
 
 /**
  * A receiver of a remote method call issued by the Sonar desktop application. If the given

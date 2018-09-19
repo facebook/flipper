@@ -1,16 +1,16 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 
-package com.facebook.sonar.plugins.litho;
+package com.facebook.flipper.plugins.litho;
 
 import android.graphics.Rect;
 import android.view.ViewGroup;
 import com.facebook.litho.DebugComponent;
 import com.facebook.litho.LithoView;
-import com.facebook.sonar.core.SonarDynamic;
-import com.facebook.sonar.core.SonarObject;
-import com.facebook.sonar.plugins.inspector.Named;
-import com.facebook.sonar.plugins.inspector.NodeDescriptor;
-import com.facebook.sonar.plugins.inspector.Touch;
+import com.facebook.flipper.core.SonarDynamic;
+import com.facebook.flipper.core.SonarObject;
+import com.facebook.flipper.plugins.inspector.Named;
+import com.facebook.flipper.plugins.inspector.NodeDescriptor;
+import com.facebook.flipper.plugins.inspector.Touch;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;

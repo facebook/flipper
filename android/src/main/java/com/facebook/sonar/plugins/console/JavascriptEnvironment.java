@@ -5,9 +5,9 @@
  *  file in the root directory of this source tree.
  *
  */
-package com.facebook.sonar.plugins.console;
+package com.facebook.flipper.plugins.console;
 
-import com.facebook.sonar.plugins.console.iface.ScriptingEnvironment;
+import com.facebook.flipper.plugins.console.iface.ScriptingEnvironment;
 import java.util.HashMap;
 import java.util.Map;
 import org.mozilla.javascript.Context;

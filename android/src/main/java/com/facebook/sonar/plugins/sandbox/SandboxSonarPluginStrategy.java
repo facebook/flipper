@@ -5,7 +5,7 @@
  *  file in the root directory of this source tree.
  *
  */
-package com.facebook.sonar.plugins.sandbox;
+package com.facebook.flipper.plugins.sandbox;
 
 import java.util.Map;
 import javax.annotation.Nullable;

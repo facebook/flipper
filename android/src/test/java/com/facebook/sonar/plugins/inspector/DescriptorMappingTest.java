@@ -5,15 +5,15 @@
  *  file in the root directory of this source tree.
  *
  */
-package com.facebook.sonar.plugins.inspector;
+package com.facebook.flipper.plugins.inspector;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import com.facebook.sonar.core.SonarConnection;
-import com.facebook.sonar.core.SonarDynamic;
-import com.facebook.sonar.core.SonarObject;
-import com.facebook.sonar.testing.SonarConnectionMock;
+import com.facebook.flipper.core.SonarConnection;
+import com.facebook.flipper.core.SonarDynamic;
+import com.facebook.flipper.core.SonarObject;
+import com.facebook.flipper.testing.SonarConnectionMock;
 import com.facebook.testing.robolectric.v3.WithTestDefaultsRunner;
 import java.util.List;
 import org.junit.Test;
