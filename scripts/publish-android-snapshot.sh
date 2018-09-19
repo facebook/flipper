@@ -7,10 +7,10 @@ IS_SNAPSHOT="$(grep 'VERSION_NAME=[0-9\.]\+-SNAPSHOT' "$BASEDIR/gradle.propertie
 if [ "$ANDROID_PUBLISH_KEY" == "" ]; then
   echo "No encryption key. Skipping snapshot deployment."
   exit
-elif [ "$IS_SNAPSHOT" != "" ]; then
-  echo "Build appears to be a SNAPSHOT release, but this is a script for building stable releases. Skipping ..."
-  exit 0
+elif [ "$IS_SNAPSHOT" == "" ]; then
+  echo "Skipping build. Given build doesn't appear to be a SNAPSHOT release."
+  exit 1
 else
-  openssl aes-256-cbc -d -in scripts/bintray-publish-keys.enc -k "$ANDROID_PUBLISH_KEY" >> "$BASEDIR/gradle.properties"
-  "$BASEDIR"/gradlew :android:uploadArchives --quiet -PdryRun=false
+  openssl aes-256-cbc -d -in scripts/gradle-publish-keys.enc -k "$ANDROID_PUBLISH_KEY" >> "$BASEDIR/gradle.properties"
+  "$BASEDIR"/gradlew uploadArchives --quiet
 fi
