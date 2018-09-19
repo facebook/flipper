@@ -287,7 +287,7 @@ public class ViewGroupDescriptor extends NodeDescriptor<ViewGroup> {
   }
 
   private static boolean shouldSkip(View view) {
-    Object tag = view.getTag(R.id.sonar_skip_view_traversal);
+    Object tag = view.getTag(R.id.flipper_skip_view_traversal);
     if (!(tag instanceof Boolean)) {
       return false;
     }
