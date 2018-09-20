@@ -15,6 +15,9 @@
 #include "ConnectionContextStore.h"
 #include "Log.h"
 #include <vector>
+#include <stdexcept>
+#include <iostream>
+#include <fstream>
 
 #if FB_SONARKIT_ENABLED
 
@@ -99,8 +102,10 @@ void SonarClient::disconnect(std::shared_ptr<SonarPlugin> plugin) {
 }
 
 void SonarClient::refreshPlugins() {
-  dynamic message = dynamic::object("method", "refreshPlugins");
-  socket_->sendMessage(message);
+    performAndReportError([this]() {
+        dynamic message = dynamic::object("method", "refreshPlugins");
+        socket_->sendMessage(message);
+    });
 }
 
 void SonarClient::onConnected() {
@@ -197,11 +202,13 @@ void SonarClient::performAndReportError(const std::function<void()>& func) {
   try {
     func();
   } catch (std::exception& e) {
-    if (connected_) {
       dynamic message = dynamic::object(
-          "error",
-          dynamic::object("message", e.what())("stacktrace", "<none>"));
+                                        "error",
+                                        dynamic::object("message", e.what())("stacktrace", "<none>"));
+    if (connected_) {
       socket_->sendMessage(message);
+    } else {
+        log("SonarError : " + std::string(e.what()));
     }
   }
 }
