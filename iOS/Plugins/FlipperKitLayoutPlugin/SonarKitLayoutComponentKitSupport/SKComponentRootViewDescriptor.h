@@ -5,10 +5,10 @@
  *  file in the root directory of this source tree.
  *
  */
-#import <SonarKitLayoutPlugin/SKNodeDescriptor.h>
+#import <FlipperKitLayoutPlugin/SKNodeDescriptor.h>
 
-@class SKComponentLayoutWrapper;
+@class CKComponentRootView;
 
-@interface SKComponentLayoutDescriptor: SKNodeDescriptor<SKComponentLayoutWrapper *>
+@interface SKComponentRootViewDescriptor : SKNodeDescriptor<CKComponentRootView *>
 
 @end

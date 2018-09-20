@@ -14,8 +14,8 @@
 #import <ComponentKit/CKComponentInternal.h>
 #import <ComponentKit/CKComponentSubclass.h>
 #import <ComponentKit/CKComponentViewConfiguration.h>
-#import <SonarKitLayoutPlugin/SKNamed.h>
-#import <SonarKitLayoutPlugin/SKObject.h>
+#import <FlipperKitLayoutPlugin/SKNamed.h>
+#import <FlipperKitLayoutPlugin/SKObject.h>
 
 /** This protocol isn't actually adopted anywhere, it just lets us use the SEL below */
 @protocol SonarKitLayoutComponentKitOverrideInformalProtocol

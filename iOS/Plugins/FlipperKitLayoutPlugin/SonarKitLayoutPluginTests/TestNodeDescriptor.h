@@ -5,7 +5,7 @@
  *  file in the root directory of this source tree.
  *
  */
-#import <SonarKitLayoutPlugin/SKNodeDescriptor.h>
+#import <FlipperKitLayoutPlugin/SKNodeDescriptor.h>
 
 #import "TestNode.h"
 

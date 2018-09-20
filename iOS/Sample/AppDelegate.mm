@@ -8,7 +8,7 @@
 #import "AppDelegate.h"
 
 #import <FlipperKit/FlipperClient.h>
-#import <SonarKitLayoutPlugin/SonarKitLayoutPlugin.h>
+#import <FlipperKitLayoutPlugin/FlipperKitLayoutPlugin.h>
 #import <SonarKitNetworkPlugin/SonarKitNetworkPlugin.h>
 #import <SonarKitLayoutComponentKitSupport/SonarKitLayoutComponentKitSupport.h>
 #import <SKIOSNetworkPlugin/SKIOSNetworkAdapter.h>
@@ -32,7 +32,7 @@
 
   SKDescriptorMapper *layoutDescriptorMapper = [[SKDescriptorMapper alloc] initWithDefaults];
   [SonarKitLayoutComponentKitSupport setUpWithDescriptorMapper: layoutDescriptorMapper];
-  [client addPlugin: [[SonarKitLayoutPlugin alloc] initWithRootNode: application
+  [client addPlugin: [[FlipperKitLayoutPlugin alloc] initWithRootNode: application
                                                withDescriptorMapper: layoutDescriptorMapper]];
 
   [[FlipperClient sharedClient] addPlugin: [[SonarKitNetworkPlugin alloc] initWithNetworkAdapter:[SKIOSNetworkAdapter new]]];

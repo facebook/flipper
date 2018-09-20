@@ -12,7 +12,7 @@
 #import <ComponentKit/CKComponentRootView.h>
 #import <ComponentKit/CKComponentHostingView.h>
 
-#import <SonarKitLayoutPlugin/SKDescriptorMapper.h>
+#import <FlipperKitLayoutPlugin/SKDescriptorMapper.h>
 
 #import "SKComponentHostingViewDescriptor.h"
 #import "SKComponentRootViewDescriptor.h"

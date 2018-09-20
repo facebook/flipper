@@ -20,8 +20,8 @@
 #import <ComponentKit/CKInsetComponent.h>
 #import <ComponentKit/CKFlexboxComponent.h>
 
-#import <SonarKitLayoutPlugin/SKHighlightOverlay.h>
-#import <SonarKitLayoutPlugin/SKObject.h>
+#import <FlipperKitLayoutPlugin/SKHighlightOverlay.h>
+#import <FlipperKitLayoutPlugin/SKObject.h>
 
 #import "SKComponentLayoutWrapper.h"
 #import "CKComponent+Sonar.h"

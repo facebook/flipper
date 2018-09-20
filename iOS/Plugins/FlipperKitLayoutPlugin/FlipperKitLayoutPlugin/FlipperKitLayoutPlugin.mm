@@ -7,7 +7,7 @@
  */
 #if FB_SONARKIT_ENABLED
 
-#import "SonarKitLayoutPlugin.h"
+#import "FlipperKitLayoutPlugin.h"
 
 #import <FlipperKit/FlipperClient.h>
 #import <FlipperKit/FlipperConnection.h>
@@ -20,7 +20,7 @@
 #import "SKSearchResultNode.h"
 #import <mutex>
 
-@implementation SonarKitLayoutPlugin
+@implementation FlipperKitLayoutPlugin
 {
 
   NSMapTable<NSString *, id> *_trackedObjects;
@@ -80,8 +80,8 @@
     [descriptor setUp];
   }
 
-  // In order to avoid a retain cycle (Connection -> Block -> SonarKitLayoutPlugin -> Connection ...)
-  __weak SonarKitLayoutPlugin *weakSelf = self;
+  // In order to avoid a retain cycle (Connection -> Block -> FlipperKitLayoutPlugin -> Connection ...)
+  __weak FlipperKitLayoutPlugin *weakSelf = self;
 
   [connection receive:@"getRoot" withBlock:^(NSDictionary *params, id<FlipperResponder> responder) {
     FlipperPerformBlockOnMainThread(^{ [weakSelf onCallGetRoot: responder]; });

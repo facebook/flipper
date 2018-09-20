@@ -7,8 +7,8 @@
  */
 #import <ComponentKit/CKComponent.h>
 #import <FlipperKit/SKMacros.h>
-#import <SonarKitLayoutPlugin/SKNamed.h>
-#import <SonarKitLayoutPlugin/SKNodeDescriptor.h>
+#import <FlipperKitLayoutPlugin/SKNamed.h>
+#import <FlipperKitLayoutPlugin/SKNodeDescriptor.h>
 
 FB_LINK_REQUIRE(CKComponent_Sonar)
 @interface CKComponent (Sonar)

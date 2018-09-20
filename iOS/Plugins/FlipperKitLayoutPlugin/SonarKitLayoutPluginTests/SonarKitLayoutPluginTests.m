@@ -9,9 +9,9 @@
 
 #if FB_SONARKIT_ENABLED
 
-#import <SonarKitLayoutPlugin/SKDescriptorMapper.h>
-#import <SonarKitLayoutPlugin/SKNodeDescriptor.h>
-#import <SonarKitLayoutPlugin/SonarKitLayoutPlugin.h>
+#import <FlipperKitLayoutPlugin/SKDescriptorMapper.h>
+#import <FlipperKitLayoutPlugin/SKNodeDescriptor.h>
+#import <FlipperKitLayoutPlugin/FlipperKitLayoutPlugin.h>
 #import <SonarKitTestUtils/SonarConnectionMock.h>
 #import <SonarKitTestUtils/SonarResponderMock.h>
 
@@ -37,7 +37,7 @@
 }
 
 - (void)testGetRoot {
-  SonarKitLayoutPlugin *plugin = [[SonarKitLayoutPlugin alloc]
+  FlipperKitLayoutPlugin *plugin = [[FlipperKitLayoutPlugin alloc]
                                   initWithRootNode: [[TestNode alloc] initWithName: @"rootNode"]
                                   withTapListener: nil
                                   withDescriptorMapper: _descriptorMapper];
@@ -60,7 +60,7 @@
 }
 
 - (void)testGetEmptyNodes {
-  SonarKitLayoutPlugin *plugin = [SonarKitLayoutPlugin new];
+  FlipperKitLayoutPlugin *plugin = [FlipperKitLayoutPlugin new];
   SonarConnectionMock *connection = [SonarConnectionMock new];
   SonarResponderMock *responder = [SonarResponderMock new];
   [plugin didConnect:connection];
@@ -81,7 +81,7 @@
 
   rootNode.children = childNodes;
 
-  SonarKitLayoutPlugin *plugin = [[SonarKitLayoutPlugin alloc] initWithRootNode: rootNode
+  FlipperKitLayoutPlugin *plugin = [[FlipperKitLayoutPlugin alloc] initWithRootNode: rootNode
                                                                 withTapListener: nil
                                                            withDescriptorMapper: _descriptorMapper];
 
@@ -132,7 +132,7 @@
 
   rootNode.children = childNodes;
 
-  SonarKitLayoutPlugin *plugin = [[SonarKitLayoutPlugin alloc] initWithRootNode: rootNode
+  FlipperKitLayoutPlugin *plugin = [[FlipperKitLayoutPlugin alloc] initWithRootNode: rootNode
                                                                 withTapListener: nil
                                                            withDescriptorMapper: _descriptorMapper];
 
@@ -171,7 +171,7 @@
   testNode2.children = @[ testNode3 ];
 
   SKTapListenerMock *tapListener = [SKTapListenerMock new];
-  SonarKitLayoutPlugin *plugin = [[SonarKitLayoutPlugin alloc] initWithRootNode: rootNode
+  FlipperKitLayoutPlugin *plugin = [[FlipperKitLayoutPlugin alloc] initWithRootNode: rootNode
                                                                 withTapListener: tapListener
                                                            withDescriptorMapper: _descriptorMapper];
 
@@ -191,7 +191,7 @@
   TestNode *rootNode = [[TestNode alloc] initWithName: @"rootNode"];
 
   SKTapListenerMock *tapListener = [SKTapListenerMock new];
-  SonarKitLayoutPlugin *plugin = [[SonarKitLayoutPlugin alloc] initWithRootNode: rootNode
+  FlipperKitLayoutPlugin *plugin = [[FlipperKitLayoutPlugin alloc] initWithRootNode: rootNode
                                                                 withTapListener: tapListener
                                                            withDescriptorMapper: _descriptorMapper];
 
@@ -223,7 +223,7 @@
   testNode2.children = @[ testNode3 ];
 
   SKTapListenerMock *tapListener = [SKTapListenerMock new];
-  SonarKitLayoutPlugin *plugin = [[SonarKitLayoutPlugin alloc] initWithRootNode: rootNode
+  FlipperKitLayoutPlugin *plugin = [[FlipperKitLayoutPlugin alloc] initWithRootNode: rootNode
                                                                 withTapListener: tapListener
                                                            withDescriptorMapper: _descriptorMapper];
 

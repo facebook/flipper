@@ -16,7 +16,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // Layout and network plugins are currently not supported for Swift apps.
 //    let layoutDescriptorMapper = SKDescriptorMapper(defaults: ())
 //    SonarKitLayoutComponentKitSupport.setUp(descriptorMapper: layoutDescriptorMapper)
-//    client.addPlugin(SonarKitLayoutPlugin(rootNode: application, descriptorMapper: layoutDescriptorMapper))
+//    client.addPlugin(FlipperKitLayoutPlugin(rootNode: application, descriptorMapper: layoutDescriptorMapper))
 
     client?.add(SonarKitNetworkPlugin(networkAdapter: SKIOSNetworkAdapter()))
     client?.start()

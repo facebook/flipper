@@ -9,8 +9,8 @@
 
 #import "CKFlexboxComponent+Sonar.h"
 
-#import <SonarKitLayoutPlugin/SKNamed.h>
-#import <SonarKitLayoutPlugin/SKObject.h>
+#import <FlipperKitLayoutPlugin/SKNamed.h>
+#import <FlipperKitLayoutPlugin/SKObject.h>
 
 #import "CKComponent+Sonar.h"
 #import "Utils.h"

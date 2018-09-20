@@ -7,7 +7,7 @@
  */
 #import <Foundation/Foundation.h>
 
-#import <SonarKitLayoutPlugin/SKDescriptorMapper.h>
+#import <FlipperKitLayoutPlugin/SKDescriptorMapper.h>
 
 @interface SonarKitLayoutComponentKitSupport : NSObject
 

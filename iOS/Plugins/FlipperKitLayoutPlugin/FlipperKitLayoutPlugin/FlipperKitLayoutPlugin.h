@@ -15,7 +15,7 @@
 #import "SKInvalidation.h"
 #import "SKDescriptorMapper.h"
 
-@interface SonarKitLayoutPlugin : NSObject<FlipperPlugin, SKInvalidationDelegate>
+@interface FlipperKitLayoutPlugin : NSObject<FlipperPlugin, SKInvalidationDelegate>
 
 - (instancetype)initWithRootNode:(id<NSObject>)rootNode
             withDescriptorMapper:(SKDescriptorMapper *)mapper;

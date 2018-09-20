@@ -19,18 +19,18 @@ PODS:
   - FlipperKit/CppBridge (0.7.2)
   - FlipperKit/FBCxxUtils (0.7.2)
   - FlipperKit/FBDefines (0.7.2)
+  - FlipperKit/FlipperKitLayoutPlugin (0.7.2):
+    - FlipperKit/Core
+    - Yoga (~> 1.9)
+    - YogaKit (~> 1.8)
   - FlipperKit/SKIOSNetworkPlugin (0.7.2):
     - FlipperKit/Core
     - FlipperKit/SonarKitNetworkPlugin
   - FlipperKit/SonarKitLayoutComponentKitSupport (0.7.2):
     - ComponentKit
     - FlipperKit/Core
-    - FlipperKit/SonarKitLayoutPlugin
+    - FlipperKit/FlipperKitLayoutPlugin
     - Yoga (~> 1.9)
-  - FlipperKit/SonarKitLayoutPlugin (0.7.2):
-    - FlipperKit/Core
-    - Yoga (~> 1.9)
-    - YogaKit (~> 1.8)
   - FlipperKit/SonarKitNetworkPlugin (0.7.2):
     - FlipperKit/Core
   - Folly (1.1.0):
@@ -85,7 +85,7 @@ SPEC CHECKSUMS:
   CocoaLibEvent: 2fab71b8bd46dd33ddb959f7928ec5909f838e3f
   ComponentKit: bf8b4c4e7448bd15b3a8e5a71174ea7aa6cea98d
   DoubleConversion: e22e0762848812a87afd67ffda3998d9ef29170c
-  FlipperKit: d8fb90df50d14c0022f5a931b93c437dfced0530
+  FlipperKit: e70400bbc914a7a3d67464a06d98bd5d6261cf4a
   Folly: dd92f69322d8535b9df98d7c91e442b0fce2fff2
   glog: 1de0bb937dccdc981596d3b5825ebfb765017ded
   OpenSSL-Static: bd17e34564a8591ad76b740318683a6caa19a13e

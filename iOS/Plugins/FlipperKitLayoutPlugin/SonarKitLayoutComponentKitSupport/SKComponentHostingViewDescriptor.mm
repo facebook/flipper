@@ -7,43 +7,39 @@
  */
 #if FB_SONARKIT_ENABLED
 
-#import "SKComponentRootViewDescriptor.h"
+#import "SKComponentHostingViewDescriptor.h"
 
 #import <ComponentKit/CKComponentDataSourceAttachController.h>
 #import <ComponentKit/CKComponentDataSourceAttachControllerInternal.h>
 #import <ComponentKit/CKComponentHostingView.h>
 #import <ComponentKit/CKComponentHostingViewInternal.h>
 #import <ComponentKit/CKComponentLayout.h>
-#import <ComponentKit/CKComponentRootViewInternal.h>
+#import <ComponentKit/CKComponentHostingViewInternal.h>
 
-#import <SonarKitLayoutPlugin/SKDescriptorMapper.h>
+#import <FlipperKitLayoutPlugin/SKDescriptorMapper.h>
 
 #import "SKComponentLayoutWrapper.h"
 
-@implementation SKComponentRootViewDescriptor
+@implementation SKComponentHostingViewDescriptor
 
-- (NSString *)identifierForNode:(CKComponentRootView *)node {
+- (NSString *)identifierForNode:(CKComponentHostingView *)node {
   return [NSString stringWithFormat: @"%p", node];
 }
 
-- (NSUInteger)childCountForNode:(CKComponentRootView *)node {
-  if ([node respondsToSelector:@selector(ck_attachState)]) {
-    CKComponentDataSourceAttachState *state = [node ck_attachState];
-    return state == nil ? 0 : 1;
-  }
-  return 0;
+- (NSUInteger)childCountForNode:(CKComponentHostingView *)node {
+  return node.mountedLayout.component ? 1 : 0;
 }
 
-- (id)childForNode:(CKComponentRootView *)node atIndex:(NSUInteger)index {
+- (id)childForNode:(CKComponentHostingView *)node atIndex:(NSUInteger)index {
   return [SKComponentLayoutWrapper newFromRoot:node];
 }
 
-- (void)setHighlighted:(BOOL)highlighted forNode:(CKComponentRootView *)node {
+- (void)setHighlighted:(BOOL)highlighted forNode:(CKComponentHostingView *)node {
   SKNodeDescriptor *viewDescriptor = [self descriptorForClass: [UIView class]];
   [viewDescriptor setHighlighted: highlighted forNode: node];
 }
 
-- (void)hitTest:(SKTouch *)touch forNode:(CKComponentRootView *)node {
+- (void)hitTest:(SKTouch *)touch forNode:(CKComponentHostingView *)node {
   [touch continueWithChildIndex: 0 withOffset: (CGPoint){ 0, 0 }];
 }
 

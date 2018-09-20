@@ -5,7 +5,7 @@
  *  file in the root directory of this source tree.
  *
  */
-#import <SonarKitLayoutPlugin/SKTapListener.h>
+#import <FlipperKitLayoutPlugin/SKTapListener.h>
 
 @interface SKTapListenerMock : NSObject<SKTapListener>
 

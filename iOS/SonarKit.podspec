@@ -71,26 +71,26 @@ Pod::Spec.new do |spec|
                              "HEADER_SEARCH_PATHS" => header_search_paths }
   end
 
-  spec.subspec "SonarKitLayoutPlugin" do |ss|
-    ss.header_dir = "SonarKitLayoutPlugin"
+  spec.subspec "FlipperKitLayoutPlugin" do |ss|
+    ss.header_dir = "FlipperKitLayoutPlugin"
     ss.dependency             'FlipperKit/Core'
     ss.dependency             'Yoga', yoga_version
     ss.dependency             'YogaKit', yogakit_version
     ss.compiler_flags       = folly_compiler_flags
-    ss.public_header_files = 'iOS/Plugins/SonarKitLayoutPlugin/SonarKitLayoutPlugin/SonarKitLayoutPlugin.h',
-                              'iOS/Plugins/SonarKitLayoutPlugin/SonarKitLayoutPlugin/SKTouch.h',
-                              'iOS/Plugins/SonarKitLayoutPlugin/SonarKitLayoutPlugin/SKDescriptorMapper.h',
-                              'iOS/Plugins/SonarKitLayoutPlugin/SonarKitLayoutPlugin/SKNodeDescriptor.h',
-                              'iOS/Plugins/SonarKitLayoutPlugin/SonarKitLayoutPlugin/SKInvalidation.h',
-                              'iOS/Plugins/SonarKitLayoutPlugin/SonarKitLayoutPlugin/SKNamed.h',
-                              'iOS/Plugins/SonarKitLayoutPlugin/SonarKitLayoutPlugin/SKTapListener.h',
-                              'iOS/Plugins/SonarKitLayoutPlugin/SonarKitLayoutPlugin/SKObject.h',
-                              'iOS/Plugins/SonarKitLayoutPlugin/SonarKitLayoutPlugin/SKHighlightOverlay.h',
-                              'iOS/Plugins/SonarKitLayoutPlugin/SonarKitLayoutPlugin/UIColor+SKSonarValueCoder.h',
-                              'iOS/Plugins/SonarKitLayoutPlugin/SonarKitLayoutPlugin/utils/SKObjectHash.h',
-                              'iOS/Plugins/SonarKitLayoutPlugin/SonarKitLayoutPlugin/utils/SKSwizzle.h',
-                              'iOS/Plugins/SonarKitLayoutPlugin/SonarKitLayoutPlugin/utils/SKYogaKitHelper.h'
-    ss.source_files         = 'iOS/Plugins/SonarKitLayoutPlugin/SonarKitLayoutPlugin/**/*.{h,cpp,m,mm}'
+    ss.public_header_files = 'iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutPlugin/FlipperKitLayoutPlugin.h',
+                              'iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutPlugin/SKTouch.h',
+                              'iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutPlugin/SKDescriptorMapper.h',
+                              'iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutPlugin/SKNodeDescriptor.h',
+                              'iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutPlugin/SKInvalidation.h',
+                              'iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutPlugin/SKNamed.h',
+                              'iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutPlugin/SKTapListener.h',
+                              'iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutPlugin/SKObject.h',
+                              'iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutPlugin/SKHighlightOverlay.h',
+                              'iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutPlugin/UIColor+SKSonarValueCoder.h',
+                              'iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutPlugin/utils/SKObjectHash.h',
+                              'iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutPlugin/utils/SKSwizzle.h',
+                              'iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutPlugin/utils/SKYogaKitHelper.h'
+    ss.source_files         = 'iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutPlugin/**/*.{h,cpp,m,mm}'
   end
 
   spec.subspec "SonarKitLayoutComponentKitSupport" do |ss|
@@ -98,13 +98,13 @@ Pod::Spec.new do |spec|
     ss.dependency             'FlipperKit/Core'
     ss.dependency             'Yoga', yoga_version
     ss.dependency             'ComponentKit'
-    ss.dependency             'FlipperKit/SonarKitLayoutPlugin'
+    ss.dependency             'FlipperKit/FlipperKitLayoutPlugin'
     ss.compiler_flags       = folly_compiler_flags
-    ss.dependency             'FlipperKit/SonarKitLayoutPlugin'
-    ss.public_header_files = 'iOS/Plugins/SonarKitLayoutPlugin/SonarKitLayoutComponentKitSupport/SonarKitLayoutComponentKitSupport.h',
-                             'iOS/Plugins/SonarKitLayoutPlugin/SonarKitLayoutComponentKitSupport/SKComponentLayoutWrapper.h'
+    ss.dependency             'FlipperKit/FlipperKitLayoutPlugin'
+    ss.public_header_files = 'iOS/Plugins/FlipperKitLayoutPlugin/SonarKitLayoutComponentKitSupport/SonarKitLayoutComponentKitSupport.h',
+                             'iOS/Plugins/FlipperKitLayoutPlugin/SonarKitLayoutComponentKitSupport/SKComponentLayoutWrapper.h'
 
-    ss.source_files         = "iOS/Plugins/SonarKitLayoutPlugin/SonarKitLayoutComponentKitSupport/**/*.{h,cpp,m,mm}"
+    ss.source_files         = "iOS/Plugins/FlipperKitLayoutPlugin/SonarKitLayoutComponentKitSupport/**/*.{h,cpp,m,mm}"
     ss.pod_target_xcconfig = { "USE_HEADERMAP" => "NO",
                                 "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)\"/Headers/Private/FlipperKit/**" }
   end
