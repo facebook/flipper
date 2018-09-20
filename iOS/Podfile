@@ -3,12 +3,12 @@ source 'https://github.com/facebook/Sonar.git'
 source 'https://github.com/CocoaPods/Specs'
 platform :ios, '9.0'
 swift_version = "4.1"
-target 'SonarKit' do
+target 'FlipperKit' do
   # Uncomment the next line if you're using Swift or would like to use dynamic frameworks
   # use_frameworks!
 
-  project 'SonarKit.xcodeproj'
-
+  project 'FlipperKit.xcodeproj'
+  pod 'Sonar', :path => '../Sonar.podspec'
   # Pods for SonarKit
   pod 'PeerTalk', '~>0.0'
   pod 'RSocket', '~>0.10'
@@ -16,6 +16,5 @@ target 'SonarKit' do
   pod 'glog', '~>0.3'
   pod 'Folly', '~>1.0'
   pod 'CocoaAsyncSocket', '~>7.6'
-  pod 'Sonar', '~>0.0.1'
 
 end
