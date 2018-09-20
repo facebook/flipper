@@ -7,28 +7,26 @@
 
 const path = require('path');
 const fs = require('fs');
-const metro = require('metro');
+const Metro = require('metro');
 const util = require('util');
 const recursiveReaddir = require('recursive-readdir');
 const HOME_DIR = require('os').homedir();
 
-module.exports = (reloadCallback, pluginPaths, pluginCache) => {
+module.exports = async (reloadCallback, pluginPaths, pluginCache) => {
   const plugins = pluginEntryPoints(pluginPaths);
   if (!fs.existsSync(pluginCache)) {
     fs.mkdirSync(pluginCache);
   }
   watchChanges(plugins, reloadCallback, pluginCache);
-  return Promise.all(
-    Object.values(plugins).map(plugin =>
-      compilePlugin(plugin, false, pluginCache),
-    ),
-  )
-    .then(dynamicPlugins => {
-      // eslint-disable-next-line no-console
-      console.log('✅  Compiled all plugins.');
-      return dynamicPlugins;
-    })
-    .catch(console.error);
+  const dynamicPlugins = [];
+  for (let plugin of Object.values(plugins)) {
+    const compiledPlugin = await compilePlugin(plugin, false, pluginCache);
+    if (compiledPlugin) {
+      dynamicPlugins.push(compiledPlugin);
+    }
+  }
+  console.log('✅  Compiled all plugins.');
+  return dynamicPlugins;
 };
 
 function watchChanges(plugins, reloadCallback, pluginCache) {
@@ -126,17 +124,6 @@ function entryPointForPluginFolder(pluginPath) {
       return acc;
     }, {});
 }
-function changeExport(path) {
-  let file = fs.readFileSync(path);
-  file = file
-    .toString()
-    .replace(
-      /\nrequire\((-?[0-9]+)\);\n*$/,
-      (_, moduleID) =>
-        `\nmodule.exports = global.require(${moduleID}).default;`,
-    );
-  fs.writeFileSync(path, file);
-}
 function mostRecentlyChanged(dir) {
   return util
     .promisify(recursiveReaddir)(dir)
@@ -146,53 +133,55 @@ function mostRecentlyChanged(dir) {
         .reduce((a, b) => (a > b ? a : b), new Date(0)),
     );
 }
-function compilePlugin(
+async function compilePlugin(
   {rootDir, name, entry, packageJSON},
   force,
   pluginCache,
 ) {
-  return new Promise((resolve, reject) => {
-    const fileName = `${name}@${packageJSON.version || '0.0.0'}.js`;
-    const out = path.join(pluginCache, fileName);
-    const result = Object.assign({}, packageJSON, {rootDir, name, entry, out});
-    // check if plugin needs to be compiled
-    mostRecentlyChanged(rootDir).then(rootDirCtime => {
-      if (
-        !force &&
-        fs.existsSync(out) &&
-        rootDirCtime < fs.lstatSync(out).ctime
-      ) {
-        // eslint-disable-next-line no-console
-        console.log(`🥫  Using cached version of ${name}...`);
-        resolve(result);
-      } else {
-        console.log(`⚙️  Compiling ${name}...`); // eslint-disable-line no-console
-        metro
-          .runBuild({
-            config: {
-              getProjectRoots: () => [rootDir, path.join(__dirname, '..')],
-              getTransformModulePath: () =>
-                path.join(__dirname, 'transforms', 'index.js'),
-              // a custom hash function is required, because by default metro starts
-              // numbering the modules by 1. This means all plugins would start at
-              // ID 1, which causes a clash. This is why we have a custom IDFactory.
-              createModuleIdFactory,
-            },
-            dev: false,
-            entry,
-            out,
-          })
-          .then(() => {
-            changeExport(out);
-            resolve(result);
-          })
-          .catch(err => {
-            console.error(
-              `❌  Plugin ${name} is ignored, because it could not be compiled.`,
-            );
-            console.error(err);
-          });
-      }
-    });
-  });
+  const fileName = `${name}@${packageJSON.version || '0.0.0'}.js`;
+  const out = path.join(pluginCache, fileName);
+  const result = Object.assign({}, packageJSON, {rootDir, name, entry, out});
+  // check if plugin needs to be compiled
+  const rootDirCtime = await mostRecentlyChanged(rootDir);
+  if (!force && fs.existsSync(out) && rootDirCtime < fs.lstatSync(out).ctime) {
+    // eslint-disable-next-line no-console
+    console.log(`🥫  Using cached version of ${name}...`);
+    return result;
+  } else {
+    console.log(`⚙️  Compiling ${name}...`); // eslint-disable-line no-console
+    try {
+      await Metro.runBuild(
+        {
+          reporter: {update: () => {}},
+          projectRoot: rootDir,
+          watchFolders: [__dirname, rootDir],
+          serializer: {
+            getRunModuleStatement: moduleID =>
+              `module.exports = global.__r(${moduleID}).default;`,
+            createModuleIdFactory,
+          },
+          transformer: {
+            babelTransformerPath: path.join(
+              __dirname,
+              'transforms',
+              'index.js',
+            ),
+          },
+        },
+        {
+          entry: entry.replace(rootDir, '.'),
+          out,
+          dev: false,
+          sourceMap: true,
+        },
+      );
+    } catch (e) {
+      console.error(
+        `❌  Plugin ${name} is ignored, because it could not be compiled.`,
+      );
+      console.error(e);
+      return null;
+    }
+    return result;
+  }
 }

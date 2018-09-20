@@ -12,7 +12,7 @@
     "babel-plugin-transform-object-rest-spread": "^7.0.0-beta.3",
     "babel-preset-react": "^7.0.0-beta.3",
     "babylon": "^7.0.0-beta.40",
-    "metro": "^0.28.0",
+    "metro": "^0.45.3",
     "recursive-readdir": "2.2.2"
   }
 }
