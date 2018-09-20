@@ -15,7 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.TextView;
-import com.facebook.flipper.core.SonarConnection;
+import com.facebook.flipper.core.FlipperConnection;
 import com.facebook.flipper.plugins.inspector.descriptors.ActivityDescriptor;
 import com.facebook.flipper.plugins.inspector.descriptors.ApplicationDescriptor;
 import com.facebook.flipper.plugins.inspector.descriptors.DialogDescriptor;
@@ -74,7 +74,7 @@ public class DescriptorMapping {
     return mMapping.get(clazz);
   }
 
-  void onConnect(SonarConnection connection) {
+  void onConnect(FlipperConnection connection) {
     for (NodeDescriptor descriptor : mMapping.values()) {
       descriptor.setConnection(connection);
       descriptor.setDescriptorMapping(this);

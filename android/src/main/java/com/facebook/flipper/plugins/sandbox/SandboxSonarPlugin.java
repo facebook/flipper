@@ -7,15 +7,15 @@
  */
 package com.facebook.flipper.plugins.sandbox;
 
-import com.facebook.flipper.core.SonarArray;
-import com.facebook.flipper.core.SonarConnection;
-import com.facebook.flipper.core.SonarObject;
-import com.facebook.flipper.core.SonarPlugin;
-import com.facebook.flipper.core.SonarReceiver;
-import com.facebook.flipper.core.SonarResponder;
+import com.facebook.flipper.core.FlipperArray;
+import com.facebook.flipper.core.FlipperConnection;
+import com.facebook.flipper.core.FlipperObject;
+import com.facebook.flipper.core.FlipperPlugin;
+import com.facebook.flipper.core.FlipperReceiver;
+import com.facebook.flipper.core.FlipperResponder;
 import java.util.Map;
 
-public class SandboxSonarPlugin implements SonarPlugin {
+public class SandboxSonarPlugin implements FlipperPlugin {
   public static final String ID = "Sandbox";
 
   private static final String SET_METHOD_NAME = "setSandbox";
@@ -33,13 +33,13 @@ public class SandboxSonarPlugin implements SonarPlugin {
   }
 
   @Override
-  public void onConnect(SonarConnection connection) {
+  public void onConnect(FlipperConnection connection) {
     connection.receive(
         GET_METHOD_NAME,
-        new SonarReceiver() {
+        new FlipperReceiver() {
           @Override
-          public void onReceive(SonarObject params, final SonarResponder responder) {
-            final SonarArray.Builder sandboxes = new SonarArray.Builder();
+          public void onReceive(FlipperObject params, final FlipperResponder responder) {
+            final FlipperArray.Builder sandboxes = new FlipperArray.Builder();
             Map<String, String> knownSandboxes = mStrategy.getKnownSandboxes();
             if (knownSandboxes == null) {
               responder.success(sandboxes.build());
@@ -47,7 +47,7 @@ public class SandboxSonarPlugin implements SonarPlugin {
             }
             for (String sandboxName : knownSandboxes.keySet()) {
               sandboxes.put(
-                  new SonarObject.Builder()
+                  new FlipperObject.Builder()
                       .put("name", sandboxName)
                       .put("value", knownSandboxes.get(sandboxName)));
             }
@@ -56,12 +56,12 @@ public class SandboxSonarPlugin implements SonarPlugin {
         });
     connection.receive(
         SET_METHOD_NAME,
-        new SonarReceiver() {
+        new FlipperReceiver() {
           @Override
-          public void onReceive(SonarObject params, SonarResponder responder) throws Exception {
+          public void onReceive(FlipperObject params, FlipperResponder responder) throws Exception {
             String sandbox = params.getString("sandbox");
             mStrategy.setSandbox(sandbox);
-            responder.success(new SonarObject.Builder().put("result", true).build());
+            responder.success(new FlipperObject.Builder().put("result", true).build());
           }
         });
   }

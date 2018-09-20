@@ -21,8 +21,8 @@ import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.view.accessibility.AccessibilityManager;
 import android.widget.EditText;
-import com.facebook.flipper.core.SonarArray;
-import com.facebook.flipper.core.SonarObject;
+import com.facebook.flipper.core.FlipperArray;
+import com.facebook.flipper.core.FlipperObject;
 import com.facebook.flipper.plugins.inspector.InspectorValue;
 import javax.annotation.Nullable;
 
@@ -511,27 +511,27 @@ public final class AccessibilityUtil {
   }
 
   /**
-   * Creates a {@link SonarObject} of useful properties of AccessibilityNodeInfo, to be shown in the
+   * Creates a {@link FlipperObject} of useful properties of AccessibilityNodeInfo, to be shown in the
    * Sonar Layout Inspector accessibility extension. All properties are immutable since they are all derived from
    * various {@link View} properties. This is a more complete list than
    * getAccessibilityNodeInfoProperties returns.
    *
    * @param view The {@link View} to derive the AccessibilityNodeInfo properties from.
-   * @return {@link SonarObject} containing the properties.
+   * @return {@link FlipperObject} containing the properties.
    */
   @Nullable
-  public static SonarObject getAccessibilityNodeInfoData(View view) {
+  public static FlipperObject getAccessibilityNodeInfoData(View view) {
     final AccessibilityNodeInfoCompat nodeInfo =
         ViewAccessibilityHelper.createNodeInfoFromView(view);
     if (nodeInfo == null) {
       return null;
     }
 
-    final SonarObject.Builder nodeInfoProps = new SonarObject.Builder();
+    final FlipperObject.Builder nodeInfoProps = new FlipperObject.Builder();
     final Rect bounds = new Rect();
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      final SonarArray.Builder actionsArrayBuilder = new SonarArray.Builder();
+      final FlipperArray.Builder actionsArrayBuilder = new FlipperArray.Builder();
       for (AccessibilityNodeInfoCompat.AccessibilityActionCompat action :
           nodeInfo.getActionList()) {
         final String actionLabel = (String) action.getLabel();
@@ -571,7 +571,7 @@ public final class AccessibilityUtil {
     nodeInfo.getBoundsInParent(bounds);
     nodeInfoProps.put(
         "parent-bounds",
-        new SonarObject.Builder()
+        new FlipperObject.Builder()
             .put("width", bounds.width())
             .put("height", bounds.height())
             .put("top", bounds.top)
@@ -582,7 +582,7 @@ public final class AccessibilityUtil {
     nodeInfo.getBoundsInScreen(bounds);
     nodeInfoProps.put(
         "screen-bounds",
-        new SonarObject.Builder()
+        new FlipperObject.Builder()
             .put("width", bounds.width())
             .put("height", bounds.height())
             .put("top", bounds.top)
@@ -608,13 +608,13 @@ public final class AccessibilityUtil {
   }
 
   /**
-   * Modifies a {@link SonarObject.Builder} to add Talkback-specific Accessibiltiy properties to be
+   * Modifies a {@link FlipperObject.Builder} to add Talkback-specific Accessibiltiy properties to be
    * shown in the Sonar Layout Inspector.
    *
-   * @param props The {@link SonarObject.Builder} to add the properties to.
+   * @param props The {@link FlipperObject.Builder} to add the properties to.
    * @param view The {@link View} to derive the properties from.
    */
-  public static void addTalkbackProperties(SonarObject.Builder props, View view) {
+  public static void addTalkbackProperties(FlipperObject.Builder props, View view) {
     if (!AccessibilityEvaluationUtil.isTalkbackFocusable(view)) {
       props
           .put("talkback-focusable", false)
@@ -628,8 +628,8 @@ public final class AccessibilityUtil {
     }
   }
 
-  public static SonarObject getViewData(View view) {
-    final SonarObject.Builder props = new SonarObject.Builder();
+  public static FlipperObject getViewData(View view) {
+    final FlipperObject.Builder props = new FlipperObject.Builder();
 
     // This needs to be an empty string to be mutable. See t20470623.
     CharSequence contentDescription =
@@ -656,10 +656,10 @@ public final class AccessibilityUtil {
     return props.build();
   }
 
-  public static SonarObject getTalkbackData(View view) {
+  public static FlipperObject getTalkbackData(View view) {
     if (!AccessibilityEvaluationUtil.isTalkbackFocusable(view)) {
       String reason = getTalkbackIgnoredReasons(view);
-      return new SonarObject.Builder()
+      return new FlipperObject.Builder()
               .put("talkback-focusable", false)
               .put("talkback-ignored-reasons", reason == null ? "" : reason)
               .build();
@@ -667,7 +667,7 @@ public final class AccessibilityUtil {
       String reason = getTalkbackFocusableReasons(view);
       CharSequence description = getTalkbackDescription(view);
       CharSequence hint = getTalkbackHint(view);
-      return new SonarObject.Builder()
+      return new FlipperObject.Builder()
               .put("talkback-focusable", true)
               .put("talkback-focusable-reasons", reason)
               .put("talkback-output", description)

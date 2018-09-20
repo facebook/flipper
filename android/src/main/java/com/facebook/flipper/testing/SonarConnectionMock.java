@@ -7,21 +7,21 @@
  */
 package com.facebook.flipper.testing;
 
-import com.facebook.flipper.core.SonarArray;
-import com.facebook.flipper.core.SonarConnection;
-import com.facebook.flipper.core.SonarObject;
-import com.facebook.flipper.core.SonarReceiver;
+import com.facebook.flipper.core.FlipperArray;
+import com.facebook.flipper.core.FlipperConnection;
+import com.facebook.flipper.core.FlipperObject;
+import com.facebook.flipper.core.FlipperReceiver;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class SonarConnectionMock implements SonarConnection {
-  public final Map<String, SonarReceiver> receivers = new HashMap<>();
+public class SonarConnectionMock implements FlipperConnection {
+  public final Map<String, FlipperReceiver> receivers = new HashMap<>();
   public final Map<String, List<Object>> sent = new HashMap<>();
 
   @Override
-  public void send(String method, SonarObject params) {
+  public void send(String method, FlipperObject params) {
     final List<Object> paramList;
     if (sent.containsKey(method)) {
       paramList = sent.get(method);
@@ -34,7 +34,7 @@ public class SonarConnectionMock implements SonarConnection {
   }
 
   @Override
-  public void send(String method, SonarArray params) {
+  public void send(String method, FlipperArray params) {
     final List<Object> paramList;
     if (sent.containsKey(method)) {
       paramList = sent.get(method);
@@ -50,7 +50,7 @@ public class SonarConnectionMock implements SonarConnection {
   public void reportError(Throwable throwable) {}
 
   @Override
-  public void receive(String method, SonarReceiver receiver) {
+  public void receive(String method, FlipperReceiver receiver) {
     receivers.put(method, receiver);
   }
 }

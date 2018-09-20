@@ -7,26 +7,26 @@
  */
 package com.facebook.flipper.plugins.common;
 
-import com.facebook.flipper.core.SonarConnection;
-import com.facebook.flipper.core.SonarObject;
-import com.facebook.flipper.core.SonarPlugin;
+import com.facebook.flipper.core.FlipperConnection;
+import com.facebook.flipper.core.FlipperObject;
+import com.facebook.flipper.core.FlipperPlugin;
 import javax.annotation.Nullable;
 
 /**
  * Sonar plugin that keeps events in a buffer until a connection is available.
  *
- * <p>In order to send data to the {@link SonarConnection}, use {@link #send(String, SonarObject)}
- * instead of {@link SonarConnection#send(String, SonarObject)}.
+ * <p>In order to send data to the {@link FlipperConnection}, use {@link #send(String, FlipperObject)}
+ * instead of {@link FlipperConnection#send(String, FlipperObject)}.
  */
-public abstract class BufferingSonarPlugin implements SonarPlugin {
+public abstract class BufferingSonarPlugin implements FlipperPlugin {
 
   private static final int BUFFER_SIZE = 500;
 
   private @Nullable RingBuffer<CachedSonarEvent> mEventQueue;
-  private @Nullable SonarConnection mConnection;
+  private @Nullable FlipperConnection mConnection;
 
   @Override
-  public synchronized void onConnect(SonarConnection connection) {
+  public synchronized void onConnect(FlipperConnection connection) {
     mConnection = connection;
 
     sendBufferedEvents();
@@ -37,7 +37,7 @@ public abstract class BufferingSonarPlugin implements SonarPlugin {
     mConnection = null;
   }
 
-  public synchronized SonarConnection getConnection() {
+  public synchronized FlipperConnection getConnection() {
     return mConnection;
   }
 
@@ -45,7 +45,7 @@ public abstract class BufferingSonarPlugin implements SonarPlugin {
     return mConnection != null;
   }
 
-  public synchronized void send(String method, SonarObject sonarObject) {
+  public synchronized void send(String method, FlipperObject sonarObject) {
     if (mEventQueue == null) {
       mEventQueue = new RingBuffer<>(BUFFER_SIZE);
     }
@@ -67,9 +67,9 @@ public abstract class BufferingSonarPlugin implements SonarPlugin {
 
   private static class CachedSonarEvent {
     final String method;
-    final SonarObject sonarObject;
+    final FlipperObject sonarObject;
 
-    private CachedSonarEvent(String method, SonarObject sonarObject) {
+    private CachedSonarEvent(String method, FlipperObject sonarObject) {
       this.method = method;
       this.sonarObject = sonarObject;
     }

@@ -12,16 +12,16 @@ import static android.content.Context.MODE_PRIVATE;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import com.facebook.flipper.core.SonarConnection;
-import com.facebook.flipper.core.SonarObject;
-import com.facebook.flipper.core.SonarPlugin;
-import com.facebook.flipper.core.SonarReceiver;
-import com.facebook.flipper.core.SonarResponder;
+import com.facebook.flipper.core.FlipperConnection;
+import com.facebook.flipper.core.FlipperObject;
+import com.facebook.flipper.core.FlipperPlugin;
+import com.facebook.flipper.core.FlipperReceiver;
+import com.facebook.flipper.core.FlipperResponder;
 import java.util.Map;
 
-public class SharedPreferencesSonarPlugin implements SonarPlugin {
+public class SharedPreferencesSonarPlugin implements FlipperPlugin {
 
-  private SonarConnection mConnection;
+  private FlipperConnection mConnection;
   private final SharedPreferences mSharedPreferences;
   private final SharedPreferences.OnSharedPreferenceChangeListener
       onSharedPreferenceChangeListener =
@@ -33,7 +33,7 @@ public class SharedPreferencesSonarPlugin implements SonarPlugin {
               }
               mConnection.send(
                   "sharedPreferencesChange",
-                  new SonarObject.Builder()
+                  new FlipperObject.Builder()
                       .put("name", key)
                       .put("deleted", !mSharedPreferences.contains(key))
                       .put("time", System.currentTimeMillis())
@@ -80,8 +80,8 @@ public class SharedPreferencesSonarPlugin implements SonarPlugin {
     return "Preferences";
   }
 
-  private SonarObject getSharedPreferencesObject() {
-    final SonarObject.Builder builder = new SonarObject.Builder();
+  private FlipperObject getSharedPreferencesObject() {
+    final FlipperObject.Builder builder = new FlipperObject.Builder();
     final Map<String, ?> map = mSharedPreferences.getAll();
 
     for (Map.Entry<String, ?> entry : map.entrySet()) {
@@ -93,23 +93,23 @@ public class SharedPreferencesSonarPlugin implements SonarPlugin {
   }
 
   @Override
-  public void onConnect(SonarConnection connection) {
+  public void onConnect(FlipperConnection connection) {
     mConnection = connection;
 
     connection.receive(
         "getSharedPreferences",
-        new SonarReceiver() {
+        new FlipperReceiver() {
           @Override
-          public void onReceive(SonarObject params, SonarResponder responder) {
+          public void onReceive(FlipperObject params, FlipperResponder responder) {
             responder.success(getSharedPreferencesObject());
           }
         });
 
     connection.receive(
         "setSharedPreference",
-        new SonarReceiver() {
+        new FlipperReceiver() {
           @Override
-          public void onReceive(SonarObject params, SonarResponder responder)
+          public void onReceive(FlipperObject params, FlipperResponder responder)
               throws IllegalArgumentException {
 
             String preferenceName = params.getString("preferenceName");

@@ -8,10 +8,10 @@
 
 package com.facebook.flipper.plugins.inspector;
 
-import com.facebook.flipper.core.SonarArray;
-import com.facebook.flipper.core.SonarConnection;
-import com.facebook.flipper.core.SonarDynamic;
-import com.facebook.flipper.core.SonarObject;
+import com.facebook.flipper.core.FlipperArray;
+import com.facebook.flipper.core.FlipperConnection;
+import com.facebook.flipper.core.FlipperDynamic;
+import com.facebook.flipper.core.FlipperObject;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nullable;
@@ -22,10 +22,10 @@ import javax.annotation.Nullable;
  * data can be exposed to the inspector.
  */
 public abstract class NodeDescriptor<T> {
-  protected SonarConnection mConnection;
+  protected FlipperConnection mConnection;
   private DescriptorMapping mDescriptorMapping;
 
-  void setConnection(SonarConnection connection) {
+  void setConnection(FlipperConnection connection) {
     mConnection = connection;
   }
 
@@ -52,11 +52,11 @@ public abstract class NodeDescriptor<T> {
       new ErrorReportingRunnable() {
         @Override
         protected void runOrThrow() throws Exception {
-          SonarArray array =
-              new SonarArray.Builder()
-                  .put(new SonarObject.Builder().put("id", getId(node)).build())
+          FlipperArray array =
+              new FlipperArray.Builder()
+                  .put(new FlipperObject.Builder().put("id", getId(node)).build())
                   .build();
-          SonarObject params = new SonarObject.Builder().put("nodes", array).build();
+          FlipperObject params = new FlipperObject.Builder().put("nodes", array).build();
           mConnection.send("invalidate", params);
         }
       }.run();
@@ -72,11 +72,11 @@ public abstract class NodeDescriptor<T> {
       new ErrorReportingRunnable() {
         @Override
         protected void runOrThrow() throws Exception {
-          SonarArray array =
-                  new SonarArray.Builder()
-                          .put(new SonarObject.Builder().put("id", getId(node)).build())
+          FlipperArray array =
+                  new FlipperArray.Builder()
+                          .put(new FlipperObject.Builder().put("id", getId(node)).build())
                           .build();
-          SonarObject params = new SonarObject.Builder().put("nodes", array).build();
+          FlipperObject params = new FlipperObject.Builder().put("nodes", array).build();
           mConnection.send("invalidateAX", params);
         }
       }.run();
@@ -137,10 +137,10 @@ public abstract class NodeDescriptor<T> {
    * Get the data to show for this node in the sidebar of the inspector. The object will be showen
    * in order and with a header matching the given name.
    */
-  public abstract List<Named<SonarObject>> getData(T node) throws Exception;
+  public abstract List<Named<FlipperObject>> getData(T node) throws Exception;
 
   /** Gets data for AX tree */
-  public List<Named<SonarObject>> getAXData(T node) throws Exception {
+  public List<Named<FlipperObject>> getAXData(T node) throws Exception {
     return Collections.EMPTY_LIST;
   }
 
@@ -149,7 +149,7 @@ public abstract class NodeDescriptor<T> {
    * provided by {@link this#getData(Object)} and the value will be of the same type as the value
    * mathcing that path in the returned object.
    */
-  public abstract void setValue(T node, String[] path, SonarDynamic value) throws Exception;
+  public abstract void setValue(T node, String[] path, FlipperDynamic value) throws Exception;
 
   /**
    * Get the attributes for this node. This is a list of read-only string:string mapping which show
@@ -205,8 +205,8 @@ public abstract class NodeDescriptor<T> {
    *     other tree or if it is not represented in the other tree bu has children that should show
    *     up, etc.
    */
-  public SonarObject getExtraInfo(T node) {
-    return new SonarObject.Builder().build();
+  public FlipperObject getExtraInfo(T node) {
+    return new FlipperObject.Builder().build();
   }
 
   /**

@@ -13,8 +13,8 @@ import android.support.v4.view.ViewCompat;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
-import com.facebook.flipper.core.SonarDynamic;
-import com.facebook.flipper.core.SonarObject;
+import com.facebook.flipper.core.FlipperDynamic;
+import com.facebook.flipper.core.FlipperObject;
 import com.facebook.flipper.plugins.inspector.ApplicationWrapper;
 import com.facebook.flipper.plugins.inspector.Named;
 import com.facebook.flipper.plugins.inspector.NodeDescriptor;
@@ -93,17 +93,17 @@ public class ApplicationDescriptor extends NodeDescriptor<ApplicationWrapper> {
               int eventType = event.getEventType();
               if (eventType == AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED) {
                 mConnection.send("axFocusEvent",
-                        new SonarObject.Builder()
+                        new FlipperObject.Builder()
                                 .put("isFocus", true)
                                 .build());
               } else if (eventType == AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUS_CLEARED) {
                 mConnection.send("axFocusEvent",
-                        new SonarObject.Builder()
+                        new FlipperObject.Builder()
                                 .put("isFocus", false)
                                 .build());
               } else if (eventType == AccessibilityEvent.TYPE_VIEW_CLICKED) {
                 mConnection.send("axFocusEvent",
-                        new SonarObject.Builder()
+                        new FlipperObject.Builder()
                                 .put("isFocus", false)
                                 .put("isClick", true)
                                 .build());
@@ -115,7 +115,7 @@ public class ApplicationDescriptor extends NodeDescriptor<ApplicationWrapper> {
         });
         editedDelegates.add((ViewGroup) view);
       } else if (hasDelegateAlready) {
-        SonarObject params = new SonarObject.Builder()
+        FlipperObject params = new FlipperObject.Builder()
                 .put("type", "usage")
                 .put("eventName", "accessibility:hasDelegateAlready").build();
         mConnection.send("track", params);
@@ -200,12 +200,12 @@ public class ApplicationDescriptor extends NodeDescriptor<ApplicationWrapper> {
   }
 
   @Override
-  public List<Named<SonarObject>> getData(ApplicationWrapper node) {
+  public List<Named<FlipperObject>> getData(ApplicationWrapper node) {
     return Collections.EMPTY_LIST;
   }
 
   @Override
-  public void setValue(ApplicationWrapper node, String[] path, SonarDynamic value) {}
+  public void setValue(ApplicationWrapper node, String[] path, FlipperDynamic value) {}
 
   @Override
   public List<Named<String>> getAttributes(ApplicationWrapper node) {
@@ -213,8 +213,8 @@ public class ApplicationDescriptor extends NodeDescriptor<ApplicationWrapper> {
   }
 
   @Override
-  public SonarObject getExtraInfo(ApplicationWrapper node) {
-    return new SonarObject.Builder().put("hasAXNode", true).build();
+  public FlipperObject getExtraInfo(ApplicationWrapper node) {
+    return new FlipperObject.Builder().put("hasAXNode", true).build();
   }
 
   @Override

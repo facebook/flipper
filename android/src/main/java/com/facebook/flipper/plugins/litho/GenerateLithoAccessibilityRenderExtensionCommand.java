@@ -5,10 +5,10 @@ package com.facebook.flipper.plugins.litho;
 import android.view.View;
 import android.view.ViewGroup;
 import com.facebook.litho.LithoView;
-import com.facebook.flipper.core.SonarConnection;
-import com.facebook.flipper.core.SonarObject;
-import com.facebook.flipper.core.SonarReceiver;
-import com.facebook.flipper.core.SonarResponder;
+import com.facebook.flipper.core.FlipperConnection;
+import com.facebook.flipper.core.FlipperObject;
+import com.facebook.flipper.core.FlipperReceiver;
+import com.facebook.flipper.core.FlipperResponder;
 import com.facebook.flipper.plugins.common.MainThreadSonarReceiver;
 import com.facebook.flipper.plugins.inspector.ApplicationWrapper;
 import com.facebook.flipper.plugins.inspector.InspectorSonarPlugin;
@@ -24,10 +24,10 @@ public final class GenerateLithoAccessibilityRenderExtensionCommand implements I
     }
 
     @Override
-    public SonarReceiver receiver(final ObjectTracker tracker, final SonarConnection connection) {
+    public FlipperReceiver receiver(final ObjectTracker tracker, final FlipperConnection connection) {
         return new MainThreadSonarReceiver(connection) {
             @Override
-            public void onReceiveOnMainThread(final SonarObject params, final SonarResponder responder)
+            public void onReceiveOnMainThread(final FlipperObject params, final FlipperResponder responder)
                     throws Exception {
                 final String applicationId = params.getString("applicationId");
 

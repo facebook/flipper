@@ -8,8 +8,8 @@
 
 package com.facebook.flipper.plugins.inspector.descriptors;
 
-import com.facebook.flipper.core.SonarDynamic;
-import com.facebook.flipper.core.SonarObject;
+import com.facebook.flipper.core.FlipperDynamic;
+import com.facebook.flipper.core.FlipperObject;
 import com.facebook.flipper.plugins.inspector.Named;
 import com.facebook.flipper.plugins.inspector.NodeDescriptor;
 import com.facebook.flipper.plugins.inspector.Touch;
@@ -43,12 +43,12 @@ public class ObjectDescriptor extends NodeDescriptor<Object> {
   }
 
   @Override
-  public List<Named<SonarObject>> getData(Object node) {
+  public List<Named<FlipperObject>> getData(Object node) {
     return Collections.EMPTY_LIST;
   }
 
   @Override
-  public void setValue(Object node, String[] path, SonarDynamic value) {}
+  public void setValue(Object node, String[] path, FlipperDynamic value) {}
 
   @Override
   public List<Named<String>> getAttributes(Object node) {

@@ -9,9 +9,9 @@ package com.facebook.flipper.core;
 
 public abstract class ErrorReportingRunnable implements Runnable {
 
-  private final SonarConnection mConnection;
+  private final FlipperConnection mConnection;
 
-  public ErrorReportingRunnable(SonarConnection connection) {
+  public ErrorReportingRunnable(FlipperConnection connection) {
     mConnection = connection;
   }
 

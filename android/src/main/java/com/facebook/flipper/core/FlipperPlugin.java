@@ -8,13 +8,13 @@
 package com.facebook.flipper.core;
 
 /**
- * A SonarPlugin is an object which exposes an API to the Desktop Sonar application. When a
- * connection is established the plugin is given a SonarConnection on which it can register request
- * handlers and send messages. When the SonarConnection is invalid onDisconnect is called. onConnect
+ * A FlipperPlugin is an object which exposes an API to the Desktop Sonar application. When a
+ * connection is established the plugin is given a FlipperConnection on which it can register request
+ * handlers and send messages. When the FlipperConnection is invalid onDisconnect is called. onConnect
  * may be called again on the same plugin object if Sonar re-connects, this will provide a new
- * SonarConnection, do not attempt to re-use the previous connection.
+ * FlipperConnection, do not attempt to re-use the previous connection.
  */
-public interface SonarPlugin {
+public interface FlipperPlugin {
 
   /**
    * @return The id of this plugin. This is the namespace which Sonar desktop plugins will call
@@ -25,12 +25,12 @@ public interface SonarPlugin {
 
   /**
    * Called when a connection has been established. The connection passed to this method is valid
-   * until {@link SonarPlugin#onDisconnect()} is called.
+   * until {@link FlipperPlugin#onDisconnect()} is called.
    */
-  void onConnect(SonarConnection connection) throws Exception;
+  void onConnect(FlipperConnection connection) throws Exception;
 
   /**
-   * Called when the connection passed to {@link SonarPlugin#onConnect(SonarConnection)} is no
+   * Called when the connection passed to {@link FlipperPlugin#onConnect(FlipperConnection)} is no
    * longer valid. Do not try to use the connection in or after this method has been called.
    */
   void onDisconnect() throws Exception;

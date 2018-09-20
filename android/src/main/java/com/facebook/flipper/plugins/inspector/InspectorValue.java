@@ -8,10 +8,10 @@
 
 package com.facebook.flipper.plugins.inspector;
 
-import com.facebook.flipper.core.SonarObject;
-import com.facebook.flipper.core.SonarValue;
+import com.facebook.flipper.core.FlipperObject;
+import com.facebook.flipper.core.FlipperValue;
 
-public class InspectorValue<T> implements SonarValue {
+public class InspectorValue<T> implements FlipperValue {
 
   /**
    * Descrive the type of data this value contains. This will influence how values are parsed and
@@ -69,8 +69,8 @@ public class InspectorValue<T> implements SonarValue {
   }
 
   @Override
-  public SonarObject toSonarObject() {
-    return new SonarObject.Builder()
+  public FlipperObject toSonarObject() {
+    return new FlipperObject.Builder()
         .put("__type__", mType)
         .put("__mutable__", mMutable)
         .put("value", mValue)

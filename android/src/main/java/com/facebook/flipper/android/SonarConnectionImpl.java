@@ -11,13 +11,13 @@ import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.soloader.SoLoader;
 import com.facebook.flipper.BuildConfig;
-import com.facebook.flipper.core.SonarArray;
-import com.facebook.flipper.core.SonarConnection;
-import com.facebook.flipper.core.SonarObject;
-import com.facebook.flipper.core.SonarReceiver;
+import com.facebook.flipper.core.FlipperArray;
+import com.facebook.flipper.core.FlipperConnection;
+import com.facebook.flipper.core.FlipperObject;
+import com.facebook.flipper.core.FlipperReceiver;
 
 @DoNotStrip
-class SonarConnectionImpl implements SonarConnection {
+class SonarConnectionImpl implements FlipperConnection {
   static {
     if (BuildConfig.IS_INTERNAL_BUILD) {
       SoLoader.loadLibrary("sonar");
@@ -31,22 +31,22 @@ class SonarConnectionImpl implements SonarConnection {
   }
 
   @Override
-  public void send(String method, SonarObject params) {
+  public void send(String method, FlipperObject params) {
     sendObject(method, params);
   }
 
   @Override
-  public void send(String method, SonarArray params) {
+  public void send(String method, FlipperArray params) {
     sendArray(method, params);
   }
 
-  public native void sendObject(String method, SonarObject params);
+  public native void sendObject(String method, FlipperObject params);
 
-  public native void sendArray(String method, SonarArray params);
+  public native void sendArray(String method, FlipperArray params);
 
   @Override
   public native void reportError(Throwable throwable);
 
   @Override
-  public native void receive(String method, SonarReceiver receiver);
+  public native void receive(String method, FlipperReceiver receiver);
 }

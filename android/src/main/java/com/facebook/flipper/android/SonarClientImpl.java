@@ -11,13 +11,13 @@ import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.soloader.SoLoader;
 import com.facebook.flipper.BuildConfig;
-import com.facebook.flipper.core.SonarClient;
-import com.facebook.flipper.core.SonarPlugin;
-import com.facebook.flipper.core.SonarStateUpdateListener;
+import com.facebook.flipper.core.FlipperClient;
+import com.facebook.flipper.core.FlipperPlugin;
+import com.facebook.flipper.core.FlipperStateUpdateListener;
 import com.facebook.flipper.core.StateSummary;
 
 @DoNotStrip
-class SonarClientImpl implements SonarClient {
+class SonarClientImpl implements FlipperClient {
   static {
     if (BuildConfig.IS_INTERNAL_BUILD) {
       SoLoader.loadLibrary("sonar");
@@ -44,13 +44,13 @@ class SonarClientImpl implements SonarClient {
   public static native SonarClientImpl getInstance();
 
   @Override
-  public native void addPlugin(SonarPlugin plugin);
+  public native void addPlugin(FlipperPlugin plugin);
 
   @Override
-  public native <T extends SonarPlugin> T getPlugin(String id);
+  public native <T extends FlipperPlugin> T getPlugin(String id);
 
   @Override
-  public native void removePlugin(SonarPlugin plugin);
+  public native void removePlugin(FlipperPlugin plugin);
 
   @Override
   public native void start();
@@ -59,7 +59,7 @@ class SonarClientImpl implements SonarClient {
   public native void stop();
 
   @Override
-  public native void subscribeForUpdates(SonarStateUpdateListener stateListener);
+  public native void subscribeForUpdates(FlipperStateUpdateListener stateListener);
 
   @Override
   public native void unsubscribe();

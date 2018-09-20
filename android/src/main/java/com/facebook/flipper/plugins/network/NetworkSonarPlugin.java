@@ -10,8 +10,8 @@ package com.facebook.flipper.plugins.network;
 
 import android.util.Base64;
 import com.facebook.flipper.core.ErrorReportingRunnable;
-import com.facebook.flipper.core.SonarArray;
-import com.facebook.flipper.core.SonarObject;
+import com.facebook.flipper.core.FlipperArray;
+import com.facebook.flipper.core.FlipperObject;
 import com.facebook.flipper.plugins.common.BufferingSonarPlugin;
 import java.util.List;
 
@@ -35,8 +35,8 @@ public class NetworkSonarPlugin extends BufferingSonarPlugin implements NetworkR
 
   @Override
   public void reportRequest(RequestInfo requestInfo) {
-    final SonarObject request =
-        new SonarObject.Builder()
+    final FlipperObject request =
+        new FlipperObject.Builder()
             .put("id", requestInfo.requestId)
             .put("timestamp", requestInfo.timeStamp)
             .put("method", requestInfo.method)
@@ -58,8 +58,8 @@ public class NetworkSonarPlugin extends BufferingSonarPlugin implements NetworkR
               responseInfo.body = null;
             }
 
-            final SonarObject response =
-                new SonarObject.Builder()
+            final FlipperObject response =
+                new FlipperObject.Builder()
                     .put("id", responseInfo.requestId)
                     .put("timestamp", responseInfo.timeStamp)
                     .put("status", responseInfo.statusCode)
@@ -99,11 +99,11 @@ public class NetworkSonarPlugin extends BufferingSonarPlugin implements NetworkR
     return new String(Base64.encode(bytes, Base64.DEFAULT));
   }
 
-  private SonarArray toSonarObject(List<Header> headers) {
-    final SonarArray.Builder list = new SonarArray.Builder();
+  private FlipperArray toSonarObject(List<Header> headers) {
+    final FlipperArray.Builder list = new FlipperArray.Builder();
 
     for (Header header : headers) {
-      list.put(new SonarObject.Builder().put("key", header.name).put("value", header.value));
+      list.put(new FlipperObject.Builder().put("key", header.name).put("value", header.value));
     }
 
     return list.build();

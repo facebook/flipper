@@ -14,8 +14,8 @@ import static com.facebook.flipper.plugins.inspector.InspectorValue.Type.Text;
 
 import android.view.View;
 import android.widget.TextView;
-import com.facebook.flipper.core.SonarDynamic;
-import com.facebook.flipper.core.SonarObject;
+import com.facebook.flipper.core.FlipperDynamic;
+import com.facebook.flipper.core.FlipperObject;
 import com.facebook.flipper.plugins.inspector.InspectorValue;
 import com.facebook.flipper.plugins.inspector.Named;
 import com.facebook.flipper.plugins.inspector.NodeDescriptor;
@@ -66,15 +66,15 @@ public class TextViewDescriptor extends NodeDescriptor<TextView> {
   }
 
   @Override
-  public List<Named<SonarObject>> getData(TextView node) throws Exception {
-    final List<Named<SonarObject>> props = new ArrayList<>();
+  public List<Named<FlipperObject>> getData(TextView node) throws Exception {
+    final List<Named<FlipperObject>> props = new ArrayList<>();
     final NodeDescriptor descriptor = descriptorForClass(View.class);
 
     props.add(
         0,
         new Named<>(
             "TextView",
-            new SonarObject.Builder()
+            new FlipperObject.Builder()
                 .put("text", InspectorValue.mutable(Text, node.getText().toString()))
                 .put(
                     "textColor",
@@ -88,15 +88,15 @@ public class TextViewDescriptor extends NodeDescriptor<TextView> {
   }
 
   @Override
-  public List<Named<SonarObject>> getAXData(TextView node) throws Exception {
-    final List<Named<SonarObject>> props = new ArrayList<>();
+  public List<Named<FlipperObject>> getAXData(TextView node) throws Exception {
+    final List<Named<FlipperObject>> props = new ArrayList<>();
     final NodeDescriptor descriptor = descriptorForClass(View.class);
     props.addAll(descriptor.getAXData(node));
     return props;
   }
 
   @Override
-  public void setValue(TextView node, String[] path, SonarDynamic value) throws Exception {
+  public void setValue(TextView node, String[] path, FlipperDynamic value) throws Exception {
     switch (path[0]) {
       case "TextView":
         switch (path[1]) {
@@ -132,7 +132,7 @@ public class TextViewDescriptor extends NodeDescriptor<TextView> {
   }
 
   @Override
-  public SonarObject getExtraInfo(TextView node) {
+  public FlipperObject getExtraInfo(TextView node) {
     final NodeDescriptor descriptor = descriptorForClass(View.class);
     return descriptor.getExtraInfo(node);
   }

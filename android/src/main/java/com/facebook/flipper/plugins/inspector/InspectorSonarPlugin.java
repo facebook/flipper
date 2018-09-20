@@ -16,13 +16,13 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import com.facebook.flipper.core.ErrorReportingRunnable;
-import com.facebook.flipper.core.SonarArray;
-import com.facebook.flipper.core.SonarConnection;
-import com.facebook.flipper.core.SonarDynamic;
-import com.facebook.flipper.core.SonarObject;
-import com.facebook.flipper.core.SonarPlugin;
-import com.facebook.flipper.core.SonarReceiver;
-import com.facebook.flipper.core.SonarResponder;
+import com.facebook.flipper.core.FlipperArray;
+import com.facebook.flipper.core.FlipperConnection;
+import com.facebook.flipper.core.FlipperDynamic;
+import com.facebook.flipper.core.FlipperObject;
+import com.facebook.flipper.core.FlipperPlugin;
+import com.facebook.flipper.core.FlipperReceiver;
+import com.facebook.flipper.core.FlipperResponder;
 import com.facebook.flipper.plugins.common.MainThreadSonarReceiver;
 import com.facebook.flipper.plugins.console.iface.ConsoleCommandReceiver;
 import com.facebook.flipper.plugins.console.iface.NullScriptingEnvironment;
@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.Stack;
 import javax.annotation.Nullable;
 
-public class InspectorSonarPlugin implements SonarPlugin {
+public class InspectorSonarPlugin implements FlipperPlugin {
 
   private ApplicationWrapper mApplication;
   private DescriptorMapping mDescriptorMapping;
@@ -43,7 +43,7 @@ public class InspectorSonarPlugin implements SonarPlugin {
   private ScriptingEnvironment mScriptingEnvironment;
   private String mHighlightedId;
   private TouchOverlayView mTouchOverlay;
-  private SonarConnection mConnection;
+  private FlipperConnection mConnection;
   private @Nullable List<ExtensionCommand> mExtensionCommands;
   private boolean mShowLithoAccessibilitySettings;
 
@@ -51,8 +51,8 @@ public class InspectorSonarPlugin implements SonarPlugin {
   public interface ExtensionCommand {
     /** The command to respond to */
     String command();
-    /** The corresponding SonarReceiver for the command */
-    SonarReceiver receiver(ObjectTracker tracker, SonarConnection connection);
+    /** The corresponding FlipperReceiver for the command */
+    FlipperReceiver receiver(ObjectTracker tracker, FlipperConnection connection);
   }
 
   private static Application getAppContextFromContext(Context context) {
@@ -121,7 +121,7 @@ public class InspectorSonarPlugin implements SonarPlugin {
   }
 
   @Override
-  public void onConnect(SonarConnection connection) throws Exception {
+  public void onConnect(FlipperConnection connection) throws Exception {
     mConnection = connection;
     mDescriptorMapping.onConnect(connection);
 
@@ -173,50 +173,50 @@ public class InspectorSonarPlugin implements SonarPlugin {
     mConnection = null;
   }
 
-  final SonarReceiver mShouldShowLithoAccessibilitySettings =
+  final FlipperReceiver mShouldShowLithoAccessibilitySettings =
           new MainThreadSonarReceiver(mConnection) {
             @Override
-            public void onReceiveOnMainThread(SonarObject params, SonarResponder responder)
+            public void onReceiveOnMainThread(FlipperObject params, FlipperResponder responder)
                     throws Exception {
-              responder.success(new SonarObject.Builder().put("showLithoAccessibilitySettings", mShowLithoAccessibilitySettings).build());
+              responder.success(new FlipperObject.Builder().put("showLithoAccessibilitySettings", mShowLithoAccessibilitySettings).build());
             }
           };
 
-  final SonarReceiver mGetRoot =
+  final FlipperReceiver mGetRoot =
       new MainThreadSonarReceiver(mConnection) {
         @Override
-        public void onReceiveOnMainThread(SonarObject params, SonarResponder responder)
+        public void onReceiveOnMainThread(FlipperObject params, FlipperResponder responder)
             throws Exception {
           responder.success(getNode(trackObject(mApplication)));
         }
       };
 
-  final SonarReceiver mGetAXRoot =
+  final FlipperReceiver mGetAXRoot =
       new MainThreadSonarReceiver(mConnection) {
         @Override
-        public void onReceiveOnMainThread(SonarObject params, SonarResponder responder)
+        public void onReceiveOnMainThread(FlipperObject params, FlipperResponder responder)
             throws Exception {
           // applicationWrapper is not used by accessibility, but is a common ancestor for multiple view roots
           responder.success(getAXNode(trackObject(mApplication)));
         }
       };
 
-  final SonarReceiver mGetNodes =
+  final FlipperReceiver mGetNodes =
       new MainThreadSonarReceiver(mConnection) {
         @Override
-        public void onReceiveOnMainThread(final SonarObject params, final SonarResponder responder)
+        public void onReceiveOnMainThread(final FlipperObject params, final FlipperResponder responder)
             throws Exception {
-          final SonarArray ids = params.getArray("ids");
-          final SonarArray.Builder result = new SonarArray.Builder();
+          final FlipperArray ids = params.getArray("ids");
+          final FlipperArray.Builder result = new FlipperArray.Builder();
 
           for (int i = 0, count = ids.length(); i < count; i++) {
             final String id = ids.getString(i);
-            final SonarObject node = getNode(id);
+            final FlipperObject node = getNode(id);
             if (node != null) {
               result.put(node);
             } else {
               responder.error(
-                  new SonarObject.Builder()
+                  new FlipperObject.Builder()
                       .put("message", "No node with given id")
                       .put("id", id)
                       .build());
@@ -224,17 +224,17 @@ public class InspectorSonarPlugin implements SonarPlugin {
             }
           }
 
-          responder.success(new SonarObject.Builder().put("elements", result).build());
+          responder.success(new FlipperObject.Builder().put("elements", result).build());
         }
       };
 
-  final SonarReceiver mGetAXNodes =
+  final FlipperReceiver mGetAXNodes =
       new MainThreadSonarReceiver(mConnection) {
         @Override
-        public void onReceiveOnMainThread(final SonarObject params, final SonarResponder responder)
+        public void onReceiveOnMainThread(final FlipperObject params, final FlipperResponder responder)
             throws Exception {
-          final SonarArray ids = params.getArray("ids");
-          final SonarArray.Builder result = new SonarArray.Builder();
+          final FlipperArray ids = params.getArray("ids");
+          final FlipperArray.Builder result = new FlipperArray.Builder();
 
           // getNodes called to refresh accessibility focus
           final boolean forAccessibilityEvent = params.getBoolean("forAccessibilityEvent");
@@ -242,7 +242,7 @@ public class InspectorSonarPlugin implements SonarPlugin {
 
           for (int i = 0, count = ids.length(); i < count; i++) {
             final String id = ids.getString(i);
-            final SonarObject node = getAXNode(id);
+            final FlipperObject node = getAXNode(id);
 
             // sent request for non-existent node, potentially in error
             if (node == null) {
@@ -253,7 +253,7 @@ public class InspectorSonarPlugin implements SonarPlugin {
               }
 
               responder.error(
-                      new SonarObject.Builder()
+                      new FlipperObject.Builder()
                               .put("message", "No accessibility node with given id")
                               .put("id", id)
                               .build());
@@ -273,14 +273,14 @@ public class InspectorSonarPlugin implements SonarPlugin {
               }
             }
           }
-          responder.success(new SonarObject.Builder().put("elements", result).build());
+          responder.success(new FlipperObject.Builder().put("elements", result).build());
         }
       };
 
-  final SonarReceiver mOnRequestAXFocus =
+  final FlipperReceiver mOnRequestAXFocus =
           new MainThreadSonarReceiver(mConnection) {
             @Override
-            public void onReceiveOnMainThread(final SonarObject params, final SonarResponder responder)
+            public void onReceiveOnMainThread(final FlipperObject params, final FlipperResponder responder)
                     throws Exception {
               final String nodeId = params.getString("id");
 
@@ -293,15 +293,15 @@ public class InspectorSonarPlugin implements SonarPlugin {
             }
           };
 
-  final SonarReceiver mSetData =
+  final FlipperReceiver mSetData =
       new MainThreadSonarReceiver(mConnection) {
         @Override
-        public void onReceiveOnMainThread(final SonarObject params, SonarResponder responder)
+        public void onReceiveOnMainThread(final FlipperObject params, FlipperResponder responder)
             throws Exception {
           final String nodeId = params.getString("id");
           final boolean ax = params.getBoolean("ax");
-          final SonarArray keyPath = params.getArray("path");
-          final SonarDynamic value = params.getDynamic("value");
+          final FlipperArray keyPath = params.getArray("path");
+          final FlipperDynamic value = params.getDynamic("value");
 
           final Object obj = mObjectTracker.get(nodeId);
           if (obj == null) {
@@ -324,10 +324,10 @@ public class InspectorSonarPlugin implements SonarPlugin {
         }
       };
 
-  final SonarReceiver mSetHighlighted =
+  final FlipperReceiver mSetHighlighted =
       new MainThreadSonarReceiver(mConnection) {
         @Override
-        public void onReceiveOnMainThread(final SonarObject params, SonarResponder responder)
+        public void onReceiveOnMainThread(final FlipperObject params, FlipperResponder responder)
             throws Exception {
           final String nodeId = params.getString("id");
           final boolean isAlignmentMode = params.getBoolean("isAlignmentMode");
@@ -343,10 +343,10 @@ public class InspectorSonarPlugin implements SonarPlugin {
         }
       };
 
-  final SonarReceiver mSetSearchActive =
+  final FlipperReceiver mSetSearchActive =
       new MainThreadSonarReceiver(mConnection) {
         @Override
-        public void onReceiveOnMainThread(final SonarObject params, SonarResponder responder)
+        public void onReceiveOnMainThread(final FlipperObject params, FlipperResponder responder)
             throws Exception {
           final boolean active = params.getBoolean("active");
           ApplicationDescriptor.setSearchActive(active);
@@ -373,27 +373,27 @@ public class InspectorSonarPlugin implements SonarPlugin {
         }
       };
 
-  final SonarReceiver mIsSearchActive =
+  final FlipperReceiver mIsSearchActive =
           new MainThreadSonarReceiver(mConnection) {
             @Override
-            public void onReceiveOnMainThread(final SonarObject params, SonarResponder responder)
+            public void onReceiveOnMainThread(final FlipperObject params, FlipperResponder responder)
                     throws Exception {
-              responder.success(new SonarObject.Builder().put("isSearchActive", ApplicationDescriptor.getSearchActive()).build());
+              responder.success(new FlipperObject.Builder().put("isSearchActive", ApplicationDescriptor.getSearchActive()).build());
             }
           };
 
-  final SonarReceiver mGetSearchResults =
+  final FlipperReceiver mGetSearchResults =
       new MainThreadSonarReceiver(mConnection) {
         @Override
-        public void onReceiveOnMainThread(SonarObject params, SonarResponder responder)
+        public void onReceiveOnMainThread(FlipperObject params, FlipperResponder responder)
             throws Exception {
           final String query = params.getString("query");
           final boolean axEnabled = params.getBoolean("axEnabled");
 
           final SearchResultNode matchTree = searchTree(query.toLowerCase(), mApplication, axEnabled);
-          final SonarObject results = matchTree == null ? null : matchTree.toSonarObject();
-          final SonarObject response =
-              new SonarObject.Builder().put("results", results).put("query", query).build();
+          final FlipperObject results = matchTree == null ? null : matchTree.toSonarObject();
+          final FlipperObject response =
+              new FlipperObject.Builder().put("results", results).put("query", query).build();
           responder.success(response);
         }
       };
@@ -409,7 +409,7 @@ public class InspectorSonarPlugin implements SonarPlugin {
 
       // if in layout inspector and talkback is running, override the first click to locate the clicked view
       if (mConnection != null && AccessibilityUtil.isTalkbackEnabled(getContext()) && event.getPointerCount() == 1) {
-        SonarObject params = new SonarObject.Builder()
+        FlipperObject params = new FlipperObject.Builder()
                 .put("type", "usage")
                 .put("eventName", "accessibility:clickToInspectTalkbackRunning").build();
         mConnection.send("track", params);
@@ -451,7 +451,7 @@ public class InspectorSonarPlugin implements SonarPlugin {
   }
 
   private Touch createTouch(final int touchX, final int touchY, final boolean ax) throws Exception {
-    final SonarArray.Builder path = new SonarArray.Builder();
+    final FlipperArray.Builder path = new FlipperArray.Builder();
     path.put(trackObject(mApplication));
 
     return new Touch() {
@@ -462,7 +462,7 @@ public class InspectorSonarPlugin implements SonarPlugin {
 
       @Override
       public void finish() {
-        mConnection.send(ax ? "selectAX" : "select", new SonarObject.Builder().put("path", path).build());
+        mConnection.send(ax ? "selectAX" : "select", new FlipperObject.Builder().put("path", path).build());
       }
 
       @Override
@@ -521,8 +521,8 @@ public class InspectorSonarPlugin implements SonarPlugin {
     descriptor.setHighlighted(obj, highlighted, isAlignmentMode);
   }
 
-  private boolean hasAXNode(SonarObject node) {
-    SonarObject extraInfo = node.getObject("extraInfo");
+  private boolean hasAXNode(FlipperObject node) {
+    FlipperObject extraInfo = node.getObject("extraInfo");
     return extraInfo != null && extraInfo.getBoolean("hasAXNode");
   }
 
@@ -544,13 +544,13 @@ public class InspectorSonarPlugin implements SonarPlugin {
 
     if (isMatch || childTrees != null) {
       final String id = trackObject(obj);
-      SonarObject node = getNode(id);
+      FlipperObject node = getNode(id);
       return new SearchResultNode(id, isMatch, node, childTrees, axEnabled && hasAXNode(node) ? getAXNode(id) : null);
     }
     return null;
   }
 
-  private @Nullable SonarObject getNode(String id) throws Exception {
+  private @Nullable FlipperObject getNode(String id) throws Exception {
     final Object obj = mObjectTracker.get(id);
     if (obj == null) {
       return null;
@@ -561,7 +561,7 @@ public class InspectorSonarPlugin implements SonarPlugin {
       return null;
     }
 
-    final SonarArray.Builder children = new SonarArray.Builder();
+    final FlipperArray.Builder children = new FlipperArray.Builder();
     new ErrorReportingRunnable(mConnection) {
       @Override
       protected void runOrThrow() throws Exception {
@@ -572,23 +572,23 @@ public class InspectorSonarPlugin implements SonarPlugin {
       }
     }.run();
 
-    final SonarObject.Builder data = new SonarObject.Builder();
+    final FlipperObject.Builder data = new FlipperObject.Builder();
     new ErrorReportingRunnable(mConnection) {
       @Override
       protected void runOrThrow() throws Exception {
-        for (Named<SonarObject> props : descriptor.getData(obj)) {
+        for (Named<FlipperObject> props : descriptor.getData(obj)) {
           data.put(props.getName(), props.getValue());
         }
       }
     }.run();
 
-    final SonarArray.Builder attributes = new SonarArray.Builder();
+    final FlipperArray.Builder attributes = new FlipperArray.Builder();
     new ErrorReportingRunnable(mConnection) {
       @Override
       protected void runOrThrow() throws Exception {
         for (Named<String> attribute : descriptor.getAttributes(obj)) {
           attributes.put(
-              new SonarObject.Builder()
+              new FlipperObject.Builder()
                   .put("name", attribute.getName())
                   .put("value", attribute.getValue())
                   .build());
@@ -596,7 +596,7 @@ public class InspectorSonarPlugin implements SonarPlugin {
       }
     }.run();
 
-    return new SonarObject.Builder()
+    return new FlipperObject.Builder()
         .put("id", descriptor.getId(obj))
         .put("name", descriptor.getName(obj))
         .put("data", data)
@@ -607,7 +607,7 @@ public class InspectorSonarPlugin implements SonarPlugin {
         .build();
   }
 
-  private @Nullable SonarObject getAXNode(String id) throws Exception {
+  private @Nullable FlipperObject getAXNode(String id) throws Exception {
 
     final Object obj = mObjectTracker.get(id);
     if (obj == null) {
@@ -619,7 +619,7 @@ public class InspectorSonarPlugin implements SonarPlugin {
       return null;
     }
 
-    final SonarArray.Builder children = new SonarArray.Builder();
+    final FlipperArray.Builder children = new FlipperArray.Builder();
     new ErrorReportingRunnable(mConnection) {
       @Override
       protected void runOrThrow() throws Exception {
@@ -630,23 +630,23 @@ public class InspectorSonarPlugin implements SonarPlugin {
       }
     }.run();
 
-    final SonarObject.Builder data = new SonarObject.Builder();
+    final FlipperObject.Builder data = new FlipperObject.Builder();
     new ErrorReportingRunnable(mConnection) {
       @Override
       protected void runOrThrow() throws Exception {
-        for (Named<SonarObject> props : descriptor.getAXData(obj)) {
+        for (Named<FlipperObject> props : descriptor.getAXData(obj)) {
           data.put(props.getName(), props.getValue());
         }
       }
     }.run();
 
-    final SonarArray.Builder attributes = new SonarArray.Builder();
+    final FlipperArray.Builder attributes = new FlipperArray.Builder();
     new ErrorReportingRunnable(mConnection) {
       @Override
       protected void runOrThrow() throws Exception {
         for (Named<String> attribute : descriptor.getAXAttributes(obj)) {
           attributes.put(
-              new SonarObject.Builder()
+              new FlipperObject.Builder()
                   .put("name", attribute.getName())
                   .put("value", attribute.getValue())
                   .build());
@@ -657,7 +657,7 @@ public class InspectorSonarPlugin implements SonarPlugin {
     String name = descriptor.getAXName(obj);
     name = name.substring(name.lastIndexOf('.') + 1);
 
-    return new SonarObject.Builder()
+    return new FlipperObject.Builder()
         .put("id", descriptor.getId(obj))
         .put("name", name)
         .put("data", data)

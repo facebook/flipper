@@ -9,18 +9,18 @@
 package com.facebook.flipper.plugins.leakcanary;
 
 import android.util.Log;
-import com.facebook.flipper.core.SonarConnection;
-import com.facebook.flipper.core.SonarObject;
-import com.facebook.flipper.core.SonarPlugin;
-import com.facebook.flipper.core.SonarReceiver;
-import com.facebook.flipper.core.SonarResponder;
+import com.facebook.flipper.core.FlipperConnection;
+import com.facebook.flipper.core.FlipperObject;
+import com.facebook.flipper.core.FlipperPlugin;
+import com.facebook.flipper.core.FlipperReceiver;
+import com.facebook.flipper.core.FlipperResponder;
 import java.util.ArrayList;
 import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class LeakCanarySonarPlugin implements SonarPlugin {
+public class LeakCanarySonarPlugin implements FlipperPlugin {
 
   private static final String TAG = "LeakCanarySonarPlugin";
 
@@ -28,7 +28,7 @@ public class LeakCanarySonarPlugin implements SonarPlugin {
   private static final String CLEAR_EVENT = "clear";
   private static final String LEAKS_KEY = "leaks";
 
-  private SonarConnection mConnection;
+  private FlipperConnection mConnection;
 
   private final List<String> leakList = new ArrayList<>();
 
@@ -38,15 +38,15 @@ public class LeakCanarySonarPlugin implements SonarPlugin {
   }
 
   @Override
-  public void onConnect(SonarConnection connection) {
+  public void onConnect(FlipperConnection connection) {
     mConnection = connection;
     sendLeakList();
 
     mConnection.receive(
         CLEAR_EVENT,
-        new SonarReceiver() {
+        new FlipperReceiver() {
           @Override
-          public void onReceive(SonarObject params, SonarResponder responder) throws Exception {
+          public void onReceive(FlipperObject params, FlipperResponder responder) throws Exception {
             leakList.clear();
           }
         });
@@ -62,7 +62,7 @@ public class LeakCanarySonarPlugin implements SonarPlugin {
       JSONObject obj = new JSONObject();
       try {
         obj.put(LEAKS_KEY, new JSONArray(leakList));
-        mConnection.send(REPORT_LEAK_EVENT, new SonarObject(obj));
+        mConnection.send(REPORT_LEAK_EVENT, new FlipperObject(obj));
       } catch (JSONException e) {
         Log.w(TAG, "Failure to serialize leak list: ", e);
       }

@@ -12,14 +12,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class SonarObject {
+public class FlipperObject {
   final JSONObject mJson;
 
-  public SonarObject(JSONObject json) {
+  public FlipperObject(JSONObject json) {
     mJson = (json != null ? json : new JSONObject());
   }
 
-  public SonarObject(String json) {
+  public FlipperObject(String json) {
     try {
       mJson = new JSONObject(json);
     } catch (JSONException e) {
@@ -27,8 +27,8 @@ public class SonarObject {
     }
   }
 
-  public SonarDynamic getDynamic(String name) {
-    return new SonarDynamic(mJson.opt(name));
+  public FlipperDynamic getDynamic(String name) {
+    return new FlipperDynamic(mJson.opt(name));
   }
 
   public String getString(String name) {
@@ -58,14 +58,14 @@ public class SonarObject {
     return mJson.optBoolean(name);
   }
 
-  public SonarObject getObject(String name) {
+  public FlipperObject getObject(String name) {
     final Object o = mJson.opt(name);
-    return new SonarObject((JSONObject) o);
+    return new FlipperObject((JSONObject) o);
   }
 
-  public SonarArray getArray(String name) {
+  public FlipperArray getArray(String name) {
     final Object o = mJson.opt(name);
-    return new SonarArray((JSONArray) o);
+    return new FlipperArray((JSONArray) o);
   }
 
   public boolean contains(String name) {
@@ -115,16 +115,16 @@ public class SonarObject {
         return put(name, (Boolean) obj);
       } else if (obj instanceof Object[]) {
         return put(name, Arrays.deepToString((Object[]) obj));
-      } else if (obj instanceof SonarObject) {
-        return put(name, (SonarObject) obj);
-      } else if (obj instanceof SonarObject.Builder) {
-        return put(name, (SonarObject.Builder) obj);
-      } else if (obj instanceof SonarArray) {
-        return put(name, (SonarArray) obj);
-      } else if (obj instanceof SonarArray.Builder) {
-        return put(name, (SonarArray.Builder) obj);
-      } else if (obj instanceof SonarValue) {
-        return put(name, ((SonarValue) obj).toSonarObject());
+      } else if (obj instanceof FlipperObject) {
+        return put(name, (FlipperObject) obj);
+      } else if (obj instanceof FlipperObject.Builder) {
+        return put(name, (FlipperObject.Builder) obj);
+      } else if (obj instanceof FlipperArray) {
+        return put(name, (FlipperArray) obj);
+      } else if (obj instanceof FlipperArray.Builder) {
+        return put(name, (FlipperArray.Builder) obj);
+      } else if (obj instanceof FlipperValue) {
+        return put(name, ((FlipperValue) obj).toSonarObject());
       } else {
         return put(name, obj.toString());
       }
@@ -184,11 +184,11 @@ public class SonarObject {
       return this;
     }
 
-    public Builder put(String name, SonarValue v) {
+    public Builder put(String name, FlipperValue v) {
       return put(name, v.toSonarObject());
     }
 
-    public Builder put(String name, SonarArray a) {
+    public Builder put(String name, FlipperArray a) {
       try {
         mJson.put(name, a == null ? null : a.mJson);
       } catch (JSONException e) {
@@ -197,11 +197,11 @@ public class SonarObject {
       return this;
     }
 
-    public Builder put(String name, SonarArray.Builder b) {
+    public Builder put(String name, FlipperArray.Builder b) {
       return put(name, b.build());
     }
 
-    public Builder put(String name, SonarObject o) {
+    public Builder put(String name, FlipperObject o) {
       try {
         mJson.put(name, o == null ? null : o.mJson);
       } catch (JSONException e) {
@@ -210,12 +210,12 @@ public class SonarObject {
       return this;
     }
 
-    public Builder put(String name, SonarObject.Builder b) {
+    public Builder put(String name, FlipperObject.Builder b) {
       return put(name, b.build());
     }
 
-    public SonarObject build() {
-      return new SonarObject(mJson);
+    public FlipperObject build() {
+      return new FlipperObject(mJson);
     }
   }
 }

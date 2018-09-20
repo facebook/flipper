@@ -5,8 +5,8 @@ import android.content.Context;
 import android.os.Bundle;
 import android.widget.Toast;
 import com.facebook.flipper.android.AndroidSonarClient;
-import com.facebook.flipper.core.SonarClient;
-import com.facebook.flipper.core.SonarStateUpdateListener;
+import com.facebook.flipper.core.FlipperClient;
+import com.facebook.flipper.core.FlipperStateUpdateListener;
 import com.facebook.flipper.core.StateSummary;
 import com.facebook.flipper.core.StateSummary.StateElement;
 import android.widget.LinearLayout;
@@ -14,7 +14,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.ScrollView;
 
-public class SonarDiagnosticActivity extends Activity implements SonarStateUpdateListener {
+public class SonarDiagnosticActivity extends Activity implements FlipperStateUpdateListener {
 
   private TextView summaryView;
   private TextView logView;
@@ -39,7 +39,7 @@ public class SonarDiagnosticActivity extends Activity implements SonarStateUpdat
 
   protected void onStart() {
     super.onStart();
-    final SonarClient client = AndroidSonarClient.getInstance(this);
+    final FlipperClient client = AndroidSonarClient.getInstance(this);
     client.subscribeForUpdates(this);
 
     summaryView.setText(getSummary());
@@ -85,7 +85,7 @@ public class SonarDiagnosticActivity extends Activity implements SonarStateUpdat
 
   protected void onStop() {
     super.onStop();
-    final SonarClient client = AndroidSonarClient.getInstance(this);
+    final FlipperClient client = AndroidSonarClient.getInstance(this);
     client.unsubscribe();
   }
 }

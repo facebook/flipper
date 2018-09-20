@@ -10,22 +10,22 @@ package com.facebook.flipper.plugins.common;
 import android.os.Handler;
 import android.os.Looper;
 import com.facebook.flipper.core.ErrorReportingRunnable;
-import com.facebook.flipper.core.SonarConnection;
-import com.facebook.flipper.core.SonarObject;
-import com.facebook.flipper.core.SonarReceiver;
-import com.facebook.flipper.core.SonarResponder;
+import com.facebook.flipper.core.FlipperConnection;
+import com.facebook.flipper.core.FlipperObject;
+import com.facebook.flipper.core.FlipperReceiver;
+import com.facebook.flipper.core.FlipperResponder;
 
-public abstract class MainThreadSonarReceiver implements SonarReceiver {
+public abstract class MainThreadSonarReceiver implements FlipperReceiver {
 
-  public MainThreadSonarReceiver(SonarConnection connection) {
+  public MainThreadSonarReceiver(FlipperConnection connection) {
     this.mConnection = connection;
   }
 
-  private final SonarConnection mConnection;
+  private final FlipperConnection mConnection;
   private final Handler mHandler = new Handler(Looper.getMainLooper());
 
   @Override
-  public final void onReceive(final SonarObject params, final SonarResponder responder) {
+  public final void onReceive(final FlipperObject params, final FlipperResponder responder) {
     mHandler.post(
         new ErrorReportingRunnable(mConnection) {
           @Override
@@ -35,6 +35,6 @@ public abstract class MainThreadSonarReceiver implements SonarReceiver {
         });
   }
 
-  public abstract void onReceiveOnMainThread(SonarObject params, SonarResponder responder)
+  public abstract void onReceiveOnMainThread(FlipperObject params, FlipperResponder responder)
       throws Exception;
 }

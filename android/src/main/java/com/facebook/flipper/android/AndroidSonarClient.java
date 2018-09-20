@@ -14,7 +14,7 @@ import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
-import com.facebook.flipper.core.SonarClient;
+import com.facebook.flipper.core.FlipperClient;
 
 public final class AndroidSonarClient {
   private static boolean sIsInitialized = false;
@@ -23,7 +23,7 @@ public final class AndroidSonarClient {
   private static final String[] REQUIRED_PERMISSIONS =
       new String[] {"android.permission.INTERNET", "android.permission.ACCESS_WIFI_STATE"};
 
-  public static synchronized SonarClient getInstance(Context context) {
+  public static synchronized FlipperClient getInstance(Context context) {
     if (!sIsInitialized) {
       checkRequiredPermissions(context);
       sSonarThread = new SonarThread("SonarEventBaseThread");
@@ -48,7 +48,7 @@ public final class AndroidSonarClient {
     return SonarClientImpl.getInstance();
   }
 
-  public static synchronized SonarClient getInstanceIfInitialized() {
+  public static synchronized FlipperClient getInstanceIfInitialized() {
     if (!sIsInitialized) {
       return null;
     }

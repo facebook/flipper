@@ -7,11 +7,11 @@
  */
 package com.facebook.flipper.plugins.console;
 
-import com.facebook.flipper.core.SonarConnection;
-import com.facebook.flipper.core.SonarPlugin;
+import com.facebook.flipper.core.FlipperConnection;
+import com.facebook.flipper.core.FlipperPlugin;
 import com.facebook.flipper.plugins.console.iface.ConsoleCommandReceiver;
 
-public class ConsoleSonarPlugin implements SonarPlugin {
+public class ConsoleSonarPlugin implements FlipperPlugin {
 
   private final JavascriptEnvironment mJavascriptEnvironment;
   private JavascriptSession mJavascriptSession;
@@ -26,7 +26,7 @@ public class ConsoleSonarPlugin implements SonarPlugin {
   }
 
   @Override
-  public void onConnect(SonarConnection connection) throws Exception {
+  public void onConnect(FlipperConnection connection) throws Exception {
     ConsoleCommandReceiver.listenForCommands(connection, mJavascriptEnvironment);
   }
 

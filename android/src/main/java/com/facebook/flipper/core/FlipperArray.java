@@ -13,14 +13,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class SonarArray {
+public class FlipperArray {
   final JSONArray mJson;
 
-  SonarArray(JSONArray json) {
+  FlipperArray(JSONArray json) {
     mJson = (json != null ? json : new JSONArray());
   }
 
-  SonarArray(String json) {
+  FlipperArray(String json) {
     try {
       mJson = new JSONArray(json);
     } catch (JSONException e) {
@@ -28,8 +28,8 @@ public class SonarArray {
     }
   }
 
-  public SonarDynamic getDynamic(int index) {
-    return new SonarDynamic(mJson.opt(index));
+  public FlipperDynamic getDynamic(int index) {
+    return new FlipperDynamic(mJson.opt(index));
   }
 
   public String getString(int index) {
@@ -56,14 +56,14 @@ public class SonarArray {
     return mJson.optBoolean(index);
   }
 
-  public SonarObject getObject(int index) {
+  public FlipperObject getObject(int index) {
     final Object o = mJson.opt(index);
-    return new SonarObject((JSONObject) o);
+    return new FlipperObject((JSONObject) o);
   }
 
-  public SonarArray getArray(int index) {
+  public FlipperArray getArray(int index) {
     final Object o = mJson.opt(index);
-    return new SonarArray((JSONArray) o);
+    return new FlipperArray((JSONArray) o);
   }
 
   public int length() {
@@ -135,30 +135,30 @@ public class SonarArray {
       return this;
     }
 
-    public Builder put(SonarValue v) {
+    public Builder put(FlipperValue v) {
       return put(v.toSonarObject());
     }
 
-    public Builder put(SonarArray a) {
+    public Builder put(FlipperArray a) {
       mJson.put(a == null ? null : a.mJson);
       return this;
     }
 
-    public Builder put(SonarArray.Builder b) {
+    public Builder put(FlipperArray.Builder b) {
       return put(b.build());
     }
 
-    public Builder put(SonarObject o) {
+    public Builder put(FlipperObject o) {
       mJson.put(o == null ? null : o.mJson);
       return this;
     }
 
-    public Builder put(SonarObject.Builder b) {
+    public Builder put(FlipperObject.Builder b) {
       return put(b.build());
     }
 
-    public SonarArray build() {
-      return new SonarArray(mJson);
+    public FlipperArray build() {
+      return new FlipperArray(mJson);
     }
   }
 }

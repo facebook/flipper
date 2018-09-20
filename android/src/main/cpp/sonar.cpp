@@ -64,7 +64,7 @@ class JEventBase : public jni::HybridClass<JEventBase> {
 
 class JFlipperObject : public jni::JavaClass<JFlipperObject> {
  public:
-  constexpr static auto kJavaDescriptor = "Lcom/facebook/flipper/core/SonarObject;";
+  constexpr static auto kJavaDescriptor = "Lcom/facebook/flipper/core/FlipperObject;";
 
   static jni::local_ref<JFlipperObject> create(const folly::dynamic& json) {
     return newInstance(folly::toJson(json));
@@ -78,7 +78,7 @@ class JFlipperObject : public jni::JavaClass<JFlipperObject> {
 
 class JFlipperArray : public jni::JavaClass<JFlipperArray> {
  public:
-  constexpr static auto kJavaDescriptor = "Lcom/facebook/flipper/core/SonarArray;";
+  constexpr static auto kJavaDescriptor = "Lcom/facebook/flipper/core/FlipperArray;";
 
   static jni::local_ref<JFlipperArray> create(const folly::dynamic& json) {
     return newInstance(folly::toJson(json));
@@ -92,7 +92,7 @@ class JFlipperArray : public jni::JavaClass<JFlipperArray> {
 
 class JFlipperResponder : public jni::JavaClass<JFlipperResponder> {
  public:
-  constexpr static auto kJavaDescriptor = "Lcom/facebook/flipper/core/SonarResponder;";
+  constexpr static auto kJavaDescriptor = "Lcom/facebook/flipper/core/FlipperResponder;";
 };
 
 class JFlipperResponderImpl : public jni::HybridClass<JFlipperResponderImpl, JFlipperResponder> {
@@ -128,7 +128,7 @@ class JFlipperResponderImpl : public jni::HybridClass<JFlipperResponderImpl, JFl
 
 class JFlipperReceiver : public jni::JavaClass<JFlipperReceiver> {
  public:
-  constexpr static auto kJavaDescriptor = "Lcom/facebook/flipper/core/SonarReceiver;";
+  constexpr static auto kJavaDescriptor = "Lcom/facebook/flipper/core/FlipperReceiver;";
 
   void receive(const folly::dynamic params, std::shared_ptr<FlipperResponder> responder) const {
     static const auto method = javaClassStatic()->getMethod<void(jni::alias_ref<JFlipperObject::javaobject>, jni::alias_ref<JFlipperResponder::javaobject>)>("onReceive");
@@ -138,7 +138,7 @@ class JFlipperReceiver : public jni::JavaClass<JFlipperReceiver> {
 
 class JFlipperConnection : public jni::JavaClass<JFlipperConnection> {
  public:
-  constexpr static auto kJavaDescriptor = "Lcom/facebook/flipper/core/SonarConnection;";
+  constexpr static auto kJavaDescriptor = "Lcom/facebook/flipper/core/FlipperConnection;";
 };
 
 class JFlipperConnectionImpl : public jni::HybridClass<JFlipperConnectionImpl, JFlipperConnection> {
@@ -182,7 +182,7 @@ class JFlipperConnectionImpl : public jni::HybridClass<JFlipperConnectionImpl, J
 
 class JFlipperPlugin : public jni::JavaClass<JFlipperPlugin> {
  public:
-  constexpr static auto kJavaDescriptor = "Lcom/facebook/flipper/core/SonarPlugin;";
+  constexpr static auto kJavaDescriptor = "Lcom/facebook/flipper/core/FlipperPlugin;";
 
   std::string identifier() const {
     static const auto method = javaClassStatic()->getMethod<std::string()>("getId");
@@ -202,7 +202,7 @@ class JFlipperPlugin : public jni::JavaClass<JFlipperPlugin> {
 
 class JFlipperStateUpdateListener : public jni::JavaClass<JFlipperStateUpdateListener> {
  public:
-  constexpr static auto  kJavaDescriptor = "Lcom/facebook/flipper/core/SonarStateUpdateListener;";
+  constexpr static auto  kJavaDescriptor = "Lcom/facebook/flipper/core/FlipperStateUpdateListener;";
 
   void onUpdate() {
     static const auto method = javaClassStatic()->getMethod<void()>("onUpdate");

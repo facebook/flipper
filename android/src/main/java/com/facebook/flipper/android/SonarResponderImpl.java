@@ -11,12 +11,12 @@ import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.soloader.SoLoader;
 import com.facebook.flipper.BuildConfig;
-import com.facebook.flipper.core.SonarArray;
-import com.facebook.flipper.core.SonarObject;
-import com.facebook.flipper.core.SonarResponder;
+import com.facebook.flipper.core.FlipperArray;
+import com.facebook.flipper.core.FlipperObject;
+import com.facebook.flipper.core.FlipperResponder;
 
 @DoNotStrip
-class SonarResponderImpl implements SonarResponder {
+class SonarResponderImpl implements FlipperResponder {
   static {
     if (BuildConfig.IS_INTERNAL_BUILD) {
       SoLoader.loadLibrary("sonar");
@@ -30,24 +30,24 @@ class SonarResponderImpl implements SonarResponder {
   }
 
   @Override
-  public void success(SonarObject params) {
+  public void success(FlipperObject params) {
     successObject(params);
   }
 
   @Override
-  public void success(SonarArray params) {
+  public void success(FlipperArray params) {
     successArray(params);
   }
 
   @Override
   public void success() {
-    successObject(new SonarObject.Builder().build());
+    successObject(new FlipperObject.Builder().build());
   }
 
-  public native void successObject(SonarObject response);
+  public native void successObject(FlipperObject response);
 
-  public native void successArray(SonarArray response);
+  public native void successArray(FlipperArray response);
 
   @Override
-  public native void error(SonarObject response);
+  public native void error(FlipperObject response);
 }

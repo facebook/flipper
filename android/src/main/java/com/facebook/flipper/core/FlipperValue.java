@@ -7,6 +7,6 @@
  */
 package com.facebook.flipper.core;
 
-public interface SonarValue {
-  SonarObject toSonarObject();
+public interface FlipperValue {
+  FlipperObject toSonarObject();
 }

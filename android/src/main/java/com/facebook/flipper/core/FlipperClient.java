@@ -7,18 +7,18 @@
  */
 package com.facebook.flipper.core;
 
-public interface SonarClient {
-  void addPlugin(SonarPlugin plugin);
+public interface FlipperClient {
+  void addPlugin(FlipperPlugin plugin);
 
-  <T extends SonarPlugin> T getPlugin(String id);
+  <T extends FlipperPlugin> T getPlugin(String id);
 
-  void removePlugin(SonarPlugin plugin);
+  void removePlugin(FlipperPlugin plugin);
 
   void start();
 
   void stop();
 
-  void subscribeForUpdates(SonarStateUpdateListener stateListener);
+  void subscribeForUpdates(FlipperStateUpdateListener stateListener);
 
   void unsubscribe();
 

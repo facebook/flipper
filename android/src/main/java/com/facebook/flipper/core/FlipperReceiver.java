@@ -11,7 +11,7 @@ package com.facebook.flipper.core;
  * A receiver of a remote method call issued by the Sonar desktop application. If the given
  * responder is present it means the Sonar desktop application is expecting a response.
  */
-public interface SonarReceiver {
+public interface FlipperReceiver {
 
   /**
    * Reciver for a request sent from the Sonar desktop client.
@@ -21,5 +21,5 @@ public interface SonarReceiver {
    *     through. In this case the request should be made from the desktop using send() instead of
    *     call().
    */
-  void onReceive(SonarObject params, SonarResponder responder) throws Exception;
+  void onReceive(FlipperObject params, FlipperResponder responder) throws Exception;
 }

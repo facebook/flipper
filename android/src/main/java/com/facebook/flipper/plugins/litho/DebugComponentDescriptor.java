@@ -20,8 +20,8 @@ import com.facebook.litho.StateContainer;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.reference.Reference;
-import com.facebook.flipper.core.SonarDynamic;
-import com.facebook.flipper.core.SonarObject;
+import com.facebook.flipper.core.FlipperDynamic;
+import com.facebook.flipper.core.FlipperObject;
 import com.facebook.flipper.plugins.inspector.HighlightedOverlay;
 import com.facebook.flipper.plugins.inspector.InspectorValue;
 import com.facebook.flipper.plugins.inspector.Named;
@@ -45,17 +45,17 @@ import javax.annotation.Nullable;
 
 public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
 
-  private Map<String, List<Pair<String[], SonarDynamic>>> mOverrides = new HashMap<>();
+  private Map<String, List<Pair<String[], FlipperDynamic>>> mOverrides = new HashMap<>();
   private DebugComponent.Overrider mOverrider =
       new DebugComponent.Overrider() {
         @Override
         public void applyComponentOverrides(String key, Component component) {
-          final List<Pair<String[], SonarDynamic>> overrides = mOverrides.get(key);
+          final List<Pair<String[], FlipperDynamic>> overrides = mOverrides.get(key);
           if (overrides == null) {
             return;
           }
 
-          for (Pair<String[], SonarDynamic> override : overrides) {
+          for (Pair<String[], FlipperDynamic> override : overrides) {
             if (override.first[0].equals("Props")) {
               applyReflectiveOverride(component, override.first[1], override.second);
             }
@@ -65,12 +65,12 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
         @Override
         public void applyStateOverrides(
             String key, StateContainer stateContainer) {
-          final List<Pair<String[], SonarDynamic>> overrides = mOverrides.get(key);
+          final List<Pair<String[], FlipperDynamic>> overrides = mOverrides.get(key);
           if (overrides == null) {
             return;
           }
 
-          for (Pair<String[], SonarDynamic> override : overrides) {
+          for (Pair<String[], FlipperDynamic> override : overrides) {
             if (override.first[0].equals("State")) {
               applyReflectiveOverride(stateContainer, override.first[1], override.second);
             }
@@ -79,12 +79,12 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
 
         @Override
         public void applyLayoutOverrides(String key, DebugLayoutNode node) {
-          final List<Pair<String[], SonarDynamic>> overrides = mOverrides.get(key);
+          final List<Pair<String[], FlipperDynamic>> overrides = mOverrides.get(key);
           if (overrides == null) {
             return;
           }
 
-          for (Pair<String[], SonarDynamic> override : overrides) {
+          for (Pair<String[], FlipperDynamic> override : overrides) {
             if (override.first[0].equals("Layout")) {
               try {
                 applyLayoutOverride(
@@ -141,25 +141,25 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
   }
 
   @Override
-  public List<Named<SonarObject>> getData(DebugComponent node) throws Exception {
+  public List<Named<FlipperObject>> getData(DebugComponent node) throws Exception {
     NodeDescriptor componentDescriptor = descriptorForClass(node.getComponent().getClass());
     if (componentDescriptor.getClass() != ObjectDescriptor.class) {
       return componentDescriptor.getData(node.getComponent());
     }
 
-    final List<Named<SonarObject>> data = new ArrayList<>();
+    final List<Named<FlipperObject>> data = new ArrayList<>();
 
-    final SonarObject layoutData = getLayoutData(node);
+    final FlipperObject layoutData = getLayoutData(node);
     if (layoutData != null) {
       data.add(new Named<>("Layout", layoutData));
     }
 
-    final SonarObject propData = getPropData(node);
+    final FlipperObject propData = getPropData(node);
     if (propData != null) {
       data.add(new Named<>("Props", propData));
     }
 
-    final SonarObject stateData = getStateData(node);
+    final FlipperObject stateData = getStateData(node);
     if (stateData != null) {
       data.add(new Named<>("State", stateData));
     }
@@ -168,13 +168,13 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
   }
 
   @Nullable
-  private static SonarObject getLayoutData(DebugComponent node) {
+  private static FlipperObject getLayoutData(DebugComponent node) {
     final DebugLayoutNode layout = node.getLayoutNode();
     if (layout == null) {
       return null;
     }
 
-    final SonarObject.Builder data = new SonarObject.Builder();
+    final FlipperObject.Builder data = new FlipperObject.Builder();
     data.put("background", fromReference(node.getContext(), layout.getBackground()));
     data.put("foreground", fromDrawable(layout.getForeground()));
 
@@ -203,7 +203,7 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
 
     data.put(
         "margin",
-        new SonarObject.Builder()
+        new FlipperObject.Builder()
             .put("left", fromYogaValue(layout.getMargin(YogaEdge.LEFT)))
             .put("top", fromYogaValue(layout.getMargin(YogaEdge.TOP)))
             .put("right", fromYogaValue(layout.getMargin(YogaEdge.RIGHT)))
@@ -216,7 +216,7 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
 
     data.put(
         "padding",
-        new SonarObject.Builder()
+        new FlipperObject.Builder()
             .put("left", fromYogaValue(layout.getPadding(YogaEdge.LEFT)))
             .put("top", fromYogaValue(layout.getPadding(YogaEdge.TOP)))
             .put("right", fromYogaValue(layout.getPadding(YogaEdge.RIGHT)))
@@ -229,7 +229,7 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
 
     data.put(
         "border",
-        new SonarObject.Builder()
+        new FlipperObject.Builder()
             .put("left", fromFloat(layout.getBorderWidth(YogaEdge.LEFT)))
             .put("top", fromFloat(layout.getBorderWidth(YogaEdge.TOP)))
             .put("right", fromFloat(layout.getBorderWidth(YogaEdge.RIGHT)))
@@ -242,7 +242,7 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
 
     data.put(
         "position",
-        new SonarObject.Builder()
+        new FlipperObject.Builder()
             .put("left", fromYogaValue(layout.getPosition(YogaEdge.LEFT)))
             .put("top", fromYogaValue(layout.getPosition(YogaEdge.TOP)))
             .put("right", fromYogaValue(layout.getPosition(YogaEdge.RIGHT)))
@@ -257,13 +257,13 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
   }
 
   @Nullable
-  private static SonarObject getPropData(DebugComponent node) {
+  private static FlipperObject getPropData(DebugComponent node) {
     if (node.canResolve()) {
       return null;
     }
 
     final Component component = node.getComponent();
-    final SonarObject.Builder props = new SonarObject.Builder();
+    final FlipperObject.Builder props = new FlipperObject.Builder();
 
     boolean hasProps = false;
     for (Field f : component.getClass().getDeclaredFields()) {
@@ -316,7 +316,7 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
   }
 
   @Nullable
-  private static SonarObject getStateData(DebugComponent node) {
+  private static FlipperObject getStateData(DebugComponent node) {
     if (node.canResolve()) {
       return null;
     }
@@ -326,7 +326,7 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
       return null;
     }
 
-    final SonarObject.Builder state = new SonarObject.Builder();
+    final FlipperObject.Builder state = new FlipperObject.Builder();
 
     boolean hasState = false;
     for (Field f : stateContainer.getClass().getDeclaredFields()) {
@@ -367,8 +367,8 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
   }
 
   @Override
-  public void setValue(DebugComponent node, String[] path, SonarDynamic value) {
-    List<Pair<String[], SonarDynamic>> overrides = mOverrides.get(node.getGlobalKey());
+  public void setValue(DebugComponent node, String[] path, FlipperDynamic value) {
+    List<Pair<String[], FlipperDynamic>> overrides = mOverrides.get(node.getGlobalKey());
     if (overrides == null) {
       overrides = new ArrayList<>();
       mOverrides.put(node.getGlobalKey(), overrides);
@@ -397,8 +397,8 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
   }
 
   @Override
-  public SonarObject getExtraInfo(DebugComponent node) {
-    SonarObject.Builder extraInfo = new SonarObject.Builder();
+  public FlipperObject getExtraInfo(DebugComponent node) {
+    FlipperObject.Builder extraInfo = new FlipperObject.Builder();
     final NodeDescriptor descriptor = descriptorForClass(View.class);
     final View hostView = node.getComponentHost();
     final View lithoView = node.getLithoView();
@@ -497,7 +497,7 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
     return descriptor.matches(query, node);
   }
 
-  private static void applyLayoutOverride(DebugLayoutNode node, String[] path, SonarDynamic value) {
+  private static void applyLayoutOverride(DebugLayoutNode node, String[] path, FlipperDynamic value) {
     switch (path[0]) {
       case "background":
         node.setBackgroundColor(value.asInt());
@@ -575,7 +575,7 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
     return YogaEdge.valueOf(s.toUpperCase());
   }
 
-  private static void applyReflectiveOverride(Object o, String key, SonarDynamic dynamic) {
+  private static void applyReflectiveOverride(Object o, String key, FlipperDynamic dynamic) {
     try {
       final Field field = o.getClass().getDeclaredField(key);
       field.setAccessible(true);

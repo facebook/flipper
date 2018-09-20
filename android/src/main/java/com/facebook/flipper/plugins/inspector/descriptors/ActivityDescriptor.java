@@ -10,8 +10,8 @@ package com.facebook.flipper.plugins.inspector.descriptors;
 
 import android.app.Activity;
 import android.view.Window;
-import com.facebook.flipper.core.SonarDynamic;
-import com.facebook.flipper.core.SonarObject;
+import com.facebook.flipper.core.FlipperDynamic;
+import com.facebook.flipper.core.FlipperObject;
 import com.facebook.flipper.plugins.inspector.Named;
 import com.facebook.flipper.plugins.inspector.NodeDescriptor;
 import com.facebook.flipper.plugins.inspector.Touch;
@@ -65,12 +65,12 @@ public class ActivityDescriptor extends NodeDescriptor<Activity> {
   }
 
   @Override
-  public List<Named<SonarObject>> getData(Activity node) {
+  public List<Named<FlipperObject>> getData(Activity node) {
     return Collections.EMPTY_LIST;
   }
 
   @Override
-  public void setValue(Activity node, String[] path, SonarDynamic value) throws Exception {}
+  public void setValue(Activity node, String[] path, FlipperDynamic value) throws Exception {}
 
   @Override
   public List<Named<String>> getAttributes(Activity node) {

@@ -29,8 +29,8 @@ import android.view.ViewGroup.MarginLayoutParams;
 import android.view.ViewParent;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import com.facebook.flipper.core.SonarDynamic;
-import com.facebook.flipper.core.SonarObject;
+import com.facebook.flipper.core.FlipperDynamic;
+import com.facebook.flipper.core.FlipperObject;
 import com.facebook.flipper.plugins.inspector.HighlightedOverlay;
 import com.facebook.flipper.plugins.inspector.InspectorValue;
 import com.facebook.flipper.plugins.inspector.Named;
@@ -113,9 +113,9 @@ public class ViewDescriptor extends NodeDescriptor<View> {
   }
 
   @Override
-  public List<Named<SonarObject>> getData(View node) {
-    final SonarObject.Builder viewProps =
-        new SonarObject.Builder()
+  public List<Named<FlipperObject>> getData(View node) {
+    final FlipperObject.Builder viewProps =
+        new FlipperObject.Builder()
             .put("height", InspectorValue.mutable(node.getHeight()))
             .put("width", InspectorValue.mutable(node.getWidth()))
             .put("alpha", InspectorValue.mutable(node.getAlpha()))
@@ -126,39 +126,39 @@ public class ViewDescriptor extends NodeDescriptor<View> {
             .put("layoutParams", getLayoutParams(node))
             .put(
                 "state",
-                new SonarObject.Builder()
+                new FlipperObject.Builder()
                     .put("enabled", InspectorValue.mutable(node.isEnabled()))
                     .put("activated", InspectorValue.mutable(node.isActivated()))
                     .put("focused", node.isFocused())
                     .put("selected", InspectorValue.mutable(node.isSelected())))
             .put(
                 "bounds",
-                new SonarObject.Builder()
+                new FlipperObject.Builder()
                     .put("left", InspectorValue.mutable(node.getLeft()))
                     .put("right", InspectorValue.mutable(node.getRight()))
                     .put("top", InspectorValue.mutable(node.getTop()))
                     .put("bottom", InspectorValue.mutable(node.getBottom())))
             .put(
                 "padding",
-                new SonarObject.Builder()
+                new FlipperObject.Builder()
                     .put("left", InspectorValue.mutable(node.getPaddingLeft()))
                     .put("top", InspectorValue.mutable(node.getPaddingTop()))
                     .put("right", InspectorValue.mutable(node.getPaddingRight()))
                     .put("bottom", InspectorValue.mutable(node.getPaddingBottom())))
             .put(
                 "rotation",
-                new SonarObject.Builder()
+                new FlipperObject.Builder()
                     .put("x", InspectorValue.mutable(node.getRotationX()))
                     .put("y", InspectorValue.mutable(node.getRotationY()))
                     .put("z", InspectorValue.mutable(node.getRotation())))
             .put(
                 "scale",
-                new SonarObject.Builder()
+                new FlipperObject.Builder()
                     .put("x", InspectorValue.mutable(node.getScaleX()))
                     .put("y", InspectorValue.mutable(node.getScaleY())))
             .put(
                 "pivot",
-                new SonarObject.Builder()
+                new FlipperObject.Builder()
                     .put("x", InspectorValue.mutable(node.getPivotX()))
                     .put("y", InspectorValue.mutable(node.getPivotY())));
 
@@ -173,8 +173,8 @@ public class ViewDescriptor extends NodeDescriptor<View> {
       viewProps.put("elevation", InspectorValue.mutable(node.getElevation()));
     }
 
-    SonarObject.Builder translation =
-        new SonarObject.Builder()
+    FlipperObject.Builder translation =
+        new FlipperObject.Builder()
             .put("x", InspectorValue.mutable(node.getTranslationX()))
             .put("y", InspectorValue.mutable(node.getTranslationY()));
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -182,8 +182,8 @@ public class ViewDescriptor extends NodeDescriptor<View> {
     }
     viewProps.put("translation", translation);
 
-    SonarObject.Builder position =
-        new SonarObject.Builder()
+    FlipperObject.Builder position =
+        new FlipperObject.Builder()
             .put("x", InspectorValue.mutable(node.getX()))
             .put("y", InspectorValue.mutable(node.getY()));
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
@@ -200,7 +200,7 @@ public class ViewDescriptor extends NodeDescriptor<View> {
   }
 
   @Override
-  public List<Named<SonarObject>> getAXData(View node) {
+  public List<Named<FlipperObject>> getAXData(View node) {
     return Arrays.asList(
         new Named<>(axNodeInfoPropsTitle, AccessibilityUtil.getAccessibilityNodeInfoData(node)),
         new Named<>(axTalkbackPropsTitle, AccessibilityUtil.getTalkbackData(node)),
@@ -209,7 +209,7 @@ public class ViewDescriptor extends NodeDescriptor<View> {
 
   @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
   @Override
-  public void setValue(View node, String[] path, SonarDynamic value) {
+  public void setValue(View node, String[] path, FlipperDynamic value) {
     if (path[0].equals(axViewPropsTitle)
         || path[0].equals(axNodeInfoPropsTitle)
         || path[0].equals(axTalkbackPropsTitle)) {
@@ -381,7 +381,7 @@ public class ViewDescriptor extends NodeDescriptor<View> {
     invalidate(node);
   }
 
-  private void setAccessibilityValue(View node, String[] path, SonarDynamic value) {
+  private void setAccessibilityValue(View node, String[] path, FlipperDynamic value) {
     switch (path[1]) {
       case "focusable":
         node.setFocusable(value.asBoolean());
@@ -440,8 +440,8 @@ public class ViewDescriptor extends NodeDescriptor<View> {
   }
 
   @Override
-  public SonarObject getExtraInfo(View node) {
-    return new SonarObject.Builder()
+  public FlipperObject getExtraInfo(View node) {
+    return new FlipperObject.Builder()
             .put("focused", AccessibilityUtil.isAXFocused(node))
             .put("hasAXNode", true)
             .build();
@@ -542,8 +542,8 @@ public class ViewDescriptor extends NodeDescriptor<View> {
     return objectDescriptor.matches(query, node);
   }
 
-  private SonarObject getTags(final View node) {
-    final SonarObject.Builder tags = new SonarObject.Builder();
+  private FlipperObject getTags(final View node) {
+    final FlipperObject.Builder tags = new FlipperObject.Builder();
     if (sKeyedTagsField == null) {
       return tags.build();
     }
@@ -573,9 +573,9 @@ public class ViewDescriptor extends NodeDescriptor<View> {
     return InspectorValue.mutable(Color, 0);
   }
 
-  private static SonarObject getLayoutParams(View node) {
+  private static FlipperObject getLayoutParams(View node) {
     final LayoutParams layoutParams = node.getLayoutParams();
-    final SonarObject.Builder params = new SonarObject.Builder();
+    final FlipperObject.Builder params = new FlipperObject.Builder();
 
     params.put("width", fromSize(layoutParams.width));
     params.put("height", fromSize(layoutParams.height));
@@ -584,7 +584,7 @@ public class ViewDescriptor extends NodeDescriptor<View> {
       final MarginLayoutParams marginLayoutParams = (MarginLayoutParams) layoutParams;
       params.put(
           "margin",
-          new SonarObject.Builder()
+          new FlipperObject.Builder()
               .put("left", InspectorValue.mutable(marginLayoutParams.leftMargin))
               .put("top", InspectorValue.mutable(marginLayoutParams.topMargin))
               .put("right", InspectorValue.mutable(marginLayoutParams.rightMargin))
@@ -606,7 +606,7 @@ public class ViewDescriptor extends NodeDescriptor<View> {
     return params.build();
   }
 
-  private void setLayoutParams(View node, String[] path, SonarDynamic value) {
+  private void setLayoutParams(View node, String[] path, FlipperDynamic value) {
     final LayoutParams params = node.getLayoutParams();
 
     switch (path[0]) {

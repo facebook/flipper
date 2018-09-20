@@ -12,17 +12,17 @@ package com.facebook.flipper.core;
  * app. The Sonar Responder will automatically wrap the response in an approriate object depending
  * on if it is an error or not.
  */
-public interface SonarResponder {
+public interface FlipperResponder {
 
   /** Deliver a successful response to the Sonar desktop app. */
-  void success(SonarObject response);
+  void success(FlipperObject response);
 
   /** Deliver a successful response to the Sonar desktop app. */
-  void success(SonarArray response);
+  void success(FlipperArray response);
 
   /** Deliver a successful response to the Sonar desktop app. */
   void success();
 
   /** Inform the Sonar desktop app of an error in handling the request. */
-  void error(SonarObject response);
+  void error(FlipperObject response);
 }

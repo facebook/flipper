@@ -12,8 +12,8 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.view.View;
-import com.facebook.flipper.core.SonarDynamic;
-import com.facebook.flipper.core.SonarObject;
+import com.facebook.flipper.core.FlipperDynamic;
+import com.facebook.flipper.core.FlipperObject;
 import com.facebook.flipper.plugins.inspector.HighlightedOverlay;
 import com.facebook.flipper.plugins.inspector.InspectorValue;
 import com.facebook.flipper.plugins.inspector.Named;
@@ -50,8 +50,8 @@ public class DrawableDescriptor extends NodeDescriptor<Drawable> {
   }
 
   @Override
-  public List<Named<SonarObject>> getData(Drawable node) {
-    final SonarObject.Builder props = new SonarObject.Builder();
+  public List<Named<FlipperObject>> getData(Drawable node) {
+    final FlipperObject.Builder props = new FlipperObject.Builder();
     final Rect bounds = node.getBounds();
 
     props.put("left", InspectorValue.mutable(bounds.left));
@@ -67,7 +67,7 @@ public class DrawableDescriptor extends NodeDescriptor<Drawable> {
   }
 
   @Override
-  public void setValue(Drawable node, String[] path, SonarDynamic value) {
+  public void setValue(Drawable node, String[] path, FlipperDynamic value) {
     final Rect bounds = node.getBounds();
 
     switch (path[0]) {

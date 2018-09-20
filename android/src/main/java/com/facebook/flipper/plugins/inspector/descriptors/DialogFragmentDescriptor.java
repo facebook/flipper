@@ -11,8 +11,8 @@ package com.facebook.flipper.plugins.inspector.descriptors;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.Fragment;
-import com.facebook.flipper.core.SonarDynamic;
-import com.facebook.flipper.core.SonarObject;
+import com.facebook.flipper.core.FlipperDynamic;
+import com.facebook.flipper.core.FlipperObject;
 import com.facebook.flipper.plugins.inspector.Named;
 import com.facebook.flipper.plugins.inspector.NodeDescriptor;
 import com.facebook.flipper.plugins.inspector.Touch;
@@ -47,13 +47,13 @@ public class DialogFragmentDescriptor extends NodeDescriptor<DialogFragment> {
   }
 
   @Override
-  public List<Named<SonarObject>> getData(DialogFragment node) throws Exception {
+  public List<Named<FlipperObject>> getData(DialogFragment node) throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(Fragment.class);
     return descriptor.getData(node);
   }
 
   @Override
-  public void setValue(DialogFragment node, String[] path, SonarDynamic value) throws Exception {
+  public void setValue(DialogFragment node, String[] path, FlipperDynamic value) throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(Fragment.class);
     descriptor.setValue(node, path, value);
   }
@@ -65,7 +65,7 @@ public class DialogFragmentDescriptor extends NodeDescriptor<DialogFragment> {
   }
 
   @Override
-  public SonarObject getExtraInfo(DialogFragment node) {
+  public FlipperObject getExtraInfo(DialogFragment node) {
     final NodeDescriptor descriptor = descriptorForClass(Fragment.class);
     return descriptor.getExtraInfo(node);
   }

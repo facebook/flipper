@@ -8,16 +8,16 @@
 package com.facebook.flipper.plugins.console.iface;
 
 import android.support.annotation.Nullable;
-import com.facebook.flipper.core.SonarConnection;
-import com.facebook.flipper.core.SonarObject;
-import com.facebook.flipper.core.SonarReceiver;
-import com.facebook.flipper.core.SonarResponder;
+import com.facebook.flipper.core.FlipperConnection;
+import com.facebook.flipper.core.FlipperObject;
+import com.facebook.flipper.core.FlipperReceiver;
+import com.facebook.flipper.core.FlipperResponder;
 import com.facebook.flipper.plugins.common.MainThreadSonarReceiver;
 import org.json.JSONObject;
 
 /**
  * Convenience class for adding console execution to a Sonar Plugin. Calling {@link
- * ConsoleCommandReceiver#listenForCommands(SonarConnection, ScriptingEnvironment, ContextProvider)}
+ * ConsoleCommandReceiver#listenForCommands(FlipperConnection, ScriptingEnvironment, ContextProvider)}
  * will add the necessary listeners for responding to command execution calls.
  */
 public class ConsoleCommandReceiver {
@@ -33,15 +33,15 @@ public class ConsoleCommandReceiver {
   }
 
   public static void listenForCommands(
-      final SonarConnection connection,
+      final FlipperConnection connection,
       final ScriptingEnvironment scriptingEnvironment,
       final ContextProvider contextProvider) {
 
     final ScriptingSession session = scriptingEnvironment.startSession();
-    final SonarReceiver executeCommandReceiver =
+    final FlipperReceiver executeCommandReceiver =
         new MainThreadSonarReceiver(connection) {
           @Override
-          public void onReceiveOnMainThread(SonarObject params, SonarResponder responder)
+          public void onReceiveOnMainThread(FlipperObject params, FlipperResponder responder)
               throws Exception {
             final String command = params.getString("command");
             final String contextObjectId = params.getString("context");
@@ -51,18 +51,18 @@ public class ConsoleCommandReceiver {
                   contextObject == null
                       ? session.evaluateCommand(command)
                       : session.evaluateCommand(command, contextObject);
-              responder.success(new SonarObject(o));
+              responder.success(new FlipperObject(o));
             } catch (Exception e) {
-              responder.error(new SonarObject.Builder().put("message", e.getMessage()).build());
+              responder.error(new FlipperObject.Builder().put("message", e.getMessage()).build());
             }
           }
         };
-    final SonarReceiver isEnabledReceiver =
-        new SonarReceiver() {
+    final FlipperReceiver isEnabledReceiver =
+        new FlipperReceiver() {
           @Override
-          public void onReceive(SonarObject params, SonarResponder responder) throws Exception {
+          public void onReceive(FlipperObject params, FlipperResponder responder) throws Exception {
             responder.success(
-                new SonarObject.Builder()
+                new FlipperObject.Builder()
                     .put("isEnabled", scriptingEnvironment.isEnabled())
                     .build());
           }
@@ -73,7 +73,7 @@ public class ConsoleCommandReceiver {
   }
 
   public static void listenForCommands(
-      SonarConnection connection, ScriptingEnvironment scriptingEnvironment) {
+      FlipperConnection connection, ScriptingEnvironment scriptingEnvironment) {
     listenForCommands(connection, scriptingEnvironment, nullContextProvider);
   }
 

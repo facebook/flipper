@@ -6,8 +6,8 @@ import android.graphics.Rect;
 import android.view.ViewGroup;
 import com.facebook.litho.DebugComponent;
 import com.facebook.litho.LithoView;
-import com.facebook.flipper.core.SonarDynamic;
-import com.facebook.flipper.core.SonarObject;
+import com.facebook.flipper.core.FlipperDynamic;
+import com.facebook.flipper.core.FlipperObject;
 import com.facebook.flipper.plugins.inspector.Named;
 import com.facebook.flipper.plugins.inspector.NodeDescriptor;
 import com.facebook.flipper.plugins.inspector.Touch;
@@ -68,8 +68,8 @@ public class LithoViewDescriptor extends NodeDescriptor<LithoView> {
   }
 
   @Override
-  public List<Named<SonarObject>> getData(LithoView node) throws Exception {
-    final List<Named<SonarObject>> props = new ArrayList<>();
+  public List<Named<FlipperObject>> getData(LithoView node) throws Exception {
+    final List<Named<FlipperObject>> props = new ArrayList<>();
     final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
     final Rect mountedBounds = node.getPreviousMountBounds();
 
@@ -77,10 +77,10 @@ public class LithoViewDescriptor extends NodeDescriptor<LithoView> {
         0,
         new Named<>(
             "LithoView",
-            new SonarObject.Builder()
+            new FlipperObject.Builder()
                 .put(
                     "mountbounds",
-                    new SonarObject.Builder()
+                    new FlipperObject.Builder()
                         .put("left", mountedBounds.left)
                         .put("top", mountedBounds.top)
                         .put("right", mountedBounds.right)
@@ -93,15 +93,15 @@ public class LithoViewDescriptor extends NodeDescriptor<LithoView> {
   }
 
   @Override
-  public List<Named<SonarObject>> getAXData(LithoView node) throws Exception {
-    final List<Named<SonarObject>> props = new ArrayList<>();
+  public List<Named<FlipperObject>> getAXData(LithoView node) throws Exception {
+    final List<Named<FlipperObject>> props = new ArrayList<>();
     final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
     props.addAll(descriptor.getAXData(node));
     return props;
   }
 
   @Override
-  public void setValue(LithoView node, String[] path, SonarDynamic value) throws Exception {
+  public void setValue(LithoView node, String[] path, FlipperDynamic value) throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
     descriptor.setValue(node, path, value);
   }
@@ -119,7 +119,7 @@ public class LithoViewDescriptor extends NodeDescriptor<LithoView> {
   }
 
   @Override
-  public SonarObject getExtraInfo(LithoView node) {
+  public FlipperObject getExtraInfo(LithoView node) {
     final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
     return descriptor.getExtraInfo(node);
   }

@@ -11,8 +11,8 @@ package com.facebook.flipper.plugins.inspector.descriptors;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.view.View;
-import com.facebook.flipper.core.SonarDynamic;
-import com.facebook.flipper.core.SonarObject;
+import com.facebook.flipper.core.FlipperDynamic;
+import com.facebook.flipper.core.FlipperObject;
 import com.facebook.flipper.plugins.inspector.Named;
 import com.facebook.flipper.plugins.inspector.NodeDescriptor;
 import com.facebook.flipper.plugins.inspector.Touch;
@@ -48,13 +48,13 @@ public class FragmentDescriptor extends NodeDescriptor<Fragment> {
   }
 
   @Override
-  public List<Named<SonarObject>> getData(Fragment node) {
+  public List<Named<FlipperObject>> getData(Fragment node) {
     final Bundle args = node.getArguments();
     if (args == null || args.isEmpty()) {
       return Collections.EMPTY_LIST;
     }
 
-    final SonarObject.Builder bundle = new SonarObject.Builder();
+    final FlipperObject.Builder bundle = new FlipperObject.Builder();
 
     for (String key : args.keySet()) {
       bundle.put(key, args.get(key));
@@ -64,7 +64,7 @@ public class FragmentDescriptor extends NodeDescriptor<Fragment> {
   }
 
   @Override
-  public void setValue(Fragment node, String[] path, SonarDynamic value) {}
+  public void setValue(Fragment node, String[] path, FlipperDynamic value) {}
 
   @Override
   public List<Named<String>> getAttributes(Fragment node) {
@@ -78,8 +78,8 @@ public class FragmentDescriptor extends NodeDescriptor<Fragment> {
   }
 
   @Override
-  public SonarObject getExtraInfo(Fragment node) {
-    return new SonarObject.Builder().put("nonAXWithAXChild", true).build();
+  public FlipperObject getExtraInfo(Fragment node) {
+    return new FlipperObject.Builder().put("nonAXWithAXChild", true).build();
   }
 
   @Nullable

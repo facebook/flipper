@@ -10,8 +10,8 @@ package com.facebook.flipper.plugins.inspector.descriptors;
 
 import android.app.Dialog;
 import android.view.Window;
-import com.facebook.flipper.core.SonarDynamic;
-import com.facebook.flipper.core.SonarObject;
+import com.facebook.flipper.core.FlipperDynamic;
+import com.facebook.flipper.core.FlipperObject;
 import com.facebook.flipper.plugins.inspector.Named;
 import com.facebook.flipper.plugins.inspector.NodeDescriptor;
 import com.facebook.flipper.plugins.inspector.Touch;
@@ -45,12 +45,12 @@ public class DialogDescriptor extends NodeDescriptor<Dialog> {
   }
 
   @Override
-  public List<Named<SonarObject>> getData(Dialog node) {
+  public List<Named<FlipperObject>> getData(Dialog node) {
     return Collections.EMPTY_LIST;
   }
 
   @Override
-  public void setValue(Dialog node, String[] path, SonarDynamic value) {}
+  public void setValue(Dialog node, String[] path, FlipperDynamic value) {}
 
   @Override
   public List<Named<String>> getAttributes(Dialog node) {

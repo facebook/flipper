@@ -17,8 +17,8 @@ import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
 import com.facebook.flipper.R;
-import com.facebook.flipper.core.SonarDynamic;
-import com.facebook.flipper.core.SonarObject;
+import com.facebook.flipper.core.FlipperDynamic;
+import com.facebook.flipper.core.FlipperObject;
 import com.facebook.flipper.plugins.inspector.HiddenNode;
 import com.facebook.flipper.plugins.inspector.InspectorValue;
 import com.facebook.flipper.plugins.inspector.Named;
@@ -153,11 +153,11 @@ public class ViewGroupDescriptor extends NodeDescriptor<ViewGroup> {
   }
 
   @Override
-  public List<Named<SonarObject>> getData(ViewGroup node) throws Exception {
-    final List<Named<SonarObject>> props = new ArrayList<>();
+  public List<Named<FlipperObject>> getData(ViewGroup node) throws Exception {
+    final List<Named<FlipperObject>> props = new ArrayList<>();
     final NodeDescriptor descriptor = descriptorForClass(View.class);
 
-    final SonarObject.Builder vgProps = new SonarObject.Builder();
+    final FlipperObject.Builder vgProps = new FlipperObject.Builder();
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
       vgProps
@@ -183,15 +183,15 @@ public class ViewGroupDescriptor extends NodeDescriptor<ViewGroup> {
   }
 
   @Override
-  public List<Named<SonarObject>> getAXData(ViewGroup node) throws Exception {
-    final List<Named<SonarObject>> props = new ArrayList<>();
+  public List<Named<FlipperObject>> getAXData(ViewGroup node) throws Exception {
+    final List<Named<FlipperObject>> props = new ArrayList<>();
     final NodeDescriptor descriptor = descriptorForClass(View.class);
     props.addAll(descriptor.getAXData(node));
     return props;
   }
 
   @Override
-  public void setValue(ViewGroup node, String[] path, SonarDynamic value) throws Exception {
+  public void setValue(ViewGroup node, String[] path, FlipperDynamic value) throws Exception {
     switch (path[0]) {
       case "ViewGroup":
         switch (path[1]) {
@@ -237,7 +237,7 @@ public class ViewGroupDescriptor extends NodeDescriptor<ViewGroup> {
   }
 
   @Override
-  public SonarObject getExtraInfo(ViewGroup node) {
+  public FlipperObject getExtraInfo(ViewGroup node) {
     final NodeDescriptor descriptor = descriptorForClass(View.class);
     return descriptor.getExtraInfo(node);
   }

@@ -11,10 +11,10 @@ import javax.annotation.Nullable;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class SonarDynamic {
+public class FlipperDynamic {
   private final Object mObject;
 
-  public SonarDynamic(Object object) {
+  public FlipperDynamic(Object object) {
     mObject = object;
   }
 
@@ -108,17 +108,17 @@ public class SonarDynamic {
     return (Boolean) mObject;
   }
 
-  public SonarObject asObject() {
+  public FlipperObject asObject() {
     if (mObject instanceof JSONObject) {
-      return new SonarObject((JSONObject) mObject);
+      return new FlipperObject((JSONObject) mObject);
     }
-    return (SonarObject) mObject;
+    return (FlipperObject) mObject;
   }
 
-  public SonarArray asArray() {
+  public FlipperArray asArray() {
     if (mObject instanceof JSONArray) {
-      return new SonarArray((JSONArray) mObject);
+      return new FlipperArray((JSONArray) mObject);
     }
-    return (SonarArray) mObject;
+    return (FlipperArray) mObject;
   }
 }

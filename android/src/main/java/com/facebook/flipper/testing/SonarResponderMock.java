@@ -7,33 +7,33 @@
  */
 package com.facebook.flipper.testing;
 
-import com.facebook.flipper.core.SonarArray;
-import com.facebook.flipper.core.SonarObject;
-import com.facebook.flipper.core.SonarResponder;
+import com.facebook.flipper.core.FlipperArray;
+import com.facebook.flipper.core.FlipperObject;
+import com.facebook.flipper.core.FlipperResponder;
 import java.util.LinkedList;
 import java.util.List;
 
-public class SonarResponderMock implements SonarResponder {
+public class SonarResponderMock implements FlipperResponder {
   public final List<Object> successes = new LinkedList<>();
-  public final List<SonarObject> errors = new LinkedList<>();
+  public final List<FlipperObject> errors = new LinkedList<>();
 
   @Override
-  public void success(SonarObject response) {
+  public void success(FlipperObject response) {
     successes.add(response);
   }
 
   @Override
-  public void success(SonarArray response) {
+  public void success(FlipperArray response) {
     successes.add(response);
   }
 
   @Override
   public void success() {
-    successes.add(new SonarObject.Builder().build());
+    successes.add(new FlipperObject.Builder().build());
   }
 
   @Override
-  public void error(SonarObject response) {
+  public void error(FlipperObject response) {
     errors.add(response);
   }
 }
