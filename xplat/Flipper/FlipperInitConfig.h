@@ -24,7 +24,7 @@ struct DeviceData {
   std::string privateAppDirectory;
 };
 
-struct SonarInitConfig {
+struct FlipperInitConfig {
   /**
   Map of client specific configuration data such as app name, device name, etc.
   */

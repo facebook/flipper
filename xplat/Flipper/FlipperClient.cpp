@@ -28,7 +28,7 @@ static FlipperClient* kInstance;
 
 using folly::dynamic;
 
-void FlipperClient::init(SonarInitConfig config) {
+void FlipperClient::init(FlipperInitConfig config) {
   auto state = std::make_shared<SonarState>();
   auto context = std::make_shared<ConnectionContextStore>(config.deviceData);
   kInstance =

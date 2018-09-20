@@ -3,7 +3,7 @@
 #include <string>
 #include <folly/io/async/SSLContext.h>
 #include <folly/dynamic.h>
-#include "SonarInitConfig.h"
+#include "FlipperInitConfig.h"
 
 using namespace folly;
 

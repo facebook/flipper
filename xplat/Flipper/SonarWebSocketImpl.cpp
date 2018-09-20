@@ -77,7 +77,7 @@ class Responder : public rsocket::RSocketResponder {
   }
 };
 
-SonarWebSocketImpl::SonarWebSocketImpl(SonarInitConfig config, std::shared_ptr<SonarState> state, std::shared_ptr<ConnectionContextStore> contextStore)
+SonarWebSocketImpl::SonarWebSocketImpl(FlipperInitConfig config, std::shared_ptr<SonarState> state, std::shared_ptr<ConnectionContextStore> contextStore)
     : deviceData_(config.deviceData), sonarState_(state), sonarEventBase_(config.callbackWorker), connectionEventBase_(config.connectionWorker), contextStore_(contextStore) {
       CHECK_THROW(config.callbackWorker, std::invalid_argument);
       CHECK_THROW(config.connectionWorker, std::invalid_argument);

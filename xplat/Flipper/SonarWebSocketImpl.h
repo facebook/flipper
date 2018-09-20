@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "SonarInitConfig.h"
+#include "FlipperInitConfig.h"
 #include "SonarWebSocket.h"
 #include "SonarState.h"
 #include <folly/Executor.h>
@@ -28,7 +28,7 @@ class SonarWebSocketImpl : public SonarWebSocket {
   friend Responder;
 
  public:
-  SonarWebSocketImpl(SonarInitConfig config, std::shared_ptr<SonarState> state, std::shared_ptr<ConnectionContextStore> contextStore);
+  SonarWebSocketImpl(FlipperInitConfig config, std::shared_ptr<SonarState> state, std::shared_ptr<ConnectionContextStore> contextStore);
 
   ~SonarWebSocketImpl();
 

@@ -9,7 +9,7 @@
 #pragma once
 
 #include "FlipperConnectionImpl.h"
-#include "SonarInitConfig.h"
+#include "FlipperInitConfig.h"
 #include "SonarPlugin.h"
 #include "SonarState.h"
 #include "SonarWebSocket.h"
@@ -27,7 +27,7 @@ class FlipperClient : public SonarWebSocket::Callbacks {
    Call before accessing instance with FlipperClient::instance(). This will set up
    all the state needed to establish a Sonar connection.
    */
-  static void init(SonarInitConfig config);
+  static void init(FlipperInitConfig config);
 
   /**
    Standard accessor for the shared FlipperClient instance. This returns a

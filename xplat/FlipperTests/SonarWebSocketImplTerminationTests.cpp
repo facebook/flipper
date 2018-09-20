@@ -32,7 +32,7 @@ protected:
 
 TEST_F(SonarWebSocketImplTerminationTest, testNullEventBaseGetsRejected) {
   try {
-    auto instance = std::make_shared<SonarWebSocketImpl>(SonarInitConfig {
+    auto instance = std::make_shared<SonarWebSocketImpl>(FlipperInitConfig {
       DeviceData {},
       nullptr,
       new EventBase()
@@ -45,7 +45,7 @@ TEST_F(SonarWebSocketImplTerminationTest, testNullEventBaseGetsRejected) {
     // Pass test
   }
   try {
-    auto instance = std::make_shared<SonarWebSocketImpl>(SonarInitConfig {
+    auto instance = std::make_shared<SonarWebSocketImpl>(FlipperInitConfig {
       DeviceData {},
       new EventBase(),
       nullptr
@@ -60,7 +60,7 @@ TEST_F(SonarWebSocketImplTerminationTest, testNullEventBaseGetsRejected) {
 }
 
 TEST_F(SonarWebSocketImplTerminationTest, testNonStartedEventBaseDoesntHang) {
-  auto config = SonarInitConfig {
+  auto config = FlipperInitConfig {
     DeviceData {},
     new EventBase(),
     new EventBase()
@@ -78,7 +78,7 @@ TEST_F(SonarWebSocketImplTerminationTest, testStartedEventBaseDoesntHang) {
   auto connectionThread = std::thread([connectionEventBase](){
     connectionEventBase->loopForever();
   });
-  auto config = SonarInitConfig {
+  auto config = FlipperInitConfig {
     DeviceData {},
     sonarEventBase,
     connectionEventBase
