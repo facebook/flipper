@@ -15,6 +15,13 @@ export {
   FlipperPlugin,
   FlipperDevicePlugin,
 } from './plugin.js';
+
+export * from './fb-stubs/constants.js';
+
+export {
+  default as SidebarExtensions,
+} from './fb-stubs/LayoutInspectorSidebarExtensions.js';
+
 export {createTablePlugin} from './createTablePlugin.js';
 export {default as DetailSidebar} from './chrome/DetailSidebar.js';
 

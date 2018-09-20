@@ -25,10 +25,10 @@ import {
   VerticalRule,
   Popover,
   ToggleButton,
+  SidebarExtensions,
 } from 'flipper';
 
 import type {TrackType} from '../../fb-stubs/Logger.js';
-import SidebarExtensions from '../../fb-stubs/LayoutInspectorSidebarExtensions.js';
 
 import debounce from 'lodash.debounce';
 

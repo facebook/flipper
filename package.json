@@ -56,7 +56,6 @@
     "jest": "^22.2.1",
     "lodash.debounce": "^4.0.8",
     "mkdirp": "^0.5.1",
-    "needle": "2.1.1",
     "openssl-wrapper": "^0.3.4",
     "prop-types": "^15.6.0",
     "react": "16",
