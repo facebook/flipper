@@ -4,7 +4,7 @@ import org.apache.tools.ant.filters.ReplaceTokens
 // Increment this when making changes to any of the native
 // dependencies.
 // !!!
-final def CACHE_REVISION = 2
+final def CACHE_REVISION = 3
 
 final def externalDir = new File("$projectDir/external")
 final def downloadsDir = new File("$buildDir/downloads")

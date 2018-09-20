@@ -111,7 +111,7 @@ list(APPEND SRC_FILES ${FOLLY_DIR}/io/async/HHWheelTimer.cpp
                       ${FOLLY_DIR}/memory/detail/MallocImpl.cpp
                       )
 
-add_library(${PACKAGE_NAME} SHARED ${SRC_FILES})
+add_library(${PACKAGE_NAME} STATIC ${SRC_FILES})
 
 set(build_DIR ${CMAKE_SOURCE_DIR}/build)
 

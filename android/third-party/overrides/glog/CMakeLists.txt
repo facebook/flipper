@@ -39,6 +39,6 @@ list(APPEND src_files ${glog_DIR}/src/demangle.cc
                       ${glog_DIR}/src/vlog_is_on.cc
                       )
 
-add_library(${PACKAGE_NAME} SHARED ${src_files})
+add_library(${PACKAGE_NAME} STATIC ${src_files})
 install(TARGETS ${PACKAGE_NAME}  DESTINATION ./build/)
 target_link_libraries(${PACKAGE_NAME})
