@@ -7,7 +7,7 @@
  */
 
 #include "FlipperClient.h"
-#include "SonarConnectionImpl.h"
+#include "FlipperConnectionImpl.h"
 #include "SonarResponderImpl.h"
 #include "SonarState.h"
 #include "SonarStep.h"
@@ -159,7 +159,7 @@ void FlipperClient::onMessageReceived(const dynamic& message) {
       }
       const auto plugin = plugins_.at(identifier);
       auto& conn = connections_[plugin->identifier()];
-      conn = std::make_shared<SonarConnectionImpl>(
+      conn = std::make_shared<FlipperConnectionImpl>(
           socket_.get(), plugin->identifier());
       plugin->didConnect(conn);
       return;

@@ -7,7 +7,7 @@
  */
 #pragma once
 
-#include "SonarConnection.h"
+#include "FlipperConnection.h"
 #include <string>
 
 namespace facebook {
@@ -29,10 +29,10 @@ class SonarPlugin {
   connection can be used to register method receivers as well as send
   messages back to the desktop app.
   */
-  virtual void didConnect(std::shared_ptr<SonarConnection> conn) = 0;
+  virtual void didConnect(std::shared_ptr<FlipperConnection> conn) = 0;
 
   /**
-  Called when a plugin has been disconnected and the SonarConnection
+  Called when a plugin has been disconnected and the FlipperConnection
   provided in didConnect is no longer valid to use.
   */
   virtual void didDisconnect() = 0;

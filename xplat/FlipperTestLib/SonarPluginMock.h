@@ -16,7 +16,7 @@ namespace test {
 
 class SonarPluginMock : public SonarPlugin {
   using ConnectionCallback =
-      std::function<void(std::shared_ptr<SonarConnection>)>;
+      std::function<void(std::shared_ptr<FlipperConnection>)>;
   using DisconnectionCallback = std::function<void()>;
 
  public:
@@ -39,7 +39,7 @@ class SonarPluginMock : public SonarPlugin {
     return identifier_;
   }
 
-  void didConnect(std::shared_ptr<SonarConnection> conn) override {
+  void didConnect(std::shared_ptr<FlipperConnection> conn) override {
     if (connectionCallback_) {
       connectionCallback_(conn);
     }

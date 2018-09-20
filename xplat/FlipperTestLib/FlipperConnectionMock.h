@@ -8,14 +8,14 @@
 
 #pragma once
 
-#include <Flipper/SonarConnection.h>
+#include <Flipper/FlipperConnection.h>
 #include <map>
 #include <string>
 
 namespace facebook {
 namespace flipper {
 
-class SonarConnectionMock : public SonarConnection {
+class FlipperConnectionMock : public FlipperConnection {
  public:
   void send(const std::string& method, const folly::dynamic& params) override {
     sent_[method] = params;

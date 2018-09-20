@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "SonarConnection.h"
+#include "FlipperConnection.h"
 #include "SonarWebSocket.h"
 #include <map>
 #include <string>
@@ -16,9 +16,9 @@
 namespace facebook {
 namespace flipper {
 
-class SonarConnectionImpl : public SonarConnection {
+class FlipperConnectionImpl : public FlipperConnection {
  public:
-  SonarConnectionImpl(SonarWebSocket* socket, const std::string& name)
+  FlipperConnectionImpl(SonarWebSocket* socket, const std::string& name)
       : socket_(socket), name_(name) {}
 
   void call(

@@ -30,7 +30,7 @@ public:
 
   std::string identifier() const override { return [[_objCPlugin identifier] UTF8String]; }
 
-  void didConnect(std::shared_ptr<facebook::flipper::SonarConnection> conn) override
+  void didConnect(std::shared_ptr<facebook::flipper::FlipperConnection> conn) override
   {
     FlipperCppBridgingConnection *const bridgingConn = [[FlipperCppBridgingConnection alloc] initWithCppConnection:conn];
     [_objCPlugin didConnect:bridgingConn];

@@ -13,10 +13,10 @@
 
 @implementation FlipperCppBridgingConnection
 {
-  std::shared_ptr<facebook::flipper::SonarConnection> conn_;
+  std::shared_ptr<facebook::flipper::FlipperConnection> conn_;
 }
 
-- (instancetype)initWithCppConnection:(std::shared_ptr<facebook::flipper::SonarConnection>)conn
+- (instancetype)initWithCppConnection:(std::shared_ptr<facebook::flipper::FlipperConnection>)conn
 {
   if (self = [super init]) {
     conn_ = conn;

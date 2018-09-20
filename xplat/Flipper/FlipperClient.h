@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "SonarConnectionImpl.h"
+#include "FlipperConnectionImpl.h"
 #include "SonarInitConfig.h"
 #include "SonarPlugin.h"
 #include "SonarState.h"
@@ -92,7 +92,7 @@ class FlipperClient : public SonarWebSocket::Callbacks {
   bool connected_ = false;
   std::unique_ptr<SonarWebSocket> socket_;
   std::map<std::string, std::shared_ptr<SonarPlugin>> plugins_;
-  std::map<std::string, std::shared_ptr<SonarConnectionImpl>> connections_;
+  std::map<std::string, std::shared_ptr<FlipperConnectionImpl>> connections_;
   std::mutex mutex_;
   std::shared_ptr<SonarState> sonarState_;
 

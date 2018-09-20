@@ -103,7 +103,7 @@ TEST(SonarClientTests, testConnectDisconnect) {
   FlipperClient client(std::unique_ptr<SonarWebSocketMock>{socket}, state);
 
   bool pluginConnected = false;
-  const auto connectionCallback = [&](std::shared_ptr<SonarConnection> conn) {
+  const auto connectionCallback = [&](std::shared_ptr<FlipperConnection> conn) {
     pluginConnected = true;
   };
   const auto disconnectionCallback = [&]() { pluginConnected = false; };
@@ -126,7 +126,7 @@ TEST(SonarClientTests, testInitDeinit) {
   FlipperClient client(std::unique_ptr<SonarWebSocketMock>{socket}, state);
 
   bool pluginConnected = false;
-  const auto connectionCallback = [&](std::shared_ptr<SonarConnection> conn) {
+  const auto connectionCallback = [&](std::shared_ptr<FlipperConnection> conn) {
     pluginConnected = true;
   };
   const auto disconnectionCallback = [&]() { pluginConnected = false; };
@@ -164,7 +164,7 @@ TEST(SonarClientTests, testRemovePluginWhenConnected) {
   FlipperClient client(std::unique_ptr<SonarWebSocketMock>{socket}, state);
 
   bool pluginConnected = false;
-  const auto connectionCallback = [&](std::shared_ptr<SonarConnection> conn) {
+  const auto connectionCallback = [&](std::shared_ptr<FlipperConnection> conn) {
     pluginConnected = true;
   };
   const auto disconnectionCallback = [&]() { pluginConnected = false; };
@@ -205,7 +205,7 @@ TEST(SonarClientTests, testExecute) {
   FlipperClient client(std::unique_ptr<SonarWebSocketMock>{socket}, state);
   client.start();
 
-  const auto connectionCallback = [](std::shared_ptr<SonarConnection> conn) {
+  const auto connectionCallback = [](std::shared_ptr<FlipperConnection> conn) {
     const auto receiver = [](const dynamic &params,
                              std::unique_ptr<FlipperResponder> responder) {
       dynamic payload = dynamic::object("message", "yes_i_hear_u");
@@ -234,7 +234,7 @@ TEST(SonarClientTests, testExecuteWithParams) {
   auto socket = new SonarWebSocketMock;
   FlipperClient client(std::unique_ptr<SonarWebSocketMock>{socket}, state);
 
-  const auto connectionCallback = [&](std::shared_ptr<SonarConnection> conn) {
+  const auto connectionCallback = [&](std::shared_ptr<FlipperConnection> conn) {
     const auto receiver = [](const dynamic &params,
                              std::unique_ptr<FlipperResponder> responder) {
       const auto &first = params["first"].asString();

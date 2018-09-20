@@ -20,12 +20,12 @@ namespace flipper {
 Represents a connection between the Desktop and mobile plugins
 with corresponding identifiers.
 */
-class SonarConnection {
+class FlipperConnection {
  public:
   using SonarReceiver = std::function<
       void(const folly::dynamic&, std::unique_ptr<FlipperResponder>)>;
 
-  virtual ~SonarConnection() {}
+  virtual ~FlipperConnection() {}
 
   /**
   Invoke a method on the Sonar desktop plugin with with a matching identifier.

@@ -52,7 +52,7 @@ public class MySonarPlugin implements SonarPlugin {
 class MySonarPlugin : public SonarPlugin {
 public:
   std::string identifier() const override { return "MySonarPlugin"; }
-  void didConnect(std::shared_ptr<SonarConnection> conn) override;
+  void didConnect(std::shared_ptr<FlipperConnection> conn) override;
   void didDisconnect() override;
 };
 ```
@@ -102,7 +102,7 @@ connection.receive("getData", new SonarReceiver() {
 ### C++
 
 ```c++
-void MySonarPlugin::didConnect(std::shared_ptr<SonarConnection> conn) {
+void MySonarPlugin::didConnect(std::shared_ptr<FlipperConnection> conn) {
   conn->receive("getData", [](const folly::dynamic &params,
                              std::unique_ptr<FlipperResponder> responder) {
     dynamic response = folly::dynamic::object("data", getMyData());
@@ -133,7 +133,7 @@ connection.send("MyMessage",
 ### C++
 
 ```c++
-void MySonarPlugin::didConnect(std::shared_ptr<SonarConnection> conn) {
+void MySonarPlugin::didConnect(std::shared_ptr<FlipperConnection> conn) {
   dynamic message = folly::dynamic::object("message", "hello");
   conn->send("getData", message);
 }

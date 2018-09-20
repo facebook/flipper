@@ -20,7 +20,7 @@
 
 #include <Flipper/FlipperClient.h>
 #include <Flipper/SonarWebSocket.h>
-#include <Flipper/SonarConnection.h>
+#include <Flipper/FlipperConnection.h>
 #include <Flipper/FlipperResponder.h>
 #include <Flipper/SonarStateUpdateListener.h>
 #include <Flipper/SonarState.h>
@@ -175,9 +175,9 @@ class JFlipperConnectionImpl : public jni::HybridClass<JFlipperConnectionImpl, J
 
  private:
   friend HybridBase;
-  std::shared_ptr<SonarConnection> _connection;
+  std::shared_ptr<FlipperConnection> _connection;
 
-  JFlipperConnectionImpl(std::shared_ptr<SonarConnection> connection): _connection(std::move(connection)) {}
+  JFlipperConnectionImpl(std::shared_ptr<FlipperConnection> connection): _connection(std::move(connection)) {}
 };
 
 class JFlipperPlugin : public jni::JavaClass<JFlipperPlugin> {
@@ -189,7 +189,7 @@ class JFlipperPlugin : public jni::JavaClass<JFlipperPlugin> {
     return method(self())->toStdString();
   }
 
-  void didConnect(std::shared_ptr<SonarConnection> conn) {
+  void didConnect(std::shared_ptr<FlipperConnection> conn) {
     static const auto method = javaClassStatic()->getMethod<void(jni::alias_ref<JFlipperConnection::javaobject>)>("onConnect");
     method(self(), JFlipperConnectionImpl::newObjectCxxArgs(conn));
   }
@@ -239,7 +239,7 @@ class JFlipperPluginWrapper : public SonarPlugin {
     return jplugin->identifier();
   }
 
-  virtual void didConnect(std::shared_ptr<SonarConnection> conn) override {
+  virtual void didConnect(std::shared_ptr<FlipperConnection> conn) override {
     jplugin->didConnect(conn);
   }
 
