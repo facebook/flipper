@@ -5,7 +5,7 @@
  *  file in the root directory of this source tree.
  *
  */
-#import <Sonar/FlipperResponder.h>
+#import <Flipper/FlipperResponder.h>
 #import <FlipperKit/FlipperResponder.h>
 
 /**

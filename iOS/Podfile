@@ -16,5 +16,6 @@ target 'FlipperKit' do
   pod 'glog', '~>0.3'
   pod 'Folly', '~>1.0'
   pod 'CocoaAsyncSocket', '~>7.6'
+  pod 'Flipper', '~>0.0.1'
 
 end

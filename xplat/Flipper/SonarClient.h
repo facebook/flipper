@@ -8,11 +8,11 @@
 
 #pragma once
 
-#include <Sonar/SonarConnectionImpl.h>
-#include <Sonar/SonarInitConfig.h>
-#include <Sonar/SonarPlugin.h>
-#include <Sonar/SonarState.h>
-#include <Sonar/SonarWebSocket.h>
+#include "SonarConnectionImpl.h"
+#include "SonarInitConfig.h"
+#include "SonarPlugin.h"
+#include "SonarState.h"
+#include "SonarWebSocket.h"
 #include <map>
 #include <mutex>
 #include "SonarStep.h"

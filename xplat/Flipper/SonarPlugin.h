@@ -7,7 +7,7 @@
  */
 #pragma once
 
-#include <Sonar/SonarConnection.h>
+#include "SonarConnection.h"
 #include <string>
 
 namespace facebook {

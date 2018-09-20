@@ -1,6 +1,6 @@
 sonarkit_version = '0.7.2'
 Pod::Spec.new do |spec|
-  spec.name = 'Sonar'
+  spec.name = 'Flipper'
   spec.version = sonarkit_version
   spec.license = { :type => 'MIT' }
   spec.homepage = 'https://github.com/facebook/sonar'
@@ -8,9 +8,9 @@ Pod::Spec.new do |spec|
   spec.authors = 'Facebook'
   spec.source = { :git => 'https://github.com/facebook/Sonar.git',
                   :tag => 'v'+sonarkit_version }
-  spec.module_name = 'Sonar'
-  spec.public_header_files = 'xplat/Sonar/*.h'
-  spec.source_files = 'xplat/Sonar/*.{h,cpp,m,mm}'
+  spec.module_name = 'Flipper'
+  spec.public_header_files = 'xplat/Flipper/*.h'
+  spec.source_files = 'xplat/Flipper/*.{h,cpp,m,mm}'
   spec.libraries = "stdc++"
   spec.dependency 'Folly', '~>1.1'
   spec.dependency 'RSocket', '~>0.10'

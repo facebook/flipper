@@ -18,12 +18,12 @@
 #include <folly/io/async/EventBase.h>
 #include <folly/io/async/EventBaseManager.h>
 
-#include <Sonar/SonarClient.h>
-#include <Sonar/SonarWebSocket.h>
-#include <Sonar/SonarConnection.h>
-#include <Sonar/FlipperResponder.h>
-#include <Sonar/SonarStateUpdateListener.h>
-#include <Sonar/SonarState.h>
+#include <Flipper/SonarClient.h>
+#include <Flipper/SonarWebSocket.h>
+#include <Flipper/SonarConnection.h>
+#include <Flipper/FlipperResponder.h>
+#include <Flipper/SonarStateUpdateListener.h>
+#include <Flipper/SonarState.h>
 
 using namespace facebook;
 using namespace facebook::flipper;

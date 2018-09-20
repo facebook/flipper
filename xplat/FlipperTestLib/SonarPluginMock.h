@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <Sonar/SonarPlugin.h>
+#include <Flipper/SonarPlugin.h>
 
 namespace facebook {
 namespace flipper {

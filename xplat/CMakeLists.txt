@@ -39,7 +39,7 @@ add_compile_options(-DFOLLY_NO_CONFIG
                     )
 
 
-file(GLOB SOURCES Sonar/*.cpp)
+file(GLOB SOURCES Flipper/*.cpp)
 add_library(${PACKAGE_NAME} STATIC ${SOURCES})
 
 set(build_DIR ${CMAKE_SOURCE_DIR}/build)

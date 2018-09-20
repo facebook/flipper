@@ -8,9 +8,9 @@
 
 #pragma once
 
-#include <Sonar/SonarInitConfig.h>
-#include <Sonar/SonarWebSocket.h>
-#include <Sonar/SonarState.h>
+#include "SonarInitConfig.h"
+#include "SonarWebSocket.h"
+#include "SonarState.h"
 #include <folly/Executor.h>
 #include <folly/io/async/EventBase.h>
 #include <rsocket/RSocket.h>

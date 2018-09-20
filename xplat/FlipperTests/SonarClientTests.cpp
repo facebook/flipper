@@ -6,9 +6,9 @@
  *
  */
 
-#include <Sonar/SonarClient.h>
-#include <SonarTestLib/SonarPluginMock.h>
-#include <SonarTestLib/SonarWebSocketMock.h>
+#include <Flipper/SonarClient.h>
+#include <FlipperTestLib/SonarPluginMock.h>
+#include <FlipperTestLib/SonarWebSocketMock.h>
 
 #include <folly/json.h>
 #include <gtest/gtest.h>

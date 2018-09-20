@@ -6,8 +6,8 @@
  *
  */
 
-#include <Sonar/SonarWebSocketImpl.h>
-#include <SonarTestLib/ConnectionContextStoreMock.h>
+#include <Flipper/SonarWebSocketImpl.h>
+#include <FlipperTestLib/ConnectionContextStoreMock.h>
 
 #include <gtest/gtest.h>
 

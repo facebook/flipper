@@ -8,8 +8,8 @@
 
 #pragma once
 
-#include <Sonar/FlipperResponder.h>
-#include <Sonar/SonarWebSocket.h>
+#include "FlipperResponder.h"
+#include "SonarWebSocket.h"
 #include <folly/json.h>
 
 namespace facebook {

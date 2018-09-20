@@ -51,7 +51,7 @@ Pod::Spec.new do |spec|
     ss.dependency 'FlipperKit/FBCxxUtils'
     ss.dependency 'FlipperKit/CppBridge'
     ss.dependency 'Folly', '~>1.1'
-    ss.dependency 'Sonar', '~>'+sonarkit_version
+    ss.dependency 'Flipper', '~>'+sonarkit_version
     ss.dependency 'CocoaAsyncSocket', '~> 7.6'
     ss.dependency 'PeerTalk', '~>0.0.2'
     ss.dependency 'OpenSSL-Static', '1.0.2.c1'

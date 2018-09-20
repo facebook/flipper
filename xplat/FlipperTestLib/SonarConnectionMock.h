@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <Sonar/SonarConnection.h>
+#include <Flipper/SonarConnection.h>
 #include <map>
 #include <string>
 

@@ -9,7 +9,7 @@
 
 #import "FlipperClient.h"
 #import "SonarCppWrapperPlugin.h"
-#import <Sonar/SonarClient.h>
+#import <Flipper/SonarClient.h>
 #include <folly/io/async/EventBase.h>
 #include <folly/io/async/ScopedEventBaseThread.h>
 #import <UIKit/UIKit.h>

@@ -8,8 +8,8 @@
 
 #pragma once
 
-#include <Sonar/SonarConnection.h>
-#include <Sonar/SonarWebSocket.h>
+#include "SonarConnection.h"
+#include "SonarWebSocket.h"
 #include <map>
 #include <string>
 

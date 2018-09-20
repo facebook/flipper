@@ -7,7 +7,7 @@ target 'Sample' do
   pod 'FlipperKit', :path => '../../SonarKit.podspec'
   pod 'FlipperKit/SonarKitLayoutComponentKitSupport', :path => '../../SonarKit.podspec'
   pod 'FlipperKit/SKIOSNetworkPlugin', :path => '../../SonarKit.podspec'
-  pod 'Sonar', :path => '../../Sonar.podspec'
+  pod 'Flipper', :path => '../../Flipper.podspec'
   post_install do |installer|
 
         installer.pods_project.targets.each do |target|

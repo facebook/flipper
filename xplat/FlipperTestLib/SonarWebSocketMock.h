@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <Sonar/SonarWebSocket.h>
+#include <Flipper/SonarWebSocket.h>
 
 namespace facebook {
 namespace flipper {

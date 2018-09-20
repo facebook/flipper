@@ -1,6 +1,6 @@
 #ifdef FB_SONARKIT_ENABLED
 
-#include <Sonar/SonarStateUpdateListener.h>
+#include <Flipper/SonarStateUpdateListener.h>
 #import "FlipperStateUpdateListener.h"
 
 /*

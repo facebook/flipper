@@ -9,7 +9,7 @@
 #error This header can only be included in .mm (ObjC++) files
 #endif
 
-#import <Sonar/SonarPlugin.h>
+#import <Flipper/SonarPlugin.h>
 #import <FlipperKit/CppBridge/FlipperCppBridgingConnection.h>
 #import <FlipperKit/FlipperPlugin.h>
 

@@ -50,12 +50,12 @@ public void myTest() {
 
 ## C++
 
-Start by creating your first test file in this directory `MySonarPluginTests.cpp` and import the testing utilities from `//xplat/sonar-client:SonarTestLib`. These utilities mock out core pieces of the communication channel so that you can test your plugin in isolation.
+Start by creating your first test file in this directory `MySonarPluginTests.cpp` and import the testing utilities from `//xplat/sonar-client:FlipperTestLib`. These utilities mock out core pieces of the communication channel so that you can test your plugin in isolation.
 
 ```
 #include <MySonarPlugin/MySonarPlugin.h>
-#include <SonarTestLib/SonarConnectionMock.h>
-#include <SonarTestLib/SonarResponderMock.h>
+#include <FlipperTestLib/SonarConnectionMock.h>
+#include <FlipperTestLib/SonarResponderMock.h>
 
 #include <folly/json.h>
 #include <gtest/gtest.h>

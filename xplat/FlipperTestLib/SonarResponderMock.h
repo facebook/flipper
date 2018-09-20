@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <Sonar/FlipperResponder.h>
+#include <Flipper/FlipperResponder.h>
 #include <folly/json.h>
 #include <vector>
 
