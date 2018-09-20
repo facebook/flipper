@@ -17,6 +17,8 @@
 #import <FlipperKitLayoutPlugin/SKNamed.h>
 #import <FlipperKitLayoutPlugin/SKObject.h>
 
+#import "CKStatelessComponent+Sonar.h"
+
 /** This protocol isn't actually adopted anywhere, it just lets us use the SEL below */
 @protocol SonarKitLayoutComponentKitOverrideInformalProtocol
 - (NSString *)sonar_componentNameOverride;

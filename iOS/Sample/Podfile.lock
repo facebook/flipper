@@ -2,7 +2,7 @@ PODS:
   - boost-for-react-native (1.63.0)
   - CocoaAsyncSocket (7.6.3)
   - CocoaLibEvent (1.0.0)
-  - ComponentKit (0.23):
+  - ComponentKit (0.24):
     - Yoga (~> 1.6)
   - DoubleConversion (1.1.5)
   - FlipperKit (0.7.2):
@@ -83,9 +83,9 @@ SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   CocoaAsyncSocket: eafaa68a7e0ec99ead0a7b35015e0bf25d2c8987
   CocoaLibEvent: 2fab71b8bd46dd33ddb959f7928ec5909f838e3f
-  ComponentKit: bf8b4c4e7448bd15b3a8e5a71174ea7aa6cea98d
+  ComponentKit: d6efb627aa2b4592cbe029d1e9e604226d39b5d9
   DoubleConversion: e22e0762848812a87afd67ffda3998d9ef29170c
-  FlipperKit: e70400bbc914a7a3d67464a06d98bd5d6261cf4a
+  FlipperKit: 1f046ef5906178012b14f6be1dfe1d5b0dc3a8d4
   Folly: dd92f69322d8535b9df98d7c91e442b0fce2fff2
   glog: 1de0bb937dccdc981596d3b5825ebfb765017ded
   OpenSSL-Static: bd17e34564a8591ad76b740318683a6caa19a13e
