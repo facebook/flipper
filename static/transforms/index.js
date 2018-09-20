@@ -6,12 +6,12 @@
  */
 
 const generate = require('@babel/generator').default;
-const babylon = require('babylon');
+const babylon = require('@babel/parser');
 const babel = require('@babel/core');
 const metro = require('metro');
 
 exports.transform = function({filename, options, src}) {
-  const presets = [require('../node_modules/babel-preset-react')];
+  const presets = [require('../node_modules/@babel/preset-react')];
   const isPlugin = !__dirname.startsWith(options.projectRoot);
 
   let ast = babylon.parse(src, {
@@ -22,9 +22,10 @@ exports.transform = function({filename, options, src}) {
 
   // run babel
   const plugins = [
-    require('../node_modules/babel-plugin-transform-object-rest-spread'),
-    require('../node_modules/babel-plugin-transform-class-properties'),
-    require('../node_modules/babel-plugin-transform-flow-strip-types'),
+    require('../node_modules/@babel/plugin-transform-modules-commonjs'),
+    require('../node_modules/@babel/plugin-proposal-object-rest-spread'),
+    require('../node_modules/@babel/plugin-proposal-class-properties'),
+    require('../node_modules/@babel/plugin-transform-flow-strip-types'),
     require('./electron-requires.js'),
     require('./fb-stubs.js'),
     require('./dynamic-requires.js'),
@@ -34,9 +35,9 @@ exports.transform = function({filename, options, src}) {
   } else {
     plugins.push(require('./import-react.js'));
   }
-  plugins.unshift(require('babel-plugin-transform-es2015-modules-commonjs'));
 
   ast = babel.transformFromAst(ast, src, {
+    ast: true,
     babelrc: !filename.includes('node_modules'),
     code: false,
     comments: false,
@@ -46,6 +47,7 @@ exports.transform = function({filename, options, src}) {
     presets,
     sourceMaps: true,
   }).ast;
+
   const result = generate(
     ast,
     {
@@ -55,6 +57,7 @@ exports.transform = function({filename, options, src}) {
     },
     src,
   );
+
   return {
     ast,
     code: result.code,
