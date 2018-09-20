@@ -10,7 +10,7 @@
 #endif
 
 #import <Sonar/SonarPlugin.h>
-#import <FlipperKit/CppBridge/SonarCppBridgingConnection.h>
+#import <FlipperKit/CppBridge/FlipperCppBridgingConnection.h>
 #import <FlipperKit/FlipperPlugin.h>
 
 namespace facebook {
@@ -32,7 +32,7 @@ public:
 
   void didConnect(std::shared_ptr<facebook::flipper::SonarConnection> conn) override
   {
-    SonarCppBridgingConnection *const bridgingConn = [[SonarCppBridgingConnection alloc] initWithCppConnection:conn];
+    FlipperCppBridgingConnection *const bridgingConn = [[FlipperCppBridgingConnection alloc] initWithCppConnection:conn];
     [_objCPlugin didConnect:bridgingConn];
   }
 

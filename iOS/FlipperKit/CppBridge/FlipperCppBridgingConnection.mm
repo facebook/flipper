@@ -5,13 +5,13 @@
  *  file in the root directory of this source tree.
  *
  */
-#import "SonarCppBridgingConnection.h"
+#import "FlipperCppBridgingConnection.h"
 
 #import <FBCxxUtils/FBCxxFollyDynamicConvert.h>
 
 #import "SonarCppBridgingResponder.h"
 
-@implementation SonarCppBridgingConnection
+@implementation FlipperCppBridgingConnection
 {
   std::shared_ptr<facebook::flipper::SonarConnection> conn_;
 }

@@ -9,10 +9,10 @@
 #import <FlipperKit/FlipperConnection.h>
 
 /**
-SonarCppBridgingConnection is a simple ObjC wrapper around SonarConnection
+FlipperCppBridgingConnection is a simple ObjC wrapper around SonarConnection
 that forwards messages to the underlying C++ connection. This class allows
 pure Objective-C plugins to send messages to the underlying connection.
 */
-@interface SonarCppBridgingConnection : NSObject <FlipperConnection>
+@interface FlipperCppBridgingConnection : NSObject <FlipperConnection>
 - (instancetype)initWithCppConnection:(std::shared_ptr<facebook::flipper::SonarConnection>)conn;
 @end
