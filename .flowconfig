@@ -13,6 +13,7 @@ flow-typed
 
 [options]
 esproposal.export_star_as=enable
+esproposal.optional_chaining=enable
 module.use_strict=true
 emoji=true
 all=true

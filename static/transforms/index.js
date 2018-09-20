@@ -16,7 +16,13 @@ exports.transform = function({filename, options, src}) {
 
   let ast = babylon.parse(src, {
     filename,
-    plugins: ['jsx', 'flow', 'classProperties', 'objectRestSpread'],
+    plugins: [
+      'jsx',
+      'flow',
+      'classProperties',
+      'objectRestSpread',
+      'optionalChaining',
+    ],
     sourceType: 'module',
   });
 
@@ -26,6 +32,7 @@ exports.transform = function({filename, options, src}) {
     require('../node_modules/@babel/plugin-proposal-object-rest-spread'),
     require('../node_modules/@babel/plugin-proposal-class-properties'),
     require('../node_modules/@babel/plugin-transform-flow-strip-types'),
+    require('../node_modules/@babel/plugin-proposal-optional-chaining'),
     require('./electron-requires.js'),
     require('./fb-stubs.js'),
     require('./dynamic-requires.js'),

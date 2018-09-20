@@ -11,6 +11,7 @@ const fbjs = require('eslint-config-fbjs');
 const pattern = /^\*\n \* Copyright 20\d{2}-present Facebook\.\n \* This source code is licensed under the MIT license found in the\n \* LICENSE file in the root directory of this source tree\.\n \* @format\n./;
 
 module.exports = {
+  parser: 'babel-eslint',
   extends: 'fbjs',
   plugins: [...fbjs.plugins, 'header', 'prettier'],
   rules: {
