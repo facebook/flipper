@@ -6,7 +6,7 @@
  *
  */
 
-#include "SonarClient.h"
+#include "FlipperClient.h"
 #include "SonarConnectionImpl.h"
 #include "SonarResponderImpl.h"
 #include "SonarState.h"
@@ -24,29 +24,29 @@
 namespace facebook {
 namespace flipper {
 
-static SonarClient* kInstance;
+static FlipperClient* kInstance;
 
 using folly::dynamic;
 
-void SonarClient::init(SonarInitConfig config) {
+void FlipperClient::init(SonarInitConfig config) {
   auto state = std::make_shared<SonarState>();
   auto context = std::make_shared<ConnectionContextStore>(config.deviceData);
   kInstance =
-      new SonarClient(std::make_unique<SonarWebSocketImpl>(std::move(config), state, context), state);
+      new FlipperClient(std::make_unique<SonarWebSocketImpl>(std::move(config), state, context), state);
 }
 
-SonarClient* SonarClient::instance() {
+FlipperClient* FlipperClient::instance() {
   return kInstance;
 }
 
-void SonarClient::setStateListener(
+void FlipperClient::setStateListener(
     std::shared_ptr<SonarStateUpdateListener> stateListener) {
   log("Setting state listener");
   sonarState_->setUpdateListener(stateListener);
 }
 
-void SonarClient::addPlugin(std::shared_ptr<SonarPlugin> plugin) {
-  log("SonarClient::addPlugin " + plugin->identifier());
+void FlipperClient::addPlugin(std::shared_ptr<SonarPlugin> plugin) {
+  log("FlipperClient::addPlugin " + plugin->identifier());
   auto step = sonarState_->start("Add plugin " + plugin->identifier());
 
   std::lock_guard<std::mutex> lock(mutex_);
@@ -63,8 +63,8 @@ void SonarClient::addPlugin(std::shared_ptr<SonarPlugin> plugin) {
   });
 }
 
-void SonarClient::removePlugin(std::shared_ptr<SonarPlugin> plugin) {
-  log("SonarClient::removePlugin " + plugin->identifier());
+void FlipperClient::removePlugin(std::shared_ptr<SonarPlugin> plugin) {
+  log("FlipperClient::removePlugin " + plugin->identifier());
 
   std::lock_guard<std::mutex> lock(mutex_);
   performAndReportError([this, plugin]() {
@@ -79,7 +79,7 @@ void SonarClient::removePlugin(std::shared_ptr<SonarPlugin> plugin) {
   });
 }
 
-std::shared_ptr<SonarPlugin> SonarClient::getPlugin(
+std::shared_ptr<SonarPlugin> FlipperClient::getPlugin(
     const std::string& identifier) {
   std::lock_guard<std::mutex> lock(mutex_);
   if (plugins_.find(identifier) == plugins_.end()) {
@@ -88,12 +88,12 @@ std::shared_ptr<SonarPlugin> SonarClient::getPlugin(
   return plugins_.at(identifier);
 }
 
-bool SonarClient::hasPlugin(const std::string& identifier) {
+bool FlipperClient::hasPlugin(const std::string& identifier) {
   std::lock_guard<std::mutex> lock(mutex_);
   return plugins_.find(identifier) != plugins_.end();
 }
 
-void SonarClient::disconnect(std::shared_ptr<SonarPlugin> plugin) {
+void FlipperClient::disconnect(std::shared_ptr<SonarPlugin> plugin) {
   const auto& conn = connections_.find(plugin->identifier());
   if (conn != connections_.end()) {
     connections_.erase(plugin->identifier());
@@ -101,22 +101,22 @@ void SonarClient::disconnect(std::shared_ptr<SonarPlugin> plugin) {
   }
 }
 
-void SonarClient::refreshPlugins() {
+void FlipperClient::refreshPlugins() {
     performAndReportError([this]() {
         dynamic message = dynamic::object("method", "refreshPlugins");
         socket_->sendMessage(message);
     });
 }
 
-void SonarClient::onConnected() {
-  log("SonarClient::onConnected");
+void FlipperClient::onConnected() {
+  log("FlipperClient::onConnected");
 
   std::lock_guard<std::mutex> lock(mutex_);
   connected_ = true;
 }
 
-void SonarClient::onDisconnected() {
-  log("SonarClient::onDisconnected");
+void FlipperClient::onDisconnected() {
+  log("FlipperClient::onDisconnected");
   auto step = sonarState_->start("Trigger onDisconnected callbacks");
   std::lock_guard<std::mutex> lock(mutex_);
   connected_ = false;
@@ -128,7 +128,7 @@ void SonarClient::onDisconnected() {
   });
 }
 
-void SonarClient::onMessageReceived(const dynamic& message) {
+void FlipperClient::onMessageReceived(const dynamic& message) {
   std::lock_guard<std::mutex> lock(mutex_);
   performAndReportError([this, &message]() {
     const auto& method = message["method"];
@@ -198,7 +198,7 @@ void SonarClient::onMessageReceived(const dynamic& message) {
   });
 }
 
-void SonarClient::performAndReportError(const std::function<void()>& func) {
+void FlipperClient::performAndReportError(const std::function<void()>& func) {
   try {
     func();
   } catch (std::exception& e) {
@@ -213,11 +213,11 @@ void SonarClient::performAndReportError(const std::function<void()>& func) {
   }
 }
 
-std::string SonarClient::getState() {
+std::string FlipperClient::getState() {
   return sonarState_->getState();
 }
 
-std::vector<StateElement> SonarClient::getStateElements() {
+std::vector<StateElement> FlipperClient::getStateElements() {
   return sonarState_->getStateElements();
 }
 

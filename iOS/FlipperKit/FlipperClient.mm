@@ -9,7 +9,7 @@
 
 #import "FlipperClient.h"
 #import "SonarCppWrapperPlugin.h"
-#import <Flipper/SonarClient.h>
+#import <Flipper/FlipperClient.h>
 #include <folly/io/async/EventBase.h>
 #include <folly/io/async/ScopedEventBaseThread.h>
 #import <UIKit/UIKit.h>
@@ -23,7 +23,7 @@
 using WrapperPlugin = facebook::flipper::SonarCppWrapperPlugin;
 
 @implementation FlipperClient {
-  facebook::flipper::SonarClient *_cppClient;
+  facebook::flipper::FlipperClient *_cppClient;
   folly::ScopedEventBaseThread sonarThread;
   folly::ScopedEventBaseThread connectionThread;
 #if !TARGET_OS_SIMULATOR
@@ -61,7 +61,7 @@ using WrapperPlugin = facebook::flipper::SonarCppWrapperPlugin;
     deviceName = [NSString stringWithFormat:@"%@ %@", [[UIDevice currentDevice] model], @"Simulator"];
 #endif
 
-    facebook::flipper::SonarClient::init({
+    facebook::flipper::FlipperClient::init({
       {
         "localhost",
         "iOS",
@@ -74,7 +74,7 @@ using WrapperPlugin = facebook::flipper::SonarCppWrapperPlugin;
       sonarThread.getEventBase(),
       connectionThread.getEventBase()
     });
-    _cppClient = facebook::flipper::SonarClient::instance();
+    _cppClient = facebook::flipper::FlipperClient::instance();
   }
   return self;
 }

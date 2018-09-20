@@ -11,11 +11,11 @@
 
 #import <Foundation/Foundation.h>
 
-#import <Flipper/SonarClient.h>
+#import <Flipper/FlipperClient.h>
 #import <FlipperKit/FlipperClient.h>
 
 @interface FlipperClient (Testing)
 
-- (instancetype)initWithCppClient:(facebook::flipper::SonarClient *)cppClient;
+- (instancetype)initWithCppClient:(facebook::flipper::FlipperClient *)cppClient;
 
 @end

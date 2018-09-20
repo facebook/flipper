@@ -21,26 +21,26 @@
 namespace facebook {
 namespace flipper {
 
-class SonarClient : public SonarWebSocket::Callbacks {
+class FlipperClient : public SonarWebSocket::Callbacks {
  public:
   /**
-   Call before accessing instance with SonarClient::instance(). This will set up
+   Call before accessing instance with FlipperClient::instance(). This will set up
    all the state needed to establish a Sonar connection.
    */
   static void init(SonarInitConfig config);
 
   /**
-   Standard accessor for the shared SonarClient instance. This returns a
-   singleton instance to a shared SonarClient. First call to this function will
-   create the shared SonarClient. Must call SonarClient::initDeviceData() before
-   first call to SonarClient::instance().
+   Standard accessor for the shared FlipperClient instance. This returns a
+   singleton instance to a shared FlipperClient. First call to this function will
+   create the shared FlipperClient. Must call FlipperClient::initDeviceData() before
+   first call to FlipperClient::instance().
    */
-  static SonarClient* instance();
+  static FlipperClient* instance();
 
   /**
    Only public for testing
    */
-  SonarClient(std::unique_ptr<SonarWebSocket> socket, std::shared_ptr<SonarState> state)
+  FlipperClient(std::unique_ptr<SonarWebSocket> socket, std::shared_ptr<SonarState> state)
       : socket_(std::move(socket)), sonarState_(state) {
     auto step = sonarState_->start("Create client");
     socket_->setCallbacks(this);
@@ -88,7 +88,7 @@ class SonarClient : public SonarWebSocket::Callbacks {
   bool hasPlugin(const std::string& identifier);
 
  private:
-  static SonarClient* instance_;
+  static FlipperClient* instance_;
   bool connected_ = false;
   std::unique_ptr<SonarWebSocket> socket_;
   std::map<std::string, std::shared_ptr<SonarPlugin>> plugins_;

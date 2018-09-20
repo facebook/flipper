@@ -6,7 +6,7 @@
  *
  */
 
-#include <Flipper/SonarClient.h>
+#include <Flipper/FlipperClient.h>
 #include <FlipperTestLib/SonarPluginMock.h>
 #include <FlipperTestLib/SonarWebSocketMock.h>
 
@@ -34,7 +34,7 @@ TEST(SonarClientTests, testSaneMocks) {
 
 TEST(SonarClientTests, testGetPlugins) {
   auto socket = new SonarWebSocketMock;
-  SonarClient client(std::unique_ptr<SonarWebSocketMock>{socket}, state);
+  FlipperClient client(std::unique_ptr<SonarWebSocketMock>{socket}, state);
   client.start();
 
   client.addPlugin(std::make_shared<SonarPluginMock>("Cat"));
@@ -50,7 +50,7 @@ TEST(SonarClientTests, testGetPlugins) {
 
 TEST(SonarClientTests, testGetPlugin) {
   auto socket = new SonarWebSocketMock;
-  SonarClient client(std::unique_ptr<SonarWebSocketMock>{socket}, state);
+  FlipperClient client(std::unique_ptr<SonarWebSocketMock>{socket}, state);
 
   const auto catPlugin = std::make_shared<SonarPluginMock>("Cat");
   client.addPlugin(catPlugin);
@@ -63,7 +63,7 @@ TEST(SonarClientTests, testGetPlugin) {
 
 TEST(SonarClientTests, testGetPluginWithDowncast) {
   auto socket = new SonarWebSocketMock;
-  SonarClient client(std::unique_ptr<SonarWebSocketMock>{socket}, state);
+  FlipperClient client(std::unique_ptr<SonarWebSocketMock>{socket}, state);
 
   const auto catPlugin = std::make_shared<SonarPluginMock>("Cat");
   client.addPlugin(catPlugin);
@@ -72,7 +72,7 @@ TEST(SonarClientTests, testGetPluginWithDowncast) {
 
 TEST(SonarClientTests, testRemovePlugin) {
   auto socket = new SonarWebSocketMock;
-  SonarClient client(std::unique_ptr<SonarWebSocketMock>{socket}, state);
+  FlipperClient client(std::unique_ptr<SonarWebSocketMock>{socket}, state);
   client.start();
 
   auto plugin = std::make_shared<SonarPluginMock>("Test");
@@ -89,7 +89,7 @@ TEST(SonarClientTests, testRemovePlugin) {
 
 TEST(SonarClientTests, testStartStop) {
   auto socket = new SonarWebSocketMock;
-  SonarClient client(std::unique_ptr<SonarWebSocketMock>{socket}, state);
+  FlipperClient client(std::unique_ptr<SonarWebSocketMock>{socket}, state);
 
   client.start();
   EXPECT_TRUE(socket->isOpen());
@@ -100,7 +100,7 @@ TEST(SonarClientTests, testStartStop) {
 
 TEST(SonarClientTests, testConnectDisconnect) {
   auto socket = new SonarWebSocketMock;
-  SonarClient client(std::unique_ptr<SonarWebSocketMock>{socket}, state);
+  FlipperClient client(std::unique_ptr<SonarWebSocketMock>{socket}, state);
 
   bool pluginConnected = false;
   const auto connectionCallback = [&](std::shared_ptr<SonarConnection> conn) {
@@ -123,7 +123,7 @@ TEST(SonarClientTests, testConnectDisconnect) {
 
 TEST(SonarClientTests, testInitDeinit) {
   auto socket = new SonarWebSocketMock;
-  SonarClient client(std::unique_ptr<SonarWebSocketMock>{socket}, state);
+  FlipperClient client(std::unique_ptr<SonarWebSocketMock>{socket}, state);
 
   bool pluginConnected = false;
   const auto connectionCallback = [&](std::shared_ptr<SonarConnection> conn) {
@@ -161,7 +161,7 @@ TEST(SonarClientTests, testInitDeinit) {
 
 TEST(SonarClientTests, testRemovePluginWhenConnected) {
   auto socket = new SonarWebSocketMock;
-  SonarClient client(std::unique_ptr<SonarWebSocketMock>{socket}, state);
+  FlipperClient client(std::unique_ptr<SonarWebSocketMock>{socket}, state);
 
   bool pluginConnected = false;
   const auto connectionCallback = [&](std::shared_ptr<SonarConnection> conn) {
@@ -182,7 +182,7 @@ TEST(SonarClientTests, testRemovePluginWhenConnected) {
 
 TEST(SonarClientTests, testUnhandleableMethod) {
   auto socket = new SonarWebSocketMock;
-  SonarClient client(std::unique_ptr<SonarWebSocketMock>{socket}, state);
+  FlipperClient client(std::unique_ptr<SonarWebSocketMock>{socket}, state);
 
   auto plugin = std::make_shared<SonarPluginMock>("Test");
   client.addPlugin(plugin);
@@ -202,7 +202,7 @@ TEST(SonarClientTests, testUnhandleableMethod) {
 
 TEST(SonarClientTests, testExecute) {
   auto socket = new SonarWebSocketMock;
-  SonarClient client(std::unique_ptr<SonarWebSocketMock>{socket}, state);
+  FlipperClient client(std::unique_ptr<SonarWebSocketMock>{socket}, state);
   client.start();
 
   const auto connectionCallback = [](std::shared_ptr<SonarConnection> conn) {
@@ -232,7 +232,7 @@ TEST(SonarClientTests, testExecute) {
 
 TEST(SonarClientTests, testExecuteWithParams) {
   auto socket = new SonarWebSocketMock;
-  SonarClient client(std::unique_ptr<SonarWebSocketMock>{socket}, state);
+  FlipperClient client(std::unique_ptr<SonarWebSocketMock>{socket}, state);
 
   const auto connectionCallback = [&](std::shared_ptr<SonarConnection> conn) {
     const auto receiver = [](const dynamic &params,
@@ -265,7 +265,7 @@ TEST(SonarClientTests, testExecuteWithParams) {
 
 TEST(SonarClientTests, testExceptionUnknownPlugin) {
   auto socket = new SonarWebSocketMock;
-  SonarClient client(std::unique_ptr<SonarWebSocketMock>{socket}, state);
+  FlipperClient client(std::unique_ptr<SonarWebSocketMock>{socket}, state);
   client.start();
 
   dynamic messageInit = dynamic::object("method", "init")(
@@ -278,7 +278,7 @@ TEST(SonarClientTests, testExceptionUnknownPlugin) {
 
 TEST(SonarClientTests, testExceptionUnknownApi) {
   auto socket = new SonarWebSocketMock;
-  SonarClient client(std::unique_ptr<SonarWebSocketMock>{socket}, state);
+  FlipperClient client(std::unique_ptr<SonarWebSocketMock>{socket}, state);
   client.start();
 
   dynamic messageInit = dynamic::object("method", "execute")(

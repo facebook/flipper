@@ -18,7 +18,7 @@
 #include <folly/io/async/EventBase.h>
 #include <folly/io/async/EventBaseManager.h>
 
-#include <Flipper/SonarClient.h>
+#include <Flipper/FlipperClient.h>
 #include <Flipper/SonarWebSocket.h>
 #include <Flipper/SonarConnection.h>
 #include <Flipper/FlipperResponder.h>
@@ -291,42 +291,42 @@ class JFlipperClient : public jni::HybridClass<JFlipperClient> {
   }
 
   void start() {
-  	SonarClient::instance()->start();
+  	FlipperClient::instance()->start();
   }
 
   void stop() {
-  	SonarClient::instance()->stop();
+  	FlipperClient::instance()->stop();
   }
 
   void addPlugin(jni::alias_ref<JFlipperPlugin> plugin) {
     auto wrapper = std::make_shared<JFlipperPluginWrapper>(make_global(plugin));
-    SonarClient::instance()->addPlugin(wrapper);
+    FlipperClient::instance()->addPlugin(wrapper);
   }
 
   void removePlugin(jni::alias_ref<JFlipperPlugin> plugin) {
-    auto client = SonarClient::instance();
+    auto client = FlipperClient::instance();
     client->removePlugin(client->getPlugin(plugin->identifier()));
   }
 
   void subscribeForUpdates(jni::alias_ref<JFlipperStateUpdateListener> stateListener) {
-    auto client = SonarClient::instance();
+    auto client = FlipperClient::instance();
     mStateListener = std::make_shared<AndroidFlipperStateUpdateListener>(stateListener);
     client->setStateListener(mStateListener);
   }
 
   void unsubscribe() {
-    auto client = SonarClient::instance();
+    auto client = FlipperClient::instance();
     mStateListener = nullptr;
     client->setStateListener(nullptr);
   }
 
   std::string getState() {
-    return SonarClient::instance()->getState();
+    return FlipperClient::instance()->getState();
   }
 
   jni::global_ref<JStateSummary::javaobject> getStateSummary() {
     auto summary = jni::make_global(JStateSummary::create());
-    auto elements = SonarClient::instance()->getStateElements();
+    auto elements = FlipperClient::instance()->getStateElements();
     for (auto&& element : elements) {
       std::string status;
       switch (element.state_) {
@@ -340,7 +340,7 @@ class JFlipperClient : public jni::HybridClass<JFlipperClient> {
   }
 
   jni::alias_ref<JFlipperPlugin> getPlugin(const std::string& identifier) {
-    auto plugin = SonarClient::instance()->getPlugin(identifier);
+    auto plugin = FlipperClient::instance()->getPlugin(identifier);
     if (plugin) {
       auto wrapper = std::static_pointer_cast<JFlipperPluginWrapper>(plugin);
       return wrapper->jplugin;
@@ -361,7 +361,7 @@ class JFlipperClient : public jni::HybridClass<JFlipperClient> {
       const std::string appId,
       const std::string privateAppDirectory) {
 
-    SonarClient::init({
+    FlipperClient::init({
       {
         std::move(host),
         std::move(os),
