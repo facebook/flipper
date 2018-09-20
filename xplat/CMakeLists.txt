@@ -40,7 +40,7 @@ add_compile_options(-DFOLLY_NO_CONFIG
 
 
 file(GLOB SOURCES Sonar/*.cpp)
-add_library(${PACKAGE_NAME} SHARED ${SOURCES})
+add_library(${PACKAGE_NAME} STATIC ${SOURCES})
 
 set(build_DIR ${CMAKE_SOURCE_DIR}/build)
 set(libfolly_build_DIR ${build_DIR}/libfolly/${ANDROID_ABI})
