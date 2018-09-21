@@ -33,7 +33,7 @@ Add the following permissions to your AndroidManifest.xml. The SDK needs these t
 It's recommended that you add the following activity to the manifest too, which can help diagnose integration issues and other problems:
 
 ```xml
-<activity android:name="com.facebook.sonar.android.diagnostics.SonarDiagnosticActivity"
+<activity android:name="com.facebook.sonar.android.diagnostics.FlipperDiagnosticActivity"
         android:exported="true"/>
 ```
 

@@ -14,7 +14,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.ScrollView;
 
-public class SonarDiagnosticActivity extends Activity implements FlipperStateUpdateListener {
+public class FlipperDiagnosticActivity extends Activity implements FlipperStateUpdateListener {
 
   private TextView summaryView;
   private TextView logView;

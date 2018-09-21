@@ -12,7 +12,7 @@ import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.widget.Text;
-import com.facebook.flipper.android.diagnostics.SonarDiagnosticActivity;
+import com.facebook.flipper.android.diagnostics.FlipperDiagnosticActivity;
 
 import java.io.IOException;
 import okhttp3.Call;
@@ -109,7 +109,7 @@ public class RootComponentSpec {
 
     @OnEvent(ClickEvent.class)
     static void openDiagnostics(final ComponentContext c) {
-        Intent intent = new Intent(c, SonarDiagnosticActivity.class);
+        Intent intent = new Intent(c, FlipperDiagnosticActivity.class);
         c.startActivity(intent);
     }
 }

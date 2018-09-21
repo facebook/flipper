@@ -37,9 +37,9 @@ The Flipper SDK includes an in-app connection diagnostics screen to help you dia
 Replace `<APP_PACKAGE>` below with the package name of your app, e.g. `com.facebook.flipper.sample`.
 On a terminal, run the following:
 ```bash
-adb shell am start -n <APP_PACKAGE>/com.facebook.sonar.android.diagnostics.SonarDiagnosticActivity
+adb shell am start -n <APP_PACKAGE>/com.facebook.sonar.android.diagnostics.FlipperDiagnosticActivity
 ```
-This will only work if you added `SonarDiagnosticActivity` to your `AndroidManifest.xml`. See [getting started](getting-started.html) for help.
+This will only work if you added `FlipperDiagnosticActivity` to your `AndroidManifest.xml`. See [getting started](getting-started.html) for help.
 
 #### iOS
 You'll need to manually add this [ViewController](https://github.com/facebook/flipper/blob/master/iOS/SonarKit/FlipperDiagnosticsViewController.m) to your app to see the in-app diagnostics.
