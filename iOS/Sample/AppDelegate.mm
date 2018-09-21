@@ -9,7 +9,7 @@
 
 #import <FlipperKit/FlipperClient.h>
 #import <FlipperKitLayoutPlugin/FlipperKitLayoutPlugin.h>
-#import <FlipperKitNetworkPlugin/SonarKitNetworkPlugin.h>
+#import <FlipperKitNetworkPlugin/FlipperKitNetworkPlugin.h>
 #import <SonarKitLayoutComponentKitSupport/SonarKitLayoutComponentKitSupport.h>
 #import <SKIOSNetworkPlugin/SKIOSNetworkAdapter.h>
 
@@ -35,7 +35,7 @@
   [client addPlugin: [[FlipperKitLayoutPlugin alloc] initWithRootNode: application
                                                withDescriptorMapper: layoutDescriptorMapper]];
 
-  [[FlipperClient sharedClient] addPlugin: [[SonarKitNetworkPlugin alloc] initWithNetworkAdapter:[SKIOSNetworkAdapter new]]];
+  [[FlipperClient sharedClient] addPlugin: [[FlipperKitNetworkPlugin alloc] initWithNetworkAdapter:[SKIOSNetworkAdapter new]]];
   [client start];
 
   UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"MainStoryBoard" bundle:nil];

@@ -62,7 +62,7 @@ Pod::Spec.new do |spec|
                              'iOS/Plugins/FlipperKitNetworkPlugin/FlipperKitNetworkPlugin/SKNetworkReporter.h',
                              'iOS/Plugins/FlipperKitNetworkPlugin/FlipperKitNetworkPlugin/SKRequestInfo.h',
                              'iOS/Plugins/FlipperKitNetworkPlugin/FlipperKitNetworkPlugin/SKResponseInfo.h',
-                             'iOS/Plugins/FlipperKitNetworkPlugin/FlipperKitNetworkPlugin/SonarKitNetworkPlugin.h',
+                             'iOS/Plugins/FlipperKitNetworkPlugin/FlipperKitNetworkPlugin/FlipperKitNetworkPlugin.h',
                              'iOS/FBDefines/FBMacros.h',
                              'iOS/FlipperKit/**/{FlipperStateUpdateListener,FlipperClient,FlipperPlugin,FlipperConnection,FlipperResponder,SKMacros}.h'
     header_search_paths = "\"$(PODS_ROOT)/FlipperKit/iOS/FlipperKit\" \"$(PODS_ROOT)\"/Headers/Private/FlipperKit/** \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/PeerTalkSonar\""
@@ -117,7 +117,7 @@ Pod::Spec.new do |spec|
                              'iOS/Plugins/FlipperKitNetworkPlugin/FlipperKitNetworkPlugin/SKNetworkReporter.h',
                              'iOS/Plugins/FlipperKitNetworkPlugin/FlipperKitNetworkPlugin/SKRequestInfo.h',
                              'iOS/Plugins/FlipperKitNetworkPlugin/FlipperKitNetworkPlugin/SKResponseInfo.h',
-                             'iOS/Plugins/FlipperKitNetworkPlugin/FlipperKitNetworkPlugin/SonarKitNetworkPlugin.h'
+                             'iOS/Plugins/FlipperKitNetworkPlugin/FlipperKitNetworkPlugin/FlipperKitNetworkPlugin.h'
     ss.source_files         = "iOS/Plugins/FlipperKitNetworkPlugin/FlipperKitNetworkPlugin/*.{h,cpp,m,mm}"
     ss.pod_target_xcconfig = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)\"/Headers/Private/FlipperKit/**" }
   end

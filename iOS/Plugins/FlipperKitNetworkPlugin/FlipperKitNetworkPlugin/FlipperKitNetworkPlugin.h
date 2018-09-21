@@ -13,7 +13,7 @@
 #import "SKBufferingPlugin.h"
 #import "SKNetworkReporter.h"
 
-@interface SonarKitNetworkPlugin : SKBufferingPlugin <SKNetworkReporterDelegate>
+@interface FlipperKitNetworkPlugin : SKBufferingPlugin <SKNetworkReporterDelegate>
 
 - (instancetype)initWithNetworkAdapter:(id<SKNetworkAdapterDelegate>)adapter NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithNetworkAdapter:(id<SKNetworkAdapterDelegate>)adapter queue:(dispatch_queue_t)queue; //For test purposes

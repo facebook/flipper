@@ -9,17 +9,17 @@
 #import <vector>
 #import <iostream>
 #import <memory>
-#import "SonarKitNetworkPlugin.h"
+#import "FlipperKitNetworkPlugin.h"
 #import "SKNetworkReporter.h"
 #import "SonarKitNetworkPlugin+CPPInitialization.h"
 #import "SKBufferingPlugin+CPPInitialization.h"
 #import "SKDispatchQueue.h"
 
-@interface SonarKitNetworkPlugin ()
+@interface FlipperKitNetworkPlugin ()
 
 @end
 
-@implementation SonarKitNetworkPlugin
+@implementation FlipperKitNetworkPlugin
 
 - (void)setAdapter:(id<SKNetworkAdapterDelegate>)adapter {
   _adapter = adapter;
@@ -104,7 +104,7 @@
 
 @end
 
-@implementation SonarKitNetworkPlugin (CPPInitialization)
+@implementation FlipperKitNetworkPlugin (CPPInitialization)
 
 - (instancetype)initWithNetworkAdapter:(id<SKNetworkAdapterDelegate>)adapter dispatchQueue:(std::shared_ptr<facebook::flipper::DispatchQueue>)queue {
     if (self = [super initWithDispatchQueue:queue]) {

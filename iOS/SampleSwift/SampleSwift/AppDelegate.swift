@@ -18,7 +18,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 //    SonarKitLayoutComponentKitSupport.setUp(descriptorMapper: layoutDescriptorMapper)
 //    client.addPlugin(FlipperKitLayoutPlugin(rootNode: application, descriptorMapper: layoutDescriptorMapper))
 
-    client?.add(SonarKitNetworkPlugin(networkAdapter: SKIOSNetworkAdapter()))
+    client?.add(FlipperKitNetworkPlugin(networkAdapter: SKIOSNetworkAdapter()))
     client?.start()
 
     let storyboard = UIStoryboard(name: "MainStoryBoard", bundle: nil)

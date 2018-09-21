@@ -67,7 +67,7 @@ SPEC CHECKSUMS:
   CocoaLibEvent: 2fab71b8bd46dd33ddb959f7928ec5909f838e3f
   DoubleConversion: e22e0762848812a87afd67ffda3998d9ef29170c
   Flipper: 495fbd327298fbc55b3ff7cb399eae52c1580494
-  FlipperKit: ea9d935ab53d3892f714313bdef903f70d992481
+  FlipperKit: 9e4ca744d949b44dd4a6b5f9aefee45d46477fe3
   Folly: dd92f69322d8535b9df98d7c91e442b0fce2fff2
   glog: 1de0bb937dccdc981596d3b5825ebfb765017ded
   OpenSSL-Static: bd17e34564a8591ad76b740318683a6caa19a13e
