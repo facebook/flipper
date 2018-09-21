@@ -17,7 +17,7 @@ export type Filter =
       type: 'enum',
       enum: Array<{
         label: string,
-        color: string,
+        color?: string,
         value: string,
       }>,
       persistent?: boolean,
