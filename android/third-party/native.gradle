@@ -150,7 +150,7 @@ task prepareLibEvent(dependsOn: [downloadLibEvent], type: Copy) {
     onlyIf { isCacheOutOfDate(CACHE_REVISION) }
     from tarTree(downloadLibEvent.dest)
     from './overrides/LibEvent/'
-    include 'libevent-release-2.1.9/**/*', 'build.gradle', 'ApplicationManifest.xml', 'CMakeLists.txt'
+    include 'libevent-release-2.1.9/**/*', 'build.gradle', 'ApplicationManifest.xml'
     includeEmptyDirs = false
     into "$externalDir/LibEvent"
 }
