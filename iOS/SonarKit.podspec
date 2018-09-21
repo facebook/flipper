@@ -57,12 +57,12 @@ Pod::Spec.new do |spec|
     ss.dependency 'OpenSSL-Static', '1.0.2.c1'
     ss.compiler_flags = folly_compiler_flags
     ss.source_files = 'iOS/FlipperKit/FBDefines/*.{h,cpp,m,mm}', 'iOS/FlipperKit/CppBridge/*.{h,mm}', 'iOS/FlipperKit/FBCxxUtils/*.{h,mm}', 'iOS/FlipperKit/Utilities/**/*.{h,m}', 'iOS/FlipperKit/*.{h,m,mm}'
-    ss.public_header_files = 'iOS/Plugins/SonarKitNetworkPlugin/SKIOSNetworkPlugin/SKIOSNetworkAdapter.h',
-                             'iOS/Plugins/SonarKitNetworkPlugin/SonarKitNetworkPlugin/SKBufferingPlugin.h',
-                             'iOS/Plugins/SonarKitNetworkPlugin/SonarKitNetworkPlugin/SKNetworkReporter.h',
-                             'iOS/Plugins/SonarKitNetworkPlugin/SonarKitNetworkPlugin/SKRequestInfo.h',
-                             'iOS/Plugins/SonarKitNetworkPlugin/SonarKitNetworkPlugin/SKResponseInfo.h',
-                             'iOS/Plugins/SonarKitNetworkPlugin/SonarKitNetworkPlugin/SonarKitNetworkPlugin.h',
+    ss.public_header_files = 'iOS/Plugins/FlipperKitNetworkPlugin/SKIOSNetworkPlugin/SKIOSNetworkAdapter.h',
+                             'iOS/Plugins/FlipperKitNetworkPlugin/FlipperKitNetworkPlugin/SKBufferingPlugin.h',
+                             'iOS/Plugins/FlipperKitNetworkPlugin/FlipperKitNetworkPlugin/SKNetworkReporter.h',
+                             'iOS/Plugins/FlipperKitNetworkPlugin/FlipperKitNetworkPlugin/SKRequestInfo.h',
+                             'iOS/Plugins/FlipperKitNetworkPlugin/FlipperKitNetworkPlugin/SKResponseInfo.h',
+                             'iOS/Plugins/FlipperKitNetworkPlugin/FlipperKitNetworkPlugin/SonarKitNetworkPlugin.h',
                              'iOS/FBDefines/FBMacros.h',
                              'iOS/FlipperKit/**/{FlipperStateUpdateListener,FlipperClient,FlipperPlugin,FlipperConnection,FlipperResponder,SKMacros}.h'
     header_search_paths = "\"$(PODS_ROOT)/FlipperKit/iOS/FlipperKit\" \"$(PODS_ROOT)\"/Headers/Private/FlipperKit/** \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/PeerTalkSonar\""
@@ -109,26 +109,26 @@ Pod::Spec.new do |spec|
                                 "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)\"/Headers/Private/FlipperKit/**" }
   end
 
-  spec.subspec "SonarKitNetworkPlugin" do |ss|
-    ss.header_dir = "SonarKitNetworkPlugin"
+  spec.subspec "FlipperKitNetworkPlugin" do |ss|
+    ss.header_dir = "FlipperKitNetworkPlugin"
     ss.dependency             'FlipperKit/Core'
     ss.compiler_flags       = folly_compiler_flags
-    ss.public_header_files = 'iOS/Plugins/SonarKitNetworkPlugin/SonarKitNetworkPlugin/SKBufferingPlugin.h',
-                             'iOS/Plugins/SonarKitNetworkPlugin/SonarKitNetworkPlugin/SKNetworkReporter.h',
-                             'iOS/Plugins/SonarKitNetworkPlugin/SonarKitNetworkPlugin/SKRequestInfo.h',
-                             'iOS/Plugins/SonarKitNetworkPlugin/SonarKitNetworkPlugin/SKResponseInfo.h',
-                             'iOS/Plugins/SonarKitNetworkPlugin/SonarKitNetworkPlugin/SonarKitNetworkPlugin.h'
-    ss.source_files         = "iOS/Plugins/SonarKitNetworkPlugin/SonarKitNetworkPlugin/*.{h,cpp,m,mm}"
+    ss.public_header_files = 'iOS/Plugins/FlipperKitNetworkPlugin/FlipperKitNetworkPlugin/SKBufferingPlugin.h',
+                             'iOS/Plugins/FlipperKitNetworkPlugin/FlipperKitNetworkPlugin/SKNetworkReporter.h',
+                             'iOS/Plugins/FlipperKitNetworkPlugin/FlipperKitNetworkPlugin/SKRequestInfo.h',
+                             'iOS/Plugins/FlipperKitNetworkPlugin/FlipperKitNetworkPlugin/SKResponseInfo.h',
+                             'iOS/Plugins/FlipperKitNetworkPlugin/FlipperKitNetworkPlugin/SonarKitNetworkPlugin.h'
+    ss.source_files         = "iOS/Plugins/FlipperKitNetworkPlugin/FlipperKitNetworkPlugin/*.{h,cpp,m,mm}"
     ss.pod_target_xcconfig = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)\"/Headers/Private/FlipperKit/**" }
   end
 
   spec.subspec "SKIOSNetworkPlugin" do |ss|
     ss.header_dir = "SKIOSNetworkPlugin"
     ss.dependency 'FlipperKit/Core'
-    ss.dependency 'FlipperKit/SonarKitNetworkPlugin'
+    ss.dependency 'FlipperKit/FlipperKitNetworkPlugin'
     ss.compiler_flags       = folly_compiler_flags
-    ss.public_header_files = 'iOS/Plugins/SonarKitNetworkPlugin/SKIOSNetworkPlugin/SKIOSNetworkAdapter.h'
-    ss.source_files         = "iOS/Plugins/SonarKitNetworkPlugin/SKIOSNetworkPlugin/**/*.{h,cpp,m,mm}"
+    ss.public_header_files = 'iOS/Plugins/FlipperKitNetworkPlugin/SKIOSNetworkPlugin/SKIOSNetworkAdapter.h'
+    ss.source_files         = "iOS/Plugins/FlipperKitNetworkPlugin/SKIOSNetworkPlugin/**/*.{h,cpp,m,mm}"
     ss.pod_target_xcconfig = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)\"/Headers/Private/FlipperKit/**" }
   end
 end

@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import <SonarKitNetworkPlugin/SKNetworkReporter.h>
+#import <FlipperKitNetworkPlugin/SKNetworkReporter.h>
 
 // Notifications posted when the record is updated
 extern NSString *const kFLEXNetworkRecorderNewTransactionNotification;

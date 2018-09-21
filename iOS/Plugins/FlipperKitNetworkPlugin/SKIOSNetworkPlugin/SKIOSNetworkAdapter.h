@@ -8,7 +8,7 @@
 #if FB_SONARKIT_ENABLED
 
 #import <Foundation/Foundation.h>
-#import <SonarKitNetworkPlugin/SKNetworkReporter.h>
+#import <FlipperKitNetworkPlugin/SKNetworkReporter.h>
 
 @interface SKIOSNetworkAdapter : NSObject<SKNetworkAdapterDelegate>
 - (instancetype)init NS_DESIGNATED_INITIALIZER;

@@ -9,7 +9,7 @@
 
 #import <FlipperKit/FlipperClient.h>
 #import <FlipperKitLayoutPlugin/FlipperKitLayoutPlugin.h>
-#import <SonarKitNetworkPlugin/SonarKitNetworkPlugin.h>
+#import <FlipperKitNetworkPlugin/SonarKitNetworkPlugin.h>
 #import <SonarKitLayoutComponentKitSupport/SonarKitLayoutComponentKitSupport.h>
 #import <SKIOSNetworkPlugin/SKIOSNetworkAdapter.h>
 
