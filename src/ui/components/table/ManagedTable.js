@@ -102,6 +102,10 @@ export type ManagedTableProps = {|
    * Whether to hide the column names at the top of the table.
    */
   hideHeader?: boolean,
+  /**
+   * Rows that are highlighted initially.
+   */
+  highlightedRows?: Set<string>,
 |};
 
 type ManagedTableState = {|
@@ -141,7 +145,7 @@ class ManagedTable extends React.Component<
       this.props.columnOrder ||
       Object.keys(this.props.columns).map(key => ({key, visible: true})),
     columnSizes: this.props.columnSizes || {},
-    highlightedRows: new Set(),
+    highlightedRows: this.props.highlightedRows || new Set(),
     sortOrder: null,
     shouldScrollToBottom: Boolean(this.props.stickyBottom),
   };
@@ -173,8 +177,26 @@ class ManagedTable extends React.Component<
       });
     }
 
+    //
+    if (this.props.highlightedRows !== nextProps.highlightedRows) {
+      this.setState({highlightedRows: nextProps.highlightedRows});
+      const {current} = this.tableRef;
+      const {highlightedRows} = nextProps;
+      if (current && highlightedRows && highlightedRows.size > 0) {
+        const index = nextProps.rows.findIndex(
+          ({key}) => key === Array.from(highlightedRows)[0],
+        );
+        current.scrollToItem(index);
+      }
+    }
+
     // if columnOrder has changed
-    if (nextProps.columnOrder !== this.props.columnOrder) {
+    if (
+      nextProps.columnOrder !== this.props.columnOrder &&
+      this.tableRef &&
+      this.tableRef.current
+    ) {
+      this.tableRef.current.resetAfterIndex(0);
       this.setState({
         columnOrder: nextProps.columnOrder,
       });
