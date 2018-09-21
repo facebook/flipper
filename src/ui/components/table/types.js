@@ -61,6 +61,7 @@ export type TableBodyColumn = {|
   sortValue?: string | number,
   isFilterable?: boolean,
   value: any,
+  align?: 'left' | 'center' | 'right',
   title?: string,
 |};
 

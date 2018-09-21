@@ -77,7 +77,7 @@ function keepKeys(obj, keys) {
 }
 
 const COLUMN_SIZE = {
-  type: 32,
+  type: 40,
   time: 120,
   pid: 60,
   tid: 60,
@@ -211,23 +211,28 @@ const HiddenScrollText = styled(Text)({
   alignSelf: 'baseline',
   userSelect: 'none',
   lineHeight: '130%',
-  marginTop: 6,
+  marginTop: 5,
+  paddingBottom: 3,
   '&::-webkit-scrollbar': {
     display: 'none',
   },
 });
 
-const LogCount = styled(HiddenScrollText)(({color}) => ({
-  backgroundColor: color,
+const LogCount = styled('div')(({backgroundColor}) => ({
+  backgroundColor,
   borderRadius: '999em',
   fontSize: 11,
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
   marginTop: 4,
-  width: 16,
+  minWidth: 16,
   height: 16,
   color: colors.white,
+  textAlign: 'center',
+  lineHeight: '16px',
+  paddingLeft: 4,
+  paddingRight: 4,
+  textOverflow: 'ellipsis',
+  overflow: 'hidden',
+  whiteSpace: 'nowrap',
 }));
 
 function pad(chunk: mixed, len: number): string {
@@ -335,6 +340,7 @@ export default class LogTable extends FlipperDevicePlugin<
         columns: {
           type: {
             value: icon,
+            align: 'center',
           },
           time: {
             value: (
@@ -459,7 +465,7 @@ export default class LogTable extends FlipperDevicePlugin<
           : 2;
       const type = LOG_TYPES[previousRow.type] || LOG_TYPES.debug;
       previousRow.columns.type.value = (
-        <LogCount color={type.color}>{count}</LogCount>
+        <LogCount backgroundColor={type.color}>{count}</LogCount>
       );
     } else {
       rows.push(row);

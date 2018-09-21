@@ -73,6 +73,7 @@ const TableBodyColumnContainer = styled('div')(props => ({
   wordWrap: props.multiline ? 'break-word' : 'normal',
   width: props.width === 'flex' ? '100%' : props.width,
   maxWidth: '100%',
+  justifyContent: props.justifyContent,
 }));
 
 type Props = {
@@ -143,6 +144,7 @@ export default class TableRow extends React.PureComponent<Props> {
               key={key}
               title={title}
               multiline={multiline}
+              justifyContent={col.align || 'flex-start'}
               width={normaliseColumnWidth(columnSizes[key])}>
               {isFilterable && onAddFilter != null ? (
                 <FilterRow addFilter={onAddFilter} filterKey={key}>

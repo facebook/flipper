@@ -21,20 +21,21 @@ const FilterText = styled('div')({
   maxWidth: '100%',
   '&:hover': {
     color: colors.white,
+    zIndex: 2,
   },
   '&:hover::after': {
     content: '""',
     position: 'absolute',
-    top: 3,
-    bottom: -2,
+    top: 2,
+    bottom: 1,
     left: -6,
     right: -6,
     borderRadius: '999em',
     backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    zIndex: -1,
   },
   '&:hover *': {
     color: `${colors.white} !important`,
-    zIndex: 2,
   },
 });
 
