@@ -18,7 +18,7 @@ import javax.annotation.Nullable;
  * <p>In order to send data to the {@link FlipperConnection}, use {@link #send(String, FlipperObject)}
  * instead of {@link FlipperConnection#send(String, FlipperObject)}.
  */
-public abstract class BufferingSonarPlugin implements FlipperPlugin {
+public abstract class BufferingFlipperPlugin implements FlipperPlugin {
 
   private static final int BUFFER_SIZE = 500;
 

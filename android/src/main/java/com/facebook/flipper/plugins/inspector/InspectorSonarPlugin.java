@@ -23,7 +23,7 @@ import com.facebook.flipper.core.FlipperObject;
 import com.facebook.flipper.core.FlipperPlugin;
 import com.facebook.flipper.core.FlipperReceiver;
 import com.facebook.flipper.core.FlipperResponder;
-import com.facebook.flipper.plugins.common.MainThreadSonarReceiver;
+import com.facebook.flipper.plugins.common.MainThreadFlipperReceiver;
 import com.facebook.flipper.plugins.console.iface.ConsoleCommandReceiver;
 import com.facebook.flipper.plugins.console.iface.NullScriptingEnvironment;
 import com.facebook.flipper.plugins.console.iface.ScriptingEnvironment;
@@ -174,7 +174,7 @@ public class InspectorSonarPlugin implements FlipperPlugin {
   }
 
   final FlipperReceiver mShouldShowLithoAccessibilitySettings =
-          new MainThreadSonarReceiver(mConnection) {
+          new MainThreadFlipperReceiver(mConnection) {
             @Override
             public void onReceiveOnMainThread(FlipperObject params, FlipperResponder responder)
                     throws Exception {
@@ -183,7 +183,7 @@ public class InspectorSonarPlugin implements FlipperPlugin {
           };
 
   final FlipperReceiver mGetRoot =
-      new MainThreadSonarReceiver(mConnection) {
+      new MainThreadFlipperReceiver(mConnection) {
         @Override
         public void onReceiveOnMainThread(FlipperObject params, FlipperResponder responder)
             throws Exception {
@@ -192,7 +192,7 @@ public class InspectorSonarPlugin implements FlipperPlugin {
       };
 
   final FlipperReceiver mGetAXRoot =
-      new MainThreadSonarReceiver(mConnection) {
+      new MainThreadFlipperReceiver(mConnection) {
         @Override
         public void onReceiveOnMainThread(FlipperObject params, FlipperResponder responder)
             throws Exception {
@@ -202,7 +202,7 @@ public class InspectorSonarPlugin implements FlipperPlugin {
       };
 
   final FlipperReceiver mGetNodes =
-      new MainThreadSonarReceiver(mConnection) {
+      new MainThreadFlipperReceiver(mConnection) {
         @Override
         public void onReceiveOnMainThread(final FlipperObject params, final FlipperResponder responder)
             throws Exception {
@@ -229,7 +229,7 @@ public class InspectorSonarPlugin implements FlipperPlugin {
       };
 
   final FlipperReceiver mGetAXNodes =
-      new MainThreadSonarReceiver(mConnection) {
+      new MainThreadFlipperReceiver(mConnection) {
         @Override
         public void onReceiveOnMainThread(final FlipperObject params, final FlipperResponder responder)
             throws Exception {
@@ -278,7 +278,7 @@ public class InspectorSonarPlugin implements FlipperPlugin {
       };
 
   final FlipperReceiver mOnRequestAXFocus =
-          new MainThreadSonarReceiver(mConnection) {
+          new MainThreadFlipperReceiver(mConnection) {
             @Override
             public void onReceiveOnMainThread(final FlipperObject params, final FlipperResponder responder)
                     throws Exception {
@@ -294,7 +294,7 @@ public class InspectorSonarPlugin implements FlipperPlugin {
           };
 
   final FlipperReceiver mSetData =
-      new MainThreadSonarReceiver(mConnection) {
+      new MainThreadFlipperReceiver(mConnection) {
         @Override
         public void onReceiveOnMainThread(final FlipperObject params, FlipperResponder responder)
             throws Exception {
@@ -325,7 +325,7 @@ public class InspectorSonarPlugin implements FlipperPlugin {
       };
 
   final FlipperReceiver mSetHighlighted =
-      new MainThreadSonarReceiver(mConnection) {
+      new MainThreadFlipperReceiver(mConnection) {
         @Override
         public void onReceiveOnMainThread(final FlipperObject params, FlipperResponder responder)
             throws Exception {
@@ -344,7 +344,7 @@ public class InspectorSonarPlugin implements FlipperPlugin {
       };
 
   final FlipperReceiver mSetSearchActive =
-      new MainThreadSonarReceiver(mConnection) {
+      new MainThreadFlipperReceiver(mConnection) {
         @Override
         public void onReceiveOnMainThread(final FlipperObject params, FlipperResponder responder)
             throws Exception {
@@ -374,7 +374,7 @@ public class InspectorSonarPlugin implements FlipperPlugin {
       };
 
   final FlipperReceiver mIsSearchActive =
-          new MainThreadSonarReceiver(mConnection) {
+          new MainThreadFlipperReceiver(mConnection) {
             @Override
             public void onReceiveOnMainThread(final FlipperObject params, FlipperResponder responder)
                     throws Exception {
@@ -383,7 +383,7 @@ public class InspectorSonarPlugin implements FlipperPlugin {
           };
 
   final FlipperReceiver mGetSearchResults =
-      new MainThreadSonarReceiver(mConnection) {
+      new MainThreadFlipperReceiver(mConnection) {
         @Override
         public void onReceiveOnMainThread(FlipperObject params, FlipperResponder responder)
             throws Exception {

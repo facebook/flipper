@@ -9,7 +9,7 @@ import com.facebook.flipper.core.FlipperConnection;
 import com.facebook.flipper.core.FlipperObject;
 import com.facebook.flipper.core.FlipperReceiver;
 import com.facebook.flipper.core.FlipperResponder;
-import com.facebook.flipper.plugins.common.MainThreadSonarReceiver;
+import com.facebook.flipper.plugins.common.MainThreadFlipperReceiver;
 import com.facebook.flipper.plugins.inspector.ApplicationWrapper;
 import com.facebook.flipper.plugins.inspector.InspectorSonarPlugin;
 import com.facebook.flipper.plugins.inspector.ObjectTracker;
@@ -25,7 +25,7 @@ public final class GenerateLithoAccessibilityRenderExtensionCommand implements I
 
     @Override
     public FlipperReceiver receiver(final ObjectTracker tracker, final FlipperConnection connection) {
-        return new MainThreadSonarReceiver(connection) {
+        return new MainThreadFlipperReceiver(connection) {
             @Override
             public void onReceiveOnMainThread(final FlipperObject params, final FlipperResponder responder)
                     throws Exception {

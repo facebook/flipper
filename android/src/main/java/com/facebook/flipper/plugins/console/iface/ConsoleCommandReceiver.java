@@ -12,7 +12,7 @@ import com.facebook.flipper.core.FlipperConnection;
 import com.facebook.flipper.core.FlipperObject;
 import com.facebook.flipper.core.FlipperReceiver;
 import com.facebook.flipper.core.FlipperResponder;
-import com.facebook.flipper.plugins.common.MainThreadSonarReceiver;
+import com.facebook.flipper.plugins.common.MainThreadFlipperReceiver;
 import org.json.JSONObject;
 
 /**
@@ -39,7 +39,7 @@ public class ConsoleCommandReceiver {
 
     final ScriptingSession session = scriptingEnvironment.startSession();
     final FlipperReceiver executeCommandReceiver =
-        new MainThreadSonarReceiver(connection) {
+        new MainThreadFlipperReceiver(connection) {
           @Override
           public void onReceiveOnMainThread(FlipperObject params, FlipperResponder responder)
               throws Exception {

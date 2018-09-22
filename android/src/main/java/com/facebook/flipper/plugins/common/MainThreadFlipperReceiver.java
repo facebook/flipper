@@ -15,9 +15,9 @@ import com.facebook.flipper.core.FlipperObject;
 import com.facebook.flipper.core.FlipperReceiver;
 import com.facebook.flipper.core.FlipperResponder;
 
-public abstract class MainThreadSonarReceiver implements FlipperReceiver {
+public abstract class MainThreadFlipperReceiver implements FlipperReceiver {
 
-  public MainThreadSonarReceiver(FlipperConnection connection) {
+  public MainThreadFlipperReceiver(FlipperConnection connection) {
     this.mConnection = connection;
   }
 

@@ -12,10 +12,10 @@ import android.util.Base64;
 import com.facebook.flipper.core.ErrorReportingRunnable;
 import com.facebook.flipper.core.FlipperArray;
 import com.facebook.flipper.core.FlipperObject;
-import com.facebook.flipper.plugins.common.BufferingSonarPlugin;
+import com.facebook.flipper.plugins.common.BufferingFlipperPlugin;
 import java.util.List;
 
-public class NetworkSonarPlugin extends BufferingSonarPlugin implements NetworkReporter {
+public class NetworkSonarPlugin extends BufferingFlipperPlugin implements NetworkReporter {
   public static final String ID = "Network";
 
   private final List<NetworkResponseFormatter> mFormatters;
