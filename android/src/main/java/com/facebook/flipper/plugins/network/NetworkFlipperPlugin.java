@@ -15,16 +15,16 @@ import com.facebook.flipper.core.FlipperObject;
 import com.facebook.flipper.plugins.common.BufferingFlipperPlugin;
 import java.util.List;
 
-public class NetworkSonarPlugin extends BufferingFlipperPlugin implements NetworkReporter {
+public class NetworkFlipperPlugin extends BufferingFlipperPlugin implements NetworkReporter {
   public static final String ID = "Network";
 
   private final List<NetworkResponseFormatter> mFormatters;
 
-  public NetworkSonarPlugin() {
+  public NetworkFlipperPlugin() {
     this(null);
   }
 
-  public NetworkSonarPlugin(List<NetworkResponseFormatter> formatters) {
+  public NetworkFlipperPlugin(List<NetworkResponseFormatter> formatters) {
     this.mFormatters = formatters;
   }
 

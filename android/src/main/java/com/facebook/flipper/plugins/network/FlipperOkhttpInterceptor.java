@@ -24,15 +24,15 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 import okio.Buffer;
 
-public class SonarOkhttpInterceptor implements Interceptor {
+public class FlipperOkhttpInterceptor implements Interceptor {
 
-  public @Nullable NetworkSonarPlugin plugin;
+  public @Nullable NetworkFlipperPlugin plugin;
 
-  public SonarOkhttpInterceptor() {
+  public FlipperOkhttpInterceptor() {
     this.plugin = null;
   }
 
-  public SonarOkhttpInterceptor(NetworkSonarPlugin plugin) {
+  public FlipperOkhttpInterceptor(NetworkFlipperPlugin plugin) {
     this.plugin = plugin;
   }
 

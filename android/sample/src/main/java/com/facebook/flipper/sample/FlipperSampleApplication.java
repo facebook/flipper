@@ -12,8 +12,8 @@ import com.facebook.flipper.plugins.inspector.DescriptorMapping;
 import com.facebook.flipper.plugins.inspector.InspectorFlipperPlugin;
 import com.facebook.flipper.plugins.leakcanary.LeakCanaryFlipperPlugin;
 import com.facebook.flipper.plugins.litho.LithoFlipperDescriptors;
-import com.facebook.flipper.plugins.network.NetworkSonarPlugin;
-import com.facebook.flipper.plugins.network.SonarOkhttpInterceptor;
+import com.facebook.flipper.plugins.network.NetworkFlipperPlugin;
+import com.facebook.flipper.plugins.network.FlipperOkhttpInterceptor;
 import com.facebook.flipper.plugins.sharedpreferences.SharedPreferencesSonarPlugin;
 import java.util.concurrent.TimeUnit;
 import okhttp3.OkHttpClient;
@@ -30,8 +30,8 @@ public class FlipperSampleApplication extends Application {
     final FlipperClient client = AndroidFlipperClient.getInstance(this);
     final DescriptorMapping descriptorMapping = DescriptorMapping.withDefaults();
 
-    NetworkSonarPlugin networkPlugin = new NetworkSonarPlugin();
-    SonarOkhttpInterceptor interceptor = new SonarOkhttpInterceptor(networkPlugin);
+    NetworkFlipperPlugin networkPlugin = new NetworkFlipperPlugin();
+    FlipperOkhttpInterceptor interceptor = new FlipperOkhttpInterceptor(networkPlugin);
 
     okhttpClient = new OkHttpClient.Builder()
     .addNetworkInterceptor(interceptor)
