@@ -24,7 +24,7 @@ the descriptor with Litho-specific settings and add some addition dependencies.<
 <pre><code class="hljs css java"><span class="hljs-keyword">import</span> com.facebook.litho.config.ComponentsConfiguration;
 <span class="hljs-keyword">import</span> com.facebook.sonar.plugins.inspector.DescriptorMapping;
 <span class="hljs-keyword">import</span> com.facebook.sonar.plugins.inspector.InspectorSonarPlugin;
-<span class="hljs-keyword">import</span> com.facebook.sonar.plugins.litho.LithoSonarDescriptors;
+<span class="hljs-keyword">import</span> com.facebook.sonar.plugins.litho.LithoFlipperDescriptors;
 
 <span class="hljs-comment">// Instead of hard-coding this setting, it's a good practice to tie</span>
 <span class="hljs-comment">// this to a BuildConfig flag, that you only enable for debug builds</span>
@@ -33,7 +33,7 @@ ComponentsConfiguration.isDebugModeEnabled = <span class="hljs-keyword">true</sp
 
 <span class="hljs-keyword">final</span> DescriptorMapping descriptorMapping = DescriptorMapping.withDefaults();
 <span class="hljs-comment">// This adds Litho capabilities to the layout inspector.</span>
-LithoSonarDescriptors.add(descriptorMapping);
+LithoFlipperDescriptors.add(descriptorMapping);
 
 client.addPlugin(<span class="hljs-keyword">new</span> InspectorSonarPlugin(mApplicationContext, descriptorMapping));
 </code></pre>
