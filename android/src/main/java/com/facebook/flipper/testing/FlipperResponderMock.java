@@ -13,7 +13,7 @@ import com.facebook.flipper.core.FlipperResponder;
 import java.util.LinkedList;
 import java.util.List;
 
-public class SonarResponderMock implements FlipperResponder {
+public class FlipperResponderMock implements FlipperResponder {
   public final List<Object> successes = new LinkedList<>();
   public final List<FlipperObject> errors = new LinkedList<>();
 

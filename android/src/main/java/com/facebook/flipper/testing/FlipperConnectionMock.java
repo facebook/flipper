@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class SonarConnectionMock implements FlipperConnection {
+public class FlipperConnectionMock implements FlipperConnection {
   public final Map<String, FlipperReceiver> receivers = new HashMap<>();
   public final Map<String, List<Object>> sent = new HashMap<>();
 

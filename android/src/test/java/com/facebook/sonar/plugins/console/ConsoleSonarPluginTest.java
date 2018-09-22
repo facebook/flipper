@@ -10,9 +10,9 @@ package com.facebook.flipper.plugins.console;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import com.facebook.flipper.core.SonarObject;
-import com.facebook.flipper.testing.SonarConnectionMock;
-import com.facebook.flipper.testing.SonarResponderMock;
+import com.facebook.flipper.core.FlipperObject;
+import com.facebook.flipper.testing.FlipperConnectionMock;
+import com.facebook.flipper.testing.FlipperResponderMock;
 import com.facebook.testing.robolectric.v3.WithTestDefaultsRunner;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,15 +21,15 @@ import org.junit.runner.RunWith;
 @RunWith(WithTestDefaultsRunner.class)
 public class ConsoleSonarPluginTest {
 
-  SonarConnectionMock connection;
-  SonarResponderMock responder;
+  FlipperConnectionMock connection;
+  FlipperResponderMock responder;
 
   @Before
   public void setup() throws Exception {
     JavascriptEnvironment jsEnvironment = new JavascriptEnvironment();
     final ConsoleSonarPlugin plugin = new ConsoleSonarPlugin(jsEnvironment);
-    connection = new SonarConnectionMock();
-    responder = new SonarResponderMock();
+    connection = new FlipperConnectionMock();
+    responder = new FlipperResponderMock();
     plugin.onConnect(connection);
   }
 
@@ -39,11 +39,11 @@ public class ConsoleSonarPluginTest {
     receiveScript("2 + 2");
     assertThat(
         responder.successes,
-        hasItem(new SonarObject.Builder().put("value", 4).put("type", "json").build()));
+        hasItem(new FlipperObject.Builder().put("value", 4).put("type", "json").build()));
   }
 
   private void receiveScript(String a) throws Exception {
-    SonarObject getValue = new SonarObject.Builder().put("command", a).build();
+    FlipperObject getValue = new FlipperObject.Builder().put("command", a).build();
     connection.receivers.get("executeCommand").onReceive(getValue, responder);
   }
 }

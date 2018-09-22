@@ -16,16 +16,16 @@ import android.graphics.Rect;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import com.facebook.flipper.core.SonarArray;
-import com.facebook.flipper.core.SonarConnection;
-import com.facebook.flipper.core.SonarDynamic;
-import com.facebook.flipper.core.SonarObject;
+import com.facebook.flipper.core.FlipperArray;
+import com.facebook.flipper.core.FlipperConnection;
+import com.facebook.flipper.core.FlipperDynamic;
+import com.facebook.flipper.core.FlipperObject;
 import com.facebook.flipper.plugins.console.iface.NullScriptingEnvironment;
 import com.facebook.flipper.plugins.console.iface.ScriptingEnvironment;
 import com.facebook.flipper.plugins.inspector.InspectorSonarPlugin.TouchOverlayView;
 import com.facebook.flipper.plugins.inspector.descriptors.ApplicationDescriptor;
-import com.facebook.flipper.testing.SonarConnectionMock;
-import com.facebook.flipper.testing.SonarResponderMock;
+import com.facebook.flipper.testing.FlipperConnectionMock;
+import com.facebook.flipper.testing.FlipperResponderMock;
 import com.facebook.testing.robolectric.v3.WithTestDefaultsRunner;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -63,7 +63,7 @@ public class InspectorSonarPluginTest {
   public void testOnConnect() throws Exception {
     final InspectorSonarPlugin plugin =
         new InspectorSonarPlugin(mApp, mDescriptorMapping, mScriptingEnvironment, null);
-    final SonarConnection connection = new SonarConnectionMock();
+    final FlipperConnection connection = new FlipperConnectionMock();
 
     plugin.onConnect(connection);
     assertThat(mApplicationDescriptor.connected(), equalTo(true));
@@ -73,7 +73,7 @@ public class InspectorSonarPluginTest {
   public void testOnDisconnect() throws Exception {
     final InspectorSonarPlugin plugin =
         new InspectorSonarPlugin(mApp, mDescriptorMapping, mScriptingEnvironment, null);
-    final SonarConnection connection = new SonarConnectionMock();
+    final FlipperConnection connection = new FlipperConnectionMock();
 
     plugin.onConnect(connection);
     plugin.onDisconnect();
@@ -84,8 +84,8 @@ public class InspectorSonarPluginTest {
   public void testGetRoot() throws Exception {
     final InspectorSonarPlugin plugin =
         new InspectorSonarPlugin(mApp, mDescriptorMapping, mScriptingEnvironment, null);
-    final SonarResponderMock responder = new SonarResponderMock();
-    final SonarConnectionMock connection = new SonarConnectionMock();
+    final FlipperResponderMock responder = new FlipperResponderMock();
+    final FlipperConnectionMock connection = new FlipperConnectionMock();
     plugin.onConnect(connection);
 
     final TestNode root = new TestNode();
@@ -96,14 +96,14 @@ public class InspectorSonarPluginTest {
     assertThat(
         responder.successes,
         hasItem(
-            new SonarObject.Builder()
+            new FlipperObject.Builder()
                 .put("id", "com.facebook.flipper")
                 .put("name", "com.facebook.flipper")
-                .put("data", new SonarObject.Builder())
-                .put("children", new SonarArray.Builder().put("test"))
-                .put("attributes", new SonarArray.Builder())
+                .put("data", new FlipperObject.Builder())
+                .put("children", new FlipperArray.Builder().put("test"))
+                .put("attributes", new FlipperArray.Builder())
                 .put("decoration", (String) null)
-                .put("extraInfo", new SonarObject.Builder())
+                .put("extraInfo", new FlipperObject.Builder())
                 .build()));
   }
 
@@ -111,8 +111,8 @@ public class InspectorSonarPluginTest {
   public void testGetNodes() throws Exception {
     final InspectorSonarPlugin plugin =
         new InspectorSonarPlugin(mApp, mDescriptorMapping, mScriptingEnvironment, null);
-    final SonarResponderMock responder = new SonarResponderMock();
-    final SonarConnectionMock connection = new SonarConnectionMock();
+    final FlipperResponderMock responder = new FlipperResponderMock();
+    final FlipperConnectionMock connection = new FlipperConnectionMock();
     plugin.onConnect(connection);
 
     final TestNode root = new TestNode();
@@ -122,25 +122,25 @@ public class InspectorSonarPluginTest {
 
     plugin.mGetRoot.onReceive(null, responder);
     plugin.mGetNodes.onReceive(
-        new SonarObject.Builder().put("ids", new SonarArray.Builder().put("test")).build(),
+        new FlipperObject.Builder().put("ids", new FlipperArray.Builder().put("test")).build(),
         responder);
 
     assertThat(
         responder.successes,
         hasItem(
-            new SonarObject.Builder()
+            new FlipperObject.Builder()
                 .put(
                     "elements",
-                    new SonarArray.Builder()
+                    new FlipperArray.Builder()
                         .put(
-                            new SonarObject.Builder()
+                            new FlipperObject.Builder()
                                 .put("id", "test")
                                 .put("name", "test")
-                                .put("data", new SonarObject.Builder())
-                                .put("children", new SonarArray.Builder())
-                                .put("attributes", new SonarArray.Builder())
+                                .put("data", new FlipperObject.Builder())
+                                .put("children", new FlipperArray.Builder())
+                                .put("attributes", new FlipperArray.Builder())
                                 .put("decoration", (String) null)
-                                .put("extraInfo", new SonarObject.Builder())))
+                                .put("extraInfo", new FlipperObject.Builder())))
                 .build()));
   }
 
@@ -148,8 +148,8 @@ public class InspectorSonarPluginTest {
   public void testGetNodesThatDontExist() throws Exception {
     final InspectorSonarPlugin plugin =
         new InspectorSonarPlugin(mApp, mDescriptorMapping, mScriptingEnvironment, null);
-    final SonarResponderMock responder = new SonarResponderMock();
-    final SonarConnectionMock connection = new SonarConnectionMock();
+    final FlipperResponderMock responder = new FlipperResponderMock();
+    final FlipperConnectionMock connection = new FlipperConnectionMock();
     plugin.onConnect(connection);
 
     final TestNode root = new TestNode();
@@ -158,13 +158,13 @@ public class InspectorSonarPluginTest {
 
     plugin.mGetRoot.onReceive(null, responder);
     plugin.mGetNodes.onReceive(
-        new SonarObject.Builder().put("ids", new SonarArray.Builder().put("notest")).build(),
+        new FlipperObject.Builder().put("ids", new FlipperArray.Builder().put("notest")).build(),
         responder);
 
     assertThat(
         responder.errors,
         hasItem(
-            new SonarObject.Builder()
+            new FlipperObject.Builder()
                 .put("message", "No node with given id")
                 .put("id", "notest")
                 .build()));
@@ -174,22 +174,22 @@ public class InspectorSonarPluginTest {
   public void testSetData() throws Exception {
     final InspectorSonarPlugin plugin =
         new InspectorSonarPlugin(mApp, mDescriptorMapping, mScriptingEnvironment, null);
-    final SonarConnectionMock connection = new SonarConnectionMock();
-    final SonarResponderMock responder = new SonarResponderMock();
+    final FlipperConnectionMock connection = new FlipperConnectionMock();
+    final FlipperResponderMock responder = new FlipperResponderMock();
     plugin.onConnect(connection);
 
     final TestNode root = new TestNode();
     root.id = "test";
-    root.data = new SonarObject.Builder().put("prop", "value").build();
+    root.data = new FlipperObject.Builder().put("prop", "value").build();
 
     mApplicationDescriptor.root = root;
 
     plugin.mGetRoot.onReceive(null, responder);
     plugin.mSetData.onReceive(
-        new SonarObject.Builder()
+        new FlipperObject.Builder()
             .put("id", "test")
-            .put("path", new SonarArray.Builder().put("data"))
-            .put("value", new SonarObject.Builder().put("prop", "updated_value"))
+            .put("path", new FlipperArray.Builder().put("data"))
+            .put("value", new FlipperObject.Builder().put("prop", "updated_value"))
             .build(),
         responder);
 
@@ -197,11 +197,11 @@ public class InspectorSonarPluginTest {
     assertThat(
         connection.sent.get("invalidate"),
         hasItem(
-            new SonarObject.Builder()
+            new FlipperObject.Builder()
                 .put(
                     "nodes",
-                    new SonarArray.Builder()
-                        .put(new SonarObject.Builder().put("id", "test").build())
+                    new FlipperArray.Builder()
+                        .put(new FlipperObject.Builder().put("id", "test").build())
                         .build())
                 .build()));
   }
@@ -210,8 +210,8 @@ public class InspectorSonarPluginTest {
   public void testSetHighlighted() throws Exception {
     final InspectorSonarPlugin plugin =
         new InspectorSonarPlugin(mApp, mDescriptorMapping, mScriptingEnvironment, null);
-    final SonarConnectionMock connection = new SonarConnectionMock();
-    final SonarResponderMock responder = new SonarResponderMock();
+    final FlipperConnectionMock connection = new FlipperConnectionMock();
+    final FlipperResponderMock responder = new FlipperResponderMock();
     plugin.onConnect(connection);
 
     final TestNode root = new TestNode();
@@ -220,12 +220,12 @@ public class InspectorSonarPluginTest {
 
     plugin.mGetRoot.onReceive(null, responder);
     plugin.mSetHighlighted.onReceive(
-        new SonarObject.Builder().put("id", "com.facebook.flipper").build(), responder);
+        new FlipperObject.Builder().put("id", "com.facebook.flipper").build(), responder);
 
     assertThat(mApplicationDescriptor.highlighted, equalTo(true));
 
     plugin.mSetHighlighted.onReceive(
-        new SonarObject.Builder().put("id", "test").build(), responder);
+        new FlipperObject.Builder().put("id", "test").build(), responder);
 
     assertThat(mApplicationDescriptor.highlighted, equalTo(false));
     assertThat(root.highlighted, equalTo(true));
@@ -239,7 +239,7 @@ public class InspectorSonarPluginTest {
   public void testHitTest() throws Exception {
     final InspectorSonarPlugin plugin =
         new InspectorSonarPlugin(mApp, mDescriptorMapping, mScriptingEnvironment, null);
-    final SonarConnectionMock connection = new SonarConnectionMock();
+    final FlipperConnectionMock connection = new FlipperConnectionMock();
     plugin.onConnect(connection);
 
     final TestNode one = new TestNode();
@@ -266,9 +266,9 @@ public class InspectorSonarPluginTest {
     assertThat(
         connection.sent.get("select"),
         hasItem(
-            new SonarObject.Builder()
+            new FlipperObject.Builder()
                 .put(
-                    "path", new SonarArray.Builder().put("com.facebook.flipper").put("test").put("3"))
+                    "path", new FlipperArray.Builder().put("com.facebook.flipper").put("test").put("3"))
                 .build()));
   }
 
@@ -276,20 +276,20 @@ public class InspectorSonarPluginTest {
   public void testSetSearchActive() throws Exception {
     final InspectorSonarPlugin plugin =
         new InspectorSonarPlugin(mApp, mDescriptorMapping, mScriptingEnvironment, null);
-    final SonarConnectionMock connection = new SonarConnectionMock();
-    final SonarResponderMock responder = new SonarResponderMock();
+    final FlipperConnectionMock connection = new FlipperConnectionMock();
+    final FlipperResponderMock responder = new FlipperResponderMock();
     plugin.onConnect(connection);
 
     final ViewGroup decorView = Mockito.spy(new FrameLayout(mApp.getApplication()));
     Mockito.when(mApp.getViewRoots()).thenReturn(Arrays.<View>asList(decorView));
 
     plugin.mSetSearchActive.onReceive(
-        new SonarObject.Builder().put("active", true).build(), responder);
+        new FlipperObject.Builder().put("active", true).build(), responder);
 
     Mockito.verify(decorView, Mockito.times(1)).addView(Mockito.any(TouchOverlayView.class));
 
     plugin.mSetSearchActive.onReceive(
-        new SonarObject.Builder().put("active", false).build(), responder);
+        new FlipperObject.Builder().put("active", false).build(), responder);
 
     Mockito.verify(decorView, Mockito.times(1)).removeView(Mockito.any(TouchOverlayView.class));
   }
@@ -298,8 +298,8 @@ public class InspectorSonarPluginTest {
   public void testNullChildThrows() throws Exception {
     final InspectorSonarPlugin plugin =
         new InspectorSonarPlugin(mApp, mDescriptorMapping, mScriptingEnvironment, null);
-    final SonarResponderMock responder = new SonarResponderMock();
-    final SonarConnectionMock connection = new SonarConnectionMock();
+    final FlipperResponderMock responder = new FlipperResponderMock();
+    final FlipperConnectionMock connection = new FlipperConnectionMock();
     plugin.onConnect(connection);
 
     final TestNode root = new TestNode();
@@ -311,7 +311,7 @@ public class InspectorSonarPluginTest {
 
     plugin.mGetRoot.onReceive(null, responder);
     plugin.mGetNodes.onReceive(
-        new SonarObject.Builder().put("ids", new SonarArray.Builder().put("test")).build(),
+        new FlipperObject.Builder().put("ids", new FlipperArray.Builder().put("test")).build(),
         responder);
   }
 
@@ -319,7 +319,7 @@ public class InspectorSonarPluginTest {
     String id;
     String name;
     List<TestNode> children = new ArrayList<>();
-    SonarObject data;
+    FlipperObject data;
     List<Named<String>> atttributes = new ArrayList<>();
     String decoration;
     boolean highlighted;
@@ -352,12 +352,12 @@ public class InspectorSonarPluginTest {
     }
 
     @Override
-    public List<Named<SonarObject>> getData(TestNode node) {
+    public List<Named<FlipperObject>> getData(TestNode node) {
       return Collections.singletonList(new Named<>("data", node.data));
     }
 
     @Override
-    public void setValue(TestNode node, String[] path, SonarDynamic value) throws Exception {
+    public void setValue(TestNode node, String[] path, FlipperDynamic value) throws Exception {
       if (path[0].equals("data")) {
         node.data = value.asObject();
       }
