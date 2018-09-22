@@ -22,7 +22,7 @@ import com.facebook.flipper.core.FlipperDynamic;
 import com.facebook.flipper.core.FlipperObject;
 import com.facebook.flipper.plugins.console.iface.NullScriptingEnvironment;
 import com.facebook.flipper.plugins.console.iface.ScriptingEnvironment;
-import com.facebook.flipper.plugins.inspector.InspectorSonarPlugin.TouchOverlayView;
+import com.facebook.flipper.plugins.inspector.InspectorFlipperPlugin.TouchOverlayView;
 import com.facebook.flipper.plugins.inspector.descriptors.ApplicationDescriptor;
 import com.facebook.flipper.testing.FlipperConnectionMock;
 import com.facebook.flipper.testing.FlipperResponderMock;
@@ -61,8 +61,8 @@ public class InspectorSonarPluginTest {
 
   @Test
   public void testOnConnect() throws Exception {
-    final InspectorSonarPlugin plugin =
-        new InspectorSonarPlugin(mApp, mDescriptorMapping, mScriptingEnvironment, null);
+    final InspectorFlipperPlugin plugin =
+        new InspectorFlipperPlugin(mApp, mDescriptorMapping, mScriptingEnvironment, null);
     final FlipperConnection connection = new FlipperConnectionMock();
 
     plugin.onConnect(connection);
@@ -71,8 +71,8 @@ public class InspectorSonarPluginTest {
 
   @Test
   public void testOnDisconnect() throws Exception {
-    final InspectorSonarPlugin plugin =
-        new InspectorSonarPlugin(mApp, mDescriptorMapping, mScriptingEnvironment, null);
+    final InspectorFlipperPlugin plugin =
+        new InspectorFlipperPlugin(mApp, mDescriptorMapping, mScriptingEnvironment, null);
     final FlipperConnection connection = new FlipperConnectionMock();
 
     plugin.onConnect(connection);
@@ -82,8 +82,8 @@ public class InspectorSonarPluginTest {
 
   @Test
   public void testGetRoot() throws Exception {
-    final InspectorSonarPlugin plugin =
-        new InspectorSonarPlugin(mApp, mDescriptorMapping, mScriptingEnvironment, null);
+    final InspectorFlipperPlugin plugin =
+        new InspectorFlipperPlugin(mApp, mDescriptorMapping, mScriptingEnvironment, null);
     final FlipperResponderMock responder = new FlipperResponderMock();
     final FlipperConnectionMock connection = new FlipperConnectionMock();
     plugin.onConnect(connection);
@@ -109,8 +109,8 @@ public class InspectorSonarPluginTest {
 
   @Test
   public void testGetNodes() throws Exception {
-    final InspectorSonarPlugin plugin =
-        new InspectorSonarPlugin(mApp, mDescriptorMapping, mScriptingEnvironment, null);
+    final InspectorFlipperPlugin plugin =
+        new InspectorFlipperPlugin(mApp, mDescriptorMapping, mScriptingEnvironment, null);
     final FlipperResponderMock responder = new FlipperResponderMock();
     final FlipperConnectionMock connection = new FlipperConnectionMock();
     plugin.onConnect(connection);
@@ -146,8 +146,8 @@ public class InspectorSonarPluginTest {
 
   @Test
   public void testGetNodesThatDontExist() throws Exception {
-    final InspectorSonarPlugin plugin =
-        new InspectorSonarPlugin(mApp, mDescriptorMapping, mScriptingEnvironment, null);
+    final InspectorFlipperPlugin plugin =
+        new InspectorFlipperPlugin(mApp, mDescriptorMapping, mScriptingEnvironment, null);
     final FlipperResponderMock responder = new FlipperResponderMock();
     final FlipperConnectionMock connection = new FlipperConnectionMock();
     plugin.onConnect(connection);
@@ -172,8 +172,8 @@ public class InspectorSonarPluginTest {
 
   @Test
   public void testSetData() throws Exception {
-    final InspectorSonarPlugin plugin =
-        new InspectorSonarPlugin(mApp, mDescriptorMapping, mScriptingEnvironment, null);
+    final InspectorFlipperPlugin plugin =
+        new InspectorFlipperPlugin(mApp, mDescriptorMapping, mScriptingEnvironment, null);
     final FlipperConnectionMock connection = new FlipperConnectionMock();
     final FlipperResponderMock responder = new FlipperResponderMock();
     plugin.onConnect(connection);
@@ -208,8 +208,8 @@ public class InspectorSonarPluginTest {
 
   @Test
   public void testSetHighlighted() throws Exception {
-    final InspectorSonarPlugin plugin =
-        new InspectorSonarPlugin(mApp, mDescriptorMapping, mScriptingEnvironment, null);
+    final InspectorFlipperPlugin plugin =
+        new InspectorFlipperPlugin(mApp, mDescriptorMapping, mScriptingEnvironment, null);
     final FlipperConnectionMock connection = new FlipperConnectionMock();
     final FlipperResponderMock responder = new FlipperResponderMock();
     plugin.onConnect(connection);
@@ -237,8 +237,8 @@ public class InspectorSonarPluginTest {
 
   @Test
   public void testHitTest() throws Exception {
-    final InspectorSonarPlugin plugin =
-        new InspectorSonarPlugin(mApp, mDescriptorMapping, mScriptingEnvironment, null);
+    final InspectorFlipperPlugin plugin =
+        new InspectorFlipperPlugin(mApp, mDescriptorMapping, mScriptingEnvironment, null);
     final FlipperConnectionMock connection = new FlipperConnectionMock();
     plugin.onConnect(connection);
 
@@ -274,8 +274,8 @@ public class InspectorSonarPluginTest {
 
   @Test
   public void testSetSearchActive() throws Exception {
-    final InspectorSonarPlugin plugin =
-        new InspectorSonarPlugin(mApp, mDescriptorMapping, mScriptingEnvironment, null);
+    final InspectorFlipperPlugin plugin =
+        new InspectorFlipperPlugin(mApp, mDescriptorMapping, mScriptingEnvironment, null);
     final FlipperConnectionMock connection = new FlipperConnectionMock();
     final FlipperResponderMock responder = new FlipperResponderMock();
     plugin.onConnect(connection);
@@ -296,8 +296,8 @@ public class InspectorSonarPluginTest {
 
   @Test(expected = AssertionError.class)
   public void testNullChildThrows() throws Exception {
-    final InspectorSonarPlugin plugin =
-        new InspectorSonarPlugin(mApp, mDescriptorMapping, mScriptingEnvironment, null);
+    final InspectorFlipperPlugin plugin =
+        new InspectorFlipperPlugin(mApp, mDescriptorMapping, mScriptingEnvironment, null);
     final FlipperResponderMock responder = new FlipperResponderMock();
     final FlipperConnectionMock connection = new FlipperConnectionMock();
     plugin.onConnect(connection);

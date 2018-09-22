@@ -9,7 +9,7 @@ import com.facebook.soloader.SoLoader;
 import com.facebook.flipper.android.AndroidFlipperClient;
 import com.facebook.flipper.core.FlipperClient;
 import com.facebook.flipper.plugins.inspector.DescriptorMapping;
-import com.facebook.flipper.plugins.inspector.InspectorSonarPlugin;
+import com.facebook.flipper.plugins.inspector.InspectorFlipperPlugin;
 import com.facebook.flipper.plugins.leakcanary.LeakCanarySonarPlugin;
 import com.facebook.flipper.plugins.litho.LithoSonarDescriptors;
 import com.facebook.flipper.plugins.network.NetworkSonarPlugin;
@@ -44,7 +44,7 @@ public class FlipperSampleApplication extends Application {
     // for this demo application we can safely assume that you always want to debug.
     ComponentsConfiguration.isDebugModeEnabled = true;
     LithoSonarDescriptors.add(descriptorMapping);
-    client.addPlugin(new InspectorSonarPlugin(this, descriptorMapping));
+    client.addPlugin(new InspectorFlipperPlugin(this, descriptorMapping));
     client.addPlugin(networkPlugin);
     client.addPlugin(new SharedPreferencesSonarPlugin(this, "sample"));
     client.addPlugin(new LeakCanarySonarPlugin());

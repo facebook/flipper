@@ -11,12 +11,12 @@ import com.facebook.flipper.core.FlipperReceiver;
 import com.facebook.flipper.core.FlipperResponder;
 import com.facebook.flipper.plugins.common.MainThreadFlipperReceiver;
 import com.facebook.flipper.plugins.inspector.ApplicationWrapper;
-import com.facebook.flipper.plugins.inspector.InspectorSonarPlugin;
+import com.facebook.flipper.plugins.inspector.InspectorFlipperPlugin;
 import com.facebook.flipper.plugins.inspector.ObjectTracker;
 
 import java.util.Stack;
 
-public final class GenerateLithoAccessibilityRenderExtensionCommand implements InspectorSonarPlugin.ExtensionCommand {
+public final class GenerateLithoAccessibilityRenderExtensionCommand implements InspectorFlipperPlugin.ExtensionCommand {
 
     @Override
     public String command() {

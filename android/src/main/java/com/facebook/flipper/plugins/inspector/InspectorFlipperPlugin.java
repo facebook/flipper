@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.Stack;
 import javax.annotation.Nullable;
 
-public class InspectorSonarPlugin implements FlipperPlugin {
+public class InspectorFlipperPlugin implements FlipperPlugin {
 
   private ApplicationWrapper mApplication;
   private DescriptorMapping mDescriptorMapping;
@@ -61,11 +61,11 @@ public class InspectorSonarPlugin implements FlipperPlugin {
     return (Application) context;
   }
 
-  public InspectorSonarPlugin(Context context, DescriptorMapping descriptorMapping) {
+  public InspectorFlipperPlugin(Context context, DescriptorMapping descriptorMapping) {
     this(getAppContextFromContext(context), descriptorMapping, new NullScriptingEnvironment());
   }
 
-  public InspectorSonarPlugin(
+  public InspectorFlipperPlugin(
       Context context,
       DescriptorMapping descriptorMapping,
       ScriptingEnvironment scriptingEnvironment) {
@@ -76,7 +76,7 @@ public class InspectorSonarPlugin implements FlipperPlugin {
         null);
   }
 
-  public InspectorSonarPlugin(
+  public InspectorFlipperPlugin(
       Context context,
       DescriptorMapping descriptorMapping,
       @Nullable List<ExtensionCommand> extensions) {
@@ -87,7 +87,7 @@ public class InspectorSonarPlugin implements FlipperPlugin {
         extensions);
   }
 
-  public InspectorSonarPlugin(
+  public InspectorFlipperPlugin(
       Context context,
       DescriptorMapping descriptorMapping,
       ScriptingEnvironment scriptingEnvironment,
@@ -101,7 +101,7 @@ public class InspectorSonarPlugin implements FlipperPlugin {
   }
 
   // Package visible for testing
-  InspectorSonarPlugin(
+  InspectorFlipperPlugin(
       ApplicationWrapper wrapper,
       DescriptorMapping descriptorMapping,
       ScriptingEnvironment scriptingEnvironment,
