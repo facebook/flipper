@@ -11,12 +11,12 @@ import com.facebook.flipper.core.FlipperConnection;
 import com.facebook.flipper.core.FlipperPlugin;
 import com.facebook.flipper.plugins.console.iface.ConsoleCommandReceiver;
 
-public class ConsoleSonarPlugin implements FlipperPlugin {
+public class ConsoleFlipperPlugin implements FlipperPlugin {
 
   private final JavascriptEnvironment mJavascriptEnvironment;
   private JavascriptSession mJavascriptSession;
 
-  public ConsoleSonarPlugin(JavascriptEnvironment jsEnvironment) {
+  public ConsoleFlipperPlugin(JavascriptEnvironment jsEnvironment) {
     this.mJavascriptEnvironment = jsEnvironment;
   }
 

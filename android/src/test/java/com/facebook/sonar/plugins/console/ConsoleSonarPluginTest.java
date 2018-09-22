@@ -27,7 +27,7 @@ public class ConsoleSonarPluginTest {
   @Before
   public void setup() throws Exception {
     JavascriptEnvironment jsEnvironment = new JavascriptEnvironment();
-    final ConsoleSonarPlugin plugin = new ConsoleSonarPlugin(jsEnvironment);
+    final ConsoleFlipperPlugin plugin = new ConsoleFlipperPlugin(jsEnvironment);
     connection = new FlipperConnectionMock();
     responder = new FlipperResponderMock();
     plugin.onConnect(connection);
