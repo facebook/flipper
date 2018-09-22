@@ -20,9 +20,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class LeakCanarySonarPlugin implements FlipperPlugin {
+public class LeakCanaryFlipperPlugin implements FlipperPlugin {
 
-  private static final String TAG = "LeakCanarySonarPlugin";
+  private static final String TAG = "LeakCanaryFlipperPlugin";
 
   private static final String REPORT_LEAK_EVENT = "reportLeak";
   private static final String CLEAR_EVENT = "clear";

@@ -10,7 +10,7 @@ import com.facebook.flipper.android.AndroidFlipperClient;
 import com.facebook.flipper.core.FlipperClient;
 import com.facebook.flipper.plugins.inspector.DescriptorMapping;
 import com.facebook.flipper.plugins.inspector.InspectorFlipperPlugin;
-import com.facebook.flipper.plugins.leakcanary.LeakCanarySonarPlugin;
+import com.facebook.flipper.plugins.leakcanary.LeakCanaryFlipperPlugin;
 import com.facebook.flipper.plugins.litho.LithoSonarDescriptors;
 import com.facebook.flipper.plugins.network.NetworkSonarPlugin;
 import com.facebook.flipper.plugins.network.SonarOkhttpInterceptor;
@@ -47,7 +47,7 @@ public class FlipperSampleApplication extends Application {
     client.addPlugin(new InspectorFlipperPlugin(this, descriptorMapping));
     client.addPlugin(networkPlugin);
     client.addPlugin(new SharedPreferencesSonarPlugin(this, "sample"));
-    client.addPlugin(new LeakCanarySonarPlugin());
+    client.addPlugin(new LeakCanaryFlipperPlugin());
     client.start();
 
     getSharedPreferences("sample", Context.MODE_PRIVATE).edit().putString("Hello", "world").apply();

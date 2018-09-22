@@ -13,9 +13,9 @@ Note: this plugin is only available for Android.
 
 First, add the plugin to your Flipper client instance:
 ```java
-import com.facebook.sonar.plugins.leakcanary.LeakCanarySonarPlugin;
+import com.facebook.sonar.plugins.leakcanary.LeakCanaryFlipperPlugin;
 
-client.addPlugin(new LeakCanarySonarPlugin());
+client.addPlugin(new LeakCanaryFlipperPlugin());
 ```
 
 Next, build a custom RefWatcher using RecordLeakService: (see [LeakCanary docs](https://github.com/square/leakcanary/wiki/Customizing-LeakCanary#uploading-to-a-server) for more information on RefWatcher)

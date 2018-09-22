@@ -27,7 +27,7 @@ public class RecordLeakService extends AbstractAnalysisResultService {
     final FlipperClient client = AndroidFlipperClient.getInstance(this);
 
     if (client != null) {
-      final LeakCanarySonarPlugin plugin = client.getPlugin("LeakCanary");
+      final LeakCanaryFlipperPlugin plugin = client.getPlugin("LeakCanary");
       if (plugin != null) {
         plugin.reportLeak(leakInfo);
       }
