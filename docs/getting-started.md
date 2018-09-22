@@ -60,7 +60,7 @@ public class MyApplication extends Application {
     SoLoader.init(this, false);
 
     if (BuildConfig.DEBUG && SonarUtils.shouldEnableSonar(this)) {
-      final SonarClient client = AndroidSonarClient.getInstance(this);
+      final SonarClient client = AndroidFlipperClient.getInstance(this);
       client.addPlugin(new InspectorSonarPlugin(this, DescriptorMapping.withDefaults()));
       client.start();
     }

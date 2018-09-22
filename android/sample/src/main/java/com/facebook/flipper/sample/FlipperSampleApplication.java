@@ -6,7 +6,7 @@ import android.app.Application;
 import android.content.Context;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.soloader.SoLoader;
-import com.facebook.flipper.android.AndroidSonarClient;
+import com.facebook.flipper.android.AndroidFlipperClient;
 import com.facebook.flipper.core.FlipperClient;
 import com.facebook.flipper.plugins.inspector.DescriptorMapping;
 import com.facebook.flipper.plugins.inspector.InspectorSonarPlugin;
@@ -27,7 +27,7 @@ public class FlipperSampleApplication extends Application {
     super.onCreate();
     SoLoader.init(this, false);
 
-    final FlipperClient client = AndroidSonarClient.getInstance(this);
+    final FlipperClient client = AndroidFlipperClient.getInstance(this);
     final DescriptorMapping descriptorMapping = DescriptorMapping.withDefaults();
 
     NetworkSonarPlugin networkPlugin = new NetworkSonarPlugin();

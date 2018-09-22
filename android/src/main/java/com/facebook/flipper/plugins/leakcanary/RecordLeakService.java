@@ -9,7 +9,7 @@ package com.facebook.flipper.plugins.leakcanary;
 
 import static com.squareup.leakcanary.LeakCanary.leakInfo;
 
-import com.facebook.flipper.android.AndroidSonarClient;
+import com.facebook.flipper.android.AndroidFlipperClient;
 import com.facebook.flipper.core.FlipperClient;
 import com.squareup.leakcanary.AbstractAnalysisResultService;
 import com.squareup.leakcanary.AnalysisResult;
@@ -24,7 +24,7 @@ public class RecordLeakService extends AbstractAnalysisResultService {
   @Override
   protected void onHeapAnalyzed(HeapDump heapDump, AnalysisResult result) {
     final String leakInfo = leakInfo(this, heapDump, result, true);
-    final FlipperClient client = AndroidSonarClient.getInstance(this);
+    final FlipperClient client = AndroidFlipperClient.getInstance(this);
 
     if (client != null) {
       final LeakCanarySonarPlugin plugin = client.getPlugin("LeakCanary");

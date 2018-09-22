@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.widget.Toast;
-import com.facebook.flipper.android.AndroidSonarClient;
+import com.facebook.flipper.android.AndroidFlipperClient;
 import com.facebook.flipper.core.FlipperClient;
 import com.facebook.flipper.core.FlipperStateUpdateListener;
 import com.facebook.flipper.core.StateSummary;
@@ -39,7 +39,7 @@ public class FlipperDiagnosticActivity extends Activity implements FlipperStateU
 
   protected void onStart() {
     super.onStart();
-    final FlipperClient client = AndroidSonarClient.getInstance(this);
+    final FlipperClient client = AndroidFlipperClient.getInstance(this);
     client.subscribeForUpdates(this);
 
     summaryView.setText(getSummary());
@@ -53,7 +53,7 @@ public class FlipperDiagnosticActivity extends Activity implements FlipperStateU
 
 @Override
   public void onUpdate() {
-    final String state = AndroidSonarClient.getInstance(this).getState();
+    final String state = AndroidFlipperClient.getInstance(this).getState();
     final String summary = getSummary();
 
    runOnUiThread(new Runnable() {
@@ -68,7 +68,7 @@ public class FlipperDiagnosticActivity extends Activity implements FlipperStateU
 
   private String getSummary() {
     final Context context = this;
-    final StateSummary summary = AndroidSonarClient.getInstance(context).getStateSummary();
+    final StateSummary summary = AndroidFlipperClient.getInstance(context).getStateSummary();
     final StringBuilder stateText = new StringBuilder();
     for (StateElement e: summary.mList) {
       final String status;
@@ -85,7 +85,7 @@ public class FlipperDiagnosticActivity extends Activity implements FlipperStateU
 
   protected void onStop() {
     super.onStop();
-    final FlipperClient client = AndroidSonarClient.getInstance(this);
+    final FlipperClient client = AndroidFlipperClient.getInstance(this);
     client.unsubscribe();
   }
 }

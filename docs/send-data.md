@@ -13,8 +13,8 @@ Plugins are identified by the string that their identifier method returns, in th
 ### Android
 
 ```java
-final SonarClient client = AndroidSonarClient.getInstance(context);
-// Client may be null if AndroidSonarClient.createInstance() was never called
+final SonarClient client = AndroidFlipperClient.getInstance(context);
+// Client may be null if AndroidFlipperClient.createInstance() was never called
 // which is the case in production builds.
 if (client != null) {
   final MySonarPlugin plugin = client.getPlugin("MySonarPlugin");

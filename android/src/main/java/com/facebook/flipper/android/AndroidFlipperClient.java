@@ -16,7 +16,7 @@ import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import com.facebook.flipper.core.FlipperClient;
 
-public final class AndroidSonarClient {
+public final class AndroidFlipperClient {
   private static boolean sIsInitialized = false;
   private static SonarThread sSonarThread;
   private static SonarThread sConnectionThread;
