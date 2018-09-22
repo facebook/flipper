@@ -36,7 +36,7 @@ the descriptor with Litho-specific settings and add some addition dependencies.
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.sonar.plugins.inspector.DescriptorMapping;
 import com.facebook.sonar.plugins.inspector.InspectorSonarPlugin;
-import com.facebook.sonar.plugins.litho.LithoSonarDescriptors;
+import com.facebook.sonar.plugins.litho.LithoFlipperDescriptors;
 
 // Instead of hard-coding this setting, it's a good practice to tie
 // this to a BuildConfig flag, that you only enable for debug builds
@@ -45,7 +45,7 @@ ComponentsConfiguration.isDebugModeEnabled = true;
 
 final DescriptorMapping descriptorMapping = DescriptorMapping.withDefaults();
 // This adds Litho capabilities to the layout inspector.
-LithoSonarDescriptors.add(descriptorMapping);
+LithoFlipperDescriptors.add(descriptorMapping);
 
 client.addPlugin(new InspectorSonarPlugin(mApplicationContext, descriptorMapping));
 ```

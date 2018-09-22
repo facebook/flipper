@@ -6,7 +6,7 @@ import com.facebook.litho.DebugComponent;
 import com.facebook.litho.LithoView;
 import com.facebook.flipper.plugins.inspector.DescriptorMapping;
 
-public final class LithoSonarDescriptors {
+public final class LithoFlipperDescriptors {
 
   public static void add(DescriptorMapping descriptorMapping) {
     descriptorMapping.register(LithoView.class, new LithoViewDescriptor());

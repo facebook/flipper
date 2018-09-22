@@ -11,7 +11,7 @@ import com.facebook.flipper.core.FlipperClient;
 import com.facebook.flipper.plugins.inspector.DescriptorMapping;
 import com.facebook.flipper.plugins.inspector.InspectorFlipperPlugin;
 import com.facebook.flipper.plugins.leakcanary.LeakCanaryFlipperPlugin;
-import com.facebook.flipper.plugins.litho.LithoSonarDescriptors;
+import com.facebook.flipper.plugins.litho.LithoFlipperDescriptors;
 import com.facebook.flipper.plugins.network.NetworkSonarPlugin;
 import com.facebook.flipper.plugins.network.SonarOkhttpInterceptor;
 import com.facebook.flipper.plugins.sharedpreferences.SharedPreferencesSonarPlugin;
@@ -43,7 +43,7 @@ public class FlipperSampleApplication extends Application {
     // Normally, you would want to make this dependent on a BuildConfig flag, but
     // for this demo application we can safely assume that you always want to debug.
     ComponentsConfiguration.isDebugModeEnabled = true;
-    LithoSonarDescriptors.add(descriptorMapping);
+    LithoFlipperDescriptors.add(descriptorMapping);
     client.addPlugin(new InspectorFlipperPlugin(this, descriptorMapping));
     client.addPlugin(networkPlugin);
     client.addPlugin(new SharedPreferencesSonarPlugin(this, "sample"));
