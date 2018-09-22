@@ -42,7 +42,7 @@ dependencies {
     SoLoader.init(<span class="hljs-keyword">this</span>, <span class="hljs-keyword">false</span>);
 
     <span class="hljs-keyword">if</span> (BuildConfig.DEBUG &amp;&amp; SonarUtils.shouldEnableSonar(<span class="hljs-keyword">this</span>)) {
-      <span class="hljs-keyword">final</span> SonarClient client = AndroidSonarClient.getInstance(<span class="hljs-keyword">this</span>);
+      <span class="hljs-keyword">final</span> SonarClient client = AndroidFlipperClient.getInstance(<span class="hljs-keyword">this</span>);
       client.addPlugin(<span class="hljs-keyword">new</span> InspectorSonarPlugin(<span class="hljs-keyword">this</span>, DescriptorMapping.withDefaults()));
       client.start();
     }
