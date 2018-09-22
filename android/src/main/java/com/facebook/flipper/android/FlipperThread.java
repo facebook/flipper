@@ -10,10 +10,10 @@ package com.facebook.flipper.android;
 import android.os.Process;
 import javax.annotation.Nullable;
 
-class SonarThread extends Thread {
+class FlipperThread extends Thread {
   private @Nullable EventBase mEventBase;
 
-  SonarThread(final String name) {
+  FlipperThread(final String name) {
     super(name);
   }
 

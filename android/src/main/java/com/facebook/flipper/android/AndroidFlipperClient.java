@@ -18,22 +18,22 @@ import com.facebook.flipper.core.FlipperClient;
 
 public final class AndroidFlipperClient {
   private static boolean sIsInitialized = false;
-  private static SonarThread sSonarThread;
-  private static SonarThread sConnectionThread;
+  private static FlipperThread sSonarThread;
+  private static FlipperThread sConnectionThread;
   private static final String[] REQUIRED_PERMISSIONS =
       new String[] {"android.permission.INTERNET", "android.permission.ACCESS_WIFI_STATE"};
 
   public static synchronized FlipperClient getInstance(Context context) {
     if (!sIsInitialized) {
       checkRequiredPermissions(context);
-      sSonarThread = new SonarThread("SonarEventBaseThread");
+      sSonarThread = new FlipperThread("SonarEventBaseThread");
       sSonarThread.start();
-      sConnectionThread = new SonarThread("SonarConnectionThread");
+      sConnectionThread = new FlipperThread("SonarConnectionThread");
       sConnectionThread.start();
 
       final Context app =
           context.getApplicationContext() == null ? context : context.getApplicationContext();
-      SonarClientImpl.init(
+      FlipperClientImpl.init(
           sSonarThread.getEventBase(),
           sConnectionThread.getEventBase(),
           getServerHost(app),
@@ -45,14 +45,14 @@ public final class AndroidFlipperClient {
           context.getFilesDir().getAbsolutePath());
       sIsInitialized = true;
     }
-    return SonarClientImpl.getInstance();
+    return FlipperClientImpl.getInstance();
   }
 
   public static synchronized FlipperClient getInstanceIfInitialized() {
     if (!sIsInitialized) {
       return null;
     }
-    return SonarClientImpl.getInstance();
+    return FlipperClientImpl.getInstance();
   }
 
   static void checkRequiredPermissions(Context context) {

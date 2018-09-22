@@ -12,12 +12,11 @@ import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.soloader.SoLoader;
 import com.facebook.flipper.BuildConfig;
 import com.facebook.flipper.core.FlipperArray;
-import com.facebook.flipper.core.FlipperConnection;
 import com.facebook.flipper.core.FlipperObject;
-import com.facebook.flipper.core.FlipperReceiver;
+import com.facebook.flipper.core.FlipperResponder;
 
 @DoNotStrip
-class SonarConnectionImpl implements FlipperConnection {
+class FlipperResponderImpl implements FlipperResponder {
   static {
     if (BuildConfig.IS_INTERNAL_BUILD) {
       SoLoader.loadLibrary("sonar");
@@ -26,27 +25,29 @@ class SonarConnectionImpl implements FlipperConnection {
 
   private final HybridData mHybridData;
 
-  private SonarConnectionImpl(HybridData hd) {
+  private FlipperResponderImpl(HybridData hd) {
     mHybridData = hd;
   }
 
   @Override
-  public void send(String method, FlipperObject params) {
-    sendObject(method, params);
+  public void success(FlipperObject params) {
+    successObject(params);
   }
 
   @Override
-  public void send(String method, FlipperArray params) {
-    sendArray(method, params);
+  public void success(FlipperArray params) {
+    successArray(params);
   }
 
-  public native void sendObject(String method, FlipperObject params);
+  @Override
+  public void success() {
+    successObject(new FlipperObject.Builder().build());
+  }
 
-  public native void sendArray(String method, FlipperArray params);
+  public native void successObject(FlipperObject response);
+
+  public native void successArray(FlipperArray response);
 
   @Override
-  public native void reportError(Throwable throwable);
-
-  @Override
-  public native void receive(String method, FlipperReceiver receiver);
+  public native void error(FlipperObject response);
 }

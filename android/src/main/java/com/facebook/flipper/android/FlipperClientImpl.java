@@ -17,7 +17,7 @@ import com.facebook.flipper.core.FlipperStateUpdateListener;
 import com.facebook.flipper.core.StateSummary;
 
 @DoNotStrip
-class SonarClientImpl implements FlipperClient {
+class FlipperClientImpl implements FlipperClient {
   static {
     if (BuildConfig.IS_INTERNAL_BUILD) {
       SoLoader.loadLibrary("sonar");
@@ -26,7 +26,7 @@ class SonarClientImpl implements FlipperClient {
 
   private final HybridData mHybridData;
 
-  private SonarClientImpl(HybridData hd) {
+  private FlipperClientImpl(HybridData hd) {
     mHybridData = hd;
   }
 
@@ -41,7 +41,7 @@ class SonarClientImpl implements FlipperClient {
       String appId,
       String privateAppDirectory);
 
-  public static native SonarClientImpl getInstance();
+  public static native FlipperClientImpl getInstance();
 
   @Override
   public native void addPlugin(FlipperPlugin plugin);

@@ -97,7 +97,7 @@ class JFlipperResponder : public jni::JavaClass<JFlipperResponder> {
 
 class JFlipperResponderImpl : public jni::HybridClass<JFlipperResponderImpl, JFlipperResponder> {
  public:
-  constexpr static auto kJavaDescriptor = "Lcom/facebook/flipper/android/SonarResponderImpl;";
+  constexpr static auto kJavaDescriptor = "Lcom/facebook/flipper/android/FlipperResponderImpl;";
 
   static void registerNatives() {
     registerHybrid({
@@ -143,7 +143,7 @@ class JFlipperConnection : public jni::JavaClass<JFlipperConnection> {
 
 class JFlipperConnectionImpl : public jni::HybridClass<JFlipperConnectionImpl, JFlipperConnection> {
  public:
-  constexpr static auto kJavaDescriptor = "Lcom/facebook/flipper/android/SonarConnectionImpl;";
+  constexpr static auto kJavaDescriptor = "Lcom/facebook/flipper/android/FlipperConnectionImpl;";
 
   static void registerNatives() {
     registerHybrid({
@@ -267,7 +267,7 @@ public:
 
 class JFlipperClient : public jni::HybridClass<JFlipperClient> {
  public:
-  constexpr static auto kJavaDescriptor = "Lcom/facebook/flipper/android/SonarClientImpl;";
+  constexpr static auto kJavaDescriptor = "Lcom/facebook/flipper/android/FlipperClientImpl;";
 
   static void registerNatives() {
     registerHybrid({
