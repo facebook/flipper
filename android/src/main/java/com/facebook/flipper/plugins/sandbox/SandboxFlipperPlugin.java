@@ -15,15 +15,15 @@ import com.facebook.flipper.core.FlipperReceiver;
 import com.facebook.flipper.core.FlipperResponder;
 import java.util.Map;
 
-public class SandboxSonarPlugin implements FlipperPlugin {
+public class SandboxFlipperPlugin implements FlipperPlugin {
   public static final String ID = "Sandbox";
 
   private static final String SET_METHOD_NAME = "setSandbox";
   private static final String GET_METHOD_NAME = "getSandbox";
 
-  private final SandboxSonarPluginStrategy mStrategy;
+  private final SandboxFlipperPluginStrategy mStrategy;
 
-  public SandboxSonarPlugin(SandboxSonarPluginStrategy strategy) {
+  public SandboxFlipperPlugin(SandboxFlipperPluginStrategy strategy) {
     mStrategy = strategy;
   }
 

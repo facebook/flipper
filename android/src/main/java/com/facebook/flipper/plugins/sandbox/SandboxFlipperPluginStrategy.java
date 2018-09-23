@@ -10,7 +10,7 @@ package com.facebook.flipper.plugins.sandbox;
 import java.util.Map;
 import javax.annotation.Nullable;
 
-public interface SandboxSonarPluginStrategy {
+public interface SandboxFlipperPluginStrategy {
 
   @Nullable
   Map<String, String> getKnownSandboxes();
