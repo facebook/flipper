@@ -14,7 +14,7 @@ import com.facebook.flipper.plugins.leakcanary.LeakCanaryFlipperPlugin;
 import com.facebook.flipper.plugins.litho.LithoFlipperDescriptors;
 import com.facebook.flipper.plugins.network.NetworkFlipperPlugin;
 import com.facebook.flipper.plugins.network.FlipperOkhttpInterceptor;
-import com.facebook.flipper.plugins.sharedpreferences.SharedPreferencesSonarPlugin;
+import com.facebook.flipper.plugins.sharedpreferences.SharedPreferencesFlipperPlugin;
 import java.util.concurrent.TimeUnit;
 import okhttp3.OkHttpClient;
 
@@ -46,7 +46,7 @@ public class FlipperSampleApplication extends Application {
     LithoFlipperDescriptors.add(descriptorMapping);
     client.addPlugin(new InspectorFlipperPlugin(this, descriptorMapping));
     client.addPlugin(networkPlugin);
-    client.addPlugin(new SharedPreferencesSonarPlugin(this, "sample"));
+    client.addPlugin(new SharedPreferencesFlipperPlugin(this, "sample"));
     client.addPlugin(new LeakCanaryFlipperPlugin());
     client.start();
 

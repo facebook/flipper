@@ -19,7 +19,7 @@ import com.facebook.flipper.core.FlipperReceiver;
 import com.facebook.flipper.core.FlipperResponder;
 import java.util.Map;
 
-public class SharedPreferencesSonarPlugin implements FlipperPlugin {
+public class SharedPreferencesFlipperPlugin implements FlipperPlugin {
 
   private FlipperConnection mConnection;
   private final SharedPreferences mSharedPreferences;
@@ -48,7 +48,7 @@ public class SharedPreferencesSonarPlugin implements FlipperPlugin {
    * @param context The context to retrieve the file from. Will use the package name as the file
    *     name with {@link Context#MODE_PRIVATE}.
    */
-  public SharedPreferencesSonarPlugin(Context context) {
+  public SharedPreferencesFlipperPlugin(Context context) {
     this(context, context.getPackageName());
   }
 
@@ -59,7 +59,7 @@ public class SharedPreferencesSonarPlugin implements FlipperPlugin {
    *     {@link Context#MODE_PRIVATE}.
    * @param name The preference file name.
    */
-  public SharedPreferencesSonarPlugin(Context context, String name) {
+  public SharedPreferencesFlipperPlugin(Context context, String name) {
     this(context, name, MODE_PRIVATE);
   }
 
@@ -70,7 +70,7 @@ public class SharedPreferencesSonarPlugin implements FlipperPlugin {
    * @param name The preference file name.
    * @param mode The Context mode to utilize.
    */
-  public SharedPreferencesSonarPlugin(Context context, String name, int mode) {
+  public SharedPreferencesFlipperPlugin(Context context, String name, int mode) {
     mSharedPreferences = context.getSharedPreferences(name, mode);
     mSharedPreferences.registerOnSharedPreferenceChangeListener(onSharedPreferenceChangeListener);
   }
