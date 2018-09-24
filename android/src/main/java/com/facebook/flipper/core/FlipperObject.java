@@ -124,7 +124,7 @@ public class FlipperObject {
       } else if (obj instanceof FlipperArray.Builder) {
         return put(name, (FlipperArray.Builder) obj);
       } else if (obj instanceof FlipperValue) {
-        return put(name, ((FlipperValue) obj).toSonarObject());
+        return put(name, ((FlipperValue) obj).toFlipperObject());
       } else {
         return put(name, obj.toString());
       }
@@ -185,7 +185,7 @@ public class FlipperObject {
     }
 
     public Builder put(String name, FlipperValue v) {
-      return put(name, v.toSonarObject());
+      return put(name, v.toFlipperObject());
     }
 
     public Builder put(String name, FlipperArray a) {

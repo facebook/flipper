@@ -391,7 +391,7 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
           final boolean axEnabled = params.getBoolean("axEnabled");
 
           final SearchResultNode matchTree = searchTree(query.toLowerCase(), mApplication, axEnabled);
-          final FlipperObject results = matchTree == null ? null : matchTree.toSonarObject();
+          final FlipperObject results = matchTree == null ? null : matchTree.toFlipperObject();
           final FlipperObject response =
               new FlipperObject.Builder().put("results", results).put("query", query).build();
           responder.success(response);

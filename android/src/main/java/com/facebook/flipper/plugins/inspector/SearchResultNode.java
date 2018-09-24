@@ -31,12 +31,12 @@ public class SearchResultNode {
     this.axElement = axElement;
   }
 
-  FlipperObject toSonarObject() {
+  FlipperObject toFlipperObject() {
     final FlipperArray childArray;
     if (children != null) {
       final FlipperArray.Builder builder = new FlipperArray.Builder();
       for (SearchResultNode child : children) {
-        builder.put(child.toSonarObject());
+        builder.put(child.toFlipperObject());
       }
       childArray = builder.build();
     } else {

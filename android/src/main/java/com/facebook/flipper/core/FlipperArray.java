@@ -136,7 +136,7 @@ public class FlipperArray {
     }
 
     public Builder put(FlipperValue v) {
-      return put(v.toSonarObject());
+      return put(v.toFlipperObject());
     }
 
     public Builder put(FlipperArray a) {

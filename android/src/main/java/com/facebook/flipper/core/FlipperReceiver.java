@@ -8,13 +8,13 @@
 package com.facebook.flipper.core;
 
 /**
- * A receiver of a remote method call issued by the Sonar desktop application. If the given
- * responder is present it means the Sonar desktop application is expecting a response.
+ * A receiver of a remote method call issued by the Flipper desktop application. If the given
+ * responder is present it means the Flipper desktop application is expecting a response.
  */
 public interface FlipperReceiver {
 
   /**
-   * Reciver for a request sent from the Sonar desktop client.
+   * Reciver for a request sent from the Flipper desktop client.
    *
    * @param params Optional set of parameters sent with the request.
    * @param responder Optional responder for request. Some requests don't warrant a response

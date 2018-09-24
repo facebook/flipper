@@ -41,7 +41,7 @@ public class NetworkFlipperPlugin extends BufferingFlipperPlugin implements Netw
             .put("timestamp", requestInfo.timeStamp)
             .put("method", requestInfo.method)
             .put("url", requestInfo.uri)
-            .put("headers", toSonarObject(requestInfo.headers))
+            .put("headers", toFlipperObject(requestInfo.headers))
             .put("data", toBase64(requestInfo.body))
             .build();
 
@@ -64,7 +64,7 @@ public class NetworkFlipperPlugin extends BufferingFlipperPlugin implements Netw
                     .put("timestamp", responseInfo.timeStamp)
                     .put("status", responseInfo.statusCode)
                     .put("reason", responseInfo.statusReason)
-                    .put("headers", toSonarObject(responseInfo.headers))
+                    .put("headers", toFlipperObject(responseInfo.headers))
                     .put("data", toBase64(responseInfo.body))
                     .build();
 
@@ -99,7 +99,7 @@ public class NetworkFlipperPlugin extends BufferingFlipperPlugin implements Netw
     return new String(Base64.encode(bytes, Base64.DEFAULT));
   }
 
-  private FlipperArray toSonarObject(List<Header> headers) {
+  private FlipperArray toFlipperObject(List<Header> headers) {
     final FlipperArray.Builder list = new FlipperArray.Builder();
 
     for (Header header : headers) {

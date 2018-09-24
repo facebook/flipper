@@ -69,7 +69,7 @@ public class InspectorValue<T> implements FlipperValue {
   }
 
   @Override
-  public FlipperObject toSonarObject() {
+  public FlipperObject toFlipperObject() {
     return new FlipperObject.Builder()
         .put("__type__", mType)
         .put("__mutable__", mMutable)

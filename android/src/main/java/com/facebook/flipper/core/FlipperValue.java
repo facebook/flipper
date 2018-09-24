@@ -8,5 +8,5 @@
 package com.facebook.flipper.core;
 
 public interface FlipperValue {
-  FlipperObject toSonarObject();
+  FlipperObject toFlipperObject();
 }

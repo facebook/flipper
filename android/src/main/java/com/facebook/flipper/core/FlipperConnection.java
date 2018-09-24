@@ -8,20 +8,20 @@
 package com.facebook.flipper.core;
 
 /**
- * A connection between a FlipperPlugin and the desktop Sonar application. Register request handlers
+ * A connection between a FlipperPlugin and the desktop Flipper application. Register request handlers
  * to respond to calls made by the desktop application or directly send messages to the desktop
  * application.
  */
 public interface FlipperConnection {
 
   /**
-   * Call a remote method on the Sonar desktop application, passing an optional JSON object as a
+   * Call a remote method on the Flipper desktop application, passing an optional JSON object as a
    * parameter.
    */
   void send(String method, FlipperObject params);
 
   /**
-   * Call a remote method on the Sonar desktop application, passing an optional JSON array as a
+   * Call a remote method on the Flipper desktop application, passing an optional JSON array as a
    * parameter.
    */
   void send(String method, FlipperArray params);
@@ -30,7 +30,7 @@ public interface FlipperConnection {
   void reportError(Throwable throwable);
 
   /**
-   * Register a receiver for a remote method call issued by the Sonar desktop application. The
+   * Register a receiver for a remote method call issued by the Flipper desktop application. The
    * FlipperReceiver is passed a responder to respond back to the desktop application.
    */
   void receive(String method, FlipperReceiver receiver);
