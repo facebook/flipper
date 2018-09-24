@@ -16,7 +16,7 @@ set(DOUBLECONVERSION_DIR ${external_DIR}/double-conversion/double-conversion-3.0
 set(OPENSSL_DIR ${external_DIR}/OpenSSL/openssl-1.1.0h/)
 
 list(APPEND dir_list ./)
-list(APPEND dir_list ./Sonar)
+list(APPEND dir_list ./Flipper)
 
 include_directories(${dir_list})
 
