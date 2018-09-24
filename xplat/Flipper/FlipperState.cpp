@@ -5,8 +5,8 @@
  *  file in the root directory of this source tree.
  *
  */
-#include "SonarState.h"
-#include "SonarStateUpdateListener.h"
+#include "FlipperState.h"
+#include "FlipperStateUpdateListener.h"
 #include "SonarStep.h"
 #include <vector>
 
@@ -16,13 +16,13 @@ using namespace facebook::flipper;
  * view of the current state of the sonar client. */
 
 
-SonarState::SonarState(): log("") {}
-void SonarState::setUpdateListener(
-    std::shared_ptr<SonarStateUpdateListener> listener) {
+FlipperState::FlipperState(): log("") {}
+void FlipperState::setUpdateListener(
+    std::shared_ptr<FlipperStateUpdateListener> listener) {
   mListener = listener;
 }
 
-void SonarState::started(std::string step) {
+void FlipperState::started(std::string step) {
   if (stateMap.find(step) == stateMap.end()) {
     insertOrder.push_back(step);
   }
@@ -32,7 +32,7 @@ void SonarState::started(std::string step) {
   }
 }
 
-void SonarState::success(std::string step) {
+void FlipperState::success(std::string step) {
   log = log + "[Success] " + step + "\n";
   stateMap[step] = State::success;
   if (mListener) {
@@ -40,7 +40,7 @@ void SonarState::success(std::string step) {
   }
 }
 
-void SonarState::failed(std::string step, std::string errorMessage) {
+void FlipperState::failed(std::string step, std::string errorMessage) {
   log = log + "[Failed] " + step + ": " + errorMessage + "\n";
   stateMap[step] = State::failed;
   if (mListener) {
@@ -51,11 +51,11 @@ void SonarState::failed(std::string step, std::string errorMessage) {
 // TODO: Currently returns string, but should really provide a better
 // representation of the current state so the UI can show it in a more intuitive
 // way
-std::string SonarState::getState() {
+std::string FlipperState::getState() {
   return log;
 }
 
-std::vector<StateElement> SonarState::getStateElements() {
+std::vector<StateElement> FlipperState::getStateElements() {
   std::vector<StateElement> v;
   for (auto stepName : insertOrder) {
     v.push_back(StateElement(stepName, stateMap[stepName]));
@@ -63,7 +63,7 @@ std::vector<StateElement> SonarState::getStateElements() {
   return v;
 }
 
-std::shared_ptr<SonarStep> SonarState::start(std::string step_name) {
+std::shared_ptr<SonarStep> FlipperState::start(std::string step_name) {
   started(step_name);
   return std::make_shared<SonarStep>(step_name, this);
 }

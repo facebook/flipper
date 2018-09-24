@@ -11,7 +11,7 @@
 #include "FlipperConnectionImpl.h"
 #include "FlipperInitConfig.h"
 #include "FlipperPlugin.h"
-#include "SonarState.h"
+#include "FlipperState.h"
 #include "FlipperConnectionManager.h"
 #include <map>
 #include <mutex>
@@ -40,7 +40,7 @@ class FlipperClient : public FlipperConnectionManager::Callbacks {
   /**
    Only public for testing
    */
-  FlipperClient(std::unique_ptr<FlipperConnectionManager> socket, std::shared_ptr<SonarState> state)
+  FlipperClient(std::unique_ptr<FlipperConnectionManager> socket, std::shared_ptr<FlipperState> state)
       : socket_(std::move(socket)), sonarState_(state) {
     auto step = sonarState_->start("Create client");
     socket_->setCallbacks(this);
@@ -72,7 +72,7 @@ class FlipperClient : public FlipperConnectionManager::Callbacks {
   void refreshPlugins();
 
   void setStateListener(
-      std::shared_ptr<SonarStateUpdateListener> stateListener);
+      std::shared_ptr<FlipperStateUpdateListener> stateListener);
 
   std::shared_ptr<FlipperPlugin> getPlugin(const std::string& identifier);
 
@@ -94,7 +94,7 @@ class FlipperClient : public FlipperConnectionManager::Callbacks {
   std::map<std::string, std::shared_ptr<FlipperPlugin>> plugins_;
   std::map<std::string, std::shared_ptr<FlipperConnectionImpl>> connections_;
   std::mutex mutex_;
-  std::shared_ptr<SonarState> sonarState_;
+  std::shared_ptr<FlipperState> sonarState_;
 
   void performAndReportError(const std::function<void()>& func);
   void disconnect(std::shared_ptr<FlipperPlugin> plugin);

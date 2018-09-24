@@ -6,7 +6,7 @@
  *
  */
 #include "SonarStep.h"
-#include "SonarState.h"
+#include "FlipperState.h"
 
 void SonarStep::complete() {
   isLogged = true;
@@ -18,7 +18,7 @@ void SonarStep::fail(std::string message) {
   state->failed(name, message);
 }
 
-SonarStep::SonarStep(std::string step, SonarState* s) {
+SonarStep::SonarStep(std::string step, FlipperState* s) {
   state = s;
   name = step;
 }

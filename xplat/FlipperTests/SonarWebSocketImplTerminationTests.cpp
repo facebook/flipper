@@ -19,13 +19,13 @@ using folly::EventBase;
 
 class FlipperConnectionManagerImplTerminationTest : public ::testing::Test {
 protected:
-  std::shared_ptr<SonarState> state;
+  std::shared_ptr<FlipperState> state;
   std::shared_ptr<ConnectionContextStore> contextStore;
   void SetUp() override {
     // Folly singletons must be registered before they are used.
     // Without this, test fails in phabricator.
     folly::SingletonVault::singleton()->registrationComplete();
-    state = std::make_shared<SonarState>();
+    state = std::make_shared<FlipperState>();
     contextStore = std::make_shared<ConnectionContextStoreMock>();
   }
 };

@@ -1,6 +1,6 @@
 #ifdef FB_SONARKIT_ENABLED
 
-#include <Flipper/SonarStateUpdateListener.h>
+#include <Flipper/FlipperStateUpdateListener.h>
 #import "FlipperStateUpdateListener.h"
 
 /*
@@ -8,7 +8,7 @@
  * A SKStateUpdateCPPWrapper instance allows for wrapping an Objective-C object
  * and passing it to the pure C++ SonarClient, so it can be triggered when updates occur.
  */
-class SKStateUpdateCPPWrapper : public SonarStateUpdateListener {
+class SKStateUpdateCPPWrapper : public FlipperStateUpdateListener {
 public:
   SKStateUpdateCPPWrapper(id<FlipperStateUpdateListener> delegate_);
   void onUpdate();

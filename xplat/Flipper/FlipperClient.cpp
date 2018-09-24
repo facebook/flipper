@@ -9,7 +9,7 @@
 #include "FlipperClient.h"
 #include "FlipperConnectionImpl.h"
 #include "FlipperResponderImpl.h"
-#include "SonarState.h"
+#include "FlipperState.h"
 #include "SonarStep.h"
 #include "FlipperConnectionManagerImpl.h"
 #include "ConnectionContextStore.h"
@@ -29,7 +29,7 @@ static FlipperClient* kInstance;
 using folly::dynamic;
 
 void FlipperClient::init(FlipperInitConfig config) {
-  auto state = std::make_shared<SonarState>();
+  auto state = std::make_shared<FlipperState>();
   auto context = std::make_shared<ConnectionContextStore>(config.deviceData);
   kInstance =
       new FlipperClient(std::make_unique<FlipperConnectionManagerImpl>(std::move(config), state, context), state);
@@ -40,7 +40,7 @@ FlipperClient* FlipperClient::instance() {
 }
 
 void FlipperClient::setStateListener(
-    std::shared_ptr<SonarStateUpdateListener> stateListener) {
+    std::shared_ptr<FlipperStateUpdateListener> stateListener) {
   log("Setting state listener");
   sonarState_->setUpdateListener(stateListener);
 }

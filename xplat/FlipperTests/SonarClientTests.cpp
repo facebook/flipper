@@ -19,7 +19,7 @@ namespace test {
 
 using folly::dynamic;
 
-auto state = std::make_shared<SonarState>();
+auto state = std::make_shared<FlipperState>();
 
 TEST(SonarClientTests, testSaneMocks) {
   FlipperConnectionManagerMock socket;

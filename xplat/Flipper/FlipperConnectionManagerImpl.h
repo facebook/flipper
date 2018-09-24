@@ -10,7 +10,7 @@
 
 #include "FlipperInitConfig.h"
 #include "FlipperConnectionManager.h"
-#include "SonarState.h"
+#include "FlipperState.h"
 #include <folly/Executor.h>
 #include <folly/io/async/EventBase.h>
 #include <rsocket/RSocket.h>
@@ -28,7 +28,7 @@ class FlipperConnectionManagerImpl : public FlipperConnectionManager {
   friend Responder;
 
  public:
-  FlipperConnectionManagerImpl(FlipperInitConfig config, std::shared_ptr<SonarState> state, std::shared_ptr<ConnectionContextStore> contextStore);
+  FlipperConnectionManagerImpl(FlipperInitConfig config, std::shared_ptr<FlipperState> state, std::shared_ptr<ConnectionContextStore> contextStore);
 
   ~FlipperConnectionManagerImpl();
 
@@ -48,7 +48,7 @@ class FlipperConnectionManagerImpl : public FlipperConnectionManager {
   bool isOpen_ = false;
   Callbacks* callbacks_;
   DeviceData deviceData_;
-  std::shared_ptr<SonarState> sonarState_;
+  std::shared_ptr<FlipperState> sonarState_;
 
   folly::EventBase* sonarEventBase_;
   folly::EventBase* connectionEventBase_;

@@ -22,8 +22,8 @@
 #include <Flipper/FlipperConnectionManager.h>
 #include <Flipper/FlipperConnection.h>
 #include <Flipper/FlipperResponder.h>
-#include <Flipper/SonarStateUpdateListener.h>
-#include <Flipper/SonarState.h>
+#include <Flipper/FlipperStateUpdateListener.h>
+#include <Flipper/FlipperState.h>
 
 using namespace facebook;
 using namespace facebook::flipper;
@@ -222,7 +222,7 @@ class JFlipperStateUpdateListener : public jni::JavaClass<JFlipperStateUpdateLis
   }
 };
 
-class AndroidFlipperStateUpdateListener : public SonarStateUpdateListener {
+class AndroidFlipperStateUpdateListener : public FlipperStateUpdateListener {
  public:
   AndroidFlipperStateUpdateListener(jni::alias_ref<JFlipperStateUpdateListener> stateListener);
   void onUpdate();
@@ -378,7 +378,7 @@ class JFlipperClient : public jni::HybridClass<JFlipperClient> {
 
  private:
   friend HybridBase;
-  std::shared_ptr<SonarStateUpdateListener> mStateListener = nullptr;
+  std::shared_ptr<FlipperStateUpdateListener> mStateListener = nullptr;
   JFlipperClient() {}
 };
 

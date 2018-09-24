@@ -14,7 +14,7 @@
 #include <map>
 
 class SonarStep;
-class SonarStateUpdateListener;
+class FlipperStateUpdateListener;
 
 namespace facebook {
 namespace flipper {
@@ -31,12 +31,12 @@ public:
 }
 }
 
-class SonarState {
+class FlipperState {
   friend SonarStep;
 
  public:
-  SonarState();
-  void setUpdateListener(std::shared_ptr<SonarStateUpdateListener>);
+  FlipperState();
+  void setUpdateListener(std::shared_ptr<FlipperStateUpdateListener>);
   std::string getState();
   std::vector<facebook::flipper::StateElement> getStateElements();
 
@@ -51,7 +51,7 @@ class SonarState {
   void failed(std::string, std::string);
   void started(std::string);
 
-  std::shared_ptr<SonarStateUpdateListener> mListener = nullptr;
+  std::shared_ptr<FlipperStateUpdateListener> mListener = nullptr;
   std::string log;
   std::vector<std::string> insertOrder;
   std::map<std::string, facebook::flipper::State> stateMap;

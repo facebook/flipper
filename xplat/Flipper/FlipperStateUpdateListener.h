@@ -8,7 +8,7 @@
 
 #pragma once
 
-class SonarStateUpdateListener {
+class FlipperStateUpdateListener {
  public:
   virtual void onUpdate() = 0;
 };

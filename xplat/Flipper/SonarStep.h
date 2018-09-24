@@ -10,7 +10,7 @@
 
 #include <string>
 
-class SonarState;
+class FlipperState;
 
 class SonarStep {
  public:
@@ -22,11 +22,11 @@ class SonarStep {
   // Mark the step as failed, and provide a message.
   void fail(std::string message);
 
-  SonarStep(std::string name, SonarState* state);
+  SonarStep(std::string name, FlipperState* state);
   ~SonarStep();
 
  private:
   std::string name;
   bool isLogged = false;
-  SonarState* state;
+  FlipperState* state;
 };
