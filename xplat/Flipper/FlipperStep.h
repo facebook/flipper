@@ -12,7 +12,7 @@
 
 class FlipperState;
 
-class SonarStep {
+class FlipperStep {
  public:
   /* Mark this step as completed successfully
    * failing to call complete() will be registered as a failure
@@ -22,8 +22,8 @@ class SonarStep {
   // Mark the step as failed, and provide a message.
   void fail(std::string message);
 
-  SonarStep(std::string name, FlipperState* state);
-  ~SonarStep();
+  FlipperStep(std::string name, FlipperState* state);
+  ~FlipperStep();
 
  private:
   std::string name;

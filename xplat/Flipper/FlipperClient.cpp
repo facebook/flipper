@@ -10,7 +10,7 @@
 #include "FlipperConnectionImpl.h"
 #include "FlipperResponderImpl.h"
 #include "FlipperState.h"
-#include "SonarStep.h"
+#include "FlipperStep.h"
 #include "FlipperConnectionManagerImpl.h"
 #include "ConnectionContextStore.h"
 #include "Log.h"

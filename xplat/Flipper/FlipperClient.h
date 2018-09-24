@@ -15,7 +15,7 @@
 #include "FlipperConnectionManager.h"
 #include <map>
 #include <mutex>
-#include "SonarStep.h"
+#include "FlipperStep.h"
 #include <vector>
 
 namespace facebook {

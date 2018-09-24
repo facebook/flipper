@@ -13,7 +13,7 @@
 #include <vector>
 #include <map>
 
-class SonarStep;
+class FlipperStep;
 class FlipperStateUpdateListener;
 
 namespace facebook {
@@ -32,7 +32,7 @@ public:
 }
 
 class FlipperState {
-  friend SonarStep;
+  friend FlipperStep;
 
  public:
   FlipperState();
@@ -41,10 +41,10 @@ class FlipperState {
   std::vector<facebook::flipper::StateElement> getStateElements();
 
   /* To record a state update, call start() with the name of the step to get a
-   SonarStep object. Call complete on this to register it successful,
+   FlipperStep object. Call complete on this to register it successful,
    the absense of the completion call when it is destructed will register as a
    step failure. */
-  std::shared_ptr<SonarStep> start(std::string step);
+  std::shared_ptr<FlipperStep> start(std::string step);
 
  private:
   void success(std::string);

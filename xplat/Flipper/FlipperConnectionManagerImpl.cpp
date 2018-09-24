@@ -7,7 +7,7 @@
  */
 
 #include "FlipperConnectionManagerImpl.h"
-#include "SonarStep.h"
+#include "FlipperStep.h"
 #include "ConnectionContextStore.h"
 #include "Log.h"
 #include <folly/String.h>

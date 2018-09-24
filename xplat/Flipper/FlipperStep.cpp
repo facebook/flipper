@@ -5,25 +5,25 @@
  *  file in the root directory of this source tree.
  *
  */
-#include "SonarStep.h"
+#include "FlipperStep.h"
 #include "FlipperState.h"
 
-void SonarStep::complete() {
+void FlipperStep::complete() {
   isLogged = true;
   state->success(name);
 }
 
-void SonarStep::fail(std::string message) {
+void FlipperStep::fail(std::string message) {
   isLogged = true;
   state->failed(name, message);
 }
 
-SonarStep::SonarStep(std::string step, FlipperState* s) {
+FlipperStep::FlipperStep(std::string step, FlipperState* s) {
   state = s;
   name = step;
 }
 
-SonarStep::~SonarStep() {
+FlipperStep::~FlipperStep() {
   if (!isLogged) {
     state->failed(name, "");
   }

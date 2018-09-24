@@ -7,7 +7,7 @@
  */
 #include "FlipperState.h"
 #include "FlipperStateUpdateListener.h"
-#include "SonarStep.h"
+#include "FlipperStep.h"
 #include <vector>
 
 using namespace facebook::flipper;
@@ -63,7 +63,7 @@ std::vector<StateElement> FlipperState::getStateElements() {
   return v;
 }
 
-std::shared_ptr<SonarStep> FlipperState::start(std::string step_name) {
+std::shared_ptr<FlipperStep> FlipperState::start(std::string step_name) {
   started(step_name);
-  return std::make_shared<SonarStep>(step_name, this);
+  return std::make_shared<FlipperStep>(step_name, this);
 }
