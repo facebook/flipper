@@ -16,7 +16,7 @@ public final class FlipperUtils {
 
   private FlipperUtils() {}
 
-  public static boolean shouldEnableSonar(Context context) {
+  public static boolean shouldEnableFlipper(Context context) {
     return BuildConfig.IS_INTERNAL_BUILD && !isEndToEndTest() && isMainProcess(context);
   }
 

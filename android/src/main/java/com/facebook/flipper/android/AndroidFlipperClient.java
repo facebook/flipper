@@ -18,7 +18,7 @@ import com.facebook.flipper.core.FlipperClient;
 
 public final class AndroidFlipperClient {
   private static boolean sIsInitialized = false;
-  private static FlipperThread sSonarThread;
+  private static FlipperThread sFlipperThread;
   private static FlipperThread sConnectionThread;
   private static final String[] REQUIRED_PERMISSIONS =
       new String[] {"android.permission.INTERNET", "android.permission.ACCESS_WIFI_STATE"};
@@ -26,15 +26,15 @@ public final class AndroidFlipperClient {
   public static synchronized FlipperClient getInstance(Context context) {
     if (!sIsInitialized) {
       checkRequiredPermissions(context);
-      sSonarThread = new FlipperThread("SonarEventBaseThread");
-      sSonarThread.start();
-      sConnectionThread = new FlipperThread("SonarConnectionThread");
+      sFlipperThread = new FlipperThread("FlipperEventBaseThread");
+      sFlipperThread.start();
+      sConnectionThread = new FlipperThread("FlipperConnectionThread");
       sConnectionThread.start();
 
       final Context app =
           context.getApplicationContext() == null ? context : context.getApplicationContext();
       FlipperClientImpl.init(
-          sSonarThread.getEventBase(),
+          sFlipperThread.getEventBase(),
           sConnectionThread.getEventBase(),
           getServerHost(app),
           "Android",
@@ -60,7 +60,7 @@ public final class AndroidFlipperClient {
     for (String permission : REQUIRED_PERMISSIONS) {
       if (ContextCompat.checkSelfPermission(context, permission)
           == PackageManager.PERMISSION_DENIED) {
-        Log.e("Sonar", String.format("App needs permission \"%s\" to work with sonar", permission));
+        Log.e("Flipper", String.format("App needs permission \"%s\" to work with sonar", permission));
       }
     }
   }
@@ -96,7 +96,7 @@ public final class AndroidFlipperClient {
       final int ip = info.getIpAddress();
       return String.format("%d.%d.%d.2", (ip & 0xff), (ip >> 8 & 0xff), (ip >> 16 & 0xff));
     } else {
-      // Running on physical device. Sonar desktop will run `adb reverse tcp:8088 tcp:8088`
+      // Running on physical device. Flipper desktop will run `adb reverse tcp:8088 tcp:8088`
       return "localhost";
     }
   }
