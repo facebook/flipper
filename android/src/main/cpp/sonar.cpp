@@ -8,7 +8,7 @@
 
 #include <memory>
 
-#ifdef SONAR_OSS
+#ifdef FLIPPER_OSS
 #include <fbjni/fbjni.h>
 #else
 #include <fb/fbjni.h>

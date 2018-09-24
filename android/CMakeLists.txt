@@ -6,7 +6,7 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 
 set(PACKAGE_NAME      "sonar")
 
-add_compile_options(-DSONAR_OSS=1
+add_compile_options(-DFLIPPER_OSS=1
                     -DFOLLY_NO_CONFIG
                     -DSONAR_JNI_EXTERNAL=1
                     -DFB_SONARKIT_ENABLED=1
