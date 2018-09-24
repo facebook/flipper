@@ -44,7 +44,7 @@
 <p>Start by creating your first test file in this directory <code>MySonarPluginTests.cpp</code> and import the testing utilities from <code>//xplat/sonar-client:FlipperTestLib</code>. These utilities mock out core pieces of the communication channel so that you can test your plugin in isolation.</p>
 <pre><code class="hljs"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;MySonarPlugin/MySonarPlugin.h&gt;</span></span>
 <span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;FlipperTestLib/FlipperConnectionMock.h&gt;</span></span>
-<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;FlipperTestLib/SonarResponderMock.h&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;FlipperTestLib/FlipperResponderMock.h&gt;</span></span>
 
 <span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;folly/json.h&gt;</span></span>
 <span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;gtest/gtest.h&gt;</span></span>
@@ -64,7 +64,7 @@ TEST(MySonarPluginTests, testDummy) {
 <p>Here is a simple test using these mock utilities to create a plugin, send some data, and assert that the result is as expected.</p>
 <pre><code class="hljs">TEST(MySonarPluginTests, testDummy) {
   <span class="hljs-symbol">std:</span><span class="hljs-symbol">:vector&lt;folly</span><span class="hljs-symbol">:</span><span class="hljs-symbol">:dynamic&gt;</span> successfulResponses;
-  auto responder = <span class="hljs-symbol">std:</span><span class="hljs-symbol">:make_unique&lt;SonarResponderMock&gt;</span>(&amp;successfulResponses);
+  auto responder = <span class="hljs-symbol">std:</span><span class="hljs-symbol">:make_unique&lt;FlipperResponderMock&gt;</span>(&amp;successfulResponses);
   auto conn = <span class="hljs-symbol">std:</span><span class="hljs-symbol">:make_shared&lt;FlipperConnectionMock&gt;</span>();
 
   MySonarPlugin plugin;
