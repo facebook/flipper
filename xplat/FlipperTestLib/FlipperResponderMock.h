@@ -15,9 +15,9 @@
 namespace facebook {
 namespace flipper {
 
-class SonarResponderMock : public FlipperResponder {
+class FlipperResponderMock : public FlipperResponder {
  public:
-  SonarResponderMock(
+  FlipperResponderMock(
       std::vector<folly::dynamic>* successes = nullptr,
       std::vector<folly::dynamic>* errors = nullptr)
       : successes_(successes), errors_(errors) {}

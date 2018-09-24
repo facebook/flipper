@@ -55,7 +55,7 @@ Start by creating your first test file in this directory `MySonarPluginTests.cpp
 ```
 #include <MySonarPlugin/MySonarPlugin.h>
 #include <FlipperTestLib/FlipperConnectionMock.h>
-#include <FlipperTestLib/SonarResponderMock.h>
+#include <FlipperTestLib/FlipperResponderMock.h>
 
 #include <folly/json.h>
 #include <gtest/gtest.h>
@@ -78,7 +78,7 @@ Here is a simple test using these mock utilities to create a plugin, send some d
 ```
 TEST(MySonarPluginTests, testDummy) {
   std::vector<folly::dynamic> successfulResponses;
-  auto responder = std::make_unique<SonarResponderMock>(&successfulResponses);
+  auto responder = std::make_unique<FlipperResponderMock>(&successfulResponses);
   auto conn = std::make_shared<FlipperConnectionMock>();
 
   MySonarPlugin plugin;

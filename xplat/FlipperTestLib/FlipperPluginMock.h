@@ -14,20 +14,20 @@ namespace facebook {
 namespace flipper {
 namespace test {
 
-class SonarPluginMock : public FlipperPlugin {
+class FlipperPluginMock : public FlipperPlugin {
   using ConnectionCallback =
       std::function<void(std::shared_ptr<FlipperConnection>)>;
   using DisconnectionCallback = std::function<void()>;
 
  public:
-  SonarPluginMock(const std::string& identifier) : identifier_(identifier) {}
+  FlipperPluginMock(const std::string& identifier) : identifier_(identifier) {}
 
-  SonarPluginMock(
+  FlipperPluginMock(
       const std::string& identifier,
       const ConnectionCallback& connectionCallback)
       : identifier_(identifier), connectionCallback_(connectionCallback) {}
 
-  SonarPluginMock(
+  FlipperPluginMock(
       const std::string& identifier,
       const ConnectionCallback& connectionCallback,
       const DisconnectionCallback& disconnectionCallback)

@@ -7,7 +7,7 @@
  */
 
 #include <Flipper/FlipperClient.h>
-#include <FlipperTestLib/SonarPluginMock.h>
+#include <FlipperTestLib/FlipperPluginMock.h>
 #include <FlipperTestLib/FlipperConnectionManagerMock.h>
 
 #include <folly/json.h>
@@ -28,7 +28,7 @@ TEST(FlipperClientTests, testSaneMocks) {
   socket.stop();
   EXPECT_FALSE(socket.isOpen());
 
-  SonarPluginMock plugin("Test");
+  FlipperPluginMock plugin("Test");
   EXPECT_EQ(plugin.identifier(), "Test");
 }
 
@@ -37,8 +37,8 @@ TEST(FlipperClientTests, testGetPlugins) {
   FlipperClient client(std::unique_ptr<FlipperConnectionManagerMock>{socket}, state);
   client.start();
 
-  client.addPlugin(std::make_shared<SonarPluginMock>("Cat"));
-  client.addPlugin(std::make_shared<SonarPluginMock>("Dog"));
+  client.addPlugin(std::make_shared<FlipperPluginMock>("Cat"));
+  client.addPlugin(std::make_shared<FlipperPluginMock>("Dog"));
 
   dynamic message = dynamic::object("id", 1)("method", "getPlugins");
   socket->callbacks->onMessageReceived(message);
@@ -52,9 +52,9 @@ TEST(FlipperClientTests, testGetPlugin) {
   auto socket = new FlipperConnectionManagerMock;
   FlipperClient client(std::unique_ptr<FlipperConnectionManagerMock>{socket}, state);
 
-  const auto catPlugin = std::make_shared<SonarPluginMock>("Cat");
+  const auto catPlugin = std::make_shared<FlipperPluginMock>("Cat");
   client.addPlugin(catPlugin);
-  const auto dogPlugin = std::make_shared<SonarPluginMock>("Dog");
+  const auto dogPlugin = std::make_shared<FlipperPluginMock>("Dog");
   client.addPlugin(dogPlugin);
 
   EXPECT_EQ(catPlugin, client.getPlugin("Cat"));
@@ -65,9 +65,9 @@ TEST(FlipperClientTests, testGetPluginWithDowncast) {
   auto socket = new FlipperConnectionManagerMock;
   FlipperClient client(std::unique_ptr<FlipperConnectionManagerMock>{socket}, state);
 
-  const auto catPlugin = std::make_shared<SonarPluginMock>("Cat");
+  const auto catPlugin = std::make_shared<FlipperPluginMock>("Cat");
   client.addPlugin(catPlugin);
-  EXPECT_EQ(catPlugin, client.getPlugin<SonarPluginMock>("Cat"));
+  EXPECT_EQ(catPlugin, client.getPlugin<FlipperPluginMock>("Cat"));
 }
 
 TEST(FlipperClientTests, testRemovePlugin) {
@@ -75,7 +75,7 @@ TEST(FlipperClientTests, testRemovePlugin) {
   FlipperClient client(std::unique_ptr<FlipperConnectionManagerMock>{socket}, state);
   client.start();
 
-  auto plugin = std::make_shared<SonarPluginMock>("Test");
+  auto plugin = std::make_shared<FlipperPluginMock>("Test");
   client.addPlugin(plugin);
   client.removePlugin(plugin);
 
@@ -107,7 +107,7 @@ TEST(FlipperClientTests, testConnectDisconnect) {
     pluginConnected = true;
   };
   const auto disconnectionCallback = [&]() { pluginConnected = false; };
-  auto plugin = std::make_shared<SonarPluginMock>("Test", connectionCallback,
+  auto plugin = std::make_shared<FlipperPluginMock>("Test", connectionCallback,
                                                   disconnectionCallback);
   client.addPlugin(plugin);
 
@@ -130,7 +130,7 @@ TEST(FlipperClientTests, testInitDeinit) {
     pluginConnected = true;
   };
   const auto disconnectionCallback = [&]() { pluginConnected = false; };
-  auto plugin = std::make_shared<SonarPluginMock>("Test", connectionCallback,
+  auto plugin = std::make_shared<FlipperPluginMock>("Test", connectionCallback,
                                                   disconnectionCallback);
 
   client.start();
@@ -168,7 +168,7 @@ TEST(FlipperClientTests, testRemovePluginWhenConnected) {
     pluginConnected = true;
   };
   const auto disconnectionCallback = [&]() { pluginConnected = false; };
-  auto plugin = std::make_shared<SonarPluginMock>("Test", connectionCallback,
+  auto plugin = std::make_shared<FlipperPluginMock>("Test", connectionCallback,
                                                   disconnectionCallback);
 
   client.addPlugin(plugin);
@@ -184,7 +184,7 @@ TEST(FlipperClientTests, testUnhandleableMethod) {
   auto socket = new FlipperConnectionManagerMock;
   FlipperClient client(std::unique_ptr<FlipperConnectionManagerMock>{socket}, state);
 
-  auto plugin = std::make_shared<SonarPluginMock>("Test");
+  auto plugin = std::make_shared<FlipperPluginMock>("Test");
   client.addPlugin(plugin);
 
   dynamic messageInit = dynamic::object("method", "init")(
@@ -213,7 +213,7 @@ TEST(FlipperClientTests, testExecute) {
     };
     conn->receive("plugin_can_u_hear_me", receiver);
   };
-  auto plugin = std::make_shared<SonarPluginMock>("Test", connectionCallback);
+  auto plugin = std::make_shared<FlipperPluginMock>("Test", connectionCallback);
   client.addPlugin(plugin);
 
   dynamic messageInit = dynamic::object("method", "init")(
@@ -245,7 +245,7 @@ TEST(FlipperClientTests, testExecuteWithParams) {
     };
     conn->receive("animal_sounds", receiver);
   };
-  auto plugin = std::make_shared<SonarPluginMock>("Test", connectionCallback);
+  auto plugin = std::make_shared<FlipperPluginMock>("Test", connectionCallback);
   client.addPlugin(plugin);
 
   dynamic messageInit = dynamic::object("method", "init")(
