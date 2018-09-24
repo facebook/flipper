@@ -6,7 +6,7 @@
  *
  */
 
-#include "SonarWebSocketImpl.h"
+#include "FlipperConnectionManagerImpl.h"
 #include "SonarStep.h"
 #include "ConnectionContextStore.h"
 #include "Log.h"
@@ -34,10 +34,10 @@ namespace flipper {
 
 class ConnectionEvents : public rsocket::RSocketConnectionEvents {
  private:
-  SonarWebSocketImpl* websocket_;
+  FlipperConnectionManagerImpl* websocket_;
 
  public:
-  ConnectionEvents(SonarWebSocketImpl* websocket) : websocket_(websocket) {}
+  ConnectionEvents(FlipperConnectionManagerImpl* websocket) : websocket_(websocket) {}
 
   void onConnected() {
     websocket_->isOpen_ = true;
@@ -64,10 +64,10 @@ class ConnectionEvents : public rsocket::RSocketConnectionEvents {
 
 class Responder : public rsocket::RSocketResponder {
  private:
-  SonarWebSocketImpl* websocket_;
+  FlipperConnectionManagerImpl* websocket_;
 
  public:
-  Responder(SonarWebSocketImpl* websocket) : websocket_(websocket) {}
+  Responder(FlipperConnectionManagerImpl* websocket) : websocket_(websocket) {}
 
   void handleFireAndForget(
       rsocket::Payload request,
@@ -77,17 +77,17 @@ class Responder : public rsocket::RSocketResponder {
   }
 };
 
-SonarWebSocketImpl::SonarWebSocketImpl(FlipperInitConfig config, std::shared_ptr<SonarState> state, std::shared_ptr<ConnectionContextStore> contextStore)
+FlipperConnectionManagerImpl::FlipperConnectionManagerImpl(FlipperInitConfig config, std::shared_ptr<SonarState> state, std::shared_ptr<ConnectionContextStore> contextStore)
     : deviceData_(config.deviceData), sonarState_(state), sonarEventBase_(config.callbackWorker), connectionEventBase_(config.connectionWorker), contextStore_(contextStore) {
       CHECK_THROW(config.callbackWorker, std::invalid_argument);
       CHECK_THROW(config.connectionWorker, std::invalid_argument);
     }
 
-SonarWebSocketImpl::~SonarWebSocketImpl() {
+FlipperConnectionManagerImpl::~FlipperConnectionManagerImpl() {
   stop();
 }
 
-void SonarWebSocketImpl::start() {
+void FlipperConnectionManagerImpl::start() {
   auto step = sonarState_->start("Start connection thread");
   folly::makeFuture()
       .via(sonarEventBase_->getEventBase())
@@ -95,7 +95,7 @@ void SonarWebSocketImpl::start() {
       .thenValue([this, step](auto&&){ step->complete(); startSync(); });
 }
 
-void SonarWebSocketImpl::startSync() {
+void FlipperConnectionManagerImpl::startSync() {
   if (!isRunningInOwnThread()) {
     log(WRONG_THREAD_EXIT_MSG);
     return;
@@ -132,7 +132,7 @@ void SonarWebSocketImpl::startSync() {
   }
 }
 
-void SonarWebSocketImpl::doCertificateExchange() {
+void FlipperConnectionManagerImpl::doCertificateExchange() {
 
   rsocket::SetupParameters parameters;
   folly::SocketAddress address;
@@ -159,7 +159,7 @@ void SonarWebSocketImpl::doCertificateExchange() {
   requestSignedCertFromSonar();
 }
 
-void SonarWebSocketImpl::connectSecurely() {
+void FlipperConnectionManagerImpl::connectSecurely() {
   rsocket::SetupParameters parameters;
   folly::SocketAddress address;
 
@@ -192,29 +192,29 @@ void SonarWebSocketImpl::connectSecurely() {
   failedConnectionAttempts_ = 0;
 }
 
-void SonarWebSocketImpl::reconnect() {
+void FlipperConnectionManagerImpl::reconnect() {
   folly::makeFuture()
       .via(sonarEventBase_->getEventBase())
       .delayed(std::chrono::seconds(reconnectIntervalSeconds))
       .thenValue([this](auto&&){ startSync(); });
 }
 
-void SonarWebSocketImpl::stop() {
+void FlipperConnectionManagerImpl::stop() {
   if (client_) {
     client_->disconnect();
   }
   client_ = nullptr;
 }
 
-bool SonarWebSocketImpl::isOpen() const {
+bool FlipperConnectionManagerImpl::isOpen() const {
   return isOpen_ && connectionIsTrusted_;
 }
 
-void SonarWebSocketImpl::setCallbacks(Callbacks* callbacks) {
+void FlipperConnectionManagerImpl::setCallbacks(Callbacks* callbacks) {
   callbacks_ = callbacks;
 }
 
-void SonarWebSocketImpl::sendMessage(const folly::dynamic& message) {
+void FlipperConnectionManagerImpl::sendMessage(const folly::dynamic& message) {
   sonarEventBase_->add([this, message]() {
     if (client_) {
       client_->getRequester()
@@ -224,7 +224,7 @@ void SonarWebSocketImpl::sendMessage(const folly::dynamic& message) {
   });
 }
 
-bool SonarWebSocketImpl::isCertificateExchangeNeeded() {
+bool FlipperConnectionManagerImpl::isCertificateExchangeNeeded() {
 
   if (failedConnectionAttempts_ >= 2) {
     return true;
@@ -238,7 +238,7 @@ bool SonarWebSocketImpl::isCertificateExchangeNeeded() {
   return !hasRequiredFiles;
 }
 
-void SonarWebSocketImpl::requestSignedCertFromSonar() {
+void FlipperConnectionManagerImpl::requestSignedCertFromSonar() {
   auto generatingCSR = sonarState_->start("Generate CSR");
   std::string csr = contextStore_->createCertificateSigningRequest();
   generatingCSR->complete();
@@ -283,7 +283,7 @@ void SonarWebSocketImpl::requestSignedCertFromSonar() {
   failedConnectionAttempts_ = 0;
 }
 
-void SonarWebSocketImpl::sendLegacyCertificateRequest(folly::dynamic message) {
+void FlipperConnectionManagerImpl::sendLegacyCertificateRequest(folly::dynamic message) {
   // Desktop is using an old version of Flipper.
   // Fall back to fireAndForget, instead of requestResponse.
   auto sendingRequest = sonarState_->start("Sending fallback certificate request");
@@ -297,7 +297,7 @@ void SonarWebSocketImpl::sendLegacyCertificateRequest(folly::dynamic message) {
    });
 }
 
-bool SonarWebSocketImpl::isRunningInOwnThread() {
+bool FlipperConnectionManagerImpl::isRunningInOwnThread() {
   return sonarEventBase_->isInEventBaseThread();
 }
 

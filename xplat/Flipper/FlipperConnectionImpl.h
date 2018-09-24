@@ -9,7 +9,7 @@
 #pragma once
 
 #include "FlipperConnection.h"
-#include "SonarWebSocket.h"
+#include "FlipperConnectionManager.h"
 #include <map>
 #include <string>
 
@@ -18,7 +18,7 @@ namespace flipper {
 
 class FlipperConnectionImpl : public FlipperConnection {
  public:
-  FlipperConnectionImpl(SonarWebSocket* socket, const std::string& name)
+  FlipperConnectionImpl(FlipperConnectionManager* socket, const std::string& name)
       : socket_(socket), name_(name) {}
 
   void call(
@@ -52,7 +52,7 @@ class FlipperConnectionImpl : public FlipperConnection {
   }
 
  private:
-  SonarWebSocket* socket_;
+  FlipperConnectionManager* socket_;
   std::string name_;
   std::map<std::string, SonarReceiver> receivers_;
 };

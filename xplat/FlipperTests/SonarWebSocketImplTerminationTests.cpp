@@ -6,7 +6,7 @@
  *
  */
 
-#include <Flipper/SonarWebSocketImpl.h>
+#include <Flipper/FlipperConnectionManagerImpl.h>
 #include <FlipperTestLib/ConnectionContextStoreMock.h>
 
 #include <gtest/gtest.h>
@@ -17,7 +17,7 @@ namespace test {
 
 using folly::EventBase;
 
-class SonarWebSocketImplTerminationTest : public ::testing::Test {
+class FlipperConnectionManagerImplTerminationTest : public ::testing::Test {
 protected:
   std::shared_ptr<SonarState> state;
   std::shared_ptr<ConnectionContextStore> contextStore;
@@ -30,9 +30,9 @@ protected:
   }
 };
 
-TEST_F(SonarWebSocketImplTerminationTest, testNullEventBaseGetsRejected) {
+TEST_F(FlipperConnectionManagerImplTerminationTest, testNullEventBaseGetsRejected) {
   try {
-    auto instance = std::make_shared<SonarWebSocketImpl>(FlipperInitConfig {
+    auto instance = std::make_shared<FlipperConnectionManagerImpl>(FlipperInitConfig {
       DeviceData {},
       nullptr,
       new EventBase()
@@ -45,7 +45,7 @@ TEST_F(SonarWebSocketImplTerminationTest, testNullEventBaseGetsRejected) {
     // Pass test
   }
   try {
-    auto instance = std::make_shared<SonarWebSocketImpl>(FlipperInitConfig {
+    auto instance = std::make_shared<FlipperConnectionManagerImpl>(FlipperInitConfig {
       DeviceData {},
       new EventBase(),
       nullptr
@@ -59,17 +59,17 @@ TEST_F(SonarWebSocketImplTerminationTest, testNullEventBaseGetsRejected) {
   }
 }
 
-TEST_F(SonarWebSocketImplTerminationTest, testNonStartedEventBaseDoesntHang) {
+TEST_F(FlipperConnectionManagerImplTerminationTest, testNonStartedEventBaseDoesntHang) {
   auto config = FlipperInitConfig {
     DeviceData {},
     new EventBase(),
     new EventBase()
   };
-  auto instance = std::make_shared<SonarWebSocketImpl>(config, state, contextStore);
+  auto instance = std::make_shared<FlipperConnectionManagerImpl>(config, state, contextStore);
   instance->start();
 }
 
-TEST_F(SonarWebSocketImplTerminationTest, testStartedEventBaseDoesntHang) {
+TEST_F(FlipperConnectionManagerImplTerminationTest, testStartedEventBaseDoesntHang) {
   auto sonarEventBase = new EventBase();
   auto connectionEventBase = new EventBase();
   auto sonarThread = std::thread([sonarEventBase](){
@@ -83,7 +83,7 @@ TEST_F(SonarWebSocketImplTerminationTest, testStartedEventBaseDoesntHang) {
     sonarEventBase,
     connectionEventBase
   };
-  auto instance = std::make_shared<SonarWebSocketImpl>(config, state, contextStore);
+  auto instance = std::make_shared<FlipperConnectionManagerImpl>(config, state, contextStore);
 
   instance->start();
 

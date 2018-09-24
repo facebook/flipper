@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 
 @protocol FlipperResponder;
-@protocol SonarWebSocket;
+@protocol FlipperConnectionManager;
 
 typedef void (^SonarReceiver)(NSDictionary*, id<FlipperResponder>);
 

@@ -19,7 +19,7 @@
 #include <folly/io/async/EventBaseManager.h>
 
 #include <Flipper/FlipperClient.h>
-#include <Flipper/SonarWebSocket.h>
+#include <Flipper/FlipperConnectionManager.h>
 #include <Flipper/FlipperConnection.h>
 #include <Flipper/FlipperResponder.h>
 #include <Flipper/SonarStateUpdateListener.h>

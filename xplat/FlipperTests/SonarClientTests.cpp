@@ -8,7 +8,7 @@
 
 #include <Flipper/FlipperClient.h>
 #include <FlipperTestLib/SonarPluginMock.h>
-#include <FlipperTestLib/SonarWebSocketMock.h>
+#include <FlipperTestLib/FlipperConnectionManagerMock.h>
 
 #include <folly/json.h>
 #include <gtest/gtest.h>
@@ -22,7 +22,7 @@ using folly::dynamic;
 auto state = std::make_shared<SonarState>();
 
 TEST(SonarClientTests, testSaneMocks) {
-  SonarWebSocketMock socket;
+  FlipperConnectionManagerMock socket;
   socket.start();
   EXPECT_TRUE(socket.isOpen());
   socket.stop();
@@ -33,8 +33,8 @@ TEST(SonarClientTests, testSaneMocks) {
 }
 
 TEST(SonarClientTests, testGetPlugins) {
-  auto socket = new SonarWebSocketMock;
-  FlipperClient client(std::unique_ptr<SonarWebSocketMock>{socket}, state);
+  auto socket = new FlipperConnectionManagerMock;
+  FlipperClient client(std::unique_ptr<FlipperConnectionManagerMock>{socket}, state);
   client.start();
 
   client.addPlugin(std::make_shared<SonarPluginMock>("Cat"));
@@ -49,8 +49,8 @@ TEST(SonarClientTests, testGetPlugins) {
 }
 
 TEST(SonarClientTests, testGetPlugin) {
-  auto socket = new SonarWebSocketMock;
-  FlipperClient client(std::unique_ptr<SonarWebSocketMock>{socket}, state);
+  auto socket = new FlipperConnectionManagerMock;
+  FlipperClient client(std::unique_ptr<FlipperConnectionManagerMock>{socket}, state);
 
   const auto catPlugin = std::make_shared<SonarPluginMock>("Cat");
   client.addPlugin(catPlugin);
@@ -62,8 +62,8 @@ TEST(SonarClientTests, testGetPlugin) {
 }
 
 TEST(SonarClientTests, testGetPluginWithDowncast) {
-  auto socket = new SonarWebSocketMock;
-  FlipperClient client(std::unique_ptr<SonarWebSocketMock>{socket}, state);
+  auto socket = new FlipperConnectionManagerMock;
+  FlipperClient client(std::unique_ptr<FlipperConnectionManagerMock>{socket}, state);
 
   const auto catPlugin = std::make_shared<SonarPluginMock>("Cat");
   client.addPlugin(catPlugin);
@@ -71,8 +71,8 @@ TEST(SonarClientTests, testGetPluginWithDowncast) {
 }
 
 TEST(SonarClientTests, testRemovePlugin) {
-  auto socket = new SonarWebSocketMock;
-  FlipperClient client(std::unique_ptr<SonarWebSocketMock>{socket}, state);
+  auto socket = new FlipperConnectionManagerMock;
+  FlipperClient client(std::unique_ptr<FlipperConnectionManagerMock>{socket}, state);
   client.start();
 
   auto plugin = std::make_shared<SonarPluginMock>("Test");
@@ -88,8 +88,8 @@ TEST(SonarClientTests, testRemovePlugin) {
 }
 
 TEST(SonarClientTests, testStartStop) {
-  auto socket = new SonarWebSocketMock;
-  FlipperClient client(std::unique_ptr<SonarWebSocketMock>{socket}, state);
+  auto socket = new FlipperConnectionManagerMock;
+  FlipperClient client(std::unique_ptr<FlipperConnectionManagerMock>{socket}, state);
 
   client.start();
   EXPECT_TRUE(socket->isOpen());
@@ -99,8 +99,8 @@ TEST(SonarClientTests, testStartStop) {
 }
 
 TEST(SonarClientTests, testConnectDisconnect) {
-  auto socket = new SonarWebSocketMock;
-  FlipperClient client(std::unique_ptr<SonarWebSocketMock>{socket}, state);
+  auto socket = new FlipperConnectionManagerMock;
+  FlipperClient client(std::unique_ptr<FlipperConnectionManagerMock>{socket}, state);
 
   bool pluginConnected = false;
   const auto connectionCallback = [&](std::shared_ptr<FlipperConnection> conn) {
@@ -122,8 +122,8 @@ TEST(SonarClientTests, testConnectDisconnect) {
 }
 
 TEST(SonarClientTests, testInitDeinit) {
-  auto socket = new SonarWebSocketMock;
-  FlipperClient client(std::unique_ptr<SonarWebSocketMock>{socket}, state);
+  auto socket = new FlipperConnectionManagerMock;
+  FlipperClient client(std::unique_ptr<FlipperConnectionManagerMock>{socket}, state);
 
   bool pluginConnected = false;
   const auto connectionCallback = [&](std::shared_ptr<FlipperConnection> conn) {
@@ -160,8 +160,8 @@ TEST(SonarClientTests, testInitDeinit) {
 }
 
 TEST(SonarClientTests, testRemovePluginWhenConnected) {
-  auto socket = new SonarWebSocketMock;
-  FlipperClient client(std::unique_ptr<SonarWebSocketMock>{socket}, state);
+  auto socket = new FlipperConnectionManagerMock;
+  FlipperClient client(std::unique_ptr<FlipperConnectionManagerMock>{socket}, state);
 
   bool pluginConnected = false;
   const auto connectionCallback = [&](std::shared_ptr<FlipperConnection> conn) {
@@ -181,8 +181,8 @@ TEST(SonarClientTests, testRemovePluginWhenConnected) {
 }
 
 TEST(SonarClientTests, testUnhandleableMethod) {
-  auto socket = new SonarWebSocketMock;
-  FlipperClient client(std::unique_ptr<SonarWebSocketMock>{socket}, state);
+  auto socket = new FlipperConnectionManagerMock;
+  FlipperClient client(std::unique_ptr<FlipperConnectionManagerMock>{socket}, state);
 
   auto plugin = std::make_shared<SonarPluginMock>("Test");
   client.addPlugin(plugin);
@@ -201,8 +201,8 @@ TEST(SonarClientTests, testUnhandleableMethod) {
 }
 
 TEST(SonarClientTests, testExecute) {
-  auto socket = new SonarWebSocketMock;
-  FlipperClient client(std::unique_ptr<SonarWebSocketMock>{socket}, state);
+  auto socket = new FlipperConnectionManagerMock;
+  FlipperClient client(std::unique_ptr<FlipperConnectionManagerMock>{socket}, state);
   client.start();
 
   const auto connectionCallback = [](std::shared_ptr<FlipperConnection> conn) {
@@ -231,8 +231,8 @@ TEST(SonarClientTests, testExecute) {
 }
 
 TEST(SonarClientTests, testExecuteWithParams) {
-  auto socket = new SonarWebSocketMock;
-  FlipperClient client(std::unique_ptr<SonarWebSocketMock>{socket}, state);
+  auto socket = new FlipperConnectionManagerMock;
+  FlipperClient client(std::unique_ptr<FlipperConnectionManagerMock>{socket}, state);
 
   const auto connectionCallback = [&](std::shared_ptr<FlipperConnection> conn) {
     const auto receiver = [](const dynamic &params,
@@ -264,8 +264,8 @@ TEST(SonarClientTests, testExecuteWithParams) {
 }
 
 TEST(SonarClientTests, testExceptionUnknownPlugin) {
-  auto socket = new SonarWebSocketMock;
-  FlipperClient client(std::unique_ptr<SonarWebSocketMock>{socket}, state);
+  auto socket = new FlipperConnectionManagerMock;
+  FlipperClient client(std::unique_ptr<FlipperConnectionManagerMock>{socket}, state);
   client.start();
 
   dynamic messageInit = dynamic::object("method", "init")(
@@ -277,8 +277,8 @@ TEST(SonarClientTests, testExceptionUnknownPlugin) {
 }
 
 TEST(SonarClientTests, testExceptionUnknownApi) {
-  auto socket = new SonarWebSocketMock;
-  FlipperClient client(std::unique_ptr<SonarWebSocketMock>{socket}, state);
+  auto socket = new FlipperConnectionManagerMock;
+  FlipperClient client(std::unique_ptr<FlipperConnectionManagerMock>{socket}, state);
   client.start();
 
   dynamic messageInit = dynamic::object("method", "execute")(

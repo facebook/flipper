@@ -8,15 +8,15 @@
 
 #pragma once
 
-#include <Flipper/SonarWebSocket.h>
+#include <Flipper/FlipperConnectionManager.h>
 
 namespace facebook {
 namespace flipper {
 namespace test {
 
-class SonarWebSocketMock : public SonarWebSocket {
+class FlipperConnectionManagerMock : public FlipperConnectionManager {
  public:
-  SonarWebSocketMock() : callbacks(nullptr) {}
+  FlipperConnectionManagerMock() : callbacks(nullptr) {}
 
   void start() override {
     open = true;

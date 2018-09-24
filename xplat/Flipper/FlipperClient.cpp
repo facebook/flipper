@@ -11,7 +11,7 @@
 #include "FlipperResponderImpl.h"
 #include "SonarState.h"
 #include "SonarStep.h"
-#include "SonarWebSocketImpl.h"
+#include "FlipperConnectionManagerImpl.h"
 #include "ConnectionContextStore.h"
 #include "Log.h"
 #include <vector>
@@ -32,7 +32,7 @@ void FlipperClient::init(FlipperInitConfig config) {
   auto state = std::make_shared<SonarState>();
   auto context = std::make_shared<ConnectionContextStore>(config.deviceData);
   kInstance =
-      new FlipperClient(std::make_unique<SonarWebSocketImpl>(std::move(config), state, context), state);
+      new FlipperClient(std::make_unique<FlipperConnectionManagerImpl>(std::move(config), state, context), state);
 }
 
 FlipperClient* FlipperClient::instance() {

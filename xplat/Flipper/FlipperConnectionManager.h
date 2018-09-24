@@ -13,12 +13,12 @@
 namespace facebook {
 namespace flipper {
 
-class SonarWebSocket {
+class FlipperConnectionManager {
  public:
   class Callbacks;
 
  public:
-  virtual ~SonarWebSocket(){};
+  virtual ~FlipperConnectionManager(){};
 
   /**
    Establishes a connection to the ws server.
@@ -48,7 +48,7 @@ class SonarWebSocket {
   virtual void setCallbacks(Callbacks* callbacks) = 0;
 };
 
-class SonarWebSocket::Callbacks {
+class FlipperConnectionManager::Callbacks {
  public:
   virtual ~Callbacks(){};
 

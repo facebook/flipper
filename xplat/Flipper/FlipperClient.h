@@ -12,7 +12,7 @@
 #include "FlipperInitConfig.h"
 #include "FlipperPlugin.h"
 #include "SonarState.h"
-#include "SonarWebSocket.h"
+#include "FlipperConnectionManager.h"
 #include <map>
 #include <mutex>
 #include "SonarStep.h"
@@ -21,7 +21,7 @@
 namespace facebook {
 namespace flipper {
 
-class FlipperClient : public SonarWebSocket::Callbacks {
+class FlipperClient : public FlipperConnectionManager::Callbacks {
  public:
   /**
    Call before accessing instance with FlipperClient::instance(). This will set up
@@ -40,7 +40,7 @@ class FlipperClient : public SonarWebSocket::Callbacks {
   /**
    Only public for testing
    */
-  FlipperClient(std::unique_ptr<SonarWebSocket> socket, std::shared_ptr<SonarState> state)
+  FlipperClient(std::unique_ptr<FlipperConnectionManager> socket, std::shared_ptr<SonarState> state)
       : socket_(std::move(socket)), sonarState_(state) {
     auto step = sonarState_->start("Create client");
     socket_->setCallbacks(this);
@@ -90,7 +90,7 @@ class FlipperClient : public SonarWebSocket::Callbacks {
  private:
   static FlipperClient* instance_;
   bool connected_ = false;
-  std::unique_ptr<SonarWebSocket> socket_;
+  std::unique_ptr<FlipperConnectionManager> socket_;
   std::map<std::string, std::shared_ptr<FlipperPlugin>> plugins_;
   std::map<std::string, std::shared_ptr<FlipperConnectionImpl>> connections_;
   std::mutex mutex_;

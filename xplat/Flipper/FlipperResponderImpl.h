@@ -9,7 +9,7 @@
 #pragma once
 
 #include "FlipperResponder.h"
-#include "SonarWebSocket.h"
+#include "FlipperConnectionManager.h"
 #include <folly/json.h>
 
 namespace facebook {
@@ -17,7 +17,7 @@ namespace flipper {
 
 class FlipperResponderImpl : public FlipperResponder {
  public:
-  FlipperResponderImpl(SonarWebSocket* socket, int64_t responseID)
+  FlipperResponderImpl(FlipperConnectionManager* socket, int64_t responseID)
       : socket_(socket), responseID_(responseID) {}
 
   void success(const folly::dynamic& response) const override {
@@ -33,7 +33,7 @@ class FlipperResponderImpl : public FlipperResponder {
   }
 
  private:
-  SonarWebSocket* socket_;
+  FlipperConnectionManager* socket_;
   int64_t responseID_;
 };
 

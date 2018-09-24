@@ -9,7 +9,7 @@
 #pragma once
 
 #include "FlipperInitConfig.h"
-#include "SonarWebSocket.h"
+#include "FlipperConnectionManager.h"
 #include "SonarState.h"
 #include <folly/Executor.h>
 #include <folly/io/async/EventBase.h>
@@ -23,14 +23,14 @@ class ConnectionEvents;
 class ConnectionContextStore;
 class Responder;
 
-class SonarWebSocketImpl : public SonarWebSocket {
+class FlipperConnectionManagerImpl : public FlipperConnectionManager {
   friend ConnectionEvents;
   friend Responder;
 
  public:
-  SonarWebSocketImpl(FlipperInitConfig config, std::shared_ptr<SonarState> state, std::shared_ptr<ConnectionContextStore> contextStore);
+  FlipperConnectionManagerImpl(FlipperInitConfig config, std::shared_ptr<SonarState> state, std::shared_ptr<ConnectionContextStore> contextStore);
 
-  ~SonarWebSocketImpl();
+  ~FlipperConnectionManagerImpl();
 
   void start() override;
 
