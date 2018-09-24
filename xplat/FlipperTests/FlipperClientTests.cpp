@@ -21,7 +21,7 @@ using folly::dynamic;
 
 auto state = std::make_shared<FlipperState>();
 
-TEST(SonarClientTests, testSaneMocks) {
+TEST(FlipperClientTests, testSaneMocks) {
   FlipperConnectionManagerMock socket;
   socket.start();
   EXPECT_TRUE(socket.isOpen());
@@ -32,7 +32,7 @@ TEST(SonarClientTests, testSaneMocks) {
   EXPECT_EQ(plugin.identifier(), "Test");
 }
 
-TEST(SonarClientTests, testGetPlugins) {
+TEST(FlipperClientTests, testGetPlugins) {
   auto socket = new FlipperConnectionManagerMock;
   FlipperClient client(std::unique_ptr<FlipperConnectionManagerMock>{socket}, state);
   client.start();
@@ -48,7 +48,7 @@ TEST(SonarClientTests, testGetPlugins) {
   EXPECT_EQ(socket->messages.back(), expected);
 }
 
-TEST(SonarClientTests, testGetPlugin) {
+TEST(FlipperClientTests, testGetPlugin) {
   auto socket = new FlipperConnectionManagerMock;
   FlipperClient client(std::unique_ptr<FlipperConnectionManagerMock>{socket}, state);
 
@@ -61,7 +61,7 @@ TEST(SonarClientTests, testGetPlugin) {
   EXPECT_EQ(dogPlugin, client.getPlugin("Dog"));
 }
 
-TEST(SonarClientTests, testGetPluginWithDowncast) {
+TEST(FlipperClientTests, testGetPluginWithDowncast) {
   auto socket = new FlipperConnectionManagerMock;
   FlipperClient client(std::unique_ptr<FlipperConnectionManagerMock>{socket}, state);
 
@@ -70,7 +70,7 @@ TEST(SonarClientTests, testGetPluginWithDowncast) {
   EXPECT_EQ(catPlugin, client.getPlugin<SonarPluginMock>("Cat"));
 }
 
-TEST(SonarClientTests, testRemovePlugin) {
+TEST(FlipperClientTests, testRemovePlugin) {
   auto socket = new FlipperConnectionManagerMock;
   FlipperClient client(std::unique_ptr<FlipperConnectionManagerMock>{socket}, state);
   client.start();
@@ -87,7 +87,7 @@ TEST(SonarClientTests, testRemovePlugin) {
   EXPECT_EQ(socket->messages.back(), expected);
 }
 
-TEST(SonarClientTests, testStartStop) {
+TEST(FlipperClientTests, testStartStop) {
   auto socket = new FlipperConnectionManagerMock;
   FlipperClient client(std::unique_ptr<FlipperConnectionManagerMock>{socket}, state);
 
@@ -98,7 +98,7 @@ TEST(SonarClientTests, testStartStop) {
   EXPECT_FALSE(socket->isOpen());
 }
 
-TEST(SonarClientTests, testConnectDisconnect) {
+TEST(FlipperClientTests, testConnectDisconnect) {
   auto socket = new FlipperConnectionManagerMock;
   FlipperClient client(std::unique_ptr<FlipperConnectionManagerMock>{socket}, state);
 
@@ -121,7 +121,7 @@ TEST(SonarClientTests, testConnectDisconnect) {
   EXPECT_FALSE(pluginConnected);
 }
 
-TEST(SonarClientTests, testInitDeinit) {
+TEST(FlipperClientTests, testInitDeinit) {
   auto socket = new FlipperConnectionManagerMock;
   FlipperClient client(std::unique_ptr<FlipperConnectionManagerMock>{socket}, state);
 
@@ -159,7 +159,7 @@ TEST(SonarClientTests, testInitDeinit) {
   EXPECT_FALSE(pluginConnected);
 }
 
-TEST(SonarClientTests, testRemovePluginWhenConnected) {
+TEST(FlipperClientTests, testRemovePluginWhenConnected) {
   auto socket = new FlipperConnectionManagerMock;
   FlipperClient client(std::unique_ptr<FlipperConnectionManagerMock>{socket}, state);
 
@@ -180,7 +180,7 @@ TEST(SonarClientTests, testRemovePluginWhenConnected) {
   EXPECT_EQ(socket->messages.back(), expected);
 }
 
-TEST(SonarClientTests, testUnhandleableMethod) {
+TEST(FlipperClientTests, testUnhandleableMethod) {
   auto socket = new FlipperConnectionManagerMock;
   FlipperClient client(std::unique_ptr<FlipperConnectionManagerMock>{socket}, state);
 
@@ -200,7 +200,7 @@ TEST(SonarClientTests, testUnhandleableMethod) {
   EXPECT_EQ(socket->messages.back(), expected);
 }
 
-TEST(SonarClientTests, testExecute) {
+TEST(FlipperClientTests, testExecute) {
   auto socket = new FlipperConnectionManagerMock;
   FlipperClient client(std::unique_ptr<FlipperConnectionManagerMock>{socket}, state);
   client.start();
@@ -230,7 +230,7 @@ TEST(SonarClientTests, testExecute) {
   EXPECT_EQ(socket->messages.back(), expected);
 }
 
-TEST(SonarClientTests, testExecuteWithParams) {
+TEST(FlipperClientTests, testExecuteWithParams) {
   auto socket = new FlipperConnectionManagerMock;
   FlipperClient client(std::unique_ptr<FlipperConnectionManagerMock>{socket}, state);
 
@@ -263,7 +263,7 @@ TEST(SonarClientTests, testExecuteWithParams) {
   EXPECT_EQ(socket->messages.back(), expected);
 }
 
-TEST(SonarClientTests, testExceptionUnknownPlugin) {
+TEST(FlipperClientTests, testExceptionUnknownPlugin) {
   auto socket = new FlipperConnectionManagerMock;
   FlipperClient client(std::unique_ptr<FlipperConnectionManagerMock>{socket}, state);
   client.start();
@@ -276,7 +276,7 @@ TEST(SonarClientTests, testExceptionUnknownPlugin) {
             "plugin Unknown not found for method init");
 }
 
-TEST(SonarClientTests, testExceptionUnknownApi) {
+TEST(FlipperClientTests, testExceptionUnknownApi) {
   auto socket = new FlipperConnectionManagerMock;
   FlipperClient client(std::unique_ptr<FlipperConnectionManagerMock>{socket}, state);
   client.start();
