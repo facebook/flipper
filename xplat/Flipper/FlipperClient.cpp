@@ -8,7 +8,7 @@
 
 #include "FlipperClient.h"
 #include "FlipperConnectionImpl.h"
-#include "SonarResponderImpl.h"
+#include "FlipperResponderImpl.h"
 #include "SonarState.h"
 #include "SonarStep.h"
 #include "SonarWebSocketImpl.h"
@@ -134,10 +134,10 @@ void FlipperClient::onMessageReceived(const dynamic& message) {
     const auto& method = message["method"];
     const auto& params = message.getDefault("params");
 
-    std::unique_ptr<SonarResponderImpl> responder;
+    std::unique_ptr<FlipperResponderImpl> responder;
     if (message.find("id") != message.items().end()) {
       responder.reset(
-          new SonarResponderImpl(socket_.get(), message["id"].getInt()));
+          new FlipperResponderImpl(socket_.get(), message["id"].getInt()));
     }
 
     if (method == "getPlugins") {

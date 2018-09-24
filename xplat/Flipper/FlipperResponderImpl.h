@@ -15,9 +15,9 @@
 namespace facebook {
 namespace flipper {
 
-class SonarResponderImpl : public FlipperResponder {
+class FlipperResponderImpl : public FlipperResponder {
  public:
-  SonarResponderImpl(SonarWebSocket* socket, int64_t responseID)
+  FlipperResponderImpl(SonarWebSocket* socket, int64_t responseID)
       : socket_(socket), responseID_(responseID) {}
 
   void success(const folly::dynamic& response) const override {
