@@ -41,18 +41,26 @@ matrix:
     - language: objective-c
 
       before_install:
+        - rm -rf iOS/Sample/Pods
+        - rm -f iOS/Sample/Podfile.lock
+        - rm -f iOS/SampleSwift/Podfile.lock
         - pod repo update
 
       install:
         - cd iOS/Sample
+        - rm -f Podfile.lock
+        - pod install
+        - cd ../SampleSwift
+        - rm -f Podfile.lock
         - pod install
         - cd ../../
 
       script:
         - cd iOS/Sample
-        - xcodebuild -showsdks
-        - xcodebuild clean build -workspace Sample.xcworkspace -scheme Pods-Sample -sdk iphonesimulator11.4
-
+        - IPHONESIMULATOR=$(xcodebuild -showsdks | grep -o "iphonesimulator[0-9]\\+\\.[0-9]\\+$")
+        - xcodebuild clean build -workspace Sample.xcworkspace -scheme Pods-Sample -sdk $IPHONESIMULATOR -quiet
+        - cd ../SampleSwift
+        - xcodebuild clean build -workspace SampleSwift.xcworkspace -scheme SampleSwift -sdk "$IPHONESIMULATOR" -quiet
     - language: android
       os: linux
       android:
