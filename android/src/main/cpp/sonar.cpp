@@ -231,7 +231,7 @@ class AndroidFlipperStateUpdateListener : public SonarStateUpdateListener {
    jni::global_ref<JFlipperStateUpdateListener> jStateListener;
 };
 
-class JFlipperPluginWrapper : public SonarPlugin {
+class JFlipperPluginWrapper : public FlipperPlugin {
  public:
   jni::global_ref<JFlipperPlugin> jplugin;
 

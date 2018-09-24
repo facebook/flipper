@@ -45,7 +45,7 @@ void FlipperClient::setStateListener(
   sonarState_->setUpdateListener(stateListener);
 }
 
-void FlipperClient::addPlugin(std::shared_ptr<SonarPlugin> plugin) {
+void FlipperClient::addPlugin(std::shared_ptr<FlipperPlugin> plugin) {
   log("FlipperClient::addPlugin " + plugin->identifier());
   auto step = sonarState_->start("Add plugin " + plugin->identifier());
 
@@ -63,7 +63,7 @@ void FlipperClient::addPlugin(std::shared_ptr<SonarPlugin> plugin) {
   });
 }
 
-void FlipperClient::removePlugin(std::shared_ptr<SonarPlugin> plugin) {
+void FlipperClient::removePlugin(std::shared_ptr<FlipperPlugin> plugin) {
   log("FlipperClient::removePlugin " + plugin->identifier());
 
   std::lock_guard<std::mutex> lock(mutex_);
@@ -79,7 +79,7 @@ void FlipperClient::removePlugin(std::shared_ptr<SonarPlugin> plugin) {
   });
 }
 
-std::shared_ptr<SonarPlugin> FlipperClient::getPlugin(
+std::shared_ptr<FlipperPlugin> FlipperClient::getPlugin(
     const std::string& identifier) {
   std::lock_guard<std::mutex> lock(mutex_);
   if (plugins_.find(identifier) == plugins_.end()) {
@@ -93,7 +93,7 @@ bool FlipperClient::hasPlugin(const std::string& identifier) {
   return plugins_.find(identifier) != plugins_.end();
 }
 
-void FlipperClient::disconnect(std::shared_ptr<SonarPlugin> plugin) {
+void FlipperClient::disconnect(std::shared_ptr<FlipperPlugin> plugin) {
   const auto& conn = connections_.find(plugin->identifier());
   if (conn != connections_.end()) {
     connections_.erase(plugin->identifier());

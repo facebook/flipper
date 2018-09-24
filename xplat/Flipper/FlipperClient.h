@@ -10,7 +10,7 @@
 
 #include "FlipperConnectionImpl.h"
 #include "FlipperInitConfig.h"
-#include "SonarPlugin.h"
+#include "FlipperPlugin.h"
 #include "SonarState.h"
 #include "SonarWebSocket.h"
 #include <map>
@@ -65,16 +65,16 @@ class FlipperClient : public SonarWebSocket::Callbacks {
 
   void onMessageReceived(const folly::dynamic& message) override;
 
-  void addPlugin(std::shared_ptr<SonarPlugin> plugin);
+  void addPlugin(std::shared_ptr<FlipperPlugin> plugin);
 
-  void removePlugin(std::shared_ptr<SonarPlugin> plugin);
+  void removePlugin(std::shared_ptr<FlipperPlugin> plugin);
 
   void refreshPlugins();
 
   void setStateListener(
       std::shared_ptr<SonarStateUpdateListener> stateListener);
 
-  std::shared_ptr<SonarPlugin> getPlugin(const std::string& identifier);
+  std::shared_ptr<FlipperPlugin> getPlugin(const std::string& identifier);
 
   std::string getState();
 
@@ -91,13 +91,13 @@ class FlipperClient : public SonarWebSocket::Callbacks {
   static FlipperClient* instance_;
   bool connected_ = false;
   std::unique_ptr<SonarWebSocket> socket_;
-  std::map<std::string, std::shared_ptr<SonarPlugin>> plugins_;
+  std::map<std::string, std::shared_ptr<FlipperPlugin>> plugins_;
   std::map<std::string, std::shared_ptr<FlipperConnectionImpl>> connections_;
   std::mutex mutex_;
   std::shared_ptr<SonarState> sonarState_;
 
   void performAndReportError(const std::function<void()>& func);
-  void disconnect(std::shared_ptr<SonarPlugin> plugin);
+  void disconnect(std::shared_ptr<FlipperPlugin> plugin);
 };
 
 } // namespace flipper

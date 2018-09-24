@@ -9,7 +9,7 @@
 #error This header can only be included in .mm (ObjC++) files
 #endif
 
-#import <Flipper/SonarPlugin.h>
+#import <Flipper/FlipperPlugin.h>
 #import <FlipperKit/CppBridge/FlipperCppBridgingConnection.h>
 #import <FlipperKit/FlipperPlugin.h>
 
@@ -23,7 +23,7 @@ SonarCppWrapperPlugin is a simple C++ wrapper around Objective-C Sonar plugins
 that can be passed to SonarClient. This class allows developers to write pure
 Objective-C plugins if they want.
 */
-class SonarCppWrapperPlugin final : public facebook::flipper::SonarPlugin {
+class SonarCppWrapperPlugin final : public facebook::flipper::FlipperPlugin {
 public:
   // Under ARC copying objCPlugin *does* increment its retain count
   SonarCppWrapperPlugin(ObjCPlugin objCPlugin) : _objCPlugin(objCPlugin) {}

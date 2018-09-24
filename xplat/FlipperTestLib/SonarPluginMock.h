@@ -8,13 +8,13 @@
 
 #pragma once
 
-#include <Flipper/SonarPlugin.h>
+#include <Flipper/FlipperPlugin.h>
 
 namespace facebook {
 namespace flipper {
 namespace test {
 
-class SonarPluginMock : public SonarPlugin {
+class SonarPluginMock : public FlipperPlugin {
   using ConnectionCallback =
       std::function<void(std::shared_ptr<FlipperConnection>)>;
   using DisconnectionCallback = std::function<void()>;

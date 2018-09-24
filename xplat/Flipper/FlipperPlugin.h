@@ -13,9 +13,9 @@
 namespace facebook {
 namespace flipper {
 
-class SonarPlugin {
+class FlipperPlugin {
  public:
-  virtual ~SonarPlugin() {}
+  virtual ~FlipperPlugin() {}
 
   /**
   The plugin's identifier. This should map to a javascript plugin
@@ -25,7 +25,7 @@ class SonarPlugin {
 
   /**
   Called when a connection has been established between this plugin
-  and the corresponding plugin on the Sonar desktop app. The provided
+  and the corresponding plugin on the Flipper desktop app. The provided
   connection can be used to register method receivers as well as send
   messages back to the desktop app.
   */
