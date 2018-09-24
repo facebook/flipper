@@ -25,7 +25,7 @@ Always use `ErrorReportingRunnable` for error handling instead of `try`/`catch` 
 
 ## C++
 
-To gracefully handle errors in Flipper we perform all transactions inside of a try block which catches all exceptions, stopping them from crashing the application and reporting them to the plugin developer. This includes your own customs implementations of `SonarPlugin::didConnect()` and `SonarConnection::send()` and `::receive()`!
+To gracefully handle errors in Flipper we perform all transactions inside of a try block which catches all exceptions, stopping them from crashing the application and reporting them to the plugin developer. This includes your own customs implementations of `SonarPlugin::didConnect()` and `FlipperConnection::send()` and `::receive()`!
 
 That means you can safely throw exceptions in your plugin code. The exception messages will be sent to the Flipper desktop app. During plugin development the exception messages are surfaced in the Chrome dev console.
 

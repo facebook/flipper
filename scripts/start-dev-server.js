@@ -14,7 +14,7 @@ const Convert = require('ansi-to-html');
 const chalk = require('chalk');
 const http = require('http');
 const path = require('path');
-const metro = require('../static/node_modules/metro');
+const Metro = require('../static/node_modules/metro');
 const fs = require('fs');
 
 const convertAnsi = new Convert();
@@ -48,15 +48,23 @@ function launchElectron({bundleURL, electronURL}) {
   });
 }
 
-function startMetroServer(port) {
-  return metro.runServer({
-    port,
-    watch: true,
-    config: {
-      getProjectRoots: () => [path.join(__dirname, '..')],
-      getTransformModulePath: () =>
-        path.join(__dirname, '..', 'static', 'transforms', 'index.js'),
+function startMetroServer(app) {
+  const projectRoot = path.join(__dirname, '..');
+  return Metro.runMetro({
+    projectRoot,
+    watchFolders: [projectRoot],
+    transformer: {
+      babelTransformerPath: path.join(
+        __dirname,
+        '..',
+        'static',
+        'transforms',
+        'index.js',
+      ),
     },
+    watch: true,
+  }).then(metroBundlerServer => {
+    app.use(metroBundlerServer.processRequest.bind(metroBundlerServer));
   });
 }
 
@@ -88,7 +96,7 @@ function startAssetServer(port) {
   const server = http.createServer(app);
 
   return new Promise((resolve, reject) => {
-    server.listen(port, () => resolve(server));
+    server.listen(port, () => resolve({app, server}));
   });
 }
 
@@ -162,14 +170,13 @@ function outputScreen(socket) {
 }
 
 (async () => {
-  const assetServerPort = await detect(DEFAULT_PORT);
-  const assetServer = await startAssetServer(assetServerPort);
-  const socket = addWebsocket(assetServer);
-  const metroServerPort = await detect(DEFAULT_PORT + 1);
-  await startMetroServer(metroServerPort);
+  const port = await detect(DEFAULT_PORT);
+  const {app, server} = await startAssetServer(port);
+  const socket = addWebsocket(server);
+  await startMetroServer(app);
   outputScreen(socket);
   launchElectron({
-    bundleURL: `http://localhost:${metroServerPort}/src/init.bundle`,
-    electronURL: `http://localhost:${assetServerPort}/index.dev.html`,
+    bundleURL: `http://localhost:${port}/src/init.bundle`,
+    electronURL: `http://localhost:${port}/index.dev.html`,
   });
 })();

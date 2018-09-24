@@ -5,43 +5,30 @@
  * @format
  */
 
-import type {StyledComponent} from '../styled/index.js';
 import Interactive from './Interactive.js';
 import FlexColumn from './FlexColumn.js';
 import {colors} from './colors';
 import {Component} from 'react';
+import styled from '../styled/index.js';
 
-const SidebarInteractiveContainer = Interactive.extends({
+const SidebarInteractiveContainer = styled(Interactive)({
   flex: 'none',
 });
 
 type SidebarPosition = 'left' | 'top' | 'right' | 'bottom';
 
-const SidebarContainer: StyledComponent<{
-  position: SidebarPosition,
-  overflow?: boolean,
-}> = FlexColumn.extends(
-  {
-    backgroundColor: props =>
-      props.backgroundColor || colors.macOSTitleBarBackgroundBlur,
-    borderLeft: props =>
-      props.position === 'right' ? '1px solid #b3b3b3' : 'none',
-    borderTop: props =>
-      props.position === 'bottom' ? '1px solid #b3b3b3' : 'none',
-    borderRight: props =>
-      props.position === 'left' ? '1px solid #b3b3b3' : 'none',
-    borderBottom: props =>
-      props.position === 'top' ? '1px solid #b3b3b3' : 'none',
-    height: '100%',
-    overflowX: 'hidden',
-    overflowY: 'auto',
-    textOverflow: props => (props.overflow ? 'ellipsis' : 'auto'),
-    whiteSpace: props => (props.overflow ? 'nowrap' : 'normal'),
-  },
-  {
-    ignoreAttributes: ['backgroundColor', 'position'],
-  },
-);
+const SidebarContainer = styled(FlexColumn)(props => ({
+  backgroundColor: props.backgroundColor || colors.macOSTitleBarBackgroundBlur,
+  borderLeft: props.position === 'right' ? '1px solid #b3b3b3' : 'none',
+  borderTop: props.position === 'bottom' ? '1px solid #b3b3b3' : 'none',
+  borderRight: props.position === 'left' ? '1px solid #b3b3b3' : 'none',
+  borderBottom: props.position === 'top' ? '1px solid #b3b3b3' : 'none',
+  height: '100%',
+  overflowX: 'hidden',
+  overflowY: 'auto',
+  textOverflow: props.overflow ? 'ellipsis' : 'auto',
+  whiteSpace: props.overflow ? 'nowrap' : 'normal',
+}));
 
 type SidebarProps = {
   /**

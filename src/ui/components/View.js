@@ -7,16 +7,11 @@
 
 import styled from '../styled/index.js';
 
-const View = styled.view(
-  {
-    height: props => (props.fill ? '100%' : 'auto'),
-    overflow: props => (props.scrollable ? 'auto' : 'visible'),
-    position: 'relative',
-    width: props => (props.fill ? '100%' : 'auto'),
-  },
-  {
-    ignoreAttributes: ['fill', 'scrollable'],
-  },
-);
+const View = styled('div')(props => ({
+  height: props.fill ? '100%' : 'auto',
+  overflow: props.scrollable ? 'auto' : 'visible',
+  position: 'relative',
+  width: props.fill ? '100%' : 'auto',
+}));
 
 export default View;

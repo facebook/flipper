@@ -6,37 +6,45 @@
  */
 
 const generate = require('@babel/generator').default;
-const babylon = require('babylon');
+const babylon = require('@babel/parser');
 const babel = require('@babel/core');
 const metro = require('metro');
 
 exports.transform = function({filename, options, src}) {
-  const presets = [require('../node_modules/babel-preset-react')];
-  const isSonarPlugin = !__dirname.startsWith(options.projectRoot);
+  const presets = [require('../node_modules/@babel/preset-react')];
+  const isPlugin = !__dirname.startsWith(options.projectRoot);
 
   let ast = babylon.parse(src, {
     filename,
-    plugins: ['jsx', 'flow', 'classProperties', 'objectRestSpread'],
+    plugins: [
+      'jsx',
+      'flow',
+      'classProperties',
+      'objectRestSpread',
+      'optionalChaining',
+    ],
     sourceType: 'module',
   });
 
   // run babel
   const plugins = [
-    require('../node_modules/babel-plugin-transform-object-rest-spread'),
-    require('../node_modules/babel-plugin-transform-class-properties'),
-    require('../node_modules/babel-plugin-transform-flow-strip-types'),
+    require('../node_modules/@babel/plugin-transform-modules-commonjs'),
+    require('../node_modules/@babel/plugin-proposal-object-rest-spread'),
+    require('../node_modules/@babel/plugin-proposal-class-properties'),
+    require('../node_modules/@babel/plugin-transform-flow-strip-types'),
+    require('../node_modules/@babel/plugin-proposal-optional-chaining'),
     require('./electron-requires.js'),
     require('./fb-stubs.js'),
     require('./dynamic-requires.js'),
   ];
-  if (isSonarPlugin) {
-    plugins.push(require('./sonar-requires.js'));
+  if (isPlugin) {
+    plugins.push(require('./flipper-requires.js'));
   } else {
     plugins.push(require('./import-react.js'));
   }
-  plugins.unshift(require('babel-plugin-transform-es2015-modules-commonjs'));
 
   ast = babel.transformFromAst(ast, src, {
+    ast: true,
     babelrc: !filename.includes('node_modules'),
     code: false,
     comments: false,
@@ -46,6 +54,7 @@ exports.transform = function({filename, options, src}) {
     presets,
     sourceMaps: true,
   }).ast;
+
   const result = generate(
     ast,
     {
@@ -55,6 +64,7 @@ exports.transform = function({filename, options, src}) {
     },
     src,
   );
+
   return {
     ast,
     code: result.code,

@@ -6,8 +6,9 @@
  */
 
 import View from './View.js';
+import styled from '../styled/index.js';
 
-export default View.extends({
+export default styled(View)({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',

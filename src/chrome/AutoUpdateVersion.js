@@ -5,19 +5,27 @@
  * @format
  */
 
-import {FlexRow, Text, colors, LoadingIndicator, Glyph, Component} from 'sonar';
+import {
+  FlexRow,
+  Text,
+  colors,
+  LoadingIndicator,
+  Glyph,
+  Component,
+  styled,
+} from 'flipper';
 import {remote} from 'electron';
 import isProduction from '../utils/isProduction.js';
 import config from '../fb-stubs/config.js';
 const version = remote.app.getVersion();
 
-const VersionText = Text.extends({
+const VersionText = styled(Text)({
   color: colors.light50,
   marginLeft: 4,
   marginTop: 2,
 });
 
-const Container = FlexRow.extends({
+const Container = styled(FlexRow)({
   alignItems: 'center',
 });
 
@@ -94,7 +102,7 @@ export default class AutoUpdateVersion extends Component<{}, State> {
           <span
             tabIndex={-1}
             role="button"
-            title="Update available. Restart Sonar."
+            title="Update available. Restart Flipper."
             onClick={remote.autoUpdater.quitAndInstall}>
             <Glyph color={colors.light30} name="breaking-news" />
           </span>

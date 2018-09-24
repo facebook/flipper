@@ -10,7 +10,7 @@ import {colors, darkColors} from './colors.js';
 
 const React = require('react');
 
-const DesktopDropdownContainer = styled.view({
+const DesktopDropdownContainer = styled('div')({
   borderBottom: `1px solid ${darkColors.dividers}`,
   lineHeight: '25px',
   marginTop: 5,
@@ -45,22 +45,15 @@ export function DesktopDropdown(props: {|
   );
 }
 
-const DesktopDropdownItemContainer = styled.view(
-  {
-    listStyle: 'none',
-    opacity: props => (props.onClick || props.onHover ? 1 : 0.5),
-    padding: '0 20px',
-
-    '&:hover': {
-      backgroundColor: props =>
-        props.onClick || props.onHover ? colors.highlight : '',
-      color: props => (props.onClick || props.onHover ? '#fff' : 'inherit'),
-    },
+const DesktopDropdownItemContainer = styled('div')(props => ({
+  listStyle: 'none',
+  opacity: props.onClick || props.onHover ? 1 : 0.5,
+  padding: '0 20px',
+  '&:hover': {
+    backgroundColor: props.onClick || props.onHover ? colors.highlight : '',
+    color: props.onClick || props.onHover ? '#fff' : 'inherit',
   },
-  {
-    ignoreAttributes: [],
-  },
-);
+}));
 
 type DesktopDropdownItemState = {|hovered: boolean|};
 
@@ -71,7 +64,7 @@ type DesktopDropdownItemProps = {
   deactivate?: () => void,
 };
 
-export class DesktopDropdownItem extends styled.StylableComponent<
+export class DesktopDropdownItem extends React.Component<
   DesktopDropdownItemProps,
   DesktopDropdownItemState,
 > {
@@ -121,7 +114,7 @@ export class DesktopDropdownItem extends styled.StylableComponent<
   }
 }
 
-export const DesktopDropdownSelectedItem = DesktopDropdownItem.extends({
+export const DesktopDropdownSelectedItem = styled(DesktopDropdownItem)({
   position: 'relative',
 
   '&::before': {

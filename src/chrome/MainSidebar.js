@@ -6,9 +6,9 @@
  */
 
 import type {
-  SonarPlugin,
-  SonarDevicePlugin,
-  SonarBasePlugin,
+  FlipperPlugin,
+  FlipperDevicePlugin,
+  FlipperBasePlugin,
 } from '../plugin.js';
 import type BaseDevice from '../devices/BaseDevice.js';
 import type Client from '../Client.js';
@@ -17,27 +17,34 @@ import {
   Component,
   Sidebar,
   FlexBox,
-  ClickableListItem,
   colors,
   brandColors,
   Text,
   Glyph,
-} from 'sonar';
+  styled,
+} from 'flipper';
 import React from 'react';
 import {devicePlugins} from '../device-plugins/index.js';
 import plugins from '../plugins/index.js';
 import {selectPlugin} from '../reducers/connections.js';
 import {connect} from 'react-redux';
 
-const CustomClickableListItem = ClickableListItem.extends({
+const ListItem = styled('div')(({active}) => ({
   paddingLeft: 10,
   display: 'flex',
   alignItems: 'center',
   marginBottom: 2,
   flexShrink: 0,
-});
+  backgroundColor: active ? colors.macOSTitleBarIconSelected : 'none',
+  color: active ? colors.white : colors.macOSSidebarSectionItem,
+  lineHeight: '25px',
+  padding: '0 10px',
+  '&[disabled]': {
+    color: 'rgba(0, 0, 0, 0.5)',
+  },
+}));
 
-const SidebarHeader = FlexBox.extends({
+const SidebarHeader = styled(FlexBox)({
   display: 'block',
   alignItems: 'center',
   padding: 3,
@@ -51,23 +58,18 @@ const SidebarHeader = FlexBox.extends({
   flexShrink: 0,
 });
 
-const PluginShape = FlexBox.extends(
-  {
-    marginRight: 5,
-    backgroundColor: props => props.backgroundColor,
-    borderRadius: 3,
-    flexShrink: 0,
-    width: 18,
-    height: 18,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  {
-    ignoreAttributes: ['backgroundColor'],
-  },
-);
+const PluginShape = styled(FlexBox)(({backgroundColor}) => ({
+  marginRight: 5,
+  backgroundColor,
+  borderRadius: 3,
+  flexShrink: 0,
+  width: 18,
+  height: 18,
+  justifyContent: 'center',
+  alignItems: 'center',
+}));
 
-const PluginName = Text.extends({
+const PluginName = styled(Text)({
   minWidth: 0,
   textOverflow: 'ellipsis',
   whiteSpace: 'nowrap',
@@ -75,17 +77,19 @@ const PluginName = Text.extends({
 });
 
 function PluginIcon({
+  isActive,
   backgroundColor,
   name,
   color,
 }: {
+  isActive: boolean,
   backgroundColor: string,
   name: string,
   color: string,
 }) {
   return (
     <PluginShape backgroundColor={backgroundColor}>
-      <Glyph size={12} name={name} color={color} />
+      <Glyph size={12} name={name} color={isActive ? colors.white : color} />
     </PluginShape>
   );
 }
@@ -93,7 +97,7 @@ function PluginIcon({
 class PluginSidebarListItem extends Component<{
   onClick: () => void,
   isActive: boolean,
-  plugin: Class<SonarBasePlugin<>>,
+  plugin: Class<FlipperBasePlugin<>>,
   app?: ?string,
 }> {
   render() {
@@ -118,14 +122,15 @@ class PluginSidebarListItem extends Component<{
     }
 
     return (
-      <CustomClickableListItem active={isActive} onClick={this.props.onClick}>
+      <ListItem active={isActive} onClick={this.props.onClick}>
         <PluginIcon
+          isActive={isActive}
           name={plugin.icon}
           backgroundColor={iconColor}
           color={colors.white}
         />
         <PluginName>{plugin.title}</PluginName>
-      </CustomClickableListItem>
+      </ListItem>
     );
   }
 }
@@ -180,7 +185,7 @@ class MainSidebar extends Component<MainSidebarProps> {
         {selectedDevice &&
           devicePlugins
             .filter(selectedDevice.supportsPlugin)
-            .map((plugin: Class<SonarDevicePlugin<>>) => (
+            .map((plugin: Class<FlipperDevicePlugin<>>) => (
               <PluginSidebarListItem
                 key={plugin.id}
                 isActive={plugin.id === selectedPlugin}
@@ -193,31 +198,41 @@ class MainSidebar extends Component<MainSidebarProps> {
                 plugin={plugin}
               />
             ))}
-        {clients.map((client: Client) => (
-          <React.Fragment key={client.id}>
-            <SidebarHeader>{client.query.app}</SidebarHeader>
-            {plugins
-              .filter(
-                (p: Class<SonarPlugin<>>) => client.plugins.indexOf(p.id) > -1,
-              )
-              .map((plugin: Class<SonarPlugin<>>) => (
-                <PluginSidebarListItem
-                  key={plugin.id}
-                  isActive={
-                    plugin.id === selectedPlugin && selectedApp === client.id
-                  }
-                  onClick={() =>
-                    selectPlugin({
-                      selectedPlugin: plugin.id,
-                      selectedApp: client.id,
-                    })
-                  }
-                  plugin={plugin}
-                  app={client.query.app}
-                />
-              ))}
-          </React.Fragment>
-        ))}
+        {clients
+          .filter(
+            (client: Client) =>
+              (selectedDevice &&
+                client.query.device_id === selectedDevice.serial) ||
+              // Old android sdk versions don't know their device_id
+              // Display their plugins under all selected devices until they die out
+              client.query.device_id === 'unknown',
+          )
+          .map((client: Client) => (
+            <React.Fragment key={client.id}>
+              <SidebarHeader>{client.query.app}</SidebarHeader>
+              {plugins
+                .filter(
+                  (p: Class<FlipperPlugin<>>) =>
+                    client.plugins.indexOf(p.id) > -1,
+                )
+                .map((plugin: Class<FlipperPlugin<>>) => (
+                  <PluginSidebarListItem
+                    key={plugin.id}
+                    isActive={
+                      plugin.id === selectedPlugin && selectedApp === client.id
+                    }
+                    onClick={() =>
+                      selectPlugin({
+                        selectedPlugin: plugin.id,
+                        selectedApp: client.id,
+                      })
+                    }
+                    plugin={plugin}
+                    app={client.query.app}
+                  />
+                ))}
+            </React.Fragment>
+          ))}
       </Sidebar>
     );
   }

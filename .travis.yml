@@ -97,4 +97,4 @@ matrix:
         - export PATH=${PATH}:${ANDROID_NDK_HOME}
         - cd ../
       script:
-        - ./gradlew :sample:build
+        - ./gradlew :sample:assembleDebug

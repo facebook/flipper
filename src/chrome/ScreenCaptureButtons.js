@@ -5,7 +5,7 @@
  * @format
  */
 
-import {Button, ButtonGroup, Component} from 'sonar';
+import {Button, ButtonGroup, Component} from 'flipper';
 import {connect} from 'react-redux';
 import AndroidDevice from '../devices/AndroidDevice';
 import IOSDevice from '../devices/IOSDevice';
@@ -232,7 +232,7 @@ class ScreenCaptureButtons extends Component<Props, State> {
     if (selectedDevice instanceof AndroidDevice) {
       this.executeShell(selectedDevice, `pgrep 'screenrecord' -L 2`);
     } else if (this.iOSRecorder && videoPath) {
-      this.iOSRecorder.kill();
+      this.iOSRecorder.kill('SIGINT');
       this.setState({
         recording: false,
       });

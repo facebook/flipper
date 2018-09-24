@@ -7,7 +7,7 @@
 
 import styled from '../styled/index.js';
 
-export default styled.view({
+export default styled('div')({
   backgroundColor: '#c9ced4',
   width: 3,
   margin: '0',

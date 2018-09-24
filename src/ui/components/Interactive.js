@@ -13,7 +13,7 @@ import {
   maybeSnapTop,
   SNAP_SIZE,
 } from '../../utils/snap.js';
-import {styled} from 'sonar';
+import {styled} from 'flipper';
 
 const invariant = require('invariant');
 const React = require('react');
@@ -86,11 +86,11 @@ type InteractiveState = {|
   resizingInitialCursor: ?CursorState,
 |};
 
-const InteractiveContainer = styled.view({
+const InteractiveContainer = styled('div')({
   willChange: 'transform, height, width, z-index',
 });
 
-export default class Interactive extends styled.StylableComponent<
+export default class Interactive extends React.Component<
   InteractiveProps,
   InteractiveState,
 > {

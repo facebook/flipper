@@ -4,14 +4,14 @@ title: UI Components
 sidebar_label: UI Components
 ---
 
-Flipper has a lot of built in React components to build UIs. You can find all of these in [`src/ui/components`](https://github.com/facebook/Flipper/tree/master/src/ui/components) and can import them directly using `import {Button} from 'sonar'`.
+Flipper has a lot of built in React components to build UIs. You can find all of these in [`src/ui/components`](https://github.com/facebook/Flipper/tree/master/src/ui/components) and can import them directly using `import {Button} from 'flipper'`.
 
 ## FlexBox
 
 In Flipper we make heavy use of flexbox for layout. FlexBox is layout system on the web which has been specifically design for building application like UIs. Flipper provides two flexbox components `FlexRow` and `FlexColumn`. These are flexbox components with some sane defaults such as automatically scrolling content that overflows.
 
 ```javascript
-import { FlexRow, FlexColumn } from 'sonar';
+import { FlexRow, FlexColumn } from 'flipper';
 
 // Align children horizontally
 <FlexRow>
@@ -27,7 +27,7 @@ import { FlexRow, FlexColumn } from 'sonar';
 To control other flexbox properties than the direction you can extend existing components, detailed in [Styling Components](styling-components.md).
 
 ```javascript
-import {FlexRow, styled} from 'sonar';
+import {FlexRow, styled} from 'flipper';
 
 const CenterFlexRow = FlexRow.extends({
   justifyContent: 'center',
@@ -42,7 +42,7 @@ const CenterFlexRow = FlexRow.extends({
 The `Text` component is available to render any text in your plugin. To render headers and subtitle differently for example, we used the styled module. With this we can also change the color, text alignment, and any other properties typically found on a `span`.
 
 ```javascript
-import {Text, styled, colors} from 'sonar';
+import {Text, styled, colors} from 'flipper';
 
 const Title = Text.extends({
   color: colors.red,
@@ -56,7 +56,7 @@ const Title = Text.extends({
 Flipper comes with a couple of button styles built in! As always you can style then further using the styled module but we expect the pre-defined buttons to fit most UIs.
 
 ```javascript
-import {Button} from 'sonar';
+import {Button} from 'flipper';
 
 <Button onClick={this.onClick} icon="airport" compact={true}>
   Click Me!
@@ -67,15 +67,15 @@ You can create a group of buttons by surrounding it with `<ButtonGroup>`.
 
 ## Sidebar
 
-The `Sidebar` component provides a nice abstraction around some common but complex behavior. The `Sidebar` is used by all major Sonar plugins and using it in your plugin will ensure your plugin behaves similarly, such as allowing for resizing.
+The `Sidebar` component provides a nice abstraction around some common but complex behavior. The `Sidebar` is used by all major Flipper plugins and using it in your plugin will ensure your plugin behaves similarly, such as allowing for resizing.
 
 ```javascript
 import {FlexRow, Sidebar, colors, styled} from 'infinity-ui';
-import {SonarPlugin} from 'sonar';
+import {FlipperPlugin} from 'flipper';
 
 type State = {};
 
-export default class MySonarPlugin extends SonarPlugin<State> {
+export default class MyFlipperPlugin extends FlipperPlugin<State> {
   static title = 'My Plugin';
   static id = 'my-plugin';
 
@@ -90,10 +90,10 @@ export default class MySonarPlugin extends SonarPlugin<State> {
   render() {
     return (
       <FlexRow fill={true}>
-        <MySonarPlugin.Red fill={true} />
+        <MyFlipperPlugin.Red fill={true} />
 
         <Sidebar position="right" width={400} minWidth={300}>
-          <MySonarPlugin.Blue fill={true} />
+          <MyFlipperPlugin.Blue fill={true} />
         </Sidebar>
       </FlexRow>
     );
@@ -113,12 +113,12 @@ import {
   Panel,
   colors,
   styled,
-  SonarPlugin,
-} from 'sonar';
+  FlipperPlugin,
+} from 'flipper';
 
 type State = {};
 
-export default class MySonarPlugin extends SonarPlugin<State> {
+export default class MyFlipperPlugin extends FlipperPlugin<State> {
   static title = 'My Plugin';
   static id = 'my-plugin';
 
@@ -139,16 +139,16 @@ export default class MySonarPlugin extends SonarPlugin<State> {
   render() {
     return (
       <FlexRow fill={true}>
-        <MySonarPlugin.Red fill={true} />
+        <MyFlipperPlugin.Red fill={true} />
 
         <Sidebar position="right" width={400} minWidth={300}>
           <FlexColumn>
             <Panel heading={'Blue'} floating={false}>
-              <MySonarPlugin.Blue />
+              <MyFlipperPlugin.Blue />
             </Panel>
 
             <Panel heading={'Green'} floating={false}>
-              <MySonarPlugin.Green />
+              <MyFlipperPlugin.Green />
             </Panel>
           </FlexColumn>
         </Sidebar>
@@ -163,11 +163,11 @@ export default class MySonarPlugin extends SonarPlugin<State> {
 The `DataInspector` component is used to unpack and display a javascript object. It is used to show View properties in the layout inspector, and to show event data in the analytics plugins.
 
 ```javascript
-import {FlexColumn, DataInspector, SonarPlugin} from 'sonar';
+import {FlexColumn, DataInspector, FlipperPlugin} from 'flipper';
 
 type State = {};
 
-export default class MySonarPlugin extends SonarPlugin<State> {
+export default class MyFlipperPlugin extends FlipperPlugin<State> {
   static title = 'My Plugin';
   static id = 'my-plugin';
 
@@ -180,7 +180,7 @@ export default class MySonarPlugin extends SonarPlugin<State> {
   render() {
     return (
       <FlexColumn fill={true}>
-        <DataInspector data={MySonarPlugin.data} />
+        <DataInspector data={MyFlipperPlugin.data} />
       </FlexColumn>
     );
   }
@@ -192,9 +192,9 @@ export default class MySonarPlugin extends SonarPlugin<State> {
 The `Toolbar` component can display a toolbar with buttons, inputs, etc. A `<Spacer />` can be used to fill the space between items.
 
 ```javascript
-import {Toolbar, Spacer, Button, SonarPlugin} from 'sonar';
+import {Toolbar, Spacer, Button, FlipperPlugin} from 'flipper';
 
-export default class MySonarPlugin extends SonarPlugin<State> {
+export default class MyFlipperPlugin extends FlipperPlugin<State> {
   render() {
     return (
       <Toolbar fill={true}>
@@ -212,9 +212,9 @@ export default class MySonarPlugin extends SonarPlugin<State> {
 Used to display content in an overlay.
 
 ```javascript
-import {Popover, SonarPlugin} from 'sonar';
+import {Popover, FlipperPlugin} from 'flipper';
 
-export default class MySonarPlugin extends SonarPlugin<State> {
+export default class MyFlipperPlugin extends FlipperPlugin<State> {
   render() {
     return (
       {this.state.popoverVisible && <Popover onDismiss={() => this.setState({popoverVisible: false})}>
@@ -230,9 +230,9 @@ export default class MySonarPlugin extends SonarPlugin<State> {
 Add a native context menu to a component by wrapping it with the ContextMenu component.
 
 ```javascript
-import {ContextMenu, SonarPlugin} from 'sonar';
+import {ContextMenu, FlipperPlugin} from 'flipper';
 
-export default class MySonarPlugin extends SonarPlugin<State> {
+export default class MyFlipperPlugin extends FlipperPlugin<State> {
   contextMenuItems = [
     {
       label: 'Copy',

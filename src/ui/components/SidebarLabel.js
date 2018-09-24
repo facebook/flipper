@@ -7,8 +7,9 @@
 
 import {colors} from './colors.js';
 import Label from './Label.js';
+import styled from '../styled/index.js';
 
-export default Label.extends({
+export default styled(Label)({
   color: colors.blackAlpha30,
   fontSize: 12,
   padding: 10,

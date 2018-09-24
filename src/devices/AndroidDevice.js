@@ -5,7 +5,7 @@
  * @format
  */
 
-import type {DeviceType, DeviceShell, DeviceLogListener} from './BaseDevice.js';
+import type {DeviceType, DeviceShell} from './BaseDevice.js';
 
 import {Priority} from 'adbkit-logcat-fb';
 import child_process from 'child_process';
@@ -25,6 +25,41 @@ export default class AndroidDevice extends BaseDevice {
     if (deviceType == 'physical') {
       this.supportedPlugins.push('DeviceCPU');
     }
+
+    this.adb.openLogcat(this.serial).then(reader => {
+      reader.on('entry', entry => {
+        if (this.logListeners.size > 0) {
+          let type = 'unknown';
+          if (entry.priority === Priority.VERBOSE) {
+            type = 'verbose';
+          }
+          if (entry.priority === Priority.DEBUG) {
+            type = 'debug';
+          }
+          if (entry.priority === Priority.INFO) {
+            type = 'info';
+          }
+          if (entry.priority === Priority.WARN) {
+            type = 'warn';
+          }
+          if (entry.priority === Priority.ERROR) {
+            type = 'error';
+          }
+          if (entry.priority === Priority.FATAL) {
+            type = 'fatal';
+          }
+
+          this.notifyLogListeners({
+            tag: entry.tag,
+            pid: entry.pid,
+            tid: entry.tid,
+            message: entry.message,
+            date: entry.date,
+            type,
+          });
+        }
+      });
+    });
   }
 
   supportedPlugins = [
@@ -41,41 +76,6 @@ export default class AndroidDevice extends BaseDevice {
 
   supportedColumns(): Array<string> {
     return ['date', 'pid', 'tid', 'tag', 'message', 'type', 'time'];
-  }
-
-  addLogListener(callback: DeviceLogListener) {
-    this.adb.openLogcat(this.serial).then(reader => {
-      reader.on('entry', async entry => {
-        let type = 'unknown';
-        if (entry.priority === Priority.VERBOSE) {
-          type = 'verbose';
-        }
-        if (entry.priority === Priority.DEBUG) {
-          type = 'debug';
-        }
-        if (entry.priority === Priority.INFO) {
-          type = 'info';
-        }
-        if (entry.priority === Priority.WARN) {
-          type = 'warn';
-        }
-        if (entry.priority === Priority.ERROR) {
-          type = 'error';
-        }
-        if (entry.priority === Priority.FATAL) {
-          type = 'fatal';
-        }
-
-        callback({
-          tag: entry.tag,
-          pid: entry.pid,
-          tid: entry.tid,
-          message: entry.message,
-          date: entry.date,
-          type,
-        });
-      });
-    });
   }
 
   reverse(): Promise<void> {

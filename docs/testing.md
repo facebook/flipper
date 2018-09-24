@@ -50,18 +50,18 @@ public void myTest() {
 
 ## C++
 
-Start by creating your first test file in this directory `MySonarPluginTests.cpp` and import the testing utilities from `//xplat/sonar-client:SonarTestLib`. These utilities mock out core pieces of the communication channel so that you can test your plugin in isolation.
+Start by creating your first test file in this directory `MySonarPluginTests.cpp` and import the testing utilities from `//xplat/sonar-client:FlipperTestLib`. These utilities mock out core pieces of the communication channel so that you can test your plugin in isolation.
 
 ```
 #include <MySonarPlugin/MySonarPlugin.h>
-#include <SonarTestLib/SonarConnectionMock.h>
-#include <SonarTestLib/SonarResponderMock.h>
+#include <FlipperTestLib/FlipperConnectionMock.h>
+#include <FlipperTestLib/FlipperResponderMock.h>
 
 #include <folly/json.h>
 #include <gtest/gtest.h>
 
 namespace facebook {
-namespace sonar {
+namespace flipper {
 namespace test {
 
 TEST(MySonarPluginTests, testDummy) {
@@ -69,7 +69,7 @@ TEST(MySonarPluginTests, testDummy) {
 }
 
 } // namespace test
-} // namespace sonar
+} // namespace flipper
 } // namespace facebook
 ```
 
@@ -78,8 +78,8 @@ Here is a simple test using these mock utilities to create a plugin, send some d
 ```
 TEST(MySonarPluginTests, testDummy) {
   std::vector<folly::dynamic> successfulResponses;
-  auto responder = std::make_unique<SonarResponderMock>(&successfulResponses);
-  auto conn = std::make_shared<SonarConnectionMock>();
+  auto responder = std::make_unique<FlipperResponderMock>(&successfulResponses);
+  auto conn = std::make_shared<FlipperConnectionMock>();
 
   MySonarPlugin plugin;
   plugin.didConnect(conn);

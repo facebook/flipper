@@ -2,7 +2,7 @@ cmake_minimum_required (VERSION 3.6.0)
 
 PROJECT(rsocket CXX)
 set(PACKAGE_NAME      rsocket)
-set(RSOCKET_VERSION 0.10.2)
+set(RSOCKET_VERSION 0.10.3)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -61,7 +61,7 @@ add_compile_options(
     -Wno-tautological-constant-compare
     )
 
-add_library(${PACKAGE_NAME} SHARED ${SRC_FILES})
+add_library(${PACKAGE_NAME} STATIC ${SRC_FILES})
 
 set(build_DIR ${CMAKE_SOURCE_DIR}/build)
 set(libfolly_build_DIR ${build_DIR}/libfolly/${ANDROID_ABI})

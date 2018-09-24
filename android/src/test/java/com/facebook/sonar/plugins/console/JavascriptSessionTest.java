@@ -5,7 +5,7 @@
  *  file in the root directory of this source tree.
  *
  */
-package com.facebook.sonar.plugins.console;
+package com.facebook.flipper.plugins.console;
 
 import static org.junit.Assert.assertEquals;
 

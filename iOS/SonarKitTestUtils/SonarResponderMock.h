@@ -7,9 +7,9 @@
  */
 #import <Foundation/Foundation.h>
 
-#import <SonarKit/SonarResponder.h>
+#import <FlipperKit/FlipperResponder.h>
 
-@interface SonarResponderMock : NSObject<SonarResponder>
+@interface SonarResponderMock : NSObject<FlipperResponder>
 
 @property (nonatomic, readonly) NSArray<NSDictionary *> *successes;
 @property (nonatomic, readonly) NSArray<NSDictionary *> *errors;

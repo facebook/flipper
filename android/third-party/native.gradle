@@ -4,7 +4,7 @@ import org.apache.tools.ant.filters.ReplaceTokens
 // Increment this when making changes to any of the native
 // dependencies.
 // !!!
-final def CACHE_REVISION = 0
+final def CACHE_REVISION = 3
 
 final def externalDir = new File("$projectDir/external")
 final def downloadsDir = new File("$buildDir/downloads")
@@ -109,7 +109,7 @@ task prepareBoost(dependsOn: [downloadBoost], type: Copy) {
 }
 
 task downloadFolly(dependsOn: createNativeDepsDirectories, type: Download) {
-    src 'https://github.com/facebook/folly/archive/v2018.06.18.00.tar.gz'
+    src 'https://github.com/facebook/folly/archive/v2018.09.10.00.tar.gz'
     onlyIfNewer true
     overwrite false
     dest new File(downloadsDir, 'folly-' + getDownloadFileName(src))
@@ -119,14 +119,21 @@ task prepareFolly(dependsOn: [downloadFolly], type: Copy) {
     onlyIf { isCacheOutOfDate(CACHE_REVISION) }
     from tarTree(downloadFolly.dest)
     from './overrides/Folly/'
-    include 'folly-2018.06.18.00/folly/**/*', 'build.gradle', 'CMakeLists.txt', 'ApplicationManifest.xml'
-    eachFile { it.path = it.path - "folly-2018.06.18.00/" }
+    include 'folly-2018.09.10.00/folly/**/*', 'build.gradle', 'CMakeLists.txt', 'ApplicationManifest.xml'
+    eachFile { it.path = it.path - "folly-2018.09.10.00/" }
     includeEmptyDirs = false
     into "$externalDir/folly"
 }
 
 //TODO: Get rid off this hack.
-task finalizeFolly(dependsOn: [prepareFolly], type: Copy) {
+task finalizeFollyWithDemangle(dependsOn: [prepareFolly], type: Copy) {
+    from './overrides/Folly/'
+    include 'Demangle.h'
+    into "$externalDir/folly/folly/detail/"
+}
+
+//TODO: Get rid off this hack.
+task finalizeFolly(dependsOn: [finalizeFollyWithDemangle], type: Copy) {
     from './overrides/Folly/'
     include 'AsyncServerSocket.cpp'
     into "$externalDir/folly/folly/io/async/"
@@ -143,7 +150,7 @@ task prepareLibEvent(dependsOn: [downloadLibEvent], type: Copy) {
     onlyIf { isCacheOutOfDate(CACHE_REVISION) }
     from tarTree(downloadLibEvent.dest)
     from './overrides/LibEvent/'
-    include 'libevent-release-2.1.9/**/*', 'build.gradle', 'ApplicationManifest.xml', 'CMakeLists.txt'
+    include 'libevent-release-2.1.9/**/*', 'build.gradle', 'ApplicationManifest.xml'
     includeEmptyDirs = false
     into "$externalDir/LibEvent"
 }
@@ -195,7 +202,7 @@ task finalizeOpenSSL(dependsOn: [configureOpenSSL], type: Exec) {
 }
 
 task downloadRSocket(dependsOn: [], type: Download) {
-    src 'https://github.com/priteshrnandgaonkar/rsocket-cpp/archive/0.10.2.tar.gz'
+    src 'https://github.com/priteshrnandgaonkar/rsocket-cpp/archive/0.10.3.tar.gz'
     onlyIfNewer true
     overwrite false
     dest new File(downloadsDir, 'rsocket-' + getDownloadFileName(src))
@@ -204,7 +211,7 @@ task downloadRSocket(dependsOn: [], type: Download) {
 task prepareRSocket(dependsOn: [downloadRSocket], type: Copy) {
     from tarTree(downloadRSocket.dest)
     from './overrides/RSocket/'
-    include 'rsocket-cpp-0.10.2/**/*', 'build.gradle', 'ApplicationManifest.xml', 'CMakeLists.txt'
+    include 'rsocket-cpp-0.10.3/**/*', 'build.gradle', 'ApplicationManifest.xml', 'CMakeLists.txt'
     includeEmptyDirs = false
     into "$externalDir/RSocket"
 }

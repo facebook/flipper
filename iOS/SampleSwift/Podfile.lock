@@ -3,6 +3,28 @@ PODS:
   - CocoaAsyncSocket (7.6.3)
   - CocoaLibEvent (1.0.0)
   - DoubleConversion (1.1.5)
+  - Flipper (0.7.2):
+    - Folly (~> 1.1)
+    - RSocket (~> 0.10)
+  - FlipperKit (0.7.2):
+    - FlipperKit/Core (= 0.7.2)
+  - FlipperKit/Core (0.7.2):
+    - CocoaAsyncSocket (~> 7.6)
+    - Flipper (~> 0.7.2)
+    - FlipperKit/CppBridge
+    - FlipperKit/FBCxxUtils
+    - FlipperKit/FBDefines
+    - Folly (~> 1.1)
+    - OpenSSL-Static (= 1.0.2.c1)
+    - PeerTalk (~> 0.0.2)
+  - FlipperKit/CppBridge (0.7.2)
+  - FlipperKit/FBCxxUtils (0.7.2)
+  - FlipperKit/FBDefines (0.7.2)
+  - FlipperKit/FlipperKitNetworkPlugin (0.7.2):
+    - FlipperKit/Core
+  - FlipperKit/SKIOSNetworkPlugin (0.7.2):
+    - FlipperKit/Core
+    - FlipperKit/FlipperKitNetworkPlugin
   - Folly (1.1.0):
     - boost-for-react-native
     - CocoaLibEvent (~> 1.0)
@@ -14,33 +36,11 @@ PODS:
   - PeerTalk (0.0.2)
   - RSocket (0.10.0):
     - Folly
-  - Sonar (0.6.16):
-    - Folly (~> 1.1)
-    - RSocket (~> 0.10)
-  - SonarKit (0.6.16):
-    - SonarKit/Core (= 0.6.16)
-  - SonarKit/Core (0.6.16):
-    - CocoaAsyncSocket (~> 7.6)
-    - Folly (~> 1.1)
-    - OpenSSL-Static (= 1.0.2.c1)
-    - PeerTalk (~> 0.0.2)
-    - Sonar (~> 0.6.16)
-    - SonarKit/CppBridge
-    - SonarKit/FBCxxUtils
-    - SonarKit/FBDefines
-  - SonarKit/CppBridge (0.6.16)
-  - SonarKit/FBCxxUtils (0.6.16)
-  - SonarKit/FBDefines (0.6.16)
-  - SonarKit/SKIOSNetworkPlugin (0.6.16):
-    - SonarKit/Core
-    - SonarKit/SonarKitNetworkPlugin
-  - SonarKit/SonarKitNetworkPlugin (0.6.16):
-    - SonarKit/Core
 
 DEPENDENCIES:
-  - Sonar (from `../../Sonar.podspec`)
-  - SonarKit (from `../../SonarKit.podspec`)
-  - SonarKit/SKIOSNetworkPlugin (from `../../SonarKit.podspec`)
+  - Flipper (from `../../Flipper.podspec`)
+  - FlipperKit (from `../../SonarKit.podspec`)
+  - FlipperKit/SKIOSNetworkPlugin (from `../../SonarKit.podspec`)
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
@@ -56,9 +56,9 @@ SPEC REPOS:
     - RSocket
 
 EXTERNAL SOURCES:
-  Sonar:
-    :path: "../../Sonar.podspec"
-  SonarKit:
+  Flipper:
+    :path: "../../Flipper.podspec"
+  FlipperKit:
     :path: "../../SonarKit.podspec"
 
 SPEC CHECKSUMS:
@@ -66,14 +66,14 @@ SPEC CHECKSUMS:
   CocoaAsyncSocket: eafaa68a7e0ec99ead0a7b35015e0bf25d2c8987
   CocoaLibEvent: 2fab71b8bd46dd33ddb959f7928ec5909f838e3f
   DoubleConversion: e22e0762848812a87afd67ffda3998d9ef29170c
+  Flipper: 495fbd327298fbc55b3ff7cb399eae52c1580494
+  FlipperKit: 9e4ca744d949b44dd4a6b5f9aefee45d46477fe3
   Folly: dd92f69322d8535b9df98d7c91e442b0fce2fff2
   glog: 1de0bb937dccdc981596d3b5825ebfb765017ded
   OpenSSL-Static: bd17e34564a8591ad76b740318683a6caa19a13e
   PeerTalk: 77481b0a8136f226b90ccf828d6061f70139ffde
   RSocket: 4fdb7e562db30a2d4fceddefdc601749ffc9ebe2
-  Sonar: 74d1e3a853f1453511108ac1b3e7469a2b2ade92
-  SonarKit: f6f9715af976f14ecab376eeb0576898c9fb0638
 
-PODFILE CHECKSUM: bfd82cb10666824db61b62e1ff7196e0b2305f0c
+PODFILE CHECKSUM: 7d3e554e10a8fbfaf5466a3d4083099a6e8a2f10
 
-COCOAPODS: 1.5.2
+COCOAPODS: 1.5.3

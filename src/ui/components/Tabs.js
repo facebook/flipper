@@ -12,45 +12,38 @@ import FlexRow from './FlexRow.js';
 import {colors} from './colors.js';
 import Tab from './Tab.js';
 
-const TabList = FlexRow.extends({
+const TabList = styled(FlexRow)({
   alignItems: 'stretch',
 });
 
-const TabListItem = styled.view(
-  {
-    backgroundColor: props => (props.active ? colors.light15 : colors.light02),
-    borderBottom: '1px solid #dddfe2',
-    boxShadow: props =>
-      props.active ? 'inset 0px 0px 3px rgba(0,0,0,0.25)' : 'none',
-    color: colors.dark80,
-    flex: 1,
-    fontSize: 13,
-    lineHeight: '28px',
-    overflow: 'hidden',
-    padding: '0 10px',
-    position: 'relative',
-    textAlign: 'center',
-    textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap',
+const TabListItem = styled('div')(props => ({
+  backgroundColor: props.active ? colors.light15 : colors.light02,
+  borderBottom: '1px solid #dddfe2',
+  boxShadow: props.active ? 'inset 0px 0px 3px rgba(0,0,0,0.25)' : 'none',
+  color: colors.dark80,
+  flex: 1,
+  fontSize: 13,
+  lineHeight: '28px',
+  overflow: 'hidden',
+  padding: '0 10px',
+  position: 'relative',
+  textAlign: 'center',
+  textOverflow: 'ellipsis',
+  whiteSpace: 'nowrap',
 
-    '&:hover': {
-      backgroundColor: props =>
-        props.active ? colors.light15 : colors.light05,
-    },
+  '&:hover': {
+    backgroundColor: props.active ? colors.light15 : colors.light05,
   },
-  {
-    ignoreAttributes: ['active'],
-  },
-);
+}));
 
-const TabListAddItem = TabListItem.extends({
+const TabListAddItem = styled(TabListItem)({
   borderRight: 'none',
   flex: 0,
   flexGrow: 0,
   fontWeight: 'bold',
 });
 
-const CloseButton = styled.view({
+const CloseButton = styled('div')({
   color: '#000',
   float: 'right',
   fontSize: 10,
@@ -69,11 +62,11 @@ const CloseButton = styled.view({
   },
 });
 
-const OrderableContainer = styled.view({
+const OrderableContainer = styled('div')({
   display: 'inline-block',
 });
 
-const TabContent = styled.view({
+const TabContent = styled('div')({
   height: '100%',
   overflow: 'auto',
   width: '100%',

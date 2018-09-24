@@ -106,12 +106,12 @@ list(APPEND SRC_FILES ${FOLLY_DIR}/io/async/HHWheelTimer.cpp
                       ${FOLLY_DIR}/dynamic.cpp
                       ${FOLLY_DIR}/ScopeGuard.cpp
                       ${FOLLY_DIR}/json_pointer.cpp
-                      ${FOLLY_DIR}/FormatArg.cpp
                       ${FOLLY_DIR}/Format.cpp
+                      ${FOLLY_DIR}/String.cpp
                       ${FOLLY_DIR}/memory/detail/MallocImpl.cpp
                       )
 
-add_library(${PACKAGE_NAME} SHARED ${SRC_FILES})
+add_library(${PACKAGE_NAME} STATIC ${SRC_FILES})
 
 set(build_DIR ${CMAKE_SOURCE_DIR}/build)
 

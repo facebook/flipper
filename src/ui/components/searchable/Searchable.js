@@ -5,7 +5,7 @@
  * @format
  */
 
-import type {Filter} from 'sonar';
+import type {Filter} from 'flipper';
 import {PureComponent} from 'react';
 import Toolbar from '../Toolbar.js';
 import FlexRow from '../FlexRow.js';
@@ -16,15 +16,16 @@ import FlexBox from '../FlexBox.js';
 import Glyph from '../Glyph.js';
 import FilterToken from './FilterToken.js';
 import PropTypes from 'prop-types';
+import styled from '../../styled/index.js';
 
 const SEARCHABLE_STORAGE_KEY = (key: string) => `SEARCHABLE_STORAGE_KEY_${key}`;
 
-const SearchBar = Toolbar.extends({
+const SearchBar = styled(Toolbar)({
   height: 42,
   padding: 6,
 });
 
-export const SearchBox = FlexBox.extends({
+export const SearchBox = styled(FlexBox)({
   backgroundColor: colors.white,
   borderRadius: '999em',
   border: `1px solid ${colors.light15}`,
@@ -34,8 +35,8 @@ export const SearchBox = FlexBox.extends({
   paddingLeft: 4,
 });
 
-export const SearchInput = Input.extends({
-  border: props => (props.focus ? '1px solid black' : 0),
+export const SearchInput = styled(Input)(props => ({
+  border: props.focus ? '1px solid black' : 0,
   padding: 0,
   fontSize: '1em',
   flexGrow: 1,
@@ -47,9 +48,9 @@ export const SearchInput = Input.extends({
     color: colors.placeholder,
     fontWeight: 300,
   },
-});
+}));
 
-const Clear = Text.extends({
+const Clear = styled(Text)({
   position: 'absolute',
   right: 6,
   top: '50%',
@@ -68,14 +69,14 @@ const Clear = Text.extends({
   },
 });
 
-export const SearchIcon = Glyph.extends({
+export const SearchIcon = styled(Glyph)({
   marginRight: 3,
   marginLeft: 3,
   marginTop: -1,
   minWidth: 16,
 });
 
-const Actions = FlexRow.extends({
+const Actions = styled(FlexRow)({
   marginLeft: 8,
   flexShrink: 0,
 });

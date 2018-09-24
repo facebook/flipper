@@ -52,7 +52,7 @@ public class MySonarPlugin implements SonarPlugin {
 class MySonarPlugin : public SonarPlugin {
 public:
   std::string identifier() const override { return "MySonarPlugin"; }
-  void didConnect(std::shared_ptr<SonarConnection> conn) override;
+  void didConnect(std::shared_ptr<FlipperConnection> conn) override;
   void didDisconnect() override;
 };
 ```
@@ -66,7 +66,7 @@ Using the `SonarConnection` object you can register a receiver of a desktop meth
 ```java
 connection.receive("getData", new SonarReceiver() {
   @Override
-  public void onReceive(SonarObject params, SonarResponder responder) throws Exception {
+  public void onReceive(SonarObject params, FlipperResponder responder) throws Exception {
     responder.success(
         new SonarObject.Builder()
             .put("data", MyData.get())
@@ -87,7 +87,7 @@ connection.receive("getData", new SonarReceiver() {
 
 - (void)didConnect:(SonarConnection*)connection
 {
-  [connection receive:@"getData" withBlock:^(NSDictionary *params, SonarResponder *responder) {
+  [connection receive:@"getData" withBlock:^(NSDictionary *params, FlipperResponder *responder) {
     [responder success:@{
       @"data":[MyData get],
     }];
@@ -102,9 +102,9 @@ connection.receive("getData", new SonarReceiver() {
 ### C++
 
 ```c++
-void MySonarPlugin::didConnect(std::shared_ptr<SonarConnection> conn) {
+void MySonarPlugin::didConnect(std::shared_ptr<FlipperConnection> conn) {
   conn->receive("getData", [](const folly::dynamic &params,
-                             std::unique_ptr<SonarResponder> responder) {
+                             std::unique_ptr<FlipperResponder> responder) {
     dynamic response = folly::dynamic::object("data", getMyData());
     responder->success(response);
   });
@@ -133,7 +133,7 @@ connection.send("MyMessage",
 ### C++
 
 ```c++
-void MySonarPlugin::didConnect(std::shared_ptr<SonarConnection> conn) {
+void MySonarPlugin::didConnect(std::shared_ptr<FlipperConnection> conn) {
   dynamic message = folly::dynamic::object("message", "hello");
   conn->send("getData", message);
 }

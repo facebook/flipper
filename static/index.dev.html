@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="graphiql/graphiql.css">
     <link rel="stylesheet" href="vis/vis.min.css">
-    <title>Sonar</title>
+    <title>Flipper</title>
 
     <style>
 
@@ -83,6 +83,10 @@
 
           script.onerror = () => {
             openError('Script failure. Check Chrome console for more info.');
+          };
+
+          script.onload = () => {
+            global.Flipper.init();
           };
 
           document.body.appendChild(script);

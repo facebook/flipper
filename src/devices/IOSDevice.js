@@ -5,21 +5,18 @@
  * @format
  */
 
-import type {
-  DeviceType,
-  DeviceLogEntry,
-  DeviceLogListener,
-} from './BaseDevice.js';
+import type {DeviceType, LogLevel, DeviceLogEntry} from './BaseDevice.js';
 import child_process from 'child_process';
 import BaseDevice from './BaseDevice.js';
 import JSONStream from 'JSONStream';
 import {Transform} from 'stream';
 
-type RawLogEntry = {
-  activityID: string, // Number in string format
+type IOSLogLevel = 'Default' | 'Info' | 'Debug' | 'Error' | 'Fault';
+
+type RawLogEntry = {|
   eventMessage: string,
-  eventType: string,
   machTimestamp: number,
+  messageType: IOSLogLevel,
   processID: number,
   processImagePath: string,
   processImageUUID: string,
@@ -28,10 +25,10 @@ type RawLogEntry = {
   senderImageUUID: string,
   senderProgramCounter: number,
   threadID: number,
-  timestamp: string, // "2017-09-27 16:21:15.771213-0400"
+  timestamp: string,
   timezoneName: string,
   traceID: string,
-};
+|};
 
 export default class IOSDevice extends BaseDevice {
   supportedPlugins = ['DeviceLogs'];
@@ -45,7 +42,7 @@ export default class IOSDevice extends BaseDevice {
     super(serial, deviceType, title);
 
     this.buffer = '';
-    this.log = null;
+    this.log = this.startLogListener();
   }
 
   teardown() {
@@ -58,7 +55,11 @@ export default class IOSDevice extends BaseDevice {
     return ['date', 'pid', 'tid', 'tag', 'message', 'type', 'time'];
   }
 
-  addLogListener(callback: DeviceLogListener) {
+  startLogListener(retries: number = 3) {
+    if (retries === 0) {
+      console.error('Attaching iOS log listener continuously failed.');
+      return;
+    }
     if (!this.log) {
       this.log = child_process.spawn(
         'xcrun',
@@ -91,40 +92,51 @@ export default class IOSDevice extends BaseDevice {
       });
     }
 
-    this.log.stdout
-      .pipe(new StripLogPrefix())
-      .pipe(JSONStream.parse('*'))
-      .on('data', (data: RawLogEntry) => {
-        callback(IOSDevice.parseLogEntry(data));
-      });
+    try {
+      this.log.stdout
+        .pipe(new StripLogPrefix())
+        .pipe(JSONStream.parse('*'))
+        .on('data', (data: RawLogEntry) => {
+          const entry = IOSDevice.parseLogEntry(data);
+          this.notifyLogListeners(entry);
+        });
+    } catch (e) {
+      console.error('Could not parse iOS log stream.', e);
+      // restart log stream
+      this.log.kill();
+      this.log = null;
+      this.startLogListener(retries - 1);
+    }
   }
 
   static parseLogEntry(entry: RawLogEntry): DeviceLogEntry {
-    let type = 'unknown';
-    if (entry.eventMessage.indexOf('[debug]') !== -1) {
+    const LOG_MAPPING: Map<IOSLogLevel, LogLevel> = new Map([
+      ['Default', 'debug'],
+      ['Info', 'info'],
+      ['Debug', 'debug'],
+      ['Error', 'error'],
+      ['Fault', 'fatal'],
+    ]);
+    let type: LogLevel = LOG_MAPPING.get(entry.messageType) || 'unknown';
+
+    // when Apple log levels are not used, log messages can be prefixed with
+    // their loglevel.
+    if (entry.eventMessage.startsWith('[debug]')) {
       type = 'debug';
-    } else if (entry.eventMessage.indexOf('[info]') !== -1) {
+    } else if (entry.eventMessage.startsWith('[info]')) {
       type = 'info';
-    } else if (entry.eventMessage.indexOf('[warn]') !== -1) {
+    } else if (entry.eventMessage.startsWith('[warn]')) {
       type = 'warn';
-    } else if (entry.eventMessage.indexOf('[error]') !== -1) {
+    } else if (entry.eventMessage.startsWith('[error]')) {
       type = 'error';
     }
-
-    // remove timestamp in front of message
-    entry.eventMessage = entry.eventMessage.replace(
-      /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3} /,
-      '',
-    );
-
     // remove type from mesage
     entry.eventMessage = entry.eventMessage.replace(
       /^\[(debug|info|warn|error)\]/,
       '',
     );
 
-    const tags = entry.processImagePath.split('/');
-    const tag = tags[tags.length - 1];
+    const tag = entry.processImagePath.split('/').pop();
 
     return {
       date: new Date(entry.timestamp),

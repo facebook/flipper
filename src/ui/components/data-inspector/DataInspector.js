@@ -8,6 +8,7 @@
 import DataDescription from './DataDescription.js';
 import {Component} from 'react';
 import ContextMenu from '../ContextMenu.js';
+import Tooltip from '../Tooltip.js';
 import styled from '../../styled/index.js';
 import DataPreview from './DataPreview.js';
 import createPaste from '../../../utils/createPaste.js';
@@ -18,34 +19,29 @@ import {clipboard} from 'electron';
 
 const deepEqual = require('deep-equal');
 
-const BaseContainer = styled.view(
-  {
-    fontFamily: 'Menlo, monospace',
-    fontSize: 11,
-    lineHeight: '17px',
-    filter: props => (props.disabled ? 'grayscale(100%)' : ''),
-    margin: props => (props.depth === 0 ? '7.5px 0' : '0'),
-    paddingLeft: 10,
-    userSelect: 'text',
-  },
-  {
-    ignoreAttributes: ['depth', 'disabled'],
-  },
-);
+const BaseContainer = styled('div')(props => ({
+  fontFamily: 'Menlo, monospace',
+  fontSize: 11,
+  lineHeight: '17px',
+  filter: props.disabled ? 'grayscale(100%)' : '',
+  margin: props.depth === 0 ? '7.5px 0' : '0',
+  paddingLeft: 10,
+  userSelect: 'text',
+}));
 
-const RecursiveBaseWrapper = styled.text({
+const RecursiveBaseWrapper = styled('span')({
   color: colors.red,
 });
 
-const Wrapper = styled.text({
+const Wrapper = styled('span')({
   color: '#555',
 });
 
-const PropertyContainer = styled.text({
+const PropertyContainer = styled('span')({
   paddingTop: '2px',
 });
 
-const ExpandControl = styled.text({
+const ExpandControl = styled('span')({
   color: '#6e6e6e',
   fontSize: 10,
   marginLeft: -11,
@@ -53,9 +49,14 @@ const ExpandControl = styled.text({
   whiteSpace: 'pre',
 });
 
-export const InspectorName = styled.text({
+export const InspectorName = styled('span')({
   color: colors.grapeDark1,
 });
+
+const nameTooltipOptions = {
+  position: 'toLeft',
+  showTail: true,
+};
 
 export type DataValueExtractor = (
   value: any,
@@ -474,10 +475,10 @@ export default class DataInspector extends Component<DataInspectorProps> {
 
       const keys = getSortedKeys({...value, ...diffValue});
 
-      const Added = styled.view({
+      const Added = styled('div')({
         backgroundColor: colors.tealTint70,
       });
-      const Removed = styled.view({
+      const Removed = styled('div')({
         backgroundColor: colors.cherryTint70,
       });
 
@@ -530,9 +531,12 @@ export default class DataInspector extends Component<DataInspectorProps> {
     const nameElems = [];
     if (typeof name !== 'undefined') {
       nameElems.push(
-        <InspectorName key="name" title={(tooltips && tooltips[name]) || ''}>
-          {name}
-        </InspectorName>,
+        <Tooltip
+          title={tooltips && tooltips[name]}
+          key="name"
+          options={nameTooltipOptions}>
+          <InspectorName>{name}</InspectorName>
+        </Tooltip>,
       );
       nameElems.push(<span key="sep">: </span>);
     }

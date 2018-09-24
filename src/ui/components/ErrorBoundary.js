@@ -11,13 +11,14 @@ import Heading from './Heading.js';
 import Button from './Button.js';
 import View from './View.js';
 import LogManager from '../../fb-stubs/Logger.js';
+import styled from '../styled/index.js';
 
-const ErrorBoundaryContainer = View.extends({
+const ErrorBoundaryContainer = styled(View)({
   overflow: 'auto',
   padding: 10,
 });
 
-const ErrorBoundaryStack = ErrorBlock.extends({
+const ErrorBoundaryStack = styled(ErrorBlock)({
   marginBottom: 10,
   whiteSpace: 'pre',
 });

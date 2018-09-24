@@ -14,9 +14,9 @@ To use the network plugin, you need to add the plugin to your Flipper client ins
 ### Android
 
 ```java
-import com.facebook.sonar.plugins.network.NetworkSonarPlugin;
+import com.facebook.sonar.plugins.network.NetworkFlipperPlugin;
 
-NetworkSonarPlugin networkSonarPlugin = new NetworkSonarPlugin();
+NetworkFlipperPlugin networkSonarPlugin = new NetworkFlipperPlugin();
 client.addPlugin(networkSonarPlugin);
 ```
 
@@ -25,10 +25,10 @@ client.addPlugin(networkSonarPlugin);
 If you are using the popular OkHttp library, you can use the Interceptors system to automatically hook into your existing stack.
 
 ```java
-import com.facebook.sonar.plugins.network.SonarOkhttpInterceptor;
+import com.facebook.sonar.plugins.network.FlipperOkhttpInterceptor;
 
 new OkHttpClient.Builder()
-    .addNetworkInterceptor(new SonarOkhttpInterceptor(networkSonarPlugin))
+    .addNetworkInterceptor(new FlipperOkhttpInterceptor(networkSonarPlugin))
     .build();
 ```
 

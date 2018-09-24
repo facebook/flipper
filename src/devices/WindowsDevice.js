@@ -5,7 +5,6 @@
  * @format
  */
 
-import type {DeviceLogListener} from './BaseDevice.js';
 import BaseDevice from './BaseDevice.js';
 
 export default class WindowsDevice extends BaseDevice {
@@ -22,6 +21,4 @@ export default class WindowsDevice extends BaseDevice {
   supportedColumns(): Array<string> {
     return [];
   }
-
-  addLogListener(_callback: DeviceLogListener) {}
 }

@@ -16,9 +16,9 @@ import {
   colors,
   brandColors,
   PureComponent,
-} from 'sonar';
+} from 'flipper';
 
-const Containter = FlexColumn.extends({
+const Containter = styled(FlexColumn)({
   fontSize: 17,
   justifyContent: 'center',
   marginLeft: 60,
@@ -30,41 +30,41 @@ const Containter = FlexColumn.extends({
   minWidth: 450,
 });
 
-const TitleRow = FlexRow.extends({
+const TitleRow = styled(FlexRow)({
   alignItems: 'center',
   marginBottom: 40,
 });
 
-const Icon = FlexBox.extends({
+const Icon = styled(FlexBox)({
   justifyContent: 'center',
   alignItems: 'center',
-  backgroundColor: brandColors.Sonar,
+  backgroundColor: brandColors.Flipper,
   width: 32,
   height: 32,
   flexShrink: 0,
   borderRadius: 6,
 });
 
-const Title = Text.extends({
+const Title = styled(Text)({
   fontSize: 30,
   fontWeight: 300,
   paddingLeft: 10,
 });
 
-const Button = View.extends({
+const Button = styled(View)({
   marginTop: 40,
   marginBottom: 30,
   borderRadius: 6,
   color: colors.white,
   border: 'none',
-  background: brandColors.Sonar,
+  background: brandColors.Flipper,
   padding: '10px 30px',
   fontWeight: 500,
   fontSize: '1em',
   alignSelf: 'flex-start',
 });
 
-const Screenshot = styled.customHTMLTag('img', {
+const Screenshot = styled('img')({
   alignSelf: 'center',
   boxShadow: '0 5px 35px rgba(0,0,0,0.3)',
   borderRadius: 5,

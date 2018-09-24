@@ -5,14 +5,14 @@
  * @format
  */
 
-import type {ElementID, Element, ElementSearchResultSet} from 'sonar';
+import type {ElementID, Element, ElementSearchResultSet} from 'flipper';
 import {
   colors,
   Glyph,
   FlexRow,
   FlexColumn,
   Toolbar,
-  SonarPlugin,
+  FlipperPlugin,
   ElementsInspector,
   InspectorSidebar,
   LoadingIndicator,
@@ -21,19 +21,15 @@ import {
   SearchBox,
   SearchInput,
   SearchIcon,
-  SonarSidebar,
+  DetailSidebar,
   VerticalRule,
-} from 'sonar';
+  Popover,
+  ToggleButton,
+  SidebarExtensions,
+} from 'flipper';
 
 import type {TrackType} from '../../fb-stubs/Logger.js';
-import SidebarExtensions from '../../fb-stubs/LayoutInspectorSidebarExtensions.js';
 
-import {
-  AXElementsInspector,
-  AXToggleButtonEnabled,
-} from '../../fb-stubs/AXLayoutExtender.js';
-
-// $FlowFixMe
 import debounce from 'lodash.debounce';
 
 export type InspectorState = {|
@@ -51,7 +47,11 @@ export type InspectorState = {|
   AXroot: ?ElementID,
   AXelements: {[key: ElementID]: Element},
   inAXMode: boolean,
+  forceLithoAXRender: boolean,
   AXtoNonAXMapping: {[key: ElementID]: ElementID},
+  accessibilitySettingsOpen: boolean,
+  showLithoAccessibilitySettings: boolean,
+  //
   isAlignmentMode: boolean,
   logCounter: number,
 |};
@@ -81,6 +81,7 @@ type UpdateAXElementsArgs = {|
 
 type AXFocusEventResult = {|
   isFocus: boolean,
+  isClick?: boolean,
 |};
 
 type SetRootArgs = {|
@@ -94,7 +95,7 @@ type GetNodesResult = {|
 type GetNodesOptions = {|
   force: boolean,
   ax: boolean,
-  forFocusEvent?: boolean,
+  forAccessibilityEvent?: boolean,
 |};
 
 type TrackArgs = {|
@@ -111,21 +112,33 @@ type SearchResultTree = {|
   axElement: Element,
 |};
 
-const LoadingSpinner = LoadingIndicator.extends({
+const LoadingSpinner = styled(LoadingIndicator)({
   marginRight: 4,
   marginLeft: 3,
   marginTop: -1,
 });
 
-const Center = FlexRow.extends({
+const Center = styled(FlexRow)({
   alignItems: 'center',
   justifyContent: 'center',
 });
 
-const SearchIconContainer = styled.view({
+const SearchIconContainer = styled('div')({
   marginRight: 9,
   marginTop: -3,
   marginLeft: 4,
+  position: 'relative', // for settings popover positioning
+});
+
+const SettingsItem = styled('div')({
+  display: 'flex',
+  flexDirection: 'row',
+  alignItems: 'center',
+});
+
+const SettingsLabel = styled('div')({
+  marginLeft: 5,
+  marginRight: 15,
 });
 
 class LayoutSearchInput extends Component<
@@ -136,7 +149,7 @@ class LayoutSearchInput extends Component<
     value: string,
   },
 > {
-  static TextInput = styled.textInput({
+  static TextInput = styled('input')({
     width: '100%',
     marginLeft: 6,
   });
@@ -173,7 +186,7 @@ class LayoutSearchInput extends Component<
   }
 }
 
-export default class Layout extends SonarPlugin<InspectorState> {
+export default class Layout extends FlipperPlugin<InspectorState> {
   static title = 'Layout';
   static id = 'Inspector';
   static icon = 'target';
@@ -188,12 +201,16 @@ export default class Layout extends SonarPlugin<InspectorState> {
     outstandingSearchQuery: null,
     // properties for ax mode
     inAXMode: false,
+    forceLithoAXRender: true,
     AXelements: {},
     AXinitialised: false,
     AXroot: null,
     AXselected: null,
     AXfocused: null,
+    accessibilitySettingsOpen: false,
     AXtoNonAXMapping: {},
+    showLithoAccessibilitySettings: false,
+    //
     isAlignmentMode: false,
     logCounter: 0,
   };
@@ -332,6 +349,20 @@ export default class Layout extends SonarPlugin<InspectorState> {
     SetAXMode(state: InspectorState, {inAXMode}: {inAXMode: boolean}) {
       return {inAXMode};
     },
+
+    SetLithoRenderMode(
+      state: InspectorState,
+      {forceLithoAXRender}: {forceLithoAXRender: boolean},
+    ) {
+      return {forceLithoAXRender};
+    },
+
+    SetAccessibilitySettingsOpen(
+      state: InspectorState,
+      {accessibilitySettingsOpen}: {accessibilitySettingsOpen: boolean},
+    ) {
+      return {accessibilitySettingsOpen};
+    },
   };
 
   search(query: string) {
@@ -468,7 +499,7 @@ export default class Layout extends SonarPlugin<InspectorState> {
 
   axEnabled(): boolean {
     // only visible internally for Android clients
-    return AXToggleButtonEnabled && this.realClient.query.os === 'Android';
+    return this.realClient.query.os === 'Android';
   }
 
   // expand tree and highlight click-to-inspect node that was found
@@ -514,6 +545,15 @@ export default class Layout extends SonarPlugin<InspectorState> {
   }
 
   initAX() {
+    // TODO: uncomment once Litho open source updates
+    // this.client
+    //   .call('shouldShowLithoAccessibilitySettings')
+    //   .then((showLithoAccessibilitySettings: boolean) => {
+    //     this.setState({
+    //       showLithoAccessibilitySettings,
+    //     });
+    //   });
+
     performance.mark('InitAXRoot');
     this.client.call('getAXRoot').then((element: Element) => {
       this.dispatchAction({elements: [element], type: 'UpdateAXElements'});
@@ -524,36 +564,51 @@ export default class Layout extends SonarPlugin<InspectorState> {
       });
     });
 
-    this.client.subscribe('axFocusEvent', ({isFocus}: AXFocusEventResult) => {
-      this.props.logger.track('usage', 'accessibility:focusEvent', {
-        isFocus,
-        inAXMode: this.state.inAXMode,
-      });
+    this.client.subscribe(
+      'axFocusEvent',
+      ({isFocus, isClick}: AXFocusEventResult) => {
+        this.props.logger.track('usage', 'accessibility:focusEvent', {
+          isFocus,
+          isClick,
+          inAXMode: this.state.inAXMode,
+        });
 
-      // if focusing, need to update all elements in the tree because
-      // we don't know which one now has focus
-      const keys = isFocus ? Object.keys(this.state.AXelements) : [];
+        // if focusing, need to update all elements in the tree because
+        // we don't know which one now has focus
+        const keys = isFocus ? Object.keys(this.state.AXelements) : [];
 
-      // if unfocusing and currently focused element exists, update only the
-      // focused element (and only if it is/was loaded in tree)
-      if (
-        !isFocus &&
-        this.state.AXfocused &&
-        this.state.AXelements[this.state.AXfocused]
-      ) {
-        keys.push(this.state.AXfocused);
-      }
+        // if unfocusing, update only the focused and selected elements and
+        // only if they have been loaded into tree
+        if (!isFocus) {
+          if (
+            this.state.AXfocused &&
+            this.state.AXelements[this.state.AXfocused]
+          ) {
+            keys.push(this.state.AXfocused);
+          }
 
-      this.getNodes(keys, {force: true, ax: true, forFocusEvent: true}).then(
-        (elements: Array<Element>) => {
+          // also update current selected element live, so data shown is not invalid
+          if (
+            this.state.AXselected &&
+            this.state.AXelements[this.state.AXselected]
+          ) {
+            keys.push(this.state.AXselected);
+          }
+        }
+
+        this.getNodes(keys, {
+          force: true,
+          ax: true,
+          forAccessibilityEvent: true,
+        }).then((elements: Array<Element>) => {
           this.dispatchAction({
             elements,
-            forFocusEvent: true,
+            forFocusEvent: !isClick,
             type: 'UpdateAXElements',
           });
-        },
-      );
-    });
+        });
+      },
+    );
 
     this.client.subscribe(
       'invalidateAX',
@@ -673,7 +728,7 @@ export default class Layout extends SonarPlugin<InspectorState> {
     ids: Array<ElementID> = [],
     options: GetNodesOptions,
   ): Promise<Array<Element>> {
-    const {force, ax, forFocusEvent} = options;
+    const {force, ax, forAccessibilityEvent} = options;
     if (!force) {
       const elems = ax ? this.state.AXelements : this.state.elements;
       // always force undefined elements and elements that need to be expanded
@@ -697,7 +752,8 @@ export default class Layout extends SonarPlugin<InspectorState> {
       return this.client
         .call(ax ? 'getAXNodes' : 'getNodes', {
           ids,
-          forFocusEvent,
+          forAccessibilityEvent,
+          selected: this.state.AXselected,
         })
         .then(({elements}: GetNodesResult) => {
           this.props.logger.trackTimeSince(mark, eventName);
@@ -824,8 +880,48 @@ export default class Layout extends SonarPlugin<InspectorState> {
 
   onToggleAccessibility = () => {
     const inAXMode = !this.state.inAXMode;
+    const {
+      forceLithoAXRender,
+      AXroot,
+      showLithoAccessibilitySettings,
+    } = this.state;
     this.props.logger.track('usage', 'accessibility:modeToggled', {inAXMode});
     this.dispatchAction({inAXMode, type: 'SetAXMode'});
+
+    // only force render if litho accessibility is included in app
+    if (showLithoAccessibilitySettings) {
+      this.client.send('forceLithoAXRender', {
+        forceLithoAXRender: inAXMode && forceLithoAXRender,
+        applicationId: AXroot,
+      });
+    }
+  };
+
+  onToggleForceLithoAXRender = () => {
+    // only force render if litho accessibility is included in app
+    if (this.state.showLithoAccessibilitySettings) {
+      const forceLithoAXRender = !this.state.forceLithoAXRender;
+      const applicationId = this.state.AXroot;
+      this.dispatchAction({forceLithoAXRender, type: 'SetLithoRenderMode'});
+      this.client.send('forceLithoAXRender', {
+        forceLithoAXRender: forceLithoAXRender,
+        applicationId,
+      });
+    }
+  };
+
+  onOpenAccessibilitySettings = () => {
+    this.dispatchAction({
+      accessibilitySettingsOpen: true,
+      type: 'SetAccessibilitySettingsOpen',
+    });
+  };
+
+  onCloseAccessibilitySettings = () => {
+    this.dispatchAction({
+      accessibilitySettingsOpen: false,
+      type: 'SetAccessibilitySettingsOpen',
+    });
   };
 
   onToggleAlignment = () => {
@@ -943,9 +1039,9 @@ export default class Layout extends SonarPlugin<InspectorState> {
       'accessibility-focused':
         'True if this element has the focus of an accessibility service',
       'content-description':
-        'Text to label the content/functionality of this element ',
+        'Text to label the content or functionality of this element ',
       'important-for-accessibility':
-        'Marks this element as important to accessibility services, one of AUTO, YES, NO, NO_HIDE_DESCENDANTS',
+        'Marks this element as important to accessibility services; one of AUTO, YES, NO, NO_HIDE_DESCENDANTS',
       'talkback-focusable': 'True if Talkback can focus on this element',
       'talkback-focusable-reasons': 'Why Talkback can focus on this element',
       'talkback-ignored': 'True if Talkback cannot focus on this element',
@@ -987,6 +1083,22 @@ export default class Layout extends SonarPlugin<InspectorState> {
     }
   };
 
+  getAccessibilitySettingsPopover(forceLithoAXRender: boolean) {
+    return (
+      <Popover
+        onDismiss={this.onCloseAccessibilitySettings}
+        forceOpts={{skewLeft: true, minWidth: 280}}>
+        <SettingsItem>
+          <ToggleButton
+            onClick={this.onToggleForceLithoAXRender}
+            toggled={forceLithoAXRender}
+          />
+          <SettingsLabel>Force Litho Accessibility Rendering</SettingsLabel>
+        </SettingsItem>
+      </Popover>
+    );
+  }
+
   render() {
     const {
       initialised,
@@ -1000,8 +1112,11 @@ export default class Layout extends SonarPlugin<InspectorState> {
       AXelements,
       isSearchActive,
       inAXMode,
+      forceLithoAXRender,
       outstandingSearchQuery,
       isAlignmentMode,
+      accessibilitySettingsOpen,
+      showLithoAccessibilitySettings,
     } = this.state;
 
     return (
@@ -1063,6 +1178,24 @@ export default class Layout extends SonarPlugin<InspectorState> {
             <LayoutSearchInput onSubmit={this.search.bind(this)} />
             {outstandingSearchQuery && <LoadingSpinner size={16} />}
           </SearchBox>
+          {inAXMode &&
+            showLithoAccessibilitySettings && (
+              <SearchIconContainer
+                onClick={this.onOpenAccessibilitySettings}
+                role="button">
+                <Glyph
+                  name="settings"
+                  size={16}
+                  color={
+                    accessibilitySettingsOpen
+                      ? colors.macOSTitleBarIconSelected
+                      : colors.macOSTitleBarIconActive
+                  }
+                />
+                {accessibilitySettingsOpen &&
+                  this.getAccessibilitySettingsPopover(forceLithoAXRender)}
+              </SearchIconContainer>
+            )}
         </Toolbar>
         <FlexRow fill={true}>
           {initialised ? (
@@ -1083,21 +1216,20 @@ export default class Layout extends SonarPlugin<InspectorState> {
           )}
           {AXinitialised && inAXMode ? <VerticalRule /> : null}
           {AXinitialised && inAXMode ? (
-            <AXElementsInspector
+            <ElementsInspector
               onElementSelected={this.onElementSelected}
               onElementHovered={this.onElementHovered}
               onElementExpanded={this.onElementExpanded}
               onValueChanged={this.onDataValueChanged}
               selected={AXselected}
               focused={AXfocused}
-              searchResults={null}
               root={AXroot}
               elements={AXelements}
               contextMenuExtensions={this.getAXContextMenuExtensions()}
             />
           ) : null}
         </FlexRow>
-        <SonarSidebar>{this.renderSidebar()}</SonarSidebar>
+        <DetailSidebar>{this.renderSidebar()}</DetailSidebar>
       </FlexColumn>
     );
   }

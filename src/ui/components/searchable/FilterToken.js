@@ -5,7 +5,7 @@
  * @format
  */
 
-import type {Filter} from 'sonar';
+import type {Filter} from 'flipper';
 import {PureComponent} from 'react';
 import Text from '../Text.js';
 import styled from '../../styled/index.js';
@@ -13,58 +13,47 @@ import {findDOMNode} from 'react-dom';
 import {colors} from '../colors.js';
 import electron from 'electron';
 
-const Token = Text.extends(
-  {
-    display: 'inline-flex',
-    alignItems: 'center',
-    backgroundColor: props =>
-      props.focused
-        ? colors.macOSHighlightActive
-        : props.color || colors.macOSHighlight,
-    borderRadius: 4,
-    marginRight: 4,
-    padding: 4,
-    paddingLeft: 6,
-    height: 21,
-    color: props => (props.focused ? 'white' : 'inherit'),
-    '&:active': {
-      backgroundColor: colors.macOSHighlightActive,
-      color: colors.white,
-    },
-    '&:first-of-type': {
-      marginLeft: 3,
-    },
+const Token = styled(Text)(props => ({
+  display: 'inline-flex',
+  alignItems: 'center',
+  backgroundColor: props.focused
+    ? colors.macOSHighlightActive
+    : props.color || colors.macOSHighlight,
+  borderRadius: 4,
+  marginRight: 4,
+  padding: 4,
+  paddingLeft: 6,
+  height: 21,
+  color: props.focused ? 'white' : 'inherit',
+  '&:active': {
+    backgroundColor: colors.macOSHighlightActive,
+    color: colors.white,
   },
-  {
-    ignoreAttributes: ['focused', 'color'],
+  '&:first-of-type': {
+    marginLeft: 3,
   },
-);
+}));
 
-const Key = Text.extends(
-  {
-    position: 'relative',
-    fontWeight: 500,
-    paddingRight: 12,
-    textTransform: 'capitalize',
-    lineHeight: '21px',
-    '&:after': {
-      content: props => (props.type === 'exclude' ? '"≠"' : '"="'),
-      paddingLeft: 5,
-      position: 'absolute',
-      top: -1,
-      right: 0,
-      fontSize: 14,
-    },
-    '&:active:after': {
-      backgroundColor: colors.macOSHighlightActive,
-    },
+const Key = styled(Text)(props => ({
+  position: 'relative',
+  fontWeight: 500,
+  paddingRight: 12,
+  textTransform: 'capitalize',
+  lineHeight: '21px',
+  '&:after': {
+    content: props.type === 'exclude' ? '"≠"' : '"="',
+    paddingLeft: 5,
+    position: 'absolute',
+    top: -1,
+    right: 0,
+    fontSize: 14,
   },
-  {
-    ignoreAttributes: ['type', 'focused'],
+  '&:active:after': {
+    backgroundColor: colors.macOSHighlightActive,
   },
-);
+}));
 
-const Value = Text.extends({
+const Value = styled(Text)({
   whiteSpace: 'nowrap',
   maxWidth: 160,
   overflow: 'hidden',
@@ -73,29 +62,24 @@ const Value = Text.extends({
   paddingLeft: 3,
 });
 
-const Chevron = styled.view(
-  {
+const Chevron = styled('div')(props => ({
+  border: 0,
+  paddingLeft: 3,
+  paddingRight: 1,
+  marginRight: 0,
+  fontSize: 16,
+  backgroundColor: 'transparent',
+  position: 'relative',
+  top: -2,
+  height: 'auto',
+  lineHeight: 'initial',
+  color: props.focused ? colors.white : 'inherit',
+  '&:hover, &:active, &:focus': {
+    color: 'inherit',
     border: 0,
-    paddingLeft: 3,
-    paddingRight: 1,
-    marginRight: 0,
-    fontSize: 16,
     backgroundColor: 'transparent',
-    position: 'relative',
-    top: -2,
-    height: 'auto',
-    lineHeight: 'initial',
-    color: props => (props.focused ? colors.white : 'inherit'),
-    '&:hover, &:active, &:focus': {
-      color: 'inherit',
-      border: 0,
-      backgroundColor: 'transparent',
-    },
   },
-  {
-    ignoreAttributes: ['focused'],
-  },
-);
+}));
 
 type Props = {|
   filter: Filter,

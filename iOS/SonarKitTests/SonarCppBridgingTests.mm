@@ -9,17 +9,17 @@
 
 #if FB_SONARKIT_ENABLED
 
-#import <SonarKit/CppBridge/SonarCppWrapperPlugin.h>
-#import <SonarKit/SonarPlugin.h>
+#import <FlipperKit/CppBridge/SonarCppWrapperPlugin.h>
+#import <FlipperKit/FlipperPlugin.h>
 
-using facebook::sonar::SonarCppWrapperPlugin;
+using facebook::flipper::SonarCppWrapperPlugin;
 
-@interface DummyPlugin : NSObject <SonarPlugin>
+@interface DummyPlugin : NSObject <FlipperPlugin>
 @end
 
 @implementation DummyPlugin
 - (NSString *)identifier { return @"Dummy"; }
-- (void)didConnect:(id<SonarConnection>)connection {}
+- (void)didConnect:(id<FlipperConnection>)connection {}
 - (void)didDisconnect {}
 @end
 
@@ -29,7 +29,7 @@ using facebook::sonar::SonarCppWrapperPlugin;
 @implementation SonarCppBridgingTests
 
 - (void)testCppWrapperRetainsObjCPlugin {
-  NSObject<SonarPlugin> *dummyPlugin = [DummyPlugin new];
+  NSObject<FlipperPlugin> *dummyPlugin = [DummyPlugin new];
   auto retainCountBefore = CFGetRetainCount((void *)dummyPlugin);
   SonarCppWrapperPlugin wrapperPlugin(dummyPlugin);
   auto retainCountAfter = CFGetRetainCount((void *)dummyPlugin);

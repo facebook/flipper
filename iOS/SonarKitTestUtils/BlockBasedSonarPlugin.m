@@ -29,7 +29,7 @@
   return _identifier;
 }
 
-- (void)didConnect:(id<SonarConnection>)connection
+- (void)didConnect:(id<FlipperConnection>)connection
 {
   if (_connect) {
     _connect(connection);

@@ -18,12 +18,12 @@ import {
   FlexRow,
   styled,
   Searchable,
-} from 'sonar';
+} from 'flipper';
 const {spawn} = require('child_process');
 const path = require('path');
 const {app, shell} = require('electron').remote;
 
-const SONAR_PLUGIN_PATH = path.join(app.getPath('home'), '.sonar');
+const FLIPPER_PLUGIN_PATH = path.join(app.getPath('home'), '.flipper');
 const DYNAMIC_PLUGINS = JSON.parse(window.process.env.PLUGINS || '[]');
 
 type NPMModule = {
@@ -63,18 +63,18 @@ type State = {
   searchCompleted: boolean,
 };
 
-const Container = FlexBox.extends({
+const Container = styled(FlexBox)({
   width: '100%',
   flexGrow: 1,
   background: colors.light02,
   overflowY: 'scroll',
 });
 
-const Title = Text.extends({
+const Title = styled(Text)({
   fontWeight: 500,
 });
 
-const Plugin = FlexColumn.extends({
+const Plugin = styled(FlexColumn)({
   backgroundColor: colors.white,
   borderRadius: 4,
   padding: 15,
@@ -82,20 +82,20 @@ const Plugin = FlexColumn.extends({
   boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
 });
 
-const SectionTitle = styled.text({
+const SectionTitle = styled('span')({
   fontWeight: 'bold',
   fontSize: 24,
   margin: 15,
   marginLeft: 20,
 });
 
-const Loading = FlexBox.extends({
+const Loading = styled(FlexBox)({
   padding: 50,
   alignItems: 'center',
   justifyContent: 'center',
 });
 
-const RestartRequired = FlexBox.extends({
+const RestartRequired = styled(FlexBox)({
   textAlign: 'center',
   justifyContent: 'center',
   fontWeight: 500,
@@ -105,22 +105,22 @@ const RestartRequired = FlexBox.extends({
   cursor: 'pointer',
 });
 
-const TitleRow = FlexRow.extends({
+const TitleRow = styled(FlexRow)({
   alignItems: 'center',
   marginBottom: 10,
   fontSize: '1.1em',
 });
 
-const Description = FlexRow.extends({
+const Description = styled(FlexRow)({
   marginBottom: 15,
   lineHeight: '130%',
 });
 
-const PluginGlyph = Glyph.extends({
+const PluginGlyph = styled(Glyph)({
   marginRight: 5,
 });
 
-const PluginLoading = LoadingIndicator.extends({
+const PluginLoading = styled(LoadingIndicator)({
   marginLeft: 5,
   marginTop: 5,
 });
@@ -133,7 +133,7 @@ const getLatestVersion = (name: string): Promise<NPMModule> => {
 
 const getPluginList = (): Promise<Array<NPMModule>> => {
   return fetch(
-    'http://registry.npmjs.org/-/v1/search?text=keywords:sonar&size=250',
+    'http://registry.npmjs.org/-/v1/search?text=keywords:flipper&size=250',
   )
     .then(res => res.json())
     .then(res => res.objects.map(o => o.package));
@@ -161,7 +161,7 @@ class PluginItem extends PureComponent<
     const {name, status: initialStatus} = this.props.plugin;
     this.setState({working: true});
     const npm = spawn('npm', [action, name], {
-      cwd: SONAR_PLUGIN_PATH,
+      cwd: FLIPPER_PLUGIN_PATH,
     });
 
     npm.stderr.on('data', e => {
@@ -203,7 +203,7 @@ class PluginItem extends PureComponent<
         <FlexRow>
           {managed ? (
             <Text size="0.9em" color={colors.light30}>
-              This plugin is not managed by Sonar, but loaded from{' '}
+              This plugin is not managed by Flipper, but loaded from{' '}
               <Text size="1em" code={true}>
                 {rootDir}
               </Text>
@@ -255,7 +255,7 @@ class PluginManager extends PureComponent<Props, State> {
     plugins: DYNAMIC_PLUGINS.reduce((acc, plugin) => {
       acc[plugin.name] = {
         ...plugin,
-        managed: !(plugin.entry, '').startsWith(SONAR_PLUGIN_PATH),
+        managed: !(plugin.entry, '').startsWith(FLIPPER_PLUGIN_PATH),
         status: 'installed',
       };
       return acc;

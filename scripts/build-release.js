@@ -9,7 +9,7 @@ const tmp = require('tmp');
 const fs = require('fs-extra');
 const builder = require('electron-builder');
 const Platform = builder.Platform;
-const metro = require('../static/node_modules/metro');
+const Metro = require('../static/node_modules/metro');
 const compilePlugins = require('../static/compilePlugins');
 
 function generateManifest(versionNumber) {
@@ -134,19 +134,32 @@ function compile(buildFolder) {
     'Building main bundle',
     path.join(__dirname, '..', 'src', 'init.js'),
   );
-  return metro
-    .runBuild({
-      config: {
-        getProjectRoots: () => [path.join(__dirname, '..')],
-        getTransformModulePath: () =>
-          path.join(__dirname, '..', 'static', 'transforms', 'index.js'),
+  const projectRoots = path.join(__dirname, '..');
+  return Metro.runBuild(
+    {
+      reporter: {update: () => {}},
+      projectRoot: projectRoots,
+      watchFolders: [projectRoots],
+      serializer: {},
+      transformer: {
+        babelTransformerPath: path.join(
+          __dirname,
+          '..',
+          'static',
+          'transforms',
+          'index.js',
+        ),
       },
-      resetCache: true,
+    },
+    {
       dev: false,
+      minify: false,
+      resetCache: true,
+      sourceMap: true,
       entry: path.join(__dirname, '..', 'src', 'init.js'),
       out: path.join(buildFolder, 'bundle.js'),
-    })
-    .catch(die);
+    },
+  ).catch(die);
 }
 
 function copyStaticFolder(buildFolder) {

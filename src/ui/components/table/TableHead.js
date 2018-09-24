@@ -6,7 +6,6 @@
  */
 
 import type {
-  TableColumnKeys,
   TableColumnOrder,
   TableColumnSizes,
   TableColumns,
@@ -28,11 +27,11 @@ const invariant = require('invariant');
 
 type MenuTemplate = Array<Electron$MenuItemOptions>;
 
-const TableHeaderArrow = styled.text({
+const TableHeaderArrow = styled('span')({
   float: 'right',
 });
 
-const TableHeaderColumnInteractive = Interactive.extends({
+const TableHeaderColumnInteractive = styled(Interactive)({
   display: 'inline-block',
   overflow: 'hidden',
   textOverflow: 'ellipsis',
@@ -40,11 +39,11 @@ const TableHeaderColumnInteractive = Interactive.extends({
   width: '100%',
 });
 
-const TableHeaderColumnContainer = styled.view({
+const TableHeaderColumnContainer = styled('div')({
   padding: '0 8px',
 });
 
-const TableHeadContainer = FlexRow.extends({
+const TableHeadContainer = styled(FlexRow)({
   borderBottom: `1px solid ${colors.sectionHeaderBorder}`,
   color: colors.light50,
   flexShrink: 0,
@@ -57,33 +56,28 @@ const TableHeadContainer = FlexRow.extends({
   zIndex: 2,
 });
 
-const TableHeadColumnContainer = styled.view(
-  {
-    position: 'relative',
-    backgroundColor: colors.white,
-    flexShrink: props => (props.width === 'flex' ? 1 : 0),
-    height: 23,
-    lineHeight: '23px',
-    fontSize: '0.85em',
-    fontWeight: 500,
-    width: props => (props.width === 'flex' ? '100%' : props.width),
-    '&::after': {
-      position: 'absolute',
-      content: '""',
-      right: 0,
-      top: 5,
-      height: 13,
-      width: 1,
-      background: colors.light15,
-    },
-    '&:last-child::after': {
-      display: 'none',
-    },
+const TableHeadColumnContainer = styled('div')(props => ({
+  position: 'relative',
+  backgroundColor: colors.white,
+  flexShrink: props.width === 'flex' ? 1 : 0,
+  height: 23,
+  lineHeight: '23px',
+  fontSize: '0.85em',
+  fontWeight: 500,
+  width: props.width === 'flex' ? '100%' : props.width,
+  '&::after': {
+    position: 'absolute',
+    content: '""',
+    right: 0,
+    top: 5,
+    height: 13,
+    width: 1,
+    background: colors.light15,
   },
-  {
-    ignoreAttributes: ['width'],
+  '&:last-child::after': {
+    display: 'none',
   },
-);
+}));
 
 const RIGHT_RESIZABLE = {right: true};
 
@@ -193,7 +187,6 @@ class TableHeadColumn extends PureComponent<{
 export default class TableHead extends PureComponent<{
   columnOrder: TableColumnOrder,
   onColumnOrder: ?(order: TableColumnOrder) => void,
-  columnKeys: TableColumnKeys,
   columns: TableColumns,
   sortOrder: ?TableRowSortOrder,
   onSort: ?TableOnSort,
@@ -201,8 +194,15 @@ export default class TableHead extends PureComponent<{
   onColumnResize: ?TableOnColumnResize,
 }> {
   buildContextMenu = (): MenuTemplate => {
+    const visibles = this.props.columnOrder
+      .map(c => (c.visible ? c.key : null))
+      .filter(Boolean)
+      .reduce((acc, cv) => {
+        acc.add(cv);
+        return acc;
+      }, new Set());
     return Object.keys(this.props.columns).map(key => {
-      const visible = this.props.columnKeys.includes(key);
+      const visible = visibles.has(key);
       return {
         label: this.props.columns[key].value,
         click: () => {

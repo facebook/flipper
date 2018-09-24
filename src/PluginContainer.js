@@ -4,13 +4,21 @@
  * LICENSE file in the root directory of this source tree.
  * @format
  */
-import type {SonarPlugin, SonarBasePlugin} from './plugin.js';
+import type {FlipperPlugin, FlipperBasePlugin} from './plugin.js';
 import type LogManager from './fb-stubs/Logger';
 import type Client from './Client.js';
 import type BaseDevice from './devices/BaseDevice.js';
+import type {Props as PluginProps} from './plugin';
 
-import {SonarDevicePlugin} from './plugin.js';
-import {ErrorBoundary, Component, FlexColumn, FlexRow, colors} from 'sonar';
+import {FlipperDevicePlugin} from './plugin.js';
+import {
+  ErrorBoundary,
+  Component,
+  FlexColumn,
+  FlexRow,
+  colors,
+  styled,
+} from 'flipper';
 import React from 'react';
 import {connect} from 'react-redux';
 import {setPluginState} from './reducers/pluginStates.js';
@@ -18,14 +26,14 @@ import {devicePlugins} from './device-plugins/index.js';
 import plugins from './plugins/index.js';
 import {activateMenuItems} from './MenuBar.js';
 
-const Container = FlexColumn.extends({
+const Container = styled(FlexColumn)({
   width: 0,
   flexGrow: 1,
   flexShrink: 1,
   backgroundColor: colors.white,
 });
 
-const SidebarContainer = FlexRow.extends({
+const SidebarContainer = styled(FlexRow)({
   backgroundColor: colors.light02,
   height: '100%',
   overflow: 'scroll',
@@ -36,7 +44,9 @@ type Props = {
   selectedDevice: BaseDevice,
   selectedPlugin: ?string,
   selectedApp: ?string,
-  pluginStates: Object,
+  pluginStates: {
+    [pluginKey: string]: Object,
+  },
   clients: Array<Client>,
   setPluginState: (payload: {
     pluginKey: string,
@@ -45,7 +55,7 @@ type Props = {
 };
 
 type State = {
-  activePlugin: ?Class<SonarBasePlugin<>>,
+  activePlugin: ?Class<FlipperBasePlugin<>>,
   target: Client | BaseDevice | null,
   pluginKey: string,
 };
@@ -53,7 +63,7 @@ type State = {
 function computeState(props: Props): State {
   // plugin changed
   let activePlugin = devicePlugins.find(
-    (p: Class<SonarDevicePlugin<>>) => p.id === props.selectedPlugin,
+    (p: Class<FlipperDevicePlugin<>>) => p.id === props.selectedPlugin,
   );
   let target = props.selectedDevice;
   let pluginKey = 'unknown';
@@ -64,7 +74,7 @@ function computeState(props: Props): State {
       (client: Client) => client.id === props.selectedApp,
     );
     activePlugin = plugins.find(
-      (p: Class<SonarPlugin<>>) => p.id === props.selectedPlugin,
+      (p: Class<FlipperPlugin<>>) => p.id === props.selectedPlugin,
     );
     if (!activePlugin || !target) {
       throw new Error(
@@ -82,7 +92,7 @@ function computeState(props: Props): State {
 }
 
 class PluginContainer extends Component<Props, State> {
-  plugin: ?SonarBasePlugin<>;
+  plugin: ?FlipperBasePlugin<>;
 
   constructor(props: Props) {
     super();
@@ -99,7 +109,7 @@ class PluginContainer extends Component<Props, State> {
     }
   }
 
-  refChanged = (ref: ?SonarBasePlugin<>) => {
+  refChanged = (ref: ?FlipperBasePlugin<>) => {
     if (this.plugin) {
       this.plugin._teardown();
       this.plugin = null;
@@ -121,6 +131,15 @@ class PluginContainer extends Component<Props, State> {
       return null;
     }
 
+    const props: PluginProps<Object> = {
+      key: pluginKey,
+      logger: this.props.logger,
+      persistedState: pluginStates[pluginKey] || {},
+      setPersistedState: state => setPluginState({pluginKey, state}),
+      target,
+      ref: this.refChanged,
+    };
+
     return (
       <React.Fragment>
         <Container key="plugin">
@@ -129,17 +148,10 @@ class PluginContainer extends Component<Props, State> {
               activePlugin.title
             }" encountered an error during render`}
             logger={this.props.logger}>
-            {React.createElement(activePlugin, {
-              key: pluginKey,
-              logger: this.props.logger,
-              persistedState: pluginStates[pluginKey] || {},
-              setPersistedState: state => setPluginState({pluginKey, state}),
-              target,
-              ref: this.refChanged,
-            })}
+            {React.createElement(activePlugin, props)}
           </ErrorBoundary>
         </Container>
-        <SidebarContainer id="sonarSidebar" />
+        <SidebarContainer id="detailsSidebar" />
       </React.Fragment>
     );
   }

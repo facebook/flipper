@@ -1,7 +1,7 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 
 import UIKit
-import SonarKit
+import FlipperKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -12,13 +12,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
     window = UIWindow()
 
-    let client = SonarClient.shared()
+    let client = FlipperClient.shared()
     // Layout and network plugins are currently not supported for Swift apps.
 //    let layoutDescriptorMapper = SKDescriptorMapper(defaults: ())
 //    SonarKitLayoutComponentKitSupport.setUp(descriptorMapper: layoutDescriptorMapper)
-//    client.addPlugin(SonarKitLayoutPlugin(rootNode: application, descriptorMapper: layoutDescriptorMapper))
+//    client.addPlugin(FlipperKitLayoutPlugin(rootNode: application, descriptorMapper: layoutDescriptorMapper))
 
-    client?.add(SonarKitNetworkPlugin(networkAdapter: SKIOSNetworkAdapter()))
+    client?.add(FlipperKitNetworkPlugin(networkAdapter: SKIOSNetworkAdapter()))
     client?.start()
 
     let storyboard = UIStoryboard(name: "MainStoryBoard", bundle: nil)

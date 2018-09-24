@@ -5,7 +5,7 @@
  *  file in the root directory of this source tree.
  *
  */
-package com.facebook.sonar.plugins.inspector.descriptors;
+package com.facebook.flipper.plugins.inspector.descriptors;
 
 import static android.view.View.MeasureSpec.EXACTLY;
 import static android.view.View.MeasureSpec.makeMeasureSpec;
@@ -14,7 +14,7 @@ import static org.mockito.Matchers.any;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import com.facebook.sonar.plugins.inspector.Touch;
+import com.facebook.flipper.plugins.inspector.Touch;
 import com.facebook.testing.robolectric.v3.WithTestDefaultsRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;

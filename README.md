@@ -105,6 +105,15 @@ Start up an android emulator and run the following in the project root:
 
 Find the full documentation for this project at [fbflipper.com](https://fbflipper.com/docs).
 
+Our documentation is built with [Docusaurus](https://docusaurus.io/). You can build
+it locally by running this:
+
+```bash
+cd website
+yarn
+yarn start
+```
+
 ## Contributing
 See the [CONTRIBUTING](/CONTRIBUTING.md) file for how to help out.
 

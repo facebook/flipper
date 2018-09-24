@@ -6,11 +6,11 @@ sidebar_label: JavaScript Setup
 
 ## Creating the plugin UI
 
-To create the desktop part of your plugin, initiate a new JavaScript project using `yarn init` and make sure your package name starts with `sonar-plugin-` and a file called `index.js`, which is the entry point to your plugin. A sample `package.json`-file could look like this:
+To create the desktop part of your plugin, initiate a new JavaScript project using `yarn init` and make sure your package name starts with `flipper-plugin-` and a file called `index.js`, which is the entry point to your plugin. A sample `package.json`-file could look like this:
 
 ```
 {
-  "name": "sonar-plugin-myplugin",
+  "name": "flipper-plugin-myplugin",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
@@ -18,12 +18,12 @@ To create the desktop part of your plugin, initiate a new JavaScript project usi
 }
 ```
 
-In `index.js` you can now create your plugin. We expect this file to have a default export of type `SonarPlugin`. A hello-world-plugin could look like this:
+In `index.js` you can now create your plugin. We expect this file to have a default export of type `FlipperPlugin`. A hello-world-plugin could look like this:
 
 ```js
-import {SonarPlugin} from 'sonar';
+import {FlipperPlugin} from 'flipper';
 
-export default class extends SonarPlugin {
+export default class extends FlipperPlugin {
   render() {
     return 'hello world';
   }
@@ -34,11 +34,11 @@ Learn more on how to use [Flipper's UI components](ui-components.md).
 
 ### Dynamically loading plugins
 
-Once a plugin is created, Flipper can load it from its folder. The path from where the plugins are loaded is specified in `~/.sonar/config.json`. Add the parent folder of your plugin to `pluginPaths` and start Flipper.
+Once a plugin is created, Flipper can load it from its folder. The path from where the plugins are loaded is specified in `~/.flipper/config.json`. Add the parent folder of your plugin to `pluginPaths` and start Flipper.
 
 ### npm dependencies
 
-If you need any dependencies in your plugin, you can install them using `yarn add`. The Flipper UI components exported from `sonar`, as well as `react` and `react-dom` don't need to be installed as dependencies. Our plugin-loader makes these dependencies available to your plugin.
+If you need any dependencies in your plugin, you can install them using `yarn add`. The Flipper UI components exported from `flipper`, as well as `react` and `react-dom` don't need to be installed as dependencies. Our plugin-loader makes these dependencies available to your plugin.
 
 ### ES6, babel-transforms and bundling
 

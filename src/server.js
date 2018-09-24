@@ -121,7 +121,7 @@ export default class Server extends EventEmitter {
     conn.connectionStatus().subscribe({
       onNext(payload) {
         if (payload.kind == 'ERROR' || payload.kind == 'CLOSED') {
-          console.debug(`Device disconnected ${client.id}`, 'connection');
+          console.debug(`Device disconnected ${client.id}`, 'server');
           server.removeConnection(client.id);
         }
       },
@@ -147,11 +147,12 @@ export default class Server extends EventEmitter {
       this.emit(
         'error',
         new Error(
-          "Sonar doesn't currently support physical iOS devices. You can still use it to view logs, but for now to use the majority of the sonar plugins you'll have to use the Simulator.",
+          "Flipper doesn't currently support physical iOS devices. You can still use it to view logs, but for now to use the majority of the Flipper plugins you'll have to use the Simulator.",
         ),
       );
       console.warn(
-        'Physical iOS device detected. This is not currently supported by sonar.',
+        'Physical iOS device detected. This is not currently supported by Flipper.',
+        'server',
       );
     }
 
@@ -165,7 +166,11 @@ export default class Server extends EventEmitter {
         try {
           rawData = JSON.parse(payload.data);
         } catch (err) {
-          console.error(`Invalid JSON: ${payload.data}`, 'clientMessage');
+          console.error(
+            `Invalid JSON: ${payload.data}`,
+            'clientMessage',
+            'server',
+          );
           return;
         }
 
@@ -181,14 +186,16 @@ export default class Server extends EventEmitter {
             subscriber.onSubscribe();
             this.certificateProvider
               .processCertificateSigningRequest(csr, clientData.os, destination)
-              .then(_ => {
+              .then(result => {
                 subscriber.onComplete({
-                  data: JSON.stringify({}),
+                  data: JSON.stringify({
+                    deviceId: result.deviceId,
+                  }),
                   metadata: '',
                 });
               })
               .catch(e => {
-                console.error(e);
+                console.error(e, 'server');
                 subscriber.onError(e);
               });
           });
@@ -207,7 +214,7 @@ export default class Server extends EventEmitter {
         try {
           rawData = JSON.parse(payload.data);
         } catch (err) {
-          console.error(`Invalid JSON: ${payload.data}`, 'clientMessage');
+          console.error(`Invalid JSON: ${payload.data}`, 'server');
           return;
         }
 
@@ -241,8 +248,8 @@ export default class Server extends EventEmitter {
   addConnection(conn: ReactiveSocket, query: ClientQuery): Client {
     invariant(query, 'expected query');
 
-    const id = `${query.app}-${query.os}-${query.device}`;
-    console.debug(`Device connected: ${id}`, 'connection');
+    const id = `${query.app}-${query.os}-${query.device}-${query.device_id}`;
+    console.debug(`Device connected: ${id}`, 'server');
 
     const client = new Client(id, query, conn, this.logger);
 
@@ -256,11 +263,11 @@ export default class Server extends EventEmitter {
         `Device client initialised: ${id}. Supported plugins: ${client.plugins.join(
           ', ',
         )}`,
-        'connection',
+        'server',
       );
 
       /* If a device gets disconnected without being cleaned up properly,
-       * sonar won't be aware until it attempts to reconnect.
+       * Flipper won't be aware until it attempts to reconnect.
        * When it does we need to terminate the zombie connection.
       */
       if (this.connections.has(id)) {
@@ -325,6 +332,7 @@ class ConnectionTracker {
             this.connectionProblemThreshold
           } times within ${this.timeWindowMillis / 1000}s.`,
         ),
+        'server',
       );
     }
   }

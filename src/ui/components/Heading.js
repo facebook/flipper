@@ -7,7 +7,7 @@
 
 import styled from '../styled/index.js';
 
-const LargeHeading = styled.view({
+const LargeHeading = styled('div')({
   fontSize: 18,
   fontWeight: 'bold',
   lineHeight: '20px',
@@ -15,7 +15,7 @@ const LargeHeading = styled.view({
   marginBottom: 10,
 });
 
-const SmallHeading = styled.view({
+const SmallHeading = styled('div')({
   fontSize: 12,
   color: '#90949c',
   fontWeight: 'bold',

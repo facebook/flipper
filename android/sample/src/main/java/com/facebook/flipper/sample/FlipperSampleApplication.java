@@ -4,16 +4,17 @@ package com.facebook.flipper.sample;
 
 import android.app.Application;
 import android.content.Context;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.soloader.SoLoader;
-import com.facebook.sonar.android.AndroidSonarClient;
-import com.facebook.sonar.core.SonarClient;
-import com.facebook.sonar.plugins.inspector.DescriptorMapping;
-import com.facebook.sonar.plugins.inspector.InspectorSonarPlugin;
-import com.facebook.sonar.plugins.leakcanary.LeakCanarySonarPlugin;
-import com.facebook.sonar.plugins.litho.LithoSonarDescriptors;
-import com.facebook.sonar.plugins.network.NetworkSonarPlugin;
-import com.facebook.sonar.plugins.network.SonarOkhttpInterceptor;
-import com.facebook.sonar.plugins.sharedpreferences.SharedPreferencesSonarPlugin;
+import com.facebook.flipper.android.AndroidFlipperClient;
+import com.facebook.flipper.core.FlipperClient;
+import com.facebook.flipper.plugins.inspector.DescriptorMapping;
+import com.facebook.flipper.plugins.inspector.InspectorFlipperPlugin;
+import com.facebook.flipper.plugins.leakcanary.LeakCanaryFlipperPlugin;
+import com.facebook.flipper.plugins.litho.LithoFlipperDescriptors;
+import com.facebook.flipper.plugins.network.NetworkFlipperPlugin;
+import com.facebook.flipper.plugins.network.FlipperOkhttpInterceptor;
+import com.facebook.flipper.plugins.sharedpreferences.SharedPreferencesFlipperPlugin;
 import java.util.concurrent.TimeUnit;
 import okhttp3.OkHttpClient;
 
@@ -26,11 +27,11 @@ public class FlipperSampleApplication extends Application {
     super.onCreate();
     SoLoader.init(this, false);
 
-    final SonarClient client = AndroidSonarClient.getInstance(this);
+    final FlipperClient client = AndroidFlipperClient.getInstance(this);
     final DescriptorMapping descriptorMapping = DescriptorMapping.withDefaults();
 
-    NetworkSonarPlugin networkPlugin = new NetworkSonarPlugin();
-    SonarOkhttpInterceptor interceptor = new SonarOkhttpInterceptor(networkPlugin);
+    NetworkFlipperPlugin networkPlugin = new NetworkFlipperPlugin();
+    FlipperOkhttpInterceptor interceptor = new FlipperOkhttpInterceptor(networkPlugin);
 
     okhttpClient = new OkHttpClient.Builder()
     .addNetworkInterceptor(interceptor)
@@ -39,11 +40,14 @@ public class FlipperSampleApplication extends Application {
     .writeTimeout(10, TimeUnit.MINUTES)
     .build();
 
-    LithoSonarDescriptors.add(descriptorMapping);
-    client.addPlugin(new InspectorSonarPlugin(this, descriptorMapping));
+    // Normally, you would want to make this dependent on a BuildConfig flag, but
+    // for this demo application we can safely assume that you always want to debug.
+    ComponentsConfiguration.isDebugModeEnabled = true;
+    LithoFlipperDescriptors.add(descriptorMapping);
+    client.addPlugin(new InspectorFlipperPlugin(this, descriptorMapping));
     client.addPlugin(networkPlugin);
-    client.addPlugin(new SharedPreferencesSonarPlugin(this, "sample"));
-    client.addPlugin(new LeakCanarySonarPlugin());
+    client.addPlugin(new SharedPreferencesFlipperPlugin(this, "sample"));
+    client.addPlugin(new LeakCanaryFlipperPlugin());
     client.start();
 
     getSharedPreferences("sample", Context.MODE_PRIVATE).edit().putString("Hello", "world").apply();

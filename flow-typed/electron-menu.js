@@ -43,7 +43,7 @@ type Electron$MenuItemOptions = {
     menuItem: Electron$MenuItem,
     browserWindow: Object,
     event: Object,
-  ) => void,
+  ) => mixed,
   role?: Electron$MenuRoles,
   type?: Electron$MenuType,
   label?: string,

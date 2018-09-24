@@ -41,6 +41,16 @@ def getRepositoryPassword() {
   return hasProperty('SONATYPE_NEXUS_PASSWORD') ? SONATYPE_NEXUS_PASSWORD : ""
 }
 
+def applyProxy(repo) {
+  def host = System.getProperty('https.proxyHost')
+  def port = (System.getProperty('https.proxyPort') ?: '-1').toInteger()
+
+  if (host != null && port > 0) {
+    repo.proxy(host: host, port: port, type: 'http')
+    repo.proxy(host: host, port: port, type: 'https')
+  }
+}
+
 afterEvaluate { project ->
   uploadArchives {
     repositories {
@@ -53,9 +63,11 @@ afterEvaluate { project ->
 
         repository(url: getReleaseRepositoryUrl()) {
           authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
+          applyProxy(it)
         }
         snapshotRepository(url: getSnapshotRepositoryUrl()) {
           authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
+          applyProxy(it)
         }
 
         pom.project {

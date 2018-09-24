@@ -5,7 +5,7 @@
  * @format
  */
 
-import type {SonarPlugin} from './plugin.js';
+import type {FlipperPlugin} from './plugin.js';
 import type {App} from './App.js';
 import type Logger from './fb-stubs/Logger.js';
 
@@ -21,7 +21,7 @@ export type ClientQuery = {|
   app: string,
   os: string,
   device: string,
-  device_id: ?string,
+  device_id: string,
 |};
 
 type RequestMetadata = {method: string, id: number, params: ?Object};
@@ -88,7 +88,7 @@ export default class Client extends EventEmitter {
     |},
   >;
 
-  supportsPlugin(Plugin: Class<SonarPlugin<>>): boolean {
+  supportsPlugin(Plugin: Class<FlipperPlugin<>>): boolean {
     return this.plugins.includes(Plugin.id);
   }
 

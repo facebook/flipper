@@ -5,15 +5,15 @@
  *  file in the root directory of this source tree.
  *
  */
-package com.facebook.sonar.plugins.inspector;
+package com.facebook.flipper.plugins.inspector;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import com.facebook.sonar.core.SonarConnection;
-import com.facebook.sonar.core.SonarDynamic;
-import com.facebook.sonar.core.SonarObject;
-import com.facebook.sonar.testing.SonarConnectionMock;
+import com.facebook.flipper.core.FlipperConnection;
+import com.facebook.flipper.core.FlipperDynamic;
+import com.facebook.flipper.core.FlipperObject;
+import com.facebook.flipper.testing.FlipperConnectionMock;
 import com.facebook.testing.robolectric.v3.WithTestDefaultsRunner;
 import java.util.List;
 import org.junit.Test;
@@ -51,12 +51,12 @@ public class DescriptorMappingTest {
     }
 
     @Override
-    public List<Named<SonarObject>> getData(T node) {
+    public List<Named<FlipperObject>> getData(T node) {
       return null;
     }
 
     @Override
-    public void setValue(T node, String[] path, SonarDynamic value) throws Exception {}
+    public void setValue(T node, String[] path, FlipperDynamic value) throws Exception {}
 
     @Override
     public List<Named<String>> getAttributes(T node) {
@@ -108,7 +108,7 @@ public class DescriptorMappingTest {
     final NodeDescriptor descriptor = new TestDescriptor<>();
     descriptorMapping.register(TestClass.class, descriptor);
 
-    final SonarConnection connection = new SonarConnectionMock();
+    final FlipperConnection connection = new FlipperConnectionMock();
     descriptorMapping.onConnect(connection);
 
     assertThat(descriptor.connected(), equalTo(true));
@@ -120,7 +120,7 @@ public class DescriptorMappingTest {
     final NodeDescriptor descriptor = new TestDescriptor<>();
     descriptorMapping.register(TestClass.class, descriptor);
 
-    final SonarConnection connection = new SonarConnectionMock();
+    final FlipperConnection connection = new FlipperConnectionMock();
     descriptorMapping.onConnect(connection);
     descriptorMapping.onDisconnect();
 

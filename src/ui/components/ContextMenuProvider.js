@@ -13,7 +13,7 @@ const PropTypes = require('prop-types');
 
 type MenuTemplate = Array<Electron$MenuItemOptions>;
 
-const Container = styled.view({
+const Container = styled('div')({
   display: 'contents',
 });
 

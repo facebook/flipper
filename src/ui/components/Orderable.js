@@ -37,19 +37,13 @@ type TabSizes = {
   [key: string]: Rect,
 };
 
-const OrderableContainer = styled.view({
+const OrderableContainer = styled('div')({
   position: 'relative',
 });
 
-const OrderableItemContainer = styled.view(
-  {
-    display: props =>
-      props.orientation === 'vertical' ? 'block' : 'inline-block',
-  },
-  {
-    ignoreAttributes: ['orientation'],
-  },
-);
+const OrderableItemContainer = styled('div')(props => ({
+  display: props.orientation === 'vertical' ? 'block' : 'inline-block',
+}));
 
 class OrderableItem extends Component<{
   orientation: OrderableOrientation,
@@ -79,7 +73,7 @@ class OrderableItem extends Component<{
   }
 }
 
-export default class Orderable extends styled.StylableComponent<
+export default class Orderable extends React.Component<
   OrderableProps,
   OrderableState,
 > {

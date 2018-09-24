@@ -16,8 +16,6 @@ type TableColumnOrderVal = {
   visible: boolean,
 };
 
-export type TableColumnRawOrder = Array<string | TableColumnOrderVal>;
-
 export type TableColumnOrder = Array<TableColumnOrderVal>;
 
 export type TableColumnSizes = {
@@ -63,6 +61,7 @@ export type TableBodyColumn = {|
   sortValue?: string | number,
   isFilterable?: boolean,
   value: any,
+  align?: 'left' | 'center' | 'right',
   title?: string,
 |};
 

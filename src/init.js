@@ -7,7 +7,7 @@
 
 import {Provider} from 'react-redux';
 import ReactDOM from 'react-dom';
-import {ContextMenuProvider} from 'sonar';
+import {ContextMenuProvider} from 'flipper';
 import {precachedIcons} from './utils/icons.js';
 import GK from './fb-stubs/GK.js';
 import Logger from './fb-stubs/Logger.js';
@@ -21,6 +21,7 @@ import autoMergeLevel2 from 'redux-persist/lib/stateReconciler/autoMergeLevel2';
 import reducers from './reducers/index.js';
 import dispatcher from './dispatcher/index.js';
 import {setupMenuBar} from './MenuBar.js';
+import TooltipProvider from './ui/components/TooltipProvider.js';
 const path = require('path');
 
 const reducer: typeof reducers = persistReducer(
@@ -52,23 +53,27 @@ GK.init();
 setupMenuBar();
 
 const AppFrame = () => (
-  <ContextMenuProvider>
-    <Provider store={store}>
-      <App logger={logger} bugReporter={bugReporter} />
-    </Provider>
-  </ContextMenuProvider>
+  <TooltipProvider>
+    <ContextMenuProvider>
+      <Provider store={store}>
+        <App logger={logger} bugReporter={bugReporter} />
+      </Provider>
+    </ContextMenuProvider>
+  </TooltipProvider>
 );
 
-// $FlowFixMe: this element exists!
-ReactDOM.render(<AppFrame />, document.getElementById('root'));
-// $FlowFixMe: service workers exist!
-navigator.serviceWorker
-  .register(
-    process.env.NODE_ENV === 'production'
-      ? path.join(__dirname, 'serviceWorker.js')
-      : './serviceWorker.js',
-  )
-  .then(r => {
-    (r.installing || r.active).postMessage({precachedIcons});
-  })
-  .catch(console.error);
+export default function init() {
+  // $FlowFixMe: this element exists!
+  ReactDOM.render(<AppFrame />, document.getElementById('root'));
+  // $FlowFixMe: service workers exist!
+  navigator.serviceWorker
+    .register(
+      process.env.NODE_ENV === 'production'
+        ? path.join(__dirname, 'serviceWorker.js')
+        : './serviceWorker.js',
+    )
+    .then(r => {
+      (r.installing || r.active).postMessage({precachedIcons});
+    })
+    .catch(console.error);
+}

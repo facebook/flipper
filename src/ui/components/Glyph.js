@@ -5,39 +5,28 @@
  * @format
  */
 
+import React from 'react';
 import styled from '../styled/index.js';
 const PropTypes = require('prop-types');
 import {getIconUrl} from '../../utils/icons.js';
 
-const ColoredIconBlack = styled.image(
-  {
-    height: props => props.size,
-    verticalAlign: 'middle',
-    width: props => props.size,
-  },
-  {
-    ignoreAttributes: ['size'],
-  },
-);
+const ColoredIconBlack = styled('img')(({size}) => ({
+  height: size,
+  verticalAlign: 'middle',
+  width: size,
+}));
 
-const ColoredIconCustom = styled.view(
-  {
-    height: props => props.size,
-    verticalAlign: 'middle',
-    width: props => props.size,
-    backgroundColor: props => props.color,
-    display: 'inline-block',
-    maskImage: props => `url('${props.src}')`,
-    maskSize: '100% 100%',
-    // $FlowFixMe: prefixed property
-    WebkitMaskImage: props => `url('${props.src}')`,
-    // $FlowFixMe: prefixed property
-    WebkitMaskSize: '100% 100%',
-  },
-  {
-    ignoreAttributes: ['color', 'size', 'src'],
-  },
-);
+const ColoredIconCustom = styled('div')(props => ({
+  height: props.size,
+  verticalAlign: 'middle',
+  width: props.size,
+  backgroundColor: props.color,
+  display: 'inline-block',
+  maskImage: `url('${props.src}')`,
+  maskSize: '100% 100%',
+  WebkitMaskImage: `url('${props.src}')`,
+  WebkitMaskSize: '100% 100%',
+}));
 
 export function ColoredIcon(
   props: {|
@@ -84,7 +73,7 @@ ColoredIcon.contextTypes = {
   glyphColor: PropTypes.string,
 };
 
-export default class Glyph extends styled.StylablePureComponent<{
+export default class Glyph extends React.Component<{
   name: string,
   size?: 8 | 10 | 12 | 16 | 18 | 20 | 24 | 32,
   variant?: 'filled' | 'outline',

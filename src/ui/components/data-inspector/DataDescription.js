@@ -14,55 +14,50 @@ import Popover from '../Popover.js';
 import {colors} from '../colors.js';
 import Input from '../Input.js';
 
-const NullValue = styled.text({
+const NullValue = styled('span')({
   color: 'rgb(128, 128, 128)',
 });
 
-const UndefinedValue = styled.text({
+const UndefinedValue = styled('span')({
   color: 'rgb(128, 128, 128)',
 });
 
-const StringValue = styled.text({
+const StringValue = styled('span')({
   color: colors.cherryDark1,
 });
 
-const ColorValue = styled.text({
+const ColorValue = styled('span')({
   color: colors.blueGrey,
 });
 
-const SymbolValue = styled.text({
+const SymbolValue = styled('span')({
   color: 'rgb(196, 26, 22)',
 });
 
-const NumberValue = styled.text({
+const NumberValue = styled('span')({
   color: colors.tealDark1,
 });
 
-const ColorBox = styled.text(
-  {
-    backgroundColor: props => props.color,
-    boxShadow: 'inset 0 0 1px rgba(0, 0, 0, 1)',
-    display: 'inline-block',
-    height: 12,
-    marginRight: 5,
-    verticalAlign: 'middle',
-    width: 12,
-  },
-  {
-    ignoreAttributes: ['color'],
-  },
-);
+const ColorBox = styled('span')(props => ({
+  backgroundColor: props.color,
+  boxShadow: 'inset 0 0 1px rgba(0, 0, 0, 1)',
+  display: 'inline-block',
+  height: 12,
+  marginRight: 5,
+  verticalAlign: 'middle',
+  width: 12,
+}));
 
-const FunctionKeyword = styled.text({
+const FunctionKeyword = styled('span')({
   color: 'rgb(170, 13, 145)',
   fontStyle: 'italic',
 });
 
-const FunctionName = styled.text({
+const FunctionName = styled('span')({
   fontStyle: 'italic',
 });
 
-const ColorPickerDescription = styled.view({
+const ColorPickerDescription = styled('div')({
   display: 'inline',
   position: 'relative',
 });

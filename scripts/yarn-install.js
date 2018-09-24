@@ -9,7 +9,12 @@ const path = require('path');
 const util = require('util');
 const glob = util.promisify(require('glob'));
 const exec = util.promisify(require('child_process').exec);
-const PACKAGES = ['static', 'src/plugins/*', 'src/fb/plugins/*'];
+const PACKAGES = [
+  'static',
+  'src/plugins/*',
+  'src/fb/plugins/*',
+  'src/fb/plugins/layout/*',
+];
 const WINDOWS = /^win/.test(process.platform);
 const YARN_PATH =
   process.argv.length > 2

@@ -5,18 +5,16 @@
  * @format
  */
 
-import FlexColumn from './FlexColumn.js';
-
+import React from 'react';
 import styled from '../styled/index.js';
+import FlexColumn from './FlexColumn.js';
 import FlexBox from './FlexBox.js';
-
 import {colors} from './colors.js';
 import Glyph from './Glyph.js';
 
 const BORDER = '1px solid #dddfe2';
-const ignoreAttributes = ['floating', 'padded'];
 
-const Chevron = Glyph.extends({
+const Chevron = styled(Glyph)({
   marginRight: 4,
   marginLeft: -2,
   marginBottom: 1,
@@ -25,7 +23,7 @@ const Chevron = Glyph.extends({
 /**
  * A Panel component.
  */
-export default class Panel extends styled.StylableComponent<
+export default class Panel extends React.Component<
   {|
     /**
      * Class name to customise styling.
@@ -84,46 +82,37 @@ export default class Panel extends styled.StylableComponent<
     collapsable: true,
   };
 
-  static PanelContainer = FlexColumn.extends(
-    {
-      flexShrink: 0,
-      padding: props => (props.floating ? 10 : 0),
-      borderBottom: props => (props.collapsed ? 'none' : BORDER),
-    },
-    {ignoreAttributes: ['collapsed', ...ignoreAttributes]},
-  );
+  static PanelContainer = styled(FlexColumn)(props => ({
+    flexShrink: 0,
+    padding: props.floating ? 10 : 0,
+    borderBottom: props.collapsed ? 'none' : BORDER,
+  }));
 
-  static PanelHeader = FlexBox.extends(
-    {
-      backgroundColor: '#f6f7f9',
-      border: props => (props.floating ? BORDER : 'none'),
-      borderBottom: BORDER,
-      borderTopLeftRadius: 2,
-      borderTopRightRadius: 2,
-      justifyContent: 'space-between',
-      lineHeight: '27px',
-      fontWeight: 500,
-      flexShrink: 0,
-      padding: props => (props.padded ? '0 10px' : 0),
-      '&:not(:first-child)': {
-        borderTop: BORDER,
-      },
+  static PanelHeader = styled(FlexBox)(props => ({
+    backgroundColor: '#f6f7f9',
+    border: props.floating ? BORDER : 'none',
+    borderBottom: BORDER,
+    borderTopLeftRadius: 2,
+    borderTopRightRadius: 2,
+    justifyContent: 'space-between',
+    lineHeight: '27px',
+    fontWeight: 500,
+    flexShrink: 0,
+    padding: props.padded ? '0 10px' : 0,
+    '&:not(:first-child)': {
+      borderTop: BORDER,
     },
-    {ignoreAttributes},
-  );
+  }));
 
-  static PanelBody = FlexColumn.extends(
-    {
-      backgroundColor: '#fff',
-      border: props => (props.floating ? BORDER : 'none'),
-      borderBottomLeftRadius: 2,
-      borderBottomRightRadius: 2,
-      borderTop: 'none',
-      flexGrow: 1,
-      padding: props => (props.padded ? 10 : 0),
-    },
-    {ignoreAttributes},
-  );
+  static PanelBody = styled(FlexColumn)(props => ({
+    backgroundColor: '#fff',
+    border: props.floating ? BORDER : 'none',
+    borderBottomLeftRadius: 2,
+    borderBottomRightRadius: 2,
+    borderTop: 'none',
+    flexGrow: 1,
+    padding: props.padded ? 10 : 0,
+  }));
   state = {
     collapsed: this.props.collapsed == null ? false : this.props.collapsed,
   };

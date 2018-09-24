@@ -5,7 +5,7 @@
  * @format
  */
 
-import {SonarDevicePlugin} from 'sonar';
+import {FlipperDevicePlugin} from 'flipper';
 var adb = require('adbkit-fb');
 
 import {
@@ -16,7 +16,7 @@ import {
   Text,
   ManagedTable,
   colors,
-} from 'sonar';
+} from 'flipper';
 
 type ADBClient = any;
 type AndroidDevice = {
@@ -98,7 +98,7 @@ function formatFrequency(freq) {
   }
 }
 
-export default class CPUFrequencyTable extends SonarDevicePlugin<CPUState> {
+export default class CPUFrequencyTable extends FlipperDevicePlugin<CPUState> {
   static id = 'DeviceCPU';
   static title = 'CPU';
   static icon = 'underline';

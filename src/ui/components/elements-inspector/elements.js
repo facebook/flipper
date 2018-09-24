@@ -19,59 +19,57 @@ import Glyph from '../Glyph.js';
 import {colors} from '../colors.js';
 import Text from '../Text.js';
 import styled from '../../styled/index.js';
-import {FixedList} from '../../virtualized/index.js';
 import {clipboard} from 'electron';
+import AutoSizer from 'react-virtualized-auto-sizer';
+import {FixedSizeList as List} from 'react-window';
 
 const ROW_HEIGHT = 23;
 
-const ElementsRowContainer = ContextMenu.extends(
-  {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: props => {
-      if (props.selected) {
-        return colors.macOSTitleBarIconSelected;
-      } else if (props.focused) {
-        return colors.lime;
-      } else if (props.even) {
-        return colors.light02;
-      } else {
-        return '';
-      }
-    },
-    color: props =>
-      props.selected || props.focused ? colors.white : colors.grapeDark3,
-    flexShrink: 0,
-    flexWrap: 'nowrap',
-    height: ROW_HEIGHT,
-    minWidth: '100%',
-    paddingLeft: props => (props.level - 1) * 12,
-    paddingRight: 20,
-    position: 'relative',
+const backgroundColor = props => {
+  if (props.selected) {
+    return colors.macOSTitleBarIconSelected;
+  } else if (props.focused) {
+    return colors.lime;
+  } else if (props.even) {
+    return colors.light02;
+  } else {
+    return '';
+  }
+};
 
-    '& *': {
-      color: props =>
-        props.selected || props.focused ? `${colors.white} !important` : '',
-    },
+const backgroundColorHover = props => {
+  if (props.selected) {
+    return colors.macOSTitleBarIconSelected;
+  } else if (props.focused) {
+    return colors.lime;
+  } else {
+    return '#EBF1FB';
+  }
+};
 
-    '&:hover': {
-      backgroundColor: props => {
-        if (props.selected) {
-          return colors.macOSTitleBarIconSelected;
-        } else if (props.focused) {
-          return colors.lime;
-        } else {
-          return '#EBF1FB';
-        }
-      },
-    },
+const ElementsRowContainer = styled(ContextMenu)(props => ({
+  flexDirection: 'row',
+  alignItems: 'center',
+  backgroundColor: backgroundColor(props),
+  color: props.selected || props.focused ? colors.white : colors.grapeDark3,
+  flexShrink: 0,
+  flexWrap: 'nowrap',
+  height: ROW_HEIGHT,
+  minWidth: '100%',
+  paddingLeft: (props.level - 1) * 12,
+  paddingRight: 20,
+  position: 'relative',
+
+  '& *': {
+    color: props.selected || props.focused ? `${colors.white} !important` : '',
   },
-  {
-    ignoreAttributes: ['level', 'selected', 'even', 'focused'],
-  },
-);
 
-const ElementsRowDecoration = FlexRow.extends({
+  '&:hover': {
+    backgroundColor: backgroundColorHover(props),
+  },
+}));
+
+const ElementsRowDecoration = styled(FlexRow)({
   flexShrink: 0,
   justifyContent: 'flex-end',
   alignItems: 'center',
@@ -81,29 +79,24 @@ const ElementsRowDecoration = FlexRow.extends({
   top: -1,
 });
 
-const ElementsLine = styled.view(
-  {
-    backgroundColor: colors.light20,
-    height: props => props.childrenCount * ROW_HEIGHT - 4,
-    position: 'absolute',
-    right: 3,
-    top: ROW_HEIGHT - 3,
-    zIndex: 2,
-    width: 2,
-    borderRadius: '999em',
-  },
-  {
-    ignoreAttributes: ['childrenCount'],
-  },
-);
+const ElementsLine = styled('div')(props => ({
+  backgroundColor: colors.light20,
+  height: props.childrenCount * ROW_HEIGHT - 4,
+  position: 'absolute',
+  right: 3,
+  top: ROW_HEIGHT - 3,
+  zIndex: 2,
+  width: 2,
+  borderRadius: '999em',
+}));
 
-const DecorationImage = styled.image({
+const DecorationImage = styled('img')({
   height: 12,
   marginRight: 5,
   width: 12,
 });
 
-const NoShrinkText = Text.extends({
+const NoShrinkText = styled(Text)({
   flexShrink: 0,
   flexWrap: 'nowrap',
   overflow: 'hidden',
@@ -111,17 +104,17 @@ const NoShrinkText = Text.extends({
   fontWeight: 400,
 });
 
-const ElementsRowAttributeContainer = NoShrinkText.extends({
+const ElementsRowAttributeContainer = styled(NoShrinkText)({
   color: colors.dark80,
   fontWeight: 300,
   marginLeft: 5,
 });
 
-const ElementsRowAttributeKey = styled.text({
+const ElementsRowAttributeKey = styled('span')({
   color: colors.tomato,
 });
 
-const ElementsRowAttributeValue = styled.text({
+const ElementsRowAttributeValue = styled('span')({
   color: colors.slateDark3,
 });
 
@@ -130,11 +123,10 @@ class PartialHighlight extends PureComponent<{
   highlighted: ?string,
   content: string,
 }> {
-  static HighlightedText = styled.text({
+  static HighlightedText = styled('span')(({selected}) => ({
     backgroundColor: '#ffff33',
-    color: props =>
-      props.selected ? `${colors.grapeDark3} !important` : 'auto',
-  });
+    color: selected ? `${colors.grapeDark3} !important` : 'auto',
+  }));
 
   render() {
     const {highlighted, content, selected} = this.props;
@@ -379,14 +371,14 @@ class ElementsRow extends PureComponent<ElementsRowProps, ElementsRowState> {
   }
 }
 
-const ElementsContainer = FlexColumn.extends({
+const ElementsContainer = styled(FlexColumn)({
   backgroundColor: colors.white,
   minHeight: '100%',
   minWidth: '100%',
   overflow: 'auto',
 });
 
-const ElementsBox = FlexColumn.extends({
+const ElementsBox = styled(FlexColumn)({
   alignItems: 'flex-start',
   flex: 1,
   overflow: 'auto',
@@ -617,24 +609,23 @@ export class Elements extends PureComponent<ElementsProps, ElementsState> {
     );
   };
 
-  keyMapper = (index: number): string => {
-    return this.state.flatElements[index].key;
-  };
-
   render() {
     const items = this.state.flatElements;
 
     return (
       <ElementsBox>
         <ElementsContainer tabIndex="0" onKeyDown={this.onKeyDown}>
-          <FixedList
-            pureData={items}
-            keyMapper={this.keyMapper}
-            rowCount={items.length}
-            rowHeight={ROW_HEIGHT}
-            rowRenderer={this.buildRow}
-            sideScrollable={true}
-          />
+          <AutoSizer>
+            {({width, height}) => (
+              <List
+                itemCount={items.length}
+                itemSize={ROW_HEIGHT}
+                width={width}
+                height={height}>
+                {e => this.buildRow(e)}
+              </List>
+            )}
+          </AutoSizer>
         </ElementsContainer>
       </ElementsBox>
     );

@@ -15,7 +15,8 @@ import {
   Input,
   View,
 } from '../index';
-import type {TableBodyRow, TableRows} from 'sonar';
+import styled from '../styled/index';
+import type {TableBodyRow, TableRows} from 'flipper';
 import type {PluginClient} from '../../plugin';
 
 type ValueWithType = {|
@@ -50,7 +51,7 @@ class ConsoleError extends Component<{
   error: Error | string | void,
   className?: string,
 }> {
-  static Container = CodeBlock.extends({
+  static Container = styled(CodeBlock)({
     backgroundColor: colors.redTint,
     color: colors.red,
     overflow: 'auto',
@@ -81,14 +82,11 @@ export class Console extends Component<Props, State> {
     },
   };
 
-  static CommandsTable = ManagedTable.extends({
-    flexGrow: 1,
-  });
-  static Window = FlexColumn.extends({
+  static Window = styled(FlexColumn)({
     padding: '15px',
     flexGrow: 1,
   });
-  static Input = Input.extends({
+  static Input = styled(Input)({
     width: '100%',
   });
 
@@ -184,7 +182,7 @@ export class Console extends Component<Props, State> {
       )
       .reduce((x, y) => x.concat(y), []);
     return rows.length ? (
-      <Console.CommandsTable
+      <ManagedTable
         columns={Console.TableColumns}
         rows={rows}
         multiline={true}

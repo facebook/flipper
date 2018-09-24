@@ -5,11 +5,7 @@
  * @format
  */
 
-import type {
-  DeviceType,
-  DeviceLogEntry,
-  DeviceLogListener,
-} from './BaseDevice.js';
+import type {DeviceType, DeviceLogEntry} from './BaseDevice.js';
 
 import fs from 'fs-extra';
 import os from 'os';
@@ -40,6 +36,8 @@ export default class OculusDevice extends BaseDevice {
 
     this.watcher = null;
     this.processedFileMap = {};
+
+    this.setupListener();
   }
 
   teardown() {
@@ -69,63 +67,63 @@ export default class OculusDevice extends BaseDevice {
     }
   }
 
-  processText(text: Buffer, callback: DeviceLogListener) {
+  processText(text: Buffer) {
     text
       .toString()
       .split('\r\n')
       .forEach(line => {
         const regex = /(.*){(\S+)}\s*\[([\w :.\\]+)\](.*)/;
         const match = regex.exec(line);
+        let entry;
         if (match && match.length === 5) {
-          callback({
+          entry = {
             tid: 0,
             pid: 0,
             date: new Date(Date.parse(match[1])),
             type: this.mapLogLevel(match[2]),
             tag: match[3],
             message: match[4],
-          });
+          };
         } else if (line.trim() === '') {
           // skip
         } else {
-          callback({
+          entry = {
             tid: 0,
             pid: 0,
             date: new Date(),
             type: 'verbose',
             tag: 'failed-parse',
             message: line,
-          });
+          };
+        }
+        if (entry) {
+          this.notifyLogListeners(entry);
         }
       });
   }
 
-  addLogListener = (callback: DeviceLogListener) => {
-    this.setupListener(callback);
-  };
-
-  async setupListener(callback: DeviceLogListener) {
+  async setupListener() {
     const files = await fs.readdir(getLogsPath());
     this.watchedFile = files
       .filter(file => file.startsWith('Service_'))
       .sort()
       .pop();
-    this.watch(callback);
-    this.timer = setTimeout(() => this.checkForNewLog(callback), 5000);
+    this.watch();
+    this.timer = setTimeout(() => this.checkForNewLog(), 5000);
   }
 
-  watch(callback: DeviceLogListener) {
+  watch() {
     const filePath = getLogsPath(this.watchedFile);
     fs.watchFile(filePath, async (current, previous) => {
       const readLen = current.size - previous.size;
       const buffer = new Buffer(readLen);
       const fd = await fs.open(filePath, 'r');
       await fs.read(fd, buffer, 0, readLen, previous.size);
-      this.processText(buffer, callback);
+      this.processText(buffer);
     });
   }
 
-  async checkForNewLog(callback: DeviceLogListener) {
+  async checkForNewLog() {
     const files = await fs.readdir(getLogsPath());
     const latestLog = files
       .filter(file => file.startsWith('Service_'))
@@ -135,8 +133,8 @@ export default class OculusDevice extends BaseDevice {
       const oldFilePath = getLogsPath(this.watchedFile);
       fs.unwatchFile(oldFilePath);
       this.watchedFile = latestLog;
-      this.watch(callback);
+      this.watch();
     }
-    this.timer = setTimeout(() => this.checkForNewLog(callback), 5000);
+    this.timer = setTimeout(() => this.checkForNewLog(), 5000);
   }
 }

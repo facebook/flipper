@@ -10,11 +10,11 @@ import type {
   TableRows,
   TableColumnSizes,
   TableColumns,
-} from 'sonar';
-import {FlexColumn, Button, SonarSidebar} from 'sonar';
+} from 'flipper';
+import {FlexColumn, Button, DetailSidebar} from 'flipper';
 import textContent from './utils/textContent.js';
 import createPaste from './utils/createPaste.js';
-import {SonarPlugin, SearchableTable} from 'sonar';
+import {FlipperPlugin, SearchableTable} from 'flipper';
 
 type ID = string;
 
@@ -54,11 +54,11 @@ type Actions<T> = AppendAndUpdateAction<T> | ResetAndUpdateAction<T>;
  * build by calling the `buildRow` function argument.
  *
  * An optional resetMethod argument can be provided which will replace the current rows with the
- * data provided. This is useful when connecting to sonar for this first time, or reconnecting to
+ * data provided. This is useful when connecting to Flipper for this first time, or reconnecting to
  * the client in an unknown state.
  */
 export function createTablePlugin<T: RowData>(props: Props<T>) {
-  return class extends SonarPlugin<State<T>, Actions<T>> {
+  return class extends FlipperPlugin<State<T>, Actions<T>> {
     static title = props.title;
     static id = props.id;
     static icon = props.icon;
@@ -199,7 +199,7 @@ export function createTablePlugin<T: RowData>(props: Props<T>) {
             stickyBottom={true}
             actions={<Button onClick={this.clear}>Clear Table</Button>}
           />
-          <SonarSidebar>{this.renderSidebar()}</SonarSidebar>
+          <DetailSidebar>{this.renderSidebar()}</DetailSidebar>
         </FlexColumn>
       );
     }

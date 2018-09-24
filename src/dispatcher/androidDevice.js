@@ -86,7 +86,7 @@ export default (store: Store, logger: Logger) => {
             payload: new Set(deviceIDsToRemove),
           });
           console.error(
-            'adb server shutdown. Run `adb start-server` and restart Sonar.',
+            'adb server shutdown. Run `adb start-server` and restart Flipper.',
           );
         } else {
           throw err;

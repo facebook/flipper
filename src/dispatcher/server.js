@@ -30,7 +30,7 @@ export default (store: Store, logger: Logger) => {
   server.addListener('error', err => {
     const payload: string =
       err.code === 'EADDRINUSE'
-        ? "Couldn't start websocket server. Looks like you have multiple copies of Sonar running."
+        ? "Couldn't start websocket server. Looks like you have multiple copies of Flipper running."
         : err.message || 'Unknown error';
 
     store.dispatch({

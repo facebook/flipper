@@ -5,7 +5,7 @@
  *  file in the root directory of this source tree.
  *
  */
-package com.facebook.sonar.plugins.inspector;
+package com.facebook.flipper.plugins.inspector;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;

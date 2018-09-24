@@ -14,9 +14,9 @@ import {
   Popover,
   styled,
   colors,
-} from 'sonar';
+} from 'flipper';
 
-const Heading = Text.extends({
+const Heading = styled(Text)({
   display: 'block',
   backgroundColor: colors.white,
   color: colors.light30,
@@ -26,7 +26,7 @@ const Heading = Text.extends({
   padding: '4px 8px 0',
 });
 
-const PopoverItem = FlexRow.extends({
+const PopoverItem = styled(FlexRow)({
   alignItems: 'center',
   borderBottom: `1px solid ${colors.light05}`,
   height: 50,
@@ -35,7 +35,7 @@ const PopoverItem = FlexRow.extends({
   },
 });
 
-const ItemTitle = Text.extends({
+const ItemTitle = styled(Text)({
   display: 'block',
   fontSize: 14,
   fontWeight: 400,
@@ -46,7 +46,7 @@ const ItemTitle = Text.extends({
   marginBottom: 1,
 });
 
-const ItemSubtitle = Text.extends({
+const ItemSubtitle = styled(Text)({
   display: 'block',
   fontWeight: 400,
   fontSize: 11,
@@ -57,20 +57,20 @@ const ItemSubtitle = Text.extends({
   whiteSpace: 'nowrap',
 });
 
-const ItemImage = FlexBox.extends({
+const ItemImage = styled(FlexBox)({
   alignItems: 'center',
   justifyContent: 'center',
   width: 40,
   flexShrink: 0,
 });
 
-const ItemContent = styled.view({
+const ItemContent = styled('div')({
   minWidth: 0,
   paddingRight: 5,
   flexGrow: 1,
 });
 
-const Section = styled.view({
+const Section = styled('div')({
   maxWidth: 260,
   borderBottom: `1px solid ${colors.light05}`,
   '&:last-child': {
@@ -78,7 +78,7 @@ const Section = styled.view({
   },
 });
 
-const Action = Button.extends({
+const Action = styled(Button)({
   border: `1px solid ${colors.macOSTitleBarButtonBorder}`,
   background: 'transparent',
   color: colors.macOSTitleBarIconSelected,

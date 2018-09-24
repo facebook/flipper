@@ -8,7 +8,7 @@
 import styled from '../styled/index.js';
 import {Component} from 'react';
 
-const IFrame = styled.customHTMLTag('iframe', {
+const IFrame = styled('iframe')({
   height: '100%',
   width: '100%',
   border: 'none',

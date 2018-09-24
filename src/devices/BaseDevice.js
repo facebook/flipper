@@ -6,17 +6,26 @@
  */
 
 import type stream from 'stream';
-import {SonarDevicePlugin} from 'sonar';
+import {FlipperDevicePlugin} from 'flipper';
 
-export type DeviceLogEntry = {
+export type LogLevel =
+  | 'unknown'
+  | 'verbose'
+  | 'debug'
+  | 'info'
+  | 'warn'
+  | 'error'
+  | 'fatal';
+
+export type DeviceLogEntry = {|
   date: Date,
   pid: number,
   tid: number,
   app?: string,
-  type: 'unknown' | 'verbose' | 'debug' | 'info' | 'warn' | 'error' | 'fatal',
+  type: LogLevel,
   tag: string,
   message: string,
-};
+|};
 
 export type DeviceShell = {
   stdout: stream.Readable,
@@ -53,11 +62,14 @@ export default class BaseDevice {
   // possible src of icon to display next to the device title
   icon: ?string;
 
+  logListeners: Map<Symbol, DeviceLogListener> = new Map();
+  logEntries: Array<DeviceLogEntry> = [];
+
   supportsOS(os: string) {
     return os.toLowerCase() === this.os.toLowerCase();
   }
 
-  supportsPlugin = (DevicePlugin: Class<SonarDevicePlugin<>>): boolean => {
+  supportsPlugin = (DevicePlugin: Class<FlipperDevicePlugin<>>): boolean => {
     return this.supportedPlugins.includes(DevicePlugin.id);
   };
 
@@ -71,8 +83,22 @@ export default class BaseDevice {
     throw new Error('unimplemented');
   }
 
-  addLogListener(listener: DeviceLogListener) {
-    throw new Error('unimplemented');
+  addLogListener(callback: DeviceLogListener): Symbol {
+    const id = Symbol();
+    this.logListeners.set(id, callback);
+    this.logEntries.map(callback);
+    return id;
+  }
+
+  notifyLogListeners(entry: DeviceLogEntry) {
+    this.logEntries.push(entry);
+    if (this.logListeners.size > 0) {
+      this.logListeners.forEach(listener => listener(entry));
+    }
+  }
+
+  removeLogListener(id: Symbol) {
+    this.logListeners.delete(id);
   }
 
   spawnShell(): DeviceShell {

@@ -10,7 +10,7 @@ import styled from '../styled/index.js';
 /**
  * A TextParagraph component.
  */
-const TextParagraph = styled.view({
+const TextParagraph = styled('div')({
   marginBottom: 10,
 
   '&:last-child': {

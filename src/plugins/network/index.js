@@ -5,7 +5,7 @@
  * @format
  */
 
-import type {TableHighlightedRows, TableRows, TableBodyRow} from 'sonar';
+import type {TableHighlightedRows, TableRows, TableBodyRow} from 'flipper';
 
 import {
   ContextMenu,
@@ -15,9 +15,10 @@ import {
   Glyph,
   colors,
   PureComponent,
-  SonarSidebar,
-} from 'sonar';
-import {SonarPlugin, SearchableTable} from 'sonar';
+  DetailSidebar,
+  styled,
+} from 'flipper';
+import {FlipperPlugin, SearchableTable} from 'flipper';
 import RequestDetails from './RequestDetails.js';
 import {URL} from 'url';
 
@@ -100,7 +101,7 @@ export function formatBytes(count: number): string {
   return count + ' B';
 }
 
-const TextEllipsis = Text.extends({
+const TextEllipsis = styled(Text)({
   overflowX: 'hidden',
   textOverflow: 'ellipsis',
   maxWidth: '100%',
@@ -108,7 +109,7 @@ const TextEllipsis = Text.extends({
   paddingTop: 4,
 });
 
-export default class extends SonarPlugin<State, *, PersistedState> {
+export default class extends FlipperPlugin<State, *, PersistedState> {
   static title = 'Network';
   static id = 'Network';
   static icon = 'internet';
@@ -176,7 +177,7 @@ export default class extends SonarPlugin<State, *, PersistedState> {
           clear={this.clearLogs}
           onRowHighlighted={this.onRowHighlighted}
         />
-        <SonarSidebar>{this.renderSidebar()}</SonarSidebar>
+        <DetailSidebar>{this.renderSidebar()}</DetailSidebar>
       </FlexColumn>
     );
   }
@@ -287,7 +288,7 @@ function calculateState(
 }
 
 class NetworkTable extends PureComponent<NetworkTableProps, NetworkTableState> {
-  static ContextMenu = ContextMenu.extends({
+  static ContextMenu = styled(ContextMenu)({
     flex: 1,
   });
 
@@ -338,7 +339,7 @@ class NetworkTable extends PureComponent<NetworkTableProps, NetworkTableState> {
   }
 }
 
-const Icon = Glyph.extends({
+const Icon = styled(Glyph)({
   marginTop: -3,
   marginRight: 3,
 });
@@ -367,7 +368,7 @@ class DurationColumn extends PureComponent<{
   request: Request,
   response: ?Response,
 }> {
-  static Text = Text.extends({
+  static Text = styled(Text)({
     flex: 1,
     textAlign: 'right',
     paddingRight: 10,
@@ -389,7 +390,7 @@ class DurationColumn extends PureComponent<{
 class SizeColumn extends PureComponent<{
   response: ?Response,
 }> {
-  static Text = Text.extends({
+  static Text = styled(Text)({
     flex: 1,
     textAlign: 'right',
     paddingRight: 10,

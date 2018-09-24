@@ -7,14 +7,14 @@
  */
 #import <Foundation/Foundation.h>
 
-#import <SonarKit/SonarPlugin.h>
+#import <FlipperKit/FlipperPlugin.h>
 
-@protocol SonarConnection;
+@protocol FlipperConnection;
 
-typedef void (^ConnectBlock)(id<SonarConnection>);
+typedef void (^ConnectBlock)(id<FlipperConnection>);
 typedef void (^DisconnectBlock)();
 
-@interface BlockBasedSonarPlugin : NSObject<SonarPlugin>
+@interface BlockBasedSonarPlugin : NSObject<FlipperPlugin>
 
 - (instancetype)initIdentifier:(NSString *)identifier connect:(ConnectBlock)connect disconnect:(DisconnectBlock)disconnect;
 

@@ -11,7 +11,7 @@ We use a styled-component based approach to styling our views. This means styles
 For basic building blocks (views, texts, ...) you can use the styled object.
 
 ```javascript
-import {styled} from 'sonar';
+import {styled} from 'flipper';
 
 const MyView = styled.view({
   fontSize: 10,

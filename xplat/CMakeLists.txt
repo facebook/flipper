@@ -4,7 +4,7 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 set(PACKAGE_NAME      sonarcpp)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_EXTENSIONS OFF)
-set(RSOCKET_VERSION 0.10.2)
+set(RSOCKET_VERSION 0.10.3)
 set(external_DIR ${PROJECT_SOURCE_DIR}/../android/third-party/external)
 set(libfolly_DIR ${external_DIR}/folly/)
 set(rsocket_DIR ${external_DIR}/RSocket/)
@@ -16,7 +16,7 @@ set(DOUBLECONVERSION_DIR ${external_DIR}/double-conversion/double-conversion-3.0
 set(OPENSSL_DIR ${external_DIR}/OpenSSL/openssl-1.1.0h/)
 
 list(APPEND dir_list ./)
-list(APPEND dir_list ./Sonar)
+list(APPEND dir_list ./Flipper)
 
 include_directories(${dir_list})
 
@@ -39,8 +39,8 @@ add_compile_options(-DFOLLY_NO_CONFIG
                     )
 
 
-file(GLOB SOURCES Sonar/*.cpp)
-add_library(${PACKAGE_NAME} SHARED ${SOURCES})
+file(GLOB SOURCES Flipper/*.cpp)
+add_library(${PACKAGE_NAME} STATIC ${SOURCES})
 
 set(build_DIR ${CMAKE_SOURCE_DIR}/build)
 set(libfolly_build_DIR ${build_DIR}/libfolly/${ANDROID_ABI})

@@ -8,21 +8,17 @@
 import {Component} from 'react';
 import Box from './Box.js';
 import {colors} from './colors';
+import styled from '../styled/index.js';
 
-const FocusableBoxBorder = Box.extends(
-  {
-    border: `1px solid ${colors.highlight}`,
-    bottom: '0',
-    left: '0',
-    pointerEvents: 'none',
-    position: 'absolute',
-    right: '0',
-    top: '0',
-  },
-  {
-    ignoreAttributes: [],
-  },
-);
+const FocusableBoxBorder = styled(Box)({
+  border: `1px solid ${colors.highlight}`,
+  bottom: '0',
+  left: '0',
+  pointerEvents: 'none',
+  position: 'absolute',
+  right: '0',
+  top: '0',
+});
 
 export default class FocusableBox extends Component<
   Object,

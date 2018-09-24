@@ -14,10 +14,11 @@ import {
   Sidebar,
   Toolbar,
   Checkbox,
-  SonarPlugin,
+  FlipperPlugin,
   Button,
-} from 'sonar';
-import type {ElementID, Element} from 'sonar';
+  styled,
+} from 'flipper';
+import type {ElementID, Element} from 'flipper';
 import {processLeaks} from './processLeakString';
 
 type State = {
@@ -42,17 +43,17 @@ export type Leak = {
   retainedSize: string,
 };
 
-const Window = FlexRow.extends({
+const Window = styled(FlexRow)({
   height: '100%',
   flex: 1,
 });
 
-const ToolbarItem = FlexRow.extends({
+const ToolbarItem = styled(FlexRow)({
   alignItems: 'center',
   marginLeft: '8px',
 });
 
-export default class LeakCanary extends SonarPlugin<State> {
+export default class LeakCanary extends FlipperPlugin<State> {
   static title = 'LeakCanary';
   static id = 'LeakCanary';
   static icon = 'bird';

@@ -6,19 +6,21 @@
  */
 
 import type TooltipProvider from './TooltipProvider.js';
+import type {TooltipOptions} from './TooltipProvider.js';
 
 import styled from '../styled/index.js';
 import {Component} from 'react';
 
 const PropTypes = require('prop-types');
 
-const TooltipContainer = styled.view({
+const TooltipContainer = styled('div')({
   display: 'contents',
 });
 
 type TooltipProps = {
   title: React$Node,
   children: React$Node,
+  options?: TooltipOptions,
 };
 
 type TooltipState = {
@@ -48,7 +50,11 @@ export default class Tooltip extends Component<TooltipProps, TooltipState> {
 
   onMouseEnter = () => {
     if (this.ref != null) {
-      this.context.TOOLTIP_PROVIDER.open(this.ref, this.props.title);
+      this.context.TOOLTIP_PROVIDER.open(
+        this.ref,
+        this.props.title,
+        this.props.options || {},
+      );
       this.setState({open: true});
     }
   };

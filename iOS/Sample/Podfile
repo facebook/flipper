@@ -4,10 +4,10 @@ source 'https://github.com/CocoaPods/Specs'
 swift_version = "4.1"
 
 target 'Sample' do
-  pod 'SonarKit', :path => '../../SonarKit.podspec'
-  pod 'SonarKit/SonarKitLayoutComponentKitSupport', :path => '../../SonarKit.podspec'
-  pod 'SonarKit/SKIOSNetworkPlugin', :path => '../../SonarKit.podspec'
-  pod 'Sonar', :path => '../../Sonar.podspec'
+  pod 'FlipperKit', :path => '../../SonarKit.podspec'
+  pod 'FlipperKit/SonarKitLayoutComponentKitSupport', :path => '../../SonarKit.podspec'
+  pod 'FlipperKit/SKIOSNetworkPlugin', :path => '../../SonarKit.podspec'
+  pod 'Flipper', :path => '../../Flipper.podspec'
   post_install do |installer|
 
         installer.pods_project.targets.each do |target|

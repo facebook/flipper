@@ -6,7 +6,8 @@
  */
 
 import FlexBox from './FlexBox.js';
+import styled from '../styled/index.js';
 
-export default FlexBox.extends({
+export default styled(FlexBox)({
   flexDirection: 'column',
 });

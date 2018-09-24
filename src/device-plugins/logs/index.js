@@ -10,23 +10,25 @@ import type {
   TableColumnOrder,
   TableColumnSizes,
   TableColumns,
-} from 'sonar';
+} from 'flipper';
 import type {Counter} from './LogWatcher.js';
 import type {DeviceLogEntry} from '../../devices/BaseDevice.js';
+import type {Props as PluginProps} from '../../plugin';
 
+import * as React from 'react';
 import {
   Text,
   ManagedTable,
   Button,
   colors,
-  FlexCenter,
-  LoadingIndicator,
   ContextMenu,
   FlexColumn,
   Glyph,
-  SonarSidebar,
-} from 'sonar';
-import {SonarDevicePlugin, SearchableTable} from 'sonar';
+  DetailSidebar,
+  FlipperDevicePlugin,
+  SearchableTable,
+  styled,
+} from 'flipper';
 import textContent from '../../utils/textContent.js';
 import createPaste from '../../utils/createPaste.js';
 import LogWatcher from './LogWatcher';
@@ -38,8 +40,7 @@ type Entries = Array<{
   entry: DeviceLogEntry,
 }>;
 
-type LogsState = {|
-  initialising: boolean,
+type State = {|
   rows: Array<TableBodyRow>,
   entries: Entries,
   key2entry: {[key: string]: DeviceLogEntry},
@@ -47,7 +48,11 @@ type LogsState = {|
   counters: Array<Counter>,
 |};
 
-const Icon = Glyph.extends({
+type Actions = {||};
+
+type PersistedState = {||};
+
+const Icon = styled(Glyph)({
   marginTop: 5,
 });
 
@@ -72,7 +77,7 @@ function keepKeys(obj, keys) {
 }
 
 const COLUMN_SIZE = {
-  type: 32,
+  type: 40,
   time: 120,
   pid: 60,
   tid: 60,
@@ -202,33 +207,33 @@ const DEFAULT_FILTERS = [
   },
 ];
 
-const HiddenScrollText = Text.extends({
+const HiddenScrollText = styled(Text)({
   alignSelf: 'baseline',
   userSelect: 'none',
   lineHeight: '130%',
-  marginTop: 6,
+  marginTop: 5,
+  paddingBottom: 3,
   '&::-webkit-scrollbar': {
     display: 'none',
   },
 });
 
-const LogCount = HiddenScrollText.extends(
-  {
-    backgroundColor: props => props.color,
-    borderRadius: '999em',
-    fontSize: 11,
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 4,
-    width: 16,
-    height: 16,
-    color: colors.white,
-  },
-  {
-    ignoreAttributes: ['color'],
-  },
-);
+const LogCount = styled('div')(({backgroundColor}) => ({
+  backgroundColor,
+  borderRadius: '999em',
+  fontSize: 11,
+  marginTop: 4,
+  minWidth: 16,
+  height: 16,
+  color: colors.white,
+  textAlign: 'center',
+  lineHeight: '16px',
+  paddingLeft: 4,
+  paddingRight: 4,
+  textOverflow: 'ellipsis',
+  overflow: 'hidden',
+  whiteSpace: 'nowrap',
+}));
 
 function pad(chunk: mixed, len: number): string {
   let str = String(chunk);
@@ -238,7 +243,11 @@ function pad(chunk: mixed, len: number): string {
   return str;
 }
 
-export default class LogTable extends SonarDevicePlugin<LogsState> {
+export default class LogTable extends FlipperDevicePlugin<
+  State,
+  Actions,
+  PersistedState,
+> {
   static id = 'DeviceLogs';
   static title = 'Logs';
   static icon = 'arrow-right';
@@ -271,7 +280,6 @@ export default class LogTable extends SonarDevicePlugin<LogsState> {
     rows: [],
     entries: [],
     key2entry: {},
-    initialising: true,
     highlightedRows: [],
     counters: this.restoreSavedCounters(),
   };
@@ -280,163 +288,157 @@ export default class LogTable extends SonarDevicePlugin<LogsState> {
   columns: TableColumns;
   columnSizes: TableColumnSizes;
   columnOrder: TableColumnOrder;
+  logListener: ?Symbol;
 
-  init() {
-    let batch: Entries = [];
-    let queued = false;
-    let counter = 0;
+  batch: Entries = [];
+  queued: boolean = false;
+  counter: number = 0;
 
+  constructor(props: PluginProps<PersistedState>) {
+    super(props);
     const supportedColumns = this.device.supportedColumns();
     this.columns = keepKeys(COLUMNS, supportedColumns);
     this.columnSizes = keepKeys(COLUMN_SIZE, supportedColumns);
     this.columnOrder = INITIAL_COLUMN_ORDER.filter(obj =>
       supportedColumns.includes(obj.key),
     );
-
-    this.device.addLogListener((entry: DeviceLogEntry) => {
-      const {icon, style} =
-        LOG_TYPES[(entry.type: string)] || LOG_TYPES.verbose;
-
-      // clean message
-      const message = entry.message.trim();
-      entry.type === 'error';
-
-      let counterUpdated = false;
-      const counters = this.state.counters.map(counter => {
-        if (message.match(counter.expression)) {
-          counterUpdated = true;
-          if (counter.notify) {
-            new window.Notification(`${counter.label}`, {
-              body: 'The watched log message appeared',
-            });
-          }
-          return {
-            ...counter,
-            count: counter.count + 1,
-          };
-        } else {
-          return counter;
-        }
-      });
-      if (counterUpdated) {
-        this.setState({counters});
-      }
-
-      // build the item, it will either be batched or added straight away
-      const item = {
-        entry,
-        row: {
-          columns: {
-            type: {
-              value: icon,
-            },
-            time: {
-              value: (
-                <HiddenScrollText code={true}>
-                  {entry.date.toTimeString().split(' ')[0] +
-                    '.' +
-                    pad(entry.date.getMilliseconds(), 3)}
-                </HiddenScrollText>
-              ),
-            },
-            message: {
-              value: <HiddenScrollText code={true}>{message}</HiddenScrollText>,
-            },
-            tag: {
-              value: (
-                <HiddenScrollText code={true}>{entry.tag}</HiddenScrollText>
-              ),
-              isFilterable: true,
-            },
-            pid: {
-              value: (
-                <HiddenScrollText code={true}>
-                  {String(entry.pid)}
-                </HiddenScrollText>
-              ),
-              isFilterable: true,
-            },
-            tid: {
-              value: (
-                <HiddenScrollText code={true}>
-                  {String(entry.tid)}
-                </HiddenScrollText>
-              ),
-              isFilterable: true,
-            },
-            app: {
-              value: (
-                <HiddenScrollText code={true}>{entry.app}</HiddenScrollText>
-              ),
-              isFilterable: true,
-            },
-          },
-          height: getLineCount(message) * 15 + 10, // 15px per line height + 8px padding
-          style,
-          type: entry.type,
-          filterValue: entry.message,
-          key: String(counter++),
-        },
-      };
-
-      // batch up logs to be processed every 250ms, if we have lots of log
-      // messages coming in, then calling an setState 200+ times is actually
-      // pretty expensive
-      batch.push(item);
-
-      if (!queued) {
-        queued = true;
-
-        this.batchTimer = setTimeout(() => {
-          const thisBatch = batch;
-          batch = [];
-          queued = false;
-
-          // update rows/entries
-          this.setState(state => {
-            const rows = [...state.rows];
-            const entries = [...state.entries];
-            const key2entry = {...state.key2entry};
-
-            for (let i = 0; i < thisBatch.length; i++) {
-              const {entry, row} = thisBatch[i];
-              entries.push({row, entry});
-              key2entry[row.key] = entry;
-
-              let previousEntry: ?DeviceLogEntry = null;
-
-              if (i > 0) {
-                previousEntry = thisBatch[i - 1].entry;
-              } else if (state.rows.length > 0 && state.entries.length > 0) {
-                previousEntry = state.entries[state.entries.length - 1].entry;
-              }
-
-              this.addRowIfNeeded(rows, row, entry, previousEntry);
-            }
-
-            return {
-              entries,
-              rows,
-              key2entry,
-            };
-          });
-        }, 100);
-      }
-    });
-
-    this.initTimer = setTimeout(() => {
-      this.setState({
-        initialising: false,
-      });
-    }, 2000);
+    this.logListener = this.device.addLogListener(this.processEntry);
   }
 
-  componentWillUnmount() {
-    if (this.initTimer) {
-      clearTimeout(this.initTimer);
+  processEntry = (entry: DeviceLogEntry) => {
+    const {icon, style} = LOG_TYPES[(entry.type: string)] || LOG_TYPES.debug;
+
+    // clean message
+    const message = entry.message.trim();
+    entry.type === 'error';
+
+    let counterUpdated = false;
+    const counters = this.state.counters.map(counter => {
+      if (message.match(counter.expression)) {
+        counterUpdated = true;
+        if (counter.notify) {
+          new window.Notification(`${counter.label}`, {
+            body: 'The watched log message appeared',
+          });
+        }
+        return {
+          ...counter,
+          count: counter.count + 1,
+        };
+      } else {
+        return counter;
+      }
+    });
+    if (counterUpdated) {
+      this.setState({counters});
     }
+
+    // build the item, it will either be batched or added straight away
+    const item = {
+      entry,
+      row: {
+        columns: {
+          type: {
+            value: icon,
+            align: 'center',
+          },
+          time: {
+            value: (
+              <HiddenScrollText code={true}>
+                {entry.date.toTimeString().split(' ')[0] +
+                  '.' +
+                  pad(entry.date.getMilliseconds(), 3)}
+              </HiddenScrollText>
+            ),
+          },
+          message: {
+            value: <HiddenScrollText code={true}>{message}</HiddenScrollText>,
+          },
+          tag: {
+            value: <HiddenScrollText code={true}>{entry.tag}</HiddenScrollText>,
+            isFilterable: true,
+          },
+          pid: {
+            value: (
+              <HiddenScrollText code={true}>
+                {String(entry.pid)}
+              </HiddenScrollText>
+            ),
+            isFilterable: true,
+          },
+          tid: {
+            value: (
+              <HiddenScrollText code={true}>
+                {String(entry.tid)}
+              </HiddenScrollText>
+            ),
+            isFilterable: true,
+          },
+          app: {
+            value: <HiddenScrollText code={true}>{entry.app}</HiddenScrollText>,
+            isFilterable: true,
+          },
+        },
+        height: getLineCount(message) * 15 + 10, // 15px per line height + 8px padding
+        style,
+        type: entry.type,
+        filterValue: entry.message,
+        key: String(this.counter++),
+      },
+    };
+
+    // batch up logs to be processed every 250ms, if we have lots of log
+    // messages coming in, then calling an setState 200+ times is actually
+    // pretty expensive
+    this.batch.push(item);
+
+    if (!this.queued) {
+      this.queued = true;
+
+      this.batchTimer = setTimeout(() => {
+        const thisBatch = this.batch;
+        this.batch = [];
+        this.queued = false;
+
+        // update rows/entries
+        this.setState(state => {
+          const rows = [...state.rows];
+          const entries = [...state.entries];
+          const key2entry = {...state.key2entry};
+
+          for (let i = 0; i < thisBatch.length; i++) {
+            const {entry, row} = thisBatch[i];
+            entries.push({row, entry});
+            key2entry[row.key] = entry;
+
+            let previousEntry: ?DeviceLogEntry = null;
+
+            if (i > 0) {
+              previousEntry = thisBatch[i - 1].entry;
+            } else if (state.rows.length > 0 && state.entries.length > 0) {
+              previousEntry = state.entries[state.entries.length - 1].entry;
+            }
+
+            this.addRowIfNeeded(rows, row, entry, previousEntry);
+          }
+
+          return {
+            entries,
+            rows,
+            key2entry,
+          };
+        });
+      }, 100);
+    }
+  };
+
+  componentWillUnmount() {
     if (this.batchTimer) {
       clearTimeout(this.batchTimer);
+    }
+
+    if (this.logListener) {
+      this.device.removeLogListener(this.logListener);
     }
   }
 
@@ -454,9 +456,16 @@ export default class LogTable extends SonarDevicePlugin<LogsState> {
       entry.tag === previousEntry.tag &&
       previousRow.type != null
     ) {
-      const count = (previousRow.columns.time.value.props.count || 1) + 1;
+      // duplicate log, increase counter
+      const count =
+        previousRow.columns.type.value &&
+        previousRow.columns.type.value.props &&
+        typeof previousRow.columns.type.value.props.children === 'number'
+          ? previousRow.columns.type.value.props.children + 1
+          : 2;
+      const type = LOG_TYPES[previousRow.type] || LOG_TYPES.debug;
       previousRow.columns.type.value = (
-        <LogCount color={LOG_TYPES[previousRow.type].color}>{count}</LogCount>
+        <LogCount backgroundColor={type.color}>{count}</LogCount>
       );
     } else {
       rows.push(row);
@@ -529,12 +538,12 @@ export default class LogTable extends SonarDevicePlugin<LogsState> {
     );
   };
 
-  static ContextMenu = ContextMenu.extends({
+  static ContextMenu = styled(ContextMenu)({
     flex: 1,
   });
 
   render() {
-    const {initialising, rows} = this.state;
+    const {rows} = this.state;
 
     const contextMenuItems = [
       {
@@ -545,11 +554,7 @@ export default class LogTable extends SonarDevicePlugin<LogsState> {
         click: this.clearLogs,
       },
     ];
-    return initialising ? (
-      <FlexCenter fill={true}>
-        <LoadingIndicator />
-      </FlexCenter>
-    ) : (
+    return (
       <LogTable.ContextMenu items={contextMenuItems} component={FlexColumn}>
         <SearchableTable
           innerRef={this.setTableRef}
@@ -566,7 +571,7 @@ export default class LogTable extends SonarDevicePlugin<LogsState> {
           actions={<Button onClick={this.clearLogs}>Clear Logs</Button>}
           stickyBottom={true}
         />
-        <SonarSidebar>{this.renderSidebar()}</SonarSidebar>
+        <DetailSidebar>{this.renderSidebar()}</DetailSidebar>
       </LogTable.ContextMenu>
     );
   }

@@ -35,6 +35,7 @@ const siteConfig = {
   repoUrl,
   scripts: ['https://buttons.github.io/buttons.js'],
   stylesheets: [],
+  onPageNav: 'separate',
 };
 
 module.exports = siteConfig;

@@ -6,11 +6,11 @@
  */
 
 import React from 'react';
-import {FlexColumn, FlexRow} from 'sonar';
+import {FlexColumn, FlexRow} from 'flipper';
 import {connect} from 'react-redux';
 import {toggleBugDialogVisible} from './reducers/application.js';
 import WelcomeScreen from './chrome/WelcomeScreen.js';
-import SonarTitleBar from './chrome/SonarTitleBar.js';
+import TitleBar from './chrome/TitleBar.js';
 import MainSidebar from './chrome/MainSidebar.js';
 import BugReporterDialog from './chrome/BugReporterDialog.js';
 import ErrorBar from './chrome/ErrorBar.js';
@@ -51,7 +51,7 @@ export class App extends React.Component<Props> {
   render() {
     return (
       <FlexColumn fill={true}>
-        <SonarTitleBar />
+        <TitleBar />
         {this.props.bugDialogVisible && (
           <BugReporterDialog
             bugReporter={this.props.bugReporter}
