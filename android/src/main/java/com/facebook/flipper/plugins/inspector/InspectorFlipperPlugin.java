@@ -47,7 +47,7 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
   private @Nullable List<ExtensionCommand> mExtensionCommands;
   private boolean mShowLithoAccessibilitySettings;
 
-  /** An interface for extensions to the Inspector Sonar plugin */
+  /** An interface for extensions to the Inspector Flipper plugin */
   public interface ExtensionCommand {
     /** The command to respond to */
     String command();

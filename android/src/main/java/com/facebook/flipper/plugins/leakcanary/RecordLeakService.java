@@ -16,7 +16,7 @@ import com.squareup.leakcanary.AnalysisResult;
 import com.squareup.leakcanary.HeapDump;
 
 /**
- * When a leak is detected, sends results to connected Sonar desktop app. In order to use this
+ * When a leak is detected, sends results to connected Flipper desktop app. In order to use this
  * service in place of the default, a custom RefWatcher will need to be created See
  * https://github.com/square/leakcanary/wiki/Customizing-LeakCanary#uploading-to-a-server
  */

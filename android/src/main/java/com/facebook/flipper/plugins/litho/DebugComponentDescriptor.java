@@ -284,7 +284,7 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
                   && PropWithDescription.class.isAssignableFrom(f.get(component).getClass())) {
                 final Object description =
                     ((PropWithDescription) f.get(component))
-                        .getSonarLayoutInspectorPropDescription();
+                        .getFlipperLayoutInspectorPropDescription();
                 // Treat the description as immutable for now, because it's a "translation" of the
                 // actual prop,
                 // mutating them is not going to change the original prop.

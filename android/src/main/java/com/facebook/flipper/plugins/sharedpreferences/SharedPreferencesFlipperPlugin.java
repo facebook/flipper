@@ -43,7 +43,7 @@ public class SharedPreferencesFlipperPlugin implements FlipperPlugin {
           };
 
   /**
-   * Creates a {@link android.content.SharedPreferences} plugin for Sonar
+   * Creates a {@link android.content.SharedPreferences} plugin for Flipper
    *
    * @param context The context to retrieve the file from. Will use the package name as the file
    *     name with {@link Context#MODE_PRIVATE}.
@@ -53,7 +53,7 @@ public class SharedPreferencesFlipperPlugin implements FlipperPlugin {
   }
 
   /**
-   * Creates a {@link android.content.SharedPreferences} plugin for Sonar
+   * Creates a {@link android.content.SharedPreferences} plugin for Flipper
    *
    * @param context The context to retrieve the file from. Will use the name as the file name with
    *     {@link Context#MODE_PRIVATE}.
@@ -64,7 +64,7 @@ public class SharedPreferencesFlipperPlugin implements FlipperPlugin {
   }
 
   /**
-   * Creates a {@link android.content.SharedPreferences} plugin for Sonar
+   * Creates a {@link android.content.SharedPreferences} plugin for Flipper
    *
    * @param context The context to retrieve the file from.
    * @param name The preference file name.

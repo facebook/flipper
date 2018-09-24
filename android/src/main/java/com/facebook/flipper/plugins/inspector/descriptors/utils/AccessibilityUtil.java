@@ -512,7 +512,7 @@ public final class AccessibilityUtil {
 
   /**
    * Creates a {@link FlipperObject} of useful properties of AccessibilityNodeInfo, to be shown in the
-   * Sonar Layout Inspector accessibility extension. All properties are immutable since they are all derived from
+   * Flipper Layout Inspector accessibility extension. All properties are immutable since they are all derived from
    * various {@link View} properties. This is a more complete list than
    * getAccessibilityNodeInfoProperties returns.
    *
@@ -609,7 +609,7 @@ public final class AccessibilityUtil {
 
   /**
    * Modifies a {@link FlipperObject.Builder} to add Talkback-specific Accessibiltiy properties to be
-   * shown in the Sonar Layout Inspector.
+   * shown in the Flipper Layout Inspector.
    *
    * @param props The {@link FlipperObject.Builder} to add the properties to.
    * @param view The {@link View} to derive the properties from.

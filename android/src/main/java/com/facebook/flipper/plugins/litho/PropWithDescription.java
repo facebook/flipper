@@ -4,5 +4,5 @@ package com.facebook.flipper.plugins.litho;
 
 public interface PropWithDescription {
 
-  Object getSonarLayoutInspectorPropDescription();
+  Object getFlipperLayoutInspectorPropDescription();
 }

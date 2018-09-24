@@ -103,7 +103,7 @@ public class BoundsDrawable extends Drawable {
 
     drawBoundsDimensions(canvas, mContentBounds);
 
-    // Disabled for now since Sonar doesn't support options too well at this point in time.
+    // Disabled for now since Flipper doesn't support options too well at this point in time.
     // Once options are supported, we should re-enable the calls below
     // drawCardinalDimensionsBetween(canvas, mContentBounds, mPaddingBounds);
     // drawCardinalDimensionsBetween(canvas, mPaddingBounds, mMarginBounds);

@@ -16,7 +16,7 @@ import com.facebook.flipper.plugins.common.MainThreadFlipperReceiver;
 import org.json.JSONObject;
 
 /**
- * Convenience class for adding console execution to a Sonar Plugin. Calling {@link
+ * Convenience class for adding console execution to a Flipper Plugin. Calling {@link
  * ConsoleCommandReceiver#listenForCommands(FlipperConnection, ScriptingEnvironment, ContextProvider)}
  * will add the necessary listeners for responding to command execution calls.
  */

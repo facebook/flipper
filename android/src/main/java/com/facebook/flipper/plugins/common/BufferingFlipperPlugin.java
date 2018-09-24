@@ -13,7 +13,7 @@ import com.facebook.flipper.core.FlipperPlugin;
 import javax.annotation.Nullable;
 
 /**
- * Sonar plugin that keeps events in a buffer until a connection is available.
+ * Flipper plugin that keeps events in a buffer until a connection is available.
  *
  * <p>In order to send data to the {@link FlipperConnection}, use {@link #send(String, FlipperObject)}
  * instead of {@link FlipperConnection#send(String, FlipperObject)}.
@@ -22,7 +22,7 @@ public abstract class BufferingFlipperPlugin implements FlipperPlugin {
 
   private static final int BUFFER_SIZE = 500;
 
-  private @Nullable RingBuffer<CachedSonarEvent> mEventQueue;
+  private @Nullable RingBuffer<CachedFlipperEvent> mEventQueue;
   private @Nullable FlipperConnection mConnection;
 
   @Override
@@ -52,24 +52,24 @@ public abstract class BufferingFlipperPlugin implements FlipperPlugin {
     if (mConnection != null) {
       mConnection.send(method, sonarObject);
     } else {
-      mEventQueue.enqueue(new CachedSonarEvent(method, sonarObject));
+      mEventQueue.enqueue(new CachedFlipperEvent(method, sonarObject));
     }
   }
 
   private synchronized void sendBufferedEvents() {
     if (mEventQueue != null && mConnection != null) {
-      for (CachedSonarEvent cachedSonarEvent : mEventQueue.asList()) {
-        mConnection.send(cachedSonarEvent.method, cachedSonarEvent.sonarObject);
+      for (CachedFlipperEvent cachedFlipperEvent : mEventQueue.asList()) {
+        mConnection.send(cachedFlipperEvent.method, cachedFlipperEvent.sonarObject);
       }
       mEventQueue.clear();
     }
   }
 
-  private static class CachedSonarEvent {
+  private static class CachedFlipperEvent {
     final String method;
     final FlipperObject sonarObject;
 
-    private CachedSonarEvent(String method, FlipperObject sonarObject) {
+    private CachedFlipperEvent(String method, FlipperObject sonarObject) {
       this.method = method;
       this.sonarObject = sonarObject;
     }

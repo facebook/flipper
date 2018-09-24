@@ -94,7 +94,7 @@ public class FlipperOkhttpInterceptor implements Interceptor {
     try {
       info.body = body.bytes();
     } catch (IOException e) {
-      Log.e("Sonar", e.toString());
+      Log.e("Flipper", e.toString());
     }
     return info;
   }

@@ -18,7 +18,7 @@ import javax.annotation.Nullable;
 
 /**
  * A NodeDescriptor is an object which known how to expose an Object of type T to the ew Inspector.
- * This class is the extension point for the Sonar inspector plugin and is how custom classes and
+ * This class is the extension point for the Flipper inspector plugin and is how custom classes and
  * data can be exposed to the inspector.
  */
 public abstract class NodeDescriptor<T> {
@@ -44,8 +44,8 @@ public abstract class NodeDescriptor<T> {
   }
 
   /**
-   * Invalidate a node. This tells Sonar that this node is no longer valid and its properties and/or
-   * children have changed. This will trigger Sonar to re-query this node getting any new data.
+   * Invalidate a node. This tells Flipper that this node is no longer valid and its properties and/or
+   * children have changed. This will trigger Flipper to re-query this node getting any new data.
    */
   protected final void invalidate(final T node) {
     if (mConnection != null) {
@@ -64,8 +64,8 @@ public abstract class NodeDescriptor<T> {
   }
 
   /**
-   * Invalidate a node in the ax tree. This tells Sonar that this node is no longer valid and its properties and/or
-   * children have changed. This will trigger Sonar to re-query this node getting any new data.
+   * Invalidate a node in the ax tree. This tells Flipper that this node is no longer valid and its properties and/or
+   * children have changed. This will trigger Flipper to re-query this node getting any new data.
    */
   protected final void invalidateAX(final T node) {
     if (mConnection != null) {
@@ -187,13 +187,13 @@ public abstract class NodeDescriptor<T> {
   }
 
   /**
-   * @return A string indicating how this element should be decorated. Check with the Sonar desktop
+   * @return A string indicating how this element should be decorated. Check with the Flipper desktop
    *     app to see what values are supported.
    */
   public abstract String getDecoration(T node) throws Exception;
 
   /**
-   * @return A string indicating how this element should be decorated in the AX tree. Check with the Sonar desktop
+   * @return A string indicating how this element should be decorated in the AX tree. Check with the Flipper desktop
    *     app to see what values are supported.
    */
   public String getAXDecoration(T node) throws Exception {
