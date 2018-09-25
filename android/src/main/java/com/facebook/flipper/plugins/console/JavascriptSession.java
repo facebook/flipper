@@ -76,7 +76,7 @@ public class JavascriptSession implements Closeable, ScriptingSession {
       mContextFactory.enterContext();
       return toJson(
           mContext.evaluateString(
-              scope, command, "sonar-console", lineNumber.incrementAndGet(), null));
+              scope, command, "flipper-console", lineNumber.incrementAndGet(), null));
     } finally {
       Context.exit();
     }

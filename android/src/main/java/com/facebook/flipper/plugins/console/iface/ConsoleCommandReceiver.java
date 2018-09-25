@@ -25,7 +25,7 @@ public class ConsoleCommandReceiver {
   /**
    * Incoming command execution calls may reference a context ID that means something to your
    * plugin. Implement {@link ContextProvider} to provide a mapping from context ID to java object.
-   * This will allow your sonar plugin to control the execution context of the command.
+   * This will allow your Flipper plugin to control the execution context of the command.
    */
   public interface ContextProvider {
     @Nullable

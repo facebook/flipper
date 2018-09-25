@@ -45,21 +45,21 @@ public abstract class BufferingFlipperPlugin implements FlipperPlugin {
     return mConnection != null;
   }
 
-  public synchronized void send(String method, FlipperObject sonarObject) {
+  public synchronized void send(String method, FlipperObject flipperObject) {
     if (mEventQueue == null) {
       mEventQueue = new RingBuffer<>(BUFFER_SIZE);
     }
     if (mConnection != null) {
-      mConnection.send(method, sonarObject);
+      mConnection.send(method, flipperObject);
     } else {
-      mEventQueue.enqueue(new CachedFlipperEvent(method, sonarObject));
+      mEventQueue.enqueue(new CachedFlipperEvent(method, flipperObject));
     }
   }
 
   private synchronized void sendBufferedEvents() {
     if (mEventQueue != null && mConnection != null) {
       for (CachedFlipperEvent cachedFlipperEvent : mEventQueue.asList()) {
-        mConnection.send(cachedFlipperEvent.method, cachedFlipperEvent.sonarObject);
+        mConnection.send(cachedFlipperEvent.method, cachedFlipperEvent.flipperObject);
       }
       mEventQueue.clear();
     }
@@ -67,11 +67,11 @@ public abstract class BufferingFlipperPlugin implements FlipperPlugin {
 
   private static class CachedFlipperEvent {
     final String method;
-    final FlipperObject sonarObject;
+    final FlipperObject flipperObject;
 
-    private CachedFlipperEvent(String method, FlipperObject sonarObject) {
+    private CachedFlipperEvent(String method, FlipperObject flipperObject) {
       this.method = method;
-      this.sonarObject = sonarObject;
+      this.flipperObject = flipperObject;
     }
   }
 }

@@ -78,7 +78,7 @@ public class ApplicationDescriptor extends NodeDescriptor<ApplicationWrapper> {
       boolean hasDelegateAlready = ViewCompat.hasAccessibilityDelegate(view);
       if (view instanceof ViewGroup && !hasDelegateAlready) {
 
-        // add delegate to root to catch accessibility events so we can update focus in sonar
+        // add delegate to root to catch accessibility events so we can update focus in Flipper
         view.setAccessibilityDelegate(new View.AccessibilityDelegate() {
           @Override
           public boolean onRequestSendAccessibilityEvent(ViewGroup host, View child, AccessibilityEvent event) {
