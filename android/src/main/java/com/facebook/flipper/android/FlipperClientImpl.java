@@ -20,7 +20,7 @@ import com.facebook.flipper.core.StateSummary;
 class FlipperClientImpl implements FlipperClient {
   static {
     if (BuildConfig.IS_INTERNAL_BUILD) {
-      SoLoader.loadLibrary("sonar");
+      SoLoader.loadLibrary("flipper");
     }
   }
 

@@ -16,7 +16,7 @@ import com.facebook.flipper.BuildConfig;
 class EventBase extends HybridClassBase {
   static {
     if (BuildConfig.IS_INTERNAL_BUILD) {
-      SoLoader.loadLibrary("sonar");
+      SoLoader.loadLibrary("flipper");
     }
   }
 

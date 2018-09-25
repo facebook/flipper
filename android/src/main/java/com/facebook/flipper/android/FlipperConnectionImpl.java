@@ -20,7 +20,7 @@ import com.facebook.flipper.core.FlipperReceiver;
 class FlipperConnectionImpl implements FlipperConnection {
   static {
     if (BuildConfig.IS_INTERNAL_BUILD) {
-      SoLoader.loadLibrary("sonar");
+      SoLoader.loadLibrary("flipper");
     }
   }
 

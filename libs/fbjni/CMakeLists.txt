@@ -6,7 +6,7 @@
 #
 
 cmake_minimum_required(VERSION 3.6.0)
-set(PACKAGE_NAME      "sonarfb")
+set(PACKAGE_NAME      "flipperfb")
 project(${PACKAGE_NAME} CXX)
 
 set(CMAKE_VERBOSE_MAKEFILE on)

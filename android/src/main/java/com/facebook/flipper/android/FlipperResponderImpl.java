@@ -19,7 +19,7 @@ import com.facebook.flipper.core.FlipperResponder;
 class FlipperResponderImpl implements FlipperResponder {
   static {
     if (BuildConfig.IS_INTERNAL_BUILD) {
-      SoLoader.loadLibrary("sonar");
+      SoLoader.loadLibrary("flipper");
     }
   }
 
