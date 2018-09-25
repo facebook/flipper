@@ -9,7 +9,7 @@
 
 #import <FlipperKit/FlipperResponder.h>
 
-@interface SonarResponderMock : NSObject<FlipperResponder>
+@interface FlipperResponderMock : NSObject<FlipperResponder>
 
 @property (nonatomic, readonly) NSArray<NSDictionary *> *successes;
 @property (nonatomic, readonly) NSArray<NSDictionary *> *errors;

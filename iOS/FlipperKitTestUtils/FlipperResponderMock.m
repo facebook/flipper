@@ -5,9 +5,9 @@
  *  file in the root directory of this source tree.
  *
  */
-#import "SonarResponderMock.h"
+#import "FlipperResponderMock.h"
 
-@implementation SonarResponderMock
+@implementation FlipperResponderMock
 
 - (instancetype)init
 {

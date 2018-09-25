@@ -13,7 +13,7 @@
 #import <FlipperKitLayoutPlugin/SKNodeDescriptor.h>
 #import <FlipperKitLayoutPlugin/FlipperKitLayoutPlugin.h>
 #import <FlipperKitTestUtils/FlipperConnectionMock.h>
-#import <FlipperKitTestUtils/SonarResponderMock.h>
+#import <FlipperKitTestUtils/FlipperResponderMock.h>
 
 #import "SKTapListenerMock.h"
 #import "TestNode.h"
@@ -43,7 +43,7 @@
                                   withDescriptorMapper: _descriptorMapper];
 
   FlipperConnectionMock *connection = [FlipperConnectionMock new];
-  SonarResponderMock *responder = [SonarResponderMock new];
+  FlipperResponderMock *responder = [FlipperResponderMock new];
   [plugin didConnect:connection];
 
   SonarReceiver receiver = connection.receivers[@"getRoot"];
@@ -62,7 +62,7 @@
 - (void)testGetEmptyNodes {
   FlipperKitLayoutPlugin *plugin = [FlipperKitLayoutPlugin new];
   FlipperConnectionMock *connection = [FlipperConnectionMock new];
-  SonarResponderMock *responder = [SonarResponderMock new];
+  FlipperResponderMock *responder = [FlipperResponderMock new];
   [plugin didConnect:connection];
 
   SonarReceiver receiver = connection.receivers[@"getNodes"];
@@ -86,7 +86,7 @@
                                                            withDescriptorMapper: _descriptorMapper];
 
   FlipperConnectionMock *connection = [FlipperConnectionMock new];
-  SonarResponderMock *responder = [SonarResponderMock new];
+  FlipperResponderMock *responder = [FlipperResponderMock new];
   [plugin didConnect:connection];
 
   // Ensure that nodes are tracked
@@ -137,7 +137,7 @@
                                                            withDescriptorMapper: _descriptorMapper];
 
   FlipperConnectionMock *connection = [FlipperConnectionMock new];
-  SonarResponderMock *responder = [SonarResponderMock new];
+  FlipperResponderMock *responder = [FlipperResponderMock new];
   [plugin didConnect:connection];
 
   // Setup in order to track nodes successfully
@@ -176,7 +176,7 @@
                                                            withDescriptorMapper: _descriptorMapper];
 
   FlipperConnectionMock *connection = [FlipperConnectionMock new];
-  SonarResponderMock *responder = [SonarResponderMock new];
+  FlipperResponderMock *responder = [FlipperResponderMock new];
   [plugin didConnect:connection];
 
   connection.receivers[@"setSearchActive"](@{@"active":@YES}, responder);
@@ -196,7 +196,7 @@
                                                            withDescriptorMapper: _descriptorMapper];
 
   FlipperConnectionMock *connection = [FlipperConnectionMock new];
-  SonarResponderMock *responder = [SonarResponderMock new];
+  FlipperResponderMock *responder = [FlipperResponderMock new];
   [plugin didConnect:connection];
 
   SonarReceiver setSearchActive = connection.receivers[@"setSearchActive"];
@@ -228,7 +228,7 @@
                                                            withDescriptorMapper: _descriptorMapper];
 
   FlipperConnectionMock *connection = [FlipperConnectionMock new];
-  SonarResponderMock *responder = [SonarResponderMock new];
+  FlipperResponderMock *responder = [FlipperResponderMock new];
   [plugin didConnect:connection];
 
   // Setup in order to track nodes successfully
