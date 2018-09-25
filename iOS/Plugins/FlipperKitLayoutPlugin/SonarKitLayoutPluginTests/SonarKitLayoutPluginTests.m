@@ -12,8 +12,8 @@
 #import <FlipperKitLayoutPlugin/SKDescriptorMapper.h>
 #import <FlipperKitLayoutPlugin/SKNodeDescriptor.h>
 #import <FlipperKitLayoutPlugin/FlipperKitLayoutPlugin.h>
-#import <SonarKitTestUtils/SonarConnectionMock.h>
-#import <SonarKitTestUtils/SonarResponderMock.h>
+#import <FlipperKitTestUtils/SonarConnectionMock.h>
+#import <FlipperKitTestUtils/SonarResponderMock.h>
 
 #import "SKTapListenerMock.h"
 #import "TestNode.h"

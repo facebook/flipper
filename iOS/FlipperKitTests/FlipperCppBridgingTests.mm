@@ -23,10 +23,10 @@ using facebook::flipper::SonarCppWrapperPlugin;
 - (void)didDisconnect {}
 @end
 
-@interface SonarCppBridgingTests : XCTestCase
+@interface FlipperCppBridgingTests : XCTestCase
 @end
 
-@implementation SonarCppBridgingTests
+@implementation FlipperCppBridgingTests
 
 - (void)testCppWrapperRetainsObjCPlugin {
   NSObject<FlipperPlugin> *dummyPlugin = [DummyPlugin new];
