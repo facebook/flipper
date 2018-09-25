@@ -70,27 +70,27 @@ TEST_F(FlipperConnectionManagerImplTerminationTest, testNonStartedEventBaseDoesn
 }
 
 TEST_F(FlipperConnectionManagerImplTerminationTest, testStartedEventBaseDoesntHang) {
-  auto sonarEventBase = new EventBase();
+  auto flipperEventBase = new EventBase();
   auto connectionEventBase = new EventBase();
-  auto sonarThread = std::thread([sonarEventBase](){
-    sonarEventBase->loopForever();
+  auto flipperThread = std::thread([flipperEventBase](){
+    flipperEventBase->loopForever();
   });
   auto connectionThread = std::thread([connectionEventBase](){
     connectionEventBase->loopForever();
   });
   auto config = FlipperInitConfig {
     DeviceData {},
-    sonarEventBase,
+    flipperEventBase,
     connectionEventBase
   };
   auto instance = std::make_shared<FlipperConnectionManagerImpl>(config, state, contextStore);
 
   instance->start();
 
-  sonarEventBase->terminateLoopSoon();
+  flipperEventBase->terminateLoopSoon();
   connectionEventBase->terminateLoopSoon();
 
-  sonarThread.join();
+  flipperThread.join();
   connectionThread.join();
 }
 

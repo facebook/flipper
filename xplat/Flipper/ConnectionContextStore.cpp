@@ -36,7 +36,7 @@ bool ConnectionContextStore::hasRequiredFiles() {
 }
 
 std::string ConnectionContextStore::createCertificateSigningRequest() {
-  ensureSonarDirExists();
+  ensureFlipperDirExists();
   generateCertSigningRequest(
       deviceData_.appId.c_str(),
       absoluteFilePath(CSR_FILE_NAME).c_str(),
@@ -90,7 +90,7 @@ std::string ConnectionContextStore::getCertificateDirectoryPath() {
   return absoluteFilePath("");
 }
 
-bool ConnectionContextStore::ensureSonarDirExists() {
+bool ConnectionContextStore::ensureFlipperDirExists() {
   std::string dirPath = absoluteFilePath("");
   struct stat info;
   if (stat(dirPath.c_str(), &info) != 0) {
@@ -99,7 +99,7 @@ bool ConnectionContextStore::ensureSonarDirExists() {
   } else if (info.st_mode & S_IFDIR) {
     return true;
   } else {
-    log("ERROR: Sonar path exists but is not a directory: " + dirPath);
+    log("ERROR: Flipper path exists but is not a directory: " + dirPath);
     return false;
   }
 }

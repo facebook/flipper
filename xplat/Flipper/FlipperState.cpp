@@ -13,7 +13,7 @@
 using namespace facebook::flipper;
 
 /* Class responsible for collecting state updates and combining them into a
- * view of the current state of the sonar client. */
+ * view of the current state of the flipper client. */
 
 
 FlipperState::FlipperState(): log("") {}

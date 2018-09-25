@@ -25,7 +25,7 @@ private:
   DeviceData deviceData_;
 
   std::string absoluteFilePath(const char* filename);
-  bool ensureSonarDirExists();
+  bool ensureFlipperDirExists();
 
 };
 

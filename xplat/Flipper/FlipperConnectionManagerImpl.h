@@ -48,9 +48,9 @@ class FlipperConnectionManagerImpl : public FlipperConnectionManager {
   bool isOpen_ = false;
   Callbacks* callbacks_;
   DeviceData deviceData_;
-  std::shared_ptr<FlipperState> sonarState_;
+  std::shared_ptr<FlipperState> flipperState_;
 
-  folly::EventBase* sonarEventBase_;
+  folly::EventBase* flipperEventBase_;
   folly::EventBase* connectionEventBase_;
   std::unique_ptr<rsocket::RSocketClient> client_;
   bool connectionIsTrusted_;
@@ -61,7 +61,7 @@ class FlipperConnectionManagerImpl : public FlipperConnectionManager {
   void doCertificateExchange();
   void connectSecurely();
   bool isCertificateExchangeNeeded();
-  void requestSignedCertFromSonar();
+  void requestSignedCertFromFlipper();
   bool isRunningInOwnThread();
   void sendLegacyCertificateRequest(folly::dynamic message);
   std::string getDeviceId();

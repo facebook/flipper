@@ -46,7 +46,7 @@ class FlipperConnectionImpl : public FlipperConnection {
         folly::dynamic::object("message", message)("stacktrace", stacktrace)));
   }
 
-  void receive(const std::string& method, const SonarReceiver& receiver)
+  void receive(const std::string& method, const FlipperReceiver& receiver)
       override {
     receivers_[method] = receiver;
   }
@@ -54,7 +54,7 @@ class FlipperConnectionImpl : public FlipperConnection {
  private:
   FlipperConnectionManager* socket_;
   std::string name_;
-  std::map<std::string, SonarReceiver> receivers_;
+  std::map<std::string, FlipperReceiver> receivers_;
 };
 
 } // namespace flipper

@@ -42,12 +42,12 @@ FlipperClient* FlipperClient::instance() {
 void FlipperClient::setStateListener(
     std::shared_ptr<FlipperStateUpdateListener> stateListener) {
   log("Setting state listener");
-  sonarState_->setUpdateListener(stateListener);
+  flipperState_->setUpdateListener(stateListener);
 }
 
 void FlipperClient::addPlugin(std::shared_ptr<FlipperPlugin> plugin) {
   log("FlipperClient::addPlugin " + plugin->identifier());
-  auto step = sonarState_->start("Add plugin " + plugin->identifier());
+  auto step = flipperState_->start("Add plugin " + plugin->identifier());
 
   std::lock_guard<std::mutex> lock(mutex_);
   performAndReportError([this, plugin, step]() {
@@ -117,7 +117,7 @@ void FlipperClient::onConnected() {
 
 void FlipperClient::onDisconnected() {
   log("FlipperClient::onDisconnected");
-  auto step = sonarState_->start("Trigger onDisconnected callbacks");
+  auto step = flipperState_->start("Trigger onDisconnected callbacks");
   std::lock_guard<std::mutex> lock(mutex_);
   connected_ = false;
   performAndReportError([this, step]() {
@@ -214,11 +214,11 @@ void FlipperClient::performAndReportError(const std::function<void()>& func) {
 }
 
 std::string FlipperClient::getState() {
-  return sonarState_->getState();
+  return flipperState_->getState();
 }
 
 std::vector<StateElement> FlipperClient::getStateElements() {
-  return sonarState_->getStateElements();
+  return flipperState_->getStateElements();
 }
 
 } // namespace flipper

@@ -21,7 +21,7 @@ class FlipperConnectionMock : public FlipperConnection {
     sent_[method] = params;
   }
 
-  void receive(const std::string& method, const SonarReceiver& receiver)
+  void receive(const std::string& method, const FlipperReceiver& receiver)
       override {
     receivers_[method] = receiver;
   }
@@ -30,7 +30,7 @@ class FlipperConnectionMock : public FlipperConnection {
       override {}
 
   std::map<std::string, folly::dynamic> sent_;
-  std::map<std::string, SonarReceiver> receivers_;
+  std::map<std::string, FlipperReceiver> receivers_;
 };
 
 } // namespace flipper

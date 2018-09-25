@@ -25,7 +25,7 @@ class FlipperClient : public FlipperConnectionManager::Callbacks {
  public:
   /**
    Call before accessing instance with FlipperClient::instance(). This will set up
-   all the state needed to establish a Sonar connection.
+   all the state needed to establish a Flipper connection.
    */
   static void init(FlipperInitConfig config);
 
@@ -41,20 +41,20 @@ class FlipperClient : public FlipperConnectionManager::Callbacks {
    Only public for testing
    */
   FlipperClient(std::unique_ptr<FlipperConnectionManager> socket, std::shared_ptr<FlipperState> state)
-      : socket_(std::move(socket)), sonarState_(state) {
-    auto step = sonarState_->start("Create client");
+      : socket_(std::move(socket)), flipperState_(state) {
+    auto step = flipperState_->start("Create client");
     socket_->setCallbacks(this);
     step->complete();
   }
 
   void start() {
-    auto step = sonarState_->start("Start client");
+    auto step = flipperState_->start("Start client");
     socket_->start();
     step->complete();
   }
 
   void stop() {
-    auto step = sonarState_->start("Stop client");
+    auto step = flipperState_->start("Stop client");
     socket_->stop();
     step->complete();
   }
@@ -94,7 +94,7 @@ class FlipperClient : public FlipperConnectionManager::Callbacks {
   std::map<std::string, std::shared_ptr<FlipperPlugin>> plugins_;
   std::map<std::string, std::shared_ptr<FlipperConnectionImpl>> connections_;
   std::mutex mutex_;
-  std::shared_ptr<FlipperState> sonarState_;
+  std::shared_ptr<FlipperState> flipperState_;
 
   void performAndReportError(const std::function<void()>& func);
   void disconnect(std::shared_ptr<FlipperPlugin> plugin);

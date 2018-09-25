@@ -15,22 +15,22 @@ namespace flipper {
 
 /**
  * FlipperResponder is used to asynchronously respond to messages
- * received from the Sonar desktop app.
+ * received from the Flipper desktop app.
  */
 class FlipperResponder {
  public:
   virtual ~FlipperResponder(){};
 
   /**
-   * Deliver a successful response to the Sonar desktop app.
+   * Deliver a successful response to the Flipper desktop app.
    */
   virtual void success(const folly::dynamic& response) const = 0;
 
   /**
-   * Inform the Sonar desktop app of an error in handling the request.
+   * Inform the Flipper desktop app of an error in handling the request.
    */
   virtual void error(const folly::dynamic& response) const = 0;
 };
 
-} // namespace sonar
+} // namespace flipper
 } // namespace facebook

@@ -22,7 +22,7 @@
 #include <stdexcept>
 
 #define WRONG_THREAD_EXIT_MSG \
-  "ERROR: Aborting sonar initialization because it's not running in the sonar thread."
+  "ERROR: Aborting flipper initialization because it's not running in the flipper thread."
 
 static constexpr int reconnectIntervalSeconds = 2;
 static constexpr int connectionKeepaliveSeconds = 10;
@@ -78,7 +78,7 @@ class Responder : public rsocket::RSocketResponder {
 };
 
 FlipperConnectionManagerImpl::FlipperConnectionManagerImpl(FlipperInitConfig config, std::shared_ptr<FlipperState> state, std::shared_ptr<ConnectionContextStore> contextStore)
-    : deviceData_(config.deviceData), sonarState_(state), sonarEventBase_(config.callbackWorker), connectionEventBase_(config.connectionWorker), contextStore_(contextStore) {
+    : deviceData_(config.deviceData), flipperState_(state), flipperEventBase_(config.callbackWorker), connectionEventBase_(config.connectionWorker), contextStore_(contextStore) {
       CHECK_THROW(config.callbackWorker, std::invalid_argument);
       CHECK_THROW(config.connectionWorker, std::invalid_argument);
     }
@@ -88,9 +88,9 @@ FlipperConnectionManagerImpl::~FlipperConnectionManagerImpl() {
 }
 
 void FlipperConnectionManagerImpl::start() {
-  auto step = sonarState_->start("Start connection thread");
+  auto step = flipperState_->start("Start connection thread");
   folly::makeFuture()
-      .via(sonarEventBase_->getEventBase())
+      .via(flipperEventBase_->getEventBase())
       .delayed(std::chrono::milliseconds(0))
       .thenValue([this, step](auto&&){ step->complete(); startSync(); });
 }
@@ -104,7 +104,7 @@ void FlipperConnectionManagerImpl::startSync() {
     log("Already connected");
     return;
   }
-  auto connect = sonarState_->start("Connect to desktop");
+  auto connect = flipperState_->start("Connect to desktop");
   try {
     if (isCertificateExchangeNeeded()) {
       doCertificateExchange();
@@ -142,7 +142,7 @@ void FlipperConnectionManagerImpl::doCertificateExchange() {
           "device", deviceData_.device)("app", deviceData_.app)));
   address.setFromHostPort(deviceData_.host, insecurePort);
 
-  auto connectingInsecurely = sonarState_->start("Connect insecurely");
+  auto connectingInsecurely = flipperState_->start("Connect insecurely");
   connectionIsTrusted_ = false;
   client_ =
       rsocket::RSocket::createConnectedClient(
@@ -156,14 +156,14 @@ void FlipperConnectionManagerImpl::doCertificateExchange() {
           .get();
   connectingInsecurely->complete();
 
-  requestSignedCertFromSonar();
+  requestSignedCertFromFlipper();
 }
 
 void FlipperConnectionManagerImpl::connectSecurely() {
   rsocket::SetupParameters parameters;
   folly::SocketAddress address;
 
-  auto loadingDeviceId = sonarState_->start("Load Device Id");
+  auto loadingDeviceId = flipperState_->start("Load Device Id");
   auto deviceId = contextStore_->getDeviceId();
   if (deviceId.compare("unknown")) {
     loadingDeviceId->complete();
@@ -174,7 +174,7 @@ void FlipperConnectionManagerImpl::connectSecurely() {
   address.setFromHostPort(deviceData_.host, securePort);
 
   std::shared_ptr<folly::SSLContext> sslContext = contextStore_->getSSLContext();
-  auto connectingSecurely = sonarState_->start("Connect securely");
+  auto connectingSecurely = flipperState_->start("Connect securely");
   connectionIsTrusted_ = true;
   client_ =
       rsocket::RSocket::createConnectedClient(
@@ -194,7 +194,7 @@ void FlipperConnectionManagerImpl::connectSecurely() {
 
 void FlipperConnectionManagerImpl::reconnect() {
   folly::makeFuture()
-      .via(sonarEventBase_->getEventBase())
+      .via(flipperEventBase_->getEventBase())
       .delayed(std::chrono::seconds(reconnectIntervalSeconds))
       .thenValue([this](auto&&){ startSync(); });
 }
@@ -215,7 +215,7 @@ void FlipperConnectionManagerImpl::setCallbacks(Callbacks* callbacks) {
 }
 
 void FlipperConnectionManagerImpl::sendMessage(const folly::dynamic& message) {
-  sonarEventBase_->add([this, message]() {
+  flipperEventBase_->add([this, message]() {
     if (client_) {
       client_->getRequester()
           ->fireAndForget(rsocket::Payload(folly::toJson(message)))
@@ -230,7 +230,7 @@ bool FlipperConnectionManagerImpl::isCertificateExchangeNeeded() {
     return true;
   }
 
-  auto step = sonarState_->start("Check required certificates are present");
+  auto step = flipperState_->start("Check required certificates are present");
   bool hasRequiredFiles = contextStore_->hasRequiredFiles();
   if (hasRequiredFiles) {
     step->complete();
@@ -238,16 +238,16 @@ bool FlipperConnectionManagerImpl::isCertificateExchangeNeeded() {
   return !hasRequiredFiles;
 }
 
-void FlipperConnectionManagerImpl::requestSignedCertFromSonar() {
-  auto generatingCSR = sonarState_->start("Generate CSR");
+void FlipperConnectionManagerImpl::requestSignedCertFromFlipper() {
+  auto generatingCSR = flipperState_->start("Generate CSR");
   std::string csr = contextStore_->createCertificateSigningRequest();
   generatingCSR->complete();
 
   folly::dynamic message = folly::dynamic::object("method", "signCertificate")(
       "csr", csr.c_str())("destination", contextStore_->getCertificateDirectoryPath().c_str());
-  auto gettingCert = sonarState_->start("Getting cert from desktop");
+  auto gettingCert = flipperState_->start("Getting cert from desktop");
 
-  sonarEventBase_->add([this, message, gettingCert]() {
+  flipperEventBase_->add([this, message, gettingCert]() {
     client_->getRequester()
         ->requestResponse(rsocket::Payload(folly::toJson(message)))
         ->subscribe([this, gettingCert](rsocket::Payload p) {
@@ -269,7 +269,7 @@ void FlipperConnectionManagerImpl::requestSignedCertFromSonar() {
               std::string errorMessage = errorWithPayload.payload.moveDataToString();
 
              if (errorMessage.compare("not implemented")) {
-               log("Desktop failed to provide certificates. Error from sonar desktop:\n" + errorMessage);
+               log("Desktop failed to provide certificates. Error from flipper desktop:\n" + errorMessage);
              } else {
               sendLegacyCertificateRequest(message);
              }
@@ -286,7 +286,7 @@ void FlipperConnectionManagerImpl::requestSignedCertFromSonar() {
 void FlipperConnectionManagerImpl::sendLegacyCertificateRequest(folly::dynamic message) {
   // Desktop is using an old version of Flipper.
   // Fall back to fireAndForget, instead of requestResponse.
-  auto sendingRequest = sonarState_->start("Sending fallback certificate request");
+  auto sendingRequest = flipperState_->start("Sending fallback certificate request");
   client_->getRequester()
    ->fireAndForget(rsocket::Payload(folly::toJson(message)))
    ->subscribe([this, sendingRequest]() {
@@ -298,7 +298,7 @@ void FlipperConnectionManagerImpl::sendLegacyCertificateRequest(folly::dynamic m
 }
 
 bool FlipperConnectionManagerImpl::isRunningInOwnThread() {
-  return sonarEventBase_->isInEventBaseThread();
+  return flipperEventBase_->isInEventBaseThread();
 }
 
 } // namespace flipper

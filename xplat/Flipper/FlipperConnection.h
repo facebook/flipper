@@ -22,20 +22,20 @@ with corresponding identifiers.
 */
 class FlipperConnection {
  public:
-  using SonarReceiver = std::function<
+  using FlipperReceiver = std::function<
       void(const folly::dynamic&, std::unique_ptr<FlipperResponder>)>;
 
   virtual ~FlipperConnection() {}
 
   /**
-  Invoke a method on the Sonar desktop plugin with with a matching identifier.
+  Invoke a method on the Flipper desktop plugin with with a matching identifier.
   */
   virtual void send(
       const std::string& method,
       const folly::dynamic& params) = 0;
 
   /**
-  Report an error to the Sonar desktop app
+  Report an error to the Flipper desktop app
   */
   virtual void error(
       const std::string& message,
@@ -43,11 +43,11 @@ class FlipperConnection {
 
   /**
   Register a receiver to be notified of incoming calls of the given
-  method from the Sonar desktop plugin with a matching identifier.
+  method from the Flipper desktop plugin with a matching identifier.
   */
   virtual void receive(
       const std::string& method,
-      const SonarReceiver& receiver) = 0;
+      const FlipperReceiver& receiver) = 0;
 };
 
 } // namespace flipper
