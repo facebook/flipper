@@ -173,6 +173,9 @@ async function compilePlugin(
           out,
           dev: false,
           sourceMap: true,
+          // due to a bug in metro inline source maps are only created when
+          // sourceMapUrl is truthy: https://github.com/facebook/metro/pull/260
+          sourceMapUrl: 'inline',
         },
       );
     } catch (e) {

@@ -156,6 +156,9 @@ function compile(buildFolder) {
       minify: false,
       resetCache: true,
       sourceMap: true,
+      // due to a bug in metro inline source maps are only created when
+      // sourceMapUrl is truthy: https://github.com/facebook/metro/pull/260
+      sourceMapUrl: 'inline',
       entry: path.join(__dirname, '..', 'src', 'init.js'),
       out: path.join(buildFolder, 'bundle.js'),
     },
