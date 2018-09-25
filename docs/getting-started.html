@@ -21,7 +21,7 @@
 <span class="hljs-tag">&lt;<span class="hljs-name">uses-permission</span> <span class="hljs-attr">android:name</span>=<span class="hljs-string">"android.permission.ACCESS_WIFI_STATE"</span> /&gt;</span>
 </code></pre>
 <p>It's recommended that you add the following activity to the manifest too, which can help diagnose integration issues and other problems:</p>
-<pre><code class="hljs css xml"><span class="hljs-tag">&lt;<span class="hljs-name">activity</span> <span class="hljs-attr">android:name</span>=<span class="hljs-string">"com.facebook.sonar.android.diagnostics.FlipperDiagnosticActivity"</span>
+<pre><code class="hljs css xml"><span class="hljs-tag">&lt;<span class="hljs-name">activity</span> <span class="hljs-attr">android:name</span>=<span class="hljs-string">"com.facebook.flipper.android.diagnostics.FlipperDiagnosticActivity"</span>
         <span class="hljs-attr">android:exported</span>=<span class="hljs-string">"true"</span>/&gt;</span>
 </code></pre>
 <p>Flipper is distributed via JCenter. Add dependencies to your <code>build.gradle</code> file.</p>
@@ -41,9 +41,9 @@ dependencies {
     <span class="hljs-keyword">super</span>.onCreate();
     SoLoader.init(<span class="hljs-keyword">this</span>, <span class="hljs-keyword">false</span>);
 
-    <span class="hljs-keyword">if</span> (BuildConfig.DEBUG &amp;&amp; SonarUtils.shouldEnableSonar(<span class="hljs-keyword">this</span>)) {
-      <span class="hljs-keyword">final</span> SonarClient client = AndroidFlipperClient.getInstance(<span class="hljs-keyword">this</span>);
-      client.addPlugin(<span class="hljs-keyword">new</span> InspectorSonarPlugin(<span class="hljs-keyword">this</span>, DescriptorMapping.withDefaults()));
+    <span class="hljs-keyword">if</span> (BuildConfig.DEBUG &amp;&amp; FlipperUtils.shouldEnableFlipper(<span class="hljs-keyword">this</span>)) {
+      <span class="hljs-keyword">final</span> FlipperClient client = AndroidFlipperClient.getInstance(<span class="hljs-keyword">this</span>);
+      client.addPlugin(<span class="hljs-keyword">new</span> InspectorFlipperPlugin(<span class="hljs-keyword">this</span>, DescriptorMapping.withDefaults()));
       client.start();
     }
   }

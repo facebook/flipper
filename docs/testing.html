@@ -6,36 +6,36 @@
           };
         </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><h1>Testing</h1></header><article><div><span><p>Developer tools are only used if they work. We have built APIs to test plugins.</p>
 <h2><a class="anchor" aria-hidden="true" id="android"></a><a href="#android" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Android</h2>
-<p>Start by creating your first test file in this directory <code>MySonarPluginTest.java</code>. In the test method body we create our plugin which we want to test as well as a <code>SonarConnectionMock</code>. In this contrived example we simply assert that our plugin's connected status is what we expect.</p>
+<p>Start by creating your first test file in this directory <code>MyFlipperPluginTest.java</code>. In the test method body we create our plugin which we want to test as well as a <code>FlipperConnectionMock</code>. In this contrived example we simply assert that our plugin's connected status is what we expect.</p>
 <pre><code class="hljs css java"><span class="hljs-meta">@RunWith</span>(RobolectricTestRunner.class)
-<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MySonarPluginTest</span> </span>{
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MyFlipperPluginTest</span> </span>{
 
   <span class="hljs-meta">@Test</span>
   <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">myTest</span><span class="hljs-params">()</span> </span>{
-    <span class="hljs-keyword">final</span> MySonarPlugin plugin = <span class="hljs-keyword">new</span> MySonarPlugin();
-    <span class="hljs-keyword">final</span> SonarConnectionMock connection = <span class="hljs-keyword">new</span> SonarConnectionMock();
+    <span class="hljs-keyword">final</span> MyFlipperPlugin plugin = <span class="hljs-keyword">new</span> MyFlipperPlugin();
+    <span class="hljs-keyword">final</span> FlipperConnectionMock connection = <span class="hljs-keyword">new</span> FlipperConnectionMock();
 
     plugin.onConnect(connection);
     assertThat(plugin.connected(), equalTo(<span class="hljs-keyword">true</span>));
   }
 }
 </code></pre>
-<p>There are two mock classes that are used to construct tests <code>SonarConnectionMock</code> and <code>SonarResponderMock</code>. Together these can be used to write very powerful tests to verify the end to end behavior of your plugin. For example we can test if for a given incoming message our plugin responds as we expect.</p>
+<p>There are two mock classes that are used to construct tests <code>FlipperConnectionMock</code> and <code>FlipperResponderMock</code>. Together these can be used to write very powerful tests to verify the end to end behavior of your plugin. For example we can test if for a given incoming message our plugin responds as we expect.</p>
 <pre><code class="hljs css java"><span class="hljs-meta">@Test</span>
 <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">myTest</span><span class="hljs-params">()</span> </span>{
-  <span class="hljs-keyword">final</span> MySonarPlugin plugin = <span class="hljs-keyword">new</span> MySonarPlugin();
-  <span class="hljs-keyword">final</span> SonarConnectionMock connection = <span class="hljs-keyword">new</span> SonarConnectionMock();
-  <span class="hljs-keyword">final</span> SonarResponderMock responder = <span class="hljs-keyword">new</span> SonarResponderMock();
+  <span class="hljs-keyword">final</span> MyFlipperPlugin plugin = <span class="hljs-keyword">new</span> MyFlipperPlugin();
+  <span class="hljs-keyword">final</span> FlipperConnectionMock connection = <span class="hljs-keyword">new</span> FlipperConnectionMock();
+  <span class="hljs-keyword">final</span> FlipperResponderMock responder = <span class="hljs-keyword">new</span> FlipperResponderMock();
 
   plugin.onConnect(connection);
 
-  <span class="hljs-keyword">final</span> SonarObject params = <span class="hljs-keyword">new</span> SonarObject.Builder()
+  <span class="hljs-keyword">final</span> FlipperObject params = <span class="hljs-keyword">new</span> FlipperObject.Builder()
       .put(<span class="hljs-string">"phrase"</span>, <span class="hljs-string">"sonar"</span>)
       .build();
   connection.receivers.get(<span class="hljs-string">"myMethod"</span>).onReceive(params, responder);
 
   assertThat(responder.successes, hasItem(
-      <span class="hljs-keyword">new</span> SonarObject.Builder()
+      <span class="hljs-keyword">new</span> FlipperObject.Builder()
           .put(<span class="hljs-string">"phrase"</span>, <span class="hljs-string">"ranos"</span>)
           .build()));
 }
