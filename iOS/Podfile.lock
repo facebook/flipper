@@ -3,6 +3,9 @@ PODS:
   - CocoaAsyncSocket (7.6.3)
   - CocoaLibEvent (1.0.0)
   - DoubleConversion (1.1.5)
+  - Flipper (0.7.2):
+    - Folly (~> 1.1)
+    - RSocket (~> 0.10)
   - Folly (1.1.0):
     - boost-for-react-native
     - CocoaLibEvent (~> 1.0)
@@ -14,18 +17,15 @@ PODS:
   - PeerTalk (0.0.2)
   - RSocket (0.10.0):
     - Folly
-  - Sonar (0.7.2):
-    - Folly (~> 1.1)
-    - RSocket (~> 0.10)
 
 DEPENDENCIES:
   - CocoaAsyncSocket (~> 7.6)
   - DoubleConversion (~> 1.1)
+  - Flipper (from `../Flipper.podspec`)
   - Folly (~> 1.0)
   - glog (~> 0.3)
   - PeerTalk (~> 0.0)
   - RSocket (~> 0.10)
-  - Sonar (from `../Sonar.podspec`)
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
@@ -41,21 +41,21 @@ SPEC REPOS:
     - RSocket
 
 EXTERNAL SOURCES:
-  Sonar:
-    :path: "../Sonar.podspec"
+  Flipper:
+    :path: "../Flipper.podspec"
 
 SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   CocoaAsyncSocket: eafaa68a7e0ec99ead0a7b35015e0bf25d2c8987
   CocoaLibEvent: 2fab71b8bd46dd33ddb959f7928ec5909f838e3f
   DoubleConversion: e22e0762848812a87afd67ffda3998d9ef29170c
+  Flipper: 495fbd327298fbc55b3ff7cb399eae52c1580494
   Folly: dd92f69322d8535b9df98d7c91e442b0fce2fff2
   glog: 1de0bb937dccdc981596d3b5825ebfb765017ded
   OpenSSL-Static: bd17e34564a8591ad76b740318683a6caa19a13e
   PeerTalk: 77481b0a8136f226b90ccf828d6061f70139ffde
   RSocket: 4fdb7e562db30a2d4fceddefdc601749ffc9ebe2
-  Sonar: cfbef2d6119e92563d51bf3cdd9ae34f4eda068b
 
-PODFILE CHECKSUM: b42359a8a1bee962b021782d4c127c6c55bf2003
+PODFILE CHECKSUM: 31bacaa95d90ebfc33e2ca7a8235227e4339f2fd
 
 COCOAPODS: 1.5.3

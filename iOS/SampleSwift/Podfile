@@ -5,8 +5,8 @@ swift_version = "4.1"
 
 target 'SampleSwift' do
   pod 'Flipper', :path => '../../Flipper.podspec'
-  pod 'FlipperKit', :path => '../../SonarKit.podspec'
-  pod 'FlipperKit/SKIOSNetworkPlugin', :path => '../../SonarKit.podspec'
+  pod 'FlipperKit', :path => '../../FlipperKit.podspec'
+  pod 'FlipperKit/SKIOSNetworkPlugin', :path => '../../FlipperKit.podspec'
   # Layout and network plugins are not yet supported for swift projects
   #pod 'SonarKit/SonarKitLayoutComponentKitSupport', :path => '../../SonarKit.podspec'
 

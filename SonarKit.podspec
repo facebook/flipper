@@ -1,1 +1,0 @@
-iOS/SonarKit.podspec

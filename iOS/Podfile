@@ -8,7 +8,7 @@ target 'FlipperKit' do
   # use_frameworks!
 
   project 'FlipperKit.xcodeproj'
-  pod 'Sonar', :path => '../Sonar.podspec'
+  pod 'Flipper', :path => '../Flipper.podspec'
   # Pods for SonarKit
   pod 'PeerTalk', '~>0.0'
   pod 'RSocket', '~>0.10'
@@ -16,6 +16,5 @@ target 'FlipperKit' do
   pod 'glog', '~>0.3'
   pod 'Folly', '~>1.0'
   pod 'CocoaAsyncSocket', '~>7.6'
-  pod 'Flipper', '~>0.0.1'
 
 end
