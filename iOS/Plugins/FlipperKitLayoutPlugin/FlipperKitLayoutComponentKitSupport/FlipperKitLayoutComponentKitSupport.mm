@@ -7,7 +7,7 @@
  */
 #if FB_SONARKIT_ENABLED
 
-#import "SonarKitLayoutComponentKitSupport.h"
+#import "FlipperKitLayoutComponentKitSupport.h"
 
 #import <ComponentKit/CKComponentRootView.h>
 #import <ComponentKit/CKComponentHostingView.h>
@@ -19,7 +19,7 @@
 #import "SKComponentLayoutDescriptor.h"
 #import "SKComponentLayoutWrapper.h"
 
-@implementation SonarKitLayoutComponentKitSupport
+@implementation FlipperKitLayoutComponentKitSupport
 
 + (void)setUpWithDescriptorMapper:(SKDescriptorMapper *)mapper {
   // What we really want here is "forProtocol:@protocol(CKInspectableView)" but no such luck.

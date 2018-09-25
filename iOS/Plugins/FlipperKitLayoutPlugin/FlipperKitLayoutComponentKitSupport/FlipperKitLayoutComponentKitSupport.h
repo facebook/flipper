@@ -9,7 +9,7 @@
 
 #import <FlipperKitLayoutPlugin/SKDescriptorMapper.h>
 
-@interface SonarKitLayoutComponentKitSupport : NSObject
+@interface FlipperKitLayoutComponentKitSupport : NSObject
 
 + (void)setUpWithDescriptorMapper:(SKDescriptorMapper *)mapper;
 

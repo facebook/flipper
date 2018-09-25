@@ -10,7 +10,7 @@
 #import <FlipperKit/FlipperClient.h>
 #import <FlipperKitLayoutPlugin/FlipperKitLayoutPlugin.h>
 #import <FlipperKitNetworkPlugin/FlipperKitNetworkPlugin.h>
-#import <SonarKitLayoutComponentKitSupport/SonarKitLayoutComponentKitSupport.h>
+#import <FlipperKitLayoutComponentKitSupport/FlipperKitLayoutComponentKitSupport.h>
 #import <SKIOSNetworkPlugin/SKIOSNetworkAdapter.h>
 
 #import "MainViewController.h"
@@ -31,7 +31,7 @@
   FlipperClient *client = [FlipperClient sharedClient];
 
   SKDescriptorMapper *layoutDescriptorMapper = [[SKDescriptorMapper alloc] initWithDefaults];
-  [SonarKitLayoutComponentKitSupport setUpWithDescriptorMapper: layoutDescriptorMapper];
+  [FlipperKitLayoutComponentKitSupport setUpWithDescriptorMapper: layoutDescriptorMapper];
   [client addPlugin: [[FlipperKitLayoutPlugin alloc] initWithRootNode: application
                                                withDescriptorMapper: layoutDescriptorMapper]];
 

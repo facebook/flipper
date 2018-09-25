@@ -5,7 +5,7 @@ swift_version = "4.1"
 
 target 'Sample' do
   pod 'FlipperKit', :path => '../../FlipperKit.podspec'
-  pod 'FlipperKit/SonarKitLayoutComponentKitSupport', :path => '../../FlipperKit.podspec'
+  pod 'FlipperKit/FlipperKitLayoutComponentKitSupport', :path => '../../FlipperKit.podspec'
   pod 'FlipperKit/SKIOSNetworkPlugin', :path => '../../FlipperKit.podspec'
   pod 'Flipper', :path => '../../Flipper.podspec'
   post_install do |installer|

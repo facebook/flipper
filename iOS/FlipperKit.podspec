@@ -93,18 +93,18 @@ Pod::Spec.new do |spec|
     ss.source_files         = 'iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutPlugin/**/*.{h,cpp,m,mm}'
   end
 
-  spec.subspec "SonarKitLayoutComponentKitSupport" do |ss|
-    ss.header_dir = "SonarKitLayoutComponentKitSupport"
+  spec.subspec "FlipperKitLayoutComponentKitSupport" do |ss|
+    ss.header_dir = "FlipperKitLayoutComponentKitSupport"
     ss.dependency             'FlipperKit/Core'
     ss.dependency             'Yoga', yoga_version
     ss.dependency             'ComponentKit'
     ss.dependency             'FlipperKit/FlipperKitLayoutPlugin'
     ss.compiler_flags       = folly_compiler_flags
     ss.dependency             'FlipperKit/FlipperKitLayoutPlugin'
-    ss.public_header_files = 'iOS/Plugins/FlipperKitLayoutPlugin/SonarKitLayoutComponentKitSupport/SonarKitLayoutComponentKitSupport.h',
-                             'iOS/Plugins/FlipperKitLayoutPlugin/SonarKitLayoutComponentKitSupport/SKComponentLayoutWrapper.h'
+    ss.public_header_files = 'iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutComponentKitSupport/FlipperKitLayoutComponentKitSupport.h',
+                             'iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutComponentKitSupport/SKComponentLayoutWrapper.h'
 
-    ss.source_files         = "iOS/Plugins/FlipperKitLayoutPlugin/SonarKitLayoutComponentKitSupport/**/*.{h,cpp,m,mm}"
+    ss.source_files         = "iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutComponentKitSupport/**/*.{h,cpp,m,mm}"
     ss.pod_target_xcconfig = { "USE_HEADERMAP" => "NO",
                                 "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)\"/Headers/Private/FlipperKit/**" }
   end
