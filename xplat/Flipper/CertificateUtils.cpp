@@ -38,7 +38,7 @@ bool generateCertSigningRequest(
   const char* subjectCountry = "US";
   const char* subjectProvince = "CA";
   const char* subjectCity = "Menlo Park";
-  const char* subjectOrganization = "Sonar";
+  const char* subjectOrganization = "Flipper";
   const char* subjectCommon = appId;
 
   X509_REQ* x509_req = X509_REQ_new();
