@@ -208,7 +208,7 @@ void FlipperClient::performAndReportError(const std::function<void()>& func) {
     if (connected_) {
       socket_->sendMessage(message);
     } else {
-        log("SonarError : " + std::string(e.what()));
+        log("Error: " + std::string(e.what()));
     }
   }
 }
