@@ -8,16 +8,16 @@ Developer tools are only used if they work. We have built APIs to test plugins.
 
 ## Android
 
-Start by creating your first test file in this directory `MySonarPluginTest.java`. In the test method body we create our plugin which we want to test as well as a `SonarConnectionMock`. In this contrived example we simply assert that our plugin's connected status is what we expect.
+Start by creating your first test file in this directory `MyFlipperPluginTest.java`. In the test method body we create our plugin which we want to test as well as a `FlipperConnectionMock`. In this contrived example we simply assert that our plugin's connected status is what we expect.
 
 ```java
 @RunWith(RobolectricTestRunner.class)
-public class MySonarPluginTest {
+public class MyFlipperPluginTest {
 
   @Test
   public void myTest() {
-    final MySonarPlugin plugin = new MySonarPlugin();
-    final SonarConnectionMock connection = new SonarConnectionMock();
+    final MyFlipperPlugin plugin = new MyFlipperPlugin();
+    final FlipperConnectionMock connection = new FlipperConnectionMock();
 
     plugin.onConnect(connection);
     assertThat(plugin.connected(), equalTo(true));
@@ -25,24 +25,24 @@ public class MySonarPluginTest {
 }
 ```
 
-There are two mock classes that are used to construct tests `SonarConnectionMock` and `SonarResponderMock`. Together these can be used to write very powerful tests to verify the end to end behavior of your plugin. For example we can test if for a given incoming message our plugin responds as we expect.
+There are two mock classes that are used to construct tests `FlipperConnectionMock` and `FlipperResponderMock`. Together these can be used to write very powerful tests to verify the end to end behavior of your plugin. For example we can test if for a given incoming message our plugin responds as we expect.
 
 ```java
 @Test
 public void myTest() {
-  final MySonarPlugin plugin = new MySonarPlugin();
-  final SonarConnectionMock connection = new SonarConnectionMock();
-  final SonarResponderMock responder = new SonarResponderMock();
+  final MyFlipperPlugin plugin = new MyFlipperPlugin();
+  final FlipperConnectionMock connection = new FlipperConnectionMock();
+  final FlipperResponderMock responder = new FlipperResponderMock();
 
   plugin.onConnect(connection);
 
-  final SonarObject params = new SonarObject.Builder()
+  final FlipperObject params = new FlipperObject.Builder()
       .put("phrase", "sonar")
       .build();
   connection.receivers.get("myMethod").onReceive(params, responder);
 
   assertThat(responder.successes, hasItem(
-      new SonarObject.Builder()
+      new FlipperObject.Builder()
           .put("phrase", "ranos")
           .build()));
 }

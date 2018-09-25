@@ -4,23 +4,23 @@ title: Mobile Setup
 sidebar_label: Mobile Setup
 ---
 
-## Implement SonarPlugin
+## Implement FlipperPlugin
 
-Create a class implementing `SonarPlugin`.
+Create a class implementing `FlipperPlugin`.
 
 ### Android
 
 ```java
-public class MySonarPlugin implements SonarPlugin {
-  private SonarConnection mConnection;
+public class MyFlipperPlugin implements FlipperPlugin {
+  private FlipperConnection mConnection;
 
   @Override
   public String getId() {
-    return "MySonarPlugin";
+    return "MyFlipperPlugin";
   }
 
   @Override
-  public void onConnect(SonarConnection connection) throws Exception {
+  public void onConnect(FlipperConnection connection) throws Exception {
     mConnection = connection;
   }
 
@@ -57,18 +57,18 @@ public:
 };
 ```
 
-## Using SonarConnection
+## Using FlipperConnection
 
-Using the `SonarConnection` object you can register a receiver of a desktop method call and respond with data.
+Using the `FlipperConnection` object you can register a receiver of a desktop method call and respond with data.
 
 ### Android
 
 ```java
-connection.receive("getData", new SonarReceiver() {
+connection.receive("getData", new FlipperReceiver() {
   @Override
-  public void onReceive(SonarObject params, FlipperResponder responder) throws Exception {
+  public void onReceive(FlipperObject params, FlipperResponder responder) throws Exception {
     responder.success(
-        new SonarObject.Builder()
+        new FlipperObject.Builder()
             .put("data", MyData.get())
             .build());
   }
@@ -119,7 +119,7 @@ You don't have to wait for the desktop to request data though, you can also push
 
 ```java
 connection.send("MyMessage",
-    new SonarObject.Builder()
+    new FlipperObject.Builder()
         .put("message", "Hello")
         .build()
 ```

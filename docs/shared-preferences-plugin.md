@@ -14,10 +14,10 @@ Note: this plugin is only available for Android.
 ### Android
 
 ```java
-import com.facebook.sonar.plugins.sharedpreferences.SharedPreferencesSonarPlugin;
+import com.facebook.flipper.plugins.sharedpreferences.SharedPreferencesFlipperPlugin;
 
 client.addPlugin(
-    new SharedPreferencesSonarPlugin(context, "my_shared_preference_file"));
+    new SharedPreferencesFlipperPlugin(context, "my_shared_preference_file"));
 ```
 
 ## Usage

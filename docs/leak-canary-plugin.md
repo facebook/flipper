@@ -13,14 +13,14 @@ Note: this plugin is only available for Android.
 
 First, add the plugin to your Flipper client instance:
 ```java
-import com.facebook.sonar.plugins.leakcanary.LeakCanaryFlipperPlugin;
+import com.facebook.flipper.plugins.leakcanary.LeakCanaryFlipperPlugin;
 
 client.addPlugin(new LeakCanaryFlipperPlugin());
 ```
 
 Next, build a custom RefWatcher using RecordLeakService: (see [LeakCanary docs](https://github.com/square/leakcanary/wiki/Customizing-LeakCanary#uploading-to-a-server) for more information on RefWatcher)
 ```java
-import com.facebook.sonar.plugins.leakcanary.RecordLeakService;
+import com.facebook.flipper.plugins.leakcanary.RecordLeakService;
 
 RefWatcher refWatcher = LeakCanary.refWatcher(this)
     .listenerServiceClass(RecordLeakService.class);

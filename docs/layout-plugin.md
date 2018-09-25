@@ -20,11 +20,11 @@ To use the layout inspector plugin, you need to add the plugin to your Flipper c
 **Standard Android View Only**
 
 ```java
-import com.facebook.sonar.plugins.inspector.DescriptorMapping;
-import com.facebook.sonar.plugins.inspector.InspectorSonarPlugin;
+import com.facebook.flipper.plugins.inspector.DescriptorMapping;
+import com.facebook.flipper.plugins.inspector.InspectorFlipperPlugin;
 
 final DescriptorMapping descriptorMapping = DescriptorMapping.withDefaults();
-client.addPlugin(new InspectorSonarPlugin(mApplicationContext, descriptorMapping));
+client.addPlugin(new InspectorFlipperPlugin(mApplicationContext, descriptorMapping));
 ```
 
 **With Litho Support**
@@ -34,9 +34,9 @@ the descriptor with Litho-specific settings and add some addition dependencies.
 
 ```java
 import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.sonar.plugins.inspector.DescriptorMapping;
-import com.facebook.sonar.plugins.inspector.InspectorSonarPlugin;
-import com.facebook.sonar.plugins.litho.LithoFlipperDescriptors;
+import com.facebook.flipper.plugins.inspector.DescriptorMapping;
+import com.facebook.flipper.plugins.inspector.InspectorFlipperPlugin;
+import com.facebook.flipper.plugins.litho.LithoFlipperDescriptors;
 
 // Instead of hard-coding this setting, it's a good practice to tie
 // this to a BuildConfig flag, that you only enable for debug builds
@@ -47,7 +47,7 @@ final DescriptorMapping descriptorMapping = DescriptorMapping.withDefaults();
 // This adds Litho capabilities to the layout inspector.
 LithoFlipperDescriptors.add(descriptorMapping);
 
-client.addPlugin(new InspectorSonarPlugin(mApplicationContext, descriptorMapping));
+client.addPlugin(new InspectorFlipperPlugin(mApplicationContext, descriptorMapping));
 ```
 
 You also need to compile in the `litho-annotations` package, as Flipper reflects
