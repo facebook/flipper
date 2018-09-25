@@ -9,7 +9,7 @@
 
 #import <FlipperKit/FlipperConnection.h>
 
-@interface SonarConnectionMock : NSObject<FlipperConnection>
+@interface FlipperConnectionMock : NSObject<FlipperConnection>
 
 @property (nonatomic, assign, getter=isConnected) BOOL connected;
 @property (nonatomic, readonly) NSDictionary<NSString *, SonarReceiver> *receivers;

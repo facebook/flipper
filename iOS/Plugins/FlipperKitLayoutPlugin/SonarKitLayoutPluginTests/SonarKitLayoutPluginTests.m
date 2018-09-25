@@ -12,7 +12,7 @@
 #import <FlipperKitLayoutPlugin/SKDescriptorMapper.h>
 #import <FlipperKitLayoutPlugin/SKNodeDescriptor.h>
 #import <FlipperKitLayoutPlugin/FlipperKitLayoutPlugin.h>
-#import <FlipperKitTestUtils/SonarConnectionMock.h>
+#import <FlipperKitTestUtils/FlipperConnectionMock.h>
 #import <FlipperKitTestUtils/SonarResponderMock.h>
 
 #import "SKTapListenerMock.h"
@@ -42,7 +42,7 @@
                                   withTapListener: nil
                                   withDescriptorMapper: _descriptorMapper];
 
-  SonarConnectionMock *connection = [SonarConnectionMock new];
+  FlipperConnectionMock *connection = [FlipperConnectionMock new];
   SonarResponderMock *responder = [SonarResponderMock new];
   [plugin didConnect:connection];
 
@@ -61,7 +61,7 @@
 
 - (void)testGetEmptyNodes {
   FlipperKitLayoutPlugin *plugin = [FlipperKitLayoutPlugin new];
-  SonarConnectionMock *connection = [SonarConnectionMock new];
+  FlipperConnectionMock *connection = [FlipperConnectionMock new];
   SonarResponderMock *responder = [SonarResponderMock new];
   [plugin didConnect:connection];
 
@@ -85,7 +85,7 @@
                                                                 withTapListener: nil
                                                            withDescriptorMapper: _descriptorMapper];
 
-  SonarConnectionMock *connection = [SonarConnectionMock new];
+  FlipperConnectionMock *connection = [FlipperConnectionMock new];
   SonarResponderMock *responder = [SonarResponderMock new];
   [plugin didConnect:connection];
 
@@ -136,7 +136,7 @@
                                                                 withTapListener: nil
                                                            withDescriptorMapper: _descriptorMapper];
 
-  SonarConnectionMock *connection = [SonarConnectionMock new];
+  FlipperConnectionMock *connection = [FlipperConnectionMock new];
   SonarResponderMock *responder = [SonarResponderMock new];
   [plugin didConnect:connection];
 
@@ -175,7 +175,7 @@
                                                                 withTapListener: tapListener
                                                            withDescriptorMapper: _descriptorMapper];
 
-  SonarConnectionMock *connection = [SonarConnectionMock new];
+  FlipperConnectionMock *connection = [FlipperConnectionMock new];
   SonarResponderMock *responder = [SonarResponderMock new];
   [plugin didConnect:connection];
 
@@ -195,7 +195,7 @@
                                                                 withTapListener: tapListener
                                                            withDescriptorMapper: _descriptorMapper];
 
-  SonarConnectionMock *connection = [SonarConnectionMock new];
+  FlipperConnectionMock *connection = [FlipperConnectionMock new];
   SonarResponderMock *responder = [SonarResponderMock new];
   [plugin didConnect:connection];
 
@@ -227,7 +227,7 @@
                                                                 withTapListener: tapListener
                                                            withDescriptorMapper: _descriptorMapper];
 
-  SonarConnectionMock *connection = [SonarConnectionMock new];
+  FlipperConnectionMock *connection = [FlipperConnectionMock new];
   SonarResponderMock *responder = [SonarResponderMock new];
   [plugin didConnect:connection];
 

@@ -5,9 +5,9 @@
  *  file in the root directory of this source tree.
  *
  */
-#import "SonarConnectionMock.h"
+#import "FlipperConnectionMock.h"
 
-@implementation SonarConnectionMock
+@implementation FlipperConnectionMock
 
 - (instancetype)init
 {
