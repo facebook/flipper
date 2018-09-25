@@ -5,11 +5,11 @@
  *  file in the root directory of this source tree.
  *
  */
-#import "SonarCppBridgingResponder.h"
+#import "FlipperCppBridgingResponder.h"
 
 #import <FBCxxUtils/FBCxxFollyDynamicConvert.h>
 
-@implementation SonarCppBridgingResponder {
+@implementation FlipperCppBridgingResponder {
   std::unique_ptr<facebook::flipper::FlipperResponder> responder_;
 }
 

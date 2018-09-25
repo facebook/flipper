@@ -9,7 +9,7 @@
 
 #import <FBCxxUtils/FBCxxFollyDynamicConvert.h>
 
-#import "SonarCppBridgingResponder.h"
+#import "FlipperCppBridgingResponder.h"
 
 @implementation FlipperCppBridgingConnection
 {
@@ -36,8 +36,8 @@
     const auto lambda = [receiver](const folly::dynamic &message,
                                    std::unique_ptr<facebook::flipper::FlipperResponder> responder) {
       @autoreleasepool {
-        SonarCppBridgingResponder *const objCResponder =
-        [[SonarCppBridgingResponder alloc] initWithCppResponder:std::move(responder)];
+        FlipperCppBridgingResponder *const objCResponder =
+        [[FlipperCppBridgingResponder alloc] initWithCppResponder:std::move(responder)];
         receiver(facebook::cxxutils::convertFollyDynamicToId(message), objCResponder);
       }
     };
