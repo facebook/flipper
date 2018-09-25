@@ -23,10 +23,10 @@ SonarCppWrapperPlugin is a simple C++ wrapper around Objective-C Sonar plugins
 that can be passed to SonarClient. This class allows developers to write pure
 Objective-C plugins if they want.
 */
-class SonarCppWrapperPlugin final : public facebook::flipper::FlipperPlugin {
+class FlipperCppWrapperPlugin final : public facebook::flipper::FlipperPlugin {
 public:
   // Under ARC copying objCPlugin *does* increment its retain count
-  SonarCppWrapperPlugin(ObjCPlugin objCPlugin) : _objCPlugin(objCPlugin) {}
+  FlipperCppWrapperPlugin(ObjCPlugin objCPlugin) : _objCPlugin(objCPlugin) {}
 
   std::string identifier() const override { return [[_objCPlugin identifier] UTF8String]; }
 

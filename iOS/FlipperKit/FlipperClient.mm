@@ -8,7 +8,7 @@
 #if FB_SONARKIT_ENABLED
 
 #import "FlipperClient.h"
-#import "SonarCppWrapperPlugin.h"
+#import "FlipperCppWrapperPlugin.h"
 #import <Flipper/FlipperClient.h>
 #include <folly/io/async/EventBase.h>
 #include <folly/io/async/ScopedEventBaseThread.h>
@@ -20,7 +20,7 @@
 //#import "SKPortForwardingServer.h"
 #endif
 
-using WrapperPlugin = facebook::flipper::SonarCppWrapperPlugin;
+using WrapperPlugin = facebook::flipper::FlipperCppWrapperPlugin;
 
 @implementation FlipperClient {
   facebook::flipper::FlipperClient *_cppClient;

@@ -9,10 +9,10 @@
 
 #if FB_SONARKIT_ENABLED
 
-#import <FlipperKit/CppBridge/SonarCppWrapperPlugin.h>
+#import <FlipperKit/CppBridge/FlipperCppWrapperPlugin.h>
 #import <FlipperKit/FlipperPlugin.h>
 
-using facebook::flipper::SonarCppWrapperPlugin;
+using facebook::flipper::FlipperCppWrapperPlugin;
 
 @interface DummyPlugin : NSObject <FlipperPlugin>
 @end
@@ -31,7 +31,7 @@ using facebook::flipper::SonarCppWrapperPlugin;
 - (void)testCppWrapperRetainsObjCPlugin {
   NSObject<FlipperPlugin> *dummyPlugin = [DummyPlugin new];
   auto retainCountBefore = CFGetRetainCount((void *)dummyPlugin);
-  SonarCppWrapperPlugin wrapperPlugin(dummyPlugin);
+  FlipperCppWrapperPlugin wrapperPlugin(dummyPlugin);
   auto retainCountAfter = CFGetRetainCount((void *)dummyPlugin);
   XCTAssertTrue(retainCountAfter > retainCountBefore);
 }
