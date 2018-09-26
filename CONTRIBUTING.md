@@ -3,6 +3,8 @@
 We want to make contributing to this project as easy and transparent as
 possible.
 
+*Read this in other languages: [Spanish](CONTRIBUTING.es.md)*
+
 ## Our Development Process
 
 Changes from Facebook employees are synced to the GitHub repo automatically.
