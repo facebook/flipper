@@ -110,7 +110,7 @@ Inicie un emulador de Android y ejecute lo siguiente en la raíz del proyecto:
 Encuentre la documentación completa para este proyecto en [fbflipper.com](https://fbflipper.com/docs).
 
 ## Contribuyendo
-Consulte el archivo [CONTRIBUTING](/CONTRIBUTING.md) para saber cómo ayudar.
+Consulte el archivo [CONTRIBUTING](/CONTRIBUTING.es.md) para saber cómo ayudar.
 
 ## License
 Flipper tiene licencia MIT, como se encuentra en el archivo [LICENCIA](/LICENSE).
