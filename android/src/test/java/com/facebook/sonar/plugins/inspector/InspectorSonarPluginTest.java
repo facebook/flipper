@@ -37,6 +37,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.robolectric.RuntimeEnvironment;
 
+import javax.annotation.Nullable;
+
 @RunWith(WithTestDefaultsRunner.class)
 public class InspectorSonarPluginTest {
 
@@ -103,7 +105,7 @@ public class InspectorSonarPluginTest {
                 .put("children", new FlipperArray.Builder().put("test"))
                 .put("attributes", new FlipperArray.Builder())
                 .put("decoration", (String) null)
-                .put("extraInfo", new FlipperObject.Builder())
+                .put("extraInfo", new FlipperObject.Builder().put("hasAXNode", true))
                 .build()));
   }
 
@@ -351,6 +353,12 @@ public class InspectorSonarPluginTest {
       return node.children.get(index);
     }
 
+    @Nullable
+    @Override
+    public Object getAXChildAt(TestNode node, int index) throws Exception {
+      return node.children.get(index);
+    }
+
     @Override
     public List<Named<FlipperObject>> getData(TestNode node) {
       return Collections.singletonList(new Named<>("data", node.data));
@@ -410,6 +418,12 @@ public class InspectorSonarPluginTest {
 
     @Override
     public Object getChildAt(ApplicationWrapper node, int index) {
+      return root;
+    }
+
+    @Nullable
+    @Override
+    public Object getAXChildAt(ApplicationWrapper node, int index) {
       return root;
     }
 
