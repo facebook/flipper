@@ -54,4 +54,4 @@ ejecutar `yarn lint` y `yarn fix` para aplicar correcciones de formato.
 ## License
 
 Al contribuir con Flipper, usted acepta que sus contribuciones serán licenciadas
-en el archivo [LICENCIA] (./ LICENCIA).
+en el archivo [LICENCIA](./LICENCIA).
