@@ -13,7 +13,7 @@ import com.facebook.soloader.SoLoader;
 @DoNotStrip
 public class ThreadScopeSupport {
   static {
-    SoLoader.loadLibrary("sonarfb");
+    SoLoader.loadLibrary("flipperfb");
   }
 
   // This is just used for ThreadScope::withClassLoader to have a java function

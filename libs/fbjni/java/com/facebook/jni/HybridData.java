@@ -22,7 +22,7 @@ import com.facebook.soloader.SoLoader;
 public class HybridData {
 
   static {
-    SoLoader.loadLibrary("sonarfb");
+    SoLoader.loadLibrary("flipperfb");
   }
 
   @DoNotStrip private Destructor mDestructor = new Destructor(this);
