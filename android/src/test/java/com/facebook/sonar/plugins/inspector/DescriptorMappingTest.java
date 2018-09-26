@@ -64,7 +64,7 @@ public class DescriptorMappingTest {
     }
 
     @Override
-    public void setHighlighted(T node, boolean selected) {}
+    public void setHighlighted(T t, boolean b, boolean b1) throws Exception {}
 
     @Override
     public void hitTest(T node, Touch touch) {}
