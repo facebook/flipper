@@ -27,21 +27,21 @@
 }
 </code></pre>
 <h3><a class="anchor" aria-hidden="true" id="ios"></a><a href="#ios" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>iOS</h3>
-<pre><code class="hljs css objective-c"><span class="hljs-class"><span class="hljs-keyword">@interface</span> <span class="hljs-title">MySonarPlugin</span> : <span class="hljs-title">NSObject</span>&lt;<span class="hljs-title">SonarPlugin</span>&gt;</span>
+<pre><code class="hljs css objective-c"><span class="hljs-class"><span class="hljs-keyword">@interface</span> <span class="hljs-title">MyFlipperPlugin</span> : <span class="hljs-title">NSObject</span>&lt;<span class="hljs-title">FlipperPlugin</span>&gt;</span>
 <span class="hljs-keyword">@end</span>
 
-<span class="hljs-class"><span class="hljs-keyword">@implementation</span> <span class="hljs-title">MySonarPlugin</span></span>
+<span class="hljs-class"><span class="hljs-keyword">@implementation</span> <span class="hljs-title">MyFlipperPlugin</span></span>
 
-- (<span class="hljs-built_in">NSString</span>*)identifier { <span class="hljs-keyword">return</span> <span class="hljs-string">@"MySonarPlugin"</span>; }
-- (<span class="hljs-keyword">void</span>)didConnect:(SonarConnection*)connection {}
+- (<span class="hljs-built_in">NSString</span>*)identifier { <span class="hljs-keyword">return</span> <span class="hljs-string">@"MyFlipperPlugin"</span>; }
+- (<span class="hljs-keyword">void</span>)didConnect:(FlipperConnection*)connection {}
 - (<span class="hljs-keyword">void</span>)didDisonnect {}
 
 <span class="hljs-keyword">@end</span>
 </code></pre>
 <h3><a class="anchor" aria-hidden="true" id="c"></a><a href="#c" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>C++</h3>
-<pre><code class="hljs css c++"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MySonarPlugin</span> :</span> <span class="hljs-keyword">public</span> SonarPlugin {
+<pre><code class="hljs css c++"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MyFlipperPlugin</span> :</span> <span class="hljs-keyword">public</span> FlipperPlugin {
 <span class="hljs-keyword">public</span>:
-  <span class="hljs-built_in">std</span>::<span class="hljs-function"><span class="hljs-built_in">string</span> <span class="hljs-title">identifier</span><span class="hljs-params">()</span> <span class="hljs-keyword">const</span> override </span>{ <span class="hljs-keyword">return</span> <span class="hljs-string">"MySonarPlugin"</span>; }
+  <span class="hljs-built_in">std</span>::<span class="hljs-function"><span class="hljs-built_in">string</span> <span class="hljs-title">identifier</span><span class="hljs-params">()</span> <span class="hljs-keyword">const</span> override </span>{ <span class="hljs-keyword">return</span> <span class="hljs-string">"MyFlipperPlugin"</span>; }
   <span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">didConnect</span><span class="hljs-params">(<span class="hljs-built_in">std</span>::<span class="hljs-built_in">shared_ptr</span>&lt;FlipperConnection&gt; conn)</span> override</span>;
   <span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">didDisconnect</span><span class="hljs-params">()</span> override</span>;
 };
@@ -60,14 +60,14 @@
 });
 </code></pre>
 <h3><a class="anchor" aria-hidden="true" id="ios"></a><a href="#ios" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>iOS</h3>
-<pre><code class="hljs css objective-c"><span class="hljs-meta">@interface</span> <span class="hljs-string">MySonarPlugin :</span> NSObject&lt;SonarPlugin&gt;
+<pre><code class="hljs css objective-c"><span class="hljs-meta">@interface</span> <span class="hljs-string">MyFlipperPlugin :</span> NSObject&lt;FlipperPlugin&gt;
 <span class="hljs-meta">@end</span>
 
-<span class="hljs-meta">@implementation</span> MySonarPlugin
+<span class="hljs-meta">@implementation</span> MyFlipperPlugin
 
-- (NSString*)identifier { <span class="hljs-keyword">return</span> @<span class="hljs-string">"MySonarPlugin"</span>; }
+- (NSString*)identifier { <span class="hljs-keyword">return</span> @<span class="hljs-string">"MyFlipperPlugin"</span>; }
 
-- (<span class="hljs-keyword">void</span>)<span class="hljs-string">didConnect:</span>(SonarConnection*)connection
+- (<span class="hljs-keyword">void</span>)<span class="hljs-string">didConnect:</span>(FlipperConnection*)connection
 {
   [connection <span class="hljs-string">receive:</span>@<span class="hljs-string">"getData"</span> <span class="hljs-string">withBlock:</span>^(NSDictionary *params, FlipperResponder *responder) {
     [responder <span class="hljs-string">success:</span>@{
@@ -81,7 +81,7 @@
 <span class="hljs-meta">@end</span>
 </code></pre>
 <h3><a class="anchor" aria-hidden="true" id="c"></a><a href="#c" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>C++</h3>
-<pre><code class="hljs css c++"><span class="hljs-keyword">void</span> MySonarPlugin::didConnect(<span class="hljs-built_in">std</span>::<span class="hljs-built_in">shared_ptr</span>&lt;FlipperConnection&gt; conn) {
+<pre><code class="hljs css c++"><span class="hljs-keyword">void</span> MyFlipperPlugin::didConnect(<span class="hljs-built_in">std</span>::<span class="hljs-built_in">shared_ptr</span>&lt;FlipperConnection&gt; conn) {
   conn-&gt;receive(<span class="hljs-string">"getData"</span>, [](<span class="hljs-keyword">const</span> folly::dynamic &amp;params,
                              <span class="hljs-built_in">std</span>::<span class="hljs-built_in">unique_ptr</span>&lt;FlipperResponder&gt; responder) {
     dynamic response = folly::dynamic::object(<span class="hljs-string">"data"</span>, getMyData());
@@ -101,7 +101,7 @@
 <pre><code class="hljs css objective-c">[connection send:@<span class="hljs-string">"getData"</span> withParams:@{@<span class="hljs-string">"message"</span>:@<span class="hljs-string">"hello"</span>}]<span class="hljs-comment">;</span>
 </code></pre>
 <h3><a class="anchor" aria-hidden="true" id="c"></a><a href="#c" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>C++</h3>
-<pre><code class="hljs css c++"><span class="hljs-keyword">void</span> MySonarPlugin::didConnect(<span class="hljs-built_in">std</span>::<span class="hljs-built_in">shared_ptr</span>&lt;FlipperConnection&gt; conn) {
+<pre><code class="hljs css c++"><span class="hljs-keyword">void</span> MyFlipperPlugin::didConnect(<span class="hljs-built_in">std</span>::<span class="hljs-built_in">shared_ptr</span>&lt;FlipperConnection&gt; conn) {
   dynamic message = folly::dynamic::object(<span class="hljs-string">"message"</span>, <span class="hljs-string">"hello"</span>);
   conn-&gt;send(<span class="hljs-string">"getData"</span>, message);
 }

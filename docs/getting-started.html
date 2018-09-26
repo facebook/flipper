@@ -67,14 +67,14 @@ dependencies {
 source <span class="hljs-string">'https://github.com/facebook/flipper.git'</span>
 source <span class="hljs-string">'https://github.com/CocoaPods/Specs'</span>
 swift_version = <span class="hljs-string">"4.1"</span>
-sonarkit_version = <span class="hljs-string">'0.7.2'</span>
+flipperkit_version = <span class="hljs-string">'0.7.2'</span>
 
 target <span class="hljs-string">'MyApp'</span> <span class="hljs-keyword">do</span>
 
-  pod <span class="hljs-string">'SonarKit'</span>, <span class="hljs-string">'~&gt;'</span>+sonarkit_version
+  pod <span class="hljs-string">'FlipperKit'</span>, <span class="hljs-string">'~&gt;'</span>+flipperkit_version
   <span class="hljs-comment"># Layout and network plugins are not yet supported for swift projects</span>
-  pod <span class="hljs-string">'SonarKit/SonarKitLayoutComponentKitSupport'</span>, <span class="hljs-string">'~&gt;'</span> + sonarkit_version
-  pod <span class="hljs-string">'SonarKit/SKIOSNetworkPlugin'</span>, <span class="hljs-string">'~&gt;'</span> + sonarkit_version
+  pod <span class="hljs-string">'FlipperKit/FlipperKitLayoutComponentKitSupport'</span>, <span class="hljs-string">'~&gt;'</span> + flipperkit_version
+  pod <span class="hljs-string">'FlipperKit/SKIOSNetworkPlugin'</span>, <span class="hljs-string">'~&gt;'</span> + flipperkit_version
 
   post_install <span class="hljs-keyword">do</span> <span class="hljs-params">|installer|</span>
 
@@ -89,16 +89,16 @@ target <span class="hljs-string">'MyApp'</span> <span class="hljs-keyword">do</s
 <span class="hljs-keyword">end</span>
 </code></pre>
 <p>and install the dependencies by running <code>pod install</code>. When you open the Xcode workspace file for your app, you now can import and initialize Flipper in your AppDelegate.</p>
-<pre><code class="hljs css objective-c"><span class="hljs-meta">#import <span class="hljs-meta-string">&lt;SonarKit/SonarClient.h&gt;</span></span>
+<pre><code class="hljs css objective-c"><span class="hljs-meta">#import <span class="hljs-meta-string">&lt;FlipperKit/FlipperClient.h&gt;</span></span>
 
 <span class="hljs-class"><span class="hljs-keyword">@implementation</span> <span class="hljs-title">AppDelegate</span></span>
 
 - (<span class="hljs-built_in">BOOL</span>)application:(<span class="hljs-built_in">UIApplication</span> *)application didFinishLaunchingWithOptions:(<span class="hljs-built_in">NSDictionary</span> *)launchOptions
 {
 <span class="hljs-meta">#if DEBUG</span>
-  SonarClient *client = [SonarClient sharedClient];
+  FlipperClient *client = [FlipperClient sharedClient];
   <span class="hljs-built_in">SKDescriptorMapper</span> *layoutDescriptorMapper = [[<span class="hljs-built_in">SKDescriptorMapper</span> alloc] initWithDefaults];
-  [client addPlugin:[[SonarKitLayoutPlugin alloc] initWithRootNode: application
+  [client addPlugin:[[FlipperKitLayoutPlugin alloc] initWithRootNode: application
                                                   withDescriptorMapper: layoutDescriptorMapper]];
   [client start];
 <span class="hljs-meta">#endif</span>
@@ -109,7 +109,7 @@ target <span class="hljs-string">'MyApp'</span> <span class="hljs-keyword">do</s
 <div class="warning">
 <ul>
 <li>We haven't released the dependency to CocoaPods yet, here is the <a href="https://github.com/facebook/flipper/issues/132">issue</a> by which you can track.</li>
-<li>If you do not use CocoaPods as a dependency management tool then currently there is no way to integrate SonarKit other than manually including all the dependencies and building it.</li>
+<li>If you do not use CocoaPods as a dependency management tool then currently there is no way to integrate FlipperKit other than manually including all the dependencies and building it.</li>
 <li>For Android, Flipper works with both emulators and physical devices connected through USB. However on iOS, we don't yet support physical devices.</li>
 <li>The Flipper layout plugin isn't supported in Swift projects since they include C++ dependencies. We're working on supporting it for Swift apps. You can join the discussion on the <a href="https://github.com/facebook/flipper/issues">issues page</a>.</li>
 </ul>
