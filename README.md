@@ -10,6 +10,8 @@ Flipper is a platform for debugging mobile apps on iOS and Android. Visualize, i
 
 ![Flipper](/website/static/img/splash@2x.png)
 
+*Read this in other languages: [Spanish](README.es.md)*
+
 ## Table of Contents
 
 - [Mobile development](#mobile-development)
