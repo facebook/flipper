@@ -61,14 +61,15 @@ using WrapperPlugin = facebook::flipper::FlipperCppWrapperPlugin;
     deviceName = [NSString stringWithFormat:@"%@ %@", [[UIDevice currentDevice] model], @"Simulator"];
 #endif
 
+    static const std::string UNKNOWN = std::string("unknown");
     facebook::flipper::FlipperClient::init({
       {
         "localhost",
         "iOS",
         [deviceName UTF8String],
-        "unknown",
-        [appName UTF8String],
-        [appId UTF8String],
+        UNKNOWN,
+        [appName UTF8String] ?: UNKNOWN,
+        [appId UTF8String] ?: UNKNOWN,
         [privateAppDirectory UTF8String],
       },
       sonarThread.getEventBase(),
