@@ -58,7 +58,7 @@ Este repositorio incluye todas las partes de Flipper. Esto incluye:
 
 # Empezando
 
-Consulte nuestra [Guía de inicio] (https://fbflipper.com/docs/getting-started.html) para configurar Flipper.
+Consulte nuestra [Guía de inicio](https://fbflipper.com/docs/getting-started.html) para configurar Flipper.
 
 ## Requisitos
 
@@ -80,7 +80,7 @@ yarn
 yarn start
 ```
 
-NOTA: Si está en Windows, necesita usar Yarn 1.5.1 hasta que se resuelva [este problema] (https://github.com/yarnpkg/yarn/issues/6048).
+NOTA: Si está en Windows, necesita usar Yarn 1.5.1 hasta que se resuelva [este problema](https://github.com/yarnpkg/yarn/issues/6048).
 
 ### Creación de aplicaciones independientes
 
@@ -112,5 +112,5 @@ Encuentre la documentación completa para este proyecto en [fbflipper.com](https
 ## Contribuyendo
 Consulte el archivo [CONTRIBUTING](/CONTRIBUTING.es.md) para saber cómo ayudar.
 
-## License
+## Licencia
 Flipper tiene licencia MIT, como se encuentra en el archivo [LICENCIA](/LICENSE).
