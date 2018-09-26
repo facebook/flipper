@@ -42,7 +42,7 @@ adb shell am start -n <APP_PACKAGE>/com.facebook.flipper.android.diagnostics.Fli
 This will only work if you added `FlipperDiagnosticActivity` to your `AndroidManifest.xml`. See [getting started](getting-started.html) for help.
 
 #### iOS
-You'll need to manually add this [ViewController](https://github.com/facebook/flipper/blob/master/iOS/SonarKit/FlipperDiagnosticsViewController.m) to your app to see the in-app diagnostics.
+You'll need to manually add this [ViewController](https://github.com/facebook/flipper/blob/master/iOS/FlipperKit/FlipperDiagnosticsViewController.m) to your app to see the in-app diagnostics.
 
 ### Known Incompatibilities
 The following devices are known to be incompatible or face issues with flipper:

@@ -94,14 +94,14 @@ project 'MyApp.xcodeproj'
 source 'https://github.com/facebook/flipper.git'
 source 'https://github.com/CocoaPods/Specs'
 swift_version = "4.1"
-sonarkit_version = '0.7.2'
+flipperkit_version = '0.7.2'
 
 target 'MyApp' do
 
-  pod 'SonarKit', '~>'+sonarkit_version
+  pod 'FlipperKit', '~>'+flipperkit_version
   # Layout and network plugins are not yet supported for swift projects
-  pod 'SonarKit/SonarKitLayoutComponentKitSupport', '~>' + sonarkit_version
-  pod 'SonarKit/SKIOSNetworkPlugin', '~>' + sonarkit_version
+  pod 'FlipperKit/FlipperKitLayoutComponentKitSupport', '~>' + flipperkit_version
+  pod 'FlipperKit/SKIOSNetworkPlugin', '~>' + flipperkit_version
 
   post_install do |installer|
 
@@ -119,16 +119,16 @@ end
 and install the dependencies by running `pod install`. When you open the Xcode workspace file for your app, you now can import and initialize Flipper in your AppDelegate.
 
 ```objective-c
-#import <SonarKit/SonarClient.h>
+#import <FlipperKit/FlipperClient.h>
 
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
 #if DEBUG
-  SonarClient *client = [SonarClient sharedClient];
+  FlipperClient *client = [FlipperClient sharedClient];
   SKDescriptorMapper *layoutDescriptorMapper = [[SKDescriptorMapper alloc] initWithDefaults];
-  [client addPlugin:[[SonarKitLayoutPlugin alloc] initWithRootNode: application
+  [client addPlugin:[[FlipperKitLayoutPlugin alloc] initWithRootNode: application
                                                   withDescriptorMapper: layoutDescriptorMapper]];
   [client start];
 #endif
@@ -140,7 +140,7 @@ and install the dependencies by running `pod install`. When you open the Xcode w
 <div class="warning">
 
 - We haven't released the dependency to CocoaPods yet, here is the [issue](https://github.com/facebook/flipper/issues/132) by which you can track.
-- If you do not use CocoaPods as a dependency management tool then currently there is no way to integrate SonarKit other than manually including all the dependencies and building it.
+- If you do not use CocoaPods as a dependency management tool then currently there is no way to integrate FlipperKit other than manually including all the dependencies and building it.
 - For Android, Flipper works with both emulators and physical devices connected through USB. However on iOS, we don't yet support physical devices.
 - The Flipper layout plugin isn't supported in Swift projects since they include C++ dependencies. We're working on supporting it for Swift apps. You can join the discussion on the [issues page](https://github.com/facebook/flipper/issues).
 

@@ -25,8 +25,8 @@ if (client != null) {
 ### iOS
 
 ```objective-c
-SonarClient *client = [SonarClient sharedClient];
-MySonarPlugin *myPlugin = [client pluginWithIdentifier:@"MySonarPlugin"];
+FlipperClient *client = [FlipperClient sharedClient];
+MyFlipperPlugin *myPlugin = [client pluginWithIdentifier:@"MyFlipperPlugin"];
 [myPlugin sendData:myData];
 ```
 

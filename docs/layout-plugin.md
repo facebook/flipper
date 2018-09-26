@@ -64,11 +64,11 @@ dependencies {
 ### iOS
 
 ```objective-c
-#import <SonarKitLayoutPlugin/SonarKitLayoutPlugin.h>
+#import <FlipperKitLayoutPlugin/FlipperKitLayoutPlugin.h>
 #import <FlipperKitLayoutPlugin/SKDescriptorMapper.h>
 
 SKDescriptorMapper *mapper = [[SKDescriptorMapper alloc] initWithDefaults];
-[client addPlugin:[[SonarKitLayoutPlugin alloc] initWithRootNode:context.application withDescriptorMapper:mapper]]
+[client addPlugin:[[FlipperKitLayoutPlugin alloc] initWithRootNode:context.application withDescriptorMapper:mapper]]
 ```
 
 ## Quick edits

@@ -37,9 +37,9 @@ As interceptors can modify the request and response, add the Flipper interceptor
 ### iOS
 
 ```objective-c
-#import <SonarKitNetworkPlugin/SonarKitNetworkPlugin.h>
+#import <FlipperKitNetworkPlugin/FlipperKitNetworkPlugin.h>
 
-[client addPlugin: [SonarKitNetworkPlugin new]]
+[client addPlugin: [FlipperKitNetworkPlugin new]]
 ```
 
 ## Usage

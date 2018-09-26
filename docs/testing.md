@@ -50,10 +50,10 @@ public void myTest() {
 
 ## C++
 
-Start by creating your first test file in this directory `MySonarPluginTests.cpp` and import the testing utilities from `//xplat/sonar-client:FlipperTestLib`. These utilities mock out core pieces of the communication channel so that you can test your plugin in isolation.
+Start by creating your first test file in this directory `MyFlipperPluginTests.cpp` and import the testing utilities from `xplat//sonar/xplat:FlipperTestLib`. These utilities mock out core pieces of the communication channel so that you can test your plugin in isolation.
 
 ```
-#include <MySonarPlugin/MySonarPlugin.h>
+#include <MyFlipperPlugin/MyFlipperPlugin.h>
 #include <FlipperTestLib/FlipperConnectionMock.h>
 #include <FlipperTestLib/FlipperResponderMock.h>
 
@@ -64,7 +64,7 @@ namespace facebook {
 namespace flipper {
 namespace test {
 
-TEST(MySonarPluginTests, testDummy) {
+TEST(MyFlipperPluginTests, testDummy) {
   EXPECT_EQ(1 + 1, 2);
 }
 
@@ -76,12 +76,12 @@ TEST(MySonarPluginTests, testDummy) {
 Here is a simple test using these mock utilities to create a plugin, send some data, and assert that the result is as expected.
 
 ```
-TEST(MySonarPluginTests, testDummy) {
+TEST(MyFlipperPluginTests, testDummy) {
   std::vector<folly::dynamic> successfulResponses;
   auto responder = std::make_unique<FlipperResponderMock>(&successfulResponses);
   auto conn = std::make_shared<FlipperConnectionMock>();
 
-  MySonarPlugin plugin;
+  MyFlipperPlugin plugin;
   plugin.didConnect(conn);
 
   folly::dynamic message = folly::dynamic::object("param1", "hello");

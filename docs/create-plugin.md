@@ -34,13 +34,13 @@ public class MyFlipperPlugin implements FlipperPlugin {
 ### iOS
 
 ```objective-c
-@interface MySonarPlugin : NSObject<SonarPlugin>
+@interface MyFlipperPlugin : NSObject<FlipperPlugin>
 @end
 
-@implementation MySonarPlugin
+@implementation MyFlipperPlugin
 
-- (NSString*)identifier { return @"MySonarPlugin"; }
-- (void)didConnect:(SonarConnection*)connection {}
+- (NSString*)identifier { return @"MyFlipperPlugin"; }
+- (void)didConnect:(FlipperConnection*)connection {}
 - (void)didDisonnect {}
 
 @end
@@ -49,9 +49,9 @@ public class MyFlipperPlugin implements FlipperPlugin {
 ### C++
 
 ```c++
-class MySonarPlugin : public SonarPlugin {
+class MyFlipperPlugin : public FlipperPlugin {
 public:
-  std::string identifier() const override { return "MySonarPlugin"; }
+  std::string identifier() const override { return "MyFlipperPlugin"; }
   void didConnect(std::shared_ptr<FlipperConnection> conn) override;
   void didDisconnect() override;
 };
@@ -78,14 +78,14 @@ connection.receive("getData", new FlipperReceiver() {
 ### iOS
 
 ```objective-c
-@interface MySonarPlugin : NSObject<SonarPlugin>
+@interface MyFlipperPlugin : NSObject<FlipperPlugin>
 @end
 
-@implementation MySonarPlugin
+@implementation MyFlipperPlugin
 
-- (NSString*)identifier { return @"MySonarPlugin"; }
+- (NSString*)identifier { return @"MyFlipperPlugin"; }
 
-- (void)didConnect:(SonarConnection*)connection
+- (void)didConnect:(FlipperConnection*)connection
 {
   [connection receive:@"getData" withBlock:^(NSDictionary *params, FlipperResponder *responder) {
     [responder success:@{
@@ -102,7 +102,7 @@ connection.receive("getData", new FlipperReceiver() {
 ### C++
 
 ```c++
-void MySonarPlugin::didConnect(std::shared_ptr<FlipperConnection> conn) {
+void MyFlipperPlugin::didConnect(std::shared_ptr<FlipperConnection> conn) {
   conn->receive("getData", [](const folly::dynamic &params,
                              std::unique_ptr<FlipperResponder> responder) {
     dynamic response = folly::dynamic::object("data", getMyData());
@@ -133,7 +133,7 @@ connection.send("MyMessage",
 ### C++
 
 ```c++
-void MySonarPlugin::didConnect(std::shared_ptr<FlipperConnection> conn) {
+void MyFlipperPlugin::didConnect(std::shared_ptr<FlipperConnection> conn) {
   dynamic message = folly::dynamic::object("message", "hello");
   conn->send("getData", message);
 }
