@@ -370,8 +370,8 @@ public class InspectorSonarPluginTest {
     }
 
     @Override
-    public void setHighlighted(TestNode node, boolean selected) {
-      node.highlighted = selected;
+    public void setHighlighted(TestNode testNode, boolean b, boolean b1) throws Exception {
+      testNode.highlighted = b;
     }
 
     @Override
@@ -414,7 +414,7 @@ public class InspectorSonarPluginTest {
     }
 
     @Override
-    public void setHighlighted(ApplicationWrapper node, boolean selected) {
+    public void setHighlighted(ApplicationWrapper node, boolean selected, boolean isAlignmentMode) {
       highlighted = selected;
     }
 
