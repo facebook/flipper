@@ -1,17 +1,17 @@
 folly_compiler_flags = '-DFB_SONARKIT_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_LIBGFLAGS=0 -DFOLLY_HAVE_LIBJEMALLOC=0 -DFOLLY_HAVE_PREADV=0 -DFOLLY_HAVE_PWRITEV=0 -DFOLLY_HAVE_TFO=0 -DFOLLY_USE_SYMBOLIZER=0'
 yoga_version = '~> 1.9'
 yogakit_version = '~>1.8'
-sonarkit_version = '0.7.2'
+flipperkit_version = '0.7.2'
 Pod::Spec.new do |spec|
   spec.name = 'FlipperKit'
-  spec.version = sonarkit_version
+  spec.version = flipperkit_version
   spec.license = { :type => 'MIT' }
   spec.homepage = 'https://github.com/facebook/Sonar'
   spec.summary = 'Sonar iOS podspec'
   spec.authors = 'Facebook'
   spec.static_framework = true
   spec.source = { :git => 'https://github.com/facebook/Sonar.git',
-                  :tag=> "v"+sonarkit_version }
+                  :tag=> "v"+flipperkit_version }
   spec.module_name = 'FlipperKit'
   spec.platforms = { :ios => "8.4" }
   spec.default_subspecs = "Core"
@@ -51,7 +51,7 @@ Pod::Spec.new do |spec|
     ss.dependency 'FlipperKit/FBCxxUtils'
     ss.dependency 'FlipperKit/CppBridge'
     ss.dependency 'Folly', '~>1.1'
-    ss.dependency 'Flipper', '~>'+sonarkit_version
+    ss.dependency 'Flipper', '~>'+flipperkit_version
     ss.dependency 'CocoaAsyncSocket', '~> 7.6'
     ss.dependency 'PeerTalk', '~>0.0.2'
     ss.dependency 'OpenSSL-Static', '1.0.2.c1'
