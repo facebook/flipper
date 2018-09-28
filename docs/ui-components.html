@@ -22,7 +22,7 @@
 <p>To control other flexbox properties than the direction you can extend existing components, detailed in <a href="/docs/styling-components.html">Styling Components</a>.</p>
 <pre><code class="hljs css javascript">import {FlexRow, styled} from 'flipper';
 
-const CenterFlexRow = FlexRow.extends({
+const CenterFlexRow = styled(FlexRow)({
   justifyContent: 'center',
 });
 
@@ -33,7 +33,7 @@ const CenterFlexRow = FlexRow.extends({
 <p>The <code>Text</code> component is available to render any text in your plugin. To render headers and subtitle differently for example, we used the styled module. With this we can also change the color, text alignment, and any other properties typically found on a <code>span</code>.</p>
 <pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> {Text, styled, colors} <span class="hljs-keyword">from</span> <span class="hljs-string">'flipper'</span>;
 
-<span class="hljs-keyword">const</span> Title = Text.extends({
+<span class="hljs-keyword">const</span> Title = styled(Text)({
   <span class="hljs-attr">color</span>: colors.red,
 });
 
@@ -55,25 +55,25 @@ const CenterFlexRow = FlexRow.extends({
 
 type State = {};
 
+<span class="hljs-keyword">const</span> Red = styled(<span class="hljs-string">'div'</span>)({
+  <span class="hljs-attr">backgroundColor</span>: colors.red,
+});
+
+<span class="hljs-keyword">const</span> Blue = styled(<span class="hljs-string">'div'</span>)({
+  <span class="hljs-attr">backgroundColor</span>: colors.blue,
+});
+
 <span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MyFlipperPlugin</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">FlipperPlugin</span>&lt;<span class="hljs-title">State</span>&gt; </span>{
   <span class="hljs-keyword">static</span> title = <span class="hljs-string">'My Plugin'</span>;
   <span class="hljs-keyword">static</span> id = <span class="hljs-string">'my-plugin'</span>;
 
-  <span class="hljs-keyword">static</span> Red = styled.view({
-    <span class="hljs-attr">backgroundColor</span>: colors.red,
-  });
-
-  <span class="hljs-keyword">static</span> Blue = styled.view({
-    <span class="hljs-attr">backgroundColor</span>: colors.blue,
-  });
-
   render() {
     <span class="hljs-keyword">return</span> (
       &lt;FlexRow fill={true}&gt;
-        &lt;MyFlipperPlugin.Red fill={true} /&gt;
+        &lt;Red fill={true} /&gt;
 
         &lt;Sidebar position="right" width={400} minWidth={300}&gt;
-          &lt;MyFlipperPlugin.Blue fill={true} /&gt;
+          &lt;Blue fill={true} /&gt;
         &lt;/Sidebar&gt;
       &lt;/FlexRow&gt;
     );
@@ -94,45 +94,45 @@ type State = {};
 
 type State = {};
 
+<span class="hljs-keyword">const</span> Red = styled(<span class="hljs-string">'div'</span>)({
+  <span class="hljs-attr">backgroundColor</span>: colors.red,
+});
+
+<span class="hljs-keyword">const</span> Blue = styled(<span class="hljs-string">'div'</span>)({
+  <span class="hljs-attr">backgroundColor</span>: colors.blue,
+  <span class="hljs-attr">height</span>: <span class="hljs-number">200</span>,
+});
+
+<span class="hljs-keyword">const</span> Green = styled(<span class="hljs-string">'div'</span>)({
+  <span class="hljs-attr">backgroundColor</span>: colors.green,
+  <span class="hljs-attr">height</span>: <span class="hljs-number">200</span>,
+});
+
 <span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MyFlipperPlugin</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">FlipperPlugin</span>&lt;<span class="hljs-title">State</span>&gt; </span>{
   <span class="hljs-keyword">static</span> title = <span class="hljs-string">'My Plugin'</span>;
   <span class="hljs-keyword">static</span> id = <span class="hljs-string">'my-plugin'</span>;
 
-  <span class="hljs-keyword">static</span> Red = styled.view({
-    <span class="hljs-attr">backgroundColor</span>: colors.red,
-  });
-
-  <span class="hljs-keyword">static</span> Blue = styled.view({
-    <span class="hljs-attr">backgroundColor</span>: colors.blue,
-    <span class="hljs-attr">height</span>: <span class="hljs-number">200</span>,
-  });
-
-  <span class="hljs-keyword">static</span> Green = styled.view({
-    <span class="hljs-attr">backgroundColor</span>: colors.green,
-    <span class="hljs-attr">height</span>: <span class="hljs-number">200</span>,
-  });
-
   render() {
     <span class="hljs-keyword">return</span> (
-      &lt;FlexRow fill={true}&gt;
-        &lt;MyFlipperPlugin.Red fill={true} /&gt;
+      <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">FlexRow</span> <span class="hljs-attr">fill</span>=<span class="hljs-string">{true}</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Red</span> <span class="hljs-attr">fill</span>=<span class="hljs-string">{true}</span> /&gt;</span>
 
-        &lt;Sidebar position="right" width={400} minWidth={300}&gt;
-          &lt;FlexColumn&gt;
-            &lt;Panel heading={'Blue'} floating={false}&gt;
-              &lt;MyFlipperPlugin.Blue /&gt;
-            &lt;/Panel&gt;
+        <span class="hljs-tag">&lt;<span class="hljs-name">Sidebar</span> <span class="hljs-attr">position</span>=<span class="hljs-string">"right"</span> <span class="hljs-attr">width</span>=<span class="hljs-string">{400}</span> <span class="hljs-attr">minWidth</span>=<span class="hljs-string">{300}</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">FlexColumn</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">Panel</span> <span class="hljs-attr">heading</span>=<span class="hljs-string">{</span>'<span class="hljs-attr">Blue</span>'} <span class="hljs-attr">floating</span>=<span class="hljs-string">{false}</span>&gt;</span>
+              <span class="hljs-tag">&lt;<span class="hljs-name">Blue</span> /&gt;</span>
+            <span class="hljs-tag">&lt;/<span class="hljs-name">Panel</span>&gt;</span>
 
-            &lt;Panel heading={'Green'} floating={false}&gt;
-              &lt;MyFlipperPlugin.Green /&gt;
-            &lt;/Panel&gt;
-          &lt;/FlexColumn&gt;
-        &lt;/Sidebar&gt;
-      &lt;/FlexRow&gt;
+            <span class="hljs-tag">&lt;<span class="hljs-name">Panel</span> <span class="hljs-attr">heading</span>=<span class="hljs-string">{</span>'<span class="hljs-attr">Green</span>'} <span class="hljs-attr">floating</span>=<span class="hljs-string">{false}</span>&gt;</span>
+              <span class="hljs-tag">&lt;<span class="hljs-name">Green</span> /&gt;</span>
+            <span class="hljs-tag">&lt;/<span class="hljs-name">Panel</span>&gt;</span>
+          <span class="hljs-tag">&lt;/<span class="hljs-name">FlexColumn</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">Sidebar</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">FlexRow</span>&gt;</span>
     );
   }
 }
-</code></pre>
+</span></code></pre>
 <h2><a class="anchor" aria-hidden="true" id="datainspector"></a><a href="#datainspector" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>DataInspector</h2>
 <p>The <code>DataInspector</code> component is used to unpack and display a javascript object. It is used to show View properties in the layout inspector, and to show event data in the analytics plugins.</p>
 <pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> {FlexColumn, DataInspector, FlipperPlugin} <span class="hljs-keyword">from</span> <span class="hljs-string">'flipper'</span>;
