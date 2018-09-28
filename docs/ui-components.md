@@ -29,7 +29,7 @@ To control other flexbox properties than the direction you can extend existing c
 ```javascript
 import {FlexRow, styled} from 'flipper';
 
-const CenterFlexRow = FlexRow.extends({
+const CenterFlexRow = styled(FlexRow)({
   justifyContent: 'center',
 });
 
@@ -44,7 +44,7 @@ The `Text` component is available to render any text in your plugin. To render h
 ```javascript
 import {Text, styled, colors} from 'flipper';
 
-const Title = Text.extends({
+const Title = styled(Text)({
   color: colors.red,
 });
 
@@ -75,25 +75,25 @@ import {FlipperPlugin} from 'flipper';
 
 type State = {};
 
+const Red = styled('div')({
+  backgroundColor: colors.red,
+});
+
+const Blue = styled('div')({
+  backgroundColor: colors.blue,
+});
+
 export default class MyFlipperPlugin extends FlipperPlugin<State> {
   static title = 'My Plugin';
   static id = 'my-plugin';
 
-  static Red = styled.view({
-    backgroundColor: colors.red,
-  });
-
-  static Blue = styled.view({
-    backgroundColor: colors.blue,
-  });
-
   render() {
     return (
       <FlexRow fill={true}>
-        <MyFlipperPlugin.Red fill={true} />
+        <Red fill={true} />
 
         <Sidebar position="right" width={400} minWidth={300}>
-          <MyFlipperPlugin.Blue fill={true} />
+          <Blue fill={true} />
         </Sidebar>
       </FlexRow>
     );
@@ -118,37 +118,37 @@ import {
 
 type State = {};
 
+const Red = styled('div')({
+  backgroundColor: colors.red,
+});
+
+const Blue = styled('div')({
+  backgroundColor: colors.blue,
+  height: 200,
+});
+
+const Green = styled('div')({
+  backgroundColor: colors.green,
+  height: 200,
+});
+
 export default class MyFlipperPlugin extends FlipperPlugin<State> {
   static title = 'My Plugin';
   static id = 'my-plugin';
 
-  static Red = styled.view({
-    backgroundColor: colors.red,
-  });
-
-  static Blue = styled.view({
-    backgroundColor: colors.blue,
-    height: 200,
-  });
-
-  static Green = styled.view({
-    backgroundColor: colors.green,
-    height: 200,
-  });
-
   render() {
     return (
       <FlexRow fill={true}>
-        <MyFlipperPlugin.Red fill={true} />
+        <Red fill={true} />
 
         <Sidebar position="right" width={400} minWidth={300}>
           <FlexColumn>
             <Panel heading={'Blue'} floating={false}>
-              <MyFlipperPlugin.Blue />
+              <Blue />
             </Panel>
 
             <Panel heading={'Green'} floating={false}>
-              <MyFlipperPlugin.Green />
+              <Green />
             </Panel>
           </FlexColumn>
         </Sidebar>
