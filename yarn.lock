@@ -1548,9 +1548,10 @@ electron-publish@19.56.0:
     fs-extra-p "^4.5.0"
     mime "^2.2.0"
 
-electron@^3.0.0-beta.4:
-  version "3.0.0-beta.4"
-  resolved "https://registry.yarnpkg.com/electron/-/electron-3.0.0-beta.4.tgz#557485c64a56e5db87e488fbfd93a8791a884966"
+electron@3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/electron/-/electron-3.0.0.tgz#d41e671b1057aee12021c63a5db242075d6dc685"
+  integrity sha512-QN9X5vYa4kzJKniwhXlJwioX9qw2fDehdqxN/00KCLz/qnOz/IHLAHGikFjRwfEF2xnkmHxf61F8wn2LePPXXQ==
   dependencies:
     "@types/node" "^8.0.24"
     electron-download "^4.1.0"
