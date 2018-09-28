@@ -1,0 +1,242 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Empty app state matches snapshot 1`] = `
+<div
+  className="css-1si6n3e"
+  fill={true}
+>
+  <div
+    className="toolbar css-1u64wvw"
+  >
+    <div
+      className="css-7nzs1f"
+      disabled={false}
+      onClick={[Function]}
+      onMouseDown={[Function]}
+      onMouseUp={[Function]}
+    >
+      <div
+        className="css-at56xe"
+        color="#acacac"
+        size={12}
+        src="https://external.xx.fbcdn.net/assets/?name=minus-circle&variant=filled&size=12&set=facebook_icons&density=1x"
+      />
+      No device selected
+    </div>
+    <div
+      className="css-1ayt83l"
+    >
+      <div
+        className="css-1telx8z"
+        disabled={true}
+        onClick={[Function]}
+        onMouseDown={[Function]}
+        onMouseUp={[Function]}
+        title="Take Screenshot"
+      >
+        <div
+          className="css-11ecny9"
+          color="#acacac"
+          size={12}
+          src="https://external.xx.fbcdn.net/assets/?name=camera&variant=filled&size=12&set=facebook_icons&density=1x"
+        />
+      </div>
+      <div
+        className="css-1telx8z"
+        disabled={true}
+        onClick={[Function]}
+        onMouseDown={[Function]}
+        onMouseUp={[Function]}
+        title="Make Screen Recording"
+      >
+        <div
+          className="css-1qxark3"
+          color="#acacac"
+          size={12}
+          src="https://external.xx.fbcdn.net/assets/?name=camcorder&variant=filled&size=12&set=facebook_icons&density=1x"
+        />
+      </div>
+    </div>
+    <div
+      className="css-12zzrdt"
+    />
+    <div
+      className="css-1xcv92o"
+    />
+    <div
+      className="css-1lljw3m"
+      onClick={[Function]}
+      onMouseDown={[Function]}
+      onMouseUp={[Function]}
+      title="Report Bug"
+    >
+      <div
+        className="css-1u10tgp"
+        color="#acacac"
+        size={12}
+        src="https://external.xx.fbcdn.net/assets/?name=bug&variant=filled&size=12&set=facebook_icons&density=1x"
+      />
+    </div>
+    <div
+      className="css-1ayt83l"
+    >
+      <div
+        className="css-19m5dks"
+        onClick={[Function]}
+        onMouseDown={[Function]}
+        onMouseUp={[Function]}
+        title="Toggle Plugins"
+      >
+        <div
+          className="css-1pfn0zl"
+          color="#80a6f5"
+          size={20}
+          src="icons/sidebar_left.svg"
+        />
+      </div>
+      <div
+        className="css-1telx8z"
+        disabled={true}
+        onClick={[Function]}
+        onMouseDown={[Function]}
+        onMouseUp={[Function]}
+        title="Toggle Details"
+      >
+        <div
+          className="css-13cmaba"
+          color="#acacac"
+          size={20}
+          src="icons/sidebar_right.svg"
+        />
+      </div>
+    </div>
+  </div>
+  <div
+    className="css-9qtipk"
+    fill={true}
+  >
+    <div
+      className="css-1atbcdi"
+    >
+      <div
+        className="css-1hs1k35"
+      >
+        <img
+          className="css-1yl4k4p"
+          src="./icon.png"
+        />
+        <span
+          className="css-p2pwny"
+        >
+          Welcome to Flipper
+        </span>
+        <span
+          className="css-1xkgddx"
+        >
+          Development Mode
+        </span>
+        <div
+          className="css-ls6p57"
+          onClick={[Function]}
+        >
+          <div
+            className="css-1wavjrl"
+            color="#8155cb"
+            size={20}
+            src="https://external.xx.fbcdn.net/assets/?name=rocket&variant=filled&size=20&set=facebook_icons&density=1x"
+          />
+          <div
+            className="css-1k4677w"
+          >
+            <span
+              className="css-1jw94dh"
+            >
+              Using Flipper
+            </span>
+            <span
+              className="css-bcc6f5"
+            >
+              Learn how Flipper can help you debug your App
+            </span>
+          </div>
+        </div>
+        <div
+          className="css-ls6p57"
+          onClick={[Function]}
+        >
+          <div
+            className="css-1bmw9ne"
+            color="#8155cb"
+            size={20}
+            src="https://external.xx.fbcdn.net/assets/?name=magic-wand&variant=filled&size=20&set=facebook_icons&density=1x"
+          />
+          <div
+            className="css-1k4677w"
+          >
+            <span
+              className="css-1jw94dh"
+            >
+              Create your own plugin
+            </span>
+            <span
+              className="css-bcc6f5"
+            >
+              Get started with these pointers
+            </span>
+          </div>
+        </div>
+        <div
+          className="css-ls6p57"
+          onClick={[Function]}
+        >
+          <div
+            className="css-nk9hkx"
+            color="#8155cb"
+            size={20}
+            src="https://external.xx.fbcdn.net/assets/?name=tools&variant=filled&size=20&set=facebook_icons&density=1x"
+          />
+          <div
+            className="css-1k4677w"
+          >
+            <span
+              className="css-1jw94dh"
+            >
+              Add Flipper support to your app
+            </span>
+            <span
+              className="css-bcc6f5"
+            >
+              Get started with these pointers
+            </span>
+          </div>
+        </div>
+        <div
+          className="css-ls6p57"
+          onClick={[Function]}
+        >
+          <div
+            className="css-14xjmfa"
+            color="#8155cb"
+            size={20}
+            src="https://external.xx.fbcdn.net/assets/?name=posts&variant=filled&size=20&set=facebook_icons&density=1x"
+          />
+          <div
+            className="css-1k4677w"
+          >
+            <span
+              className="css-1jw94dh"
+            >
+              Contributing and Feedback
+            </span>
+            <span
+              className="css-bcc6f5"
+            >
+              Report issues and help us improve Flipper
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

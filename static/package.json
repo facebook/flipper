@@ -15,5 +15,6 @@
     "@babel/preset-react": "^7.0.0",
     "metro": "^0.45.3",
     "recursive-readdir": "2.2.2"
-  }
+  },
+  "devDependencies": {}
 }

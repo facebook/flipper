@@ -8,11 +8,11 @@
 const generate = require('@babel/generator').default;
 const babylon = require('@babel/parser');
 const babel = require('@babel/core');
-const metro = require('metro');
 
-exports.transform = function({filename, options, src}) {
+function transform({filename, options, src}) {
   const presets = [require('../node_modules/@babel/preset-react')];
-  const isPlugin = !__dirname.startsWith(options.projectRoot);
+  const isPlugin =
+    options.projectRoot && !__dirname.startsWith(options.projectRoot);
 
   let ast = babylon.parse(src, {
     filename,
@@ -33,10 +33,18 @@ exports.transform = function({filename, options, src}) {
     require('../node_modules/@babel/plugin-proposal-class-properties'),
     require('../node_modules/@babel/plugin-transform-flow-strip-types'),
     require('../node_modules/@babel/plugin-proposal-optional-chaining'),
-    require('./electron-requires.js'),
     require('./fb-stubs.js'),
     require('./dynamic-requires.js'),
   ];
+
+  if (!options.isTestRunner) {
+    // Replacing require statements with electronRequire to prevent metro from
+    // resolving them. electronRequire are resolved during runtime by electron.
+    // As the tests are not bundled by metro and run in @jest-runner/electron,
+    // electron imports are working out of the box.
+    plugins.push(require('./electron-requires.js'));
+  }
+
   if (isPlugin) {
     plugins.push(require('./flipper-requires.js'));
   } else {
@@ -64,11 +72,22 @@ exports.transform = function({filename, options, src}) {
     },
     src,
   );
-
   return {
     ast,
     code: result.code,
     filename,
-    map: result.rawMappings.map(metro.sourceMaps.compactMapping),
+    map: result.map,
   };
+}
+
+module.exports = {
+  transform,
+  process(src, filename, config, options) {
+    return transform({
+      src,
+      filename,
+      config,
+      options: {...options, isTestRunner: true},
+    });
+  },
 };

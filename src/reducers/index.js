@@ -30,7 +30,7 @@ export type Store = ReduxStore<
     connections: DevicesState,
     pluginStates: PluginsState,
   },
-  ApplicationAction | DevicesAction | PluginsAction,
+  ApplicationAction | DevicesAction | PluginsAction | {|type: 'INIT'|},
 >;
 
 export default combineReducers({

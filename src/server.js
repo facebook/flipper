@@ -21,8 +21,8 @@ const invariant = require('invariant');
 const tls = require('tls');
 const net = require('net');
 
-const SECURE_PORT = 8088;
-const INSECURE_PORT = 8089;
+export const SECURE_PORT = 8088;
+export const INSECURE_PORT = 8089;
 
 type RSocket = {|
   fireAndForget(payload: {data: string}): void,
@@ -57,14 +57,6 @@ export default class Server extends EventEmitter {
     ((event: 'clients-change', callback: () => void) => void);
 
   init() {
-    if (process.env.NODE_ENV === 'test') {
-      console.warn(
-        "rsocket server has not been started as we're in test mode",
-        'server',
-      );
-      return;
-    }
-
     this.certificateProvider
       .loadSecureServerConfig()
       .then(
@@ -93,6 +85,7 @@ export default class Server extends EventEmitter {
             } server started on port ${port}`,
             'server',
           );
+          server.emit('listening', port);
         });
       return transportServer;
     };

@@ -258,7 +258,7 @@ class Button extends React.Component<
     active: false,
   };
 
-  _ref: ?Element | ?Text;
+  _ref = React.createRef();
 
   onMouseDown = () => this.setState({active: true});
   onMouseUp = () => this.setState({active: false});
@@ -270,10 +270,14 @@ class Button extends React.Component<
     if (this.props.dropdown) {
       const menu = electron.remote.Menu.buildFromTemplate(this.props.dropdown);
       const position = {};
-      if (this._ref != null && this._ref instanceof Element) {
-        const {left, bottom} = this._ref.getBoundingClientRect();
-        position.x = parseInt(left, 10);
-        position.y = parseInt(bottom + 6, 10);
+      const {current} = this._ref;
+      if (current) {
+        const node = findDOMNode(current);
+        if (node instanceof Element) {
+          const {left, bottom} = node.getBoundingClientRect();
+          position.x = parseInt(left, 10);
+          position.y = parseInt(bottom + 6, 10);
+        }
       }
       menu.popup({
         window: electron.remote.getCurrentWindow(),
@@ -287,10 +291,6 @@ class Button extends React.Component<
     if (this.props.href != null) {
       electron.shell.openExternal(this.props.href);
     }
-  };
-
-  setRef = (ref: ?React.ElementRef<any>) => {
-    this._ref = findDOMNode(ref);
   };
 
   render() {
@@ -336,7 +336,7 @@ class Button extends React.Component<
     return (
       <StyledButton
         {...props}
-        ref={this.setRef}
+        ref={this._ref}
         windowIsFocused={windowIsFocused}
         onClick={this.onClick}
         onMouseDown={this.onMouseDown}

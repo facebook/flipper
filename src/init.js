@@ -62,7 +62,7 @@ const AppFrame = () => (
   </TooltipProvider>
 );
 
-export default function init() {
+function init() {
   // $FlowFixMe: this element exists!
   ReactDOM.render(<AppFrame />, document.getElementById('root'));
   // $FlowFixMe: service workers exist!
@@ -77,3 +77,6 @@ export default function init() {
     })
     .catch(console.error);
 }
+
+// make init function callable from outside
+window.Flipper.init = init;

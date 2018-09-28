@@ -15,7 +15,6 @@ import MainSidebar from './chrome/MainSidebar.js';
 import BugReporterDialog from './chrome/BugReporterDialog.js';
 import ErrorBar from './chrome/ErrorBar.js';
 import PluginContainer from './PluginContainer.js';
-import PluginManager from './chrome/PluginManager.js';
 import {ipcRenderer} from 'electron';
 
 import type Logger from './fb-stubs/Logger.js';
@@ -30,7 +29,7 @@ type Props = {
   pluginManagerVisible: boolean,
   selectedDevice: ?BaseDevice,
   error: ?string,
-  toggleBugDialogVisible: (visible?: boolean) => void,
+  toggleBugDialogVisible: (visible?: boolean) => any,
 };
 
 export class App extends React.Component<Props> {
@@ -55,7 +54,9 @@ export class App extends React.Component<Props> {
         {this.props.bugDialogVisible && (
           <BugReporterDialog
             bugReporter={this.props.bugReporter}
-            close={() => this.props.toggleBugDialogVisible(false)}
+            close={() => {
+              this.props.toggleBugDialogVisible(false);
+            }}
           />
         )}
         <FlexRow fill={true}>
