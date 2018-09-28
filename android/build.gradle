@@ -26,14 +26,6 @@ android {
         abortOnError false
     }
 
-    sourceSets {
-        main {
-            java {
-                srcDir 'plugins'
-            }
-        }
-    }
-
     externalNativeBuild {
         cmake {
             path './CMakeLists.txt'
