@@ -203,6 +203,7 @@ type Props = {
    * Whether the button should render depressed into its socket
    */
   depressed?: boolean,
+  iconVariant?: 'filled' | 'outline',
 };
 
 type State = {
@@ -300,6 +301,7 @@ class Button extends React.Component<
       selected,
       iconSize,
       windowIsFocused,
+      iconVariant,
       ...props
     } = this.props;
     const {active} = this.state;
@@ -324,10 +326,9 @@ class Button extends React.Component<
       iconComponent = (
         <Icon
           name={icon}
-          size={
-            iconSize != null ? iconSize : this.props.compact === true ? 12 : 16
-          }
+          size={iconSize || this.props.compact === true ? 12 : 16}
           color={color}
+          variant={iconVariant || 'filled'}
           hasText={Boolean(children)}
         />
       );
