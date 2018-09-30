@@ -109,3 +109,4 @@ matrix:
         - cd ../
       script:
         - ./gradlew :sample:assembleDebug
+        - ./gradlew :android:testDebugUnitTest
