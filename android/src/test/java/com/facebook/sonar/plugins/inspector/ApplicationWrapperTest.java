@@ -14,7 +14,7 @@ import android.app.Activity;
 import android.app.Application;
 import android.app.Application.ActivityLifecycleCallbacks;
 import android.os.Bundle;
-import com.facebook.testing.robolectric.v3.WithTestDefaultsRunner;
+import org.robolectric.RobolectricTestRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,7 +22,7 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-@RunWith(WithTestDefaultsRunner.class)
+@RunWith(RobolectricTestRunner.class)
 public class ApplicationWrapperTest {
 
   private ApplicationWrapper mWrapper;

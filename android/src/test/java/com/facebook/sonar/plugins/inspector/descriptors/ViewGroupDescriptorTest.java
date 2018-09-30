@@ -15,13 +15,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import com.facebook.flipper.plugins.inspector.Touch;
-import com.facebook.testing.robolectric.v3.WithTestDefaultsRunner;
+import org.robolectric.RobolectricTestRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.robolectric.RuntimeEnvironment;
 
-@RunWith(WithTestDefaultsRunner.class)
+@RunWith(RobolectricTestRunner.class)
 public class ViewGroupDescriptorTest {
 
   @Test

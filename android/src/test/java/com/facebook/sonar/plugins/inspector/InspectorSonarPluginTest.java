@@ -26,7 +26,7 @@ import com.facebook.flipper.plugins.inspector.InspectorFlipperPlugin.TouchOverla
 import com.facebook.flipper.plugins.inspector.descriptors.ApplicationDescriptor;
 import com.facebook.flipper.testing.FlipperConnectionMock;
 import com.facebook.flipper.testing.FlipperResponderMock;
-import com.facebook.testing.robolectric.v3.WithTestDefaultsRunner;
+import org.robolectric.RobolectricTestRunner;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -39,7 +39,7 @@ import org.robolectric.RuntimeEnvironment;
 
 import javax.annotation.Nullable;
 
-@RunWith(WithTestDefaultsRunner.class)
+@RunWith(RobolectricTestRunner.class)
 public class InspectorSonarPluginTest {
 
   private MockApplicationDescriptor mApplicationDescriptor;

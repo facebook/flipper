@@ -9,7 +9,7 @@ package com.facebook.flipper.plugins.console;
 
 import static org.junit.Assert.assertEquals;
 
-import com.facebook.testing.robolectric.v3.WithTestDefaultsRunner;
+import org.robolectric.RobolectricTestRunner;
 import com.google.common.collect.ImmutableMap;
 import java.util.Collections;
 import java.util.HashMap;
@@ -18,7 +18,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mozilla.javascript.ContextFactory;
 
-@RunWith(WithTestDefaultsRunner.class)
+@RunWith(RobolectricTestRunner.class)
 public class JavascriptSessionTest {
 
   ContextFactory mContextFactory = new ContextFactory();

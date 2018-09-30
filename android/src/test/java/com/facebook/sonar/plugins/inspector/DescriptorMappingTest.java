@@ -14,12 +14,12 @@ import com.facebook.flipper.core.FlipperConnection;
 import com.facebook.flipper.core.FlipperDynamic;
 import com.facebook.flipper.core.FlipperObject;
 import com.facebook.flipper.testing.FlipperConnectionMock;
-import com.facebook.testing.robolectric.v3.WithTestDefaultsRunner;
+import org.robolectric.RobolectricTestRunner;
 import java.util.List;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-@RunWith(WithTestDefaultsRunner.class)
+@RunWith(RobolectricTestRunner.class)
 public class DescriptorMappingTest {
 
   private class TestClass {}
