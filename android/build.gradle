@@ -26,6 +26,15 @@ android {
         abortOnError false
     }
 
+    sourceSets {
+        test {
+            java {
+                exclude 'com/facebook/sonar/plugins/facebook/**'
+            }
+        }
+    }
+
+
     externalNativeBuild {
         cmake {
             path './CMakeLists.txt'
@@ -45,6 +54,11 @@ android {
         implementation deps.lithoWidget
         implementation deps.rhino
         implementation deps.leakcanary
+
+        testImplementation deps.mockito
+        testImplementation deps.robolectric
+        testImplementation deps.hamcrest
+        testImplementation deps.junit
     }
 }
 
