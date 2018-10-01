@@ -6,18 +6,18 @@ sidebar_label: Send Data
 
 It is often useful to get an instance of a Flipper plugin to send data to it. Flipper makes this simple with built-in support.
 
-Plugins should be treated as singleton instances as there can only be one `SonarClient` and each `SonarClient` can only have one instance of a certain plugin. The Flipper API makes this simple by offering a way to get the current client and query it for plugins.
+Plugins should be treated as singleton instances as there can only be one `FlipperClient` and each `FlipperClient` can only have one instance of a certain plugin. The Flipper API makes this simple by offering a way to get the current client and query it for plugins.
 
-Plugins are identified by the string that their identifier method returns, in this example, "MySonarPlugin":
+Plugins are identified by the string that their identifier method returns, in this example, "MyFlipperPlugin":
 
 ### Android
 
 ```java
-final SonarClient client = AndroidFlipperClient.getInstance(context);
+final FlipperClient client = AndroidFlipperClient.getInstance(context);
 // Client may be null if AndroidFlipperClient.createInstance() was never called
 // which is the case in production builds.
 if (client != null) {
-  final MySonarPlugin plugin = client.getPlugin("MySonarPlugin");
+  final MyFlipperPlugin plugin = client.getPlugin("MyFlipperPlugin");
   plugin.sendData(myData);
 }
 ```
@@ -33,16 +33,16 @@ MyFlipperPlugin *myPlugin = [client pluginWithIdentifier:@"MyFlipperPlugin"];
 ### C++
 
 ```c++
-auto &client = SonarClient::instance();
+auto &client = FlipperClient::instance();
 
-// "MySonarPlugin is the return value of MySonarPlugin::identifier()
-auto aPlugin = client.getPlugin("MySonarPlugin");
+// "MyFlipperPlugin is the return value of MyFlipperPlugin::identifier()
+auto aPlugin = client.getPlugin("MyFlipperPlugin");
 
-// aPlugin is a std::shared_ptr<SonarPlugin>. Downcast to expected type.
-auto myPlugin = std::static_pointer_cast<MySonarPlugin>(aPlugin);
+// aPlugin is a std::shared_ptr<FlipperPlugin>. Downcast to expected type.
+auto myPlugin = std::static_pointer_cast<MyFlipperPlugin>(aPlugin);
 
 // Alternatively, use the templated version
-myPlugin = client.getPlugin<MySonarPlugin>("MySonarPlugin");
+myPlugin = client.getPlugin<MyFlipperPlugin>("MyFlipperPlugin");
 
 myPlugin->sendData(myData);
 ```
