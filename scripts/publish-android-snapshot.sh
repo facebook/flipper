@@ -12,5 +12,5 @@ elif [ "$IS_SNAPSHOT" == "" ]; then
   exit 1
 else
   openssl aes-256-cbc -d -in scripts/gradle-publish-keys.enc -k "$ANDROID_PUBLISH_KEY" >> "$BASEDIR/gradle.properties"
-  "$BASEDIR"/gradlew uploadArchives --quiet
+  "$BASEDIR"/gradlew uploadArchives
 fi
