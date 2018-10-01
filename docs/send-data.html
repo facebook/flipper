@@ -5,14 +5,14 @@
             nav.classList.toggle('docsSliderActive');
           };
         </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><h1>Sending Data to Plugins</h1></header><article><div><span><p>It is often useful to get an instance of a Flipper plugin to send data to it. Flipper makes this simple with built-in support.</p>
-<p>Plugins should be treated as singleton instances as there can only be one <code>SonarClient</code> and each <code>SonarClient</code> can only have one instance of a certain plugin. The Flipper API makes this simple by offering a way to get the current client and query it for plugins.</p>
-<p>Plugins are identified by the string that their identifier method returns, in this example, &quot;MySonarPlugin&quot;:</p>
+<p>Plugins should be treated as singleton instances as there can only be one <code>FlipperClient</code> and each <code>FlipperClient</code> can only have one instance of a certain plugin. The Flipper API makes this simple by offering a way to get the current client and query it for plugins.</p>
+<p>Plugins are identified by the string that their identifier method returns, in this example, &quot;MyFlipperPlugin&quot;:</p>
 <h3><a class="anchor" aria-hidden="true" id="android"></a><a href="#android" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Android</h3>
-<pre><code class="hljs css java"><span class="hljs-keyword">final</span> SonarClient client = AndroidFlipperClient.getInstance(context);
+<pre><code class="hljs css java"><span class="hljs-keyword">final</span> FlipperClient client = AndroidFlipperClient.getInstance(context);
 <span class="hljs-comment">// Client may be null if AndroidFlipperClient.createInstance() was never called</span>
 <span class="hljs-comment">// which is the case in production builds.</span>
 <span class="hljs-keyword">if</span> (client != <span class="hljs-keyword">null</span>) {
-  <span class="hljs-keyword">final</span> MySonarPlugin plugin = client.getPlugin(<span class="hljs-string">"MySonarPlugin"</span>);
+  <span class="hljs-keyword">final</span> MyFlipperPlugin plugin = client.getPlugin(<span class="hljs-string">"MyFlipperPlugin"</span>);
   plugin.sendData(myData);
 }
 </code></pre>
@@ -22,16 +22,16 @@
 [myPlugin sendData:myData]<span class="hljs-comment">;</span>
 </code></pre>
 <h3><a class="anchor" aria-hidden="true" id="c"></a><a href="#c" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>C++</h3>
-<pre><code class="hljs css c++"><span class="hljs-keyword">auto</span> &amp;client = SonarClient::instance();
+<pre><code class="hljs css c++"><span class="hljs-keyword">auto</span> &amp;client = FlipperClient::instance();
 
-<span class="hljs-comment">// "MySonarPlugin is the return value of MySonarPlugin::identifier()</span>
-<span class="hljs-keyword">auto</span> aPlugin = client.getPlugin(<span class="hljs-string">"MySonarPlugin"</span>);
+<span class="hljs-comment">// "MyFlipperPlugin is the return value of MyFlipperPlugin::identifier()</span>
+<span class="hljs-keyword">auto</span> aPlugin = client.getPlugin(<span class="hljs-string">"MyFlipperPlugin"</span>);
 
-<span class="hljs-comment">// aPlugin is a std::shared_ptr&lt;SonarPlugin&gt;. Downcast to expected type.</span>
-<span class="hljs-keyword">auto</span> myPlugin = <span class="hljs-built_in">std</span>::static_pointer_cast&lt;MySonarPlugin&gt;(aPlugin);
+<span class="hljs-comment">// aPlugin is a std::shared_ptr&lt;FlipperPlugin&gt;. Downcast to expected type.</span>
+<span class="hljs-keyword">auto</span> myPlugin = <span class="hljs-built_in">std</span>::static_pointer_cast&lt;MyFlipperPlugin&gt;(aPlugin);
 
 <span class="hljs-comment">// Alternatively, use the templated version</span>
-myPlugin = client.getPlugin&lt;MySonarPlugin&gt;(<span class="hljs-string">"MySonarPlugin"</span>);
+myPlugin = client.getPlugin&lt;MyFlipperPlugin&gt;(<span class="hljs-string">"MyFlipperPlugin"</span>);
 
 myPlugin-&gt;sendData(myData);
 </code></pre>
