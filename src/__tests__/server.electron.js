@@ -26,17 +26,30 @@ beforeAll(() => {
 test('servers starting at ports', done => {
   const serversToBeStarted = new Set([SECURE_PORT, INSECURE_PORT]);
 
-  server.addListener('listening', port => {
-    if (!serversToBeStarted.has(port)) {
-      done.fail(Error(`unknown server started at port ${port}`));
-    } else {
-      serversToBeStarted.delete(port);
-    }
-    if (serversToBeStarted.size === 0) {
-      done();
-    }
+  return new Promise((resolve, reject) => {
+    server.addListener('listening', port => {
+      if (!serversToBeStarted.has(port)) {
+        throw Error(`unknown server started at port ${port}`);
+      } else {
+        serversToBeStarted.delete(port);
+      }
+      if (serversToBeStarted.size === 0) {
+        done();
+        resolve();
+      }
+    });
   });
 });
+
+test(
+  'Layout plugin is connecting',
+  done => {
+    server.addListener('new-client', (client: Client) => {
+      done();
+    });
+  },
+  10000,
+);
 
 afterAll(() => {
   server.close();
