@@ -37,7 +37,7 @@ public void myTest() {
   plugin.onConnect(connection);
 
   final FlipperObject params = new FlipperObject.Builder()
-      .put("phrase", "sonar")
+      .put("phrase", "flipper")
       .build();
   connection.receivers.get("myMethod").onReceive(params, responder);
 
