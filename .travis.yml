@@ -35,6 +35,7 @@ matrix:
         - yarn
 
       script:
+        - yarn test
         - yarn lint
         - yarn build --mac --version=$TRAVIS_BUILD_NUMBER
 

@@ -88,9 +88,9 @@ exports[`Empty app state matches snapshot 1`] = `
         title="Toggle Plugins"
       >
         <div
-          className="css-1pfn0zl"
+          className="css-1221zh3"
           color="#80a6f5"
-          size={20}
+          size={12}
           src="icons/sidebar_left.svg"
         />
       </div>
@@ -103,9 +103,9 @@ exports[`Empty app state matches snapshot 1`] = `
         title="Toggle Details"
       >
         <div
-          className="css-13cmaba"
+          className="css-1fkfe9s"
           color="#acacac"
-          size={20}
+          size={12}
           src="icons/sidebar_right.svg"
         />
       </div>

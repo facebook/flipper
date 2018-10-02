@@ -16,8 +16,6 @@ import BugReporter from '../fb-stubs/BugReporter.js';
 // create redux store with initial state
 const mockStore = configureStore([])(reducers(undefined, {type: 'INIT'}));
 
-beforeEach(() => {});
-
 test('Empty app state matches snapshot', () => {
   const logger = new Logger();
   const bugReporter = new BugReporter(logger);

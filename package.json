@@ -27,9 +27,7 @@
   "jest": {
     "transform": {
       "\\.(js)$": "<rootDir>/static/transforms/index.js"
-    },
-    "runner": "@jest-runner/electron",
-    "testEnvironment": "@jest-runner/electron/environment"
+    }
   },
   "devDependencies": {
     "@jest-runner/electron": "^0.0.8",
@@ -102,7 +100,8 @@
     "start": "cross-env NODE_ENV=development node scripts/start-dev-server.js",
     "build": "yarn rm-dist && cross-env NODE_ENV=production node scripts/build-release.js $@",
     "fix": "eslint . --fix",
-    "test": "jest",
+    "test": "jest --testPathPattern=node\\.js$",
+    "test-electron": "jest --testPathPattern=electron\\.js$ --testEnvironment=@jest-runner/electron/environment --runner=@jest-runner/electron",
     "lint": "eslint . && flow check"
   },
   "optionalDependencies": {
