@@ -30,7 +30,7 @@
   plugin.onConnect(connection);
 
   <span class="hljs-keyword">final</span> FlipperObject params = <span class="hljs-keyword">new</span> FlipperObject.Builder()
-      .put(<span class="hljs-string">"phrase"</span>, <span class="hljs-string">"sonar"</span>)
+      .put(<span class="hljs-string">"phrase"</span>, <span class="hljs-string">"flipper"</span>)
       .build();
   connection.receivers.get(<span class="hljs-string">"myMethod"</span>).onReceive(params, responder);
 
