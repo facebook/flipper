@@ -15,11 +15,15 @@ export default class Select extends Component<{
   onChange: (key: string) => void,
   selected?: ?string,
 }> {
+  onChange = (event: Object) => {
+    this.props.onChange(event.target.value);
+  };
+
   render() {
     const {className, options, selected} = this.props;
 
     return (
-      <select onChange={this.props.onChange} className={className}>
+      <select onChange={this.onChange} className={className}>
         {Object.keys(options).map(key => (
           <option selected={key === selected}>{options[key]}</option>
         ))}
