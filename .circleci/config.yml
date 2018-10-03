@@ -32,7 +32,7 @@ workflows:
   build-and-deploy:
     jobs:
       - build
-      - snapshot
+      - snapshot:
           filters:
             branches:
               only: master
