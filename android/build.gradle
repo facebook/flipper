@@ -29,7 +29,6 @@ android {
     sourceSets {
         test {
             java {
-                exclude 'com/facebook/sonar/plugins/facebook/**'
                 exclude 'com/facebook/flipper/plugins/facebook/**'
             }
         }
