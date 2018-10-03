@@ -10,7 +10,8 @@
 #include <fcntl.h>
 #include <openssl/pem.h>
 #include <openssl/rsa.h>
-#include <sys/stat.h>
+#include <folly/portability/SysStat.h>
+#include <folly/portability/Fcntl.h>
 #include <cstring>
 
 void free(

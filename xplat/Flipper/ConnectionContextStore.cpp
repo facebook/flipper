@@ -1,6 +1,6 @@
 #include "ConnectionContextStore.h"
 #include <folly/json.h>
-#include <sys/stat.h>
+#include <folly/portability/SysStat.h>
 #include <fstream>
 #include <iostream>
 #include "CertificateUtils.h"
