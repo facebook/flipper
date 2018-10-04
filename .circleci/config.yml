@@ -1,37 +1,38 @@
-version: 2.0
-jobs:
-  build:
+version: 2.1
+executors:
+  default-executor:
     docker:
       - image: circleci/android:api-28-ndk-r17b
-    steps:
-      - checkout
-      - run:
-          name: build and deploy
-          command: ./gradlew :sample:assembleDebug
 
+    environment:
+      _JAVA_OPTIONS: "-Xmx1500m -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:ParallelGCThreads=2 -XX:ConcGCThreads=2 -XX:ParallelGCThreads=2 -Djava.util.concurrent.ForkJoinPool.common.parallelism=2"
+      TERM: 'dumb'
+
+jobs:
   snapshot:
+    executor: default-executor
     docker:
       - image: circleci/android:api-28-ndk-r17b
     steps:
       - checkout
       - run:
           name: build and deploy
-          command: scripts/publish-android-snapshot.sh
+          command: ./gradlew :android:assembleRelease && scripts/publish-android-snapshot.sh
 
   release:
+    executor: default-executor
     docker:
       - image: circleci/android:api-28-ndk-r17b
     steps:
       - checkout
       - run:
           name: build and deploy
-          command: scripts/publish-android-release.sh
+          command: ./gradlew :android:assembleRelease && scripts/publish-android-release.sh
 
 workflows:
   version: 2
   build-and-deploy:
     jobs:
-      - build
       - snapshot:
           filters:
             branches:
