@@ -36,7 +36,12 @@ using WrapperPlugin = facebook::flipper::FlipperCppWrapperPlugin;
   static FlipperClient *sharedClient = nil;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    sharedClient = [[self alloc] init];
+    try {
+      sharedClient = [[self alloc] init];
+    } catch (const std::exception &e) {
+      // fail.
+      sharedClient = nil;
+    }
   });
   return sharedClient;
 }
@@ -52,9 +57,9 @@ using WrapperPlugin = facebook::flipper::FlipperCppWrapperPlugin;
 
     NSFileManager *manager = [NSFileManager defaultManager];
 
-    if ([manager fileExistsAtPath:privateAppDirectory isDirectory:NULL] == NO) {
-      //TODO: Handle errors properly
-      [manager createDirectoryAtPath:privateAppDirectory withIntermediateDirectories:YES attributes:nil error:nil];
+    if ([manager fileExistsAtPath:privateAppDirectory isDirectory:NULL] == NO &&
+        ![manager createDirectoryAtPath:privateAppDirectory withIntermediateDirectories:YES attributes:nil error:nil]) {
+      return nil;
     }
 
 #if TARGET_OS_SIMULATOR
@@ -62,20 +67,25 @@ using WrapperPlugin = facebook::flipper::FlipperCppWrapperPlugin;
 #endif
 
     static const std::string UNKNOWN = std::string("unknown");
-    facebook::flipper::FlipperClient::init({
-      {
-        "localhost",
-        "iOS",
-        [deviceName UTF8String],
-        UNKNOWN,
-        [appName UTF8String] ?: UNKNOWN,
-        [appId UTF8String] ?: UNKNOWN,
-        [privateAppDirectory UTF8String],
-      },
-      sonarThread.getEventBase(),
-      connectionThread.getEventBase()
-    });
-    _cppClient = facebook::flipper::FlipperClient::instance();
+    try {
+      facebook::flipper::FlipperClient::init({
+        {
+          "localhost",
+          "iOS",
+          [deviceName UTF8String],
+          UNKNOWN,
+          [appName UTF8String] ?: UNKNOWN,
+          [appId UTF8String] ?: UNKNOWN,
+          [privateAppDirectory UTF8String],
+        },
+        sonarThread.getEventBase(),
+        connectionThread.getEventBase()
+      });
+      _cppClient = facebook::flipper::FlipperClient::instance();
+    } catch (const std::system_error &e) {
+      // Probably ran out of disk space.
+      return nil;
+    }
   }
   return self;
 }
