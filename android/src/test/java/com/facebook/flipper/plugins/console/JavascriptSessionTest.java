@@ -9,7 +9,6 @@ package com.facebook.flipper.plugins.console;
 
 import static org.junit.Assert.assertEquals;
 
-import org.robolectric.RobolectricTestRunner;
 import com.google.common.collect.ImmutableMap;
 import java.util.Collections;
 import java.util.HashMap;
@@ -17,6 +16,7 @@ import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mozilla.javascript.ContextFactory;
+import org.robolectric.RobolectricTestRunner;
 
 @RunWith(RobolectricTestRunner.class)
 public class JavascriptSessionTest {

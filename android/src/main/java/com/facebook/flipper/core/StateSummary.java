@@ -1,24 +1,30 @@
 package com.facebook.flipper.core;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 public class StateSummary {
 
   public enum State {
-    IN_PROGRESS, SUCCESS, FAILED, UNKNOWN;
+    IN_PROGRESS,
+    SUCCESS,
+    FAILED,
+    UNKNOWN;
   }
 
   public static class StateElement {
     private final String mName;
     private final State mState;
+
     public StateElement(String name, State state) {
       mName = name;
       mState = state;
     }
+
     public String getName() {
       return mName;
     }
+
     public State getState() {
       return mState;
     }

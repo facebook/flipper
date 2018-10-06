@@ -26,9 +26,11 @@ public class AccessibilityRoleUtil {
    *
    * <p>https://github.com/google/talkback/blob/master/utils/src/main/java/Role.java
    *
-   * The roles spoken by Talkback (roleStrings) should also be kept up to date and are found here:
+   * <p>The roles spoken by Talkback (roleStrings) should also be kept up to date and are found
+   * here:
    *
    * <p>https://github.com/google/talkback/compositor/src/main/res/values/strings.xml
+   *
    * <p>https://github.com/google/talkback/compositor/src/main/res/raw/compositor.json
    */
   public enum AccessibilityRole {
@@ -78,7 +80,9 @@ public class AccessibilityRoleUtil {
       return mValue;
     }
 
-    public String getRoleString() { return mRoleString; }
+    public String getRoleString() {
+      return mRoleString;
+    }
 
     public static AccessibilityRole fromValue(String value) {
       for (AccessibilityRole role : AccessibilityRole.values()) {

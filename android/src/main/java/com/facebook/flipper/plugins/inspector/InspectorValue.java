@@ -15,8 +15,8 @@ public class InspectorValue<T> implements FlipperValue {
 
   /**
    * Descrive the type of data this value contains. This will influence how values are parsed and
-   * displayed by the Flipper desktop app. For example colors will be parse as integers and displayed
-   * using hex values and be editable using a color picker.
+   * displayed by the Flipper desktop app. For example colors will be parse as integers and
+   * displayed using hex values and be editable using a color picker.
    *
    * <p>Do not extends this list of types without adding support for the type in the desktop
    * Inspector.

@@ -7,14 +7,14 @@
  */
 package com.facebook.flipper.android;
 
-import com.facebook.jni.HybridData;
-import com.facebook.proguard.annotations.DoNotStrip;
-import com.facebook.soloader.SoLoader;
 import com.facebook.flipper.BuildConfig;
 import com.facebook.flipper.core.FlipperClient;
 import com.facebook.flipper.core.FlipperPlugin;
 import com.facebook.flipper.core.FlipperStateUpdateListener;
 import com.facebook.flipper.core.StateSummary;
+import com.facebook.jni.HybridData;
+import com.facebook.proguard.annotations.DoNotStrip;
+import com.facebook.soloader.SoLoader;
 
 @DoNotStrip
 class FlipperClientImpl implements FlipperClient {

@@ -138,7 +138,8 @@ public class TextViewDescriptor extends NodeDescriptor<TextView> {
   }
 
   @Override
-  public void setHighlighted(TextView node, boolean selected, boolean isAlignmentMode) throws Exception {
+  public void setHighlighted(TextView node, boolean selected, boolean isAlignmentMode)
+      throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(View.class);
     descriptor.setHighlighted(node, selected, isAlignmentMode);
   }

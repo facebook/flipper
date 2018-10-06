@@ -243,7 +243,8 @@ public class ViewGroupDescriptor extends NodeDescriptor<ViewGroup> {
   }
 
   @Override
-  public void setHighlighted(ViewGroup node, boolean selected, boolean isAlignmentMode) throws Exception {
+  public void setHighlighted(ViewGroup node, boolean selected, boolean isAlignmentMode)
+      throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(View.class);
     descriptor.setHighlighted(node, selected, isAlignmentMode);
   }
@@ -252,8 +253,8 @@ public class ViewGroupDescriptor extends NodeDescriptor<ViewGroup> {
     for (int i = node.getChildCount() - 1; i >= 0; i--) {
       final View child = node.getChildAt(i);
       if (child instanceof HiddenNode
-              || child.getVisibility() != View.VISIBLE
-              || shouldSkip(child)) {
+          || child.getVisibility() != View.VISIBLE
+          || shouldSkip(child)) {
         continue;
       }
 

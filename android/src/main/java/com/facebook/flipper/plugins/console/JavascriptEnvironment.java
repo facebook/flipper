@@ -45,8 +45,7 @@ public class JavascriptEnvironment implements ScriptingEnvironment {
   public void registerGlobalObject(String name, Object object) {
     if (mBoundVariables.containsKey(name)) {
       throw new IllegalStateException(
-          String.format(
-              "Variable %s is already reserved for %s", name, mBoundVariables.get(name)));
+          String.format("Variable %s is already reserved for %s", name, mBoundVariables.get(name)));
     }
     mBoundVariables.put(name, object);
   }

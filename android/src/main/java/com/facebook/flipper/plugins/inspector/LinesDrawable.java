@@ -9,15 +9,12 @@
 package com.facebook.flipper.plugins.inspector;
 
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.ColorFilter;
-import android.graphics.Paint;
 import android.graphics.DashPathEffect;
+import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
-import android.graphics.Region;
 import android.graphics.drawable.Drawable;
-import android.text.TextPaint;
 import javax.annotation.Nullable;
 
 public class LinesDrawable extends Drawable {
@@ -67,7 +64,7 @@ public class LinesDrawable extends Drawable {
     dashPaint.setColor(0xFF800000);
     dashPaint.setStyle(Paint.Style.STROKE);
     dashPaint.setStrokeWidth(3);
-    dashPaint.setPathEffect(new DashPathEffect(new float[]{10, 10}, 0));
+    dashPaint.setPathEffect(new DashPathEffect(new float[] {10, 10}, 0));
 
     canvas.drawLine(mContentBounds.right, 0, mContentBounds.right, 100000, dashPaint);
     canvas.drawLine(mContentBounds.left, 0, mContentBounds.left, 100000, dashPaint);

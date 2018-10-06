@@ -9,10 +9,10 @@ package com.facebook.flipper.core;
 
 /**
  * A FlipperPlugin is an object which exposes an API to the Desktop Flipper application. When a
- * connection is established the plugin is given a FlipperConnection on which it can register request
- * handlers and send messages. When the FlipperConnection is invalid onDisconnect is called. onConnect
- * may be called again on the same plugin object if Flipper re-connects, this will provide a new
- * FlipperConnection, do not attempt to re-use the previous connection.
+ * connection is established the plugin is given a FlipperConnection on which it can register
+ * request handlers and send messages. When the FlipperConnection is invalid onDisconnect is called.
+ * onConnect may be called again on the same plugin object if Flipper re-connects, this will provide
+ * a new FlipperConnection, do not attempt to re-use the previous connection.
  */
 public interface FlipperPlugin {
 

@@ -96,7 +96,12 @@ public final class AndroidRootResolver {
       viewsField.setAccessible(true);
       paramsField = clazz.getDeclaredField(WINDOW_PARAMS_FIELD);
       paramsField.setAccessible(true);
-    } catch (InvocationTargetException | IllegalAccessException | RuntimeException | NoSuchMethodException | NoSuchFieldException | ClassNotFoundException ignored) {
+    } catch (InvocationTargetException
+        | IllegalAccessException
+        | RuntimeException
+        | NoSuchMethodException
+        | NoSuchFieldException
+        | ClassNotFoundException ignored) {
     }
   }
 }

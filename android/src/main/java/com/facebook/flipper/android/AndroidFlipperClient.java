@@ -60,7 +60,9 @@ public final class AndroidFlipperClient {
     for (String permission : REQUIRED_PERMISSIONS) {
       if (ContextCompat.checkSelfPermission(context, permission)
           == PackageManager.PERMISSION_DENIED) {
-        Log.e("Flipper", String.format("App needs permission \"%s\" to work with Flipper.", permission));
+        Log.e(
+            "Flipper",
+            String.format("App needs permission \"%s\" to work with Flipper.", permission));
       }
     }
   }

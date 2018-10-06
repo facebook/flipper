@@ -86,16 +86,18 @@ public class SharedPreferencesFlipperPlugin implements FlipperPlugin {
    * Creates a {@link android.content.SharedPreferences} plugin for Flipper
    *
    * @param context The context to retrieve the preferences from.
-   * @param descriptors A list of {@link SharedPreferencesDescriptor}s
-   *    that describe the list of preferences to retrieve.
+   * @param descriptors A list of {@link SharedPreferencesDescriptor}s that describe the list of
+   *     preferences to retrieve.
    */
-  public SharedPreferencesFlipperPlugin(Context context, List<SharedPreferencesDescriptor> descriptors) {
+  public SharedPreferencesFlipperPlugin(
+      Context context, List<SharedPreferencesDescriptor> descriptors) {
     if (context == null) {
       throw new IllegalArgumentException("Given null context");
     }
     mSharedPreferences = new HashMap<>(descriptors.size());
     for (SharedPreferencesDescriptor descriptor : descriptors) {
-      SharedPreferences preferences = context.getSharedPreferences(descriptor.name, descriptor.mode);
+      SharedPreferences preferences =
+          context.getSharedPreferences(descriptor.name, descriptor.mode);
       preferences.registerOnSharedPreferenceChangeListener(onSharedPreferenceChangeListener);
       mSharedPreferences.put(preferences, descriptor);
     }
@@ -107,12 +109,13 @@ public class SharedPreferencesFlipperPlugin implements FlipperPlugin {
   }
 
   private SharedPreferences getSharedPreferencesFor(String name) {
-    for (Map.Entry<SharedPreferences, SharedPreferencesDescriptor> entry : mSharedPreferences.entrySet()) {
+    for (Map.Entry<SharedPreferences, SharedPreferencesDescriptor> entry :
+        mSharedPreferences.entrySet()) {
       if (entry.getValue().name.equals(name)) {
         return entry.getKey();
       }
     }
-    throw new IllegalStateException("Unknown shared preferences " +name);
+    throw new IllegalStateException("Unknown shared preferences " + name);
   }
 
   private FlipperObject getFlipperObjectFor(String name) {
@@ -139,7 +142,8 @@ public class SharedPreferencesFlipperPlugin implements FlipperPlugin {
           @Override
           public void onReceive(FlipperObject params, FlipperResponder responder) {
             FlipperObject.Builder builder = new FlipperObject.Builder();
-            for (Map.Entry<SharedPreferences, SharedPreferencesDescriptor> entry : mSharedPreferences.entrySet()) {
+            for (Map.Entry<SharedPreferences, SharedPreferencesDescriptor> entry :
+                mSharedPreferences.entrySet()) {
               builder.put(entry.getValue().name, getFlipperObjectFor(entry.getKey()));
             }
             responder.success(builder.build());

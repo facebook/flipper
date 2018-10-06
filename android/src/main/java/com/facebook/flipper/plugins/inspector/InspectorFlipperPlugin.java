@@ -10,11 +10,10 @@ package com.facebook.flipper.plugins.inspector;
 
 import android.app.Application;
 import android.content.Context;
-import android.support.v4.view.ViewCompat;
-import android.view.accessibility.AccessibilityEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.accessibility.AccessibilityEvent;
 import com.facebook.flipper.core.ErrorReportingRunnable;
 import com.facebook.flipper.core.FlipperArray;
 import com.facebook.flipper.core.FlipperConnection;
@@ -29,10 +28,8 @@ import com.facebook.flipper.plugins.console.iface.NullScriptingEnvironment;
 import com.facebook.flipper.plugins.console.iface.ScriptingEnvironment;
 import com.facebook.flipper.plugins.inspector.descriptors.ApplicationDescriptor;
 import com.facebook.flipper.plugins.inspector.descriptors.utils.AccessibilityUtil;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
 import javax.annotation.Nullable;
 
 public class InspectorFlipperPlugin implements FlipperPlugin {
@@ -145,7 +142,8 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
     connection.receive("getAXRoot", mGetAXRoot);
     connection.receive("getAXNodes", mGetAXNodes);
     connection.receive("onRequestAXFocus", mOnRequestAXFocus);
-    connection.receive("shouldShowLithoAccessibilitySettings", mShouldShowLithoAccessibilitySettings);
+    connection.receive(
+        "shouldShowLithoAccessibilitySettings", mShouldShowLithoAccessibilitySettings);
 
     if (mExtensionCommands != null) {
       for (ExtensionCommand extensionCommand : mExtensionCommands) {
@@ -174,13 +172,16 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
   }
 
   final FlipperReceiver mShouldShowLithoAccessibilitySettings =
-          new MainThreadFlipperReceiver(mConnection) {
-            @Override
-            public void onReceiveOnMainThread(FlipperObject params, FlipperResponder responder)
-                    throws Exception {
-              responder.success(new FlipperObject.Builder().put("showLithoAccessibilitySettings", mShowLithoAccessibilitySettings).build());
-            }
-          };
+      new MainThreadFlipperReceiver(mConnection) {
+        @Override
+        public void onReceiveOnMainThread(FlipperObject params, FlipperResponder responder)
+            throws Exception {
+          responder.success(
+              new FlipperObject.Builder()
+                  .put("showLithoAccessibilitySettings", mShowLithoAccessibilitySettings)
+                  .build());
+        }
+      };
 
   final FlipperReceiver mGetRoot =
       new MainThreadFlipperReceiver(mConnection) {
@@ -196,7 +197,8 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
         @Override
         public void onReceiveOnMainThread(FlipperObject params, FlipperResponder responder)
             throws Exception {
-          // applicationWrapper is not used by accessibility, but is a common ancestor for multiple view roots
+          // applicationWrapper is not used by accessibility, but is a common ancestor for multiple
+          // view roots
           responder.success(getAXNode(trackObject(mApplication)));
         }
       };
@@ -204,8 +206,8 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
   final FlipperReceiver mGetNodes =
       new MainThreadFlipperReceiver(mConnection) {
         @Override
-        public void onReceiveOnMainThread(final FlipperObject params, final FlipperResponder responder)
-            throws Exception {
+        public void onReceiveOnMainThread(
+            final FlipperObject params, final FlipperResponder responder) throws Exception {
           final FlipperArray ids = params.getArray("ids");
           final FlipperArray.Builder result = new FlipperArray.Builder();
 
@@ -231,8 +233,8 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
   final FlipperReceiver mGetAXNodes =
       new MainThreadFlipperReceiver(mConnection) {
         @Override
-        public void onReceiveOnMainThread(final FlipperObject params, final FlipperResponder responder)
-            throws Exception {
+        public void onReceiveOnMainThread(
+            final FlipperObject params, final FlipperResponder responder) throws Exception {
           final FlipperArray ids = params.getArray("ids");
           final FlipperArray.Builder result = new FlipperArray.Builder();
 
@@ -247,16 +249,17 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
             // sent request for non-existent node, potentially in error
             if (node == null) {
 
-              // some nodes may be null since we are searching through all current and previous known nodes
+              // some nodes may be null since we are searching through all current and previous
+              // known nodes
               if (forAccessibilityEvent) {
                 continue;
               }
 
               responder.error(
-                      new FlipperObject.Builder()
-                              .put("message", "No accessibility node with given id")
-                              .put("id", id)
-                              .build());
+                  new FlipperObject.Builder()
+                      .put("message", "No accessibility node with given id")
+                      .put("id", id)
+                      .build());
               return;
             } else {
 
@@ -267,7 +270,7 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
                   result.put(node);
                 }
 
-              // normal getNodes call, put any nodes in result
+                // normal getNodes call, put any nodes in result
               } else {
                 result.put(node);
               }
@@ -278,20 +281,20 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
       };
 
   final FlipperReceiver mOnRequestAXFocus =
-          new MainThreadFlipperReceiver(mConnection) {
-            @Override
-            public void onReceiveOnMainThread(final FlipperObject params, final FlipperResponder responder)
-                    throws Exception {
-              final String nodeId = params.getString("id");
+      new MainThreadFlipperReceiver(mConnection) {
+        @Override
+        public void onReceiveOnMainThread(
+            final FlipperObject params, final FlipperResponder responder) throws Exception {
+          final String nodeId = params.getString("id");
 
-              final Object obj = mObjectTracker.get(nodeId);
-              if (obj == null || !(obj instanceof View)) {
-                return;
-              }
+          final Object obj = mObjectTracker.get(nodeId);
+          if (obj == null || !(obj instanceof View)) {
+            return;
+          }
 
-              ((View) obj).sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
-            }
-          };
+          ((View) obj).sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
+        }
+      };
 
   final FlipperReceiver mSetData =
       new MainThreadFlipperReceiver(mConnection) {
@@ -320,7 +323,7 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
           }
 
           descriptor.setValue(obj, path, value);
-          responder.success(ax ? getAXNode(nodeId): null);
+          responder.success(ax ? getAXNode(nodeId) : null);
         }
       };
 
@@ -374,13 +377,16 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
       };
 
   final FlipperReceiver mIsSearchActive =
-          new MainThreadFlipperReceiver(mConnection) {
-            @Override
-            public void onReceiveOnMainThread(final FlipperObject params, FlipperResponder responder)
-                    throws Exception {
-              responder.success(new FlipperObject.Builder().put("isSearchActive", ApplicationDescriptor.getSearchActive()).build());
-            }
-          };
+      new MainThreadFlipperReceiver(mConnection) {
+        @Override
+        public void onReceiveOnMainThread(final FlipperObject params, FlipperResponder responder)
+            throws Exception {
+          responder.success(
+              new FlipperObject.Builder()
+                  .put("isSearchActive", ApplicationDescriptor.getSearchActive())
+                  .build());
+        }
+      };
 
   final FlipperReceiver mGetSearchResults =
       new MainThreadFlipperReceiver(mConnection) {
@@ -390,7 +396,8 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
           final String query = params.getString("query");
           final boolean axEnabled = params.getBoolean("axEnabled");
 
-          final SearchResultNode matchTree = searchTree(query.toLowerCase(), mApplication, axEnabled);
+          final SearchResultNode matchTree =
+              searchTree(query.toLowerCase(), mApplication, axEnabled);
           final FlipperObject results = matchTree == null ? null : matchTree.toFlipperObject();
           final FlipperObject response =
               new FlipperObject.Builder().put("results", results).put("query", query).build();
@@ -407,24 +414,35 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
     @Override
     public boolean onHoverEvent(MotionEvent event) {
 
-      // if in layout inspector and talkback is running, override the first click to locate the clicked view
-      if (mConnection != null && AccessibilityUtil.isTalkbackEnabled(getContext()) && event.getPointerCount() == 1) {
-        FlipperObject params = new FlipperObject.Builder()
+      // if in layout inspector and talkback is running, override the first click to locate the
+      // clicked view
+      if (mConnection != null
+          && AccessibilityUtil.isTalkbackEnabled(getContext())
+          && event.getPointerCount() == 1) {
+        FlipperObject params =
+            new FlipperObject.Builder()
                 .put("type", "usage")
-                .put("eventName", "accessibility:clickToInspectTalkbackRunning").build();
+                .put("eventName", "accessibility:clickToInspectTalkbackRunning")
+                .build();
         mConnection.send("track", params);
 
         final int action = event.getAction();
         switch (action) {
-          case MotionEvent.ACTION_HOVER_ENTER: {
-            event.setAction(MotionEvent.ACTION_DOWN);
-          } break;
-          case MotionEvent.ACTION_HOVER_MOVE: {
-            event.setAction(MotionEvent.ACTION_MOVE);
-          } break;
-          case MotionEvent.ACTION_HOVER_EXIT: {
-            event.setAction(MotionEvent.ACTION_UP);
-          } break;
+          case MotionEvent.ACTION_HOVER_ENTER:
+            {
+              event.setAction(MotionEvent.ACTION_DOWN);
+            }
+            break;
+          case MotionEvent.ACTION_HOVER_MOVE:
+            {
+              event.setAction(MotionEvent.ACTION_MOVE);
+            }
+            break;
+          case MotionEvent.ACTION_HOVER_EXIT:
+            {
+              event.setAction(MotionEvent.ACTION_UP);
+            }
+            break;
         }
         return onTouchEvent(event);
       }
@@ -459,15 +477,14 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
       int y = touchY;
       Object node = mApplication;
 
-
       @Override
       public void finish() {
-        mConnection.send(ax ? "selectAX" : "select", new FlipperObject.Builder().put("path", path).build());
+        mConnection.send(
+            ax ? "selectAX" : "select", new FlipperObject.Builder().put("path", path).build());
       }
 
       @Override
-      public void continueWithOffset(
-              final int childIndex, final int offsetX, final int offsetY) {
+      public void continueWithOffset(final int childIndex, final int offsetX, final int offsetY) {
         final Touch touch = this;
 
         new ErrorReportingRunnable(mConnection) {
@@ -507,7 +524,8 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
     descriptor.axHitTest(mApplication, createTouch(touchX, touchY, true));
   }
 
-  private void setHighlighted(final String id, final boolean highlighted, final boolean isAlignmentMode) throws Exception {
+  private void setHighlighted(
+      final String id, final boolean highlighted, final boolean isAlignmentMode) throws Exception {
     final Object obj = mObjectTracker.get(id);
     if (obj == null) {
       return;
@@ -545,7 +563,8 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
     if (isMatch || childTrees != null) {
       final String id = trackObject(obj);
       FlipperObject node = getNode(id);
-      return new SearchResultNode(id, isMatch, node, childTrees, axEnabled && hasAXNode(node) ? getAXNode(id) : null);
+      return new SearchResultNode(
+          id, isMatch, node, childTrees, axEnabled && hasAXNode(node) ? getAXNode(id) : null);
     }
     return null;
   }

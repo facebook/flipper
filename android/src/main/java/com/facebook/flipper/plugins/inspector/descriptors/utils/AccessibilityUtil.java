@@ -94,13 +94,15 @@ public final class AccessibilityUtil {
   }
 
   /**
-   * Given a {@link Context}, determine if an accessibility touch exploration service (TalkBack) is running.
+   * Given a {@link Context}, determine if an accessibility touch exploration service (TalkBack) is
+   * running.
    *
    * @param context The {@link Context} used to get the {@link AccessibilityManager}.
    * @return {@code true} if an accessibility touch exploration service is currently running.
    */
   public static boolean isTalkbackEnabled(Context context) {
-    return ((AccessibilityManager) context.getSystemService(ACCESSIBILITY_SERVICE)).isTouchExplorationEnabled();
+    return ((AccessibilityManager) context.getSystemService(ACCESSIBILITY_SERVICE))
+        .isTouchExplorationEnabled();
   }
 
   /**
@@ -223,15 +225,18 @@ public final class AccessibilityUtil {
   }
 
   /**
-   * Adds the state segments of Talkback's response to a given list. This should be kept up to date as
-   * much as necessary. Details can be seen in the source code here :
+   * Adds the state segments of Talkback's response to a given list. This should be kept up to date
+   * as much as necessary. Details can be seen in the source code here :
    *
-   * https://github.com/google/talkback/compositor/src/main/res/raw/compositor.json
-   *  - search for "description_for_tree_status", "get_switch_state"
+   * <p>https://github.com/google/talkback/compositor/src/main/res/raw/compositor.json - search for
+   * "description_for_tree_status", "get_switch_state"
    *
-   * https://github.com/google/talkback/compositor/src/main/res/values/strings.xml
+   * <p>https://github.com/google/talkback/compositor/src/main/res/values/strings.xml
    */
-  private static void addStateSegments(StringBuilder talkbackSegments, AccessibilityNodeInfoCompat node, AccessibilityRoleUtil.AccessibilityRole role) {
+  private static void addStateSegments(
+      StringBuilder talkbackSegments,
+      AccessibilityNodeInfoCompat node,
+      AccessibilityRoleUtil.AccessibilityRole role) {
     // selected status is always prepended
     if (node.isSelected()) {
       talkbackSegments.append("selected" + delimiter);
@@ -247,14 +252,17 @@ public final class AccessibilityUtil {
     }
 
     String roleString = role.getRoleString();
-    if (node.isCheckable() && !roleString.equals("Switch") &&
-            (!role.equals(AccessibilityRoleUtil.AccessibilityRole.CHECKED_TEXT_VIEW) || node.isChecked())) {
+    if (node.isCheckable()
+        && !roleString.equals("Switch")
+        && (!role.equals(AccessibilityRoleUtil.AccessibilityRole.CHECKED_TEXT_VIEW)
+            || node.isChecked())) {
       talkbackSegments.append((node.isChecked() ? "checked" : "not checked") + delimiter);
     }
 
     if (roleString.equals("Switch")) {
       CharSequence switchState = node.getText();
-      if (TextUtils.isEmpty(switchState) || role == AccessibilityRoleUtil.AccessibilityRole.TOGGLE_BUTTON) {
+      if (TextUtils.isEmpty(switchState)
+          || role == AccessibilityRoleUtil.AccessibilityRole.TOGGLE_BUTTON) {
         talkbackSegments.append((node.isChecked() ? "checked" : "not checked") + delimiter);
       } else {
         talkbackSegments.append(switchState + delimiter);
@@ -271,6 +279,7 @@ public final class AccessibilityUtil {
   }
 
   private static final int SYSTEM_ACTION_MAX = 0x01FFFFFF;
+
   private static String getHintForCustomActions(AccessibilityNodeInfoCompat node) {
     StringBuilder customActions = new StringBuilder();
     for (AccessibilityNodeInfoCompat.AccessibilityActionCompat action : node.getActionList()) {
@@ -294,15 +303,18 @@ public final class AccessibilityUtil {
     return actions.length() > 0 ? "Actions: " + actions : "";
   }
 
-  // currently this is not used because the Talkback source logic seems erroneous resulting in get_hint_for_actions never
+  // currently this is not used because the Talkback source logic seems erroneous resulting in
+  // get_hint_for_actions never
   // returning any strings - see the TO DO in getTalkbackHint below once source is fixed
   private static String getHintForActions(AccessibilityNodeInfoCompat node) {
     StringBuilder actions = new StringBuilder();
     for (AccessibilityNodeInfoCompat.AccessibilityActionCompat action : node.getActionList()) {
       int id = action.getId();
       CharSequence label = action.getLabel();
-      if (id != AccessibilityNodeInfoCompat.ACTION_CLICK && id != AccessibilityNodeInfoCompat.ACTION_LONG_CLICK &&
-              !TextUtils.isEmpty(label) && id <= SYSTEM_ACTION_MAX) {
+      if (id != AccessibilityNodeInfoCompat.ACTION_CLICK
+          && id != AccessibilityNodeInfoCompat.ACTION_LONG_CLICK
+          && !TextUtils.isEmpty(label)
+          && id <= SYSTEM_ACTION_MAX) {
         actions.append(label + delimiter);
       }
     }
@@ -346,19 +358,18 @@ public final class AccessibilityUtil {
     return "";
   }
 
-
   /**
-   * Creates the text that Google's TalkBack screen reader will read aloud for a given {@link View}'s hint.
-   * This hint is generally ported over from Google's TalkBack screen reader, and this should be kept up to
-   * date with their implementation (as much as necessary).  Hints can be turned off by user, so it may not
-   * actually be spoken and this method assumes the selection style is double tapping (it can also be set to
-   * keyboard or single tap but the general idea for the hint is the same). Details can be seen in their
-   * source code here:
+   * Creates the text that Google's TalkBack screen reader will read aloud for a given {@link
+   * View}'s hint. This hint is generally ported over from Google's TalkBack screen reader, and this
+   * should be kept up to date with their implementation (as much as necessary). Hints can be turned
+   * off by user, so it may not actually be spoken and this method assumes the selection style is
+   * double tapping (it can also be set to keyboard or single tap but the general idea for the hint
+   * is the same). Details can be seen in their source code here:
    *
-   * https://github.com/google/talkback/compositor/src/main/res/raw/compositor.json
-   *  - search for "get_hint_from_node"
+   * <p>https://github.com/google/talkback/compositor/src/main/res/raw/compositor.json - search for
+   * "get_hint_from_node"
    *
-   * https://github.com/google/talkback/compositor/src/main/res/values/strings.xml
+   * <p>https://github.com/google/talkback/compositor/src/main/res/values/strings.xml
    *
    * @param view The {@link View} to evaluate for a hint.
    * @return {@code String} representing the hint talkback will say when a {@link View} is focused.
@@ -378,24 +389,31 @@ public final class AccessibilityUtil {
       if (role == AccessibilityRoleUtil.AccessibilityRole.DROP_DOWN_LIST) {
         return "Double tap to change";
       } else if (role == AccessibilityRoleUtil.AccessibilityRole.PAGER) {
-        if (supportsAction(node, AccessibilityNodeInfoCompat.ACTION_SCROLL_FORWARD) || supportsAction(node, AccessibilityNodeInfoCompat.ACTION_SCROLL_BACKWARD)) {
+        if (supportsAction(node, AccessibilityNodeInfoCompat.ACTION_SCROLL_FORWARD)
+            || supportsAction(node, AccessibilityNodeInfoCompat.ACTION_SCROLL_BACKWARD)) {
           return "Swipe with two fingers to switch pages";
         } else {
           return "No more pages";
         }
-      } else if (role == AccessibilityRoleUtil.AccessibilityRole.SEEK_CONTROL &&
-              (supportsAction(node, AccessibilityNodeInfoCompat.ACTION_SCROLL_FORWARD) || supportsAction(node, AccessibilityNodeInfoCompat.ACTION_SCROLL_BACKWARD))) {
+      } else if (role == AccessibilityRoleUtil.AccessibilityRole.SEEK_CONTROL
+          && (supportsAction(node, AccessibilityNodeInfoCompat.ACTION_SCROLL_FORWARD)
+              || supportsAction(node, AccessibilityNodeInfoCompat.ACTION_SCROLL_BACKWARD))) {
         return "Use volume keys to adjust";
       } else {
 
         // first custom actions
         String segmentToAdd = getHintForCustomActions(node);
-        if (segmentToAdd.length() > 0) { hint.append(segmentToAdd + delimiter); }
+        if (segmentToAdd.length() > 0) {
+          hint.append(segmentToAdd + delimiter);
+        }
 
         // TODO: add getHintForActions(node) here if Talkback source gets fixed.
-        // Currently the "get_hint_for_actions" in the compositor source never adds to Talkback output
-        // because of a mismatched if condition/body. If this changes, we should also add a getHintForActions
-        // method here. Source at https://github.com/google/talkback/compositor/src/main/res/raw/compositor.json
+        // Currently the "get_hint_for_actions" in the compositor source never adds to Talkback
+        // output
+        // because of a mismatched if condition/body. If this changes, we should also add a
+        // getHintForActions
+        // method here. Source at
+        // https://github.com/google/talkback/compositor/src/main/res/raw/compositor.json
 
         // then normal tap (special case for EditText)
         if (role == AccessibilityRoleUtil.AccessibilityRole.EDIT_TEXT) {
@@ -404,12 +422,16 @@ public final class AccessibilityUtil {
           }
         } else {
           segmentToAdd = getHintForClick(node);
-          if (segmentToAdd.length() > 0) { hint.append(segmentToAdd + delimiter); }
+          if (segmentToAdd.length() > 0) {
+            hint.append(segmentToAdd + delimiter);
+          }
         }
 
         // then long press
         segmentToAdd = getHintForLongClick(node);
-        if (segmentToAdd.length() > 0) { hint.append(segmentToAdd + delimiter); }
+        if (segmentToAdd.length() > 0) {
+          hint.append(segmentToAdd + delimiter);
+        }
       }
     }
     node.recycle();
@@ -421,11 +443,12 @@ public final class AccessibilityUtil {
    * This may be any combination of the {@link View}'s {@code text}, {@code contentDescription}, and
    * the {@code text} and {@code contentDescription} of any ancestor {@link View}.
    *
-   * This description is generally ported over from Google's TalkBack screen reader, and this should be kept up to
-   * date with their implementation (as much as necessary). Details can be seen in their source code here:
+   * <p>This description is generally ported over from Google's TalkBack screen reader, and this
+   * should be kept up to date with their implementation (as much as necessary). Details can be seen
+   * in their source code here:
    *
-   * https://github.com/google/talkback/compositor/src/main/res/raw/compositor.json
-   *  - search for "get_description_for_tree", "append_description_for_tree", "description_for_tree_nodes"
+   * <p>https://github.com/google/talkback/compositor/src/main/res/raw/compositor.json - search for
+   * "get_description_for_tree", "append_description_for_tree", "description_for_tree_nodes"
    *
    * @param view The {@link View} to evaluate.
    * @return {@code String} representing what talkback will say when a {@link View} is focused.
@@ -449,7 +472,8 @@ public final class AccessibilityUtil {
       if (roleString == null) {
         roleString = role.getRoleString();
       }
-      boolean disabled = AccessibilityEvaluationUtil.isActionableForAccessibility(node) && !node.isEnabled();
+      boolean disabled =
+          AccessibilityEvaluationUtil.isActionableForAccessibility(node) && !node.isEnabled();
 
       // EditText's prioritize their own text content over a contentDescription so skip this
       if (!TextUtils.isEmpty(contentDescription) && (!isEditText || !hasNodeText)) {
@@ -461,10 +485,14 @@ public final class AccessibilityUtil {
         talkbackSegments.append(contentDescription + delimiter);
 
         // then role
-        if (roleString.length() > 0) { talkbackSegments.append(roleString + delimiter); }
+        if (roleString.length() > 0) {
+          talkbackSegments.append(roleString + delimiter);
+        }
 
         // lastly disabled is appended if applicable
-        if (disabled) { talkbackSegments.append("disabled" + delimiter); }
+        if (disabled) {
+          talkbackSegments.append("disabled" + delimiter);
+        }
 
         return removeFinalDelimiter(talkbackSegments);
       }
@@ -473,8 +501,12 @@ public final class AccessibilityUtil {
       if (hasNodeText) {
         // skip status checks for EditText, but description, role, and disabled are included
         talkbackSegments.append(nodeText + delimiter);
-        if (roleString.length() > 0) { talkbackSegments.append(roleString + delimiter); }
-        if (disabled) { talkbackSegments.append("disabled" + delimiter); }
+        if (roleString.length() > 0) {
+          talkbackSegments.append(roleString + delimiter);
+        }
+        if (disabled) {
+          talkbackSegments.append("disabled" + delimiter);
+        }
 
         return removeFinalDelimiter(talkbackSegments);
       }
@@ -511,9 +543,9 @@ public final class AccessibilityUtil {
   }
 
   /**
-   * Creates a {@link FlipperObject} of useful properties of AccessibilityNodeInfo, to be shown in the
-   * Flipper Layout Inspector accessibility extension. All properties are immutable since they are all derived from
-   * various {@link View} properties. This is a more complete list than
+   * Creates a {@link FlipperObject} of useful properties of AccessibilityNodeInfo, to be shown in
+   * the Flipper Layout Inspector accessibility extension. All properties are immutable since they
+   * are all derived from various {@link View} properties. This is a more complete list than
    * getAccessibilityNodeInfoProperties returns.
    *
    * @param view The {@link View} to derive the AccessibilityNodeInfo properties from.
@@ -597,7 +629,7 @@ public final class AccessibilityUtil {
 
   public static boolean isAXFocused(View view) {
     final AccessibilityNodeInfoCompat nodeInfo =
-            ViewAccessibilityHelper.createNodeInfoFromView(view);
+        ViewAccessibilityHelper.createNodeInfoFromView(view);
     if (nodeInfo == null) {
       return false;
     } else {
@@ -608,8 +640,8 @@ public final class AccessibilityUtil {
   }
 
   /**
-   * Modifies a {@link FlipperObject.Builder} to add Talkback-specific Accessibiltiy properties to be
-   * shown in the Flipper Layout Inspector.
+   * Modifies a {@link FlipperObject.Builder} to add Talkback-specific Accessibiltiy properties to
+   * be shown in the Flipper Layout Inspector.
    *
    * @param props The {@link FlipperObject.Builder} to add the properties to.
    * @param view The {@link View} to derive the properties from.
@@ -634,13 +666,14 @@ public final class AccessibilityUtil {
     // This needs to be an empty string to be mutable. See t20470623.
     CharSequence contentDescription =
         view.getContentDescription() != null ? view.getContentDescription() : "";
-    props.put("content-description", InspectorValue.mutable(contentDescription))
-            .put("focusable", InspectorValue.mutable(view.isFocusable()))
-            .put("selected", InspectorValue.mutable(view.isSelected()))
-            .put("enabled", InspectorValue.mutable(view.isEnabled()))
-            .put("long-clickable", InspectorValue.mutable(view.isLongClickable()))
-            .put("clickable", InspectorValue.mutable(view.isClickable()))
-            .put("focused", view.isFocused());
+    props
+        .put("content-description", InspectorValue.mutable(contentDescription))
+        .put("focusable", InspectorValue.mutable(view.isFocusable()))
+        .put("selected", InspectorValue.mutable(view.isSelected()))
+        .put("enabled", InspectorValue.mutable(view.isEnabled()))
+        .put("long-clickable", InspectorValue.mutable(view.isLongClickable()))
+        .put("clickable", InspectorValue.mutable(view.isClickable()))
+        .put("focused", view.isFocused());
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       props.put("accessibility-focused", view.isAccessibilityFocused());
@@ -660,19 +693,19 @@ public final class AccessibilityUtil {
     if (!AccessibilityEvaluationUtil.isTalkbackFocusable(view)) {
       String reason = getTalkbackIgnoredReasons(view);
       return new FlipperObject.Builder()
-              .put("talkback-focusable", false)
-              .put("talkback-ignored-reasons", reason == null ? "" : reason)
-              .build();
+          .put("talkback-focusable", false)
+          .put("talkback-ignored-reasons", reason == null ? "" : reason)
+          .build();
     } else {
       String reason = getTalkbackFocusableReasons(view);
       CharSequence description = getTalkbackDescription(view);
       CharSequence hint = getTalkbackHint(view);
       return new FlipperObject.Builder()
-              .put("talkback-focusable", true)
-              .put("talkback-focusable-reasons", reason)
-              .put("talkback-output", description)
-              .put("talkback-hint", hint)
-              .build();
+          .put("talkback-focusable", true)
+          .put("talkback-focusable-reasons", reason)
+          .put("talkback-output", description)
+          .put("talkback-hint", hint)
+          .build();
     }
   }
 }

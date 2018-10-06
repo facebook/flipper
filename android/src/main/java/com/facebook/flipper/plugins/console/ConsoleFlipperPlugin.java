@@ -30,6 +30,5 @@ public class ConsoleFlipperPlugin implements FlipperPlugin {
     ConsoleCommandReceiver.listenForCommands(connection, mJavascriptEnvironment);
   }
 
-  public void onDisconnect() throws Exception {
-  }
+  public void onDisconnect() throws Exception {}
 }

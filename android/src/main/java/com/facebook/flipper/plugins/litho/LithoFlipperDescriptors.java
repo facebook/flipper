@@ -2,9 +2,9 @@
 
 package com.facebook.flipper.plugins.litho;
 
+import com.facebook.flipper.plugins.inspector.DescriptorMapping;
 import com.facebook.litho.DebugComponent;
 import com.facebook.litho.LithoView;
-import com.facebook.flipper.plugins.inspector.DescriptorMapping;
 
 public final class LithoFlipperDescriptors {
 

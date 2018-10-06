@@ -44,8 +44,9 @@ public abstract class NodeDescriptor<T> {
   }
 
   /**
-   * Invalidate a node. This tells Flipper that this node is no longer valid and its properties and/or
-   * children have changed. This will trigger Flipper to re-query this node getting any new data.
+   * Invalidate a node. This tells Flipper that this node is no longer valid and its properties
+   * and/or children have changed. This will trigger Flipper to re-query this node getting any new
+   * data.
    */
   protected final void invalidate(final T node) {
     if (mConnection != null) {
@@ -64,8 +65,9 @@ public abstract class NodeDescriptor<T> {
   }
 
   /**
-   * Invalidate a node in the ax tree. This tells Flipper that this node is no longer valid and its properties and/or
-   * children have changed. This will trigger Flipper to re-query this node getting any new data.
+   * Invalidate a node in the ax tree. This tells Flipper that this node is no longer valid and its
+   * properties and/or children have changed. This will trigger Flipper to re-query this node
+   * getting any new data.
    */
   protected final void invalidateAX(final T node) {
     if (mConnection != null) {
@@ -73,9 +75,9 @@ public abstract class NodeDescriptor<T> {
         @Override
         protected void runOrThrow() throws Exception {
           FlipperArray array =
-                  new FlipperArray.Builder()
-                          .put(new FlipperObject.Builder().put("id", getId(node)).build())
-                          .build();
+              new FlipperArray.Builder()
+                  .put(new FlipperObject.Builder().put("id", getId(node)).build())
+                  .build();
           FlipperObject params = new FlipperObject.Builder().put("nodes", array).build();
           mConnection.send("invalidateAX", params);
         }
@@ -179,22 +181,22 @@ public abstract class NodeDescriptor<T> {
 
   /**
    * Perform hit testing on the given ax node. Either continue the search in an ax child with {@link
-   * Touch#continueWithOffset(int, int, int, boolean)} or finish the hit testing on this ax node with {@link
-   * Touch#finish()}
+   * Touch#continueWithOffset(int, int, int, boolean)} or finish the hit testing on this ax node
+   * with {@link Touch#finish()}
    */
   public void axHitTest(T node, Touch touch) throws Exception {
     touch.finish();
   }
 
   /**
-   * @return A string indicating how this element should be decorated. Check with the Flipper desktop
-   *     app to see what values are supported.
+   * @return A string indicating how this element should be decorated. Check with the Flipper
+   *     desktop app to see what values are supported.
    */
   public abstract String getDecoration(T node) throws Exception;
 
   /**
-   * @return A string indicating how this element should be decorated in the AX tree. Check with the Flipper desktop
-   *     app to see what values are supported.
+   * @return A string indicating how this element should be decorated in the AX tree. Check with the
+   *     Flipper desktop app to see what values are supported.
    */
   public String getAXDecoration(T node) throws Exception {
     return null;

@@ -8,9 +8,9 @@
 package com.facebook.flipper.core;
 
 /**
- * FlipperResponder is used to asyncronously response to a messaged recieved from the Flipper desktop
- * app. The Flipper Responder will automatically wrap the response in an approriate object depending
- * on if it is an error or not.
+ * FlipperResponder is used to asyncronously response to a messaged recieved from the Flipper
+ * desktop app. The Flipper Responder will automatically wrap the response in an approriate object
+ * depending on if it is an error or not.
  */
 public interface FlipperResponder {
 

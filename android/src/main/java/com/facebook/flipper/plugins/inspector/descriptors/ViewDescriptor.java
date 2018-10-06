@@ -99,7 +99,6 @@ public class ViewDescriptor extends NodeDescriptor<View> {
       }
     }
     return "NULL NODEINFO OR CLASSNAME";
-
   }
 
   @Override
@@ -195,8 +194,7 @@ public class ViewDescriptor extends NodeDescriptor<View> {
       viewProps.put("foreground", fromDrawable(node.getForeground()));
     }
 
-    return Arrays.asList(
-        new Named<>("View", viewProps.build()));
+    return Arrays.asList(new Named<>("View", viewProps.build()));
   }
 
   @Override
@@ -442,9 +440,9 @@ public class ViewDescriptor extends NodeDescriptor<View> {
   @Override
   public FlipperObject getExtraInfo(View node) {
     return new FlipperObject.Builder()
-            .put("focused", AccessibilityUtil.isAXFocused(node))
-            .put("hasAXNode", true)
-            .build();
+        .put("focused", AccessibilityUtil.isAXFocused(node))
+        .put("hasAXNode", true)
+        .build();
   }
 
   @Nullable

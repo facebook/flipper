@@ -4,13 +4,13 @@ package com.facebook.flipper.plugins.litho;
 
 import android.graphics.Rect;
 import android.view.ViewGroup;
-import com.facebook.litho.DebugComponent;
-import com.facebook.litho.LithoView;
 import com.facebook.flipper.core.FlipperDynamic;
 import com.facebook.flipper.core.FlipperObject;
 import com.facebook.flipper.plugins.inspector.Named;
 import com.facebook.flipper.plugins.inspector.NodeDescriptor;
 import com.facebook.flipper.plugins.inspector.Touch;
+import com.facebook.litho.DebugComponent;
+import com.facebook.litho.LithoView;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
@@ -125,7 +125,8 @@ public class LithoViewDescriptor extends NodeDescriptor<LithoView> {
   }
 
   @Override
-  public void setHighlighted(LithoView node, boolean selected, boolean isAlignmentMode) throws Exception {
+  public void setHighlighted(LithoView node, boolean selected, boolean isAlignmentMode)
+      throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
     descriptor.setHighlighted(node, selected, isAlignmentMode);
   }

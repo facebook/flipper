@@ -26,18 +26,17 @@ import com.facebook.flipper.plugins.inspector.InspectorFlipperPlugin.TouchOverla
 import com.facebook.flipper.plugins.inspector.descriptors.ApplicationDescriptor;
 import com.facebook.flipper.testing.FlipperConnectionMock;
 import com.facebook.flipper.testing.FlipperResponderMock;
-import org.robolectric.RobolectricTestRunner;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nullable;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
-
-import javax.annotation.Nullable;
 
 @RunWith(RobolectricTestRunner.class)
 public class InspectorSonarPluginTest {
@@ -270,7 +269,8 @@ public class InspectorSonarPluginTest {
         hasItem(
             new FlipperObject.Builder()
                 .put(
-                    "path", new FlipperArray.Builder().put("com.facebook.flipper").put("test").put("3"))
+                    "path",
+                    new FlipperArray.Builder().put("com.facebook.flipper").put("test").put("3"))
                 .build()));
   }
 

@@ -11,6 +11,14 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.v4.util.Pair;
 import android.view.View;
+import com.facebook.flipper.core.FlipperDynamic;
+import com.facebook.flipper.core.FlipperObject;
+import com.facebook.flipper.plugins.inspector.HighlightedOverlay;
+import com.facebook.flipper.plugins.inspector.InspectorValue;
+import com.facebook.flipper.plugins.inspector.Named;
+import com.facebook.flipper.plugins.inspector.NodeDescriptor;
+import com.facebook.flipper.plugins.inspector.Touch;
+import com.facebook.flipper.plugins.inspector.descriptors.ObjectDescriptor;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.DebugComponent;
@@ -20,14 +28,6 @@ import com.facebook.litho.StateContainer;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.reference.Reference;
-import com.facebook.flipper.core.FlipperDynamic;
-import com.facebook.flipper.core.FlipperObject;
-import com.facebook.flipper.plugins.inspector.HighlightedOverlay;
-import com.facebook.flipper.plugins.inspector.InspectorValue;
-import com.facebook.flipper.plugins.inspector.Named;
-import com.facebook.flipper.plugins.inspector.NodeDescriptor;
-import com.facebook.flipper.plugins.inspector.Touch;
-import com.facebook.flipper.plugins.inspector.descriptors.ObjectDescriptor;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
@@ -63,8 +63,7 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
         }
 
         @Override
-        public void applyStateOverrides(
-            String key, StateContainer stateContainer) {
+        public void applyStateOverrides(String key, StateContainer stateContainer) {
           final List<Pair<String[], FlipperDynamic>> overrides = mOverrides.get(key);
           if (overrides == null) {
             return;
@@ -497,7 +496,8 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
     return descriptor.matches(query, node);
   }
 
-  private static void applyLayoutOverride(DebugLayoutNode node, String[] path, FlipperDynamic value) {
+  private static void applyLayoutOverride(
+      DebugLayoutNode node, String[] path, FlipperDynamic value) {
     switch (path[0]) {
       case "background":
         node.setBackgroundColor(value.asInt());

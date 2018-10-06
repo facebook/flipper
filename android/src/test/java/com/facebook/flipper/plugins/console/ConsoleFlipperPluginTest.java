@@ -13,10 +13,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import com.facebook.flipper.core.FlipperObject;
 import com.facebook.flipper.testing.FlipperConnectionMock;
 import com.facebook.flipper.testing.FlipperResponderMock;
-import org.robolectric.RobolectricTestRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 
 @RunWith(RobolectricTestRunner.class)
 public class ConsoleFlipperPluginTest {

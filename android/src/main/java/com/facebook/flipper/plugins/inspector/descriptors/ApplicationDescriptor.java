@@ -19,7 +19,6 @@ import com.facebook.flipper.plugins.inspector.ApplicationWrapper;
 import com.facebook.flipper.plugins.inspector.Named;
 import com.facebook.flipper.plugins.inspector.NodeDescriptor;
 import com.facebook.flipper.plugins.inspector.Touch;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -79,45 +78,46 @@ public class ApplicationDescriptor extends NodeDescriptor<ApplicationWrapper> {
       if (view instanceof ViewGroup && !hasDelegateAlready) {
 
         // add delegate to root to catch accessibility events so we can update focus in Flipper
-        view.setAccessibilityDelegate(new View.AccessibilityDelegate() {
-          @Override
-          public boolean onRequestSendAccessibilityEvent(ViewGroup host, View child, AccessibilityEvent event) {
-            if (mConnection != null) {
+        view.setAccessibilityDelegate(
+            new View.AccessibilityDelegate() {
+              @Override
+              public boolean onRequestSendAccessibilityEvent(
+                  ViewGroup host, View child, AccessibilityEvent event) {
+                if (mConnection != null) {
 
-              // the touchOverlay will handle the event in this case
-              if (searchActive) {
-                return false;
+                  // the touchOverlay will handle the event in this case
+                  if (searchActive) {
+                    return false;
+                  }
+
+                  // otherwise send the necessary focus event to the plugin
+                  int eventType = event.getEventType();
+                  if (eventType == AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED) {
+                    mConnection.send(
+                        "axFocusEvent", new FlipperObject.Builder().put("isFocus", true).build());
+                  } else if (eventType
+                      == AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUS_CLEARED) {
+                    mConnection.send(
+                        "axFocusEvent", new FlipperObject.Builder().put("isFocus", false).build());
+                  } else if (eventType == AccessibilityEvent.TYPE_VIEW_CLICKED) {
+                    mConnection.send(
+                        "axFocusEvent",
+                        new FlipperObject.Builder()
+                            .put("isFocus", false)
+                            .put("isClick", true)
+                            .build());
+                  }
+                }
+                return super.onRequestSendAccessibilityEvent(host, child, event);
               }
-
-              // otherwise send the necessary focus event to the plugin
-              int eventType = event.getEventType();
-              if (eventType == AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED) {
-                mConnection.send("axFocusEvent",
-                        new FlipperObject.Builder()
-                                .put("isFocus", true)
-                                .build());
-              } else if (eventType == AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUS_CLEARED) {
-                mConnection.send("axFocusEvent",
-                        new FlipperObject.Builder()
-                                .put("isFocus", false)
-                                .build());
-              } else if (eventType == AccessibilityEvent.TYPE_VIEW_CLICKED) {
-                mConnection.send("axFocusEvent",
-                        new FlipperObject.Builder()
-                                .put("isFocus", false)
-                                .put("isClick", true)
-                                .build());
-              }
-
-            }
-            return super.onRequestSendAccessibilityEvent(host, child, event);
-          }
-        });
+            });
         editedDelegates.add((ViewGroup) view);
       } else if (hasDelegateAlready) {
-        FlipperObject params = new FlipperObject.Builder()
+        FlipperObject params =
+            new FlipperObject.Builder()
                 .put("type", "usage")
-                .put("eventName", "accessibility:hasDelegateAlready").build();
+                .put("eventName", "accessibility:hasDelegateAlready")
+                .build();
         mConnection.send("track", params);
       }
     }
@@ -218,7 +218,8 @@ public class ApplicationDescriptor extends NodeDescriptor<ApplicationWrapper> {
   }
 
   @Override
-  public void setHighlighted(ApplicationWrapper node, boolean selected, boolean isAlignmentMode) throws Exception {
+  public void setHighlighted(ApplicationWrapper node, boolean selected, boolean isAlignmentMode)
+      throws Exception {
     final int childCount = getChildCount(node);
     if (childCount > 0) {
       final Object topChild = getChildAt(node, childCount - 1);
@@ -242,7 +243,7 @@ public class ApplicationDescriptor extends NodeDescriptor<ApplicationWrapper> {
   }
 
   @Override
-  public void hitTest(ApplicationWrapper node, Touch touch) throws Exception{
+  public void hitTest(ApplicationWrapper node, Touch touch) throws Exception {
     runHitTest(node, touch, false);
   }
 

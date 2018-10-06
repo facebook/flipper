@@ -8,9 +8,9 @@
 package com.facebook.flipper.core;
 
 /**
- * A connection between a FlipperPlugin and the desktop Flipper application. Register request handlers
- * to respond to calls made by the desktop application or directly send messages to the desktop
- * application.
+ * A connection between a FlipperPlugin and the desktop Flipper application. Register request
+ * handlers to respond to calls made by the desktop application or directly send messages to the
+ * desktop application.
  */
 public interface FlipperConnection {
 

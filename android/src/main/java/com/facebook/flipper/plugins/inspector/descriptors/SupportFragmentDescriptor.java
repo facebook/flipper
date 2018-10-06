@@ -84,7 +84,8 @@ public class SupportFragmentDescriptor extends NodeDescriptor<Fragment> {
   }
 
   @Override
-  public void setHighlighted(Fragment node, boolean selected, boolean isAlignmentMode) throws Exception {
+  public void setHighlighted(Fragment node, boolean selected, boolean isAlignmentMode)
+      throws Exception {
     if (node.getView() == null) {
       return;
     }

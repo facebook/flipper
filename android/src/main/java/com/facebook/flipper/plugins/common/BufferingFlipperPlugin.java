@@ -15,8 +15,8 @@ import javax.annotation.Nullable;
 /**
  * Flipper plugin that keeps events in a buffer until a connection is available.
  *
- * <p>In order to send data to the {@link FlipperConnection}, use {@link #send(String, FlipperObject)}
- * instead of {@link FlipperConnection#send(String, FlipperObject)}.
+ * <p>In order to send data to the {@link FlipperConnection}, use {@link #send(String,
+ * FlipperObject)} instead of {@link FlipperConnection#send(String, FlipperObject)}.
  */
 public abstract class BufferingFlipperPlugin implements FlipperPlugin {
 

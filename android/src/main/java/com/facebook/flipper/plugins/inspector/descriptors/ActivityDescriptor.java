@@ -78,7 +78,8 @@ public class ActivityDescriptor extends NodeDescriptor<Activity> {
   }
 
   @Override
-  public void setHighlighted(Activity node, boolean selected, boolean isAlignmentMode) throws Exception {
+  public void setHighlighted(Activity node, boolean selected, boolean isAlignmentMode)
+      throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(Window.class);
     descriptor.setHighlighted(node.getWindow(), selected, isAlignmentMode);
   }

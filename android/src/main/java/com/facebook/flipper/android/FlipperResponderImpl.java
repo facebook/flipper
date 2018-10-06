@@ -7,13 +7,13 @@
  */
 package com.facebook.flipper.android;
 
-import com.facebook.jni.HybridData;
-import com.facebook.proguard.annotations.DoNotStrip;
-import com.facebook.soloader.SoLoader;
 import com.facebook.flipper.BuildConfig;
 import com.facebook.flipper.core.FlipperArray;
 import com.facebook.flipper.core.FlipperObject;
 import com.facebook.flipper.core.FlipperResponder;
+import com.facebook.jni.HybridData;
+import com.facebook.proguard.annotations.DoNotStrip;
+import com.facebook.soloader.SoLoader;
 
 @DoNotStrip
 class FlipperResponderImpl implements FlipperResponder {

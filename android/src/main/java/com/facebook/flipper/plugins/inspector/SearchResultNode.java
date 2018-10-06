@@ -19,11 +19,14 @@ public class SearchResultNode {
   private final boolean isMatch;
   private final FlipperObject element;
   private final FlipperObject axElement;
-  @Nullable
-  private final List<SearchResultNode> children;
+  @Nullable private final List<SearchResultNode> children;
 
   SearchResultNode(
-      String id, boolean isMatch, FlipperObject element, List<SearchResultNode> children, FlipperObject axElement) {
+      String id,
+      boolean isMatch,
+      FlipperObject element,
+      List<SearchResultNode> children,
+      FlipperObject axElement) {
     this.id = id;
     this.isMatch = isMatch;
     this.element = element;

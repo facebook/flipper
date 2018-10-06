@@ -44,5 +44,4 @@ public final class ViewAccessibilityHelper {
 
     return nodeInfo;
   }
-
 }
