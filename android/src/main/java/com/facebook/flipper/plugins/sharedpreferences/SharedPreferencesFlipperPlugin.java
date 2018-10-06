@@ -17,12 +17,15 @@ import com.facebook.flipper.core.FlipperObject;
 import com.facebook.flipper.core.FlipperPlugin;
 import com.facebook.flipper.core.FlipperReceiver;
 import com.facebook.flipper.core.FlipperResponder;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class SharedPreferencesFlipperPlugin implements FlipperPlugin {
 
   private FlipperConnection mConnection;
-  private final SharedPreferences mSharedPreferences;
+  private final Map<SharedPreferences, SharedPreferencesDescriptor> mSharedPreferences;
   private final SharedPreferences.OnSharedPreferenceChangeListener
       onSharedPreferenceChangeListener =
           new SharedPreferences.OnSharedPreferenceChangeListener() {
@@ -31,13 +34,18 @@ public class SharedPreferencesFlipperPlugin implements FlipperPlugin {
               if (mConnection == null) {
                 return;
               }
+              SharedPreferencesDescriptor descriptor = mSharedPreferences.get(sharedPreferences);
+              if (descriptor == null) {
+                return;
+              }
               mConnection.send(
                   "sharedPreferencesChange",
                   new FlipperObject.Builder()
+                      .put("preferences", descriptor.name)
                       .put("name", key)
-                      .put("deleted", !mSharedPreferences.contains(key))
+                      .put("deleted", !sharedPreferences.contains(key))
                       .put("time", System.currentTimeMillis())
-                      .put("value", mSharedPreferences.getAll().get(key))
+                      .put("value", sharedPreferences.getAll().get(key))
                       .build());
             }
           };
@@ -71,8 +79,26 @@ public class SharedPreferencesFlipperPlugin implements FlipperPlugin {
    * @param mode The Context mode to utilize.
    */
   public SharedPreferencesFlipperPlugin(Context context, String name, int mode) {
-    mSharedPreferences = context.getSharedPreferences(name, mode);
-    mSharedPreferences.registerOnSharedPreferenceChangeListener(onSharedPreferenceChangeListener);
+    this(context, Arrays.asList(new SharedPreferencesDescriptor(name, mode)));
+  }
+
+  /**
+   * Creates a {@link android.content.SharedPreferences} plugin for Flipper
+   *
+   * @param context The context to retrieve the preferences from.
+   * @param descriptors A list of {@link SharedPreferencesDescriptor}s
+   *    that describe the list of preferences to retrieve.
+   */
+  public SharedPreferencesFlipperPlugin(Context context, List<SharedPreferencesDescriptor> descriptors) {
+    if (context == null) {
+      throw new IllegalArgumentException("Given null context");
+    }
+    mSharedPreferences = new HashMap<>(descriptors.size());
+    for (SharedPreferencesDescriptor descriptor : descriptors) {
+      SharedPreferences preferences = context.getSharedPreferences(descriptor.name, descriptor.mode);
+      preferences.registerOnSharedPreferenceChangeListener(onSharedPreferenceChangeListener);
+      mSharedPreferences.put(preferences, descriptor);
+    }
   }
 
   @Override
@@ -80,15 +106,26 @@ public class SharedPreferencesFlipperPlugin implements FlipperPlugin {
     return "Preferences";
   }
 
-  private FlipperObject getSharedPreferencesObject() {
-    final FlipperObject.Builder builder = new FlipperObject.Builder();
-    final Map<String, ?> map = mSharedPreferences.getAll();
+  private SharedPreferences getSharedPreferencesFor(String name) {
+    for (Map.Entry<SharedPreferences, SharedPreferencesDescriptor> entry : mSharedPreferences.entrySet()) {
+      if (entry.getValue().name.equals(name)) {
+        return entry.getKey();
+      }
+    }
+    throw new IllegalStateException("Unknown shared preferences " +name);
+  }
 
+  private FlipperObject getFlipperObjectFor(String name) {
+    return getFlipperObjectFor(getSharedPreferencesFor(name));
+  }
+
+  private FlipperObject getFlipperObjectFor(SharedPreferences sharedPreferences) {
+    FlipperObject.Builder builder = new FlipperObject.Builder();
+    Map<String, ?> map = sharedPreferences.getAll();
     for (Map.Entry<String, ?> entry : map.entrySet()) {
       final Object val = entry.getValue();
       builder.put(entry.getKey(), val);
     }
-
     return builder.build();
   }
 
@@ -97,11 +134,27 @@ public class SharedPreferencesFlipperPlugin implements FlipperPlugin {
     mConnection = connection;
 
     connection.receive(
+        "getAllSharedPreferences",
+        new FlipperReceiver() {
+          @Override
+          public void onReceive(FlipperObject params, FlipperResponder responder) {
+            FlipperObject.Builder builder = new FlipperObject.Builder();
+            for (Map.Entry<SharedPreferences, SharedPreferencesDescriptor> entry : mSharedPreferences.entrySet()) {
+              builder.put(entry.getValue().name, getFlipperObjectFor(entry.getKey()));
+            }
+            responder.success(builder.build());
+          }
+        });
+
+    connection.receive(
         "getSharedPreferences",
         new FlipperReceiver() {
           @Override
           public void onReceive(FlipperObject params, FlipperResponder responder) {
-            responder.success(getSharedPreferencesObject());
+            String name = params.getString("name");
+            if (name != null) {
+              responder.success(getFlipperObjectFor(name));
+            }
           }
         });
 
@@ -111,10 +164,11 @@ public class SharedPreferencesFlipperPlugin implements FlipperPlugin {
           @Override
           public void onReceive(FlipperObject params, FlipperResponder responder)
               throws IllegalArgumentException {
-
+            String sharedPreferencesName = params.getString("sharedPreferencesName");
             String preferenceName = params.getString("preferenceName");
-            Object originalValue = mSharedPreferences.getAll().get(preferenceName);
-            SharedPreferences.Editor editor = mSharedPreferences.edit();
+            SharedPreferences sharedPrefs = getSharedPreferencesFor(sharedPreferencesName);
+            Object originalValue = sharedPrefs.getAll().get(preferenceName);
+            SharedPreferences.Editor editor = sharedPrefs.edit();
 
             if (originalValue instanceof Boolean) {
               editor.putBoolean(preferenceName, params.getBoolean("preferenceValue"));
@@ -132,7 +186,7 @@ public class SharedPreferencesFlipperPlugin implements FlipperPlugin {
 
             editor.apply();
 
-            responder.success(getSharedPreferencesObject());
+            responder.success(getFlipperObjectFor(sharedPreferencesName));
           }
         });
   }
@@ -140,5 +194,18 @@ public class SharedPreferencesFlipperPlugin implements FlipperPlugin {
   @Override
   public void onDisconnect() {
     mConnection = null;
+  }
+
+  public static class SharedPreferencesDescriptor {
+    public final String name;
+    public final int mode;
+
+    public SharedPreferencesDescriptor(String name, int mode) {
+      if (name == null || name.length() == 0) {
+        throw new IllegalArgumentException("Given null or empty name");
+      }
+      this.name = name;
+      this.mode = mode;
+    }
   }
 }

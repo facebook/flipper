@@ -12,27 +12,38 @@ import {
   FlexColumn,
   colors,
   FlexRow,
-  DataInspector,
+  ManagedDataInspector,
   styled,
+  Select,
 } from 'flipper';
 import {FlipperPlugin} from 'flipper';
 
 const {clone} = require('lodash');
 
 type SharedPreferencesChangeEvent = {|
+  preferences: string,
   name: string,
   time: number,
   deleted: boolean,
   value: string,
 |};
 
-export type SharedPreferences = {
+export type SharedPreferences = {|
   [name: string]: any,
+|};
+
+type SharedPreferencesEntry = {
+  preferences: SharedPreferences,
+  changesList: Array<SharedPreferencesChangeEvent>,
+};
+
+type SharedPreferencesMap = {
+  [name: string]: SharedPreferencesEntry,
 };
 
 type SharedPreferencesState = {|
-  sharedPreferences: ?SharedPreferences,
-  changesList: Array<SharedPreferencesChangeEvent>,
+  selectedPreferences: ?string,
+  sharedPreferences: SharedPreferencesMap,
 |};
 
 const CHANGELOG_COLUMNS = {
@@ -58,12 +69,17 @@ const DELETED_LABEL = <Text color={colors.cherry}>Deleted</Text>;
 
 const InspectorColumn = styled(FlexColumn)({
   flexGrow: 0.2,
-  padding: '16px',
 });
 
 const ChangelogColumn = styled(FlexColumn)({
   flexGrow: 0.8,
-  padding: '16px',
+  paddingLeft: '16px',
+});
+
+const RootColumn = styled(FlexColumn)({
+  paddingLeft: '16px',
+  paddingRight: '16px',
+  paddingTop: '16px',
 });
 
 export default class extends FlipperPlugin<SharedPreferencesState> {
@@ -71,37 +87,59 @@ export default class extends FlipperPlugin<SharedPreferencesState> {
   static id = 'Preferences';
 
   state = {
-    changesList: [],
-    sharedPreferences: null,
+    selectedPreferences: null,
+    sharedPreferences: {},
   };
 
   reducers = {
     UpdateSharedPreferences(state: SharedPreferencesState, results: Object) {
+      let update = results.update;
+      let entry = state.sharedPreferences[update.name] || {changesList: []};
+      entry.preferences = update.preferences;
+      state.sharedPreferences[update.name] = entry;
       return {
-        changesList: state.changesList,
-        sharedPreferences: results.results,
+        selectedPreferences: state.selectedPreferences || update.name,
+        sharedPreferences: state.sharedPreferences,
       };
     },
 
     ChangeSharedPreferences(state: SharedPreferencesState, event: Object) {
-      const sharedPreferences = {...(state.sharedPreferences || {})};
-      if (event.change.deleted) {
-        delete sharedPreferences[event.change.name];
-      } else {
-        sharedPreferences[event.change.name] = event.change.value;
+      const change = event.change;
+      const entry = state.sharedPreferences[change.preferences];
+      if (entry == null) {
+        return;
       }
+      if (change.deleted) {
+        delete entry.preferences[change.name];
+      } else {
+        entry.preferences[change.name] = change.value;
+      }
+      entry.changesList = [change, ...entry.changesList];
       return {
-        changesList: [event.change, ...state.changesList],
-        sharedPreferences,
+        selectedPreferences: state.selectedPreferences,
+        sharedPreferences: state.sharedPreferences,
+      };
+    },
+
+    UpdateSelectedSharedPreferences(
+      state: SharedPreferencesState,
+      event: Object,
+    ) {
+      return {
+        selectedPreferences: event.selected,
+        sharedPreferences: state.sharedPreferences,
       };
     },
   };
 
   init() {
     this.client
-      .call('getSharedPreferences')
-      .then((results: SharedPreferences) => {
-        this.dispatchAction({results, type: 'UpdateSharedPreferences'});
+      .call('getAllSharedPreferences')
+      .then((results: {[name: string]: SharedPreferences}) => {
+        Object.entries(results).forEach(([name, prefs]) => {
+          const update = {name: name, preferences: prefs};
+          this.dispatchAction({update, type: 'UpdateSharedPreferences'});
+        });
       });
 
     this.client.subscribe(
@@ -110,17 +148,19 @@ export default class extends FlipperPlugin<SharedPreferencesState> {
         this.dispatchAction({change, type: 'ChangeSharedPreferences'});
       },
     );
-    this.client.subscribe(
-      'newSharedPreferences',
-      (results: SharedPreferences) => {
-        this.dispatchAction({results, type: 'UpdateSharedPreferences'});
-      },
-    );
   }
 
   onSharedPreferencesChanged = (path: Array<string>, value: any) => {
-    const values = this.state.sharedPreferences;
+    const selectedPreferences = this.state.selectedPreferences;
+    if (selectedPreferences == null) {
+      return;
+    }
+    const entry = this.state.sharedPreferences[selectedPreferences];
+    if (entry == null) {
+      return;
+    }
 
+    const values = entry.preferences;
     let newValue = value;
     if (path.length === 2 && values) {
       newValue = clone(values[path[0]]);
@@ -128,54 +168,87 @@ export default class extends FlipperPlugin<SharedPreferencesState> {
     }
     this.client
       .call('setSharedPreference', {
+        sharedPreferencesName: this.state.selectedPreferences,
         preferenceName: path[0],
         preferenceValue: newValue,
       })
       .then((results: SharedPreferences) => {
-        this.dispatchAction({results, type: 'UpdateSharedPreferences'});
+        let update = {
+          name: this.state.selectedPreferences,
+          preferences: results,
+        };
+        this.dispatchAction({update, type: 'UpdateSharedPreferences'});
       });
   };
 
+  onSharedPreferencesSelected = (selected: string) => {
+    this.dispatchAction({
+      selected: selected,
+      type: 'UpdateSelectedSharedPreferences',
+    });
+  };
+
   render() {
-    if (this.state.sharedPreferences == null) {
+    const selectedPreferences = this.state.selectedPreferences;
+    if (selectedPreferences == null) {
+      return null;
+    }
+
+    const entry = this.state.sharedPreferences[selectedPreferences];
+    if (entry == null) {
       return null;
     }
 
     return (
-      <FlexRow fill={true} scrollable={true}>
-        <InspectorColumn>
-          <Heading>Inspector</Heading>
-          <DataInspector
-            data={this.state.sharedPreferences}
-            setValue={this.onSharedPreferencesChanged}
+      <RootColumn fill={true}>
+        <Heading>
+          <span style={{marginRight: '16px'}}>Preference File</span>
+          <Select
+            options={Object.keys(this.state.sharedPreferences).reduce(
+              (obj, item) => {
+                obj[item] = item;
+                return obj;
+              },
+              {},
+            )}
+            onChange={this.onSharedPreferencesSelected}
           />
-        </InspectorColumn>
-        <ChangelogColumn>
-          <Heading>Changelog</Heading>
-          <ManagedTable
-            columnSizes={CHANGELOG_COLUMN_SIZES}
-            columns={CHANGELOG_COLUMNS}
-            rowLineHeight={26}
-            rows={this.state.changesList.map((element, index) => {
-              return {
-                columns: {
-                  event: {
-                    value: element.deleted ? DELETED_LABEL : UPDATED_LABEL,
+        </Heading>
+        <FlexRow fill={true} scrollable={true}>
+          <InspectorColumn>
+            <Heading>Inspector</Heading>
+            <ManagedDataInspector
+              data={entry.preferences}
+              setValue={this.onSharedPreferencesChanged}
+            />
+          </InspectorColumn>
+          <ChangelogColumn>
+            <Heading>Changelog</Heading>
+            <ManagedTable
+              columnSizes={CHANGELOG_COLUMN_SIZES}
+              columns={CHANGELOG_COLUMNS}
+              rowLineHeight={26}
+              rows={entry.changesList.map((element, index) => {
+                return {
+                  columns: {
+                    event: {
+                      value: element.deleted ? DELETED_LABEL : UPDATED_LABEL,
+                    },
+                    name: {
+                      value: element.name,
+                    },
+                    value: {
+                      value: element.value,
+                    },
                   },
-                  name: {
-                    value: element.name,
-                  },
-                  value: {
-                    value: element.value,
-                  },
-                },
 
-                key: String(index),
-              };
-            })}
-          />
-        </ChangelogColumn>
-      </FlexRow>
+                  key: String(index),
+                };
+              })}
+            />
+          </ChangelogColumn>
+        </FlexRow>
+      </RootColumn>
     );
   }
 }
