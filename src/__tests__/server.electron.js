@@ -41,7 +41,7 @@ test('servers starting at ports', done => {
   });
 });
 
-test(
+test.skip(
   'Layout plugin is connecting',
   done => {
     server.addListener('new-client', (client: Client) => {
