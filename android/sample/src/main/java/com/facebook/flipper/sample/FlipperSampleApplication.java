@@ -15,8 +15,10 @@ import com.facebook.flipper.plugins.litho.LithoFlipperDescriptors;
 import com.facebook.flipper.plugins.network.NetworkFlipperPlugin;
 import com.facebook.flipper.plugins.network.FlipperOkhttpInterceptor;
 import com.facebook.flipper.plugins.sharedpreferences.SharedPreferencesFlipperPlugin;
+import com.facebook.flipper.plugins.sharedpreferences.SharedPreferencesFlipperPlugin.SharedPreferencesDescriptor;
 import java.util.concurrent.TimeUnit;
 import okhttp3.OkHttpClient;
+import java.util.Arrays;
 
 public class FlipperSampleApplication extends Application {
 
@@ -46,10 +48,21 @@ public class FlipperSampleApplication extends Application {
     LithoFlipperDescriptors.add(descriptorMapping);
     client.addPlugin(new InspectorFlipperPlugin(this, descriptorMapping));
     client.addPlugin(networkPlugin);
-    client.addPlugin(new SharedPreferencesFlipperPlugin(this, "sample"));
+    client.addPlugin(
+      new SharedPreferencesFlipperPlugin(
+        this, Arrays.asList(
+          new SharedPreferencesDescriptor("sample", Context.MODE_PRIVATE),
+          new SharedPreferencesDescriptor("other_sample", Context.MODE_PRIVATE))));
     client.addPlugin(new LeakCanaryFlipperPlugin());
     client.start();
 
-    getSharedPreferences("sample", Context.MODE_PRIVATE).edit().putString("Hello", "world").apply();
+    getSharedPreferences("sample", Context.MODE_PRIVATE)
+        .edit()
+        .putString("Hello", "world")
+        .apply();
+    getSharedPreferences("other_sample", Context.MODE_PRIVATE)
+        .edit()
+        .putInt("SomeKey", 1337)
+        .apply();
   }
 }
