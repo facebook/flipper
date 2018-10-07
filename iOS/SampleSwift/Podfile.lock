@@ -3,26 +3,28 @@ PODS:
   - CocoaAsyncSocket (7.6.3)
   - CocoaLibEvent (1.0.0)
   - DoubleConversion (1.1.5)
-  - Flipper (0.7.2):
+  - Flipper (0.8.1):
     - Folly (~> 1.1)
     - RSocket (~> 0.10)
-  - FlipperKit (0.7.2):
-    - FlipperKit/Core (= 0.7.2)
-  - FlipperKit/Core (0.7.2):
+  - FlipperKit (0.8.1):
+    - FlipperKit/Core (= 0.8.1)
+  - FlipperKit/Core (0.8.1):
     - CocoaAsyncSocket (~> 7.6)
-    - Flipper (~> 0.7.2)
+    - Flipper (~> 0.8.1)
     - FlipperKit/CppBridge
     - FlipperKit/FBCxxUtils
     - FlipperKit/FBDefines
     - Folly (~> 1.1)
     - OpenSSL-Static (= 1.0.2.c1)
     - PeerTalk (~> 0.0.2)
-  - FlipperKit/CppBridge (0.7.2)
-  - FlipperKit/FBCxxUtils (0.7.2)
-  - FlipperKit/FBDefines (0.7.2)
-  - FlipperKit/FlipperKitNetworkPlugin (0.7.2):
+  - FlipperKit/CppBridge (0.8.1)
+  - FlipperKit/FBCxxUtils (0.8.1)
+  - FlipperKit/FBDefines (0.8.1)
+  - FlipperKit/FlipperKitNetworkPlugin (0.8.1):
     - FlipperKit/Core
-  - FlipperKit/SKIOSNetworkPlugin (0.7.2):
+  - FlipperKit/FlipperKitUserDefaultsPlugin (0.8.1):
+    - FlipperKit/Core
+  - FlipperKit/SKIOSNetworkPlugin (0.8.1):
     - FlipperKit/Core
     - FlipperKit/FlipperKitNetworkPlugin
   - Folly (1.1.0):
@@ -40,6 +42,7 @@ PODS:
 DEPENDENCIES:
   - Flipper (from `../../Flipper.podspec`)
   - FlipperKit (from `../../FlipperKit.podspec`)
+  - FlipperKit/FlipperKitUserDefaultsPlugin (from `../../FlipperKit.podspec`)
   - FlipperKit/SKIOSNetworkPlugin (from `../../FlipperKit.podspec`)
 
 SPEC REPOS:
@@ -50,7 +53,7 @@ SPEC REPOS:
     - DoubleConversion
     - glog
     - OpenSSL-Static
-  https://github.com/facebook/Sonar.git:
+  https://github.com/facebook/Sonar:
     - Folly
     - PeerTalk
     - RSocket
@@ -66,14 +69,14 @@ SPEC CHECKSUMS:
   CocoaAsyncSocket: eafaa68a7e0ec99ead0a7b35015e0bf25d2c8987
   CocoaLibEvent: 2fab71b8bd46dd33ddb959f7928ec5909f838e3f
   DoubleConversion: e22e0762848812a87afd67ffda3998d9ef29170c
-  Flipper: 495fbd327298fbc55b3ff7cb399eae52c1580494
-  FlipperKit: a3c03ff44340fa38ff476f6269484270533c5749
+  Flipper: 847a9ba40de727f6bb02a1b365674538f051ecf2
+  FlipperKit: 93c4d1c38f10ef2900f646ddb65c29bdf4975cfd
   Folly: dd92f69322d8535b9df98d7c91e442b0fce2fff2
   glog: 1de0bb937dccdc981596d3b5825ebfb765017ded
   OpenSSL-Static: bd17e34564a8591ad76b740318683a6caa19a13e
   PeerTalk: 77481b0a8136f226b90ccf828d6061f70139ffde
   RSocket: 4fdb7e562db30a2d4fceddefdc601749ffc9ebe2
 
-PODFILE CHECKSUM: 74eec891e5ca29c4d3817bc4c2c8ed86c6b9958c
+PODFILE CHECKSUM: 3eeb7fcb7e93b388b33cfa6730390259dd6292f7
 
 COCOAPODS: 1.5.3
