@@ -9,6 +9,7 @@
 #import "FKUserDefaultsPlugin.h"
 #import <FlipperKit/FlipperConnection.h>
 #import <FlipperKit/FlipperResponder.h>
+#import "FKUserDefaultsSwizzleUtility.h"
 
 @interface FKUserDefaultsPlugin ()
 @property (nonatomic, strong) id<FlipperConnection> flipperConnection;
@@ -21,9 +22,16 @@
 
 - (instancetype)initWithSuiteName:(NSString *)suiteName {
     if (self = [super init]) {
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userDefaultsDidChange:) name:NSUserDefaultsDidChangeNotification object:nil];
         _userDefaults = [NSUserDefaults standardUserDefaults];
         _suiteName = suiteName;
+        [FKUserDefaultsSwizzleUtility swizzleSelector:@selector(setObject:forKey:) class:[NSUserDefaults class] block:^(NSInvocation * _Nonnull invocation) {
+            __unsafe_unretained id firstArg = nil;
+            __unsafe_unretained id secondArg = nil;
+            [invocation getArgument:&firstArg atIndex:2];
+            [invocation getArgument:&secondArg atIndex:3];
+            [invocation invoke];
+            [self userDefaultsChangedWithValue:firstArg key:secondArg];
+        }];
     }
     return self;
         
@@ -50,10 +58,22 @@
     return @"Preferences";
 }
 
-- (void)userDefaultsDidChange:(NSNotification *)notification {
-    if (!self.flipperConnection) {
-        return;
+#pragma mark - Private methods
+
+- (void)userDefaultsChangedWithValue:(id)value key:(NSString *)key {
+    NSTimeInterval interval = [[NSDate date] timeIntervalSince1970] * 1000;
+    NSString *intervalStr = [NSString stringWithFormat:@"%f", interval];
+    NSMutableDictionary *params = [@{@"name":key,
+                                    @"time":intervalStr
+                                    } mutableCopy];
+    
+    if (!value) {
+        [params setObject:@"YES" forKey:@"deleted"];
+    } else {
+        [params setObject:value forKey:@"value"];
     }
+    
+    [self.flipperConnection send:@"sharedPreferencesChange" withParams:[params copy]];
 }
 
 @end
