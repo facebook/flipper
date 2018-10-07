@@ -10,8 +10,10 @@
 #import <FlipperKit/FlipperClient.h>
 #import <FlipperKitLayoutPlugin/FlipperKitLayoutPlugin.h>
 #import <FlipperKitNetworkPlugin/FlipperKitNetworkPlugin.h>
+#import <FlipperKitUserDefaultsPlugin/FKUserDefaultsPlugin.h>
 #import <FlipperKitLayoutComponentKitSupport/FlipperKitLayoutComponentKitSupport.h>
 #import <SKIOSNetworkPlugin/SKIOSNetworkAdapter.h>
+#import <FlipperKitUserDefaultsPlugin/FKUserDefaultsPlugin.h>
 
 #import "MainViewController.h"
 #import "RootViewController.h"
@@ -34,6 +36,8 @@
   [FlipperKitLayoutComponentKitSupport setUpWithDescriptorMapper: layoutDescriptorMapper];
   [client addPlugin: [[FlipperKitLayoutPlugin alloc] initWithRootNode: application
                                                withDescriptorMapper: layoutDescriptorMapper]];
+    
+  [client addPlugin:[[FKUserDefaultsPlugin alloc] initWithSuiteName:nil]];
 
   [[FlipperClient sharedClient] addPlugin: [[FlipperKitNetworkPlugin alloc] initWithNetworkAdapter:[SKIOSNetworkAdapter new]]];
   [client start];
