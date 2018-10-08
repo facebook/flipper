@@ -24,13 +24,14 @@
     if (self = [super init]) {
         _userDefaults = [NSUserDefaults standardUserDefaults];
         _suiteName = suiteName;
+        __weak typeof(self) weakSelf = self;
         [FKUserDefaultsSwizzleUtility swizzleSelector:@selector(setObject:forKey:) class:[NSUserDefaults class] block:^(NSInvocation * _Nonnull invocation) {
             __unsafe_unretained id firstArg = nil;
             __unsafe_unretained id secondArg = nil;
             [invocation getArgument:&firstArg atIndex:2];
             [invocation getArgument:&secondArg atIndex:3];
             [invocation invoke];
-            [self userDefaultsChangedWithValue:firstArg key:secondArg];
+            [weakSelf userDefaultsChangedWithValue:firstArg key:secondArg];
         }];
     }
     return self;
