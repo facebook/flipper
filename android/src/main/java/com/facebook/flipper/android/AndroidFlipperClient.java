@@ -89,7 +89,10 @@ public final class AndroidFlipperClient {
   }
 
   static String getServerHost(Context context) {
-    if (isRunningOnStockEmulator()) {
+    if (isRunningOnStockEmulator() && Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+      // adb reverse was added in lollipop, so before this
+      // hard code host ip address.
+      // This means it will only work on emulators, not physical devices.
       return "10.0.2.2";
     } else if (isRunningOnGenymotion()) {
       // This is hand-wavy but works on but ipv4 and ipv6 genymotion
@@ -98,7 +101,8 @@ public final class AndroidFlipperClient {
       final int ip = info.getIpAddress();
       return String.format("%d.%d.%d.2", (ip & 0xff), (ip >> 8 & 0xff), (ip >> 16 & 0xff));
     } else {
-      // Running on physical device. Flipper desktop will run `adb reverse tcp:8088 tcp:8088`
+      // Running on physical device or modern stock emulator.
+      // Flipper desktop will run `adb reverse` to forward the ports.
       return "localhost";
     }
   }
