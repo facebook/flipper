@@ -26,6 +26,7 @@ client.addPlugin(
 
 ```swift
 import FlipperKit
+
 client?.add(FKUserDefaultsPlugin.init(suiteName: "your_suitename"))
 ```
 
@@ -33,6 +34,7 @@ client?.add(FKUserDefaultsPlugin.init(suiteName: "your_suitename"))
 
 ```objc
 #import <FlipperKitUserDefaultsPlugin/FKUserDefaultsPlugin.h>
+
 [client addPlugin:[[FKUserDefaultsPlugin alloc] initWithSuiteName:@"your_suitename"]];
 ```
 
