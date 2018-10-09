@@ -10,6 +10,7 @@ import type {DeviceType, DeviceShell} from './BaseDevice.js';
 import {Priority} from 'adbkit-logcat-fb';
 import child_process from 'child_process';
 import BaseDevice from './BaseDevice.js';
+import {SECURE_PORT, INSECURE_PORT} from '../server';
 
 type ADBClient = any;
 
@@ -79,13 +80,15 @@ export default class AndroidDevice extends BaseDevice {
   }
 
   reverse(): Promise<void> {
-    if (this.deviceType === 'physical') {
-      return this.adb
-        .reverse(this.serial, 'tcp:8088', 'tcp:8088')
-        .then(_ => this.adb.reverse(this.serial, 'tcp:8089', 'tcp:8089'));
-    } else {
-      return Promise.resolve();
-    }
+    return this.adb
+      .reverse(this.serial, `tcp:${SECURE_PORT}`, `tcp:${SECURE_PORT}`)
+      .then(() =>
+        this.adb.reverse(
+          this.serial,
+          `tcp:${INSECURE_PORT}`,
+          `tcp:${INSECURE_PORT}`,
+        ),
+      );
   }
 
   spawnShell(): DeviceShell {
