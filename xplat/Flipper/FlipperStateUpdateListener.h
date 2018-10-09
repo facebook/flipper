@@ -10,5 +10,6 @@
 
 class FlipperStateUpdateListener {
  public:
+  virtual ~FlipperStateUpdateListener() = default;
   virtual void onUpdate() = 0;
 };
