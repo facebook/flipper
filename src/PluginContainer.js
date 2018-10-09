@@ -22,6 +22,8 @@ import {
 import React from 'react';
 import {connect} from 'react-redux';
 import {setPluginState} from './reducers/pluginStates.js';
+import {setActiveNotifications} from './reducers/notifications.js';
+import type {NotificationSet} from './plugin.js';
 import {devicePlugins} from './device-plugins/index.js';
 import plugins from './plugins/index.js';
 import {activateMenuItems} from './MenuBar.js';
@@ -51,6 +53,10 @@ type Props = {
   setPluginState: (payload: {
     pluginKey: string,
     state: Object,
+  }) => void,
+  setActiveNotifications: ({
+    pluginId: string,
+    notifications: NotificationSet,
   }) => void,
 };
 
@@ -124,7 +130,7 @@ class PluginContainer extends Component<Props, State> {
   };
 
   render() {
-    const {pluginStates, setPluginState} = this.props;
+    const {pluginStates, setPluginState, setActiveNotifications} = this.props;
     const {activePlugin, pluginKey, target} = this.state;
 
     if (!activePlugin || !target) {
@@ -136,6 +142,11 @@ class PluginContainer extends Component<Props, State> {
       logger: this.props.logger,
       persistedState: pluginStates[pluginKey] || {},
       setPersistedState: state => setPluginState({pluginKey, state}),
+      setActiveNotifications: notifications =>
+        setActiveNotifications({
+          pluginId: pluginKey,
+          notifications: notifications,
+        }),
       target,
       ref: this.refChanged,
     };
@@ -171,5 +182,6 @@ export default connect(
   }),
   {
     setPluginState,
+    setActiveNotifications,
   },
 )(PluginContainer);
