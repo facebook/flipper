@@ -54,4 +54,5 @@ Promise.all(
   .catch(err => {
     console.error('❌  Installing plugin dependencies failed.');
     console.error(err);
+    process.exit(1);
   });
