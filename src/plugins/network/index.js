@@ -7,6 +7,7 @@
 
 import type {TableHighlightedRows, TableRows, TableBodyRow} from 'flipper';
 
+import type {NotificationSet} from '../../plugin';
 import {
   ContextMenu,
   FlexColumn,
@@ -151,6 +152,26 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
     this.setState({selectedIds: []});
     this.props.setPersistedState({responses: {}, requests: {}});
   };
+
+  computeNotifications(props: *, state: State) {
+    const notifications: NotificationSet = {};
+    const persistedState = props.persistedState;
+    for (const response in persistedState.responses) {
+      const status = persistedState.responses[response].status;
+      if (status >= 400) {
+        const url = persistedState.requests[response]?.url;
+        const startTime = persistedState.requests[response]?.timestamp;
+        const endTime = persistedState.responses[response].timestamp;
+        notifications[`${url}-${startTime}`] = {
+          timestamp: endTime,
+          title: 'Failed network request',
+          message: `Response for ${url} failed with status code ${status}`,
+          severity: 'error',
+        };
+      }
+    }
+    return notifications;
+  }
 
   renderSidebar = () => {
     const {requests, responses} = this.props.persistedState;
