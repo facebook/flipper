@@ -36,6 +36,7 @@ matrix:
 
       script:
         - yarn lint
+        - yarn test
         - yarn build --mac --version=$TRAVIS_BUILD_NUMBER
 
     - language: objective-c
