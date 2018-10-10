@@ -326,7 +326,7 @@ class Button extends React.Component<
       iconComponent = (
         <Icon
           name={icon}
-          size={iconSize || this.props.compact === true ? 12 : 16}
+          size={iconSize || (this.props.compact === true ? 12 : 16)}
           color={color}
           variant={iconVariant || 'filled'}
           hasText={Boolean(children)}
