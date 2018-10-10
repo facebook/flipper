@@ -6,7 +6,6 @@
  */
 import type {FlipperPlugin, FlipperBasePlugin} from './plugin.js';
 import type LogManager from './fb-stubs/Logger';
-import type Client from './Client.js';
 import type BaseDevice from './devices/BaseDevice.js';
 import type {Props as PluginProps} from './plugin';
 
@@ -20,10 +19,10 @@ import {
   styled,
 } from 'flipper';
 import React from 'react';
+import Client from './Client.js';
 import {connect} from 'react-redux';
 import {setPluginState} from './reducers/pluginStates.js';
 import {setActiveNotifications} from './reducers/notifications.js';
-import type {NotificationSet} from './plugin.js';
 import {devicePlugins} from './device-plugins/index.js';
 import plugins from './plugins/index.js';
 import {activateMenuItems} from './MenuBar.js';
@@ -54,10 +53,7 @@ type Props = {
     pluginKey: string,
     state: Object,
   }) => void,
-  setActiveNotifications: ({
-    pluginId: string,
-    notifications: NotificationSet,
-  }) => void,
+  deepLinkPayload: ?string,
 };
 
 type State = {
@@ -130,7 +126,7 @@ class PluginContainer extends Component<Props, State> {
   };
 
   render() {
-    const {pluginStates, setPluginState, setActiveNotifications} = this.props;
+    const {pluginStates, setPluginState} = this.props;
     const {activePlugin, pluginKey, target} = this.state;
 
     if (!activePlugin || !target) {
@@ -142,12 +138,8 @@ class PluginContainer extends Component<Props, State> {
       logger: this.props.logger,
       persistedState: pluginStates[pluginKey] || {},
       setPersistedState: state => setPluginState({pluginKey, state}),
-      setActiveNotifications: notifications =>
-        setActiveNotifications({
-          pluginId: pluginKey,
-          notifications: notifications,
-        }),
       target,
+      deepLinkPayload: this.props.deepLinkPayload,
       ref: this.refChanged,
     };
 
@@ -171,7 +163,13 @@ class PluginContainer extends Component<Props, State> {
 export default connect(
   ({
     application: {rightSidebarVisible, rightSidebarAvailable},
-    connections: {selectedPlugin, selectedDevice, selectedApp, clients},
+    connections: {
+      selectedPlugin,
+      selectedDevice,
+      selectedApp,
+      clients,
+      deepLinkPayload,
+    },
     pluginStates,
   }) => ({
     selectedPlugin,
@@ -179,6 +177,7 @@ export default connect(
     pluginStates,
     selectedApp,
     clients,
+    deepLinkPayload,
   }),
   {
     setPluginState,

@@ -7,7 +7,6 @@
 
 import type {TableHighlightedRows, TableRows, TableBodyRow} from 'flipper';
 
-import type {NotificationSet} from '../../plugin';
 import {
   ContextMenu,
   FlexColumn,
@@ -154,7 +153,7 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
   };
 
   computeNotifications(props: *, state: State) {
-    const notifications: NotificationSet = {};
+    const notifications = {};
     const persistedState = props.persistedState;
     for (const response in persistedState.responses) {
       const status = persistedState.responses[response].status;

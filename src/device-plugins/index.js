@@ -10,11 +10,16 @@ import type {FlipperDevicePlugin} from '../plugin.js';
 import {GK} from 'flipper';
 import logs from './logs/index.js';
 import cpu from './cpu/index.js';
+import notifications from './notifications/index.js';
 
 const plugins: Array<Class<FlipperDevicePlugin<any>>> = [logs];
 
 if (GK.get('sonar_uiperf')) {
   plugins.push(cpu);
+}
+
+if (GK.get('flipper_notifications')) {
+  plugins.push(notifications);
 }
 
 export const devicePlugins = plugins;

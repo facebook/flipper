@@ -12,6 +12,7 @@ import type {
 } from '../plugin.js';
 import type BaseDevice from '../devices/BaseDevice.js';
 import type Client from '../Client.js';
+import type {PluginNotification} from '../reducers/notifications';
 
 import {
   Component,
@@ -22,6 +23,7 @@ import {
   Text,
   Glyph,
   styled,
+  GK,
 } from 'flipper';
 import React from 'react';
 import {devicePlugins} from '../device-plugins/index.js';
@@ -69,12 +71,31 @@ const PluginShape = styled(FlexBox)(({backgroundColor}) => ({
   alignItems: 'center',
 }));
 
-const PluginName = styled(Text)({
+const PluginName = styled(Text)(props => ({
   minWidth: 0,
   textOverflow: 'ellipsis',
   whiteSpace: 'nowrap',
   overflow: 'hidden',
-});
+  display: 'flex',
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  flexGrow: 1,
+  '::after': {
+    fontSize: 12,
+    display: props.count ? 'inline-block' : 'none',
+    padding: '0 8px',
+    lineHeight: '17px',
+    height: 17,
+    alignSelf: 'center',
+    content: `"${props.count}"`,
+    borderRadius: '999em',
+    color: props.isActive ? colors.macOSTitleBarIconSelected : colors.white,
+    backgroundColor: props.isActive
+      ? colors.white
+      : colors.macOSTitleBarIconSelected,
+    fontWeight: 500,
+  },
+}));
 
 function PluginIcon({
   isActive,
@@ -83,7 +104,7 @@ function PluginIcon({
   color,
 }: {
   isActive: boolean,
-  backgroundColor: string,
+  backgroundColor?: string,
   name: string,
   color: string,
 }) {
@@ -145,6 +166,8 @@ type MainSidebarProps = {|
     selectedApp: ?string,
   }) => void,
   clients: Array<Client>,
+  activeNotifications: Array<PluginNotification>,
+  blacklistedPlugins: Array<string>,
 |};
 
 class MainSidebar extends Component<MainSidebarProps> {
@@ -155,6 +178,7 @@ class MainSidebar extends Component<MainSidebarProps> {
       selectedApp,
       selectPlugin,
       windowIsFocused,
+      activeNotifications,
     } = this.props;
     let {clients} = this.props;
 
@@ -175,6 +199,11 @@ class MainSidebar extends Component<MainSidebarProps> {
       )
       .sort((a, b) => (a.query.app || '').localeCompare(b.query.app));
 
+    let blacklistedPlugins = new Set(this.props.blacklistedPlugins);
+    const notifications = activeNotifications.filter(
+      (n: PluginNotification) => !blacklistedPlugins.has(n.pluginId),
+    );
+
     return (
       <Sidebar
         position="left"
@@ -182,6 +211,30 @@ class MainSidebar extends Component<MainSidebarProps> {
         backgroundColor={
           process.platform === 'darwin' && windowIsFocused ? 'transparent' : ''
         }>
+        {GK.get('flipper_notifications') && (
+          <ListItem
+            active={selectedPlugin === 'notifications'}
+            onClick={() =>
+              selectPlugin({
+                selectedPlugin: 'notifications',
+                selectedApp: null,
+              })
+            }>
+            <PluginIcon
+              color={colors.light50}
+              name={notifications.length > 0 ? 'bell' : 'bell-null'}
+              isActive={selectedPlugin === 'notifications'}
+            />
+            <PluginName
+              count={notifications.length}
+              isActive={selectedPlugin === 'notifications'}>
+              Notifications
+            </PluginName>
+          </ListItem>
+        )}
+        {selectedDevice && (
+          <SidebarHeader>{selectedDevice.title}</SidebarHeader>
+        )}
         {selectedDevice &&
           devicePlugins
             .filter(selectedDevice.supportsPlugin)
@@ -242,7 +295,10 @@ export default connect(
   ({
     application: {windowIsFocused},
     connections: {selectedDevice, selectedPlugin, selectedApp, clients},
+    notifications: {activeNotifications, blacklistedPlugins},
   }) => ({
+    blacklistedPlugins,
+    activeNotifications,
     windowIsFocused,
     selectedDevice,
     selectedPlugin,
