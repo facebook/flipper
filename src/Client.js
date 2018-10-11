@@ -8,6 +8,7 @@
 import type {FlipperPlugin} from './plugin.js';
 import type {App} from './App.js';
 import type Logger from './fb-stubs/Logger.js';
+import type {Store} from './reducers/index.js';
 
 import {clientPlugins} from './plugins/index.js';
 import {ReactiveSocket, PartialResponder} from 'rsocket-core';
@@ -32,6 +33,7 @@ export default class Client extends EventEmitter {
     query: ClientQuery,
     conn: ReactiveSocket,
     logger: Logger,
+    store: Store,
   ) {
     super();
 
@@ -42,8 +44,8 @@ export default class Client extends EventEmitter {
     this.query = query;
     this.messageIdCounter = 0;
     this.logger = logger;
+    this.store = store;
 
-    this.bufferedMessages = new Map();
     this.broadcastCallbacks = new Map();
     this.requestCallbacks = new Map();
 
@@ -77,8 +79,8 @@ export default class Client extends EventEmitter {
   plugins: Plugins;
   connection: ReactiveSocket;
   responder: PartialResponder;
+  store: Store;
 
-  bufferedMessages: Map<string, Array<Object>>;
   broadcastCallbacks: Map<?string, Map<string, Set<Function>>>;
 
   requestCallbacks: Map<
@@ -159,19 +161,38 @@ export default class Client extends EventEmitter {
         const params = data.params;
         invariant(params, 'expected params');
 
-        const apiCallbacks = this.broadcastCallbacks.get(params.api);
-        if (!apiCallbacks) {
-          return;
-        }
+        const persistingPlugin: ?Class<FlipperPlugin<>> = clientPlugins.find(
+          (p: Class<FlipperPlugin<>>) =>
+            p.id === params.api && p.persistedStateReducer,
+        );
 
-        const methodCallbacks: ?Set<Function> = apiCallbacks.get(params.method);
-        if (this.selectedPlugin != params.api) {
-          this.bufferMessage(params);
-          return;
-        }
-        if (methodCallbacks && methodCallbacks.size > 0) {
-          for (const callback of methodCallbacks) {
-            callback(params.params);
+        if (persistingPlugin) {
+          const pluginKey = `${this.id}#${params.api}`;
+          const persistedState = this.store.getState().pluginStates[pluginKey];
+          this.store.dispatch({
+            type: 'SET_PLUGIN_STATE',
+            payload: {
+              pluginKey,
+              // $FlowFixMe: We checked persistedStateReducer exists
+              state: persistingPlugin.persistedStateReducer(
+                persistedState,
+                params.params,
+              ),
+            },
+          });
+        } else {
+          const apiCallbacks = this.broadcastCallbacks.get(params.api);
+          if (!apiCallbacks) {
+            return;
+          }
+
+          const methodCallbacks: ?Set<Function> = apiCallbacks.get(
+            params.method,
+          );
+          if (methodCallbacks) {
+            for (const callback of methodCallbacks) {
+              callback(params.params);
+            }
           }
         }
       }
@@ -191,39 +212,6 @@ export default class Client extends EventEmitter {
       callbacks.reject(data.error);
     } else {
       // ???
-    }
-  }
-
-  readBufferedMessages(id: string) {
-    const paramsArray = this.bufferedMessages.get(id);
-    if (!paramsArray) {
-      return;
-    }
-    paramsArray.forEach((params, i) =>
-      setTimeout(() => {
-        const apiCallbacks = this.broadcastCallbacks.get(params.api);
-        if (!apiCallbacks) {
-          return;
-        }
-
-        const methodCallbacks: ?Set<Function> = apiCallbacks.get(params.method);
-        if (methodCallbacks) {
-          for (const callback of methodCallbacks) {
-            callback(params.params);
-          }
-        }
-      }, i * 20),
-    );
-    this.bufferedMessages.delete(id);
-  }
-
-  bufferMessage(msg: Object) {
-    const arr = this.bufferedMessages.get(msg.api);
-    if (arr) {
-      arr.push(msg);
-      this.bufferedMessages.set(msg.api, arr);
-    } else {
-      this.bufferedMessages.set(msg.api, [msg]);
     }
   }
 

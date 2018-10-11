@@ -113,6 +113,8 @@ export class FlipperPlugin<S = *, A = *, P = *> extends FlipperBasePlugin<
   A,
   P,
 > {
+  static persistedStateReducer: ?(persistedState: P, data: Object) => $Shape<P>;
+
   constructor(props: Props<*>) {
     super(props);
     const {id} = this.constructor;
@@ -163,6 +165,10 @@ export class FlipperPlugin<S = *, A = *, P = *> extends FlipperBasePlugin<
   }
 
   _teardown() {
+    if (this.constructor.persistedStateReducer) {
+      // do not tear down when persistedStateReducer is set
+      return;
+    }
     // automatically unsubscribe subscriptions
     for (const {method, callback} of this.subscriptions) {
       this.realClient.unsubscribe(this.constructor.id, method, callback);

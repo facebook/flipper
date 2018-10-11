@@ -7,11 +7,14 @@
 
 import Server, {SECURE_PORT, INSECURE_PORT} from '../server.js';
 import LogManager from '../fb-stubs/Logger';
+import reducers from '../reducers/index.js';
+import configureStore from 'redux-mock-store';
 import path from 'path';
 import os from 'os';
 import fs from 'fs';
 
 let server;
+const mockStore = configureStore([])(reducers(undefined, {type: 'INIT'}));
 
 beforeAll(() => {
   // create config directory, which is usually created by static/index.js
@@ -20,7 +23,7 @@ beforeAll(() => {
     fs.mkdirSync(flipperDir);
   }
 
-  server = new Server(new LogManager());
+  server = new Server(new LogManager(), mockStore);
 });
 
 test('servers starting at ports', done => {

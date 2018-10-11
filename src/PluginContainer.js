@@ -6,6 +6,7 @@
  */
 import type {FlipperPlugin, FlipperBasePlugin} from './plugin.js';
 import type LogManager from './fb-stubs/Logger';
+import type Client from './Client.js';
 import type BaseDevice from './devices/BaseDevice.js';
 import type {Props as PluginProps} from './plugin';
 
@@ -19,7 +20,6 @@ import {
   styled,
 } from 'flipper';
 import React from 'react';
-import Client from './Client.js';
 import {connect} from 'react-redux';
 import {setPluginState} from './reducers/pluginStates.js';
 import {setActiveNotifications} from './reducers/notifications.js';
@@ -119,9 +119,6 @@ class PluginContainer extends Component<Props, State> {
     if (ref && target) {
       activateMenuItems(ref);
       ref._init();
-      if (target instanceof Client) {
-        target.readBufferedMessages(ref.constructor.id);
-      }
       this.props.logger.trackTimeSince(`activePlugin-${ref.constructor.id}`);
       this.plugin = ref;
     }

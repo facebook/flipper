@@ -8,6 +8,7 @@
 import type {SecureServerConfig} from './utils/CertificateProvider';
 import type Logger from './fb-stubs/Logger';
 import type {ClientQuery} from './Client.js';
+import type {Store} from './reducers/index.js';
 
 import CertificateProvider from './utils/CertificateProvider';
 import {RSocketServer, ReactiveSocket} from 'rsocket-core';
@@ -42,13 +43,15 @@ export default class Server extends EventEmitter {
   certificateProvider: CertificateProvider;
   connectionTracker: ConnectionTracker;
   logger: Logger;
+  store: Store;
 
-  constructor(logger: Logger) {
+  constructor(logger: Logger, store: Store) {
     super();
     this.logger = logger;
     this.connections = new Map();
     this.certificateProvider = new CertificateProvider(this, logger);
     this.connectionTracker = new ConnectionTracker(logger);
+    this.store = store;
     this.init();
   }
 
@@ -244,7 +247,7 @@ export default class Server extends EventEmitter {
     const id = `${query.app}-${query.os}-${query.device}-${query.device_id}`;
     console.debug(`Device connected: ${id}`, 'server');
 
-    const client = new Client(id, query, conn, this.logger);
+    const client = new Client(id, query, conn, this.logger, this.store);
 
     const info = {
       client,
