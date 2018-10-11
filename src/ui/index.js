@@ -68,6 +68,7 @@ export {default as CodeBlock} from './components/CodeBlock.js';
 
 // error
 export {default as ErrorBlock} from './components/ErrorBlock.js';
+export {ErrorBlockContainer} from './components/ErrorBlock.js';
 export {default as ErrorBoundary} from './components/ErrorBoundary.js';
 
 // interactive components

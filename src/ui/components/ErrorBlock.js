@@ -9,7 +9,7 @@ import styled from '../styled/index.js';
 import React from 'react';
 import CodeBlock from './CodeBlock.js';
 
-const ErrorBlockContainer = styled(CodeBlock)({
+export const ErrorBlockContainer = styled(CodeBlock)({
   backgroundColor: '#f2dede',
   border: '1px solid #ebccd1',
   borderRadius: 4,
