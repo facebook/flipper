@@ -17,8 +17,9 @@ import {
   PureComponent,
   DetailSidebar,
   styled,
+  SearchableTable,
+  FlipperPlugin,
 } from 'flipper';
-import {FlipperPlugin, SearchableTable} from 'flipper';
 import RequestDetails from './RequestDetails.js';
 import {URL} from 'url';
 
@@ -115,6 +116,23 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
   static icon = 'internet';
   static keyboardActions = ['clear'];
 
+  static subscribed = [];
+
+  static persistedStateReducer = (
+    persistedState: PersistedState,
+    data: Request | Response,
+  ): PersistedState => {
+    const dataType: 'requests' | 'responses' = data.url
+      ? 'requests'
+      : 'responses';
+    return {
+      [dataType]: {
+        ...persistedState[dataType],
+        [data.id]: data,
+      },
+    };
+  };
+
   onKeyboardAction = (action: string) => {
     if (action === 'clear') {
       this.clearLogs();
@@ -124,25 +142,6 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
   state = {
     selectedIds: [],
   };
-
-  init() {
-    this.client.subscribe('newRequest', (request: Request) => {
-      this.props.setPersistedState({
-        requests: {
-          ...this.props.persistedState.requests,
-          [request.id]: request,
-        },
-      });
-    });
-    this.client.subscribe('newResponse', (response: Response) => {
-      this.props.setPersistedState({
-        responses: {
-          ...this.props.persistedState.responses,
-          [response.id]: response,
-        },
-      });
-    });
-  }
 
   onRowHighlighted = (selectedIds: Array<RequestId>) =>
     this.setState({selectedIds});
@@ -290,7 +289,7 @@ function calculateState(
           nextProps.responses[responseId],
         );
         const index = rows.findIndex(
-          r => r.key === nextProps.requests[responseId].id,
+          r => r.key === nextProps.requests[responseId]?.id,
         );
         if (index > -1 && newRow) {
           rows[index] = newRow;
