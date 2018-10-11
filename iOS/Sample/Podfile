@@ -4,9 +4,11 @@ source 'https://github.com/CocoaPods/Specs'
 swift_version = "4.1"
 
 target 'Sample' do
+  platform :ios, '9.0'
   pod 'FlipperKit', :path => '../../FlipperKit.podspec'
   pod 'FlipperKit/FlipperKitLayoutComponentKitSupport', :path => '../../FlipperKit.podspec'
   pod 'FlipperKit/SKIOSNetworkPlugin', :path => '../../FlipperKit.podspec'
+  pod 'FlipperKit/FlipperKitUserDefaultsPlugin', :path => '../../FlipperKit.podspec'
   pod 'Flipper', :path => '../../Flipper.podspec'
   post_install do |installer|
 

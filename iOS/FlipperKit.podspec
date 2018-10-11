@@ -63,6 +63,7 @@ Pod::Spec.new do |spec|
                              'iOS/Plugins/FlipperKitNetworkPlugin/FlipperKitNetworkPlugin/SKRequestInfo.h',
                              'iOS/Plugins/FlipperKitNetworkPlugin/FlipperKitNetworkPlugin/SKResponseInfo.h',
                              'iOS/Plugins/FlipperKitNetworkPlugin/FlipperKitNetworkPlugin/FlipperKitNetworkPlugin.h',
+                             'iOS/Plugins/FlipperKitUserDefaultsPlugin/FKUserDefaultsPlugin.h',
                              'iOS/FBDefines/FBMacros.h',
                              'iOS/FlipperKit/**/{FlipperStateUpdateListener,FlipperClient,FlipperPlugin,FlipperConnection,FlipperResponder,SKMacros}.h'
     header_search_paths = "\"$(PODS_ROOT)/FlipperKit/iOS/FlipperKit\" \"$(PODS_ROOT)\"/Headers/Private/FlipperKit/** \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/PeerTalkSonar\""
@@ -129,6 +130,15 @@ Pod::Spec.new do |spec|
     ss.compiler_flags       = folly_compiler_flags
     ss.public_header_files = 'iOS/Plugins/FlipperKitNetworkPlugin/SKIOSNetworkPlugin/SKIOSNetworkAdapter.h'
     ss.source_files         = "iOS/Plugins/FlipperKitNetworkPlugin/SKIOSNetworkPlugin/**/*.{h,cpp,m,mm}"
+    ss.pod_target_xcconfig = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)\"/Headers/Private/FlipperKit/**" }
+  end
+
+  spec.subspec "FlipperKitUserDefaultsPlugin" do |ss|
+    ss.header_dir = "FlipperKitUserDefaultsPlugin"
+    ss.dependency 'FlipperKit/Core'
+    ss.compiler_flags       = folly_compiler_flags
+    ss.public_header_files = 'iOS/Plugins/FlipperKitUserDefaultsPlugin/FKUserDefaultsPlugin.h'
+    ss.source_files         = "iOS/Plugins/FlipperKitUserDefaultsPlugin/**/*.{h,m}"
     ss.pod_target_xcconfig = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)\"/Headers/Private/FlipperKit/**" }
   end
 end

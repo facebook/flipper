@@ -9,7 +9,7 @@ Easily inspect and modify the data contained within your app's shared preference
 
 ## Setup
 
-Note: this plugin is only available for Android.
+This plugin is available for both Android and iOS.
 
 ### Android
 
@@ -18,6 +18,24 @@ import com.facebook.flipper.plugins.sharedpreferences.SharedPreferencesFlipperPl
 
 client.addPlugin(
     new SharedPreferencesFlipperPlugin(context, "my_shared_preference_file"));
+```
+
+### iOS
+
+#### Swift
+
+```swift
+import FlipperKit
+
+client?.add(FKUserDefaultsPlugin.init(suiteName: "your_suitename"))
+```
+
+#### Objective-c
+
+```objc
+#import <FlipperKitUserDefaultsPlugin/FKUserDefaultsPlugin.h>
+
+[client addPlugin:[[FKUserDefaultsPlugin alloc] initWithSuiteName:@"your_suitename"]];
 ```
 
 ## Usage
