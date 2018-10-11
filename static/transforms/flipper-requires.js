@@ -5,6 +5,8 @@
  * @format
  */
 
+const {resolve, dirname} = require('path');
+
 // do not apply this transform for these paths
 const EXCLUDE_PATHS = [
   '/node_modules/react-devtools-core/',
@@ -28,27 +30,32 @@ module.exports = ({types: t}) => ({
       }
       const node = path.node;
       const args = node.arguments || [];
+
       if (
         node.callee.name === 'require' &&
         args.length === 1 &&
-        t.isStringLiteral(args[0]) &&
-        args[0].value === 'flipper'
+        t.isStringLiteral(args[0])
       ) {
-        path.replaceWith(t.identifier('window.Flipper'));
-      } else if (
-        node.callee.name === 'require' &&
-        args.length > 0 &&
-        t.isStringLiteral(args[0]) &&
-        args[0].value === 'react'
-      ) {
-        path.replaceWith(t.identifier('window.React'));
-      } else if (
-        node.callee.name === 'require' &&
-        args.length > 0 &&
-        t.isStringLiteral(args[0]) &&
-        args[0].value === 'react-dom'
-      ) {
-        path.replaceWith(t.identifier('window.ReactDOM'));
+        if (args[0].value === 'flipper') {
+          path.replaceWith(t.identifier('window.Flipper'));
+        } else if (args[0].value === 'react') {
+          path.replaceWith(t.identifier('window.React'));
+        } else if (args[0].value === 'react-dom') {
+          path.replaceWith(t.identifier('window.ReactDOM'));
+        } else if (
+          // require a file not a pacakge
+          args[0].value.indexOf('/') > -1 &&
+          // in the plugin itself and not inside one of its dependencies
+          state.file.opts.filename.indexOf('node_modules') === -1 &&
+          // the resolved path for this file is outside the plugins root
+          !resolve(dirname(state.file.opts.filename), args[0].value).startsWith(
+            state.file.opts.root,
+          )
+        ) {
+          throw new Error(
+            'Plugins cannot require files from outside their folder.',
+          );
+        }
       }
     },
     Identifier(path, state) {

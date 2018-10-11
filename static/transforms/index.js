@@ -57,6 +57,7 @@ function transform({filename, options, src}) {
     code: false,
     comments: false,
     compact: false,
+    root: options.projectRoot,
     filename,
     plugins,
     presets,
