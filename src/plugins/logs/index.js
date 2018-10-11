@@ -15,7 +15,6 @@ import type {Counter} from './LogWatcher.js';
 import type {DeviceLogEntry} from '../../devices/BaseDevice.js';
 import type {Props as PluginProps} from '../../plugin';
 
-import * as React from 'react';
 import {
   Text,
   ManagedTable,
@@ -29,9 +28,9 @@ import {
   SearchableTable,
   styled,
   Device,
+  createPaste,
+  textContent,
 } from 'flipper';
-import textContent from '../../utils/textContent.js';
-import createPaste from '../../utils/createPaste.js';
 import LogWatcher from './LogWatcher';
 
 const LOG_WATCHER_LOCAL_STORAGE_KEY = 'LOG_WATCHER_LOCAL_STORAGE_KEY';

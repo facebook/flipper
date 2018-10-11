@@ -23,8 +23,7 @@ import Client from './Client.js';
 import {connect} from 'react-redux';
 import {setPluginState} from './reducers/pluginStates.js';
 import {setActiveNotifications} from './reducers/notifications.js';
-import {devicePlugins} from './device-plugins/index.js';
-import plugins from './plugins/index.js';
+import {devicePlugins, clientPlugins} from './plugins/index.js';
 import {activateMenuItems} from './MenuBar.js';
 
 const Container = styled(FlexColumn)({
@@ -75,7 +74,7 @@ function computeState(props: Props): State {
     target = props.clients.find(
       (client: Client) => client.id === props.selectedApp,
     );
-    activePlugin = plugins.find(
+    activePlugin = clientPlugins.find(
       (p: Class<FlipperPlugin<>>) => p.id === props.selectedPlugin,
     );
     if (!activePlugin || !target) {

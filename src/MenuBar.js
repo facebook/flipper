@@ -7,7 +7,6 @@
 
 import type {FlipperBasePlugin} from './plugin.js';
 
-import {devicePlugins} from './device-plugins/index.js';
 import plugins from './plugins/index.js';
 import electron from 'electron';
 
@@ -69,7 +68,7 @@ export function setupMenuBar() {
 
   // collect all keyboard actions from all plugins
   const registeredActions: Set<?KeyboardAction> = new Set(
-    [...devicePlugins, ...plugins]
+    plugins
       .map((plugin: Class<FlipperBasePlugin<>>) => plugin.keyboardActions || [])
       .reduce((acc: KeyboardActions, cv) => acc.concat(cv), [])
       .map(

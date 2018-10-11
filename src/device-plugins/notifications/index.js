@@ -5,7 +5,7 @@
  * @format
  */
 
-import type {SearchableProps, FlipperPlugin} from 'flipper';
+import type {SearchableProps, FlipperBasePlugin, Device} from 'flipper';
 import type {PluginNotification} from '../../reducers/notifications';
 import {selectPlugin} from '../../reducers/connections';
 
@@ -41,6 +41,10 @@ export default class Notifications extends FlipperDevicePlugin<{}> {
   static contextTypes = {
     store: PropTypes.object.isRequired,
   };
+
+  static supportsDevice(device: Device) {
+    return false;
+  }
 
   onKeyboardAction = (action: string) => {
     if (action === 'clear') {
@@ -347,7 +351,7 @@ class NotificationItem extends Component<ItemProps> {
     this.plugin = plugin;
   }
 
-  plugin: ?Class<FlipperPlugin<>>;
+  plugin: ?Class<FlipperBasePlugin<>>;
   contextMenuItems;
   deepLinkButton = React.createRef();
 

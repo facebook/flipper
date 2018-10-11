@@ -9,7 +9,7 @@ import type {FlipperPlugin} from './plugin.js';
 import type {App} from './App.js';
 import type Logger from './fb-stubs/Logger.js';
 
-import plugins from './plugins/index.js';
+import {clientPlugins} from './plugins/index.js';
 import {ReactiveSocket, PartialResponder} from 'rsocket-core';
 
 const EventEmitter = (require('events'): any);
@@ -93,7 +93,7 @@ export default class Client extends EventEmitter {
   }
 
   getFirstSupportedPlugin(): ?string {
-    for (const Plugin of plugins) {
+    for (const Plugin of clientPlugins) {
       if (this.supportsPlugin(Plugin)) {
         return Plugin.id;
       }

@@ -5,11 +5,7 @@
  * @format
  */
 
-import type {
-  FlipperPlugin,
-  FlipperDevicePlugin,
-  FlipperBasePlugin,
-} from '../plugin.js';
+import {FlipperBasePlugin} from '../plugin.js';
 import type BaseDevice from '../devices/BaseDevice.js';
 import type Client from '../Client.js';
 import type {PluginNotification} from '../reducers/notifications';
@@ -24,12 +20,18 @@ import {
   Glyph,
   styled,
   GK,
+  FlipperPlugin,
+  FlipperDevicePlugin,
 } from 'flipper';
 import React from 'react';
-import {devicePlugins} from '../device-plugins/index.js';
-import plugins from '../plugins/index.js';
+import {devicePlugins, clientPlugins} from '../plugins/index.js';
+import notificationPlugin from '../device-plugins/notifications/index.js';
 import {selectPlugin} from '../reducers/connections.js';
 import {connect} from 'react-redux';
+
+if (GK.get('flipper_notifications')) {
+  devicePlugins.push(notificationPlugin);
+}
 
 const ListItem = styled('div')(({active}) => ({
   paddingLeft: 10,
@@ -253,7 +255,7 @@ class MainSidebar extends Component<MainSidebarProps> {
           .map((client: Client) => (
             <React.Fragment key={client.id}>
               <SidebarHeader>{client.query.app}</SidebarHeader>
-              {plugins
+              {clientPlugins
                 .filter(
                   (p: Class<FlipperPlugin<>>) =>
                     client.plugins.indexOf(p.id) > -1,

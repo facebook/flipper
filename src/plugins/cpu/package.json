@@ -1,0 +1,9 @@
+{
+  "name": "flipper-plugin-device-cpu",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "adbkit-fb": "2.10.1"
+  }
+}

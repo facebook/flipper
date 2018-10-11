@@ -6,7 +6,6 @@
  */
 
 import type stream from 'stream';
-import {FlipperDevicePlugin} from 'flipper';
 
 export type LogLevel =
   | 'unknown'

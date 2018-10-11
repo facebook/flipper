@@ -1,0 +1,7 @@
+{
+  "name": "flipper-plugin-device-logs",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {}
+}

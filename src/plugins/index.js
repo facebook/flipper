@@ -9,7 +9,11 @@ import {GK} from 'flipper';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import * as Flipper from 'flipper';
-import {FlipperPlugin, FlipperBasePlugin} from '../plugin.js';
+import {
+  FlipperPlugin,
+  FlipperBasePlugin,
+  FlipperDevicePlugin,
+} from '../plugin.js';
 import {remote} from 'electron';
 
 const plugins = new Map();
@@ -54,7 +58,7 @@ bundledPlugins
   }))
   .forEach(addIfNotAdded);
 
-const exportedPlugins: Array<Class<FlipperPlugin<>>> = Array.from(
+const exportedPlugins: Array<Class<FlipperBasePlugin<>>> = Array.from(
   plugins.values(),
 )
   .map(plugin => {
@@ -82,3 +86,11 @@ const exportedPlugins: Array<Class<FlipperPlugin<>>> = Array.from(
   .sort((a, b) => (a.title || '').localeCompare(b.title || ''));
 
 export default exportedPlugins;
+export const devicePlugins: Array<Class<FlipperDevicePlugin<>>> =
+  // $FlowFixMe
+  exportedPlugins.filter(
+    plugin => plugin.prototype instanceof FlipperDevicePlugin,
+  );
+export const clientPlugins: Array<Class<FlipperPlugin<>>> =
+  // $FlowFixMe
+  exportedPlugins.filter(plugin => plugin.prototype instanceof FlipperPlugin);
