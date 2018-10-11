@@ -56,9 +56,6 @@ export default class BaseDevice {
   // serial number for this device
   serial: string;
 
-  // supported device plugins for this platform
-  supportedPlugins: Array<string> = [];
-
   // possible src of icon to display next to the device title
   icon: ?string;
 
@@ -68,10 +65,6 @@ export default class BaseDevice {
   supportsOS(os: string) {
     return os.toLowerCase() === this.os.toLowerCase();
   }
-
-  supportsPlugin = (DevicePlugin: Class<FlipperDevicePlugin<>>): boolean => {
-    return this.supportedPlugins.includes(DevicePlugin.id);
-  };
 
   toJSON() {
     return `<${this.constructor.name}#${this.title}>`;

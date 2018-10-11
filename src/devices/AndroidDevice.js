@@ -23,9 +23,6 @@ export default class AndroidDevice extends BaseDevice {
   ) {
     super(serial, deviceType, title);
     this.adb = adb;
-    if (deviceType == 'physical') {
-      this.supportedPlugins.push('DeviceCPU');
-    }
 
     this.adb.openLogcat(this.serial).then(reader => {
       reader.on('entry', entry => {
@@ -63,12 +60,6 @@ export default class AndroidDevice extends BaseDevice {
     });
   }
 
-  supportedPlugins = [
-    'DeviceLogs',
-    'DeviceShell',
-    'DeviceFiles',
-    'DeviceScreen',
-  ];
   icon = 'icons/android.svg';
   os = 'Android';
   adb: ADBClient;

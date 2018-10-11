@@ -5,7 +5,7 @@
  * @format
  */
 
-import {FlipperDevicePlugin} from 'flipper';
+import {FlipperDevicePlugin, Device} from 'flipper';
 var adb = require('adbkit-fb');
 
 import {
@@ -112,6 +112,10 @@ export default class CPUFrequencyTable extends FlipperDevicePlugin<CPUState> {
     monitoring: false,
     hardwareInfo: '',
   };
+
+  static supportsDevice(device: Device) {
+    return device.os === 'Android' && device.deviceType === 'physical';
+  }
 
   init() {
     let device = ((this.device: any): AndroidDevice);

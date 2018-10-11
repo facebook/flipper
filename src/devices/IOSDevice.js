@@ -31,7 +31,6 @@ type RawLogEntry = {|
 |};
 
 export default class IOSDevice extends BaseDevice {
-  supportedPlugins = ['DeviceLogs'];
   icon = 'icons/ios.svg';
   os = 'iOS';
 

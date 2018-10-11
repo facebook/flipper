@@ -100,6 +100,12 @@ export class FlipperDevicePlugin<S = *, A = *, P = *> extends FlipperBasePlugin<
   _init() {
     this.init();
   }
+
+  static supportsDevice(device: BaseDevice) {
+    throw new Error(
+      'supportsDevice is unimplemented in FlipperDevicePlugin class',
+    );
+  }
 }
 
 export class FlipperPlugin<S = *, A = *, P = *> extends FlipperBasePlugin<

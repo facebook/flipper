@@ -182,16 +182,6 @@ class MainSidebar extends Component<MainSidebarProps> {
     } = this.props;
     let {clients} = this.props;
 
-    let enabledPlugins = [];
-    for (const devicePlugin of devicePlugins) {
-      if (selectedDevice && selectedDevice.supportsPlugin(devicePlugin)) {
-        enabledPlugins.push(devicePlugin);
-      }
-    }
-    enabledPlugins = enabledPlugins.sort((a, b) => {
-      return (a.title || '').localeCompare(b.title);
-    });
-
     clients = clients
       .filter(
         (client: Client) =>
@@ -237,7 +227,7 @@ class MainSidebar extends Component<MainSidebarProps> {
         )}
         {selectedDevice &&
           devicePlugins
-            .filter(selectedDevice.supportsPlugin)
+            .filter(plugin => plugin.supportsDevice(selectedDevice))
             .map((plugin: Class<FlipperDevicePlugin<>>) => (
               <PluginSidebarListItem
                 key={plugin.id}

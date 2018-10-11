@@ -28,6 +28,7 @@ import {
   FlipperDevicePlugin,
   SearchableTable,
   styled,
+  Device,
 } from 'flipper';
 import textContent from '../../utils/textContent.js';
 import createPaste from '../../utils/createPaste.js';
@@ -255,6 +256,10 @@ export default class LogTable extends FlipperDevicePlugin<
 
   initTimer: ?TimeoutID;
   batchTimer: ?TimeoutID;
+
+  static supportsDevice(device: Device) {
+    return device.os === 'iOS' || device.os === 'Android';
+  }
 
   onKeyboardAction = (action: string) => {
     if (action === 'clear') {
