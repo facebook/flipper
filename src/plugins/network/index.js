@@ -125,9 +125,16 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
     const dataType: 'requests' | 'responses' = data.url
       ? 'requests'
       : 'responses';
+    if (persistedState) {
+      return {
+        [dataType]: {
+          ...persistedState[dataType],
+          [data.id]: data,
+        },
+      };
+    }
     return {
       [dataType]: {
-        ...persistedState[dataType],
         [data.id]: data,
       },
     };
