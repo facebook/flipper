@@ -36,4 +36,10 @@ longer valid to use.
 */
 - (void)didDisconnect;
 
+/**
+ Returns true if the plugin is meant to be run in background too, otherwise it returns false.
+ */
+@optional
+- (BOOL)runInBackground;
+
 @end

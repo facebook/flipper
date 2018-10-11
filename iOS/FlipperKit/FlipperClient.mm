@@ -124,6 +124,7 @@ using WrapperPlugin = facebook::flipper::FlipperCppWrapperPlugin;
   _cppClient->start();
 }
 
+
 - (void)stop
 {
   _cppClient->stop();

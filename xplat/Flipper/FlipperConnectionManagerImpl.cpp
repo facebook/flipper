@@ -92,7 +92,7 @@ void FlipperConnectionManagerImpl::start() {
   folly::makeFuture()
       .via(flipperEventBase_->getEventBase())
       .delayed(std::chrono::milliseconds(0))
-      .thenValue([this, step](auto&&){ step->complete(); startSync(); });
+  .thenValue([this, step](auto&&){ step->complete(); startSync();});
 }
 
 void FlipperConnectionManagerImpl::startSync() {

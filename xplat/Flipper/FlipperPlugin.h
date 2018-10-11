@@ -36,6 +36,13 @@ class FlipperPlugin {
   provided in didConnect is no longer valid to use.
   */
   virtual void didDisconnect() = 0;
+
+  /**
+   Returns true if the plugin is meant to be run in background too, otherwise it returns false.
+   */
+  virtual bool runInBackground() {
+    return false;
+  }
 };
 
 } // namespace flipper

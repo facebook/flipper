@@ -43,6 +43,7 @@ export default class Client extends EventEmitter {
     this.messageIdCounter = 0;
     this.logger = logger;
 
+    this.bufferedMessages = new Map();
     this.broadcastCallbacks = new Map();
     this.requestCallbacks = new Map();
 
@@ -77,6 +78,7 @@ export default class Client extends EventEmitter {
   connection: ReactiveSocket;
   responder: PartialResponder;
 
+  bufferedMessages: Map<string, Array<Object>>;
   broadcastCallbacks: Map<?string, Map<string, Set<Function>>>;
 
   requestCallbacks: Map<
@@ -163,7 +165,11 @@ export default class Client extends EventEmitter {
         }
 
         const methodCallbacks: ?Set<Function> = apiCallbacks.get(params.method);
-        if (methodCallbacks) {
+        if (this.selectedPlugin != params.api) {
+          this.bufferMessage(params);
+          return;
+        }
+        if (methodCallbacks && methodCallbacks.size > 0) {
           for (const callback of methodCallbacks) {
             callback(params.params);
           }
@@ -185,6 +191,39 @@ export default class Client extends EventEmitter {
       callbacks.reject(data.error);
     } else {
       // ???
+    }
+  }
+
+  readBufferedMessages(id: string) {
+    const paramsArray = this.bufferedMessages.get(id);
+    if (!paramsArray) {
+      return;
+    }
+    paramsArray.forEach((params, i) =>
+      setTimeout(() => {
+        const apiCallbacks = this.broadcastCallbacks.get(params.api);
+        if (!apiCallbacks) {
+          return;
+        }
+
+        const methodCallbacks: ?Set<Function> = apiCallbacks.get(params.method);
+        if (methodCallbacks) {
+          for (const callback of methodCallbacks) {
+            callback(params.params);
+          }
+        }
+      }, i * 20),
+    );
+    this.bufferedMessages.delete(id);
+  }
+
+  bufferMessage(msg: Object) {
+    const arr = this.bufferedMessages.get(msg.api);
+    if (arr) {
+      arr.push(msg);
+      this.bufferedMessages.set(msg.api, arr);
+    } else {
+      this.bufferedMessages.set(msg.api, [msg]);
     }
   }
 

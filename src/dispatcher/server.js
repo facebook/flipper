@@ -13,6 +13,12 @@ import type Client from '../Client.js';
 
 export default (store: Store, logger: Logger) => {
   const server = new Server(logger);
+  store.subscribe(() => {
+    let currentState = store.getState();
+    currentState.connections.clients.forEach((client: Client) => {
+      client.selectedPlugin = currentState.connections.selectedPlugin;
+    });
+  });
   server.addListener('new-client', (client: Client) => {
     store.dispatch({
       type: 'NEW_CLIENT',

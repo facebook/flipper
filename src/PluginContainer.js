@@ -119,6 +119,9 @@ class PluginContainer extends Component<Props, State> {
     if (ref && target) {
       activateMenuItems(ref);
       ref._init();
+      if (target instanceof Client) {
+        target.readBufferedMessages(ref.constructor.id);
+      }
       this.props.logger.trackTimeSince(`activePlugin-${ref.constructor.id}`);
       this.plugin = ref;
     }
@@ -136,7 +139,13 @@ class PluginContainer extends Component<Props, State> {
       key: pluginKey,
       logger: this.props.logger,
       persistedState: pluginStates[pluginKey] || {},
-      setPersistedState: state => setPluginState({pluginKey, state}),
+      setPersistedState: state => {
+        // We are using setTimout here to wait for previous state updated to
+        // finish before triggering a new state update. Otherwise this can
+        // cause race conditions, with multiple state updates happening at the
+        // same time.
+        setTimeout(() => setPluginState({pluginKey, state}), 0);
+      },
       target,
       deepLinkPayload: this.props.deepLinkPayload,
       ref: this.refChanged,

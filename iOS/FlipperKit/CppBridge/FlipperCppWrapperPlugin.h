@@ -38,6 +38,13 @@ public:
 
   void didDisconnect() override { [_objCPlugin didDisconnect]; }
 
+  bool runInBackground() override {
+    if ([_objCPlugin respondsToSelector:@selector(runInBackground)]) {
+      return [_objCPlugin runInBackground];
+    }
+    return false;
+  }
+
   ObjCPlugin getObjCPlugin() { return _objCPlugin; }
 
 private:

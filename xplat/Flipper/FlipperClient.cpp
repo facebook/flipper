@@ -79,6 +79,19 @@ void FlipperClient::removePlugin(std::shared_ptr<FlipperPlugin> plugin) {
   });
 }
 
+  void FlipperClient::startBackgroundPlugins() {
+    std::cout << "Activating Background Plugins..." << std::endl;
+    for (std::map<std::string, std::shared_ptr<FlipperPlugin>>::iterator it=plugins_.begin(); it!=plugins_.end(); ++it) {
+      std::cout << it->first << std::endl;
+      if (it->second.get()->runInBackground()) {
+        auto& conn = connections_[it->first];
+        conn = std::make_shared<FlipperConnectionImpl>(socket_.get(),it->first);
+        it->second.get()->didConnect(conn);
+      }
+
+    }
+  }
+
 std::shared_ptr<FlipperPlugin> FlipperClient::getPlugin(
     const std::string& identifier) {
   std::lock_guard<std::mutex> lock(mutex_);
@@ -113,6 +126,7 @@ void FlipperClient::onConnected() {
 
   std::lock_guard<std::mutex> lock(mutex_);
   connected_ = true;
+  startBackgroundPlugins();
 }
 
 void FlipperClient::onDisconnected() {
@@ -161,7 +175,9 @@ void FlipperClient::onMessageReceived(const dynamic& message) {
       auto& conn = connections_[plugin->identifier()];
       conn = std::make_shared<FlipperConnectionImpl>(
           socket_.get(), plugin->identifier());
-      plugin->didConnect(conn);
+      if (!plugin.get()->runInBackground()) {
+        plugin->didConnect(conn);
+      }
       return;
     }
 
@@ -173,7 +189,9 @@ void FlipperClient::onMessageReceived(const dynamic& message) {
             method.getString());
       }
       const auto plugin = plugins_.at(identifier);
-      disconnect(plugin);
+      if (!plugin.get()->runInBackground()) {
+        disconnect(plugin);
+      }
       return;
     }
 

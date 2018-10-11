@@ -58,6 +58,11 @@ static const NSUInteger bufferSize = 500;
   });
 }
 
+- (BOOL)runInBackground {
+  return YES;
+}
+
+
 - (void)send:(NSString *)method
  sonarObject:(NSDictionary<NSString *, id> *)sonarObject {
   _connectionAccessQueue->async(^{
