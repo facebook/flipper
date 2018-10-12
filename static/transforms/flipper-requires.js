@@ -50,10 +50,16 @@ module.exports = ({types: t}) => ({
           // the resolved path for this file is outside the plugins root
           !resolve(dirname(state.file.opts.filename), args[0].value).startsWith(
             state.file.opts.root,
-          )
+          ) &&
+          !resolve(dirname(state.file.opts.filename), args[0].value).indexOf(
+            '/static/',
+          ) < 0
         ) {
           throw new Error(
-            'Plugins cannot require files from outside their folder.',
+            `Plugins cannot require files from outside their folder. Attempted to require ${resolve(
+              dirname(state.file.opts.filename),
+              args[0].value,
+            )} which isn't inside ${state.file.opts.root}`,
           );
         }
       }
