@@ -97,11 +97,12 @@ swift_version = "4.1"
 flipperkit_version = '0.8.1'
 
 target 'MyApp' do
-
+  platform :ios, '9.0'
   pod 'FlipperKit', '~>'+flipperkit_version
   # Layout and network plugins are not yet supported for swift projects
   pod 'FlipperKit/FlipperKitLayoutComponentKitSupport', '~>' + flipperkit_version
   pod 'FlipperKit/SKIOSNetworkPlugin', '~>' + flipperkit_version
+  pod 'FlipperKit/FlipperKitUserDefaultsPlugin', '~>' + flipperkit_version
 
   post_install do |installer|
 
@@ -120,6 +121,7 @@ and install the dependencies by running `pod install`. When you open the Xcode w
 
 ```objective-c
 #import <FlipperKit/FlipperClient.h>
+#import <FlipperKitUserDefaultsPlugin/FKUserDefaultsPlugin.h>
 
 @implementation AppDelegate
 
@@ -130,6 +132,8 @@ and install the dependencies by running `pod install`. When you open the Xcode w
   SKDescriptorMapper *layoutDescriptorMapper = [[SKDescriptorMapper alloc] initWithDefaults];
   [client addPlugin:[[FlipperKitLayoutPlugin alloc] initWithRootNode: application
                                                   withDescriptorMapper: layoutDescriptorMapper]];
+  [client addPlugin:[[FKUserDefaultsPlugin alloc] initWithSuiteName:nil]];
+
   [client start];
 #endif
   ...

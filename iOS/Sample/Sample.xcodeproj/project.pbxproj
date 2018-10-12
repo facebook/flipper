@@ -7,7 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		070E4F377782060039511A32 /* libPods-Sample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 55478E5C767F9CC35112E1C9 /* libPods-Sample.a */; };
+		0D0B1CF0E859D91C55CC453B /* libPods-Sample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F97F4E8C3E28D8BFAAEE60F4 /* libPods-Sample.a */; };
+		4E102341216AD7B400160734 /* UserDefaultsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4E102340216AD7B400160734 /* UserDefaultsViewController.m */; };
 		53D59DB320ABA18400207065 /* NetworkViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 53D59DAA20ABA18300207065 /* NetworkViewController.m */; };
 		53D59DB420ABA18400207065 /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 53D59DAB20ABA18300207065 /* AppDelegate.mm */; };
 		53D59DB520ABA18400207065 /* MainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 53D59DAD20ABA18300207065 /* MainViewController.m */; };
@@ -19,6 +20,8 @@
 
 /* Begin PBXFileReference section */
 		081A9FC23643CD21C7D61AA1 /* Pods-Sample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Sample.release.xcconfig"; path = "Pods/Target Support Files/Pods-Sample/Pods-Sample.release.xcconfig"; sourceTree = "<group>"; };
+		4E10233F216AD7B400160734 /* UserDefaultsViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UserDefaultsViewController.h; sourceTree = "<group>"; };
+		4E102340216AD7B400160734 /* UserDefaultsViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UserDefaultsViewController.m; sourceTree = "<group>"; };
 		53D59DAA20ABA18300207065 /* NetworkViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NetworkViewController.m; sourceTree = SOURCE_ROOT; };
 		53D59DAB20ABA18300207065 /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AppDelegate.mm; sourceTree = SOURCE_ROOT; };
 		53D59DAC20ABA18300207065 /* NetworkViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NetworkViewController.h; sourceTree = SOURCE_ROOT; };
@@ -32,8 +35,8 @@
 		53E0DE4120ABA0E3005682E1 /* Sample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Sample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		53E0DE5220ABA0E4005682E1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = SOURCE_ROOT; };
 		53E0DE5320ABA0E4005682E1 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		55478E5C767F9CC35112E1C9 /* libPods-Sample.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Sample.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		BDF8FF7C018FDB3437209993 /* Pods-Sample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Sample.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Sample/Pods-Sample.debug.xcconfig"; sourceTree = "<group>"; };
+		F97F4E8C3E28D8BFAAEE60F4 /* libPods-Sample.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Sample.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -41,7 +44,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				070E4F377782060039511A32 /* libPods-Sample.a in Frameworks */,
+				0D0B1CF0E859D91C55CC453B /* libPods-Sample.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -59,6 +62,8 @@
 				53D59DAD20ABA18300207065 /* MainViewController.m */,
 				53D59DAC20ABA18300207065 /* NetworkViewController.h */,
 				53D59DAA20ABA18300207065 /* NetworkViewController.m */,
+				4E10233F216AD7B400160734 /* UserDefaultsViewController.h */,
+				4E102340216AD7B400160734 /* UserDefaultsViewController.m */,
 				53D59DAE20ABA18300207065 /* RootViewController.h */,
 				53D59DAF20ABA18300207065 /* RootViewController.mm */,
 				53E0DE5220ABA0E4005682E1 /* Info.plist */,
@@ -97,7 +102,7 @@
 		C89232DD95E032B5B6FA95A1 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				55478E5C767F9CC35112E1C9 /* libPods-Sample.a */,
+				F97F4E8C3E28D8BFAAEE60F4 /* libPods-Sample.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -194,6 +199,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				53E0DE5420ABA0E4005682E1 /* main.m in Sources */,
+				4E102341216AD7B400160734 /* UserDefaultsViewController.m in Sources */,
 				53D59DB320ABA18400207065 /* NetworkViewController.m in Sources */,
 				53D59DB420ABA18400207065 /* AppDelegate.mm in Sources */,
 				53D59DB520ABA18400207065 /* MainViewController.m in Sources */,
@@ -342,7 +348,7 @@
 					"\"${PODS_ROOT}/Headers/Public/glog\"",
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 11.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -361,7 +367,7 @@
 					"-l\"DoubleConversion\"",
 					"-l\"Folly\"",
 					"-l\"PeerTalk\"",
-          "-l\"Flipper\"",
+					"-l\"Flipper\"",
 					"-l\"FlipperKit\"",
 					"-l\"Yoga\"",
 					"-l\"c++\"",
@@ -406,7 +412,7 @@
 					"\"${PODS_ROOT}/Headers/Public/glog\"",
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 11.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -425,7 +431,7 @@
 					"-l\"DoubleConversion\"",
 					"-l\"Folly\"",
 					"-l\"PeerTalk\"",
-          "-l\"Flipper\"",
+					"-l\"Flipper\"",
 					"-l\"FlipperKit\"",
 					"-l\"Yoga\"",
 					"-l\"c++\"",

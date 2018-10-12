@@ -46,6 +46,7 @@ This repository includes all parts of Flipper. This includes:
   * Logs (`/src/device-plugins/logs`)
   * Layout inspector (`/src/plugins/layout`)
   * Network inspector (`/src/plugins/network`)
+  * Shared Preferences/NSUserDefaults inspector (`/src/plugins/shared_preferences`)
 * website and documentation (`/website` / `/docs`)
 
 # Getting started

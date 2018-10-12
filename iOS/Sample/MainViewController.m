@@ -10,6 +10,7 @@
 
 #import "NetworkViewController.h"
 #import "RootViewController.h"
+#import "UserDefaultsViewController.h"
 
 @interface MainViewController ()
 
@@ -33,6 +34,13 @@
   NetworkViewController *networkViewController = [storyboard instantiateViewControllerWithIdentifier:@"NetworkViewController"];
 
   [self.navigationController pushViewController:networkViewController animated:true];
+}
+
+- (IBAction)tappedUserDefaults:(id)sender {
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"MainStoryBoard" bundle:nil];
+    UserDefaultsViewController *userDefaultsViewController = [storyboard instantiateViewControllerWithIdentifier:@"UserDefaultsViewController"];
+    
+    [self.navigationController pushViewController:userDefaultsViewController animated:true];
 }
 
 @end
