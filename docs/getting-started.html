@@ -70,11 +70,12 @@ swift_version = <span class="hljs-string">"4.1"</span>
 flipperkit_version = <span class="hljs-string">'0.8.1'</span>
 
 target <span class="hljs-string">'MyApp'</span> <span class="hljs-keyword">do</span>
-
+  platform <span class="hljs-symbol">:ios</span>, <span class="hljs-string">'9.0'</span>
   pod <span class="hljs-string">'FlipperKit'</span>, <span class="hljs-string">'~&gt;'</span>+flipperkit_version
   <span class="hljs-comment"># Layout and network plugins are not yet supported for swift projects</span>
   pod <span class="hljs-string">'FlipperKit/FlipperKitLayoutComponentKitSupport'</span>, <span class="hljs-string">'~&gt;'</span> + flipperkit_version
   pod <span class="hljs-string">'FlipperKit/SKIOSNetworkPlugin'</span>, <span class="hljs-string">'~&gt;'</span> + flipperkit_version
+  pod <span class="hljs-string">'FlipperKit/FlipperKitUserDefaultsPlugin'</span>, <span class="hljs-string">'~&gt;'</span> + flipperkit_version
 
   post_install <span class="hljs-keyword">do</span> <span class="hljs-params">|installer|</span>
 
@@ -90,6 +91,7 @@ target <span class="hljs-string">'MyApp'</span> <span class="hljs-keyword">do</s
 </code></pre>
 <p>and install the dependencies by running <code>pod install</code>. When you open the Xcode workspace file for your app, you now can import and initialize Flipper in your AppDelegate.</p>
 <pre><code class="hljs css objective-c"><span class="hljs-meta">#import <span class="hljs-meta-string">&lt;FlipperKit/FlipperClient.h&gt;</span></span>
+<span class="hljs-meta">#import <span class="hljs-meta-string">&lt;FlipperKitUserDefaultsPlugin/FKUserDefaultsPlugin.h&gt;</span></span>
 
 <span class="hljs-class"><span class="hljs-keyword">@implementation</span> <span class="hljs-title">AppDelegate</span></span>
 
@@ -100,6 +102,8 @@ target <span class="hljs-string">'MyApp'</span> <span class="hljs-keyword">do</s
   <span class="hljs-built_in">SKDescriptorMapper</span> *layoutDescriptorMapper = [[<span class="hljs-built_in">SKDescriptorMapper</span> alloc] initWithDefaults];
   [client addPlugin:[[FlipperKitLayoutPlugin alloc] initWithRootNode: application
                                                   withDescriptorMapper: layoutDescriptorMapper]];
+  [client addPlugin:[[FKUserDefaultsPlugin alloc] initWithSuiteName:<span class="hljs-literal">nil</span>]];
+
   [client start];
 <span class="hljs-meta">#endif</span>
   ...
