@@ -11,6 +11,7 @@ import type BaseDevice from './devices/BaseDevice.js';
 import type {Props as PluginProps} from './plugin';
 
 import {FlipperDevicePlugin} from './plugin.js';
+import type {Notification} from './plugin.js';
 import {
   ErrorBoundary,
   Component,
@@ -51,6 +52,10 @@ type Props = {
   setPluginState: (payload: {
     pluginKey: string,
     state: Object,
+  }) => void,
+  setActiveNotifications: ({
+    pluginId: string,
+    notifications: Array<Notification>,
   }) => void,
   deepLinkPayload: ?string,
 };
@@ -125,7 +130,7 @@ class PluginContainer extends Component<Props, State> {
   };
 
   render() {
-    const {pluginStates, setPluginState} = this.props;
+    const {pluginStates, setPluginState, setActiveNotifications} = this.props;
     const {activePlugin, pluginKey, target} = this.state;
 
     if (!activePlugin || !target) {
@@ -143,6 +148,11 @@ class PluginContainer extends Component<Props, State> {
         // same time.
         setTimeout(() => setPluginState({pluginKey, state}), 0);
       },
+      setActiveNotifications: (notifications: Array<Notification>) =>
+        setActiveNotifications({
+          pluginId: pluginKey,
+          notifications: notifications,
+        }),
       target,
       deepLinkPayload: this.props.deepLinkPayload,
       ref: this.refChanged,

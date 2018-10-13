@@ -4,17 +4,7 @@
  * LICENSE file in the root directory of this source tree.
  * @format
  */
-import type {Node} from 'react';
-
-export type Notification = {|
-  id: string,
-  title: string,
-  message: Node,
-  severity: 'warning' | 'error',
-  timestamp?: number,
-  category?: string,
-  action?: string,
-|};
+import type {Notification} from '../plugin';
 
 export type PluginNotification = {|
   notification: Notification,

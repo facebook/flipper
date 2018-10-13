@@ -22,6 +22,7 @@ import {
 } from 'flipper';
 import RequestDetails from './RequestDetails.js';
 import {URL} from 'url';
+import type {Notification} from '../../plugin';
 
 type RequestId = string;
 
@@ -159,20 +160,21 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
   };
 
   computeNotifications(props: *, state: State) {
-    const notifications = {};
+    const notifications: Array<Notification> = [];
     const persistedState = props.persistedState;
     for (const response in persistedState.responses) {
       const status = persistedState.responses[response].status;
-      if (status >= 400) {
+      const id = persistedState.requests[response]?.id;
+      if (status >= 400 && id != null) {
         const url = persistedState.requests[response]?.url;
-        const startTime = persistedState.requests[response]?.timestamp;
         const endTime = persistedState.responses[response].timestamp;
-        notifications[`${url}-${startTime}`] = {
+        notifications.push({
+          id,
           timestamp: endTime,
           title: 'Failed network request',
           message: `Response for ${url} failed with status code ${status}`,
           severity: 'error',
-        };
+        });
       }
     }
     return notifications;

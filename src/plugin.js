@@ -24,10 +24,21 @@ export type PluginClient = {|
 
 type PluginTarget = BaseDevice | Client;
 
+export type Notification = {|
+  id: string,
+  title: string,
+  message: string,
+  severity: 'warning' | 'error',
+  timestamp?: number,
+  category?: string,
+  action?: string,
+|};
+
 export type Props<T> = {
   logger: Logger,
   persistedState: T,
   setPersistedState: (state: $Shape<T>) => void,
+  setActiveNotifications: (Array<Notification>) => void,
   target: PluginTarget,
   deepLinkPayload: ?string,
 };
@@ -64,6 +75,9 @@ export class FlipperBasePlugin<
   // methods to be overriden by plugins
   init(): void {}
   teardown(): void {}
+  computeNotifications(props: Props<*>, state: State): Array<Notification> {
+    return [];
+  }
   // methods to be overridden by subclasses
   _init(): void {}
   _teardown(): void {}
@@ -82,6 +96,10 @@ export class FlipperBasePlugin<
       // $FlowFixMe
       throw new TypeError(`Reducer ${actionData.type} isn't a function`);
     }
+  }
+
+  componentDidUpdate(props: Props<*>, state: State): void {
+    props.setActiveNotifications(this.computeNotifications(props, state));
   }
 }
 
