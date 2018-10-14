@@ -9,6 +9,16 @@ The LeakCanary plugin provides developers with Flipper support for [LeakCanary](
 
 Note: this plugin is only available for Android.
 
+Ensure that you already have an explicit dependency in your application's
+`build.gradle`, e.g.
+
+```groovy
+dependencies {
+  debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.6.1'
+  releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.6.1'
+}
+```
+
 ### Android
 
 First, add the plugin to your Flipper client instance:
