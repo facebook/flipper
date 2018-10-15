@@ -14,6 +14,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     let client = FlipperClient.shared()
     let layoutDescriptorMapper = SKDescriptorMapper(defaults: ())
+    // If you want to debug componentkit view in swift, otherwise you can ignore the next line
     FlipperKitLayoutComponentKitSupport.setUpWith(layoutDescriptorMapper)
     client?.add(FlipperKitLayoutPlugin(rootNode: application, with: layoutDescriptorMapper!))
 

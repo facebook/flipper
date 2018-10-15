@@ -63,12 +63,26 @@ dependencies {
 
 ### iOS
 
+In Objective-C you can add it as follows
+
 ```objective-c
 #import <FlipperKitLayoutPlugin/FlipperKitLayoutPlugin.h>
 #import <FlipperKitLayoutPlugin/SKDescriptorMapper.h>
 
 SKDescriptorMapper *mapper = [[SKDescriptorMapper alloc] initWithDefaults];
 [client addPlugin:[[FlipperKitLayoutPlugin alloc] initWithRootNode:context.application withDescriptorMapper:mapper]]
+```
+
+Whereas in swift you can add it as follows
+
+```swift
+import FlipperKit
+
+let layoutDescriptorMapper = SKDescriptorMapper(defaults: ())
+// If you want to debug componentkit view in swift, otherwise you can ignore the next line
+FlipperKitLayoutComponentKitSupport.setUpWith(layoutDescriptorMapper)
+
+client?.add(FlipperKitLayoutPlugin(rootNode: application, with: layoutDescriptorMapper!))
 ```
 
 ## Quick edits
