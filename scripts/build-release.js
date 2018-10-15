@@ -115,7 +115,6 @@ function buildDist(buildFolder) {
         },
         electronDownload,
         npmRebuild: false,
-        asarUnpack: 'PortForwardingMacApp.app/**/*',
       },
       projectDir: buildFolder,
       targets,

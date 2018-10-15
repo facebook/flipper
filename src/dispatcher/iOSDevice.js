@@ -5,13 +5,11 @@
  * @format
  */
 
-import type {ChildProcess} from 'child_process';
 import type {Store} from '../reducers/index.js';
 import type Logger from '../fb-stubs/Logger.js';
 
 import {promisify} from 'util';
 import child_process from 'child_process';
-const exec = promisify(child_process.exec);
 const execFile = promisify(child_process.execFile);
 import IOSDevice from '../devices/IOSDevice';
 
@@ -23,14 +21,6 @@ type iOSSimulatorDevice = {|
 |};
 
 type IOSDeviceMap = {[id: string]: Array<iOSSimulatorDevice>};
-
-// start port forwarding server for real device connections
-const portForwarder: ChildProcess = exec(
-  'PortForwardingMacApp.app/Contents/MacOS/PortForwardingMacApp -portForward=8088 -multiplexChannelPort=8078',
-);
-window.addEventListener('beforeunload', () => {
-  portForwarder.kill();
-});
 
 function querySimulatorDevices(store: Store): Promise<IOSDeviceMap> {
   const {connections} = store.getState();
