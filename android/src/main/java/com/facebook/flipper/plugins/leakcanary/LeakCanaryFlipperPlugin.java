@@ -57,6 +57,11 @@ public class LeakCanaryFlipperPlugin implements FlipperPlugin {
     mConnection = null;
   }
 
+  @Override
+  public boolean runInBackground() {
+    return false;
+  }
+
   private void sendLeakList() {
     if (mConnection != null) {
       JSONObject obj = new JSONObject();

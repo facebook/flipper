@@ -171,6 +171,11 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
     mConnection = null;
   }
 
+  @Override
+  public boolean runInBackground() {
+    return false;
+  }
+
   final FlipperReceiver mShouldShowLithoAccessibilitySettings =
       new MainThreadFlipperReceiver(mConnection) {
         @Override

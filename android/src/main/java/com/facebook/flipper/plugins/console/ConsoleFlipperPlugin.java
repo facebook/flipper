@@ -31,4 +31,9 @@ public class ConsoleFlipperPlugin implements FlipperPlugin {
   }
 
   public void onDisconnect() throws Exception {}
+
+  @Override
+  public boolean runInBackground() {
+    return false;
+  }
 }

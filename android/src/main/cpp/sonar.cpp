@@ -198,6 +198,11 @@ class JFlipperPlugin : public jni::JavaClass<JFlipperPlugin> {
     static const auto method = javaClassStatic()->getMethod<void()>("onDisconnect");
     method(self());
   }
+
+    bool runInBackground() {
+        static const auto method = javaClassStatic()->getMethod<jboolean()>("runInBackground");
+        return method(self()) == JNI_TRUE;
+    }
 };
 
 class JFlipperStateUpdateListener : public jni::JavaClass<JFlipperStateUpdateListener> {
@@ -246,6 +251,10 @@ class JFlipperPluginWrapper : public FlipperPlugin {
   virtual void didDisconnect() override {
     jplugin->didDisconnect();
   }
+
+    virtual bool runInBackground() override {
+        return jplugin->runInBackground();
+    }
 
   JFlipperPluginWrapper(jni::global_ref<JFlipperPlugin> plugin): jplugin(plugin) {}
 };

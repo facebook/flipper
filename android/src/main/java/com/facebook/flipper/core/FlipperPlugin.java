@@ -34,4 +34,9 @@ public interface FlipperPlugin {
    * longer valid. Do not try to use the connection in or after this method has been called.
    */
   void onDisconnect() throws Exception;
+
+  /**
+   Returns true if the plugin is meant to be run in background too, otherwise it returns false.
+   */
+  boolean runInBackground();
 }

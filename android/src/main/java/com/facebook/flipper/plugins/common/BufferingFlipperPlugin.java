@@ -37,6 +37,11 @@ public abstract class BufferingFlipperPlugin implements FlipperPlugin {
     mConnection = null;
   }
 
+  @Override
+  public boolean runInBackground() {
+    return true;
+  }
+
   public synchronized FlipperConnection getConnection() {
     return mConnection;
   }

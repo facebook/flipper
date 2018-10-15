@@ -68,4 +68,9 @@ public class SandboxFlipperPlugin implements FlipperPlugin {
 
   @Override
   public void onDisconnect() {}
+
+    @Override
+    public boolean runInBackground() {
+        return false;
+    }
 }

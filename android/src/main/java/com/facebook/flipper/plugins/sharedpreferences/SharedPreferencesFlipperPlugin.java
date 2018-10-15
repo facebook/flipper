@@ -200,6 +200,11 @@ public class SharedPreferencesFlipperPlugin implements FlipperPlugin {
     mConnection = null;
   }
 
+  @Override
+  public boolean runInBackground() {
+    return false;
+  }
+
   public static class SharedPreferencesDescriptor {
     public final String name;
     public final int mode;
