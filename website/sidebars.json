@@ -12,6 +12,7 @@
     "Plugins: Desktop part": [
       "js-setup",
       "communicating",
+      "background-plugin-jsside",
       "create-table-plugin",
       "ui-components",
       "styling-components"

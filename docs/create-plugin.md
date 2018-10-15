@@ -28,6 +28,11 @@ public class MyFlipperPlugin implements FlipperPlugin {
   public void onDisconnect() throws Exception {
     mConnection = null;
   }
+
+  @Override
+  public boolean runInBackground() {
+  	return false;
+  }
 }
 ```
 
@@ -42,6 +47,7 @@ public class MyFlipperPlugin implements FlipperPlugin {
 - (NSString*)identifier { return @"MyFlipperPlugin"; }
 - (void)didConnect:(FlipperConnection*)connection {}
 - (void)didDisonnect {}
+- (BOOL)runInBackground {}
 
 @end
 ```
@@ -54,6 +60,7 @@ public:
   std::string identifier() const override { return "MyFlipperPlugin"; }
   void didConnect(std::shared_ptr<FlipperConnection> conn) override;
   void didDisconnect() override;
+  bool runInBackground() override;
 };
 ```
 
@@ -138,3 +145,7 @@ void MyFlipperPlugin::didConnect(std::shared_ptr<FlipperConnection> conn) {
   conn->send("getData", message);
 }
 ```
+
+## Background Plugins
+
+If the plugin returns false in `runInBackground()`, then the Flipper app will only accept messages from the client side when the plugin is active (i.e. when user is using the plugin in the Flipper app). Whereas with the plugin marked as `runInBackground`, it can send messages even when the plugin is not in active use. The benefit is that the data can be processed in the background and notifications can be fired. It also reduces the number of rerenders and time taken to display the data when the plugin becomes active. As the data comes in the background, it is processed and a state is updated in the Redux store. When the plugin becomes active, the initial render will contain all the data. Currently, the network plugin is run in background. To setup the plugin in background, follow the above steps and for the JavaScript side follow the steps given [here](background-plugin-jsside.md).

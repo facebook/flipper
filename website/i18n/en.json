@@ -4,6 +4,8 @@
     "next": "Next",
     "previous": "Previous",
     "tagline": "Extensible mobile app debugging",
+    "background-plugin-jsside": "Background Plugin Setup",
+    "Background Plugin": "Background Plugin",
     "communicating": "Device Communication",
     "Device Communication": "Device Communication",
     "create-plugin": "Mobile Setup",
