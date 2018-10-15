@@ -4,6 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
-    "pako": "^1.0.6"
+    "pako": "^1.0.6",
+    "adbkit-fb": "2.10.1"
   }
 }

@@ -3,5 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
-  "gatekeeper": "sonar_sandbox_plugin"
+  "gatekeeper": "sonar_sandbox_plugin",
+  "dependencies": {
+    "adbkit-fb": "2.10.1"
+  }
 }
