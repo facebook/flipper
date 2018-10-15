@@ -149,6 +149,7 @@ async function compilePlugin(
     return result;
   } else {
     console.log(`Compiling ${name} in ${rootDir} with watchFolders ${__dirname}...`); // eslint-disable-line no-console
+    console.log(`Entry: ${entry}`);
     try {
       await Metro.runBuild(
         {
