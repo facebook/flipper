@@ -1,6 +1,3 @@
-os: osx
-osx_image: xcode9.4
-
 matrix:
   include:
     - language: node_js
@@ -28,6 +25,7 @@ matrix:
           on:
             branch: master
     - language: node_js
+      os: linux
       node_js:
         - "10"
 
@@ -37,9 +35,11 @@ matrix:
       script:
         - yarn lint
         - yarn test
-        - yarn build --mac --version=$TRAVIS_BUILD_NUMBER
+        - yarn build --linux --version=$TRAVIS_BUILD_NUMBER
 
     - language: objective-c
+      os: osx
+      osx_image: xcode9.4
 
       before_install:
         - rm -rf iOS/Sample/Pods
@@ -58,6 +58,8 @@ matrix:
         - IPHONESIMULATOR=$(xcodebuild -showsdks | grep -o "iphonesimulator[0-9]\\+\\.[0-9]\\+$")
         - xcodebuild clean build -workspace Sample.xcworkspace -scheme Sample -sdk $IPHONESIMULATOR -quiet
     - language: objective-c
+      os: osx
+      osx_image: xcode9.4
 
       before_install:
         - rm -rf iOS/SampleSwift/Pods
