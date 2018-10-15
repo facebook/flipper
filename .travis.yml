@@ -31,6 +31,7 @@ matrix:
 
       before_install:
         - curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version 1.10.1
+        - source /home/travis/.bashrc
 
       install:
         - yarn
