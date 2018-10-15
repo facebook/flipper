@@ -152,7 +152,6 @@ async function compilePlugin(
     try {
       await Metro.runBuild(
         {
-          reporter: {update: () => {}},
           projectRoot: rootDir,
           watchFolders: [__dirname, rootDir],
           serializer: {
