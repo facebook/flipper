@@ -173,6 +173,7 @@ async function compilePlugin(
           out,
           dev: false,
           sourceMap: true,
+          minify: false,
         },
       );
     } catch (e) {
