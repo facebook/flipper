@@ -6,6 +6,7 @@
 <url> <loc>https://fbflipper.com/blog/2017/09/25/testing-rss.html</loc> <changefreq>weekly</changefreq> <priority>0.3</priority> </url>
 <url> <loc>https://fbflipper.com/blog/2017/04/10/blog-post-two.html</loc> <changefreq>weekly</changefreq> <priority>0.3</priority> </url>
 <url> <loc>https://fbflipper.com/blog/2016/03/11/blog-post.html</loc> <changefreq>weekly</changefreq> <priority>0.3</priority> </url>
+<url> <loc>https://fbflipper.com/docs/background-plugin-jsside.html</loc> <changefreq>hourly</changefreq> <priority>1.0</priority> <xhtml:link rel="alternate" hreflang="en" href="https://fbflipper.com/docs/background-plugin-jsside.html" /> </url>
 <url> <loc>https://fbflipper.com/docs/communicating.html</loc> <changefreq>hourly</changefreq> <priority>1.0</priority> <xhtml:link rel="alternate" hreflang="en" href="https://fbflipper.com/docs/communicating.html" /> </url>
 <url> <loc>https://fbflipper.com/docs/create-plugin.html</loc> <changefreq>hourly</changefreq> <priority>1.0</priority> <xhtml:link rel="alternate" hreflang="en" href="https://fbflipper.com/docs/create-plugin.html" /> </url>
 <url> <loc>https://fbflipper.com/docs/create-table-plugin.html</loc> <changefreq>hourly</changefreq> <priority>1.0</priority> <xhtml:link rel="alternate" hreflang="en" href="https://fbflipper.com/docs/create-table-plugin.html" /> </url>
