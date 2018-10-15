@@ -37,9 +37,9 @@ matrix:
         - yarn
 
       script:
-        - ls /home/travis/build/facebook/flipper/node_modules
         - yarn lint
         - yarn test
+        - ls /home/travis/build/facebook/flipper/node_modules/adbkit-fb
         - yarn build --linux --version=$TRAVIS_BUILD_NUMBER
 
     - language: objective-c
