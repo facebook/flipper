@@ -37,7 +37,7 @@ matrix:
         - yarn
 
       script:
-        - echo /home/travis/build/facebook/flipper/node_modules
+        - ls /home/travis/build/facebook/flipper/node_modules
         - yarn lint
         - yarn test
         - yarn build --linux --version=$TRAVIS_BUILD_NUMBER
