@@ -4,6 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
-    "lodash.debounce": "^4.0.8"
+    "lodash.debounce": "^4.0.8",
+    "adbkit-fb": "2.10.1"
   }
 }

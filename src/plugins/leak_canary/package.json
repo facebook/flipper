@@ -4,6 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
-    "lodash": "^4.17.5"
+    "lodash": "^4.17.5",
+    "adbkit-fb": "2.10.1"
   }
 }
