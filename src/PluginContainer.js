@@ -25,6 +25,7 @@ import {connect} from 'react-redux';
 import {setPluginState} from './reducers/pluginStates.js';
 import {setActiveNotifications} from './reducers/notifications.js';
 import {devicePlugins, clientPlugins} from './plugins/index.js';
+import NotificationsHub from './NotificationsHub';
 import {activateMenuItems} from './MenuBar.js';
 
 const Container = styled(FlexColumn)({
@@ -68,7 +69,7 @@ type State = {
 
 function computeState(props: Props): State {
   // plugin changed
-  let activePlugin = devicePlugins.find(
+  let activePlugin = [NotificationsHub, ...devicePlugins].find(
     (p: Class<FlipperDevicePlugin<>>) => p.id === props.selectedPlugin,
   );
   let target = props.selectedDevice;

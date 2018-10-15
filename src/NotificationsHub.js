@@ -6,8 +6,8 @@
  */
 
 import type {SearchableProps, FlipperBasePlugin, Device} from 'flipper';
-import type {PluginNotification} from '../../reducers/notifications';
-import {selectPlugin} from '../../reducers/connections';
+import type {PluginNotification} from './reducers/notifications';
+import {selectPlugin} from './reducers/connections';
 
 import {
   FlipperDevicePlugin,
@@ -23,14 +23,14 @@ import {
 } from 'flipper';
 import {connect} from 'react-redux';
 import React, {Component, Fragment} from 'react';
-import plugins from '../../plugins/index';
+import plugins from './plugins/index';
 import {clipboard} from 'electron';
 import PropTypes from 'prop-types';
 import {
   clearAllNotifications,
   updatePluginBlacklist,
-} from '../../reducers/notifications';
-import {createPaste, textContent} from '../../utils/index';
+} from './reducers/notifications';
+import {createPaste, textContent} from './utils/index';
 
 export default class Notifications extends FlipperDevicePlugin<{}> {
   static id = 'notifications';

@@ -25,13 +25,9 @@ import {
 } from 'flipper';
 import React from 'react';
 import {devicePlugins, clientPlugins} from '../plugins/index.js';
-import notificationPlugin from '../device-plugins/notifications/index.js';
+import NotificationsHub from '../NotificationsHub.js';
 import {selectPlugin} from '../reducers/connections.js';
 import {connect} from 'react-redux';
-
-if (GK.get('flipper_notifications')) {
-  devicePlugins.push(notificationPlugin);
-}
 
 const ListItem = styled('div')(({active}) => ({
   paddingLeft: 10,
@@ -214,13 +210,15 @@ class MainSidebar extends Component<MainSidebarProps> {
             }>
             <PluginIcon
               color={colors.light50}
-              name={notifications.length > 0 ? 'bell' : 'bell-null'}
-              isActive={selectedPlugin === 'notifications'}
+              name={
+                notifications.length > 0 ? NotificationsHub.icon : 'bell-null'
+              }
+              isActive={selectedPlugin === NotificationsHub.id}
             />
             <PluginName
               count={notifications.length}
-              isActive={selectedPlugin === 'notifications'}>
-              Notifications
+              isActive={selectedPlugin === NotificationsHub.id}>
+              {NotificationsHub.title}
             </PluginName>
           </ListItem>
         )}
