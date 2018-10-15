@@ -148,7 +148,7 @@ async function compilePlugin(
     console.log(`🥫  Using cached version of ${name}...`);
     return result;
   } else {
-    console.log(`⚙️  Compiling ${name}...`); // eslint-disable-line no-console
+    console.log(`Compiling ${name} in ${rootDir} with watchFolders ${__dirname}...`); // eslint-disable-line no-console
     try {
       await Metro.runBuild(
         {
