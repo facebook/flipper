@@ -13,10 +13,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     window = UIWindow()
 
     let client = FlipperClient.shared()
-    // Layout and network plugins are currently not supported for Swift apps.
-//    let layoutDescriptorMapper = SKDescriptorMapper(defaults: ())
-//    FlipperKitLayoutComponentKitSupport.setUp(descriptorMapper: layoutDescriptorMapper)
-//    client.addPlugin(FlipperKitLayoutPlugin(rootNode: application, descriptorMapper: layoutDescriptorMapper))
+    let layoutDescriptorMapper = SKDescriptorMapper(defaults: ())
+    FlipperKitLayoutComponentKitSupport.setUpWith(layoutDescriptorMapper)
+    client?.add(FlipperKitLayoutPlugin(rootNode: application, with: layoutDescriptorMapper!))
 
     client?.add(FlipperKitNetworkPlugin(networkAdapter: SKIOSNetworkAdapter()))
     client?.add(FKUserDefaultsPlugin.init(suiteName: nil))

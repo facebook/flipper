@@ -343,6 +343,7 @@
 					"\"${PODS_ROOT}/Headers/Public/FlipperKit\"",
 					"\"${PODS_ROOT}/Headers/Public/Yoga\"",
 					"\"${PODS_ROOT}/Headers/Public/glog\"",
+					"\"${PODS_ROOT}/Headers/Public/FlipperKit/FlipperKitLayoutPlugin\"",
 				);
 				INFOPLIST_FILE = SampleSwift/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -407,6 +408,7 @@
 					"\"${PODS_ROOT}/Headers/Public/FlipperKit\"",
 					"\"${PODS_ROOT}/Headers/Public/Yoga\"",
 					"\"${PODS_ROOT}/Headers/Public/glog\"",
+					"\"${PODS_ROOT}/Headers/Public/FlipperKit/FlipperKitLayoutPlugin\"",
 				);
 				INFOPLIST_FILE = SampleSwift/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
