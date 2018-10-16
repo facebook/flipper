@@ -46,11 +46,21 @@ gradle configuration:</p>
 }
 </code></pre>
 <h3><a class="anchor" aria-hidden="true" id="ios"></a><a href="#ios" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>iOS</h3>
+<p>In Objective-C you can add it as follows:</p>
 <pre><code class="hljs css objective-c"><span class="hljs-meta">#import <span class="hljs-meta-string">&lt;FlipperKitLayoutPlugin/FlipperKitLayoutPlugin.h&gt;</span></span>
 <span class="hljs-meta">#import <span class="hljs-meta-string">&lt;FlipperKitLayoutPlugin/SKDescriptorMapper.h&gt;</span></span>
 
 <span class="hljs-built_in">SKDescriptorMapper</span> *mapper = [[<span class="hljs-built_in">SKDescriptorMapper</span> alloc] initWithDefaults];
 [client addPlugin:[[FlipperKitLayoutPlugin alloc] initWithRootNode:context.application withDescriptorMapper:mapper]]
+</code></pre>
+<p>Whereas in swift you can add it as follows:</p>
+<pre><code class="hljs css swift"><span class="hljs-keyword">import</span> FlipperKit
+
+<span class="hljs-keyword">let</span> layoutDescriptorMapper = <span class="hljs-type">SKDescriptorMapper</span>(defaults: ())
+<span class="hljs-comment">// If you want to debug componentkit view in swift, otherwise you can ignore the next line</span>
+<span class="hljs-type">FlipperKitLayoutComponentKitSupport</span>.setUpWith(layoutDescriptorMapper)
+
+client?.add(<span class="hljs-type">FlipperKitLayoutPlugin</span>(rootNode: application, with: layoutDescriptorMapper!))
 </code></pre>
 <h2><a class="anchor" aria-hidden="true" id="quick-edits"></a><a href="#quick-edits" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Quick edits</h2>
 <p>The Layout Inspector not only allows you to view the hierarchy and inspect each item's properties, but it also allows you to edit things such as layout attributes, background colors, props, and state. Most things actually. This allows you to quickly tweak paddings, margins, and colors until you are happy with them, all without re-compiling. This can save you many hours implementing a new design.</p>
