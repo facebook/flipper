@@ -112,8 +112,8 @@ public class ApplicationDescriptor extends NodeDescriptor<ApplicationWrapper> {
               }
             });
         editedDelegates.add((ViewGroup) view);
-      } else if (hasDelegateAlready) {
-        FlipperObject params =
+      } else if (hasDelegateAlready && mConnection != null) {
+        FlipperObject params = 
             new FlipperObject.Builder()
                 .put("type", "usage")
                 .put("eventName", "accessibility:hasDelegateAlready")
