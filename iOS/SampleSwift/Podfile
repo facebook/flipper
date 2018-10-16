@@ -10,7 +10,7 @@ target 'SampleSwift' do
   pod 'FlipperKit/SKIOSNetworkPlugin', :path => '../../FlipperKit.podspec'
   pod 'FlipperKit/FlipperKitUserDefaultsPlugin', :path => '../../FlipperKit.podspec'
   # Layout and network plugins are not yet supported for swift projects
-  #pod 'SonarKit/FlipperKitLayoutComponentKitSupport', :path => '../../SonarKit.podspec'
+  pod 'FlipperKit/FlipperKitLayoutComponentKitSupport', :path => '../../FlipperKit.podspec'
 
   post_install do |installer|
         installer.pods_project.targets.each do |target|
