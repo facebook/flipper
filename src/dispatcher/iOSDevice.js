@@ -15,7 +15,8 @@ import IOSDevice from '../devices/IOSDevice';
 
 type iOSSimulatorDevice = {|
   state: 'Booted' | 'Shutdown' | 'Shutting Down',
-  availability: string,
+  availability?: string,
+  isAvailable?: 'YES' | 'NO',
   name: string,
   udid: string,
 |};
@@ -45,7 +46,10 @@ function querySimulatorDevices(store: Store): Promise<IOSDeviceMap> {
       simulators.forEach((simulator: iOSSimulatorDevice) => {
         const isRunning =
           simulator.state === 'Booted' &&
-          simulator.availability === '(available)';
+          // For some users "availability" is set, for others it's "isAvailable"
+          // It's not clear which key is set, so we are checking both.
+          (simulator.availability === '(available)' ||
+            simulator.isAvailable === 'YES');
 
         if (isRunning && !currentDeviceIDs.has(simulator.udid)) {
           // create device
