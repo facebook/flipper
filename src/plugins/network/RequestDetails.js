@@ -12,10 +12,12 @@ import type {Request, Response, Header} from './index.js';
 import {
   Component,
   FlexColumn,
+  FlexRow,
   ManagedTable,
   ManagedDataInspector,
   Text,
   Panel,
+  Select,
   styled,
   colors,
 } from 'flipper';
@@ -51,6 +53,10 @@ type RequestDetailsProps = {
   response: ?Response,
 };
 
+type RequestDetailsState = {
+  bodyFormat: string,
+};
+
 function decodeBody(container: Request | Response): string {
   if (!container.data) {
     return '';
@@ -83,11 +89,20 @@ function decompress(body: string): string {
   return String.fromCharCode.apply(null, new Uint8Array(data));
 }
 
-export default class RequestDetails extends Component<RequestDetailsProps> {
+export default class RequestDetails extends Component<
+  RequestDetailsProps,
+  RequestDetailsState,
+> {
   static Container = styled(FlexColumn)({
     height: '100%',
     overflow: 'auto',
   });
+  static BodyOptions = {
+    formatted: 'formatted',
+    parsed: 'parsed',
+  };
+
+  state: RequestDetailsState = {bodyFormat: RequestDetails.BodyOptions.parsed};
 
   urlColumns = (url: URL) => {
     return [
@@ -134,9 +149,16 @@ export default class RequestDetails extends Component<RequestDetailsProps> {
     ];
   };
 
+  onSelectFormat = (bodyFormat: string) => {
+    this.setState(() => ({bodyFormat}));
+  };
+
   render() {
     const {request, response} = this.props;
     const url = new URL(request.url);
+
+    const {bodyFormat} = this.state;
+    const formattedText = bodyFormat == RequestDetails.BodyOptions.formatted;
 
     return (
       <RequestDetails.Container>
@@ -168,11 +190,16 @@ export default class RequestDetails extends Component<RequestDetailsProps> {
         ) : null}
 
         {request.data != null ? (
-          <Panel heading={'Request Body'} floating={false}>
-            <RequestBodyInspector request={request} />
+          <Panel
+            heading={'Request Body'}
+            floating={false}
+            padded={!formattedText}>
+            <RequestBodyInspector
+              formattedText={formattedText}
+              request={request}
+            />
           </Panel>
         ) : null}
-
         {response
           ? [
               response.headers.length > 0 ? (
@@ -183,11 +210,28 @@ export default class RequestDetails extends Component<RequestDetailsProps> {
                   <HeaderInspector headers={response.headers} />
                 </Panel>
               ) : null,
-              <Panel heading={'Response Body'} floating={false}>
-                <ResponseBodyInspector request={request} response={response} />
+              <Panel
+                heading={'Response Body'}
+                floating={false}
+                padded={!formattedText}>
+                <ResponseBodyInspector
+                  formattedText={formattedText}
+                  request={request}
+                  response={response}
+                />
               </Panel>,
             ]
           : null}
+        <Panel heading={'Options'} floating={false} collapsed={true}>
+          <FlexRow>
+            <Text>Body: </Text>
+            <Select
+              selected={bodyFormat}
+              onChange={this.onSelectFormat}
+              options={RequestDetails.BodyOptions}
+            />
+          </FlexRow>
+        </Panel>
       </RequestDetails.Container>
     );
   }
@@ -286,12 +330,14 @@ type BodyFormatter = {
 
 class RequestBodyInspector extends Component<{
   request: Request,
+  formattedText: boolean,
 }> {
   render() {
-    const {request} = this.props;
+    const {request, formattedText} = this.props;
+    const bodyFormatters = formattedText ? TextBodyFormatters : BodyFormatters;
     let component;
     try {
-      for (const formatter of BodyFormatters) {
+      for (const formatter of bodyFormatters) {
         if (formatter.formatRequest) {
           component = formatter.formatRequest(request);
           if (component) {
@@ -316,13 +362,14 @@ class RequestBodyInspector extends Component<{
 class ResponseBodyInspector extends Component<{
   response: Response,
   request: Request,
+  formattedText: boolean,
 }> {
   render() {
-    const {request, response} = this.props;
-
+    const {request, response, formattedText} = this.props;
+    const bodyFormatters = formattedText ? TextBodyFormatters : BodyFormatters;
     let component;
     try {
-      for (const formatter of BodyFormatters) {
+      for (const formatter of bodyFormatters) {
         if (formatter.formatResponse) {
           component = formatter.formatResponse(request, response);
           if (component) {
@@ -423,6 +470,57 @@ class VideoFormatter {
           </VideoFormatter.Video>
         </MediaContainer>
       );
+    }
+  };
+}
+
+class JSONText extends Component<{children: any}> {
+  static NoScrollbarText = styled(Text)({
+    overflowY: 'hidden',
+  });
+
+  render() {
+    const jsonObject = this.props.children;
+    return (
+      <JSONText.NoScrollbarText code whiteSpace="pre" selectable>
+        {JSON.stringify(jsonObject, null, 2)}
+        {'\n'}
+      </JSONText.NoScrollbarText>
+    );
+  }
+}
+
+class JSONTextFormatter {
+  formatRequest = (request: Request) => {
+    return this.format(
+      decodeBody(request),
+      getHeaderValue(request.headers, 'content-type'),
+    );
+  };
+
+  formatResponse = (request: Request, response: Response) => {
+    return this.format(
+      decodeBody(response),
+      getHeaderValue(response.headers, 'content-type'),
+    );
+  };
+
+  format = (body: string, contentType: string) => {
+    if (
+      contentType.startsWith('application/json') ||
+      contentType.startsWith('text/javascript') ||
+      contentType.startsWith('application/x-fb-flatbuffer')
+    ) {
+      try {
+        const data = JSON.parse(body);
+        return <JSONText>{data}</JSONText>;
+      } catch (SyntaxError) {
+        // Multiple top level JSON roots, map them one by one
+        return body
+          .split('\n')
+          .map(json => JSON.parse(json))
+          .map(data => <JSONText>{data}</JSONText>);
+      }
     }
   };
 }
@@ -534,3 +632,5 @@ const BodyFormatters: Array<BodyFormatter> = [
   new JSONFormatter(),
   new FormUrlencodedFormatter(),
 ];
+
+const TextBodyFormatters: Array<BodyFormatter> = [new JSONTextFormatter()];
