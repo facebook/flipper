@@ -5,9 +5,26 @@
  * @format
  */
 
-import {remote} from 'electron';
+import {remote, ipcRenderer} from 'electron';
 import type {Store} from '../reducers/index.js';
 import type Logger from '../fb-stubs/Logger.js';
+
+import {selectPlugin, userPreferredPlugin} from '../reducers/connections';
+export const uriComponents = (url: string) => {
+  if (!url) {
+    return [];
+  }
+  const match: ?Array<string> = url.match(
+    /^flipper:\/\/([^\/]*)\/([^\/]*)\/?(.*)$/,
+  );
+  if (match) {
+    return (match
+      .map(decodeURIComponent)
+      .slice(1)
+      .filter(Boolean): Array<string>);
+  }
+  return [];
+};
 
 export default (store: Store, logger: Logger) => {
   const currentWindow = remote.getCurrentWindow();
@@ -22,5 +39,26 @@ export default (store: Store, logger: Logger) => {
       type: 'windowIsFocused',
       payload: false,
     });
+  });
+
+  ipcRenderer.on('flipper-deeplink', (event, url) => {
+    // flipper://<client>/<pluginId>/<payload>
+    const match = uriComponents(url);
+    if (match.length > 1) {
+      store.dispatch(
+        selectPlugin({
+          selectedApp: match[0],
+          selectedPlugin: match[1],
+          deepLinkPayload: match[2],
+        }),
+      );
+    }
+  });
+  ipcRenderer.on('flipper-deeplink-preferred-plugin', (event, url) => {
+    // flipper://<client>/<pluginId>/<payload>
+    const match = uriComponents(url);
+    if (match.length > 1) {
+      store.dispatch(userPreferredPlugin(match[1]));
+    }
   });
 };

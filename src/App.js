@@ -45,8 +45,8 @@ export class App extends React.Component<Props> {
       );
     });
     ipcRenderer.send('getLaunchTime');
+    ipcRenderer.send('componentDidMount');
   }
-
   render() {
     return (
       <FlexColumn fill={true}>

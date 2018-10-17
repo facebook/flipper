@@ -153,6 +153,13 @@ app.on('ready', function() {
   }
 });
 
+ipcMain.on('componentDidMount', event => {
+  if (deeplinkURL) {
+    win.webContents.send('flipper-deeplink-preferred-plugin', deeplinkURL);
+    deeplinkURL = null;
+  }
+});
+
 ipcMain.on('getLaunchTime', event => {
   if (launchStartTime) {
     event.sender.send('getLaunchTime', launchStartTime);
@@ -161,7 +168,6 @@ ipcMain.on('getLaunchTime', event => {
     launchStartTime = null;
   }
 });
-
 // Define custom protocol handler. Deep linking works on packaged versions of the application!
 app.setAsDefaultProtocolClient('flipper');
 
@@ -219,8 +225,5 @@ function tryCreateWindow() {
         slashes: true,
       });
     win.loadURL(entryUrl);
-    if (deeplinkURL) {
-      win.webContents.send('flipper-deeplink', deeplinkURL);
-    }
   }
 }

@@ -46,6 +46,10 @@ export type Action =
       },
     }
   | {
+      type: 'SELECT_USER_PREFERRED_PLUGIN',
+      payload: string,
+    }
+  | {
       type: 'SERVER_ERROR',
       payload: ?string,
     }
@@ -178,7 +182,10 @@ export default function reducer(
         userPreferredPlugin: selectedPlugin,
       };
     }
-
+    case 'SELECT_USER_PREFERRED_PLUGIN': {
+      const {payload} = action;
+      return {...state, userPreferredPlugin: payload};
+    }
     case 'NEW_CLIENT': {
       const {payload} = action;
       const {userPreferredApp, userPreferredPlugin} = state;
@@ -247,5 +254,9 @@ export const selectPlugin = (payload: {
   selectedApp: ?string,
 }): Action => ({
   type: 'SELECT_PLUGIN',
+  payload,
+});
+export const userPreferredPlugin = (payload: string): Action => ({
+  type: 'SELECT_USER_PREFERRED_PLUGIN',
   payload,
 });
