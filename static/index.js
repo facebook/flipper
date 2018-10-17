@@ -15,7 +15,6 @@ const fs = require('fs');
 const {exec} = require('child_process');
 const compilePlugins = require('./compilePlugins.js');
 const os = require('os');
-
 // disable electron security warnings: https://github.com/electron/electron/blob/master/docs/tutorial/security.md#security-native-capabilities-and-your-responsibility
 process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = true;
 
@@ -79,6 +78,7 @@ process.env.CONFIG = JSON.stringify({
 let win;
 let appReady = false;
 let pluginsCompiled = false;
+let deeplinkURL = null;
 
 // tracking
 setInterval(() => {
@@ -126,6 +126,17 @@ app.on('window-all-closed', () => {
   app.quit();
 });
 
+app.on('will-finish-launching', () => {
+  // Protocol handler for osx
+  app.on('open-url', function(event, url) {
+    event.preventDefault();
+    deeplinkURL = url;
+    if (win) {
+      win.webContents.send('flipper-deeplink', deeplinkURL);
+    }
+  });
+});
+
 app.on('ready', function() {
   appReady = true;
   app.commandLine.appendSwitch('scroll-bounce');
@@ -151,6 +162,9 @@ ipcMain.on('getLaunchTime', event => {
   }
 });
 
+// Define custom protocol handler. Deep linking works on packaged versions of the application!
+app.setAsDefaultProtocolClient('flipper');
+
 function tryCreateWindow() {
   if (appReady && pluginsCompiled) {
     win = new BrowserWindow({
@@ -172,6 +186,12 @@ function tryCreateWindow() {
     });
     win.once('ready-to-show', () => win.show());
     win.once('close', ({sender}) => {
+      if (process.env.NODE_ENV === 'development') {
+        // Removes as a default protocol for debug builds. Because even when the
+        // production application is installed, and one tries to deeplink through
+        // browser, it still looks for the debug one and tries to open electron
+        app.removeAsDefaultProtocolClient('flipper');
+      }
       const [x, y] = sender.getPosition();
       const [width, height] = sender.getSize();
       // save window position and size
@@ -199,5 +219,8 @@ function tryCreateWindow() {
         slashes: true,
       });
     win.loadURL(entryUrl);
+    if (deeplinkURL) {
+      win.webContents.send('flipper-deeplink', deeplinkURL);
+    }
   }
 }
