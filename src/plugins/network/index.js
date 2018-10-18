@@ -141,6 +141,28 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
     };
   };
 
+  static getActiveNotifications = (
+    persistedState: PersistedState,
+  ): Array<Notification> => {
+    const responses = persistedState ? persistedState.responses || [] : [];
+    return (
+      // $FlowFixMe Object.values returns Array<mixed>, but we know it is Array<Response>
+      (Object.values(responses): Array<Response>)
+        // Show error messages for all status codes indicating a client or server error
+        .filter((response: Response) => response.status >= 400)
+        .map((response: Response) => ({
+          id: response.id,
+          title: `HTTP ${response.status}: Network request failed`,
+          message: `Request to "${persistedState.requests[response.id]?.url ||
+            '(URL missing)'}" failed. ${response.reason}`,
+          severity: 'error',
+          timestamp: response.timestamp,
+          category: response.status,
+          action: response.id,
+        }))
+    );
+  };
+
   onKeyboardAction = (action: string) => {
     if (action === 'clear') {
       this.clearLogs();
@@ -158,27 +180,6 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
     this.setState({selectedIds: []});
     this.props.setPersistedState({responses: {}, requests: {}});
   };
-
-  computeNotifications(props: *, state: State) {
-    const notifications: Array<Notification> = [];
-    const persistedState = props.persistedState;
-    for (const response in persistedState.responses) {
-      const status = persistedState.responses[response].status;
-      const id = persistedState.requests[response]?.id;
-      if (status >= 400 && id != null) {
-        const url = persistedState.requests[response]?.url;
-        const endTime = persistedState.responses[response].timestamp;
-        notifications.push({
-          id,
-          timestamp: endTime,
-          title: 'Failed network request',
-          message: `Response for ${url} failed with status code ${status}`,
-          severity: 'error',
-        });
-      }
-    }
-    return notifications;
-  }
 
   renderSidebar = () => {
     const {requests, responses} = this.props.persistedState;
