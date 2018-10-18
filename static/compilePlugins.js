@@ -35,9 +35,13 @@ function watchChanges(plugins, reloadCallback, pluginCache) {
 
   Object.values(plugins).map(plugin =>
     fs.watch(plugin.rootDir, (eventType, filename) => {
-      // eslint-disable-next-line no-console
-      console.log(`🕵️‍  Detected changes in ${plugin.name}`);
-      compilePlugin(plugin, true, pluginCache).then(reloadCallback);
+      // only recompile for changes in not hidden files. Watchman might create
+      // a file called .watchman-cookie
+      if (!filename.startsWith('.')) {
+        // eslint-disable-next-line no-console
+        console.log(`🕵️‍  Detected changes in ${plugin.name}`);
+        compilePlugin(plugin, true, pluginCache).then(reloadCallback);
+      }
     }),
   );
 }

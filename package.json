@@ -19,7 +19,8 @@
     },
     "win": {
       "publisherName": "Facebook, Inc."
-    }
+    },
+    "asar": false
   },
   "resolutions": {
     "@jest-runner/electron/electron": "3.0.0"
