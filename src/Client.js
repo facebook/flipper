@@ -10,6 +10,7 @@ import type {App} from './App.js';
 import type Logger from './fb-stubs/Logger.js';
 import type {Store} from './reducers/index.js';
 
+import {setPluginState} from './reducers/pluginStates.js';
 import {clientPlugins} from './plugins/index.js';
 import {ReactiveSocket, PartialResponder} from 'rsocket-core';
 
@@ -169,17 +170,17 @@ export default class Client extends EventEmitter {
         if (persistingPlugin) {
           const pluginKey = `${this.id}#${params.api}`;
           const persistedState = this.store.getState().pluginStates[pluginKey];
-          this.store.dispatch({
-            type: 'SET_PLUGIN_STATE',
-            payload: {
+          // $FlowFixMe: We checked persistedStateReducer exists
+          const newPluginState = persistingPlugin.persistedStateReducer(
+            persistedState,
+            params.params,
+          );
+          this.store.dispatch(
+            setPluginState({
               pluginKey,
-              // $FlowFixMe: We checked persistedStateReducer exists
-              state: persistingPlugin.persistedStateReducer(
-                persistedState,
-                params.params,
-              ),
-            },
-          });
+              state: newPluginState,
+            }),
+          );
         } else {
           const apiCallbacks = this.broadcastCallbacks.get(params.api);
           if (!apiCallbacks) {

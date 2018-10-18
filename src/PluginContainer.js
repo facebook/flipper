@@ -6,12 +6,11 @@
  */
 import type {FlipperPlugin, FlipperBasePlugin} from './plugin.js';
 import type LogManager from './fb-stubs/Logger';
-import type Client from './Client.js';
 import type BaseDevice from './devices/BaseDevice.js';
 import type {Props as PluginProps} from './plugin';
 
 import {FlipperDevicePlugin} from './plugin.js';
-import type {Notification} from './plugin.js';
+import Client from './Client.js';
 import {
   ErrorBoundary,
   Component,
@@ -23,7 +22,6 @@ import {
 import React from 'react';
 import {connect} from 'react-redux';
 import {setPluginState} from './reducers/pluginStates.js';
-import {setActiveNotifications} from './reducers/notifications.js';
 import {devicePlugins, clientPlugins} from './plugins/index.js';
 import NotificationsHub from './NotificationsHub';
 import {activateMenuItems} from './MenuBar.js';
@@ -53,10 +51,6 @@ type Props = {
   setPluginState: (payload: {
     pluginKey: string,
     state: Object,
-  }) => void,
-  setActiveNotifications: ({
-    pluginId: string,
-    notifications: Array<Notification>,
   }) => void,
   deepLinkPayload: ?string,
 };
@@ -131,7 +125,7 @@ class PluginContainer extends Component<Props, State> {
   };
 
   render() {
-    const {pluginStates, setPluginState, setActiveNotifications} = this.props;
+    const {pluginStates, setPluginState} = this.props;
     const {activePlugin, pluginKey, target} = this.state;
 
     if (!activePlugin || !target) {
@@ -142,18 +136,7 @@ class PluginContainer extends Component<Props, State> {
       key: pluginKey,
       logger: this.props.logger,
       persistedState: pluginStates[pluginKey] || {},
-      setPersistedState: state => {
-        // We are using setTimout here to wait for previous state updated to
-        // finish before triggering a new state update. Otherwise this can
-        // cause race conditions, with multiple state updates happening at the
-        // same time.
-        setTimeout(() => setPluginState({pluginKey, state}), 0);
-      },
-      setActiveNotifications: (notifications: Array<Notification>) =>
-        setActiveNotifications({
-          pluginId: pluginKey,
-          notifications: notifications,
-        }),
+      setPersistedState: state => setPluginState({pluginKey, state}),
       target,
       deepLinkPayload: this.props.deepLinkPayload,
       ref: this.refChanged,
@@ -197,6 +180,5 @@ export default connect(
   }),
   {
     setPluginState,
-    setActiveNotifications,
   },
 )(PluginContainer);

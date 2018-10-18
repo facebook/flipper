@@ -38,7 +38,6 @@ export type Props<T> = {
   logger: Logger,
   persistedState: T,
   setPersistedState: (state: $Shape<T>) => void,
-  setActiveNotifications: (Array<Notification>) => void,
   target: PluginTarget,
   deepLinkPayload: ?string,
 };
@@ -97,10 +96,6 @@ export class FlipperBasePlugin<
       throw new TypeError(`Reducer ${actionData.type} isn't a function`);
     }
   }
-
-  componentDidUpdate(props: Props<*>, state: State): void {
-    props.setActiveNotifications(this.computeNotifications(props, state));
-  }
 }
 
 export class FlipperDevicePlugin<S = *, A = *, P = *> extends FlipperBasePlugin<
@@ -132,6 +127,7 @@ export class FlipperPlugin<S = *, A = *, P = *> extends FlipperBasePlugin<
   P,
 > {
   static persistedStateReducer: ?(persistedState: P, data: Object) => $Shape<P>;
+  static getActiveNotifications: ?(persistedState: P) => Array<Notification>;
 
   constructor(props: Props<*>) {
     super(props);

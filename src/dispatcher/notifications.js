@@ -8,17 +8,45 @@
 import type {Store} from '../reducers/index.js';
 import type Logger from '../fb-stubs/Logger.js';
 import type {PluginNotification} from '../reducers/notifications';
+import type {FlipperPlugin} from '../plugin.js';
 
 import {selectPlugin} from '../reducers/connections';
+import {setActiveNotifications} from '../reducers/notifications';
 import {textContent} from '../utils/index';
+import {clientPlugins} from '../plugins/index.js';
 
 export default (store: Store, logger: Logger) => {
   const knownNotifications: Set<string> = new Set();
+  const knownPluginStates: Map<string, Object> = new Map();
+
   store.subscribe(() => {
-    const {
-      activeNotifications,
-      blacklistedPlugins,
-    } = store.getState().notifications;
+    const {notifications, pluginStates} = store.getState();
+
+    Object.keys(pluginStates).forEach(key => {
+      if (knownPluginStates.get(key) !== pluginStates[key]) {
+        knownPluginStates.set(key, pluginStates[key]);
+        const [client, pluginId] = key.split('#');
+        const persistingPlugin: ?Class<FlipperPlugin<>> = clientPlugins.find(
+          (p: Class<FlipperPlugin<>>) =>
+            p.id === pluginId && p.getActiveNotifications,
+        );
+
+        if (persistingPlugin) {
+          store.dispatch(
+            setActiveNotifications({
+              // $FlowFixMe: Ensured getActiveNotifications is implemented in filter
+              notifications: persistingPlugin.getActiveNotifications(
+                pluginStates[key],
+              ),
+              client,
+              pluginId,
+            }),
+          );
+        }
+      }
+    });
+
+    const {activeNotifications, blacklistedPlugins} = notifications;
 
     activeNotifications.forEach((n: PluginNotification) => {
       if (
