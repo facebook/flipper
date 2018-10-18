@@ -80,7 +80,6 @@
     "react-window": "^1.1.1",
     "redux": "^4.0.0",
     "redux-persist": "^5.10.0",
-    "redux-persist-transform-filter": "^0.0.18",
     "rsocket-core": "^0.0.6",
     "rsocket-tcp-server": "^0.0.6",
     "socket.io": "^2.0.4",

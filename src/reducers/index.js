@@ -10,6 +10,8 @@ import application from './application.js';
 import connections from './connections.js';
 import pluginStates from './pluginStates.js';
 import notifications from './notifications.js';
+import {persistReducer} from 'redux-persist';
+import storage from 'redux-persist/lib/storage/index.js';
 
 import type {
   State as ApplicationState,
@@ -45,7 +47,18 @@ export type Store = ReduxStore<
 
 export default combineReducers({
   application,
-  connections,
+  connections: persistReducer(
+    {
+      key: 'connections',
+      storage,
+      whitelist: [
+        'userPreferredDevice',
+        'userPreferredPlugin',
+        'userPreferredApp',
+      ],
+    },
+    connections,
+  ),
   pluginStates,
   notifications,
 });
