@@ -1,6 +1,11 @@
 {
   "docs": {
-    "Using Flipper": ["getting-started", "understand", "stetho", "troubleshooting"],
+    "Using Flipper": [
+      "getting-started",
+      "understand",
+      "stetho",
+      "troubleshooting"
+    ],
     "Built-in Plugins": [
       "logs-plugin",
       "layout-plugin",
@@ -11,9 +16,9 @@
     ],
     "Plugins: Desktop part": [
       "js-setup",
-      "communicating",
-      "background-plugin-jsside",
+      "writing-a-plugin",
       "create-table-plugin",
+      "communicating",
       "ui-components",
       "styling-components"
     ],
@@ -23,8 +28,6 @@
       "error-handling",
       "testing"
     ],
-    "Flipper Internals": [
-      "establishing-a-connection"
-    ]
+    "Flipper Internals": ["establishing-a-connection"]
   }
 }

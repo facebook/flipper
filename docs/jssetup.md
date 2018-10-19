@@ -18,19 +18,7 @@ To create the desktop part of your plugin, initiate a new JavaScript project usi
 }
 ```
 
-In `index.js` you can now create your plugin. We expect this file to have a default export of type `FlipperPlugin`. A hello-world-plugin could look like this:
-
-```js
-import {FlipperPlugin} from 'flipper';
-
-export default class extends FlipperPlugin {
-  render() {
-    return 'hello world';
-  }
-}
-```
-
-Learn more on how to use [Flipper's UI components](ui-components.md).
+In `index.js` you can now create your plugin. Take a look at [Writing a plugin](writing-a-plugin.md) to learn how a plugin can look like. Also, make sure to check out [Flipper's UI components](ui-components.md) when building your plugin.
 
 ### Dynamically loading plugins
 
