@@ -1,10 +1,19 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
-
+/*
+ *  Copyright (c) 2004-present, Facebook, Inc.
+ *
+ *  This source code is licensed under the MIT license found in the LICENSE
+ *  file in the root directory of this source tree.
+ *
+ */
 package com.facebook.flipper.sample;
 
 import android.content.Intent;
 import android.util.Log;
+import com.facebook.flipper.android.AndroidFlipperClient;
 import com.facebook.flipper.android.diagnostics.FlipperDiagnosticActivity;
+import com.facebook.flipper.core.FlipperClient;
+import com.facebook.flipper.core.FlipperPlugin;
+import com.facebook.flipper.plugins.example.ExampleFlipperPlugin;
 import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
@@ -39,6 +48,12 @@ public class RootComponentSpec {
                 .key("2")
                 .textSizeSp(20)
                 .clickHandler(RootComponent.hitPostRequest(c)))
+        .child(
+            Text.create(c)
+                .text("Trigger Notification")
+                .key("3")
+                .textSizeSp(20)
+                .clickHandler(RootComponent.triggerNotification(c)))
         .child(
             Text.create(c)
                 .text("Diagnose connection issues")
@@ -108,8 +123,20 @@ public class RootComponentSpec {
   }
 
   @OnEvent(ClickEvent.class)
+  static void triggerNotification(final ComponentContext c) {
+    FlipperClient client = AndroidFlipperClient.getInstanceIfInitialized();
+    if (client != null) {
+      FlipperPlugin plugin = client.getPlugin(ExampleFlipperPlugin.ID);
+      if (plugin instanceof ExampleFlipperPlugin) {
+        ((ExampleFlipperPlugin) plugin).triggerNotification();
+      }
+    }
+  }
+
+  @OnEvent(ClickEvent.class)
   static void openDiagnostics(final ComponentContext c) {
     Intent intent = new Intent(c, FlipperDiagnosticActivity.class);
     c.startActivity(intent);
   }
+
 }
