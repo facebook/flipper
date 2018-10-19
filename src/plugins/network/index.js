@@ -168,7 +168,7 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
   };
 
   state = {
-    selectedIds: [],
+    selectedIds: this.props.deepLinkPayload ? [this.props.deepLinkPayload] : [],
   };
 
   onRowHighlighted = (selectedIds: Array<RequestId>) =>
@@ -203,6 +203,9 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
           responses={responses || {}}
           clear={this.clearLogs}
           onRowHighlighted={this.onRowHighlighted}
+          highlightedRows={
+            this.state.selectedIds ? new Set(this.state.selectedIds) : null
+          }
         />
         <DetailSidebar>{this.renderSidebar()}</DetailSidebar>
       </FlexColumn>
@@ -215,6 +218,7 @@ type NetworkTableProps = {
   responses: {[id: RequestId]: Response},
   clear: () => void,
   onRowHighlighted: (keys: TableHighlightedRows) => void,
+  highlightedRows: ?Set<string>,
 };
 
 type NetworkTableState = {|
@@ -357,6 +361,7 @@ class NetworkTable extends PureComponent<NetworkTableProps, NetworkTableState> {
           columns={COLUMNS}
           rows={this.state.sortedRows}
           onRowHighlighted={this.props.onRowHighlighted}
+          highlightedRows={this.props.highlightedRows}
           rowLineHeight={26}
           zebra={false}
           actions={<Button onClick={this.props.clear}>Clear Table</Button>}
