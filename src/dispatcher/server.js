@@ -26,6 +26,10 @@ export default (store: Store, logger: Logger) => {
       type: 'CLIENT_REMOVED',
       payload: id,
     });
+    store.dispatch({
+      type: 'CLEAR_PLUGIN_STATE',
+      payload: id,
+    });
   });
 
   server.addListener('error', err => {
