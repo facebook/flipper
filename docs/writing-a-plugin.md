@@ -39,6 +39,7 @@ static defaultPersistedState = {
 
 static persistedStateReducer = (
   persistedState: PersistedState,
+  method: string,
   newData: Object,
 ): PersistedState => {
   // Logic to merge current state with new data
