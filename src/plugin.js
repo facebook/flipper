@@ -126,7 +126,11 @@ export class FlipperPlugin<S = *, A = *, P = *> extends FlipperBasePlugin<
   A,
   P,
 > {
-  static persistedStateReducer: ?(persistedState: P, data: Object) => $Shape<P>;
+  static persistedStateReducer: ?(
+    persistedState: P,
+    method: string,
+    data: Object,
+  ) => $Shape<P>;
   static getActiveNotifications: ?(persistedState: P) => Array<Notification>;
 
   constructor(props: Props<*>) {

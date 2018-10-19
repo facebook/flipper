@@ -121,6 +121,7 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
 
   static persistedStateReducer = (
     persistedState: PersistedState,
+    method: string,
     data: Request | Response,
   ): PersistedState => {
     const dataType: 'requests' | 'responses' = data.url

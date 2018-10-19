@@ -173,6 +173,7 @@ export default class Client extends EventEmitter {
           // $FlowFixMe: We checked persistedStateReducer exists
           const newPluginState = persistingPlugin.persistedStateReducer(
             persistedState,
+            params.method,
             params.params,
           );
           this.store.dispatch(
