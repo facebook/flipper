@@ -199,7 +199,7 @@ class MainSidebar extends Component<MainSidebarProps> {
         backgroundColor={
           process.platform === 'darwin' && windowIsFocused ? 'transparent' : ''
         }>
-        {GK.get('flipper_notifications') && (
+        {!GK.get('flipper_disable_notifications') && (
           <ListItem
             active={selectedPlugin === 'notifications'}
             onClick={() =>

@@ -14,8 +14,13 @@ import {selectPlugin} from '../reducers/connections';
 import {setActiveNotifications} from '../reducers/notifications';
 import {textContent} from '../utils/index';
 import {clientPlugins} from '../plugins/index.js';
+import GK from '../fb-stubs/GK';
 
 export default (store: Store, logger: Logger) => {
+  if (GK.get('flipper_disable_notifications')) {
+    return;
+  }
+
   const knownNotifications: Set<string> = new Set();
   const knownPluginStates: Map<string, Object> = new Map();
 
