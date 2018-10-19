@@ -116,8 +116,11 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
   static id = 'Network';
   static icon = 'internet';
   static keyboardActions = ['clear'];
-
   static subscribed = [];
+  static defaultPersistedState = {
+    requests: {},
+    responses: {},
+  };
 
   static persistedStateReducer = (
     persistedState: PersistedState,
@@ -127,16 +130,10 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
     const dataType: 'requests' | 'responses' = data.url
       ? 'requests'
       : 'responses';
-    if (persistedState) {
-      return {
-        [dataType]: {
-          ...persistedState[dataType],
-          [data.id]: data,
-        },
-      };
-    }
     return {
+      ...persistedState,
       [dataType]: {
+        ...persistedState[dataType],
         [data.id]: data,
       },
     };
