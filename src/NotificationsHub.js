@@ -274,9 +274,10 @@ const SEVERITY_COLOR_MAP = {
   error: colors.red,
 };
 
-const NotificationBox = styled(FlexColumn)(props => ({
+const NotificationBox = styled(FlexRow)(props => ({
   backgroundColor: props.inactive ? 'transparent' : colors.white,
   opacity: props.inactive ? 0.5 : 1,
+  alignItems: 'flex-start',
   borderRadius: 5,
   padding: 10,
   flexShrink: 0,
@@ -302,19 +303,54 @@ const NotificationBox = styled(FlexColumn)(props => ({
   },
 }));
 
-const Title = styled(FlexRow)({
+const Title = styled('div')({
+  minWidth: 150,
+  color: colors.light80,
+  flexShrink: 0,
+  marginBottom: 6,
   fontWeight: 500,
-  marginBottom: 5,
-  alignItems: 'center',
+  lineHeight: 1,
   fontSize: '1.1em',
 });
 
-const Chevron = styled(Glyph)({
-  position: 'absolute',
-  right: 10,
-  top: '50%',
-  transform: 'translateY(-50%)',
-  opacity: 0.5,
+const NotificationContent = styled(FlexColumn)(props => ({
+  marginLeft: 6,
+  marginRight: 10,
+  flexGrow: 1,
+  overflow: 'hidden',
+  maxHeight: props.isSelected ? 'none' : 56,
+  lineHeight: 1.4,
+  color: props.isSelected ? colors.light50 : colors.light30,
+}));
+
+const Actions = styled(FlexRow)({
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  color: colors.light20,
+  marginTop: 12,
+  borderTop: `1px solid ${colors.light05}`,
+  paddingTop: 8,
+});
+
+const NotificationButton = styled('div')({
+  border: `1px solid ${colors.light20}`,
+  color: colors.light50,
+  borderRadius: 4,
+  textAlign: 'center',
+  padding: 4,
+  width: 55,
+  marginBottom: 4,
+  opacity: 0,
+  transition: '0.15s opacity',
+  '[data-role="notification"]:hover &': {
+    opacity: 0.5,
+  },
+  ':last-child': {
+    marginBottom: 0,
+  },
+  '[data-role="notification"] &:hover': {
+    opacity: 1,
+  },
 });
 
 type ItemProps = {
@@ -355,17 +391,6 @@ class NotificationItem extends Component<ItemProps> {
   contextMenuItems;
   deepLinkButton = React.createRef();
 
-  onClick = (e: MouseEvent) => {
-    if (
-      this.props.notification.action &&
-      e.target === this.deepLinkButton.current
-    ) {
-      this.openDeeplink();
-    } else if (this.props.onClick) {
-      this.props.onClick();
-    }
-  };
-
   createPaste = () => {
     createPaste(this.getContent());
   };
@@ -400,44 +425,55 @@ class NotificationItem extends Component<ItemProps> {
 
     return (
       <ContextMenu
+        data-role="notification"
         component={NotificationBox}
         severity={notification.severity}
-        onClick={this.onClick}
+        onClick={this.props.onClick}
         isSelected={isSelected}
         inactive={inactive}
         items={this.contextMenuItems}>
-        <Title>
-          <Glyph name={this.plugin?.icon || 'bell'} size={12} />
-          <span>&nbsp;</span>
-          {notification.title}
-        </Title>
-        {notification.message}
+        <Glyph name={this.plugin?.icon || 'bell'} size={12} />
+        <NotificationContent isSelected={isSelected}>
+          <Title>{notification.title}</Title>
+          {notification.message}
+          {!inactive &&
+            isSelected &&
+            this.plugin &&
+            (action || onHide) && (
+              <Actions>
+                <FlexRow>
+                  {action && (
+                    <Button onClick={this.openDeeplink}>
+                      Open in {this.plugin.title}
+                    </Button>
+                  )}
+                  {onHide && (
+                    <Button onClick={onHide}>Hide {this.plugin.title}</Button>
+                  )}
+                </FlexRow>
+                <span>
+                  {notification.timestamp
+                    ? new Date(notification.timestamp).toTimeString()
+                    : ''}
+                </span>
+              </Actions>
+            )}
+        </NotificationContent>
         {action &&
           !inactive &&
           !isSelected && (
-            <Chevron
-              innerRef={this.deepLinkButton}
-              name="arrow-right-circle"
-              variant="outline"
-              size={24}
-              color={colors.light30}
-              onClick={this.onClick}
-            />
-          )}
-        {!inactive &&
-          isSelected &&
-          this.plugin &&
-          (action || onHide) && (
-            <FlexRow style={{marginTop: 10}}>
+            <FlexColumn style={{alignSelf: 'center'}}>
               {action && (
-                <Button onClick={this.openDeeplink}>
-                  Open in {this.plugin.title}
-                </Button>
+                <NotificationButton compact onClick={this.openDeeplink}>
+                  Open
+                </NotificationButton>
               )}
               {onHide && (
-                <Button onClick={onHide}>Hide {this.plugin.title}</Button>
+                <NotificationButton compact onClick={onHide}>
+                  Hide
+                </NotificationButton>
               )}
-            </FlexRow>
+            </FlexColumn>
           )}
       </ContextMenu>
     );
