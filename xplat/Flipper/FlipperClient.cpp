@@ -172,10 +172,9 @@ void FlipperClient::onMessageReceived(const dynamic& message) {
             method.getString());
       }
       const auto plugin = plugins_.at(identifier);
-      auto& conn = connections_[plugin->identifier()];
-      conn = std::make_shared<FlipperConnectionImpl>(
-          socket_.get(), plugin->identifier());
       if (!plugin.get()->runInBackground()) {
+        auto& conn = connections_[plugin->identifier()];
+        conn = std::make_shared<FlipperConnectionImpl>(socket_.get(), plugin->identifier());
         plugin->didConnect(conn);
       }
       return;
