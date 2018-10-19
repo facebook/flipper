@@ -52,6 +52,7 @@ export class FlipperBasePlugin<
   static icon: string = 'apps';
   static keyboardActions: ?KeyboardActions;
   static screenshot: ?string;
+  static defaultPersistedState: PersistedState;
 
   // forbid instance properties that should be static
   title: empty;

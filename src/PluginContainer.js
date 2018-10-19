@@ -135,7 +135,12 @@ class PluginContainer extends Component<Props, State> {
     const props: PluginProps<Object> = {
       key: pluginKey,
       logger: this.props.logger,
-      persistedState: pluginStates[pluginKey] || {},
+      persistedState: activePlugin.defaultPersistedState
+        ? {
+            ...activePlugin.defaultPersistedState,
+            ...pluginStates[pluginKey],
+          }
+        : pluginStates[pluginKey],
       setPersistedState: state => setPluginState({pluginKey, state}),
       target,
       deepLinkPayload: this.props.deepLinkPayload,

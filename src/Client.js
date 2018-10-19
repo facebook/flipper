@@ -169,7 +169,10 @@ export default class Client extends EventEmitter {
 
         if (persistingPlugin) {
           const pluginKey = `${this.id}#${params.api}`;
-          const persistedState = this.store.getState().pluginStates[pluginKey];
+          const persistedState = {
+            ...persistingPlugin.defaultPersistedState,
+            ...this.store.getState().pluginStates[pluginKey],
+          };
           // $FlowFixMe: We checked persistedStateReducer exists
           const newPluginState = persistingPlugin.persistedStateReducer(
             persistedState,
