@@ -68,7 +68,7 @@ public class RootComponentSpec {
 
     final Request request =
         new Request.Builder().url("https://api.github.com/repos/facebook/yoga").get().build();
-    FlipperSampleApplication.okhttpClient
+    FlipperSampleApplication.sOkHttpClient
         .newCall(request)
         .enqueue(
             new Callback() {
@@ -101,7 +101,7 @@ public class RootComponentSpec {
             .post(formBody)
             .build();
 
-    FlipperSampleApplication.okhttpClient
+    FlipperSampleApplication.sOkHttpClient
         .newCall(request)
         .enqueue(
             new Callback() {

@@ -9,6 +9,7 @@ package com.facebook.flipper.sample;
 
 import android.app.Application;
 import android.content.Context;
+import android.support.annotation.Nullable;
 import com.facebook.flipper.android.AndroidFlipperClient;
 import com.facebook.flipper.core.FlipperClient;
 import com.facebook.flipper.plugins.example.ExampleFlipperPlugin;
@@ -28,7 +29,7 @@ import okhttp3.OkHttpClient;
 
 public class FlipperSampleApplication extends Application {
 
-  public static OkHttpClient okhttpClient;
+  @Nullable public static OkHttpClient sOkHttpClient = null;
 
   @Override
   public void onCreate() {
@@ -38,10 +39,10 @@ public class FlipperSampleApplication extends Application {
     final FlipperClient client = AndroidFlipperClient.getInstance(this);
     final DescriptorMapping descriptorMapping = DescriptorMapping.withDefaults();
 
-    NetworkFlipperPlugin networkPlugin = new NetworkFlipperPlugin();
-    FlipperOkhttpInterceptor interceptor = new FlipperOkhttpInterceptor(networkPlugin);
+    final NetworkFlipperPlugin networkPlugin = new NetworkFlipperPlugin();
+    final FlipperOkhttpInterceptor interceptor = new FlipperOkhttpInterceptor(networkPlugin);
 
-    okhttpClient =
+    sOkHttpClient =
         new OkHttpClient.Builder()
             .addNetworkInterceptor(interceptor)
             .connectTimeout(60, TimeUnit.SECONDS)

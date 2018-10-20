@@ -19,14 +19,14 @@ import com.facebook.litho.LithoView;
 public class MainActivity extends AppCompatActivity {
 
   @Override
-  protected void onCreate(Bundle savedInstanceState) {
+  protected void onCreate(final Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     final ComponentContext c = new ComponentContext(this);
     setContentView(LithoView.create(c, RootComponent.create(c).build()));
 
-    FlipperClient client = AndroidFlipperClient.getInstanceIfInitialized();
+    final FlipperClient client = AndroidFlipperClient.getInstanceIfInitialized();
     if (client != null) {
-      FlipperPlugin samplePlugin = client.getPlugin(ExampleFlipperPlugin.ID);
+      final FlipperPlugin samplePlugin = client.getPlugin(ExampleFlipperPlugin.ID);
       if (samplePlugin instanceof ExampleFlipperPlugin) {
         ((ExampleFlipperPlugin) samplePlugin).setActivity(this);
       }
