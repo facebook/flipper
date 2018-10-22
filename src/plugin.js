@@ -40,6 +40,7 @@ export type Props<T> = {
   setPersistedState: (state: $Shape<T>) => void,
   target: PluginTarget,
   deepLinkPayload: ?string,
+  selectPlugin: (pluginID: string, deepLinkPayload: ?string) => boolean,
 };
 
 export class FlipperBasePlugin<

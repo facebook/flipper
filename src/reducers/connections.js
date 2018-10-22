@@ -8,7 +8,7 @@
 import type BaseDevice from '../devices/BaseDevice';
 import type Client from '../Client';
 
-export type State = {
+export type State = {|
   devices: Array<BaseDevice>,
   androidEmulators: Array<string>,
   selectedDevice: ?BaseDevice,
@@ -19,7 +19,8 @@ export type State = {
   userPreferredApp: ?string,
   error: ?string,
   clients: Array<Client>,
-};
+  deepLinkPayload: ?string,
+|};
 
 export type Action =
   | {
@@ -40,10 +41,11 @@ export type Action =
     }
   | {
       type: 'SELECT_PLUGIN',
-      payload: {
+      payload: {|
         selectedPlugin: ?string,
         selectedApp: ?string,
-      },
+        deepLinkPayload: ?string,
+      |},
     }
   | {
       type: 'SELECT_USER_PREFERRED_PLUGIN',
@@ -79,6 +81,7 @@ const INITAL_STATE: State = {
   userPreferredApp: null,
   error: null,
   clients: [],
+  deepLinkPayload: null,
 };
 
 export default function reducer(
@@ -170,7 +173,7 @@ export default function reducer(
     }
     case 'SELECT_PLUGIN': {
       const {payload} = action;
-      const {selectedPlugin} = payload;
+      const {selectedPlugin, selectedApp} = payload;
       if (selectedPlugin) {
         performance.mark(`activePlugin-${selectedPlugin}`);
       }
@@ -178,7 +181,7 @@ export default function reducer(
       return {
         ...state,
         ...payload,
-        userPreferredApp: payload.selectedApp,
+        userPreferredApp: selectedApp || state.userPreferredApp,
         userPreferredPlugin: selectedPlugin,
       };
     }
@@ -249,10 +252,11 @@ export const preferDevice = (payload: string): Action => ({
   payload,
 });
 
-export const selectPlugin = (payload: {
+export const selectPlugin = (payload: {|
   selectedPlugin: ?string,
-  selectedApp: ?string,
-}): Action => ({
+  selectedApp?: ?string,
+  deepLinkPayload: ?string,
+|}): Action => ({
   type: 'SELECT_PLUGIN',
   payload,
 });

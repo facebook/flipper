@@ -22,6 +22,7 @@ import {
 import React from 'react';
 import {connect} from 'react-redux';
 import {setPluginState} from './reducers/pluginStates.js';
+import {selectPlugin} from './reducers/connections';
 import {devicePlugins, clientPlugins} from './plugins/index.js';
 import NotificationsHub from './NotificationsHub';
 import {activateMenuItems} from './MenuBar.js';
@@ -53,6 +54,11 @@ type Props = {
     state: Object,
   }) => void,
   deepLinkPayload: ?string,
+  selectPlugin: (payload: {|
+    selectedPlugin: ?string,
+    selectedApp?: ?string,
+    deepLinkPayload: ?string,
+  |}) => mixed,
 };
 
 type State = {
@@ -144,6 +150,19 @@ class PluginContainer extends Component<Props, State> {
       setPersistedState: state => setPluginState({pluginKey, state}),
       target,
       deepLinkPayload: this.props.deepLinkPayload,
+      selectPlugin: (pluginID: string, deepLinkPayload: ?string) => {
+        const {target} = this.state;
+        // check if plugin will be available
+        if (
+          target instanceof Client &&
+          target.plugins.some(p => p === pluginID)
+        ) {
+          this.props.selectPlugin({selectedPlugin: pluginID, deepLinkPayload});
+          return true;
+        } else {
+          return false;
+        }
+      },
       ref: this.refChanged,
     };
 
@@ -185,5 +204,6 @@ export default connect(
   }),
   {
     setPluginState,
+    selectPlugin,
   },
 )(PluginContainer);
