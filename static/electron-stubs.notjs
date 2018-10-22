@@ -8,5 +8,8 @@
         isFocused: function() {return true;}
       };
     },
+    app: {
+      getVersion: function() {return '1';}
+    }
   },
 }

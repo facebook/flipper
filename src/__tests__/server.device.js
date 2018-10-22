@@ -5,7 +5,7 @@
  * @format
  */
 
-import Server, {SECURE_PORT, INSECURE_PORT} from '../server.js';
+import Server from '../server.js';
 import LogManager from '../fb-stubs/Logger';
 import reducers from '../reducers/index.js';
 import configureStore from 'redux-mock-store';
@@ -27,23 +27,26 @@ beforeAll(() => {
   return server.init();
 });
 
-test('servers starting at ports', done => {
-  const serversToBeStarted = new Set([SECURE_PORT, INSECURE_PORT]);
-
-  return new Promise((resolve, reject) => {
-    server.addListener('listening', port => {
-      if (!serversToBeStarted.has(port)) {
-        throw Error(`unknown server started at port ${port}`);
-      } else {
-        serversToBeStarted.delete(port);
-      }
-      if (serversToBeStarted.size === 0) {
+test.skip(
+  'Device can connect successfully',
+  done => {
+    var testFinished = false;
+    server.addListener('new-client', (client: Client) => {
+      console.debug('new-client ' + new Date().toString());
+      setTimeout(() => {
+        testFinished = true;
         done();
-        resolve();
+      }, 5000);
+    });
+    server.addListener('removed-client', (id: string) => {
+      console.debug('removed-client ' + new Date().toString());
+      if (!testFinished) {
+        done.fail('client disconnected too early');
       }
     });
-  });
-});
+  },
+  20000,
+);
 
 afterAll(() => {
   return server.close();
