@@ -1,0 +1,12 @@
+{
+  remote: {
+    process: {
+      env: {},
+    },
+    getCurrentWindow: function() {
+      return {
+        isFocused: function() {return true;}
+      };
+    },
+  },
+}

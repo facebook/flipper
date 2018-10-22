@@ -37,7 +37,11 @@ function transform({filename, options, src}) {
     require('./dynamic-requires.js'),
   ];
 
-  if (!options.isTestRunner) {
+  if (options.isTestRunner) {
+    if (process.env.USE_ELECTRON_STUBS) {
+      plugins.push(require('./electron-stubs.js'));
+    }
+  } else {
     // Replacing require statements with electronRequire to prevent metro from
     // resolving them. electronRequire are resolved during runtime by electron.
     // As the tests are not bundled by metro and run in @jest-runner/electron,
