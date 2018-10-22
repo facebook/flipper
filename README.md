@@ -84,10 +84,13 @@ yarn build --mac --version $buildNumber
 
 ```
 cd iOS/Sample
-pod install
+rm -f Podfile.lock
+pod install --repo-update
 open Sample.xcworkspace
 <Run app from xcode>
 ```
+
+You can omit `--repo-update` to speed up the installation, but watch out as you may be building against outdated dependencies.
 
 ## Android SDK + Sample app
 
