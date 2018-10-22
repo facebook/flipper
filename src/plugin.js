@@ -11,6 +11,7 @@ import type Logger from './fb-stubs/Logger.js';
 import type Client from './Client.js';
 
 import React from 'react';
+import type {Node} from 'react';
 import BaseDevice from './devices/BaseDevice.js';
 import {AndroidDevice, IOSDevice} from 'flipper';
 
@@ -27,7 +28,7 @@ type PluginTarget = BaseDevice | Client;
 export type Notification = {|
   id: string,
   title: string,
-  message: string,
+  message: string | Node,
   severity: 'warning' | 'error',
   timestamp?: number,
   category?: string,
