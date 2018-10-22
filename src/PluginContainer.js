@@ -67,54 +67,39 @@ type State = {
   pluginKey: string,
 };
 
-function computeState(props: Props): State {
-  // plugin changed
-  let activePlugin = [NotificationsHub, ...devicePlugins].find(
-    (p: Class<FlipperDevicePlugin<>>) => p.id === props.selectedPlugin,
-  );
-  let target = props.selectedDevice;
-  let pluginKey = 'unknown';
-  if (activePlugin) {
-    pluginKey = `${props.selectedDevice.serial}#${activePlugin.id}`;
-  } else {
-    target = props.clients.find(
-      (client: Client) => client.id === props.selectedApp,
-    );
-    activePlugin = clientPlugins.find(
-      (p: Class<FlipperPlugin<>>) => p.id === props.selectedPlugin,
-    );
-    if (!activePlugin || !target) {
-      throw new Error(
-        `Plugin "${props.selectedPlugin || ''}" could not be found.`,
-      );
-    }
-    pluginKey = `${target.id}#${activePlugin.id}`;
-  }
-
-  return {
-    activePlugin,
-    target,
-    pluginKey,
-  };
-}
-
 class PluginContainer extends Component<Props, State> {
-  plugin: ?FlipperBasePlugin<>;
-
-  constructor(props: Props) {
-    super();
-    this.state = computeState(props);
-  }
-
-  componentWillReceiveProps(nextProps: Props) {
-    if (
-      nextProps.selectedDevice !== this.props.selectedDevice ||
-      nextProps.selectedApp !== this.props.selectedApp ||
-      nextProps.selectedPlugin !== this.props.selectedPlugin
-    ) {
-      this.setState(computeState(nextProps));
+  static getDerivedStateFromProps(props: Props): State {
+    let activePlugin = [NotificationsHub, ...devicePlugins].find(
+      (p: Class<FlipperDevicePlugin<>>) => p.id === props.selectedPlugin,
+    );
+    let target = props.selectedDevice;
+    let pluginKey = 'unknown';
+    if (activePlugin) {
+      pluginKey = `${props.selectedDevice.serial}#${activePlugin.id}`;
+    } else {
+      target = props.clients.find(
+        (client: Client) => client.id === props.selectedApp,
+      );
+      activePlugin = clientPlugins.find(
+        (p: Class<FlipperPlugin<>>) => p.id === props.selectedPlugin,
+      );
+      if (!activePlugin || !target) {
+        throw new Error(
+          `Plugin "${props.selectedPlugin || ''}" could not be found.`,
+        );
+      }
+      pluginKey = `${target.id}#${activePlugin.id}`;
     }
+
+    return {
+      activePlugin,
+      target,
+      pluginKey,
+    };
   }
+
+  state: State = this.constructor.getDerivedStateFromProps(this.props);
+  plugin: ?FlipperBasePlugin<>;
 
   refChanged = (ref: ?FlipperBasePlugin<>) => {
     if (this.plugin) {
