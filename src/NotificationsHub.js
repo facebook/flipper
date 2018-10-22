@@ -60,6 +60,8 @@ export default class Notifications extends FlipperDevicePlugin<{}> {
     return (
       <ConnectedNotificationsTable
         onClear={this.onClear}
+        selectedID={this.props.deepLinkPayload}
+        onSelectPlugin={this.props.selectPlugin}
         defaultFilters={this.context.store
           .getState()
           .notifications.blacklistedPlugins.map(value => ({
@@ -90,6 +92,7 @@ type Props = {|
     selectedApp: ?string,
     deepLinkPayload?: ?string,
   }) => mixed,
+  selectedID: ?string,
 |};
 
 type State = {|
@@ -128,11 +131,16 @@ const NoContent = styled(FlexColumn)({
 });
 
 class NotificationsTable extends Component<Props, State> {
-  state = {
-    selectedNotification: null,
-  };
+  static getDerivedStateFromProps(props: Props): State {
+    return {
+      selectedNotification: props.selectedID,
+    };
+  }
 
   contextMenuItems = [{label: 'Clear all', click: this.props.onClear}];
+  state: State = {
+    selectedNotification: this.props.selectedID,
+  };
 
   componentDidUpdate(prevProps: Props) {
     if (this.props.filters.length !== prevProps.filters.length) {
@@ -196,7 +204,8 @@ class NotificationsTable extends Component<Props, State> {
           onHide={() => this.onHide(n.pluginId)}
           selectPlugin={this.props.selectPlugin}
         />
-      ));
+      ))
+      .reverse();
 
     const invalidatedNotifications = this.props.invalidatedNotifications
       .filter(this.getFilter())
@@ -207,7 +216,8 @@ class NotificationsTable extends Component<Props, State> {
           onClear={this.props.onClear}
           inactive
         />
-      ));
+      ))
+      .reverse();
 
     return (
       <ContextMenu items={this.contextMenuItems} component={Content}>

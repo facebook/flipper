@@ -65,9 +65,9 @@ export default (store: Store, logger: Logger) => {
         notification.onclick = () =>
           store.dispatch(
             selectPlugin({
-              selectedPlugin: n.pluginId,
-              selectedApp: n.client,
-              deepLinkPayload: n.notification.action,
+              selectedPlugin: 'notifications',
+              selectedApp: null,
+              deepLinkPayload: n.notification.id,
             }),
           );
         knownNotifications.add(n.notification.id);
