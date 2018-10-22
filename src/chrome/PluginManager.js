@@ -343,7 +343,7 @@ class PluginManager extends PureComponent<Props, State> {
     );
     return (
       <Container>
-        <FlexColumn fill={true}>
+        <FlexColumn grow={true}>
           {this.state.restartRequired && (
             <RestartRequired onClick={this.relaunch}>
               <Glyph name="arrows-circle" size={12} color={colors.white} />
@@ -396,7 +396,7 @@ const SearchablePluginManager = Searchable(PluginManager);
 export default class extends PureComponent<{}> {
   render() {
     return (
-      <FlexColumn fill={true}>
+      <FlexColumn grow={true}>
         <SearchablePluginManager />
       </FlexColumn>
     );

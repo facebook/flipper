@@ -147,14 +147,14 @@ export default class LeakCanary extends FlipperPlugin<State> {
 
     return (
       <Sidebar position="right" width={600} minWidth={300} maxWidth={900}>
-        <Panel heading={'Instance'} floating={false} fill={false}>
+        <Panel heading={'Instance'} floating={false} grow={false}>
           <ManagedDataInspector
             data={instanceFields}
             expandRoot={true}
             extractValue={this._extractValue}
           />
         </Panel>
-        <Panel heading={'Static'} floating={false} fill={false}>
+        <Panel heading={'Static'} floating={false} grow={false}>
           <ManagedDataInspector
             data={staticFields}
             expandRoot={true}
@@ -171,8 +171,8 @@ export default class LeakCanary extends FlipperPlugin<State> {
 
     return (
       <Window>
-        <FlexColumn fill={true}>
-          <FlexColumn fill={true} scrollable={true}>
+        <FlexColumn grow={true}>
+          <FlexColumn grow={true} scrollable={true}>
             {this.state.leaks.map((leak: Leak, idx: number) => {
               const elements = showFullClassPaths
                 ? leak.elements

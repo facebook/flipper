@@ -8,10 +8,10 @@
 import styled from '../styled/index.js';
 
 const View = styled('div')(props => ({
-  height: props.fill ? '100%' : 'auto',
+  height: props.grow ? '100%' : 'auto',
   overflow: props.scrollable ? 'auto' : 'visible',
   position: 'relative',
-  width: props.fill ? '100%' : 'auto',
+  width: props.grow ? '100%' : 'auto',
 }));
 
 export default View;

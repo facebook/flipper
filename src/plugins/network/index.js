@@ -197,7 +197,7 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
     const {requests, responses} = this.props.persistedState;
 
     return (
-      <FlexColumn fill={true}>
+      <FlexColumn grow={true}>
         <NetworkTable
           requests={requests || {}}
           responses={responses || {}}

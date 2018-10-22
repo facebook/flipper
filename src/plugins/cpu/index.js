@@ -340,7 +340,7 @@ export default class CPUFrequencyTable extends FlipperDevicePlugin<CPUState> {
   render() {
     return (
       <FlexRow>
-        <FlexColumn fill={true}>
+        <FlexColumn grow={true}>
           <Toolbar position="top">
             {this.state.monitoring ? (
               <Button onClick={this.onStopMonitor} icon="pause">

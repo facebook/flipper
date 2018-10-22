@@ -40,7 +40,7 @@ export default class Panel extends React.Component<
      *  height: 100%;
      *  width: 100%;
      */
-    fill?: boolean,
+    grow?: boolean,
     /**
      * Heading for this panel. If this is anything other than a string then no
      * padding is applied to the heading.
@@ -74,10 +74,10 @@ export default class Panel extends React.Component<
 > {
   static defaultProps: {|
     floating: boolean,
-    fill: boolean,
+    grow: boolean,
     collapsable: boolean,
   |} = {
-    fill: false,
+    grow: false,
     floating: true,
     collapsable: true,
   };
@@ -124,7 +124,7 @@ export default class Panel extends React.Component<
       padded,
       children,
       className,
-      fill,
+      grow,
       floating,
       heading,
       collapsable,
@@ -135,7 +135,7 @@ export default class Panel extends React.Component<
       <Panel.PanelContainer
         className={className}
         floating={floating}
-        fill={fill}
+        grow={grow}
         collapsed={collapsed}>
         <Panel.PanelHeader
           floating={floating}
@@ -156,7 +156,7 @@ export default class Panel extends React.Component<
 
         {children == null || (collapsable && collapsed) ? null : (
           <Panel.PanelBody
-            fill={fill}
+            grow={grow}
             padded={padded == null ? true : padded}
             floating={floating}>
             {children}

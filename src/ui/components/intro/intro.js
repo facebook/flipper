@@ -87,7 +87,7 @@ export default class Intro extends PureComponent<Props> {
   render() {
     const {icon, children, title, onDismiss, screenshot} = this.props;
     return (
-      <FlexRow fill={true}>
+      <FlexRow grow={true}>
         <Containter>
           <TitleRow>
             {icon != null && (

@@ -251,7 +251,7 @@ export default function Tabs(props: {|
   }
 
   return (
-    <FlexColumn fill={true}>
+    <FlexColumn grow={true}>
       <TabList>
         {before}
         {tabList}

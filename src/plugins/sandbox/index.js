@@ -103,7 +103,7 @@ export default class SandboxView extends FlipperPlugin<SandboxState> {
     return (
       <FlexColumn>
         <SandboxView.TextInputLayout>
-          <ButtonGroup flexGrow={1}>
+          <ButtonGroup flexgrow={true}>
             <SandboxView.TextInput
               type="text"
               placeholder="Sandbox URL (e.g. unixname.sb.facebook.com)"

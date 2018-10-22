@@ -188,7 +188,7 @@ export default class LogWatcher extends PureComponent<Props, State> {
 
   render() {
     return (
-      <FlexColumn fill={true} tabIndex={-1} onKeyDown={this.onKeyDown}>
+      <FlexColumn grow={true} tabIndex={-1} onKeyDown={this.onKeyDown}>
         <WatcherPanel
           heading="Expression Watcher"
           floating={false}

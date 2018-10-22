@@ -59,7 +59,7 @@ class InspectorSidebarSection extends Component<InspectorSidebarSectionProps> {
   render() {
     const {id} = this.props;
     return (
-      <Panel heading={id} floating={false} fill={false}>
+      <Panel heading={id} floating={false} grow={false}>
         <ManagedDataInspector
           data={this.props.data}
           setValue={this.props.onValueChanged ? this.setValue : undefined}
@@ -137,7 +137,7 @@ export class InspectorSidebar extends Component<Props, State> {
 
     if (GK.get('sonar_show_console_plugin') && this.state.isConsoleEnabled) {
       sections.push(
-        <Panel heading="JS Console" floating={false} fill={false}>
+        <Panel heading="JS Console" floating={false} grow={false}>
           <Console client={this.props.client} getContext={() => element.id} />
         </Panel>,
       );

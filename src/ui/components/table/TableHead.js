@@ -164,7 +164,7 @@ class TableHeadColumn extends PureComponent<{
     if (isResizable) {
       children = (
         <TableHeaderColumnInteractive
-          fill={true}
+          grow={true}
           resizable={RIGHT_RESIZABLE}
           onResize={this.onResize}>
           {children}

@@ -1120,7 +1120,7 @@ export default class Layout extends FlipperPlugin<InspectorState> {
     } = this.state;
 
     return (
-      <FlexColumn fill={true}>
+      <FlexColumn grow={true}>
         <Toolbar>
           <SearchIconContainer
             onClick={this.onFindClick}
@@ -1197,7 +1197,7 @@ export default class Layout extends FlipperPlugin<InspectorState> {
               </SearchIconContainer>
             )}
         </Toolbar>
-        <FlexRow fill={true}>
+        <FlexRow grow={true}>
           {initialised ? (
             <ElementsInspector
               onElementSelected={this.onElementSelected}
@@ -1210,7 +1210,7 @@ export default class Layout extends FlipperPlugin<InspectorState> {
               elements={elements}
             />
           ) : (
-            <Center fill={true}>
+            <Center grow={true}>
               <LoadingIndicator />
             </Center>
           )}

@@ -185,7 +185,7 @@ export function createTablePlugin<T: RowData>(props: Props<T>) {
       const {rows} = this.state;
 
       return (
-        <FlexColumn fill={true}>
+        <FlexColumn grow={true}>
           <SearchableTable
             key={props.id}
             rowLineHeight={28}

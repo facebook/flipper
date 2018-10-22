@@ -49,7 +49,7 @@ export class App extends React.Component<Props> {
   }
   render() {
     return (
-      <FlexColumn fill={true}>
+      <FlexColumn grow={true}>
         <TitleBar />
         {this.props.bugDialogVisible && (
           <BugReporterDialog
@@ -59,7 +59,7 @@ export class App extends React.Component<Props> {
             }}
           />
         )}
-        <FlexRow fill={true}>
+        <FlexRow grow={true}>
           {this.props.leftSidebarVisible && <MainSidebar />}
           {this.props.selectedDevice ? (
             <PluginContainer logger={this.props.logger} />

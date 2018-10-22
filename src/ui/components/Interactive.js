@@ -48,7 +48,7 @@ type InteractiveProps = {|
   movable?: boolean,
   hidden?: boolean,
   moving?: boolean,
-  fill?: boolean,
+  grow?: boolean,
   siblings?: $Shape<{[key: string]: $Shape<Rect>}>,
   updateCursor?: (cursor: ?string) => void,
   zIndex?: number,
@@ -650,7 +650,7 @@ export default class Interactive extends React.Component<
   };
 
   render() {
-    const {fill, height, left, movable, top, width, zIndex} = this.props;
+    const {grow, height, left, movable, top, width, zIndex} = this.props;
 
     const style: Object = {
       cursor: this.state.cursor,
@@ -658,7 +658,7 @@ export default class Interactive extends React.Component<
     };
 
     if (movable === true || top != null || left != null) {
-      if (fill === true) {
+      if (grow === true) {
         style.left = left || 0;
         style.top = top || 0;
       } else {
@@ -666,7 +666,7 @@ export default class Interactive extends React.Component<
       }
     }
 
-    if (fill === true) {
+    if (grow === true) {
       style.right = 0;
       style.bottom = 0;
       style.width = '100%';

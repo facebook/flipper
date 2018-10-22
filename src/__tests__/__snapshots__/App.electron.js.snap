@@ -3,7 +3,6 @@
 exports[`Empty app state matches snapshot 1`] = `
 <div
   className="css-1si6n3e"
-  fill={true}
 >
   <div
     className="toolbar css-1u64wvw"
@@ -113,7 +112,6 @@ exports[`Empty app state matches snapshot 1`] = `
   </div>
   <div
     className="css-9qtipk"
-    fill={true}
   >
     <div
       className="css-1atbcdi"

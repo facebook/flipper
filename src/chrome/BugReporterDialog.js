@@ -183,7 +183,7 @@ export default class BugReporterDialog extends Component<Props, State> {
 
     if (success) {
       content = (
-        <FlexCenter fill={true}>
+        <FlexCenter grow={true}>
           <FlexColumn>
             <Text>
               <Text>Bug </Text>
@@ -204,7 +204,7 @@ export default class BugReporterDialog extends Component<Props, State> {
       );
     } else {
       content = (
-        <Container fill={true}>
+        <Container grow={true}>
           <TitleInput
             placeholder="Title..."
             value={title}

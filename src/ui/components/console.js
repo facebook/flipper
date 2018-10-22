@@ -197,7 +197,7 @@ export class Console extends Component<Props, State> {
   render() {
     return (
       <Console.Window>
-        <View fill>{this.renderPreviousCommands()}</View>
+        <View grow={true}>{this.renderPreviousCommands()}</View>
         <form onSubmit={this.onSubmit}>
           <Console.Input
             onChange={this.onInputChange}

@@ -200,7 +200,7 @@ export default class extends FlipperPlugin<SharedPreferencesState> {
     }
 
     return (
-      <RootColumn fill={true}>
+      <RootColumn grow={true}>
         <Heading>
           <span style={{marginRight: '16px'}}>Preference File</span>
           <Select
@@ -214,7 +214,7 @@ export default class extends FlipperPlugin<SharedPreferencesState> {
             onChange={this.onSharedPreferencesSelected}
           />
         </Heading>
-        <FlexRow fill={true} scrollable={true}>
+        <FlexRow grow={true} scrollable={true}>
           <InspectorColumn>
             <Heading>Inspector</Heading>
             <ManagedDataInspector

@@ -84,7 +84,7 @@ export default class ElementsInspector extends Component<{
     } = this.props;
 
     return (
-      <FlexRow fill={true}>
+      <FlexRow grow={true}>
         <Elements
           onElementExpanded={onElementExpanded}
           onElementSelected={onElementSelected}
