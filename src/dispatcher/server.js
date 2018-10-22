@@ -13,6 +13,7 @@ import type Client from '../Client.js';
 
 export default (store: Store, logger: Logger) => {
   const server = new Server(logger, store);
+  server.init();
 
   server.addListener('new-client', (client: Client) => {
     store.dispatch({

@@ -44,6 +44,7 @@ export default class Server extends EventEmitter {
   connectionTracker: ConnectionTracker;
   logger: Logger;
   store: Store;
+  initialisePromise: Promise<void>;
 
   constructor(logger: Logger, store: Store) {
     super();
@@ -52,7 +53,6 @@ export default class Server extends EventEmitter {
     this.certificateProvider = new CertificateProvider(this, logger);
     this.connectionTracker = new ConnectionTracker(logger);
     this.store = store;
-    this.init();
   }
 
   on: ((event: 'new-client', callback: (client: Client) => void) => void) &
@@ -60,12 +60,16 @@ export default class Server extends EventEmitter {
     ((event: 'clients-change', callback: () => void) => void);
 
   init() {
-    this.certificateProvider
+    this.initialisePromise = this.certificateProvider
       .loadSecureServerConfig()
       .then(
         options => (this.secureServer = this.startServer(SECURE_PORT, options)),
-      );
-    this.insecureServer = this.startServer(INSECURE_PORT);
+      )
+      .then(() => {
+        this.insecureServer = this.startServer(INSECURE_PORT);
+        return;
+      });
+    return this.initialisePromise;
   }
 
   startServer(port: number, sslConfig?: SecureServerConfig) {
@@ -232,9 +236,14 @@ export default class Server extends EventEmitter {
     };
   };
 
-  close() {
-    this.secureServer.stop();
-    this.insecureServer.stop();
+  close(): Promise<void> {
+    if (this.initialisePromise) {
+      return this.initialisePromise.then(_ => {
+        this.secureServer.stop();
+        this.insecureServer.stop();
+      });
+    }
+    return Promise.resolve();
   }
 
   toJSON() {

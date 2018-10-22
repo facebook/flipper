@@ -24,6 +24,7 @@ beforeAll(() => {
   }
 
   server = new Server(new LogManager(), mockStore);
+  return server.init();
 });
 
 test('servers starting at ports', done => {
