@@ -8,6 +8,7 @@
 package com.facebook.flipper.plugins.example;
 
 import android.app.Activity;
+import android.support.annotation.Nullable;
 import android.widget.Toast;
 import com.facebook.flipper.core.FlipperConnection;
 import com.facebook.flipper.core.FlipperObject;
@@ -19,8 +20,9 @@ public class ExampleFlipperPlugin implements FlipperPlugin {
 
   public static final String ID = "Example";
 
-  private Activity mActivity;
-  private FlipperConnection mConnection;
+  @Nullable private Activity mActivity;
+
+  @Nullable private FlipperConnection mConnection;
 
   private int mNotificationsSent = 0;
 
@@ -37,14 +39,13 @@ public class ExampleFlipperPlugin implements FlipperPlugin {
   }
 
   @Override
-  public void onConnect(FlipperConnection connection) throws Exception {
+  public void onConnect(FlipperConnection connection) {
     mConnection = connection;
     connection.receive(
         "displayMessage",
         new FlipperReceiver() {
           @Override
-          public void onReceive(final FlipperObject params, FlipperResponder responder)
-              throws Exception {
+          public void onReceive(final FlipperObject params, FlipperResponder responder) {
             if (mActivity != null) {
               mActivity.runOnUiThread(
                   new Runnable() {
@@ -70,7 +71,7 @@ public class ExampleFlipperPlugin implements FlipperPlugin {
   }
 
   @Override
-  public void onDisconnect() throws Exception {
+  public void onDisconnect() {
     mConnection = null;
   }
 
