@@ -7,7 +7,7 @@
  */
 
 import {Button, Input, FlipperPlugin, FlexColumn, styled, Text} from 'flipper';
-
+import type {Notification} from '../../plugin';
 type DisplayMessageResponse = {
   greeting: string,
 };
@@ -18,7 +18,8 @@ type State = {
 };
 
 type PersistedState = {
-  currentNotificationId: number,
+  currentNotificationIds: Array<number>,
+  receivedMessage: ?string,
 };
 
 const Container = styled(FlexColumn)({
@@ -31,6 +32,11 @@ export default class extends FlipperPlugin<*, State, PersistedState> {
   static title = 'Example';
   static id = 'Example';
   static icon = 'apps';
+
+  static defaultPersistedState = {
+    currentNotificationIds: [],
+    receivedMessage: null,
+  };
 
   state = {
     prompt: 'Type a message below to see it displayed on the mobile app',
@@ -47,7 +53,16 @@ export default class extends FlipperPlugin<*, State, PersistedState> {
   ): PersistedState => {
     if (method === 'triggerNotification') {
       return {
-        currentNotificationId: payload.id,
+        ...persistedState,
+        currentNotificationIds: persistedState.currentNotificationIds.concat([
+          payload.id,
+        ]),
+      };
+    }
+    if (method === 'displayMessage') {
+      return {
+        ...persistedState,
+        receivedMessage: payload.msg,
       };
     }
     return persistedState || {};
@@ -56,15 +71,17 @@ export default class extends FlipperPlugin<*, State, PersistedState> {
   /*
    * Callback to provide the currently active notifications.
    */
-  static getActiveNotifications = (persistedState: PersistedState) => {
-    return [
-      {
-        id: 'test-notification:' + persistedState.currentNotificationId,
+  static getActiveNotifications = (
+    persistedState: PersistedState,
+  ): Array<Notification> => {
+    return persistedState.currentNotificationIds.map((x: number) => {
+      return {
+        id: 'test-notification:' + x,
         message: 'Example Notification',
         severity: 'warning',
-        title: 'Notification: ' + persistedState.currentNotificationId,
-      },
-    ];
+        title: 'Notification: ' + x,
+      };
+    });
   };
 
   /*
@@ -83,14 +100,17 @@ export default class extends FlipperPlugin<*, State, PersistedState> {
   render() {
     return (
       <Container>
-        <Text>{this.state.prompt}</Text>,
+        <Text>{this.state.prompt}</Text>
         <Input
           placeholder="Message"
           onChange={event => {
             this.setState({message: event.target.value});
           }}
-        />,
-        <Button onClick={this.sendMessage.bind(this)}>Send</Button>,
+        />
+        <Button onClick={this.sendMessage.bind(this)}>Send</Button>
+        {this.props.persistedState.receivedMessage && (
+          <Text> {this.props.persistedState.receivedMessage} </Text>
+        )}
       </Container>
     );
   }

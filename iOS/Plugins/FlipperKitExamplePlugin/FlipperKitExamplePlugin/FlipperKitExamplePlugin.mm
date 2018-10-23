@@ -13,7 +13,6 @@
 #import <FlipperKit/FlipperResponder.h>
 
 @interface FlipperKitExamplePlugin()
-@property (strong, nonatomic) NSMutableArray<NSString *> *messagesToDisplay;
 @property (strong, nonatomic) id<FlipperConnection> connection;
 @property (nonatomic) NSInteger triggerCount;
 
@@ -23,7 +22,6 @@
 
 - (instancetype)init {
     if (self = [super init]) {
-        _messagesToDisplay = @[].mutableCopy;
         _triggerCount = 0;
     }
     return self;
@@ -44,7 +42,8 @@
     __weak FlipperKitExamplePlugin *weakSelf = self;
     self.connection = connection;
     [connection receive:@"displayMessage" withBlock:^(NSDictionary *params, id<FlipperResponder> responder) {
-        [weakSelf.messagesToDisplay addObject:params[@"message"]];
+        [weakSelf.delegate messageReceived:params[@"message"]];
+        [responder success:@{@"greeting": @"Hello"}];
     }];
 }
 

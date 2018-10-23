@@ -8,7 +8,12 @@
 #import <Foundation/Foundation.h>
 #import <FlipperKit/FlipperPlugin.h>
 
+@protocol FlipperKitExampleCommunicationResponderDelegate
+- (void)messageReceived:(NSString *)msg;
+@end
+
 @interface FlipperKitExamplePlugin : NSObject<FlipperPlugin>
+@property (weak, nonatomic) id<FlipperKitExampleCommunicationResponderDelegate> delegate;
 
 - (instancetype)init NS_UNAVAILABLE;
 - (void)sendMessage:(NSString *)msg;

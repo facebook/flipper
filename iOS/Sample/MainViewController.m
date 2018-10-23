@@ -11,6 +11,7 @@
 #import "NetworkViewController.h"
 #import "RootViewController.h"
 #import "UserDefaultsViewController.h"
+#import "CommunicationDemoViewController.h"
 
 @interface MainViewController ()
 
@@ -41,6 +42,12 @@
     UserDefaultsViewController *userDefaultsViewController = [storyboard instantiateViewControllerWithIdentifier:@"UserDefaultsViewController"];
     
     [self.navigationController pushViewController:userDefaultsViewController animated:true];
+}
+
+- (IBAction)tappedCommunicationDemo:(UIButton *)sender {
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"MainStoryBoard" bundle:nil];
+    CommunicationDemoViewController *communicationDemoViewController = [storyboard instantiateViewControllerWithIdentifier:@"CommunicationDemoViewController"];
+    [self.navigationController pushViewController:communicationDemoViewController animated:true];
 }
 
 @end
