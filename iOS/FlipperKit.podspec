@@ -144,4 +144,13 @@ Pod::Spec.new do |spec|
     ss.source_files         = "iOS/Plugins/FlipperKitUserDefaultsPlugin/**/*.{h,m}"
     ss.pod_target_xcconfig = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)\"/Headers/Private/FlipperKit/**" }
   end
+
+  spec.subspec "FlipperKitExamplePlugin" do |ss|
+    ss.header_dir = "FlipperKitExamplePlugin"
+    ss.dependency 'FlipperKit/Core'
+    ss.compiler_flags       = folly_compiler_flags
+    ss.public_header_files = 'iOS/Plugins/FlipperKitExamplePlugin/FlipperKitExamplePlugin.h'
+    ss.source_files         = "iOS/Plugins/FlipperKitExamplePlugin/**/*.{h,mm}"
+    ss.pod_target_xcconfig = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)\"/Headers/Private/FlipperKit/**" }
+  end
 end
