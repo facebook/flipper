@@ -14,7 +14,7 @@
 @property (strong, nonatomic) NSArray<NSDictionary *> *elements;
 @end
 
-@interface FlipperDiagnosticsViewController : UIViewController <FlipperStateUpdateListener>
+@interface FlipperDiagnosticsViewController : UIViewController<FlipperStateUpdateListener>
 @property(strong, nonatomic) StateTableDataSource *tableDataSource;
 @property(strong, nonatomic) UILabel *stateLabel;
 @property(strong, nonatomic) UITableView *stateTable;

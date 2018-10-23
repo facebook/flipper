@@ -70,7 +70,7 @@ Pod::Spec.new do |spec|
                              'iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutPlugin/SKDescriptorMapper.h',
                              'iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutComponentKitSupport/FlipperKitLayoutComponentKitSupport.h',
                              'iOS/FBDefines/FBMacros.h',
-                             'iOS/FlipperKit/**/{FlipperStateUpdateListener,FlipperClient,FlipperPlugin,FlipperConnection,FlipperResponder,SKMacros}.h'
+                             'iOS/FlipperKit/**/{FlipperDiagnosticsViewController,FlipperStateUpdateListener,FlipperClient,FlipperPlugin,FlipperConnection,FlipperResponder,SKMacros}.h'
     header_search_paths = "\"$(PODS_ROOT)/FlipperKit/iOS/FlipperKit\" \"$(PODS_ROOT)\"/Headers/Private/FlipperKit/** \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/PeerTalkSonar\""
     ss.pod_target_xcconfig = { "USE_HEADERMAP" => "NO",
                              "DEFINES_MODULE" => "YES",

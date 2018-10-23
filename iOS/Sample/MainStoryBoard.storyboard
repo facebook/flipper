@@ -194,6 +194,19 @@
                                     <action selector="tappedComponentKitLayout:" destination="2r2-64-LPh" eventType="touchUpInside" id="amo-e0-rJv"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EOQ-ZH-neu">
+                                <rect key="frame" x="0.0" y="292" width="375" height="60"/>
+                                <color key="backgroundColor" red="0.89411764709999997" green="0.87450980389999999" blue="0.92941176469999998" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="60" id="32l-Gv-9l5"/>
+                                </constraints>
+                                <state key="normal" title="Diagnostic Screen">
+                                    <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
+                                <connections>
+                                    <action selector="tappedDiagnosticScreen:" destination="2r2-64-LPh" eventType="touchUpInside" id="5ut-rC-ctB"/>
+                                </connections>
+                            </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="U2A-FV-duk">
                                 <rect key="frame" x="0.0" y="224" width="375" height="60"/>
                                 <color key="backgroundColor" red="0.89411764709999997" green="0.87450980389999999" blue="0.92941176469999998" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
@@ -217,14 +230,17 @@
                             <constraint firstItem="R0E-21-TJB" firstAttribute="top" secondItem="fhd-5r-dZW" secondAttribute="top" id="4Og-b3-TDg"/>
                             <constraint firstItem="R0E-21-TJB" firstAttribute="leading" secondItem="fhd-5r-dZW" secondAttribute="leading" id="7mG-cL-FY7"/>
                             <constraint firstItem="xh0-Q4-60g" firstAttribute="leading" secondItem="fhd-5r-dZW" secondAttribute="leading" id="DPX-l5-Rca"/>
+                            <constraint firstItem="EOQ-ZH-neu" firstAttribute="trailing" secondItem="fhd-5r-dZW" secondAttribute="trailing" id="FfZ-R1-561"/>
                             <constraint firstItem="B57-dd-H6T" firstAttribute="leading" secondItem="fhd-5r-dZW" secondAttribute="leading" id="Hhd-in-vfk"/>
                             <constraint firstItem="U2A-FV-duk" firstAttribute="top" secondItem="wdV-rw-8hy" secondAttribute="bottom" constant="8" id="N7B-ib-na4"/>
                             <constraint firstItem="fhd-5r-dZW" firstAttribute="trailing" secondItem="B57-dd-H6T" secondAttribute="trailing" id="ODW-CJ-ean"/>
                             <constraint firstItem="fhd-5r-dZW" firstAttribute="trailing" secondItem="R0E-21-TJB" secondAttribute="trailing" id="QyG-ez-XwS"/>
+                            <constraint firstItem="EOQ-ZH-neu" firstAttribute="leading" secondItem="fhd-5r-dZW" secondAttribute="leading" id="XQN-cm-RsS"/>
                             <constraint firstItem="wdV-rw-8hy" firstAttribute="leading" secondItem="xh0-Q4-60g" secondAttribute="leading" id="ebs-Zh-KRL"/>
                             <constraint firstItem="wdV-rw-8hy" firstAttribute="top" secondItem="xh0-Q4-60g" secondAttribute="bottom" constant="8" id="g0a-Kf-scc"/>
                             <constraint firstItem="U2A-FV-duk" firstAttribute="trailing" secondItem="fhd-5r-dZW" secondAttribute="trailing" id="kCq-Gy-Opv"/>
                             <constraint firstItem="fhd-5r-dZW" firstAttribute="bottom" secondItem="B57-dd-H6T" secondAttribute="bottom" id="kh1-ra-tzR"/>
+                            <constraint firstItem="EOQ-ZH-neu" firstAttribute="top" secondItem="U2A-FV-duk" secondAttribute="bottom" constant="8" id="t6G-HJ-u4x"/>
                             <constraint firstItem="B57-dd-H6T" firstAttribute="top" secondItem="fhd-5r-dZW" secondAttribute="top" id="vGA-oo-EGc"/>
                             <constraint firstItem="U2A-FV-duk" firstAttribute="leading" secondItem="fhd-5r-dZW" secondAttribute="leading" id="zaZ-Bn-fhD"/>
                         </constraints>
@@ -243,9 +259,6 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="sonarpattern" translatesAutoresizingMaskIntoConstraints="NO" id="ytS-7A-bty">
-                                <rect key="frame" x="0.0" y="20" width="375" height="647"/>
-                            </imageView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="WSh-CB-RQ8">
                                 <rect key="frame" x="40" y="257.5" width="295" height="152"/>
                                 <subviews>
@@ -306,6 +319,9 @@
                                     <constraint firstItem="Fel-3h-2Ts" firstAttribute="top" secondItem="cp1-5I-XfA" secondAttribute="bottom" constant="8" id="sAQ-IL-GiU"/>
                                 </constraints>
                             </view>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="sonarpattern" translatesAutoresizingMaskIntoConstraints="NO" id="ytS-7A-bty">
+                                <rect key="frame" x="0.0" y="20" width="375" height="647"/>
+                            </imageView>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
