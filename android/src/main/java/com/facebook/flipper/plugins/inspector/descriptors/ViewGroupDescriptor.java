@@ -17,6 +17,7 @@ import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
 import com.facebook.flipper.R;
+import com.facebook.flipper.core.ErrorReportingRunnable;
 import com.facebook.flipper.core.FlipperDynamic;
 import com.facebook.flipper.core.FlipperObject;
 import com.facebook.flipper.plugins.inspector.HiddenNode;
@@ -66,26 +67,28 @@ public class ViewGroupDescriptor extends NodeDescriptor<ViewGroup> {
   public void init(final ViewGroup node) {
     final NodeKey key = new NodeKey();
 
-    final Runnable maybeInvalidate =
-        new ErrorReportingRunnable() {
-          @Override
-          public void runOrThrow() throws Exception {
-            if (connected()) {
-              if (key.set(node)) {
-                invalidate(node);
-                invalidateAX(node);
-              }
+    if (mConnection != null) {
+      final Runnable maybeInvalidate =
+          new ErrorReportingRunnable(mConnection) {
+            @Override
+            public void runOrThrow() throws Exception {
+              if (connected()) {
+                if (key.set(node)) {
+                  invalidate(node);
+                  invalidateAX(node);
+                }
 
-              final boolean hasAttachedToWindow =
-                  Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
-              if (!hasAttachedToWindow || node.isAttachedToWindow()) {
-                node.postDelayed(this, 1000);
+                final boolean hasAttachedToWindow =
+                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
+                if (!hasAttachedToWindow || node.isAttachedToWindow()) {
+                  node.postDelayed(this, 1000);
+                }
               }
             }
-          }
-        };
+          };
 
-    node.postDelayed(maybeInvalidate, 1000);
+      node.postDelayed(maybeInvalidate, 1000);
+    }
   }
 
   @Override

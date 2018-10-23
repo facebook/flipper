@@ -13,6 +13,7 @@ import android.support.v4.view.ViewCompat;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
+import com.facebook.flipper.core.ErrorReportingRunnable;
 import com.facebook.flipper.core.FlipperDynamic;
 import com.facebook.flipper.core.FlipperObject;
 import com.facebook.flipper.plugins.inspector.ApplicationWrapper;
@@ -58,7 +59,7 @@ public class ApplicationDescriptor extends NodeDescriptor<ApplicationWrapper> {
     }
   }
 
-  private static List<ViewGroup> editedDelegates = new ArrayList<>();
+  private static final List<ViewGroup> editedDelegates = new ArrayList<>();
   private static boolean searchActive;
 
   public static void setSearchActive(boolean active) {
@@ -143,22 +144,25 @@ public class ApplicationDescriptor extends NodeDescriptor<ApplicationWrapper> {
         });
 
     final NodeKey key = new NodeKey();
-    final Runnable maybeInvalidate =
-        new NodeDescriptor.ErrorReportingRunnable() {
-          @Override
-          public void runOrThrow() throws Exception {
-            if (connected()) {
-              if (key.set(node)) {
-                invalidate(node);
-                invalidateAX(node);
-                setDelegates(node);
-              }
-              node.postDelayed(this, 1000);
-            }
-          }
-        };
 
-    node.postDelayed(maybeInvalidate, 1000);
+    if (mConnection != null) {
+      final Runnable maybeInvalidate =
+          new ErrorReportingRunnable(mConnection) {
+            @Override
+            public void runOrThrow() {
+              if (connected()) {
+                if (key.set(node)) {
+                  invalidate(node);
+                  invalidateAX(node);
+                  setDelegates(node);
+                }
+                node.postDelayed(this, 1000);
+              }
+            }
+          };
+
+      node.postDelayed(maybeInvalidate, 1000);
+    }
   }
 
   @Override
@@ -172,7 +176,7 @@ public class ApplicationDescriptor extends NodeDescriptor<ApplicationWrapper> {
   }
 
   @Override
-  public String getAXName(ApplicationWrapper node) throws Exception {
+  public String getAXName(ApplicationWrapper node) {
     return "Application";
   }
 
@@ -228,7 +232,7 @@ public class ApplicationDescriptor extends NodeDescriptor<ApplicationWrapper> {
     }
   }
 
-  private void runHitTest(ApplicationWrapper node, Touch touch, boolean ax) throws Exception {
+  private void runHitTest(ApplicationWrapper node, Touch touch, boolean ax) {
     final int childCount = getChildCount(node);
 
     for (int i = childCount - 1; i >= 0; i--) {
@@ -252,8 +256,9 @@ public class ApplicationDescriptor extends NodeDescriptor<ApplicationWrapper> {
     runHitTest(node, touch, true);
   }
 
+  @Nullable
   @Override
-  public @Nullable String getDecoration(ApplicationWrapper obj) {
+  public String getDecoration(ApplicationWrapper obj) {
     return null;
   }
 

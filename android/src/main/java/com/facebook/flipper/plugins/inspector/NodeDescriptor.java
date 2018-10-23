@@ -8,13 +8,14 @@
 
 package com.facebook.flipper.plugins.inspector;
 
+import android.support.annotation.Nullable;
+import com.facebook.flipper.core.ErrorReportingRunnable;
 import com.facebook.flipper.core.FlipperArray;
 import com.facebook.flipper.core.FlipperConnection;
 import com.facebook.flipper.core.FlipperDynamic;
 import com.facebook.flipper.core.FlipperObject;
 import java.util.Collections;
 import java.util.List;
-import javax.annotation.Nullable;
 
 /**
  * A NodeDescriptor is an object which known how to expose an Object of type T to the ew Inspector.
@@ -22,7 +23,7 @@ import javax.annotation.Nullable;
  * data can be exposed to the inspector.
  */
 public abstract class NodeDescriptor<T> {
-  protected FlipperConnection mConnection;
+  @Nullable protected FlipperConnection mConnection;
   private DescriptorMapping mDescriptorMapping;
 
   void setConnection(FlipperConnection connection) {
@@ -50,7 +51,7 @@ public abstract class NodeDescriptor<T> {
    */
   protected final void invalidate(final T node) {
     if (mConnection != null) {
-      new ErrorReportingRunnable() {
+      new ErrorReportingRunnable(mConnection) {
         @Override
         protected void runOrThrow() throws Exception {
           FlipperArray array =
@@ -71,7 +72,7 @@ public abstract class NodeDescriptor<T> {
    */
   protected final void invalidateAX(final T node) {
     if (mConnection != null) {
-      new ErrorReportingRunnable() {
+      new ErrorReportingRunnable(mConnection) {
         @Override
         protected void runOrThrow() throws Exception {
           FlipperArray array =
@@ -87,13 +88,6 @@ public abstract class NodeDescriptor<T> {
 
   protected final boolean connected() {
     return mConnection != null;
-  }
-
-  protected abstract class ErrorReportingRunnable
-      extends com.facebook.flipper.core.ErrorReportingRunnable {
-    public ErrorReportingRunnable() {
-      super(mConnection);
-    }
   }
 
   /**

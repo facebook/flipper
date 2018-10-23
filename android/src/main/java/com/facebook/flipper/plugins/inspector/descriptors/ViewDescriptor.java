@@ -29,6 +29,7 @@ import android.view.ViewGroup.MarginLayoutParams;
 import android.view.ViewParent;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import com.facebook.flipper.core.ErrorReportingRunnable;
 import com.facebook.flipper.core.FlipperDynamic;
 import com.facebook.flipper.core.FlipperObject;
 import com.facebook.flipper.plugins.inspector.HighlightedOverlay;
@@ -546,20 +547,22 @@ public class ViewDescriptor extends NodeDescriptor<View> {
       return tags.build();
     }
 
-    new ErrorReportingRunnable() {
-      @Override
-      protected void runOrThrow() throws Exception {
-        final SparseArray keyedTags = (SparseArray) sKeyedTagsField.get(node);
-        if (keyedTags != null) {
-          for (int i = 0, count = keyedTags.size(); i < count; i++) {
-            final String id =
-                ResourcesUtil.getIdStringQuietly(
-                    node.getContext(), node.getResources(), keyedTags.keyAt(i));
-            tags.put(id, keyedTags.valueAt(i));
+    if (mConnection != null) {
+      new ErrorReportingRunnable(mConnection) {
+        @Override
+        protected void runOrThrow() throws Exception {
+          final SparseArray keyedTags = (SparseArray) sKeyedTagsField.get(node);
+          if (keyedTags != null) {
+            for (int i = 0, count = keyedTags.size(); i < count; i++) {
+              final String id =
+                  ResourcesUtil.getIdStringQuietly(
+                      node.getContext(), node.getResources(), keyedTags.keyAt(i));
+              tags.put(id, keyedTags.valueAt(i));
+            }
           }
         }
-      }
-    }.run();
+      }.run();
+    }
 
     return tags.build();
   }
