@@ -108,6 +108,10 @@
     FlipperPerformBlockOnMainThread(^{ [weakSelf onCallSetSearchActive: [params[@"active"] boolValue] withConnection: connection]; });
   }];
 
+  [connection receive:@"isSearchActive" withBlock:^(NSDictionary *params, id<FlipperResponder> responder) {
+    FlipperPerformBlockOnMainThread(^{ [weakSelf onCallIsSearchActiveWithConnection: responder]; });
+  }];
+
   [connection receive:@"isConsoleEnabled" withBlock:^(NSDictionary *params, id<FlipperResponder> responder) {
     FlipperPerformBlockOnMainThread(^{ [responder success: @{@"isEnabled": @NO}];});
   }];
@@ -236,6 +240,10 @@
   } else {
     [_tapListener unmount];
   }
+}
+
+- (void)onCallIsSearchActiveWithConnection:(id<FlipperResponder>)responder {
+  [responder success: @{ @"isSearchActive": @NO }];
 }
 
 - (void)invalidateNode:(id<NSObject>)node {
