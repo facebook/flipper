@@ -12,7 +12,7 @@ import type BaseDevice from '../devices/BaseDevice';
 import type Logger from '../fb-stubs/Logger.js';
 const adb = require('adbkit-fb');
 
-function createDecive(client, device): Promise<AndroidDevice> {
+function createDevice(client, device): Promise<AndroidDevice> {
   return new Promise((resolve, reject) => {
     const type =
       device.type !== 'device' || device.id.startsWith('emulator')
@@ -56,80 +56,85 @@ function getRunningEmulatorName(id: string): Promise<?string> {
 export default (store: Store, logger: Logger) => {
   const client = adb.createClient();
 
-  // get emulators
-  child_process.exec(
-    '$ANDROID_HOME/tools/emulator -list-avds',
-    (error: ?Error, data: ?string) => {
-      if (error == null && data != null) {
+  const watchAndroidDevices = () => {
+    // get emulators
+    child_process.exec(
+      '$ANDROID_HOME/tools/emulator -list-avds',
+      (error: ?Error, data: ?string) => {
+        if (error != null || data == null) {
+          console.error(error || 'Failed to list AVDs');
+          return;
+        }
         const payload = data.split('\n').filter(Boolean);
         store.dispatch({
           type: 'REGISTER_ANDROID_EMULATORS',
           payload,
         });
-      }
-    },
-  );
+      },
+    );
 
-  client
-    .trackDevices()
-    .then(tracker => {
-      tracker.on('error', err => {
-        if (err.message === 'Connection closed') {
-          // adb server has shutdown, remove all android devices
-          const {connections} = store.getState();
-          const deviceIDsToRemove: Array<string> = connections.devices
-            .filter((device: BaseDevice) => device instanceof AndroidDevice)
-            .map((device: BaseDevice) => device.serial);
+    client
+      .trackDevices()
+      .then(tracker => {
+        tracker.on('error', err => {
+          if (err.message === 'Connection closed') {
+            // adb server has shutdown, remove all android devices
+            const {connections} = store.getState();
+            const deviceIDsToRemove: Array<string> = connections.devices
+              .filter((device: BaseDevice) => device instanceof AndroidDevice)
+              .map((device: BaseDevice) => device.serial);
 
-          store.dispatch({
-            type: 'UNREGISTER_DEVICES',
-            payload: new Set(deviceIDsToRemove),
-          });
-          console.error(
-            'adb server shutdown. Run `adb start-server` and restart Flipper.',
-          );
-        } else {
-          throw err;
-        }
-      });
+            store.dispatch({
+              type: 'UNREGISTER_DEVICES',
+              payload: new Set(deviceIDsToRemove),
+            });
+            console.error('adb server was shutdown');
+            setTimeout(watchAndroidDevices, 500);
+          } else {
+            throw err;
+          }
+        });
 
-      tracker.on('add', async device => {
-        if (device.type !== 'offline') {
-          const androidDevice = await createDecive(client, device);
-          store.dispatch({
-            type: 'REGISTER_DEVICE',
-            payload: androidDevice,
-          });
-        }
-      });
+        tracker.on('add', async device => {
+          if (device.type !== 'offline') {
+            const androidDevice = await createDevice(client, device);
+            store.dispatch({
+              type: 'REGISTER_DEVICE',
+              payload: androidDevice,
+            });
+          }
+        });
 
-      tracker.on('change', async device => {
-        if (device.type === 'offline') {
+        tracker.on('change', async device => {
+          if (device.type === 'offline') {
+            store.dispatch({
+              type: 'UNREGISTER_DEVICES',
+              payload: new Set([device.id]),
+            });
+          } else {
+            const androidDevice = await createDevice(client, device);
+            store.dispatch({
+              type: 'REGISTER_DEVICE',
+              payload: androidDevice,
+            });
+          }
+        });
+
+        tracker.on('remove', device => {
           store.dispatch({
             type: 'UNREGISTER_DEVICES',
             payload: new Set([device.id]),
           });
+        });
+      })
+      .catch(err => {
+        if (err.code === 'ECONNREFUSED') {
+          // adb server isn't running
         } else {
-          const androidDevice = await createDecive(client, device);
-          store.dispatch({
-            type: 'REGISTER_DEVICE',
-            payload: androidDevice,
-          });
+          throw err;
         }
       });
+  };
 
-      tracker.on('remove', device => {
-        store.dispatch({
-          type: 'UNREGISTER_DEVICES',
-          payload: new Set([device.id]),
-        });
-      });
-    })
-    .catch(err => {
-      if (err.code === 'ECONNREFUSED') {
-        // adb server isn't running
-      } else {
-        throw err;
-      }
-    });
+  watchAndroidDevices();
 };
