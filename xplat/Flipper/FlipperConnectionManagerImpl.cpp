@@ -270,6 +270,7 @@ void FlipperConnectionManagerImpl::requestSignedCertFromFlipper() {
 
              if (errorMessage.compare("not implemented")) {
                log("Desktop failed to provide certificates. Error from flipper desktop:\n" + errorMessage);
+               client_ = nullptr;
              } else {
               sendLegacyCertificateRequest(message);
              }
