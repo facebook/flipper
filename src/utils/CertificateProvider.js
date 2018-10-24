@@ -213,8 +213,7 @@ export default class CertificateProvider {
     deviceCsrFilePath: string,
     csr: string,
   ): Promise<string> {
-    const client = adb.createClient();
-    return client.listDevices().then((devices: Array<{id: string}>) => {
+    return this.adb.listDevices().then((devices: Array<{id: string}>) => {
       const deviceMatchList = devices.map(device =>
         // To find out which device requested the cert, search them
         // all for a matching csr file.
