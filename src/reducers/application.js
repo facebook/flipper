@@ -29,19 +29,17 @@ export type Action = {
   payload?: boolean,
 };
 
-const INITIAL_STATE: State = {
+const initialState: () => State = () => ({
   leftSidebarVisible: true,
   rightSidebarVisible: true,
   rightSidebarAvailable: false,
   bugDialogVisible: false,
   windowIsFocused: remote.getCurrentWindow().isFocused(),
   pluginManagerVisible: false,
-};
+});
 
-export default function reducer(
-  state: State = INITIAL_STATE,
-  action: Action,
-): State {
+export default function reducer(state: State, action: Action): State {
+  state = state || initialState();
   const {payload, type} = action;
   const newValue = typeof payload === 'undefined' ? !state[type] : payload;
 
