@@ -10,19 +10,25 @@
 #include "FlipperStep.h"
 #include <vector>
 
+#if FLIPPER_DEBUG_LOG
+#include "Log.h"
+#endif
+
 using namespace facebook::flipper;
 
 /* Class responsible for collecting state updates and combining them into a
  * view of the current state of the flipper client. */
 
-
-FlipperState::FlipperState(): log("") {}
+FlipperState::FlipperState() : logs("") {}
 void FlipperState::setUpdateListener(
     std::shared_ptr<FlipperStateUpdateListener> listener) {
   mListener = listener;
 }
 
 void FlipperState::started(std::string step) {
+#if FLIPPER_DEBUG_LOG
+  log("[started] " + step);
+#endif
   if (stateMap.find(step) == stateMap.end()) {
     insertOrder.push_back(step);
   }
@@ -33,7 +39,10 @@ void FlipperState::started(std::string step) {
 }
 
 void FlipperState::success(std::string step) {
-  log = log + "[Success] " + step + "\n";
+#if FLIPPER_DEBUG_LOG
+  log("[finished] " + step);
+#endif
+  logs = logs + "[Success] " + step + "\n";
   stateMap[step] = State::success;
   if (mListener) {
     mListener->onUpdate();
@@ -41,7 +50,10 @@ void FlipperState::success(std::string step) {
 }
 
 void FlipperState::failed(std::string step, std::string errorMessage) {
-  log = log + "[Failed] " + step + ": " + errorMessage + "\n";
+#if FLIPPER_DEBUG_LOG
+  log("[failed] " + step);
+#endif
+  logs = logs + "[Failed] " + step + ": " + errorMessage + "\n";
   stateMap[step] = State::failed;
   if (mListener) {
     mListener->onUpdate();
@@ -52,7 +64,7 @@ void FlipperState::failed(std::string step, std::string errorMessage) {
 // representation of the current state so the UI can show it in a more intuitive
 // way
 std::string FlipperState::getState() {
-  return log;
+  return logs;
 }
 
 std::vector<StateElement> FlipperState::getStateElements() {

@@ -52,7 +52,7 @@ class FlipperState {
   void started(std::string);
 
   std::shared_ptr<FlipperStateUpdateListener> mListener = nullptr;
-  std::string log;
+  std::string logs;
   std::vector<std::string> insertOrder;
   std::map<std::string, facebook::flipper::State> stateMap;
 };
