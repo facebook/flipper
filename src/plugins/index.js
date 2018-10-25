@@ -17,8 +17,6 @@ import {
 import {remote} from 'electron';
 
 const plugins = new Map();
-// $FlowFixMe process.env not defined in electron API spec
-const remoteEnv = remote.process.env;
 
 // expose Flipper and exact globally for dynamically loaded plugins
 window.React = React;
@@ -33,14 +31,16 @@ const addIfNotAdded = plugin => {
 
 let disabledPlugins = [];
 try {
-  disabledPlugins = JSON.parse(remoteEnv.CONFIG || '{}').disabledPlugins || [];
+  // $FlowFixMe process.env not defined in electron API spec
+  disabledPlugins = JSON.parse(remote?.process.env.CONFIG || '{}').disabledPlugins || [];
 } catch (e) {
   console.error(e);
 }
 
 // Load dynamic plugins
 try {
-  JSON.parse(remoteEnv.PLUGINS || '[]').forEach(addIfNotAdded);
+  // $FlowFixMe process.env not defined in electron API spec
+  JSON.parse(remote?.process.env.PLUGINS || '[]').forEach(addIfNotAdded);
 } catch (e) {
   console.error(e);
 }

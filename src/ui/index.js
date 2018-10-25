@@ -5,6 +5,7 @@
  * @format
  */
 
+export {default as styled} from 'react-emotion';
 export {default as Button} from './components/Button.js';
 export {default as ToggleButton} from './components/ToggleSwitch.js';
 export {

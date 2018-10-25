@@ -13,7 +13,7 @@ import {
   maybeSnapTop,
   SNAP_SIZE,
 } from '../../utils/snap.js';
-import {styled} from 'flipper';
+import {styled} from '../../ui';
 
 const invariant = require('invariant');
 const React = require('react');
