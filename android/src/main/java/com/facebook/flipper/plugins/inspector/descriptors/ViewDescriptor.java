@@ -51,7 +51,7 @@ import javax.annotation.Nullable;
 
 public class ViewDescriptor extends NodeDescriptor<View> {
 
-  private static final String axViewPropsTitle = "View";
+  private static final String axViewPropsTitle = "Accessibility";
   private static final String axNodeInfoPropsTitle = "AccessibilityNodeInfo";
   private static final String axTalkbackPropsTitle = "Talkback";
 
