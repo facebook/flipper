@@ -45,7 +45,6 @@ android {
         compileOnly deps.lithoAnnotations
         implementation project(':fbjni')
         implementation deps.soloader
-        implementation deps.guava
         implementation deps.jsr305
         implementation deps.supportAppCompat
         implementation deps.stetho
@@ -55,6 +54,7 @@ android {
         implementation deps.rhino
         compileOnly deps.leakcanary
 
+        testImplementation deps.guava
         testImplementation deps.mockito
         testImplementation deps.robolectric
         testImplementation deps.hamcrest
