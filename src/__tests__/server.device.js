@@ -27,7 +27,7 @@ beforeAll(() => {
   return server.init();
 });
 
-test.skip(
+test(
   'Device can connect successfully',
   done => {
     var testFinished = false;
