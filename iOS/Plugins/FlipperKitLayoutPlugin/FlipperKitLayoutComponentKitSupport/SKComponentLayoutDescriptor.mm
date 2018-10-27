@@ -97,9 +97,18 @@
   return data;
 }
 
+#if !defined(FLIPPER_OSS)
+- (NSString *) getStackTrace:(CKFlexboxComponentChild)child{
+  return [child.component sonar_getName];
+}
+#endif
+       
 - (NSDictionary<NSString *, NSObject *> *)propsForFlexboxChild:(CKFlexboxComponentChild)child {
   return @{
            @"spacingBefore": SKObject(@(child.spacingBefore)),
+#if !defined(FLIPPER_OSS)
+           @"NT Stack Trace": [self getStackTrace:child],
+#endif
            @"spacingAfter": SKObject(@(child.spacingAfter)),
            @"flexGrow": SKObject(@(child.flexGrow)),
            @"flexShrink": SKObject(@(child.flexShrink)),
