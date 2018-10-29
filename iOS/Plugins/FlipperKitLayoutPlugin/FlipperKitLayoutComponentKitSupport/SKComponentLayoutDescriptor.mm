@@ -98,20 +98,30 @@
 }
 
 #if !defined(FLIPPER_OSS)
-- (NSString *) getNTMetaDataForChild:(CKFlexboxComponentChild)child
+- (NSDictionary<NSString *, NSString *> *) getNTMetaDataForChild:(CKFlexboxComponentChild)child
                            qualifier:(NSString *) qualifier
 {
   NSString *str = @"{\"stackTrace\":{\"Content\":\":nt:flexbox :nt:text :nt:flexbox\"},\"unminifiedData\":{\"Content\":\"text\"}, \"graphQLCalls\":{\"Content\":\"text\"}}";
   NSData *data = [str dataUsingEncoding:NSUTF8StringEncoding];
   id json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
   if ([qualifier isEqualToString:@"Stack Trace"]) {
-    return [json objectForKey:@"stackTrace"];
+    NSDictionary *trace = [json objectForKey:@"stackTrace"];
+    NSString *traceString = [[trace objectForKey:@"Content"] stringByReplacingOccurrencesOfString:@" " withString:@""];
+    NSArray *listItems = [traceString componentsSeparatedByString:@":nt:"];
+    NSMutableArray *xhpComponents = [NSMutableArray array];;
+    for (NSString *s in listItems) {
+      if (![s isEqualToString:@""]) {
+        NSString *xhpString = [NSString stringWithFormat:@"%@%@%@", @"<nt:", s, @">"];
+        [xhpComponents addObject:xhpString];
+      }
+    }
+    return @{@"Content": [xhpComponents componentsJoinedByString:@" "]};
   } else if ([qualifier isEqualToString:@"Unminified Payload"]) {
     return [json objectForKey:@"unminifiedData"];
   } else if ([qualifier isEqualToString:@"GraphQL Calls"]) {
     return [json objectForKey:@"graphQLCalls"];
   }
-  return @"";
+  return @{};
 }
 #endif
        
