@@ -54,7 +54,6 @@ android {
         implementation deps.rhino
         compileOnly deps.leakcanary
 
-        testImplementation deps.guava
         testImplementation deps.mockito
         testImplementation deps.robolectric
         testImplementation deps.hamcrest

@@ -9,9 +9,9 @@ package com.facebook.flipper.plugins.console;
 
 import static org.junit.Assert.assertEquals;
 
-import com.google.common.collect.ImmutableMap;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,12 +42,13 @@ public class JavascriptSessionTest {
 
   @Test
   public void testVariablesGetBoundCorrectly() throws Exception {
+    Map<String, Object> data = new HashMap<>();
+    data.put("a", 2);
+    data.put("b", 2);
     JavascriptSession session =
         new JavascriptSession(
             mContextFactory,
-            ImmutableMap.<String, Object>of(
-                "a", 2,
-                "b", 2));
+            data);
     JSONObject json = session.evaluateCommand("a+b");
     assertEquals("json", json.getString("type"));
     assertEquals(4, json.getInt("value"));
@@ -65,10 +66,12 @@ public class JavascriptSessionTest {
 
   @Test
   public void testJavaObjectEvaluation() throws Exception {
+    Map<String, Object> data = new HashMap<>();
+    data.put("object", new HashMap<String, String>());
     JavascriptSession session =
         new JavascriptSession(
             mContextFactory,
-            ImmutableMap.<String, Object>of("object", new HashMap<String, String>()));
+            data);
     JSONObject json = session.evaluateCommand("object");
     assertEquals("javaObject", json.getString("type"));
     assertEquals("{}", json.getJSONObject("value").getString("toString"));
@@ -76,10 +79,12 @@ public class JavascriptSessionTest {
 
   @Test
   public void testJavaMethodEvaluation() throws Exception {
+    Map<String, Object> data = new HashMap<>();
+    data.put("object", new HashMap<String, String>());
     JavascriptSession session =
         new JavascriptSession(
             mContextFactory,
-            ImmutableMap.<String, Object>of("object", new HashMap<String, String>()));
+            data);
     JSONObject json = session.evaluateCommand("object.get");
     assertEquals("method", json.getString("type"));
   }
