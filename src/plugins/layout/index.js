@@ -545,13 +545,14 @@ export default class Layout extends FlipperPlugin<InspectorState> {
   }
 
   initAX() {
-    this.client
-      .call('shouldShowLithoAccessibilitySettings')
-      .then((showLithoAccessibilitySettings: boolean) => {
-        this.setState({
-          showLithoAccessibilitySettings,
-        });
-      });
+    // TODO: uncomment once Litho open source updates
+    // this.client
+    //   .call('shouldShowLithoAccessibilitySettings')
+    //   .then((showLithoAccessibilitySettings: boolean) => {
+    //     this.setState({
+    //       showLithoAccessibilitySettings,
+    //     });
+    //   });
 
     performance.mark('InitAXRoot');
     this.client.call('getAXRoot').then((element: Element) => {

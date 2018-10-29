@@ -75,7 +75,8 @@ public final class GenerateLithoAccessibilityRenderExtensionCommand
     while (!lithoViewSearchStack.isEmpty()) {
       ViewGroup v = lithoViewSearchStack.pop();
       if (v instanceof LithoView) {
-        ((LithoView) v).rerenderForAccessibility(forceLithoAXRender);
+        // TODO: uncomment once Litho open source updates
+        //                ((LithoView) v).rerenderForAccessibility(forceLithoAXRender);
       } else {
         for (int i = 0; i < v.getChildCount(); i++) {
           View child = v.getChildAt(i);
