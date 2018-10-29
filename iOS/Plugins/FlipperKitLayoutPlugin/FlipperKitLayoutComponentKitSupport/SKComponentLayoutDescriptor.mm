@@ -98,8 +98,20 @@
 }
 
 #if !defined(FLIPPER_OSS)
-- (NSString *) getStackTrace:(CKFlexboxComponentChild)child{
-  return [child.component sonar_getName];
+- (NSString *) getNTMetaDataForChild:(CKFlexboxComponentChild)child
+                           qualifier:(NSString *) qualifier
+{
+  NSString *str = @"{\"stackTrace\":{\"Content\":\":nt:flexbox :nt:text :nt:flexbox\"},\"unminifiedData\":{\"Content\":\"text\"}, \"graphQLCalls\":{\"Content\":\"text\"}}";
+  NSData *data = [str dataUsingEncoding:NSUTF8StringEncoding];
+  id json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+  if ([qualifier isEqualToString:@"Stack Trace"]) {
+    return [json objectForKey:@"stackTrace"];
+  } else if ([qualifier isEqualToString:@"Unminified Payload"]) {
+    return [json objectForKey:@"unminifiedData"];
+  } else if ([qualifier isEqualToString:@"GraphQL Calls"]) {
+    return [json objectForKey:@"graphQLCalls"];
+  }
+  return @"";
 }
 #endif
        
@@ -107,7 +119,11 @@
   return @{
            @"spacingBefore": SKObject(@(child.spacingBefore)),
 #if !defined(FLIPPER_OSS)
-           @"NT Stack Trace": [self getStackTrace:child],
+           @"Native Templates": @{
+               @"Stack Trace": [self getNTMetaDataForChild:child qualifier:@"Stack Trace"],
+               @"Unminified Payload":[self getNTMetaDataForChild:child qualifier:@"Unminified Payload"],
+               @"GraphQL Calls":[self getNTMetaDataForChild:child qualifier:@"GraphQL Calls"],
+               },
 #endif
            @"spacingAfter": SKObject(@(child.spacingAfter)),
            @"flexGrow": SKObject(@(child.flexGrow)),
