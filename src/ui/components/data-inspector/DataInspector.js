@@ -464,7 +464,7 @@ export default class DataInspector extends Component<DataInspectorProps> {
       }
     }
 
-    let propertyNodesContainer;
+    let propertyNodesContainer = null;
     if (isExpandable && isExpanded) {
       const propertyNodes = [];
 
@@ -532,7 +532,7 @@ export default class DataInspector extends Component<DataInspectorProps> {
     if (typeof name !== 'undefined') {
       nameElems.push(
         <Tooltip
-          title={tooltips && tooltips[name]}
+          title={tooltips != null && tooltips[name]}
           key="name"
           options={nameTooltipOptions}>
           <InspectorName>{name}</InspectorName>

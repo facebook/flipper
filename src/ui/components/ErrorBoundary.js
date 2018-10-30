@@ -75,7 +75,7 @@ export default class ErrorBoundary extends Component<
         </ErrorBoundaryContainer>
       );
     } else {
-      return this.props.children;
+      return this.props.children || null;
     }
   }
 }

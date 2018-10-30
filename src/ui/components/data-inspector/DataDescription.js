@@ -9,7 +9,7 @@ import type {DataInspectorSetValue} from './DataInspector.js';
 import {PureComponent} from 'react';
 import styled from '../../styled/index.js';
 import {SketchPicker} from 'react-color';
-import {Component} from 'react';
+import {Component, Fragment} from 'react';
 import Popover from '../Popover.js';
 import {colors} from '../colors.js';
 import Input from '../Input.js';
@@ -294,7 +294,7 @@ class ColorEditor extends Component<{
   render() {
     const colorInfo = parseColor(this.props.value);
     if (!colorInfo) {
-      return;
+      return <Fragment />;
     }
 
     return (

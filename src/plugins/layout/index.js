@@ -107,6 +107,7 @@ type TrackArgs = {|
 type SearchResultTree = {|
   id: string,
   isMatch: Boolean,
+  hasChildren: boolean,
   children: ?Array<SearchResultTree>,
   element: Element,
   axElement: Element,
@@ -476,11 +477,13 @@ export default class Layout extends FlipperPlugin<InspectorState> {
     });
   }
 
-  getElementsFromSearchResultTree(tree: ?SearchResultTree) {
+  getElementsFromSearchResultTree(
+    tree: ?SearchResultTree,
+  ): Array<SearchResultTree> {
     if (!tree) {
       return [];
     }
-    var elements = [
+    let elements = [
       {
         id: tree.id,
         isMatch: tree.isMatch,

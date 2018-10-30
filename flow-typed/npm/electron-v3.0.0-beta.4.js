@@ -1842,11 +1842,11 @@ declare module 'electron' {
       ((eventName: 'devtools-focused', callback: () => void) => void);
   }
   declare class BrowserView {
-    constructor: (
+    constructor(
       options?: ?{
         webPreferences?: ?{},
       },
-    ) => BrowserView;
+    ): BrowserView;
     static getAllViews: () => Array<BrowserView>;
     static fromWebContents: (webContents: WebContents) => BrowserView | null;
     static fromId: (id: number) => BrowserView;
@@ -1862,7 +1862,7 @@ declare module 'electron' {
     id: number;
   }
   declare class BrowserWindow {
-    constructor: (
+    constructor(
       options?: ?{
         width?: ?number,
         height?: ?number,
@@ -1968,7 +1968,7 @@ declare module 'electron' {
           navigateOnDragDrop?: ?boolean,
         },
       },
-    ) => BrowserWindow;
+    ): BrowserWindow;
     static getAllWindows: () => Array<BrowserWindow>;
     static getFocusedWindow: () => BrowserWindow | null;
     static fromWebContents: (webContents: WebContents) => BrowserWindow;
@@ -2237,7 +2237,7 @@ declare module 'electron' {
     closed: boolean;
   }
   declare class ClientRequest {
-    constructor: (options: Object | string) => ClientRequest;
+    constructor(options: Object | string): ClientRequest;
     setHeader: (name: string, value: {}) => void;
     getHeader: (
       name: string,
@@ -2463,7 +2463,7 @@ declare module 'electron' {
       ((eventName: 'error', callback: () => void) => void);
   }
   declare class Menu {
-    constructor: () => Menu;
+    constructor(): Menu;
     static setApplicationMenu: (menu: Menu | null) => void;
     static getApplicationMenu: () => Menu | null;
     static sendActionToFirstResponder: (action: string) => void;
@@ -2500,7 +2500,7 @@ declare module 'electron' {
       ) => void);
   }
   declare class MenuItem {
-    constructor: (options: {
+    constructor(options: {
       click?: ?Function,
       role?: ?string,
       type?: ?'normal' | 'separator' | 'submenu' | 'checkbox' | 'radio',
@@ -2514,7 +2514,7 @@ declare module 'electron' {
       submenu?: ?Array<MenuItemConstructorOptions> | Menu,
       id?: ?string,
       position?: ?string,
-    }) => MenuItem;
+    }): MenuItem;
     enabled: boolean;
     visible: boolean;
     checked: boolean;
@@ -2564,7 +2564,7 @@ declare module 'electron' {
     }) => void;
   }
   declare class Notification {
-    constructor: (options: {
+    constructor(options: {
       title: string,
       subtitle?: ?string,
       body: string,
@@ -2575,7 +2575,7 @@ declare module 'electron' {
       sound?: ?string,
       actions?: ?Array<NotificationAction>,
       closeButtonText?: ?string,
-    }) => Notification;
+    }): Notification;
     static isSupported: () => boolean;
     show: () => void;
     close: () => void;
@@ -2676,7 +2676,7 @@ declare module 'electron' {
     ) => void;
   }
   declare class TouchBar {
-    constructor: (options: {
+    constructor(options: {
       items: Array<
         | TouchBarButton
         | TouchBarColorPicker
@@ -2699,7 +2699,7 @@ declare module 'electron' {
         | TouchBarSlider
         | TouchBarSpacer
         | null,
-    }) => TouchBar;
+    }): TouchBar;
     static TouchBarButton: Class<TouchBarButton>;
     static TouchBarColorPicker: Class<TouchBarColorPicker>;
     static TouchBarGroup: Class<TouchBarGroup>;
@@ -2712,7 +2712,7 @@ declare module 'electron' {
     escapeItem: TouchBarItem;
   }
   declare class Tray {
-    constructor: (image: NativeImage | string) => Tray;
+    constructor(image: NativeImage | string): Tray;
     destroy: () => void;
     setImage: (image: NativeImage | string) => void;
     setPressedImage: (image: NativeImage | string) => void;
@@ -3637,51 +3637,51 @@ declare module 'electron' {
       ((listener: Function) => void);
   }
   declare class TouchBarButton {
-    constructor: (options: {
+    constructor(options: {
       label?: ?string,
       backgroundColor?: ?string,
       icon?: ?NativeImage,
       iconPosition?: ?'left' | 'right' | 'overlay',
       click?: ?Function,
-    }) => TouchBarButton;
+    }): TouchBarButton;
     label: string;
     backgroundColor: string;
     icon: NativeImage;
   }
   declare class TouchBarColorPicker {
-    constructor: (options: {
+    constructor(options: {
       availableColors?: ?Array<string>,
       selectedColor?: ?string,
       change?: ?Function,
-    }) => TouchBarColorPicker;
+    }): TouchBarColorPicker;
     availableColors: Array<string>;
     selectedColor: string;
   }
   declare class TouchBarGroup {
-    constructor: (options: {
+    constructor(options: {
       items: TouchBar,
-    }) => TouchBarGroup;
+    }): TouchBarGroup;
   }
   declare class TouchBarLabel {
-    constructor: (options: {
+    constructor(options: {
       label?: ?string,
       textColor?: ?string,
-    }) => TouchBarLabel;
+    }): TouchBarLabel;
     label: string;
     textColor: string;
   }
   declare class TouchBarPopover {
-    constructor: (options: {
+    constructor(options: {
       label?: ?string,
       icon?: ?NativeImage,
       items?: ?TouchBar,
       showCloseButton?: ?boolean,
-    }) => TouchBarPopover;
+    }): TouchBarPopover;
     label: string;
     icon: NativeImage;
   }
   declare class TouchBarScrubber {
-    constructor: (options: {
+    constructor(options: {
       items: Array<ScrubberItem>,
       select: Function,
       highlight: Function,
@@ -3690,7 +3690,7 @@ declare module 'electron' {
       showArrowButtons: boolean,
       mode: string,
       continuous: boolean,
-    }) => TouchBarScrubber;
+    }): TouchBarScrubber;
     items: Array<ScrubberItem>;
     selectedStyle: string;
     overlayStyle: string;
@@ -3699,7 +3699,7 @@ declare module 'electron' {
     continuous: boolean;
   }
   declare class TouchBarSegmentedControl {
-    constructor: (options: {
+    constructor(options: {
       segmentStyle?:
         | ?'automatic'
         | 'rounded'
@@ -3713,28 +3713,28 @@ declare module 'electron' {
       segments: Array<SegmentedControlSegment>,
       selectedIndex?: ?number,
       change: Function,
-    }) => TouchBarSegmentedControl;
+    }): TouchBarSegmentedControl;
     segmentStyle: string;
     segments: Array<SegmentedControlSegment>;
     selectedIndex: number;
   }
   declare class TouchBarSlider {
-    constructor: (options: {
+    constructor(options: {
       label?: ?string,
       value?: ?number,
       minValue?: ?number,
       maxValue?: ?number,
       change?: ?Function,
-    }) => TouchBarSlider;
+    }): TouchBarSlider;
     label: string;
     value: number;
     minValue: number;
     maxValue: number;
   }
   declare class TouchBarSpacer {
-    constructor: (options: {
+    constructor(options: {
       size?: ?'small' | 'large' | 'flexible',
-    }) => TouchBarSpacer;
+    }): TouchBarSpacer;
   }
   declare type Accelerator = any;
   declare type WebFrame = any;

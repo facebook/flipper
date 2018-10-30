@@ -59,7 +59,7 @@ type Electron$MenuItemOptions = {
 };
 
 declare class Electron$MenuItem {
-  constructor: (options: Electron$MenuItemOptions) => void;
+  constructor(options: Electron$MenuItemOptions): Electron$MenuItem;
   enabled: boolean;
   visible: boolean;
   checked: boolean;
