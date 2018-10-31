@@ -31,8 +31,9 @@ const addIfNotAdded = plugin => {
 
 let disabledPlugins = [];
 try {
-  // $FlowFixMe process.env not defined in electron API spec
-  disabledPlugins = JSON.parse(remote?.process.env.CONFIG || '{}').disabledPlugins || [];
+  disabledPlugins =
+    // $FlowFixMe process.env not defined in electron API spec
+    JSON.parse(remote?.process.env.CONFIG || '{}').disabledPlugins || [];
 } catch (e) {
   console.error(e);
 }
