@@ -45,7 +45,6 @@ android {
         compileOnly deps.lithoAnnotations
         implementation project(':fbjni')
         implementation deps.soloader
-        implementation deps.guava
         implementation deps.jsr305
         implementation deps.supportAppCompat
         implementation deps.stetho
