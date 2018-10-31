@@ -607,6 +607,43 @@ class GraphQLFormatter {
       return <ManagedDataInspector expandRoot={true} data={data} />;
     }
   };
+
+  formatResponse = (request: Request, response: Response) => {
+    return this.format(
+      decodeBody(response),
+      getHeaderValue(response.headers, 'content-type'),
+    );
+  };
+
+  format = (body: string, contentType: string) => {
+    if (
+      contentType.startsWith('application/json') ||
+      contentType.startsWith('text/javascript') ||
+      contentType.startsWith('text/html') ||
+      contentType.startsWith('application/x-fb-flatbuffer')
+    ) {
+      try {
+        const data = JSON.parse(body);
+        return (
+          <ManagedDataInspector
+            collapsed={true}
+            expandRoot={true}
+            data={data}
+          />
+        );
+      } catch (SyntaxError) {
+        // Multiple top level JSON roots, map them one by one
+        const roots = body.replace(/}{/g, '}\r\n{').split('\n');
+        return (
+          <ManagedDataInspector
+            collapsed={true}
+            expandRoot={true}
+            data={roots.map(json => JSON.parse(json))}
+          />
+        );
+      }
+    }
+  };
 }
 
 class FormUrlencodedFormatter {
