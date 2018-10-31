@@ -7,7 +7,6 @@
  */
 package com.facebook.flipper.plugins.network;
 
-import android.util.Log;
 import com.facebook.flipper.plugins.network.NetworkReporter.RequestInfo;
 import com.facebook.flipper.plugins.network.NetworkReporter.ResponseInfo;
 import java.io.IOException;
@@ -22,6 +21,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 import okio.Buffer;
+import okio.BufferedSource;
 
 public class FlipperOkhttpInterceptor implements Interceptor {
 
@@ -44,30 +44,16 @@ public class FlipperOkhttpInterceptor implements Interceptor {
     ResponseBody body = response.body();
     ResponseInfo responseInfo = convertResponse(response, body, identifier);
     plugin.reportResponse(responseInfo);
-    // Creating new response as can't used response.body() more than once
-    if (responseInfo.body != null) {
-      return response
-          .newBuilder()
-          .body(ResponseBody.create(body.contentType(), responseInfo.body))
-          .build();
-    } else {
-      return response;
-    }
+    return response;
   }
 
-  private static byte[] bodyToByteArray(final Request request) {
-
-    try {
-      final Request copy = request.newBuilder().build();
-      final Buffer buffer = new Buffer();
-      copy.body().writeTo(buffer);
-      return buffer.readByteArray();
-    } catch (final IOException e) {
-      return e.getMessage().getBytes();
-    }
+  private static byte[] bodyToByteArray(final Request request) throws IOException {
+    final Buffer buffer = new Buffer();
+    request.body().writeTo(buffer);
+    return buffer.readByteArray();
   }
 
-  private RequestInfo convertRequest(Request request, String identifier) {
+  private RequestInfo convertRequest(Request request, String identifier) throws IOException {
     List<NetworkReporter.Header> headers = convertHeader(request.headers());
     RequestInfo info = new RequestInfo();
     info.requestId = identifier;
@@ -82,19 +68,18 @@ public class FlipperOkhttpInterceptor implements Interceptor {
     return info;
   }
 
-  private ResponseInfo convertResponse(Response response, ResponseBody body, String identifier) {
-
+  private ResponseInfo convertResponse(Response response, ResponseBody body, String identifier)
+      throws IOException {
     List<NetworkReporter.Header> headers = convertHeader(response.headers());
     ResponseInfo info = new ResponseInfo();
     info.requestId = identifier;
     info.timeStamp = response.receivedResponseAtMillis();
     info.statusCode = response.code();
     info.headers = headers;
-    try {
-      info.body = body.bytes();
-    } catch (IOException e) {
-      Log.e("Flipper", e.toString());
-    }
+    BufferedSource source = body.source();
+    source.request(Long.MAX_VALUE);
+    Buffer buffer = source.buffer().clone();
+    info.body = buffer.readByteArray();
     return info;
   }
 
