@@ -1,5 +1,10 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
-
+/*
+ *  Copyright (c) 2004-present, Facebook, Inc.
+ *
+ *  This source code is licensed under the MIT license found in the LICENSE
+ *  file in the root directory of this source tree.
+ *
+ */
 package com.facebook.flipper.plugins.litho;
 
 import static com.facebook.flipper.plugins.inspector.InspectorValue.Type.Color;
@@ -617,9 +622,9 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
       return fromDrawable(null);
     }
 
-    final T d = Reference.acquire(c, r);
+    final T d = Reference.acquire(c.getBaseContext(), r);
     final InspectorValue v = fromDrawable(d);
-    Reference.release(c, d, r);
+    Reference.release(c.getBaseContext(), d, r);
     return v;
   }
 
