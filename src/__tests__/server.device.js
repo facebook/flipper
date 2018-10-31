@@ -12,6 +12,7 @@ import configureStore from 'redux-mock-store';
 import path from 'path';
 import os from 'os';
 import fs from 'fs';
+import androidDevice from '../dispatcher/androidDevice';
 
 let server;
 const mockStore = configureStore([])(reducers(undefined, {type: 'INIT'}));
@@ -23,7 +24,12 @@ beforeAll(() => {
     fs.mkdirSync(flipperDir);
   }
 
-  server = new Server(new LogManager(), mockStore);
+  const logger = new LogManager();
+
+  // Set up android dispatcher, which does the adb reversing.
+  androidDevice(mockStore, logger);
+
+  server = new Server(logger, mockStore);
   return server.init();
 });
 
