@@ -29,6 +29,8 @@ static constexpr int connectionKeepaliveSeconds = 10;
 static constexpr int securePort = 8088;
 static constexpr int insecurePort = 8089;
 
+static constexpr int maxPayloadSize = 0xFFFFFF;
+
 namespace facebook {
 namespace flipper {
 
@@ -216,9 +218,22 @@ void FlipperConnectionManagerImpl::setCallbacks(Callbacks* callbacks) {
 
 void FlipperConnectionManagerImpl::sendMessage(const folly::dynamic& message) {
   flipperEventBase_->add([this, message]() {
+    std::string json = folly::toJson(message);
+    rsocket::Payload payload = rsocket::Payload(json);
+    auto payloadLength = payload.data->computeChainDataLength();
+
+    DCHECK_LE(payloadLength, maxPayloadSize);
+    if (payloadLength > maxPayloadSize) {
+      auto logMessage =
+          std::string(
+              "Error: Skipping sending message larger than max rsocket payload: ") +
+          json;
+      log(logMessage);
+      return;
+    }
     if (client_) {
       client_->getRequester()
-          ->fireAndForget(rsocket::Payload(folly::toJson(message)))
+          ->fireAndForget(std::move(payload))
           ->subscribe([]() {});
     }
   });
