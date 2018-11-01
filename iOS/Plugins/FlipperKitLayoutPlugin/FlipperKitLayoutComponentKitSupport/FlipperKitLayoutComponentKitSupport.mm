@@ -18,8 +18,21 @@
 #import "SKComponentRootViewDescriptor.h"
 #import "SKComponentLayoutDescriptor.h"
 #import "SKComponentLayoutWrapper.h"
+#import "SKSubDescriptor.h"
 
 @implementation FlipperKitLayoutComponentKitSupport
+
++ (void)setUpWithDescriptorMapper:(SKDescriptorMapper *)mapper
+                   subDescriptors:(NSArray<SKSubDescriptor *>*)subDescriptors{
+  [mapper registerDescriptor: [[SKComponentHostingViewDescriptor alloc] initWithDescriptorMapper: mapper]
+                    forClass: [CKComponentHostingView class]];
+  [mapper registerDescriptor: [[SKComponentRootViewDescriptor alloc] initWithDescriptorMapper: mapper]
+                    forClass: [CKComponentRootView class]];
+  SKComponentLayoutDescriptor *layoutDescriptor = [[SKComponentLayoutDescriptor alloc] initWithDescriptorMapper:mapper];
+  [layoutDescriptor addSubDescriptors:subDescriptors];
+  [mapper registerDescriptor: layoutDescriptor
+                    forClass: [SKComponentLayoutWrapper class]];
+}
 
 + (void)setUpWithDescriptorMapper:(SKDescriptorMapper *)mapper {
   // What we really want here is "forProtocol:@protocol(CKInspectableView)" but no such luck.

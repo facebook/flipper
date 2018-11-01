@@ -23,7 +23,9 @@
 #import <FlipperKitLayoutPlugin/SKHighlightOverlay.h>
 #import <FlipperKitLayoutPlugin/SKObject.h>
 
+#import "SKSubDescriptor.h"
 #import "SKComponentLayoutWrapper.h"
+#import "NTSubDescriptor.h"
 #import "CKComponent+Sonar.h"
 #import "Utils.h"
 
@@ -31,11 +33,16 @@
 {
   NSDictionary<NSNumber *, NSString *> *CKFlexboxAlignSelfEnumMap;
   NSDictionary<NSNumber *, NSString *> *CKFlexboxPositionTypeEnumMap;
+  NSArray<SKSubDescriptor *>*_registeredSubdescriptors;
 }
 
 - (void)setUp {
   [super setUp];
-
+  
+  if (!_registeredSubdescriptors) {
+    _registeredSubdescriptors = [NSArray new];
+  }
+  
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     [self initEnumMaps];
@@ -87,54 +94,30 @@
 
 - (NSArray<SKNamed<NSDictionary<NSString *, NSObject *> *> *> *)dataForNode:(SKComponentLayoutWrapper *)node {
   NSMutableArray<SKNamed<NSDictionary<NSString *, NSObject *> *> *> *data = [NSMutableArray new];
-
+  
   if (node.isFlexboxChild) {
     [data addObject: [SKNamed newWithName:@"Layout" withValue:[self propsForFlexboxChild:node.flexboxChild]]];
   }
-
+  NSMutableDictionary<NSString *, NSObject *> *extraData = [[NSMutableDictionary alloc] init];
+  
+  for (SKSubDescriptor *s in _registeredSubdescriptors) {
+    [extraData setObject:[s getDataForNode:node] forKey:[s getName]];
+  }
+  if (extraData.count > 0) {
+    [data addObject: [SKNamed newWithName:@"Extra Sections" withValue:extraData]];
+  }
+  
   [data addObjectsFromArray:[node.component sonar_getData]];
-
   return data;
 }
 
-#if !defined(FLIPPER_OSS)
-- (NSDictionary<NSString *, NSString *> *) getNTMetaDataForChild:(CKFlexboxComponentChild)child
-                           qualifier:(NSString *) qualifier
-{
-  NSString *str = @"{\"stackTrace\":{\"Content\":\":nt:flexbox :nt:text :nt:flexbox\"},\"unminifiedData\":{\"Content\":\"text\"}, \"graphQLCalls\":{\"Content\":\"text\"}}";
-  NSData *data = [str dataUsingEncoding:NSUTF8StringEncoding];
-  id json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-  if ([qualifier isEqualToString:@"Stack Trace"]) {
-    NSDictionary *trace = [json objectForKey:@"stackTrace"];
-    NSString *traceString = [[trace objectForKey:@"Content"] stringByReplacingOccurrencesOfString:@" " withString:@""];
-    NSArray *listItems = [traceString componentsSeparatedByString:@":nt:"];
-    NSMutableArray *xhpComponents = [NSMutableArray array];;
-    for (NSString *s in listItems) {
-      if (![s isEqualToString:@""]) {
-        NSString *xhpString = [NSString stringWithFormat:@"%@%@%@", @"<nt:", s, @">"];
-        [xhpComponents addObject:xhpString];
-      }
-    }
-    return @{@"Content": [xhpComponents componentsJoinedByString:@" "]};
-  } else if ([qualifier isEqualToString:@"Unminified Payload"]) {
-    return [json objectForKey:@"unminifiedData"];
-  } else if ([qualifier isEqualToString:@"GraphQL Calls"]) {
-    return [json objectForKey:@"graphQLCalls"];
-  }
-  return @{};
+- (void)addSubDescriptors:(nonnull NSArray<SKSubDescriptor *>*)subDescriptors{
+  _registeredSubdescriptors = subDescriptors;
 }
-#endif
        
 - (NSDictionary<NSString *, NSObject *> *)propsForFlexboxChild:(CKFlexboxComponentChild)child {
   return @{
            @"spacingBefore": SKObject(@(child.spacingBefore)),
-#if !defined(FLIPPER_OSS)
-           @"Native Templates": @{
-               @"Stack Trace": [self getNTMetaDataForChild:child qualifier:@"Stack Trace"],
-               @"Unminified Payload":[self getNTMetaDataForChild:child qualifier:@"Unminified Payload"],
-               @"GraphQL Calls":[self getNTMetaDataForChild:child qualifier:@"GraphQL Calls"],
-               },
-#endif
            @"spacingAfter": SKObject(@(child.spacingAfter)),
            @"flexGrow": SKObject(@(child.flexGrow)),
            @"flexShrink": SKObject(@(child.flexShrink)),
