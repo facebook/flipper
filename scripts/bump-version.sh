@@ -90,4 +90,4 @@ hg addremove
 hg commit -m"Flipper Release: v$VERSION"
 
 echo "Preparing diff for your review..."
-arc diff --prepare
+jf submit -n
