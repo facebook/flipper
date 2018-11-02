@@ -75,6 +75,8 @@ ext.deps = [
         stetho             : 'com.facebook.stetho:stetho:1.5.0',
         okhttp3            : 'com.squareup.okhttp3:okhttp:3.10.0',
         leakcanary         : 'com.squareup.leakcanary:leakcanary-android:1.6.1',
+        testCore        : 'androidx.test:core:1.0.0',
+        testRules       : 'androidx.test:rules:1.1.0',
         // Plugin dependencies
         rhino              : 'org.mozilla:rhino:1.7.10',
 ]

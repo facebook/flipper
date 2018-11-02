@@ -5,7 +5,7 @@ android {
     buildToolsVersion rootProject.buildToolsVersion
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
-        testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         applicationId 'com.facebook.flipper.sample'
     }
 
@@ -33,6 +33,10 @@ dependencies {
     // Third-party
     implementation deps.soloader
     implementation deps.okhttp3
+
+    // Integration test
+    androidTestImplementation deps.testCore
+    androidTestImplementation deps.testRules
 
     implementation project(':android')
 }
