@@ -25,7 +25,6 @@
 
 #import "SKSubDescriptor.h"
 #import "SKComponentLayoutWrapper.h"
-#import "NTSubDescriptor.h"
 #import "CKComponent+Sonar.h"
 #import "Utils.h"
 
