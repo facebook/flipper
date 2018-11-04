@@ -190,17 +190,20 @@ function compileDefaultPlugins(buildFolder) {
       path.join(__dirname, '..', 'src', 'fb', 'plugins'),
     ],
     defaultPluginDir,
-  ).then(defaultPlugins =>
-    fs.writeFileSync(
-      path.join(defaultPluginDir, 'index.json'),
-      JSON.stringify(
-        defaultPlugins.map(plugin => ({
-          ...plugin,
-          out: path.join(defaultPluginFolder, path.parse(plugin.out).base),
-        })),
+    {force: true, failSilently: false},
+  )
+    .then(defaultPlugins =>
+      fs.writeFileSync(
+        path.join(defaultPluginDir, 'index.json'),
+        JSON.stringify(
+          defaultPlugins.map(plugin => ({
+            ...plugin,
+            out: path.join(defaultPluginFolder, path.parse(plugin.out).base),
+          })),
+        ),
       ),
-    ),
-  );
+    )
+    .catch(die);
 }
 
 (async () => {

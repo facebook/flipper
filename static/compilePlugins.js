@@ -3,6 +3,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  * @format
+ * @flow
  */
 
 const path = require('path');
@@ -12,15 +13,38 @@ const util = require('util');
 const recursiveReaddir = require('recursive-readdir');
 const HOME_DIR = require('os').homedir();
 
-module.exports = async (reloadCallback, pluginPaths, pluginCache) => {
+/* eslint-disable prettier/prettier */
+/*::
+type CompileOptions = {|
+  force: boolean,
+  failSilently: boolean,
+|};
+*/
+
+const DEFAULT_COMPILE_OPTIONS /*: CompileOptions */ = {
+  force: false,
+  failSilently: true,
+};
+
+module.exports = async (
+  reloadCallback,
+  pluginPaths,
+  pluginCache,
+  options = DEFAULT_COMPILE_OPTIONS,
+) => {
   const plugins = pluginEntryPoints(pluginPaths);
   if (!fs.existsSync(pluginCache)) {
     fs.mkdirSync(pluginCache);
   }
-  watchChanges(plugins, reloadCallback, pluginCache);
+  watchChanges(plugins, reloadCallback, pluginCache, options);
   const dynamicPlugins = [];
   for (let plugin of Object.values(plugins)) {
-    const compiledPlugin = await compilePlugin(plugin, false, pluginCache);
+    const dynamicOptions = Object.assign(options, {force: false});
+    const compiledPlugin = await compilePlugin(
+      plugin,
+      pluginCache,
+      dynamicOptions,
+    );
     if (compiledPlugin) {
       dynamicPlugins.push(compiledPlugin);
     }
@@ -29,7 +53,12 @@ module.exports = async (reloadCallback, pluginPaths, pluginCache) => {
   return dynamicPlugins;
 };
 
-function watchChanges(plugins, reloadCallback, pluginCache) {
+function watchChanges(
+  plugins,
+  reloadCallback,
+  pluginCache,
+  options = DEFAULT_COMPILE_OPTIONS,
+) {
   // eslint-disable-next-line no-console
   console.log('🕵️‍  Watching for plugin changes');
 
@@ -40,7 +69,8 @@ function watchChanges(plugins, reloadCallback, pluginCache) {
       if (!filename.startsWith('.')) {
         // eslint-disable-next-line no-console
         console.log(`🕵️‍  Detected changes in ${plugin.name}`);
-        compilePlugin(plugin, true, pluginCache).then(reloadCallback);
+        const watchOptions = Object.assign(options, {force: true});
+        compilePlugin(plugin, pluginCache, watchOptions).then(reloadCallback);
       }
     }),
   );
@@ -139,15 +169,19 @@ function mostRecentlyChanged(dir) {
 }
 async function compilePlugin(
   {rootDir, name, entry, packageJSON},
-  force,
   pluginCache,
+  options/*: CompileOptions */,
 ) {
   const fileName = `${name}@${packageJSON.version || '0.0.0'}.js`;
   const out = path.join(pluginCache, fileName);
   const result = Object.assign({}, packageJSON, {rootDir, name, entry, out});
   // check if plugin needs to be compiled
   const rootDirCtime = await mostRecentlyChanged(rootDir);
-  if (!force && fs.existsSync(out) && rootDirCtime < fs.lstatSync(out).ctime) {
+  if (
+    !options.force &&
+    fs.existsSync(out) &&
+    rootDirCtime < fs.lstatSync(out).ctime
+  ) {
     // eslint-disable-next-line no-console
     console.log(`🥫  Using cached version of ${name}...`);
     return result;
@@ -181,11 +215,15 @@ async function compilePlugin(
         },
       );
     } catch (e) {
-      console.error(
-        `❌  Plugin ${name} is ignored, because it could not be compiled.`,
-      );
-      console.error(e);
-      return null;
+      if (options.failSilently) {
+        console.error(
+          `❌  Plugin ${name} is ignored, because it could not be compiled.`,
+        );
+        console.error(e);
+        return null;
+      } else {
+        throw e;
+      }
     }
     return result;
   }
