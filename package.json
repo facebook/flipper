@@ -31,7 +31,7 @@
     }
   },
   "devDependencies": {
-    "@jest-runner/electron": "^0.0.8",
+    "@jest-runner/electron": "^0.1.0",
     "babel-eslint": "8.2.1",
     "electron": "3.0.0",
     "electron-builder": "^19.49.0",
