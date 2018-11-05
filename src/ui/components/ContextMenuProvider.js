@@ -17,6 +17,10 @@ const Container = styled('div')({
   display: 'contents',
 });
 
+/**
+ * Flipper's root is already wrapped with this component, so plugins should not
+ * need to use this. ContextMenu is what you probably want to use.
+ */
 export default class ContextMenuProvider extends Component<{|
   children: React$Node,
 |}> {

@@ -19,7 +19,11 @@ const IFrame = styled('iframe')({
   left: 0,
 });
 
+/**
+ * Listener for resize events.
+ */
 export default class ResizeSensor extends Component<{
+  /** Callback when resize happened */
   onResize: (e: UIEvent) => void,
 }> {
   iframe: ?HTMLIFrameElement;

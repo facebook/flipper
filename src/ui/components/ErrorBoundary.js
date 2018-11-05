@@ -10,7 +10,6 @@ import {Component} from 'react';
 import Heading from './Heading.js';
 import Button from './Button.js';
 import View from './View.js';
-import LogManager from '../../fb-stubs/Logger.js';
 import styled from '../styled/index.js';
 
 const ErrorBoundaryContainer = styled(View)({
@@ -24,10 +23,13 @@ const ErrorBoundaryStack = styled(ErrorBlock)({
 });
 
 type ErrorBoundaryProps = {
+  /** Function to dynamically generate the heading of the ErrorBox. */
   buildHeading?: (err: Error) => string,
+  /** Heading of the ErrorBox. Used as an alternative to `buildHeading`. */
   heading?: string,
-  logger?: LogManager,
+  /** Whether the stacktrace of the error is shown in the error box */
   showStack?: boolean,
+  /** Code that might throw errors that will be catched */
   children?: React$Node,
 };
 
@@ -35,6 +37,9 @@ type ErrorBoundaryState = {|
   error: ?Error,
 |};
 
+/**
+ * Boundary catching errors and displaying an ErrorBlock instead.
+ */
 export default class ErrorBoundary extends Component<
   ErrorBoundaryProps,
   ErrorBoundaryState,
@@ -45,7 +50,7 @@ export default class ErrorBoundary extends Component<
   }
 
   componentDidCatch(err: Error) {
-    this.props.logger && console.error(err.toString(), 'ErrorBoundary');
+    console.error(err.toString(), 'ErrorBoundary');
     this.setState({error: err});
   }
 

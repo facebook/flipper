@@ -12,12 +12,23 @@ import PropTypes from 'prop-types';
 type MenuTemplate = Array<Electron$MenuItemOptions>;
 
 type Props = {
+  /** List of items in the context menu. Used for static menus. */
   items?: MenuTemplate,
+  /** Function to generate the menu. Called right before the menu is showed. Used for dynamic menus. */
   buildItems?: () => MenuTemplate,
+  /** Nodes that should have a context menu */
   children: React$Node,
+  /** The component that is used to wrap the children. Defaults to `FlexColumn`. */
   component: React.ComponentType<any> | string,
 };
 
+/**
+ * Native context menu that is shown on secondary click.
+ * Uses [Electron's context menu API](https://electronjs.org/docs/api/menu-item)
+ * to show menu items.
+ *
+ * Separators can be added by `{type: 'separator'}`
+ */
 export default class ContextMenu extends React.Component<Props> {
   static defaultProps = {
     component: FlexColumn,

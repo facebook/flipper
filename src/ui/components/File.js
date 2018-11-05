@@ -11,13 +11,20 @@ const React = require('react');
 const fs = require('fs');
 
 type FileProps = {|
+  /** Path to the file in the file system */
   src: string,
+  /** Initial content that should be shown while the file is loading */
   buffer?: ?string,
+  /** Encoding to parse the contents of the file. Defaults to UTF-8. */
   encoding: string,
-  onError?: (err: Error) => React.Element<*>,
-  onLoading?: () => React.Element<*>,
+  /** Content that should be rendered, when the file loading failed. */
+  onError?: (err: Error) => React.Element<any>,
+  /** Content that should be rendered, while the file is loaded. */
+  onLoading?: () => React.Element<any>,
+  /** Callback when the data is successfully loaded. */
   onData?: (content: string) => void,
-  onLoad: (content: string) => React.Element<*>,
+  /** Content that should be rendered, when the file is successfully loaded. This ususally should render the file's contents. */
+  onLoad: (content: string) => React.Element<any>,
 |};
 
 type FileState = {|
@@ -26,6 +33,9 @@ type FileState = {|
   content: string,
 |};
 
+/**
+ * Wrapper for loading file content from the file system.
+ */
 export default class File extends Component<FileProps, FileState> {
   constructor(props: FileProps, context: Object) {
     super(props, context);

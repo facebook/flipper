@@ -18,7 +18,9 @@ const TooltipContainer = styled('div')({
 });
 
 type TooltipProps = {
+  /** Content shown in the tooltip */
   title: React$Node,
+  /** Component that will show the tooltip */
   children: React$Node,
   options?: TooltipOptions,
 };

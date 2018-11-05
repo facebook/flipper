@@ -17,7 +17,7 @@ export {default as ButtonGroup} from './components/ButtonGroup.js';
 export {colors, darkColors, brandColors} from './components/colors.js';
 
 //
-export {default as Glyph, ColoredIcon} from './components/Glyph.js';
+export {default as Glyph} from './components/Glyph.js';
 
 //
 export {default as LoadingIndicator} from './components/LoadingIndicator.js';
@@ -86,8 +86,6 @@ export {
   default as ContextMenuProvider,
 } from './components/ContextMenuProvider.js';
 export {default as ContextMenu} from './components/ContextMenu.js';
-export {default as InlineContextMenu} from './components/InlineContextMenu.js';
-export {default as Dropdown} from './components/Dropdown.js';
 
 // file
 export type {FileListFile, FileListFiles} from './components/FileList.js';

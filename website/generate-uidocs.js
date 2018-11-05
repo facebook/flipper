@@ -95,9 +95,9 @@ function generateMarkdown(component) {
       }
 
       // escape pipes and new lines because they will break tables
-      type = type.replace(/\n/g, ' ').replace(/\|/g, '&#124;');
+      type = type.replace(/\n/g, ' ').replace(/\|/g, '⎮');
       description = description
-        ? description.replace(/\n/g, ' ').replace(/\|/g, '&#124;')
+        ? description.replace(/\n/g, ' ').replace(/\|/g, '⎮')
         : '';
 
       props += `| \`${prop}\` | \`${type}\` | ${description} |\n`;

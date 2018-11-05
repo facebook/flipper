@@ -29,9 +29,13 @@ export type FileListFile = {|
 export type FileListFiles = Array<FileListFile>;
 
 type FileListProps = {
+  /** Path to the folder */
   src: string,
+  /** Content to be rendered in case of an error */
   onError?: ?(err: Error) => React$Node,
+  /** Content to be rendered while loading */
   onLoad?: () => void,
+  /** Content to be rendered when the file list is loaded */
   onFiles: (files: FileListFiles) => React$Node,
 };
 
@@ -40,6 +44,10 @@ type FileListState = {|
   error: ?Error,
 |};
 
+/**
+ * List the contents of a folder from the user's file system. The file system is watched for
+ * changes and this list will automatically update.
+ */
 export default class FileList extends Component<FileListProps, FileListState> {
   constructor(props: FileListProps, context: Object) {
     super(props, context);

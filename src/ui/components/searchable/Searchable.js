@@ -390,4 +390,8 @@ const Searchable = (
     }
   };
 
+/**
+ * Higher-order-component that allows adding a searchbar on top of the wrapped
+ * component. See SearchableManagedTable for usage with a table.
+ */
 export default Searchable;

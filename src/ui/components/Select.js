@@ -7,12 +7,19 @@
 
 import {Component} from 'react';
 
+/**
+ * Dropdown to select from a list of options
+ */
 export default class Select extends Component<{
+  /** Additional className added to the element */
   className?: string,
+  /** Additional className added to the element */
   options: {
     [key: string]: string,
   },
+  /** Callback when the selected value changes */
   onChange: (key: string) => void,
+  /** Selected key */
   selected?: ?string,
 }> {
   onChange = (event: Object) => {

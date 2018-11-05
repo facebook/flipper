@@ -17,10 +17,10 @@ import deepEqual from 'deep-equal';
 type Props = {|
   ...ManagedTableProps,
   ...SearchableProps,
+  /** Reference to the table */
   innerRef?: (ref: React.ElementRef<*>) => void,
+  /** Filters that are added to the filterbar by default */
   defaultFilters: Array<Filter>,
-  filter: empty,
-  filterValue: empty,
 |};
 
 type State = {
@@ -103,4 +103,8 @@ class SearchableManagedTable extends PureComponent<Props, State> {
   }
 }
 
+/**
+ * Table with filter and searchbar, supports all properties a ManagedTable
+ * and Searchable supports.
+ */
 export default Searchable(SearchableManagedTable);

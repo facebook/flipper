@@ -8,10 +8,17 @@
 import ButtonGroup from './ButtonGroup.js';
 import Button from './Button.js';
 
+/**
+ * Button group to navigate back and forth.
+ */
 export default function ButtonNavigationGroup(props: {|
+  /** Back button is enabled */
   canGoBack: boolean,
+  /** Forwards button is enabled */
   canGoForward: boolean,
+  /** Callback when back button is clicked */
   onBack: () => void,
+  /** Callback when forwards button is clicked */
   onForward: () => void,
 |}) {
   return (

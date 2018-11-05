@@ -186,6 +186,9 @@ type Props = {
    * Name of the icon dispalyed next to the text
    */
   icon?: string,
+  /**
+   * Size of the icon in pixels.
+   */
   iconSize?: number,
   /**
    * For toggle buttons, if the button is selected
@@ -203,6 +206,9 @@ type Props = {
    * Whether the button should render depressed into its socket
    */
   depressed?: boolean,
+  /**
+   * Style of the icon. `filled` is the default
+   */
   iconVariant?: 'filled' | 'outline',
 };
 
@@ -211,41 +217,7 @@ type State = {
 };
 
 /**
- * Simple button.
- *
- * **Usage**
- *
- * ```jsx
- * import {Button} from 'flipper';
- * <Button onClick={handler}>Click me</Button>
- * ```
- *
- * @example Default button
- *   <Button>Click me</Button>
- * @example Primary button
- *   <Button type="primary">Click me</Button>
- * @example Success button
- *   <Button type="success">Click me</Button>
- * @example Warning button
- *   <Button type="warning">Click me</Button>
- * @example Danger button
- *   <Button type="danger">Click me</Button>
- * @example Default solid button
- *   <Button solid={true}>Click me</Button>
- * @example Primary solid button
- *   <Button type="primary" solid={true}>Click me</Button>
- * @example Success solid button
- *   <Button type="success" solid={true}>Click me</Button>
- * @example Warning solid button
- *   <Button type="warning" solid={true}>Click me</Button>
- * @example Danger solid button
- *   <Button type="danger" solid={true}>Click me</Button>
- * @example Compact button
- *   <Button compact={true}>Click me</Button>
- * @example Large button
- *   <Button large={true}>Click me</Button>
- * @example Disabled button
- *   <Button disabled={true}>Click me</Button>
+ * A simple button, used in many parts of the application.
  */
 class Button extends React.Component<
   Props & {windowIsFocused: boolean},

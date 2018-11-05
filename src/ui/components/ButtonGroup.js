@@ -21,12 +21,13 @@ const ButtonGroupContainer = styled('div')({
 /**
  * Group a series of buttons together.
  *
- * @example List of buttons
+ * ```jsx
  *   <ButtonGroup>
  *     <Button>One</Button>
  *     <Button>Two</Button>
  *     <Button>Three</Button>
  *   </ButtonGroup>
+ * ```
  */
 export default class ButtonGroup extends Component<{
   children: React$Node,

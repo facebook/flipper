@@ -8,6 +8,9 @@
 import View from './View.js';
 import styled from '../styled/index.js';
 
+/**
+ * A container dispalying its children horizontally and vertically centered.
+ */
 export default styled(View)({
   display: 'flex',
   alignItems: 'center',

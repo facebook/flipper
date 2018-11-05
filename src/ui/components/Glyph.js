@@ -28,7 +28,7 @@ const ColoredIconCustom = styled('div')(props => ({
   WebkitMaskSize: '100% 100%',
 }));
 
-export function ColoredIcon(
+function ColoredIcon(
   props: {|
     name: string,
     src: string,

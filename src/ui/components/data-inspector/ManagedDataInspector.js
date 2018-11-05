@@ -54,28 +54,6 @@ type ManagedDataInspectorState = {|
  *
  * If you require lower level access to the state then use `DataInspector`
  * directly.
- *
- * @example Plain object
- *   <ManagedDataInspector data={{
- *     a: '',
- *     b: [1, 2, 3, 4],
- *     c: {foo: 'bar'},
- *     d: 4,
- *   }} />
- * @example Expanded root
- *   <ManagedDataInspector expandRoot={true} data={{
- *     a: '',
- *     b: [1, 2, 3, 4],
- *     c: {foo: 'bar'},
- *     d: 4,
- *   }} />
- * @example Editable
- *   <ManagedDataInspector setValue={() => {}} data={{
- *     a: '',
- *     b: [1, 2, 3, 4],
- *     c: {foo: 'bar'},
- *     d: 4,
- *   }} />
  */
 export default class ManagedDataInspector extends PureComponent<
   ManagedDataInspectorProps,

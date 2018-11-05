@@ -25,19 +25,6 @@ const SmallHeading = styled('div')({
 
 /**
  * A heading component.
- *
- * @example Heading 1
- *   <Heading level={1}>I'm a heading</Heading>
- * @example Heading 2
- *   <Heading level={2}>I'm a heading</Heading>
- * @example Heading 3
- *   <Heading level={3}>I'm a heading</Heading>
- * @example Heading 4
- *   <Heading level={4}>I'm a heading</Heading>
- * @example Heading 5
- *   <Heading level={5}>I'm a heading</Heading>
- * @example Heading 6
- *   <Heading level={6}>I'm a heading</Heading>
  */
 export default function Heading(props: {
   /**
