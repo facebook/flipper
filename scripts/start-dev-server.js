@@ -79,6 +79,13 @@ function startAssetServer(port) {
     next();
   });
 
+  app.use((req, res, next) => {
+    res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+    res.header('Expires', '-1');
+    res.header('Pragma', 'no-cache');
+    next();
+  });
+
   app.get('/', (req, res) => {
     fs.readFile(path.join(STATIC_DIR, 'index.dev.html'), (err, content) => {
       res.end(content);
