@@ -252,6 +252,48 @@ pre code {
   opacity: 0.8;
 }
 
+.mainContainer article table {
+  width: 100%;
+  border: 0;
+}
+
+.mainContainer article table td:nth-child(1){
+  width: 15%;
+  min-width: 140px;
+}
+.mainContainer article table td:nth-child(2){
+  width: 25%;
+}
+table tr {
+  border-bottom: 1px solid #e5e5e5;
+}
+
+table tr td {
+  vertical-align: top;
+  border: 0;
+}
+
+table tr th {
+  border: 0;
+  text-transform: none;
+}
+
+table tr th code, table tr td code {
+  background: none;
+  margin: 0;
+  color: inherit;
+  border: 0;
+  box-shadow: none;
+}
+
+table tr:nth-of-type(odd) {
+  background: none;
+}
+
+table tr:hover {
+  background: #f5f5f5;
+}
+
 footer .sitemap .nav-home,
 footer .fbOpenSource {
   opacity: 1;
