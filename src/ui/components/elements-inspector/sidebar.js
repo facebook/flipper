@@ -7,6 +7,7 @@
 
 import type {Element} from './ElementsInspector.js';
 import type {PluginClient} from '../../../plugin';
+import type Client from '../../../Client.js';
 import type Logger from '../../../fb-stubs/Logger.js';
 import Panel from '../Panel.js';
 import ManagedDataInspector from '../data-inspector/ManagedDataInspector.js';
@@ -78,6 +79,7 @@ type Props = {|
   tooltips?: Object,
   onValueChanged: ?OnValueChanged,
   client: PluginClient,
+  realClient: Client,
   logger: Logger,
   extensions?: Array<any>,
 |};
@@ -119,7 +121,12 @@ export class InspectorSidebar extends Component<Props, State> {
     const sections =
       (extensions &&
         extensions.map(ext =>
-          ext(this.props.client, element.id, this.props.logger),
+          ext(
+            this.props.client,
+            this.props.realClient,
+            element.id,
+            this.props.logger,
+          ),
         )) ||
       [];
 

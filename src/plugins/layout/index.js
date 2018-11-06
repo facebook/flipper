@@ -1066,6 +1066,7 @@ export default class Layout extends FlipperPlugin<InspectorState> {
             tooltips={this.getAccessibilityTooltips()}
             onValueChanged={this.onDataValueChanged}
             client={this.client}
+            realClient={this.realClient}
             logger={this.props.logger}
           />
         )
@@ -1078,6 +1079,7 @@ export default class Layout extends FlipperPlugin<InspectorState> {
             element={this.state.elements[this.state.selected]}
             onValueChanged={this.onDataValueChanged}
             client={this.client}
+            realClient={this.realClient}
             logger={this.props.logger}
             extensions={SidebarExtensions}
           />
