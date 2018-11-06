@@ -16,6 +16,7 @@ type Props = {
   rightSidebarVisible: boolean,
   rightSidebarAvailable: boolean,
   toggleRightSidebarAvailable: (visible: boolean) => void,
+  width?: number,
 };
 
 class DetailSidebar extends React.Component<Props> {
@@ -41,7 +42,7 @@ class DetailSidebar extends React.Component<Props> {
       this.props.rightSidebarVisible &&
       domNode &&
       ReactDOM.createPortal(
-        <Sidebar width={300} position="right">
+        <Sidebar width={this.props.width || 300} position="right">
           {this.props.children}
         </Sidebar>,
         domNode,
