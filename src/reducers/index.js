@@ -60,5 +60,12 @@ export default combineReducers({
     connections,
   ),
   pluginStates,
-  notifications,
+  notifications: persistReducer(
+    {
+      key: 'notifications',
+      storage,
+      whitelist: ['blacklistedPlugins'],
+    },
+    notifications,
+  ),
 });

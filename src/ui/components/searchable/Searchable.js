@@ -15,10 +15,7 @@ import Text from '../Text.js';
 import FlexBox from '../FlexBox.js';
 import Glyph from '../Glyph.js';
 import FilterToken from './FilterToken.js';
-import PropTypes from 'prop-types';
 import styled from '../../styled/index.js';
-
-const SEARCHABLE_STORAGE_KEY = (key: string) => `SEARCHABLE_STORAGE_KEY_${key}`;
 
 const SearchBar = styled(Toolbar)({
   height: 42,
@@ -110,12 +107,8 @@ const Searchable = (
       placeholder: 'Search...',
     };
 
-    static contextTypes = {
-      plugin: PropTypes.string,
-    };
-
     state = {
-      filters: [],
+      filters: this.props.defaultFilters || [],
       focusedToken: -1,
       searchTerm: '',
       hasFocus: false,
@@ -127,19 +120,20 @@ const Searchable = (
       window.document.addEventListener('keydown', this.onKeyDown);
       const {defaultFilters} = this.props;
       let savedState;
-      let key = this.context.plugin + this.props.tableKey;
-      try {
-        savedState = JSON.parse(
-          window.localStorage.getItem(SEARCHABLE_STORAGE_KEY(key)) || 'null',
-        );
-      } catch (e) {
-        window.localStorage.removeItem(SEARCHABLE_STORAGE_KEY(key));
-      }
-      if (savedState) {
-        if (this.props.onFilterChange != null) {
-          this.props.onFilterChange(savedState.filters);
+
+      if (this.props.tableKey) {
+        try {
+          savedState = JSON.parse(
+            window.localStorage.getItem(this.getPersistKey()) || 'null',
+          );
+        } catch (e) {
+          window.localStorage.removeItem(this.getPersistKey());
         }
+      }
+
+      if (savedState) {
         if (defaultFilters != null) {
+          // merge default filter with persisted filters
           const savedStateFilters = savedState.filters;
           defaultFilters.forEach(defaultFilter => {
             const filterIndex = savedStateFilters.findIndex(
@@ -160,21 +154,20 @@ const Searchable = (
           });
         }
         this.setState({
-          searchTerm: savedState.searchTerm || '',
-          filters: savedState.filters || [],
+          searchTerm: savedState.searchTerm || this.state.searchTerm,
+          filters: savedState.filters || this.state.filters,
         });
       }
     }
 
     componentDidUpdate(prevProps: Props, prevState: State) {
       if (
-        this.context.plugin &&
+        this.props.tableKey &&
         (prevState.searchTerm !== this.state.searchTerm ||
           prevState.filters !== this.state.filters)
       ) {
-        let key = this.context.plugin + this.props.tableKey;
         window.localStorage.setItem(
-          SEARCHABLE_STORAGE_KEY(key),
+          this.getPersistKey(),
           JSON.stringify({
             searchTerm: this.state.searchTerm,
             filters: this.state.filters,
@@ -342,6 +335,8 @@ const Searchable = (
         ),
         searchTerm: '',
       });
+
+    getPersistKey = () => `SEARCHABLE_STORAGE_KEY_${this.props.tableKey || ''}`;
 
     render(): React.Node {
       const {placeholder, actions, ...props} = this.props;
