@@ -336,24 +336,23 @@ class RequestBodyInspector extends Component<{
     const {request, formattedText} = this.props;
     const bodyFormatters = formattedText ? TextBodyFormatters : BodyFormatters;
     let component;
-    try {
-      for (const formatter of bodyFormatters) {
-        if (formatter.formatRequest) {
+    for (const formatter of bodyFormatters) {
+      if (formatter.formatRequest) {
+        try {
           component = formatter.formatRequest(request);
           if (component) {
             break;
           }
+        } catch (e) {
+          console.warn(
+            'BodyFormatter exception from ' + formatter.constructor.name,
+            e.getMessage(),
+          );
         }
       }
-    } catch (e) {}
-
-    if (component == null && request.data != null) {
-      component = <Text>{decodeBody(request)}</Text>;
     }
 
-    if (component == null) {
-      return null;
-    }
+    component = component || <Text>{decodeBody(request)}</Text>;
 
     return <BodyContainer>{component}</BodyContainer>;
   }
@@ -368,16 +367,21 @@ class ResponseBodyInspector extends Component<{
     const {request, response, formattedText} = this.props;
     const bodyFormatters = formattedText ? TextBodyFormatters : BodyFormatters;
     let component;
-    try {
-      for (const formatter of bodyFormatters) {
-        if (formatter.formatResponse) {
+    for (const formatter of bodyFormatters) {
+      if (formatter.formatResponse) {
+        try {
           component = formatter.formatResponse(request, response);
           if (component) {
             break;
           }
+        } catch (e) {
+          console.warn(
+            'BodyFormatter exception from ' + formatter.constructor.name,
+            e.getMessage(),
+          );
         }
       }
-    } catch (e) {}
+    }
 
     component = component || <Text>{decodeBody(response)}</Text>;
 
