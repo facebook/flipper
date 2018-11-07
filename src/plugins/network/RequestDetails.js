@@ -23,6 +23,8 @@ import {
 import {getHeaderValue} from './index.js';
 
 import querystring from 'querystring';
+// $FlowFixMe
+import xmlBeautifier from 'xml-beautifier';
 
 const WrappingText = styled(Text)({
   wordWrap: 'break-word',
@@ -487,6 +489,22 @@ class JSONText extends Component<{children: any}> {
   }
 }
 
+class XMLText extends Component<{body: any}> {
+  static NoScrollbarText = styled(Text)({
+    overflowY: 'hidden',
+  });
+
+  render() {
+    const xmlPretty = xmlBeautifier(this.props.body);
+    return (
+      <XMLText.NoScrollbarText code whiteSpace="pre" selectable>
+        {xmlPretty}
+        {'\n'}
+      </XMLText.NoScrollbarText>
+    );
+  }
+}
+
 class JSONTextFormatter {
   formatRequest = (request: Request) => {
     return this.format(
@@ -518,6 +536,28 @@ class JSONTextFormatter {
           .map(json => JSON.parse(json))
           .map(data => <JSONText>{data}</JSONText>);
       }
+    }
+  };
+}
+
+class XMLTextFormatter {
+  formatRequest = (request: Request) => {
+    return this.format(
+      decodeBody(request),
+      getHeaderValue(request.headers, 'content-type'),
+    );
+  };
+
+  formatResponse = (request: Request, response: Response) => {
+    return this.format(
+      decodeBody(response),
+      getHeaderValue(response.headers, 'content-type'),
+    );
+  };
+
+  format = (body: string, contentType: string) => {
+    if (contentType.startsWith('text/html')) {
+      return <XMLText body={body} />;
     }
   };
 }
@@ -665,6 +705,7 @@ const BodyFormatters: Array<BodyFormatter> = [
   new GraphQLFormatter(),
   new JSONFormatter(),
   new FormUrlencodedFormatter(),
+  new XMLTextFormatter(),
 ];
 
 const TextBodyFormatters: Array<BodyFormatter> = [new JSONTextFormatter()];
