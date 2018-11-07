@@ -12,7 +12,6 @@ import type {Request, Response, Header} from './index.js';
 import {
   Component,
   FlexColumn,
-  FlexRow,
   ManagedTable,
   ManagedDataInspector,
   Text,
@@ -223,14 +222,13 @@ export default class RequestDetails extends Component<
             ]
           : null}
         <Panel heading={'Options'} floating={false} collapsed={true}>
-          <FlexRow>
-            <Text>Body: </Text>
-            <Select
-              selected={bodyFormat}
-              onChange={this.onSelectFormat}
-              options={RequestDetails.BodyOptions}
-            />
-          </FlexRow>
+          <Select
+            grow
+            label="Body"
+            selected={bodyFormat}
+            onChange={this.onSelectFormat}
+            options={RequestDetails.BodyOptions}
+          />
         </Panel>
       </RequestDetails.Container>
     );
@@ -403,8 +401,7 @@ type ImageWithSizeState = {
 class ImageWithSize extends Component<ImageWithSizeProps, ImageWithSizeState> {
   static Image = styled('img')({
     objectFit: 'scale-down',
-    maxWidth: 500,
-    maxHeight: 500,
+    maxWidth: '100%',
     marginBottom: 10,
   });
 

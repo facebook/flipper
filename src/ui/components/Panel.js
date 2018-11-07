@@ -156,6 +156,7 @@ export default class Panel extends React.Component<
 
         {children == null || (collapsable && collapsed) ? null : (
           <Panel.PanelBody
+            scrollable
             grow={grow}
             padded={padded == null ? true : padded}
             floating={floating}>

@@ -207,7 +207,7 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
             this.state.selectedIds ? new Set(this.state.selectedIds) : null
           }
         />
-        <DetailSidebar>{this.renderSidebar()}</DetailSidebar>
+        <DetailSidebar width={500}>{this.renderSidebar()}</DetailSidebar>
       </FlexColumn>
     );
   }
@@ -384,7 +384,7 @@ class StatusColumn extends PureComponent<{
     let glyph;
 
     if (children != null && children >= 400 && children < 600) {
-      glyph = <Icon name="stop-solid" color={colors.red} />;
+      glyph = <Icon name="stop" color={colors.red} />;
     }
 
     return (

@@ -49,7 +49,6 @@ const TableHeadContainer = styled(FlexRow)({
   flexShrink: 0,
   left: 0,
   overflow: 'hidden',
-  position: 'sticky',
   right: 0,
   textAlign: 'left',
   top: 0,
