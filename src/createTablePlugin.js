@@ -34,15 +34,14 @@ type Props<T> = {|
   buildRow: (row: T) => any,
 |};
 
-type State<T> = {|
+type PersistedState<T> = {|
   rows: TableRows,
   datas: {[key: ID]: T},
-  selectedIds: Array<ID>,
 |};
 
-type AppendAndUpdateAction<T> = {|type: 'AppendAndUpdate', datas: Array<T>|};
-type ResetAndUpdateAction<T> = {|type: 'ResetAndUpdate', datas: Array<T>|};
-type Actions<T> = AppendAndUpdateAction<T> | ResetAndUpdateAction<T>;
+type State = {|
+  selectedIds: Array<ID>,
+|};
 
 /**
  * createTablePlugin creates a Plugin class which handles fetching data from the client and
@@ -58,15 +57,52 @@ type Actions<T> = AppendAndUpdateAction<T> | ResetAndUpdateAction<T>;
  * the client in an unknown state.
  */
 export function createTablePlugin<T: RowData>(props: Props<T>) {
-  return class extends FlipperPlugin<State<T>, Actions<T>> {
+  // $FlowFixMe persistedStateReducer is fine to accept payload of type T, because it is of type RowData
+  return class extends FlipperPlugin<State, *, PersistedState<T>> {
     static title = props.title;
     static id = props.id;
     static icon = props.icon;
     static keyboardActions = ['clear', 'createPaste'];
 
-    state = {
+    static defaultPersistedState: PersistedState<T> = {
       rows: [],
       datas: {},
+    };
+
+    static persistedStateReducer = (
+      persistedState: PersistedState<T>,
+      method: string,
+      payload: T | Array<T>,
+    ): $Shape<PersistedState<RowData>> => {
+      if (method === props.method) {
+        const newRows = [];
+        const newData = {};
+        const datas = Array.isArray(payload) ? payload : [payload];
+
+        for (const data of datas.reverse()) {
+          if (data.id == null) {
+            console.warn('The data sent did not contain an ID.', data);
+          }
+          if (persistedState.datas[data.id] == null) {
+            newData[data.id] = data;
+            newRows.push(props.buildRow(data));
+          }
+        }
+        return {
+          datas: {...persistedState.datas, ...newData},
+          rows: [...persistedState.rows, ...newRows],
+        };
+      } else if (method === props.resetMethod) {
+        return {
+          rows: [],
+          datas: {},
+        };
+      } else {
+        return {};
+      }
+    };
+
+    state = {
       selectedIds: [],
     };
 
@@ -78,66 +114,12 @@ export function createTablePlugin<T: RowData>(props: Props<T>) {
       }
     };
 
-    reducers = {
-      AppendAndUpdate(state: State<T>, action: AppendAndUpdateAction<T>) {
-        const newRows = [];
-        const newData = {};
-
-        for (const data of action.datas.reverse()) {
-          if (data.id == null) {
-            console.warn('The data sent did not contain an ID.');
-          }
-          if (this.state.datas[data.id] == null) {
-            newData[data.id] = data;
-            newRows.push(props.buildRow(data));
-          }
-        }
-        return {
-          datas: {...state.datas, ...newData},
-          rows: [...state.rows, ...newRows],
-        };
-      },
-      ResetAndUpdate(state: State<T>, action: ResetAndUpdateAction<T>) {
-        const newRows = [];
-        const newData = {};
-
-        for (const data of action.datas.reverse()) {
-          if (data.id == null) {
-            console.warn('The data sent did not contain an ID.');
-          }
-          if (this.state.datas[data.id] == null) {
-            newData[data.id] = data;
-            newRows.push(props.buildRow(data));
-          }
-        }
-        return {
-          datas: newData,
-          rows: newRows,
-        };
-      },
-    };
-
-    init() {
-      this.client.subscribe(props.method, (data: T | Array<T>) => {
-        this.dispatchAction({
-          type: 'AppendAndUpdate',
-          datas: data instanceof Array ? data : [data],
-        });
-      });
-      if (props.resetMethod) {
-        this.client.subscribe(props.resetMethod, (data: Array<T>) => {
-          this.dispatchAction({
-            type: 'ResetAndUpdate',
-            datas: data instanceof Array ? data : [],
-          });
-        });
-      }
-    }
-
     clear = () => {
-      this.setState({
-        datas: {},
+      this.props.setPersistedState({
         rows: [],
+        datas: {},
+      });
+      this.setState({
         selectedIds: [],
       });
     };
@@ -151,13 +133,13 @@ export function createTablePlugin<T: RowData>(props: Props<T>) {
 
       if (this.state.selectedIds.length > 0) {
         // create paste from selection
-        paste = this.state.rows
+        paste = this.props.persistedState.rows
           .filter(row => this.state.selectedIds.indexOf(row.key) > -1)
           .map(mapFn)
           .join('\n');
       } else {
         // create paste with all rows
-        paste = this.state.rows.map(mapFn).join('\n');
+        paste = this.props.persistedState.rows.map(mapFn).join('\n');
       }
       createPaste(paste);
     };
@@ -170,7 +152,8 @@ export function createTablePlugin<T: RowData>(props: Props<T>) {
 
     renderSidebar = () => {
       const {renderSidebar} = props;
-      const {datas, selectedIds} = this.state;
+      const {selectedIds} = this.state;
+      const {datas} = this.props.persistedState;
       const selectedId = selectedIds.length !== 1 ? null : selectedIds[0];
 
       if (selectedId != null) {
@@ -182,7 +165,7 @@ export function createTablePlugin<T: RowData>(props: Props<T>) {
 
     render() {
       const {columns, columnSizes} = props;
-      const {rows} = this.state;
+      const {rows} = this.props.persistedState;
 
       return (
         <FlexColumn grow={true}>
