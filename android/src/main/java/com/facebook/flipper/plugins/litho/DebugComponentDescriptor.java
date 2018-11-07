@@ -622,9 +622,9 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
       return fromDrawable(null);
     }
 
-    final T d = Reference.acquire(c.getBaseContext(), r);
+    final T d = Reference.acquire(c.getAndroidContext(), r);
     final InspectorValue v = fromDrawable(d);
-    Reference.release(c.getBaseContext(), d, r);
+    Reference.release(c.getAndroidContext(), d, r);
     return v;
   }
 

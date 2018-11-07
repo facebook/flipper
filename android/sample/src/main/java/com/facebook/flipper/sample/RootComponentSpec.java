@@ -135,8 +135,8 @@ public class RootComponentSpec {
 
   @OnEvent(ClickEvent.class)
   static void openDiagnostics(final ComponentContext c) {
-    Intent intent = new Intent(c.getBaseContext(), FlipperDiagnosticActivity.class);
-    c.getBaseContext().startActivity(intent);
+    Intent intent = new Intent(c.getAndroidContext(), FlipperDiagnosticActivity.class);
+    c.getAndroidContext().startActivity(intent);
   }
 
 }
