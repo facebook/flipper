@@ -131,15 +131,39 @@ export class InspectorSidebar extends Component<Props, State> {
       [];
 
     for (const key in element.data) {
-      sections.push(
-        <InspectorSidebarSection
-          tooltips={this.props.tooltips}
-          key={key}
-          id={key}
-          data={element.data[key]}
-          onValueChanged={this.props.onValueChanged}
-        />,
-      );
+      if (key === 'Extra Sections') {
+        for (const extraSection in element.data[key]) {
+          let data = element.data[key][extraSection];
+
+          // data might be sent as stringified JSON, we want to parse it for a nicer persentation.
+          if (typeof data === 'string') {
+            try {
+              data = JSON.parse(data);
+            } catch (e) {
+              // data was not a valid JSON, using string instead
+            }
+          }
+          sections.push(
+            <InspectorSidebarSection
+              tooltips={this.props.tooltips}
+              key={extraSection}
+              id={extraSection}
+              data={data}
+              onValueChanged={this.props.onValueChanged}
+            />,
+          );
+        }
+      } else {
+        sections.push(
+          <InspectorSidebarSection
+            tooltips={this.props.tooltips}
+            key={key}
+            id={key}
+            data={element.data[key]}
+            onValueChanged={this.props.onValueChanged}
+          />,
+        );
+      }
     }
 
     if (GK.get('sonar_show_console_plugin') && this.state.isConsoleEnabled) {
