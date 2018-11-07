@@ -179,12 +179,14 @@ export default class Client extends EventEmitter {
             params.method,
             params.params,
           );
-          this.store.dispatch(
-            setPluginState({
-              pluginKey,
-              state: newPluginState,
-            }),
-          );
+          if (persistedState !== newPluginState) {
+            this.store.dispatch(
+              setPluginState({
+                pluginKey,
+                state: newPluginState,
+              }),
+            );
+          }
         } else {
           const apiCallbacks = this.broadcastCallbacks.get(params.api);
           if (!apiCallbacks) {
