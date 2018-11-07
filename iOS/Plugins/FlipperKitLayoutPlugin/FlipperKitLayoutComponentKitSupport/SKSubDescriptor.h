@@ -24,6 +24,6 @@
 /**
  This is the data the SubDescriptor wants to pass up to the SKLayoutDescriptor.
  */
-- (NSDictionary<NSString *, NSObject *> *)getDataForNode:(SKComponentLayoutWrapper *)node;
+- (NSString *)getDataForNode:(SKComponentLayoutWrapper *)node;
 
 @end
