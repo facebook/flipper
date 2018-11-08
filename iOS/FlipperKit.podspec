@@ -32,7 +32,7 @@ Pod::Spec.new do |spec|
     ss.compiler_flags = folly_compiler_flags
     ss.source_files = 'iOS/FlipperKit/CppBridge/**/*.{h,mm}'
     # We set these files as private headers since they only need to be accessed
-    # by other SonarKit source files
+    # by other FlipperKit source files
     ss.private_header_files = 'iOS/FlipperKit/CppBridge/**/*.h'
     ss.preserve_path = 'FlipperKit/CppBridge/**/*.h'
   end
@@ -42,7 +42,7 @@ Pod::Spec.new do |spec|
     ss.compiler_flags = folly_compiler_flags
     ss.source_files = 'iOS/FlipperKit/FBCxxUtils/**/*.{h,mm}'
     # We set these files as private headers since they only need to be accessed
-    # by other SonarKit source files
+    # by other FlipperKit source files
     ss.private_header_files = 'iOS/FlipperKit/FBCxxUtils/**/*.h'
   end
 
