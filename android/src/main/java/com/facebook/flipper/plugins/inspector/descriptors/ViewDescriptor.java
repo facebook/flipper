@@ -401,6 +401,9 @@ public class ViewDescriptor extends NodeDescriptor<View> {
       case "selected":
         node.setSelected(value.asBoolean());
         break;
+      case "enabled":
+        node.setEnabled(value.asBoolean());
+        break;
     }
     invalidateAX(node);
   }
