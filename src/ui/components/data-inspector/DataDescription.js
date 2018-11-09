@@ -4,7 +4,7 @@
  * LICENSE file in the root directory of this source tree.
  * @format
  */
-
+import {Link} from 'flipper';
 import type {DataInspectorSetValue} from './DataInspector.js';
 import {PureComponent} from 'react';
 import styled from '../../styled/index.js';
@@ -462,7 +462,11 @@ class DataDescriptionContainer extends Component<{
 
       case 'text':
       case 'string':
-        return <StringValue>"{String(val || '')}"</StringValue>;
+        if (val.startsWith('http://') || val.startsWith('https://')) {
+          return <Link href={val}>{val}</Link>;
+        } else {
+          return <StringValue>"{String(val || '')}"</StringValue>;
+        }
 
       case 'enum':
         return <StringValue>{String(val)}</StringValue>;
