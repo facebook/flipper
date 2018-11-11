@@ -17,6 +17,8 @@
 - (void)viewDidLoad {
   [super viewDidLoad];
   self.navigationItem.title = @"Network";
+  NSArray *array = @[];
+  [array objectAtIndex:4];
 }
 
 - (IBAction)tappedGithubLitho:(UIButton *)sender {

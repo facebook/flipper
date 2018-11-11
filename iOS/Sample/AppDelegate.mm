@@ -6,7 +6,7 @@
  *
  */
 #import "AppDelegate.h"
-
+#import <FlipperKitCrashReporterPlugin/FlipperKitCrashReporterPlugin.h>
 #import <FlipperKit/FlipperClient.h>
 #import <FlipperKitLayoutPlugin/FlipperKitLayoutPlugin.h>
 #import <FlipperKitNetworkPlugin/FlipperKitNetworkPlugin.h>
@@ -27,6 +27,12 @@
   UIWindow *_window;
 }
 
+void uncaughtExceptionHandler(NSException *exception) {
+  NSLog(@"CRASH: %@", exception);
+  NSLog(@"Stack Trace: %@", [exception callStackSymbols]);
+  // Internal error reporting
+}
+
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
   _window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
@@ -38,7 +44,7 @@
                                                withDescriptorMapper: layoutDescriptorMapper]];
     
   [client addPlugin:[[FKUserDefaultsPlugin alloc] initWithSuiteName:nil]];
-
+  [client addPlugin:[[FlipperKitCrashReporterPlugin alloc] init]];
   [[FlipperClient sharedClient] addPlugin: [[FlipperKitNetworkPlugin alloc] initWithNetworkAdapter:[SKIOSNetworkAdapter new]]];
   [client addPlugin:[FlipperKitExamplePlugin sharedInstance]];
   [client start];
@@ -54,6 +60,8 @@
   [_window makeKeyAndVisible];
 
   NSLog(@"Hello from Flipper in an Objc app!");
+//  NSSetUncaughtExceptionHandler(&uncaughtExceptionHandler);    // Normal launch stuff
+
   return YES;
 }
 
