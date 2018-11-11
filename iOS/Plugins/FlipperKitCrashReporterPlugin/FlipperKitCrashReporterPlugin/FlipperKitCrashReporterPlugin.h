@@ -5,9 +5,15 @@
  *  file in the root directory of this source tree.
  *
  */
+#if FB_SONARKIT_ENABLED
+
 #import <Foundation/Foundation.h>
 #import <FlipperKit/FlipperPlugin.h>
 
 @interface FlipperKitCrashReporterPlugin : NSObject<FlipperPlugin>
-
+- (instancetype)init NS_UNAVAILABLE;
++ (instancetype) sharedInstance;
 @end
+
+
+#endif

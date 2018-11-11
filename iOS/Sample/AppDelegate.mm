@@ -27,11 +27,11 @@
   UIWindow *_window;
 }
 
-void uncaughtExceptionHandler(NSException *exception) {
-  NSLog(@"CRASH: %@", exception);
-  NSLog(@"Stack Trace: %@", [exception callStackSymbols]);
-  // Internal error reporting
-}
+//void uncaughtExceptionHandler(NSException *exception) {
+//  NSLog(@"CRASH: %@", exception);
+//  NSLog(@"Stack Trace: %@", [exception callStackSymbols]);
+//  // Internal error reporting
+//}
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
@@ -44,7 +44,8 @@ void uncaughtExceptionHandler(NSException *exception) {
                                                withDescriptorMapper: layoutDescriptorMapper]];
     
   [client addPlugin:[[FKUserDefaultsPlugin alloc] initWithSuiteName:nil]];
-  [client addPlugin:[[FlipperKitCrashReporterPlugin alloc] init]];
+  [client addPlugin:[FlipperKitCrashReporterPlugin sharedInstance]];
+
   [[FlipperClient sharedClient] addPlugin: [[FlipperKitNetworkPlugin alloc] initWithNetworkAdapter:[SKIOSNetworkAdapter new]]];
   [client addPlugin:[FlipperKitExamplePlugin sharedInstance]];
   [client start];

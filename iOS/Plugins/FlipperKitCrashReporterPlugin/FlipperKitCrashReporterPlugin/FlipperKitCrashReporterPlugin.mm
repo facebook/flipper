@@ -7,24 +7,56 @@
  */
  #if FB_SONARKIT_ENABLED
  #import "FlipperKitCrashReporterPlugin.h"
+#import <FlipperKit/FlipperConnection.h>
+
+@interface FlipperKitCrashReporterPlugin()
+@property (strong, nonatomic) id<FlipperConnection> connection;
+- (void) handleException:(NSException *)exception;
+
+@end
+
+void flipperkitUncaughtExceptionHandler(NSException *exception) {
+  NSLog(@"CRASH: %@", exception);
+  NSLog(@"Stack Trace: %@", [exception callStackSymbols]);
+  [[FlipperKitCrashReporterPlugin sharedInstance] handleException:exception];
+}
 
 @implementation FlipperKitCrashReporterPlugin
+
+- (instancetype)init {
+  if (self = [super init]) {
+    _connection = nil;
+  }
+  return self;
+}
+
++ (instancetype)sharedInstance {
+  static FlipperKitCrashReporterPlugin *sInstance = nil;
+
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    sInstance = [FlipperKitCrashReporterPlugin new];
+  });
+
+  return sInstance;
+}
 
 - (NSString *)identifier {
   return @"CrashReporter";
 }
 
-void uncaughtExceptionHandler(NSException *exception) {
-  NSLog(@"CRASH: %@", exception);
-  NSLog(@"Stack Trace: %@", [exception callStackSymbols]);
-  // Internal error reporting
-}
+- (void) handleException:(NSException *)exception {
+  // TODO: Rather than having indirection from c function, somehow pass objective c selectors as a c function pointer to NSSetUncaughtExceptionHandler
+  [self.connection send:@"crash-report" withParams:@{@"callstack": [exception callStackSymbols]}];
 
+}
 - (void)didConnect:(id<FlipperConnection>)connection {
-  NSSetUncaughtExceptionHandler(&uncaughtExceptionHandler);
+  self.connection = connection;
+  NSSetUncaughtExceptionHandler(&flipperkitUncaughtExceptionHandler);
 }
 
 - (void)didDisconnect {
+  self.connection = nil;
   NSSetUncaughtExceptionHandler(nullptr);
 }
 
