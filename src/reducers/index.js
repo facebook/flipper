@@ -64,7 +64,7 @@ export default combineReducers({
     {
       key: 'notifications',
       storage,
-      whitelist: ['blacklistedPlugins'],
+      whitelist: ['blacklistedPlugins', 'blacklistedCategories'],
     },
     notifications,
   ),

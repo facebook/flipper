@@ -15,6 +15,7 @@ import {selectPlugin} from '../reducers/connections';
 import {
   setActiveNotifications,
   updatePluginBlacklist,
+  updateCategoryBlacklist,
 } from '../reducers/notifications';
 import {textContent} from '../utils/index';
 import {clientPlugins} from '../plugins/index.js';
@@ -54,6 +55,14 @@ export default (store: Store, logger: Logger) => {
             'notification-hide-category',
             pluginNotification,
           );
+
+          const {category} = pluginNotification.notification;
+          const {blacklistedCategories} = store.getState().notifications;
+          if (category && blacklistedCategories.indexOf(category) === -1) {
+            store.dispatch(
+              updateCategoryBlacklist([...blacklistedCategories, category]),
+            );
+          }
         } else if (arg === 2) {
           // Hide plugin
           logger.track('usage', 'notification-hide-plugin', pluginNotification);
@@ -102,13 +111,19 @@ export default (store: Store, logger: Logger) => {
       }
     });
 
-    const {activeNotifications, blacklistedPlugins} = notifications;
+    const {
+      activeNotifications,
+      blacklistedPlugins,
+      blacklistedCategories,
+    } = notifications;
 
     activeNotifications.forEach((n: PluginNotification) => {
       if (
         store.getState().connections.selectedPlugin !== 'notifications' &&
         !knownNotifications.has(n.notification.id) &&
-        blacklistedPlugins.indexOf(n.pluginId) === -1
+        blacklistedPlugins.indexOf(n.pluginId) === -1 &&
+        (!n.notification.category ||
+          blacklistedCategories.indexOf(n.notification.category) === -1)
       ) {
         ipcRenderer.send('sendNotification', {
           payload: {
