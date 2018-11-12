@@ -143,9 +143,11 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
     persistedState: PersistedState,
   ): Array<Notification> => {
     const responses = persistedState ? persistedState.responses || [] : [];
+    // $FlowFixMe Object.values returns Array<mixed>, but we know it is Array<Response>
+    const r: Array<Response> = Object.values(responses);
+
     return (
-      // $FlowFixMe Object.values returns Array<mixed>, but we know it is Array<Response>
-      (Object.values(responses): Array<Response>)
+      r
         // Show error messages for all status codes indicating a client or server error
         .filter((response: Response) => response.status >= 400)
         .map((response: Response) => ({
@@ -155,7 +157,7 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
             '(URL missing)'}" failed. ${response.reason}`,
           severity: 'error',
           timestamp: response.timestamp,
-          category: response.status,
+          category: `HTTP${response.status}`,
           action: response.id,
         }))
     );

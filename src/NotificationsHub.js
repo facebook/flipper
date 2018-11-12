@@ -7,12 +7,13 @@
 
 import type {SearchableProps, FlipperBasePlugin, Device} from 'flipper';
 import type {PluginNotification} from './reducers/notifications';
-import {selectPlugin} from './reducers/connections';
+import type Logger from './fb-stubs/Logger';
 
 import {
   FlipperDevicePlugin,
   Searchable,
   Button,
+  ButtonGroup,
   FlexBox,
   FlexColumn,
   FlexRow,
@@ -29,7 +30,9 @@ import PropTypes from 'prop-types';
 import {
   clearAllNotifications,
   updatePluginBlacklist,
+  updateCategoryBlacklist,
 } from './reducers/notifications';
+import {selectPlugin} from './reducers/connections';
 import {createPaste, textContent} from './utils/index';
 
 export default class Notifications extends FlipperDevicePlugin<{}> {
@@ -57,19 +60,30 @@ export default class Notifications extends FlipperDevicePlugin<{}> {
   };
 
   render() {
+    const {
+      blacklistedPlugins,
+      blacklistedCategories,
+    } = this.context.store.getState().notifications;
     return (
       <ConnectedNotificationsTable
         onClear={this.onClear}
         selectedID={this.props.deepLinkPayload}
         onSelectPlugin={this.props.selectPlugin}
-        defaultFilters={this.context.store
-          .getState()
-          .notifications.blacklistedPlugins.map(value => ({
+        logger={this.props.logger}
+        defaultFilters={[
+          ...blacklistedPlugins.map(value => ({
             value,
             invertible: false,
             type: 'exclude',
             key: 'plugin',
-          }))}
+          })),
+          ...blacklistedCategories.map(value => ({
+            value,
+            invertible: false,
+            type: 'exclude',
+            key: 'category',
+          })),
+        ]}
         actions={
           <Fragment>
             <Button onClick={this.onClear}>Clear</Button>
@@ -85,14 +99,17 @@ type Props = {|
   activeNotifications: Array<PluginNotification>,
   invalidatedNotifications: Array<PluginNotification>,
   blacklistedPlugins: Array<string>,
+  blacklistedCategories: Array<string>,
   onClear: () => void,
   updatePluginBlacklist: (blacklist: Array<string>) => mixed,
+  updateCategoryBlacklist: (blacklist: Array<string>) => mixed,
   selectPlugin: ({
     selectedPlugin: ?string,
     selectedApp: ?string,
     deepLinkPayload?: ?string,
   }) => mixed,
   selectedID: ?string,
+  logger: Logger,
 |};
 
 type State = {|
@@ -131,12 +148,6 @@ const NoContent = styled(FlexColumn)({
 });
 
 class NotificationsTable extends Component<Props, State> {
-  static getDerivedStateFromProps(props: Props): State {
-    return {
-      selectedNotification: props.selectedID,
-    };
-  }
-
   contextMenuItems = [{label: 'Clear all', click: this.props.onClear}];
   state: State = {
     selectedNotification: this.props.selectedID,
@@ -149,10 +160,27 @@ class NotificationsTable extends Component<Props, State> {
           .filter(f => f.type === 'exclude' && f.key.toLowerCase() === 'plugin')
           .map(f => String(f.value)),
       );
+
+      this.props.updateCategoryBlacklist(
+        this.props.filters
+          .filter(
+            f => f.type === 'exclude' && f.key.toLowerCase() === 'category',
+          )
+          .map(f => String(f.value)),
+      );
+    }
+
+    if (
+      this.props.selectedID &&
+      prevProps.selectedID !== this.props.selectedID
+    ) {
+      this.setState({
+        selectedNotification: this.props.selectedID,
+      });
     }
   }
 
-  onHide = (pluginId: string) => {
+  onHidePlugin = (pluginId: string) => {
     // add filter to searchbar
     this.props.addFilter({
       value: pluginId,
@@ -165,15 +193,41 @@ class NotificationsTable extends Component<Props, State> {
     );
   };
 
+  onHideCategory = (category: string) => {
+    // add filter to searchbar
+    this.props.addFilter({
+      value: category,
+      type: 'exclude',
+      key: 'category',
+      invertible: false,
+    });
+    this.props.updatePluginBlacklist(
+      this.props.blacklistedCategories.concat(category),
+    );
+  };
+
   getFilter = (): ((n: PluginNotification) => boolean) => (
     n: PluginNotification,
   ) => {
     const searchTerm = this.props.searchTerm.toLowerCase();
-    const blacklist = new Set(
+
+    // filter plugins
+    const blacklistedPlugins = new Set(
       this.props.blacklistedPlugins.map(p => p.toLowerCase()),
     );
-    if (blacklist.has(n.pluginId.toLowerCase())) {
+    if (blacklistedPlugins.has(n.pluginId.toLowerCase())) {
       return false;
+    }
+
+    // filter categories
+    const {category} = n.notification;
+    if (category) {
+      const blacklistedCategories = new Set(
+        this.props.blacklistedCategories.map(p => p.toLowerCase()),
+      );
+      if (blacklistedCategories.has(category.toLowerCase())) {
+        return false;
+      }
     }
 
     if (searchTerm.length === 0) {
@@ -192,19 +246,27 @@ class NotificationsTable extends Component<Props, State> {
   render() {
     const activeNotifications = this.props.activeNotifications
       .filter(this.getFilter())
-      .map((n: PluginNotification) => (
-        <NotificationItem
-          key={n.notification.id}
-          {...n}
-          isSelected={this.state.selectedNotification === n.notification.id}
-          onClick={() =>
-            this.setState({selectedNotification: n.notification.id})
-          }
-          onClear={this.props.onClear}
-          onHide={() => this.onHide(n.pluginId)}
-          selectPlugin={this.props.selectPlugin}
-        />
-      ))
+      .map((n: PluginNotification) => {
+        const {category} = n.notification;
+
+        return (
+          <NotificationItem
+            key={n.notification.id}
+            {...n}
+            isSelected={this.state.selectedNotification === n.notification.id}
+            onHighlight={() =>
+              this.setState({selectedNotification: n.notification.id})
+            }
+            onClear={this.props.onClear}
+            onHidePlugin={() => this.onHidePlugin(n.pluginId)}
+            onHideCategory={
+              category ? () => this.onHideCategory(category) : undefined
+            }
+            selectPlugin={this.props.selectPlugin}
+            logger={this.props.logger}
+          />
+        );
+      })
       .reverse();
 
     const invalidatedNotifications = this.props.invalidatedNotifications
@@ -255,14 +317,17 @@ const ConnectedNotificationsTable = connect(
       activeNotifications,
       invalidatedNotifications,
       blacklistedPlugins,
+      blacklistedCategories,
     },
   }) => ({
     activeNotifications,
     invalidatedNotifications,
     blacklistedPlugins,
+    blacklistedCategories,
   }),
   {
     updatePluginBlacklist,
+    updateCategoryBlacklist,
     selectPlugin,
   },
 )(Searchable(NotificationsTable));
@@ -348,7 +413,7 @@ const NotificationButton = styled('div')({
   borderRadius: 4,
   textAlign: 'center',
   padding: 4,
-  width: 55,
+  width: 80,
   marginBottom: 4,
   opacity: 0,
   transition: '0.15s opacity',
@@ -365,8 +430,9 @@ const NotificationButton = styled('div')({
 
 type ItemProps = {
   ...PluginNotification,
-  onClick?: () => mixed,
-  onHide?: () => mixed,
+  onHighlight?: () => mixed,
+  onHidePlugin?: () => mixed,
+  onHideCategory?: () => mixed,
   isSelected?: boolean,
   inactive?: boolean,
   selectPlugin?: ({
@@ -374,18 +440,29 @@ type ItemProps = {
     selectedApp: ?string,
     deepLinkPayload?: ?string,
   }) => mixed,
+  logger?: Logger,
 };
 
-class NotificationItem extends Component<ItemProps> {
+type ItemState = {|
+  reportedNotHelpful: boolean,
+|};
+
+class NotificationItem extends Component<ItemProps, ItemState> {
   constructor(props: ItemProps) {
     super(props);
     const plugin = plugins.find(p => p.id === props.pluginId);
 
     const items = [];
-    if (props.onHide && plugin) {
+    if (props.onHidePlugin && plugin) {
       items.push({
         label: `Hide ${plugin.title} plugin`,
-        click: this.props.onHide,
+        click: this.props.onHidePlugin,
+      });
+    }
+    if (props.onHideCategory) {
+      items.push({
+        label: 'Hide Similar',
+        click: this.props.onHideCategory,
       });
     }
     items.push(
@@ -397,6 +474,7 @@ class NotificationItem extends Component<ItemProps> {
     this.plugin = plugin;
   }
 
+  state = {reportedNotHelpful: false};
   plugin: ?Class<FlipperBasePlugin<>>;
   contextMenuItems;
   deepLinkButton = React.createRef();
@@ -429,8 +507,37 @@ class NotificationItem extends Component<ItemProps> {
     }
   };
 
+  reportNotUseful = (e: UIEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (this.props.logger) {
+      this.props.logger.track(
+        'usage',
+        'notification-not-useful',
+        this.props.notification,
+      );
+    }
+    this.setState({reportedNotHelpful: true});
+  };
+
+  onHide = (e: UIEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (this.props.onHideCategory) {
+      this.props.onHideCategory();
+    } else if (this.props.onHidePlugin) {
+      this.props.onHidePlugin();
+    }
+  };
+
   render() {
-    const {notification, isSelected, inactive, onHide} = this.props;
+    const {
+      notification,
+      isSelected,
+      inactive,
+      onHidePlugin,
+      onHideCategory,
+    } = this.props;
     const {action} = notification;
 
     return (
@@ -438,7 +545,7 @@ class NotificationItem extends Component<ItemProps> {
         data-role="notification"
         component={NotificationBox}
         severity={notification.severity}
-        onClick={this.props.onClick}
+        onClick={this.props.onHighlight}
         isSelected={isSelected}
         inactive={inactive}
         items={this.contextMenuItems}>
@@ -449,7 +556,7 @@ class NotificationItem extends Component<ItemProps> {
           {!inactive &&
             isSelected &&
             this.plugin &&
-            (action || onHide) && (
+            (action || onHidePlugin || onHideCategory) && (
               <Actions>
                 <FlexRow>
                   {action && (
@@ -457,9 +564,16 @@ class NotificationItem extends Component<ItemProps> {
                       Open in {this.plugin.title}
                     </Button>
                   )}
-                  {onHide && (
-                    <Button onClick={onHide}>Hide {this.plugin.title}</Button>
-                  )}
+                  <ButtonGroup>
+                    {onHideCategory && (
+                      <Button onClick={onHideCategory}>Hide similar</Button>
+                    )}
+                    {onHidePlugin && (
+                      <Button onClick={onHidePlugin}>
+                        Hide {this.plugin.title}
+                      </Button>
+                    )}
+                  </ButtonGroup>
                 </FlexRow>
                 <span>
                   {notification.timestamp
@@ -478,9 +592,13 @@ class NotificationItem extends Component<ItemProps> {
                   Open
                 </NotificationButton>
               )}
-              {onHide && (
-                <NotificationButton compact onClick={onHide}>
+              {this.state.reportedNotHelpful ? (
+                <NotificationButton compact onClick={this.onHide}>
                   Hide
+                </NotificationButton>
+              ) : (
+                <NotificationButton compact onClick={this.reportNotUseful}>
+                  Not helpful
                 </NotificationButton>
               )}
             </FlexColumn>
