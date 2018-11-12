@@ -8,13 +8,14 @@
 const [s, ns] = process.hrtime();
 let launchStartTime = s * 1e3 + ns / 1e6;
 
-const {app, BrowserWindow, ipcMain} = require('electron');
+const {app, BrowserWindow, ipcMain, Notification} = require('electron');
 const path = require('path');
 const url = require('url');
 const fs = require('fs');
 const {exec} = require('child_process');
 const compilePlugins = require('./compilePlugins.js');
 const os = require('os');
+
 // disable electron security warnings: https://github.com/electron/electron/blob/master/docs/tutorial/security.md#security-native-capabilities-and-your-responsibility
 process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = true;
 
@@ -168,6 +169,37 @@ ipcMain.on('getLaunchTime', event => {
     launchStartTime = null;
   }
 });
+
+ipcMain.on(
+  'sendNotification',
+  (e, {payload, pluginNotification, closeAfter}) => {
+    // notifications can only be sent when app is ready
+    if (appReady) {
+      const n = new Notification(payload);
+
+      // Forwarding notification events to renderer process
+      // https://electronjs.org/docs/api/notification#instance-events
+      ['show', 'click', 'close', 'reply', 'action'].forEach(eventName => {
+        n.on(eventName, (event, ...args) => {
+          e.sender.send(
+            'notificationEvent',
+            eventName,
+            pluginNotification,
+            ...args,
+          );
+        });
+      });
+      n.show();
+
+      if (closeAfter) {
+        setTimeout(() => {
+          n.close();
+        }, closeAfter);
+      }
+    }
+  },
+);
+
 // Define custom protocol handler. Deep linking works on packaged versions of the application!
 app.setAsDefaultProtocolClient('flipper');
 
