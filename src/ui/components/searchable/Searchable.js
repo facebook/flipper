@@ -107,7 +107,7 @@ const Searchable = (
       placeholder: 'Search...',
     };
 
-    state = {
+    state: State = {
       filters: this.props.defaultFilters || [],
       focusedToken: -1,
       searchTerm: '',
@@ -176,6 +176,21 @@ const Searchable = (
         if (this.props.onFilterChange != null) {
           this.props.onFilterChange(this.state.filters);
         }
+      } else if (prevProps.defaultFilters !== this.props.defaultFilters) {
+        const mergedFilters = [...this.state.filters];
+        this.props.defaultFilters.forEach((defaultFilter: Filter) => {
+          const filterIndex = mergedFilters.findIndex(
+            (f: Filter) => f.key === defaultFilter.key,
+          );
+          if (filterIndex > -1) {
+            mergedFilters[filterIndex] = defaultFilter;
+          } else {
+            mergedFilters.push(defaultFilter);
+          }
+        });
+        this.setState({
+          filters: mergedFilters,
+        });
       }
     }
 
