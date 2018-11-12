@@ -51,8 +51,9 @@ using WrapperPlugin = facebook::flipper::FlipperCppWrapperPlugin;
   if (self = [super init]) {
     UIDevice *device = [UIDevice currentDevice];
     NSString *deviceName = [device name];
-    NSString *appName = [[NSBundle mainBundle] objectForInfoDictionaryKey:(NSString *)kCFBundleNameKey];
-    NSString *appId = appName;
+    NSBundle *bundle = [NSBundle mainBundle];
+    NSString *appName = [bundle objectForInfoDictionaryKey:(NSString *)kCFBundleNameKey];
+    NSString *appId = [bundle bundleIdentifier];
     NSString *privateAppDirectory = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES)[0];
 
     NSFileManager *manager = [NSFileManager defaultManager];
