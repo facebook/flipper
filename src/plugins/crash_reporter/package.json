@@ -1,0 +1,8 @@
+{
+  "name": "flipper-plugin-crash-reporter",
+  "version": "0.1.0",
+  "description": "A plugin which will display a crash",
+  "main": "index.js",
+  "repository": "https://github.com/facebook/flipper",
+  "license": "MIT"
+}

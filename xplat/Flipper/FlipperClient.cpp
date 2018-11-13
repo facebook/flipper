@@ -37,6 +37,7 @@ void FlipperClient::init(FlipperInitConfig config) {
 
 FlipperClient* FlipperClient::instance() {
   return kInstance;
+
 }
 
 void FlipperClient::setStateListener(

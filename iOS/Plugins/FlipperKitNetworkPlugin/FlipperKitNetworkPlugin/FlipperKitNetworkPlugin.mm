@@ -27,6 +27,7 @@
 }
 
 - (instancetype)init {
+
   if (self = [super initWithQueue:dispatch_queue_create("com.sonarkit.network.buffer", DISPATCH_QUEUE_SERIAL)]) {
   }
   return self;

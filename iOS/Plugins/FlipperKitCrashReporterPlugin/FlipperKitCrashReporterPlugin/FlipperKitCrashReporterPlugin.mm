@@ -11,6 +11,7 @@
 
 @interface FlipperKitCrashReporterPlugin()
 @property (strong, nonatomic) id<FlipperConnection> connection;
+@property (assign, nonatomic) NSUInteger notificationID;
 - (void) handleException:(NSException *)exception;
 
 @end
@@ -26,6 +27,7 @@ void flipperkitUncaughtExceptionHandler(NSException *exception) {
 - (instancetype)init {
   if (self = [super init]) {
     _connection = nil;
+    _notificationID = 0;
   }
   return self;
 }
@@ -47,7 +49,8 @@ void flipperkitUncaughtExceptionHandler(NSException *exception) {
 
 - (void) handleException:(NSException *)exception {
   // TODO: Rather than having indirection from c function, somehow pass objective c selectors as a c function pointer to NSSetUncaughtExceptionHandler
-  [self.connection send:@"crash-report" withParams:@{@"callstack": [exception callStackSymbols]}];
+  self.notificationID += 1;
+  [self.connection send:@"crash-report" withParams:@{@"id": [NSUUID UUID].UUIDString, @"reason": [exception reason], @"name": [exception name], @"callstack": [exception callStackSymbols]}];
 
 }
 - (void)didConnect:(id<FlipperConnection>)connection {
