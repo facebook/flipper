@@ -53,7 +53,8 @@
   for (UIWindow *window in node.windows) {
     if ([window isKindOfClass: [SKHiddenWindow class]]
         || [window isKindOfClass:objc_lookUpClass("FBAccessibilityOverlayWindow")]
-        || [window isKindOfClass:objc_lookUpClass("UITextEffectsWindow")]) {
+        || [window isKindOfClass:objc_lookUpClass("UITextEffectsWindow")]
+        || [window isKindOfClass:objc_lookUpClass("FBStatusBarTrackingWindow")]) {
       continue;
     }
     [children addObject: window];
