@@ -23,6 +23,12 @@ if (!process.env.ANDROID_HOME) {
   process.env.ANDROID_HOME = '/opt/android_sdk';
 }
 
+// emulator/emulator is more reliable than tools/emulator, so prefer it if
+// it exists
+process.env.PATH = `${process.env.ANDROID_HOME}/emulator:${
+  process.env.ANDROID_HOME
+}/tools:${process.env.PATH}`;
+
 if (process.platform === 'darwin') {
   // If we are running on macOS and the app is called Flipper, we add a comment
   // with the old name, to make it findable via Spotlight using its old name.

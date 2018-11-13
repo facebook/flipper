@@ -59,7 +59,7 @@ export default (store: Store, logger: Logger) => {
   const watchAndroidDevices = () => {
     // get emulators
     child_process.exec(
-      '$ANDROID_HOME/tools/emulator -list-avds',
+      'emulator -list-avds',
       (error: ?Error, data: ?string) => {
         if (error != null || data == null) {
           console.error(error || 'Failed to list AVDs');
