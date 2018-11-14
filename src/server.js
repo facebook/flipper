@@ -253,7 +253,7 @@ export default class Server extends EventEmitter {
   addConnection(conn: ReactiveSocket, query: ClientQuery): Client {
     invariant(query, 'expected query');
 
-    const id = `${query.app}-${query.os}-${query.device}-${query.device_id}`;
+    const id = `${query.app}#${query.os}#${query.device}#${query.device_id}`;
     console.debug(`Device connected: ${id}`, 'server');
 
     const client = new Client(id, query, conn, this.logger, this.store);
