@@ -28,7 +28,7 @@ const store = createStore(
 persistStore(store);
 
 const logger = new Logger();
-const bugReporter = new BugReporter(logger);
+const bugReporter = new BugReporter(logger, store);
 dispatcher(store, logger);
 GK.init();
 setupMenuBar();

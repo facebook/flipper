@@ -18,7 +18,7 @@ const mockStore = configureStore([])(reducers(undefined, {type: 'INIT'}));
 
 test('Empty app state matches snapshot', () => {
   const logger = new Logger();
-  const bugReporter = new BugReporter(logger);
+  const bugReporter = new BugReporter(logger, mockStore);
 
   const component = renderer.create(
     <Provider store={mockStore}>

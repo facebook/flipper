@@ -7,8 +7,10 @@
 
 import LogManager from './Logger';
 
+import type {Store} from '../reducers/index.js';
+
 export default class BugReporter {
-  constructor(logManager: LogManager) {}
+  constructor(logManager: LogManager, store: Store) {}
   async report(title: string, body: string): Promise<number> {
     return Promise.resolve(-1);
   }
