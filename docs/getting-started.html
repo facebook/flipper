@@ -71,22 +71,22 @@ flipperkit_version = <span class="hljs-string">'0.11.1'</span>
 
 target <span class="hljs-string">'MyApp'</span> <span class="hljs-keyword">do</span>
   platform <span class="hljs-symbol">:ios</span>, <span class="hljs-string">'9.0'</span>
-  pod <span class="hljs-string">'FlipperKit'</span>, <span class="hljs-string">'~&gt;'</span>+flipperkit_version
+
+  pod <span class="hljs-string">'FlipperKit'</span>, <span class="hljs-string">'~&gt;'</span> + flipperkit_version
   <span class="hljs-comment"># Layout and network plugins are not yet supported for swift projects</span>
   pod <span class="hljs-string">'FlipperKit/FlipperKitLayoutComponentKitSupport'</span>, <span class="hljs-string">'~&gt;'</span> + flipperkit_version
   pod <span class="hljs-string">'FlipperKit/SKIOSNetworkPlugin'</span>, <span class="hljs-string">'~&gt;'</span> + flipperkit_version
   pod <span class="hljs-string">'FlipperKit/FlipperKitUserDefaultsPlugin'</span>, <span class="hljs-string">'~&gt;'</span> + flipperkit_version
 
   post_install <span class="hljs-keyword">do</span> <span class="hljs-params">|installer|</span>
-
-        installer.pods_project.targets.each <span class="hljs-keyword">do</span> <span class="hljs-params">|target|</span>
-            <span class="hljs-keyword">if</span> [<span class="hljs-string">'YogaKit'</span>].<span class="hljs-keyword">include</span>? target.name
-                target.build_configurations.each <span class="hljs-keyword">do</span> <span class="hljs-params">|config|</span>
-                    config.build_settings[<span class="hljs-string">'SWIFT_VERSION'</span>] = swift_version
-                <span class="hljs-keyword">end</span>
-            <span class="hljs-keyword">end</span>
+    installer.pods_project.targets.each <span class="hljs-keyword">do</span> <span class="hljs-params">|target|</span>
+      <span class="hljs-keyword">if</span> [<span class="hljs-string">'YogaKit'</span>].<span class="hljs-keyword">include</span>? target.name
+        target.build_configurations.each <span class="hljs-keyword">do</span> <span class="hljs-params">|config|</span>
+          config.build_settings[<span class="hljs-string">'SWIFT_VERSION'</span>] = swift_version
         <span class="hljs-keyword">end</span>
+      <span class="hljs-keyword">end</span>
     <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">end</span>
 <span class="hljs-keyword">end</span>
 </code></pre>
 <p>and install the dependencies by running <code>pod install</code>. When you open the Xcode workspace file for your app, you now can import and initialize Flipper in your AppDelegate.</p>
