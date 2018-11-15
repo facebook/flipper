@@ -19,6 +19,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     client?.add(FlipperKitLayoutPlugin(rootNode: application, with: layoutDescriptorMapper!))
 
     client?.add(FlipperKitNetworkPlugin(networkAdapter: SKIOSNetworkAdapter()))
+    client?.add(FlipperKitExamplePlugin.sharedInstance());
     client?.add(FKUserDefaultsPlugin.init(suiteName: nil))
     client?.start()
 
