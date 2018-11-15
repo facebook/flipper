@@ -37,7 +37,7 @@ export default (store: Store, logger: Logger) => {
   > = [...getBundledPlugins(), ...getDynamicPlugins()]
     .filter(disabled)
     .filter(checkGK)
-    .map(requirePlugin)
+    .map(requirePlugin())
     .filter(Boolean);
 
   store.dispatch(registerPlugins(initialPlugins));
@@ -69,7 +69,7 @@ function getBundledPlugins(): Array<PluginDefinition> {
   }));
 }
 
-function getDynamicPlugins() {
+export function getDynamicPlugins() {
   let dynamicPlugins: Array<PluginDefinition> = [];
   try {
     // $FlowFixMe process.env not defined in electron API spec
@@ -80,7 +80,7 @@ function getDynamicPlugins() {
   return dynamicPlugins;
 }
 
-function checkGK(plugin: PluginDefinition): boolean {
+export function checkGK(plugin: PluginDefinition): boolean {
   const result = plugin.gatekeeper && !GK.get(plugin.gatekeeper);
   if (!result) {
     console.warn(
@@ -92,7 +92,7 @@ function checkGK(plugin: PluginDefinition): boolean {
   return !result;
 }
 
-function checkDisabled(): (plugin: PluginDefinition) => boolean {
+export function checkDisabled(): (plugin: PluginDefinition) => boolean {
   let disabledPlugins: Set<string> = new Set();
   try {
     disabledPlugins = new Set(
@@ -106,17 +106,21 @@ function checkDisabled(): (plugin: PluginDefinition) => boolean {
   return (plugin: PluginDefinition) => !disabledPlugins.has(plugin.name);
 }
 
-function requirePlugin(
-  pluginDefinition: PluginDefinition,
-): ?Class<FlipperPlugin<> | FlipperDevicePlugin<>> {
-  try {
-    const plugin = window.electronRequire(pluginDefinition.out);
-    if (!plugin.prototype instanceof FlipperBasePlugin) {
-      throw new Error(`Plugin ${plugin.name} is not a FlipperBasePlugin`);
+export function requirePlugin(
+  requireFunction: Function = window.electronRequire,
+) {
+  return (
+    pluginDefinition: PluginDefinition,
+  ): ?Class<FlipperPlugin<> | FlipperDevicePlugin<>> => {
+    try {
+      const plugin = requireFunction(pluginDefinition.out);
+      if (!plugin.prototype instanceof FlipperBasePlugin) {
+        throw new Error(`Plugin ${plugin.name} is not a FlipperBasePlugin`);
+      }
+      return plugin;
+    } catch (e) {
+      console.error(pluginDefinition, e);
+      return null;
     }
-    return plugin;
-  } catch (e) {
-    console.error(pluginDefinition, e);
-    return null;
-  }
+  };
 }
