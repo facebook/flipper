@@ -9,6 +9,7 @@ package com.facebook.flipper.sample;
 
 import android.content.Intent;
 import android.util.Log;
+import java.util.ArrayList;
 import com.facebook.flipper.android.AndroidFlipperClient;
 import com.facebook.flipper.android.diagnostics.FlipperDiagnosticActivity;
 import com.facebook.flipper.core.FlipperClient;
@@ -65,7 +66,8 @@ public class RootComponentSpec {
 
   @OnEvent(ClickEvent.class)
   static void hitGetRequest(final ComponentContext c) {
-
+      ArrayList<Integer> myArray= new ArrayList<Integer>();
+      Integer i = myArray.get(10);
     final Request request =
         new Request.Builder().url("https://api.github.com/repos/facebook/yoga").get().build();
     FlipperSampleApplication.sOkHttpClient

@@ -10,8 +10,11 @@ package com.facebook.flipper.sample;
 import android.app.Application;
 import android.content.Context;
 import android.support.annotation.Nullable;
+import android.util.Log;
+
 import com.facebook.flipper.android.AndroidFlipperClient;
 import com.facebook.flipper.core.FlipperClient;
+import com.facebook.flipper.plugins.crashreporter.CrashReporterPlugin;
 import com.facebook.flipper.plugins.example.ExampleFlipperPlugin;
 import com.facebook.flipper.plugins.inspector.DescriptorMapping;
 import com.facebook.flipper.plugins.inspector.InspectorFlipperPlugin;
@@ -64,8 +67,17 @@ public class FlipperSampleApplication extends Application {
                 new SharedPreferencesDescriptor("other_sample", Context.MODE_PRIVATE))));
     client.addPlugin(new LeakCanaryFlipperPlugin());
     client.addPlugin(new ExampleFlipperPlugin());
+    client.addPlugin(new CrashReporterPlugin());
     client.start();
-
+//    Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+//      @Override
+//      public void uncaughtException(Thread paramThread, Throwable paramThrowable) {
+//        //Catch your exception
+//        // Without System.exit() this will not work.
+//        Log.e("EXCEPTIONHANDLER", "Inside global exception handler");
+//        System.exit(2);
+//      }
+//    });
     getSharedPreferences("sample", Context.MODE_PRIVATE).edit().putString("Hello", "world").apply();
     getSharedPreferences("other_sample", Context.MODE_PRIVATE)
         .edit()

@@ -6,9 +6,7 @@
   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
   <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
-  <uses-sdk
-      android:minSdkVersion="15"
-      android:targetSdkVersion="24"
+  <uses-sdk android:targetSdkVersion="24"
       />
 
   <application
