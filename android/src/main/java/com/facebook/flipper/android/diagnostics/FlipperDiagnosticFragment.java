@@ -7,6 +7,7 @@
  */
 package com.facebook.flipper.android.diagnostics;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
@@ -16,6 +17,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -27,15 +29,27 @@ import com.facebook.flipper.core.StateSummary.StateElement;
 
 public class FlipperDiagnosticFragment extends Fragment implements FlipperStateUpdateListener {
 
-  private TextView mSummaryView;
-  private TextView mLogView;
-  private ScrollView mScrollView;
+  TextView mSummaryView;
+  TextView mLogView;
+  ScrollView mScrollView;
+  Button mReportButton;
+
+  @Nullable FlipperDiagnosticReportListener mReportCallback;
+
+  private final View.OnClickListener mOnBugReportClickListener =
+      new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+          mReportCallback.report(
+              AndroidFlipperClient.getInstance(getContext()).getState(), getSummary());
+        }
+      };
 
   public static FlipperDiagnosticFragment newInstance() {
-    final FlipperDiagnosticFragment fragment = new FlipperDiagnosticFragment();
-    return fragment;
+    return new FlipperDiagnosticFragment();
   }
 
+  @SuppressLint("SetTextI18n")
   @Nullable
   @Override
   public View onCreateView(
@@ -46,10 +60,18 @@ public class FlipperDiagnosticFragment extends Fragment implements FlipperStateU
     final LinearLayout root = new LinearLayout(getContext());
     root.setOrientation(LinearLayout.VERTICAL);
 
+    if (mReportCallback != null) {
+      mReportButton = new Button(getContext());
+      mReportButton.setText("Report Bug");
+      mReportButton.setOnClickListener(mOnBugReportClickListener);
+    }
     mSummaryView = new TextView(getContext());
     mLogView = new TextView(getContext());
     mScrollView = new ScrollView(getContext());
     mScrollView.addView(mLogView);
+    if (mReportButton != null) {
+      root.addView(mReportButton);
+    }
     root.addView(mSummaryView);
     root.addView(mScrollView);
     return root;
@@ -90,7 +112,7 @@ public class FlipperDiagnosticFragment extends Fragment implements FlipperStateU
     }
   }
 
-  private String getSummary() {
+  String getSummary() {
     final Context context = getContext();
     final StateSummary summary = AndroidFlipperClient.getInstance(context).getStateSummary();
     final StringBuilder stateText = new StringBuilder();
@@ -115,9 +137,19 @@ public class FlipperDiagnosticFragment extends Fragment implements FlipperStateU
     return stateText.toString();
   }
 
+  @Override
   public void onStop() {
     super.onStop();
     final FlipperClient client = AndroidFlipperClient.getInstance(getContext());
     client.unsubscribe();
+  }
+
+  @Override
+  public void onAttach(Context context) {
+    super.onAttach(context);
+
+    if (context instanceof FlipperDiagnosticReportListener) {
+      mReportCallback = (FlipperDiagnosticReportListener) context;
+    }
   }
 }
