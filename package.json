@@ -47,7 +47,7 @@
     "eslint-plugin-prettier": "^2.4.0",
     "eslint-plugin-react": "^7.5.1",
     "eslint-plugin-relay": "^0.0.20",
-    "flow-bin": "^0.86.0",
+    "flow-bin": "^0.84.0",
     "glob": "^7.1.2",
     "jest": "^23.6.0",
     "prettier": "1.13.6",
