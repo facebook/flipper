@@ -10,6 +10,7 @@ import Server from '../server.js';
 import type {Store} from '../reducers/index.js';
 import type Logger from '../fb-stubs/Logger.js';
 import type Client from '../Client.js';
+import type {UninitializedClient} from '../UninitializedClient';
 
 export default (store: Store, logger: Logger) => {
   const server = new Server(logger, store);
@@ -44,6 +45,33 @@ export default (store: Store, logger: Logger) => {
       payload,
     });
   });
+
+  server.addListener('start-client-setup', (client: UninitializedClient) => {
+    store.dispatch({
+      type: 'START_CLIENT_SETUP',
+      payload: client,
+    });
+  });
+
+  server.addListener(
+    'finish-client-setup',
+    (payload: {client: UninitializedClient, deviceId: string}) => {
+      store.dispatch({
+        type: 'FINISH_CLIENT_SETUP',
+        payload: payload,
+      });
+    },
+  );
+
+  server.addListener(
+    'client-setup-error',
+    (payload: {client: UninitializedClient, error: Error}) => {
+      store.dispatch({
+        type: 'CLIENT_SETUP_ERROR',
+        payload: payload,
+      });
+    },
+  );
 
   window.addEventListener('beforeunload', () => {
     server.close();
