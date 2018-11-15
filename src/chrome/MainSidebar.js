@@ -26,7 +26,6 @@ import {
   LoadingIndicator,
 } from 'flipper';
 import React from 'react';
-import {devicePlugins, clientPlugins} from '../plugins/index.js';
 import NotificationsHub from '../NotificationsHub.js';
 import {selectPlugin} from '../reducers/connections.js';
 import {connect} from 'react-redux';
@@ -179,6 +178,8 @@ type MainSidebarProps = {|
   }>,
   activeNotifications: Array<PluginNotification>,
   blacklistedPlugins: Array<string>,
+  devicePlugins: Map<string, Class<FlipperDevicePlugin<>>>,
+  clientPlugins: Map<string, Class<FlipperPlugin<>>>,
 |};
 
 class MainSidebar extends Component<MainSidebarProps> {
@@ -239,7 +240,7 @@ class MainSidebar extends Component<MainSidebarProps> {
           <SidebarHeader>{selectedDevice.title}</SidebarHeader>
         )}
         {selectedDevice &&
-          devicePlugins
+          Array.from(this.props.devicePlugins.values())
             .filter(plugin => plugin.supportsDevice(selectedDevice))
             .map((plugin: Class<FlipperDevicePlugin<>>) => (
               <PluginSidebarListItem
@@ -266,7 +267,7 @@ class MainSidebar extends Component<MainSidebarProps> {
           .map((client: Client) => (
             <React.Fragment key={client.id}>
               <SidebarHeader>{client.query.app}</SidebarHeader>
-              {clientPlugins
+              {Array.from(this.props.clientPlugins.values())
                 .filter(
                   (p: Class<FlipperPlugin<>>) =>
                     client.plugins.indexOf(p.id) > -1,
@@ -315,6 +316,7 @@ export default connect(
       uninitializedClients,
     },
     notifications: {activeNotifications, blacklistedPlugins},
+    plugins: {devicePlugins, clientPlugins},
   }) => ({
     blacklistedPlugins,
     activeNotifications,
@@ -324,6 +326,8 @@ export default connect(
     selectedApp,
     clients,
     uninitializedClients,
+    devicePlugins,
+    clientPlugins,
   }),
   {
     selectPlugin,

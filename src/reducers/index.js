@@ -10,6 +10,7 @@ import application from './application.js';
 import connections from './connections.js';
 import pluginStates from './pluginStates.js';
 import notifications from './notifications.js';
+import plugins from './plugins.js';
 import {persistReducer} from 'redux-persist';
 import storage from 'redux-persist/lib/storage/index.js';
 
@@ -22,26 +23,32 @@ import type {
   Action as DevicesAction,
 } from './connections.js';
 import type {
-  State as PluginsState,
-  Action as PluginsAction,
+  State as PluginStatesState,
+  Action as PluginStatesAction,
 } from './pluginStates.js';
 import type {
   State as NotificationsState,
   Action as NotificationsAction,
 } from './notifications.js';
+import type {
+  State as PluginsState,
+  Action as PluginsAction,
+} from './plugins.js';
 import type {Store as ReduxStore} from 'redux';
 
 export type Store = ReduxStore<
-  {
+  {|
     application: ApplicationState,
     connections: DevicesState,
-    pluginStates: PluginsState,
+    pluginStates: PluginStatesState,
     notifications: NotificationsState,
-  },
+    plugins: PluginsState,
+  |},
   | ApplicationAction
   | DevicesAction
-  | PluginsAction
+  | PluginStatesAction
   | NotificationsAction
+  | PluginsAction
   | {|type: 'INIT'|},
 >;
 
@@ -72,4 +79,5 @@ export default combineReducers({
     },
     notifications,
   ),
+  plugins,
 });

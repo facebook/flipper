@@ -5,9 +5,8 @@
  * @format
  */
 
-import type {FlipperBasePlugin} from './plugin.js';
+import type {FlipperPlugin, FlipperDevicePlugin} from './plugin.js';
 
-import plugins from './plugins/index.js';
 import electron from 'electron';
 
 export type DefaultKeyboardAction = 'clear' | 'goToBottom' | 'createPaste';
@@ -63,13 +62,18 @@ function actionHandler(action: string) {
   }
 }
 
-export function setupMenuBar() {
+export function setupMenuBar(
+  plugins: Array<Class<FlipperPlugin<> | FlipperDevicePlugin<>>>,
+) {
   const template = getTemplate(electron.remote.app, electron.remote.shell);
 
   // collect all keyboard actions from all plugins
   const registeredActions: Set<?KeyboardAction> = new Set(
     plugins
-      .map((plugin: Class<FlipperBasePlugin<>>) => plugin.keyboardActions || [])
+      .map(
+        (plugin: Class<FlipperPlugin<> | FlipperDevicePlugin<>>) =>
+          plugin.keyboardActions || [],
+      )
       .reduce((acc: KeyboardActions, cv) => acc.concat(cv), [])
       .map(
         (action: DefaultKeyboardAction | KeyboardAction) =>
@@ -132,7 +136,9 @@ function appendMenuItem(
   }
 }
 
-export function activateMenuItems(activePlugin: FlipperBasePlugin<>) {
+export function activateMenuItems(
+  activePlugin: FlipperPlugin<> | FlipperDevicePlugin<>,
+) {
   // disable all keyboard actions
   for (const item of menuItems) {
     item[1].enabled = false;

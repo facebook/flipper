@@ -17,7 +17,6 @@ import {createStore} from 'redux';
 import {persistStore} from 'redux-persist';
 import reducers from './reducers/index.js';
 import dispatcher from './dispatcher/index.js';
-import {setupMenuBar} from './MenuBar.js';
 import TooltipProvider from './ui/components/TooltipProvider.js';
 const path = require('path');
 
@@ -31,7 +30,6 @@ const logger = new Logger();
 const bugReporter = new BugReporter(logger, store);
 dispatcher(store, logger);
 GK.init();
-setupMenuBar();
 
 const AppFrame = () => (
   <TooltipProvider>

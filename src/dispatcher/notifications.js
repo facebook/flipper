@@ -18,7 +18,6 @@ import {
   updateCategoryBlacklist,
 } from '../reducers/notifications';
 import {textContent} from '../utils/index';
-import {clientPlugins} from '../plugins/index.js';
 import GK from '../fb-stubs/GK';
 
 type NotificationEvents = 'show' | 'click' | 'close' | 'reply' | 'action';
@@ -83,11 +82,7 @@ export default (store: Store, logger: Logger) => {
 
   store.subscribe(() => {
     const {notifications, pluginStates} = store.getState();
-
-    const pluginMap: Map<string, Class<FlipperPlugin<>>> = clientPlugins.reduce(
-      (acc, cv) => acc.set(cv.id, cv),
-      new Map(),
-    );
+    const pluginMap = store.getState().plugins.clientPlugins;
 
     Object.keys(pluginStates).forEach(key => {
       if (knownPluginStates.get(key) !== pluginStates[key]) {

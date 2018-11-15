@@ -5,7 +5,12 @@
  * @format
  */
 
-import type {SearchableProps, FlipperBasePlugin, Device} from 'flipper';
+import type {
+  SearchableProps,
+  FlipperBasePlugin,
+  FlipperPlugin,
+  Device,
+} from 'flipper';
 import type {PluginNotification} from './reducers/notifications';
 import type Logger from './fb-stubs/Logger';
 
@@ -24,7 +29,6 @@ import {
 } from 'flipper';
 import {connect} from 'react-redux';
 import React, {Component, Fragment} from 'react';
-import plugins from './plugins/index';
 import {clipboard} from 'electron';
 import PropTypes from 'prop-types';
 import {
@@ -100,6 +104,8 @@ type Props = {|
   invalidatedNotifications: Array<PluginNotification>,
   blacklistedPlugins: Array<string>,
   blacklistedCategories: Array<string>,
+  devicePlugins: Map<string, Class<FlipperDevicePlugin<>>>,
+  clientPlugins: Map<string, Class<FlipperPlugin<>>>,
   onClear: () => void,
   updatePluginBlacklist: (blacklist: Array<string>) => mixed,
   updateCategoryBlacklist: (blacklist: Array<string>) => mixed,
@@ -243,6 +249,9 @@ class NotificationsTable extends Component<Props, State> {
     return false;
   };
 
+  getPlugin = (id: string) =>
+    this.props.clientPlugins.get(id) || this.props.devicePlugins.get(id);
+
   render() {
     const activeNotifications = this.props.activeNotifications
       .filter(this.getFilter())
@@ -253,6 +262,7 @@ class NotificationsTable extends Component<Props, State> {
           <NotificationItem
             key={n.notification.id}
             {...n}
+            plugin={this.getPlugin(n.pluginId)}
             isSelected={this.state.selectedNotification === n.notification.id}
             onHighlight={() =>
               this.setState({selectedNotification: n.notification.id})
@@ -275,6 +285,7 @@ class NotificationsTable extends Component<Props, State> {
         <NotificationItem
           key={n.notification.id}
           {...n}
+          plugin={this.getPlugin(n.pluginId)}
           onClear={this.props.onClear}
           inactive
         />
@@ -323,11 +334,14 @@ const ConnectedNotificationsTable = connect(
       blacklistedPlugins,
       blacklistedCategories,
     },
+    plugins: {devicePlugins, clientPlugins},
   }) => ({
     activeNotifications,
     invalidatedNotifications,
     blacklistedPlugins,
     blacklistedCategories,
+    devicePlugins,
+    clientPlugins,
   }),
   {
     updatePluginBlacklist,
@@ -445,6 +459,7 @@ type ItemProps = {
     deepLinkPayload?: ?string,
   }) => mixed,
   logger?: Logger,
+  plugin: ?Class<FlipperBasePlugin<>>,
 };
 
 type ItemState = {|
@@ -454,12 +469,10 @@ type ItemState = {|
 class NotificationItem extends Component<ItemProps, ItemState> {
   constructor(props: ItemProps) {
     super(props);
-    const plugin = plugins.find(p => p.id === props.pluginId);
-
     const items = [];
-    if (props.onHidePlugin && plugin) {
+    if (props.onHidePlugin && props.plugin) {
       items.push({
-        label: `Hide ${plugin.title} plugin`,
+        label: `Hide ${props.plugin.title} plugin`,
         click: this.props.onHidePlugin,
       });
     }
@@ -475,11 +488,9 @@ class NotificationItem extends Component<ItemProps, ItemState> {
     );
 
     this.contextMenuItems = items;
-    this.plugin = plugin;
   }
 
   state = {reportedNotHelpful: false};
-  plugin: ?Class<FlipperBasePlugin<>>;
   contextMenuItems;
   deepLinkButton = React.createRef();
 
@@ -541,6 +552,7 @@ class NotificationItem extends Component<ItemProps, ItemState> {
       inactive,
       onHidePlugin,
       onHideCategory,
+      plugin,
     } = this.props;
     const {action} = notification;
 
@@ -553,19 +565,19 @@ class NotificationItem extends Component<ItemProps, ItemState> {
         isSelected={isSelected}
         inactive={inactive}
         items={this.contextMenuItems}>
-        <Glyph name={this.plugin?.icon || 'bell'} size={12} />
+        <Glyph name={plugin?.icon || 'bell'} size={12} />
         <NotificationContent isSelected={isSelected}>
           <Title>{notification.title}</Title>
           {notification.message}
           {!inactive &&
             isSelected &&
-            this.plugin &&
+            plugin &&
             (action || onHidePlugin || onHideCategory) && (
               <Actions>
                 <FlexRow>
                   {action && (
                     <Button onClick={this.openDeeplink}>
-                      Open in {this.plugin.title}
+                      Open in {plugin.title}
                     </Button>
                   )}
                   <ButtonGroup>
@@ -574,7 +586,7 @@ class NotificationItem extends Component<ItemProps, ItemState> {
                     )}
                     {onHidePlugin && (
                       <Button onClick={onHidePlugin}>
-                        Hide {this.plugin.title}
+                        Hide {plugin.title}
                       </Button>
                     )}
                   </ButtonGroup>

@@ -12,6 +12,7 @@ import application from './application';
 import tracking from './tracking';
 import server from './server';
 import notifications from './notifications';
+import plugins from './plugins';
 
 import type Logger from '../fb-stubs/Logger.js';
 import type {Store} from '../reducers/index.js';
@@ -25,4 +26,5 @@ export default (store: Store, logger: Logger) =>
     tracking,
     server,
     notifications,
+    plugins,
   ].forEach(fn => fn(store, logger));
