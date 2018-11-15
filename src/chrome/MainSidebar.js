@@ -8,6 +8,7 @@
 import {FlipperBasePlugin} from '../plugin.js';
 import type BaseDevice from '../devices/BaseDevice.js';
 import type Client from '../Client.js';
+import type {UninitializedClient} from '../UninitializedClient.js';
 import type {PluginNotification} from '../reducers/notifications';
 
 import {
@@ -22,6 +23,7 @@ import {
   GK,
   FlipperPlugin,
   FlipperDevicePlugin,
+  LoadingIndicator,
 } from 'flipper';
 import React from 'react';
 import {devicePlugins, clientPlugins} from '../plugins/index.js';
@@ -154,6 +156,13 @@ class PluginSidebarListItem extends Component<{
   }
 }
 
+const Spinner = styled(LoadingIndicator)({
+  marginTop: '10px',
+  marginBottom: '10px',
+  marginLeft: 'auto',
+  marginRight: 'auto',
+});
+
 type MainSidebarProps = {|
   selectedPlugin: ?string,
   selectedApp: ?string,
@@ -164,6 +173,10 @@ type MainSidebarProps = {|
     selectedApp: ?string,
   }) => void,
   clients: Array<Client>,
+  uninitializedClients: Array<{
+    client: UninitializedClient,
+    deviceId?: string,
+  }>,
   activeNotifications: Array<PluginNotification>,
   blacklistedPlugins: Array<string>,
 |};
@@ -178,7 +191,7 @@ class MainSidebar extends Component<MainSidebarProps> {
       windowIsFocused,
       activeNotifications,
     } = this.props;
-    let {clients} = this.props;
+    let {clients, uninitializedClients} = this.props;
 
     clients = clients
       .filter(
@@ -276,6 +289,12 @@ class MainSidebar extends Component<MainSidebarProps> {
                 ))}
             </React.Fragment>
           ))}
+        {uninitializedClients.map(entry => (
+          <React.Fragment key={JSON.stringify(entry.client)}>
+            <SidebarHeader>{entry.client.appName}</SidebarHeader>
+            <Spinner size={16} />
+          </React.Fragment>
+        ))}
       </Sidebar>
     );
   }
@@ -288,7 +307,13 @@ class MainSidebar extends Component<MainSidebarProps> {
 export default connect(
   ({
     application: {windowIsFocused},
-    connections: {selectedDevice, selectedPlugin, selectedApp, clients},
+    connections: {
+      selectedDevice,
+      selectedPlugin,
+      selectedApp,
+      clients,
+      uninitializedClients,
+    },
     notifications: {activeNotifications, blacklistedPlugins},
   }) => ({
     blacklistedPlugins,
@@ -298,6 +323,7 @@ export default connect(
     selectedPlugin,
     selectedApp,
     clients,
+    uninitializedClients,
   }),
   {
     selectPlugin,
