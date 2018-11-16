@@ -269,31 +269,36 @@ export default function reducer(
         ...state,
         uninitializedClients: state.uninitializedClients
           .filter(entry => !isEqual(entry.client, payload))
-          .concat([{client: payload}]),
+          .concat([{client: payload}])
+          .sort((a, b) => a.client.appName.localeCompare(b.client.appName)),
       };
     }
     case 'FINISH_CLIENT_SETUP': {
       const {payload} = action;
       return {
         ...state,
-        uninitializedClients: state.uninitializedClients.map(
-          c =>
-            isEqual(c.client, payload.client)
-              ? {...c, deviceId: payload.deviceId}
-              : c,
-        ),
+        uninitializedClients: state.uninitializedClients
+          .map(
+            c =>
+              isEqual(c.client, payload.client)
+                ? {...c, deviceId: payload.deviceId}
+                : c,
+          )
+          .sort((a, b) => a.client.appName.localeCompare(b.client.appName)),
       };
     }
     case 'CLIENT_SETUP_ERROR': {
       const {payload} = action;
       return {
         ...state,
-        uninitializedClients: state.uninitializedClients.map(
-          c =>
-            isEqual(c.client, payload.client)
-              ? {...c, error: payload.error.message}
-              : c,
-        ),
+        uninitializedClients: state.uninitializedClients
+          .map(
+            c =>
+              isEqual(c.client, payload.client)
+                ? {...c, error: payload.error.message}
+                : c,
+          )
+          .sort((a, b) => a.client.appName.localeCompare(b.client.appName)),
       };
     }
     default:
