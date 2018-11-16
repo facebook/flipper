@@ -37,11 +37,11 @@
 
 - (void)setUp {
   [super setUp];
-  
+
   if (!_registeredSubdescriptors) {
     _registeredSubdescriptors = [NSArray new];
   }
-  
+
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     [self initEnumMaps];
@@ -93,27 +93,27 @@
 
 - (NSArray<SKNamed<NSDictionary<NSString *, NSObject *> *> *> *)dataForNode:(SKComponentLayoutWrapper *)node {
   NSMutableArray<SKNamed<NSDictionary<NSString *, NSObject *> *> *> *data = [NSMutableArray new];
-  
+
   if (node.isFlexboxChild) {
     [data addObject: [SKNamed newWithName:@"Layout" withValue:[self propsForFlexboxChild:node.flexboxChild]]];
   }
   NSMutableDictionary<NSString *, NSObject *> *extraData = [[NSMutableDictionary alloc] init];
-  
+
   for (SKSubDescriptor *s in _registeredSubdescriptors) {
     [extraData setObject:[s getDataForNode:node] forKey:[s getName]];
   }
   if (extraData.count > 0) {
     [data addObject: [SKNamed newWithName:@"Extra Sections" withValue:extraData]];
   }
-  
+
   [data addObjectsFromArray:[node.component sonar_getData]];
   return data;
 }
 
 - (void)addSubDescriptors:(nonnull NSArray<SKSubDescriptor *>*)subDescriptors{
-  _registeredSubdescriptors = subDescriptors;
+  // _registeredSubdescriptors = subDescriptors;
 }
-       
+
 - (NSDictionary<NSString *, NSObject *> *)propsForFlexboxChild:(CKFlexboxComponentChild)child {
   return @{
            @"spacingBefore": SKObject(@(child.spacingBefore)),
