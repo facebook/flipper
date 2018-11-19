@@ -72,6 +72,10 @@ export class App extends React.Component<Props> {
     );
   }
 }
+/* $FlowFixMe(>=0.86.0) This
+ * comment suppresses an error found when Flow v0.86 was
+ * deployed. To see the error, delete this comment and
+ * run Flow. */
 export default connect(
   ({
     application: {pluginManagerVisible, bugDialogVisible, leftSidebarVisible},

@@ -130,6 +130,10 @@ export default class LogWatcher extends PureComponent<Props, State> {
   };
 
   buildRows = () => {
+    /* $FlowFixMe(>=0.86.0) This
+     * comment suppresses an error found when Flow v0.86 was
+     * deployed. To see the error, delete this comment and
+     * run Flow. */
     return this.props.counters.map(({label, count, notify}, i) => ({
       columns: {
         expression: {
