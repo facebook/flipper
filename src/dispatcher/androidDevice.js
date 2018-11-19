@@ -55,14 +55,12 @@ function getRunningEmulatorName(id: string): Promise<?string> {
 
 export default (store: Store, logger: Logger) => {
   // Using this client before adb server is started up will cause failures.
-  // safeClient gets around this by waiting for listDevices first, which ensures
-  // the server is up and running.
-  const unsafeClient = adb.createClient();
-
-  const safeClient = () =>
-    new Promise((resolve, reject) => {
-      resolve(unsafeClient.listDevices().then(() => unsafeClient));
-    });
+  // this gets around this by waiting for listDevices first, which ensures
+  // the server is up and running before allowing any other operations.
+  const clientPromise = (() => {
+    const unsafeClient = adb.createClient();
+    return unsafeClient.listDevices().then(() => unsafeClient);
+  })();
 
   const watchAndroidDevices = () => {
     // get emulators
@@ -81,7 +79,7 @@ export default (store: Store, logger: Logger) => {
       },
     );
 
-    safeClient().then(client => {
+    clientPromise.then(client => {
       client
         .trackDevices()
         .then(tracker => {
