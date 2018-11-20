@@ -27,8 +27,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     let mainViewController = storyboard.instantiateViewController(withIdentifier: "MainViewController")
     let navigationController = UINavigationController(rootViewController: mainViewController)
 
-    navigationController.navigationBar.topItem?.title = "SampleFlipper";
-    navigationController.navigationBar.isTranslucent = false;
+    navigationController.navigationBar.topItem?.title = "SampleFlipper"
+    navigationController.navigationBar.isTranslucent = false
 
     window?.rootViewController = navigationController
     window?.makeKeyAndVisible()
