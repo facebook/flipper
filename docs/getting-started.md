@@ -98,22 +98,22 @@ flipperkit_version = '0.11.1'
 
 target 'MyApp' do
   platform :ios, '9.0'
-  pod 'FlipperKit', '~>'+flipperkit_version
+
+  pod 'FlipperKit', '~>' + flipperkit_version
   # Layout and network plugins are not yet supported for swift projects
   pod 'FlipperKit/FlipperKitLayoutComponentKitSupport', '~>' + flipperkit_version
   pod 'FlipperKit/SKIOSNetworkPlugin', '~>' + flipperkit_version
   pod 'FlipperKit/FlipperKitUserDefaultsPlugin', '~>' + flipperkit_version
 
   post_install do |installer|
-
-        installer.pods_project.targets.each do |target|
-            if ['YogaKit'].include? target.name
-                target.build_configurations.each do |config|
-                    config.build_settings['SWIFT_VERSION'] = swift_version
-                end
-            end
+    installer.pods_project.targets.each do |target|
+      if ['YogaKit'].include? target.name
+        target.build_configurations.each do |config|
+          config.build_settings['SWIFT_VERSION'] = swift_version
         end
+      end
     end
+  end
 end
 ```
 

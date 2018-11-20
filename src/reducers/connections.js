@@ -7,6 +7,8 @@
 
 import type BaseDevice from '../devices/BaseDevice';
 import type Client from '../Client';
+import type {UninitializedClient} from '../UninitializedClient';
+import {isEqual} from 'lodash';
 
 export type State = {|
   devices: Array<BaseDevice>,
@@ -19,6 +21,11 @@ export type State = {|
   userPreferredApp: ?string,
   error: ?string,
   clients: Array<Client>,
+  uninitializedClients: Array<{
+    client: UninitializedClient,
+    deviceId?: string,
+    errorMessage?: string,
+  }>,
   deepLinkPayload: ?string,
 |};
 
@@ -66,6 +73,18 @@ export type Action =
   | {
       type: 'PREFER_DEVICE',
       payload: string,
+    }
+  | {
+      type: 'START_CLIENT_SETUP',
+      payload: UninitializedClient,
+    }
+  | {
+      type: 'FINISH_CLIENT_SETUP',
+      payload: {client: UninitializedClient, deviceId: string},
+    }
+  | {
+      type: 'CLIENT_SETUP_ERROR',
+      payload: {client: UninitializedClient, error: Error},
     };
 
 const DEFAULT_PLUGIN = 'DeviceLogs';
@@ -81,6 +100,7 @@ const INITAL_STATE: State = {
   userPreferredApp: null,
   error: null,
   clients: [],
+  uninitializedClients: [],
   deepLinkPayload: null,
 };
 
@@ -208,6 +228,12 @@ export default function reducer(
       return {
         ...state,
         clients: state.clients.concat(payload),
+        uninitializedClients: state.uninitializedClients.filter(c => {
+          return (
+            c.deviceId !== payload.query.device_id ||
+            c.client.appName !== payload.query.app
+          );
+        }),
         selectedApp,
         selectedPlugin,
       };
@@ -236,6 +262,44 @@ export default function reducer(
     case 'SERVER_ERROR': {
       const {payload} = action;
       return {...state, error: payload};
+    }
+    case 'START_CLIENT_SETUP': {
+      const {payload} = action;
+      return {
+        ...state,
+        uninitializedClients: state.uninitializedClients
+          .filter(entry => !isEqual(entry.client, payload))
+          .concat([{client: payload}])
+          .sort((a, b) => a.client.appName.localeCompare(b.client.appName)),
+      };
+    }
+    case 'FINISH_CLIENT_SETUP': {
+      const {payload} = action;
+      return {
+        ...state,
+        uninitializedClients: state.uninitializedClients
+          .map(
+            c =>
+              isEqual(c.client, payload.client)
+                ? {...c, deviceId: payload.deviceId}
+                : c,
+          )
+          .sort((a, b) => a.client.appName.localeCompare(b.client.appName)),
+      };
+    }
+    case 'CLIENT_SETUP_ERROR': {
+      const {payload} = action;
+      return {
+        ...state,
+        uninitializedClients: state.uninitializedClients
+          .map(
+            c =>
+              isEqual(c.client, payload.client)
+                ? {...c, error: payload.error.message}
+                : c,
+          )
+          .sort((a, b) => a.client.appName.localeCompare(b.client.appName)),
+      };
     }
     default:
       return state;

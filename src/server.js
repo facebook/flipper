@@ -15,6 +15,7 @@ import {RSocketServer, ReactiveSocket} from 'rsocket-core';
 import RSocketTCPServer from 'rsocket-tcp-server';
 import {Single} from 'rsocket-flowable';
 import Client from './Client.js';
+import type {UninitializedClient} from './UninitializedClient';
 import {RecurringError} from './utils/errors';
 
 const EventEmitter = (require('events'): any);
@@ -140,6 +141,13 @@ export default class Server extends EventEmitter {
     const clientData = JSON.parse(connectRequest.data);
     this.connectionTracker.logConnectionAttempt(clientData);
 
+    const client: UninitializedClient = {
+      os: clientData.os,
+      deviceName: clientData.device,
+      appName: clientData.app,
+    };
+    this.emit('start-client-setup', client);
+
     if (
       clientData.os === 'iOS' &&
       !clientData.device.toLowerCase().includes('simulator')
@@ -181,6 +189,7 @@ export default class Server extends EventEmitter {
         |} = rawData;
         if (json.method === 'signCertificate') {
           console.debug('CSR received from device', 'server');
+
           const {csr, destination} = json;
           return new Single(subscriber => {
             subscriber.onSubscribe();
@@ -193,10 +202,15 @@ export default class Server extends EventEmitter {
                   }),
                   metadata: '',
                 });
+                this.emit('finish-client-setup', {
+                  client,
+                  deviceId: result.deviceId,
+                });
               })
               .catch(e => {
                 console.error(e, 'server');
                 subscriber.onError(e);
+                this.emit('client-setup-error', {client, error: e});
               });
           });
         }
@@ -253,7 +267,7 @@ export default class Server extends EventEmitter {
   addConnection(conn: ReactiveSocket, query: ClientQuery): Client {
     invariant(query, 'expected query');
 
-    const id = `${query.app}-${query.os}-${query.device}-${query.device_id}`;
+    const id = `${query.app}#${query.os}#${query.device}#${query.device_id}`;
     console.debug(`Device connected: ${id}`, 'server');
 
     const client = new Client(id, query, conn, this.logger, this.store);

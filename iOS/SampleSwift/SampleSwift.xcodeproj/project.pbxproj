@@ -10,6 +10,7 @@
 		322121E8134CB1102F388691 /* libPods-SampleSwift.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6233B2BCBACBB2E8D715CC04 /* libPods-SampleSwift.a */; };
 		4E102343216ADB5900160734 /* UserDefaultsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E102342216ADB5900160734 /* UserDefaultsViewController.swift */; };
 		532FF2DF211316ED00FC5A10 /* NetworkViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 532FF2DE211316ED00FC5A10 /* NetworkViewController.swift */; };
+		53C327E5219DDCA800FE7A4C /* CommunicationDemoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53C327E4219DDCA800FE7A4C /* CommunicationDemoViewController.swift */; };
 		A19C402720E20023004BF1F7 /* Icons.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A19C402620E20023004BF1F7 /* Icons.xcassets */; };
 		A1EC522D20DED61B007C6977 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1EC522C20DED61B007C6977 /* AppDelegate.swift */; };
 		A1EC522F20DED61B007C6977 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1EC522E20DED61B007C6977 /* ViewController.swift */; };
@@ -20,6 +21,7 @@
 /* Begin PBXFileReference section */
 		4E102342216ADB5900160734 /* UserDefaultsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsViewController.swift; sourceTree = "<group>"; };
 		532FF2DE211316ED00FC5A10 /* NetworkViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkViewController.swift; sourceTree = "<group>"; };
+		53C327E4219DDCA800FE7A4C /* CommunicationDemoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunicationDemoViewController.swift; sourceTree = "<group>"; };
 		6233B2BCBACBB2E8D715CC04 /* libPods-SampleSwift.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SampleSwift.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		82933F6ACB19D9FAA4A0B0DC /* Pods-SampleSwift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SampleSwift.release.xcconfig"; path = "Pods/Target Support Files/Pods-SampleSwift/Pods-SampleSwift.release.xcconfig"; sourceTree = "<group>"; };
 		871A353CDDB4CD0F4FE9A564 /* Pods-SampleSwift.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SampleSwift.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SampleSwift/Pods-SampleSwift.debug.xcconfig"; sourceTree = "<group>"; };
@@ -81,6 +83,7 @@
 				A1EC523820DED61C007C6977 /* Info.plist */,
 				532FF2DE211316ED00FC5A10 /* NetworkViewController.swift */,
 				4E102342216ADB5900160734 /* UserDefaultsViewController.swift */,
+				53C327E4219DDCA800FE7A4C /* CommunicationDemoViewController.swift */,
 			);
 			path = SampleSwift;
 			sourceTree = "<group>";
@@ -188,6 +191,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A1EC522F20DED61B007C6977 /* ViewController.swift in Sources */,
+				53C327E5219DDCA800FE7A4C /* CommunicationDemoViewController.swift in Sources */,
 				532FF2DF211316ED00FC5A10 /* NetworkViewController.swift in Sources */,
 				4E102343216ADB5900160734 /* UserDefaultsViewController.swift in Sources */,
 				A1EC522D20DED61B007C6977 /* AppDelegate.swift in Sources */,

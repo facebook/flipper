@@ -21,14 +21,12 @@ type Props = {
 
 class DevicesButton extends Component<Props> {
   launchEmulator = (name: string) => {
-    const child = spawn(
-      `${process.env.ANDROID_HOME || ''}/tools/emulator`,
-      [`@${name}`],
-      {
-        detached: true,
-        stdio: 'ignore',
-      },
-    );
+    const child = spawn('emulator', [`@${name}`], {
+      detached: true,
+    });
+    child.stderr.on('data', data => {
+      console.error(`Android emulator error: ${data}`);
+    });
     child.on('error', console.error);
     this.props.preferDevice(name);
   };
@@ -96,6 +94,9 @@ class DevicesButton extends Component<Props> {
     );
   }
 }
+
+/* $FlowFixMe(>=0.86.0) This comment suppresses an error found when Flow v0.86
+ * was deployed. To see the error, delete this comment and run Flow. */
 export default connect(
   ({connections: {devices, androidEmulators, selectedDevice}}) => ({
     devices,

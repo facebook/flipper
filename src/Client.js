@@ -11,7 +11,6 @@ import type Logger from './fb-stubs/Logger.js';
 import type {Store} from './reducers/index.js';
 
 import {setPluginState} from './reducers/pluginStates.js';
-import {clientPlugins} from './plugins/index.js';
 import {ReactiveSocket, PartialResponder} from 'rsocket-core';
 
 const EventEmitter = (require('events'): any);
@@ -97,14 +96,6 @@ export default class Client extends EventEmitter {
     return this.plugins.includes(Plugin.id);
   }
 
-  getFirstSupportedPlugin(): ?string {
-    for (const Plugin of clientPlugins) {
-      if (this.supportsPlugin(Plugin)) {
-        return Plugin.id;
-      }
-    }
-  }
-
   async init() {
     await this.getPlugins();
   }
@@ -162,12 +153,11 @@ export default class Client extends EventEmitter {
         const params = data.params;
         invariant(params, 'expected params');
 
-        const persistingPlugin: ?Class<FlipperPlugin<>> = clientPlugins.find(
-          (p: Class<FlipperPlugin<>>) =>
-            p.id === params.api && p.persistedStateReducer,
-        );
+        const persistingPlugin: ?Class<
+          FlipperPlugin<>,
+        > = this.store.getState().plugins.clientPlugins.get(params.api);
 
-        if (persistingPlugin) {
+        if (persistingPlugin && persistingPlugin.persistedStateReducer) {
           const pluginKey = `${this.id}#${params.api}`;
           const persistedState = {
             ...persistingPlugin.defaultPersistedState,

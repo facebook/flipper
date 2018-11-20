@@ -8,6 +8,7 @@
 import {FlipperBasePlugin} from '../plugin.js';
 import type BaseDevice from '../devices/BaseDevice.js';
 import type Client from '../Client.js';
+import type {UninitializedClient} from '../UninitializedClient.js';
 import type {PluginNotification} from '../reducers/notifications';
 
 import {
@@ -22,9 +23,9 @@ import {
   GK,
   FlipperPlugin,
   FlipperDevicePlugin,
+  LoadingIndicator,
 } from 'flipper';
 import React from 'react';
-import {devicePlugins, clientPlugins} from '../plugins/index.js';
 import NotificationsHub from '../NotificationsHub.js';
 import {selectPlugin} from '../reducers/connections.js';
 import {connect} from 'react-redux';
@@ -154,6 +155,13 @@ class PluginSidebarListItem extends Component<{
   }
 }
 
+const Spinner = styled(LoadingIndicator)({
+  marginTop: '10px',
+  marginBottom: '10px',
+  marginLeft: 'auto',
+  marginRight: 'auto',
+});
+
 type MainSidebarProps = {|
   selectedPlugin: ?string,
   selectedApp: ?string,
@@ -164,8 +172,14 @@ type MainSidebarProps = {|
     selectedApp: ?string,
   }) => void,
   clients: Array<Client>,
+  uninitializedClients: Array<{
+    client: UninitializedClient,
+    deviceId?: string,
+  }>,
   activeNotifications: Array<PluginNotification>,
   blacklistedPlugins: Array<string>,
+  devicePlugins: Map<string, Class<FlipperDevicePlugin<>>>,
+  clientPlugins: Map<string, Class<FlipperPlugin<>>>,
 |};
 
 class MainSidebar extends Component<MainSidebarProps> {
@@ -178,7 +192,7 @@ class MainSidebar extends Component<MainSidebarProps> {
       windowIsFocused,
       activeNotifications,
     } = this.props;
-    let {clients} = this.props;
+    let {clients, uninitializedClients} = this.props;
 
     clients = clients
       .filter(
@@ -226,7 +240,7 @@ class MainSidebar extends Component<MainSidebarProps> {
           <SidebarHeader>{selectedDevice.title}</SidebarHeader>
         )}
         {selectedDevice &&
-          devicePlugins
+          Array.from(this.props.devicePlugins.values())
             .filter(plugin => plugin.supportsDevice(selectedDevice))
             .map((plugin: Class<FlipperDevicePlugin<>>) => (
               <PluginSidebarListItem
@@ -253,7 +267,7 @@ class MainSidebar extends Component<MainSidebarProps> {
           .map((client: Client) => (
             <React.Fragment key={client.id}>
               <SidebarHeader>{client.query.app}</SidebarHeader>
-              {clientPlugins
+              {Array.from(this.props.clientPlugins.values())
                 .filter(
                   (p: Class<FlipperPlugin<>>) =>
                     client.plugins.indexOf(p.id) > -1,
@@ -276,16 +290,33 @@ class MainSidebar extends Component<MainSidebarProps> {
                 ))}
             </React.Fragment>
           ))}
+        {uninitializedClients.map(entry => (
+          <React.Fragment key={JSON.stringify(entry.client)}>
+            <SidebarHeader>{entry.client.appName}</SidebarHeader>
+            <Spinner size={16} />
+          </React.Fragment>
+        ))}
       </Sidebar>
     );
   }
 }
 
+/* $FlowFixMe(>=0.86.0) This
+ * comment suppresses an error found when Flow v0.86 was
+ * deployed. To see the error, delete this comment and
+ * run Flow. */
 export default connect(
   ({
     application: {windowIsFocused},
-    connections: {selectedDevice, selectedPlugin, selectedApp, clients},
+    connections: {
+      selectedDevice,
+      selectedPlugin,
+      selectedApp,
+      clients,
+      uninitializedClients,
+    },
     notifications: {activeNotifications, blacklistedPlugins},
+    plugins: {devicePlugins, clientPlugins},
   }) => ({
     blacklistedPlugins,
     activeNotifications,
@@ -294,6 +325,9 @@ export default connect(
     selectedPlugin,
     selectedApp,
     clients,
+    uninitializedClients,
+    devicePlugins,
+    clientPlugins,
   }),
   {
     selectPlugin,

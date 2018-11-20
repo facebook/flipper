@@ -19,6 +19,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     client?.add(FlipperKitLayoutPlugin(rootNode: application, with: layoutDescriptorMapper!))
 
     client?.add(FlipperKitNetworkPlugin(networkAdapter: SKIOSNetworkAdapter()))
+    client?.add(FlipperKitExamplePlugin.sharedInstance());
     client?.add(FKUserDefaultsPlugin.init(suiteName: nil))
     client?.start()
 
@@ -26,8 +27,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     let mainViewController = storyboard.instantiateViewController(withIdentifier: "MainViewController")
     let navigationController = UINavigationController(rootViewController: mainViewController)
 
-    navigationController.navigationBar.topItem?.title = "SampleFlipper";
-    navigationController.navigationBar.isTranslucent = false;
+    navigationController.navigationBar.topItem?.title = "SampleFlipper"
+    navigationController.navigationBar.isTranslucent = false
 
     window?.rootViewController = navigationController
     window?.makeKeyAndVisible()

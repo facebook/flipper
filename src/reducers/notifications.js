@@ -16,6 +16,7 @@ export type State = {
   activeNotifications: Array<PluginNotification>,
   invalidatedNotifications: Array<PluginNotification>,
   blacklistedPlugins: Array<string>,
+  blacklistedCategories: Array<string>,
   clearedNotifications: Set<string>,
 };
 
@@ -28,24 +29,32 @@ type ActiveNotificationsAction = {
   },
 };
 
-type ClearAllAction = {
-  type: 'CLEAR_ALL_NOTIFICATIONS',
-};
-
-type UpdateBlacklistAction = {
-  type: 'UPDATE_PLUGIN_BLACKLIST',
-  payload: Array<string>,
-};
-
 export type Action =
-  | ActiveNotificationsAction
-  | ClearAllAction
-  | UpdateBlacklistAction;
+  | {
+      type: 'CLEAR_ALL_NOTIFICATIONS',
+    }
+  | {
+      type: 'SET_ACTIVE_NOTIFICATIONS',
+      payload: {
+        notifications: Array<Notification>,
+        client: ?string,
+        pluginId: string,
+      },
+    }
+  | {
+      type: 'UPDATE_PLUGIN_BLACKLIST',
+      payload: Array<string>,
+    }
+  | {
+      type: 'UPDATE_CATEGORY_BLACKLIST',
+      payload: Array<string>,
+    };
 
 const INITIAL_STATE: State = {
   activeNotifications: [],
   invalidatedNotifications: [],
   blacklistedPlugins: [],
+  blacklistedCategories: [],
   clearedNotifications: new Set(),
 };
 
@@ -76,6 +85,11 @@ export default function reducer(
       return {
         ...state,
         blacklistedPlugins: action.payload,
+      };
+    case 'UPDATE_CATEGORY_BLACKLIST':
+      return {
+        ...state,
+        blacklistedCategories: action.payload,
       };
     default:
       return state;
@@ -140,11 +154,16 @@ export function clearAllNotifications(): Action {
   };
 }
 
-export function updatePluginBlacklist(
-  payload: Array<string>,
-): UpdateBlacklistAction {
+export function updatePluginBlacklist(payload: Array<string>) {
   return {
     type: 'UPDATE_PLUGIN_BLACKLIST',
+    payload,
+  };
+}
+
+export function updateCategoryBlacklist(payload: Array<string>) {
+  return {
+    type: 'UPDATE_CATEGORY_BLACKLIST',
     payload,
   };
 }

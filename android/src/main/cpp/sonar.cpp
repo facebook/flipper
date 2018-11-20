@@ -1,11 +1,10 @@
 /*
- *  Copyright (c) 2018-present, Facebook, Inc.
+ *  Copyright (c) Facebook, Inc.
  *
  *  This source code is licensed under the MIT license found in the LICENSE
  *  file in the root directory of this source tree.
  *
  */
-
 #include <memory>
 
 #ifdef FLIPPER_OSS
@@ -29,6 +28,14 @@ using namespace facebook;
 using namespace facebook::flipper;
 
 namespace {
+
+void handleException(const std::exception& e) {
+  // TODO: T35898390, report and log the exception in scribe
+  // TODO: T35898500, send flipper notification
+  std::string message = "Exception caught in C++ and suppressed: ";
+  message += e.what();
+  __android_log_write(ANDROID_LOG_ERROR, "FLIPPER", message.c_str());
+}
 
 class JEventBase : public jni::HybridClass<JEventBase> {
  public:
@@ -186,22 +193,45 @@ class JFlipperPlugin : public jni::JavaClass<JFlipperPlugin> {
 
   std::string identifier() const {
     static const auto method = javaClassStatic()->getMethod<std::string()>("getId");
-    return method(self())->toStdString();
+    try {
+      return method(self())->toStdString();
+
+    } catch (const std::exception& e) {
+      handleException(e);
+      return "";
+    }
   }
 
   void didConnect(std::shared_ptr<FlipperConnection> conn) {
-    static const auto method = javaClassStatic()->getMethod<void(jni::alias_ref<JFlipperConnection::javaobject>)>("onConnect");
-    method(self(), JFlipperConnectionImpl::newObjectCxxArgs(conn));
+    auto method =
+        javaClassStatic()
+            ->getMethod<void(jni::alias_ref<JFlipperConnection::javaobject>)>(
+                "onConnect");
+    try {
+      method(self(), JFlipperConnectionImpl::newObjectCxxArgs(conn));
+    } catch (const std::exception& e) {
+      handleException(e);
+    }
   }
 
   void didDisconnect() {
     static const auto method = javaClassStatic()->getMethod<void()>("onDisconnect");
-    method(self());
+    try {
+      method(self());
+    } catch (const std::exception& e) {
+      handleException(e);
+    }
   }
 
     bool runInBackground() {
-        static const auto method = javaClassStatic()->getMethod<jboolean()>("runInBackground");
+      static const auto method =
+          javaClassStatic()->getMethod<jboolean()>("runInBackground");
+      try {
         return method(self()) == JNI_TRUE;
+      } catch (const std::exception& e) {
+        handleException(e);
+        return false;
+      }
     }
 };
 
@@ -210,20 +240,41 @@ class JFlipperStateUpdateListener : public jni::JavaClass<JFlipperStateUpdateLis
   constexpr static auto  kJavaDescriptor = "Lcom/facebook/flipper/core/FlipperStateUpdateListener;";
 
   void onUpdate() {
-    static const auto method = javaClassStatic()->getMethod<void()>("onUpdate");
-    method(self());
+    try {
+      static const auto method =
+          javaClassStatic()->getMethod<void()>("onUpdate");
+      method(self());
+    } catch (const std::exception& e) {
+      handleException(e);
+    }
   }
   void onStepStarted(std::string step) {
-    static const auto method = javaClassStatic()->getMethod<void(std::string)>("onStepStarted");
-    method(self(), step);
+    try {
+      static const auto method =
+          javaClassStatic()->getMethod<void(std::string)>("onStepStarted");
+      method(self(), step);
+    } catch (const std::exception& e) {
+      handleException(e);
+    }
   }
   void onStepSuccess(std::string step) {
-    static const auto method = javaClassStatic()->getMethod<void(std::string)>("onStepSuccess");
-    method(self(), step);
+    try {
+      static const auto method =
+          javaClassStatic()->getMethod<void(std::string)>("onStepSuccess");
+      method(self(), step);
+    } catch (const std::exception& e) {
+      handleException(e);
+    }
   }
   void onStepFailed(std::string step, std::string errorMessage) {
-    static const auto method = javaClassStatic()->getMethod<void(std::string, std::string)>("onStepFailed");
-    method(self(), step, errorMessage);
+    try {
+      static const auto method =
+          javaClassStatic()->getMethod<void(std::string, std::string)>(
+              "onStepFailed");
+      method(self(), step, errorMessage);
+    } catch (const std::exception& e) {
+      handleException(e);
+    }
   }
 };
 
@@ -295,65 +346,116 @@ class JFlipperClient : public jni::HybridClass<JFlipperClient> {
   }
 
   static jni::alias_ref<JFlipperClient::javaobject> getInstance(jni::alias_ref<jclass>) {
-    static auto client = make_global(newObjectCxxArgs());
-  	return client;
+    try {
+      static auto client = make_global(newObjectCxxArgs());
+      return client;
+    } catch (const std::exception& e) {
+      return nullptr;
+    }
   }
 
   void start() {
-  	FlipperClient::instance()->start();
+    try {
+      FlipperClient::instance()->start();
+    } catch (const std::exception& e) {
+      handleException(e);
+    }
   }
 
   void stop() {
-  	FlipperClient::instance()->stop();
+    try {
+      FlipperClient::instance()->stop();
+    } catch (const std::exception& e) {
+      handleException(e);
+    }
   }
 
   void addPlugin(jni::alias_ref<JFlipperPlugin> plugin) {
-    auto wrapper = std::make_shared<JFlipperPluginWrapper>(make_global(plugin));
-    FlipperClient::instance()->addPlugin(wrapper);
+    try {
+      auto wrapper =
+          std::make_shared<JFlipperPluginWrapper>(make_global(plugin));
+      FlipperClient::instance()->addPlugin(wrapper);
+    } catch (const std::exception& e) {
+      handleException(e);
+    }
   }
 
   void removePlugin(jni::alias_ref<JFlipperPlugin> plugin) {
-    auto client = FlipperClient::instance();
-    client->removePlugin(client->getPlugin(plugin->identifier()));
+    try {
+      auto client = FlipperClient::instance();
+      client->removePlugin(client->getPlugin(plugin->identifier()));
+    } catch (const std::exception& e) {
+      handleException(e);
+    }
   }
 
   void subscribeForUpdates(jni::alias_ref<JFlipperStateUpdateListener> stateListener) {
-    auto client = FlipperClient::instance();
-    mStateListener = std::make_shared<AndroidFlipperStateUpdateListener>(stateListener);
-    client->setStateListener(mStateListener);
+    try {
+      auto client = FlipperClient::instance();
+      mStateListener =
+          std::make_shared<AndroidFlipperStateUpdateListener>(stateListener);
+      client->setStateListener(mStateListener);
+    } catch (const std::exception& e) {
+      handleException(e);
+    }
   }
 
   void unsubscribe() {
-    auto client = FlipperClient::instance();
-    mStateListener = nullptr;
-    client->setStateListener(nullptr);
+    try {
+      auto client = FlipperClient::instance();
+      mStateListener = nullptr;
+      client->setStateListener(nullptr);
+    } catch (const std::exception& e) {
+      handleException(e);
+    }
   }
 
   std::string getState() {
-    return FlipperClient::instance()->getState();
+    try {
+      return FlipperClient::instance()->getState();
+    } catch (const std::exception& e) {
+      handleException(e);
+      return "";
+    }
   }
 
   jni::global_ref<JStateSummary::javaobject> getStateSummary() {
-    auto summary = jni::make_global(JStateSummary::create());
-    auto elements = FlipperClient::instance()->getStateElements();
-    for (auto&& element : elements) {
-      std::string status;
-      switch (element.state_) {
-        case State::in_progress: status = "IN_PROGRESS"; break;
-        case State::failed: status = "FAILED"; break;
-        case State::success: status = "SUCCESS"; break;
+    try {
+      auto summary = jni::make_global(JStateSummary::create());
+      auto elements = FlipperClient::instance()->getStateElements();
+      for (auto&& element : elements) {
+        std::string status;
+        switch (element.state_) {
+          case State::in_progress:
+            status = "IN_PROGRESS";
+            break;
+          case State::failed:
+            status = "FAILED";
+            break;
+          case State::success:
+            status = "SUCCESS";
+            break;
+        }
+        summary->addEntry(element.name_, status);
       }
-      summary->addEntry(element.name_, status);
+      return summary;
+    } catch (const std::exception& e) {
+      handleException(e);
+      return nullptr;
     }
-    return summary;
   }
 
   jni::alias_ref<JFlipperPlugin> getPlugin(const std::string& identifier) {
-    auto plugin = FlipperClient::instance()->getPlugin(identifier);
-    if (plugin) {
-      auto wrapper = std::static_pointer_cast<JFlipperPluginWrapper>(plugin);
-      return wrapper->jplugin;
-    } else {
+    try {
+      auto plugin = FlipperClient::instance()->getPlugin(identifier);
+      if (plugin) {
+        auto wrapper = std::static_pointer_cast<JFlipperPluginWrapper>(plugin);
+        return wrapper->jplugin;
+      } else {
+        return nullptr;
+      }
+    } catch (const std::exception& e) {
+      handleException(e);
       return nullptr;
     }
   }
