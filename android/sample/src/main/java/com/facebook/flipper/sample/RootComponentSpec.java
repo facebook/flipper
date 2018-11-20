@@ -66,8 +66,6 @@ public class RootComponentSpec {
 
   @OnEvent(ClickEvent.class)
   static void hitGetRequest(final ComponentContext c) {
-      ArrayList<Integer> myArray= new ArrayList<Integer>();
-      Integer i = myArray.get(10);
     final Request request =
         new Request.Builder().url("https://api.github.com/repos/facebook/yoga").get().build();
     FlipperSampleApplication.sOkHttpClient
