@@ -67,6 +67,6 @@ export default class extends FlipperPlugin {
   };
 
   render() {
-    return 'hello world';
+    return 'Dedicated space to debug crashes. Look out for crash notifications.';
   }
 }
