@@ -346,7 +346,7 @@ class RequestBodyInspector extends Component<{
         } catch (e) {
           console.warn(
             'BodyFormatter exception from ' + formatter.constructor.name,
-            e.getMessage(),
+            e.message,
           );
         }
       }
@@ -377,7 +377,7 @@ class ResponseBodyInspector extends Component<{
         } catch (e) {
           console.warn(
             'BodyFormatter exception from ' + formatter.constructor.name,
-            e.getMessage(),
+            e.message,
           );
         }
       }
