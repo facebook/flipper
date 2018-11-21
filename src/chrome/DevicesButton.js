@@ -19,6 +19,8 @@ type Props = {
   preferDevice: (device: string) => void,
 };
 
+// Remove this if the flow fixme at the bottom is addressed (or has already been removed).
+/* eslint-disable prettier/prettier */
 class DevicesButton extends Component<Props> {
   launchEmulator = (name: string) => {
     const child = spawn('emulator', [`@${name}`], {
@@ -96,7 +98,8 @@ class DevicesButton extends Component<Props> {
 }
 
 /* $FlowFixMe(>=0.86.0) This comment suppresses an error found when Flow v0.86
- * was deployed. To see the error, delete this comment and run Flow. */
+ * was deployed. To see the error, delete this comment and run Flow.
+ */
 export default connect(
   ({connections: {devices, androidEmulators, selectedDevice}}) => ({
     devices,
