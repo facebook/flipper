@@ -71,6 +71,7 @@
     "lodash.debounce": "^4.0.8",
     "mkdirp": "^0.5.1",
     "openssl-wrapper": "^0.3.4",
+    "promise-retry": "^1.1.1",
     "prop-types": "^15.6.0",
     "react": "16",
     "react-color": "^2.11.7",
