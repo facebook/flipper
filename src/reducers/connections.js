@@ -9,6 +9,7 @@ import type BaseDevice from '../devices/BaseDevice';
 import type Client from '../Client';
 import type {UninitializedClient} from '../UninitializedClient';
 import {isEqual} from 'lodash';
+import {RecurringError} from '../utils/errors';
 
 export type State = {|
   devices: Array<BaseDevice>,
@@ -289,6 +290,13 @@ export default function reducer(
     }
     case 'CLIENT_SETUP_ERROR': {
       const {payload} = action;
+
+      console.error(
+        new RecurringError(`Client setup error: ${payload.error.message}`),
+        `${payload.client.os}:${payload.client.deviceName}:${
+          payload.client.appName
+        }`,
+      );
       return {
         ...state,
         uninitializedClients: state.uninitializedClients
