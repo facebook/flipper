@@ -87,7 +87,9 @@ export default (store: Store, logger: Logger) => {
     Object.keys(pluginStates).forEach(key => {
       if (knownPluginStates.get(key) !== pluginStates[key]) {
         knownPluginStates.set(key, pluginStates[key]);
-        const [client, pluginId] = key.split('#');
+        const split = key.split('#');
+        const pluginId = split.pop();
+        const client = split.join('#');
         const persistingPlugin: ?Class<FlipperPlugin<>> = pluginMap.get(
           pluginId,
         );
