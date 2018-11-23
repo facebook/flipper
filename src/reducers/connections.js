@@ -226,6 +226,16 @@ export default function reducer(
         selectedPlugin = userPreferredPlugin;
       }
 
+      const matchingDeviceForClient = state.devices.filter(
+        device => payload.query.device_id === device.serial,
+      );
+      if (matchingDeviceForClient.length === 0) {
+        console.error(
+          new RecurringError(`Client initialised for non-displayed device`),
+          payload.id,
+        );
+      }
+
       return {
         ...state,
         clients: state.clients.concat(payload),
