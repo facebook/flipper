@@ -1,11 +1,10 @@
 /*
- *  Copyright (c) 2018-present, Facebook, Inc.
+ *  Copyright (c) Facebook, Inc.
  *
  *  This source code is licensed under the MIT license found in the LICENSE
  *  file in the root directory of this source tree.
  *
  */
-
 #pragma once
 
 #include <Flipper/FlipperPlugin.h>
@@ -35,6 +34,16 @@ class FlipperPluginMock : public FlipperPlugin {
         connectionCallback_(connectionCallback),
         disconnectionCallback_(disconnectionCallback) {}
 
+  FlipperPluginMock(
+      const std::string& identifier,
+      const ConnectionCallback& connectionCallback,
+      const DisconnectionCallback& disconnectionCallback,
+      bool runInBackground)
+      : identifier_(identifier),
+        runInBackground_(runInBackground),
+        connectionCallback_(connectionCallback),
+        disconnectionCallback_(disconnectionCallback) {}
+
   std::string identifier() const override {
     return identifier_;
   }
@@ -51,8 +60,13 @@ class FlipperPluginMock : public FlipperPlugin {
     }
   }
 
+  bool runInBackground() override {
+    return runInBackground_;
+  }
+
  private:
   std::string identifier_;
+  bool runInBackground_ = false;
   ConnectionCallback connectionCallback_;
   DisconnectionCallback disconnectionCallback_;
 };

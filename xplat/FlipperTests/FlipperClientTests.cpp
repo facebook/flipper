@@ -1,11 +1,10 @@
 /*
- *  Copyright (c) 2018-present, Facebook, Inc.
+ *  Copyright (c) Facebook, Inc.
  *
  *  This source code is licensed under the MIT license found in the LICENSE
  *  file in the root directory of this source tree.
  *
  */
-
 #include <Flipper/FlipperClient.h>
 #include <FlipperTestLib/FlipperPluginMock.h>
 #include <FlipperTestLib/FlipperConnectionManagerMock.h>
@@ -287,6 +286,46 @@ TEST(FlipperClientTests, testExceptionUnknownApi) {
 
   EXPECT_EQ(socket->messages.back()["error"]["message"],
             "connection Unknown not found for method execute");
+}
+
+TEST(FlipperClientTests, testBackgroundPluginActivated) {
+  auto socket = new FlipperConnectionManagerMock;
+  FlipperClient client(
+      std::unique_ptr<FlipperConnectionManagerMock>{socket}, state);
+
+  bool pluginConnected = false;
+  const auto connectionCallback = [&](std::shared_ptr<FlipperConnection> conn) {
+    pluginConnected = true;
+  };
+  const auto disconnectionCallback = [&]() { pluginConnected = false; };
+  auto plugin = std::make_shared<FlipperPluginMock>(
+      "Test", connectionCallback, disconnectionCallback, true);
+
+  client.addPlugin(plugin);
+  client.start();
+  EXPECT_TRUE(pluginConnected);
+  client.stop();
+  EXPECT_FALSE(pluginConnected);
+}
+
+TEST(FlipperClientTests, testNonBackgroundPluginNotActivated) {
+  auto socket = new FlipperConnectionManagerMock;
+  FlipperClient client(
+      std::unique_ptr<FlipperConnectionManagerMock>{socket}, state);
+
+  bool pluginConnected = false;
+  const auto connectionCallback = [&](std::shared_ptr<FlipperConnection> conn) {
+    pluginConnected = true;
+  };
+  const auto disconnectionCallback = [&]() { pluginConnected = false; };
+  auto plugin = std::make_shared<FlipperPluginMock>(
+      "Test", connectionCallback, disconnectionCallback, false);
+
+  client.addPlugin(plugin);
+  client.start();
+  EXPECT_FALSE(pluginConnected);
+  client.stop();
+  EXPECT_FALSE(pluginConnected);
 }
 
 } // namespace test
