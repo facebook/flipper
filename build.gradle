@@ -5,7 +5,6 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.2.1'
-        classpath "com.github.dcendents:android-maven-gradle-plugin:${ANDROID_MAVEN_GRADLE_PLUGIN_VERSION}"
     }
 }
 
@@ -13,6 +12,7 @@ plugins {
     id 'de.undercouch.download' version '3.4.3'
     id 'com.github.ben-manes.versions' version '0.20.0'
     id 'com.jfrog.bintray' version '1.8.4'
+    id "com.github.dcendents.android-maven" version '2.1'
 }
 
 ext.isSnapshot = { VERSION_NAME.endsWith('-SNAPSHOT') }
