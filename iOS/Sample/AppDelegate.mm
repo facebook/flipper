@@ -6,7 +6,7 @@
  *
  */
 #import "AppDelegate.h"
-
+#import <FlipperKitCrashReporterPlugin/FlipperKitCrashReporterPlugin.h>
 #import <FlipperKit/FlipperClient.h>
 #import <FlipperKitLayoutPlugin/FlipperKitLayoutPlugin.h>
 #import <FlipperKitNetworkPlugin/FlipperKitNetworkPlugin.h>
@@ -38,6 +38,7 @@
                                                withDescriptorMapper: layoutDescriptorMapper]];
     
   [client addPlugin:[[FKUserDefaultsPlugin alloc] initWithSuiteName:nil]];
+  [client addPlugin:[FlipperKitCrashReporterPlugin sharedInstance]];
 
   [[FlipperClient sharedClient] addPlugin: [[FlipperKitNetworkPlugin alloc] initWithNetworkAdapter:[SKIOSNetworkAdapter new]]];
   [client addPlugin:[FlipperKitExamplePlugin sharedInstance]];
