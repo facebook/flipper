@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2004-present, Facebook, Inc.
+ *  Copyright (c) Facebook, Inc.
  *
  *  This source code is licensed under the MIT license found in the LICENSE
  *  file in the root directory of this source tree.
@@ -12,6 +12,7 @@ import android.content.Context;
 import android.support.annotation.Nullable;
 import com.facebook.flipper.android.AndroidFlipperClient;
 import com.facebook.flipper.core.FlipperClient;
+import com.facebook.flipper.plugins.crashreporter.CrashReporterPlugin;
 import com.facebook.flipper.plugins.example.ExampleFlipperPlugin;
 import com.facebook.flipper.plugins.inspector.DescriptorMapping;
 import com.facebook.flipper.plugins.inspector.InspectorFlipperPlugin;
@@ -64,6 +65,7 @@ public class FlipperSampleApplication extends Application {
                 new SharedPreferencesDescriptor("other_sample", Context.MODE_PRIVATE))));
     client.addPlugin(new LeakCanaryFlipperPlugin());
     client.addPlugin(new ExampleFlipperPlugin());
+    client.addPlugin(new CrashReporterPlugin());
     client.start();
 
     getSharedPreferences("sample", Context.MODE_PRIVATE).edit().putString("Hello", "world").apply();
