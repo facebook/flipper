@@ -15,6 +15,7 @@
 #import <UIKit/UIKit.h>
 #include "SKStateUpdateCPPWrapper.h"
 #import "FlipperDiagnosticsViewController.h"
+#import "FlipperClient+Testing.h"
 
 #if !TARGET_OS_SIMULATOR
 //#import "SKPortForwardingServer.h"
@@ -173,6 +174,17 @@ using WrapperPlugin = facebook::flipper::FlipperCppWrapperPlugin;
 - (void)subscribeForUpdates:(id<FlipperStateUpdateListener>)controller {
   auto stateListener = std::make_shared<SKStateUpdateCPPWrapper>(controller);
   _cppClient->setStateListener(stateListener);
+}
+
+@end
+
+@implementation FlipperClient (Testing)
+
+- (instancetype)initWithCppClient:(facebook::flipper::FlipperClient *)cppClient {
+    if (self = [super init]) {
+        _cppClient = cppClient;
+    }
+    return self;
 }
 
 @end
