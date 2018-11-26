@@ -6,8 +6,8 @@
  *
  */
 #include <Flipper/FlipperClient.h>
-#include <FlipperTestLib/FlipperPluginMock.h>
 #include <FlipperTestLib/FlipperConnectionManagerMock.h>
+#include <FlipperTestLib/FlipperPluginMock.h>
 
 #include <folly/json.h>
 #include <gtest/gtest.h>
@@ -33,7 +33,8 @@ TEST(FlipperClientTests, testSaneMocks) {
 
 TEST(FlipperClientTests, testGetPlugins) {
   auto socket = new FlipperConnectionManagerMock;
-  FlipperClient client(std::unique_ptr<FlipperConnectionManagerMock>{socket}, state);
+  FlipperClient client(
+      std::unique_ptr<FlipperConnectionManagerMock>{socket}, state);
   client.start();
 
   client.addPlugin(std::make_shared<FlipperPluginMock>("Cat"));
@@ -49,7 +50,8 @@ TEST(FlipperClientTests, testGetPlugins) {
 
 TEST(FlipperClientTests, testGetPlugin) {
   auto socket = new FlipperConnectionManagerMock;
-  FlipperClient client(std::unique_ptr<FlipperConnectionManagerMock>{socket}, state);
+  FlipperClient client(
+      std::unique_ptr<FlipperConnectionManagerMock>{socket}, state);
 
   const auto catPlugin = std::make_shared<FlipperPluginMock>("Cat");
   client.addPlugin(catPlugin);
@@ -62,7 +64,8 @@ TEST(FlipperClientTests, testGetPlugin) {
 
 TEST(FlipperClientTests, testGetPluginWithDowncast) {
   auto socket = new FlipperConnectionManagerMock;
-  FlipperClient client(std::unique_ptr<FlipperConnectionManagerMock>{socket}, state);
+  FlipperClient client(
+      std::unique_ptr<FlipperConnectionManagerMock>{socket}, state);
 
   const auto catPlugin = std::make_shared<FlipperPluginMock>("Cat");
   client.addPlugin(catPlugin);
@@ -71,7 +74,8 @@ TEST(FlipperClientTests, testGetPluginWithDowncast) {
 
 TEST(FlipperClientTests, testRemovePlugin) {
   auto socket = new FlipperConnectionManagerMock;
-  FlipperClient client(std::unique_ptr<FlipperConnectionManagerMock>{socket}, state);
+  FlipperClient client(
+      std::unique_ptr<FlipperConnectionManagerMock>{socket}, state);
   client.start();
 
   auto plugin = std::make_shared<FlipperPluginMock>("Test");
@@ -88,7 +92,8 @@ TEST(FlipperClientTests, testRemovePlugin) {
 
 TEST(FlipperClientTests, testStartStop) {
   auto socket = new FlipperConnectionManagerMock;
-  FlipperClient client(std::unique_ptr<FlipperConnectionManagerMock>{socket}, state);
+  FlipperClient client(
+      std::unique_ptr<FlipperConnectionManagerMock>{socket}, state);
 
   client.start();
   EXPECT_TRUE(socket->isOpen());
@@ -99,15 +104,16 @@ TEST(FlipperClientTests, testStartStop) {
 
 TEST(FlipperClientTests, testConnectDisconnect) {
   auto socket = new FlipperConnectionManagerMock;
-  FlipperClient client(std::unique_ptr<FlipperConnectionManagerMock>{socket}, state);
+  FlipperClient client(
+      std::unique_ptr<FlipperConnectionManagerMock>{socket}, state);
 
   bool pluginConnected = false;
   const auto connectionCallback = [&](std::shared_ptr<FlipperConnection> conn) {
     pluginConnected = true;
   };
   const auto disconnectionCallback = [&]() { pluginConnected = false; };
-  auto plugin = std::make_shared<FlipperPluginMock>("Test", connectionCallback,
-                                                  disconnectionCallback);
+  auto plugin = std::make_shared<FlipperPluginMock>(
+      "Test", connectionCallback, disconnectionCallback);
   client.addPlugin(plugin);
 
   client.start();
@@ -122,15 +128,16 @@ TEST(FlipperClientTests, testConnectDisconnect) {
 
 TEST(FlipperClientTests, testInitDeinit) {
   auto socket = new FlipperConnectionManagerMock;
-  FlipperClient client(std::unique_ptr<FlipperConnectionManagerMock>{socket}, state);
+  FlipperClient client(
+      std::unique_ptr<FlipperConnectionManagerMock>{socket}, state);
 
   bool pluginConnected = false;
   const auto connectionCallback = [&](std::shared_ptr<FlipperConnection> conn) {
     pluginConnected = true;
   };
   const auto disconnectionCallback = [&]() { pluginConnected = false; };
-  auto plugin = std::make_shared<FlipperPluginMock>("Test", connectionCallback,
-                                                  disconnectionCallback);
+  auto plugin = std::make_shared<FlipperPluginMock>(
+      "Test", connectionCallback, disconnectionCallback);
 
   client.start();
   client.addPlugin(plugin);
@@ -160,15 +167,16 @@ TEST(FlipperClientTests, testInitDeinit) {
 
 TEST(FlipperClientTests, testRemovePluginWhenConnected) {
   auto socket = new FlipperConnectionManagerMock;
-  FlipperClient client(std::unique_ptr<FlipperConnectionManagerMock>{socket}, state);
+  FlipperClient client(
+      std::unique_ptr<FlipperConnectionManagerMock>{socket}, state);
 
   bool pluginConnected = false;
   const auto connectionCallback = [&](std::shared_ptr<FlipperConnection> conn) {
     pluginConnected = true;
   };
   const auto disconnectionCallback = [&]() { pluginConnected = false; };
-  auto plugin = std::make_shared<FlipperPluginMock>("Test", connectionCallback,
-                                                  disconnectionCallback);
+  auto plugin = std::make_shared<FlipperPluginMock>(
+      "Test", connectionCallback, disconnectionCallback);
 
   client.addPlugin(plugin);
   client.start();
@@ -181,7 +189,8 @@ TEST(FlipperClientTests, testRemovePluginWhenConnected) {
 
 TEST(FlipperClientTests, testUnhandleableMethod) {
   auto socket = new FlipperConnectionManagerMock;
-  FlipperClient client(std::unique_ptr<FlipperConnectionManagerMock>{socket}, state);
+  FlipperClient client(
+      std::unique_ptr<FlipperConnectionManagerMock>{socket}, state);
 
   auto plugin = std::make_shared<FlipperPluginMock>("Test");
   client.addPlugin(plugin);
@@ -201,11 +210,12 @@ TEST(FlipperClientTests, testUnhandleableMethod) {
 
 TEST(FlipperClientTests, testExecute) {
   auto socket = new FlipperConnectionManagerMock;
-  FlipperClient client(std::unique_ptr<FlipperConnectionManagerMock>{socket}, state);
+  FlipperClient client(
+      std::unique_ptr<FlipperConnectionManagerMock>{socket}, state);
   client.start();
 
   const auto connectionCallback = [](std::shared_ptr<FlipperConnection> conn) {
-    const auto receiver = [](const dynamic &params,
+    const auto receiver = [](const dynamic& params,
                              std::unique_ptr<FlipperResponder> responder) {
       dynamic payload = dynamic::object("message", "yes_i_hear_u");
       responder->success(payload);
@@ -231,13 +241,14 @@ TEST(FlipperClientTests, testExecute) {
 
 TEST(FlipperClientTests, testExecuteWithParams) {
   auto socket = new FlipperConnectionManagerMock;
-  FlipperClient client(std::unique_ptr<FlipperConnectionManagerMock>{socket}, state);
+  FlipperClient client(
+      std::unique_ptr<FlipperConnectionManagerMock>{socket}, state);
 
   const auto connectionCallback = [&](std::shared_ptr<FlipperConnection> conn) {
-    const auto receiver = [](const dynamic &params,
+    const auto receiver = [](const dynamic& params,
                              std::unique_ptr<FlipperResponder> responder) {
-      const auto &first = params["first"].asString();
-      const auto &second = params["second"].asString();
+      const auto& first = params["first"].asString();
+      const auto& second = params["second"].asString();
       std::map<std::string, std::string> m{{"dog", "woof"}, {"cat", "meow"}};
       dynamic payload = dynamic::object(first, m[first])(second, m[second]);
       responder->success(payload);
@@ -264,28 +275,32 @@ TEST(FlipperClientTests, testExecuteWithParams) {
 
 TEST(FlipperClientTests, testExceptionUnknownPlugin) {
   auto socket = new FlipperConnectionManagerMock;
-  FlipperClient client(std::unique_ptr<FlipperConnectionManagerMock>{socket}, state);
+  FlipperClient client(
+      std::unique_ptr<FlipperConnectionManagerMock>{socket}, state);
   client.start();
 
   dynamic messageInit = dynamic::object("method", "init")(
       "params", dynamic::object("plugin", "Unknown"));
   socket->callbacks->onMessageReceived(messageInit);
 
-  EXPECT_EQ(socket->messages.back()["error"]["message"],
-            "plugin Unknown not found for method init");
+  EXPECT_EQ(
+      socket->messages.back()["error"]["message"],
+      "plugin Unknown not found for method init");
 }
 
 TEST(FlipperClientTests, testExceptionUnknownApi) {
   auto socket = new FlipperConnectionManagerMock;
-  FlipperClient client(std::unique_ptr<FlipperConnectionManagerMock>{socket}, state);
+  FlipperClient client(
+      std::unique_ptr<FlipperConnectionManagerMock>{socket}, state);
   client.start();
 
   dynamic messageInit = dynamic::object("method", "execute")(
       "params", dynamic::object("api", "Unknown"));
   socket->callbacks->onMessageReceived(messageInit);
 
-  EXPECT_EQ(socket->messages.back()["error"]["message"],
-            "connection Unknown not found for method execute");
+  EXPECT_EQ(
+      socket->messages.back()["error"]["message"],
+      "connection Unknown not found for method execute");
 }
 
 TEST(FlipperClientTests, testBackgroundPluginActivated) {
@@ -326,6 +341,46 @@ TEST(FlipperClientTests, testNonBackgroundPluginNotActivated) {
   EXPECT_FALSE(pluginConnected);
   client.stop();
   EXPECT_FALSE(pluginConnected);
+}
+
+TEST(FlipperClientTests, testCrashInDidConnectDisConnectIsSuppressed) {
+  auto socket = new FlipperConnectionManagerMock;
+  FlipperClient client(
+      std::unique_ptr<FlipperConnectionManagerMock>{socket}, state);
+
+  const auto connectionCallback = [&](std::shared_ptr<FlipperConnection> conn) {
+    throw std::runtime_error("Runtime Error in test");
+  };
+  const auto disconnectionCallback = [&]() {
+    throw std::runtime_error("Runtime Error in test");
+  };
+  auto plugin = std::make_shared<FlipperPluginMock>(
+      "Test", connectionCallback, disconnectionCallback, true);
+
+  client.addPlugin(plugin);
+
+  EXPECT_NO_FATAL_FAILURE(client.start());
+  EXPECT_NO_FATAL_FAILURE(client.stop());
+}
+
+TEST(
+    FlipperClientTests,
+    testNonStandardCrashInDidConnectDisConnectIsSuppressed) {
+  auto socket = new FlipperConnectionManagerMock;
+  FlipperClient client(
+      std::unique_ptr<FlipperConnectionManagerMock>{socket}, state);
+
+  const auto connectionCallback = [&](std::shared_ptr<FlipperConnection> conn) {
+    throw "Non standard exception";
+  };
+  const auto disconnectionCallback = [&]() { throw "Non standard exception"; };
+  auto plugin = std::make_shared<FlipperPluginMock>(
+      "Test", connectionCallback, disconnectionCallback, true);
+
+  client.addPlugin(plugin);
+
+  EXPECT_NO_FATAL_FAILURE(client.start());
+  EXPECT_NO_FATAL_FAILURE(client.stop());
 }
 
 } // namespace test

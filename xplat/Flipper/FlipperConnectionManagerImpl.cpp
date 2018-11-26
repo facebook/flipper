@@ -1,25 +1,24 @@
 /*
- *  Copyright (c) 2018-present, Facebook, Inc.
+ *  Copyright (c) Facebook, Inc.
  *
  *  This source code is licensed under the MIT license found in the LICENSE
  *  file in the root directory of this source tree.
  *
  */
-
 #include "FlipperConnectionManagerImpl.h"
-#include "FlipperStep.h"
-#include "ConnectionContextStore.h"
-#include "Log.h"
 #include <folly/String.h>
 #include <folly/futures/Future.h>
+#include <folly/io/async/AsyncSocketException.h>
 #include <folly/io/async/SSLContext.h>
 #include <folly/json.h>
 #include <rsocket/Payload.h>
 #include <rsocket/RSocket.h>
 #include <rsocket/transports/tcp/TcpConnectionFactory.h>
-#include <thread>
-#include <folly/io/async/AsyncSocketException.h>
 #include <stdexcept>
+#include <thread>
+#include "ConnectionContextStore.h"
+#include "FlipperStep.h"
+#include "Log.h"
 
 #define WRONG_THREAD_EXIT_MSG \
   "ERROR: Aborting flipper initialization because it's not running in the flipper thread."
@@ -39,7 +38,8 @@ class ConnectionEvents : public rsocket::RSocketConnectionEvents {
   FlipperConnectionManagerImpl* websocket_;
 
  public:
-  ConnectionEvents(FlipperConnectionManagerImpl* websocket) : websocket_(websocket) {}
+  ConnectionEvents(FlipperConnectionManagerImpl* websocket)
+      : websocket_(websocket) {}
 
   void onConnected() {
     websocket_->isOpen_ = true;
@@ -79,11 +79,18 @@ class Responder : public rsocket::RSocketResponder {
   }
 };
 
-FlipperConnectionManagerImpl::FlipperConnectionManagerImpl(FlipperInitConfig config, std::shared_ptr<FlipperState> state, std::shared_ptr<ConnectionContextStore> contextStore)
-    : deviceData_(config.deviceData), flipperState_(state), flipperEventBase_(config.callbackWorker), connectionEventBase_(config.connectionWorker), contextStore_(contextStore) {
-      CHECK_THROW(config.callbackWorker, std::invalid_argument);
-      CHECK_THROW(config.connectionWorker, std::invalid_argument);
-    }
+FlipperConnectionManagerImpl::FlipperConnectionManagerImpl(
+    FlipperInitConfig config,
+    std::shared_ptr<FlipperState> state,
+    std::shared_ptr<ConnectionContextStore> contextStore)
+    : deviceData_(config.deviceData),
+      flipperState_(state),
+      flipperEventBase_(config.callbackWorker),
+      connectionEventBase_(config.connectionWorker),
+      contextStore_(contextStore) {
+  CHECK_THROW(config.callbackWorker, std::invalid_argument);
+  CHECK_THROW(config.connectionWorker, std::invalid_argument);
+}
 
 FlipperConnectionManagerImpl::~FlipperConnectionManagerImpl() {
   stop();
@@ -91,10 +98,14 @@ FlipperConnectionManagerImpl::~FlipperConnectionManagerImpl() {
 
 void FlipperConnectionManagerImpl::start() {
   auto step = flipperState_->start("Start connection thread");
+
   folly::makeFuture()
       .via(flipperEventBase_->getEventBase())
       .delayed(std::chrono::milliseconds(0))
-  .thenValue([this, step](auto&&){ step->complete(); startSync();});
+      .thenValue([this, step](auto&&) {
+        step->complete();
+        startSync();
+      });
 }
 
 void FlipperConnectionManagerImpl::startSync() {
@@ -135,7 +146,6 @@ void FlipperConnectionManagerImpl::startSync() {
 }
 
 void FlipperConnectionManagerImpl::doCertificateExchange() {
-
   rsocket::SetupParameters parameters;
   folly::SocketAddress address;
 
@@ -175,7 +185,8 @@ void FlipperConnectionManagerImpl::connectSecurely() {
       "device_id", deviceId)("app", deviceData_.app)));
   address.setFromHostPort(deviceData_.host, securePort);
 
-  std::shared_ptr<folly::SSLContext> sslContext = contextStore_->getSSLContext();
+  std::shared_ptr<folly::SSLContext> sslContext =
+      contextStore_->getSSLContext();
   auto connectingSecurely = flipperState_->start("Connect securely");
   connectionIsTrusted_ = true;
   client_ =
@@ -198,7 +209,7 @@ void FlipperConnectionManagerImpl::reconnect() {
   folly::makeFuture()
       .via(flipperEventBase_->getEventBase())
       .delayed(std::chrono::seconds(reconnectIntervalSeconds))
-      .thenValue([this](auto&&){ startSync(); });
+      .thenValue([this](auto&&) { startSync(); });
 }
 
 void FlipperConnectionManagerImpl::stop() {
@@ -240,7 +251,6 @@ void FlipperConnectionManagerImpl::sendMessage(const folly::dynamic& message) {
 }
 
 bool FlipperConnectionManagerImpl::isCertificateExchangeNeeded() {
-
   if (failedConnectionAttempts_ >= 2) {
     return true;
   }
@@ -258,59 +268,66 @@ void FlipperConnectionManagerImpl::requestSignedCertFromFlipper() {
   std::string csr = contextStore_->createCertificateSigningRequest();
   generatingCSR->complete();
 
-  folly::dynamic message = folly::dynamic::object("method", "signCertificate")(
-      "csr", csr.c_str())("destination", contextStore_->getCertificateDirectoryPath().c_str());
+  folly::dynamic message =
+      folly::dynamic::object("method", "signCertificate")("csr", csr.c_str())(
+          "destination", contextStore_->getCertificateDirectoryPath().c_str());
   auto gettingCert = flipperState_->start("Getting cert from desktop");
 
   flipperEventBase_->add([this, message, gettingCert]() {
     client_->getRequester()
         ->requestResponse(rsocket::Payload(folly::toJson(message)))
-        ->subscribe([this, gettingCert](rsocket::Payload p) {
-          auto response = p.moveDataToString();
-          if (!response.empty()) {
-            folly::dynamic config = folly::parseJson(response);
-            contextStore_->storeConnectionConfig(config);
-          }
-          gettingCert->complete();
-          log("Certificate exchange complete.");
-          // Disconnect after message sending is complete.
-          // This will trigger a reconnect which should use the secure channel.
-          // TODO: Connect immediately, without waiting for reconnect
-          client_ = nullptr;
-        },
-        [this, message](folly::exception_wrapper e) {
-          e.handle(
-            [&](rsocket::ErrorWithPayload& errorWithPayload) {
-              std::string errorMessage = errorWithPayload.payload.moveDataToString();
-
-             if (errorMessage.compare("not implemented")) {
-               log("Desktop failed to provide certificates. Error from flipper desktop:\n" + errorMessage);
-               client_ = nullptr;
-             } else {
-              sendLegacyCertificateRequest(message);
-             }
+        ->subscribe(
+            [this, gettingCert](rsocket::Payload p) {
+              auto response = p.moveDataToString();
+              if (!response.empty()) {
+                folly::dynamic config = folly::parseJson(response);
+                contextStore_->storeConnectionConfig(config);
+              }
+              gettingCert->complete();
+              log("Certificate exchange complete.");
+              // Disconnect after message sending is complete.
+              // This will trigger a reconnect which should use the secure
+              // channel.
+              // TODO: Connect immediately, without waiting for reconnect
+              client_ = nullptr;
             },
-            [e](...) {
-             log(("Error during certificate exchange:" + e.what()).c_str());
-            }
-          );
-        });
+            [this, message](folly::exception_wrapper e) {
+              e.handle(
+                  [&](rsocket::ErrorWithPayload& errorWithPayload) {
+                    std::string errorMessage =
+                        errorWithPayload.payload.moveDataToString();
+
+                    if (errorMessage.compare("not implemented")) {
+                      log("Desktop failed to provide certificates. Error from flipper desktop:\n" +
+                          errorMessage);
+                      client_ = nullptr;
+                    } else {
+                      sendLegacyCertificateRequest(message);
+                    }
+                  },
+                  [e](...) {
+                    log(("Error during certificate exchange:" + e.what())
+                            .c_str());
+                  });
+            });
   });
   failedConnectionAttempts_ = 0;
 }
 
-void FlipperConnectionManagerImpl::sendLegacyCertificateRequest(folly::dynamic message) {
+void FlipperConnectionManagerImpl::sendLegacyCertificateRequest(
+    folly::dynamic message) {
   // Desktop is using an old version of Flipper.
   // Fall back to fireAndForget, instead of requestResponse.
-  auto sendingRequest = flipperState_->start("Sending fallback certificate request");
+  auto sendingRequest =
+      flipperState_->start("Sending fallback certificate request");
   client_->getRequester()
-   ->fireAndForget(rsocket::Payload(folly::toJson(message)))
-   ->subscribe([this, sendingRequest]() {
-     sendingRequest->complete();
-     folly::dynamic config = folly::dynamic::object();
-     contextStore_->storeConnectionConfig(config);
-     client_ = nullptr;
-   });
+      ->fireAndForget(rsocket::Payload(folly::toJson(message)))
+      ->subscribe([this, sendingRequest]() {
+        sendingRequest->complete();
+        folly::dynamic config = folly::dynamic::object();
+        contextStore_->storeConnectionConfig(config);
+        client_ = nullptr;
+      });
 }
 
 bool FlipperConnectionManagerImpl::isRunningInOwnThread() {

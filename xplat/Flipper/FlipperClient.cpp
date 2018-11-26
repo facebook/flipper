@@ -1,23 +1,22 @@
 /*
- *  Copyright (c) 2018-present, Facebook, Inc.
+ *  Copyright (c) Facebook, Inc.
  *
  *  This source code is licensed under the MIT license found in the LICENSE
  *  file in the root directory of this source tree.
  *
  */
-
 #include "FlipperClient.h"
+#include <fstream>
+#include <iostream>
+#include <stdexcept>
+#include <vector>
+#include "ConnectionContextStore.h"
 #include "FlipperConnectionImpl.h"
+#include "FlipperConnectionManagerImpl.h"
 #include "FlipperResponderImpl.h"
 #include "FlipperState.h"
 #include "FlipperStep.h"
-#include "FlipperConnectionManagerImpl.h"
-#include "ConnectionContextStore.h"
 #include "Log.h"
-#include <vector>
-#include <stdexcept>
-#include <iostream>
-#include <fstream>
 
 #if FB_SONARKIT_ENABLED
 
@@ -31,8 +30,10 @@ using folly::dynamic;
 void FlipperClient::init(FlipperInitConfig config) {
   auto state = std::make_shared<FlipperState>();
   auto context = std::make_shared<ConnectionContextStore>(config.deviceData);
-  kInstance =
-      new FlipperClient(std::make_unique<FlipperConnectionManagerImpl>(std::move(config), state, context), state);
+  kInstance = new FlipperClient(
+      std::make_unique<FlipperConnectionManagerImpl>(
+          std::move(config), state, context),
+      state);
 }
 
 FlipperClient* FlipperClient::instance() {
@@ -41,16 +42,18 @@ FlipperClient* FlipperClient::instance() {
 
 void FlipperClient::setStateListener(
     std::shared_ptr<FlipperStateUpdateListener> stateListener) {
-  log("Setting state listener");
-  flipperState_->setUpdateListener(stateListener);
+  performAndReportError([this, &stateListener]() {
+    log("Setting state listener");
+    flipperState_->setUpdateListener(stateListener);
+  });
 }
 
 void FlipperClient::addPlugin(std::shared_ptr<FlipperPlugin> plugin) {
-  log("FlipperClient::addPlugin " + plugin->identifier());
-  auto step = flipperState_->start("Add plugin " + plugin->identifier());
+  performAndReportError([this, plugin]() {
+    log("FlipperClient::addPlugin " + plugin->identifier());
+    auto step = flipperState_->start("Add plugin " + plugin->identifier());
 
-  std::lock_guard<std::mutex> lock(mutex_);
-  performAndReportError([this, plugin, step]() {
+    std::lock_guard<std::mutex> lock(mutex_);
     if (plugins_.find(plugin->identifier()) != plugins_.end()) {
       throw std::out_of_range(
           "plugin " + plugin->identifier() + " already added.");
@@ -64,10 +67,10 @@ void FlipperClient::addPlugin(std::shared_ptr<FlipperPlugin> plugin) {
 }
 
 void FlipperClient::removePlugin(std::shared_ptr<FlipperPlugin> plugin) {
-  log("FlipperClient::removePlugin " + plugin->identifier());
-
-  std::lock_guard<std::mutex> lock(mutex_);
   performAndReportError([this, plugin]() {
+    log("FlipperClient::removePlugin " + plugin->identifier());
+
+    std::lock_guard<std::mutex> lock(mutex_);
     if (plugins_.find(plugin->identifier()) == plugins_.end()) {
       throw std::out_of_range("plugin " + plugin->identifier() + " not added.");
     }
@@ -79,18 +82,20 @@ void FlipperClient::removePlugin(std::shared_ptr<FlipperPlugin> plugin) {
   });
 }
 
-  void FlipperClient::startBackgroundPlugins() {
-    std::cout << "Activating Background Plugins..." << std::endl;
-    for (std::map<std::string, std::shared_ptr<FlipperPlugin>>::iterator it=plugins_.begin(); it!=plugins_.end(); ++it) {
-      std::cout << it->first << std::endl;
-      if (it->second.get()->runInBackground()) {
-        auto& conn = connections_[it->first];
-        conn = std::make_shared<FlipperConnectionImpl>(socket_.get(),it->first);
-        it->second.get()->didConnect(conn);
-      }
-
+void FlipperClient::startBackgroundPlugins() {
+  std::cout << "Activating Background Plugins..." << std::endl;
+  for (std::map<std::string, std::shared_ptr<FlipperPlugin>>::iterator it =
+           plugins_.begin();
+       it != plugins_.end();
+       ++it) {
+    std::cout << it->first << std::endl;
+    if (it->second.get()->runInBackground()) {
+      auto& conn = connections_[it->first];
+      conn = std::make_shared<FlipperConnectionImpl>(socket_.get(), it->first);
+      it->second.get()->didConnect(conn);
     }
   }
+}
 
 std::shared_ptr<FlipperPlugin> FlipperClient::getPlugin(
     const std::string& identifier) {
@@ -115,26 +120,28 @@ void FlipperClient::disconnect(std::shared_ptr<FlipperPlugin> plugin) {
 }
 
 void FlipperClient::refreshPlugins() {
-    performAndReportError([this]() {
-        dynamic message = dynamic::object("method", "refreshPlugins");
-        socket_->sendMessage(message);
-    });
+  performAndReportError([this]() {
+    dynamic message = dynamic::object("method", "refreshPlugins");
+    socket_->sendMessage(message);
+  });
 }
 
 void FlipperClient::onConnected() {
-  log("FlipperClient::onConnected");
+  performAndReportError([this]() {
+    log("FlipperClient::onConnected");
 
-  std::lock_guard<std::mutex> lock(mutex_);
-  connected_ = true;
-  startBackgroundPlugins();
+    std::lock_guard<std::mutex> lock(mutex_);
+    connected_ = true;
+    startBackgroundPlugins();
+  });
 }
 
 void FlipperClient::onDisconnected() {
-  log("FlipperClient::onDisconnected");
-  auto step = flipperState_->start("Trigger onDisconnected callbacks");
-  std::lock_guard<std::mutex> lock(mutex_);
-  connected_ = false;
-  performAndReportError([this, step]() {
+  performAndReportError([this]() {
+    log("FlipperClient::onDisconnected");
+    auto step = flipperState_->start("Trigger onDisconnected callbacks");
+    std::lock_guard<std::mutex> lock(mutex_);
+    connected_ = false;
     for (const auto& iter : plugins_) {
       disconnect(iter.second);
     }
@@ -143,8 +150,8 @@ void FlipperClient::onDisconnected() {
 }
 
 void FlipperClient::onMessageReceived(const dynamic& message) {
-  std::lock_guard<std::mutex> lock(mutex_);
   performAndReportError([this, &message]() {
+    std::lock_guard<std::mutex> lock(mutex_);
     const auto& method = message["method"];
     const auto& params = message.getDefault("params");
 
@@ -174,7 +181,8 @@ void FlipperClient::onMessageReceived(const dynamic& message) {
       const auto plugin = plugins_.at(identifier);
       if (!plugin.get()->runInBackground()) {
         auto& conn = connections_[plugin->identifier()];
-        conn = std::make_shared<FlipperConnectionImpl>(socket_.get(), plugin->identifier());
+        conn = std::make_shared<FlipperConnectionImpl>(
+            socket_.get(), plugin->identifier());
         plugin->didConnect(conn);
       }
       return;
@@ -214,20 +222,28 @@ void FlipperClient::onMessageReceived(const dynamic& message) {
     responder->error(response);
   });
 }
-
 void FlipperClient::performAndReportError(const std::function<void()>& func) {
+#if FLIPPER_ENABLE_CRASH
+  // To debug the stack trace and an exception turn on the compiler flag
+  // FLIPPER_ENABLE_CRASH
+  func();
+#else
   try {
     func();
   } catch (std::exception& e) {
-      dynamic message = dynamic::object(
-                                        "error",
-                                        dynamic::object("message", e.what())("stacktrace", "<none>"));
+    dynamic message = dynamic::object(
+        "error", dynamic::object("message", e.what())("stacktrace", "<none>"));
     if (connected_) {
       socket_->sendMessage(message);
     } else {
-        log("Error: " + std::string(e.what()));
+      log("Error: " + std::string(e.what()));
     }
+  } catch (...) {
+    // Generic catch block for the exception of type not belonging to
+    // std::exception
+    log("Unknown error suppressed in FlipperClient");
   }
+#endif
 }
 
 std::string FlipperClient::getState() {
