@@ -8,14 +8,16 @@
 import Server from '../server.js';
 import LogManager from '../fb-stubs/Logger';
 import reducers from '../reducers/index.js';
-import configureStore from 'redux-mock-store';
+import {createStore} from 'redux';
 import path from 'path';
 import os from 'os';
 import fs from 'fs';
 import androidDevice from '../dispatcher/androidDevice';
+import iosDevice from '../dispatcher/iOSDevice';
+import type Client from '../Client';
 
 let server;
-const mockStore = configureStore([])(reducers(undefined, {type: 'INIT'}));
+const store = createStore(reducers);
 
 beforeAll(() => {
   // create config directory, which is usually created by static/index.js
@@ -26,10 +28,10 @@ beforeAll(() => {
 
   const logger = new LogManager();
 
-  // Set up android dispatcher, which does the adb reversing.
-  androidDevice(mockStore, logger);
+  androidDevice(store, logger);
+  iosDevice(store, logger);
 
-  server = new Server(logger, mockStore);
+  server = new Server(logger, store);
   return server.init();
 });
 
@@ -37,17 +39,32 @@ test(
   'Device can connect successfully',
   done => {
     var testFinished = false;
+    var disconnectedTooEarly = false;
+    const registeredClients = [];
     server.addListener('new-client', (client: Client) => {
-      console.debug('new-client ' + new Date().toString());
+      // Check there is a connected device that has the same device_id as the new client
+      const deviceId = client.query.device_id;
+      expect(deviceId).toBeTruthy();
+      const devices = store.getState().connections.devices;
+      expect(devices.map(device => device.serial)).toContain(deviceId);
+
+      // Make sure it only connects once
+      registeredClients.push(client);
+      expect(registeredClients.length).toBe(1);
+
+      // Make sure client stays connected for some time before passing test
       setTimeout(() => {
         testFinished = true;
-        done();
+        if (disconnectedTooEarly) {
+          console.error('Client disconnected too early');
+        } else {
+          done();
+        }
       }, 5000);
     });
     server.addListener('removed-client', (id: string) => {
-      console.debug('removed-client ' + new Date().toString());
       if (!testFinished) {
-        done.fail('client disconnected too early');
+        disconnectedTooEarly = true;
       }
     });
   },
