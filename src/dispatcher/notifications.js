@@ -8,7 +8,7 @@
 import type {Store} from '../reducers/index.js';
 import type Logger from '../fb-stubs/Logger.js';
 import type {PluginNotification} from '../reducers/notifications';
-import type {FlipperPlugin} from '../plugin.js';
+import type {FlipperPlugin, FlipperDevicePlugin} from '../plugin.js';
 
 import {ipcRenderer} from 'electron';
 import {selectPlugin} from '../reducers/connections';
@@ -82,7 +82,20 @@ export default (store: Store, logger: Logger) => {
 
   store.subscribe(() => {
     const {notifications, pluginStates} = store.getState();
-    const pluginMap = store.getState().plugins.clientPlugins;
+
+    const clientPlugins: Map<string, Class<FlipperPlugin<>>> = store.getState()
+      .plugins.clientPlugins;
+
+    const devicePlugins: Map<
+      string,
+      Class<FlipperDevicePlugin<>>,
+    > = store.getState().plugins.devicePlugins;
+
+    const pluginMap: Map<
+      string,
+      Class<FlipperPlugin<> | FlipperDevicePlugin<>>,
+      //$FlowFixMe Flow complains that FlipperPlugin and FlipperDevicePlugin are incompatible, where as we have already mentioned the type of the class it can take in the type
+    > = new Map([...clientPlugins, ...devicePlugins]);
 
     Object.keys(pluginStates).forEach(key => {
       if (knownPluginStates.get(key) !== pluginStates[key]) {
@@ -90,10 +103,9 @@ export default (store: Store, logger: Logger) => {
         const split = key.split('#');
         const pluginId = split.pop();
         const client = split.join('#');
-        const persistingPlugin: ?Class<FlipperPlugin<>> = pluginMap.get(
-          pluginId,
-        );
-
+        const persistingPlugin: ?Class<
+          FlipperPlugin<> | FlipperDevicePlugin<>,
+        > = pluginMap.get(pluginId);
         if (persistingPlugin && persistingPlugin.getActiveNotifications) {
           store.dispatch(
             setActiveNotifications({

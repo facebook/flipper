@@ -6,7 +6,7 @@
  * @flow
  */
 
-import {FlipperPlugin} from 'flipper';
+import {FlipperDevicePlugin, Device} from 'flipper';
 import type {Notification} from '../../plugin';
 
 type Crash = {|
@@ -19,7 +19,7 @@ type PersistedState = {|
   crashes: Array<Crash>,
 |};
 
-export default class extends FlipperPlugin {
+export default class CrashReporterPlugin extends FlipperDevicePlugin {
   static title = 'Crash Reporter';
   static id = 'CrashReporter';
   static icon = 'apps';
@@ -28,6 +28,9 @@ export default class extends FlipperPlugin {
     crashes: [],
   };
 
+  static supportsDevice(device: Device) {
+    return device.os === 'iOS' || device.os === 'Android';
+  }
   /*
    * Reducer to process incoming "send" messages from the mobile counterpart.
    */

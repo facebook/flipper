@@ -55,7 +55,14 @@ export class FlipperBasePlugin<
   static keyboardActions: ?KeyboardActions;
   static screenshot: ?string;
   static defaultPersistedState: PersistedState;
-
+  static persistedStateReducer: ?(
+    persistedState: PersistedState,
+    method: string,
+    data: Object,
+  ) => $Shape<PersistedState>;
+  static getActiveNotifications: ?(
+    persistedState: PersistedState,
+  ) => Array<Notification>;
   // forbid instance properties that should be static
   title: empty;
   id: empty;
@@ -129,13 +136,6 @@ export class FlipperPlugin<S = *, A = *, P = *> extends FlipperBasePlugin<
   A,
   P,
 > {
-  static persistedStateReducer: ?(
-    persistedState: P,
-    method: string,
-    data: Object,
-  ) => $Shape<P>;
-  static getActiveNotifications: ?(persistedState: P) => Array<Notification>;
-
   constructor(props: Props<*>) {
     super(props);
     const {id} = this.constructor;
