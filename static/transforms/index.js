@@ -8,6 +8,8 @@
 const generate = require('@babel/generator').default;
 const babylon = require('@babel/parser');
 const babel = require('@babel/core');
+const fs = require('fs');
+const path = require('path');
 
 function transform({filename, options, src}) {
   const presets = [require('../node_modules/@babel/preset-react')];
@@ -33,9 +35,16 @@ function transform({filename, options, src}) {
     require('../node_modules/@babel/plugin-proposal-class-properties'),
     require('../node_modules/@babel/plugin-transform-flow-strip-types'),
     require('../node_modules/@babel/plugin-proposal-optional-chaining'),
-    require('./fb-stubs.js'),
     require('./dynamic-requires.js'),
   ];
+
+  if (
+    fs.existsSync(
+      path.resolve(path.dirname(path.dirname(__dirname)), 'src', 'fb'),
+    )
+  ) {
+    plugins.push(require('./fb-stubs.js'));
+  }
 
   if (options.isTestRunner) {
     if (process.env.USE_ELECTRON_STUBS) {
