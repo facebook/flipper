@@ -9,11 +9,10 @@ package com.facebook.flipper.plugins.crashreporter;
 
 import android.app.Activity;
 import android.support.annotation.Nullable;
+import com.facebook.flipper.core.FlipperArray;
 import com.facebook.flipper.core.FlipperConnection;
 import com.facebook.flipper.core.FlipperObject;
 import com.facebook.flipper.core.FlipperPlugin;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 
 public class CrashReporterPlugin implements FlipperPlugin {
   public static final String ID = "CrashReporter";
@@ -41,15 +40,17 @@ public class CrashReporterPlugin implements FlipperPlugin {
           public void uncaughtException(Thread paramThread, Throwable paramThrowable) {
             if (mConnection != null) {
               FlipperConnection connection = mConnection;
-              StringWriter sw = new StringWriter();
-              PrintWriter pw = new PrintWriter(sw);
-              paramThrowable.printStackTrace(pw);
+              FlipperArray.Builder builder = new FlipperArray.Builder();
+              for (StackTraceElement stackTraceElement : paramThrowable.getStackTrace()) {
+                builder.put(stackTraceElement.toString());
+              }
+              FlipperArray arr = builder.build();
               connection.send(
                   "crash-report",
                   new FlipperObject.Builder()
-                      .put("callstack", sw.toString())
-                      .put("cause", paramThrowable.toString())
-                      .put("reason", paramThrowable.toString())
+                      .put("callstack", arr)
+                      .put("name", paramThrowable.toString())
+                      .put("reason", paramThrowable.getMessage())
                       .build());
             }
             if (prevHandler != null) {
