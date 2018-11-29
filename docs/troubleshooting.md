@@ -28,6 +28,7 @@ We hope that flipper works well out of the box, but the software is a work in pr
 * Open Chrome dev tools within Flipper. To do so, from the View menu select Toggle Developer Tools or press CMD+Option+I and check if there are any errors on the console.
 * Delete `~/.flipper`
 * **Uninstall** and reinstall the mobile app.
+* Make sure the time and date are set correctly on your mobile device and desktop computer.
 * If no app plugins are showing up, there may be a connectivity issue between Flipper and your app. Check [connection issues](#connection-issues) to see if anything is failing.
 
 ### Connection Issues
