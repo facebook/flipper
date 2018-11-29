@@ -1,3 +1,10 @@
+/*
+ *  Copyright (c) Facebook, Inc.
+ *
+ *  This source code is licensed under the MIT license found in the LICENSE
+ *  file in the root directory of this source tree.
+ *
+ */
 #include "ConnectionContextStore.h"
 #include <folly/json.h>
 #include <folly/portability/SysStat.h>
@@ -37,10 +44,13 @@ bool ConnectionContextStore::hasRequiredFiles() {
 
 std::string ConnectionContextStore::createCertificateSigningRequest() {
   ensureFlipperDirExists();
-  generateCertSigningRequest(
+  bool success = generateCertSigningRequest(
       deviceData_.appId.c_str(),
       absoluteFilePath(CSR_FILE_NAME).c_str(),
       absoluteFilePath(PRIVATE_KEY_FILE).c_str());
+  if (!success) {
+    throw new std::runtime_error("Failed to generate CSR");
+  }
   std::string csr = loadStringFromFile(absoluteFilePath(CSR_FILE_NAME));
 
   return csr;
