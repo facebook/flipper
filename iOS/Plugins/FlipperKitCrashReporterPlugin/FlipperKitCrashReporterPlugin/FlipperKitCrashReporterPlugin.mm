@@ -17,7 +17,7 @@
 
 @end
 
-void flipperkitUncaughtExceptionHandler(NSException *exception) {
+static void flipperkitUncaughtExceptionHandler(NSException *exception) {
   NSLog(@"CRASH: %@", exception);
   NSLog(@"Stack Trace: %@", [exception callStackSymbols]);
   [[FlipperKitCrashReporterPlugin sharedInstance] handleException:exception];
