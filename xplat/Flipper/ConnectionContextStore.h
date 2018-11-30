@@ -1,3 +1,9 @@
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the LICENSE
+ * file in the root directory of this source tree.
+ */
 #pragma once
 
 #include <string>
@@ -21,13 +27,12 @@ public:
   std::string getDeviceId();
   void storeConnectionConfig(folly::dynamic& config);
 
-private:
+ private:
   DeviceData deviceData_;
 
   std::string absoluteFilePath(const char* filename);
-  bool ensureFlipperDirExists();
-
+  bool resetFlipperDir();
 };
 
 } // namespace flipper
-} //namespace facebook
+} // namespace facebook

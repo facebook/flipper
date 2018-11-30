@@ -1,13 +1,13 @@
-/*
- *  Copyright (c) Facebook, Inc.
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- *  This source code is licensed under the MIT license found in the LICENSE
- *  file in the root directory of this source tree.
- *
+ * This source code is licensed under the MIT license found in the LICENSE
+ * file in the root directory of this source tree.
  */
 #include "ConnectionContextStore.h"
 #include <folly/json.h>
 #include <folly/portability/SysStat.h>
+#include <stdio.h>
 #include <fstream>
 #include <iostream>
 #include "CertificateUtils.h"
@@ -43,7 +43,7 @@ bool ConnectionContextStore::hasRequiredFiles() {
 }
 
 std::string ConnectionContextStore::createCertificateSigningRequest() {
-  ensureFlipperDirExists();
+  resetFlipperDir();
   bool success = generateCertSigningRequest(
       deviceData_.appId.c_str(),
       absoluteFilePath(CSR_FILE_NAME).c_str(),
@@ -100,13 +100,20 @@ std::string ConnectionContextStore::getCertificateDirectoryPath() {
   return absoluteFilePath("");
 }
 
-bool ConnectionContextStore::ensureFlipperDirExists() {
+bool ConnectionContextStore::resetFlipperDir() {
   std::string dirPath = absoluteFilePath("");
   struct stat info;
   if (stat(dirPath.c_str(), &info) != 0) {
     int ret = mkdir(dirPath.c_str(), S_IRUSR | S_IWUSR | S_IXUSR);
     return ret == 0;
   } else if (info.st_mode & S_IFDIR) {
+    for (auto file : {CSR_FILE_NAME,
+                      FLIPPER_CA_FILE_NAME,
+                      CLIENT_CERT_FILE_NAME,
+                      PRIVATE_KEY_FILE,
+                      CONNECTION_CONFIG_FILE}) {
+      std::remove(absoluteFilePath(file).c_str());
+    }
     return true;
   } else {
     log("ERROR: Flipper path exists but is not a directory: " + dirPath);
