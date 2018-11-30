@@ -82,7 +82,7 @@ export function getDynamicPlugins() {
 
 export function checkGK(plugin: PluginDefinition): boolean {
   const result = plugin.gatekeeper && !GK.get(plugin.gatekeeper);
-  if (!result) {
+  if (plugin.gatekeeper && !result) {
     console.warn(
       'Plugin %s will be ignored as user is not part of the gatekeeper "%s".',
       plugin.name,
