@@ -111,7 +111,7 @@
 }
 
 - (void)addSubDescriptors:(nonnull NSArray<SKSubDescriptor *>*)subDescriptors{
-  // _registeredSubdescriptors = subDescriptors;
+  _registeredSubdescriptors = subDescriptors;
 }
 
 - (NSDictionary<NSString *, NSObject *> *)propsForFlexboxChild:(CKFlexboxComponentChild)child {
