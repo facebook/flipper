@@ -12,6 +12,7 @@ import type {UninitializedClient} from '../UninitializedClient.js';
 import type {PluginNotification} from '../reducers/notifications';
 
 import {
+  PureComponent,
   Component,
   Sidebar,
   FlexBox,
@@ -177,13 +178,12 @@ type MainSidebarProps = {|
     client: UninitializedClient,
     deviceId?: string,
   }>,
-  activeNotifications: Array<PluginNotification>,
-  blacklistedPlugins: Array<string>,
+  numNotifications: number,
   devicePlugins: Map<string, Class<FlipperDevicePlugin<>>>,
   clientPlugins: Map<string, Class<FlipperPlugin<>>>,
 |};
 
-class MainSidebar extends Component<MainSidebarProps> {
+class MainSidebar extends PureComponent<MainSidebarProps> {
   render() {
     const {
       selectedDevice,
@@ -191,7 +191,7 @@ class MainSidebar extends Component<MainSidebarProps> {
       selectedApp,
       selectPlugin,
       windowIsFocused,
-      activeNotifications,
+      numNotifications,
     } = this.props;
     let {clients, uninitializedClients} = this.props;
 
@@ -201,11 +201,6 @@ class MainSidebar extends Component<MainSidebarProps> {
           selectedDevice && selectedDevice.supportsOS(client.query.os),
       )
       .sort((a, b) => (a.query.app || '').localeCompare(b.query.app));
-
-    let blacklistedPlugins = new Set(this.props.blacklistedPlugins);
-    const notifications = activeNotifications.filter(
-      (n: PluginNotification) => !blacklistedPlugins.has(n.pluginId),
-    );
 
     return (
       <Sidebar
@@ -226,13 +221,11 @@ class MainSidebar extends Component<MainSidebarProps> {
             }>
             <PluginIcon
               color={colors.light50}
-              name={
-                notifications.length > 0 ? NotificationsHub.icon : 'bell-null'
-              }
+              name={numNotifications > 0 ? NotificationsHub.icon : 'bell-null'}
               isActive={selectedPlugin === NotificationsHub.id}
             />
             <PluginName
-              count={notifications.length}
+              count={numNotifications}
               isActive={selectedPlugin === NotificationsHub.id}>
               {NotificationsHub.title}
             </PluginName>
@@ -322,8 +315,12 @@ export default connect(
     notifications: {activeNotifications, blacklistedPlugins},
     plugins: {devicePlugins, clientPlugins},
   }) => ({
-    blacklistedPlugins,
-    activeNotifications,
+    numNotifications: (() => {
+      const blacklist = new Set(blacklistedPlugins);
+      return activeNotifications.filter(
+        (n: PluginNotification) => !blacklist.has(n.pluginId),
+      ).length;
+    })(),
     windowIsFocused,
     selectedDevice,
     selectedPlugin,
