@@ -1,9 +1,8 @@
-/*
- *  Copyright (c) Facebook, Inc.
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- *  This source code is licensed under the MIT license found in the LICENSE
- *  file in the root directory of this source tree.
- *
+ * This source code is licensed under the MIT license found in the LICENSE
+ * file in the root directory of this source tree.
  */
 #include "FlipperConnectionManagerImpl.h"
 #include <folly/String.h>
@@ -117,29 +116,31 @@ void FlipperConnectionManagerImpl::startSync() {
     log("Already connected");
     return;
   }
-  auto connect = flipperState_->start("Connect to desktop");
+  bool isClientSetupStep = isCertificateExchangeNeeded();
+  auto step = flipperState_->start(
+      isClientSetupStep ? "Establish pre-setup connection"
+                        : "Establish main connection");
   try {
-    if (isCertificateExchangeNeeded()) {
+    if (isClientSetupStep) {
       doCertificateExchange();
-      return;
+    } else {
+      connectSecurely();
     }
-
-    connectSecurely();
-    connect->complete();
+    step->complete();
   } catch (const folly::AsyncSocketException& e) {
     if (e.getType() == folly::AsyncSocketException::NOT_OPEN) {
       // The expected code path when flipper desktop is not running.
       // Don't count as a failed attempt.
-      connect->fail("Port not open");
+      step->fail("Port not open");
     } else {
       log(e.what());
       failedConnectionAttempts_++;
-      connect->fail(e.what());
+      step->fail(e.what());
     }
     reconnect();
   } catch (const std::exception& e) {
     log(e.what());
-    connect->fail(e.what());
+    step->fail(e.what());
     failedConnectionAttempts_++;
     reconnect();
   }
