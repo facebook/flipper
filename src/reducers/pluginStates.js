@@ -19,7 +19,7 @@ export type Action =
     }
   | {
       type: 'CLEAR_PLUGIN_STATE',
-      payload: string,
+      payload: {id: string, devicePlugins: Set<string>},
     };
 
 const INITIAL_STATE: State = {};
@@ -41,7 +41,8 @@ export default function reducer(
     return Object.keys(state).reduce((newState, pluginKey) => {
       // Only add the pluginState, if its from a plugin other than the one that
       // was removed. pluginKeys are in the form of ${clientID}#${pluginID}.
-      if (!pluginKey.startsWith(payload)) {
+      const pluginId = pluginKey.split('#').pop();
+      if (pluginId !== payload.id || payload.devicePlugins.has(pluginId)) {
         newState[pluginKey] = state[pluginKey];
       }
       return newState;

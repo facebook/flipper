@@ -6,6 +6,9 @@
  */
 
 import type {FlipperPlugin, FlipperBasePlugin} from './plugin.js';
+import {FlipperDevicePlugin} from './plugin.js';
+import type BaseDevice from './devices/BaseDevice.js';
+
 import type {App} from './App.js';
 import type Logger from './fb-stubs/Logger.js';
 import type {Store} from './reducers/index.js';
@@ -67,6 +70,12 @@ export default class Client extends EventEmitter {
       },
     });
   }
+  getDevice = (): ?BaseDevice =>
+    this.store
+      .getState()
+      .connections.devices.find(
+        (device: BaseDevice) => device.serial === this.query.device_id,
+      );
 
   on: ((event: 'plugins-change', callback: () => void) => void) &
     ((event: 'close', callback: () => void) => void);
@@ -157,7 +166,12 @@ export default class Client extends EventEmitter {
           this.store.getState().plugins.clientPlugins.get(params.api) ||
           this.store.getState().plugins.devicePlugins.get(params.api);
         if (persistingPlugin && persistingPlugin.persistedStateReducer) {
-          const pluginKey = `${this.id}#${params.api}`;
+          let pluginKey = `${this.id}#${params.api}`;
+          //$FlowFixMe
+          if (persistingPlugin.prototype instanceof FlipperDevicePlugin) {
+            // For device plugins, we are just using the device id instead of client id as the prefix.
+            pluginKey = `${this.getDevice()?.serial || ''}#${params.api}`;
+          }
           const persistedState = {
             ...persistingPlugin.defaultPersistedState,
             ...this.store.getState().pluginStates[pluginKey],

@@ -14,8 +14,11 @@ export {
   FlipperPlugin,
   FlipperDevicePlugin,
 } from './plugin.js';
-
+export {clipboard} from 'electron';
 export * from './fb-stubs/constants.js';
+export * from './utils/createPaste.js';
+export {connect} from 'react-redux';
+export {selectPlugin} from './reducers/connections';
 
 export {
   default as SidebarExtensions,

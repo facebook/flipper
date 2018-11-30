@@ -280,6 +280,30 @@ export default class LogTable extends FlipperDevicePlugin<
     }));
   };
 
+  calculateHighlightedRows = (
+    deeplinkPayload: ?string,
+    rows: Array<TableBodyRow>,
+  ): Array<string> => {
+    if (!deeplinkPayload) {
+      return [];
+    }
+    const crash = JSON.parse(deeplinkPayload);
+    let highlightedRows = rows.filter(x => {
+      //$FlowFixMe: x.filterValue is not undefined
+      let matched = x.filterValue.includes(crash.name);
+      if (!matched) {
+        return matched;
+      }
+      for (let i = 0; i < crash.callStack.length && matched; ++i) {
+        //$FlowFixMe: x.filterValue is not undefined
+        matched = x.filterValue.includes(crash.callStack[i]);
+      }
+      return matched;
+    });
+    highlightedRows = highlightedRows.map(x => x.key);
+    return [highlightedRows.pop()];
+  };
+
   state = {
     rows: [],
     entries: [],
@@ -390,7 +414,6 @@ export default class LogTable extends FlipperDevicePlugin<
         key: String(this.counter++),
       },
     };
-
     // batch up logs to be processed every 250ms, if we have lots of log
     // messages coming in, then calling an setState 200+ times is actually
     // pretty expensive
@@ -425,11 +448,15 @@ export default class LogTable extends FlipperDevicePlugin<
 
             this.addRowIfNeeded(rows, row, entry, previousEntry);
           }
-
+          const highlightedRows = this.calculateHighlightedRows(
+            this.props.deepLinkPayload,
+            rows,
+          );
           return {
             entries,
             rows,
             key2entry,
+            highlightedRows: highlightedRows,
           };
         });
       }, 100);
@@ -547,8 +574,7 @@ export default class LogTable extends FlipperDevicePlugin<
   });
 
   render() {
-    const {rows} = this.state;
-
+    const {rows, highlightedRows} = this.state;
     const contextMenuItems = [
       {
         type: 'separator',
@@ -568,6 +594,9 @@ export default class LogTable extends FlipperDevicePlugin<
           columnOrder={this.columnOrder}
           columns={this.columns}
           rows={rows}
+          highlightedRows={
+            highlightedRows ? new Set(highlightedRows) : new Set([])
+          }
           onRowHighlighted={this.onRowHighlighted}
           multiHighlight={true}
           defaultFilters={DEFAULT_FILTERS}

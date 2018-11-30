@@ -6,7 +6,7 @@
  */
 import type {FlipperPlugin, FlipperDevicePlugin} from './plugin.js';
 import type LogManager from './fb-stubs/Logger';
-import type BaseDevice from './devices/BaseDevice.js';
+import BaseDevice from './devices/BaseDevice.js';
 import type {Props as PluginProps} from './plugin';
 
 import Client from './Client.js';
@@ -128,7 +128,6 @@ class PluginContainer extends Component<Props, State> {
     if (!activePlugin || !target) {
       return null;
     }
-
     const props: PluginProps<Object> = {
       key: pluginKey,
       logger: this.props.logger,
@@ -148,6 +147,9 @@ class PluginContainer extends Component<Props, State> {
           target instanceof Client &&
           target.plugins.some(p => p === pluginID)
         ) {
+          this.props.selectPlugin({selectedPlugin: pluginID, deepLinkPayload});
+          return true;
+        } else if (target instanceof BaseDevice) {
           this.props.selectPlugin({selectedPlugin: pluginID, deepLinkPayload});
           return true;
         } else {

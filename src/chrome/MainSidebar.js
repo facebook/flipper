@@ -170,6 +170,7 @@ type MainSidebarProps = {|
   selectPlugin: (payload: {
     selectedPlugin: ?string,
     selectedApp: ?string,
+    deepLinkPayload: ?string,
   }) => void,
   clients: Array<Client>,
   uninitializedClients: Array<{
@@ -220,6 +221,7 @@ class MainSidebar extends Component<MainSidebarProps> {
               selectPlugin({
                 selectedPlugin: 'notifications',
                 selectedApp: null,
+                deepLinkPayload: null,
               })
             }>
             <PluginIcon
@@ -250,6 +252,7 @@ class MainSidebar extends Component<MainSidebarProps> {
                   selectPlugin({
                     selectedPlugin: plugin.id,
                     selectedApp: null,
+                    deepLinkPayload: null,
                   })
                 }
                 plugin={plugin}
@@ -282,6 +285,7 @@ class MainSidebar extends Component<MainSidebarProps> {
                       selectPlugin({
                         selectedPlugin: plugin.id,
                         selectedApp: client.id,
+                        deepLinkPayload: null,
                       })
                     }
                     plugin={plugin}

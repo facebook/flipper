@@ -6,7 +6,17 @@
  * @flow
  */
 
-import {FlipperDevicePlugin, Device} from 'flipper';
+import {
+  FlipperDevicePlugin,
+  Device,
+  View,
+  styled,
+  FlexColumn,
+  FlexRow,
+  ContextMenu,
+  clipboard,
+  Button,
+} from 'flipper';
 import type {Notification} from '../../plugin';
 
 type Crash = {|
@@ -18,6 +28,34 @@ type Crash = {|
 type PersistedState = {|
   crashes: Array<Crash>,
 |};
+
+const Title = styled(View)({
+  fontWeight: 'bold',
+  fontSize: '100%',
+  color: 'red',
+});
+
+const Value = styled(View)({
+  paddingLeft: '8px',
+  fontSize: '100%',
+  fontFamily: 'Monospace',
+});
+
+const RootColumn = styled(FlexColumn)({
+  paddingLeft: '16px',
+  paddingRight: '16px',
+  paddingTop: '8px',
+});
+
+const CrashRow = styled(FlexRow)({
+  paddingTop: '8px',
+});
+
+const CallStack = styled('pre')({
+  fontFamily: 'Monospace',
+  fontSize: '100%',
+  paddingLeft: '8px',
+});
 
 export default class CrashReporterPlugin extends FlipperDevicePlugin {
   static title = 'Crash Reporter';
@@ -67,11 +105,70 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin {
         message: crash.callStack,
         severity: 'error',
         title: 'CRASH: ' + crash.name + ' ' + crash.reason,
+        action: 'Inspect',
       };
     });
   };
 
+  convertCallstackToString(crash: Crash): string {
+    return crash.callStack.reduce((acc, val) => acc.concat('\n', val));
+  }
+
   render() {
-    return 'Dedicated space to debug crashes. Look out for crash notifications.';
+    if (this.props.persistedState.crashes.length > 0) {
+      const crash = this.props.persistedState.crashes.slice(-1)[0];
+      const callStackString = this.convertCallstackToString(crash);
+      return (
+        <RootColumn>
+          <CrashRow>
+            <Title>Name</Title>
+            <Value>{crash.name}</Value>
+          </CrashRow>
+          <CrashRow>
+            <Title>Reason</Title>
+            <Value>{crash.reason}</Value>
+          </CrashRow>
+          <CrashRow>
+            <Title>CallStack</Title>
+          </CrashRow>
+          <CrashRow>
+            <ContextMenu
+              items={[
+                {
+                  label: 'copy',
+                  click: () => {
+                    clipboard.writeText(callStackString);
+                  },
+                },
+              ]}>
+              <CallStack>{callStackString}</CallStack>
+            </ContextMenu>
+          </CrashRow>
+          {this.device.os == 'Android' && (
+            <CrashRow>
+              <Button
+                onClick={event => {
+                  this.props.selectPlugin(
+                    'DeviceLogs',
+                    JSON.stringify({
+                      ...crash,
+                      callStackString: callStackString,
+                    }),
+                  );
+                }}>
+                Deeplink to Logs
+              </Button>
+            </CrashRow>
+          )}
+        </RootColumn>
+      );
+    }
+    return (
+      <RootColumn>
+        <Title>
+          Dedicated space to debug crashes. Look out for crash notifications
+        </Title>
+      </RootColumn>
+    );
   }
 }
