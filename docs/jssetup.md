@@ -22,7 +22,7 @@ In `index.js` you can now create your plugin. Take a look at [Writing a plugin](
 
 ### Dynamically loading plugins
 
-Once a plugin is created, Flipper can load it from its folder. The path from where the plugins are loaded is specified in `~/.flipper/config.json`. Add the parent folder of your plugin to `pluginPaths` and start Flipper.
+Once a plugin is created, Flipper can load it from its folder. The path from where the plugins are loaded is specified in `~/.flipper/config.json`. The paths specified in `pluginPaths` need to point to a folder containing a subfolder for every plugin. For example you can create a directory `~/flipper-plugins` and set `pluginPaths` in Flipper's config to `["~/flipper-plugins"]`. This directory needs to contain a sub-directory for every plugin you create. In this example there would be a directory `~/flipper-plugins/flipper-plugin-myplugin` that contains your plugin's package.json and all code of your plugin.
 
 ### npm dependencies
 
