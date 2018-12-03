@@ -186,7 +186,9 @@ class ManagedTable extends React.Component<
         const index = nextProps.rows.findIndex(
           ({key}) => key === Array.from(highlightedRows)[0],
         );
-        current.scrollToItem(index);
+        if (index >= 0) {
+          current.scrollToItem(index);
+        }
       }
     }
 
