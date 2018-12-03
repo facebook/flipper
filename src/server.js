@@ -148,22 +148,6 @@ export default class Server extends EventEmitter {
     };
     this.emit('start-client-setup', client);
 
-    if (
-      clientData.os === 'iOS' &&
-      !clientData.device.toLowerCase().includes('simulator')
-    ) {
-      this.emit(
-        'error',
-        new Error(
-          "Flipper doesn't currently support physical iOS devices. You can still use it to view logs, but for now to use the majority of the Flipper plugins you'll have to use the Simulator.",
-        ),
-      );
-      console.warn(
-        'Physical iOS device detected. This is not currently supported by Flipper.',
-        'server',
-      );
-    }
-
     return {
       requestResponse: (payload: {data: string}) => {
         if (typeof payload.data !== 'string') {

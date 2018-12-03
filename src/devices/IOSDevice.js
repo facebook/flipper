@@ -55,6 +55,9 @@ export default class IOSDevice extends BaseDevice {
   }
 
   startLogListener(retries: number = 3) {
+    if (this.deviceType === 'physical') {
+      return;
+    }
     if (retries === 0) {
       console.error('Attaching iOS log listener continuously failed.');
       return;

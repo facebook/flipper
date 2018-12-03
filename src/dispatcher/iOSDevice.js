@@ -5,13 +5,18 @@
  * @format
  */
 
+import type {ChildProcess} from 'child_process';
 import type {Store} from '../reducers/index.js';
 import type Logger from '../fb-stubs/Logger.js';
+import type {DeviceType} from '../devices/BaseDevice';
 
 import {promisify} from 'util';
+import path from 'path';
 import child_process from 'child_process';
-const execFile = promisify(child_process.execFile);
+const execFile = child_process.execFile;
 import IOSDevice from '../devices/IOSDevice';
+import iosUtil from '../fb-stubs/iOSContainerUtility';
+import isProduction from '../utils/isProduction.js';
 
 type iOSSimulatorDevice = {|
   state: 'Booted' | 'Shutdown' | 'Shutting Down',
@@ -21,55 +26,95 @@ type iOSSimulatorDevice = {|
   udid: string,
 |};
 
-type IOSDeviceMap = {[id: string]: Array<iOSSimulatorDevice>};
+type IOSDeviceParams = {udid: string, type: DeviceType, name: string};
 
-function querySimulatorDevices(store: Store): Promise<IOSDeviceMap> {
+const portforwardingClient = isProduction()
+  ? path.resolve(
+      __dirname,
+      'PortForwardingMacApp.app/Contents/MacOS/PortForwardingMacApp',
+    )
+  : 'PortForwardingMacApp.app/Contents/MacOS/PortForwardingMacApp';
+
+function forwardPort(port: number, multiplexChannelPort: number) {
+  return execFile(portforwardingClient, [
+    `-portForward=${port}`,
+    `-multiplexChannelPort=${multiplexChannelPort}`,
+  ]);
+}
+// start port forwarding server for real device connections
+const portForwarders: Array<ChildProcess> = [
+  forwardPort(8089, 8079),
+  forwardPort(8088, 8078),
+];
+window.addEventListener('beforeunload', () => {
+  portForwarders.forEach(process => process.kill());
+});
+
+function queryDevices(store: Store): Promise<void> {
   const {connections} = store.getState();
+  const currentDeviceIDs: Set<string> = new Set(
+    connections.devices
+      .filter(device => device instanceof IOSDevice)
+      .map(device => device.serial),
+  );
+  return Promise.all([getActiveSimulators(), getActiveDevices()])
+    .then(([a, b]) => a.concat(b))
+    .then(activeDevices => {
+      for (const {udid, type, name} of activeDevices) {
+        if (currentDeviceIDs.has(udid)) {
+          currentDeviceIDs.delete(udid);
+        } else {
+          store.dispatch({
+            type: 'REGISTER_DEVICE',
+            payload: new IOSDevice(udid, type, name),
+          });
+        }
+      }
 
-  return execFile('xcrun', ['simctl', 'list', 'devices', '--json'], {
+      if (currentDeviceIDs.size > 0) {
+        store.dispatch({
+          type: 'UNREGISTER_DEVICES',
+          payload: currentDeviceIDs,
+        });
+      }
+    });
+}
+
+function getActiveSimulators(): Promise<Array<IOSDeviceParams>> {
+  return promisify(execFile)('xcrun', ['simctl', 'list', 'devices', '--json'], {
     encoding: 'utf8',
   })
     .then(({stdout}) => JSON.parse(stdout).devices)
-    .then((simulatorDevices: IOSDeviceMap) => {
+    .then(simulatorDevices => {
       const simulators: Array<iOSSimulatorDevice> = Object.values(
         simulatorDevices,
         // $FlowFixMe
       ).reduce((acc, cv) => acc.concat(cv), []);
 
-      const currentDeviceIDs: Set<string> = new Set(
-        connections.devices
-          .filter(device => device instanceof IOSDevice)
-          .map(device => device.serial),
-      );
-
-      const deviceIDsToRemove = new Set();
-      simulators.forEach((simulator: iOSSimulatorDevice) => {
-        const isRunning =
-          simulator.state === 'Booted' &&
-          // For some users "availability" is set, for others it's "isAvailable"
-          // It's not clear which key is set, so we are checking both.
-          (simulator.availability === '(available)' ||
-            simulator.isAvailable === 'YES');
-
-        if (isRunning && !currentDeviceIDs.has(simulator.udid)) {
-          // create device
-          store.dispatch({
-            type: 'REGISTER_DEVICE',
-            payload: new IOSDevice(simulator.udid, 'emulator', simulator.name),
-          });
-        } else if (!isRunning && currentDeviceIDs.has(simulator.udid)) {
-          deviceIDsToRemove.add(simulator.udid);
-          // delete device
-        }
-      });
-
-      if (deviceIDsToRemove.size > 0) {
-        store.dispatch({
-          type: 'UNREGISTER_DEVICES',
-          payload: deviceIDsToRemove,
+      return simulators
+        .filter(
+          simulator =>
+            simulator.state === 'Booted' &&
+            // For some users "availability" is set, for others it's "isAvailable"
+            // It's not clear which key is set, so we are checking both.
+            (simulator.availability === '(available)' ||
+              simulator.isAvailable === 'YES'),
+        )
+        .map(simulator => {
+          return {
+            udid: simulator.udid,
+            type: 'emulator',
+            name: simulator.name,
+          };
         });
-      }
     });
+}
+
+function getActiveDevices(): Promise<Array<IOSDeviceParams>> {
+  return iosUtil.targets().catch(e => {
+    console.warn(e);
+    return [];
+  });
 }
 
 export default (store: Store, logger: Logger) => {
@@ -77,10 +122,10 @@ export default (store: Store, logger: Logger) => {
   if (process.platform !== 'darwin') {
     return;
   }
-  querySimulatorDevices(store)
+  queryDevices(store)
     .then(() => {
       const simulatorUpdateInterval = setInterval(() => {
-        querySimulatorDevices(store).catch(err => {
+        queryDevices(store).catch(err => {
           console.error(err);
           clearInterval(simulatorUpdateInterval);
         });

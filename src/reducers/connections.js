@@ -301,8 +301,10 @@ export default function reducer(
     case 'CLIENT_SETUP_ERROR': {
       const {payload} = action;
 
+      const errorMessage =
+        payload.error instanceof Error ? payload.error.message : payload.error;
       console.error(
-        new RecurringError(`Client setup error: ${payload.error.message}`),
+        new RecurringError(`Client setup error: ${errorMessage}`),
         `${payload.client.os}:${payload.client.deviceName}:${
           payload.client.appName
         }`,
@@ -313,10 +315,11 @@ export default function reducer(
           .map(
             c =>
               isEqual(c.client, payload.client)
-                ? {...c, error: payload.error.message}
+                ? {...c, error: errorMessage}
                 : c,
           )
           .sort((a, b) => a.client.appName.localeCompare(b.client.appName)),
+        error: `Client setup error: ${errorMessage}`,
       };
     }
     default:

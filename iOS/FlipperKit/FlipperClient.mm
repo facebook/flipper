@@ -18,7 +18,7 @@
 #import "FlipperClient+Testing.h"
 
 #if !TARGET_OS_SIMULATOR
-//#import <FKPortForwarding/FKPortForwardingServer.h>
+#import <FKPortForwarding/FKPortForwardingServer.h>
 #endif
 
 using WrapperPlugin = facebook::flipper::FlipperCppWrapperPlugin;
@@ -28,7 +28,8 @@ using WrapperPlugin = facebook::flipper::FlipperCppWrapperPlugin;
   folly::ScopedEventBaseThread sonarThread;
   folly::ScopedEventBaseThread connectionThread;
 #if !TARGET_OS_SIMULATOR
- // FKPortForwardingServer *_server;
+ FKPortForwardingServer *_secureServer;
+ FKPortForwardingServer *_insecureServer;
 #endif
 }
 
@@ -119,9 +120,12 @@ using WrapperPlugin = facebook::flipper::FlipperCppWrapperPlugin;
 - (void)start;
 {
 #if !TARGET_OS_SIMULATOR
-  // _server = [FKPortForwardingServer new];
-  // [_server forwardConnectionsFromPort:8088];
-  // [_server listenForMultiplexingChannelOnPort:8078];
+  _secureServer = [FKPortForwardingServer new];
+  [_secureServer forwardConnectionsFromPort:8088];
+  [_secureServer listenForMultiplexingChannelOnPort:8078];
+  _insecureServer = [FKPortForwardingServer new];
+  [_insecureServer forwardConnectionsFromPort:8089];
+  [_insecureServer listenForMultiplexingChannelOnPort:8079];
 #endif
   _cppClient->start();
 }
@@ -131,8 +135,10 @@ using WrapperPlugin = facebook::flipper::FlipperCppWrapperPlugin;
 {
   _cppClient->stop();
 #if !TARGET_OS_SIMULATOR
-  // [_server close];
-  // _server = nil;
+  [_secureServer close];
+  _secureServer = nil;
+  [_insecureServer close];
+  _insecureServer = nil;
 #endif
 }
 
