@@ -1,39 +1,34 @@
-/*
- *  Copyright (c) 2018-present, Facebook, Inc.
- *
- *  This source code is licensed under the MIT license found in the LICENSE
- *  file in the root directory of this source tree.
- *
- */
-#import "SKPortForwardingServer.h"
+// Copyright 2004-present Facebook. All Rights Reserved.
+
+#import "FKPortForwardingServer.h"
 
 #import <UIKit/UIKit.h>
 
 #import <CocoaAsyncSocket/GCDAsyncSocket.h>
 #import <peertalk/PTChannel.h>
 
-#import "SKMacros.h"
-#import "SKPortForwardingCommon.h"
+#import "FKPortForwardingCommon.h"
 
-@interface SKPortForwardingServer () <PTChannelDelegate, GCDAsyncSocketDelegate>
+@interface FKPortForwardingServer () <PTChannelDelegate, GCDAsyncSocketDelegate>
+{
+  __weak PTChannel *_serverChannel;
+  __weak PTChannel *_peerChannel;
 
-@property (nonatomic, weak) PTChannel *serverChannel;
-@property (nonatomic, weak) PTChannel *peerChannel;
-
-@property (nonatomic, strong) GCDAsyncSocket *serverSocket;
-@property (nonatomic, strong) NSMutableDictionary *clientSockets;
-@property (nonatomic, assign) UInt32 lastClientSocketTag;
-@property (nonatomic, strong) dispatch_queue_t socketQueue;
-@property (nonatomic, strong) PTProtocol *protocol;
+  GCDAsyncSocket *_serverSocket;
+  NSMutableDictionary *_clientSockets;
+  UInt32 _lastClientSocketTag;
+  dispatch_queue_t _socketQueue;
+  PTProtocol *_protocol;
+}
 
 @end
 
-@implementation SKPortForwardingServer
+@implementation FKPortForwardingServer
 
 - (instancetype)init
 {
   if (self = [super init]) {
-    _socketQueue = dispatch_queue_create("SKPortForwardingServer", DISPATCH_QUEUE_SERIAL);
+    _socketQueue = dispatch_queue_create("FKPortForwardingServer", DISPATCH_QUEUE_SERIAL);
     _lastClientSocketTag = 0;
     _clientSockets = [NSMutableDictionary dictionary];
     _protocol = [[PTProtocol alloc] initWithDispatchQueue:_socketQueue];
@@ -60,10 +55,10 @@
   GCDAsyncSocket *serverSocket = [[GCDAsyncSocket alloc] initWithDelegate:self delegateQueue:_socketQueue];
   NSError *listenError;
   if ([serverSocket acceptOnPort:port error:&listenError]) {
-    self.serverSocket = serverSocket;
+    _serverSocket = serverSocket;
   } else {
     if (shouldReportError) {
-      SKLog(@"Failed to listen: %@", listenError);
+      FBPFLog(@"Failed to listen: %@", listenError);
     }
   }
 }
@@ -82,22 +77,22 @@
   [channel listenOnPort:port IPv4Address:INADDR_LOOPBACK callback:^(NSError *error) {
     if (error) {
       if (shouldReportError) {
-        SKLog(@"Failed to listen on 127.0.0.1:%lu: %@", (unsigned long)port, error);
+        FBPFLog(@"Failed to listen on 127.0.0.1:%lu: %@", (unsigned long)port, error);
       }
     } else {
-      SKTrace(@"Listening on 127.0.0.1:%lu", (unsigned long)port);
-      self.serverChannel = channel;
+      FBPFTrace(@"Listening on 127.0.0.1:%lu", (unsigned long)port);
+      self->_serverChannel = channel;
     }
   }];
 }
 
 - (void)close
 {
-  if (self.serverChannel) {
-    [self.serverChannel close];
-    self.serverChannel = nil;
+  if (_serverChannel) {
+    [_serverChannel close];
+    _serverChannel = nil;
   }
-  [self.serverSocket disconnect];
+  [_serverSocket disconnect];
 }
 
 #pragma mark - PTChannelDelegate
@@ -105,27 +100,27 @@
 - (void)ioFrameChannel:(PTChannel *)channel didAcceptConnection:(PTChannel *)otherChannel fromAddress:(PTAddress *)address {
   // Cancel any other connection. We are FIFO, so the last connection
   // established will cancel any previous connection and "take its place".
-  if (self.peerChannel) {
-    [self.peerChannel cancel];
+  if (_peerChannel) {
+    [_peerChannel cancel];
   }
 
   // Weak pointer to current connection. Connection objects live by themselves
   // (owned by its parent dispatch queue) until they are closed.
-  self.peerChannel = otherChannel;
-  self.peerChannel.userInfo = address;
-  SKTrace(@"Connected to %@", address);
+  _peerChannel = otherChannel;
+  _peerChannel.userInfo = address;
+  FBPFTrace(@"Connected to %@", address);
 }
 
 - (void)ioFrameChannel:(PTChannel *)channel didReceiveFrameOfType:(uint32_t)type tag:(uint32_t)tag payload:(PTData *)payload {
   //NSLog(@"didReceiveFrameOfType: %u, %u, %@", type, tag, payload);
-  if (type == SKPortForwardingFrameTypeWriteToPipe) {
-    GCDAsyncSocket *sock = self.clientSockets[@(tag)];
+  if (type == FKPortForwardingFrameTypeWriteToPipe) {
+    GCDAsyncSocket *sock = _clientSockets[@(tag)];
     [sock writeData:[NSData dataWithBytes:payload.data length:payload.length] withTimeout:-1 tag:0];
-    SKTrace(@"channel -> socket (%d), %zu bytes", tag, payload.length);
+    FBPFTrace(@"channel -> socket (%d), %zu bytes", tag, payload.length);
   }
 
-  if (type == SKPortForwardingFrameTypeClosePipe) {
-    GCDAsyncSocket *sock = self.clientSockets[@(tag)];
+  if (type == FKPortForwardingFrameTypeClosePipe) {
+    GCDAsyncSocket *sock = _clientSockets[@(tag)];
     [sock disconnectAfterWriting];
   }
 }
@@ -135,8 +130,8 @@
     [sock setDelegate:nil];
     [sock disconnect];
   }
-  [self.clientSockets removeAllObjects];
-  SKTrace(@"Disconnected from %@, error = %@", channel.userInfo, error);
+  [_clientSockets removeAllObjects];
+  FBPFTrace(@"Disconnected from %@, error = %@", channel.userInfo, error);
 }
 
 
@@ -145,7 +140,7 @@
 - (void)socket:(GCDAsyncSocket *)sock didAcceptNewSocket:(GCDAsyncSocket *)newSocket
 {
   dispatch_block_t block = ^() {
-    if (!self.peerChannel) {
+    if (!self->_peerChannel) {
       [newSocket setDelegate:nil];
       [newSocket disconnect];
     }
@@ -153,9 +148,9 @@
     UInt32 tag = ++self->_lastClientSocketTag;
     newSocket.userData = @(tag);
     newSocket.delegate = self;
-    self.clientSockets[@(tag)] = newSocket;
-    [self.peerChannel sendFrameOfType:SKPortForwardingFrameTypeOpenPipe tag:self->_lastClientSocketTag withPayload:nil callback:^(NSError *error) {
-      SKTrace(@"open socket (%d), error = %@", (unsigned int)tag, error);
+    self->_clientSockets[@(tag)] = newSocket;
+    [self->_peerChannel sendFrameOfType:FKPortForwardingFrameTypeOpenPipe tag:self->_lastClientSocketTag withPayload:nil callback:^(NSError *error) {
+      FBPFTrace(@"open socket (%d), error = %@", (unsigned int)tag, error);
       [newSocket readDataWithTimeout:-1 tag:0];
     }];
   };
@@ -170,9 +165,9 @@
 - (void)socket:(GCDAsyncSocket *)sock didReadData:(NSData *)data withTag:(long)_
 {
   UInt32 tag = [[sock userData] unsignedIntValue];
-  SKTrace(@"Incoming data on socket (%d) - %lu bytes", (unsigned int)tag, (unsigned long)data.length);
-  [_peerChannel sendFrameOfType:SKPortForwardingFrameTypeWriteToPipe tag:tag withPayload:NSDataToGCDData(data) callback:^(NSError *error) {
-    SKTrace(@"socket (%d) -> channel %lu bytes, error = %@", (unsigned int)tag, (unsigned long)data.length, error);
+  FBPFTrace(@"Incoming data on socket (%d) - %lu bytes", (unsigned int)tag, (unsigned long)data.length);
+  [_peerChannel sendFrameOfType:FKPortForwardingFrameTypeWriteToPipe tag:tag withPayload:NSDataToGCDData(data) callback:^(NSError *error) {
+    FBPFTrace(@"socket (%d) -> channel %lu bytes, error = %@", (unsigned int)tag, (unsigned long)data.length, error);
     [sock readDataWithTimeout:-1 tag:_];
   }];
 }
@@ -181,8 +176,8 @@
 {
   UInt32 tag = [sock.userData unsignedIntValue];
   [_clientSockets removeObjectForKey:@(tag)];
-  [_peerChannel sendFrameOfType:SKPortForwardingFrameTypeClosePipe tag:tag withPayload:nil callback:^(NSError *error) {
-    SKTrace(@"socket (%d) disconnected, err = %@, peer error = %@", (unsigned int)tag, err, error);
+  [_peerChannel sendFrameOfType:FKPortForwardingFrameTypeClosePipe tag:tag withPayload:nil callback:^(NSError *error) {
+    FBPFTrace(@"socket (%d) disconnected, err = %@, peer error = %@", (unsigned int)tag, err, error);
   }];
 }
 

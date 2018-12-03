@@ -18,7 +18,7 @@
 #import "FlipperClient+Testing.h"
 
 #if !TARGET_OS_SIMULATOR
-//#import "SKPortForwardingServer.h"
+//#import <FKPortForwarding/FKPortForwardingServer.h>
 #endif
 
 using WrapperPlugin = facebook::flipper::FlipperCppWrapperPlugin;
@@ -28,7 +28,7 @@ using WrapperPlugin = facebook::flipper::FlipperCppWrapperPlugin;
   folly::ScopedEventBaseThread sonarThread;
   folly::ScopedEventBaseThread connectionThread;
 #if !TARGET_OS_SIMULATOR
- // SKPortForwardingServer *_server;
+ // FKPortForwardingServer *_server;
 #endif
 }
 
@@ -119,7 +119,7 @@ using WrapperPlugin = facebook::flipper::FlipperCppWrapperPlugin;
 - (void)start;
 {
 #if !TARGET_OS_SIMULATOR
-  // _server = [SKPortForwardingServer new];
+  // _server = [FKPortForwardingServer new];
   // [_server forwardConnectionsFromPort:8088];
   // [_server listenForMultiplexingChannelOnPort:8078];
 #endif

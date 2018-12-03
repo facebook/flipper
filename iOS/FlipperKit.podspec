@@ -46,17 +46,26 @@ Pod::Spec.new do |spec|
     ss.private_header_files = 'iOS/FlipperKit/FBCxxUtils/**/*.h'
   end
 
+  spec.subspec "FKPortForwarding" do |ss|
+    ss.header_dir = "FKPortForwarding"
+    ss.dependency 'CocoaAsyncSocket', '~> 7.6'
+    ss.dependency 'PeerTalk', '~>0.0.2'
+    ss.compiler_flags = folly_compiler_flags
+    ss.source_files = 'iOS/FlipperKit/FKPortForwarding/FKPortForwarding{Server,Common}.{h,m}'
+    ss.private_header_files = 'iOS/FlipperKit/FKPortForwarding/FKPortForwarding{Server,Common}.h'
+  end
+
+
   spec.subspec "Core" do |ss|
     ss.dependency 'FlipperKit/FBDefines'
     ss.dependency 'FlipperKit/FBCxxUtils'
     ss.dependency 'FlipperKit/CppBridge'
+    ss.dependency 'FlipperKit/FKPortForwarding'
     ss.dependency 'Folly', '~>1.1'
     ss.dependency 'Flipper', '~>'+flipperkit_version
-    ss.dependency 'CocoaAsyncSocket', '~> 7.6'
-    ss.dependency 'PeerTalk', '~>0.0.2'
     ss.dependency 'OpenSSL-Static', '1.0.2.c1'
     ss.compiler_flags = folly_compiler_flags
-    ss.source_files = 'iOS/FlipperKit/FBDefines/*.{h,cpp,m,mm}', 'iOS/FlipperKit/CppBridge/*.{h,mm}', 'iOS/FlipperKit/FBCxxUtils/*.{h,mm}', 'iOS/FlipperKit/Utilities/**/*.{h,m}', 'iOS/FlipperKit/*.{h,m,mm}'
+    ss.source_files = 'iOS/FlipperKit/FBDefines/*.{h,cpp,m,mm}', 'iOS/FlipperKit/CppBridge/*.{h,mm}', 'iOS/FlipperKit/FBCxxUtils/*.{h,mm}', 'iOS/FlipperKit/*.{h,m,mm}'
     ss.public_header_files = 'iOS/Plugins/FlipperKitNetworkPlugin/SKIOSNetworkPlugin/SKIOSNetworkAdapter.h',
                              'iOS/Plugins/FlipperKitNetworkPlugin/FlipperKitNetworkPlugin/SKBufferingPlugin.h',
                              'iOS/Plugins/FlipperKitNetworkPlugin/FlipperKitNetworkPlugin/SKNetworkReporter.h',
