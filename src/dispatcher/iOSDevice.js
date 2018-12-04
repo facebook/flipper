@@ -9,8 +9,8 @@ import type {ChildProcess} from 'child_process';
 import type {Store} from '../reducers/index.js';
 import type Logger from '../fb-stubs/Logger.js';
 import type {DeviceType} from '../devices/BaseDevice';
-import {RecurringError} from '../utils/errors';
 
+import {RecurringError} from '../utils/errors';
 import {promisify} from 'util';
 import path from 'path';
 import child_process from 'child_process';
@@ -18,6 +18,7 @@ const execFile = child_process.execFile;
 import IOSDevice from '../devices/IOSDevice';
 import iosUtil from '../fb-stubs/iOSContainerUtility';
 import isProduction from '../utils/isProduction.js';
+import GK from '../fb-stubs/GK';
 
 type iOSSimulatorDevice = {|
   state: 'Booted' | 'Shutdown' | 'Shutting Down',
@@ -43,10 +44,9 @@ function forwardPort(port: number, multiplexChannelPort: number) {
   ]);
 }
 // start port forwarding server for real device connections
-const portForwarders: Array<ChildProcess> = [
-  forwardPort(8089, 8079),
-  forwardPort(8088, 8078),
-];
+const portForwarders: Array<ChildProcess> = GK.get('flipper_ios_device_support')
+  ? [forwardPort(8089, 8079), forwardPort(8088, 8078)]
+  : [];
 window.addEventListener('beforeunload', () => {
   portForwarders.forEach(process => process.kill());
 });
@@ -112,12 +112,10 @@ function getActiveSimulators(): Promise<Array<IOSDeviceParams>> {
 }
 
 function getActiveDevices(): Promise<Array<IOSDeviceParams>> {
-  return iosUtil.isAvailable()
-    ? iosUtil.targets().catch(e => {
-        console.error(new RecurringError(e.message));
-        return [];
-      })
-    : Promise.resolve([]);
+  return iosUtil.targets().catch(e => {
+    console.error(new RecurringError(e.message));
+    return [];
+  });
 }
 
 export default (store: Store, logger: Logger) => {

@@ -4,6 +4,8 @@
  * LICENSE file in the root directory of this source tree.
  * @format
  */
+import {promisify} from 'util';
+const exec = promisify(require('child_process').exec);
 
 const errorMessage = 'Physical iOS devices not yet supported';
 
@@ -18,7 +20,21 @@ function isAvailable(): boolean {
 }
 
 function targets(): Promise<Array<DeviceTarget>> {
-  return Promise.reject(errorMessage);
+  return exec('instruments -s devices').then(({stdout}) =>
+    stdout
+      .toString()
+      .split('\n')
+      .map(line => line.trim())
+      .map(line => /(.+) \([^(]+\) \[(.*)\]( \(Simulator\))?/.exec(line))
+      .filter(Boolean)
+      .filter(
+        ([match, name, udid, isSim]) =>
+          !isSim && (name.includes('iPhone') || name.includes('iPad')),
+      )
+      .map(([match, name, udid]) => {
+        return {udid: udid, type: 'physical', name: name};
+      }),
+  );
 }
 
 function push(

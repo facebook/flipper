@@ -10,6 +10,7 @@ import type Client from '../Client';
 import type {UninitializedClient} from '../UninitializedClient';
 import {isEqual} from 'lodash';
 import {RecurringError} from '../utils/errors';
+import iosUtil from '../fb-stubs/iOSContainerUtility';
 
 export type State = {|
   devices: Array<BaseDevice>,
@@ -153,12 +154,20 @@ export default function reducer(
         selection = {};
       }
 
+      const error =
+        payload.os === 'iOS' &&
+        payload.deviceType === 'physical' &&
+        !iosUtil.isAvailable()
+          ? 'iOS Devices are not yet supported'
+          : null;
+
       return {
         ...state,
         devices,
         // select device if none was selected before
         selectedDevice,
         ...selection,
+        error,
       };
     }
     case 'UNREGISTER_DEVICES': {
