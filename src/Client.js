@@ -6,13 +6,12 @@
  */
 
 import type {FlipperPlugin, FlipperBasePlugin} from './plugin.js';
-import {FlipperDevicePlugin} from './plugin.js';
 import type BaseDevice from './devices/BaseDevice.js';
-
 import type {App} from './App.js';
 import type Logger from './fb-stubs/Logger.js';
 import type {Store} from './reducers/index.js';
 
+import {FlipperDevicePlugin} from './plugin.js';
 import {setPluginState} from './reducers/pluginStates.js';
 import {ReactiveSocket, PartialResponder} from 'rsocket-core';
 
@@ -121,6 +120,13 @@ export default class Client extends EventEmitter {
     await this.getPlugins();
     this.emit('plugins-change');
   }
+
+  getDevice = (): ?BaseDevice =>
+    this.store
+      .getState()
+      .connections.devices.find(
+        (device: BaseDevice) => device.serial === this.query.device_id,
+      );
 
   onMessage(msg: string) {
     if (typeof msg !== 'string') {
