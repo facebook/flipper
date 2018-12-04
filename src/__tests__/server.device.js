@@ -55,11 +55,8 @@ test(
       // Make sure client stays connected for some time before passing test
       setTimeout(() => {
         testFinished = true;
-        if (disconnectedTooEarly) {
-          console.error('Client disconnected too early');
-        } else {
-          done();
-        }
+        expect(disconnectedTooEarly).toBe(false);
+        done();
       }, 5000);
     });
     server.addListener('removed-client', (id: string) => {
