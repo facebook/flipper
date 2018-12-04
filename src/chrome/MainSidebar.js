@@ -156,12 +156,18 @@ class PluginSidebarListItem extends Component<{
   }
 }
 
-const Spinner = styled(LoadingIndicator)({
-  marginTop: '10px',
-  marginBottom: '10px',
-  marginLeft: 'auto',
-  marginRight: 'auto',
-});
+const Spinner = centerInSidebar(LoadingIndicator);
+
+const ErrorIndicator = centerInSidebar(Glyph);
+
+function centerInSidebar(component) {
+  return styled(component)({
+    marginTop: '10px',
+    marginBottom: '10px',
+    marginLeft: 'auto',
+    marginRight: 'auto',
+  });
+}
 
 type MainSidebarProps = {|
   selectedPlugin: ?string,
@@ -177,6 +183,7 @@ type MainSidebarProps = {|
   uninitializedClients: Array<{
     client: UninitializedClient,
     deviceId?: string,
+    errorMessage?: string,
   }>,
   numNotifications: number,
   devicePlugins: Map<string, Class<FlipperDevicePlugin<>>>,
@@ -290,7 +297,7 @@ class MainSidebar extends PureComponent<MainSidebarProps> {
         {uninitializedClients.map(entry => (
           <React.Fragment key={JSON.stringify(entry.client)}>
             <SidebarHeader>{entry.client.appName}</SidebarHeader>
-            <Spinner size={16} />
+            {entry.errorMessage ? <ErrorIndicator name={"mobile-cross"} size={16} /> : <Spinner size={16}/>}
           </React.Fragment>
         ))}
       </Sidebar>

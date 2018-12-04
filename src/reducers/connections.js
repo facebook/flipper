@@ -315,7 +315,7 @@ export default function reducer(
           .map(
             c =>
               isEqual(c.client, payload.client)
-                ? {...c, error: errorMessage}
+                ? {...c, errorMessage: errorMessage}
                 : c,
           )
           .sort((a, b) => a.client.appName.localeCompare(b.client.appName)),
