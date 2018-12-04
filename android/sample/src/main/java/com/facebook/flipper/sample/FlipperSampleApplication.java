@@ -1,9 +1,8 @@
-/*
- *  Copyright (c) Facebook, Inc.
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- *  This source code is licensed under the MIT license found in the LICENSE
- *  file in the root directory of this source tree.
- *
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
 package com.facebook.flipper.sample;
 
@@ -65,7 +64,7 @@ public class FlipperSampleApplication extends Application {
                 new SharedPreferencesDescriptor("other_sample", Context.MODE_PRIVATE))));
     client.addPlugin(new LeakCanaryFlipperPlugin());
     client.addPlugin(new ExampleFlipperPlugin());
-    client.addPlugin(new CrashReporterPlugin());
+    client.addPlugin(CrashReporterPlugin.getInstance());
     client.start();
 
     getSharedPreferences("sample", Context.MODE_PRIVATE).edit().putString("Hello", "world").apply();

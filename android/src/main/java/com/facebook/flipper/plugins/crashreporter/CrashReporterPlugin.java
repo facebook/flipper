@@ -1,9 +1,8 @@
-/*
- *  Copyright (c) Facebook, Inc.
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- *  This source code is licensed under the MIT license found in the LICENSE
- *  file in the root directory of this source tree.
- *
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
 package com.facebook.flipper.plugins.crashreporter;
 
@@ -22,7 +21,16 @@ public class CrashReporterPlugin implements FlipperPlugin {
   @Nullable private FlipperConnection mConnection;
 
   @Nullable private Thread.UncaughtExceptionHandler prevHandler;
+  private static CrashReporterPlugin crashreporterPlugin = null;
 
+  private CrashReporterPlugin() {}
+
+  // static method to create instance of Singleton class
+  public static CrashReporterPlugin getInstance() {
+    if (crashreporterPlugin == null) crashreporterPlugin = new CrashReporterPlugin();
+
+    return crashreporterPlugin;
+  }
   /*
    * Activity to be used to display incoming messages
    */
@@ -38,26 +46,30 @@ public class CrashReporterPlugin implements FlipperPlugin {
         new Thread.UncaughtExceptionHandler() {
           @Override
           public void uncaughtException(Thread paramThread, Throwable paramThrowable) {
-            if (mConnection != null) {
-              FlipperConnection connection = mConnection;
-              FlipperArray.Builder builder = new FlipperArray.Builder();
-              for (StackTraceElement stackTraceElement : paramThrowable.getStackTrace()) {
-                builder.put(stackTraceElement.toString());
-              }
-              FlipperArray arr = builder.build();
-              connection.send(
-                  "crash-report",
-                  new FlipperObject.Builder()
-                      .put("callstack", arr)
-                      .put("name", paramThrowable.toString())
-                      .put("reason", paramThrowable.getMessage())
-                      .build());
-            }
+            sendExceptionMessage(paramThread, paramThrowable);
             if (prevHandler != null) {
               prevHandler.uncaughtException(paramThread, paramThrowable);
             }
           }
         });
+  }
+
+  public void sendExceptionMessage(Thread paramThread, Throwable paramThrowable) {
+    if (mConnection != null) {
+      FlipperConnection connection = mConnection;
+      FlipperArray.Builder builder = new FlipperArray.Builder();
+      for (StackTraceElement stackTraceElement : paramThrowable.getStackTrace()) {
+        builder.put(stackTraceElement.toString());
+      }
+      FlipperArray arr = builder.build();
+      connection.send(
+          "crash-report",
+          new FlipperObject.Builder()
+              .put("callstack", arr)
+              .put("name", paramThrowable.toString())
+              .put("reason", paramThrowable.getMessage())
+              .build());
+    }
   }
 
   @Override
