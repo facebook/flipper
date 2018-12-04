@@ -294,7 +294,14 @@ export default class LogTable extends FlipperDevicePlugin<
       if (!matched) {
         return matched;
       }
-      for (let i = 0; i < crash.callStack.length && matched; ++i) {
+      // If top 10 callstack entries are present in a row then it most probably matches the row.
+      // The reason why we do not perform the full callstack check is that sometimes the row in logs plugins has truncated data
+      // TODO: T37573722
+      for (
+        let i = 0;
+        i < Math.min(crash.callStack.length, 10) && matched;
+        ++i
+      ) {
         //$FlowFixMe: x.filterValue is not undefined
         matched = x.filterValue.includes(crash.callStack[i]);
       }

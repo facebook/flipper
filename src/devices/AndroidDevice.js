@@ -46,7 +46,6 @@ export default class AndroidDevice extends BaseDevice {
           if (entry.priority === Priority.FATAL) {
             type = 'fatal';
           }
-
           this.notifyLogListeners({
             tag: entry.tag,
             pid: entry.pid,

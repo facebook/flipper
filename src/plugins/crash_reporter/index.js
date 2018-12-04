@@ -39,12 +39,15 @@ const Value = styled(View)({
   paddingLeft: '8px',
   fontSize: '100%',
   fontFamily: 'Monospace',
+  maxHeight: '200px',
+  overflow: 'scroll',
 });
 
 const RootColumn = styled(FlexColumn)({
   paddingLeft: '16px',
   paddingRight: '16px',
   paddingTop: '8px',
+  overflow: 'scroll',
 });
 
 const CrashRow = styled(FlexRow)({
@@ -55,6 +58,8 @@ const CallStack = styled('pre')({
   fontFamily: 'Monospace',
   fontSize: '100%',
   paddingLeft: '8px',
+  maxHeight: '500px',
+  overflow: 'scroll',
 });
 
 export default class CrashReporterPlugin extends FlipperDevicePlugin {
@@ -105,7 +110,7 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin {
         message: crash.callStack,
         severity: 'error',
         title: 'CRASH: ' + crash.name + ' ' + crash.reason,
-        action: 'Inspect',
+        action: JSON.stringify(crash),
       };
     });
   };
@@ -115,8 +120,15 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin {
   }
 
   render() {
-    if (this.props.persistedState.crashes.length > 0) {
-      const crash = this.props.persistedState.crashes.slice(-1)[0];
+    let crash =
+      this.props.persistedState.crashes.length > 0
+        ? this.props.persistedState.crashes.slice(-1)[0]
+        : undefined;
+    if (this.props.deepLinkPayload) {
+      // In case of the deeplink from the notifications use the notifications crash, otherwise show the latest crash
+      crash = JSON.parse(this.props.deepLinkPayload);
+    }
+    if (crash) {
       const callStackString = this.convertCallstackToString(crash);
       return (
         <RootColumn>
