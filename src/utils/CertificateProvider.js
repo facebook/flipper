@@ -82,10 +82,14 @@ export default class CertificateProvider {
   }
 
   processCertificateSigningRequest(
-    csr: string,
+    unsanitizedCsr: string,
     os: string,
     appDirectory: string,
   ): Promise<{|deviceId: string|}> {
+    const csr = this.santitizeString(unsanitizedCsr);
+    if (csr === '') {
+      return Promise.reject(new Error(`Received empty CSR from ${os} device`));
+    }
     this.ensureOpenSSLIsAvailable();
     return this.certificateSetup
       .then(_ => this.getCACertificate())
@@ -327,12 +331,7 @@ export default class CertificateProvider {
       `cat ${directory + csrFileName}`,
     )
       .then(deviceCsr => {
-        return (
-          deviceCsr
-            .toString()
-            .replace(/\r/g, '')
-            .trim() === csr.replace(/\r/g, '').trim()
-        );
+        return this.santitizeString(deviceCsr.toString()) === csr;
       })
       .catch(err => {
         console.error(err, logTag);
@@ -366,14 +365,15 @@ export default class CertificateProvider {
           .then(fileName => {
             const copiedFile = path.resolve(dir, fileName);
             return promisify(fs.readFile)(copiedFile).then(data =>
-              data
-                .toString()
-                .replace(/\r/g, '')
-                .trim(),
+              this.santitizeString(data.toString()),
             );
           });
       })
-      .then(csrFromDevice => csrFromDevice === csr.replace(/\r/g, '').trim());
+      .then(csrFromDevice => csrFromDevice === csr);
+  }
+
+  santitizeString(csrString: string): string {
+    return csrString.replace(/\r/g, '').trim();
   }
 
   pushFileToAndroidDevice(
