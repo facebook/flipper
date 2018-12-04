@@ -192,7 +192,6 @@ export default class Server extends EventEmitter {
                 });
               })
               .catch(e => {
-                console.error(e, 'server');
                 subscriber.onError(e);
                 this.emit('client-setup-error', {client, error: e});
               });
