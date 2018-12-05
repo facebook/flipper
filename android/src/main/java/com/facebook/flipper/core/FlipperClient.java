@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2018-present, Facebook, Inc.
+ *  Copyright (c) Facebook, Inc.
  *
  *  This source code is licensed under the MIT license found in the LICENSE
  *  file in the root directory of this source tree.
@@ -11,6 +11,8 @@ public interface FlipperClient {
   void addPlugin(FlipperPlugin plugin);
 
   <T extends FlipperPlugin> T getPlugin(String id);
+
+  <T extends FlipperPlugin> T getPluginByClass(Class<T> cls);
 
   void removePlugin(FlipperPlugin plugin);
 

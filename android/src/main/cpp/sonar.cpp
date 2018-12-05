@@ -331,17 +331,18 @@ class JFlipperClient : public jni::HybridClass<JFlipperClient> {
 
   static void registerNatives() {
     registerHybrid({
-      makeNativeMethod("init", JFlipperClient::init),
-      makeNativeMethod("getInstance", JFlipperClient::getInstance),
-      makeNativeMethod("start", JFlipperClient::start),
-      makeNativeMethod("stop", JFlipperClient::stop),
-      makeNativeMethod("addPlugin", JFlipperClient::addPlugin),
-      makeNativeMethod("removePlugin", JFlipperClient::removePlugin),
-      makeNativeMethod("subscribeForUpdates", JFlipperClient::subscribeForUpdates),
-      makeNativeMethod("unsubscribe", JFlipperClient::unsubscribe),
-      makeNativeMethod("getPlugin", JFlipperClient::getPlugin),
-      makeNativeMethod("getState", JFlipperClient::getState),
-      makeNativeMethod("getStateSummary", JFlipperClient::getStateSummary),
+        makeNativeMethod("init", JFlipperClient::init),
+        makeNativeMethod("getInstance", JFlipperClient::getInstance),
+        makeNativeMethod("start", JFlipperClient::start),
+        makeNativeMethod("stop", JFlipperClient::stop),
+        makeNativeMethod("addPluginNative", JFlipperClient::addPlugin),
+        makeNativeMethod("removePluginNative", JFlipperClient::removePlugin),
+        makeNativeMethod(
+            "subscribeForUpdates", JFlipperClient::subscribeForUpdates),
+        makeNativeMethod("unsubscribe", JFlipperClient::unsubscribe),
+        makeNativeMethod("getPlugin", JFlipperClient::getPlugin),
+        makeNativeMethod("getState", JFlipperClient::getState),
+        makeNativeMethod("getStateSummary", JFlipperClient::getStateSummary),
     });
   }
 
