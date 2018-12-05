@@ -24,6 +24,7 @@ android {
     externalNativeBuild {
         cmake {
             path 'libevent-release-2.1.9/CMakeLists.txt'
+            version CMAKE_VERSION
         }
     }
 }

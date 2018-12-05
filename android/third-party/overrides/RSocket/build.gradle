@@ -24,7 +24,7 @@ android {
     externalNativeBuild {
         cmake {
             path './CMakeLists.txt'
+            version CMAKE_VERSION
         }
     }
 }
-//'x86', 'x86_64', 'armeabi-v7a',
