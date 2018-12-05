@@ -12,7 +12,7 @@
 <span class="hljs-comment">// Client may be null if AndroidFlipperClient.createInstance() was never called</span>
 <span class="hljs-comment">// which is the case in production builds.</span>
 <span class="hljs-keyword">if</span> (client != <span class="hljs-keyword">null</span>) {
-  <span class="hljs-keyword">final</span> MyFlipperPlugin plugin = client.getPlugin(<span class="hljs-string">"MyFlipperPlugin"</span>);
+  <span class="hljs-keyword">final</span> MyFlipperPlugin plugin = client.getPluginByClass(MyFlipperPlugin.class);
   plugin.sendData(myData);
 }
 </code></pre>
