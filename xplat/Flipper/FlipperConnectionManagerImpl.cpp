@@ -128,10 +128,16 @@ void FlipperConnectionManagerImpl::startSync() {
     }
     step->complete();
   } catch (const folly::AsyncSocketException& e) {
-    if (e.getType() == folly::AsyncSocketException::NOT_OPEN) {
+    if (e.getType() == folly::AsyncSocketException::NOT_OPEN ||
+        e.getType() == folly::AsyncSocketException::NETWORK_ERROR) {
       // The expected code path when flipper desktop is not running.
-      // Don't count as a failed attempt.
-      step->fail("Port not open");
+      // Don't count as a failed attempt, or it would invalidate the connection
+      // files for no reason. On iOS devices, we can always connect to the local
+      // port forwarding server even when it can't connect to flipper. In that
+      // case we get a Network error instead of a Port not open error, so we
+      // treat them the same.
+      step->fail(
+          "No route to flipper found. Is flipper desktop running? Retrying...");
     } else {
       log(e.what());
       failedConnectionAttempts_++;
