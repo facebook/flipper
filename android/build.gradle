@@ -16,7 +16,6 @@ android {
 
         externalNativeBuild {
             cmake {
-                version CMAKE_VERSION
                 arguments '-DANDROID_TOOLCHAIN=clang', '-DANDROID_STL=c++_shared'
                 targets 'flipper', 'event', 'event_extra', 'event_core'
             }
