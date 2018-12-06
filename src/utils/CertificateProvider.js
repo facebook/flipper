@@ -281,6 +281,12 @@ export default class CertificateProvider {
             `No matching device found for app: ${appName}`,
           );
         }
+        if (matchingIds.length > 1) {
+          console.error(
+            new RecurringError('More than one matching device found for CSR'),
+            csr,
+          );
+        }
         return matchingIds[0];
       });
     });
