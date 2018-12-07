@@ -21,6 +21,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     client?.add(FlipperKitNetworkPlugin(networkAdapter: SKIOSNetworkAdapter()))
     client?.add(FlipperKitExamplePlugin.sharedInstance());
     client?.add(FKUserDefaultsPlugin.init(suiteName: nil))
+    client?.add(FlipperKitCrashReporterPlugin.sharedInstance());
     client?.start()
 
     let storyboard = UIStoryboard(name: "MainStoryBoard", bundle: nil)
