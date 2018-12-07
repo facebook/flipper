@@ -8,11 +8,14 @@
  #if FB_SONARKIT_ENABLED
  #import "FlipperKitCrashReporterPlugin.h"
 #import <FlipperKit/FlipperConnection.h>
+#include <folly/io/async/ScopedEventBaseThread.h>
+#import "FlipperKitSignalHandler.h"
 
 @interface FlipperKitCrashReporterPlugin()
 @property (strong, nonatomic) id<FlipperConnection> connection;
 @property (assign, nonatomic) NSUInteger notificationID;
 @property (assign, nonatomic) NSUncaughtExceptionHandler *prevHandler;
+
 - (void) handleException:(NSException *)exception;
 
 @end
@@ -23,7 +26,10 @@ static void flipperkitUncaughtExceptionHandler(NSException *exception) {
   [[FlipperKitCrashReporterPlugin sharedInstance] handleException:exception];
 }
 
-@implementation FlipperKitCrashReporterPlugin
+@implementation FlipperKitCrashReporterPlugin {
+  std::unique_ptr<facebook::flipper::FlipperKitSignalHandler> _signalHandler;
+  folly::ScopedEventBaseThread _crashReporterThread;
+}
 
 - (instancetype)init {
   if (self = [super init]) {
@@ -58,13 +64,20 @@ static void flipperkitUncaughtExceptionHandler(NSException *exception) {
     }
 }
 
+- (void)sendCrashParams:(NSDictionary *)params {
+    self.notificationID += 1;
+    [self.connection send:@"crash-report" withParams: params];
+}
+
 - (void)didConnect:(id<FlipperConnection>)connection {
   self.connection = connection;
+  _signalHandler = std::make_unique<facebook::flipper::FlipperKitSignalHandler>(self, _crashReporterThread.getEventBase());
   NSSetUncaughtExceptionHandler(&flipperkitUncaughtExceptionHandler);
 }
 
 - (void)didDisconnect {
   self.connection = nil;
+  _signalHandler.reset(nullptr); // deallocate the object
   NSSetUncaughtExceptionHandler(self.prevHandler);
 }
 
