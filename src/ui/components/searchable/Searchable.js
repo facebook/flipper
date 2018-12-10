@@ -140,7 +140,6 @@ const Searchable = (
               f => f.key === defaultFilter.key,
             );
             if (filterIndex > -1) {
-              const defaultFilter: Filter = defaultFilters[filterIndex];
               if (defaultFilter.type === 'enum') {
                 savedStateFilters[filterIndex].enum = defaultFilter.enum;
               }
