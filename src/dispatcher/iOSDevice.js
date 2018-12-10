@@ -51,7 +51,7 @@ window.addEventListener('beforeunload', () => {
   portForwarders.forEach(process => process.kill());
 });
 
-function queryDevices(store: Store): Promise<void> {
+function queryDevices(store: Store, logger: Logger): Promise<void> {
   const {connections} = store.getState();
   const currentDeviceIDs: Set<string> = new Set(
     connections.devices
@@ -65,6 +65,12 @@ function queryDevices(store: Store): Promise<void> {
         if (currentDeviceIDs.has(udid)) {
           currentDeviceIDs.delete(udid);
         } else {
+          logger.track('usage', 'register-device', {
+            os: 'iOS',
+            type: type,
+            name: name,
+            serial: udid,
+          });
           store.dispatch({
             type: 'REGISTER_DEVICE',
             payload: new IOSDevice(udid, type, name),
@@ -73,6 +79,9 @@ function queryDevices(store: Store): Promise<void> {
       }
 
       if (currentDeviceIDs.size > 0) {
+        currentDeviceIDs.forEach(id =>
+          logger.track('usage', 'unregister-device', {os: 'iOS', serial: id}),
+        );
         store.dispatch({
           type: 'UNREGISTER_DEVICES',
           payload: currentDeviceIDs,
@@ -123,10 +132,10 @@ export default (store: Store, logger: Logger) => {
   if (process.platform !== 'darwin') {
     return;
   }
-  queryDevices(store)
+  queryDevices(store, logger)
     .then(() => {
       const simulatorUpdateInterval = setInterval(() => {
-        queryDevices(store).catch(err => {
+        queryDevices(store, logger).catch(err => {
           console.error(err);
           clearInterval(simulatorUpdateInterval);
         });

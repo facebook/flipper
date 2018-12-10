@@ -13,19 +13,19 @@ import type BaseDevice from '../devices/BaseDevice';
 import type Logger from '../fb-stubs/Logger.js';
 const adb = require('adbkit-fb');
 
-function createDevice(client, device): Promise<AndroidDevice> {
+function createDevice(adbClient, device): Promise<AndroidDevice> {
   return new Promise((resolve, reject) => {
     const type =
       device.type !== 'device' || device.id.startsWith('emulator')
         ? 'emulator'
         : 'physical';
 
-    client.getProperties(device.id).then(async props => {
+    adbClient.getProperties(device.id).then(async props => {
       let name = props['ro.product.model'];
       if (type === 'emulator') {
         name = (await getRunningEmulatorName(device.id)) || name;
       }
-      const androidDevice = new AndroidDevice(device.id, type, name, client);
+      const androidDevice = new AndroidDevice(device.id, type, name, adbClient);
       androidDevice.reverse();
       resolve(androidDevice);
     });
@@ -115,10 +115,7 @@ export default (store: Store, logger: Logger) => {
                   )
                   .map((device: BaseDevice) => device.serial);
 
-                store.dispatch({
-                  type: 'UNREGISTER_DEVICES',
-                  payload: new Set(deviceIDsToRemove),
-                });
+                unregisterDevices(deviceIDsToRemove);
                 console.error('adb server was shutdown');
                 setTimeout(watchAndroidDevices, 500);
               } else {
@@ -128,34 +125,20 @@ export default (store: Store, logger: Logger) => {
 
             tracker.on('add', async device => {
               if (device.type !== 'offline') {
-                const androidDevice = await createDevice(client, device);
-                store.dispatch({
-                  type: 'REGISTER_DEVICE',
-                  payload: androidDevice,
-                });
+                registerDevice(client, device);
               }
             });
 
             tracker.on('change', async device => {
               if (device.type === 'offline') {
-                store.dispatch({
-                  type: 'UNREGISTER_DEVICES',
-                  payload: new Set([device.id]),
-                });
+                unregisterDevices([device.id]);
               } else {
-                const androidDevice = await createDevice(client, device);
-                store.dispatch({
-                  type: 'REGISTER_DEVICE',
-                  payload: androidDevice,
-                });
+                registerDevice(client, device);
               }
             });
 
             tracker.on('remove', device => {
-              store.dispatch({
-                type: 'UNREGISTER_DEVICES',
-                payload: new Set([device.id]),
-              });
+              unregisterDevices([device.id]);
             });
           })
           .catch(err => {
@@ -170,6 +153,32 @@ export default (store: Store, logger: Logger) => {
         console.error(`Failed to watch for android devices: ${e.message}`);
       });
   };
+
+  async function registerDevice(adbClient: any, deviceData: any) {
+    const androidDevice = await createDevice(adbClient, deviceData);
+    logger.track('usage', 'register-device', {
+      os: 'Android',
+      name: androidDevice.title,
+      serial: androidDevice.serial,
+    });
+    store.dispatch({
+      type: 'REGISTER_DEVICE',
+      payload: androidDevice,
+    });
+  }
+
+  async function unregisterDevices(deviceIds: Array<string>) {
+    deviceIds.forEach(id =>
+      logger.track('usage', 'unregister-device', {
+        os: 'Android',
+        serial: id,
+      }),
+    );
+    store.dispatch({
+      type: 'UNREGISTER_DEVICES',
+      payload: new Set(deviceIds),
+    });
+  }
 
   watchAndroidDevices();
 };
