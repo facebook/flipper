@@ -243,6 +243,136 @@ function pad(chunk: mixed, len: number): string {
   return str;
 }
 
+export function addEntriesToState(
+  items: Entries,
+  state: $Shape<State> = {
+    rows: [],
+    entries: [],
+    key2entry: {},
+  },
+): $Shape<State> {
+  const rows = [...state.rows];
+  const entries = [...state.entries];
+  const key2entry = {...state.key2entry};
+
+  for (let i = 0; i < items.length; i++) {
+    const {entry, row} = items[i];
+    entries.push({row, entry});
+    key2entry[row.key] = entry;
+
+    let previousEntry: ?DeviceLogEntry = null;
+
+    if (i > 0) {
+      previousEntry = items[i - 1].entry;
+    } else if (state.rows.length > 0 && state.entries.length > 0) {
+      previousEntry = state.entries[state.entries.length - 1].entry;
+    }
+
+    addRowIfNeeded(rows, row, entry, previousEntry);
+  }
+
+  return {
+    entries,
+    rows,
+    key2entry,
+  };
+}
+
+export function addRowIfNeeded(
+  rows: Array<TableBodyRow>,
+  row: TableBodyRow,
+  entry: DeviceLogEntry,
+  previousEntry: ?DeviceLogEntry,
+) {
+  const previousRow = rows.length > 0 ? rows[rows.length - 1] : null;
+  if (
+    previousRow &&
+    previousEntry &&
+    entry.message === previousEntry.message &&
+    entry.tag === previousEntry.tag &&
+    previousRow.type != null
+  ) {
+    // duplicate log, increase counter
+    const count =
+      previousRow.columns.type.value &&
+      previousRow.columns.type.value.props &&
+      typeof previousRow.columns.type.value.props.children === 'number'
+        ? previousRow.columns.type.value.props.children + 1
+        : 2;
+    const type = LOG_TYPES[previousRow.type] || LOG_TYPES.debug;
+    previousRow.columns.type.value = (
+      <LogCount backgroundColor={type.color}>{count}</LogCount>
+    );
+  } else {
+    rows.push(row);
+  }
+}
+
+export function processEntry(
+  entry: DeviceLogEntry,
+  key: string,
+): {
+  row: TableBodyRow,
+  entry: DeviceLogEntry,
+} {
+  console.log(JSON.stringify(entry));
+  const {icon, style} = LOG_TYPES[(entry.type: string)] || LOG_TYPES.debug;
+
+  // clean message
+  const message = entry.message.trim();
+  entry.type === 'error';
+
+  // build the item, it will either be batched or added straight away
+  return {
+    entry,
+    row: {
+      columns: {
+        type: {
+          value: icon,
+          align: 'center',
+        },
+        time: {
+          value: (
+            <HiddenScrollText code={true}>
+              {entry.date.toTimeString().split(' ')[0] +
+                '.' +
+                pad(entry.date.getMilliseconds(), 3)}
+            </HiddenScrollText>
+          ),
+        },
+        message: {
+          value: <HiddenScrollText code={true}>{message}</HiddenScrollText>,
+        },
+        tag: {
+          value: <HiddenScrollText code={true}>{entry.tag}</HiddenScrollText>,
+          isFilterable: true,
+        },
+        pid: {
+          value: (
+            <HiddenScrollText code={true}>{String(entry.pid)}</HiddenScrollText>
+          ),
+          isFilterable: true,
+        },
+        tid: {
+          value: (
+            <HiddenScrollText code={true}>{String(entry.tid)}</HiddenScrollText>
+          ),
+          isFilterable: true,
+        },
+        app: {
+          value: <HiddenScrollText code={true}>{entry.app}</HiddenScrollText>,
+          isFilterable: true,
+        },
+      },
+      height: getLineCount(message) * 15 + 10, // 15px per line height + 8px padding
+      style,
+      type: entry.type,
+      filterValue: entry.message,
+      key,
+    },
+  };
+}
+
 export default class LogTable extends FlipperDevicePlugin<
   State,
   Actions,
@@ -322,8 +452,10 @@ export default class LogTable extends FlipperDevicePlugin<
       supportedColumns.includes(obj.key),
     );
 
-    const initialState = this.addEntriesToState(
-      this.device.getLogs().map(this.processEntry),
+    const initialState = addEntriesToState(
+      this.device
+        .getLogs()
+        .map(log => processEntry(log, String(this.counter++))),
     );
     this.state = {
       ...initialState,
@@ -335,7 +467,7 @@ export default class LogTable extends FlipperDevicePlugin<
     };
 
     this.logListener = this.device.addLogListener((entry: DeviceLogEntry) => {
-      const processedEntry = this.processEntry(entry);
+      const processedEntry = processEntry(entry, String(this.counter++));
       this.incrementCounterIfNeeded(processedEntry.entry);
       this.scheudleEntryForBatch(processedEntry);
     });
@@ -365,73 +497,6 @@ export default class LogTable extends FlipperDevicePlugin<
     }
   };
 
-  processEntry = (
-    entry: DeviceLogEntry,
-  ): {
-    row: TableBodyRow,
-    entry: DeviceLogEntry,
-  } => {
-    const {icon, style} = LOG_TYPES[(entry.type: string)] || LOG_TYPES.debug;
-
-    // clean message
-    const message = entry.message.trim();
-    entry.type === 'error';
-
-    // build the item, it will either be batched or added straight away
-    return {
-      entry,
-      row: {
-        columns: {
-          type: {
-            value: icon,
-            align: 'center',
-          },
-          time: {
-            value: (
-              <HiddenScrollText code={true}>
-                {entry.date.toTimeString().split(' ')[0] +
-                  '.' +
-                  pad(entry.date.getMilliseconds(), 3)}
-              </HiddenScrollText>
-            ),
-          },
-          message: {
-            value: <HiddenScrollText code={true}>{message}</HiddenScrollText>,
-          },
-          tag: {
-            value: <HiddenScrollText code={true}>{entry.tag}</HiddenScrollText>,
-            isFilterable: true,
-          },
-          pid: {
-            value: (
-              <HiddenScrollText code={true}>
-                {String(entry.pid)}
-              </HiddenScrollText>
-            ),
-            isFilterable: true,
-          },
-          tid: {
-            value: (
-              <HiddenScrollText code={true}>
-                {String(entry.tid)}
-              </HiddenScrollText>
-            ),
-            isFilterable: true,
-          },
-          app: {
-            value: <HiddenScrollText code={true}>{entry.app}</HiddenScrollText>,
-            isFilterable: true,
-          },
-        },
-        height: getLineCount(message) * 15 + 10, // 15px per line height + 8px padding
-        style,
-        type: entry.type,
-        filterValue: entry.message,
-        key: String(this.counter++),
-      },
-    };
-  };
-
   scheudleEntryForBatch = (item: {
     row: TableBodyRow,
     entry: DeviceLogEntry,
@@ -448,44 +513,9 @@ export default class LogTable extends FlipperDevicePlugin<
         const thisBatch = this.batch;
         this.batch = [];
         this.queued = false;
-        this.setState(state => this.addEntriesToState(thisBatch, state));
+        this.setState(state => addEntriesToState(thisBatch, state));
       }, 100);
     }
-  };
-
-  addEntriesToState = (
-    items: Entries,
-    state: $Shape<State> = {
-      rows: [],
-      entries: [],
-      key2entry: {},
-    },
-  ): $Shape<State> => {
-    const rows = [...state.rows];
-    const entries = [...state.entries];
-    const key2entry = {...state.key2entry};
-
-    for (let i = 0; i < items.length; i++) {
-      const {entry, row} = items[i];
-      entries.push({row, entry});
-      key2entry[row.key] = entry;
-
-      let previousEntry: ?DeviceLogEntry = null;
-
-      if (i > 0) {
-        previousEntry = items[i - 1].entry;
-      } else if (state.rows.length > 0 && state.entries.length > 0) {
-        previousEntry = state.entries[state.entries.length - 1].entry;
-      }
-
-      this.addRowIfNeeded(rows, row, entry, previousEntry);
-    }
-
-    return {
-      entries,
-      rows,
-      key2entry,
-    };
   };
 
   componentWillUnmount() {
@@ -495,36 +525,6 @@ export default class LogTable extends FlipperDevicePlugin<
 
     if (this.logListener) {
       this.device.removeLogListener(this.logListener);
-    }
-  }
-
-  addRowIfNeeded(
-    rows: Array<TableBodyRow>,
-    row: TableBodyRow,
-    entry: DeviceLogEntry,
-    previousEntry: ?DeviceLogEntry,
-  ) {
-    const previousRow = rows.length > 0 ? rows[rows.length - 1] : null;
-    if (
-      previousRow &&
-      previousEntry &&
-      entry.message === previousEntry.message &&
-      entry.tag === previousEntry.tag &&
-      previousRow.type != null
-    ) {
-      // duplicate log, increase counter
-      const count =
-        previousRow.columns.type.value &&
-        previousRow.columns.type.value.props &&
-        typeof previousRow.columns.type.value.props.children === 'number'
-          ? previousRow.columns.type.value.props.children + 1
-          : 2;
-      const type = LOG_TYPES[previousRow.type] || LOG_TYPES.debug;
-      previousRow.columns.type.value = (
-        <LogCount backgroundColor={type.color}>{count}</LogCount>
-      );
-    } else {
-      rows.push(row);
     }
   }
 
