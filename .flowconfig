@@ -22,5 +22,14 @@ module.name_mapper='flipper' -> '<PROJECT_ROOT>/src/index.js'
 
 suppress_type=$FlowFixMe
 
+[strict]
+deprecated-type
+nonstrict-import
+sketchy-null
+unclear-type
+unsafe-getters-setters
+untyped-import
+untyped-type-import
+
 [version]
 ^0.86.0
