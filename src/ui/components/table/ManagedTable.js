@@ -153,10 +153,18 @@ class ManagedTable extends React.Component<
   tableRef: {
     current: null | List,
   } = React.createRef();
+
   scrollRef: {
     current: null | HTMLDivElement,
   } = React.createRef();
+
   dragStartIndex: ?number = null;
+
+  // We want to call scrollToHighlightedRows on componentDidMount. However, at
+  // this time, tableRef is still null, because AutoSizer needs one render to
+  // measure the size of the table. This is why we are using this flag to
+  // trigger actions on the first update instead.
+  firstUpdate = true;
 
   componentDidMount() {
     document.addEventListener('keydown', this.onKeyDown);
@@ -177,19 +185,8 @@ class ManagedTable extends React.Component<
       });
     }
 
-    //
     if (this.props.highlightedRows !== nextProps.highlightedRows) {
       this.setState({highlightedRows: nextProps.highlightedRows});
-      const {current} = this.tableRef;
-      const {highlightedRows} = nextProps;
-      if (current && highlightedRows && highlightedRows.size > 0) {
-        const index = nextProps.rows.findIndex(
-          ({key}) => key === Array.from(highlightedRows)[0],
-        );
-        if (index >= 0) {
-          current.scrollToItem(index);
-        }
-      }
     }
 
     // if columnOrder has changed
@@ -214,15 +211,38 @@ class ManagedTable extends React.Component<
     }
   }
 
-  componentDidUpdate(prevProps: ManagedTableProps) {
+  componentDidUpdate(
+    prevProps: ManagedTableProps,
+    prevState: ManagedTableState,
+  ) {
     if (
       this.props.rows.length !== prevProps.rows.length &&
       this.state.shouldScrollToBottom &&
       this.state.highlightedRows.size < 2
     ) {
       this.scrollToBottom();
+    } else if (
+      prevState.highlightedRows !== this.state.highlightedRows ||
+      this.firstUpdate
+    ) {
+      this.scrollToHighlightedRows();
     }
+    this.firstUpdate = false;
   }
+
+  scrollToHighlightedRows = () => {
+    const {current} = this.tableRef;
+    const {highlightedRows} = this.state;
+    if (current && highlightedRows && highlightedRows.size > 0) {
+      const highlightedRow = Array.from(highlightedRows)[0];
+      const index = this.props.rows.findIndex(
+        ({key}) => key === highlightedRow,
+      );
+      if (index >= 0) {
+        current.scrollToItem(index);
+      }
+    }
+  };
 
   onCopy = () => {
     clipboard.writeText(this.getSelectedText());
