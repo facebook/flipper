@@ -105,12 +105,13 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin {
     persistedState: PersistedState,
   ): Array<Notification> => {
     return persistedState.crashes.map((crash: Crash) => {
+      const id = 'crash-notification:' + crash.notificationID;
       return {
-        id: 'crash-notification:' + crash.notificationID,
+        id,
         message: crash.callStack,
         severity: 'error',
         title: 'CRASH: ' + crash.name + ' ' + crash.reason,
-        action: JSON.stringify(crash),
+        action: id,
       };
     });
   };
@@ -119,15 +120,23 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin {
     return crash.callStack.reduce((acc, val) => acc.concat('\n', val));
   }
 
+  openInLogs = (crash: Crash) => {
+    this.props.selectPlugin(
+      'DeviceLogs',
+      crash.callStack
+        .slice(0, 5)
+        .join('\n\tat ')
+        .trim(),
+    );
+  };
+
   render() {
-    let crash =
-      this.props.persistedState.crashes.length > 0
-        ? this.props.persistedState.crashes.slice(-1)[0]
-        : undefined;
-    if (this.props.deepLinkPayload) {
-      // In case of the deeplink from the notifications use the notifications crash, otherwise show the latest crash
-      crash = JSON.parse(this.props.deepLinkPayload);
-    }
+    const crash =
+      this.props.persistedState.crashes.length > 0 &&
+      this.props.persistedState.crashes[
+        this.props.persistedState.crashes.length - 1
+      ];
+
     if (crash) {
       const callStackString = this.convertCallstackToString(crash);
       return (
@@ -158,17 +167,8 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin {
           </CrashRow>
           {this.device.os == 'Android' && (
             <CrashRow>
-              <Button
-                onClick={event => {
-                  this.props.selectPlugin(
-                    'DeviceLogs',
-                    JSON.stringify({
-                      ...crash,
-                      callStackString: callStackString,
-                    }),
-                  );
-                }}>
-                Deeplink to Logs
+              <Button onClick={() => this.openInLogs(crash)}>
+                Open in Logs
               </Button>
             </CrashRow>
           )}
