@@ -40,6 +40,13 @@
 
 - (void)didConnect:(id<FlipperConnection>)connection {
     self.flipperConnection = connection;
+    [connection receive:@"getAllSharedPreferences" withBlock:^(NSDictionary *params, id<FlipperResponder> responder) {
+        NSDictionary *userDefaults = @{
+                                       @"Standard UserDefaults": [self.userDefaults dictionaryRepresentation]
+                                       };
+        [responder success: userDefaults];
+    }];
+    
     [connection receive:@"getSharedPreferences" withBlock:^(NSDictionary *params, id<FlipperResponder> responder) {
         [responder success:[self.userDefaults dictionaryRepresentation]];
     }];
@@ -73,7 +80,7 @@
     } else {
         [params setObject:value forKey:@"value"];
     }
-    
+    [params setObject:@"Standard UserDefaults" forKey:@"preferences"];
     [self.flipperConnection send:@"sharedPreferencesChange" withParams:[params copy]];
 }
 
