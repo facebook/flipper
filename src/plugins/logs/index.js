@@ -44,7 +44,7 @@ type State = {|
   rows: Array<TableBodyRow>,
   entries: Entries,
   key2entry: {[key: string]: DeviceLogEntry},
-  highlightedRows: Array<string>,
+  highlightedRows: Set<string>,
   counters: Array<Counter>,
 |};
 
@@ -281,42 +281,26 @@ export default class LogTable extends FlipperDevicePlugin<
   };
 
   calculateHighlightedRows = (
-    deeplinkPayload: ?string,
+    deepLinkPayload: ?string,
     rows: Array<TableBodyRow>,
-  ): Array<string> => {
-    if (!deeplinkPayload) {
-      return [];
+  ): Set<string> => {
+    const highlightedRows = new Set();
+    if (!deepLinkPayload) {
+      return highlightedRows;
     }
-    const crash = JSON.parse(deeplinkPayload);
-    let highlightedRows = rows.filter(x => {
-      //$FlowFixMe: x.filterValue is not undefined
-      let matched = x.filterValue.includes(crash.name);
-      if (!matched) {
-        return matched;
-      }
-      // If top 10 callstack entries are present in a row then it most probably matches the row.
-      // The reason why we do not perform the full callstack check is that sometimes the row in logs plugins has truncated data
-      // TODO: T37573722
-      for (
-        let i = 0;
-        i < Math.min(crash.callStack.length, 10) && matched;
-        ++i
-      ) {
-        //$FlowFixMe: x.filterValue is not undefined
-        matched = x.filterValue.includes(crash.callStack[i]);
-      }
-      return matched;
-    });
-    highlightedRows = highlightedRows.map(x => x.key);
-    return [highlightedRows.pop()];
-  };
 
-  state = {
-    rows: [],
-    entries: [],
-    key2entry: {},
-    highlightedRows: [],
-    counters: this.restoreSavedCounters(),
+    // Run through array from last to first, because we want to show the last
+    // time it the log we are looking for appeared.
+    for (let i = rows.length - 1; i >= 0; i--) {
+      if (
+        rows[i].filterValue &&
+        rows[i].filterValue.includes(deepLinkPayload)
+      ) {
+        highlightedRows.add(rows[i].key);
+        break;
+      }
+    }
+    return highlightedRows;
   };
 
   tableRef: ?ManagedTable;
@@ -337,16 +321,28 @@ export default class LogTable extends FlipperDevicePlugin<
     this.columnOrder = INITIAL_COLUMN_ORDER.filter(obj =>
       supportedColumns.includes(obj.key),
     );
-    this.logListener = this.device.addLogListener(this.processEntry);
+
+    const initialState = this.addEntriesToState(
+      this.device.getLogs().map(this.processEntry),
+    );
+    this.state = {
+      ...initialState,
+      highlightedRows: this.calculateHighlightedRows(
+        props.deepLinkPayload,
+        initialState.rows,
+      ),
+      counters: this.restoreSavedCounters(),
+    };
+
+    this.logListener = this.device.addLogListener((entry: DeviceLogEntry) => {
+      const processedEntry = this.processEntry(entry);
+      this.incrementCounterIfNeeded(processedEntry.entry);
+      this.scheudleEntryForBatch(processedEntry);
+    });
   }
 
-  processEntry = (entry: DeviceLogEntry) => {
-    const {icon, style} = LOG_TYPES[(entry.type: string)] || LOG_TYPES.debug;
-
-    // clean message
+  incrementCounterIfNeeded = (entry: DeviceLogEntry) => {
     const message = entry.message.trim();
-    entry.type === 'error';
-
     let counterUpdated = false;
     const counters = this.state.counters.map(counter => {
       if (message.match(counter.expression)) {
@@ -367,9 +363,22 @@ export default class LogTable extends FlipperDevicePlugin<
     if (counterUpdated) {
       this.setState({counters});
     }
+  };
+
+  processEntry = (
+    entry: DeviceLogEntry,
+  ): {
+    row: TableBodyRow,
+    entry: DeviceLogEntry,
+  } => {
+    const {icon, style} = LOG_TYPES[(entry.type: string)] || LOG_TYPES.debug;
+
+    // clean message
+    const message = entry.message.trim();
+    entry.type === 'error';
 
     // build the item, it will either be batched or added straight away
-    const item = {
+    return {
       entry,
       row: {
         columns: {
@@ -421,6 +430,12 @@ export default class LogTable extends FlipperDevicePlugin<
         key: String(this.counter++),
       },
     };
+  };
+
+  scheudleEntryForBatch = (item: {
+    row: TableBodyRow,
+    entry: DeviceLogEntry,
+  }) => {
     // batch up logs to be processed every 250ms, if we have lots of log
     // messages coming in, then calling an setState 200+ times is actually
     // pretty expensive
@@ -433,41 +448,44 @@ export default class LogTable extends FlipperDevicePlugin<
         const thisBatch = this.batch;
         this.batch = [];
         this.queued = false;
-
-        // update rows/entries
-        this.setState(state => {
-          const rows = [...state.rows];
-          const entries = [...state.entries];
-          const key2entry = {...state.key2entry};
-
-          for (let i = 0; i < thisBatch.length; i++) {
-            const {entry, row} = thisBatch[i];
-            entries.push({row, entry});
-            key2entry[row.key] = entry;
-
-            let previousEntry: ?DeviceLogEntry = null;
-
-            if (i > 0) {
-              previousEntry = thisBatch[i - 1].entry;
-            } else if (state.rows.length > 0 && state.entries.length > 0) {
-              previousEntry = state.entries[state.entries.length - 1].entry;
-            }
-
-            this.addRowIfNeeded(rows, row, entry, previousEntry);
-          }
-          const highlightedRows = this.calculateHighlightedRows(
-            this.props.deepLinkPayload,
-            rows,
-          );
-          return {
-            entries,
-            rows,
-            key2entry,
-            highlightedRows: highlightedRows,
-          };
-        });
+        this.setState(state => this.addEntriesToState(thisBatch, state));
       }, 100);
     }
+  };
+
+  addEntriesToState = (
+    items: Entries,
+    state: $Shape<State> = {
+      rows: [],
+      entries: [],
+      key2entry: {},
+    },
+  ): $Shape<State> => {
+    const rows = [...state.rows];
+    const entries = [...state.entries];
+    const key2entry = {...state.key2entry};
+
+    for (let i = 0; i < items.length; i++) {
+      const {entry, row} = items[i];
+      entries.push({row, entry});
+      key2entry[row.key] = entry;
+
+      let previousEntry: ?DeviceLogEntry = null;
+
+      if (i > 0) {
+        previousEntry = items[i - 1].entry;
+      } else if (state.rows.length > 0 && state.entries.length > 0) {
+        previousEntry = state.entries[state.entries.length - 1].entry;
+      }
+
+      this.addRowIfNeeded(rows, row, entry, previousEntry);
+    }
+
+    return {
+      entries,
+      rows,
+      key2entry,
+    };
   };
 
   componentWillUnmount() {
@@ -514,7 +532,7 @@ export default class LogTable extends FlipperDevicePlugin<
     this.setState({
       entries: [],
       rows: [],
-      highlightedRows: [],
+      highlightedRows: new Set(),
       key2entry: {},
       counters: this.state.counters.map(counter => ({
         ...counter,
@@ -530,10 +548,10 @@ export default class LogTable extends FlipperDevicePlugin<
         .map(key => textContent(row.columns[key].value))
         .join('\t');
 
-    if (this.state.highlightedRows.length > 0) {
+    if (this.state.highlightedRows.size > 0) {
       // create paste from selection
       paste = this.state.rows
-        .filter(row => this.state.highlightedRows.indexOf(row.key) > -1)
+        .filter(row => this.state.highlightedRows.has(row.key))
         .map(mapFn)
         .join('\n');
     } else {
@@ -556,7 +574,7 @@ export default class LogTable extends FlipperDevicePlugin<
   onRowHighlighted = (highlightedRows: Array<string>) => {
     this.setState({
       ...this.state,
-      highlightedRows,
+      highlightedRows: new Set(highlightedRows),
     });
   };
 
@@ -580,19 +598,21 @@ export default class LogTable extends FlipperDevicePlugin<
     flex: 1,
   });
 
+  buildContextMenuItems = () => [
+    {
+      type: 'separator',
+    },
+    {
+      label: 'Clear all',
+      click: this.clearLogs,
+    },
+  ];
+
   render() {
-    const {rows, highlightedRows} = this.state;
-    const contextMenuItems = [
-      {
-        type: 'separator',
-      },
-      {
-        label: 'Clear all',
-        click: this.clearLogs,
-      },
-    ];
     return (
-      <LogTable.ContextMenu items={contextMenuItems} component={FlexColumn}>
+      <LogTable.ContextMenu
+        buildItems={this.buildContextMenuItems}
+        component={FlexColumn}>
         <SearchableTable
           innerRef={this.setTableRef}
           floating={false}
@@ -600,17 +620,17 @@ export default class LogTable extends FlipperDevicePlugin<
           columnSizes={this.columnSizes}
           columnOrder={this.columnOrder}
           columns={this.columns}
-          rows={rows}
-          highlightedRows={
-            highlightedRows ? new Set(highlightedRows) : new Set([])
-          }
+          rows={this.state.rows}
+          highlightedRows={this.state.highlightedRows}
           onRowHighlighted={this.onRowHighlighted}
           multiHighlight={true}
           defaultFilters={DEFAULT_FILTERS}
           zebra={false}
           actions={<Button onClick={this.clearLogs}>Clear Logs</Button>}
           // If the logs is opened through deeplink, then don't scroll as the row is highlighted
-          stickyBottom={!this.props.deepLinkPayload}
+          stickyBottom={
+            !(this.props.deepLinkPayload && this.state.highlightedRows.size > 0)
+          }
         />
         <DetailSidebar>{this.renderSidebar()}</DetailSidebar>
       </LogTable.ContextMenu>

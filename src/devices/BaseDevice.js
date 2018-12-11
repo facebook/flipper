@@ -78,7 +78,6 @@ export default class BaseDevice {
   addLogListener(callback: DeviceLogListener): Symbol {
     const id = Symbol();
     this.logListeners.set(id, callback);
-    this.logEntries.map(callback);
     return id;
   }
 
@@ -87,6 +86,10 @@ export default class BaseDevice {
     if (this.logListeners.size > 0) {
       this.logListeners.forEach(listener => listener(entry));
     }
+  }
+
+  getLogs() {
+    return this.logEntries;
   }
 
   removeLogListener(id: Symbol) {
