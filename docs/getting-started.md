@@ -45,7 +45,7 @@ repositories {
 }
 
 dependencies {
-  debugImplementation 'com.facebook.flipper:flipper:0.12.0'
+  debugImplementation 'com.facebook.flipper:flipper:0.13.0'
 }
 ```
 
@@ -81,7 +81,7 @@ repositories {
 }
 
 dependencies {
-  debugImplementation 'com.facebook.flipper:flipper:0.12.0'
+  debugImplementation 'com.facebook.flipper:flipper:0.13.0'
 }
 ```
 
@@ -94,7 +94,7 @@ project 'MyApp.xcodeproj'
 source 'https://github.com/facebook/flipper.git'
 source 'https://github.com/CocoaPods/Specs'
 swift_version = "4.1"
-flipperkit_version = '0.12.0'
+flipperkit_version = '0.13.0'
 
 target 'MyApp' do
   platform :ios, '9.0'
