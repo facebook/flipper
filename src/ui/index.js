@@ -131,6 +131,8 @@ export {default as Heading} from './components/Heading.js';
 // filters
 export type {Filter} from './components/filter/types.js';
 
+export {default as MarkerTimeline} from './components/MarkerTimeline.js';
+
 //
 export {
   SearchBox,
