@@ -519,20 +519,22 @@ class ManagedTable extends React.Component<
   };
 
   render() {
-    const {columns, rows, rowLineHeight} = this.props;
+    const {columns, rows, rowLineHeight, hideHeader} = this.props;
     const {columnOrder, columnSizes} = this.state;
 
     return (
       <Container>
-        <TableHead
-          columnOrder={columnOrder}
-          onColumnOrder={this.onColumnOrder}
-          columns={columns}
-          onColumnResize={this.onColumnResize}
-          sortOrder={this.state.sortOrder}
-          columnSizes={columnSizes}
-          onSort={this.onSort}
-        />
+        {hideHeader !== true && (
+          <TableHead
+            columnOrder={columnOrder}
+            onColumnOrder={this.onColumnOrder}
+            columns={columns}
+            onColumnResize={this.onColumnResize}
+            sortOrder={this.state.sortOrder}
+            columnSizes={columnSizes}
+            onSort={this.onSort}
+          />
+        )}
         <Container>
           {this.props.autoHeight ? (
             this.props.rows.map((_, index) => this.getRow({index, style: {}}))
