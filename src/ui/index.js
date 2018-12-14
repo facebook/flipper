@@ -133,6 +133,8 @@ export type {Filter} from './components/filter/types.js';
 
 export {default as MarkerTimeline} from './components/MarkerTimeline.js';
 
+export {default as StackTrace} from './components/StackTrace.js';
+
 //
 export {
   SearchBox,
