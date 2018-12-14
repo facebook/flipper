@@ -315,7 +315,6 @@ export function processEntry(
   row: TableBodyRow,
   entry: DeviceLogEntry,
 } {
-  console.log(JSON.stringify(entry));
   const {icon, style} = LOG_TYPES[(entry.type: string)] || LOG_TYPES.debug;
 
   // clean message
