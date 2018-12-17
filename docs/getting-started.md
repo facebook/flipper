@@ -100,10 +100,10 @@ target 'MyApp' do
   platform :ios, '9.0'
 
   pod 'FlipperKit', '~>' + flipperkit_version
-  # Layout and network plugins are not yet supported for swift projects
   pod 'FlipperKit/FlipperKitLayoutComponentKitSupport', '~>' + flipperkit_version
   pod 'FlipperKit/SKIOSNetworkPlugin', '~>' + flipperkit_version
   pod 'FlipperKit/FlipperKitUserDefaultsPlugin', '~>' + flipperkit_version
+  pod 'FlipperKit/FlipperKitCrashReporterPlugin', '~>' + flipperkit_version
 
   post_install do |installer|
     installer.pods_project.targets.each do |target|
