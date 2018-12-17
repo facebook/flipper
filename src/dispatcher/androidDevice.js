@@ -7,7 +7,7 @@
 
 import AndroidDevice from '../devices/AndroidDevice';
 import child_process from 'child_process';
-import promiseRetry from 'promise-retry';
+import {promisify} from 'util';
 import type {Store} from '../reducers/index.js';
 import type BaseDevice from '../devices/BaseDevice';
 import type Logger from '../fb-stubs/Logger.js';
@@ -55,31 +55,21 @@ function getRunningEmulatorName(id: string): Promise<?string> {
 }
 
 export default (store: Store, logger: Logger) => {
-  // Using this client before adb server is started up will cause failures.
-  // this gets around this by waiting for listDevices first, which ensures
-  // the server is up and running before allowing any other operations.
+  // Adbkit will attempt to start the adb server if it's not already running,
+  // however, it sometimes fails with ENOENT errors. So instead, we start it
+  // manually before requesting a client.
 
   function createClient() {
-    const unsafeClient = adb.createClient();
-    return promiseRetry(
-      (retry, number) => {
-        return unsafeClient
-          .listDevices()
-          .then(() => {
-            return unsafeClient;
-          })
-          .catch(e => {
-            console.warn(`Failed to start adb client. Retrying. ${e.message}`);
-            retry(e);
-          });
-      },
-      {
-        minTimeout: 200,
-        retries: 5,
-      },
-    );
+    return promisify(child_process.exec)('adb start-server')
+      .then(result => {
+        if (result.error) {
+          throw new Error(
+            `Failed to start adb server: ${result.stderr.toString()}`,
+          );
+        }
+      })
+      .then(adb.createClient);
   }
-  const clientPromise = createClient();
 
   const watchAndroidDevices = () => {
     // get emulators
@@ -98,7 +88,7 @@ export default (store: Store, logger: Logger) => {
       },
     );
 
-    clientPromise
+    createClient()
       .then(client => {
         client
           .trackDevices()
