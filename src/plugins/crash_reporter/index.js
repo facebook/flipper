@@ -19,13 +19,14 @@ import {
 } from 'flipper';
 import type {Notification} from '../../plugin';
 
-type Crash = {|
-  notificationID: number,
-  callStack: string,
+export type Crash = {|
+  notificationID: string,
+  callstack: string,
   reason: string,
   name: string,
 |};
-type PersistedState = {|
+
+export type PersistedState = {|
   crashes: Array<Crash>,
 |};
 
@@ -70,6 +71,8 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin {
   static supportsDevice(device: Device) {
     return device.os === 'iOS' || device.os === 'Android';
   }
+
+  static notificationID: number = 0;
   /*
    * Reducer to process incoming "send" messages from the mobile counterpart.
    */
@@ -79,21 +82,27 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin {
     payload: Object,
   ): PersistedState => {
     if (method === 'crash-report') {
-      return {
-        ...persistedState,
+      CrashReporterPlugin.notificationID++;
+      const mergedState: PersistedState = {
         crashes: persistedState.crashes.concat([
           {
-            notificationID: Math.random(), // All notifications are unique
-            callStack: payload.callstack,
+            notificationID: CrashReporterPlugin.notificationID.toString(), // All notifications are unique
+            callstack: payload.callstack,
             name: payload.name,
             reason: payload.reason,
           },
         ]),
       };
+      return mergedState;
     }
     return persistedState;
   };
 
+  static trimCallStackIfPossible = (callstack: string): string => {
+    let regex = /Application Specific Information:/;
+    const query = regex.exec(callstack);
+    return query ? callstack.substring(0, query.index) : callstack;
+  };
   /*
    * Callback to provide the currently active notifications.
    */
@@ -101,10 +110,10 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin {
     persistedState: PersistedState,
   ): Array<Notification> => {
     return persistedState.crashes.map((crash: Crash) => {
-      const id = 'crash-notification:' + crash.notificationID;
+      const id = crash.notificationID;
       return {
         id,
-        message: crash.callStack,
+        message: CrashReporterPlugin.trimCallStackIfPossible(crash.callstack),
         severity: 'error',
         title: 'CRASH: ' + crash.name + ' ' + crash.reason,
         action: id,
@@ -124,7 +133,7 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin {
       ];
 
     if (crash) {
-      const callStackString = crash.callStack;
+      const callstackString = crash.callstack;
       return (
         <RootColumn>
           <CrashRow>
@@ -144,16 +153,16 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin {
                 {
                   label: 'copy',
                   click: () => {
-                    clipboard.writeText(callStackString);
+                    clipboard.writeText(callstackString);
                   },
                 },
               ]}>
-              <CallStack>{callStackString}</CallStack>
+              <CallStack>{callstackString}</CallStack>
             </ContextMenu>
           </CrashRow>
           {this.device.os == 'Android' && (
             <CrashRow>
-              <Button onClick={() => this.openInLogs(crash.callStack)}>
+              <Button onClick={() => this.openInLogs(crash.callstack)}>
                 Open in Logs
               </Button>
             </CrashRow>

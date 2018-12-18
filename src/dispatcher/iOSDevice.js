@@ -9,7 +9,8 @@ import type {ChildProcess} from 'child_process';
 import type {Store} from '../reducers/index.js';
 import type Logger from '../fb-stubs/Logger.js';
 import type {DeviceType} from '../devices/BaseDevice';
-
+import BaseDevice from '../devices/BaseDevice';
+import type {PersistedState} from '../plugins/crash_reporter';
 import {RecurringError} from '../utils/errors';
 import {promisify} from 'util';
 import path from 'path';
@@ -19,6 +20,12 @@ import IOSDevice from '../devices/IOSDevice';
 import iosUtil from '../fb-stubs/iOSContainerUtility';
 import isProduction from '../utils/isProduction.js';
 import GK from '../fb-stubs/GK';
+import fs from 'fs';
+import os from 'os';
+import util from 'util';
+import {setPluginState} from '../reducers/pluginStates.js';
+import {FlipperDevicePlugin, FlipperPlugin} from '../plugin.js';
+import type {State as PluginStatesState} from '../reducers/pluginStates.js';
 
 type iOSSimulatorDevice = {|
   state: 'Booted' | 'Shutdown' | 'Shutting Down',
@@ -26,6 +33,12 @@ type iOSSimulatorDevice = {|
   isAvailable?: 'YES' | 'NO',
   name: string,
   udid: string,
+|};
+
+type Crash = {|
+  callstack: string,
+  reason: string,
+  name: string,
 |};
 
 type IOSDeviceParams = {udid: string, type: DeviceType, name: string};
@@ -50,6 +63,120 @@ const portForwarders: Array<ChildProcess> = GK.get('flipper_ios_device_support')
 window.addEventListener('beforeunload', () => {
   portForwarders.forEach(process => process.kill());
 });
+
+export function parseCrashLog(content: string): Crash {
+  const regex = /Exception Type: *[aA-zZ0-9]*/;
+  const arr = regex.exec(content);
+  const exceptionString = arr ? arr[0] : '';
+  const exceptionRegex = /[aA-zZ0-9]*$/;
+  const tmp = exceptionRegex.exec(exceptionString);
+  const exception =
+    tmp && tmp[0].length ? tmp[0] : 'Cannot figure out the cause';
+  const crash = {
+    callstack: content,
+    name: exception,
+    reason: exception,
+  };
+  return crash;
+}
+
+export function getPersistedState(
+  pluginKey: string,
+  persistingPlugin: ?Class<FlipperPlugin<> | FlipperDevicePlugin<>>,
+  pluginStates: PluginStatesState,
+): ?PersistedState {
+  if (!persistingPlugin) {
+    return null;
+  }
+  const persistedState = {
+    ...persistingPlugin.defaultPersistedState,
+    ...pluginStates[pluginKey],
+  };
+  return persistedState;
+}
+
+export function getPluginKey(
+  selectedDevice: ?BaseDevice,
+  pluginID: string,
+): string {
+  return `${selectedDevice?.serial || 'unknown'}#${pluginID}`;
+}
+
+export function getNewPersisitedStateFromCrashLog(
+  persistedState: ?PersistedState,
+  persistingPlugin: Class<FlipperDevicePlugin<> | FlipperPlugin<>>,
+  content: string,
+): ?PersistedState {
+  const crash = parseCrashLog(content);
+  if (!persistingPlugin.persistedStateReducer) {
+    return null;
+  }
+  const newPluginState = persistingPlugin.persistedStateReducer(
+    persistedState,
+    'crash-report',
+    crash,
+  );
+  return newPluginState;
+}
+
+function parseCrashLogAndUpdateState(store: Store, content: string) {
+  const pluginID = 'CrashReporter';
+  const pluginKey = getPluginKey(
+    store.getState().connections.selectedDevice,
+    pluginID,
+  );
+  const persistingPlugin: ?Class<
+    FlipperDevicePlugin<> | FlipperPlugin<>,
+  > = store.getState().plugins.devicePlugins.get('CrashReporter');
+  if (!persistingPlugin) {
+    return;
+  }
+  const pluginStates = store.getState().pluginStates;
+  const persistedState = getPersistedState(
+    pluginKey,
+    persistingPlugin,
+    pluginStates,
+  );
+  const newPluginState = getNewPersisitedStateFromCrashLog(
+    persistedState,
+    persistingPlugin,
+    content,
+  );
+  if (newPluginState && persistedState !== newPluginState) {
+    store.dispatch(
+      setPluginState({
+        pluginKey,
+        state: newPluginState,
+      }),
+    );
+  }
+}
+
+function addFileWatcherForiOSCrashLogs(store: Store, logger: Logger) {
+  const dir = path.join(os.homedir(), 'Library', 'Logs', 'DiagnosticReports');
+  if (!fs.existsSync(dir)) {
+    // Directory doesn't exist
+    return;
+  }
+  fs.watch(dir, (eventType, filename) => {
+    // We just parse the crash logs with extension `.crash`
+    const checkFileExtension = /.crash$/.exec(filename);
+    if (!filename || !checkFileExtension) {
+      return;
+    }
+    fs.readFile(path.join(dir, filename), 'utf8', function(err, data) {
+      if (store.getState().connections.selectedDevice?.os != 'iOS') {
+        // If the selected device is not iOS don't show crash notifications
+        return;
+      }
+      if (err) {
+        console.error(err);
+        return;
+      }
+      parseCrashLogAndUpdateState(store, util.format(data));
+    });
+  });
+}
 
 function queryDevices(store: Store, logger: Logger): Promise<void> {
   const {connections} = store.getState();
@@ -132,6 +259,7 @@ export default (store: Store, logger: Logger) => {
   if (process.platform !== 'darwin') {
     return;
   }
+  addFileWatcherForiOSCrashLogs(store, logger);
   queryDevices(store, logger)
     .then(() => {
       const simulatorUpdateInterval = setInterval(() => {
