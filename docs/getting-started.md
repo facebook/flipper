@@ -158,7 +158,7 @@ Install the dependencies by running `pod install`.When you open the Xcode worksp
   [FlipperKitLayoutComponentKitSupport setUpWithDescriptorMapper: layoutDescriptorMapper];
   [client addPlugin: [[FlipperKitLayoutPlugin alloc] initWithRootNode: application
                                                  withDescriptorMapper: layoutDescriptorMapper]];
-  
+
   [client addPlugin:[[FKUserDefaultsPlugin alloc] initWithSuiteName:nil]];  [client start];
   [client addPlugin: [[FlipperKitNetworkPlugin alloc] initWithNetworkAdapter:[SKIOSNetworkAdapter new]]];
   [client start];
@@ -214,7 +214,7 @@ target 'MyApp' do
 ```
 
 
-Install the dependencies by running `pod install`.When you open the Xcode workspace file for your app, you now can import and initialize Flipper in your AppDelegate by following the below mentioned example. Before running your app, make sure that the flag `-DFB_SONARKIT_ENABLED` is present in the `OTHER_SWIFT_FLAGS` in your application's build settings.
+Install the dependencies by running `pod install`.When you open the Xcode workspace file for your app, you now can import and initialize Flipper in your AppDelegate by following the below mentioned example. Before running your app, make sure that the flag `-Xcc -DFB_SONARKIT_ENABLED` is present in the `OTHER_SWIFT_FLAGS` in your application's build settings.
 
 ```swift
 import UIKit
