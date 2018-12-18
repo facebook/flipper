@@ -119,8 +119,6 @@ target 'MyApp' do
       app_project = Xcodeproj::Project.open(file_name)
       app_project.native_targets.each do |target|
           target.build_configurations.each do |config|
-            puts 'target: ' + target.name
-            puts 'config: ' + config.build_settings.inspect
             if (config.build_settings['OTHER_SWIFT_FLAGS'])
               if !(config.build_settings['OTHER_SWIFT_FLAGS'].include? '-DFB_SONARKIT_ENABLED')
                 config.build_settings['OTHER_SWIFT_FLAGS'] =  [config.build_settings['OTHER_SWIFT_FLAGS'], '-Xcc', '-DFB_SONARKIT_ENABLED']
