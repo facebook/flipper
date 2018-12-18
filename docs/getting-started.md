@@ -112,51 +112,56 @@ target 'MyApp' do
   # This post_install script adds swift version to yogakit's pod target.
   # It also adds -DFB_SONARKIT_ENABLED=1 flag to OTHER_CFLAGS, necessary to build expose Flipper classes in the header files
   post_install do |installer|
-        installer.pods_project.targets.each do |target|
-            if ['YogaKit'].include? target.name
-                target.build_configurations.each do |config|
-                    config.build_settings['SWIFT_VERSION'] = swift_version
-                end
-            end
-        end
-    file_name = Dir.glob("*.xcodeproj")[0]
-    app_project = Xcodeproj::Project.open(file_name)
-    app_project.native_targets.each do |target|
-        target.build_configurations.each do |config|
-          if (config.build_settings['OTHER_CFLAGS'])
-            if !(config.build_settings['OTHER_CFLAGS'].include? '-DFB_SONARKIT_ENABLED=1')
-              puts 'Adding -DFB_SONARKIT_ENABLED=1 in OTHER_CFLAGS...'
-              config.build_settings['OTHER_CFLAGS'] << '-DFB_SONARKIT_ENABLED=1'
-            end
-          elsif
-            config.build_settings['OTHER_CFLAGS'] = ['$(inherited)', '-DFB_SONARKIT_ENABLED=1']
-          end
-          app_project.save
-        end
-      end
-    end
-  end
+	    installer.pods_project.targets.each do |target|
+	        if ['YogaKit'].include? target.name
+	            target.build_configurations.each do |config|
+	                config.build_settings['SWIFT_VERSION'] = swift_version
+	            end
+	        end
+	    end
+	    file_name = Dir.glob("*.xcodeproj")[0]
+	    app_project = Xcodeproj::Project.open(file_name)
+	    app_project.native_targets.each do |target|
+	        target.build_configurations.each do |config|
+	          if (config.build_settings['OTHER_CFLAGS'])
+	            if !(config.build_settings['OTHER_CFLAGS'].include? '-DFB_SONARKIT_ENABLED=1')
+	              puts 'Adding -DFB_SONARKIT_ENABLED=1 in OTHER_CFLAGS...'
+	              config.build_settings['OTHER_CFLAGS'] << '-DFB_SONARKIT_ENABLED=1'
+	            end
+	          else
+	            puts 'OTHER_CFLAGS does not exist, assigining it to `$(inherited), -DFB_SONARKIT_ENABLED=1` '
+	            config.build_settings['OTHER_CFLAGS'] = '$(inherited) -DFB_SONARKIT_ENABLED=1 '
+	          end
+	          app_project.save
+	        end
+	    end
+   end
+end
 ```
 
 Install the dependencies by running `pod install`.When you open the Xcode workspace file for your app, you now can import and initialize Flipper in your AppDelegate. Before running your app, make sure that the flag `-DFB_SONARKIT_ENABLED=1` is present in the `OTHER_CFLAGS` in your application's build settings.
 
 ```objective-c
 #import <FlipperKit/FlipperClient.h>
+#import <FlipperKitLayoutPlugin/FlipperKitLayoutPlugin.h>
+#import <FlipperKitLayoutComponentKitSupport/FlipperKitLayoutComponentKitSupport.h>
 #import <FlipperKitUserDefaultsPlugin/FKUserDefaultsPlugin.h>
+#import <FlipperKitNetworkPlugin/FlipperKitNetworkPlugin.h>
+#import <SKIOSNetworkPlugin/SKIOSNetworkAdapter.h>
 
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-#if DEBUG
   FlipperClient *client = [FlipperClient sharedClient];
   SKDescriptorMapper *layoutDescriptorMapper = [[SKDescriptorMapper alloc] initWithDefaults];
-  [client addPlugin:[[FlipperKitLayoutPlugin alloc] initWithRootNode: application
-                                                  withDescriptorMapper: layoutDescriptorMapper]];
-  [client addPlugin:[[FKUserDefaultsPlugin alloc] initWithSuiteName:nil]];
-
+  [FlipperKitLayoutComponentKitSupport setUpWithDescriptorMapper: layoutDescriptorMapper];
+  [client addPlugin: [[FlipperKitLayoutPlugin alloc] initWithRootNode: application
+                                                 withDescriptorMapper: layoutDescriptorMapper]];
+  
+  [client addPlugin:[[FKUserDefaultsPlugin alloc] initWithSuiteName:nil]];  [client start];
+  [client addPlugin: [[FlipperKitNetworkPlugin alloc] initWithNetworkAdapter:[SKIOSNetworkAdapter new]]];
   [client start];
-#endif
   ...
 }
 @end
@@ -181,7 +186,7 @@ target 'MyApp' do
   pod 'FlipperKit/SKIOSNetworkPlugin', '~>' + flipperkit_version
   pod 'FlipperKit/FlipperKitUserDefaultsPlugin', '~>' + flipperkit_version
 
-  # This post_install script adds -DFB_SONARKIT_ENABLED flag to OTHER_SWIFT_FLAGS, necessary to build swift target
+# This post_install script adds -DFB_SONARKIT_ENABLED flag to OTHER_SWIFT_FLAGS, necessary to build swift target
     post_install do |installer|
       file_name = Dir.glob("*.xcodeproj")[0]
       app_project = Xcodeproj::Project.open(file_name)
@@ -189,11 +194,16 @@ target 'MyApp' do
           target.build_configurations.each do |config|
             if (config.build_settings['OTHER_SWIFT_FLAGS'])
               if !(config.build_settings['OTHER_SWIFT_FLAGS'].include? '-DFB_SONARKIT_ENABLED')
+                puts 'Adding -DFB_SONARKIT_ENABLED ...'
                 swift_flags = config.build_settings['OTHER_SWIFT_FLAGS']
-                config.build_settings['OTHER_SWIFT_FLAGS'] = swift_flags.split.last == '-Xcc' ? [swift_flags, '-DFB_SONARKIT_ENABLED'] : [swift_flags, '-Xcc', '-DFB_SONARKIT_ENABLED']
+                if swift_flags.split.last != '-Xcc'
+                  config.build_settings['OTHER_SWIFT_FLAGS'] << ' -Xcc'
+                end
+                config.build_settings['OTHER_SWIFT_FLAGS'] << ' -DFB_SONARKIT_ENABLED'
               end
-            elsif
-              config.build_settings['OTHER_SWIFT_FLAGS'] = ['$(inherited)', '-Xcc', '-DFB_SONARKIT_ENABLED']
+            else
+              puts 'OTHER_SWIFT_FLAGS does not exist thus assigning it to `$(inherited) -Xcc -DFB_SONARKIT_ENABLED`'
+              config.build_settings['OTHER_SWIFT_FLAGS'] = '$(inherited) -Xcc -DFB_SONARKIT_ENABLED'
             end
             app_project.save
           end

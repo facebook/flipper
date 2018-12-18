@@ -13,21 +13,26 @@ target 'SampleSwift' do
   pod 'FlipperKit/FlipperKitLayoutComponentKitSupport', :path => '../../FlipperKit.podspec'
   pod 'FlipperKit/FlipperKitCrashReporterPlugin', :path => '../../FlipperKit.podspec'
   # This post_install script adds -DFB_SONARKIT_ENABLED flag to OTHER_SWIFT_FLAGS, necessary to build swift target
-    post_install do |installer|
-      file_name = Dir.glob("*.xcodeproj")[0]
-      app_project = Xcodeproj::Project.open(file_name)
-      app_project.native_targets.each do |target|
-          target.build_configurations.each do |config|
-            if (config.build_settings['OTHER_SWIFT_FLAGS'])
-              if !(config.build_settings['OTHER_SWIFT_FLAGS'].include? '-DFB_SONARKIT_ENABLED')
-                swift_flags = config.build_settings['OTHER_SWIFT_FLAGS']
-                config.build_settings['OTHER_SWIFT_FLAGS'] = swift_flags.split.last == '-Xcc' ? [swift_flags, '-DFB_SONARKIT_ENABLED'] : [swift_flags, '-Xcc', '-DFB_SONARKIT_ENABLED']
-              end
-            elsif
-              config.build_settings['OTHER_SWIFT_FLAGS'] = ['$(inherited)', '-Xcc', '-DFB_SONARKIT_ENABLED']
+  post_install do |installer|
+    file_name = Dir.glob("*.xcodeproj")[0]
+    app_project = Xcodeproj::Project.open(file_name)
+    app_project.native_targets.each do |target|
+      target.build_configurations.each do |config|
+        if (config.build_settings['OTHER_SWIFT_FLAGS'])
+          if !(config.build_settings['OTHER_SWIFT_FLAGS'].include? '-DFB_SONARKIT_ENABLED')
+            puts 'Adding -DFB_SONARKIT_ENABLED ...'
+            swift_flags = config.build_settings['OTHER_SWIFT_FLAGS']
+            if swift_flags.split.last != '-Xcc'
+              config.build_settings['OTHER_SWIFT_FLAGS'] << ' -Xcc'
             end
-            app_project.save
+            config.build_settings['OTHER_SWIFT_FLAGS'] << ' -DFB_SONARKIT_ENABLED'
           end
+        else
+          puts 'OTHER_SWIFT_FLAGS does not exist thus assigning it to `$(inherited) -Xcc -DFB_SONARKIT_ENABLED`'
+          config.build_settings['OTHER_SWIFT_FLAGS'] = '$(inherited) -Xcc -DFB_SONARKIT_ENABLED'
         end
+        app_project.save
+      end
     end
+  end
 end
