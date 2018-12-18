@@ -6,7 +6,11 @@
  */
 
 import type BugReporter from '../fb-stubs/BugReporter.js';
+import type {FlipperDevicePlugin, FlipperPlugin} from '../plugin';
+import {toggleBugDialogVisible} from '../reducers/application.js';
 import {Component} from 'react';
+import {Transition} from 'react-transition-group';
+import {connect} from 'react-redux';
 import {
   Button,
   colors,
@@ -16,6 +20,7 @@ import {
   FlexRow,
   Textarea,
   Text,
+  Glyph,
   FlexCenter,
   styled,
 } from 'flipper';
@@ -24,26 +29,49 @@ const Container = styled(FlexColumn)({
   padding: 10,
 });
 
+const Icon = styled(Glyph)({
+  marginRight: 8,
+  marginLeft: 3,
+});
+
+const Center = styled(Text)({
+  textAlign: 'center',
+  lineHeight: '130%',
+  paddingLeft: 20,
+  paddingRight: 20,
+});
+
+const Title = styled('div')({
+  fontWeight: '500',
+  marginTop: 8,
+  marginLeft: 2,
+  marginBottom: 8,
+});
+
 const textareaStyle = {
   margin: 0,
   marginBottom: 10,
 };
 
-const DialogContainer = styled('div')({
+const DialogContainer = styled('div')(({state}) => ({
+  transform: `translateY(${
+    state === 'entering' || state === 'exiting' ? '-110' : ''
+  }%)`,
+  transition: '.3s transform',
   width: 400,
   height: 300,
   position: 'absolute',
   left: '50%',
   marginLeft: -200,
-  top: 40,
-  zIndex: 999999,
-  backgroundColor: '#fff',
-  border: '1px solid #ddd',
+  top: 38,
+  zIndex: 2,
+  backgroundColor: '#EFEEEF',
+  border: '1px solid #C6C6C6',
   borderTop: 'none',
-  borderBottomLeftRadius: 5,
-  borderBottomRightRadius: 5,
-  boxShadow: '0 1px 10px rgba(0, 0, 0, 0.1)',
-});
+  borderBottomLeftRadius: 2,
+  borderBottomRightRadius: 2,
+  boxShadow: '0 5px 13px rgba(0, 0, 0, 0.2)',
+}));
 
 const TitleInput = styled(Input)({
   ...textareaStyle,
@@ -64,46 +92,55 @@ const Footer = styled(FlexRow)({
 });
 
 const CloseDoneButton = styled(Button)({
-  width: 50,
-  margin: '10px auto',
+  marginTop: 20,
+  marginLeft: 'auto !important',
+  marginRight: 'auto',
 });
 
-type State = {
+const InfoBox = styled(FlexRow)({
+  marginBottom: 20,
+  lineHeight: '130%',
+});
+
+type State = {|
   description: string,
   title: string,
   submitting: boolean,
-  success: false | number, // false if not created, id of bug if it's been created
+  success: ?number,
   error: ?string,
-};
+|};
 
-type Props = {
+type Props = {|
   bugReporter: BugReporter,
-  close: () => void,
-};
+  toggleBugDialogVisible: (visible: boolean) => mixed,
+  activePlugin: ?Class<FlipperPlugin<> | FlipperDevicePlugin<>>,
+  bugDialogVisible: boolean,
+|};
 
-const DEFAULT_DESCRIPTION = `Thanks for taking the time to provide feedback!
-Please fill out the following information to make addressing your issue easier.
-
-What device platform are you using? ios/android
-What sort of device are you using? emulator/physical
-What app are you trying to use? wilde, fb4a, lite etc
-Describe your problem in as much detail as possible: `;
-
-export default class BugReporterDialog extends Component<Props, State> {
-  constructor(props: Props) {
-    super(props);
-
-    this.state = {
-      description: DEFAULT_DESCRIPTION,
-      title: '',
-      submitting: false,
-      success: false,
-      error: null,
-    };
-  }
+class BugReporterDialog extends Component<Props, State> {
+  state = {
+    description: '',
+    title: '',
+    submitting: false,
+    success: null,
+    error: null,
+  };
 
   titleRef: HTMLElement;
   descriptionRef: HTMLElement;
+
+  componentDidMount() {
+    document.addEventListener('keydown', this.onKeyDown);
+  }
+  componentWillUnmount() {
+    document.removeEventListener('keydown', this.onKeyDown);
+  }
+
+  onKeyDown = (e: KeyboardEvent) => {
+    if (this.props.bugDialogVisible && e.key === 'Escape') {
+      this.onCancel();
+    }
+  };
 
   onDescriptionChange = (e: SyntheticInputEvent<HTMLInputElement>) => {
     this.setState({description: e.target.value});
@@ -173,60 +210,115 @@ export default class BugReporterDialog extends Component<Props, State> {
   };
 
   onCancel = () => {
-    this.props.close();
+    this.setState({
+      error: null,
+      title: '',
+      description: '',
+    });
+    this.props.toggleBugDialogVisible(false);
   };
 
   render() {
     let content;
-
-    const {title, success, error, description} = this.state;
+    const {title, success, error, description, submitting} = this.state;
 
     if (success) {
       content = (
         <FlexCenter grow={true}>
           <FlexColumn>
-            <Text>
-              <Text>Bug </Text>
-
-              <Text bold={true}>
-                <Link
-                  href={`https://our.intern.facebook.com/intern/bug/${success}`}>
-                  {success}
-                </Link>
-              </Text>
-
-              <Text> created. Thank you for the report!</Text>
-            </Text>
-
-            <CloseDoneButton onClick={this.onCancel}>Close</CloseDoneButton>
+            <Center>
+              <Glyph
+                name="checkmark-circle"
+                size={24}
+                variant="outline"
+                color={colors.light30}
+              />
+              <br />
+              <Title>Bug Report created</Title>
+              The bug report{' '}
+              <Link
+                href={`https://our.intern.facebook.com/intern/bug/${success}`}>
+                {success}
+              </Link>{' '}
+              was successfully created. Thank you for your help making Flipper
+              better!
+            </Center>
+            <CloseDoneButton onClick={this.onCancel} compact type="primary">
+              Close
+            </CloseDoneButton>
           </FlexColumn>
         </FlexCenter>
       );
     } else {
       content = (
         <Container grow={true}>
+          <Title>Report a bug...</Title>
           <TitleInput
             placeholder="Title..."
             value={title}
             innerRef={this.setTitleRef}
             onChange={this.onTitleChange}
+            disabled={submitting}
           />
 
           <DescriptionTextarea
-            placeholder="Description..."
+            placeholder="Describe your problem in as much detail as possible..."
             value={description}
             innerRef={this.setDescriptionRef}
             onChange={this.onDescriptionChange}
+            disabled={submitting}
           />
+          {this.props.activePlugin?.bugs && (
+            <InfoBox>
+              <Icon color={colors.light50} name="info-circle" />
+              <span>
+                If you bug is related to the{' '}
+                <strong>
+                  {this.props.activePlugin?.title ||
+                    this.props.activePlugin?.id}{' '}
+                  plugin
+                </strong>
+                {this.props.activePlugin?.bugs?.url && (
+                  <span>
+                    , you might find useful information about it here:{' '}
+                    <Link href={this.props.activePlugin?.bugs?.url || ''}>
+                      {this.props.activePlugin?.bugs?.url}
+                    </Link>
+                  </span>
+                )}
+                {this.props.activePlugin?.bugs?.email && (
+                  <span>
+                    , you might also want contact{' '}
+                    <Link
+                      href={
+                        'mailto:' + String(this.props.activePlugin?.bugs?.email)
+                      }>
+                      {this.props.activePlugin?.bugs?.email}
+                    </Link>, the author/oncall of this plugin, directly
+                  </span>
+                )}
+                .
+              </span>
+            </InfoBox>
+          )}
 
           <Footer>
             {error != null && <Text color={colors.red}>{error}</Text>}
             <SubmitButtonContainer>
-              <Button type="primary" onClick={this.onSubmit}>
-                Submit report
-              </Button>
-              <Button type="danger" onClick={this.onCancel}>
+              <Button
+                onClick={this.onCancel}
+                disabled={submitting}
+                compact
+                padded>
                 Cancel
+              </Button>
+              <Button
+                type="primary"
+                onClick={this.onSubmit}
+                disabled={submitting}
+                compact
+                padded>
+                Submit Report
               </Button>
             </SubmitButtonContainer>
           </Footer>
@@ -234,6 +326,26 @@ export default class BugReporterDialog extends Component<Props, State> {
       );
     }
 
-    return <DialogContainer>{content}</DialogContainer>;
+    return (
+      <Transition in={this.props.bugDialogVisible} timeout={300} unmountOnExit>
+        {state => <DialogContainer state={state}>{content}</DialogContainer>}
+      </Transition>
+    );
   }
 }
+
+// $FlowFixMe
+export default connect(
+  ({
+    plugins: {devicePlugins, clientPlugins},
+    connections: {selectedPlugin},
+    application: {bugDialogVisible},
+  }) => ({
+    bugDialogVisible,
+    activePlugin:
+      devicePlugins.get(selectedPlugin) || clientPlugins.get(selectedPlugin),
+  }),
+  {
+    toggleBugDialogVisible,
+  },
+)(BugReporterDialog);

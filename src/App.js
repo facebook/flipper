@@ -8,7 +8,6 @@
 import React from 'react';
 import {FlexColumn, FlexRow} from 'flipper';
 import {connect} from 'react-redux';
-import {toggleBugDialogVisible} from './reducers/application.js';
 import WelcomeScreen from './chrome/WelcomeScreen.js';
 import TitleBar from './chrome/TitleBar.js';
 import MainSidebar from './chrome/MainSidebar.js';
@@ -25,11 +24,9 @@ type Props = {
   logger: Logger,
   bugReporter: BugReporter,
   leftSidebarVisible: boolean,
-  bugDialogVisible: boolean,
   pluginManagerVisible: boolean,
   selectedDevice: ?BaseDevice,
   error: ?string,
-  toggleBugDialogVisible: (visible?: boolean) => any,
 };
 
 export class App extends React.Component<Props> {
@@ -51,14 +48,7 @@ export class App extends React.Component<Props> {
     return (
       <FlexColumn grow={true}>
         <TitleBar />
-        {this.props.bugDialogVisible && (
-          <BugReporterDialog
-            bugReporter={this.props.bugReporter}
-            close={() => {
-              this.props.toggleBugDialogVisible(false);
-            }}
-          />
-        )}
+        <BugReporterDialog bugReporter={this.props.bugReporter} />
         <FlexRow grow={true}>
           {this.props.leftSidebarVisible && <MainSidebar />}
           {this.props.selectedDevice ? (
@@ -78,16 +68,12 @@ export class App extends React.Component<Props> {
  * run Flow. */
 export default connect(
   ({
-    application: {pluginManagerVisible, bugDialogVisible, leftSidebarVisible},
+    application: {pluginManagerVisible, leftSidebarVisible},
     connections: {selectedDevice, error},
   }) => ({
     pluginManagerVisible,
-    bugDialogVisible,
     leftSidebarVisible,
     selectedDevice,
     error,
   }),
-  {
-    toggleBugDialogVisible,
-  },
 )(App);

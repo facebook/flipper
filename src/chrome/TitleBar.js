@@ -44,6 +44,7 @@ const AppTitleBar = styled(FlexRow)(({focused}) => ({
   paddingRight: 10,
   justifyContent: 'space-between',
   WebkitAppRegion: 'drag',
+  zIndex: 3,
 }));
 
 type Props = {|
