@@ -155,13 +155,27 @@ class ScreenCaptureButtons extends Component<Props, State> {
     const videoPath = path.join(CAPTURE_LOCATION, getFileName('mp4'));
     this.videoPath = videoPath;
     if (selectedDevice instanceof AndroidDevice) {
+      const devicePath = '/sdcard/flipper_recorder';
+
       this.setState({
         recording: true,
       });
+
       this.executeShell(
         selectedDevice,
-        `screenrecord --bugreport /sdcard/video.mp4`,
+        `mkdir -p "${devicePath}" && touch "${devicePath}/.nomedia"`,
       )
+        .then(output => {
+          if (output) {
+            throw output;
+          }
+        })
+        .then(() =>
+          this.executeShell(
+            selectedDevice,
+            `screenrecord --bugreport "${devicePath}/video.mp4"`,
+          ),
+        )
         .then(output => {
           if (output) {
             throw output;
@@ -174,17 +188,19 @@ class ScreenCaptureButtons extends Component<Props, State> {
           });
         })
         .then(
-          (): Promise<string> => {
-            return this.pullFromDevice(
+          (): Promise<string> =>
+            this.pullFromDevice(
               selectedDevice,
-              `/sdcard/video.mp4`,
+              `${devicePath}/video.mp4`,
               videoPath,
-            );
-          },
+            ),
         )
         .then(openFile)
-        .then(() => {
-          this.executeShell(selectedDevice, `rm /sdcard/video.mp4`);
+        .then(() => this.executeShell(selectedDevice, `rm -rf "${devicePath}"`))
+        .then(output => {
+          if (output) {
+            throw output;
+          }
         })
         .then(() => {
           this.setState({
