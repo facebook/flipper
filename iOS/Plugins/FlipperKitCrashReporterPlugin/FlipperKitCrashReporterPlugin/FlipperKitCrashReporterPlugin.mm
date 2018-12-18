@@ -16,15 +16,7 @@
 @property (assign, nonatomic) NSUInteger notificationID;
 @property (assign, nonatomic) NSUncaughtExceptionHandler *prevHandler;
 
-- (void) handleException:(NSException *)exception;
-
 @end
-
-static void flipperkitUncaughtExceptionHandler(NSException *exception) {
-  NSLog(@"CRASH: %@", exception);
-  NSLog(@"Stack Trace: %@", [exception callStackSymbols]);
-  [[FlipperKitCrashReporterPlugin sharedInstance] handleException:exception];
-}
 
 @implementation FlipperKitCrashReporterPlugin {
   std::unique_ptr<facebook::flipper::FlipperKitSignalHandler> _signalHandler;
@@ -55,30 +47,16 @@ static void flipperkitUncaughtExceptionHandler(NSException *exception) {
   return @"CrashReporter";
 }
 
-- (void) handleException:(NSException *)exception {
-  // TODO: Rather than having indirection from c function, somehow pass objective c selectors as a c function pointer to NSSetUncaughtExceptionHandler
-  self.notificationID += 1;
-  [self.connection send:@"crash-report" withParams:@{@"reason": [exception reason], @"name": [exception name], @"callstack": [exception callStackSymbols]}];
-    if (self.prevHandler) {
-        self.prevHandler(exception);
-    }
-}
-
 - (void)sendCrashParams:(NSDictionary *)params {
     self.notificationID += 1;
-    [self.connection send:@"crash-report" withParams: params];
 }
 
 - (void)didConnect:(id<FlipperConnection>)connection {
   self.connection = connection;
-  _signalHandler = std::make_unique<facebook::flipper::FlipperKitSignalHandler>(self, _crashReporterThread.getEventBase());
-  NSSetUncaughtExceptionHandler(&flipperkitUncaughtExceptionHandler);
 }
 
 - (void)didDisconnect {
   self.connection = nil;
-  _signalHandler.reset(nullptr); // deallocate the object
-  NSSetUncaughtExceptionHandler(self.prevHandler);
 }
 
 - (BOOL)runInBackground {

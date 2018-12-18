@@ -1,14 +1,13 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the LICENSE
+ * file in the root directory of this source tree.
  */
 package com.facebook.flipper.plugins.crashreporter;
 
 import android.app.Activity;
 import android.support.annotation.Nullable;
-import com.facebook.flipper.core.FlipperArray;
 import com.facebook.flipper.core.FlipperConnection;
 import com.facebook.flipper.core.FlipperObject;
 import com.facebook.flipper.core.FlipperPlugin;
@@ -57,15 +56,18 @@ public class CrashReporterPlugin implements FlipperPlugin {
   public void sendExceptionMessage(Thread paramThread, Throwable paramThrowable) {
     if (mConnection != null) {
       FlipperConnection connection = mConnection;
-      FlipperArray.Builder builder = new FlipperArray.Builder();
-      for (StackTraceElement stackTraceElement : paramThrowable.getStackTrace()) {
-        builder.put(stackTraceElement.toString());
+      StringBuilder strBuilder = new StringBuilder("");
+      StackTraceElement[] elems = paramThrowable.getStackTrace();
+      for (int i = 0; i < elems.length; ++i) {
+        strBuilder.append(elems[i].toString());
+        if (i < elems.length - 1) {
+          strBuilder.append("\n\tat ");
+        }
       }
-      FlipperArray arr = builder.build();
       connection.send(
           "crash-report",
           new FlipperObject.Builder()
-              .put("callstack", arr)
+              .put("callstack", strBuilder.toString())
               .put("name", paramThrowable.toString())
               .put("reason", paramThrowable.getMessage())
               .build());

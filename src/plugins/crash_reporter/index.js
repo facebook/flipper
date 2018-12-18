@@ -21,7 +21,7 @@ import type {Notification} from '../../plugin';
 
 type Crash = {|
   notificationID: number,
-  callStack: [string],
+  callStack: string,
   reason: string,
   name: string,
 |};
@@ -112,18 +112,8 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin {
     });
   };
 
-  convertCallstackToString(crash: Crash): string {
-    return crash.callStack.reduce((acc, val) => acc.concat('\n', val));
-  }
-
-  openInLogs = (crash: Crash) => {
-    this.props.selectPlugin(
-      'DeviceLogs',
-      crash.callStack
-        .slice(0, 5)
-        .join('\n\tat ')
-        .trim(),
-    );
+  openInLogs = (callstack: string) => {
+    this.props.selectPlugin('DeviceLogs', callstack);
   };
 
   render() {
@@ -134,7 +124,7 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin {
       ];
 
     if (crash) {
-      const callStackString = this.convertCallstackToString(crash);
+      const callStackString = crash.callStack;
       return (
         <RootColumn>
           <CrashRow>
@@ -163,7 +153,7 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin {
           </CrashRow>
           {this.device.os == 'Android' && (
             <CrashRow>
-              <Button onClick={() => this.openInLogs(crash)}>
+              <Button onClick={() => this.openInLogs(crash.callStack)}>
                 Open in Logs
               </Button>
             </CrashRow>
