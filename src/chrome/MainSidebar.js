@@ -146,11 +146,11 @@ class PluginSidebarListItem extends Component<{
       <ListItem active={isActive} onClick={this.props.onClick}>
         <PluginIcon
           isActive={isActive}
-          name={plugin.icon}
+          name={plugin.icon || 'apps'}
           backgroundColor={iconColor}
           color={colors.white}
         />
-        <PluginName>{plugin.title}</PluginName>
+        <PluginName>{plugin.title || plugin.id}</PluginName>
       </ListItem>
     );
   }
@@ -228,7 +228,11 @@ class MainSidebar extends PureComponent<MainSidebarProps> {
             }>
             <PluginIcon
               color={colors.light50}
-              name={numNotifications > 0 ? NotificationsHub.icon : 'bell-null'}
+              name={
+                numNotifications > 0
+                  ? NotificationsHub.icon || 'bell'
+                  : 'bell-null'
+              }
               isActive={selectedPlugin === NotificationsHub.id}
             />
             <PluginName

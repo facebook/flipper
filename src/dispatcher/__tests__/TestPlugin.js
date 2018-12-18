@@ -7,4 +7,6 @@
 
 import {FlipperPlugin} from '../../plugin.js';
 
-export default class extends FlipperPlugin {}
+export default class extends FlipperPlugin {
+  static id = 'Static ID';
+}

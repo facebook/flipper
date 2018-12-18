@@ -472,7 +472,7 @@ class NotificationItem extends Component<ItemProps, ItemState> {
     const items = [];
     if (props.onHidePlugin && props.plugin) {
       items.push({
-        label: `Hide ${props.plugin.title} plugin`,
+        label: `Hide ${props.plugin.title || props.plugin.id} plugin`,
         click: this.props.onHidePlugin,
       });
     }

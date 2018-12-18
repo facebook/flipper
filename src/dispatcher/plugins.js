@@ -32,6 +32,7 @@ export default (store: Store, logger: Logger) => {
   window.Flipper = Flipper;
 
   const disabled = checkDisabled();
+
   const initialPlugins: Array<
     Class<FlipperPlugin<> | FlipperDevicePlugin<>>,
   > = [...getBundledPlugins(), ...getDynamicPlugins()]
@@ -113,10 +114,27 @@ export function requirePlugin(
     pluginDefinition: PluginDefinition,
   ): ?Class<FlipperPlugin<> | FlipperDevicePlugin<>> => {
     try {
-      const plugin = requireFunction(pluginDefinition.out);
+      let plugin = requireFunction(pluginDefinition.out);
+      if (plugin.default) {
+        plugin = plugin.default;
+      }
       if (!plugin.prototype instanceof FlipperBasePlugin) {
         throw new Error(`Plugin ${plugin.name} is not a FlipperBasePlugin`);
       }
+
+      // set values from package.json as static variables on class
+      Object.keys(pluginDefinition).forEach(key => {
+        if (key === 'name') {
+          plugin.id = plugin.id || pluginDefinition.name;
+        } else if (key === 'id') {
+          throw new Error(
+            'Field "id" not allowed in package.json. The plugin\'s name will be used as ID"',
+          );
+        } else {
+          plugin[key] = plugin[key] || pluginDefinition[key];
+        }
+      });
+
       return plugin;
     } catch (e) {
       console.error(pluginDefinition, e);

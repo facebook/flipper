@@ -49,9 +49,13 @@ export class FlipperBasePlugin<
   Actions = *,
   PersistedState = *,
 > extends React.Component<Props<PersistedState>, State> {
-  static title: string = 'Unknown';
-  static id: string = 'Unknown';
-  static icon: string = 'apps';
+  static title: ?string = null;
+  static id: string = '';
+  static icon: ?string = null;
+  static bugs: ?{
+    email?: string,
+    url?: string,
+  } = null;
   static keyboardActions: ?KeyboardActions;
   static screenshot: ?string;
   static defaultPersistedState: PersistedState;
@@ -78,7 +82,7 @@ export class FlipperBasePlugin<
   onKeyboardAction: ?(action: string) => void;
 
   toJSON() {
-    return `<${this.constructor.name}#${this.constructor.title}>`;
+    return `<${this.constructor.name}#${this.constructor.id}>`;
   }
 
   // methods to be overriden by plugins

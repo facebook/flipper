@@ -22,17 +22,14 @@ type RowData = {
   id: ID,
 };
 
-type Props<T> = {|
-  title: string,
-  id: string,
-  icon: string,
+type Props<T> = {
   method: string,
   resetMethod?: string,
   columns: TableColumns,
   columnSizes: TableColumnSizes,
   renderSidebar: (row: T) => any,
   buildRow: (row: T) => any,
-|};
+};
 
 type PersistedState<T> = {|
   rows: TableRows,
@@ -59,9 +56,6 @@ type State = {|
 export function createTablePlugin<T: RowData>(props: Props<T>) {
   // $FlowFixMe persistedStateReducer is fine to accept payload of type T, because it is of type RowData
   return class extends FlipperPlugin<State, *, PersistedState<T>> {
-    static title = props.title;
-    static id = props.id;
-    static icon = props.icon;
     static keyboardActions = ['clear', 'createPaste'];
 
     static defaultPersistedState: PersistedState<T> = {
@@ -170,7 +164,7 @@ export function createTablePlugin<T: RowData>(props: Props<T>) {
       return (
         <FlexColumn grow={true}>
           <SearchableTable
-            key={props.id}
+            key={this.constructor.id}
             rowLineHeight={28}
             floating={false}
             multiline={true}

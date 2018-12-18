@@ -18,6 +18,7 @@ import reducers from '../../reducers/index.js';
 import Logger from '../../fb-stubs/Logger.js';
 import configureStore from 'redux-mock-store';
 import {TEST_PASSING_GK, TEST_FAILING_GK} from '../../fb-stubs/GK';
+import TestPlugin from './TestPlugin';
 
 const mockStore = configureStore([])(reducers(undefined, {type: 'INIT'}));
 const logger = new Logger();
@@ -111,11 +112,17 @@ test('requirePlugin returns null for invalid requires', () => {
 });
 
 test('requirePlugin loads plugin', () => {
+  const name = 'pluginID';
+  const homepage = 'https://fb.workplace.com/groups/230455004101832/';
   const plugin = requirePlugin(require)({
-    name: 'pluginID',
+    name,
+    homepage,
     out: path.join(__dirname, 'TestPlugin.js'),
-    // $FlowFixMe Electron require returns default exports wrapped in an object
-  }).default;
-
+  });
+  // $FlowFixMe
   expect(plugin.prototype).toBeInstanceOf(FlipperPlugin);
+  // $FlowFixMe
+  expect(plugin.homepage).toBe(homepage);
+  // $FlowFixMe
+  expect(plugin.id).toBe(TestPlugin.id);
 });

@@ -9,9 +9,6 @@ import {createTablePlugin} from '../createTablePlugin.js';
 import {FlipperPlugin} from '../plugin.js';
 
 const PROPS = {
-  title: 'Plugin Title',
-  id: 'pluginID',
-  icon: 'icon',
   method: 'method',
   resetMethod: 'resetMethod',
   columns: {},
@@ -23,24 +20,6 @@ const PROPS = {
 test('createTablePlugin returns FlipperPlugin', () => {
   const tablePlugin = createTablePlugin({...PROPS});
   expect(tablePlugin.prototype).toBeInstanceOf(FlipperPlugin);
-});
-
-test('Plugin ID is set', () => {
-  const id = 'pluginID';
-  const tablePlugin = createTablePlugin({...PROPS, id});
-  expect(tablePlugin.id).toBe(id);
-});
-
-test('Plugin title is set', () => {
-  const title = 'My Plugin Title';
-  const tablePlugin = createTablePlugin({...PROPS, title});
-  expect(tablePlugin.title).toBe(title);
-});
-
-test('Plugin icon is set', () => {
-  const icon = 'icon';
-  const tablePlugin = createTablePlugin({...PROPS, icon});
-  expect(tablePlugin.icon).toBe(icon);
 });
 
 test('persistedStateReducer is resetting data', () => {
