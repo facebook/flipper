@@ -12,7 +12,7 @@ import IOSDevice from '../devices/IOSDevice';
 import os from 'os';
 import fs from 'fs';
 import adb from 'adbkit-fb';
-import {exec} from 'child_process';
+import {exec, spawn} from 'child_process';
 import {remote} from 'electron';
 import path from 'path';
 
@@ -40,15 +40,12 @@ type State = {|
   capturingScreenshot: boolean,
 |};
 
-function openFile(path: string): Promise<string> {
-  return new Promise((resolve, reject) => {
-    exec(`${getOpenCommand()} "${path}"`, (error, stdout, stderr) => {
-      if (error) {
-        reject(error);
-      } else {
-        resolve(path);
-      }
-    });
+function openFile(path: string) {
+  const child = spawn(getOpenCommand(), [path]);
+  child.on('exit', (code, signal) => {
+    if (code != 0) {
+      console.error(`${getOpenCommand()} failed with exit code ${code}`);
+    }
   });
 }
 
@@ -124,7 +121,7 @@ class ScreenCaptureButtons extends Component<Props, State> {
     }
   };
 
-  captureScreenshot = (): ?Promise<string> => {
+  captureScreenshot = (): ?Promise<void> => {
     const {selectedDevice} = this.props;
 
     if (selectedDevice instanceof AndroidDevice) {
@@ -142,7 +139,8 @@ class ScreenCaptureButtons extends Component<Props, State> {
             if (err) {
               reject(err);
             } else {
-              resolve(await openFile(screenshotPath));
+              openFile(screenshotPath);
+              resolve();
             }
           },
         );
