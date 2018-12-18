@@ -5,7 +5,7 @@
  * @format
  */
 
-import {Component, Button} from 'flipper';
+import {Component, Button, styled} from 'flipper';
 import {connect} from 'react-redux';
 import {spawn} from 'child_process';
 import {selectDevice, preferDevice} from '../reducers/connections.js';
@@ -18,6 +18,10 @@ type Props = {
   selectDevice: (device: BaseDevice) => void,
   preferDevice: (device: string) => void,
 };
+
+const DropdownButton = styled(Button)({
+  fontSize: 11,
+});
 
 // Remove this if the flow fixme at the bottom is addressed (or has already been removed).
 /* eslint-disable prettier/prettier */
@@ -90,14 +94,12 @@ class DevicesButton extends Component<Props> {
       }
     }
     return (
-      <Button compact={true} icon={icon} dropdown={dropdown} disabled={false}>
+      <DropdownButton compact={true} icon={icon} dropdown={dropdown}>
         {text}
-      </Button>
+      </DropdownButton>
     );
   }
-}
-
-/* $FlowFixMe(>=0.86.0) This comment suppresses an error found when Flow v0.86
+} /* $FlowFixMe(>=0.86.0) This comment suppresses an error found when Flow v0.86
  * was deployed. To see the error, delete this comment and run Flow.
  */
 export default connect(

@@ -14,6 +14,7 @@ const ColoredIconBlack = styled('img')(({size}) => ({
   height: size,
   verticalAlign: 'middle',
   width: size,
+  flexShrink: 0,
 }));
 
 const ColoredIconCustom = styled('div')(props => ({
@@ -26,6 +27,7 @@ const ColoredIconCustom = styled('div')(props => ({
   maskSize: '100% 100%',
   WebkitMaskImage: `url('${props.src}')`,
   WebkitMaskSize: '100% 100%',
+  flexShrink: 0,
 }));
 
 function ColoredIcon(

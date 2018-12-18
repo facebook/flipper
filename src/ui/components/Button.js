@@ -20,6 +20,8 @@ const borderColor = props => {
     return colors.macOSTitleBarButtonBorderBlur;
   } else if (props.type === 'danger') {
     return colors.red;
+  } else if (props.type === 'primary') {
+    return '#237FF1';
   } else if (props.depressed) {
     return colors.macOSTitleBarButtonBorderBottom;
   } else {
@@ -31,6 +33,8 @@ const borderBottomColor = props => {
     return colors.macOSTitleBarButtonBorderBlur;
   } else if (props.type === 'danger') {
     return colors.red;
+  } else if (props.type === 'primary') {
+    return '#237FF1';
   } else {
     return colors.macOSTitleBarButtonBorderBottom;
   }
@@ -44,6 +48,8 @@ const backgroundImage = props => {
       } 1px, ${colors.macOSTitleBarButtonBorderBlur} 0%, ${
         colors.macOSTitleBarButtonBackgroundActive
       } 100%)`;
+    } else if (props.type === 'primary') {
+      return `linear-gradient(to bottom, #67a6f7 0%, #0072FA 100%)`;
     } else {
       return `linear-gradient(to bottom, transparent 0%,${
         colors.macOSTitleBarButtonBackground
@@ -57,6 +63,8 @@ const backgroundImage = props => {
 const color = props => {
   if (props.type === 'danger' && props.windowIsFocused) {
     return colors.red;
+  } else if (props.type === 'primary' && props.windowIsFocused) {
+    return colors.white;
   } else if (props.disabled) {
     return colors.macOSTitleBarIconBlur;
   } else {
@@ -85,11 +93,10 @@ const StyledButton = styled('div')(props => ({
   borderWidth: 1,
   borderColor: borderColor(props),
   borderBottomColor: borderBottomColor(props),
-  fontSize: props.compact === true ? 11 : '1em',
   color: color(props),
   borderRadius: 4,
   position: 'relative',
-  padding: '0 6px',
+  padding: props.padded ? '0 15px' : '0 6px',
   height: props.compact === true ? 24 : 28,
   margin: 0,
   marginLeft: props.inButtonGroup === true ? 0 : 10,
@@ -210,6 +217,10 @@ type Props = {
    * Style of the icon. `filled` is the default
    */
   iconVariant?: 'filled' | 'outline',
+  /**
+   * Whether the button should have additional padding left and right.
+   */
+  padded?: boolean,
 };
 
 type State = {
