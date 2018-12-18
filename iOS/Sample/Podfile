@@ -13,7 +13,6 @@ target 'Sample' do
   pod 'FlipperKit/FlipperKitCrashReporterPlugin', :path => '../../FlipperKit.podspec'
   pod 'Flipper', :path => '../../Flipper.podspec'
   post_install do |installer|
-
         installer.pods_project.targets.each do |target|
             if ['YogaKit'].include? target.name
                 target.build_configurations.each do |config|
@@ -21,6 +20,20 @@ target 'Sample' do
                 end
             end
         end
+    file_name = Dir.glob("*.xcodeproj")[0]
+    app_project = Xcodeproj::Project.open(file_name)
+    app_project.native_targets.each do |target|
+        target.build_configurations.each do |config|
+          if (config.build_settings['OTHER_CFLAGS'])
+            if !(config.build_settings['OTHER_CFLAGS'].include? '-DFB_SONARKIT_ENABLED=1')
+              puts 'Adding -DFB_SONARKIT_ENABLED=1 in OTHER_CFLAGS...'
+              config.build_settings['OTHER_CFLAGS'] << '-DFB_SONARKIT_ENABLED=1'
+            end
+          elsif
+            config.build_settings['OTHER_CFLAGS'] = ['$(inherited)', '-DFB_SONARKIT_ENABLED=1']
+          end
+          app_project.save
+        end
+      end
     end
-
 end
