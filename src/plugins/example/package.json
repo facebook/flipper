@@ -1,6 +1,12 @@
 {
-    "name": "flipper-plugin-sample",
-    "version": "1.0.0",
-    "main": "index.js",
-    "license": "MIT"
+  "name": "Example",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "title": "Example Plugin",
+  "icon": "apps",
+  "bugs": {
+    "email": "oncall+flipper@xmail.facebook.com",
+    "url": "https://fb.workplace.com/groups/230455004101832/"
+  }
 }

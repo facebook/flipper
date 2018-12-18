@@ -63,10 +63,6 @@ const CallStack = styled('pre')({
 });
 
 export default class CrashReporterPlugin extends FlipperDevicePlugin {
-  static title = 'Crash Reporter';
-  static id = 'CrashReporter';
-  static icon = 'apps';
-
   static defaultPersistedState = {
     crashes: [],
   };

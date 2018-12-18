@@ -112,9 +112,6 @@ const TextEllipsis = styled(Text)({
 });
 
 export default class extends FlipperPlugin<State, *, PersistedState> {
-  static title = 'Network';
-  static id = 'Network';
-  static icon = 'internet';
   static keyboardActions = ['clear'];
   static subscribed = [];
   static defaultPersistedState = {

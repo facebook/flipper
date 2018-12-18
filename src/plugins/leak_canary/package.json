@@ -1,9 +1,13 @@
 {
-  "name": "flipper-plugin-leakcanary",
+  "name": "LeakCanary",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
     "lodash": "^4.17.5"
+  },
+  "icon": "bird",
+  "bugs": {
+    "email": "jhli@fb.com"
   }
 }

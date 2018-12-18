@@ -38,10 +38,6 @@ export default class SandboxView extends FlipperPlugin<SandboxState> {
     showFeedback: false,
   };
 
-  static title = 'Sandbox';
-  static id = 'Sandbox';
-  static icon = 'translate';
-
   static TextInput = styled('input')({
     border: `1px solid ${colors.light10}`,
     fontSize: '1em',

@@ -54,9 +54,6 @@ const ToolbarItem = styled(FlexRow)({
 });
 
 export default class LeakCanary extends FlipperPlugin<State> {
-  static title = 'LeakCanary';
-  static id = 'LeakCanary';
-  static icon = 'bird';
   state = {
     leaks: [],
     selectedIdx: null,

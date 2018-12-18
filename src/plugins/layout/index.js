@@ -188,10 +188,6 @@ class LayoutSearchInput extends Component<
 }
 
 export default class Layout extends FlipperPlugin<InspectorState> {
-  static title = 'Layout';
-  static id = 'Inspector';
-  static icon = 'target';
-
   state = {
     elements: {},
     initialised: false,

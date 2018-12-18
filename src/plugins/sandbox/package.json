@@ -1,7 +1,11 @@
 {
-  "name": "flipper-plugin-sandbox",
+  "name": "Sandbox",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
-  "gatekeeper": "sonar_sandbox_plugin"
+  "gatekeeper": "sonar_sandbox_plugin",
+  "icon": "translate",
+  "bugs": {
+    "email": "edoardo@fb.com"
+  }
 }

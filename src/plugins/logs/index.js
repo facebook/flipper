@@ -377,9 +377,6 @@ export default class LogTable extends FlipperDevicePlugin<
   Actions,
   PersistedState,
 > {
-  static id = 'DeviceLogs';
-  static title = 'Logs';
-  static icon = 'arrow-right';
   static keyboardActions = ['clear', 'goToBottom', 'createPaste'];
 
   initTimer: ?TimeoutID;

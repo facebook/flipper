@@ -1,7 +1,13 @@
 {
-  "name": "flipper-plugin-device-logs",
+  "name": "DeviceLogs",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
-  "dependencies": {}
+  "dependencies": {},
+  "title": "Logs",
+  "icon": "arrow-right",
+  "bugs": {
+    "email": "oncall+flipper@xmail.facebook.com",
+    "url": "https://fb.workplace.com/groups/230455004101832/"
+  }
 }

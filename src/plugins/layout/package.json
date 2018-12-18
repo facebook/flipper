@@ -1,9 +1,15 @@
 {
-  "name": "flipper-plugin-layout",
+  "name": "Inspector",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
     "lodash.debounce": "^4.0.8"
+  },
+  "title": "Layout",
+  "icon": "target",
+  "bugs": {
+    "email": "oncall+flipper@xmail.facebook.com",
+    "url": "https://fb.workplace.com/groups/230455004101832/"
   }
 }

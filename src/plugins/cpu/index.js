@@ -99,10 +99,6 @@ function formatFrequency(freq) {
 }
 
 export default class CPUFrequencyTable extends FlipperDevicePlugin<CPUState> {
-  static id = 'DeviceCPU';
-  static title = 'CPU';
-  static icon = 'underline';
-
   adbClient: ADBClient;
   intervalID: ?IntervalID;
 

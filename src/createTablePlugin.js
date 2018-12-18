@@ -22,14 +22,14 @@ type RowData = {
   id: ID,
 };
 
-type Props<T> = {
+type Props<T> = {|
   method: string,
   resetMethod?: string,
   columns: TableColumns,
   columnSizes: TableColumnSizes,
   renderSidebar: (row: T) => any,
   buildRow: (row: T) => any,
-};
+|};
 
 type PersistedState<T> = {|
   rows: TableRows,
