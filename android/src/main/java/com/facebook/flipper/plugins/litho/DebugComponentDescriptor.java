@@ -41,6 +41,7 @@ import com.facebook.yoga.YogaJustify;
 import com.facebook.yoga.YogaPositionType;
 import com.facebook.yoga.YogaValue;
 import java.lang.reflect.Field;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -158,10 +159,7 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
       data.add(new Named<>("Layout", layoutData));
     }
 
-    final FlipperObject propData = getPropData(node);
-    if (propData != null) {
-      data.add(new Named<>("Props", propData));
-    }
+    data.addAll(getPropData(node));
 
     final FlipperObject stateData = getStateData(node);
     if (stateData != null) {
@@ -261,13 +259,14 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
   }
 
   @Nullable
-  private static FlipperObject getPropData(DebugComponent node) {
+  private static List<Named<FlipperObject>> getPropData(DebugComponent node) {
     if (node.canResolve()) {
       return null;
     }
 
     final Component component = node.getComponent();
     final FlipperObject.Builder props = new FlipperObject.Builder();
+    List<Named<FlipperObject>> data = new ArrayList<>();
 
     boolean hasProps = false;
     for (Field f : component.getClass().getDeclaredFields()) {
@@ -276,6 +275,15 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
 
         final Prop annotation = f.getAnnotation(Prop.class);
         if (annotation != null) {
+          if (f.get(component) != null
+              && PropWithInspectorSection.class.isAssignableFrom(f.get(component).getClass())) {
+            final AbstractMap.SimpleEntry<String, String> datum =
+                ((PropWithInspectorSection) f.get(component)).getFlipperLayoutInspectorSection();
+            if (datum != null) {
+              data.add(new Named<>(datum.getKey(), new FlipperObject(datum.getValue())));
+            }
+          }
+
           switch (annotation.resType()) {
             case COLOR:
               props.put(f.getName(), fromColor((Integer) f.get(component)));
@@ -316,7 +324,11 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
       }
     }
 
-    return hasProps ? props.build() : null;
+    if (hasProps) {
+      data.add(new Named<>("Props", props.build()));
+    }
+
+    return data;
   }
 
   @Nullable
