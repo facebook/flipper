@@ -6,23 +6,30 @@ sidebar_label: JavaScript Setup
 
 ## Creating the plugin UI
 
-To create the desktop part of your plugin, initiate a new JavaScript project using `yarn init` and make sure your package name starts with `flipper-plugin-` and a file called `index.js`, which is the entry point to your plugin. A sample `package.json`-file could look like this:
+To create the desktop part of your plugin, initiate a new JavaScript project using `yarn init` and make sure your package name is the plugin's ID you are using in the native implementation. Create a file called `index.js`, which is the entry point to your plugin. A sample `package.json`-file could look like this:
 
 ```
 {
-  "name": "flipper-plugin-myplugin",
+  "name": "myplugin",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
-  "dependencies": {}
+  "dependencies": {},
+  "title": "My Plugin",
+  "icon": "apps",
+  "bugs": {
+    "email": "you@example.com"
+  }
 }
 ```
+
+Flipper uses some fields from the `package.json` in the plugin. A `title` can be set, that is shown in Flipper's sidebar, same is true for the `icon`. We also strongly encourage to set a `bugs` field specifying an email and/or url, where bugs for the plugin can be reported.
 
 In `index.js` you can now create your plugin. Take a look at [Writing a plugin](writing-a-plugin.md) to learn how a plugin can look like. Also, make sure to check out [Flipper's UI components](ui-components.md) when building your plugin.
 
 ### Dynamically loading plugins
 
-Once a plugin is created, Flipper can load it from its folder. The path from where the plugins are loaded is specified in `~/.flipper/config.json`. The paths specified in `pluginPaths` need to point to a folder containing a subfolder for every plugin. For example you can create a directory `~/flipper-plugins` and set `pluginPaths` in Flipper's config to `["~/flipper-plugins"]`. This directory needs to contain a sub-directory for every plugin you create. In this example there would be a directory `~/flipper-plugins/flipper-plugin-myplugin` that contains your plugin's package.json and all code of your plugin.
+Once a plugin is created, Flipper can load it from its folder. The path from where the plugins are loaded is specified in `~/.flipper/config.json`. The paths specified in `pluginPaths` need to point to a folder containing a subfolder for every plugin. For example you can create a directory `~/flipper-plugins` and set `pluginPaths` in Flipper's config to `["~/flipper-plugins"]`. This directory needs to contain a sub-directory for every plugin you create. In this example there would be a directory `~/flipper-plugins/myplugin` that contains your plugin's package.json and all code of your plugin.
 
 ### npm dependencies
 
