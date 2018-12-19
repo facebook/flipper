@@ -23,6 +23,10 @@ function setNotificationID(notificationID: number) {
   CrashReporterPlugin.notificationID = notificationID;
 }
 
+function setCrashReporterPluginID(id: string) {
+  CrashReporterPlugin.id = id;
+}
+
 function getCrash(
   id: number,
   callstack: string,
@@ -39,7 +43,16 @@ function getCrash(
 beforeEach(() => {
   setNotificationID(0); // Resets notificationID to 0
   setDefaultPersistedState({crashes: []}); // Resets defaultpersistedstate
+  setCrashReporterPluginID('CrashReporter');
 });
+
+afterAll(() => {
+  // Reset values
+  setNotificationID(0);
+  setDefaultPersistedState({crashes: []});
+  setCrashReporterPluginID('');
+});
+
 test('test the parsing of the reason for crash when log matches the predefined regex', () => {
   const log = 'Blaa Blaaa \n Blaa Blaaa \n Exception Type:  SIGSEGV';
   const crash = parseCrashLog(log);
@@ -96,20 +109,6 @@ test('test getPersistedState for non-empty defaultPersistedState and undefined p
     pluginStates,
   );
   expect(perisistedState).toEqual({crashes: [crash]});
-});
-test('test getPersistedState for non-empty defaultPersistedState and defined pluginState', () => {
-  const crash = getCrash(0, 'callstack', 'crash0', 'crash0');
-  const pluginKey = getPluginKey(null, CrashReporterPlugin.id);
-  setDefaultPersistedState({crashes: [crash]});
-  const pluginStateCrash = getCrash(1, 'callstack', 'crash1', 'crash1');
-  //$FlowFixMe
-  const pluginStates = {'unknown#CrashReporter': {crashes: [pluginStateCrash]}};
-  const perisistedState = getPersistedState(
-    pluginKey,
-    CrashReporterPlugin,
-    pluginStates,
-  );
-  expect(perisistedState).toEqual({crashes: [pluginStateCrash]});
 });
 test('test getPersistedState for non-empty defaultPersistedState and defined pluginState', () => {
   const crash = getCrash(0, 'callstack', 'crash0', 'crash0');
