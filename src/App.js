@@ -14,6 +14,7 @@ import MainSidebar from './chrome/MainSidebar.js';
 import BugReporterDialog from './chrome/BugReporterDialog.js';
 import ErrorBar from './chrome/ErrorBar.js';
 import PluginContainer from './PluginContainer.js';
+import Sheet from './chrome/Sheet.js';
 import {ipcRenderer} from 'electron';
 
 import type Logger from './fb-stubs/Logger.js';
@@ -48,7 +49,14 @@ export class App extends React.Component<Props> {
     return (
       <FlexColumn grow={true}>
         <TitleBar />
-        <BugReporterDialog bugReporter={this.props.bugReporter} />
+        <Sheet>
+          {onHide => (
+            <BugReporterDialog
+              bugReporter={this.props.bugReporter}
+              onHide={onHide}
+            />
+          )}
+        </Sheet>
         <FlexRow grow={true}>
           {this.props.leftSidebarVisible && <MainSidebar />}
           {this.props.selectedDevice ? (

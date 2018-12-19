@@ -7,9 +7,7 @@
 
 import type BugReporter from '../fb-stubs/BugReporter.js';
 import type {FlipperDevicePlugin, FlipperPlugin} from '../plugin';
-import {toggleBugDialogVisible} from '../reducers/application.js';
-import {Component} from 'react';
-import {Transition} from 'react-transition-group';
+import {Fragment, Component} from 'react';
 import {connect} from 'react-redux';
 import {
   Button,
@@ -18,15 +16,17 @@ import {
   Input,
   FlexColumn,
   FlexRow,
+  FlexCenter,
   Textarea,
   Text,
   Glyph,
-  FlexCenter,
   styled,
 } from 'flipper';
 
 const Container = styled(FlexColumn)({
   padding: 10,
+  width: 400,
+  height: 300,
 });
 
 const Icon = styled(Glyph)({
@@ -52,26 +52,6 @@ const textareaStyle = {
   margin: 0,
   marginBottom: 10,
 };
-
-const DialogContainer = styled('div')(({state}) => ({
-  transform: `translateY(${
-    state === 'entering' || state === 'exiting' ? '-110' : ''
-  }%)`,
-  transition: '.3s transform',
-  width: 400,
-  height: 300,
-  position: 'absolute',
-  left: '50%',
-  marginLeft: -200,
-  top: 38,
-  zIndex: 2,
-  backgroundColor: '#EFEEEF',
-  border: '1px solid #C6C6C6',
-  borderTop: 'none',
-  borderBottomLeftRadius: 2,
-  borderBottomRightRadius: 2,
-  boxShadow: '0 5px 13px rgba(0, 0, 0, 0.2)',
-}));
 
 const TitleInput = styled(Input)({
   ...textareaStyle,
@@ -112,9 +92,8 @@ type State = {|
 
 type Props = {|
   bugReporter: BugReporter,
-  toggleBugDialogVisible: (visible: boolean) => mixed,
   activePlugin: ?Class<FlipperPlugin<> | FlipperDevicePlugin<>>,
-  bugDialogVisible: boolean,
+  onHide: () => mixed,
 |};
 
 class BugReporterDialog extends Component<Props, State> {
@@ -128,19 +107,6 @@ class BugReporterDialog extends Component<Props, State> {
 
   titleRef: HTMLElement;
   descriptionRef: HTMLElement;
-
-  componentDidMount() {
-    document.addEventListener('keydown', this.onKeyDown);
-  }
-  componentWillUnmount() {
-    document.removeEventListener('keydown', this.onKeyDown);
-  }
-
-  onKeyDown = (e: KeyboardEvent) => {
-    if (this.props.bugDialogVisible && e.key === 'Escape') {
-      this.onCancel();
-    }
-  };
 
   onDescriptionChange = (e: SyntheticInputEvent<HTMLInputElement>) => {
     this.setState({description: e.target.value});
@@ -215,7 +181,7 @@ class BugReporterDialog extends Component<Props, State> {
       title: '',
       description: '',
     });
-    this.props.toggleBugDialogVisible(false);
+    this.props.onHide();
   };
 
   render() {
@@ -251,7 +217,7 @@ class BugReporterDialog extends Component<Props, State> {
       );
     } else {
       content = (
-        <Container grow={true}>
+        <Fragment>
           <Title>Report a bug...</Title>
           <TitleInput
             placeholder="Title..."
@@ -322,15 +288,11 @@ class BugReporterDialog extends Component<Props, State> {
               </Button>
             </SubmitButtonContainer>
           </Footer>
-        </Container>
+        </Fragment>
       );
     }
 
-    return (
-      <Transition in={this.props.bugDialogVisible} timeout={300} unmountOnExit>
-        {state => <DialogContainer state={state}>{content}</DialogContainer>}
-      </Transition>
-    );
+    return <Container>{content}</Container>;
   }
 }
 
@@ -339,13 +301,8 @@ export default connect(
   ({
     plugins: {devicePlugins, clientPlugins},
     connections: {selectedPlugin},
-    application: {bugDialogVisible},
   }) => ({
-    bugDialogVisible,
     activePlugin:
       devicePlugins.get(selectedPlugin) || clientPlugins.get(selectedPlugin),
   }),
-  {
-    toggleBugDialogVisible,
-  },
 )(BugReporterDialog);
