@@ -126,11 +126,22 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin {
   };
 
   render() {
-    const crash =
-      this.props.persistedState.crashes.length > 0 &&
-      this.props.persistedState.crashes[
-        this.props.persistedState.crashes.length - 1
-      ];
+    let crash: ?Crash =
+      this.props.persistedState.crashes.length > 0
+        ? this.props.persistedState.crashes[
+            this.props.persistedState.crashes.length - 1
+          ]
+        : null;
+
+    if (this.props.deepLinkPayload) {
+      const id = this.props.deepLinkPayload;
+      const index = this.props.persistedState.crashes.findIndex(elem => {
+        return elem.notificationID === Number(id);
+      });
+      if (index >= 0) {
+        crash = this.props.persistedState.crashes[index];
+      }
+    }
 
     if (crash) {
       const callstackString = crash.callstack;
@@ -162,7 +173,11 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin {
           </CrashRow>
           {this.device.os == 'Android' && (
             <CrashRow>
-              <Button onClick={() => this.openInLogs(crash.callstack)}>
+              <Button
+                onClick={() => {
+                  //$FlowFixMe: checked that crash is not undefined
+                  this.openInLogs(crash.callstack);
+                }}>
                 Open in Logs
               </Button>
             </CrashRow>
