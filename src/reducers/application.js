@@ -7,71 +7,82 @@
 
 import {remote} from 'electron';
 
+export type ActiveSheet = 'BUG_REPORTER' | 'PLUGIN_DEBUGGER' | null;
+
 export type State = {
   leftSidebarVisible: boolean,
   rightSidebarVisible: boolean,
   rightSidebarAvailable: boolean,
-  bugDialogVisible: boolean,
   windowIsFocused: boolean,
-  pluginManagerVisible: boolean,
+  activeSheet: ActiveSheet,
 };
 
-type ActionType =
+type BooleanActionType =
   | 'leftSidebarVisible'
   | 'rightSidebarVisible'
   | 'rightSidebarAvailable'
-  | 'bugDialogVisible'
-  | 'windowIsFocused'
-  | 'pluginManagerVisible';
+  | 'windowIsFocused';
 
-export type Action = {
-  type: ActionType,
-  payload?: boolean,
-};
+export type Action =
+  | {
+      type: BooleanActionType,
+      payload?: boolean,
+    }
+  | {
+      type: 'SET_ACTIVE_SHEET',
+      payload: ActiveSheet,
+    };
 
 const initialState: () => State = () => ({
   leftSidebarVisible: true,
   rightSidebarVisible: true,
   rightSidebarAvailable: false,
-  bugDialogVisible: false,
   windowIsFocused: remote.getCurrentWindow().isFocused(),
-  pluginManagerVisible: false,
+  activeSheet: null,
 });
 
 export default function reducer(state: State, action: Action): State {
   state = state || initialState();
-  const {payload, type} = action;
-  const newValue = typeof payload === 'undefined' ? !state[type] : payload;
-
   if (
-    type === 'leftSidebarVisible' ||
-    type === 'rightSidebarVisible' ||
-    type === 'rightSidebarAvailable' ||
-    type === 'bugDialogVisible' ||
-    type === 'windowIsFocused' ||
-    type === 'pluginManagerVisible'
+    action.type === 'leftSidebarVisible' ||
+    action.type === 'rightSidebarVisible' ||
+    action.type === 'rightSidebarAvailable' ||
+    action.type === 'windowIsFocused'
   ) {
-    if (state[type] === newValue) {
+    const newValue =
+      typeof action.payload === 'undefined'
+        ? !state[action.type]
+        : action.payload;
+
+    if (state[action.type] === newValue) {
       // value hasn't changed
       return state;
     } else {
       return {
         ...state,
-        [type]: newValue,
+        [action.type]: newValue,
       };
     }
+  } else if (action.type === 'SET_ACTIVE_SHEET') {
+    return {
+      ...state,
+      activeSheet: action.payload,
+    };
   } else {
     return state;
   }
 }
 
-export const toggleAction = (type: ActionType, payload?: boolean): Action => ({
+export const toggleAction = (
+  type: BooleanActionType,
+  payload?: boolean,
+): Action => ({
   type,
   payload,
 });
 
-export const toggleBugDialogVisible = (payload?: boolean): Action => ({
-  type: 'bugDialogVisible',
+export const setActiveSheet = (payload: ActiveSheet): Action => ({
+  type: 'SET_ACTIVE_SHEET',
   payload,
 });
 
@@ -87,10 +98,5 @@ export const toggleRightSidebarVisible = (payload?: boolean): Action => ({
 
 export const toggleRightSidebarAvailable = (payload?: boolean): Action => ({
   type: 'rightSidebarAvailable',
-  payload,
-});
-
-export const togglePluginManagerVisible = (payload?: boolean): Action => ({
-  type: 'pluginManagerVisible',
   payload,
 });

@@ -26,11 +26,9 @@ test('Empty app state matches snapshot', () => {
         logger={logger}
         bugReporter={bugReporter}
         leftSidebarVisible={false}
-        bugDialogVisible={false}
-        pluginManagerVisible={false}
         selectedDevice={null}
-        toggleBugDialogVisible={() => {}}
         error={null}
+        activeSheet={null}
       />
     </Provider>,
   );

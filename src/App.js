@@ -20,14 +20,15 @@ import {ipcRenderer} from 'electron';
 import type Logger from './fb-stubs/Logger.js';
 import type BugReporter from './fb-stubs/BugReporter.js';
 import type BaseDevice from './devices/BaseDevice.js';
+import type {ActiveSheet} from './reducers/application.js';
 
 type Props = {
   logger: Logger,
   bugReporter: BugReporter,
   leftSidebarVisible: boolean,
-  pluginManagerVisible: boolean,
   selectedDevice: ?BaseDevice,
   error: ?string,
+  activeSheet: ActiveSheet,
 };
 
 export class App extends React.Component<Props> {
@@ -45,18 +46,25 @@ export class App extends React.Component<Props> {
     ipcRenderer.send('getLaunchTime');
     ipcRenderer.send('componentDidMount');
   }
+
+  getSheet = (onHide: () => mixed) => {
+    if (this.props.activeSheet === 'BUG_REPORTER') {
+      return (
+        <BugReporterDialog
+          bugReporter={this.props.bugReporter}
+          onHide={onHide}
+        />
+      );
+    } else {
+      return null;
+    }
+  };
+
   render() {
     return (
       <FlexColumn grow={true}>
         <TitleBar />
-        <Sheet>
-          {onHide => (
-            <BugReporterDialog
-              bugReporter={this.props.bugReporter}
-              onHide={onHide}
-            />
-          )}
-        </Sheet>
+        <Sheet>{this.getSheet}</Sheet>
         <FlexRow grow={true}>
           {this.props.leftSidebarVisible && <MainSidebar />}
           {this.props.selectedDevice ? (
@@ -76,12 +84,12 @@ export class App extends React.Component<Props> {
  * run Flow. */
 export default connect(
   ({
-    application: {pluginManagerVisible, leftSidebarVisible},
+    application: {leftSidebarVisible, activeSheet},
     connections: {selectedDevice, error},
   }) => ({
-    pluginManagerVisible,
     leftSidebarVisible,
     selectedDevice,
+    activeSheet,
     error,
   }),
 )(App);

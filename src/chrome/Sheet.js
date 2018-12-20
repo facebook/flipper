@@ -7,18 +7,19 @@
 
 import {Component} from 'react';
 import {Transition} from 'react-transition-group';
-import {toggleBugDialogVisible} from '../reducers/application.js';
+import {setActiveSheet} from '../reducers/application.js';
 import {connect} from 'react-redux';
 import {styled} from 'flipper';
 
 const DialogContainer = styled('div')(({state}) => ({
-  transform: `translateY(${
-    state === 'entering' || state === 'exiting' ? '-110' : ''
+  transform: `translate(-50%, ${
+    state === 'entering' || state === 'exiting' || state === 'exited'
+      ? '-110'
+      : '0'
   }%)`,
   transition: '.3s transform',
   position: 'absolute',
   left: '50%',
-  marginLeft: -200,
   top: 38,
   zIndex: 2,
   backgroundColor: '#EFEEEF',
@@ -31,14 +32,33 @@ const DialogContainer = styled('div')(({state}) => ({
 
 type Props = {|
   sheetVisible: boolean,
-  onHideSheet: () => mixed,
+  onHideSheet: () => void,
   children: (onHide: () => mixed) => any,
 |};
 
-class Sheet extends Component<Props> {
+type State = {|
+  isVisible: boolean,
+|};
+
+class Sheet extends Component<Props, State> {
+  state = {
+    isVisible: this.props.sheetVisible,
+  };
+
+  static getDerivedStateFromProps(props: Props, state: State) {
+    if (!props.sheetVisible) {
+      return {
+        isVisible: true,
+      };
+    } else {
+      return null;
+    }
+  }
+
   componentDidMount() {
     document.addEventListener('keydown', this.onKeyDown);
   }
+
   componentWillUnmount() {
     document.removeEventListener('keydown', this.onKeyDown);
   }
@@ -50,12 +70,16 @@ class Sheet extends Component<Props> {
   };
 
   onHide = () => {
-    this.props.onHideSheet();
+    this.setState({isVisible: false});
   };
 
   render() {
     return (
-      <Transition in={this.props.sheetVisible} timeout={300} unmountOnExit>
+      <Transition
+        in={this.props.sheetVisible && this.state.isVisible}
+        timeout={300}
+        onExited={() => this.props.onHideSheet()}
+        unmountOnExit>
         {state => (
           <DialogContainer state={state}>
             {this.props.children(this.onHide)}
@@ -70,10 +94,10 @@ class Sheet extends Component<Props> {
  * deployed. To see the error, delete this comment and
  * run Flow. */
 export default connect(
-  ({application: {bugDialogVisible}}) => ({
-    sheetVisible: bugDialogVisible,
+  ({application: {activeSheet}}) => ({
+    sheetVisible: Boolean(activeSheet),
   }),
   {
-    onHideSheet: () => toggleBugDialogVisible(false),
+    onHideSheet: () => setActiveSheet(null),
   },
 )(Sheet);

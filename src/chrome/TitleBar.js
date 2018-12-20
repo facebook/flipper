@@ -5,6 +5,8 @@
  * @format
  */
 
+import type {ActiveSheet} from '../reducers/application';
+
 import {
   colors,
   Button,
@@ -12,15 +14,13 @@ import {
   FlexRow,
   Component,
   Spacer,
-  GK,
   styled,
 } from 'flipper';
 import {connect} from 'react-redux';
 import {
-  toggleBugDialogVisible,
+  setActiveSheet,
   toggleLeftSidebarVisible,
   toggleRightSidebarVisible,
-  togglePluginManagerVisible,
 } from '../reducers/application.js';
 import DevicesButton from './DevicesButton.js';
 import ScreenCaptureButtons from './ScreenCaptureButtons.js';
@@ -52,11 +52,9 @@ type Props = {|
   leftSidebarVisible: boolean,
   rightSidebarVisible: boolean,
   rightSidebarAvailable: boolean,
-  pluginManagerVisible: boolean,
-  toggleBugDialogVisible: (visible?: boolean) => void,
   toggleLeftSidebarVisible: (visible?: boolean) => void,
   toggleRightSidebarVisible: (visible?: boolean) => void,
-  togglePluginManagerVisible: (visible?: boolean) => void,
+  setActiveSheet: (sheet: ActiveSheet) => void,
 |};
 
 class TitleBar extends Component<Props> {
@@ -70,18 +68,9 @@ class TitleBar extends Component<Props> {
         {config.bugReportButtonVisible && (
           <Button
             compact={true}
-            onClick={() => this.props.toggleBugDialogVisible()}
+            onClick={() => this.props.setActiveSheet('BUG_REPORTER')}
             title="Report Bug"
             icon="bug"
-          />
-        )}
-        {GK.get('sonar_dynamic_plugins') && (
-          <Button
-            compact={true}
-            onClick={() => this.props.toggleBugDialogVisible()}
-            selected={this.props.pluginManagerVisible}
-            title="Plugin Manager"
-            icon="apps"
           />
         )}
         <ButtonGroup>
@@ -127,9 +116,8 @@ export default connect(
     pluginManagerVisible,
   }),
   {
-    toggleBugDialogVisible,
+    setActiveSheet,
     toggleLeftSidebarVisible,
     toggleRightSidebarVisible,
-    togglePluginManagerVisible,
   },
 )(TitleBar);
