@@ -5,7 +5,11 @@
  * @format
  */
 
-import {default as reducer, registerPlugins} from '../plugins';
+import {
+  default as reducer,
+  registerPlugins,
+  addGatekeepedPlugins,
+} from '../plugins';
 import {
   FlipperBasePlugin,
   FlipperPlugin,
@@ -29,6 +33,9 @@ test('add clientPlugin', () => {
     {
       devicePlugins: new Map(),
       clientPlugins: new Map(),
+      gatekeepedPlugins: [],
+      failedPlugins: [],
+      disabledPlugins: [],
     },
     registerPlugins([testPlugin]),
   );
@@ -40,6 +47,9 @@ test('add devicePlugin', () => {
     {
       devicePlugins: new Map(),
       clientPlugins: new Map(),
+      gatekeepedPlugins: [],
+      failedPlugins: [],
+      disabledPlugins: [],
     },
     registerPlugins([testDevicePlugin]),
   );
@@ -51,6 +61,9 @@ test('do not add plugin twice', () => {
     {
       devicePlugins: new Map(),
       clientPlugins: new Map(),
+      gatekeepedPlugins: [],
+      failedPlugins: [],
+      disabledPlugins: [],
     },
     registerPlugins([testPlugin, testPlugin]),
   );
@@ -62,10 +75,28 @@ test('do not add other classes', () => {
     {
       devicePlugins: new Map(),
       clientPlugins: new Map(),
+      gatekeepedPlugins: [],
+      failedPlugins: [],
+      disabledPlugins: [],
     },
     // $FlowFixMe testing wrong classes on purpose here
     registerPlugins([testBasePlugin]),
   );
   expect(res.devicePlugins.size).toEqual(0);
   expect(res.devicePlugins.size).toEqual(0);
+});
+
+test('add gatekeeped plugin', () => {
+  const gatekeepedPlugins = [{name: 'plugin', out: 'out.js'}];
+  const res = reducer(
+    {
+      devicePlugins: new Map(),
+      clientPlugins: new Map(),
+      gatekeepedPlugins: [],
+      failedPlugins: [],
+      disabledPlugins: [],
+    },
+    addGatekeepedPlugins(gatekeepedPlugins),
+  );
+  expect(res.gatekeepedPlugins).toEqual(gatekeepedPlugins);
 });

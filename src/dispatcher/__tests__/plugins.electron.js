@@ -26,7 +26,7 @@ const logger = new Logger();
 test('dispatcher dispatches REGISTER_PLUGINS', () => {
   dispatcher(mockStore, logger);
   const actions = mockStore.getActions();
-  expect(actions[0].type).toBe('REGISTER_PLUGINS');
+  expect(actions.map(a => a.type)).toContain('REGISTER_PLUGINS');
 });
 
 test('getDynamicPlugins returns empty array', () => {
@@ -56,7 +56,7 @@ test('checkDisabled', () => {
   const config = {disabledPlugins: [disabledPlugin]};
   // $FlowFixMe process.env not defined in electron API spec
   remote.process.env.CONFIG = JSON.stringify(config);
-  const disabled = checkDisabled();
+  const disabled = checkDisabled([]);
 
   expect(
     disabled({
@@ -75,7 +75,7 @@ test('checkDisabled', () => {
 
 test('checkGK for plugin without GK', () => {
   expect(
-    checkGK({
+    checkGK([])({
       name: 'pluginID',
       out: './test/index.js',
     }),
@@ -84,7 +84,7 @@ test('checkGK for plugin without GK', () => {
 
 test('checkGK for passing plugin', () => {
   expect(
-    checkGK({
+    checkGK([])({
       name: 'pluginID',
       gatekeeper: TEST_PASSING_GK,
       out: './test/index.js',
@@ -93,17 +93,20 @@ test('checkGK for passing plugin', () => {
 });
 
 test('checkGK for failing plugin', () => {
-  expect(
-    checkGK({
-      name: 'pluginID',
-      gatekeeper: TEST_FAILING_GK,
-      out: './test/index.js',
-    }),
-  ).toBeFalsy();
+  const gatekeepedPlugins = [];
+  const name = 'pluginID';
+  const plugins = checkGK(gatekeepedPlugins)({
+    name,
+    gatekeeper: TEST_FAILING_GK,
+    out: './test/index.js',
+  });
+
+  expect(plugins).toBeFalsy();
+  expect(gatekeepedPlugins[0].name).toEqual(name);
 });
 
 test('requirePlugin returns null for invalid requires', () => {
-  const plugin = requirePlugin(require)({
+  const plugin = requirePlugin([], require)({
     name: 'pluginID',
     out: 'this/path/does not/exist',
   });
@@ -114,7 +117,7 @@ test('requirePlugin returns null for invalid requires', () => {
 test('requirePlugin loads plugin', () => {
   const name = 'pluginID';
   const homepage = 'https://fb.workplace.com/groups/230455004101832/';
-  const plugin = requirePlugin(require)({
+  const plugin = requirePlugin([], require)({
     name,
     homepage,
     out: path.join(__dirname, 'TestPlugin.js'),

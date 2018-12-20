@@ -13,16 +13,22 @@ import type {State} from '../reducers/plugins';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import * as Flipper from 'flipper';
-import {registerPlugins} from '../reducers/plugins';
+import {
+  registerPlugins,
+  addGatekeepedPlugins,
+  addDisabledPlugins,
+  addFailedPlugins,
+} from '../reducers/plugins';
 import {remote} from 'electron';
 import {GK} from 'flipper';
 import {FlipperBasePlugin} from '../plugin.js';
 import {setupMenuBar} from '../MenuBar.js';
 
-type PluginDefinition = {
+export type PluginDefinition = {
   name: string,
   out: string,
   gatekeeper?: string,
+  entry?: string,
 };
 
 export default (store: Store, logger: Logger) => {
@@ -31,16 +37,21 @@ export default (store: Store, logger: Logger) => {
   window.ReactDOM = ReactDOM;
   window.Flipper = Flipper;
 
-  const disabled = checkDisabled();
+  const gatekeepedPlugins: Array<PluginDefinition> = [];
+  const disabledPlugins: Array<PluginDefinition> = [];
+  const failedPlugins: Array<[PluginDefinition, string]> = [];
 
   const initialPlugins: Array<
     Class<FlipperPlugin<> | FlipperDevicePlugin<>>,
   > = [...getBundledPlugins(), ...getDynamicPlugins()]
-    .filter(disabled)
-    .filter(checkGK)
-    .map(requirePlugin())
+    .filter(checkDisabled(disabledPlugins))
+    .filter(checkGK(gatekeepedPlugins))
+    .map(requirePlugin(failedPlugins))
     .filter(Boolean);
 
+  store.dispatch(addGatekeepedPlugins(gatekeepedPlugins));
+  store.dispatch(addDisabledPlugins(disabledPlugins));
+  store.dispatch(addFailedPlugins(failedPlugins));
   store.dispatch(registerPlugins(initialPlugins));
 
   let state: ?State = null;
@@ -81,22 +92,30 @@ export function getDynamicPlugins() {
   return dynamicPlugins;
 }
 
-export function checkGK(plugin: PluginDefinition): boolean {
-  const result = plugin.gatekeeper && !GK.get(plugin.gatekeeper);
-  if (plugin.gatekeeper && !result) {
+export const checkGK = (gatekeepedPlugins: Array<PluginDefinition>) => (
+  plugin: PluginDefinition,
+): boolean => {
+  if (!plugin.gatekeeper) {
+    return true;
+  }
+  const result = GK.get(plugin.gatekeeper);
+  if (!result) {
+    gatekeepedPlugins.push(plugin);
     console.warn(
       'Plugin %s will be ignored as user is not part of the gatekeeper "%s".',
       plugin.name,
       plugin.gatekeeper,
     );
   }
-  return !result;
-}
+  return result;
+};
 
-export function checkDisabled(): (plugin: PluginDefinition) => boolean {
-  let disabledPlugins: Set<string> = new Set();
+export const checkDisabled = (disabledPlugins: Array<PluginDefinition>) => (
+  plugin: PluginDefinition,
+): boolean => {
+  let disabledList: Set<string> = new Set();
   try {
-    disabledPlugins = new Set(
+    disabledList = new Set(
       // $FlowFixMe process.env not defined in electron API spec
       JSON.parse(remote?.process.env.CONFIG || '{}').disabledPlugins || [],
     );
@@ -104,12 +123,17 @@ export function checkDisabled(): (plugin: PluginDefinition) => boolean {
     console.error(e);
   }
 
-  return (plugin: PluginDefinition) => !disabledPlugins.has(plugin.name);
-}
+  if (disabledList.has(plugin.name)) {
+    disabledPlugins.push(plugin);
+  }
 
-export function requirePlugin(
+  return !disabledList.has(plugin.name);
+};
+
+export const requirePlugin = (
+  failedPlugins: Array<[PluginDefinition, string]>,
   requireFunction: Function = window.electronRequire,
-) {
+) => {
   return (
     pluginDefinition: PluginDefinition,
   ): ?Class<FlipperPlugin<> | FlipperDevicePlugin<>> => {
@@ -137,8 +161,9 @@ export function requirePlugin(
 
       return plugin;
     } catch (e) {
+      failedPlugins.push([pluginDefinition, e.message]);
       console.error(pluginDefinition, e);
       return null;
     }
   };
-}
+};

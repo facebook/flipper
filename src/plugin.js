@@ -52,6 +52,8 @@ export class FlipperBasePlugin<
   static title: ?string = null;
   static id: string = '';
   static icon: ?string = null;
+  static gatekeeper: ?string = null;
+  static entry: ?string = null;
   static bugs: ?{
     email?: string,
     url?: string,
