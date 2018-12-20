@@ -16,6 +16,7 @@ import ErrorBar from './chrome/ErrorBar.js';
 import PluginContainer from './PluginContainer.js';
 import Sheet from './chrome/Sheet.js';
 import {ipcRenderer} from 'electron';
+import PluginDebugger from './chrome/PluginDebugger.js';
 
 import type Logger from './fb-stubs/Logger.js';
 import type BugReporter from './fb-stubs/BugReporter.js';
@@ -55,6 +56,8 @@ export class App extends React.Component<Props> {
           onHide={onHide}
         />
       );
+    } else if (this.props.activeSheet === 'PLUGIN_DEBUGGER') {
+      return <PluginDebugger onHide={onHide} />;
     } else {
       return null;
     }
