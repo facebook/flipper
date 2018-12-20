@@ -65,10 +65,10 @@ window.addEventListener('beforeunload', () => {
 });
 
 export function parseCrashLog(content: string): Crash {
-  const regex = /Exception Type: *[aA-zZ0-9]*/;
+  const regex = /Exception Type: *[\w]*/;
   const arr = regex.exec(content);
   const exceptionString = arr ? arr[0] : '';
-  const exceptionRegex = /[aA-zZ0-9]*$/;
+  const exceptionRegex = /[\w]*$/;
   const tmp = exceptionRegex.exec(exceptionString);
   const exception =
     tmp && tmp[0].length ? tmp[0] : 'Cannot figure out the cause';
@@ -78,6 +78,21 @@ export function parseCrashLog(content: string): Crash {
     reason: exception,
   };
   return crash;
+}
+export function parsePath(content: string): ?string {
+  const regex = /Path: *[\w\-\/\.\t\ \_\%]*\n/;
+  const arr = regex.exec(content);
+  if (!arr || arr.length <= 0) {
+    return null;
+  }
+  const pathString = arr[0];
+  const pathRegex = /[\w\-\/\.\t\ \_\%]*\n/;
+  const tmp = pathRegex.exec(pathString);
+  if (!tmp || tmp.length == 0) {
+    return null;
+  }
+  const path = tmp[0];
+  return path.trim();
 }
 
 export function getPersistedState(
@@ -119,7 +134,28 @@ export function getNewPersisitedStateFromCrashLog(
   return newPluginState;
 }
 
+export function shouldShowCrashNotification(
+  baseDevice: ?BaseDevice,
+  content: string,
+): boolean {
+  const appPath = parsePath(content);
+  const serial: string = baseDevice?.serial || 'unknown';
+  if (!appPath || !appPath.includes(serial)) {
+    // Do not show notifications for the app which are not the selected one
+    return false;
+  }
+  return true;
+}
+
 function parseCrashLogAndUpdateState(store: Store, content: string) {
+  if (
+    !shouldShowCrashNotification(
+      store.getState().connections.selectedDevice,
+      content,
+    )
+  ) {
+    return;
+  }
   const pluginID = 'CrashReporter';
   const pluginKey = getPluginKey(
     store.getState().connections.selectedDevice,

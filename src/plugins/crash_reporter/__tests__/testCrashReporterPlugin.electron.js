@@ -10,6 +10,8 @@ import {
   getPluginKey,
   getPersistedState,
   getNewPersisitedStateFromCrashLog,
+  parsePath,
+  shouldShowCrashNotification,
 } from '../../../dispatcher/iOSDevice.js';
 import BaseDevice from '../../../devices/BaseDevice';
 import CrashReporterPlugin from '../../crash_reporter';
@@ -54,7 +56,8 @@ afterAll(() => {
 });
 
 test('test the parsing of the reason for crash when log matches the predefined regex', () => {
-  const log = 'Blaa Blaaa \n Blaa Blaaa \n Exception Type:  SIGSEGV';
+  const log =
+    'Blaa Blaaa \n Blaa Blaaa \n Exception Type:  SIGSEGV \n Blaa Blaa \n Blaa Blaa';
   const crash = parseCrashLog(log);
   expect(crash.callstack).toEqual(log);
   expect(crash.reason).toEqual('SIGSEGV');
@@ -69,7 +72,8 @@ test('test the parsing of the crash log when log does not match the predefined r
 });
 
 test('test the parsing of the reason for crash when log does not match the predefined regex contains unicode character', () => {
-  const log = 'Blaa Blaaa \n Blaa Blaaa \n Exception Type:  🍕🐬';
+  const log =
+    'Blaa Blaaa \n Blaa Blaaa \n Exception Type:  🍕🐬 \n Blaa Blaa \n Blaa Blaa';
   const crash = parseCrashLog(log);
   expect(crash.callstack).toEqual(log);
   expect(crash.reason).toEqual('Cannot figure out the cause');
@@ -134,7 +138,8 @@ test('test getNewPersisitedStateFromCrashLog for non-empty defaultPersistedState
     CrashReporterPlugin,
     pluginStates,
   );
-  const content = 'Blaa Blaaa \n Blaa Blaaa \n Exception Type:  SIGSEGV';
+  const content =
+    'Blaa Blaaa \n Blaa Blaaa \n Exception Type:  SIGSEGV \n Blaa Blaa \n Blaa Blaa';
   expect(perisistedState).toEqual({crashes: [pluginStateCrash]});
   const newPersistedState = getNewPersisitedStateFromCrashLog(
     perisistedState,
@@ -197,4 +202,55 @@ test('test getNewPersisitedStateFromCrashLog for non-empty defaultPersistedState
       ),
     ],
   });
+});
+test('test parsing of path when inputs are correct', () => {
+  const content =
+    'Blaa Blaaa \n Blaa Blaaa \n Path:  path/to/simulator/TH1S-15DEV1CE-1D/AppName.app/AppName \n Blaa Blaa \n Blaa Blaa';
+  const id = parsePath(content);
+  expect(id).toEqual('path/to/simulator/TH1S-15DEV1CE-1D/AppName.app/AppName');
+});
+test('test parsing of path when path has special characters in it', () => {
+  let content =
+    'Blaa Blaaa \n Blaa Blaaa \n Path:  path/to/simulator/TH1S-15DEV1CE-1D/App Name.app/App Name \n Blaa Blaa \n Blaa Blaa';
+  let id = parsePath(content);
+  expect(id).toEqual(
+    'path/to/simulator/TH1S-15DEV1CE-1D/App Name.app/App Name',
+  );
+  content =
+    'Blaa Blaaa \n Blaa Blaaa \n Path:  path/to/simulator/TH1S-15DEV1CE-1D/App_Name.app/App_Name \n Blaa Blaa \n Blaa Blaa';
+  id = parsePath(content);
+  expect(id).toEqual(
+    'path/to/simulator/TH1S-15DEV1CE-1D/App_Name.app/App_Name',
+  );
+  content =
+    'Blaa Blaaa \n Blaa Blaaa \n Path:  path/to/simulator/TH1S-15DEV1CE-1D/App%20Name.app/App%20Name \n Blaa Blaa \n Blaa Blaa';
+  id = parsePath(content);
+  expect(id).toEqual(
+    'path/to/simulator/TH1S-15DEV1CE-1D/App%20Name.app/App%20Name',
+  );
+});
+test('test parsing of path when a regex is not present', () => {
+  const content = 'Blaa Blaaa \n Blaa Blaaa \n Blaa Blaa \n Blaa Blaa';
+  const id = parsePath(content);
+  expect(id).toEqual(null);
+});
+test('test shouldShowCrashNotification function for all correct inputs', () => {
+  const device = new BaseDevice('TH1S-15DEV1CE-1D', 'emulator', 'test device');
+  let content =
+    'Blaa Blaaa \n Blaa Blaaa \n Path:  path/to/simulator/TH1S-15DEV1CE-1D/App Name.app/App Name \n Blaa Blaa \n Blaa Blaa';
+  const shouldShowNotification = shouldShowCrashNotification(device, content);
+  expect(shouldShowNotification).toEqual(true);
+});
+test('test shouldShowCrashNotification function for all correct inputs but incorrect id', () => {
+  const device = new BaseDevice('TH1S-15DEV1CE-1D', 'emulator', 'test device');
+  let content =
+    'Blaa Blaaa \n Blaa Blaaa \n Path:  path/to/simulator/TH1S-1598DEV1CE-2D/App Name.app/App Name \n Blaa Blaa \n Blaa Blaa';
+  const shouldShowNotification = shouldShowCrashNotification(device, content);
+  expect(shouldShowNotification).toEqual(false);
+});
+test('test shouldShowCrashNotification function for undefined device', () => {
+  let content =
+    'Blaa Blaaa \n Blaa Blaaa \n Path:  path/to/simulator/TH1S-1598DEV1CE-2D/App Name.app/App Name \n Blaa Blaa \n Blaa Blaa';
+  const shouldShowNotification = shouldShowCrashNotification(null, content);
+  expect(shouldShowNotification).toEqual(false);
 });
