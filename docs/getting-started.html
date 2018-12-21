@@ -62,7 +62,9 @@ dependencies {
 }
 </code></pre>
 <h3><a class="anchor" aria-hidden="true" id="setup-your-ios-app"></a><a href="#setup-your-ios-app" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Setup your iOS app</h3>
-<p>To integrate with an iOS app, you can use <a href="https://cocoapods.org">CocoaPods</a>. Add the mobile Flipper SDK and its dependencies to your <code>Podfile</code>:</p>
+<p>To integrate with an iOS app, you can use <a href="https://cocoapods.org">CocoaPods</a>. Add the mobile Flipper SDK and its dependencies to your <code>Podfile</code></p>
+<h3><a class="anchor" aria-hidden="true" id="objective-c"></a><a href="#objective-c" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Objective-c</h3>
+<p>Podfile for Objective-C projects will look like the following</p>
 <pre><code class="hljs css ruby">project <span class="hljs-string">'MyApp.xcodeproj'</span>
 source <span class="hljs-string">'https://github.com/facebook/flipper.git'</span>
 source <span class="hljs-string">'https://github.com/CocoaPods/Specs'</span>
@@ -76,39 +78,123 @@ target <span class="hljs-string">'MyApp'</span> <span class="hljs-keyword">do</s
   pod <span class="hljs-string">'FlipperKit/FlipperKitLayoutComponentKitSupport'</span>, <span class="hljs-string">'~&gt;'</span> + flipperkit_version
   pod <span class="hljs-string">'FlipperKit/SKIOSNetworkPlugin'</span>, <span class="hljs-string">'~&gt;'</span> + flipperkit_version
   pod <span class="hljs-string">'FlipperKit/FlipperKitUserDefaultsPlugin'</span>, <span class="hljs-string">'~&gt;'</span> + flipperkit_version
-  pod <span class="hljs-string">'FlipperKit/FlipperKitCrashReporterPlugin'</span>, <span class="hljs-string">'~&gt;'</span> + flipperkit_version
-
+  <span class="hljs-comment"># This post_install script adds swift version to yogakit's pod target.</span>
+  <span class="hljs-comment"># It also adds -DFB_SONARKIT_ENABLED=1 flag to OTHER_CFLAGS, necessary to build expose Flipper classes in the header files</span>
   post_install <span class="hljs-keyword">do</span> <span class="hljs-params">|installer|</span>
-    installer.pods_project.targets.each <span class="hljs-keyword">do</span> <span class="hljs-params">|target|</span>
-      <span class="hljs-keyword">if</span> [<span class="hljs-string">'YogaKit'</span>].<span class="hljs-keyword">include</span>? target.name
-        target.build_configurations.each <span class="hljs-keyword">do</span> <span class="hljs-params">|config|</span>
-          config.build_settings[<span class="hljs-string">'SWIFT_VERSION'</span>] = swift_version
+        installer.pods_project.targets.each <span class="hljs-keyword">do</span> <span class="hljs-params">|target|</span>
+            <span class="hljs-keyword">if</span> [<span class="hljs-string">'YogaKit'</span>].<span class="hljs-keyword">include</span>? target.name
+                target.build_configurations.each <span class="hljs-keyword">do</span> <span class="hljs-params">|config|</span>
+                    config.build_settings[<span class="hljs-string">'SWIFT_VERSION'</span>] = swift_version
+                <span class="hljs-keyword">end</span>
+            <span class="hljs-keyword">end</span>
         <span class="hljs-keyword">end</span>
-      <span class="hljs-keyword">end</span>
-    <span class="hljs-keyword">end</span>
-  <span class="hljs-keyword">end</span>
+        file_name = Dir.glob(<span class="hljs-string">"*.xcodeproj"</span>)[<span class="hljs-number">0</span>]
+        app_project = Xcodeproj::Project.open(file_name)
+        app_project.native_targets.each <span class="hljs-keyword">do</span> <span class="hljs-params">|target|</span>
+            target.build_configurations.each <span class="hljs-keyword">do</span> <span class="hljs-params">|config|</span>
+              <span class="hljs-keyword">if</span> (config.build_settings[<span class="hljs-string">'OTHER_CFLAGS'</span>])
+                <span class="hljs-keyword">if</span> !(config.build_settings[<span class="hljs-string">'OTHER_CFLAGS'</span>].<span class="hljs-keyword">include</span>? <span class="hljs-string">'-DFB_SONARKIT_ENABLED=1'</span>)
+                  puts <span class="hljs-string">'Adding -DFB_SONARKIT_ENABLED=1 in OTHER_CFLAGS...'</span>
+                  config.build_settings[<span class="hljs-string">'OTHER_CFLAGS'</span>] &lt;&lt; <span class="hljs-string">'-DFB_SONARKIT_ENABLED=1'</span>
+                <span class="hljs-keyword">end</span>
+              <span class="hljs-keyword">else</span>
+                puts <span class="hljs-string">'OTHER_CFLAGS does not exist, assigining it to `$(inherited), -DFB_SONARKIT_ENABLED=1` '</span>
+                config.build_settings[<span class="hljs-string">'OTHER_CFLAGS'</span>] = <span class="hljs-string">'$(inherited) -DFB_SONARKIT_ENABLED=1 '</span>
+              <span class="hljs-keyword">end</span>
+              app_project.save
+            <span class="hljs-keyword">end</span>
+        <span class="hljs-keyword">end</span>
+   <span class="hljs-keyword">end</span>
 <span class="hljs-keyword">end</span>
 </code></pre>
-<p>and install the dependencies by running <code>pod install</code>. When you open the Xcode workspace file for your app, you now can import and initialize Flipper in your AppDelegate.</p>
+<p>Install the dependencies by running <code>pod install</code>.When you open the Xcode workspace file for your app, you now can import and initialize Flipper in your AppDelegate. Before running your app, make sure that the flag <code>-DFB_SONARKIT_ENABLED=1</code> is present in the <code>OTHER_CFLAGS</code> in your application's build settings.</p>
 <pre><code class="hljs css objective-c"><span class="hljs-meta">#import <span class="hljs-meta-string">&lt;FlipperKit/FlipperClient.h&gt;</span></span>
+<span class="hljs-meta">#import <span class="hljs-meta-string">&lt;FlipperKitLayoutPlugin/FlipperKitLayoutPlugin.h&gt;</span></span>
+<span class="hljs-meta">#import <span class="hljs-meta-string">&lt;FlipperKitLayoutComponentKitSupport/FlipperKitLayoutComponentKitSupport.h&gt;</span></span>
 <span class="hljs-meta">#import <span class="hljs-meta-string">&lt;FlipperKitUserDefaultsPlugin/FKUserDefaultsPlugin.h&gt;</span></span>
+<span class="hljs-meta">#import <span class="hljs-meta-string">&lt;FlipperKitNetworkPlugin/FlipperKitNetworkPlugin.h&gt;</span></span>
+<span class="hljs-meta">#import <span class="hljs-meta-string">&lt;SKIOSNetworkPlugin/SKIOSNetworkAdapter.h&gt;</span></span>
 
 <span class="hljs-class"><span class="hljs-keyword">@implementation</span> <span class="hljs-title">AppDelegate</span></span>
 
 - (<span class="hljs-built_in">BOOL</span>)application:(<span class="hljs-built_in">UIApplication</span> *)application didFinishLaunchingWithOptions:(<span class="hljs-built_in">NSDictionary</span> *)launchOptions
 {
-<span class="hljs-meta">#if DEBUG</span>
   FlipperClient *client = [FlipperClient sharedClient];
   <span class="hljs-built_in">SKDescriptorMapper</span> *layoutDescriptorMapper = [[<span class="hljs-built_in">SKDescriptorMapper</span> alloc] initWithDefaults];
-  [client addPlugin:[[FlipperKitLayoutPlugin alloc] initWithRootNode: application
-                                                  withDescriptorMapper: layoutDescriptorMapper]];
-  [client addPlugin:[[FKUserDefaultsPlugin alloc] initWithSuiteName:<span class="hljs-literal">nil</span>]];
+  [FlipperKitLayoutComponentKitSupport setUpWithDescriptorMapper: layoutDescriptorMapper];
+  [client addPlugin: [[FlipperKitLayoutPlugin alloc] initWithRootNode: application
+                                                 withDescriptorMapper: layoutDescriptorMapper]];
 
+  [client addPlugin:[[FKUserDefaultsPlugin alloc] initWithSuiteName:<span class="hljs-literal">nil</span>]];  [client start];
+  [client addPlugin: [[FlipperKitNetworkPlugin alloc] initWithNetworkAdapter:[<span class="hljs-built_in">SKIOSNetworkAdapter</span> new]]];
   [client start];
-<span class="hljs-meta">#endif</span>
   ...
 }
 <span class="hljs-keyword">@end</span>
+</code></pre>
+<h3><a class="anchor" aria-hidden="true" id="swift"></a><a href="#swift" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Swift</h3>
+<p>Podfile for the swift projects will look like the following:</p>
+<pre><code class="hljs css ruby">project <span class="hljs-string">'MyApp.xcodeproj'</span>
+source <span class="hljs-string">'https://github.com/facebook/flipper.git'</span>
+source <span class="hljs-string">'https://github.com/CocoaPods/Specs'</span>
+swift_version = <span class="hljs-string">"4.1"</span>
+flipperkit_version = <span class="hljs-string">'0.13.0'</span>
+
+target <span class="hljs-string">'MyApp'</span> <span class="hljs-keyword">do</span>
+  platform <span class="hljs-symbol">:ios</span>, <span class="hljs-string">'9.0'</span>
+
+  pod <span class="hljs-string">'FlipperKit'</span>, <span class="hljs-string">'~&gt;'</span> + flipperkit_version
+  <span class="hljs-comment"># Layout and network plugins are not yet supported for swift projects</span>
+  pod <span class="hljs-string">'FlipperKit/FlipperKitLayoutComponentKitSupport'</span>, <span class="hljs-string">'~&gt;'</span> + flipperkit_version
+  pod <span class="hljs-string">'FlipperKit/SKIOSNetworkPlugin'</span>, <span class="hljs-string">'~&gt;'</span> + flipperkit_version
+  pod <span class="hljs-string">'FlipperKit/FlipperKitUserDefaultsPlugin'</span>, <span class="hljs-string">'~&gt;'</span> + flipperkit_version
+
+<span class="hljs-comment"># This post_install script adds -DFB_SONARKIT_ENABLED flag to OTHER_SWIFT_FLAGS, necessary to build swift target</span>
+    post_install <span class="hljs-keyword">do</span> <span class="hljs-params">|installer|</span>
+      file_name = Dir.glob(<span class="hljs-string">"*.xcodeproj"</span>)[<span class="hljs-number">0</span>]
+      app_project = Xcodeproj::Project.open(file_name)
+      app_project.native_targets.each <span class="hljs-keyword">do</span> <span class="hljs-params">|target|</span>
+          target.build_configurations.each <span class="hljs-keyword">do</span> <span class="hljs-params">|config|</span>
+            <span class="hljs-keyword">if</span> (config.build_settings[<span class="hljs-string">'OTHER_SWIFT_FLAGS'</span>])
+              <span class="hljs-keyword">if</span> !(config.build_settings[<span class="hljs-string">'OTHER_SWIFT_FLAGS'</span>].<span class="hljs-keyword">include</span>? <span class="hljs-string">'-DFB_SONARKIT_ENABLED'</span>)
+                puts <span class="hljs-string">'Adding -DFB_SONARKIT_ENABLED ...'</span>
+                swift_flags = config.build_settings[<span class="hljs-string">'OTHER_SWIFT_FLAGS'</span>]
+                <span class="hljs-keyword">if</span> swift_flags.split.last != <span class="hljs-string">'-Xcc'</span>
+                  config.build_settings[<span class="hljs-string">'OTHER_SWIFT_FLAGS'</span>] &lt;&lt; <span class="hljs-string">' -Xcc'</span>
+                <span class="hljs-keyword">end</span>
+                config.build_settings[<span class="hljs-string">'OTHER_SWIFT_FLAGS'</span>] &lt;&lt; <span class="hljs-string">' -DFB_SONARKIT_ENABLED'</span>
+              <span class="hljs-keyword">end</span>
+            <span class="hljs-keyword">else</span>
+              puts <span class="hljs-string">'OTHER_SWIFT_FLAGS does not exist thus assigning it to `$(inherited) -Xcc -DFB_SONARKIT_ENABLED`'</span>
+              config.build_settings[<span class="hljs-string">'OTHER_SWIFT_FLAGS'</span>] = <span class="hljs-string">'$(inherited) -Xcc -DFB_SONARKIT_ENABLED'</span>
+            <span class="hljs-keyword">end</span>
+            app_project.save
+          <span class="hljs-keyword">end</span>
+        <span class="hljs-keyword">end</span>
+    <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">end</span>
+
+</code></pre>
+<p>Install the dependencies by running <code>pod install</code>.When you open the Xcode workspace file for your app, you now can import and initialize Flipper in your AppDelegate by following the below mentioned example. Before running your app, make sure that the flag <code>-Xcc -DFB_SONARKIT_ENABLED</code> is present in the <code>OTHER_SWIFT_FLAGS</code> in your application's build settings.</p>
+<pre><code class="hljs css swift"><span class="hljs-keyword">import</span> UIKit
+<span class="hljs-keyword">import</span> FlipperKit
+<span class="hljs-meta">@UIApplicationMain</span>
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">AppDelegate</span>: <span class="hljs-title">UIResponder</span>, <span class="hljs-title">UIApplicationDelegate</span> </span>{
+
+  <span class="hljs-keyword">var</span> window: <span class="hljs-type">UIWindow</span>?
+
+
+  <span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">application</span><span class="hljs-params">(<span class="hljs-number">_</span> application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?)</span></span> -&gt; <span class="hljs-type">Bool</span> {
+    <span class="hljs-comment">// Override point for customization after application launch.</span>
+    <span class="hljs-keyword">let</span> client = <span class="hljs-type">FlipperClient</span>.shared()
+    <span class="hljs-keyword">let</span> layoutDescriptorMapper = <span class="hljs-type">SKDescriptorMapper</span>(defaults: ())
+    <span class="hljs-type">FlipperKitLayoutComponentKitSupport</span>.setUpWith(layoutDescriptorMapper)
+    client?.add(<span class="hljs-type">FlipperKitLayoutPlugin</span>(rootNode: application, with: layoutDescriptorMapper!))
+    client?.start()
+    <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>
+  }
+}
+
 </code></pre>
 <div class="warning">
 <ul>
@@ -121,4 +207,4 @@ target <span class="hljs-string">'MyApp'</span> <span class="hljs-keyword">do</s
 <p>Finally, you need to add plugins to your Flipper client. Above we have only added the Layout Inspector plugin to get you started. See <a href="/docs/network-plugin.html">Network Plugin</a> and <a href="/docs/layout-plugin.html">Layout Inspector Plugin</a> for information on how to add them, and also enable Litho or ComponentKit support. You can check the sample apps in the <a href="https://github.com/facebook/flipper">GitHub repo</a> for examples of integrating other plugins.</p>
 <h2><a class="anchor" aria-hidden="true" id="having-trouble"></a><a href="#having-trouble" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Having trouble?</h2>
 <p>See the <a href="troubleshooting.html">troubleshooting page</a> for help with known problems.</p>
-</span></div></article></div><div class="docs-prevnext"><a class="docs-next button" href="understand.html">Understanding Flipper →</a></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#setup">Setup</a><ul class="toc-headings"><li><a href="#desktop-app">Desktop app</a></li><li><a href="#setup-your-android-app">Setup your Android app</a></li><li><a href="#android-snapshots">Android Snapshots</a></li><li><a href="#setup-your-ios-app">Setup your iOS app</a></li></ul></li><li><a href="#ready-for-takeoff">Ready for takeoff</a></li><li><a href="#having-trouble">Having trouble?</a></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/" class="nav-home"><img src="/img/mascot.png" alt="Flipper mascot" title="I&#x27;m a dolphin not a whale!" width="66" height="58"/></a><div><h5>Docs</h5><a href="/docs/getting-started.html">Getting Started</a><a href="/docs/understand.html">Understanding Flipper</a><a href="/docs/js-setup.html">Creating Plugins</a></div><div><h5>Plugins</h5><a href="/docs/logs-plugin.html">Log Viewer</a><a href="/docs/layout-plugin.html">Layout Inspector</a><a href="/docs/network-plugin.html">Network Inspector</a></div><div><h5>More</h5><a href="https://twitter.com/flipper_fb">Twitter</a><a href="https://github.com/facebook/flipper">GitHub</a><a class="github-button" href="https://github.com/facebook/flipper" data-icon="octicon-star" data-count-href="/facebook/flipper/stargazers" data-show-count="true" data-count-aria-label="# stargazers on GitHub" aria-label="Star this project on GitHub">Star</a></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2018 Facebook</section></footer></div></body></html>
+</span></div></article></div><div class="docs-prevnext"><a class="docs-next button" href="understand.html">Understanding Flipper →</a></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#setup">Setup</a><ul class="toc-headings"><li><a href="#desktop-app">Desktop app</a></li><li><a href="#setup-your-android-app">Setup your Android app</a></li><li><a href="#android-snapshots">Android Snapshots</a></li><li><a href="#setup-your-ios-app">Setup your iOS app</a></li><li><a href="#objective-c">Objective-c</a></li><li><a href="#swift">Swift</a></li></ul></li><li><a href="#ready-for-takeoff">Ready for takeoff</a></li><li><a href="#having-trouble">Having trouble?</a></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/" class="nav-home"><img src="/img/mascot.png" alt="Flipper mascot" title="I&#x27;m a dolphin not a whale!" width="66" height="58"/></a><div><h5>Docs</h5><a href="/docs/getting-started.html">Getting Started</a><a href="/docs/understand.html">Understanding Flipper</a><a href="/docs/js-setup.html">Creating Plugins</a></div><div><h5>Plugins</h5><a href="/docs/logs-plugin.html">Log Viewer</a><a href="/docs/layout-plugin.html">Layout Inspector</a><a href="/docs/network-plugin.html">Network Inspector</a></div><div><h5>More</h5><a href="https://twitter.com/flipper_fb">Twitter</a><a href="https://github.com/facebook/flipper">GitHub</a><a class="github-button" href="https://github.com/facebook/flipper" data-icon="octicon-star" data-count-href="/facebook/flipper/stargazers" data-show-count="true" data-count-aria-label="# stargazers on GitHub" aria-label="Star this project on GitHub">Star</a></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2018 Facebook</section></footer></div></body></html>
