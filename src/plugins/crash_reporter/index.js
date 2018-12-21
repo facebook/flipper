@@ -16,8 +16,17 @@ import {
   ContextMenu,
   clipboard,
   Button,
+  FlipperPlugin,
+  getPluginKey,
+  getPersistedState,
+  BaseDevice,
 } from 'flipper';
+import fs from 'fs';
+import os from 'os';
+import util from 'util';
+import path from 'path';
 import type {Notification} from '../../plugin';
+import type {Store} from 'flipper';
 
 export type Crash = {|
   notificationID: string,
@@ -26,9 +35,15 @@ export type Crash = {|
   name: string,
 |};
 
-export type PersistedState = {|
-  crashes: Array<Crash>,
+export type CrashLog = {|
+  callstack: string,
+  reason: string,
+  name: string,
 |};
+
+export type PersistedState = {
+  crashes: Array<Crash>,
+};
 
 const Title = styled(View)({
   fontWeight: 'bold',
@@ -63,7 +78,147 @@ const CallStack = styled('pre')({
   overflow: 'scroll',
 });
 
-export default class CrashReporterPlugin extends FlipperDevicePlugin {
+export function getNewPersisitedStateFromCrashLog(
+  persistedState: ?PersistedState,
+  persistingPlugin: Class<FlipperDevicePlugin<> | FlipperPlugin<>>,
+  content: string,
+): ?PersistedState {
+  const crash = parseCrashLog(content);
+  if (!persistingPlugin.persistedStateReducer) {
+    return null;
+  }
+  const newPluginState = persistingPlugin.persistedStateReducer(
+    persistedState,
+    'crash-report',
+    crash,
+  );
+  return newPluginState;
+}
+
+export function parseCrashLogAndUpdateState(
+  store: Store,
+  content: string,
+  setPersistedState: (
+    pluginKey: string,
+    newPluginState: ?PersistedState,
+  ) => void,
+) {
+  if (
+    !shouldShowCrashNotification(
+      store.getState().connections.selectedDevice,
+      content,
+    )
+  ) {
+    return;
+  }
+  const pluginID = CrashReporterPlugin.id;
+  const pluginKey = getPluginKey(
+    null,
+    store.getState().connections.selectedDevice,
+    pluginID,
+  );
+  const persistingPlugin: ?Class<
+    FlipperDevicePlugin<> | FlipperPlugin<>,
+  > = store.getState().plugins.devicePlugins.get(CrashReporterPlugin.id);
+  if (!persistingPlugin) {
+    return;
+  }
+  const pluginStates = store.getState().pluginStates;
+  const persistedState = getPersistedState(
+    pluginKey,
+    persistingPlugin,
+    pluginStates,
+  );
+  const newPluginState = getNewPersisitedStateFromCrashLog(
+    persistedState,
+    persistingPlugin,
+    content,
+  );
+  setPersistedState(pluginKey, newPluginState);
+}
+
+export function shouldShowCrashNotification(
+  baseDevice: ?BaseDevice,
+  content: string,
+): boolean {
+  const appPath = parsePath(content);
+  const serial: string = baseDevice?.serial || 'unknown';
+  if (!appPath || !appPath.includes(serial)) {
+    // Do not show notifications for the app which are not the selected one
+    return false;
+  }
+  return true;
+}
+
+export function parseCrashLog(content: string): CrashLog {
+  const regex = /Exception Type: *[\w]*/;
+  const arr = regex.exec(content);
+  const exceptionString = arr ? arr[0] : '';
+  const exceptionRegex = /[\w]*$/;
+  const tmp = exceptionRegex.exec(exceptionString);
+  const exception =
+    tmp && tmp[0].length ? tmp[0] : 'Cannot figure out the cause';
+  const crash = {
+    callstack: content,
+    name: exception,
+    reason: exception,
+  };
+  return crash;
+}
+
+export function parsePath(content: string): ?string {
+  const regex = /Path: *[\w\-\/\.\t\ \_\%]*\n/;
+  const arr = regex.exec(content);
+  if (!arr || arr.length <= 0) {
+    return null;
+  }
+  const pathString = arr[0];
+  const pathRegex = /[\w\-\/\.\t\ \_\%]*\n/;
+  const tmp = pathRegex.exec(pathString);
+  if (!tmp || tmp.length == 0) {
+    return null;
+  }
+  const path = tmp[0];
+  return path.trim();
+}
+
+function addFileWatcherForiOSCrashLogs(
+  store: Store,
+  setPersistedState: (
+    pluginKey: string,
+    newPluginState: ?PersistedState,
+  ) => void,
+) {
+  const dir = path.join(os.homedir(), 'Library', 'Logs', 'DiagnosticReports');
+  if (!fs.existsSync(dir)) {
+    // Directory doesn't exist
+    return;
+  }
+  fs.watch(dir, (eventType, filename) => {
+    // We just parse the crash logs with extension `.crash`
+    const checkFileExtension = /.crash$/.exec(filename);
+    if (!filename || !checkFileExtension) {
+      return;
+    }
+    fs.readFile(path.join(dir, filename), 'utf8', function(err, data) {
+      if (store.getState().connections.selectedDevice?.os != 'iOS') {
+        // If the selected device is not iOS don't show crash notifications
+        return;
+      }
+      if (err) {
+        console.error(err);
+        return;
+      }
+      parseCrashLogAndUpdateState(store, util.format(data), setPersistedState);
+    });
+  });
+}
+
+export default class CrashReporterPlugin extends FlipperDevicePlugin<
+  *,
+  *,
+  PersistedState,
+> {
   static defaultPersistedState = {
     crashes: [],
   };
@@ -96,6 +251,19 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin {
       return mergedState;
     }
     return persistedState;
+  };
+
+  /*
+   * This function gets called whenever plugin is registered
+   */
+  static onRegisterPlugin = (
+    store: Store,
+    setPersistedState: (
+      pluginKey: string,
+      newPluginState: ?PersistedState,
+    ) => void,
+  ): void => {
+    addFileWatcherForiOSCrashLogs(store, setPersistedState);
   };
 
   static trimCallStackIfPossible = (callstack: string): string => {
@@ -136,7 +304,7 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin {
     if (this.props.deepLinkPayload) {
       const id = this.props.deepLinkPayload;
       const index = this.props.persistedState.crashes.findIndex(elem => {
-        return elem.notificationID === Number(id);
+        return elem.notificationID === id;
       });
       if (index >= 0) {
         crash = this.props.persistedState.crashes[index];

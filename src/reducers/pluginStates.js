@@ -29,13 +29,17 @@ export default function reducer(
   action: Action,
 ): State {
   if (action.type === 'SET_PLUGIN_STATE') {
-    return {
-      ...state,
-      [action.payload.pluginKey]: {
-        ...state[action.payload.pluginKey],
-        ...action.payload.state,
-      },
-    };
+    const newPluginState = action.payload.state;
+    if (newPluginState && newPluginState !== state) {
+      return {
+        ...state,
+        [action.payload.pluginKey]: {
+          ...state[action.payload.pluginKey],
+          ...newPluginState,
+        },
+      };
+    }
+    return {...state};
   } else if (action.type === 'CLEAR_PLUGIN_STATE') {
     const {payload} = action;
     return Object.keys(state).reduce((newState, pluginKey) => {

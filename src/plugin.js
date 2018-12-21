@@ -9,6 +9,7 @@ import type {KeyboardActions} from './MenuBar.js';
 import type {App} from './App.js';
 import type Logger from './fb-stubs/Logger.js';
 import type Client from './Client.js';
+import type {Store} from './reducers/index.js';
 
 import React from 'react';
 import type {Node} from 'react';
@@ -69,6 +70,13 @@ export class FlipperBasePlugin<
   static getActiveNotifications: ?(
     persistedState: PersistedState,
   ) => Array<Notification>;
+  static onRegisterPlugin: ?(
+    store: Store,
+    setPersistedState: (
+      pluginKey: string,
+      newPluginState: ?PersistedState,
+    ) => void,
+  ) => void;
   // forbid instance properties that should be static
   title: empty;
   id: empty;

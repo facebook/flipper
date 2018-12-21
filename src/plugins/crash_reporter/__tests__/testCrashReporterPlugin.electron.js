@@ -4,18 +4,16 @@
  * LICENSE file in the root directory of this source tree.
  * @format
  */
-
-import {
-  parseCrashLog,
-  getPluginKey,
-  getPersistedState,
-  getNewPersisitedStateFromCrashLog,
-  parsePath,
-  shouldShowCrashNotification,
-} from '../../../dispatcher/iOSDevice.js';
 import BaseDevice from '../../../devices/BaseDevice';
 import CrashReporterPlugin from '../../crash_reporter';
 import type {PersistedState, Crash} from '../../crash_reporter';
+import {
+  parseCrashLog,
+  getNewPersisitedStateFromCrashLog,
+  parsePath,
+  shouldShowCrashNotification,
+} from '../../crash_reporter';
+import {getPluginKey, getPersistedState} from '../../../utils/pluginUtils.js';
 
 function setDefaultPersistedState(defaultState: PersistedState) {
   CrashReporterPlugin.defaultPersistedState = defaultState;
@@ -88,12 +86,21 @@ test('test the parsing of the reason for crash when log is empty', () => {
 });
 test('test the getter of pluginKey with proper input', () => {
   const device = new BaseDevice('serial', 'emulator', 'test device');
-  const pluginKey = getPluginKey(device, 'CrashReporter');
+  const pluginKey = getPluginKey(null, device, 'CrashReporter');
   expect(pluginKey).toEqual('serial#CrashReporter');
 });
 test('test the getter of pluginKey with undefined input', () => {
-  const pluginKey = getPluginKey(undefined, 'CrashReporter');
+  const pluginKey = getPluginKey(null, undefined, 'CrashReporter');
   expect(pluginKey).toEqual('unknown#CrashReporter');
+});
+test('test the getter of pluginKey with defined selected app', () => {
+  const pluginKey = getPluginKey('selectedApp', undefined, 'CrashReporter');
+  expect(pluginKey).toEqual('selectedApp#CrashReporter');
+});
+test('test the getter of pluginKey with defined selected app and defined base device', () => {
+  const device = new BaseDevice('serial', 'emulator', 'test device');
+  const pluginKey = getPluginKey('selectedApp', device, 'CrashReporter');
+  expect(pluginKey).toEqual('selectedApp#CrashReporter');
 });
 test('test defaultPersistedState of CrashReporterPlugin', () => {
   expect(CrashReporterPlugin.defaultPersistedState).toEqual({crashes: []});
@@ -108,7 +115,7 @@ test('test getPersistedState for non-empty defaultPersistedState and undefined p
   setDefaultPersistedState({crashes: [crash]});
   const pluginStates = {};
   const perisistedState = getPersistedState(
-    getPluginKey(null, CrashReporterPlugin.id),
+    getPluginKey(null, null, CrashReporterPlugin.id),
     CrashReporterPlugin,
     pluginStates,
   );
@@ -116,7 +123,7 @@ test('test getPersistedState for non-empty defaultPersistedState and undefined p
 });
 test('test getPersistedState for non-empty defaultPersistedState and defined pluginState', () => {
   const crash = getCrash(0, 'callstack', 'crash0', 'crash0');
-  const pluginKey = getPluginKey(null, CrashReporterPlugin.id);
+  const pluginKey = getPluginKey(null, null, CrashReporterPlugin.id);
   setDefaultPersistedState({crashes: [crash]});
   const pluginStateCrash = getCrash(1, 'callstack', 'crash1', 'crash1');
   const pluginStates = {'unknown#CrashReporter': {crashes: [pluginStateCrash]}};
@@ -129,7 +136,7 @@ test('test getPersistedState for non-empty defaultPersistedState and defined plu
 });
 test('test getNewPersisitedStateFromCrashLog for non-empty defaultPersistedState and defined pluginState', () => {
   const crash = getCrash(0, 'callstack', 'crash0', 'crash0');
-  const pluginKey = getPluginKey(null, CrashReporterPlugin.id);
+  const pluginKey = getPluginKey(null, null, CrashReporterPlugin.id);
   setDefaultPersistedState({crashes: [crash]});
   const pluginStateCrash = getCrash(1, 'callstack', 'crash1', 'crash1');
   const pluginStates = {'unknown#CrashReporter': {crashes: [pluginStateCrash]}};
@@ -153,7 +160,7 @@ test('test getNewPersisitedStateFromCrashLog for non-empty defaultPersistedState
 test('test getNewPersisitedStateFromCrashLog for non-empty defaultPersistedState and undefined pluginState', () => {
   setNotificationID(0);
   const crash = getCrash(0, 'callstack', 'crash0', 'crash0');
-  const pluginKey = getPluginKey(null, CrashReporterPlugin.id);
+  const pluginKey = getPluginKey(null, null, CrashReporterPlugin.id);
   setDefaultPersistedState({crashes: [crash]});
   const pluginStates = {};
   const perisistedState = getPersistedState(
@@ -175,7 +182,7 @@ test('test getNewPersisitedStateFromCrashLog for non-empty defaultPersistedState
 test('test getNewPersisitedStateFromCrashLog for non-empty defaultPersistedState and defined pluginState and improper crash log', () => {
   setNotificationID(0);
   const crash = getCrash(0, 'callstack', 'crash0', 'crash0');
-  const pluginKey = getPluginKey(null, CrashReporterPlugin.id);
+  const pluginKey = getPluginKey(null, null, CrashReporterPlugin.id);
   setDefaultPersistedState({crashes: [crash]});
   const pluginStateCrash = getCrash(1, 'callstack', 'crash1', 'crash1');
   const pluginStates = {'unknown#CrashReporter': {crashes: [pluginStateCrash]}};
