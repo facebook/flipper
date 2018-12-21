@@ -11,7 +11,7 @@
 		4E102341216AD7B400160734 /* UserDefaultsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4E102340216AD7B400160734 /* UserDefaultsViewController.m */; };
 		53B4A36B217E2B6200B36A53 /* CommunicationDemoViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 53B4A36A217E2B6200B36A53 /* CommunicationDemoViewController.mm */; };
 		53D59DB320ABA18400207065 /* NetworkViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 53D59DAA20ABA18300207065 /* NetworkViewController.m */; };
-		53D59DB420ABA18400207065 /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 53D59DAB20ABA18300207065 /* AppDelegate.mm */; };
+		53D59DB420ABA18400207065 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 53D59DAB20ABA18300207065 /* AppDelegate.m */; };
 		53D59DB520ABA18400207065 /* MainViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 53D59DAD20ABA18300207065 /* MainViewController.mm */; };
 		53D59DB620ABA18400207065 /* RootViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 53D59DAF20ABA18300207065 /* RootViewController.mm */; };
 		53D59DB720ABA18400207065 /* MainStoryBoard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 53D59DB020ABA18400207065 /* MainStoryBoard.storyboard */; };
@@ -26,7 +26,7 @@
 		534252A9217DECCD0092D02B /* CommunicationDemoViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CommunicationDemoViewController.h; sourceTree = "<group>"; };
 		53B4A36A217E2B6200B36A53 /* CommunicationDemoViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CommunicationDemoViewController.mm; sourceTree = "<group>"; };
 		53D59DAA20ABA18300207065 /* NetworkViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NetworkViewController.m; sourceTree = SOURCE_ROOT; };
-		53D59DAB20ABA18300207065 /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AppDelegate.mm; sourceTree = SOURCE_ROOT; };
+		53D59DAB20ABA18300207065 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = SOURCE_ROOT; };
 		53D59DAC20ABA18300207065 /* NetworkViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NetworkViewController.h; sourceTree = SOURCE_ROOT; };
 		53D59DAD20ABA18300207065 /* MainViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MainViewController.mm; sourceTree = SOURCE_ROOT; };
 		53D59DAE20ABA18300207065 /* RootViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RootViewController.h; sourceTree = SOURCE_ROOT; };
@@ -59,7 +59,7 @@
 			children = (
 				53B4A36A217E2B6200B36A53 /* CommunicationDemoViewController.mm */,
 				53D59DBA20ABA20300207065 /* AppDelegate.h */,
-				53D59DAB20ABA18300207065 /* AppDelegate.mm */,
+				53D59DAB20ABA18300207065 /* AppDelegate.m */,
 				53D59DB120ABA18400207065 /* Icons.xcassets */,
 				53D59DB020ABA18400207065 /* MainStoryBoard.storyboard */,
 				53D59DB220ABA18400207065 /* MainViewController.h */,
@@ -206,7 +206,7 @@
 				53E0DE5420ABA0E4005682E1 /* main.m in Sources */,
 				4E102341216AD7B400160734 /* UserDefaultsViewController.m in Sources */,
 				53D59DB320ABA18400207065 /* NetworkViewController.m in Sources */,
-				53D59DB420ABA18400207065 /* AppDelegate.mm in Sources */,
+				53D59DB420ABA18400207065 /* AppDelegate.m in Sources */,
 				53B4A36B217E2B6200B36A53 /* CommunicationDemoViewController.mm in Sources */,
 				53D59DB520ABA18400207065 /* MainViewController.mm in Sources */,
 				53D59DB620ABA18400207065 /* RootViewController.mm in Sources */,
@@ -337,7 +337,6 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
 					"COCOAPODS=1",
-					"FB_SONARKIT_ENABLED=1",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -359,9 +358,43 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-fmodule-map-file=\"${PODS_ROOT}/Headers/Public/FlipperKit/FlipperKit.modulemap\"",
+					"-fmodule-map-file=\"${PODS_ROOT}/Headers/Public/yoga/Yoga.modulemap\"",
+					"-fmodule-map-file=\"${PODS_CONFIGURATION_BUILD_DIR}/YogaKit/YogaKit.modulemap\"",
+					"-isystem",
+					"\"${PODS_ROOT}/Headers/Public\"",
+					"-isystem",
+					"\"${PODS_ROOT}/Headers/Public/CocoaAsyncSocket\"",
+					"-isystem",
+					"\"${PODS_ROOT}/Headers/Public/CocoaLibEvent\"",
+					"-isystem",
+					"\"${PODS_ROOT}/Headers/Public/ComponentKit\"",
+					"-isystem",
+					"\"${PODS_ROOT}/Headers/Public/DoubleConversion\"",
+					"-isystem",
+					"\"${PODS_ROOT}/Headers/Public/Flipper\"",
+					"-isystem",
+					"\"${PODS_ROOT}/Headers/Public/FlipperKit\"",
+					"-isystem",
+					"\"${PODS_ROOT}/Headers/Public/Folly\"",
+					"-isystem",
+					"\"${PODS_ROOT}/Headers/Public/OpenSSL-Static\"",
+					"-isystem",
+					"\"${PODS_ROOT}/Headers/Public/PeerTalk\"",
+					"-isystem",
+					"\"${PODS_ROOT}/Headers/Public/RSocket\"",
+					"-isystem",
+					"\"${PODS_ROOT}/Headers/Public/Yoga\"",
+					"-isystem",
+					"\"${PODS_ROOT}/Headers/Public/YogaKit\"",
+					"-isystem",
+					"\"${PODS_ROOT}/Headers/Public/glog\"",
+					"-DFB_SONARKIT_ENABLED=1",
+				);
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
-					"-DFB_SONARKIT_ENABLED=1",
 					"-Wno-implicit-retain-self",
 					"-Wno-global-constructors",
 				);
@@ -387,7 +420,6 @@
 					"\"Security\"",
 					"-framework",
 					"\"UIKit\"",
-					"-DFB_SONARKIT_ENABLED=1",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.facebook.flipper;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -423,9 +455,43 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-fmodule-map-file=\"${PODS_ROOT}/Headers/Public/FlipperKit/FlipperKit.modulemap\"",
+					"-fmodule-map-file=\"${PODS_ROOT}/Headers/Public/yoga/Yoga.modulemap\"",
+					"-fmodule-map-file=\"${PODS_CONFIGURATION_BUILD_DIR}/YogaKit/YogaKit.modulemap\"",
+					"-isystem",
+					"\"${PODS_ROOT}/Headers/Public\"",
+					"-isystem",
+					"\"${PODS_ROOT}/Headers/Public/CocoaAsyncSocket\"",
+					"-isystem",
+					"\"${PODS_ROOT}/Headers/Public/CocoaLibEvent\"",
+					"-isystem",
+					"\"${PODS_ROOT}/Headers/Public/ComponentKit\"",
+					"-isystem",
+					"\"${PODS_ROOT}/Headers/Public/DoubleConversion\"",
+					"-isystem",
+					"\"${PODS_ROOT}/Headers/Public/Flipper\"",
+					"-isystem",
+					"\"${PODS_ROOT}/Headers/Public/FlipperKit\"",
+					"-isystem",
+					"\"${PODS_ROOT}/Headers/Public/Folly\"",
+					"-isystem",
+					"\"${PODS_ROOT}/Headers/Public/OpenSSL-Static\"",
+					"-isystem",
+					"\"${PODS_ROOT}/Headers/Public/PeerTalk\"",
+					"-isystem",
+					"\"${PODS_ROOT}/Headers/Public/RSocket\"",
+					"-isystem",
+					"\"${PODS_ROOT}/Headers/Public/Yoga\"",
+					"-isystem",
+					"\"${PODS_ROOT}/Headers/Public/YogaKit\"",
+					"-isystem",
+					"\"${PODS_ROOT}/Headers/Public/glog\"",
+					"-DFB_SONARKIT_ENABLED=1",
+				);
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
-					"-DFB_SONARKIT_ENABLED=1",
 					"-Wno-implicit-retain-self",
 					"-Wno-global-constructors",
 				);
@@ -451,7 +517,6 @@
 					"\"Security\"",
 					"-framework",
 					"\"UIKit\"",
-					"-DFB_SONARKIT_ENABLED=1",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.facebook.flipper;
 				PRODUCT_NAME = "$(TARGET_NAME)";
