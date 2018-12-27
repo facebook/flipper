@@ -13,11 +13,11 @@ To use the sandbox plugin, you need to add the plugin to your Flipper client ins
 ### Android
 
 ```java
-import com.facebook.flipper.plugins.SandboxSonarPlugin;
-import com.facebook.flipper.plugins.SandboxSonarPluginStrategy;
+import com.facebook.flipper.plugins.sandbox.SandboxFlipperPlugin;
+import com.facebook.flipper.plugins.sandbox.SandboxFlipperPluginStrategy;
 
-final SandboxSonarPluginStrategy strategy = getStrategy(); // Your strategy goes here
-client.addPlugin(new SandboxSonarPlugin(strategy));
+final SandboxFlipperPluginStrategy strategy = getStrategy(); // Your strategy goes here
+client.addPlugin(new SandboxFlipperPlugin(strategy));
 ```
 
 ### iOS
