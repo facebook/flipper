@@ -86,6 +86,7 @@ repositories {
 
 dependencies {
   debugImplementation 'com.facebook.flipper:flipper:0.13.1-SNAPSHOT'
+  debugImplementation 'com.facebook.flipper:soloader:0.5.1'
 }
 ```
 
