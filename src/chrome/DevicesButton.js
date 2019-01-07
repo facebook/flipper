@@ -8,8 +8,13 @@
 import {Component, Button, styled} from 'flipper';
 import {connect} from 'react-redux';
 import {spawn} from 'child_process';
+import {dirname} from 'path';
 import {selectDevice, preferDevice} from '../reducers/connections.js';
+import {default as which} from 'which';
+import {promisify} from 'util';
 import type BaseDevice from '../devices/BaseDevice.js';
+
+const whichPromise = promisify(which);
 
 type Props = {
   selectedDevice: ?BaseDevice,
@@ -27,13 +32,18 @@ const DropdownButton = styled(Button)({
 /* eslint-disable prettier/prettier */
 class DevicesButton extends Component<Props> {
   launchEmulator = (name: string) => {
-    const child = spawn('emulator', [`@${name}`], {
-      detached: true,
-    });
-    child.stderr.on('data', data => {
-      console.error(`Android emulator error: ${data}`);
-    });
-    child.on('error', console.error);
+    // On Linux, you must run the emulator from the directory it's in because
+    // reasons ...
+    whichPromise('emulator').then(emulatorPath => {
+      const child = spawn(emulatorPath, [`@${name}`], {
+        detached: true,
+        cwd: dirname(emulatorPath),
+      });
+      child.stderr.on('data', data => {
+        console.error(`Android emulator error: ${data}`);
+      });
+      child.on('error', console.error);
+    }).catch(console.error);
     this.props.preferDevice(name);
   };
 
