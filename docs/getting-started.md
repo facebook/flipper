@@ -37,7 +37,10 @@ It's recommended that you add the following activity to the manifest too, which 
         android:exported="true"/>
 ```
 
-Flipper is distributed via JCenter. Add dependencies to your `build.gradle` file.
+Flipper is distributed via JCenter. Add the dependencies to your `build.gradle` file.
+You should also explicitly depend on [`soloader`](https://github.com/facebook/soloader)
+instead of relying on transitive dependency resolution which is getting deprecated
+with Gradle 5.
 
 ```groovy
 repositories {
@@ -46,6 +49,7 @@ repositories {
 
 dependencies {
   debugImplementation 'com.facebook.flipper:flipper:0.13.0'
+  debugImplementation 'com.facebook.flipper:soloader:0.5.1'
 }
 ```
 
@@ -81,7 +85,8 @@ repositories {
 }
 
 dependencies {
-  debugImplementation 'com.facebook.flipper:flipper:0.13.0'
+  debugImplementation 'com.facebook.flipper:flipper:0.13.1-SNAPSHOT'
+  debugImplementation 'com.facebook.flipper:soloader:0.5.1'
 }
 ```
 
