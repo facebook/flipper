@@ -21,6 +21,7 @@ import {
   Text,
   Glyph,
   styled,
+  FlexColumn,
   GK,
   FlipperPlugin,
   FlipperDevicePlugin,
@@ -29,6 +30,7 @@ import {
 import React from 'react';
 import NotificationsHub from '../NotificationsHub.js';
 import {selectPlugin} from '../reducers/connections.js';
+import {setActiveSheet} from '../reducers/application.js';
 import {connect} from 'react-redux';
 
 const ListItem = styled('div')(({active}) => ({
@@ -95,6 +97,20 @@ const PluginName = styled(Text)(props => ({
       : colors.macOSTitleBarIconSelected,
     fontWeight: 500,
   },
+}));
+
+const Plugins = styled(FlexColumn)({
+  flexGrow: 1,
+});
+
+const PluginDebugger = styled(FlexBox)(props => ({
+  color: colors.blackAlpha50,
+  borderTop: `1px solid ${colors.blackAlpha10}`,
+  alignItems: 'center',
+  padding: 10,
+  whiteSpace: 'nowrap',
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
 }));
 
 function PluginIcon({
@@ -188,6 +204,7 @@ type MainSidebarProps = {|
   numNotifications: number,
   devicePlugins: Map<string, Class<FlipperDevicePlugin<>>>,
   clientPlugins: Map<string, Class<FlipperPlugin<>>>,
+  setActiveSheet: (activeSheet: ?string) => any,
 |};
 
 class MainSidebar extends PureComponent<MainSidebarProps> {
@@ -216,98 +233,111 @@ class MainSidebar extends PureComponent<MainSidebarProps> {
         backgroundColor={
           process.platform === 'darwin' && windowIsFocused ? 'transparent' : ''
         }>
-        {!GK.get('flipper_disable_notifications') && (
-          <ListItem
-            active={selectedPlugin === 'notifications'}
-            onClick={() =>
-              selectPlugin({
-                selectedPlugin: 'notifications',
-                selectedApp: null,
-                deepLinkPayload: null,
-              })
-            }>
-            <PluginIcon
-              color={colors.light50}
-              name={
-                numNotifications > 0
-                  ? NotificationsHub.icon || 'bell'
-                  : 'bell-null'
-              }
-              isActive={selectedPlugin === NotificationsHub.id}
-            />
-            <PluginName
-              count={numNotifications}
-              isActive={selectedPlugin === NotificationsHub.id}>
-              {NotificationsHub.title}
-            </PluginName>
-          </ListItem>
-        )}
-        {selectedDevice && (
-          <SidebarHeader>{selectedDevice.title}</SidebarHeader>
-        )}
-        {selectedDevice &&
-          Array.from(this.props.devicePlugins.values())
-            .filter(plugin => plugin.supportsDevice(selectedDevice))
-            .map((plugin: Class<FlipperDevicePlugin<>>) => (
-              <PluginSidebarListItem
-                key={plugin.id}
-                isActive={plugin.id === selectedPlugin}
-                onClick={() =>
-                  selectPlugin({
-                    selectedPlugin: plugin.id,
-                    selectedApp: null,
-                    deepLinkPayload: null,
-                  })
+        <Plugins>
+          {!GK.get('flipper_disable_notifications') && (
+            <ListItem
+              active={selectedPlugin === 'notifications'}
+              onClick={() =>
+                selectPlugin({
+                  selectedPlugin: 'notifications',
+                  selectedApp: null,
+                  deepLinkPayload: null,
+                })
+              }>
+              <PluginIcon
+                color={colors.light50}
+                name={
+                  numNotifications > 0
+                    ? NotificationsHub.icon || 'bell'
+                    : 'bell-null'
                 }
-                plugin={plugin}
+                isActive={selectedPlugin === NotificationsHub.id}
               />
+              <PluginName
+                count={numNotifications}
+                isActive={selectedPlugin === NotificationsHub.id}>
+                {NotificationsHub.title}
+              </PluginName>
+            </ListItem>
+          )}
+          {selectedDevice && (
+            <SidebarHeader>{selectedDevice.title}</SidebarHeader>
+          )}
+          {selectedDevice &&
+            Array.from(this.props.devicePlugins.values())
+              .filter(plugin => plugin.supportsDevice(selectedDevice))
+              .map((plugin: Class<FlipperDevicePlugin<>>) => (
+                <PluginSidebarListItem
+                  key={plugin.id}
+                  isActive={plugin.id === selectedPlugin}
+                  onClick={() =>
+                    selectPlugin({
+                      selectedPlugin: plugin.id,
+                      selectedApp: null,
+                      deepLinkPayload: null,
+                    })
+                  }
+                  plugin={plugin}
+                />
+              ))}
+          {clients
+            .filter(
+              (client: Client) =>
+                (selectedDevice &&
+                  client.query.device_id === selectedDevice.serial) ||
+                // Old android sdk versions don't know their device_id
+                // Display their plugins under all selected devices until they die out
+                client.query.device_id === 'unknown',
+            )
+            .map((client: Client) => (
+              <React.Fragment key={client.id}>
+                <SidebarHeader>{client.query.app}</SidebarHeader>
+                {Array.from(this.props.clientPlugins.values())
+                  .filter(
+                    (p: Class<FlipperPlugin<>>) =>
+                      client.plugins.indexOf(p.id) > -1,
+                  )
+                  .map((plugin: Class<FlipperPlugin<>>) => (
+                    <PluginSidebarListItem
+                      key={plugin.id}
+                      isActive={
+                        plugin.id === selectedPlugin &&
+                        selectedApp === client.id
+                      }
+                      onClick={() =>
+                        selectPlugin({
+                          selectedPlugin: plugin.id,
+                          selectedApp: client.id,
+                          deepLinkPayload: null,
+                        })
+                      }
+                      plugin={plugin}
+                      app={client.query.app}
+                    />
+                  ))}
+              </React.Fragment>
             ))}
-        {clients
-          .filter(
-            (client: Client) =>
-              (selectedDevice &&
-                client.query.device_id === selectedDevice.serial) ||
-              // Old android sdk versions don't know their device_id
-              // Display their plugins under all selected devices until they die out
-              client.query.device_id === 'unknown',
-          )
-          .map((client: Client) => (
-            <React.Fragment key={client.id}>
-              <SidebarHeader>{client.query.app}</SidebarHeader>
-              {Array.from(this.props.clientPlugins.values())
-                .filter(
-                  (p: Class<FlipperPlugin<>>) =>
-                    client.plugins.indexOf(p.id) > -1,
-                )
-                .map((plugin: Class<FlipperPlugin<>>) => (
-                  <PluginSidebarListItem
-                    key={plugin.id}
-                    isActive={
-                      plugin.id === selectedPlugin && selectedApp === client.id
-                    }
-                    onClick={() =>
-                      selectPlugin({
-                        selectedPlugin: plugin.id,
-                        selectedApp: client.id,
-                        deepLinkPayload: null,
-                      })
-                    }
-                    plugin={plugin}
-                    app={client.query.app}
-                  />
-                ))}
+          {uninitializedClients.map(entry => (
+            <React.Fragment key={JSON.stringify(entry.client)}>
+              <SidebarHeader>{entry.client.appName}</SidebarHeader>
+              {entry.errorMessage ? (
+                <ErrorIndicator name={'mobile-cross'} size={16} />
+              ) : (
+                <Spinner size={16} />
+              )}
             </React.Fragment>
           ))}
-        {uninitializedClients.map(entry => (
-          <React.Fragment key={JSON.stringify(entry.client)}>
-            <SidebarHeader>{entry.client.appName}</SidebarHeader>
-            {entry.errorMessage ? (
-              <ErrorIndicator name={'mobile-cross'} size={16} />
-            ) : (
-              <Spinner size={16} />
-            )}
-          </React.Fragment>
-        ))}
+        </Plugins>
+        <PluginDebugger
+          onClick={() => this.props.setActiveSheet('PLUGIN_DEBUGGER')}>
+          <Glyph
+            name="question-circle"
+            size={16}
+            variant="outline"
+            color={colors.blackAlpha30}
+          />
+          &nbsp;Plugin not showing?
+        </PluginDebugger>
       </Sidebar>
     );
   }
@@ -347,5 +377,6 @@ export default connect(
   }),
   {
     selectPlugin,
+    setActiveSheet,
   },
 )(MainSidebar);

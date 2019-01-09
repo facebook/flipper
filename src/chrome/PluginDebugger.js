@@ -9,9 +9,17 @@ import type {FlipperDevicePlugin, FlipperPlugin} from '../plugin';
 import type {PluginDefinition} from '../dispatcher/plugins';
 import type Client from '../Client';
 
-import {Component} from 'react';
+import {Component, Fragment} from 'react';
 import {connect} from 'react-redux';
-import {FlexColumn, Button, Text, ManagedTable, styled, colors} from 'flipper';
+import {
+  FlexColumn,
+  Button,
+  Text,
+  ManagedTable,
+  styled,
+  colors,
+  Link,
+} from 'flipper';
 import {remote} from 'electron';
 
 const Container = styled(FlexColumn)({
@@ -20,7 +28,8 @@ const Container = styled(FlexColumn)({
 });
 
 const InfoText = styled(Text)({
-  lineHeight: '140%',
+  lineHeight: '130%',
+  marginBottom: 8,
 });
 
 const Title = styled('div')({
@@ -67,6 +76,7 @@ type Props = {|
   disabledPlugins: Array<PluginDefinition>,
   failedPlugins: Array<[PluginDefinition, string]>,
   clients: Array<Client>,
+  selectedDevice: ?string,
   onHide: () => mixed,
 |};
 
@@ -217,22 +227,74 @@ class PluginDebugger extends Component<Props> {
   }
 
   render() {
+    let content = null;
+
+    if (!this.props.selectedDevice) {
+      content = (
+        <InfoText>
+          We can't find any device connected to your computer. Is an
+          emulator/simulator currently running on your system, or is there a
+          development device connected via USB? There are some devices/emulators
+          known to have problems connecting to Flipper. Check out the{' '}
+          <Link href="https://fbflipper.com/docs/troubleshooting.html#known-incompatibilities">
+            known incompatibilities
+          </Link>.
+        </InfoText>
+      );
+    } else if (
+      !this.props.clients.some(
+        (client: Client) =>
+          client.query.device_id === this.props.selectedDevice,
+      )
+    ) {
+      // no clients for selected device
+      content = (
+        <Fragment>
+          <InfoText>
+            While Flipper was able to connect to your device, it wasn't able to
+            connect to the app you are running on your device. For this reason,
+            app-specific plugins will not show up.
+          </InfoText>
+          {this.props.clients.length > 0 && (
+            // we have clients, but not for this device
+            <InfoText>
+              Make sure you selected the correct device from the dropdown button
+              in the upper left corner. Only plugins for the selected device are
+              shown in the sidebar.
+            </InfoText>
+          )}
+          <InfoText>
+            To debug why Flipper couldn't establish a connection to the app,
+            check out our documentation about{' '}
+            <Link href="https://fbflipper.com/docs/troubleshooting.html#connection-issues">
+              connection issues
+            </Link>.
+          </InfoText>
+        </Fragment>
+      );
+    } else {
+      content = (
+        <Fragment>
+          <InfoText>
+            The table lists all plugins known to Flipper. Some of them might be
+            blocked by GKs, others may not show up, because none of the
+            connected apps is supporting it.
+          </InfoText>
+          <TableContainer>
+            <ManagedTable
+              columns={COLUMNS}
+              rows={this.getRows()}
+              highlightableRows={false}
+              columnSizes={COLUMNS_SIZES}
+            />
+          </TableContainer>
+        </Fragment>
+      );
+    }
     return (
       <Container>
         <Title>Plugin Status</Title>
-        <InfoText>
-          The table lists all plugins known to Flipper. Some of them might be
-          blocked by GKs, others may not show up, because none of the connected
-          apps is supporting it.
-        </InfoText>
-        <TableContainer>
-          <ManagedTable
-            columns={COLUMNS}
-            rows={this.getRows()}
-            highlightableRows={false}
-            columnSizes={COLUMNS_SIZES}
-          />
-        </TableContainer>
+        {content}
         <Row>
           <Button compact padded onClick={this.props.onHide}>
             Close
@@ -253,7 +315,7 @@ export default connect(
       disabledPlugins,
       failedPlugins,
     },
-    connections: {selectedPlugin, clients},
+    connections: {selectedPlugin, clients, selectedDevice},
   }) => ({
     devicePlugins: Array.from(devicePlugins.values()),
     clientPlugins: Array.from(clientPlugins.values()),
@@ -261,5 +323,6 @@ export default connect(
     clients,
     disabledPlugins,
     failedPlugins,
+    selectedDevice: selectedDevice?.serial,
   }),
 )(PluginDebugger);
