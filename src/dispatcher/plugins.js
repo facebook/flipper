@@ -56,26 +56,6 @@ export default (store: Store, logger: Logger) => {
   store.dispatch(addFailedPlugins(failedPlugins));
   store.dispatch(registerPlugins(initialPlugins));
 
-  initialPlugins.forEach(p => {
-    if (p.onRegisterPlugin) {
-      p.onRegisterPlugin(store, (pluginKey: string, newPluginState: any) => {
-        const persistedState = getPersistedState(
-          pluginKey,
-          p,
-          store.getState().pluginStates,
-        );
-        if (newPluginState && newPluginState !== persistedState) {
-          store.dispatch(
-            setPluginState({
-              pluginKey: pluginKey,
-              state: newPluginState,
-            }),
-          );
-        }
-      });
-    }
-  });
-
   let state: ?State = null;
   store.subscribe(() => {
     const newState = store.getState().plugins;

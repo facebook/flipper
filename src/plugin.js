@@ -70,8 +70,9 @@ export class FlipperBasePlugin<
   static getActiveNotifications: ?(
     persistedState: PersistedState,
   ) => Array<Notification>;
-  static onRegisterPlugin: ?(
+  static onRegisterDevice: ?(
     store: Store,
+    baseDevice: BaseDevice,
     setPersistedState: (
       pluginKey: string,
       newPluginState: ?PersistedState,

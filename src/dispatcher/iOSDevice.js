@@ -18,7 +18,7 @@ import IOSDevice from '../devices/IOSDevice';
 import iosUtil from '../fb-stubs/iOSContainerUtility';
 import isProduction from '../utils/isProduction.js';
 import GK from '../fb-stubs/GK';
-
+import {registerDeviceCallbackOnPlugins} from '../utils/onRegisterDevice.js';
 type iOSSimulatorDevice = {|
   state: 'Booted' | 'Shutdown' | 'Shutting Down',
   availability?: string,
@@ -70,10 +70,17 @@ function queryDevices(store: Store, logger: Logger): Promise<void> {
             name: name,
             serial: udid,
           });
+          const iOSDevice = new IOSDevice(udid, type, name);
           store.dispatch({
             type: 'REGISTER_DEVICE',
-            payload: new IOSDevice(udid, type, name),
+            payload: iOSDevice,
           });
+          registerDeviceCallbackOnPlugins(
+            store,
+            store.getState().plugins.devicePlugins,
+            store.getState().plugins.clientPlugins,
+            iOSDevice,
+          );
         }
       }
 

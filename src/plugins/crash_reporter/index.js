@@ -26,7 +26,7 @@ import os from 'os';
 import util from 'util';
 import path from 'path';
 import type {Notification} from '../../plugin';
-import type {Store} from 'flipper';
+import type {Store, DeviceLogEntry} from 'flipper';
 
 export type Crash = {|
   notificationID: string,
@@ -107,6 +107,7 @@ export function parseCrashLogAndUpdateState(
     !shouldShowCrashNotification(
       store.getState().connections.selectedDevice,
       content,
+      store.getState().connections.selectedDevice?.os,
     )
   ) {
     return;
@@ -140,7 +141,11 @@ export function parseCrashLogAndUpdateState(
 export function shouldShowCrashNotification(
   baseDevice: ?BaseDevice,
   content: string,
+  os: ?string,
 ): boolean {
+  if (os && os.includes('Android')) {
+    return true;
+  }
   const appPath = parsePath(content);
   const serial: string = baseDevice?.serial || 'unknown';
   if (!appPath || !appPath.includes(serial)) {
@@ -253,19 +258,6 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin<
     return persistedState;
   };
 
-  /*
-   * This function gets called whenever plugin is registered
-   */
-  static onRegisterPlugin = (
-    store: Store,
-    setPersistedState: (
-      pluginKey: string,
-      newPluginState: ?PersistedState,
-    ) => void,
-  ): void => {
-    addFileWatcherForiOSCrashLogs(store, setPersistedState);
-  };
-
   static trimCallStackIfPossible = (callstack: string): string => {
     let regex = /Application Specific Information:/;
     const query = regex.exec(callstack);
@@ -289,6 +281,45 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin<
     });
   };
 
+  /*
+   * This function gets called whenever the device is registered
+   */
+  static onRegisterDevice = (
+    store: Store,
+    baseDevice: BaseDevice,
+    setPersistedState: (
+      pluginKey: string,
+      newPluginState: ?PersistedState,
+    ) => void,
+  ): void => {
+    if (baseDevice.os.includes('iOS')) {
+      addFileWatcherForiOSCrashLogs(store, setPersistedState);
+    } else {
+      const referenceDate = new Date();
+      (function(
+        store: Store,
+        date: Date,
+        setPersistedState: (
+          pluginKey: string,
+          newPluginState: ?PersistedState,
+        ) => void,
+      ) {
+        baseDevice.addLogListener((entry: DeviceLogEntry) => {
+          if (
+            entry.type === 'error' &&
+            entry.tag === 'AndroidRuntime' &&
+            entry.date.getTime() - date.getTime() > 0
+          ) {
+            parseCrashLogAndUpdateState(
+              store,
+              entry.message,
+              setPersistedState,
+            );
+          }
+        });
+      })(store, referenceDate, setPersistedState);
+    }
+  };
   openInLogs = (callstack: string) => {
     this.props.selectPlugin('DeviceLogs', callstack);
   };

@@ -11,6 +11,7 @@ import promiseRetry from 'promise-retry';
 import type {Store} from '../reducers/index.js';
 import type BaseDevice from '../devices/BaseDevice';
 import type Logger from '../fb-stubs/Logger.js';
+import {registerDeviceCallbackOnPlugins} from '../utils/onRegisterDevice.js';
 const adb = require('adbkit-fb');
 
 function createDevice(adbClient, device): Promise<AndroidDevice> {
@@ -165,6 +166,13 @@ export default (store: Store, logger: Logger) => {
       type: 'REGISTER_DEVICE',
       payload: androidDevice,
     });
+
+    registerDeviceCallbackOnPlugins(
+      store,
+      store.getState().plugins.devicePlugins,
+      store.getState().plugins.clientPlugins,
+      androidDevice,
+    );
   }
 
   async function unregisterDevices(deviceIds: Array<string>) {
