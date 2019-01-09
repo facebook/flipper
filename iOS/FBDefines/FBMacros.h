@@ -10,5 +10,4 @@
      #define FB_LINK_REQUIRE_(NAME, UNIQUE)	
     #define FB_LINKABLE(NAME)	
     #define FB_LINK_REQUIRE(NAME)	
-    #define FB_LINK_REQUIRE_EXT(NAME)	
  #endif
