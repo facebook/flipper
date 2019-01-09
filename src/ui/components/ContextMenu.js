@@ -9,7 +9,7 @@ import * as React from 'react';
 import FlexColumn from './FlexColumn.js';
 import PropTypes from 'prop-types';
 
-type MenuTemplate = Array<Electron$MenuItemOptions>;
+export type MenuTemplate = Array<Electron$MenuItemOptions>;
 
 type Props = {
   /** List of items in the context menu. Used for static menus. */

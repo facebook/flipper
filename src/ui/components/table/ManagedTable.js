@@ -16,6 +16,8 @@ import type {
   TableOnAddFilter,
 } from './types.js';
 
+import type {MenuTemplate} from '../ContextMenu.js';
+
 import React from 'react';
 import styled from '../../styled/index.js';
 import AutoSizer from 'react-virtualized-auto-sizer';
@@ -106,6 +108,10 @@ export type ManagedTableProps = {|
    * Rows that are highlighted initially.
    */
   highlightedRows?: Set<string>,
+  /**
+   * Allows to create context menu items for rows
+   */
+  buildContextMenuItems?: () => MenuTemplate,
 |};
 
 type ManagedTableState = {|
@@ -541,7 +547,11 @@ class ManagedTable extends React.Component<
           ) : (
             <AutoSizer>
               {({width, height}) => (
-                <ContextMenu buildItems={this.buildContextMenuItems}>
+                <ContextMenu
+                  buildItems={
+                    this.props.buildContextMenuItems ||
+                    this.buildContextMenuItems
+                  }>
                   <List
                     itemCount={rows.length}
                     itemSize={index =>
