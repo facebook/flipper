@@ -9,7 +9,7 @@
 
 #import <FlipperKit/SKMacros.h>
 
-FB_LINK_REQUIRE(UICollectionView_SKInvalidation)
+FB_LINK_REQUIRE_CATEGORY(UICollectionView_SKInvalidation)
 @interface UICollectionView (SKInvalidation)
 
 + (void)enableInvalidations;

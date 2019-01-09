@@ -10,7 +10,7 @@
 #import <FlipperKitLayoutPlugin/SKNamed.h>
 #import <FlipperKitLayoutPlugin/SKNodeDescriptor.h>
 
-FB_LINK_REQUIRE(CKComponent_Sonar)
+FB_LINK_REQUIRE_CATEGORY(CKComponent_Sonar)
 @interface CKComponent (Sonar)
 
 - (NSArray<SKNamed<NSDictionary<NSString *, NSObject *> *> *> *)sonar_getData;

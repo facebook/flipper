@@ -8,7 +8,7 @@
 #import <ComponentKit/CKStatelessComponent.h>
 #import <FlipperKit/SKMacros.h>
 
-FB_LINK_REQUIRE(CKStatelessComponent_Sonar)
+FB_LINK_REQUIRE_CATEGORY(CKStatelessComponent_Sonar)
 @interface CKStatelessComponent (Sonar)
 
 - (NSString *)sonar_componentNameOverride;

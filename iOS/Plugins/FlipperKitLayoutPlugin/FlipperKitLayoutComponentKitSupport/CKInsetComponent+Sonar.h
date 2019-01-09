@@ -8,7 +8,7 @@
 #import <ComponentKit/CKInsetComponent.h>
 #import <FlipperKit/SKMacros.h>
 
-FB_LINK_REQUIRE(CKInsetComponent_Sonar)
+FB_LINK_REQUIRE_CATEGORY(CKInsetComponent_Sonar)
 @interface CKInsetComponent (Sonar)
 
 @end

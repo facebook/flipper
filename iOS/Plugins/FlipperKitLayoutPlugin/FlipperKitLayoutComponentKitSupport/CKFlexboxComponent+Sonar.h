@@ -8,7 +8,7 @@
 #import <ComponentKit/CKFlexboxComponent.h>
 #import <FlipperKit/SKMacros.h>
 
-FB_LINK_REQUIRE(CKFlexboxComponent_Sonar)
+FB_LINK_REQUIRE_CATEGORY(CKFlexboxComponent_Sonar)
 @interface CKFlexboxComponent (Sonar)
 
 @end

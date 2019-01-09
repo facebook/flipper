@@ -11,7 +11,7 @@
 
 #import "SKObject.h"
 
-FB_LINK_REQUIRE(UIColor_SonarValueCoder)
+FB_LINK_REQUIRE_CATEGORY(UIColor_SonarValueCoder)
 @interface UIColor (SonarValueCoder) <SKSonarValueCoder>
 
 @end

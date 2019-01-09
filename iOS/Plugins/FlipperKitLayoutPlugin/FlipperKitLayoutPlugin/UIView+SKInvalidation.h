@@ -7,7 +7,7 @@
  */
 #import <FlipperKit/SKMacros.h>
 
-FB_LINK_REQUIRE(UIView_SKInvalidation)
+FB_LINK_REQUIRE_CATEGORY(UIView_SKInvalidation)
 @interface UIView (SKInvalidation)
 
 + (void)enableInvalidation;
