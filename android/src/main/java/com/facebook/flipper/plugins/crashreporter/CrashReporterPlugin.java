@@ -40,19 +40,8 @@ public class CrashReporterPlugin implements FlipperPlugin {
   @Override
   public void onConnect(FlipperConnection connection) {
     mConnection = connection;
-    prevHandler = Thread.getDefaultUncaughtExceptionHandler();
-    Thread.setDefaultUncaughtExceptionHandler(
-        new Thread.UncaughtExceptionHandler() {
-          @Override
-          public void uncaughtException(Thread paramThread, Throwable paramThrowable) {
-            sendExceptionMessage(paramThread, paramThrowable);
-            if (prevHandler != null) {
-              prevHandler.uncaughtException(paramThread, paramThrowable);
-            }
-          }
-        });
   }
-
+  // This function is called from Litho's error boundary.
   public void sendExceptionMessage(Thread paramThread, Throwable paramThrowable) {
     if (mConnection != null) {
       FlipperConnection connection = mConnection;
@@ -77,7 +66,6 @@ public class CrashReporterPlugin implements FlipperPlugin {
   @Override
   public void onDisconnect() {
     mConnection = null;
-    Thread.setDefaultUncaughtExceptionHandler(prevHandler);
   }
 
   @Override
