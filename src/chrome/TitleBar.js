@@ -21,6 +21,7 @@ import {
   setActiveSheet,
   toggleLeftSidebarVisible,
   toggleRightSidebarVisible,
+  ACTIVE_SHEET_BUG_REPORTER,
 } from '../reducers/application.js';
 import DevicesButton from './DevicesButton.js';
 import ScreenCaptureButtons from './ScreenCaptureButtons.js';
@@ -44,7 +45,7 @@ const AppTitleBar = styled(FlexRow)(({focused}) => ({
   paddingRight: 10,
   justifyContent: 'space-between',
   WebkitAppRegion: 'drag',
-  zIndex: 3,
+  zIndex: 4,
 }));
 
 type Props = {|
@@ -68,7 +69,7 @@ class TitleBar extends Component<Props> {
         {config.bugReportButtonVisible && (
           <Button
             compact={true}
-            onClick={() => this.props.setActiveSheet('BUG_REPORTER')}
+            onClick={() => this.props.setActiveSheet(ACTIVE_SHEET_BUG_REPORTER)}
             title="Report Bug"
             icon="bug"
           />

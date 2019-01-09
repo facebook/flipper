@@ -10,18 +10,23 @@ import {Transition} from 'react-transition-group';
 import {setActiveSheet} from '../reducers/application.js';
 import {connect} from 'react-redux';
 import {styled} from 'flipper';
+import {PLUGIN_SHEET_ELEMENT_ID} from '../ui/components/Sheet';
+import {ACTIVE_SHEET_PLUGIN_SHEET} from '../reducers/application';
+
+import type {ActiveSheet} from '../reducers/application';
 
 const DialogContainer = styled('div')(({state}) => ({
   transform: `translate(-50%, ${
     state === 'entering' || state === 'exiting' || state === 'exited'
-      ? '-110'
-      : '0'
-  }%)`,
+      ? 'calc(-100% - 20px)'
+      : '0%'
+  })`,
+  opacity: state === 'exited' ? 0 : 1,
   transition: '.3s transform',
   position: 'absolute',
   left: '50%',
   top: 38,
-  zIndex: 2,
+  zIndex: 3,
   backgroundColor: '#EFEEEF',
   border: '1px solid #C6C6C6',
   borderTop: 'none',
@@ -31,7 +36,7 @@ const DialogContainer = styled('div')(({state}) => ({
 }));
 
 type Props = {|
-  sheetVisible: boolean,
+  activeSheet: ActiveSheet,
   onHideSheet: () => void,
   children: (onHide: () => mixed) => any,
 |};
@@ -42,11 +47,11 @@ type State = {|
 
 class Sheet extends Component<Props, State> {
   state = {
-    isVisible: this.props.sheetVisible,
+    isVisible: Boolean(this.props.activeSheet),
   };
 
   static getDerivedStateFromProps(props: Props, state: State) {
-    if (!props.sheetVisible) {
+    if (!props.activeSheet) {
       return {
         isVisible: true,
       };
@@ -76,12 +81,23 @@ class Sheet extends Component<Props, State> {
   render() {
     return (
       <Transition
-        in={this.props.sheetVisible && this.state.isVisible}
+        in={Boolean(this.props.activeSheet) && this.state.isVisible}
         timeout={300}
-        onExited={() => this.props.onHideSheet()}
-        unmountOnExit>
+        onExited={() => this.props.onHideSheet()}>
         {state => (
           <DialogContainer state={state}>
+            <div
+              /* This is the target for React.portal, it should not be
+               * unmounted, therefore it's hidden, when another sheet
+               * is presented. */
+              id={PLUGIN_SHEET_ELEMENT_ID}
+              style={{
+                display:
+                  this.props.activeSheet === ACTIVE_SHEET_PLUGIN_SHEET
+                    ? 'block'
+                    : 'none',
+              }}
+            />
             {this.props.children(this.onHide)}
           </DialogContainer>
         )}
@@ -95,7 +111,7 @@ class Sheet extends Component<Props, State> {
  * run Flow. */
 export default connect(
   ({application: {activeSheet}}) => ({
-    sheetVisible: Boolean(activeSheet),
+    activeSheet,
   }),
   {
     onHideSheet: () => setActiveSheet(null),

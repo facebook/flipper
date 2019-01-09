@@ -17,6 +17,10 @@ import PluginContainer from './PluginContainer.js';
 import Sheet from './chrome/Sheet.js';
 import {ipcRenderer} from 'electron';
 import PluginDebugger from './chrome/PluginDebugger.js';
+import {
+  ACTIVE_SHEET_BUG_REPORTER,
+  ACTIVE_SHEET_PLUGIN_DEBUGGER,
+} from './reducers/application.js';
 
 import type Logger from './fb-stubs/Logger.js';
 import type BugReporter from './fb-stubs/BugReporter.js';
@@ -49,16 +53,17 @@ export class App extends React.Component<Props> {
   }
 
   getSheet = (onHide: () => mixed) => {
-    if (this.props.activeSheet === 'BUG_REPORTER') {
+    if (this.props.activeSheet === ACTIVE_SHEET_BUG_REPORTER) {
       return (
         <BugReporterDialog
           bugReporter={this.props.bugReporter}
           onHide={onHide}
         />
       );
-    } else if (this.props.activeSheet === 'PLUGIN_DEBUGGER') {
+    } else if (this.props.activeSheet === ACTIVE_SHEET_PLUGIN_DEBUGGER) {
       return <PluginDebugger onHide={onHide} />;
     } else {
+      // contents are added via React.Portal
       return null;
     }
   };

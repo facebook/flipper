@@ -7,7 +7,16 @@
 
 import {remote} from 'electron';
 
-export type ActiveSheet = 'BUG_REPORTER' | 'PLUGIN_DEBUGGER' | null;
+export const ACTIVE_SHEET_PLUGIN_SHEET: 'PLUGIN_SHEET' = 'PLUGIN_SHEET';
+export const ACTIVE_SHEET_BUG_REPORTER: 'BUG_REPORTER' = 'BUG_REPORTER';
+export const ACTIVE_SHEET_PLUGIN_DEBUGGER: 'PLUGIN_DEBUGGER' =
+  'PLUGIN_DEBUGGER';
+
+export type ActiveSheet =
+  | typeof ACTIVE_SHEET_PLUGIN_SHEET
+  | typeof ACTIVE_SHEET_BUG_REPORTER
+  | typeof ACTIVE_SHEET_PLUGIN_DEBUGGER
+  | null;
 
 export type State = {
   leftSidebarVisible: boolean,
