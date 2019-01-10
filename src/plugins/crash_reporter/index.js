@@ -82,12 +82,14 @@ export function getNewPersisitedStateFromCrashLog(
   persistedState: ?PersistedState,
   persistingPlugin: Class<FlipperDevicePlugin<> | FlipperPlugin<>>,
   content: string,
+  os: ?string,
 ): ?PersistedState {
-  const crash = parseCrashLog(content);
-  if (!persistingPlugin.persistedStateReducer) {
+  const persistedStateReducer = persistingPlugin.persistedStateReducer;
+  if (!os || !persistedStateReducer) {
     return null;
   }
-  const newPluginState = persistingPlugin.persistedStateReducer(
+  const crash = parseCrashLog(content, os);
+  const newPluginState = persistedStateReducer(
     persistedState,
     'crash-report',
     crash,
@@ -103,11 +105,12 @@ export function parseCrashLogAndUpdateState(
     newPluginState: ?PersistedState,
   ) => void,
 ) {
+  const os = store.getState().connections.selectedDevice?.os;
   if (
     !shouldShowCrashNotification(
       store.getState().connections.selectedDevice,
       content,
-      store.getState().connections.selectedDevice?.os,
+      os,
     )
   ) {
     return;
@@ -134,6 +137,7 @@ export function parseCrashLogAndUpdateState(
     persistedState,
     persistingPlugin,
     content,
+    os,
   );
   setPersistedState(pluginKey, newPluginState);
 }
@@ -155,20 +159,49 @@ export function shouldShowCrashNotification(
   return true;
 }
 
-export function parseCrashLog(content: string): CrashLog {
-  const regex = /Exception Type: *[\w]*/;
-  const arr = regex.exec(content);
-  const exceptionString = arr ? arr[0] : '';
-  const exceptionRegex = /[\w]*$/;
-  const tmp = exceptionRegex.exec(exceptionString);
-  const exception =
-    tmp && tmp[0].length ? tmp[0] : 'Cannot figure out the cause';
-  const crash = {
-    callstack: content,
-    name: exception,
-    reason: exception,
-  };
-  return crash;
+export function parseCrashLog(content: string, os: string): CrashLog {
+  const stubString = 'Cannot figure out the cause';
+  if (os.includes('iOS')) {
+    const regex = /Exception Type: *[\w]*/;
+    const arr = regex.exec(content);
+    const exceptionString = arr ? arr[0] : '';
+    const exceptionRegex = /[\w]*$/;
+    const tmp = exceptionRegex.exec(exceptionString);
+    const exception =
+      tmp && tmp[0].length ? tmp[0] : 'Cannot figure out the cause';
+    const crash = {
+      callstack: content,
+      name: exception,
+      reason: exception,
+    };
+    return crash;
+  } else if (os.includes('Android')) {
+    const regForName = /.*\n/;
+    const nameRegArr = regForName.exec(content);
+    let name = nameRegArr ? nameRegArr[0] : stubString;
+    const regForCallStack = /\tat[\w\s\n.$&+,:;=?@#|'<>.^*()%!-]*$/;
+    const callStackArray = regForCallStack.exec(content);
+    const callStack = callStackArray ? callStackArray[0] : '';
+    let remainingString =
+      callStack.length > 0 ? content.replace(callStack, '') : '';
+    if (remainingString[remainingString.length - 1] === '\n') {
+      remainingString = remainingString.slice(0, -1);
+    }
+    const reason =
+      remainingString.length > 0
+        ? remainingString.split('\n').pop()
+        : stubString;
+    if (name[name.length - 1] === '\n') {
+      name = name.slice(0, -1);
+    }
+    const crash = {
+      callstack: content,
+      name: name,
+      reason: reason,
+    };
+    return crash;
+  }
+  throw new Error('Unsupported OS');
 }
 
 export function parsePath(content: string): ?string {

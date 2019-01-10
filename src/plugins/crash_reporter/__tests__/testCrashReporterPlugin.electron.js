@@ -56,14 +56,14 @@ afterAll(() => {
 test('test the parsing of the reason for crash when log matches the predefined regex', () => {
   const log =
     'Blaa Blaaa \n Blaa Blaaa \n Exception Type:  SIGSEGV \n Blaa Blaa \n Blaa Blaa';
-  const crash = parseCrashLog(log);
+  const crash = parseCrashLog(log, 'iOS');
   expect(crash.callstack).toEqual(log);
   expect(crash.reason).toEqual('SIGSEGV');
   expect(crash.name).toEqual('SIGSEGV');
 });
 test('test the parsing of the crash log when log does not match the predefined regex but is alphanumeric', () => {
   const log = 'Blaa Blaaa \n Blaa Blaaa \n Blaa Blaaa';
-  const crash = parseCrashLog(log);
+  const crash = parseCrashLog(log, 'iOS');
   expect(crash.callstack).toEqual(log);
   expect(crash.reason).toEqual('Cannot figure out the cause');
   expect(crash.name).toEqual('Cannot figure out the cause');
@@ -72,14 +72,46 @@ test('test the parsing of the crash log when log does not match the predefined r
 test('test the parsing of the reason for crash when log does not match the predefined regex contains unicode character', () => {
   const log =
     'Blaa Blaaa \n Blaa Blaaa \n Exception Type:  🍕🐬 \n Blaa Blaa \n Blaa Blaa';
-  const crash = parseCrashLog(log);
+  const crash = parseCrashLog(log, 'iOS');
   expect(crash.callstack).toEqual(log);
   expect(crash.reason).toEqual('Cannot figure out the cause');
   expect(crash.name).toEqual('Cannot figure out the cause');
 });
 test('test the parsing of the reason for crash when log is empty', () => {
   const log = '';
-  const crash = parseCrashLog(log);
+  const crash = parseCrashLog(log, 'iOS');
+  expect(crash.callstack).toEqual(log);
+  expect(crash.reason).toEqual('Cannot figure out the cause');
+  expect(crash.name).toEqual('Cannot figure out the cause');
+});
+test('test the parsing of the Android crash log for the proper android crash format', () => {
+  const log =
+    'FATAL EXCEPTION: main\nProcess: com.facebook.flipper.sample, PID: 27026\njava.lang.IndexOutOfBoundsException: Index: 190, Size: 0\n\tat java.util.ArrayList.get(ArrayList.java:437)\n\tat com.facebook.flipper.sample.RootComponentSpec.hitGetRequest(RootComponentSpec.java:72)\n\tat com.facebook.flipper.sample.RootComponent.hitGetRequest(RootComponent.java:46)\n';
+  const crash = parseCrashLog(log, 'Android');
+  expect(crash.callstack).toEqual(log);
+  expect(crash.reason).toEqual(
+    'java.lang.IndexOutOfBoundsException: Index: 190, Size: 0',
+  );
+  expect(crash.name).toEqual('FATAL EXCEPTION: main');
+});
+test('test the parsing of the Android crash log for the unknown crash format', () => {
+  const log = 'Blaa Blaa Blaa';
+  const crash = parseCrashLog(log, 'Android');
+  expect(crash.callstack).toEqual(log);
+  expect(crash.reason).toEqual('Cannot figure out the cause');
+  expect(crash.name).toEqual('Cannot figure out the cause');
+});
+test('test the parsing of the Android crash log for the partial format matching the crash format', () => {
+  const log = 'First Line Break \n Blaa Blaa \n Blaa Blaa ';
+  const crash = parseCrashLog(log, 'Android');
+  expect(crash.callstack).toEqual(log);
+  expect(crash.reason).toEqual('Cannot figure out the cause');
+  expect(crash.name).toEqual('First Line Break ');
+});
+test('test the parsing of the Android crash log with os being iOS', () => {
+  const log =
+    'FATAL EXCEPTION: main\nProcess: com.facebook.flipper.sample, PID: 27026\njava.lang.IndexOutOfBoundsException: Index: 190, Size: 0\n\tat java.util.ArrayList.get(ArrayList.java:437)\n\tat com.facebook.flipper.sample.RootComponentSpec.hitGetRequest(RootComponentSpec.java:72)\n\tat com.facebook.flipper.sample.RootComponent.hitGetRequest(RootComponent.java:46)\n';
+  const crash = parseCrashLog(log, 'iOS');
   expect(crash.callstack).toEqual(log);
   expect(crash.reason).toEqual('Cannot figure out the cause');
   expect(crash.name).toEqual('Cannot figure out the cause');
@@ -152,6 +184,7 @@ test('test getNewPersisitedStateFromCrashLog for non-empty defaultPersistedState
     perisistedState,
     CrashReporterPlugin,
     content,
+    'iOS',
   );
   expect(newPersistedState).toEqual({
     crashes: [pluginStateCrash, getCrash(1, content, 'SIGSEGV', 'SIGSEGV')],
@@ -174,6 +207,7 @@ test('test getNewPersisitedStateFromCrashLog for non-empty defaultPersistedState
     perisistedState,
     CrashReporterPlugin,
     content,
+    'iOS',
   );
   expect(newPersistedState).toEqual({
     crashes: [crash, getCrash(1, content, 'SIGSEGV', 'SIGSEGV')],
@@ -197,6 +231,7 @@ test('test getNewPersisitedStateFromCrashLog for non-empty defaultPersistedState
     perisistedState,
     CrashReporterPlugin,
     content,
+    'iOS',
   );
   expect(newPersistedState).toEqual({
     crashes: [
@@ -209,6 +244,26 @@ test('test getNewPersisitedStateFromCrashLog for non-empty defaultPersistedState
       ),
     ],
   });
+});
+test('test getNewPersisitedStateFromCrashLog when os is undefined', () => {
+  setNotificationID(0);
+  const crash = getCrash(0, 'callstack', 'crash0', 'crash0');
+  const pluginKey = getPluginKey(null, null, CrashReporterPlugin.id);
+  setDefaultPersistedState({crashes: [crash]});
+  const pluginStateCrash = getCrash(1, 'callstack', 'crash1', 'crash1');
+  const pluginStates = {'unknown#CrashReporter': {crashes: [pluginStateCrash]}};
+  const perisistedState = getPersistedState(
+    pluginKey,
+    CrashReporterPlugin,
+    pluginStates,
+  );
+  const content = 'Blaa Blaaa \n Blaa Blaaa';
+  const newPersistedState = getNewPersisitedStateFromCrashLog(
+    perisistedState,
+    CrashReporterPlugin,
+    content,
+  );
+  expect(newPersistedState).toEqual(null);
 });
 test('test parsing of path when inputs are correct', () => {
   const content =
