@@ -226,6 +226,9 @@ class MainSidebar extends PureComponent<MainSidebarProps> {
       )
       .sort((a, b) => (a.query.app || '').localeCompare(b.query.app));
 
+    const byPluginNameOrId = (a, b) =>
+      (a.title || a.id) > (b.title || b.id) ? 1 : -1;
+
     return (
       <Sidebar
         position="left"
@@ -266,6 +269,7 @@ class MainSidebar extends PureComponent<MainSidebarProps> {
           {selectedDevice &&
             Array.from(this.props.devicePlugins.values())
               .filter(plugin => plugin.supportsDevice(selectedDevice))
+              .sort(byPluginNameOrId)
               .map((plugin: Class<FlipperDevicePlugin<>>) => (
                 <PluginSidebarListItem
                   key={plugin.id}
@@ -297,6 +301,7 @@ class MainSidebar extends PureComponent<MainSidebarProps> {
                     (p: Class<FlipperPlugin<>>) =>
                       client.plugins.indexOf(p.id) > -1,
                   )
+                  .sort(byPluginNameOrId)
                   .map((plugin: Class<FlipperPlugin<>>) => (
                     <PluginSidebarListItem
                       key={plugin.id}
