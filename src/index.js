@@ -33,3 +33,4 @@ export {default as DetailSidebar} from './chrome/DetailSidebar.js';
 export {default as AndroidDevice} from './devices/AndroidDevice.js';
 export {default as Device} from './devices/BaseDevice.js';
 export {default as IOSDevice} from './devices/IOSDevice.js';
+export type {OS} from './devices/BaseDevice.js';

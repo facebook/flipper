@@ -36,6 +36,8 @@ export type DeviceLogListener = (entry: DeviceLogEntry) => void;
 
 export type DeviceType = 'emulator' | 'physical';
 
+export type OS = 'iOS' | 'Android' | 'Windows';
+
 export default class BaseDevice {
   constructor(serial: string, deviceType: DeviceType, title: string) {
     this.serial = serial;
@@ -44,7 +46,7 @@ export default class BaseDevice {
   }
 
   // operating system of this device
-  os: string;
+  os: OS;
 
   // human readable name for this device
   title: string;
@@ -61,7 +63,7 @@ export default class BaseDevice {
   logListeners: Map<Symbol, DeviceLogListener> = new Map();
   logEntries: Array<DeviceLogEntry> = [];
 
-  supportsOS(os: string) {
+  supportsOS(os: OS) {
     return os.toLowerCase() === this.os.toLowerCase();
   }
 

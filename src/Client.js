@@ -10,7 +10,7 @@ import type BaseDevice from './devices/BaseDevice.js';
 import type {App} from './App.js';
 import type Logger from './fb-stubs/Logger.js';
 import type {Store} from './reducers/index.js';
-
+import type {OS} from './devices/BaseDevice.js';
 import {FlipperDevicePlugin} from './plugin.js';
 import {setPluginState} from './reducers/pluginStates.js';
 import {ReactiveSocket, PartialResponder} from 'rsocket-core';
@@ -22,7 +22,7 @@ type Plugins = Array<string>;
 
 export type ClientQuery = {|
   app: string,
-  os: string,
+  os: OS,
   device: string,
   device_id: string,
 |};

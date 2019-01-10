@@ -26,7 +26,7 @@ import os from 'os';
 import util from 'util';
 import path from 'path';
 import type {Notification} from '../../plugin';
-import type {Store, DeviceLogEntry} from 'flipper';
+import type {Store, DeviceLogEntry, OS} from 'flipper';
 
 export type Crash = {|
   notificationID: string,
@@ -82,7 +82,7 @@ export function getNewPersisitedStateFromCrashLog(
   persistedState: ?PersistedState,
   persistingPlugin: Class<FlipperDevicePlugin<> | FlipperPlugin<>>,
   content: string,
-  os: ?string,
+  os: ?OS,
 ): ?PersistedState {
   const persistedStateReducer = persistingPlugin.persistedStateReducer;
   if (!os || !persistedStateReducer) {
@@ -145,9 +145,9 @@ export function parseCrashLogAndUpdateState(
 export function shouldShowCrashNotification(
   baseDevice: ?BaseDevice,
   content: string,
-  os: ?string,
+  os: ?OS,
 ): boolean {
-  if (os && os.includes('Android')) {
+  if (os && os === 'Android') {
     return true;
   }
   const appPath = parsePath(content);
@@ -159,49 +159,54 @@ export function shouldShowCrashNotification(
   return true;
 }
 
-export function parseCrashLog(content: string, os: string): CrashLog {
+export function parseCrashLog(content: string, os: OS): CrashLog {
   const stubString = 'Cannot figure out the cause';
-  if (os.includes('iOS')) {
-    const regex = /Exception Type: *[\w]*/;
-    const arr = regex.exec(content);
-    const exceptionString = arr ? arr[0] : '';
-    const exceptionRegex = /[\w]*$/;
-    const tmp = exceptionRegex.exec(exceptionString);
-    const exception =
-      tmp && tmp[0].length ? tmp[0] : 'Cannot figure out the cause';
-    const crash = {
-      callstack: content,
-      name: exception,
-      reason: exception,
-    };
-    return crash;
-  } else if (os.includes('Android')) {
-    const regForName = /.*\n/;
-    const nameRegArr = regForName.exec(content);
-    let name = nameRegArr ? nameRegArr[0] : stubString;
-    const regForCallStack = /\tat[\w\s\n.$&+,:;=?@#|'<>.^*()%!-]*$/;
-    const callStackArray = regForCallStack.exec(content);
-    const callStack = callStackArray ? callStackArray[0] : '';
-    let remainingString =
-      callStack.length > 0 ? content.replace(callStack, '') : '';
-    if (remainingString[remainingString.length - 1] === '\n') {
-      remainingString = remainingString.slice(0, -1);
+  switch (os) {
+    case 'iOS': {
+      const regex = /Exception Type: *[\w]*/;
+      const arr = regex.exec(content);
+      const exceptionString = arr ? arr[0] : '';
+      const exceptionRegex = /[\w]*$/;
+      const tmp = exceptionRegex.exec(exceptionString);
+      const exception =
+        tmp && tmp[0].length ? tmp[0] : 'Cannot figure out the cause';
+      const crash = {
+        callstack: content,
+        name: exception,
+        reason: exception,
+      };
+      return crash;
     }
-    const reason =
-      remainingString.length > 0
-        ? remainingString.split('\n').pop()
-        : stubString;
-    if (name[name.length - 1] === '\n') {
-      name = name.slice(0, -1);
+    case 'Android': {
+      const regForName = /.*\n/;
+      const nameRegArr = regForName.exec(content);
+      let name = nameRegArr ? nameRegArr[0] : stubString;
+      const regForCallStack = /\tat[\w\s\n.$&+,:;=?@#|'<>.^*()%!-]*$/;
+      const callStackArray = regForCallStack.exec(content);
+      const callStack = callStackArray ? callStackArray[0] : '';
+      let remainingString =
+        callStack.length > 0 ? content.replace(callStack, '') : '';
+      if (remainingString[remainingString.length - 1] === '\n') {
+        remainingString = remainingString.slice(0, -1);
+      }
+      const reason =
+        remainingString.length > 0
+          ? remainingString.split('\n').pop()
+          : stubString;
+      if (name[name.length - 1] === '\n') {
+        name = name.slice(0, -1);
+      }
+      const crash = {
+        callstack: content,
+        name: name,
+        reason: reason,
+      };
+      return crash;
     }
-    const crash = {
-      callstack: content,
-      name: name,
-      reason: reason,
-    };
-    return crash;
+    default: {
+      throw new Error('Unsupported OS');
+    }
   }
-  throw new Error('Unsupported OS');
 }
 
 export function parsePath(content: string): ?string {
