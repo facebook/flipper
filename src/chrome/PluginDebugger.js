@@ -120,7 +120,7 @@ class PluginDebugger extends Component<Props> {
     pluginPath: ?string,
   ) {
     return {
-      key: name,
+      key: name.toLowerCase(),
       columns: {
         lamp: {value: <Lamp on={loaded} />},
         name: {value: <Ellipsis>{name}</Ellipsis>},
@@ -142,14 +142,13 @@ class PluginDebugger extends Component<Props> {
           value: this.getSupportedClients(name),
         },
         source: {
-          value:
-            pluginPath && pluginPath.startsWith(remote.app.getAppPath()) ? (
-              <i>bundled</i>
-            ) : (
-              <Ellipsis code title={pluginPath}>
-                {pluginPath}
-              </Ellipsis>
-            ),
+          value: pluginPath ? (
+            <Ellipsis code title={pluginPath}>
+              {pluginPath}
+            </Ellipsis>
+          ) : (
+            <i>bundled</i>
+          ),
         },
       },
     };
@@ -168,6 +167,12 @@ class PluginDebugger extends Component<Props> {
 
   getRows() {
     let rows = [];
+
+    // bundled plugins are loaded from the defaultPlugins directory within
+    // Flipper's package.
+    const externalPluginPath = (p: PluginDefinition) =>
+      p.out.startsWith('./defaultPlugins/') ? null : p.entry;
+
     this.props.gatekeepedPlugins.forEach(plugin =>
       rows.push(
         this.buildRow(
@@ -176,7 +181,7 @@ class PluginDebugger extends Component<Props> {
           'GK disabled',
           plugin.gatekeeper,
           false,
-          plugin.entry,
+          externalPluginPath(plugin),
         ),
       ),
     );
@@ -191,7 +196,7 @@ class PluginDebugger extends Component<Props> {
           plugin.gatekeeper,
           true,
           // $FlowFixMe: Flow doesn't know this is inherited from FlipperBasePlugin
-          plugin.entry,
+          externalPluginPath(plugin),
         ),
       ),
     );
@@ -206,20 +211,34 @@ class PluginDebugger extends Component<Props> {
           plugin.gatekeeper,
           true,
           // $FlowFixMe: Flow doesn't know this is inherited from FlipperBasePlugin
-          plugin.entry,
+          externalPluginPath(plugin),
         ),
       ),
     );
 
     this.props.disabledPlugins.forEach(plugin =>
       rows.push(
-        this.buildRow(plugin.name, false, 'disabled', null, null, plugin.entry),
+        this.buildRow(
+          plugin.name,
+          false,
+          'disabled',
+          null,
+          null,
+          externalPluginPath(plugin),
+        ),
       ),
     );
 
     this.props.failedPlugins.forEach(([plugin, status]) =>
       rows.push(
-        this.buildRow(plugin.name, false, status, null, null, plugin.entry),
+        this.buildRow(
+          plugin.name,
+          false,
+          status,
+          null,
+          null,
+          externalPluginPath(plugin),
+        ),
       ),
     );
 
