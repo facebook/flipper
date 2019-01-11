@@ -6,7 +6,7 @@
  */
 
 export type LogTypes = 'error' | 'warn' | 'info' | 'debug';
-export type TrackType = 'duration' | 'usage' | 'performance';
+export type TrackType = 'duration' | 'usage' | 'performance' | 'success-rate';
 import ScribeLogger from './ScribeLogger';
 
 export default class LogManager {

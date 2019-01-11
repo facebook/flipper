@@ -190,10 +190,20 @@ export default class Server extends EventEmitter {
                   client,
                   deviceId: result.deviceId,
                 });
+                this.logger.track(
+                  'success-rate',
+                  'processCertificateSigningRequest',
+                  1,
+                );
               })
               .catch(e => {
                 subscriber.onError(e);
                 this.emit('client-setup-error', {client, error: e});
+                this.logger.track(
+                  'success-rate',
+                  'processCertificateSigningRequest',
+                  0,
+                );
               });
           });
         }
