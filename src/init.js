@@ -26,7 +26,7 @@ const store = createStore(
 );
 persistStore(store);
 
-const logger = new Logger();
+const logger = new Logger(store);
 const bugReporter = new BugReporter(logger, store);
 dispatcher(store, logger);
 GK.init();

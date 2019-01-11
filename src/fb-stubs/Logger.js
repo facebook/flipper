@@ -10,7 +10,7 @@ export type TrackType = 'duration' | 'usage' | 'performance';
 import ScribeLogger from './ScribeLogger';
 
 export default class LogManager {
-  constructor() {
+  constructor(store: ?Store) {
     this.scribeLogger = new ScribeLogger(this);
   }
 
