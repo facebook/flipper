@@ -17,6 +17,7 @@ import {Single} from 'rsocket-flowable';
 import Client from './Client.js';
 import type {UninitializedClient} from './UninitializedClient';
 import {RecurringError} from './utils/errors';
+import {recordSuccessMetric} from './utils/metrics';
 
 const EventEmitter = (require('events'): any);
 const invariant = require('invariant');
@@ -177,8 +178,15 @@ export default class Server extends EventEmitter {
           const {csr, destination} = json;
           return new Single(subscriber => {
             subscriber.onSubscribe();
-            this.certificateProvider
-              .processCertificateSigningRequest(csr, clientData.os, destination)
+            recordSuccessMetric(
+              this.certificateProvider.processCertificateSigningRequest(
+                csr,
+                clientData.os,
+                destination,
+              ),
+              'processCertificateSigningRequest',
+              this.logger,
+            )
               .then(result => {
                 subscriber.onComplete({
                   data: JSON.stringify({
@@ -190,20 +198,10 @@ export default class Server extends EventEmitter {
                   client,
                   deviceId: result.deviceId,
                 });
-                this.logger.track(
-                  'success-rate',
-                  'processCertificateSigningRequest',
-                  1,
-                );
               })
               .catch(e => {
                 subscriber.onError(e);
                 this.emit('client-setup-error', {client, error: e});
-                this.logger.track(
-                  'success-rate',
-                  'processCertificateSigningRequest',
-                  0,
-                );
               });
           });
         }
