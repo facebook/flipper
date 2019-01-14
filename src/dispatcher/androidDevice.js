@@ -12,6 +12,7 @@ import type {Store} from '../reducers/index.js';
 import type BaseDevice from '../devices/BaseDevice';
 import type Logger from '../fb-stubs/Logger.js';
 import {registerDeviceCallbackOnPlugins} from '../utils/onRegisterDevice.js';
+import {recordSuccessMetric} from '../utils/metrics';
 const adb = require('adbkit-fb');
 
 function createDevice(adbClient, device): Promise<AndroidDevice> {
@@ -80,7 +81,11 @@ export default (store: Store, logger: Logger) => {
       },
     );
   }
-  const clientPromise = createClient();
+  const clientPromise = recordSuccessMetric(
+    createClient(),
+    'createADBClient',
+    logger,
+  );
 
   const watchAndroidDevices = () => {
     // get emulators
