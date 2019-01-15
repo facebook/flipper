@@ -6,7 +6,7 @@
  */
 
 import Server, {SECURE_PORT, INSECURE_PORT} from '../server.js';
-import LogManager from '../fb-stubs/Logger';
+import {init as initLogger} from '../fb-stubs/Logger';
 import reducers from '../reducers/index.js';
 import configureStore from 'redux-mock-store';
 import path from 'path';
@@ -23,7 +23,8 @@ beforeAll(() => {
     fs.mkdirSync(flipperDir);
   }
 
-  server = new Server(new LogManager(), mockStore);
+  const logger = initLogger();
+  server = new Server(logger, mockStore);
   return server.init();
 });
 

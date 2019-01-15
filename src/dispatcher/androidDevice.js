@@ -81,11 +81,7 @@ export default (store: Store, logger: Logger) => {
       },
     );
   }
-  const clientPromise = recordSuccessMetric(
-    createClient(),
-    'createADBClient',
-    logger,
-  );
+  const clientPromise = recordSuccessMetric(createClient(), 'createADBClient');
 
   const watchAndroidDevices = () => {
     // get emulators

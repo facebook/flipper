@@ -5,7 +5,7 @@
  * @format
  */
 
-import type Logger from '../fb-stubs/Logger';
+import {getInstance} from '../fb-stubs/Logger';
 
 /*
  * Wraps a Promise, preserving it's functionality but logging the success or
@@ -15,15 +15,14 @@ import type Logger from '../fb-stubs/Logger';
 export function recordSuccessMetric(
   promise: Promise<*>,
   name: string,
-  logger: Logger,
 ): Promise<*> {
   return promise.then(
     fulfilledValue => {
-      logger.track('success-rate', name, 1);
+      getInstance().track('success-rate', name, 1);
       return fulfilledValue;
     },
     rejectionReason => {
-      logger.track('success-rate', name, 0);
+      getInstance().track('success-rate', name, 0);
       return Promise.reject(rejectionReason);
     },
   );

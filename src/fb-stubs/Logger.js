@@ -9,6 +9,8 @@ export type LogTypes = 'error' | 'warn' | 'info' | 'debug';
 export type TrackType = 'duration' | 'usage' | 'performance' | 'success-rate';
 import ScribeLogger from './ScribeLogger';
 
+var instance: ?LogManager = null;
+
 export default class LogManager {
   constructor(store: ?Store) {
     this.scribeLogger = new ScribeLogger(this);
@@ -27,4 +29,21 @@ export default class LogManager {
   error(data: any, category: string) {}
 
   debug(data: any, category: string) {}
+}
+
+export function init(store: Store): LogManager {
+  if (instance) {
+    throw new Error('Attempted to initialize Logger when already initialized');
+  }
+  instance = new LogManager(store);
+  return instance;
+}
+
+export function getInstance(): LogManager {
+  if (!instance) {
+    throw new Error(
+      'Requested Logger instance without initializing it. Make sure init() is called at app start',
+    );
+  }
+  return instance;
 }

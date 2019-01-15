@@ -185,7 +185,6 @@ export default class Server extends EventEmitter {
                 destination,
               ),
               'processCertificateSigningRequest',
-              this.logger,
             )
               .then(result => {
                 subscriber.onComplete({

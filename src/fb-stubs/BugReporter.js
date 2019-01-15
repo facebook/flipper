@@ -5,7 +5,7 @@
  * @format
  */
 
-import LogManager from './Logger';
+import type LogManager from './Logger';
 
 import type {Store} from '../reducers/index.js';
 
