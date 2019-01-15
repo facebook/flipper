@@ -71,6 +71,7 @@ export default class Server extends EventEmitter {
         this.insecureServer = this.startServer(INSECURE_PORT);
         return;
       });
+    recordSuccessMetric(this.initialisePromise, 'initializeServer');
     return this.initialisePromise;
   }
 
