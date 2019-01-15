@@ -36,6 +36,7 @@ import type {
 } from './plugins.js';
 import type {Store as ReduxStore} from 'redux';
 
+// $FlowFixMe introduced when removing $Subtype/$Supertype
 export type Store = ReduxStore<
   {|
     application: ApplicationState,
