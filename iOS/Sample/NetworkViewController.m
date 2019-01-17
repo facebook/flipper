@@ -42,14 +42,14 @@
   [urlRequest setHTTPBody:postData];
   [urlRequest setHTTPMethod:@"POST"];
   __weak NetworkViewController *weakSelf = self;
-  [[[NSURLSession sharedSession] dataTaskWithRequest:urlRequest completionHandler:^(NSData *_Nullable data, NSURLResponse *_Nullable response, NSError *_Nullable error) {
+  [[[NSURLSession sharedSession] dataTaskWithRequest:urlRequest completionHandler:^(NSData *_Nullable data, NSURLResponse *_Nullable response, NSError *_Nullable dataTaskError) {
 
-    if (error || !data) {
+    if (dataTaskError || !data) {
       UIAlertController *alertController = [weakSelf alertControllerForMessage:@"Received error in POST API response"];
       [weakSelf presentViewController:alertController animated:true completion:nil];
       return;
     }
-    NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:data options:0 error:&error];
+    NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:data options:0 error:&dataTaskError];
     NSLog(@"MSG-POST: %@", dict[@"msg"]);
 
     UIAlertController *alertController = [weakSelf alertControllerForMessage:@"Received response from POST API"];

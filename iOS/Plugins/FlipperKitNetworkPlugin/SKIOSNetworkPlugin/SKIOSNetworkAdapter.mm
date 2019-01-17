@@ -8,8 +8,8 @@
 #if FB_SONARKIT_ENABLED
 
 #import "SKIOSNetworkAdapter.h"
-#import "FLEXNetworkObserver.h"
-#import "FLEXNetworkRecorder.h"
+#import "FLEXNetworkLib/FLEXNetworkObserver.h"
+#import "FLEXNetworkLib/FLEXNetworkRecorder.h"
 
 @implementation SKIOSNetworkAdapter
 @synthesize delegate = _delegate;
