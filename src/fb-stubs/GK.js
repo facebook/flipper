@@ -19,4 +19,8 @@ export default class GK {
     }
     return false;
   }
+
+  static serializeGKs() {
+    return JSON.stringify({});
+  }
 }
