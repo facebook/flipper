@@ -17,7 +17,7 @@ import BugReporter from '../fb-stubs/BugReporter.js';
 const mockStore = configureStore([])(reducers(undefined, {type: 'INIT'}));
 
 test('Empty app state matches snapshot', () => {
-  const logger = initLogger();
+  const logger = initLogger(mockStore);
   const bugReporter = new BugReporter(logger, mockStore);
 
   const component = renderer.create(

@@ -12,7 +12,7 @@ import ScribeLogger from './ScribeLogger';
 var instance: ?LogManager = null;
 
 export default class LogManager {
-  constructor(store: ?Store) {
+  constructor(store: Store) {
     this.scribeLogger = new ScribeLogger(this);
   }
 

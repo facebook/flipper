@@ -21,7 +21,7 @@ import {TEST_PASSING_GK, TEST_FAILING_GK} from '../../fb-stubs/GK';
 import TestPlugin from './TestPlugin';
 
 const mockStore = configureStore([])(reducers(undefined, {type: 'INIT'}));
-const logger = new Logger();
+const logger = new Logger(mockStore);
 
 test('dispatcher dispatches REGISTER_PLUGINS', () => {
   dispatcher(mockStore, logger);

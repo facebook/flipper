@@ -23,7 +23,7 @@ beforeAll(() => {
     fs.mkdirSync(flipperDir);
   }
 
-  const logger = initLogger();
+  const logger = initLogger(mockStore);
   server = new Server(logger, mockStore);
   return server.init();
 });
