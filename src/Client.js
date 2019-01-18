@@ -27,7 +27,42 @@ export type ClientQuery = {|
   device_id: string,
 |};
 
+type ErrorType = {message: string, stacktrace: string, name: string};
 type RequestMetadata = {method: string, id: number, params: ?Object};
+
+const handleError = (store: Store, deviceSerial: ?string, error: ErrorType) => {
+  const crashReporterPlugin = store
+    .getState()
+    .plugins.devicePlugins.get('CrashReporter');
+  if (!crashReporterPlugin) {
+    return;
+  }
+
+  const pluginKey = `${deviceSerial || ''}#CrashReporter`;
+
+  const persistedState = {
+    ...crashReporterPlugin.defaultPersistedState,
+    ...store.getState().pluginStates[pluginKey],
+  };
+  // $FlowFixMe: We checked persistedStateReducer exists
+  const newPluginState = crashReporterPlugin.persistedStateReducer(
+    persistedState,
+    'flipper-crash-report',
+    {
+      name: error.name,
+      reason: error.message,
+      callstack: error.stacktrace,
+    },
+  );
+  if (persistedState !== newPluginState) {
+    store.dispatch(
+      setPluginState({
+        pluginKey,
+        state: newPluginState,
+      }),
+    );
+  }
+};
 
 export default class Client extends EventEmitter {
   constructor(
@@ -162,6 +197,7 @@ export default class Client extends EventEmitter {
           }: ${error.message} + \nDevice Stack Trace: ${error.stacktrace}`,
           'deviceError',
         );
+        handleError(this.store, this.getDevice()?.serial, error);
       } else if (method === 'refreshPlugins') {
         this.refreshPlugins();
       } else if (method === 'execute') {
@@ -226,6 +262,10 @@ export default class Client extends EventEmitter {
       callbacks.resolve(data.success);
     } else if (data.error) {
       callbacks.reject(data.error);
+      const {error} = data;
+      if (error) {
+        handleError(this.store, this.getDevice()?.serial, error);
+      }
     } else {
       // ???
     }

@@ -279,7 +279,7 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin<
     method: string,
     payload: Object,
   ): PersistedState => {
-    if (method === 'crash-report') {
+    if (method === 'crash-report' || method === 'flipper-crash-report') {
       CrashReporterPlugin.notificationID++;
       const mergedState: PersistedState = {
         crashes: persistedState.crashes.concat([

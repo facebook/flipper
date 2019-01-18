@@ -1,9 +1,8 @@
-/*
- *  Copyright (c) Facebook, Inc.
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- *  This source code is licensed under the MIT license found in the LICENSE
- *  file in the root directory of this source tree.
- *
+ * This source code is licensed under the MIT license found in the LICENSE
+ * file in the root directory of this source tree.
  */
 #include <Flipper/FlipperClient.h>
 #include <FlipperTestLib/FlipperConnectionManagerMock.h>
@@ -282,9 +281,11 @@ TEST(FlipperClientTests, testExceptionUnknownPlugin) {
   dynamic messageInit = dynamic::object("method", "init")(
       "params", dynamic::object("plugin", "Unknown"));
   socket->callbacks->onMessageReceived(messageInit);
-
   EXPECT_EQ(
       socket->messages.back()["error"]["message"],
+      "plugin Unknown not found for method init");
+  EXPECT_EQ(
+      socket->messages.back()["error"]["name"],
       "plugin Unknown not found for method init");
 }
 
@@ -297,9 +298,11 @@ TEST(FlipperClientTests, testExceptionUnknownApi) {
   dynamic messageInit = dynamic::object("method", "execute")(
       "params", dynamic::object("api", "Unknown"));
   socket->callbacks->onMessageReceived(messageInit);
-
   EXPECT_EQ(
       socket->messages.back()["error"]["message"],
+      "connection Unknown not found for method execute");
+  EXPECT_EQ(
+      socket->messages.back()["error"]["name"],
       "connection Unknown not found for method execute");
 }
 
