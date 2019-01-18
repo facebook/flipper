@@ -27,6 +27,7 @@ import DevicesButton from './DevicesButton.js';
 import ScreenCaptureButtons from './ScreenCaptureButtons.js';
 import AutoUpdateVersion from './AutoUpdateVersion.js';
 import config from '../fb-stubs/config.js';
+import {isAutoUpdaterEnabled} from '../utils/argvUtils.js';
 
 const AppTitleBar = styled(FlexRow)(({focused}) => ({
   background: focused
@@ -65,7 +66,7 @@ class TitleBar extends Component<Props> {
         <DevicesButton />
         <ScreenCaptureButtons />
         <Spacer />
-        {process.platform === 'darwin' ? <AutoUpdateVersion /> : null}
+        {isAutoUpdaterEnabled() ? <AutoUpdateVersion /> : null}
         {config.bugReportButtonVisible && (
           <Button
             compact={true}

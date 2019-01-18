@@ -59,9 +59,6 @@ exports[`Empty app state matches snapshot 1`] = `
       className="css-12zzrdt"
     />
     <div
-      className="css-1xcv92o"
-    />
-    <div
       className="css-1cecbfb"
       onClick={[Function]}
       onMouseDown={[Function]}
