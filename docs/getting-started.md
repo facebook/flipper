@@ -49,7 +49,7 @@ repositories {
 
 dependencies {
   debugImplementation 'com.facebook.flipper:flipper:0.14.1'
-  debugImplementation 'com.facebook.flipper:soloader:0.5.1'
+  debugImplementation 'com.facebook.soloader:soloader:0.5.1'
 }
 ```
 
