@@ -38,7 +38,7 @@ RefWatcher refWatcher = LeakCanary.refWatcher(this)
 ```
 
 
-Then, add the RecordLeakService in your debug variant AndroidManifest.xml
+Then, add the `RecordLeakService` in your debug variant AndroidManifest.xml.
 
 ```xml
     <service android:name="com.facebook.flipper.plugins.leakcanary.RecordLeakService" />
