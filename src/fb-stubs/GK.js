@@ -21,6 +21,6 @@ export default class GK {
   }
 
   static serializeGKs() {
-    return JSON.stringify({});
+    return '';
   }
 }
