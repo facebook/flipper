@@ -1,11 +1,10 @@
 #!/usr/bin/env stack
--- stack --resolver lts-12.7 --install-ghc runghc --package turtle --package system-filepath --package pseudomacros --package foldl
+-- stack --resolver lts-13.4 --install-ghc runghc --package turtle --package system-filepath --package pseudomacros --package foldl
 
 {-# OPTIONS_GHC -fno-warn-name-shadowing #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE KindSignatures #-}
-{-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE FlexibleContexts #-}
 
 import Prelude hiding (FilePath)
@@ -13,7 +12,6 @@ import Turtle
 
 import Data.Maybe (catMaybes)
 import Control.Monad (forM_)
-import PseudoMacros (__FILE__)
 
 import qualified Filesystem.Path.CurrentOS as Path
 import qualified Data.Text as T
@@ -21,10 +19,16 @@ import qualified Control.Foldl as F
 
 -- * Global settings
 
-replacements :: [(FilePath, Pattern Version)]
-replacements =
-  [("gradle.properties", "VERSION_NAME=" *> version)
-  ,("docs/getting-started.md", spaces >> "debugImplementation 'com.facebook.flipper:flipper:" *> version <* "'")
+releaseReplacements :: [(FilePath, Pattern Version)]
+releaseReplacements =
+  [("gradle.properties", "VERSION_NAME=" *> anyVersion)
+  ,("docs/getting-started.md", spaces >> "debugImplementation 'com.facebook.flipper:flipper:" *> releaseVersion <* "'")
+  ]
+
+snapshotReplacements :: [(FilePath, Pattern Version)]
+snapshotReplacements =
+  [("gradle.properties", "VERSION_NAME=" *> anyVersion)
+  ,("docs/getting-started.md", spaces >> "debugImplementation 'com.facebook.flipper:flipper:" *> snapshotVersion <* "'")
   ]
 
 flipperPath :: FilePath -> FilePath
@@ -33,8 +37,16 @@ flipperPath basePath =
 
 -- * Patterns
 
-version :: Pattern Version
-version =
+releaseVersion :: Pattern Version
+releaseVersion =
+  Version <$> plus digit <> "." <> plus digit <> "." <> plus digit
+
+snapshotVersion :: Pattern Version
+snapshotVersion =
+  Version <$> plus digit <> "." <> plus digit <> "." <> plus digit <> "-SNAPSHOT"
+
+anyVersion :: Pattern Version
+anyVersion =
   Version <$> plus digit <> "." <> plus digit <> "." <> plus (char '-' <|> alphaNum)
 
 -- * Application logic
@@ -44,16 +56,18 @@ newtype Version = Version Text
 
 unversion (Version v) = v
 
-parser :: Turtle.Parser Version
-parser = Version <$> argText "version" "Version to bump to, e.g. 1.0.2"
+data BumpMode = ModeRelease | ModeSnapshot
+  deriving (Show, Eq)
 
--- | Provide a path to the directory this very file resides in through some
--- arcane magic.
-thisDirectory :: IO FilePath
-thisDirectory = do
-  let filePath :: FilePath = $__FILE__
-  currentDir <- pwd
-  return . Path.parent $ currentDir </> filePath
+data BumpArguments = BumpArguments
+  { argVersion :: Version
+  , argMode :: BumpMode
+  } deriving (Show, Eq)
+
+parser :: Turtle.Parser BumpArguments
+parser = BumpArguments
+  <$> (Version <$> argText "version" "Version to bump to, e.g. 1.0.2")
+  <*> ((\b -> if b then ModeSnapshot else ModeRelease) <$> switch "snapshot" 's' "Change SNAPSHOT references instead of release ones")
 
 -- | Find the root of the project, indicated by the presence of a ".hg" folder.
 findProjectRoot :: FilePath -> IO (Maybe FilePath)
@@ -73,21 +87,25 @@ findProjectRoot dir = go $ Path.splitDirectories dir
           else
             go ds'
 
-replaceLine :: Version -> Pattern Version -> Line -> Shell Line
-replaceLine newVersion pttrn l =
+replaceLine :: Version -> Pattern Version -> Pattern Version -> Line -> Shell Line
+replaceLine newVersion matcher pttrn l =
   if match pttrn (lineToText l) == empty then pure l
-  else sed (const (unversion newVersion) <$> version) $ pure l
+  else sed (unversion newVersion <$ anyVersion) $ pure l
 
 main :: IO ()
 main = do
-  newVersion <- options "Flipper Version Bumper" parser
-  let isVersionValid = match version (unversion newVersion)
+  args <- options "Flipper Version Bumper" parser
+  let newVersion = argVersion args
+  let (versionMatcher, replacements) = case argMode args of
+        ModeRelease -> (releaseVersion, releaseReplacements)
+        ModeSnapshot -> (snapshotVersion, snapshotReplacements)
+
+  let isVersionValid = match versionMatcher (unversion newVersion)
   when (null isVersionValid) $ do
     printf ("Invalid version specified: "%w%".\n") newVersion
     exit $ ExitFailure 2
 
-  directory <- thisDirectory
-  projectRoot <- findProjectRoot directory
+  projectRoot <- findProjectRoot =<< pwd
   let flipperDir = flipperPath <$> projectRoot
   flipperDir_ <- case flipperDir of
         Just f -> pure f
@@ -98,6 +116,6 @@ main = do
       let absPath = flipperDir_ </> path
       printf ("Updating version in "%w%"\n") absPath
       lines <- T.lines <$> readTextFile absPath
-      newLines :: [Line] <- flip fold F.mconcat . sequence $ replaceLine newVersion pttrn <$> catMaybes (textToLine <$> lines)
+      newLines :: [Line] <- flip fold F.mconcat . sequence $ replaceLine newVersion versionMatcher pttrn <$> catMaybes (textToLine <$> lines)
       writeTextFile absPath . T.unlines $ lineToText <$> newLines
   echo "Done!"
