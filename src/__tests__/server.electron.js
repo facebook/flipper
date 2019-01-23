@@ -25,13 +25,13 @@ beforeAll(() => {
 
   const logger = initLogger(mockStore);
   server = new Server(logger, mockStore);
-  return server.init();
 });
 
 test('servers starting at ports', done => {
   const serversToBeStarted = new Set([SECURE_PORT, INSECURE_PORT]);
 
-  return new Promise((resolve, reject) => {
+  // Resolve promise when we get a listen event for each port
+  const listenerPromise = new Promise((resolve, reject) => {
     server.addListener('listening', port => {
       if (!serversToBeStarted.has(port)) {
         throw Error(`unknown server started at port ${port}`);
@@ -44,6 +44,11 @@ test('servers starting at ports', done => {
       }
     });
   });
+
+  // Initialise server after the listeners have been setup
+  server.init();
+
+  return listenerPromise;
 });
 
 afterAll(() => {
