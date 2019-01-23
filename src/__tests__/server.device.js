@@ -6,7 +6,7 @@
  */
 
 import Server from '../server.js';
-import LogManager from '../fb-stubs/Logger';
+import {init as initLogger} from '../fb-stubs/Logger';
 import reducers from '../reducers/index.js';
 import {createStore} from 'redux';
 import path from 'path';
@@ -26,7 +26,7 @@ beforeAll(() => {
     fs.mkdirSync(flipperDir);
   }
 
-  const logger = new LogManager();
+  const logger = initLogger(store);
 
   androidDevice(store, logger);
   iosDevice(store, logger);
