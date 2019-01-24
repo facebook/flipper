@@ -16,6 +16,7 @@
 #include "SKStateUpdateCPPWrapper.h"
 #import "FlipperDiagnosticsViewController.h"
 #import "FlipperClient+Testing.h"
+#import "SKEnvironmentVariables.h"
 
 #if !TARGET_OS_SIMULATOR
 #import <FKPortForwarding/FKPortForwardingServer.h>
@@ -82,7 +83,9 @@ using WrapperPlugin = facebook::flipper::FlipperCppWrapperPlugin;
           [privateAppDirectory UTF8String],
         },
         sonarThread.getEventBase(),
-        connectionThread.getEventBase()
+        connectionThread.getEventBase(),
+        [SKEnvironmentVariables getInsecurePort],
+        [SKEnvironmentVariables getSecurePort]
       });
       _cppClient = facebook::flipper::FlipperClient::instance();
     } catch (const std::system_error &e) {
