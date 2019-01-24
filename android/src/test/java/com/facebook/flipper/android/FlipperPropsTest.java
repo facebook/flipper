@@ -8,11 +8,11 @@ package com.facebook.flipper.android;
 
 import static org.junit.Assert.assertEquals;
 
-import com.facebook.testing.robolectric.v3.WithTestDefaultsRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 
-@RunWith(WithTestDefaultsRunner.class)
+@RunWith(RobolectricTestRunner.class)
 public class FlipperPropsTest {
 
   @Test
