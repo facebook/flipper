@@ -189,6 +189,25 @@ target 'MyApp' do
   pod 'FlipperKit/SKIOSNetworkPlugin', '~>' + flipperkit_version
   pod 'FlipperKit/FlipperKitUserDefaultsPlugin', '~>' + flipperkit_version
 
+  # If you use `use_frameworks!` in your Podfile, 
+  # uncomment the below $static_framework array and also 
+  # the pre_install section.  This will cause Flipper and 
+  # it's dependencies to be static and all other pods to 
+  # be dynamic.
+
+  # $static_framework = ['FlipperKit', 'Flipper', 'Folly',
+  #   'CocoaAsyncSocket', 'ComponentKit', 'DoubleConversion', 
+  #   'glog', 'PeerTalk', 'RSocket', 'Yoga', 'YogaKit', 
+  #   'CocoaLibEvent', 'OpenSSL-Static', 'boost-for-react-native']
+  
+  # pre_install do |installer|
+  #     installer.pod_targets.each do |pod|
+  #       if $static_framework.include?(pod.name)  
+  #         pod.host_requires_frameworks = false
+  #       end
+  #   end
+  # end
+
 # This post_install script adds -DFB_SONARKIT_ENABLED flag to OTHER_SWIFT_FLAGS, necessary to build swift target
     post_install do |installer|
       file_name = Dir.glob("*.xcodeproj")[0]
