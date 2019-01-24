@@ -7,5 +7,5 @@ cd "$BASEDIR" || exit
 case $OSTYPE in
   darwin*) ./bump.mac "$@" ;;
   linux-gnu) ./bump.lnx64 "$@" ;;
-  *) echo "Unknown OS. Using source version via https://haskellstack.org/" && ./bump.hs "$@" ;;
+  *) echo "Unknown OS. Using source version via https://haskellstack.org/" && ./bump/bump.hs "$@" ;;
 esac

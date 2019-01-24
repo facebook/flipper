@@ -1,5 +1,5 @@
 #!/usr/bin/env stack
--- stack --resolver lts-13.4 --install-ghc runghc --package turtle --package system-filepath --package pseudomacros --package foldl
+-- stack --resolver lts-13.4 --install-ghc runghc --package turtle --package system-filepath --package foldl
 
 {-# OPTIONS_GHC -fno-warn-name-shadowing #-}
 {-# LANGUAGE OverloadedStrings #-}
