@@ -154,6 +154,25 @@ target <span class="hljs-string">'MyApp'</span> <span class="hljs-keyword">do</s
   pod <span class="hljs-string">'FlipperKit/SKIOSNetworkPlugin'</span>, <span class="hljs-string">'~&gt;'</span> + flipperkit_version
   pod <span class="hljs-string">'FlipperKit/FlipperKitUserDefaultsPlugin'</span>, <span class="hljs-string">'~&gt;'</span> + flipperkit_version
 
+  <span class="hljs-comment"># If you use `use_frameworks!` in your Podfile, </span>
+  <span class="hljs-comment"># uncomment the below $static_framework array and also </span>
+  <span class="hljs-comment"># the pre_install section.  This will cause Flipper and </span>
+  <span class="hljs-comment"># it's dependencies to be static and all other pods to </span>
+  <span class="hljs-comment"># be dynamic.</span>
+
+  <span class="hljs-comment"># $static_framework = ['FlipperKit', 'Flipper', 'Folly',</span>
+  <span class="hljs-comment">#   'CocoaAsyncSocket', 'ComponentKit', 'DoubleConversion', </span>
+  <span class="hljs-comment">#   'glog', 'PeerTalk', 'RSocket', 'Yoga', 'YogaKit', </span>
+  <span class="hljs-comment">#   'CocoaLibEvent', 'OpenSSL-Static', 'boost-for-react-native']</span>
+  
+  <span class="hljs-comment"># pre_install do |installer|</span>
+  <span class="hljs-comment">#     installer.pod_targets.each do |pod|</span>
+  <span class="hljs-comment">#       if $static_framework.include?(pod.name)  </span>
+  <span class="hljs-comment">#         pod.host_requires_frameworks = false</span>
+  <span class="hljs-comment">#       end</span>
+  <span class="hljs-comment">#   end</span>
+  <span class="hljs-comment"># end</span>
+
 <span class="hljs-comment"># This post_install script adds -DFB_SONARKIT_ENABLED flag to OTHER_SWIFT_FLAGS, necessary to build swift target</span>
     post_install <span class="hljs-keyword">do</span> <span class="hljs-params">|installer|</span>
       file_name = Dir.glob(<span class="hljs-string">"*.xcodeproj"</span>)[<span class="hljs-number">0</span>]
