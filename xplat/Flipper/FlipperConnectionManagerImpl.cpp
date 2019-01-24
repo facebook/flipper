@@ -24,8 +24,6 @@
 
 static constexpr int reconnectIntervalSeconds = 2;
 static constexpr int connectionKeepaliveSeconds = 10;
-static constexpr int securePort = 8088;
-static constexpr int insecurePort = 8089;
 
 static constexpr int maxPayloadSize = 0xFFFFFF;
 
@@ -84,6 +82,8 @@ FlipperConnectionManagerImpl::FlipperConnectionManagerImpl(
     std::shared_ptr<ConnectionContextStore> contextStore)
     : deviceData_(config.deviceData),
       flipperState_(state),
+      insecurePort(config.insecurePort),
+      securePort(config.securePort),
       flipperEventBase_(config.callbackWorker),
       connectionEventBase_(config.connectionWorker),
       contextStore_(contextStore) {
