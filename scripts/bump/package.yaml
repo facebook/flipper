@@ -12,3 +12,5 @@ executables:
   bump:
     source-dirs:      .
     main:             bump.hs
+    ghc-options:      -O2 -optl-s
+    ld-options:       -static -fuse-ld=gold
