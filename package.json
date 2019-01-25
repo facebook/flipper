@@ -1,7 +1,7 @@
 {
   "name": "flipper",
   "private": true,
-  "version": "0.14.1",
+  "version": "0.14.2",
   "versionDate": "2018-4-12",
   "description": "Mobile development tool",
   "productName": "Flipper",
