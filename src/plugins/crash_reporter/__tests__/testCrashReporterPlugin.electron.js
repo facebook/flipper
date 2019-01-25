@@ -40,6 +40,7 @@ function getCrash(
     name: name,
   };
 }
+
 beforeEach(() => {
   setNotificationID(0); // Resets notificationID to 0
   setDefaultPersistedState({crashes: []}); // Resets defaultpersistedstate
