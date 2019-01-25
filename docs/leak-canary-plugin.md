@@ -37,6 +37,13 @@ RefWatcher refWatcher = LeakCanary.refWatcher(this)
     .buildAndInstall();
 ```
 
+
+Then, add the `RecordLeakService` in your debug variant AndroidManifest.xml.
+
+```xml
+    <service android:name="com.facebook.flipper.plugins.leakcanary.RecordLeakService" />
+```
+
 ## Usage
 
 Leaks detected by LeakCanary will appear automatically in Flipper. Each leak will display a hierarchy of objects, beginning from the garbage collector root and ending at the leaked class.
