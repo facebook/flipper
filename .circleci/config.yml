@@ -9,17 +9,6 @@ executors:
       TERM: 'dumb'
 
 jobs:
-  add_accepted_android_sdk_license:
-    executor: default-executor
-    docker:
-      - image: circleci/android:api-28-ndk-r17b
-    steps:
-      - run:
-          name: Add accepted Android SDK license
-          command: |
-            mkdir -p "$ANDROID_HOME/licenses/"
-            echo > "$ANDROID_HOME/licenses/android-sdk-license"
-            echo -n 24333f8a63b6825ea9c5514f83c2829b004d1fee > "$ANDROID_HOME/licenses/android-sdk-license"
   snapshot:
     executor: default-executor
     docker:
@@ -28,7 +17,9 @@ jobs:
       - checkout
       - run:
           name: build and deploy
-          command: ./gradlew :android:assembleRelease && scripts/publish-android-snapshot.sh
+          command: |
+            yes | sdkmanager "platforms;android-27" || true
+            ./gradlew :android:assembleRelease && scripts/publish-android-snapshot.sh
 
   release:
     executor: default-executor
@@ -38,13 +29,14 @@ jobs:
       - checkout
       - run:
           name: build and deploy
-          command: ./gradlew :android:assembleRelease && scripts/publish-android-release.sh
+          command: |
+            yes | sdkmanager "platforms;android-27" || true
+            ./gradlew :android:assembleRelease && scripts/publish-android-release.sh
 
 workflows:
   version: 2
   build-and-deploy:
     jobs:
-      - add_accepted_android_sdk_license
       - snapshot:
           filters:
             branches:
