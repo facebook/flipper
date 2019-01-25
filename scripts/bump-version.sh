@@ -46,6 +46,10 @@ OLD_VERSION="${OLD_VERSION_POD_ARG##* }"
 echo "The currently released version is $OLD_VERSION. What should the version of the next release be?"
 read -r VERSION
 
+# This could be one expression with GNU sed, but I guess we want to support the BSD crap, too.
+SNAPSHOT_MINOR_VERSION=$(echo "$VERSION" | sed -Ee 's/([0-9]+)\.([0-9]+)\.([0-9]+)/\3 + 1/' | bc)
+SNAPSHOT_VERSION="$(echo "$VERSION" | sed -Ee 's/([0-9]+)\.([0-9]+)\.([0-9]+)/\1.\2./')""$SNAPSHOT_MINOR_VERSION""-SNAPSHOT"
+
 echo "Updating version $VERSION in podspecs, podfiles and in getting started docs..."
 
 # Update Podspec files and podfiles with correct version
@@ -92,7 +96,15 @@ jq '.version = $newVal' --arg newVal "$VERSION" "$SONAR_DIR"/package.json > tmp.
 
 echo "Committing the files..."
 hg addremove
-hg commit -m"Flipper Release: v$VERSION"
 
-echo "Preparing diff for your review..."
-jf submit -n
+hg commit -m "Flipper Release: v$VERSION"
+
+RELEASE_REV="$(hg log -r . --template "{node}\\n")"
+
+echo "Release commit made as $RELEASE_REV, creating new snapshot version $SNAPSHOT_VERSION..."
+"$SONAR_DIR"/scripts/bump.sh --snapshot "$SNAPSHOT_VERSION"
+
+hg commit -m "Flipper Bump: v$SNAPSHOT_VERSION"
+
+echo "Sumitting diffs for review..."
+jf submit -n -r.^::.
