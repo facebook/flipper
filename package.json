@@ -68,6 +68,7 @@
     "express": "^4.15.2",
     "fs-extra": "^7.0.1",
     "invariant": "^2.2.2",
+    "line-replace": "^1.0.2",
     "lodash.debounce": "^4.0.8",
     "mkdirp": "^0.5.1",
     "node-fetch": "^2.3.0",
