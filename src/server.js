@@ -24,9 +24,6 @@ const invariant = require('invariant');
 const tls = require('tls');
 const net = require('net');
 
-export const SECURE_PORT = 8088;
-export const INSECURE_PORT = 8089;
-
 type RSocket = {|
   fireAndForget(payload: {data: string}): void,
   connectionStatus(): any,
@@ -62,13 +59,12 @@ export default class Server extends EventEmitter {
     ((event: 'clients-change', callback: () => void) => void);
 
   init() {
+    const {insecure, secure} = this.store.getState().application.serverPorts;
     this.initialisePromise = this.certificateProvider
       .loadSecureServerConfig()
-      .then(
-        options => (this.secureServer = this.startServer(SECURE_PORT, options)),
-      )
+      .then(options => (this.secureServer = this.startServer(secure, options)))
       .then(() => {
-        this.insecureServer = this.startServer(INSECURE_PORT);
+        this.insecureServer = this.startServer(insecure);
         return;
       });
     recordSuccessMetric(this.initialisePromise, 'initializeServer');

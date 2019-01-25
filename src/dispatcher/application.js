@@ -8,6 +8,7 @@
 import {remote, ipcRenderer} from 'electron';
 import type {Store} from '../reducers/index.js';
 import type Logger from '../fb-stubs/Logger.js';
+import {parseFlipperPorts} from '../utils/environmentVariables';
 
 import {selectPlugin, userPreferredPlugin} from '../reducers/connections';
 export const uriComponents = (url: string) => {
@@ -61,4 +62,14 @@ export default (store: Store, logger: Logger) => {
       store.dispatch(userPreferredPlugin(match[1]));
     }
   });
+
+  if (process.env.FLIPPER_PORTS) {
+    const portOverrides = parseFlipperPorts(process.env.FLIPPER_PORTS);
+    if (portOverrides) {
+      store.dispatch({
+        type: 'SET_SERVER_PORTS',
+        payload: portOverrides,
+      });
+    }
+  }
 };

@@ -50,7 +50,7 @@ test(
 
       // Make sure it only connects once
       registeredClients.push(client);
-      expect(registeredClients.length).toBe(1);
+      expect(registeredClients).toHaveLength(1);
 
       // Make sure client stays connected for some time before passing test
       setTimeout(() => {

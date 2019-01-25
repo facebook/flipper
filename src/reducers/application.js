@@ -26,6 +26,10 @@ export type State = {
   windowIsFocused: boolean,
   activeSheet: ActiveSheet,
   sessionId: ?string,
+  serverPorts: {
+    insecure: number,
+    secure: number,
+  },
 };
 
 type BooleanActionType =
@@ -42,6 +46,13 @@ export type Action =
   | {
       type: 'SET_ACTIVE_SHEET',
       payload: ActiveSheet,
+    }
+  | {
+      type: 'SET_SERVER_PORTS',
+      payload: {
+        insecure: number,
+        secure: number,
+      },
     };
 
 const initialState: () => State = () => ({
@@ -51,6 +62,10 @@ const initialState: () => State = () => ({
   windowIsFocused: remote.getCurrentWindow().isFocused(),
   activeSheet: null,
   sessionId: uuidv1(),
+  serverPorts: {
+    insecure: 8089,
+    secure: 8088,
+  },
 });
 
 export default function reducer(state: State, action: Action): State {
@@ -79,6 +94,12 @@ export default function reducer(state: State, action: Action): State {
     return {
       ...state,
       activeSheet: action.payload,
+    };
+  }
+  if (action.type === 'SET_SERVER_PORTS') {
+    return {
+      ...state,
+      serverPorts: action.payload,
     };
   } else {
     return state;

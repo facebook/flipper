@@ -15,7 +15,11 @@ import {registerDeviceCallbackOnPlugins} from '../utils/onRegisterDevice.js';
 import {recordSuccessMetric} from '../utils/metrics';
 const adb = require('adbkit-fb');
 
-function createDevice(adbClient, device): Promise<AndroidDevice> {
+function createDevice(
+  adbClient: any,
+  device: any,
+  store: Store,
+): Promise<AndroidDevice> {
   return new Promise((resolve, reject) => {
     const type =
       device.type !== 'device' || device.id.startsWith('emulator')
@@ -28,7 +32,8 @@ function createDevice(adbClient, device): Promise<AndroidDevice> {
         name = (await getRunningEmulatorName(device.id)) || name;
       }
       const androidDevice = new AndroidDevice(device.id, type, name, adbClient);
-      androidDevice.reverse();
+      const ports = store.getState().application.serverPorts;
+      androidDevice.reverse([ports.secure, ports.insecure]);
       resolve(androidDevice);
     });
   });
@@ -127,7 +132,7 @@ export default (store: Store, logger: Logger) => {
 
             tracker.on('add', async device => {
               if (device.type !== 'offline') {
-                registerDevice(client, device);
+                registerDevice(client, device, store);
               }
             });
 
@@ -135,7 +140,7 @@ export default (store: Store, logger: Logger) => {
               if (device.type === 'offline') {
                 unregisterDevices([device.id]);
               } else {
-                registerDevice(client, device);
+                registerDevice(client, device, store);
               }
             });
 
@@ -156,8 +161,8 @@ export default (store: Store, logger: Logger) => {
       });
   };
 
-  async function registerDevice(adbClient: any, deviceData: any) {
-    const androidDevice = await createDevice(adbClient, deviceData);
+  async function registerDevice(adbClient: any, deviceData: any, store: Store) {
+    const androidDevice = await createDevice(adbClient, deviceData, store);
     logger.track('usage', 'register-device', {
       os: 'Android',
       name: androidDevice.title,
