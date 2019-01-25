@@ -37,11 +37,11 @@ module.exports = ({types: t}) => ({
         t.isStringLiteral(args[0])
       ) {
         if (args[0].value === 'flipper') {
-          path.replaceWith(t.identifier('window.Flipper'));
+          path.replaceWith(t.identifier('global.Flipper'));
         } else if (args[0].value === 'react') {
-          path.replaceWith(t.identifier('window.React'));
+          path.replaceWith(t.identifier('global.React'));
         } else if (args[0].value === 'react-dom') {
-          path.replaceWith(t.identifier('window.ReactDOM'));
+          path.replaceWith(t.identifier('global.ReactDOM'));
         } else if (
           // require a file not a pacakge
           args[0].value.indexOf('/') > -1 &&
@@ -70,7 +70,7 @@ module.exports = ({types: t}) => ({
         path.parentPath.node.id !== path.node &&
         !isExcludedPath(state.file.opts.filename)
       ) {
-        path.replaceWith(t.identifier('window.React'));
+        path.replaceWith(t.identifier('global.React'));
       }
     },
   },

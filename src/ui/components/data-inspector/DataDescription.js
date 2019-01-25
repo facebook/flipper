@@ -4,7 +4,7 @@
  * LICENSE file in the root directory of this source tree.
  * @format
  */
-import {Link} from 'flipper';
+import Link from '../Link';
 import type {DataInspectorSetValue} from './DataInspector.js';
 import {PureComponent} from 'react';
 import styled from '../../styled/index.js';

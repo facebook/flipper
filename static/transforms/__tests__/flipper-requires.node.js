@@ -17,36 +17,36 @@ const babelOptions = {
   filename: 'index.js',
 };
 
-test('transform react requires to global window', () => {
+test('transform react requires to global object', () => {
   const src = 'require("react")';
   const ast = parse(src);
   const transformed = transformFromAstSync(ast, src, babelOptions).ast;
   const {code} = generate(transformed);
-  expect(code).toBe('window.React;');
+  expect(code).toBe('global.React;');
 });
 
-test('transform react-dom requires to global window', () => {
+test('transform react-dom requires to global object', () => {
   const src = 'require("react-dom")';
   const ast = parse(src);
   const transformed = transformFromAstSync(ast, src, babelOptions).ast;
   const {code} = generate(transformed);
-  expect(code).toBe('window.ReactDOM;');
+  expect(code).toBe('global.ReactDOM;');
 });
 
-test('transform flipper requires to global window', () => {
+test('transform flipper requires to global object', () => {
   const src = 'require("flipper")';
   const ast = parse(src);
   const transformed = transformFromAstSync(ast, src, babelOptions).ast;
   const {code} = generate(transformed);
-  expect(code).toBe('window.Flipper;');
+  expect(code).toBe('global.Flipper;');
 });
 
-test('transform React identifier to window.React', () => {
+test('transform React identifier to global.React', () => {
   const src = 'React;';
   const ast = parse(src);
   const transformed = transformFromAstSync(ast, src, babelOptions).ast;
   const {code} = generate(transformed);
-  expect(code).toBe('window.React;');
+  expect(code).toBe('global.React;');
 });
 
 test.skip('throw error when requiring outside the plugin', () => {

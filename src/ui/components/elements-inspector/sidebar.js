@@ -13,7 +13,7 @@ import Panel from '../Panel.js';
 import ManagedDataInspector from '../data-inspector/ManagedDataInspector.js';
 import {Component} from 'react';
 import {Console} from '../console';
-import {GK} from 'flipper';
+import GK from '../../../fb-stubs/GK';
 
 const deepEqual = require('deep-equal');
 

@@ -46,9 +46,12 @@ function forwardPort(port: number, multiplexChannelPort: number) {
 const portForwarders: Array<ChildProcess> = GK.get('flipper_ios_device_support')
   ? [forwardPort(8089, 8079), forwardPort(8088, 8078)]
   : [];
-window.addEventListener('beforeunload', () => {
-  portForwarders.forEach(process => process.kill());
-});
+
+if (typeof window !== 'undefined') {
+  window.addEventListener('beforeunload', () => {
+    portForwarders.forEach(process => process.kill());
+  });
+}
 
 function queryDevices(store: Store, logger: Logger): Promise<void> {
   const {connections} = store.getState();

@@ -13,7 +13,7 @@ import {
   maybeSnapTop,
   SNAP_SIZE,
 } from '../../utils/snap.js';
-import {styled} from '../../ui';
+import styled from '../styled/index.js';
 
 const invariant = require('invariant');
 const React = require('react');

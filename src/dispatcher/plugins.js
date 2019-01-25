@@ -12,7 +12,7 @@ import type {State} from '../reducers/plugins';
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import * as Flipper from 'flipper';
+import * as Flipper from '../index.js';
 import {
   registerPlugins,
   addGatekeepedPlugins,
@@ -20,11 +20,9 @@ import {
   addFailedPlugins,
 } from '../reducers/plugins';
 import {remote} from 'electron';
-import {GK} from 'flipper';
+import GK from '../fb-stubs/GK';
 import {FlipperBasePlugin} from '../plugin.js';
 import {setupMenuBar} from '../MenuBar.js';
-import {setPluginState} from '../reducers/pluginStates.js';
-import {getPersistedState} from '../utils/pluginUtils.js';
 
 export type PluginDefinition = {
   name: string,
@@ -35,9 +33,10 @@ export type PluginDefinition = {
 
 export default (store: Store, logger: Logger) => {
   // expose Flipper and exact globally for dynamically loaded plugins
-  window.React = React;
-  window.ReactDOM = ReactDOM;
-  window.Flipper = Flipper;
+  const globalObject = typeof window === 'undefined' ? global : window;
+  globalObject.React = React;
+  globalObject.ReactDOM = ReactDOM;
+  globalObject.Flipper = Flipper;
 
   const gatekeepedPlugins: Array<PluginDefinition> = [];
   const disabledPlugins: Array<PluginDefinition> = [];
@@ -74,7 +73,7 @@ function getBundledPlugins(): Array<PluginDefinition> {
   // List of defaultPlugins is written at build time
   let bundledPlugins: Array<PluginDefinition> = [];
   try {
-    bundledPlugins = window.electronRequire('./defaultPlugins/index.json');
+    bundledPlugins = global.electronRequire('./defaultPlugins/index.json');
   } catch (e) {}
 
   return bundledPlugins.map(plugin => ({
@@ -86,8 +85,10 @@ function getBundledPlugins(): Array<PluginDefinition> {
 export function getDynamicPlugins() {
   let dynamicPlugins: Array<PluginDefinition> = [];
   try {
-    // $FlowFixMe process.env not defined in electron API spec
-    dynamicPlugins = JSON.parse(remote?.process.env.PLUGINS || '[]');
+    dynamicPlugins = JSON.parse(
+      // $FlowFixMe process.env not defined in electron API spec
+      remote?.process.env.PLUGINS || process.env.PLUGINS || '[]',
+    );
   } catch (e) {
     console.error(e);
   }
@@ -119,7 +120,8 @@ export const checkDisabled = (disabledPlugins: Array<PluginDefinition>) => (
   try {
     disabledList = new Set(
       // $FlowFixMe process.env not defined in electron API spec
-      JSON.parse(remote?.process.env.CONFIG || '{}').disabledPlugins || [],
+      JSON.parse(remote?.process.env.CONFIG || process.env.CONFIG || '{}')
+        .disabledPlugins || [],
     );
   } catch (e) {
     console.error(e);
@@ -134,13 +136,13 @@ export const checkDisabled = (disabledPlugins: Array<PluginDefinition>) => (
 
 export const requirePlugin = (
   failedPlugins: Array<[PluginDefinition, string]>,
-  requireFunction: Function = window.electronRequire,
+  reqFn: Function = global.electronRequire,
 ) => {
   return (
     pluginDefinition: PluginDefinition,
   ): ?Class<FlipperPlugin<> | FlipperDevicePlugin<>> => {
     try {
-      let plugin = requireFunction(pluginDefinition.out);
+      let plugin = reqFn(pluginDefinition.out);
       if (plugin.default) {
         plugin = plugin.default;
       }

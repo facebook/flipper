@@ -14,7 +14,8 @@ import type {Store} from './reducers/index.js';
 import React from 'react';
 import type {Node} from 'react';
 import BaseDevice from './devices/BaseDevice.js';
-import {AndroidDevice, IOSDevice} from 'flipper';
+import AndroidDevice from './devices/AndroidDevice';
+import IOSDevice from './devices/IOSDevice';
 
 const invariant = require('invariant');
 

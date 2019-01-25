@@ -29,10 +29,12 @@ export default (store: Store, logger: Logger) => {
     }
   }
 
-  droppedFrameDetection(
-    performance.now(),
-    () => store.getState().application.windowIsFocused,
-  );
+  if (typeof window !== 'undefined') {
+    droppedFrameDetection(
+      performance.now(),
+      () => store.getState().application.windowIsFocused,
+    );
+  }
 
   ipcRenderer.on('trackUsage', () => {
     const {

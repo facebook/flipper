@@ -7,7 +7,7 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {Sidebar} from 'flipper';
+import Sidebar from '../ui/components/Sidebar';
 import {connect} from 'react-redux';
 import {toggleRightSidebarAvailable} from '../reducers/application.js';
 
@@ -15,7 +15,7 @@ type Props = {
   children: any,
   rightSidebarVisible: boolean,
   rightSidebarAvailable: boolean,
-  toggleRightSidebarAvailable: (visible: boolean) => void,
+  toggleRightSidebarAvailable: (visible?: boolean) => any,
   width?: number,
 };
 
