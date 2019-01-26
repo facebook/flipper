@@ -14,9 +14,8 @@ import {
   SNAP_SIZE,
 } from '../../utils/snap.js';
 import styled from '../styled/index.js';
-
-const invariant = require('invariant');
-const React = require('react');
+import * as invariant from 'invariant';
+import * as React from 'react';
 
 const WINDOW_CURSOR_BOUNDARY = 5;
 
