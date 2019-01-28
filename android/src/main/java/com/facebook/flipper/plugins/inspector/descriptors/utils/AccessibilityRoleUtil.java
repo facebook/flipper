@@ -1,11 +1,9 @@
-/*
- *  Copyright (c) 2018-present, Facebook, Inc.
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- *  This source code is licensed under the MIT license found in the LICENSE
- *  file in the root directory of this source tree.
- *
+ * This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.flipper.plugins.inspector.descriptors.utils;
 
 import android.support.v4.view.ViewCompat;
@@ -29,9 +27,9 @@ public class AccessibilityRoleUtil {
    * <p>The roles spoken by Talkback (roleStrings) should also be kept up to date and are found
    * here:
    *
-   * <p>https://github.com/google/talkback/compositor/src/main/res/values/strings.xml
+   * <p>https://github.com/google/talkback/blob/master/compositor/src/main/res/values/strings.xml
    *
-   * <p>https://github.com/google/talkback/compositor/src/main/res/raw/compositor.json
+   * <p>https://github.com/google/talkback/blob/master/compositor/src/main/res/raw/compositor.json
    */
   public enum AccessibilityRole {
     NONE(null, ""),
