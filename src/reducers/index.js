@@ -11,6 +11,7 @@ import connections from './connections.js';
 import pluginStates from './pluginStates.js';
 import notifications from './notifications.js';
 import plugins from './plugins.js';
+
 import {persistReducer} from 'redux-persist';
 import storage from 'redux-persist/lib/storage/index.js';
 

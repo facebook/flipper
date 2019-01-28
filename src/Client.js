@@ -73,7 +73,6 @@ export default class Client extends EventEmitter {
     store: Store,
   ) {
     super();
-
     this.connected = true;
     this.plugins = [];
     this.connection = conn;
@@ -104,6 +103,7 @@ export default class Client extends EventEmitter {
       },
     });
   }
+
   getDevice = (): ?BaseDevice =>
     this.store
       .getState()
@@ -272,7 +272,7 @@ export default class Client extends EventEmitter {
   }
 
   toJSON() {
-    return `<Client#${this.id}>`;
+    return {id: this.id, query: this.query};
   }
 
   subscribe(

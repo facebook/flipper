@@ -6,7 +6,8 @@
  */
 
 import type {FlipperPlugin, FlipperDevicePlugin} from './plugin.js';
-
+import {exportStoreToFile} from './utils/exportData.js';
+import type {Store} from './reducers/';
 import electron from 'electron';
 
 export type DefaultKeyboardAction = 'clear' | 'goToBottom' | 'createPaste';
@@ -64,9 +65,13 @@ function actionHandler(action: string) {
 
 export function setupMenuBar(
   plugins: Array<Class<FlipperPlugin<> | FlipperDevicePlugin<>>>,
+  store: Store,
 ) {
-  const template = getTemplate(electron.remote.app, electron.remote.shell);
-
+  const template = getTemplate(
+    electron.remote.app,
+    electron.remote.shell,
+    store,
+  );
   // collect all keyboard actions from all plugins
   const registeredActions: Set<?KeyboardAction> = new Set(
     plugins
@@ -169,8 +174,24 @@ export function activateMenuItems(
   );
 }
 
-function getTemplate(app: Object, shell: Object): Array<MenuItem> {
+function getTemplate(
+  app: Object,
+  shell: Object,
+  store: Store,
+): Array<MenuItem> {
   const template = [
+    {
+      label: 'File',
+      submenu: [
+        {
+          label: 'Export Data',
+          role: 'export',
+          click: function(item: Object, focusedWindow: Object) {
+            exportStoreToFile(store);
+          },
+        },
+      ],
+    },
     {
       label: 'Edit',
       submenu: [

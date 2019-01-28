@@ -59,10 +59,13 @@ export default (store: Store, logger: Logger) => {
   store.subscribe(() => {
     const newState = store.getState().plugins;
     if (state !== newState) {
-      setupMenuBar([
-        ...newState.devicePlugins.values(),
-        ...newState.clientPlugins.values(),
-      ]);
+      setupMenuBar(
+        [
+          ...newState.devicePlugins.values(),
+          ...newState.clientPlugins.values(),
+        ],
+        store,
+      );
     }
     state = newState;
   });

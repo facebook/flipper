@@ -354,6 +354,7 @@ export const selectPlugin = (payload: {|
   type: 'SELECT_PLUGIN',
   payload,
 });
+
 export const userPreferredPlugin = (payload: string): Action => ({
   type: 'SELECT_USER_PREFERRED_PLUGIN',
   payload,

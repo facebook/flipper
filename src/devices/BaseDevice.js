@@ -68,7 +68,12 @@ export default class BaseDevice {
   }
 
   toJSON() {
-    return `<${this.constructor.name}#${this.title}#${this.serial}>`;
+    return {
+      os: this.os,
+      title: this.title,
+      deviceType: this.deviceType,
+      serial: this.serial,
+    };
   }
 
   teardown() {}
