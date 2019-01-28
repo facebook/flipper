@@ -55,6 +55,12 @@ exports[`TitleBar is rendered 1`] = `
   <div
     className="css-12zzrdt"
   />
+  <span
+    className="css-lli23c"
+  >
+    1.0.0
+    -dev
+  </span>
   <div
     className="css-1cecbfb"
     onClick={[Function]}

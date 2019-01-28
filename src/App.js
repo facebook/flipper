@@ -15,7 +15,7 @@ import BugReporterDialog from './chrome/BugReporterDialog.js';
 import ErrorBar from './chrome/ErrorBar.js';
 import PluginContainer from './PluginContainer.js';
 import Sheet from './chrome/Sheet.js';
-import {ipcRenderer} from 'electron';
+import {ipcRenderer, remote} from 'electron';
 import PluginDebugger from './chrome/PluginDebugger.js';
 import {
   ACTIVE_SHEET_BUG_REPORTER,
@@ -26,6 +26,8 @@ import type Logger from './fb-stubs/Logger.js';
 import type BugReporter from './fb-stubs/BugReporter.js';
 import type BaseDevice from './devices/BaseDevice.js';
 import type {ActiveSheet} from './reducers/application.js';
+
+const version = remote.app.getVersion();
 
 type Props = {
   logger: Logger,
@@ -71,7 +73,7 @@ export class App extends React.Component<Props> {
   render() {
     return (
       <FlexColumn grow={true}>
-        <TitleBar />
+        <TitleBar version={version} />
         <Sheet>{this.getSheet}</Sheet>
         <FlexRow grow={true}>
           {this.props.leftSidebarVisible && <MainSidebar />}

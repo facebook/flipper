@@ -15,6 +15,7 @@ import {
   Component,
   Spacer,
   styled,
+  Text,
 } from 'flipper';
 import {connect} from 'react-redux';
 import {
@@ -28,6 +29,7 @@ import ScreenCaptureButtons from './ScreenCaptureButtons.js';
 import AutoUpdateVersion from './AutoUpdateVersion.js';
 import config from '../fb-stubs/config.js';
 import {isAutoUpdaterEnabled} from '../utils/argvUtils.js';
+import isProduction from '../utils/isProduction.js';
 
 const AppTitleBar = styled(FlexRow)(({focused}) => ({
   background: focused
@@ -57,7 +59,14 @@ type Props = {|
   toggleLeftSidebarVisible: (visible?: boolean) => void,
   toggleRightSidebarVisible: (visible?: boolean) => void,
   setActiveSheet: (sheet: ActiveSheet) => void,
+  version: string,
 |};
+
+const VersionText = styled(Text)({
+  color: colors.light50,
+  marginLeft: 4,
+  marginTop: 2,
+});
 
 class TitleBar extends Component<Props> {
   render() {
@@ -66,7 +75,13 @@ class TitleBar extends Component<Props> {
         <DevicesButton />
         <ScreenCaptureButtons />
         <Spacer />
-        {isAutoUpdaterEnabled() ? <AutoUpdateVersion /> : null}
+        <VersionText>
+          {this.props.version}
+          {isProduction() ? '' : '-dev'}
+        </VersionText>
+        {isAutoUpdaterEnabled() ? (
+          <AutoUpdateVersion version={this.props.version} />
+        ) : null}
         {config.bugReportButtonVisible && (
           <Button
             compact={true}

@@ -24,6 +24,7 @@ test('TitleBar is rendered', () => {
         toggleLeftSidebarVisible={() => {}}
         toggleRightSidebarVisible={() => {}}
         setActiveSheet={_sheet => {}}
+        version="1.0.0"
       />
     </Provider>,
   );
