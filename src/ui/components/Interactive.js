@@ -14,8 +14,8 @@ import {
   SNAP_SIZE,
 } from '../../utils/snap.js';
 import styled from '../styled/index.js';
-import * as invariant from 'invariant';
-import * as React from 'react';
+import invariant from 'invariant';
+import React from 'react';
 
 const WINDOW_CURSOR_BOUNDARY = 5;
 
@@ -70,7 +70,7 @@ type InteractiveProps = {|
   innerRef?: (elem: HTMLElement) => void,
   style?: Object,
   className?: string,
-  children?: React.Element<*>,
+  children?: React$Element<*>,
 |};
 
 type InteractiveState = {|
