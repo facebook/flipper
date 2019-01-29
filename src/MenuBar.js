@@ -9,6 +9,7 @@ import type {FlipperPlugin, FlipperDevicePlugin} from './plugin.js';
 import {exportStoreToFile} from './utils/exportData.js';
 import type {Store} from './reducers/';
 import electron from 'electron';
+import {GK} from 'flipper';
 
 export type DefaultKeyboardAction = 'clear' | 'goToBottom' | 'createPaste';
 export type TopLevelMenu = 'Edit' | 'View' | 'Window' | 'Help';
@@ -181,18 +182,6 @@ function getTemplate(
 ): Array<MenuItem> {
   const template = [
     {
-      label: 'File',
-      submenu: [
-        {
-          label: 'Export Data',
-          role: 'export',
-          click: function(item: Object, focusedWindow: Object) {
-            exportStoreToFile(store);
-          },
-        },
-      ],
-    },
-    {
       label: 'Edit',
       submenu: [
         {
@@ -320,7 +309,21 @@ function getTemplate(
       ],
     },
   ];
-
+  if (GK.get('flipper_import_export')) {
+    console.log('flipper_import_export is true');
+    template.unshift({
+      label: 'File',
+      submenu: [
+        {
+          label: 'Export Data',
+          role: 'export',
+          click: function(item: Object, focusedWindow: Object) {
+            exportStoreToFile(store);
+          },
+        },
+      ],
+    });
+  }
   if (process.platform === 'darwin') {
     const name = app.getName();
     template.unshift({
