@@ -20,6 +20,7 @@ import {
   getPluginKey,
   getPersistedState,
   BaseDevice,
+  shouldParseAndroidLog,
 } from 'flipper';
 import fs from 'fs';
 import os from 'os';
@@ -279,7 +280,7 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin<
     method: string,
     payload: Object,
   ): PersistedState => {
-    if (method === 'crash-report') {
+    if (method === 'crash-report' || method === 'flipper-crash-report') {
       CrashReporterPlugin.notificationID++;
       const mergedState: PersistedState = {
         crashes: persistedState.crashes.concat([
@@ -342,17 +343,32 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin<
           newPluginState: ?PersistedState,
         ) => void,
       ) {
+        let androidLog: string = '';
+        let androidLogUnderProcess = false;
+        let timer = null;
         baseDevice.addLogListener((entry: DeviceLogEntry) => {
-          if (
-            entry.type === 'error' &&
-            entry.tag === 'AndroidRuntime' &&
-            entry.date.getTime() - date.getTime() > 0
-          ) {
-            parseCrashLogAndUpdateState(
-              store,
-              entry.message,
-              setPersistedState,
-            );
+          if (shouldParseAndroidLog(entry, referenceDate)) {
+            if (androidLogUnderProcess) {
+              androidLog += '\n' + entry.message;
+              androidLog = androidLog.trim();
+              if (timer) {
+                clearTimeout(timer);
+              }
+            } else {
+              androidLog = entry.message;
+              androidLogUnderProcess = true;
+            }
+            timer = setTimeout(() => {
+              if (androidLog.length > 0) {
+                parseCrashLogAndUpdateState(
+                  store,
+                  androidLog,
+                  setPersistedState,
+                );
+              }
+              androidLogUnderProcess = false;
+              androidLog = '';
+            }, 50);
           }
         });
       })(store, referenceDate, setPersistedState);

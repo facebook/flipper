@@ -6,7 +6,7 @@
  */
 
 import Server from '../server.js';
-import LogManager from '../fb-stubs/Logger';
+import {init as initLogger} from '../fb-stubs/Logger';
 import reducers from '../reducers/index.js';
 import {createStore} from 'redux';
 import path from 'path';
@@ -26,7 +26,7 @@ beforeAll(() => {
     fs.mkdirSync(flipperDir);
   }
 
-  const logger = new LogManager();
+  const logger = initLogger(store);
 
   androidDevice(store, logger);
   iosDevice(store, logger);
@@ -50,7 +50,7 @@ test(
 
       // Make sure it only connects once
       registeredClients.push(client);
-      expect(registeredClients.length).toBe(1);
+      expect(registeredClients).toHaveLength(1);
 
       // Make sure client stays connected for some time before passing test
       setTimeout(() => {

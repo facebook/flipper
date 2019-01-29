@@ -1,9 +1,8 @@
-/*
- *  Copyright (c) Facebook, Inc.
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- *  This source code is licensed under the MIT license found in the LICENSE
- *  file in the root directory of this source tree.
- *
+ * This source code is licensed under the MIT license found in the LICENSE
+ * file in the root directory of this source tree.
  */
 #include <memory>
 
@@ -465,6 +464,8 @@ class JFlipperClient : public jni::HybridClass<JFlipperClient> {
       jni::alias_ref<jclass>,
       JEventBase* callbackWorker,
       JEventBase* connectionWorker,
+      int insecurePort,
+      int securePort,
       const std::string host,
       const std::string os,
       const std::string device,
@@ -472,20 +473,17 @@ class JFlipperClient : public jni::HybridClass<JFlipperClient> {
       const std::string app,
       const std::string appId,
       const std::string privateAppDirectory) {
-
-    FlipperClient::init({
-      {
-        std::move(host),
-        std::move(os),
-        std::move(device),
-        std::move(deviceId),
-        std::move(app),
-        std::move(appId),
-        std::move(privateAppDirectory)
-      },
-      callbackWorker->eventBase(),
-      connectionWorker->eventBase()
-    });
+    FlipperClient::init({{std::move(host),
+                          std::move(os),
+                          std::move(device),
+                          std::move(deviceId),
+                          std::move(app),
+                          std::move(appId),
+                          std::move(privateAppDirectory)},
+                         callbackWorker->eventBase(),
+                         connectionWorker->eventBase(),
+                         insecurePort,
+                         securePort});
   }
 
  private:

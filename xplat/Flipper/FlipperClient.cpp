@@ -1,9 +1,8 @@
-/*
- *  Copyright (c) Facebook, Inc.
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- *  This source code is licensed under the MIT license found in the LICENSE
- *  file in the root directory of this source tree.
- *
+ * This source code is licensed under the MIT license found in the LICENSE
+ * file in the root directory of this source tree.
  */
 #include "FlipperClient.h"
 #include <fstream>
@@ -17,6 +16,12 @@
 #include "FlipperState.h"
 #include "FlipperStep.h"
 #include "Log.h"
+#if __ANDROID__
+#include "utils/CallstackHelper.h"
+#endif
+#if __APPLE__
+#include <execinfo.h>
+#endif
 
 #if FB_SONARKIT_ENABLED
 
@@ -222,6 +227,31 @@ void FlipperClient::onMessageReceived(const dynamic& message) {
     responder->error(response);
   });
 }
+std::string FlipperClient::callstack() {
+#if __APPLE__
+  // For some iOS apps, __Unwind_Backtrace symbol wasn't found in sandcastle
+  // builds, thus, for iOS apps, using backtrace c function.
+  void* callstack[2048];
+  int frames = backtrace(callstack, 2048);
+  char** strs = backtrace_symbols(callstack, frames);
+  std::string output = "";
+  for (int i = 0; i < frames; ++i) {
+    output.append(strs[i]);
+    output.append("\n");
+  }
+  return output;
+#elif __ANDROID__
+  const size_t max = 2048;
+  void* buffer[max];
+  std::ostringstream oss;
+
+  dumpBacktrace(oss, buffer, captureBacktrace(buffer, max));
+  std::string output = std::string(oss.str().c_str());
+  return output;
+#else
+  return "";
+#endif
+}
 void FlipperClient::performAndReportError(const std::function<void()>& func) {
 #if FLIPPER_ENABLE_CRASH
   // To debug the stack trace and an exception turn on the compiler flag
@@ -231,9 +261,12 @@ void FlipperClient::performAndReportError(const std::function<void()>& func) {
   try {
     func();
   } catch (std::exception& e) {
-    dynamic message = dynamic::object(
-        "error", dynamic::object("message", e.what())("stacktrace", "<none>"));
     if (connected_) {
+      std::string callstack = this->callstack();
+      dynamic message = dynamic::object(
+          "error",
+          dynamic::object("message", e.what())("stacktrace", callstack)(
+              "name", e.what()));
       socket_->sendMessage(message);
     } else {
       log("Error: " + std::string(e.what()));

@@ -6,11 +6,11 @@
  */
 
 import type {DeviceType, DeviceShell} from './BaseDevice.js';
+import type {Store} from '../reducers/index';
 
 import {Priority} from 'adbkit-logcat-fb';
 import child_process from 'child_process';
 import BaseDevice from './BaseDevice.js';
-import {SECURE_PORT, INSECURE_PORT} from '../server';
 
 type ADBClient = any;
 
@@ -69,16 +69,14 @@ export default class AndroidDevice extends BaseDevice {
     return ['date', 'pid', 'tid', 'tag', 'message', 'type', 'time'];
   }
 
-  reverse(): Promise<void> {
-    return this.adb
-      .reverse(this.serial, `tcp:${SECURE_PORT}`, `tcp:${SECURE_PORT}`)
-      .then(() =>
-        this.adb.reverse(
-          this.serial,
-          `tcp:${INSECURE_PORT}`,
-          `tcp:${INSECURE_PORT}`,
-        ),
-      );
+  reverse(ports: [number]): Promise<void> {
+    return Promise.all(
+      ports.map(port =>
+        this.adb.reverse(this.serial, `tcp:${port}`, `tcp:${port}`),
+      ),
+    ).then(() => {
+      return;
+    });
   }
 
   spawnShell(): DeviceShell {

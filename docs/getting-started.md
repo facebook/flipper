@@ -48,8 +48,8 @@ repositories {
 }
 
 dependencies {
-  debugImplementation 'com.facebook.flipper:flipper:0.14.1'
-  debugImplementation 'com.facebook.flipper:soloader:0.5.1'
+  debugImplementation 'com.facebook.flipper:flipper:0.14.2'
+  debugImplementation 'com.facebook.soloader:soloader:0.5.1'
 }
 ```
 
@@ -85,7 +85,7 @@ repositories {
 }
 
 dependencies {
-  debugImplementation 'com.facebook.flipper:flipper:0.14.1'
+  debugImplementation 'com.facebook.flipper:flipper:0.14.3-SNAPSHOT'
   debugImplementation 'com.facebook.soloader:soloader:0.5.1'
 }
 ```
@@ -103,7 +103,7 @@ project 'MyApp.xcodeproj'
 source 'https://github.com/facebook/flipper.git'
 source 'https://github.com/CocoaPods/Specs'
 swift_version = "4.1"
-flipperkit_version = '0.14.1'
+flipperkit_version = '0.14.2'
 
 target 'MyApp' do
   platform :ios, '9.0'
@@ -178,7 +178,7 @@ project 'MyApp.xcodeproj'
 source 'https://github.com/facebook/flipper.git'
 source 'https://github.com/CocoaPods/Specs'
 swift_version = "4.1"
-flipperkit_version = '0.14.1'
+flipperkit_version = '0.14.2'
 
 target 'MyApp' do
   platform :ios, '9.0'
@@ -188,6 +188,25 @@ target 'MyApp' do
   pod 'FlipperKit/FlipperKitLayoutComponentKitSupport', '~>' + flipperkit_version
   pod 'FlipperKit/SKIOSNetworkPlugin', '~>' + flipperkit_version
   pod 'FlipperKit/FlipperKitUserDefaultsPlugin', '~>' + flipperkit_version
+
+  # If you use `use_frameworks!` in your Podfile, 
+  # uncomment the below $static_framework array and also 
+  # the pre_install section.  This will cause Flipper and 
+  # it's dependencies to be static and all other pods to 
+  # be dynamic.
+
+  # $static_framework = ['FlipperKit', 'Flipper', 'Folly',
+  #   'CocoaAsyncSocket', 'ComponentKit', 'DoubleConversion', 
+  #   'glog', 'PeerTalk', 'RSocket', 'Yoga', 'YogaKit', 
+  #   'CocoaLibEvent', 'OpenSSL-Static', 'boost-for-react-native']
+  
+  # pre_install do |installer|
+  #     installer.pod_targets.each do |pod|
+  #       if $static_framework.include?(pod.name)  
+  #         pod.host_requires_frameworks = false
+  #       end
+  #   end
+  # end
 
 # This post_install script adds -DFB_SONARKIT_ENABLED flag to OTHER_SWIFT_FLAGS, necessary to build swift target
     post_install do |installer|

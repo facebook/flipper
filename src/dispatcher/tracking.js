@@ -6,6 +6,8 @@
  */
 
 import {ipcRenderer} from 'electron';
+// $FlowFixMe perf_hooks is a new API in node
+import {performance} from 'perf_hooks';
 
 import type {Store} from '../reducers/index.js';
 import type Logger from '../fb-stubs/Logger.js';
@@ -29,10 +31,12 @@ export default (store: Store, logger: Logger) => {
     }
   }
 
-  droppedFrameDetection(
-    performance.now(),
-    () => store.getState().application.windowIsFocused,
-  );
+  if (typeof window !== 'undefined') {
+    droppedFrameDetection(
+      performance.now(),
+      () => store.getState().application.windowIsFocused,
+    );
+  }
 
   ipcRenderer.on('trackUsage', () => {
     const {

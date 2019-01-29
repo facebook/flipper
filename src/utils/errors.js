@@ -11,4 +11,7 @@ export class RecurringError extends Error {
     super(message);
     this.name = 'RecurringError';
   }
+  toString(): string {
+    return `[${this.name}] ${this.message}`;
+  }
 }

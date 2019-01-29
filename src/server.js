@@ -24,9 +24,6 @@ const invariant = require('invariant');
 const tls = require('tls');
 const net = require('net');
 
-export const SECURE_PORT = 8088;
-export const INSECURE_PORT = 8089;
-
 type RSocket = {|
   fireAndForget(payload: {data: string}): void,
   connectionStatus(): any,
@@ -40,8 +37,8 @@ type ClientInfo = {|
 
 export default class Server extends EventEmitter {
   connections: Map<string, ClientInfo>;
-  secureServer: RSocketServer;
-  insecureServer: RSocketServer;
+  secureServer: Promise<RSocketServer>;
+  insecureServer: Promise<RSocketServer>;
   certificateProvider: CertificateProvider;
   connectionTracker: ConnectionTracker;
   logger: Logger;
@@ -62,55 +59,61 @@ export default class Server extends EventEmitter {
     ((event: 'clients-change', callback: () => void) => void);
 
   init() {
+    const {insecure, secure} = this.store.getState().application.serverPorts;
     this.initialisePromise = this.certificateProvider
       .loadSecureServerConfig()
-      .then(
-        options => (this.secureServer = this.startServer(SECURE_PORT, options)),
-      )
+      .then(options => (this.secureServer = this.startServer(secure, options)))
       .then(() => {
-        this.insecureServer = this.startServer(INSECURE_PORT);
+        this.insecureServer = this.startServer(insecure);
         return;
       });
     recordSuccessMetric(this.initialisePromise, 'initializeServer');
     return this.initialisePromise;
   }
 
-  startServer(port: number, sslConfig?: SecureServerConfig) {
+  startServer(
+    port: number,
+    sslConfig?: SecureServerConfig,
+  ): Promise<RSocketServer> {
     const server = this;
-    const serverFactory = onConnect => {
-      const transportServer = sslConfig
-        ? tls.createServer(sslConfig, socket => {
-            onConnect(socket);
+    return new Promise((resolve, reject) => {
+      let rsServer;
+      const serverFactory = onConnect => {
+        const transportServer = sslConfig
+          ? tls.createServer(sslConfig, socket => {
+              onConnect(socket);
+            })
+          : net.createServer(onConnect);
+        transportServer
+          .on('error', err => {
+            server.emit('error', err);
+            console.error(`Error opening server on port ${port}`, 'server');
+            reject(err);
           })
-        : net.createServer(onConnect);
-      transportServer
-        .on('error', err => {
-          server.emit('error', err);
-          console.error(`Error opening server on port ${port}`, 'server');
-        })
-        .on('listening', () => {
-          console.debug(
-            `${
-              sslConfig ? 'Secure' : 'Certificate'
-            } server started on port ${port}`,
-            'server',
-          );
-          server.emit('listening', port);
-        });
-      return transportServer;
-    };
-    const rsServer = new RSocketServer({
-      getRequestHandler: sslConfig
-        ? this._trustedRequestHandler
-        : this._untrustedRequestHandler,
-      transport: new RSocketTCPServer({
-        port: port,
-        serverFactory: serverFactory,
-      }),
-    });
+          .on('listening', () => {
+            console.debug(
+              `${
+                sslConfig ? 'Secure' : 'Certificate'
+              } server started on port ${port}`,
+              'server',
+            );
+            server.emit('listening', port);
+            resolve(rsServer);
+          });
+        return transportServer;
+      };
 
-    rsServer.start();
-    return rsServer;
+      rsServer = new RSocketServer({
+        getRequestHandler: sslConfig
+          ? this._trustedRequestHandler
+          : this._untrustedRequestHandler,
+        transport: new RSocketTCPServer({
+          port: port,
+          serverFactory: serverFactory,
+        }),
+      });
+      rsServer.start();
+    });
   }
 
   _trustedRequestHandler = (conn: RSocket, connectRequest: {data: string}) => {
@@ -244,8 +247,10 @@ export default class Server extends EventEmitter {
   close(): Promise<void> {
     if (this.initialisePromise) {
       return this.initialisePromise.then(_ => {
-        this.secureServer.stop();
-        this.insecureServer.stop();
+        return Promise.all([
+          this.secureServer.then(server => server.stop()),
+          this.insecureServer.then(server => server.stop()),
+        ]).then(() => undefined);
       });
     }
     return Promise.resolve();

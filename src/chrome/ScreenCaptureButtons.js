@@ -15,6 +15,7 @@ import adb from 'adbkit-fb';
 import {exec, spawn} from 'child_process';
 import {remote} from 'electron';
 import path from 'path';
+import {recordSuccessMetric} from '../utils/metrics';
 
 let CAPTURE_LOCATION = remote.app.getPath('desktop');
 try {
@@ -125,26 +126,31 @@ class ScreenCaptureButtons extends Component<Props, State> {
     const {selectedDevice} = this.props;
 
     if (selectedDevice instanceof AndroidDevice) {
-      return selectedDevice.adb
-        .screencap(selectedDevice.serial)
-        .then(writePngStreamToFile)
-        .then(openFile)
-        .catch(console.error);
+      return recordSuccessMetric(
+        selectedDevice.adb
+          .screencap(selectedDevice.serial)
+          .then(writePngStreamToFile)
+          .then(openFile),
+        'captureScreenshotAndroid',
+      ).catch(console.error);
     } else if (selectedDevice instanceof IOSDevice) {
       const screenshotPath = path.join(CAPTURE_LOCATION, getFileName('png'));
-      return new Promise((resolve, reject) => {
-        exec(
-          `xcrun simctl io booted screenshot "${screenshotPath}"`,
-          async (err, data) => {
-            if (err) {
-              reject(err);
-            } else {
-              openFile(screenshotPath);
-              resolve();
-            }
-          },
-        );
-      });
+      return recordSuccessMetric(
+        new Promise((resolve, reject) => {
+          exec(
+            `xcrun simctl io booted screenshot "${screenshotPath}"`,
+            async (err, data) => {
+              if (err) {
+                reject(err);
+              } else {
+                openFile(screenshotPath);
+                resolve();
+              }
+            },
+          );
+        }),
+        'captureScreenshotIos',
+      );
     }
   };
 

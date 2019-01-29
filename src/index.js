@@ -26,7 +26,12 @@ export type {Store} from './reducers/index.js';
 export {
   default as SidebarExtensions,
 } from './fb-stubs/LayoutInspectorSidebarExtensions.js';
-export {DeviceLogListener, DeviceLogEntry} from './devices/BaseDevice.js';
+export {
+  DeviceLogListener,
+  DeviceLogEntry,
+  LogLevel,
+} from './devices/BaseDevice.js';
+export {shouldParseAndroidLog} from './fb-stubs/crashReporterUtility.js';
 export {createTablePlugin} from './createTablePlugin.js';
 export {default as DetailSidebar} from './chrome/DetailSidebar.js';
 

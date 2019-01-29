@@ -15,19 +15,10 @@ const fs = require('fs');
 const {exec} = require('child_process');
 const compilePlugins = require('./compilePlugins.js');
 const os = require('os');
+const setup = require('./setup');
 
 // disable electron security warnings: https://github.com/electron/electron/blob/master/docs/tutorial/security.md#security-native-capabilities-and-your-responsibility
 process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = true;
-
-if (!process.env.ANDROID_HOME) {
-  process.env.ANDROID_HOME = '/opt/android_sdk';
-}
-
-// emulator/emulator is more reliable than tools/emulator, so prefer it if
-// it exists
-process.env.PATH = `${process.env.ANDROID_HOME}/emulator:${
-  process.env.ANDROID_HOME
-}/tools:${process.env.PATH}`;
 
 if (process.platform === 'darwin') {
   // If we are running on macOS and the app is called Flipper, we add a comment
@@ -44,29 +35,7 @@ if (process.platform === 'darwin') {
   }
 }
 
-// ensure .flipper folder and config exist
-const sonarDir = path.join(os.homedir(), '.sonar');
-const flipperDir = path.join(os.homedir(), '.flipper');
-if (fs.existsSync(flipperDir)) {
-  // nothing to do
-} else if (fs.existsSync(sonarDir)) {
-  // move .sonar to .flipper
-  fs.renameSync(sonarDir, flipperDir);
-} else {
-  fs.mkdirSync(flipperDir);
-}
-
-const configPath = path.join(flipperDir, 'config.json');
-let config = {pluginPaths: [], disabledPlugins: [], lastWindowPosition: {}};
-
-try {
-  config = {
-    ...config,
-    ...JSON.parse(fs.readFileSync(configPath)),
-  };
-} catch (e) {
-  fs.writeFileSync(configPath, JSON.stringify(config));
-}
+let {config, configPath, flipperDir} = setup();
 
 const pluginPaths = config.pluginPaths
   .concat(

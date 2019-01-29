@@ -17,7 +17,9 @@ jobs:
       - checkout
       - run:
           name: build and deploy
-          command: ./gradlew :android:assembleRelease && scripts/publish-android-snapshot.sh
+          command: |
+            yes | sdkmanager "platforms;android-27" || true
+            ./gradlew :android:assembleRelease && scripts/publish-android-snapshot.sh
 
   release:
     executor: default-executor
@@ -27,7 +29,9 @@ jobs:
       - checkout
       - run:
           name: build and deploy
-          command: ./gradlew :android:assembleRelease && scripts/publish-android-release.sh
+          command: |
+            yes | sdkmanager "platforms;android-27" || true
+            ./gradlew :android:assembleRelease && scripts/publish-android-release.sh
 
 workflows:
   version: 2

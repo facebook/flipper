@@ -6,8 +6,10 @@
  */
 
 import type {FlipperPlugin, FlipperDevicePlugin} from './plugin.js';
-
+import {exportStoreToFile} from './utils/exportData.js';
+import type {Store} from './reducers/';
 import electron from 'electron';
+import {GK} from 'flipper';
 
 export type DefaultKeyboardAction = 'clear' | 'goToBottom' | 'createPaste';
 export type TopLevelMenu = 'Edit' | 'View' | 'Window' | 'Help';
@@ -64,9 +66,13 @@ function actionHandler(action: string) {
 
 export function setupMenuBar(
   plugins: Array<Class<FlipperPlugin<> | FlipperDevicePlugin<>>>,
+  store: Store,
 ) {
-  const template = getTemplate(electron.remote.app, electron.remote.shell);
-
+  const template = getTemplate(
+    electron.remote.app,
+    electron.remote.shell,
+    store,
+  );
   // collect all keyboard actions from all plugins
   const registeredActions: Set<?KeyboardAction> = new Set(
     plugins
@@ -169,7 +175,11 @@ export function activateMenuItems(
   );
 }
 
-function getTemplate(app: Object, shell: Object): Array<MenuItem> {
+function getTemplate(
+  app: Object,
+  shell: Object,
+  store: Store,
+): Array<MenuItem> {
   const template = [
     {
       label: 'Edit',
@@ -299,7 +309,21 @@ function getTemplate(app: Object, shell: Object): Array<MenuItem> {
       ],
     },
   ];
-
+  if (GK.get('flipper_import_export')) {
+    console.log('flipper_import_export is true');
+    template.unshift({
+      label: 'File',
+      submenu: [
+        {
+          label: 'Export Data',
+          role: 'export',
+          click: function(item: Object, focusedWindow: Object) {
+            exportStoreToFile(store);
+          },
+        },
+      ],
+    });
+  }
   if (process.platform === 'darwin') {
     const name = app.getName();
     template.unshift({

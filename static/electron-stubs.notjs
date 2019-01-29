@@ -5,11 +5,25 @@
     },
     getCurrentWindow: function() {
       return {
-        isFocused: function() {return true;}
+        isFocused: function() {return true;},
+        on: function() {return true;}
       };
     },
     app: {
-      getVersion: function() {return '1';}
+      getVersion: function() {return '1';},
+      getName: function() {return '';}
+    },
+    shell: {
+      openExternal: function() {}
+    },
+    Menu: {
+      buildFromTemplate: function() {
+        return {items: []}
+      },
+      setApplicationMenu: function() {}
     }
+  },
+  ipcRenderer: {
+    on: function() {return true;}
   },
 }

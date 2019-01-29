@@ -1,0 +1,27 @@
+---
+id: custom-ports
+title: Running Flipper with different ports
+sidebar_label: Using different ports
+---
+
+By default Flipper runs its servers on ports 8088 and 8089, and the mobile SDKs look for servers on those ports.
+
+Each of these can be overridden by setting an environment variable, with the format `${INSECURE_PORT},${SECURE_PORT}`.
+
+To run the desktop app using custom ports:
+
+```
+FLIPPER_PORTS=1111,2222 ./flipper
+```
+
+To configure the Android SDK for custom ports, set the `flipper.ports` prop to your chosen ports `1111,2222` like so, and then launch the Android app.
+
+```
+adb shell
+su
+setprop flipper.ports 1111,2222
+exit
+exit
+```
+
+To configure the iOS SDK for custom ports, set the FLIPPER_PORTS environment variable in your app launch script.

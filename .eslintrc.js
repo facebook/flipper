@@ -27,6 +27,16 @@ module.exports = {
 
     // additional rules for this project
     'header/header': [2, 'block', {pattern}],
-    'prettier/prettier': [2, 'fb', '@format'],
+    'prettier/prettier': [
+      2,
+      {
+        requirePragma: true,
+        singleQuote: true,
+        trailingComma: 'all',
+        bracketSpacing: false,
+        jsxBracketSameLine: true,
+        parser: 'flow',
+      },
+    ],
   },
 };

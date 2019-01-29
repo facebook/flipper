@@ -1,0 +1,7 @@
+packages:
+- .
+resolver: lts-12.14
+
+build:
+  split-objs: true
+

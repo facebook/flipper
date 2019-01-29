@@ -1,9 +1,8 @@
-/*
- *  Copyright (c) Facebook, Inc.
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- *  This source code is licensed under the MIT license found in the LICENSE
- *  file in the root directory of this source tree.
- *
+ * This source code is licensed under the MIT license found in the LICENSE
+ * file in the root directory of this source tree.
  */
 #pragma once
 
@@ -46,6 +45,9 @@ class FlipperClient : public FlipperConnectionManager::Callbacks {
       : socket_(std::move(socket)), flipperState_(state) {
     auto step = flipperState_->start("Create client");
     socket_->setCallbacks(this);
+    auto& conn = connections_["flipper-crash-report"];
+    conn = std::make_shared<FlipperConnectionImpl>(
+        socket_.get(), "flipper-crash-report");
     step->complete();
   }
 
@@ -105,6 +107,7 @@ class FlipperClient : public FlipperConnectionManager::Callbacks {
 
   void disconnect(std::shared_ptr<FlipperPlugin> plugin);
   void startBackgroundPlugins();
+  std::string callstack();
 };
 
 } // namespace flipper

@@ -26,6 +26,7 @@ function launchElectron({bundleURL, electronURL}) {
   const args = [
     path.join(STATIC_DIR, 'index.js'),
     '--remote-debugging-port=9222',
+    ...process.argv,
   ];
 
   const proc = child.spawn(electronBinary, args, {

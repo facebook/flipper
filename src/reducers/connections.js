@@ -11,6 +11,8 @@ import type {UninitializedClient} from '../UninitializedClient';
 import {isEqual} from 'lodash';
 import {RecurringError} from '../utils/errors';
 import iosUtil from '../fb-stubs/iOSContainerUtility';
+// $FlowFixMe perf_hooks is a new API in node
+import {performance} from 'perf_hooks';
 
 export type State = {|
   devices: Array<BaseDevice>,
@@ -354,6 +356,7 @@ export const selectPlugin = (payload: {|
   type: 'SELECT_PLUGIN',
   payload,
 });
+
 export const userPreferredPlugin = (payload: string): Action => ({
   type: 'SELECT_USER_PREFERRED_PLUGIN',
   payload,

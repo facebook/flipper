@@ -78,7 +78,9 @@ export default (store: Store, logger: Logger) => {
     },
   );
 
-  window.addEventListener('beforeunload', () => {
-    server.close();
-  });
+  if (typeof window !== 'undefined') {
+    window.addEventListener('beforeunload', () => {
+      server.close();
+    });
+  }
 };

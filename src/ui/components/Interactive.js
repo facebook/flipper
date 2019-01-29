@@ -13,10 +13,9 @@ import {
   maybeSnapTop,
   SNAP_SIZE,
 } from '../../utils/snap.js';
-import {styled} from '../../ui';
-
-const invariant = require('invariant');
-const React = require('react');
+import styled from '../styled/index.js';
+import invariant from 'invariant';
+import React from 'react';
 
 const WINDOW_CURSOR_BOUNDARY = 5;
 
@@ -71,7 +70,7 @@ type InteractiveProps = {|
   innerRef?: (elem: HTMLElement) => void,
   style?: Object,
   className?: string,
-  children?: React.Element<*>,
+  children?: React$Element<*>,
 |};
 
 type InteractiveState = {|

@@ -58,9 +58,12 @@ exports[`Empty app state matches snapshot 1`] = `
     <div
       className="css-12zzrdt"
     />
-    <div
-      className="css-1xcv92o"
-    />
+    <span
+      className="css-lli23c"
+    >
+      3.0.0
+      -dev
+    </span>
     <div
       className="css-1cecbfb"
       onClick={[Function]}

@@ -1,0 +1,112 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TitleBar is rendered 1`] = `
+<div
+  className="toolbar css-78eqwq"
+>
+  <div
+    className="css-q7gju5"
+    onClick={[Function]}
+    onMouseDown={[Function]}
+    onMouseUp={[Function]}
+  >
+    <div
+      className="css-1h9aj9a"
+      color="#acacac"
+      size={12}
+      src="https://external.xx.fbcdn.net/assets/?name=minus-circle&variant=filled&size=12&set=facebook_icons&density=1x"
+    />
+    No device selected
+  </div>
+  <div
+    className="css-1ayt83l"
+  >
+    <div
+      className="css-rb77sv"
+      disabled={true}
+      onClick={[Function]}
+      onMouseDown={[Function]}
+      onMouseUp={[Function]}
+      title="Take Screenshot"
+    >
+      <div
+        className="css-1dg3xuk"
+        color="#acacac"
+        size={12}
+        src="https://external.xx.fbcdn.net/assets/?name=camera&variant=filled&size=12&set=facebook_icons&density=1x"
+      />
+    </div>
+    <div
+      className="css-rb77sv"
+      disabled={true}
+      onClick={[Function]}
+      onMouseDown={[Function]}
+      onMouseUp={[Function]}
+      title="Make Screen Recording"
+    >
+      <div
+        className="css-wvm62d"
+        color="#acacac"
+        size={12}
+        src="https://external.xx.fbcdn.net/assets/?name=camcorder&variant=filled&size=12&set=facebook_icons&density=1x"
+      />
+    </div>
+  </div>
+  <div
+    className="css-12zzrdt"
+  />
+  <span
+    className="css-lli23c"
+  >
+    1.0.0
+    -dev
+  </span>
+  <div
+    className="css-1cecbfb"
+    onClick={[Function]}
+    onMouseDown={[Function]}
+    onMouseUp={[Function]}
+    title="Report Bug"
+  >
+    <div
+      className="css-1idwz0j"
+      color="#acacac"
+      size={12}
+      src="https://external.xx.fbcdn.net/assets/?name=bug&variant=filled&size=12&set=facebook_icons&density=1x"
+    />
+  </div>
+  <div
+    className="css-1ayt83l"
+  >
+    <div
+      className="css-u1e6jr"
+      onClick={[Function]}
+      onMouseDown={[Function]}
+      onMouseUp={[Function]}
+      title="Toggle Plugins"
+    >
+      <div
+        className="css-2bfl92"
+        color="#80a6f5"
+        size={20}
+        src="icons/sidebar_left.svg"
+      />
+    </div>
+    <div
+      className="css-rb77sv"
+      disabled={true}
+      onClick={[Function]}
+      onMouseDown={[Function]}
+      onMouseUp={[Function]}
+      title="Toggle Details"
+    >
+      <div
+        className="css-j5i4pm"
+        color="#acacac"
+        size={20}
+        src="icons/sidebar_right.svg"
+      />
+    </div>
+  </div>
+</div>
+`;

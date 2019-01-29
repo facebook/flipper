@@ -46,7 +46,10 @@ function transform({filename, options, src}) {
     plugins.push(require('./fb-stubs.js'));
   }
 
-  if (options.isTestRunner) {
+  if (process.env.BUILD_HEADLESS) {
+    plugins.push(require('./electron-stubs.js'));
+    plugins.push(require('./electron-requires.js'));
+  } else if (options.isTestRunner) {
     if (process.env.USE_ELECTRON_STUBS) {
       plugins.push(require('./electron-stubs.js'));
     }

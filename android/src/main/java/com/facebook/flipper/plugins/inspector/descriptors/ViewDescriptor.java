@@ -1,11 +1,9 @@
-/*
- *  Copyright (c) 2018-present, Facebook, Inc.
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- *  This source code is licensed under the MIT license found in the LICENSE
- *  file in the root directory of this source tree.
- *
+ * This source code is licensed under the MIT license found in the LICENSE
+ * file in the root directory of this source tree.
  */
-
 package com.facebook.flipper.plugins.inspector.descriptors;
 
 import static com.facebook.flipper.plugins.inspector.InspectorValue.Type.Color;
@@ -95,11 +93,15 @@ public class ViewDescriptor extends NodeDescriptor<View> {
       CharSequence name = nodeInfo.getClassName();
       nodeInfo.recycle();
 
-      if (name != null) {
+      if (name != null && name != "") {
         return name.toString();
       }
     }
-    return "NULL NODEINFO OR CLASSNAME";
+
+    // A node may have no name if a custom role description was set, but no
+    // role, or if the AccessibilityNodeInfo could not be generated. If this is
+    // the case name just give this node a generic name.
+    return "AccessibilityNode";
   }
 
   @Override

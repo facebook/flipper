@@ -5,8 +5,8 @@
  * @format
  */
 
-import Server, {SECURE_PORT, INSECURE_PORT} from '../server.js';
 import {init as initLogger} from '../fb-stubs/Logger';
+import Server from '../server';
 import reducers from '../reducers/index.js';
 import configureStore from 'redux-mock-store';
 import path from 'path';
@@ -25,13 +25,14 @@ beforeAll(() => {
 
   const logger = initLogger(mockStore);
   server = new Server(logger, mockStore);
-  return server.init();
 });
 
 test('servers starting at ports', done => {
-  const serversToBeStarted = new Set([SECURE_PORT, INSECURE_PORT]);
+  const ports = mockStore.getState().application.serverPorts;
+  const serversToBeStarted = new Set([ports.secure, ports.insecure]);
 
-  return new Promise((resolve, reject) => {
+  // Resolve promise when we get a listen event for each port
+  const listenerPromise = new Promise((resolve, reject) => {
     server.addListener('listening', port => {
       if (!serversToBeStarted.has(port)) {
         throw Error(`unknown server started at port ${port}`);
@@ -44,6 +45,11 @@ test('servers starting at ports', done => {
       }
     });
   });
+
+  // Initialise server after the listeners have been setup
+  server.init();
+
+  return listenerPromise;
 });
 
 afterAll(() => {

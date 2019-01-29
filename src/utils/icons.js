@@ -96,7 +96,9 @@ export function getIconUrl(
     }
   }
 
-  let requestedScale: number = window.devicePixelRatio;
+  let requestedScale: number =
+    typeof window !== 'undefined' ? window.devicePixelRatio : 1;
+
   if (!SCALE.includes(requestedScale)) {
     // find the next largest size
     const possibleScale: ?number = SCALE.find(scale => {

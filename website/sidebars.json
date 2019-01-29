@@ -29,6 +29,7 @@
       "error-handling",
       "testing"
     ],
-    "Flipper Internals": ["establishing-a-connection"]
+    "Flipper Internals": ["establishing-a-connection"],
+    "Advanced Usage": ["custom-ports"]
   }
 }
