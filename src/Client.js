@@ -14,6 +14,8 @@ import type {OS} from './devices/BaseDevice.js';
 import {FlipperDevicePlugin} from './plugin.js';
 import {setPluginState} from './reducers/pluginStates.js';
 import {ReactiveSocket, PartialResponder} from 'rsocket-core';
+// $FlowFixMe perf_hooks is a new API in node
+import {performance} from 'perf_hooks';
 
 const EventEmitter = (require('events'): any);
 const invariant = require('invariant');

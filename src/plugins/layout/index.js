@@ -27,6 +27,8 @@ import {
   ToggleButton,
   SidebarExtensions,
 } from 'flipper';
+// $FlowFixMe perf_hooks is a new API in node
+import {performance} from 'perf_hooks';
 
 import type {TrackType} from '../../fb-stubs/Logger.js';
 
