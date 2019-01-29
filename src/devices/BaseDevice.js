@@ -36,6 +36,13 @@ export type DeviceLogListener = (entry: DeviceLogEntry) => void;
 
 export type DeviceType = 'emulator' | 'physical';
 
+export type DeviceExport = {|
+  os: string,
+  title: string,
+  deviceType: DeviceType,
+  serial: string,
+|};
+
 export type OS = 'iOS' | 'Android' | 'Windows';
 
 export default class BaseDevice {
@@ -67,7 +74,7 @@ export default class BaseDevice {
     return os.toLowerCase() === this.os.toLowerCase();
   }
 
-  toJSON() {
+  toJSON(): DeviceExport {
     return {
       os: this.os,
       title: this.title,

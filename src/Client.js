@@ -27,6 +27,11 @@ export type ClientQuery = {|
   device_id: string,
 |};
 
+export type ClientExport = {|
+  id: string,
+  query: ClientQuery,
+|};
+
 type ErrorType = {message: string, stacktrace: string, name: string};
 type RequestMetadata = {method: string, id: number, params: ?Object};
 
@@ -271,7 +276,7 @@ export default class Client extends EventEmitter {
     }
   }
 
-  toJSON() {
+  toJSON(): ClientExport {
     return {id: this.id, query: this.query};
   }
 
