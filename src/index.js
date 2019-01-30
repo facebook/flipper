@@ -31,7 +31,7 @@ export {
   DeviceLogEntry,
   LogLevel,
 } from './devices/BaseDevice.js';
-export {shouldParseAndroidLog} from './fb-stubs/crashReporterUtility.js';
+export {shouldParseAndroidLog} from './utils/crashReporterUtility.js';
 export {createTablePlugin} from './createTablePlugin.js';
 export {default as DetailSidebar} from './chrome/DetailSidebar.js';
 
