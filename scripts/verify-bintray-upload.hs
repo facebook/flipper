@@ -3,7 +3,7 @@
 
 {-
 
-This script verifies that for a given version number, all Litho artifacts were
+This script verifies that for a given version number, all Flipper artifacts were
 successfully uploaded to Bintray. Due to service flakiness, sometimes one or
 more artifacts don't actually end up getting published and we want to have
 an automated way to check whether or not an upload succeded.
@@ -130,7 +130,7 @@ parseMvnArtifact = M.parse (mvnParser <* M.eof) "<input>" >>> first (T.pack . M.
 
 mvnArtifactToVersionedIdentifier :: MvnArtifact -> Text -> Text
 mvnArtifactToVersionedIdentifier MvnArtifact{..} version =
-  format ("com.facebook.litho:"%s%":"%s%":"%s) mvnArtifactId version mvnPackaging
+  format ("com.facebook.flipper:"%s%":"%s%":"%s) mvnArtifactId version mvnPackaging
 
 buildMvnGetCommand :: MvnArtifact -> Version -> FilePath -> (T.Text, [T.Text])
 buildMvnGetCommand artifact (Version version) configDir =
