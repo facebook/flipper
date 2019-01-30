@@ -98,7 +98,14 @@ export default class BaseDevice {
   notifyLogListeners(entry: DeviceLogEntry) {
     this.logEntries.push(entry);
     if (this.logListeners.size > 0) {
-      this.logListeners.forEach(listener => listener(entry));
+      this.logListeners.forEach(listener => {
+        // prevent breaking other listeners, if one listener doesn't work.
+        try {
+          listener(entry);
+        } catch (e) {
+          console.error(`Log listener exception:`, e);
+        }
+      });
     }
   }
 
