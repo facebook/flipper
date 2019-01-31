@@ -17,7 +17,7 @@ import {Single} from 'rsocket-flowable';
 import Client from './Client.js';
 import type {UninitializedClient} from './UninitializedClient';
 import {RecurringError} from './utils/errors';
-import {recordSuccessMetric} from './utils/metrics';
+import {reportPlatformFailures} from './utils/metrics';
 
 const EventEmitter = (require('events'): any);
 const invariant = require('invariant');
@@ -67,7 +67,7 @@ export default class Server extends EventEmitter {
         this.insecureServer = this.startServer(insecure);
         return;
       });
-    recordSuccessMetric(this.initialisePromise, 'initializeServer');
+    reportPlatformFailures(this.initialisePromise, 'initializeServer');
     return this.initialisePromise;
   }
 
@@ -182,7 +182,7 @@ export default class Server extends EventEmitter {
           const {csr, destination} = json;
           return new Single(subscriber => {
             subscriber.onSubscribe();
-            recordSuccessMetric(
+            reportPlatformFailures(
               this.certificateProvider.processCertificateSigningRequest(
                 csr,
                 clientData.os,

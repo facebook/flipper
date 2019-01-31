@@ -21,7 +21,7 @@ const tmp = require('tmp');
 const tmpFile = promisify(tmp.file);
 const tmpDir = promisify(tmp.dir);
 import iosUtil from '../fb-stubs/iOSContainerUtility';
-import {recordSuccessMetric} from './metrics';
+import {reportPlatformFailures} from './metrics';
 
 // Desktop file paths
 const os = require('os');
@@ -78,7 +78,7 @@ export default class CertificateProvider {
   constructor(server: Server, logger: LogManager) {
     this.logger = logger;
     this.adb = adb.createClient();
-    this.certificateSetup = recordSuccessMetric(
+    this.certificateSetup = reportPlatformFailures(
       this.ensureServerCertExists(),
       'ensureServerCertExists',
     );

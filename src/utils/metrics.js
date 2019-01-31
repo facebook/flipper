@@ -12,7 +12,7 @@ import {getInstance} from '../fb-stubs/Logger';
  failure state of it, with a given name, based on whether it's fulfilled or
  rejected.
  */
-export function recordSuccessMetric(
+export function reportPlatformFailures(
   promise: Promise<*>,
   name: string,
 ): Promise<*> {
