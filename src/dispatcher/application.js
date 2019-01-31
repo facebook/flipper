@@ -70,6 +70,12 @@ export default (store: Store, logger: Logger) => {
         type: 'SET_SERVER_PORTS',
         payload: portOverrides,
       });
+    } else {
+      console.error(
+        `Ignoring malformed FLIPPER_PORTS env variable:
+        "${process.env.FLIPPER_PORTS || ''}".
+        Example expected format: "1111,2222".`,
+      );
     }
   }
 };

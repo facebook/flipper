@@ -21,9 +21,5 @@ export function parseFlipperPorts(
       insecure: ports[0],
       secure: ports[1],
     };
-  } else {
-    console.error(
-      `Ignoring malformed FLIPPER_PORTS env variable: "${envVar}". Example expected format: "1111,2222".`,
-    );
   }
 }
