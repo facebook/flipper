@@ -10,11 +10,7 @@
 <pre><code class="hljs"><span class="hljs-attr">FLIPPER_PORTS</span>=<span class="hljs-number">1111</span>,<span class="hljs-number">2222</span> ./flipper
 </code></pre>
 <p>To configure the Android SDK for custom ports, set the <code>flipper.ports</code> prop to your chosen ports <code>1111,2222</code> like so, and then launch the Android app.</p>
-<pre><code class="hljs">adb shell
-su
-setprop flipper.ports <span class="hljs-number">1111</span>,<span class="hljs-number">2222</span>
-<span class="hljs-keyword">exit</span>
-<span class="hljs-keyword">exit</span>
-</code></pre>
+<pre><code class="hljs">adb <span class="hljs-keyword">shell</span><span class="bash"> su 0 setprop flipper.ports 1111,2222
+</span></code></pre>
 <p>To configure the iOS SDK for custom ports, set the FLIPPER_PORTS environment variable in your app launch script.</p>
 </span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="establishing-a-connection.html">← Establishing a connection</a></div></div></div><nav class="onPageNav"></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/" class="nav-home"><img src="/img/mascot.png" alt="Flipper mascot" title="I&#x27;m a dolphin not a whale!" width="66" height="58"/></a><div><h5>Docs</h5><a href="/docs/getting-started.html">Getting Started</a><a href="/docs/understand.html">Understanding Flipper</a><a href="/docs/js-setup.html">Creating Plugins</a></div><div><h5>Plugins</h5><a href="/docs/logs-plugin.html">Log Viewer</a><a href="/docs/layout-plugin.html">Layout Inspector</a><a href="/docs/network-plugin.html">Network Inspector</a></div><div><h5>More</h5><a href="https://twitter.com/flipper_fb">Twitter</a><a href="https://github.com/facebook/flipper">GitHub</a><a class="github-button" href="https://github.com/facebook/flipper" data-icon="octicon-star" data-count-href="/facebook/flipper/stargazers" data-show-count="true" data-count-aria-label="# stargazers on GitHub" aria-label="Star this project on GitHub">Star</a></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2019 Facebook</section></footer></div></body></html>
