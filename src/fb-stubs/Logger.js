@@ -18,7 +18,7 @@ export default class LogManager {
 
   scribeLogger: ScribeLogger;
 
-  track(type: TrackType, event: string, data: ?any) {}
+  track(type: TrackType, event: string, data: ?any, plugin?: string) {}
 
   trackTimeSince(mark: string, eventName: ?string) {}
 

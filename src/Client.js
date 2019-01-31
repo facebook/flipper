@@ -16,6 +16,7 @@ import {setPluginState} from './reducers/pluginStates.js';
 import {ReactiveSocket, PartialResponder} from 'rsocket-core';
 // $FlowFixMe perf_hooks is a new API in node
 import {performance} from 'perf_hooks';
+import {reportPluginFailures} from './utils/metrics';
 
 const EventEmitter = (require('events'): any);
 const invariant = require('invariant');
@@ -368,7 +369,11 @@ export default class Client extends EventEmitter {
   }
 
   call(api: string, method: string, params?: Object): Promise<Object> {
-    return this.rawCall('execute', {api, method, params});
+    return reportPluginFailures(
+      this.rawCall('execute', {api, method, params}),
+      `Call-${method}`,
+      api,
+    );
   }
 
   send(api: string, method: string, params?: Object): void {
