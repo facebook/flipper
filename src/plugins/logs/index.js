@@ -317,10 +317,6 @@ export function processEntry(
 } {
   const {icon, style} = LOG_TYPES[(entry.type: string)] || LOG_TYPES.debug;
 
-  // clean message
-  const message = entry.message.trim();
-  entry.type === 'error';
-
   // build the item, it will either be batched or added straight away
   return {
     entry,
@@ -340,7 +336,9 @@ export function processEntry(
           ),
         },
         message: {
-          value: <HiddenScrollText code={true}>{message}</HiddenScrollText>,
+          value: (
+            <HiddenScrollText code={true}>{entry.message}</HiddenScrollText>
+          ),
         },
         tag: {
           value: <HiddenScrollText code={true}>{entry.tag}</HiddenScrollText>,
@@ -363,7 +361,7 @@ export function processEntry(
           isFilterable: true,
         },
       },
-      height: getLineCount(message) * 15 + 10, // 15px per line height + 8px padding
+      height: getLineCount(entry.message) * 15 + 10, // 15px per line height + 8px padding
       style,
       type: entry.type,
       filterValue: entry.message,
@@ -470,10 +468,9 @@ export default class LogTable extends FlipperDevicePlugin<
   }
 
   incrementCounterIfNeeded = (entry: DeviceLogEntry) => {
-    const message = entry.message.trim();
     let counterUpdated = false;
     const counters = this.state.counters.map(counter => {
-      if (message.match(counter.expression)) {
+      if (entry.message.match(counter.expression)) {
         counterUpdated = true;
         if (counter.notify) {
           new window.Notification(`${counter.label}`, {
