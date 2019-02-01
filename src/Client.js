@@ -17,6 +17,7 @@ import {ReactiveSocket, PartialResponder} from 'rsocket-core';
 // $FlowFixMe perf_hooks is a new API in node
 import {performance} from 'perf_hooks';
 import {reportPluginFailures} from './utils/metrics';
+import {default as isProduction} from './utils/isProduction.js';
 
 const EventEmitter = (require('events'): any);
 const invariant = require('invariant');
@@ -39,6 +40,9 @@ type ErrorType = {message: string, stacktrace: string, name: string};
 type RequestMetadata = {method: string, id: number, params: ?Object};
 
 const handleError = (store: Store, deviceSerial: ?string, error: ErrorType) => {
+  if (isProduction()) {
+    return;
+  }
   const crashReporterPlugin = store
     .getState()
     .plugins.devicePlugins.get('CrashReporter');
