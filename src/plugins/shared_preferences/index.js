@@ -104,7 +104,7 @@ export default class extends FlipperPlugin<SharedPreferencesState> {
       const change = event.change;
       const entry = state.sharedPreferences[change.preferences];
       if (entry == null) {
-        return;
+        return state;
       }
       if (change.deleted) {
         delete entry.preferences[change.name];

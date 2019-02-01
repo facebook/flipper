@@ -38,8 +38,19 @@ const SidebarContainer = styled(FlexRow)({
   overflow: 'scroll',
 });
 
-type Props = {
+/*
+pluginState: pluginStates[pluginKey],
+activePlugin,
+target,
+deepLinkPayload,
+pluginKey,
+*/
+type OwnProps = {|
   logger: LogManager,
+|};
+
+type Props = {|
+  ...OwnProps,
   pluginState: Object,
   activePlugin: ?Class<FlipperPlugin<> | FlipperDevicePlugin<>>,
   target: Client | BaseDevice | null,
@@ -55,7 +66,7 @@ type Props = {
     pluginKey: string,
     state: Object,
   }) => void,
-};
+|};
 
 class PluginContainer extends PureComponent<Props> {
   plugin: ?FlipperPlugin<> | FlipperDevicePlugin<>;
@@ -132,11 +143,7 @@ class PluginContainer extends PureComponent<Props> {
   }
 }
 
-/* $FlowFixMe(>=0.86.0) This
- * comment suppresses an error found when Flow v0.86 was
- * deployed. To see the error, delete this comment and
- * run Flow. */
-export default connect(
+export default connect<Props, OwnProps, _, _, _, _>(
   ({
     application: {rightSidebarVisible, rightSidebarAvailable},
     connections: {
@@ -182,6 +189,7 @@ export default connect(
       pluginKey,
     };
   },
+  // $FlowFixMe
   {
     setPluginState,
     selectPlugin,

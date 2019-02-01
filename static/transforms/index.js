@@ -20,7 +20,7 @@ function transform({filename, options, src}) {
     filename,
     plugins: [
       'jsx',
-      'flow',
+      ['flow', {all: true}],
       'classProperties',
       'objectRestSpread',
       'optionalChaining',

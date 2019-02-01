@@ -8,6 +8,7 @@
 import type {FlipperDevicePlugin, FlipperPlugin} from '../plugin';
 import type {PluginDefinition} from '../dispatcher/plugins';
 import type Client from '../Client';
+import type {TableBodyRow} from '../ui/components/table/types';
 
 import {Component, Fragment} from 'react';
 import {connect} from 'react-redux';
@@ -20,7 +21,6 @@ import {
   colors,
   Link,
 } from 'flipper';
-import {remote} from 'electron';
 
 const Container = styled(FlexColumn)({
   padding: 10,
@@ -118,7 +118,7 @@ class PluginDebugger extends Component<Props> {
     GKname: ?string,
     GKpassing: ?boolean,
     pluginPath: ?string,
-  ) {
+  ): TableBodyRow {
     return {
       key: name.toLowerCase(),
       columns: {
@@ -165,8 +165,8 @@ class PluginDebugger extends Component<Props> {
       .join(', ');
   }
 
-  getRows() {
-    let rows = [];
+  getRows(): Array<TableBodyRow> {
+    let rows: Array<TableBodyRow> = [];
 
     // bundled plugins are loaded from the defaultPlugins directory within
     // Flipper's package.

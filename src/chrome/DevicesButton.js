@@ -28,22 +28,22 @@ const DropdownButton = styled(Button)({
   fontSize: 11,
 });
 
-// Remove this if the flow fixme at the bottom is addressed (or has already been removed).
-/* eslint-disable prettier/prettier */
 class DevicesButton extends Component<Props> {
   launchEmulator = (name: string) => {
     // On Linux, you must run the emulator from the directory it's in because
     // reasons ...
-    whichPromise('emulator').then(emulatorPath => {
-      const child = spawn(emulatorPath, [`@${name}`], {
-        detached: true,
-        cwd: dirname(emulatorPath),
-      });
-      child.stderr.on('data', data => {
-        console.error(`Android emulator error: ${data}`);
-      });
-      child.on('error', console.error);
-    }).catch(console.error);
+    whichPromise('emulator')
+      .then(emulatorPath => {
+        const child = spawn(emulatorPath, [`@${name}`], {
+          detached: true,
+          cwd: dirname(emulatorPath),
+        });
+        child.stderr.on('data', data => {
+          console.error(`Android emulator error: ${data}`);
+        });
+        child.on('error', console.error);
+      })
+      .catch(console.error);
     this.props.preferDevice(name);
   };
 
@@ -109,10 +109,8 @@ class DevicesButton extends Component<Props> {
       </DropdownButton>
     );
   }
-} /* $FlowFixMe(>=0.86.0) This comment suppresses an error found when Flow v0.86
- * was deployed. To see the error, delete this comment and run Flow.
- */
-export default connect(
+}
+export default connect<Props, {||}, _, _, _, _>(
   ({connections: {devices, androidEmulators, selectedDevice}}) => ({
     devices,
     androidEmulators,

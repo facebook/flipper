@@ -14,10 +14,10 @@ import {getInstance} from '../fb-stubs/Logger';
 
  Use this variant to report failures in core platform (Flipper) code.
  */
-export function reportPlatformFailures(
-  promise: Promise<*>,
+export function reportPlatformFailures<T>(
+  promise: Promise<T>,
   name: string,
-): Promise<*> {
+): Promise<T> {
   return promise.then(
     fulfilledValue => {
       getInstance().track('success-rate', name, 1);
@@ -37,11 +37,11 @@ export function reportPlatformFailures(
 
  Use this variant to report failures in plugin code.
  */
-export function reportPluginFailures(
-  promise: Promise<*>,
+export function reportPluginFailures<T>(
+  promise: Promise<T>,
   name: string,
   plugin: string,
-): Promise<*> {
+): Promise<T> {
   return promise.then(
     fulfilledValue => {
       getInstance().track('success-rate', name, 1, plugin);

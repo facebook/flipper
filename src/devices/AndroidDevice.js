@@ -6,7 +6,6 @@
  */
 
 import type {DeviceType, DeviceShell} from './BaseDevice.js';
-import type {Store} from '../reducers/index';
 
 import {Priority} from 'adbkit-logcat-fb';
 import child_process from 'child_process';
@@ -69,7 +68,7 @@ export default class AndroidDevice extends BaseDevice {
     return ['date', 'pid', 'tid', 'tag', 'message', 'type', 'time'];
   }
 
-  reverse(ports: [number]): Promise<void> {
+  reverse(ports: [number, number]): Promise<void> {
     return Promise.all(
       ports.map(port =>
         this.adb.reverse(this.serial, `tcp:${port}`, `tcp:${port}`),

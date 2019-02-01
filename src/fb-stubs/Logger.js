@@ -7,6 +7,7 @@
 
 export type LogTypes = 'error' | 'warn' | 'info' | 'debug';
 export type TrackType = 'duration' | 'usage' | 'performance' | 'success-rate';
+import type {Store} from '../reducers/index';
 import ScribeLogger from './ScribeLogger';
 
 var instance: ?LogManager = null;

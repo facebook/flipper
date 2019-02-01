@@ -8,8 +8,6 @@
 import LogManager from '../fb-stubs/Logger';
 import {RecurringError} from './errors';
 import {promisify} from 'util';
-import child_process from 'child_process';
-const exec = promisify(child_process.exec);
 const fs = require('fs');
 const adb = require('adbkit-fb');
 import {

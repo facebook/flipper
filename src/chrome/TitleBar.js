@@ -51,7 +51,12 @@ const AppTitleBar = styled(FlexRow)(({focused}) => ({
   zIndex: 4,
 }));
 
+type OwnProps = {|
+  version: string,
+|};
+
 type Props = {|
+  ...OwnProps,
   windowIsFocused: boolean,
   leftSidebarVisible: boolean,
   rightSidebarVisible: boolean,
@@ -59,7 +64,6 @@ type Props = {|
   toggleLeftSidebarVisible: (visible?: boolean) => void,
   toggleRightSidebarVisible: (visible?: boolean) => void,
   setActiveSheet: (sheet: ActiveSheet) => void,
-  version: string,
 |};
 
 const VersionText = styled(Text)({
@@ -114,23 +118,19 @@ class TitleBar extends Component<Props> {
   }
 }
 
-/* $FlowFixMe(>=0.86.0) This comment suppresses an error found when Flow v0.86
- * was deployed. To see the error, delete this comment and run Flow. */
-export default connect(
+export default connect<Props, OwnProps, _, _, _, _>(
   ({
     application: {
       windowIsFocused,
       leftSidebarVisible,
       rightSidebarVisible,
       rightSidebarAvailable,
-      pluginManagerVisible,
     },
   }) => ({
     windowIsFocused,
     leftSidebarVisible,
     rightSidebarVisible,
     rightSidebarAvailable,
-    pluginManagerVisible,
   }),
   {
     setActiveSheet,

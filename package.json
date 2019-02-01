@@ -35,7 +35,7 @@
   },
   "devDependencies": {
     "@jest-runner/electron": "^0.1.0",
-    "babel-eslint": "8.2.1",
+    "babel-eslint": "^10.0.1",
     "electron": "3.0.0",
     "electron-builder": "^19.49.0",
     "eslint": "^5.12.1",
@@ -47,7 +47,7 @@
     "eslint-plugin-prettier": "^3.0.1",
     "eslint-plugin-react": "^7.5.1",
     "eslint-plugin-relay": "^1.0.0",
-    "flow-bin": "^0.86.0",
+    "flow-bin": "^0.91.0",
     "glob": "^7.1.2",
     "jest": "^23.6.0",
     "prettier": "1.13.6",

@@ -10,6 +10,7 @@ import type BaseDevice from '../devices/BaseDevice.js';
 import type Client from '../Client.js';
 import type {UninitializedClient} from '../UninitializedClient.js';
 import type {PluginNotification} from '../reducers/notifications';
+import type {ActiveSheet} from '../reducers/application';
 
 import {
   PureComponent,
@@ -190,11 +191,11 @@ type MainSidebarProps = {|
   selectedApp: ?string,
   selectedDevice: ?BaseDevice,
   windowIsFocused: boolean,
-  selectPlugin: (payload: {
+  selectPlugin: (payload: {|
     selectedPlugin: ?string,
     selectedApp: ?string,
     deepLinkPayload: ?string,
-  }) => void,
+  |}) => void,
   clients: Array<Client>,
   uninitializedClients: Array<{
     client: UninitializedClient,
@@ -204,7 +205,7 @@ type MainSidebarProps = {|
   numNotifications: number,
   devicePlugins: Map<string, Class<FlipperDevicePlugin<>>>,
   clientPlugins: Map<string, Class<FlipperPlugin<>>>,
-  setActiveSheet: (activeSheet: ?string) => any,
+  setActiveSheet: (activeSheet: ActiveSheet) => void,
 |};
 
 class MainSidebar extends PureComponent<MainSidebarProps> {
@@ -348,11 +349,7 @@ class MainSidebar extends PureComponent<MainSidebarProps> {
   }
 }
 
-/* $FlowFixMe(>=0.86.0) This
- * comment suppresses an error found when Flow v0.86 was
- * deployed. To see the error, delete this comment and
- * run Flow. */
-export default connect(
+export default connect<MainSidebarProps, {||}, _, _, _, _>(
   ({
     application: {windowIsFocused},
     connections: {

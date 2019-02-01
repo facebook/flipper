@@ -7,7 +7,6 @@
 
 import {
   FlexRow,
-  Text,
   colors,
   LoadingIndicator,
   Glyph,

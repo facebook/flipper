@@ -37,7 +37,14 @@ import type {
 } from './plugins.js';
 import type {Store as ReduxStore} from 'redux';
 
-// $FlowFixMe introduced when removing $Subtype/$Supertype
+type Actions =
+  | ApplicationAction
+  | DevicesAction
+  | PluginStatesAction
+  | NotificationsAction
+  | PluginsAction
+  | {|type: 'INIT'|};
+
 export type Store = ReduxStore<
   {|
     application: ApplicationState,
@@ -46,19 +53,10 @@ export type Store = ReduxStore<
     notifications: NotificationsState,
     plugins: PluginsState,
   |},
-  | ApplicationAction
-  | DevicesAction
-  | PluginStatesAction
-  | NotificationsAction
-  | PluginsAction
-  | {|type: 'INIT'|},
+  Actions,
 >;
 
-/* $FlowFixMe(>=0.86.0) This
- * comment suppresses an error found when Flow v0.86 was
- * deployed. To see the error, delete this comment and
- * run Flow. */
-export default combineReducers({
+export default combineReducers<_, Actions>({
   application,
   connections: persistReducer(
     {

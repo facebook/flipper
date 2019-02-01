@@ -156,9 +156,7 @@ class ManagedTable extends React.Component<
     shouldScrollToBottom: Boolean(this.props.stickyBottom),
   };
 
-  tableRef: {
-    current: null | List,
-  } = React.createRef();
+  tableRef = React.createRef<List>();
 
   scrollRef: {
     current: null | HTMLDivElement,
