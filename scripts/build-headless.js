@@ -7,12 +7,8 @@
 
 const path = require('path');
 const lineReplace = require('line-replace');
-const fs = require('fs-extra');
-const {
-  buildFolder,
-  compile,
-  compileDefaultPlugins,
-} = require('./build-utils.js');
+const {exec: createBinary} = require('pkg');
+const {buildFolder, compile} = require('./build-utils.js');
 
 function preludeBundle(dir) {
   return new Promise((resolve, reject) =>
@@ -27,21 +23,43 @@ function preludeBundle(dir) {
   );
 }
 
-function copyFolder(dir) {
-  const buildDir = path.join(__dirname, '..', 'dist');
-  fs.removeSync(buildDir);
-  fs.copySync(dir, buildDir);
-}
-
 (async () => {
+  const targets = [];
+  let platformPostfix;
+
+  if (process.argv.indexOf('--mac') > -1) {
+    targets.push('node10-macos-x64');
+    platformPostfix = '-macos';
+  }
+  if (process.argv.indexOf('--linux') > -1) {
+    targets.push('node10-linux-x64');
+    platformPostfix = '-linux';
+  }
+  if (process.argv.indexOf('--win') > -1) {
+    targets.push('node10-win-x64');
+    platformPostfix = '-win';
+  }
+  if (targets.length === 0) {
+    throw new Error('No targets specified. eg. --mac, --win, or --linux');
+  } else if (targets.length > 1) {
+    // platformPostfix is automatically added by pkg
+    platformPostfix = '';
+  }
+
   process.env.BUILD_HEADLESS = 'true';
-  const dir = await buildFolder();
+  const buildDir = await buildFolder();
+  const distDir = path.join(__dirname, '..', 'dist');
   // eslint-disable-next-line no-console
-  console.log('Created build directory', dir);
-  await compile(dir, path.join(__dirname, '..', 'headless', 'index.js'));
-  await preludeBundle(dir);
-  await compileDefaultPlugins(dir);
-  copyFolder(dir);
+  console.log('Created build directory', buildDir);
+  await compile(buildDir, path.join(__dirname, '..', 'headless', 'index.js'));
+  await preludeBundle(buildDir);
+  await createBinary([
+    path.join(buildDir, 'bundle.js'),
+    '--output',
+    path.join(distDir, `flipper${platformPostfix}`),
+    '--targets',
+    targets.join(','),
+  ]);
   // eslint-disable-next-line no-console
   console.log('✨  Done');
   process.exit();
