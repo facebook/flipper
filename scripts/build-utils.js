@@ -16,9 +16,7 @@ function die(err) {
   process.exit(1);
 }
 
-function compileDefaultPlugins(buildFolder) {
-  const defaultPluginFolder = 'defaultPlugins';
-  const defaultPluginDir = path.join(buildFolder, defaultPluginFolder);
+function compileDefaultPlugins(defaultPluginDir) {
   return compilePlugins(
     null,
     [
@@ -34,7 +32,7 @@ function compileDefaultPlugins(buildFolder) {
         JSON.stringify(
           defaultPlugins.map(plugin => ({
             ...plugin,
-            out: path.join(defaultPluginFolder, path.parse(plugin.out).base),
+            out: path.parse(plugin.out).base,
           })),
         ),
       ),

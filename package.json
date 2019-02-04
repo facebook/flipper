@@ -111,7 +111,7 @@
     "reset": "yarn cache clean && yarn rm-dist && yarn rm-modules && yarn rm-temp",
     "start": "cross-env NODE_ENV=development node scripts/start-dev-server.js",
     "build": "yarn rm-dist && cross-env NODE_ENV=production node scripts/build-release.js $@",
-    "build-headless": "yarn rm-dist && cross-env NODE_ENV=production node scripts/build-headless.js $@",
+    "build-headless": "yarn rm-dist && mkdir dist && cross-env NODE_ENV=production node scripts/build-headless.js $@",
     "fix": "eslint . --fix",
     "test": "jest --testPathPattern=node\\.js$ --no-cache",
     "test-electron": "jest --testPathPattern=electron\\.js$ --testEnvironment=@jest-runner/electron/environment --runner=@jest-runner/electron --no-cache",

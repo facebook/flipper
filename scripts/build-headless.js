@@ -8,7 +8,11 @@
 const path = require('path');
 const lineReplace = require('line-replace');
 const {exec: createBinary} = require('pkg');
-const {buildFolder, compile} = require('./build-utils.js');
+const {
+  buildFolder,
+  compile,
+  compileDefaultPlugins,
+} = require('./build-utils.js');
 
 function preludeBundle(dir) {
   return new Promise((resolve, reject) =>
@@ -53,6 +57,7 @@ function preludeBundle(dir) {
   console.log('Created build directory', buildDir);
   await compile(buildDir, path.join(__dirname, '..', 'headless', 'index.js'));
   await preludeBundle(buildDir);
+  await compileDefaultPlugins(path.join(distDir, 'plugins'));
   await createBinary([
     path.join(buildDir, 'bundle.js'),
     '--output',

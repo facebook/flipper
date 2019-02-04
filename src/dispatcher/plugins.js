@@ -23,6 +23,7 @@ import {remote} from 'electron';
 import GK from '../fb-stubs/GK';
 import {FlipperBasePlugin} from '../plugin.js';
 import {setupMenuBar} from '../MenuBar.js';
+import path from 'path';
 
 export type PluginDefinition = {
   name: string,
@@ -74,14 +75,21 @@ export default (store: Store, logger: Logger) => {
 function getBundledPlugins(): Array<PluginDefinition> {
   // DefaultPlugins that are included in the bundle.
   // List of defaultPlugins is written at build time
+  const pluginPath =
+    process.env.BUNDLED_PLUGIN_PATH || path.join(__dirname, 'defaultPlugins');
+
   let bundledPlugins: Array<PluginDefinition> = [];
   try {
-    bundledPlugins = global.electronRequire('./defaultPlugins/index.json');
-  } catch (e) {}
+    bundledPlugins = global.electronRequire(
+      path.join(pluginPath, 'index.json'),
+    );
+  } catch (e) {
+    console.error(e);
+  }
 
   return bundledPlugins.map(plugin => ({
     ...plugin,
-    out: './' + plugin.out,
+    out: path.join(pluginPath, plugin.out),
   }));
 }
 

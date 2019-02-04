@@ -135,7 +135,7 @@ function copyStaticFolder(buildFolder) {
   // eslint-disable-next-line no-console
   console.log('Created build directory', dir);
   await copyStaticFolder(dir);
-  await compileDefaultPlugins(dir);
+  await compileDefaultPlugins(path.join(dir, 'defaultPlugins'));
   await compile(dir, path.join(__dirname, '..', 'src', 'init.js'));
   const versionNumber = await modifyPackageManifest(dir);
   generateManifest(versionNumber);
