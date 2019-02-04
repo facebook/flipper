@@ -11,6 +11,7 @@ const fs = require('fs');
 const Metro = require('metro');
 const util = require('util');
 const recursiveReaddir = require('recursive-readdir');
+const expandTilde = require('expand-tilde');
 const HOME_DIR = require('os').homedir();
 
 /* eslint-disable prettier/prettier */
@@ -115,7 +116,7 @@ function pluginEntryPoints(additionalPaths = []) {
   return entryPoints;
 }
 function entryPointForPluginFolder(pluginPath) {
-  pluginPath = pluginPath.replace('~', HOME_DIR);
+  pluginPath = expandTilde(pluginPath);
   if (!fs.existsSync(pluginPath)) {
     return {};
   }

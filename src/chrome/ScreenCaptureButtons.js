@@ -9,8 +9,9 @@ import {Button, ButtonGroup, Component} from 'flipper';
 import {connect} from 'react-redux';
 import AndroidDevice from '../devices/AndroidDevice';
 import IOSDevice from '../devices/IOSDevice';
-import os from 'os';
+import expandTilde from 'expand-tilde';
 import fs from 'fs';
+import os from 'os';
 import adb from 'adbkit-fb';
 import {exec, spawn} from 'child_process';
 import {remote} from 'electron';
@@ -19,11 +20,9 @@ import {reportPlatformFailures} from '../utils/metrics';
 
 let CAPTURE_LOCATION = remote.app.getPath('desktop');
 try {
-  CAPTURE_LOCATION =
-    JSON.parse(window.process.env.CONFIG).screenCapturePath.replace(
-      /^~/,
-      os.homedir(),
-    ) || CAPTURE_LOCATION;
+  CAPTURE_LOCATION = expandTilde(
+    JSON.parse(window.process.env.CONFIG).screenCapturePath || CAPTURE_LOCATION,
+  );
 } catch (e) {}
 
 import type BaseDevice from '../devices/BaseDevice';

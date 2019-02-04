@@ -16,6 +16,7 @@ const {exec} = require('child_process');
 const compilePlugins = require('./compilePlugins.js');
 const os = require('os');
 const setup = require('./setup');
+const expandTilde = require('expand-tilde');
 
 // disable electron security warnings: https://github.com/electron/electron/blob/master/docs/tutorial/security.md#security-native-capabilities-and-your-responsibility
 process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = true;
@@ -42,7 +43,7 @@ const pluginPaths = config.pluginPaths
     path.join(__dirname, '..', 'src', 'plugins'),
     path.join(__dirname, '..', 'src', 'fb', 'plugins'),
   )
-  .map(p => p.replace(/^~/, os.homedir()))
+  .map(expandTilde)
   .filter(fs.existsSync);
 
 process.env.CONFIG = JSON.stringify({
