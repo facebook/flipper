@@ -13,6 +13,26 @@ import path from 'path';
 // $FlowFixMe this file exist, trust me, flow!
 import setup from '../static/setup.js';
 
+console.error(`
+ _____ _ _
+|   __| |_|___ ___ ___ ___
+|   __| | | . | . | -_|  _|
+|__|  |_|_|  _|  _|___|_| v${global.__VERSION__}
+          |_| |_|
+`);
+// redirect all logging to stderr
+const verboseMode = false;
+const originalConsole = global.console;
+global.console = new Proxy(console, {
+  get: function(obj, prop) {
+    return (...args) => {
+      if (prop === 'error' || verboseMode) {
+        originalConsole.error(`[${prop}] `, ...args);
+      }
+    };
+  },
+});
+
 // Polyfills
 global.WebSocket = require('ws'); // used for redux devtools
 global.fetch = require('node-fetch/lib/index');
