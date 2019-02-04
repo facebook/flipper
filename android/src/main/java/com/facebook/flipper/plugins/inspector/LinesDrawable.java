@@ -15,10 +15,12 @@ import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.view.View;
+import java.util.Map;
+import java.util.WeakHashMap;
 import javax.annotation.Nullable;
 
 public class LinesDrawable extends Drawable {
-  private static @Nullable LinesDrawable sInstance;
 
   private final Rect mWorkRect;
   private final Rect mMarginBounds;
@@ -26,19 +28,27 @@ public class LinesDrawable extends Drawable {
   private final Rect mContentBounds;
 
   private final float mDensity;
+  private static @Nullable Map<View, LinesDrawable> sInstanceMap;
 
   public static LinesDrawable getInstance(
-      float density, Rect marginBounds, Rect paddingBounds, Rect contentBounds) {
-    final LinesDrawable drawable = getInstance(density);
+      View view, float density, Rect marginBounds, Rect paddingBounds, Rect contentBounds) {
+    final LinesDrawable drawable = getInstance(view, density);
     drawable.setBounds(marginBounds, paddingBounds, contentBounds);
     return drawable;
   }
 
-  public static LinesDrawable getInstance(float density) {
-    if (sInstance == null) {
-      sInstance = new LinesDrawable(density);
+  public static LinesDrawable getInstance(View view, float density) {
+    if (sInstanceMap == null) {
+      sInstanceMap = new WeakHashMap<>();
     }
-    return sInstance;
+
+    if (sInstanceMap.containsKey(view)) {
+      return sInstanceMap.get(view);
+    }
+
+    LinesDrawable drawable = new LinesDrawable(density);
+    sInstanceMap.put(view, drawable);
+    return drawable;
   }
 
   private LinesDrawable(float density) {
