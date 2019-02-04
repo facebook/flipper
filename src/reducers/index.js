@@ -45,16 +45,16 @@ type Actions =
   | PluginsAction
   | {|type: 'INIT'|};
 
-export type Store = ReduxStore<
-  {|
-    application: ApplicationState,
-    connections: DevicesState,
-    pluginStates: PluginStatesState,
-    notifications: NotificationsState,
-    plugins: PluginsState,
-  |},
-  Actions,
->;
+export type State = {|
+  application: ApplicationState,
+  connections: DevicesState,
+  pluginStates: PluginStatesState,
+  notifications: NotificationsState,
+  plugins: PluginsState,
+|};
+
+// $FlowFixMe introduced when removing $Subtype/$Supertype
+export type Store = ReduxStore<State, Actions>;
 
 export default combineReducers<_, Actions>({
   application,

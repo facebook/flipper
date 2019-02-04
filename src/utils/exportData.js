@@ -10,6 +10,7 @@ import type {State as PluginStates} from '../reducers/pluginStates';
 import type {PluginNotification} from '../reducers/notifications.js';
 import type {ClientExport} from '../Client.js';
 import type {State as PluginStatesState} from '../reducers/pluginStates';
+import type {State} from '../reducers/index';
 import {FlipperDevicePlugin} from '../plugin.js';
 import {default as BaseDevice} from '../devices/BaseDevice';
 
@@ -118,21 +119,24 @@ export const processStore = (
   return null;
 };
 
-export const exportStoreToFile = (data: Store): Promise<void> => {
-  const state = data.getState();
+export function serializeStore(state: State): ?ExportType {
   const {activeNotifications} = state.notifications;
   const {selectedDevice, clients} = state.connections;
   const {pluginStates} = state;
   const {devicePlugins} = state.plugins;
   // TODO: T39612653 Make Client mockable. Currently rsocket logic is tightly coupled.
   // Not passing the entire state as currently Client is not mockable.
-  const json = processStore(
+  return processStore(
     activeNotifications,
     selectedDevice,
     pluginStates,
     clients.map(client => client.toJSON()),
     devicePlugins,
   );
+}
+
+export const exportStoreToFile = (store: Store): Promise<void> => {
+  const json = serializeStore(store.getState());
   if (json) {
     return new Promise((resolve, reject) => {
       fs.writeFile(exportFilePath, JSON.stringify(json), err => {
