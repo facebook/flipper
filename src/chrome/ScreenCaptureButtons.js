@@ -166,7 +166,7 @@ class ScreenCaptureButtons extends Component<Props, State> {
 
       this.executeShell(
         selectedDevice,
-        `mkdir -p "${devicePath}" && touch "${devicePath}/.nomedia"`,
+        `mkdir -p "${devicePath}" && echo -n > "${devicePath}/.nomedia"`,
       )
         .then(output => {
           if (output) {
