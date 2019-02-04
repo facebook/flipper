@@ -86,9 +86,19 @@ function buildFolder() {
   }).catch(die);
 }
 
+function getVersionNumber() {
+  let {version} = require('../package.json');
+  const buildNumber = process.argv.join(' ').match(/--version=(\d+)/);
+  if (buildNumber && buildNumber.length > 0) {
+    version = [...version.split('.').slice(0, 2), buildNumber[1]].join('.');
+  }
+  return version;
+}
+
 module.exports = {
   buildFolder,
   compile,
   die,
   compileDefaultPlugins,
+  getVersionNumber,
 };

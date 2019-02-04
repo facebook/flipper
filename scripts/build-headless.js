@@ -12,15 +12,15 @@ const {
   buildFolder,
   compile,
   compileDefaultPlugins,
+  getVersionNumber,
 } = require('./build-utils.js');
 
-function preludeBundle(dir) {
+function preludeBundle(dir, versionNumber) {
   return new Promise((resolve, reject) =>
     lineReplace({
       file: path.join(dir, 'bundle.js'),
       line: 1,
-      text:
-        'var __DEV__=false; global.electronRequire = require; global.performance = require("perf_hooks").performance;',
+      text: `var __DEV__=false; global.electronRequire = require; global.performance = require("perf_hooks").performance;global.__VERSION__="${versionNumber}";`,
       addNewLine: true,
       callback: resolve,
     }),
@@ -56,7 +56,8 @@ function preludeBundle(dir) {
   // eslint-disable-next-line no-console
   console.log('Created build directory', buildDir);
   await compile(buildDir, path.join(__dirname, '..', 'headless', 'index.js'));
-  await preludeBundle(buildDir);
+  const versionNumber = getVersionNumber();
+  await preludeBundle(buildDir, versionNumber);
   await compileDefaultPlugins(path.join(distDir, 'plugins'));
   await createBinary([
     path.join(buildDir, 'bundle.js'),
