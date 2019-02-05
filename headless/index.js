@@ -47,7 +47,7 @@ yargs
     startFlipper,
   )
   .version(global.__VERSION__)
-  .help().argv;
+  .help();
 
 function startFlipper({
   dev,

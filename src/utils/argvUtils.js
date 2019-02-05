@@ -9,7 +9,9 @@ import electron from 'electron';
 import isProduction from './isProduction';
 
 export const isAutoUpdaterEnabled = () =>
-  // $FlowFixMe: argv is not included in the type defs.
-  !electron.remote.process.argv.includes('--no-updater') &&
+  // TODO(T39788540): Centralise config access and avoid parsing multiple times.
+  // $FlowFixMe: env is not in the type defs.
+  JSON.parse(electron.remote?.process.env.CONFIG || process.env.CONFIG || '{}')
+    .updaterEnabled &&
   isProduction() &&
   process.platform === 'darwin';

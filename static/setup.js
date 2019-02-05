@@ -9,7 +9,7 @@ const path = require('path');
 const os = require('os');
 const fs = require('fs');
 
-module.exports = function() {
+module.exports = function(argv) {
   if (!process.env.ANDROID_HOME) {
     process.env.ANDROID_HOME = '/opt/android_sdk';
   }
@@ -27,7 +27,11 @@ module.exports = function() {
   }
 
   const configPath = path.join(flipperDir, 'config.json');
-  let config = {pluginPaths: [], disabledPlugins: [], lastWindowPosition: {}};
+  let config = {
+    pluginPaths: [],
+    disabledPlugins: [],
+    lastWindowPosition: {},
+  };
 
   try {
     config = {
@@ -38,6 +42,12 @@ module.exports = function() {
     // file not readable or not parsable, overwrite it with the new config
     fs.writeFileSync(configPath, JSON.stringify(config));
   }
+
+  // Non-persistent CLI arguments.
+  config = {
+    ...config,
+    updaterEnabled: argv.updater,
+  };
 
   return {config, configPath, flipperDir};
 };

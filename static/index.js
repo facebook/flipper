@@ -17,6 +17,7 @@ const compilePlugins = require('./compilePlugins.js');
 const os = require('os');
 const setup = require('./setup');
 const expandTilde = require('expand-tilde');
+const yargs = require('yargs');
 
 // disable electron security warnings: https://github.com/electron/electron/blob/master/docs/tutorial/security.md#security-native-capabilities-and-your-responsibility
 process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = true;
@@ -36,7 +37,17 @@ if (process.platform === 'darwin') {
   }
 }
 
-let {config, configPath, flipperDir} = setup();
+const argv = yargs
+  .usage('$0 [args]')
+  .option('updater', {
+    default: true,
+    describe: 'Toggle the built-in update mechanism.',
+    type: 'boolean',
+  })
+  .version(global.__VERSION__)
+  .help().argv;
+
+let {config, configPath, flipperDir} = setup(argv);
 
 const pluginPaths = config.pluginPaths
   .concat(
