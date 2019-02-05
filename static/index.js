@@ -14,7 +14,6 @@ const url = require('url');
 const fs = require('fs');
 const {exec} = require('child_process');
 const compilePlugins = require('./compilePlugins.js');
-const os = require('os');
 const setup = require('./setup');
 const expandTilde = require('expand-tilde');
 const yargs = require('yargs');
