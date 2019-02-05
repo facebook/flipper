@@ -16,16 +16,7 @@ import {default as BaseDevice} from '../devices/BaseDevice';
 import {default as ArchivedDevice} from '../devices/ArchivedDevice';
 import {default as Client} from '../Client';
 import {getInstance} from '../fb-stubs/Logger.js';
-
 import fs from 'fs';
-import os from 'os';
-import path from 'path';
-
-const exportFilePath = path.join(
-  os.homedir(),
-  '.flipper',
-  'FlipperExport.json',
-);
 
 export type ExportType = {|
   fileVersion: '1.0.0',
@@ -138,8 +129,11 @@ export function serializeStore(state: State): ?ExportType {
   );
 }
 
-export const exportStoreToFile = (store: Store): Promise<void> => {
-  const json = serializeStore(store.getState());
+export const exportStoreToFile = (
+  exportFilePath: string,
+  data: Store,
+): Promise<void> => {
+  const json = serializeStore(data.getState());
   if (json) {
     return new Promise((resolve, reject) => {
       fs.writeFile(exportFilePath, JSON.stringify(json), err => {

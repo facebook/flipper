@@ -12,6 +12,8 @@ import electron from 'electron';
 import {GK} from 'flipper';
 import {remote} from 'electron';
 const {dialog} = remote;
+import os from 'os';
+import path from 'path';
 
 export type DefaultKeyboardAction = 'clear' | 'goToBottom' | 'createPaste';
 export type TopLevelMenu = 'Edit' | 'View' | 'Window' | 'Help';
@@ -320,7 +322,16 @@ function getTemplate(
           label: 'Export Data...',
           role: 'export',
           click: function(item: Object, focusedWindow: Object) {
-            exportStoreToFile(store);
+            dialog.showSaveDialog(
+              null,
+              {
+                title: 'FlipperExport',
+                defaultPath: path.join(os.homedir(), 'FlipperExport.json'),
+              },
+              file => {
+                exportStoreToFile(file, store);
+              },
+            );
           },
         },
         {
