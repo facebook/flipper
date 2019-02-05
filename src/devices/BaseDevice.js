@@ -86,7 +86,7 @@ export default class BaseDevice {
   teardown() {}
 
   supportedColumns(): Array<string> {
-    throw new Error('unimplemented');
+    return ['date', 'pid', 'tid', 'tag', 'message', 'type', 'time'];
   }
 
   addLogListener(callback: DeviceLogListener): Symbol {
@@ -117,7 +117,7 @@ export default class BaseDevice {
     this.logListeners.delete(id);
   }
 
-  spawnShell(): DeviceShell {
+  spawnShell(): ?DeviceShell {
     throw new Error('unimplemented');
   }
 }

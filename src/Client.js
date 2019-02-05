@@ -80,20 +80,20 @@ export default class Client extends EventEmitter {
   constructor(
     id: string,
     query: ClientQuery,
-    conn: ReactiveSocket,
+    conn: ?ReactiveSocket,
     logger: Logger,
     store: Store,
+    plugins: ?Plugins,
   ) {
     super();
     this.connected = true;
-    this.plugins = [];
+    this.plugins = plugins ? plugins : [];
     this.connection = conn;
     this.id = id;
     this.query = query;
     this.messageIdCounter = 0;
     this.logger = logger;
     this.store = store;
-
     this.broadcastCallbacks = new Map();
     this.requestCallbacks = new Map();
 
@@ -104,16 +104,18 @@ export default class Client extends EventEmitter {
       },
     };
 
-    conn.connectionStatus().subscribe({
-      onNext(payload) {
-        if (payload.kind == 'ERROR' || payload.kind == 'CLOSED') {
-          client.connected = false;
-        }
-      },
-      onSubscribe(subscription) {
-        subscription.request(Number.MAX_SAFE_INTEGER);
-      },
-    });
+    if (conn) {
+      conn.connectionStatus().subscribe({
+        onNext(payload) {
+          if (payload.kind == 'ERROR' || payload.kind == 'CLOSED') {
+            client.connected = false;
+          }
+        },
+        onSubscribe(subscription) {
+          subscription.request(Number.MAX_SAFE_INTEGER);
+        },
+      });
+    }
   }
 
   getDevice = (): ?BaseDevice =>
@@ -132,7 +134,7 @@ export default class Client extends EventEmitter {
   query: ClientQuery;
   messageIdCounter: number;
   plugins: Plugins;
-  connection: ReactiveSocket;
+  connection: ?ReactiveSocket;
   responder: PartialResponder;
   store: Store;
 
@@ -337,7 +339,9 @@ export default class Client extends EventEmitter {
 
       console.debug(data, 'message:call');
       this.startTimingRequestResponse({method, id, params});
-      this.connection.fireAndForget({data: JSON.stringify(data)});
+      if (this.connection) {
+        this.connection.fireAndForget({data: JSON.stringify(data)});
+      }
     });
   }
 
@@ -369,7 +373,9 @@ export default class Client extends EventEmitter {
       params,
     };
     console.debug(data, 'message:send');
-    this.connection.fireAndForget({data: JSON.stringify(data)});
+    if (this.connection) {
+      this.connection.fireAndForget({data: JSON.stringify(data)});
+    }
   }
 
   call(api: string, method: string, params?: Object): Promise<Object> {

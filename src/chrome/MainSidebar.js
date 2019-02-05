@@ -219,7 +219,6 @@ class MainSidebar extends PureComponent<MainSidebarProps> {
       numNotifications,
     } = this.props;
     let {clients, uninitializedClients} = this.props;
-
     clients = clients
       .filter(
         (client: Client) =>

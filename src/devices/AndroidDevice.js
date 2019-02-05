@@ -78,7 +78,7 @@ export default class AndroidDevice extends BaseDevice {
     });
   }
 
-  spawnShell(): DeviceShell {
+  spawnShell(): ?DeviceShell {
     return child_process.spawn('adb', ['-s', this.serial, 'shell', '-t', '-t']);
   }
 }

@@ -13,6 +13,9 @@ import type {State as PluginStatesState} from '../reducers/pluginStates';
 import type {State} from '../reducers/index';
 import {FlipperDevicePlugin} from '../plugin.js';
 import {default as BaseDevice} from '../devices/BaseDevice';
+import {default as ArchivedDevice} from '../devices/ArchivedDevice';
+import {default as Client} from '../Client';
+import {getInstance} from '../fb-stubs/Logger.js';
 
 import fs from 'fs';
 import os from 'os';
@@ -149,4 +152,62 @@ export const exportStoreToFile = (store: Store): Promise<void> => {
   }
   console.error('Make sure a device is connected');
   return new Promise.reject(new Error('No device is selected'));
+};
+
+export const importFileToStore = (file: string, store: Store) => {
+  fs.readFile(file, 'utf8', (err, data) => {
+    if (err) {
+      console.error(err);
+      return;
+    }
+    const json = JSON.parse(data);
+    const {device, clients} = json;
+    const archivedDevice = new ArchivedDevice(
+      device.serial,
+      device.deviceType,
+      device.title,
+      device.os,
+    );
+    store.dispatch({
+      type: 'REGISTER_DEVICE',
+      payload: archivedDevice,
+    });
+    store.dispatch({
+      type: 'SELECT_DEVICE',
+      payload: archivedDevice,
+    });
+
+    const {pluginStates} = json.store;
+    const keys = Object.keys(pluginStates);
+    clients.forEach(client => {
+      const clientPlugins = keys
+        .filter(key => {
+          const arr = key.split('#');
+          arr.pop();
+          const clientPlugin = arr.join('#');
+          return client.id === clientPlugin;
+        })
+        .map(client => client.split('#').pop());
+      store.dispatch({
+        type: 'NEW_CLIENT',
+        payload: new Client(
+          client.id,
+          client.query,
+          null,
+          getInstance(),
+          store,
+          clientPlugins,
+        ),
+      });
+    });
+    keys.forEach(key => {
+      store.dispatch({
+        type: 'SET_PLUGIN_STATE',
+        payload: {
+          pluginKey: key,
+          state: pluginStates[key],
+        },
+      });
+    });
+  });
 };
