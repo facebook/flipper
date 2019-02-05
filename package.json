@@ -101,7 +101,8 @@
     "which": "^1.3.1",
     "ws": "^6.1.2",
     "xml2js": "^0.4.19",
-    "yargs": "^11.0.0"
+    "yargs": "^11.0.0",
+    "yazl": "^2.5.1"
   },
   "scripts": {
     "postinstall": "node scripts/yarn-install.js",

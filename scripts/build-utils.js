@@ -60,6 +60,9 @@ function compile(buildFolder, entry) {
           'index.js',
         ),
       },
+      resolver: {
+        blacklistRE: /\/sonar\/dist\//,
+      },
     },
     {
       dev: false,

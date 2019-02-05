@@ -206,6 +206,9 @@ async function compilePlugin(
               'index.js',
             ),
           },
+          resolver: {
+            blacklistRE: /\/sonar\/dist\//,
+          },
         },
         {
           entry: entry.replace(rootDir, '.'),

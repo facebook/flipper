@@ -5,8 +5,10 @@
  * @format
  */
 
+const fs = require('fs');
 const path = require('path');
 const lineReplace = require('line-replace');
+const yazl = require('yazl');
 const {exec: createBinary} = require('pkg');
 const {
   buildFolder,
@@ -14,6 +16,8 @@ const {
   compileDefaultPlugins,
   getVersionNumber,
 } = require('./build-utils.js');
+
+const PLUGINS_FOLDER_NAME = 'plugins';
 
 function preludeBundle(dir, versionNumber) {
   return new Promise((resolve, reject) =>
@@ -27,25 +31,53 @@ function preludeBundle(dir, versionNumber) {
   );
 }
 
+async function createZip(buildDir, distDir, targets) {
+  return Promise.all(
+    targets.map(
+      target =>
+        new Promise((resolve, reject) => {
+          const zip = new yazl.ZipFile();
+          const binary = `flipper-${target === 'mac' ? 'macos' : target}`;
+          zip.addFile(path.join(buildDir, binary), binary);
+          const pluginDir = path.join(buildDir, PLUGINS_FOLDER_NAME);
+          fs.readdirSync(pluginDir).forEach(file => {
+            zip.addFile(
+              path.join(pluginDir, file),
+              path.join(PLUGINS_FOLDER_NAME, file),
+            );
+          });
+          zip.outputStream
+            .pipe(
+              fs.createWriteStream(
+                path.join(distDir, `Flipper-headless-${target}.zip`),
+              ),
+            )
+            .on('close', resolve);
+          zip.end();
+        }),
+    ),
+  );
+}
+
 (async () => {
-  const targets = [];
+  const targets = {};
   let platformPostfix;
 
   if (process.argv.indexOf('--mac') > -1) {
-    targets.push('node10-macos-x64');
+    targets.mac = 'node10-macos-x64';
     platformPostfix = '-macos';
   }
   if (process.argv.indexOf('--linux') > -1) {
-    targets.push('node10-linux-x64');
+    targets.linux = 'node10-linux-x64';
     platformPostfix = '-linux';
   }
   if (process.argv.indexOf('--win') > -1) {
-    targets.push('node10-win-x64');
+    targets.win = 'node10-win-x64';
     platformPostfix = '-win';
   }
   if (targets.length === 0) {
     throw new Error('No targets specified. eg. --mac, --win, or --linux');
-  } else if (targets.length > 1) {
+  } else if (Object.keys(targets).length > 1) {
     // platformPostfix is automatically added by pkg
     platformPostfix = '';
   }
@@ -58,14 +90,16 @@ function preludeBundle(dir, versionNumber) {
   await compile(buildDir, path.join(__dirname, '..', 'headless', 'index.js'));
   const versionNumber = getVersionNumber();
   await preludeBundle(buildDir, versionNumber);
-  await compileDefaultPlugins(path.join(distDir, 'plugins'));
+  await compileDefaultPlugins(path.join(buildDir, PLUGINS_FOLDER_NAME));
   await createBinary([
     path.join(buildDir, 'bundle.js'),
     '--output',
-    path.join(distDir, `flipper${platformPostfix}`),
+    path.join(buildDir, `flipper${platformPostfix}`),
     '--targets',
-    targets.join(','),
+    Object.values(targets).join(','),
+    '--debug',
   ]);
+  await createZip(buildDir, distDir, Object.keys(targets));
   // eslint-disable-next-line no-console
   console.log('✨  Done');
   process.exit();
