@@ -25,6 +25,7 @@ import {FlipperBasePlugin} from '../plugin.js';
 import {setupMenuBar} from '../MenuBar.js';
 import path from 'path';
 import {default as config} from '../utils/processConfig.js';
+import isProduction from '../utils/isProduction';
 
 export type PluginDefinition = {
   name: string,
@@ -74,6 +75,11 @@ export default (store: Store, logger: Logger) => {
 };
 
 function getBundledPlugins(): Array<PluginDefinition> {
+  if (!isProduction()) {
+    // Plugins are only bundled in production builds
+    return [];
+  }
+
   // DefaultPlugins that are included in the bundle.
   // List of defaultPlugins is written at build time
   const pluginPath =
