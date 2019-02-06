@@ -17,15 +17,12 @@ import {exec, spawn} from 'child_process';
 import {remote} from 'electron';
 import path from 'path';
 import {reportPlatformFailures} from '../utils/metrics';
-
-let CAPTURE_LOCATION = remote.app.getPath('desktop');
-try {
-  CAPTURE_LOCATION = expandTilde(
-    JSON.parse(window.process.env.CONFIG).screenCapturePath || CAPTURE_LOCATION,
-  );
-} catch (e) {}
-
+import config from '../utils/processConfig';
 import type BaseDevice from '../devices/BaseDevice';
+
+const CAPTURE_LOCATION = expandTilde(
+  config().screenCapturePath || remote.app.getPath('desktop'),
+);
 
 type PullTransfer = any;
 

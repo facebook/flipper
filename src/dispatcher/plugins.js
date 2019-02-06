@@ -24,6 +24,7 @@ import GK from '../fb-stubs/GK';
 import {FlipperBasePlugin} from '../plugin.js';
 import {setupMenuBar} from '../MenuBar.js';
 import path from 'path';
+import {default as config} from '../utils/processConfig.js';
 
 export type PluginDefinition = {
   name: string,
@@ -129,11 +130,7 @@ export const checkDisabled = (disabledPlugins: Array<PluginDefinition>) => (
 ): boolean => {
   let disabledList: Set<string> = new Set();
   try {
-    disabledList = new Set(
-      // $FlowFixMe process.env not defined in electron API spec
-      JSON.parse(remote?.process.env.CONFIG || process.env.CONFIG || '{}')
-        .disabledPlugins || [],
-    );
+    disabledList = config().disabledPlugins;
   } catch (e) {
     console.error(e);
   }
