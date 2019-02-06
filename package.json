@@ -31,7 +31,10 @@
   "jest": {
     "transform": {
       "\\.(js)$": "<rootDir>/static/transforms/index.js"
-    }
+    },
+    "setupFiles": [
+      "<rootDir>/static/globalTestSetup.js"
+    ]
   },
   "devDependencies": {
     "@jest-runner/electron": "^0.1.0",
