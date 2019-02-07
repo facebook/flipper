@@ -75,7 +75,9 @@ export default class CertificateProvider {
 
   constructor(server: Server, logger: LogManager) {
     this.logger = logger;
-    this.adb = adb.createClient();
+    this.adb = adb.createClient({
+      port: process.env.ANDROID_ADB_SERVER_PORT || '5037',
+    });
     this.certificateSetup = reportPlatformFailures(
       this.ensureServerCertExists(),
       'ensureServerCertExists',

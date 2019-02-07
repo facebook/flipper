@@ -79,7 +79,11 @@ export default (store: Store, logger: Logger) => {
             );
           }
         })
-        .then(adb.createClient),
+        .then(() =>
+          adb.createClient({
+            port: process.env.ANDROID_ADB_SERVER_PORT || '5037',
+          }),
+        ),
       'createADBClient.shell',
     ).catch(err => {
       console.error(
