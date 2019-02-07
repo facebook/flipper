@@ -50,6 +50,7 @@ android {
         implementation deps.stetho
         implementation deps.okhttp3
         implementation deps.lithoCore
+        implementation deps.lithoSectionsDebug
         implementation deps.lithoWidget
         implementation deps.rhino
         compileOnly deps.leakcanary
