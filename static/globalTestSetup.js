@@ -12,3 +12,5 @@ console.error = function(message) {
   );
   defaultConsoleError.apply(console, arguments);
 };
+
+global.fetch = require('jest-fetch-mock');

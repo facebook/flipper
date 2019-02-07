@@ -53,6 +53,7 @@
     "flow-bin": "^0.91.0",
     "glob": "^7.1.2",
     "jest": "^23.6.0",
+    "jest-fetch-mock": "^2.1.0",
     "prettier": "1.13.6",
     "redux-mock-store": "^1.5.3"
   },
