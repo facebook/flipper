@@ -47,7 +47,7 @@ yargs
     startFlipper,
   )
   .version(global.__VERSION__)
-  .help();
+  .help().argv; // http://yargs.js.org/docs/#api-argv
 
 function startFlipper({
   dev,
@@ -87,7 +87,7 @@ function startFlipper({
   // needs to be required after WebSocket polyfill is loaded
   const devToolsEnhancer = require('remote-redux-devtools').default;
 
-  setup();
+  setup({});
   const store = dev
     ? createStore(
         reducers,
