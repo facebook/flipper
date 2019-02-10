@@ -16,10 +16,10 @@ Pod::Spec.new do |spec|
   spec.platforms = { :ios => "8.4" }
   spec.default_subspecs = "Core"
 
-  # This subspec is necessary since FBMacros.h is imported as <FBDefines/FBMacros.h>
+  # This subspec is necessary since FBDefines.h is imported as <FBDefines/FBDefines.h>
   # inside SKMacros.h, which is a public header file. Defining this directory as a
   # subspec with header_dir = 'FBDefines' allows this to work, even though it wouldn't
-  # generally (you would need to import <FlipperKit/t/FBDefines/FBMacros.h>)
+  # generally (you would need to import <FlipperKit/t/FBDefines/FBDefines.h>)
   spec.subspec 'FBDefines' do |ss|
     ss.header_dir = 'FBDefines'
     ss.compiler_flags = folly_compiler_flags
@@ -79,7 +79,7 @@ Pod::Spec.new do |spec|
                              'iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutPlugin/SKDescriptorMapper.h',
                              'iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutComponentKitSupport/FlipperKitLayoutComponentKitSupport.h',
                              'iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutComponentKitSupport/SKSubDescriptor.h',
-                             'iOS/FBDefines/FBMacros.h',
+                             'iOS/FBDefines/FBDefines.h',
                              'iOS/Plugins/FlipperKitExamplePlugin/FlipperKitExamplePlugin/FlipperKitExamplePlugin.h',
                              'iOS/Plugins/FlipperKitCrashReporterPlugin/FlipperKitCrashReporterPlugin/FlipperKitCrashReporterPlugin.h',
                              'iOS/FlipperKit/**/{FlipperDiagnosticsViewController,FlipperStateUpdateListener,FlipperClient,FlipperPlugin,FlipperConnection,FlipperResponder,SKMacros}.h'
