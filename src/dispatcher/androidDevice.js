@@ -14,6 +14,7 @@ import type BaseDevice from '../devices/BaseDevice';
 import type Logger from '../fb-stubs/Logger.js';
 import {registerDeviceCallbackOnPlugins} from '../utils/onRegisterDevice.js';
 import {reportPlatformFailures} from '../utils/metrics';
+import adbConfig from '../utils/adbConfig';
 const adb = require('adbkit-fb');
 
 function createDevice(
@@ -79,11 +80,7 @@ export default (store: Store, logger: Logger) => {
             );
           }
         })
-        .then(() =>
-          adb.createClient({
-            port: process.env.ANDROID_ADB_SERVER_PORT || '5037',
-          }),
-        ),
+        .then(() => adb.createClient(adbConfig())),
       'createADBClient.shell',
     ).catch(err => {
       console.error(
@@ -92,7 +89,7 @@ export default (store: Store, logger: Logger) => {
 
       /* In the event that starting adb with the above method fails, fallback
          to using adbkit, though its known to be unreliable. */
-      const unsafeClient = adb.createClient();
+      const unsafeClient = adb.createClient(adbConfig());
       return reportPlatformFailures(
         promiseRetry(
           (retry, number) => {

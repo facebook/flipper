@@ -20,6 +20,7 @@ const tmpFile = promisify(tmp.file);
 const tmpDir = promisify(tmp.dir);
 import iosUtil from '../fb-stubs/iOSContainerUtility';
 import {reportPlatformFailures} from './metrics';
+import adbConfig from './adbConfig';
 
 // Desktop file paths
 const os = require('os');
@@ -75,9 +76,7 @@ export default class CertificateProvider {
 
   constructor(server: Server, logger: LogManager) {
     this.logger = logger;
-    this.adb = adb.createClient({
-      port: process.env.ANDROID_ADB_SERVER_PORT || '5037',
-    });
+    this.adb = adb.createClient(adbConfig());
     this.certificateSetup = reportPlatformFailures(
       this.ensureServerCertExists(),
       'ensureServerCertExists',
