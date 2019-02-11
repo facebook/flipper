@@ -23,7 +23,7 @@ with corresponding identifiers.
 class FlipperConnection {
  public:
   using FlipperReceiver = std::function<
-      void(const folly::dynamic&, std::unique_ptr<FlipperResponder>)>;
+      void(const folly::dynamic&, std::shared_ptr<FlipperResponder>)>;
 
   virtual ~FlipperConnection() {}
 

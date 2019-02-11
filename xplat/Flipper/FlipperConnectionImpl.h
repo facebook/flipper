@@ -1,17 +1,16 @@
-/*
- *  Copyright (c) 2018-present, Facebook, Inc.
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- *  This source code is licensed under the MIT license found in the LICENSE
- *  file in the root directory of this source tree.
- *
+ * This source code is licensed under the MIT license found in the LICENSE
+ * file in the root directory of this source tree.
  */
-
 #pragma once
 
-#include "FlipperConnection.h"
-#include "FlipperConnectionManager.h"
 #include <map>
 #include <string>
+#include "FlipperConnection.h"
+#include "FlipperConnectionManager.h"
+#include "Log.h"
 
 namespace facebook {
 namespace flipper {
@@ -24,11 +23,14 @@ class FlipperConnectionImpl : public FlipperConnection {
   void call(
       const std::string& method,
       const folly::dynamic& params,
-      std::unique_ptr<FlipperResponder> responder) {
+      std::shared_ptr<FlipperResponder> responder) {
     if (receivers_.find(method) == receivers_.end()) {
-      throw std::out_of_range("receiver " + method + " not found.");
+      std::string errorMessage = "Receiver " + method + " not found.";
+      log("Error: " + errorMessage);
+      responder->error(folly::dynamic::object("message", errorMessage));
+      return;
     }
-    receivers_.at(method)(params, std::move(responder));
+    receivers_.at(method)(params, responder);
   }
 
   void send(const std::string& method, const folly::dynamic& params) override {

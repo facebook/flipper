@@ -1,14 +1,13 @@
-/*
- *  Copyright (c) 2018-present, Facebook, Inc.
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- *  This source code is licensed under the MIT license found in the LICENSE
- *  file in the root directory of this source tree.
- *
+ * This source code is licensed under the MIT license found in the LICENSE
+ * file in the root directory of this source tree.
  */
-
 #pragma once
 
 #include <folly/json.h>
+#include "FlipperResponder.h"
 
 namespace facebook {
 namespace flipper {
@@ -56,7 +55,9 @@ class FlipperConnectionManager::Callbacks {
 
   virtual void onDisconnected() = 0;
 
-  virtual void onMessageReceived(const folly::dynamic& message) = 0;
+  virtual void onMessageReceived(
+      const folly::dynamic& message,
+      std::unique_ptr<FlipperResponder>) = 0;
 };
 
 } // namespace flipper

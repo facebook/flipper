@@ -174,8 +174,8 @@ class JFlipperConnectionImpl : public jni::HybridClass<JFlipperConnectionImpl, J
 
   void receive(const std::string method, jni::alias_ref<JFlipperReceiver> receiver) {
     auto global = make_global(receiver);
-    _connection->receive(std::move(method), [global] (const folly::dynamic& params, std::unique_ptr<FlipperResponder> responder) {
-      global->receive(params, std::move(responder));
+    _connection->receive(std::move(method), [global] (const folly::dynamic& params, std::shared_ptr<FlipperResponder> responder) {
+      global->receive(params, responder);
     });
   }
 
