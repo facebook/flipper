@@ -31,6 +31,11 @@ static constexpr int connectionKeepaliveSeconds = 10;
 
 static constexpr int maxPayloadSize = 0xFFFFFF;
 
+// Not a public-facing version number.
+// Used for compatibility checking with desktop flipper.
+// To be bumped for every core platform interface change.
+static constexpr int sdkVersion = 1;
+
 namespace facebook {
 namespace flipper {
 
@@ -146,9 +151,9 @@ void FlipperConnectionManagerImpl::doCertificateExchange() {
   rsocket::SetupParameters parameters;
   folly::SocketAddress address;
 
-  parameters.payload = rsocket::Payload(
-      folly::toJson(folly::dynamic::object("os", deviceData_.os)(
-          "device", deviceData_.device)("app", deviceData_.app)));
+  parameters.payload = rsocket::Payload(folly::toJson(folly::dynamic::object(
+      "os", deviceData_.os)("device", deviceData_.device)(
+      "app", deviceData_.app)("sdk_version", sdkVersion)));
   address.setFromHostPort(deviceData_.host, insecurePort);
 
   auto connectingInsecurely = flipperState_->start("Connect insecurely");
@@ -177,9 +182,10 @@ void FlipperConnectionManagerImpl::connectSecurely() {
   if (deviceId.compare("unknown")) {
     loadingDeviceId->complete();
   }
-  parameters.payload = rsocket::Payload(folly::toJson(folly::dynamic::object(
-      "os", deviceData_.os)("device", deviceData_.device)(
-      "device_id", deviceId)("app", deviceData_.app)));
+  parameters.payload = rsocket::Payload(
+      folly::toJson(folly::dynamic::object("os", deviceData_.os)(
+          "device", deviceData_.device)("device_id", deviceId)(
+          "app", deviceData_.app)("sdk_version", sdkVersion)));
   address.setFromHostPort(deviceData_.host, securePort);
 
   std::shared_ptr<folly::SSLContext> sslContext =
