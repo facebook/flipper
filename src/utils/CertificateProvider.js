@@ -28,6 +28,7 @@ const caKey = getFilePath('ca.key');
 const caCert = getFilePath('ca.crt');
 const serverKey = getFilePath('server.key');
 const serverCsr = getFilePath('server.csr');
+const serverSrl = getFilePath('server.srl');
 const serverCert = getFilePath('server.crt');
 
 // Device file paths
@@ -169,6 +170,7 @@ export default class CertificateProvider {
         CA: caCert,
         CAkey: caKey,
         CAcreateserial: true,
+        CAserial: serverSrl,
       });
     });
   }
@@ -612,6 +614,7 @@ export default class CertificateProvider {
           CA: caCert,
           CAkey: caKey,
           CAcreateserial: true,
+          CAserial: serverSrl,
           out: serverCert,
         }),
       )
