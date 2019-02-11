@@ -29,6 +29,7 @@ export type ClientQuery = {|
   os: OS,
   device: string,
   device_id: string,
+  sdk_version?: number,
 |};
 
 export type ClientExport = {|
@@ -91,6 +92,7 @@ export default class Client extends EventEmitter {
     this.connection = conn;
     this.id = id;
     this.query = query;
+    this.sdkVersion = query.sdk_version || 0;
     this.messageIdCounter = 0;
     this.logger = logger;
     this.store = store;
@@ -132,6 +134,7 @@ export default class Client extends EventEmitter {
   connected: boolean;
   id: string;
   query: ClientQuery;
+  sdkVersion: number;
   messageIdCounter: number;
   plugins: Plugins;
   connection: ?ReactiveSocket;
@@ -265,17 +268,29 @@ export default class Client extends EventEmitter {
       return;
     }
 
-    const callbacks = this.requestCallbacks.get(id);
-    if (!callbacks) {
-      return;
+    if (this.sdkVersion < 1) {
+      const callbacks = this.requestCallbacks.get(id);
+      if (!callbacks) {
+        return;
+      }
+      this.requestCallbacks.delete(id);
+      this.finishTimingRequestResponse(callbacks.metadata);
+      this.onResponse(data, callbacks.resolve, callbacks.reject);
     }
-    this.requestCallbacks.delete(id);
-    this.finishTimingRequestResponse(callbacks.metadata);
+  }
 
+  onResponse(
+    data: {
+      success?: Object,
+      error?: Object,
+    },
+    resolve: any => any,
+    reject: any => any,
+  ) {
     if (data.success) {
-      callbacks.resolve(data.success);
+      resolve(data.success);
     } else if (data.error) {
-      callbacks.reject(data.error);
+      reject(data.error);
       const {error} = data;
       if (error) {
         handleError(this.store, this.getDevice()?.serial, error);
@@ -329,7 +344,10 @@ export default class Client extends EventEmitter {
         id,
         params,
       };
-      this.requestCallbacks.set(id, {reject, resolve, metadata});
+
+      if (this.sdkVersion < 1) {
+        this.requestCallbacks.set(id, {reject, resolve, metadata});
+      }
 
       const data = {
         id,
@@ -338,9 +356,32 @@ export default class Client extends EventEmitter {
       };
 
       console.debug(data, 'message:call');
-      this.startTimingRequestResponse({method, id, params});
+
+      if (this.sdkVersion < 1) {
+        this.startTimingRequestResponse({method, id, params});
+        if (this.connection) {
+          this.connection.fireAndForget({data: JSON.stringify(data)});
+        }
+        return;
+      }
+
+      const mark = this.getPerformanceMark(metadata);
+      performance.mark(mark);
       if (this.connection) {
-        this.connection.fireAndForget({data: JSON.stringify(data)});
+        this.connection
+          .requestResponse({data: JSON.stringify(data)})
+          .subscribe({
+            onComplete: payload => {
+              const logEventName = this.getLogEventName(data);
+              this.logger.trackTimeSince(mark, logEventName);
+              const response: {|
+                success?: Object,
+                error?: Object,
+              |} = JSON.parse(payload.data);
+              this.onResponse(response, resolve, reject);
+            },
+            onError: reject,
+          });
       }
     });
   }
