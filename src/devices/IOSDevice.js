@@ -63,10 +63,15 @@ export default class IOSDevice extends BaseDevice {
       return;
     }
     if (!this.log) {
+      const deviceSetPath = process.env.DEVICE_SET_PATH
+        ? ['--set', process.env.DEVICE_SET_PATH]
+        : [];
+
       this.log = child_process.spawn(
         'xcrun',
         [
           'simctl',
+          ...deviceSetPath,
           'spawn',
           'booted',
           'log',
