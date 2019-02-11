@@ -193,7 +193,7 @@ void FlipperConnectionManagerImpl::connectSecurely() {
               std::move(address),
               std::move(sslContext)),
           std::move(parameters),
-          std::make_shared<FlipperRSocketResponder>(this),
+          std::make_shared<FlipperRSocketResponder>(this, connectionEventBase_),
           std::chrono::seconds(connectionKeepaliveSeconds), // keepaliveInterval
           nullptr, // stats
           std::make_shared<ConnectionEvents>(this))
@@ -239,6 +239,12 @@ void FlipperConnectionManagerImpl::sendMessage(const folly::dynamic& message) {
       return;
     }
   });
+}
+
+void FlipperConnectionManagerImpl::onMessageReceived(
+    const folly::dynamic& message,
+    std::unique_ptr<FlipperResponder> responder) {
+  callbacks_->onMessageReceived(message, std::move(responder));
 }
 
 bool FlipperConnectionManagerImpl::isCertificateExchangeNeeded() {

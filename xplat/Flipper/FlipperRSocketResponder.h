@@ -9,15 +9,18 @@
 namespace facebook {
 namespace flipper {
 
-class FlipperConnectionManagerImpl;
+class FlipperConnectionManager;
 
 class FlipperRSocketResponder : public rsocket::RSocketResponder {
  private:
-  FlipperConnectionManagerImpl* websocket_;
+  FlipperConnectionManager* websocket_;
+  folly::EventBase* eventBase_;
 
  public:
-  FlipperRSocketResponder(FlipperConnectionManagerImpl* websocket)
-      : websocket_(websocket){};
+  FlipperRSocketResponder(
+      FlipperConnectionManager* websocket,
+      folly::EventBase* eventBase)
+      : websocket_(websocket), eventBase_(eventBase){};
 
   void handleFireAndForget(
       rsocket::Payload request,

@@ -31,7 +31,7 @@ void FlipperRSocketResponder::handleFireAndForget(
         std::make_unique<FireAndForgetBasedFlipperResponder>(websocket_, id);
   }
 
-  websocket_->callbacks_->onMessageReceived(
+  websocket_->onMessageReceived(
       folly::parseJson(payload), std::move(responder));
 }
 
@@ -44,7 +44,7 @@ FlipperRSocketResponder::handleRequestResponse(
   auto dynamicSingle = yarpl::single::Single<folly::dynamic>::create(
       [payload = std::move(requestString), this](auto observer) {
         auto responder = std::make_unique<FlipperResponderImpl>(observer);
-        websocket_->callbacks_->onMessageReceived(
+        websocket_->onMessageReceived(
             folly::parseJson(payload), std::move(responder));
       });
 
@@ -53,19 +53,18 @@ FlipperRSocketResponder::handleRequestResponse(
         observer->onSubscribe(yarpl::single::SingleSubscriptions::empty());
         dynamicSingle->subscribe(
             [observer, this](folly::dynamic d) {
-              websocket_->connectionEventBase_->runInEventBaseThread(
-                  [observer, d]() {
-                    try {
-                      observer->onSuccess(toRSocketPayload(d));
+              eventBase_->runInEventBaseThread([observer, d]() {
+                try {
+                  observer->onSuccess(toRSocketPayload(d));
 
-                    } catch (std::exception& e) {
-                      log(e.what());
-                      observer->onError(e);
-                    }
-                  });
+                } catch (std::exception& e) {
+                  log(e.what());
+                  observer->onError(e);
+                }
+              });
             },
             [observer, this](folly::exception_wrapper e) {
-              websocket_->connectionEventBase_->runInEventBaseThread(
+              eventBase_->runInEventBaseThread(
                   [observer, e]() { observer->onError(e); });
             });
       });

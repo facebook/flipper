@@ -61,7 +61,7 @@ TEST_F(FlipperClientTest, testGetPlugins) {
   client->addPlugin(std::make_shared<FlipperPluginMock>("Dog"));
 
   dynamic message = dynamic::object("id", 1)("method", "getPlugins");
-  socket->callbacks->onMessageReceived(message, getResponder());
+  socket->onMessageReceived(message, getResponder());
 
   dynamic expected = dynamic::object("plugins", dynamic::array("Cat", "Dog"));
   EXPECT_EQ(successes[0], expected);
@@ -92,8 +92,8 @@ TEST_F(FlipperClientTest, testRemovePlugin) {
   client->removePlugin(plugin);
 
   dynamic message = dynamic::object("id", 1)("method", "getPlugins");
-  auto responder = std::make_shared<FlipperResponderMock>();
-  socket->callbacks->onMessageReceived(message, getResponder());
+  auto responder = std::make_unique<FlipperResponderMock>();
+  socket->onMessageReceived(message, getResponder());
 
   dynamic expected = dynamic::object("plugins", dynamic::array());
   EXPECT_EQ(successes[0], expected);
@@ -148,24 +148,24 @@ TEST_F(FlipperClientTest, testInitDeinit) {
   {
     dynamic messageInit = dynamic::object("method", "init")(
         "params", dynamic::object("plugin", "Test"));
-    auto responder = std::make_shared<FlipperResponderMock>();
-    socket->callbacks->onMessageReceived(messageInit, getResponder());
+    auto responder = std::make_unique<FlipperResponderMock>();
+    socket->onMessageReceived(messageInit, getResponder());
     EXPECT_TRUE(pluginConnected);
   }
 
   {
     dynamic messageDeinit = dynamic::object("method", "deinit")(
         "params", dynamic::object("plugin", "Test"));
-    auto responder = std::make_shared<FlipperResponderMock>();
-    socket->callbacks->onMessageReceived(messageDeinit, getResponder());
+    auto responder = std::make_unique<FlipperResponderMock>();
+    socket->onMessageReceived(messageDeinit, getResponder());
     EXPECT_FALSE(pluginConnected);
   }
 
   {
     dynamic messageReinit = dynamic::object("method", "init")(
         "params", dynamic::object("plugin", "Test"));
-    auto responder = std::make_shared<FlipperResponderMock>();
-    socket->callbacks->onMessageReceived(messageReinit, getResponder());
+    auto responder = std::make_unique<FlipperResponderMock>();
+    socket->onMessageReceived(messageReinit, getResponder());
     EXPECT_TRUE(pluginConnected);
   }
 
@@ -198,14 +198,14 @@ TEST_F(FlipperClientTest, testUnhandleableMethod) {
   {
     dynamic messageInit = dynamic::object("method", "init")(
         "params", dynamic::object("plugin", "Test"));
-    auto responder = std::make_shared<FlipperResponderMock>();
-    socket->callbacks->onMessageReceived(messageInit, getResponder());
+    auto responder = std::make_unique<FlipperResponderMock>();
+    socket->onMessageReceived(messageInit, getResponder());
   }
 
   {
     dynamic messageExecute = dynamic::object("id", 1)("method", "unexpected");
-    auto responder = std::make_shared<FlipperResponderMock>();
-    socket->callbacks->onMessageReceived(messageExecute, getResponder());
+    auto responder = std::make_unique<FlipperResponderMock>();
+    socket->onMessageReceived(messageExecute, getResponder());
   }
 
   dynamic expected =
@@ -231,8 +231,8 @@ TEST_F(FlipperClientTest, testExecute) {
   {
     dynamic messageInit = dynamic::object("method", "init")(
         "params", dynamic::object("plugin", "Test"));
-    auto responder = std::make_shared<FlipperResponderMock>();
-    socket->callbacks->onMessageReceived(messageInit, getResponder());
+    auto responder = std::make_unique<FlipperResponderMock>();
+    socket->onMessageReceived(messageInit, getResponder());
   }
 
   {
@@ -266,8 +266,8 @@ TEST_F(FlipperClientTest, testExecuteWithParams) {
   {
     dynamic messageInit = dynamic::object("method", "init")(
         "params", dynamic::object("plugin", "Test"));
-    auto responder = std::make_shared<FlipperResponderMock>();
-    socket->callbacks->onMessageReceived(messageInit, getResponder());
+    auto responder = std::make_unique<FlipperResponderMock>();
+    socket->onMessageReceived(messageInit, getResponder());
   }
 
   {
@@ -275,8 +275,8 @@ TEST_F(FlipperClientTest, testExecuteWithParams) {
         "params",
         dynamic::object("api", "Test")("method", "animal_sounds")(
             "params", dynamic::object("first", "dog")("second", "cat")));
-    auto responder = std::make_shared<FlipperResponderMock>();
-    socket->callbacks->onMessageReceived(messageExecute, getResponder());
+    auto responder = std::make_unique<FlipperResponderMock>();
+    socket->onMessageReceived(messageExecute, getResponder());
   }
 
   dynamic expected = dynamic::object("dog", "woof")("cat", "meow");
@@ -289,8 +289,8 @@ TEST_F(FlipperClientTest, testExceptionUnknownPlugin) {
 
   dynamic messageInit = dynamic::object("method", "init")(
       "params", dynamic::object("plugin", "Unknown"));
-  auto responder = std::make_shared<FlipperResponderMock>();
-  socket->callbacks->onMessageReceived(messageInit, getResponder());
+  auto responder = std::make_unique<FlipperResponderMock>();
+  socket->onMessageReceived(messageInit, getResponder());
 
   auto failure = failures[0];
   EXPECT_EQ(failure["message"], "Plugin Unknown not found for method init");
@@ -302,8 +302,8 @@ TEST_F(FlipperClientTest, testExceptionUnknownApi) {
 
   dynamic messageInit = dynamic::object("method", "execute")(
       "params", dynamic::object("api", "Unknown"));
-  auto responder = std::make_shared<FlipperResponderMock>();
-  socket->callbacks->onMessageReceived(messageInit, getResponder());
+  auto responder = std::make_unique<FlipperResponderMock>();
+  socket->onMessageReceived(messageInit, getResponder());
   auto failure = failures[0];
   EXPECT_EQ(
       failure["message"], "Connection Unknown not found for method execute");

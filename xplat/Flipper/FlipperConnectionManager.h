@@ -45,6 +45,13 @@ class FlipperConnectionManager {
    The callbacks should be set before a connection is established.
    */
   virtual void setCallbacks(Callbacks* callbacks) = 0;
+
+  /**
+   Called by ws server when a message has been received.
+  */
+  virtual void onMessageReceived(
+      const folly::dynamic& message,
+      std::unique_ptr<FlipperResponder> responder) = 0;
 };
 
 class FlipperConnectionManager::Callbacks {
