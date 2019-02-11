@@ -98,6 +98,7 @@ export default class Client extends EventEmitter {
     this.store = store;
     this.broadcastCallbacks = new Map();
     this.requestCallbacks = new Map();
+    this.activePlugins = new Set();
 
     const client = this;
     this.responder = {
@@ -140,6 +141,7 @@ export default class Client extends EventEmitter {
   connection: ?ReactiveSocket;
   responder: PartialResponder;
   store: Store;
+  activePlugins: Set<string>;
 
   broadcastCallbacks: Map<?string, Map<string, Set<Function>>>;
 
@@ -355,6 +357,8 @@ export default class Client extends EventEmitter {
         params,
       };
 
+      const plugin = params?.api;
+
       console.debug(data, 'message:call');
 
       if (this.sdkVersion < 1) {
@@ -367,21 +371,29 @@ export default class Client extends EventEmitter {
 
       const mark = this.getPerformanceMark(metadata);
       performance.mark(mark);
-      if (this.connection) {
-        this.connection
-          .requestResponse({data: JSON.stringify(data)})
-          .subscribe({
-            onComplete: payload => {
-              const logEventName = this.getLogEventName(data);
-              this.logger.trackTimeSince(mark, logEventName);
-              const response: {|
-                success?: Object,
-                error?: Object,
-              |} = JSON.parse(payload.data);
-              this.onResponse(response, resolve, reject);
-            },
-            onError: reject,
-          });
+      if (this.isAcceptingMessagesFromPlugin(plugin)) {
+        this.connection &&
+          this.connection
+            .requestResponse({data: JSON.stringify(data)})
+            .subscribe({
+              onComplete: payload => {
+                if (this.isAcceptingMessagesFromPlugin(plugin)) {
+                  const logEventName = this.getLogEventName(data);
+                  this.logger.trackTimeSince(mark, logEventName);
+                  const response: {|
+                    success?: Object,
+                    error?: Object,
+                  |} = JSON.parse(payload.data);
+                  this.onResponse(response, resolve, reject);
+                }
+              },
+              // Open fresco then layout and you get errors because responses come back after deinit.
+              onError: e => {
+                if (this.isAcceptingMessagesFromPlugin(plugin)) {
+                  reject(e);
+                }
+              },
+            });
       }
     });
   }
@@ -396,6 +408,10 @@ export default class Client extends EventEmitter {
     this.logger.trackTimeSince(mark, logEventName);
   }
 
+  isAcceptingMessagesFromPlugin(plugin: ?string) {
+    return this.connection && (!plugin || this.activePlugins.has(plugin));
+  }
+
   getPerformanceMark(data: RequestMetadata): string {
     const {method, id} = data;
     return `request_response_${method}_${id}`;
@@ -406,6 +422,16 @@ export default class Client extends EventEmitter {
     return params && params.api && params.method
       ? `request_response_${method}_${params.api}_${params.method}`
       : `request_response_${method}`;
+  }
+
+  initPlugin(pluginId: string) {
+    this.activePlugins.add(pluginId);
+    this.rawSend('init', {plugin: pluginId});
+  }
+
+  deinitPlugin(pluginId: string) {
+    this.activePlugins.delete(pluginId);
+    this.rawSend('deinit', {plugin: pluginId});
   }
 
   rawSend(method: string, params?: Object): void {

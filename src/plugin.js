@@ -209,12 +209,12 @@ export class FlipperPlugin<S = *, A = *, P = *> extends FlipperBasePlugin<
     // run plugin teardown
     this.teardown();
     if (this.realClient.connected) {
-      this.realClient.rawSend('deinit', {plugin: this.constructor.id});
+      this.realClient.deinitPlugin(this.constructor.id);
     }
   }
 
   _init() {
-    this.realClient.rawSend('init', {plugin: this.constructor.id});
+    this.realClient.initPlugin(this.constructor.id);
     this.init();
   }
 }
