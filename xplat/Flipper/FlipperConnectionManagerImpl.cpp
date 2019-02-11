@@ -17,6 +17,7 @@
 #include <thread>
 #include "ConnectionContextStore.h"
 #include "FireAndForgetBasedFlipperResponder.h"
+#include "FlipperRSocketResponder.h"
 #include "FlipperResponderImpl.h"
 #include "FlipperStep.h"
 #include "Log.h"
@@ -33,7 +34,6 @@ static constexpr int maxPayloadSize = 0xFFFFFF;
 namespace facebook {
 namespace flipper {
 
-rsocket::Payload toRSocketPayload(dynamic data);
 
 class ConnectionEvents : public rsocket::RSocketConnectionEvents {
  private:
@@ -63,68 +63,6 @@ class ConnectionEvents : public rsocket::RSocketConnectionEvents {
 
   void onClosed(const folly::exception_wrapper& e) {
     onDisconnected(e);
-  }
-};
-
-class Responder : public rsocket::RSocketResponder {
- private:
-  FlipperConnectionManagerImpl* websocket_;
-
- public:
-  Responder(FlipperConnectionManagerImpl* websocket) : websocket_(websocket) {}
-
-  void handleFireAndForget(
-      rsocket::Payload request,
-      rsocket::StreamId streamId) {
-    const auto payload = request.moveDataToString();
-    std::unique_ptr<FireAndForgetBasedFlipperResponder> responder;
-    auto message = folly::parseJson(payload);
-    if (message.find("id") != message.items().end()) {
-      auto id = message["id"].getInt();
-      responder =
-          std::make_unique<FireAndForgetBasedFlipperResponder>(websocket_, id);
-    }
-
-    websocket_->callbacks_->onMessageReceived(
-        folly::parseJson(payload), std::move(responder));
-  }
-
-  std::shared_ptr<yarpl::single::Single<rsocket::Payload>>
-  handleRequestResponse(rsocket::Payload request, rsocket::StreamId streamId) {
-    const auto requestString = request.moveDataToString();
-
-    auto dynamicSingle = yarpl::single::Single<folly::dynamic>::create(
-        [payload = std::move(requestString), this](auto observer) {
-          auto responder = std::make_unique<FlipperResponderImpl>(observer);
-          websocket_->callbacks_->onMessageReceived(
-              folly::parseJson(payload), std::move(responder));
-        });
-
-    auto rsocketSingle = yarpl::single::Single<rsocket::Payload>::create(
-        [payload = std::move(requestString), dynamicSingle, this](
-            auto observer) {
-          observer->onSubscribe(
-              yarpl::single::SingleSubscriptions::empty());
-          dynamicSingle->subscribe(
-              [observer, this](folly::dynamic d) {
-                websocket_->connectionEventBase_->runInEventBaseThread(
-                    [observer, d]() {
-                      try {
-                        observer->onSuccess(toRSocketPayload(d));
-
-                      } catch (std::exception& e) {
-                        log(e.what());
-                        observer->onError(e);
-                      }
-                    });
-              },
-              [observer, this](folly::exception_wrapper e) {
-                websocket_->connectionEventBase_->runInEventBaseThread(
-                    [observer, e]() { observer->onError(e); });
-              });
-        });
-
-    return rsocketSingle;
   }
 };
 
@@ -255,7 +193,7 @@ void FlipperConnectionManagerImpl::connectSecurely() {
               std::move(address),
               std::move(sslContext)),
           std::move(parameters),
-          std::make_shared<Responder>(this),
+          std::make_shared<FlipperRSocketResponder>(this),
           std::chrono::seconds(connectionKeepaliveSeconds), // keepaliveInterval
           nullptr, // stats
           std::make_shared<ConnectionEvents>(this))

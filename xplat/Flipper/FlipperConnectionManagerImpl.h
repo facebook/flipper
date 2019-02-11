@@ -19,11 +19,13 @@ namespace flipper {
 
 class ConnectionEvents;
 class ConnectionContextStore;
-class Responder;
+class FlipperRSocketResponder;
+
+rsocket::Payload toRSocketPayload(folly::dynamic data);
 
 class FlipperConnectionManagerImpl : public FlipperConnectionManager {
   friend ConnectionEvents;
-  friend Responder;
+  friend FlipperRSocketResponder;
 
  public:
   FlipperConnectionManagerImpl(FlipperInitConfig config, std::shared_ptr<FlipperState> state, std::shared_ptr<ConnectionContextStore> contextStore);
