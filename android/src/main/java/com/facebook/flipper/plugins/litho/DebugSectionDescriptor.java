@@ -121,7 +121,38 @@ public class DebugSectionDescriptor extends NodeDescriptor<DebugSection> {
 
   @Override
   public void hitTest(DebugSection node, Touch touch) throws Exception {
-    // TODO T39526148
+    final int childCount = getChildCount(node);
+
+    // For a DiffSectionSpec, check if child view to see if the touch is in its bounds.
+    // For a GroupSectionSpec, check the bounds of the entire section.
+
+    if (node.isDiffSectionSpec()) {
+      for (int i = 0; i < childCount; i++) {
+        View child = (View) getChildAt(node, i);
+        int left = child.getLeft() + (int) child.getTranslationX();
+        int top = (child.getTop() + (int) child.getTranslationY());
+        int right = (child.getRight() + (int) child.getTranslationX());
+        int bottom = (child.getBottom() + (int) child.getTranslationY());
+
+        final boolean hit = touch.containedIn(left, top, right, bottom);
+        if (hit) {
+          touch.continueWithOffset(i, left, top);
+          return;
+        }
+      }
+      touch.finish();
+    } else {
+      for (int i = 0; i < childCount; i++) {
+        DebugSection child = (DebugSection) getChildAt(node, i);
+        Rect bounds = child.getBounds();
+        final boolean hit = touch.containedIn(bounds.left, bounds.top, bounds.right, bounds.bottom);
+        if (hit) {
+          touch.continueWithOffset(i, 0, 0);
+          return;
+        }
+      }
+      touch.finish();
+    }
   }
 
   @Override
