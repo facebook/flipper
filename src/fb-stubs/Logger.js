@@ -12,8 +12,12 @@ import ScribeLogger from './ScribeLogger';
 
 var instance: ?LogManager = null;
 
+type Args = {
+  isHeadless?: boolean,
+};
+
 export default class LogManager {
-  constructor(store: Store) {
+  constructor(store: Store, args?: Args) {
     this.scribeLogger = new ScribeLogger(this);
   }
 

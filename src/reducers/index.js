@@ -53,7 +53,6 @@ export type State = {|
   plugins: PluginsState,
 |};
 
-// $FlowFixMe introduced when removing $Subtype/$Supertype
 export type Store = ReduxStore<State, Actions>;
 
 export default combineReducers<_, Actions>({

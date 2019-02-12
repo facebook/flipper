@@ -94,7 +94,7 @@ function startFlipper({
         devToolsEnhancer({realtime: true, hostname: 'localhost', port: 8181}),
       )
     : createStore(reducers);
-  const logger = new Logger(store);
+  const logger = new Logger(store, {isHeadless: true});
   init(store);
   dispatcher(store, logger);
 
