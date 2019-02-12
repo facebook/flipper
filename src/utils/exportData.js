@@ -220,13 +220,25 @@ export const importFileToStore = (file: string, store: Store) => {
       // During the export, Date is exported as string
       return {...log, date: new Date(log.date)};
     });
+    const {serial, deviceType, title, os} = device;
     const archivedDevice = new ArchivedDevice(
-      device.serial,
-      device.deviceType,
-      device.title,
-      device.os,
+      serial,
+      deviceType,
+      title,
+      os,
       updatedLogs,
     );
+    const devices = store.getState().connections.devices;
+    const matchedDevices = devices.filter(
+      availableDevice => availableDevice.serial === serial,
+    );
+    if (matchedDevices.length > 0) {
+      store.dispatch({
+        type: 'SELECT_DEVICE',
+        payload: matchedDevices[0],
+      });
+      return;
+    }
     store.dispatch({
       type: 'REGISTER_DEVICE',
       payload: archivedDevice,
