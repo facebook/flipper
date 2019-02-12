@@ -17,6 +17,7 @@ import {default as ArchivedDevice} from '../devices/ArchivedDevice';
 import {default as Client} from '../Client';
 import {getInstance} from '../fb-stubs/Logger.js';
 import fs from 'fs';
+import uuid from 'uuid';
 
 export type ExportType = {|
   fileVersion: '1.0.0',
@@ -78,12 +79,69 @@ export function processNotificationStates(
   return activeNotifications;
 }
 
+const addSaltToDeviceSerial = (
+  salt: string,
+  device: BaseDevice,
+  clients: Array<ClientExport>,
+  pluginStates: PluginStatesState,
+  pluginNotification: Array<PluginNotification>,
+): ExportType => {
+  const {serial} = device;
+  const newSerial = salt + '-' + serial;
+  const newDevice = new ArchivedDevice(
+    newSerial,
+    device.deviceType,
+    device.title,
+    device.os,
+  );
+  const updatedClients = clients.map((client: ClientExport) => {
+    return {
+      ...client,
+      id: client.id.replace(serial, newSerial),
+      query: {...client.query, device_id: newSerial},
+    };
+  });
+
+  const updatedPluginStates: PluginStatesState = {};
+  for (let key in pluginStates) {
+    if (!key.includes(serial)) {
+      throw new Error(
+        `Error while exporting, plugin state (${key}) does not have ${serial} in its key`,
+      );
+    }
+    const pluginData = pluginStates[key];
+    key = key.replace(serial, newSerial);
+    updatedPluginStates[key] = pluginData;
+  }
+
+  const updatedPluginNotifications = pluginNotification.map(notif => {
+    if (!notif.client || !notif.client.includes(serial)) {
+      throw new Error(
+        `Error while exporting, plugin state (${
+          notif.pluginId
+        }) does not have ${serial} in it`,
+      );
+    }
+    return {...notif, client: notif.client.replace(serial, newSerial)};
+  });
+  return {
+    fileVersion: '1.0.0',
+    clients: updatedClients,
+    device: newDevice.toJSON(),
+    store: {
+      pluginStates: updatedPluginStates,
+      activeNotifications: updatedPluginNotifications,
+    },
+  };
+};
+
 export const processStore = (
   activeNotifications: Array<PluginNotification>,
   device: ?BaseDevice,
   pluginStates: PluginStatesState,
   clients: Array<ClientExport>,
   devicePlugins: Map<string, Class<FlipperDevicePlugin<>>>,
+  salt: string,
 ): ?ExportType => {
   if (device) {
     const {serial} = device;
@@ -100,15 +158,15 @@ export const processStore = (
       activeNotifications,
       devicePlugins,
     );
-    return {
-      fileVersion: '1.0.0',
-      clients: processedClients,
-      device: device.toJSON(),
-      store: {
-        pluginStates: processedPluginStates,
-        activeNotifications: processedActiveNotifications,
-      },
-    };
+    // Adding salt to the device id, so that the device_id in the device list is unique.
+    const exportFlipperData = addSaltToDeviceSerial(
+      salt,
+      device,
+      processedClients,
+      processedPluginStates,
+      processedActiveNotifications,
+    );
+    return exportFlipperData;
   }
   return null;
 };
@@ -126,6 +184,7 @@ export function serializeStore(state: State): ?ExportType {
     pluginStates,
     clients.map(client => client.toJSON()),
     devicePlugins,
+    uuid.v4(),
   );
 }
 

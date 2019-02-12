@@ -8,7 +8,6 @@
 import {default as BaseDevice} from '../../devices/BaseDevice';
 import {default as ArchivedDevice} from '../../devices/ArchivedDevice';
 import {processStore} from '../exportData';
-import {IOSDevice} from '../../..';
 import {FlipperDevicePlugin} from '../../plugin.js';
 import type {Notification} from '../../plugin.js';
 import type {ClientExport} from '../../Client.js';
@@ -32,6 +31,26 @@ function generateClientIdentifier(device: BaseDevice, app: string): string {
   return identifier;
 }
 
+function generateClientIdentifierWithSalt(
+  identifier: string,
+  salt: string,
+): string {
+  let array = identifier.split('#');
+  const serial = array.pop();
+  return array.join('#') + '#' + salt + '-' + serial;
+}
+
+function generateClientFromClientWithSalt(
+  client: ClientExport,
+  salt: string,
+): ClientExport {
+  const {os, device, device_id, app} = client.query;
+  const identifier = generateClientIdentifierWithSalt(client.id, salt);
+  return {
+    id: identifier,
+    query: {app, os, device, device_id: salt + '-' + device_id},
+  };
+}
 function generateClientFromDevice(
   device: BaseDevice,
   app: string,
@@ -44,12 +63,49 @@ function generateClientFromDevice(
   };
 }
 
+test('test generateClientIndentifierWithSalt helper function', () => {
+  const device = new ArchivedDevice('serial', 'emulator', 'TestiPhone', 'iOS');
+  const identifier = generateClientIdentifier(device, 'app');
+  const saltIdentifier = generateClientIdentifierWithSalt(identifier, 'salt');
+  expect(saltIdentifier).toEqual('app#iOS#emulator#salt-serial');
+  expect(identifier).toEqual('app#iOS#emulator#serial');
+});
+
+test('test generateClientFromClientWithSalt helper function', () => {
+  const device = new ArchivedDevice('serial', 'emulator', 'TestiPhone', 'iOS');
+  const client = generateClientFromDevice(device, 'app');
+  const saltedClient = generateClientFromClientWithSalt(client, 'salt');
+  expect(saltedClient).toEqual({
+    id: 'app#iOS#emulator#salt-serial',
+    query: {
+      app: 'app',
+      os: 'iOS',
+      device: 'emulator',
+      device_id: 'salt-serial',
+    },
+  });
+  expect(client).toEqual({
+    id: 'app#iOS#emulator#serial',
+    query: {
+      app: 'app',
+      os: 'iOS',
+      device: 'emulator',
+      device_id: 'serial',
+    },
+  });
+});
+
 test('test generateClientFromDevice helper function', () => {
   const device = new ArchivedDevice('serial', 'emulator', 'TestiPhone', 'iOS');
   const client = generateClientFromDevice(device, 'app');
   expect(client).toEqual({
     id: 'app#iOS#emulator#serial',
-    query: {app: 'app', os: 'iOS', device: 'emulator', device_id: 'serial'},
+    query: {
+      app: 'app',
+      os: 'iOS',
+      device: 'emulator',
+      device_id: 'serial',
+    },
   });
 });
 
@@ -70,7 +126,7 @@ test('test generateNotifications helper function', () => {
 });
 
 test('test processStore function for empty state', () => {
-  const json = processStore([], null, {}, [], new Map());
+  const json = processStore([], null, {}, [], new Map(), 'salt');
   expect(json).toBeNull();
 });
 
@@ -81,6 +137,7 @@ test('test processStore function for an iOS device connected', () => {
     {},
     [],
     new Map(),
+    'salt',
   );
   expect(json).toBeDefined();
   // $FlowFixMe Flow doesn't that its a test and the assertion for null is already done
@@ -89,7 +146,7 @@ test('test processStore function for an iOS device connected', () => {
   expect(clients).toEqual([]);
   //$FlowFixMe Flow doesn't that its a test and the assertion for null is already done
   const {serial, deviceType, title, os} = device;
-  expect(serial).toEqual('serial');
+  expect(serial).toEqual('salt-serial');
   expect(deviceType).toEqual('emulator');
   expect(title).toEqual('TestiPhone');
   expect(os).toEqual('iOS');
@@ -108,12 +165,15 @@ test('test processStore function for an iOS device connected with client plugin 
     {[clientIdentifier]: {msg: 'Test plugin'}},
     [generateClientFromDevice(device, 'testapp')],
     new Map(),
+    'salt',
   );
   expect(json).toBeDefined();
   //$FlowFixMe Flow doesn't that its a test and the assertion for null is already done
   const {pluginStates} = json.store;
   let expectedPluginState = {
-    [clientIdentifier]: {msg: 'Test plugin'},
+    [generateClientIdentifierWithSalt(clientIdentifier, 'salt')]: {
+      msg: 'Test plugin',
+    },
   };
   expect(pluginStates).toEqual(expectedPluginState);
 });
@@ -144,6 +204,7 @@ test('test processStore function to have only the client for the selected device
     selectedDevice,
     'testapp',
   );
+
   const json = processStore(
     [],
     selectedDevice,
@@ -160,18 +221,23 @@ test('test processStore function to have only the client for the selected device
       generateClientFromDevice(unselectedDevice, 'testapp'),
     ],
     new Map(),
+    'salt',
   );
+
   expect(json).toBeDefined();
   //$FlowFixMe Flow doesn't that its a test and the assertion for null is already added
   const {clients} = json;
   //$FlowFixMe Flow doesn't that its a test and the assertion for null is already added
   const {pluginStates} = json.store;
   let expectedPluginState = {
-    [selectedDeviceClientIdentifier + '#testapp']: {
+    [generateClientIdentifierWithSalt(selectedDeviceClientIdentifier, 'salt') +
+    '#testapp']: {
       msg: 'Test plugin selected device',
     },
   };
-  expect(clients).toEqual([selectedDeviceClient]);
+  expect(clients).toEqual([
+    generateClientFromClientWithSalt(selectedDeviceClient, 'salt'),
+  ]);
   expect(pluginStates).toEqual(expectedPluginState);
 });
 
@@ -211,6 +277,7 @@ test('test processStore function to have multiple clients for the selected devic
       generateClientFromDevice(selectedDevice, 'testapp2'),
     ],
     new Map(),
+    'salt',
   );
   expect(json).toBeDefined();
   //$FlowFixMe Flow doesn't that its a test and the assertion for null is already added
@@ -218,14 +285,19 @@ test('test processStore function to have multiple clients for the selected devic
   //$FlowFixMe Flow doesn't that its a test and the assertion for null is already added
   const {pluginStates} = json.store;
   let expectedPluginState = {
-    [clientIdentifierApp1 + '#testapp1']: {
+    [generateClientIdentifierWithSalt(clientIdentifierApp1, 'salt') +
+    '#testapp1']: {
       msg: 'Test plugin App1',
     },
-    [clientIdentifierApp2 + '#testapp2']: {
+    [generateClientIdentifierWithSalt(clientIdentifierApp2, 'salt') +
+    '#testapp2']: {
       msg: 'Test plugin App2',
     },
   };
-  expect(clients).toEqual([client1, client2]);
+  expect(clients).toEqual([
+    generateClientFromClientWithSalt(client1, 'salt'),
+    generateClientFromClientWithSalt(client2, 'salt'),
+  ]);
   expect(pluginStates).toEqual(expectedPluginState);
 });
 
@@ -247,6 +319,7 @@ test('test processStore function for device plugin state and no clients', () => 
     },
     [],
     new Map([['TestDevicePlugin', TestDevicePlugin]]),
+    'salt',
   );
   expect(json).toBeDefined();
   //$FlowFixMe Flow doesn't that its a test and the assertion for null is already done
@@ -254,7 +327,7 @@ test('test processStore function for device plugin state and no clients', () => 
   //$FlowFixMe Flow doesn't that its a test and the assertion for null is already done
   const {clients} = json;
   let expectedPluginState = {
-    'serial#TestDevicePlugin': {msg: 'Test Device plugin'},
+    'salt-serial#TestDevicePlugin': {msg: 'Test Device plugin'},
   };
   expect(pluginStates).toEqual(expectedPluginState);
   expect(clients).toEqual([]);
@@ -278,6 +351,7 @@ test('test processStore function for unselected device plugin state and no clien
     },
     [],
     new Map([['TestDevicePlugin', TestDevicePlugin]]),
+    'salt',
   );
   expect(json).toBeDefined();
   //$FlowFixMe Flow doesn't that its a test and the assertion for null is already done
@@ -308,23 +382,31 @@ test('test processStore function for notifications for selected device', () => {
     notification,
     client: client.id,
   };
+
   const json = processStore(
     [activeNotification],
     selectedDevice,
     {},
     [client],
     new Map([['TestDevicePlugin', TestDevicePlugin]]),
+    'salt',
   );
+
   expect(json).toBeDefined();
   //$FlowFixMe Flow doesn't that its a test and the assertion for null is already done
   const {pluginStates} = json.store;
   //$FlowFixMe Flow doesn't that its a test and the assertion for null is already done
   const {clients} = json;
   expect(pluginStates).toEqual({});
-  expect(clients).toEqual([client]);
+  expect(clients).toEqual([generateClientFromClientWithSalt(client, 'salt')]);
   //$FlowFixMe Flow doesn't that its a test and the assertion for null is already done
   const {activeNotifications} = json.store;
-  expect(activeNotifications).toEqual([activeNotification]);
+  const expectedActiveNotification = {
+    pluginId: 'TestNotification',
+    notification,
+    client: generateClientIdentifierWithSalt(client.id, 'salt'),
+  };
+  expect(activeNotifications).toEqual([expectedActiveNotification]);
 });
 
 test('test processStore function for notifications for unselected device', () => {
@@ -364,6 +446,7 @@ test('test processStore function for notifications for unselected device', () =>
     {},
     [client, unselectedclient],
     new Map(),
+    'salt',
   );
   expect(json).toBeDefined();
   //$FlowFixMe Flow doesn't that its a test and the assertion for null is already done
@@ -371,7 +454,7 @@ test('test processStore function for notifications for unselected device', () =>
   //$FlowFixMe Flow doesn't that its a test and the assertion for null is already done
   const {clients} = json;
   expect(pluginStates).toEqual({});
-  expect(clients).toEqual([client]);
+  expect(clients).toEqual([generateClientFromClientWithSalt(client, 'salt')]);
   //$FlowFixMe Flow doesn't that its a test and the assertion for null is already done
   const {activeNotifications} = json.store;
   expect(activeNotifications).toEqual([]);
