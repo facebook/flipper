@@ -93,6 +93,7 @@ const addSaltToDeviceSerial = (
     device.deviceType,
     device.title,
     device.os,
+    device.getLogs(),
   );
   const updatedClients = clients.map((client: ClientExport) => {
     return {
@@ -215,11 +216,16 @@ export const importFileToStore = (file: string, store: Store) => {
     }
     const json = JSON.parse(data);
     const {device, clients} = json;
+    const updatedLogs = device.logs.map(log => {
+      // During the export, Date is exported as string
+      return {...log, date: new Date(log.date)};
+    });
     const archivedDevice = new ArchivedDevice(
       device.serial,
       device.deviceType,
       device.title,
       device.os,
+      updatedLogs,
     );
     store.dispatch({
       type: 'REGISTER_DEVICE',

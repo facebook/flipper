@@ -5,16 +5,30 @@
  * @format
  */
 import BaseDevice from './BaseDevice.js';
-import type {DeviceType, OS, DeviceShell} from './BaseDevice.js';
+import type {
+  DeviceType,
+  OS,
+  DeviceShell,
+  DeviceLogEntry,
+} from './BaseDevice.js';
 
 export default class ArchivedDevice extends BaseDevice {
-  constructor(serial: string, deviceType: DeviceType, title: string, os: OS) {
+  constructor(
+    serial: string,
+    deviceType: DeviceType,
+    title: string,
+    os: OS,
+    logEntries: Array<DeviceLogEntry>,
+  ) {
     super(serial, deviceType, title);
     this.os = os;
+    this.logs = logEntries;
   }
 
+  logs: Array<DeviceLogEntry>;
+
   getLogs() {
-    return [];
+    return this.logs;
   }
 
   spawnShell(): ?DeviceShell {

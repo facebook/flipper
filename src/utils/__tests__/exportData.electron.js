@@ -64,7 +64,13 @@ function generateClientFromDevice(
 }
 
 test('test generateClientIndentifierWithSalt helper function', () => {
-  const device = new ArchivedDevice('serial', 'emulator', 'TestiPhone', 'iOS');
+  const device = new ArchivedDevice(
+    'serial',
+    'emulator',
+    'TestiPhone',
+    'iOS',
+    [],
+  );
   const identifier = generateClientIdentifier(device, 'app');
   const saltIdentifier = generateClientIdentifierWithSalt(identifier, 'salt');
   expect(saltIdentifier).toEqual('app#iOS#emulator#salt-serial');
@@ -72,7 +78,13 @@ test('test generateClientIndentifierWithSalt helper function', () => {
 });
 
 test('test generateClientFromClientWithSalt helper function', () => {
-  const device = new ArchivedDevice('serial', 'emulator', 'TestiPhone', 'iOS');
+  const device = new ArchivedDevice(
+    'serial',
+    'emulator',
+    'TestiPhone',
+    'iOS',
+    [],
+  );
   const client = generateClientFromDevice(device, 'app');
   const saltedClient = generateClientFromClientWithSalt(client, 'salt');
   expect(saltedClient).toEqual({
@@ -96,7 +108,13 @@ test('test generateClientFromClientWithSalt helper function', () => {
 });
 
 test('test generateClientFromDevice helper function', () => {
-  const device = new ArchivedDevice('serial', 'emulator', 'TestiPhone', 'iOS');
+  const device = new ArchivedDevice(
+    'serial',
+    'emulator',
+    'TestiPhone',
+    'iOS',
+    [],
+  );
   const client = generateClientFromDevice(device, 'app');
   expect(client).toEqual({
     id: 'app#iOS#emulator#serial',
@@ -110,7 +128,13 @@ test('test generateClientFromDevice helper function', () => {
 });
 
 test('test generateClientIdentifier helper function', () => {
-  const device = new ArchivedDevice('serial', 'emulator', 'TestiPhone', 'iOS');
+  const device = new ArchivedDevice(
+    'serial',
+    'emulator',
+    'TestiPhone',
+    'iOS',
+    [],
+  );
   const identifier = generateClientIdentifier(device, 'app');
   expect(identifier).toEqual('app#iOS#emulator#serial');
 });
@@ -133,7 +157,7 @@ test('test processStore function for empty state', () => {
 test('test processStore function for an iOS device connected', () => {
   const json = processStore(
     [],
-    new ArchivedDevice('serial', 'emulator', 'TestiPhone', 'iOS'),
+    new ArchivedDevice('serial', 'emulator', 'TestiPhone', 'iOS', []),
     {},
     [],
     new Map(),
@@ -157,7 +181,13 @@ test('test processStore function for an iOS device connected', () => {
 });
 
 test('test processStore function for an iOS device connected with client plugin data', () => {
-  const device = new ArchivedDevice('serial', 'emulator', 'TestiPhone', 'iOS');
+  const device = new ArchivedDevice(
+    'serial',
+    'emulator',
+    'TestiPhone',
+    'iOS',
+    [],
+  );
   const clientIdentifier = generateClientIdentifier(device, 'testapp');
   const json = processStore(
     [],
@@ -184,12 +214,14 @@ test('test processStore function to have only the client for the selected device
     'emulator',
     'TestiPhone',
     'iOS',
+    [],
   );
   const unselectedDevice = new ArchivedDevice(
     'identifier',
     'emulator',
     'TestiPhone',
     'iOS',
+    [],
   );
 
   const unselectedDeviceClientIdentifier = generateClientIdentifier(
@@ -247,6 +279,7 @@ test('test processStore function to have multiple clients for the selected devic
     'emulator',
     'TestiPhone',
     'iOS',
+    [],
   );
 
   const clientIdentifierApp1 = generateClientIdentifier(
@@ -308,6 +341,7 @@ test('test processStore function for device plugin state and no clients', () => 
     'emulator',
     'TestiPhone',
     'iOS',
+    [],
   );
   const json = processStore(
     [],
@@ -340,6 +374,7 @@ test('test processStore function for unselected device plugin state and no clien
     'emulator',
     'TestiPhone',
     'iOS',
+    [],
   );
   const json = processStore(
     [],
@@ -369,6 +404,7 @@ test('test processStore function for notifications for selected device', () => {
     'emulator',
     'TestiPhone',
     'iOS',
+    [],
   );
   const client = generateClientFromDevice(selectedDevice, 'testapp1');
   const notification = generateNotifications(
@@ -416,12 +452,14 @@ test('test processStore function for notifications for unselected device', () =>
     'emulator',
     'TestiPhone',
     'iOS',
+    [],
   );
   const unselectedDevice = new ArchivedDevice(
     'identifier',
     'emulator',
     'TestiPhone',
     'iOS',
+    [],
   );
 
   const client = generateClientFromDevice(selectedDevice, 'testapp1');
