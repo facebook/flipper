@@ -32,31 +32,30 @@ function preludeBundle(dir, versionNumber) {
 }
 
 async function createZip(buildDir, distDir, targets) {
-  return Promise.all(
-    targets.map(
-      target =>
-        new Promise((resolve, reject) => {
-          const zip = new yazl.ZipFile();
-          const binary = `flipper-${target === 'mac' ? 'macos' : target}`;
-          zip.addFile(path.join(buildDir, binary), binary);
-          const pluginDir = path.join(buildDir, PLUGINS_FOLDER_NAME);
-          fs.readdirSync(pluginDir).forEach(file => {
-            zip.addFile(
-              path.join(pluginDir, file),
-              path.join(PLUGINS_FOLDER_NAME, file),
-            );
-          });
-          zip.outputStream
-            .pipe(
-              fs.createWriteStream(
-                path.join(distDir, `Flipper-headless-${target}.zip`),
-              ),
-            )
-            .on('close', resolve);
-          zip.end();
-        }),
-    ),
-  );
+  return new Promise((resolve, reject) => {
+    const zip = new yazl.ZipFile();
+
+    // add binaries for each target
+    targets.forEach(target => {
+      const binary = `flipper-${target === 'mac' ? 'macos' : target}`;
+      zip.addFile(path.join(buildDir, binary), binary);
+    });
+
+    // add plugins
+    const pluginDir = path.join(buildDir, PLUGINS_FOLDER_NAME);
+    fs.readdirSync(pluginDir).forEach(file => {
+      zip.addFile(
+        path.join(pluginDir, file),
+        path.join(PLUGINS_FOLDER_NAME, file),
+      );
+    });
+
+    // write zip file
+    zip.outputStream
+      .pipe(fs.createWriteStream(path.join(distDir, `Flipper-headless.zip`)))
+      .on('close', resolve);
+    zip.end();
+  });
 }
 
 (async () => {
