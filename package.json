@@ -23,7 +23,15 @@
     "win": {
       "publisherName": "Facebook, Inc."
     },
-    "asar": false
+    "asar": false,
+    "fileAssociations": [
+     {
+         "ext": [".flipper"],
+         "name": "Flipper Data",
+         "role": "Viewer",
+         "icon": "document-icons/document.icns"
+     }
+   ]
   },
   "resolutions": {
     "@jest-runner/electron/electron": "3.0.0"

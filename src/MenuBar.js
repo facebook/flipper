@@ -326,7 +326,7 @@ function getTemplate(
               null,
               {
                 title: 'FlipperExport',
-                defaultPath: path.join(os.homedir(), 'FlipperExport.json'),
+                defaultPath: path.join(os.homedir(), 'FlipperExport.flipper'),
               },
               file => {
                 exportStoreToFile(file, store);

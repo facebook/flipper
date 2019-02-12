@@ -9,7 +9,7 @@ import {remote, ipcRenderer} from 'electron';
 import type {Store} from '../reducers/index.js';
 import type Logger from '../fb-stubs/Logger.js';
 import {parseFlipperPorts} from '../utils/environmentVariables';
-
+import {importFileToStore} from '../utils/exportData';
 import {selectPlugin, userPreferredPlugin} from '../reducers/connections';
 export const uriComponents = (url: string) => {
   if (!url) {
@@ -55,6 +55,11 @@ export default (store: Store, logger: Logger) => {
       );
     }
   });
+
+  ipcRenderer.on('open-flipper-file', (event, url) => {
+    importFileToStore(url, store);
+  });
+
   ipcRenderer.on('flipper-deeplink-preferred-plugin', (event, url) => {
     // flipper://<client>/<pluginId>/<payload>
     const match = uriComponents(url);

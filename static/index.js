@@ -66,6 +66,7 @@ let win;
 let appReady = false;
 let pluginsCompiled = false;
 let deeplinkURL = null;
+let filePath = null;
 
 // tracking
 setInterval(() => {
@@ -122,6 +123,15 @@ app.on('will-finish-launching', () => {
       win.webContents.send('flipper-deeplink', deeplinkURL);
     }
   });
+  app.on('open-file', (event, path) => {
+    // When flipper app is running, and someone double clicks the import file, `componentDidMount` will not be called again and windows object will exist in that case. That's why calling `win.webContents.send('open-flipper-file', filePath);` again.
+    event.preventDefault();
+    filePath = path;
+    if (win) {
+      win.webContents.send('open-flipper-file', filePath);
+      filePath = null;
+    }
+  });
 });
 
 app.on('ready', function() {
@@ -144,6 +154,11 @@ ipcMain.on('componentDidMount', event => {
   if (deeplinkURL) {
     win.webContents.send('flipper-deeplink-preferred-plugin', deeplinkURL);
     deeplinkURL = null;
+  }
+  if (filePath) {
+    // When flipper app is not running, the windows object might not exist in the callback of `open-file`, but after ``componentDidMount` it will definitely exist.
+    win.webContents.send('open-flipper-file', filePath);
+    filePath = null;
   }
 });
 
