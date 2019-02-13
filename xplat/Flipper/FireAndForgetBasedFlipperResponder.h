@@ -27,13 +27,13 @@ class FireAndForgetBasedFlipperResponder : public FlipperResponder {
       int64_t responseID)
       : socket_(socket), responseID_(responseID) {}
 
-  void success(const folly::dynamic& response) const override {
+  void success(const folly::dynamic& response) override {
     const folly::dynamic message =
         folly::dynamic::object("id", responseID_)("success", response);
     socket_->sendMessage(message);
   }
 
-  void error(const folly::dynamic& response) const override {
+  void error(const folly::dynamic& response) override {
     const folly::dynamic message =
         folly::dynamic::object("id", responseID_)("error", response);
     socket_->sendMessage(message);

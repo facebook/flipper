@@ -24,19 +24,29 @@ class FlipperResponderImpl : public FlipperResponder {
           downstreamObserver)
       : downstreamObserver_(downstreamObserver) {}
 
-  void success(const folly::dynamic& response) const override {
+  void success(const folly::dynamic& response) override {
     const folly::dynamic message = folly::dynamic::object("success", response);
+    isCompleted = true;
     downstreamObserver_->onSuccess(message);
   }
 
-  void error(const folly::dynamic& response) const override {
+  void error(const folly::dynamic& response) override {
     const folly::dynamic message = folly::dynamic::object("error", response);
+    isCompleted = true;
     downstreamObserver_->onSuccess(message);
+  }
+
+  ~FlipperResponderImpl() {
+    if (!isCompleted) {
+      downstreamObserver_->onSuccess(
+          folly::dynamic::object("success", folly::dynamic::object()));
+    }
   }
 
  private:
   std::shared_ptr<yarpl::single::SingleObserver<folly::dynamic>>
       downstreamObserver_;
+  bool isCompleted = false;
 };
 
 } // namespace flipper

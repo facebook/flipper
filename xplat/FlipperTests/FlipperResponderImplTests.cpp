@@ -18,6 +18,9 @@ namespace test {
 
 using folly::dynamic;
 
+void assertIsSuccess(folly::dynamic d);
+void assertIsError(folly::dynamic d);
+
 TEST(FlipperResponderImplTest, testSuccessWrapper) {
   auto dynamicSingle =
       yarpl::single::Single<folly::dynamic>::create([](auto observer) mutable {
@@ -30,6 +33,7 @@ TEST(FlipperResponderImplTest, testSuccessWrapper) {
 
   to->awaitTerminalEvent();
   auto output = to->getOnSuccessValue();
+  assertIsSuccess(output);
   EXPECT_EQ(output["success"]["my"], "object");
 }
 
@@ -45,7 +49,35 @@ TEST(FlipperResponderImplTest, testErrorWrapper) {
 
   to->awaitTerminalEvent();
   auto output = to->getOnSuccessValue();
+  assertIsError(output);
   EXPECT_EQ(output["error"]["my"], "object");
+}
+
+TEST(FlipperResponderImplTest, testNoExplicitResponseReturnsSuccess) {
+  auto to = yarpl::single::SingleTestObserver<folly::dynamic>::create();
+  {
+    auto dynamicSingle = yarpl::single::Single<folly::dynamic>::create(
+        [](auto observer) mutable {
+          observer->onSubscribe(yarpl::single::SingleSubscriptions::empty());
+          auto responder = std::make_shared<FlipperResponderImpl>(observer);
+        });
+    dynamicSingle->subscribe(to);
+  }
+
+  to->awaitTerminalEvent();
+  auto output = to->getOnSuccessValue();
+  assertIsSuccess(output);
+  EXPECT_TRUE(output["success"].empty());
+}
+
+void assertIsSuccess(folly::dynamic d) {
+  EXPECT_NE(d.find("success"), d.items().end());
+  EXPECT_EQ(d.find("error"), d.items().end());
+}
+
+void assertIsError(folly::dynamic d) {
+  EXPECT_NE(d.find("error"), d.items().end());
+  EXPECT_EQ(d.find("success"), d.items().end());
 }
 
 } // namespace test
