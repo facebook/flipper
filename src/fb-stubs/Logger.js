@@ -36,7 +36,7 @@ export default class LogManager {
   debug(data: any, category: string) {}
 }
 
-export function init(store: Store): LogManager {
+export function init(store: Store, args?: Args): LogManager {
   if (instance) {
     throw new Error('Attempted to initialize Logger when already initialized');
   }

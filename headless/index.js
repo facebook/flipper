@@ -8,7 +8,7 @@
 import {createStore} from 'redux';
 import reducers from '../src/reducers/index.js';
 import dispatcher from '../src/dispatcher/index.js';
-import Logger, {init} from '../src/fb-stubs/Logger.js';
+import {init as initLogger} from '../src/fb-stubs/Logger.js';
 import path from 'path';
 // $FlowFixMe this file exist, trust me, flow!
 import setup from '../static/setup.js';
@@ -94,8 +94,7 @@ function startFlipper({
         devToolsEnhancer({realtime: true, hostname: 'localhost', port: 8181}),
       )
     : createStore(reducers);
-  const logger = new Logger(store, {isHeadless: true});
-  init(store);
+  const logger = initLogger(store, {isHeadless: true});
   dispatcher(store, logger);
 
   process.on('SIGINT', () => {
