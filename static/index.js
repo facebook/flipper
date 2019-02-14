@@ -43,6 +43,11 @@ const argv = yargs
     describe: 'Toggle the built-in update mechanism.',
     type: 'boolean',
   })
+  .option('launcher', {
+    default: true,
+    describe: 'Toggle delegating to the update launcher on startup.',
+    type: 'boolean',
+  })
   .version(global.__VERSION__)
   .help().argv;
 

@@ -13,6 +13,8 @@ export type ProcessConfig = {|
   lastWindowPosition: ?{x: number, y: number, width: number, height: number},
   screenCapturePath: ?string,
   updaterEnabled: boolean,
+  // Controls whether to delegate to the launcher if present.
+  launcherEnabled: boolean,
 |};
 
 let configObj = null;
@@ -29,6 +31,8 @@ export default function config(): ProcessConfig {
       updaterEnabled:
         typeof json.updaterEnabled === 'boolean' ? json.updaterEnabled : true,
       screenCapturePath: json.screenCapturePath,
+      launcherEnabled:
+        typeof json.launcherEnabled === 'boolean' ? json.launcherEnabled : true,
     };
   }
 

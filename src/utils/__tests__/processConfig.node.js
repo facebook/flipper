@@ -18,6 +18,7 @@ test('config is decoded from env', () => {
     lastWindowPosition: {x: 4, y: 8, width: 15, height: 16},
     updaterEnabled: false,
     screenCapturePath: '/my/screenshot/path',
+    launcherEnabled: false,
   });
 
   expect(config()).toEqual({
@@ -26,6 +27,7 @@ test('config is decoded from env', () => {
     lastWindowPosition: {x: 4, y: 8, width: 15, height: 16},
     updaterEnabled: false,
     screenCapturePath: '/my/screenshot/path',
+    launcherEnabled: false,
   });
 });
 
@@ -38,5 +40,6 @@ test('config is decoded from env with defaults', () => {
     lastWindowPosition: undefined,
     updaterEnabled: true,
     screenCapturePath: undefined,
+    launcherEnabled: true,
   });
 });
