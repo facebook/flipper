@@ -20,7 +20,13 @@ export default class ArchivedDevice extends BaseDevice {
     os: OS,
     logEntries: Array<DeviceLogEntry>,
   ) {
-    super(serial, deviceType, title);
+    let archivedDeviceType = deviceType;
+    if (archivedDeviceType === 'emulator') {
+      archivedDeviceType = 'archivedEmulator';
+    } else if (archivedDeviceType === 'physical') {
+      archivedDeviceType = 'archivedPhysical';
+    }
+    super(serial, archivedDeviceType, title);
     this.os = os;
     this.logs = logEntries;
   }

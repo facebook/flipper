@@ -70,14 +70,31 @@ class DevicesButton extends Component<Props> {
           label: 'Running devices',
           enabled: false,
         },
-        ...devices.map((device: BaseDevice) => ({
-          click: () => selectDevice(device),
-          checked: device === selectedDevice,
-          label: `${device.deviceType === 'physical' ? '📱 ' : ''}${
-            device.title
-          }`,
-          type: 'checkbox',
-        })),
+        ...devices.map((device: BaseDevice) => {
+          let label = '';
+          switch (device.deviceType) {
+            case 'emulator':
+              label = '';
+              break;
+            case 'physical':
+              label = '📱 ';
+              break;
+            case 'archivedEmulator':
+              label = '📦 ';
+              break;
+            case 'archivedPhysical':
+              label = '📦 ';
+              break;
+            default:
+              label = '';
+          }
+          return {
+            click: () => selectDevice(device),
+            checked: device === selectedDevice,
+            label: `${label}${device.title}`,
+            type: 'checkbox',
+          };
+        }),
       );
     }
     if (androidEmulators.length > 0) {
@@ -91,7 +108,6 @@ class DevicesButton extends Component<Props> {
           label: name,
           click: () => this.launchEmulator(name),
         }));
-
       if (emulators.length > 0) {
         dropdown.push(
           {type: 'separator'},
@@ -116,5 +132,8 @@ export default connect<Props, {||}, _, _, _, _>(
     androidEmulators,
     selectedDevice,
   }),
-  {selectDevice, preferDevice},
+  {
+    selectDevice,
+    preferDevice,
+  },
 )(DevicesButton);

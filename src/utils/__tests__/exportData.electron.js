@@ -73,8 +73,8 @@ test('test generateClientIndentifierWithSalt helper function', () => {
   );
   const identifier = generateClientIdentifier(device, 'app');
   const saltIdentifier = generateClientIdentifierWithSalt(identifier, 'salt');
-  expect(saltIdentifier).toEqual('app#iOS#emulator#salt-serial');
-  expect(identifier).toEqual('app#iOS#emulator#serial');
+  expect(saltIdentifier).toEqual('app#iOS#archivedEmulator#salt-serial');
+  expect(identifier).toEqual('app#iOS#archivedEmulator#serial');
 });
 
 test('test generateClientFromClientWithSalt helper function', () => {
@@ -88,20 +88,20 @@ test('test generateClientFromClientWithSalt helper function', () => {
   const client = generateClientFromDevice(device, 'app');
   const saltedClient = generateClientFromClientWithSalt(client, 'salt');
   expect(saltedClient).toEqual({
-    id: 'app#iOS#emulator#salt-serial',
+    id: 'app#iOS#archivedEmulator#salt-serial',
     query: {
       app: 'app',
       os: 'iOS',
-      device: 'emulator',
+      device: 'archivedEmulator',
       device_id: 'salt-serial',
     },
   });
   expect(client).toEqual({
-    id: 'app#iOS#emulator#serial',
+    id: 'app#iOS#archivedEmulator#serial',
     query: {
       app: 'app',
       os: 'iOS',
-      device: 'emulator',
+      device: 'archivedEmulator',
       device_id: 'serial',
     },
   });
@@ -117,11 +117,11 @@ test('test generateClientFromDevice helper function', () => {
   );
   const client = generateClientFromDevice(device, 'app');
   expect(client).toEqual({
-    id: 'app#iOS#emulator#serial',
+    id: 'app#iOS#archivedEmulator#serial',
     query: {
       app: 'app',
       os: 'iOS',
-      device: 'emulator',
+      device: 'archivedEmulator',
       device_id: 'serial',
     },
   });
@@ -136,7 +136,7 @@ test('test generateClientIdentifier helper function', () => {
     [],
   );
   const identifier = generateClientIdentifier(device, 'app');
-  expect(identifier).toEqual('app#iOS#emulator#serial');
+  expect(identifier).toEqual('app#iOS#archivedEmulator#serial');
 });
 
 test('test generateNotifications helper function', () => {
@@ -171,7 +171,7 @@ test('test processStore function for an iOS device connected', () => {
   //$FlowFixMe Flow doesn't that its a test and the assertion for null is already done
   const {serial, deviceType, title, os} = device;
   expect(serial).toEqual('salt-serial');
-  expect(deviceType).toEqual('emulator');
+  expect(deviceType).toEqual('archivedEmulator');
   expect(title).toEqual('TestiPhone');
   expect(os).toEqual('iOS');
   //$FlowFixMe Flow doesn't that its a test and the assertion for null is already done

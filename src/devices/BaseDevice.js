@@ -34,7 +34,11 @@ export type DeviceShell = {
 
 export type DeviceLogListener = (entry: DeviceLogEntry) => void;
 
-export type DeviceType = 'emulator' | 'physical';
+export type DeviceType =
+  | 'emulator'
+  | 'physical'
+  | 'archivedEmulator'
+  | 'archivedPhysical';
 
 export type DeviceExport = {|
   os: string,
