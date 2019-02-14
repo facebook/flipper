@@ -12,7 +12,7 @@ import type {
   Device,
 } from 'flipper';
 import type {PluginNotification} from './reducers/notifications';
-import type Logger from './fb-stubs/Logger';
+import type {Logger} from './fb-interfaces/Logger';
 
 import {
   FlipperDevicePlugin,

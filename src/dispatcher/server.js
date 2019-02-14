@@ -8,7 +8,7 @@
 import Server from '../server.js';
 
 import type {Store} from '../reducers/index.js';
-import type Logger from '../fb-stubs/Logger.js';
+import type {Logger} from '../fb-interfaces/Logger.js';
 import type Client from '../Client.js';
 import type {UninitializedClient} from '../UninitializedClient';
 

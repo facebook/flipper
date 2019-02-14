@@ -7,7 +7,7 @@
 
 import {remote, ipcRenderer} from 'electron';
 import type {Store} from '../reducers/index.js';
-import type Logger from '../fb-stubs/Logger.js';
+import type {Logger} from '../fb-interfaces/Logger.js';
 import {parseFlipperPorts} from '../utils/environmentVariables';
 import {importFileToStore} from '../utils/exportData';
 import {selectPlugin, userPreferredPlugin} from '../reducers/connections';

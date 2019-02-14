@@ -5,7 +5,7 @@
  * @format
  */
 
-import LogManager from '../fb-stubs/Logger';
+import type {Logger} from '../fb-interfaces/Logger';
 import {RecurringError} from './errors';
 import {promisify} from 'util';
 const fs = require('fs');
@@ -70,12 +70,12 @@ export type SecureServerConfig = {|
  * Flipper CA.
 */
 export default class CertificateProvider {
-  logger: LogManager;
+  logger: Logger;
   adb: any;
   certificateSetup: Promise<void>;
   server: Server;
 
-  constructor(server: Server, logger: LogManager) {
+  constructor(server: Server, logger: Logger) {
     this.logger = logger;
     this.adb = adb.createClient(adbConfig());
     this.certificateSetup = reportPlatformFailures(

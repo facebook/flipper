@@ -11,7 +11,7 @@ import promiseRetry from 'promise-retry';
 import {promisify} from 'util';
 import type {Store} from '../reducers/index.js';
 import type BaseDevice from '../devices/BaseDevice';
-import type Logger from '../fb-stubs/Logger.js';
+import type {Logger} from '../fb-interfaces/Logger.js';
 import {registerDeviceCallbackOnPlugins} from '../utils/onRegisterDevice.js';
 import {reportPlatformFailures} from '../utils/metrics';
 import adbConfig from '../utils/adbConfig';

@@ -10,7 +10,7 @@ import {ipcRenderer} from 'electron';
 import {performance} from 'perf_hooks';
 
 import type {Store} from '../reducers/index.js';
-import type Logger from '../fb-stubs/Logger.js';
+import type {Logger} from '../fb-interfaces/Logger.js';
 
 export default (store: Store, logger: Logger) => {
   let droppedFrames: number = 0;

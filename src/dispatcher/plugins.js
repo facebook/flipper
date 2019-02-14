@@ -6,7 +6,7 @@
  */
 
 import type {Store} from '../reducers/index.js';
-import type Logger from '../fb-stubs/Logger.js';
+import type {Logger} from '../fb-interfaces/Logger.js';
 import type {FlipperPlugin, FlipperDevicePlugin} from '../plugin.js';
 import type {State} from '../reducers/plugins';
 

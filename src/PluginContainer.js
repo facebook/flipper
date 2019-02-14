@@ -5,7 +5,7 @@
  * @format
  */
 import type {FlipperPlugin, FlipperDevicePlugin} from './plugin.js';
-import type LogManager from './fb-stubs/Logger';
+import type {Logger} from './fb-interfaces/Logger';
 import BaseDevice from './devices/BaseDevice.js';
 import type {Props as PluginProps} from './plugin';
 
@@ -46,7 +46,7 @@ deepLinkPayload,
 pluginKey,
 */
 type OwnProps = {|
-  logger: LogManager,
+  logger: Logger,
 |};
 
 type Props = {|

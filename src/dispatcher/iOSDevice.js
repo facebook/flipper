@@ -7,7 +7,7 @@
 
 import type {ChildProcess} from 'child_process';
 import type {Store} from '../reducers/index.js';
-import type Logger from '../fb-stubs/Logger.js';
+import type {Logger} from '../fb-interfaces/Logger.js';
 import type {DeviceType} from '../devices/BaseDevice';
 import {RecurringError} from '../utils/errors';
 import {promisify} from 'util';

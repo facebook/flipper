@@ -22,7 +22,7 @@ import {
   ACTIVE_SHEET_PLUGIN_DEBUGGER,
 } from './reducers/application.js';
 
-import type Logger from './fb-stubs/Logger.js';
+import type {Logger} from './fb-interfaces/Logger.js';
 import type BugReporter from './fb-stubs/BugReporter.js';
 import type BaseDevice from './devices/BaseDevice.js';
 import type {ActiveSheet} from './reducers/application.js';

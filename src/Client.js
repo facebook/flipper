@@ -8,7 +8,7 @@
 import type {FlipperPlugin, FlipperBasePlugin} from './plugin.js';
 import type BaseDevice from './devices/BaseDevice.js';
 import type {App} from './App.js';
-import type Logger from './fb-stubs/Logger.js';
+import type {Logger} from './fb-interfaces/Logger.js';
 import type {Store} from './reducers/index.js';
 import type {OS} from './devices/BaseDevice.js';
 import {FlipperDevicePlugin} from './plugin.js';
