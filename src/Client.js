@@ -454,6 +454,12 @@ export default class Client extends EventEmitter {
   }
 
   send(api: string, method: string, params?: Object): void {
+    if (!isProduction()) {
+      console.warn(
+        `${api}:${method ||
+          ''} client.send() is deprecated. Please use call() instead so you can handle errors.`,
+      );
+    }
     return this.rawSend('execute', {api, method, params});
   }
 }
