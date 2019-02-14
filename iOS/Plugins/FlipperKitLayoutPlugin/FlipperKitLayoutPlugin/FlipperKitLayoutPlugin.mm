@@ -84,11 +84,11 @@
   __weak FlipperKitLayoutPlugin *weakSelf = self;
 
   [connection receive:@"getRoot" withBlock:^(NSDictionary *params, id<FlipperResponder> responder) {
-    FlipperPerformBlockOnMainThread(^{ [weakSelf onCallGetRoot: responder]; });
+    FlipperPerformBlockOnMainThread(^{ [weakSelf onCallGetRoot: responder]; }, responder);
   }];
 
   [connection receive:@"getNodes" withBlock:^(NSDictionary *params, id<FlipperResponder> responder) {
-    FlipperPerformBlockOnMainThread(^{ [weakSelf onCallGetNodes: params[@"ids"] withResponder: responder]; });
+    FlipperPerformBlockOnMainThread(^{ [weakSelf onCallGetNodes: params[@"ids"] withResponder: responder]; }, responder);
   }];
 
   [connection receive:@"setData" withBlock:^(NSDictionary *params, id<FlipperResponder> responder) {
@@ -97,27 +97,27 @@
                  withPath: params[@"path"]
                   toValue: params[@"value"]
            withConnection: connection];
-    });
+    }, responder);
   }];
 
   [connection receive:@"setHighlighted" withBlock:^(NSDictionary *params, id<FlipperResponder> responder) {
-    FlipperPerformBlockOnMainThread(^{ [weakSelf onCallSetHighlighted: params[@"id"] withResponder: responder]; });
+    FlipperPerformBlockOnMainThread(^{ [weakSelf onCallSetHighlighted: params[@"id"] withResponder: responder]; }, responder);
   }];
 
   [connection receive:@"setSearchActive" withBlock:^(NSDictionary *params, id<FlipperResponder> responder) {
-    FlipperPerformBlockOnMainThread(^{ [weakSelf onCallSetSearchActive: [params[@"active"] boolValue] withConnection: connection]; });
+    FlipperPerformBlockOnMainThread(^{ [weakSelf onCallSetSearchActive: [params[@"active"] boolValue] withConnection: connection]; }, responder);
   }];
 
   [connection receive:@"isSearchActive" withBlock:^(NSDictionary *params, id<FlipperResponder> responder) {
-    FlipperPerformBlockOnMainThread(^{ [weakSelf onCallIsSearchActiveWithConnection: responder]; });
+    FlipperPerformBlockOnMainThread(^{ [weakSelf onCallIsSearchActiveWithConnection: responder]; }, responder);
   }];
 
   [connection receive:@"isConsoleEnabled" withBlock:^(NSDictionary *params, id<FlipperResponder> responder) {
-    FlipperPerformBlockOnMainThread(^{ [responder success: @{@"isEnabled": @NO}];});
+    FlipperPerformBlockOnMainThread(^{ [responder success: @{@"isEnabled": @NO}];}, responder);
   }];
 
   [connection receive:@"getSearchResults" withBlock:^(NSDictionary *params, id<FlipperResponder> responder) {
-    FlipperPerformBlockOnMainThread(^{ [weakSelf onCallGetSearchResults: params[@"query"] withResponder: responder]; });
+    FlipperPerformBlockOnMainThread(^{ [weakSelf onCallGetSearchResults: params[@"query"] withResponder: responder]; }, responder);
   }];
 }
 
