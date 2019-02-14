@@ -18,9 +18,10 @@ import {default as Client} from '../Client';
 import {getInstance} from '../fb-stubs/Logger.js';
 import fs from 'fs';
 import uuid from 'uuid';
+import {remote} from 'electron';
 
 export type ExportType = {|
-  fileVersion: '1.0.0',
+  fileVersion: string,
   clients: Array<ClientExport>,
   device: ?DeviceExport,
   store: {
@@ -126,7 +127,7 @@ const addSaltToDeviceSerial = (
     return {...notif, client: notif.client.replace(serial, newSerial)};
   });
   return {
-    fileVersion: '1.0.0',
+    fileVersion: remote.app.getVersion(),
     clients: updatedClients,
     device: newDevice.toJSON(),
     store: {
@@ -216,11 +217,13 @@ export const importFileToStore = (file: string, store: Store) => {
     }
     const json = JSON.parse(data);
     const {device, clients} = json;
-    const updatedLogs = device.logs.map(log => {
-      // During the export, Date is exported as string
-      return {...log, date: new Date(log.date)};
-    });
-    const {serial, deviceType, title, os} = device;
+    const {serial, deviceType, title, os, logs} = device;
+    const updatedLogs = logs
+      ? logs.map(log => {
+          // During the export, Date is exported as string
+          return {...log, date: new Date(log.date)};
+        })
+      : [];
     const archivedDevice = new ArchivedDevice(
       serial,
       deviceType,
