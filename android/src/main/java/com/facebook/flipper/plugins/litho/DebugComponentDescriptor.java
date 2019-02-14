@@ -159,7 +159,10 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
       data.add(new Named<>("Layout", layoutData));
     }
 
-    data.addAll(getPropData(node));
+    final List<Named<FlipperObject>> propData = getPropData(node);
+    if (propData != null) {
+      data.addAll(propData);
+    }
 
     final FlipperObject stateData = getStateData(node);
     if (stateData != null) {
