@@ -76,6 +76,7 @@ module.exports = function(argv) {
   config = {
     ...config,
     updaterEnabled: argv.updater,
+    launcherMsg: argv.launcherMsg,
   };
 
   return {config, configPath, flipperDir};

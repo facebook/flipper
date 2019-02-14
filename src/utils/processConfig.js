@@ -12,6 +12,7 @@ export type ProcessConfig = {|
   pluginPaths: Array<string>,
   lastWindowPosition: ?{x: number, y: number, width: number, height: number},
   screenCapturePath: ?string,
+  launcherMsg: ?string,
   updaterEnabled: boolean,
   // Controls whether to delegate to the launcher if present.
   launcherEnabled: boolean,
@@ -28,6 +29,7 @@ export default function config(): ProcessConfig {
       disabledPlugins: new Set(json.disabledPlugins || []),
       pluginPaths: json.pluginPaths || [],
       lastWindowPosition: json.lastWindowPosition,
+      launcherMsg: json.launcherMsg,
       updaterEnabled:
         typeof json.updaterEnabled === 'boolean' ? json.updaterEnabled : true,
       screenCapturePath: json.screenCapturePath,

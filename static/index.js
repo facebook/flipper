@@ -48,6 +48,11 @@ const argv = yargs
     describe: 'Toggle delegating to the update launcher on startup.',
     type: 'boolean',
   })
+  .option('launcher-msg', {
+    describe:
+      '[Internal] Used to provide a user message from the launcher to the user.',
+    type: 'string',
+  })
   .version(global.__VERSION__)
   .help().argv;
 
