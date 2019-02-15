@@ -6,6 +6,7 @@
  */
 
 import type {TableHighlightedRows, TableRows, TableBodyRow} from 'flipper';
+import {padStart} from 'lodash';
 
 import {
   ContextMenu,
@@ -59,6 +60,8 @@ export type Header = {|
 |};
 
 const COLUMN_SIZE = {
+  requestTimestamp: 100,
+  responseTimestamp: 100,
   domain: 'flex',
   method: 100,
   status: 70,
@@ -66,7 +69,23 @@ const COLUMN_SIZE = {
   duration: 100,
 };
 
+const COLUMN_ORDER = [
+  {key: 'requestTimestamp', visible: true},
+  {key: 'responseTimestamp', visible: false},
+  {key: 'domain', visible: true},
+  {key: 'method', visible: true},
+  {key: 'status', visible: true},
+  {key: 'size', visible: true},
+  {key: 'duration', visible: true},
+];
+
 const COLUMNS = {
+  requestTimestamp: {
+    value: 'Request Time',
+  },
+  responseTimestamp: {
+    value: 'Response Time',
+  },
   domain: {
     value: 'Domain',
   },
@@ -224,6 +243,19 @@ type NetworkTableState = {|
   sortedRows: TableRows,
 |};
 
+function formatTimestamp(timestamp: number): string {
+  const date = new Date(timestamp);
+  return `${padStart(date.getHours().toString(), 2, '0')}:${padStart(
+    date.getMinutes().toString(),
+    2,
+    '0',
+  )}:${padStart(date.getSeconds().toString(), 2, '0')}.${padStart(
+    date.getMilliseconds().toString(),
+    3,
+    '0',
+  )}`;
+}
+
 function buildRow(request: Request, response: ?Response): ?TableBodyRow {
   if (request == null) {
     return;
@@ -234,6 +266,18 @@ function buildRow(request: Request, response: ?Response): ?TableBodyRow {
 
   return {
     columns: {
+      requestTimestamp: {
+        value: (
+          <TextEllipsis>{formatTimestamp(request.timestamp)}</TextEllipsis>
+        ),
+      },
+      responseTimestamp: {
+        value: (
+          <TextEllipsis>
+            {response && formatTimestamp(response.timestamp)}
+          </TextEllipsis>
+        ),
+      },
       domain: {
         value: (
           <TextEllipsis>{friendlyName ? friendlyName : domain}</TextEllipsis>
@@ -358,6 +402,7 @@ class NetworkTable extends PureComponent<NetworkTableProps, NetworkTableState> {
           floating={false}
           columnSizes={COLUMN_SIZE}
           columns={COLUMNS}
+          columnOrder={COLUMN_ORDER}
           rows={this.state.sortedRows}
           onRowHighlighted={this.props.onRowHighlighted}
           highlightedRows={this.props.highlightedRows}

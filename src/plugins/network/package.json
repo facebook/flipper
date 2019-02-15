@@ -5,7 +5,8 @@
   "license": "MIT",
   "dependencies": {
     "pako": "^1.0.6",
-    "xml-beautifier": "^0.4.0"
+    "xml-beautifier": "^0.4.0",
+    "lodash": "^4.17.11"
   },
   "icon": "internet",
   "bugs": {
