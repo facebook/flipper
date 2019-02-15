@@ -64,7 +64,7 @@ function watchChanges(
   console.log('🕵️‍  Watching for plugin changes');
 
   Object.values(plugins).map(plugin =>
-    fs.watch(plugin.rootDir, (eventType, filename) => {
+    fs.watch(plugin.rootDir, {recursive: true}, (eventType, filename) => {
       // only recompile for changes in not hidden files. Watchman might create
       // a file called .watchman-cookie
       if (!filename.startsWith('.')) {
