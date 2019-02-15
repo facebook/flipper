@@ -314,7 +314,6 @@ function getTemplate(
     },
   ];
   if (GK.get('flipper_import_export')) {
-    console.log('flipper_import_export is true');
     template.unshift({
       label: 'File',
       submenu: [
