@@ -50,7 +50,7 @@ public void myTest() {
 
 ## C++
 
-Start by creating your first test file in this directory `MyFlipperPluginTests.cpp` and import the testing utilities from `xplat//sonar/xplat:FlipperTestLib`. These utilities mock out core pieces of the communication channel so that you can test your plugin in isolation.
+Start by creating your first test file in this directory `MyFlipperPluginTests.cpp` and import the testing utilities from `fbsource//xplat/sonar/xplat:FlipperTestLib`. These utilities mock out core pieces of the communication channel so that you can test your plugin in isolation.
 
 ```
 #include <MyFlipperPlugin/MyFlipperPlugin.h>
