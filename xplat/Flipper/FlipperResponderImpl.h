@@ -11,6 +11,7 @@
 #include <rsocket/RSocketResponder.h>
 #include "FlipperConnectionManager.h"
 #include "FlipperResponder.h"
+#include "Log.h"
 
 namespace facebook {
 namespace flipper {
@@ -38,8 +39,16 @@ class FlipperResponderImpl : public FlipperResponder {
 
   ~FlipperResponderImpl() {
     if (!isCompleted) {
-      downstreamObserver_->onSuccess(
-          folly::dynamic::object("success", folly::dynamic::object()));
+      try {
+        downstreamObserver_->onSuccess(
+            folly::dynamic::object("success", folly::dynamic::object()));
+      } catch (std::exception& e) {
+        log(std::string(
+                "Exception occurred when responding in FlipperResponder: ") +
+            e.what());
+      } catch (...) {
+        log("Exception occurred when responding in FlipperResponder");
+      }
     }
   }
 
