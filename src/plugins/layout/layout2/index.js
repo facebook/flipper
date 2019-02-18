@@ -5,7 +5,7 @@
  * @format
  */
 
-import type {ElementID, Element} from 'flipper';
+import type {ElementID, Element, ElementSearchResultSet} from 'flipper';
 
 import {
   FlexColumn,
@@ -20,6 +20,7 @@ import {
 import Inspector from './Inspector';
 import ToolbarIcon from './ToolbarIcon';
 import InspectorSidebar from './InspectorSidebar';
+import Search from './Search';
 
 type State = {|
   init: boolean,
@@ -28,6 +29,7 @@ type State = {|
   inAlignmentMode: boolean,
   selectedElement: ?ElementID,
   selectedAXElement: ?ElementID,
+  searchResults: ?ElementSearchResultSet,
 |};
 
 export type PersistedState = {|
@@ -52,6 +54,7 @@ export default class Layout extends FlipperPlugin<State, void, PersistedState> {
     inAlignmentMode: false,
     selectedElement: null,
     selectedAXElement: null,
+    searchResults: null,
   };
 
   componentDidMount() {
@@ -116,6 +119,7 @@ export default class Layout extends FlipperPlugin<State, void, PersistedState> {
       setPersistedState: this.props.setPersistedState,
       persistedState: this.props.persistedState,
       onDataValueChanged: this.onDataValueChanged,
+      searchResults: this.state.searchResults,
     };
 
     let element;
@@ -151,6 +155,15 @@ export default class Layout extends FlipperPlugin<State, void, PersistedState> {
                 title="Toggle AlignmentMode to show alignment lines"
                 icon="borders"
                 active={this.state.inAlignmentMode}
+              />
+              <Search
+                client={this.client}
+                setPersistedState={this.props.setPersistedState}
+                persistedState={this.props.persistedState}
+                onSearchResults={searchResults =>
+                  this.setState({searchResults})
+                }
+                inAXMode={this.state.inAXMode}
               />
             </Toolbar>
 

@@ -5,7 +5,12 @@
  * @format
  */
 
-import type {ElementID, Element, PluginClient} from 'flipper';
+import type {
+  ElementID,
+  Element,
+  PluginClient,
+  ElementSearchResultSet,
+} from 'flipper';
 import {ElementsInspector} from 'flipper';
 import {Component} from 'react';
 import debounce from 'lodash.debounce';
@@ -29,6 +34,7 @@ type Props = {
   onDataValueChanged: (path: Array<string>, value: any) => void,
   setPersistedState: (state: $Shape<PersistedState>) => void,
   persistedState: PersistedState,
+  searchResults: ?ElementSearchResultSet,
 };
 
 export default class Inspector extends Component<Props> {
