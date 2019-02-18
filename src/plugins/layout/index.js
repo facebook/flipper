@@ -26,9 +26,12 @@ import {
   Popover,
   ToggleButton,
   SidebarExtensions,
+  GK,
 } from 'flipper';
 // $FlowFixMe perf_hooks is a new API in node
 import {performance} from 'perf_hooks';
+
+import Layout2 from './layout2/index.js';
 
 import type {TrackType} from '../../fb-interfaces/Logger.js';
 
@@ -189,7 +192,7 @@ class LayoutSearchInput extends Component<
   }
 }
 
-export default class Layout extends FlipperPlugin<InspectorState> {
+class Layout extends FlipperPlugin<InspectorState> {
   state = {
     elements: {},
     initialised: false,
@@ -1236,3 +1239,5 @@ export default class Layout extends FlipperPlugin<InspectorState> {
     );
   }
 }
+
+export default (GK.get('flipper_layout_inspector_new') ? Layout2 : Layout);
