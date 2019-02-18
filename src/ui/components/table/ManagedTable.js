@@ -348,8 +348,7 @@ class ManagedTable extends React.Component<
     document.addEventListener('mouseup', this.onStopDragSelecting);
 
     if (
-      ((e.metaKey && process.platform === 'darwin') ||
-        (e.ctrlKey && process.platform !== 'darwin')) &&
+      ((e.metaKey && process.platform === 'darwin') || e.ctrlKey) &&
       this.props.multiHighlight
     ) {
       highlightedRows.add(row.key);
