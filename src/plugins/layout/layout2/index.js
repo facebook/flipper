@@ -15,9 +15,11 @@ import {
   Sidebar,
   Link,
   Glyph,
+  DetailSidebar,
 } from 'flipper';
 import Inspector from './Inspector';
 import ToolbarIcon from './ToolbarIcon';
+import InspectorSidebar from './InspectorSidebar';
 
 type State = {|
   init: boolean,
@@ -116,6 +118,15 @@ export default class Layout extends FlipperPlugin<State, void, PersistedState> {
       onDataValueChanged: this.onDataValueChanged,
     };
 
+    let element;
+    if (this.state.inAXMode && this.state.selectedAXElement) {
+      element = this.props.persistedState.AXelements[
+        this.state.selectedAXElement
+      ];
+    } else if (this.state.selectedElement) {
+      element = this.props.persistedState.elements[this.state.selectedElement];
+    }
+
     return (
       <FlexColumn grow={true}>
         {this.state.init && (
@@ -162,8 +173,18 @@ export default class Layout extends FlipperPlugin<State, void, PersistedState> {
                 </Sidebar>
               )}
             </FlexRow>
+            <DetailSidebar>
+              <InspectorSidebar
+                client={this.client}
+                realClient={this.realClient}
+                element={element}
+                onValueChanged={this.onDataValueChanged}
+                logger={this.props.logger}
+              />
+            </DetailSidebar>
           </>
         )}
+        {/* TODO: Remove this when rolling out publicly */}
         <Toolbar position="bottom" compact>
           <Glyph name="beta" color="#8157C7" />&nbsp;
           <strong>Version 2.0:</strong>&nbsp; Provide feedback about this plugin
