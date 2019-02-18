@@ -14,6 +14,7 @@ export {
   FlipperPlugin,
   FlipperDevicePlugin,
 } from './plugin.js';
+export type {PluginClient} from './plugin.js';
 export {clipboard} from 'electron';
 export * from './fb-stubs/constants.js';
 export * from './utils/createPaste.js';
