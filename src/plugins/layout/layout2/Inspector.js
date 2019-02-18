@@ -22,6 +22,7 @@ type Props = {
   ax?: boolean,
   client: PluginClient,
   showsSidebar: boolean,
+  inAlignmentMode?: boolean,
   selectedElement: ?ElementID,
   selectedAXElement: ?ElementID,
   onSelect: (ids: ?ElementID) => void,
@@ -196,6 +197,7 @@ export default class Inspector extends Component<Props> {
   onElementHovered = debounce((key: ?ElementID) =>
     this.props.client.call(this.call().SET_HIGHLIGHTED, {
       id: key,
+      isAlignmentMode: this.props.inAlignmentMode,
     }),
   );
 

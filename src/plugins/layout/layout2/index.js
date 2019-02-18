@@ -23,6 +23,7 @@ type State = {|
   init: boolean,
   inTargetMode: boolean,
   inAXMode: boolean,
+  inAlignmentMode: boolean,
   selectedElement: ?ElementID,
   selectedAXElement: ?ElementID,
 |};
@@ -46,6 +47,7 @@ export default class Layout extends FlipperPlugin<State, void, PersistedState> {
     init: false,
     inTargetMode: false,
     inAXMode: false,
+    inAlignmentMode: false,
     selectedElement: null,
     selectedAXElement: null,
   };
@@ -81,6 +83,16 @@ export default class Layout extends FlipperPlugin<State, void, PersistedState> {
     this.setState({inAXMode: !this.state.inAXMode});
   };
 
+  onToggleAlignmentMode = () => {
+    if (this.state.selectedElement) {
+      this.client.send('setHighlighted', {
+        id: this.state.selectedElement,
+        inAlignmentMode: !this.state.inAlignmentMode,
+      });
+    }
+    this.setState({inAlignmentMode: !this.state.inAlignmentMode});
+  };
+
   onDataValueChanged = (path: Array<string>, value: any) => {
     const id = this.state.inAXMode
       ? this.state.selectedAXElement
@@ -96,6 +108,7 @@ export default class Layout extends FlipperPlugin<State, void, PersistedState> {
   render() {
     const inspectorProps = {
       client: this.client,
+      inAlignmentMode: this.state.inAlignmentMode,
       selectedElement: this.state.selectedElement,
       selectedAXElement: this.state.selectedAXElement,
       setPersistedState: this.props.setPersistedState,
@@ -122,6 +135,12 @@ export default class Layout extends FlipperPlugin<State, void, PersistedState> {
                   active={this.state.inAXMode}
                 />
               )}
+              <ToolbarIcon
+                onClick={this.onToggleAlignmentMode}
+                title="Toggle AlignmentMode to show alignment lines"
+                icon="borders"
+                active={this.state.inAlignmentMode}
+              />
             </Toolbar>
 
             <FlexRow grow={true}>
