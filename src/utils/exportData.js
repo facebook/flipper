@@ -19,6 +19,7 @@ import {getInstance} from '../fb-stubs/Logger.js';
 import fs from 'fs';
 import uuid from 'uuid';
 import {remote} from 'electron';
+import {serialize, deserialize} from './serialization';
 
 export type ExportType = {|
   fileVersion: string,
@@ -197,7 +198,7 @@ export const exportStoreToFile = (
   const json = serializeStore(data.getState());
   if (json) {
     return new Promise((resolve, reject) => {
-      fs.writeFile(exportFilePath, JSON.stringify(json), err => {
+      fs.writeFile(exportFilePath, serialize(json), err => {
         if (err) {
           reject(err);
         }
@@ -215,21 +216,15 @@ export const importFileToStore = (file: string, store: Store) => {
       console.error(err);
       return;
     }
-    const json = JSON.parse(data);
+    const json = deserialize(data);
     const {device, clients} = json;
     const {serial, deviceType, title, os, logs} = device;
-    const updatedLogs = logs
-      ? logs.map(log => {
-          // During the export, Date is exported as string
-          return {...log, date: new Date(log.date)};
-        })
-      : [];
     const archivedDevice = new ArchivedDevice(
       serial,
       deviceType,
       title,
       os,
-      updatedLogs,
+      logs,
     );
     const devices = store.getState().connections.devices;
     const matchedDevices = devices.filter(
