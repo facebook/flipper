@@ -21,6 +21,7 @@ import ToolbarIcon from './ToolbarIcon';
 
 type State = {|
   init: boolean,
+  inTargetMode: boolean,
   inAXMode: boolean,
   selectedElement: ?ElementID,
   selectedAXElement: ?ElementID,
@@ -43,6 +44,7 @@ export default class Layout extends FlipperPlugin<State, void, PersistedState> {
 
   state = {
     init: false,
+    inTargetMode: false,
     inAXMode: false,
     selectedElement: null,
     selectedAXElement: null,
@@ -53,8 +55,27 @@ export default class Layout extends FlipperPlugin<State, void, PersistedState> {
   }
 
   init() {
+    // persist searchActive state when moving between plugins to prevent multiple
+    // TouchOverlayViews since we can't edit the view heirarchy in onDisconnect
+    this.client.call('isSearchActive').then(({isSearchActive}) => {
+      this.setState({inTargetMode: isSearchActive});
+    });
+
+    // disable target mode after
+    this.client.subscribe('select', () => {
+      if (this.state.inTargetMode) {
+        this.onToggleTargetMode();
+      }
+    });
+
     this.setState({init: true});
   }
+
+  onToggleTargetMode = () => {
+    const inTargetMode = !this.state.inTargetMode;
+    this.setState({inTargetMode});
+    this.client.send('setSearchActive', {active: inTargetMode});
+  };
 
   onToggleAXMode = () => {
     this.setState({inAXMode: !this.state.inAXMode});
@@ -87,6 +108,12 @@ export default class Layout extends FlipperPlugin<State, void, PersistedState> {
         {this.state.init && (
           <>
             <Toolbar>
+              <ToolbarIcon
+                onClick={this.onToggleTargetMode}
+                title="Toggle target mode"
+                icon="target"
+                active={this.state.inTargetMode}
+              />
               {this.realClient.query.os === 'Android' && (
                 <ToolbarIcon
                   onClick={this.onToggleAXMode}

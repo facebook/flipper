@@ -74,6 +74,13 @@ export default class Inspector extends Component<Props> {
         this.getNodes(nodes.map(n => n.id), {});
       },
     );
+
+    this.props.client.subscribe(
+      this.call().SELECT,
+      ({path}: {path: Array<ElementID>}) => {
+        this.getAndExpandPath(path);
+      },
+    );
   }
 
   componentDidUpdate(prevProps: Props) {
@@ -171,6 +178,14 @@ export default class Inspector extends Component<Props> {
     } else {
       return Promise.resolve([]);
     }
+  }
+
+  getAndExpandPath(path: Array<ElementID>) {
+    return Promise.all(path.map(id => this.getChildren(id, {}, true))).then(
+      () => {
+        this.onElementSelected(path[path.length - 1]);
+      },
+    );
   }
 
   onElementSelected = debounce((selectedKey: ElementID) => {
