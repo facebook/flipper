@@ -102,6 +102,7 @@ const PluginName = styled(Text)(props => ({
 
 const Plugins = styled(FlexColumn)({
   flexGrow: 1,
+  overflow: 'scroll',
 });
 
 const PluginDebugger = styled(FlexBox)(props => ({
@@ -109,6 +110,7 @@ const PluginDebugger = styled(FlexBox)(props => ({
   borderTop: `1px solid ${colors.blackAlpha10}`,
   alignItems: 'center',
   padding: 10,
+  flexShrink: 0,
   whiteSpace: 'nowrap',
   overflow: 'hidden',
   textOverflow: 'ellipsis',
