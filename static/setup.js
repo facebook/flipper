@@ -35,6 +35,9 @@ const startLauncher = () => {
 module.exports = function(argv) {
   if (argv.launcher && isProduction() && isLauncherInstalled()) {
     console.warn('Delegating to Flipper Launcher ...');
+    console.warn(
+      `You can disable this behavior by passing '--no-launcher' at startup.`,
+    );
     startLauncher();
     process.exit(0);
   }
