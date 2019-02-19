@@ -224,7 +224,7 @@ export const importFileToStore = (file: string, store: Store) => {
       deviceType,
       title,
       os,
-      logs,
+      logs ? logs : [],
     );
     const devices = store.getState().connections.devices;
     const matchedDevices = devices.filter(
