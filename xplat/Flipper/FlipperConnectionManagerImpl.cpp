@@ -268,7 +268,7 @@ bool FlipperConnectionManagerImpl::isCertificateExchangeNeeded() {
 
 void FlipperConnectionManagerImpl::requestSignedCertFromFlipper() {
   auto generatingCSR = flipperState_->start("Generate CSR");
-  std::string csr = contextStore_->createCertificateSigningRequest();
+  std::string csr = contextStore_->getCertificateSigningRequest();
   generatingCSR->complete();
 
   folly::dynamic message =
