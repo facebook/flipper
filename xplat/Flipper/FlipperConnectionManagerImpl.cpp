@@ -341,15 +341,16 @@ rsocket::Payload toRSocketPayload(dynamic data) {
   std::string json = folly::toJson(data);
   rsocket::Payload payload = rsocket::Payload(json);
   auto payloadLength = payload.data->computeChainDataLength();
-
-  DCHECK_LE(payloadLength, maxPayloadSize);
   if (payloadLength > maxPayloadSize) {
     auto logMessage =
         std::string(
             "Error: Skipping sending message larger than max rsocket payload: ") +
-        json;
+        json.substr(0, 100) + "...";
+    log(logMessage);
+    DCHECK_LE(payloadLength, maxPayloadSize);
     throw new std::length_error(logMessage);
   }
+
   return payload;
 }
 
