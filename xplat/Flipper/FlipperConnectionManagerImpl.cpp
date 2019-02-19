@@ -134,9 +134,16 @@ void FlipperConnectionManagerImpl::startSync() {
       step->fail(
           "No route to flipper found. Is flipper desktop running? Retrying...");
     } else {
-      log(e.what());
+      if (e.getType() == folly::AsyncSocketException::SSL_ERROR) {
+        auto message = std::string(e.what()) +
+            "\nMake sure the date and time of your device is up to date.";
+        log(message);
+        step->fail(message);
+      } else {
+        log(e.what());
+        step->fail(e.what());
+      }
       failedConnectionAttempts_++;
-      step->fail(e.what());
     }
     reconnect();
   } catch (const std::exception& e) {
