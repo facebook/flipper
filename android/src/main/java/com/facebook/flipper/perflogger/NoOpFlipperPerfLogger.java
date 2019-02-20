@@ -6,11 +6,14 @@
  */
 package com.facebook.flipper.perflogger;
 
-public interface FlipperPerfLogger {
+public class NoOpFlipperPerfLogger implements FlipperPerfLogger {
 
-  void startMarker(String name);
+  @Override
+  public void startMarker(String name) {}
 
-  void endMarker(String name);
+  @Override
+  public void endMarker(String name) {}
 
-  void cancelMarker(String name);
+  @Override
+  public void cancelMarker(String name) {}
 }
