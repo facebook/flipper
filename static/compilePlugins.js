@@ -207,7 +207,7 @@ async function compilePlugin(
             ),
           },
           resolver: {
-            blacklistRE: /\/sonar\/dist\//,
+            blacklistRE: /\/(sonar|flipper-public)\/dist\//,
           },
         },
         {

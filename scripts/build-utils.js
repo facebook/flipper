@@ -61,7 +61,7 @@ function compile(buildFolder, entry) {
         ),
       },
       resolver: {
-        blacklistRE: /\/sonar\/dist\//,
+        blacklistRE: /\/(sonar|flipper-public)\/dist\//,
       },
     },
     {
