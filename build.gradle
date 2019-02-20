@@ -33,8 +33,8 @@ subprojects {
 
 ext {
     minSdkVersion = 15
-    targetSdkVersion = 25
-    compileSdkVersion = 27
+    targetSdkVersion = 28
+    compileSdkVersion = 28
     buildToolsVersion = '28.0.3'
     sourceCompatibilityVersion = JavaVersion.VERSION_1_7
     targetCompatibilityVersion = JavaVersion.VERSION_1_7
@@ -42,13 +42,13 @@ ext {
 
 ext.deps = [
         // Android support
-        supportAnnotations : 'com.android.support:support-annotations:27.1.1',
-        supportAppCompat   : 'com.android.support:appcompat-v7:27.1.1',
-        supportCoreUi      : 'com.android.support:support-core-ui:27.1.1',
-        supportRecyclerView: 'com.android.support:recyclerview-v7:27.1.1',
+        supportAnnotations : "com.android.support:support-annotations:$ANDROID_SUPPORT_VERSION",
+        supportAppCompat   : "com.android.support:appcompat-v7:$ANDROID_SUPPORT_VERSION",
+        supportCoreUi      : "com.android.support:support-core-ui:$ANDROID_SUPPORT_VERSION",
+        supportRecyclerView: "com.android.support:recyclerview-v7:$ANDROID_SUPPORT_VERSION",
         supportConstraintLayout: 'com.android.support.constraint:constraint-layout:1.1.0',
         supportEspresso    : 'com.android.support.test.espresso:espresso-core:2.2.2',
-        supportDesign      : 'com.android.support:design:27.1.1',
+        supportDesign      : "com.android.support:design:$ANDROID_SUPPORT_VERSION",
         supportEspressoIntents : 'com.android.support.test.espresso:espresso-intents:2.2.2',
         supportTestRunner  : 'com.android.support.test:runner:1.0.2',
         // Arch
