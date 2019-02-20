@@ -101,8 +101,7 @@ export default class BaseDevice {
     return id;
   }
 
-  notifyLogListeners(entry: DeviceLogEntry) {
-    this.logEntries.push(entry);
+  _notifyLogListeners(entry: DeviceLogEntry) {
     if (this.logListeners.size > 0) {
       this.logListeners.forEach(listener => {
         // prevent breaking other listeners, if one listener doesn't work.
@@ -113,6 +112,11 @@ export default class BaseDevice {
         }
       });
     }
+  }
+
+  addLogEntry(entry: DeviceLogEntry) {
+    this.logEntries.push(entry);
+    this._notifyLogListeners(entry);
   }
 
   getLogs() {

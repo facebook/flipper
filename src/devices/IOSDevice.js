@@ -105,7 +105,7 @@ export default class IOSDevice extends BaseDevice {
         .pipe(JSONStream.parse('*'))
         .on('data', (data: RawLogEntry) => {
           const entry = IOSDevice.parseLogEntry(data);
-          this.notifyLogListeners(entry);
+          this.addLogEntry(entry);
         });
     } catch (e) {
       console.error('Could not parse iOS log stream.', e);
