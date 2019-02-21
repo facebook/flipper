@@ -6,6 +6,7 @@
  */
 
 import type {Filter} from 'flipper';
+import type {TableColumns} from '../table/types';
 import {PureComponent} from 'react';
 import Toolbar from '../Toolbar.js';
 import FlexRow from '../FlexRow.js';
@@ -88,6 +89,7 @@ type Props = {|
   placeholder?: string,
   actions: React.Node,
   tableKey: string,
+  columns?: TableColumns,
   onFilterChange: (filters: Array<Filter>) => void,
   defaultFilters: Array<Filter>,
 |};
@@ -117,11 +119,12 @@ const Searchable = (
     _inputRef: ?HTMLInputElement;
 
     componentDidMount() {
+      console.log(this.props);
       window.document.addEventListener('keydown', this.onKeyDown);
       const {defaultFilters} = this.props;
       let savedState;
 
-      if (this.props.tableKey) {
+      if (this.getTableKey()) {
         try {
           savedState = JSON.parse(
             window.localStorage.getItem(this.getPersistKey()) || 'null',
@@ -161,7 +164,7 @@ const Searchable = (
 
     componentDidUpdate(prevProps: Props, prevState: State) {
       if (
-        this.props.tableKey &&
+        this.getTableKey() &&
         (prevState.searchTerm !== this.state.searchTerm ||
           prevState.filters !== this.state.filters)
       ) {
@@ -196,6 +199,21 @@ const Searchable = (
     componentWillUnmount() {
       window.document.removeEventListener('keydown', this.onKeyDown);
     }
+
+    getTableKey = (): ?string => {
+      if (this.props.tableKey) {
+        return this.props.tableKey;
+      } else if (this.props.columns) {
+        // if we have a table, we are using it's colums to uniquely identify
+        // the table (in case there is more than one table rendered at a time)
+        return (
+          'TABLE_COLUMNS_' +
+          Object.keys(this.props.columns)
+            .join('_')
+            .toUpperCase()
+        );
+      }
+    };
 
     onKeyDown = (e: SyntheticKeyboardEvent<>) => {
       const ctrlOrCmd = e =>
@@ -350,7 +368,7 @@ const Searchable = (
         searchTerm: '',
       });
 
-    getPersistKey = () => `SEARCHABLE_STORAGE_KEY_${this.props.tableKey || ''}`;
+    getPersistKey = () => `SEARCHABLE_STORAGE_KEY_${this.getTableKey() || ''}`;
 
     render(): React.Node {
       const {placeholder, actions, ...props} = this.props;
