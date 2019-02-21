@@ -301,23 +301,25 @@ void FlipperConnectionManagerImpl::requestSignedCertFromFlipper() {
               // TODO: Connect immediately, without waiting for reconnect
               client_ = nullptr;
             },
-            [this, message](folly::exception_wrapper e) {
+            [this, message, gettingCert](folly::exception_wrapper e) {
               e.handle(
                   [&](rsocket::ErrorWithPayload& errorWithPayload) {
                     std::string errorMessage =
                         errorWithPayload.payload.moveDataToString();
 
                     if (errorMessage.compare("not implemented")) {
-                      log("Desktop failed to provide certificates. Error from flipper desktop:\n" +
-                          errorMessage);
+                      auto error =
+                          "Desktop failed to provide certificates. Error from flipper desktop:\n" +
+                          errorMessage;
+                      log(error);
+                      gettingCert->fail(error);
                       client_ = nullptr;
                     } else {
                       sendLegacyCertificateRequest(message);
                     }
                   },
-                  [e](...) {
-                    log(("Error during certificate exchange:" + e.what())
-                            .c_str());
+                  [e, gettingCert](...) {
+                    gettingCert->fail(e.what().c_str());
                   });
             });
   });
