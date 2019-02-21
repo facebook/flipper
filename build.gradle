@@ -44,15 +44,15 @@ ext {
 
 ext.deps = [
         // Android support
-        supportAnnotations : "com.android.support:support-annotations:$ANDROID_SUPPORT_VERSION",
-        supportAppCompat   : "com.android.support:appcompat-v7:$ANDROID_SUPPORT_VERSION",
-        supportCoreUi      : "com.android.support:support-core-ui:$ANDROID_SUPPORT_VERSION",
-        supportRecyclerView: "com.android.support:recyclerview-v7:$ANDROID_SUPPORT_VERSION",
-        supportConstraintLayout: 'com.android.support.constraint:constraint-layout:1.1.0',
-        supportEspresso    : 'com.android.support.test.espresso:espresso-core:2.2.2',
-        supportDesign      : "com.android.support:design:$ANDROID_SUPPORT_VERSION",
-        supportEspressoIntents : 'com.android.support.test.espresso:espresso-intents:2.2.2',
-        supportTestRunner  : 'com.android.support.test:runner:1.0.2',
+        supportAnnotations : "androidx.annotation:annotation:$ANDROIDX_VERSION",
+        supportAppCompat   : "androidx.appcompat:appcompat:$ANDROIDX_VERSION",
+        supportCoreUi      : "androidx.legacy:legacy-support-core-ui:$ANDROIDX_VERSION",
+        supportRecyclerView: "androidx.recyclerview:recyclerview:$ANDROIDX_VERSION",
+        supportConstraintLayout: "androidx.constraintlayout:constraintlayout:1.1.2",
+        supportEspresso    : 'androidx.test.espresso:espresso-core:3.1.0',
+        supportDesign      : "com.google.android.material:material:1.0.0-rc01",
+        supportEspressoIntents : 'androidx.test.espresso:espresso-intents:3.1.0',
+        supportTestRunner  : 'androidx.test:runner:1.1.0',
         // Arch
         archPaging         : 'android.arch.paging:runtime:1.0.0',
         // First-party

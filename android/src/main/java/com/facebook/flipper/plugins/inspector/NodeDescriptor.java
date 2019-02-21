@@ -8,7 +8,7 @@
 
 package com.facebook.flipper.plugins.inspector;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import com.facebook.flipper.core.ErrorReportingRunnable;
 import com.facebook.flipper.core.FlipperArray;
 import com.facebook.flipper.core.FlipperConnection;
