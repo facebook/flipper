@@ -6,7 +6,7 @@ sidebar_label: Mobile Setup
 
 ## Implement FlipperPlugin
 
-Create a class implementing `FlipperPlugin`.
+Create a class implementing `FlipperPlugin`. The ID that is returned from your implementation needs to match the `name` defined in your JavaScript counterpart's `package.json`.
 
 ### Android
 
