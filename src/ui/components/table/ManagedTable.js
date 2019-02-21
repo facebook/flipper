@@ -112,6 +112,10 @@ export type ManagedTableProps = {|
    * Allows to create context menu items for rows
    */
   buildContextMenuItems?: () => MenuTemplate,
+  /**
+   * Callback when sorting changes
+   */
+  onSort?: (order: TableRowSortOrder) => void,
 |};
 
 type ManagedTableState = {|
@@ -194,12 +198,10 @@ class ManagedTable extends React.Component<
     }
 
     // if columnOrder has changed
-    if (
-      nextProps.columnOrder !== this.props.columnOrder &&
-      this.tableRef &&
-      this.tableRef.current
-    ) {
-      this.tableRef.current.resetAfterIndex(0);
+    if (nextProps.columnOrder !== this.props.columnOrder) {
+      if (this.tableRef && this.tableRef.current) {
+        this.tableRef.current.resetAfterIndex(0);
+      }
       this.setState({
         columnOrder: nextProps.columnOrder,
       });
@@ -304,6 +306,7 @@ class ManagedTable extends React.Component<
 
   onSort = (sortOrder: TableRowSortOrder) => {
     this.setState({sortOrder});
+    this.props.onSort && this.props.onSort(sortOrder);
   };
 
   onColumnOrder = (columnOrder: TableColumnOrder) => {
