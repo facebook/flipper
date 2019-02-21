@@ -12,6 +12,7 @@ import type {
   ImagesListResponse,
   ImageEvent,
   FrescoDebugOverlayEvent,
+  CacheInfo,
 } from './api.js';
 import type {ImagesMap} from './ImagePool.js';
 
@@ -31,15 +32,18 @@ import ImagePool from './ImagePool.js';
 export type ImageEventWithId = ImageEvent & {eventId: number};
 
 type PersistedState = {
+  surfaceList: Set<string>,
   images: ImagesList,
   events: Array<ImageEventWithId>,
   imagesMap: ImagesMap,
 };
 
 type PluginState = {
+  selectedSurface: string,
   selectedImage: ?ImageId,
   isDebugOverlayEnabled: boolean,
   isAutoRefreshEnabled: boolean,
+  images: ImagesList,
 };
 
 const EmptySidebar = styled(FlexRow)({
@@ -51,12 +55,14 @@ const EmptySidebar = styled(FlexRow)({
 });
 
 const DEBUG = false;
+const surfaceDefaultText = 'SELECT ALL SURFACES';
 
 export default class extends FlipperPlugin<PluginState, *, PersistedState> {
   static defaultPersistedState: PersistedState = {
     images: [],
     events: [],
     imagesMap: {},
+    surfaceList: new Set(),
   };
 
   state: PluginState;
@@ -64,9 +70,11 @@ export default class extends FlipperPlugin<PluginState, *, PersistedState> {
   nextEventId: number = 1;
 
   state = {
+    selectedSurface: surfaceDefaultText,
     selectedImage: null,
     isDebugOverlayEnabled: false,
     isAutoRefreshEnabled: false,
+    images: [],
   };
 
   init() {
@@ -76,6 +84,14 @@ export default class extends FlipperPlugin<PluginState, *, PersistedState> {
     }
     this.updateCaches('init');
     this.client.subscribe('events', (event: ImageEvent) => {
+      const {surfaceList} = this.props.persistedState;
+      const {attribution} = event;
+      if (attribution instanceof Array && attribution.length > 0) {
+        const surface = attribution[0].trim();
+        if (surface.length > 0) {
+          surfaceList.add(surface);
+        }
+      }
       this.props.setPersistedState({
         events: [
           {eventId: this.nextEventId, ...event},
@@ -100,6 +116,40 @@ export default class extends FlipperPlugin<PluginState, *, PersistedState> {
     this.imagePool.clear();
   }
 
+  filterImages = (
+    images: ImagesList,
+    events: Array<ImageEventWithId>,
+    surface: string,
+  ): ImagesList => {
+    if (!surface || surface === surfaceDefaultText) {
+      return images;
+    }
+    const imageList = images.map((image: CacheInfo) => {
+      const imageIdList = image.imageIds.filter(imageID => {
+        const filteredEvents = events.filter((event: ImageEventWithId) => {
+          return (
+            event.attribution &&
+            event.attribution.length > 0 &&
+            event.attribution[0] == surface &&
+            event.imageIds &&
+            event.imageIds.includes(imageID)
+          );
+        });
+        return filteredEvents.length > 0;
+      });
+      return {...image, imageIds: imageIdList};
+    });
+    return imageList;
+  };
+
+  updateImagesOnUI = (images: ImagesList, surface: string) => {
+    const filteredImages = this.filterImages(
+      images,
+      this.props.persistedState.events,
+      surface,
+    );
+    this.setState({selectedSurface: surface, images: filteredImages});
+  };
   updateCaches = (reason: string) => {
     if (DEBUG) {
       // eslint-disable-next-line no-console
@@ -110,6 +160,10 @@ export default class extends FlipperPlugin<PluginState, *, PersistedState> {
         this.imagePool.fetchImages(data.imageIds),
       );
       this.props.setPersistedState({images: response.levels});
+      this.updateImagesOnUI(
+        this.props.persistedState.images,
+        this.state.selectedSurface,
+      );
     });
   };
 
@@ -178,11 +232,24 @@ export default class extends FlipperPlugin<PluginState, *, PersistedState> {
     return <ImagesSidebar image={maybeImage} events={events} />;
   };
 
+  onSurfaceChange = (surface: string) => {
+    this.updateImagesOnUI(this.props.persistedState.images, surface);
+  };
+
   render() {
+    const options = [...this.props.persistedState.surfaceList].reduce(
+      (acc, item) => {
+        return {...acc, [item]: item};
+      },
+      {[surfaceDefaultText]: surfaceDefaultText},
+    );
     return (
       <React.Fragment>
         <ImagesCacheOverview
-          images={this.props.persistedState.images}
+          surfaceOptions={options}
+          selectedSurface={this.state.selectedSurface}
+          onChangeSurface={this.onSurfaceChange}
+          images={this.state.images}
           onClear={this.onClear}
           onTrimMemory={this.onTrimMemory}
           onRefresh={() => this.updateCaches('refresh')}

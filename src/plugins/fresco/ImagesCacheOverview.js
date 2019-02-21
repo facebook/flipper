@@ -18,6 +18,7 @@ import {
   FlexColumn,
   LoadingIndicator,
   styled,
+  Select,
 } from 'flipper';
 import type {ImagesMap} from './ImagePool.js';
 import {clipboard} from 'electron';
@@ -32,6 +33,9 @@ function formatKB(bytes: number) {
 }
 
 type ImagesCacheOverviewProps = {
+  surfaceOptions: {[key: string]: string},
+  selectedSurface: string,
+  onChangeSurface: (key: string) => void,
   images: ImagesList,
   onClear: (type: string) => void,
   onTrimMemory: () => void,
@@ -49,6 +53,12 @@ type ImagesCacheOverviewState = {|
   selectedImage: ?ImageId,
   size: number,
 |};
+
+const StyledSelect = styled(Select)(props => ({
+  marginLeft: 6,
+  marginRight: 6,
+  height: '100%',
+}));
 
 export default class ImagesCacheOverview extends PureComponent<
   ImagesCacheOverviewProps,
@@ -133,6 +143,11 @@ export default class ImagesCacheOverview extends PureComponent<
           <Button onClick={this.onEnableAutoRefreshToggled}>
             Auto Refresh {this.props.isAutoRefreshEnabled ? 'ON' : 'OFF'}
           </Button>
+          <StyledSelect
+            options={this.props.surfaceOptions}
+            selected={this.props.selectedSurface}
+            onChange={this.props.onChangeSurface}
+          />
           <Spacer />
           <input
             type="range"

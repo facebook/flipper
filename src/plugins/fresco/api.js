@@ -37,6 +37,7 @@ export type ImageData = {|
   height: number,
   sizeBytes: number,
   data: ImageBytes,
+  surface?: string,
 |};
 
 // getImage({imageId: string}) -> ImageData
