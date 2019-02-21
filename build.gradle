@@ -24,6 +24,8 @@ subprojects {
         mavenLocal()
         mavenCentral()
         jcenter()
+        // TODO(T40752310): Remove this once Fresco is stable.
+        maven { url 'https://jitpack.io' }
 
         if (isSnapshot()) {
             maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
