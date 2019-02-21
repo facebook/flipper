@@ -21,7 +21,7 @@ cd "$ROOT_DIR/xplat/sonar"
 # If `node_modules` exists, we can't tell if it was created with
 # `--ignore-scripts` or not, so we play it safe, and avoid touching it.
 if [[ ! -d "node_modules" ]]; then
-  "$ROOT_DIR/xplat/third-party/yarn/install-node-modules.sh" --ignore-scripts
+  "$ROOT_DIR/xplat/third-party/yarn/install-node-modules.sh" --ignore-scripts --ignore-engines
 fi
 
 # Prefer the internal version of Flow, which should be in the PATH - but

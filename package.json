@@ -36,7 +36,7 @@
     ]
   },
   "resolutions": {
-    "@jest-runner/electron/electron": "3.0.0"
+    "@jest-runner/electron/electron": "4.0.5"
   },
   "jest": {
     "transform": {
@@ -47,10 +47,10 @@
     ]
   },
   "devDependencies": {
-    "@jest-runner/electron": "^0.1.0",
+    "@jest-runner/electron": "^1.0.3",
     "babel-eslint": "^10.0.1",
-    "electron": "3.0.0",
-    "electron-builder": "^19.49.0",
+    "electron": "^4.0.5",
+    "electron-builder": "^20.38.5",
     "eslint": "^5.12.1",
     "eslint-config-fbjs": "^2.0.1",
     "eslint-plugin-babel": "^5.3.0",
@@ -62,7 +62,7 @@
     "eslint-plugin-relay": "^1.0.0",
     "flow-bin": "^0.91.0",
     "glob": "^7.1.2",
-    "jest": "^23.6.0",
+    "jest": "^24.1.0",
     "jest-fetch-mock": "^2.1.0",
     "prettier": "1.13.6",
     "redux-mock-store": "^1.5.3"
@@ -119,6 +119,7 @@
     "yazl": "^2.5.1"
   },
   "scripts": {
+    "preinstall": "yarn config set ignore-engines",
     "postinstall": "node scripts/yarn-install.js",
     "rm-dist": "rm -rf dist",
     "rm-modules": "rm -rf node_modules static/node_modules",

@@ -78,7 +78,6 @@ function buildDist(buildFolder) {
 
   return builder
     .build({
-      appDir: buildFolder,
       publish: 'never',
       config: {
         appId: `com.facebook.sonar`,

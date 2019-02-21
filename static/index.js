@@ -100,22 +100,23 @@ compilePlugins(
 });
 
 // check if we already have an instance of this app open
-const isSecondInstance = app.makeSingleInstance(
-  (commandLine, workingDirectory) => {
-    // someone tried to run a second instance, we should focus our window
+const gotTheLock = app.requestSingleInstanceLock();
+
+if (!gotTheLock) {
+  app.quit();
+} else {
+  app.on('second-instance', (event, commandLine, workingDirectory) => {
+    // Someone tried to run a second instance, we should focus our window.
     if (win) {
       if (win.isMinimized()) {
         win.restore();
       }
-
       win.focus();
     }
-  },
-);
+  });
 
-// if this is a second instance then quit the app to prevent collisions
-if (isSecondInstance) {
-  app.quit();
+  // Create myWindow, load the rest of the app, etc...
+  app.on('ready', () => {});
 }
 
 // quit app once all windows are closed
