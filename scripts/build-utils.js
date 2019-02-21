@@ -30,9 +30,9 @@ function compileDefaultPlugins(defaultPluginDir) {
       fs.writeFileSync(
         path.join(defaultPluginDir, 'index.json'),
         JSON.stringify(
-          defaultPlugins.map(plugin => ({
+          defaultPlugins.map(({entry, rootDir, out, ...plugin}) => ({
             ...plugin,
-            out: path.parse(plugin.out).base,
+            out: path.parse(out).base,
           })),
         ),
       ),
