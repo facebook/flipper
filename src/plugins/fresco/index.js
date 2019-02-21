@@ -30,13 +30,16 @@ import ImagePool from './ImagePool.js';
 
 export type ImageEventWithId = ImageEvent & {eventId: number};
 
-type PluginState = {
+type PersistedState = {
   images: ImagesList,
-  isDebugOverlayEnabled: boolean,
-  isAutoRefreshEnabled: boolean,
   events: Array<ImageEventWithId>,
   imagesMap: ImagesMap,
+};
+
+type PluginState = {
   selectedImage: ?ImageId,
+  isDebugOverlayEnabled: boolean,
+  isAutoRefreshEnabled: boolean,
 };
 
 const EmptySidebar = styled(FlexRow)({
@@ -49,18 +52,21 @@ const EmptySidebar = styled(FlexRow)({
 
 const DEBUG = false;
 
-export default class extends FlipperPlugin<PluginState> {
+export default class extends FlipperPlugin<PluginState, *, PersistedState> {
+  static defaultPersistedState: PersistedState = {
+    images: [],
+    events: [],
+    imagesMap: {},
+  };
+
   state: PluginState;
   imagePool: ImagePool;
   nextEventId: number = 1;
 
   state = {
-    images: [],
-    events: [],
     selectedImage: null,
     isDebugOverlayEnabled: false,
     isAutoRefreshEnabled: false,
-    imagesMap: {},
   };
 
   init() {
@@ -70,8 +76,11 @@ export default class extends FlipperPlugin<PluginState> {
     }
     this.updateCaches('init');
     this.client.subscribe('events', (event: ImageEvent) => {
-      this.setState({
-        events: [{eventId: this.nextEventId, ...event}, ...this.state.events],
+      this.props.setPersistedState({
+        events: [
+          {eventId: this.nextEventId, ...event},
+          ...this.props.persistedState.events,
+        ],
       });
       this.nextEventId++;
     });
@@ -83,7 +92,7 @@ export default class extends FlipperPlugin<PluginState> {
     );
 
     this.imagePool = new ImagePool(this.getImage, (images: ImagesMap) =>
-      this.setState({imagesMap: images}),
+      this.props.setPersistedState({imagesMap: images}),
     );
   }
 
@@ -100,7 +109,7 @@ export default class extends FlipperPlugin<PluginState> {
       response.levels.forEach(data =>
         this.imagePool.fetchImages(data.imageIds),
       );
-      this.setState({images: response.levels});
+      this.props.setPersistedState({images: response.levels});
     });
   };
 
@@ -162,8 +171,8 @@ export default class extends FlipperPlugin<PluginState> {
       );
     }
 
-    const maybeImage = this.state.imagesMap[selectedImage];
-    const events = this.state.events.filter(e =>
+    const maybeImage = this.props.persistedState.imagesMap[selectedImage];
+    const events = this.props.persistedState.events.filter(e =>
       e.imageIds.includes(selectedImage),
     );
     return <ImagesSidebar image={maybeImage} events={events} />;
@@ -173,7 +182,7 @@ export default class extends FlipperPlugin<PluginState> {
     return (
       <React.Fragment>
         <ImagesCacheOverview
-          images={this.state.images}
+          images={this.props.persistedState.images}
           onClear={this.onClear}
           onTrimMemory={this.onTrimMemory}
           onRefresh={() => this.updateCaches('refresh')}
@@ -182,8 +191,8 @@ export default class extends FlipperPlugin<PluginState> {
           isDebugOverlayEnabled={this.state.isDebugOverlayEnabled}
           isAutoRefreshEnabled={this.state.isAutoRefreshEnabled}
           onImageSelected={this.onImageSelected}
-          imagesMap={this.state.imagesMap}
-          events={this.state.events}
+          imagesMap={this.props.persistedState.imagesMap}
+          events={this.props.persistedState.events}
         />
         <DetailSidebar>{this.renderSidebar()}</DetailSidebar>
       </React.Fragment>
