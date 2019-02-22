@@ -62,7 +62,7 @@ function decodeBody(container: Request | Response): string {
   if (!container.data) {
     return '';
   }
-  const b64Decoded = atob(container.data);
+  const b64Decoded = decodeURIComponent(escape(atob(container.data)));
 
   return getHeaderValue(container.headers, 'Content-Encoding') === 'gzip'
     ? decompress(b64Decoded)

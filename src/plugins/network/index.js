@@ -490,7 +490,7 @@ class SizeColumn extends PureComponent<{
     if (lengthString != null && lengthString != '') {
       length = parseInt(lengthString, 10);
     } else if (response.data) {
-      length = atob(response.data).length;
+      length = decodeURIComponent(escape(atob(response.data))).length;
     }
     return length;
   }
