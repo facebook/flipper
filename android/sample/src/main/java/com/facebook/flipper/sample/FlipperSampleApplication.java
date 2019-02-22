@@ -12,13 +12,10 @@ import androidx.annotation.Nullable;
 import com.facebook.common.memory.manager.NoOpDebugMemoryManager;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.flipper.android.AndroidFlipperClient;
-import com.facebook.flipper.core.FlipperArray;
 import com.facebook.flipper.core.FlipperClient;
-import com.facebook.flipper.perflogger.NoOpFlipperPerfLogger;
 import com.facebook.flipper.plugins.crashreporter.CrashReporterPlugin;
 import com.facebook.flipper.plugins.example.ExampleFlipperPlugin;
 import com.facebook.flipper.plugins.fresco.FrescoFlipperPlugin;
-import com.facebook.flipper.plugins.fresco.objecthelper.FlipperObjectHelper;
 import com.facebook.flipper.plugins.inspector.DescriptorMapping;
 import com.facebook.flipper.plugins.inspector.InspectorFlipperPlugin;
 import com.facebook.flipper.plugins.leakcanary.LeakCanaryFlipperPlugin;
@@ -27,7 +24,6 @@ import com.facebook.flipper.plugins.network.FlipperOkhttpInterceptor;
 import com.facebook.flipper.plugins.network.NetworkFlipperPlugin;
 import com.facebook.flipper.plugins.sharedpreferences.SharedPreferencesFlipperPlugin;
 import com.facebook.flipper.plugins.sharedpreferences.SharedPreferencesFlipperPlugin.SharedPreferencesDescriptor;
-import com.facebook.imagepipeline.debug.FlipperImageTracker;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.soloader.SoLoader;
 import java.util.Arrays;
@@ -71,19 +67,7 @@ public class FlipperSampleApplication extends Application {
                 new SharedPreferencesDescriptor("sample", Context.MODE_PRIVATE),
                 new SharedPreferencesDescriptor("other_sample", Context.MODE_PRIVATE))));
     client.addPlugin(new LeakCanaryFlipperPlugin());
-    client.addPlugin(
-        new FrescoFlipperPlugin(
-            new FlipperImageTracker(),
-            Fresco.getImagePipelineFactory().getPlatformBitmapFactory(),
-            new FlipperObjectHelper() {
-              @Override
-              public FlipperArray fromCallerContext(Object callerContext) {
-                return null;
-              }
-            },
-            new NoOpDebugMemoryManager(),
-            new NoOpFlipperPerfLogger(),
-            null));
+    client.addPlugin(new FrescoFlipperPlugin());
     client.addPlugin(new ExampleFlipperPlugin());
     client.addPlugin(CrashReporterPlugin.getInstance());
     client.start();
