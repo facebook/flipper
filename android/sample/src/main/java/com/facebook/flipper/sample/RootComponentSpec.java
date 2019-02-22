@@ -20,9 +20,12 @@ import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.StateValue;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnEvent;
+import com.facebook.litho.annotations.OnUpdateState;
+import com.facebook.litho.annotations.State;
 import com.facebook.litho.fresco.FrescoImage;
 import com.facebook.litho.widget.Text;
 import java.io.IOException;
@@ -37,7 +40,7 @@ import okhttp3.Response;
 public class RootComponentSpec {
 
   @OnCreateLayout
-  static Component onCreateLayout(final ComponentContext c) {
+  static Component onCreateLayout(final ComponentContext c, @State boolean displayImage) {
     final DraweeController controller =
         Fresco.newDraweeControllerBuilder().setUri("https://fbflipper.com/img/icon.png").build();
     return Column.create(c)
@@ -62,10 +65,16 @@ public class RootComponentSpec {
         .child(
             Text.create(c)
                 .text("Diagnose connection issues")
-                .key("3")
+                .key("4")
                 .textSizeSp(20)
                 .clickHandler(RootComponent.openDiagnostics(c)))
-        .child(FrescoImage.create(c).controller(controller))
+        .child(
+            Text.create(c)
+                .text("Load Fresco image")
+                .key("5")
+                .textSizeSp(20)
+                .clickHandler(RootComponent.loadImage(c)))
+        .child(displayImage ? FrescoImage.create(c).controller(controller) : null)
         .build();
   }
 
@@ -145,4 +154,13 @@ public class RootComponentSpec {
     c.getAndroidContext().startActivity(intent);
   }
 
+  @OnUpdateState
+  static void updateDisplayImage(StateValue<Boolean> displayImage) {
+    displayImage.set(true);
+  }
+
+  @OnEvent(ClickEvent.class)
+  static void loadImage(final ComponentContext c) {
+    RootComponent.updateDisplayImageAsync(c);
+  }
 }

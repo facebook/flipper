@@ -9,7 +9,6 @@ package com.facebook.flipper.sample;
 import android.app.Application;
 import android.content.Context;
 import androidx.annotation.Nullable;
-import com.facebook.common.memory.manager.NoOpDebugMemoryManager;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.flipper.android.AndroidFlipperClient;
 import com.facebook.flipper.core.FlipperClient;
