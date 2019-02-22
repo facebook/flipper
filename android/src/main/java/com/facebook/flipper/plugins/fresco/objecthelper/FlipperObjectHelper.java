@@ -210,5 +210,6 @@ public abstract class FlipperObjectHelper {
     return builder.build();
   }
 
+  @Nullable
   public abstract FlipperArray fromCallerContext(@Nullable Object callerContext);
 }

@@ -9,6 +9,8 @@ package com.facebook.flipper.sample;
 
 import android.content.Intent;
 import android.util.Log;
+import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.flipper.android.AndroidFlipperClient;
 import com.facebook.flipper.android.diagnostics.FlipperDiagnosticActivity;
 import com.facebook.flipper.core.FlipperClient;
@@ -21,6 +23,7 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnEvent;
+import com.facebook.litho.fresco.FrescoImage;
 import com.facebook.litho.widget.Text;
 import java.io.IOException;
 import okhttp3.Call;
@@ -35,6 +38,8 @@ public class RootComponentSpec {
 
   @OnCreateLayout
   static Component onCreateLayout(final ComponentContext c) {
+    final DraweeController controller =
+        Fresco.newDraweeControllerBuilder().setUri("https://fbflipper.com/img/icon.png").build();
     return Column.create(c)
         .child(
             Text.create(c)
@@ -60,6 +65,7 @@ public class RootComponentSpec {
                 .key("3")
                 .textSizeSp(20)
                 .clickHandler(RootComponent.openDiagnostics(c)))
+        .child(FrescoImage.create(c).controller(controller))
         .build();
   }
 
