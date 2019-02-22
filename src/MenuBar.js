@@ -6,10 +6,14 @@
  */
 
 import type {FlipperPlugin, FlipperDevicePlugin} from './plugin.js';
-import {exportStoreToFile} from './utils/exportData.js';
+import {exportStoreToFile, importFileToStore} from './utils/exportData.js';
 import type {Store} from './reducers/';
 import electron from 'electron';
 import {GK} from 'flipper';
+import {remote} from 'electron';
+const {dialog} = remote;
+import os from 'os';
+import path from 'path';
 
 export type DefaultKeyboardAction = 'clear' | 'goToBottom' | 'createPaste';
 export type TopLevelMenu = 'Edit' | 'View' | 'Window' | 'Help';
@@ -310,15 +314,39 @@ function getTemplate(
     },
   ];
   if (GK.get('flipper_import_export')) {
-    console.log('flipper_import_export is true');
     template.unshift({
       label: 'File',
       submenu: [
         {
-          label: 'Export Data',
+          label: 'Export Data...',
           role: 'export',
           click: function(item: Object, focusedWindow: Object) {
-            exportStoreToFile(store);
+            dialog.showSaveDialog(
+              null,
+              {
+                title: 'FlipperExport',
+                defaultPath: path.join(os.homedir(), 'FlipperExport.flipper'),
+              },
+              file => {
+                exportStoreToFile(file, store);
+              },
+            );
+          },
+        },
+        {
+          label: 'Import Data...',
+          role: 'import',
+          click: function(item: Object, focusedWindow: Object) {
+            dialog.showOpenDialog(
+              {
+                properties: ['openFile'],
+              },
+              (files: Array<string>) => {
+                if (files !== undefined && files.length > 0) {
+                  importFileToStore(files[0], store);
+                }
+              },
+            );
           },
         },
       ],

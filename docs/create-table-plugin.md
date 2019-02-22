@@ -8,7 +8,7 @@ A very common kind of Flipper plugin is a plugin which fetches some structured d
 
 To make building these kinds of plugins as easy as possible we have created an abstraction we call `createTablePlugin`. This is a function which manages the complexities of building a table plugin but still allows you to customize many things to suite your needs.
 
-Below is a sample implementation of a desktop plugin based on `createTablePlugin`. It subscribes to updates from a client plugin with id `myplugin` sending rows to with the `newRow` method. A row can have any structure you want as long as it has a unique field `id` of type `string`.
+Below is a sample implementation of a desktop plugin based on `createTablePlugin`. It subscribes to updates from a client send using the `newRow` method. A row can have any structure you want as long as it has a unique field `id` of type `string`.
 
 See "[Create Plugin](create-plugin.md)" for how to create the native counterpart for your plugin.
 
@@ -74,10 +74,7 @@ const columnSizes = {
 };
 
 export default createTablePlugin({
-  title: 'My Plugin', // Title of plugin
-  id: 'myplugin', // ID of plugin
   method: 'newRow', // Method which should be subscribed to to get new rows with share Row (from above),
-  icon: 'washing-machine',
   columns,
   columnSizes,
   renderSidebar,

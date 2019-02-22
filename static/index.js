@@ -14,8 +14,9 @@ const url = require('url');
 const fs = require('fs');
 const {exec} = require('child_process');
 const compilePlugins = require('./compilePlugins.js');
-const os = require('os');
 const setup = require('./setup');
+const expandTilde = require('expand-tilde');
+const yargs = require('yargs');
 
 // disable electron security warnings: https://github.com/electron/electron/blob/master/docs/tutorial/security.md#security-native-capabilities-and-your-responsibility
 process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = true;
@@ -35,14 +36,34 @@ if (process.platform === 'darwin') {
   }
 }
 
-let {config, configPath, flipperDir} = setup();
+const argv = yargs
+  .usage('$0 [args]')
+  .option('updater', {
+    default: true,
+    describe: 'Toggle the built-in update mechanism.',
+    type: 'boolean',
+  })
+  .option('launcher', {
+    default: true,
+    describe: 'Toggle delegating to the update launcher on startup.',
+    type: 'boolean',
+  })
+  .option('launcher-msg', {
+    describe:
+      '[Internal] Used to provide a user message from the launcher to the user.',
+    type: 'string',
+  })
+  .version(global.__VERSION__)
+  .help().argv;
+
+let {config, configPath, flipperDir} = setup(argv);
 
 const pluginPaths = config.pluginPaths
   .concat(
     path.join(__dirname, '..', 'src', 'plugins'),
     path.join(__dirname, '..', 'src', 'fb', 'plugins'),
   )
-  .map(p => p.replace(/^~/, os.homedir()))
+  .map(expandTilde)
   .filter(fs.existsSync);
 
 process.env.CONFIG = JSON.stringify({
@@ -55,6 +76,7 @@ let win;
 let appReady = false;
 let pluginsCompiled = false;
 let deeplinkURL = null;
+let filePath = null;
 
 // tracking
 setInterval(() => {
@@ -78,22 +100,23 @@ compilePlugins(
 });
 
 // check if we already have an instance of this app open
-const isSecondInstance = app.makeSingleInstance(
-  (commandLine, workingDirectory) => {
-    // someone tried to run a second instance, we should focus our window
+const gotTheLock = app.requestSingleInstanceLock();
+
+if (!gotTheLock) {
+  app.quit();
+} else {
+  app.on('second-instance', (event, commandLine, workingDirectory) => {
+    // Someone tried to run a second instance, we should focus our window.
     if (win) {
       if (win.isMinimized()) {
         win.restore();
       }
-
       win.focus();
     }
-  },
-);
+  });
 
-// if this is a second instance then quit the app to prevent collisions
-if (isSecondInstance) {
-  app.quit();
+  // Create myWindow, load the rest of the app, etc...
+  app.on('ready', () => {});
 }
 
 // quit app once all windows are closed
@@ -109,6 +132,15 @@ app.on('will-finish-launching', () => {
     deeplinkURL = url;
     if (win) {
       win.webContents.send('flipper-deeplink', deeplinkURL);
+    }
+  });
+  app.on('open-file', (event, path) => {
+    // When flipper app is running, and someone double clicks the import file, `componentDidMount` will not be called again and windows object will exist in that case. That's why calling `win.webContents.send('open-flipper-file', filePath);` again.
+    event.preventDefault();
+    filePath = path;
+    if (win) {
+      win.webContents.send('open-flipper-file', filePath);
+      filePath = null;
     }
   });
 });
@@ -133,6 +165,11 @@ ipcMain.on('componentDidMount', event => {
   if (deeplinkURL) {
     win.webContents.send('flipper-deeplink-preferred-plugin', deeplinkURL);
     deeplinkURL = null;
+  }
+  if (filePath) {
+    // When flipper app is not running, the windows object might not exist in the callback of `open-file`, but after ``componentDidMount` it will definitely exist.
+    win.webContents.send('open-flipper-file', filePath);
+    filePath = null;
   }
 });
 

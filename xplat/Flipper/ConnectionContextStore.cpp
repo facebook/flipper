@@ -42,7 +42,10 @@ bool ConnectionContextStore::hasRequiredFiles() {
   return true;
 }
 
-std::string ConnectionContextStore::createCertificateSigningRequest() {
+std::string ConnectionContextStore::getCertificateSigningRequest() {
+  if (csr != "") {
+    return csr;
+  }
   resetFlipperDir();
   bool success = generateCertSigningRequest(
       deviceData_.appId.c_str(),
@@ -51,7 +54,7 @@ std::string ConnectionContextStore::createCertificateSigningRequest() {
   if (!success) {
     throw new std::runtime_error("Failed to generate CSR");
   }
-  std::string csr = loadStringFromFile(absoluteFilePath(CSR_FILE_NAME));
+  csr = loadStringFromFile(absoluteFilePath(CSR_FILE_NAME));
 
   return csr;
 }

@@ -1,16 +1,16 @@
-/*
- *  Copyright (c) 2004-present, Facebook, Inc.
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- *  This source code is licensed under the MIT license found in the LICENSE
- *  file in the root directory of this source tree.
- *
+ * This source code is licensed under the MIT license found in the LICENSE
+ * file in the root directory of this source tree.
  */
-
 #import <Foundation/Foundation.h>
 #import "SKMacros.h"
+#import "FlipperResponder.h"
+
 
 SK_EXTERN_C_BEGIN
-void FlipperPerformBlockOnMainThread(void(^block)());
+void FlipperPerformBlockOnMainThread(void(^block)(), id<FlipperResponder> responder);
 SK_EXTERN_C_END
 
 @protocol FlipperConnection;

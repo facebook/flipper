@@ -5,12 +5,12 @@
  * @format
  */
 
-import type LogManager from './Logger';
+import type {Logger} from '../fb-interfaces/Logger';
 
 import type {Store} from '../reducers/index.js';
 
 export default class BugReporter {
-  constructor(logManager: LogManager, store: Store) {}
+  constructor(logManager: Logger, store: Store) {}
   async report(title: string, body: string): Promise<number> {
     return Promise.resolve(-1);
   }

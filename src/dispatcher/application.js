@@ -7,9 +7,9 @@
 
 import {remote, ipcRenderer} from 'electron';
 import type {Store} from '../reducers/index.js';
-import type Logger from '../fb-stubs/Logger.js';
+import type {Logger} from '../fb-interfaces/Logger.js';
 import {parseFlipperPorts} from '../utils/environmentVariables';
-
+import {importFileToStore} from '../utils/exportData';
 import {selectPlugin, userPreferredPlugin} from '../reducers/connections';
 export const uriComponents = (url: string) => {
   if (!url) {
@@ -55,6 +55,11 @@ export default (store: Store, logger: Logger) => {
       );
     }
   });
+
+  ipcRenderer.on('open-flipper-file', (event, url) => {
+    importFileToStore(url, store);
+  });
+
   ipcRenderer.on('flipper-deeplink-preferred-plugin', (event, url) => {
     // flipper://<client>/<pluginId>/<payload>
     const match = uriComponents(url);
@@ -70,6 +75,12 @@ export default (store: Store, logger: Logger) => {
         type: 'SET_SERVER_PORTS',
         payload: portOverrides,
       });
+    } else {
+      console.error(
+        `Ignoring malformed FLIPPER_PORTS env variable:
+        "${process.env.FLIPPER_PORTS || ''}".
+        Example expected format: "1111,2222".`,
+      );
     }
   }
 };

@@ -5,11 +5,9 @@
  * @format
  */
 
-import LogManager from '../fb-stubs/Logger';
+import type {Logger} from '../fb-interfaces/Logger';
 import {RecurringError} from './errors';
 import {promisify} from 'util';
-import child_process from 'child_process';
-const exec = promisify(child_process.exec);
 const fs = require('fs');
 const adb = require('adbkit-fb');
 import {
@@ -21,7 +19,8 @@ const tmp = require('tmp');
 const tmpFile = promisify(tmp.file);
 const tmpDir = promisify(tmp.dir);
 import iosUtil from '../fb-stubs/iOSContainerUtility';
-import {recordSuccessMetric} from './metrics';
+import {reportPlatformFailures} from './metrics';
+import adbConfig from './adbConfig';
 
 // Desktop file paths
 const os = require('os');
@@ -29,6 +28,7 @@ const caKey = getFilePath('ca.key');
 const caCert = getFilePath('ca.crt');
 const serverKey = getFilePath('server.key');
 const serverCsr = getFilePath('server.csr');
+const serverSrl = getFilePath('server.srl');
 const serverCert = getFilePath('server.crt');
 
 // Device file paths
@@ -40,7 +40,7 @@ const caSubject = '/C=US/ST=CA/L=Menlo Park/O=Sonar/CN=SonarCA';
 const serverSubject = '/C=US/ST=CA/L=Menlo Park/O=Sonar/CN=localhost';
 const minCertExpiryWindowSeconds = 24 * 60 * 60;
 const appNotDebuggableRegex = /debuggable/;
-const allowedAppNameRegex = /^[a-zA-Z0-9.\-]+$/;
+const allowedAppNameRegex = /^[a-zA-Z0-9._\-]+$/;
 const operationNotPermittedRegex = /not permitted/;
 const logTag = 'CertificateProvider';
 /*
@@ -70,15 +70,15 @@ export type SecureServerConfig = {|
  * Flipper CA.
 */
 export default class CertificateProvider {
-  logger: LogManager;
+  logger: Logger;
   adb: any;
   certificateSetup: Promise<void>;
   server: Server;
 
-  constructor(server: Server, logger: LogManager) {
+  constructor(server: Server, logger: Logger) {
     this.logger = logger;
-    this.adb = adb.createClient();
-    this.certificateSetup = recordSuccessMetric(
+    this.adb = adb.createClient(adbConfig());
+    this.certificateSetup = reportPlatformFailures(
       this.ensureServerCertExists(),
       'ensureServerCertExists',
     );
@@ -170,6 +170,7 @@ export default class CertificateProvider {
         CA: caCert,
         CAkey: caKey,
         CAcreateserial: true,
+        CAserial: serverSrl,
       });
     });
   }
@@ -613,6 +614,7 @@ export default class CertificateProvider {
           CA: caCert,
           CAkey: caKey,
           CAcreateserial: true,
+          CAserial: serverSrl,
           out: serverCert,
         }),
       )

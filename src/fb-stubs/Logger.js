@@ -5,20 +5,24 @@
  * @format
  */
 
-export type LogTypes = 'error' | 'warn' | 'info' | 'debug';
-export type TrackType = 'duration' | 'usage' | 'performance' | 'success-rate';
+import type {TrackType, Logger} from '../fb-interfaces/Logger';
+import type {Store} from '../reducers/index';
 import ScribeLogger from './ScribeLogger';
 
-var instance: ?LogManager = null;
+var instance: ?StubLogger = null;
 
-export default class LogManager {
-  constructor(store: Store) {
+type Args = {
+  isHeadless?: boolean,
+};
+
+class StubLogger implements Logger {
+  constructor(store: Store, args?: Args) {
     this.scribeLogger = new ScribeLogger(this);
   }
 
   scribeLogger: ScribeLogger;
 
-  track(type: TrackType, event: string, data: ?any) {}
+  track(type: TrackType, event: string, data: ?any, plugin?: string) {}
 
   trackTimeSince(mark: string, eventName: ?string) {}
 
@@ -31,15 +35,15 @@ export default class LogManager {
   debug(data: any, category: string) {}
 }
 
-export function init(store: Store): LogManager {
+export function init(store: Store, args?: Args): Logger {
   if (instance) {
     throw new Error('Attempted to initialize Logger when already initialized');
   }
-  instance = new LogManager(store);
+  instance = new StubLogger(store);
   return instance;
 }
 
-export function getInstance(): LogManager {
+export function getInstance(): Logger {
   if (!instance) {
     throw new Error(
       'Requested Logger instance without initializing it. Make sure init() is called at app start',

@@ -14,8 +14,8 @@ import static com.facebook.flipper.plugins.inspector.InspectorValue.Type.Number;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.support.v4.util.Pair;
 import android.view.View;
+import androidx.core.util.Pair;
 import com.facebook.flipper.core.FlipperDynamic;
 import com.facebook.flipper.core.FlipperObject;
 import com.facebook.flipper.plugins.inspector.HighlightedOverlay;
@@ -159,7 +159,10 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
       data.add(new Named<>("Layout", layoutData));
     }
 
-    data.addAll(getPropData(node));
+    final List<Named<FlipperObject>> propData = getPropData(node);
+    if (propData != null) {
+      data.addAll(propData);
+    }
 
     final FlipperObject stateData = getStateData(node);
     if (stateData != null) {

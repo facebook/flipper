@@ -7,7 +7,7 @@ android {
         minSdkVersion rootProject.minSdkVersion
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         applicationId 'com.facebook.flipper.sample'
-        targetSdkVersion 24
+        targetSdkVersion 28
     }
 
     lintOptions {
@@ -29,11 +29,21 @@ dependencies {
     implementation deps.lithoCore
     implementation deps.lithoWidget
     implementation deps.lithoAnnotations
+    // TODO(T40752310): Temporary while we depend on the jitpack artifact with a different group.
+    implementation(deps.lithoFresco) {
+        exclude group: 'com.facebook.fresco'
+    }
     annotationProcessor deps.lithoProcessor
 
     // Third-party
     implementation deps.soloader
     implementation deps.okhttp3
+    // TODO(T40752310): Temporary till Fresco has a stable release.
+    implementation('com.github.facebook:fresco:0ff379c262') {
+        exclude group: 'com.squareup.okhttp3'
+        exclude group: 'com.github.facebook.fresco', module: 'animated-base-test'
+        exclude group: 'com.github.facebook.fresco', module: 'imagepipeline-test'
+    }
 
     // Integration test
     androidTestImplementation deps.testCore

@@ -4,7 +4,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.2.1'
+        classpath 'com.android.tools.build:gradle:3.3.1'
     }
 }
 
@@ -24,6 +24,8 @@ subprojects {
         mavenLocal()
         mavenCentral()
         jcenter()
+        // TODO(T40752310): Remove this once Fresco is stable.
+        maven { url 'https://jitpack.io' }
 
         if (isSnapshot()) {
             maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
@@ -33,8 +35,8 @@ subprojects {
 
 ext {
     minSdkVersion = 15
-    targetSdkVersion = 25
-    compileSdkVersion = 27
+    targetSdkVersion = 28
+    compileSdkVersion = 28
     buildToolsVersion = '28.0.3'
     sourceCompatibilityVersion = JavaVersion.VERSION_1_7
     targetCompatibilityVersion = JavaVersion.VERSION_1_7
@@ -42,15 +44,15 @@ ext {
 
 ext.deps = [
         // Android support
-        supportAnnotations : 'com.android.support:support-annotations:27.1.1',
-        supportAppCompat   : 'com.android.support:appcompat-v7:27.1.1',
-        supportCoreUi      : 'com.android.support:support-core-ui:27.1.1',
-        supportRecyclerView: 'com.android.support:recyclerview-v7:27.1.1',
-        supportConstraintLayout: 'com.android.support.constraint:constraint-layout:1.1.0',
-        supportEspresso    : 'com.android.support.test.espresso:espresso-core:2.2.2',
-        supportDesign      : 'com.android.support:design:27.1.1',
-        supportEspressoIntents : 'com.android.support.test.espresso:espresso-intents:2.2.2',
-        supportTestRunner  : 'com.android.support.test:runner:1.0.2',
+        supportAnnotations : "androidx.annotation:annotation:$ANDROIDX_VERSION",
+        supportAppCompat   : "androidx.appcompat:appcompat:$ANDROIDX_VERSION",
+        supportCoreUi      : "androidx.legacy:legacy-support-core-ui:$ANDROIDX_VERSION",
+        supportRecyclerView: "androidx.recyclerview:recyclerview:$ANDROIDX_VERSION",
+        supportConstraintLayout: "androidx.constraintlayout:constraintlayout:1.1.2",
+        supportEspresso    : 'androidx.test.espresso:espresso-core:3.1.0',
+        supportDesign      : "com.google.android.material:material:1.0.0-rc01",
+        supportEspressoIntents : 'androidx.test.espresso:espresso-intents:3.1.0',
+        supportTestRunner  : 'androidx.test:runner:1.1.0',
         // Arch
         archPaging         : 'android.arch.paging:runtime:1.0.0',
         // First-party
@@ -62,6 +64,7 @@ ext.deps = [
         // Litho
         lithoAnnotations   : "com.facebook.litho:litho-annotations:$LITHO_VERSION",
         lithoCore          : "com.facebook.litho:litho-core:$LITHO_VERSION",
+        lithoSectionsDebug : "com.facebook.litho:litho-sections-debug:$LITHO_VERSION",
         lithoWidget        : "com.facebook.litho:litho-widget:$LITHO_VERSION",
         lithoProcessor     : "com.facebook.litho:litho-processor:$LITHO_VERSION",
         lithoFresco        : "com.facebook.litho:litho-fresco:$LITHO_VERSION",

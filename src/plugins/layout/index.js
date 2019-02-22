@@ -26,11 +26,14 @@ import {
   Popover,
   ToggleButton,
   SidebarExtensions,
+  GK,
 } from 'flipper';
 // $FlowFixMe perf_hooks is a new API in node
 import {performance} from 'perf_hooks';
 
-import type {TrackType} from '../../fb-stubs/Logger.js';
+import Layout2 from './layout2/index.js';
+
+import type {TrackType} from '../../fb-interfaces/Logger.js';
 
 import debounce from 'lodash.debounce';
 
@@ -189,7 +192,7 @@ class LayoutSearchInput extends Component<
   }
 }
 
-export default class Layout extends FlipperPlugin<InspectorState> {
+class Layout extends FlipperPlugin<InspectorState> {
   state = {
     elements: {},
     initialised: false,
@@ -535,12 +538,12 @@ export default class Layout extends FlipperPlugin<InspectorState> {
           });
         }
 
-        this.client.send('setHighlighted', {
+        this.client.call('setHighlighted', {
           id: selected,
           isAlignmentMode: this.state.isAlignmentMode,
         });
 
-        this.client.send('setSearchActive', {active: false});
+        this.client.call('setSearchActive', {active: false});
       },
     );
   }
@@ -875,7 +878,7 @@ export default class Layout extends FlipperPlugin<InspectorState> {
   onFindClick = () => {
     const isSearchActive = !this.state.isSearchActive;
     this.dispatchAction({isSearchActive, type: 'SetSearchActive'});
-    this.client.send('setSearchActive', {active: isSearchActive});
+    this.client.call('setSearchActive', {active: isSearchActive});
   };
 
   onToggleAccessibility = () => {
@@ -890,7 +893,7 @@ export default class Layout extends FlipperPlugin<InspectorState> {
 
     // only force render if litho accessibility is included in app
     if (showLithoAccessibilitySettings) {
-      this.client.send('forceLithoAXRender', {
+      this.client.call('forceLithoAXRender', {
         forceLithoAXRender: inAXMode && forceLithoAXRender,
         applicationId: AXroot,
       });
@@ -903,7 +906,7 @@ export default class Layout extends FlipperPlugin<InspectorState> {
       const forceLithoAXRender = !this.state.forceLithoAXRender;
       const applicationId = this.state.AXroot;
       this.dispatchAction({forceLithoAXRender, type: 'SetLithoRenderMode'});
-      this.client.send('forceLithoAXRender', {
+      this.client.call('forceLithoAXRender', {
         forceLithoAXRender: forceLithoAXRender,
         applicationId,
       });
@@ -964,7 +967,7 @@ export default class Layout extends FlipperPlugin<InspectorState> {
     const {key, AXkey} = this.getKeysFromSelected(selectedKey);
     this.dispatchAction({key, AXkey, type: 'SelectElement'});
 
-    this.client.send('setHighlighted', {
+    this.client.call('setHighlighted', {
       id: selectedKey,
       isAlignmentMode: this.state.isAlignmentMode,
     });
@@ -991,7 +994,7 @@ export default class Layout extends FlipperPlugin<InspectorState> {
   });
 
   onElementHovered = debounce((key: ?ElementID) => {
-    this.client.send('setHighlighted', {
+    this.client.call('setHighlighted', {
       id: key,
       isAlignmentMode: this.state.isAlignmentMode,
     });
@@ -1002,7 +1005,7 @@ export default class Layout extends FlipperPlugin<InspectorState> {
       {
         label: 'Focus',
         click: (id: ElementID) => {
-          this.client.send('onRequestAXFocus', {id});
+          this.client.call('onRequestAXFocus', {id});
         },
       },
     ];
@@ -1236,3 +1239,5 @@ export default class Layout extends FlipperPlugin<InspectorState> {
     );
   }
 }
+
+export default (GK.get('flipper_layout_inspector_new') ? Layout2 : Layout);

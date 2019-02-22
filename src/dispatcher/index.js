@@ -14,7 +14,7 @@ import server from './server';
 import notifications from './notifications';
 import plugins from './plugins';
 
-import type Logger from '../fb-stubs/Logger.js';
+import type {Logger} from '../fb-interfaces/Logger.js';
 import type {Store} from '../reducers/index.js';
 
 export default (store: Store, logger: Logger) =>

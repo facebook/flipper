@@ -6,7 +6,7 @@
  */
 
 import type {Store} from '../reducers/index.js';
-import type Logger from '../fb-stubs/Logger.js';
+import type {Logger} from '../fb-interfaces/Logger.js';
 
 import WindowsDevice from '../devices/WindowsDevice';
 

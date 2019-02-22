@@ -34,13 +34,18 @@ export type DeviceShell = {
 
 export type DeviceLogListener = (entry: DeviceLogEntry) => void;
 
-export type DeviceType = 'emulator' | 'physical';
+export type DeviceType =
+  | 'emulator'
+  | 'physical'
+  | 'archivedEmulator'
+  | 'archivedPhysical';
 
 export type DeviceExport = {|
   os: string,
   title: string,
   deviceType: DeviceType,
   serial: string,
+  logs: Array<DeviceLogEntry>,
 |};
 
 export type OS = 'iOS' | 'Android' | 'Windows';
@@ -80,13 +85,14 @@ export default class BaseDevice {
       title: this.title,
       deviceType: this.deviceType,
       serial: this.serial,
+      logs: this.getLogs(),
     };
   }
 
   teardown() {}
 
   supportedColumns(): Array<string> {
-    throw new Error('unimplemented');
+    return ['date', 'pid', 'tid', 'tag', 'message', 'type', 'time'];
   }
 
   addLogListener(callback: DeviceLogListener): Symbol {
@@ -95,11 +101,22 @@ export default class BaseDevice {
     return id;
   }
 
-  notifyLogListeners(entry: DeviceLogEntry) {
-    this.logEntries.push(entry);
+  _notifyLogListeners(entry: DeviceLogEntry) {
     if (this.logListeners.size > 0) {
-      this.logListeners.forEach(listener => listener(entry));
+      this.logListeners.forEach(listener => {
+        // prevent breaking other listeners, if one listener doesn't work.
+        try {
+          listener(entry);
+        } catch (e) {
+          console.error(`Log listener exception:`, e);
+        }
+      });
     }
+  }
+
+  addLogEntry(entry: DeviceLogEntry) {
+    this.logEntries.push(entry);
+    this._notifyLogListeners(entry);
   }
 
   getLogs() {
@@ -110,7 +127,7 @@ export default class BaseDevice {
     this.logListeners.delete(id);
   }
 
-  spawnShell(): DeviceShell {
+  spawnShell(): ?DeviceShell {
     throw new Error('unimplemented');
   }
 }

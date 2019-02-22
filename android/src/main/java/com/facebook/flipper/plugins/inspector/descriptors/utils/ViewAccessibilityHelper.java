@@ -8,9 +8,9 @@
 
 package com.facebook.flipper.plugins.inspector.descriptors.utils;
 
-import android.support.v4.view.ViewCompat;
-import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;
 import android.view.View;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import javax.annotation.Nullable;
 
 /** Class that helps with accessibility by providing useful methods. */

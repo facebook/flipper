@@ -58,7 +58,6 @@ type State = {|
  * the client in an unknown state.
  */
 export function createTablePlugin<T: RowData>(props: Props<T>) {
-  // $FlowFixMe persistedStateReducer is fine to accept payload of type T, because it is of type RowData
   return class extends FlipperPlugin<State, *, PersistedState<T>> {
     static keyboardActions = ['clear', 'createPaste'];
 

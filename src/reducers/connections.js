@@ -71,6 +71,10 @@ export type Action =
       payload: Client,
     }
   | {
+      type: 'NEW_CLIENT_SANITY_CHECK',
+      payload: Client,
+    }
+  | {
       type: 'CLIENT_REMOVED',
       payload: string,
     }
@@ -237,16 +241,6 @@ export default function reducer(
         selectedPlugin = userPreferredPlugin;
       }
 
-      const matchingDeviceForClient = state.devices.filter(
-        device => payload.query.device_id === device.serial,
-      );
-      if (matchingDeviceForClient.length === 0) {
-        console.error(
-          new RecurringError(`Client initialised for non-displayed device`),
-          payload.id,
-        );
-      }
-
       return {
         ...state,
         clients: state.clients.concat(payload),
@@ -259,6 +253,26 @@ export default function reducer(
         selectedApp,
         selectedPlugin,
       };
+    }
+    case 'NEW_CLIENT_SANITY_CHECK': {
+      const {payload} = action;
+      // Check for clients initialised when there is no matching device
+      const clientIsStillConnected = state.clients.filter(
+        client => client.id == payload.query.device_id,
+      );
+      if (clientIsStillConnected) {
+        const matchingDeviceForClient = state.devices.filter(
+          device => payload.query.device_id === device.serial,
+        );
+        if (matchingDeviceForClient.length === 0) {
+          console.error(
+            new RecurringError(`Client initialised for non-displayed device`),
+            payload.id,
+          );
+        }
+      }
+
+      return state;
     }
     case 'CLIENT_REMOVED': {
       const {payload} = action;

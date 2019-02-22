@@ -13,10 +13,6 @@ We expect this file to have a default export of type `FlipperPlugin`. A hello-wo
 import {FlipperPlugin} from 'flipper';
 
 export default class extends FlipperPlugin {
-  static title = 'My Plugin';
-  static id = 'my-plugin';
-  static icon = 'internet';
-
   render() {
     return 'hello world';
   }

@@ -8,7 +8,7 @@
 import type {FlipperPlugin, FlipperBasePlugin} from './plugin.js';
 import type BaseDevice from './devices/BaseDevice.js';
 import type {App} from './App.js';
-import type Logger from './fb-stubs/Logger.js';
+import type {Logger} from './fb-interfaces/Logger.js';
 import type {Store} from './reducers/index.js';
 import type {OS} from './devices/BaseDevice.js';
 import {FlipperDevicePlugin} from './plugin.js';
@@ -16,6 +16,8 @@ import {setPluginState} from './reducers/pluginStates.js';
 import {ReactiveSocket, PartialResponder} from 'rsocket-core';
 // $FlowFixMe perf_hooks is a new API in node
 import {performance} from 'perf_hooks';
+import {reportPluginFailures} from './utils/metrics';
+import {default as isProduction} from './utils/isProduction.js';
 
 const EventEmitter = (require('events'): any);
 const invariant = require('invariant');
@@ -27,6 +29,7 @@ export type ClientQuery = {|
   os: OS,
   device: string,
   device_id: string,
+  sdk_version?: number,
 |};
 
 export type ClientExport = {|
@@ -38,6 +41,9 @@ type ErrorType = {message: string, stacktrace: string, name: string};
 type RequestMetadata = {method: string, id: number, params: ?Object};
 
 const handleError = (store: Store, deviceSerial: ?string, error: ErrorType) => {
+  if (isProduction()) {
+    return;
+  }
   const crashReporterPlugin = store
     .getState()
     .plugins.devicePlugins.get('CrashReporter');
@@ -75,22 +81,24 @@ export default class Client extends EventEmitter {
   constructor(
     id: string,
     query: ClientQuery,
-    conn: ReactiveSocket,
+    conn: ?ReactiveSocket,
     logger: Logger,
     store: Store,
+    plugins: ?Plugins,
   ) {
     super();
     this.connected = true;
-    this.plugins = [];
+    this.plugins = plugins ? plugins : [];
     this.connection = conn;
     this.id = id;
     this.query = query;
+    this.sdkVersion = query.sdk_version || 0;
     this.messageIdCounter = 0;
     this.logger = logger;
     this.store = store;
-
     this.broadcastCallbacks = new Map();
     this.requestCallbacks = new Map();
+    this.activePlugins = new Set();
 
     const client = this;
     this.responder = {
@@ -99,16 +107,18 @@ export default class Client extends EventEmitter {
       },
     };
 
-    conn.connectionStatus().subscribe({
-      onNext(payload) {
-        if (payload.kind == 'ERROR' || payload.kind == 'CLOSED') {
-          client.connected = false;
-        }
-      },
-      onSubscribe(subscription) {
-        subscription.request(Number.MAX_SAFE_INTEGER);
-      },
-    });
+    if (conn) {
+      conn.connectionStatus().subscribe({
+        onNext(payload) {
+          if (payload.kind == 'ERROR' || payload.kind == 'CLOSED') {
+            client.connected = false;
+          }
+        },
+        onSubscribe(subscription) {
+          subscription.request(Number.MAX_SAFE_INTEGER);
+        },
+      });
+    }
   }
 
   getDevice = (): ?BaseDevice =>
@@ -125,11 +135,13 @@ export default class Client extends EventEmitter {
   connected: boolean;
   id: string;
   query: ClientQuery;
+  sdkVersion: number;
   messageIdCounter: number;
   plugins: Plugins;
-  connection: ReactiveSocket;
+  connection: ?ReactiveSocket;
   responder: PartialResponder;
   store: Store;
+  activePlugins: Set<string>;
 
   broadcastCallbacks: Map<?string, Map<string, Set<Function>>>;
 
@@ -258,17 +270,29 @@ export default class Client extends EventEmitter {
       return;
     }
 
-    const callbacks = this.requestCallbacks.get(id);
-    if (!callbacks) {
-      return;
+    if (this.sdkVersion < 1) {
+      const callbacks = this.requestCallbacks.get(id);
+      if (!callbacks) {
+        return;
+      }
+      this.requestCallbacks.delete(id);
+      this.finishTimingRequestResponse(callbacks.metadata);
+      this.onResponse(data, callbacks.resolve, callbacks.reject);
     }
-    this.requestCallbacks.delete(id);
-    this.finishTimingRequestResponse(callbacks.metadata);
+  }
 
+  onResponse(
+    data: {
+      success?: Object,
+      error?: Object,
+    },
+    resolve: any => any,
+    reject: any => any,
+  ) {
     if (data.success) {
-      callbacks.resolve(data.success);
+      resolve(data.success);
     } else if (data.error) {
-      callbacks.reject(data.error);
+      reject(data.error);
       const {error} = data;
       if (error) {
         handleError(this.store, this.getDevice()?.serial, error);
@@ -322,7 +346,10 @@ export default class Client extends EventEmitter {
         id,
         params,
       };
-      this.requestCallbacks.set(id, {reject, resolve, metadata});
+
+      if (this.sdkVersion < 1) {
+        this.requestCallbacks.set(id, {reject, resolve, metadata});
+      }
 
       const data = {
         id,
@@ -330,9 +357,44 @@ export default class Client extends EventEmitter {
         params,
       };
 
+      const plugin = params?.api;
+
       console.debug(data, 'message:call');
-      this.startTimingRequestResponse({method, id, params});
-      this.connection.fireAndForget({data: JSON.stringify(data)});
+
+      if (this.sdkVersion < 1) {
+        this.startTimingRequestResponse({method, id, params});
+        if (this.connection) {
+          this.connection.fireAndForget({data: JSON.stringify(data)});
+        }
+        return;
+      }
+
+      const mark = this.getPerformanceMark(metadata);
+      performance.mark(mark);
+      if (this.isAcceptingMessagesFromPlugin(plugin)) {
+        this.connection &&
+          this.connection
+            .requestResponse({data: JSON.stringify(data)})
+            .subscribe({
+              onComplete: payload => {
+                if (this.isAcceptingMessagesFromPlugin(plugin)) {
+                  const logEventName = this.getLogEventName(data);
+                  this.logger.trackTimeSince(mark, logEventName);
+                  const response: {|
+                    success?: Object,
+                    error?: Object,
+                  |} = JSON.parse(payload.data);
+                  this.onResponse(response, resolve, reject);
+                }
+              },
+              // Open fresco then layout and you get errors because responses come back after deinit.
+              onError: e => {
+                if (this.isAcceptingMessagesFromPlugin(plugin)) {
+                  reject(e);
+                }
+              },
+            });
+      }
     });
   }
 
@@ -344,6 +406,10 @@ export default class Client extends EventEmitter {
     const mark = this.getPerformanceMark(data);
     const logEventName = this.getLogEventName(data);
     this.logger.trackTimeSince(mark, logEventName);
+  }
+
+  isAcceptingMessagesFromPlugin(plugin: ?string) {
+    return this.connection && (!plugin || this.activePlugins.has(plugin));
   }
 
   getPerformanceMark(data: RequestMetadata): string {
@@ -358,20 +424,42 @@ export default class Client extends EventEmitter {
       : `request_response_${method}`;
   }
 
+  initPlugin(pluginId: string) {
+    this.activePlugins.add(pluginId);
+    this.rawSend('init', {plugin: pluginId});
+  }
+
+  deinitPlugin(pluginId: string) {
+    this.activePlugins.delete(pluginId);
+    this.rawSend('deinit', {plugin: pluginId});
+  }
+
   rawSend(method: string, params?: Object): void {
     const data = {
       method,
       params,
     };
     console.debug(data, 'message:send');
-    this.connection.fireAndForget({data: JSON.stringify(data)});
+    if (this.connection) {
+      this.connection.fireAndForget({data: JSON.stringify(data)});
+    }
   }
 
   call(api: string, method: string, params?: Object): Promise<Object> {
-    return this.rawCall('execute', {api, method, params});
+    return reportPluginFailures(
+      this.rawCall('execute', {api, method, params}),
+      `Call-${method}`,
+      api,
+    );
   }
 
   send(api: string, method: string, params?: Object): void {
+    if (!isProduction()) {
+      console.warn(
+        `${api}:${method ||
+          ''} client.send() is deprecated. Please use call() instead so you can handle errors.`,
+      );
+    }
     return this.rawSend('execute', {api, method, params});
   }
 }

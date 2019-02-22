@@ -7,7 +7,7 @@ import org.apache.tools.ant.filters.ReplaceTokens
 final def CACHE_REVISION = 3
 
 final def externalDir = new File("$projectDir/external")
-final def downloadsDir = new File("$buildDir/downloads")
+final def downloadsDir = new File("$externalDir/downloads")
 final def revisionFile = new File("$buildDir/external_cache_revision.txt")
 
 final def getDownloadFileName = { final URL src ->
@@ -25,6 +25,7 @@ final def isCacheOutOfDate = { final Integer revision ->
 }
 
 task createNativeDepsDirectories {
+    buildDir.mkdirs()
     downloadsDir.mkdirs()
     externalDir.mkdirs()
 }

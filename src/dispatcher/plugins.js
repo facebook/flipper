@@ -6,7 +6,7 @@
  */
 
 import type {Store} from '../reducers/index.js';
-import type Logger from '../fb-stubs/Logger.js';
+import type {Logger} from '../fb-interfaces/Logger.js';
 import type {FlipperPlugin, FlipperDevicePlugin} from '../plugin.js';
 import type {State} from '../reducers/plugins';
 
@@ -23,6 +23,9 @@ import {remote} from 'electron';
 import GK from '../fb-stubs/GK';
 import {FlipperBasePlugin} from '../plugin.js';
 import {setupMenuBar} from '../MenuBar.js';
+import path from 'path';
+import {default as config} from '../utils/processConfig.js';
+import isProduction from '../utils/isProduction';
 
 export type PluginDefinition = {
   name: string,
@@ -72,16 +75,28 @@ export default (store: Store, logger: Logger) => {
 };
 
 function getBundledPlugins(): Array<PluginDefinition> {
+  if (!isProduction()) {
+    // Plugins are only bundled in production builds
+    return [];
+  }
+
   // DefaultPlugins that are included in the bundle.
   // List of defaultPlugins is written at build time
+  const pluginPath =
+    process.env.BUNDLED_PLUGIN_PATH || path.join(__dirname, 'defaultPlugins');
+
   let bundledPlugins: Array<PluginDefinition> = [];
   try {
-    bundledPlugins = global.electronRequire('./defaultPlugins/index.json');
-  } catch (e) {}
+    bundledPlugins = global.electronRequire(
+      path.join(pluginPath, 'index.json'),
+    );
+  } catch (e) {
+    console.error(e);
+  }
 
   return bundledPlugins.map(plugin => ({
     ...plugin,
-    out: './' + plugin.out,
+    out: path.join(pluginPath, plugin.out),
   }));
 }
 
@@ -121,11 +136,7 @@ export const checkDisabled = (disabledPlugins: Array<PluginDefinition>) => (
 ): boolean => {
   let disabledList: Set<string> = new Set();
   try {
-    disabledList = new Set(
-      // $FlowFixMe process.env not defined in electron API spec
-      JSON.parse(remote?.process.env.CONFIG || process.env.CONFIG || '{}')
-        .disabledPlugins || [],
-    );
+    disabledList = config().disabledPlugins;
   } catch (e) {
     console.error(e);
   }

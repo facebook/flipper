@@ -17,13 +17,16 @@ import android.graphics.Rect;
 import android.graphics.Region;
 import android.graphics.drawable.Drawable;
 import android.text.TextPaint;
+import android.view.View;
+import java.util.Map;
+import java.util.WeakHashMap;
 import javax.annotation.Nullable;
 
 public class BoundsDrawable extends Drawable {
   public static final int COLOR_HIGHLIGHT_CONTENT = 0x888875c5;
   public static final int COLOR_HIGHLIGHT_PADDING = 0x889dd185;
   public static final int COLOR_HIGHLIGHT_MARGIN = 0x88f7b77b;
-  private static @Nullable BoundsDrawable sInstance;
+  private static @Nullable Map<View, BoundsDrawable> sInstanceMap;
 
   private final TextPaint mTextPaint;
   private final Paint mMarginPaint;
@@ -39,17 +42,24 @@ public class BoundsDrawable extends Drawable {
   private final float mDensity;
 
   public static BoundsDrawable getInstance(
-      float density, Rect marginBounds, Rect paddingBounds, Rect contentBounds) {
-    final BoundsDrawable drawable = getInstance(density);
+      View view, float density, Rect marginBounds, Rect paddingBounds, Rect contentBounds) {
+    final BoundsDrawable drawable = getInstance(view, density);
     drawable.setBounds(marginBounds, paddingBounds, contentBounds);
     return drawable;
   }
 
-  public static BoundsDrawable getInstance(float density) {
-    if (sInstance == null) {
-      sInstance = new BoundsDrawable(density);
+  public static BoundsDrawable getInstance(View view, float density) {
+    if (sInstanceMap == null) {
+      sInstanceMap = new WeakHashMap<>();
     }
-    return sInstance;
+
+    if (sInstanceMap.containsKey(view)) {
+      return sInstanceMap.get(view);
+    }
+
+    final BoundsDrawable drawable = new BoundsDrawable(density);
+    sInstanceMap.put(view, drawable);
+    return drawable;
   }
 
   private BoundsDrawable(float density) {

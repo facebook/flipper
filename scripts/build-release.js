@@ -13,6 +13,7 @@ const {
   compile,
   die,
   compileDefaultPlugins,
+  getVersionNumber,
 } = require('./build-utils.js');
 
 function generateManifest(versionNumber) {
@@ -29,7 +30,7 @@ function generateManifest(versionNumber) {
   );
 }
 
-function modifyPackageManifest(buildFolder) {
+function modifyPackageManifest(buildFolder, versionNumber) {
   // eslint-disable-next-line no-console
   console.log('Creating package.json manifest');
   const manifest = require('../package.json');
@@ -40,28 +41,11 @@ function modifyPackageManifest(buildFolder) {
   // because all dependencies from the root-folder are already bundled by metro.
   manifest.dependencies = manifestStatic.dependencies;
   manifest.main = 'index.js';
-
-  const buildNumber = process.argv.join(' ').match(/--version=(\d+)/);
-  if (buildNumber && buildNumber.length > 0) {
-    manifest.version = [
-      ...manifest.version.split('.').slice(0, 2),
-      buildNumber[1],
-    ].join('.');
-  }
-
-  return new Promise((resolve, reject) => {
-    fs.writeFile(
-      path.join(buildFolder, 'package.json'),
-      JSON.stringify(manifest, null, '  '),
-      err => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(manifest.version);
-        }
-      },
-    );
-  }).catch(die);
+  manifest.version = versionNumber;
+  fs.writeFileSync(
+    path.join(buildFolder, 'package.json'),
+    JSON.stringify(manifest, null, '  '),
+  );
 }
 
 function buildDist(buildFolder) {
@@ -94,7 +78,6 @@ function buildDist(buildFolder) {
 
   return builder
     .build({
-      appDir: buildFolder,
       publish: 'never',
       config: {
         appId: `com.facebook.sonar`,
@@ -112,32 +95,20 @@ function buildDist(buildFolder) {
 }
 
 function copyStaticFolder(buildFolder) {
-  return new Promise((resolve, reject) => {
-    fs.copy(
-      path.join(__dirname, '..', 'static'),
-      buildFolder,
-      {
-        dereference: true,
-      },
-      err => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve();
-        }
-      },
-    );
-  }).catch(die);
+  fs.copySync(path.join(__dirname, '..', 'static'), buildFolder, {
+    dereference: true,
+  });
 }
 
 (async () => {
   const dir = await buildFolder();
   // eslint-disable-next-line no-console
   console.log('Created build directory', dir);
-  await copyStaticFolder(dir);
-  await compileDefaultPlugins(dir);
+  copyStaticFolder(dir);
+  await compileDefaultPlugins(path.join(dir, 'defaultPlugins'));
   await compile(dir, path.join(__dirname, '..', 'src', 'init.js'));
-  const versionNumber = await modifyPackageManifest(dir);
+  const versionNumber = getVersionNumber();
+  modifyPackageManifest(dir, versionNumber);
   generateManifest(versionNumber);
   await buildDist(dir);
   // eslint-disable-next-line no-console

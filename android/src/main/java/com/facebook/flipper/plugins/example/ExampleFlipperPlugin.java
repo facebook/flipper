@@ -8,8 +8,8 @@
 package com.facebook.flipper.plugins.example;
 
 import android.app.Activity;
-import android.support.annotation.Nullable;
 import android.widget.Toast;
+import androidx.annotation.Nullable;
 import com.facebook.flipper.core.FlipperConnection;
 import com.facebook.flipper.core.FlipperObject;
 import com.facebook.flipper.core.FlipperPlugin;

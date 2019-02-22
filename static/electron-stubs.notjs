@@ -10,7 +10,7 @@
       };
     },
     app: {
-      getVersion: function() {return '1';},
+      getVersion: function() {return global.__VERSION__ || '1';},
       getName: function() {return '';}
     },
     shell: {

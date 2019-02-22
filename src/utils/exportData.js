@@ -10,21 +10,19 @@ import type {State as PluginStates} from '../reducers/pluginStates';
 import type {PluginNotification} from '../reducers/notifications.js';
 import type {ClientExport} from '../Client.js';
 import type {State as PluginStatesState} from '../reducers/pluginStates';
+import type {State} from '../reducers/index';
 import {FlipperDevicePlugin} from '../plugin.js';
 import {default as BaseDevice} from '../devices/BaseDevice';
-
+import {default as ArchivedDevice} from '../devices/ArchivedDevice';
+import {default as Client} from '../Client';
+import {getInstance} from '../fb-stubs/Logger.js';
 import fs from 'fs';
-import os from 'os';
-import path from 'path';
-
-const exportFilePath = path.join(
-  os.homedir(),
-  '.flipper',
-  'FlipperExport.json',
-);
+import uuid from 'uuid';
+import {remote} from 'electron';
+import {serialize, deserialize} from './serialization';
 
 export type ExportType = {|
-  fileVersion: '1.0.0',
+  fileVersion: string,
   clients: Array<ClientExport>,
   device: ?DeviceExport,
   store: {
@@ -83,12 +81,70 @@ export function processNotificationStates(
   return activeNotifications;
 }
 
+const addSaltToDeviceSerial = (
+  salt: string,
+  device: BaseDevice,
+  clients: Array<ClientExport>,
+  pluginStates: PluginStatesState,
+  pluginNotification: Array<PluginNotification>,
+): ExportType => {
+  const {serial} = device;
+  const newSerial = salt + '-' + serial;
+  const newDevice = new ArchivedDevice(
+    newSerial,
+    device.deviceType,
+    device.title,
+    device.os,
+    device.getLogs(),
+  );
+  const updatedClients = clients.map((client: ClientExport) => {
+    return {
+      ...client,
+      id: client.id.replace(serial, newSerial),
+      query: {...client.query, device_id: newSerial},
+    };
+  });
+
+  const updatedPluginStates: PluginStatesState = {};
+  for (let key in pluginStates) {
+    if (!key.includes(serial)) {
+      throw new Error(
+        `Error while exporting, plugin state (${key}) does not have ${serial} in its key`,
+      );
+    }
+    const pluginData = pluginStates[key];
+    key = key.replace(serial, newSerial);
+    updatedPluginStates[key] = pluginData;
+  }
+
+  const updatedPluginNotifications = pluginNotification.map(notif => {
+    if (!notif.client || !notif.client.includes(serial)) {
+      throw new Error(
+        `Error while exporting, plugin state (${
+          notif.pluginId
+        }) does not have ${serial} in it`,
+      );
+    }
+    return {...notif, client: notif.client.replace(serial, newSerial)};
+  });
+  return {
+    fileVersion: remote.app.getVersion(),
+    clients: updatedClients,
+    device: newDevice.toJSON(),
+    store: {
+      pluginStates: updatedPluginStates,
+      activeNotifications: updatedPluginNotifications,
+    },
+  };
+};
+
 export const processStore = (
   activeNotifications: Array<PluginNotification>,
   device: ?BaseDevice,
   pluginStates: PluginStatesState,
   clients: Array<ClientExport>,
   devicePlugins: Map<string, Class<FlipperDevicePlugin<>>>,
+  salt: string,
 ): ?ExportType => {
   if (device) {
     const {serial} = device;
@@ -105,37 +161,44 @@ export const processStore = (
       activeNotifications,
       devicePlugins,
     );
-    return {
-      fileVersion: '1.0.0',
-      clients: processedClients,
-      device: device.toJSON(),
-      store: {
-        pluginStates: processedPluginStates,
-        activeNotifications: processedActiveNotifications,
-      },
-    };
+    // Adding salt to the device id, so that the device_id in the device list is unique.
+    const exportFlipperData = addSaltToDeviceSerial(
+      salt,
+      device,
+      processedClients,
+      processedPluginStates,
+      processedActiveNotifications,
+    );
+    return exportFlipperData;
   }
   return null;
 };
 
-export const exportStoreToFile = (data: Store): Promise<void> => {
-  const state = data.getState();
+export function serializeStore(state: State): ?ExportType {
   const {activeNotifications} = state.notifications;
   const {selectedDevice, clients} = state.connections;
   const {pluginStates} = state;
   const {devicePlugins} = state.plugins;
   // TODO: T39612653 Make Client mockable. Currently rsocket logic is tightly coupled.
   // Not passing the entire state as currently Client is not mockable.
-  const json = processStore(
+  return processStore(
     activeNotifications,
     selectedDevice,
     pluginStates,
     clients.map(client => client.toJSON()),
     devicePlugins,
+    uuid.v4(),
   );
+}
+
+export const exportStoreToFile = (
+  exportFilePath: string,
+  data: Store,
+): Promise<void> => {
+  const json = serializeStore(data.getState());
   if (json) {
     return new Promise((resolve, reject) => {
-      fs.writeFile(exportFilePath, JSON.stringify(json), err => {
+      fs.writeFile(exportFilePath, serialize(json), err => {
         if (err) {
           reject(err);
         }
@@ -145,4 +208,75 @@ export const exportStoreToFile = (data: Store): Promise<void> => {
   }
   console.error('Make sure a device is connected');
   return new Promise.reject(new Error('No device is selected'));
+};
+
+export const importFileToStore = (file: string, store: Store) => {
+  fs.readFile(file, 'utf8', (err, data) => {
+    if (err) {
+      console.error(err);
+      return;
+    }
+    const json = deserialize(data);
+    const {device, clients} = json;
+    const {serial, deviceType, title, os, logs} = device;
+    const archivedDevice = new ArchivedDevice(
+      serial,
+      deviceType,
+      title,
+      os,
+      logs ? logs : [],
+    );
+    const devices = store.getState().connections.devices;
+    const matchedDevices = devices.filter(
+      availableDevice => availableDevice.serial === serial,
+    );
+    if (matchedDevices.length > 0) {
+      store.dispatch({
+        type: 'SELECT_DEVICE',
+        payload: matchedDevices[0],
+      });
+      return;
+    }
+    store.dispatch({
+      type: 'REGISTER_DEVICE',
+      payload: archivedDevice,
+    });
+    store.dispatch({
+      type: 'SELECT_DEVICE',
+      payload: archivedDevice,
+    });
+
+    const {pluginStates} = json.store;
+    const keys = Object.keys(pluginStates);
+    clients.forEach(client => {
+      const clientPlugins = keys
+        .filter(key => {
+          const arr = key.split('#');
+          arr.pop();
+          const clientPlugin = arr.join('#');
+          return client.id === clientPlugin;
+        })
+        .map(client => client.split('#').pop());
+      store.dispatch({
+        type: 'NEW_CLIENT',
+        payload: new Client(
+          client.id,
+          client.query,
+          null,
+          getInstance(),
+          store,
+          clientPlugins,
+        ),
+      });
+    });
+    keys.forEach(key => {
+      store.dispatch({
+        type: 'SET_PLUGIN_STATE',
+        payload: {
+          pluginKey: key,
+          state: pluginStates[key],
+        },
+      });
+    });
+  });
 };

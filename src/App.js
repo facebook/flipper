@@ -22,21 +22,25 @@ import {
   ACTIVE_SHEET_PLUGIN_DEBUGGER,
 } from './reducers/application.js';
 
-import type Logger from './fb-stubs/Logger.js';
+import type {Logger} from './fb-interfaces/Logger.js';
 import type BugReporter from './fb-stubs/BugReporter.js';
 import type BaseDevice from './devices/BaseDevice.js';
 import type {ActiveSheet} from './reducers/application.js';
 
 const version = remote.app.getVersion();
 
-type Props = {
+type OwnProps = {|
   logger: Logger,
   bugReporter: BugReporter,
+|};
+
+type Props = {|
+  ...OwnProps,
   leftSidebarVisible: boolean,
   selectedDevice: ?BaseDevice,
   error: ?string,
   activeSheet: ActiveSheet,
-};
+|};
 
 export class App extends React.Component<Props> {
   componentDidMount() {
@@ -88,11 +92,8 @@ export class App extends React.Component<Props> {
     );
   }
 }
-/* $FlowFixMe(>=0.86.0) This
- * comment suppresses an error found when Flow v0.86 was
- * deployed. To see the error, delete this comment and
- * run Flow. */
-export default connect(
+
+export default connect<Props, OwnProps, _, _, _, _>(
   ({
     application: {leftSidebarVisible, activeSheet},
     connections: {selectedDevice, error},

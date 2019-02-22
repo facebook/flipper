@@ -45,7 +45,8 @@ public class HighlightedOverlay {
     margin = enclose(margin, padding);
 
     final float density = targetView.getContext().getResources().getDisplayMetrics().density;
-    final Drawable overlay = BoundsDrawable.getInstance(density, margin, padding, contentBounds);
+    final Drawable overlay =
+        BoundsDrawable.getInstance(targetView, density, margin, padding, contentBounds);
 
     targetView.getOverlay().add(overlay);
 
@@ -60,7 +61,7 @@ public class HighlightedOverlay {
               coords[1] + contentBounds.bottom);
 
       final Drawable lineOverlay =
-          LinesDrawable.getInstance(density, margin, padding, lineContentBounds);
+          LinesDrawable.getInstance(targetView, density, margin, padding, lineContentBounds);
 
       targetView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
 
@@ -74,8 +75,8 @@ public class HighlightedOverlay {
     }
 
     final float density = targetView.getContext().getResources().getDisplayMetrics().density;
-    final Drawable overlay = BoundsDrawable.getInstance(density);
-    final Drawable overlay2 = LinesDrawable.getInstance(density);
+    final Drawable overlay = BoundsDrawable.getInstance(targetView, density);
+    final Drawable overlay2 = LinesDrawable.getInstance(targetView, density);
     targetView.getRootView().getOverlay().remove(overlay2);
 
     targetView.getOverlay().remove(overlay);

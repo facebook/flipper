@@ -55,10 +55,10 @@ public class DescriptorMapping {
     mapping.register(Drawable.class, new DrawableDescriptor());
     mapping.register(Dialog.class, new DialogDescriptor());
     mapping.register(android.app.Fragment.class, new FragmentDescriptor());
-    mapping.register(android.support.v4.app.Fragment.class, new SupportFragmentDescriptor());
+    mapping.register(androidx.fragment.app.Fragment.class, new SupportFragmentDescriptor());
     mapping.register(android.app.DialogFragment.class, new DialogFragmentDescriptor());
     mapping.register(
-        android.support.v4.app.DialogFragment.class, new SupportDialogFragmentDescriptor());
+        androidx.fragment.app.DialogFragment.class, new SupportDialogFragmentDescriptor());
     return mapping;
   }
 

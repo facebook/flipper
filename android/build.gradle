@@ -50,8 +50,13 @@ android {
         implementation deps.stetho
         implementation deps.okhttp3
         implementation deps.lithoCore
+        implementation deps.lithoSectionsDebug
         implementation deps.lithoWidget
         implementation deps.rhino
+        // TODO(T40752310): Should be depending on a stable version.
+        compileOnly('com.github.facebook:fresco:0ff379c262') {
+            exclude group: 'com.squareup.okhttp3'
+        }
         compileOnly deps.leakcanary
 
         testImplementation deps.mockito

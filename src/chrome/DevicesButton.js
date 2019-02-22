@@ -28,22 +28,22 @@ const DropdownButton = styled(Button)({
   fontSize: 11,
 });
 
-// Remove this if the flow fixme at the bottom is addressed (or has already been removed).
-/* eslint-disable prettier/prettier */
 class DevicesButton extends Component<Props> {
   launchEmulator = (name: string) => {
     // On Linux, you must run the emulator from the directory it's in because
     // reasons ...
-    whichPromise('emulator').then(emulatorPath => {
-      const child = spawn(emulatorPath, [`@${name}`], {
-        detached: true,
-        cwd: dirname(emulatorPath),
-      });
-      child.stderr.on('data', data => {
-        console.error(`Android emulator error: ${data}`);
-      });
-      child.on('error', console.error);
-    }).catch(console.error);
+    whichPromise('emulator')
+      .then(emulatorPath => {
+        const child = spawn(emulatorPath, [`@${name}`], {
+          detached: true,
+          cwd: dirname(emulatorPath),
+        });
+        child.stderr.on('data', data => {
+          console.error(`Android emulator error: ${data}`);
+        });
+        child.on('error', console.error);
+      })
+      .catch(console.error);
     this.props.preferDevice(name);
   };
 
@@ -70,14 +70,31 @@ class DevicesButton extends Component<Props> {
           label: 'Running devices',
           enabled: false,
         },
-        ...devices.map((device: BaseDevice) => ({
-          click: () => selectDevice(device),
-          checked: device === selectedDevice,
-          label: `${device.deviceType === 'physical' ? '📱 ' : ''}${
-            device.title
-          }`,
-          type: 'checkbox',
-        })),
+        ...devices.map((device: BaseDevice) => {
+          let label = '';
+          switch (device.deviceType) {
+            case 'emulator':
+              label = '';
+              break;
+            case 'physical':
+              label = '📱 ';
+              break;
+            case 'archivedEmulator':
+              label = '📦 ';
+              break;
+            case 'archivedPhysical':
+              label = '📦 ';
+              break;
+            default:
+              label = '';
+          }
+          return {
+            click: () => selectDevice(device),
+            checked: device === selectedDevice,
+            label: `${label}${device.title}`,
+            type: 'checkbox',
+          };
+        }),
       );
     }
     if (androidEmulators.length > 0) {
@@ -91,7 +108,6 @@ class DevicesButton extends Component<Props> {
           label: name,
           click: () => this.launchEmulator(name),
         }));
-
       if (emulators.length > 0) {
         dropdown.push(
           {type: 'separator'},
@@ -109,14 +125,15 @@ class DevicesButton extends Component<Props> {
       </DropdownButton>
     );
   }
-} /* $FlowFixMe(>=0.86.0) This comment suppresses an error found when Flow v0.86
- * was deployed. To see the error, delete this comment and run Flow.
- */
-export default connect(
+}
+export default connect<Props, {||}, _, _, _, _>(
   ({connections: {devices, androidEmulators, selectedDevice}}) => ({
     devices,
     androidEmulators,
     selectedDevice,
   }),
-  {selectDevice, preferDevice},
+  {
+    selectDevice,
+    preferDevice,
+  },
 )(DevicesButton);

@@ -8,12 +8,12 @@
 package com.facebook.flipper.plugins.inspector.descriptors.utils;
 
 import android.graphics.Rect;
-import android.support.v4.view.ViewCompat;
-import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import com.facebook.flipper.plugins.inspector.descriptors.utils.AccessibilityRoleUtil.AccessibilityRole;
 import java.util.List;
 import javax.annotation.Nullable;

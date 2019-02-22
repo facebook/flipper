@@ -8,7 +8,7 @@
 import Server from '../server.js';
 
 import type {Store} from '../reducers/index.js';
-import type Logger from '../fb-stubs/Logger.js';
+import type {Logger} from '../fb-interfaces/Logger.js';
 import type Client from '../Client.js';
 import type {UninitializedClient} from '../UninitializedClient';
 
@@ -21,6 +21,13 @@ export default (store: Store, logger: Logger) => {
       type: 'NEW_CLIENT',
       payload: client,
     });
+    // Wait 2 seconds, and then trigger another event so we can check it's displayed
+    setTimeout(() => {
+      store.dispatch({
+        type: 'NEW_CLIENT_SANITY_CHECK',
+        payload: client,
+      });
+    }, 2000);
   });
 
   server.addListener('removed-client', (id: string) => {

@@ -112,6 +112,10 @@ export type ManagedTableProps = {|
    * Allows to create context menu items for rows
    */
   buildContextMenuItems?: () => MenuTemplate,
+  /**
+   * Callback when sorting changes
+   */
+  onSort?: (order: TableRowSortOrder) => void,
 |};
 
 type ManagedTableState = {|
@@ -156,9 +160,7 @@ class ManagedTable extends React.Component<
     shouldScrollToBottom: Boolean(this.props.stickyBottom),
   };
 
-  tableRef: {
-    current: null | List,
-  } = React.createRef();
+  tableRef = React.createRef<List>();
 
   scrollRef: {
     current: null | HTMLDivElement,
@@ -196,12 +198,10 @@ class ManagedTable extends React.Component<
     }
 
     // if columnOrder has changed
-    if (
-      nextProps.columnOrder !== this.props.columnOrder &&
-      this.tableRef &&
-      this.tableRef.current
-    ) {
-      this.tableRef.current.resetAfterIndex(0);
+    if (nextProps.columnOrder !== this.props.columnOrder) {
+      if (this.tableRef && this.tableRef.current) {
+        this.tableRef.current.resetAfterIndex(0);
+      }
       this.setState({
         columnOrder: nextProps.columnOrder,
       });
@@ -306,6 +306,7 @@ class ManagedTable extends React.Component<
 
   onSort = (sortOrder: TableRowSortOrder) => {
     this.setState({sortOrder});
+    this.props.onSort && this.props.onSort(sortOrder);
   };
 
   onColumnOrder = (columnOrder: TableColumnOrder) => {
@@ -350,8 +351,7 @@ class ManagedTable extends React.Component<
     document.addEventListener('mouseup', this.onStopDragSelecting);
 
     if (
-      ((e.metaKey && process.platform === 'darwin') ||
-        (e.ctrlKey && process.platform !== 'darwin')) &&
+      ((e.metaKey && process.platform === 'darwin') || e.ctrlKey) &&
       this.props.multiHighlight
     ) {
       highlightedRows.add(row.key);

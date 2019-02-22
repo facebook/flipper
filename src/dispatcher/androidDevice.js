@@ -11,9 +11,10 @@ import promiseRetry from 'promise-retry';
 import {promisify} from 'util';
 import type {Store} from '../reducers/index.js';
 import type BaseDevice from '../devices/BaseDevice';
-import type Logger from '../fb-stubs/Logger.js';
+import type {Logger} from '../fb-interfaces/Logger.js';
 import {registerDeviceCallbackOnPlugins} from '../utils/onRegisterDevice.js';
-import {recordSuccessMetric} from '../utils/metrics';
+import {reportPlatformFailures} from '../utils/metrics';
+import adbConfig from '../utils/adbConfig';
 const adb = require('adbkit-fb');
 
 function createDevice(
@@ -70,7 +71,7 @@ export default (store: Store, logger: Logger) => {
     const adbPath = process.env.ANDROID_HOME
       ? `${process.env.ANDROID_HOME}/platform-tools/adb`
       : 'adb';
-    return recordSuccessMetric(
+    return reportPlatformFailures(
       promisify(child_process.exec)(`${adbPath} start-server`)
         .then(result => {
           if (result.error) {
@@ -79,7 +80,7 @@ export default (store: Store, logger: Logger) => {
             );
           }
         })
-        .then(adb.createClient),
+        .then(() => adb.createClient(adbConfig())),
       'createADBClient.shell',
     ).catch(err => {
       console.error(
@@ -88,8 +89,8 @@ export default (store: Store, logger: Logger) => {
 
       /* In the event that starting adb with the above method fails, fallback
          to using adbkit, though its known to be unreliable. */
-      const unsafeClient = adb.createClient();
-      return recordSuccessMetric(
+      const unsafeClient = adb.createClient(adbConfig());
+      return reportPlatformFailures(
         promiseRetry(
           (retry, number) => {
             return unsafeClient
@@ -131,7 +132,7 @@ export default (store: Store, logger: Logger) => {
       },
     );
 
-    recordSuccessMetric(createClient(), 'createADBClient')
+    reportPlatformFailures(createClient(), 'createADBClient')
       .then(client => {
         client
           .trackDevices()

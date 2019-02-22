@@ -1,11 +1,9 @@
-/*
- *  Copyright (c) 2018-present, Facebook, Inc.
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- *  This source code is licensed under the MIT license found in the LICENSE
- *  file in the root directory of this source tree.
- *
+ * This source code is licensed under the MIT license found in the LICENSE
+ * file in the root directory of this source tree.
  */
-
 #pragma once
 
 #include <folly/json.h>
@@ -24,12 +22,12 @@ class FlipperResponder {
   /**
    * Deliver a successful response to the Flipper desktop app.
    */
-  virtual void success(const folly::dynamic& response) const = 0;
+  virtual void success(const folly::dynamic& response) = 0;
 
   /**
    * Inform the Flipper desktop app of an error in handling the request.
    */
-  virtual void error(const folly::dynamic& response) const = 0;
+  virtual void error(const folly::dynamic& response) = 0;
 };
 
 } // namespace flipper

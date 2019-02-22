@@ -35,10 +35,14 @@ const DialogContainer = styled('div')(({state}) => ({
   boxShadow: '0 5px 13px rgba(0, 0, 0, 0.2)',
 }));
 
+type OwnProps = {|
+  children: (onHide: () => mixed) => any,
+|};
+
 type Props = {|
+  ...OwnProps,
   activeSheet: ActiveSheet,
   onHideSheet: () => void,
-  children: (onHide: () => mixed) => any,
 |};
 
 type State = {|
@@ -105,11 +109,8 @@ class Sheet extends Component<Props, State> {
     );
   }
 }
-/* $FlowFixMe(>=0.86.0) This
- * comment suppresses an error found when Flow v0.86 was
- * deployed. To see the error, delete this comment and
- * run Flow. */
-export default connect(
+
+export default connect<Props, OwnProps, _, _, _, _>(
   ({application: {activeSheet}}) => ({
     activeSheet,
   }),
