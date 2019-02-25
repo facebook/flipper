@@ -57,15 +57,22 @@ const handleError = (store: Store, deviceSerial: ?string, error: ErrorType) => {
     ...crashReporterPlugin.defaultPersistedState,
     ...store.getState().pluginStates[pluginKey],
   };
+  const isCrashReport: boolean = Boolean(error.name || error.message);
+  const payload = isCrashReport
+    ? {
+        name: error.name,
+        reason: error.message,
+        callstack: error.stacktrace,
+      }
+    : {
+        name: 'Plugin Error',
+        reason: JSON.stringify(error),
+      };
   // $FlowFixMe: We checked persistedStateReducer exists
   const newPluginState = crashReporterPlugin.persistedStateReducer(
     persistedState,
     'flipper-crash-report',
-    {
-      name: error.name,
-      reason: error.message,
-      callstack: error.stacktrace,
-    },
+    payload,
   );
   if (persistedState !== newPluginState) {
     store.dispatch(

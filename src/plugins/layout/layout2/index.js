@@ -16,6 +16,7 @@ import {
   Link,
   Glyph,
   DetailSidebar,
+  SidebarExtensions,
 } from 'flipper';
 import Inspector from './Inspector';
 import ToolbarIcon from './ToolbarIcon';
@@ -193,6 +194,7 @@ export default class Layout extends FlipperPlugin<State, void, PersistedState> {
                 element={element}
                 onValueChanged={this.onDataValueChanged}
                 logger={this.props.logger}
+                extensions={SidebarExtensions}
               />
             </DetailSidebar>
           </>
