@@ -119,7 +119,6 @@ const Searchable = (
     _inputRef: ?HTMLInputElement;
 
     componentDidMount() {
-      console.log(this.props);
       window.document.addEventListener('keydown', this.onKeyDown);
       const {defaultFilters} = this.props;
       let savedState;
