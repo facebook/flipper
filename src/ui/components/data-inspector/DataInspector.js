@@ -203,7 +203,15 @@ function getRootContextMenu(data: Object): Array<Electron$MenuItemOptions> {
       },
     },
   ];
-  rootContextMenuCache.set(data, menu);
+  if (data instanceof Object) {
+    rootContextMenuCache.set(data, menu);
+  } else {
+    console.error(
+      '[data-inspector] Ignoring unsupported data type for cache: ',
+      data,
+      typeof data,
+    );
+  }
   return menu;
 }
 
