@@ -231,6 +231,22 @@ void FlipperClient::onMessageReceived(
       return;
     }
 
+    if (method == "isMethodSupported") {
+      const auto identifier = params["api"].getString();
+      if (connections_.find(identifier) == connections_.end()) {
+        std::string errorMessage = "Connection " + identifier +
+            " not found for method " + method.getString();
+        log(errorMessage);
+        responder->error(folly::dynamic::object("message", errorMessage)(
+            "name", "ConnectionNotFound"));
+        return;
+      }
+      const auto& conn = connections_.at(params["api"].getString());
+      bool isSupported = conn->hasReceiver(params["method"].getString());
+      responder->success(dynamic::object("isSupported", isSupported));
+      return;
+    }
+
     dynamic response =
         dynamic::object("message", "Received unknown method: " + method);
     responder->error(response);
