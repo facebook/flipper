@@ -53,7 +53,9 @@ dependencies {
 }
 ```
 
-Now you can initialize Flipper in your Application's `onCreate`-method like this:
+Now you can initialize Flipper in your Application's `onCreate` method like this:
+
+It's important that `SoLoader.init(this, false);` is called at some point before the Flipper client is initialized. This allows the c++ part of Flipper to be loaded.
 
 ```java
 public class MyApplication extends Application {
