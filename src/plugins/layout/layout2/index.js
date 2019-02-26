@@ -33,11 +33,13 @@ type State = {|
   searchResults: ?ElementSearchResultSet,
 |};
 
+export type ElementMap = {[key: ElementID]: Element};
+
 export type PersistedState = {|
   rootElement: ?ElementID,
   rootAXElement: ?ElementID,
-  elements: {[key: ElementID]: Element},
-  AXelements: {[key: ElementID]: Element},
+  elements: ElementMap,
+  AXelements: ElementMap,
 |};
 
 export default class Layout extends FlipperPlugin<State, void, PersistedState> {
@@ -59,6 +61,7 @@ export default class Layout extends FlipperPlugin<State, void, PersistedState> {
   };
 
   componentDidMount() {
+    // reset the data, as it might be outdated
     this.props.setPersistedState(Layout.defaultPersistedState);
   }
 

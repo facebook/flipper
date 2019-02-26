@@ -137,32 +137,29 @@ export default class Inspector extends Component<Props> {
       // element has no children so we're as deep as we can be
       return;
     }
-    return this.getChildren(element.id, {}, true).then(
-      (elements: Array<Element>) => {
-        if (element.children.length >= 2) {
-          // element has two or more children so we can stop expanding
-          return;
-        }
-        return this.performInitialExpand(this.elements()[element.children[0]]);
-      },
-    );
+    return this.getChildren(element.id, {}).then((elements: Array<Element>) => {
+      if (element.children.length >= 2) {
+        // element has two or more children so we can stop expanding
+        return;
+      }
+      return this.performInitialExpand(this.elements()[element.children[0]]);
+    });
   }
 
   async getChildren(
     id: ElementID,
     options: GetNodesOptions,
-    expanded?: boolean,
   ): Promise<Array<Element>> {
     if (!this.elements()[id]) {
-      await this.getNodes([id], options, expanded);
+      await this.getNodes([id], options);
     }
-    return this.getNodes(this.elements()[id].children, options, expanded);
+    this.updateElement(id, {expanded: true});
+    return this.getNodes(this.elements()[id].children, options);
   }
 
   getNodes(
     ids: Array<ElementID> = [],
     options: GetNodesOptions,
-    expanded?: boolean,
   ): Promise<Array<Element>> {
     const {forAccessibilityEvent} = options;
 
@@ -174,12 +171,7 @@ export default class Inspector extends Component<Props> {
           selected: false,
         })
         .then(({elements}) => {
-          elements.forEach(e => {
-            if (typeof expanded === 'boolean') {
-              e.expanded = expanded;
-            }
-            this.updateElement(e.id, e);
-          });
+          elements.forEach(e => this.updateElement(e.id, e));
           return elements;
         });
     } else {
@@ -188,11 +180,9 @@ export default class Inspector extends Component<Props> {
   }
 
   getAndExpandPath(path: Array<ElementID>) {
-    return Promise.all(path.map(id => this.getChildren(id, {}, true))).then(
-      () => {
-        this.onElementSelected(path[path.length - 1]);
-      },
-    );
+    return Promise.all(path.map(id => this.getChildren(id, {}))).then(() => {
+      this.onElementSelected(path[path.length - 1]);
+    });
   }
 
   onElementSelected = debounce((selectedKey: ElementID) => {
