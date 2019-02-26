@@ -37,7 +37,8 @@ dependencies {
   debugImplementation <span class="hljs-string">'com.facebook.soloader:soloader:0.5.1'</span>
 }
 </code></pre>
-<p>Now you can initialize Flipper in your Application's <code>onCreate</code>-method like this:</p>
+<p>Now you can initialize Flipper in your Application's <code>onCreate</code> method like this:</p>
+<p>It's important that <code>SoLoader.init(this, false);</code> is called at some point before the Flipper client is initialized. This allows the c++ part of Flipper to be loaded.</p>
 <pre><code class="hljs css java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MyApplication</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Application</span> </span>{
 
   <span class="hljs-meta">@Override</span>
