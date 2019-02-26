@@ -64,7 +64,7 @@ function actionHandler(action: string) {
   if (pluginActionHandler) {
     pluginActionHandler(action);
   } else {
-    console.warn(`Unhandled keybaord action "${action}".`);
+    console.warn(`Unhandled keyboard action "${action}".`);
   }
 }
 
