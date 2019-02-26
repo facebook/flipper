@@ -135,6 +135,14 @@ export default class Layout extends FlipperPlugin<State, void, PersistedState> {
       element = this.props.persistedState.elements[this.state.selectedElement];
     }
 
+    const inspector = (
+      <Inspector
+        {...inspectorProps}
+        onSelect={selectedElement => this.setState({selectedElement})}
+        showsSidebar={!this.state.inAXMode}
+      />
+    );
+
     return (
       <FlexColumn grow={true}>
         {this.state.init && (
@@ -172,13 +180,11 @@ export default class Layout extends FlipperPlugin<State, void, PersistedState> {
             </Toolbar>
 
             <FlexRow grow={true}>
-              <Inspector
-                {...inspectorProps}
-                onSelect={selectedElement => this.setState({selectedElement})}
-                showsSidebar={!this.state.inAXMode}
-              />
-              {this.state.inAXMode && (
-                <Sidebar position="right" width={400}>
+              {this.state.inAXMode ? (
+                <>
+                  <Sidebar position="left" maxWidth={Infinity}>
+                    {inspector}
+                  </Sidebar>
                   <Inspector
                     {...inspectorProps}
                     onSelect={selectedAXElement =>
@@ -187,7 +193,9 @@ export default class Layout extends FlipperPlugin<State, void, PersistedState> {
                     showsSidebar={true}
                     ax
                   />
-                </Sidebar>
+                </>
+              ) : (
+                inspector
               )}
             </FlexRow>
             <DetailSidebar>
