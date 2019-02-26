@@ -58,6 +58,7 @@ export type ImageEvent = {
   startTime: Timestamp,
   endTime: Timestamp,
   source: string,
+  coldStart: number,
   viewport?: ViewportData, // not set for prefetches
 };
 
