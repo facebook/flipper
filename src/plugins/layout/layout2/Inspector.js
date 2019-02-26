@@ -216,6 +216,7 @@ export default class Inspector extends Component<Props> {
         onElementHovered={this.onElementHovered}
         onElementExpanded={this.onElementExpanded}
         onValueChanged={this.props.onDataValueChanged}
+        searchResults={this.props.searchResults}
         selected={this.selected()}
         root={this.root()}
         elements={this.elements()}
