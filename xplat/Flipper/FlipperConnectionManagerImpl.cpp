@@ -357,7 +357,7 @@ rsocket::Payload toRSocketPayload(dynamic data) {
         json.substr(0, 100) + "...";
     log(logMessage);
     DCHECK_LE(payloadLength, maxPayloadSize);
-    throw new std::length_error(logMessage);
+    throw std::length_error(logMessage);
   }
 
   return payload;
