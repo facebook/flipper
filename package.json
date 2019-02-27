@@ -72,6 +72,7 @@
     "adbkit-fb": "2.10.1",
     "ansi-to-html": "^0.6.3",
     "chalk": "^2.3.0",
+    "child-process-es6-promise": "^1.2.1",
     "codemirror": "^5.25.0",
     "cross-env": "^5.2.0",
     "dashify": "^1.0.0",

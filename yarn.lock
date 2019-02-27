@@ -1737,6 +1737,11 @@ chardet@^0.7.0:
   resolved "https://registry.yarnpkg.com/chardet/-/chardet-0.7.0.tgz#90094849f0937f2eedc2425d0d28a9e5f0cbad9e"
   integrity sha512-mT8iDcrh03qDGRRmoA2hmBJnxpllMR+0/0qlzjqZES6NdiWDcZkCNAk4rPFZ9Q85r27unkiNNg8ZOiwZXBHwcA==
 
+child-process-es6-promise@^1.2.1:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/child-process-es6-promise/-/child-process-es6-promise-1.2.1.tgz#3634950521b49d5cad9735cbcc8d69cf1e4d0cab"
+  integrity sha512-ekKf2tD+2B2AZvLBhrBb44oelJSjeBkG3dZHpF5oIC9xhePhI3cAMqxyAxLMmskpc81GfCodSRh29wshnsOd/g==
+
 chownr@^1.0.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/chownr/-/chownr-1.1.1.tgz#54726b8b8fff4df053c42187e801fb4412df1494"
