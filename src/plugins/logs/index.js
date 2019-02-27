@@ -522,6 +522,9 @@ export default class LogTable extends FlipperDevicePlugin<
   }
 
   clearLogs = () => {
+    this.device.clearLogs().catch(e => {
+      console.error('Failed to clear logs: ', e);
+    });
     this.setState({
       entries: [],
       rows: [],
