@@ -7,6 +7,7 @@
 const path = require('path');
 const fs = require('fs-extra');
 const builder = require('electron-builder');
+const cp = require('child-process-es6-promise');
 const Platform = builder.Platform;
 const {
   buildFolder,
@@ -50,9 +51,15 @@ function modifyPackageManifest(buildFolder, versionNumber) {
 
 function buildDist(buildFolder) {
   const targetsRaw = [];
+  const postBuildCallbacks = [];
 
   if (process.argv.indexOf('--mac') > -1) {
-    targetsRaw.push(Platform.MAC.createTarget(['zip']));
+    targetsRaw.push(Platform.MAC.createTarget(['dir']));
+    postBuildCallbacks.push(() =>
+      cp.spawn('zip', ['-yr9', '../Flipper-mac.zip', 'Flipper.app'], {
+        cwd: path.join(__dirname, '..', 'dist', 'mac'),
+      }),
+    );
   }
   if (process.argv.indexOf('--linux') > -1) {
     targetsRaw.push(Platform.LINUX.createTarget(['zip']));
@@ -91,6 +98,7 @@ function buildDist(buildFolder) {
       projectDir: buildFolder,
       targets,
     })
+    .then(() => Promise.all(postBuildCallbacks.map(p => p())))
     .catch(die);
 }
 
