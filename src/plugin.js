@@ -23,6 +23,7 @@ export type PluginClient = {|
   send: (method: string, params?: Object) => void,
   call: (method: string, params?: Object) => Promise<any>,
   subscribe: (method: string, callback: (params: any) => void) => void,
+  supportsMethod: (method: string) => Promise<boolean>,
 |};
 
 type PluginTarget = BaseDevice | Client;
@@ -168,6 +169,7 @@ export class FlipperPlugin<S = *, A = *, P = *> extends FlipperBasePlugin<
         });
         this.realClient.subscribe(id, method, callback);
       },
+      supportsMethod: method => this.realClient.supportsMethod(id, method),
     };
   }
 

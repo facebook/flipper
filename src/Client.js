@@ -469,4 +469,13 @@ export default class Client extends EventEmitter {
     }
     return this.rawSend('execute', {api, method, params});
   }
+
+  supportsMethod(api: string, method: string): Promise<boolean> {
+    if (this.sdkVersion < 2) {
+      return Promise.resolve(false);
+    }
+    return this.rawCall('isMethodSupported', {api, method}).then(
+      response => response.isSupported,
+    );
+  }
 }
