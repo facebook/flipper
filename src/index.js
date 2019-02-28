@@ -9,6 +9,7 @@ export {default as styled} from 'react-emotion';
 export * from './ui/index.js';
 export * from './utils/index.js';
 export {default as GK} from './fb-stubs/GK.js';
+export {default as createPaste} from './fb-stubs/createPaste.js';
 export {
   FlipperBasePlugin,
   FlipperPlugin,
@@ -17,7 +18,7 @@ export {
 export type {PluginClient} from './plugin.js';
 export {clipboard} from 'electron';
 export * from './fb-stubs/constants.js';
-export * from './utils/createPaste.js';
+export * from './fb-stubs/createPaste.js';
 export {connect} from 'react-redux';
 export {selectPlugin} from './reducers/connections';
 export {getPluginKey, getPersistedState} from './utils/pluginUtils.js';

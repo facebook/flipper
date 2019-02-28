@@ -5,4 +5,6 @@
  * @format
  */
 
-export {default as textContent} from './textContent.js';
+export default function createPaste(input: string): Promise<?string> {
+  return Promise.reject('Not implemented!');
+}

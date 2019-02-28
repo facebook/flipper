@@ -37,7 +37,8 @@ import {
   updateCategoryBlacklist,
 } from './reducers/notifications';
 import {selectPlugin} from './reducers/connections';
-import {createPaste, textContent} from './utils/index';
+import {textContent} from './utils/index';
+import createPaste from './fb-stubs/createPaste';
 
 export default class Notifications extends FlipperDevicePlugin<{}> {
   static id = 'notifications';
