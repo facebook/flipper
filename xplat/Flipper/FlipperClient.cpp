@@ -302,15 +302,10 @@ void FlipperClient::performAndReportError(const std::function<void()>& func) {
   try {
     func();
   } catch (std::exception& e) {
-    if (connected_) {
-      std::string callstack = this->callstack();
-      dynamic message = dynamic::object(
-          "error",
-          dynamic::object("message", e.what())("stacktrace", callstack)(
-              "name", e.what()));
-      socket_->sendMessage(message);
-    } else {
-      log("Error: " + std::string(e.what()));
+    handleError(e);
+  } catch (std::exception* e) {
+    if (e) {
+      handleError(*e);
     }
   } catch (...) {
     // Generic catch block for the exception of type not belonging to
@@ -318,6 +313,19 @@ void FlipperClient::performAndReportError(const std::function<void()>& func) {
     log("Unknown error suppressed in FlipperClient");
   }
 #endif
+}
+
+void FlipperClient::handleError(std::exception& e) {
+  if (connected_) {
+    std::string callstack = this->callstack();
+    dynamic message = dynamic::object(
+        "error",
+        dynamic::object("message", e.what())("stacktrace", callstack)(
+            "name", e.what()));
+    socket_->sendMessage(message);
+  } else {
+    log("Error: " + std::string(e.what()));
+  }
 }
 
 std::string FlipperClient::getState() {
