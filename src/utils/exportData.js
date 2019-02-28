@@ -10,8 +10,8 @@ import type {State as PluginStates} from '../reducers/pluginStates';
 import type {PluginNotification} from '../reducers/notifications.js';
 import type {ClientExport} from '../Client.js';
 import type {State as PluginStatesState} from '../reducers/pluginStates';
-import type {State} from '../reducers/index';
-import {FlipperDevicePlugin} from '../plugin.js';
+import {pluginKey} from '../reducers/pluginStates';
+import {FlipperDevicePlugin, FlipperPlugin, callClient} from '../plugin.js';
 import {default as BaseDevice} from '../devices/BaseDevice';
 import {default as ArchivedDevice} from '../devices/ArchivedDevice';
 import {default as Client} from '../Client';
@@ -174,17 +174,51 @@ export const processStore = (
   return null;
 };
 
-export function serializeStore(state: State): ?ExportType {
-  const {activeNotifications} = state.notifications;
-  const {selectedDevice, clients} = state.connections;
+export async function serializeStore(store: Store): Promise<?ExportType> {
+  const state = store.getState();
+  const {clients} = state.connections;
   const {pluginStates} = state;
-  const {devicePlugins} = state.plugins;
+  const {plugins} = state;
+  const newPluginState = {...pluginStates};
   // TODO: T39612653 Make Client mockable. Currently rsocket logic is tightly coupled.
   // Not passing the entire state as currently Client is not mockable.
+
+  const pluginsMap: Map<
+    string,
+    Class<FlipperDevicePlugin<> | FlipperPlugin<>>,
+  > = new Map([]);
+  plugins.clientPlugins.forEach((val, key) => {
+    pluginsMap.set(key, val);
+  });
+  plugins.devicePlugins.forEach((val, key) => {
+    pluginsMap.set(key, val);
+  });
+  for (let client of clients) {
+    for (let plugin of client.plugins) {
+      const pluginClass: ?Class<
+        FlipperDevicePlugin<> | FlipperPlugin<>,
+      > = plugin ? pluginsMap.get(plugin) : null;
+      const exportState = pluginClass ? pluginClass.exportPersistedState : null;
+      if (exportState) {
+        const key = pluginKey(client.id, plugin);
+        const data = await exportState(
+          callClient(client, plugin),
+          newPluginState[key],
+          store,
+        );
+        newPluginState[key] = data;
+      }
+    }
+  }
+
+  const {activeNotifications} = store.getState().notifications;
+  const {selectedDevice} = store.getState().connections;
+  const {devicePlugins} = store.getState().plugins;
+
   return processStore(
     activeNotifications,
     selectedDevice,
-    pluginStates,
+    newPluginState,
     clients.map(client => client.toJSON()),
     devicePlugins,
     uuid.v4(),
@@ -193,21 +227,21 @@ export function serializeStore(state: State): ?ExportType {
 
 export const exportStoreToFile = (
   exportFilePath: string,
-  data: Store,
+  store: Store,
 ): Promise<void> => {
-  const json = serializeStore(data.getState());
-  if (json) {
-    return new Promise((resolve, reject) => {
-      fs.writeFile(exportFilePath, serialize(json), err => {
-        if (err) {
-          reject(err);
-        }
-        resolve();
-      });
+  return new Promise(async (resolve, reject) => {
+    const json = await serializeStore(store);
+    if (!json) {
+      console.error('Make sure a device is connected');
+      reject('No device is selected');
+    }
+    fs.writeFile(exportFilePath, serialize(json), err => {
+      if (err) {
+        reject(err);
+      }
+      resolve();
     });
-  }
-  console.error('Make sure a device is connected');
-  return new Promise.reject(new Error('No device is selected'));
+  });
 };
 
 export const importFileToStore = (file: string, store: Store) => {

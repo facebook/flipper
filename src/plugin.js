@@ -19,6 +19,15 @@ import IOSDevice from './devices/IOSDevice';
 
 const invariant = require('invariant');
 
+// This function is intended to be called from outside of the plugin.
+// If you want to `call` from the plugin use, this.client.call
+export function callClient(
+  client: Client,
+  id: string,
+): (string, ?Object) => Promise<Object> {
+  return (method, params) => client.call(id, method, false, params);
+}
+
 export type PluginClient = {|
   send: (method: string, params?: Object) => void,
   call: (method: string, params?: Object) => Promise<any>,
@@ -69,6 +78,11 @@ export class FlipperBasePlugin<
     method: string,
     data: Object,
   ) => $Shape<PersistedState>;
+  static exportPersistedState: ?(
+    callClient: (string, ?Object) => Promise<Object>,
+    persistedState: ?PersistedState,
+    store: ?Store,
+  ) => Promise<?PersistedState>;
   static getActiveNotifications: ?(
     persistedState: PersistedState,
   ) => Array<Notification>;
@@ -160,7 +174,7 @@ export class FlipperPlugin<S = *, A = *, P = *> extends FlipperBasePlugin<
     // $FlowFixMe props.target will be instance of Client
     this.realClient = props.target;
     this.client = {
-      call: (method, params) => this.realClient.call(id, method, params),
+      call: (method, params) => this.realClient.call(id, method, true, params),
       send: (method, params) => this.realClient.send(id, method, params),
       subscribe: (method, callback) => {
         this.subscriptions.push({

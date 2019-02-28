@@ -8,7 +8,7 @@ import type {FlipperPlugin, FlipperDevicePlugin} from './plugin.js';
 import type {Logger} from './fb-interfaces/Logger';
 import BaseDevice from './devices/BaseDevice.js';
 import type {Props as PluginProps} from './plugin';
-
+import {pluginKey as getPluginKey} from './reducers/pluginStates';
 import Client from './Client.js';
 import {
   ErrorBoundary,
@@ -168,7 +168,7 @@ export default connect<Props, OwnProps, _, _, _, _>(
       }
       target = selectedDevice;
       if (activePlugin) {
-        pluginKey = `${selectedDevice.serial}#${activePlugin.id}`;
+        pluginKey = getPluginKey(selectedDevice.serial, activePlugin.id);
       } else {
         target = clients.find((client: Client) => client.id === selectedApp);
         activePlugin = clientPlugins.get(selectedPlugin);
@@ -177,7 +177,7 @@ export default connect<Props, OwnProps, _, _, _, _>(
             `Plugin "${selectedPlugin || ''}" could not be found.`,
           );
         }
-        pluginKey = `${target.id}#${activePlugin.id}`;
+        pluginKey = getPluginKey(target.id, activePlugin.id);
       }
     }
 

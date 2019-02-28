@@ -5,7 +5,7 @@
  * @format
  */
 
-import type {ElementID, Element, ElementSearchResultSet} from 'flipper';
+import type {ElementID, Element, ElementSearchResultSet, Store} from 'flipper';
 
 import {
   FlexColumn,
@@ -51,6 +51,22 @@ const BetaBar = styled(Toolbar)({
 });
 
 export default class Layout extends FlipperPlugin<State, void, PersistedState> {
+  static exportPersistedState = (
+    callClient: (string, ?Object) => Promise<Object>,
+    persistedState: ?PersistedState,
+    store: ?Store,
+  ): Promise<?PersistedState> => {
+    const defaultPromise = Promise.resolve(persistedState);
+    if (!store) {
+      return defaultPromise;
+    }
+    const selectedDevice = store.getState().connections.selectedDevice;
+    if (selectedDevice && selectedDevice.os === 'iOS') {
+      return callClient('getAllNodes').then(({allNodes}) => allNodes);
+    }
+    return defaultPromise;
+  };
+
   static defaultPersistedState = {
     rootElement: null,
     rootAXElement: null,
@@ -67,11 +83,6 @@ export default class Layout extends FlipperPlugin<State, void, PersistedState> {
     selectedAXElement: null,
     searchResults: null,
   };
-
-  componentDidMount() {
-    // reset the data, as it might be outdated
-    this.props.setPersistedState(Layout.defaultPersistedState);
-  }
 
   init() {
     // persist searchActive state when moving between plugins to prevent multiple
