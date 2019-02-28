@@ -32,6 +32,7 @@ import React from 'react';
 import NotificationsHub from '../NotificationsHub.js';
 import {selectPlugin} from '../reducers/connections.js';
 import {setActiveSheet} from '../reducers/application.js';
+import UserAccount from './UserAccount.js';
 import {connect} from 'react-redux';
 
 const ListItem = styled('div')(({active}) => ({
@@ -107,7 +108,6 @@ const Plugins = styled(FlexColumn)({
 
 const PluginDebugger = styled(FlexBox)(props => ({
   color: colors.blackAlpha50,
-  borderTop: `1px solid ${colors.blackAlpha10}`,
   alignItems: 'center',
   padding: 10,
   flexShrink: 0,
@@ -345,6 +345,7 @@ class MainSidebar extends PureComponent<MainSidebarProps> {
           />
           &nbsp;Plugin not showing?
         </PluginDebugger>
+        <UserAccount />
       </Sidebar>
     );
   }
