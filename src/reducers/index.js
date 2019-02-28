@@ -11,6 +11,7 @@ import connections from './connections.js';
 import pluginStates from './pluginStates.js';
 import notifications from './notifications.js';
 import plugins from './plugins.js';
+import user from './user.js';
 
 import {persistReducer} from 'redux-persist';
 import storage from 'redux-persist/lib/storage/index.js';
@@ -35,6 +36,7 @@ import type {
   State as PluginsState,
   Action as PluginsAction,
 } from './plugins.js';
+import type {State as UserState, Action as UserAction} from './user.js';
 import type {Store as ReduxStore} from 'redux';
 
 type Actions =
@@ -43,6 +45,7 @@ type Actions =
   | PluginStatesAction
   | NotificationsAction
   | PluginsAction
+  | UserAction
   | {|type: 'INIT'|};
 
 export type State = {|
@@ -51,6 +54,7 @@ export type State = {|
   pluginStates: PluginStatesState,
   notifications: NotificationsState,
   plugins: PluginsState,
+  user: UserState,
 |};
 
 export type Store = ReduxStore<State, Actions>;
@@ -79,4 +83,11 @@ export default combineReducers<_, Actions>({
     notifications,
   ),
   plugins,
+  user: persistReducer(
+    {
+      key: 'user',
+      storage,
+    },
+    user,
+  ),
 });
