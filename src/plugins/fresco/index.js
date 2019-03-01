@@ -44,6 +44,7 @@ type PluginState = {
   isDebugOverlayEnabled: boolean,
   isAutoRefreshEnabled: boolean,
   images: ImagesList,
+  coldStartFilter: boolean,
 };
 
 const EmptySidebar = styled(FlexRow)({
@@ -75,6 +76,7 @@ export default class extends FlipperPlugin<PluginState, *, PersistedState> {
     isDebugOverlayEnabled: false,
     isAutoRefreshEnabled: false,
     images: [],
+    coldStartFilter: false,
   };
 
   init() {
@@ -120,19 +122,27 @@ export default class extends FlipperPlugin<PluginState, *, PersistedState> {
     images: ImagesList,
     events: Array<ImageEventWithId>,
     surface: string,
+    coldStart: boolean,
   ): ImagesList => {
-    if (!surface || surface === surfaceDefaultText) {
+    if (!surface || (surface === surfaceDefaultText && !coldStart)) {
       return images;
     }
     const imageList = images.map((image: CacheInfo) => {
       const imageIdList = image.imageIds.filter(imageID => {
         const filteredEvents = events.filter((event: ImageEventWithId) => {
-          return (
+          const output =
             event.attribution &&
             event.attribution.length > 0 &&
-            event.attribution[0] == surface &&
             event.imageIds &&
-            event.imageIds.includes(imageID)
+            event.imageIds.includes(imageID);
+
+          if (surface === surfaceDefaultText) {
+            return output && coldStart && event.coldStart;
+          }
+          return (
+            (!coldStart || (coldStart && event.coldStart)) &&
+            output &&
+            event.attribution[0] == surface
           );
         });
         return filteredEvents.length > 0;
@@ -142,13 +152,22 @@ export default class extends FlipperPlugin<PluginState, *, PersistedState> {
     return imageList;
   };
 
-  updateImagesOnUI = (images: ImagesList, surface: string) => {
+  updateImagesOnUI = (
+    images: ImagesList,
+    surface: string,
+    coldStart: boolean,
+  ) => {
     const filteredImages = this.filterImages(
       images,
       this.props.persistedState.events,
       surface,
+      coldStart,
     );
-    this.setState({selectedSurface: surface, images: filteredImages});
+    this.setState({
+      selectedSurface: surface,
+      images: filteredImages,
+      coldStartFilter: coldStart,
+    });
   };
   updateCaches = (reason: string) => {
     if (DEBUG) {
@@ -163,6 +182,7 @@ export default class extends FlipperPlugin<PluginState, *, PersistedState> {
       this.updateImagesOnUI(
         this.props.persistedState.images,
         this.state.selectedSurface,
+        this.state.coldStartFilter,
       );
     });
   };
@@ -233,7 +253,19 @@ export default class extends FlipperPlugin<PluginState, *, PersistedState> {
   };
 
   onSurfaceChange = (surface: string) => {
-    this.updateImagesOnUI(this.props.persistedState.images, surface);
+    this.updateImagesOnUI(
+      this.props.persistedState.images,
+      surface,
+      this.state.coldStartFilter,
+    );
+  };
+
+  onColdStartChange = (checked: boolean) => {
+    this.updateImagesOnUI(
+      this.props.persistedState.images,
+      this.state.selectedSurface,
+      checked,
+    );
   };
 
   render() {
@@ -249,6 +281,8 @@ export default class extends FlipperPlugin<PluginState, *, PersistedState> {
           surfaceOptions={options}
           selectedSurface={this.state.selectedSurface}
           onChangeSurface={this.onSurfaceChange}
+          coldStartFilter={this.state.coldStartFilter}
+          onColdStartChange={this.onColdStartChange}
           images={this.state.images}
           onClear={this.onClear}
           onTrimMemory={this.onTrimMemory}

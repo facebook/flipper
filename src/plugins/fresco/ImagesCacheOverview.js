@@ -19,6 +19,7 @@ import {
   LoadingIndicator,
   styled,
   Select,
+  Checkbox,
 } from 'flipper';
 import type {ImagesMap} from './ImagePool.js';
 import {clipboard} from 'electron';
@@ -33,6 +34,8 @@ function formatKB(bytes: number) {
 }
 
 type ImagesCacheOverviewProps = {
+  onColdStartChange: (checked: boolean) => void,
+  coldStartFilter: boolean,
   surfaceOptions: {[key: string]: string},
   selectedSurface: string,
   onChangeSurface: (key: string) => void,
@@ -55,6 +58,12 @@ type ImagesCacheOverviewState = {|
 |};
 
 const StyledSelect = styled(Select)(props => ({
+  marginLeft: 6,
+  marginRight: 6,
+  height: '100%',
+}));
+
+const StyledCheckbox = styled(Checkbox)(props => ({
   marginLeft: 6,
   marginRight: 6,
   height: '100%',
@@ -119,14 +128,6 @@ export default class ImagesCacheOverview extends PureComponent<
         (c, cacheInfo) => c + cacheInfo.imageIds.length,
         0,
       ) > 0;
-    if (!hasImages) {
-      return (
-        <ImagesCacheOverview.Empty>
-          <LoadingIndicator />
-        </ImagesCacheOverview.Empty>
-      );
-    }
-
     return (
       <ImagesCacheOverview.Container
         grow={true}
@@ -148,6 +149,11 @@ export default class ImagesCacheOverview extends PureComponent<
             selected={this.props.selectedSurface}
             onChange={this.props.onChangeSurface}
           />
+          <StyledCheckbox
+            checked={this.props.coldStartFilter}
+            onChange={this.props.onColdStartChange}
+          />
+          Show ColdStart Images
           <Spacer />
           <input
             type="range"
@@ -157,30 +163,36 @@ export default class ImagesCacheOverview extends PureComponent<
             value={this.state.size}
           />
         </Toolbar>
-        <ImagesCacheOverview.Content>
-          {this.props.images.map(data => {
-            const maxSize = data.maxSizeBytes;
-            const subtitle = maxSize
-              ? formatMB(data.sizeBytes) + ' / ' + formatMB(maxSize)
-              : formatMB(data.sizeBytes);
-            const onClear = data.clearKey
-              ? () => this.props.onClear(data.clearKey)
-              : null;
-            return (
-              <ImageGrid
-                title={data.cacheType}
-                subtitle={subtitle}
-                images={data.imageIds}
-                onImageSelected={this.onImageSelected}
-                selectedImage={this.state.selectedImage}
-                imagesMap={this.props.imagesMap}
-                size={this.state.size}
-                events={this.props.events}
-                onClear={onClear}
-              />
-            );
-          })}
-        </ImagesCacheOverview.Content>
+        {!hasImages ? (
+          <ImagesCacheOverview.Empty>
+            <LoadingIndicator />
+          </ImagesCacheOverview.Empty>
+        ) : (
+          <ImagesCacheOverview.Content>
+            {this.props.images.map(data => {
+              const maxSize = data.maxSizeBytes;
+              const subtitle = maxSize
+                ? formatMB(data.sizeBytes) + ' / ' + formatMB(maxSize)
+                : formatMB(data.sizeBytes);
+              const onClear = data.clearKey
+                ? () => this.props.onClear(data.clearKey)
+                : null;
+              return (
+                <ImageGrid
+                  title={data.cacheType}
+                  subtitle={subtitle}
+                  images={data.imageIds}
+                  onImageSelected={this.onImageSelected}
+                  selectedImage={this.state.selectedImage}
+                  imagesMap={this.props.imagesMap}
+                  size={this.state.size}
+                  events={this.props.events}
+                  onClear={onClear}
+                />
+              );
+            })}
+          </ImagesCacheOverview.Content>
+        )}
       </ImagesCacheOverview.Container>
     );
   }
