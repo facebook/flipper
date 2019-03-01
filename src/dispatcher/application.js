@@ -8,9 +8,12 @@
 import {remote, ipcRenderer} from 'electron';
 import type {Store} from '../reducers/index.js';
 import type {Logger} from '../fb-interfaces/Logger.js';
+import {toggleAction} from '../reducers/application';
 import {parseFlipperPorts} from '../utils/environmentVariables';
-import {importFileToStore} from '../utils/exportData';
-import {selectPlugin, userPreferredPlugin} from '../reducers/connections';
+import {importDataToStore, importFileToStore} from '../utils/exportData';
+import {selectPlugin} from '../reducers/connections';
+import qs from 'query-string';
+
 export const uriComponents = (url: string) => {
   if (!url) {
     return [];
@@ -42,11 +45,29 @@ export default (store: Store, logger: Logger) => {
     });
   });
 
-  ipcRenderer.on('flipper-deeplink', (event, url) => {
-    // flipper://<client>/<pluginId>/<payload>
+  ipcRenderer.on('flipper-protocol-handler', (event, url) => {
+    if (url.startsWith('flipper://import')) {
+      const {search} = new URL(url);
+      const download = qs.parse(search)?.url;
+      store.dispatch(toggleAction('downloadingImportData', true));
+      return (
+        download &&
+        fetch(String(download))
+          .then(res => res.text())
+          .then(data => importDataToStore(data, store))
+          .then(() => {
+            store.dispatch(toggleAction('downloadingImportData', false));
+          })
+          .catch((e: Error) => {
+            console.error(e);
+            store.dispatch(toggleAction('downloadingImportData', false));
+          })
+      );
+    }
     const match = uriComponents(url);
     if (match.length > 1) {
-      store.dispatch(
+      // flipper://<client>/<pluginId>/<payload>
+      return store.dispatch(
         selectPlugin({
           selectedApp: match[0],
           selectedPlugin: match[1],
@@ -58,14 +79,6 @@ export default (store: Store, logger: Logger) => {
 
   ipcRenderer.on('open-flipper-file', (event, url) => {
     importFileToStore(url, store);
-  });
-
-  ipcRenderer.on('flipper-deeplink-preferred-plugin', (event, url) => {
-    // flipper://<client>/<pluginId>/<payload>
-    const match = uriComponents(url);
-    if (match.length > 1) {
-      store.dispatch(userPreferredPlugin(match[1]));
-    }
   });
 
   if (process.env.FLIPPER_PORTS) {

@@ -316,7 +316,6 @@ export function processEntry(
   entry: DeviceLogEntry,
 } {
   const {icon, style} = LOG_TYPES[(entry.type: string)] || LOG_TYPES.debug;
-
   // build the item, it will either be batched or added straight away
   return {
     entry,

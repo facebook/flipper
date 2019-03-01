@@ -244,73 +244,77 @@ export const exportStoreToFile = (
   });
 };
 
+export function importDataToStore(data: string, store: Store) {
+  const json = deserialize(data);
+  const {device, clients} = json;
+  const {serial, deviceType, title, os, logs} = device;
+  const archivedDevice = new ArchivedDevice(
+    serial,
+    deviceType,
+    title,
+    os,
+    logs ? logs : [],
+  );
+  const devices = store.getState().connections.devices;
+  const matchedDevices = devices.filter(
+    availableDevice => availableDevice.serial === serial,
+  );
+  if (matchedDevices.length > 0) {
+    store.dispatch({
+      type: 'SELECT_DEVICE',
+      payload: matchedDevices[0],
+    });
+    return;
+  }
+  store.dispatch({
+    type: 'REGISTER_DEVICE',
+    payload: archivedDevice,
+  });
+  store.dispatch({
+    type: 'SELECT_DEVICE',
+    payload: archivedDevice,
+  });
+
+  const {pluginStates} = json.store;
+  const keys = Object.keys(pluginStates);
+  clients.forEach(client => {
+    const clientPlugins = keys
+      .filter(key => {
+        const arr = key.split('#');
+        arr.pop();
+        const clientPlugin = arr.join('#');
+        return client.id === clientPlugin;
+      })
+      .map(client => client.split('#').pop());
+    store.dispatch({
+      type: 'NEW_CLIENT',
+      payload: new Client(
+        client.id,
+        client.query,
+        null,
+        getInstance(),
+        store,
+        clientPlugins,
+      ),
+    });
+  });
+  keys.forEach(key => {
+    store.dispatch({
+      type: 'SET_PLUGIN_STATE',
+      payload: {
+        pluginKey: key,
+        state: pluginStates[key],
+      },
+    });
+  });
+}
+
 export const importFileToStore = (file: string, store: Store) => {
   fs.readFile(file, 'utf8', (err, data) => {
     if (err) {
       console.error(err);
       return;
     }
-    const json = deserialize(data);
-    const {device, clients} = json;
-    const {serial, deviceType, title, os, logs} = device;
-    const archivedDevice = new ArchivedDevice(
-      serial,
-      deviceType,
-      title,
-      os,
-      logs ? logs : [],
-    );
-    const devices = store.getState().connections.devices;
-    const matchedDevices = devices.filter(
-      availableDevice => availableDevice.serial === serial,
-    );
-    if (matchedDevices.length > 0) {
-      store.dispatch({
-        type: 'SELECT_DEVICE',
-        payload: matchedDevices[0],
-      });
-      return;
-    }
-    store.dispatch({
-      type: 'REGISTER_DEVICE',
-      payload: archivedDevice,
-    });
-    store.dispatch({
-      type: 'SELECT_DEVICE',
-      payload: archivedDevice,
-    });
-
-    const {pluginStates} = json.store;
-    const keys = Object.keys(pluginStates);
-    clients.forEach(client => {
-      const clientPlugins = keys
-        .filter(key => {
-          const arr = key.split('#');
-          arr.pop();
-          const clientPlugin = arr.join('#');
-          return client.id === clientPlugin;
-        })
-        .map(client => client.split('#').pop());
-      store.dispatch({
-        type: 'NEW_CLIENT',
-        payload: new Client(
-          client.id,
-          client.query,
-          null,
-          getInstance(),
-          store,
-          clientPlugins,
-        ),
-      });
-    });
-    keys.forEach(key => {
-      store.dispatch({
-        type: 'SET_PLUGIN_STATE',
-        payload: {
-          pluginKey: key,
-          state: pluginStates[key],
-        },
-      });
-    });
+    importDataToStore(data, store);
   });
 };
