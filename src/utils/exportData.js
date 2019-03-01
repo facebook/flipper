@@ -225,21 +225,31 @@ export async function serializeStore(store: Store): Promise<?ExportType> {
   );
 }
 
-export const exportStoreToFile = (
-  exportFilePath: string,
-  store: Store,
-): Promise<void> => {
+export function exportStore(store: Store): Promise<string> {
   return new Promise(async (resolve, reject) => {
     const json = await serializeStore(store);
     if (!json) {
       console.error('Make sure a device is connected');
       reject('No device is selected');
     }
-    fs.writeFile(exportFilePath, serialize(json), err => {
+    const serializedString = serialize(json);
+    if (serializedString.length <= 0) {
+      reject('Serialize function returned empty string');
+    }
+    resolve(serializedString);
+  });
+}
+
+export const exportStoreToFile = (
+  exportFilePath: string,
+  store: Store,
+): Promise<void> => {
+  return exportStore(store).then(storeString => {
+    fs.writeFile(exportFilePath, storeString, err => {
       if (err) {
-        reject(err);
+        throw new Error(err);
       }
-      resolve();
+      return;
     });
   });
 };
