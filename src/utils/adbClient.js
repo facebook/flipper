@@ -40,7 +40,8 @@ function createClient() {
     'createADBClient.shell',
   ).catch(err => {
     console.error(
-      'Failed to create adb client using shell adb command. Trying with adbkit',
+      'Failed to create adb client using shell adb command. Trying with adbkit.\n' +
+        err.toString(),
     );
 
     /* In the event that starting adb with the above method fails, fallback
