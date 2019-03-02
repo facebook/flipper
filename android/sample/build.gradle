@@ -30,20 +30,13 @@ dependencies {
     implementation deps.lithoWidget
     implementation deps.lithoAnnotations
     // TODO(T40752310): Temporary while we depend on the jitpack artifact with a different group.
-    implementation(deps.lithoFresco) {
-        exclude group: 'com.facebook.fresco'
-    }
+    implementation deps.lithoFresco
     annotationProcessor deps.lithoProcessor
 
     // Third-party
     implementation deps.soloader
     implementation deps.okhttp3
-    // TODO(T40752310): Temporary till Fresco has a stable release.
-    implementation('com.github.facebook:fresco:0ff379c262') {
-        exclude group: 'com.squareup.okhttp3'
-        exclude group: 'com.github.facebook.fresco', module: 'animated-base-test'
-        exclude group: 'com.github.facebook.fresco', module: 'imagepipeline-test'
-    }
+    implementation deps.fresco
 
     // Integration test
     androidTestImplementation deps.testCore
