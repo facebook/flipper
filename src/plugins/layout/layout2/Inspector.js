@@ -77,8 +77,17 @@ export default class Inspector extends Component<Props> {
 
     this.props.client.subscribe(
       this.call().INVALIDATE,
-      ({nodes}: {nodes: Array<{id: ElementID}>}) => {
-        this.getNodes(nodes.map(n => n.id), {});
+      ({
+        nodes,
+      }: {
+        nodes: Array<{id: ElementID, children: Array<ElementID>}>,
+      }) => {
+        this.getNodes(
+          nodes
+            .map(n => [n.id, ...(n.children || [])])
+            .reduce((acc, cv) => acc.concat(cv), []),
+          {},
+        );
       },
     );
 
