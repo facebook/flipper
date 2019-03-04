@@ -4,6 +4,7 @@
  * LICENSE file in the root directory of this source tree.
  * @format
  */
+import {getInstance as getLogger} from '../fb-stubs/Logger';
 import type {Store} from '../reducers';
 import type {DeviceExport} from '../devices/BaseDevice';
 import type {State as PluginStates} from '../reducers/pluginStates';
@@ -20,6 +21,9 @@ import fs from 'fs';
 import uuid from 'uuid';
 import {remote} from 'electron';
 import {serialize, deserialize} from './serialization';
+
+export const IMPORT_FLIPPER_TRACE_EVENT = 'import-flipper-trace';
+export const EXPORT_FLIPPER_TRACE_EVENT = 'export-flipper-trace';
 
 export type ExportType = {|
   fileVersion: string,
@@ -226,6 +230,7 @@ export async function serializeStore(store: Store): Promise<?ExportType> {
 }
 
 export function exportStore(store: Store): Promise<string> {
+  getLogger().track('usage', EXPORT_FLIPPER_TRACE_EVENT);
   return new Promise(async (resolve, reject) => {
     const json = await serializeStore(store);
     if (!json) {
@@ -255,6 +260,7 @@ export const exportStoreToFile = (
 };
 
 export function importDataToStore(data: string, store: Store) {
+  getLogger().track('usage', IMPORT_FLIPPER_TRACE_EVENT);
   const json = deserialize(data);
   const {device, clients} = json;
   const {serial, deviceType, title, os, logs} = device;

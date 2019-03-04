@@ -10,7 +10,13 @@ import type {Store} from '../reducers/index.js';
 import type {Logger} from '../fb-interfaces/Logger.js';
 import {toggleAction} from '../reducers/application';
 import {parseFlipperPorts} from '../utils/environmentVariables';
-import {importDataToStore, importFileToStore} from '../utils/exportData';
+import {
+  importDataToStore,
+  importFileToStore,
+  IMPORT_FLIPPER_TRACE_EVENT,
+} from '../utils/exportData';
+import {tryCatchReportPlatformFailures} from '../utils/metrics';
+
 import {selectPlugin} from '../reducers/connections';
 import qs from 'query-string';
 
@@ -78,7 +84,9 @@ export default (store: Store, logger: Logger) => {
   });
 
   ipcRenderer.on('open-flipper-file', (event, url) => {
-    importFileToStore(url, store);
+    tryCatchReportPlatformFailures(() => {
+      return importFileToStore(url, store);
+    }, `${IMPORT_FLIPPER_TRACE_EVENT}:Deeplink`);
   });
 
   if (process.env.FLIPPER_PORTS) {
