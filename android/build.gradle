@@ -53,10 +53,9 @@ android {
         implementation deps.lithoSectionsDebug
         implementation deps.lithoWidget
         implementation deps.rhino
-        // TODO(T40752310): Should be depending on a stable version.
-        compileOnly('com.github.facebook:fresco:0ff379c262') {
-            exclude group: 'com.squareup.okhttp3'
-        }
+        implementation deps.fresco
+        implementation deps.frescoFlipper
+        implementation deps.frescoStetho
         compileOnly deps.leakcanary
 
         testImplementation deps.mockito
