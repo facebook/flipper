@@ -12,6 +12,8 @@ import type BaseDevice from '../devices/BaseDevice';
 import type {Logger} from '../fb-interfaces/Logger.js';
 import {registerDeviceCallbackOnPlugins} from '../utils/onRegisterDevice.js';
 import {getAdbClient} from '../utils/adbClient';
+import {default as which} from 'which';
+import {promisify} from 'util';
 
 function createDevice(
   adbClient: any,
@@ -62,20 +64,22 @@ function getRunningEmulatorName(id: string): Promise<?string> {
 export default (store: Store, logger: Logger) => {
   const watchAndroidDevices = () => {
     // get emulators
-    child_process.exec(
-      'emulator -list-avds',
-      (error: ?Error, data: ?string) => {
-        if (error != null || data == null) {
-          console.error(error || 'Failed to list AVDs');
-          return;
-        }
-        const payload = data.split('\n').filter(Boolean);
-        store.dispatch({
-          type: 'REGISTER_ANDROID_EMULATORS',
-          payload,
-        });
-      },
-    );
+    promisify(which)('emulator').then(emulatorPath => {
+      child_process.exec(
+        `${emulatorPath} -list-avds`,
+        (error: ?Error, data: ?string) => {
+          if (error != null || data == null) {
+            console.error(error || 'Failed to list AVDs');
+            return;
+          }
+          const payload = data.split('\n').filter(Boolean);
+          store.dispatch({
+            type: 'REGISTER_ANDROID_EMULATORS',
+            payload,
+          });
+        },
+      );
+    });
 
     getAdbClient()
       .then(client => {
