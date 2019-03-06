@@ -103,7 +103,7 @@ const PluginName = styled(Text)(props => ({
 
 const Plugins = styled(FlexColumn)({
   flexGrow: 1,
-  overflow: 'scroll',
+  overflow: 'auto',
 });
 
 const PluginDebugger = styled(FlexBox)(props => ({

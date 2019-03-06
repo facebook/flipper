@@ -18,6 +18,7 @@ const Container = styled(FlexRow)({
   padding: '5px 10px',
   borderTop: `1px solid ${colors.blackAlpha10}`,
   fontWeight: 500,
+  flexShrink: 0,
 });
 
 const ProfilePic = styled('img')({
