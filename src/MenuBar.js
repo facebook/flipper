@@ -8,6 +8,7 @@
 import type {FlipperPlugin, FlipperDevicePlugin} from './plugin.js';
 import {
   exportStoreToFile,
+  exportStore,
   importFileToStore,
   IMPORT_FLIPPER_TRACE_EVENT,
   EXPORT_FLIPPER_TRACE_EVENT,
@@ -19,6 +20,7 @@ import {remote} from 'electron';
 const {dialog} = remote;
 import os from 'os';
 import path from 'path';
+import {shareFlipperData} from './fb-stubs/user';
 import {
   reportPlatformFailures,
   tryCatchReportPlatformFailures,
@@ -326,27 +328,8 @@ function getTemplate(
       label: 'File',
       submenu: [
         {
-          label: 'Export Data...',
-          role: 'export',
-          click: function(item: Object, focusedWindow: Object) {
-            dialog.showSaveDialog(
-              null,
-              {
-                title: 'FlipperExport',
-                defaultPath: path.join(os.homedir(), 'FlipperExport.flipper'),
-              },
-              file => {
-                reportPlatformFailures(
-                  exportStoreToFile(file, store),
-                  `${EXPORT_FLIPPER_TRACE_EVENT}:UI`,
-                );
-              },
-            );
-          },
-        },
-        {
-          label: 'Import Data...',
-          role: 'import',
+          label: 'Open File...',
+          accelerator: 'CommandOrControl+O',
           click: function(item: Object, focusedWindow: Object) {
             dialog.showOpenDialog(
               {
@@ -361,6 +344,40 @@ function getTemplate(
               },
             );
           },
+        },
+        {
+          label: 'Export',
+          submenu: [
+            {
+              label: 'File...',
+              accelerator: 'CommandOrControl+E',
+              click: function(item: Object, focusedWindow: Object) {
+                dialog.showSaveDialog(
+                  null,
+                  {
+                    title: 'FlipperExport',
+                    defaultPath: path.join(
+                      os.homedir(),
+                      'FlipperExport.flipper',
+                    ),
+                  },
+                  file => {
+                    reportPlatformFailures(
+                      exportStoreToFile(file, store),
+                      `${EXPORT_FLIPPER_TRACE_EVENT}:UI`,
+                    );
+                  },
+                );
+              },
+            },
+            {
+              label: 'Sharable Link',
+              accelerator: 'CommandOrControl+Shift+E',
+              click: async function(item: Object, focusedWindow: Object) {
+                shareFlipperData(await exportStore(store));
+              },
+            },
+          ],
         },
       ],
     });

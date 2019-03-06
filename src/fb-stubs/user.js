@@ -16,3 +16,8 @@ export async function graphQLQuery(query: string) {
 export function logoutUser(): Promise<void> {
   return Promise.reject();
 }
+
+export async function shareFlipperData(trace: string) {
+  new window.Notification('Feature not implemented');
+  return Promise.reject();
+}
