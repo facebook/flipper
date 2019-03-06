@@ -14,7 +14,7 @@ To use the network plugin, you need to add the plugin to your Flipper client ins
 ### Android
 
 ```java
-import com.facebook.Flipper.plugins.network.NetworkFlipperPlugin;
+import com.facebook.flipper.plugins.network.NetworkFlipperPlugin;
 
 NetworkFlipperPlugin networkFlipperPlugin = new NetworkFlipperPlugin();
 client.addPlugin(networkFlipperPlugin);
