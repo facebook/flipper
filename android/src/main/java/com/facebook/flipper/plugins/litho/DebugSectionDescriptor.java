@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import androidx.core.view.MarginLayoutParamsCompat;
 import androidx.core.view.ViewCompat;
+import com.facebook.flipper.core.ErrorReportingRunnable;
 import com.facebook.flipper.core.FlipperDynamic;
 import com.facebook.flipper.core.FlipperObject;
 import com.facebook.flipper.plugins.inspector.HighlightedOverlay;
@@ -22,6 +23,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DebugSectionDescriptor extends NodeDescriptor<DebugSection> {
+
+  @Override
+  public void invalidate(final DebugSection debugSection) {
+    super.invalidate(debugSection);
+
+    new ErrorReportingRunnable(mConnection) {
+      @Override
+      protected void runOrThrow() throws Exception {
+        for (int i = 0; i < getChildCount(debugSection); i++) {
+          Object child = getChildAt(debugSection, i);
+          if (child instanceof DebugSection) {
+            invalidate((DebugSection) child);
+          }
+        }
+      }
+    }.run();
+  }
+
   @Override
   public void init(DebugSection node) throws Exception {}
 

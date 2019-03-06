@@ -74,7 +74,8 @@ public class ViewGroupDescriptor extends NodeDescriptor<ViewGroup> {
             public void runOrThrow() throws Exception {
               if (connected()) {
                 if (key.set(node)) {
-                  invalidate(node);
+                  NodeDescriptor descriptor = descriptorForClass(node.getClass());
+                  descriptor.invalidate(node);
                   invalidateAX(node);
                 }
 
