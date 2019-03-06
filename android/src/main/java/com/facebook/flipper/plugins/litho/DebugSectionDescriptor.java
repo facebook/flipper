@@ -18,6 +18,7 @@ import com.facebook.flipper.plugins.inspector.Named;
 import com.facebook.flipper.plugins.inspector.NodeDescriptor;
 import com.facebook.flipper.plugins.inspector.Touch;
 import com.facebook.litho.sections.debug.DebugSection;
+import java.util.ArrayList;
 import java.util.List;
 
 public class DebugSectionDescriptor extends NodeDescriptor<DebugSection> {
@@ -47,7 +48,8 @@ public class DebugSectionDescriptor extends NodeDescriptor<DebugSection> {
   @Override
   public List<Named<FlipperObject>> getData(DebugSection node) throws Exception {
     // TODO T39526148 add changeset info
-    return null;
+    final List<Named<FlipperObject>> attrs = new ArrayList<>();
+    return attrs;
   }
 
   @Override
@@ -58,7 +60,8 @@ public class DebugSectionDescriptor extends NodeDescriptor<DebugSection> {
   @Override
   public List<Named<String>> getAttributes(DebugSection node) throws Exception {
     // TODO T39526148
-    return null;
+    final List<Named<String>> attrs = new ArrayList<>();
+    return attrs;
   }
 
   @Override
