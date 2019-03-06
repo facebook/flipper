@@ -166,8 +166,8 @@ public class DebugSectionDescriptor extends NodeDescriptor<DebugSection> {
 
   @Override
   public boolean matches(String query, DebugSection node) throws Exception {
-    // TODO T39526148
-    return false;
+    final NodeDescriptor descriptor = descriptorForClass(Object.class);
+    return descriptor.matches(query, node);
   }
 
   @Override
