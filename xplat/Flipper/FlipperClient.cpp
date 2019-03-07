@@ -68,6 +68,12 @@ void FlipperClient::addPlugin(std::shared_ptr<FlipperPlugin> plugin) {
     step->complete();
     if (connected_) {
       refreshPlugins();
+      if (plugin->runInBackground()) {
+        auto& conn = connections_[plugin->identifier()];
+        conn = std::make_shared<FlipperConnectionImpl>(
+            socket_.get(), plugin->identifier());
+        plugin->didConnect(conn);
+      }
     }
   });
 }
