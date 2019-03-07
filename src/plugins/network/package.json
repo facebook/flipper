@@ -9,6 +9,7 @@
     "lodash": "^4.17.11"
   },
   "icon": "internet",
+  "title": "Network",
   "bugs": {
     "email": "oncall+flipper@xmail.facebook.com",
     "url": "https://fb.workplace.com/groups/230455004101832/"
