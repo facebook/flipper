@@ -62,11 +62,15 @@ function decodeBody(container: Request | Response): string {
   if (!container.data) {
     return '';
   }
-  const b64Decoded = decodeURIComponent(escape(atob(container.data)));
+  const b64Decoded = atob(container.data);
+  const body =
+    getHeaderValue(container.headers, 'Content-Encoding') === 'gzip'
+      ? decompress(b64Decoded)
+      : b64Decoded;
 
-  return getHeaderValue(container.headers, 'Content-Encoding') === 'gzip'
-    ? decompress(b64Decoded)
-    : b64Decoded;
+  // Data is transferred as base64 encoded bytes to support unicode characters,
+  // we need to decode the bytes here to display the correct unicode characters.
+  return decodeURIComponent(escape(body));
 }
 
 function decompress(body: string): string {
