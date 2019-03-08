@@ -28,12 +28,16 @@ export function callClient(
   return (method, params) => client.call(id, method, false, params);
 }
 
-export type PluginClient = {|
-  send: (method: string, params?: Object) => void,
-  call: (method: string, params?: Object) => Promise<any>,
-  subscribe: (method: string, callback: (params: any) => void) => void,
-  supportsMethod: (method: string) => Promise<boolean>,
-|};
+export interface PluginClient {
+  // eslint-disable-next-line
+  send(method: string, params?: Object): void;
+  // eslint-disable-next-line
+  call(method: string, params?: Object): Promise<any>;
+  // eslint-disable-next-line
+  subscribe(method: string, callback: (params: any) => void): void;
+  // eslint-disable-next-line
+  supportsMethod(method: string): Promise<boolean>;
+}
 
 type PluginTarget = BaseDevice | Client;
 
@@ -54,6 +58,7 @@ export type Props<T> = {
   target: PluginTarget,
   deepLinkPayload: ?string,
   selectPlugin: (pluginID: string, deepLinkPayload: ?string) => boolean,
+  isArchivedDevice: boolean,
 };
 
 export class FlipperBasePlugin<

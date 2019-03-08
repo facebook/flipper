@@ -5,7 +5,13 @@
  * @format
  */
 
-import type {ElementID, Element, ElementSearchResultSet, Store} from 'flipper';
+import type {
+  ElementID,
+  Element,
+  ElementSearchResultSet,
+  Store,
+  PluginClient,
+} from 'flipper';
 
 import {
   FlexColumn,
@@ -22,6 +28,7 @@ import Inspector from './Inspector';
 import ToolbarIcon from './ToolbarIcon';
 import InspectorSidebar from './InspectorSidebar';
 import Search from './Search';
+import ProxyArchiveClient from './ProxyArchiveClient';
 
 type State = {|
   init: boolean,
@@ -115,6 +122,11 @@ export default class Layout extends FlipperPlugin<State, void, PersistedState> {
     this.setState({inAXMode: !this.state.inAXMode});
   };
 
+  getClient(): PluginClient {
+    return this.props.isArchivedDevice
+      ? new ProxyArchiveClient(this.props.persistedState)
+      : this.client;
+  }
   onToggleAlignmentMode = () => {
     if (this.state.selectedElement) {
       this.client.send('setHighlighted', {
@@ -139,7 +151,7 @@ export default class Layout extends FlipperPlugin<State, void, PersistedState> {
 
   render() {
     const inspectorProps = {
-      client: this.client,
+      client: this.getClient(),
       inAlignmentMode: this.state.inAlignmentMode,
       selectedElement: this.state.selectedElement,
       selectedAXElement: this.state.selectedAXElement,
@@ -192,7 +204,7 @@ export default class Layout extends FlipperPlugin<State, void, PersistedState> {
                 active={this.state.inAlignmentMode}
               />
               <Search
-                client={this.client}
+                client={this.getClient()}
                 setPersistedState={this.props.setPersistedState}
                 persistedState={this.props.persistedState}
                 onSearchResults={searchResults =>
@@ -223,7 +235,7 @@ export default class Layout extends FlipperPlugin<State, void, PersistedState> {
             </FlexRow>
             <DetailSidebar>
               <InspectorSidebar
-                client={this.client}
+                client={this.getClient()}
                 realClient={this.realClient}
                 element={element}
                 onValueChanged={this.onDataValueChanged}

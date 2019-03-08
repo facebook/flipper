@@ -18,13 +18,13 @@ import {
 } from 'flipper';
 import {Component} from 'react';
 
-type SearchResultTree = {|
+export type SearchResultTree = {|
   id: string,
-  isMatch: Boolean,
+  isMatch: boolean,
   hasChildren: boolean,
   children: ?Array<SearchResultTree>,
   element: Element,
-  axElement: Element,
+  axElement: ?Element, // Not supported in iOS
 |};
 
 type Props = {

@@ -17,6 +17,7 @@ import {
   FlexRow,
   colors,
   styled,
+  ArchivedDevice,
 } from 'flipper';
 import React from 'react';
 import {connect} from 'react-redux';
@@ -66,6 +67,7 @@ type Props = {|
     pluginKey: string,
     state: Object,
   }) => void,
+  isArchivedDevice: boolean,
 |};
 
 class PluginContainer extends PureComponent<Props> {
@@ -91,20 +93,21 @@ class PluginContainer extends PureComponent<Props> {
       activePlugin,
       pluginKey,
       target,
+      isArchivedDevice,
     } = this.props;
-
     if (!activePlugin || !target) {
       return null;
     }
     const props: PluginProps<Object> = {
       key: pluginKey,
       logger: this.props.logger,
-      persistedState: activePlugin.defaultPersistedState
-        ? {
-            ...activePlugin.defaultPersistedState,
-            ...pluginState,
-          }
-        : pluginState,
+      persistedState:
+        !isArchivedDevice && activePlugin.defaultPersistedState
+          ? {
+              ...activePlugin.defaultPersistedState,
+              ...pluginState,
+            }
+          : pluginState,
       setPersistedState: state => setPluginState({pluginKey, state}),
       target,
       deepLinkPayload: this.props.deepLinkPayload,
@@ -125,8 +128,8 @@ class PluginContainer extends PureComponent<Props> {
         }
       },
       ref: this.refChanged,
+      isArchivedDevice,
     };
-
     return (
       <React.Fragment>
         <Container key="plugin">
@@ -180,6 +183,7 @@ export default connect<Props, OwnProps, _, _, _, _>(
         pluginKey = getPluginKey(target.id, activePlugin.id);
       }
     }
+    const isArchivedDevice = selectedDevice instanceof ArchivedDevice;
 
     return {
       pluginState: pluginStates[pluginKey],
@@ -187,6 +191,7 @@ export default connect<Props, OwnProps, _, _, _, _>(
       target,
       deepLinkPayload,
       pluginKey,
+      isArchivedDevice,
     };
   },
   // $FlowFixMe
