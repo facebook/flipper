@@ -344,7 +344,6 @@ const ConnectedNotificationsTable = connect<Props, OwnProps, _, _, _, _>(
     devicePlugins,
     clientPlugins,
   }),
-  // $FlowFixMe
   {
     updatePluginBlacklist,
     updateCategoryBlacklist,

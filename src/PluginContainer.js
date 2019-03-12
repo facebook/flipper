@@ -194,7 +194,6 @@ export default connect<Props, OwnProps, _, _, _, _>(
       isArchivedDevice,
     };
   },
-  // $FlowFixMe
   {
     setPluginState,
     selectPlugin,
