@@ -4,14 +4,15 @@
  * LICENSE file in the root directory of this source tree.
  * @format
  */
+import {getInstance as getLogger} from '../fb-stubs/Logger';
 import type {Store} from '../reducers';
 import type {DeviceExport} from '../devices/BaseDevice';
 import type {State as PluginStates} from '../reducers/pluginStates';
 import type {PluginNotification} from '../reducers/notifications.js';
 import type {ClientExport} from '../Client.js';
 import type {State as PluginStatesState} from '../reducers/pluginStates';
-import type {State} from '../reducers/index';
-import {FlipperDevicePlugin} from '../plugin.js';
+import {pluginKey} from '../reducers/pluginStates';
+import {FlipperDevicePlugin, FlipperPlugin, callClient} from '../plugin.js';
 import {default as BaseDevice} from '../devices/BaseDevice';
 import {default as ArchivedDevice} from '../devices/ArchivedDevice';
 import {default as Client} from '../Client';
@@ -20,6 +21,9 @@ import fs from 'fs';
 import uuid from 'uuid';
 import {remote} from 'electron';
 import {serialize, deserialize} from './serialization';
+
+export const IMPORT_FLIPPER_TRACE_EVENT = 'import-flipper-trace';
+export const EXPORT_FLIPPER_TRACE_EVENT = 'export-flipper-trace';
 
 export type ExportType = {|
   fileVersion: string,
@@ -174,41 +178,152 @@ export const processStore = (
   return null;
 };
 
-export function serializeStore(state: State): ?ExportType {
-  const {activeNotifications} = state.notifications;
-  const {selectedDevice, clients} = state.connections;
+export async function serializeStore(store: Store): Promise<?ExportType> {
+  const state = store.getState();
+  const {clients} = state.connections;
   const {pluginStates} = state;
-  const {devicePlugins} = state.plugins;
+  const {plugins} = state;
+  const newPluginState = {...pluginStates};
   // TODO: T39612653 Make Client mockable. Currently rsocket logic is tightly coupled.
   // Not passing the entire state as currently Client is not mockable.
+
+  const pluginsMap: Map<
+    string,
+    Class<FlipperDevicePlugin<> | FlipperPlugin<>>,
+  > = new Map([]);
+  plugins.clientPlugins.forEach((val, key) => {
+    pluginsMap.set(key, val);
+  });
+  plugins.devicePlugins.forEach((val, key) => {
+    pluginsMap.set(key, val);
+  });
+  for (let client of clients) {
+    for (let plugin of client.plugins) {
+      const pluginClass: ?Class<
+        FlipperDevicePlugin<> | FlipperPlugin<>,
+      > = plugin ? pluginsMap.get(plugin) : null;
+      const exportState = pluginClass ? pluginClass.exportPersistedState : null;
+      if (exportState) {
+        const key = pluginKey(client.id, plugin);
+        const data = await exportState(
+          callClient(client, plugin),
+          newPluginState[key],
+          store,
+        );
+        newPluginState[key] = data;
+      }
+    }
+  }
+
+  const {activeNotifications} = store.getState().notifications;
+  const {selectedDevice} = store.getState().connections;
+  const {devicePlugins} = store.getState().plugins;
+
   return processStore(
     activeNotifications,
     selectedDevice,
-    pluginStates,
+    newPluginState,
     clients.map(client => client.toJSON()),
     devicePlugins,
     uuid.v4(),
   );
 }
 
+export function exportStore(store: Store): Promise<string> {
+  getLogger().track('usage', EXPORT_FLIPPER_TRACE_EVENT);
+  return new Promise(async (resolve, reject) => {
+    const json = await serializeStore(store);
+    if (!json) {
+      console.error('Make sure a device is connected');
+      reject('No device is selected');
+    }
+    const serializedString = serialize(json);
+    if (serializedString.length <= 0) {
+      reject('Serialize function returned empty string');
+    }
+    resolve(serializedString);
+  });
+}
+
 export const exportStoreToFile = (
   exportFilePath: string,
-  data: Store,
+  store: Store,
 ): Promise<void> => {
-  const json = serializeStore(data.getState());
-  if (json) {
-    return new Promise((resolve, reject) => {
-      fs.writeFile(exportFilePath, serialize(json), err => {
-        if (err) {
-          reject(err);
-        }
-        resolve();
-      });
+  return exportStore(store).then(storeString => {
+    fs.writeFile(exportFilePath, storeString, err => {
+      if (err) {
+        throw new Error(err);
+      }
+      return;
     });
-  }
-  console.error('Make sure a device is connected');
-  return new Promise.reject(new Error('No device is selected'));
+  });
 };
+
+export function importDataToStore(data: string, store: Store) {
+  getLogger().track('usage', IMPORT_FLIPPER_TRACE_EVENT);
+  const json = deserialize(data);
+  const {device, clients} = json;
+  const {serial, deviceType, title, os, logs} = device;
+  const archivedDevice = new ArchivedDevice(
+    serial,
+    deviceType,
+    title,
+    os,
+    logs ? logs : [],
+  );
+  const devices = store.getState().connections.devices;
+  const matchedDevices = devices.filter(
+    availableDevice => availableDevice.serial === serial,
+  );
+  if (matchedDevices.length > 0) {
+    store.dispatch({
+      type: 'SELECT_DEVICE',
+      payload: matchedDevices[0],
+    });
+    return;
+  }
+  store.dispatch({
+    type: 'REGISTER_DEVICE',
+    payload: archivedDevice,
+  });
+  store.dispatch({
+    type: 'SELECT_DEVICE',
+    payload: archivedDevice,
+  });
+
+  const {pluginStates} = json.store;
+  const keys = Object.keys(pluginStates);
+  clients.forEach(client => {
+    const clientPlugins = keys
+      .filter(key => {
+        const arr = key.split('#');
+        arr.pop();
+        const clientPlugin = arr.join('#');
+        return client.id === clientPlugin;
+      })
+      .map(client => client.split('#').pop());
+    store.dispatch({
+      type: 'NEW_CLIENT',
+      payload: new Client(
+        client.id,
+        client.query,
+        null,
+        getInstance(),
+        store,
+        clientPlugins,
+      ),
+    });
+  });
+  keys.forEach(key => {
+    store.dispatch({
+      type: 'SET_PLUGIN_STATE',
+      payload: {
+        pluginKey: key,
+        state: pluginStates[key],
+      },
+    });
+  });
+}
 
 export const importFileToStore = (file: string, store: Store) => {
   fs.readFile(file, 'utf8', (err, data) => {
@@ -216,67 +331,6 @@ export const importFileToStore = (file: string, store: Store) => {
       console.error(err);
       return;
     }
-    const json = deserialize(data);
-    const {device, clients} = json;
-    const {serial, deviceType, title, os, logs} = device;
-    const archivedDevice = new ArchivedDevice(
-      serial,
-      deviceType,
-      title,
-      os,
-      logs ? logs : [],
-    );
-    const devices = store.getState().connections.devices;
-    const matchedDevices = devices.filter(
-      availableDevice => availableDevice.serial === serial,
-    );
-    if (matchedDevices.length > 0) {
-      store.dispatch({
-        type: 'SELECT_DEVICE',
-        payload: matchedDevices[0],
-      });
-      return;
-    }
-    store.dispatch({
-      type: 'REGISTER_DEVICE',
-      payload: archivedDevice,
-    });
-    store.dispatch({
-      type: 'SELECT_DEVICE',
-      payload: archivedDevice,
-    });
-
-    const {pluginStates} = json.store;
-    const keys = Object.keys(pluginStates);
-    clients.forEach(client => {
-      const clientPlugins = keys
-        .filter(key => {
-          const arr = key.split('#');
-          arr.pop();
-          const clientPlugin = arr.join('#');
-          return client.id === clientPlugin;
-        })
-        .map(client => client.split('#').pop());
-      store.dispatch({
-        type: 'NEW_CLIENT',
-        payload: new Client(
-          client.id,
-          client.query,
-          null,
-          getInstance(),
-          store,
-          clientPlugins,
-        ),
-      });
-    });
-    keys.forEach(key => {
-      store.dispatch({
-        type: 'SET_PLUGIN_STATE',
-        payload: {
-          pluginKey: key,
-          state: pluginStates[key],
-        },
-      });
-    });
+    importDataToStore(data, store);
   });
 };

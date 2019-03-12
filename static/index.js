@@ -131,7 +131,7 @@ app.on('will-finish-launching', () => {
     event.preventDefault();
     deeplinkURL = url;
     if (win) {
-      win.webContents.send('flipper-deeplink', deeplinkURL);
+      win.webContents.send('flipper-protocol-handler', deeplinkURL);
     }
   });
   app.on('open-file', (event, path) => {
@@ -163,7 +163,7 @@ app.on('ready', function() {
 
 ipcMain.on('componentDidMount', event => {
   if (deeplinkURL) {
-    win.webContents.send('flipper-deeplink-preferred-plugin', deeplinkURL);
+    win.webContents.send('flipper-protocol-handler', deeplinkURL);
     deeplinkURL = null;
   }
   if (filePath) {

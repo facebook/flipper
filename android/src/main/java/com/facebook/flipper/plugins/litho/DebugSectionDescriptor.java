@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import androidx.core.view.MarginLayoutParamsCompat;
 import androidx.core.view.ViewCompat;
+import com.facebook.flipper.core.ErrorReportingRunnable;
 import com.facebook.flipper.core.FlipperDynamic;
 import com.facebook.flipper.core.FlipperObject;
 import com.facebook.flipper.plugins.inspector.HighlightedOverlay;
@@ -18,9 +19,28 @@ import com.facebook.flipper.plugins.inspector.Named;
 import com.facebook.flipper.plugins.inspector.NodeDescriptor;
 import com.facebook.flipper.plugins.inspector.Touch;
 import com.facebook.litho.sections.debug.DebugSection;
+import java.util.ArrayList;
 import java.util.List;
 
 public class DebugSectionDescriptor extends NodeDescriptor<DebugSection> {
+
+  @Override
+  public void invalidate(final DebugSection debugSection) {
+    super.invalidate(debugSection);
+
+    new ErrorReportingRunnable(mConnection) {
+      @Override
+      protected void runOrThrow() throws Exception {
+        for (int i = 0; i < getChildCount(debugSection); i++) {
+          Object child = getChildAt(debugSection, i);
+          if (child instanceof DebugSection) {
+            invalidate((DebugSection) child);
+          }
+        }
+      }
+    }.run();
+  }
+
   @Override
   public void init(DebugSection node) throws Exception {}
 
@@ -47,7 +67,8 @@ public class DebugSectionDescriptor extends NodeDescriptor<DebugSection> {
   @Override
   public List<Named<FlipperObject>> getData(DebugSection node) throws Exception {
     // TODO T39526148 add changeset info
-    return null;
+    final List<Named<FlipperObject>> attrs = new ArrayList<>();
+    return attrs;
   }
 
   @Override
@@ -58,7 +79,8 @@ public class DebugSectionDescriptor extends NodeDescriptor<DebugSection> {
   @Override
   public List<Named<String>> getAttributes(DebugSection node) throws Exception {
     // TODO T39526148
-    return null;
+    final List<Named<String>> attrs = new ArrayList<>();
+    return attrs;
   }
 
   @Override
@@ -163,8 +185,8 @@ public class DebugSectionDescriptor extends NodeDescriptor<DebugSection> {
 
   @Override
   public boolean matches(String query, DebugSection node) throws Exception {
-    // TODO T39526148
-    return false;
+    final NodeDescriptor descriptor = descriptorForClass(Object.class);
+    return descriptor.matches(query, node);
   }
 
   @Override

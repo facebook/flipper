@@ -48,12 +48,14 @@ repositories {
 }
 
 dependencies {
-  debugImplementation 'com.facebook.flipper:flipper:0.16.2'
+  debugImplementation 'com.facebook.flipper:flipper:0.17.1'
   debugImplementation 'com.facebook.soloader:soloader:0.5.1'
 }
 ```
 
-Now you can initialize Flipper in your Application's `onCreate`-method like this:
+Now you can initialize Flipper in your Application's `onCreate` method like this:
+
+It's important that `SoLoader.init(this, false);` is called at some point before the Flipper client is initialized. This allows the c++ part of Flipper to be loaded.
 
 ```java
 public class MyApplication extends Application {
@@ -85,7 +87,7 @@ repositories {
 }
 
 dependencies {
-  debugImplementation 'com.facebook.flipper:flipper:0.16.3-SNAPSHOT'
+  debugImplementation 'com.facebook.flipper:flipper:0.17.2-SNAPSHOT'
   debugImplementation 'com.facebook.soloader:soloader:0.5.1'
 }
 ```
@@ -103,7 +105,7 @@ project 'MyApp.xcodeproj'
 source 'https://github.com/facebook/flipper.git'
 source 'https://github.com/CocoaPods/Specs'
 swift_version = "4.1"
-flipperkit_version = '0.16.2'
+flipperkit_version = '0.17.1'
 
 target 'MyApp' do
   platform :ios, '9.0'
@@ -178,7 +180,7 @@ project 'MyApp.xcodeproj'
 source 'https://github.com/facebook/flipper.git'
 source 'https://github.com/CocoaPods/Specs'
 swift_version = "4.1"
-flipperkit_version = '0.16.2'
+flipperkit_version = '0.17.1'
 
 target 'MyApp' do
   platform :ios, '9.0'

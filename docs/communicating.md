@@ -9,7 +9,7 @@ To start communicating with a client your plugin must implement the init functio
 ```javascript
 class extends FlipperPlugin {
   static title = "MyPlugin";
-  static id = 'MyPlugin';
+  static id = "MyPlugin";
 
   init() {
     // Setup subscriptions etc using this.client

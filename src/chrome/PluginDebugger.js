@@ -297,7 +297,7 @@ class PluginDebugger extends Component<Props> {
           <InfoText>
             The table lists all plugins known to Flipper. Some of them might be
             blocked by GKs, others may not show up, because none of the
-            connected apps is supporting it.
+            connected apps are supporting it.
           </InfoText>
           <TableContainer>
             <ManagedTable

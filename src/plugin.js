@@ -19,11 +19,25 @@ import IOSDevice from './devices/IOSDevice';
 
 const invariant = require('invariant');
 
-export type PluginClient = {|
-  send: (method: string, params?: Object) => void,
-  call: (method: string, params?: Object) => Promise<any>,
-  subscribe: (method: string, callback: (params: any) => void) => void,
-|};
+// This function is intended to be called from outside of the plugin.
+// If you want to `call` from the plugin use, this.client.call
+export function callClient(
+  client: Client,
+  id: string,
+): (string, ?Object) => Promise<Object> {
+  return (method, params) => client.call(id, method, false, params);
+}
+
+export interface PluginClient {
+  // eslint-disable-next-line
+  send(method: string, params?: Object): void;
+  // eslint-disable-next-line
+  call(method: string, params?: Object): Promise<any>;
+  // eslint-disable-next-line
+  subscribe(method: string, callback: (params: any) => void): void;
+  // eslint-disable-next-line
+  supportsMethod(method: string): Promise<boolean>;
+}
 
 type PluginTarget = BaseDevice | Client;
 
@@ -44,6 +58,7 @@ export type Props<T> = {
   target: PluginTarget,
   deepLinkPayload: ?string,
   selectPlugin: (pluginID: string, deepLinkPayload: ?string) => boolean,
+  isArchivedDevice: boolean,
 };
 
 export class FlipperBasePlugin<
@@ -68,6 +83,11 @@ export class FlipperBasePlugin<
     method: string,
     data: Object,
   ) => $Shape<PersistedState>;
+  static exportPersistedState: ?(
+    callClient: (string, ?Object) => Promise<Object>,
+    persistedState: ?PersistedState,
+    store: ?Store,
+  ) => Promise<?PersistedState>;
   static getActiveNotifications: ?(
     persistedState: PersistedState,
   ) => Array<Notification>;
@@ -159,7 +179,7 @@ export class FlipperPlugin<S = *, A = *, P = *> extends FlipperBasePlugin<
     // $FlowFixMe props.target will be instance of Client
     this.realClient = props.target;
     this.client = {
-      call: (method, params) => this.realClient.call(id, method, params),
+      call: (method, params) => this.realClient.call(id, method, true, params),
       send: (method, params) => this.realClient.send(id, method, params),
       subscribe: (method, callback) => {
         this.subscriptions.push({
@@ -168,6 +188,7 @@ export class FlipperPlugin<S = *, A = *, P = *> extends FlipperBasePlugin<
         });
         this.realClient.subscribe(id, method, callback);
       },
+      supportsMethod: method => this.realClient.supportsMethod(id, method),
     };
   }
 

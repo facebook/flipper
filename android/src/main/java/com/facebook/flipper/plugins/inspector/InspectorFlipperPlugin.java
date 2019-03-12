@@ -133,6 +133,7 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
           }
         });
     connection.receive("getRoot", mGetRoot);
+    connection.receive("getAllNodes", mGetAllNodes);
     connection.receive("getNodes", mGetNodes);
     connection.receive("setData", mSetData);
     connection.receive("setHighlighted", mSetHighlighted);
@@ -173,7 +174,7 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
 
   @Override
   public boolean runInBackground() {
-    return false;
+    return true;
   }
 
   final FlipperReceiver mShouldShowLithoAccessibilitySettings =
@@ -207,6 +208,31 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
           responder.success(getAXNode(trackObject(mApplication)));
         }
       };
+  final FlipperReceiver mGetAllNodes =
+      new MainThreadFlipperReceiver(mConnection) {
+        @Override
+        public void onReceiveOnMainThread(
+            final FlipperObject params, final FlipperResponder responder) throws Exception {
+          final FlipperObject.Builder result = new FlipperObject.Builder();
+          final FlipperObject.Builder AXResults = new FlipperObject.Builder();
+
+          String rootID = trackObject(mApplication);
+          populateAllAXNodes(rootID, AXResults);
+          populateAllNodes(rootID, result);
+          final FlipperObject output =
+              new FlipperObject.Builder()
+                  .put(
+                      "allNodes",
+                      new FlipperObject.Builder()
+                          .put("elements", result.build())
+                          .put("AXelements", AXResults.build())
+                          .put("rootElement", rootID)
+                          .put("rootAXElement", rootID)
+                          .build())
+                  .build();
+          responder.success(output);
+        }
+      };
 
   final FlipperReceiver mGetNodes =
       new MainThreadFlipperReceiver(mConnection) {
@@ -234,6 +260,24 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
           responder.success(new FlipperObject.Builder().put("elements", result).build());
         }
       };
+
+  void populateAllNodes(String rootNode, FlipperObject.Builder builder) throws Exception {
+    FlipperObject object = getNode(rootNode);
+    builder.put(rootNode, object);
+    FlipperArray children = object.getArray("children");
+    for (int i = 0, count = children.length(); i < count; ++i) {
+      populateAllNodes(children.getString(i), builder);
+    }
+  }
+
+  void populateAllAXNodes(String rootNode, FlipperObject.Builder builder) throws Exception {
+    FlipperObject object = getAXNode(rootNode);
+    builder.put(rootNode, object);
+    FlipperArray children = object.getArray("children");
+    for (int i = 0, count = children.length(); i < count; ++i) {
+      populateAllAXNodes(children.getString(i), builder);
+    }
+  }
 
   final FlipperReceiver mGetAXNodes =
       new MainThreadFlipperReceiver(mConnection) {

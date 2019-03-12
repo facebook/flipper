@@ -9,6 +9,10 @@ export type State = {
   [pluginKey: string]: Object,
 };
 
+export const pluginKey = (serial: string, pluginName: string): string => {
+  return `${serial}#${pluginName}`;
+};
+
 export type Action =
   | {
       type: 'SET_PLUGIN_STATE',

@@ -112,6 +112,15 @@ class EventDetails extends Component<{
             setValue={function(path: Array<string>, val: any) {}}
           />
         </p>
+        <p>
+          <DataDescriptionKey>Requested on cold start</DataDescriptionKey>
+          <span key="sep">: </span>
+          <DataDescription
+            type="boolean"
+            value={event.coldStart}
+            setValue={null}
+          />
+        </p>
         {this.renderViewportData()}
       </EventDetails.Container>
     );

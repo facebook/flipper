@@ -18,6 +18,7 @@ import {
   FlexCenter,
   styled,
   colors,
+  SidebarExtensions,
 } from 'flipper';
 import {Component} from 'react';
 
@@ -92,7 +93,6 @@ type Props = {|
   client: PluginClient,
   realClient: Client,
   logger: Logger,
-  extensions?: Array<Function>,
 |};
 
 type State = {|
@@ -124,14 +124,14 @@ export default class Sidebar extends Component<Props, State> {
   }
 
   render() {
-    const {element, extensions} = this.props;
+    const {element} = this.props;
     if (!element || !element.data) {
       return <NoData grow>No data</NoData>;
     }
 
     const sections: Array<any> =
-      (extensions &&
-        extensions.map(ext =>
+      (SidebarExtensions &&
+        SidebarExtensions.map(ext =>
           ext(
             this.props.client,
             this.props.realClient,

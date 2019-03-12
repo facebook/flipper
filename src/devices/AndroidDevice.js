@@ -9,6 +9,7 @@ import type {DeviceType, DeviceShell} from './BaseDevice.js';
 
 import {Priority} from 'adbkit-logcat-fb';
 import child_process from 'child_process';
+import child_process_promise from 'child-process-es6-promise';
 import BaseDevice from './BaseDevice.js';
 
 type ADBClient = any;
@@ -79,5 +80,9 @@ export default class AndroidDevice extends BaseDevice {
 
   spawnShell(): ?DeviceShell {
     return child_process.spawn('adb', ['-s', this.serial, 'shell', '-t', '-t']);
+  }
+
+  clearLogs(): Promise<void> {
+    return child_process_promise.spawn('adb', ['logcat', '-c']);
   }
 }

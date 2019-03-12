@@ -9,7 +9,6 @@ import type {Logger} from '../fb-interfaces/Logger';
 import {RecurringError} from './errors';
 import {promisify} from 'util';
 const fs = require('fs');
-const adb = require('adbkit-fb');
 import {
   openssl,
   isInstalled as opensslInstalled,
@@ -20,7 +19,8 @@ const tmpFile = promisify(tmp.file);
 const tmpDir = promisify(tmp.dir);
 import iosUtil from '../fb-stubs/iOSContainerUtility';
 import {reportPlatformFailures} from './metrics';
-import adbConfig from './adbConfig';
+import {getAdbClient} from './adbClient';
+const adb = require('adbkit-fb');
 
 // Desktop file paths
 const os = require('os');
@@ -71,13 +71,13 @@ export type SecureServerConfig = {|
 */
 export default class CertificateProvider {
   logger: Logger;
-  adb: any;
+  adb: Promise<any>;
   certificateSetup: Promise<void>;
   server: Server;
 
   constructor(server: Server, logger: Logger) {
     this.logger = logger;
-    this.adb = adb.createClient(adbConfig());
+    this.adb = getAdbClient();
     this.certificateSetup = reportPlatformFailures(
       this.ensureServerCertExists(),
       'ensureServerCertExists',
@@ -260,41 +260,43 @@ export default class CertificateProvider {
     deviceCsrFilePath: string,
     csr: string,
   ): Promise<string> {
-    return this.adb.listDevices().then((devices: Array<{id: string}>) => {
-      const deviceMatchList = devices.map(device =>
-        this.androidDeviceHasMatchingCSR(
-          deviceCsrFilePath,
-          device.id,
-          appName,
-          csr,
-        )
-          .then(isMatch => {
-            return {id: device.id, isMatch};
-          })
-          .catch(e => {
-            console.error(
-              `Unable to check for matching CSR in ${device.id}:${appName}`,
-              logTag,
-            );
-            return {id: device.id, isMatch: false};
-          }),
-      );
-      return Promise.all(deviceMatchList).then(devices => {
-        const matchingIds = devices.filter(m => m.isMatch).map(m => m.id);
-        if (matchingIds.length == 0) {
-          throw new RecurringError(
-            `No matching device found for app: ${appName}`,
-          );
-        }
-        if (matchingIds.length > 1) {
-          console.error(
-            new RecurringError('More than one matching device found for CSR'),
+    return this.adb
+      .then(client => client.listDevices())
+      .then((devices: Array<{id: string}>) => {
+        const deviceMatchList = devices.map(device =>
+          this.androidDeviceHasMatchingCSR(
+            deviceCsrFilePath,
+            device.id,
+            appName,
             csr,
-          );
-        }
-        return matchingIds[0];
+          )
+            .then(isMatch => {
+              return {id: device.id, isMatch};
+            })
+            .catch(e => {
+              console.error(
+                `Unable to check for matching CSR in ${device.id}:${appName}`,
+                logTag,
+              );
+              return {id: device.id, isMatch: false};
+            }),
+        );
+        return Promise.all(deviceMatchList).then(devices => {
+          const matchingIds = devices.filter(m => m.isMatch).map(m => m.id);
+          if (matchingIds.length == 0) {
+            throw new RecurringError(
+              `No matching device found for app: ${appName}`,
+            );
+          }
+          if (matchingIds.length > 1) {
+            console.error(
+              new RecurringError('More than one matching device found for CSR'),
+              csr,
+            );
+          }
+          return matchingIds[0];
+        });
       });
-    });
   }
 
   getTargetiOSDeviceId(
@@ -417,7 +419,9 @@ export default class CertificateProvider {
       );
     }
     return this.adb
-      .shell(deviceId, `echo '${command}' | run-as '${user}'`)
+      .then(client =>
+        client.shell(deviceId, `echo '${command}' | run-as '${user}'`),
+      )
       .then(adb.util.readAll)
       .then(buffer => buffer.toString())
       .then(output => {

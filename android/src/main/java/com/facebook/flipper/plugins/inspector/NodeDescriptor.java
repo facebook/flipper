@@ -49,7 +49,7 @@ public abstract class NodeDescriptor<T> {
    * and/or children have changed. This will trigger Flipper to re-query this node getting any new
    * data.
    */
-  protected final void invalidate(final T node) {
+  public void invalidate(final T node) {
     if (mConnection != null) {
       new ErrorReportingRunnable(mConnection) {
         @Override

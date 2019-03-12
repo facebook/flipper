@@ -34,7 +34,7 @@ static constexpr int maxPayloadSize = 0xFFFFFF;
 // Not a public-facing version number.
 // Used for compatibility checking with desktop flipper.
 // To be bumped for every core platform interface change.
-static constexpr int sdkVersion = 1;
+static constexpr int sdkVersion = 2;
 
 namespace facebook {
 namespace flipper {
@@ -357,7 +357,7 @@ rsocket::Payload toRSocketPayload(dynamic data) {
         json.substr(0, 100) + "...";
     log(logMessage);
     DCHECK_LE(payloadLength, maxPayloadSize);
-    throw new std::length_error(logMessage);
+    throw std::length_error(logMessage);
   }
 
   return payload;

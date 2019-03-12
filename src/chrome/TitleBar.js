@@ -16,6 +16,7 @@ import {
   Spacer,
   styled,
   Text,
+  LoadingIndicator,
 } from 'flipper';
 import {connect} from 'react-redux';
 import {
@@ -61,6 +62,7 @@ type Props = {|
   leftSidebarVisible: boolean,
   rightSidebarVisible: boolean,
   rightSidebarAvailable: boolean,
+  downloadingImportData: boolean,
   toggleLeftSidebarVisible: (visible?: boolean) => void,
   toggleRightSidebarVisible: (visible?: boolean) => void,
   setActiveSheet: (sheet: ActiveSheet) => void,
@@ -72,17 +74,29 @@ const VersionText = styled(Text)({
   marginTop: 2,
 });
 
+const Importing = styled(FlexRow)({
+  color: colors.light50,
+  alignItems: 'center',
+  marginLeft: 10,
+});
+
 class TitleBar extends Component<Props> {
   render() {
     return (
       <AppTitleBar focused={this.props.windowIsFocused} className="toolbar">
         <DevicesButton />
         <ScreenCaptureButtons />
+        {this.props.downloadingImportData && (
+          <Importing>
+            <LoadingIndicator size={16} />&nbsp;Importing data...
+          </Importing>
+        )}
         <Spacer />
         <VersionText>
           {this.props.version}
           {isProduction() ? '' : '-dev'}
         </VersionText>
+
         {isAutoUpdaterEnabled() ? (
           <AutoUpdateVersion version={this.props.version} />
         ) : null}
@@ -125,12 +139,14 @@ export default connect<Props, OwnProps, _, _, _, _>(
       leftSidebarVisible,
       rightSidebarVisible,
       rightSidebarAvailable,
+      downloadingImportData,
     },
   }) => ({
     windowIsFocused,
     leftSidebarVisible,
     rightSidebarVisible,
     rightSidebarAvailable,
+    downloadingImportData,
   }),
   {
     setActiveSheet,

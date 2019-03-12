@@ -11,7 +11,7 @@ import ContextMenu from '../ContextMenu.js';
 import Tooltip from '../Tooltip.js';
 import styled from '../../styled/index.js';
 import DataPreview from './DataPreview.js';
-import createPaste from '../../../utils/createPaste.js';
+import createPaste from '../../../fb-stubs/createPaste.js';
 import {reportInteraction} from '../../../utils/InteractionTracker.js';
 import {getSortedKeys} from './utils.js';
 import {colors} from '../colors.js';

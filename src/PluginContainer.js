@@ -8,7 +8,7 @@ import type {FlipperPlugin, FlipperDevicePlugin} from './plugin.js';
 import type {Logger} from './fb-interfaces/Logger';
 import BaseDevice from './devices/BaseDevice.js';
 import type {Props as PluginProps} from './plugin';
-
+import {pluginKey as getPluginKey} from './reducers/pluginStates';
 import Client from './Client.js';
 import {
   ErrorBoundary,
@@ -17,6 +17,7 @@ import {
   FlexRow,
   colors,
   styled,
+  ArchivedDevice,
 } from 'flipper';
 import React from 'react';
 import {connect} from 'react-redux';
@@ -66,6 +67,7 @@ type Props = {|
     pluginKey: string,
     state: Object,
   }) => void,
+  isArchivedDevice: boolean,
 |};
 
 class PluginContainer extends PureComponent<Props> {
@@ -91,20 +93,21 @@ class PluginContainer extends PureComponent<Props> {
       activePlugin,
       pluginKey,
       target,
+      isArchivedDevice,
     } = this.props;
-
     if (!activePlugin || !target) {
       return null;
     }
     const props: PluginProps<Object> = {
       key: pluginKey,
       logger: this.props.logger,
-      persistedState: activePlugin.defaultPersistedState
-        ? {
-            ...activePlugin.defaultPersistedState,
-            ...pluginState,
-          }
-        : pluginState,
+      persistedState:
+        !isArchivedDevice && activePlugin.defaultPersistedState
+          ? {
+              ...activePlugin.defaultPersistedState,
+              ...pluginState,
+            }
+          : pluginState,
       setPersistedState: state => setPluginState({pluginKey, state}),
       target,
       deepLinkPayload: this.props.deepLinkPayload,
@@ -125,8 +128,8 @@ class PluginContainer extends PureComponent<Props> {
         }
       },
       ref: this.refChanged,
+      isArchivedDevice,
     };
-
     return (
       <React.Fragment>
         <Container key="plugin">
@@ -168,7 +171,7 @@ export default connect<Props, OwnProps, _, _, _, _>(
       }
       target = selectedDevice;
       if (activePlugin) {
-        pluginKey = `${selectedDevice.serial}#${activePlugin.id}`;
+        pluginKey = getPluginKey(selectedDevice.serial, activePlugin.id);
       } else {
         target = clients.find((client: Client) => client.id === selectedApp);
         activePlugin = clientPlugins.get(selectedPlugin);
@@ -177,19 +180,21 @@ export default connect<Props, OwnProps, _, _, _, _>(
             `Plugin "${selectedPlugin || ''}" could not be found.`,
           );
         }
-        pluginKey = `${target.id}#${activePlugin.id}`;
+        pluginKey = getPluginKey(target.id, activePlugin.id);
       }
     }
-
+    const isArchivedDevice = !selectedDevice
+      ? false
+      : selectedDevice instanceof ArchivedDevice;
     return {
       pluginState: pluginStates[pluginKey],
       activePlugin,
       target,
       deepLinkPayload,
       pluginKey,
+      isArchivedDevice,
     };
   },
-  // $FlowFixMe
   {
     setPluginState,
     selectPlugin,
