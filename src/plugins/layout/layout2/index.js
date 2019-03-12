@@ -179,12 +179,14 @@ export default class Layout extends FlipperPlugin<State, void, PersistedState> {
         {this.state.init && (
           <>
             <Toolbar>
-              <ToolbarIcon
-                onClick={this.onToggleTargetMode}
-                title="Toggle target mode"
-                icon="target"
-                active={this.state.inTargetMode}
-              />
+              {!this.props.isArchivedDevice && (
+                <ToolbarIcon
+                  onClick={this.onToggleTargetMode}
+                  title="Toggle target mode"
+                  icon="target"
+                  active={this.state.inTargetMode}
+                />
+              )}
               {this.realClient.query.os === 'Android' && (
                 <ToolbarIcon
                   onClick={this.onToggleAXMode}
@@ -193,12 +195,15 @@ export default class Layout extends FlipperPlugin<State, void, PersistedState> {
                   active={this.state.inAXMode}
                 />
               )}
-              <ToolbarIcon
-                onClick={this.onToggleAlignmentMode}
-                title="Toggle AlignmentMode to show alignment lines"
-                icon="borders"
-                active={this.state.inAlignmentMode}
-              />
+              {!this.props.isArchivedDevice && (
+                <ToolbarIcon
+                  onClick={this.onToggleAlignmentMode}
+                  title="Toggle AlignmentMode to show alignment lines"
+                  icon="borders"
+                  active={this.state.inAlignmentMode}
+                />
+              )}
+
               <Search
                 client={this.getClient()}
                 setPersistedState={this.props.setPersistedState}
