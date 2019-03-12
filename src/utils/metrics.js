@@ -53,3 +53,21 @@ export function reportPluginFailures<T>(
     },
   );
 }
+
+/*
+ * Wraps a closure, preserving it's functionality but logging the success or
+ failure state of it.
+ */
+export function tryCatchReportPlatformFailures<T>(
+  closure: () => T,
+  name: string,
+): T {
+  try {
+    const result = closure();
+    getInstance().track('success-rate', name, 1);
+    return result;
+  } catch (e) {
+    getInstance().track('success-rate', name, 0);
+    throw e;
+  }
+}

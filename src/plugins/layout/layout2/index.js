@@ -5,7 +5,13 @@
  * @format
  */
 
-import type {ElementID, Element, ElementSearchResultSet} from 'flipper';
+import type {
+  ElementID,
+  Element,
+  ElementSearchResultSet,
+  Store,
+  PluginClient,
+} from 'flipper';
 
 import {
   FlexColumn,
@@ -16,11 +22,13 @@ import {
   Link,
   Glyph,
   DetailSidebar,
+  styled,
 } from 'flipper';
 import Inspector from './Inspector';
 import ToolbarIcon from './ToolbarIcon';
 import InspectorSidebar from './InspectorSidebar';
 import Search from './Search';
+import ProxyArchiveClient from './ProxyArchiveClient';
 
 type State = {|
   init: boolean,
@@ -32,14 +40,40 @@ type State = {|
   searchResults: ?ElementSearchResultSet,
 |};
 
+export type ElementMap = {[key: ElementID]: Element};
+
 export type PersistedState = {|
   rootElement: ?ElementID,
   rootAXElement: ?ElementID,
-  elements: {[key: ElementID]: Element},
-  AXelements: {[key: ElementID]: Element},
+  elements: ElementMap,
+  AXelements: ElementMap,
 |};
 
+const BetaBar = styled(Toolbar)({
+  display: 'block',
+  overflow: 'hidden',
+  lineHeight: '15px',
+  whiteSpace: 'nowrap',
+  textOverflow: 'ellipsis',
+});
+
 export default class Layout extends FlipperPlugin<State, void, PersistedState> {
+  static exportPersistedState = (
+    callClient: (string, ?Object) => Promise<Object>,
+    persistedState: ?PersistedState,
+    store: ?Store,
+  ): Promise<?PersistedState> => {
+    const defaultPromise = Promise.resolve(persistedState);
+    if (!store) {
+      return defaultPromise;
+    }
+    const selectedDevice = store.getState().connections.selectedDevice;
+    if (selectedDevice && selectedDevice.os === 'iOS') {
+      return callClient('getAllNodes').then(({allNodes}) => allNodes);
+    }
+    return defaultPromise;
+  };
+
   static defaultPersistedState = {
     rootElement: null,
     rootAXElement: null,
@@ -57,11 +91,11 @@ export default class Layout extends FlipperPlugin<State, void, PersistedState> {
     searchResults: null,
   };
 
-  componentDidMount() {
-    this.props.setPersistedState(Layout.defaultPersistedState);
-  }
-
   init() {
+    if (!this.props.persistedState) {
+      // If the selected plugin from the previous session was layout, then while importing the flipper trace, the redux store doesn't get updated in the first render, due to which the plugin crashes, as it has no persisted state
+      this.props.setPersistedState(this.constructor.defaultPersistedState);
+    }
     // persist searchActive state when moving between plugins to prevent multiple
     // TouchOverlayViews since we can't edit the view heirarchy in onDisconnect
     this.client.call('isSearchActive').then(({isSearchActive}) => {
@@ -88,6 +122,11 @@ export default class Layout extends FlipperPlugin<State, void, PersistedState> {
     this.setState({inAXMode: !this.state.inAXMode});
   };
 
+  getClient(): PluginClient {
+    return this.props.isArchivedDevice
+      ? new ProxyArchiveClient(this.props.persistedState)
+      : this.client;
+  }
   onToggleAlignmentMode = () => {
     if (this.state.selectedElement) {
       this.client.send('setHighlighted', {
@@ -112,7 +151,7 @@ export default class Layout extends FlipperPlugin<State, void, PersistedState> {
 
   render() {
     const inspectorProps = {
-      client: this.client,
+      client: this.getClient(),
       inAlignmentMode: this.state.inAlignmentMode,
       selectedElement: this.state.selectedElement,
       selectedAXElement: this.state.selectedAXElement,
@@ -130,6 +169,14 @@ export default class Layout extends FlipperPlugin<State, void, PersistedState> {
     } else if (this.state.selectedElement) {
       element = this.props.persistedState.elements[this.state.selectedElement];
     }
+
+    const inspector = (
+      <Inspector
+        {...inspectorProps}
+        onSelect={selectedElement => this.setState({selectedElement})}
+        showsSidebar={!this.state.inAXMode}
+      />
+    );
 
     return (
       <FlexColumn grow={true}>
@@ -157,7 +204,7 @@ export default class Layout extends FlipperPlugin<State, void, PersistedState> {
                 active={this.state.inAlignmentMode}
               />
               <Search
-                client={this.client}
+                client={this.getClient()}
                 setPersistedState={this.props.setPersistedState}
                 persistedState={this.props.persistedState}
                 onSearchResults={searchResults =>
@@ -168,13 +215,11 @@ export default class Layout extends FlipperPlugin<State, void, PersistedState> {
             </Toolbar>
 
             <FlexRow grow={true}>
-              <Inspector
-                {...inspectorProps}
-                onSelect={selectedElement => this.setState({selectedElement})}
-                showsSidebar={!this.state.inAXMode}
-              />
-              {this.state.inAXMode && (
-                <Sidebar position="right" width={400}>
+              {this.state.inAXMode ? (
+                <>
+                  <Sidebar position="left" maxWidth={Infinity}>
+                    {inspector}
+                  </Sidebar>
                   <Inspector
                     {...inspectorProps}
                     onSelect={selectedAXElement =>
@@ -183,12 +228,14 @@ export default class Layout extends FlipperPlugin<State, void, PersistedState> {
                     showsSidebar={true}
                     ax
                   />
-                </Sidebar>
+                </>
+              ) : (
+                inspector
               )}
             </FlexRow>
             <DetailSidebar>
               <InspectorSidebar
-                client={this.client}
+                client={this.getClient()}
                 realClient={this.realClient}
                 element={element}
                 onValueChanged={this.onDataValueChanged}
@@ -198,14 +245,14 @@ export default class Layout extends FlipperPlugin<State, void, PersistedState> {
           </>
         )}
         {/* TODO: Remove this when rolling out publicly */}
-        <Toolbar position="bottom" compact>
+        <BetaBar position="bottom" compact>
           <Glyph name="beta" color="#8157C7" />&nbsp;
           <strong>Version 2.0:</strong>&nbsp; Provide feedback about this plugin
           in our&nbsp;
           <Link href="https://fb.workplace.com/groups/246035322947653/">
             feedback group
           </Link>.
-        </Toolbar>
+        </BetaBar>
       </FlexColumn>
     );
   }

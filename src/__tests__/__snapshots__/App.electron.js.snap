@@ -61,7 +61,7 @@ exports[`Empty app state matches snapshot 1`] = `
     <span
       className="css-lli23c"
     >
-      4.0.5
+      4.0.8
       -dev
     </span>
     <div

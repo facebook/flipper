@@ -6,7 +6,13 @@
  */
 
 import type {FlipperPlugin, FlipperDevicePlugin} from './plugin.js';
-import {exportStoreToFile, importFileToStore} from './utils/exportData.js';
+import {
+  exportStoreToFile,
+  exportStore,
+  importFileToStore,
+  IMPORT_FLIPPER_TRACE_EVENT,
+  EXPORT_FLIPPER_TRACE_EVENT,
+} from './utils/exportData.js';
 import type {Store} from './reducers/';
 import electron from 'electron';
 import {GK} from 'flipper';
@@ -14,7 +20,11 @@ import {remote} from 'electron';
 const {dialog} = remote;
 import os from 'os';
 import path from 'path';
-
+import {shareFlipperData} from './fb-stubs/user';
+import {
+  reportPlatformFailures,
+  tryCatchReportPlatformFailures,
+} from './utils/metrics';
 export type DefaultKeyboardAction = 'clear' | 'goToBottom' | 'createPaste';
 export type TopLevelMenu = 'Edit' | 'View' | 'Window' | 'Help';
 
@@ -64,7 +74,7 @@ function actionHandler(action: string) {
   if (pluginActionHandler) {
     pluginActionHandler(action);
   } else {
-    console.warn(`Unhandled keybaord action "${action}".`);
+    console.warn(`Unhandled keyboard action "${action}".`);
   }
 }
 
@@ -318,24 +328,8 @@ function getTemplate(
       label: 'File',
       submenu: [
         {
-          label: 'Export Data...',
-          role: 'export',
-          click: function(item: Object, focusedWindow: Object) {
-            dialog.showSaveDialog(
-              null,
-              {
-                title: 'FlipperExport',
-                defaultPath: path.join(os.homedir(), 'FlipperExport.flipper'),
-              },
-              file => {
-                exportStoreToFile(file, store);
-              },
-            );
-          },
-        },
-        {
-          label: 'Import Data...',
-          role: 'import',
+          label: 'Open File...',
+          accelerator: 'CommandOrControl+O',
           click: function(item: Object, focusedWindow: Object) {
             dialog.showOpenDialog(
               {
@@ -343,11 +337,47 @@ function getTemplate(
               },
               (files: Array<string>) => {
                 if (files !== undefined && files.length > 0) {
-                  importFileToStore(files[0], store);
+                  tryCatchReportPlatformFailures(() => {
+                    importFileToStore(files[0], store);
+                  }, `${IMPORT_FLIPPER_TRACE_EVENT}:UI`);
                 }
               },
             );
           },
+        },
+        {
+          label: 'Export',
+          submenu: [
+            {
+              label: 'File...',
+              accelerator: 'CommandOrControl+E',
+              click: function(item: Object, focusedWindow: Object) {
+                dialog.showSaveDialog(
+                  null,
+                  {
+                    title: 'FlipperExport',
+                    defaultPath: path.join(
+                      os.homedir(),
+                      'FlipperExport.flipper',
+                    ),
+                  },
+                  file => {
+                    reportPlatformFailures(
+                      exportStoreToFile(file, store),
+                      `${EXPORT_FLIPPER_TRACE_EVENT}:UI`,
+                    );
+                  },
+                );
+              },
+            },
+            {
+              label: 'Sharable Link',
+              accelerator: 'CommandOrControl+Shift+E',
+              click: async function(item: Object, focusedWindow: Object) {
+                shareFlipperData(await exportStore(store));
+              },
+            },
+          ],
         },
       ],
     });

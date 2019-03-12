@@ -21,6 +21,7 @@ test('TitleBar is rendered', () => {
         leftSidebarVisible={false}
         rightSidebarVisible={false}
         rightSidebarAvailable={false}
+        downloadingImportData={false}
         toggleLeftSidebarVisible={() => {}}
         toggleRightSidebarVisible={() => {}}
         setActiveSheet={_sheet => {}}

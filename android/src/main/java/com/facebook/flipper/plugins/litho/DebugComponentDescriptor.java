@@ -25,14 +25,12 @@ import com.facebook.flipper.plugins.inspector.NodeDescriptor;
 import com.facebook.flipper.plugins.inspector.Touch;
 import com.facebook.flipper.plugins.inspector.descriptors.ObjectDescriptor;
 import com.facebook.litho.Component;
-import com.facebook.litho.ComponentContext;
 import com.facebook.litho.DebugComponent;
 import com.facebook.litho.DebugLayoutNode;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.StateContainer;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
-import com.facebook.litho.reference.Reference;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
@@ -180,7 +178,7 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
     }
 
     final FlipperObject.Builder data = new FlipperObject.Builder();
-    data.put("background", fromReference(node.getContext(), layout.getBackground()));
+    data.put("background", fromDrawable(layout.getBackground()));
     data.put("foreground", fromDrawable(layout.getForeground()));
 
     data.put("direction", InspectorValue.mutable(Enum, layout.getLayoutDirection().toString()));
@@ -631,17 +629,6 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
     return InspectorValue.mutable(Color, 0);
   }
 
-  private static <T extends Drawable> InspectorValue fromReference(
-      ComponentContext c, Reference<T> r) {
-    if (r == null) {
-      return fromDrawable(null);
-    }
-
-    final T d = Reference.acquire(c.getAndroidContext(), r);
-    final InspectorValue v = fromDrawable(d);
-    Reference.release(c.getAndroidContext(), d, r);
-    return v;
-  }
 
   private static InspectorValue fromFloat(float f) {
     if (Float.isNaN(f)) {

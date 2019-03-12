@@ -110,6 +110,7 @@ class FlipperClient : public FlipperConnectionManager::Callbacks {
   void disconnect(std::shared_ptr<FlipperPlugin> plugin);
   void startBackgroundPlugins();
   std::string callstack();
+  void handleError(std::exception& e);
 };
 
 } // namespace flipper

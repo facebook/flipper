@@ -11,6 +11,7 @@ import android.util.Base64;
 import com.facebook.cache.common.CacheKey;
 import com.facebook.common.internal.Predicate;
 import com.facebook.common.memory.manager.DebugMemoryManager;
+import com.facebook.common.memory.manager.NoOpDebugMemoryManager;
 import com.facebook.common.references.CloseableReference;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.backends.pipeline.info.ImageLoadStatus;
@@ -23,6 +24,7 @@ import com.facebook.flipper.core.FlipperObject;
 import com.facebook.flipper.core.FlipperReceiver;
 import com.facebook.flipper.core.FlipperResponder;
 import com.facebook.flipper.perflogger.FlipperPerfLogger;
+import com.facebook.flipper.perflogger.NoOpFlipperPerfLogger;
 import com.facebook.flipper.plugins.common.BufferingFlipperPlugin;
 import com.facebook.flipper.plugins.fresco.objecthelper.FlipperObjectHelper;
 import com.facebook.imagepipeline.bitmaps.PlatformBitmapFactory;
@@ -85,6 +87,16 @@ public class FrescoFlipperPlugin extends BufferingFlipperPlugin implements Image
     mMemoryManager = memoryManager;
     mPerfLogger = perfLogger;
     mDebugPrefHelper = debugPrefHelper;
+  }
+
+  public FrescoFlipperPlugin() {
+    this(
+        new FlipperImageTracker(),
+        Fresco.getImagePipelineFactory().getPlatformBitmapFactory(),
+        null,
+        new NoOpDebugMemoryManager(),
+        new NoOpFlipperPerfLogger(),
+        null);
   }
 
   public FlipperImageTracker getFlipperImageTracker() {

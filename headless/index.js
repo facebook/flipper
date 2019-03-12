@@ -97,10 +97,8 @@ function startFlipper({
   const logger = initLogger(store, {isHeadless: true});
   dispatcher(store, logger);
 
-  process.on('SIGINT', () => {
-    originalConsole.log(
-      JSON.stringify(serializeStore(store.getState()), null, 2),
-    );
+  process.on('SIGINT', async () => {
+    originalConsole.log(JSON.stringify(await serializeStore(store), null, 2));
     process.exit();
   });
 }

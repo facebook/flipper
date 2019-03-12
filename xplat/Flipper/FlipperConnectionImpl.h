@@ -53,6 +53,13 @@ class FlipperConnectionImpl : public FlipperConnection {
     receivers_[method] = receiver;
   }
 
+  /**
+  Runtime check which receivers are supported for this app
+  */
+  bool hasReceiver(const std::string& method) {
+    return receivers_.find(method) != receivers_.end();
+  }
+
  private:
   FlipperConnectionManager* socket_;
   std::string name_;

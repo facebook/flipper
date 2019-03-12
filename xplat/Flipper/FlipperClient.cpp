@@ -68,6 +68,12 @@ void FlipperClient::addPlugin(std::shared_ptr<FlipperPlugin> plugin) {
     step->complete();
     if (connected_) {
       refreshPlugins();
+      if (plugin->runInBackground()) {
+        auto& conn = connections_[plugin->identifier()];
+        conn = std::make_shared<FlipperConnectionImpl>(
+            socket_.get(), plugin->identifier());
+        plugin->didConnect(conn);
+      }
     }
   });
 }
@@ -231,6 +237,22 @@ void FlipperClient::onMessageReceived(
       return;
     }
 
+    if (method == "isMethodSupported") {
+      const auto identifier = params["api"].getString();
+      if (connections_.find(identifier) == connections_.end()) {
+        std::string errorMessage = "Connection " + identifier +
+            " not found for method " + method.getString();
+        log(errorMessage);
+        responder->error(folly::dynamic::object("message", errorMessage)(
+            "name", "ConnectionNotFound"));
+        return;
+      }
+      const auto& conn = connections_.at(params["api"].getString());
+      bool isSupported = conn->hasReceiver(params["method"].getString());
+      responder->success(dynamic::object("isSupported", isSupported));
+      return;
+    }
+
     dynamic response =
         dynamic::object("message", "Received unknown method: " + method);
     responder->error(response);
@@ -286,15 +308,10 @@ void FlipperClient::performAndReportError(const std::function<void()>& func) {
   try {
     func();
   } catch (std::exception& e) {
-    if (connected_) {
-      std::string callstack = this->callstack();
-      dynamic message = dynamic::object(
-          "error",
-          dynamic::object("message", e.what())("stacktrace", callstack)(
-              "name", e.what()));
-      socket_->sendMessage(message);
-    } else {
-      log("Error: " + std::string(e.what()));
+    handleError(e);
+  } catch (std::exception* e) {
+    if (e) {
+      handleError(*e);
     }
   } catch (...) {
     // Generic catch block for the exception of type not belonging to
@@ -302,6 +319,19 @@ void FlipperClient::performAndReportError(const std::function<void()>& func) {
     log("Unknown error suppressed in FlipperClient");
   }
 #endif
+}
+
+void FlipperClient::handleError(std::exception& e) {
+  if (connected_) {
+    std::string callstack = this->callstack();
+    dynamic message = dynamic::object(
+        "error",
+        dynamic::object("message", e.what())("stacktrace", callstack)(
+            "name", e.what()));
+    socket_->sendMessage(message);
+  } else {
+    log("Error: " + std::string(e.what()));
+  }
 }
 
 std::string FlipperClient::getState() {

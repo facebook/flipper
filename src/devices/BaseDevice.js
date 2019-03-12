@@ -123,6 +123,11 @@ export default class BaseDevice {
     return this.logEntries;
   }
 
+  clearLogs(): Promise<void> {
+    // Only for device types that allow clearing.
+    return Promise.resolve();
+  }
+
   removeLogListener(id: Symbol) {
     this.logListeners.delete(id);
   }

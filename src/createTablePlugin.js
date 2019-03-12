@@ -18,7 +18,7 @@ import DetailSidebar from './chrome/DetailSidebar';
 import {FlipperPlugin} from './plugin';
 import SearchableTable from './ui/components/searchable/SearchableTable';
 import textContent from './utils/textContent.js';
-import createPaste from './utils/createPaste.js';
+import createPaste from './fb-stubs/createPaste.js';
 
 type ID = string;
 

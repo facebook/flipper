@@ -57,15 +57,22 @@ const handleError = (store: Store, deviceSerial: ?string, error: ErrorType) => {
     ...crashReporterPlugin.defaultPersistedState,
     ...store.getState().pluginStates[pluginKey],
   };
+  const isCrashReport: boolean = Boolean(error.name || error.message);
+  const payload = isCrashReport
+    ? {
+        name: error.name,
+        reason: error.message,
+        callstack: error.stacktrace,
+      }
+    : {
+        name: 'Plugin Error',
+        reason: JSON.stringify(error),
+      };
   // $FlowFixMe: We checked persistedStateReducer exists
   const newPluginState = crashReporterPlugin.persistedStateReducer(
     persistedState,
     'flipper-crash-report',
-    {
-      name: error.name,
-      reason: error.message,
-      callstack: error.stacktrace,
-    },
+    payload,
   );
   if (persistedState !== newPluginState) {
     store.dispatch(
@@ -164,7 +171,9 @@ export default class Client extends EventEmitter {
 
   // get the supported plugins
   async getPlugins(): Promise<Plugins> {
-    const plugins = await this.rawCall('getPlugins').then(data => data.plugins);
+    const plugins = await this.rawCall('getPlugins', false).then(
+      data => data.plugins,
+    );
     this.plugins = plugins;
     return plugins;
   }
@@ -338,7 +347,11 @@ export default class Client extends EventEmitter {
     methodCallbacks.delete(callback);
   }
 
-  rawCall(method: string, params?: Object): Promise<Object> {
+  rawCall(
+    method: string,
+    fromPlugin: boolean,
+    params?: Object,
+  ): Promise<Object> {
     return new Promise((resolve, reject) => {
       const id = this.messageIdCounter++;
       const metadata: RequestMetadata = {
@@ -371,13 +384,13 @@ export default class Client extends EventEmitter {
 
       const mark = this.getPerformanceMark(metadata);
       performance.mark(mark);
-      if (this.isAcceptingMessagesFromPlugin(plugin)) {
+      if (!fromPlugin || this.isAcceptingMessagesFromPlugin(plugin)) {
         this.connection &&
           this.connection
             .requestResponse({data: JSON.stringify(data)})
             .subscribe({
               onComplete: payload => {
-                if (this.isAcceptingMessagesFromPlugin(plugin)) {
+                if (!fromPlugin || this.isAcceptingMessagesFromPlugin(plugin)) {
                   const logEventName = this.getLogEventName(data);
                   this.logger.trackTimeSince(mark, logEventName);
                   const response: {|
@@ -445,9 +458,14 @@ export default class Client extends EventEmitter {
     }
   }
 
-  call(api: string, method: string, params?: Object): Promise<Object> {
+  call(
+    api: string,
+    method: string,
+    fromPlugin: boolean,
+    params?: Object,
+  ): Promise<Object> {
     return reportPluginFailures(
-      this.rawCall('execute', {api, method, params}),
+      this.rawCall('execute', fromPlugin, {api, method, params}),
       `Call-${method}`,
       api,
     );
@@ -461,5 +479,14 @@ export default class Client extends EventEmitter {
       );
     }
     return this.rawSend('execute', {api, method, params});
+  }
+
+  supportsMethod(api: string, method: string): Promise<boolean> {
+    if (this.sdkVersion < 2) {
+      return Promise.resolve(false);
+    }
+    return this.rawCall('isMethodSupported', true, {api, method}).then(
+      response => response.isSupported,
+    );
   }
 }

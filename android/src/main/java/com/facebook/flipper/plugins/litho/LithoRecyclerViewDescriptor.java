@@ -19,8 +19,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LithoRecyclerViewDescriptor extends NodeDescriptor<LithoRecylerView> {
+
   @Override
-  public void init(LithoRecylerView node) throws Exception {}
+  public void invalidate(final LithoRecylerView node) {
+    super.invalidate(node);
+
+    new com.facebook.flipper.core.ErrorReportingRunnable(mConnection) {
+      @Override
+      protected void runOrThrow() throws Exception {
+        final Object child;
+        child = getChildAt(node, 0);
+        if (child instanceof DebugSection) {
+          DebugSection childSection = (DebugSection) child;
+          final NodeDescriptor descriptor = descriptorForClass(DebugSection.class);
+          descriptor.invalidate(childSection);
+        }
+      }
+    }.run();
+  }
+
+  @Override
+  public void init(final LithoRecylerView node) throws Exception {
+    final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
+    descriptor.init(node);
+  }
 
   @Override
   public String getId(LithoRecylerView node) throws Exception {

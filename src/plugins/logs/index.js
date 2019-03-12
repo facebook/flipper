@@ -316,7 +316,6 @@ export function processEntry(
   entry: DeviceLogEntry,
 } {
   const {icon, style} = LOG_TYPES[(entry.type: string)] || LOG_TYPES.debug;
-
   // build the item, it will either be batched or added straight away
   return {
     entry,
@@ -522,6 +521,9 @@ export default class LogTable extends FlipperDevicePlugin<
   }
 
   clearLogs = () => {
+    this.device.clearLogs().catch(e => {
+      console.error('Failed to clear logs: ', e);
+    });
     this.setState({
       entries: [],
       rows: [],

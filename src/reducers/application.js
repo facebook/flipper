@@ -30,13 +30,15 @@ export type State = {
     insecure: number,
     secure: number,
   },
+  downloadingImportData: boolean,
 };
 
 type BooleanActionType =
   | 'leftSidebarVisible'
   | 'rightSidebarVisible'
   | 'rightSidebarAvailable'
-  | 'windowIsFocused';
+  | 'windowIsFocused'
+  | 'downloadingImportData';
 
 export type Action =
   | {
@@ -66,6 +68,7 @@ const initialState: () => State = () => ({
     insecure: 8089,
     secure: 8088,
   },
+  downloadingImportData: false,
 });
 
 export default function reducer(state: State, action: Action): State {
@@ -74,7 +77,8 @@ export default function reducer(state: State, action: Action): State {
     action.type === 'leftSidebarVisible' ||
     action.type === 'rightSidebarVisible' ||
     action.type === 'rightSidebarAvailable' ||
-    action.type === 'windowIsFocused'
+    action.type === 'windowIsFocused' ||
+    action.type === 'downloadingImportData'
   ) {
     const newValue =
       typeof action.payload === 'undefined'
