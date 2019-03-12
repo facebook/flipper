@@ -183,8 +183,9 @@ export default connect<Props, OwnProps, _, _, _, _>(
         pluginKey = getPluginKey(target.id, activePlugin.id);
       }
     }
-    const isArchivedDevice = selectedDevice instanceof ArchivedDevice;
-
+    const isArchivedDevice = !selectedDevice
+      ? false
+      : selectedDevice instanceof ArchivedDevice;
     return {
       pluginState: pluginStates[pluginKey],
       activePlugin,

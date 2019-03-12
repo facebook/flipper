@@ -49,7 +49,9 @@ export function searchNodes(
   AXMode: boolean,
   state: PersistedState,
 ): ?SearchResultTree {
-  const elements = state[propsForPersistedState(AXMode).ELEMENTS];
+  // Even if the axMode is true, we will have to search the normal elements too.
+  // The AXEelements will automatically populated in constructSearchResultTree
+  const elements = state[propsForPersistedState(false).ELEMENTS];
   const children: Array<SearchResultTree> = [];
   const match = isMatch(node, query);
 

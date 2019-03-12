@@ -83,10 +83,9 @@ function populateChildren(state: PersistedState, axMode: boolean) {
     'child1_child1 view',
     [],
   );
+  state.elements = elements;
   if (axMode) {
     state.AXelements = elements;
-  } else {
-    state.elements = elements;
   }
 }
 

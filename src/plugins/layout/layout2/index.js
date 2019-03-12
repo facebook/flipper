@@ -67,11 +67,7 @@ export default class Layout extends FlipperPlugin<State, void, PersistedState> {
     if (!store) {
       return defaultPromise;
     }
-    const selectedDevice = store.getState().connections.selectedDevice;
-    if (selectedDevice && selectedDevice.os === 'iOS') {
-      return callClient('getAllNodes').then(({allNodes}) => allNodes);
-    }
-    return defaultPromise;
+    return callClient('getAllNodes').then(({allNodes}) => allNodes);
   };
 
   static defaultPersistedState = {
