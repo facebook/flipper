@@ -101,13 +101,12 @@ class PluginContainer extends PureComponent<Props> {
     const props: PluginProps<Object> = {
       key: pluginKey,
       logger: this.props.logger,
-      persistedState:
-        !isArchivedDevice && activePlugin.defaultPersistedState
-          ? {
-              ...activePlugin.defaultPersistedState,
-              ...pluginState,
-            }
-          : pluginState,
+      persistedState: activePlugin.defaultPersistedState
+        ? {
+            ...activePlugin.defaultPersistedState,
+            ...pluginState,
+          }
+        : pluginState,
       setPersistedState: state => setPluginState({pluginKey, state}),
       target,
       deepLinkPayload: this.props.deepLinkPayload,
