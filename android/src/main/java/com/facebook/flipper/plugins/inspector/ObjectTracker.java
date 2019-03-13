@@ -8,7 +8,7 @@
 
 package com.facebook.flipper.plugins.inspector;
 
-import java.lang.ref.WeakReference;
+import java.lang.ref.SoftReference;
 import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.Nullable;
@@ -16,20 +16,20 @@ import javax.annotation.Nullable;
 public class ObjectTracker {
   ObjectTracker() {}
 
-  private final Map<String, WeakReference<Object>> mObjects = new HashMap<>();
+  private final Map<String, SoftReference<Object>> mObjects = new HashMap<>();
 
   void put(String id, Object obj) {
-    mObjects.put(id, new WeakReference<>(obj));
+    mObjects.put(id, new SoftReference<>(obj));
   }
 
   @Nullable
   public Object get(String id) {
-    final WeakReference<Object> weakObj = mObjects.get(id);
-    if (weakObj == null) {
+    final SoftReference<Object> softRef = mObjects.get(id);
+    if (softRef == null) {
       return null;
     }
 
-    final Object obj = weakObj.get();
+    final Object obj = softRef.get();
     if (obj == null) {
       mObjects.remove(id);
     }
