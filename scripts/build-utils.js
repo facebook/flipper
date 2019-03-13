@@ -79,7 +79,7 @@ function buildFolder() {
   // eslint-disable-next-line no-console
   console.log('Creating build directory');
   return new Promise((resolve, reject) => {
-    tmp.dir((err, buildFolder) => {
+    tmp.dir({prefix: 'flipper-build-'}, (err, buildFolder) => {
       if (err) {
         reject(err);
       } else {
