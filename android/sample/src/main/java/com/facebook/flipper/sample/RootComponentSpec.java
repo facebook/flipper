@@ -8,14 +8,9 @@
 package com.facebook.flipper.sample;
 
 import android.content.Intent;
-import android.util.Log;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.interfaces.DraweeController;
-import com.facebook.flipper.android.AndroidFlipperClient;
 import com.facebook.flipper.android.diagnostics.FlipperDiagnosticActivity;
-import com.facebook.flipper.core.FlipperClient;
-import com.facebook.flipper.core.FlipperPlugin;
-import com.facebook.flipper.plugins.example.ExampleFlipperPlugin;
 import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
@@ -28,13 +23,6 @@ import com.facebook.litho.annotations.OnUpdateState;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.fresco.FrescoImage;
 import com.facebook.litho.widget.Text;
-import java.io.IOException;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.FormBody;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
 
 @LayoutSpec
 public class RootComponentSpec {
@@ -80,72 +68,17 @@ public class RootComponentSpec {
 
   @OnEvent(ClickEvent.class)
   static void hitGetRequest(final ComponentContext c) {
-
-    final Request request =
-        new Request.Builder().url("https://api.github.com/repos/facebook/yoga").get().build();
-    FlipperSampleApplication.sOkHttpClient
-        .newCall(request)
-        .enqueue(
-            new Callback() {
-              @Override
-              public void onFailure(final Call call, final IOException e) {
-                e.printStackTrace();
-                Log.d("Flipper", e.getMessage());
-              }
-
-              @Override
-              public void onResponse(final Call call, final Response response) throws IOException {
-                if (response.isSuccessful()) {
-                  Log.d("Flipper", response.body().string());
-                } else {
-                  Log.d("Flipper", "not successful");
-                }
-              }
-            });
+    ExampleActions.sendGetRequest();
   }
 
   @OnEvent(ClickEvent.class)
   static void hitPostRequest(final ComponentContext c) {
-
-    final RequestBody formBody =
-        new FormBody.Builder().add("app", "Flipper").add("remarks", "Its awesome").build();
-
-    final Request request =
-        new Request.Builder()
-            .url("https://demo9512366.mockable.io/SonarPost")
-            .post(formBody)
-            .build();
-
-    FlipperSampleApplication.sOkHttpClient
-        .newCall(request)
-        .enqueue(
-            new Callback() {
-              @Override
-              public void onFailure(final Call call, final IOException e) {
-                e.printStackTrace();
-                Log.d("Flipper", e.getMessage());
-              }
-
-              @Override
-              public void onResponse(final Call call, final Response response) throws IOException {
-                if (response.isSuccessful()) {
-                  Log.d("Flipper", response.body().string());
-                } else {
-                  Log.d("Flipper", "not successful");
-                }
-              }
-            });
+    ExampleActions.sendPostRequest();
   }
 
   @OnEvent(ClickEvent.class)
   static void triggerNotification(final ComponentContext c) {
-    FlipperClient client = AndroidFlipperClient.getInstanceIfInitialized();
-    if (client != null) {
-      FlipperPlugin plugin = client.getPlugin(ExampleFlipperPlugin.ID);
-      if (plugin instanceof ExampleFlipperPlugin) {
-        ((ExampleFlipperPlugin) plugin).triggerNotification();
-      }
-    }
+    ExampleActions.sendNotification();
   }
 
   @OnEvent(ClickEvent.class)
