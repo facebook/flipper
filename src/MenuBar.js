@@ -8,11 +8,11 @@
 import type {FlipperPlugin, FlipperDevicePlugin} from './plugin.js';
 import {
   exportStoreToFile,
-  exportStore,
   importFileToStore,
   IMPORT_FLIPPER_TRACE_EVENT,
   EXPORT_FLIPPER_TRACE_EVENT,
 } from './utils/exportData.js';
+import {setActiveSheet, ACTIVE_SHEET_SHARE_DATA} from './reducers/application';
 import type {Store} from './reducers/';
 import electron from 'electron';
 import {GK} from 'flipper';
@@ -20,7 +20,6 @@ import {remote} from 'electron';
 const {dialog} = remote;
 import os from 'os';
 import path from 'path';
-import {shareFlipperData} from './fb-stubs/user';
 import {
   reportPlatformFailures,
   tryCatchReportPlatformFailures,
@@ -374,7 +373,7 @@ function getTemplate(
               label: 'Sharable Link',
               accelerator: 'CommandOrControl+Shift+E',
               click: async function(item: Object, focusedWindow: Object) {
-                shareFlipperData(await exportStore(store));
+                store.dispatch(setActiveSheet(ACTIVE_SHEET_SHARE_DATA));
               },
             },
           ],
