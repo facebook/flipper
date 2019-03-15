@@ -22,6 +22,8 @@ import uuid from 'uuid';
 import {remote} from 'electron';
 import {serialize, deserialize} from './serialization';
 import {readCurrentRevision} from './packageMetadata.js';
+import {tryCatchReportPlatformFailures} from './metrics';
+
 export const IMPORT_FLIPPER_TRACE_EVENT = 'import-flipper-trace';
 export const EXPORT_FLIPPER_TRACE_EVENT = 'export-flipper-trace';
 
@@ -337,3 +339,18 @@ export const importFileToStore = (file: string, store: Store) => {
     importDataToStore(data, store);
   });
 };
+
+export function showOpenDialog(store: Store) {
+  remote.dialog.showOpenDialog(
+    {
+      properties: ['openFile'],
+    },
+    (files: Array<string>) => {
+      if (files !== undefined && files.length > 0) {
+        tryCatchReportPlatformFailures(() => {
+          importFileToStore(files[0], store);
+        }, `${IMPORT_FLIPPER_TRACE_EVENT}:UI`);
+      }
+    },
+  );
+}

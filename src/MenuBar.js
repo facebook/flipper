@@ -8,8 +8,7 @@
 import type {FlipperPlugin, FlipperDevicePlugin} from './plugin.js';
 import {
   exportStoreToFile,
-  importFileToStore,
-  IMPORT_FLIPPER_TRACE_EVENT,
+  showOpenDialog,
   EXPORT_FLIPPER_TRACE_EVENT,
 } from './utils/exportData.js';
 import {setActiveSheet, ACTIVE_SHEET_SHARE_DATA} from './reducers/application';
@@ -20,10 +19,7 @@ import {remote} from 'electron';
 const {dialog} = remote;
 import os from 'os';
 import path from 'path';
-import {
-  reportPlatformFailures,
-  tryCatchReportPlatformFailures,
-} from './utils/metrics';
+import {reportPlatformFailures} from './utils/metrics';
 export type DefaultKeyboardAction = 'clear' | 'goToBottom' | 'createPaste';
 export type TopLevelMenu = 'Edit' | 'View' | 'Window' | 'Help';
 
@@ -329,18 +325,7 @@ function getTemplate(
           label: 'Open File...',
           accelerator: 'CommandOrControl+O',
           click: function(item: Object, focusedWindow: Object) {
-            dialog.showOpenDialog(
-              {
-                properties: ['openFile'],
-              },
-              (files: Array<string>) => {
-                if (files !== undefined && files.length > 0) {
-                  tryCatchReportPlatformFailures(() => {
-                    importFileToStore(files[0], store);
-                  }, `${IMPORT_FLIPPER_TRACE_EVENT}:UI`);
-                }
-              },
-            );
+            showOpenDialog(store);
           },
         },
         {

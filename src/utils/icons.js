@@ -36,6 +36,14 @@ export const precachedIcons: Array<string> = [
     size: 12,
   },
   {
+    name: 'box',
+    size: 12,
+  },
+  {
+    name: 'desktop',
+    size: 12,
+  },
+  {
     name: 'bug',
     size: 12,
   },
