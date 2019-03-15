@@ -13,7 +13,7 @@ import path from 'path';
 // $FlowFixMe this file exist, trust me, flow!
 import setup from '../static/setup.js';
 import yargs from 'yargs';
-import {serializeStore} from '../src/utils/exportData.js';
+import {exportStore} from '../src/utils/exportData.js';
 
 yargs
   .usage('$0 [args]')
@@ -98,7 +98,7 @@ function startFlipper({
   dispatcher(store, logger);
 
   process.on('SIGINT', async () => {
-    originalConsole.log(JSON.stringify(await serializeStore(store), null, 2));
+    originalConsole.log(await exportStore(store));
     process.exit();
   });
 }

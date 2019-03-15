@@ -178,7 +178,7 @@ export const processStore = (
   return null;
 };
 
-export async function serializeStore(store: Store): Promise<?ExportType> {
+export async function getStoreExport(store: Store): Promise<?ExportType> {
   const state = store.getState();
   const {clients} = state.connections;
   const {pluginStates} = state;
@@ -232,12 +232,12 @@ export async function serializeStore(store: Store): Promise<?ExportType> {
 export function exportStore(store: Store): Promise<string> {
   getLogger().track('usage', EXPORT_FLIPPER_TRACE_EVENT);
   return new Promise(async (resolve, reject) => {
-    const json = await serializeStore(store);
-    if (!json) {
+    const storeExport = await getStoreExport(store);
+    if (!storeExport) {
       console.error('Make sure a device is connected');
       reject('No device is selected');
     }
-    const serializedString = serialize(json);
+    const serializedString = serialize(storeExport);
     if (serializedString.length <= 0) {
       reject('Serialize function returned empty string');
     }
