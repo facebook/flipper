@@ -21,12 +21,13 @@ import fs from 'fs';
 import uuid from 'uuid';
 import {remote} from 'electron';
 import {serialize, deserialize} from './serialization';
-
+import {readCurrentRevision} from './packageMetadata.js';
 export const IMPORT_FLIPPER_TRACE_EVENT = 'import-flipper-trace';
 export const EXPORT_FLIPPER_TRACE_EVENT = 'export-flipper-trace';
 
 export type ExportType = {|
   fileVersion: string,
+  flipperReleaseRevision: ?string,
   clients: Array<ClientExport>,
   device: ?DeviceExport,
   store: {
@@ -85,13 +86,13 @@ export function processNotificationStates(
   return activeNotifications;
 }
 
-const addSaltToDeviceSerial = (
+const addSaltToDeviceSerial = async (
   salt: string,
   device: BaseDevice,
   clients: Array<ClientExport>,
   pluginStates: PluginStatesState,
   pluginNotification: Array<PluginNotification>,
-): ExportType => {
+): Promise<ExportType> => {
   const {serial} = device;
   const newSerial = salt + '-' + serial;
   const newDevice = new ArchivedDevice(
@@ -131,8 +132,10 @@ const addSaltToDeviceSerial = (
     }
     return {...notif, client: notif.client.replace(serial, newSerial)};
   });
+  const revision: ?string = await readCurrentRevision();
   return {
     fileVersion: remote.app.getVersion(),
+    flipperReleaseRevision: revision,
     clients: updatedClients,
     device: newDevice.toJSON(),
     store: {
@@ -142,14 +145,14 @@ const addSaltToDeviceSerial = (
   };
 };
 
-export const processStore = (
+export const processStore = async (
   activeNotifications: Array<PluginNotification>,
   device: ?BaseDevice,
   pluginStates: PluginStatesState,
   clients: Array<ClientExport>,
   devicePlugins: Map<string, Class<FlipperDevicePlugin<>>>,
   salt: string,
-): ?ExportType => {
+): Promise<?ExportType> => {
   if (device) {
     const {serial} = device;
     const processedClients = processClients(clients, serial);
@@ -166,7 +169,7 @@ export const processStore = (
       devicePlugins,
     );
     // Adding salt to the device id, so that the device_id in the device list is unique.
-    const exportFlipperData = addSaltToDeviceSerial(
+    const exportFlipperData = await addSaltToDeviceSerial(
       salt,
       device,
       processedClients,
