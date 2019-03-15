@@ -1183,24 +1183,23 @@ class Layout extends FlipperPlugin<InspectorState> {
             <LayoutSearchInput onSubmit={this.search.bind(this)} />
             {outstandingSearchQuery && <LoadingSpinner size={16} />}
           </SearchBox>
-          {inAXMode &&
-            showLithoAccessibilitySettings && (
-              <SearchIconContainer
-                onClick={this.onOpenAccessibilitySettings}
-                role="button">
-                <Glyph
-                  name="settings"
-                  size={16}
-                  color={
-                    accessibilitySettingsOpen
-                      ? colors.macOSTitleBarIconSelected
-                      : colors.macOSTitleBarIconActive
-                  }
-                />
-                {accessibilitySettingsOpen &&
-                  this.getAccessibilitySettingsPopover(forceLithoAXRender)}
-              </SearchIconContainer>
-            )}
+          {inAXMode && showLithoAccessibilitySettings && (
+            <SearchIconContainer
+              onClick={this.onOpenAccessibilitySettings}
+              role="button">
+              <Glyph
+                name="settings"
+                size={16}
+                color={
+                  accessibilitySettingsOpen
+                    ? colors.macOSTitleBarIconSelected
+                    : colors.macOSTitleBarIconActive
+                }
+              />
+              {accessibilitySettingsOpen &&
+                this.getAccessibilitySettingsPopover(forceLithoAXRender)}
+            </SearchIconContainer>
+          )}
         </Toolbar>
         <FlexRow grow={true}>
           {initialised ? (

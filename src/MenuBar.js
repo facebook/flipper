@@ -94,11 +94,10 @@ export function setupMenuBar(
           plugin.keyboardActions || [],
       )
       .reduce((acc: KeyboardActions, cv) => acc.concat(cv), [])
-      .map(
-        (action: DefaultKeyboardAction | KeyboardAction) =>
-          typeof action === 'string'
-            ? defaultKeyboardActions.find(a => a.action === action)
-            : action,
+      .map((action: DefaultKeyboardAction | KeyboardAction) =>
+        typeof action === 'string'
+          ? defaultKeyboardActions.find(a => a.action === action)
+          : action,
       ),
   );
 

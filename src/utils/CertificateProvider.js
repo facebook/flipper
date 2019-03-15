@@ -68,7 +68,7 @@ export type SecureServerConfig = {|
  * It also deploys the Flipper CA cert to the app.
  * The app can trust a server if and only if it has a certificate signed by the
  * Flipper CA.
-*/
+ */
 export default class CertificateProvider {
   logger: Logger;
   adb: Promise<any>;

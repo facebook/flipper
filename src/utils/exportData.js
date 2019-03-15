@@ -74,8 +74,8 @@ export function processNotificationStates(
   devicePlugins: Map<string, Class<FlipperDevicePlugin<>>>,
 ): Array<PluginNotification> {
   let activeNotifications = allActiveNotifications.filter(notif => {
-    const filteredClients = clients.filter(
-      client => (notif.client ? client.id.includes(notif.client) : false),
+    const filteredClients = clients.filter(client =>
+      notif.client ? client.id.includes(notif.client) : false,
     );
     return (
       filteredClients.length > 0 ||

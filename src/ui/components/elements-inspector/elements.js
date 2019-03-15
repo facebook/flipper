@@ -168,8 +168,7 @@ class ElementsRowAttribute extends PureComponent<{
     const {name, value, matchingSearchQuery, selected} = this.props;
     return (
       <ElementsRowAttributeContainer code={true}>
-        <ElementsRowAttributeKey>{name}</ElementsRowAttributeKey>
-        =
+        <ElementsRowAttributeKey>{name}</ElementsRowAttributeKey>=
         <ElementsRowAttributeValue>
           <PartialHighlight
             content={value}

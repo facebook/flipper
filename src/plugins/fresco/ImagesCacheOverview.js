@@ -405,10 +405,9 @@ class ImageItem extends PureComponent<{
 
     return (
       <ImageItem.Container onClick={this.onClick} size={size}>
-        {numberOfRequests > 0 &&
-          image != null && (
-            <ImageItem.Events>{numberOfRequests}</ImageItem.Events>
-          )}
+        {numberOfRequests > 0 && image != null && (
+          <ImageItem.Events>{numberOfRequests}</ImageItem.Events>
+        )}
         {image != null ? (
           <ImageItem.Image src={image.data} />
         ) : (

@@ -600,26 +600,24 @@ class NotificationItem extends Component<ItemProps, ItemState> {
               </Actions>
             )}
         </NotificationContent>
-        {action &&
-          !inactive &&
-          !isSelected && (
-            <FlexColumn style={{alignSelf: 'center'}}>
-              {action && (
-                <NotificationButton compact onClick={this.openDeeplink}>
-                  Open
-                </NotificationButton>
-              )}
-              {this.state.reportedNotHelpful ? (
-                <NotificationButton compact onClick={this.onHide}>
-                  Hide
-                </NotificationButton>
-              ) : (
-                <NotificationButton compact onClick={this.reportNotUseful}>
-                  Not helpful
-                </NotificationButton>
-              )}
-            </FlexColumn>
-          )}
+        {action && !inactive && !isSelected && (
+          <FlexColumn style={{alignSelf: 'center'}}>
+            {action && (
+              <NotificationButton compact onClick={this.openDeeplink}>
+                Open
+              </NotificationButton>
+            )}
+            {this.state.reportedNotHelpful ? (
+              <NotificationButton compact onClick={this.onHide}>
+                Hide
+              </NotificationButton>
+            ) : (
+              <NotificationButton compact onClick={this.reportNotUseful}>
+                Not helpful
+              </NotificationButton>
+            )}
+          </FlexColumn>
+        )}
       </ContextMenu>
     );
   }

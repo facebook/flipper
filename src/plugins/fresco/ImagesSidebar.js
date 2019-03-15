@@ -36,7 +36,9 @@ export default class ImagesSidebar extends Component<
     return (
       <div>
         {this.renderUri()}
-        {this.props.events.map(e => <EventDetails key={e.eventId} event={e} />)}
+        {this.props.events.map(e => (
+          <EventDetails key={e.eventId} event={e} />
+        ))}
       </div>
     );
   }

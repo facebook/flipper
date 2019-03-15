@@ -88,7 +88,8 @@ class TitleBar extends Component<Props> {
         <ScreenCaptureButtons />
         {this.props.downloadingImportData && (
           <Importing>
-            <LoadingIndicator size={16} />&nbsp;Importing data...
+            <LoadingIndicator size={16} />
+            &nbsp;Importing data...
           </Importing>
         )}
         <Spacer />
