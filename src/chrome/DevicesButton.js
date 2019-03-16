@@ -6,12 +6,15 @@
  */
 
 import {Component, Button, styled} from 'flipper';
+import ArchivedDevice from '../devices/ArchivedDevice.js';
 import {connect} from 'react-redux';
 import {spawn} from 'child_process';
 import {dirname} from 'path';
 import {selectDevice, preferDevice} from '../reducers/connections.js';
 import {default as which} from 'which';
 import {promisify} from 'util';
+import {showOpenDialog} from '../utils/exportData';
+import PropTypes from 'prop-types';
 import type BaseDevice from '../devices/BaseDevice.js';
 
 const whichPromise = promisify(which);
@@ -29,6 +32,10 @@ const DropdownButton = styled(Button)({
 });
 
 class DevicesButton extends Component<Props> {
+  static contextTypes = {
+    store: PropTypes.object.isRequired,
+  };
+
   launchEmulator = (name: string) => {
     // On Linux, you must run the emulator from the directory it's in because
     // reasons ...
@@ -54,49 +61,77 @@ class DevicesButton extends Component<Props> {
       selectedDevice,
       selectDevice,
     } = this.props;
-    let text = 'No device selected';
+    let buttonLabel = 'No device selected';
     let icon = 'minus-circle';
 
-    if (selectedDevice) {
-      text = selectedDevice.title;
+    if (selectedDevice instanceof ArchivedDevice) {
+      buttonLabel = `${selectedDevice?.title || 'Unknown device'} (offline)`;
+      icon = 'box';
+    } else if (selectedDevice?.deviceType === 'physical') {
+      buttonLabel = selectedDevice?.title || 'Unknown device';
       icon = 'mobile';
+    } else if (selectedDevice?.deviceType === 'emulator') {
+      buttonLabel = selectedDevice?.title || 'Unknown emulator';
+      icon = 'desktop';
     }
 
     const dropdown = [];
 
-    if (devices.length > 0) {
-      dropdown.push(
-        {
-          label: 'Running devices',
-          enabled: false,
-        },
-        ...devices.map((device: BaseDevice) => {
-          let label = '';
-          switch (device.deviceType) {
-            case 'emulator':
-              label = '';
-              break;
-            case 'physical':
-              label = '📱 ';
-              break;
-            case 'archivedEmulator':
-              label = '📦 ';
-              break;
-            case 'archivedPhysical':
-              label = '📦 ';
-              break;
-            default:
-              label = '';
-          }
-          return {
-            click: () => selectDevice(device),
-            checked: device === selectedDevice,
-            label: `${label}${device.title}`,
-            type: 'checkbox',
-          };
-        }),
-      );
+    // Physical devices
+    const connectedDevices = [
+      {
+        label: 'Connected Devices',
+        enabled: false,
+      },
+      ...devices
+        .filter(device => device.deviceType === 'physical')
+        .map((device: BaseDevice) => ({
+          click: () => selectDevice(device),
+          checked: device === selectedDevice,
+          label: `📱 ${device.title}`,
+          type: 'checkbox',
+        })),
+    ];
+    if (connectedDevices.length > 1) {
+      dropdown.push(...connectedDevices);
     }
+    // Emulators
+    const runningEmulators = [
+      {
+        label: 'Running Emulators',
+        enabled: false,
+      },
+      ...devices
+        .filter(device => device.deviceType === 'emulator')
+        .map((device: BaseDevice) => ({
+          click: () => selectDevice(device),
+          checked: device === selectedDevice,
+          label: device.title,
+          type: 'checkbox',
+        })),
+    ];
+    if (runningEmulators.length > 1) {
+      dropdown.push(...runningEmulators);
+    }
+    // Archived
+    const importedFiles = [
+      {
+        label: 'Imported Devices',
+        enabled: false,
+      },
+      ...devices
+        .filter(device => device instanceof ArchivedDevice)
+        .map((device: BaseDevice) => ({
+          click: () => selectDevice(device),
+          checked: device === selectedDevice,
+          label: `📦 ${device.title} (offline)`,
+          type: 'checkbox',
+        })),
+    ];
+    if (importedFiles.length > 1) {
+      dropdown.push(...importedFiles);
+    }
+    // Launch Android emulators
     if (androidEmulators.length > 0) {
       const emulators = Array.from(androidEmulators)
         .filter(
@@ -119,9 +154,18 @@ class DevicesButton extends Component<Props> {
         );
       }
     }
+    if (dropdown.length > 0) {
+      dropdown.push({type: 'separator'});
+    }
+    dropdown.push({
+      label: 'Open File...',
+      click: () => {
+        showOpenDialog(this.context.store);
+      },
+    });
     return (
       <DropdownButton compact={true} icon={icon} dropdown={dropdown}>
-        {text}
+        {buttonLabel}
       </DropdownButton>
     );
   }

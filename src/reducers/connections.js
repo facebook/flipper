@@ -314,11 +314,10 @@ export default function reducer(
       return {
         ...state,
         uninitializedClients: state.uninitializedClients
-          .map(
-            c =>
-              isEqual(c.client, payload.client)
-                ? {...c, deviceId: payload.deviceId}
-                : c,
+          .map(c =>
+            isEqual(c.client, payload.client)
+              ? {...c, deviceId: payload.deviceId}
+              : c,
           )
           .sort((a, b) => a.client.appName.localeCompare(b.client.appName)),
       };
@@ -337,11 +336,10 @@ export default function reducer(
       return {
         ...state,
         uninitializedClients: state.uninitializedClients
-          .map(
-            c =>
-              isEqual(c.client, payload.client)
-                ? {...c, errorMessage: errorMessage}
-                : c,
+          .map(c =>
+            isEqual(c.client, payload.client)
+              ? {...c, errorMessage: errorMessage}
+              : c,
           )
           .sort((a, b) => a.client.appName.localeCompare(b.client.appName)),
         error: `Client setup error: ${errorMessage}`,

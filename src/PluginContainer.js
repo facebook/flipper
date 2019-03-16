@@ -101,13 +101,12 @@ class PluginContainer extends PureComponent<Props> {
     const props: PluginProps<Object> = {
       key: pluginKey,
       logger: this.props.logger,
-      persistedState:
-        !isArchivedDevice && activePlugin.defaultPersistedState
-          ? {
-              ...activePlugin.defaultPersistedState,
-              ...pluginState,
-            }
-          : pluginState,
+      persistedState: activePlugin.defaultPersistedState
+        ? {
+            ...activePlugin.defaultPersistedState,
+            ...pluginState,
+          }
+        : pluginState,
       setPersistedState: state => setPluginState({pluginKey, state}),
       target,
       deepLinkPayload: this.props.deepLinkPayload,
@@ -183,8 +182,9 @@ export default connect<Props, OwnProps, _, _, _, _>(
         pluginKey = getPluginKey(target.id, activePlugin.id);
       }
     }
-    const isArchivedDevice = selectedDevice instanceof ArchivedDevice;
-
+    const isArchivedDevice = !selectedDevice
+      ? false
+      : selectedDevice instanceof ArchivedDevice;
     return {
       pluginState: pluginStates[pluginKey],
       activePlugin,
@@ -194,7 +194,6 @@ export default connect<Props, OwnProps, _, _, _, _>(
       isArchivedDevice,
     };
   },
-  // $FlowFixMe
   {
     setPluginState,
     selectPlugin,

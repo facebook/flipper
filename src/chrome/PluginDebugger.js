@@ -257,7 +257,8 @@ class PluginDebugger extends Component<Props> {
           known to have problems connecting to Flipper. Check out the{' '}
           <Link href="https://fbflipper.com/docs/troubleshooting.html#known-incompatibilities">
             known incompatibilities
-          </Link>.
+          </Link>
+          .
         </InfoText>
       );
     } else if (
@@ -287,7 +288,8 @@ class PluginDebugger extends Component<Props> {
             check out our documentation about{' '}
             <Link href="https://fbflipper.com/docs/troubleshooting.html#connection-issues">
               connection issues
-            </Link>.
+            </Link>
+            .
           </InfoText>
         </Fragment>
       );

@@ -67,11 +67,7 @@ export default class Layout extends FlipperPlugin<State, void, PersistedState> {
     if (!store) {
       return defaultPromise;
     }
-    const selectedDevice = store.getState().connections.selectedDevice;
-    if (selectedDevice && selectedDevice.os === 'iOS') {
-      return callClient('getAllNodes').then(({allNodes}) => allNodes);
-    }
-    return defaultPromise;
+    return callClient('getAllNodes').then(({allNodes}) => allNodes);
   };
 
   static defaultPersistedState = {
@@ -183,12 +179,14 @@ export default class Layout extends FlipperPlugin<State, void, PersistedState> {
         {this.state.init && (
           <>
             <Toolbar>
-              <ToolbarIcon
-                onClick={this.onToggleTargetMode}
-                title="Toggle target mode"
-                icon="target"
-                active={this.state.inTargetMode}
-              />
+              {!this.props.isArchivedDevice && (
+                <ToolbarIcon
+                  onClick={this.onToggleTargetMode}
+                  title="Toggle target mode"
+                  icon="target"
+                  active={this.state.inTargetMode}
+                />
+              )}
               {this.realClient.query.os === 'Android' && (
                 <ToolbarIcon
                   onClick={this.onToggleAXMode}
@@ -197,12 +195,15 @@ export default class Layout extends FlipperPlugin<State, void, PersistedState> {
                   active={this.state.inAXMode}
                 />
               )}
-              <ToolbarIcon
-                onClick={this.onToggleAlignmentMode}
-                title="Toggle AlignmentMode to show alignment lines"
-                icon="borders"
-                active={this.state.inAlignmentMode}
-              />
+              {!this.props.isArchivedDevice && (
+                <ToolbarIcon
+                  onClick={this.onToggleAlignmentMode}
+                  title="Toggle AlignmentMode to show alignment lines"
+                  icon="borders"
+                  active={this.state.inAlignmentMode}
+                />
+              )}
+
               <Search
                 client={this.getClient()}
                 setPersistedState={this.props.setPersistedState}
@@ -246,12 +247,14 @@ export default class Layout extends FlipperPlugin<State, void, PersistedState> {
         )}
         {/* TODO: Remove this when rolling out publicly */}
         <BetaBar position="bottom" compact>
-          <Glyph name="beta" color="#8157C7" />&nbsp;
+          <Glyph name="beta" color="#8157C7" />
+          &nbsp;
           <strong>Version 2.0:</strong>&nbsp; Provide feedback about this plugin
           in our&nbsp;
           <Link href="https://fb.workplace.com/groups/246035322947653/">
             feedback group
-          </Link>.
+          </Link>
+          .
         </BetaBar>
       </FlexColumn>
     );

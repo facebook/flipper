@@ -21,12 +21,15 @@ import fs from 'fs';
 import uuid from 'uuid';
 import {remote} from 'electron';
 import {serialize, deserialize} from './serialization';
+import {readCurrentRevision} from './packageMetadata.js';
+import {tryCatchReportPlatformFailures} from './metrics';
 
 export const IMPORT_FLIPPER_TRACE_EVENT = 'import-flipper-trace';
 export const EXPORT_FLIPPER_TRACE_EVENT = 'export-flipper-trace';
 
 export type ExportType = {|
   fileVersion: string,
+  flipperReleaseRevision: ?string,
   clients: Array<ClientExport>,
   device: ?DeviceExport,
   store: {
@@ -74,8 +77,8 @@ export function processNotificationStates(
   devicePlugins: Map<string, Class<FlipperDevicePlugin<>>>,
 ): Array<PluginNotification> {
   let activeNotifications = allActiveNotifications.filter(notif => {
-    const filteredClients = clients.filter(
-      client => (notif.client ? client.id.includes(notif.client) : false),
+    const filteredClients = clients.filter(client =>
+      notif.client ? client.id.includes(notif.client) : false,
     );
     return (
       filteredClients.length > 0 ||
@@ -85,13 +88,13 @@ export function processNotificationStates(
   return activeNotifications;
 }
 
-const addSaltToDeviceSerial = (
+const addSaltToDeviceSerial = async (
   salt: string,
   device: BaseDevice,
   clients: Array<ClientExport>,
   pluginStates: PluginStatesState,
   pluginNotification: Array<PluginNotification>,
-): ExportType => {
+): Promise<ExportType> => {
   const {serial} = device;
   const newSerial = salt + '-' + serial;
   const newDevice = new ArchivedDevice(
@@ -131,8 +134,10 @@ const addSaltToDeviceSerial = (
     }
     return {...notif, client: notif.client.replace(serial, newSerial)};
   });
+  const revision: ?string = await readCurrentRevision();
   return {
     fileVersion: remote.app.getVersion(),
+    flipperReleaseRevision: revision,
     clients: updatedClients,
     device: newDevice.toJSON(),
     store: {
@@ -142,14 +147,14 @@ const addSaltToDeviceSerial = (
   };
 };
 
-export const processStore = (
+export const processStore = async (
   activeNotifications: Array<PluginNotification>,
   device: ?BaseDevice,
   pluginStates: PluginStatesState,
   clients: Array<ClientExport>,
   devicePlugins: Map<string, Class<FlipperDevicePlugin<>>>,
   salt: string,
-): ?ExportType => {
+): Promise<?ExportType> => {
   if (device) {
     const {serial} = device;
     const processedClients = processClients(clients, serial);
@@ -166,7 +171,7 @@ export const processStore = (
       devicePlugins,
     );
     // Adding salt to the device id, so that the device_id in the device list is unique.
-    const exportFlipperData = addSaltToDeviceSerial(
+    const exportFlipperData = await addSaltToDeviceSerial(
       salt,
       device,
       processedClients,
@@ -178,7 +183,7 @@ export const processStore = (
   return null;
 };
 
-export async function serializeStore(store: Store): Promise<?ExportType> {
+export async function getStoreExport(store: Store): Promise<?ExportType> {
   const state = store.getState();
   const {clients} = state.connections;
   const {pluginStates} = state;
@@ -232,12 +237,12 @@ export async function serializeStore(store: Store): Promise<?ExportType> {
 export function exportStore(store: Store): Promise<string> {
   getLogger().track('usage', EXPORT_FLIPPER_TRACE_EVENT);
   return new Promise(async (resolve, reject) => {
-    const json = await serializeStore(store);
-    if (!json) {
+    const storeExport = await getStoreExport(store);
+    if (!storeExport) {
       console.error('Make sure a device is connected');
       reject('No device is selected');
     }
-    const serializedString = serialize(json);
+    const serializedString = serialize(storeExport);
     if (serializedString.length <= 0) {
       reject('Serialize function returned empty string');
     }
@@ -334,3 +339,18 @@ export const importFileToStore = (file: string, store: Store) => {
     importDataToStore(data, store);
   });
 };
+
+export function showOpenDialog(store: Store) {
+  remote.dialog.showOpenDialog(
+    {
+      properties: ['openFile'],
+    },
+    (files: Array<string>) => {
+      if (files !== undefined && files.length > 0) {
+        tryCatchReportPlatformFailures(() => {
+          importFileToStore(files[0], store);
+        }, `${IMPORT_FLIPPER_TRACE_EVENT}:UI`);
+      }
+    },
+  );
+}

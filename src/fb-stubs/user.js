@@ -17,7 +17,23 @@ export function logoutUser(): Promise<void> {
   return Promise.reject();
 }
 
-export async function shareFlipperData(trace: string) {
+export async function shareFlipperData(
+  trace: string,
+): Promise<
+  | {
+      id: string,
+      os: 'string',
+      deviceType: string,
+      plugins: string[],
+      fileUrl: string,
+      flipperUrl: string,
+    }
+  | {
+      error: string,
+      error_class: string,
+      stacktrace: string,
+    },
+> {
   new window.Notification('Feature not implemented');
   return Promise.reject();
 }

@@ -380,6 +380,7 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin<
 
   render() {
     let crash: ?Crash =
+      this.props.persistedState.crashes &&
       this.props.persistedState.crashes.length > 0
         ? this.props.persistedState.crashes[
             this.props.persistedState.crashes.length - 1

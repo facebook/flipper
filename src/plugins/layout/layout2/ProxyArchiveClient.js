@@ -25,6 +25,7 @@ function constructSearchResultTree(
   isMatch: boolean,
   children: Array<SearchResultTree>,
   AXMode: boolean,
+  AXNode: ?Element,
 ): SearchResultTree {
   let searchResult = {
     id: node.id,
@@ -32,9 +33,8 @@ function constructSearchResultTree(
     hasChildren: children.length > 0,
     children: children.length > 0 ? children : null,
     element: node,
-    axElement: null,
+    axElement: AXNode,
   };
-  searchResult[`${propsForPersistedState(AXMode).ELEMENT}`] = node;
   return searchResult;
 }
 
@@ -49,7 +49,9 @@ export function searchNodes(
   AXMode: boolean,
   state: PersistedState,
 ): ?SearchResultTree {
-  const elements = state[propsForPersistedState(AXMode).ELEMENTS];
+  // Even if the axMode is true, we will have to search the normal elements too.
+  // The AXEelements will automatically populated in constructSearchResultTree
+  const elements = state[propsForPersistedState(false).ELEMENTS];
   const children: Array<SearchResultTree> = [];
   const match = isMatch(node, query);
 
@@ -62,7 +64,15 @@ export function searchNodes(
   }
 
   if (match || children.length > 0) {
-    return cloneDeep(constructSearchResultTree(node, match, children, AXMode));
+    return cloneDeep(
+      constructSearchResultTree(
+        node,
+        match,
+        children,
+        AXMode,
+        AXMode ? state.AXelements[node.id] : null,
+      ),
+    );
   }
   return null;
 }

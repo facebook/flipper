@@ -260,7 +260,8 @@ class BugReporterDialog extends Component<Props, State> {
                         'mailto:' + String(this.props.activePlugin?.bugs?.email)
                       }>
                       {this.props.activePlugin?.bugs?.email}
-                    </Link>, the author/oncall of this plugin, directly
+                    </Link>
+                    , the author/oncall of this plugin, directly
                   </span>
                 )}
                 .

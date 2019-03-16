@@ -73,21 +73,29 @@ export default class Search extends Component<Props, State> {
     });
 
     if (!query) {
-      this.displaySearchResults({query: '', results: null});
+      this.displaySearchResults(
+        {query: '', results: null},
+        this.props.inAXMode,
+      );
     } else {
       this.props.client
         .call('getSearchResults', {query, axEnabled: this.props.inAXMode})
-        .then(response => this.displaySearchResults(response));
+        .then(response =>
+          this.displaySearchResults(response, this.props.inAXMode),
+        );
     }
   }
 
-  displaySearchResults({
-    results,
-    query,
-  }: {
-    results: ?SearchResultTree,
-    query: string,
-  }) {
+  displaySearchResults(
+    {
+      results,
+      query,
+    }: {
+      results: ?SearchResultTree,
+      query: string,
+    },
+    axMode: boolean,
+  ) {
     this.setState({
       outstandingSearchQuery:
         query === this.state.outstandingSearchQuery
@@ -106,10 +114,30 @@ export default class Search extends Component<Props, State> {
           expanded: element.children.some(c => searchResultIDs.has(c)),
         },
       }),
-      {...this.props.persistedState.elements},
+      this.props.persistedState.elements,
     );
 
-    this.props.setPersistedState({elements});
+    let {AXelements} = this.props.persistedState;
+    if (axMode) {
+      AXelements = searchResults.reduce(
+        (acc: ElementMap, {axElement}: SearchResultTree) => {
+          if (!axElement) {
+            return acc;
+          }
+          return {
+            ...acc,
+            [axElement.id]: {
+              ...axElement,
+              // expand all search results, that we have have children for
+              expanded: axElement.children.some(c => searchResultIDs.has(c)),
+            },
+          };
+        },
+        this.props.persistedState.AXelements,
+      );
+    }
+
+    this.props.setPersistedState({elements, AXelements});
 
     this.props.onSearchResults({
       matches: new Set(

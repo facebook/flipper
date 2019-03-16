@@ -31,7 +31,15 @@ function generateManifest(versionNumber) {
   );
 }
 
-function modifyPackageManifest(buildFolder, versionNumber) {
+// Asynchronously determine current mercurial revision as string or `null` in case of any error.
+function genMercurialRevision() {
+  return cp
+    .spawn('hg', ['log', '-r', '.', '-T', '{node}'])
+    .catch(err => null)
+    .then(res => (res && res.stdout) || null);
+}
+
+function modifyPackageManifest(buildFolder, versionNumber, hgRevision) {
   // eslint-disable-next-line no-console
   console.log('Creating package.json manifest');
   const manifest = require('../package.json');
@@ -43,6 +51,9 @@ function modifyPackageManifest(buildFolder, versionNumber) {
   manifest.dependencies = manifestStatic.dependencies;
   manifest.main = 'index.js';
   manifest.version = versionNumber;
+  if (hgRevision != null) {
+    manifest.revision = hgRevision;
+  }
   fs.writeFileSync(
     path.join(buildFolder, 'package.json'),
     JSON.stringify(manifest, null, '  '),
@@ -116,7 +127,8 @@ function copyStaticFolder(buildFolder) {
   await compileDefaultPlugins(path.join(dir, 'defaultPlugins'));
   await compile(dir, path.join(__dirname, '..', 'src', 'init.js'));
   const versionNumber = getVersionNumber();
-  modifyPackageManifest(dir, versionNumber);
+  const hgRevision = await genMercurialRevision();
+  modifyPackageManifest(dir, versionNumber, hgRevision);
   generateManifest(versionNumber);
   await buildDist(dir);
   // eslint-disable-next-line no-console

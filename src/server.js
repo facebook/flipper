@@ -284,7 +284,7 @@ export default class Server extends EventEmitter {
       /* If a device gets disconnected without being cleaned up properly,
        * Flipper won't be aware until it attempts to reconnect.
        * When it does we need to terminate the zombie connection.
-      */
+       */
       if (this.connections.has(id)) {
         const connectionInfo = this.connections.get(id);
         connectionInfo &&

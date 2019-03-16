@@ -28,5 +28,12 @@ public class MainActivity extends AppCompatActivity {
       final ExampleFlipperPlugin samplePlugin = client.getPluginByClass(ExampleFlipperPlugin.class);
       samplePlugin.setActivity(this);
     }
+
+    if (getIntent().getBooleanExtra("NON_INTERACTIVE_RUN", false)) {
+      ExampleActions.sendGetRequest();
+      ExampleActions.sendPostRequest();
+      ExampleActions.sendNotification();
+      finish();
+    }
   }
 }
