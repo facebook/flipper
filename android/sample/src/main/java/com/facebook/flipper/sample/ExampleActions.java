@@ -12,9 +12,9 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-final class ExampleActions {
+public final class ExampleActions {
 
-  static void sendPostRequest() {
+  public static void sendPostRequest() {
     final RequestBody formBody =
         new FormBody.Builder().add("app", "Flipper").add("remarks", "Its awesome").build();
 
@@ -45,7 +45,7 @@ final class ExampleActions {
             });
   }
 
-  static void sendGetRequest() {
+  public static void sendGetRequest() {
     final Request request =
         new Request.Builder().url("https://api.github.com/repos/facebook/yoga").get().build();
     FlipperSampleApplication.sOkHttpClient
@@ -69,7 +69,7 @@ final class ExampleActions {
             });
   }
 
-  static void sendNotification() {
+  public static void sendNotification() {
     final FlipperClient client = AndroidFlipperClient.getInstanceIfInitialized();
     if (client != null) {
       final ExampleFlipperPlugin plugin = client.getPluginByClass(ExampleFlipperPlugin.class);
