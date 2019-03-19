@@ -98,7 +98,11 @@ function startFlipper({
   dispatcher(store, logger);
 
   process.on('SIGINT', async () => {
-    originalConsole.log(await exportStore(store));
+    try {
+      originalConsole.log(await exportStore(store));
+    } catch (e) {
+      console.error(e);
+    }
     process.exit();
   });
 }
