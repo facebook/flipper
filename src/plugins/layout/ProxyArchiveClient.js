@@ -8,7 +8,8 @@
 import type {Element, ElementID} from 'flipper';
 import type {PersistedState} from './index';
 import type {SearchResultTree} from './Search';
-import {cloneDeep} from 'lodash';
+// $FlowFixMe
+import cloneDeep from 'lodash.clonedeep';
 
 const propsForPersistedState = (
   AXMode: boolean,
