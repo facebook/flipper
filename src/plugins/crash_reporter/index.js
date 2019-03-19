@@ -21,6 +21,11 @@ import {
   getPersistedState,
   BaseDevice,
   shouldParseAndroidLog,
+  StackTrace,
+  Text,
+  colors,
+  Toolbar,
+  Spacer,
 } from 'flipper';
 import fs from 'fs';
 import os from 'os';
@@ -28,6 +33,17 @@ import util from 'util';
 import path from 'path';
 import type {Notification} from '../../plugin';
 import type {Store, DeviceLogEntry, OS} from 'flipper';
+import {Component} from 'react';
+
+type HeaderRowProps = {
+  title: string,
+  value: string,
+};
+type openLogsCallbackType = () => void;
+
+type CrashReporterBarProps = {|
+  openLogsCallback?: openLogsCallbackType,
+|};
 
 export type Crash = {|
   notificationID: string,
@@ -46,37 +62,58 @@ export type PersistedState = {
   crashes: Array<Crash>,
 };
 
-const Title = styled(View)({
+const Padder = styled('div')(
+  ({paddingLeft, paddingRight, paddingBottom, paddingTop}) => ({
+    paddingLeft: paddingLeft || 0,
+    paddingRight: paddingRight || 0,
+    paddingBottom: paddingBottom || 0,
+    paddingTop: paddingTop || 0,
+  }),
+);
+
+const Title = styled(Text)({
   fontWeight: 'bold',
-  fontSize: '100%',
-  color: 'red',
+  color: colors.greyTint3,
+  height: 'auto',
+  width: 200,
+  textOverflow: 'ellipsis',
 });
 
-const Value = styled(View)({
-  paddingLeft: '8px',
-  fontSize: '100%',
-  fontFamily: 'Monospace',
-  maxHeight: '200px',
+const Line = styled(View)({
+  backgroundColor: colors.greyTint2,
+  height: 1,
+  width: 'auto',
+  marginTop: 2,
+  flexShrink: 0,
+});
+
+const Container = styled(FlexColumn)({
+  overflow: 'hidden',
+  flexShrink: 0,
+});
+
+const Value = styled(Title)({
+  maxHeight: 200,
+  height: 'auto',
+  flexGrow: 1,
+});
+
+const FlexGrowColumn = styled(FlexColumn)({
+  flexGrow: 1,
+});
+
+const ScrollableColumn = styled(FlexGrowColumn)({
   overflow: 'scroll',
+  height: 'auto',
 });
 
-const RootColumn = styled(FlexColumn)({
-  paddingLeft: '16px',
-  paddingRight: '16px',
-  paddingTop: '8px',
-  overflow: 'scroll',
+const StyledFlexGrowColumn = styled(FlexColumn)({
+  flexGrow: 1,
 });
 
-const CrashRow = styled(FlexRow)({
-  paddingTop: '8px',
-});
-
-const CallStack = styled('pre')({
-  fontFamily: 'Monospace',
-  fontSize: '100%',
-  paddingLeft: '8px',
-  maxHeight: '500px',
-  overflow: 'scroll',
+const StyledFlexColumn = styled(StyledFlexGrowColumn)({
+  justifyContent: 'center',
+  alignItems: 'center',
 });
 
 export function getNewPersisitedStateFromCrashLog(
@@ -258,14 +295,47 @@ function addFileWatcherForiOSCrashLogs(
   });
 }
 
+class CrashReporterBar extends Component<CrashReporterBarProps> {
+  render() {
+    const {openLogsCallback} = this.props;
+    return (
+      <Toolbar>
+        <Spacer />
+        <Button
+          disabled={Boolean(!openLogsCallback)}
+          onClick={openLogsCallback}>
+          Open In Logs
+        </Button>
+      </Toolbar>
+    );
+  }
+}
+
+class HeaderRow extends Component<HeaderRowProps> {
+  render() {
+    const {title, value} = this.props;
+    return (
+      <Padder paddingTop={8} paddingBottom={2}>
+        <Container>
+          <Padder paddingLeft={8}>
+            <FlexRow>
+              <Title>{title}</Title>
+              <Value code={true}>{value}</Value>
+            </FlexRow>
+          </Padder>
+          <Line />
+        </Container>
+      </Padder>
+    );
+  }
+}
+
 export default class CrashReporterPlugin extends FlipperDevicePlugin<
   *,
   *,
   PersistedState,
 > {
-  static defaultPersistedState = {
-    crashes: [],
-  };
+  static defaultPersistedState = {crashes: []};
 
   static supportsDevice(device: Device) {
     return device.os === 'iOS' || device.os === 'Android';
@@ -379,7 +449,7 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin<
   };
 
   render() {
-    let crash: ?Crash =
+    const currentCrash: ?Crash =
       this.props.persistedState.crashes &&
       this.props.persistedState.crashes.length > 0
         ? this.props.persistedState.crashes[
@@ -387,32 +457,41 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin<
           ]
         : null;
 
+    let deeplinkedCrash = null;
     if (this.props.deepLinkPayload) {
       const id = this.props.deepLinkPayload;
       const index = this.props.persistedState.crashes.findIndex(elem => {
         return elem.notificationID === id;
       });
       if (index >= 0) {
-        crash = this.props.persistedState.crashes[index];
+        deeplinkedCrash = this.props.persistedState.crashes[index];
       }
     }
 
+    const crash = deeplinkedCrash || currentCrash;
     if (crash) {
       const callstackString = crash.callstack;
+
+      const children = crash.callstack.split('\n').map(str => {
+        return {message: str};
+      });
       return (
-        <RootColumn>
-          <CrashRow>
-            <Title>Name</Title>
-            <Value>{crash.name}</Value>
-          </CrashRow>
-          <CrashRow>
-            <Title>Reason</Title>
-            <Value>{crash.reason}</Value>
-          </CrashRow>
-          <CrashRow>
-            <Title>CallStack</Title>
-          </CrashRow>
-          <CrashRow>
+        <FlexColumn>
+          {this.device.os == 'Android' ? (
+            <CrashReporterBar
+              openLogsCallback={() => {
+                this.openInLogs(crash.callstack);
+              }}
+            />
+          ) : (
+            <CrashReporterBar />
+          )}
+          <ScrollableColumn>
+            <HeaderRow title="Name" value={crash.name} />
+            <HeaderRow title="Reason" value={crash.reason} />
+            <Padder paddingLeft={8} paddingTop={4} paddingBottom={2}>
+              <Title> Stacktrace </Title>
+            </Padder>
             <ContextMenu
               items={[
                 {
@@ -422,29 +501,27 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin<
                   },
                 },
               ]}>
-              <CallStack>{callstackString}</CallStack>
+              <Line />
+              <StackTrace
+                children={children}
+                isCrash={false}
+                padded={false}
+                backgroundColor={colors.greyStackTraceTint}
+              />
             </ContextMenu>
-          </CrashRow>
-          {this.device.os == 'Android' && (
-            <CrashRow>
-              <Button
-                onClick={() => {
-                  //$FlowFixMe: checked that crash is not undefined
-                  this.openInLogs(crash.callstack);
-                }}>
-                Open in Logs
-              </Button>
-            </CrashRow>
-          )}
-        </RootColumn>
+          </ScrollableColumn>
+        </FlexColumn>
       );
     }
     return (
-      <RootColumn>
-        <Title>
-          Dedicated space to debug crashes. Look out for crash notifications
-        </Title>
-      </RootColumn>
+      <StyledFlexGrowColumn>
+        <CrashReporterBar />
+        <StyledFlexColumn>
+          <Padder paddingBottom={8}>
+            <Title>No Crashes Logged</Title>
+          </Padder>
+        </StyledFlexColumn>
+      </StyledFlexGrowColumn>
     );
   }
 }
