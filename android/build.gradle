@@ -51,6 +51,7 @@ android {
         implementation deps.okhttp3
         implementation deps.lithoCore
         implementation deps.lithoSectionsDebug
+        implementation deps.lithoSectionsCore
         implementation deps.lithoWidget
         implementation deps.rhino
         implementation deps.fresco
