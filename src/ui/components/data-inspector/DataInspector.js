@@ -217,6 +217,7 @@ function getRootContextMenu(data: Object): Array<Electron$MenuItemOptions> {
 
 function isPureObject(obj: Object) {
   return (
+    obj !== null &&
     Object.prototype.toString.call(obj) !== '[object Date]' &&
     typeof obj === 'object'
   );
@@ -234,10 +235,10 @@ const diffMetadataExtractor: DiffMetadataExtractor = (
   const val = data[key];
   const diffVal = diff[key];
   if (!data.hasOwnProperty(key)) {
-    return [{data: diffVal, status: 'added'}];
+    return [{data: diffVal, status: 'removed'}];
   }
   if (!diff.hasOwnProperty(key)) {
-    return [{data: val, status: 'removed'}];
+    return [{data: val, status: 'added'}];
   }
 
   if (isPureObject(diffVal) && isPureObject(val)) {
@@ -248,7 +249,7 @@ const diffMetadataExtractor: DiffMetadataExtractor = (
     // Check if there's a difference between the original value and
     // the value from the diff prop
     // The property name still exists, but the values may be different.
-    return [{data: diffVal, status: 'added'}, {data: val, status: 'removed'}];
+    return [{data: val, status: 'added'}, {data: diffVal, status: 'removed'}];
   }
 
   return Object.prototype.hasOwnProperty.call(data, key) ? [{data: val}] : [];
