@@ -7,7 +7,9 @@ import android.graphics.drawable.Drawable;
 import com.facebook.flipper.core.FlipperObject;
 import com.facebook.flipper.plugins.inspector.InspectorValue;
 import com.facebook.flipper.plugins.inspector.Named;
+import com.facebook.litho.StateContainer;
 import com.facebook.litho.annotations.Prop;
+import com.facebook.litho.annotations.State;
 import java.lang.reflect.Field;
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -80,6 +82,32 @@ public class DataUtils {
     }
 
     return data;
+  }
+
+  @Nullable
+  static FlipperObject getStateData(Object node, StateContainer stateContainer) throws Exception {
+    if (stateContainer == null) {
+      return null;
+    }
+
+    final FlipperObject.Builder state = new FlipperObject.Builder();
+
+    boolean hasState = false;
+    for (Field f : stateContainer.getClass().getDeclaredFields()) {
+      f.setAccessible(true);
+
+      final State annotation = f.getAnnotation(State.class);
+      if (annotation != null) {
+        if (DataUtils.isTypeMutable(f.getType())) {
+          state.put(f.getName(), InspectorValue.mutable(f.get(stateContainer)));
+        } else {
+          state.put(f.getName(), InspectorValue.immutable(f.get(stateContainer)));
+        }
+        hasState = true;
+      }
+    }
+
+    return hasState ? state.build() : null;
   }
 
   static boolean isTypeMutable(Class<?> type) {

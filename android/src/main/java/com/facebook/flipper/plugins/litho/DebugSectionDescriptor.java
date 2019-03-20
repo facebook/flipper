@@ -76,6 +76,11 @@ public class DebugSectionDescriptor extends NodeDescriptor<DebugSection> {
       data.addAll(propData);
     }
 
+    final FlipperObject stateData = getStateData(node);
+    if (stateData != null) {
+      data.add(new Named<>("State", stateData));
+    }
+
     return data;
   }
 
@@ -83,6 +88,10 @@ public class DebugSectionDescriptor extends NodeDescriptor<DebugSection> {
       throws Exception {
     final Section section = node.getSection();
     return DataUtils.getPropData(section);
+  }
+
+  private static @Nullable FlipperObject getStateData(DebugSection node) throws Exception {
+    return DataUtils.getStateData(node, node.getStateContainer());
   }
 
   @Override

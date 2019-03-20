@@ -27,7 +27,6 @@ import com.facebook.litho.DebugComponent;
 import com.facebook.litho.DebugLayoutNode;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.StateContainer;
-import com.facebook.litho.annotations.State;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
@@ -266,37 +265,8 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
   }
 
   @Nullable
-  private static FlipperObject getStateData(DebugComponent node) {
-    if (node.canResolve()) {
-      return null;
-    }
-
-    final StateContainer stateContainer = node.getStateContainer();
-    if (stateContainer == null) {
-      return null;
-    }
-
-    final FlipperObject.Builder state = new FlipperObject.Builder();
-
-    boolean hasState = false;
-    for (Field f : stateContainer.getClass().getDeclaredFields()) {
-      try {
-        f.setAccessible(true);
-
-        final State annotation = f.getAnnotation(State.class);
-        if (annotation != null) {
-          if (DataUtils.isTypeMutable(f.getType())) {
-            state.put(f.getName(), InspectorValue.mutable(f.get(stateContainer)));
-          } else {
-            state.put(f.getName(), InspectorValue.immutable(f.get(stateContainer)));
-          }
-          hasState = true;
-        }
-      } catch (Exception ignored) {
-      }
-    }
-
-    return hasState ? state.build() : null;
+  private static FlipperObject getStateData(DebugComponent node) throws Exception {
+    return DataUtils.getStateData(node, node.getStateContainer());
   }
 
   @Override
