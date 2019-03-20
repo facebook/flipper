@@ -17,3 +17,6 @@ export const GRAPH_SECRET_ACCESS_TOKEN = '';
 // Provides access to Insights Validation ednpoint on interngraph
 export const INSIGHT_INTERN_APP_ID = '';
 export const INSIGHT_INTERN_APP_TOKEN = '';
+
+// Enables the flipper data to be exported through shareabale link
+export const ENABLE_SHAREABLE_LINK = false;
