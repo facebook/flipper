@@ -9,8 +9,14 @@
 
 #import "SKComponentRootViewDescriptor.h"
 
+// TODO T41966103 Remove conditional imports
+#if FLIPPER_OSS
 #import <ComponentKit/CKComponentDataSourceAttachController.h>
 #import <ComponentKit/CKComponentDataSourceAttachControllerInternal.h>
+#else
+#import <ComponentKit/CKComponentAttachController.h>
+#import <ComponentKit/CKComponentAttachControllerInternal.h>
+#endif
 #import <ComponentKit/CKComponentHostingView.h>
 #import <ComponentKit/CKComponentHostingViewInternal.h>
 #import <ComponentKit/CKComponentLayout.h>
@@ -28,7 +34,7 @@
 
 - (NSUInteger)childCountForNode:(CKComponentRootView *)node {
   if ([node respondsToSelector:@selector(ck_attachState)]) {
-    CKComponentDataSourceAttachState *state = [node ck_attachState];
+    const auto state = [node ck_attachState];
     return state == nil ? 0 : 1;
   }
   return 0;

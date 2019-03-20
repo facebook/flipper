@@ -11,8 +11,14 @@
 
 #import <ComponentKit/CKComponent.h>
 #import <ComponentKit/CKComponentRootView.h>
+// TODO T41966103 Remove conditional imports
+#if FLIPPER_OSS
 #import <ComponentKit/CKComponentDataSourceAttachController.h>
 #import <ComponentKit/CKComponentDataSourceAttachControllerInternal.h>
+#else
+#import <ComponentKit/CKComponentAttachController.h>
+#import <ComponentKit/CKComponentAttachControllerInternal.h>
+#endif
 #import <ComponentKit/CKInspectableView.h>
 
 static char const kLayoutWrapperKey = ' ';
