@@ -7,12 +7,10 @@
  */
 package com.facebook.flipper.plugins.litho;
 
-import static com.facebook.flipper.plugins.inspector.InspectorValue.Type.Color;
 import static com.facebook.flipper.plugins.inspector.InspectorValue.Type.Enum;
 import static com.facebook.flipper.plugins.inspector.InspectorValue.Type.Number;
 
 import android.graphics.Rect;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import androidx.core.util.Pair;
@@ -29,8 +27,6 @@ import com.facebook.litho.DebugComponent;
 import com.facebook.litho.DebugLayoutNode;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.StateContainer;
-import com.facebook.litho.annotations.Prop;
-import com.facebook.litho.annotations.State;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
@@ -39,7 +35,6 @@ import com.facebook.yoga.YogaJustify;
 import com.facebook.yoga.YogaPositionType;
 import com.facebook.yoga.YogaValue;
 import java.lang.reflect.Field;
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -178,8 +173,8 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
     }
 
     final FlipperObject.Builder data = new FlipperObject.Builder();
-    data.put("background", fromDrawable(layout.getBackground()));
-    data.put("foreground", fromDrawable(layout.getForeground()));
+    data.put("background", DataUtils.fromDrawable(layout.getBackground()));
+    data.put("foreground", DataUtils.fromDrawable(layout.getForeground()));
 
     data.put("direction", InspectorValue.mutable(Enum, layout.getLayoutDirection().toString()));
     data.put("flex-direction", InspectorValue.mutable(Enum, layout.getFlexDirection().toString()));
@@ -260,127 +255,18 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
   }
 
   @Nullable
-  private static List<Named<FlipperObject>> getPropData(DebugComponent node) {
+  private static List<Named<FlipperObject>> getPropData(DebugComponent node) throws Exception {
     if (node.canResolve()) {
       return null;
     }
 
     final Component component = node.getComponent();
-    final FlipperObject.Builder props = new FlipperObject.Builder();
-    List<Named<FlipperObject>> data = new ArrayList<>();
-
-    boolean hasProps = false;
-    for (Field f : component.getClass().getDeclaredFields()) {
-      try {
-        f.setAccessible(true);
-
-        final Prop annotation = f.getAnnotation(Prop.class);
-        if (annotation != null) {
-          if (f.get(component) != null
-              && PropWithInspectorSection.class.isAssignableFrom(f.get(component).getClass())) {
-            final AbstractMap.SimpleEntry<String, String> datum =
-                ((PropWithInspectorSection) f.get(component)).getFlipperLayoutInspectorSection();
-            if (datum != null) {
-              data.add(new Named<>(datum.getKey(), new FlipperObject(datum.getValue())));
-            }
-          }
-
-          switch (annotation.resType()) {
-            case COLOR:
-              props.put(f.getName(), fromColor((Integer) f.get(component)));
-              break;
-            case DRAWABLE:
-              props.put(f.getName(), fromDrawable((Drawable) f.get(component)));
-              break;
-            default:
-              if (f.get(component) != null
-                  && PropWithDescription.class.isAssignableFrom(f.get(component).getClass())) {
-                final Object description =
-                    ((PropWithDescription) f.get(component))
-                        .getFlipperLayoutInspectorPropDescription();
-                // Treat the description as immutable for now, because it's a "translation" of the
-                // actual prop,
-                // mutating them is not going to change the original prop.
-                if (description instanceof Map<?, ?>) {
-                  final Map<?, ?> descriptionMap = (Map<?, ?>) description;
-                  for (Map.Entry<?, ?> entry : descriptionMap.entrySet()) {
-                    props.put(
-                        entry.getKey().toString(), InspectorValue.immutable(entry.getValue()));
-                  }
-                } else {
-                  props.put(f.getName(), InspectorValue.immutable(description));
-                }
-              } else {
-                if (isTypeMutable(f.getType())) {
-                  props.put(f.getName(), InspectorValue.mutable(f.get(component)));
-                } else {
-                  props.put(f.getName(), InspectorValue.immutable(f.get(component)));
-                }
-              }
-              break;
-          }
-          hasProps = true;
-        }
-      } catch (Exception ignored) {
-      }
-    }
-
-    if (hasProps) {
-      data.add(new Named<>("Props", props.build()));
-    }
-
-    return data;
+    return DataUtils.getPropData(component);
   }
 
   @Nullable
-  private static FlipperObject getStateData(DebugComponent node) {
-    if (node.canResolve()) {
-      return null;
-    }
-
-    final StateContainer stateContainer = node.getStateContainer();
-    if (stateContainer == null) {
-      return null;
-    }
-
-    final FlipperObject.Builder state = new FlipperObject.Builder();
-
-    boolean hasState = false;
-    for (Field f : stateContainer.getClass().getDeclaredFields()) {
-      try {
-        f.setAccessible(true);
-
-        final State annotation = f.getAnnotation(State.class);
-        if (annotation != null) {
-          if (isTypeMutable(f.getType())) {
-            state.put(f.getName(), InspectorValue.mutable(f.get(stateContainer)));
-          } else {
-            state.put(f.getName(), InspectorValue.immutable(f.get(stateContainer)));
-          }
-          hasState = true;
-        }
-      } catch (Exception ignored) {
-      }
-    }
-
-    return hasState ? state.build() : null;
-  }
-
-  private static boolean isTypeMutable(Class<?> type) {
-    if (type == int.class || type == Integer.class) {
-      return true;
-    } else if (type == long.class || type == Long.class) {
-      return true;
-    } else if (type == float.class || type == Float.class) {
-      return true;
-    } else if (type == double.class || type == Double.class) {
-      return true;
-    } else if (type == boolean.class || type == Boolean.class) {
-      return true;
-    } else if (type.isAssignableFrom(String.class)) {
-      return true;
-    }
-    return false;
+  private static FlipperObject getStateData(DebugComponent node) throws Exception {
+    return DataUtils.getStateData(node, node.getStateContainer());
   }
 
   @Override
@@ -622,14 +508,6 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
     }
   }
 
-  private static InspectorValue fromDrawable(Drawable d) {
-    if (d instanceof ColorDrawable) {
-      return InspectorValue.mutable(Color, ((ColorDrawable) d).getColor());
-    }
-    return InspectorValue.mutable(Color, 0);
-  }
-
-
   private static InspectorValue fromFloat(float f) {
     if (Float.isNaN(f)) {
       return InspectorValue.mutable(Enum, "undefined");
@@ -637,12 +515,9 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
     return InspectorValue.mutable(Number, f);
   }
 
-  private static InspectorValue fromYogaValue(YogaValue v) {
+  static InspectorValue fromYogaValue(YogaValue v) {
     // TODO add support for Type.Dimension or similar
     return InspectorValue.mutable(Enum, v.toString());
   }
 
-  private static InspectorValue fromColor(int color) {
-    return InspectorValue.mutable(Color, color);
-  }
 }

@@ -18,9 +18,11 @@ import com.facebook.flipper.plugins.inspector.HighlightedOverlay;
 import com.facebook.flipper.plugins.inspector.Named;
 import com.facebook.flipper.plugins.inspector.NodeDescriptor;
 import com.facebook.flipper.plugins.inspector.Touch;
+import com.facebook.litho.sections.Section;
 import com.facebook.litho.sections.debug.DebugSection;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nullable;
 
 public class DebugSectionDescriptor extends NodeDescriptor<DebugSection> {
 
@@ -67,8 +69,29 @@ public class DebugSectionDescriptor extends NodeDescriptor<DebugSection> {
   @Override
   public List<Named<FlipperObject>> getData(DebugSection node) throws Exception {
     // TODO T39526148 add changeset info
-    final List<Named<FlipperObject>> attrs = new ArrayList<>();
-    return attrs;
+    final List<Named<FlipperObject>> data = new ArrayList<>();
+
+    final List<Named<FlipperObject>> propData = getPropData(node);
+    if (propData != null) {
+      data.addAll(propData);
+    }
+
+    final FlipperObject stateData = getStateData(node);
+    if (stateData != null) {
+      data.add(new Named<>("State", stateData));
+    }
+
+    return data;
+  }
+
+  private static @Nullable List<Named<FlipperObject>> getPropData(DebugSection node)
+      throws Exception {
+    final Section section = node.getSection();
+    return DataUtils.getPropData(section);
+  }
+
+  private static @Nullable FlipperObject getStateData(DebugSection node) throws Exception {
+    return DataUtils.getStateData(node, node.getStateContainer());
   }
 
   @Override

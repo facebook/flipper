@@ -14,7 +14,7 @@ import {
 import {setActiveSheet, ACTIVE_SHEET_SHARE_DATA} from './reducers/application';
 import type {Store} from './reducers/';
 import electron from 'electron';
-import {GK} from 'flipper';
+import {ENABLE_SHAREABLE_LINK} from 'flipper';
 import {remote} from 'electron';
 const {dialog} = remote;
 import os from 'os';
@@ -188,7 +188,54 @@ function getTemplate(
   shell: Object,
   store: Store,
 ): Array<MenuItem> {
+  const exportSubmenu = [
+    {
+      label: 'File...',
+      accelerator: 'CommandOrControl+E',
+      click: function(item: Object, focusedWindow: Object) {
+        dialog.showSaveDialog(
+          null,
+          {
+            title: 'FlipperExport',
+            defaultPath: path.join(os.homedir(), 'FlipperExport.flipper'),
+          },
+          file => {
+            reportPlatformFailures(
+              exportStoreToFile(file, store),
+              `${EXPORT_FLIPPER_TRACE_EVENT}:UI`,
+            );
+          },
+        );
+      },
+    },
+  ];
+  if (ENABLE_SHAREABLE_LINK) {
+    exportSubmenu.push({
+      label: 'Sharable Link',
+      accelerator: 'CommandOrControl+Shift+E',
+      click: async function(item: Object, focusedWindow: Object) {
+        store.dispatch(setActiveSheet(ACTIVE_SHEET_SHARE_DATA));
+      },
+    });
+  }
+
   const template = [
+    {
+      label: 'File',
+      submenu: [
+        {
+          label: 'Open File...',
+          accelerator: 'CommandOrControl+O',
+          click: function(item: Object, focusedWindow: Object) {
+            showOpenDialog(store);
+          },
+        },
+        {
+          label: 'Export',
+          submenu: exportSubmenu,
+        },
+      ],
+    },
     {
       label: 'Edit',
       submenu: [
@@ -317,54 +364,7 @@ function getTemplate(
       ],
     },
   ];
-  if (GK.get('flipper_import_export')) {
-    template.unshift({
-      label: 'File',
-      submenu: [
-        {
-          label: 'Open File...',
-          accelerator: 'CommandOrControl+O',
-          click: function(item: Object, focusedWindow: Object) {
-            showOpenDialog(store);
-          },
-        },
-        {
-          label: 'Export',
-          submenu: [
-            {
-              label: 'File...',
-              accelerator: 'CommandOrControl+E',
-              click: function(item: Object, focusedWindow: Object) {
-                dialog.showSaveDialog(
-                  null,
-                  {
-                    title: 'FlipperExport',
-                    defaultPath: path.join(
-                      os.homedir(),
-                      'FlipperExport.flipper',
-                    ),
-                  },
-                  file => {
-                    reportPlatformFailures(
-                      exportStoreToFile(file, store),
-                      `${EXPORT_FLIPPER_TRACE_EVENT}:UI`,
-                    );
-                  },
-                );
-              },
-            },
-            {
-              label: 'Sharable Link',
-              accelerator: 'CommandOrControl+Shift+E',
-              click: async function(item: Object, focusedWindow: Object) {
-                store.dispatch(setActiveSheet(ACTIVE_SHEET_SHARE_DATA));
-              },
-            },
-          ],
-        },
-      ],
-    });
-  }
+
   if (process.platform === 'darwin') {
     const name = app.getName();
     template.unshift({

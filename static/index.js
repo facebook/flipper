@@ -38,6 +38,10 @@ if (process.platform === 'darwin') {
 
 const argv = yargs
   .usage('$0 [args]')
+  .option('file', {
+    describe: 'Define a file to open on startup.',
+    type: 'string',
+  })
   .option('updater', {
     default: true,
     describe: 'Toggle the built-in update mechanism.',
@@ -54,7 +58,8 @@ const argv = yargs
     type: 'string',
   })
   .version(global.__VERSION__)
-  .help().argv;
+  .help()
+  .parse(process.argv.slice(1));
 
 let {config, configPath, flipperDir} = setup(argv);
 
@@ -76,7 +81,7 @@ let win;
 let appReady = false;
 let pluginsCompiled = false;
 let deeplinkURL = null;
-let filePath = null;
+let filePath = argv.file;
 
 // tracking
 setInterval(() => {
