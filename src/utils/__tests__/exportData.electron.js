@@ -257,7 +257,6 @@ test('test processStore function to have only the client for the selected device
   expect(json).toBeDefined();
   //$FlowFixMe Flow doesn't that its a test and the assertion for null is already added
   const {clients} = json;
-  //$FlowFixMe Flow doesn't that its a test and the assertion for null is already added
   const {pluginStates} = json.store;
   let expectedPluginState = {
     [generateClientIdentifierWithSalt(selectedDeviceClientIdentifier, 'salt') +
