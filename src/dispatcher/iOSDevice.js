@@ -9,7 +9,6 @@ import type {ChildProcess} from 'child_process';
 import type {Store} from '../reducers/index.js';
 import type {Logger} from '../fb-interfaces/Logger.js';
 import type {DeviceType} from '../devices/BaseDevice';
-import {RecurringError} from '../utils/errors';
 import {promisify} from 'util';
 import path from 'path';
 import child_process from 'child_process';
@@ -138,7 +137,7 @@ function getActiveSimulators(): Promise<Array<IOSDeviceParams>> {
 
 function getActiveDevices(): Promise<Array<IOSDeviceParams>> {
   return iosUtil.targets().catch(e => {
-    console.error(new RecurringError(e.message));
+    console.error(e.message);
     return [];
   });
 }

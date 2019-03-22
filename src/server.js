@@ -16,7 +16,6 @@ import RSocketTCPServer from 'rsocket-tcp-server';
 import {Single} from 'rsocket-flowable';
 import Client from './Client.js';
 import type {UninitializedClient} from './UninitializedClient';
-import {RecurringError} from './utils/errors';
 import {reportPlatformFailures} from './utils/metrics';
 
 const EventEmitter = (require('events'): any);
@@ -342,11 +341,9 @@ class ConnectionTracker {
     this.connectionAttempts.set(key, entry);
     if (entry.length >= this.connectionProblemThreshold) {
       console.error(
-        new RecurringError(
-          `Connection loop detected with ${key}. Connected ${
-            this.connectionProblemThreshold
-          } times within ${this.timeWindowMillis / 1000}s.`,
-        ),
+        `Connection loop detected with ${key}. Connected ${
+          this.connectionProblemThreshold
+        } times within ${this.timeWindowMillis / 1000}s.`,
         'server',
       );
     }

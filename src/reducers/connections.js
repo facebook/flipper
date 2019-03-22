@@ -9,7 +9,6 @@ import type BaseDevice from '../devices/BaseDevice';
 import type Client from '../Client';
 import type {UninitializedClient} from '../UninitializedClient';
 import {isEqual} from 'lodash';
-import {RecurringError} from '../utils/errors';
 import iosUtil from '../fb-stubs/iOSContainerUtility';
 // $FlowFixMe perf_hooks is a new API in node
 import {performance} from 'perf_hooks';
@@ -266,8 +265,7 @@ export default function reducer(
         );
         if (matchingDeviceForClient.length === 0) {
           console.error(
-            new RecurringError(`Client initialised for non-displayed device`),
-            payload.id,
+            `Client initialised for non-displayed device: ${payload.id}`,
           );
         }
       }
@@ -328,10 +326,9 @@ export default function reducer(
       const errorMessage =
         payload.error instanceof Error ? payload.error.message : payload.error;
       console.error(
-        new RecurringError(`Client setup error: ${errorMessage}`),
-        `${payload.client.os}:${payload.client.deviceName}:${
-          payload.client.appName
-        }`,
+        `Client setup error: ${errorMessage} while setting up client: ${
+          payload.client.os
+        }:${payload.client.deviceName}:${payload.client.appName}`,
       );
       return {
         ...state,
