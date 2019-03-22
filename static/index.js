@@ -15,6 +15,7 @@ const fs = require('fs');
 const {exec} = require('child_process');
 const compilePlugins = require('./compilePlugins.js');
 const setup = require('./setup');
+const delegateToLauncher = require('./launcher');
 const expandTilde = require('expand-tilde');
 const yargs = require('yargs');
 
@@ -81,7 +82,7 @@ let win;
 let appReady = false;
 let pluginsCompiled = false;
 let deeplinkURL = null;
-let filePath = argv.file;
+let filePath = null;
 
 // tracking
 setInterval(() => {
@@ -135,6 +136,7 @@ app.on('will-finish-launching', () => {
   app.on('open-url', function(event, url) {
     event.preventDefault();
     deeplinkURL = url;
+    argv.url = url;
     if (win) {
       win.webContents.send('flipper-protocol-handler', deeplinkURL);
     }
@@ -143,6 +145,7 @@ app.on('will-finish-launching', () => {
     // When flipper app is running, and someone double clicks the import file, `componentDidMount` will not be called again and windows object will exist in that case. That's why calling `win.webContents.send('open-flipper-file', filePath);` again.
     event.preventDefault();
     filePath = path;
+    argv.file = path;
     if (win) {
       win.webContents.send('open-flipper-file', filePath);
       filePath = null;
@@ -150,7 +153,13 @@ app.on('will-finish-launching', () => {
   });
 });
 
-app.on('ready', function() {
+app.on('ready', () => {
+  // If we delegate to the launcher, shut down this instance of the app.
+  if (delegateToLauncher(argv)) {
+    app.quit();
+    return;
+  }
+
   appReady = true;
   app.commandLine.appendSwitch('scroll-bounce');
   tryCreateWindow();
