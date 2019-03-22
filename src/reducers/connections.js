@@ -172,7 +172,7 @@ export default function reducer(
         // select device if none was selected before
         selectedDevice,
         ...selection,
-        error,
+        error: error || state.error,
       };
     }
     case 'UNREGISTER_DEVICES': {
