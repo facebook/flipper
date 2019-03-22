@@ -34,6 +34,7 @@ export type {
   TableHighlightedRows,
   TableRowSortOrder,
   TableColumnOrder,
+  TableColumnOrderVal,
   TableColumnSizes,
 } from './components/table/types.js';
 export {default as ManagedTable} from './components/table/ManagedTable.js';

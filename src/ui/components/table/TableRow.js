@@ -130,21 +130,16 @@ export default class TableRow extends React.PureComponent<Props> {
         {columnKeys.map(key => {
           const col = row.columns[key];
 
-          if (col == null) {
-            throw new Error(
-              `Trying to access column "${key}" which does not exist on row. Make sure buildRow is returning a valid row.`,
-            );
-          }
-          const isFilterable = col.isFilterable || false;
-          const value = col ? col.value : '';
-          const title = col ? col.title : '';
+          const isFilterable = col?.isFilterable || false;
+          const value = col?.value;
+          const title = col?.title;
 
           return (
             <TableBodyColumnContainer
               key={key}
               title={title}
               multiline={multiline}
-              justifyContent={col.align || 'flex-start'}
+              justifyContent={col?.align || 'flex-start'}
               width={normaliseColumnWidth(columnSizes[key])}>
               {isFilterable && onAddFilter != null ? (
                 <FilterRow addFilter={onAddFilter} filterKey={key}>
