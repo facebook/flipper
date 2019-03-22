@@ -11,7 +11,8 @@
     },
     app: {
       getVersion: function() {return global.__VERSION__ || '1';},
-      getName: function() {return '';}
+      getName: function() {return '';},
+      getAppPath: function() {return process.cwd();}
     },
     shell: {
       openExternal: function() {}

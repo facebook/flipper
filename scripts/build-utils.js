@@ -10,6 +10,7 @@ const compilePlugins = require('../static/compilePlugins');
 const tmp = require('tmp');
 const path = require('path');
 const fs = require('fs-extra');
+const cp = require('child-process-es6-promise');
 
 function die(err) {
   console.error(err.stack);
@@ -98,10 +99,19 @@ function getVersionNumber() {
   return version;
 }
 
+// Asynchronously determine current mercurial revision as string or `null` in case of any error.
+function genMercurialRevision() {
+  return cp
+    .spawn('hg', ['log', '-r', '.', '-T', '{node}'])
+    .catch(err => null)
+    .then(res => (res && res.stdout) || null);
+}
+
 module.exports = {
   buildFolder,
   compile,
   die,
   compileDefaultPlugins,
   getVersionNumber,
+  genMercurialRevision,
 };
