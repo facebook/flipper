@@ -7,14 +7,15 @@
 const path = require('path');
 const fs = require('fs-extra');
 const builder = require('electron-builder');
-const cp = require('child-process-es6-promise');
 const Platform = builder.Platform;
+const cp = require('child-process-es6-promise');
 const {
   buildFolder,
   compile,
   die,
   compileDefaultPlugins,
   getVersionNumber,
+  genMercurialRevision,
 } = require('./build-utils.js');
 
 function generateManifest(versionNumber) {
@@ -29,14 +30,6 @@ function generateManifest(versionNumber) {
       version_name: versionNumber,
     }),
   );
-}
-
-// Asynchronously determine current mercurial revision as string or `null` in case of any error.
-function genMercurialRevision() {
-  return cp
-    .spawn('hg', ['log', '-r', '.', '-T', '{node}'])
-    .catch(err => null)
-    .then(res => (res && res.stdout) || null);
 }
 
 function modifyPackageManifest(buildFolder, versionNumber, hgRevision) {

@@ -23,6 +23,10 @@ const getPackageJSON = async () => {
 
 export const readCurrentRevision: () => Promise<?string> = lodash.memoize(
   async () => {
+    // This is provided as part of the bundling process for headless.
+    if (global.__REVISION__) {
+      return global.__REVISION__;
+    }
     const json = await getPackageJSON();
     return json.revision;
   },

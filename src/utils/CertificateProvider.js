@@ -6,7 +6,6 @@
  */
 
 import type {Logger} from '../fb-interfaces/Logger';
-import {RecurringError} from './errors';
 import {promisify} from 'util';
 const fs = require('fs');
 import {
@@ -237,7 +236,7 @@ export default class CertificateProvider {
         },
       );
     }
-    return Promise.reject(new RecurringError(`Unsupported device os: ${os}`));
+    return Promise.reject(new Error(`Unsupported device os: ${os}`));
   }
 
   pushFileToiOSDevice(
@@ -284,13 +283,11 @@ export default class CertificateProvider {
         return Promise.all(deviceMatchList).then(devices => {
           const matchingIds = devices.filter(m => m.isMatch).map(m => m.id);
           if (matchingIds.length == 0) {
-            throw new RecurringError(
-              `No matching device found for app: ${appName}`,
-            );
+            throw new Error(`No matching device found for app: ${appName}`);
           }
           if (matchingIds.length > 1) {
             console.error(
-              new RecurringError('More than one matching device found for CSR'),
+              new Error('More than one matching device found for CSR'),
               csr,
             );
           }
@@ -323,9 +320,7 @@ export default class CertificateProvider {
       return Promise.all(deviceMatchList).then(devices => {
         const matchingIds = devices.filter(m => m.isMatch).map(m => m.id);
         if (matchingIds.length == 0) {
-          throw new RecurringError(
-            `No matching device found for app: ${appName}`,
-          );
+          throw new Error(`No matching device found for app: ${appName}`);
         }
         return matchingIds[0];
       });
@@ -409,13 +404,11 @@ export default class CertificateProvider {
     command: string,
   ): Promise<string> {
     if (!user.match(allowedAppNameRegex)) {
-      return Promise.reject(
-        new RecurringError(`Disallowed run-as user: ${user}`),
-      );
+      return Promise.reject(new Error(`Disallowed run-as user: ${user}`));
     }
     if (command.match(/[']/)) {
       return Promise.reject(
-        new RecurringError(`Disallowed escaping command: ${command}`),
+        new Error(`Disallowed escaping command: ${command}`),
       );
     }
     return this.adb
@@ -426,14 +419,14 @@ export default class CertificateProvider {
       .then(buffer => buffer.toString())
       .then(output => {
         if (output.match(appNotDebuggableRegex)) {
-          const e = new RecurringError(
+          const e = new Error(
             `Android app ${user} is not debuggable. To use it with Flipper, add android:debuggable="true" to the application section of AndroidManifest.xml`,
           );
           this.server.emit('error', e);
           throw e;
         }
         if (output.toLowerCase().match(operationNotPermittedRegex)) {
-          const e = new RecurringError(
+          const e = new Error(
             `Your android device (${deviceId}) does not support the adb shell run-as command. We're tracking this at https://github.com/facebook/flipper/issues/92`,
           );
           this.server.emit('error', e);
@@ -470,13 +463,13 @@ export default class CertificateProvider {
       .then(subject => {
         const matches = subject.trim().match(x509SubjectCNRegex);
         if (!matches || matches.length < 2) {
-          throw new RecurringError(`Cannot extract CN from ${subject}`);
+          throw new Error(`Cannot extract CN from ${subject}`);
         }
         return matches[1];
       })
       .then(appName => {
         if (!appName.match(allowedAppNameRegex)) {
-          throw new RecurringError(
+          throw new Error(
             `Disallowed app name in CSR: ${appName}. Only alphanumeric characters and '.' allowed.`,
           );
         }

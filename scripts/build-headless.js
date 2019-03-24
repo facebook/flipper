@@ -15,16 +15,19 @@ const {
   compile,
   compileDefaultPlugins,
   getVersionNumber,
+  genMercurialRevision,
 } = require('./build-utils.js');
 
 const PLUGINS_FOLDER_NAME = 'plugins';
 
-function preludeBundle(dir, versionNumber) {
+function preludeBundle(dir, versionNumber, buildRevision) {
+  const revisionStr =
+    buildRevision == null ? '' : `global.__REVISION__="${buildRevision}";`;
   return new Promise((resolve, reject) =>
     lineReplace({
       file: path.join(dir, 'bundle.js'),
       line: 1,
-      text: `var __DEV__=false; global.electronRequire = require; global.performance = require("perf_hooks").performance;global.__VERSION__="${versionNumber}";`,
+      text: `var __DEV__=false; global.electronRequire = require; global.performance = require("perf_hooks").performance;global.__VERSION__="${versionNumber}";${revisionStr}`,
       addNewLine: true,
       callback: resolve,
     }),
@@ -52,7 +55,7 @@ async function createZip(buildDir, distDir, targets) {
 
     // write zip file
     zip.outputStream
-      .pipe(fs.createWriteStream(path.join(distDir, `Flipper-headless.zip`)))
+      .pipe(fs.createWriteStream(path.join(distDir, 'Flipper-headless.zip')))
       .on('close', resolve);
     zip.end();
   });
@@ -88,7 +91,8 @@ async function createZip(buildDir, distDir, targets) {
   console.log('Created build directory', buildDir);
   await compile(buildDir, path.join(__dirname, '..', 'headless', 'index.js'));
   const versionNumber = getVersionNumber();
-  await preludeBundle(buildDir, versionNumber);
+  const buildRevision = await genMercurialRevision();
+  await preludeBundle(buildDir, versionNumber, buildRevision);
   await compileDefaultPlugins(path.join(buildDir, PLUGINS_FOLDER_NAME));
   await createBinary([
     path.join(buildDir, 'bundle.js'),

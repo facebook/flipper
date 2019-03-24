@@ -18,6 +18,8 @@ import {ReactiveSocket, PartialResponder} from 'rsocket-core';
 import {performance} from 'perf_hooks';
 import {reportPluginFailures} from './utils/metrics';
 import {default as isProduction} from './utils/isProduction.js';
+import {registerPlugins} from './reducers/plugins';
+import createTableNativePlugin from './plugins/TableNativePlugin';
 
 const EventEmitter = (require('events'): any);
 const invariant = require('invariant');
@@ -175,6 +177,21 @@ export default class Client extends EventEmitter {
       data => data.plugins,
     );
     this.plugins = plugins;
+    const nativeplugins = plugins
+      .map(plugin => /_nativeplugin_([^_]+)_([^_]+)/.exec(plugin))
+      .filter(Boolean)
+      .map(([id, type, title]) => {
+        // TODO put this in another component, and make the "types" registerable
+        switch (type) {
+          case 'Table':
+            return createTableNativePlugin(id, title);
+          default: {
+            return null;
+          }
+        }
+      })
+      .filter(Boolean);
+    this.store.dispatch(registerPlugins(nativeplugins));
     return plugins;
   }
 

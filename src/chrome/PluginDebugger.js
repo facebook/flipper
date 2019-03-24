@@ -171,7 +171,11 @@ class PluginDebugger extends Component<Props> {
     // bundled plugins are loaded from the defaultPlugins directory within
     // Flipper's package.
     const externalPluginPath = (p: PluginDefinition) =>
-      p.out.startsWith('./defaultPlugins/') ? null : p.entry;
+      p.out
+        ? p.out.startsWith('./defaultPlugins/')
+          ? null
+          : p.entry
+        : 'Native Plugin';
 
     this.props.gatekeepedPlugins.forEach(plugin =>
       rows.push(
