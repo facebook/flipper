@@ -43,6 +43,10 @@ const argv = yargs
     describe: 'Define a file to open on startup.',
     type: 'string',
   })
+  .option('url', {
+    describe: 'Define a flipper:// URL to open on startup.',
+    type: 'string',
+  })
   .option('updater', {
     default: true,
     describe: 'Toggle the built-in update mechanism.',
@@ -81,8 +85,8 @@ process.env.CONFIG = JSON.stringify({
 let win;
 let appReady = false;
 let pluginsCompiled = false;
-let deeplinkURL = null;
-let filePath = null;
+let deeplinkURL = argv.url;
+let filePath = argv.file;
 
 // tracking
 setInterval(() => {
