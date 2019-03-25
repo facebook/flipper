@@ -159,24 +159,25 @@ app.on('will-finish-launching', () => {
 
 app.on('ready', () => {
   // If we delegate to the launcher, shut down this instance of the app.
-  if (delegateToLauncher(argv)) {
-    app.quit();
-    return;
-  }
-
-  appReady = true;
-  app.commandLine.appendSwitch('scroll-bounce');
-  tryCreateWindow();
-  // if in development install the react devtools extension
-  if (process.env.NODE_ENV === 'development') {
-    const {
-      default: installExtension,
-      REACT_DEVELOPER_TOOLS,
-      REDUX_DEVTOOLS,
-    } = require('electron-devtools-installer');
-    installExtension(REACT_DEVELOPER_TOOLS.id);
-    installExtension(REDUX_DEVTOOLS.id);
-  }
+  delegateToLauncher(argv).then(hasLauncherInvoked => {
+    if (hasLauncherInvoked) {
+      app.quit();
+      return;
+    }
+    appReady = true;
+    app.commandLine.appendSwitch('scroll-bounce');
+    tryCreateWindow();
+    // if in development install the react devtools extension
+    if (process.env.NODE_ENV === 'development') {
+      const {
+        default: installExtension,
+        REACT_DEVELOPER_TOOLS,
+        REDUX_DEVTOOLS,
+      } = require('electron-devtools-installer');
+      installExtension(REACT_DEVELOPER_TOOLS.id);
+      installExtension(REDUX_DEVTOOLS.id);
+    }
+  });
 });
 
 ipcMain.on('componentDidMount', event => {
