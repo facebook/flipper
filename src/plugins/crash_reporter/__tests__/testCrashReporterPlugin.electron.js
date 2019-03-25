@@ -64,14 +64,26 @@ afterAll(() => {
   setCrashReporterPluginID('');
 });
 
-test('test the parsing of the reason for crash when log matches the predefined regex', () => {
+test('test the parsing of the date and crash info for the log which matches the predefined regex', () => {
+  const log =
+    'Blaa Blaaa \n Blaa Blaaa \n Exception Type:  SIGSEGV \n Blaa Blaa \n Blaa Blaa Date/Time: 2019-03-21 12:07:00.861 +0000 \n Blaa balaaa';
+  const crash = parseCrashLog(log, 'iOS');
+  expect(crash.callstack).toEqual(log);
+  expect(crash.reason).toEqual('SIGSEGV');
+  expect(crash.name).toEqual('SIGSEGV');
+  expect(crash.date).toEqual(new Date('2019-03-21 12:07:00.861'));
+});
+
+test('test the parsing of the reason for crash when log matches the crash regex, but there is no mention of date', () => {
   const log =
     'Blaa Blaaa \n Blaa Blaaa \n Exception Type:  SIGSEGV \n Blaa Blaa \n Blaa Blaa';
   const crash = parseCrashLog(log, 'iOS');
   expect(crash.callstack).toEqual(log);
   expect(crash.reason).toEqual('SIGSEGV');
   expect(crash.name).toEqual('SIGSEGV');
+  expect(crash.date).toBeUndefined();
 });
+
 test('test the parsing of the crash log when log does not match the predefined regex but is alphanumeric', () => {
   const log = 'Blaa Blaaa \n Blaa Blaaa \n Blaa Blaaa';
   const crash = parseCrashLog(log, 'iOS');
@@ -87,6 +99,7 @@ test('test the parsing of the reason for crash when log does not match the prede
   expect(crash.callstack).toEqual(log);
   expect(crash.reason).toEqual('Cannot figure out the cause');
   expect(crash.name).toEqual('Cannot figure out the cause');
+  expect(crash.date).toBeUndefined();
 });
 test('test the parsing of the reason for crash when log is empty', () => {
   const log = '';
@@ -94,23 +107,27 @@ test('test the parsing of the reason for crash when log is empty', () => {
   expect(crash.callstack).toEqual(log);
   expect(crash.reason).toEqual('Cannot figure out the cause');
   expect(crash.name).toEqual('Cannot figure out the cause');
+  expect(crash.date).toBeUndefined();
 });
 test('test the parsing of the Android crash log for the proper android crash format', () => {
   const log =
     'FATAL EXCEPTION: main\nProcess: com.facebook.flipper.sample, PID: 27026\njava.lang.IndexOutOfBoundsException: Index: 190, Size: 0\n\tat java.util.ArrayList.get(ArrayList.java:437)\n\tat com.facebook.flipper.sample.RootComponentSpec.hitGetRequest(RootComponentSpec.java:72)\n\tat com.facebook.flipper.sample.RootComponent.hitGetRequest(RootComponent.java:46)\n';
-  const crash = parseCrashLog(log, 'Android');
+  const date = new Date();
+  const crash = parseCrashLog(log, 'Android', date);
   expect(crash.callstack).toEqual(log);
   expect(crash.reason).toEqual(
     'java.lang.IndexOutOfBoundsException: Index: 190, Size: 0',
   );
   expect(crash.name).toEqual('FATAL EXCEPTION: main');
+  expect(crash.date).toEqual(date);
 });
-test('test the parsing of the Android crash log for the unknown crash format', () => {
+test('test the parsing of the Android crash log for the unknown crash format and no date', () => {
   const log = 'Blaa Blaa Blaa';
   const crash = parseCrashLog(log, 'Android');
   expect(crash.callstack).toEqual(log);
   expect(crash.reason).toEqual('Cannot figure out the cause');
   expect(crash.name).toEqual('Cannot figure out the cause');
+  expect(crash.date).toBeUndefined();
 });
 test('test the parsing of the Android crash log for the partial format matching the crash format', () => {
   const log = 'First Line Break \n Blaa Blaa \n Blaa Blaa ';

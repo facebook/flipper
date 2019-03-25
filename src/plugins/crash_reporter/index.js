@@ -66,6 +66,7 @@ export type CrashLog = {|
   callstack: string,
   reason: string,
   name: string,
+  date: ?Date,
 |};
 
 export type PersistedState = {
@@ -164,12 +165,13 @@ export function getNewPersisitedStateFromCrashLog(
   persistingPlugin: Class<FlipperDevicePlugin<> | FlipperPlugin<>>,
   content: string,
   os: ?OS,
+  logDate: ?Date,
 ): ?PersistedState {
   const persistedStateReducer = persistingPlugin.persistedStateReducer;
   if (!os || !persistedStateReducer) {
     return null;
   }
-  const crash = parseCrashLog(content, os);
+  const crash = parseCrashLog(content, os, logDate);
   const newPluginState = persistedStateReducer(
     persistedState,
     'crash-report',
@@ -185,6 +187,7 @@ export function parseCrashLogAndUpdateState(
     pluginKey: string,
     newPluginState: ?PersistedState,
   ) => void,
+  logDate: ?Date,
 ) {
   const os = store.getState().connections.selectedDevice?.os;
   if (
@@ -219,6 +222,7 @@ export function parseCrashLogAndUpdateState(
     persistingPlugin,
     content,
     os,
+    logDate,
   );
   setPersistedState(pluginKey, newPluginState);
 }
@@ -240,7 +244,11 @@ export function shouldShowCrashNotification(
   return true;
 }
 
-export function parseCrashLog(content: string, os: OS): CrashLog {
+export function parseCrashLog(
+  content: string,
+  os: OS,
+  logDate: ?Date,
+): CrashLog {
   const stubString = 'Cannot figure out the cause';
   switch (os) {
     case 'iOS': {
@@ -251,10 +259,24 @@ export function parseCrashLog(content: string, os: OS): CrashLog {
       const tmp = exceptionRegex.exec(exceptionString);
       const exception =
         tmp && tmp[0].length ? tmp[0] : 'Cannot figure out the cause';
+
+      let date = logDate;
+      if (!date) {
+        const dateRegex = /Date\/Time: *[\w\s\.:-]*/;
+        const dateArr = dateRegex.exec(content);
+        const dateString = dateArr ? dateArr[0] : '';
+        const dateRegex2 = /[\w\s\.:-]*$/;
+        const tmp1 = dateRegex2.exec(dateString);
+        const extractedDateString: ?string =
+          tmp1 && tmp1[0].length ? tmp1[0] : null;
+        date = extractedDateString ? new Date(extractedDateString) : logDate;
+      }
+
       const crash = {
         callstack: content,
         name: exception,
         reason: exception,
+        date,
       };
       return crash;
     }
@@ -281,6 +303,7 @@ export function parseCrashLog(content: string, os: OS): CrashLog {
         callstack: content,
         name: name,
         reason: reason,
+        date: logDate,
       };
       return crash;
     }
@@ -542,6 +565,7 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin<
                   store,
                   androidLog,
                   setPersistedState,
+                  entry.date,
                 );
               }
               androidLogUnderProcess = false;
