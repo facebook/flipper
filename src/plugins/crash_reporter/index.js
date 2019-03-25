@@ -26,13 +26,14 @@ import {
   colors,
   Toolbar,
   Spacer,
+  Select,
 } from 'flipper';
 import fs from 'fs';
 import os from 'os';
 import util from 'util';
 import path from 'path';
 import type {Notification} from '../../plugin';
-import type {Store, DeviceLogEntry, OS} from 'flipper';
+import type {Store, DeviceLogEntry, OS, Props} from 'flipper';
 import {Component} from 'react';
 
 type HeaderRowProps = {
@@ -43,6 +44,14 @@ type openLogsCallbackType = () => void;
 
 type CrashReporterBarProps = {|
   openLogsCallback?: openLogsCallbackType,
+  crashSelector: CrashSelectorProps,
+|};
+
+type CrashSelectorProps = {|
+  crashes: ?{[key: string]: string},
+  orderedIDs: ?Array<string>,
+  selectedCrashID: ?string,
+  onCrashChange: ?(string) => void,
 |};
 
 export type Crash = {|
@@ -50,6 +59,7 @@ export type Crash = {|
   callstack: string,
   reason: string,
   name: string,
+  date: Date,
 |};
 
 export type CrashLog = {|
@@ -60,6 +70,10 @@ export type CrashLog = {|
 
 export type PersistedState = {
   crashes: Array<Crash>,
+};
+
+type State = {
+  crash: ?Crash,
 };
 
 const Padder = styled('div')(
@@ -111,9 +125,38 @@ const StyledFlexGrowColumn = styled(FlexColumn)({
   flexGrow: 1,
 });
 
+const StyledFlexRowColumn = styled(FlexRow)({
+  aligItems: 'center',
+  justifyContent: 'center',
+  height: '100%',
+});
+
 const StyledFlexColumn = styled(StyledFlexGrowColumn)({
   justifyContent: 'center',
   alignItems: 'center',
+});
+
+const MatchParentHeightComponent = styled(FlexRow)({
+  height: '100%',
+});
+
+const ButtonGroupContainer = styled(FlexRow)({
+  paddingLeft: 4,
+  paddingTop: 2,
+  paddingBottom: 2,
+  height: '100%',
+});
+
+const StyledSelectContainer = styled(FlexRow)({
+  paddingLeft: 8,
+  paddingTop: 2,
+  paddingBottom: 2,
+  height: '100%',
+});
+
+const StyledSelect = styled(Select)({
+  height: '100%',
+  maxWidth: 200,
 });
 
 export function getNewPersisitedStateFromCrashLog(
@@ -295,11 +338,75 @@ function addFileWatcherForiOSCrashLogs(
   });
 }
 
+class CrashSelector extends Component<CrashSelectorProps> {
+  render() {
+    const {crashes, selectedCrashID, orderedIDs, onCrashChange} = this.props;
+    return (
+      <StyledFlexRowColumn>
+        <ButtonGroupContainer>
+          <MatchParentHeightComponent>
+            <Button
+              disabled={Boolean(!orderedIDs || orderedIDs.length <= 1)}
+              compact={true}
+              onClick={() => {
+                if (onCrashChange && orderedIDs) {
+                  const index = orderedIDs.indexOf(selectedCrashID);
+                  const nextIndex =
+                    index < 1 ? orderedIDs.length - 1 : index - 1;
+                  const nextID = orderedIDs[nextIndex];
+                  onCrashChange(nextID);
+                }
+              }}
+              icon="chevron-left"
+              iconSize={12}
+              title="Previous Crash"
+            />
+          </MatchParentHeightComponent>
+          <MatchParentHeightComponent>
+            <Button
+              disabled={Boolean(!orderedIDs || orderedIDs.length <= 1)}
+              compact={true}
+              onClick={() => {
+                if (onCrashChange && orderedIDs) {
+                  const index = orderedIDs.indexOf(selectedCrashID);
+                  const nextIndex =
+                    index >= orderedIDs.length - 1 ? 0 : index + 1;
+                  const nextID = orderedIDs[nextIndex];
+                  onCrashChange(nextID);
+                }
+              }}
+              icon="chevron-right"
+              iconSize={12}
+              title="Next Crash"
+            />
+          </MatchParentHeightComponent>
+        </ButtonGroupContainer>
+        <StyledSelectContainer>
+          <StyledSelect
+            grow={true}
+            selected={selectedCrashID || 'NoCrashID'}
+            options={crashes || {NoCrashID: 'No Crash'}}
+            onChange={(title: string) => {
+              for (const key in crashes) {
+                if (crashes[key] === title && onCrashChange) {
+                  onCrashChange(key);
+                  return;
+                }
+              }
+            }}
+          />
+        </StyledSelectContainer>
+      </StyledFlexRowColumn>
+    );
+  }
+}
+
 class CrashReporterBar extends Component<CrashReporterBarProps> {
   render() {
-    const {openLogsCallback} = this.props;
+    const {openLogsCallback, crashSelector} = this.props;
     return (
       <Toolbar>
+        <CrashSelector {...crashSelector} />
         <Spacer />
         <Button
           disabled={Boolean(!openLogsCallback)}
@@ -331,8 +438,8 @@ class HeaderRow extends Component<HeaderRowProps> {
 }
 
 export default class CrashReporterPlugin extends FlipperDevicePlugin<
-  *,
-  *,
+  State,
+  void,
   PersistedState,
 > {
   static defaultPersistedState = {crashes: []};
@@ -359,6 +466,7 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin<
             callstack: payload.callstack,
             name: payload.name,
             reason: payload.reason,
+            date: payload.date || new Date(),
           },
         ]),
       };
@@ -448,14 +556,18 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin<
     this.props.selectPlugin('DeviceLogs', callstack);
   };
 
-  render() {
-    const currentCrash: ?Crash =
+  constructor(props: Props<PersistedState>) {
+    // Required step: always call the parent class' constructor
+    super(props);
+    let crash: ?Crash = null;
+    if (
       this.props.persistedState.crashes &&
       this.props.persistedState.crashes.length > 0
-        ? this.props.persistedState.crashes[
-            this.props.persistedState.crashes.length - 1
-          ]
-        : null;
+    ) {
+      crash = this.props.persistedState.crashes[
+        this.props.persistedState.crashes.length - 1
+      ];
+    }
 
     let deeplinkedCrash = null;
     if (this.props.deepLinkPayload) {
@@ -467,24 +579,66 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin<
         deeplinkedCrash = this.props.persistedState.crashes[index];
       }
     }
+    // Set the state directly. Use props if necessary.
+    this.state = {
+      crash: deeplinkedCrash || crash,
+    };
+  }
 
-    const crash = deeplinkedCrash || currentCrash;
+  render() {
+    let crashToBeInspected = this.state.crash;
+
+    if (!crashToBeInspected && this.props.persistedState.crashes.length > 0) {
+      crashToBeInspected = this.props.persistedState.crashes[
+        this.props.persistedState.crashes.length - 1
+      ];
+    }
+    const crash = crashToBeInspected;
     if (crash) {
+      const {crashes} = this.props.persistedState;
+      const crashMap = crashes.reduce(
+        (acc: {[key: string]: string}, persistedCrash: Crash) => {
+          const {notificationID, date} = persistedCrash;
+          const name = 'Crash at ' + date.toLocaleString();
+          acc[notificationID] = name;
+          return acc;
+        },
+        {},
+      );
+
+      const orderedIDs = crashes.map(
+        persistedCrash => persistedCrash.notificationID,
+      );
+      const selectedCrashID = crash.notificationID;
+      const onCrashChange = id => {
+        const newSelectedCrash = crashes.find(element => {
+          return element.notificationID === id;
+        });
+        this.setState({crash: newSelectedCrash});
+        console.log('onCrashChange called', id);
+      };
       const callstackString = crash.callstack;
 
       const children = crash.callstack.split('\n').map(str => {
         return {message: str};
       });
+      const crashSelector: CrashSelectorProps = {
+        crashes: crashMap,
+        orderedIDs,
+        selectedCrashID,
+        onCrashChange,
+      };
       return (
         <FlexColumn>
           {this.device.os == 'Android' ? (
             <CrashReporterBar
+              crashSelector={crashSelector}
               openLogsCallback={() => {
                 this.openInLogs(crash.callstack);
               }}
             />
           ) : (
-            <CrashReporterBar />
+            <CrashReporterBar crashSelector={crashSelector} />
           )}
           <ScrollableColumn>
             <HeaderRow title="Name" value={crash.name} />
@@ -513,9 +667,15 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin<
         </FlexColumn>
       );
     }
+    const crashSelector = {
+      crashes: null,
+      orderedIDs: null,
+      selectedCrashID: null,
+      onCrashChange: null,
+    };
     return (
       <StyledFlexGrowColumn>
-        <CrashReporterBar />
+        <CrashReporterBar crashSelector={crashSelector} />
         <StyledFlexColumn>
           <Padder paddingBottom={8}>
             <Title>No Crashes Logged</Title>

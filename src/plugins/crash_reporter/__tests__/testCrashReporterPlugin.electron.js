@@ -38,7 +38,17 @@ function getCrash(
     callstack: callstack,
     reason: reason,
     name: name,
+    date: new Date(),
   };
+}
+
+function assertCrash(crash: Crash, expectedCrash: Crash) {
+  const {notificationID, callstack, reason, name, date} = crash;
+  expect(notificationID).toEqual(expectedCrash.notificationID);
+  expect(callstack).toEqual(expectedCrash.callstack);
+  expect(reason).toEqual(expectedCrash.reason);
+  expect(name).toEqual(expectedCrash.name);
+  expect(date.toDateString()).toEqual(expectedCrash.date.toDateString());
 }
 
 beforeEach(() => {
@@ -180,16 +190,28 @@ test('test getNewPersisitedStateFromCrashLog for non-empty defaultPersistedState
   );
   const content =
     'Blaa Blaaa \n Blaa Blaaa \n Exception Type:  SIGSEGV \n Blaa Blaa \n Blaa Blaa';
-  expect(perisistedState).toEqual({crashes: [pluginStateCrash]});
+  expect(perisistedState).toBeDefined();
+  // $FlowFixMe: Checked if perisistedState is defined or not
+  const {crashes} = perisistedState;
+  expect(crashes).toBeDefined();
+  expect(crashes.length).toEqual(1);
+  expect(crashes[0]).toEqual(pluginStateCrash);
   const newPersistedState = getNewPersisitedStateFromCrashLog(
     perisistedState,
     CrashReporterPlugin,
     content,
     'iOS',
   );
-  expect(newPersistedState).toEqual({
-    crashes: [pluginStateCrash, getCrash(1, content, 'SIGSEGV', 'SIGSEGV')],
-  });
+  expect(newPersistedState).toBeDefined();
+  // $FlowFixMe: Checked if perisistedState is defined or not
+  const newPersistedStateCrashes = newPersistedState.crashes;
+  expect(newPersistedStateCrashes).toBeDefined();
+  expect(newPersistedStateCrashes.length).toEqual(2);
+  assertCrash(newPersistedStateCrashes[0], pluginStateCrash);
+  assertCrash(
+    newPersistedStateCrashes[1],
+    getCrash(1, content, 'SIGSEGV', 'SIGSEGV'),
+  );
 });
 test('test getNewPersisitedStateFromCrashLog for non-empty defaultPersistedState and undefined pluginState', () => {
   setNotificationID(0);
@@ -210,9 +232,13 @@ test('test getNewPersisitedStateFromCrashLog for non-empty defaultPersistedState
     content,
     'iOS',
   );
-  expect(newPersistedState).toEqual({
-    crashes: [crash, getCrash(1, content, 'SIGSEGV', 'SIGSEGV')],
-  });
+  expect(newPersistedState).toBeDefined();
+  // $FlowFixMe: Checked if perisistedState is defined or not
+  const {crashes} = newPersistedState;
+  expect(crashes).toBeDefined();
+  expect(crashes.length).toEqual(2);
+  assertCrash(crashes[0], crash);
+  assertCrash(crashes[1], getCrash(1, content, 'SIGSEGV', 'SIGSEGV'));
 });
 test('test getNewPersisitedStateFromCrashLog for non-empty defaultPersistedState and defined pluginState and improper crash log', () => {
   setNotificationID(0);
@@ -234,17 +260,21 @@ test('test getNewPersisitedStateFromCrashLog for non-empty defaultPersistedState
     content,
     'iOS',
   );
-  expect(newPersistedState).toEqual({
-    crashes: [
-      pluginStateCrash,
-      getCrash(
-        1,
-        content,
-        'Cannot figure out the cause',
-        'Cannot figure out the cause',
-      ),
-    ],
-  });
+  expect(newPersistedState).toBeDefined();
+  // $FlowFixMe: Checked if perisistedState is defined or not
+  const {crashes} = newPersistedState;
+  expect(crashes).toBeDefined();
+  expect(crashes.length).toEqual(2);
+  assertCrash(crashes[0], pluginStateCrash);
+  assertCrash(
+    crashes[1],
+    getCrash(
+      1,
+      content,
+      'Cannot figure out the cause',
+      'Cannot figure out the cause',
+    ),
+  );
 });
 test('test getNewPersisitedStateFromCrashLog when os is undefined', () => {
   setNotificationID(0);

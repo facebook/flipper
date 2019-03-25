@@ -16,7 +16,7 @@ export {
   FlipperDevicePlugin,
   callClient,
 } from './plugin.js';
-export type {PluginClient} from './plugin.js';
+export type {PluginClient, Props} from './plugin.js';
 export {default as Client} from './Client.js';
 export {clipboard} from 'electron';
 export * from './fb-stubs/constants.js';
