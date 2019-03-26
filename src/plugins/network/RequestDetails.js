@@ -532,6 +532,7 @@ class JSONTextFormatter {
   format = (body: string, contentType: string) => {
     if (
       contentType.startsWith('application/json') ||
+      contentType.startsWith('application/hal+json') ||
       contentType.startsWith('text/javascript') ||
       contentType.startsWith('application/x-fb-flatbuffer')
     ) {
@@ -589,6 +590,7 @@ class JSONFormatter {
   format = (body: string, contentType: string) => {
     if (
       contentType.startsWith('application/json') ||
+      contentType.startsWith('application/hal+json') ||
       contentType.startsWith('text/javascript') ||
       contentType.startsWith('application/x-fb-flatbuffer')
     ) {
@@ -664,6 +666,7 @@ class GraphQLFormatter {
   format = (body: string, contentType: string) => {
     if (
       contentType.startsWith('application/json') ||
+      contentType.startsWith('application/hal+json') ||
       contentType.startsWith('text/javascript') ||
       contentType.startsWith('text/html') ||
       contentType.startsWith('application/x-fb-flatbuffer')
