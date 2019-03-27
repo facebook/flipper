@@ -9,7 +9,6 @@ package com.facebook.flipper.plugins.common;
 
 import android.os.Handler;
 import android.os.Looper;
-import com.facebook.flipper.core.FlipperConnection;
 import com.facebook.flipper.core.FlipperObject;
 import com.facebook.flipper.core.FlipperReceiver;
 import com.facebook.flipper.core.FlipperResponder;
@@ -17,10 +16,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 public abstract class MainThreadFlipperReceiver implements FlipperReceiver {
-
-  public MainThreadFlipperReceiver(FlipperConnection connection) {
-    // TODO(T41065412): remove unused constructor argument.
-  }
 
   private final Handler mHandler = new Handler(Looper.getMainLooper());
 

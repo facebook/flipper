@@ -9,7 +9,6 @@ package com.facebook.flipper.plugins.common;
 
 import com.facebook.flipper.core.FlipperObject;
 import com.facebook.flipper.core.FlipperResponder;
-import com.facebook.flipper.testing.FlipperConnectionMock;
 import com.facebook.flipper.testing.FlipperResponderMock;
 import org.junit.Assert;
 import org.junit.Before;
@@ -20,19 +19,17 @@ import org.robolectric.RobolectricTestRunner;
 @RunWith(RobolectricTestRunner.class)
 public class MainThreadFlipperReceiverTest {
 
-  FlipperConnectionMock connection;
   FlipperResponderMock responder;
 
   @Before
   public void setup() throws Exception {
-    connection = new FlipperConnectionMock();
     responder = new FlipperResponderMock();
   }
 
   @Test
   public void errorIsPassedToResponder() throws Exception {
     MainThreadFlipperReceiver receiver =
-        new MainThreadFlipperReceiver(connection) {
+        new MainThreadFlipperReceiver() {
           public void onReceiveOnMainThread(FlipperObject params, FlipperResponder responder)
               throws Exception {
             throw new RuntimeException("hello exception");
