@@ -37,3 +37,7 @@ export async function shareFlipperData(
   new window.Notification('Feature not implemented');
   return Promise.reject();
 }
+
+export async function writeKeychain(token: string) {
+  return Promise.reject();
+}
