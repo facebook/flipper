@@ -754,7 +754,7 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
 
   private static Object assertNotNull(@Nullable Object o) {
     if (o == null) {
-      throw new AssertionError("Unexpected null value");
+      throw new RuntimeException("Unexpected null value");
     }
     return o;
   }
