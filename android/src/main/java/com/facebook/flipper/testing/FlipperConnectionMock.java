@@ -19,6 +19,7 @@ import java.util.Map;
 public class FlipperConnectionMock implements FlipperConnection {
   public final Map<String, FlipperReceiver> receivers = new HashMap<>();
   public final Map<String, List<Object>> sent = new HashMap<>();
+  public final List<Throwable> errors = new ArrayList<>();
 
   @Override
   public void send(String method, FlipperObject params) {
@@ -47,7 +48,9 @@ public class FlipperConnectionMock implements FlipperConnection {
   }
 
   @Override
-  public void reportError(Throwable throwable) {}
+  public void reportError(Throwable throwable) {
+    errors.add(throwable);
+  }
 
   @Override
   public void receive(String method, FlipperReceiver receiver) {
