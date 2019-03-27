@@ -28,6 +28,7 @@ import {
   Spacer,
   Select,
 } from 'flipper';
+import unicodeSubstring from 'unicode-substring';
 import fs from 'fs';
 import os from 'os';
 import util from 'util';
@@ -313,6 +314,14 @@ export function parseCrashLog(
   }
 }
 
+function truncate(baseString: string, numOfChars: number): string {
+  if (baseString.length <= numOfChars) {
+    return baseString;
+  }
+  const truncated_string = unicodeSubstring(baseString, 0, numOfChars - 1);
+  return truncated_string + '\u2026';
+}
+
 export function parsePath(content: string): ?string {
   const regex = /Path: *[\w\-\/\.\t\ \_\%]*\n/;
   const arr = regex.exec(content);
@@ -511,11 +520,19 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin<
   ): Array<Notification> => {
     return persistedState.crashes.map((crash: Crash) => {
       const id = crash.notificationID;
+      const title = `CRASH: ${truncate(crash.name, 50)} Reason: ${truncate(
+        crash.reason,
+        50,
+      )}`;
+      const callstack = CrashReporterPlugin.trimCallStackIfPossible(
+        crash.callstack,
+      );
+      const msg = `Callstack: ${truncate(callstack, 200)}`;
       return {
         id,
-        message: CrashReporterPlugin.trimCallStackIfPossible(crash.callstack),
+        message: msg,
         severity: 'error',
-        title: 'CRASH: ' + crash.name + ' ' + crash.reason,
+        title: title,
         action: id,
       };
     });

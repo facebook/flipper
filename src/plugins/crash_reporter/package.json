@@ -10,5 +10,8 @@
   "bugs": {
     "email": "prit91@fb.com",
     "url": "https://fb.workplace.com/groups/220760072184928/"
+  },
+  "dependencies": {
+    "unicode-substring": "^1.0.0"
   }
 }
