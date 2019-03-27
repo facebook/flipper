@@ -459,7 +459,17 @@ class HeaderRow extends Component<HeaderRowProps> {
           <Padder paddingLeft={8}>
             <FlexRow>
               <Title>{title}</Title>
-              <Value code={true}>{value}</Value>
+              <ContextMenu
+                items={[
+                  {
+                    label: 'copy',
+                    click: () => {
+                      clipboard.writeText(value);
+                    },
+                  },
+                ]}>
+                <Value code={true}>{value}</Value>
+              </ContextMenu>
             </FlexRow>
           </Padder>
           <Line />
