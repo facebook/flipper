@@ -6,6 +6,7 @@
  */
 
 import {FlipperBasePlugin} from '../plugin.js';
+import config from '../fb-stubs/config';
 import type BaseDevice from '../devices/BaseDevice.js';
 import type Client from '../Client.js';
 import type {UninitializedClient} from '../UninitializedClient.js';
@@ -345,7 +346,7 @@ class MainSidebar extends PureComponent<MainSidebarProps> {
           />
           &nbsp;Plugin not showing?
         </PluginDebugger>
-        <UserAccount />
+        {config.showLogin && <UserAccount />}
       </Sidebar>
     );
   }

@@ -6,9 +6,11 @@
  */
 
 import type {User} from '../reducers/user';
+import type {ActiveSheet} from '../reducers/application';
 
 import {styled, PureComponent, FlexRow, Glyph, Text, colors} from 'flipper';
 import {logout} from '../reducers/user';
+import {setActiveSheet, ACTIVE_SHEET_SIGN_IN} from '../reducers/application.js';
 import {connect} from 'react-redux';
 import electron from 'electron';
 import {findDOMNode} from 'react-dom';
@@ -19,12 +21,14 @@ const Container = styled(FlexRow)({
   borderTop: `1px solid ${colors.blackAlpha10}`,
   fontWeight: 500,
   flexShrink: 0,
+  minHeight: 36,
+  color: colors.blackAlpha80,
 });
 
 const ProfilePic = styled('img')({
   borderRadius: '999em',
   flexShrink: 0,
-  width: 25,
+  width: 24,
   marginRight: 6,
 });
 
@@ -39,6 +43,7 @@ const UserName = styled(Text)({
 type UserAccountProps = {|
   user: User,
   logout: () => void,
+  setActiveSheet: (activeSheet: ActiveSheet) => void,
 |};
 
 class UserAccount extends PureComponent<UserAccountProps> {
@@ -76,7 +81,18 @@ class UserAccount extends PureComponent<UserAccountProps> {
         <UserName>{this.props.user.name}</UserName>
         <Glyph name="chevron-down" size={10} variant="outline" />
       </Container>
-    ) : null;
+    ) : (
+      <Container
+        onClick={() => this.props.setActiveSheet(ACTIVE_SHEET_SIGN_IN)}>
+        <Glyph
+          name="profile-circle"
+          size={16}
+          variant="outline"
+          color={colors.blackAlpha50}
+        />
+        &nbsp;Sign In...
+      </Container>
+    );
   }
 }
 
@@ -86,5 +102,6 @@ export default connect<UserAccountProps, {||}, _, _, _, _>(
   }),
   {
     logout,
+    setActiveSheet,
   },
 )(UserAccount);
