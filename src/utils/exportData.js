@@ -5,7 +5,7 @@
  * @format
  */
 import {getInstance as getLogger} from '../fb-stubs/Logger';
-import type {Store} from '../reducers';
+import type {Store, MiddlewareAPI} from '../reducers';
 import type {DeviceExport} from '../devices/BaseDevice';
 import type {State as PluginStates} from '../reducers/pluginStates';
 import type {PluginNotification} from '../reducers/notifications.js';
@@ -183,7 +183,9 @@ export const processStore = async (
   return null;
 };
 
-export async function getStoreExport(store: Store): Promise<?ExportType> {
+export async function getStoreExport(
+  store: MiddlewareAPI,
+): Promise<?ExportType> {
   const state = store.getState();
   const {clients} = state.connections;
   const {pluginStates} = state;
@@ -234,7 +236,7 @@ export async function getStoreExport(store: Store): Promise<?ExportType> {
   );
 }
 
-export function exportStore(store: Store): Promise<string> {
+export function exportStore(store: MiddlewareAPI): Promise<string> {
   getLogger().track('usage', EXPORT_FLIPPER_TRACE_EVENT);
   return new Promise(async (resolve, reject) => {
     const storeExport = await getStoreExport(store);
