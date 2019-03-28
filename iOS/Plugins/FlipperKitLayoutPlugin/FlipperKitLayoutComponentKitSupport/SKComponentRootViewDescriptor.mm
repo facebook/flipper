@@ -33,11 +33,8 @@
 }
 
 - (NSUInteger)childCountForNode:(CKComponentRootView *)node {
-  if ([node respondsToSelector:@selector(ck_attachState)]) {
-    const auto state = [node ck_attachState];
-    return state == nil ? 0 : 1;
-  }
-  return 0;
+  const auto state = CKGetAttachStateForView(node);
+  return state == nil ? 0 : 1;
 }
 
 - (id)childForNode:(CKComponentRootView *)node atIndex:(NSUInteger)index {
