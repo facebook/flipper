@@ -122,6 +122,7 @@ public abstract class TablePlugin extends NativePlugin {
                     .build());
           }
         });
+    this.onConnected();
   }
 
   protected abstract void onConnected();

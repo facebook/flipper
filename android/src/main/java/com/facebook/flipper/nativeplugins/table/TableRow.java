@@ -35,6 +35,19 @@ public abstract class TableRow {
     }
   }
 
+  public static class BooleanValue implements Value {
+    private boolean val;
+
+    public BooleanValue(boolean i) {
+      this.val = i;
+    }
+
+    @Override
+    public FlipperObject serialize() {
+      return new FlipperObject.Builder().put("type", "boolean").put("value", val).build();
+    }
+  }
+
   public static class TimeValue implements Value {
     private long millis;
 
@@ -71,7 +84,7 @@ public abstract class TableRow {
     this.sidebar = sidebar;
   }
 
-  FlipperObject serialize() {
+  final FlipperObject serialize() {
     FlipperObject.Builder columnsObject = new FlipperObject.Builder();
     for (Map.Entry<TablePlugin.Column, ? extends Value> e : values.entrySet()) {
       columnsObject.put(e.getKey().id, e.getValue().serialize());
