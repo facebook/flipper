@@ -111,10 +111,7 @@ const INITAL_STATE: State = {
   deepLinkPayload: null,
 };
 
-export default function reducer(
-  state: State = INITAL_STATE,
-  action: Action,
-): State {
+const reducer = (state: State = INITAL_STATE, action: Action): State => {
   switch (action.type) {
     case 'SELECT_DEVICE': {
       const {payload} = action;
@@ -159,20 +156,12 @@ export default function reducer(
         selection = {};
       }
 
-      const error =
-        payload.os === 'iOS' &&
-        payload.deviceType === 'physical' &&
-        !iosUtil.isAvailable()
-          ? 'iOS Devices are not yet supported'
-          : null;
-
       return {
         ...state,
         devices,
         // select device if none was selected before
         selectedDevice,
         ...selection,
-        error: error || state.error,
       };
     }
     case 'UNREGISTER_DEVICES': {
@@ -345,7 +334,24 @@ export default function reducer(
     default:
       return state;
   }
-}
+};
+
+export default (state: State = INITAL_STATE, action: Action): State => {
+  const nextState = reducer(state, action);
+
+  if (nextState.selectedDevice) {
+    const {selectedDevice} = nextState;
+    const error =
+      selectedDevice.os === 'iOS' &&
+      selectedDevice.deviceType === 'physical' &&
+      !iosUtil.isAvailable()
+        ? 'iOS Devices are not yet supported'
+        : null;
+
+    nextState.error = error || nextState.error;
+  }
+  return nextState;
+};
 
 export const selectDevice = (payload: BaseDevice): Action => ({
   type: 'SELECT_DEVICE',
