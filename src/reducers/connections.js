@@ -348,7 +348,7 @@ export default (state: State = INITAL_STATE, action: Action): State => {
         ? 'iOS Devices are not yet supported'
         : null;
 
-    nextState.error = error || nextState.error;
+    nextState.error = error;
   }
   return nextState;
 };
