@@ -43,6 +43,10 @@ const argv = yargs
     describe: 'Define a file to open on startup.',
     type: 'string',
   })
+  .option('url', {
+    describe: 'Define a flipper:// URL to open on startup.',
+    type: 'string',
+  })
   .option('updater', {
     default: true,
     describe: 'Toggle the built-in update mechanism.',
@@ -81,8 +85,8 @@ process.env.CONFIG = JSON.stringify({
 let win;
 let appReady = false;
 let pluginsCompiled = false;
-let deeplinkURL = null;
-let filePath = null;
+let deeplinkURL = argv.url;
+let filePath = argv.file;
 
 // tracking
 setInterval(() => {
@@ -155,24 +159,25 @@ app.on('will-finish-launching', () => {
 
 app.on('ready', () => {
   // If we delegate to the launcher, shut down this instance of the app.
-  if (delegateToLauncher(argv)) {
-    app.quit();
-    return;
-  }
-
-  appReady = true;
-  app.commandLine.appendSwitch('scroll-bounce');
-  tryCreateWindow();
-  // if in development install the react devtools extension
-  if (process.env.NODE_ENV === 'development') {
-    const {
-      default: installExtension,
-      REACT_DEVELOPER_TOOLS,
-      REDUX_DEVTOOLS,
-    } = require('electron-devtools-installer');
-    installExtension(REACT_DEVELOPER_TOOLS.id);
-    installExtension(REDUX_DEVTOOLS.id);
-  }
+  delegateToLauncher(argv).then(hasLauncherInvoked => {
+    if (hasLauncherInvoked) {
+      app.quit();
+      return;
+    }
+    appReady = true;
+    app.commandLine.appendSwitch('scroll-bounce');
+    tryCreateWindow();
+    // if in development install the react devtools extension
+    if (process.env.NODE_ENV === 'development') {
+      const {
+        default: installExtension,
+        REACT_DEVELOPER_TOOLS,
+        REDUX_DEVTOOLS,
+      } = require('electron-devtools-installer');
+      installExtension(REACT_DEVELOPER_TOOLS.id);
+      installExtension(REDUX_DEVTOOLS.id);
+    }
+  });
 });
 
 ipcMain.on('componentDidMount', event => {

@@ -30,7 +30,7 @@ public final class GenerateLithoAccessibilityRenderExtensionCommand
 
   @Override
   public FlipperReceiver receiver(final ObjectTracker tracker, final FlipperConnection connection) {
-    return new MainThreadFlipperReceiver(connection) {
+    return new MainThreadFlipperReceiver() {
       @Override
       public void onReceiveOnMainThread(
           final FlipperObject params, final FlipperResponder responder) throws Exception {

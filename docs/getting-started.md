@@ -48,7 +48,7 @@ repositories {
 }
 
 dependencies {
-  debugImplementation 'com.facebook.flipper:flipper:0.18.0'
+  debugImplementation 'com.facebook.flipper:flipper:0.19.0'
   debugImplementation 'com.facebook.soloader:soloader:0.5.1'
 }
 ```
@@ -87,7 +87,7 @@ repositories {
 }
 
 dependencies {
-  debugImplementation 'com.facebook.flipper:flipper:0.18.1-SNAPSHOT'
+  debugImplementation 'com.facebook.flipper:flipper:0.19.1-SNAPSHOT'
   debugImplementation 'com.facebook.soloader:soloader:0.5.1'
 }
 ```
@@ -105,7 +105,7 @@ project 'MyApp.xcodeproj'
 source 'https://github.com/facebook/flipper.git'
 source 'https://github.com/CocoaPods/Specs'
 swift_version = "4.1"
-flipperkit_version = '0.18.0'
+flipperkit_version = '0.19.0'
 
 target 'MyApp' do
   platform :ios, '9.0'
@@ -180,7 +180,7 @@ project 'MyApp.xcodeproj'
 source 'https://github.com/facebook/flipper.git'
 source 'https://github.com/CocoaPods/Specs'
 swift_version = "4.1"
-flipperkit_version = '0.18.0'
+flipperkit_version = '0.19.0'
 
 target 'MyApp' do
   platform :ios, '9.0'

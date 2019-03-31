@@ -35,13 +35,14 @@ public class FlipperDiagnosticFragment extends Fragment implements FlipperStateU
   Button mReportButton;
 
   @Nullable FlipperDiagnosticReportListener mReportCallback;
+  @Nullable FlipperDiagnosticSummaryTextFilter mDiagnosticSummaryTextFilter;
 
   private final View.OnClickListener mOnBugReportClickListener =
       new View.OnClickListener() {
         @Override
         public void onClick(View v) {
           mReportCallback.report(
-              AndroidFlipperClient.getInstance(getContext()).getState(), getSummary());
+              AndroidFlipperClient.getInstance(getContext()).getState(), getSummary().toString());
         }
       };
 
@@ -96,7 +97,10 @@ public class FlipperDiagnosticFragment extends Fragment implements FlipperStateU
   @Override
   public void onUpdate() {
     final String state = AndroidFlipperClient.getInstance(getContext()).getState();
-    final String summary = getSummary();
+    final CharSequence summary =
+        mDiagnosticSummaryTextFilter == null
+            ? getSummary()
+            : mDiagnosticSummaryTextFilter.applyDiagnosticSummaryTextFilter(getSummary());
 
     final Activity activity = getActivity();
     if (activity != null) {
@@ -112,10 +116,10 @@ public class FlipperDiagnosticFragment extends Fragment implements FlipperStateU
     }
   }
 
-  String getSummary() {
+  CharSequence getSummary() {
     final Context context = getContext();
     final StateSummary summary = AndroidFlipperClient.getInstance(context).getStateSummary();
-    final StringBuilder stateText = new StringBuilder();
+    final StringBuilder stateText = new StringBuilder(16);
     for (StateElement e : summary.mList) {
       final String status;
       switch (e.getState()) {
@@ -132,7 +136,7 @@ public class FlipperDiagnosticFragment extends Fragment implements FlipperStateU
         default:
           status = "❓";
       }
-      stateText.append(status).append(e.getName()).append("\n");
+      stateText.append(status).append(e.getName()).append('\n');
     }
     return stateText.toString();
   }
@@ -150,6 +154,9 @@ public class FlipperDiagnosticFragment extends Fragment implements FlipperStateU
 
     if (context instanceof FlipperDiagnosticReportListener) {
       mReportCallback = (FlipperDiagnosticReportListener) context;
+    }
+    if (context instanceof FlipperDiagnosticSummaryTextFilter) {
+      mDiagnosticSummaryTextFilter = (FlipperDiagnosticSummaryTextFilter) context;
     }
   }
 }

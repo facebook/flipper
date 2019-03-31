@@ -9,7 +9,7 @@ import type {KeyboardActions} from './MenuBar.js';
 import type {App} from './App.js';
 import type {Logger} from './fb-interfaces/Logger.js';
 import type Client from './Client.js';
-import type {Store} from './reducers/index.js';
+import type {Store, MiddlewareAPI} from './reducers/index.js';
 
 import React from 'react';
 import type {Node} from 'react';
@@ -86,7 +86,7 @@ export class FlipperBasePlugin<
   static exportPersistedState: ?(
     callClient: (string, ?Object) => Promise<Object>,
     persistedState: ?PersistedState,
-    store: ?Store,
+    store: ?MiddlewareAPI,
   ) => Promise<?PersistedState>;
   static getActiveNotifications: ?(
     persistedState: PersistedState,

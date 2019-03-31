@@ -39,7 +39,7 @@ public class ConsoleCommandReceiver {
 
     final ScriptingSession session = scriptingEnvironment.startSession();
     final FlipperReceiver executeCommandReceiver =
-        new MainThreadFlipperReceiver(connection) {
+        new MainThreadFlipperReceiver() {
           @Override
           public void onReceiveOnMainThread(FlipperObject params, FlipperResponder responder)
               throws Exception {

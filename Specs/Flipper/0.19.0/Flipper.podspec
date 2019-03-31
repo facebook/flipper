@@ -12,8 +12,8 @@ Pod::Spec.new do |spec|
   spec.public_header_files = 'xplat/Flipper/*.h','xplat/utils/*.h'
   spec.source_files = 'xplat/Flipper/*.{h,cpp,m,mm}','xplat/Flipper/utils/*.{h,cpp,m,mm}'
   spec.libraries = "stdc++"
-  spec.dependency 'Flipper-Folly', '1.3.0'
-  spec.dependency 'Flipper-RSocket', '0.10.4'
+  spec.dependency 'Flipper-Folly', '~>1.2'
+  spec.dependency 'Flipper-RSocket', '~>0.10'
   spec.compiler_flags = '-DFLIPPER_OSS=1 -DFB_SONARKIT_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_LIBGFLAGS=0 -DFOLLY_HAVE_LIBJEMALLOC=0 -DFOLLY_HAVE_PREADV=0 -DFOLLY_HAVE_PWRITEV=0 -DFOLLY_HAVE_TFO=0 -DFOLLY_USE_SYMBOLIZER=0 -Wall
     -std=c++14
     -Wno-global-constructors'

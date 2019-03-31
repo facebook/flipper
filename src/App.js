@@ -14,6 +14,7 @@ import MainSidebar from './chrome/MainSidebar.js';
 import BugReporterDialog from './chrome/BugReporterDialog.js';
 import ErrorBar from './chrome/ErrorBar.js';
 import ShareSheet from './chrome/ShareSheet.js';
+import SignInSheet from './chrome/SignInSheet.js';
 import PluginContainer from './PluginContainer.js';
 import Sheet from './chrome/Sheet.js';
 import {ipcRenderer, remote} from 'electron';
@@ -22,6 +23,7 @@ import {
   ACTIVE_SHEET_BUG_REPORTER,
   ACTIVE_SHEET_PLUGIN_DEBUGGER,
   ACTIVE_SHEET_SHARE_DATA,
+  ACTIVE_SHEET_SIGN_IN,
 } from './reducers/application.js';
 
 import type {Logger} from './fb-interfaces/Logger.js';
@@ -72,6 +74,8 @@ export class App extends React.Component<Props> {
       return <PluginDebugger onHide={onHide} />;
     } else if (this.props.activeSheet === ACTIVE_SHEET_SHARE_DATA) {
       return <ShareSheet onHide={onHide} />;
+    } else if (this.props.activeSheet === ACTIVE_SHEET_SIGN_IN) {
+      return <SignInSheet onHide={onHide} />;
     } else {
       // contents are added via React.Portal
       return null;

@@ -7,12 +7,57 @@
 
 import {ManagedDataInspector, Panel} from 'flipper';
 import {createTablePlugin} from '../createTablePlugin';
+import {colors, styled, Text, Toolbar, Spacer, Button} from 'flipper';
 
 type RowData = {
   id: string,
   columns: {},
-  details: {},
+  sidebar: Array<SidebarSection>,
 };
+
+type SidebarSection = JsonSection | ToolbarSection;
+type JsonSection = {
+  type: 'json',
+  title: string,
+  content: string,
+};
+type ToolbarSection = {
+  type: 'toolbar',
+  items: [{type: 'link', destination: string, label: string}],
+};
+
+const NonWrappingText = styled(Text)({
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+  whiteSpace: 'nowrap',
+  userSelect: 'none',
+});
+
+const BooleanValue = styled(NonWrappingText)(props => ({
+  '&::before': {
+    content: '""',
+    display: 'inline-block',
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: props.active ? colors.green : colors.red,
+    marginRight: 5,
+    marginTop: 1,
+  },
+}));
+
+function renderValue({type, value}: {type: string, value: any}) {
+  switch (type) {
+    case 'boolean':
+      return (
+        <BooleanValue code={true} active={value}>
+          {value.toString()}
+        </BooleanValue>
+      );
+    default:
+      return value;
+  }
+}
 
 function buildRow(rowData: RowData, previousRowData: ?RowData) {
   if (!rowData.columns) {
@@ -21,7 +66,7 @@ function buildRow(rowData: RowData, previousRowData: ?RowData) {
   const oldColumns =
     previousRowData && previousRowData.columns
       ? Object.keys(previousRowData.columns).reduce((map, key) => {
-          if (key !== previousRowData?.id) {
+          if (key !== 'id') {
             map[key] = {
               value: (previousRowData?.columns || {})[key].value,
               isFilterable: true,
@@ -31,9 +76,10 @@ function buildRow(rowData: RowData, previousRowData: ?RowData) {
         }, {})
       : {};
   const columns = Object.keys(rowData.columns).reduce((map, key) => {
-    if (key !== rowData.id) {
+    if (rowData.columns && key !== 'id') {
+      const renderedValue = renderValue(rowData.columns[key]);
       map[key] = {
-        value: rowData.columns && rowData.columns[key].value,
+        value: renderedValue,
         isFilterable: true,
       };
     }
@@ -47,15 +93,52 @@ function buildRow(rowData: RowData, previousRowData: ?RowData) {
   };
 }
 
-function renderSidebar(rowData: RowData) {
-  if (!rowData.details) {
-    throw new Error('defaultRenderSidebar used with incorrect data format.');
-  }
+function renderToolbar(section: ToolbarSection) {
+  const toolbarComponents = section.items.map((item, index) => {
+    switch (item.type) {
+      case 'link':
+        return (
+          <Button href={item.destination} key={index + 1}>
+            {item.label}
+          </Button>
+        );
+    }
+  });
   return (
-    <Panel floating={false} heading={'Details'}>
-      <ManagedDataInspector data={rowData.details} expandRoot={true} />
-    </Panel>
+    <Toolbar key="toolbar">
+      <Spacer key={0} />
+      {toolbarComponents}
+    </Toolbar>
   );
+}
+
+function renderSidebar(rowData: RowData) {
+  if (!rowData.sidebar) {
+    throw new Error('renderSidebar used with missing rowData.sidebar');
+  }
+  if (!Array.isArray(rowData.sidebar)) {
+    throw new Error('typeof rowData.sidebar is not array as expected: ');
+  }
+  return rowData.sidebar.map(renderSidebarSection);
+}
+
+function renderSidebarSection(section: SidebarSection, index: number) {
+  switch (section.type) {
+    case 'json':
+      return (
+        <Panel floating={false} heading={section.title} key={index}>
+          <ManagedDataInspector data={section.content} expandRoot={true} />
+        </Panel>
+      );
+    case 'toolbar':
+      return renderToolbar(section);
+    default:
+      return (
+        <Panel floating={false} heading={'Details'} key={index}>
+          <ManagedDataInspector data={section} expandRoot={true} />
+        </Panel>
+      );
+  }
 }
 
 export default function createTableNativePlugin(id: string, title: string) {

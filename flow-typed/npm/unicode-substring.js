@@ -3,10 +3,12 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  * @format
+ * @flow
  */
-
-export default {
-  updateServer: 'https://www.facebook.com/fbflipper/public/latest.json',
-  bugReportButtonVisible: false,
-  showLogin: false,
-};
+declare module 'unicode-substring' {
+  declare export default function unicodeSubstring(
+    baseString: string,
+    start: number,
+    end: number,
+  ): string;
+}

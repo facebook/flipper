@@ -37,7 +37,10 @@ import type {
   Action as PluginsAction,
 } from './plugins.js';
 import type {State as UserState, Action as UserAction} from './user.js';
-import type {Store as ReduxStore} from 'redux';
+import type {
+  Store as ReduxStore,
+  MiddlewareAPI as ReduxMiddlewareAPI,
+} from 'redux';
 
 type Actions =
   | ApplicationAction
@@ -58,6 +61,7 @@ export type State = {|
 |};
 
 export type Store = ReduxStore<State, Actions>;
+export type MiddlewareAPI = ReduxMiddlewareAPI<State, Actions>;
 
 export default combineReducers<_, Actions>({
   application,

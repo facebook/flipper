@@ -7,6 +7,7 @@
  */
 package com.facebook.flipper.plugins.inspector;
 
+import static com.facebook.flipper.plugins.inspector.ThrowableMessageMatcher.hasThrowableWithMessage;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -31,6 +32,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nullable;
+import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -296,7 +298,7 @@ public class InspectorFlipperPluginTest {
     Mockito.verify(decorView, Mockito.times(1)).removeView(Mockito.any(TouchOverlayView.class));
   }
 
-  @Test(expected = AssertionError.class)
+  @Test
   public void testNullChildThrows() throws Exception {
     final InspectorFlipperPlugin plugin =
         new InspectorFlipperPlugin(mApp, mDescriptorMapping, mScriptingEnvironment, null);
@@ -307,7 +309,7 @@ public class InspectorFlipperPluginTest {
     final TestNode root = new TestNode();
     root.id = "test";
     root.name = "test";
-    root.children = new ArrayList<>();
+    root.children = new ArrayList<>(1);
     root.children.add(null);
     mApplicationDescriptor.root = root;
 
@@ -315,6 +317,9 @@ public class InspectorFlipperPluginTest {
     plugin.mGetNodes.onReceive(
         new FlipperObject.Builder().put("ids", new FlipperArray.Builder().put("test")).build(),
         responder);
+
+    assertThat(
+        connection.errors, CoreMatchers.hasItem(hasThrowableWithMessage("Unexpected null value")));
   }
 
   private class TestNode {

@@ -26,13 +26,15 @@ import {
   colors,
   Toolbar,
   Spacer,
+  Select,
 } from 'flipper';
+import unicodeSubstring from 'unicode-substring';
 import fs from 'fs';
 import os from 'os';
 import util from 'util';
 import path from 'path';
 import type {Notification} from '../../plugin';
-import type {Store, DeviceLogEntry, OS} from 'flipper';
+import type {Store, DeviceLogEntry, OS, Props} from 'flipper';
 import {Component} from 'react';
 
 type HeaderRowProps = {
@@ -43,6 +45,14 @@ type openLogsCallbackType = () => void;
 
 type CrashReporterBarProps = {|
   openLogsCallback?: openLogsCallbackType,
+  crashSelector: CrashSelectorProps,
+|};
+
+type CrashSelectorProps = {|
+  crashes: ?{[key: string]: string},
+  orderedIDs: ?Array<string>,
+  selectedCrashID: ?string,
+  onCrashChange: ?(string) => void,
 |};
 
 export type Crash = {|
@@ -50,16 +60,22 @@ export type Crash = {|
   callstack: string,
   reason: string,
   name: string,
+  date: Date,
 |};
 
 export type CrashLog = {|
   callstack: string,
   reason: string,
   name: string,
+  date: ?Date,
 |};
 
 export type PersistedState = {
   crashes: Array<Crash>,
+};
+
+type State = {
+  crash: ?Crash,
 };
 
 const Padder = styled('div')(
@@ -111,9 +127,38 @@ const StyledFlexGrowColumn = styled(FlexColumn)({
   flexGrow: 1,
 });
 
+const StyledFlexRowColumn = styled(FlexRow)({
+  aligItems: 'center',
+  justifyContent: 'center',
+  height: '100%',
+});
+
 const StyledFlexColumn = styled(StyledFlexGrowColumn)({
   justifyContent: 'center',
   alignItems: 'center',
+});
+
+const MatchParentHeightComponent = styled(FlexRow)({
+  height: '100%',
+});
+
+const ButtonGroupContainer = styled(FlexRow)({
+  paddingLeft: 4,
+  paddingTop: 2,
+  paddingBottom: 2,
+  height: '100%',
+});
+
+const StyledSelectContainer = styled(FlexRow)({
+  paddingLeft: 8,
+  paddingTop: 2,
+  paddingBottom: 2,
+  height: '100%',
+});
+
+const StyledSelect = styled(Select)({
+  height: '100%',
+  maxWidth: 200,
 });
 
 export function getNewPersisitedStateFromCrashLog(
@@ -121,12 +166,13 @@ export function getNewPersisitedStateFromCrashLog(
   persistingPlugin: Class<FlipperDevicePlugin<> | FlipperPlugin<>>,
   content: string,
   os: ?OS,
+  logDate: ?Date,
 ): ?PersistedState {
   const persistedStateReducer = persistingPlugin.persistedStateReducer;
   if (!os || !persistedStateReducer) {
     return null;
   }
-  const crash = parseCrashLog(content, os);
+  const crash = parseCrashLog(content, os, logDate);
   const newPluginState = persistedStateReducer(
     persistedState,
     'crash-report',
@@ -142,6 +188,7 @@ export function parseCrashLogAndUpdateState(
     pluginKey: string,
     newPluginState: ?PersistedState,
   ) => void,
+  logDate: ?Date,
 ) {
   const os = store.getState().connections.selectedDevice?.os;
   if (
@@ -176,6 +223,7 @@ export function parseCrashLogAndUpdateState(
     persistingPlugin,
     content,
     os,
+    logDate,
   );
   setPersistedState(pluginKey, newPluginState);
 }
@@ -197,7 +245,11 @@ export function shouldShowCrashNotification(
   return true;
 }
 
-export function parseCrashLog(content: string, os: OS): CrashLog {
+export function parseCrashLog(
+  content: string,
+  os: OS,
+  logDate: ?Date,
+): CrashLog {
   const stubString = 'Cannot figure out the cause';
   switch (os) {
     case 'iOS': {
@@ -208,10 +260,24 @@ export function parseCrashLog(content: string, os: OS): CrashLog {
       const tmp = exceptionRegex.exec(exceptionString);
       const exception =
         tmp && tmp[0].length ? tmp[0] : 'Cannot figure out the cause';
+
+      let date = logDate;
+      if (!date) {
+        const dateRegex = /Date\/Time: *[\w\s\.:-]*/;
+        const dateArr = dateRegex.exec(content);
+        const dateString = dateArr ? dateArr[0] : '';
+        const dateRegex2 = /[\w\s\.:-]*$/;
+        const tmp1 = dateRegex2.exec(dateString);
+        const extractedDateString: ?string =
+          tmp1 && tmp1[0].length ? tmp1[0] : null;
+        date = extractedDateString ? new Date(extractedDateString) : logDate;
+      }
+
       const crash = {
         callstack: content,
         name: exception,
         reason: exception,
+        date,
       };
       return crash;
     }
@@ -238,6 +304,7 @@ export function parseCrashLog(content: string, os: OS): CrashLog {
         callstack: content,
         name: name,
         reason: reason,
+        date: logDate,
       };
       return crash;
     }
@@ -245,6 +312,14 @@ export function parseCrashLog(content: string, os: OS): CrashLog {
       throw new Error('Unsupported OS');
     }
   }
+}
+
+function truncate(baseString: string, numOfChars: number): string {
+  if (baseString.length <= numOfChars) {
+    return baseString;
+  }
+  const truncated_string = unicodeSubstring(baseString, 0, numOfChars - 1);
+  return truncated_string + '\u2026';
 }
 
 export function parsePath(content: string): ?string {
@@ -295,11 +370,75 @@ function addFileWatcherForiOSCrashLogs(
   });
 }
 
+class CrashSelector extends Component<CrashSelectorProps> {
+  render() {
+    const {crashes, selectedCrashID, orderedIDs, onCrashChange} = this.props;
+    return (
+      <StyledFlexRowColumn>
+        <ButtonGroupContainer>
+          <MatchParentHeightComponent>
+            <Button
+              disabled={Boolean(!orderedIDs || orderedIDs.length <= 1)}
+              compact={true}
+              onClick={() => {
+                if (onCrashChange && orderedIDs) {
+                  const index = orderedIDs.indexOf(selectedCrashID);
+                  const nextIndex =
+                    index < 1 ? orderedIDs.length - 1 : index - 1;
+                  const nextID = orderedIDs[nextIndex];
+                  onCrashChange(nextID);
+                }
+              }}
+              icon="chevron-left"
+              iconSize={12}
+              title="Previous Crash"
+            />
+          </MatchParentHeightComponent>
+          <MatchParentHeightComponent>
+            <Button
+              disabled={Boolean(!orderedIDs || orderedIDs.length <= 1)}
+              compact={true}
+              onClick={() => {
+                if (onCrashChange && orderedIDs) {
+                  const index = orderedIDs.indexOf(selectedCrashID);
+                  const nextIndex =
+                    index >= orderedIDs.length - 1 ? 0 : index + 1;
+                  const nextID = orderedIDs[nextIndex];
+                  onCrashChange(nextID);
+                }
+              }}
+              icon="chevron-right"
+              iconSize={12}
+              title="Next Crash"
+            />
+          </MatchParentHeightComponent>
+        </ButtonGroupContainer>
+        <StyledSelectContainer>
+          <StyledSelect
+            grow={true}
+            selected={selectedCrashID || 'NoCrashID'}
+            options={crashes || {NoCrashID: 'No Crash'}}
+            onChange={(title: string) => {
+              for (const key in crashes) {
+                if (crashes[key] === title && onCrashChange) {
+                  onCrashChange(key);
+                  return;
+                }
+              }
+            }}
+          />
+        </StyledSelectContainer>
+      </StyledFlexRowColumn>
+    );
+  }
+}
+
 class CrashReporterBar extends Component<CrashReporterBarProps> {
   render() {
-    const {openLogsCallback} = this.props;
+    const {openLogsCallback, crashSelector} = this.props;
     return (
       <Toolbar>
+        <CrashSelector {...crashSelector} />
         <Spacer />
         <Button
           disabled={Boolean(!openLogsCallback)}
@@ -320,7 +459,17 @@ class HeaderRow extends Component<HeaderRowProps> {
           <Padder paddingLeft={8}>
             <FlexRow>
               <Title>{title}</Title>
-              <Value code={true}>{value}</Value>
+              <ContextMenu
+                items={[
+                  {
+                    label: 'copy',
+                    click: () => {
+                      clipboard.writeText(value);
+                    },
+                  },
+                ]}>
+                <Value code={true}>{value}</Value>
+              </ContextMenu>
             </FlexRow>
           </Padder>
           <Line />
@@ -331,8 +480,8 @@ class HeaderRow extends Component<HeaderRowProps> {
 }
 
 export default class CrashReporterPlugin extends FlipperDevicePlugin<
-  *,
-  *,
+  State,
+  void,
   PersistedState,
 > {
   static defaultPersistedState = {crashes: []};
@@ -359,6 +508,7 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin<
             callstack: payload.callstack,
             name: payload.name,
             reason: payload.reason,
+            date: payload.date || new Date(),
           },
         ]),
       };
@@ -380,11 +530,19 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin<
   ): Array<Notification> => {
     return persistedState.crashes.map((crash: Crash) => {
       const id = crash.notificationID;
+      const title = `CRASH: ${truncate(crash.name, 50)} Reason: ${truncate(
+        crash.reason,
+        50,
+      )}`;
+      const callstack = CrashReporterPlugin.trimCallStackIfPossible(
+        crash.callstack,
+      );
+      const msg = `Callstack: ${truncate(callstack, 200)}`;
       return {
         id,
-        message: CrashReporterPlugin.trimCallStackIfPossible(crash.callstack),
+        message: msg,
         severity: 'error',
-        title: 'CRASH: ' + crash.name + ' ' + crash.reason,
+        title: title,
         action: id,
       };
     });
@@ -434,6 +592,7 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin<
                   store,
                   androidLog,
                   setPersistedState,
+                  entry.date,
                 );
               }
               androidLogUnderProcess = false;
@@ -448,14 +607,18 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin<
     this.props.selectPlugin('DeviceLogs', callstack);
   };
 
-  render() {
-    const currentCrash: ?Crash =
+  constructor(props: Props<PersistedState>) {
+    // Required step: always call the parent class' constructor
+    super(props);
+    let crash: ?Crash = null;
+    if (
       this.props.persistedState.crashes &&
       this.props.persistedState.crashes.length > 0
-        ? this.props.persistedState.crashes[
-            this.props.persistedState.crashes.length - 1
-          ]
-        : null;
+    ) {
+      crash = this.props.persistedState.crashes[
+        this.props.persistedState.crashes.length - 1
+      ];
+    }
 
     let deeplinkedCrash = null;
     if (this.props.deepLinkPayload) {
@@ -467,24 +630,66 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin<
         deeplinkedCrash = this.props.persistedState.crashes[index];
       }
     }
+    // Set the state directly. Use props if necessary.
+    this.state = {
+      crash: deeplinkedCrash || crash,
+    };
+  }
 
-    const crash = deeplinkedCrash || currentCrash;
+  render() {
+    let crashToBeInspected = this.state.crash;
+
+    if (!crashToBeInspected && this.props.persistedState.crashes.length > 0) {
+      crashToBeInspected = this.props.persistedState.crashes[
+        this.props.persistedState.crashes.length - 1
+      ];
+    }
+    const crash = crashToBeInspected;
     if (crash) {
+      const {crashes} = this.props.persistedState;
+      const crashMap = crashes.reduce(
+        (acc: {[key: string]: string}, persistedCrash: Crash) => {
+          const {notificationID, date} = persistedCrash;
+          const name = 'Crash at ' + date.toLocaleString();
+          acc[notificationID] = name;
+          return acc;
+        },
+        {},
+      );
+
+      const orderedIDs = crashes.map(
+        persistedCrash => persistedCrash.notificationID,
+      );
+      const selectedCrashID = crash.notificationID;
+      const onCrashChange = id => {
+        const newSelectedCrash = crashes.find(element => {
+          return element.notificationID === id;
+        });
+        this.setState({crash: newSelectedCrash});
+        console.log('onCrashChange called', id);
+      };
       const callstackString = crash.callstack;
 
       const children = crash.callstack.split('\n').map(str => {
         return {message: str};
       });
+      const crashSelector: CrashSelectorProps = {
+        crashes: crashMap,
+        orderedIDs,
+        selectedCrashID,
+        onCrashChange,
+      };
       return (
         <FlexColumn>
           {this.device.os == 'Android' ? (
             <CrashReporterBar
+              crashSelector={crashSelector}
               openLogsCallback={() => {
                 this.openInLogs(crash.callstack);
               }}
             />
           ) : (
-            <CrashReporterBar />
+            <CrashReporterBar crashSelector={crashSelector} />
           )}
           <ScrollableColumn>
             <HeaderRow title="Name" value={crash.name} />
@@ -513,9 +718,15 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin<
         </FlexColumn>
       );
     }
+    const crashSelector = {
+      crashes: null,
+      orderedIDs: null,
+      selectedCrashID: null,
+      onCrashChange: null,
+    };
     return (
       <StyledFlexGrowColumn>
-        <CrashReporterBar />
+        <CrashReporterBar crashSelector={crashSelector} />
         <StyledFlexColumn>
           <Padder paddingBottom={8}>
             <Title>No Crashes Logged</Title>

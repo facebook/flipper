@@ -178,7 +178,7 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
   }
 
   final FlipperReceiver mShouldShowLithoAccessibilitySettings =
-      new MainThreadFlipperReceiver(mConnection) {
+      new MainThreadFlipperReceiver() {
         @Override
         public void onReceiveOnMainThread(FlipperObject params, FlipperResponder responder)
             throws Exception {
@@ -190,7 +190,7 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
       };
 
   final FlipperReceiver mGetRoot =
-      new MainThreadFlipperReceiver(mConnection) {
+      new MainThreadFlipperReceiver() {
         @Override
         public void onReceiveOnMainThread(FlipperObject params, FlipperResponder responder)
             throws Exception {
@@ -199,7 +199,7 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
       };
 
   final FlipperReceiver mGetAXRoot =
-      new MainThreadFlipperReceiver(mConnection) {
+      new MainThreadFlipperReceiver() {
         @Override
         public void onReceiveOnMainThread(FlipperObject params, FlipperResponder responder)
             throws Exception {
@@ -209,7 +209,7 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
         }
       };
   final FlipperReceiver mGetAllNodes =
-      new MainThreadFlipperReceiver(mConnection) {
+      new MainThreadFlipperReceiver() {
         @Override
         public void onReceiveOnMainThread(
             final FlipperObject params, final FlipperResponder responder) throws Exception {
@@ -235,7 +235,7 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
       };
 
   final FlipperReceiver mGetNodes =
-      new MainThreadFlipperReceiver(mConnection) {
+      new MainThreadFlipperReceiver() {
         @Override
         public void onReceiveOnMainThread(
             final FlipperObject params, final FlipperResponder responder) throws Exception {
@@ -280,7 +280,7 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
   }
 
   final FlipperReceiver mGetAXNodes =
-      new MainThreadFlipperReceiver(mConnection) {
+      new MainThreadFlipperReceiver() {
         @Override
         public void onReceiveOnMainThread(
             final FlipperObject params, final FlipperResponder responder) throws Exception {
@@ -330,7 +330,7 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
       };
 
   final FlipperReceiver mOnRequestAXFocus =
-      new MainThreadFlipperReceiver(mConnection) {
+      new MainThreadFlipperReceiver() {
         @Override
         public void onReceiveOnMainThread(
             final FlipperObject params, final FlipperResponder responder) throws Exception {
@@ -346,7 +346,7 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
       };
 
   final FlipperReceiver mSetData =
-      new MainThreadFlipperReceiver(mConnection) {
+      new MainThreadFlipperReceiver() {
         @Override
         public void onReceiveOnMainThread(final FlipperObject params, FlipperResponder responder)
             throws Exception {
@@ -377,7 +377,7 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
       };
 
   final FlipperReceiver mSetHighlighted =
-      new MainThreadFlipperReceiver(mConnection) {
+      new MainThreadFlipperReceiver() {
         @Override
         public void onReceiveOnMainThread(final FlipperObject params, FlipperResponder responder)
             throws Exception {
@@ -396,7 +396,7 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
       };
 
   final FlipperReceiver mSetSearchActive =
-      new MainThreadFlipperReceiver(mConnection) {
+      new MainThreadFlipperReceiver() {
         @Override
         public void onReceiveOnMainThread(final FlipperObject params, FlipperResponder responder)
             throws Exception {
@@ -426,7 +426,7 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
       };
 
   final FlipperReceiver mIsSearchActive =
-      new MainThreadFlipperReceiver(mConnection) {
+      new MainThreadFlipperReceiver() {
         @Override
         public void onReceiveOnMainThread(final FlipperObject params, FlipperResponder responder)
             throws Exception {
@@ -438,7 +438,7 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
       };
 
   final FlipperReceiver mGetSearchResults =
-      new MainThreadFlipperReceiver(mConnection) {
+      new MainThreadFlipperReceiver() {
         @Override
         public void onReceiveOnMainThread(FlipperObject params, FlipperResponder responder)
             throws Exception {
@@ -754,7 +754,7 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
 
   private static Object assertNotNull(@Nullable Object o) {
     if (o == null) {
-      throw new AssertionError("Unexpected null value");
+      throw new RuntimeException("Unexpected null value");
     }
     return o;
   }

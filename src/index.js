@@ -16,7 +16,7 @@ export {
   FlipperDevicePlugin,
   callClient,
 } from './plugin.js';
-export type {PluginClient} from './plugin.js';
+export type {PluginClient, Props} from './plugin.js';
 export {default as Client} from './Client.js';
 export {clipboard} from 'electron';
 export * from './fb-stubs/constants.js';
@@ -25,7 +25,7 @@ export {connect} from 'react-redux';
 export {selectPlugin} from './reducers/connections';
 export {getPluginKey, getPersistedState} from './utils/pluginUtils.js';
 export {default as BaseDevice} from './devices/BaseDevice.js';
-export type {Store} from './reducers/index.js';
+export type {Store, MiddlewareAPI} from './reducers/index.js';
 
 export {
   default as SidebarExtensions,

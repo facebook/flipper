@@ -16,7 +16,7 @@ public final class FlipperUtils {
 
   private FlipperUtils() {}
 
-  public static boolean shouldEnableFlipper(Context context) {
+  public static boolean shouldEnableFlipper(final Context context) {
     return BuildConfig.IS_INTERNAL_BUILD && !isEndToEndTest() && isMainProcess(context);
   }
 
@@ -33,7 +33,7 @@ public final class FlipperUtils {
     }
   }
 
-  private static boolean isMainProcess(Context context) {
+  private static boolean isMainProcess(final Context context) {
     final int pid = android.os.Process.myPid();
     final ActivityManager manager =
         (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);

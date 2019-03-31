@@ -61,7 +61,7 @@ Pod::Spec.new do |spec|
     ss.dependency 'FlipperKit/FBCxxUtils'
     ss.dependency 'FlipperKit/CppBridge'
     ss.dependency 'FlipperKit/FKPortForwarding'
-    ss.dependency 'Flipper-Folly', '1.3.0'
+    ss.dependency 'Flipper-Folly', '~>1.2'
     ss.dependency 'Flipper', '~>'+flipperkit_version
     ss.dependency 'OpenSSL-Static', '1.0.2.c1'
     ss.compiler_flags = folly_compiler_flags

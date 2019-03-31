@@ -3,12 +3,14 @@
   "version": "0.1.0",
   "description": "A plugin which will display a crash",
   "main": "index.js",
-  "gatekeeper": "flipper_crash_reporter_plugin",
   "repository": "https://github.com/facebook/flipper",
   "license": "MIT",
   "title": "Crash Reporter",
   "bugs": {
     "email": "prit91@fb.com",
     "url": "https://fb.workplace.com/groups/220760072184928/"
+  },
+  "dependencies": {
+    "unicode-substring": "^1.0.0"
   }
 }

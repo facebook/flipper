@@ -5,15 +5,17 @@
  * @format
  */
 
+import path from 'path';
 import {createStore} from 'redux';
-import reducers from '../src/reducers/index.js';
+import {applyMiddleware} from 'redux';
+import yargs from 'yargs';
+
 import dispatcher from '../src/dispatcher/index.js';
 import {init as initLogger} from '../src/fb-stubs/Logger.js';
-import path from 'path';
+import reducers from '../src/reducers/index.js';
+import {exportStore} from '../src/utils/exportData.js';
 // $FlowFixMe this file exist, trust me, flow!
 import setup from '../static/setup.js';
-import yargs from 'yargs';
-import {exportStore} from '../src/utils/exportData.js';
 
 yargs
   .usage('$0 [args]')
@@ -37,6 +39,11 @@ yargs
           'Enable redux-devtools. Tries to connect to devtools running on port 8181',
         type: 'boolean',
       });
+      yargs.option('exit', {
+        describe: 'Controls when to exit and dump the store to stdout.',
+        choices: ['sigint', 'disconnect'],
+        default: 'sigint',
+      });
       yargs.option('v', {
         alias: 'verbose',
         default: false,
@@ -52,6 +59,7 @@ yargs
 function startFlipper({
   dev,
   verbose,
+  exit,
   'insecure-port': insecurePort,
   'secure-port': securePort,
 }) {
@@ -85,24 +93,40 @@ function startFlipper({
   process.env.FLIPPER_PORTS = `${insecurePort},${securePort}`;
 
   // needs to be required after WebSocket polyfill is loaded
-  const devToolsEnhancer = require('remote-redux-devtools').default;
+  const devToolsEnhancer = require('remote-redux-devtools');
+
+  const headlessMiddleware = store => next => action => {
+    if (exit == 'disconnect' && action.type == 'CLIENT_REMOVED') {
+      // TODO(T42325892): Investigate why the export stalls without exiting the
+      // current eventloop task here.
+      setTimeout(() => {
+        exportStore(store)
+          .then(output => {
+            originalConsole.log(output);
+            process.exit();
+          })
+          .catch(console.error);
+      }, 10);
+    }
+    return next(action);
+  };
 
   setup({});
-  const store = dev
-    ? createStore(
-        reducers,
-        devToolsEnhancer({realtime: true, hostname: 'localhost', port: 8181}),
-      )
-    : createStore(reducers);
+  const store = createStore(
+    reducers,
+    devToolsEnhancer.composeWithDevTools(applyMiddleware(headlessMiddleware)),
+  );
   const logger = initLogger(store, {isHeadless: true});
   dispatcher(store, logger);
 
-  process.on('SIGINT', async () => {
-    try {
-      originalConsole.log(await exportStore(store));
-    } catch (e) {
-      console.error(e);
-    }
-    process.exit();
-  });
+  if (exit == 'sigint') {
+    process.on('SIGINT', async () => {
+      try {
+        originalConsole.log(await exportStore(store));
+      } catch (e) {
+        console.error(e);
+      }
+      process.exit();
+    });
+  }
 }

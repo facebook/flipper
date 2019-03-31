@@ -38,7 +38,17 @@ function getCrash(
     callstack: callstack,
     reason: reason,
     name: name,
+    date: new Date(),
   };
+}
+
+function assertCrash(crash: Crash, expectedCrash: Crash) {
+  const {notificationID, callstack, reason, name, date} = crash;
+  expect(notificationID).toEqual(expectedCrash.notificationID);
+  expect(callstack).toEqual(expectedCrash.callstack);
+  expect(reason).toEqual(expectedCrash.reason);
+  expect(name).toEqual(expectedCrash.name);
+  expect(date.toDateString()).toEqual(expectedCrash.date.toDateString());
 }
 
 beforeEach(() => {
@@ -54,14 +64,26 @@ afterAll(() => {
   setCrashReporterPluginID('');
 });
 
-test('test the parsing of the reason for crash when log matches the predefined regex', () => {
+test('test the parsing of the date and crash info for the log which matches the predefined regex', () => {
+  const log =
+    'Blaa Blaaa \n Blaa Blaaa \n Exception Type:  SIGSEGV \n Blaa Blaa \n Blaa Blaa Date/Time: 2019-03-21 12:07:00.861 +0000 \n Blaa balaaa';
+  const crash = parseCrashLog(log, 'iOS');
+  expect(crash.callstack).toEqual(log);
+  expect(crash.reason).toEqual('SIGSEGV');
+  expect(crash.name).toEqual('SIGSEGV');
+  expect(crash.date).toEqual(new Date('2019-03-21 12:07:00.861'));
+});
+
+test('test the parsing of the reason for crash when log matches the crash regex, but there is no mention of date', () => {
   const log =
     'Blaa Blaaa \n Blaa Blaaa \n Exception Type:  SIGSEGV \n Blaa Blaa \n Blaa Blaa';
   const crash = parseCrashLog(log, 'iOS');
   expect(crash.callstack).toEqual(log);
   expect(crash.reason).toEqual('SIGSEGV');
   expect(crash.name).toEqual('SIGSEGV');
+  expect(crash.date).toBeUndefined();
 });
+
 test('test the parsing of the crash log when log does not match the predefined regex but is alphanumeric', () => {
   const log = 'Blaa Blaaa \n Blaa Blaaa \n Blaa Blaaa';
   const crash = parseCrashLog(log, 'iOS');
@@ -77,6 +99,7 @@ test('test the parsing of the reason for crash when log does not match the prede
   expect(crash.callstack).toEqual(log);
   expect(crash.reason).toEqual('Cannot figure out the cause');
   expect(crash.name).toEqual('Cannot figure out the cause');
+  expect(crash.date).toBeUndefined();
 });
 test('test the parsing of the reason for crash when log is empty', () => {
   const log = '';
@@ -84,23 +107,27 @@ test('test the parsing of the reason for crash when log is empty', () => {
   expect(crash.callstack).toEqual(log);
   expect(crash.reason).toEqual('Cannot figure out the cause');
   expect(crash.name).toEqual('Cannot figure out the cause');
+  expect(crash.date).toBeUndefined();
 });
 test('test the parsing of the Android crash log for the proper android crash format', () => {
   const log =
     'FATAL EXCEPTION: main\nProcess: com.facebook.flipper.sample, PID: 27026\njava.lang.IndexOutOfBoundsException: Index: 190, Size: 0\n\tat java.util.ArrayList.get(ArrayList.java:437)\n\tat com.facebook.flipper.sample.RootComponentSpec.hitGetRequest(RootComponentSpec.java:72)\n\tat com.facebook.flipper.sample.RootComponent.hitGetRequest(RootComponent.java:46)\n';
-  const crash = parseCrashLog(log, 'Android');
+  const date = new Date();
+  const crash = parseCrashLog(log, 'Android', date);
   expect(crash.callstack).toEqual(log);
   expect(crash.reason).toEqual(
     'java.lang.IndexOutOfBoundsException: Index: 190, Size: 0',
   );
   expect(crash.name).toEqual('FATAL EXCEPTION: main');
+  expect(crash.date).toEqual(date);
 });
-test('test the parsing of the Android crash log for the unknown crash format', () => {
+test('test the parsing of the Android crash log for the unknown crash format and no date', () => {
   const log = 'Blaa Blaa Blaa';
   const crash = parseCrashLog(log, 'Android');
   expect(crash.callstack).toEqual(log);
   expect(crash.reason).toEqual('Cannot figure out the cause');
   expect(crash.name).toEqual('Cannot figure out the cause');
+  expect(crash.date).toBeUndefined();
 });
 test('test the parsing of the Android crash log for the partial format matching the crash format', () => {
   const log = 'First Line Break \n Blaa Blaa \n Blaa Blaa ';
@@ -180,16 +207,28 @@ test('test getNewPersisitedStateFromCrashLog for non-empty defaultPersistedState
   );
   const content =
     'Blaa Blaaa \n Blaa Blaaa \n Exception Type:  SIGSEGV \n Blaa Blaa \n Blaa Blaa';
-  expect(perisistedState).toEqual({crashes: [pluginStateCrash]});
+  expect(perisistedState).toBeDefined();
+  // $FlowFixMe: Checked if perisistedState is defined or not
+  const {crashes} = perisistedState;
+  expect(crashes).toBeDefined();
+  expect(crashes.length).toEqual(1);
+  expect(crashes[0]).toEqual(pluginStateCrash);
   const newPersistedState = getNewPersisitedStateFromCrashLog(
     perisistedState,
     CrashReporterPlugin,
     content,
     'iOS',
   );
-  expect(newPersistedState).toEqual({
-    crashes: [pluginStateCrash, getCrash(1, content, 'SIGSEGV', 'SIGSEGV')],
-  });
+  expect(newPersistedState).toBeDefined();
+  // $FlowFixMe: Checked if perisistedState is defined or not
+  const newPersistedStateCrashes = newPersistedState.crashes;
+  expect(newPersistedStateCrashes).toBeDefined();
+  expect(newPersistedStateCrashes.length).toEqual(2);
+  assertCrash(newPersistedStateCrashes[0], pluginStateCrash);
+  assertCrash(
+    newPersistedStateCrashes[1],
+    getCrash(1, content, 'SIGSEGV', 'SIGSEGV'),
+  );
 });
 test('test getNewPersisitedStateFromCrashLog for non-empty defaultPersistedState and undefined pluginState', () => {
   setNotificationID(0);
@@ -210,9 +249,13 @@ test('test getNewPersisitedStateFromCrashLog for non-empty defaultPersistedState
     content,
     'iOS',
   );
-  expect(newPersistedState).toEqual({
-    crashes: [crash, getCrash(1, content, 'SIGSEGV', 'SIGSEGV')],
-  });
+  expect(newPersistedState).toBeDefined();
+  // $FlowFixMe: Checked if perisistedState is defined or not
+  const {crashes} = newPersistedState;
+  expect(crashes).toBeDefined();
+  expect(crashes.length).toEqual(2);
+  assertCrash(crashes[0], crash);
+  assertCrash(crashes[1], getCrash(1, content, 'SIGSEGV', 'SIGSEGV'));
 });
 test('test getNewPersisitedStateFromCrashLog for non-empty defaultPersistedState and defined pluginState and improper crash log', () => {
   setNotificationID(0);
@@ -234,17 +277,21 @@ test('test getNewPersisitedStateFromCrashLog for non-empty defaultPersistedState
     content,
     'iOS',
   );
-  expect(newPersistedState).toEqual({
-    crashes: [
-      pluginStateCrash,
-      getCrash(
-        1,
-        content,
-        'Cannot figure out the cause',
-        'Cannot figure out the cause',
-      ),
-    ],
-  });
+  expect(newPersistedState).toBeDefined();
+  // $FlowFixMe: Checked if perisistedState is defined or not
+  const {crashes} = newPersistedState;
+  expect(crashes).toBeDefined();
+  expect(crashes.length).toEqual(2);
+  assertCrash(crashes[0], pluginStateCrash);
+  assertCrash(
+    crashes[1],
+    getCrash(
+      1,
+      content,
+      'Cannot figure out the cause',
+      'Cannot figure out the cause',
+    ),
+  );
 });
 test('test getNewPersisitedStateFromCrashLog when os is undefined', () => {
   setNotificationID(0);

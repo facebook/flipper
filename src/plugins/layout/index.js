@@ -9,7 +9,7 @@ import type {
   ElementID,
   Element,
   ElementSearchResultSet,
-  Store,
+  MiddlewareAPI,
   PluginClient,
 } from 'flipper';
 
@@ -61,7 +61,7 @@ export default class Layout extends FlipperPlugin<State, void, PersistedState> {
   static exportPersistedState = (
     callClient: (string, ?Object) => Promise<Object>,
     persistedState: ?PersistedState,
-    store: ?Store,
+    store: ?MiddlewareAPI,
   ): Promise<?PersistedState> => {
     const defaultPromise = Promise.resolve(persistedState);
     if (!store) {
