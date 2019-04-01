@@ -1,0 +1,9 @@
+{
+  "name": "databases",
+  "version": "1.0.0",
+  "title": "Databases",
+  "icon": "internet",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {}
+}
