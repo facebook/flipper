@@ -114,16 +114,16 @@ target 'MyApp' do
   pod 'FlipperKit/FlipperKitLayoutComponentKitSupport', '~>' + flipperkit_version
   pod 'FlipperKit/SKIOSNetworkPlugin', '~>' + flipperkit_version
   pod 'FlipperKit/FlipperKitUserDefaultsPlugin', '~>' + flipperkit_version
-  # This post_install script adds swift version to yogakit's pod target.
+  # This post_install script adds min deployment iOS version to yoga's pod target.
   # It also adds -DFB_SONARKIT_ENABLED=1 flag to OTHER_CFLAGS, necessary to build expose Flipper classes in the header files
   post_install do |installer|
-	    installer.pods_project.targets.each do |target|
-	        if ['YogaKit'].include? target.name
-	            target.build_configurations.each do |config|
-	                config.build_settings['SWIFT_VERSION'] = swift_version
-	            end
-	        end
-	    end
+      installer.pods_project.targets.each do |target|
+               if ('Yoga' == target.name)
+                   target.build_configurations.each do |config|
+                     config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '8.0'
+                   end
+               end
+       end
 	    file_name = Dir.glob("*.xcodeproj")[0]
 	    app_project = Xcodeproj::Project.open(file_name)
 	    app_project.native_targets.each do |target|
@@ -191,17 +191,17 @@ target 'MyApp' do
   pod 'FlipperKit/SKIOSNetworkPlugin', '~>' + flipperkit_version
   pod 'FlipperKit/FlipperKitUserDefaultsPlugin', '~>' + flipperkit_version
 
-  # If you use `use_frameworks!` in your Podfile, 
-  # uncomment the below $static_framework array and also 
-  # the pre_install section.  This will cause Flipper and 
-  # it's dependencies to be static and all other pods to 
+  # If you use `use_frameworks!` in your Podfile,
+  # uncomment the below $static_framework array and also
+  # the pre_install section.  This will cause Flipper and
+  # it's dependencies to be static and all other pods to
   # be dynamic.
 
   # $static_framework = ['FlipperKit', 'Flipper', 'Folly',
-  #   'CocoaAsyncSocket', 'ComponentKit', 'DoubleConversion', 
-  #   'glog', 'PeerTalk', 'RSocket', 'Yoga', 'YogaKit', 
+  #   'CocoaAsyncSocket', 'ComponentKit', 'DoubleConversion',
+  #   'glog', 'PeerTalk', 'RSocket', 'Yoga', 'YogaKit',
   #   'CocoaLibEvent', 'OpenSSL-Static', 'boost-for-react-native']
-  
+
   # pre_install do |installer|
   #     installer.pod_targets.each do |pod|
   #       if $static_framework.include?(pod.name)  
@@ -210,10 +210,18 @@ target 'MyApp' do
   #   end
   # end
 
-# This post_install script adds -DFB_SONARKIT_ENABLED flag to OTHER_SWIFT_FLAGS, necessary to build swift target
+# This post_install script adds min deployment iOS version to yoga's pod target.
+# It also adds -DFB_SONARKIT_ENABLED flag to OTHER_SWIFT_FLAGS, necessary to build swift target
     post_install do |installer|
       file_name = Dir.glob("*.xcodeproj")[0]
       app_project = Xcodeproj::Project.open(file_name)
+      installer.pods_project.targets.each do |target|
+               if ('Yoga' == target.name)
+                   target.build_configurations.each do |config|
+                     config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '8.0'
+                   end
+               end
+       end
       app_project.native_targets.each do |target|
           target.build_configurations.each do |config|
             if (config.build_settings['OTHER_SWIFT_FLAGS'])
