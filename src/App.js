@@ -15,6 +15,7 @@ import BugReporterDialog from './chrome/BugReporterDialog.js';
 import ErrorBar from './chrome/ErrorBar.js';
 import ShareSheet from './chrome/ShareSheet.js';
 import SignInSheet from './chrome/SignInSheet.js';
+import ShareSheetExportFile from './chrome/ShareSheetExportFile.js';
 import PluginContainer from './PluginContainer.js';
 import Sheet from './chrome/Sheet.js';
 import {ipcRenderer, remote} from 'electron';
@@ -24,6 +25,7 @@ import {
   ACTIVE_SHEET_PLUGIN_DEBUGGER,
   ACTIVE_SHEET_SHARE_DATA,
   ACTIVE_SHEET_SIGN_IN,
+  ACTIVE_SHEET_SHARE_DATA_IN_FILE,
 } from './reducers/application.js';
 
 import type {Logger} from './fb-interfaces/Logger.js';
@@ -44,6 +46,7 @@ type Props = {|
   selectedDevice: ?BaseDevice,
   error: ?string,
   activeSheet: ActiveSheet,
+  exportFile: ?string,
 |};
 
 export class App extends React.Component<Props> {
@@ -76,6 +79,12 @@ export class App extends React.Component<Props> {
       return <ShareSheet onHide={onHide} />;
     } else if (this.props.activeSheet === ACTIVE_SHEET_SIGN_IN) {
       return <SignInSheet onHide={onHide} />;
+    } else if (this.props.activeSheet === ACTIVE_SHEET_SHARE_DATA_IN_FILE) {
+      const {exportFile} = this.props;
+      if (!exportFile) {
+        throw new Error('Tried to export data without passing the file path');
+      }
+      return <ShareSheetExportFile onHide={onHide} file={exportFile} />;
     } else {
       // contents are added via React.Portal
       return null;
@@ -103,12 +112,13 @@ export class App extends React.Component<Props> {
 
 export default connect<Props, OwnProps, _, _, _, _>(
   ({
-    application: {leftSidebarVisible, activeSheet},
+    application: {leftSidebarVisible, activeSheet, exportFile},
     connections: {selectedDevice, error},
   }) => ({
     leftSidebarVisible,
     selectedDevice,
     activeSheet,
+    exportFile,
     error,
   }),
 )(App);

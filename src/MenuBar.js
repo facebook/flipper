@@ -6,22 +6,20 @@
  */
 
 import type {FlipperPlugin, FlipperDevicePlugin} from './plugin.js';
+import {showOpenDialog} from './utils/exportData.js';
 import {
-  exportStoreToFile,
-  showOpenDialog,
-  EXPORT_FLIPPER_TRACE_EVENT,
-} from './utils/exportData.js';
-import {setActiveSheet, ACTIVE_SHEET_SHARE_DATA} from './reducers/application';
+  setExportDataToFileActiveSheet,
+  setActiveSheet,
+  ACTIVE_SHEET_SHARE_DATA,
+} from './reducers/application';
 import type {Store} from './reducers/';
 import electron from 'electron';
 import {ENABLE_SHAREABLE_LINK} from 'flipper';
-import {remote} from 'electron';
-const {dialog} = remote;
-import os from 'os';
-import path from 'path';
-import {reportPlatformFailures} from './utils/metrics';
 export type DefaultKeyboardAction = 'clear' | 'goToBottom' | 'createPaste';
 export type TopLevelMenu = 'Edit' | 'View' | 'Window' | 'Help';
+const {dialog} = electron.remote;
+import os from 'os';
+import path from 'path';
 
 type MenuItem = {|
   label?: string,
@@ -199,11 +197,11 @@ function getTemplate(
             title: 'FlipperExport',
             defaultPath: path.join(os.homedir(), 'FlipperExport.flipper'),
           },
-          file => {
-            reportPlatformFailures(
-              exportStoreToFile(file, store),
-              `${EXPORT_FLIPPER_TRACE_EVENT}:UI`,
-            );
+          async file => {
+            if (!file) {
+              return;
+            }
+            store.dispatch(setExportDataToFileActiveSheet(file));
           },
         );
       },

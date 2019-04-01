@@ -29,6 +29,7 @@ test('Empty app state matches snapshot', () => {
         selectedDevice={null}
         error={null}
         activeSheet={null}
+        exportFile={null}
       />
     </Provider>,
   );

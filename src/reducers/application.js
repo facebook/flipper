@@ -14,6 +14,8 @@ export const ACTIVE_SHEET_PLUGIN_DEBUGGER: 'PLUGIN_DEBUGGER' =
   'PLUGIN_DEBUGGER';
 export const ACTIVE_SHEET_SHARE_DATA: 'SHARE_DATA' = 'SHARE_DATA';
 export const ACTIVE_SHEET_SIGN_IN: 'SIGN_IN' = 'SIGN_IN';
+export const ACTIVE_SHEET_SHARE_DATA_IN_FILE: 'SHARE_DATA_IN_FILE' =
+  'SHARE_DATA_IN_FILE';
 
 export type ActiveSheet =
   | typeof ACTIVE_SHEET_PLUGIN_SHEET
@@ -21,6 +23,7 @@ export type ActiveSheet =
   | typeof ACTIVE_SHEET_PLUGIN_DEBUGGER
   | typeof ACTIVE_SHEET_SHARE_DATA
   | typeof ACTIVE_SHEET_SIGN_IN
+  | typeof ACTIVE_SHEET_SHARE_DATA_IN_FILE
   | null;
 
 export type State = {
@@ -29,6 +32,7 @@ export type State = {
   rightSidebarAvailable: boolean,
   windowIsFocused: boolean,
   activeSheet: ActiveSheet,
+  exportFile: ?string,
   sessionId: ?string,
   serverPorts: {
     insecure: number,
@@ -54,6 +58,10 @@ export type Action =
       payload: ActiveSheet,
     }
   | {
+      type: typeof ACTIVE_SHEET_SHARE_DATA_IN_FILE,
+      payload: {file: string},
+    }
+  | {
       type: 'SET_SERVER_PORTS',
       payload: {
         insecure: number,
@@ -67,6 +75,7 @@ const initialState: () => State = () => ({
   rightSidebarAvailable: false,
   windowIsFocused: remote.getCurrentWindow().isFocused(),
   activeSheet: null,
+  exportFile: null,
   sessionId: uuidv1(),
   serverPorts: {
     insecure: 8089,
@@ -103,6 +112,12 @@ export default function reducer(state: State, action: Action): State {
       ...state,
       activeSheet: action.payload,
     };
+  } else if (action.type === ACTIVE_SHEET_SHARE_DATA_IN_FILE) {
+    return {
+      ...state,
+      activeSheet: ACTIVE_SHEET_SHARE_DATA_IN_FILE,
+      exportFile: action.payload.file,
+    };
   }
   if (action.type === 'SET_SERVER_PORTS') {
     return {
@@ -120,6 +135,11 @@ export const toggleAction = (
 ): Action => ({
   type,
   payload,
+});
+
+export const setExportDataToFileActiveSheet = (file: string): Action => ({
+  type: ACTIVE_SHEET_SHARE_DATA_IN_FILE,
+  payload: {file},
 });
 
 export const setActiveSheet = (payload: ActiveSheet): Action => ({
