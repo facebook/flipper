@@ -357,7 +357,6 @@
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
-					"-l\"PeerTalk\"",
 					"-l\"crypto\"",
 					"-l\"event\"",
 					"-l\"event_core\"",
@@ -411,7 +410,6 @@
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
-					"-l\"PeerTalk\"",
 					"-l\"crypto\"",
 					"-l\"event\"",
 					"-l\"event_core\"",

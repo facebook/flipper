@@ -49,7 +49,7 @@ Pod::Spec.new do |spec|
   spec.subspec "FKPortForwarding" do |ss|
     ss.header_dir = "FKPortForwarding"
     ss.dependency 'CocoaAsyncSocket', '~> 7.6'
-    ss.dependency 'PeerTalk', '~>0.0.2'
+    ss.dependency 'Flipper-PeerTalk', '~>0.0.4'
     ss.compiler_flags = folly_compiler_flags
     ss.source_files = 'iOS/FlipperKit/FKPortForwarding/FKPortForwarding{Server,Common}.{h,m}'
     ss.private_header_files = 'iOS/FlipperKit/FKPortForwarding/FKPortForwarding{Server,Common}.h'
@@ -83,7 +83,7 @@ Pod::Spec.new do |spec|
                              'iOS/Plugins/FlipperKitExamplePlugin/FlipperKitExamplePlugin/FlipperKitExamplePlugin.h',
                              'iOS/Plugins/FlipperKitCrashReporterPlugin/FlipperKitCrashReporterPlugin/FlipperKitCrashReporterPlugin.h',
                              'iOS/FlipperKit/**/{FlipperDiagnosticsViewController,FlipperStateUpdateListener,FlipperClient,FlipperPlugin,FlipperConnection,FlipperResponder,SKMacros}.h'
-    header_search_paths = "\"$(PODS_ROOT)/FlipperKit/iOS/FlipperKit\" \"$(PODS_ROOT)\"/Headers/Private/FlipperKit/** \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/PeerTalkSonar\""
+    header_search_paths = "\"$(PODS_ROOT)/FlipperKit/iOS/FlipperKit\" \"$(PODS_ROOT)\"/Headers/Private/FlipperKit/** \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/DoubleConversion\""
     ss.pod_target_xcconfig = { "USE_HEADERMAP" => "NO",
                              "DEFINES_MODULE" => "YES",
                              "HEADER_SEARCH_PATHS" => header_search_paths }

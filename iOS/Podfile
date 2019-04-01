@@ -10,7 +10,7 @@ target 'FlipperKit' do
   project 'FlipperKit.xcodeproj'
   pod 'Flipper', :path => '../Flipper.podspec'
   # Pods for SonarKit
-  pod 'PeerTalk', '~>0.0'
+  pod 'Flipper-PeerTalk', '~>0.0'
   pod 'Flipper-RSocket', '~>0.10'
   pod 'DoubleConversion', '~>1.1'
   pod 'glog', '~>0.3'
