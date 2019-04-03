@@ -163,6 +163,8 @@ export default class extends FlipperPlugin<DatabasesPluginState> {
             selected={this.state.selectedDatabase == null ? {} : this.state.databaseList[this.state.selectedDatabase].databaseTableList[1]}
             onChange={this.onDatabaseTableSelected}
           />
+          <div grow={true} />
+          <Button style={{marginLeft: 'auto', display: 'none'}} onClick={this.onDataClicked}>Execute SQL</Button>
         </Toolbar>
         <FlexRow style={{ flex: 1 }}>
           <ManagedTable
