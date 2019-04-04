@@ -36,8 +36,8 @@ type DatabaseMap = {
 
 type DatabasesPluginState = {|
   selectedDatabase: ?string,
-    selectedDatabaseTable: ?string,
-      databaseList: DatabaseMap,
+  selectedDatabaseTable: ?string,
+  databaseList: DatabaseMap,
 |};
 
 const ColumnSizes = {
@@ -78,14 +78,14 @@ const Columns = {
 
 export default class extends FlipperPlugin<DatabasesPluginState> {
 
-  state = {
+  state: DatabasesPluginState = {
     selectedDatabase: null,
     selectedDatabaseTable: null,
     databaseList: {},
   };
 
   reducers = {
-    UpdateDatabases(state: DatabasesPluginState, results: Object) {
+    UpdateDatabases(state: DatabasesPluginState, results: Object): DatabasesPluginState {
       let update = results.update;
       let entry = state.databaseList[update.name] || {};
       entry.database = update.database;
@@ -97,7 +97,7 @@ export default class extends FlipperPlugin<DatabasesPluginState> {
         databaseList: state.databaseList,
       };
     },
-    UpdateSelectedDatabase(state: SharedPreferencesState, event: Object) {
+    UpdateSelectedDatabase(state: DatabasesPluginState, event: Object): DatabasesPluginState {
       return {
         selectedDatabase: event.selected,
         selectedDatabaseTable: null,
@@ -159,8 +159,8 @@ export default class extends FlipperPlugin<DatabasesPluginState> {
           />
           <BoldSpan style={{ marginLeft: 16, marginRight: 16 }}>Table</BoldSpan>
           <Select
-            options={this.state.selectedDatabase == null ? {} : this.state.databaseList[this.state.selectedDatabase].databaseTableList}
-            selected={this.state.selectedDatabase == null ? {} : this.state.databaseList[this.state.selectedDatabase].databaseTableList[1]}
+            options={this.state.selectedDatabase == null ? {} : this.state.databaseList[this.state.selectedDatabase].databaseTableList.reduce((options, tableName) => ({...options, [tableName]: tableName}), {})}
+            selected={this.state.selectedDatabase && this.state.databaseList[this.state.selectedDatabase].databaseTableList[1]}
             onChange={this.onDatabaseTableSelected}
           />
           <div grow={true} />
@@ -184,7 +184,7 @@ export default class extends FlipperPlugin<DatabasesPluginState> {
               <Button>Structure</Button>
             </ButtonGroup>
             <Text grow={true} style={{ flex: 1, textAlign: 'center' }}>1-100 of 1056 row</Text>
-            <ButtonNavigation canGoBack canGoForward />
+            <ButtonNavigation canGoBack canGoForward onBack={() => {}} onForward={() => {}}/>
           </FlexRow>
         </Toolbar>
       </FlexColumn>
