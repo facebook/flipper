@@ -17,6 +17,9 @@ import com.facebook.flipper.core.FlipperObject;
 import com.facebook.flipper.core.FlipperPlugin;
 import com.facebook.flipper.core.FlipperReceiver;
 import com.facebook.flipper.core.FlipperResponder;
+import java.io.File;
+import java.io.FilenameFilter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -24,6 +27,8 @@ import java.util.Map;
 
 public class SharedPreferencesFlipperPlugin implements FlipperPlugin {
 
+  private static final String SHARED_PREFS_DIR = "shared_prefs";
+  private static final String XML_SUFFIX = ".xml";
   private FlipperConnection mConnection;
   private final Map<SharedPreferences, SharedPreferencesDescriptor> mSharedPreferences;
   private final SharedPreferences.OnSharedPreferenceChangeListener
@@ -57,7 +62,7 @@ public class SharedPreferencesFlipperPlugin implements FlipperPlugin {
    *     name with {@link Context#MODE_PRIVATE}.
    */
   public SharedPreferencesFlipperPlugin(Context context) {
-    this(context, context.getPackageName());
+    this(context, buildDescriptorForAllPrefsFiles(context));
   }
 
   /**
@@ -106,6 +111,27 @@ public class SharedPreferencesFlipperPlugin implements FlipperPlugin {
   @Override
   public String getId() {
     return "Preferences";
+  }
+
+  private static List<SharedPreferencesDescriptor> buildDescriptorForAllPrefsFiles(
+      Context context) {
+    File dir = new File(context.getApplicationInfo().dataDir, SHARED_PREFS_DIR);
+    String[] list =
+        dir.list(
+            new FilenameFilter() {
+              @Override
+              public boolean accept(File dir, String name) {
+                return name.endsWith(XML_SUFFIX);
+              }
+            });
+    List<SharedPreferencesDescriptor> descriptors = new ArrayList<>();
+    if (list != null) {
+      for (String each : list) {
+        String prefName = each.substring(0, each.indexOf(XML_SUFFIX));
+        descriptors.add(new SharedPreferencesDescriptor(prefName, MODE_PRIVATE));
+      }
+    }
+    return descriptors;
   }
 
   private SharedPreferences getSharedPreferencesFor(String name) {
