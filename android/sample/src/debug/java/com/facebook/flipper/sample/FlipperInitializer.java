@@ -17,6 +17,7 @@ import com.facebook.flipper.plugins.leakcanary.LeakCanaryFlipperPlugin;
 import com.facebook.flipper.plugins.litho.LithoFlipperDescriptors;
 import com.facebook.flipper.plugins.network.FlipperOkhttpInterceptor;
 import com.facebook.flipper.plugins.network.NetworkFlipperPlugin;
+import com.facebook.flipper.plugins.databases.DatabasesFlipperPlugin;
 import com.facebook.flipper.plugins.sharedpreferences.SharedPreferencesFlipperPlugin;
 import com.facebook.flipper.plugins.sharedpreferences.SharedPreferencesFlipperPlugin.SharedPreferencesDescriptor;
 import com.facebook.litho.config.ComponentsConfiguration;
@@ -51,6 +52,7 @@ public final class FlipperInitializer {
     client.addPlugin(new FrescoFlipperPlugin());
     client.addPlugin(new ExampleFlipperPlugin());
     client.addPlugin(CrashReporterPlugin.getInstance());
+    client.addPlugin(new DatabasesFlipperPlugin());
     client.start();
 
     final OkHttpClient okHttpClient =
