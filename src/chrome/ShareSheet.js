@@ -59,10 +59,20 @@ const InfoText = styled(Text)({
   marginBottom: 15,
 });
 
+const Padder = styled('div')(
+  ({paddingLeft, paddingRight, paddingBottom, paddingTop}) => ({
+    paddingLeft: paddingLeft || 0,
+    paddingRight: paddingRight || 0,
+    paddingBottom: paddingBottom || 0,
+    paddingTop: paddingTop || 0,
+  }),
+);
+
 type Props = {
   onHide: () => mixed,
 };
 type State = {
+  errorArray: Array<Error>,
   result:
     | ?{
         error_class: string,
@@ -79,20 +89,32 @@ export default class ShareSheet extends Component<Props, State> {
   };
 
   state = {
+    errorArray: [],
     result: null,
   };
 
   async componentDidMount() {
-    const storeData = await exportStore(this.context.store);
-    const result = await shareFlipperData(storeData);
-    this.setState({result});
-
-    if (result.flipperUrl) {
-      clipboard.writeText(String(result.flipperUrl));
-      new window.Notification('Sharable Flipper trace created', {
-        body: 'URL copied to clipboard',
-        requireInteraction: true,
+    try {
+      const {serializedString, errorArray} = await exportStore(
+        this.context.store,
+      );
+      const result = await shareFlipperData(serializedString);
+      this.setState({errorArray, result});
+      if (result.flipperUrl) {
+        clipboard.writeText(String(result.flipperUrl));
+        new window.Notification('Sharable Flipper trace created', {
+          body: 'URL copied to clipboard',
+          requireInteraction: true,
+        });
+      }
+    } catch (e) {
+      this.setState({
+        result: {
+          error_class: 'EXPORT_ERROR',
+          error: e,
+        },
       });
+      return;
     }
   }
 
@@ -116,6 +138,21 @@ export default class ShareSheet extends Component<Props, State> {
                     data might contain sensitve information like access tokens
                     used in network requests.
                   </InfoText>
+                  {this.state.errorArray.length > 0 && (
+                    <Padder paddingBottom={8}>
+                      <FlexColumn>
+                        <Title bold>
+                          The following errors occurred while exporting your
+                          data
+                        </Title>
+                        {this.state.errorArray.map((e: Error) => {
+                          return (
+                            <ErrorMessage code>{e.toString()}</ErrorMessage>
+                          );
+                        })}
+                      </FlexColumn>
+                    </Padder>
+                  )}
                 </>
               ) : (
                 <>

@@ -54,11 +54,21 @@ const InfoText = styled(Text)({
   marginBottom: 15,
 });
 
+const Padder = styled('div')(
+  ({paddingLeft, paddingRight, paddingBottom, paddingTop}) => ({
+    paddingLeft: paddingLeft || 0,
+    paddingRight: paddingRight || 0,
+    paddingBottom: paddingBottom || 0,
+    paddingTop: paddingTop || 0,
+  }),
+);
+
 type Props = {
   onHide: () => mixed,
   file: string,
 };
 type State = {
+  errorArray: Array<Error>,
   result: ?{
     success: boolean,
     error: ?Error,
@@ -71,18 +81,19 @@ export default class ShareSheetExportFile extends Component<Props, State> {
   };
 
   state = {
+    errorArray: [],
     result: null,
   };
 
   async componentDidMount() {
     try {
-      await reportPlatformFailures(
+      const {errorArray} = await reportPlatformFailures(
         exportStoreToFile(this.props.file, this.context.store),
         `${EXPORT_FLIPPER_TRACE_EVENT}:UI`,
       );
-      this.setState({result: {success: true, error: null}});
+      this.setState({errorArray, result: {success: true, error: null}});
     } catch (err) {
-      this.setState({result: {success: false, error: err}});
+      this.setState({errorArray: [], result: {success: false, error: err}});
     }
   }
 
@@ -100,6 +111,16 @@ export default class ShareSheetExportFile extends Component<Props, State> {
                 might contain sensitive information like access tokens used in
                 network requests.
               </InfoText>
+              {this.state.errorArray.length > 0 && (
+                <Padder paddingBottom={8}>
+                  <FlexColumn>
+                    <Title bold>Errors: </Title>
+                    {this.state.errorArray.map((e: Error) => {
+                      return <ErrorMessage code>{e.toString()}</ErrorMessage>;
+                    })}
+                  </FlexColumn>
+                </Padder>
+              )}
             </FlexColumn>
             <FlexRow>
               <Spacer />

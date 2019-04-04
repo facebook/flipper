@@ -23,7 +23,8 @@ import {remote} from 'electron';
 import {serialize, deserialize} from './serialization';
 import {readCurrentRevision} from './packageMetadata.js';
 import {tryCatchReportPlatformFailures} from './metrics';
-
+import {promisify} from 'util';
+import promiseTimeout from './promiseTimeout';
 export const IMPORT_FLIPPER_TRACE_EVENT = 'import-flipper-trace';
 export const EXPORT_FLIPPER_TRACE_EVENT = 'export-flipper-trace';
 
@@ -185,7 +186,7 @@ export const processStore = async (
 
 export async function getStoreExport(
   store: MiddlewareAPI,
-): Promise<?ExportType> {
+): Promise<{exportData: ?ExportType, errorArray: Array<Error>}> {
   const state = store.getState();
   const {clients} = state.connections;
   const {pluginStates} = state;
@@ -204,6 +205,7 @@ export async function getStoreExport(
   plugins.devicePlugins.forEach((val, key) => {
     pluginsMap.set(key, val);
   });
+  const errorArray: Array<Error> = [];
   for (let client of clients) {
     for (let plugin of client.plugins) {
       const pluginClass: ?Class<
@@ -212,12 +214,17 @@ export async function getStoreExport(
       const exportState = pluginClass ? pluginClass.exportPersistedState : null;
       if (exportState) {
         const key = pluginKey(client.id, plugin);
-        const data = await exportState(
-          callClient(client, plugin),
-          newPluginState[key],
-          store,
-        );
-        newPluginState[key] = data;
+        try {
+          const data = await promiseTimeout(
+            120000, // Timeout in 2 mins
+            exportState(callClient(client, plugin), newPluginState[key], store),
+            `Timed out while collecting data for ${plugin}`,
+          );
+          newPluginState[key] = data;
+        } catch (e) {
+          errorArray.push(e);
+          continue;
+        }
       }
     }
   }
@@ -226,7 +233,7 @@ export async function getStoreExport(
   const {selectedDevice} = store.getState().connections;
   const {devicePlugins} = store.getState().plugins;
 
-  return processStore(
+  const exportData = await processStore(
     activeNotifications,
     selectedDevice,
     newPluginState,
@@ -234,35 +241,37 @@ export async function getStoreExport(
     devicePlugins,
     uuid.v4(),
   );
+  return {exportData, errorArray};
 }
 
-export function exportStore(store: MiddlewareAPI): Promise<string> {
+export function exportStore(
+  store: MiddlewareAPI,
+): Promise<{serializedString: string, errorArray: Array<Error>}> {
   getLogger().track('usage', EXPORT_FLIPPER_TRACE_EVENT);
   return new Promise(async (resolve, reject) => {
-    const storeExport = await getStoreExport(store);
-    if (!storeExport) {
+    const {exportData, errorArray} = await getStoreExport(store);
+    if (!exportData) {
       console.error('Make sure a device is connected');
       reject('No device is selected');
     }
-    const serializedString = serialize(storeExport);
+    const serializedString = serialize(exportData);
     if (serializedString.length <= 0) {
       reject('Serialize function returned empty string');
     }
-    resolve(serializedString);
+    resolve({serializedString, errorArray});
   });
 }
 
 export const exportStoreToFile = (
   exportFilePath: string,
   store: Store,
-): Promise<void> => {
-  return exportStore(store).then(storeString => {
-    fs.writeFile(exportFilePath, storeString, err => {
-      if (err) {
-        throw new Error(err);
-      }
-      return;
-    });
+): Promise<{errorArray: Array<Error>}> => {
+  return exportStore(store).then(({serializedString, errorArray}) => {
+    return promisify(fs.writeFile)(exportFilePath, serializedString).then(
+      () => {
+        return {errorArray};
+      },
+    );
   });
 };
 

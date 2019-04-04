@@ -101,8 +101,8 @@ function startFlipper({
       // current eventloop task here.
       setTimeout(() => {
         exportStore(store)
-          .then(output => {
-            originalConsole.log(output);
+          .then(({serializedString}) => {
+            originalConsole.log(serializedString);
             process.exit();
           })
           .catch(console.error);
@@ -122,7 +122,9 @@ function startFlipper({
   if (exit == 'sigint') {
     process.on('SIGINT', async () => {
       try {
-        originalConsole.log(await exportStore(store));
+        const {serializedString, errorArray} = await exportStore(store);
+        errorArray.forEach(console.error);
+        originalConsole.log(serializedString);
       } catch (e) {
         console.error(e);
       }
