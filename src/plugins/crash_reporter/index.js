@@ -108,10 +108,14 @@ const Container = styled(FlexColumn)({
   flexShrink: 0,
 });
 
-const Value = styled(Title)({
-  maxHeight: 200,
+const Value = styled(Text)({
+  fontWeight: 'bold',
+  color: colors.greyTint3,
   height: 'auto',
+  maxHeight: 200,
   flexGrow: 1,
+  textOverflow: 'ellipsis',
+  marginRight: 8,
 });
 
 const FlexGrowColumn = styled(FlexColumn)({
