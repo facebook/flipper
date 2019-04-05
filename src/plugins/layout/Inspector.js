@@ -138,9 +138,8 @@ export default class Inspector extends Component<Props> {
       },
     });
 
-
-    // Check if there are new IDs in the children array, and call getNodes() 
-    // if there are any 
+    // Check if there are new IDs in the children array, and call getNodes()
+    // if there are any.
     if (data.children) {
       const newNodes = data.children.filter(c => !this.elements()[c]);
       this.getNodes(newNodes, {});
