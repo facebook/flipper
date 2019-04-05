@@ -1,26 +1,34 @@
 package com.facebook.flipper.nativeplugins.table;
 
+import androidx.annotation.Nullable;
+
 public class TableMetadata {
 
-  final TablePlugin.Column[] mColumns;
+  final Column[] mColumns;
+  final QueryableTableRowProvider mResponder;
 
-  private TableMetadata(TablePlugin.Column[] columns) {
-    if (columns == null) {
-      throw new IllegalArgumentException("columns must not be null");
-    }
-    this.mColumns = columns;
+  private TableMetadata(
+      @Nullable Column[] columns, @Nullable QueryableTableRowProvider queryResponder) {
+    this.mColumns = columns == null ? new Column[] {} : columns;
+    this.mResponder = queryResponder;
   }
 
   public static class Builder {
-    private TablePlugin.Column[] columns;
+    private Column[] columns;
+    private QueryableTableRowProvider queryResponder;
 
-    public Builder columns(TablePlugin.Column... columns) {
+    public Builder columns(Column... columns) {
       this.columns = columns;
       return this;
     }
 
+    public Builder queryResponder(QueryableTableRowProvider responder) {
+      this.queryResponder = responder;
+      return this;
+    }
+
     public TableMetadata build() {
-      return new TableMetadata(columns);
+      return new TableMetadata(columns, queryResponder);
     }
   }
 }

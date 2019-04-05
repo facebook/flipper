@@ -5,7 +5,7 @@ import com.facebook.flipper.nativeplugins.components.Sidebar;
 import java.util.Map;
 
 public abstract class TableRow {
-  interface Value {
+  public interface Value {
     FlipperObject serialize();
   }
 
@@ -75,10 +75,10 @@ public abstract class TableRow {
   }
 
   final String id;
-  final Map<TablePlugin.Column, ? extends Value> values;
+  final Map<Column, ? extends Value> values;
   final Sidebar sidebar;
 
-  public TableRow(String id, Map<TablePlugin.Column, ? extends Value> values, Sidebar sidebar) {
+  public TableRow(String id, Map<Column, ? extends Value> values, Sidebar sidebar) {
     this.id = id;
     this.values = values;
     this.sidebar = sidebar;
@@ -86,7 +86,7 @@ public abstract class TableRow {
 
   final FlipperObject serialize() {
     FlipperObject.Builder columnsObject = new FlipperObject.Builder();
-    for (Map.Entry<TablePlugin.Column, ? extends Value> e : values.entrySet()) {
+    for (Map.Entry<Column, ? extends Value> e : values.entrySet()) {
       columnsObject.put(e.getKey().id, e.getValue().serialize());
     }
     columnsObject.put("id", id);
@@ -95,5 +95,19 @@ public abstract class TableRow {
         .put("sidebar", sidebar.serialize())
         .put("id", id)
         .build();
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null) {
+      return false;
+    }
+    if (getClass() != o.getClass()) {
+      return false;
+    }
+    return serialize().equals(((TableRow) o).serialize());
   }
 }
