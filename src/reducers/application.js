@@ -26,6 +26,11 @@ export type ActiveSheet =
   | typeof ACTIVE_SHEET_SHARE_DATA_IN_FILE
   | null;
 
+export type LauncherMsg = {
+  message: string,
+  severity: 'warning' | 'error',
+};
+
 export type State = {
   leftSidebarVisible: boolean,
   rightSidebarVisible: boolean,
@@ -39,6 +44,7 @@ export type State = {
     secure: number,
   },
   downloadingImportData: boolean,
+  launcherMsg: LauncherMsg,
 };
 
 type BooleanActionType =
@@ -67,6 +73,13 @@ export type Action =
         insecure: number,
         secure: number,
       },
+    }
+  | {
+      type: 'LAUNCHER_MSG',
+      payload: {
+        severity: 'warning' | 'error',
+        message: string,
+      },
     };
 
 const initialState: () => State = () => ({
@@ -82,6 +95,10 @@ const initialState: () => State = () => ({
     secure: 8088,
   },
   downloadingImportData: false,
+  launcherMsg: {
+    severity: 'warning',
+    message: '',
+  },
 });
 
 export default function reducer(state: State, action: Action): State {
@@ -118,11 +135,15 @@ export default function reducer(state: State, action: Action): State {
       activeSheet: ACTIVE_SHEET_SHARE_DATA_IN_FILE,
       exportFile: action.payload.file,
     };
-  }
-  if (action.type === 'SET_SERVER_PORTS') {
+  } else if (action.type === 'SET_SERVER_PORTS') {
     return {
       ...state,
       serverPorts: action.payload,
+    };
+  } else if (action.type === 'LAUNCHER_MSG') {
+    return {
+      ...state,
+      launcherMsg: action.payload,
     };
   } else {
     return state;

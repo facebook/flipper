@@ -5,7 +5,7 @@
  * @format
  */
 
-import type {ActiveSheet} from '../reducers/application';
+import type {ActiveSheet, LauncherMsg} from '../reducers/application';
 
 import {
   colors,
@@ -28,6 +28,7 @@ import {
 import DevicesButton from './DevicesButton.js';
 import ScreenCaptureButtons from './ScreenCaptureButtons.js';
 import AutoUpdateVersion from './AutoUpdateVersion.js';
+import UpdateIndicator from './UpdateIndicator.js';
 import config from '../fb-stubs/config.js';
 import {isAutoUpdaterEnabled} from '../utils/argvUtils.js';
 import isProduction from '../utils/isProduction.js';
@@ -66,6 +67,7 @@ type Props = {|
   toggleLeftSidebarVisible: (visible?: boolean) => void,
   toggleRightSidebarVisible: (visible?: boolean) => void,
   setActiveSheet: (sheet: ActiveSheet) => void,
+  launcherMsg: LauncherMsg,
 |};
 
 const VersionText = styled(Text)({
@@ -100,7 +102,9 @@ class TitleBar extends Component<Props> {
 
         {isAutoUpdaterEnabled() ? (
           <AutoUpdateVersion version={this.props.version} />
-        ) : null}
+        ) : (
+          <UpdateIndicator launcherMsg={this.props.launcherMsg} />
+        )}
         {config.bugReportButtonVisible && (
           <Button
             compact={true}
@@ -141,6 +145,7 @@ export default connect<Props, OwnProps, _, _, _, _>(
       rightSidebarVisible,
       rightSidebarAvailable,
       downloadingImportData,
+      launcherMsg,
     },
   }) => ({
     windowIsFocused,
@@ -148,6 +153,7 @@ export default connect<Props, OwnProps, _, _, _, _>(
     rightSidebarVisible,
     rightSidebarAvailable,
     downloadingImportData,
+    launcherMsg,
   }),
   {
     setActiveSheet,
