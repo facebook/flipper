@@ -34,14 +34,20 @@ type DatabasesPluginState = {|
   databases: DatabaseMap,
 |};
 
+type Actions =
+  | SelectDatabaseEvent
+  | SelectDatabaseTableEvent
+  | UpdateDatabasesEvent;
+
 type DatabaseMap = {[databaseName: string]: DatabaseEntry};
 
 type DatabaseEntry = {
   tables: Array<string>,
 };
 
-type DatabaseListMessage = {|
+type UpdateDatabasesEvent = {|
   databases: {[name: string]: {tables: Array<string>}},
+  type: 'UpdateDatabases',
 |};
 
 type SelectDatabaseEvent = {|
@@ -90,7 +96,7 @@ const Columns = {
   },
 };
 
-export default class extends FlipperPlugin<DatabasesPluginState> {
+export default class extends FlipperPlugin<DatabasesPluginState, Actions> {
   state: DatabasesPluginState = {
     selectedDatabase: null,
     selectedDatabaseTable: null,
@@ -100,7 +106,7 @@ export default class extends FlipperPlugin<DatabasesPluginState> {
   reducers = {
     UpdateDatabases(
       state: DatabasesPluginState,
-      results: DatabaseListMessage,
+      results: UpdateDatabasesEvent,
     ): DatabasesPluginState {
       const updates = results.databases;
       const databases = {...state.databases, ...updates};
@@ -150,19 +156,17 @@ export default class extends FlipperPlugin<DatabasesPluginState> {
   onDataClicked = () => {};
 
   onDatabaseSelected = (selected: string) => {
-    const action: SelectDatabaseEvent = {
+    this.dispatchAction({
       database: selected,
       type: 'UpdateSelectedDatabase',
-    };
-    this.dispatchAction(action);
+    });
   };
 
   onDatabaseTableSelected = (selected: string) => {
-    const action: SelectDatabaseTableEvent = {
+    this.dispatchAction({
       table: selected,
       type: 'UpdateSelectedDatabaseTable',
-    };
-    this.dispatchAction(action);
+    });
   };
 
   render() {
