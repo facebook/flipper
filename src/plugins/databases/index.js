@@ -1,3 +1,10 @@
+/**
+ * Copyright 2018-present Facebook.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ * @format
+ */
+
 import {
   styled,
   colors,
@@ -9,9 +16,9 @@ import {
   ManagedTable,
   Text,
   Button,
-  ButtonGroup
+  ButtonGroup,
 } from 'flipper';
-import { FlipperPlugin } from 'flipper';
+import {FlipperPlugin} from 'flipper';
 import ButtonNavigation from './ButtonNavigation';
 
 const BoldSpan = styled('Span')({
@@ -21,23 +28,30 @@ const BoldSpan = styled('Span')({
   textTransform: 'uppercase',
 });
 
-export type Database = {|
-  [name: string]: any,
-|};
-
-type DatabaseEntry = {
-  database: Database,
-  databaseTableList: Array<string>,
-};
-
-type DatabaseMap = {
-  [name: string]: DatabaseEntry,
-};
-
 type DatabasesPluginState = {|
   selectedDatabase: ?string,
   selectedDatabaseTable: ?string,
-  databaseList: DatabaseMap,
+  databases: DatabaseMap,
+|};
+
+type DatabaseMap = {[databaseName: string]: DatabaseEntry};
+
+type DatabaseEntry = {
+  tables: Array<string>,
+};
+
+type DatabaseListMessage = {|
+  databases: {[name: string]: {tables: Array<string>}},
+|};
+
+type SelectDatabaseEvent = {|
+  type: 'UpdateSelectedDatabase',
+  database: string,
+|};
+
+type SelectDatabaseTableEvent = {|
+  type: 'UpdateSelectedDatabaseTable',
+  table: string,
 |};
 
 const ColumnSizes = {
@@ -77,96 +91,116 @@ const Columns = {
 };
 
 export default class extends FlipperPlugin<DatabasesPluginState> {
-
   state: DatabasesPluginState = {
     selectedDatabase: null,
     selectedDatabaseTable: null,
-    databaseList: {},
+    databases: {},
   };
 
   reducers = {
-    UpdateDatabases(state: DatabasesPluginState, results: Object): DatabasesPluginState {
-      let update = results.update;
-      let entry = state.databaseList[update.name] || {};
-      entry.database = update.database;
-      entry.databaseTableList = update.databaseTableList || [];
-      state.databaseList[update.name] = entry;
+    UpdateDatabases(
+      state: DatabasesPluginState,
+      results: DatabaseListMessage,
+    ): DatabasesPluginState {
+      const updates = results.databases;
+      const databases = {...state.databases, ...updates};
+      const selectedDatabase =
+        state.selectedDatabase || Object.keys(databases)[0];
       return {
-        selectedDatabase: state.selectedDatabase || update.name,
-        selectedDatabaseTable: null,
-        databaseList: state.databaseList,
+        ...state,
+        databases,
+        selectedDatabase: selectedDatabase,
+        selectedDatabaseTable: databases[selectedDatabase].tables[0],
       };
     },
-    UpdateSelectedDatabase(state: DatabasesPluginState, event: Object): DatabasesPluginState {
+    UpdateSelectedDatabase(
+      state: DatabasesPluginState,
+      event: SelectDatabaseEvent,
+    ): DatabasesPluginState {
       return {
-        selectedDatabase: event.selected,
+        selectedDatabase: event.database,
         selectedDatabaseTable: null,
-        databaseList: state.databaseList,
+        databases: state.databases,
       };
     },
   };
 
   init() {
-    this.state.selectedDatabase = "name";
+    this.dispatchAction({
+      databases: {
+        db1: {database: null, tables: ['A', 'B']},
+        db2: {database: null, tables: ['E', 'F']},
+        db3: {database: null, tables: ['C', 'D']},
+      },
+      type: 'UpdateDatabases',
+    });
 
-    this.dispatchAction({
-      update: { name: "name", database: null, databaseTableList: ["A", "B"]},
-      type: 'UpdateDatabases'
-    });
-    this.dispatchAction({
-      update: { name: "name3", database: null, databaseTableList: ["E", "F"] },
-      type: 'UpdateDatabases'
-    });
-    this.dispatchAction({
-      update: { name: "name2", database: null, databaseTableList: ["C", "D"] },
-      type: 'UpdateDatabases'
-    });
+    setTimeout(() => {
+      this.dispatchAction({
+        databases: {
+          db4: {database: null, tables: ['A', 'B']},
+          db5: {database: null, tables: ['E', 'F']},
+          db6: {database: null, tables: ['C', 'D']},
+        },
+        type: 'UpdateDatabases',
+      });
+    }, 100);
   }
 
-  onDataClicked = () => {
-
-  }
+  onDataClicked = () => {};
 
   onDatabaseSelected = (selected: string) => {
-    this.setState({selectedDatabase:selected})
-    this.dispatchAction({
-      selected: selected,
-      type: 'UpdateSelectedDatabase'
-    });
+    const action: SelectDatabaseEvent = {
+      database: selected,
+      type: 'UpdateSelectedDatabase',
+    };
+    this.dispatchAction(action);
   };
 
   onDatabaseTableSelected = (selected: string) => {
-    this.dispatchAction({
-      selected: selected,
-      type: 'UpdateSelectedDatabaseTable'
-    });
+    const action: SelectDatabaseTableEvent = {
+      table: selected,
+      type: 'UpdateSelectedDatabaseTable',
+    };
+    this.dispatchAction(action);
   };
 
   render() {
+    const tableOptions =
+      (this.state.selectedDatabase &&
+        this.state.databases[this.state.selectedDatabase] &&
+        this.state.databases[this.state.selectedDatabase].tables.reduce(
+          (options, tableName) => ({...options, [tableName]: tableName}),
+          {},
+        )) ||
+      {};
+
     return (
-      <FlexColumn style={{ flex: 1 }}>
-        <Toolbar position="top" style={{ paddingLeft: 8 }}>
-          <BoldSpan style={{ marginRight: 16 }}>Database</BoldSpan>
+      <FlexColumn style={{flex: 1}}>
+        <Toolbar position="top" style={{paddingLeft: 8}}>
+          <BoldSpan style={{marginRight: 16}}>Database</BoldSpan>
           <Select
-            options={Object.keys(this.state.databaseList).reduce(
-              (obj, item) => {
-                obj[item] = item;
-                return obj;
-              },
-              {},
-            )}
+            options={Object.keys(this.state.databases).reduce((obj, item) => {
+              obj[item] = item;
+              return obj;
+            }, {})}
+            selected={this.state.selectedDatabase}
             onChange={this.onDatabaseSelected}
           />
-          <BoldSpan style={{ marginLeft: 16, marginRight: 16 }}>Table</BoldSpan>
+          <BoldSpan style={{marginLeft: 16, marginRight: 16}}>Table</BoldSpan>
           <Select
-            options={this.state.selectedDatabase == null ? {} : this.state.databaseList[this.state.selectedDatabase].databaseTableList.reduce((options, tableName) => ({...options, [tableName]: tableName}), {})}
-            selected={this.state.selectedDatabase && this.state.databaseList[this.state.selectedDatabase].databaseTableList[1]}
+            options={tableOptions}
+            selected={this.state.selectedDatabaseTable}
             onChange={this.onDatabaseTableSelected}
           />
           <div grow={true} />
-          <Button style={{marginLeft: 'auto', display: 'none'}} onClick={this.onDataClicked}>Execute SQL</Button>
+          <Button
+            style={{marginLeft: 'auto', display: 'none'}}
+            onClick={this.onDataClicked}>
+            Execute SQL
+          </Button>
         </Toolbar>
-        <FlexRow style={{ flex: 1 }}>
+        <FlexRow style={{flex: 1}}>
           <ManagedTable
             multiline={true}
             columnSizes={ColumnSizes}
@@ -177,14 +211,21 @@ export default class extends FlipperPlugin<DatabasesPluginState> {
             rows={[]}
           />
         </FlexRow>
-        <Toolbar position="bottom" style={{ paddingLeft: 8 }}>
+        <Toolbar position="bottom" style={{paddingLeft: 8}}>
           <FlexRow grow={true}>
             <ButtonGroup>
               <Button onClick={this.onDataClicked}>Data</Button>
               <Button>Structure</Button>
             </ButtonGroup>
-            <Text grow={true} style={{ flex: 1, textAlign: 'center' }}>1-100 of 1056 row</Text>
-            <ButtonNavigation canGoBack canGoForward onBack={() => {}} onForward={() => {}}/>
+            <Text grow={true} style={{flex: 1, textAlign: 'center'}}>
+              1-100 of 1056 row
+            </Text>
+            <ButtonNavigation
+              canGoBack
+              canGoForward
+              onBack={() => {}}
+              onForward={() => {}}
+            />
           </FlexRow>
         </Toolbar>
       </FlexColumn>
