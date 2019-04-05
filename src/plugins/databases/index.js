@@ -7,8 +7,6 @@
 
 import {
   styled,
-  colors,
-  Heading,
   Toolbar,
   Select,
   FlexColumn,
