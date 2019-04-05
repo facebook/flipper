@@ -127,6 +127,16 @@ export default class extends FlipperPlugin<DatabasesPluginState, Actions> {
         databases: state.databases,
       };
     },
+    UpdateSelectedDatabaseTable(
+      state: DatabasesPluginState,
+      event: SelectDatabaseTableEvent,
+    ): DatabasesPluginState {
+      return {
+        selectedDatabase: state.selectedDatabase,
+        selectedDatabaseTable: event.table,
+        databases: state.databases,
+      };
+    },
   };
 
   init() {
@@ -186,13 +196,13 @@ export default class extends FlipperPlugin<DatabasesPluginState, Actions> {
               obj[item] = item;
               return obj;
             }, {})}
-            selected={this.state.selectedDatabase}
+            value={this.state.selectedDatabase}
             onChange={this.onDatabaseSelected}
           />
           <BoldSpan style={{marginLeft: 16, marginRight: 16}}>Table</BoldSpan>
           <Select
             options={tableOptions}
-            selected={this.state.selectedDatabaseTable}
+            value={this.state.selectedDatabaseTable}
             onChange={this.onDatabaseTableSelected}
           />
           <div grow={true} />
