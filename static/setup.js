@@ -8,7 +8,6 @@
 const path = require('path');
 const os = require('os');
 const fs = require('fs');
-const {spawn} = require('child_process');
 
 module.exports = function(argv) {
   if (!process.env.ANDROID_HOME) {
