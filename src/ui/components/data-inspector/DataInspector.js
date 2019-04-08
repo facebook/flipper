@@ -203,7 +203,7 @@ function getRootContextMenu(data: Object): Array<Electron$MenuItemOptions> {
       },
     },
   ];
-  if (data instanceof Object) {
+  if (typeof data === 'object' && data !== null) {
     rootContextMenuCache.set(data, menu);
   } else {
     console.error(
