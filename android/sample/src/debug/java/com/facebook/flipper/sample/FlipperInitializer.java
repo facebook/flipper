@@ -25,11 +25,6 @@ import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 import okhttp3.OkHttpClient;
 
-import android.database.DatabaseUtils;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
-import androidx.annotation.Nullable;
-
 public final class FlipperInitializer {
   public interface IntializationResult {
     OkHttpClient getOkHttpClient();
@@ -57,7 +52,7 @@ public final class FlipperInitializer {
     client.addPlugin(new FrescoFlipperPlugin());
     client.addPlugin(new ExampleFlipperPlugin());
     client.addPlugin(CrashReporterPlugin.getInstance());
-    client.addPlugin(new DatabasesFlipperPlugin());
+    client.addPlugin(new DatabasesFlipperPlugin(context));
     client.start();
 
     final OkHttpClient okHttpClient =

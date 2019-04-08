@@ -2,37 +2,49 @@
 
 package com.facebook.flipper.plugins.databases;
 
+import android.content.Context;
 import com.facebook.flipper.core.FlipperConnection;
 import com.facebook.flipper.core.FlipperPlugin;
-import com.facebook.flipper.core.FlipperObject;
-import com.facebook.flipper.core.FlipperResponder;
-import com.facebook.flipper.core.FlipperReceiver;
+import com.facebook.flipper.plugins.databases.impl.SqliteDatabaseDriver;
+import java.util.Collections;
+import java.util.List;
 
 public class DatabasesFlipperPlugin implements FlipperPlugin {
 
-  @Override
-  public String getId() {
-    return "Databases";
-  }
+    private static final String ID = "Databases";
 
-  @Override
-  public void onConnect(FlipperConnection connection) throws Exception {
-    connection.receive("greet", new FlipperReceiver() {
-      @Override
-      public void onReceive(FlipperObject params, FlipperResponder responder) throws Exception {
-        responder.success(
-            new FlipperObject.Builder()
-                .put("greeting", "Hello")
-                .build());
-      }
-    });
-  }
+    private final DatabasesManager databasesManager;
 
-  @Override
-  public void onDisconnect() throws Exception {}
+    public DatabasesFlipperPlugin(Context context) {
+        this(new SqliteDatabaseDriver(context));
+    }
 
-  @Override
-  public boolean runInBackground() {
-    return false;
-  }
+    public DatabasesFlipperPlugin(DatabaseDriver databaseDriver) {
+        this(Collections.singletonList(databaseDriver));
+    }
+
+    public DatabasesFlipperPlugin(List<DatabaseDriver> databaseDriverList) {
+        databasesManager = new DatabasesManager(databaseDriverList);
+    }
+
+    @Override
+    public String getId() {
+        return ID;
+    }
+
+    @Override
+    public void onConnect(FlipperConnection connection) {
+        databasesManager.setConnection(connection);
+    }
+
+    @Override
+    public void onDisconnect() {
+        databasesManager.setConnection(null);
+    }
+
+    @Override
+    public boolean runInBackground() {
+        return false;
+    }
+
 }
