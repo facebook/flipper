@@ -7,6 +7,6 @@ public class TableMetadataTestUtils {
   }
 
   public static QueryableTableRowProvider getQueryResponder(TableMetadata tableMetadata) {
-    return tableMetadata.responder;
+    return tableMetadata.mResponder;
   }
 }
