@@ -18,27 +18,8 @@ public class TableRowDisplayImpl implements TableRowDisplay {
         new FlipperReceiver() {
           @Override
           public void onReceive(FlipperObject params, FlipperResponder responder) throws Exception {
-            final FlipperObject.Builder columns = new FlipperObject.Builder();
-            final FlipperObject.Builder columnSizes = new FlipperObject.Builder();
-            final FlipperArray.Builder columnOrder = new FlipperArray.Builder();
-            final FlipperArray.Builder filterableColumns = new FlipperArray.Builder();
-            for (Column c : subscriber.getMetadata().mColumns) {
-              columns.put(c.id, new FlipperObject.Builder().put("value", c.displayName).build());
-              columnSizes.put(c.id, c.displayWidth);
-              columnOrder.put(
-                  new FlipperObject.Builder().put("key", c.id).put("visible", c.showByDefault));
-              if (c.isFilterable) {
-                filterableColumns.put(c.id);
-              }
-            }
-
-            responder.success(
-                new FlipperObject.Builder()
-                    .put("columns", columns.build())
-                    .put("columnSizes", columnSizes.build())
-                    .put("columnOrder", columnOrder.build())
-                    .put("filterableColumns", filterableColumns.build())
-                    .build());
+            final FlipperObject metadata = subscriber.getMetadata().serialize();
+            responder.success(metadata);
           }
         });
   }
