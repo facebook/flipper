@@ -39,13 +39,6 @@ const SidebarContainer = styled(FlexRow)({
   overflow: 'scroll',
 });
 
-/*
-pluginState: pluginStates[pluginKey],
-activePlugin,
-target,
-deepLinkPayload,
-pluginKey,
-*/
 type OwnProps = {|
   logger: Logger,
 |};
@@ -55,7 +48,7 @@ type Props = {|
   pluginState: Object,
   activePlugin: ?Class<FlipperPlugin<> | FlipperDevicePlugin<>>,
   target: Client | BaseDevice | null,
-  pluginKey: string,
+  pluginKey: ?string,
   deepLinkPayload: ?string,
 
   selectPlugin: (payload: {|
@@ -95,7 +88,8 @@ class PluginContainer extends PureComponent<Props> {
       target,
       isArchivedDevice,
     } = this.props;
-    if (!activePlugin || !target) {
+    if (!activePlugin || !target || !pluginKey) {
+      console.warn(`No selected plugin. Rendering empty!`);
       return null;
     }
     const props: PluginProps<Object> = {
@@ -158,7 +152,7 @@ export default connect<Props, OwnProps, _, _, _, _>(
     pluginStates,
     plugins: {devicePlugins, clientPlugins},
   }) => {
-    let pluginKey = 'unknown';
+    let pluginKey = null;
     let target = null;
     let activePlugin: ?Class<FlipperPlugin<> | FlipperDevicePlugin<>> = null;
 
@@ -174,12 +168,9 @@ export default connect<Props, OwnProps, _, _, _, _>(
       } else {
         target = clients.find((client: Client) => client.id === selectedApp);
         activePlugin = clientPlugins.get(selectedPlugin);
-        if (!activePlugin || !target) {
-          throw new Error(
-            `Plugin "${selectedPlugin || ''}" could not be found.`,
-          );
+        if (activePlugin && target) {
+          pluginKey = getPluginKey(target.id, activePlugin.id);
         }
-        pluginKey = getPluginKey(target.id, activePlugin.id);
       }
     }
     const isArchivedDevice = !selectedDevice
