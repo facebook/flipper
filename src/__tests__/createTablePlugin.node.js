@@ -8,57 +8,42 @@
 import {createTablePlugin} from '../createTablePlugin.js';
 import {FlipperPlugin} from '../plugin.js';
 
-const KNOWN_METADATA_PROPS = {
+const PROPS = {
   method: 'method',
   resetMethod: 'resetMethod',
   columns: {},
   columnSizes: {},
   renderSidebar: () => {},
-  buildRow: () => {
-    return {columns: {}, key: 'someKey'};
-  },
-};
-
-const DYNAMIC_METADATA_PROPS = {
-  method: 'method',
-  resetMethod: 'resetMethod',
-  id: 'testytest',
-  title: 'TestPlugin',
-  renderSidebar: () => {},
-  buildRow: () => {
-    return {columns: {}, key: 'someKey'};
-  },
+  buildRow: () => {},
 };
 
 test('createTablePlugin returns FlipperPlugin', () => {
-  const tablePlugin = createTablePlugin({...KNOWN_METADATA_PROPS});
+  const tablePlugin = createTablePlugin({...PROPS});
   expect(tablePlugin.prototype).toBeInstanceOf(FlipperPlugin);
 });
 
 test('persistedStateReducer is resetting data', () => {
   const resetMethod = 'resetMethod';
-  const tablePlugin = createTablePlugin({...KNOWN_METADATA_PROPS, resetMethod});
+  const tablePlugin = createTablePlugin({...PROPS, resetMethod});
 
-  const ps = {
-    datas: {'1': {id: '1', rowNumber: 0}},
-    rows: [
-      {
-        key: '1',
-        columns: {
-          id: {
-            value: '1',
+  // $FlowFixMe persistedStateReducer exists for createTablePlugin
+  const {rows, datas} = tablePlugin.persistedStateReducer(
+    {
+      datas: {'1': {id: '1'}},
+      rows: [
+        {
+          key: '1',
+          columns: {
+            id: {
+              value: '1',
+            },
           },
         },
-      },
-    ],
-    tableMetadata: null,
-  };
-
-  if (!tablePlugin.persistedStateReducer) {
-    expect(tablePlugin.persistedStateReducer).toBeDefined();
-    return;
-  }
-  const {rows, datas} = tablePlugin.persistedStateReducer(ps, resetMethod, {});
+      ],
+    },
+    resetMethod,
+    {},
+  );
 
   expect(datas).toEqual({});
   expect(rows).toEqual([]);
@@ -66,44 +51,18 @@ test('persistedStateReducer is resetting data', () => {
 
 test('persistedStateReducer is adding data', () => {
   const method = 'method';
-  const tablePlugin = createTablePlugin({...KNOWN_METADATA_PROPS, method});
+  const tablePlugin = createTablePlugin({...PROPS, method});
   const id = '1';
 
-  const ps = {
-    datas: {},
-    rows: [],
-    tableMetadata: null,
-  };
-
-  if (!tablePlugin.persistedStateReducer) {
-    expect(tablePlugin.persistedStateReducer).toBeDefined();
-    return;
-  }
-  const {rows, datas} = tablePlugin.persistedStateReducer(ps, method, {id});
-
-  expect(rows.length).toBe(1);
-  expect(Object.keys(datas)).toEqual([id]);
-});
-
-test('dyn persistedStateReducer is adding data', () => {
-  const method = 'method';
-  const tablePlugin = createTablePlugin({...DYNAMIC_METADATA_PROPS, method});
-  const id = '1';
-
-  const ps = {
-    datas: {},
-    rows: [],
-    tableMetadata: null,
-  };
-
-  if (!tablePlugin.persistedStateReducer) {
-    expect(tablePlugin.persistedStateReducer).toBeDefined();
-    return;
-  }
-  const {rows, datas} = tablePlugin.persistedStateReducer(ps, method, {
-    id,
-    columns: {},
-  });
+  // $FlowFixMe persistedStateReducer exists for createTablePlugin
+  const {rows, datas} = tablePlugin.persistedStateReducer(
+    {
+      datas: {},
+      rows: [],
+    },
+    method,
+    {id},
+  );
 
   expect(rows.length).toBe(1);
   expect(Object.keys(datas)).toEqual([id]);
