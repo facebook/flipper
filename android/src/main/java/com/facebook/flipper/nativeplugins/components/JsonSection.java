@@ -2,11 +2,11 @@ package com.facebook.flipper.nativeplugins.components;
 
 import com.facebook.flipper.core.FlipperObject;
 
-public class JsonSidebarSection implements SidebarSection {
+public class JsonSection implements UISection {
   private final String title;
   private final FlipperObject content;
 
-  public JsonSidebarSection(String title, FlipperObject content) {
+  public JsonSection(String title, FlipperObject content) {
     this.title = title;
     this.content = content;
   }

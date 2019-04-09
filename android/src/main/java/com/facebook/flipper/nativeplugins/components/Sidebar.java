@@ -6,7 +6,7 @@ public class Sidebar {
 
   private final FlipperArray.Builder sections = new FlipperArray.Builder();
 
-  public Sidebar addSection(SidebarSection section) {
+  public Sidebar addSection(UISection section) {
     sections.put(section.serialize());
     return this;
   }
