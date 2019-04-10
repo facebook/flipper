@@ -16,6 +16,7 @@ import {
   Button,
   ButtonGroup,
 } from 'flipper';
+import type {TableRows} from '../../ui/components/table/types';
 import {FlipperPlugin} from 'flipper';
 import ButtonNavigation from './ButtonNavigation';
 
@@ -31,6 +32,7 @@ type DatabasesPluginState = {|
   selectedDatabaseTable: ?string,
   databases: DatabaseMap,
   viewMode: 'data' | 'structure',
+  tableRows: TableRows,
 |};
 
 type Actions =
@@ -106,6 +108,7 @@ export default class extends FlipperPlugin<DatabasesPluginState, Actions> {
     selectedDatabaseTable: null,
     databases: {},
     viewMode: 'data',
+    tableRows: [{columns: {cpu_id: {value: 5}}, key: '1'}],
   };
 
   reducers = {
@@ -235,7 +238,7 @@ export default class extends FlipperPlugin<DatabasesPluginState, Actions> {
             autoHeight={true}
             floating={false}
             zebra={true}
-            rows={[]}
+            rows={this.state.tableRows}
           />
         </FlexRow>
         <Toolbar position="bottom" style={{paddingLeft: 8}}>
