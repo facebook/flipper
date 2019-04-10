@@ -3,11 +3,14 @@ package com.facebook.flipper.nativeplugins.table;
 import androidx.annotation.Nullable;
 import com.facebook.flipper.core.FlipperArray;
 import com.facebook.flipper.core.FlipperObject;
+import com.facebook.flipper.nativeplugins.components.ToolbarSection;
 
 public class TableMetadata {
 
   final Column[] mColumns;
   final QueryableTableRowProvider mResponder;
+  final ToolbarSection mTopToolbar;
+  final ToolbarSection mBottomToolbar;
 
   FlipperObject serialize() {
     final FlipperObject.Builder columns = new FlipperObject.Builder();
@@ -28,18 +31,27 @@ public class TableMetadata {
         .put("columnSizes", columnSizes.build())
         .put("columnOrder", columnOrder.build())
         .put("filterableColumns", filterableColumns.build())
+        .put("topToolbar", mTopToolbar != null ? mTopToolbar.serialize() : null)
+        .put("bottomToolbar", mBottomToolbar != null ? mBottomToolbar.serialize() : null)
         .build();
   }
 
   private TableMetadata(
-      @Nullable Column[] columns, @Nullable QueryableTableRowProvider queryResponder) {
+      @Nullable Column[] columns,
+      @Nullable QueryableTableRowProvider queryResponder,
+      @Nullable ToolbarSection topToolbar,
+      @Nullable ToolbarSection bottomToolbar) {
     this.mColumns = columns == null ? new Column[] {} : columns;
     this.mResponder = queryResponder;
+    this.mTopToolbar = topToolbar;
+    this.mBottomToolbar = bottomToolbar;
   }
 
   public static class Builder {
     private Column[] columns;
     private QueryableTableRowProvider queryResponder;
+    private ToolbarSection topToolbar;
+    private ToolbarSection bottomToolbar;
 
     public Builder columns(Column... columns) {
       this.columns = columns;
@@ -51,8 +63,18 @@ public class TableMetadata {
       return this;
     }
 
+    public Builder topToolbar(ToolbarSection bar) {
+      this.topToolbar = bar;
+      return this;
+    }
+
+    public Builder bottomToolbar(ToolbarSection bar) {
+      this.bottomToolbar = bar;
+      return this;
+    }
+
     public TableMetadata build() {
-      return new TableMetadata(columns, queryResponder);
+      return new TableMetadata(columns, queryResponder, topToolbar, bottomToolbar);
     }
   }
 }
