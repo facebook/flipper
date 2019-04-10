@@ -5,25 +5,33 @@
  * @format
  */
 
-export type DatabaseListRequest = {
-  method: 'getDatabases',
-  params: {},
+import type {PluginClient} from '../../plugin';
+
+type ClientCall<Params, Response> = Params => Promise<Response>;
+
+type DatabaseListRequest = {};
+
+type DatabaseListResponse = Array<{
+  id: Number,
+  name: string,
+  tables: Array<string>,
+}>;
+
+type QueryTableRequest = {
+  databaseId: String,
+  table: string,
+  order: String,
+  reverse: Boolean,
+  start: Number,
+  count: number,
 };
 
-export type DatabaseListResponse = {
-  databases: Array<{name: String, tables: Array<string>}>,
-};
-
-export type QueryTableRequest = {
-  method: 'queryTable',
-  params: {
-    table: string,
-  },
-};
-
-export type QueryTableResponse = {
+type QueryTableResponse = {
   columns: Array<string>,
-  vlaues: Array<Array<DatabaseValue>>,
+  values: Array<Array<DatabaseValue>>,
+  start: Number,
+  count: Number,
+  total: number,
 };
 
 type DatabaseValue =
@@ -39,3 +47,37 @@ type DatabaseValue =
       type: 'float',
       value: number,
     };
+
+type GetTableStructureRequest = {
+  databaseId: Number,
+  table: string,
+};
+
+type GetTableStructureResponse = {
+  structureColumns: Array<string>,
+  structureValues: Array<Array<DatabaseValue>>,
+  indexesColumns: Array<string>,
+  indexesValues: Array<Array<DatabaseValue>>,
+  definition: string,
+};
+
+export class DatabaseClient {
+  client: PluginClient;
+
+  constructor(pluginClient: PluginClient) {
+    this.client = pluginClient;
+  }
+
+  getDatabases: ClientCall<
+    DatabaseListRequest,
+    DatabaseListResponse,
+  > = params => this.client.call('databaseList', {});
+
+  getTableData: ClientCall<QueryTableRequest, QueryTableResponse> = params =>
+    this.client.call('getTableData', params);
+
+  getTableStructure: ClientCall<
+    GetTableStructureRequest,
+    GetTableStructureResponse,
+  > = params => this.client.call('getTableStructure', params);
+}

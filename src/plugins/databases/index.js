@@ -18,6 +18,7 @@ import {
 } from 'flipper';
 import type {TableRows} from '../../ui/components/table/types';
 import {FlipperPlugin} from 'flipper';
+import {DatabaseClient} from './ClientProtocol';
 import ButtonNavigation from './ButtonNavigation';
 
 const BoldSpan = styled('Span')({
@@ -103,6 +104,8 @@ const Columns = {
 };
 
 export default class extends FlipperPlugin<DatabasesPluginState, Actions> {
+  databaseClient: DatabaseClient;
+
   state: DatabasesPluginState = {
     selectedDatabase: null,
     selectedDatabaseTable: null,
@@ -117,7 +120,7 @@ export default class extends FlipperPlugin<DatabasesPluginState, Actions> {
       results: UpdateDatabasesEvent,
     ): DatabasesPluginState {
       const updates = results.databases;
-      const databases = {...state.databases, ...updates};
+      const databases = updates;
       const selectedDatabase =
         state.selectedDatabase || Object.keys(databases)[0];
       return {
@@ -158,25 +161,17 @@ export default class extends FlipperPlugin<DatabasesPluginState, Actions> {
   };
 
   init() {
-    this.dispatchAction({
-      databases: {
-        db1: {database: null, tables: ['A', 'B']},
-        db2: {database: null, tables: ['E', 'F']},
-        db3: {database: null, tables: ['C', 'D']},
-      },
-      type: 'UpdateDatabases',
-    });
-
-    setTimeout(() => {
+    this.databaseClient = new DatabaseClient(this.client);
+    this.databaseClient.getDatabases({}).then(databases => {
+      console.log(databases);
       this.dispatchAction({
-        databases: {
-          db4: {database: null, tables: ['A', 'B']},
-          db5: {database: null, tables: ['E', 'F']},
-          db6: {database: null, tables: ['C', 'D']},
-        },
         type: 'UpdateDatabases',
+        databases: databases.reduce((accumulator, currentValue) => {
+          accumulator[currentValue.name] = {tables: currentValue.tables};
+          return accumulator;
+        }, {}),
       });
-    }, 100);
+    });
   }
 
   onDataClicked = () => {};
