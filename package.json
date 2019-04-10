@@ -40,14 +40,17 @@
   },
   "jest": {
     "transform": {
-      "\\.(js)$": "<rootDir>/static/transforms/index.js"
+      "\\.js$": "<rootDir>/static/transforms/index.js"
     },
     "setupFiles": [
       "<rootDir>/static/globalTestSetup.js"
-    ]
+    ],
+    "moduleNameMapper": {
+      "^flipper$": "<rootDir>/src/index.js"
+    }
   },
   "devDependencies": {
-    "@jest-runner/electron": "^1.0.3",
+    "@jest-runner/electron": "^1.1.1",
     "babel-eslint": "^10.0.1",
     "electron": "^4.0.8",
     "electron-builder": "^20.38.5",
@@ -62,7 +65,7 @@
     "eslint-plugin-relay": "^1.0.0",
     "flow-bin": "^0.91.0",
     "glob": "^7.1.2",
-    "jest": "^24.7.0",
+    "jest": "^24.7.1",
     "jest-fetch-mock": "^2.1.0",
     "prettier": "1.16.4",
     "redux-mock-store": "^1.5.3"
