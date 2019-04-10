@@ -340,13 +340,13 @@ export default class extends FlipperPlugin<DatabasesPluginState, Actions> {
                 obj[item] = item;
                 return obj;
               }, {})}
-            value={this.state.selectedDatabase}
+            selected={String(this.state.selectedDatabase)}
             onChange={this.onDatabaseSelected}
           />
           <BoldSpan style={{marginLeft: 16, marginRight: 16}}>Table</BoldSpan>
           <Select
             options={tableOptions}
-            value={this.state.selectedDatabaseTable}
+            selected={this.state.selectedDatabaseTable}
             onChange={this.onDatabaseTableSelected}
           />
           <div grow={true} />
