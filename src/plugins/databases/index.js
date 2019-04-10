@@ -90,42 +90,6 @@ type UpdatePageEvent = {|
   total: number,
 |};
 
-const ColumnSizes = {
-  cpu_id: '10%',
-  scaling_cur_freq: 'flex',
-  scaling_min_freq: 'flex',
-  scaling_max_freq: 'flex',
-  cpuinfo_min_freq: 'flex',
-  cpuinfo_max_freq: 'flex',
-};
-
-const Columns = {
-  cpu_id: {
-    value: 'CPU ID',
-    resizable: true,
-  },
-  scaling_cur_freq: {
-    value: 'Scaling Current',
-    resizable: true,
-  },
-  scaling_min_freq: {
-    value: 'Scaling MIN',
-    resizable: true,
-  },
-  scaling_max_freq: {
-    value: 'Scaling MAX',
-    resizable: true,
-  },
-  cpuinfo_min_freq: {
-    value: 'MIN Frequency',
-    resizable: true,
-  },
-  cpuinfo_max_freq: {
-    value: 'MAX Frequency',
-    resizable: true,
-  },
-};
-
 function transformRow(columns: Array<string>, row: Array<any>): TableBodyRow {
   const transformedColumns = {};
   for (var i = 0; i < columns.length; i++) {
@@ -251,7 +215,7 @@ export default class extends FlipperPlugin<DatabasesPluginState, Actions> {
     ) {
       this.databaseClient
         .getTableData({
-          count: 10,
+          count: 30,
           databaseId: newState.selectedDatabase,
           reverse: false,
           table: table,
@@ -347,7 +311,6 @@ export default class extends FlipperPlugin<DatabasesPluginState, Actions> {
           this.state.currentPage.table === this.state.selectedDatabaseTable ? (
             <ManagedTable
               multiline={true}
-              columnSizes={ColumnSizes}
               columns={this.state.currentPage.columns.reduce((acc, val) => {
                 acc[val] = {value: val, resizable: true};
                 return acc;
@@ -365,9 +328,15 @@ export default class extends FlipperPlugin<DatabasesPluginState, Actions> {
               <Button onClick={this.onDataClicked}>Data</Button>
               <Button>Structure</Button>
             </ButtonGroup>
-            <Text grow={true} style={{flex: 1, textAlign: 'center'}}>
-              1-100 of 1056 row
-            </Text>
+            {this.state.currentPage ? (
+              <Text grow={true} style={{flex: 1, textAlign: 'center'}}>
+                {this.state.currentPage.count === this.state.currentPage.total
+                  ? `${this.state.currentPage.count} `
+                  : `${this.state.currentPage.start + 1}-${this.state
+                      .currentPage.start + this.state.currentPage.count} `}
+                of {this.state.currentPage.total} rows
+              </Text>
+            ) : null}
             <ButtonNavigation
               canGoBack
               canGoForward
