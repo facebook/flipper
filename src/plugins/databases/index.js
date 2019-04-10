@@ -35,12 +35,24 @@ type DatabasesPluginState = {|
   viewMode: 'data' | 'structure',
   tableRows: TableRows,
   error: ?null,
+  currentPage: ?Page,
 |};
+
+type Page = {
+  databaseId: number,
+  table: string,
+  columns: Array<string>,
+  values: Array<Array<any>>,
+  start: number,
+  count: number,
+  total: number,
+};
 
 type Actions =
   | SelectDatabaseEvent
   | SelectDatabaseTableEvent
-  | UpdateDatabasesEvent;
+  | UpdateDatabasesEvent
+  | UpdatePageEvent;
 
 type DatabaseEntry = {
   id: number,
@@ -66,6 +78,17 @@ type SelectDatabaseTableEvent = {|
 type UpdateViewModeEvent = {|
   type: 'UpdateViewMode',
   viewMode: 'data' | 'structure',
+|};
+
+type UpdatePageEvent = {|
+  type: 'UpdatePage',
+  databaseId: number,
+  table: string,
+  columns: Array<string>,
+  values: Array<Array<any>>,
+  start: number,
+  count: number,
+  total: number,
 |};
 
 const ColumnSizes = {
@@ -114,6 +137,7 @@ export default class extends FlipperPlugin<DatabasesPluginState, Actions> {
     viewMode: 'data',
     tableRows: [{columns: {cpu_id: {value: 5}}, key: '1'}],
     error: null,
+    currentPage: null,
   };
 
   reducers = [
@@ -134,7 +158,7 @@ export default class extends FlipperPlugin<DatabasesPluginState, Actions> {
           ...state,
           databases,
           selectedDatabase: selectedDatabase,
-          selectedDatabaseTable: databases[selectedDatabase].tables[0],
+          selectedDatabaseTable: databases[selectedDatabase - 1].tables[0],
         };
       },
     ],
@@ -147,7 +171,8 @@ export default class extends FlipperPlugin<DatabasesPluginState, Actions> {
         return {
           ...state,
           selectedDatabase: event.database,
-          selectedDatabaseTable: null,
+          selectedDatabaseTable:
+            state.databases[event.database - 1].tables[0] || null,
         };
       },
     ],
@@ -175,6 +200,20 @@ export default class extends FlipperPlugin<DatabasesPluginState, Actions> {
         };
       },
     ],
+    [
+      'UpdatePage',
+      (
+        state: DatabasesPluginState,
+        event: UpdatePageEvent,
+      ): DatabasesPluginState => {
+        return {
+          ...state,
+          currentPage: {
+            ...event,
+          },
+        };
+      },
+    ],
   ].reduce((acc, val) => {
     const name = val[0];
     const f = val[1];
@@ -191,22 +230,36 @@ export default class extends FlipperPlugin<DatabasesPluginState, Actions> {
     previousState: DatabasesPluginState,
     newState: DatabasesPluginState,
   ) {
+    const databaseId = newState.selectedDatabase;
+    const table = newState.selectedDatabaseTable;
     if (
       (previousState.selectedDatabase != newState.selectedDatabase ||
         previousState.selectedDatabaseTable !=
           newState.selectedDatabaseTable) &&
-      newState.selectedDatabase &&
-      newState.selectedDatabaseTable
+      databaseId &&
+      table
     ) {
       this.databaseClient
         .getTableData({
           count: 10,
           databaseId: newState.selectedDatabase,
           reverse: false,
-          table: newState.selectedDatabaseTable,
+          table: table,
           start: 0,
         })
-        .then(data => console.log(data))
+        .then(data => {
+          console.log(data);
+          this.dispatchAction({
+            type: 'UpdatePage',
+            databaseId: databaseId,
+            table: table,
+            columns: data.columns,
+            values: data.values,
+            start: data.start,
+            count: data.count,
+            total: data.total,
+          });
+        })
         .catch(e => {
           this.setState({error: e});
         });
@@ -244,8 +297,8 @@ export default class extends FlipperPlugin<DatabasesPluginState, Actions> {
   render() {
     const tableOptions =
       (this.state.selectedDatabase &&
-        this.state.databases[this.state.selectedDatabase] &&
-        this.state.databases[this.state.selectedDatabase].tables.reduce(
+        this.state.databases[this.state.selectedDatabase - 1] &&
+        this.state.databases[this.state.selectedDatabase - 1].tables.reduce(
           (options, tableName) => ({...options, [tableName]: tableName}),
           {},
         )) ||
@@ -306,6 +359,7 @@ export default class extends FlipperPlugin<DatabasesPluginState, Actions> {
             />
           </FlexRow>
         </Toolbar>
+        {this.state.error}
       </FlexColumn>
     );
   }

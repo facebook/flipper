@@ -29,8 +29,8 @@ type QueryTableRequest = {
 type QueryTableResponse = {
   columns: Array<string>,
   values: Array<Array<DatabaseValue>>,
-  start: Number,
-  count: Number,
+  start: number,
+  count: number,
   total: number,
 };
 
@@ -49,7 +49,7 @@ type DatabaseValue =
     };
 
 type GetTableStructureRequest = {
-  databaseId: Number,
+  databaseId: number,
   table: string,
 };
 
