@@ -21,6 +21,8 @@ import {FlipperPlugin} from 'flipper';
 import {DatabaseClient} from './ClientProtocol';
 import ButtonNavigation from './ButtonNavigation';
 
+const PAGE_SIZE = 30;
+
 const BoldSpan = styled('Span')({
   fontSize: 12,
   color: '#90949c',
@@ -31,6 +33,7 @@ const BoldSpan = styled('Span')({
 type DatabasesPluginState = {|
   selectedDatabase: number,
   selectedDatabaseTable: ?string,
+  pageRowNumber: number,
   databases: Array<DatabaseEntry>,
   viewMode: 'data' | 'structure',
   error: ?null,
@@ -51,7 +54,9 @@ type Actions =
   | SelectDatabaseEvent
   | SelectDatabaseTableEvent
   | UpdateDatabasesEvent
-  | UpdatePageEvent;
+  | UpdatePageEvent
+  | NextPageEvent
+  | PreviousPageEvent;
 
 type DatabaseEntry = {
   id: number,
@@ -90,6 +95,14 @@ type UpdatePageEvent = {|
   total: number,
 |};
 
+type NextPageEvent = {
+  type: 'NextPage',
+};
+
+type PreviousPageEvent = {
+  type: 'PreviousPage',
+};
+
 function transformRow(
   columns: Array<string>,
   row: Array<any>,
@@ -108,6 +121,7 @@ export default class extends FlipperPlugin<DatabasesPluginState, Actions> {
   state: DatabasesPluginState = {
     selectedDatabase: 0,
     selectedDatabaseTable: null,
+    pageRowNumber: 0,
     databases: [],
     viewMode: 'data',
     error: null,
@@ -193,6 +207,30 @@ export default class extends FlipperPlugin<DatabasesPluginState, Actions> {
         };
       },
     ],
+    [
+      'NextPage',
+      (
+        state: DatabasesPluginState,
+        event: UpdatePageEvent,
+      ): DatabasesPluginState => {
+        return {
+          ...state,
+          pageRowNumber: state.pageRowNumber + PAGE_SIZE,
+        };
+      },
+    ],
+    [
+      'PreviousPage',
+      (
+        state: DatabasesPluginState,
+        event: UpdatePageEvent,
+      ): DatabasesPluginState => {
+        return {
+          ...state,
+          pageRowNumber: Math.max(state.pageRowNumber - PAGE_SIZE, 0),
+        };
+      },
+    ],
   ].reduce((acc, val) => {
     const name = val[0];
     const f = val[1];
@@ -213,18 +251,18 @@ export default class extends FlipperPlugin<DatabasesPluginState, Actions> {
     const table = newState.selectedDatabaseTable;
     if (
       (previousState.selectedDatabase != newState.selectedDatabase ||
-        previousState.selectedDatabaseTable !=
-          newState.selectedDatabaseTable) &&
+        previousState.selectedDatabaseTable != newState.selectedDatabaseTable ||
+        previousState.pageRowNumber != newState.pageRowNumber) &&
       databaseId &&
       table
     ) {
       this.databaseClient
         .getTableData({
-          count: 30,
+          count: PAGE_SIZE,
           databaseId: newState.selectedDatabase,
           reverse: false,
           table: table,
-          start: 0,
+          start: newState.pageRowNumber,
         })
         .then(data => {
           console.log(data);
@@ -271,6 +309,14 @@ export default class extends FlipperPlugin<DatabasesPluginState, Actions> {
       table: selected,
       type: 'UpdateSelectedDatabaseTable',
     });
+  };
+
+  onNextPageClicked = () => {
+    this.dispatchAction({type: 'NextPage'});
+  };
+
+  onPreviousPageClicked = () => {
+    this.dispatchAction({type: 'PreviousPage'});
   };
 
   render() {
@@ -342,12 +388,17 @@ export default class extends FlipperPlugin<DatabasesPluginState, Actions> {
                 of {this.state.currentPage.total} rows
               </Text>
             ) : null}
-            <ButtonNavigation
-              canGoBack
-              canGoForward
-              onBack={() => {}}
-              onForward={() => {}}
-            />
+            {this.state.currentPage ? (
+              <ButtonNavigation
+                canGoBack={this.state.currentPage.start > 0}
+                canGoForward={
+                  this.state.currentPage.start + this.state.currentPage.count <
+                  this.state.currentPage.total
+                }
+                onBack={this.onPreviousPageClicked}
+                onForward={this.onNextPageClicked}
+              />
+            ) : null}
           </FlexRow>
         </Toolbar>
         {this.state.error}

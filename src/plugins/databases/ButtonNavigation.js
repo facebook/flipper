@@ -4,7 +4,7 @@
  * LICENSE file in the root directory of this source tree.
  * @format
  */
-import {Button, ButtonGroup, Glyph} from 'flipper';
+import {Button, ButtonGroup, Glyph, colors} from 'flipper';
 
 export default function ButtonNavigation(props: {|
   /** Back button is enabled */
@@ -19,10 +19,26 @@ export default function ButtonNavigation(props: {|
   return (
     <ButtonGroup>
       <Button disabled={!props.canGoBack} onClick={props.onBack}>
-        <Glyph name="chevron-left" size={16} />
+        <Glyph
+          name="chevron-left"
+          size={16}
+          color={
+            props.canGoBack
+              ? colors.macOSTitleBarIconSelected
+              : colors.macOSTitleBarIconActive
+          }
+        />
       </Button>
       <Button disabled={!props.canGoForward} onClick={props.onForward}>
-        <Glyph name="chevron-right" size={16} />
+        <Glyph
+          name="chevron-right"
+          size={16}
+          color={
+            props.canGoForward
+              ? colors.macOSTitleBarIconSelected
+              : colors.macOSTitleBarIconActive
+          }
+        />
       </Button>
     </ButtonGroup>
   );
