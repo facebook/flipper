@@ -90,12 +90,16 @@ type UpdatePageEvent = {|
   total: number,
 |};
 
-function transformRow(columns: Array<string>, row: Array<any>): TableBodyRow {
+function transformRow(
+  columns: Array<string>,
+  row: Array<any>,
+  index: number,
+): TableBodyRow {
   const transformedColumns = {};
   for (var i = 0; i < columns.length; i++) {
     transformedColumns[columns[i]] = {value: row[i].value};
   }
-  return {key: '1', columns: transformedColumns};
+  return {key: String(index), columns: transformedColumns};
 }
 
 export default class extends FlipperPlugin<DatabasesPluginState, Actions> {
@@ -176,8 +180,9 @@ export default class extends FlipperPlugin<DatabasesPluginState, Actions> {
         state: DatabasesPluginState,
         event: UpdatePageEvent,
       ): DatabasesPluginState => {
-        const rows: Array<TableBodyRow> = event.values.map((row: Array<any>) =>
-          transformRow(event.columns, row),
+        const rows: Array<TableBodyRow> = event.values.map(
+          (row: Array<any>, index: number) =>
+            transformRow(event.columns, row, index),
         );
         return {
           ...state,
