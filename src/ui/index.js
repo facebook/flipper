@@ -25,7 +25,7 @@ export {default as LoadingIndicator} from './components/LoadingIndicator.js';
 //
 export {default as Popover} from './components/Popover.js';
 
-//
+// tables
 export type {
   TableColumns,
   TableRows,
@@ -39,6 +39,8 @@ export type {
 } from './components/table/types.js';
 export {default as ManagedTable} from './components/table/ManagedTable.js';
 export type {ManagedTableProps} from './components/table/ManagedTable.js';
+export type {Value} from './components/table/TypeBasedValueRenderer.js';
+export {renderValue} from './components/table/TypeBasedValueRenderer.js';
 
 //
 export type {

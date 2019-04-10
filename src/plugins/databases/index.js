@@ -19,6 +19,8 @@ import {
 import type {TableBodyRow} from '../../ui/components/table/types';
 import {FlipperPlugin} from 'flipper';
 import {DatabaseClient} from './ClientProtocol';
+import {renderValue} from 'flipper';
+import type {Value} from 'flipper';
 import ButtonNavigation from './ButtonNavigation';
 
 const PAGE_SIZE = 30;
@@ -105,12 +107,12 @@ type PreviousPageEvent = {
 
 function transformRow(
   columns: Array<string>,
-  row: Array<any>,
+  row: Array<Value>,
   index: number,
 ): TableBodyRow {
   const transformedColumns = {};
   for (var i = 0; i < columns.length; i++) {
-    transformedColumns[columns[i]] = {value: row[i].value};
+    transformedColumns[columns[i]] = {value: renderValue(row[i])};
   }
   return {key: String(index), columns: transformedColumns};
 }
@@ -199,7 +201,7 @@ export default class extends FlipperPlugin<DatabasesPluginState, Actions> {
         event: UpdatePageEvent,
       ): DatabasesPluginState => {
         const rows: Array<TableBodyRow> = event.values.map(
-          (row: Array<any>, index: number) =>
+          (row: Array<Value>, index: number) =>
             transformRow(event.columns, row, index),
         );
         return {

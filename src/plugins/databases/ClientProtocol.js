@@ -6,6 +6,7 @@
  */
 
 import type {PluginClient} from '../../plugin';
+import type {Value} from '../../ui/components/table/TypeBasedValueRenderer';
 
 type ClientCall<Params, Response> = Params => Promise<Response>;
 
@@ -28,25 +29,11 @@ type QueryTableRequest = {
 
 type QueryTableResponse = {
   columns: Array<string>,
-  values: Array<Array<DatabaseValue>>,
+  values: Array<Array<Value>>,
   start: number,
   count: number,
   total: number,
 };
-
-type DatabaseValue =
-  | {
-      type: 'string',
-      value: string,
-    }
-  | {
-      type: 'integer',
-      value: number,
-    }
-  | {
-      type: 'float',
-      value: number,
-    };
 
 type GetTableStructureRequest = {
   databaseId: number,
@@ -55,9 +42,9 @@ type GetTableStructureRequest = {
 
 type GetTableStructureResponse = {
   structureColumns: Array<string>,
-  structureValues: Array<Array<DatabaseValue>>,
+  structureValues: Array<Array<Value>>,
   indexesColumns: Array<string>,
-  indexesValues: Array<Array<DatabaseValue>>,
+  indexesValues: Array<Array<Value>>,
   definition: string,
 };
 
