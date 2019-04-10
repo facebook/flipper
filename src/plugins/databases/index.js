@@ -30,6 +30,7 @@ type DatabasesPluginState = {|
   selectedDatabase: ?string,
   selectedDatabaseTable: ?string,
   databases: DatabaseMap,
+  viewMode: 'data' | 'structure',
 |};
 
 type Actions =
@@ -56,6 +57,11 @@ type SelectDatabaseEvent = {|
 type SelectDatabaseTableEvent = {|
   type: 'UpdateSelectedDatabaseTable',
   table: string,
+|};
+
+type UpdateViewModeEvent = {|
+  type: 'UpdateViewMode',
+  viewMode: 'data' | 'structure',
 |};
 
 const ColumnSizes = {
@@ -99,6 +105,7 @@ export default class extends FlipperPlugin<DatabasesPluginState, Actions> {
     selectedDatabase: null,
     selectedDatabaseTable: null,
     databases: {},
+    viewMode: 'data',
   };
 
   reducers = {
@@ -122,9 +129,9 @@ export default class extends FlipperPlugin<DatabasesPluginState, Actions> {
       event: SelectDatabaseEvent,
     ): DatabasesPluginState {
       return {
+        ...state,
         selectedDatabase: event.database,
         selectedDatabaseTable: null,
-        databases: state.databases,
       };
     },
     UpdateSelectedDatabaseTable(
@@ -132,9 +139,17 @@ export default class extends FlipperPlugin<DatabasesPluginState, Actions> {
       event: SelectDatabaseTableEvent,
     ): DatabasesPluginState {
       return {
-        selectedDatabase: state.selectedDatabase,
+        ...state,
         selectedDatabaseTable: event.table,
-        databases: state.databases,
+      };
+    },
+    UpdateViewMode(
+      state: DatabasesPluginState,
+      event: UpdateViewModeEvent,
+    ): DatabasesPluginState {
+      return {
+        ...state,
+        viewMode: event.viewMode,
       };
     },
   };
