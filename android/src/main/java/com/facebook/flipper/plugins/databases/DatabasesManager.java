@@ -26,7 +26,6 @@ public class DatabasesManager {
     private final SparseArray<DatabaseDescriptorHolder> databaseDescriptorHolderSparseArray;
     private final Set<DatabaseDescriptorHolder> databaseDescriptorHolderSet;
 
-    private int uniqueIds = 1;
     private FlipperConnection connection;
 
     public DatabasesManager(List<DatabaseDriver> databaseDriverList) {
@@ -57,12 +56,13 @@ public class DatabasesManager {
             new FlipperReceiver() {
                 @Override
                 public void onReceive(FlipperObject params, FlipperResponder responder) {
+                    int databaseId = 1;
                     databaseDescriptorHolderSparseArray.clear();
                     databaseDescriptorHolderSet.clear();
                     for (DatabaseDriver<?> databaseDriver : databaseDriverList) {
                         List<? extends DatabaseDescriptor> databaseDescriptorList = databaseDriver.getDatabases();
                         for (DatabaseDescriptor databaseDescriptor : databaseDescriptorList) {
-                            int id = uniqueIds++;
+                            int id = databaseId++;
                             DatabaseDescriptorHolder databaseDescriptorHolder = new DatabaseDescriptorHolder(id, databaseDriver, databaseDescriptor);
                             databaseDescriptorHolderSparseArray.put(id, databaseDescriptorHolder);
                             databaseDescriptorHolderSet.add(databaseDescriptorHolder);

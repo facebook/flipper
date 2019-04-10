@@ -12,17 +12,17 @@ type ClientCall<Params, Response> = Params => Promise<Response>;
 type DatabaseListRequest = {};
 
 type DatabaseListResponse = Array<{
-  id: Number,
+  id: number,
   name: string,
   tables: Array<string>,
 }>;
 
 type QueryTableRequest = {
-  databaseId: String,
+  databaseId: number,
   table: string,
-  order: String,
-  reverse: Boolean,
-  start: Number,
+  order?: string,
+  reverse: boolean,
+  start: number,
   count: number,
 };
 

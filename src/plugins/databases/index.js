@@ -29,11 +29,12 @@ const BoldSpan = styled('Span')({
 });
 
 type DatabasesPluginState = {|
-  selectedDatabase: ?string,
+  selectedDatabase: number,
   selectedDatabaseTable: ?string,
-  databases: DatabaseMap,
+  databases: Array<DatabaseEntry>,
   viewMode: 'data' | 'structure',
   tableRows: TableRows,
+  error: ?null,
 |};
 
 type Actions =
@@ -41,20 +42,20 @@ type Actions =
   | SelectDatabaseTableEvent
   | UpdateDatabasesEvent;
 
-type DatabaseMap = {[databaseName: string]: DatabaseEntry};
-
 type DatabaseEntry = {
+  id: number,
+  name: string,
   tables: Array<string>,
 };
 
 type UpdateDatabasesEvent = {|
-  databases: {[name: string]: {tables: Array<string>}},
+  databases: Array<{name: string, id: number, tables: Array<string>}>,
   type: 'UpdateDatabases',
 |};
 
 type SelectDatabaseEvent = {|
   type: 'UpdateSelectedDatabase',
-  database: string,
+  database: number,
 |};
 
 type SelectDatabaseTableEvent = {|
@@ -107,58 +108,110 @@ export default class extends FlipperPlugin<DatabasesPluginState, Actions> {
   databaseClient: DatabaseClient;
 
   state: DatabasesPluginState = {
-    selectedDatabase: null,
+    selectedDatabase: 0,
     selectedDatabaseTable: null,
-    databases: {},
+    databases: [],
     viewMode: 'data',
     tableRows: [{columns: {cpu_id: {value: 5}}, key: '1'}],
+    error: null,
   };
 
-  reducers = {
-    UpdateDatabases(
-      state: DatabasesPluginState,
-      results: UpdateDatabasesEvent,
-    ): DatabasesPluginState {
-      const updates = results.databases;
-      const databases = updates;
-      const selectedDatabase =
-        state.selectedDatabase || Object.keys(databases)[0];
-      return {
-        ...state,
-        databases,
-        selectedDatabase: selectedDatabase,
-        selectedDatabaseTable: databases[selectedDatabase].tables[0],
-      };
-    },
-    UpdateSelectedDatabase(
-      state: DatabasesPluginState,
-      event: SelectDatabaseEvent,
-    ): DatabasesPluginState {
-      return {
-        ...state,
-        selectedDatabase: event.database,
-        selectedDatabaseTable: null,
-      };
-    },
-    UpdateSelectedDatabaseTable(
-      state: DatabasesPluginState,
-      event: SelectDatabaseTableEvent,
-    ): DatabasesPluginState {
-      return {
-        ...state,
-        selectedDatabaseTable: event.table,
-      };
-    },
-    UpdateViewMode(
-      state: DatabasesPluginState,
-      event: UpdateViewModeEvent,
-    ): DatabasesPluginState {
-      return {
-        ...state,
-        viewMode: event.viewMode,
-      };
-    },
-  };
+  reducers = [
+    [
+      'UpdateDatabases',
+      (
+        state: DatabasesPluginState,
+        results: UpdateDatabasesEvent,
+      ): DatabasesPluginState => {
+        const updates = results.databases;
+        const databases = updates;
+        const selectedDatabase =
+          state.selectedDatabase || Object.values(databases)[0]
+            ? // $FlowFixMe
+              Object.values(databases)[0].id
+            : 0;
+        return {
+          ...state,
+          databases,
+          selectedDatabase: selectedDatabase,
+          selectedDatabaseTable: databases[selectedDatabase].tables[0],
+        };
+      },
+    ],
+    [
+      'UpdateSelectedDatabase',
+      (
+        state: DatabasesPluginState,
+        event: SelectDatabaseEvent,
+      ): DatabasesPluginState => {
+        return {
+          ...state,
+          selectedDatabase: event.database,
+          selectedDatabaseTable: null,
+        };
+      },
+    ],
+    [
+      'UpdateSelectedDatabaseTable',
+      (
+        state: DatabasesPluginState,
+        event: SelectDatabaseTableEvent,
+      ): DatabasesPluginState => {
+        return {
+          ...state,
+          selectedDatabaseTable: event.table,
+        };
+      },
+    ],
+    [
+      'UpdateViewMode',
+      (
+        state: DatabasesPluginState,
+        event: UpdateViewModeEvent,
+      ): DatabasesPluginState => {
+        return {
+          ...state,
+          viewMode: event.viewMode,
+        };
+      },
+    ],
+  ].reduce((acc, val) => {
+    const name = val[0];
+    const f = val[1];
+
+    acc[name] = (previousState, event) => {
+      const newState = f(previousState, event);
+      this.onStateChanged(previousState, newState);
+      return newState;
+    };
+    return acc;
+  }, {});
+
+  onStateChanged(
+    previousState: DatabasesPluginState,
+    newState: DatabasesPluginState,
+  ) {
+    if (
+      (previousState.selectedDatabase != newState.selectedDatabase ||
+        previousState.selectedDatabaseTable !=
+          newState.selectedDatabaseTable) &&
+      newState.selectedDatabase &&
+      newState.selectedDatabaseTable
+    ) {
+      this.databaseClient
+        .getTableData({
+          count: 10,
+          databaseId: newState.selectedDatabase,
+          reverse: false,
+          table: newState.selectedDatabaseTable,
+          start: 0,
+        })
+        .then(data => console.log(data))
+        .catch(e => {
+          this.setState({error: e});
+        });
+    }
+  }
 
   init() {
     this.databaseClient = new DatabaseClient(this.client);
@@ -166,10 +219,7 @@ export default class extends FlipperPlugin<DatabasesPluginState, Actions> {
       console.log(databases);
       this.dispatchAction({
         type: 'UpdateDatabases',
-        databases: databases.reduce((accumulator, currentValue) => {
-          accumulator[currentValue.name] = {tables: currentValue.tables};
-          return accumulator;
-        }, {}),
+        databases,
       });
     });
   }
@@ -177,8 +227,9 @@ export default class extends FlipperPlugin<DatabasesPluginState, Actions> {
   onDataClicked = () => {};
 
   onDatabaseSelected = (selected: string) => {
+    const dbId = this.state.databases.find(x => x.name === selected)?.id || 0;
     this.dispatchAction({
-      database: selected,
+      database: dbId,
       type: 'UpdateSelectedDatabase',
     });
   };
@@ -205,10 +256,12 @@ export default class extends FlipperPlugin<DatabasesPluginState, Actions> {
         <Toolbar position="top" style={{paddingLeft: 8}}>
           <BoldSpan style={{marginRight: 16}}>Database</BoldSpan>
           <Select
-            options={Object.keys(this.state.databases).reduce((obj, item) => {
-              obj[item] = item;
-              return obj;
-            }, {})}
+            options={this.state.databases
+              .map(x => x.name)
+              .reduce((obj, item) => {
+                obj[item] = item;
+                return obj;
+              }, {})}
             value={this.state.selectedDatabase}
             onChange={this.onDatabaseSelected}
           />
