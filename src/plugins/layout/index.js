@@ -19,10 +19,7 @@ import {
   FlipperPlugin,
   Toolbar,
   Sidebar,
-  Link,
-  Glyph,
   DetailSidebar,
-  styled,
 } from 'flipper';
 import Inspector from './Inspector';
 import ToolbarIcon from './ToolbarIcon';
@@ -48,14 +45,6 @@ export type PersistedState = {|
   elements: ElementMap,
   AXelements: ElementMap,
 |};
-
-const BetaBar = styled(Toolbar)({
-  display: 'block',
-  overflow: 'hidden',
-  lineHeight: '15px',
-  whiteSpace: 'nowrap',
-  textOverflow: 'ellipsis',
-});
 
 export default class Layout extends FlipperPlugin<State, void, PersistedState> {
   static exportPersistedState = (
@@ -245,17 +234,6 @@ export default class Layout extends FlipperPlugin<State, void, PersistedState> {
             </DetailSidebar>
           </>
         )}
-        {/* TODO: Remove this when rolling out publicly */}
-        <BetaBar position="bottom" compact>
-          <Glyph name="beta" color="#8157C7" />
-          &nbsp;
-          <strong>Version 2.0:</strong>&nbsp; Provide feedback about this plugin
-          in our&nbsp;
-          <Link href="https://fb.workplace.com/groups/246035322947653/">
-            feedback group
-          </Link>
-          .
-        </BetaBar>
       </FlexColumn>
     );
   }
