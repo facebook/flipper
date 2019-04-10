@@ -14,6 +14,7 @@ import {
   Toolbar,
   Spacer,
   Button,
+  Select,
 } from 'flipper';
 import ErrorBlock from '../ui/components/ErrorBlock';
 import FlexColumn from '../ui/components/FlexColumn';
@@ -36,6 +37,8 @@ import type {
 type ID = string;
 
 type TableMetadata = {
+  topToolbar?: ToolbarSection,
+  bottomToolbar?: ToolbarSection,
   columns: TableColumns,
   columnSizes?: TableColumnSizes,
   columnOrder?: Array<TableColumnOrderVal>,
@@ -74,8 +77,18 @@ type JsonSection = {
 };
 type ToolbarSection = {
   type: 'toolbar',
-  items: [{type: 'link', destination: string, label: string}],
+  items: Array<ToolbarItem>,
 };
+type ToolbarItem =
+  | {type: 'link', destination: string, label: string}
+  | {
+      type: 'input',
+      inputType: 'select',
+      id: string,
+      label: string,
+      options: Array<string>,
+      value: string,
+    };
 
 const NonWrappingText = styled(Text)({
   overflow: 'hidden',
@@ -96,6 +109,15 @@ const BooleanValue = styled(NonWrappingText)(props => ({
     marginTop: 1,
   },
 }));
+
+const Label = styled('Span')({
+  fontSize: 12,
+  color: '#90949c',
+  fontWeight: 'bold',
+  textTransform: 'uppercase',
+  marginLeft: 5,
+  marginRight: 12,
+});
 
 function renderValue({type, value}: {type: string, value: any}) {
   switch (type) {
@@ -153,6 +175,18 @@ function renderToolbar(section: ToolbarSection) {
             {item.label}
           </Button>
         );
+      case 'input':
+        return [
+          <Label>{item.label}</Label>,
+          <Select
+            options={item.options.reduce((obj, item) => {
+              obj[item] = item;
+              return obj;
+            }, {})}
+            value={item.value}
+            onChange={() => {}}
+          />,
+        ];
     }
   });
   return (
@@ -382,14 +416,22 @@ export default function createTableNativePlugin(id: string, title: string) {
         return 'Loading...';
       }
       const {
+        topToolbar,
+        bottomToolbar,
         columns,
         columnSizes,
         columnOrder,
       } = this.props.persistedState.tableMetadata;
       const {rows} = this.props.persistedState;
 
+      const topToolbarComponent = topToolbar ? renderToolbar(topToolbar) : null;
+      const bottomToolbarComponent = bottomToolbar
+        ? renderToolbar(bottomToolbar)
+        : null;
+
       return (
         <FlexColumn grow={true}>
+          {topToolbarComponent}
           <SearchableTable
             key={this.constructor.id}
             rowLineHeight={28}
@@ -405,6 +447,7 @@ export default function createTableNativePlugin(id: string, title: string) {
             actions={<Button onClick={this.clear}>Clear Table</Button>}
           />
           <DetailSidebar>{this.renderSidebar()}</DetailSidebar>
+          {bottomToolbarComponent}
         </FlexColumn>
       );
     }
