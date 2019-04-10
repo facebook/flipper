@@ -16,7 +16,7 @@ import {
   Button,
   ButtonGroup,
 } from 'flipper';
-import type {TableRows} from '../../ui/components/table/types';
+import type {TableBodyRow} from '../../ui/components/table/types';
 import {FlipperPlugin} from 'flipper';
 import {DatabaseClient} from './ClientProtocol';
 import ButtonNavigation from './ButtonNavigation';
@@ -33,7 +33,6 @@ type DatabasesPluginState = {|
   selectedDatabaseTable: ?string,
   databases: Array<DatabaseEntry>,
   viewMode: 'data' | 'structure',
-  tableRows: TableRows,
   error: ?null,
   currentPage: ?Page,
 |};
@@ -42,7 +41,7 @@ type Page = {
   databaseId: number,
   table: string,
   columns: Array<string>,
-  values: Array<Array<any>>,
+  rows: Array<TableBodyRow>,
   start: number,
   count: number,
   total: number,
@@ -127,6 +126,14 @@ const Columns = {
   },
 };
 
+function transformRow(columns: Array<string>, row: Array<any>): TableBodyRow {
+  const transformedColumns = {};
+  for (var i = 0; i < columns.length; i++) {
+    transformedColumns[columns[i]] = {value: row[i].value};
+  }
+  return {key: '1', columns: transformedColumns};
+}
+
 export default class extends FlipperPlugin<DatabasesPluginState, Actions> {
   databaseClient: DatabaseClient;
 
@@ -135,7 +142,6 @@ export default class extends FlipperPlugin<DatabasesPluginState, Actions> {
     selectedDatabaseTable: null,
     databases: [],
     viewMode: 'data',
-    tableRows: [{columns: {cpu_id: {value: 5}}, key: '1'}],
     error: null,
     currentPage: null,
   };
@@ -206,9 +212,13 @@ export default class extends FlipperPlugin<DatabasesPluginState, Actions> {
         state: DatabasesPluginState,
         event: UpdatePageEvent,
       ): DatabasesPluginState => {
+        const rows: Array<TableBodyRow> = event.values.map((row: Array<any>) =>
+          transformRow(event.columns, row),
+        );
         return {
           ...state,
           currentPage: {
+            rows: rows,
             ...event,
           },
         };
@@ -332,15 +342,22 @@ export default class extends FlipperPlugin<DatabasesPluginState, Actions> {
           </Button>
         </Toolbar>
         <FlexRow style={{flex: 1}}>
-          <ManagedTable
-            multiline={true}
-            columnSizes={ColumnSizes}
-            columns={Columns}
-            autoHeight={true}
-            floating={false}
-            zebra={true}
-            rows={this.state.tableRows}
-          />
+          {this.state.currentPage &&
+          this.state.currentPage.databaseId === this.state.selectedDatabase &&
+          this.state.currentPage.table === this.state.selectedDatabaseTable ? (
+            <ManagedTable
+              multiline={true}
+              columnSizes={ColumnSizes}
+              columns={this.state.currentPage.columns.reduce((acc, val) => {
+                acc[val] = {value: val, resizable: true};
+                return acc;
+              }, {})}
+              autoHeight={true}
+              floating={false}
+              zebra={true}
+              rows={this.state.currentPage?.rows}
+            />
+          ) : null}
         </FlexRow>
         <Toolbar position="bottom" style={{paddingLeft: 8}}>
           <FlexRow grow={true}>
