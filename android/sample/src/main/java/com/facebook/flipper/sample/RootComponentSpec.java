@@ -23,7 +23,6 @@ import com.facebook.litho.annotations.OnUpdateState;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.fresco.FrescoImage;
 import com.facebook.litho.widget.Text;
-
 @LayoutSpec
 public class RootComponentSpec {
 
