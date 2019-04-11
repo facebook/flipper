@@ -87,8 +87,8 @@ export default class Inspector extends Component<Props> {
           .reduce((acc, cv) => acc.concat(cv), []);
         this.getNodes(ids, {}).then(nodes => {
           nodes.forEach(node => {
-            // Check if there are new IDs in the children array, and call getNodes() 
-            // if there are any 
+            // Check if there are new IDs in the children array, and call getNodes()
+            // if there are any
             const cIds = node.children.filter(c => !this.elements()[c]);
             this.getNodes(cIds, {});
           });
