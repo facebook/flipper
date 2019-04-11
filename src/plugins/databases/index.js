@@ -53,13 +53,20 @@ type Page = {
   total: number,
 };
 
-type Structure = {};
+type Structure = {|
+  databaseId: number,
+  table: string,
+  columns: Array<string>,
+  rows: Array<TableBodyRow>,
+|};
 
 type Actions =
   | SelectDatabaseEvent
   | SelectDatabaseTableEvent
   | UpdateDatabasesEvent
+  | UpdateViewModeEvent
   | UpdatePageEvent
+  | UpdateStructureEvent
   | NextPageEvent
   | PreviousPageEvent;
 
@@ -98,6 +105,14 @@ type UpdatePageEvent = {|
   start: number,
   count: number,
   total: number,
+|};
+
+type UpdateStructureEvent = {|
+  type: 'UpdateStructure',
+  databaseId: number,
+  table: string,
+  columns: Array<string>,
+  rows: Array<Array<any>>,
 |};
 
 type NextPageEvent = {
@@ -214,15 +229,32 @@ export default class extends FlipperPlugin<DatabasesPluginState, Actions> {
         state: DatabasesPluginState,
         event: UpdatePageEvent,
       ): DatabasesPluginState => {
-        const rows: Array<TableBodyRow> = event.values.map(
-          (row: Array<Value>, index: number) =>
-            transformRow(event.columns, row, index),
-        );
         return {
           ...state,
           currentPage: {
-            rows: rows,
+            rows: event.values.map((row: Array<Value>, index: number) =>
+              transformRow(event.columns, row, index),
+            ),
             ...event,
+          },
+        };
+      },
+    ],
+    [
+      'UpdateStructure',
+      (
+        state: DatabasesPluginState,
+        event: UpdateStructureEvent,
+      ): DatabasesPluginState => {
+        return {
+          ...state,
+          currentStructure: {
+            databaseId: event.databaseId,
+            table: event.table,
+            columns: event.columns,
+            rows: event.rows.map((row: Array<Value>, index: number) =>
+              transformRow(event.columns, row, index),
+            ),
           },
         };
       },
@@ -236,6 +268,7 @@ export default class extends FlipperPlugin<DatabasesPluginState, Actions> {
         return {
           ...state,
           pageRowNumber: state.pageRowNumber + PAGE_SIZE,
+          currentPage: null,
         };
       },
     ],
@@ -248,6 +281,19 @@ export default class extends FlipperPlugin<DatabasesPluginState, Actions> {
         return {
           ...state,
           pageRowNumber: Math.max(state.pageRowNumber - PAGE_SIZE, 0),
+          currentPage: null,
+        };
+      },
+    ],
+    [
+      'UpdateViewMode',
+      (
+        state: DatabasesPluginState,
+        event: UpdateViewModeEvent,
+      ): DatabasesPluginState => {
+        return {
+          ...state,
+          viewMode: event.viewMode,
         };
       },
     ],
@@ -269,7 +315,12 @@ export default class extends FlipperPlugin<DatabasesPluginState, Actions> {
   ) {
     const databaseId = newState.selectedDatabase;
     const table = newState.selectedDatabaseTable;
-    if (newState.currentPage === null && databaseId && table) {
+    if (
+      newState.viewMode === 'data' &&
+      newState.currentPage === null &&
+      databaseId &&
+      table
+    ) {
       this.databaseClient
         .getTableData({
           count: PAGE_SIZE,
@@ -295,6 +346,31 @@ export default class extends FlipperPlugin<DatabasesPluginState, Actions> {
           this.setState({error: e});
         });
     }
+    if (
+      newState.viewMode === 'structure' &&
+      newState.currentStructure === null &&
+      databaseId &&
+      table
+    ) {
+      this.databaseClient
+        .getTableStructure({
+          databaseId: databaseId,
+          table: table,
+        })
+        .then(data => {
+          console.log(data);
+          this.dispatchAction({
+            type: 'UpdateStructure',
+            databaseId: databaseId,
+            table: table,
+            columns: data.structureColumns,
+            rows: data.structureValues,
+          });
+        })
+        .catch(e => {
+          this.setState({error: e});
+        });
+    }
   }
 
   init() {
@@ -308,7 +384,13 @@ export default class extends FlipperPlugin<DatabasesPluginState, Actions> {
     });
   }
 
-  onDataClicked = () => {};
+  onDataClicked = () => {
+    this.dispatchAction({type: 'UpdateViewMode', viewMode: 'data'});
+  };
+
+  onStructureClicked = () => {
+    this.dispatchAction({type: 'UpdateViewMode', viewMode: 'structure'});
+  };
 
   onDatabaseSelected = (selected: string) => {
     const dbId = this.state.databases.find(x => x.name === selected)?.id || 0;
@@ -332,6 +414,57 @@ export default class extends FlipperPlugin<DatabasesPluginState, Actions> {
   onPreviousPageClicked = () => {
     this.dispatchAction({type: 'PreviousPage'});
   };
+
+  renderTable() {
+    if (!this.state.currentPage) {
+      return null;
+    }
+    return (
+      <ManagedTable
+        floating={false}
+        columnOrder={this.state.currentPage.columns.map(name => ({
+          key: name,
+          visible: true,
+        }))}
+        columns={
+          this.state.currentPage &&
+          this.state.currentPage.columns.reduce((acc, val) => {
+            acc[val] = {value: val, resizable: true};
+            return acc;
+          }, {})
+        }
+        zebra={true}
+        rows={this.state.currentPage?.rows || []}
+      />
+    );
+  }
+
+  renderStructure() {
+    if (!this.state.currentStructure) {
+      return null;
+    }
+    return (
+      <ManagedTable
+        floating={false}
+        columnOrder={this.state.currentStructure.columns.map(name => ({
+          key: name,
+          visible: true,
+        }))}
+        columns={
+          this.state.currentStructure &&
+          this.state.currentStructure.columns.reduce((acc, val) => {
+            acc[val] = {value: val, resizable: true};
+            return acc;
+          }, {})
+        }
+        zebra={true}
+        rows={
+          (this.state.currentStructure && this.state.currentStructure.rows) ||
+          []
+        }
+      />
+    );
+  }
 
   render() {
     const tableOptions =
@@ -371,25 +504,15 @@ export default class extends FlipperPlugin<DatabasesPluginState, Actions> {
           </Button>
         </Toolbar>
         <FlexRow style={{flex: 1}}>
-          {this.state.currentPage &&
-          this.state.currentPage.databaseId === this.state.selectedDatabase &&
-          this.state.currentPage.table === this.state.selectedDatabaseTable ? (
-            <ManagedTable
-              floating={false}
-              columns={this.state.currentPage.columns.reduce((acc, val) => {
-                acc[val] = {value: val, resizable: true};
-                return acc;
-              }, {})}
-              zebra={true}
-              rows={this.state.currentPage?.rows}
-            />
-          ) : null}
+          {this.state.viewMode === 'data'
+            ? this.renderTable()
+            : this.renderStructure()}
         </FlexRow>
         <Toolbar position="bottom" style={{paddingLeft: 8}}>
           <FlexRow grow={true}>
             <ButtonGroup>
               <Button onClick={this.onDataClicked}>Data</Button>
-              <Button>Structure</Button>
+              <Button onClick={this.onStructureClicked}>Structure</Button>
             </ButtonGroup>
             {this.state.currentPage ? (
               <Text grow={true} style={{flex: 1, textAlign: 'center'}}>
@@ -413,7 +536,7 @@ export default class extends FlipperPlugin<DatabasesPluginState, Actions> {
             ) : null}
           </FlexRow>
         </Toolbar>
-        {this.state.error}
+        {this.state.error?.toString()}
       </FlexColumn>
     );
   }
