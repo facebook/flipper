@@ -16,6 +16,10 @@ export type Value =
   | {
       type: 'boolean',
       value: boolean,
+    }
+  | {
+      type: 'integer' | 'float' | 'double' | 'number',
+      value: number,
     };
 
 const NonWrappingText = styled(Text)({
@@ -47,8 +51,13 @@ export function renderValue(val: Value) {
         </BooleanValue>
       );
     case 'string':
-      return <Text>{val.value}</Text>;
+      return <NonWrappingText>{val.value}</NonWrappingText>;
+    case 'integer':
+    case 'float':
+    case 'double':
+    case 'number':
+      return <NonWrappingText>{val.value}</NonWrappingText>;
     default:
-      return val.value;
+      return <NonWrappingText>{val.value}</NonWrappingText>;
   }
 }
