@@ -147,6 +147,7 @@ export default class extends FlipperPlugin<DatabasesPluginState, Actions> {
           databases,
           selectedDatabase: selectedDatabase,
           selectedDatabaseTable: databases[selectedDatabase - 1].tables[0],
+          pageRowNumber: 0,
         };
       },
     ],
@@ -161,6 +162,7 @@ export default class extends FlipperPlugin<DatabasesPluginState, Actions> {
           selectedDatabase: event.database,
           selectedDatabaseTable:
             state.databases[event.database - 1].tables[0] || null,
+          pageRowNumber: 0,
         };
       },
     ],
@@ -173,6 +175,7 @@ export default class extends FlipperPlugin<DatabasesPluginState, Actions> {
         return {
           ...state,
           selectedDatabaseTable: event.table,
+          pageRowNumber: 0,
         };
       },
     ],
@@ -185,6 +188,7 @@ export default class extends FlipperPlugin<DatabasesPluginState, Actions> {
         return {
           ...state,
           viewMode: event.viewMode,
+          pageRowNumber: 0,
         };
       },
     ],
