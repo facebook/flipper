@@ -23,7 +23,7 @@ import {renderValue} from 'flipper';
 import type {Value} from 'flipper';
 import ButtonNavigation from './ButtonNavigation';
 
-const PAGE_SIZE = 30;
+const PAGE_SIZE = 50;
 
 const BoldSpan = styled('Span')({
   fontSize: 12,
@@ -367,13 +367,11 @@ export default class extends FlipperPlugin<DatabasesPluginState, Actions> {
           this.state.currentPage.databaseId === this.state.selectedDatabase &&
           this.state.currentPage.table === this.state.selectedDatabaseTable ? (
             <ManagedTable
-              multiline={true}
+              floating={false}
               columns={this.state.currentPage.columns.reduce((acc, val) => {
                 acc[val] = {value: val, resizable: true};
                 return acc;
               }, {})}
-              autoHeight={true}
-              floating={false}
               zebra={true}
               rows={this.state.currentPage?.rows}
             />
