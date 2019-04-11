@@ -82,12 +82,13 @@ export default class Inspector extends Component<Props> {
       }: {
         nodes: Array<{id: ElementID, children: Array<ElementID>}>,
       }) => {
-        this.getNodes(
-          nodes
-            .map(n => [n.id, ...(n.children || [])])
-            .reduce((acc, cv) => acc.concat(cv), []),
-          {},
-        );
+
+        const ids = nodes
+          .map(n => [n.id, ...(n.children || [])])
+          .reduce((acc, cv) => acc.concat(cv), []);
+        this.getNodes(ids,{}).then(node => {
+          this.getChildren(ids, {});
+        });
       },
     );
 
@@ -137,13 +138,6 @@ export default class Inspector extends Component<Props> {
         },
       },
     });
-
-    // Check if there are new IDs in the children array, and call getNodes()
-    // if there are any.
-    if (data.children) {
-      const newNodes = data.children.filter(c => !this.elements()[c]);
-      this.getNodes(newNodes, {});
-    }
   }
 
   // When opening the inspector for the first time, expand all elements that
