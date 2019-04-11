@@ -9,8 +9,6 @@
 
 #import "SKComponentRootViewDescriptor.h"
 
-// TODO T41966103 Remove conditional imports
-
 #import <ComponentKit/CKComponentAttachController.h>
 #import <ComponentKit/CKComponentAttachControllerInternal.h>
 #import <ComponentKit/CKComponentHostingView.h>
