@@ -40,6 +40,7 @@ type DatabasesPluginState = {|
   viewMode: 'data' | 'structure',
   error: ?null,
   currentPage: ?Page,
+  currentStructure: ?Structure,
 |};
 
 type Page = {
@@ -51,6 +52,8 @@ type Page = {
   count: number,
   total: number,
 };
+
+type Structure = {};
 
 type Actions =
   | SelectDatabaseEvent
@@ -128,6 +131,7 @@ export default class extends FlipperPlugin<DatabasesPluginState, Actions> {
     viewMode: 'data',
     error: null,
     currentPage: null,
+    currentStructure: null,
   };
 
   reducers = [
@@ -144,12 +148,19 @@ export default class extends FlipperPlugin<DatabasesPluginState, Actions> {
             ? // $FlowFixMe
               Object.values(databases)[0].id
             : 0;
+        const selectedTable = databases[selectedDatabase - 1].tables[0];
         return {
           ...state,
           databases,
           selectedDatabase: selectedDatabase,
-          selectedDatabaseTable: databases[selectedDatabase - 1].tables[0],
+          selectedDatabaseTable: selectedTable,
           pageRowNumber: 0,
+          currentPage:
+            selectedDatabase === state.selectedDatabase &&
+            selectedTable === state.selectedDatabaseTable
+              ? state.currentPage
+              : null,
+          currentStructure: null,
         };
       },
     ],
@@ -165,6 +176,8 @@ export default class extends FlipperPlugin<DatabasesPluginState, Actions> {
           selectedDatabaseTable:
             state.databases[event.database - 1].tables[0] || null,
           pageRowNumber: 0,
+          currentPage: null,
+          currentStructure: null,
         };
       },
     ],
@@ -178,6 +191,8 @@ export default class extends FlipperPlugin<DatabasesPluginState, Actions> {
           ...state,
           selectedDatabaseTable: event.table,
           pageRowNumber: 0,
+          currentPage: null,
+          currentStructure: null,
         };
       },
     ],
@@ -190,7 +205,6 @@ export default class extends FlipperPlugin<DatabasesPluginState, Actions> {
         return {
           ...state,
           viewMode: event.viewMode,
-          pageRowNumber: 0,
         };
       },
     ],
@@ -255,13 +269,7 @@ export default class extends FlipperPlugin<DatabasesPluginState, Actions> {
   ) {
     const databaseId = newState.selectedDatabase;
     const table = newState.selectedDatabaseTable;
-    if (
-      (previousState.selectedDatabase != newState.selectedDatabase ||
-        previousState.selectedDatabaseTable != newState.selectedDatabaseTable ||
-        previousState.pageRowNumber != newState.pageRowNumber) &&
-      databaseId &&
-      table
-    ) {
+    if (newState.currentPage === null && databaseId && table) {
       this.databaseClient
         .getTableData({
           count: PAGE_SIZE,
