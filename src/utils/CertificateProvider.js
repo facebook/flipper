@@ -270,19 +270,23 @@ export default class CertificateProvider {
             csr,
           )
             .then(isMatch => {
-              return {id: device.id, isMatch};
+              return {id: device.id, isMatch, error: null};
             })
             .catch(e => {
               console.error(
                 `Unable to check for matching CSR in ${device.id}:${appName}`,
                 logTag,
               );
-              return {id: device.id, isMatch: false};
+              return {id: device.id, isMatch: false, error: e};
             }),
         );
         return Promise.all(deviceMatchList).then(devices => {
           const matchingIds = devices.filter(m => m.isMatch).map(m => m.id);
           if (matchingIds.length == 0) {
+            const erroredDevice = devices.find(d => d.error);
+            if (erroredDevice) {
+              throw erroredDevice.error;
+            }
             throw new Error(`No matching device found for app: ${appName}`);
           }
           if (matchingIds.length > 1) {
@@ -337,14 +341,9 @@ export default class CertificateProvider {
       deviceId,
       processName,
       `cat ${directory + csrFileName}`,
-    )
-      .then(deviceCsr => {
-        return this.santitizeString(deviceCsr.toString()) === csr;
-      })
-      .catch(err => {
-        console.error(err, logTag);
-        return false;
-      });
+    ).then(deviceCsr => {
+      return this.santitizeString(deviceCsr.toString()) === csr;
+    });
   }
 
   iOSDeviceHasMatchingCSR(
@@ -419,18 +418,14 @@ export default class CertificateProvider {
       .then(buffer => buffer.toString())
       .then(output => {
         if (output.match(appNotDebuggableRegex)) {
-          const e = new Error(
+          throw new Error(
             `Android app ${user} is not debuggable. To use it with Flipper, add android:debuggable="true" to the application section of AndroidManifest.xml`,
           );
-          this.server.emit('error', e);
-          throw e;
         }
         if (output.toLowerCase().match(operationNotPermittedRegex)) {
-          const e = new Error(
+          throw new Error(
             `Your android device (${deviceId}) does not support the adb shell run-as command. We're tracking this at https://github.com/facebook/flipper/issues/92`,
           );
-          this.server.emit('error', e);
-          throw e;
         }
         return output;
       });
