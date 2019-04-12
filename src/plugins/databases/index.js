@@ -58,6 +58,8 @@ type Structure = {|
   table: string,
   columns: Array<string>,
   rows: Array<TableBodyRow>,
+  indexesColumns: Array<string>,
+  indexesValues: Array<TableBodyRow>,
 |};
 
 type Actions =
@@ -113,6 +115,8 @@ type UpdateStructureEvent = {|
   table: string,
   columns: Array<string>,
   rows: Array<Array<any>>,
+  indexesColumns: Array<string>,
+  indexesValues: Array<Array<any>>,
 |};
 
 type NextPageEvent = {
@@ -133,6 +137,69 @@ function transformRow(
     transformedColumns[columns[i]] = {value: renderValue(row[i])};
   }
   return {key: String(index), columns: transformedColumns};
+}
+
+function renderTable(page: ?Page) {
+  if (!page) {
+    return null;
+  }
+  return (
+    <ManagedTable
+      floating={false}
+      columnOrder={page.columns.map(name => ({
+        key: name,
+        visible: true,
+      }))}
+      columns={page.columns.reduce((acc, val) => {
+        acc[val] = {value: val, resizable: true};
+        return acc;
+      }, {})}
+      zebra={true}
+      rows={page.rows}
+    />
+  );
+}
+
+function renderDatabaseColumns(structure: ?Structure) {
+  if (!structure) {
+    return null;
+  }
+  return (
+    <ManagedTable
+      floating={false}
+      columnOrder={structure.columns.map(name => ({
+        key: name,
+        visible: true,
+      }))}
+      columns={structure.columns.reduce((acc, val) => {
+        acc[val] = {value: val, resizable: true};
+        return acc;
+      }, {})}
+      zebra={true}
+      rows={structure.rows || []}
+    />
+  );
+}
+
+function renderDatabaseIndexes(structure: ?Structure) {
+  if (!structure) {
+    return null;
+  }
+  return (
+    <ManagedTable
+      floating={false}
+      columnOrder={structure.indexesColumns.map(name => ({
+        key: name,
+        visible: true,
+      }))}
+      columns={structure.indexesColumns.reduce((acc, val) => {
+        acc[val] = {value: val, resizable: true};
+        return acc;
+      }, {})}
+      zebra={true}
+      rows={structure.indexesValues || []}
+    />
+  );
 }
 
 export default class extends FlipperPlugin<DatabasesPluginState, Actions> {
@@ -255,6 +322,11 @@ export default class extends FlipperPlugin<DatabasesPluginState, Actions> {
             rows: event.rows.map((row: Array<Value>, index: number) =>
               transformRow(event.columns, row, index),
             ),
+            indexesColumns: event.indexesColumns,
+            indexesValues: event.indexesValues.map(
+              (row: Array<Value>, index: number) =>
+                transformRow(event.columns, row, index),
+            ),
           },
         };
       },
@@ -365,6 +437,8 @@ export default class extends FlipperPlugin<DatabasesPluginState, Actions> {
             table: table,
             columns: data.structureColumns,
             rows: data.structureValues,
+            indexesColumns: data.indexesColumns,
+            indexesValues: data.indexesValues,
           });
         })
         .catch(e => {
@@ -415,55 +489,11 @@ export default class extends FlipperPlugin<DatabasesPluginState, Actions> {
     this.dispatchAction({type: 'PreviousPage'});
   };
 
-  renderTable() {
-    if (!this.state.currentPage) {
-      return null;
-    }
-    return (
-      <ManagedTable
-        floating={false}
-        columnOrder={this.state.currentPage.columns.map(name => ({
-          key: name,
-          visible: true,
-        }))}
-        columns={
-          this.state.currentPage &&
-          this.state.currentPage.columns.reduce((acc, val) => {
-            acc[val] = {value: val, resizable: true};
-            return acc;
-          }, {})
-        }
-        zebra={true}
-        rows={this.state.currentPage?.rows || []}
-      />
-    );
-  }
-
   renderStructure() {
-    if (!this.state.currentStructure) {
-      return null;
-    }
-    return (
-      <ManagedTable
-        floating={false}
-        columnOrder={this.state.currentStructure.columns.map(name => ({
-          key: name,
-          visible: true,
-        }))}
-        columns={
-          this.state.currentStructure &&
-          this.state.currentStructure.columns.reduce((acc, val) => {
-            acc[val] = {value: val, resizable: true};
-            return acc;
-          }, {})
-        }
-        zebra={true}
-        rows={
-          (this.state.currentStructure && this.state.currentStructure.rows) ||
-          []
-        }
-      />
-    );
+    return [
+      renderDatabaseColumns(this.state.currentStructure),
+      renderDatabaseIndexes(this.state.currentStructure),
+    ];
   }
 
   render() {
@@ -503,11 +533,9 @@ export default class extends FlipperPlugin<DatabasesPluginState, Actions> {
             Execute SQL
           </Button>
         </Toolbar>
-        <FlexRow style={{flex: 1}}>
-          {this.state.viewMode === 'data'
-            ? this.renderTable()
-            : this.renderStructure()}
-        </FlexRow>
+        {this.state.viewMode === 'data'
+          ? renderTable(this.state.currentPage)
+          : this.renderStructure()}
         <Toolbar position="bottom" style={{paddingLeft: 8}}>
           <FlexRow grow={true}>
             <ButtonGroup>
