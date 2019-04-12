@@ -24,8 +24,8 @@ export default function ButtonNavigation(props: {|
           size={16}
           color={
             props.canGoBack
-              ? colors.macOSTitleBarIconSelected
-              : colors.macOSTitleBarIconActive
+              ? colors.macOSTitleBarIconActive
+              : colors.macOSTitleBarIconBlur
           }
         />
       </Button>
@@ -35,8 +35,8 @@ export default function ButtonNavigation(props: {|
           size={16}
           color={
             props.canGoForward
-              ? colors.macOSTitleBarIconSelected
-              : colors.macOSTitleBarIconActive
+              ? colors.macOSTitleBarIconActive
+              : colors.macOSTitleBarIconBlur
           }
         />
       </Button>

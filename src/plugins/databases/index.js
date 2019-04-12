@@ -165,19 +165,21 @@ function renderDatabaseColumns(structure: ?Structure) {
     return null;
   }
   return (
-    <ManagedTable
-      floating={false}
-      columnOrder={structure.columns.map(name => ({
-        key: name,
-        visible: true,
-      }))}
-      columns={structure.columns.reduce((acc, val) => {
-        acc[val] = {value: val, resizable: true};
-        return acc;
-      }, {})}
-      zebra={true}
-      rows={structure.rows || []}
-    />
+    <FlexRow grow={true}>
+      <ManagedTable
+        floating={false}
+        columnOrder={structure.columns.map(name => ({
+          key: name,
+          visible: true,
+        }))}
+        columns={structure.columns.reduce((acc, val) => {
+          acc[val] = {value: val, resizable: true};
+          return acc;
+        }, {})}
+        zebra={true}
+        rows={structure.rows || []}
+      />
+    </FlexRow>
   );
 }
 
@@ -186,19 +188,21 @@ function renderDatabaseIndexes(structure: ?Structure) {
     return null;
   }
   return (
-    <ManagedTable
-      floating={false}
-      columnOrder={structure.indexesColumns.map(name => ({
-        key: name,
-        visible: true,
-      }))}
-      columns={structure.indexesColumns.reduce((acc, val) => {
-        acc[val] = {value: val, resizable: true};
-        return acc;
-      }, {})}
-      zebra={true}
-      rows={structure.indexesValues || []}
-    />
+    <FlexRow grow={true}>
+      <ManagedTable
+        floating={false}
+        columnOrder={structure.indexesColumns.map(name => ({
+          key: name,
+          visible: true,
+        }))}
+        columns={structure.indexesColumns.reduce((acc, val) => {
+          acc[val] = {value: val, resizable: true};
+          return acc;
+        }, {})}
+        zebra={true}
+        rows={structure.indexesValues || []}
+      />
+    </FlexRow>
   );
 }
 
@@ -533,16 +537,26 @@ export default class extends FlipperPlugin<DatabasesPluginState, Actions> {
             Execute SQL
           </Button>
         </Toolbar>
-        {this.state.viewMode === 'data'
-          ? renderTable(this.state.currentPage)
-          : this.renderStructure()}
+        <FlexColumn grow={true}>
+          {this.state.viewMode === 'data'
+            ? renderTable(this.state.currentPage)
+            : this.renderStructure()}
+        </FlexColumn>
         <Toolbar position="bottom" style={{paddingLeft: 8}}>
           <FlexRow grow={true}>
             <ButtonGroup>
-              <Button onClick={this.onDataClicked}>Data</Button>
-              <Button onClick={this.onStructureClicked}>Structure</Button>
+              <Button
+                onClick={this.onDataClicked}
+                selected={this.state.viewMode === 'data'}>
+                Data
+              </Button>
+              <Button
+                onClick={this.onStructureClicked}
+                selected={this.state.viewMode === 'structure'}>
+                Structure
+              </Button>
             </ButtonGroup>
-            {this.state.currentPage ? (
+            {this.state.viewMode === 'data' && this.state.currentPage ? (
               <Text grow={true} style={{flex: 1, textAlign: 'center'}}>
                 {this.state.currentPage.count === this.state.currentPage.total
                   ? `${this.state.currentPage.count} `
@@ -551,7 +565,7 @@ export default class extends FlipperPlugin<DatabasesPluginState, Actions> {
                 of {this.state.currentPage.total} rows
               </Text>
             ) : null}
-            {this.state.currentPage ? (
+            {this.state.viewMode === 'data' && this.state.currentPage ? (
               <ButtonNavigation
                 canGoBack={this.state.currentPage.start > 0}
                 canGoForward={
