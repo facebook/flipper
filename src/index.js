@@ -36,6 +36,7 @@ export {
   LogLevel,
 } from './devices/BaseDevice.js';
 export {shouldParseAndroidLog} from './utils/crashReporterUtility.js';
+export {default as isProduction} from './utils/isProduction.js';
 export {createTablePlugin} from './createTablePlugin.js';
 export {default as DetailSidebar} from './chrome/DetailSidebar.js';
 

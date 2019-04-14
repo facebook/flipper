@@ -25,6 +25,7 @@ import {
   DetailSidebar,
   colors,
   styled,
+  isProduction,
 } from 'flipper';
 import ImagesSidebar from './ImagesSidebar.js';
 import ImagePool from './ImagePool.js';
@@ -55,8 +56,14 @@ const EmptySidebar = styled(FlexRow)({
   fontSize: 16,
 });
 
-const DEBUG = false;
 const surfaceDefaultText = 'SELECT ALL SURFACES';
+
+const debugLog = (...args) => {
+  if (!isProduction()) {
+    // eslint-disable-next-line no-console
+    console.log(...args);
+  }
+};
 
 export default class extends FlipperPlugin<PluginState, *, PersistedState> {
   static defaultPersistedState: PersistedState = {
@@ -80,10 +87,7 @@ export default class extends FlipperPlugin<PluginState, *, PersistedState> {
   };
 
   init() {
-    if (DEBUG) {
-      // eslint-disable-next-line no-console
-      console.log('init()');
-    }
+    debugLog('init()');
     this.updateCaches('init');
     this.client.subscribe('events', (event: ImageEvent) => {
       const {surfaceList} = this.props.persistedState;
@@ -170,10 +174,7 @@ export default class extends FlipperPlugin<PluginState, *, PersistedState> {
     });
   };
   updateCaches = (reason: string) => {
-    if (DEBUG) {
-      // eslint-disable-next-line no-console
-      console.log('Requesting images list (reason=' + reason + ')');
-    }
+    debugLog('Requesting images list (reason=' + reason + ')');
     this.client.call('listImages').then((response: ImagesListResponse) => {
       response.levels.forEach(data =>
         this.imagePool.fetchImages(data.imageIds),
@@ -217,15 +218,9 @@ export default class extends FlipperPlugin<PluginState, *, PersistedState> {
   };
 
   getImage = (imageId: string) => {
-    if (DEBUG) {
-      // eslint-disable-next-line no-console
-      console.log('<- getImage requested for ' + imageId);
-    }
+    debugLog('<- getImage requested for ' + imageId);
     this.client.call('getImage', {imageId}).then((image: ImageData) => {
-      if (DEBUG) {
-        // eslint-disable-next-line no-console
-        console.log('-> getImage ' + imageId + ' returned');
-      }
+      debugLog('-> getImage ' + imageId + ' returned');
       this.imagePool._fetchCompleted(image);
     });
   };
