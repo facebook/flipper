@@ -6884,50 +6884,50 @@ rn-host-detect@^1.1.5:
   resolved "https://registry.yarnpkg.com/rn-host-detect/-/rn-host-detect-1.1.5.tgz#fbecb982b73932f34529e97932b9a63e58d8deb6"
   integrity sha512-ufk2dFT3QeP9HyZ/xTuMtW27KnFy815CYitJMqQm+pgG3ZAtHBsrU8nXizNKkqXGy3bQmhEoloVbrfbvMJMqkg==
 
-rsocket-core@^0.0.9:
-  version "0.0.9"
-  resolved "https://registry.yarnpkg.com/rsocket-core/-/rsocket-core-0.0.9.tgz#501f41390b11f50f9c62d38ca4867990de7d9af5"
-  integrity sha512-4+NRHizylhBMDUqZCKIQC8mF8W+4A1xqJ6Ho9BacfTfJfh3HAYIFL7vvPjok+7teBu6vmN8b+bjp/v5Qr6QR7A==
+rsocket-core@^0.0.10:
+  version "0.0.10"
+  resolved "https://registry.yarnpkg.com/rsocket-core/-/rsocket-core-0.0.10.tgz#937b2d1e562e80e86e20fea445be37e0e2f88962"
+  integrity sha512-u7PolLWw2yP2l/xLUegfr0YhfYorbw+gk98QeKSb8c8Qe+1/jTuwgKI/hfFvkHkx9ByrX8FFNv64EsPDcbcfvA==
   dependencies:
     fbjs "^0.8.12"
-    rsocket-flowable "^0.0.9"
-    rsocket-types "^0.0.9"
+    rsocket-flowable "^0.0.10"
+    rsocket-types "^0.0.10"
 
-rsocket-flowable@^0.0.9:
-  version "0.0.9"
-  resolved "https://registry.yarnpkg.com/rsocket-flowable/-/rsocket-flowable-0.0.9.tgz#d6bc998734b0c03b31a82f4ea10d24019b7ef681"
-  integrity sha512-AkG7rQMT95NnazZ0nJe7+Mv/8ueCR+hg5TZqLQUOXz1+Y4jXjUnL5tSZfh3oBkfZjyksDanTd1cWxpAZNtdf7w==
+rsocket-flowable@^0.0.10:
+  version "0.0.10"
+  resolved "https://registry.yarnpkg.com/rsocket-flowable/-/rsocket-flowable-0.0.10.tgz#6e02f87145fde0d73b165f37b98bd39e7a95b50d"
+  integrity sha512-H8DWjne8atb1wtQ7cFhQV1Rq6MmRGniqaP6x8zM1avx2qt4SfyQDC9BlKRMDcwxkqt03MHz9MzYKsWfV44lUDg==
   dependencies:
     fbjs "^0.8.12"
 
-rsocket-tcp-client@^0.0.9:
-  version "0.0.9"
-  resolved "https://registry.yarnpkg.com/rsocket-tcp-client/-/rsocket-tcp-client-0.0.9.tgz#c66c432171e09ddbdaf6411f11c92b557945965f"
-  integrity sha512-+NdB9AcZLZF6kSoxTjdRErvUoXQI5lEYjyM4j/oekaE37veCJWVijYTpIWWfFKajSYqLGfa9uUxMW2l7ME4/HQ==
+rsocket-tcp-client@^0.0.10:
+  version "0.0.10"
+  resolved "https://registry.yarnpkg.com/rsocket-tcp-client/-/rsocket-tcp-client-0.0.10.tgz#ca9146fbc78bf77da61f4f69dad200673c7f5313"
+  integrity sha512-6axwyp/5X/8QGwOjYrfN4Ij844V5NkRp7LzzdZqtpHEDt09Vlf4aJ74VIx4vSDqlK4Hzs/8tjf/D00lFnhHhDg==
   dependencies:
     fbjs "^0.8.12"
-    rsocket-core "^0.0.9"
-    rsocket-flowable "^0.0.9"
+    rsocket-core "^0.0.10"
+    rsocket-flowable "^0.0.10"
 
-rsocket-tcp-server@^0.0.9:
-  version "0.0.9"
-  resolved "https://registry.yarnpkg.com/rsocket-tcp-server/-/rsocket-tcp-server-0.0.9.tgz#620bd5c9bb231f250e95653bf06bae947052ed34"
-  integrity sha512-kwHi2yCkv6d3q2gY3R6WSvwDsV0BRAwrjMXAJDBcfpAitTH5PNhE4YZLjWlLWGlohR3HlUBvIcqw7vpPp/w6ag==
+rsocket-tcp-server@^0.0.10:
+  version "0.0.10"
+  resolved "https://registry.yarnpkg.com/rsocket-tcp-server/-/rsocket-tcp-server-0.0.10.tgz#3f50b6555eca5ecfb0efbdffae6cd3b0ab28f3d3"
+  integrity sha512-tc2VkW/fNYtkcx33UeLW47mqi+c13Nqm/3OHjPeYD9FoUCYdvytrq8P1dPy23q83/ID3tTfrKFA/GoLFSLC4fg==
   dependencies:
     fbjs "^0.8.12"
-    rsocket-core "^0.0.9"
-    rsocket-flowable "^0.0.9"
-    rsocket-tcp-client "^0.0.9"
-    rsocket-types "^0.0.9"
+    rsocket-core "^0.0.10"
+    rsocket-flowable "^0.0.10"
+    rsocket-tcp-client "^0.0.10"
+    rsocket-types "^0.0.10"
 
-rsocket-types@^0.0.9:
-  version "0.0.9"
-  resolved "https://registry.yarnpkg.com/rsocket-types/-/rsocket-types-0.0.9.tgz#4376fcf512b9d7b923da26602ab93b7a35166d5d"
-  integrity sha512-KJsht6nfgkpqek1bpaafah5WJicijB4rKLGWbcMdudtAqEfLoOg6COLql9BQ82tK0cp63H1UqRfIl9ANKQC5Ng==
+rsocket-types@^0.0.10:
+  version "0.0.10"
+  resolved "https://registry.yarnpkg.com/rsocket-types/-/rsocket-types-0.0.10.tgz#5065fc0d8d7531fbf71aad330370b6adbbc7a97b"
+  integrity sha512-EO0iSSt5AOvEysUtA0Fm0i+pNWNcPIDLPAD0kP8Tk/IwYGyr303USF+1n2H9wuLMqqBQwWSv5E/VG46TztZJdg==
   dependencies:
     buffer "^5.0.6"
     fbjs "^0.8.12"
-    rsocket-flowable "^0.0.9"
+    rsocket-flowable "^0.0.10"
 
 rsvp@^3.3.3:
   version "3.6.2"
