@@ -26,6 +26,9 @@ public interface FlipperConnection {
    */
   void send(String method, FlipperArray params);
 
+  /** Report client error with reason and stacktrace as an argument */
+  void reportErrorWithMetadata(String reason, String stackTrace);
+
   /** Report client error */
   void reportError(Throwable throwable);
 

@@ -318,8 +318,11 @@ public class InspectorFlipperPluginTest {
         new FlipperObject.Builder().put("ids", new FlipperArray.Builder().put("test")).build(),
         responder);
 
+    assertThat(connection.errors.size(), equalTo(1));
     assertThat(
-        connection.errors, CoreMatchers.hasItem(hasThrowableWithMessage("Unexpected null value")));
+        connection.errors,
+        CoreMatchers.hasItem(
+            hasThrowableWithMessage("java.lang.RuntimeException: Unexpected null value")));
   }
 
   private class TestNode {

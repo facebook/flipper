@@ -45,6 +45,9 @@ class FlipperConnectionImpl implements FlipperConnection {
   public native void sendArray(String method, FlipperArray params);
 
   @Override
+  public native void reportErrorWithMetadata(String reason, String stackTrace);
+
+  @Override
   public native void reportError(Throwable throwable);
 
   @Override

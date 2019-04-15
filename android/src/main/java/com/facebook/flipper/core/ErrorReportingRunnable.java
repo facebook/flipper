@@ -7,6 +7,9 @@
  */
 package com.facebook.flipper.core;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 public abstract class ErrorReportingRunnable implements Runnable {
 
   private final FlipperConnection mConnection;
@@ -21,7 +24,11 @@ public abstract class ErrorReportingRunnable implements Runnable {
       runOrThrow();
     } catch (Exception e) {
       if (mConnection != null) {
-        mConnection.reportError(e);
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        e.printStackTrace(pw);
+        String sStackTrace = sw.toString(); // stack trace as a string
+        mConnection.reportErrorWithMetadata(e.toString(), sStackTrace);
       }
     } finally {
       doFinally();

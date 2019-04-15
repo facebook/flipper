@@ -153,10 +153,13 @@ class JFlipperConnectionImpl : public jni::HybridClass<JFlipperConnectionImpl, J
 
   static void registerNatives() {
     registerHybrid({
-      makeNativeMethod("sendObject", JFlipperConnectionImpl::sendObject),
-      makeNativeMethod("sendArray", JFlipperConnectionImpl::sendArray),
-      makeNativeMethod("reportError", JFlipperConnectionImpl::reportError),
-      makeNativeMethod("receive", JFlipperConnectionImpl::receive),
+        makeNativeMethod("sendObject", JFlipperConnectionImpl::sendObject),
+        makeNativeMethod("sendArray", JFlipperConnectionImpl::sendArray),
+        makeNativeMethod("reportError", JFlipperConnectionImpl::reportError),
+        makeNativeMethod(
+            "reportErrorWithMetadata",
+            JFlipperConnectionImpl::reportErrorWithMetadata),
+        makeNativeMethod("receive", JFlipperConnectionImpl::receive),
     });
   }
 
@@ -168,8 +171,15 @@ class JFlipperConnectionImpl : public jni::HybridClass<JFlipperConnectionImpl, J
     _connection->send(std::move(method), json ? folly::parseJson(json->toJsonString()) : folly::dynamic::object());
   }
 
+  void reportErrorWithMetadata(
+      const std::string reason,
+      const std::string stackTrace) {
+    _connection->error(reason, stackTrace);
+  }
+
   void reportError(jni::alias_ref<jni::JThrowable> throwable) {
-    _connection->error(throwable->toString(), throwable->getStackTrace()->toString());
+    _connection->error(
+        throwable->toString(), throwable->getStackTrace()->toString());
   }
 
   void receive(const std::string method, jni::alias_ref<JFlipperReceiver> receiver) {

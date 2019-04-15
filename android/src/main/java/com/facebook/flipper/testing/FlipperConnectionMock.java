@@ -48,6 +48,11 @@ public class FlipperConnectionMock implements FlipperConnection {
   }
 
   @Override
+  public void reportErrorWithMetadata(String reason, String stackTrace) {
+    errors.add(new Throwable(reason));
+  }
+
+  @Override
   public void reportError(Throwable throwable) {
     errors.add(throwable);
   }

@@ -532,15 +532,25 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin<
   static getActiveNotifications = (
     persistedState: PersistedState,
   ): Array<Notification> => {
-    return persistedState.crashes.map((crash: Crash) => {
+    const filteredCrashes = persistedState.crashes.filter(crash => {
+      let ignore = !crash.name && !crash.reason;
+      if (ignore) {
+        console.error('Ignored the notification for the crash', crash);
+      }
+      return ignore;
+    });
+    return filteredCrashes.map((crash: Crash) => {
       const id = crash.notificationID;
-      const title = `CRASH: ${truncate(crash.name, 50)} Reason: ${truncate(
-        crash.reason,
-        50,
-      )}`;
-      const callstack = CrashReporterPlugin.trimCallStackIfPossible(
-        crash.callstack,
-      );
+      let name: string = crash.name || crash.reason;
+      let title: string = 'CRASH: ' + truncate(name, 50);
+      title = `${
+        name == crash.reason
+          ? title
+          : title + 'Reason: ' + truncate(crash.reason, 50)
+      }`;
+      const callstack = crash.callstack
+        ? CrashReporterPlugin.trimCallStackIfPossible(crash.callstack)
+        : 'No callstack available';
       const msg = `Callstack: ${truncate(callstack, 200)}`;
       return {
         id,
