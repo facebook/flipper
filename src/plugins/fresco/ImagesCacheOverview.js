@@ -19,7 +19,8 @@ import {
   LoadingIndicator,
   styled,
   Select,
-  Checkbox,
+  ToggleButton,
+  Text,
 } from 'flipper';
 import type {ImagesMap} from './ImagePool.js';
 import {clipboard} from 'electron';
@@ -31,6 +32,36 @@ function formatMB(bytes: number) {
 
 function formatKB(bytes: number) {
   return Math.floor(bytes / 1024) + 'KB';
+}
+
+type ToggleProps = {|
+  label: string,
+  onClick?: (newValue: boolean) => void,
+  toggled: boolean,
+|};
+
+const ToolbarToggleButton = styled(ToggleButton)(_props => ({
+  alignSelf: 'center',
+  marginRight: 4,
+  minWidth: 30,
+}));
+
+const ToggleLabel = styled(Text)(_props => ({
+  whiteSpace: 'nowrap',
+}));
+
+function Toggle(props: ToggleProps) {
+  return (
+    <>
+      <ToolbarToggleButton
+        onClick={() => {
+          props.onClick && props.onClick(!props.toggled);
+        }}
+        toggled={props.toggled}
+      />
+      <ToggleLabel>{props.label}</ToggleLabel>
+    </>
+  );
 }
 
 type ImagesCacheOverviewProps = {
@@ -61,12 +92,7 @@ const StyledSelect = styled(Select)(props => ({
   marginLeft: 6,
   marginRight: 6,
   height: '100%',
-}));
-
-const StyledCheckbox = styled(Checkbox)(props => ({
-  marginLeft: 6,
-  marginRight: 6,
-  height: '100%',
+  maxWidth: 164,
 }));
 
 export default class ImagesCacheOverview extends PureComponent<
@@ -137,23 +163,27 @@ export default class ImagesCacheOverview extends PureComponent<
           <Button icon="cross-outline" onClick={this.props.onTrimMemory}>
             Trim Memory
           </Button>
-          <Button onClick={this.onEnableDebugOverlayToggled}>
-            DebugOverlay {this.props.isDebugOverlayEnabled ? 'ON' : 'OFF'}
-          </Button>
           <Button onClick={this.props.onRefresh}>Refresh</Button>
-          <Button onClick={this.onEnableAutoRefreshToggled}>
-            Auto Refresh {this.props.isAutoRefreshEnabled ? 'ON' : 'OFF'}
-          </Button>
           <StyledSelect
             options={this.props.surfaceOptions}
             selected={this.props.selectedSurface}
             onChange={this.props.onChangeSurface}
           />
-          <StyledCheckbox
-            checked={this.props.coldStartFilter}
-            onChange={this.props.onColdStartChange}
+          <Toggle
+            onClick={this.onEnableAutoRefreshToggled}
+            toggled={this.props.isAutoRefreshEnabled}
+            label="Auto Refresh"
           />
-          Show ColdStart Images
+          <Toggle
+            onClick={this.onEnableDebugOverlayToggled}
+            toggled={this.props.isDebugOverlayEnabled}
+            label="Show Debug Overlay"
+          />
+          <Toggle
+            toggled={this.props.coldStartFilter}
+            onClick={this.props.onColdStartChange}
+            label="Show Cold Start Images"
+          />
           <Spacer />
           <input
             type="range"
