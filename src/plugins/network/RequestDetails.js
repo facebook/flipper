@@ -643,6 +643,30 @@ class GraphQLBatchFormatter {
 }
 
 class GraphQLFormatter {
+  parsedServerTimeForFirstFlush = (data: any) => {
+    const firstResponse =
+      Array.isArray(data) && data.length > 0 ? data[0] : data;
+    if (!firstResponse) {
+      return null;
+    }
+
+    const extensions = firstResponse['extensions'];
+    if (!extensions) {
+      return null;
+    }
+    const serverMetadata = extensions['server_metadata'];
+    if (!serverMetadata) {
+      return null;
+    }
+    const requestStartMs = serverMetadata['request_start_time_ms'];
+    const timeAtFlushMs = serverMetadata['time_at_flush_ms'];
+    return (
+      <WrappingText>
+        {'Server wall time for initial response (ms): ' +
+          (timeAtFlushMs - requestStartMs)}
+      </WrappingText>
+    );
+  };
   formatRequest = (request: Request) => {
     if (request.url.indexOf('graphql') > 0) {
       const data = querystring.parse(decodeBody(request));
@@ -674,21 +698,30 @@ class GraphQLFormatter {
       try {
         const data = JSON.parse(body);
         return (
-          <ManagedDataInspector
-            collapsed={true}
-            expandRoot={true}
-            data={data}
-          />
+          <div>
+            {this.parsedServerTimeForFirstFlush(data)}
+            <ManagedDataInspector
+              collapsed={true}
+              expandRoot={true}
+              data={data}
+            />
+          </div>
         );
       } catch (SyntaxError) {
         // Multiple top level JSON roots, map them one by one
-        const roots = body.replace(/}{/g, '}\r\n{').split('\n');
+        const parsedResponses = body
+          .replace(/}{/g, '}\r\n{')
+          .split('\n')
+          .map(json => JSON.parse(json));
         return (
-          <ManagedDataInspector
-            collapsed={true}
-            expandRoot={true}
-            data={roots.map(json => JSON.parse(json))}
-          />
+          <div>
+            {this.parsedServerTimeForFirstFlush(parsedResponses)}
+            <ManagedDataInspector
+              collapsed={true}
+              expandRoot={true}
+              data={parsedResponses}
+            />
+          </div>
         );
       }
     }
