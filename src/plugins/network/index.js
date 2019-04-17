@@ -21,11 +21,11 @@ import {
   SearchableTable,
   FlipperPlugin,
 } from 'flipper';
+import type {Request, RequestId, Response} from './types.js';
+import {getHeaderValue} from './utils.js';
 import RequestDetails from './RequestDetails.js';
 import {URL} from 'url';
 import type {Notification} from '../../plugin';
-
-type RequestId = string;
 
 type PersistedState = {|
   requests: {[id: RequestId]: Request},
@@ -34,29 +34,6 @@ type PersistedState = {|
 
 type State = {|
   selectedIds: Array<RequestId>,
-|};
-
-export type Request = {|
-  id: RequestId,
-  timestamp: number,
-  method: string,
-  url: string,
-  headers: Array<Header>,
-  data: ?string,
-|};
-
-export type Response = {|
-  id: RequestId,
-  timestamp: number,
-  status: number,
-  reason: string,
-  headers: Array<Header>,
-  data: ?string,
-|};
-
-export type Header = {|
-  key: string,
-  value: string,
 |};
 
 const COLUMN_SIZE = {
@@ -102,15 +79,6 @@ const COLUMNS = {
     value: 'Duration',
   },
 };
-
-export function getHeaderValue(headers: Array<Header>, key: string): string {
-  for (const header of headers) {
-    if (header.key.toLowerCase() === key.toLowerCase()) {
-      return header.value;
-    }
-  }
-  return '';
-}
 
 export function formatBytes(count: number): string {
   if (count > 1024 * 1024) {
