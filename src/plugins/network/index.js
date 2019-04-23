@@ -22,8 +22,9 @@ import {
   FlipperPlugin,
 } from 'flipper';
 import type {Request, RequestId, Response} from './types.js';
-import {getHeaderValue} from './utils.js';
+import {convertRequestToCurlCommand, getHeaderValue} from './utils.js';
 import RequestDetails from './RequestDetails.js';
+import {clipboard} from 'electron';
 import {URL} from 'url';
 import type {Notification} from '../../plugin';
 
@@ -160,6 +161,19 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
   onRowHighlighted = (selectedIds: Array<RequestId>) =>
     this.setState({selectedIds});
 
+  copyRequestCurlCommand = () => {
+    const {requests} = this.props.persistedState;
+    const {selectedIds} = this.state;
+    // Ensure there is only one row highlighted.
+    if (selectedIds.length !== 1) {
+      return;
+    }
+
+    const request = requests[selectedIds[0]];
+    const command = convertRequestToCurlCommand(request);
+    clipboard.writeText(command);
+  };
+
   clearLogs = () => {
     this.setState({selectedIds: []});
     this.props.setPersistedState({responses: {}, requests: {}});
@@ -188,6 +202,7 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
           requests={requests || {}}
           responses={responses || {}}
           clear={this.clearLogs}
+          copyRequestCurlCommand={this.copyRequestCurlCommand}
           onRowHighlighted={this.onRowHighlighted}
           highlightedRows={
             this.state.selectedIds ? new Set(this.state.selectedIds) : null
@@ -203,6 +218,7 @@ type NetworkTableProps = {
   requests: {[id: RequestId]: Request},
   responses: {[id: RequestId]: Response},
   clear: () => void,
+  copyRequestCurlCommand: () => void,
   onRowHighlighted: (keys: TableHighlightedRows) => void,
   highlightedRows: ?Set<string>,
 };
@@ -349,19 +365,35 @@ class NetworkTable extends PureComponent<NetworkTableProps, NetworkTableState> {
     this.setState(calculateState(this.props, nextProps, this.state.sortedRows));
   }
 
-  contextMenuItems = [
-    {
-      type: 'separator',
-    },
-    {
-      label: 'Clear all',
-      click: this.props.clear,
-    },
-  ];
+  contextMenuItems() {
+    const {clear, copyRequestCurlCommand, highlightedRows} = this.props;
+    const highlightedMenuItems =
+      highlightedRows && highlightedRows.size === 1
+        ? [
+            {
+              type: 'separator',
+            },
+            {
+              label: 'Copy as cURL',
+              click: copyRequestCurlCommand,
+            },
+          ]
+        : [];
+
+    return highlightedMenuItems.concat([
+      {
+        type: 'separator',
+      },
+      {
+        label: 'Clear all',
+        click: clear,
+      },
+    ]);
+  }
 
   render() {
     return (
-      <NetworkTable.ContextMenu items={this.contextMenuItems}>
+      <NetworkTable.ContextMenu items={this.contextMenuItems()}>
         <SearchableTable
           virtual={true}
           multiline={false}
