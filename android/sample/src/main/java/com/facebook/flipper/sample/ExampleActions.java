@@ -46,8 +46,7 @@ public final class ExampleActions {
   }
 
   public static void sendGetRequest() {
-    final Request request =
-        new Request.Builder().url("https://api.github.com/repos/facebook/yoga").get().build();
+    final Request request = new Request.Builder().url("https://api.github.com/repos/facebook/yoga").get().build();
     FlipperSampleApplication.sOkHttpClient
         .newCall(request)
         .enqueue(

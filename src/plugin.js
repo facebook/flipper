@@ -83,6 +83,9 @@ export class FlipperBasePlugin<
     method: string,
     data: Object,
   ) => $Shape<PersistedState>;
+  static exportMetrics: ?(
+    persistedState: PersistedState,
+  ) => Promise<Map<string, number | string>>;
   static exportPersistedState: ?(
     callClient: (string, ?Object) => Promise<Object>,
     persistedState: ?PersistedState,

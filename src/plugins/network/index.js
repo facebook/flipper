@@ -107,6 +107,19 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
     responses: {},
   };
 
+  static exportMetrics = (
+    persistedState: PersistedState,
+  ): Promise<Map<string, number | string>> => {
+    const failures = Object.keys(persistedState.responses).reduce(function(
+      previous,
+      key,
+    ) {
+      return previous + (persistedState.responses[key].status >= 400);
+    },
+    0);
+    return Promise.resolve(new Map([['NUMBER_NETWORK_FAILURES', failures]]));
+  };
+
   static persistedStateReducer = (
     persistedState: PersistedState,
     method: string,

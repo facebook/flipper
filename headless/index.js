@@ -14,6 +14,8 @@ import dispatcher from '../src/dispatcher/index.js';
 import {init as initLogger} from '../src/fb-stubs/Logger.js';
 import reducers from '../src/reducers/index.js';
 import {exportStore} from '../src/utils/exportData.js';
+import exportMetrics from '../src/utils/exportMetrics.js';
+
 // $FlowFixMe this file exist, trust me, flow!
 import setup from '../static/setup.js';
 
@@ -50,6 +52,12 @@ yargs
         describe: 'Enable verbose logging',
         type: 'boolean',
       });
+      yargs.option('metrics', {
+        alias: 'metrics',
+        default: false,
+        describe: 'Will export metrics instead of data when flipper terminates',
+        type: 'boolean',
+      });
     },
     startFlipper,
   )
@@ -59,6 +67,7 @@ yargs
 function startFlipper({
   dev,
   verbose,
+  metrics,
   exit,
   'insecure-port': insecurePort,
   'secure-port': securePort,
@@ -100,12 +109,21 @@ function startFlipper({
       // TODO(T42325892): Investigate why the export stalls without exiting the
       // current eventloop task here.
       setTimeout(() => {
-        exportStore(store)
-          .then(({serializedString}) => {
-            originalConsole.log(serializedString);
-            process.exit();
-          })
-          .catch(console.error);
+        if (metrics) {
+          exportMetrics(store)
+            .then(payload => {
+              originalConsole.log(payload);
+              process.exit();
+            })
+            .catch(console.error);
+        } else {
+          exportStore(store)
+            .then(({serializedString}) => {
+              originalConsole.log(serializedString);
+              process.exit();
+            })
+            .catch(console.error);
+        }
       }, 10);
     }
     return next(action);
@@ -122,9 +140,14 @@ function startFlipper({
   if (exit == 'sigint') {
     process.on('SIGINT', async () => {
       try {
-        const {serializedString, errorArray} = await exportStore(store);
-        errorArray.forEach(console.error);
-        originalConsole.log(serializedString);
+        if (metrics) {
+          const payload = await exportMetrics(store);
+          originalConsole.log(payload);
+        } else {
+          const {serializedString, errorArray} = await exportStore(store);
+          errorArray.forEach(console.error);
+          originalConsole.log(serializedString);
+        }
       } catch (e) {
         console.error(e);
       }
