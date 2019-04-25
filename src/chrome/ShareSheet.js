@@ -18,9 +18,11 @@ import {
   Input,
 } from 'flipper';
 import {shareFlipperData} from '../fb-stubs/user';
-import {exportStore} from '../utils/exportData.js';
+import {exportStore, EXPORT_FLIPPER_TRACE_EVENT} from '../utils/exportData.js';
 import PropTypes from 'prop-types';
 import {clipboard} from 'electron';
+import {reportPlatformFailures} from '../utils/metrics';
+export const SHARE_FLIPPER_TRACE_EVENT = 'share-flipper-link';
 
 const Container = styled(FlexColumn)({
   padding: 20,
@@ -95,10 +97,16 @@ export default class ShareSheet extends Component<Props, State> {
 
   async componentDidMount() {
     try {
-      const {serializedString, errorArray} = await exportStore(
-        this.context.store,
+      const {serializedString, errorArray} = await reportPlatformFailures(
+        exportStore(this.context.store),
+        `${EXPORT_FLIPPER_TRACE_EVENT}:UI_LINK`,
       );
-      const result = await shareFlipperData(serializedString);
+
+      const result = await reportPlatformFailures(
+        shareFlipperData(serializedString),
+        `${SHARE_FLIPPER_TRACE_EVENT}`,
+      );
+
       this.setState({errorArray, result});
       if (result.flipperUrl) {
         clipboard.writeText(String(result.flipperUrl));

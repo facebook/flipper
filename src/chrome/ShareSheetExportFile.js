@@ -89,7 +89,7 @@ export default class ShareSheetExportFile extends Component<Props, State> {
     try {
       const {errorArray} = await reportPlatformFailures(
         exportStoreToFile(this.props.file, this.context.store),
-        `${EXPORT_FLIPPER_TRACE_EVENT}:UI`,
+        `${EXPORT_FLIPPER_TRACE_EVENT}:UI_FILE`,
       );
       this.setState({errorArray, result: {success: true, error: null}});
     } catch (err) {
