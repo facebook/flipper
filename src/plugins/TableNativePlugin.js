@@ -226,6 +226,10 @@ function renderSidebarSection(section: SidebarSection, index: number): Node {
   }
 }
 
+type IncomingMessage =
+  | {method: 'updateRows', data: Array<RowData>}
+  | {method: 'clearTable'};
+
 export default function createTableNativePlugin(id: string, title: string) {
   return class extends FlipperPlugin<State, *, PersistedState> {
     static keyboardActions = ['clear', 'createPaste'];
@@ -238,19 +242,15 @@ export default function createTableNativePlugin(id: string, title: string) {
       tableMetadata: null,
     };
 
-    static persistedStateReducer = (
+    static typedPersistedStateReducer = (
       persistedState: PersistedState,
-      method: string,
-      payload: RowData | Array<RowData>,
+      message: IncomingMessage,
     ): $Shape<PersistedState> => {
-      if (method === 'updateRows') {
+      if (message.method === 'updateRows') {
         const newRows = [];
         const newData = {};
-        if (!Array.isArray(payload)) {
-          throw new Error('updateRows called with non array type');
-        }
 
-        for (const rowData of payload.reverse()) {
+        for (const rowData of message.data.reverse()) {
           if (rowData.id == null) {
             throw new Error(
               `updateRows: row is missing id: ${JSON.stringify(rowData)}`,
@@ -281,7 +281,7 @@ export default function createTableNativePlugin(id: string, title: string) {
           datas: {...persistedState.datas, ...newData},
           rows: [...persistedState.rows, ...newRows],
         };
-      } else if (method === 'clearTable') {
+      } else if (message.method === 'clearTable') {
         return {
           ...persistedState,
           rows: [],
@@ -290,6 +290,15 @@ export default function createTableNativePlugin(id: string, title: string) {
       } else {
         return {};
       }
+    };
+
+    static persistedStateReducer = (
+      persistedState: PersistedState,
+      method: string,
+      data: any,
+    ): $Shape<PersistedState> => {
+      // $FlowFixMe Unsafely treat the recieved message as what we're expecting.
+      return this.typedPersistedStateReducer(persistedState, {method, data});
     };
 
     state = {
