@@ -92,7 +92,7 @@ public abstract class TableRow {
     columnsObject.put("id", id);
     return new FlipperObject.Builder()
         .put("columns", columnsObject.build())
-        .put("sidebar", sidebar.serialize())
+        .put("sidebar", sidebar != null ? sidebar.serialize() : null)
         .put("id", id)
         .build();
   }

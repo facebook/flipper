@@ -199,7 +199,7 @@ function renderToolbar(section: ToolbarSection) {
 
 function renderSidebarForRow(rowData: RowData): Node {
   if (!rowData.sidebar) {
-    throw new Error('renderSidebar used with missing rowData.sidebar');
+    return null;
   }
   if (!Array.isArray(rowData.sidebar)) {
     throw new Error('typeof rowData.sidebar is not array as expected: ');
