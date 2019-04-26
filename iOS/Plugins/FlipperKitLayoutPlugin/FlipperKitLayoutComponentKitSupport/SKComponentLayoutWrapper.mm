@@ -9,11 +9,15 @@
 
 #import "SKComponentLayoutWrapper.h"
 
+#import <ComponentKit/CKAnalyticsListenerHelpers.h>
 #import <ComponentKit/CKComponent.h>
+#import <ComponentKit/CKComponentInternal.h>
 #import <ComponentKit/CKComponentRootView.h>
 #import <ComponentKit/CKComponentAttachController.h>
 #import <ComponentKit/CKComponentAttachControllerInternal.h>
 #import <ComponentKit/CKInspectableView.h>
+
+#import "CKComponent+Sonar.h"
 
 static char const kLayoutWrapperKey = ' ';
 
@@ -41,21 +45,35 @@ static CKFlexboxComponentChild findFlexboxLayoutParams(CKComponent *parent, CKCo
 
 + (instancetype)newFromRoot:(id<CKInspectableView>)root {
   const CKComponentLayout layout = [root mountedLayout];
+  CKComponentReuseWrapper *reuseWrapper = CKAnalyticsListenerHelpers::GetReusedNodes(layout.component);
   SKComponentLayoutWrapper *const wrapper =
   [[SKComponentLayoutWrapper alloc] initWithLayout:layout
                                           position:CGPointMake(0, 0)
-                                         parentKey:[NSString stringWithFormat: @"%p.", layout.component]];
-  if (layout.component)
+                                         parentKey:[NSString stringWithFormat: @"%p.", layout.component]
+                                      reuseWrapper:reuseWrapper];
+  if (layout.component) {
     objc_setAssociatedObject(layout.component, &kLayoutWrapperKey, wrapper, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+  }
   return wrapper;
 }
 
-- (instancetype)initWithLayout:(const CKComponentLayout &)layout position:(CGPoint)position parentKey:(NSString *)parentKey {
+- (instancetype)initWithLayout:(const CKComponentLayout &)layout
+                      position:(CGPoint)position
+                     parentKey:(NSString *)parentKey
+                  reuseWrapper:(CKComponentReuseWrapper *)reuseWrapper
+{
   if (self = [super init]) {
     _component = layout.component;
     _size = layout.size;
     _position = position;
     _identifier = [parentKey stringByAppendingString:layout.component ? NSStringFromClass([layout.component class]) : @"(null)"];
+
+    if (_component && reuseWrapper) {
+      auto const canBeReusedCounter = [reuseWrapper canBeReusedCounter:_component.treeNode.nodeIdentifier];
+      if (canBeReusedCounter > 0) {
+        _component.flipper_canBeReusedCounter = canBeReusedCounter;
+      }
+    }
 
     if (layout.children != nullptr) {
       int index = 0;
@@ -65,7 +83,8 @@ static CKFlexboxComponentChild findFlexboxLayoutParams(CKComponent *parent, CKCo
         }
         SKComponentLayoutWrapper *childWrapper = [[SKComponentLayoutWrapper alloc] initWithLayout:child.layout
                                                                                          position:child.position
-                                                                                        parentKey:[_identifier stringByAppendingFormat:@"[%d].", index++]];
+                                                                                        parentKey:[_identifier stringByAppendingFormat:@"[%d].", index++]
+                                                                                     reuseWrapper:reuseWrapper];
         childWrapper->_isFlexboxChild = [_component isKindOfClass:[CKFlexboxComponent class]];
         childWrapper->_flexboxChild = findFlexboxLayoutParams(_component, child.layout.component);
         _children.push_back(childWrapper);

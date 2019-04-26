@@ -144,10 +144,10 @@
 }
 
 - (NSArray<SKNamed<NSString *> *> *)attributesForNode:(SKComponentLayoutWrapper *)node {
-  return @[
-           [SKNamed newWithName: @"responder"
-                      withValue: SKObject(NSStringFromClass([node.component.nextResponder class]))]
-           ];
+  NSMutableArray<SKNamed<NSString *> *> *attributes = [NSMutableArray array];
+  [attributes addObject:[SKNamed newWithName:@"responder"
+                                   withValue:SKObject(NSStringFromClass([node.component.nextResponder class]))]];
+  return attributes;
 }
 
 - (void)setHighlighted:(BOOL)highlighted forNode:(SKComponentLayoutWrapper *)node {
