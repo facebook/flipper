@@ -11,18 +11,10 @@ target 'Sample' do
   pod 'FlipperKit/FlipperKitUserDefaultsPlugin', :path => '../../FlipperKit.podspec'
   pod 'FlipperKit/FlipperKitExamplePlugin', :path => '../../FlipperKit.podspec'
   pod 'Flipper', :path => '../../Flipper.podspec'
-  # This post_install script adds swift version to yogakit's pod target.
   # It also adds -DFB_SONARKIT_ENABLED=1 flag to OTHER_CFLAGS, necessary to build expose Flipper classes in the header files
   post_install do |installer|
 	    file_name = Dir.glob("*.xcodeproj")[0]
 	    app_project = Xcodeproj::Project.open(file_name)
-      installer.pods_project.targets.each do |target|
-               if ('Yoga' == target.name)
-                   target.build_configurations.each do |config|
-                     config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '8.0'
-                   end
-               end
-       end
 	    app_project.native_targets.each do |target|
 	        target.build_configurations.each do |config|
 	          if (config.build_settings['OTHER_CFLAGS'])

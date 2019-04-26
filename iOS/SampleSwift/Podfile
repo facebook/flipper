@@ -14,13 +14,6 @@ target 'SampleSwift' do
   post_install do |installer|
     file_name = Dir.glob("*.xcodeproj")[0]
     app_project = Xcodeproj::Project.open(file_name)
-    installer.pods_project.targets.each do |target|
-             if ('Yoga' == target.name)
-                 target.build_configurations.each do |config|
-                   config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '8.0'
-                 end
-             end
-     end
     app_project.native_targets.each do |target|
       target.build_configurations.each do |config|
         if (config.build_settings['OTHER_SWIFT_FLAGS'])
