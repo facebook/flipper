@@ -40,6 +40,7 @@ class DevicesButton extends Component<Props> {
     // On Linux, you must run the emulator from the directory it's in because
     // reasons ...
     whichPromise('emulator')
+      .catch(e => `${process.env.ANDROID_HOME || ''}/tools/emulator`)
       .then(emulatorPath => {
         const child = spawn(emulatorPath, [`@${name}`], {
           detached: true,

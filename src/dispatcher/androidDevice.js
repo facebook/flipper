@@ -64,22 +64,24 @@ function getRunningEmulatorName(id: string): Promise<?string> {
 export default (store: Store, logger: Logger) => {
   const watchAndroidDevices = () => {
     // get emulators
-    promisify(which)('emulator').then(emulatorPath => {
-      child_process.exec(
-        `${emulatorPath} -list-avds`,
-        (error: ?Error, data: ?string) => {
-          if (error != null || data == null) {
-            console.error(error || 'Failed to list AVDs');
-            return;
-          }
-          const payload = data.split('\n').filter(Boolean);
-          store.dispatch({
-            type: 'REGISTER_ANDROID_EMULATORS',
-            payload,
-          });
-        },
-      );
-    });
+    promisify(which)('emulator')
+      .catch(e => `${process.env.ANDROID_HOME || ''}/tools/emulator`)
+      .then(emulatorPath => {
+        child_process.exec(
+          `${emulatorPath} -list-avds`,
+          (error: ?Error, data: ?string) => {
+            if (error != null || data == null) {
+              console.error(error || 'Failed to list AVDs');
+              return;
+            }
+            const payload = data.split('\n').filter(Boolean);
+            store.dispatch({
+              type: 'REGISTER_ANDROID_EMULATORS',
+              payload,
+            });
+          },
+        );
+      });
 
     getAdbClient()
       .then(client => {
