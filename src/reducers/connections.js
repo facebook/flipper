@@ -341,14 +341,19 @@ export default (state: State = INITAL_STATE, action: Action): State => {
 
   if (nextState.selectedDevice) {
     const {selectedDevice} = nextState;
+    const deviceNotSupportedError = 'iOS Devices are not yet supported';
     const error =
       selectedDevice.os === 'iOS' &&
       selectedDevice.deviceType === 'physical' &&
       !iosUtil.isAvailable()
-        ? 'iOS Devices are not yet supported'
+        ? deviceNotSupportedError
         : null;
 
-    nextState.error = error || nextState.error;
+    if (nextState.error === deviceNotSupportedError) {
+      nextState.error = error;
+    } else {
+      nextState.error = error || nextState.error;
+    }
   }
   return nextState;
 };
