@@ -9,15 +9,6 @@ h5,
 h6 {
   font-family: 'San Francisco', -apple-system, BlinkMacSystemFont,
     '.SFNSText-Regular', 'Helvetica Neue', Helvetica, sans-serif;
-  font-size: 17px;
-  font-weight: 400;
-}
-
-.fixedHeaderContainer header h2 {
-  font-family: 'San Francisco', -apple-system, BlinkMacSystemFont,
-    '.SFNSText-Regular', 'Helvetica Neue', Helvetica, sans-serif;
-  font-size: 17px;
-  font-weight: 400;
 }
 
 .splash {
