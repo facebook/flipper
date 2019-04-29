@@ -1,7 +1,6 @@
 ---
 id: getting-started
 title: Getting Started
-sidebar_label: Getting Started
 ---
 
 Flipper helps you debug Android and iOS apps running in an emulator/simulator or connected physical development devices. Flipper consists of two parts:
@@ -23,7 +22,7 @@ Once you start Flipper and launch an emulator/simulator or connect a device, you
 
 ### Setup your Android app
 
-Add the following permissions to your AndroidManifest.xml. The SDK needs these to communicate with the desktop app on localhost via adb. It won't make any external internet requests.
+Add the following permissions to your `AndroidManifest.xml`. The SDK needs these to communicate with the desktop app on localhost via adb. It won't make any external internet requests.
 
 ```xml
 <uses-permission android:name="android.permission.INTERNET" />
@@ -53,9 +52,8 @@ dependencies {
 }
 ```
 
-Now you can initialize Flipper in your Application's `onCreate` method like this:
-
-It's important that `SoLoader.init(this, false);` is called at some point before the Flipper client is initialized. This allows the c++ part of Flipper to be loaded.
+Now you can initialize Flipper in your Application's `onCreate` method, which involves
+initializing SoLoader (for loading the C++ part of Flipper) and starting a `FlipperClient`.
 
 ```java
 public class MyApplication extends Application {
@@ -92,14 +90,14 @@ dependencies {
 }
 ```
 
-### Setup your iOS app
+## Setup your iOS app
 
-To integrate with an iOS app, you can use [CocoaPods](https://cocoapods.org). Add the mobile Flipper SDK and its dependencies to your `Podfile`
+We support both Swift and Objective-C for Flipper with CocoaPods as build and distribution mechanism.
 
-### Objective-c
+### CocoaPods
 
-Podfile for Objective-C projects will look like the following
-
+<!--DOCUSAURUS_CODE_TABS-->
+<!--Objective-C-->
 ```ruby
 project 'MyApp.xcodeproj'
 source 'https://github.com/facebook/flipper.git'
@@ -143,38 +141,7 @@ target 'MyApp' do
    end
 end
 ```
-
-Install the dependencies by running `pod install`.When you open the Xcode workspace file for your app, you now can import and initialize Flipper in your AppDelegate. Before running your app, make sure that the flag `-DFB_SONARKIT_ENABLED=1` is present in the `OTHER_CFLAGS` in your application's build settings.
-
-```objective-c
-#import <FlipperKit/FlipperClient.h>
-#import <FlipperKitLayoutPlugin/FlipperKitLayoutPlugin.h>
-#import <FlipperKitLayoutComponentKitSupport/FlipperKitLayoutComponentKitSupport.h>
-#import <FlipperKitUserDefaultsPlugin/FKUserDefaultsPlugin.h>
-#import <FlipperKitNetworkPlugin/FlipperKitNetworkPlugin.h>
-#import <SKIOSNetworkPlugin/SKIOSNetworkAdapter.h>
-
-@implementation AppDelegate
-
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
-{
-  FlipperClient *client = [FlipperClient sharedClient];
-  SKDescriptorMapper *layoutDescriptorMapper = [[SKDescriptorMapper alloc] initWithDefaults];
-  [FlipperKitLayoutComponentKitSupport setUpWithDescriptorMapper: layoutDescriptorMapper];
-  [client addPlugin: [[FlipperKitLayoutPlugin alloc] initWithRootNode: application
-                                                 withDescriptorMapper: layoutDescriptorMapper]];
-
-  [client addPlugin:[[FKUserDefaultsPlugin alloc] initWithSuiteName:nil]];  [client start];
-  [client addPlugin: [[FlipperKitNetworkPlugin alloc] initWithNetworkAdapter:[SKIOSNetworkAdapter new]]];
-  [client start];
-  ...
-}
-@end
-```
-### Swift
-
-Podfile for the swift projects will look like the following:
-
+<!--Swift-->
 ```ruby
 project 'MyApp.xcodeproj'
 source 'https://github.com/facebook/flipper.git'
@@ -210,44 +177,76 @@ target 'MyApp' do
   #   end
   # end
 
-# This post_install script adds min deployment iOS version to yoga's pod target.
-# It also adds -DFB_SONARKIT_ENABLED flag to OTHER_SWIFT_FLAGS, necessary to build swift target
-    post_install do |installer|
-      file_name = Dir.glob("*.xcodeproj")[0]
-      app_project = Xcodeproj::Project.open(file_name)
-      installer.pods_project.targets.each do |target|
-               if ('Yoga' == target.name)
-                   target.build_configurations.each do |config|
-                     config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '8.0'
-                   end
-               end
-       end
-      app_project.native_targets.each do |target|
-          target.build_configurations.each do |config|
-            if (config.build_settings['OTHER_SWIFT_FLAGS'])
-              if !(config.build_settings['OTHER_SWIFT_FLAGS'].include? '-DFB_SONARKIT_ENABLED')
-                puts 'Adding -DFB_SONARKIT_ENABLED ...'
-                swift_flags = config.build_settings['OTHER_SWIFT_FLAGS']
-                if swift_flags.split.last != '-Xcc'
-                  config.build_settings['OTHER_SWIFT_FLAGS'] << ' -Xcc'
-                end
-                config.build_settings['OTHER_SWIFT_FLAGS'] << ' -DFB_SONARKIT_ENABLED'
+  # This post_install script adds min deployment iOS version to yoga's pod target.
+  # It also adds -DFB_SONARKIT_ENABLED flag to OTHER_SWIFT_FLAGS, necessary to build swift target
+  post_install do |installer|
+    file_name = Dir.glob("*.xcodeproj")[0]
+    app_project = Xcodeproj::Project.open(file_name)
+    installer.pods_project.targets.each do |target|
+              if ('Yoga' == target.name)
+                  target.build_configurations.each do |config|
+                    config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '8.0'
+                  end
               end
-            else
-              puts 'OTHER_SWIFT_FLAGS does not exist thus assigning it to `$(inherited) -Xcc -DFB_SONARKIT_ENABLED`'
-              config.build_settings['OTHER_SWIFT_FLAGS'] = '$(inherited) -Xcc -DFB_SONARKIT_ENABLED'
+      end
+    app_project.native_targets.each do |target|
+        target.build_configurations.each do |config|
+          if (config.build_settings['OTHER_SWIFT_FLAGS'])
+            if !(config.build_settings['OTHER_SWIFT_FLAGS'].include? '-DFB_SONARKIT_ENABLED')
+              puts 'Adding -DFB_SONARKIT_ENABLED ...'
+              swift_flags = config.build_settings['OTHER_SWIFT_FLAGS']
+              if swift_flags.split.last != '-Xcc'
+                config.build_settings['OTHER_SWIFT_FLAGS'] << ' -Xcc'
+              end
+              config.build_settings['OTHER_SWIFT_FLAGS'] << ' -DFB_SONARKIT_ENABLED'
             end
-            app_project.save
+          else
+            puts 'OTHER_SWIFT_FLAGS does not exist thus assigning it to `$(inherited) -Xcc -DFB_SONARKIT_ENABLED`'
+            config.build_settings['OTHER_SWIFT_FLAGS'] = '$(inherited) -Xcc -DFB_SONARKIT_ENABLED'
           end
+          app_project.save
         end
-    end
+      end
   end
-
+end
 ```
+<!--END_DOCUSAURUS_CODE_TABS-->
 
+Install the dependencies by running `pod install`. When you open the XCode
+workspace file of your app, you now can import and initialize Flipper in your
+AppDelegate. Before running your app, make sure that the flag
+`-DFB_SONARKIT_ENABLED=1` is present in the `OTHER_CFLAGS` of
+application's build settings.
 
-Install the dependencies by running `pod install`.When you open the Xcode workspace file for your app, you now can import and initialize Flipper in your AppDelegate by following the below mentioned example. Before running your app, make sure that the flag `-Xcc -DFB_SONARKIT_ENABLED` is present in the `OTHER_SWIFT_FLAGS` in your application's build settings.
+<!--DOCUSAURUS_CODE_TABS-->
 
+<!--Objective-C-->
+```objective-c
+#import <FlipperKit/FlipperClient.h>
+#import <FlipperKitLayoutPlugin/FlipperKitLayoutPlugin.h>
+#import <FlipperKitLayoutComponentKitSupport/FlipperKitLayoutComponentKitSupport.h>
+#import <FlipperKitUserDefaultsPlugin/FKUserDefaultsPlugin.h>
+#import <FlipperKitNetworkPlugin/FlipperKitNetworkPlugin.h>
+#import <SKIOSNetworkPlugin/SKIOSNetworkAdapter.h>
+
+@implementation AppDelegate
+
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+{
+  FlipperClient *client = [FlipperClient sharedClient];
+  SKDescriptorMapper *layoutDescriptorMapper = [[SKDescriptorMapper alloc] initWithDefaults];
+  [FlipperKitLayoutComponentKitSupport setUpWithDescriptorMapper: layoutDescriptorMapper];
+  [client addPlugin: [[FlipperKitLayoutPlugin alloc] initWithRootNode: application
+                                                 withDescriptorMapper: layoutDescriptorMapper]];
+
+  [client addPlugin:[[FKUserDefaultsPlugin alloc] initWithSuiteName:nil]];  [client start];
+  [client addPlugin: [[FlipperKitNetworkPlugin alloc] initWithNetworkAdapter:[SKIOSNetworkAdapter new]]];
+  [client start];
+  ...
+}
+@end
+```
+<!--Swift-->
 ```swift
 import UIKit
 import FlipperKit
@@ -267,8 +266,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     return true
   }
 }
-
 ```
+<!--END_DOCUSAURUS_CODE_TABS-->
 
 <div class="warning">
 
