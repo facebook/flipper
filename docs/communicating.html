@@ -4,7 +4,7 @@
           toggler.onclick = function() {
             nav.classList.toggle('docsSliderActive');
           };
-        </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><h1>Device Communication</h1></header><article><div><span><p>To start communicating with a client your plugin must implement the init function. Once this function has been called the active client can also be accessed via <code>this.client</code>. This <code>id</code> of the plugin in JavaScript must match the native plugin <code>id</code> to allow for them to communicate.</p>
+        </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/flipper/blob/master/docs/communicating.md" target="_blank">Edit</a><h1>Device Communication</h1></header><article><div><span><p>To start communicating with a client your plugin must implement the init function. Once this function has been called the active client can also be accessed via <code>this.client</code>. This <code>id</code> of the plugin in JavaScript must match the native plugin <code>id</code> to allow for them to communicate.</p>
 <pre><code class="hljs css javascript"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">FlipperPlugin</span> </span>{
   <span class="hljs-keyword">static</span> title = <span class="hljs-string">"MyPlugin"</span>;
   <span class="hljs-keyword">static</span> id = <span class="hljs-string">"MyPlugin"</span>;

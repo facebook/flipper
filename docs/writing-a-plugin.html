@@ -4,7 +4,7 @@
           toggler.onclick = function() {
             nav.classList.toggle('docsSliderActive');
           };
-        </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><h1>Writing a plugin in JavaScript</h1></header><article><div><span><p>Every plugin needs to be self-contained in its own folder. At the root-level of this folder we are expecting a <code>package.json</code> for your plugin and an <code>index.js</code> file which is the entry-point to your plugin. To learn more about the basic setup of a plugin, have a look at <a href="/docs/js-setup.html">JavaScript Setup</a>.</p>
+        </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/flipper/blob/master/docs/writing-a-plugin.md" target="_blank">Edit</a><h1>Writing a plugin in JavaScript</h1></header><article><div><span><p>Every plugin needs to be self-contained in its own folder. At the root-level of this folder we are expecting a <code>package.json</code> for your plugin and an <code>index.js</code> file which is the entry-point to your plugin. To learn more about the basic setup of a plugin, have a look at <a href="/docs/js-setup.html">JavaScript Setup</a>.</p>
 <p>We expect this file to have a default export of type <code>FlipperPlugin</code>. A hello-world-plugin could look like this:</p>
 <pre><code class="hljs css js"><span class="hljs-keyword">import</span> {FlipperPlugin} <span class="hljs-keyword">from</span> <span class="hljs-string">'flipper'</span>;
 
