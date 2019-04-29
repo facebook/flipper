@@ -14,8 +14,7 @@
         <link href="https://fbflipper.com//blog/2017/10/24/new-version-1.0.0.html">
         </link>
         <updated>2017-10-24T06:00:00Z</updated>
-        <summary type="html"><![CDATA[<p>This blog post will test file name parsing issues when periods are present.</p>
-]]></summary>
+        <summary type="html"><![CDATA[<p>This blog post will test file name parsing issues when periods are present.</p> ]]></summary>
         <author>
             <name>Eric Nakagawa</name>
             <uri>http://twitter.com/ericnakagawa</uri>
@@ -27,9 +26,7 @@
         <link href="https://fbflipper.com//blog/2017/09/26/adding-rss.html">
         </link>
         <updated>2017-09-26T06:00:00Z</updated>
-        <summary type="html"><![CDATA[<p>This is a test post.</p>
-<p>A whole bunch of other information.</p>
-]]></summary>
+        <summary type="html"><![CDATA[<p>This is a test post.</p> <p>A whole bunch of other information.</p> ]]></summary>
         <author>
             <name>Eric Nakagawa</name>
             <uri>http://twitter.com/ericnakagawa</uri>
