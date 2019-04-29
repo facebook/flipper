@@ -1,12 +1,12 @@
 ---
-name: "� Bug Report"
+name: "🐛 Bug Report"
 about: You want to report a reproducible bug or regression in Flipper.
 title: ''
 labels: 'Type: Bug Report'
 
 ---
 
-## � Bug Report
+## 🐛 Bug Report
 <!--
   A clear and concise description of what the bug is.
   Include screenshots if needed.
