@@ -4,109 +4,49 @@
     "next": "Next",
     "previous": "Previous",
     "tagline": "Extensible mobile app debugging",
-    "docs": {
-      "communicating": {
-        "title": "Device Communication",
-        "sidebar_label": "Device Communication"
-      },
-      "crash-reporter-plugin": {
-        "title": "Crash Reporter Plugin"
-      },
-      "create-plugin": {
-        "title": "Mobile Setup",
-        "sidebar_label": "Mobile Setup"
-      },
-      "create-table-plugin": {
-        "title": "Create Table Plugin",
-        "sidebar_label": "Create Table Plugin"
-      },
-      "custom-ports": {
-        "title": "Running Flipper with different ports",
-        "sidebar_label": "Using different ports"
-      },
-      "error-handling": {
-        "title": "Error Handling",
-        "sidebar_label": "Error Handling"
-      },
-      "establishing-a-connection": {
-        "title": "Establishing a connection",
-        "sidebar_label": "Establishing a connection"
-      },
-      "getting-started": {
-        "title": "Getting Started",
-        "sidebar_label": "Getting Started"
-      },
-      "js-setup": {
-        "title": "JavaScript Setup",
-        "sidebar_label": "JavaScript Setup"
-      },
-      "layout-plugin": {
-        "title": "Layout Inspector"
-      },
-      "leak-canary-plugin": {
-        "title": "LeakCanary"
-      },
-      "logs-plugin": {
-        "title": "Logs"
-      },
-      "network-plugin": {
-        "title": "Network"
-      },
-      "sandbox-plugin": {
-        "title": "Sandbox"
-      },
-      "send-data": {
-        "title": "Sending Data to Plugins",
-        "sidebar_label": "Send Data"
-      },
-      "share-flipper-data": {
-        "title": "Share Flipper Data 📦"
-      },
-      "shared-preferences-plugin": {
-        "title": "Shared Preferences"
-      },
-      "stetho": {
-        "title": "Stetho Guidance",
-        "sidebar_label": "Stetho Guidance"
-      },
-      "styling-components": {
-        "title": "Styling Components",
-        "sidebar_label": "Styling Components"
-      },
-      "testing": {
-        "title": "Testing",
-        "sidebar_label": "Testing"
-      },
-      "troubleshooting": {
-        "title": "Troubleshooting Issues",
-        "sidebar_label": "Troubleshooting Issues"
-      },
-      "ui-components": {
-        "title": "UI Components",
-        "sidebar_label": "UI Components"
-      },
-      "understand": {
-        "title": "Understanding Flipper",
-        "sidebar_label": "Understanding Flipper"
-      },
-      "writing-a-plugin": {
-        "title": "Writing a plugin in JavaScript",
-        "sidebar_label": "Writing a plugin"
-      }
-    },
-    "links": {
-      "Getting Started": "Getting Started",
-      "Docs": "Docs",
-      "GitHub": "GitHub"
-    },
-    "categories": {
-      "Using Flipper": "Using Flipper",
-      "Built-in Plugins": "Built-in Plugins",
-      "Plugins: Desktop part": "Plugins: Desktop part",
-      "Plugins: Mobile part": "Plugins: Mobile part",
-      "Flipper Internals": "Flipper Internals",
-      "Advanced Usage": "Advanced Usage"
-    }
+    "background-plugin-jsside": "Background Plugin Setup",
+    "Background Plugin": "Background Plugin",
+    "communicating": "Device Communication",
+    "Device Communication": "Device Communication",
+    "create-plugin": "Mobile Setup",
+    "Mobile Setup": "Mobile Setup",
+    "create-table-plugin": "Create Table Plugin",
+    "Create Table Plugin": "Create Table Plugin",
+    "error-handling": "Error Handling",
+    "Error Handling": "Error Handling",
+    "establishing-a-connection": "Establishing a connection",
+    "Establishing a connection": "Establishing a connection",
+    "getting-started": "Getting Started",
+    "Getting Started": "Getting Started",
+    "js-setup": "JavaScript Setup",
+    "JavaScript Setup": "JavaScript Setup",
+    "layout-plugin": "Layout Inspector",
+    "leak-canary-plugin": "LeakCanary",
+    "logs-plugin": "Logs",
+    "network-plugin": "Network",
+    "sandbox-plugin": "Sandbox",
+    "send-data": "Sending Data to Plugins",
+    "Send Data": "Send Data",
+    "shared-preferences-plugin": "Shared Preferences",
+    "stetho": "Stetho Guidance",
+    "Stetho Guidance": "Stetho Guidance",
+    "styling-components": "Styling Components",
+    "Styling Components": "Styling Components",
+    "testing": "Testing",
+    "Testing": "Testing",
+    "troubleshooting": "Troubleshooting Issues",
+    "Troubleshooting Issues": "Troubleshooting Issues",
+    "ui-components": "UI Components",
+    "UI Components": "UI Components",
+    "understand": "Understanding Flipper",
+    "Understanding Flipper": "Understanding Flipper",
+    "Docs": "Docs",
+    "GitHub": "GitHub",
+    "Using Flipper": "Using Flipper",
+    "Built-in Plugins": "Built-in Plugins",
+    "Plugins: Desktop part": "Plugins: Desktop part",
+    "Plugins: Mobile part": "Plugins: Mobile part",
+    "Flipper Internals": "Flipper Internals"
   },
   "pages-strings": {
     "Help Translate|recruit community translators for your project": "Help Translate",
