@@ -17,6 +17,7 @@ const siteConfig = {
     {doc: 'understand', label: 'Docs'},
     {href: repoUrl, label: 'GitHub'},
   ],
+  editUrl: 'https://github.com/facebook/flipper/blob/master/docs/',
   /* path to images for header/footer */
   headerIcon: 'img/icon.png',
   footerIcon: 'img/mascot.png',
