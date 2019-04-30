@@ -40,7 +40,6 @@ dependencies {
     implementation deps.lithoCore
     implementation deps.lithoWidget
     implementation deps.lithoAnnotations
-    // TODO(T40752310): Temporary while we depend on the jitpack artifact with a different group.
     implementation deps.lithoFresco
     annotationProcessor deps.lithoProcessor
 
