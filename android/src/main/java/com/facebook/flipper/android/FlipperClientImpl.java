@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
@@ -27,7 +27,7 @@ class FlipperClientImpl implements FlipperClient {
   }
 
   private final HybridData mHybridData;
-  private final Map<Class<?>, String> mClassIdentifierMap = new HashMap(8);
+  private final Map<Class<?>, String> mClassIdentifierMap = new HashMap<>(8);
 
   private FlipperClientImpl(HybridData hd) {
     mHybridData = hd;
