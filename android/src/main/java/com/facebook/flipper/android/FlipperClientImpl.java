@@ -16,6 +16,7 @@ import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.soloader.SoLoader;
 import java.util.HashMap;
 import java.util.Map;
+import javax.annotation.Nullable;
 
 @DoNotStrip
 class FlipperClientImpl implements FlipperClient {
@@ -59,9 +60,11 @@ class FlipperClientImpl implements FlipperClient {
    * @deprecated Prefer using {@link #getPluginByClass(Class)} over the stringly-typed interface.
    */
   @Override
+  @Nullable
   @Deprecated
   public native <T extends FlipperPlugin> T getPlugin(String id);
 
+  @Nullable
   @Override
   public <T extends FlipperPlugin> T getPluginByClass(Class<T> cls) {
     final String id = mClassIdentifierMap.get(cls);
