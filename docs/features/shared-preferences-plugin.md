@@ -2,6 +2,7 @@
 id: shared-preferences-plugin
 title: Shared Preferences
 ---
+→ [See setup instructions for the Shared Preferences plugin](setup/shared-preferences-plugin.md)
 
 Easily inspect and modify the data contained within your app's shared preferences.
 

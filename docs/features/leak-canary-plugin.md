@@ -3,6 +3,8 @@ id: leak-canary-plugin
 title: LeakCanary
 ---
 
+→ [See setup instructions for the LeakCanary](setup/leak-canary-plugin.md)
+
 The LeakCanary plugin provides developers with Flipper support for [LeakCanary](https://github.com/square/leakcanary), an open source memory leak detection library.
 
 Leaks detected by LeakCanary will appear automatically in Flipper. Each leak will display a hierarchy of objects, beginning from the garbage collector root and ending at the leaked class.

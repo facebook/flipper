@@ -3,6 +3,8 @@ id: layout-plugin
 title: Layout Inspector
 ---
 
+→ [See setup instructions for the Layout Inspector](setup/layout-plugin.md)
+
 The Layout Inspector in Flipper is useful for a ton of different debugging scenarios. First of all, you can inspect what views the hierarchy is made up of as well as what properties each view has. This is incredibly useful when debugging issues with your product.
 
 The Layout tab supports [Litho](https://fblitho.com) and [ComponentKit](https://componentkit.org) components as well. We integrate with these frameworks to present components in the hierarchy just as if they were native views. We show you all the layout properties, props, and state of the components. The layout inspector is further extensible to support other UI frameworks.

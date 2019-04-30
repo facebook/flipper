@@ -3,6 +3,8 @@ id: network-plugin
 title: Network
 ---
 
+→ [See setup instructions for the Network plugin](setup/network-plugin.md)
+
 Use the Network inspector to inspect outgoing network traffic our apps. You can easily browse all requests being made and their responses. The plugin also supports gzipped responses.
 
 ![Network plugin](/docs/assets/network.png)
