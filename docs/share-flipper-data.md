@@ -25,34 +25,18 @@ To export Flipper data as a `.flipper` file, follow these steps:
 
 There are multiple ways to open a `.flipper` file.
 
-**Easiest Way**
+**Directly from finder**
 
-1. Double click the `.flipper` file, it would automatically open Flipper and import its data. So cool! 😎
+Double click the `.flipper` file to launch the app with that device snapshot.
 
-**From UI**
+**From within Flipper**
 
-1) Open Flipper and click on the “File” in the menu bar
+Choose "Open File..." from either the Devices dropdown menu or the File menu (or keyboard shortcut ⌘O) and select the file to import.
 
-2) Click Open File...
-
-   Or
-
-
-1) Open Flipper and click on the device dropdown
-
-2) Find the Open File... option at the bottom of the dropdown
-
-   Or
-
-
-  Use Shortcut ⌘O
-
-3) A dialog will show up, select the file and click on Open
-
-4) You will now have imported the Flipper data. You would see an offline (archived device) being created, which looks like the following image.
-
+This will load the snapshot as an offline device, which will look like this:
 
 ![importedDevice](/docs/assets/shareFlipperData/importedDevice.png)
 
+**flipper:// URL handler**
 
-For any queries and bugs, please create a GitHub [issue](https://github.com/facebook/flipper/issues/).
+For advanced users, flipper is a registered handler for URLs of the form `flipper://import...` so if you download a .flipper file from a link like this, Flipper will launch directly from the browser and display the downloaded snapshot.
