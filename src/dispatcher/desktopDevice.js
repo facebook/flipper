@@ -8,14 +8,20 @@
 import type {Store} from '../reducers/index.js';
 import type {Logger} from '../fb-interfaces/Logger.js';
 
+import MacDevice from '../devices/MacDevice';
 import WindowsDevice from '../devices/WindowsDevice';
 
 export default (store: Store, logger: Logger) => {
-  if (process.platform !== 'win32') {
+  var device;
+  if (process.platform === 'darwin') {
+    device = new MacDevice();
+  } else if (process.platform === 'win32') {
+    device = new WindowsDevice();
+  } else {
     return;
   }
   store.dispatch({
     type: 'REGISTER_DEVICE',
-    payload: new WindowsDevice(),
+    payload: device,
   });
 };
