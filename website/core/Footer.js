@@ -29,7 +29,6 @@ class Footer extends React.Component {
                 alt="Flipper mascot"
                 title="I'm a dolphin not a whale!"
                 width="66"
-                height="58"
               />
             )}
           </a>

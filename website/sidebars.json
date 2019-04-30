@@ -1,36 +1,43 @@
 {
+  "features": {
+    "Features": [
+      "features/index",
+      "features/logs-plugin",
+      "features/layout-plugin",
+      "features/network-plugin",
+      "features/sandbox-plugin",
+      "features/shared-preferences-plugin",
+      "features/leak-canary-plugin",
+      "features/crash-reporter-plugin",
+      "features/share-flipper-data"
+    ]
+  },
   "docs": {
     "Using Flipper": [
       "getting-started",
-      "understand",
-      "stetho",
       "share-flipper-data",
       "troubleshooting"
     ],
-    "Built-in Plugins": [
-      "logs-plugin",
-      "layout-plugin",
-      "network-plugin",
-      "sandbox-plugin",
-      "shared-preferences-plugin",
-      "leak-canary-plugin",
-      "crash-reporter-plugin"
+    "Plugin Setup": [
+      "setup/layout-plugin",
+      "setup/network-plugin",
+      "setup/sandbox-plugin",
+      "setup/shared-preferences-plugin",
+      "setup/leak-canary-plugin",
+      "setup/crash-reporter-plugin"
     ],
-    "Plugins: Desktop part": [
+    "Plugin Development": [
       "js-setup",
       "writing-a-plugin",
       "create-table-plugin",
       "communicating",
       "ui-components",
-      "styling-components"
-    ],
-    "Plugins: Mobile part": [
+      "styling-components",
       "create-plugin",
       "send-data",
       "error-handling",
       "testing"
     ],
-    "Flipper Internals": ["establishing-a-connection"],
-    "Advanced Usage": ["custom-ports"]
+    "Advanced Usage": ["custom-ports", "establishing-a-connection", "stetho"]
   }
 }

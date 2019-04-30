@@ -9,14 +9,9 @@ h5,
 h6 {
   font-family: 'San Francisco', -apple-system, BlinkMacSystemFont,
     '.SFNSText-Regular', 'Helvetica Neue', Helvetica, sans-serif;
-  font-size: 17px;
-  font-weight: 400;
 }
 
-.fixedHeaderContainer header h2 {
-  font-family: 'San Francisco', -apple-system, BlinkMacSystemFont,
-    '.SFNSText-Regular', 'Helvetica Neue', Helvetica, sans-serif;
-  font-size: 17px;
+.headerTitleWithLogo {
   font-weight: 400;
 }
 
@@ -110,7 +105,7 @@ h6 {
 .content.row {
   display: flex;
   flex-direction: row;
-  margin: 80px auto;
+  margin: 60px auto;
 }
 
 .content .col {
@@ -124,9 +119,11 @@ h6 {
   font-size: 28px;
   font-weight: 300;
   margin-bottom: 20px;
+  margin-top: 0;
 }
 
 .col h4 {
+  margin: 0;
   font-weight: 500;
   font-size: 0.8em;
   opacity: 0.7;
@@ -176,10 +173,6 @@ nav.toc .toggleNav .navGroup.navGroupActive h3 {
   width: 100%;
 }
 
-.docsNavContainer {
-  margin-top: 65px;
-}
-
 a.learnmore {
   display: inline-block;
   margin-top: 10px;
@@ -190,7 +183,7 @@ a.learnmore:hover {
   opacity: 0.7;
 }
 
-nav.toc .toggleNav ul li a.navItemActive {
+.toc .toggleNav ul li.navListItemActive a {
   color: $actionColor;
   opacity: 1;
 }
@@ -257,11 +250,11 @@ pre code {
   border: 0;
 }
 
-.mainContainer article table td:nth-child(1){
+.mainContainer article table td:nth-child(1) {
   width: 15%;
   min-width: 140px;
 }
-.mainContainer article table td:nth-child(2){
+.mainContainer article table td:nth-child(2) {
   width: 25%;
 }
 table tr {
@@ -278,7 +271,8 @@ table tr th {
   text-transform: none;
 }
 
-table tr th code, table tr td code {
+table tr th code,
+table tr td code {
   background: none;
   margin: 0;
   color: inherit;
@@ -366,7 +360,12 @@ footer iframe {
 }
 
 .warning {
-    background-color: rgb(253, 245, 212);
-    border-left: 4px solid rgb(241, 196, 15);
-    padding: 12px;
+  background-color: rgb(253, 245, 212);
+  border-left: 4px solid rgb(241, 196, 15);
+  padding: 12px;
+}
+
+.navListItem a[href='/docs/features/index.html'] {
+  /* Hide sidebar link to "Features"-pages, because it is linked in header */
+  display: none !important;
 }

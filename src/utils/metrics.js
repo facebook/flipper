@@ -20,11 +20,11 @@ export function reportPlatformFailures<T>(
 ): Promise<T> {
   return promise.then(
     fulfilledValue => {
-      getInstance().track('success-rate', name, 1);
+      logPlatformSuccessRate(name, {isSuccess: true});
       return fulfilledValue;
     },
     rejectionReason => {
-      getInstance().track('success-rate', name, 0);
+      logPlatformSuccessRate(name, {isSuccess: false, error: rejectionReason});
       return Promise.reject(rejectionReason);
     },
   );
@@ -44,11 +44,14 @@ export function reportPluginFailures<T>(
 ): Promise<T> {
   return promise.then(
     fulfilledValue => {
-      getInstance().track('success-rate', name, 1, plugin);
+      logPluginSuccessRate(name, plugin, {isSuccess: true});
       return fulfilledValue;
     },
     rejectionReason => {
-      getInstance().track('success-rate', name, 0, plugin);
+      logPluginSuccessRate(name, plugin, {
+        isSuccess: false,
+        error: rejectionReason,
+      });
       return Promise.reject(rejectionReason);
     },
   );
@@ -64,10 +67,43 @@ export function tryCatchReportPlatformFailures<T>(
 ): T {
   try {
     const result = closure();
-    getInstance().track('success-rate', name, 1);
+    logPlatformSuccessRate(name, {isSuccess: true});
     return result;
   } catch (e) {
-    getInstance().track('success-rate', name, 0);
+    logPlatformSuccessRate(name, {isSuccess: false, error: e});
     throw e;
   }
+}
+
+type Result = {isSuccess: true} | {isSuccess: false, error: any};
+
+function logPlatformSuccessRate(name: string, result: Result) {
+  if (result.isSuccess) {
+    getInstance().track('success-rate', name, {value: 1});
+  } else {
+    getInstance().track('success-rate', name, {
+      value: 0,
+      error: extractMessage(result.error),
+    });
+  }
+}
+
+function logPluginSuccessRate(name: string, plugin: string, result: Result) {
+  if (result.isSuccess) {
+    getInstance().track('success-rate', name, {value: 1}, plugin);
+  } else {
+    getInstance().track(
+      'success-rate',
+      name,
+      {value: 1, error: extractMessage(result.error)},
+      plugin,
+    );
+  }
+}
+
+function extractMessage(error: any) {
+  if (error instanceof Error) {
+    return error.message;
+  }
+  return JSON.stringify(error);
 }

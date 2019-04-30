@@ -48,7 +48,7 @@ export type DeviceExport = {|
   logs: Array<DeviceLogEntry>,
 |};
 
-export type OS = 'iOS' | 'Android' | 'Windows';
+export type OS = 'iOS' | 'Android' | 'Windows' | 'MacOS';
 
 export default class BaseDevice {
   constructor(serial: string, deviceType: DeviceType, title: string) {
