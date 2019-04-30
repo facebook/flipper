@@ -18,6 +18,7 @@ include ':glog'
 include ':libevent'
 include ':rsocket'
 include ':third-party'
+include ':noop'
 
 project(':fbjni').projectDir = file('libs/fbjni')
 project(':easywsclient').projectDir = file('libs/easywsclient')
@@ -30,3 +31,4 @@ project(':folly').projectDir = file('android/third-party/external/folly/')
 project(':libevent').projectDir = file('android/third-party/external/LibEvent/')
 project(':rsocket').projectDir = file('android/third-party/external/RSocket/')
 project(':third-party').projectDir = file('android/third-party/')
+project(':noop').projectDir = file('android/no-op/')
