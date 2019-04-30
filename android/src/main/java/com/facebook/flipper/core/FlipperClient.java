@@ -7,11 +7,15 @@
  */
 package com.facebook.flipper.core;
 
+import javax.annotation.Nullable;
+
 public interface FlipperClient {
   void addPlugin(FlipperPlugin plugin);
 
+  @Nullable
   <T extends FlipperPlugin> T getPlugin(String id);
 
+  @Nullable
   <T extends FlipperPlugin> T getPluginByClass(Class<T> cls);
 
   void removePlugin(FlipperPlugin plugin);
