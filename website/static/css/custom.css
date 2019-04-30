@@ -364,3 +364,8 @@ footer iframe {
   border-left: 4px solid rgb(241, 196, 15);
   padding: 12px;
 }
+
+.navListItem a[href='/docs/features/index.html'] {
+  /* Hide sidebar link to "Features"-pages, because it is linked in header */
+  display: none !important;
+}
