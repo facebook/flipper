@@ -26,7 +26,7 @@ class Index extends React.Component {
                 href="https://www.facebook.com/fbflipper/public/mac">
                 Download
               </a>
-              <a className="btn" href="/docs/understand.html">
+              <a className="btn" href="/docs/getting-started.html">
                 Learn more
               </a>
             </div>
@@ -70,7 +70,7 @@ class Index extends React.Component {
               data back and forth, calling functions, and listening for events
               on the mobile app.
             </p>
-            <a className="learnmore" href="/docs/understand.html">
+            <a className="learnmore" href="/docs/getting-started.html">
               Learn more
             </a>
           </div>

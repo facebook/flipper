@@ -131,7 +131,9 @@ export default class WelcomeScreen extends PureComponent<Props, State> {
           </Version>
           <Item
             onClick={() =>
-              shell.openExternal('https://fbflipper.com/docs/understand.html')
+              shell.openExternal(
+                'https://fbflipper.com/docs/getting-started.html',
+              )
             }>
             <Icon size={20} name="rocket" color={brandColors.Flipper} />
             <FlexColumn>
