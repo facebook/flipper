@@ -1,7 +1,6 @@
 ---
 id: arch
 title: Architecture
-sidebar_label: Architecture
 ---
 
 Flipper is built to be a universal pluggable platform for development tools. Currently Flipper focuses on Android and iOS development but its design does not limit it to these platforms. Another way to think of Flipper is a more general purpose implementation of Chrome DevTools.

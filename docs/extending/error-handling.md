@@ -1,7 +1,6 @@
 ---
 id: error-handling
 title: Error Handling
-sidebar_label: Error Handling
 ---
 
 Errors in Flipper plugins should be hidden from the user while providing actionable data to the plugin developer.

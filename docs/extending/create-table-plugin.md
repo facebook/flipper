@@ -1,7 +1,6 @@
 ---
 id: create-table-plugin
 title: Create Table Plugin
-sidebar_label: Create Table Plugin
 ---
 
 A very common kind of Flipper plugin is a plugin which fetches some structured data from the device and presents it in a table.

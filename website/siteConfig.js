@@ -14,7 +14,8 @@ const siteConfig = {
   projectName: 'flipper',
   headerLinks: [
     {doc: 'features/index', label: 'Features'},
-    {doc: 'getting-started', label: 'Docs'},
+    {doc: 'getting-started', label: 'Setup'},
+    {doc: 'extending/index', label: 'Extending'},
     {href: repoUrl, label: 'GitHub'},
   ],
   editUrl: 'https://github.com/facebook/flipper/blob/master/docs/',

@@ -1,7 +1,6 @@
 ---
 id: writing-a-plugin
 title: Writing a plugin in JavaScript
-sidebar_label: Writing a plugin
 ---
 
 Every plugin needs to be self-contained in its own folder. At the root-level of this folder we are expecting a `package.json` for your plugin and an `index.js` file which is the entry-point to your plugin. To learn more about the basic setup of a plugin, have a look at [JavaScript Setup](jssetup.md).

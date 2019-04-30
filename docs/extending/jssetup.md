@@ -1,7 +1,6 @@
 ---
 id: js-setup
 title: JavaScript Setup
-sidebar_label: JavaScript Setup
 ---
 
 ## Creating the plugin UI

@@ -1,7 +1,6 @@
 ---
 id: styling-components
 title: Styling Components
-sidebar_label: Styling Components
 ---
 
 We are using [emotion](https://emotion.sh) to style our components. For more details on how this works, please refer to emotion's documentation. We heavily use their [Styled Components](https://emotion.sh/docs/styled) approach, which allows you to extend our built-in components.

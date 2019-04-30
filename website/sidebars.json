@@ -12,7 +12,7 @@
       "features/share-flipper-data"
     ]
   },
-  "docs": {
+  "setup": {
     "Using Flipper": [
       "getting-started",
       "share-flipper-data",
@@ -26,19 +26,22 @@
       "setup/leak-canary-plugin",
       "setup/crash-reporter-plugin"
     ],
+    "Advanced Usage": ["custom-ports", "stetho"]
+  },
+  "extending": {
+    "Extending Flipper": ["extending/index"],
     "Plugin Development": [
-      "js-setup",
-      "writing-a-plugin",
-      "create-table-plugin",
-      "communicating",
-      "ui-components",
-      "styling-components",
-      "create-plugin",
-      "send-data",
-      "error-handling",
-      "testing"
+      "extending/js-setup",
+      "extending/writing-a-plugin",
+      "extending/create-table-plugin",
+      "extending/communicating",
+      "extending/ui-components",
+      "extending/styling-components",
+      "extending/create-plugin",
+      "extending/send-data",
+      "extending/error-handling",
+      "extending/testing"
     ],
-    "Advanced Usage": ["custom-ports", "stetho"],
     "Internals": ["arch", "establishing-a-connection"]
   }
 }

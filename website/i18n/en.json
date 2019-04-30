@@ -5,33 +5,46 @@
     "previous": "Previous",
     "tagline": "Extensible mobile app debugging",
     "docs": {
-      "arch": {
-        "title": "Architecture",
-        "sidebar_label": "Architecture"
-      },
       "communicating": {
         "title": "Device Communication",
         "sidebar_label": "Device Communication"
-      },
-      "create-plugin": {
-        "title": "Mobile Setup",
-        "sidebar_label": "Mobile Setup"
-      },
-      "create-table-plugin": {
-        "title": "Create Table Plugin",
-        "sidebar_label": "Create Table Plugin"
       },
       "custom-ports": {
         "title": "Running Flipper with different ports",
         "sidebar_label": "Using different ports"
       },
-      "error-handling": {
-        "title": "Error Handling",
-        "sidebar_label": "Error Handling"
+      "extending/arch": {
+        "title": "Architecture"
       },
-      "establishing-a-connection": {
-        "title": "Establishing a connection",
-        "sidebar_label": "Establishing a connection"
+      "extending/create-plugin": {
+        "title": "Mobile Setup"
+      },
+      "extending/create-table-plugin": {
+        "title": "Create Table Plugin"
+      },
+      "extending/error-handling": {
+        "title": "Error Handling"
+      },
+      "extending/establishing-a-connection": {
+        "title": "Establishing a connection"
+      },
+      "extending/index": {
+        "title": "Clients and Plugins"
+      },
+      "extending/js-setup": {
+        "title": "JavaScript Setup"
+      },
+      "extending/send-data": {
+        "title": "Sending Data to Plugins"
+      },
+      "extending/styling-components": {
+        "title": "Styling Components"
+      },
+      "extending/testing": {
+        "title": "Testing"
+      },
+      "extending/writing-a-plugin": {
+        "title": "Writing a plugin in JavaScript"
       },
       "features/crash-reporter-plugin": {
         "title": "Crash Reporter"
@@ -63,14 +76,6 @@
       "getting-started": {
         "title": "Getting Started"
       },
-      "js-setup": {
-        "title": "JavaScript Setup",
-        "sidebar_label": "JavaScript Setup"
-      },
-      "send-data": {
-        "title": "Sending Data to Plugins",
-        "sidebar_label": "Send Data"
-      },
       "setup/crash-reporter-plugin": {
         "title": "Crash Reporter Setup",
         "sidebar_label": "Crash Reporter"
@@ -99,14 +104,6 @@
         "title": "Stetho Guidance",
         "sidebar_label": "Stetho Guidance"
       },
-      "styling-components": {
-        "title": "Styling Components",
-        "sidebar_label": "Styling Components"
-      },
-      "testing": {
-        "title": "Testing",
-        "sidebar_label": "Testing"
-      },
       "troubleshooting": {
         "title": "Troubleshooting Issues",
         "sidebar_label": "Troubleshooting Issues"
@@ -114,23 +111,21 @@
       "ui-components": {
         "title": "UI Components",
         "sidebar_label": "UI Components"
-      },
-      "writing-a-plugin": {
-        "title": "Writing a plugin in JavaScript",
-        "sidebar_label": "Writing a plugin"
       }
     },
     "links": {
       "Features": "Features",
-      "Docs": "Docs",
+      "Setup": "Setup",
+      "Extending": "Extending",
       "GitHub": "GitHub"
     },
     "categories": {
       "Features": "Features",
       "Using Flipper": "Using Flipper",
       "Plugin Setup": "Plugin Setup",
-      "Plugin Development": "Plugin Development",
       "Advanced Usage": "Advanced Usage",
+      "Extending Flipper": "Extending Flipper",
+      "Plugin Development": "Plugin Development",
       "Internals": "Internals"
     }
   },

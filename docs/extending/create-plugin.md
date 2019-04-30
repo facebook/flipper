@@ -1,7 +1,6 @@
 ---
 id: create-plugin
 title: Mobile Setup
-sidebar_label: Mobile Setup
 ---
 
 ## Implement FlipperPlugin

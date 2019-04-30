@@ -1,7 +1,6 @@
 ---
 id: testing
 title: Testing
-sidebar_label: Testing
 ---
 
 Developer tools are only used if they work. We have built APIs to test plugins.
