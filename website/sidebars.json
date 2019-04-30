@@ -38,6 +38,7 @@
       "error-handling",
       "testing"
     ],
-    "Advanced Usage": ["custom-ports", "establishing-a-connection", "stetho"]
+    "Advanced Usage": ["custom-ports", "stetho"],
+    "Internals": ["arch", "establishing-a-connection"]
   }
 }

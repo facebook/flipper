@@ -5,6 +5,10 @@
     "previous": "Previous",
     "tagline": "Extensible mobile app debugging",
     "docs": {
+      "arch": {
+        "title": "Architecture",
+        "sidebar_label": "Architecture"
+      },
       "communicating": {
         "title": "Device Communication",
         "sidebar_label": "Device Communication"
@@ -126,7 +130,8 @@
       "Using Flipper": "Using Flipper",
       "Plugin Setup": "Plugin Setup",
       "Plugin Development": "Plugin Development",
-      "Advanced Usage": "Advanced Usage"
+      "Advanced Usage": "Advanced Usage",
+      "Internals": "Internals"
     }
   },
   "pages-strings": {
