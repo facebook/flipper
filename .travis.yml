@@ -114,4 +114,4 @@ matrix:
         - cd ../
       script:
         - ./gradlew :sample:assembleDebug
-        - ./gradlew :android:testDebugUnitTest
+        - ./gradlew :android:testDebugUnitTest :sample:testDebugUnitTest
