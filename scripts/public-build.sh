@@ -1,4 +1,8 @@
 #!/bin/bash
+# Copyright (c) Facebook, Inc. and its affiliates.
+#
+# This source code is licensed under the MIT license found in the LICENSE file
+# in the root directory of this source tree.
 
 echo "✨ Creating new Flipper release on GitHub..."
 MAJOR=$(curl -x fwdproxy:8080 --silent https://raw.githubusercontent.com/facebook/flipper/master/package.json | jq -r '.version' | sed -E 's/[0-9]+$//g')
