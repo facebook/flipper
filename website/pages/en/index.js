@@ -30,11 +30,15 @@ class Index extends React.Component {
                 Learn more
               </a>
             </div>
-            <img
-              src="/img/splash.png"
-              srcSet="/img/splash.png 1x, /img/splash@2x.png 2x"
-              className="splashScreen"
-            />
+            <div className="slideshow">
+              <img src="/docs/assets/logs.png" className="splashScreen" />
+              <img src="/docs/assets/layout.png" className="splashScreen" />
+              <img src="/docs/assets/network.png" className="splashScreen" />
+              <img
+                src="/docs/assets/crashreporterplugin.png"
+                className="splashScreen"
+              />
+            </div>
             <div className="shadow" />
           </div>
         </div>
