@@ -156,6 +156,7 @@ function renderTable(page: ?Page) {
       }, {})}
       zebra={true}
       rows={page.rows}
+      horizontallyScrollable={true}
     />
   );
 }
@@ -178,6 +179,7 @@ function renderDatabaseColumns(structure: ?Structure) {
         }, {})}
         zebra={true}
         rows={structure.rows || []}
+        horizontallyScrollable={true}
       />
     </FlexRow>
   );
@@ -201,6 +203,7 @@ function renderDatabaseIndexes(structure: ?Structure) {
         }, {})}
         zebra={true}
         rows={structure.indexesValues || []}
+        horizontallyScrollable={true}
       />
     </FlexRow>
   );
