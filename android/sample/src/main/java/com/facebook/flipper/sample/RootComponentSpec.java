@@ -11,6 +11,7 @@ import android.content.Intent;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.flipper.android.diagnostics.FlipperDiagnosticActivity;
+import com.facebook.flipper.sample.network.NetworkClient;
 import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
@@ -23,6 +24,7 @@ import com.facebook.litho.annotations.OnUpdateState;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.fresco.FrescoImage;
 import com.facebook.litho.widget.Text;
+
 @LayoutSpec
 public class RootComponentSpec {
 
@@ -67,12 +69,12 @@ public class RootComponentSpec {
 
   @OnEvent(ClickEvent.class)
   static void hitGetRequest(final ComponentContext c) {
-    ExampleActions.sendGetRequest();
+    ExampleActions.sendGetRequest(NetworkClient.getInstance().getOkHttpClient());
   }
 
   @OnEvent(ClickEvent.class)
   static void hitPostRequest(final ComponentContext c) {
-    ExampleActions.sendPostRequest();
+    ExampleActions.sendPostRequest(NetworkClient.getInstance().getOkHttpClient());
   }
 
   @OnEvent(ClickEvent.class)
@@ -82,7 +84,7 @@ public class RootComponentSpec {
 
   @OnEvent(ClickEvent.class)
   static void openDiagnostics(final ComponentContext c) {
-    Intent intent = new Intent(c.getAndroidContext(), FlipperDiagnosticActivity.class);
+    final Intent intent = new Intent(c.getAndroidContext(), FlipperDiagnosticActivity.class);
     c.getAndroidContext().startActivity(intent);
   }
 

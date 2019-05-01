@@ -16,6 +16,7 @@ import com.facebook.flipper.core.FlipperPlugin;
 import com.facebook.flipper.core.FlipperReceiver;
 import com.facebook.flipper.core.FlipperResponder;
 import com.facebook.flipper.sample.ExampleActions;
+import com.facebook.flipper.sample.network.NetworkClient;
 
 public class ConnectionTestPlugin implements FlipperPlugin {
 
@@ -63,8 +64,9 @@ public class ConnectionTestPlugin implements FlipperPlugin {
         new Runnable() {
           @Override
           public void run() {
-            ExampleActions.sendGetRequest();
-            ExampleActions.sendPostRequest();
+            final NetworkClient networkClient = NetworkClient.getInstance();
+            ExampleActions.sendGetRequest(networkClient.getOkHttpClient());
+            ExampleActions.sendPostRequest(networkClient.getOkHttpClient());
             // We want Flipper to properly disconnect at this point and actually shut down the app.
             mActivity.finish();
             android.os.Process.sendSignal(android.os.Process.myPid(), 15);

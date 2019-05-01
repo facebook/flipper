@@ -1,3 +1,10 @@
+/*
+ *  Copyright (c) 2018-present, Facebook, Inc.
+ *
+ *  This source code is licensed under the MIT license found in the LICENSE
+ *  file in the root directory of this source tree.
+ *
+ */
 package com.facebook.flipper.sample;
 
 import android.util.Log;
@@ -8,13 +15,14 @@ import java.io.IOException;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public final class ExampleActions {
 
-  public static void sendPostRequest() {
+  public static void sendPostRequest(OkHttpClient client) {
     final RequestBody formBody =
         new FormBody.Builder().add("app", "Flipper").add("remarks", "Its awesome").build();
 
@@ -24,7 +32,7 @@ public final class ExampleActions {
             .post(formBody)
             .build();
 
-    FlipperSampleApplication.sOkHttpClient
+    client
         .newCall(request)
         .enqueue(
             new Callback() {
@@ -45,9 +53,10 @@ public final class ExampleActions {
             });
   }
 
-  public static void sendGetRequest() {
-    final Request request = new Request.Builder().url("https://api.github.com/repos/facebook/yoga").get().build();
-    FlipperSampleApplication.sOkHttpClient
+  public static void sendGetRequest(OkHttpClient client) {
+    final Request request =
+        new Request.Builder().url("https://api.github.com/repos/facebook/yoga").get().build();
+    client
         .newCall(request)
         .enqueue(
             new Callback() {

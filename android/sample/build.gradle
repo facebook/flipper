@@ -64,5 +64,6 @@ dependencies {
     testImplementation deps.hamcrest
     testImplementation deps.junit
 
-    implementation project(':android')
+    debugImplementation project(':android')
+    releaseImplementation project(':noop')
 }

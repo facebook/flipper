@@ -1,3 +1,10 @@
+/*
+ *  Copyright (c) 2018-present, Facebook, Inc.
+ *
+ *  This source code is licensed under the MIT license found in the LICENSE
+ *  file in the root directory of this source tree.
+ *
+ */
 package com.facebook.flipper.connectivitytest;
 
 import android.os.Bundle;
@@ -6,9 +13,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.facebook.flipper.android.AndroidFlipperClient;
 import com.facebook.flipper.core.FlipperClient;
 import com.facebook.flipper.plugins.example.ExampleFlipperPlugin;
-import com.facebook.flipper.sample.RootComponent;
-import com.facebook.litho.ComponentContext;
-import com.facebook.litho.LithoView;
 
 /**
  * Oh hai! This is probably not the kinda sample you want to copy to your application; we're just
@@ -19,9 +23,6 @@ public class ConnectionTestActivity extends AppCompatActivity {
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-
-    final ComponentContext c = new ComponentContext(this);
-    setContentView(LithoView.create(c, RootComponent.create(c).build()));
 
     final FlipperClient client = AndroidFlipperClient.getInstanceIfInitialized();
     if (client != null) {
