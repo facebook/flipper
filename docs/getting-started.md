@@ -100,8 +100,6 @@ We support both Swift and Objective-C for Flipper with CocoaPods as build and di
 <!--Objective-C-->
 ```ruby
 project 'MyApp.xcodeproj'
-source 'https://github.com/facebook/flipper.git'
-source 'https://github.com/CocoaPods/Specs'
 swift_version = "4.1"
 flipperkit_version = '0.20.0'
 
@@ -112,40 +110,28 @@ target 'MyApp' do
   pod 'FlipperKit/FlipperKitLayoutComponentKitSupport', '~>' + flipperkit_version
   pod 'FlipperKit/SKIOSNetworkPlugin', '~>' + flipperkit_version
   pod 'FlipperKit/FlipperKitUserDefaultsPlugin', '~>' + flipperkit_version
-  # This post_install script adds min deployment iOS version to yoga's pod target.
-  # It also adds -DFB_SONARKIT_ENABLED=1 flag to OTHER_CFLAGS, necessary to build expose Flipper classes in the header files
+  # This post_install hook adds the -DFB_SONARKIT_ENABLED=1 flag to OTHER_CFLAGS, necessary to expose Flipper classes in the header files
   post_install do |installer|
-      installer.pods_project.targets.each do |target|
-               if ('Yoga' == target.name)
-                   target.build_configurations.each do |config|
-                     config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '8.0'
-                   end
-               end
-       end
-	    file_name = Dir.glob("*.xcodeproj")[0]
-	    app_project = Xcodeproj::Project.open(file_name)
-	    app_project.native_targets.each do |target|
-	        target.build_configurations.each do |config|
-	          if (config.build_settings['OTHER_CFLAGS'])
-	            if !(config.build_settings['OTHER_CFLAGS'].include? '-DFB_SONARKIT_ENABLED=1')
-	              puts 'Adding -DFB_SONARKIT_ENABLED=1 in OTHER_CFLAGS...'
-	              config.build_settings['OTHER_CFLAGS'] << '-DFB_SONARKIT_ENABLED=1'
-	            end
-	          else
-	            puts 'OTHER_CFLAGS does not exist, assigining it to `$(inherited), -DFB_SONARKIT_ENABLED=1` '
-	            config.build_settings['OTHER_CFLAGS'] = '$(inherited) -DFB_SONARKIT_ENABLED=1 '
-	          end
-	          app_project.save
-	        end
-	    end
+    file_name = Dir.glob("*.xcodeproj")[0]
+    app_project = Xcodeproj::Project.open(file_name)
+    app_project.native_targets.each do |target|
+      target.build_configurations.each do |config|
+        cflags = config.build_settings['OTHER_CFLAGS'] || '$(inherited) '
+        unless cflags.include? '-DFB_SONARKIT_ENABLED=1'
+          puts 'Adding -DFB_SONARKIT_ENABLED=1 in OTHER_CFLAGS...'
+          cflags << '-DFB_SONARKIT_ENABLED=1'
+        end
+        config.build_settings['OTHER_CFLAGS'] = cflags
+      end
+      app_project.save
+    end
+    installer.pods_project.save
    end
 end
 ```
 <!--Swift-->
 ```ruby
 project 'MyApp.xcodeproj'
-source 'https://github.com/facebook/flipper.git'
-source 'https://github.com/CocoaPods/Specs'
 swift_version = "4.1"
 flipperkit_version = '0.20.0'
 
@@ -177,22 +163,14 @@ target 'MyApp' do
   #   end
   # end
 
-  # This post_install script adds min deployment iOS version to yoga's pod target.
-  # It also adds -DFB_SONARKIT_ENABLED flag to OTHER_SWIFT_FLAGS, necessary to build swift target
+  # This post_install hook adds the -DFB_SONARKIT_ENABLED flag to OTHER_SWIFT_FLAGS, necessary to build swift target
   post_install do |installer|
     file_name = Dir.glob("*.xcodeproj")[0]
     app_project = Xcodeproj::Project.open(file_name)
-    installer.pods_project.targets.each do |target|
-              if ('Yoga' == target.name)
-                  target.build_configurations.each do |config|
-                    config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '8.0'
-                  end
-              end
-      end
     app_project.native_targets.each do |target|
         target.build_configurations.each do |config|
           if (config.build_settings['OTHER_SWIFT_FLAGS'])
-            if !(config.build_settings['OTHER_SWIFT_FLAGS'].include? '-DFB_SONARKIT_ENABLED')
+            unless config.build_settings['OTHER_SWIFT_FLAGS'].include? '-DFB_SONARKIT_ENABLED'
               puts 'Adding -DFB_SONARKIT_ENABLED ...'
               swift_flags = config.build_settings['OTHER_SWIFT_FLAGS']
               if swift_flags.split.last != '-Xcc'
@@ -207,16 +185,21 @@ target 'MyApp' do
           app_project.save
         end
       end
+      installer.pods_project.save
   end
 end
 ```
 <!--END_DOCUSAURUS_CODE_TABS-->
 
-Install the dependencies by running `pod install`. When you open the XCode
-workspace file of your app, you now can import and initialize Flipper in your
-AppDelegate. Before running your app, make sure that the flag
-`-DFB_SONARKIT_ENABLED=1` is present in the `OTHER_CFLAGS` of
-application's build settings.
+You need to compile your project with the `FB_SONARKIT_ENABLED=1` compiler flag. The above `post_install` hook adds this compiler flag to your project settings.
+
+<div class="warning">
+
+On the first run of `pod install`, `FB_SONARKIT_ENABLED=1` may not be added in the "Build Settings" of your project, but in all the subsequent runs of `pod install`, the above `post_install` hook successfully adds the compiler flag. So before running your app, make sure that `FB_SONARKIT_ENABLED=1` is present in `OTHER_CFLAGS` and `OTHER_SWIFT_FLAGS` for Objective-C and Swift projects respectively.
+</div>
+
+Install the dependencies by running `pod install`. You can now import and initialize Flipper in your
+AppDelegate.
 
 <!--DOCUSAURUS_CODE_TABS-->
 
@@ -271,7 +254,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 <div class="warning">
 
-- We haven't released the dependency to CocoaPods yet, here is the [issue](https://github.com/facebook/flipper/issues/132) by which you can track.
 - If you do not use CocoaPods as a dependency management tool then currently there is no way to integrate FlipperKit other than manually including all the dependencies and building it.
 - For Android, Flipper works with both emulators and physical devices connected through USB. However on iOS, we don't yet support physical devices.
 
