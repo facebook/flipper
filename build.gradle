@@ -3,13 +3,14 @@
 // This source code is licensed under the MIT license found in the LICENSE file
 // in the root directory of this source tree.
 
-buildscript {
+buildscript { 
     repositories {
         google()
         jcenter()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.4.0'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$KOTLIN_VERSION"
     }
 }
 
@@ -67,10 +68,13 @@ ext.deps = [
         // Litho
         lithoAnnotations   : "com.facebook.litho:litho-annotations:$LITHO_VERSION",
         lithoCore          : "com.facebook.litho:litho-core:$LITHO_VERSION",
+        lithoSectionsAnnotations: "com.facebook.litho:litho-sections-annotations:$LITHO_VERSION",
         lithoSectionsDebug : "com.facebook.litho:litho-sections-debug:$LITHO_VERSION",
         lithoSectionsCore  : "com.facebook.litho:litho-sections-core:$LITHO_VERSION",
+        lithoSectionsWidget  : "com.facebook.litho:litho-sections-widget:$LITHO_VERSION",
         lithoWidget        : "com.facebook.litho:litho-widget:$LITHO_VERSION",
         lithoProcessor     : "com.facebook.litho:litho-processor:$LITHO_VERSION",
+        lithoSectionsProcessor: "com.facebook.litho:litho-sections-processor:$LITHO_VERSION",
         lithoFresco        : "com.facebook.litho:litho-fresco:$LITHO_VERSION",
         lithoTesting       : "com.facebook.litho:litho-testing:$LITHO_VERSION",
         // Debugging and testing
