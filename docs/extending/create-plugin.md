@@ -7,8 +7,9 @@ title: Mobile Setup
 
 Create a class implementing `FlipperPlugin`. The ID that is returned from your implementation needs to match the `name` defined in your JavaScript counterpart's `package.json`.
 
-### Android
 
+<!--DOCUSAURUS_CODE_TABS-->
+<!--Android-->
 ```java
 public class MyFlipperPlugin implements FlipperPlugin {
   private FlipperConnection mConnection;
@@ -34,9 +35,7 @@ public class MyFlipperPlugin implements FlipperPlugin {
   }
 }
 ```
-
-### iOS
-
+<!--iOS-->
 ```objective-c
 @interface MyFlipperPlugin : NSObject<FlipperPlugin>
 @end
@@ -50,9 +49,7 @@ public class MyFlipperPlugin implements FlipperPlugin {
 
 @end
 ```
-
-### C++
-
+<!--C++-->
 ```c++
 class MyFlipperPlugin : public FlipperPlugin {
 public:
@@ -62,13 +59,15 @@ public:
   bool runInBackground() override;
 };
 ```
+<!--END_DOCUSAURUS_CODE_TABS-->
+
 
 ## Using FlipperConnection
 
 Using the `FlipperConnection` object you can register a receiver of a desktop method call and respond with data.
 
-### Android
-
+<!--DOCUSAURUS_CODE_TABS-->
+<!--Android-->
 ```java
 connection.receive("getData", new FlipperReceiver() {
   @Override
@@ -80,9 +79,7 @@ connection.receive("getData", new FlipperReceiver() {
   }
 });
 ```
-
-### iOS
-
+<!--iOS-->
 ```objective-c
 @interface MyFlipperPlugin : NSObject<FlipperPlugin>
 @end
@@ -104,9 +101,7 @@ connection.receive("getData", new FlipperReceiver() {
 
 @end
 ```
-
-### C++
-
+<!--C++-->
 ```c++
 void MyFlipperPlugin::didConnect(std::shared_ptr<FlipperConnection> conn) {
   conn->receive("getData", [](const folly::dynamic &params,
@@ -116,34 +111,32 @@ void MyFlipperPlugin::didConnect(std::shared_ptr<FlipperConnection> conn) {
   });
 }
 ```
+<!--END_DOCUSAURUS_CODE_TABS-->
 
 ## Push data to the desktop
 
 You don't have to wait for the desktop to request data though, you can also push data directly to the desktop.
 
-### Android
-
+<!--DOCUSAURUS_CODE_TABS-->
+<!--Android-->
 ```java
 connection.send("MyMessage",
     new FlipperObject.Builder()
         .put("message", "Hello")
         .build()
 ```
-
-### iOS
-
+<!--iOS-->
 ```objective-c
 [connection send:@"getData" withParams:@{@"message":@"hello"}];
 ```
-
-### C++
-
+<!--C++-->
 ```c++
 void MyFlipperPlugin::didConnect(std::shared_ptr<FlipperConnection> conn) {
   dynamic message = folly::dynamic::object("message", "hello");
   conn->send("getData", message);
 }
 ```
+<!--END_DOCUSAURUS_CODE_TABS-->
 
 ## Background Plugins
 

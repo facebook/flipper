@@ -9,8 +9,9 @@ Plugins should be treated as singleton instances as there can only be one `Flipp
 
 Plugins are identified by the string that their identifier method returns, in this example, "MyFlipperPlugin":
 
-### Android
 
+<!--DOCUSAURUS_CODE_TABS-->
+<!--Android-->
 ```java
 final FlipperClient client = AndroidFlipperClient.getInstance(context);
 // Client may be null if AndroidFlipperClient.createInstance() was never called
@@ -20,17 +21,13 @@ if (client != null) {
   plugin.sendData(myData);
 }
 ```
-
-### iOS
-
+<!--iOS-->
 ```objective-c
 FlipperClient *client = [FlipperClient sharedClient];
 MyFlipperPlugin *myPlugin = [client pluginWithIdentifier:@"MyFlipperPlugin"];
 [myPlugin sendData:myData];
 ```
-
-### C++
-
+<!--C++-->
 ```c++
 auto &client = FlipperClient::instance();
 
@@ -45,5 +42,8 @@ myPlugin = client.getPlugin<MyFlipperPlugin>("MyFlipperPlugin");
 
 myPlugin->sendData(myData);
 ```
+```
+<!--END_DOCUSAURUS_CODE_TABS-->
+
 
 Here, `sendData` is an example of a method that might be implemented by the Flipper plugin.
