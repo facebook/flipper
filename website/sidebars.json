@@ -45,7 +45,8 @@
     ],
     "Other Platforms": [
       "extending/new-clients",
-      "extending/establishing-a-connection"
+      "extending/establishing-a-connection",
+      "extending/supporting-layout"
     ],
     "Internals": ["extending/arch"]
   }

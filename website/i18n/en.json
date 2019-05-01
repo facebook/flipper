@@ -46,6 +46,9 @@
       "extending/styling-components": {
         "title": "Styling Components"
       },
+      "extending/supporting-layout": {
+        "title": "Implementing Layout Inspection"
+      },
       "extending/testing": {
         "title": "Testing"
       },
