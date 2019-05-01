@@ -14,6 +14,9 @@ import com.facebook.flipper.core.FlipperClient
 import com.facebook.flipper.plugins.inspector.DescriptorMapping
 import com.facebook.flipper.plugins.inspector.InspectorFlipperPlugin
 import com.facebook.flipper.plugins.litho.LithoFlipperDescriptors
+import com.facebook.litho.config.ComponentsConfiguration
+import com.facebook.litho.sections.config.SectionsConfiguration
+import com.facebook.litho.widget.SectionsDebug
 import com.facebook.soloader.SoLoader
 
 class TutorialApplication : Application() {
@@ -22,6 +25,11 @@ class TutorialApplication : Application() {
 
         SoLoader.init(this, false)
         Fresco.initialize(this)
+
+        // Normally, you would want to make these dependent on BuildConfig.DEBUG.
+        ComponentsConfiguration.isDebugModeEnabled = true
+        ComponentsConfiguration.enableRenderInfoDebugging = true
+
         val flipperClient = AndroidFlipperClient.getInstance(this)
         val descriptorMapping = DescriptorMapping.withDefaults()
         LithoFlipperDescriptors.addWithSections(descriptorMapping)
