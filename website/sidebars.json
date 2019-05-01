@@ -42,6 +42,10 @@
       "extending/error-handling",
       "extending/testing"
     ],
-    "Internals": ["arch", "establishing-a-connection"]
+    "Other Platforms": [
+      "extending/new-clients",
+      "extending/establishing-a-connection"
+    ],
+    "Internals": ["extending/arch"]
   }
 }
