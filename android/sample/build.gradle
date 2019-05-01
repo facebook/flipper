@@ -23,6 +23,12 @@ android {
         main {
             manifest.srcFile './AndroidManifest.xml'
         }
+
+        test {
+            java {
+                exclude 'com/facebook/flipper/plugins/facebook/**'
+            }
+        }
     }
 
     compileOptions {
@@ -51,6 +57,12 @@ dependencies {
     // Integration test
     androidTestImplementation deps.testCore
     androidTestImplementation deps.testRules
+
+    // Unit tests
+    testImplementation deps.mockito
+    testImplementation deps.robolectric
+    testImplementation deps.hamcrest
+    testImplementation deps.junit
 
     implementation project(':android')
 }
