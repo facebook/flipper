@@ -116,6 +116,10 @@ export type ManagedTableProps = {|
    * Callback when sorting changes
    */
   onSort?: (order: TableRowSortOrder) => void,
+  /**
+   * Table scroll horizontally, if needed
+   */
+  horizontallyScrollable?: boolean,
 |};
 
 type ManagedTableState = {|
@@ -126,9 +130,10 @@ type ManagedTableState = {|
   shouldScrollToBottom: boolean,
 |};
 
-const Container = styled(FlexColumn)({
+const Container = styled(FlexColumn)(props => ({
+  overflow: props.overflow ? 'scroll' : 'visible',
   flexGrow: 1,
-});
+}));
 
 class ManagedTable extends React.Component<
   ManagedTableProps,
@@ -318,8 +323,13 @@ class ManagedTable extends React.Component<
     );
   };
 
-  onColumnResize = (columnSizes: TableColumnSizes) => {
-    this.setState({columnSizes});
+  onColumnResize = (id: string, width: number | string) => {
+    this.setState(({columnSizes}) => ({
+      columnSizes: {
+        ...columnSizes,
+        [id]: width,
+      },
+    }));
   };
 
   scrollToBottom() {
@@ -499,7 +509,13 @@ class ManagedTable extends React.Component<
   );
 
   getRow = ({index, style}) => {
-    const {onAddFilter, multiline, zebra, rows} = this.props;
+    const {
+      onAddFilter,
+      multiline,
+      zebra,
+      rows,
+      horizontallyScrollable,
+    } = this.props;
     const {columnOrder, columnSizes, highlightedRows} = this.state;
     const columnKeys = columnOrder
       .map(k => (k.visible ? k.key : null))
@@ -520,16 +536,37 @@ class ManagedTable extends React.Component<
         style={style}
         onAddFilter={onAddFilter}
         zebra={zebra}
+        horizontallyScrollable={horizontallyScrollable}
       />
     );
   };
 
   render() {
-    const {columns, rows, rowLineHeight, hideHeader} = this.props;
+    const {
+      columns,
+      rows,
+      rowLineHeight,
+      hideHeader,
+      horizontallyScrollable,
+    } = this.props;
     const {columnOrder, columnSizes} = this.state;
 
+    let computedWidth = 0;
+    if (horizontallyScrollable) {
+      for (const col in columnSizes) {
+        const width = columnSizes[col];
+        if (isNaN(width)) {
+          // non-numeric columns with, can't caluclate
+          computedWidth = 0;
+          break;
+        } else {
+          computedWidth += parseInt(width, 10);
+        }
+      }
+    }
+
     return (
-      <Container>
+      <Container overflow={horizontallyScrollable}>
         {hideHeader !== true && (
           <TableHead
             columnOrder={columnOrder}
@@ -539,6 +576,7 @@ class ManagedTable extends React.Component<
             sortOrder={this.state.sortOrder}
             columnSizes={columnSizes}
             onSort={this.onSort}
+            horizontallyScrollable={horizontallyScrollable}
           />
         )}
         <Container>
@@ -560,7 +598,7 @@ class ManagedTable extends React.Component<
                       DEFAULT_ROW_HEIGHT
                     }
                     ref={this.tableRef}
-                    width={width}
+                    width={Math.max(width, computedWidth)}
                     estimatedItemSize={rowLineHeight || DEFAULT_ROW_HEIGHT}
                     overscanCount={5}
                     innerRef={this.scrollRef}

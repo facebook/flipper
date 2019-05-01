@@ -26,7 +26,7 @@ export type TableHighlightedRows = Array<string>;
 
 export type TableColumnKeys = Array<string>;
 
-export type TableOnColumnResize = (sizes: TableColumnSizes) => void;
+export type TableOnColumnResize = (id: string, size: number | string) => void;
 export type TableOnColumnOrder = (order: TableColumnOrder) => void;
 export type TableOnSort = (order: TableRowSortOrder) => void;
 export type TableOnHighlight = (
