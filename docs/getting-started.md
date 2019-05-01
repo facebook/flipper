@@ -41,6 +41,9 @@ You should also explicitly depend on [`soloader`](https://github.com/facebook/so
 instead of relying on transitive dependency resolution which is getting deprecated
 with Gradle 5.
 
+We provide a "no-op" implementation of some oft-used Flipper interfaces you can
+use to make it easier to strip Flipper from your release builds.
+
 ```groovy
 repositories {
   jcenter()
@@ -49,6 +52,8 @@ repositories {
 dependencies {
   debugImplementation 'com.facebook.flipper:flipper:0.20.0'
   debugImplementation 'com.facebook.soloader:soloader:0.5.1'
+
+  releaseImplementation 'com.facebook.flipper:flipper-noop:0.20.0'
 }
 ```
 
@@ -87,6 +92,8 @@ repositories {
 dependencies {
   debugImplementation 'com.facebook.flipper:flipper:0.20.1-SNAPSHOT'
   debugImplementation 'com.facebook.soloader:soloader:0.5.1'
+
+  releaseImplementation 'com.facebook.flipper:flipper-noop:0.20.1-SNAPSHOT'
 }
 ```
 
