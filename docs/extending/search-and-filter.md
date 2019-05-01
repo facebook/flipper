@@ -30,7 +30,7 @@ The search term entered into the searchbar by the user.
 
 `filters: Array<Filter>`
 
-The list of filters that are currently applied
+The list of filters that are currently applied.
 
 
 #### Example
