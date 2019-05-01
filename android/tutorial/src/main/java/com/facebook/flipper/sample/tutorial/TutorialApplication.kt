@@ -11,6 +11,7 @@ import android.app.Application
 import com.facebook.drawee.backends.pipeline.Fresco
 import com.facebook.flipper.android.AndroidFlipperClient
 import com.facebook.flipper.core.FlipperClient
+import com.facebook.flipper.plugins.fresco.FrescoFlipperPlugin
 import com.facebook.flipper.plugins.inspector.DescriptorMapping
 import com.facebook.flipper.plugins.inspector.InspectorFlipperPlugin
 import com.facebook.flipper.plugins.litho.LithoFlipperDescriptors
@@ -35,6 +36,7 @@ class TutorialApplication : Application() {
         LithoFlipperDescriptors.addWithSections(descriptorMapping)
 
         flipperClient.addPlugin(InspectorFlipperPlugin(this, descriptorMapping))
+        flipperClient.addPlugin(FrescoFlipperPlugin())
         flipperClient.start()
     }
 }
