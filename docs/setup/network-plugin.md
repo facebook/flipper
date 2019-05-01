@@ -31,8 +31,27 @@ As interceptors can modify the request and response, add the Flipper interceptor
 
 ## iOS
 
+To enable network inspection, add the following pod to your Podfile:
+
+```ruby
+pod 'FlipperKit/SKIOSNetworkPlugin', '~>' + flipperkit_version
+```
+
+Initialise the plugin in the following way:
+
+<!--DOCUSAURUS_CODE_TABS-->
+<!--Objective-C-->
 ```objective-c
 #import <FlipperKitNetworkPlugin/FlipperKitNetworkPlugin.h>
 
-[client addPlugin: [FlipperKitNetworkPlugin new]]
+[[FlipperClient sharedClient] addPlugin: [[FlipperKitNetworkPlugin alloc] initWithNetworkAdapter:[SKIOSNetworkAdapter new]]];
+
 ```
+<!--Swift-->
+```swift
+import FlipperKit
+
+client?.add(FlipperKitNetworkPlugin(networkAdapter: SKIOSNetworkAdapter()))
+
+```
+<!--END_DOCUSAURUS_CODE_TABS-->
