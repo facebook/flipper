@@ -8,7 +8,7 @@ To use the layout inspector plugin, you need to add the plugin to your Flipper c
 
 ## Android
 
-**Standard Android View Only**
+### Standard Android View Only
 
 ```java
 import com.facebook.flipper.plugins.inspector.DescriptorMapping;
@@ -18,7 +18,7 @@ final DescriptorMapping descriptorMapping = DescriptorMapping.withDefaults();
 client.addPlugin(new InspectorFlipperPlugin(mApplicationContext, descriptorMapping));
 ```
 
-**With Litho Support**
+### With Litho Support
 
 If you want to enable Litho support in the layout inspector, you need to augment
 the descriptor with Litho-specific settings and add some addition dependencies.
@@ -66,21 +66,57 @@ view.setTag("flipper_skip_view_traversal", true);
 
 ## iOS
 
+### Standard UIView Only
+
+To debug layout using Flipper, add the following pod:
+
+```ruby
+pod 'FlipperKit/FlipperKitLayoutPlugin', '~>' + flipperkit_version
+```
+
+Once you have added the pod, initialise the plugin and add it to the `FlipperClient` as follows.
+
 <!--DOCUSAURUS_CODE_TABS-->
 <!--Objective-C-->
 ```objective-c
 #import <FlipperKitLayoutPlugin/FlipperKitLayoutPlugin.h>
-#import <FlipperKitLayoutPlugin/SKDescriptorMapper.h>
 
 SKDescriptorMapper *mapper = [[SKDescriptorMapper alloc] initWithDefaults];
-[client addPlugin:[[FlipperKitLayoutPlugin alloc] initWithRootNode:context.application withDescriptorMapper:mapper]]
+[client addPlugin:[[FlipperKitLayoutPlugin alloc] initWithRootNode:context.application withDescriptorMapper:mapper]];
 ```
 <!--Swift-->
 ```swift
 import FlipperKit
 
 let layoutDescriptorMapper = SKDescriptorMapper(defaults: ())
-// If you want to debug componentkit view in swift, otherwise you can ignore the next line
+client?.add(FlipperKitLayoutPlugin(rootNode: application, with: layoutDescriptorMapper!))
+```
+<!--END_DOCUSAURUS_CODE_TABS-->
+
+### With ComponentKit Support
+
+If you want to enable [ComponentKit support](https://github.com/facebook/componentkit) in the layout inspector, you need to add `FlipperKit/FlipperKitLayoutComponentKitSupport` to your Podfile.
+
+```ruby
+pod 'FlipperKit/FlipperKitLayoutComponentKitSupport', '~>' + flipperkit_version
+```   
+Once you have added the pod you will then need to augment the descriptor with Componentkit-specific settings as shown below.
+<!--DOCUSAURUS_CODE_TABS-->
+<!--Objective-C-->
+```objective-c
+#import <FlipperKitLayoutPlugin/FlipperKitLayoutPlugin.h>
+#import <FlipperKitLayoutComponentKitSupport/FlipperKitLayoutComponentKitSupport.h>
+
+SKDescriptorMapper *layoutDescriptorMapper = [[SKDescriptorMapper alloc] initWithDefaults];
+[FlipperKitLayoutComponentKitSupport setUpWithDescriptorMapper: layoutDescriptorMapper];
+[client addPlugin: [[FlipperKitLayoutPlugin alloc] initWithRootNode: application
+                                           withDescriptorMapper: layoutDescriptorMapper]];
+```
+<!--Swift-->
+```swift
+import FlipperKit
+
+let layoutDescriptorMapper = SKDescriptorMapper(defaults: ())
 FlipperKitLayoutComponentKitSupport.setUpWith(layoutDescriptorMapper)
 
 client?.add(FlipperKitLayoutPlugin(rootNode: application, with: layoutDescriptorMapper!))
