@@ -37,6 +37,9 @@
       "extending/new-clients": {
         "title": "Implementing a Flipper Client"
       },
+      "extending/search-and-filter": {
+        "title": "Searching and Filtering"
+      },
       "extending/send-data": {
         "title": "Sending Data to Plugins"
       },

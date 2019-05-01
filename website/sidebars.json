@@ -39,6 +39,7 @@
       "extending/styling-components",
       "extending/create-plugin",
       "extending/send-data",
+      "extending/search-and-filter",
       "extending/error-handling",
       "extending/testing"
     ],
