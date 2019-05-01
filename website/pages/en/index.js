@@ -22,11 +22,11 @@ class Index extends React.Component {
             </h2>
             <div className="row">
               <a
-                className="btn primary"
+                className="landing-btn primary"
                 href="https://www.facebook.com/fbflipper/public/mac">
                 Download
               </a>
-              <a className="btn" href="/docs/getting-started.html">
+              <a className="landing-btn" href="/docs/features/index.html">
                 Learn more
               </a>
             </div>
@@ -58,7 +58,7 @@ class Index extends React.Component {
               useful tools including a log viewer, interactive layout inspector,
               and network inspector.
             </p>
-            <a className="learnmore" href="/docs/getting-started.html">
+            <a className="learnmore" href="/docs/features/index.html">
               Learn more
             </a>
           </div>
@@ -74,7 +74,7 @@ class Index extends React.Component {
               data back and forth, calling functions, and listening for events
               on the mobile app.
             </p>
-            <a className="learnmore" href="/docs/getting-started.html">
+            <a className="learnmore" href="/docs/extending/index.html">
               Learn more
             </a>
           </div>
@@ -102,10 +102,24 @@ class Index extends React.Component {
               improve Flipper. We are excited to see what you will build on this
               platform.
             </p>
-            <a className="learnmore" href="/docs/js-setup.html">
+            <a
+              className="learnmore"
+              href="https://github.com/facebook/flipper"
+              target="_blank">
               Learn more
             </a>
           </div>
+        </div>
+        <div className="wrapper landing-cta">
+          <a href="/docs/getting-started.html" className="landing-btn primary">
+            Integrate Flipper In Your App
+          </a>
+          <a
+            href="https://www.facebook.com/fbflipper/public/mac"
+            target="_blank"
+            className="landing-btn">
+            Download Flipper
+          </a>
         </div>
       </div>
     );

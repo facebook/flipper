@@ -46,17 +46,29 @@ h6 {
   letter-spacing: 1px;
 }
 
-.splash .btn {
-  color: white;
+.landing-btn {
   display: inline-block;
   padding: 7px 20px;
   border-radius: 6px;
   margin: 0 10px;
-  border: 1px solid white;
+  border: 1px solid #777;
 }
 
-.splash .btn.primary {
+.landing-btn:hover {
+}
+
+.landing-btn.primary {
   background-color: #008cf2;
+  color: white;
+  border-color: #008cf2;
+}
+
+.splash .landing-btn {
+  color: white;
+  border-color: white;
+}
+
+.splash .landing-btn.primary {
   border-color: #008cf2;
 }
 
@@ -216,11 +228,6 @@ nav.toc .toggleNav .navGroup.navGroupActive h3 {
   margin: 0;
 }
 
-.button {
-  border-radius: 6px;
-  text-transform: none;
-}
-
 .sitemap {
   width: 100%;
 }
@@ -236,7 +243,6 @@ a.learnmore:hover {
 }
 
 .toc .toggleNav ul li.navListItemActive a {
-  color: $actionColor;
   opacity: 1;
 }
 
@@ -439,4 +445,25 @@ footer iframe {
   background: #f0f0f0;
   content: '';
   position: absolute;
+}
+
+.landing-cta {
+  padding-top: 30px;
+  padding-bottom: 80px;
+  text-align: center;
+}
+.button {
+  text-transform: none;
+  border: none;
+  font-size: 0.8em;
+  border-radius: 999em;
+  background-color: rgba(0, 0, 0, 0.05);
+  padding: 0.5em 1em;
+  font-weight: 500;
+  margin-top: 8px;
+}
+
+.button:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+  color: inherit;
 }
