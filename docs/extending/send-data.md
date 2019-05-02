@@ -31,14 +31,8 @@ MyFlipperPlugin *myPlugin = [client pluginWithIdentifier:@"MyFlipperPlugin"];
 ```c++
 auto &client = FlipperClient::instance();
 
-// "MyFlipperPlugin is the return value of MyFlipperPlugin::identifier()
-auto aPlugin = client.getPlugin("MyFlipperPlugin");
-
-// aPlugin is a std::shared_ptr<FlipperPlugin>. Downcast to expected type.
-auto myPlugin = std::static_pointer_cast<MyFlipperPlugin>(aPlugin);
-
-// Alternatively, use the templated version
-myPlugin = client.getPlugin<MyFlipperPlugin>("MyFlipperPlugin");
+// "MyFlipperPlugin" is the return value of MyFlipperPlugin::identifier()
+auto myPlugin = client.getPlugin<MyFlipperPlugin>("MyFlipperPlugin");
 
 myPlugin->sendData(myData);
 ```
