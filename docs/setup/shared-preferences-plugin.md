@@ -17,6 +17,13 @@ client.addPlugin(
 
 ## iOS
 
+If you want to use the Shared Preferences plugin, you need to add `FlipperKit/FlipperKitUserDefaultsPlugin` to your Podfile.
+
+```ruby
+pod 'FlipperKit/FlipperKitUserDefaultsPlugin', '~>' + flipperkit_version
+```
+
+Initialize the plugin in the following way:
 
 <!--DOCUSAURUS_CODE_TABS-->
 <!--Objective-C-->
