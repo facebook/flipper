@@ -20,6 +20,9 @@ export type Value =
   | {
       type: 'integer' | 'float' | 'double' | 'number',
       value: number,
+    }
+  | {
+      type: 'null',
     };
 
 const NonWrappingText = styled(Text)({
@@ -57,6 +60,8 @@ export function renderValue(val: Value) {
     case 'double':
     case 'number':
       return <NonWrappingText>{val.value}</NonWrappingText>;
+    case 'null':
+      return <NonWrappingText>NULL</NonWrappingText>;
     default:
       return <NonWrappingText>{val.value}</NonWrappingText>;
   }
