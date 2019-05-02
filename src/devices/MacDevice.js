@@ -11,7 +11,7 @@ export default class MacDevice extends BaseDevice {
   os = 'MacOS';
 
   constructor() {
-    super('', 'physical', 'desktop');
+    super('', 'physical', 'Mac');
   }
 
   teardown() {}
