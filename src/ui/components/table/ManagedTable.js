@@ -116,6 +116,7 @@ export type ManagedTableProps = {|
    * Allows to create context menu items for rows.
    */
   buildContextMenuItems?: () => MenuTemplate,
+  initialSortOrder?: ?TableRowSortOrder,
   /**
    * Callback when sorting changes.
    */

@@ -19,6 +19,7 @@ import {
 import type {
   TableBodyRow,
   TableColumnSizes,
+  TableRowSortOrder,
 } from '../../ui/components/table/types';
 import {FlipperPlugin} from 'flipper';
 import {DatabaseClient} from './ClientProtocol';
@@ -50,6 +51,7 @@ type DatabasesPluginState = {|
       [table: string]: TableColumnSizes,
     },
   },
+  currentSort: ?TableRowSortOrder,
 |};
 
 type Page = {
@@ -81,7 +83,8 @@ type Actions =
   | NextPageEvent
   | PreviousPageEvent
   | ColumnResizeEvent
-  | RefreshEvent;
+  | RefreshEvent
+  | SortByChangedEvent;
 
 type DatabaseEntry = {
   id: number,
@@ -150,6 +153,11 @@ type RefreshEvent = {
   type: 'Refresh',
 };
 
+type SortByChangedEvent = {
+  type: 'SortByChanged',
+  sortOrder: TableRowSortOrder,
+};
+
 function transformRow(
   columns: Array<string>,
   row: Array<Value>,
@@ -175,7 +183,7 @@ function renderTable(page: ?Page, component: DatabasesPlugin) {
         visible: true,
       }))}
       columns={page.columns.reduce((acc, val) => {
-        acc[val] = {value: val, resizable: true};
+        acc[val] = {value: val, resizable: true, sortable: true};
         return acc;
       }, {})}
       zebra={true}
@@ -192,6 +200,13 @@ function renderTable(page: ?Page, component: DatabasesPlugin) {
           });
         }
       }}
+      onSort={(sortOrder: TableRowSortOrder) => {
+        component.dispatchAction({
+          type: 'SortByChanged',
+          sortOrder,
+        });
+      }}
+      initialSortOrder={component.state.currentSort}
     />
   );
 }
@@ -260,6 +275,7 @@ export default class DatabasesPlugin extends FlipperPlugin<
     currentPage: null,
     currentStructure: null,
     columnSizes: {},
+    currentSort: null,
   };
 
   reducers = [
@@ -277,18 +293,18 @@ export default class DatabasesPlugin extends FlipperPlugin<
               Object.values(databases)[0].id
             : 0;
         const selectedTable = databases[selectedDatabase - 1].tables[0];
+        const sameTableSelected =
+          selectedDatabase === state.selectedDatabase &&
+          selectedTable === state.selectedDatabaseTable;
         return {
           ...state,
           databases,
           selectedDatabase: selectedDatabase,
           selectedDatabaseTable: selectedTable,
           pageRowNumber: 0,
-          currentPage:
-            selectedDatabase === state.selectedDatabase &&
-            selectedTable === state.selectedDatabaseTable
-              ? state.currentPage
-              : null,
+          currentPage: sameTableSelected ? state.currentPage : null,
           currentStructure: null,
+          currentSort: sameTableSelected ? state.currentSort : null,
         };
       },
     ],
@@ -306,6 +322,7 @@ export default class DatabasesPlugin extends FlipperPlugin<
           pageRowNumber: 0,
           currentPage: null,
           currentStructure: null,
+          currentSort: null,
         };
       },
     ],
@@ -321,6 +338,7 @@ export default class DatabasesPlugin extends FlipperPlugin<
           pageRowNumber: 0,
           currentPage: null,
           currentStructure: null,
+          currentSort: null,
         };
       },
     ],
@@ -442,6 +460,17 @@ export default class DatabasesPlugin extends FlipperPlugin<
         };
       },
     ],
+    [
+      'SortByChanged',
+      (state: DatabasesPluginState, event: SortByChangedEvent) => {
+        return {
+          ...state,
+          currentSort: event.sortOrder,
+          pageRowNumber: 0,
+          currentPage: null,
+        };
+      },
+    ],
   ].reduce((acc, val) => {
     const name = val[0];
     const f = val[1];
@@ -470,7 +499,8 @@ export default class DatabasesPlugin extends FlipperPlugin<
         .getTableData({
           count: PAGE_SIZE,
           databaseId: newState.selectedDatabase,
-          reverse: false,
+          order: newState.currentSort?.key,
+          reverse: (newState.currentSort?.direction || 'up') === 'down',
           table: table,
           start: newState.pageRowNumber,
         })
