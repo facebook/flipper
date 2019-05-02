@@ -51,3 +51,114 @@ client.addPlugin(new InspectorFlipperPlugin(mContext, descriptorMapping));
 
 You may not need to create a whole new descriptor but instead you may just want to change extend an existing one to expose some new piece of data. In that case just locate the correct descriptor and edit its `getData`, `getAttributes` and perhaps `setData` methods.
 
+## iOS
+
+### SKNodeDescriptor
+
+To expose an object to the layout inspector in Sonar you have to implement a `SKNodeDescriptor` which describes the object. For example `SKViewDescriptor` describes `UIView` objects, and the `SKComponentDescriptor` describes `CKComponent` objects. These descriptors have necessary callbacks which is used to expose its children and data associated with the object they describe. See [SKNodeDescriptor](https://github.com/facebook/flipper/blob/b0d2983bd440dc41ec67089e11acd394e6566b8f/iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutPlugin/SKNodeDescriptor.h) for the full available API.
+
+`SKNodeDescriptor` implementations should **never** be subclass other `SKNodeDescriptor` implementations. Instead re-use existing behaviour by explicitly using other descriptors and delegate behaviour.
+
+**Don't**
+
+```objc
+@interface SKArbitraryViewDescriptor : SKViewDescriptor<ArbitraryView *>
+
+@end
+
+@implementation SKArbitraryViewDescriptor
+
+- (NSString *)identifierForNode:(ArbitraryView *)node 
+{
+  return [super identifierForNode:node];
+}
+
+@end
+```
+
+
+**Do**
+
+```objc
+@interface SKArbitraryViewDescriptor : SKNodeDescriptor<ArbitraryView *>
+@end
+
+@implementation SKArbitraryViewDescriptor
+
+- (NSString *)identifierForNode:(ArbitraryView *)node 
+{
+  SKNodeDescriptor *descriptor = [self descriptorForClass:[UIView class]];
+  return [descriptor identifierForNode:node];
+}
+
+@end
+```
+
+### Register a Descriptor
+
+In order to register your descriptor for an object, you use `SKDescriptorMapper`. After registering all descriptors you pass on the descriptor-mapper object to the plugin during initialisation.
+
+```objc
+[descriptorMapper registerDescriptor:[SKArbitraryViewDescriptor new]
+                            forClass:[AbritraryView class]];
+                                           
+```
+
+There's already a set of descriptors registered by default in
+`SKDescriptorMapper`, and if you want to add a descriptor to the default set
+you can do it in [`SKDescriptorMapper`](https://github.com/facebook/flipper/blob/b0d2983bd440dc41ec67089e11acd394e6566b8f/iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutPlugin/SKDescriptorMapper.mm).
+
+### Extending an existing Descriptor
+
+Sometimes all you need is to extend the functionality of an existing descriptor. In that case you just need to locate the correct descriptor and edit the methods `dataForNode`, `attributesForNode`, and possibly `dataMutationsForNode`.
+
+
+### Subdescriptors
+
+If you want to extend the `SKComponentKitLayoutDescriptor` and add an additional section based on the nodes of the `SKComponentLayoutDescriptor`, you will have to subclass `SKSubDescriptor`.
+
+```objc
+#import <FlipperKitLayoutComponentKitSupport/SKSubDescriptor.h>
+
+@interface YourSubDescriptor: SKSubDescriptor
+
+@end
+
+
+@implementation YourSubDescriptor
+
+- (NSString *) getName {
+  return @"Section Name";
+}
+
+- (NSString *)getDataForNode:(SKComponentLayoutWrapper *)node {
+	return @"Meta data"
+}
+
+@end
+
+#endif
+```
+
+Once you have implemented the descriptor, you will have to setup the Layout plugin as follows.
+
+<!--DOCUSAURUS_CODE_TABS-->
+<!--Objective-C-->
+```objc
+NSArray<SKSubDescriptor *> *registeredSubDescriptors = @[ yourSubDescriptors ];
+SKDescriptorMapper *layoutDescriptorMapper = [[SKDescriptorMapper alloc] initWithDefaults];
+[FlipperKitLayoutComponentKitSupport setUpWithDescriptorMapper: layoutDescriptorMapper subDescriptors: registeredSubDescriptors];
+[client addPlugin: [[FlipperKitLayoutPlugin alloc] initWithRootNode: application
+                                           withDescriptorMapper: layoutDescriptorMapper]];
+```
+<!--Swift-->
+```swift
+let subDescriptors = [ yourSubDescriptors ]
+let layoutDescriptorMapper = SKDescriptorMapper(defaults: ())
+FlipperKitLayoutComponentKitSupport.setUpWith(layoutDescriptorMapper, subDescriptors: subDescriptors)
+client?.add(FlipperKitLayoutPlugin(rootNode: application, with: layoutDescriptorMapper!))
+
+```
+<!--END_DOCUSAURUS_CODE_TABS-->
+
+
