@@ -8,6 +8,7 @@
 package com.facebook.flipper.sample.tutorial.ui
 
 import android.graphics.Typeface
+import com.facebook.flipper.sample.tutorial.MarineMammal
 import com.facebook.litho.Column
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext

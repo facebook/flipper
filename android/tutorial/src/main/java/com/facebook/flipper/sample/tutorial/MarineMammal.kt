@@ -5,7 +5,7 @@
  * in the root directory of this source tree.
  */
 
-package com.facebook.flipper.sample.tutorial.ui
+package com.facebook.flipper.sample.tutorial
 
 import android.net.Uri
 

@@ -7,6 +7,7 @@
 
 package com.facebook.flipper.sample.tutorial.ui
 
+import com.facebook.flipper.sample.tutorial.MarineMammal
 import com.facebook.litho.Column
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
@@ -24,7 +25,8 @@ object FeedItemCardSpec {
   @OnCreateLayout
   fun onCreateLayout(
       c: ComponentContext,
-      @Prop mammal: MarineMammal): Component =
+      @Prop mammal: MarineMammal
+  ): Component =
       Column.create(c)
           .paddingDip(VERTICAL, 8f)
           .paddingDip(HORIZONTAL, 16f)

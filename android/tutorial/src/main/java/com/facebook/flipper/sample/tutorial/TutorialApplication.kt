@@ -15,6 +15,7 @@ import com.facebook.flipper.plugins.fresco.FrescoFlipperPlugin
 import com.facebook.flipper.plugins.inspector.DescriptorMapping
 import com.facebook.flipper.plugins.inspector.InspectorFlipperPlugin
 import com.facebook.flipper.plugins.litho.LithoFlipperDescriptors
+import com.facebook.flipper.sample.tutorial.plugin.SeaMammalFlipperPlugin
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.sections.config.SectionsConfiguration
 import com.facebook.litho.widget.SectionsDebug
@@ -37,6 +38,7 @@ class TutorialApplication : Application() {
 
         flipperClient.addPlugin(InspectorFlipperPlugin(this, descriptorMapping))
         flipperClient.addPlugin(FrescoFlipperPlugin())
+        flipperClient.addPlugin(SeaMammalFlipperPlugin())
         flipperClient.start()
     }
 }

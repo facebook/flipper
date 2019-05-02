@@ -7,6 +7,7 @@
 
 package com.facebook.flipper.sample.tutorial.ui
 
+import com.facebook.flipper.sample.tutorial.MarineMammals
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.annotations.LayoutSpec
