@@ -4,28 +4,20 @@ title: Crash Reporter Setup
 sidebar_label: Crash Reporter
 ---
 
+You do not have to instantiate it in your app in order to use its basic functionality mentioned [here](features/crash-reporter-plugin.md). You can also use crash reporter plugin to send the notifications for the exception which you suppress in your Android application. You could even use it to send the notifications when the [Litho Error Boundary](https://fblitho.com/docs/error-boundaries) is triggered. In order to send your custom notification you will have to follow the following steps.
+
 ## Android
 
+Instantiate and add the plugin in `FlipperClient`.
 ```java
 import com.facebook.flipper.plugins.crashreporter.CrashReporterPlugin;
 
 client.addPlugin(CrashReporterPlugin.getInstance());
 ```
 
+Use the following API to trigger your custom crash notification.
 
-## iOS
-
-<!--DOCUSAURUS_CODE_TABS-->
-<!--Objective-C-->
-```objectivec
-#import <FlipperKitCrashReporterPlugin/FlipperKitCrashReporterPlugin.h>
-
-[client addPlugin:[FlipperKitCrashReporterPlugin sharedInstance]];
+```java
+import com.facebook.flipper.plugins.crashreporter.CrashReporterPlugin;
+CrashReporterPlugin.getInstance().sendExceptionMessage(Thread.currentThread(), error);
 ```
-<!--Swift-->
-```swift
-import FlipperKit
-
-client?.add(FlipperKitCrashReporterPlugin.sharedInstance());
-```
-<!--END_DOCUSAURUS_CODE_TABS-->
