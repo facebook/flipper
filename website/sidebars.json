@@ -29,7 +29,7 @@
     "Advanced Usage": ["custom-ports", "stetho"]
   },
   "extending": {
-    "Extending Flipper": ["extending/index"],
+    "Extending Flipper": ["extending/index", "extending/layout-inspector"],
     "Plugin Development": [
       "extending/js-setup",
       "extending/writing-a-plugin",

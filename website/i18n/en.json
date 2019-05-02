@@ -34,6 +34,9 @@
       "extending/js-setup": {
         "title": "JavaScript Setup"
       },
+      "extending/layout-inspector": {
+        "title": "Extending the Layout Inspector"
+      },
       "extending/new-clients": {
         "title": "Implementing a Flipper Client"
       },
