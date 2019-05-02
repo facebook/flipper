@@ -16,12 +16,16 @@ import {
   Button,
   ButtonGroup,
 } from 'flipper';
-import type {TableBodyRow} from '../../ui/components/table/types';
+import type {
+  TableBodyRow,
+  TableColumnSizes,
+} from '../../ui/components/table/types';
 import {FlipperPlugin} from 'flipper';
 import {DatabaseClient} from './ClientProtocol';
 import {renderValue} from 'flipper';
 import type {Value} from 'flipper';
 import ButtonNavigation from './ButtonNavigation';
+import _ from 'lodash';
 
 const PAGE_SIZE = 50;
 
@@ -41,6 +45,11 @@ type DatabasesPluginState = {|
   error: ?null,
   currentPage: ?Page,
   currentStructure: ?Structure,
+  columnSizes: {
+    [database: number]: {
+      [table: string]: TableColumnSizes,
+    },
+  },
 |};
 
 type Page = {
@@ -70,7 +79,8 @@ type Actions =
   | UpdatePageEvent
   | UpdateStructureEvent
   | NextPageEvent
-  | PreviousPageEvent;
+  | PreviousPageEvent
+  | ColumnResizeEvent;
 
 type DatabaseEntry = {
   id: number,
@@ -127,6 +137,14 @@ type PreviousPageEvent = {
   type: 'PreviousPage',
 };
 
+type ColumnResizeEvent = {
+  type: 'ColumnResize',
+  view: 'page',
+  database: number,
+  table: string,
+  sizes: TableColumnSizes,
+};
+
 function transformRow(
   columns: Array<string>,
   row: Array<Value>,
@@ -139,12 +157,13 @@ function transformRow(
   return {key: String(index), columns: transformedColumns};
 }
 
-function renderTable(page: ?Page) {
+function renderTable(page: ?Page, component: DatabasesPlugin) {
   if (!page) {
     return null;
   }
   return (
     <ManagedTable
+      tableKey={`databases-${page.databaseId}-${page.table}`}
       floating={false}
       columnOrder={page.columns.map(name => ({
         key: name,
@@ -157,6 +176,17 @@ function renderTable(page: ?Page) {
       zebra={true}
       rows={page.rows}
       horizontallyScrollable={true}
+      onColumnResize={sizes => {
+        if (page) {
+          component.dispatchAction({
+            type: 'ColumnResize',
+            view: 'page',
+            database: page.databaseId,
+            table: page.table,
+            sizes: sizes,
+          });
+        }
+      }}
     />
   );
 }
@@ -209,7 +239,10 @@ function renderDatabaseIndexes(structure: ?Structure) {
   );
 }
 
-export default class extends FlipperPlugin<DatabasesPluginState, Actions> {
+export default class DatabasesPlugin extends FlipperPlugin<
+  DatabasesPluginState,
+  Actions,
+> {
   databaseClient: DatabaseClient;
 
   state: DatabasesPluginState = {
@@ -221,6 +254,7 @@ export default class extends FlipperPlugin<DatabasesPluginState, Actions> {
     error: null,
     currentPage: null,
     currentStructure: null,
+    columnSizes: {},
   };
 
   reducers = [
@@ -373,6 +407,21 @@ export default class extends FlipperPlugin<DatabasesPluginState, Actions> {
         return {
           ...state,
           viewMode: event.viewMode,
+        };
+      },
+    ],
+    [
+      'ColumnResize',
+      (state: DatabasesPluginState, event: ColumnResizeEvent) => {
+        return {
+          ...state,
+          columnSizes: {
+            ...state.columnSizes,
+            [event.database]: {
+              ...state.columnSizes[event.database],
+              [event.table]: event.sizes,
+            },
+          },
         };
       },
     ],
@@ -542,7 +591,7 @@ export default class extends FlipperPlugin<DatabasesPluginState, Actions> {
         </Toolbar>
         <FlexColumn grow={true}>
           {this.state.viewMode === 'data'
-            ? renderTable(this.state.currentPage)
+            ? renderTable(this.state.currentPage, this)
             : this.renderStructure()}
         </FlexColumn>
         <Toolbar position="bottom" style={{paddingLeft: 8}}>
