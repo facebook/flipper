@@ -115,3 +115,4 @@ matrix:
       script:
         - ./gradlew :sample:assembleDebug
         - ./gradlew :android:testDebugUnitTest :sample:testDebugUnitTest
+        - ./gradlew :tutorial:assembleDebug
