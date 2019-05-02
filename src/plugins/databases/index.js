@@ -648,11 +648,13 @@ export default class DatabasesPlugin extends FlipperPlugin<
           <FlexRow grow={true}>
             <ButtonGroup>
               <Button
+                icon={'data-table'}
                 onClick={this.onDataClicked}
                 selected={this.state.viewMode === 'data'}>
                 Data
               </Button>
               <Button
+                icon={'gears-two'}
                 onClick={this.onStructureClicked}
                 selected={this.state.viewMode === 'structure'}>
                 Structure
