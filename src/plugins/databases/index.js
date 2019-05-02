@@ -80,7 +80,8 @@ type Actions =
   | UpdateStructureEvent
   | NextPageEvent
   | PreviousPageEvent
-  | ColumnResizeEvent;
+  | ColumnResizeEvent
+  | RefreshEvent;
 
 type DatabaseEntry = {
   id: number,
@@ -143,6 +144,10 @@ type ColumnResizeEvent = {
   database: number,
   table: string,
   sizes: TableColumnSizes,
+};
+
+type RefreshEvent = {
+  type: 'Refresh',
 };
 
 function transformRow(
@@ -399,6 +404,18 @@ export default class DatabasesPlugin extends FlipperPlugin<
       },
     ],
     [
+      'Refresh',
+      (
+        state: DatabasesPluginState,
+        event: RefreshEvent,
+      ): DatabasesPluginState => {
+        return {
+          ...state,
+          currentPage: null,
+        };
+      },
+    ],
+    [
       'UpdateViewMode',
       (
         state: DatabasesPluginState,
@@ -522,6 +539,10 @@ export default class DatabasesPlugin extends FlipperPlugin<
     this.dispatchAction({type: 'UpdateViewMode', viewMode: 'structure'});
   };
 
+  onRefreshClicked = () => {
+    this.dispatchAction({type: 'Refresh'});
+  };
+
   onDatabaseSelected = (selected: string) => {
     const dbId = this.state.databases.find(x => x.name === selected)?.id || 0;
     this.dispatchAction({
@@ -583,9 +604,8 @@ export default class DatabasesPlugin extends FlipperPlugin<
             onChange={this.onDatabaseTableSelected}
           />
           <div grow={true} />
-          <Button
-            style={{marginLeft: 'auto', display: 'none'}}
-            onClick={this.onDataClicked}>
+          <Button onClick={this.onRefreshClicked}>Refresh</Button>
+          <Button style={{marginLeft: 'auto', display: 'none'}}>
             Execute SQL
           </Button>
         </Toolbar>
