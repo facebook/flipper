@@ -10,6 +10,10 @@ pre {
   position: relative;
 }
 
+.hljs {
+  padding: 2rem 1.5rem;
+}
+
 pre .btnIcon {
   position: absolute;
   top: 4px;
