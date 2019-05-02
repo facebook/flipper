@@ -24,20 +24,16 @@ There are three main ways your desktop plugin can communicate with connected dev
 With remote method calls your plugin can call a method on the attached client. This is useful for querying information from the client that your plugin wants to display. The first parameter is the name of the client API and the second is the specific method on that API. Optionally a JSON object can be passed as an argument to the client.
 
 ```javascript
-this.client.call('methodName', DATA).then(res => {
+this.client.call('methodName', data).then(res => {
   // res contains client response
 });
 ```
 
-This function returns a promise so that you can await a potential response from the client. If you are calling a method on the client but don't expect a response then you should instead opt for using the `send()` function.
-
-```javascript
-this.client.send('methodName', DATA);
-```
+This function returns a promise so that you can await a potential response from the client. This also gives you the opportunity to handle or report errors encountered by the client using `Promise.catch`.
 
 ## Subscriptions
 
-A client is not only able to respond to method calls but also push data directly to the Flipper desktop app. With the subscribe API your plugin can subscribe to there pushes from the client. Pass the name of the method and the API it is part of as well as a callback function to start a subscription. Any time the client sends a push matching this method the callback will be called with any attached data as a javascript object.
+A client is not only able to respond to method calls but also push data directly to the Flipper desktop app. With the subscribe API your plugin can subscribe to data pushed from the client. Pass the name of the method and the API it is part of as well as a callback function to start a subscription. Any time the client sends a push matching this method the callback will be called with any attached data as a javascript object.
 
 ```javascript
 this.client.subscribe('methodName', data => {

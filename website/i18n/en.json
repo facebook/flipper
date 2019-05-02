@@ -5,16 +5,16 @@
     "previous": "Previous",
     "tagline": "Extensible mobile app debugging",
     "docs": {
-      "communicating": {
-        "title": "Device Communication",
-        "sidebar_label": "Device Communication"
-      },
       "custom-ports": {
         "title": "Running Flipper with different ports",
         "sidebar_label": "Using different ports"
       },
       "extending/arch": {
         "title": "Architecture"
+      },
+      "extending/communicating": {
+        "title": "Device Communication",
+        "sidebar_label": "Device Communication"
       },
       "extending/create-plugin": {
         "title": "Mobile Setup"
