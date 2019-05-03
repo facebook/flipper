@@ -1,11 +1,12 @@
 ---
 id: create-plugin
-title: Mobile Setup
+title: Client Plugin API
 ---
 
-## Implement FlipperPlugin
+## FlipperPlugin
+To build a client plugin, just implement the `FlipperPlugin` interface.
 
-Create a class implementing `FlipperPlugin`. The ID that is returned from your implementation needs to match the `name` defined in your JavaScript counterpart's `package.json`.
+The ID that is returned from your implementation needs to match the `name` defined in your JavaScript counterpart's `package.json`.
 
 
 <!--DOCUSAURUS_CODE_TABS-->
@@ -44,7 +45,7 @@ public class MyFlipperPlugin implements FlipperPlugin {
 
 - (NSString*)identifier { return @"MyFlipperPlugin"; }
 - (void)didConnect:(FlipperConnection*)connection {}
-- (void)didDisonnect {}
+- (void)didDisconnect {}
 - (BOOL)runInBackground {}
 
 @end
@@ -64,7 +65,7 @@ public:
 
 ## Using FlipperConnection
 
-Using the `FlipperConnection` object you can register a receiver of a desktop method call and respond with data.
+`onConnect` will be called when your plugin becomes active. This will provide a `FlipperConnection` allowing you to register receivers for desktop method calls and respond with data.
 
 <!--DOCUSAURUS_CODE_TABS-->
 <!--Android-->
@@ -115,7 +116,7 @@ void MyFlipperPlugin::didConnect(std::shared_ptr<FlipperConnection> conn) {
 
 ## Push data to the desktop
 
-You don't have to wait for the desktop to request data though, you can also push data directly to the desktop.
+You don't have to wait for the desktop to request data though, you can also push data directly to the desktop. If the JS plugin subscribes to the same method, it will receive the data.
 
 <!--DOCUSAURUS_CODE_TABS-->
 <!--Android-->
@@ -140,4 +141,8 @@ void MyFlipperPlugin::didConnect(std::shared_ptr<FlipperConnection> conn) {
 
 ## Background Plugins
 
-If the plugin returns false in `runInBackground()`, then the Flipper app will only accept messages from the client side when the plugin is active (i.e. when user is using the plugin in the Flipper app). Whereas with the plugin marked as `runInBackground`, it can send messages even when the plugin is not in active use. The benefit is that the data can be processed in the background and notifications can be fired. It also reduces the number of rerenders and time taken to display the data when the plugin becomes active. As the data comes in the background, it is processed and a state is updated in the Redux store. When the plugin becomes active, the initial render will contain all the data.
+In some cases you may want to provide data to flipper even when your plugin is not currently active. Returning true in `runInBackground()` will result in `onConnect` being called as soon as Flipper connects, and allow you to use the connection at any time.
+
+This should be used in combination with a `persistedStateReducer` on the desktop side. See the [JS Plugin API](js-plugin-api#background-plugins) for details.
+
+The benefit is that the desktop plugin can process this data in the background and fire notifications. It also reduces the number of renders and time taken to display the data when the plugin becomes active.

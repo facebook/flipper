@@ -13,7 +13,7 @@
         "title": "Architecture"
       },
       "extending/create-plugin": {
-        "title": "Mobile Setup"
+        "title": "Client Plugin API"
       },
       "extending/create-table-plugin": {
         "title": "Create Table Plugin"
