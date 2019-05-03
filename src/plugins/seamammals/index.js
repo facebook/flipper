@@ -36,11 +36,11 @@ function renderSidebar(row: Row) {
 }
 
 type State = {
-  selectedIndex: number,
+  selectedID: ?string,
 };
 
 type PersistedState = {
-  data: Array<Row>,
+  [key: string]: Row,
 };
 
 export default class SeaMammals extends FlipperPlugin<
@@ -48,9 +48,7 @@ export default class SeaMammals extends FlipperPlugin<
   void,
   PersistedState,
 > {
-  static defaultPersistedState = {
-    data: [],
-  };
+  static defaultPersistedState = {};
 
   static persistedStateReducer = (
     persistedState: PersistedState,
@@ -59,7 +57,8 @@ export default class SeaMammals extends FlipperPlugin<
   ) => {
     if (method === 'newRow') {
       return {
-        data: [...persistedState.data, payload],
+        ...persistedState,
+        [payload.id]: payload,
       };
     }
     return persistedState;
@@ -71,29 +70,30 @@ export default class SeaMammals extends FlipperPlugin<
     alignItems: 'flex-start',
     alignContent: 'flex-start',
     flexGrow: 1,
+    overflow: 'scroll',
   });
 
   state = {
-    selectedIndex: -1,
+    selectedID: null,
   };
 
   render() {
-    const {selectedIndex} = this.state;
-    const {data} = this.props.persistedState;
+    const {selectedID} = this.state;
+    const {persistedState} = this.props;
 
     return (
       <SeaMammals.Container>
-        {data.map((row, i) => (
+        {Object.entries(persistedState).map(([id, row]) => (
           <Card
             {...row}
-            onSelect={() => this.setState({selectedIndex: i})}
-            selected={i === selectedIndex}
-            key={i}
+            onSelect={() => this.setState({selectedID: id})}
+            selected={id === selectedID}
+            key={id}
           />
         ))}
         <DetailSidebar>
-          {this.state.selectedIndex > -1 &&
-            renderSidebar(this.props.persistedState.data[selectedIndex])}
+          {typeof selectedID === 'string' &&
+            renderSidebar(persistedState[selectedID])}
         </DetailSidebar>
       </SeaMammals.Container>
     );
