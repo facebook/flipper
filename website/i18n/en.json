@@ -54,6 +54,10 @@
       "extending/testing": {
         "title": "Testing"
       },
+      "extending/ui-components": {
+        "title": "UI Components",
+        "sidebar_label": "UI Components"
+      },
       "features/crash-reporter-plugin": {
         "title": "Crash Reporter"
       },
@@ -115,10 +119,6 @@
       "troubleshooting": {
         "title": "Troubleshooting Issues",
         "sidebar_label": "Troubleshooting Issues"
-      },
-      "ui-components": {
-        "title": "UI Components",
-        "sidebar_label": "UI Components"
       }
     },
     "links": {

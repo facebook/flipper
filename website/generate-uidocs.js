@@ -11,7 +11,7 @@ const fs = require('fs');
 const babylon = require('@babel/parser');
 const docblockParser = require('docblock-parser');
 
-const TARGET = __dirname + '/../docs/ui-components.md';
+const TARGET = __dirname + '/../docs/extending/ui-components.md';
 
 glob(__dirname + '/../src/ui/components/**/*.js', (err, files) => {
   const content = files
