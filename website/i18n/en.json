@@ -121,6 +121,12 @@
       "troubleshooting": {
         "title": "Troubleshooting Issues",
         "sidebar_label": "Troubleshooting Issues"
+      },
+      "tutorial/android": {
+        "title": "Building an Android Plugin"
+      },
+      "tutorial/intro": {
+        "title": "Intro"
       }
     },
     "links": {
@@ -136,6 +142,7 @@
       "Advanced Usage": "Advanced Usage",
       "Extending Flipper": "Extending Flipper",
       "Plugin Development": "Plugin Development",
+      "Tutorial": "Tutorial",
       "Other Platforms": "Other Platforms",
       "Internals": "Internals"
     }

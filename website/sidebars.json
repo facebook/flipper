@@ -43,6 +43,10 @@
       "extending/testing",
       "extending/debugging"
     ],
+    "Tutorial": [
+      "tutorial/intro",
+      "tutorial/android"
+    ],
     "Other Platforms": [
       "extending/new-clients",
       "extending/establishing-a-connection",
