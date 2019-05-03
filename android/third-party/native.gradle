@@ -224,7 +224,7 @@ task prepareRSocket(dependsOn: [downloadRSocket], type: Copy) {
     into "$externalDir/RSocket"
 }
 
-task writeCacheRevision() {
+task writeCacheRevision(dependsOn: createNativeDepsDirectories) {
     doLast {
         revisionFile.text = CACHE_REVISION.toString()
     }
