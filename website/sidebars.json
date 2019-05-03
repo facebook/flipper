@@ -29,7 +29,13 @@
     "Advanced Usage": ["custom-ports", "stetho"]
   },
   "extending": {
-    "Extending Flipper": ["extending/index", "extending/layout-inspector"],
+    "Extending Flipper": ["extending/index"],
+    "Tutorial": [
+      "tutorial/intro",
+      "tutorial/android",
+      "tutorial/js-table",
+      "tutorial/js-custom"
+    ],
     "Plugin Development": [
       "extending/js-setup",
       "extending/js-plugin-api",
@@ -43,17 +49,14 @@
       "extending/testing",
       "extending/debugging"
     ],
-    "Tutorial": [
-      "tutorial/intro",
-      "tutorial/android",
-      "tutorial/js-table",
-      "tutorial/js-custom"
-    ],
     "Other Platforms": [
       "extending/new-clients",
       "extending/establishing-a-connection",
       "extending/supporting-layout"
     ],
-    "Internals": ["extending/arch"]
+    "Internals": [
+      "extending/arch",
+      "extending/layout-inspector"
+    ]
   }
 }
