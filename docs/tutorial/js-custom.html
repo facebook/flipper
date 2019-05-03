@@ -62,6 +62,7 @@
     <span class="hljs-attr">alignItems</span>: <span class="hljs-string">'flex-start'</span>,
     <span class="hljs-attr">alignContent</span>: <span class="hljs-string">'flex-start'</span>,
     <span class="hljs-attr">flexGrow</span>: <span class="hljs-number">1</span>,
+    <span class="hljs-attr">overflow</span>: <span class="hljs-string">'scroll'</span>,
   });
 
   render() {
@@ -76,7 +77,7 @@
 <p>You can see how we are styling our components using <a href="https://emotion.sh/">emotion</a>. To learn more about this, make sure to read our guide on <a href="/docs/extending/styling-components.html">styling components</a>.</p>
 <h2><a class="anchor" aria-hidden="true" id="adding-data-handling"></a><a href="#adding-data-handling" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Adding data handling</h2>
 <p>The plugin is quite useless when we don't display any actual data. We are adding two static properties to our plugin class for data handling. <code>defaultPersistedState</code> defines the default state before we received any data. In <code>persistedStateReducer</code> we define how new data is merged with the existing data.</p>
-<p>For the default state we define an empty array because we don't have any data, yet. When receiving data, we simply add it to the existing array. Learn more about <a href="/docs/extending/js-plugin-api.html#persistedstate">persistedState</a> in our guide.</p>
+<p>For the default state we define an empty object because we don't have any data, yet. When receiving data, we simply add it to the existing object, using the ID as a key. Learn more about <a href="/docs/extending/js-plugin-api.html#persistedstate">persistedState</a> in our guide.</p>
 <pre><code class="hljs css language-js"><span class="hljs-keyword">static</span> defaultPersistedState = {
   <span class="hljs-attr">data</span>: [],
 };
@@ -88,7 +89,8 @@
 ) =&gt; {
   <span class="hljs-keyword">if</span> (method === <span class="hljs-string">'newRow'</span>) {
     <span class="hljs-keyword">return</span> {
-      <span class="hljs-attr">data</span>: [...persistedState.data, payload],
+      ...persistedState,
+      [payload.id]: payload,
     };
   }
   <span class="hljs-keyword">return</span> persistedState;
@@ -99,25 +101,24 @@
 <p>Now we can access the data from <code>this.props.persistedState.data</code> and render it. So let's update our <code>render</code> method using a custom <code>Card</code> component, which we will implement in a bit.</p>
 <pre><code class="hljs css language-js">render() {
   <span class="hljs-keyword">const</span> {selectedIndex} = <span class="hljs-keyword">this</span>.state;
-  <span class="hljs-keyword">const</span> {data} = <span class="hljs-keyword">this</span>.props.persistedState;
+  <span class="hljs-keyword">const</span> {persistedState} = <span class="hljs-keyword">this</span>.props;
 
   <span class="hljs-keyword">return</span> (
     &lt;SeaMammals.Container&gt;
-      {data.map((row, i) =&gt; &lt;Card
+      {Object.entries(persistedState).map(([id, row]) =&gt; &lt;Card
         {...row}
-        key={i}
-        onSelect={() =&gt; this.setState({selectedIndex: i})}
-        selected={i === selectedIndex}
+        onSelect={() =&gt; this.setState({selectedID: id})}
+        selected={id === selectedID}
+        key={id}
       /&gt;)}
     &lt;/SeaMammals.Container&gt;
   );
 }
 </code></pre>
 <h2><a class="anchor" aria-hidden="true" id="adding-the-sidebar"></a><a href="#adding-the-sidebar" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Adding the sidebar</h2>
-<p>When clicking on a Card, we want to show all details in the sidebar as we did with the table before. We are using React's state to store the selected index in our array. Flipper provides a <code>DetailSidebar</code> component which we can use to add information to the sidebar. It doesn't matter where this component is placed as long as it is returned somewhere in our <code>render</code> method. The <code>renderSidebar</code> method returning the sidebar's content is still the same we used with <code>createTablePlugin</code>.</p>
+<p>When clicking on a Card, we want to show all details in the sidebar as we did with the table before. We are using React's state to store the selected ID in our data. Flipper provides a <code>DetailSidebar</code> component which we can use to add information to the sidebar. It doesn't matter where this component is placed as long as it is returned somewhere in our <code>render</code> method. The <code>renderSidebar</code> method returning the sidebar's content is still the same we used with <code>createTablePlugin</code>.</p>
 <pre><code class="hljs css language-js">&lt;DetailSidebar&gt;
-  {this.state.selectedIndex &gt; -1 &amp;&amp;
-    renderSidebar(this.props.persistedState.data[selectedIndex])}
+  {typeof selectedID === 'string' &amp;&amp; renderSidebar(persistedState[selectedID])}
 &lt;/DetailSidebar&gt;
 </code></pre>
 <h2><a class="anchor" aria-hidden="true" id="creating-a-custom-component"></a><a href="#creating-a-custom-component" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Creating a custom component</h2>
