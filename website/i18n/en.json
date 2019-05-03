@@ -18,6 +18,9 @@
       "extending/create-table-plugin": {
         "title": "Create Table Plugin"
       },
+      "extending/debugging": {
+        "title": "Debugging"
+      },
       "extending/error-handling": {
         "title": "Error Handling"
       },

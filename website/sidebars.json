@@ -40,7 +40,8 @@
       "extending/create-plugin",
       "extending/send-data",
       "extending/error-handling",
-      "extending/testing"
+      "extending/testing",
+      "extending/debugging"
     ],
     "Other Platforms": [
       "extending/new-clients",
