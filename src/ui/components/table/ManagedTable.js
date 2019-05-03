@@ -97,11 +97,11 @@ export type ManagedTableProps = {|
    */
   stickyBottom?: boolean,
   /**
-   * Used by SearchableTable to add filters for rows
+   * Used by SearchableTable to add filters for rows.
    */
   onAddFilter?: TableOnAddFilter,
   /**
-   * Enable or disable zebra striping
+   * Enable or disable zebra striping.
    */
   zebra?: boolean,
   /**
@@ -113,13 +113,17 @@ export type ManagedTableProps = {|
    */
   highlightedRows?: Set<string>,
   /**
-   * Allows to create context menu items for rows
+   * Allows to create context menu items for rows.
    */
   buildContextMenuItems?: () => MenuTemplate,
   /**
-   * Callback when sorting changes
+   * Callback when sorting changes.
    */
   onSort?: (order: TableRowSortOrder) => void,
+  /**
+   * Initial sort order of the table.
+   */
+  initialSortOrder?: ?TableRowSortOrder,
   /**
    * Table scroll horizontally, if needed
    */
@@ -170,7 +174,7 @@ class ManagedTable extends React.Component<
         ? globalTableState[this.props.tableKey]
         : {},
     highlightedRows: this.props.highlightedRows || new Set(),
-    sortOrder: null,
+    sortOrder: this.props.initialSortOrder || null,
     shouldScrollToBottom: Boolean(this.props.stickyBottom),
   };
 
