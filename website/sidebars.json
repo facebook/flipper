@@ -36,9 +36,9 @@
       "extending/create-table-plugin",
       "extending/ui-components",
       "extending/styling-components",
+      "extending/search-and-filter",
       "extending/create-plugin",
       "extending/send-data",
-      "extending/search-and-filter",
       "extending/error-handling",
       "extending/testing"
     ],

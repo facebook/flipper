@@ -1,6 +1,6 @@
 ---
 id: send-data
-title: Providing data to plugins
+title: Providing Data to Plugins
 ---
 
 It is often useful to get an instance of a Flipper plugin to send data to it. Flipper makes this simple with built-in support.
