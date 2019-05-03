@@ -21,6 +21,7 @@ export default class SeaMammals extends FlipperPlugin {
     alignItems: 'flex-start',
     alignContent: 'flex-start',
     flexGrow: 1,
+    overflow: 'scroll',
   });
 
   render() {
@@ -39,7 +40,7 @@ You can see how we are styling our components using [emotion](https://emotion.sh
 
 The plugin is quite useless when we don't display any actual data. We are adding two static properties to our plugin class for data handling. `defaultPersistedState` defines the default state before we received any data. In `persistedStateReducer` we define how new data is merged with the existing data.
 
-For the default state we define an empty array because we don't have any data, yet. When receiving data, we simply add it to the existing array. Learn more about [persistedState](extending/js-plugin-api.md#persistedstate) in our guide.
+For the default state we define an empty object because we don't have any data, yet. When receiving data, we simply add it to the existing object, using the ID as a key. Learn more about [persistedState](extending/js-plugin-api.md#persistedstate) in our guide.
 
 ```js
 static defaultPersistedState = {
@@ -53,7 +54,8 @@ static persistedStateReducer = (
 ) => {
   if (method === 'newRow') {
     return {
-      data: [...persistedState.data, payload],
+      ...persistedState,
+      [payload.id]: payload,
     };
   }
   return persistedState;
@@ -69,15 +71,15 @@ Now we can access the data from `this.props.persistedState.data` and render it. 
 ```js
 render() {
   const {selectedIndex} = this.state;
-  const {data} = this.props.persistedState;
+  const {persistedState} = this.props;
 
   return (
     <SeaMammals.Container>
-      {data.map((row, i) => <Card
+      {Object.entries(persistedState).map(([id, row]) => <Card
         {...row}
-        key={i}
-        onSelect={() => this.setState({selectedIndex: i})}
-        selected={i === selectedIndex}
+        onSelect={() => this.setState({selectedID: id})}
+        selected={id === selectedID}
+        key={id}
       />)}
     </SeaMammals.Container>
   );
@@ -86,12 +88,11 @@ render() {
 
 ## Adding the sidebar
 
-When clicking on a Card, we want to show all details in the sidebar as we did with the table before. We are using React's state to store the selected index in our array. Flipper provides a `DetailSidebar` component which we can use to add information to the sidebar. It doesn't matter where this component is placed as long as it is returned somewhere in our `render` method. The `renderSidebar` method returning the sidebar's content is still the same we used with `createTablePlugin`.
+When clicking on a Card, we want to show all details in the sidebar as we did with the table before. We are using React's state to store the selected ID in our data. Flipper provides a `DetailSidebar` component which we can use to add information to the sidebar. It doesn't matter where this component is placed as long as it is returned somewhere in our `render` method. The `renderSidebar` method returning the sidebar's content is still the same we used with `createTablePlugin`.
 
 ```js
 <DetailSidebar>
-  {this.state.selectedIndex > -1 &&
-    renderSidebar(this.props.persistedState.data[selectedIndex])}
+  {typeof selectedID === 'string' && renderSidebar(persistedState[selectedID])}
 </DetailSidebar>
 ```
 
