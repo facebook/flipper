@@ -33,7 +33,7 @@ class SeaMammalFlipperPlugin : FlipperPlugin {
         connection = null
     }
 
-    override fun runInBackground(): Boolean = false
+    override fun runInBackground(): Boolean = true
 
     private     fun newRow(row: FlipperObject) {
         connection?.send("newRow", row)
