@@ -38,7 +38,7 @@
         "title": "JavaScript Plugin Definition"
       },
       "extending/layout-inspector": {
-        "title": "Extending the Layout Inspector"
+        "title": "Extending Layout Inspector"
       },
       "extending/new-clients": {
         "title": "Implementing a Flipper Client"
@@ -47,7 +47,7 @@
         "title": "Searching and Filtering"
       },
       "extending/send-data": {
-        "title": "Sending Data to Plugins"
+        "title": "Providing data to plugins"
       },
       "extending/styling-components": {
         "title": "Styling Components"
