@@ -127,6 +127,9 @@
       },
       "tutorial/intro": {
         "title": "Intro"
+      },
+      "tutorial/js-table": {
+        "title": "Showing a table"
       }
     },
     "links": {
