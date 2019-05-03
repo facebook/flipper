@@ -41,6 +41,10 @@ export type ManagedTableProps = {|
    * Row definitions.
    */
   rows: TableRows,
+  /*
+   * Globally unique key for persisting data between uses of a table such as column sizes.
+   */
+  tableKey?: string,
   /**
    * Whether the table has a border.
    */
@@ -60,7 +64,7 @@ export type ManagedTableProps = {|
    */
   columnOrder?: TableColumnOrder,
   /**
-   * Size of the columns.
+   * Initial size of the columns.
    */
   columnSizes?: TableColumnSizes,
   /**
@@ -135,6 +139,8 @@ const Container = styled(FlexColumn)(props => ({
   flexGrow: 1,
 }));
 
+const globalTableState: {[string]: TableColumnSizes} = {};
+
 class ManagedTable extends React.Component<
   ManagedTableProps,
   ManagedTableState,
@@ -159,7 +165,10 @@ class ManagedTable extends React.Component<
       JSON.parse(window.localStorage.getItem(this.getTableKey()) || 'null') ||
       this.props.columnOrder ||
       Object.keys(this.props.columns).map(key => ({key, visible: true})),
-    columnSizes: this.props.columnSizes || {},
+    columnSizes:
+      this.props.tableKey && globalTableState[this.props.tableKey]
+        ? globalTableState[this.props.tableKey]
+        : {},
     highlightedRows: this.props.highlightedRows || new Set(),
     sortOrder: null,
     shouldScrollToBottom: Boolean(this.props.stickyBottom),
@@ -330,6 +339,13 @@ class ManagedTable extends React.Component<
         [id]: width,
       },
     }));
+    if (!this.props.tableKey) {
+      return;
+    }
+    if (!globalTableState[this.props.tableKey]) {
+      globalTableState[this.props.tableKey] = {};
+    }
+    globalTableState[this.props.tableKey][id] = width;
   };
 
   scrollToBottom() {
