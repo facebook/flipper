@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import FlipperKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -16,6 +17,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
     // Override point for customization after application launch.
+    let client = FlipperClient.shared()
+    let layoutDescriptorMapper = SKDescriptorMapper(defaults: ())
+    // If you want to debug componentkit view in swift, otherwise you can omit the next line
+    FlipperKitLayoutComponentKitSupport.setUpWith(layoutDescriptorMapper)
+    client?.add(FlipperKitLayoutPlugin(rootNode: application, with: layoutDescriptorMapper!))
+    client?.add(FlipperKitNetworkPlugin(networkAdapter: SKIOSNetworkAdapter()))
+    client?.add(FKUserDefaultsPlugin.init(suiteName: nil))
+    client?.add(SeaMammalsPlugin(MarineMammal.defaultList))
+    client?.start()
+    
     return true
   }
 
