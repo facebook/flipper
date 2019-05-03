@@ -12,10 +12,6 @@
       "extending/arch": {
         "title": "Architecture"
       },
-      "extending/communicating": {
-        "title": "Device Communication",
-        "sidebar_label": "Device Communication"
-      },
       "extending/create-plugin": {
         "title": "Mobile Setup"
       },

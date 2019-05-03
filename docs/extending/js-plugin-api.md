@@ -9,14 +9,17 @@ Provided a plugin is setup as defined in [JS Plugin Definiton](js-setup), the ba
 
 Below is a reference of the APIs available to the `FlipperPlugin` class.
 
+## init()
+`FlipperPlugin` has an `init()` method which can be overridden by plugins. Use this to make any initial calls to the client, and set up subscriptions. Only after `init()` is called will the `client` object be set.
+
 ## Client
 
-This object is provided for communicating with the client plugin, and is accessible using `this.client` inside `FlipperPlugin`. Methods called on it will be routed to the client plugin with the same identifier as the JS plugin.
+This object is provided for communicating with the client plugin, and is accessible using `this.client` inside `FlipperPlugin` after `init()` has been called. Methods called on it will be routed to the client plugin with the same identifier as the JS plugin.
 
 ### call
 `client.call(method: string, params: Object): Promise<Object>`
 
-Call a method on your client plugin implementation.
+Call a method on your client plugin implementation. Call `.catch()` on the returned promise to handle any errors returned from the client.
 
 ### subscribe
 `client.subscribe(method: string, callback: (Object => void)): void`

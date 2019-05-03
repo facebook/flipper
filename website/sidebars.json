@@ -34,7 +34,6 @@
       "extending/js-setup",
       "extending/js-plugin-api",
       "extending/create-table-plugin",
-      "extending/communicating",
       "extending/ui-components",
       "extending/styling-components",
       "extending/create-plugin",
