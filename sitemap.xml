@@ -42,4 +42,8 @@
 <url> <loc>https://fbflipper.com/docs/setup/shared-preferences-plugin.html</loc> <changefreq>hourly</changefreq> <priority>1.0</priority> <xhtml:link rel="alternate" hreflang="en" href="https://fbflipper.com/docs/setup/shared-preferences-plugin.html" /> </url>
 <url> <loc>https://fbflipper.com/docs/stetho.html</loc> <changefreq>hourly</changefreq> <priority>1.0</priority> <xhtml:link rel="alternate" hreflang="en" href="https://fbflipper.com/docs/stetho.html" /> </url>
 <url> <loc>https://fbflipper.com/docs/troubleshooting.html</loc> <changefreq>hourly</changefreq> <priority>1.0</priority> <xhtml:link rel="alternate" hreflang="en" href="https://fbflipper.com/docs/troubleshooting.html" /> </url>
+<url> <loc>https://fbflipper.com/docs/tutorial/android.html</loc> <changefreq>hourly</changefreq> <priority>1.0</priority> <xhtml:link rel="alternate" hreflang="en" href="https://fbflipper.com/docs/tutorial/android.html" /> </url>
+<url> <loc>https://fbflipper.com/docs/tutorial/intro.html</loc> <changefreq>hourly</changefreq> <priority>1.0</priority> <xhtml:link rel="alternate" hreflang="en" href="https://fbflipper.com/docs/tutorial/intro.html" /> </url>
+<url> <loc>https://fbflipper.com/docs/tutorial/js-custom.html</loc> <changefreq>hourly</changefreq> <priority>1.0</priority> <xhtml:link rel="alternate" hreflang="en" href="https://fbflipper.com/docs/tutorial/js-custom.html" /> </url>
+<url> <loc>https://fbflipper.com/docs/tutorial/js-table.html</loc> <changefreq>hourly</changefreq> <priority>1.0</priority> <xhtml:link rel="alternate" hreflang="en" href="https://fbflipper.com/docs/tutorial/js-table.html" /> </url>
 </urlset>
