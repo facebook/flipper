@@ -375,8 +375,8 @@ footer iframe {
     flex-direction: column;
   }
 
-  .splash .splashScreen {
-    margin-top: 20px;
+  .splash .slideshow {
+    margin-top: 80px;
   }
 
   .content.row {

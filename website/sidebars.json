@@ -46,7 +46,8 @@
     "Tutorial": [
       "tutorial/intro",
       "tutorial/android",
-      "tutorial/js-table"
+      "tutorial/js-table",
+      "tutorial/js-custom"
     ],
     "Other Platforms": [
       "extending/new-clients",

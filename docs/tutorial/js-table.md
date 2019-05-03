@@ -4,9 +4,9 @@ title: Showing a table
 ---
 
 Now that we have the native side covered, let's display the data we're sending
-on the desktop side. 
+on the desktop side.
 
-<img align="right" src="/docs/assets/android-tutorial-desktop.png" alt="Android Tutorial App" width="400">
+![Android Tutorial App](assets/android-tutorial-desktop.png)
 
 ## Dynamic Plugin loading
 
