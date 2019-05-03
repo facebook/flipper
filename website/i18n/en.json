@@ -31,6 +31,9 @@
       "extending/index": {
         "title": "Clients and Plugins"
       },
+      "extending/js-plugin-api": {
+        "title": "JavaScript Plugin API"
+      },
       "extending/js-setup": {
         "title": "JavaScript Plugin Definition"
       },
@@ -54,9 +57,6 @@
       },
       "extending/testing": {
         "title": "Testing"
-      },
-      "extending/writing-a-plugin": {
-        "title": "Writing a plugin in JavaScript"
       },
       "features/crash-reporter-plugin": {
         "title": "Crash Reporter"

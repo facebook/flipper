@@ -32,7 +32,7 @@
     "Extending Flipper": ["extending/index", "extending/layout-inspector"],
     "Plugin Development": [
       "extending/js-setup",
-      "extending/writing-a-plugin",
+      "extending/js-plugin-api",
       "extending/create-table-plugin",
       "extending/communicating",
       "extending/ui-components",

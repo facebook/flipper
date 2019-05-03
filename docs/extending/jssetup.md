@@ -3,11 +3,11 @@ id: js-setup
 title: JavaScript Plugin Definition
 ---
 
-All JavaScript Flipper plugins consist of a directory. This directory must contain the following two files:
+All JavaScript Flipper plugins must be self-contained in a directory. This directory must contain at a minimum the following two files:
 * package.json
 * index.js
 
-To create the desktop part of your plugin, initiate a new JavaScript project using `yarn init` and make sure your package name is the same as the identifier of the client plugin. Create a file called `index.js`, which is the entry point to your plugin. An example `package.json` file could look like this:
+The best way to initialize a JS plugin is to create a directory, and run `yarn init` inside it. Make sure your package name is the same as the identifier of the client plugin. After that create an `index.js` file which will be the entry point to your plugin. An example `package.json` file could look like this:
 
 Example `package.json`:
 ```
@@ -35,7 +35,18 @@ Important attributes of `package.json`:
 
 `bugs` Specify an email and/or url, where plugin bugs should be reported.
 
-In `index.js` you can now create your plugin. Take a look at [Writing a plugin](writing-a-plugin.md) to see what this code looks like. Also, make sure to check out the [Flipper UI Component Library](ui-components.md) for lots of pre-made components.
+In `index.js` you will define the plugin in JavaScript. This file must export a default class that extends `FlipperPlugin`. Browse our [JS API docs](js-plugin-api) to see what you can do, and make sure to check out our [UI Component Library](ui-components.md) for lots of pre-made components.
+
+Example `index.js`:
+```js
+import {FlipperPlugin} from 'flipper';
+
+export default class extends FlipperPlugin {
+  render() {
+    return 'hello world';
+  }
+}
+```
 
 ### Dynamically loading plugins
 
