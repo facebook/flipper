@@ -1,12 +1,15 @@
 ---
 id: js-setup
-title: JavaScript Setup
+title: JavaScript Plugin Definition
 ---
 
-## Creating the plugin UI
+All JavaScript Flipper plugins consist of a directory. This directory must contain the following two files:
+* package.json
+* index.js
 
-To create the desktop part of your plugin, initiate a new JavaScript project using `yarn init` and make sure your package name is the plugin's ID you are using in the native implementation. Create a file called `index.js`, which is the entry point to your plugin. A sample `package.json`-file could look like this:
+To create the desktop part of your plugin, initiate a new JavaScript project using `yarn init` and make sure your package name is the same as the identifier of the client plugin. Create a file called `index.js`, which is the entry point to your plugin. An example `package.json` file could look like this:
 
+Example `package.json`:
 ```
 {
   "name": "myplugin",
@@ -22,13 +25,36 @@ To create the desktop part of your plugin, initiate a new JavaScript project usi
 }
 ```
 
-Flipper uses some fields from the `package.json` in the plugin. The `name` is used as, the ID to identify the mobile counterpart. A `title` can be set, that is shown in Flipper's sidebar, same is true for the `icon`. We also strongly encourage to set a `bugs` field specifying an email and/or url, where bugs for the plugin can be reported.
+Important attributes of `package.json`:
 
-In `index.js` you can now create your plugin. Take a look at [Writing a plugin](writing-a-plugin.md) to learn how a plugin can look like. Also, make sure to check out [Flipper's UI components](ui-components.md) when building your plugin.
+`name` Used as the plugin identifier and **must match the mobile plugin Identifier**.
+
+`title` Shown in the main sidebar as the human readable name of the plugin.
+
+`icon` Determines the plugin icon which is displayed in the main sidebar.
+
+`bugs` Specify an email and/or url, where plugin bugs should be reported.
+
+In `index.js` you can now create your plugin. Take a look at [Writing a plugin](writing-a-plugin.md) to see what this code looks like. Also, make sure to check out the [Flipper UI Component Library](ui-components.md) for lots of pre-made components.
 
 ### Dynamically loading plugins
 
-Once a plugin is created, Flipper can load it from its folder. The path from where the plugins are loaded is specified in `~/.flipper/config.json`. The paths specified in `pluginPaths` need to point to a folder containing a subfolder for every plugin. For example you can create a directory `~/flipper-plugins` and set `pluginPaths` in Flipper's config to `["~/flipper-plugins"]`. This directory needs to contain a sub-directory for every plugin you create. In this example there would be a directory `~/flipper-plugins/myplugin` that contains your plugin's `package.json` and all code of your plugin.
+Flipper will load and run plugins it finds in a configurable location. The paths searched are specified in `~/.flipper/config.json`. These paths, `pluginPaths`, should contain one folder for each of the plugins it stores. An example config setting and plugin file structure is shown below:
+
+`~/.flipper/config.json`:
+```
+{
+  ...,
+  "pluginPaths": ["~/flipper-plugins"]
+}
+```
+Plugin File Structure:
+```
+~ flipper-plugins/
+    my-plugin/
+      package.json
+      index.js
+```
 
 ### npm dependencies
 

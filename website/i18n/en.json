@@ -32,7 +32,7 @@
         "title": "Clients and Plugins"
       },
       "extending/js-setup": {
-        "title": "JavaScript Setup"
+        "title": "JavaScript Plugin Definition"
       },
       "extending/layout-inspector": {
         "title": "Extending the Layout Inspector"
