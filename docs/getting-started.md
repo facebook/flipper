@@ -157,18 +157,20 @@ target 'MyApp' do
   # it's dependencies to be static and all other pods to
   # be dynamic.
 
-  # $static_framework = ['FlipperKit', 'Flipper', 'Folly',
+  # $static_framework = ['FlipperKit', 'Flipper', 'Flipper-Folly',
   #   'CocoaAsyncSocket', 'ComponentKit', 'DoubleConversion',
-  #   'glog', 'PeerTalk', 'RSocket', 'Yoga', 'YogaKit',
+  #   'glog', 'Flipper-PeerTalk', 'Flipper-RSocket', 'Yoga', 'YogaKit',
   #   'CocoaLibEvent', 'OpenSSL-Static', 'boost-for-react-native']
-
+  #
   # pre_install do |installer|
-  #     installer.pod_targets.each do |pod|
-  #       if $static_framework.include?(pod.name)  
-  #         pod.host_requires_frameworks = false
-  #       end
+  #   Pod::Installer::Xcode::TargetValidator.send(:define_method, :verify_no_static_framework_transitive_dependencies) {}
+  #   installer.pod_targets.each do |pod|
+  #     if $static_framework.include?(pod.name)
+  #       pod.instance_variable_set(:@host_requires_frameworks, false)
+  #     end
   #   end
   # end
+
 
   # This post_install hook adds the -DFB_SONARKIT_ENABLED flag to OTHER_SWIFT_FLAGS, necessary to build swift target
   post_install do |installer|
