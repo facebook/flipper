@@ -4,7 +4,6 @@
 //
 //  Created by Marc Terns on 10/6/18.
 //  Copyright (c) 2018-present, Facebook, Inc.
-//  Copyright (c) 2018-present, Facebook, Inc.
 //
 
 #import "FKUserDefaultsSwizzleUtility.h"
