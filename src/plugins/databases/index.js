@@ -15,7 +15,9 @@ import {
   Text,
   Button,
   ButtonGroup,
+  Input,
 } from 'flipper';
+import {Component} from 'react';
 import type {
   TableBodyRow,
   TableColumnSizes,
@@ -84,7 +86,8 @@ type Actions =
   | PreviousPageEvent
   | ColumnResizeEvent
   | RefreshEvent
-  | SortByChangedEvent;
+  | SortByChangedEvent
+  | GoToRowEvent;
 
 type DatabaseEntry = {
   id: number,
@@ -156,6 +159,11 @@ type RefreshEvent = {
 type SortByChangedEvent = {
   type: 'SortByChanged',
   sortOrder: TableRowSortOrder,
+};
+
+type GoToRowEvent = {
+  type: 'GoToRow',
+  row: number,
 };
 
 function transformRow(
@@ -257,6 +265,58 @@ function renderDatabaseIndexes(structure: ?Structure) {
       />
     </FlexRow>
   );
+}
+
+type PageInfoProps = {
+  currentRow: number,
+  count: number,
+  totalRows: number,
+  onChange: (currentRow: number, count: number) => void,
+};
+
+class PageInfo extends Component<PageInfoProps, {isOpen: boolean, inputValue: string}> {
+
+constructor(props: PageInfoProps) {
+  super(props);
+  this.state = {isOpen: false, inputValue: String(props.currentRow)};
+}
+
+  onOpen() {
+    this.setState({isOpen: true});
+  }
+
+  onInputChanged(e) {
+    this.setState({inputValue: e.target.value});
+  }
+
+  onSubmit(e: SyntheticKeyboardEvent<>) {
+    if (e.key === 'Enter') {
+      const rowNumber = parseInt(this.state.inputValue);
+      console.log(rowNumber);
+      this.props.onChange(rowNumber - 1, this.props.count);
+      this.setState({isOpen: false});
+    }
+  }
+
+  render() {
+    return (
+      <FlexRow grow={true} alignItems={'center'}>
+        <div style={{flex: 1}}/>
+        <Text>
+          {this.props.count === this.props.totalRows
+            ? `${this.props.count} `
+            : `${this.props.currentRow + 1}-${this.props.currentRow + this.props.count} `}
+          of {this.props.totalRows} rows
+        </Text>
+        <div style={{flex: 1}}/>
+        {this.state.isOpen ?
+          <Input tabIndex={1} placeholder={this.props.currentRow+1} onChange={this.onInputChanged.bind(this)} onKeyDown={this.onSubmit.bind(this)}/> :
+          <Button style={{textAlign: 'center'}} onClick={this.onOpen.bind(this)}>
+                    Go To Row
+          </Button>
+        }
+      </FlexRow>);
+  }
 }
 
 export default class DatabasesPlugin extends FlipperPlugin<
@@ -417,6 +477,24 @@ export default class DatabasesPlugin extends FlipperPlugin<
         return {
           ...state,
           pageRowNumber: Math.max(state.pageRowNumber - PAGE_SIZE, 0),
+          currentPage: null,
+        };
+      },
+    ],
+    [
+      'GoToRow',
+      (
+        state: DatabasesPluginState,
+        event: GoToRowEvent,
+      ): DatabasesPluginState => {
+        if (!state.currentPage) {
+          return state;
+        }
+        const destinationRow = event.row < 0 ? 0 :
+          event.row >= state.currentPage.total - PAGE_SIZE ? Math.max(state.currentPage.total - PAGE_SIZE, 0) : event.row;
+        return {
+          ...state,
+          pageRowNumber: destinationRow,
           currentPage: null,
         };
       },
@@ -596,6 +674,10 @@ export default class DatabasesPlugin extends FlipperPlugin<
     this.dispatchAction({type: 'PreviousPage'});
   };
 
+  onGoToRow = (row: number, count: number) => {
+    this.dispatchAction({type: 'GoToRow', row: row});
+  };
+
   renderStructure() {
     return [
       renderDatabaseColumns(this.state.currentStructure),
@@ -661,13 +743,11 @@ export default class DatabasesPlugin extends FlipperPlugin<
               </Button>
             </ButtonGroup>
             {this.state.viewMode === 'data' && this.state.currentPage ? (
-              <Text grow={true} style={{flex: 1, textAlign: 'center'}}>
-                {this.state.currentPage.count === this.state.currentPage.total
-                  ? `${this.state.currentPage.count} `
-                  : `${this.state.currentPage.start + 1}-${this.state
-                      .currentPage.start + this.state.currentPage.count} `}
-                of {this.state.currentPage.total} rows
-              </Text>
+              <PageInfo
+                currentRow={this.state.currentPage.start}
+                count={this.state.currentPage.count}
+                totalRows={this.state.currentPage.total}
+                onChange={this.onGoToRow}/>
             ) : null}
             {this.state.viewMode === 'data' && this.state.currentPage ? (
               <ButtonNavigation
@@ -682,7 +762,7 @@ export default class DatabasesPlugin extends FlipperPlugin<
             ) : null}
           </FlexRow>
         </Toolbar>
-        {this.state.error?.toString()}
+        {this.state.error && JSON.stringify(this.state.error)}
       </FlexColumn>
     );
   }
