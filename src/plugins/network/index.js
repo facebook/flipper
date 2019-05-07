@@ -5,7 +5,12 @@
  * @format
  */
 
-import type {TableHighlightedRows, TableRows, TableBodyRow} from 'flipper';
+import type {
+  TableHighlightedRows,
+  TableRows,
+  TableBodyRow,
+  MetricType,
+} from 'flipper';
 import {padStart} from 'lodash';
 
 import {
@@ -107,9 +112,9 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
     responses: {},
   };
 
-  static exportMetrics = (
+  static metricsReducer = (
     persistedState: PersistedState,
-  ): Promise<Map<string, number | string>> => {
+  ): Promise<MetricType> => {
     const failures = Object.keys(persistedState.responses).reduce(function(
       previous,
       key,
@@ -117,7 +122,7 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
       return previous + (persistedState.responses[key].status >= 400);
     },
     0);
-    return Promise.resolve(new Map([['NUMBER_NETWORK_FAILURES', failures]]));
+    return Promise.resolve({NUMBER_NETWORK_FAILURES: failures});
   };
 
   static persistedStateReducer = (

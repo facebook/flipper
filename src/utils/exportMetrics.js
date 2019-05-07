@@ -4,19 +4,19 @@
  * LICENSE file in the root directory of this source tree.
  * @format
  */
-import type {MiddlewareAPI} from '../reducers';
-import {serialize} from './serialization.js';
 import type {FlipperPlugin, FlipperDevicePlugin} from 'flipper';
+import {serialize} from './serialization';
+import type {MiddlewareAPI} from '../reducers';
 
-type MetricType = Map<string, Map<string, string | number>>;
-
-export type ExportMetricType = Map<string, MetricType>;
+export type MetricType = {[metricName: string]: number};
+type MetricPluginType = {[pluginID: string]: MetricType};
+export type ExportMetricType = {[clientID: string]: MetricPluginType};
 
 export default async function exportMetrics(
   store: MiddlewareAPI,
 ): Promise<string> {
   const state = store.getState();
-  let metrics: ExportMetricType = new Map();
+  const metrics: ExportMetricType = {};
   for (let key in state.pluginStates) {
     const pluginStateData = state.pluginStates[key];
     const arr = key.split('#');
@@ -32,20 +32,19 @@ export default async function exportMetrics(
     state.plugins.devicePlugins.forEach((val, key) => {
       pluginsMap.set(key, val);
     });
-    const exportMetrics1: ?(
+    const metricsReducer: ?(
       persistedState: any,
-    ) => Promise<Map<string, string | number>> = pluginsMap.get(pluginName)
-      ?.exportMetrics;
-    if (pluginsMap.has(pluginName) && exportMetrics1) {
-      const metricMap = await exportMetrics1(pluginStateData);
-      const pluginMap = new Map([[pluginName, metricMap]]);
-      if (!metrics.get(clientID)) {
-        metrics.set(clientID, pluginMap);
+    ) => Promise<MetricType> = pluginsMap.get(pluginName)?.metricsReducer;
+    if (pluginsMap.has(pluginName) && metricsReducer) {
+      const metricsObject = await metricsReducer(pluginStateData);
+      const pluginObject = {};
+      pluginObject[pluginName] = metricsObject;
+      if (!metrics[clientID]) {
+        metrics[clientID] = pluginObject;
         continue;
       }
-      const prevMetricMap = metrics.get(clientID);
-      // $FlowFixMe: prevMetricMap cannot be null, because clientID is added only when the pluingMetricMap is available
-      metrics.set(clientID, new Map([...prevMetricMap, ...pluginMap]));
+      const mergedMetrics = {...metrics[clientID], ...pluginObject};
+      metrics[clientID] = mergedMetrics;
     }
   }
   return Promise.resolve(serialize(metrics));

@@ -10,7 +10,7 @@ import type {App} from './App.js';
 import type {Logger} from './fb-interfaces/Logger.js';
 import type Client from './Client.js';
 import type {Store, MiddlewareAPI} from './reducers/index.js';
-
+import type {MetricType} from './utils/exportMetrics.js';
 import React from 'react';
 import type {Node} from 'react';
 import BaseDevice from './devices/BaseDevice.js';
@@ -83,9 +83,9 @@ export class FlipperBasePlugin<
     method: string,
     data: Object,
   ) => $Shape<PersistedState>;
-  static exportMetrics: ?(
+  static metricsReducer: ?(
     persistedState: PersistedState,
-  ) => Promise<Map<string, number | string>>;
+  ) => Promise<MetricType>;
   static exportPersistedState: ?(
     callClient: (string, ?Object) => Promise<Object>,
     persistedState: ?PersistedState,
