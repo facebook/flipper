@@ -32,6 +32,7 @@
     "Extending Flipper": ["extending/index"],
     "Tutorial": [
       "tutorial/intro",
+      "tutorial/ios",
       "tutorial/android",
       "tutorial/js-table",
       "tutorial/js-custom"
