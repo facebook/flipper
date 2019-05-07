@@ -25,7 +25,6 @@ import javax.annotation.Nullable;
 
 public class DataUtils {
 
-  @Nullable
   static List<com.facebook.flipper.plugins.inspector.Named<com.facebook.flipper.core.FlipperObject>>
       getPropData(Object node) throws Exception {
     final FlipperObject.Builder props = new FlipperObject.Builder();
@@ -49,10 +48,10 @@ public class DataUtils {
 
         switch (annotation.resType()) {
           case COLOR:
-            props.put(f.getName(), fromColor((Integer) f.get(node)));
+            props.put(f.getName(), f.get(node) == null ? "null" : fromColor((Integer) f.get(node)));
             break;
           case DRAWABLE:
-            props.put(f.getName(), fromDrawable((Drawable) f.get(node)));
+            props.put(f.getName(), f.get(node) == null ? "null" : fromDrawable((Drawable) f.get(node)));
             break;
           default:
             if (f.get(node) != null
