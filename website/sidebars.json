@@ -15,7 +15,6 @@
   "setup": {
     "Using Flipper": [
       "getting-started",
-      "share-flipper-data",
       "troubleshooting"
     ],
     "Plugin Setup": [
