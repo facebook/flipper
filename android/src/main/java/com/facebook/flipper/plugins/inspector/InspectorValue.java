@@ -12,7 +12,7 @@ import com.facebook.flipper.core.FlipperValue;
 public class InspectorValue<T> implements FlipperValue {
 
   /**
-   * Descrive the type of data this value contains. This will influence how values are parsed and
+   * Describe the type of data this value contains. This will influence how values are parsed and
    * displayed by the Flipper desktop app. For example colors will be parse as integers and
    * displayed using hex values and be editable using a color picker.
    *
