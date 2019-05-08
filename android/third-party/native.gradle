@@ -226,6 +226,7 @@ task prepareRSocket(dependsOn: [downloadRSocket], type: Copy) {
 
 task writeCacheRevision(dependsOn: createNativeDepsDirectories) {
     doLast {
+        buildDir.mkdirs()
         revisionFile.text = CACHE_REVISION.toString()
     }
 }
