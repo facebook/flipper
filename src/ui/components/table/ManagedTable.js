@@ -145,6 +145,12 @@ const Container = styled(FlexColumn)(props => ({
 
 const globalTableState: {[string]: TableColumnSizes} = {};
 
+function getTextContentOfRow(rowId: string) {
+  return Array.from(
+    document.querySelectorAll(`[data-key='${rowId}'] > *`) || [],
+  ).map(node => node.textContent);
+}
+
 class ManagedTable extends React.Component<
   ManagedTableProps,
   ManagedTableState,
@@ -455,13 +461,39 @@ class ManagedTable extends React.Component<
     }
   };
 
-  buildContextMenuItems = () => {
+  onCopyCell = (rowId: string, column: string) => {
+    const cellText = getTextContentOfRow(rowId)[
+      Object.keys(this.props.columns).indexOf(column)
+    ];
+    clipboard.writeText(cellText);
+  };
+
+  buildContextMenuItems: () => Array<Electron$MenuItemOptions> = () => {
     const {highlightedRows} = this.state;
     if (highlightedRows.size === 0) {
       return [];
     }
 
+    const copyCellSubMenu =
+      highlightedRows.size === 1
+        ? [
+            {
+              click: this.onCopy,
+              label: 'Copy cell',
+              submenu: Object.keys(this.props.columns).map((column, index) => ({
+                label: this.props.columns[column].value,
+                click: () => {
+                  const rowId = this.state.highlightedRows.values().next()
+                    .value;
+                  rowId && this.onCopyCell(rowId, column);
+                },
+              })),
+            },
+          ]
+        : [];
+
     return [
+      ...copyCellSubMenu,
       {
         label:
           highlightedRows.size > 1
@@ -486,12 +518,7 @@ class ManagedTable extends React.Component<
       .filter(row => highlightedRows.has(row.key))
       .map(
         (row: TableBodyRow) =>
-          row.copyText ||
-          Array.from(
-            document.querySelectorAll(`[data-key='${row.key}'] > *`) || [],
-          )
-            .map(node => node.textContent)
-            .join('\t'),
+          row.copyText || getTextContentOfRow(row.key).join('\t'),
       )
       .join('\n');
   };

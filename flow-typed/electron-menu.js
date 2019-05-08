@@ -53,7 +53,7 @@ type Electron$MenuItemOptions = {
   enabled?: boolean,
   visible?: boolean,
   checked?: boolean,
-  submenu?: Electron$MenuItem | Electron$MenuItemOptions,
+  submenu?: Electron$Menu | Array<Electron$MenuItemOptions>,
   id?: string,
   position?: string,
 };
