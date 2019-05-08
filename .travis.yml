@@ -57,7 +57,7 @@ matrix:
       script:
         - cd iOS/Sample
         - IPHONESIMULATOR=$(xcodebuild -showsdks | grep -o "iphonesimulator[0-9]\\+\\.[0-9]\\+$")
-        - xcodebuild clean build -workspace Sample.xcworkspace -scheme Sample -sdk $IPHONESIMULATOR -quiet > ./build.log
+        - xcodebuild clean build -workspace Sample.xcworkspace -scheme Sample -sdk $IPHONESIMULATOR | sed -nE '/error:/,/^[[:digit:]] errors? generated/ p'
         - tail -100 ./build.log
     - language: objective-c
 
@@ -75,7 +75,7 @@ matrix:
       script:
         - cd iOS/SampleSwift
         - IPHONESIMULATOR=$(xcodebuild -showsdks | grep -o "iphonesimulator[0-9]\\+\\.[0-9]\\+$")
-        - xcodebuild clean build -workspace SampleSwift.xcworkspace -scheme SampleSwift -sdk $IPHONESIMULATOR -quiet > ./build.log
+        - xcodebuild clean build -workspace SampleSwift.xcworkspace -scheme SampleSwift -sdk $IPHONESIMULATOR | sed -nE '/error:/,/^[[:digit:]] errors? generated/ p'
         - tail -100 ./build.log
     - language: android
       os: linux
