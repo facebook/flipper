@@ -20,8 +20,6 @@ import com.facebook.flipper.core.FlipperArray;
 import com.facebook.flipper.core.FlipperConnection;
 import com.facebook.flipper.core.FlipperDynamic;
 import com.facebook.flipper.core.FlipperObject;
-import com.facebook.flipper.plugins.console.iface.NullScriptingEnvironment;
-import com.facebook.flipper.plugins.console.iface.ScriptingEnvironment;
 import com.facebook.flipper.plugins.inspector.InspectorFlipperPlugin.TouchOverlayView;
 import com.facebook.flipper.plugins.inspector.descriptors.ApplicationDescriptor;
 import com.facebook.flipper.testing.FlipperConnectionMock;
@@ -45,7 +43,6 @@ public class InspectorFlipperPluginTest {
   private MockApplicationDescriptor mApplicationDescriptor;
   private DescriptorMapping mDescriptorMapping;
   private ApplicationWrapper mApp;
-  private ScriptingEnvironment mScriptingEnvironment;
 
   @Before
   public void setup() {
@@ -57,14 +54,13 @@ public class InspectorFlipperPluginTest {
     mApplicationDescriptor = new MockApplicationDescriptor();
     mDescriptorMapping.register(ApplicationWrapper.class, mApplicationDescriptor);
     mDescriptorMapping.register(TestNode.class, new TestNodeDescriptor());
-    mScriptingEnvironment = new NullScriptingEnvironment();
     mApp = Mockito.spy(new ApplicationWrapper(app));
   }
 
   @Test
   public void testOnConnect() throws Exception {
     final InspectorFlipperPlugin plugin =
-        new InspectorFlipperPlugin(mApp, mDescriptorMapping, mScriptingEnvironment, null);
+        new InspectorFlipperPlugin(mApp, mDescriptorMapping, null);
     final FlipperConnection connection = new FlipperConnectionMock();
 
     plugin.onConnect(connection);
@@ -74,7 +70,7 @@ public class InspectorFlipperPluginTest {
   @Test
   public void testOnDisconnect() throws Exception {
     final InspectorFlipperPlugin plugin =
-        new InspectorFlipperPlugin(mApp, mDescriptorMapping, mScriptingEnvironment, null);
+        new InspectorFlipperPlugin(mApp, mDescriptorMapping, null);
     final FlipperConnection connection = new FlipperConnectionMock();
 
     plugin.onConnect(connection);
@@ -85,7 +81,7 @@ public class InspectorFlipperPluginTest {
   @Test
   public void testGetRoot() throws Exception {
     final InspectorFlipperPlugin plugin =
-        new InspectorFlipperPlugin(mApp, mDescriptorMapping, mScriptingEnvironment, null);
+        new InspectorFlipperPlugin(mApp, mDescriptorMapping, null);
     final FlipperResponderMock responder = new FlipperResponderMock();
     final FlipperConnectionMock connection = new FlipperConnectionMock();
     plugin.onConnect(connection);
@@ -112,7 +108,7 @@ public class InspectorFlipperPluginTest {
   @Test
   public void testGetNodes() throws Exception {
     final InspectorFlipperPlugin plugin =
-        new InspectorFlipperPlugin(mApp, mDescriptorMapping, mScriptingEnvironment, null);
+        new InspectorFlipperPlugin(mApp, mDescriptorMapping, null);
     final FlipperResponderMock responder = new FlipperResponderMock();
     final FlipperConnectionMock connection = new FlipperConnectionMock();
     plugin.onConnect(connection);
@@ -149,7 +145,7 @@ public class InspectorFlipperPluginTest {
   @Test
   public void testGetNodesThatDontExist() throws Exception {
     final InspectorFlipperPlugin plugin =
-        new InspectorFlipperPlugin(mApp, mDescriptorMapping, mScriptingEnvironment, null);
+        new InspectorFlipperPlugin(mApp, mDescriptorMapping, null);
     final FlipperResponderMock responder = new FlipperResponderMock();
     final FlipperConnectionMock connection = new FlipperConnectionMock();
     plugin.onConnect(connection);
@@ -175,7 +171,7 @@ public class InspectorFlipperPluginTest {
   @Test
   public void testSetData() throws Exception {
     final InspectorFlipperPlugin plugin =
-        new InspectorFlipperPlugin(mApp, mDescriptorMapping, mScriptingEnvironment, null);
+        new InspectorFlipperPlugin(mApp, mDescriptorMapping, null);
     final FlipperConnectionMock connection = new FlipperConnectionMock();
     final FlipperResponderMock responder = new FlipperResponderMock();
     plugin.onConnect(connection);
@@ -211,7 +207,7 @@ public class InspectorFlipperPluginTest {
   @Test
   public void testSetHighlighted() throws Exception {
     final InspectorFlipperPlugin plugin =
-        new InspectorFlipperPlugin(mApp, mDescriptorMapping, mScriptingEnvironment, null);
+        new InspectorFlipperPlugin(mApp, mDescriptorMapping, null);
     final FlipperConnectionMock connection = new FlipperConnectionMock();
     final FlipperResponderMock responder = new FlipperResponderMock();
     plugin.onConnect(connection);
@@ -240,7 +236,7 @@ public class InspectorFlipperPluginTest {
   @Test
   public void testHitTest() throws Exception {
     final InspectorFlipperPlugin plugin =
-        new InspectorFlipperPlugin(mApp, mDescriptorMapping, mScriptingEnvironment, null);
+        new InspectorFlipperPlugin(mApp, mDescriptorMapping, null);
     final FlipperConnectionMock connection = new FlipperConnectionMock();
     plugin.onConnect(connection);
 
@@ -278,7 +274,7 @@ public class InspectorFlipperPluginTest {
   @Test
   public void testSetSearchActive() throws Exception {
     final InspectorFlipperPlugin plugin =
-        new InspectorFlipperPlugin(mApp, mDescriptorMapping, mScriptingEnvironment, null);
+        new InspectorFlipperPlugin(mApp, mDescriptorMapping, null);
     final FlipperConnectionMock connection = new FlipperConnectionMock();
     final FlipperResponderMock responder = new FlipperResponderMock();
     plugin.onConnect(connection);
@@ -300,7 +296,7 @@ public class InspectorFlipperPluginTest {
   @Test
   public void testNullChildThrows() throws Exception {
     final InspectorFlipperPlugin plugin =
-        new InspectorFlipperPlugin(mApp, mDescriptorMapping, mScriptingEnvironment, null);
+        new InspectorFlipperPlugin(mApp, mDescriptorMapping, null);
     final FlipperResponderMock responder = new FlipperResponderMock();
     final FlipperConnectionMock connection = new FlipperConnectionMock();
     plugin.onConnect(connection);

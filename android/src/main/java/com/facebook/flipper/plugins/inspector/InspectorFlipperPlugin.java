@@ -21,9 +21,6 @@ import com.facebook.flipper.core.FlipperPlugin;
 import com.facebook.flipper.core.FlipperReceiver;
 import com.facebook.flipper.core.FlipperResponder;
 import com.facebook.flipper.plugins.common.MainThreadFlipperReceiver;
-import com.facebook.flipper.plugins.console.iface.ConsoleCommandReceiver;
-import com.facebook.flipper.plugins.console.iface.NullScriptingEnvironment;
-import com.facebook.flipper.plugins.console.iface.ScriptingEnvironment;
 import com.facebook.flipper.plugins.inspector.descriptors.ApplicationDescriptor;
 import com.facebook.flipper.plugins.inspector.descriptors.utils.AccessibilityUtil;
 import java.util.ArrayList;
@@ -35,7 +32,6 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
   private ApplicationWrapper mApplication;
   private DescriptorMapping mDescriptorMapping;
   private ObjectTracker mObjectTracker;
-  private ScriptingEnvironment mScriptingEnvironment;
   private String mHighlightedId;
   private TouchOverlayView mTouchOverlay;
   private FlipperConnection mConnection;
@@ -57,17 +53,9 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
   }
 
   public InspectorFlipperPlugin(Context context, DescriptorMapping descriptorMapping) {
-    this(getAppContextFromContext(context), descriptorMapping, new NullScriptingEnvironment());
-  }
-
-  public InspectorFlipperPlugin(
-      Context context,
-      DescriptorMapping descriptorMapping,
-      ScriptingEnvironment scriptingEnvironment) {
     this(
         new ApplicationWrapper(getAppContextFromContext(context)),
         descriptorMapping,
-        scriptingEnvironment,
         null);
   }
 
@@ -75,23 +63,10 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
       Context context,
       DescriptorMapping descriptorMapping,
       @Nullable List<ExtensionCommand> extensions) {
-    this(
-        new ApplicationWrapper(getAppContextFromContext(context)),
-        descriptorMapping,
-        new NullScriptingEnvironment(),
-        extensions);
-  }
-
-  public InspectorFlipperPlugin(
-      Context context,
-      DescriptorMapping descriptorMapping,
-      ScriptingEnvironment scriptingEnvironment,
-      @Nullable List<ExtensionCommand> extensions) {
 
     this(
         new ApplicationWrapper(getAppContextFromContext(context)),
         descriptorMapping,
-        scriptingEnvironment,
         extensions);
   }
 
@@ -99,13 +74,11 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
   InspectorFlipperPlugin(
       ApplicationWrapper wrapper,
       DescriptorMapping descriptorMapping,
-      ScriptingEnvironment scriptingEnvironment,
       @Nullable List<ExtensionCommand> extensions) {
     mDescriptorMapping = descriptorMapping;
 
     mObjectTracker = new ObjectTracker();
     mApplication = wrapper;
-    mScriptingEnvironment = scriptingEnvironment;
     mExtensionCommands = extensions;
     mShowLithoAccessibilitySettings = false;
   }
@@ -120,16 +93,6 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
     mConnection = connection;
     mDescriptorMapping.onConnect(connection);
 
-    ConsoleCommandReceiver.listenForCommands(
-        connection,
-        mScriptingEnvironment,
-        new ConsoleCommandReceiver.ContextProvider() {
-          @Override
-          @Nullable
-          public Object getObjectForId(String id) {
-            return mObjectTracker.get(id);
-          }
-        });
     connection.receive("getRoot", mGetRoot);
     connection.receive("getAllNodes", mGetAllNodes);
     connection.receive("getNodes", mGetNodes);
