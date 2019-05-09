@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2004-present, Facebook, Inc.
+ *  Copyright (c) 2004-present, Facebook, Inc. and its affiliates.
  *
  *  This source code is licensed under the MIT license found in the LICENSE
  *  file in the root directory of this source tree.
@@ -61,6 +61,10 @@ FB_LINKABLE(CKComponent_Sonar)
   if ([self respondsToSelector:@selector(sonar_componentNameOverride)]) {
     return [(id)self sonar_componentNameOverride];
   }
+  auto const canBeReusedCounter = self.flipper_canBeReusedCounter;
+  if (canBeReusedCounter > 0) {
+    return [NSString stringWithFormat:@"%@ (Can be reused x%lu)", NSStringFromClass([self class]), (unsigned long)canBeReusedCounter];
+  }
   return NSStringFromClass([self class]);
 }
 
@@ -98,10 +102,19 @@ FB_LINKABLE(CKComponent_Sonar)
   NSMutableArray<SKNamed<NSDictionary<NSString *, NSObject *> *> *> *data = [NSMutableArray new];
 
   [data addObject: [SKNamed newWithName: @"CKComponent"
-                                         withValue: @{
-                                                      @"frame": SKObject(self.viewContext.frame),
-                                                      @"controller": SKObject(NSStringFromClass([self.controller class])),
-                                                      }]];
+                              withValue: @{
+                                           @"frame": SKObject(self.viewContext.frame),
+                                           @"controller": SKObject(NSStringFromClass([self.controller class])),
+                                           }]];
+
+  auto const canBeReusedCounter = self.flipper_canBeReusedCounter;
+  if (canBeReusedCounter > 0) {
+    [data addObject: [SKNamed newWithName: @"Convert to CKRenderComponent"
+                                withValue: @{
+                                             @"This component can be reused" :
+                                               SKObject([NSString stringWithFormat:@"%lu times", (unsigned long)canBeReusedCounter])
+                                             }]];
+  }
 
   if (self.viewContext.view) {
     auto _actions = _CKComponentDebugControlActionsForComponent(self);
@@ -170,6 +183,18 @@ FB_LINKABLE(CKComponent_Sonar)
              CK::Component::Accessibility::SetForceAccessibilityEnabled([value boolValue]);
            }
            };
+}
+
+static char const kCanBeReusedKey = ' ';
+
+- (void)setFlipper_canBeReusedCounter:(NSUInteger)canBeReusedCounter
+{
+  objc_setAssociatedObject(self, &kCanBeReusedKey, @(canBeReusedCounter), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (NSUInteger)flipper_canBeReusedCounter
+{
+  return [objc_getAssociatedObject(self, &kCanBeReusedKey) unsignedIntegerValue];
 }
 
 @end

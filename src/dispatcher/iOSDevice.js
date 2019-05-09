@@ -7,9 +7,8 @@
 
 import type {ChildProcess} from 'child_process';
 import type {Store} from '../reducers/index.js';
-import type Logger from '../fb-stubs/Logger.js';
+import type {Logger} from '../fb-interfaces/Logger.js';
 import type {DeviceType} from '../devices/BaseDevice';
-import {RecurringError} from '../utils/errors';
 import {promisify} from 'util';
 import path from 'path';
 import child_process from 'child_process';
@@ -100,9 +99,16 @@ function queryDevices(store: Store, logger: Logger): Promise<void> {
 }
 
 function getActiveSimulators(): Promise<Array<IOSDeviceParams>> {
-  return promisify(execFile)('xcrun', ['simctl', 'list', 'devices', '--json'], {
-    encoding: 'utf8',
-  })
+  const deviceSetPath = process.env.DEVICE_SET_PATH
+    ? ['--set', process.env.DEVICE_SET_PATH]
+    : [];
+  return promisify(execFile)(
+    'xcrun',
+    ['simctl', ...deviceSetPath, 'list', 'devices', '--json'],
+    {
+      encoding: 'utf8',
+    },
+  )
     .then(({stdout}) => JSON.parse(stdout).devices)
     .then(simulatorDevices => {
       const simulators: Array<iOSSimulatorDevice> = Object.values(
@@ -131,7 +137,7 @@ function getActiveSimulators(): Promise<Array<IOSDeviceParams>> {
 
 function getActiveDevices(): Promise<Array<IOSDeviceParams>> {
   return iosUtil.targets().catch(e => {
-    console.error(new RecurringError(e.message));
+    console.error(e.message);
     return [];
   });
 }

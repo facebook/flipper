@@ -1,11 +1,9 @@
-/*
- *  Copyright (c) 2018-present, Facebook, Inc.
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- *  This source code is licensed under the MIT license found in the LICENSE
- *  file in the root directory of this source tree.
- *
+ * This source code is licensed under the MIT license found in the LICENSE
+ * file in the root directory of this source tree.
  */
-
 package com.facebook.flipper.plugins.inspector;
 
 import android.app.Application;
@@ -23,9 +21,6 @@ import com.facebook.flipper.core.FlipperPlugin;
 import com.facebook.flipper.core.FlipperReceiver;
 import com.facebook.flipper.core.FlipperResponder;
 import com.facebook.flipper.plugins.common.MainThreadFlipperReceiver;
-import com.facebook.flipper.plugins.console.iface.ConsoleCommandReceiver;
-import com.facebook.flipper.plugins.console.iface.NullScriptingEnvironment;
-import com.facebook.flipper.plugins.console.iface.ScriptingEnvironment;
 import com.facebook.flipper.plugins.inspector.descriptors.ApplicationDescriptor;
 import com.facebook.flipper.plugins.inspector.descriptors.utils.AccessibilityUtil;
 import java.util.ArrayList;
@@ -37,7 +32,6 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
   private ApplicationWrapper mApplication;
   private DescriptorMapping mDescriptorMapping;
   private ObjectTracker mObjectTracker;
-  private ScriptingEnvironment mScriptingEnvironment;
   private String mHighlightedId;
   private TouchOverlayView mTouchOverlay;
   private FlipperConnection mConnection;
@@ -59,17 +53,9 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
   }
 
   public InspectorFlipperPlugin(Context context, DescriptorMapping descriptorMapping) {
-    this(getAppContextFromContext(context), descriptorMapping, new NullScriptingEnvironment());
-  }
-
-  public InspectorFlipperPlugin(
-      Context context,
-      DescriptorMapping descriptorMapping,
-      ScriptingEnvironment scriptingEnvironment) {
     this(
         new ApplicationWrapper(getAppContextFromContext(context)),
         descriptorMapping,
-        scriptingEnvironment,
         null);
   }
 
@@ -77,23 +63,10 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
       Context context,
       DescriptorMapping descriptorMapping,
       @Nullable List<ExtensionCommand> extensions) {
-    this(
-        new ApplicationWrapper(getAppContextFromContext(context)),
-        descriptorMapping,
-        new NullScriptingEnvironment(),
-        extensions);
-  }
-
-  public InspectorFlipperPlugin(
-      Context context,
-      DescriptorMapping descriptorMapping,
-      ScriptingEnvironment scriptingEnvironment,
-      @Nullable List<ExtensionCommand> extensions) {
 
     this(
         new ApplicationWrapper(getAppContextFromContext(context)),
         descriptorMapping,
-        scriptingEnvironment,
         extensions);
   }
 
@@ -101,13 +74,11 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
   InspectorFlipperPlugin(
       ApplicationWrapper wrapper,
       DescriptorMapping descriptorMapping,
-      ScriptingEnvironment scriptingEnvironment,
       @Nullable List<ExtensionCommand> extensions) {
     mDescriptorMapping = descriptorMapping;
 
     mObjectTracker = new ObjectTracker();
     mApplication = wrapper;
-    mScriptingEnvironment = scriptingEnvironment;
     mExtensionCommands = extensions;
     mShowLithoAccessibilitySettings = false;
   }
@@ -122,17 +93,8 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
     mConnection = connection;
     mDescriptorMapping.onConnect(connection);
 
-    ConsoleCommandReceiver.listenForCommands(
-        connection,
-        mScriptingEnvironment,
-        new ConsoleCommandReceiver.ContextProvider() {
-          @Override
-          @Nullable
-          public Object getObjectForId(String id) {
-            return mObjectTracker.get(id);
-          }
-        });
     connection.receive("getRoot", mGetRoot);
+    connection.receive("getAllNodes", mGetAllNodes);
     connection.receive("getNodes", mGetNodes);
     connection.receive("setData", mSetData);
     connection.receive("setHighlighted", mSetHighlighted);
@@ -173,11 +135,11 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
 
   @Override
   public boolean runInBackground() {
-    return false;
+    return true;
   }
 
   final FlipperReceiver mShouldShowLithoAccessibilitySettings =
-      new MainThreadFlipperReceiver(mConnection) {
+      new MainThreadFlipperReceiver() {
         @Override
         public void onReceiveOnMainThread(FlipperObject params, FlipperResponder responder)
             throws Exception {
@@ -189,7 +151,7 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
       };
 
   final FlipperReceiver mGetRoot =
-      new MainThreadFlipperReceiver(mConnection) {
+      new MainThreadFlipperReceiver() {
         @Override
         public void onReceiveOnMainThread(FlipperObject params, FlipperResponder responder)
             throws Exception {
@@ -198,7 +160,7 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
       };
 
   final FlipperReceiver mGetAXRoot =
-      new MainThreadFlipperReceiver(mConnection) {
+      new MainThreadFlipperReceiver() {
         @Override
         public void onReceiveOnMainThread(FlipperObject params, FlipperResponder responder)
             throws Exception {
@@ -207,9 +169,34 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
           responder.success(getAXNode(trackObject(mApplication)));
         }
       };
+  final FlipperReceiver mGetAllNodes =
+      new MainThreadFlipperReceiver() {
+        @Override
+        public void onReceiveOnMainThread(
+            final FlipperObject params, final FlipperResponder responder) throws Exception {
+          final FlipperObject.Builder result = new FlipperObject.Builder();
+          final FlipperObject.Builder AXResults = new FlipperObject.Builder();
+
+          String rootID = trackObject(mApplication);
+          populateAllAXNodes(rootID, AXResults);
+          populateAllNodes(rootID, result);
+          final FlipperObject output =
+              new FlipperObject.Builder()
+                  .put(
+                      "allNodes",
+                      new FlipperObject.Builder()
+                          .put("elements", result.build())
+                          .put("AXelements", AXResults.build())
+                          .put("rootElement", rootID)
+                          .put("rootAXElement", rootID)
+                          .build())
+                  .build();
+          responder.success(output);
+        }
+      };
 
   final FlipperReceiver mGetNodes =
-      new MainThreadFlipperReceiver(mConnection) {
+      new MainThreadFlipperReceiver() {
         @Override
         public void onReceiveOnMainThread(
             final FlipperObject params, final FlipperResponder responder) throws Exception {
@@ -235,8 +222,26 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
         }
       };
 
+  void populateAllNodes(String rootNode, FlipperObject.Builder builder) throws Exception {
+    FlipperObject object = getNode(rootNode);
+    builder.put(rootNode, object);
+    FlipperArray children = object.getArray("children");
+    for (int i = 0, count = children.length(); i < count; ++i) {
+      populateAllNodes(children.getString(i), builder);
+    }
+  }
+
+  void populateAllAXNodes(String rootNode, FlipperObject.Builder builder) throws Exception {
+    FlipperObject object = getAXNode(rootNode);
+    builder.put(rootNode, object);
+    FlipperArray children = object.getArray("children");
+    for (int i = 0, count = children.length(); i < count; ++i) {
+      populateAllAXNodes(children.getString(i), builder);
+    }
+  }
+
   final FlipperReceiver mGetAXNodes =
-      new MainThreadFlipperReceiver(mConnection) {
+      new MainThreadFlipperReceiver() {
         @Override
         public void onReceiveOnMainThread(
             final FlipperObject params, final FlipperResponder responder) throws Exception {
@@ -286,7 +291,7 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
       };
 
   final FlipperReceiver mOnRequestAXFocus =
-      new MainThreadFlipperReceiver(mConnection) {
+      new MainThreadFlipperReceiver() {
         @Override
         public void onReceiveOnMainThread(
             final FlipperObject params, final FlipperResponder responder) throws Exception {
@@ -302,7 +307,7 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
       };
 
   final FlipperReceiver mSetData =
-      new MainThreadFlipperReceiver(mConnection) {
+      new MainThreadFlipperReceiver() {
         @Override
         public void onReceiveOnMainThread(final FlipperObject params, FlipperResponder responder)
             throws Exception {
@@ -333,7 +338,7 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
       };
 
   final FlipperReceiver mSetHighlighted =
-      new MainThreadFlipperReceiver(mConnection) {
+      new MainThreadFlipperReceiver() {
         @Override
         public void onReceiveOnMainThread(final FlipperObject params, FlipperResponder responder)
             throws Exception {
@@ -352,7 +357,7 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
       };
 
   final FlipperReceiver mSetSearchActive =
-      new MainThreadFlipperReceiver(mConnection) {
+      new MainThreadFlipperReceiver() {
         @Override
         public void onReceiveOnMainThread(final FlipperObject params, FlipperResponder responder)
             throws Exception {
@@ -382,7 +387,7 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
       };
 
   final FlipperReceiver mIsSearchActive =
-      new MainThreadFlipperReceiver(mConnection) {
+      new MainThreadFlipperReceiver() {
         @Override
         public void onReceiveOnMainThread(final FlipperObject params, FlipperResponder responder)
             throws Exception {
@@ -394,7 +399,7 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
       };
 
   final FlipperReceiver mGetSearchResults =
-      new MainThreadFlipperReceiver(mConnection) {
+      new MainThreadFlipperReceiver() {
         @Override
         public void onReceiveOnMainThread(FlipperObject params, FlipperResponder responder)
             throws Exception {
@@ -710,7 +715,7 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
 
   private static Object assertNotNull(@Nullable Object o) {
     if (o == null) {
-      throw new AssertionError("Unexpected null value");
+      throw new RuntimeException("Unexpected null value");
     }
     return o;
   }

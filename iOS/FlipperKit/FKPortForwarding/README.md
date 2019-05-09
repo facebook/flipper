@@ -19,6 +19,7 @@ channel from Mac to iOS, creates a TCP server on iOS and multiplexes all
 connections to that server via the peertalk channel. Helper app running on Mac
 listens for commands on the peertalk channel and initializes TCP connections
 to local port and forwards all communication back via the same peertalk channel.
+```
 
 
                                                        |
@@ -53,6 +54,7 @@ to local port and forwards all communication back via the same peertalk channel.
                        |        |               |             |               |        |
                        +--------+               |             |               +--------+
                                                 +-------------+
+```
 
 First, the library on iOS device creates a TCP server on the port we want to
 forward (let's say 8081) and a special Peertalk server on port 8025. Mac helper

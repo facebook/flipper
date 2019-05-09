@@ -1,11 +1,13 @@
-/*
- *  Copyright (c) 2018-present, Facebook, Inc.
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- *  This source code is licensed under the MIT license found in the LICENSE
- *  file in the root directory of this source tree.
- *
+ * This source code is licensed under the MIT license found in the LICENSE
+ * file in the root directory of this source tree.
  */
 package com.facebook.flipper.core;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 public abstract class ErrorReportingRunnable implements Runnable {
 
@@ -21,7 +23,11 @@ public abstract class ErrorReportingRunnable implements Runnable {
       runOrThrow();
     } catch (Exception e) {
       if (mConnection != null) {
-        mConnection.reportError(e);
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        e.printStackTrace(pw);
+        String sStackTrace = sw.toString(); // stack trace as a string
+        mConnection.reportErrorWithMetadata(e.toString(), sStackTrace);
       }
     } finally {
       doFinally();

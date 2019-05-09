@@ -1,11 +1,9 @@
-/*
- *  Copyright (c) 2018-present, Facebook, Inc.
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- *  This source code is licensed under the MIT license found in the LICENSE
- *  file in the root directory of this source tree.
- *
+ * This source code is licensed under the MIT license found in the LICENSE
+ * file in the root directory of this source tree.
  */
-
 package com.facebook.flipper.plugins.inspector;
 
 import android.graphics.Rect;
@@ -45,7 +43,8 @@ public class HighlightedOverlay {
     margin = enclose(margin, padding);
 
     final float density = targetView.getContext().getResources().getDisplayMetrics().density;
-    final Drawable overlay = BoundsDrawable.getInstance(density, margin, padding, contentBounds);
+    final Drawable overlay =
+        BoundsDrawable.getInstance(targetView, density, margin, padding, contentBounds);
 
     targetView.getOverlay().add(overlay);
 
@@ -60,7 +59,7 @@ public class HighlightedOverlay {
               coords[1] + contentBounds.bottom);
 
       final Drawable lineOverlay =
-          LinesDrawable.getInstance(density, margin, padding, lineContentBounds);
+          LinesDrawable.getInstance(targetView, density, margin, padding, lineContentBounds);
 
       targetView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
 
@@ -74,8 +73,8 @@ public class HighlightedOverlay {
     }
 
     final float density = targetView.getContext().getResources().getDisplayMetrics().density;
-    final Drawable overlay = BoundsDrawable.getInstance(density);
-    final Drawable overlay2 = LinesDrawable.getInstance(density);
+    final Drawable overlay = BoundsDrawable.getInstance(targetView, density);
+    final Drawable overlay2 = LinesDrawable.getInstance(targetView, density);
     targetView.getRootView().getOverlay().remove(overlay2);
 
     targetView.getOverlay().remove(overlay);

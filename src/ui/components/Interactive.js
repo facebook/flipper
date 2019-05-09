@@ -323,6 +323,12 @@ export default class Interactive extends React.Component<
     }
   };
 
+  onClick = (e: SyntheticMouseEvent<>) => {
+    if (this.state.couldResize) {
+      e.stopPropagation();
+    }
+  };
+
   calculateMove(event: SyntheticMouseEvent<>) {
     const {movingInitialCursor, movingInitialProps} = this.state;
 
@@ -687,6 +693,7 @@ export default class Interactive extends React.Component<
         onMouseDown={this.startAction}
         onMouseMove={this.onLocalMouseMove}
         onMouseLeave={this.onMouseLeave} // eslint-disable-next-line
+        onClick={this.onClick}
         style={style}>
         {this.props.children}
       </InteractiveContainer>

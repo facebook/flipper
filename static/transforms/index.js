@@ -20,7 +20,7 @@ function transform({filename, options, src}) {
     filename,
     plugins: [
       'jsx',
-      'flow',
+      ['flow', {all: true}],
       'classProperties',
       'objectRestSpread',
       'optionalChaining',
@@ -99,6 +99,10 @@ function transform({filename, options, src}) {
 
 module.exports = {
   transform,
+  // Disable caching of babel transforms all together. We haven't found a good
+  // way to cache our transforms, as they rely on side effects like env vars or
+  // the existence of folders in the file system.
+  getCacheKey: () => Math.random().toString(36),
   process(src, filename, config, options) {
     return transform({
       src,

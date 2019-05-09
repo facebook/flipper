@@ -6,7 +6,7 @@
  */
 
 import type {SecureServerConfig} from './utils/CertificateProvider';
-import type Logger from './fb-stubs/Logger';
+import type {Logger} from './fb-interfaces/Logger';
 import type {ClientQuery} from './Client.js';
 import type {Store} from './reducers/index.js';
 
@@ -16,8 +16,7 @@ import RSocketTCPServer from 'rsocket-tcp-server';
 import {Single} from 'rsocket-flowable';
 import Client from './Client.js';
 import type {UninitializedClient} from './UninitializedClient';
-import {RecurringError} from './utils/errors';
-import {recordSuccessMetric} from './utils/metrics';
+import {reportPlatformFailures} from './utils/metrics';
 
 const EventEmitter = (require('events'): any);
 const invariant = require('invariant');
@@ -67,7 +66,7 @@ export default class Server extends EventEmitter {
         this.insecureServer = this.startServer(insecure);
         return;
       });
-    recordSuccessMetric(this.initialisePromise, 'initializeServer');
+    reportPlatformFailures(this.initialisePromise, 'initializeServer');
     return this.initialisePromise;
   }
 
@@ -182,7 +181,7 @@ export default class Server extends EventEmitter {
           const {csr, destination} = json;
           return new Single(subscriber => {
             subscriber.onSubscribe();
-            recordSuccessMetric(
+            reportPlatformFailures(
               this.certificateProvider.processCertificateSigningRequest(
                 csr,
                 clientData.os,
@@ -284,7 +283,7 @@ export default class Server extends EventEmitter {
       /* If a device gets disconnected without being cleaned up properly,
        * Flipper won't be aware until it attempts to reconnect.
        * When it does we need to terminate the zombie connection.
-      */
+       */
       if (this.connections.has(id)) {
         const connectionInfo = this.connections.get(id);
         connectionInfo &&
@@ -342,11 +341,9 @@ class ConnectionTracker {
     this.connectionAttempts.set(key, entry);
     if (entry.length >= this.connectionProblemThreshold) {
       console.error(
-        new RecurringError(
-          `Connection loop detected with ${key}. Connected ${
-            this.connectionProblemThreshold
-          } times within ${this.timeWindowMillis / 1000}s.`,
-        ),
+        `Connection loop detected with ${key}. Connected ${
+          this.connectionProblemThreshold
+        } times within ${this.timeWindowMillis / 1000}s.`,
         'server',
       );
     }

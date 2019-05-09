@@ -1,15 +1,15 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the LICENSE
+ * file in the root directory of this source tree.
  */
 package com.facebook.flipper.plugins.inspector.descriptors.utils;
 
-import android.support.v4.view.ViewCompat;
-import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;
 import android.view.View;
 import android.view.accessibility.AccessibilityNodeInfo;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import javax.annotation.Nullable;
 
 /**
@@ -41,7 +41,7 @@ public class AccessibilityRoleUtil {
     IMAGE("android.widget.ImageView", "Image"),
     IMAGE_BUTTON("android.widget.ImageView", "Button"),
     LIST("android.widget.AbsListView", "List"),
-    PAGER("android.support.v4.view.ViewPager", "Multi-page view"),
+    PAGER("androidx.viewpager.widget.ViewPager", "Multi-page view"),
     RADIO_BUTTON("android.widget.RadioButton", "Radio button"),
     SEEK_CONTROL("android.widget.SeekBar", "Seek control"),
     SWITCH("android.widget.Switch", "Switch"),
@@ -52,7 +52,7 @@ public class AccessibilityRoleUtil {
     CHECKED_TEXT_VIEW("android.widget.CheckedTextView", ""),
     PROGRESS_BAR("android.widget.ProgressBar", "Progress bar"),
     ACTION_BAR_TAB("android.app.ActionBar$Tab", ""),
-    DRAWER_LAYOUT("android.support.v4.widget.DrawerLayout", ""),
+    DRAWER_LAYOUT("androidx.drawerlayout.widget.DrawerLayout", ""),
     SLIDING_DRAWER("android.widget.SlidingDrawer", ""),
     ICON_MENU("com.android.internal.view.menu.IconMenuView", ""),
     TOAST("android.widget.Toast$TN", ""),

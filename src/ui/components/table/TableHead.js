@@ -43,7 +43,7 @@ const TableHeaderColumnContainer = styled('div')({
   padding: '0 8px',
 });
 
-const TableHeadContainer = styled(FlexRow)({
+const TableHeadContainer = styled(FlexRow)(props => ({
   borderBottom: `1px solid ${colors.sectionHeaderBorder}`,
   color: colors.light50,
   flexShrink: 0,
@@ -53,7 +53,8 @@ const TableHeadContainer = styled(FlexRow)({
   textAlign: 'left',
   top: 0,
   zIndex: 2,
-});
+  minWidth: props.horizontallyScrollable ? 'min-content' : 0,
+}));
 
 const TableHeadColumnContainer = styled('div')(props => ({
   position: 'relative',
@@ -97,8 +98,16 @@ class TableHeadColumn extends PureComponent<{
   onColumnResize: ?TableOnColumnResize,
   children?: React$Node,
   title?: string,
+  horizontallyScrollable?: boolean,
 }> {
   ref: HTMLElement;
+
+  componentDidMount() {
+    if (this.props.horizontallyScrollable) {
+      // measure initial width
+      this.onResize(this.ref.offsetWidth);
+    }
+  }
 
   onClick = () => {
     const {id, onSort, sortOrder} = this.props;
@@ -117,7 +126,7 @@ class TableHeadColumn extends PureComponent<{
   };
 
   onResize = (newWidth: number) => {
-    const {id, columnSizes, onColumnResize, width} = this.props;
+    const {id, onColumnResize, width} = this.props;
     if (!onColumnResize) {
       return;
     }
@@ -143,10 +152,7 @@ class TableHeadColumn extends PureComponent<{
       }
     }
 
-    onColumnResize({
-      ...columnSizes,
-      [id]: normalizedWidth,
-    });
+    onColumnResize(id, normalizedWidth);
   };
 
   setRef = (ref: HTMLElement) => {
@@ -191,6 +197,7 @@ export default class TableHead extends PureComponent<{
   onSort: ?TableOnSort,
   columnSizes: TableColumnSizes,
   onColumnResize: ?TableOnColumnResize,
+  horizontallyScrollable?: boolean,
 }> {
   buildContextMenu = (): MenuTemplate => {
     const visibles = this.props.columnOrder
@@ -237,6 +244,7 @@ export default class TableHead extends PureComponent<{
       onColumnResize,
       onSort,
       sortOrder,
+      horizontallyScrollable,
     } = this.props;
     const elems = [];
 
@@ -284,7 +292,8 @@ export default class TableHead extends PureComponent<{
           onSort={onSort}
           columnSizes={columnSizes}
           onColumnResize={onColumnResize}
-          title={key}>
+          title={key}
+          horizontallyScrollable={horizontallyScrollable}>
           {col.value}
           {arrow}
         </TableHeadColumn>
@@ -296,10 +305,11 @@ export default class TableHead extends PureComponent<{
 
       lastResizable = isResizable;
     }
-
     return (
       <ContextMenu buildItems={this.buildContextMenu}>
-        <TableHeadContainer>{elems}</TableHeadContainer>
+        <TableHeadContainer horizontallyScrollable={horizontallyScrollable}>
+          {elems}
+        </TableHeadContainer>
       </ContextMenu>
     );
   }

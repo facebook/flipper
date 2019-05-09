@@ -11,12 +11,17 @@ import Sidebar from '../ui/components/Sidebar';
 import {connect} from 'react-redux';
 import {toggleRightSidebarAvailable} from '../reducers/application.js';
 
-type Props = {
+type OwnProps = {|
   children: any,
+  width?: number,
+  minWidth?: number,
+|};
+
+type Props = {
+  ...OwnProps,
   rightSidebarVisible: boolean,
   rightSidebarAvailable: boolean,
   toggleRightSidebarAvailable: (visible?: boolean) => any,
-  width?: number,
 };
 
 class DetailSidebar extends React.Component<Props> {
@@ -42,7 +47,10 @@ class DetailSidebar extends React.Component<Props> {
       this.props.rightSidebarVisible &&
       domNode &&
       ReactDOM.createPortal(
-        <Sidebar width={this.props.width || 300} position="right">
+        <Sidebar
+          minWidth={this.props.minWidth}
+          width={this.props.width || 300}
+          position="right">
           {this.props.children}
         </Sidebar>,
         domNode,
@@ -51,11 +59,7 @@ class DetailSidebar extends React.Component<Props> {
   }
 }
 
-/* $FlowFixMe(>=0.86.0) This
- * comment suppresses an error found when Flow v0.86 was
- * deployed. To see the error, delete this comment and
- * run Flow. */
-export default connect(
+export default connect<Props, OwnProps, _, _, _, _>(
   ({application: {rightSidebarVisible, rightSidebarAvailable}}) => ({
     rightSidebarVisible,
     rightSidebarAvailable,

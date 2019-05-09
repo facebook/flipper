@@ -21,7 +21,7 @@ class ConnectionContextStore {
 public:
   ConnectionContextStore(DeviceData deviceData);
   bool hasRequiredFiles();
-  std::string createCertificateSigningRequest();
+  std::string getCertificateSigningRequest();
   std::shared_ptr<SSLContext> getSSLContext();
   std::string getCertificateDirectoryPath();
   std::string getDeviceId();
@@ -29,6 +29,7 @@ public:
 
  private:
   DeviceData deviceData_;
+  std::string csr = "";
 
   std::string absoluteFilePath(const char* filename);
   bool resetFlipperDir();

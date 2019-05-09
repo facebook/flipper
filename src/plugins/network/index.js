@@ -5,7 +5,13 @@
  * @format
  */
 
-import type {TableHighlightedRows, TableRows, TableBodyRow} from 'flipper';
+import type {
+  TableHighlightedRows,
+  TableRows,
+  TableBodyRow,
+  MetricType,
+} from 'flipper';
+import {padStart} from 'lodash';
 
 import {
   ContextMenu,
@@ -20,11 +26,12 @@ import {
   SearchableTable,
   FlipperPlugin,
 } from 'flipper';
+import type {Request, RequestId, Response} from './types.js';
+import {convertRequestToCurlCommand, getHeaderValue} from './utils.js';
 import RequestDetails from './RequestDetails.js';
+import {clipboard} from 'electron';
 import {URL} from 'url';
 import type {Notification} from '../../plugin';
-
-type RequestId = string;
 
 type PersistedState = {|
   requests: {[id: RequestId]: Request},
@@ -35,30 +42,9 @@ type State = {|
   selectedIds: Array<RequestId>,
 |};
 
-export type Request = {|
-  id: RequestId,
-  timestamp: number,
-  method: string,
-  url: string,
-  headers: Array<Header>,
-  data: ?string,
-|};
-
-export type Response = {|
-  id: RequestId,
-  timestamp: number,
-  status: number,
-  reason: string,
-  headers: Array<Header>,
-  data: ?string,
-|};
-
-export type Header = {|
-  key: string,
-  value: string,
-|};
-
 const COLUMN_SIZE = {
+  requestTimestamp: 100,
+  responseTimestamp: 100,
   domain: 'flex',
   method: 100,
   status: 70,
@@ -66,7 +52,23 @@ const COLUMN_SIZE = {
   duration: 100,
 };
 
+const COLUMN_ORDER = [
+  {key: 'requestTimestamp', visible: true},
+  {key: 'responseTimestamp', visible: false},
+  {key: 'domain', visible: true},
+  {key: 'method', visible: true},
+  {key: 'status', visible: true},
+  {key: 'size', visible: true},
+  {key: 'duration', visible: true},
+];
+
 const COLUMNS = {
+  requestTimestamp: {
+    value: 'Request Time',
+  },
+  responseTimestamp: {
+    value: 'Response Time',
+  },
   domain: {
     value: 'Domain',
   },
@@ -83,15 +85,6 @@ const COLUMNS = {
     value: 'Duration',
   },
 };
-
-export function getHeaderValue(headers: Array<Header>, key: string): string {
-  for (const header of headers) {
-    if (header.key.toLowerCase() === key.toLowerCase()) {
-      return header.value;
-    }
-  }
-  return '';
-}
 
 export function formatBytes(count: number): string {
   if (count > 1024 * 1024) {
@@ -117,6 +110,19 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
   static defaultPersistedState = {
     requests: {},
     responses: {},
+  };
+
+  static metricsReducer = (
+    persistedState: PersistedState,
+  ): Promise<MetricType> => {
+    const failures = Object.keys(persistedState.responses).reduce(function(
+      previous,
+      key,
+    ) {
+      return previous + (persistedState.responses[key].status >= 400);
+    },
+    0);
+    return Promise.resolve({NUMBER_NETWORK_FAILURES: failures});
   };
 
   static persistedStateReducer = (
@@ -173,6 +179,19 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
   onRowHighlighted = (selectedIds: Array<RequestId>) =>
     this.setState({selectedIds});
 
+  copyRequestCurlCommand = () => {
+    const {requests} = this.props.persistedState;
+    const {selectedIds} = this.state;
+    // Ensure there is only one row highlighted.
+    if (selectedIds.length !== 1) {
+      return;
+    }
+
+    const request = requests[selectedIds[0]];
+    const command = convertRequestToCurlCommand(request);
+    clipboard.writeText(command);
+  };
+
   clearLogs = () => {
     this.setState({selectedIds: []});
     this.props.setPersistedState({responses: {}, requests: {}});
@@ -201,6 +220,7 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
           requests={requests || {}}
           responses={responses || {}}
           clear={this.clearLogs}
+          copyRequestCurlCommand={this.copyRequestCurlCommand}
           onRowHighlighted={this.onRowHighlighted}
           highlightedRows={
             this.state.selectedIds ? new Set(this.state.selectedIds) : null
@@ -216,6 +236,7 @@ type NetworkTableProps = {
   requests: {[id: RequestId]: Request},
   responses: {[id: RequestId]: Response},
   clear: () => void,
+  copyRequestCurlCommand: () => void,
   onRowHighlighted: (keys: TableHighlightedRows) => void,
   highlightedRows: ?Set<string>,
 };
@@ -223,6 +244,19 @@ type NetworkTableProps = {
 type NetworkTableState = {|
   sortedRows: TableRows,
 |};
+
+function formatTimestamp(timestamp: number): string {
+  const date = new Date(timestamp);
+  return `${padStart(date.getHours().toString(), 2, '0')}:${padStart(
+    date.getMinutes().toString(),
+    2,
+    '0',
+  )}:${padStart(date.getSeconds().toString(), 2, '0')}.${padStart(
+    date.getMilliseconds().toString(),
+    3,
+    '0',
+  )}`;
+}
 
 function buildRow(request: Request, response: ?Response): ?TableBodyRow {
   if (request == null) {
@@ -234,6 +268,18 @@ function buildRow(request: Request, response: ?Response): ?TableBodyRow {
 
   return {
     columns: {
+      requestTimestamp: {
+        value: (
+          <TextEllipsis>{formatTimestamp(request.timestamp)}</TextEllipsis>
+        ),
+      },
+      responseTimestamp: {
+        value: (
+          <TextEllipsis>
+            {response && formatTimestamp(response.timestamp)}
+          </TextEllipsis>
+        ),
+      },
       domain: {
         value: (
           <TextEllipsis>{friendlyName ? friendlyName : domain}</TextEllipsis>
@@ -337,19 +383,35 @@ class NetworkTable extends PureComponent<NetworkTableProps, NetworkTableState> {
     this.setState(calculateState(this.props, nextProps, this.state.sortedRows));
   }
 
-  contextMenuItems = [
-    {
-      type: 'separator',
-    },
-    {
-      label: 'Clear all',
-      click: this.props.clear,
-    },
-  ];
+  contextMenuItems() {
+    const {clear, copyRequestCurlCommand, highlightedRows} = this.props;
+    const highlightedMenuItems =
+      highlightedRows && highlightedRows.size === 1
+        ? [
+            {
+              type: 'separator',
+            },
+            {
+              label: 'Copy as cURL',
+              click: copyRequestCurlCommand,
+            },
+          ]
+        : [];
+
+    return highlightedMenuItems.concat([
+      {
+        type: 'separator',
+      },
+      {
+        label: 'Clear all',
+        click: clear,
+      },
+    ]);
+  }
 
   render() {
     return (
-      <NetworkTable.ContextMenu items={this.contextMenuItems}>
+      <NetworkTable.ContextMenu items={this.contextMenuItems()}>
         <SearchableTable
           virtual={true}
           multiline={false}
@@ -358,6 +420,7 @@ class NetworkTable extends PureComponent<NetworkTableProps, NetworkTableState> {
           floating={false}
           columnSizes={COLUMN_SIZE}
           columns={COLUMNS}
+          columnOrder={COLUMN_ORDER}
           rows={this.state.sortedRows}
           onRowHighlighted={this.props.onRowHighlighted}
           highlightedRows={this.props.highlightedRows}
@@ -445,6 +508,9 @@ class SizeColumn extends PureComponent<{
     if (lengthString != null && lengthString != '') {
       length = parseInt(lengthString, 10);
     } else if (response.data) {
+      // FIXME: T41427687 This is probably not the correct way to determine
+      // the correct byte size of the response, because String.length returns
+      // the number of characters, not bytes.
       length = atob(response.data).length;
     }
     return length;

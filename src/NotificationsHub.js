@@ -12,7 +12,7 @@ import type {
   Device,
 } from 'flipper';
 import type {PluginNotification} from './reducers/notifications';
-import type Logger from './fb-stubs/Logger';
+import type {Logger} from './fb-interfaces/Logger';
 
 import {
   FlipperDevicePlugin,
@@ -37,7 +37,8 @@ import {
   updateCategoryBlacklist,
 } from './reducers/notifications';
 import {selectPlugin} from './reducers/connections';
-import {createPaste, textContent} from './utils/index';
+import {textContent} from './utils/index';
+import createPaste from './fb-stubs/createPaste';
 
 export default class Notifications extends FlipperDevicePlugin<{}> {
   static id = 'notifications';
@@ -98,24 +99,28 @@ export default class Notifications extends FlipperDevicePlugin<{}> {
   }
 }
 
-type Props = {|
+type OwnProps = {|
   ...SearchableProps,
+  onClear: () => void,
+  selectedID: ?string,
+  logger: Logger,
+|};
+
+type Props = {|
+  ...OwnProps,
   activeNotifications: Array<PluginNotification>,
   invalidatedNotifications: Array<PluginNotification>,
   blacklistedPlugins: Array<string>,
   blacklistedCategories: Array<string>,
   devicePlugins: Map<string, Class<FlipperDevicePlugin<>>>,
   clientPlugins: Map<string, Class<FlipperPlugin<>>>,
-  onClear: () => void,
   updatePluginBlacklist: (blacklist: Array<string>) => mixed,
   updateCategoryBlacklist: (blacklist: Array<string>) => mixed,
-  selectPlugin: ({
+  selectPlugin: (payload: {|
     selectedPlugin: ?string,
     selectedApp: ?string,
-    deepLinkPayload?: ?string,
-  }) => mixed,
-  selectedID: ?string,
-  logger: Logger,
+    deepLinkPayload: ?string,
+  |}) => mixed,
 |};
 
 type State = {|
@@ -322,11 +327,7 @@ class NotificationsTable extends Component<Props, State> {
   }
 }
 
-/* $FlowFixMe(>=0.86.0) This
- * comment suppresses an error found when Flow v0.86 was
- * deployed. To see the error, delete this comment and
- * run Flow. */
-const ConnectedNotificationsTable = connect(
+const ConnectedNotificationsTable = connect<Props, OwnProps, _, _, _, _>(
   ({
     notifications: {
       activeNotifications,
@@ -453,11 +454,11 @@ type ItemProps = {
   onHideCategory?: () => mixed,
   isSelected?: boolean,
   inactive?: boolean,
-  selectPlugin?: ({
+  selectPlugin?: (payload: {|
     selectedPlugin: ?string,
     selectedApp: ?string,
-    deepLinkPayload?: ?string,
-  }) => mixed,
+    deepLinkPayload: ?string,
+  |}) => mixed,
   logger?: Logger,
   plugin: ?Class<FlipperBasePlugin<>>,
 };
@@ -599,26 +600,24 @@ class NotificationItem extends Component<ItemProps, ItemState> {
               </Actions>
             )}
         </NotificationContent>
-        {action &&
-          !inactive &&
-          !isSelected && (
-            <FlexColumn style={{alignSelf: 'center'}}>
-              {action && (
-                <NotificationButton compact onClick={this.openDeeplink}>
-                  Open
-                </NotificationButton>
-              )}
-              {this.state.reportedNotHelpful ? (
-                <NotificationButton compact onClick={this.onHide}>
-                  Hide
-                </NotificationButton>
-              ) : (
-                <NotificationButton compact onClick={this.reportNotUseful}>
-                  Not helpful
-                </NotificationButton>
-              )}
-            </FlexColumn>
-          )}
+        {action && !inactive && !isSelected && (
+          <FlexColumn style={{alignSelf: 'center'}}>
+            {action && (
+              <NotificationButton compact onClick={this.openDeeplink}>
+                Open
+              </NotificationButton>
+            )}
+            {this.state.reportedNotHelpful ? (
+              <NotificationButton compact onClick={this.onHide}>
+                Hide
+              </NotificationButton>
+            ) : (
+              <NotificationButton compact onClick={this.reportNotUseful}>
+                Not helpful
+              </NotificationButton>
+            )}
+          </FlexColumn>
+        )}
       </ContextMenu>
     );
   }

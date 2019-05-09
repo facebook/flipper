@@ -35,38 +35,34 @@ beforeAll(() => {
   return server.init();
 });
 
-test(
-  'Device can connect successfully',
-  done => {
-    var testFinished = false;
-    var disconnectedTooEarly = false;
-    const registeredClients = [];
-    server.addListener('new-client', (client: Client) => {
-      // Check there is a connected device that has the same device_id as the new client
-      const deviceId = client.query.device_id;
-      expect(deviceId).toBeTruthy();
-      const devices = store.getState().connections.devices;
-      expect(devices.map(device => device.serial)).toContain(deviceId);
+test('Device can connect successfully', done => {
+  var testFinished = false;
+  var disconnectedTooEarly = false;
+  const registeredClients = [];
+  server.addListener('new-client', (client: Client) => {
+    // Check there is a connected device that has the same device_id as the new client
+    const deviceId = client.query.device_id;
+    expect(deviceId).toBeTruthy();
+    const devices = store.getState().connections.devices;
+    expect(devices.map(device => device.serial)).toContain(deviceId);
 
-      // Make sure it only connects once
-      registeredClients.push(client);
-      expect(registeredClients).toHaveLength(1);
+    // Make sure it only connects once
+    registeredClients.push(client);
+    expect(registeredClients).toHaveLength(1);
 
-      // Make sure client stays connected for some time before passing test
-      setTimeout(() => {
-        testFinished = true;
-        expect(disconnectedTooEarly).toBe(false);
-        done();
-      }, 5000);
-    });
-    server.addListener('removed-client', (id: string) => {
-      if (!testFinished) {
-        disconnectedTooEarly = true;
-      }
-    });
-  },
-  20000,
-);
+    // Make sure client stays connected for some time before passing test
+    setTimeout(() => {
+      testFinished = true;
+      expect(disconnectedTooEarly).toBe(false);
+      done();
+    }, 5000);
+  });
+  server.addListener('removed-client', (id: string) => {
+    if (!testFinished) {
+      disconnectedTooEarly = true;
+    }
+  });
+}, 20000);
 
 afterAll(() => {
   return server.close();

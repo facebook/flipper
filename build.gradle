@@ -1,18 +1,24 @@
-buildscript {
+// Copyright (c) Facebook, Inc. and its affiliates.
+//
+// This source code is licensed under the MIT license found in the LICENSE file
+// in the root directory of this source tree.
+
+buildscript { 
     repositories {
         google()
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.2.1'
+        classpath 'com.android.tools.build:gradle:3.4.0'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$KOTLIN_VERSION"
     }
 }
 
 plugins {
     id 'de.undercouch.download' version '3.4.3'
-    id 'com.github.ben-manes.versions' version '0.20.0'
     id 'com.jfrog.bintray' version '1.8.4'
-    id "com.github.dcendents.android-maven" version '2.1'
+    id 'com.github.dcendents.android-maven' version '2.1'
+    id 'com.github.ben-manes.versions' version '0.21.0'
 }
 
 ext.isSnapshot = { VERSION_NAME.endsWith('-SNAPSHOT') }
@@ -33,8 +39,8 @@ subprojects {
 
 ext {
     minSdkVersion = 15
-    targetSdkVersion = 25
-    compileSdkVersion = 27
+    targetSdkVersion = 28
+    compileSdkVersion = 28
     buildToolsVersion = '28.0.3'
     sourceCompatibilityVersion = JavaVersion.VERSION_1_7
     targetCompatibilityVersion = JavaVersion.VERSION_1_7
@@ -42,28 +48,33 @@ ext {
 
 ext.deps = [
         // Android support
-        supportAnnotations : 'com.android.support:support-annotations:27.1.1',
-        supportAppCompat   : 'com.android.support:appcompat-v7:27.1.1',
-        supportCoreUi      : 'com.android.support:support-core-ui:27.1.1',
-        supportRecyclerView: 'com.android.support:recyclerview-v7:27.1.1',
-        supportConstraintLayout: 'com.android.support.constraint:constraint-layout:1.1.0',
-        supportEspresso    : 'com.android.support.test.espresso:espresso-core:2.2.2',
-        supportDesign      : 'com.android.support:design:27.1.1',
-        supportEspressoIntents : 'com.android.support.test.espresso:espresso-intents:2.2.2',
-        supportTestRunner  : 'com.android.support.test:runner:1.0.2',
+        supportAnnotations : "androidx.annotation:annotation:$ANDROIDX_VERSION",
+        supportAppCompat   : "androidx.appcompat:appcompat:$ANDROIDX_VERSION",
+        supportCoreUi      : "androidx.legacy:legacy-support-core-ui:$ANDROIDX_VERSION",
+        supportRecyclerView: "androidx.recyclerview:recyclerview:$ANDROIDX_VERSION",
+        supportConstraintLayout: "androidx.constraintlayout:constraintlayout:1.1.2",
+        supportEspresso    : 'androidx.test.espresso:espresso-core:3.1.0',
+        supportDesign      : "com.google.android.material:material:1.0.0-rc01",
+        supportEspressoIntents : 'androidx.test.espresso:espresso-intents:3.1.0',
+        supportTestRunner  : 'androidx.test:runner:1.1.0',
         // Arch
         archPaging         : 'android.arch.paging:runtime:1.0.0',
         // First-party
         soloader           : 'com.facebook.soloader:soloader:0.6.0',
         screenshot         : 'com.facebook.testing.screenshot:core:0.5.0',
         // Annotations
-        jsr305             : 'com.google.code.findbugs:jsr305:3.0.1',
+        jsr305             : 'com.google.code.findbugs:jsr305:3.0.2',
         inferAnnotations   : 'com.facebook.infer.annotation:infer-annotation:0.11.2',
         // Litho
         lithoAnnotations   : "com.facebook.litho:litho-annotations:$LITHO_VERSION",
         lithoCore          : "com.facebook.litho:litho-core:$LITHO_VERSION",
+        lithoSectionsAnnotations: "com.facebook.litho:litho-sections-annotations:$LITHO_VERSION",
+        lithoSectionsDebug : "com.facebook.litho:litho-sections-debug:$LITHO_VERSION",
+        lithoSectionsCore  : "com.facebook.litho:litho-sections-core:$LITHO_VERSION",
+        lithoSectionsWidget  : "com.facebook.litho:litho-sections-widget:$LITHO_VERSION",
         lithoWidget        : "com.facebook.litho:litho-widget:$LITHO_VERSION",
         lithoProcessor     : "com.facebook.litho:litho-processor:$LITHO_VERSION",
+        lithoSectionsProcessor: "com.facebook.litho:litho-sections-processor:$LITHO_VERSION",
         lithoFresco        : "com.facebook.litho:litho-fresco:$LITHO_VERSION",
         lithoTesting       : "com.facebook.litho:litho-testing:$LITHO_VERSION",
         // Debugging and testing
@@ -72,11 +83,14 @@ ext.deps = [
         junit              : 'junit:junit:4.12',
         hamcrest           : 'org.hamcrest:hamcrest-library:1.3',
         mockito            : 'org.mockito:mockito-core:1.9.5',
-        stetho             : 'com.facebook.stetho:stetho:1.5.0',
-        okhttp3            : 'com.squareup.okhttp3:okhttp:3.10.0',
-        leakcanary         : 'com.squareup.leakcanary:leakcanary-android:1.6.1',
-        testCore        : 'androidx.test:core:1.0.0',
-        testRules       : 'androidx.test:rules:1.1.0',
+        stetho             : 'com.facebook.stetho:stetho:1.5.1',
+        okhttp3            : 'com.squareup.okhttp3:okhttp:3.14.1',
+        leakcanary         : 'com.squareup.leakcanary:leakcanary-android:1.6.3',
+        testCore           : 'androidx.test:core:1.1.0',
+        testRules          : 'androidx.test:rules:1.1.0',
         // Plugin dependencies
         rhino              : 'org.mozilla:rhino:1.7.10',
+        frescoFlipper      : 'com.facebook.fresco:flipper:1.13.0',
+        frescoStetho       : 'com.facebook.fresco:stetho:1.13.0',
+        fresco             : 'com.facebook.fresco:fresco:1.13.0'
 ]

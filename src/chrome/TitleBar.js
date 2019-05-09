@@ -5,7 +5,7 @@
  * @format
  */
 
-import type {ActiveSheet} from '../reducers/application';
+import type {ActiveSheet, LauncherMsg} from '../reducers/application';
 
 import {
   colors,
@@ -16,6 +16,7 @@ import {
   Spacer,
   styled,
   Text,
+  LoadingIndicator,
 } from 'flipper';
 import {connect} from 'react-redux';
 import {
@@ -27,6 +28,7 @@ import {
 import DevicesButton from './DevicesButton.js';
 import ScreenCaptureButtons from './ScreenCaptureButtons.js';
 import AutoUpdateVersion from './AutoUpdateVersion.js';
+import UpdateIndicator from './UpdateIndicator.js';
 import config from '../fb-stubs/config.js';
 import {isAutoUpdaterEnabled} from '../utils/argvUtils.js';
 import isProduction from '../utils/isProduction.js';
@@ -51,15 +53,21 @@ const AppTitleBar = styled(FlexRow)(({focused}) => ({
   zIndex: 4,
 }));
 
+type OwnProps = {|
+  version: string,
+|};
+
 type Props = {|
+  ...OwnProps,
   windowIsFocused: boolean,
   leftSidebarVisible: boolean,
   rightSidebarVisible: boolean,
   rightSidebarAvailable: boolean,
+  downloadingImportData: boolean,
   toggleLeftSidebarVisible: (visible?: boolean) => void,
   toggleRightSidebarVisible: (visible?: boolean) => void,
   setActiveSheet: (sheet: ActiveSheet) => void,
-  version: string,
+  launcherMsg: LauncherMsg,
 |};
 
 const VersionText = styled(Text)({
@@ -68,20 +76,35 @@ const VersionText = styled(Text)({
   marginTop: 2,
 });
 
+const Importing = styled(FlexRow)({
+  color: colors.light50,
+  alignItems: 'center',
+  marginLeft: 10,
+});
+
 class TitleBar extends Component<Props> {
   render() {
     return (
       <AppTitleBar focused={this.props.windowIsFocused} className="toolbar">
         <DevicesButton />
         <ScreenCaptureButtons />
+        {this.props.downloadingImportData && (
+          <Importing>
+            <LoadingIndicator size={16} />
+            &nbsp;Importing data...
+          </Importing>
+        )}
         <Spacer />
         <VersionText>
           {this.props.version}
           {isProduction() ? '' : '-dev'}
         </VersionText>
+
         {isAutoUpdaterEnabled() ? (
           <AutoUpdateVersion version={this.props.version} />
-        ) : null}
+        ) : (
+          <UpdateIndicator launcherMsg={this.props.launcherMsg} />
+        )}
         {config.bugReportButtonVisible && (
           <Button
             compact={true}
@@ -114,23 +137,23 @@ class TitleBar extends Component<Props> {
   }
 }
 
-/* $FlowFixMe(>=0.86.0) This comment suppresses an error found when Flow v0.86
- * was deployed. To see the error, delete this comment and run Flow. */
-export default connect(
+export default connect<Props, OwnProps, _, _, _, _>(
   ({
     application: {
       windowIsFocused,
       leftSidebarVisible,
       rightSidebarVisible,
       rightSidebarAvailable,
-      pluginManagerVisible,
+      downloadingImportData,
+      launcherMsg,
     },
   }) => ({
     windowIsFocused,
     leftSidebarVisible,
     rightSidebarVisible,
     rightSidebarAvailable,
-    pluginManagerVisible,
+    downloadingImportData,
+    launcherMsg,
   }),
   {
     setActiveSheet,

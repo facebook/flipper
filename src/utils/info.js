@@ -32,9 +32,7 @@ export function getInfo(): Info {
   };
 }
 
-export function stringifyInfo(): string {
-  const info = getInfo();
-
+export function stringifyInfo(info: Info): string {
   const lines = [
     `Platform: ${info.platform} ${info.arch}`,
     `Unixname: ${info.unixname}`,

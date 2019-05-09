@@ -6,4 +6,3 @@
  */
 
 export {default as textContent} from './textContent.js';
-export {default as createPaste} from './createPaste.js';

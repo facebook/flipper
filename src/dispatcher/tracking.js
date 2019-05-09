@@ -10,7 +10,7 @@ import {ipcRenderer} from 'electron';
 import {performance} from 'perf_hooks';
 
 import type {Store} from '../reducers/index.js';
-import type Logger from '../fb-stubs/Logger.js';
+import type {Logger} from '../fb-interfaces/Logger.js';
 
 export default (store: Store, logger: Logger) => {
   let droppedFrames: number = 0;
@@ -49,24 +49,31 @@ export default (store: Store, logger: Logger) => {
     if (!selectedDevice || !selectedPlugin) {
       return;
     }
+
+    let app: string;
+    let sdkVersion: number;
+
+    if (selectedApp) {
+      const client = clients.find((c: Client) => c.id === selectedApp);
+      if (client) {
+        app = client.query.app;
+        sdkVersion = client.query.sdk_version || 0;
+      }
+    }
+
     const info = {
       droppedFrames,
       largeFrameDrops,
       os: selectedDevice.os,
       device: selectedDevice.title,
       plugin: selectedPlugin,
+      app,
+      sdkVersion,
     };
+
     // reset dropped frames counter
     droppedFrames = 0;
     largeFrameDrops = 0;
-
-    if (selectedApp) {
-      const client = clients.find((c: Client) => c.id === selectedApp);
-      if (client) {
-        // $FlowFixMe
-        info.app = client.query.app;
-      }
-    }
 
     logger.track('usage', 'ping', info);
   });

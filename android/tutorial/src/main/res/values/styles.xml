@@ -1,0 +1,18 @@
+<!--
+  ~ Copyright (c) Facebook, Inc. and its affiliates.
+  ~
+  ~ This source code is licensed under the MIT license found in the LICENSE
+  ~ file in the root directory of this source tree.
+  -->
+
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+</resources>

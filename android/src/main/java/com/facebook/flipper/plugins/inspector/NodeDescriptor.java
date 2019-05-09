@@ -1,14 +1,12 @@
-/*
- *  Copyright (c) 2018-present, Facebook, Inc.
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- *  This source code is licensed under the MIT license found in the LICENSE
- *  file in the root directory of this source tree.
- *
+ * This source code is licensed under the MIT license found in the LICENSE
+ * file in the root directory of this source tree.
  */
-
 package com.facebook.flipper.plugins.inspector;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import com.facebook.flipper.core.ErrorReportingRunnable;
 import com.facebook.flipper.core.FlipperArray;
 import com.facebook.flipper.core.FlipperConnection;
@@ -49,7 +47,7 @@ public abstract class NodeDescriptor<T> {
    * and/or children have changed. This will trigger Flipper to re-query this node getting any new
    * data.
    */
-  protected final void invalidate(final T node) {
+  public void invalidate(final T node) {
     if (mConnection != null) {
       new ErrorReportingRunnable(mConnection) {
         @Override

@@ -1,9 +1,8 @@
-/*
- *  Copyright (c) 2018-present, Facebook, Inc.
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- *  This source code is licensed under the MIT license found in the LICENSE
- *  file in the root directory of this source tree.
- *
+ * This source code is licensed under the MIT license found in the LICENSE
+ * file in the root directory of this source tree.
  */
 package com.facebook.flipper.android;
 
@@ -43,6 +42,9 @@ class FlipperConnectionImpl implements FlipperConnection {
   public native void sendObject(String method, FlipperObject params);
 
   public native void sendArray(String method, FlipperArray params);
+
+  @Override
+  public native void reportErrorWithMetadata(String reason, String stackTrace);
 
   @Override
   public native void reportError(Throwable throwable);

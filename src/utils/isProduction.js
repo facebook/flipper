@@ -9,7 +9,7 @@ import electron from 'electron';
 
 const _isProduction = !/node_modules[\\/]electron[\\/]/.test(
   // $FlowFixMe: execPath exists, but is not in electron API spec
-  electron.remote.process.execPath,
+  process.execPath || electron.remote.process.execPath,
 );
 
 export default function isProduction(): boolean {

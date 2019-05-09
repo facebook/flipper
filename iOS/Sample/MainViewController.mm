@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2018-present, Facebook, Inc.
+ *  Copyright (c) 2018-present, Facebook, Inc. and its affiliates.
  *
  *  This source code is licensed under the MIT license found in the LICENSE
  *  file in the root directory of this source tree.
@@ -53,6 +53,11 @@
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"MainStoryBoard" bundle:nil];
     CommunicationDemoViewController *communicationDemoViewController = [storyboard instantiateViewControllerWithIdentifier:@"CommunicationDemoViewController"];
     [self.navigationController pushViewController:communicationDemoViewController animated:true];
+}
+
+- (IBAction)tappedCauseCrash:(UIButton *)sender {
+  NSArray *arr = @[];
+  [arr objectAtIndex:10];
 }
 
 @end

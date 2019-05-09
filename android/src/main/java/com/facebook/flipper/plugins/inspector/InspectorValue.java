@@ -1,11 +1,9 @@
-/*
- *  Copyright (c) 2018-present, Facebook, Inc.
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- *  This source code is licensed under the MIT license found in the LICENSE
- *  file in the root directory of this source tree.
- *
+ * This source code is licensed under the MIT license found in the LICENSE
+ * file in the root directory of this source tree.
  */
-
 package com.facebook.flipper.plugins.inspector;
 
 import com.facebook.flipper.core.FlipperObject;
@@ -14,7 +12,7 @@ import com.facebook.flipper.core.FlipperValue;
 public class InspectorValue<T> implements FlipperValue {
 
   /**
-   * Descrive the type of data this value contains. This will influence how values are parsed and
+   * Describe the type of data this value contains. This will influence how values are parsed and
    * displayed by the Flipper desktop app. For example colors will be parse as integers and
    * displayed using hex values and be editable using a color picker.
    *

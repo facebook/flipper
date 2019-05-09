@@ -38,5 +38,6 @@ module.exports = {
         parser: 'flow',
       },
     ],
+    'flowtype/object-type-delimiter': [0],
   },
 };

@@ -153,10 +153,13 @@ class JFlipperConnectionImpl : public jni::HybridClass<JFlipperConnectionImpl, J
 
   static void registerNatives() {
     registerHybrid({
-      makeNativeMethod("sendObject", JFlipperConnectionImpl::sendObject),
-      makeNativeMethod("sendArray", JFlipperConnectionImpl::sendArray),
-      makeNativeMethod("reportError", JFlipperConnectionImpl::reportError),
-      makeNativeMethod("receive", JFlipperConnectionImpl::receive),
+        makeNativeMethod("sendObject", JFlipperConnectionImpl::sendObject),
+        makeNativeMethod("sendArray", JFlipperConnectionImpl::sendArray),
+        makeNativeMethod("reportError", JFlipperConnectionImpl::reportError),
+        makeNativeMethod(
+            "reportErrorWithMetadata",
+            JFlipperConnectionImpl::reportErrorWithMetadata),
+        makeNativeMethod("receive", JFlipperConnectionImpl::receive),
     });
   }
 
@@ -168,14 +171,21 @@ class JFlipperConnectionImpl : public jni::HybridClass<JFlipperConnectionImpl, J
     _connection->send(std::move(method), json ? folly::parseJson(json->toJsonString()) : folly::dynamic::object());
   }
 
+  void reportErrorWithMetadata(
+      const std::string reason,
+      const std::string stackTrace) {
+    _connection->error(reason, stackTrace);
+  }
+
   void reportError(jni::alias_ref<jni::JThrowable> throwable) {
-    _connection->error(throwable->toString(), throwable->getStackTrace()->toString());
+    _connection->error(
+        throwable->toString(), throwable->getStackTrace()->toString());
   }
 
   void receive(const std::string method, jni::alias_ref<JFlipperReceiver> receiver) {
     auto global = make_global(receiver);
-    _connection->receive(std::move(method), [global] (const folly::dynamic& params, std::unique_ptr<FlipperResponder> responder) {
-      global->receive(params, std::move(responder));
+    _connection->receive(std::move(method), [global] (const folly::dynamic& params, std::shared_ptr<FlipperResponder> responder) {
+      global->receive(params, responder);
     });
   }
 
@@ -198,6 +208,11 @@ class JFlipperPlugin : public jni::JavaClass<JFlipperPlugin> {
     } catch (const std::exception& e) {
       handleException(e);
       return "";
+    } catch (const std::exception* e) {
+      if (e) {
+        handleException(*e);
+      }
+      return "";
     }
   }
 
@@ -210,6 +225,10 @@ class JFlipperPlugin : public jni::JavaClass<JFlipperPlugin> {
       method(self(), JFlipperConnectionImpl::newObjectCxxArgs(conn));
     } catch (const std::exception& e) {
       handleException(e);
+    } catch (const std::exception* e) {
+      if (e) {
+        handleException(*e);
+      }
     }
   }
 
@@ -219,6 +238,10 @@ class JFlipperPlugin : public jni::JavaClass<JFlipperPlugin> {
       method(self());
     } catch (const std::exception& e) {
       handleException(e);
+    } catch (const std::exception* e) {
+      if (e) {
+        handleException(*e);
+      }
     }
   }
 
@@ -229,6 +252,11 @@ class JFlipperPlugin : public jni::JavaClass<JFlipperPlugin> {
         return method(self()) == JNI_TRUE;
       } catch (const std::exception& e) {
         handleException(e);
+        return false;
+      } catch (const std::exception* e) {
+        if (e) {
+          handleException(*e);
+        }
         return false;
       }
     }
@@ -245,6 +273,10 @@ class JFlipperStateUpdateListener : public jni::JavaClass<JFlipperStateUpdateLis
       method(self());
     } catch (const std::exception& e) {
       handleException(e);
+    } catch (const std::exception* e) {
+      if (e) {
+        handleException(*e);
+      }
     }
   }
   void onStepStarted(std::string step) {
@@ -254,6 +286,10 @@ class JFlipperStateUpdateListener : public jni::JavaClass<JFlipperStateUpdateLis
       method(self(), step);
     } catch (const std::exception& e) {
       handleException(e);
+    } catch (const std::exception* e) {
+      if (e) {
+        handleException(*e);
+      }
     }
   }
   void onStepSuccess(std::string step) {
@@ -263,6 +299,10 @@ class JFlipperStateUpdateListener : public jni::JavaClass<JFlipperStateUpdateLis
       method(self(), step);
     } catch (const std::exception& e) {
       handleException(e);
+    } catch (const std::exception* e) {
+      if (e) {
+        handleException(*e);
+      }
     }
   }
   void onStepFailed(std::string step, std::string errorMessage) {
@@ -273,6 +313,10 @@ class JFlipperStateUpdateListener : public jni::JavaClass<JFlipperStateUpdateLis
       method(self(), step, errorMessage);
     } catch (const std::exception& e) {
       handleException(e);
+    } catch (const std::exception* e) {
+      if (e) {
+        handleException(*e);
+      }
     }
   }
 };
@@ -359,6 +403,10 @@ class JFlipperClient : public jni::HybridClass<JFlipperClient> {
       FlipperClient::instance()->start();
     } catch (const std::exception& e) {
       handleException(e);
+    } catch (const std::exception* e) {
+      if (e) {
+        handleException(*e);
+      }
     }
   }
 
@@ -367,6 +415,10 @@ class JFlipperClient : public jni::HybridClass<JFlipperClient> {
       FlipperClient::instance()->stop();
     } catch (const std::exception& e) {
       handleException(e);
+    } catch (const std::exception* e) {
+      if (e) {
+        handleException(*e);
+      }
     }
   }
 
@@ -377,6 +429,10 @@ class JFlipperClient : public jni::HybridClass<JFlipperClient> {
       FlipperClient::instance()->addPlugin(wrapper);
     } catch (const std::exception& e) {
       handleException(e);
+    } catch (const std::exception* e) {
+      if (e) {
+        handleException(*e);
+      }
     }
   }
 
@@ -386,6 +442,10 @@ class JFlipperClient : public jni::HybridClass<JFlipperClient> {
       client->removePlugin(client->getPlugin(plugin->identifier()));
     } catch (const std::exception& e) {
       handleException(e);
+    } catch (const std::exception* e) {
+      if (e) {
+        handleException(*e);
+      }
     }
   }
 
@@ -397,6 +457,10 @@ class JFlipperClient : public jni::HybridClass<JFlipperClient> {
       client->setStateListener(mStateListener);
     } catch (const std::exception& e) {
       handleException(e);
+    } catch (const std::exception* e) {
+      if (e) {
+        handleException(*e);
+      }
     }
   }
 
@@ -407,6 +471,10 @@ class JFlipperClient : public jni::HybridClass<JFlipperClient> {
       client->setStateListener(nullptr);
     } catch (const std::exception& e) {
       handleException(e);
+    } catch (const std::exception* e) {
+      if (e) {
+        handleException(*e);
+      }
     }
   }
 
@@ -415,6 +483,11 @@ class JFlipperClient : public jni::HybridClass<JFlipperClient> {
       return FlipperClient::instance()->getState();
     } catch (const std::exception& e) {
       handleException(e);
+      return "";
+    } catch (const std::exception* e) {
+      if (e) {
+        handleException(*e);
+      }
       return "";
     }
   }
@@ -442,6 +515,11 @@ class JFlipperClient : public jni::HybridClass<JFlipperClient> {
     } catch (const std::exception& e) {
       handleException(e);
       return nullptr;
+    } catch (const std::exception* e) {
+      if (e) {
+        handleException(*e);
+      }
+      return nullptr;
     }
   }
 
@@ -456,6 +534,11 @@ class JFlipperClient : public jni::HybridClass<JFlipperClient> {
       }
     } catch (const std::exception& e) {
       handleException(e);
+      return nullptr;
+    } catch (const std::exception* e) {
+      if (e) {
+        handleException(*e);
+      }
       return nullptr;
     }
   }

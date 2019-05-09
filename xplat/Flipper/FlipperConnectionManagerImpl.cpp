@@ -16,8 +16,12 @@
 #include <stdexcept>
 #include <thread>
 #include "ConnectionContextStore.h"
+#include "FireAndForgetBasedFlipperResponder.h"
+#include "FlipperRSocketResponder.h"
+#include "FlipperResponderImpl.h"
 #include "FlipperStep.h"
 #include "Log.h"
+#include "yarpl/Single.h"
 
 #define WRONG_THREAD_EXIT_MSG \
   "ERROR: Aborting flipper initialization because it's not running in the flipper thread."
@@ -27,8 +31,14 @@ static constexpr int connectionKeepaliveSeconds = 10;
 
 static constexpr int maxPayloadSize = 0xFFFFFF;
 
+// Not a public-facing version number.
+// Used for compatibility checking with desktop flipper.
+// To be bumped for every core platform interface change.
+static constexpr int sdkVersion = 2;
+
 namespace facebook {
 namespace flipper {
+
 
 class ConnectionEvents : public rsocket::RSocketConnectionEvents {
  private:
@@ -58,21 +68,6 @@ class ConnectionEvents : public rsocket::RSocketConnectionEvents {
 
   void onClosed(const folly::exception_wrapper& e) {
     onDisconnected(e);
-  }
-};
-
-class Responder : public rsocket::RSocketResponder {
- private:
-  FlipperConnectionManagerImpl* websocket_;
-
- public:
-  Responder(FlipperConnectionManagerImpl* websocket) : websocket_(websocket) {}
-
-  void handleFireAndForget(
-      rsocket::Payload request,
-      rsocket::StreamId streamId) {
-    const auto payload = request.moveDataToString();
-    websocket_->callbacks_->onMessageReceived(folly::parseJson(payload));
   }
 };
 
@@ -139,9 +134,16 @@ void FlipperConnectionManagerImpl::startSync() {
       step->fail(
           "No route to flipper found. Is flipper desktop running? Retrying...");
     } else {
-      log(e.what());
+      if (e.getType() == folly::AsyncSocketException::SSL_ERROR) {
+        auto message = std::string(e.what()) +
+            "\nMake sure the date and time of your device is up to date.";
+        log(message);
+        step->fail(message);
+      } else {
+        log(e.what());
+        step->fail(e.what());
+      }
       failedConnectionAttempts_++;
-      step->fail(e.what());
     }
     reconnect();
   } catch (const std::exception& e) {
@@ -156,9 +158,9 @@ void FlipperConnectionManagerImpl::doCertificateExchange() {
   rsocket::SetupParameters parameters;
   folly::SocketAddress address;
 
-  parameters.payload = rsocket::Payload(
-      folly::toJson(folly::dynamic::object("os", deviceData_.os)(
-          "device", deviceData_.device)("app", deviceData_.app)));
+  parameters.payload = rsocket::Payload(folly::toJson(folly::dynamic::object(
+      "os", deviceData_.os)("device", deviceData_.device)(
+      "app", deviceData_.app)("sdk_version", sdkVersion)));
   address.setFromHostPort(deviceData_.host, insecurePort);
 
   auto connectingInsecurely = flipperState_->start("Connect insecurely");
@@ -187,9 +189,10 @@ void FlipperConnectionManagerImpl::connectSecurely() {
   if (deviceId.compare("unknown")) {
     loadingDeviceId->complete();
   }
-  parameters.payload = rsocket::Payload(folly::toJson(folly::dynamic::object(
-      "os", deviceData_.os)("device", deviceData_.device)(
-      "device_id", deviceId)("app", deviceData_.app)));
+  parameters.payload = rsocket::Payload(
+      folly::toJson(folly::dynamic::object("os", deviceData_.os)(
+          "device", deviceData_.device)("device_id", deviceId)(
+          "app", deviceData_.app)("sdk_version", sdkVersion)));
   address.setFromHostPort(deviceData_.host, securePort);
 
   std::shared_ptr<folly::SSLContext> sslContext =
@@ -203,7 +206,7 @@ void FlipperConnectionManagerImpl::connectSecurely() {
               std::move(address),
               std::move(sslContext)),
           std::move(parameters),
-          std::make_shared<Responder>(this),
+          std::make_shared<FlipperRSocketResponder>(this, connectionEventBase_),
           std::chrono::seconds(connectionKeepaliveSeconds), // keepaliveInterval
           nullptr, // stats
           std::make_shared<ConnectionEvents>(this))
@@ -236,25 +239,25 @@ void FlipperConnectionManagerImpl::setCallbacks(Callbacks* callbacks) {
 
 void FlipperConnectionManagerImpl::sendMessage(const folly::dynamic& message) {
   flipperEventBase_->add([this, message]() {
-    std::string json = folly::toJson(message);
-    rsocket::Payload payload = rsocket::Payload(json);
-    auto payloadLength = payload.data->computeChainDataLength();
-
-    DCHECK_LE(payloadLength, maxPayloadSize);
-    if (payloadLength > maxPayloadSize) {
-      auto logMessage =
-          std::string(
-              "Error: Skipping sending message larger than max rsocket payload: ") +
-          json;
-      log(logMessage);
+    try {
+      rsocket::Payload payload = toRSocketPayload(message);
+      if (client_) {
+        client_->getRequester()
+            ->fireAndForget(std::move(payload))
+            ->subscribe([]() {});
+      }
+    } catch (std::length_error& e) {
+      // Skip sending messages that are too large.
+      log(e.what());
       return;
     }
-    if (client_) {
-      client_->getRequester()
-          ->fireAndForget(std::move(payload))
-          ->subscribe([]() {});
-    }
   });
+}
+
+void FlipperConnectionManagerImpl::onMessageReceived(
+    const folly::dynamic& message,
+    std::unique_ptr<FlipperResponder> responder) {
+  callbacks_->onMessageReceived(message, std::move(responder));
 }
 
 bool FlipperConnectionManagerImpl::isCertificateExchangeNeeded() {
@@ -272,7 +275,7 @@ bool FlipperConnectionManagerImpl::isCertificateExchangeNeeded() {
 
 void FlipperConnectionManagerImpl::requestSignedCertFromFlipper() {
   auto generatingCSR = flipperState_->start("Generate CSR");
-  std::string csr = contextStore_->createCertificateSigningRequest();
+  std::string csr = contextStore_->getCertificateSigningRequest();
   generatingCSR->complete();
 
   folly::dynamic message =
@@ -298,23 +301,25 @@ void FlipperConnectionManagerImpl::requestSignedCertFromFlipper() {
               // TODO: Connect immediately, without waiting for reconnect
               client_ = nullptr;
             },
-            [this, message](folly::exception_wrapper e) {
+            [this, message, gettingCert](folly::exception_wrapper e) {
               e.handle(
                   [&](rsocket::ErrorWithPayload& errorWithPayload) {
                     std::string errorMessage =
                         errorWithPayload.payload.moveDataToString();
 
                     if (errorMessage.compare("not implemented")) {
-                      log("Desktop failed to provide certificates. Error from flipper desktop:\n" +
-                          errorMessage);
+                      auto error =
+                          "Desktop failed to provide certificates. Error from flipper desktop:\n" +
+                          errorMessage;
+                      log(error);
+                      gettingCert->fail(error);
                       client_ = nullptr;
                     } else {
                       sendLegacyCertificateRequest(message);
                     }
                   },
-                  [e](...) {
-                    log(("Error during certificate exchange:" + e.what())
-                            .c_str());
+                  [e, gettingCert](...) {
+                    gettingCert->fail(e.what().c_str());
                   });
             });
   });
@@ -339,6 +344,23 @@ void FlipperConnectionManagerImpl::sendLegacyCertificateRequest(
 
 bool FlipperConnectionManagerImpl::isRunningInOwnThread() {
   return flipperEventBase_->isInEventBaseThread();
+}
+
+rsocket::Payload toRSocketPayload(dynamic data) {
+  std::string json = folly::toJson(data);
+  rsocket::Payload payload = rsocket::Payload(json);
+  auto payloadLength = payload.data->computeChainDataLength();
+  if (payloadLength > maxPayloadSize) {
+    auto logMessage =
+        std::string(
+            "Error: Skipping sending message larger than max rsocket payload: ") +
+        json.substr(0, 100) + "...";
+    log(logMessage);
+    DCHECK_LE(payloadLength, maxPayloadSize);
+    throw std::length_error(logMessage);
+  }
+
+  return payload;
 }
 
 } // namespace flipper

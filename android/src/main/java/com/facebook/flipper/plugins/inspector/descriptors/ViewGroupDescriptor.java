@@ -1,15 +1,13 @@
-/*
- *  Copyright (c) 2018-present, Facebook, Inc.
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- *  This source code is licensed under the MIT license found in the LICENSE
- *  file in the root directory of this source tree.
- *
+ * This source code is licensed under the MIT license found in the LICENSE
+ * file in the root directory of this source tree.
  */
-
 package com.facebook.flipper.plugins.inspector.descriptors;
 
-import static android.support.v4.view.ViewGroupCompat.LAYOUT_MODE_CLIP_BOUNDS;
-import static android.support.v4.view.ViewGroupCompat.LAYOUT_MODE_OPTICAL_BOUNDS;
+import static androidx.core.view.ViewGroupCompat.LAYOUT_MODE_CLIP_BOUNDS;
+import static androidx.core.view.ViewGroupCompat.LAYOUT_MODE_OPTICAL_BOUNDS;
 import static com.facebook.flipper.plugins.inspector.InspectorValue.Type.Boolean;
 import static com.facebook.flipper.plugins.inspector.InspectorValue.Type.Enum;
 
@@ -74,7 +72,8 @@ public class ViewGroupDescriptor extends NodeDescriptor<ViewGroup> {
             public void runOrThrow() throws Exception {
               if (connected()) {
                 if (key.set(node)) {
-                  invalidate(node);
+                  NodeDescriptor descriptor = descriptorForClass(node.getClass());
+                  descriptor.invalidate(node);
                   invalidateAX(node);
                 }
 
@@ -322,8 +321,8 @@ public class ViewGroupDescriptor extends NodeDescriptor<ViewGroup> {
       boolean added = false;
       if (fragment instanceof android.app.Fragment) {
         added = ((android.app.Fragment) fragment).isAdded();
-      } else if (fragment instanceof android.support.v4.app.Fragment) {
-        added = ((android.support.v4.app.Fragment) fragment).isAdded();
+      } else if (fragment instanceof androidx.fragment.app.Fragment) {
+        added = ((androidx.fragment.app.Fragment) fragment).isAdded();
       }
 
       return added ? fragment : null;

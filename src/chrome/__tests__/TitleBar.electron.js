@@ -21,10 +21,12 @@ test('TitleBar is rendered', () => {
         leftSidebarVisible={false}
         rightSidebarVisible={false}
         rightSidebarAvailable={false}
+        downloadingImportData={false}
         toggleLeftSidebarVisible={() => {}}
         toggleRightSidebarVisible={() => {}}
         setActiveSheet={_sheet => {}}
         version="1.0.0"
+        launcherMsg={{message: 'Hello world', severity: 'warning'}}
       />
     </Provider>,
   );

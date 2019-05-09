@@ -1,4 +1,10 @@
-/* your custom css */
+/*
+ *  Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ *  This source code is licensed under the MIT license found in the LICENSE
+ *  file in the root directory of this source tree.
+ *
+ */
 
 body,
 h1,
@@ -9,14 +15,9 @@ h5,
 h6 {
   font-family: 'San Francisco', -apple-system, BlinkMacSystemFont,
     '.SFNSText-Regular', 'Helvetica Neue', Helvetica, sans-serif;
-  font-size: 17px;
-  font-weight: 400;
 }
 
-.fixedHeaderContainer header h2 {
-  font-family: 'San Francisco', -apple-system, BlinkMacSystemFont,
-    '.SFNSText-Regular', 'Helvetica Neue', Helvetica, sans-serif;
-  font-size: 17px;
+.headerTitleWithLogo {
   font-weight: 400;
 }
 
@@ -51,17 +52,29 @@ h6 {
   letter-spacing: 1px;
 }
 
-.splash .btn {
-  color: white;
+.landing-btn {
   display: inline-block;
   padding: 7px 20px;
   border-radius: 6px;
   margin: 0 10px;
-  border: 1px solid white;
+  border: 1px solid #777;
 }
 
-.splash .btn.primary {
+.landing-btn:hover {
+}
+
+.landing-btn.primary {
   background-color: #008cf2;
+  color: white;
+  border-color: #008cf2;
+}
+
+.splash .landing-btn {
+  color: white;
+  border-color: white;
+}
+
+.splash .landing-btn.primary {
   border-color: #008cf2;
 }
 
@@ -90,14 +103,66 @@ h6 {
   }
 }
 
-.splashScreen {
-  width: 100%;
+.slideshow {
   position: absolute;
   left: 50%;
   top: 100%;
   animation: 0.6s ease-out 0.2s 1 slideIn forwards;
-  width: 1116px;
   max-width: 100%;
+  width: 1116px;
+}
+
+.splashScreen {
+  opacity: 0;
+  position: absolute;
+  left: 0;
+  top: 0;
+  max-width: 100%;
+  width: 1116px;
+}
+
+@keyframes slideshow2 {
+  20%,
+  55% {
+    opacity: 0;
+  }
+  25%,
+  50% {
+    opacity: 1;
+  }
+}
+@keyframes slideshow3 {
+  45%,
+  80% {
+    opacity: 0;
+  }
+  50%,
+  75% {
+    opacity: 1;
+  }
+}
+@keyframes slideshow4 {
+  65%,
+  100% {
+    opacity: 0;
+  }
+  70%,
+  95% {
+    opacity: 1;
+  }
+}
+
+.slideshow .splashScreen:nth-child(1) {
+  opacity: 1;
+}
+.slideshow .splashScreen:nth-child(2) {
+  animation: 16s slideshow2 infinite;
+}
+.slideshow .splashScreen:nth-child(3) {
+  animation: 16s slideshow3 infinite;
+}
+.slideshow .splashScreen:nth-child(4) {
+  animation: 16s slideshow4 infinite;
 }
 
 .content {
@@ -110,7 +175,7 @@ h6 {
 .content.row {
   display: flex;
   flex-direction: row;
-  margin: 80px auto;
+  margin: 60px auto;
 }
 
 .content .col {
@@ -124,9 +189,11 @@ h6 {
   font-size: 28px;
   font-weight: 300;
   margin-bottom: 20px;
+  margin-top: 0;
 }
 
 .col h4 {
+  margin: 0;
   font-weight: 500;
   font-size: 0.8em;
   opacity: 0.7;
@@ -167,17 +234,8 @@ nav.toc .toggleNav .navGroup.navGroupActive h3 {
   margin: 0;
 }
 
-.button {
-  border-radius: 6px;
-  text-transform: none;
-}
-
 .sitemap {
   width: 100%;
-}
-
-.docsNavContainer {
-  margin-top: 65px;
 }
 
 a.learnmore {
@@ -190,8 +248,7 @@ a.learnmore:hover {
   opacity: 0.7;
 }
 
-nav.toc .toggleNav ul li a.navItemActive {
-  color: $actionColor;
+.toc .toggleNav ul li.navListItemActive a {
   opacity: 1;
 }
 
@@ -257,11 +314,11 @@ pre code {
   border: 0;
 }
 
-.mainContainer article table td:nth-child(1){
+.mainContainer article table td:nth-child(1) {
   width: 15%;
   min-width: 140px;
 }
-.mainContainer article table td:nth-child(2){
+.mainContainer article table td:nth-child(2) {
   width: 25%;
 }
 table tr {
@@ -278,7 +335,8 @@ table tr th {
   text-transform: none;
 }
 
-table tr th code, table tr td code {
+table tr th code,
+table tr td code {
   background: none;
   margin: 0;
   color: inherit;
@@ -292,6 +350,10 @@ table tr:nth-of-type(odd) {
 
 table tr:hover {
   background: #f5f5f5;
+}
+
+footer .sitemap {
+  overflow: hidden;
 }
 
 footer .sitemap .nav-home,
@@ -319,8 +381,8 @@ footer iframe {
     flex-direction: column;
   }
 
-  .splash .splashScreen {
-    margin-top: 20px;
+  .splash .slideshow {
+    margin-top: 80px;
   }
 
   .content.row {
@@ -366,7 +428,48 @@ footer iframe {
 }
 
 .warning {
-    background-color: rgb(253, 245, 212);
-    border-left: 4px solid rgb(241, 196, 15);
-    padding: 12px;
+  background-color: rgb(253, 245, 212);
+  border-left: 4px solid rgb(241, 196, 15);
+  padding: 12px;
+}
+
+.navListItem a[href='/docs/features/index.html'] {
+  /* Hide sidebar link to "Features"-pages, because it is linked in header */
+  display: none !important;
+}
+
+.content.row {
+  position: relative;
+}
+
+.content.row:not(:last-child)::after {
+  display: block;
+  height: 1px;
+  left: 25%;
+  right: 25%;
+  bottom: -10px;
+  background: #f0f0f0;
+  content: '';
+  position: absolute;
+}
+
+.landing-cta {
+  padding-top: 30px;
+  padding-bottom: 80px;
+  text-align: center;
+}
+.button {
+  text-transform: none;
+  border: none;
+  font-size: 0.8em;
+  border-radius: 999em;
+  background-color: rgba(0, 0, 0, 0.05);
+  padding: 0.5em 1em;
+  font-weight: 500;
+  margin-top: 8px;
+}
+
+.button:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+  color: inherit;
 }

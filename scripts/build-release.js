@@ -8,11 +8,14 @@ const path = require('path');
 const fs = require('fs-extra');
 const builder = require('electron-builder');
 const Platform = builder.Platform;
+const cp = require('child-process-es6-promise');
 const {
   buildFolder,
   compile,
   die,
   compileDefaultPlugins,
+  getVersionNumber,
+  genMercurialRevision,
 } = require('./build-utils.js');
 
 function generateManifest(versionNumber) {
@@ -29,7 +32,7 @@ function generateManifest(versionNumber) {
   );
 }
 
-function modifyPackageManifest(buildFolder) {
+function modifyPackageManifest(buildFolder, versionNumber, hgRevision) {
   // eslint-disable-next-line no-console
   console.log('Creating package.json manifest');
   const manifest = require('../package.json');
@@ -40,35 +43,27 @@ function modifyPackageManifest(buildFolder) {
   // because all dependencies from the root-folder are already bundled by metro.
   manifest.dependencies = manifestStatic.dependencies;
   manifest.main = 'index.js';
-
-  const buildNumber = process.argv.join(' ').match(/--version=(\d+)/);
-  if (buildNumber && buildNumber.length > 0) {
-    manifest.version = [
-      ...manifest.version.split('.').slice(0, 2),
-      buildNumber[1],
-    ].join('.');
+  manifest.version = versionNumber;
+  if (hgRevision != null) {
+    manifest.revision = hgRevision;
   }
-
-  return new Promise((resolve, reject) => {
-    fs.writeFile(
-      path.join(buildFolder, 'package.json'),
-      JSON.stringify(manifest, null, '  '),
-      err => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(manifest.version);
-        }
-      },
-    );
-  }).catch(die);
+  fs.writeFileSync(
+    path.join(buildFolder, 'package.json'),
+    JSON.stringify(manifest, null, '  '),
+  );
 }
 
 function buildDist(buildFolder) {
   const targetsRaw = [];
+  const postBuildCallbacks = [];
 
   if (process.argv.indexOf('--mac') > -1) {
-    targetsRaw.push(Platform.MAC.createTarget(['zip']));
+    targetsRaw.push(Platform.MAC.createTarget(['dir']));
+    postBuildCallbacks.push(() =>
+      cp.spawn('zip', ['-yr9', '../Flipper-mac.zip', 'Flipper.app'], {
+        cwd: path.join(__dirname, '..', 'dist', 'mac'),
+      }),
+    );
   }
   if (process.argv.indexOf('--linux') > -1) {
     targetsRaw.push(Platform.LINUX.createTarget(['zip']));
@@ -94,7 +89,6 @@ function buildDist(buildFolder) {
 
   return builder
     .build({
-      appDir: buildFolder,
       publish: 'never',
       config: {
         appId: `com.facebook.sonar`,
@@ -108,36 +102,26 @@ function buildDist(buildFolder) {
       projectDir: buildFolder,
       targets,
     })
+    .then(() => Promise.all(postBuildCallbacks.map(p => p())))
     .catch(die);
 }
 
 function copyStaticFolder(buildFolder) {
-  return new Promise((resolve, reject) => {
-    fs.copy(
-      path.join(__dirname, '..', 'static'),
-      buildFolder,
-      {
-        dereference: true,
-      },
-      err => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve();
-        }
-      },
-    );
-  }).catch(die);
+  fs.copySync(path.join(__dirname, '..', 'static'), buildFolder, {
+    dereference: true,
+  });
 }
 
 (async () => {
   const dir = await buildFolder();
   // eslint-disable-next-line no-console
   console.log('Created build directory', dir);
-  await copyStaticFolder(dir);
-  await compileDefaultPlugins(dir);
+  copyStaticFolder(dir);
+  await compileDefaultPlugins(path.join(dir, 'defaultPlugins'));
   await compile(dir, path.join(__dirname, '..', 'src', 'init.js'));
-  const versionNumber = await modifyPackageManifest(dir);
+  const versionNumber = getVersionNumber();
+  const hgRevision = await genMercurialRevision();
+  modifyPackageManifest(dir, versionNumber, hgRevision);
   generateManifest(versionNumber);
   await buildDist(dir);
   // eslint-disable-next-line no-console

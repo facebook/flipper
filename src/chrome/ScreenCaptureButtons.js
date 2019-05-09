@@ -9,24 +9,20 @@ import {Button, ButtonGroup, Component} from 'flipper';
 import {connect} from 'react-redux';
 import AndroidDevice from '../devices/AndroidDevice';
 import IOSDevice from '../devices/IOSDevice';
-import os from 'os';
+import expandTilde from 'expand-tilde';
 import fs from 'fs';
+import os from 'os';
 import adb from 'adbkit-fb';
 import {exec, spawn} from 'child_process';
 import {remote} from 'electron';
 import path from 'path';
-import {recordSuccessMetric} from '../utils/metrics';
-
-let CAPTURE_LOCATION = remote.app.getPath('desktop');
-try {
-  CAPTURE_LOCATION =
-    JSON.parse(window.process.env.CONFIG).screenCapturePath.replace(
-      /^~/,
-      os.homedir(),
-    ) || CAPTURE_LOCATION;
-} catch (e) {}
-
+import {reportPlatformFailures} from '../utils/metrics';
+import config from '../utils/processConfig';
 import type BaseDevice from '../devices/BaseDevice';
+
+const CAPTURE_LOCATION = expandTilde(
+  config().screenCapturePath || remote.app.getPath('desktop'),
+);
 
 type PullTransfer = any;
 
@@ -126,7 +122,7 @@ class ScreenCaptureButtons extends Component<Props, State> {
     const {selectedDevice} = this.props;
 
     if (selectedDevice instanceof AndroidDevice) {
-      return recordSuccessMetric(
+      return reportPlatformFailures(
         selectedDevice.adb
           .screencap(selectedDevice.serial)
           .then(writePngStreamToFile)
@@ -135,7 +131,7 @@ class ScreenCaptureButtons extends Component<Props, State> {
       ).catch(console.error);
     } else if (selectedDevice instanceof IOSDevice) {
       const screenshotPath = path.join(CAPTURE_LOCATION, getFileName('png'));
-      return recordSuccessMetric(
+      return reportPlatformFailures(
         new Promise((resolve, reject) => {
           exec(
             `xcrun simctl io booted screenshot "${screenshotPath}"`,
@@ -167,7 +163,7 @@ class ScreenCaptureButtons extends Component<Props, State> {
 
       this.executeShell(
         selectedDevice,
-        `mkdir -p "${devicePath}" && touch "${devicePath}/.nomedia"`,
+        `mkdir -p "${devicePath}" && echo -n > "${devicePath}/.nomedia"`,
       )
         .then(output => {
           if (output) {
@@ -302,10 +298,8 @@ class ScreenCaptureButtons extends Component<Props, State> {
   }
 }
 
-/* $FlowFixMe(>=0.86.0) This
- * comment suppresses an error found when Flow v0.86 was
- * deployed. To see the error, delete this comment and
- * run Flow. */
-export default connect(({connections: {selectedDevice}}) => ({
-  selectedDevice,
-}))(ScreenCaptureButtons);
+export default connect<Props, {||}, _, _, _, _>(
+  ({connections: {selectedDevice}}) => ({
+    selectedDevice,
+  }),
+)(ScreenCaptureButtons);

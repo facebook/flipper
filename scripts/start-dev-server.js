@@ -63,6 +63,9 @@ function startMetroServer(app) {
         'index.js',
       ),
     },
+    resolver: {
+      blacklistRE: /\/(sonar|flipper)\/dist\//,
+    },
     watch: true,
   }).then(metroBundlerServer => {
     app.use(metroBundlerServer.processRequest.bind(metroBundlerServer));

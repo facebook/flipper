@@ -4,49 +4,155 @@
     "next": "Next",
     "previous": "Previous",
     "tagline": "Extensible mobile app debugging",
-    "background-plugin-jsside": "Background Plugin Setup",
-    "Background Plugin": "Background Plugin",
-    "communicating": "Device Communication",
-    "Device Communication": "Device Communication",
-    "create-plugin": "Mobile Setup",
-    "Mobile Setup": "Mobile Setup",
-    "create-table-plugin": "Create Table Plugin",
-    "Create Table Plugin": "Create Table Plugin",
-    "error-handling": "Error Handling",
-    "Error Handling": "Error Handling",
-    "establishing-a-connection": "Establishing a connection",
-    "Establishing a connection": "Establishing a connection",
-    "getting-started": "Getting Started",
-    "Getting Started": "Getting Started",
-    "js-setup": "JavaScript Setup",
-    "JavaScript Setup": "JavaScript Setup",
-    "layout-plugin": "Layout Inspector",
-    "leak-canary-plugin": "LeakCanary",
-    "logs-plugin": "Logs",
-    "network-plugin": "Network",
-    "sandbox-plugin": "Sandbox",
-    "send-data": "Sending Data to Plugins",
-    "Send Data": "Send Data",
-    "shared-preferences-plugin": "Shared Preferences",
-    "stetho": "Stetho Guidance",
-    "Stetho Guidance": "Stetho Guidance",
-    "styling-components": "Styling Components",
-    "Styling Components": "Styling Components",
-    "testing": "Testing",
-    "Testing": "Testing",
-    "troubleshooting": "Troubleshooting Issues",
-    "Troubleshooting Issues": "Troubleshooting Issues",
-    "ui-components": "UI Components",
-    "UI Components": "UI Components",
-    "understand": "Understanding Flipper",
-    "Understanding Flipper": "Understanding Flipper",
-    "Docs": "Docs",
-    "GitHub": "GitHub",
-    "Using Flipper": "Using Flipper",
-    "Built-in Plugins": "Built-in Plugins",
-    "Plugins: Desktop part": "Plugins: Desktop part",
-    "Plugins: Mobile part": "Plugins: Mobile part",
-    "Flipper Internals": "Flipper Internals"
+    "docs": {
+      "custom-ports": {
+        "title": "Running Flipper with different ports",
+        "sidebar_label": "Using different ports"
+      },
+      "extending/arch": {
+        "title": "Architecture"
+      },
+      "extending/create-plugin": {
+        "title": "Client Plugin API"
+      },
+      "extending/create-table-plugin": {
+        "title": "Create Table Plugin"
+      },
+      "extending/debugging": {
+        "title": "Debugging"
+      },
+      "extending/error-handling": {
+        "title": "Error Handling"
+      },
+      "extending/establishing-a-connection": {
+        "title": "Secure Communication"
+      },
+      "extending/index": {
+        "title": "Clients and Plugins"
+      },
+      "extending/js-plugin-api": {
+        "title": "JavaScript Plugin API"
+      },
+      "extending/js-setup": {
+        "title": "JavaScript Plugin Definition"
+      },
+      "extending/layout-inspector": {
+        "title": "Extending Layout Inspector"
+      },
+      "extending/new-clients": {
+        "title": "Implementing a Flipper Client"
+      },
+      "extending/search-and-filter": {
+        "title": "Searching and Filtering"
+      },
+      "extending/send-data": {
+        "title": "Providing Data to Plugins"
+      },
+      "extending/styling-components": {
+        "title": "Styling Components"
+      },
+      "extending/supporting-layout": {
+        "title": "Implementing Layout Inspection"
+      },
+      "extending/testing": {
+        "title": "Testing"
+      },
+      "extending/ui-components": {
+        "title": "UI Components"
+      },
+      "features/crash-reporter-plugin": {
+        "title": "Crash Reporter"
+      },
+      "features/index": {
+        "title": "Features"
+      },
+      "features/layout-plugin": {
+        "title": "Layout Inspector"
+      },
+      "features/leak-canary-plugin": {
+        "title": "LeakCanary"
+      },
+      "features/logs-plugin": {
+        "title": "Logs"
+      },
+      "features/network-plugin": {
+        "title": "Network"
+      },
+      "features/sandbox-plugin": {
+        "title": "Sandbox"
+      },
+      "features/share-flipper-data": {
+        "title": "Share Flipper Data"
+      },
+      "features/shared-preferences-plugin": {
+        "title": "Shared Preferences"
+      },
+      "getting-started": {
+        "title": "Getting Started"
+      },
+      "setup/crash-reporter-plugin": {
+        "title": "Crash Reporter Setup",
+        "sidebar_label": "Crash Reporter"
+      },
+      "setup/layout-plugin": {
+        "title": "Layout Inspector Setup",
+        "sidebar_label": "Layout Inspector"
+      },
+      "setup/leak-canary-plugin": {
+        "title": "LeakCanary Setup",
+        "sidebar_label": "LeakCanary"
+      },
+      "setup/network-plugin": {
+        "title": "Network Setup",
+        "sidebar_label": "Network"
+      },
+      "setup/sandbox-plugin": {
+        "title": "Sandbox Setup",
+        "sidebar_label": "Sandbox"
+      },
+      "setup/shared-preferences-plugin": {
+        "title": "Shared Preferences Setup",
+        "sidebar_label": "Shared Preferences"
+      },
+      "stetho": {
+        "title": "Stetho Guidance",
+        "sidebar_label": "Stetho Guidance"
+      },
+      "troubleshooting": {
+        "title": "Troubleshooting Issues",
+        "sidebar_label": "Troubleshooting Issues"
+      },
+      "tutorial/android": {
+        "title": "Building an Android Plugin"
+      },
+      "tutorial/intro": {
+        "title": "Intro"
+      },
+      "tutorial/js-custom": {
+        "title": "Building Custom UI",
+        "sidebar_label": "Custom UI"
+      },
+      "tutorial/js-table": {
+        "title": "Showing a table"
+      }
+    },
+    "links": {
+      "Features": "Features",
+      "Setup": "Setup",
+      "Extending": "Extending",
+      "GitHub": "GitHub"
+    },
+    "categories": {
+      "Features": "Features",
+      "Using Flipper": "Using Flipper",
+      "Plugin Setup": "Plugin Setup",
+      "Advanced Usage": "Advanced Usage",
+      "Extending Flipper": "Extending Flipper",
+      "Tutorial": "Tutorial",
+      "Plugin Development": "Plugin Development",
+      "Other Platforms": "Other Platforms",
+      "Internals": "Internals"
+    }
   },
   "pages-strings": {
     "Help Translate|recruit community translators for your project": "Help Translate",

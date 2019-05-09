@@ -5,10 +5,10 @@
  * @format
  */
 import type {FlipperPlugin, FlipperDevicePlugin} from './plugin.js';
-import type LogManager from './fb-stubs/Logger';
+import type {Logger} from './fb-interfaces/Logger';
 import BaseDevice from './devices/BaseDevice.js';
 import type {Props as PluginProps} from './plugin';
-
+import {pluginKey as getPluginKey} from './reducers/pluginStates';
 import Client from './Client.js';
 import {
   ErrorBoundary,
@@ -17,6 +17,7 @@ import {
   FlexRow,
   colors,
   styled,
+  ArchivedDevice,
 } from 'flipper';
 import React from 'react';
 import {connect} from 'react-redux';
@@ -38,12 +39,16 @@ const SidebarContainer = styled(FlexRow)({
   overflow: 'scroll',
 });
 
-type Props = {
-  logger: LogManager,
+type OwnProps = {|
+  logger: Logger,
+|};
+
+type Props = {|
+  ...OwnProps,
   pluginState: Object,
   activePlugin: ?Class<FlipperPlugin<> | FlipperDevicePlugin<>>,
   target: Client | BaseDevice | null,
-  pluginKey: string,
+  pluginKey: ?string,
   deepLinkPayload: ?string,
 
   selectPlugin: (payload: {|
@@ -55,7 +60,8 @@ type Props = {
     pluginKey: string,
     state: Object,
   }) => void,
-};
+  isArchivedDevice: boolean,
+|};
 
 class PluginContainer extends PureComponent<Props> {
   plugin: ?FlipperPlugin<> | FlipperDevicePlugin<>;
@@ -80,9 +86,10 @@ class PluginContainer extends PureComponent<Props> {
       activePlugin,
       pluginKey,
       target,
+      isArchivedDevice,
     } = this.props;
-
-    if (!activePlugin || !target) {
+    if (!activePlugin || !target || !pluginKey) {
+      console.warn(`No selected plugin. Rendering empty!`);
       return null;
     }
     const props: PluginProps<Object> = {
@@ -114,8 +121,8 @@ class PluginContainer extends PureComponent<Props> {
         }
       },
       ref: this.refChanged,
+      isArchivedDevice,
     };
-
     return (
       <React.Fragment>
         <Container key="plugin">
@@ -132,11 +139,7 @@ class PluginContainer extends PureComponent<Props> {
   }
 }
 
-/* $FlowFixMe(>=0.86.0) This
- * comment suppresses an error found when Flow v0.86 was
- * deployed. To see the error, delete this comment and
- * run Flow. */
-export default connect(
+export default connect<Props, OwnProps, _, _, _, _>(
   ({
     application: {rightSidebarVisible, rightSidebarAvailable},
     connections: {
@@ -149,7 +152,7 @@ export default connect(
     pluginStates,
     plugins: {devicePlugins, clientPlugins},
   }) => {
-    let pluginKey = 'unknown';
+    let pluginKey = null;
     let target = null;
     let activePlugin: ?Class<FlipperPlugin<> | FlipperDevicePlugin<>> = null;
 
@@ -161,25 +164,25 @@ export default connect(
       }
       target = selectedDevice;
       if (activePlugin) {
-        pluginKey = `${selectedDevice.serial}#${activePlugin.id}`;
+        pluginKey = getPluginKey(selectedDevice.serial, activePlugin.id);
       } else {
         target = clients.find((client: Client) => client.id === selectedApp);
         activePlugin = clientPlugins.get(selectedPlugin);
-        if (!activePlugin || !target) {
-          throw new Error(
-            `Plugin "${selectedPlugin || ''}" could not be found.`,
-          );
+        if (activePlugin && target) {
+          pluginKey = getPluginKey(target.id, activePlugin.id);
         }
-        pluginKey = `${target.id}#${activePlugin.id}`;
       }
     }
-
+    const isArchivedDevice = !selectedDevice
+      ? false
+      : selectedDevice instanceof ArchivedDevice;
     return {
       pluginState: pluginStates[pluginKey],
       activePlugin,
       target,
       deepLinkPayload,
       pluginKey,
+      isArchivedDevice,
     };
   },
   {

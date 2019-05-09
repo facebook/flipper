@@ -11,7 +11,7 @@ export default class WindowsDevice extends BaseDevice {
   os = 'Windows';
 
   constructor() {
-    super('', 'physical', 'desktop');
+    super('', 'physical', 'Windows');
   }
 
   teardown() {}

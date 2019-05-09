@@ -19,11 +19,12 @@ namespace flipper {
 
 class ConnectionEvents;
 class ConnectionContextStore;
-class Responder;
+class FlipperRSocketResponder;
+
+rsocket::Payload toRSocketPayload(folly::dynamic data);
 
 class FlipperConnectionManagerImpl : public FlipperConnectionManager {
   friend ConnectionEvents;
-  friend Responder;
 
  public:
   FlipperConnectionManagerImpl(FlipperInitConfig config, std::shared_ptr<FlipperState> state, std::shared_ptr<ConnectionContextStore> contextStore);
@@ -39,6 +40,10 @@ class FlipperConnectionManagerImpl : public FlipperConnectionManager {
   void setCallbacks(Callbacks* callbacks) override;
 
   void sendMessage(const folly::dynamic& message) override;
+
+  void onMessageReceived(
+      const folly::dynamic& message,
+      std::unique_ptr<FlipperResponder> responder) override;
 
   void reconnect();
 

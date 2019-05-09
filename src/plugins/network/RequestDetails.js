@@ -5,9 +5,7 @@
  * @format
  */
 
-// $FlowFixMe
-import pako from 'pako';
-import type {Request, Response, Header} from './index.js';
+import type {Request, Response, Header} from './types.js';
 
 import {
   Component,
@@ -20,7 +18,7 @@ import {
   styled,
   colors,
 } from 'flipper';
-import {getHeaderValue} from './index.js';
+import {decodeBody, getHeaderValue} from './utils.js';
 
 import querystring from 'querystring';
 // $FlowFixMe
@@ -57,38 +55,6 @@ type RequestDetailsProps = {
 type RequestDetailsState = {
   bodyFormat: string,
 };
-
-function decodeBody(container: Request | Response): string {
-  if (!container.data) {
-    return '';
-  }
-  const b64Decoded = atob(container.data);
-
-  return getHeaderValue(container.headers, 'Content-Encoding') === 'gzip'
-    ? decompress(b64Decoded)
-    : b64Decoded;
-}
-
-function decompress(body: string): string {
-  const charArray = body.split('').map(x => x.charCodeAt(0));
-
-  const byteArray = new Uint8Array(charArray);
-
-  let data;
-  try {
-    if (body) {
-      data = pako.inflate(byteArray);
-    } else {
-      return body;
-    }
-  } catch (e) {
-    // Sometimes Content-Encoding is 'gzip' but the body is already decompressed.
-    // Assume this is the case when decompression fails.
-    return body;
-  }
-
-  return String.fromCharCode.apply(null, new Uint8Array(data));
-}
 
 export default class RequestDetails extends Component<
   RequestDetailsProps,
@@ -527,6 +493,7 @@ class JSONTextFormatter {
   format = (body: string, contentType: string) => {
     if (
       contentType.startsWith('application/json') ||
+      contentType.startsWith('application/hal+json') ||
       contentType.startsWith('text/javascript') ||
       contentType.startsWith('application/x-fb-flatbuffer')
     ) {
@@ -584,6 +551,7 @@ class JSONFormatter {
   format = (body: string, contentType: string) => {
     if (
       contentType.startsWith('application/json') ||
+      contentType.startsWith('application/hal+json') ||
       contentType.startsWith('text/javascript') ||
       contentType.startsWith('application/x-fb-flatbuffer')
     ) {
@@ -636,6 +604,30 @@ class GraphQLBatchFormatter {
 }
 
 class GraphQLFormatter {
+  parsedServerTimeForFirstFlush = (data: any) => {
+    const firstResponse =
+      Array.isArray(data) && data.length > 0 ? data[0] : data;
+    if (!firstResponse) {
+      return null;
+    }
+
+    const extensions = firstResponse['extensions'];
+    if (!extensions) {
+      return null;
+    }
+    const serverMetadata = extensions['server_metadata'];
+    if (!serverMetadata) {
+      return null;
+    }
+    const requestStartMs = serverMetadata['request_start_time_ms'];
+    const timeAtFlushMs = serverMetadata['time_at_flush_ms'];
+    return (
+      <WrappingText>
+        {'Server wall time for initial response (ms): ' +
+          (timeAtFlushMs - requestStartMs)}
+      </WrappingText>
+    );
+  };
   formatRequest = (request: Request) => {
     if (request.url.indexOf('graphql') > 0) {
       const data = querystring.parse(decodeBody(request));
@@ -659,6 +651,7 @@ class GraphQLFormatter {
   format = (body: string, contentType: string) => {
     if (
       contentType.startsWith('application/json') ||
+      contentType.startsWith('application/hal+json') ||
       contentType.startsWith('text/javascript') ||
       contentType.startsWith('text/html') ||
       contentType.startsWith('application/x-fb-flatbuffer')
@@ -666,21 +659,30 @@ class GraphQLFormatter {
       try {
         const data = JSON.parse(body);
         return (
-          <ManagedDataInspector
-            collapsed={true}
-            expandRoot={true}
-            data={data}
-          />
+          <div>
+            {this.parsedServerTimeForFirstFlush(data)}
+            <ManagedDataInspector
+              collapsed={true}
+              expandRoot={true}
+              data={data}
+            />
+          </div>
         );
       } catch (SyntaxError) {
         // Multiple top level JSON roots, map them one by one
-        const roots = body.replace(/}{/g, '}\r\n{').split('\n');
+        const parsedResponses = body
+          .replace(/}{/g, '}\r\n{')
+          .split('\n')
+          .map(json => JSON.parse(json));
         return (
-          <ManagedDataInspector
-            collapsed={true}
-            expandRoot={true}
-            data={roots.map(json => JSON.parse(json))}
-          />
+          <div>
+            {this.parsedServerTimeForFirstFlush(parsedResponses)}
+            <ManagedDataInspector
+              collapsed={true}
+              expandRoot={true}
+              data={parsedResponses}
+            />
+          </div>
         );
       }
     }

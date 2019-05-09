@@ -11,7 +11,14 @@ const fs = require('fs');
 const babylon = require('@babel/parser');
 const docblockParser = require('docblock-parser');
 
-const TARGET = __dirname + '/../docs/ui-components.md';
+const HEADER = `---
+id: ui-components
+title: UI Components
+---
+
+Flipper has a lot of built in React components to build UIs. You can import them directly using e.g. \`import {Button} from 'flipper'\`.`;
+
+const TARGET = __dirname + '/../docs/extending/ui-components.md';
 
 glob(__dirname + '/../src/ui/components/**/*.js', (err, files) => {
   const content = files
@@ -35,7 +42,7 @@ glob(__dirname + '/../src/ui/components/**/*.js', (err, files) => {
     .filter(Boolean)
     .map(generateMarkdown)
     .reduce((acc, cv) => acc + cv, '');
-  fs.writeFileSync(TARGET, fs.readFileSync(TARGET) + content);
+  fs.writeFileSync(TARGET, HEADER + content);
 });
 
 // HOC are not supported by react-docgen. This means, styled-components will not

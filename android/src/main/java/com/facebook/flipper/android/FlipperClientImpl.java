@@ -1,8 +1,8 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the LICENSE
+ * file in the root directory of this source tree.
  */
 package com.facebook.flipper.android;
 
@@ -16,6 +16,7 @@ import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.soloader.SoLoader;
 import java.util.HashMap;
 import java.util.Map;
+import javax.annotation.Nullable;
 
 @DoNotStrip
 class FlipperClientImpl implements FlipperClient {
@@ -26,7 +27,7 @@ class FlipperClientImpl implements FlipperClient {
   }
 
   private final HybridData mHybridData;
-  private final Map<Class<?>, String> mClassIdentifierMap = new HashMap(8);
+  private final Map<Class<?>, String> mClassIdentifierMap = new HashMap<>(8);
 
   private FlipperClientImpl(HybridData hd) {
     mHybridData = hd;
@@ -59,9 +60,11 @@ class FlipperClientImpl implements FlipperClient {
    * @deprecated Prefer using {@link #getPluginByClass(Class)} over the stringly-typed interface.
    */
   @Override
+  @Nullable
   @Deprecated
   public native <T extends FlipperPlugin> T getPlugin(String id);
 
+  @Nullable
   @Override
   public <T extends FlipperPlugin> T getPluginByClass(Class<T> cls) {
     final String id = mClassIdentifierMap.get(cls);

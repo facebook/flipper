@@ -1,5 +1,11 @@
 #!/usr/bin/env stack
 -- stack --resolver lts-13.4 --install-ghc runghc --package turtle --package system-filepath --package foldl
+{-
+Copyright (c) Facebook, Inc. and its affiliates.
+
+This source code is licensed under the MIT license found in the LICENSE file
+in the root directory of this source tree.
+-}
 
 {-# OPTIONS_GHC -fno-warn-name-shadowing #-}
 {-# LANGUAGE OverloadedStrings #-}

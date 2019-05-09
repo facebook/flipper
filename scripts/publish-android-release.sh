@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
+# Copyright (c) Facebook, Inc. and its affiliates.
+#
+# This source code is licensed under the MIT license found in the LICENSE file
+# in the root directory of this source tree.
 set -e
 
 BASEDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
@@ -12,5 +16,5 @@ elif [ "$IS_SNAPSHOT" != "" ]; then
   exit 1
 else
   openssl aes-256-cbc -d -in scripts/bintray-publish-keys.enc -k "$ANDROID_PUBLISH_KEY" >> "$BASEDIR/gradle.properties"
-  "$BASEDIR"/gradlew :android:bintrayUpload :fbjni:bintrayUpload -PdryRun=false
+  "$BASEDIR"/gradlew :android:bintrayUpload :fbjni:bintrayUpload :noop:bintrayUpload -PdryRun=false
 fi

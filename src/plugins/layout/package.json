@@ -4,6 +4,8 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
+    "deep-equal": "^1.0.1",
+    "lodash.clonedeep": "^4.5.0",
     "lodash.debounce": "^4.0.8"
   },
   "title": "Layout",

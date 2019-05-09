@@ -1,9 +1,8 @@
-/*
- *  Copyright (c) 2018-present, Facebook, Inc.
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- *  This source code is licensed under the MIT license found in the LICENSE
- *  file in the root directory of this source tree.
- *
+ * This source code is licensed under the MIT license found in the LICENSE
+ * file in the root directory of this source tree.
  */
 package com.facebook.flipper.android.diagnostics;
 
@@ -11,9 +10,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +17,9 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import com.facebook.flipper.android.AndroidFlipperClient;
 import com.facebook.flipper.core.FlipperClient;
 import com.facebook.flipper.core.FlipperStateUpdateListener;
@@ -35,13 +34,14 @@ public class FlipperDiagnosticFragment extends Fragment implements FlipperStateU
   Button mReportButton;
 
   @Nullable FlipperDiagnosticReportListener mReportCallback;
+  @Nullable FlipperDiagnosticSummaryTextFilter mDiagnosticSummaryTextFilter;
 
   private final View.OnClickListener mOnBugReportClickListener =
       new View.OnClickListener() {
         @Override
         public void onClick(View v) {
           mReportCallback.report(
-              AndroidFlipperClient.getInstance(getContext()).getState(), getSummary());
+              AndroidFlipperClient.getInstance(getContext()).getState(), getSummary().toString());
         }
       };
 
@@ -96,7 +96,10 @@ public class FlipperDiagnosticFragment extends Fragment implements FlipperStateU
   @Override
   public void onUpdate() {
     final String state = AndroidFlipperClient.getInstance(getContext()).getState();
-    final String summary = getSummary();
+    final CharSequence summary =
+        mDiagnosticSummaryTextFilter == null
+            ? getSummary()
+            : mDiagnosticSummaryTextFilter.applyDiagnosticSummaryTextFilter(getSummary());
 
     final Activity activity = getActivity();
     if (activity != null) {
@@ -112,10 +115,10 @@ public class FlipperDiagnosticFragment extends Fragment implements FlipperStateU
     }
   }
 
-  String getSummary() {
+  CharSequence getSummary() {
     final Context context = getContext();
     final StateSummary summary = AndroidFlipperClient.getInstance(context).getStateSummary();
-    final StringBuilder stateText = new StringBuilder();
+    final StringBuilder stateText = new StringBuilder(16);
     for (StateElement e : summary.mList) {
       final String status;
       switch (e.getState()) {
@@ -132,7 +135,7 @@ public class FlipperDiagnosticFragment extends Fragment implements FlipperStateU
         default:
           status = "❓";
       }
-      stateText.append(status).append(e.getName()).append("\n");
+      stateText.append(status).append(e.getName()).append('\n');
     }
     return stateText.toString();
   }
@@ -150,6 +153,9 @@ public class FlipperDiagnosticFragment extends Fragment implements FlipperStateU
 
     if (context instanceof FlipperDiagnosticReportListener) {
       mReportCallback = (FlipperDiagnosticReportListener) context;
+    }
+    if (context instanceof FlipperDiagnosticSummaryTextFilter) {
+      mDiagnosticSummaryTextFilter = (FlipperDiagnosticSummaryTextFilter) context;
     }
   }
 }

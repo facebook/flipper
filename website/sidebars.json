@@ -1,35 +1,62 @@
 {
-  "docs": {
+  "features": {
+    "Features": [
+      "features/index",
+      "features/logs-plugin",
+      "features/layout-plugin",
+      "features/network-plugin",
+      "features/sandbox-plugin",
+      "features/shared-preferences-plugin",
+      "features/leak-canary-plugin",
+      "features/crash-reporter-plugin",
+      "features/share-flipper-data"
+    ]
+  },
+  "setup": {
     "Using Flipper": [
       "getting-started",
-      "understand",
-      "stetho",
       "troubleshooting"
     ],
-    "Built-in Plugins": [
-      "logs-plugin",
-      "layout-plugin",
-      "network-plugin",
-      "sandbox-plugin",
-      "shared-preferences-plugin",
-      "leak-canary-plugin",
-      "crash-reporter-plugin"
+    "Plugin Setup": [
+      "setup/layout-plugin",
+      "setup/network-plugin",
+      "setup/sandbox-plugin",
+      "setup/shared-preferences-plugin",
+      "setup/leak-canary-plugin",
+      "setup/crash-reporter-plugin"
     ],
-    "Plugins: Desktop part": [
-      "js-setup",
-      "writing-a-plugin",
-      "create-table-plugin",
-      "communicating",
-      "ui-components",
-      "styling-components"
+    "Advanced Usage": ["custom-ports", "stetho"]
+  },
+  "extending": {
+    "Extending Flipper": ["extending/index"],
+    "Tutorial": [
+      "tutorial/intro",
+      "tutorial/ios",
+      "tutorial/android",
+      "tutorial/js-table",
+      "tutorial/js-custom"
     ],
-    "Plugins: Mobile part": [
-      "create-plugin",
-      "send-data",
-      "error-handling",
-      "testing"
+    "Plugin Development": [
+      "extending/js-setup",
+      "extending/js-plugin-api",
+      "extending/create-table-plugin",
+      "extending/ui-components",
+      "extending/styling-components",
+      "extending/search-and-filter",
+      "extending/create-plugin",
+      "extending/send-data",
+      "extending/error-handling",
+      "extending/testing",
+      "extending/debugging"
     ],
-    "Flipper Internals": ["establishing-a-connection"],
-    "Advanced Usage": ["custom-ports"]
+    "Other Platforms": [
+      "extending/new-clients",
+      "extending/establishing-a-connection",
+      "extending/supporting-layout"
+    ],
+    "Internals": [
+      "extending/arch",
+      "extending/layout-inspector"
+    ]
   }
 }

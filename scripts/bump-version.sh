@@ -1,4 +1,8 @@
 #!/bin/bash
+# Copyright (c) Facebook, Inc. and its affiliates.
+#
+# This source code is licensed under the MIT license found in the LICENSE file
+# in the root directory of this source tree.
 set -e
 
 darwin=false
@@ -35,8 +39,8 @@ echo "✨ Making a new release..."
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 SONAR_DIR="$DIR/../"
-FLIPPERKIT_PODSPEC_PATH="$SONAR_DIR/iOS/FlipperKit.podspec"
-FLIPPER_PODSPEC_PATH="$SONAR_DIR/xplat/Flipper/Flipper.podspec"
+FLIPPERKIT_PODSPEC_PATH="$SONAR_DIR/FlipperKit.podspec"
+FLIPPER_PODSPEC_PATH="$SONAR_DIR/Flipper.podspec"
 SONAR_GETTING_STARTED_DOC="$SONAR_DIR/docs/getting-started.md"
 SPECS_DIR="$SONAR_DIR/Specs/"
 FLIPPERKIT_VERSION_TAG='flipperkit_version'
@@ -67,24 +71,6 @@ else
   echo "Updating $SONAR_GETTING_STARTED_DOC"
   sed -i "s/${FLIPPERKIT_VERSION_TAG} = ${OLD_VERSION}/${FLIPPERKIT_VERSION_TAG} = '${VERSION}'/" "$SONAR_GETTING_STARTED_DOC"
 fi
-# Copy Podfiles
-
-if [ ! -d "$SPECS_DIR/FlipperKit/" ]   # for file "if [-f /home/rama/file]"
-then
-  mkdir "$SPECS_DIR/FlipperKit/"
-fi
-
-if [ ! -d "$SPECS_DIR/Flipper/" ]   # for file "if [-f /home/rama/file]"
-then
-  mkdir "$SPECS_DIR/Flipper/"
-fi
-
-mkdir "$SPECS_DIR/FlipperKit/$VERSION"  # New Specs dir for FlipperKit podspec
-mkdir "$SPECS_DIR/Flipper/$VERSION"     # New Specs dir for Flipper podspec
-echo "Copying FlipperKit.podspec in Specs folder"
-cp "$FLIPPERKIT_PODSPEC_PATH" "$SPECS_DIR/FlipperKit/$VERSION" # Copied FlipperKit podspec
-echo "Copying Flipper.podspec in Specs folder"
-cp "$FLIPPER_PODSPEC_PATH" "$SPECS_DIR/Flipper/$VERSION" # Copied Flipper podspec
 
 echo "Bumping version number for android related files..."
 # Update Android related files
@@ -106,5 +92,9 @@ echo "Release commit made as $RELEASE_REV, creating new snapshot version $SNAPSH
 
 hg commit -m "Flipper Bump: v$SNAPSHOT_VERSION"
 
-echo "Sumitting diffs for review..."
+echo "Submitting diffs for review..."
 jf submit -n -r.^::.
+
+echo "Once the tag is released on the Github, publish the pods to cocoapods, by running the following commands:"
+echo "pod trunk push ~/fbsource/xplat/sonar/Flipper.podspec --use-libraries --allow-warnings --verbose"
+echo "pod trunk push ~/fbsource/xplat/sonar/Flipper.podspec --use-libraries --allow-warnings --verbose --skip-import-validation --swift-version=4.0"

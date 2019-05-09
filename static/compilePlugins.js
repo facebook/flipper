@@ -11,6 +11,7 @@ const fs = require('fs');
 const Metro = require('metro');
 const util = require('util');
 const recursiveReaddir = require('recursive-readdir');
+const expandTilde = require('expand-tilde');
 const HOME_DIR = require('os').homedir();
 
 /* eslint-disable prettier/prettier */
@@ -63,7 +64,7 @@ function watchChanges(
   console.log('🕵️‍  Watching for plugin changes');
 
   Object.values(plugins).map(plugin =>
-    fs.watch(plugin.rootDir, (eventType, filename) => {
+    fs.watch(plugin.rootDir, {recursive: true}, (eventType, filename) => {
       // only recompile for changes in not hidden files. Watchman might create
       // a file called .watchman-cookie
       if (!filename.startsWith('.')) {
@@ -115,7 +116,7 @@ function pluginEntryPoints(additionalPaths = []) {
   return entryPoints;
 }
 function entryPointForPluginFolder(pluginPath) {
-  pluginPath = pluginPath.replace('~', HOME_DIR);
+  pluginPath = expandTilde(pluginPath);
   if (!fs.existsSync(pluginPath)) {
     return {};
   }
@@ -204,6 +205,9 @@ async function compilePlugin(
               'transforms',
               'index.js',
             ),
+          },
+          resolver: {
+            blacklistRE: /\/(sonar|flipper-public)\/dist\//,
           },
         },
         {

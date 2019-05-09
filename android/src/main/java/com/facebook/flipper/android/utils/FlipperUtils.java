@@ -1,9 +1,8 @@
-/*
- *  Copyright (c) 2018-present, Facebook, Inc.
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- *  This source code is licensed under the MIT license found in the LICENSE
- *  file in the root directory of this source tree.
- *
+ * This source code is licensed under the MIT license found in the LICENSE
+ * file in the root directory of this source tree.
  */
 package com.facebook.flipper.android.utils;
 
@@ -16,7 +15,7 @@ public final class FlipperUtils {
 
   private FlipperUtils() {}
 
-  public static boolean shouldEnableFlipper(Context context) {
+  public static boolean shouldEnableFlipper(final Context context) {
     return BuildConfig.IS_INTERNAL_BUILD && !isEndToEndTest() && isMainProcess(context);
   }
 
@@ -33,7 +32,7 @@ public final class FlipperUtils {
     }
   }
 
-  private static boolean isMainProcess(Context context) {
+  private static boolean isMainProcess(final Context context) {
     final int pid = android.os.Process.myPid();
     final ActivityManager manager =
         (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);

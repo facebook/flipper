@@ -4,6 +4,7 @@
 //
 //  Created by Marc Terns on 10/7/18.
 //  Copyright © 2018 Noah Gilmore. All rights reserved.
+//  Copyright (c) 2018-present, Facebook, Inc.
 //
 
 import UIKit

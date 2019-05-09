@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2018-present, Facebook, Inc.
+ *  Copyright (c) 2018-present, Facebook, Inc. and its affiliates.
  *
  *  This source code is licensed under the MIT license found in the LICENSE
  *  file in the root directory of this source tree.
@@ -144,10 +144,10 @@
 }
 
 - (NSArray<SKNamed<NSString *> *> *)attributesForNode:(SKComponentLayoutWrapper *)node {
-  return @[
-           [SKNamed newWithName: @"responder"
-                      withValue: SKObject(NSStringFromClass([node.component.nextResponder class]))]
-           ];
+  NSMutableArray<SKNamed<NSString *> *> *attributes = [NSMutableArray array];
+  [attributes addObject:[SKNamed newWithName:@"responder"
+                                   withValue:SKObject(NSStringFromClass([node.component.nextResponder class]))]];
+  return attributes;
 }
 
 - (void)setHighlighted:(BOOL)highlighted forNode:(SKComponentLayoutWrapper *)node {

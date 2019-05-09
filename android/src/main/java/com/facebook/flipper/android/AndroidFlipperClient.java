@@ -11,8 +11,8 @@ import android.content.pm.PackageManager;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import androidx.core.content.ContextCompat;
 import com.facebook.flipper.core.FlipperClient;
 
 public final class AndroidFlipperClient {

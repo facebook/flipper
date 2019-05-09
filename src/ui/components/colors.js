@@ -40,6 +40,9 @@ export const colors = {
   purpleTint: '#E8E3F4',
   grey: '#88A2AB', // Grey - Debug
   greyTint: '#E7ECEE',
+  greyTint2: '#e5e5e5', // Grey - Can be used in demarcation with greyStackTraceTint
+  greyTint3: '#515151', // Grey - Can be used as the color for the title
+  greyStackTraceTint: '#f5f6f8', // Grey - It is used as the background for the stacktrace in crash reporter plugin
   cyan: '#4FC9EA', // Cyan - Info
   cyanTint: '#DCF4FB', // Cyan - Info
   // FIG UI Light

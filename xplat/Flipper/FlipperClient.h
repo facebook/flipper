@@ -71,7 +71,9 @@ class FlipperClient : public FlipperConnectionManager::Callbacks {
 
   void onDisconnected() override;
 
-  void onMessageReceived(const folly::dynamic& message) override;
+  void onMessageReceived(
+      const folly::dynamic& message,
+      std::unique_ptr<FlipperResponder>) override;
 
   void addPlugin(std::shared_ptr<FlipperPlugin> plugin);
 
@@ -108,6 +110,7 @@ class FlipperClient : public FlipperConnectionManager::Callbacks {
   void disconnect(std::shared_ptr<FlipperPlugin> plugin);
   void startBackgroundPlugins();
   std::string callstack();
+  void handleError(std::exception& e);
 };
 
 } // namespace flipper

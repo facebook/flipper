@@ -11,7 +11,7 @@ import ContextMenu from '../ContextMenu.js';
 import Tooltip from '../Tooltip.js';
 import styled from '../../styled/index.js';
 import DataPreview from './DataPreview.js';
-import createPaste from '../../../utils/createPaste.js';
+import createPaste from '../../../fb-stubs/createPaste.js';
 import {reportInteraction} from '../../../utils/InteractionTracker.js';
 import {getSortedKeys} from './utils.js';
 import {colors} from '../colors.js';
@@ -203,12 +203,21 @@ function getRootContextMenu(data: Object): Array<Electron$MenuItemOptions> {
       },
     },
   ];
-  rootContextMenuCache.set(data, menu);
+  if (typeof data === 'object' && data !== null) {
+    rootContextMenuCache.set(data, menu);
+  } else {
+    console.error(
+      '[data-inspector] Ignoring unsupported data type for cache: ',
+      data,
+      typeof data,
+    );
+  }
   return menu;
 }
 
 function isPureObject(obj: Object) {
   return (
+    obj !== null &&
     Object.prototype.toString.call(obj) !== '[object Date]' &&
     typeof obj === 'object'
   );
@@ -226,10 +235,10 @@ const diffMetadataExtractor: DiffMetadataExtractor = (
   const val = data[key];
   const diffVal = diff[key];
   if (!data.hasOwnProperty(key)) {
-    return [{data: diffVal, status: 'added'}];
+    return [{data: diffVal, status: 'removed'}];
   }
   if (!diff.hasOwnProperty(key)) {
-    return [{data: val, status: 'removed'}];
+    return [{data: val, status: 'added'}];
   }
 
   if (isPureObject(diffVal) && isPureObject(val)) {
@@ -240,7 +249,7 @@ const diffMetadataExtractor: DiffMetadataExtractor = (
     // Check if there's a difference between the original value and
     // the value from the diff prop
     // The property name still exists, but the values may be different.
-    return [{data: diffVal, status: 'added'}, {data: val, status: 'removed'}];
+    return [{data: val, status: 'added'}, {data: diffVal, status: 'removed'}];
   }
 
   return Object.prototype.hasOwnProperty.call(data, key) ? [{data: val}] : [];

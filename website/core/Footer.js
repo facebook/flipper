@@ -29,21 +29,19 @@ class Footer extends React.Component {
                 alt="Flipper mascot"
                 title="I'm a dolphin not a whale!"
                 width="66"
-                height="58"
               />
             )}
           </a>
           <div>
             <h5>Docs</h5>
             <a href="/docs/getting-started.html">Getting Started</a>
-            <a href="/docs/understand.html">Understanding Flipper</a>
-            <a href="/docs/js-setup.html">Creating Plugins</a>
+            <a href="/docs/extending/js-setup.html">Creating Plugins</a>
           </div>
           <div>
             <h5>Plugins</h5>
-            <a href="/docs/logs-plugin.html">Log Viewer</a>
-            <a href="/docs/layout-plugin.html">Layout Inspector</a>
-            <a href="/docs/network-plugin.html">Network Inspector</a>
+            <a href="/docs/features/logs-plugin.html">Log Viewer</a>
+            <a href="/docs/features/layout-plugin.html">Layout Inspector</a>
+            <a href="/docs/features/network-plugin.html">Network Inspector</a>
           </div>
           <div>
             <h5>More</h5>

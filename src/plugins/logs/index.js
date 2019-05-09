@@ -58,6 +58,9 @@ const Icon = styled(Glyph)({
 
 function getLineCount(str: string): number {
   let count = 1;
+  if (!(typeof str === 'string')) {
+    return 0;
+  }
   for (let i = 0; i < str.length; i++) {
     if (str[i] === '\n') {
       count++;
@@ -316,11 +319,6 @@ export function processEntry(
   entry: DeviceLogEntry,
 } {
   const {icon, style} = LOG_TYPES[(entry.type: string)] || LOG_TYPES.debug;
-
-  // clean message
-  const message = entry.message.trim();
-  entry.type === 'error';
-
   // build the item, it will either be batched or added straight away
   return {
     entry,
@@ -340,7 +338,9 @@ export function processEntry(
           ),
         },
         message: {
-          value: <HiddenScrollText code={true}>{message}</HiddenScrollText>,
+          value: (
+            <HiddenScrollText code={true}>{entry.message}</HiddenScrollText>
+          ),
         },
         tag: {
           value: <HiddenScrollText code={true}>{entry.tag}</HiddenScrollText>,
@@ -363,7 +363,7 @@ export function processEntry(
           isFilterable: true,
         },
       },
-      height: getLineCount(message) * 15 + 10, // 15px per line height + 8px padding
+      height: getLineCount(entry.message) * 15 + 10, // 15px per line height + 8px padding
       style,
       type: entry.type,
       filterValue: entry.message,
@@ -426,6 +426,18 @@ export default class LogTable extends FlipperDevicePlugin<
         break;
       }
     }
+    if (highlightedRows.size <= 0) {
+      // Check if the individual lines in the deeplinkPayload is matched or not.
+      const arr = deepLinkPayload.split('\n');
+      for (let msg of arr) {
+        for (let i = rows.length - 1; i >= 0; i--) {
+          if (rows[i].filterValue && rows[i].filterValue.includes(msg)) {
+            highlightedRows.add(rows[i].key);
+            break;
+          }
+        }
+      }
+    }
     return highlightedRows;
   };
 
@@ -470,10 +482,9 @@ export default class LogTable extends FlipperDevicePlugin<
   }
 
   incrementCounterIfNeeded = (entry: DeviceLogEntry) => {
-    const message = entry.message.trim();
     let counterUpdated = false;
     const counters = this.state.counters.map(counter => {
-      if (message.match(counter.expression)) {
+      if (entry.message.match(counter.expression)) {
         counterUpdated = true;
         if (counter.notify) {
           new window.Notification(`${counter.label}`, {
@@ -525,6 +536,9 @@ export default class LogTable extends FlipperDevicePlugin<
   }
 
   clearLogs = () => {
+    this.device.clearLogs().catch(e => {
+      console.error('Failed to clear logs: ', e);
+    });
     this.setState({
       entries: [],
       rows: [],

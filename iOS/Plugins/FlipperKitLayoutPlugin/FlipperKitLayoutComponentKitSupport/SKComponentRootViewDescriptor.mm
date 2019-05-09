@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2018-present, Facebook, Inc.
+ *  Copyright (c) 2018-present, Facebook, Inc. and its affiliates.
  *
  *  This source code is licensed under the MIT license found in the LICENSE
  *  file in the root directory of this source tree.
@@ -9,8 +9,8 @@
 
 #import "SKComponentRootViewDescriptor.h"
 
-#import <ComponentKit/CKComponentDataSourceAttachController.h>
-#import <ComponentKit/CKComponentDataSourceAttachControllerInternal.h>
+#import <ComponentKit/CKComponentAttachController.h>
+#import <ComponentKit/CKComponentAttachControllerInternal.h>
 #import <ComponentKit/CKComponentHostingView.h>
 #import <ComponentKit/CKComponentHostingViewInternal.h>
 #import <ComponentKit/CKComponentLayout.h>
@@ -27,11 +27,8 @@
 }
 
 - (NSUInteger)childCountForNode:(CKComponentRootView *)node {
-  if ([node respondsToSelector:@selector(ck_attachState)]) {
-    CKComponentDataSourceAttachState *state = [node ck_attachState];
-    return state == nil ? 0 : 1;
-  }
-  return 0;
+  const auto state = CKGetAttachStateForView(node);
+  return state == nil ? 0 : 1;
 }
 
 - (id)childForNode:(CKComponentRootView *)node atIndex:(NSUInteger)index {

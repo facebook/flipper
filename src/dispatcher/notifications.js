@@ -6,10 +6,10 @@
  */
 
 import type {Store} from '../reducers/index.js';
-import type Logger from '../fb-stubs/Logger.js';
+import type {Logger} from '../fb-interfaces/Logger.js';
 import type {PluginNotification} from '../reducers/notifications';
 import type {FlipperPlugin, FlipperDevicePlugin} from '../plugin.js';
-
+import isHeadless from '../utils/isHeadless.js';
 import {ipcRenderer} from 'electron';
 import {selectPlugin} from '../reducers/connections';
 import {
@@ -128,6 +128,7 @@ export default (store: Store, logger: Logger) => {
 
     activeNotifications.forEach((n: PluginNotification) => {
       if (
+        !isHeadless() &&
         store.getState().connections.selectedPlugin !== 'notifications' &&
         !knownNotifications.has(n.notification.id) &&
         blacklistedPlugins.indexOf(n.pluginId) === -1 &&

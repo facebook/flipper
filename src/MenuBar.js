@@ -6,13 +6,20 @@
  */
 
 import type {FlipperPlugin, FlipperDevicePlugin} from './plugin.js';
-import {exportStoreToFile} from './utils/exportData.js';
+import {showOpenDialog} from './utils/exportData.js';
+import {
+  setExportDataToFileActiveSheet,
+  setActiveSheet,
+  ACTIVE_SHEET_SHARE_DATA,
+} from './reducers/application';
 import type {Store} from './reducers/';
 import electron from 'electron';
-import {GK} from 'flipper';
-
+import {ENABLE_SHAREABLE_LINK} from 'flipper';
 export type DefaultKeyboardAction = 'clear' | 'goToBottom' | 'createPaste';
 export type TopLevelMenu = 'Edit' | 'View' | 'Window' | 'Help';
+const {dialog} = electron.remote;
+import os from 'os';
+import path from 'path';
 
 type MenuItem = {|
   label?: string,
@@ -60,7 +67,7 @@ function actionHandler(action: string) {
   if (pluginActionHandler) {
     pluginActionHandler(action);
   } else {
-    console.warn(`Unhandled keybaord action "${action}".`);
+    console.warn(`Unhandled keyboard action "${action}".`);
   }
 }
 
@@ -81,11 +88,10 @@ export function setupMenuBar(
           plugin.keyboardActions || [],
       )
       .reduce((acc: KeyboardActions, cv) => acc.concat(cv), [])
-      .map(
-        (action: DefaultKeyboardAction | KeyboardAction) =>
-          typeof action === 'string'
-            ? defaultKeyboardActions.find(a => a.action === action)
-            : action,
+      .map((action: DefaultKeyboardAction | KeyboardAction) =>
+        typeof action === 'string'
+          ? defaultKeyboardActions.find(a => a.action === action)
+          : action,
       ),
   );
 
@@ -180,7 +186,54 @@ function getTemplate(
   shell: Object,
   store: Store,
 ): Array<MenuItem> {
+  const exportSubmenu = [
+    {
+      label: 'File...',
+      accelerator: 'CommandOrControl+E',
+      click: function(item: Object, focusedWindow: Object) {
+        dialog.showSaveDialog(
+          null,
+          {
+            title: 'FlipperExport',
+            defaultPath: path.join(os.homedir(), 'FlipperExport.flipper'),
+          },
+          async file => {
+            if (!file) {
+              return;
+            }
+            store.dispatch(setExportDataToFileActiveSheet(file));
+          },
+        );
+      },
+    },
+  ];
+  if (ENABLE_SHAREABLE_LINK) {
+    exportSubmenu.push({
+      label: 'Sharable Link',
+      accelerator: 'CommandOrControl+Shift+E',
+      click: async function(item: Object, focusedWindow: Object) {
+        store.dispatch(setActiveSheet(ACTIVE_SHEET_SHARE_DATA));
+      },
+    });
+  }
+
   const template = [
+    {
+      label: 'File',
+      submenu: [
+        {
+          label: 'Open File...',
+          accelerator: 'CommandOrControl+O',
+          click: function(item: Object, focusedWindow: Object) {
+            showOpenDialog(store);
+          },
+        },
+        {
+          label: 'Export',
+          submenu: exportSubmenu,
+        },
+      ],
+    },
     {
       label: 'Edit',
       submenu: [
@@ -309,21 +362,7 @@ function getTemplate(
       ],
     },
   ];
-  if (GK.get('flipper_import_export')) {
-    console.log('flipper_import_export is true');
-    template.unshift({
-      label: 'File',
-      submenu: [
-        {
-          label: 'Export Data',
-          role: 'export',
-          click: function(item: Object, focusedWindow: Object) {
-            exportStoreToFile(store);
-          },
-        },
-      ],
-    });
-  }
+
   if (process.platform === 'darwin') {
     const name = app.getName();
     template.unshift({

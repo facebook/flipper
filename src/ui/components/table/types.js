@@ -11,7 +11,7 @@ export const MINIMUM_COLUMN_WIDTH = 100;
 export const DEFAULT_COLUMN_WIDTH = 200;
 export const DEFAULT_ROW_HEIGHT = 23;
 
-type TableColumnOrderVal = {
+export type TableColumnOrderVal = {
   key: string,
   visible: boolean,
 };
@@ -26,7 +26,7 @@ export type TableHighlightedRows = Array<string>;
 
 export type TableColumnKeys = Array<string>;
 
-export type TableOnColumnResize = (sizes: TableColumnSizes) => void;
+export type TableOnColumnResize = (id: string, size: number | string) => void;
 export type TableOnColumnOrder = (order: TableColumnOrder) => void;
 export type TableOnSort = (order: TableRowSortOrder) => void;
 export type TableOnHighlight = (

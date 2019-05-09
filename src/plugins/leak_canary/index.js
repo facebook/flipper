@@ -88,7 +88,7 @@ export default class LeakCanary extends FlipperPlugin<State> {
       selectedIdx: null,
       selectedEid: null,
     });
-    this.client.send('clear');
+    this.client.call('clear');
   };
 
   _selectElement = (leakIdx: number, eid: string) => {

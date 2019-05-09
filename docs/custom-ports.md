@@ -17,11 +17,7 @@ FLIPPER_PORTS=1111,2222 ./flipper
 To configure the Android SDK for custom ports, set the `flipper.ports` prop to your chosen ports `1111,2222` like so, and then launch the Android app.
 
 ```
-adb shell
-su
-setprop flipper.ports 1111,2222
-exit
-exit
+adb shell su 0 setprop flipper.ports 1111,2222
 ```
 
 To configure the iOS SDK for custom ports, set the FLIPPER_PORTS environment variable in your app launch script.

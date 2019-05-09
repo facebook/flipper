@@ -9,7 +9,6 @@ import type BaseDevice from '../devices/BaseDevice';
 import type Client from '../Client';
 import type {UninitializedClient} from '../UninitializedClient';
 import {isEqual} from 'lodash';
-import {RecurringError} from '../utils/errors';
 import iosUtil from '../fb-stubs/iOSContainerUtility';
 // $FlowFixMe perf_hooks is a new API in node
 import {performance} from 'perf_hooks';
@@ -71,6 +70,10 @@ export type Action =
       payload: Client,
     }
   | {
+      type: 'NEW_CLIENT_SANITY_CHECK',
+      payload: Client,
+    }
+  | {
       type: 'CLIENT_REMOVED',
       payload: string,
     }
@@ -108,10 +111,7 @@ const INITAL_STATE: State = {
   deepLinkPayload: null,
 };
 
-export default function reducer(
-  state: State = INITAL_STATE,
-  action: Action,
-): State {
+const reducer = (state: State = INITAL_STATE, action: Action): State => {
   switch (action.type) {
     case 'SELECT_DEVICE': {
       const {payload} = action;
@@ -156,20 +156,12 @@ export default function reducer(
         selection = {};
       }
 
-      const error =
-        payload.os === 'iOS' &&
-        payload.deviceType === 'physical' &&
-        !iosUtil.isAvailable()
-          ? 'iOS Devices are not yet supported'
-          : null;
-
       return {
         ...state,
         devices,
         // select device if none was selected before
         selectedDevice,
         ...selection,
-        error,
       };
     }
     case 'UNREGISTER_DEVICES': {
@@ -237,16 +229,6 @@ export default function reducer(
         selectedPlugin = userPreferredPlugin;
       }
 
-      const matchingDeviceForClient = state.devices.filter(
-        device => payload.query.device_id === device.serial,
-      );
-      if (matchingDeviceForClient.length === 0) {
-        console.error(
-          new RecurringError(`Client initialised for non-displayed device`),
-          payload.id,
-        );
-      }
-
       return {
         ...state,
         clients: state.clients.concat(payload),
@@ -259,6 +241,25 @@ export default function reducer(
         selectedApp,
         selectedPlugin,
       };
+    }
+    case 'NEW_CLIENT_SANITY_CHECK': {
+      const {payload} = action;
+      // Check for clients initialised when there is no matching device
+      const clientIsStillConnected = state.clients.filter(
+        client => client.id == payload.query.device_id,
+      );
+      if (clientIsStillConnected) {
+        const matchingDeviceForClient = state.devices.filter(
+          device => payload.query.device_id === device.serial,
+        );
+        if (matchingDeviceForClient.length === 0) {
+          console.error(
+            `Client initialised for non-displayed device: ${payload.id}`,
+          );
+        }
+      }
+
+      return state;
     }
     case 'CLIENT_REMOVED': {
       const {payload} = action;
@@ -300,11 +301,10 @@ export default function reducer(
       return {
         ...state,
         uninitializedClients: state.uninitializedClients
-          .map(
-            c =>
-              isEqual(c.client, payload.client)
-                ? {...c, deviceId: payload.deviceId}
-                : c,
+          .map(c =>
+            isEqual(c.client, payload.client)
+              ? {...c, deviceId: payload.deviceId}
+              : c,
           )
           .sort((a, b) => a.client.appName.localeCompare(b.client.appName)),
       };
@@ -315,19 +315,17 @@ export default function reducer(
       const errorMessage =
         payload.error instanceof Error ? payload.error.message : payload.error;
       console.error(
-        new RecurringError(`Client setup error: ${errorMessage}`),
-        `${payload.client.os}:${payload.client.deviceName}:${
-          payload.client.appName
-        }`,
+        `Client setup error: ${errorMessage} while setting up client: ${
+          payload.client.os
+        }:${payload.client.deviceName}:${payload.client.appName}`,
       );
       return {
         ...state,
         uninitializedClients: state.uninitializedClients
-          .map(
-            c =>
-              isEqual(c.client, payload.client)
-                ? {...c, errorMessage: errorMessage}
-                : c,
+          .map(c =>
+            isEqual(c.client, payload.client)
+              ? {...c, errorMessage: errorMessage}
+              : c,
           )
           .sort((a, b) => a.client.appName.localeCompare(b.client.appName)),
         error: `Client setup error: ${errorMessage}`,
@@ -336,7 +334,29 @@ export default function reducer(
     default:
       return state;
   }
-}
+};
+
+export default (state: State = INITAL_STATE, action: Action): State => {
+  const nextState = reducer(state, action);
+
+  if (nextState.selectedDevice) {
+    const {selectedDevice} = nextState;
+    const deviceNotSupportedError = 'iOS Devices are not yet supported';
+    const error =
+      selectedDevice.os === 'iOS' &&
+      selectedDevice.deviceType === 'physical' &&
+      !iosUtil.isAvailable()
+        ? deviceNotSupportedError
+        : null;
+
+    if (nextState.error === deviceNotSupportedError) {
+      nextState.error = error;
+    } else {
+      nextState.error = error || nextState.error;
+    }
+  }
+  return nextState;
+};
 
 export const selectDevice = (payload: BaseDevice): Action => ({
   type: 'SELECT_DEVICE',

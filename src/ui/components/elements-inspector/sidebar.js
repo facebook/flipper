@@ -8,7 +8,7 @@
 import type {Element} from './ElementsInspector.js';
 import type {PluginClient} from '../../../plugin';
 import type Client from '../../../Client.js';
-import type Logger from '../../../fb-stubs/Logger.js';
+import type {Logger} from '../../../fb-interfaces/Logger.js';
 import Panel from '../Panel.js';
 import ManagedDataInspector from '../data-inspector/ManagedDataInspector.js';
 import {Component} from 'react';
@@ -81,7 +81,7 @@ type Props = {|
   client: PluginClient,
   realClient: Client,
   logger: Logger,
-  extensions?: Array<any>,
+  extensions?: Array<Function>,
 |};
 
 type State = {|
@@ -118,12 +118,8 @@ export class InspectorSidebar extends Component<Props, State> {
       return null;
     }
 
-    const sections =
+    const sections: Array<any> =
       (extensions &&
-        /* $FlowFixMe(>=0.86.0) This
-         * comment suppresses an error found when Flow v0.86 was
-         * deployed. To see the error, delete this comment and
-         * run Flow. */
         extensions.map(ext =>
           ext(
             this.props.client,

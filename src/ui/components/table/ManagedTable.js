@@ -27,7 +27,7 @@ import TableHead from './TableHead.js';
 import TableRow from './TableRow.js';
 import ContextMenu from '../ContextMenu.js';
 import FlexColumn from '../FlexColumn.js';
-import createPaste from '../../../utils/createPaste.js';
+import createPaste from '../../../fb-stubs/createPaste.js';
 import debounceRender from 'react-debounce-render';
 import debounce from 'lodash.debounce';
 import {DEFAULT_ROW_HEIGHT} from './types';
@@ -41,6 +41,10 @@ export type ManagedTableProps = {|
    * Row definitions.
    */
   rows: TableRows,
+  /*
+   * Globally unique key for persisting data between uses of a table such as column sizes.
+   */
+  tableKey?: string,
   /**
    * Whether the table has a border.
    */
@@ -60,7 +64,7 @@ export type ManagedTableProps = {|
    */
   columnOrder?: TableColumnOrder,
   /**
-   * Size of the columns.
+   * Initial size of the columns.
    */
   columnSizes?: TableColumnSizes,
   /**
@@ -93,11 +97,11 @@ export type ManagedTableProps = {|
    */
   stickyBottom?: boolean,
   /**
-   * Used by SearchableTable to add filters for rows
+   * Used by SearchableTable to add filters for rows.
    */
   onAddFilter?: TableOnAddFilter,
   /**
-   * Enable or disable zebra striping
+   * Enable or disable zebra striping.
    */
   zebra?: boolean,
   /**
@@ -109,9 +113,21 @@ export type ManagedTableProps = {|
    */
   highlightedRows?: Set<string>,
   /**
-   * Allows to create context menu items for rows
+   * Allows to create context menu items for rows.
    */
   buildContextMenuItems?: () => MenuTemplate,
+  /**
+   * Callback when sorting changes.
+   */
+  onSort?: (order: TableRowSortOrder) => void,
+  /**
+   * Initial sort order of the table.
+   */
+  initialSortOrder?: ?TableRowSortOrder,
+  /**
+   * Table scroll horizontally, if needed
+   */
+  horizontallyScrollable?: boolean,
 |};
 
 type ManagedTableState = {|
@@ -122,9 +138,18 @@ type ManagedTableState = {|
   shouldScrollToBottom: boolean,
 |};
 
-const Container = styled(FlexColumn)({
+const Container = styled(FlexColumn)(props => ({
+  overflow: props.overflow ? 'scroll' : 'visible',
   flexGrow: 1,
-});
+}));
+
+const globalTableState: {[string]: TableColumnSizes} = {};
+
+function getTextContentOfRow(rowId: string) {
+  return Array.from(
+    document.querySelectorAll(`[data-key='${rowId}'] > *`) || [],
+  ).map(node => node.textContent);
+}
 
 class ManagedTable extends React.Component<
   ManagedTableProps,
@@ -150,15 +175,16 @@ class ManagedTable extends React.Component<
       JSON.parse(window.localStorage.getItem(this.getTableKey()) || 'null') ||
       this.props.columnOrder ||
       Object.keys(this.props.columns).map(key => ({key, visible: true})),
-    columnSizes: this.props.columnSizes || {},
+    columnSizes:
+      this.props.tableKey && globalTableState[this.props.tableKey]
+        ? globalTableState[this.props.tableKey]
+        : {},
     highlightedRows: this.props.highlightedRows || new Set(),
-    sortOrder: null,
+    sortOrder: this.props.initialSortOrder || null,
     shouldScrollToBottom: Boolean(this.props.stickyBottom),
   };
 
-  tableRef: {
-    current: null | List,
-  } = React.createRef();
+  tableRef = React.createRef<List>();
 
   scrollRef: {
     current: null | HTMLDivElement,
@@ -196,12 +222,10 @@ class ManagedTable extends React.Component<
     }
 
     // if columnOrder has changed
-    if (
-      nextProps.columnOrder !== this.props.columnOrder &&
-      this.tableRef &&
-      this.tableRef.current
-    ) {
-      this.tableRef.current.resetAfterIndex(0);
+    if (nextProps.columnOrder !== this.props.columnOrder) {
+      if (this.tableRef && this.tableRef.current) {
+        this.tableRef.current.resetAfterIndex(0);
+      }
       this.setState({
         columnOrder: nextProps.columnOrder,
       });
@@ -306,6 +330,7 @@ class ManagedTable extends React.Component<
 
   onSort = (sortOrder: TableRowSortOrder) => {
     this.setState({sortOrder});
+    this.props.onSort && this.props.onSort(sortOrder);
   };
 
   onColumnOrder = (columnOrder: TableColumnOrder) => {
@@ -317,8 +342,20 @@ class ManagedTable extends React.Component<
     );
   };
 
-  onColumnResize = (columnSizes: TableColumnSizes) => {
-    this.setState({columnSizes});
+  onColumnResize = (id: string, width: number | string) => {
+    this.setState(({columnSizes}) => ({
+      columnSizes: {
+        ...columnSizes,
+        [id]: width,
+      },
+    }));
+    if (!this.props.tableKey) {
+      return;
+    }
+    if (!globalTableState[this.props.tableKey]) {
+      globalTableState[this.props.tableKey] = {};
+    }
+    globalTableState[this.props.tableKey][id] = width;
   };
 
   scrollToBottom() {
@@ -350,8 +387,7 @@ class ManagedTable extends React.Component<
     document.addEventListener('mouseup', this.onStopDragSelecting);
 
     if (
-      ((e.metaKey && process.platform === 'darwin') ||
-        (e.ctrlKey && process.platform !== 'darwin')) &&
+      ((e.metaKey && process.platform === 'darwin') || e.ctrlKey) &&
       this.props.multiHighlight
     ) {
       highlightedRows.add(row.key);
@@ -425,13 +461,39 @@ class ManagedTable extends React.Component<
     }
   };
 
-  buildContextMenuItems = () => {
+  onCopyCell = (rowId: string, column: string) => {
+    const cellText = getTextContentOfRow(rowId)[
+      Object.keys(this.props.columns).indexOf(column)
+    ];
+    clipboard.writeText(cellText);
+  };
+
+  buildContextMenuItems: () => Array<Electron$MenuItemOptions> = () => {
     const {highlightedRows} = this.state;
     if (highlightedRows.size === 0) {
       return [];
     }
 
+    const copyCellSubMenu =
+      highlightedRows.size === 1
+        ? [
+            {
+              click: this.onCopy,
+              label: 'Copy cell',
+              submenu: Object.keys(this.props.columns).map((column, index) => ({
+                label: this.props.columns[column].value,
+                click: () => {
+                  const rowId = this.state.highlightedRows.values().next()
+                    .value;
+                  rowId && this.onCopyCell(rowId, column);
+                },
+              })),
+            },
+          ]
+        : [];
+
     return [
+      ...copyCellSubMenu,
       {
         label:
           highlightedRows.size > 1
@@ -456,12 +518,7 @@ class ManagedTable extends React.Component<
       .filter(row => highlightedRows.has(row.key))
       .map(
         (row: TableBodyRow) =>
-          row.copyText ||
-          Array.from(
-            document.querySelectorAll(`[data-key='${row.key}'] > *`) || [],
-          )
-            .map(node => node.textContent)
-            .join('\t'),
+          row.copyText || getTextContentOfRow(row.key).join('\t'),
       )
       .join('\n');
   };
@@ -499,7 +556,13 @@ class ManagedTable extends React.Component<
   );
 
   getRow = ({index, style}) => {
-    const {onAddFilter, multiline, zebra, rows} = this.props;
+    const {
+      onAddFilter,
+      multiline,
+      zebra,
+      rows,
+      horizontallyScrollable,
+    } = this.props;
     const {columnOrder, columnSizes, highlightedRows} = this.state;
     const columnKeys = columnOrder
       .map(k => (k.visible ? k.key : null))
@@ -520,16 +583,37 @@ class ManagedTable extends React.Component<
         style={style}
         onAddFilter={onAddFilter}
         zebra={zebra}
+        horizontallyScrollable={horizontallyScrollable}
       />
     );
   };
 
   render() {
-    const {columns, rows, rowLineHeight, hideHeader} = this.props;
+    const {
+      columns,
+      rows,
+      rowLineHeight,
+      hideHeader,
+      horizontallyScrollable,
+    } = this.props;
     const {columnOrder, columnSizes} = this.state;
 
+    let computedWidth = 0;
+    if (horizontallyScrollable) {
+      for (const col in columnSizes) {
+        const width = columnSizes[col];
+        if (isNaN(width)) {
+          // non-numeric columns with, can't caluclate
+          computedWidth = 0;
+          break;
+        } else {
+          computedWidth += parseInt(width, 10);
+        }
+      }
+    }
+
     return (
-      <Container>
+      <Container overflow={horizontallyScrollable}>
         {hideHeader !== true && (
           <TableHead
             columnOrder={columnOrder}
@@ -539,6 +623,7 @@ class ManagedTable extends React.Component<
             sortOrder={this.state.sortOrder}
             columnSizes={columnSizes}
             onSort={this.onSort}
+            horizontallyScrollable={horizontallyScrollable}
           />
         )}
         <Container>
@@ -560,7 +645,7 @@ class ManagedTable extends React.Component<
                       DEFAULT_ROW_HEIGHT
                     }
                     ref={this.tableRef}
-                    width={width}
+                    width={Math.max(width, computedWidth)}
                     estimatedItemSize={rowLineHeight || DEFAULT_ROW_HEIGHT}
                     overscanCount={5}
                     innerRef={this.scrollRef}

@@ -13,10 +13,12 @@ const siteConfig = {
   baseUrl: '/' /* base url for your project */,
   projectName: 'flipper',
   headerLinks: [
-    {doc: 'getting-started', label: 'Getting Started'},
-    {doc: 'understand', label: 'Docs'},
+    {doc: 'features/index', label: 'Features'},
+    {doc: 'getting-started', label: 'Setup'},
+    {doc: 'extending/index', label: 'Extending'},
     {href: repoUrl, label: 'GitHub'},
   ],
+  editUrl: 'https://github.com/facebook/flipper/blob/master/docs/',
   /* path to images for header/footer */
   headerIcon: 'img/icon.png',
   footerIcon: 'img/mascot.png',
@@ -32,8 +34,19 @@ const siteConfig = {
   highlight: {
     theme: 'default',
   },
+  algolia: {
+    apiKey: '2df980e7ffc95c19552790f7cad32666',
+    indexName: 'fbflipper',
+    algoliaOptions: {
+      hitsPerPage: 5,
+    },
+  },
+  scripts: [
+    'https://buttons.github.io/buttons.js',
+    'https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js',
+    '/js/code-blocks-buttons.js',
+  ],
   repoUrl,
-  scripts: ['https://buttons.github.io/buttons.js'],
   stylesheets: [],
   onPageNav: 'separate',
 };

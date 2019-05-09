@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the LICENSE
+ * file in the root directory of this source tree.
+ */
+
 apply plugin: 'com.android.library'
 apply plugin: 'maven'
 
@@ -50,8 +57,13 @@ android {
         implementation deps.stetho
         implementation deps.okhttp3
         implementation deps.lithoCore
+        implementation deps.lithoSectionsDebug
+        implementation deps.lithoSectionsCore
         implementation deps.lithoWidget
         implementation deps.rhino
+        implementation deps.fresco
+        implementation deps.frescoFlipper
+        implementation deps.frescoStetho
         compileOnly deps.leakcanary
 
         testImplementation deps.mockito

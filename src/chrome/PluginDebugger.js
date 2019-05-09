@@ -8,6 +8,7 @@
 import type {FlipperDevicePlugin, FlipperPlugin} from '../plugin';
 import type {PluginDefinition} from '../dispatcher/plugins';
 import type Client from '../Client';
+import type {TableBodyRow} from '../ui/components/table/types';
 
 import {Component, Fragment} from 'react';
 import {connect} from 'react-redux';
@@ -20,7 +21,6 @@ import {
   colors,
   Link,
 } from 'flipper';
-import {remote} from 'electron';
 
 const Container = styled(FlexColumn)({
   padding: 10,
@@ -118,7 +118,7 @@ class PluginDebugger extends Component<Props> {
     GKname: ?string,
     GKpassing: ?boolean,
     pluginPath: ?string,
-  ) {
+  ): TableBodyRow {
     return {
       key: name.toLowerCase(),
       columns: {
@@ -165,13 +165,17 @@ class PluginDebugger extends Component<Props> {
       .join(', ');
   }
 
-  getRows() {
-    let rows = [];
+  getRows(): Array<TableBodyRow> {
+    let rows: Array<TableBodyRow> = [];
 
     // bundled plugins are loaded from the defaultPlugins directory within
     // Flipper's package.
     const externalPluginPath = (p: PluginDefinition) =>
-      p.out.startsWith('./defaultPlugins/') ? null : p.entry;
+      p.out
+        ? p.out.startsWith('./defaultPlugins/')
+          ? null
+          : p.entry
+        : 'Native Plugin';
 
     this.props.gatekeepedPlugins.forEach(plugin =>
       rows.push(
@@ -257,7 +261,8 @@ class PluginDebugger extends Component<Props> {
           known to have problems connecting to Flipper. Check out the{' '}
           <Link href="https://fbflipper.com/docs/troubleshooting.html#known-incompatibilities">
             known incompatibilities
-          </Link>.
+          </Link>
+          .
         </InfoText>
       );
     } else if (
@@ -287,7 +292,8 @@ class PluginDebugger extends Component<Props> {
             check out our documentation about{' '}
             <Link href="https://fbflipper.com/docs/troubleshooting.html#connection-issues">
               connection issues
-            </Link>.
+            </Link>
+            .
           </InfoText>
         </Fragment>
       );
@@ -297,7 +303,7 @@ class PluginDebugger extends Component<Props> {
           <InfoText>
             The table lists all plugins known to Flipper. Some of them might be
             blocked by GKs, others may not show up, because none of the
-            connected apps is supporting it.
+            connected apps are supporting it.
           </InfoText>
           <TableContainer>
             <ManagedTable

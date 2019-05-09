@@ -18,6 +18,8 @@ import {persistStore} from 'redux-persist';
 import reducers from './reducers/index.js';
 import dispatcher from './dispatcher/index.js';
 import TooltipProvider from './ui/components/TooltipProvider.js';
+import config from './utils/processConfig.js';
+import {initLauncherHooks} from './utils/launcher.js';
 const path = require('path');
 
 const store = createStore(
@@ -55,6 +57,8 @@ function init() {
       (r.installing || r.active).postMessage({precachedIcons});
     })
     .catch(console.error);
+
+  initLauncherHooks(config(), store);
 }
 
 // make init function callable from outside

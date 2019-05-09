@@ -12,12 +12,24 @@ export const ACTIVE_SHEET_PLUGIN_SHEET: 'PLUGIN_SHEET' = 'PLUGIN_SHEET';
 export const ACTIVE_SHEET_BUG_REPORTER: 'BUG_REPORTER' = 'BUG_REPORTER';
 export const ACTIVE_SHEET_PLUGIN_DEBUGGER: 'PLUGIN_DEBUGGER' =
   'PLUGIN_DEBUGGER';
+export const ACTIVE_SHEET_SHARE_DATA: 'SHARE_DATA' = 'SHARE_DATA';
+export const ACTIVE_SHEET_SIGN_IN: 'SIGN_IN' = 'SIGN_IN';
+export const ACTIVE_SHEET_SHARE_DATA_IN_FILE: 'SHARE_DATA_IN_FILE' =
+  'SHARE_DATA_IN_FILE';
 
 export type ActiveSheet =
   | typeof ACTIVE_SHEET_PLUGIN_SHEET
   | typeof ACTIVE_SHEET_BUG_REPORTER
   | typeof ACTIVE_SHEET_PLUGIN_DEBUGGER
+  | typeof ACTIVE_SHEET_SHARE_DATA
+  | typeof ACTIVE_SHEET_SIGN_IN
+  | typeof ACTIVE_SHEET_SHARE_DATA_IN_FILE
   | null;
+
+export type LauncherMsg = {
+  message: string,
+  severity: 'warning' | 'error',
+};
 
 export type State = {
   leftSidebarVisible: boolean,
@@ -25,18 +37,22 @@ export type State = {
   rightSidebarAvailable: boolean,
   windowIsFocused: boolean,
   activeSheet: ActiveSheet,
+  exportFile: ?string,
   sessionId: ?string,
   serverPorts: {
     insecure: number,
     secure: number,
   },
+  downloadingImportData: boolean,
+  launcherMsg: LauncherMsg,
 };
 
 type BooleanActionType =
   | 'leftSidebarVisible'
   | 'rightSidebarVisible'
   | 'rightSidebarAvailable'
-  | 'windowIsFocused';
+  | 'windowIsFocused'
+  | 'downloadingImportData';
 
 export type Action =
   | {
@@ -48,10 +64,21 @@ export type Action =
       payload: ActiveSheet,
     }
   | {
+      type: typeof ACTIVE_SHEET_SHARE_DATA_IN_FILE,
+      payload: {file: string},
+    }
+  | {
       type: 'SET_SERVER_PORTS',
       payload: {
         insecure: number,
         secure: number,
+      },
+    }
+  | {
+      type: 'LAUNCHER_MSG',
+      payload: {
+        severity: 'warning' | 'error',
+        message: string,
       },
     };
 
@@ -61,10 +88,16 @@ const initialState: () => State = () => ({
   rightSidebarAvailable: false,
   windowIsFocused: remote.getCurrentWindow().isFocused(),
   activeSheet: null,
+  exportFile: null,
   sessionId: uuidv1(),
   serverPorts: {
     insecure: 8089,
     secure: 8088,
+  },
+  downloadingImportData: false,
+  launcherMsg: {
+    severity: 'warning',
+    message: '',
   },
 });
 
@@ -74,7 +107,8 @@ export default function reducer(state: State, action: Action): State {
     action.type === 'leftSidebarVisible' ||
     action.type === 'rightSidebarVisible' ||
     action.type === 'rightSidebarAvailable' ||
-    action.type === 'windowIsFocused'
+    action.type === 'windowIsFocused' ||
+    action.type === 'downloadingImportData'
   ) {
     const newValue =
       typeof action.payload === 'undefined'
@@ -95,11 +129,21 @@ export default function reducer(state: State, action: Action): State {
       ...state,
       activeSheet: action.payload,
     };
-  }
-  if (action.type === 'SET_SERVER_PORTS') {
+  } else if (action.type === ACTIVE_SHEET_SHARE_DATA_IN_FILE) {
+    return {
+      ...state,
+      activeSheet: ACTIVE_SHEET_SHARE_DATA_IN_FILE,
+      exportFile: action.payload.file,
+    };
+  } else if (action.type === 'SET_SERVER_PORTS') {
     return {
       ...state,
       serverPorts: action.payload,
+    };
+  } else if (action.type === 'LAUNCHER_MSG') {
+    return {
+      ...state,
+      launcherMsg: action.payload,
     };
   } else {
     return state;
@@ -112,6 +156,11 @@ export const toggleAction = (
 ): Action => ({
   type,
   payload,
+});
+
+export const setExportDataToFileActiveSheet = (file: string): Action => ({
+  type: ACTIVE_SHEET_SHARE_DATA_IN_FILE,
+  payload: {file},
 });
 
 export const setActiveSheet = (payload: ActiveSheet): Action => ({
