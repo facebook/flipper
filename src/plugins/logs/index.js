@@ -58,6 +58,9 @@ const Icon = styled(Glyph)({
 
 function getLineCount(str: string): number {
   let count = 1;
+  if (!(typeof str === 'string')) {
+    return 0;
+  }
   for (let i = 0; i < str.length; i++) {
     if (str[i] === '\n') {
       count++;
