@@ -1,6 +1,12 @@
 os: osx
 osx_image: xcode10.2
 
+deploy:
+  provider: script
+  script: ./scripts/push.sh
+  on:
+    tags: true
+
 matrix:
   include:
     - language: node_js
