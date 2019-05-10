@@ -27,7 +27,7 @@ const backgroundColor = props => {
   if (props.selected) {
     return colors.macOSTitleBarIconSelected;
   } else if (props.focused) {
-    return colors.lime;
+    return '#00CF52';
   } else if (props.even) {
     return colors.light02;
   } else {
@@ -39,7 +39,7 @@ const backgroundColorHover = props => {
   if (props.selected) {
     return colors.macOSTitleBarIconSelected;
   } else if (props.focused) {
-    return colors.lime;
+    return '#00CF52';
   } else {
     return '#EBF1FB';
   }
