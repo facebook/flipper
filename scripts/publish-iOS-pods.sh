@@ -5,5 +5,5 @@
 # in the root directory of this source tree.
 set -e
 
-pod trunk push ./scripts/Flipper.podspec --use-libraries --allow-warnings --verbose
-pod trunk push ./scripts/FlipperKit.podspec --use-libraries --allow-warnings --verbose --skip-import-validation --swift-version=4.0
+pod trunk push ./Flipper.podspec --use-libraries --allow-warnings --verbose
+pod trunk push ./FlipperKit.podspec --use-libraries --allow-warnings --verbose --skip-import-validation --swift-version=4.0
