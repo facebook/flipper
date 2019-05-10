@@ -66,6 +66,30 @@ export default class Inspector extends Component<Props> {
       : this.props.persistedState.elements;
   };
 
+  focused = () => {
+    if (!this.props.ax) {
+      return null;
+    }
+    // $FlowFixMe: Object.values returns Array<mixed>
+    const elements: Array<Element> = Object.values(
+      this.props.persistedState.AXelements,
+    );
+    return elements.find(i => i?.data?.Accessibility?.['accessibility-focused'])
+      ?.id;
+  };
+
+  getAXContextMenuExtensions = () =>
+    this.props.ax
+      ? [
+          {
+            label: 'Focus',
+            click: (id: ElementID) => {
+              this.props.client.call('onRequestAXFocus', {id});
+            },
+          },
+        ]
+      : [];
+
   componentDidMount() {
     this.props.client.call(this.call().GET_ROOT).then((root: Element) => {
       this.props.setPersistedState({
@@ -102,6 +126,16 @@ export default class Inspector extends Component<Props> {
         this.getAndExpandPath(path);
       },
     );
+
+    if (this.props.ax) {
+      this.props.client.subscribe('axFocusEvent', () => {
+        // update all nodes, to find new focused node
+        this.getNodes(Object.keys(this.props.persistedState.AXelements), {
+          force: true,
+          ax: true,
+        });
+      });
+    }
   }
 
   componentDidUpdate(prevProps: Props) {
@@ -234,6 +268,8 @@ export default class Inspector extends Component<Props> {
         selected={this.selected()}
         root={this.root()}
         elements={this.elements()}
+        focused={this.focused()}
+        contextMenuExtensions={this.getAXContextMenuExtensions()}
       />
     ) : null;
   }

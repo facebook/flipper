@@ -1,6 +1,6 @@
 Pod::Spec.new do |spec|
   spec.name = 'Flipper-Folly'
-  spec.version = '1.3.0'
+  spec.version = '1.3.4'
   spec.license = { :type => 'Apache License, Version 2.0' }
   spec.homepage = 'https://github.com/facebook/folly'
   spec.summary = 'An open-source C++ library developed and used at Facebook.'
@@ -152,10 +152,10 @@ Pod::Spec.new do |spec|
                               "folly/futures/*.h",
                               "folly/futures/detail/*.h"
 
-  spec.pod_target_xcconfig = {  "USE_HEADERMAP": "NO",
-                                "ONLY_ACTIVE_ARCH": "YES",
-                                "CLANG_CXX_LANGUAGE_STANDARD": "c++11",
-                                "HEADER_SEARCH_PATHS": "\"$(PODS_TARGET_SRCROOT)\" \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/DoubleConversion\""
+  spec.pod_target_xcconfig = {  "USE_HEADERMAP" => "NO",
+                                "ARCHS" => "${ARCHS_STANDARD_64_BIT}",
+                                "CLANG_CXX_LANGUAGE_STANDARD" => "c++11",
+                                "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)\" \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/DoubleConversion\""
                               }
   # Pinning to the same version as React.podspec.
   spec.platforms = { :ios => "8.0"}
