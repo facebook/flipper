@@ -1,6 +1,12 @@
 os: osx
 osx_image: xcode10.2
 
+deploy:
+  provider: script
+  script: ./scripts/publish-iOS-pods.sh
+  on:
+    branch: automate_ios_release
+
 matrix:
   include:
     - language: node_js
