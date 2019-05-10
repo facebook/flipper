@@ -78,6 +78,18 @@ export default class Inspector extends Component<Props> {
       ?.id;
   };
 
+  getAXContextMenuExtensions = () =>
+    this.props.ax
+      ? [
+          {
+            label: 'Focus',
+            click: (id: ElementID) => {
+              this.props.client.call('onRequestAXFocus', {id});
+            },
+          },
+        ]
+      : [];
+
   componentDidMount() {
     this.props.client.call(this.call().GET_ROOT).then((root: Element) => {
       this.props.setPersistedState({
@@ -257,6 +269,7 @@ export default class Inspector extends Component<Props> {
         root={this.root()}
         elements={this.elements()}
         focused={this.focused()}
+        contextMenuExtensions={this.getAXContextMenuExtensions()}
       />
     ) : null;
   }
