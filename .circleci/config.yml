@@ -42,13 +42,13 @@ jobs:
           command: |
             pod --version
       - run:
-          name: "Push FlipperKit Pod"
-          command: |
-            pod trunk push ./FlipperKit.podspec --use-libraries --allow-warnings --verbose --skip-import-validation --swift-version=4.2
-      - run:
           name: "Push Flipper Pod"
           command: |
             pod trunk push ./Flipper.podspec --use-libraries --allow-warnings --verbose --skip-import-validation
+      - run:
+          name: "Push FlipperKit Pod"
+          command: |
+            pod trunk push ./FlipperKit.podspec --use-libraries --allow-warnings --verbose --skip-import-validation --swift-version=4.2
 
 workflows:
   version: 2
