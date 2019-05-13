@@ -66,5 +66,7 @@ workflows:
               ignore: /.*/
       - publish-pods:
           filters:
+            tags:
+              only: /^v.*/
             branches:
-              only: automate-ios-release
+              ignore: /.*/
