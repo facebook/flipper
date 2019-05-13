@@ -269,7 +269,7 @@ export const darkColors = {
 };
 
 export const brandColors = {
-  Facebook: '#4267B2',
+  Facebook: '#0D7BED',
   Messenger: '#0088FA',
   Instagram: '#E61E68',
   Flipper: '#8155cb',
