@@ -46,7 +46,7 @@ Pod::Spec.new do |spec|
   spec.subspec 'FBCxxUtils' do |ss|
     ss.header_dir = 'FBCxxUtils'
     ss.compiler_flags = folly_compiler_flags
-    ss.dependency 'Flipper-Folly', '1.3.0'
+    ss.dependency 'Flipper-Folly', '~> 1.3'
     ss.source_files = 'iOS/FlipperKit/FBCxxUtils/**/*.{h,mm}'
     # We set these files as private headers since they only need to be accessed
     # by other FlipperKit source files
