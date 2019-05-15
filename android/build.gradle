@@ -60,7 +60,6 @@ android {
         implementation deps.lithoSectionsDebug
         implementation deps.lithoSectionsCore
         implementation deps.lithoWidget
-        implementation deps.rhino
         implementation deps.fresco
         implementation deps.frescoFlipper
         implementation deps.frescoStetho

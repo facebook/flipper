@@ -89,7 +89,6 @@ ext.deps = [
         testCore           : 'androidx.test:core:1.1.0',
         testRules          : 'androidx.test:rules:1.1.0',
         // Plugin dependencies
-        rhino              : 'org.mozilla:rhino:1.7.10',
         frescoFlipper      : 'com.facebook.fresco:flipper:1.13.0',
         frescoStetho       : 'com.facebook.fresco:stetho:1.13.0',
         fresco             : 'com.facebook.fresco:fresco:1.13.0'
