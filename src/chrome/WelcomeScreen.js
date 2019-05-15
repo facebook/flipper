@@ -146,7 +146,7 @@ export default class WelcomeScreen extends PureComponent<Props, State> {
           <Item
             onClick={() =>
               shell.openExternal(
-                'https://fbflipper.com/docs/create-plugin.html',
+                'https://fbflipper.com/docs/tutorial/intro.html',
               )
             }>
             <Icon size={20} name="magic-wand" color={brandColors.Flipper} />

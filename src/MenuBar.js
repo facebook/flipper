@@ -350,7 +350,9 @@ function getTemplate(
         {
           label: 'Create plugins',
           click: function() {
-            shell.openExternal('https://fbflipper.com/docs/create-plugin.html');
+            shell.openExternal(
+              'https://fbflipper.com/docs/tutorial/intro.html',
+            );
           },
         },
         {
