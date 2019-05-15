@@ -3,7 +3,7 @@ id: share-flipper-data
 title: Share Flipper Data
 ---
 
-Flipper's diagnostic and profiling data is often used for debugging. But sometimes you can not solve the problem on your own and need some help from your colleagues. Rather than sending screenshots or ... you can share the data you are seeing in Flipper with them. This includes all logs, the layout hierarchy, network requests, etc. and helps to get the bigger picture of why something didn't work as expected.
+Flipper's diagnostic and profiling data is often used for debugging. But sometimes you can not solve the problem on your own and need some help from your colleagues. Rather than just sending screenshots, you can share the data you are seeing in Flipper with them. This includes all logs, the layout hierarchy, network requests, etc. and helps to get the bigger picture of why something didn't work as expected.
 
 ## Export Flipper Data
 
