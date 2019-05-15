@@ -325,7 +325,7 @@ public class InspectorFlipperPluginTest {
     String name;
     List<TestNode> children = new ArrayList<>();
     FlipperObject data;
-    List<Named<String>> atttributes = new ArrayList<>();
+    List<Named<String>> attributes = new ArrayList<>();
     String decoration;
     boolean highlighted;
     Rect bounds = new Rect();
@@ -377,7 +377,7 @@ public class InspectorFlipperPluginTest {
 
     @Override
     public List<Named<String>> getAttributes(TestNode node) {
-      return node.atttributes;
+      return node.attributes;
     }
 
     @Override
