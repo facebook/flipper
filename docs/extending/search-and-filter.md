@@ -3,12 +3,12 @@ id: search-and-filter
 title: Searching and Filtering
 ---
 
-Many plugins need the ability to make their content search and filterable. Flipper provides a component for this use-case called `Searchable`. This is a higher-order-component that can be used to wrap any table, list, generic react-component and adds Flippers search bar on top of it.
+Many plugins need the ability to make their content searchable and filterable. Flipper provides a component for this use-case called `Searchable`. This is a higher-order-component that can be used to wrap any table, list, or generic React component and adds Flipper's search bar on top of it.
 
-We differentiate between search and filter, but both functionalities are provided by the `Searchable` component. Search is a custom string entered by the user. Filters can not be added by the user directly, but are added programmatically from within your plugin.
+We differentiate between search and filter, but both functionalities are provided by the `Searchable` component. Search is a custom string entered by the user. Filters cannot be added by the user directly, but are added programmatically from within your plugin.
 
 ## Filters
-Every filter has a key and a value. The key represents an attribute of the items you are filtering, and the value is the value that is compared with the items to see if the attribute matches. As an example, if you were filtering rows of a table, the a filter key would be the id of a column.
+Every filter has a key and a value. The key represents an attribute of the items you are filtering, and the value is the value that is compared with the items to see if the attribute matches. As an example, if you were filtering rows of a table, a filter key would be the id of a column.
 
 There are two different types of filters:
 - **include/exclude filters**: An arbitrary string that must (or must not) be included in the filterable item.
@@ -23,7 +23,7 @@ Function allowing the component to add filters.
 
 `searchTerm: string`
 
-The search term entered into the searchbar by the user.
+The search term entered into the search bar by the user.
 
 `filters: Array<Filter>`
 
