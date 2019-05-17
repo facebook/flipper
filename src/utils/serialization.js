@@ -145,7 +145,10 @@ export function makeObjectSerializable(obj: any): any {
         }
         const serializedKey = dict.get(key);
         const serializedValue = dict.get(value);
-        if (serializedValue && serializedKey) {
+        if (
+          typeof serializedKey !== 'undefined' &&
+          typeof serializedValue !== 'undefined'
+        ) {
           obj = {...obj, [serializedKey]: serializedValue};
         }
       }

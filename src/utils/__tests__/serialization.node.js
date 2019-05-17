@@ -29,6 +29,12 @@ test('test makeObjectSerializable function for unnested object with no Set and M
   expect(output2).toEqual(obj2);
 });
 
+test('makeObjectSerializable function for unnested object with values which returns false when put in an if condition', () => {
+  const obj2 = {key1: 0, key2: ''};
+  const output2 = makeObjectSerializable(obj2);
+  expect(output2).toEqual(obj2);
+});
+
 test('test deserializeObject function for unnested object with no Set and Map', () => {
   let obj = {key1: 'value1', key2: 'value2'};
   const output = deserializeObject(obj);

@@ -9,12 +9,14 @@ import path from 'path';
 import {createStore} from 'redux';
 import {applyMiddleware} from 'redux';
 import yargs from 'yargs';
-
 import dispatcher from '../src/dispatcher/index.js';
 import {init as initLogger} from '../src/fb-stubs/Logger.js';
 import reducers from '../src/reducers/index.js';
 import {exportStore} from '../src/utils/exportData.js';
-import exportMetrics from '../src/utils/exportMetrics.js';
+import {
+  exportMetricsWithoutTrace,
+  exportMetricsFromTrace,
+} from '../src/utils/exportMetrics.js';
 
 // $FlowFixMe this file exist, trust me, flow!
 import setup from '../static/setup.js';
@@ -54,9 +56,9 @@ yargs
       });
       yargs.option('metrics', {
         alias: 'metrics',
-        default: false,
+        default: undefined,
         describe: 'Will export metrics instead of data when flipper terminates',
-        type: 'boolean',
+        type: 'string',
       });
     },
     startFlipper,
@@ -64,7 +66,14 @@ yargs
   .version(global.__VERSION__)
   .help().argv; // http://yargs.js.org/docs/#api-argv
 
-function startFlipper({
+function shouldExportMetric(metrics): boolean {
+  if (!metrics) {
+    return process.argv.includes('--metrics');
+  }
+  return true;
+}
+
+async function startFlipper({
   dev,
   verbose,
   metrics,
@@ -109,8 +118,9 @@ function startFlipper({
       // TODO(T42325892): Investigate why the export stalls without exiting the
       // current eventloop task here.
       setTimeout(() => {
-        if (metrics) {
-          exportMetrics(store)
+        if (shouldExportMetric(metrics) && !metrics) {
+          const state = store.getState();
+          exportMetricsWithoutTrace(state, state.pluginStates)
             .then(payload => {
               originalConsole.log(payload);
               process.exit();
@@ -137,11 +147,25 @@ function startFlipper({
   const logger = initLogger(store, {isHeadless: true});
   dispatcher(store, logger);
 
+  if (shouldExportMetric(metrics) && metrics && metrics.length > 0) {
+    try {
+      const payload = await exportMetricsFromTrace(metrics, store.getState());
+      originalConsole.log(payload);
+    } catch (error) {
+      console.error(error);
+    }
+    process.exit();
+  }
+
   if (exit == 'sigint') {
     process.on('SIGINT', async () => {
       try {
-        if (metrics) {
-          const payload = await exportMetrics(store);
+        if (shouldExportMetric(metrics) && !metrics) {
+          const state = store.getState();
+          const payload = await exportMetricsWithoutTrace(
+            state,
+            state.pluginStates,
+          );
           originalConsole.log(payload);
         } else {
           const {serializedString, errorArray} = await exportStore(store);
