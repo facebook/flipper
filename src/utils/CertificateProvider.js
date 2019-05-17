@@ -19,7 +19,7 @@ const tmpDir = promisify(tmp.dir);
 import iosUtil from '../fb-stubs/iOSContainerUtility';
 import {reportPlatformFailures} from './metrics';
 import {getAdbClient} from './adbClient';
-const adb = require('adbkit-fb');
+import * as androidUtil from './androidContainerUtility';
 
 // Desktop file paths
 const os = require('os');
@@ -38,9 +38,7 @@ const deviceClientCertFile = 'device.crt';
 const caSubject = '/C=US/ST=CA/L=Menlo Park/O=Sonar/CN=SonarCA';
 const serverSubject = '/C=US/ST=CA/L=Menlo Park/O=Sonar/CN=localhost';
 const minCertExpiryWindowSeconds = 24 * 60 * 60;
-const appNotDebuggableRegex = /debuggable/;
 const allowedAppNameRegex = /^[a-zA-Z0-9._\-]+$/;
-const operationNotPermittedRegex = /not permitted/;
 const logTag = 'CertificateProvider';
 /*
  * RFC2253 specifies the unamiguous x509 subject format.
@@ -197,12 +195,7 @@ export default class CertificateProvider {
       );
       return Promise.all([deviceIdPromise, appNamePromise]).then(
         ([deviceId, appName]) =>
-          this.pushFileToAndroidDevice(
-            deviceId,
-            appName,
-            destination + filename,
-            contents,
-          ),
+          androidUtil.push(deviceId, appName, destination + filename, contents),
       );
     }
     if (os === 'iOS' || os === 'windows') {
@@ -337,13 +330,15 @@ export default class CertificateProvider {
     processName: string,
     csr: string,
   ): Promise<boolean> {
-    return this.executeCommandOnAndroid(
-      deviceId,
-      processName,
-      `cat ${directory + csrFileName}`,
-    ).then(deviceCsr => {
-      return this.santitizeString(deviceCsr.toString()) === csr;
-    });
+    return androidUtil
+      .executeCommandAsApp(
+        deviceId,
+        processName,
+        `cat ${directory + csrFileName}`,
+      )
+      .then(deviceCsr => {
+        return this.santitizeString(deviceCsr.toString()) === csr;
+      });
   }
 
   iOSDeviceHasMatchingCSR(
@@ -381,54 +376,6 @@ export default class CertificateProvider {
 
   santitizeString(csrString: string): string {
     return csrString.replace(/\r/g, '').trim();
-  }
-
-  pushFileToAndroidDevice(
-    deviceId: string,
-    app: string,
-    filename: string,
-    contents: string,
-  ): Promise<void> {
-    console.debug(`Deploying ${filename} to ${deviceId}:${app}`, logTag);
-    return this.executeCommandOnAndroid(
-      deviceId,
-      app,
-      `echo "${contents}" > ${filename} && chmod 600 ${filename}`,
-    ).then(output => undefined);
-  }
-
-  executeCommandOnAndroid(
-    deviceId: string,
-    user: string,
-    command: string,
-  ): Promise<string> {
-    if (!user.match(allowedAppNameRegex)) {
-      return Promise.reject(new Error(`Disallowed run-as user: ${user}`));
-    }
-    if (command.match(/[']/)) {
-      return Promise.reject(
-        new Error(`Disallowed escaping command: ${command}`),
-      );
-    }
-    return this.adb
-      .then(client =>
-        client.shell(deviceId, `echo '${command}' | run-as '${user}'`),
-      )
-      .then(adb.util.readAll)
-      .then(buffer => buffer.toString())
-      .then(output => {
-        if (output.match(appNotDebuggableRegex)) {
-          throw new Error(
-            `Android app ${user} is not debuggable. To use it with Flipper, add android:debuggable="true" to the application section of AndroidManifest.xml`,
-          );
-        }
-        if (output.toLowerCase().match(operationNotPermittedRegex)) {
-          throw new Error(
-            `Your android device (${deviceId}) does not support the adb shell run-as command. We're tracking this at https://github.com/facebook/flipper/issues/92`,
-          );
-        }
-        return output;
-      });
   }
 
   extractAppNameFromCSR(csr: string): Promise<string> {
