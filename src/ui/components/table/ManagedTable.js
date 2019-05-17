@@ -178,7 +178,7 @@ class ManagedTable extends React.Component<
     columnSizes:
       this.props.tableKey && globalTableState[this.props.tableKey]
         ? globalTableState[this.props.tableKey]
-        : {},
+        : this.props.columnSizes || {},
     highlightedRows: this.props.highlightedRows || new Set(),
     sortOrder: this.props.initialSortOrder || null,
     shouldScrollToBottom: Boolean(this.props.stickyBottom),
