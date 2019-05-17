@@ -331,11 +331,7 @@ export default class CertificateProvider {
     csr: string,
   ): Promise<boolean> {
     return androidUtil
-      .executeCommandAsApp(
-        deviceId,
-        processName,
-        `cat ${directory + csrFileName}`,
-      )
+      .pull(deviceId, processName, directory + csrFileName)
       .then(deviceCsr => {
         return this.santitizeString(deviceCsr.toString()) === csr;
       });
