@@ -20,3 +20,5 @@ export const INSIGHT_INTERN_APP_TOKEN = '';
 
 // Enables the flipper data to be exported through shareabale link
 export const ENABLE_SHAREABLE_LINK = false;
+
+export const IS_PUBLIC_BUILD = true;

@@ -20,6 +20,7 @@ import dispatcher from './dispatcher/index.js';
 import TooltipProvider from './ui/components/TooltipProvider.js';
 import config from './utils/processConfig.js';
 import {initLauncherHooks} from './utils/launcher.js';
+import initCrashReporter from './utils/electronCrashReporter';
 const path = require('path');
 
 const store = createStore(
@@ -59,6 +60,8 @@ function init() {
     .catch(console.error);
 
   initLauncherHooks(config(), store);
+  const sessionId = store.getState().application.sessionId;
+  initCrashReporter(sessionId || '');
 }
 
 // make init function callable from outside
