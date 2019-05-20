@@ -73,12 +73,14 @@ public class FlipperSampleApplication extends Application {
       super(context, "database1.db", null, DATABASE_VERSION);
     }
 
+    @Override
     public void onCreate(SQLiteDatabase db) {
       db.execSQL(SQL_CREATE_FIRST_TABLE);
       db.execSQL(SQL_CREATE_SECOND_TABLE);
       insertSampleData(db);
     }
 
+    @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
       // This database is only a cache for online data, so its upgrade policy is
       // to simply to discard the data and start over
@@ -89,6 +91,7 @@ public class FlipperSampleApplication extends Application {
       onCreate(db);
     }
 
+    @Override
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
       onUpgrade(db, oldVersion, newVersion);
     }
@@ -129,12 +132,14 @@ public class FlipperSampleApplication extends Application {
       super(context, "database2.db", null, DATABASE_VERSION);
     }
 
+    @Override
     public void onCreate(SQLiteDatabase db) {
       db.execSQL(SQL_CREATE_FIRST_TABLE);
       db.execSQL(SQL_CREATE_SECOND_TABLE);
       insertSampleData(db);
     }
 
+    @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
       // This database is only a cache for online data, so its upgrade policy is
       // to simply to discard the data and start over
@@ -145,6 +150,7 @@ public class FlipperSampleApplication extends Application {
       onCreate(db);
     }
 
+    @Override
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
       onUpgrade(db, oldVersion, newVersion);
     }

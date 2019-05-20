@@ -1,3 +1,9 @@
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the LICENSE
+ * file in the root directory of this source tree.
+ */
 package com.facebook.flipper.plugins.databases;
 
 import android.content.Context;
@@ -8,29 +14,31 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
+/**
+ * Abstract class allowing to implement different drivers interfacing with Databases.
+ * @param <DESCRIPTOR> A DatabaseDescriptor object that is called for each databases provider by the driver
+ */
 public abstract class DatabaseDriver<DESCRIPTOR extends DatabaseDescriptor> {
 
-    protected Context mContext;
+    private final Context mContext;
 
-    public DatabaseDriver(@NonNull final Context context) {
+    public DatabaseDriver(final Context context) {
         mContext = context;
     }
 
-    @NonNull
     public Context getContext() {
         return mContext;
     }
 
-    @NonNull
     public abstract List<DESCRIPTOR> getDatabases();
 
-    public abstract List<String> getTableNames(@NonNull DESCRIPTOR databaseDescriptor);
+    public abstract List<String> getTableNames(DESCRIPTOR databaseDescriptor);
 
-    public abstract DatabaseGetTableDataResponse getTableData(@NonNull DESCRIPTOR databaseDescriptor, @NonNull String table, @Nullable String order, boolean reverse, int start, int count);
+    public abstract DatabaseGetTableDataResponse getTableData(DESCRIPTOR databaseDescriptor, String table, String order, boolean reverse, int start, int count);
 
-    public abstract DatabaseGetTableStructureResponse getTableStructure(@NonNull DESCRIPTOR databaseDescriptor, @NonNull String table);
+    public abstract DatabaseGetTableStructureResponse getTableStructure(DESCRIPTOR databaseDescriptor, String table);
 
-    public abstract DatabaseExecuteSqlResponse executeSQL(@NonNull DESCRIPTOR databaseDescriptor, @NonNull String query);
+    public abstract DatabaseExecuteSqlResponse executeSQL(DESCRIPTOR databaseDescriptor, String query);
 
     public static class DatabaseGetTableDataResponse {
 

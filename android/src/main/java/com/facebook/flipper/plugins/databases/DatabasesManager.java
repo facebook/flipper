@@ -1,3 +1,9 @@
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the LICENSE
+ * file in the root directory of this source tree.
+ */
 package com.facebook.flipper.plugins.databases;
 
 import android.util.SparseArray;
@@ -13,6 +19,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import javax.annotation.Nullable;
 
 public class DatabasesManager {
 
@@ -21,17 +28,16 @@ public class DatabasesManager {
     private final static String GET_TABLE_STRUCTURE_COMMAND = "getTableStructure";
     private final static String EXECUTE_COMMAND = "execute";
 
-    private final List<DatabaseDriver> databaseDriverList;
+    private final List<DatabaseDriver> mDatabaseDriverList;
+    private final SparseArray<DatabaseDescriptorHolder> mDatabaseDescriptorHolderSparseArray;
+    private final Set<DatabaseDescriptorHolder> mDatabaseDescriptorHolderSet;
 
-    private final SparseArray<DatabaseDescriptorHolder> databaseDescriptorHolderSparseArray;
-    private final Set<DatabaseDescriptorHolder> databaseDescriptorHolderSet;
-
-    private FlipperConnection connection;
+    private FlipperConnection mConnection;
 
     public DatabasesManager(List<DatabaseDriver> databaseDriverList) {
-        this.databaseDriverList = databaseDriverList;
-        this.databaseDescriptorHolderSparseArray = new SparseArray<>();
-        this.databaseDescriptorHolderSet = new TreeSet<>(new Comparator<DatabaseDescriptorHolder>() {
+        this.mDatabaseDriverList = databaseDriverList;
+        this.mDatabaseDescriptorHolderSparseArray = new SparseArray<>();
+        this.mDatabaseDescriptorHolderSet = new TreeSet<>(new Comparator<DatabaseDescriptorHolder>() {
             @Override
             public int compare(DatabaseDescriptorHolder o1, DatabaseDescriptorHolder o2) {
                 return o1.databaseDescriptor.name().compareTo(o2.databaseDescriptor.name());
@@ -39,15 +45,15 @@ public class DatabasesManager {
         });
     }
 
-    public void setConnection(FlipperConnection connection) {
-        this.connection = connection;
+    public void setConnection(@Nullable FlipperConnection connection) {
+        this.mConnection = connection;
         if (connection != null) {
             listenForCommands(connection);
         }
     }
 
     public boolean isConnected() {
-        return connection != null;
+        return mConnection != null;
     }
 
     private void listenForCommands(FlipperConnection connection) {
@@ -57,18 +63,18 @@ public class DatabasesManager {
                 @Override
                 public void onReceive(FlipperObject params, FlipperResponder responder) {
                     int databaseId = 1;
-                    databaseDescriptorHolderSparseArray.clear();
-                    databaseDescriptorHolderSet.clear();
-                    for (DatabaseDriver<?> databaseDriver : databaseDriverList) {
+                    mDatabaseDescriptorHolderSparseArray.clear();
+                    mDatabaseDescriptorHolderSet.clear();
+                    for (DatabaseDriver<?> databaseDriver : mDatabaseDriverList) {
                         List<? extends DatabaseDescriptor> databaseDescriptorList = databaseDriver.getDatabases();
                         for (DatabaseDescriptor databaseDescriptor : databaseDescriptorList) {
                             int id = databaseId++;
                             DatabaseDescriptorHolder databaseDescriptorHolder = new DatabaseDescriptorHolder(id, databaseDriver, databaseDescriptor);
-                            databaseDescriptorHolderSparseArray.put(id, databaseDescriptorHolder);
-                            databaseDescriptorHolderSet.add(databaseDescriptorHolder);
+                            mDatabaseDescriptorHolderSparseArray.put(id, databaseDescriptorHolder);
+                            mDatabaseDescriptorHolderSet.add(databaseDescriptorHolder);
                         }
                     }
-                    FlipperArray result = ObjectMapper.databaseListToFlipperArray(databaseDescriptorHolderSet);
+                    FlipperArray result = ObjectMapper.databaseListToFlipperArray(mDatabaseDescriptorHolderSet);
                     responder.success(result);
                 }
             });
@@ -81,7 +87,7 @@ public class DatabasesManager {
                     if (getTableDataRequest == null) {
                         responder.error(ObjectMapper.toErrorFlipperObject(DatabasesErrorCodes.ERROR_INVALID_REQUEST, DatabasesErrorCodes.ERROR_INVALID_REQUEST_MESSAGE));
                     } else {
-                        DatabaseDescriptorHolder databaseDescriptorHolder = databaseDescriptorHolderSparseArray.get(getTableDataRequest.databaseId);
+                        DatabaseDescriptorHolder databaseDescriptorHolder = mDatabaseDescriptorHolderSparseArray.get(getTableDataRequest.databaseId);
                         if (databaseDescriptorHolder == null) {
                             responder.error(ObjectMapper.toErrorFlipperObject(DatabasesErrorCodes.ERROR_DATABASE_INVALID, DatabasesErrorCodes.ERROR_DATABASE_INVALID_MESSAGE));
                         } else {
@@ -105,7 +111,7 @@ public class DatabasesManager {
                     if (getTableStructureRequest == null) {
                         responder.error(ObjectMapper.toErrorFlipperObject(DatabasesErrorCodes.ERROR_INVALID_REQUEST, DatabasesErrorCodes.ERROR_INVALID_REQUEST_MESSAGE));
                     } else {
-                        DatabaseDescriptorHolder databaseDescriptorHolder = databaseDescriptorHolderSparseArray.get(getTableStructureRequest.databaseId);
+                        DatabaseDescriptorHolder databaseDescriptorHolder = mDatabaseDescriptorHolderSparseArray.get(getTableStructureRequest.databaseId);
                         if (databaseDescriptorHolder == null) {
                             responder.error(ObjectMapper.toErrorFlipperObject(DatabasesErrorCodes.ERROR_DATABASE_INVALID, DatabasesErrorCodes.ERROR_DATABASE_INVALID_MESSAGE));
                         } else {
@@ -129,7 +135,7 @@ public class DatabasesManager {
                     if (executeSqlRequest == null) {
                         responder.error(ObjectMapper.toErrorFlipperObject(DatabasesErrorCodes.ERROR_INVALID_REQUEST, DatabasesErrorCodes.ERROR_INVALID_REQUEST_MESSAGE));
                     } else {
-                        DatabaseDescriptorHolder databaseDescriptorHolder = databaseDescriptorHolderSparseArray.get(executeSqlRequest.databaseId);
+                        DatabaseDescriptorHolder databaseDescriptorHolder = mDatabaseDescriptorHolderSparseArray.get(executeSqlRequest.databaseId);
                         if (databaseDescriptorHolder == null) {
                             responder.error(ObjectMapper.toErrorFlipperObject(DatabasesErrorCodes.ERROR_DATABASE_INVALID, DatabasesErrorCodes.ERROR_DATABASE_INVALID_MESSAGE));
                         } else {

@@ -1,3 +1,9 @@
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the LICENSE
+ * file in the root directory of this source tree.
+ */
 package com.facebook.flipper.plugins.databases.impl;
 
 import android.content.Context;
@@ -64,7 +70,6 @@ public class SqliteDatabaseDriver extends DatabaseDriver<SqliteDatabaseDescripto
         this.sqliteDatabaseConnectionProvider = sqliteDatabaseConnectionProvider;
     }
 
-    @NonNull
     @Override
     public List<SqliteDatabaseDescriptor> getDatabases() {
         ArrayList<SqliteDatabaseDescriptor> databases = new ArrayList<>();
@@ -78,7 +83,7 @@ public class SqliteDatabaseDriver extends DatabaseDriver<SqliteDatabaseDescripto
     }
 
     @Override
-    public List<String> getTableNames(@NonNull SqliteDatabaseDescriptor databaseDescriptor) {
+    public List<String> getTableNames(SqliteDatabaseDescriptor databaseDescriptor) {
         SQLiteDatabase database = sqliteDatabaseConnectionProvider.openDatabase(databaseDescriptor.file);
         try {
             Cursor cursor = database.rawQuery("SELECT name FROM " + SCHEMA_TABLE + " WHERE type IN (?, ?)", new String[]{"table", "view"});
@@ -97,7 +102,7 @@ public class SqliteDatabaseDriver extends DatabaseDriver<SqliteDatabaseDescripto
     }
 
     @Override
-    public DatabaseExecuteSqlResponse executeSQL(@NonNull SqliteDatabaseDescriptor databaseDescriptor, @NonNull String query) {
+    public DatabaseExecuteSqlResponse executeSQL(SqliteDatabaseDescriptor databaseDescriptor, String query) {
         SQLiteDatabase database = sqliteDatabaseConnectionProvider.openDatabase(databaseDescriptor.file);
         try {
             String firstWordUpperCase = getFirstWord(query).toUpperCase();
@@ -120,7 +125,7 @@ public class SqliteDatabaseDriver extends DatabaseDriver<SqliteDatabaseDescripto
     }
 
     @Override
-    public DatabaseGetTableDataResponse getTableData(@NonNull SqliteDatabaseDescriptor databaseDescriptor, @NonNull String table, @Nullable String order, boolean reverse, int start, int count) {
+    public DatabaseGetTableDataResponse getTableData(SqliteDatabaseDescriptor databaseDescriptor, String table, @Nullable String order, boolean reverse, int start, int count) {
         SQLiteDatabase database = sqliteDatabaseConnectionProvider.openDatabase(databaseDescriptor.file);
         try {
             String orderBy = order != null ? order + (reverse ? " DESC" : " ASC") : null;
@@ -140,7 +145,7 @@ public class SqliteDatabaseDriver extends DatabaseDriver<SqliteDatabaseDescripto
     }
 
     @Override
-    public DatabaseGetTableStructureResponse getTableStructure(@NonNull SqliteDatabaseDescriptor databaseDescriptor, @NonNull String table) {
+    public DatabaseGetTableStructureResponse getTableStructure(SqliteDatabaseDescriptor databaseDescriptor, String table) {
         SQLiteDatabase database = sqliteDatabaseConnectionProvider.openDatabase(databaseDescriptor.file);
         try {
             Cursor structureCursor = database.rawQuery("PRAGMA table_info(" + table + ")", null);
