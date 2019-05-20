@@ -15,7 +15,7 @@ import type {
   CacheInfo,
 } from './api.js';
 import type {ImagesMap} from './ImagePool.js';
-
+import type {MetricType} from 'flipper';
 import React from 'react';
 import ImagesCacheOverview from './ImagesCacheOverview.js';
 import {
@@ -71,6 +71,33 @@ export default class extends FlipperPlugin<PluginState, *, PersistedState> {
     events: [],
     imagesMap: {},
     surfaceList: new Set(),
+  };
+
+  static metricsReducer = (
+    persistedState: PersistedState,
+  ): Promise<MetricType> => {
+    const {events, imagesMap} = persistedState;
+    let wastedBytes = 0;
+    events.forEach(event => {
+      const {viewport, imageIds} = event;
+      if (!viewport) {
+        return;
+      }
+      imageIds.forEach(imageID => {
+        const imageData: ImageData = imagesMap[imageID];
+        if (!imageData) {
+          return;
+        }
+        const imageWidth: number = imageData.width;
+        const imageHeight: number = imageData.height;
+        const viewPortWidth: number = viewport.width;
+        const viewPortHeight: number = viewport.height;
+        const viewPortArea = viewPortWidth * viewPortHeight;
+        const imageArea = imageWidth * imageHeight;
+        wastedBytes += Math.max(0, imageArea - viewPortArea);
+      });
+    });
+    return Promise.resolve({WASTED_BYTES: wastedBytes});
   };
 
   state: PluginState;
