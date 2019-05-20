@@ -44,7 +44,6 @@ export default function initCrashReporter(sessionId: string): Promise<void> {
         };
         remote.crashReporter.start(electronCrashReporterArgs);
         crashReporter.start(electronCrashReporterArgs);
-        remote.process.crash();
       });
   });
 }
