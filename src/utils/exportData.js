@@ -191,6 +191,10 @@ export async function getStoreExport(
   const {clients} = state.connections;
   const {pluginStates} = state;
   const {plugins} = state;
+  const {selectedDevice} = store.getState().connections;
+  if (!selectedDevice) {
+    throw new Error('Please select a device before exporting data.');
+  }
   const newPluginState = {...pluginStates};
   // TODO: T39612653 Make Client mockable. Currently rsocket logic is tightly coupled.
   // Not passing the entire state as currently Client is not mockable.
@@ -207,6 +211,9 @@ export async function getStoreExport(
   });
   const errorArray: Array<Error> = [];
   for (let client of clients) {
+    if (!client.id.includes(selectedDevice.serial)) {
+      continue;
+    }
     for (let plugin of client.plugins) {
       const pluginClass: ?Class<
         FlipperDevicePlugin<> | FlipperPlugin<>,
@@ -230,7 +237,6 @@ export async function getStoreExport(
   }
 
   const {activeNotifications} = store.getState().notifications;
-  const {selectedDevice} = store.getState().connections;
   const {devicePlugins} = store.getState().plugins;
 
   const exportData = await processStore(
@@ -249,16 +255,20 @@ export function exportStore(
 ): Promise<{serializedString: string, errorArray: Array<Error>}> {
   getLogger().track('usage', EXPORT_FLIPPER_TRACE_EVENT);
   return new Promise(async (resolve, reject) => {
-    const {exportData, errorArray} = await getStoreExport(store);
-    if (!exportData) {
-      console.error('Make sure a device is connected');
-      reject('No device is selected');
+    try {
+      const {exportData, errorArray} = await getStoreExport(store);
+      if (!exportData) {
+        console.error('Make sure a device is connected');
+        reject('No device is selected');
+      }
+      const serializedString = serialize(exportData);
+      if (serializedString.length <= 0) {
+        reject('Serialize function returned empty string');
+      }
+      resolve({serializedString, errorArray});
+    } catch (e) {
+      reject(e);
     }
-    const serializedString = serialize(exportData);
-    if (serializedString.length <= 0) {
-      reject('Serialize function returned empty string');
-    }
-    resolve({serializedString, errorArray});
   });
 }
 
