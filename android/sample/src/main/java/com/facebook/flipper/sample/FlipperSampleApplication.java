@@ -1,8 +1,8 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the LICENSE
- * file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
 package com.facebook.flipper.sample;
 
@@ -50,24 +50,28 @@ public class FlipperSampleApplication extends Application {
     // If you change the database schema, you must increment the database version.
     public static final int DATABASE_VERSION = 4;
     private static final String SQL_CREATE_FIRST_TABLE =
-        "CREATE TABLE " + "db1_first_table" + " (" +
-            "_id INTEGER PRIMARY KEY," +
-            "db1_col0_text TEXT," +
-            "db1_col1_integer INTEGER," +
-            "db1_col2_float FLOAT," +
-            "db1_col3_blob TEXT," +
-            "db1_col4_null TEXT DEFAULT NULL," +
-            "db1_col5 TEXT," +
-            "db1_col6 TEXT," +
-            "db1_col7 TEXT," +
-            "db1_col8 TEXT," +
-            "db1_col9 TEXT" +
-        ")";
+        "CREATE TABLE "
+            + "db1_first_table"
+            + " ("
+            + "_id INTEGER PRIMARY KEY,"
+            + "db1_col0_text TEXT,"
+            + "db1_col1_integer INTEGER,"
+            + "db1_col2_float FLOAT,"
+            + "db1_col3_blob TEXT,"
+            + "db1_col4_null TEXT DEFAULT NULL,"
+            + "db1_col5 TEXT,"
+            + "db1_col6 TEXT,"
+            + "db1_col7 TEXT,"
+            + "db1_col8 TEXT,"
+            + "db1_col9 TEXT"
+            + ")";
     private static final String SQL_CREATE_SECOND_TABLE =
-        "CREATE TABLE " + "db1_empty_table" + " (" +
-            "_id INTEGER PRIMARY KEY," +
-            "column1 TEXT," +
-            "column2 TEXT)";
+        "CREATE TABLE "
+            + "db1_empty_table"
+            + " ("
+            + "_id INTEGER PRIMARY KEY,"
+            + "column1 TEXT,"
+            + "column2 TEXT)";
 
     public Database1Helper(Context context) {
       super(context, "database1.db", null, DATABASE_VERSION);
@@ -97,19 +101,19 @@ public class FlipperSampleApplication extends Application {
     }
 
     public void insertSampleData(SQLiteDatabase db) {
-        for(int i = 0 ; i < 100 ;i++) {
-            ContentValues contentValues = new ContentValues();
-            contentValues.put("db1_col0_text", "Long text data for testing resizing");
-            contentValues.put("db1_col1_integer", 1000 + i);
-            contentValues.put("db1_col2_float", 1000.465f + i);
-            contentValues.put("db1_col3_blob", new byte[]{0, 0, 0, 1, 1, 0, 1, 1});
-            contentValues.put("db1_col5", "db_1_column5_value");
-            contentValues.put("db1_col6", "db_1_column6_value");
-            contentValues.put("db1_col7", "db_1_column7_value");
-            contentValues.put("db1_col8", "db_1_column8_value");
-            contentValues.put("db1_col9", "db_1_column9_value");
-            db.insert("db1_first_table", null, contentValues);
-        }
+      for (int i = 0; i < 100; i++) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("db1_col0_text", "Long text data for testing resizing");
+        contentValues.put("db1_col1_integer", 1000 + i);
+        contentValues.put("db1_col2_float", 1000.465f + i);
+        contentValues.put("db1_col3_blob", new byte[] {0, 0, 0, 1, 1, 0, 1, 1});
+        contentValues.put("db1_col5", "db_1_column5_value");
+        contentValues.put("db1_col6", "db_1_column6_value");
+        contentValues.put("db1_col7", "db_1_column7_value");
+        contentValues.put("db1_col8", "db_1_column8_value");
+        contentValues.put("db1_col9", "db_1_column9_value");
+        db.insert("db1_first_table", null, contentValues);
+      }
     }
   }
 
@@ -118,15 +122,19 @@ public class FlipperSampleApplication extends Application {
     // If you change the database schema, you must increment the database version.
     public static final int DATABASE_VERSION = 4;
     private static final String SQL_CREATE_FIRST_TABLE =
-        "CREATE TABLE " + "db2_first_table" + " (" +
-            "_id INTEGER PRIMARY KEY," +
-            "column1 TEXT," +
-            "column2 TEXT)";
+        "CREATE TABLE "
+            + "db2_first_table"
+            + " ("
+            + "_id INTEGER PRIMARY KEY,"
+            + "column1 TEXT,"
+            + "column2 TEXT)";
     private static final String SQL_CREATE_SECOND_TABLE =
-        "CREATE TABLE " + "db2_second_table" + " (" +
-            "_id INTEGER PRIMARY KEY," +
-            "column1 TEXT," +
-            "column2 TEXT)";
+        "CREATE TABLE "
+            + "db2_second_table"
+            + " ("
+            + "_id INTEGER PRIMARY KEY,"
+            + "column1 TEXT,"
+            + "column2 TEXT)";
 
     public Database2Helper(Context context) {
       super(context, "database2.db", null, DATABASE_VERSION);
@@ -156,13 +164,15 @@ public class FlipperSampleApplication extends Application {
     }
 
     public void insertSampleData(SQLiteDatabase db) {
-        for(int i = 0 ; i < 10 ;i++) {
-            ContentValues contentValues = new ContentValues();
-            contentValues.put("column1", "Long text data for testing resizing");
-            contentValues.put("column2", "extra extra extra extra extra extra extra extra extra extra extra extra extra extra extra extra extra extra extra extra extra extra extra extra extra extra extra extra extra extra extra extra extra extra extra extra Long text data for testing resizing");
-            db.insert("db2_first_table", null, contentValues);
-            db.insert("db2_second_table", null, contentValues);
-        }
+      for (int i = 0; i < 10; i++) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("column1", "Long text data for testing resizing");
+        contentValues.put(
+            "column2",
+            "extra extra extra extra extra extra extra extra extra extra extra extra extra extra extra extra extra extra extra extra extra extra extra extra extra extra extra extra extra extra extra extra extra extra extra extra Long text data for testing resizing");
+        db.insert("db2_first_table", null, contentValues);
+        db.insert("db2_second_table", null, contentValues);
+      }
     }
   }
 }

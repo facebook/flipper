@@ -1,8 +1,8 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the LICENSE
- * file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
 package com.facebook.flipper.plugins.databases.impl;
 
@@ -12,5 +12,5 @@ import java.io.File;
 
 public interface SqliteDatabaseConnectionProvider {
 
-    SQLiteDatabase openDatabase(File databaseFile) throws SQLiteException;
+  SQLiteDatabase openDatabase(File databaseFile) throws SQLiteException;
 }
