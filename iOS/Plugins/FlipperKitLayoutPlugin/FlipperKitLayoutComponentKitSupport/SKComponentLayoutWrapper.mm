@@ -58,7 +58,8 @@ static CKFlexboxComponentChild findFlexboxLayoutParams(CKComponent *parent, CKCo
   [[SKComponentLayoutWrapper alloc] initWithLayout:layout
                                           position:CGPointMake(0, 0)
                                          parentKey:[NSString stringWithFormat: @"%p.", layout.component]
-                                      reuseWrapper:reuseWrapper];
+                                      reuseWrapper:reuseWrapper
+                                              rootNode: root];
   // Cache the result.
   if (layout.component) {
     objc_setAssociatedObject(layout.component, &kLayoutWrapperKey, wrapper, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
@@ -70,8 +71,10 @@ static CKFlexboxComponentChild findFlexboxLayoutParams(CKComponent *parent, CKCo
                       position:(CGPoint)position
                      parentKey:(NSString *)parentKey
                   reuseWrapper:(CKComponentReuseWrapper *)reuseWrapper
+                          rootNode:(id<CKInspectableView>)node
 {
   if (self = [super init]) {
+    _rootNode = node;
     _component = layout.component;
     _size = layout.size;
     _position = position;
@@ -93,7 +96,9 @@ static CKFlexboxComponentChild findFlexboxLayoutParams(CKComponent *parent, CKCo
         SKComponentLayoutWrapper *childWrapper = [[SKComponentLayoutWrapper alloc] initWithLayout:child.layout
                                                                                          position:child.position
                                                                                         parentKey:[_identifier stringByAppendingFormat:@"[%d].", index++]
-                                                                                     reuseWrapper:reuseWrapper];
+                                                                                     reuseWrapper:reuseWrapper
+                                                                                             rootNode: nil
+                                                  ];
         childWrapper->_isFlexboxChild = [_component isKindOfClass:[CKFlexboxComponent class]];
         childWrapper->_flexboxChild = findFlexboxLayoutParams(_component, child.layout.component);
         _children.push_back(childWrapper);

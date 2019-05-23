@@ -86,6 +86,9 @@
 
 - (id)childForNode:(SKComponentLayoutWrapper *)node atIndex:(NSUInteger)index {
     if (node.children.size() == 0) {
+      if (node.rootNode == node.component.viewContext.view) {
+        return nil;
+      }
       return node.component.viewContext.view;
     }
     return node.children[index];
