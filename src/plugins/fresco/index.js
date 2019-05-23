@@ -15,7 +15,7 @@ import type {
   CacheInfo,
 } from './api.js';
 import type {ImagesMap} from './ImagePool.js';
-import type {MetricType} from 'flipper';
+import type {MetricType, MiddlewareAPI} from 'flipper';
 import React from 'react';
 import ImagesCacheOverview from './ImagesCacheOverview.js';
 import {
@@ -65,12 +65,64 @@ const debugLog = (...args) => {
   }
 };
 
+type ImagesMetaData = {|
+  levels: ImagesListResponse,
+  events: Array<ImageEventWithId>,
+  imageDataList: Array<ImageData>,
+|};
+
 export default class extends FlipperPlugin<PluginState, *, PersistedState> {
   static defaultPersistedState: PersistedState = {
     images: [],
     events: [],
     imagesMap: {},
     surfaceList: new Set(),
+  };
+
+  static exportPersistedState = (
+    callClient: (string, ?Object) => Promise<Object>,
+    persistedState: ?PersistedState,
+    store: ?MiddlewareAPI,
+  ): Promise<?PersistedState> => {
+    if (persistedState) {
+      return Promise.resolve(persistedState);
+    }
+    const defaultPromise = Promise.resolve(persistedState);
+    if (!store) {
+      return defaultPromise;
+    }
+    return callClient('getAllImageData').then((data: ImagesMetaData) => {
+      if (!data) {
+        return;
+      }
+      const {levels, events, imageDataList} = data;
+      let pluginData: PersistedState = {
+        images: [...levels.levels],
+        surfaceList: new Set(),
+        events: [],
+        imagesMap: {},
+      };
+
+      events.forEach((event: ImageEventWithId, index) => {
+        const {attribution} = event;
+        if (attribution instanceof Array && attribution.length > 0) {
+          const surface = attribution[0].trim();
+          if (surface.length > 0) {
+            pluginData.surfaceList.add(surface);
+          }
+        }
+        pluginData = {
+          ...pluginData,
+          events: [{eventId: index, ...event}, ...pluginData.events],
+        };
+      });
+
+      imageDataList.forEach((imageData: ImageData) => {
+        const {imageId} = imageData;
+        pluginData.imagesMap[imageId] = imageData;
+      });
+      return pluginData;
+    });
   };
 
   static metricsReducer = (
@@ -113,42 +165,6 @@ export default class extends FlipperPlugin<PluginState, *, PersistedState> {
     coldStartFilter: false,
   };
 
-  init() {
-    debugLog('init()');
-    this.updateCaches('init');
-    this.client.subscribe('events', (event: ImageEvent) => {
-      const {surfaceList} = this.props.persistedState;
-      const {attribution} = event;
-      if (attribution instanceof Array && attribution.length > 0) {
-        const surface = attribution[0].trim();
-        if (surface.length > 0) {
-          surfaceList.add(surface);
-        }
-      }
-      this.props.setPersistedState({
-        events: [
-          {eventId: this.nextEventId, ...event},
-          ...this.props.persistedState.events,
-        ],
-      });
-      this.nextEventId++;
-    });
-    this.client.subscribe(
-      'debug_overlay_event',
-      (event: FrescoDebugOverlayEvent) => {
-        this.setState({isDebugOverlayEnabled: event.enabled});
-      },
-    );
-
-    this.imagePool = new ImagePool(this.getImage, (images: ImagesMap) =>
-      this.props.setPersistedState({imagesMap: images}),
-    );
-  }
-
-  teardown() {
-    this.imagePool.clear();
-  }
-
   filterImages = (
     images: ImagesList,
     events: Array<ImageEventWithId>,
@@ -182,6 +198,49 @@ export default class extends FlipperPlugin<PluginState, *, PersistedState> {
     });
     return imageList;
   };
+
+  init() {
+    debugLog('init()');
+    this.updateCaches('init');
+    this.client.subscribe('events', (event: ImageEvent) => {
+      const {surfaceList} = this.props.persistedState;
+      const {attribution} = event;
+      if (attribution instanceof Array && attribution.length > 0) {
+        const surface = attribution[0].trim();
+        if (surface.length > 0) {
+          surfaceList.add(surface);
+        }
+      }
+      this.props.setPersistedState({
+        events: [
+          {eventId: this.nextEventId, ...event},
+          ...this.props.persistedState.events,
+        ],
+      });
+      this.nextEventId++;
+    });
+    this.client.subscribe(
+      'debug_overlay_event',
+      (event: FrescoDebugOverlayEvent) => {
+        this.setState({isDebugOverlayEnabled: event.enabled});
+      },
+    );
+    this.imagePool = new ImagePool(this.getImage, (images: ImagesMap) =>
+      this.props.setPersistedState({imagesMap: images}),
+    );
+
+    let images = this.filterImages(
+      this.props.persistedState.images,
+      this.props.persistedState.events,
+      this.state.selectedSurface,
+      this.state.coldStartFilter,
+    );
+    this.setState({images});
+  }
+
+  teardown() {
+    this.imagePool.clear();
+  }
 
   updateImagesOnUI = (
     images: ImagesList,

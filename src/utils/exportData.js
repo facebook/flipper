@@ -319,6 +319,15 @@ export function importDataToStore(data: string, store: Store) {
 
   const {pluginStates} = json.store;
   const keys = Object.keys(pluginStates);
+  keys.forEach(key => {
+    store.dispatch({
+      type: 'SET_PLUGIN_STATE',
+      payload: {
+        pluginKey: key,
+        state: pluginStates[key],
+      },
+    });
+  });
   clients.forEach(client => {
     const clientPlugins = keys
       .filter(key => {
@@ -338,15 +347,6 @@ export function importDataToStore(data: string, store: Store) {
         store,
         clientPlugins,
       ),
-    });
-  });
-  keys.forEach(key => {
-    store.dispatch({
-      type: 'SET_PLUGIN_STATE',
-      payload: {
-        pluginKey: key,
-        state: pluginStates[key],
-      },
     });
   });
 }
