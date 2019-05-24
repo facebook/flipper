@@ -111,9 +111,10 @@ export default class Client extends EventEmitter {
 
     const client = this;
     this.responder = {
-      fireAndForget: (payload: {data: string}) => {
-        client.onMessage(payload.data);
-      },
+      fireAndForget: (payload: {data: string}) =>
+        requestIdleCallback(() => client.onMessage(payload.data), {
+          timeout: 500,
+        }),
     };
 
     if (conn) {
