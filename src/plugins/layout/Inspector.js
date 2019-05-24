@@ -109,14 +109,7 @@ export default class Inspector extends Component<Props> {
         const ids = nodes
           .map(n => [n.id, ...(n.children || [])])
           .reduce((acc, cv) => acc.concat(cv), []);
-        this.getNodes(ids, {}).then(nodes => {
-          nodes.forEach(node => {
-            // Check if there are new IDs in the children array, and call getNodes()
-            // if there are any
-            const cIds = node.children.filter(c => !this.elements()[c]);
-            this.getNodes(cIds, {});
-          });
-        });
+        this.invalidate(ids);
       },
     );
 
@@ -164,6 +157,19 @@ export default class Inspector extends Component<Props> {
       ).find((e: Element) => e.extraInfo?.linkedAXNode === selectedAXElement);
       this.props.onSelect(linkedNode?.id);
     }
+  }
+
+  invalidate(ids: Array<ElementID>): Promise<Array<Element>> {
+    if (ids.length === 0) {
+      return Promise.resolve([]);
+    }
+    return this.getNodes(ids, {}).then((elements: Array<Element>) => {
+      const children = elements
+        .filter((element: Element) => this.elements()[element.id]?.expanded)
+        .map((element: Element) => element.children)
+        .reduce((acc, val) => acc.concat(val), []);
+      return this.invalidate(children);
+    });
   }
 
   updateElement(id: ElementID, data: Object) {
