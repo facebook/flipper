@@ -12,11 +12,11 @@ import java.util.Map;
 import javax.annotation.Nullable;
 
 public class ObjectTracker {
-  ObjectTracker() {}
+  public ObjectTracker() {}
 
   private final Map<String, SoftReference<Object>> mObjects = new HashMap<>();
 
-  void put(String id, Object obj) {
+  public void put(String id, Object obj) {
     mObjects.put(id, new SoftReference<>(obj));
   }
 
@@ -35,11 +35,11 @@ public class ObjectTracker {
     return obj;
   }
 
-  void clear() {
+  public void clear() {
     mObjects.clear();
   }
 
-  boolean contains(String id) {
+  public boolean contains(String id) {
     return mObjects.containsKey(id);
   }
 }
