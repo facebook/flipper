@@ -11,6 +11,7 @@
  * arguments.
  */
 import {getAdbClient} from './adbClient';
+import {UnsupportedError} from './metrics';
 const adbkit = require('adbkit-fb');
 
 const allowedAppNameRegex = /^[a-zA-Z0-9._\-]+$/;
@@ -89,7 +90,7 @@ function executeCommandAsApp(
         );
       }
       if (output.toLowerCase().match(operationNotPermittedRegex)) {
-        throw new Error(
+        throw new UnsupportedError(
           `Your android device (${deviceId}) does not support the adb shell run-as command. We're tracking this at https://github.com/facebook/flipper/issues/92`,
         );
       }

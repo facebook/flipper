@@ -7,6 +7,12 @@
 
 import {getInstance} from '../fb-stubs/Logger';
 
+export class UnsupportedError extends Error {
+  constructor(message: string) {
+    super(message);
+  }
+}
+
 /*
  * Wraps a Promise, preserving it's functionality but logging the success or
  failure state of it, with a given name, based on whether it's fulfilled or
@@ -24,7 +30,11 @@ export function reportPlatformFailures<T>(
       return fulfilledValue;
     },
     rejectionReason => {
-      logPlatformSuccessRate(name, {isSuccess: false, error: rejectionReason});
+      logPlatformSuccessRate(name, {
+        isSuccess: false,
+        supportedOperation: !(rejectionReason instanceof UnsupportedError),
+        error: rejectionReason,
+      });
       return Promise.reject(rejectionReason);
     },
   );
@@ -50,6 +60,7 @@ export function reportPluginFailures<T>(
     rejectionReason => {
       logPluginSuccessRate(name, plugin, {
         isSuccess: false,
+        supportedOperation: !(rejectionReason instanceof UnsupportedError),
         error: rejectionReason,
       });
       return Promise.reject(rejectionReason);
@@ -70,12 +81,18 @@ export function tryCatchReportPlatformFailures<T>(
     logPlatformSuccessRate(name, {isSuccess: true});
     return result;
   } catch (e) {
-    logPlatformSuccessRate(name, {isSuccess: false, error: e});
+    logPlatformSuccessRate(name, {
+      isSuccess: false,
+      supportedOperation: !(e instanceof UnsupportedError),
+      error: e,
+    });
     throw e;
   }
 }
 
-type Result = {isSuccess: true} | {isSuccess: false, error: any};
+type Result =
+  | {isSuccess: true}
+  | {isSuccess: false, supportedOperation: boolean, error: any};
 
 function logPlatformSuccessRate(name: string, result: Result) {
   if (result.isSuccess) {
@@ -83,6 +100,7 @@ function logPlatformSuccessRate(name: string, result: Result) {
   } else {
     getInstance().track('success-rate', name, {
       value: 0,
+      supportedOperation: result.supportedOperation ? 1 : 0,
       error: extractMessage(result.error),
     });
   }
@@ -95,7 +113,11 @@ function logPluginSuccessRate(name: string, plugin: string, result: Result) {
     getInstance().track(
       'success-rate',
       name,
-      {value: 0, error: extractMessage(result.error)},
+      {
+        value: 0,
+        supportedOperation: result.supportedOperation ? 1 : 0,
+        error: extractMessage(result.error),
+      },
       plugin,
     );
   }
