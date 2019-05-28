@@ -95,7 +95,7 @@ function logPluginSuccessRate(name: string, plugin: string, result: Result) {
     getInstance().track(
       'success-rate',
       name,
-      {value: 1, error: extractMessage(result.error)},
+      {value: 0, error: extractMessage(result.error)},
       plugin,
     );
   }
