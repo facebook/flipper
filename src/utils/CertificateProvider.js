@@ -255,6 +255,9 @@ export default class CertificateProvider {
     return this.adb
       .then(client => client.listDevices())
       .then((devices: Array<{id: string}>) => {
+        if (devices.length === 0) {
+          throw new Error('No Android devices found');
+        }
         const deviceMatchList = devices.map(device =>
           this.androidDeviceHasMatchingCSR(
             deviceCsrFilePath,
@@ -304,6 +307,9 @@ export default class CertificateProvider {
       return Promise.resolve(matches[1]);
     }
     return iosUtil.targets().then(targets => {
+      if (targets.length === 0) {
+        throw new Error('No iOS devices found');
+      }
       const deviceMatchList = targets.map(target =>
         this.iOSDeviceHasMatchingCSR(
           deviceCsrFilePath,
