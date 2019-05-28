@@ -32,6 +32,7 @@ import UpdateIndicator from './UpdateIndicator.js';
 import config from '../fb-stubs/config.js';
 import {isAutoUpdaterEnabled} from '../utils/argvUtils.js';
 import isProduction from '../utils/isProduction.js';
+import {clipboard} from 'electron';
 
 const AppTitleBar = styled(FlexRow)(({focused}) => ({
   background: focused
@@ -74,7 +75,33 @@ const VersionText = styled(Text)({
   color: colors.light50,
   marginLeft: 4,
   marginTop: 2,
+  cursor: 'pointer',
+  display: 'block',
+  padding: '4px 10px',
+  '&:hover': {
+    backgroundColor: `rgba(0,0,0,0.05)`,
+    borderRadius: '999em',
+  },
 });
+
+class Version extends Component<{children: string}, {copied: boolean}> {
+  state = {
+    copied: false,
+  };
+  _onClick = () => {
+    clipboard.writeText(this.props.children);
+    this.setState({copied: true});
+    setTimeout(() => this.setState({copied: false}), 1000);
+  };
+
+  render() {
+    return (
+      <VersionText onClick={this._onClick}>
+        {this.state.copied ? 'Copied' : this.props.children}
+      </VersionText>
+    );
+  }
+}
 
 const Importing = styled(FlexRow)({
   color: colors.light50,
@@ -95,10 +122,7 @@ class TitleBar extends Component<Props> {
           </Importing>
         )}
         <Spacer />
-        <VersionText>
-          {this.props.version}
-          {isProduction() ? '' : '-dev'}
-        </VersionText>
+        <Version>{this.props.version + (isProduction() ? '' : '-dev')}</Version>
 
         {isAutoUpdaterEnabled() ? (
           <AutoUpdateVersion version={this.props.version} />

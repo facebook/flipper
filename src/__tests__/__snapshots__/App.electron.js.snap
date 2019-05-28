@@ -59,10 +59,10 @@ exports[`Empty app state matches snapshot 1`] = `
       className="css-12zzrdt"
     />
     <span
-      className="css-lli23c"
+      className="css-1swhxtd"
+      onClick={[Function]}
     >
-      4.0.8
-      -dev
+      4.0.8-dev
     </span>
     <div
       className="css-1cecbfb"
