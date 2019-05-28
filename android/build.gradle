@@ -11,6 +11,7 @@ apply plugin: 'maven'
 android {
     compileSdkVersion rootProject.compileSdkVersion
     buildToolsVersion rootProject.buildToolsVersion
+    testOptions.unitTests.includeAndroidResources = true
 
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
@@ -67,6 +68,8 @@ android {
 
         testImplementation deps.mockito
         testImplementation deps.robolectric
+        testImplementation deps.testCore
+        testImplementation deps.testRules
         testImplementation deps.hamcrest
         testImplementation deps.junit
     }

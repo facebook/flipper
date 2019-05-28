@@ -25,7 +25,7 @@ exports[`Empty app state matches snapshot 1`] = `
       className="css-1ayt83l"
     >
       <div
-        className="css-rb77sv"
+        className="css-z34oxs"
         disabled={true}
         onClick={[Function]}
         onMouseDown={[Function]}
@@ -40,7 +40,7 @@ exports[`Empty app state matches snapshot 1`] = `
         />
       </div>
       <div
-        className="css-rb77sv"
+        className="css-z34oxs"
         disabled={true}
         onClick={[Function]}
         onMouseDown={[Function]}
@@ -96,7 +96,7 @@ exports[`Empty app state matches snapshot 1`] = `
         />
       </div>
       <div
-        className="css-rb77sv"
+        className="css-z34oxs"
         disabled={true}
         onClick={[Function]}
         onMouseDown={[Function]}

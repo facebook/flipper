@@ -127,15 +127,17 @@ const StyledButton = styled('div')(props => ({
     marginLeft: 0,
   },
 
-  '&:active': {
-    borderColor: colors.macOSTitleBarButtonBorder,
-    borderBottomColor: colors.macOSTitleBarButtonBorderBottom,
-    background: `linear-gradient(to bottom, ${
-      colors.macOSTitleBarButtonBackgroundActiveHighlight
-    } 1px, ${colors.macOSTitleBarButtonBackgroundActive} 0%, ${
-      colors.macOSTitleBarButtonBorderBlur
-    } 100%)`,
-  },
+  '&:active': props.disabled
+    ? null
+    : {
+        borderColor: colors.macOSTitleBarButtonBorder,
+        borderBottomColor: colors.macOSTitleBarButtonBorderBottom,
+        background: `linear-gradient(to bottom, ${
+          colors.macOSTitleBarButtonBackgroundActiveHighlight
+        } 1px, ${colors.macOSTitleBarButtonBackgroundActive} 0%, ${
+          colors.macOSTitleBarButtonBorderBlur
+        } 100%)`,
+      },
 
   '&:disabled': {
     borderColor: borderColor(props),
