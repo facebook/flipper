@@ -16,6 +16,7 @@ import com.facebook.flipper.plugins.inspector.Named;
 import com.facebook.litho.StateContainer;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
+import com.facebook.litho.drawable.ComparableColorDrawable;
 import java.lang.reflect.Field;
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -51,7 +52,8 @@ public class DataUtils {
             props.put(f.getName(), f.get(node) == null ? "null" : fromColor((Integer) f.get(node)));
             break;
           case DRAWABLE:
-            props.put(f.getName(), f.get(node) == null ? "null" : fromDrawable((Drawable) f.get(node)));
+            props.put(
+                f.getName(), f.get(node) == null ? "null" : fromDrawable((Drawable) f.get(node)));
             break;
           default:
             if (f.get(node) != null
@@ -133,11 +135,13 @@ public class DataUtils {
   }
 
   static com.facebook.flipper.plugins.inspector.InspectorValue fromDrawable(Drawable d) {
+    int color = 0;
     if (d instanceof ColorDrawable) {
-      return com.facebook.flipper.plugins.inspector.InspectorValue.mutable(
-          Color, ((ColorDrawable) d).getColor());
+      color = ((ColorDrawable) d).getColor();
+    } else if (d instanceof ComparableColorDrawable) {
+      color = ((ComparableColorDrawable) d).getColor();
     }
-    return com.facebook.flipper.plugins.inspector.InspectorValue.mutable(Color, 0);
+    return com.facebook.flipper.plugins.inspector.InspectorValue.mutable(Color, color);
   }
 
   static com.facebook.flipper.plugins.inspector.InspectorValue fromColor(int color) {

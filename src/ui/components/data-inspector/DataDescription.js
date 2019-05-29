@@ -447,7 +447,9 @@ class DataDescriptionContainer extends Component<{
 
       case 'color': {
         const colorInfo = parseColor(val);
-        if (colorInfo) {
+        if (typeof val === 'number' && val === 0) {
+          return <UndefinedValue>(not set)</UndefinedValue>;
+        } else if (colorInfo) {
           const {a, b, g, r} = colorInfo;
           return [
             <ColorBox key="color-box" color={`rgba(${r}, ${g}, ${b}, ${a})`} />,
