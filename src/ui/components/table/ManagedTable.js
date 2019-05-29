@@ -462,10 +462,8 @@ class ManagedTable extends React.Component<
     }
   };
 
-  onCopyCell = (rowId: string, column: string) => {
-    const cellText = getTextContentOfRow(rowId)[
-      Object.keys(this.props.columns).indexOf(column)
-    ];
+  onCopyCell = (rowId: string, index: number) => {
+    const cellText = getTextContentOfRow(rowId)[index];
     clipboard.writeText(cellText);
   };
 
@@ -481,14 +479,17 @@ class ManagedTable extends React.Component<
             {
               click: this.onCopy,
               label: 'Copy cell',
-              submenu: Object.keys(this.props.columns).map((column, index) => ({
-                label: this.props.columns[column].value,
-                click: () => {
-                  const rowId = this.state.highlightedRows.values().next()
-                    .value;
-                  rowId && this.onCopyCell(rowId, column);
-                },
-              })),
+              submenu: this.state.columnOrder
+                .filter(c => c.visible)
+                .map(c => c.key)
+                .map((column, index) => ({
+                  label: this.props.columns[column].value,
+                  click: () => {
+                    const rowId = this.state.highlightedRows.values().next()
+                      .value;
+                    rowId && this.onCopyCell(rowId, index);
+                  },
+                })),
             },
           ]
         : [];
