@@ -14,11 +14,12 @@ import {registerDeviceCallbackOnPlugins} from '../utils/onRegisterDevice.js';
 import {getAdbClient} from '../utils/adbClient';
 import {default as which} from 'which';
 import {promisify} from 'util';
+import type {ServerPorts} from '../reducers/application';
 
 function createDevice(
   adbClient: any,
   device: any,
-  store: Store,
+  ports: ?ServerPorts,
 ): Promise<AndroidDevice> {
   return new Promise((resolve, reject) => {
     const type =
@@ -32,11 +33,20 @@ function createDevice(
         name = (await getRunningEmulatorName(device.id)) || name;
       }
       const androidDevice = new AndroidDevice(device.id, type, name, adbClient);
-      const ports = store.getState().application.serverPorts;
-      androidDevice.reverse([ports.secure, ports.insecure]);
+      if (ports) {
+        androidDevice.reverse([ports.secure, ports.insecure]);
+      }
       resolve(androidDevice);
     });
   });
+}
+
+export async function getActiveAndroidDevices(): Promise<Array<BaseDevice>> {
+  const client = await getAdbClient();
+  const androidDevices = await client.listDevices();
+  return await Promise.all(
+    androidDevices.map(device => createDevice(client, device)),
+  );
 }
 
 function getRunningEmulatorName(id: string): Promise<?string> {
@@ -138,7 +148,11 @@ export default (store: Store, logger: Logger) => {
   };
 
   async function registerDevice(adbClient: any, deviceData: any, store: Store) {
-    const androidDevice = await createDevice(adbClient, deviceData, store);
+    const androidDevice = await createDevice(
+      adbClient,
+      deviceData,
+      store.getState().application.serverPorts,
+    );
     logger.track('usage', 'register-device', {
       os: 'Android',
       name: androidDevice.title,

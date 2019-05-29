@@ -17,7 +17,7 @@ import {
   exportMetricsWithoutTrace,
   exportMetricsFromTrace,
 } from '../src/utils/exportMetrics.js';
-
+import {listDevices} from '../src/utils/listDevices';
 // $FlowFixMe this file exist, trust me, flow!
 import setup from '../static/setup.js';
 
@@ -60,6 +60,12 @@ yargs
         describe: 'Will export metrics instead of data when flipper terminates',
         type: 'string',
       });
+      yargs.option('list-devices', {
+        alias: 'showDevices',
+        default: false,
+        describe: 'Will print the list of devices in the terminal',
+        type: 'boolean',
+      });
     },
     startFlipper,
   )
@@ -77,6 +83,7 @@ async function startFlipper({
   dev,
   verbose,
   metrics,
+  showDevices,
   exit,
   'insecure-port': insecurePort,
   'secure-port': securePort,
@@ -145,8 +152,15 @@ async function startFlipper({
     devToolsEnhancer.composeWithDevTools(applyMiddleware(headlessMiddleware)),
   );
   const logger = initLogger(store, {isHeadless: true});
-  dispatcher(store, logger);
 
+  //TODO: T45068486 Refactor this function into separate components.
+  if (showDevices) {
+    const devices = await listDevices();
+    originalConsole.log(devices);
+    process.exit();
+  }
+
+  dispatcher(store, logger);
   if (shouldExportMetric(metrics) && metrics && metrics.length > 0) {
     try {
       const payload = await exportMetricsFromTrace(metrics, store.getState());

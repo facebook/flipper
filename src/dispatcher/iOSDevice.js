@@ -142,6 +142,20 @@ function getActiveDevices(): Promise<Array<IOSDeviceParams>> {
   });
 }
 
+export async function getActiveDevicesAndSimulators(): Promise<
+  Array<IOSDevice>,
+> {
+  const activeDevices: Array<Array<IOSDeviceParams>> = await Promise.all([
+    getActiveSimulators(),
+    getActiveDevices(),
+  ]);
+  const allDevices = activeDevices[0].concat(activeDevices[1]);
+  return allDevices.map(device => {
+    const {udid, type, name} = device;
+    return new IOSDevice(udid, type, name);
+  });
+}
+
 export default (store: Store, logger: Logger) => {
   // monitoring iOS devices only available on MacOS.
   if (process.platform !== 'darwin') {

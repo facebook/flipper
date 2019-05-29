@@ -30,6 +30,10 @@ export type LauncherMsg = {
   message: string,
   severity: 'warning' | 'error',
 };
+export type ServerPorts = {
+  insecure: number,
+  secure: number,
+};
 
 export type State = {
   leftSidebarVisible: boolean,
@@ -39,10 +43,7 @@ export type State = {
   activeSheet: ActiveSheet,
   exportFile: ?string,
   sessionId: ?string,
-  serverPorts: {
-    insecure: number,
-    secure: number,
-  },
+  serverPorts: ServerPorts,
   downloadingImportData: boolean,
   launcherMsg: LauncherMsg,
 };
