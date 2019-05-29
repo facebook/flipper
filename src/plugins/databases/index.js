@@ -43,6 +43,7 @@ type DatabasesPluginState = {|
   selectedDatabaseTable: ?string,
   pageRowNumber: number,
   databases: Array<DatabaseEntry>,
+  outdatedDatabaseList: boolean,
   viewMode: 'data' | 'structure',
   error: ?null,
   currentPage: ?Page,
@@ -316,6 +317,7 @@ export default class DatabasesPlugin extends FlipperPlugin<
     selectedDatabaseTable: null,
     pageRowNumber: 0,
     databases: [],
+    outdatedDatabaseList: true,
     viewMode: 'data',
     error: null,
     currentPage: null,
@@ -333,17 +335,25 @@ export default class DatabasesPlugin extends FlipperPlugin<
         const updates = results.databases;
         const databases = updates;
         const selectedDatabase =
-          state.selectedDatabase || Object.values(databases)[0]
+          state.selectedDatabase ||
+          (Object.values(databases)[0]
             ? // $FlowFixMe
               Object.values(databases)[0].id
-            : 0;
-        const selectedTable = databases[selectedDatabase - 1].tables[0];
+            : 0);
+        const selectedTable =
+          state.selectedDatabaseTable &&
+          databases[selectedDatabase - 1].tables.includes(
+            state.selectedDatabaseTable,
+          )
+            ? state.selectedDatabaseTable
+            : databases[selectedDatabase - 1].tables[0];
         const sameTableSelected =
           selectedDatabase === state.selectedDatabase &&
           selectedTable === state.selectedDatabaseTable;
         return {
           ...state,
           databases,
+          outdatedDatabaseList: false,
           selectedDatabase: selectedDatabase,
           selectedDatabaseTable: selectedTable,
           pageRowNumber: 0,
@@ -496,6 +506,7 @@ export default class DatabasesPlugin extends FlipperPlugin<
       ): DatabasesPluginState => {
         return {
           ...state,
+          outdatedDatabaseList: true,
           currentPage: null,
         };
       },
@@ -600,12 +611,19 @@ export default class DatabasesPlugin extends FlipperPlugin<
           this.setState({error: e});
         });
     }
+    if (!previousState.outdatedDatabaseList && newState.outdatedDatabaseList) {
+      this.databaseClient.getDatabases({}).then(databases => {
+        this.dispatchAction({
+          type: 'UpdateDatabases',
+          databases,
+        });
+      });
+    }
   }
 
   init() {
     this.databaseClient = new DatabaseClient(this.client);
     this.databaseClient.getDatabases({}).then(databases => {
-      console.log(databases);
       this.dispatchAction({
         type: 'UpdateDatabases',
         databases,
