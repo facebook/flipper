@@ -66,6 +66,13 @@ yargs
         describe: 'Will print the list of devices in the terminal',
         type: 'boolean',
       });
+      yargs.option('device', {
+        alias: 'selectedDeviceID',
+        default: undefined,
+        describe:
+          'The identifier passed will be matched against the udid of the available devices and the matched device would be selected',
+        type: 'string',
+      });
     },
     startFlipper,
   )
@@ -84,6 +91,7 @@ async function startFlipper({
   verbose,
   metrics,
   showDevices,
+  selectedDeviceID,
   exit,
   'insecure-port': insecurePort,
   'secure-port': securePort,
@@ -169,6 +177,31 @@ async function startFlipper({
       console.error(error);
     }
     process.exit();
+  }
+
+  if (selectedDeviceID) {
+    //$FlowFixMe: Checked the class name before calling reverse.
+    const devices = await listDevices();
+    const matchedDevice = devices.find(
+      device => device.serial === selectedDeviceID,
+    );
+    if (matchedDevice) {
+      if (matchedDevice.constructor.name === 'AndroidDevice') {
+        const ports = store.getState().application.serverPorts;
+        matchedDevice.reverse([ports.secure, ports.insecure]);
+      }
+      store.dispatch({
+        type: 'REGISTER_DEVICE',
+        payload: matchedDevice,
+      });
+      store.dispatch({
+        type: 'SELECT_DEVICE',
+        payload: matchedDevice,
+      });
+    } else {
+      console.error(`No device matching the serial ${selectedDeviceID}`);
+      process.exit();
+    }
   }
 
   if (exit == 'sigint') {
