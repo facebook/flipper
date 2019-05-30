@@ -11,7 +11,8 @@ apply plugin: 'maven'
 android {
     compileSdkVersion rootProject.compileSdkVersion
     buildToolsVersion rootProject.buildToolsVersion
-    testOptions.unitTests.includeAndroidResources = true
+    // Uncomment this and enable the database plugin test when roboelectric is upgraded
+    // testOptions.unitTests.includeAndroidResources = true
 
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
