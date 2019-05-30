@@ -16,6 +16,7 @@ import {
   Button,
   ButtonGroup,
   Input,
+  getStringFromErrorLike,
 } from 'flipper';
 import {Component} from 'react';
 import type {
@@ -757,7 +758,7 @@ export default class DatabasesPlugin extends FlipperPlugin<
             ) : null}
           </FlexRow>
         </Toolbar>
-        {this.state.error && JSON.stringify(this.state.error)}
+        {this.state.error && getStringFromErrorLike(this.state.error)}
       </FlexColumn>
     );
   }

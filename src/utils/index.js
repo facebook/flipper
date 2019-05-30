@@ -6,3 +6,4 @@
  */
 
 export {default as textContent} from './textContent.js';
+export {getStringFromErrorLike} from './errors.js';
