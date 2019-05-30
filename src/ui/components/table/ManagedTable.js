@@ -372,11 +372,6 @@ class ManagedTable extends React.Component<
     row: TableBodyRow,
     index: number,
   ) => {
-    if (e.button !== 0 || !this.props.highlightableRows) {
-      // Only highlight rows when using primary mouse button,
-      // otherwise do nothing, to not interfere context menus.
-      return;
-    }
     if (e.shiftKey) {
       // prevents text selection
       e.preventDefault();
@@ -384,11 +379,18 @@ class ManagedTable extends React.Component<
 
     let {highlightedRows} = this.state;
 
-    this.dragStartIndex = index;
-    document.addEventListener('mouseup', this.onStopDragSelecting);
+    const contextClick =
+      e.button !== 0 ||
+      (process.platform === 'darwin' && e.button === 0 && e.ctrlKey);
+
+    if (!contextClick) {
+      this.dragStartIndex = index;
+      document.addEventListener('mouseup', this.onStopDragSelecting);
+    }
 
     if (
-      ((e.metaKey && process.platform === 'darwin') || e.ctrlKey) &&
+      ((process.platform === 'darwin' && e.metaKey) ||
+        (process.platform !== 'darwin' && e.ctrlKey)) &&
       this.props.multiHighlight
     ) {
       highlightedRows.add(row.key);
