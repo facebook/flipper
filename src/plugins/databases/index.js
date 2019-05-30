@@ -16,6 +16,7 @@ import {
   Button,
   ButtonGroup,
   Input,
+  colors,
   getStringFromErrorLike,
 } from 'flipper';
 import {Component} from 'react';
@@ -37,6 +38,12 @@ const BoldSpan = styled('span')({
   color: '#90949c',
   fontWeight: 'bold',
   textTransform: 'uppercase',
+});
+const ErrorBar = styled('div')({
+  backgroundColor: colors.cherry,
+  color: colors.white,
+  lineHeight: '26px',
+  textAlign: 'center',
 });
 
 type DatabasesPluginState = {|
@@ -758,7 +765,9 @@ export default class DatabasesPlugin extends FlipperPlugin<
             ) : null}
           </FlexRow>
         </Toolbar>
-        {this.state.error && getStringFromErrorLike(this.state.error)}
+        {this.state.error && (
+          <ErrorBar>{getStringFromErrorLike(this.state.error)}</ErrorBar>
+        )}
       </FlexColumn>
     );
   }
