@@ -698,7 +698,9 @@ export default class DatabasesPlugin extends FlipperPlugin<
                 obj[item] = item;
                 return obj;
               }, {})}
-            selected={String(this.state.selectedDatabase)}
+            selected={
+              this.state.databases[this.state.selectedDatabase - 1]?.name
+            }
             onChange={this.onDatabaseSelected}
           />
           <BoldSpan style={{marginLeft: 16, marginRight: 16}}>Table</BoldSpan>
