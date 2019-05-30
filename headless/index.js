@@ -20,6 +20,18 @@ import {
 import {listDevices} from '../src/utils/listDevices';
 // $FlowFixMe this file exist, trust me, flow!
 import setup from '../static/setup.js';
+import type {Store} from '../src/reducers';
+
+type UserArguments = {|
+  securePort: string,
+  insecurePort: string,
+  dev: boolean,
+  exit: 'sigint' | 'disconnect',
+  verbose: boolean,
+  metrics: string,
+  showDevices: boolean,
+  selectedDeviceID: string,
+|};
 
 yargs
   .usage('$0 [args]')
@@ -28,11 +40,13 @@ yargs
     'Start a headless Flipper instance',
     yargs => {
       yargs.option('secure-port', {
+        alias: 'securePort',
         default: '8088',
         describe: 'Secure port the Flipper server should run on.',
         type: 'string',
       });
       yargs.option('insecure-port', {
+        alias: 'insecurePort',
         default: '8089',
         describe: 'Insecure port the Flipper server should run on.',
         type: 'string',
@@ -86,16 +100,90 @@ function shouldExportMetric(metrics): boolean {
   return true;
 }
 
-async function startFlipper({
-  dev,
-  verbose,
-  metrics,
-  showDevices,
-  selectedDeviceID,
-  exit,
-  'insecure-port': insecurePort,
-  'secure-port': securePort,
-}) {
+async function earlyExitActions(
+  userArguments: UserArguments,
+  originalConsole: typeof global.console,
+): Promise<void> {
+  const {showDevices} = userArguments;
+  if (showDevices) {
+    const devices = await listDevices();
+    originalConsole.log(devices);
+    process.exit();
+  }
+}
+
+async function exitActions(
+  userArguments: UserArguments,
+  originalConsole: typeof global.console,
+  store: Store,
+): Promise<void> {
+  const {metrics, exit} = userArguments;
+  if (shouldExportMetric(metrics) && metrics && metrics.length > 0) {
+    try {
+      const payload = await exportMetricsFromTrace(metrics, store.getState());
+      originalConsole.log(payload);
+    } catch (error) {
+      console.error(error);
+    }
+    process.exit();
+  }
+  if (exit == 'sigint') {
+    process.on('SIGINT', async () => {
+      try {
+        if (shouldExportMetric(metrics) && !metrics) {
+          const state = store.getState();
+          const payload = await exportMetricsWithoutTrace(
+            state,
+            state.pluginStates,
+          );
+          originalConsole.log(payload);
+        } else {
+          const {serializedString, errorArray} = await exportStore(store);
+          errorArray.forEach(console.error);
+          originalConsole.log(serializedString);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+      process.exit();
+    });
+  }
+}
+
+async function storeModifyingActions(
+  userArguments: UserArguments,
+  originalConsole: typeof global.console,
+  store: Store,
+): Promise<void> {
+  const {selectedDeviceID} = userArguments;
+  if (selectedDeviceID) {
+    //$FlowFixMe: Checked the class name before calling reverse.
+    const devices = await listDevices();
+    const matchedDevice = devices.find(
+      device => device.serial === selectedDeviceID,
+    );
+    if (matchedDevice) {
+      if (matchedDevice.constructor.name === 'AndroidDevice') {
+        const ports = store.getState().application.serverPorts;
+        matchedDevice.reverse([ports.secure, ports.insecure]);
+      }
+      store.dispatch({
+        type: 'REGISTER_DEVICE',
+        payload: matchedDevice,
+      });
+      store.dispatch({
+        type: 'SELECT_DEVICE',
+        payload: matchedDevice,
+      });
+    } else {
+      console.error(`No device matching the serial ${selectedDeviceID}`);
+      process.exit();
+    }
+  }
+}
+
+async function startFlipper(userArguments: UserArguments) {
+  const {verbose, metrics, exit, insecurePort, securePort} = userArguments;
   console.error(`
    _____ _ _
   |   __| |_|___ ___ ___ ___
@@ -161,68 +249,11 @@ async function startFlipper({
   );
   const logger = initLogger(store, {isHeadless: true});
 
-  //TODO: T45068486 Refactor this function into separate components.
-  if (showDevices) {
-    const devices = await listDevices();
-    originalConsole.log(devices);
-    process.exit();
-  }
+  await earlyExitActions(userArguments, originalConsole);
 
   dispatcher(store, logger);
-  if (shouldExportMetric(metrics) && metrics && metrics.length > 0) {
-    try {
-      const payload = await exportMetricsFromTrace(metrics, store.getState());
-      originalConsole.log(payload);
-    } catch (error) {
-      console.error(error);
-    }
-    process.exit();
-  }
 
-  if (selectedDeviceID) {
-    //$FlowFixMe: Checked the class name before calling reverse.
-    const devices = await listDevices();
-    const matchedDevice = devices.find(
-      device => device.serial === selectedDeviceID,
-    );
-    if (matchedDevice) {
-      if (matchedDevice.constructor.name === 'AndroidDevice') {
-        const ports = store.getState().application.serverPorts;
-        matchedDevice.reverse([ports.secure, ports.insecure]);
-      }
-      store.dispatch({
-        type: 'REGISTER_DEVICE',
-        payload: matchedDevice,
-      });
-      store.dispatch({
-        type: 'SELECT_DEVICE',
-        payload: matchedDevice,
-      });
-    } else {
-      console.error(`No device matching the serial ${selectedDeviceID}`);
-      process.exit();
-    }
-  }
+  await storeModifyingActions(userArguments, originalConsole, store);
 
-  if (exit == 'sigint') {
-    process.on('SIGINT', async () => {
-      try {
-        if (shouldExportMetric(metrics) && !metrics) {
-          const state = store.getState();
-          const payload = await exportMetricsWithoutTrace(
-            state,
-            state.pluginStates,
-          );
-          originalConsole.log(payload);
-        } else {
-          const {serializedString, errorArray} = await exportStore(store);
-          errorArray.forEach(console.error);
-          originalConsole.log(serializedString);
-        }
-      } catch (e) {
-        console.error(e);
-      }
-      process.exit();
-    });
-  }
+  await exitActions(userArguments, originalConsole, store);
 }
