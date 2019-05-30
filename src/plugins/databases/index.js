@@ -444,7 +444,7 @@ export default class DatabasesPlugin extends FlipperPlugin<
             indexesColumns: event.indexesColumns,
             indexesValues: event.indexesValues.map(
               (row: Array<Value>, index: number) =>
-                transformRow(event.columns, row, index),
+                transformRow(event.indexesColumns, row, index),
             ),
           },
         };
