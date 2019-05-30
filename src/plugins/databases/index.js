@@ -29,7 +29,6 @@ import {DatabaseClient} from './ClientProtocol';
 import {renderValue} from 'flipper';
 import type {Value} from 'flipper';
 import ButtonNavigation from './ButtonNavigation';
-import _ from 'lodash';
 
 const PAGE_SIZE = 50;
 
