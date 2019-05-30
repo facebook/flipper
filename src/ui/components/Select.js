@@ -57,8 +57,10 @@ export default class Select extends Component<{
         id={this.selectID}
         onChange={this.onChange}
         className={className}>
-        {Object.keys(options).map(key => (
-          <option selected={key === selected}>{options[key]}</option>
+        {Object.keys(options).map((key, index) => (
+          <option key={index} selected={key === selected}>
+            {options[key]}
+          </option>
         ))}
       </SelectMenu>
     );

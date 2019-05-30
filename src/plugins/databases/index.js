@@ -31,7 +31,7 @@ import _ from 'lodash';
 
 const PAGE_SIZE = 50;
 
-const BoldSpan = styled('Span')({
+const BoldSpan = styled('span')({
   fontSize: 12,
   color: '#90949c',
   fontWeight: 'bold',
@@ -707,7 +707,7 @@ export default class DatabasesPlugin extends FlipperPlugin<
             selected={this.state.selectedDatabaseTable}
             onChange={this.onDatabaseTableSelected}
           />
-          <div grow={true} />
+          <div />
           <Button onClick={this.onRefreshClicked}>Refresh</Button>
           <Button style={{marginLeft: 'auto', display: 'none'}}>
             Execute SQL

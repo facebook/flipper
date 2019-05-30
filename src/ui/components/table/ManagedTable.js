@@ -140,7 +140,7 @@ type ManagedTableState = {|
 |};
 
 const Container = styled(FlexColumn)(props => ({
-  overflow: props.overflow ? 'scroll' : 'visible',
+  overflow: props.canOverflow ? 'scroll' : 'visible',
   flexGrow: 1,
 }));
 
@@ -617,7 +617,7 @@ class ManagedTable extends React.Component<
     }
 
     return (
-      <Container overflow={horizontallyScrollable}>
+      <Container canOverflow={horizontallyScrollable}>
         {hideHeader !== true && (
           <TableHead
             columnOrder={columnOrder}
