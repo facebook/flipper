@@ -110,9 +110,17 @@ export default class Client extends EventEmitter {
     this.activePlugins = new Set();
 
     const client = this;
+    // node.js doesn't support requestIdleCallback
+    const rIC =
+      typeof requestIdleCallback === 'undefined'
+        ? (cb, options) => {
+            cb();
+          }
+        : requestIdleCallback;
+
     this.responder = {
       fireAndForget: (payload: {data: string}) =>
-        requestIdleCallback(
+        rIC(
           () => {
             const mark = 'onMessageCallback';
             performance.mark();
