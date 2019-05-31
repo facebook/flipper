@@ -67,3 +67,8 @@ export type ImageEvent = {
 export type FrescoDebugOverlayEvent = {|
   enabled: boolean,
 |};
+
+export type AndroidCloseableReferenceLeakEvent = {|
+  identityHashCode: string,
+  className: string,
+|};
