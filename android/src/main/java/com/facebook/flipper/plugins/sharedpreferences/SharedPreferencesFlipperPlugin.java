@@ -10,6 +10,8 @@ import static android.content.Context.MODE_PRIVATE;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Build;
+import android.preference.PreferenceManager;
 import com.facebook.flipper.core.FlipperConnection;
 import com.facebook.flipper.core.FlipperObject;
 import com.facebook.flipper.core.FlipperPlugin;
@@ -128,10 +130,18 @@ public class SharedPreferencesFlipperPlugin implements FlipperPlugin {
         String prefName = each.substring(0, each.indexOf(XML_SUFFIX));
         descriptors.add(new SharedPreferencesDescriptor(prefName, MODE_PRIVATE));
       }
-    }
+    }    
+
+    descriptors.add(0, new SharedPreferencesDescriptor(getDefaultSharedPreferencesName(context), MODE_PRIVATE));
+          
     return descriptors;
   }
 
+  private static String getDefaultSharedPreferencesName(Context context) {
+      return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
+              ? PreferenceManager.getDefaultSharedPreferencesName(context)
+              : context.getPackageName() + "_preferences";
+  
   private SharedPreferences getSharedPreferencesFor(String name) {
     for (Map.Entry<SharedPreferences, SharedPreferencesDescriptor> entry :
         mSharedPreferences.entrySet()) {
