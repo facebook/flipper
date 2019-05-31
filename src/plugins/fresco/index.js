@@ -12,6 +12,7 @@ import type {
   ImagesListResponse,
   ImageEvent,
   FrescoDebugOverlayEvent,
+  AndroidCloseableReferenceLeakEvent,
   CacheInfo,
 } from './api.js';
 import type {ImagesMap} from './ImagePool.js';
@@ -223,6 +224,13 @@ export default class extends FlipperPlugin<PluginState, *, PersistedState> {
       'debug_overlay_event',
       (event: FrescoDebugOverlayEvent) => {
         this.setState({isDebugOverlayEnabled: event.enabled});
+      },
+    );
+    this.client.subscribe(
+      'closeable_reference_leak_event',
+      (event: AndroidCloseableReferenceLeakEvent) => {
+        // TODO(T45065440): Temporary log, to be turned into counter.
+        console.warn('CloseableReference leak detected:', event);
       },
     );
     this.imagePool = new ImagePool(this.getImage, (images: ImagesMap) =>
