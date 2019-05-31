@@ -132,7 +132,7 @@ public class SharedPreferencesFlipperPlugin implements FlipperPlugin {
       }
     }    
 
-    descriptors.add(0, new SharedPreferencesDescriptor(getDefaultSharedPreferencesName(context), MODE_PRIVATE));
+    descriptors.add(new SharedPreferencesDescriptor(getDefaultSharedPreferencesName(context), MODE_PRIVATE));
           
     return descriptors;
   }
