@@ -185,4 +185,10 @@ export default (store: Store, logger: Logger) => {
   }
 
   watchAndroidDevices();
+
+  // cleanup method
+  return () =>
+    getAdbClient().then(client => {
+      client.kill();
+    });
 };

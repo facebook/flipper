@@ -137,7 +137,7 @@
     "test": "jest --testPathPattern=node\\.js$ --no-cache",
     "test:debug": "node --inspect node_modules/.bin/jest --runInBand",
     "test-electron": "jest --testPathPattern=electron\\.js$ --testEnvironment=@jest-runner/electron/environment --runner=@jest-runner/electron --no-cache",
-    "test-with-device": "USE_ELECTRON_STUBS=1 jest --testPathPattern=device\\.js$ --detectOpenHandles --forceExit --no-cache",
+    "test-with-device": "USE_ELECTRON_STUBS=1 jest --testPathPattern=device\\.js$ --detectOpenHandles --no-cache",
     "lint": "eslint . && flow check"
   },
   "optionalDependencies": {
