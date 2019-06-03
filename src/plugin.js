@@ -154,7 +154,7 @@ export class FlipperDevicePlugin<S = *, A = *, P = *> extends FlipperBasePlugin<
 > {
   device: BaseDevice;
 
-  constructor(props: Props<*>) {
+  constructor(props: Props<P>) {
     super(props);
     this.device = props.target;
   }
@@ -175,7 +175,7 @@ export class FlipperPlugin<S = *, A = *, P = *> extends FlipperBasePlugin<
   A,
   P,
 > {
-  constructor(props: Props<*>) {
+  constructor(props: Props<P>) {
     super(props);
     const {id} = this.constructor;
     this.subscriptions = [];
