@@ -6,6 +6,7 @@
  */
 
 import type {Logger} from '../fb-interfaces/Logger';
+import Server from '../server';
 import {promisify} from 'util';
 const fs = require('fs');
 import {
