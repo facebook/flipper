@@ -7,16 +7,17 @@
 import type {FlipperPlugin, FlipperDevicePlugin} from 'flipper';
 import {serialize} from './serialization';
 import type {State as PluginStatesState} from '../reducers/pluginStates';
-import type {State} from '../reducers/index.js';
+import type {Store} from '../reducers';
 import fs from 'fs';
 import type {ExportType} from './exportData';
+import {fetchMetadata, pluginsClassMap} from './exportData';
 import {deserializeObject} from './serialization';
 
 export type MetricType = {[metricName: string]: number};
 type MetricPluginType = {[pluginID: string]: MetricType};
 export type ExportMetricType = {[clientID: string]: MetricPluginType};
 
-export async function exportMetrics(
+async function exportMetrics(
   pluginStates: PluginStatesState,
   pluginsMap: Map<string, Class<FlipperDevicePlugin<> | FlipperPlugin<>>>,
 ): Promise<string> {
@@ -45,21 +46,21 @@ export async function exportMetrics(
 }
 
 export async function exportMetricsWithoutTrace(
-  state: State,
+  store: Store,
   pluginStates: PluginStatesState,
 ): Promise<?string> {
   const pluginsMap: Map<
     string,
     Class<FlipperDevicePlugin<> | FlipperPlugin<>>,
-  > = new Map([]);
-  state.plugins.clientPlugins.forEach((val, key) => {
-    pluginsMap.set(key, val);
-  });
-  state.plugins.devicePlugins.forEach((val, key) => {
-    pluginsMap.set(key, val);
-  });
+  > = pluginsClassMap(store.getState());
+  const metadata = await fetchMetadata(pluginStates, pluginsMap, store);
+  const newPluginStates = metadata.pluginStates;
+  const {errorArray} = metadata;
+  if (errorArray.length > 0) {
+    console.error(errorArray);
+  }
 
-  const metrics = await exportMetrics(pluginStates, pluginsMap);
+  const metrics = await exportMetrics(newPluginStates, pluginsMap);
   return metrics;
 }
 
@@ -74,7 +75,7 @@ function parseJSON(str: string): ?any {
 
 export async function exportMetricsFromTrace(
   trace: string,
-  state: State,
+  pluginsMap: Map<string, Class<FlipperDevicePlugin<> | FlipperPlugin<>>>,
 ): Promise<?string> {
   const data = fs.readFileSync(trace, 'utf8');
   const parsedJSONData = parseJSON(data);
@@ -102,6 +103,5 @@ export async function exportMetricsFromTrace(
       ),
     );
   }
-  const metrics = await exportMetricsWithoutTrace(state, pluginStates);
-  return metrics;
+  return await exportMetrics(pluginStates, pluginsMap);
 }

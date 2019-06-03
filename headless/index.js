@@ -12,7 +12,7 @@ import yargs from 'yargs';
 import dispatcher from '../src/dispatcher/index.js';
 import {init as initLogger} from '../src/fb-stubs/Logger.js';
 import reducers from '../src/reducers/index.js';
-import {exportStore} from '../src/utils/exportData.js';
+import {exportStore, pluginsClassMap} from '../src/utils/exportData.js';
 import {
   exportMetricsWithoutTrace,
   exportMetricsFromTrace,
@@ -120,7 +120,10 @@ async function exitActions(
   const {metrics, exit} = userArguments;
   if (shouldExportMetric(metrics) && metrics && metrics.length > 0) {
     try {
-      const payload = await exportMetricsFromTrace(metrics, store.getState());
+      const payload = await exportMetricsFromTrace(
+        metrics,
+        pluginsClassMap(store.getState()),
+      );
       originalConsole.log(payload);
     } catch (error) {
       console.error(error);
@@ -133,7 +136,7 @@ async function exitActions(
         if (shouldExportMetric(metrics) && !metrics) {
           const state = store.getState();
           const payload = await exportMetricsWithoutTrace(
-            state,
+            store,
             state.pluginStates,
           );
           originalConsole.log(payload);

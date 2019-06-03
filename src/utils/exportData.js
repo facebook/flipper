@@ -25,6 +25,8 @@ import {readCurrentRevision} from './packageMetadata.js';
 import {tryCatchReportPlatformFailures} from './metrics';
 import {promisify} from 'util';
 import promiseTimeout from './promiseTimeout';
+import type {State} from '../reducers';
+
 export const IMPORT_FLIPPER_TRACE_EVENT = 'import-flipper-trace';
 export const EXPORT_FLIPPER_TRACE_EVENT = 'export-flipper-trace';
 
@@ -44,6 +46,22 @@ export function processClients(
   serial: string,
 ): Array<ClientExport> {
   return clients.filter(client => client.query.device_id === serial);
+}
+
+export function pluginsClassMap(
+  state: State,
+): Map<string, Class<FlipperDevicePlugin<> | FlipperPlugin<>>> {
+  const pluginsMap: Map<
+    string,
+    Class<FlipperDevicePlugin<> | FlipperPlugin<>>,
+  > = new Map([]);
+  state.plugins.clientPlugins.forEach((val, key) => {
+    pluginsMap.set(key, val);
+  });
+  state.plugins.devicePlugins.forEach((val, key) => {
+    pluginsMap.set(key, val);
+  });
+  return pluginsMap;
 }
 
 export function processPluginStates(
@@ -184,34 +202,17 @@ export const processStore = async (
   return null;
 };
 
-export async function getStoreExport(
+export async function fetchMetadata(
+  pluginStates: PluginStatesState,
+  pluginsMap: Map<string, Class<FlipperDevicePlugin<> | FlipperPlugin<>>>,
   store: MiddlewareAPI,
-): Promise<{exportData: ?ExportType, errorArray: Array<Error>}> {
-  const state = store.getState();
-  const {clients} = state.connections;
-  const {pluginStates} = state;
-  const {plugins} = state;
-  const {selectedDevice} = store.getState().connections;
-  if (!selectedDevice) {
-    throw new Error('Please select a device before exporting data.');
-  }
+): Promise<{pluginStates: PluginStatesState, errorArray: Array<Error>}> {
   const newPluginState = {...pluginStates};
-  // TODO: T39612653 Make Client mockable. Currently rsocket logic is tightly coupled.
-  // Not passing the entire state as currently Client is not mockable.
-
-  const pluginsMap: Map<
-    string,
-    Class<FlipperDevicePlugin<> | FlipperPlugin<>>,
-  > = new Map([]);
-  plugins.clientPlugins.forEach((val, key) => {
-    pluginsMap.set(key, val);
-  });
-  plugins.devicePlugins.forEach((val, key) => {
-    pluginsMap.set(key, val);
-  });
   const errorArray: Array<Error> = [];
+  const clients = store.getState().connections.clients;
+  const selectedDevice = store.getState().connections.selectedDevice;
   for (let client of clients) {
-    if (!client.id.includes(selectedDevice.serial)) {
+    if (!selectedDevice || !client.id.includes(selectedDevice.serial)) {
       continue;
     }
     for (let plugin of client.plugins) {
@@ -235,6 +236,37 @@ export async function getStoreExport(
       }
     }
   }
+  return {pluginStates: newPluginState, errorArray};
+}
+
+export async function getStoreExport(
+  store: MiddlewareAPI,
+): Promise<{exportData: ?ExportType, errorArray: Array<Error>}> {
+  const state = store.getState();
+  const {clients} = state.connections;
+  const {pluginStates} = state;
+  const {plugins} = state;
+  const {selectedDevice} = store.getState().connections;
+  if (!selectedDevice) {
+    throw new Error('Please select a device before exporting data.');
+  }
+  // TODO: T39612653 Make Client mockable. Currently rsocket logic is tightly coupled.
+  // Not passing the entire state as currently Client is not mockable.
+
+  const pluginsMap: Map<
+    string,
+    Class<FlipperDevicePlugin<> | FlipperPlugin<>>,
+  > = new Map([]);
+  plugins.clientPlugins.forEach((val, key) => {
+    pluginsMap.set(key, val);
+  });
+  plugins.devicePlugins.forEach((val, key) => {
+    pluginsMap.set(key, val);
+  });
+
+  const metadata = await fetchMetadata(pluginStates, pluginsMap, store);
+  const {errorArray} = metadata;
+  const newPluginState = metadata.pluginStates;
 
   const {activeNotifications} = store.getState().notifications;
   const {devicePlugins} = store.getState().plugins;
