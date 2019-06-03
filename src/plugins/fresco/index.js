@@ -130,26 +130,28 @@ export default class extends FlipperPlugin<PluginState, *, PersistedState> {
     persistedState: PersistedState,
   ): Promise<MetricType> => {
     const {events, imagesMap} = persistedState;
-    let wastedBytes = 0;
-    events.forEach(event => {
+    let wastedBytes = events.reduce((acc, event) => {
       const {viewport, imageIds} = event;
       if (!viewport) {
-        return;
+        return acc;
       }
-      imageIds.forEach(imageID => {
-        const imageData: ImageData = imagesMap[imageID];
-        if (!imageData) {
-          return;
-        }
-        const imageWidth: number = imageData.width;
-        const imageHeight: number = imageData.height;
-        const viewPortWidth: number = viewport.width;
-        const viewPortHeight: number = viewport.height;
-        const viewPortArea = viewPortWidth * viewPortHeight;
-        const imageArea = imageWidth * imageHeight;
-        wastedBytes += Math.max(0, imageArea - viewPortArea);
-      });
-    });
+      return (
+        acc +
+        imageIds.reduce((innerAcc, imageID) => {
+          const imageData: ImageData = imagesMap[imageID];
+          if (!imageData) {
+            return innerAcc;
+          }
+          const imageWidth: number = imageData.width;
+          const imageHeight: number = imageData.height;
+          const viewPortWidth: number = viewport.width;
+          const viewPortHeight: number = viewport.height;
+          const viewPortArea = viewPortWidth * viewPortHeight;
+          const imageArea = imageWidth * imageHeight;
+          return innerAcc + Math.max(0, imageArea - viewPortArea);
+        }, acc)
+      );
+    }, 0);
     return Promise.resolve({WASTED_BYTES: wastedBytes});
   };
 
