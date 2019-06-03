@@ -54,8 +54,13 @@ function init() {
         ? path.join(__dirname, 'serviceWorker.js')
         : './serviceWorker.js',
     )
-    .then(r => {
-      (r.installing || r.active).postMessage({precachedIcons});
+    .then((r: ServiceWorkerRegistration) => {
+      const client = r.installing || r.active;
+      if (client != null) {
+        client.postMessage({precachedIcons});
+      } else {
+        console.error('Service worker registration failed: ', r);
+      }
     })
     .catch(console.error);
 
