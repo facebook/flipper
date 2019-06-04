@@ -130,6 +130,7 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
     method: string,
     data: Request | Response,
   ): PersistedState => {
+    console.log(data);
     const dataType: 'requests' | 'responses' = data.url
       ? 'requests'
       : 'responses';
