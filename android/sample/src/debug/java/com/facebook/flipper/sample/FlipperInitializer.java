@@ -57,7 +57,7 @@ public final class FlipperInitializer {
 
     final OkHttpClient okHttpClient =
         new OkHttpClient.Builder()
-            .addNetworkInterceptor(interceptor)
+            .addInterceptor(interceptor)
             .connectTimeout(60, TimeUnit.SECONDS)
             .readTimeout(60, TimeUnit.SECONDS)
             .writeTimeout(10, TimeUnit.MINUTES)
