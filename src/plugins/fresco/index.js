@@ -105,8 +105,15 @@ export default class extends FlipperPlugin<PluginState, *, PersistedState> {
       };
 
       events.forEach((event: ImageEventWithId, index) => {
+        if (!event) {
+          return;
+        }
         const {attribution} = event;
-        if (attribution instanceof Array && attribution.length > 0) {
+        if (
+          attribution &&
+          attribution instanceof Array &&
+          attribution.length > 0
+        ) {
           const surface = attribution[0].trim();
           if (surface.length > 0) {
             pluginData.surfaceList.add(surface);

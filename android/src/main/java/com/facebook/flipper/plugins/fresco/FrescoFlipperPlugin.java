@@ -175,12 +175,20 @@ public class FrescoFlipperPlugin extends BufferingFlipperPlugin
                   getImageData(
                       imageID, encodedBitmap, bitmap, mFlipperImageTracker.getUriString(cacheKey)));
             }
-            responder.success(
+
+            FlipperArray.Builder arrayBuilder = new FlipperArray.Builder();
+            for (FlipperObject obj : mEvents) {
+              arrayBuilder.put(obj);
+            }
+            mEvents.clear();
+
+            FlipperObject object =
                 new FlipperObject.Builder()
                     .put("levels", levels)
                     .put("imageDataList", imageDataListBuilder.build())
-                    .put("events", new FlipperArray(new JSONArray(mEvents)))
-                    .build());
+                    .put("events", arrayBuilder.build())
+                    .build();
+            responder.success(object);
           }
         });
     connection.receive(
