@@ -9,16 +9,10 @@ package com.facebook.flipper.plugins.network;
 import com.facebook.flipper.plugins.network.NetworkReporter.RequestInfo;
 import com.facebook.flipper.plugins.network.NetworkReporter.ResponseInfo;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import javax.annotation.Nullable;
-import okhttp3.Headers;
-import okhttp3.Interceptor;
-import okhttp3.Request;
-import okhttp3.Response;
-import okhttp3.ResponseBody;
+
+import okhttp3.*;
 import okio.Buffer;
 import okio.BufferedSource;
 
@@ -26,12 +20,25 @@ public class FlipperOkhttpInterceptor implements Interceptor {
 
   public @Nullable NetworkFlipperPlugin plugin;
 
+  private Map<String, ResponseInfo> mockResponeMap = new HashMap<>();
+
   public FlipperOkhttpInterceptor() {
     this.plugin = null;
   }
 
   public FlipperOkhttpInterceptor(NetworkFlipperPlugin plugin) {
     this.plugin = plugin;
+
+    // TODO test code, remove it later
+    ResponseInfo mockResponse = new ResponseInfo();
+    mockResponse.body = "TEST".getBytes();
+    mockResponse.statusCode = 200;
+    mockResponse.statusReason = "OK";
+    registerMockResponse("https://api.github.com/repos/facebook/yoga", "GET", mockResponse);
+  }
+
+  protected void registerMockResponse(String requestUrl, String method, ResponseInfo response) {
+    mockResponeMap.put(requestUrl + "|" + method, response);
   }
 
   @Override
@@ -39,11 +46,33 @@ public class FlipperOkhttpInterceptor implements Interceptor {
     Request request = chain.request();
     String identifier = UUID.randomUUID().toString();
     plugin.reportRequest(convertRequest(request, identifier));
-    Response response = chain.proceed(request);
+
+    // Check if there is a mock response
+    Response mockResponse = getMockResponse(request);
+    Response response = mockResponse != null ? getMockResponse(request) : chain.proceed(request);
+
     ResponseBody body = response.body();
     ResponseInfo responseInfo = convertResponse(response, body, identifier);
     plugin.reportResponse(responseInfo);
     return response;
+  }
+
+  @Nullable
+  private Response getMockResponse(Request request) {
+    String url = request.url().toString();
+    String method = request.method();
+    ResponseInfo mockResponse = mockResponeMap.get(url+"|"+method);
+    if (mockResponse != null) {
+      return new Response.Builder()
+              .request(request)
+              .protocol(Protocol.HTTP_1_1)
+              .code(mockResponse.statusCode)
+              .message(mockResponse.statusReason)
+              .receivedResponseAtMillis(System.currentTimeMillis())
+              .body(ResponseBody.create(MediaType.get("application/text"), mockResponse.body))
+              .build();
+    }
+    return null;
   }
 
   private static byte[] bodyToByteArray(final Request request) throws IOException {
