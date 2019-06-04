@@ -29,8 +29,8 @@ type UserArguments = {|
   exit: 'sigint' | 'disconnect',
   verbose: boolean,
   metrics: string,
-  showDevices: boolean,
-  selectedDeviceID: string,
+  listDevices: boolean,
+  device: string,
 |};
 
 yargs
@@ -40,13 +40,11 @@ yargs
     'Start a headless Flipper instance',
     yargs => {
       yargs.option('secure-port', {
-        alias: 'securePort',
         default: '8088',
         describe: 'Secure port the Flipper server should run on.',
         type: 'string',
       });
       yargs.option('insecure-port', {
-        alias: 'insecurePort',
         default: '8089',
         describe: 'Insecure port the Flipper server should run on.',
         type: 'string',
@@ -69,19 +67,16 @@ yargs
         type: 'boolean',
       });
       yargs.option('metrics', {
-        alias: 'metrics',
         default: undefined,
         describe: 'Will export metrics instead of data when flipper terminates',
         type: 'string',
       });
       yargs.option('list-devices', {
-        alias: 'showDevices',
         default: false,
         describe: 'Will print the list of devices in the terminal',
         type: 'boolean',
       });
       yargs.option('device', {
-        alias: 'selectedDeviceID',
         default: undefined,
         describe:
           'The identifier passed will be matched against the udid of the available devices and the matched device would be selected',
@@ -104,8 +99,7 @@ async function earlyExitActions(
   userArguments: UserArguments,
   originalConsole: typeof global.console,
 ): Promise<void> {
-  const {showDevices} = userArguments;
-  if (showDevices) {
+  if (userArguments.listDevices) {
     const devices = await listDevices();
     originalConsole.log(devices);
     process.exit();
@@ -158,7 +152,7 @@ async function storeModifyingActions(
   originalConsole: typeof global.console,
   store: Store,
 ): Promise<void> {
-  const {selectedDeviceID} = userArguments;
+  const {device: selectedDeviceID} = userArguments;
   if (selectedDeviceID) {
     //$FlowFixMe: Checked the class name before calling reverse.
     const devices = await listDevices();
