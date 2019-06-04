@@ -33,7 +33,7 @@ import ImagePool from './ImagePool.js';
 
 export type ImageEventWithId = ImageEvent & {eventId: number};
 
-type PersistedState = {
+export type PersistedState = {
   surfaceList: Set<string>,
   images: ImagesList,
   events: Array<ImageEventWithId>,
@@ -157,28 +157,27 @@ export default class extends FlipperPlugin<PluginState, *, PersistedState> {
     persistedState: PersistedState,
   ): Promise<MetricType> => {
     const {events, imagesMap, closeableReferenceLeaks} = persistedState;
+
     const wastedBytes = (events || []).reduce((acc, event) => {
       const {viewport, imageIds} = event;
       if (!viewport) {
         return acc;
       }
-      return (
-        acc +
-        imageIds.reduce((innerAcc, imageID) => {
-          const imageData: ImageData = imagesMap[imageID];
-          if (!imageData) {
-            return innerAcc;
-          }
-          const imageWidth: number = imageData.width;
-          const imageHeight: number = imageData.height;
-          const viewPortWidth: number = viewport.width;
-          const viewPortHeight: number = viewport.height;
-          const viewPortArea = viewPortWidth * viewPortHeight;
-          const imageArea = imageWidth * imageHeight;
-          return innerAcc + Math.max(0, imageArea - viewPortArea);
-        }, acc)
-      );
+      return imageIds.reduce((innerAcc, imageID) => {
+        const imageData: ImageData = imagesMap[imageID];
+        if (!imageData) {
+          return innerAcc;
+        }
+        const imageWidth: number = imageData.width;
+        const imageHeight: number = imageData.height;
+        const viewPortWidth: number = viewport.width;
+        const viewPortHeight: number = viewport.height;
+        const viewPortArea = viewPortWidth * viewPortHeight;
+        const imageArea = imageWidth * imageHeight;
+        return innerAcc + Math.max(0, imageArea - viewPortArea);
+      }, acc);
     }, 0);
+
     return Promise.resolve({
       WASTED_BYTES: wastedBytes,
       CLOSEABLE_REFERENCE_LEAKS: (closeableReferenceLeaks || []).length,
