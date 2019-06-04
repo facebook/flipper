@@ -16,6 +16,7 @@ import {padStart} from 'lodash';
 import {
   ContextMenu,
   FlexColumn,
+  FlexRow,
   Button,
   Text,
   Glyph,
@@ -25,7 +26,13 @@ import {
   styled,
   SearchableTable,
   FlipperPlugin,
+  Sheet
 } from 'flipper';
+
+import {
+  MockResponseDialog
+} from "./MockResponseDialog";
+
 import type {Request, RequestId, Response} from './types.js';
 import {
   convertRequestToCurlCommand,
@@ -134,7 +141,6 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
     method: string,
     data: Request | Response,
   ): PersistedState => {
-    console.log(data);
     const dataType: 'requests' | 'responses' = data.url
       ? 'requests'
       : 'responses';
@@ -248,6 +254,7 @@ type NetworkTableProps = {
 
 type NetworkTableState = {|
   sortedRows: TableRows,
+  showMockResponseDialog: boolean
 |};
 
 function formatTimestamp(timestamp: number): string {
@@ -348,6 +355,7 @@ function calculateState(
   },
   nextProps: NetworkTableProps,
   rows: TableRows = [],
+  showMockResponseDialog: boolean = false
 ): NetworkTableState {
   rows = [...rows];
 
@@ -390,6 +398,7 @@ function calculateState(
 
   return {
     sortedRows: rows,
+    showMockResponseDialog: showMockResponseDialog
   };
 }
 
@@ -439,9 +448,26 @@ class NetworkTable extends PureComponent<NetworkTableProps, NetworkTableState> {
     ]);
   }
 
+
+  showMockResponseDialog = () => {
+    this.setState({
+      showMockResponseDialog: true
+    });
+  };
+
+  hideMockResponseDialog = () => {
+    this.setState({
+      showMockResponseDialog: false
+    })
+  };
+
   render() {
     return (
       <NetworkTable.ContextMenu items={this.contextMenuItems()}>
+        {this.state.showMockResponseDialog ?
+          <Sheet>
+            {onHide => <MockResponseDialog onHide={onHide} onDismiss={this.hideMockResponseDialog}/>}
+          </Sheet> : null}
         <SearchableTable
           virtual={true}
           multiline={false}
@@ -457,7 +483,12 @@ class NetworkTable extends PureComponent<NetworkTableProps, NetworkTableState> {
           rowLineHeight={26}
           allowRegexSearch={true}
           zebra={false}
-          actions={<Button onClick={this.props.clear}>Clear Table</Button>}
+          actions={
+            <FlexRow>
+              <Button onClick={this.props.clear}>Clear Table</Button>
+              <Button onClick={this.showMockResponseDialog}>Mock Response</Button>
+            </FlexRow>
+          }
         />
       </NetworkTable.ContextMenu>
     );
