@@ -38,6 +38,7 @@ type PersistedState = {
   images: ImagesList,
   events: Array<ImageEventWithId>,
   imagesMap: ImagesMap,
+  closeableReferenceLeaks: Array<AndroidCloseableReferenceLeakEvent>,
 };
 
 type PluginState = {
@@ -78,6 +79,7 @@ export default class extends FlipperPlugin<PluginState, *, PersistedState> {
     events: [],
     imagesMap: {},
     surfaceList: new Set(),
+    closeableReferenceLeaks: [],
   };
 
   static exportPersistedState = (
@@ -98,10 +100,10 @@ export default class extends FlipperPlugin<PluginState, *, PersistedState> {
       }
       const {levels, events, imageDataList} = data;
       let pluginData: PersistedState = {
+        ...FlipperPlugin.defaultPersistedState,
         images: [...levels.levels],
-        surfaceList: new Set(),
-        events: [],
-        imagesMap: {},
+        closeableReferenceLeaks:
+          (persistedState && persistedState.closeableReferenceLeaks) || [],
       };
 
       events.forEach((event: ImageEventWithId, index) => {
@@ -133,11 +135,29 @@ export default class extends FlipperPlugin<PluginState, *, PersistedState> {
     });
   };
 
+  static persistedStateReducer = (
+    persistedState: PersistedState,
+    method: string,
+    data: Object,
+  ): PersistedState => {
+    if (method == 'closeable_reference_leak_event') {
+      const event: AndroidCloseableReferenceLeakEvent = data;
+      return {
+        ...persistedState,
+        closeableReferenceLeaks: persistedState.closeableReferenceLeaks.concat(
+          event,
+        ),
+      };
+    }
+
+    return persistedState;
+  };
+
   static metricsReducer = (
     persistedState: PersistedState,
   ): Promise<MetricType> => {
-    const {events, imagesMap} = persistedState;
-    let wastedBytes = events.reduce((acc, event) => {
+    const {events, imagesMap, closeableReferenceLeaks} = persistedState;
+    let wastedBytes = (events || []).reduce((acc, event) => {
       const {viewport, imageIds} = event;
       if (!viewport) {
         return acc;
@@ -159,7 +179,10 @@ export default class extends FlipperPlugin<PluginState, *, PersistedState> {
         }, acc)
       );
     }, 0);
-    return Promise.resolve({WASTED_BYTES: wastedBytes});
+    return Promise.resolve({
+      WASTED_BYTES: wastedBytes,
+      CLOSEABLE_REFERENCE_LEAKS: (closeableReferenceLeaks || []).length,
+    });
   };
 
   state: PluginState;
@@ -233,13 +256,6 @@ export default class extends FlipperPlugin<PluginState, *, PersistedState> {
       'debug_overlay_event',
       (event: FrescoDebugOverlayEvent) => {
         this.setState({isDebugOverlayEnabled: event.enabled});
-      },
-    );
-    this.client.subscribe(
-      'closeable_reference_leak_event',
-      (event: AndroidCloseableReferenceLeakEvent) => {
-        // TODO(T45065440): Temporary log, to be turned into counter.
-        console.warn('CloseableReference leak detected:', event);
       },
     );
     this.imagePool = new ImagePool(this.getImage, (images: ImagesMap) =>
