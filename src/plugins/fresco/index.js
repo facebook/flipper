@@ -157,7 +157,7 @@ export default class extends FlipperPlugin<PluginState, *, PersistedState> {
     persistedState: PersistedState,
   ): Promise<MetricType> => {
     const {events, imagesMap, closeableReferenceLeaks} = persistedState;
-    let wastedBytes = (events || []).reduce((acc, event) => {
+    const wastedBytes = (events || []).reduce((acc, event) => {
       const {viewport, imageIds} = event;
       if (!viewport) {
         return acc;
