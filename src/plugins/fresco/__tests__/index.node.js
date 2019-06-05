@@ -7,16 +7,18 @@
 
 import FrescoPlugin from '../index.js';
 import type {PersistedState, ImageEventWithId} from '../index.js';
+import type {AndroidCloseableReferenceLeakEvent} from '../api.js';
+import type {MetricType} from 'flipper';
 
 function mockPersistedState(
   imageSizes: Array<{
     width: number,
     height: number,
-  }>,
+  }> = [],
   viewport: {
     width: number,
     height: number,
-  },
+  } = {width: 150, height: 150},
 ): PersistedState {
   const scanDisplayTime = {};
   scanDisplayTime[1] = 3;
@@ -79,7 +81,6 @@ test('the metric reducer for the input having regression', () => {
   const metrics = FrescoPlugin.metricsReducer(persistedState);
   expect(metrics).resolves.toMatchObject({
     WASTED_BYTES: 37500,
-    CLOSEABLE_REFERENCE_LEAKS: 0,
   });
 });
 
@@ -110,7 +111,6 @@ test('the metric reducer for the input having no regression', () => {
   const metrics = metricsReducer(persistedState);
   expect(metrics).resolves.toMatchObject({
     WASTED_BYTES: 0,
-    CLOSEABLE_REFERENCE_LEAKS: 0,
   });
 });
 
@@ -119,10 +119,7 @@ test('the metric reducer for the default persisted state', () => {
   expect(metricsReducer).toBeDefined();
   //$FlowFixMe: Added a check if the metricsReducer exists in FrescoPlugin
   const metrics = metricsReducer(FrescoPlugin.defaultPersistedState);
-  expect(metrics).resolves.toMatchObject({
-    WASTED_BYTES: 0,
-    CLOSEABLE_REFERENCE_LEAKS: 0,
-  });
+  expect(metrics).resolves.toMatchObject({WASTED_BYTES: 0});
 });
 
 test('the metric reducer with the events data but with no imageData in imagesMap ', () => {
@@ -151,10 +148,7 @@ test('the metric reducer with the events data but with no imageData in imagesMap
   expect(metricsReducer).toBeDefined();
   //$FlowFixMe: Added a check if the metricsReducer exists in FrescoPlugin
   const metrics = metricsReducer(persistedState);
-  expect(metrics).resolves.toMatchObject({
-    WASTED_BYTES: 0,
-    CLOSEABLE_REFERENCE_LEAKS: 0,
-  });
+  expect(metrics).resolves.toMatchObject({WASTED_BYTES: 0});
 });
 
 test('the metric reducer with the no viewPort data in events', () => {
@@ -183,10 +177,7 @@ test('the metric reducer with the no viewPort data in events', () => {
   expect(metricsReducer).toBeDefined();
   //$FlowFixMe: Added a check if the metricsReducer exists in FrescoPlugin
   const metrics = metricsReducer(persistedState);
-  expect(metrics).resolves.toMatchObject({
-    WASTED_BYTES: 0,
-    CLOSEABLE_REFERENCE_LEAKS: 0,
-  });
+  expect(metrics).resolves.toMatchObject({WASTED_BYTES: 0});
 });
 
 test('the metric reducer with the multiple events', () => {
@@ -252,8 +243,36 @@ test('the metric reducer with the multiple events', () => {
   expect(metricsReducer).toBeDefined();
   //$FlowFixMe: Added a check if the metricsReducer exists in FrescoPlugin
   const metrics = metricsReducer(persistedState);
-  expect(metrics).resolves.toMatchObject({
-    WASTED_BYTES: 160000,
-    CLOSEABLE_REFERENCE_LEAKS: 0,
-  });
+  expect(metrics).resolves.toMatchObject({WASTED_BYTES: 172500});
+});
+
+test('closeable reference metrics on empty state', () => {
+  const metricsReducer: (
+    persistedState: PersistedState,
+  ) => Promise<MetricType> = (FrescoPlugin.metricsReducer: any);
+  const persistedState = mockPersistedState();
+  const metrics = metricsReducer(persistedState);
+  expect(metrics).resolves.toMatchObject({CLOSEABLE_REFERENCE_LEAKS: 0});
+});
+
+test('closeable reference metrics on input', () => {
+  const metricsReducer: (
+    persistedState: PersistedState,
+  ) => Promise<MetricType> = (FrescoPlugin.metricsReducer: any);
+  const closeableReferenceLeaks: Array<AndroidCloseableReferenceLeakEvent> = [
+    {
+      identityHashCode: 'deadbeef',
+      className: 'com.facebook.imagepipeline.memory.NativeMemoryChunk',
+    },
+    {
+      identityHashCode: 'f4c3b00c',
+      className: 'com.facebook.flipper.SomeMemoryAbstraction',
+    },
+  ];
+  const persistedState = {
+    ...mockPersistedState(),
+    closeableReferenceLeaks,
+  };
+  const metrics = metricsReducer(persistedState);
+  expect(metrics).resolves.toMatchObject({CLOSEABLE_REFERENCE_LEAKS: 2});
 });
