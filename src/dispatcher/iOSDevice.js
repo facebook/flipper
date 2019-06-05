@@ -132,7 +132,8 @@ function getActiveSimulators(): Promise<Array<IOSDeviceParams>> {
             name: simulator.name,
           };
         });
-    });
+    })
+    .catch(_ => []);
 }
 
 function getActiveDevices(): Promise<Array<IOSDeviceParams>> {
