@@ -9,6 +9,7 @@ import FrescoPlugin from '../index.js';
 import type {PersistedState, ImageEventWithId} from '../index.js';
 import type {AndroidCloseableReferenceLeakEvent} from '../api.js';
 import type {MetricType} from 'flipper';
+import type {Notification} from '../../../plugin';
 
 function mockPersistedState(
   imageSizes: Array<{
@@ -52,6 +53,7 @@ function mockPersistedState(
     events,
     imagesMap,
     closeableReferenceLeaks: [],
+    isLeakTrackingEnabled: false,
   };
 }
 
@@ -275,4 +277,37 @@ test('closeable reference metrics on input', () => {
   };
   const metrics = metricsReducer(persistedState);
   expect(metrics).resolves.toMatchObject({CLOSEABLE_REFERENCE_LEAKS: 2});
+});
+
+test('notifications for leaks', () => {
+  const notificationReducer: (
+    persistedState: PersistedState,
+  ) => Array<Notification> = (FrescoPlugin.getActiveNotifications: any);
+  const closeableReferenceLeaks: Array<AndroidCloseableReferenceLeakEvent> = [
+    {
+      identityHashCode: 'deadbeef',
+      className: 'com.facebook.imagepipeline.memory.NativeMemoryChunk',
+    },
+    {
+      identityHashCode: 'f4c3b00c',
+      className: 'com.facebook.flipper.SomeMemoryAbstraction',
+    },
+  ];
+  const persistedStateWithoutTracking = {
+    ...mockPersistedState(),
+    closeableReferenceLeaks,
+    isLeakTrackingEnabled: false,
+  };
+  const emptyNotifs = notificationReducer(persistedStateWithoutTracking);
+  expect(emptyNotifs).toHaveLength(0);
+
+  const persistedStateWithTracking = {
+    ...mockPersistedState(),
+    closeableReferenceLeaks,
+    isLeakTrackingEnabled: true,
+  };
+  const notifs = notificationReducer(persistedStateWithTracking);
+  expect(notifs).toHaveLength(2);
+  expect(notifs[0].message).toContain('deadbeef');
+  expect(notifs[1].title).toContain('SomeMemoryAbstraction');
 });
