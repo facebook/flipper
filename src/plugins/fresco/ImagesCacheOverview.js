@@ -81,6 +81,8 @@ type ImagesCacheOverviewProps = {
   onImageSelected: (selectedImage: ImageId) => void,
   imagesMap: ImagesMap,
   events: Array<ImageEventWithId>,
+  onTrackLeaks: (enabled: boolean) => void,
+  isLeakTrackingEnabled: boolean,
 };
 
 type ImagesCacheOverviewState = {|
@@ -183,6 +185,11 @@ export default class ImagesCacheOverview extends PureComponent<
             toggled={this.props.coldStartFilter}
             onClick={this.props.onColdStartChange}
             label="Show Cold Start Images"
+          />
+          <Toggle
+            toggled={this.props.isLeakTrackingEnabled}
+            onClick={this.props.onTrackLeaks}
+            label="Track Leaks"
           />
           <Spacer />
           <input

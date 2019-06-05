@@ -30,6 +30,7 @@ import {
 } from 'flipper';
 import ImagesSidebar from './ImagesSidebar.js';
 import ImagePool from './ImagePool.js';
+import type {Notification} from '../../plugin';
 
 export type ImageEventWithId = ImageEvent & {eventId: number};
 
@@ -39,6 +40,7 @@ export type PersistedState = {
   events: Array<ImageEventWithId>,
   imagesMap: ImagesMap,
   closeableReferenceLeaks: Array<AndroidCloseableReferenceLeakEvent>,
+  isLeakTrackingEnabled: boolean,
 };
 
 type PluginState = {
@@ -80,6 +82,7 @@ export default class extends FlipperPlugin<PluginState, *, PersistedState> {
     imagesMap: {},
     surfaceList: new Set(),
     closeableReferenceLeaks: [],
+    isLeakTrackingEnabled: false,
   };
 
   static exportPersistedState = (
@@ -183,6 +186,21 @@ export default class extends FlipperPlugin<PluginState, *, PersistedState> {
       CLOSEABLE_REFERENCE_LEAKS: (closeableReferenceLeaks || []).length,
     });
   };
+
+  static getActiveNotifications = ({
+    closeableReferenceLeaks,
+    isLeakTrackingEnabled,
+  }: PersistedState): Array<Notification> =>
+    closeableReferenceLeaks
+      .filter(_ => isLeakTrackingEnabled)
+      .map((event: AndroidCloseableReferenceLeakEvent, index) => ({
+        id: event.identityHashCode,
+        title: `Leaked CloseableReference: ${event.className}`,
+        message: `CloseableReference leaked for ${event.className}
+          (identity hashcode: ${event.identityHashCode})`,
+        severity: 'error',
+        category: 'closeablereference_leak',
+      }));
 
   state: PluginState;
   imagePool: ImagePool;
@@ -381,6 +399,12 @@ export default class extends FlipperPlugin<PluginState, *, PersistedState> {
     );
   };
 
+  onTrackLeaks = (checked: boolean) => {
+    this.props.setPersistedState({
+      isLeakTrackingEnabled: checked,
+    });
+  };
+
   render() {
     const options = [...this.props.persistedState.surfaceList].reduce(
       (acc, item) => {
@@ -407,6 +431,10 @@ export default class extends FlipperPlugin<PluginState, *, PersistedState> {
           onImageSelected={this.onImageSelected}
           imagesMap={this.props.persistedState.imagesMap}
           events={this.props.persistedState.events}
+          isLeakTrackingEnabled={
+            this.props.persistedState.isLeakTrackingEnabled
+          }
+          onTrackLeaks={this.onTrackLeaks}
         />
         <DetailSidebar>{this.renderSidebar()}</DetailSidebar>
       </React.Fragment>
