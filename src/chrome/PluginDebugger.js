@@ -21,6 +21,7 @@ import {
   colors,
   Link,
 } from 'flipper';
+import StatusIndicator from '../ui/components/StatusIndicator';
 
 const Container = styled(FlexColumn)({
   padding: 10,
@@ -59,15 +60,9 @@ const TableContainer = styled('div')({
   display: 'flex',
 });
 
-const Lamp = styled('div')(props => ({
-  width: 10,
-  height: 10,
-  borderRadius: 5,
-  backgroundColor: props.on ? colors.lime : colors.red,
-  border: `1px solid ${colors.blackAlpha30}`,
-  marginTop: 6,
-  flexShrink: 0,
-}));
+const Lamp = props => (
+  <StatusIndicator statusColor={props.on ? colors.lime : colors.red} />
+);
 
 type Props = {|
   devicePlugins: Array<FlipperDevicePlugin<>>,

@@ -124,6 +124,7 @@ export {default as ModalOverlay} from './components/ModalOverlay.js';
 export {default as Tooltip} from './components/Tooltip.js';
 export {default as TooltipProvider} from './components/TooltipProvider.js';
 export {default as ResizeSensor} from './components/ResizeSensor.js';
+export {default as StatusIndicator} from './components/StatusIndicator.js';
 
 // typography
 export {default as HorizontalRule} from './components/HorizontalRule.js';
