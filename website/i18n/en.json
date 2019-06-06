@@ -63,6 +63,9 @@
       "features/crash-reporter-plugin": {
         "title": "Crash Reporter"
       },
+      "features/databases-plugin": {
+        "title": "Databases"
+      },
       "features/index": {
         "title": "Features"
       },
@@ -93,6 +96,10 @@
       "setup/crash-reporter-plugin": {
         "title": "Crash Reporter Setup",
         "sidebar_label": "Crash Reporter"
+      },
+      "setup/databases-plugin": {
+        "title": "Databases Plugin Setup",
+        "sidebar_label": "Databases"
       },
       "setup/layout-plugin": {
         "title": "Layout Inspector Setup",
@@ -127,6 +134,9 @@
       },
       "tutorial/intro": {
         "title": "Intro"
+      },
+      "tutorial/ios": {
+        "title": "Building an iOS Plugin"
       },
       "tutorial/js-custom": {
         "title": "Building Custom UI",

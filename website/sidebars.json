@@ -5,6 +5,7 @@
       "features/logs-plugin",
       "features/layout-plugin",
       "features/network-plugin",
+      "features/databases-plugin",
       "features/sandbox-plugin",
       "features/shared-preferences-plugin",
       "features/leak-canary-plugin",
@@ -20,6 +21,7 @@
     "Plugin Setup": [
       "setup/layout-plugin",
       "setup/network-plugin",
+      "setup/databases-plugin",
       "setup/sandbox-plugin",
       "setup/shared-preferences-plugin",
       "setup/leak-canary-plugin",
