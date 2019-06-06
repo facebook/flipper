@@ -17,9 +17,10 @@ import user from './user';
 
 import type {Logger} from '../fb-interfaces/Logger.js';
 import type {Store} from '../reducers/index.js';
+import type {Dispatcher} from './types';
 
-export default (store: Store, logger: Logger) =>
-  [
+export default function(store: Store, logger: Logger): () => Promise<void> {
+  const dispatchers: Array<Dispatcher> = [
     application,
     androidDevice,
     iOSDevice,
@@ -29,4 +30,11 @@ export default (store: Store, logger: Logger) =>
     notifications,
     plugins,
     user,
-  ].forEach(fn => fn(store, logger));
+  ];
+  const globalCleanup = dispatchers
+    .map(dispatcher => dispatcher(store, logger))
+    .filter(Boolean);
+  return () => {
+    return Promise.all(globalCleanup).then(() => {});
+  };
+}

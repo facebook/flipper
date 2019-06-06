@@ -95,14 +95,19 @@ function shouldExportMetric(metrics): boolean {
   return true;
 }
 
+function outputAndExit(output: string): void {
+  process.stdout.write(output, () => {
+    process.exit(0);
+  });
+}
+
 async function earlyExitActions(
   userArguments: UserArguments,
   originalConsole: typeof global.console,
 ): Promise<void> {
   if (userArguments.listDevices) {
     const devices = await listDevices();
-    originalConsole.log(devices);
-    process.exit();
+    outputAndExit(devices.toString());
   }
 }
 
@@ -118,11 +123,11 @@ async function exitActions(
         metrics,
         pluginsClassMap(store.getState()),
       );
-      originalConsole.log(payload);
+      outputAndExit(payload.toString());
     } catch (error) {
       console.error(error);
+      process.exit();
     }
-    process.exit();
   }
   if (exit == 'sigint') {
     process.on('SIGINT', async () => {
@@ -133,16 +138,15 @@ async function exitActions(
             store,
             state.pluginStates,
           );
-          originalConsole.log(payload);
+          outputAndExit(payload.toString());
         } else {
           const {serializedString, errorArray} = await exportStore(store);
           errorArray.forEach(console.error);
-          originalConsole.log(serializedString);
+          outputAndExit(serializedString);
         }
       } catch (e) {
         console.error(e);
       }
-      process.exit();
     });
   }
 }
@@ -222,15 +226,13 @@ async function startFlipper(userArguments: UserArguments) {
           const state = store.getState();
           exportMetricsWithoutTrace(state, state.pluginStates)
             .then(payload => {
-              originalConsole.log(payload);
-              process.exit();
+              outputAndExit(payload || '');
             })
             .catch(console.error);
         } else {
           exportStore(store)
             .then(({serializedString}) => {
-              originalConsole.log(serializedString);
-              process.exit();
+              outputAndExit(serializedString);
             })
             .catch(console.error);
         }
@@ -248,9 +250,11 @@ async function startFlipper(userArguments: UserArguments) {
 
   await earlyExitActions(userArguments, originalConsole);
 
-  dispatcher(store, logger);
+  const cleanupDispatchers = dispatcher(store, logger);
 
   await storeModifyingActions(userArguments, originalConsole, store);
 
   await exitActions(userArguments, originalConsole, store);
+
+  await cleanupDispatchers();
 }

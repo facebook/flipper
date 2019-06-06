@@ -90,4 +90,5 @@ export default (store: Store, logger: Logger) => {
       server.close();
     });
   }
+  return server.close;
 };
