@@ -13,6 +13,7 @@ import com.facebook.common.internal.Predicate;
 import com.facebook.common.memory.manager.DebugMemoryManager;
 import com.facebook.common.memory.manager.NoOpDebugMemoryManager;
 import com.facebook.common.references.CloseableReference;
+import com.facebook.common.references.SharedReference;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.backends.pipeline.info.ImageLoadStatus;
 import com.facebook.drawee.backends.pipeline.info.ImageOriginUtils;
@@ -47,10 +48,13 @@ import javax.annotation.Nullable;
  * Allows Sonar to display the contents of Fresco's caches. This is useful for developers to debug
  * what images are being held in cache as they navigate through their app.
  */
-public class FrescoFlipperPlugin extends BufferingFlipperPlugin implements ImagePerfDataListener {
+public class FrescoFlipperPlugin extends BufferingFlipperPlugin
+    implements ImagePerfDataListener, CloseableReferenceLeakTracker.Listener {
 
   private static final String FRESCO_EVENT = "events";
   private static final String FRESCO_DEBUGOVERLAY_EVENT = "debug_overlay_event";
+  private static final String FRESCO_CLOSEABLE_REFERENCE_LEAK_EVENT =
+      "closeable_reference_leak_event";
 
   private static final int BITMAP_PREVIEW_WIDTH = 150;
   private static final int BITMAP_PREVIEW_HEIGHT = 150;
@@ -504,5 +508,14 @@ public class FrescoFlipperPlugin extends BufferingFlipperPlugin implements Image
 
   private static void respondError(FlipperResponder responder, String errorReason) {
     responder.error(new FlipperObject.Builder().put("reason", errorReason).build());
+  }
+
+  @Override
+  public void onCloseableReferenceLeak(SharedReference<Object> reference) {
+    final FlipperObject.Builder builder =
+        new FlipperObject.Builder()
+            .put("identityHashCode", System.identityHashCode(reference))
+            .put("className", reference.get().getClass().getName());
+    send(FRESCO_CLOSEABLE_REFERENCE_LEAK_EVENT, builder.build());
   }
 }
