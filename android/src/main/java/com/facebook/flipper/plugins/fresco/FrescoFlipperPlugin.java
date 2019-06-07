@@ -95,6 +95,10 @@ public class FrescoFlipperPlugin extends BufferingFlipperPlugin
     mMemoryManager = memoryManager;
     mPerfLogger = perfLogger;
     mDebugPrefHelper = debugPrefHelper;
+
+    if (closeableReferenceLeakTracker != null) {
+      closeableReferenceLeakTracker.setListener(this);
+    }
   }
 
   public FrescoFlipperPlugin() {
