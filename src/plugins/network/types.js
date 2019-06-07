@@ -51,3 +51,9 @@ export type Insights = {|
   transferSpeed: ?number,
   retries: ?RetryInsights,
 |};
+
+export type Route = {|
+  requestUrl: string,
+  method: string,
+  response: ?Response,
+|};

@@ -486,7 +486,7 @@ class NetworkTable extends PureComponent<NetworkTableProps, NetworkTableState> {
           actions={
             <FlexRow>
               <Button onClick={this.props.clear}>Clear Table</Button>
-              <Button onClick={this.showMockResponseDialog}>Mock Response</Button>
+              <Button onClick={this.showMockResponseDialog}>Mock</Button>
             </FlexRow>
           }
         />
