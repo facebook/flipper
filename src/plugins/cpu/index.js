@@ -16,6 +16,9 @@ import {
   Text,
   ManagedTable,
   colors,
+  styled,
+  Panel,
+  DetailSidebar,
 } from 'flipper';
 
 type ADBClient = any;
@@ -30,6 +33,9 @@ type CPUFrequency = {|
   scaling_cur_freq: number,
   scaling_min_freq: number,
   scaling_max_freq: number,
+  scaling_available_freqs: Array<number>,
+  scaling_governor: string,
+  scaling_available_governors: Array<string>,
   cpuinfo_max_freq: number,
   cpuinfo_min_freq: number,
 |};
@@ -39,6 +45,7 @@ type CPUState = {|
   cpuCount: number,
   monitoring: boolean,
   hardwareInfo: string,
+  selectedIds: Array<number>,
 |};
 
 type ShellCallBack = (output: string) => void;
@@ -77,7 +84,21 @@ const Columns = {
     value: 'MAX Frequency',
     resizable: true,
   },
+  scaling_governor: {
+    value: 'Scaling Governor',
+    resizable: true,
+  },
 };
+
+const Heading = styled('div')({
+  fontWeight: 'bold',
+  fontSize: 13,
+  display: 'block',
+  marginBottom: 10,
+  '&:not(:first-child)': {
+    marginTop: 20,
+  },
+});
 
 // check if str is a number
 function isNormalInteger(str) {
@@ -107,6 +128,7 @@ export default class CPUFrequencyTable extends FlipperDevicePlugin<CPUState> {
     cpuCount: 0,
     monitoring: false,
     hardwareInfo: '',
+    selectedIds: [],
   };
 
   static supportsDevice(device: Device) {
@@ -132,6 +154,9 @@ export default class CPUFrequencyTable extends FlipperDevicePlugin<CPUState> {
           scaling_max_freq: -1,
           cpuinfo_min_freq: -1,
           cpuinfo_max_freq: -1,
+          scaling_available_freqs: [],
+          scaling_governor: 'N/A',
+          scaling_available_governors: [],
         };
       }
       this.setState({
@@ -168,6 +193,44 @@ export default class CPUFrequencyTable extends FlipperDevicePlugin<CPUState> {
         });
       }
     }, 'cat /sys/devices/system/cpu/cpu' + core + '/cpufreq/' + type);
+  };
+
+  updateAvailableFrequencies = (core: number) => {
+    this.executeShell((output: string) => {
+      let cpuFreq = this.state.cpuFreq;
+      let freqs = output.split(' ').map((num: string) => {
+        return parseInt(num, 10);
+      });
+      cpuFreq[core].scaling_available_freqs = freqs;
+      let maxFreq = cpuFreq[core].scaling_max_freq;
+      if (maxFreq > 0 && freqs.indexOf(maxFreq) == -1) {
+        freqs.push(maxFreq); // always add scaling max to available frequencies
+      }
+      this.setState({
+        cpuFreq: cpuFreq,
+      });
+    }, 'cat /sys/devices/system/cpu/cpu' + core + '/cpufreq/scaling_available_frequencies');
+  };
+
+  updateCoreGovernor = (core: number) => {
+    this.executeShell((output: string) => {
+      let cpuFreq = this.state.cpuFreq;
+      cpuFreq[core].scaling_governor = output;
+      this.setState({
+        cpuFreq: cpuFreq,
+      });
+    }, 'cat /sys/devices/system/cpu/cpu' + core + '/cpufreq/scaling_governor');
+  };
+
+  readAvailableGovernors = (core: number) => {
+    this.executeShell((output: string) => {
+      let cpuFreq = this.state.cpuFreq;
+      cpuFreq[core].scaling_available_governors = output.split(' ');
+
+      this.setState({
+        cpuFreq: cpuFreq,
+      });
+    }, 'cat /sys/devices/system/cpu/cpu' + core + '/cpufreq/scaling_available_governors');
   };
 
   readCoreFrequency = (core: number) => {
@@ -222,10 +285,15 @@ export default class CPUFrequencyTable extends FlipperDevicePlugin<CPUState> {
     if (this.intervalID) {
       return;
     }
+    for (let i = 0; i < this.state.cpuCount; ++i) {
+      this.readAvailableGovernors(i);
+    }
 
     this.intervalID = setInterval(() => {
       for (let i = 0; i < this.state.cpuCount; ++i) {
         this.readCoreFrequency(i);
+        this.updateCoreGovernor(i);
+        this.updateAvailableFrequencies(i); // scaling max might change, so we also update this
       }
     }, 500);
 
@@ -253,6 +321,8 @@ export default class CPUFrequencyTable extends FlipperDevicePlugin<CPUState> {
       cpuFreq[i].scaling_cur_freq = -1;
       cpuFreq[i].scaling_min_freq = -1;
       cpuFreq[i].scaling_max_freq = -1;
+      cpuFreq[i].scaling_available_freqs = [];
+      cpuFreq[i].scaling_governor = 'N/A';
       // we don't cleanup cpuinfo_min_freq, cpuinfo_max_freq
       // because usually they are fixed (hardware)
     }
@@ -265,7 +335,8 @@ export default class CPUFrequencyTable extends FlipperDevicePlugin<CPUState> {
     this.cleanup();
   };
 
-  buildRow = (freq: CPUFrequency) => {
+  buildRow = (freq: CPUFrequency, idx: number) => {
+    let selected = this.state.selectedIds.indexOf(idx) >= 0;
     let style = {};
     if (freq.scaling_cur_freq == -2) {
       style = {
@@ -282,7 +353,8 @@ export default class CPUFrequencyTable extends FlipperDevicePlugin<CPUState> {
     ) {
       style = {
         style: {
-          backgroundColor: colors.redTint,
+          backgroundColor: selected ? colors.red : colors.redTint,
+          // better visibility when highlighted
           color: colors.red,
           fontWeight: 700,
         },
@@ -319,18 +391,133 @@ export default class CPUFrequencyTable extends FlipperDevicePlugin<CPUState> {
         cpuinfo_max_freq: {
           value: <Text>{formatFrequency(freq.cpuinfo_max_freq)}</Text>,
         },
+        scaling_governor: {
+          value: <Text>{freq.scaling_governor}</Text>,
+        },
       },
       key: freq.cpu_id,
+
       style,
     };
   };
 
   frequencyRows = (cpuFreqs: Array<CPUFrequency>): TableRows => {
-    let rows = [];
-    for (const cpuFreq of cpuFreqs) {
-      rows.push(this.buildRow(cpuFreq));
+    return cpuFreqs.map(this.buildRow);
+  };
+
+  buildAvailableFreqList = (freq: CPUFrequency) => {
+    if (freq.scaling_available_freqs.length == 0) {
+      return <Text>N/A</Text>;
     }
-    return rows;
+    let info = freq;
+    return (
+      <Text>
+        {freq.scaling_available_freqs.map((freq, idx) => {
+          let style = {};
+          if (
+            freq == info.scaling_cur_freq ||
+            freq == info.scaling_min_freq ||
+            freq == info.scaling_max_freq
+          ) {
+            style.fontWeight = 'bold';
+          }
+          return (
+            <Text key={idx} style={style}>
+              {formatFrequency(freq)}
+              {freq == info.scaling_cur_freq && (
+                <Text style={style}> (scaling current)</Text>
+              )}
+              {freq == info.scaling_min_freq && (
+                <Text style={style}> (scaling min)</Text>
+              )}
+              {freq == info.scaling_max_freq && (
+                <Text style={style}> (scaling max)</Text>
+              )}
+              <br />
+            </Text>
+          );
+        })}
+      </Text>
+    );
+  };
+
+  buildAvailableGovList = (freq: CPUFrequency): string => {
+    if (freq.scaling_available_governors.length == 0) {
+      return 'N/A';
+    }
+    return freq.scaling_available_governors.join(', ');
+  };
+
+  buildSidebarRow = (key: string, val: any) => {
+    return {
+      columns: {
+        key: {value: <Text>{key}</Text>},
+        value: {
+          value: val,
+        },
+      },
+      key: key,
+    };
+  };
+
+  sidebarRows = (id: number) => {
+    let availableFreqTitle = 'Scaling Available Frequencies';
+    let selected = this.state.cpuFreq[id];
+    if (selected.scaling_available_freqs.length > 0) {
+      availableFreqTitle +=
+        ' (' + selected.scaling_available_freqs.length.toString() + ')';
+    }
+
+    let keys = [availableFreqTitle, 'Scaling Available Governors'];
+
+    let vals = [
+      this.buildAvailableFreqList(selected),
+      this.buildAvailableGovList(selected),
+    ];
+    return keys.map<any>((key, idx) => {
+      return this.buildSidebarRow(key, vals[idx]);
+    });
+  };
+
+  renderSidebar = () => {
+    if (this.state.selectedIds.length == 0) {
+      return null;
+    }
+    let id = this.state.selectedIds[0];
+    let cols = {
+      key: {
+        value: 'key',
+        resizable: true,
+      },
+      value: {
+        value: 'value',
+        resizable: true,
+      },
+    };
+    let colSizes = {
+      key: '35%',
+      value: 'flex',
+    };
+    return (
+      <DetailSidebar width={500}>
+        <Panel
+          padded={true}
+          heading="CPU details"
+          floating={false}
+          collapsable={true}>
+          <Heading>CPU_{id}</Heading>
+          <ManagedTable
+            columnSizes={colSizes}
+            multiline={true}
+            columns={cols}
+            autoHeight={true}
+            floating={false}
+            zebra={true}
+            rows={this.sidebarRows(id)}
+          />
+        </Panel>
+      </DetailSidebar>
+    );
   };
 
   render() {
@@ -357,7 +544,14 @@ export default class CPUFrequencyTable extends FlipperDevicePlugin<CPUState> {
             floating={false}
             zebra={true}
             rows={this.frequencyRows(this.state.cpuFreq)}
+            onRowHighlighted={selectedIds => {
+              this.setState({
+                selectedIds: selectedIds,
+              });
+            }}
           />
+
+          {this.renderSidebar()}
         </FlexColumn>
       </FlexRow>
     );
