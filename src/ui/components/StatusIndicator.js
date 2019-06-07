@@ -20,6 +20,7 @@ const StatusIndicator: Props => Element<'div'> = styled('div')(
     backgroundColor: statusColor,
     border: `1px solid ${colors.blackAlpha30}`,
     borderRadius: '50%',
+    display: 'inline-block',
     flexShrink: 0,
     height: diameter,
     title,
