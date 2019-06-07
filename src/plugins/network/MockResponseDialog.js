@@ -1,6 +1,7 @@
 import {
   Component,
   FlexColumn,
+  FlexRow,
   Button,
   styled
 } from 'flipper';
@@ -23,10 +24,12 @@ const Title = styled('div')({
 const Container = styled(FlexColumn)({
   padding: 10,
   width: 700,
+  height: 500,
 });
 
 const Row = styled(FlexColumn)({
   alignItems: 'flex-end',
+  marginTop: 16
 });
 
 export class MockResponseDialog extends Component<Props> {
@@ -39,7 +42,7 @@ export class MockResponseDialog extends Component<Props> {
   render() {
     return (
       <Container>
-        <Title>Mock Responses</Title>
+        <Title>Mock Network Responses</Title>
         <ManageMockResponsePanel />
         <Row>
           <Button compact padded onClick={this.onCloseButtonClicked}>

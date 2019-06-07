@@ -29,3 +29,9 @@ export type Header = {|
   key: string,
   value: string,
 |};
+
+export type Route = {|
+  requestUrl: string,
+  method: string,
+  response: ?Response,
+|};
