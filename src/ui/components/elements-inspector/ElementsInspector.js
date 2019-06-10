@@ -7,7 +7,7 @@
 
 import {Component} from 'react';
 import FlexRow from '../FlexRow.js';
-import {Elements} from './elements.js';
+import {Elements, type DecorateRow} from './elements.js';
 import type {ContextMenuExtension} from 'flipper';
 
 export type ElementID = string;
@@ -65,6 +65,7 @@ export default class ElementsInspector extends Component<{
   useAppSidebar?: boolean,
   alternateRowColor?: boolean,
   contextMenuExtensions?: Array<ContextMenuExtension>,
+  decorateRow?: DecorateRow,
 }> {
   static defaultProps = {
     alternateRowColor: true,
@@ -81,6 +82,7 @@ export default class ElementsInspector extends Component<{
       searchResults,
       alternateRowColor,
       contextMenuExtensions,
+      decorateRow,
     } = this.props;
 
     return (
@@ -96,6 +98,7 @@ export default class ElementsInspector extends Component<{
           elements={elements}
           alternateRowColor={alternateRowColor}
           contextMenuExtensions={contextMenuExtensions}
+          decorateRow={decorateRow}
         />
       </FlexRow>
     );
