@@ -60,7 +60,7 @@ const runHeadless = memoize((args: Array<string>) => {
 
     setTimeout(() => {
       process.kill('SIGINT');
-    }, 10000);
+    }, 20000);
   });
 });
 
