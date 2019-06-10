@@ -64,7 +64,7 @@
 <tr><td><code>compact</code></td><td><code>boolean</code></td><td>Whether this button is compact. Decreases padding and line-height.</td></tr>
 <tr><td><code>type</code></td><td><code>'primary' ⎮ 'success' ⎮ 'warning' ⎮ 'danger'</code></td><td>Type of button.</td></tr>
 <tr><td><code>children</code></td><td><code>React$Node</code></td><td>Children.</td></tr>
-<tr><td><code>dropdown</code></td><td><code>Array&lt;Electron$MenuItemOptions&gt;</code></td><td>Dropdown menu template shown on click.</td></tr>
+<tr><td><code>dropdown</code></td><td><code>Array&lt;MenuItemConstructorOptions&gt;</code></td><td>Dropdown menu template shown on click.</td></tr>
 <tr><td><code>icon</code></td><td><code>string</code></td><td>Name of the icon dispalyed next to the text</td></tr>
 <tr><td><code>iconSize</code></td><td><code>number</code></td><td>Size of the icon in pixels.</td></tr>
 <tr><td><code>selected</code></td><td><code>boolean</code></td><td>For toggle buttons, if the button is selected</td></tr>
@@ -136,7 +136,7 @@ to show menu items.</p>
 <tr><th>Property</th><th>Type</th><th>Description</th></tr>
 </thead>
 <tbody>
-<tr><td><code>items</code></td><td><code>Array&lt;Electron$MenuItemOptions&gt;</code></td><td>List of items in the context menu. Used for static menus.</td></tr>
+<tr><td><code>items</code></td><td><code>Array&lt;MenuItemConstructorOptions&gt;</code></td><td>List of items in the context menu. Used for static menus.</td></tr>
 <tr><td><code>buildItems</code></td><td><code>() =&gt; MenuTemplate</code></td><td>Function to generate the menu. Called right before the menu is showed. Used for dynamic menus.</td></tr>
 <tr><td><code>children</code></td><td><code>React$Node</code></td><td>Nodes that should have a context menu</td></tr>
 <tr><td><code>component</code></td><td><code>React.ComponentType&lt;any&gt; ⎮ string</code></td><td>The component that is used to wrap the children. Defaults to <code>FlexColumn</code>.</td></tr>
