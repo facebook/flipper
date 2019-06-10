@@ -221,7 +221,7 @@ class ElementsRow extends PureComponent<ElementsRowProps, ElementsRowState> {
 
   interaction: (name: string, data: any) => void;
 
-  getContextMenu = (): Array<Electron$MenuItemOptions> => {
+  getContextMenu = (): Array<MenuItemConstructorOptions> => {
     const {props} = this;
     const items = [
       {

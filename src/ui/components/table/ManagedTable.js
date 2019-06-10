@@ -469,7 +469,7 @@ class ManagedTable extends React.Component<
     clipboard.writeText(cellText);
   };
 
-  buildContextMenuItems: () => Array<Electron$MenuItemOptions> = () => {
+  buildContextMenuItems: () => Array<MenuItemConstructorOptions> = () => {
     const {highlightedRows} = this.state;
     if (highlightedRows.size === 0) {
       return [];

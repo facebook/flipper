@@ -127,7 +127,7 @@ export function setupMenuBar(
 }
 
 function appendMenuItem(
-  template: Array<MenuItem>,
+  template: Array<MenuItemConstructorOptions>,
   actionHandler: (action: string) => void,
   item: ?KeyboardAction,
 ) {
@@ -185,7 +185,7 @@ function getTemplate(
   app: Object,
   shell: Object,
   store: Store,
-): Array<MenuItem> {
+): Array<MenuItemConstructorOptions> {
   const exportSubmenu = [
     {
       label: 'File...',

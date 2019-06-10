@@ -190,7 +190,7 @@ type Props = {
   /**
    * Dropdown menu template shown on click.
    */
-  dropdown?: Array<Electron$MenuItemOptions>,
+  dropdown?: Array<MenuItemConstructorOptions>,
   /**
    * Name of the icon dispalyed next to the text
    */

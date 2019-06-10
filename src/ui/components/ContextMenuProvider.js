@@ -11,7 +11,7 @@ import electron from 'electron';
 
 const PropTypes = require('prop-types');
 
-type MenuTemplate = Array<Electron$MenuItemOptions>;
+type MenuTemplate = Array<MenuItemConstructorOptions>;
 
 const Container = styled('div')({
   display: 'contents',

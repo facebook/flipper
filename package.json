@@ -36,7 +36,7 @@
     ]
   },
   "resolutions": {
-    "@jest-runner/electron/electron": "4.0.8"
+    "@jest-runner/electron/electron": "5.0.2"
   },
   "jest": {
     "transform": {
@@ -50,9 +50,9 @@
     }
   },
   "devDependencies": {
-    "@jest-runner/electron": "^1.1.1",
+    "@jest-runner/electron": "^2.0.1",
     "babel-eslint": "^10.0.1",
-    "electron": "^4.0.8",
+    "electron": "^5.0.2",
     "electron-builder": "^20.38.5",
     "eslint": "^5.12.1",
     "eslint-config-fbjs": "^2.0.1",
