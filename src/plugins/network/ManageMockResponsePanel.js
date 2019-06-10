@@ -8,7 +8,6 @@ import {
   styled,
   colors,
   FlexRow,
-  DetailSidebar,
   Panel
 } from 'flipper';
 
@@ -50,6 +49,15 @@ const AddRouteButton = styled(FlexBox)(props => ({
   textOverflow: 'ellipsis',
 }));
 
+const Container = styled(FlexRow)({
+  flex: 1,
+  justifyContent: 'space-around',
+  alignItems: 'stretch'
+});
+
+const LeftPanel = styled(FlexColumn)({
+  flex: 1
+});
 
 export class ManageMockResponsePanel extends PureComponent<Props, State> {
 
@@ -93,22 +101,12 @@ export class ManageMockResponsePanel extends PureComponent<Props, State> {
     });
   };
 
-  static Container = styled(FlexRow)({
-    flex: 1,
-    justifyContent: 'space-around',
-    alignItems: 'stretch'
-  });
-
-  static LeftPanel = styled(FlexColumn)({
-    flex: 1
-  });
-
   render() {
 
-    const route = {};
+    const route = null; // {requestUrl: ''};
     return (
-      <ManageMockResponsePanel.Container>
-        <ManageMockResponsePanel.LeftPanel>
+      <Container>
+        <LeftPanel>
           <AddRouteButton onClick={this.addRow}>
             <Glyph
               name="plus-circle"
@@ -129,7 +127,7 @@ export class ManageMockResponsePanel extends PureComponent<Props, State> {
             floating={false}
             zebra={false}
           />
-        </ManageMockResponsePanel.LeftPanel>
+        </LeftPanel>
 
         <FlexColumn style={{flex:3, height: '100%'}}>
           <Panel
@@ -140,7 +138,7 @@ export class ManageMockResponsePanel extends PureComponent<Props, State> {
             <MockResponseDetails route={route} />
           </Panel>
         </FlexColumn>
-      </ManageMockResponsePanel.Container>
+      </Container>
     );
   }
 }
