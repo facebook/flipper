@@ -9,9 +9,12 @@ import {
   Select,
   styled,
 } from 'flipper';
+import type {RequestId} from "./types";
 
 type Props = {
-  route: Route
+  id: RequestId,
+  route: Route,
+  handleRouteChange: (selectedId: RequestId, route: Route) =>{}
 };
 
 type State = {
@@ -61,7 +64,7 @@ const textAreaStyle = {
 const StyledInput = styled(Input)({
   width: '100%',
   height: 20,
-  marginLeft : 8,
+  marginLeft: 8,
   flexGrow: 5
 });
 
@@ -87,34 +90,47 @@ export class MockResponseDetails extends PureComponent<Props, State> {
 
     // Initial state
     this.state = {
-      requestUrl: route.requestUrl
+      requestUrl: route.requestUrl,
+      method: route.method,
+      data: route.data
     };
 
+    this.handleMethodSelectChange = this.handleMethodSelectChange.bind(this);
     this.handleURLInputChange = this.handleURLInputChange.bind(this);
     this.handleDataTextAreaChange = this.handleDataTextAreaChange.bind(this);
   }
 
+  handleMethodSelectChange = (text: string) => {
+    this.setState({
+      method: text
+    }, () => {
+      this.props.handleRouteChange(this.props.id, {...this.state, method: this.state.method});
+    })
+  };
 
-  handleURLInputChange(event) {
+  handleURLInputChange = (event) => {
+    console.log(this.props);
     this.setState({
       requestUrl: event.target.value
+    }, () => {
+      this.props.handleRouteChange(this.props.id, {...this.state, requestUrl: this.state.requestUrl});
     });
-  }
+  };
 
-  handleDataTextAreaChange(event) {
+  handleDataTextAreaChange = (event) => {
     this.setState({
       data: event.target.value
+    },() => {
+      this.props.handleRouteChange(this.props.id, {...this.state, data: this.state.data});
     });
-  }
+  };
 
 
   render() {
 
     const methodOptions = ['GET', 'POST'];
 
-    const { requestUrl, method, data } = this.state;
-
-    console.log(this.state);
+    const {requestUrl, method, data} = this.state;
 
     return (
       <Container>
@@ -124,12 +140,7 @@ export class MockResponseDetails extends PureComponent<Props, State> {
               grow={true}
               selected={method !== undefined ? method : 'GET'}
               options={methodOptions}
-              onChange={(selectedMethod: string) => {
-                this.setState({
-                  ...this.state,
-                  method: selectedMethod
-                })
-              }}>
+              onChange={this.handleMethodSelectChange}>
 
             </StyledSelect>
           </StyledSelectContainer>
