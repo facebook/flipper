@@ -55,5 +55,5 @@ export type Insights = {|
 export type Route = {|
   requestUrl: string,
   method: string,
-  response: ?Response,
+  data: string,
 |};

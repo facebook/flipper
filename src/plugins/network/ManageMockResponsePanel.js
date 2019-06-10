@@ -18,14 +18,11 @@ import {
 import {
   MockResponseDetails
 } from "./MockResponseDetails";
-import React from "react";
-
-type Props = {
-  a: boolean
-};
+import type {RequestId} from "./types";
 
 type State = {
-  routes: Route []
+  routes: Route [],
+  selectedIds: []
 };
 
 const ColumnSizes = {
@@ -39,7 +36,7 @@ const Columns = {
   }
 };
 
-const AddRouteButton = styled(FlexBox)(props => ({
+const AddRouteButton = styled(FlexBox)({
   color: colors.blackAlpha50,
   alignItems: 'center',
   padding: 10,
@@ -47,7 +44,7 @@ const AddRouteButton = styled(FlexBox)(props => ({
   whiteSpace: 'nowrap',
   overflow: 'hidden',
   textOverflow: 'ellipsis',
-}));
+});
 
 const Container = styled(FlexRow)({
   flex: 1,
@@ -59,12 +56,18 @@ const LeftPanel = styled(FlexColumn)({
   flex: 1
 });
 
-export class ManageMockResponsePanel extends PureComponent<Props, State> {
+const RightPanel = styled(FlexColumn)({
+  flex:3,
+  height: '100%'
+});
+
+export class ManageMockResponsePanel extends PureComponent<*, State> {
 
   constructor(props: Props) {
     super(props);
     this.state = {
-      routes: []
+      routes: [],
+      selectedIds: []
     }
   }
 
@@ -80,7 +83,6 @@ export class ManageMockResponsePanel extends PureComponent<Props, State> {
   };
 
   buildRow = (route: Route, index: number ) => {
-    console.log(route);
     return {
       columns: {
         route: {
@@ -93,7 +95,7 @@ export class ManageMockResponsePanel extends PureComponent<Props, State> {
 
   addRow = () => {
     const route = {
-      requestUrl: '/test',
+      requestUrl: '/',
       method: 'GET'
     };
     this.setState({
@@ -101,9 +103,37 @@ export class ManageMockResponsePanel extends PureComponent<Props, State> {
     });
   };
 
-  render() {
+  onRowHighlighted = (selectedIds: Array<RequestId>) =>
+    this.setState({selectedIds: selectedIds});
 
-    const route = null; // {requestUrl: ''};
+  handleRouteChange = (selectedId: RequestId, route: Route) => {
+    const routes = this.state.routes;
+    routes[selectedId] = route;
+    this.setState({
+      routes: routes
+    });
+  };
+
+  renderSidebar = () => {
+    const { selectedIds, routes} = this.state;
+    const selectedId = selectedIds.length === 1 ? selectedIds[0] : null;
+    return selectedId != null ? (
+      <Panel
+        grow={true}
+        collapsable={false}
+        floating={false}
+        heading={'Response'} >
+        <MockResponseDetails
+          id={selectedId}
+          key={selectedId}
+          route={routes[selectedId]}
+          handleRouteChange={this.handleRouteChange}
+        />
+      </Panel>
+    ) : null;
+  };
+
+  render() {
     return (
       <Container>
         <LeftPanel>
@@ -112,8 +142,7 @@ export class ManageMockResponsePanel extends PureComponent<Props, State> {
               name="plus-circle"
               size={16}
               variant="outline"
-              color={colors.blackAlpha30}
-            />
+              color={colors.blackAlpha30}/>
             &nbsp;Add Route
           </AddRouteButton>
           <ManagedTable
@@ -126,18 +155,16 @@ export class ManageMockResponsePanel extends PureComponent<Props, State> {
             autoHeight={false}
             floating={false}
             zebra={false}
+            onRowHighlighted={this.onRowHighlighted}
+            highlightedRows={
+              this.state.selectedIds ? new Set(this.state.selectedIds) : null
+            }
           />
         </LeftPanel>
 
-        <FlexColumn style={{flex:3, height: '100%'}}>
-          <Panel
-            grow={true}
-            collapsable={false}
-            floating={false}
-            heading={'Response'} >
-            <MockResponseDetails route={route} />
-          </Panel>
-        </FlexColumn>
+        <RightPanel>
+          {this.renderSidebar()}
+        </RightPanel>
       </Container>
     );
   }
