@@ -6,7 +6,6 @@
  */
 
 import {spawn} from 'child_process';
-// $FlowFixMe
 import memoize from 'lodash.memoize';
 
 const TEST_TIMEOUT_MS = 30 * 1000;
