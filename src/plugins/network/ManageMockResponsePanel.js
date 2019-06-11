@@ -21,6 +21,7 @@ import {
 import type {RequestId} from "./types";
 
 type Props = {
+  routes: Route [],
   handleRoutesChange : (routes: Route[]) => void
 }
 
@@ -80,9 +81,9 @@ export class ManageMockResponsePanel extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
-      routes: [],
-      selectedIds: []
-    }
+      routes: this.props.routes || [],
+      selectedIds: (this.props.routes !== undefined && this.props.routes.length > 0)?  [0] : []
+    };
   }
 
   buildRows = (state: State) => {
