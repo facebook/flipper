@@ -43,6 +43,7 @@ import RequestDetails from './RequestDetails.js';
 import {clipboard} from 'electron';
 import {URL} from 'url';
 import type {Notification} from '../../plugin';
+import type {Route} from "./types";
 
 type PersistedState = {|
   requests: {[id: RequestId]: Request},
@@ -208,6 +209,10 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
     this.props.setPersistedState({responses: {}, requests: {}});
   };
 
+  handleRoutesChange = (routes: Route[]) => {
+    this.client.call('mockResponses', {routes: routes});
+  };
+
   renderSidebar = () => {
     const {requests, responses} = this.props.persistedState;
     const {selectedIds} = this.state;
@@ -236,6 +241,7 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
           highlightedRows={
             this.state.selectedIds ? new Set(this.state.selectedIds) : null
           }
+          handleRoutesChange={this.handleRoutesChange}
         />
         <DetailSidebar width={500}>{this.renderSidebar()}</DetailSidebar>
       </FlexColumn>
@@ -250,6 +256,7 @@ type NetworkTableProps = {
   copyRequestCurlCommand: () => void,
   onRowHighlighted: (keys: TableHighlightedRows) => void,
   highlightedRows: ?Set<string>,
+  handleRoutesChange: (routes: Route[]) => void
 };
 
 type NetworkTableState = {|
@@ -466,7 +473,12 @@ class NetworkTable extends PureComponent<NetworkTableProps, NetworkTableState> {
       <NetworkTable.ContextMenu items={this.contextMenuItems()}>
         {this.state.showMockResponseDialog ?
           <Sheet>
-            {onHide => <MockResponseDialog onHide={onHide} onDismiss={this.hideMockResponseDialog}/>}
+            {onHide =>
+              <MockResponseDialog
+                onHide={onHide}
+                onDismiss={this.hideMockResponseDialog}
+                handleRoutesChange={this.props.handleRoutesChange}
+              />}
           </Sheet> : null}
         <SearchableTable
           virtual={true}

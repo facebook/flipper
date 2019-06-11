@@ -9,10 +9,12 @@ import {
 import {
   ManageMockResponsePanel
 } from './ManageMockResponsePanel'
+import type {Route} from "./types";
 
 type Props = {
   onHide: () => void,
-  onDismiss:() => void
+  onDismiss:() => void,
+  handleRoutesChange : (routes: Route[]) => void
 };
 
 const Title = styled('div')({
@@ -43,7 +45,9 @@ export class MockResponseDialog extends Component<Props> {
     return (
       <Container>
         <Title>Mock Network Responses</Title>
-        <ManageMockResponsePanel />
+        <ManageMockResponsePanel
+          handleRoutesChange={this.props.handleRoutesChange}
+        />
         <Row>
           <Button compact padded onClick={this.onCloseButtonClicked}>
             Close

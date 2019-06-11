@@ -9,6 +9,8 @@ package com.facebook.flipper.plugins.common;
 import com.facebook.flipper.core.FlipperConnection;
 import com.facebook.flipper.core.FlipperObject;
 import com.facebook.flipper.core.FlipperPlugin;
+
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -23,17 +25,34 @@ public abstract class BufferingFlipperPlugin implements FlipperPlugin {
 
   private @Nullable RingBuffer<CachedFlipperEvent> mEventQueue;
   private @Nullable FlipperConnection mConnection;
+  private @Nullable ConnectionListener mConnectionListener;
+
+  public synchronized void setConnectionListener(@Nonnull ConnectionListener listener) {
+    this.mConnectionListener = listener;
+  }
+
+  public synchronized void removeConnectionListener() {
+    this.mConnectionListener = null;
+  }
 
   @Override
   public synchronized void onConnect(FlipperConnection connection) {
     mConnection = connection;
 
     sendBufferedEvents();
+
+    if (this.mConnectionListener != null) {
+      this.mConnectionListener.onConnect(connection);
+    }
   }
 
   @Override
   public synchronized void onDisconnect() {
     mConnection = null;
+
+    if (this.mConnectionListener != null) {
+      this.mConnectionListener.onDisconnect();
+    }
   }
 
   @Override
@@ -77,5 +96,10 @@ public abstract class BufferingFlipperPlugin implements FlipperPlugin {
       this.method = method;
       this.flipperObject = flipperObject;
     }
+  }
+
+  public interface ConnectionListener {
+    void onConnect(FlipperConnection connection);
+    void onDisconnect();
   }
 }

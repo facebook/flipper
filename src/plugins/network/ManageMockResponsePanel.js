@@ -20,6 +20,10 @@ import {
 } from "./MockResponseDetails";
 import type {RequestId} from "./types";
 
+type Props = {
+  handleRoutesChange : (routes: Route[]) => void
+}
+
 type State = {
   routes: Route [],
   selectedIds: []
@@ -71,7 +75,7 @@ const TextEllipsis = styled(Text)({
   whiteSpace: 'nowrap',
 });
 
-export class ManageMockResponsePanel extends Component<*, State> {
+export class ManageMockResponsePanel extends Component<Props, State> {
 
   constructor(props: Props) {
     super(props);
@@ -123,6 +127,8 @@ export class ManageMockResponsePanel extends Component<*, State> {
     routes[selectedId] = route;
     this.setState({
       routes: routes
+    }, () => {
+      this.props.handleRoutesChange(this.state.routes);
     });
   };
 

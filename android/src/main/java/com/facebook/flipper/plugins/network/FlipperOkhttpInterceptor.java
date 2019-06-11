@@ -6,6 +6,11 @@
  */
 package com.facebook.flipper.plugins.network;
 
+import android.text.TextUtils;
+import android.util.Log;
+import android.view.TextureView;
+import com.facebook.flipper.core.*;
+import com.facebook.flipper.plugins.common.BufferingFlipperPlugin;
 import com.facebook.flipper.plugins.network.NetworkReporter.RequestInfo;
 import com.facebook.flipper.plugins.network.NetworkReporter.ResponseInfo;
 import java.io.IOException;
@@ -16,7 +21,7 @@ import okhttp3.*;
 import okio.Buffer;
 import okio.BufferedSource;
 
-public class FlipperOkhttpInterceptor implements Interceptor {
+public class FlipperOkhttpInterceptor implements Interceptor, BufferingFlipperPlugin.ConnectionListener {
 
   public @Nullable NetworkFlipperPlugin plugin;
 
@@ -28,13 +33,14 @@ public class FlipperOkhttpInterceptor implements Interceptor {
 
   public FlipperOkhttpInterceptor(NetworkFlipperPlugin plugin) {
     this.plugin = plugin;
+    this.plugin.setConnectionListener(this);
 
     // TODO test code, remove it later
-    ResponseInfo mockResponse = new ResponseInfo();
-    mockResponse.body = "TEST".getBytes();
-    mockResponse.statusCode = 200;
-    mockResponse.statusReason = "OK";
-    registerMockResponse("https://api.github.com/repos/facebook/yoga", "GET", mockResponse);
+//    ResponseInfo mockResponse = new ResponseInfo();
+//    mockResponse.body = "TEST".getBytes();
+//    mockResponse.statusCode = 200;
+//    mockResponse.statusReason = "OK";
+//    registerMockResponse("https://api.github.com/repos/facebook/yoga", "GET", mockResponse);
   }
 
   protected void registerMockResponse(String requestUrl, String method, ResponseInfo response) {
@@ -119,5 +125,38 @@ public class FlipperOkhttpInterceptor implements Interceptor {
       list.add(new NetworkReporter.Header(key, headers.get(key)));
     }
     return list;
+  }
+
+  @Override
+  public void onConnect(FlipperConnection connection) {
+    connection.receive("mockResponses", new FlipperReceiver() {
+      @Override
+      public void onReceive(FlipperObject params, FlipperResponder responder) throws Exception {
+        FlipperArray array = params.getArray("routes");
+        mockResponeMap.clear();
+
+
+        for(int i = 0; i < array.length(); i++) {
+          FlipperObject route = array.getObject(i);
+          String data = route.getString("data");
+          String requestUrl = route.getString("requestUrl");
+          String method = route.getString("method");
+
+          if (!TextUtils.isEmpty(data) && !TextUtils.isEmpty(requestUrl) && !TextUtils.isEmpty(method)) {
+            ResponseInfo mockResponse = new ResponseInfo();
+            mockResponse.body = data.getBytes();
+            mockResponse.statusCode = 200;
+            mockResponse.statusReason = "OK";
+            registerMockResponse(requestUrl, method, mockResponse);
+          }
+        }
+        responder.success();
+      }
+    });
+  }
+
+  @Override
+  public void onDisconnect() {
+
   }
 }
