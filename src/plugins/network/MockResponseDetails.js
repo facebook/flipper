@@ -109,7 +109,6 @@ export class MockResponseDetails extends PureComponent<Props, State> {
   };
 
   handleURLInputChange = (event) => {
-    console.log(this.props);
     this.setState({
       requestUrl: event.target.value
     }, () => {

@@ -1,5 +1,5 @@
 import {
-  PureComponent,
+  Component,
   ManagedTable,
   Text,
   FlexBox,
@@ -26,7 +26,7 @@ type State = {
 };
 
 const ColumnSizes = {
-  route: 50
+  route: "flex"
 };
 
 const Columns = {
@@ -61,7 +61,17 @@ const RightPanel = styled(FlexColumn)({
   height: '100%'
 });
 
-export class ManageMockResponsePanel extends PureComponent<*, State> {
+const TextEllipsis = styled(Text)({
+  overflowX: 'hidden',
+  textOverflow: 'ellipsis',
+  maxWidth: '100%',
+  lineHeight: '18px',
+  paddingTop: 4,
+  display: 'block',
+  whiteSpace: 'nowrap',
+});
+
+export class ManageMockResponsePanel extends Component<*, State> {
 
   constructor(props: Props) {
     super(props);
@@ -86,7 +96,7 @@ export class ManageMockResponsePanel extends PureComponent<*, State> {
     return {
       columns: {
         route: {
-          value: <Text>{route.requestUrl}</Text>
+          value: <TextEllipsis>{route.requestUrl}</TextEllipsis>
         }
       },
       key: index
@@ -98,8 +108,10 @@ export class ManageMockResponsePanel extends PureComponent<*, State> {
       requestUrl: '/',
       method: 'GET'
     };
+    const newRoutes = [...this.state.routes, route];
     this.setState({
-      routes: [...this.state.routes, route]
+      routes: newRoutes,
+      selectedIds : [newRoutes.length - 1]
     });
   };
 
@@ -117,6 +129,7 @@ export class ManageMockResponsePanel extends PureComponent<*, State> {
   renderSidebar = () => {
     const { selectedIds, routes} = this.state;
     const selectedId = selectedIds.length === 1 ? selectedIds[0] : null;
+
     return selectedId != null ? (
       <Panel
         grow={true}
