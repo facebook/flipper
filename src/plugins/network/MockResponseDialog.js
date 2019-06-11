@@ -23,8 +23,8 @@ const Title = styled('div')({
 
 const Container = styled(FlexColumn)({
   padding: 10,
-  width: 700,
-  height: 500,
+  width: 800,
+  height: 550,
 });
 
 const Row = styled(FlexColumn)({
