@@ -48,6 +48,7 @@ import type {Route} from "./types";
 type PersistedState = {|
   requests: {[id: RequestId]: Request},
   responses: {[id: RequestId]: Response},
+  routes: Route []
 |};
 
 type State = {|
@@ -122,6 +123,7 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
   static defaultPersistedState = {
     requests: {},
     responses: {},
+    routes: []
   };
 
   static metricsReducer = (
@@ -210,6 +212,13 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
   };
 
   handleRoutesChange = (routes: Route[]) => {
+    // save to persisted state
+    this.props.setPersistedState({
+      ...this.props.persistedState,
+      routes: routes
+    });
+
+    // inform client
     this.client.call('mockResponses', {routes: routes});
   };
 
@@ -228,13 +237,14 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
   };
 
   render() {
-    const {requests, responses} = this.props.persistedState;
+    const {requests, responses, routes} = this.props.persistedState;
 
     return (
       <FlexColumn grow={true}>
         <NetworkTable
           requests={requests || {}}
           responses={responses || {}}
+          routes={routes || []}
           clear={this.clearLogs}
           copyRequestCurlCommand={this.copyRequestCurlCommand}
           onRowHighlighted={this.onRowHighlighted}
@@ -256,12 +266,14 @@ type NetworkTableProps = {
   copyRequestCurlCommand: () => void,
   onRowHighlighted: (keys: TableHighlightedRows) => void,
   highlightedRows: ?Set<string>,
+  routes: Route [],
   handleRoutesChange: (routes: Route[]) => void
 };
 
 type NetworkTableState = {|
   sortedRows: TableRows,
-  showMockResponseDialog: boolean
+  showMockResponseDialog: boolean,
+  routes: Route []
 |};
 
 function formatTimestamp(timestamp: number): string {
@@ -362,10 +374,11 @@ function calculateState(
   },
   nextProps: NetworkTableProps,
   rows: TableRows = [],
-  showMockResponseDialog: boolean = false
+  routes: Route [] = [],
+  showMockResponseDialog: boolean = true
 ): NetworkTableState {
+  routes = [... nextProps.routes];
   rows = [...rows];
-
   if (Object.keys(nextProps.requests).length === 0) {
     // cleared
     rows = [];
@@ -405,7 +418,8 @@ function calculateState(
 
   return {
     sortedRows: rows,
-    showMockResponseDialog: showMockResponseDialog
+    showMockResponseDialog: showMockResponseDialog,
+    routes: routes
   };
 }
 
@@ -420,6 +434,7 @@ class NetworkTable extends PureComponent<NetworkTableProps, NetworkTableState> {
       {
         requests: {},
         responses: {},
+        routes: []
       },
       props,
     );
@@ -475,6 +490,7 @@ class NetworkTable extends PureComponent<NetworkTableProps, NetworkTableState> {
           <Sheet>
             {onHide =>
               <MockResponseDialog
+                routes={this.state.routes}
                 onHide={onHide}
                 onDismiss={this.hideMockResponseDialog}
                 handleRoutesChange={this.props.handleRoutesChange}

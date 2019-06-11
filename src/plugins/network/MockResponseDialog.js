@@ -12,6 +12,7 @@ import {
 import type {Route} from "./types";
 
 type Props = {
+  routes: Route [],
   onHide: () => void,
   onDismiss:() => void,
   handleRoutesChange : (routes: Route[]) => void
@@ -46,6 +47,7 @@ export class MockResponseDialog extends Component<Props> {
       <Container>
         <Title>Mock Network Responses</Title>
         <ManageMockResponsePanel
+          routes={this.props.routes}
           handleRoutesChange={this.props.handleRoutesChange}
         />
         <Row>
