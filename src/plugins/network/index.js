@@ -48,7 +48,8 @@ import type {Route} from "./types";
 type PersistedState = {|
   requests: {[id: RequestId]: Request},
   responses: {[id: RequestId]: Response},
-  routes: Route []
+  routes: Route [],
+  showMockResponseDialog: boolean
 |};
 
 type State = {|
@@ -123,7 +124,8 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
   static defaultPersistedState = {
     requests: {},
     responses: {},
-    routes: []
+    routes: [],
+    showMockResponseDialog: false
   };
 
   static metricsReducer = (
@@ -222,6 +224,20 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
     this.client.call('mockResponses', {routes: routes});
   };
 
+  onMockButtonPressed = () => {
+    this.props.setPersistedState({
+      ...this.props.persistedState,
+      showMockResponseDialog: true
+    });
+  };
+
+  onCloseButtonPressed = () => {
+    this.props.setPersistedState({
+      ...this.props.persistedState,
+      showMockResponseDialog: false
+    });
+  };
+
   renderSidebar = () => {
     const {requests, responses} = this.props.persistedState;
     const {selectedIds} = this.state;
@@ -237,7 +253,7 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
   };
 
   render() {
-    const {requests, responses, routes} = this.props.persistedState;
+    const {requests, responses, routes, showMockResponseDialog} = this.props.persistedState;
 
     return (
       <FlexColumn grow={true}>
@@ -245,6 +261,9 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
           requests={requests || {}}
           responses={responses || {}}
           routes={routes || []}
+          onMockButtonPressed={this.onMockButtonPressed}
+          onCloseButtonPressed={this.onCloseButtonPressed}
+          showMockResponseDialog={showMockResponseDialog}
           clear={this.clearLogs}
           copyRequestCurlCommand={this.copyRequestCurlCommand}
           onRowHighlighted={this.onRowHighlighted}
@@ -267,12 +286,14 @@ type NetworkTableProps = {
   onRowHighlighted: (keys: TableHighlightedRows) => void,
   highlightedRows: ?Set<string>,
   routes: Route [],
-  handleRoutesChange: (routes: Route[]) => void
+  handleRoutesChange: (routes: Route[]) => void,
+  onMockButtonPressed:() => void,
+  onCloseButtonPressed:() => void,
+  showMockResponseDialog: boolean
 };
 
 type NetworkTableState = {|
   sortedRows: TableRows,
-  showMockResponseDialog: boolean,
   routes: Route []
 |};
 
@@ -375,7 +396,6 @@ function calculateState(
   nextProps: NetworkTableProps,
   rows: TableRows = [],
   routes: Route [] = [],
-  showMockResponseDialog: boolean = true
 ): NetworkTableState {
   routes = [... nextProps.routes];
   rows = [...rows];
@@ -418,7 +438,6 @@ function calculateState(
 
   return {
     sortedRows: rows,
-    showMockResponseDialog: showMockResponseDialog,
     routes: routes
   };
 }
@@ -470,29 +489,16 @@ class NetworkTable extends PureComponent<NetworkTableProps, NetworkTableState> {
     ]);
   }
 
-
-  showMockResponseDialog = () => {
-    this.setState({
-      showMockResponseDialog: true
-    });
-  };
-
-  hideMockResponseDialog = () => {
-    this.setState({
-      showMockResponseDialog: false
-    })
-  };
-
   render() {
     return (
       <NetworkTable.ContextMenu items={this.contextMenuItems()}>
-        {this.state.showMockResponseDialog ?
+        {this.props.showMockResponseDialog ?
           <Sheet>
             {onHide =>
               <MockResponseDialog
                 routes={this.state.routes}
                 onHide={onHide}
-                onDismiss={this.hideMockResponseDialog}
+                onDismiss={this.props.onCloseButtonPressed}
                 handleRoutesChange={this.props.handleRoutesChange}
               />}
           </Sheet> : null}
@@ -514,7 +520,7 @@ class NetworkTable extends PureComponent<NetworkTableProps, NetworkTableState> {
           actions={
             <FlexRow>
               <Button onClick={this.props.clear}>Clear Table</Button>
-              <Button onClick={this.showMockResponseDialog}>Mock</Button>
+              <Button onClick={this.props.onMockButtonPressed}>Mock</Button>
             </FlexRow>
           }
         />
