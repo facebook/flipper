@@ -11,7 +11,7 @@ import org.apache.tools.ant.filters.ReplaceTokens
 // Increment this when making changes to any of the native
 // dependencies.
 // !!!
-final def CACHE_REVISION = 3
+final def CACHE_REVISION = 18
 
 final def externalDir = new File("$projectDir/external")
 final def downloadsDir = new File("$externalDir/downloads")
@@ -117,7 +117,7 @@ task prepareBoost(dependsOn: [downloadBoost], type: Copy) {
 }
 
 task downloadFolly(dependsOn: createNativeDepsDirectories, type: Download) {
-    src 'https://github.com/facebook/folly/archive/v2018.09.10.00.tar.gz'
+    src 'https://github.com/facebook/folly/archive/v2019.06.10.00.tar.gz'
     onlyIfNewer true
     overwrite false
     dest new File(downloadsDir, 'folly-' + getDownloadFileName(src))
@@ -127,10 +127,10 @@ task prepareFolly(dependsOn: [downloadFolly], type: Copy) {
     onlyIf { isCacheOutOfDate(CACHE_REVISION) }
     from tarTree(downloadFolly.dest)
     from './overrides/Folly/'
-    include 'folly-2018.09.10.00/folly/**/*', 'build.gradle', 'CMakeLists.txt', 'ApplicationManifest.xml'
-    eachFile { it.path = it.path - "folly-2018.09.10.00/" }
+    include 'folly-2019.06.10.00/folly/**/*', 'build.gradle', 'CMakeLists.txt', 'ApplicationManifest.xml'
+    eachFile { it.path = it.path - "folly-2019.06.10.00/" }
     includeEmptyDirs = false
-    into "$externalDir/folly"
+    into "$externalDir/folly/"
 }
 
 //TODO: Get rid off this hack.
@@ -143,8 +143,8 @@ task finalizeFollyWithDemangle(dependsOn: [prepareFolly], type: Copy) {
 //TODO: Get rid off this hack.
 task finalizeFolly(dependsOn: [finalizeFollyWithDemangle], type: Copy) {
     from './overrides/Folly/'
-    include 'AsyncServerSocket.cpp'
-    into "$externalDir/folly/folly/io/async/"
+   include 'AsyncServerSocket.cpp'
+   into "$externalDir/folly/folly/io/async/"
 }
 
 task downloadLibEvent(dependsOn: [], type: Download) {
@@ -210,7 +210,7 @@ task finalizeOpenSSL(dependsOn: [configureOpenSSL], type: Exec) {
 }
 
 task downloadRSocket(dependsOn: [], type: Download) {
-    src 'https://github.com/priteshrnandgaonkar/rsocket-cpp/archive/0.10.3.tar.gz'
+    src 'https://github.com/priteshrnandgaonkar/rsocket-cpp/archive/0.10.7.tar.gz'
     onlyIfNewer true
     overwrite false
     dest new File(downloadsDir, 'rsocket-' + getDownloadFileName(src))
@@ -219,7 +219,7 @@ task downloadRSocket(dependsOn: [], type: Download) {
 task prepareRSocket(dependsOn: [downloadRSocket], type: Copy) {
     from tarTree(downloadRSocket.dest)
     from './overrides/RSocket/'
-    include 'rsocket-cpp-0.10.3/**/*', 'build.gradle', 'ApplicationManifest.xml', 'CMakeLists.txt'
+    include 'rsocket-cpp-0.10.7/**/*', 'build.gradle', 'ApplicationManifest.xml', 'CMakeLists.txt'
     includeEmptyDirs = false
     into "$externalDir/RSocket"
 }

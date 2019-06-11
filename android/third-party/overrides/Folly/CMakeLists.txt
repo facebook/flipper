@@ -29,6 +29,7 @@ list(APPEND dir_list ${OPENSSL_DIR}/include/)
 include_directories(${dir_list})
 
 add_compile_options(
+    -USOCK_NONBLOCK
     -DFOLLY_HAVE_CLOCK_GETTIME=1
     -DFOLLY_HAVE_PTHREAD=1
     -DFOLLY_NO_CONFIG=1
@@ -109,6 +110,7 @@ list(APPEND SRC_FILES ${FOLLY_DIR}/io/async/HHWheelTimer.cpp
                       ${FOLLY_DIR}/Format.cpp
                       ${FOLLY_DIR}/String.cpp
                       ${FOLLY_DIR}/memory/detail/MallocImpl.cpp
+                      ${FOLLY_DIR}/net/NetOps.cpp
                       )
 
 add_library(${PACKAGE_NAME} STATIC ${SRC_FILES})
