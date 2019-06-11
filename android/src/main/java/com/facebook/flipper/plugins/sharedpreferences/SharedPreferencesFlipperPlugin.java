@@ -141,6 +141,7 @@ public class SharedPreferencesFlipperPlugin implements FlipperPlugin {
       return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
               ? PreferenceManager.getDefaultSharedPreferencesName(context)
               : context.getPackageName() + "_preferences";
+  }
   
   private SharedPreferences getSharedPreferencesFor(String name) {
     for (Map.Entry<SharedPreferences, SharedPreferencesDescriptor> entry :
