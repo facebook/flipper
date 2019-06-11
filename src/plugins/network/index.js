@@ -182,6 +182,12 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
     );
   };
 
+  init() {
+    if (this.props.persistedState.routes) {
+      this.client.call('mockResponses', {routes: this.props.persistedState.routes});
+    }
+  }
+
   onKeyboardAction = (action: string) => {
     if (action === 'clear') {
       this.clearLogs();
