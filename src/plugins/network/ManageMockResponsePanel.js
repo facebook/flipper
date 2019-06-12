@@ -8,7 +8,8 @@ import {
   styled,
   colors,
   FlexRow,
-  Panel
+  Panel,
+  ContextMenu
 } from 'flipper';
 
 import {
@@ -22,7 +23,7 @@ import type {RequestId} from "./types";
 
 type Props = {
   routes: Route [],
-  handleRoutesChange : (routes: Route[]) => void
+  handleRoutesChange : (routes: Route[]) => void,
 }
 
 type State = {
@@ -78,6 +79,22 @@ const TextEllipsis = styled(Text)({
 
 export class ManageMockResponsePanel extends Component<Props, State> {
 
+  static ContextMenu = styled(ContextMenu)({
+    flex: 1,
+  });
+
+  contextMenuItems() {
+    return [
+      {
+        type: 'separator',
+      },
+      {
+        label: 'Delete',
+        click: this.deleteRoute,
+      },
+    ];
+  }
+
   constructor(props: Props) {
     super(props);
     this.state = {
@@ -86,10 +103,24 @@ export class ManageMockResponsePanel extends Component<Props, State> {
     };
   }
 
-  buildRows = (state: State) => {
-    if (state.routes) {
+  deleteRoute = () => {
+    const { selectedIds } = this.state;
+    const selectedId = selectedIds.length === 1 ? selectedIds[0] : null;
+    const routes = this.state.routes;
+    routes.splice(selectedId, 1);
+    this.setState({
+      routes: routes,
+      selectedIds: []
+    }, () => {
+      this.props.handleRoutesChange(this.state.routes);
+    });
+  };
+
+  buildRows = () => {
+    const { routes }  = this.state;
+    if (routes) {
       let rows = [];
-      state.routes.forEach((route: Route, index: number) => {
+      routes.forEach((route: Route, index: number) => {
         rows.push(this.buildRow(route, index));
       });
       return rows;
@@ -165,21 +196,23 @@ export class ManageMockResponsePanel extends Component<Props, State> {
               color={colors.blackAlpha30}/>
             &nbsp;Add Route
           </AddRouteButton>
-          <ManagedTable
-            hideHeader={true}
-            multiline={true}
-            columnSizes={ColumnSizes}
-            columns={Columns}
-            rows={this.buildRows(this.state)}
-            stickyBottom={true}
-            autoHeight={false}
-            floating={false}
-            zebra={false}
-            onRowHighlighted={this.onRowHighlighted}
-            highlightedRows={
-              this.state.selectedIds ? new Set(this.state.selectedIds) : null
-            }
-          />
+          <ManageMockResponsePanel.ContextMenu
+            items={this.contextMenuItems()}>
+            <ManagedTable
+              hideHeader={true}
+              multiline={true}
+              columnSizes={ColumnSizes}
+              columns={Columns}
+              rows={this.buildRows()}
+              stickyBottom={true}
+              autoHeight={false}
+              floating={false}
+              zebra={false}
+              onRowHighlighted={this.onRowHighlighted}
+              highlightedRows={
+                this.state.selectedIds ? new Set(this.state.selectedIds) : null
+              }/>
+          </ManageMockResponsePanel.ContextMenu>
         </LeftPanel>
 
         <RightPanel>
