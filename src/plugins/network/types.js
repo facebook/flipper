@@ -56,4 +56,5 @@ export type Route = {|
   requestUrl: string,
   method: string,
   data: string,
+  isDuplicate: boolean
 |};
