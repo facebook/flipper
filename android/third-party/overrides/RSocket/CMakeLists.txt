@@ -2,7 +2,7 @@ cmake_minimum_required (VERSION 3.6.0)
 
 PROJECT(rsocket CXX)
 set(PACKAGE_NAME      rsocket)
-set(RSOCKET_VERSION 0.10.3)
+set(RSOCKET_VERSION 0.10.7)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_EXTENSIONS OFF)
 

@@ -109,6 +109,7 @@ list(APPEND SRC_FILES ${FOLLY_DIR}/io/async/HHWheelTimer.cpp
                       ${FOLLY_DIR}/Format.cpp
                       ${FOLLY_DIR}/String.cpp
                       ${FOLLY_DIR}/memory/detail/MallocImpl.cpp
+                      ${FOLLY_DIR}/net/NetOps.cpp
                       )
 
 add_library(${PACKAGE_NAME} STATIC ${SRC_FILES})
