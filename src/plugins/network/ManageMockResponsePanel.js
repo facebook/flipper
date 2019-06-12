@@ -3,11 +3,11 @@ import {
   ManagedTable,
   Text,
   FlexBox,
+  FlexRow,
   FlexColumn,
   Glyph,
   styled,
   colors,
-  FlexRow,
   Panel,
   ContextMenu
 } from 'flipper';
@@ -77,6 +77,11 @@ const TextEllipsis = styled(Text)({
   whiteSpace: 'nowrap',
 });
 
+const Icon = styled(Glyph)({
+  marginTop: 5,
+  marginRight: 8
+});
+
 export class ManageMockResponsePanel extends Component<Props, State> {
 
   static ContextMenu = styled(ContextMenu)({
@@ -117,10 +122,17 @@ export class ManageMockResponsePanel extends Component<Props, State> {
   };
 
   buildRows = () => {
-    const { routes }  = this.state;
+    const routes = new Array(...this.state.routes);
     if (routes) {
       let rows = [];
+      let duplicateMap = {};
       routes.forEach((route: Route, index: number) => {
+        if (duplicateMap[route.requestUrl]){
+          route.isDuplicate = true;
+        } else {
+          route.isDuplicate = false;
+          duplicateMap[route.requestUrl] = true;
+        }
         rows.push(this.buildRow(route, index));
       });
       return rows;
@@ -132,7 +144,14 @@ export class ManageMockResponsePanel extends Component<Props, State> {
     return {
       columns: {
         route: {
-          value: <TextEllipsis>{route.requestUrl}</TextEllipsis>
+          value:
+            route.isDuplicate ?
+            <FlexRow>
+              <Icon name="caution-triangle" color={colors.yellow} />
+              <TextEllipsis>{route.requestUrl}</TextEllipsis>
+            </FlexRow>
+              :
+              <TextEllipsis>{route.requestUrl}</TextEllipsis>
         }
       },
       key: index

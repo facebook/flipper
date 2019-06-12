@@ -223,7 +223,7 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
     });
 
     // inform client
-    this.client.call('mockResponses', {routes: routes});
+    this.client.call('mockResponses', {routes: routes.filter(route => !route.isDuplicate)});
   };
 
   onMockButtonPressed = () => {
