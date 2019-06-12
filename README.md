@@ -55,7 +55,7 @@ Please refer to our [Getting Started guide](https://fbflipper.com/docs/getting-s
 
 ## Requirements
 
-* macOS (while Flipper is buildable using other systems as well, only macOS is officially supported)
+* macOS (Flipper works on Linux and Windows, too, but we only support macOS officially at the moment.)
 * node >= 8
 * yarn >= 1.5
 * iOS developer tools (for developing iOS plugins)
