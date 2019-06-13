@@ -26,12 +26,10 @@ import {
   styled,
   SearchableTable,
   FlipperPlugin,
-  Sheet
+  Sheet,
 } from 'flipper';
 
-import {
-  MockResponseDialog
-} from "./MockResponseDialog";
+import {MockResponseDialog} from './MockResponseDialog';
 
 import type {Request, RequestId, Response} from './types.js';
 import {convertRequestToCurlCommand, getHeaderValue} from './utils.js';
@@ -39,13 +37,13 @@ import RequestDetails from './RequestDetails.js';
 import {clipboard} from 'electron';
 import {URL} from 'url';
 import type {Notification} from '../../plugin';
-import type {Route} from "./types";
+import type {Route} from './types';
 
 type PersistedState = {|
   requests: {[id: RequestId]: Request},
   responses: {[id: RequestId]: Response},
-  routes: Route [],
-  showMockResponseDialog: boolean
+  routes: Route[],
+  showMockResponseDialog: boolean,
 |};
 
 type State = {|
@@ -121,7 +119,7 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
     requests: {},
     responses: {},
     routes: [],
-    showMockResponseDialog: false
+    showMockResponseDialog: false,
   };
 
   static metricsReducer = (
@@ -180,7 +178,9 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
 
   init() {
     if (this.props.persistedState.routes) {
-      this.client.call('mockResponses', {routes: this.props.persistedState.routes});
+      this.client.call('mockResponses', {
+        routes: this.props.persistedState.routes,
+      });
     }
   }
 
@@ -219,24 +219,26 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
     // save to persisted state
     this.props.setPersistedState({
       ...this.props.persistedState,
-      routes: routes
+      routes: routes,
     });
 
     // inform client
-    this.client.call('mockResponses', {routes: routes.filter(route => !route.isDuplicate)});
+    this.client.call('mockResponses', {
+      routes: routes.filter(route => !route.isDuplicate),
+    });
   };
 
   onMockButtonPressed = () => {
     this.props.setPersistedState({
       ...this.props.persistedState,
-      showMockResponseDialog: true
+      showMockResponseDialog: true,
     });
   };
 
   onCloseButtonPressed = () => {
     this.props.setPersistedState({
       ...this.props.persistedState,
-      showMockResponseDialog: false
+      showMockResponseDialog: false,
     });
   };
 
@@ -255,7 +257,12 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
   };
 
   render() {
-    const {requests, responses, routes, showMockResponseDialog} = this.props.persistedState;
+    const {
+      requests,
+      responses,
+      routes,
+      showMockResponseDialog,
+    } = this.props.persistedState;
 
     return (
       <FlexColumn grow={true}>
@@ -287,16 +294,16 @@ type NetworkTableProps = {
   copyRequestCurlCommand: () => void,
   onRowHighlighted: (keys: TableHighlightedRows) => void,
   highlightedRows: ?Set<string>,
-  routes: Route [],
+  routes: Route[],
   handleRoutesChange: (routes: Route[]) => void,
-  onMockButtonPressed:() => void,
-  onCloseButtonPressed:() => void,
-  showMockResponseDialog: boolean
+  onMockButtonPressed: () => void,
+  onCloseButtonPressed: () => void,
+  showMockResponseDialog: boolean,
 };
 
 type NetworkTableState = {|
   sortedRows: TableRows,
-  routes: Route []
+  routes: Route[],
 |};
 
 function formatTimestamp(timestamp: number): string {
@@ -319,11 +326,14 @@ function buildRow(request: Request, response: ?Response): ?TableBodyRow {
   const url = new URL(request.url);
   const domain = url.host + url.pathname;
   const friendlyName = getHeaderValue(request.headers, 'X-FB-Friendly-Name');
-  const style = response && response.isMock ? {
-    backgroundColor: colors.yellowTint,
-    color: colors.yellow,
-    fontWeight: 500,
-  }: { };
+  const style =
+    response && response.isMock
+      ? {
+          backgroundColor: colors.yellowTint,
+          color: colors.yellow,
+          fontWeight: 500,
+        }
+      : {};
 
   return {
     columns: {
@@ -378,9 +388,9 @@ function calculateState(
   },
   nextProps: NetworkTableProps,
   rows: TableRows = [],
-  routes: Route [] = [],
+  routes: Route[] = [],
 ): NetworkTableState {
-  routes = [... nextProps.routes];
+  routes = [...nextProps.routes];
   rows = [...rows];
   if (Object.keys(nextProps.requests).length === 0) {
     // cleared
@@ -421,7 +431,7 @@ function calculateState(
 
   return {
     sortedRows: rows,
-    routes: routes
+    routes: routes,
   };
 }
 
@@ -436,7 +446,7 @@ class NetworkTable extends PureComponent<NetworkTableProps, NetworkTableState> {
       {
         requests: {},
         responses: {},
-        routes: []
+        routes: [],
       },
       props,
     );
@@ -475,16 +485,18 @@ class NetworkTable extends PureComponent<NetworkTableProps, NetworkTableState> {
   render() {
     return (
       <NetworkTable.ContextMenu items={this.contextMenuItems()}>
-        {this.props.showMockResponseDialog ?
+        {this.props.showMockResponseDialog ? (
           <Sheet>
-            {onHide =>
+            {onHide => (
               <MockResponseDialog
                 routes={this.state.routes}
                 onHide={onHide}
                 onDismiss={this.props.onCloseButtonPressed}
                 handleRoutesChange={this.props.handleRoutesChange}
-              />}
-          </Sheet> : null}
+              />
+            )}
+          </Sheet>
+        ) : null}
         <SearchableTable
           virtual={true}
           multiline={false}

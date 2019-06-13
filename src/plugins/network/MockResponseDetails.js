@@ -1,3 +1,10 @@
+/**
+ * Copyright 2018-present Facebook.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ * @format
+ */
+
 import type {Route} from './types.js';
 
 import {
@@ -9,14 +16,14 @@ import {
   Glyph,
   Select,
   styled,
-  colors
+  colors,
 } from 'flipper';
-import type {RequestId} from "./types";
+import type {RequestId} from './types';
 
 type Props = {
   id: RequestId,
   route: Route,
-  handleRouteChange: (selectedId: RequestId, route: Route) =>{}
+  handleRouteChange: (selectedId: RequestId, route: Route) => {},
 };
 
 const StyledSelectContainer = styled(FlexRow)({
@@ -24,7 +31,7 @@ const StyledSelectContainer = styled(FlexRow)({
   paddingTop: 2,
   paddingBottom: 2,
   height: '100%',
-  flexGrow: 1
+  flexGrow: 1,
 });
 
 const StyledSelect = styled(Select)({
@@ -45,7 +52,8 @@ const textAreaStyle = {
   color: '#333',
   padding: 10,
   resize: 'none',
-  fontFamily: 'source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace',
+  fontFamily:
+    'source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace',
   display: 'inline-block',
   lineHeight: 1.5,
   border: '1px solid #dcdee2',
@@ -61,7 +69,7 @@ const StyledInput = styled(Input)({
   width: '100%',
   height: 20,
   marginLeft: 8,
-  flexGrow: 5
+  flexGrow: 5,
 });
 
 const Container = styled(FlexColumn)({
@@ -73,11 +81,10 @@ const Container = styled(FlexColumn)({
 });
 
 const Warning = styled(FlexRow)({
-  marginTop: 8
+  marginTop: 8,
 });
 
 export class MockResponseDetails extends Component<Props> {
-
   updateRouteChange = (route: Route) => {
     this.props.handleRouteChange(this.props.id, route);
   };
@@ -88,18 +95,17 @@ export class MockResponseDetails extends Component<Props> {
     this.updateRouteChange(route);
   };
 
-  handleURLInputChange = (event) => {
+  handleURLInputChange = event => {
     const route = this.props.route;
     route.requestUrl = event.target.value;
     this.updateRouteChange(route);
   };
 
-  handleDataTextAreaChange = (event) => {
+  handleDataTextAreaChange = event => {
     const route = this.props.route;
     route.data = event.target.value;
     this.updateRouteChange(route);
   };
-
 
   render() {
     const methodOptions = ['GET', 'POST'];
@@ -113,16 +119,16 @@ export class MockResponseDetails extends Component<Props> {
               grow={true}
               selected={method !== undefined ? method : 'GET'}
               options={methodOptions}
-              onChange={this.handleMethodSelectChange}>
-
-            </StyledSelect>
+              onChange={this.handleMethodSelectChange}
+            />
           </StyledSelectContainer>
 
           <StyledInput
             type="text"
             placeholder="URL"
             value={requestUrl}
-            onChange={this.handleURLInputChange}/>
+            onChange={this.handleURLInputChange}
+          />
         </FlexRow>
         <StyledText>Data</StyledText>
         <textarea
@@ -131,13 +137,16 @@ export class MockResponseDetails extends Component<Props> {
           autoComplete="off"
           spellCheck="false"
           value={data}
-          onChange={this.handleDataTextAreaChange}/>
-        {isDuplicate ?
-          (<Warning>
-            <Glyph name="caution-triangle" color={colors.yellow}/>
-            <Text style={{marginLeft: 5}}>Route is duplicated (Same URL and Method)</Text>
-          </Warning>) : null
-        }
+          onChange={this.handleDataTextAreaChange}
+        />
+        {isDuplicate ? (
+          <Warning>
+            <Glyph name="caution-triangle" color={colors.yellow} />
+            <Text style={{marginLeft: 5}}>
+              Route is duplicated (Same URL and Method)
+            </Text>
+          </Warning>
+        ) : null}
       </Container>
     );
   }

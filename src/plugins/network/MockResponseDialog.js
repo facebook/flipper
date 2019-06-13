@@ -1,21 +1,20 @@
-import {
-  Component,
-  FlexColumn,
-  FlexRow,
-  Button,
-  styled
-} from 'flipper';
+/**
+ * Copyright 2018-present Facebook.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ * @format
+ */
 
-import {
-  ManageMockResponsePanel
-} from './ManageMockResponsePanel'
-import type {Route} from "./types";
+import {Component, FlexColumn, Button, styled} from 'flipper';
+
+import {ManageMockResponsePanel} from './ManageMockResponsePanel';
+import type {Route} from './types';
 
 type Props = {
-  routes: Route [],
+  routes: Route[],
   onHide: () => void,
-  onDismiss:() => void,
-  handleRoutesChange : (routes: Route[]) => void
+  onDismiss: () => void,
+  handleRoutesChange: (routes: Route[]) => void,
 };
 
 const Title = styled('div')({
@@ -32,11 +31,10 @@ const Container = styled(FlexColumn)({
 
 const Row = styled(FlexColumn)({
   alignItems: 'flex-end',
-  marginTop: 16
+  marginTop: 16,
 });
 
 export class MockResponseDialog extends Component<Props> {
-
   onCloseButtonClicked = () => {
     this.props.onHide();
     this.props.onDismiss();
