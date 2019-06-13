@@ -13,7 +13,6 @@ import com.facebook.common.internal.Predicate;
 import com.facebook.common.memory.manager.DebugMemoryManager;
 import com.facebook.common.memory.manager.NoOpDebugMemoryManager;
 import com.facebook.common.references.CloseableReference;
-import com.facebook.common.references.SharedReference;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.backends.pipeline.info.ImageLoadStatus;
 import com.facebook.drawee.backends.pipeline.info.ImageOriginUtils;
@@ -48,8 +47,7 @@ import javax.annotation.Nullable;
  * Allows Sonar to display the contents of Fresco's caches. This is useful for developers to debug
  * what images are being held in cache as they navigate through their app.
  */
-public class FrescoFlipperPlugin extends BufferingFlipperPlugin
-    implements ImagePerfDataListener, CloseableReferenceLeakTracker.Listener {
+public class FrescoFlipperPlugin extends BufferingFlipperPlugin implements ImagePerfDataListener {
 
   private static final String FRESCO_EVENT = "events";
   private static final String FRESCO_DEBUGOVERLAY_EVENT = "debug_overlay_event";
@@ -95,10 +93,6 @@ public class FrescoFlipperPlugin extends BufferingFlipperPlugin
     mMemoryManager = memoryManager;
     mPerfLogger = perfLogger;
     mDebugPrefHelper = debugPrefHelper;
-
-    if (closeableReferenceLeakTracker != null) {
-      closeableReferenceLeakTracker.setListener(this);
-    }
   }
 
   public FrescoFlipperPlugin() {
@@ -512,14 +506,5 @@ public class FrescoFlipperPlugin extends BufferingFlipperPlugin
 
   private static void respondError(FlipperResponder responder, String errorReason) {
     responder.error(new FlipperObject.Builder().put("reason", errorReason).build());
-  }
-
-  @Override
-  public void onCloseableReferenceLeak(SharedReference<Object> reference) {
-    final FlipperObject.Builder builder =
-        new FlipperObject.Builder()
-            .put("identityHashCode", System.identityHashCode(reference))
-            .put("className", reference.get().getClass().getName());
-    send(FRESCO_CLOSEABLE_REFERENCE_LEAK_EVENT, builder.build());
   }
 }
