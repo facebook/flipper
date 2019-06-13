@@ -265,10 +265,12 @@ test('closeable reference metrics on input', () => {
     {
       identityHashCode: 'deadbeef',
       className: 'com.facebook.imagepipeline.memory.NativeMemoryChunk',
+      stacktrace: null,
     },
     {
       identityHashCode: 'f4c3b00c',
       className: 'com.facebook.flipper.SomeMemoryAbstraction',
+      stacktrace: null,
     },
   ];
   const persistedState = {
@@ -287,10 +289,12 @@ test('notifications for leaks', () => {
     {
       identityHashCode: 'deadbeef',
       className: 'com.facebook.imagepipeline.memory.NativeMemoryChunk',
+      stacktrace: null,
     },
     {
       identityHashCode: 'f4c3b00c',
       className: 'com.facebook.flipper.SomeMemoryAbstraction',
+      stacktrace: null,
     },
   ];
   const persistedStateWithoutTracking = {
@@ -308,6 +312,6 @@ test('notifications for leaks', () => {
   };
   const notifs = notificationReducer(persistedStateWithTracking);
   expect(notifs).toHaveLength(2);
-  expect(notifs[0].message).toContain('deadbeef');
+  expect(notifs[0].message).toMatchSnapshot();
   expect(notifs[1].title).toContain('SomeMemoryAbstraction');
 });

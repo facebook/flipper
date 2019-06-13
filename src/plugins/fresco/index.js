@@ -15,6 +15,7 @@ import type {
   AndroidCloseableReferenceLeakEvent,
   CacheInfo,
 } from './api.js';
+import {Fragment} from 'react';
 import type {ImagesMap} from './ImagePool.js';
 import type {MetricType, MiddlewareAPI} from 'flipper';
 import React from 'react';
@@ -58,6 +59,10 @@ const EmptySidebar = styled(FlexRow)({
   color: colors.light30,
   padding: 15,
   fontSize: 16,
+});
+
+export const InlineFlexRow = styled(FlexRow)({
+  display: 'inline-block',
 });
 
 const surfaceDefaultText = 'SELECT ALL SURFACES';
@@ -196,8 +201,21 @@ export default class extends FlipperPlugin<PluginState, *, PersistedState> {
       .map((event: AndroidCloseableReferenceLeakEvent, index) => ({
         id: event.identityHashCode,
         title: `Leaked CloseableReference: ${event.className}`,
-        message: `CloseableReference leaked for ${event.className}
-          (identity hashcode: ${event.identityHashCode})`,
+        message: (
+          <Fragment>
+            <InlineFlexRow>
+              CloseableReference leaked for{' '}
+              <Text code={true}>{event.className}</Text>
+              (identity hashcode: {event.identityHashCode}).
+            </InlineFlexRow>
+            <InlineFlexRow>
+              <Text bold={true}>Stacktrace:</Text>
+            </InlineFlexRow>
+            <InlineFlexRow>
+              <Text code={true}>{event.stacktrace || '<unavailable>'}</Text>
+            </InlineFlexRow>
+          </Fragment>
+        ),
         severity: 'error',
         category: 'closeablereference_leak',
       }));

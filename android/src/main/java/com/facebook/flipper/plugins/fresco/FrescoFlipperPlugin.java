@@ -39,6 +39,8 @@ import com.facebook.imagepipeline.image.CloseableBitmap;
 import com.facebook.imagepipeline.image.CloseableImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -521,6 +523,16 @@ public class FrescoFlipperPlugin extends BufferingFlipperPlugin
         new FlipperObject.Builder()
             .put("identityHashCode", System.identityHashCode(reference))
             .put("className", reference.get().getClass().getName());
+    if (stacktrace != null) {
+      builder.put("stacktrace", getStackTraceString(stacktrace));
+    }
     send(FRESCO_CLOSEABLE_REFERENCE_LEAK_EVENT, builder.build());
+  }
+
+  public static String getStackTraceString(Throwable tr) {
+    StringWriter sw = new StringWriter();
+    PrintWriter pw = new PrintWriter(sw);
+    tr.printStackTrace(pw);
+    return sw.toString();
   }
 }
