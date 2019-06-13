@@ -319,6 +319,11 @@ function buildRow(request: Request, response: ?Response): ?TableBodyRow {
   const url = new URL(request.url);
   const domain = url.host + url.pathname;
   const friendlyName = getHeaderValue(request.headers, 'X-FB-Friendly-Name');
+  const style = response && response.isMock ? {
+    backgroundColor: colors.yellowTint,
+    color: colors.yellow,
+    fontWeight: 500,
+  }: { };
 
   return {
     columns: {
@@ -362,6 +367,7 @@ function buildRow(request: Request, response: ?Response): ?TableBodyRow {
     sortKey: request.timestamp,
     copyText: request.url,
     highlightOnHover: true,
+    style: style,
   };
 }
 

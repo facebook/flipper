@@ -178,7 +178,7 @@ export default class RequestDetails extends Component<
                 </Panel>
               ) : null,
               <Panel
-                heading={'Response Body'}
+                heading={response.isMock ? 'Response Body (Mock)': 'Response Body'}
                 floating={false}
                 padded={!formattedText}>
                 <ResponseBodyInspector
