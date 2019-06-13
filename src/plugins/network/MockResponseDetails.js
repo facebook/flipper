@@ -1,13 +1,15 @@
 import type {Route} from './types.js';
 
 import {
-  PureComponent,
+  Component,
   FlexRow,
   FlexColumn,
   Input,
   Text,
+  Glyph,
   Select,
   styled,
+  colors
 } from 'flipper';
 import type {RequestId} from "./types";
 
@@ -16,12 +18,6 @@ type Props = {
   route: Route,
   handleRouteChange: (selectedId: RequestId, route: Route) =>{}
 };
-
-type State = {
-  requestUrl: string,
-  method: string,
-  data: string
-}
 
 const StyledSelectContainer = styled(FlexRow)({
   paddingLeft: 6,
@@ -76,60 +72,38 @@ const Container = styled(FlexColumn)({
   overflow: 'hidden',
 });
 
-export class MockResponseDetails extends PureComponent<Props, State> {
+const Warning = styled(FlexRow)({
+  marginTop: 8
+});
 
-  constructor(props) {
-    super(props);
+export class MockResponseDetails extends Component<Props> {
 
-    // Copy the route info from props
-    const route = (this.props != null && this.props.route !== null) ? this.props.route : {
-      requestUrl: '',
-      method: 'GET',
-      data: ''
-    };
-
-    // Initial state
-    this.state = {
-      requestUrl: route.requestUrl,
-      method: route.method,
-      data: route.data
-    };
-
-    this.handleMethodSelectChange = this.handleMethodSelectChange.bind(this);
-    this.handleURLInputChange = this.handleURLInputChange.bind(this);
-    this.handleDataTextAreaChange = this.handleDataTextAreaChange.bind(this);
-  }
+  updateRouteChange = (route: Route) => {
+    this.props.handleRouteChange(this.props.id, route);
+  };
 
   handleMethodSelectChange = (text: string) => {
-    this.setState({
-      method: text
-    }, () => {
-      this.props.handleRouteChange(this.props.id, {...this.state, method: this.state.method});
-    })
+    const route = this.props.route;
+    route.method = text;
+    this.updateRouteChange(route);
   };
 
   handleURLInputChange = (event) => {
-    this.setState({
-      requestUrl: event.target.value
-    }, () => {
-      this.props.handleRouteChange(this.props.id, {...this.state, requestUrl: this.state.requestUrl});
-    });
+    const route = this.props.route;
+    route.requestUrl = event.target.value;
+    this.updateRouteChange(route);
   };
 
   handleDataTextAreaChange = (event) => {
-    this.setState({
-      data: event.target.value
-    },() => {
-      this.props.handleRouteChange(this.props.id, {...this.state, data: this.state.data});
-    });
+    const route = this.props.route;
+    route.data = event.target.value;
+    this.updateRouteChange(route);
   };
 
 
   render() {
-
     const methodOptions = ['GET', 'POST'];
-
-    const {requestUrl, method, data} = this.state;
+    const {requestUrl, method, data, isDuplicate} = this.props.route;
 
     return (
       <Container>
@@ -158,6 +132,12 @@ export class MockResponseDetails extends PureComponent<Props, State> {
           spellCheck="false"
           value={data}
           onChange={this.handleDataTextAreaChange}/>
+        {isDuplicate ?
+          (<Warning>
+            <Glyph name="caution-triangle" color={colors.yellow}/>
+            <Text style={{marginLeft: 5}}>Route is duplicated (Same URL and Method)</Text>
+          </Warning>) : null
+        }
       </Container>
     );
   }

@@ -323,6 +323,11 @@ function buildRow(request: Request, response: ?Response): ?TableBodyRow {
   const url = new URL(request.url);
   const domain = url.host + url.pathname;
   const friendlyName = getHeaderValue(request.headers, 'X-FB-Friendly-Name');
+  const style = response && response.isMock ? {
+    backgroundColor: colors.yellowTint,
+    color: colors.yellow,
+    fontWeight: 500,
+  }: { };
 
   let copyText = `# HTTP request for ${domain} (ID: ${request.id})
 ## Request
@@ -391,6 +396,7 @@ ${response.headers
     sortKey: request.timestamp,
     copyText,
     highlightOnHover: true,
+    style: style,
   };
 }
 

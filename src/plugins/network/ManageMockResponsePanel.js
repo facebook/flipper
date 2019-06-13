@@ -27,7 +27,6 @@ type Props = {
 }
 
 type State = {
-  routes: Route [],
   selectedIds: []
 };
 
@@ -103,7 +102,6 @@ export class ManageMockResponsePanel extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
-      routes: this.props.routes || [],
       selectedIds: (this.props.routes !== undefined && this.props.routes.length > 0)?  [0] : []
     };
   }
@@ -111,28 +109,23 @@ export class ManageMockResponsePanel extends Component<Props, State> {
   deleteRoute = () => {
     const { selectedIds } = this.state;
     const selectedId = selectedIds.length === 1 ? selectedIds[0] : null;
-    const routes = this.state.routes;
+    const routes = this.props.routes;
     routes.splice(selectedId, 1);
+
+    this.checkDuplicate(routes);
+
     this.setState({
-      routes: routes,
       selectedIds: []
     }, () => {
-      this.props.handleRoutesChange(this.state.routes);
+      this.props.handleRoutesChange(routes);
     });
   };
 
   buildRows = () => {
-    const routes = new Array(...this.state.routes);
+    const { routes } =  this.props;
     if (routes) {
       let rows = [];
-      let duplicateMap = {};
       routes.forEach((route: Route, index: number) => {
-        if (duplicateMap[route.requestUrl]){
-          route.isDuplicate = true;
-        } else {
-          route.isDuplicate = false;
-          duplicateMap[route.requestUrl] = true;
-        }
         rows.push(this.buildRow(route, index));
       });
       return rows;
@@ -158,14 +151,30 @@ export class ManageMockResponsePanel extends Component<Props, State> {
     }
   };
 
+  checkDuplicate = (routes: Route []) => {
+    let duplicateMap = {};
+    routes.forEach((r: Route, index: number) => {
+      if (duplicateMap[r.method+"|"+r.requestUrl]){
+        r.isDuplicate = true;
+      } else {
+        r.isDuplicate = false;
+        duplicateMap[r.method+"|"+r.requestUrl] = true;
+      }
+    });
+  };
+
   addRow = () => {
     const route = {
       requestUrl: '/',
       method: 'GET'
     };
-    const newRoutes = [...this.state.routes, route];
+    const newRoutes = [...this.props.routes, route];
+
+    this.checkDuplicate(newRoutes);
+
+    this.props.handleRoutesChange(newRoutes);
+
     this.setState({
-      routes: newRoutes,
       selectedIds : [newRoutes.length - 1]
     });
   };
@@ -174,17 +183,26 @@ export class ManageMockResponsePanel extends Component<Props, State> {
     this.setState({selectedIds: selectedIds});
 
   handleRouteChange = (selectedId: RequestId, route: Route) => {
-    const routes = this.state.routes;
+
+    const routes = this.props.routes;
+
+    // Set route
     routes[selectedId] = route;
+
+    // Check duplicate
+    this.checkDuplicate(routes);
+
     this.setState({
       routes: routes
     }, () => {
-      this.props.handleRoutesChange(this.state.routes);
+      this.props.handleRoutesChange(routes);
     });
   };
 
   renderSidebar = () => {
-    const { selectedIds, routes} = this.state;
+
+    const { selectedIds } = this.state;
+    const { routes } = this.props;
     const selectedId = selectedIds.length === 1 ? selectedIds[0] : null;
 
     return selectedId != null ? (
@@ -194,8 +212,8 @@ export class ManageMockResponsePanel extends Component<Props, State> {
         floating={false}
         heading={'Response'} >
         <MockResponseDetails
-          id={selectedId}
           key={selectedId}
+          id={selectedId}
           route={routes[selectedId]}
           handleRouteChange={this.handleRouteChange}
         />

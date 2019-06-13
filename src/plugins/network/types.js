@@ -24,6 +24,7 @@ export type Response = {|
   headers: Array<Header>,
   data: ?string,
   insights: ?Insights,
+  isMock: boolean,
 |};
 
 export type Header = {|
@@ -56,5 +57,5 @@ export type Route = {|
   requestUrl: string,
   method: string,
   data: string,
-  isDuplicate: boolean
+  isDuplicate: boolean,
 |};
