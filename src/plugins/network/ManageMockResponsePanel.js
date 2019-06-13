@@ -219,7 +219,7 @@ export class ManageMockResponsePanel extends Component<Props, State> {
         grow={true}
         collapsable={false}
         floating={false}
-        heading={'Response'}>
+        heading={'Route Info'}>
         <MockResponseDetails
           key={selectedId}
           id={selectedId}

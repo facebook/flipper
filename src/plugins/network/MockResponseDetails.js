@@ -13,6 +13,8 @@ import {
   FlexColumn,
   Input,
   Text,
+  Tabs,
+  Tab,
   Glyph,
   Select,
   styled,
@@ -25,6 +27,10 @@ type Props = {
   route: Route,
   handleRouteChange: (selectedId: RequestId, route: Route) => {},
 };
+
+type State = {
+  activeTab: string,
+}
 
 const StyledSelectContainer = styled(FlexRow)({
   paddingLeft: 6,
@@ -47,7 +53,7 @@ const StyledText = styled(Text)({
 const textAreaStyle = {
   width: '100%',
   marginTop: 8,
-  height: 250,
+  height: 300,
   fontSize: 15,
   color: '#333',
   padding: 10,
@@ -84,7 +90,12 @@ const Warning = styled(FlexRow)({
   marginTop: 8,
 });
 
-export class MockResponseDetails extends Component<Props> {
+export class MockResponseDetails extends Component<Props, State> {
+
+  state = {
+    activeTab: 'response'
+  };
+
   updateRouteChange = (route: Route) => {
     this.props.handleRouteChange(this.props.id, route);
   };
@@ -105,6 +116,12 @@ export class MockResponseDetails extends Component<Props> {
     const route = this.props.route;
     route.data = event.target.value;
     this.updateRouteChange(route);
+  };
+
+  onActive = (key: ?string) => {
+    this.setState({
+      activeTab: key
+    })
   };
 
   render() {
@@ -130,18 +147,30 @@ export class MockResponseDetails extends Component<Props> {
             onChange={this.handleURLInputChange}
           />
         </FlexRow>
-        <StyledText>Data</StyledText>
-        <textarea
-          style={textAreaStyle}
-          wrap="soft"
-          autoComplete="off"
-          spellCheck="false"
-          value={data}
-          onChange={this.handleDataTextAreaChange}
-        />
+        <StyledText />
+        <Tabs active={this.state.activeTab}
+              onActive={this.onActive}>
+          <Tab
+            key={'response'}
+            label={'Response'}>
+            <textarea
+              style={textAreaStyle}
+              wrap="soft"
+              autoComplete="off"
+              spellCheck="false"
+              value={data}
+              onChange={this.handleDataTextAreaChange}
+            />
+          </Tab>
+          <Tab
+            key={'headers'}
+            label={'Headers'}>
+            <StyledText>Hello</StyledText>
+          </Tab>
+        </Tabs>
         {isDuplicate ? (
           <Warning>
-            <Glyph name="caution-triangle" color={colors.yellow} />
+            <Glyph name="caution-triangle" color={colors.yellow}/>
             <Text style={{marginLeft: 5}}>
               Route is duplicated (Same URL and Method)
             </Text>
