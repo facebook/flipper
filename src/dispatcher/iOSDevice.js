@@ -53,6 +53,7 @@ if (typeof window !== 'undefined') {
 }
 
 function queryDevices(store: Store, logger: Logger): Promise<void> {
+  checkXcodeVersionMismatch();
   const {connections} = store.getState();
   const currentDeviceIDs: Set<string> = new Set(
     connections.devices
@@ -141,6 +142,34 @@ function getActiveDevices(): Promise<Array<IOSDeviceParams>> {
     console.error(e.message);
     return [];
   });
+}
+
+let xcodeVersionMismatchFound = false;
+async function checkXcodeVersionMismatch() {
+  if (xcodeVersionMismatchFound) {
+    return;
+  }
+  const exec = promisify(child_process.exec);
+  try {
+    let {stdout: xcodeCLIVersion} = await exec('xcode-select -p');
+    xcodeCLIVersion = xcodeCLIVersion.trim();
+    const {stdout} = await exec('ps aux | grep CoreSimulator');
+    for (let line of stdout.split('\n')) {
+      const match = line.match(
+        /\/Applications\/Xcode[^/]*\.app\/Contents\/Developer/,
+      );
+      const runningVersion = match && match.length > 0 ? match[0].trim() : null;
+      if (runningVersion && runningVersion !== xcodeCLIVersion) {
+        console.error(
+          `Xcode version mismatch: Simulator is running from "${runningVersion}" while Xcode CLI is "${xcodeCLIVersion}". Running "xcode-select --switch ${runningVersion}" can fix this.`,
+        );
+        xcodeVersionMismatchFound = true;
+        break;
+      }
+    }
+  } catch (e) {
+    console.error(e);
+  }
 }
 
 export async function getActiveDevicesAndSimulators(): Promise<
