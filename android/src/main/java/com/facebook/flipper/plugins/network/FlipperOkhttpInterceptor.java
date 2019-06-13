@@ -59,6 +59,7 @@ public class FlipperOkhttpInterceptor implements Interceptor, BufferingFlipperPl
 
     ResponseBody body = response.body();
     ResponseInfo responseInfo = convertResponse(response, body, identifier);
+    responseInfo.isMock = mockResponse != null;
     plugin.reportResponse(responseInfo);
     return response;
   }
