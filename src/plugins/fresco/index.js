@@ -193,8 +193,8 @@ export default class extends FlipperPlugin<PluginState, *, PersistedState> {
   };
 
   static getActiveNotifications = ({
-    closeableReferenceLeaks,
-    isLeakTrackingEnabled,
+    closeableReferenceLeaks = [],
+    isLeakTrackingEnabled = false,
   }: PersistedState): Array<Notification> =>
     closeableReferenceLeaks
       .filter(_ => isLeakTrackingEnabled)
