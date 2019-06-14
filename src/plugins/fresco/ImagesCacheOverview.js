@@ -162,7 +162,7 @@ export default class ImagesCacheOverview extends PureComponent<
         onKeyDown={this.onKeyDown}
         tabIndex="0">
         <Toolbar position="top">
-          <Button icon="cross-outline" onClick={this.props.onTrimMemory}>
+          <Button icon="trash" onClick={this.props.onTrimMemory}>
             Trim Memory
           </Button>
           <Button onClick={this.props.onRefresh}>Refresh</Button>
