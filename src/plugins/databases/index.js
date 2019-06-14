@@ -190,6 +190,7 @@ function renderTable(page: ?Page, component: DatabasesPlugin) {
       zebra={true}
       rows={page.rows}
       horizontallyScrollable={true}
+      multiHighlight={true}
       onSort={(sortOrder: TableRowSortOrder) => {
         component.dispatchAction({
           type: 'SortByChanged',
