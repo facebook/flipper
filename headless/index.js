@@ -101,6 +101,12 @@ function outputAndExit(output: string): void {
   });
 }
 
+function errorAndExit(error: string): void {
+  process.stderr.write(error, () => {
+    process.exit(1);
+  });
+}
+
 async function earlyExitActions(
   userArguments: UserArguments,
   originalConsole: typeof global.console,
@@ -228,13 +234,17 @@ async function startFlipper(userArguments: UserArguments) {
             .then(payload => {
               outputAndExit(payload || '');
             })
-            .catch(console.error);
+            .catch(e => {
+              errorAndExit(e.message);
+            });
         } else {
           exportStore(store)
             .then(({serializedString}) => {
               outputAndExit(serializedString);
             })
-            .catch(console.error);
+            .catch(e => {
+              errorAndExit(e.message);
+            });
         }
       }, 10);
     }
