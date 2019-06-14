@@ -383,10 +383,16 @@ class ManagedTable extends React.Component<
       e.button !== 0 ||
       (process.platform === 'darwin' && e.button === 0 && e.ctrlKey);
 
-    if (!contextClick) {
-      this.dragStartIndex = index;
-      document.addEventListener('mouseup', this.onStopDragSelecting);
+    if (contextClick) {
+      if (!highlightedRows.has(row.key)) {
+        highlightedRows.clear();
+        highlightedRows.add(row.key);
+      }
+      return;
     }
+
+    this.dragStartIndex = index;
+    document.addEventListener('mouseup', this.onStopDragSelecting);
 
     if (
       ((process.platform === 'darwin' && e.metaKey) ||
