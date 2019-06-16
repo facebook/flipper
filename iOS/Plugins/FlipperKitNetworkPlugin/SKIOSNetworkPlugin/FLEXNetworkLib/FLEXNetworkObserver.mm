@@ -847,7 +847,10 @@ static char const *const kFLEXRequestIDKey = "kFLEXRequestIDKey";
 
 + (void)setRequestID:(NSString *)requestID forConnectionOrTask:(id)connectionOrTask
 {
-    objc_setAssociatedObject(connectionOrTask, kFLEXRequestIDKey, requestID, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    if (connectionOrTask) {
+        objc_setAssociatedObject(connectionOrTask, kFLEXRequestIDKey, requestID, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    }
+    
 }
 
 #pragma mark - Initialization
