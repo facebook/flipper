@@ -31,6 +31,12 @@ export type Header = {|
   value: string,
 |};
 
+export type RetryInsights = {|
+  count: number,
+  limit: number,
+  timeSpent: number,
+|};
+
 export type Insights = {|
   dnsLookupTime: ?number,
   connectTime: ?number,
@@ -43,4 +49,5 @@ export type Insights = {|
   // Amount of transferred data can be different from total size of payload.
   bytesTransfered: ?number,
   transferSpeed: ?number,
+  retries: ?RetryInsights,
 |};

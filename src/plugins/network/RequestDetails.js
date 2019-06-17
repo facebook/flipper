@@ -5,7 +5,13 @@
  * @format
  */
 
-import type {Request, Response, Header, Insights} from './types.js';
+import type {
+  Request,
+  Response,
+  Header,
+  Insights,
+  RetryInsights,
+} from './types.js';
 
 import {
   Component,
@@ -731,6 +737,14 @@ class InsightsInspector extends Component<{insights: Insights}> {
     return `${formatBytes(value)}/sec`;
   }
 
+  formatRetries(retry: RetryInsights): string {
+    const timesWord = retry.limit === 1 ? 'time' : 'times';
+
+    return `${this.formatTime(retry.timeSpent)} (${
+      retry.count
+    } ${timesWord} out of ${retry.limit})`;
+  }
+
   buildRow<T>(name: string, value: ?T, formatter: T => string): any {
     return value
       ? {
@@ -750,9 +764,10 @@ class InsightsInspector extends Component<{insights: Insights}> {
 
   render() {
     const insights = this.props.insights;
-    const {buildRow, formatTime, formatSpeed} = this;
+    const {buildRow, formatTime, formatSpeed, formatRetries} = this;
 
     const rows = [
+      buildRow('Retries', insights.retries, formatRetries.bind(this)),
       buildRow('DNS lookup time', insights.dnsLookupTime, formatTime),
       buildRow('Connect time', insights.connectTime, formatTime),
       buildRow('SSL handshake time', insights.sslHandshakeTime, formatTime),
