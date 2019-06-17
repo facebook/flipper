@@ -17,6 +17,7 @@ import FlexBox from '../FlexBox.js';
 import Glyph from '../Glyph.js';
 import FilterToken from './FilterToken.js';
 import styled from '../../styled/index.js';
+import debounce from 'lodash.debounce';
 
 const SearchBar = styled(Toolbar)({
   height: 42,
@@ -250,10 +251,12 @@ const Searchable = (
       }
     };
 
-    onChangeSearchTerm = (e: SyntheticInputEvent<HTMLInputElement>) =>
+    onChangeSearchTerm = (e: SyntheticInputEvent<HTMLInputElement>) => {
+      this.setState({searchTerm: e.target.value});
       this.matchTags(e.target.value, false);
+    };
 
-    matchTags = (searchTerm: string, matchEnd: boolean) => {
+    matchTags = debounce((searchTerm: string, matchEnd: boolean) => {
       const filterPattern = matchEnd
         ? /([a-z][a-z0-9]*[!]?[:=][^\s]+)($|\s)/gi
         : /([a-z][a-z0-9]*[!]?[:=][^\s]+)\s/gi;
@@ -284,8 +287,7 @@ const Searchable = (
 
         searchTerm = searchTerm.replace(filterPattern, '');
       }
-      this.setState({searchTerm});
-    };
+    }, 200);
 
     setInputRef = (ref: ?HTMLInputElement) => {
       this._inputRef = ref;
