@@ -275,8 +275,13 @@ class ManagedTable extends React.Component<
     }
   };
 
-  onCopy = () => {
-    clipboard.writeText(this.getSelectedText());
+  onCopy = (withHeader: boolean) => {
+    clipboard.writeText(
+      [
+        ...(withHeader ? [this.getHeaderText()] : []),
+        this.getSelectedText(),
+      ].join('\n'),
+    );
   };
 
   onKeyDown = (e: KeyboardEvent) => {
@@ -289,7 +294,7 @@ class ManagedTable extends React.Component<
         (e.ctrlKey && process.platform !== 'darwin')) &&
       e.keyCode === 67
     ) {
-      this.onCopy();
+      this.onCopy(false);
     } else if (
       (e.keyCode === 38 || e.keyCode === 40) &&
       this.props.highlightableRows
@@ -485,7 +490,6 @@ class ManagedTable extends React.Component<
       highlightedRows.size === 1
         ? [
             {
-              click: this.onCopy,
               label: 'Copy cell',
               submenu: this.state.columnOrder
                 .filter(c => c.visible)
@@ -509,13 +513,32 @@ class ManagedTable extends React.Component<
           highlightedRows.size > 1
             ? `Copy ${highlightedRows.size} rows`
             : 'Copy row',
-        click: this.onCopy,
+        submenu: [
+          {label: 'With columns header', click: () => this.onCopy(true)},
+          {
+            label: 'Without columns header',
+            click: () => {
+              this.onCopy(false);
+            },
+          },
+        ],
       },
       {
         label: 'Create Paste',
-        click: () => createPaste(this.getSelectedText()),
+        click: () =>
+          createPaste(
+            [this.getHeaderText(), this.getSelectedText()].join('\n'),
+          ),
       },
     ];
+  };
+
+  getHeaderText = (): string => {
+    return this.state.columnOrder
+      .filter(c => c.visible)
+      .map(c => c.key)
+      .map(key => this.props.columns[key].value)
+      .join('\t');
   };
 
   getSelectedText = (): string => {
