@@ -16,5 +16,8 @@
     "glob": "^7.1.3",
     "react-docgen": "^4.1.0"
   },
-  "dependencies": {}
+  "dependencies": {},
+  "resolutions": {
+    "underscore.string": "3.3.5"
+  }
 }
