@@ -120,7 +120,7 @@ const INITIAL_COLUMN_ORDER = [
   },
   {
     key: 'time',
-    visible: false,
+    visible: true,
   },
   {
     key: 'pid',
