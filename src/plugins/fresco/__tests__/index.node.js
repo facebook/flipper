@@ -81,7 +81,7 @@ test('the metric reducer for the input having regression', () => {
   expect(FrescoPlugin.metricsReducer).toBeDefined();
   //$FlowFixMe: Added a check if the metricsReducer exists in FrescoPlugin
   const metrics = FrescoPlugin.metricsReducer(persistedState);
-  expect(metrics).resolves.toMatchObject({
+  return expect(metrics).resolves.toMatchObject({
     WASTED_BYTES: 37500,
   });
 });
@@ -111,7 +111,7 @@ test('the metric reducer for the input having no regression', () => {
   expect(metricsReducer).toBeDefined();
   //$FlowFixMe: Added a check if the metricsReducer exists in FrescoPlugin
   const metrics = metricsReducer(persistedState);
-  expect(metrics).resolves.toMatchObject({
+  return expect(metrics).resolves.toMatchObject({
     WASTED_BYTES: 0,
   });
 });
@@ -121,7 +121,7 @@ test('the metric reducer for the default persisted state', () => {
   expect(metricsReducer).toBeDefined();
   //$FlowFixMe: Added a check if the metricsReducer exists in FrescoPlugin
   const metrics = metricsReducer(FrescoPlugin.defaultPersistedState);
-  expect(metrics).resolves.toMatchObject({WASTED_BYTES: 0});
+  return expect(metrics).resolves.toMatchObject({WASTED_BYTES: 0});
 });
 
 test('the metric reducer with the events data but with no imageData in imagesMap ', () => {
@@ -150,7 +150,7 @@ test('the metric reducer with the events data but with no imageData in imagesMap
   expect(metricsReducer).toBeDefined();
   //$FlowFixMe: Added a check if the metricsReducer exists in FrescoPlugin
   const metrics = metricsReducer(persistedState);
-  expect(metrics).resolves.toMatchObject({WASTED_BYTES: 0});
+  return expect(metrics).resolves.toMatchObject({WASTED_BYTES: 0});
 });
 
 test('the metric reducer with the no viewPort data in events', () => {
@@ -179,7 +179,7 @@ test('the metric reducer with the no viewPort data in events', () => {
   expect(metricsReducer).toBeDefined();
   //$FlowFixMe: Added a check if the metricsReducer exists in FrescoPlugin
   const metrics = metricsReducer(persistedState);
-  expect(metrics).resolves.toMatchObject({WASTED_BYTES: 0});
+  return expect(metrics).resolves.toMatchObject({WASTED_BYTES: 0});
 });
 
 test('the metric reducer with the multiple events', () => {
@@ -245,7 +245,7 @@ test('the metric reducer with the multiple events', () => {
   expect(metricsReducer).toBeDefined();
   //$FlowFixMe: Added a check if the metricsReducer exists in FrescoPlugin
   const metrics = metricsReducer(persistedState);
-  expect(metrics).resolves.toMatchObject({WASTED_BYTES: 172500});
+  return expect(metrics).resolves.toMatchObject({WASTED_BYTES: 160000});
 });
 
 test('closeable reference metrics on empty state', () => {
@@ -254,7 +254,7 @@ test('closeable reference metrics on empty state', () => {
   ) => Promise<MetricType> = (FrescoPlugin.metricsReducer: any);
   const persistedState = mockPersistedState();
   const metrics = metricsReducer(persistedState);
-  expect(metrics).resolves.toMatchObject({CLOSEABLE_REFERENCE_LEAKS: 0});
+  return expect(metrics).resolves.toMatchObject({CLOSEABLE_REFERENCE_LEAKS: 0});
 });
 
 test('closeable reference metrics on input', () => {
@@ -278,7 +278,7 @@ test('closeable reference metrics on input', () => {
     closeableReferenceLeaks,
   };
   const metrics = metricsReducer(persistedState);
-  expect(metrics).resolves.toMatchObject({CLOSEABLE_REFERENCE_LEAKS: 2});
+  return expect(metrics).resolves.toMatchObject({CLOSEABLE_REFERENCE_LEAKS: 2});
 });
 
 test('notifications for leaks', () => {
