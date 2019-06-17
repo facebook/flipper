@@ -52,7 +52,7 @@ export async function exportMetricsWithoutTrace(
   const pluginsMap: Map<
     string,
     Class<FlipperDevicePlugin<> | FlipperPlugin<>>,
-  > = pluginsClassMap(store.getState());
+  > = pluginsClassMap(store.getState().plugins);
   const metadata = await fetchMetadata(pluginStates, pluginsMap, store);
   const newPluginStates = metadata.pluginStates;
   const {errorArray} = metadata;

@@ -21,6 +21,8 @@ import {listDevices} from '../src/utils/listDevices';
 // $FlowFixMe this file exist, trust me, flow!
 import setup from '../static/setup.js';
 import type {Store} from '../src/reducers';
+import {getActivePluginNames} from '../src/utils/pluginUtils.js';
+import {serialize} from '../src/utils/serialization';
 
 type UserArguments = {|
   securePort: string,
@@ -31,6 +33,7 @@ type UserArguments = {|
   metrics: string,
   listDevices: boolean,
   device: string,
+  listPlugins: boolean,
 |};
 
 yargs
@@ -74,6 +77,11 @@ yargs
       yargs.option('list-devices', {
         default: false,
         describe: 'Will print the list of devices in the terminal',
+        type: 'boolean',
+      });
+      yargs.option('list-plugins', {
+        default: false,
+        describe: 'Will print the list of supported plugins in the terminal',
         type: 'boolean',
       });
       yargs.option('device', {
@@ -122,12 +130,16 @@ async function exitActions(
   originalConsole: typeof global.console,
   store: Store,
 ): Promise<void> {
+  if (userArguments.listPlugins) {
+    outputAndExit(serialize(getActivePluginNames(store.getState().plugins)));
+  }
+
   const {metrics, exit} = userArguments;
   if (shouldExportMetric(metrics) && metrics && metrics.length > 0) {
     try {
       const payload = await exportMetricsFromTrace(
         metrics,
-        pluginsClassMap(store.getState()),
+        pluginsClassMap(store.getState().plugins),
       );
       outputAndExit(payload.toString());
     } catch (error) {

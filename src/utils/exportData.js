@@ -49,16 +49,16 @@ export function processClients(
 }
 
 export function pluginsClassMap(
-  state: State,
+  plugins: PluginStates,
 ): Map<string, Class<FlipperDevicePlugin<> | FlipperPlugin<>>> {
   const pluginsMap: Map<
     string,
     Class<FlipperDevicePlugin<> | FlipperPlugin<>>,
   > = new Map([]);
-  state.plugins.clientPlugins.forEach((val, key) => {
+  plugins.clientPlugins.forEach((val, key) => {
     pluginsMap.set(key, val);
   });
-  state.plugins.devicePlugins.forEach((val, key) => {
+  plugins.devicePlugins.forEach((val, key) => {
     pluginsMap.set(key, val);
   });
   return pluginsMap;
