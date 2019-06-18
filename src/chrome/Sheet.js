@@ -26,7 +26,7 @@ const DialogContainer = styled('div')(({state}) => ({
   position: 'absolute',
   left: '50%',
   top: 38,
-  zIndex: 3,
+  zIndex: 5,
   backgroundColor: '#EFEEEF',
   border: '1px solid #C6C6C6',
   borderTop: 'none',
