@@ -258,6 +258,18 @@ class ManagedTable extends React.Component<
     ) {
       this.scrollToHighlightedRows();
     }
+    if (
+      this.props.stickyBottom &&
+      !this.state.shouldScrollToBottom &&
+      this.scrollRef &&
+      this.scrollRef.current &&
+      this.scrollRef.current.parentElement &&
+      this.scrollRef.current.parentElement instanceof HTMLElement &&
+      this.scrollRef.current.offsetHeight <=
+        this.scrollRef.current.parentElement.offsetHeight
+    ) {
+      this.setState({shouldScrollToBottom: true});
+    }
     this.firstUpdate = false;
   }
 
@@ -569,12 +581,11 @@ class ManagedTable extends React.Component<
       const parent = current ? current.parentElement : null;
       if (
         this.props.stickyBottom &&
-        scrollDirection === 'forward' &&
-        !this.state.shouldScrollToBottom &&
         current &&
         parent instanceof HTMLElement &&
-        current.offsetHeight - (scrollOffset + parent.offsetHeight) <
-          parent.offsetHeight
+        scrollDirection === 'forward' &&
+        !this.state.shouldScrollToBottom &&
+        current.offsetHeight - parent.offsetHeight === scrollOffset
       ) {
         this.setState({shouldScrollToBottom: true});
       } else if (
