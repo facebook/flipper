@@ -65,7 +65,7 @@ const Padder = styled('div')(
 
 type Props = {
   onHide: () => mixed,
-  file: string,
+  file: ?string,
 };
 type State = {
   errorArray: Array<Error>,
@@ -86,6 +86,10 @@ export default class ShareSheetExportFile extends Component<Props, State> {
   };
 
   async componentDidMount() {
+    if (!this.props.file) {
+      return;
+    }
+
     try {
       const {errorArray} = await reportPlatformFailures(
         exportStoreToFile(this.props.file, this.context.store),
@@ -98,6 +102,10 @@ export default class ShareSheetExportFile extends Component<Props, State> {
   }
 
   render() {
+    if (!this.props.file) {
+      return this.renderNoFileError();
+    }
+
     const {result} = this.state;
     if (result) {
       const {success, error} = result;
@@ -160,5 +168,21 @@ export default class ShareSheetExportFile extends Component<Props, State> {
         </Container>
       );
     }
+  }
+
+  renderNoFileError() {
+    return (
+      <Container>
+        <Center>
+          <Title bold>No file selected</Title>
+        </Center>
+        <FlexRow>
+          <Spacer />
+          <Button compact padded onClick={this.props.onHide}>
+            Close
+          </Button>
+        </FlexRow>
+      </Container>
+    );
   }
 }
