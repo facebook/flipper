@@ -478,7 +478,8 @@ class ManagedTable extends React.Component<
       dragStartIndex &&
       current &&
       this.props.multiHighlight &&
-      this.props.highlightableRows
+      this.props.highlightableRows &&
+      !e.shiftKey // When shift key is pressed, it's a range select not a drag select
     ) {
       current.scrollToItem(index + 1);
       const startKey = this.props.rows[dragStartIndex].key;
