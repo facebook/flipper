@@ -27,7 +27,11 @@ import {
   FlipperPlugin,
 } from 'flipper';
 import type {Request, RequestId, Response} from './types.js';
-import {convertRequestToCurlCommand, getHeaderValue} from './utils.js';
+import {
+  convertRequestToCurlCommand,
+  getHeaderValue,
+  decodeBody,
+} from './utils.js';
 import RequestDetails from './RequestDetails.js';
 import {clipboard} from 'electron';
 import {URL} from 'url';
@@ -266,6 +270,31 @@ function buildRow(request: Request, response: ?Response): ?TableBodyRow {
   const domain = url.host + url.pathname;
   const friendlyName = getHeaderValue(request.headers, 'X-FB-Friendly-Name');
 
+  let copyText = `# HTTP request for ${domain} (ID: ${request.id})
+## Request
+HTTP ${request.method} ${request.url}
+${request.headers
+  .map(({key, value}) => `${key}: ${String(value)}`)
+  .join('\n')}`;
+
+  if (request.data) {
+    copyText += `\n\n${decodeBody(request)}`;
+  }
+
+  if (response) {
+    copyText += `
+
+## Response
+HTTP ${response.status} ${response.reason}
+${response.headers
+  .map(({key, value}) => `${key}: ${String(value)}`)
+  .join('\n')}`;
+  }
+
+  if (response) {
+    copyText += `\n\n${decodeBody(response)}`;
+  }
+
   return {
     columns: {
       requestTimestamp: {
@@ -306,7 +335,7 @@ function buildRow(request: Request, response: ?Response): ?TableBodyRow {
     key: request.id,
     filterValue: `${request.method} ${request.url}`,
     sortKey: request.timestamp,
-    copyText: request.url,
+    copyText,
     highlightOnHover: true,
   };
 }
