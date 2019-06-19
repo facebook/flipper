@@ -31,6 +31,7 @@ import createPaste from '../../../fb-stubs/createPaste.js';
 import debounceRender from 'react-debounce-render';
 import debounce from 'lodash.debounce';
 import {DEFAULT_ROW_HEIGHT} from './types';
+import textContent from '../../../utils/textContent.js';
 
 export type ManagedTableProps = {|
   /**
@@ -145,12 +146,6 @@ const Container = styled(FlexColumn)(props => ({
 }));
 
 const globalTableState: {[string]: TableColumnSizes} = {};
-
-function getTextContentOfRow(rowId: string) {
-  return Array.from(
-    document.querySelectorAll(`[data-key='${rowId}'] > *`) || [],
-  ).map(node => node.textContent);
-}
 
 class ManagedTable extends React.Component<
   ManagedTableProps,
@@ -489,7 +484,7 @@ class ManagedTable extends React.Component<
   };
 
   onCopyCell = (rowId: string, index: number) => {
-    const cellText = getTextContentOfRow(rowId)[index];
+    const cellText = this.getTextContentOfRow(rowId)[index];
     clipboard.writeText(cellText);
   };
 
@@ -564,9 +559,19 @@ class ManagedTable extends React.Component<
       .filter(row => highlightedRows.has(row.key))
       .map(
         (row: TableBodyRow) =>
-          row.copyText || getTextContentOfRow(row.key).join('\t'),
+          row.copyText || this.getTextContentOfRow(row.key).join('\t'),
       )
       .join('\n');
+  };
+
+  getTextContentOfRow = (key: string): Array<string> => {
+    const row = this.props.rows.find(row => row.key === key);
+    if (!row) {
+      return [];
+    }
+    return this.state.columnOrder
+      .filter(({visible}) => visible)
+      .map(({key}) => textContent(row.columns[key].value));
   };
 
   onScroll = debounce(
