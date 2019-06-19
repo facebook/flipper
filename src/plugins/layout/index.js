@@ -94,7 +94,12 @@ export default class Layout extends FlipperPlugin<State, void, PersistedState> {
       }
     });
 
-    this.setState({init: true});
+    this.setState({
+      init: true,
+      selectedElement: this.props.deepLinkPayload
+        ? this.props.deepLinkPayload
+        : null,
+    });
   }
 
   onToggleTargetMode = () => {
@@ -201,6 +206,7 @@ export default class Layout extends FlipperPlugin<State, void, PersistedState> {
                   this.setState({searchResults})
                 }
                 inAXMode={this.state.inAXMode}
+                initialQuery={this.props.deepLinkPayload}
               />
             </Toolbar>
 

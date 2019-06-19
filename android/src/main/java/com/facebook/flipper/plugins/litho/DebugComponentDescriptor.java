@@ -396,7 +396,7 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
   @Override
   public boolean matches(String query, DebugComponent node) throws Exception {
     NodeDescriptor descriptor = descriptorForClass(Object.class);
-    return descriptor.matches(query, node);
+    return descriptor.matches(query, node) || getId(node).equals(query);
   }
 
   private static void applyLayoutOverride(
