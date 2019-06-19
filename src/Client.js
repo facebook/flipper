@@ -294,23 +294,20 @@ export default class Client extends EventEmitter {
               }),
             );
           }
-        } else {
-          const apiCallbacks = this.broadcastCallbacks.get(params.api);
-          if (!apiCallbacks) {
-            return;
-          }
+        }
+        const apiCallbacks = this.broadcastCallbacks.get(params.api);
+        if (!apiCallbacks) {
+          return;
+        }
 
-          const methodCallbacks: ?Set<Function> = apiCallbacks.get(
-            params.method,
-          );
-          if (methodCallbacks) {
-            for (const callback of methodCallbacks) {
-              callback(params.params);
-            }
+        const methodCallbacks: ?Set<Function> = apiCallbacks.get(params.method);
+        if (methodCallbacks) {
+          for (const callback of methodCallbacks) {
+            callback(params.params);
           }
         }
       }
-      return;
+      return; // method === 'execute'
     }
 
     if (this.sdkVersion < 1) {

@@ -271,6 +271,7 @@ export default class extends FlipperPlugin<PluginState, *, PersistedState> {
     debugLog('init()');
     this.updateCaches('init');
     this.client.subscribe('events', (event: ImageEvent) => {
+      debugLog('Received events', event);
       const {surfaceList} = this.props.persistedState;
       const {attribution} = event;
       if (attribution instanceof Array && attribution.length > 0) {
