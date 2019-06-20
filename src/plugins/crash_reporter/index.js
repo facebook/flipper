@@ -537,7 +537,7 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin<
       if (ignore) {
         console.error('Ignored the notification for the crash', crash);
       }
-      return ignore;
+      return !ignore;
     });
     return filteredCrashes.map((crash: Crash) => {
       const id = crash.notificationID;
