@@ -27,9 +27,7 @@ type State = {
   filterRows: (row: TableBodyRow) => boolean,
 };
 
-const filterRowsFactory = (filters: Array<Filter>, searchTerm: string) => (
-  row: TableBodyRow,
-): boolean =>
+const rowMatchesFilters = (filters: Array<Filter>, row: TableBodyRow) =>
   filters
     .map((filter: Filter) => {
       if (filter.type === 'enum' && row.type != null) {
@@ -48,14 +46,43 @@ const filterRowsFactory = (filters: Array<Filter>, searchTerm: string) => (
         return true;
       }
     })
-    .reduce((acc, cv) => acc && cv, true) &&
-  (searchTerm != null && searchTerm.length > 0
-    ? Object.keys(row.columns)
-        .map(key => textContent(row.columns[key].value))
-        .join('~~') // prevent from matching text spanning multiple columns
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase())
-    : true);
+    .every(x => x === true);
+
+function rowMatchesRegex(values: Array<string>, regex: string): boolean {
+  try {
+    const re = new RegExp(regex);
+    return values.some(x => re.test(x));
+  } catch (e) {
+    return false;
+  }
+}
+
+function rowMatchesSearchTerm(
+  searchTerm: string,
+  isRegex: boolean,
+  row: TableBodyRow,
+): boolean {
+  if (searchTerm == null || searchTerm.length === 0) {
+    return true;
+  }
+  const rowValues = Object.keys(row.columns).map(key =>
+    textContent(row.columns[key].value),
+  );
+  if (isRegex) {
+    return rowMatchesRegex(rowValues, searchTerm);
+  }
+  return rowValues.some(x =>
+    x.toLowerCase().includes(searchTerm.toLowerCase()),
+  );
+}
+
+const filterRowsFactory = (
+  filters: Array<Filter>,
+  searchTerm: string,
+  regexSearch: boolean,
+) => (row: TableBodyRow): boolean =>
+  rowMatchesFilters(filters, row) &&
+  rowMatchesSearchTerm(searchTerm, regexSearch, row);
 
 class SearchableManagedTable extends PureComponent<Props, State> {
   static defaultProps = {
@@ -63,7 +90,11 @@ class SearchableManagedTable extends PureComponent<Props, State> {
   };
 
   state = {
-    filterRows: filterRowsFactory(this.props.filters, this.props.searchTerm),
+    filterRows: filterRowsFactory(
+      this.props.filters,
+      this.props.searchTerm,
+      this.props.regexEnabled || false,
+    ),
   };
 
   componentDidMount() {
@@ -73,10 +104,15 @@ class SearchableManagedTable extends PureComponent<Props, State> {
   componentWillReceiveProps(nextProps: Props) {
     if (
       nextProps.searchTerm !== this.props.searchTerm ||
+      nextProps.regexEnabled != this.props.regexEnabled ||
       !deepEqual(this.props.filters, nextProps.filters)
     ) {
       this.setState({
-        filterRows: filterRowsFactory(nextProps.filters, nextProps.searchTerm),
+        filterRows: filterRowsFactory(
+          nextProps.filters,
+          nextProps.searchTerm,
+          nextProps.regexEnabled || false,
+        ),
       });
     }
   }

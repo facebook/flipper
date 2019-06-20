@@ -637,6 +637,7 @@ export default class LogTable extends FlipperDevicePlugin<
           defaultFilters={DEFAULT_FILTERS}
           zebra={false}
           actions={<Button onClick={this.clearLogs}>Clear Logs</Button>}
+          regexSupported={true}
           // If the logs is opened through deeplink, then don't scroll as the row is highlighted
           stickyBottom={
             !(this.props.deepLinkPayload && this.state.highlightedRows.size > 0)

@@ -18,6 +18,7 @@ import Glyph from '../Glyph.js';
 import FilterToken from './FilterToken.js';
 import styled from '../../styled/index.js';
 import debounce from 'lodash.debounce';
+import ToggleSwitch from '../ToggleSwitch';
 
 const SearchBar = styled(Toolbar)({
   height: 42,
@@ -43,6 +44,7 @@ export const SearchInput = styled(Input)(props => ({
   lineHeight: '100%',
   marginLeft: 2,
   width: '100%',
+  color: props.isValidInput ? colors.black : colors.red,
   '&::-webkit-input-placeholder': {
     color: colors.placeholder,
     fontWeight: 300,
@@ -84,6 +86,8 @@ export type SearchableProps = {|
   addFilter: (filter: Filter) => void,
   searchTerm: string,
   filters: Array<Filter>,
+  regexSupported?: boolean,
+  regexEnabled?: boolean,
 |};
 
 type Props = {|
@@ -93,6 +97,7 @@ type Props = {|
   columns?: TableColumns,
   onFilterChange: (filters: Array<Filter>) => void,
   defaultFilters: Array<Filter>,
+  regexSupported: boolean,
 |};
 
 type State = {
@@ -100,7 +105,17 @@ type State = {
   focusedToken: number,
   searchTerm: string,
   hasFocus: boolean,
+  regexEnabled: boolean,
+  compiledRegex: ?RegExp,
 };
+
+function compileRegex(s: string): ?RegExp {
+  try {
+    return new RegExp(s);
+  } catch (e) {
+    return null;
+  }
+}
 
 const Searchable = (
   Component: React.ComponentType<any>,
@@ -115,6 +130,8 @@ const Searchable = (
       focusedToken: -1,
       searchTerm: '',
       hasFocus: false,
+      regexEnabled: false,
+      compiledRegex: null,
     };
 
     _inputRef: ?HTMLInputElement;
@@ -155,9 +172,12 @@ const Searchable = (
             }
           });
         }
+        const searchTerm = savedState.searchTerm || this.state.searchTerm;
         this.setState({
-          searchTerm: savedState.searchTerm || this.state.searchTerm,
+          searchTerm: searchTerm,
           filters: savedState.filters || this.state.filters,
+          regexEnabled: savedState.regexEnabled || this.state.regexEnabled,
+          compiledRegex: compileRegex(searchTerm),
         });
       }
     }
@@ -166,6 +186,7 @@ const Searchable = (
       if (
         this.getTableKey() &&
         (prevState.searchTerm !== this.state.searchTerm ||
+          prevState.regexEnabled != this.state.regexEnabled ||
           prevState.filters !== this.state.filters)
       ) {
         window.localStorage.setItem(
@@ -173,6 +194,7 @@ const Searchable = (
           JSON.stringify({
             searchTerm: this.state.searchTerm,
             filters: this.state.filters,
+            regexEnabled: this.state.regexEnabled,
           }),
         );
         if (this.props.onFilterChange != null) {
@@ -252,7 +274,10 @@ const Searchable = (
     };
 
     onChangeSearchTerm = (e: SyntheticInputEvent<HTMLInputElement>) => {
-      this.setState({searchTerm: e.target.value});
+      this.setState({
+        searchTerm: e.target.value,
+        compiledRegex: compileRegex(e.target.value),
+      });
       this.matchTags(e.target.value, false);
     };
 
@@ -357,6 +382,13 @@ const Searchable = (
 
     onTokenBlur = () => this.setState({focusedToken: -1});
 
+    onRegexToggled = () => {
+      this.setState({
+        regexEnabled: !this.state.regexEnabled,
+        compiledRegex: compileRegex(this.state.searchTerm),
+      });
+    };
+
     hasFocus = (): boolean => {
       return this.state.focusedToken !== -1 || this.state.hasFocus;
     };
@@ -400,11 +432,23 @@ const Searchable = (
               innerRef={this.setInputRef}
               onFocus={this.onInputFocus}
               onBlur={this.onInputBlur}
+              isValidInput={
+                this.state.regexEnabled
+                  ? this.state.compiledRegex !== null
+                  : true
+              }
             />
-            {(this.state.searchTerm || this.state.filters.length > 0) && (
-              <Clear onClick={this.clear}>&times;</Clear>
-            )}
           </SearchBox>
+          {this.props.regexSupported ? (
+            <ToggleSwitch
+              toggled={this.state.regexEnabled}
+              onClick={this.onRegexToggled}
+              label={'Regex'}
+            />
+          ) : null}
+          {(this.state.searchTerm || this.state.filters.length > 0) && (
+            <Clear onClick={this.clear}>&times;</Clear>
+          )}
           {actions != null && <Actions>{actions}</Actions>}
         </SearchBar>,
         <Component
@@ -412,6 +456,7 @@ const Searchable = (
           key="table"
           addFilter={this.addFilter}
           searchTerm={this.state.searchTerm}
+          regexEnabled={this.state.regexEnabled}
           filters={this.state.filters}
         />,
       ];
