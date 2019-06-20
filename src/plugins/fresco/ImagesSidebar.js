@@ -81,21 +81,14 @@ export default class ImagesSidebar extends Component<
 class EventDetails extends Component<{
   event: ImageEventWithId,
 }> {
-  static Container = styled(Panel)({
-    flexShrink: 0,
-    marginTop: '15px',
-  });
-
   render() {
     const {event} = this.props;
 
     return (
-      <EventDetails.Container
+      <Panel
         heading={<RequestHeader event={event} />}
         floating={false}
-        padded={false}
-        grow={false}
-        collapsed={false}>
+        padded={true}>
         <p>
           <DataDescriptionKey>Attribution</DataDescriptionKey>
           <span key="sep">: </span>
@@ -138,7 +131,7 @@ class EventDetails extends Component<{
           />
         </p>
         {this.renderViewportData()}
-      </EventDetails.Container>
+      </Panel>
     );
   }
 

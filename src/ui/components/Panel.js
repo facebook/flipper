@@ -140,7 +140,7 @@ export default class Panel extends React.Component<
         collapsed={collapsed}>
         <Panel.PanelHeader
           floating={floating}
-          padded={typeof heading === 'string'}
+          padded={padded || typeof heading === 'string'}
           onClick={this.onClick}>
           <span>
             {collapsable && (
