@@ -16,6 +16,7 @@ import {setPluginState} from './reducers/pluginStates.js';
 import {ReactiveSocket, PartialResponder} from 'rsocket-core';
 // $FlowFixMe perf_hooks is a new API in node
 import {performance} from 'perf_hooks';
+import {reportPlatformFailures} from './utils/metrics';
 import {reportPluginFailures} from './utils/metrics';
 import {default as isProduction} from './utils/isProduction.js';
 import {registerPlugins} from './reducers/plugins';
@@ -108,6 +109,7 @@ export default class Client extends EventEmitter {
     this.broadcastCallbacks = new Map();
     this.requestCallbacks = new Map();
     this.activePlugins = new Set();
+    this.lastSeenDeviceList = [];
 
     const client = this;
     // node.js doesn't support requestIdleCallback
@@ -147,12 +149,49 @@ export default class Client extends EventEmitter {
     }
   }
 
-  getDevice = (): ?BaseDevice =>
-    this.store
-      .getState()
-      .connections.devices.find(
-        (device: BaseDevice) => device.serial === this.query.device_id,
-      );
+  /* All clients should have a corresponding Device in the store.
+     However, clients can connect before a device is registered, so wait a
+     while for the device to be registered if it isn't already. */
+  setMatchingDevice(): void {
+    if (this.device) {
+      return;
+    }
+    this.device = reportPlatformFailures(
+      new Promise((resolve, reject) => {
+        const device: ?BaseDevice = this.store
+          .getState()
+          .connections.devices.find(
+            (device: BaseDevice) => device.serial === this.query.device_id,
+          );
+        if (device) {
+          resolve(device);
+          return;
+        }
+
+        const unsubscribe = this.store.subscribe(() => {
+          const newDeviceList = this.store.getState().connections.devices;
+          if (newDeviceList === this.lastSeenDeviceList) {
+            return;
+          }
+          this.lastSeenDeviceList = this.store.getState().connections.devices;
+          const matchingDevice = newDeviceList.find(
+            (device: BaseDevice) => device.serial === this.query.device_id,
+          );
+          if (matchingDevice) {
+            resolve(matchingDevice);
+            unsubscribe();
+          }
+        });
+        setTimeout(() => {
+          unsubscribe();
+          const error = `Timed out waiting for device for client ${this.id}`;
+          console.error(error);
+          reject(error);
+        }, 5000);
+      }),
+      'client-setMatchingDevice',
+    );
+  }
 
   on: ((event: 'plugins-change', callback: () => void) => void) &
     ((event: 'close', callback: () => void) => void);
@@ -168,6 +207,7 @@ export default class Client extends EventEmitter {
   responder: PartialResponder;
   store: Store;
   activePlugins: Set<string>;
+  device: Promise<BaseDevice>;
 
   broadcastCallbacks: Map<?string, Map<string, Set<Function>>>;
 
@@ -185,6 +225,7 @@ export default class Client extends EventEmitter {
   }
 
   async init() {
+    this.setMatchingDevice();
     await this.getPlugins();
   }
 
@@ -218,12 +259,16 @@ export default class Client extends EventEmitter {
     this.emit('plugins-change');
   }
 
-  getDevice = (): ?BaseDevice =>
-    this.store
-      .getState()
-      .connections.devices.find(
-        (device: BaseDevice) => device.serial === this.query.device_id,
-      );
+  deviceSerial(): Promise<string> {
+    return this.device
+      .then(device => device.serial)
+      .catch(e => {
+        console.error(
+          'Using "" for deviceId because client has no matching device',
+        );
+        return '';
+      });
+  }
 
   onMessage(msg: string) {
     if (typeof msg !== 'string') {
@@ -259,7 +304,9 @@ export default class Client extends EventEmitter {
           }: ${error.message} + \nDevice Stack Trace: ${error.stacktrace}`,
           'deviceError',
         );
-        handleError(this.store, this.getDevice()?.serial, error);
+        this.deviceSerial().then(serial =>
+          handleError(this.store, serial, error),
+        );
       } else if (method === 'refreshPlugins') {
         this.refreshPlugins();
       } else if (method === 'execute') {
@@ -274,7 +321,9 @@ export default class Client extends EventEmitter {
           //$FlowFixMe
           if (persistingPlugin.prototype instanceof FlipperDevicePlugin) {
             // For device plugins, we are just using the device id instead of client id as the prefix.
-            pluginKey = `${this.getDevice()?.serial || ''}#${params.api}`;
+            this.deviceSerial().then(
+              serial => (pluginKey = `${serial}#${params.api}`),
+            );
           }
           const persistedState = {
             ...persistingPlugin.defaultPersistedState,
@@ -335,7 +384,9 @@ export default class Client extends EventEmitter {
       reject(data.error);
       const {error} = data;
       if (error) {
-        handleError(this.store, this.getDevice()?.serial, error);
+        this.deviceSerial().then(serial =>
+          handleError(this.store, serial, error),
+        );
       }
     } else {
       // ???
