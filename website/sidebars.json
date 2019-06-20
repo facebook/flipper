@@ -23,6 +23,7 @@
       "setup/layout-plugin",
       "setup/network-plugin",
       "setup/databases-plugin",
+      "setup/images-plugin",
       "setup/sandbox-plugin",
       "setup/shared-preferences-plugin",
       "setup/leak-canary-plugin",

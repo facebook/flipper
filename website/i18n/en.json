@@ -104,6 +104,10 @@
         "title": "Databases Plugin Setup",
         "sidebar_label": "Databases"
       },
+      "setup/images-plugin": {
+        "title": "Images Setup",
+        "sidebar_label": "Images"
+      },
       "setup/layout-plugin": {
         "title": "Layout Inspector Setup",
         "sidebar_label": "Layout Inspector"

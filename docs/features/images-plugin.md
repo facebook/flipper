@@ -3,6 +3,8 @@ id: images-plugin
 title: Images
 ---
 
+→ [See setup instructions for the images plugin](setup/images-plugin.md)
+
 The images plugin allows you to inspect what images were fetched, where they are
 coming from and selectively clear caches. Currently, the plugin supports
 [Fresco](https://github.com/facebook/fresco/) as backend.
