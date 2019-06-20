@@ -104,7 +104,7 @@ const Line = styled(View)({
 });
 
 const Container = styled(FlexColumn)({
-  overflow: 'hidden',
+  overflow: 'scroll',
   flexShrink: 0,
 });
 
@@ -115,7 +115,9 @@ const Value = styled(Text)({
   maxHeight: 200,
   flexGrow: 1,
   textOverflow: 'ellipsis',
+  marginLeft: 8,
   marginRight: 8,
+  overflow: 'hidden',
 });
 
 const FlexGrowColumn = styled(FlexColumn)({
@@ -458,24 +460,22 @@ class HeaderRow extends Component<HeaderRowProps> {
   render() {
     const {title, value} = this.props;
     return (
-      <Padder paddingTop={8} paddingBottom={2}>
+      <Padder paddingTop={8} paddingBottom={2} paddingLeft={8}>
         <Container>
-          <Padder paddingLeft={8}>
-            <FlexRow>
-              <Title>{title}</Title>
-              <ContextMenu
-                items={[
-                  {
-                    label: 'copy',
-                    click: () => {
-                      clipboard.writeText(value);
-                    },
+          <FlexRow>
+            <Title>{title}</Title>
+            <ContextMenu
+              items={[
+                {
+                  label: 'copy',
+                  click: () => {
+                    clipboard.writeText(value);
                   },
-                ]}>
-                <Value code={true}>{value}</Value>
-              </ContextMenu>
-            </FlexRow>
-          </Padder>
+                },
+              ]}>
+              <Value code={true}>{value}</Value>
+            </ContextMenu>
+          </FlexRow>
           <Line />
         </Container>
       </Padder>
