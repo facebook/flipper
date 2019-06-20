@@ -62,3 +62,27 @@ client.addPlugin(new FrescoFlipperPlugin(
     null,
     leakTracker));
 ```
+
+### Attribution
+
+In order to annotate images with the context they are used in, you have to set a
+caller context when loading the image. This can be any object, so for the simplest
+case, a String will suffice.
+
+```java
+String callerContext = "my_feature";
+
+// For DraweeViews:
+draweeView.setImageURI(uri, callerContext);
+
+// For prefetching:
+ImagePipeline imagePipeline = Fresco.getImagePipeline();
+imagePipeline.prefetchToDiskCache(imageRequest, callerContext);
+
+// For manually fetching an image:
+DataSource<CloseableReference<CloseableImage>>
+    dataSource = imagePipeline.fetchDecodedImage(imageRequest, callerContext);
+```
+
+If a caller context is supplied, the image will be properly attributed in the
+Flipper image plugin.
