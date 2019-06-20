@@ -37,6 +37,7 @@ export const SearchBox = styled(FlexBox)({
 
 export const SearchInput = styled(Input)(props => ({
   border: props.focus ? '1px solid black' : 0,
+  ...(props.regex ? {fontFamily: 'monospace'} : {}),
   padding: 0,
   fontSize: '1em',
   flexGrow: 1,
@@ -437,6 +438,7 @@ const Searchable = (
                   ? this.state.compiledRegex !== null
                   : true
               }
+              regex={this.state.regexEnabled && this.state.searchTerm}
             />
           </SearchBox>
           {this.props.regexSupported ? (
