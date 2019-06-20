@@ -12,10 +12,12 @@ import com.facebook.flipper.core.FlipperArray.Builder;
 import com.facebook.flipper.core.FlipperObject;
 import com.facebook.flipper.plugins.databases.DatabaseDriver.DatabaseExecuteSqlResponse;
 import com.facebook.flipper.plugins.databases.DatabaseDriver.DatabaseGetTableDataResponse;
+import com.facebook.flipper.plugins.databases.DatabaseDriver.DatabaseGetTableInfoResponse;
 import com.facebook.flipper.plugins.databases.DatabaseDriver.DatabaseGetTableStructureResponse;
 import com.facebook.flipper.plugins.databases.DatabasesManager.DatabaseDescriptorHolder;
 import com.facebook.flipper.plugins.databases.DatabasesManager.ExecuteSqlRequest;
 import com.facebook.flipper.plugins.databases.DatabasesManager.GetTableDataRequest;
+import com.facebook.flipper.plugins.databases.DatabasesManager.GetTableInfoRequest;
 import com.facebook.flipper.plugins.databases.DatabasesManager.GetTableStructureRequest;
 import java.io.UnsupportedEncodingException;
 import java.util.Collection;
@@ -76,6 +78,15 @@ public class ObjectMapper {
     return new GetTableStructureRequest(databaseId, table);
   }
 
+  public static GetTableInfoRequest flipperObjectToGetTableInfoRequest(FlipperObject params) {
+    int databaseId = params.getInt("databaseId");
+    String table = params.getString("table");
+    if (databaseId <= 0 || TextUtils.isEmpty(table)) {
+      return null;
+    }
+    return new GetTableInfoRequest(databaseId, table);
+  }
+
   public static ExecuteSqlRequest flipperObjectToExecuteSqlRequest(FlipperObject params) {
     int databaseId = params.getInt("databaseId");
     String value = params.getString("value");
@@ -111,7 +122,7 @@ public class ObjectMapper {
         .build();
   }
 
-  public static FlipperObject databaseGetTableStructureReponseToFlipperObject(
+  public static FlipperObject databaseGetTableStructureResponseToFlipperObject(
       DatabaseGetTableStructureResponse databaseGetTableStructureResponse) {
 
     FlipperArray.Builder structureColumnBuilder = new FlipperArray.Builder();
@@ -147,7 +158,14 @@ public class ObjectMapper {
         .put("structureValues", structureValuesBuilder.build())
         .put("indexesColumns", indexesColumnBuilder.build())
         .put("indexesValues", indexesValuesBuilder.build())
-        .put("definition", databaseGetTableStructureResponse.definition)
+        .build();
+  }
+
+  public static FlipperObject databaseGetTableInfoResponseToFlipperObject(
+      DatabaseGetTableInfoResponse databaseGetTableInfoResponse) {
+
+    return new FlipperObject.Builder()
+        .put("definition", databaseGetTableInfoResponse.definition)
         .build();
   }
 
