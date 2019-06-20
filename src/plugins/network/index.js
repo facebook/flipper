@@ -538,10 +538,7 @@ class SizeColumn extends PureComponent<{
     if (lengthString != null && lengthString != '') {
       length = parseInt(lengthString, 10);
     } else if (response.data) {
-      // FIXME: T41427687 This is probably not the correct way to determine
-      // the correct byte size of the response, because String.length returns
-      // the number of characters, not bytes.
-      length = atob(response.data).length;
+      length = Buffer.byteLength(response.data, 'base64');
     }
     return length;
   }
