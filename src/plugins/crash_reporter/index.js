@@ -57,7 +57,7 @@ type CrashSelectorProps = {|
 
 export type Crash = {|
   notificationID: string,
-  callstack: string,
+  callstack: ?string,
   reason: string,
   name: string,
   date: Date,
@@ -676,15 +676,14 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin<
       );
       const selectedCrashID = crash.notificationID;
       const onCrashChange = id => {
-        const newSelectedCrash = crashes.find(element => {
-          return element.notificationID === id;
-        });
+        const newSelectedCrash = crashes.find(
+          element => element.notificationID === id,
+        );
         this.setState({crash: newSelectedCrash});
-        console.log('onCrashChange called', id);
       };
-      const callstackString = crash.callstack;
 
-      const children = crash.callstack.split('\n').map(str => {
+      const callstackString = crash.callstack || '';
+      const children = callstackString.split('\n').map(str => {
         return {message: str};
       });
       const crashSelector: CrashSelectorProps = {
@@ -699,7 +698,9 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin<
             <CrashReporterBar
               crashSelector={crashSelector}
               openLogsCallback={() => {
-                this.openInLogs(crash.callstack);
+                if (crash.callstack) {
+                  this.openInLogs(crash.callstack);
+                }
               }}
             />
           ) : (
