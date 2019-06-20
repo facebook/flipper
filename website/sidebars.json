@@ -6,6 +6,7 @@
       "features/layout-plugin",
       "features/network-plugin",
       "features/databases-plugin",
+      "features/images-plugin",
       "features/sandbox-plugin",
       "features/shared-preferences-plugin",
       "features/leak-canary-plugin",

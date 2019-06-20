@@ -66,6 +66,9 @@
       "features/databases-plugin": {
         "title": "Databases"
       },
+      "features/images-plugin": {
+        "title": "Images"
+      },
       "features/index": {
         "title": "Features"
       },
