@@ -42,6 +42,7 @@ export type PersistedState = {
   imagesMap: ImagesMap,
   closeableReferenceLeaks: Array<AndroidCloseableReferenceLeakEvent>,
   isLeakTrackingEnabled: boolean,
+  nextEventId: number,
 };
 
 type PluginState = {
@@ -88,6 +89,7 @@ export default class extends FlipperPlugin<PluginState, *, PersistedState> {
     surfaceList: new Set(),
     closeableReferenceLeaks: [],
     isLeakTrackingEnabled: false,
+    nextEventId: 0,
   };
 
   static exportPersistedState = (
@@ -155,6 +157,26 @@ export default class extends FlipperPlugin<PluginState, *, PersistedState> {
         closeableReferenceLeaks: persistedState.closeableReferenceLeaks.concat(
           event,
         ),
+      };
+    } else if (method == 'events') {
+      const event: ImageEvent = data;
+
+      debugLog('Received events', event);
+      const {surfaceList} = persistedState;
+      const {attribution} = event;
+      if (attribution instanceof Array && attribution.length > 0) {
+        const surface = attribution[0].trim();
+        if (surface.length > 0) {
+          surfaceList.add(surface);
+        }
+      }
+      return {
+        ...persistedState,
+        events: [
+          {eventId: persistedState.nextEventId, ...event},
+          ...persistedState.events,
+        ],
+        nextEventId: persistedState.nextEventId + 1,
       };
     }
 
@@ -270,24 +292,6 @@ export default class extends FlipperPlugin<PluginState, *, PersistedState> {
   init() {
     debugLog('init()');
     this.updateCaches('init');
-    this.client.subscribe('events', (event: ImageEvent) => {
-      debugLog('Received events', event);
-      const {surfaceList} = this.props.persistedState;
-      const {attribution} = event;
-      if (attribution instanceof Array && attribution.length > 0) {
-        const surface = attribution[0].trim();
-        if (surface.length > 0) {
-          surfaceList.add(surface);
-        }
-      }
-      this.props.setPersistedState({
-        events: [
-          {eventId: this.nextEventId, ...event},
-          ...this.props.persistedState.events,
-        ],
-      });
-      this.nextEventId++;
-    });
     this.client.subscribe(
       'debug_overlay_event',
       (event: FrescoDebugOverlayEvent) => {

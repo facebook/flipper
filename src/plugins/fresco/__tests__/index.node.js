@@ -54,6 +54,7 @@ function mockPersistedState(
     imagesMap,
     closeableReferenceLeaks: [],
     isLeakTrackingEnabled: false,
+    nextEventId: 0,
   };
 }
 
@@ -238,6 +239,7 @@ test('the metric reducer with the multiple events', () => {
   const persistedState = {
     surfaceList: new Set(),
     images: [],
+    nextEventId: 0,
     events,
     imagesMap,
   };
