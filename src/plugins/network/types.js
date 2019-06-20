@@ -36,4 +36,5 @@ export type Route = {|
   method: string,
   data: string,
   isDuplicate: boolean,
+  headers: Array<Header>,
 |};
