@@ -87,7 +87,7 @@ export type SearchableProps = {|
   addFilter: (filter: Filter) => void,
   searchTerm: string,
   filters: Array<Filter>,
-  regexSupported?: boolean,
+  allowRegexSearch?: boolean,
   regexEnabled?: boolean,
 |};
 
@@ -98,7 +98,7 @@ type Props = {|
   columns?: TableColumns,
   onFilterChange: (filters: Array<Filter>) => void,
   defaultFilters: Array<Filter>,
-  regexSupported: boolean,
+  allowRegexSearch: boolean,
 |};
 
 type State = {
@@ -441,7 +441,7 @@ const Searchable = (
               regex={this.state.regexEnabled && this.state.searchTerm}
             />
           </SearchBox>
-          {this.props.regexSupported ? (
+          {this.props.allowRegexSearch ? (
             <ToggleSwitch
               toggled={this.state.regexEnabled}
               onClick={this.onRegexToggled}

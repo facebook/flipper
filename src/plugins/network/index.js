@@ -454,7 +454,7 @@ class NetworkTable extends PureComponent<NetworkTableProps, NetworkTableState> {
           onRowHighlighted={this.props.onRowHighlighted}
           highlightedRows={this.props.highlightedRows}
           rowLineHeight={26}
-          regexSupported={true}
+          allowRegexSearch={true}
           zebra={false}
           actions={<Button onClick={this.props.clear}>Clear Table</Button>}
         />
