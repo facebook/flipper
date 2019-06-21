@@ -21,12 +21,23 @@ import {registerDeviceCallbackOnPlugins} from '../utils/onRegisterDevice.js';
 type iOSSimulatorDevice = {|
   state: 'Booted' | 'Shutdown' | 'Shutting Down',
   availability?: string,
-  isAvailable?: 'YES' | 'NO',
+  isAvailable?: 'YES' | 'NO' | true | false,
   name: string,
   udid: string,
 |};
 
 type IOSDeviceParams = {udid: string, type: DeviceType, name: string};
+
+function isAvailable(simulator: iOSSimulatorDevice): boolean {
+  // For some users "availability" is set, for others it's "isAvailable"
+  // It's not clear which key is set, so we are checking both.
+  // We've also seen isAvailable return "YES" and true, depending on version.
+  return (
+    simulator.availability === '(available)' ||
+    simulator.isAvailable === 'YES' ||
+    simulator.isAvailable === true
+  );
+}
 
 const portforwardingClient = isProduction()
   ? path.resolve(
@@ -119,12 +130,7 @@ function getActiveSimulators(): Promise<Array<IOSDeviceParams>> {
 
       return simulators
         .filter(
-          simulator =>
-            simulator.state === 'Booted' &&
-            // For some users "availability" is set, for others it's "isAvailable"
-            // It's not clear which key is set, so we are checking both.
-            (simulator.availability === '(available)' ||
-              simulator.isAvailable === 'YES'),
+          simulator => simulator.state === 'Booted' && isAvailable(simulator),
         )
         .map(simulator => {
           return {
