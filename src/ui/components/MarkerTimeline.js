@@ -48,9 +48,15 @@ const Point = styled(FlexRow)(props => ({
   right: 10,
   cursor: props.onClick ? 'pointer' : 'default',
   borderRadius: 3,
-  alignItems: 'center',
+  alignItems: 'flex-start',
+  lineHeight: '16px',
   ':hover': {
-    background: props.onClick ? colors.light02 : 'transparent',
+    background: `linear-gradient(to top, rgba(255,255,255,0) 0, #ffffff 10px)`,
+    paddingBottom: 5,
+    zIndex: 2,
+    '> span': {
+      whiteSpace: 'initial',
+    },
   },
   '::before': {
     position: 'relative',
@@ -68,6 +74,7 @@ const Point = styled(FlexRow)(props => ({
     border: '1px solid rgba(0,0,0,0.2)',
     backgroundColor: props.threadColor,
     marginRight: 6,
+    zIndex: 3,
     boxShadow: props.selected
       ? `0 0 0 2px ${colors.macOSTitleBarIconSelected}`
       : null,
@@ -90,11 +97,13 @@ const Time = styled('span')({
   color: colors.light30,
   fontWeight: '300',
   marginRight: 4,
+  marginTop: -2,
 });
 
 const Code = styled(Text)({
   overflow: 'hidden',
   textOverflow: 'ellipsis',
+  marginTop: -1,
 });
 
 type TimePoint = {
@@ -194,7 +203,6 @@ export default class MarkerTimeline extends Component<Props, State> {
               key={i}
               threadColor={p.color}
               cut={p.isCut}
-              title={p.markerNames.length > 1 ? p.markerNames.join(', ') : null}
               positionY={p.positionY}
               onClick={onClick ? () => onClick(p.markerKeys) : undefined}
               selected={p.markerKeys.includes(this.props.selected)}
