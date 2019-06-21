@@ -125,9 +125,12 @@ export default class Client extends EventEmitter {
         rIC(
           () => {
             const mark = 'onMessageCallback';
-            performance.mark();
-            client.onMessage(payload.data);
-            this.logger.trackTimeSince(mark);
+            performance.mark(mark);
+            try {
+              client.onMessage(payload.data);
+            } finally {
+              this.logger.trackTimeSince(mark);
+            }
           },
           {
             timeout: 500,
