@@ -78,7 +78,7 @@ export class App extends React.Component<Props> {
       case ACTIVE_SHEET_PLUGIN_DEBUGGER:
         return <PluginDebugger onHide={onHide} />;
       case ACTIVE_SHEET_SHARE_DATA:
-        return <ShareSheet onHide={onHide} />;
+        return <ShareSheet onHide={onHide} logger={this.props.logger} />;
       case ACTIVE_SHEET_SIGN_IN:
         return <SignInSheet onHide={onHide} />;
       case ACTIVE_SHEET_SHARE_DATA_IN_FILE:

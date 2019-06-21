@@ -17,11 +17,14 @@ import {
   Spacer,
   Input,
 } from 'flipper';
+import type {Logger} from '../fb-interfaces/Logger.js';
 import {shareFlipperData} from '../fb-stubs/user';
 import {exportStore, EXPORT_FLIPPER_TRACE_EVENT} from '../utils/exportData.js';
 import PropTypes from 'prop-types';
 import {clipboard} from 'electron';
 import {reportPlatformFailures} from '../utils/metrics';
+// $FlowFixMe: Missing type defs for node built-in.
+import {performance} from 'perf_hooks';
 export const SHARE_FLIPPER_TRACE_EVENT = 'share-flipper-link';
 
 const Container = styled(FlexColumn)({
@@ -72,6 +75,7 @@ const Padder = styled('div')(
 
 type Props = {
   onHide: () => mixed,
+  logger: Logger,
 };
 type State = {
   errorArray: Array<Error>,
@@ -96,6 +100,8 @@ export default class ShareSheet extends Component<Props, State> {
   };
 
   async componentDidMount() {
+    const mark = 'shareSheetExportUrl';
+    performance.mark(mark);
     try {
       const {serializedString, errorArray} = await reportPlatformFailures(
         exportStore(this.context.store),
@@ -115,6 +121,7 @@ export default class ShareSheet extends Component<Props, State> {
           requireInteraction: true,
         });
       }
+      this.props.logger.trackTimeSince(mark, 'export:url-success');
     } catch (e) {
       this.setState({
         result: {
@@ -122,7 +129,7 @@ export default class ShareSheet extends Component<Props, State> {
           error: e,
         },
       });
-      return;
+      this.props.logger.trackTimeSince(mark, 'export:url-error');
     }
   }
 
