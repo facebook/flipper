@@ -21,7 +21,6 @@ import {
   getPersistedState,
   BaseDevice,
   shouldParseAndroidLog,
-  StackTrace,
   Text,
   colors,
   Toolbar,
@@ -115,6 +114,9 @@ const Value = styled(Text)({
   maxHeight: 200,
   flexGrow: 1,
   textOverflow: 'ellipsis',
+  whiteSpace: 'normal',
+  wordWrap: 'break-word',
+  lineHeight: 2,
   marginLeft: 8,
   marginRight: 8,
   overflow: 'hidden',
@@ -165,6 +167,11 @@ const StyledSelectContainer = styled(FlexRow)({
 const StyledSelect = styled(Select)({
   height: '100%',
   maxWidth: 200,
+});
+
+const StackTraceContainer = styled(FlexColumn)({
+  backgroundColor: colors.greyStackTraceTint,
+  flexShrink: 0,
 });
 
 export function getNewPersisitedStateFromCrashLog(
@@ -483,6 +490,24 @@ class HeaderRow extends Component<HeaderRowProps> {
   }
 }
 
+type StackTraceComponentProps = {
+  stacktrace: string,
+};
+
+class StackTraceComponent extends Component<StackTraceComponentProps> {
+  render() {
+    const {stacktrace} = this.props;
+    return (
+      <StackTraceContainer>
+        <Padder paddingTop={8} paddingBottom={2} paddingLeft={8}>
+          <Value code={true}>{stacktrace}</Value>
+        </Padder>
+        <Line />
+      </StackTraceContainer>
+    );
+  }
+}
+
 export default class CrashReporterPlugin extends FlipperDevicePlugin<
   State,
   void,
@@ -722,12 +747,9 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin<
                 },
               ]}>
               <Line />
-              <StackTrace
-                children={children}
-                isCrash={false}
-                padded={false}
-                backgroundColor={colors.greyStackTraceTint}
-              />
+              {children.map(child => {
+                return <StackTraceComponent stacktrace={child.message} />;
+              })}
             </ContextMenu>
           </ScrollableColumn>
         </FlexColumn>
