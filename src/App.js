@@ -83,7 +83,11 @@ export class App extends React.Component<Props> {
         return <SignInSheet onHide={onHide} />;
       case ACTIVE_SHEET_SHARE_DATA_IN_FILE:
         return (
-          <ShareSheetExportFile onHide={onHide} file={this.props.exportFile} />
+          <ShareSheetExportFile
+            onHide={onHide}
+            file={this.props.exportFile}
+            logger={this.props.logger}
+          />
         );
       case ACTIVE_SHEET_PLUGIN_SHEET:
         // Currently unused.

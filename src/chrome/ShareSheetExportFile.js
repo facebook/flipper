@@ -16,6 +16,9 @@ import {
   Spacer,
 } from 'flipper';
 import {reportPlatformFailures} from '../utils/metrics';
+// $FlowFixMe: Missing type defs for node built-in.
+import {performance} from 'perf_hooks';
+import type {Logger} from '../fb-interfaces/Logger.js';
 import {
   exportStoreToFile,
   EXPORT_FLIPPER_TRACE_EVENT,
@@ -66,6 +69,7 @@ const Padder = styled('div')(
 type Props = {
   onHide: () => mixed,
   file: ?string,
+  logger: Logger,
 };
 type State = {
   errorArray: Array<Error>,
@@ -86,18 +90,23 @@ export default class ShareSheetExportFile extends Component<Props, State> {
   };
 
   async componentDidMount() {
-    if (!this.props.file) {
-      return;
-    }
-
+    const mark = 'shareSheetExportFile';
+    performance.mark(mark);
     try {
+      // Flow doesn't allow us to check for this earlier because `performance` is untyped
+      // and could presumably do anything.
+      if (!this.props.file) {
+        return;
+      }
       const {errorArray} = await reportPlatformFailures(
         exportStoreToFile(this.props.file, this.context.store),
         `${EXPORT_FLIPPER_TRACE_EVENT}:UI_FILE`,
       );
       this.setState({errorArray, result: {success: true, error: null}});
+      this.props.logger.trackTimeSince(mark, 'export:file-success');
     } catch (err) {
       this.setState({errorArray: [], result: {success: false, error: err}});
+      this.props.logger.trackTimeSince(mark, 'export:file-error');
     }
   }
 
