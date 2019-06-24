@@ -22,6 +22,7 @@ import {shareFlipperData} from '../fb-stubs/user';
 import {exportStore, EXPORT_FLIPPER_TRACE_EVENT} from '../utils/exportData.js';
 import PropTypes from 'prop-types';
 import {clipboard} from 'electron';
+import ShareSheetErrorList from './ShareSheetErrorList.js';
 import {reportPlatformFailures} from '../utils/metrics';
 // $FlowFixMe: Missing type defs for node built-in.
 import {performance} from 'perf_hooks';
@@ -42,21 +43,9 @@ const Uploading = styled(Text)({
   marginTop: 15,
 });
 
-const ErrorMessage = styled(Text)({
-  display: 'block',
-  marginTop: 6,
-  wordBreak: 'break-all',
-  whiteSpace: 'pre-line',
-  lineHeight: 1.35,
-});
-
 const Copy = styled(Input)({
   marginRight: 0,
   marginBottom: 15,
-});
-
-const Title = styled(Text)({
-  marginBottom: 6,
 });
 
 const InfoText = styled(Text)({
@@ -64,14 +53,17 @@ const InfoText = styled(Text)({
   marginBottom: 15,
 });
 
-const Padder = styled('div')(
-  ({paddingLeft, paddingRight, paddingBottom, paddingTop}) => ({
-    paddingLeft: paddingLeft || 0,
-    paddingRight: paddingRight || 0,
-    paddingBottom: paddingBottom || 0,
-    paddingTop: paddingTop || 0,
-  }),
-);
+const Title = styled(Text)({
+  marginBottom: 6,
+});
+
+const ErrorMessage = styled(Text)({
+  display: 'block',
+  marginTop: 6,
+  wordBreak: 'break-all',
+  whiteSpace: 'pre-line',
+  lineHeight: 1.35,
+});
 
 type Props = {
   onHide: () => mixed,
@@ -153,20 +145,7 @@ export default class ShareSheet extends Component<Props, State> {
                     data might contain sensitve information like access tokens
                     used in network requests.
                   </InfoText>
-                  {this.state.errorArray.length > 0 && (
-                    <Padder paddingBottom={8}>
-                      <FlexColumn>
-                        <Title bold>
-                          The following errors occurred while exporting your
-                          data
-                        </Title>
-                        {this.state.errorArray.map((e: Error) => {
-                          return (
-                            <ErrorMessage code>{e.toString()}</ErrorMessage>
-                          );
-                        })}
-                      </FlexColumn>
-                    </Padder>
+                  <ShareSheetErrorList errors={this.state.errorArray} />
                   )}
                 </>
               ) : (

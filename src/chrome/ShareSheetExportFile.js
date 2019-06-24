@@ -24,6 +24,7 @@ import {
   EXPORT_FLIPPER_TRACE_EVENT,
 } from '../utils/exportData.js';
 import PropTypes from 'prop-types';
+import ShareSheetErrorList from './ShareSheetErrorList.js';
 
 const Container = styled(FlexColumn)({
   padding: 20,
@@ -57,20 +58,12 @@ const InfoText = styled(Text)({
   marginBottom: 15,
 });
 
-const Padder = styled('div')(
-  ({paddingLeft, paddingRight, paddingBottom, paddingTop}) => ({
-    paddingLeft: paddingLeft || 0,
-    paddingRight: paddingRight || 0,
-    paddingBottom: paddingBottom || 0,
-    paddingTop: paddingTop || 0,
-  }),
-);
-
 type Props = {
   onHide: () => mixed,
   file: ?string,
   logger: Logger,
 };
+
 type State = {
   errorArray: Array<Error>,
   result: ?{
@@ -128,16 +121,7 @@ export default class ShareSheetExportFile extends Component<Props, State> {
                 might contain sensitive information like access tokens used in
                 network requests.
               </InfoText>
-              {this.state.errorArray.length > 0 && (
-                <Padder paddingBottom={8}>
-                  <FlexColumn>
-                    <Title bold>Errors: </Title>
-                    {this.state.errorArray.map((e: Error) => {
-                      return <ErrorMessage code>{e.toString()}</ErrorMessage>;
-                    })}
-                  </FlexColumn>
-                </Padder>
-              )}
+              <ShareSheetErrorList errors={this.state.errorArray} />
             </FlexColumn>
             <FlexRow>
               <Spacer />
