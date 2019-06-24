@@ -94,7 +94,3 @@ hg commit -m "Flipper Bump: v$SNAPSHOT_VERSION"
 
 echo "Submitting diffs for review..."
 jf submit -n -r.^::.
-
-echo "Once the tag is released on the Github, publish the pods to cocoapods, by running the following commands:"
-echo "pod trunk push ~/fbsource/xplat/sonar/Flipper.podspec --use-libraries --allow-warnings --verbose"
-echo "pod trunk push ~/fbsource/xplat/sonar/Flipper.podspec --use-libraries --allow-warnings --verbose --skip-import-validation --swift-version=4.0"
