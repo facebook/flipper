@@ -33,6 +33,8 @@ export default class ArchivedDevice extends BaseDevice {
 
   logs: Array<DeviceLogEntry>;
 
+  isArchived = true;
+
   getLogs() {
     return this.logs;
   }

@@ -11,6 +11,7 @@ import {Priority} from 'adbkit-logcat-fb';
 import child_process from 'child_process';
 import child_process_promise from 'child-process-es6-promise';
 import BaseDevice from './BaseDevice.js';
+import ArchivedDevice from './ArchivedDevice.js';
 
 type ADBClient = any;
 
@@ -84,5 +85,15 @@ export default class AndroidDevice extends BaseDevice {
 
   clearLogs(): Promise<void> {
     return child_process_promise.spawn('adb', ['logcat', '-c']);
+  }
+
+  archive(): ArchivedDevice {
+    return new ArchivedDevice(
+      this.serial,
+      this.deviceType,
+      this.title,
+      this.os,
+      [...this.logEntries],
+    );
   }
 }

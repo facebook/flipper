@@ -6,7 +6,6 @@
  */
 
 import {Component, Button, styled} from 'flipper';
-import ArchivedDevice from '../devices/ArchivedDevice.js';
 import {connect} from 'react-redux';
 import {spawn} from 'child_process';
 import {dirname} from 'path';
@@ -65,7 +64,7 @@ class DevicesButton extends Component<Props> {
     let buttonLabel = 'No device selected';
     let icon = 'minus-circle';
 
-    if (selectedDevice instanceof ArchivedDevice) {
+    if (selectedDevice?.isArchived) {
       buttonLabel = `${selectedDevice?.title || 'Unknown device'} (offline)`;
       icon = 'box';
     } else if (selectedDevice?.deviceType === 'physical') {
@@ -117,11 +116,11 @@ class DevicesButton extends Component<Props> {
     // Archived
     const importedFiles = [
       {
-        label: 'Imported Devices',
+        label: 'Disconnected Devices',
         enabled: false,
       },
       ...devices
-        .filter(device => device instanceof ArchivedDevice)
+        .filter(device => device.isArchived)
         .map((device: BaseDevice) => ({
           click: () => selectDevice(device),
           checked: device === selectedDevice,
@@ -137,8 +136,10 @@ class DevicesButton extends Component<Props> {
       const emulators = Array.from(androidEmulators)
         .filter(
           (name: string) =>
-            devices.findIndex((device: BaseDevice) => device.title === name) ===
-            -1,
+            devices.findIndex(
+              (device: BaseDevice) =>
+                device.title === name && !device.isArchived,
+            ) === -1,
         )
         .map((name: string) => ({
           label: name,

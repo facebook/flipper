@@ -6,6 +6,7 @@
  */
 
 import type stream from 'stream';
+import type ArchivedDevice from './ArchivedDevice';
 
 export type LogLevel =
   | 'unknown'
@@ -74,6 +75,7 @@ export default class BaseDevice {
 
   logListeners: Map<Symbol, DeviceLogListener> = new Map();
   logEntries: Array<DeviceLogEntry> = [];
+  isArchived: boolean = false;
 
   supportsOS(os: OS) {
     return os.toLowerCase() === this.os.toLowerCase();
@@ -134,5 +136,9 @@ export default class BaseDevice {
 
   spawnShell(): ?DeviceShell {
     throw new Error('unimplemented');
+  }
+
+  archive(): ?ArchivedDevice {
+    return null;
   }
 }

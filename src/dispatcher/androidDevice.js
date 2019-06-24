@@ -158,6 +158,21 @@ export default (store: Store, logger: Logger) => {
       name: androidDevice.title,
       serial: androidDevice.serial,
     });
+
+    // remove offline devices with same serial as the connected.
+    const reconnectedDevices = store
+      .getState()
+      .connections.devices.filter(
+        (device: BaseDevice) =>
+          device.serial === androidDevice.serial && device.isArchived,
+      )
+      .map(device => device.serial);
+
+    store.dispatch({
+      type: 'UNREGISTER_DEVICES',
+      payload: new Set(reconnectedDevices),
+    });
+
     store.dispatch({
       type: 'REGISTER_DEVICE',
       payload: androidDevice,
@@ -178,10 +193,29 @@ export default (store: Store, logger: Logger) => {
         serial: id,
       }),
     );
+
+    const archivedDevices = deviceIds
+      .map(id => {
+        const device = store
+          .getState()
+          .connections.devices.find(device => device.serial === id);
+        if (device && !device.isArchived) {
+          return device.archive();
+        }
+      })
+      .filter(Boolean);
+
     store.dispatch({
       type: 'UNREGISTER_DEVICES',
       payload: new Set(deviceIds),
     });
+
+    archivedDevices.forEach((payload: BaseDevice) =>
+      store.dispatch({
+        type: 'REGISTER_DEVICE',
+        payload,
+      }),
+    );
   }
 
   watchAndroidDevices();
