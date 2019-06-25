@@ -23,6 +23,9 @@ import setup from '../static/setup.js';
 import type {Store} from '../src/reducers';
 import {getActivePluginNames} from '../src/utils/pluginUtils.js';
 import {serialize} from '../src/utils/serialization';
+import type BaseDevice from '../src/devices/BaseDevice';
+
+type Action = {|exit: boolean, exitMessage?: string|};
 
 type UserArguments = {|
   securePort: string,
@@ -116,37 +119,33 @@ function errorAndExit(error: string): void {
 }
 
 async function earlyExitActions(
+  exitClosures: Array<(userArguments: UserArguments) => Promise<Action>>,
   userArguments: UserArguments,
   originalConsole: typeof global.console,
 ): Promise<void> {
-  if (userArguments.listDevices) {
-    const devices = await listDevices();
-    outputAndExit(devices.toString());
+  for (const exitAction of exitClosures) {
+    const {exit, exitMessage} = await exitAction(userArguments);
+    if (exit) {
+      outputAndExit(exitMessage || 'Exited through the earlyExit action');
+    }
   }
 }
 
 async function exitActions(
+  exitClosures: Array<
+    (userArguments: UserArguments, store: Store) => Promise<Action>,
+  >,
   userArguments: UserArguments,
-  originalConsole: typeof global.console,
   store: Store,
 ): Promise<void> {
-  if (userArguments.listPlugins) {
-    outputAndExit(serialize(getActivePluginNames(store.getState().plugins)));
-  }
-
   const {metrics, exit} = userArguments;
-  if (shouldExportMetric(metrics) && metrics && metrics.length > 0) {
-    try {
-      const payload = await exportMetricsFromTrace(
-        metrics,
-        pluginsClassMap(store.getState().plugins),
-      );
-      outputAndExit(payload.toString());
-    } catch (error) {
-      console.error(error);
-      process.exit();
+  for (var exitAction of exitClosures) {
+    const {exit, exitMessage} = await exitAction(userArguments, store);
+    if (exit) {
+      outputAndExit(exitMessage || 'Exited through the exitActions function');
     }
   }
+
   if (exit == 'sigint') {
     process.on('SIGINT', async () => {
       try {
@@ -170,33 +169,16 @@ async function exitActions(
 }
 
 async function storeModifyingActions(
+  storeModifyingClosures: Array<
+    (userArguments: UserArguments, store: Store) => Promise<Action>,
+  >,
   userArguments: UserArguments,
-  originalConsole: typeof global.console,
   store: Store,
 ): Promise<void> {
-  const {device: selectedDeviceID} = userArguments;
-  if (selectedDeviceID) {
-    //$FlowFixMe: Checked the class name before calling reverse.
-    const devices = await listDevices();
-    const matchedDevice = devices.find(
-      device => device.serial === selectedDeviceID,
-    );
-    if (matchedDevice) {
-      if (matchedDevice.constructor.name === 'AndroidDevice') {
-        const ports = store.getState().application.serverPorts;
-        matchedDevice.reverse([ports.secure, ports.insecure]);
-      }
-      store.dispatch({
-        type: 'REGISTER_DEVICE',
-        payload: matchedDevice,
-      });
-      store.dispatch({
-        type: 'SELECT_DEVICE',
-        payload: matchedDevice,
-      });
-    } else {
-      console.error(`No device matching the serial ${selectedDeviceID}`);
-      process.exit();
+  for (const closure of storeModifyingClosures) {
+    const {exit, exitMessage} = await closure(userArguments, store);
+    if (exit) {
+      outputAndExit(exitMessage || 'Exited through the earlyExit action');
     }
   }
 }
@@ -270,13 +252,107 @@ async function startFlipper(userArguments: UserArguments) {
   );
   const logger = initLogger(store, {isHeadless: true});
 
-  await earlyExitActions(userArguments, originalConsole);
+  const earlyExitClosures: Array<
+    (userArguments: UserArguments) => Promise<Action>,
+  > = [
+    (userArguments: UserArguments) => {
+      if (userArguments.listDevices) {
+        return listDevices().then((devices: Array<BaseDevice>) => {
+          const mapped = devices.map(device => {
+            return {
+              os: device.os,
+              title: device.title,
+              deviceType: device.deviceType,
+              serial: device.serial,
+            };
+          });
+          return {exit: true, exitMessage: serialize(mapped)};
+        });
+      }
+      return Promise.resolve({exit: false});
+    },
+  ];
+
+  await earlyExitActions(earlyExitClosures, userArguments);
 
   const cleanupDispatchers = dispatcher(store, logger);
 
-  await storeModifyingActions(userArguments, originalConsole, store);
+  const storeModifyingClosures: Array<
+    (userArguments: UserArguments, store: Store) => Promise<Action>,
+  > = [
+    (userArguments: UserArguments, store: Store) => {
+      const {device: selectedDeviceID} = userArguments;
+      if (selectedDeviceID) {
+        return listDevices().then(devices => {
+          const matchedDevice = devices.find(
+            device => device.serial === selectedDeviceID,
+          );
+          if (matchedDevice) {
+            if (matchedDevice.constructor.name === 'AndroidDevice') {
+              const ports = store.getState().application.serverPorts;
+              //$FlowFixMe: Checked the class name before calling reverse.
+              matchedDevice.reverse([ports.secure, ports.insecure]);
+            }
+            store.dispatch({
+              type: 'REGISTER_DEVICE',
+              payload: matchedDevice,
+            });
+            store.dispatch({
+              type: 'SELECT_DEVICE',
+              payload: matchedDevice,
+            });
+            return {exit: false};
+          }
+          return {
+            exit: true,
+            exitMessage: `No device matching the serial ${selectedDeviceID}`,
+          };
+        });
+      }
+      return Promise.resolve({
+        exit: false,
+      });
+    },
+  ];
 
-  await exitActions(userArguments, originalConsole, store);
+  const exitActionClosures: Array<
+    (userArguments: UserArguments, store: Store) => Promise<Action>,
+  > = [
+    (userArguments: UserArguments, store: Store) => {
+      const {listPlugins} = userArguments;
+      if (listPlugins) {
+        return Promise.resolve({
+          exit: true,
+          exitMessage: serialize(
+            getActivePluginNames(store.getState().plugins),
+          ),
+        });
+      }
+      return Promise.resolve({
+        exit: false,
+      });
+    },
+    (userArguments: UserArguments, store: Store) => {
+      const {metrics} = userArguments;
+      if (shouldExportMetric(metrics) && metrics && metrics.length > 0) {
+        return exportMetricsFromTrace(
+          metrics,
+          pluginsClassMap(store.getState().plugins),
+        )
+          .then(payload => {
+            return {exit: true, exitMessage: payload ? payload.toString() : ''};
+          })
+          .catch(error => {
+            return {exit: true, exitMessage: error};
+          });
+      }
+      return Promise.resolve({exit: false});
+    },
+  ];
+
+  await storeModifyingActions(storeModifyingClosures, userArguments, store);
+
+  await exitActions(exitActionClosures, userArguments, store);
 
   await cleanupDispatchers();
 }

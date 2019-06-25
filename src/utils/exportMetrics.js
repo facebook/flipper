@@ -76,7 +76,7 @@ function parseJSON(str: string): ?any {
 export async function exportMetricsFromTrace(
   trace: string,
   pluginsMap: Map<string, Class<FlipperDevicePlugin<> | FlipperPlugin<>>>,
-): Promise<?string> {
+): Promise<string> {
   const data = fs.readFileSync(trace, 'utf8');
   const parsedJSONData = parseJSON(data);
   if (!parsedJSONData) {
