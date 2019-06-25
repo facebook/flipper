@@ -11,6 +11,7 @@ import type {Store} from '../reducers/index.js';
 import type {Logger} from '../fb-interfaces/Logger.js';
 import type Client from '../Client.js';
 import type {UninitializedClient} from '../UninitializedClient';
+import type BaseDevice from '../devices/BaseDevice';
 
 export default (store: Store, logger: Logger) => {
   const server = new Server(logger, store);
@@ -31,6 +32,31 @@ export default (store: Store, logger: Logger) => {
   });
 
   server.addListener('removed-client', (id: string) => {
+    const client: ?Client = store
+      .getState()
+      .connections.clients.find((client: Client) => client.id === id);
+    if (client) {
+      const device: ?BaseDevice = store
+        .getState()
+        .connections.devices.find(
+          (device: BaseDevice) => device.serial === client.query.device_id,
+        );
+
+      if (device && !device.isArchived && device.os === 'Android') {
+        client.connected = false;
+        client.connection = null;
+        // find all plugins for this client that store data in persistedState
+        client.plugins = Object.keys(store.getState().pluginStates)
+          .filter(key => key.startsWith(id))
+          .map(key => key.split('#').pop());
+
+        // don't remove client if it still has plugins
+        if (client.plugins.length > 0) {
+          return;
+        }
+      }
+    }
+
     store.dispatch({
       type: 'CLIENT_REMOVED',
       payload: id,
