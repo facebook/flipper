@@ -423,6 +423,7 @@ export default class extends FlipperPlugin<PluginState, *, PersistedState> {
   };
 
   onTrackLeaks = (checked: boolean) => {
+    this.props.logger.track('usage', 'fresco:onTrackLeaks', {enabled: checked});
     this.props.setPersistedState({
       isLeakTrackingEnabled: checked,
     });
