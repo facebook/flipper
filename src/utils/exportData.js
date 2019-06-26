@@ -290,11 +290,11 @@ export function exportStore(
       const {exportData, errorArray} = await getStoreExport(store);
       if (!exportData) {
         console.error('Make sure a device is connected');
-        reject('No device is selected');
+        reject(new Error('No device is selected'));
       }
       const serializedString = serialize(exportData);
       if (serializedString.length <= 0) {
-        reject('Serialize function returned empty string');
+        reject(new Error('Serialize function returned empty string'));
       }
       resolve({serializedString, errorArray});
     } catch (e) {

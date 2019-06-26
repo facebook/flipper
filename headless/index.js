@@ -25,7 +25,9 @@ import {getActivePluginNames} from '../src/utils/pluginUtils.js';
 import {serialize} from '../src/utils/serialization';
 import type BaseDevice from '../src/devices/BaseDevice';
 
-type Action = {|exit: boolean, exitMessage?: string|};
+import {getStringFromErrorLike} from '../src/utils/index';
+
+type Action = {|exit: true, result: string|} | {|exit: false|};
 
 type UserArguments = {|
   securePort: string,
@@ -112,8 +114,8 @@ function outputAndExit(output: string): void {
   });
 }
 
-function errorAndExit(error: string): void {
-  process.stderr.write(error, () => {
+function errorAndExit(error: any): void {
+  process.stderr.write(getStringFromErrorLike(error), () => {
     process.exit(1);
   });
 }
@@ -124,9 +126,13 @@ async function earlyExitActions(
   originalConsole: typeof global.console,
 ): Promise<void> {
   for (const exitAction of exitClosures) {
-    const {exit, exitMessage} = await exitAction(userArguments);
-    if (exit) {
-      outputAndExit(exitMessage || 'Exited through the earlyExit action');
+    try {
+      const action = await exitAction(userArguments);
+      if (action.exit) {
+        outputAndExit(action.result);
+      }
+    } catch (e) {
+      errorAndExit(e);
     }
   }
 }
@@ -140,9 +146,13 @@ async function exitActions(
 ): Promise<void> {
   const {metrics, exit} = userArguments;
   for (var exitAction of exitClosures) {
-    const {exit, exitMessage} = await exitAction(userArguments, store);
-    if (exit) {
-      outputAndExit(exitMessage || 'Exited through the exitActions function');
+    try {
+      const action = await exitAction(userArguments, store);
+      if (action.exit) {
+        outputAndExit(action.result);
+      }
+    } catch (e) {
+      errorAndExit(e);
     }
   }
 
@@ -162,7 +172,7 @@ async function exitActions(
           outputAndExit(serializedString);
         }
       } catch (e) {
-        console.error(e);
+        errorAndExit(e);
       }
     });
   }
@@ -176,9 +186,13 @@ async function storeModifyingActions(
   store: Store,
 ): Promise<void> {
   for (const closure of storeModifyingClosures) {
-    const {exit, exitMessage} = await closure(userArguments, store);
-    if (exit) {
-      outputAndExit(exitMessage || 'Exited through the earlyExit action');
+    try {
+      const action = await closure(userArguments, store);
+      if (action.exit) {
+        outputAndExit(action.result);
+      }
+    } catch (e) {
+      errorAndExit(e);
     }
   }
 }
@@ -229,7 +243,7 @@ async function startFlipper(userArguments: UserArguments) {
               outputAndExit(payload || '');
             })
             .catch(e => {
-              errorAndExit(e.message);
+              errorAndExit(e);
             });
         } else {
           exportStore(store)
@@ -237,7 +251,7 @@ async function startFlipper(userArguments: UserArguments) {
               outputAndExit(serializedString);
             })
             .catch(e => {
-              errorAndExit(e.message);
+              errorAndExit(e);
             });
         }
       }, 10);
@@ -266,7 +280,7 @@ async function startFlipper(userArguments: UserArguments) {
               serial: device.serial,
             };
           });
-          return {exit: true, exitMessage: serialize(mapped)};
+          return {exit: true, result: serialize(mapped)};
         });
       }
       return Promise.resolve({exit: false});
@@ -303,10 +317,9 @@ async function startFlipper(userArguments: UserArguments) {
             });
             return {exit: false};
           }
-          return {
-            exit: true,
-            exitMessage: `No device matching the serial ${selectedDeviceID}`,
-          };
+          return Promise.reject(
+            new Error(`No device matching the serial ${selectedDeviceID}`),
+          );
         });
       }
       return Promise.resolve({
@@ -323,9 +336,7 @@ async function startFlipper(userArguments: UserArguments) {
       if (listPlugins) {
         return Promise.resolve({
           exit: true,
-          exitMessage: serialize(
-            getActivePluginNames(store.getState().plugins),
-          ),
+          result: serialize(getActivePluginNames(store.getState().plugins)),
         });
       }
       return Promise.resolve({
@@ -340,10 +351,10 @@ async function startFlipper(userArguments: UserArguments) {
           pluginsClassMap(store.getState().plugins),
         )
           .then(payload => {
-            return {exit: true, exitMessage: payload ? payload.toString() : ''};
+            return {exit: true, result: payload ? payload.toString() : ''};
           })
           .catch(error => {
-            return {exit: true, exitMessage: error};
+            return {exit: true, result: error};
           });
       }
       return Promise.resolve({exit: false});
