@@ -127,6 +127,7 @@ export default class BaseDevice {
 
   clearLogs(): Promise<void> {
     // Only for device types that allow clearing.
+    this.logEntries = [];
     return Promise.resolve();
   }
 

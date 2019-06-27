@@ -84,6 +84,7 @@ export default class AndroidDevice extends BaseDevice {
   }
 
   clearLogs(): Promise<void> {
+    this.logEntries = [];
     return child_process_promise.spawn('adb', ['logcat', '-c']);
   }
 

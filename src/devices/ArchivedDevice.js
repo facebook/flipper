@@ -39,6 +39,11 @@ export default class ArchivedDevice extends BaseDevice {
     return this.logs;
   }
 
+  clearLogs(): Promise<void> {
+    this.logs = [];
+    return Promise.resolve();
+  }
+
   spawnShell(): ?DeviceShell {
     return null;
   }
