@@ -431,12 +431,9 @@ class CrashSelector extends Component<CrashSelectorProps> {
             grow={true}
             selected={selectedCrashID || 'NoCrashID'}
             options={crashes || {NoCrashID: 'No Crash'}}
-            onChange={(title: string) => {
-              for (const key in crashes) {
-                if (crashes[key] === title && onCrashChange) {
-                  onCrashChange(key);
-                  return;
-                }
+            onChangeWithKey={(key: string) => {
+              if (onCrashChange) {
+                onCrashChange(key);
               }
             }}
           />
