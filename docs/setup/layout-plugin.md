@@ -60,7 +60,7 @@ The issue is that if you have some view that occupies big part of the screen but
 Add the following tag to your view to skip it from Flipper's view picker. The view will still be shown in the layout hierarchy, but it will not be selected while using the view picker.
 
 ```java
-view.setTag("flipper_skip_view_traversal", true);
+view.setTag(R.id.flipper_skip_view_traversal, true);
 ```
 
 
