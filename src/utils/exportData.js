@@ -211,7 +211,11 @@ export async function fetchMetadata(
   const clients = store.getState().connections.clients;
   const selectedDevice = store.getState().connections.selectedDevice;
   for (let client of clients) {
-    if (!selectedDevice || !client.id.includes(selectedDevice.serial)) {
+    if (
+      !selectedDevice ||
+      selectedDevice.isArchived ||
+      !client.id.includes(selectedDevice.serial)
+    ) {
       continue;
     }
     for (let plugin of client.plugins) {
