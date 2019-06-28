@@ -230,7 +230,7 @@ class ElementsRow extends PureComponent<ElementsRowProps, ElementsRowState> {
       {
         label: 'Copy',
         click: () => {
-          clipboard.writeText(props.element.name);
+          clipboard.writeText(props.element.name + ' id=' + props.element.id);
         },
       },
       {
