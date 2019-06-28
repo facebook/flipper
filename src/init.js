@@ -27,11 +27,10 @@ const store = createStore(
   reducers,
   window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(),
 );
-persistStore(store);
 
 const logger = initLogger(store);
 const bugReporter = new BugReporter(logger, store);
-dispatcher(store, logger);
+
 GK.init();
 
 const AppFrame = () => (
@@ -69,5 +68,9 @@ function init() {
   initCrashReporter(sessionId || '');
 }
 
-// make init function callable from outside
-window.Flipper.init = init;
+// rehydrate app state before exposing init
+persistStore(store, null, () => {
+  dispatcher(store, logger);
+  // make init function callable from outside
+  window.Flipper.init = init;
+});
