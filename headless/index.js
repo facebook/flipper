@@ -109,6 +109,7 @@ function shouldExportMetric(metrics): boolean {
 }
 
 function outputAndExit(output: string): void {
+  console.log(`Finished. Outputting ${output.length} characters.`);
   process.stdout.write(output, () => {
     process.exit(0);
   });
