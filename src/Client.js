@@ -22,7 +22,7 @@ import {default as isProduction} from './utils/isProduction.js';
 import {registerPlugins} from './reducers/plugins';
 import createTableNativePlugin from './plugins/TableNativePlugin';
 
-const EventEmitter = (require('events'): any);
+const EventEmitter = require('events');
 const invariant = require('invariant');
 
 type Plugins = Array<string>;
@@ -196,9 +196,6 @@ export default class Client extends EventEmitter {
     );
   }
 
-  on: ((event: 'plugins-change', callback: () => void) => void) &
-    ((event: 'close', callback: () => void) => void);
-
   app: App;
   connected: boolean;
   id: string;
@@ -211,7 +208,8 @@ export default class Client extends EventEmitter {
   store: Store;
   activePlugins: Set<string>;
   device: Promise<BaseDevice>;
-
+  logger: Logger;
+  lastSeenDeviceList: Array<BaseDevice>;
   broadcastCallbacks: Map<?string, Map<string, Set<Function>>>;
 
   requestCallbacks: Map<

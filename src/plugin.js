@@ -156,6 +156,7 @@ export class FlipperDevicePlugin<S = *, A = *, P = *> extends FlipperBasePlugin<
 
   constructor(props: Props<P>) {
     super(props);
+    // $FlowFixMe props.target will be instance of Device
     this.device = props.target;
   }
 
@@ -203,8 +204,8 @@ export class FlipperPlugin<S = *, A = *, P = *> extends FlipperBasePlugin<
   client: PluginClient;
   realClient: Client;
 
-  getDevice(): ?BaseDevice {
-    return this.realClient.getDevice();
+  getDevice(): Promise<BaseDevice> {
+    return this.realClient.device;
   }
 
   getAndroidDevice(): AndroidDevice {
