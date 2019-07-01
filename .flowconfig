@@ -7,7 +7,7 @@
 .*/static/.*
 <PROJECT_ROOT>/src/fb/plugins/relaydevtools/relay-devtools/DevtoolsUI.js$
 .*/website/.*
-<PROJECT_ROOT>/src/fb/plugins/sections/d3/d3.js$
+<PROJECT_ROOT>/src/plugins/sections/d3/d3.js$
 
 [libs]
 flow-typed
