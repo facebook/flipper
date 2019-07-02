@@ -34,7 +34,7 @@ type Props = {
 type State = {
   activeTab: string,
   selectedHeaderIds: [],
-}
+};
 
 const StyledSelectContainer = styled(FlexRow)({
   paddingLeft: 6,
@@ -79,7 +79,7 @@ const StyledInput = styled(Input)({
   width: '100%',
   height: 20,
   marginLeft: 8,
-  flexGrow: 5
+  flexGrow: 5,
 });
 
 const HeaderInput = styled(Input)({
@@ -148,9 +148,8 @@ const StyledContextMenu = styled(ContextMenu)({
 });
 
 export class MockResponseDetails extends Component<Props, State> {
-
   state = {
-    activeTab: 'data'
+    activeTab: 'data',
   };
 
   updateRouteChange = (route: Route) => {
@@ -175,18 +174,20 @@ export class MockResponseDetails extends Component<Props, State> {
     this.updateRouteChange(route);
   };
 
-  handleHeaderNameChange = (event) => {
+  handleHeaderNameChange = event => {
     const route = this.props.route;
     const {selectedHeaderIds} = this.state;
-    const selectedId = selectedHeaderIds.length === 1 ? selectedHeaderIds[0] : null;
+    const selectedId =
+      selectedHeaderIds.length === 1 ? selectedHeaderIds[0] : null;
     route.headers[selectedId].key = event.target.value;
     this.updateRouteChange(route);
   };
 
-  handleHeaderValueChange = (event) => {
+  handleHeaderValueChange = event => {
     const route = this.props.route;
     const {selectedHeaderIds} = this.state;
-    const selectedId = selectedHeaderIds.length === 1 ? selectedHeaderIds[0] : null;
+    const selectedId =
+      selectedHeaderIds.length === 1 ? selectedHeaderIds[0] : null;
     route.headers[selectedId].value = event.target.value;
     this.updateRouteChange(route);
   };
@@ -196,8 +197,8 @@ export class MockResponseDetails extends Component<Props, State> {
 
   onActive = (key: ?string) => {
     this.setState({
-      activeTab: key
-    })
+      activeTab: key,
+    });
   };
 
   buildRows = () => {
@@ -214,34 +215,48 @@ export class MockResponseDetails extends Component<Props, State> {
 
   buildRow = (header: Header, index: number) => {
     const {selectedHeaderIds} = this.state;
-    const selectedId = selectedHeaderIds? selectedHeaderIds.length === 1 ? selectedHeaderIds[0] : null : 0;
+    const selectedId = selectedHeaderIds
+      ? selectedHeaderIds.length === 1
+        ? selectedHeaderIds[0]
+        : null
+      : 0;
     return {
       columns: {
         name: {
-          value:
-            <HeaderInput type="text"
-                         placeholder="Name"
-                         value={header.key}
-                         style={selectedId === index? {backgroundColor: colors.highlight}:{}}
-                         onChange={this.handleHeaderNameChange} />
+          value: (
+            <HeaderInput
+              type="text"
+              placeholder="Name"
+              value={header.key}
+              style={
+                selectedId === index ? {backgroundColor: colors.highlight} : {}
+              }
+              onChange={this.handleHeaderNameChange}
+            />
+          ),
         },
         value: {
-          value:
-            <HeaderInput type="text"
-                         placeholder="Value"
-                         value={header.value}
-                         style={selectedId === index? {backgroundColor: colors.highlight}:{}}
-                         onChange={this.handleHeaderValueChange}/>
+          value: (
+            <HeaderInput
+              type="text"
+              placeholder="Value"
+              value={header.value}
+              style={
+                selectedId === index ? {backgroundColor: colors.highlight} : {}
+              }
+              onChange={this.handleHeaderValueChange}
+            />
+          ),
         },
         close: {
-          value:
+          value: (
             <FlexBox onClick={this.deleteRow}>
-              <HeaderGlyph name="cross-circle" color={colors.red}  />
+              <HeaderGlyph name="cross-circle" color={colors.red} />
             </FlexBox>
+          ),
         },
         warning: {
-          value:
-            <HeaderGlyph name="caution-triangle" color={colors.yellow} />
+          value: <HeaderGlyph name="caution-triangle" color={colors.yellow} />,
         },
       },
       key: index,
@@ -261,15 +276,17 @@ export class MockResponseDetails extends Component<Props, State> {
   };
 
   deleteRow = () => {
-    console.log();
     const route = this.props.route;
     const headers = route.headers;
     const {selectedHeaderIds} = this.state;
-    const selectedId = selectedHeaderIds? selectedHeaderIds.length === 1 ? selectedHeaderIds[0] : null : 0;
-    headers.splice(selectedId,1);
-    headers.splice(index,1);
+    const selectedId = selectedHeaderIds
+      ? selectedHeaderIds.length === 1
+        ? selectedHeaderIds[0]
+        : null
+      : 0;
+    headers.splice(selectedId, 1);
     route.headers = headers;
-    this.updateRouteChange(route)
+    this.updateRouteChange(route);
   };
 
   render() {
@@ -297,18 +314,15 @@ export class MockResponseDetails extends Component<Props, State> {
         </FlexRow>
         {isDuplicate ? (
           <Warning>
-            <Glyph name="caution-triangle" color={colors.yellow}/>
+            <Glyph name="caution-triangle" color={colors.yellow} />
             <Text style={{marginLeft: 5}}>
               Route is duplicated (Same URL and Method)
             </Text>
           </Warning>
         ) : null}
         <StyledText />
-        <Tabs active={this.state.activeTab}
-              onActive={this.onActive}>
-          <Tab
-            key={'data'}
-            label={'Data'}>
+        <Tabs active={this.state.activeTab} onActive={this.onActive}>
+          <Tab key={'data'} label={'Data'}>
             <textarea
               style={textAreaStyle}
               wrap="soft"
@@ -318,9 +332,7 @@ export class MockResponseDetails extends Component<Props, State> {
               onChange={this.handleDataTextAreaChange}
             />
           </Tab>
-          <Tab
-            key={'headers'}
-            label={'Headers'}>
+          <Tab key={'headers'} label={'Headers'}>
             <StyledContextMenu>
               <ManagedTable
                 hideHeader={true}
@@ -335,8 +347,11 @@ export class MockResponseDetails extends Component<Props, State> {
                 zebra={false}
                 onRowHighlighted={this.onRowHighlighted}
                 highlightedRows={
-                  this.state.selectedHeaderIds ? new Set(this.state.selectedHeaderIds) : null
-                }/>
+                  this.state.selectedHeaderIds
+                    ? new Set(this.state.selectedHeaderIds)
+                    : null
+                }
+              />
             </StyledContextMenu>
             <AddHeaderButton onClick={this.addRow}>
               <Glyph
