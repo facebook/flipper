@@ -78,7 +78,7 @@ can be useful if you have an advanced setup of Fresco in your application:</p>
 <p>The Flipper plugin can help you track down <code>CloseableReferences</code> who have not had
 <code>close()</code> called on them. This can have a negative impact on the performance of
 your application.</p>
-<p>Do enable this functionality, you need to create a <code>CloseableReferenceLeakTracker</code>
+<p>To enable this functionality, you need to create a <code>CloseableReferenceLeakTracker</code>
 and set it in both your <code>ImagePipelineConfig</code> for Fresco and the <code>FrescoPluginPlugin</code>
 on creation.</p>
 <pre><code class="hljs css language-java"><span class="hljs-keyword">import</span> com.facebook.imagepipeline.debug.FlipperCloseableReferenceLeakTracker;
