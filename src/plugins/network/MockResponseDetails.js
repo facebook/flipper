@@ -264,7 +264,9 @@ export class MockResponseDetails extends Component<Props, State> {
     console.log();
     const route = this.props.route;
     const headers = route.headers;
-    // TODO Try to find a way to get the index
+    const {selectedHeaderIds} = this.state;
+    const selectedId = selectedHeaderIds? selectedHeaderIds.length === 1 ? selectedHeaderIds[0] : null : 0;
+    headers.splice(selectedId,1);
     headers.splice(index,1);
     route.headers = headers;
     this.updateRouteChange(route)
