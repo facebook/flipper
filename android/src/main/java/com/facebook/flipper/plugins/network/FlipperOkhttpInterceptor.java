@@ -140,12 +140,24 @@ public class FlipperOkhttpInterceptor implements Interceptor, BufferingFlipperPl
           String data = route.getString("data");
           String requestUrl = route.getString("requestUrl");
           String method = route.getString("method");
+          FlipperArray headersArray = route.getArray("headers");
 
           if (!TextUtils.isEmpty(data) && !TextUtils.isEmpty(requestUrl) && !TextUtils.isEmpty(method)) {
             ResponseInfo mockResponse = new ResponseInfo();
             mockResponse.body = data.getBytes();
             mockResponse.statusCode = 200;
             mockResponse.statusReason = "OK";
+
+            if (headersArray != null) {
+                List<NetworkReporter.Header> headers = new ArrayList<>();
+                for (int j = 0; j < headersArray.length(); j++) {
+                    FlipperObject header = headersArray.getObject(j);
+                    headers.add(new NetworkReporter.Header(
+                            header.getString("key"),
+                            header.getString("value")));
+                }
+                mockResponse.headers = headers;
+            }
             registerMockResponse(requestUrl, method, mockResponse);
           }
         }
