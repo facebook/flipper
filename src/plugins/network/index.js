@@ -225,7 +225,7 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
       ...this.props.persistedState,
       routes: routes,
     });
-
+    console.log(routes);
     // inform client
     this.client.call('mockResponses', {
       routes: routes.filter(route => !route.isDuplicate),
