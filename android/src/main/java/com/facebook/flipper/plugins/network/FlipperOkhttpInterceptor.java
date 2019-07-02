@@ -7,19 +7,17 @@
 package com.facebook.flipper.plugins.network;
 
 import android.text.TextUtils;
-import android.util.Log;
-import android.view.TextureView;
 import com.facebook.flipper.core.*;
 import com.facebook.flipper.plugins.common.BufferingFlipperPlugin;
 import com.facebook.flipper.plugins.network.NetworkReporter.RequestInfo;
 import com.facebook.flipper.plugins.network.NetworkReporter.ResponseInfo;
-import java.io.IOException;
-import java.util.*;
-import javax.annotation.Nullable;
-
 import okhttp3.*;
 import okio.Buffer;
 import okio.BufferedSource;
+
+import javax.annotation.Nullable;
+import java.io.IOException;
+import java.util.*;
 
 public class FlipperOkhttpInterceptor implements Interceptor, BufferingFlipperPlugin.ConnectionListener {
 
@@ -69,15 +67,22 @@ public class FlipperOkhttpInterceptor implements Interceptor, BufferingFlipperPl
     String url = request.url().toString();
     String method = request.method();
     ResponseInfo mockResponse = mockResponeMap.get(url+"|"+method);
+
     if (mockResponse != null) {
-      return new Response.Builder()
-              .request(request)
+      Response.Builder builder = new Response.Builder();
+      builder.request(request)
               .protocol(Protocol.HTTP_1_1)
               .code(mockResponse.statusCode)
               .message(mockResponse.statusReason)
               .receivedResponseAtMillis(System.currentTimeMillis())
-              .body(ResponseBody.create(MediaType.get("application/text"), mockResponse.body))
-              .build();
+              .body(ResponseBody.create(MediaType.get("application/text"), mockResponse.body));
+
+      if (mockResponse.headers != null && mockResponse.headers.size() > 0) {
+        for (NetworkReporter.Header header: mockResponse.headers) {
+          builder.header(header.name, header.value);
+        }
+      }
+      return builder.build();
     }
     return null;
   }
@@ -135,7 +140,6 @@ public class FlipperOkhttpInterceptor implements Interceptor, BufferingFlipperPl
       public void onReceive(FlipperObject params, FlipperResponder responder) throws Exception {
         FlipperArray array = params.getArray("routes");
         mockResponeMap.clear();
-
 
         for(int i = 0; i < array.length(); i++) {
           FlipperObject route = array.getObject(i);
