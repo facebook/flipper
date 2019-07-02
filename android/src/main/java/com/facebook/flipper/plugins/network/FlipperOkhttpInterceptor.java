@@ -7,19 +7,17 @@
 package com.facebook.flipper.plugins.network;
 
 import android.text.TextUtils;
-import android.util.Log;
-import android.view.TextureView;
 import com.facebook.flipper.core.*;
 import com.facebook.flipper.plugins.common.BufferingFlipperPlugin;
 import com.facebook.flipper.plugins.network.NetworkReporter.RequestInfo;
 import com.facebook.flipper.plugins.network.NetworkReporter.ResponseInfo;
-import java.io.IOException;
-import java.util.*;
-import javax.annotation.Nullable;
-
 import okhttp3.*;
 import okio.Buffer;
 import okio.BufferedSource;
+
+import javax.annotation.Nullable;
+import java.io.IOException;
+import java.util.*;
 
 public class FlipperOkhttpInterceptor implements Interceptor, BufferingFlipperPlugin.ConnectionListener {
 

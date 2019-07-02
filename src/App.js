@@ -36,6 +36,12 @@ import type {Logger} from './fb-interfaces/Logger.js';
 import type BugReporter from './fb-stubs/BugReporter.js';
 import type BaseDevice from './devices/BaseDevice.js';
 import type {ActiveSheet} from './reducers/application.js';
+
+if (process.env.NODE_ENV !== 'production') {
+  const {whyDidYouUpdate} = require('why-did-you-update');
+  whyDidYouUpdate(React);
+}
+
 const version = remote.app.getVersion();
 
 type OwnProps = {|
