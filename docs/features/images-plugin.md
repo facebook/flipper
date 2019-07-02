@@ -27,6 +27,6 @@ of your application, for instance during cold start.
 ## Leak Tracking
 
 Dealing with large resources can require special APIs to be used that circumvent
-usual garbage collection. The plugin allows to track `CloseableReference`s for
+usual garbage collection. The plugin allows tracking `CloseableReference`s for
 Fresco on Android that weren't properly closed, which can help you improve
 the performance of your app.

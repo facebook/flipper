@@ -36,7 +36,7 @@ The Flipper plugin can help you track down `CloseableReferences` who have not ha
 `close()` called on them. This can have a negative impact on the performance of
 your application.
 
-Do enable this functionality, you need to create a `CloseableReferenceLeakTracker`
+To enable this functionality, you need to create a `CloseableReferenceLeakTracker`
 and set it in both your `ImagePipelineConfig` for Fresco and the `FrescoPluginPlugin`
 on creation.
 
