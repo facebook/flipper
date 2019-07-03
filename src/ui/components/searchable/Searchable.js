@@ -45,7 +45,7 @@ export const SearchInput = styled(Input)(props => ({
   lineHeight: '100%',
   marginLeft: 2,
   width: '100%',
-  color: props.isValidInput ? colors.black : colors.red,
+  color: props.regex && !props.isValidInput ? colors.red : colors.black,
   '&::-webkit-input-placeholder': {
     color: colors.placeholder,
     fontWeight: 300,
