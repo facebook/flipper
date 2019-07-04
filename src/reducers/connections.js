@@ -189,7 +189,7 @@ const reducer = (state: State = INITAL_STATE, action: Action): State => {
       let selection = {};
       if (selectedDeviceWasRemoved) {
         selection = {
-          selectedDevice: devices[devices.length - 1],
+          selectedDevice: devices[devices.length - 1] || null,
           selectedApp: null,
           selectedPlugin: DEFAULT_PLUGIN,
         };
