@@ -12,6 +12,7 @@ export {
   default as ButtonNavigationGroup,
 } from './components/ButtonNavigationGroup.js';
 export {default as ButtonGroup} from './components/ButtonGroup.js';
+export {default as ButtonGroupChain} from './components/ButtonGroupChain.js';
 
 //
 export {colors, darkColors, brandColors} from './components/colors.js';
@@ -124,6 +125,7 @@ export {default as ModalOverlay} from './components/ModalOverlay.js';
 export {default as Tooltip} from './components/Tooltip.js';
 export {default as TooltipProvider} from './components/TooltipProvider.js';
 export {default as ResizeSensor} from './components/ResizeSensor.js';
+export {default as StatusIndicator} from './components/StatusIndicator.js';
 
 // typography
 export {default as HorizontalRule} from './components/HorizontalRule.js';

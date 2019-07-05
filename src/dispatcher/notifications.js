@@ -21,6 +21,7 @@ import {textContent} from '../utils/index';
 import GK from '../fb-stubs/GK';
 
 type NotificationEvents = 'show' | 'click' | 'close' | 'reply' | 'action';
+const NOTIFICATION_THROTTLE = 5 * 1000; // in milliseconds
 
 export default (store: Store, logger: Logger) => {
   if (GK.get('flipper_disable_notifications')) {
@@ -29,6 +30,7 @@ export default (store: Store, logger: Logger) => {
 
   const knownNotifications: Set<string> = new Set();
   const knownPluginStates: Map<string, Object> = new Map();
+  const lastNotificationTime: Map<string, number> = new Map();
 
   ipcRenderer.on(
     'notificationEvent',
@@ -135,6 +137,19 @@ export default (store: Store, logger: Logger) => {
         (!n.notification.category ||
           blacklistedCategories.indexOf(n.notification.category) === -1)
       ) {
+        const prevNotificationTime: number =
+          lastNotificationTime.get(n.pluginId) || 0;
+        lastNotificationTime.set(n.pluginId, new Date().getTime());
+        knownNotifications.add(n.notification.id);
+
+        if (
+          new Date().getTime() - prevNotificationTime <
+          NOTIFICATION_THROTTLE
+        ) {
+          // Don't send a notification if the plugin has sent a notification
+          // within the NOTIFICATION_THROTTLE.
+          return;
+        }
         ipcRenderer.send('sendNotification', {
           payload: {
             title: n.notification.title,
@@ -159,7 +174,6 @@ export default (store: Store, logger: Logger) => {
           pluginNotification: n,
         });
         logger.track('usage', 'native-notification', n.notification);
-        knownNotifications.add(n.notification.id);
       }
     });
   });

@@ -15,6 +15,7 @@ import type {
   AndroidCloseableReferenceLeakEvent,
   CacheInfo,
 } from './api.js';
+import {Fragment} from 'react';
 import type {ImagesMap} from './ImagePool.js';
 import type {MetricType, MiddlewareAPI} from 'flipper';
 import React from 'react';
@@ -30,14 +31,18 @@ import {
 } from 'flipper';
 import ImagesSidebar from './ImagesSidebar.js';
 import ImagePool from './ImagePool.js';
+import type {Notification} from '../../plugin';
 
 export type ImageEventWithId = ImageEvent & {eventId: number};
 
-type PersistedState = {
+export type PersistedState = {
   surfaceList: Set<string>,
   images: ImagesList,
   events: Array<ImageEventWithId>,
   imagesMap: ImagesMap,
+  closeableReferenceLeaks: Array<AndroidCloseableReferenceLeakEvent>,
+  isLeakTrackingEnabled: boolean,
+  nextEventId: number,
 };
 
 type PluginState = {
@@ -55,6 +60,10 @@ const EmptySidebar = styled(FlexRow)({
   color: colors.light30,
   padding: 15,
   fontSize: 16,
+});
+
+export const InlineFlexRow = styled(FlexRow)({
+  display: 'inline-block',
 });
 
 const surfaceDefaultText = 'SELECT ALL SURFACES';
@@ -78,6 +87,9 @@ export default class extends FlipperPlugin<PluginState, *, PersistedState> {
     events: [],
     imagesMap: {},
     surfaceList: new Set(),
+    closeableReferenceLeaks: [],
+    isLeakTrackingEnabled: false,
+    nextEventId: 0,
   };
 
   static exportPersistedState = (
@@ -98,15 +110,22 @@ export default class extends FlipperPlugin<PluginState, *, PersistedState> {
       }
       const {levels, events, imageDataList} = data;
       let pluginData: PersistedState = {
+        ...FlipperPlugin.defaultPersistedState,
         images: [...levels.levels],
-        surfaceList: new Set(),
-        events: [],
-        imagesMap: {},
+        closeableReferenceLeaks:
+          (persistedState && persistedState.closeableReferenceLeaks) || [],
       };
 
       events.forEach((event: ImageEventWithId, index) => {
+        if (!event) {
+          return;
+        }
         const {attribution} = event;
-        if (attribution instanceof Array && attribution.length > 0) {
+        if (
+          attribution &&
+          attribution instanceof Array &&
+          attribution.length > 0
+        ) {
           const surface = attribution[0].trim();
           if (surface.length > 0) {
             pluginData.surfaceList.add(surface);
@@ -126,20 +145,58 @@ export default class extends FlipperPlugin<PluginState, *, PersistedState> {
     });
   };
 
+  static persistedStateReducer = (
+    persistedState: PersistedState,
+    method: string,
+    data: Object,
+  ): PersistedState => {
+    if (method == 'closeable_reference_leak_event') {
+      const event: AndroidCloseableReferenceLeakEvent = data;
+      return {
+        ...persistedState,
+        closeableReferenceLeaks: persistedState.closeableReferenceLeaks.concat(
+          event,
+        ),
+      };
+    } else if (method == 'events') {
+      const event: ImageEvent = data;
+
+      debugLog('Received events', event);
+      const {surfaceList} = persistedState;
+      const {attribution} = event;
+      if (attribution instanceof Array && attribution.length > 0) {
+        const surface = attribution[0].trim();
+        if (surface.length > 0) {
+          surfaceList.add(surface);
+        }
+      }
+      return {
+        ...persistedState,
+        events: [
+          {eventId: persistedState.nextEventId, ...event},
+          ...persistedState.events,
+        ],
+        nextEventId: persistedState.nextEventId + 1,
+      };
+    }
+
+    return persistedState;
+  };
+
   static metricsReducer = (
     persistedState: PersistedState,
   ): Promise<MetricType> => {
-    const {events, imagesMap} = persistedState;
-    let wastedBytes = 0;
-    events.forEach(event => {
+    const {events, imagesMap, closeableReferenceLeaks} = persistedState;
+
+    const wastedBytes = (events || []).reduce((acc, event) => {
       const {viewport, imageIds} = event;
       if (!viewport) {
-        return;
+        return acc;
       }
-      imageIds.forEach(imageID => {
+      return imageIds.reduce((innerAcc, imageID) => {
         const imageData: ImageData = imagesMap[imageID];
         if (!imageData) {
-          return;
+          return innerAcc;
         }
         const imageWidth: number = imageData.width;
         const imageHeight: number = imageData.height;
@@ -147,11 +204,43 @@ export default class extends FlipperPlugin<PluginState, *, PersistedState> {
         const viewPortHeight: number = viewport.height;
         const viewPortArea = viewPortWidth * viewPortHeight;
         const imageArea = imageWidth * imageHeight;
-        wastedBytes += Math.max(0, imageArea - viewPortArea);
-      });
+        return innerAcc + Math.max(0, imageArea - viewPortArea);
+      }, acc);
+    }, 0);
+
+    return Promise.resolve({
+      WASTED_BYTES: wastedBytes,
+      CLOSEABLE_REFERENCE_LEAKS: (closeableReferenceLeaks || []).length,
     });
-    return Promise.resolve({WASTED_BYTES: wastedBytes});
   };
+
+  static getActiveNotifications = ({
+    closeableReferenceLeaks = [],
+    isLeakTrackingEnabled = false,
+  }: PersistedState): Array<Notification> =>
+    closeableReferenceLeaks
+      .filter(_ => isLeakTrackingEnabled)
+      .map((event: AndroidCloseableReferenceLeakEvent, index) => ({
+        id: event.identityHashCode,
+        title: `Leaked CloseableReference: ${event.className}`,
+        message: (
+          <Fragment>
+            <InlineFlexRow>
+              CloseableReference leaked for{' '}
+              <Text code={true}>{event.className}</Text>
+              (identity hashcode: {event.identityHashCode}).
+            </InlineFlexRow>
+            <InlineFlexRow>
+              <Text bold={true}>Stacktrace:</Text>
+            </InlineFlexRow>
+            <InlineFlexRow>
+              <Text code={true}>{event.stacktrace || '<unavailable>'}</Text>
+            </InlineFlexRow>
+          </Fragment>
+        ),
+        severity: 'error',
+        category: 'closeablereference_leak',
+      }));
 
   state: PluginState;
   imagePool: ImagePool;
@@ -203,34 +292,10 @@ export default class extends FlipperPlugin<PluginState, *, PersistedState> {
   init() {
     debugLog('init()');
     this.updateCaches('init');
-    this.client.subscribe('events', (event: ImageEvent) => {
-      const {surfaceList} = this.props.persistedState;
-      const {attribution} = event;
-      if (attribution instanceof Array && attribution.length > 0) {
-        const surface = attribution[0].trim();
-        if (surface.length > 0) {
-          surfaceList.add(surface);
-        }
-      }
-      this.props.setPersistedState({
-        events: [
-          {eventId: this.nextEventId, ...event},
-          ...this.props.persistedState.events,
-        ],
-      });
-      this.nextEventId++;
-    });
     this.client.subscribe(
       'debug_overlay_event',
       (event: FrescoDebugOverlayEvent) => {
         this.setState({isDebugOverlayEnabled: event.enabled});
-      },
-    );
-    this.client.subscribe(
-      'closeable_reference_leak_event',
-      (event: AndroidCloseableReferenceLeakEvent) => {
-        // TODO(T45065440): Temporary log, to be turned into counter.
-        console.warn('CloseableReference leak detected:', event);
       },
     );
     this.imagePool = new ImagePool(this.getImage, (images: ImagesMap) =>
@@ -357,6 +422,13 @@ export default class extends FlipperPlugin<PluginState, *, PersistedState> {
     );
   };
 
+  onTrackLeaks = (checked: boolean) => {
+    this.props.logger.track('usage', 'fresco:onTrackLeaks', {enabled: checked});
+    this.props.setPersistedState({
+      isLeakTrackingEnabled: checked,
+    });
+  };
+
   render() {
     const options = [...this.props.persistedState.surfaceList].reduce(
       (acc, item) => {
@@ -383,6 +455,10 @@ export default class extends FlipperPlugin<PluginState, *, PersistedState> {
           onImageSelected={this.onImageSelected}
           imagesMap={this.props.persistedState.imagesMap}
           events={this.props.persistedState.events}
+          isLeakTrackingEnabled={
+            this.props.persistedState.isLeakTrackingEnabled
+          }
+          onTrackLeaks={this.onTrackLeaks}
         />
         <DetailSidebar>{this.renderSidebar()}</DetailSidebar>
       </React.Fragment>

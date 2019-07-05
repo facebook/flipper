@@ -18,26 +18,22 @@ function processArray(
   array: [any],
   stack: Array<any>,
   dict: Map<any, any>,
-): {premature: boolean, outputArr: Array<any>} {
+): {childNeedsIteration: boolean, outputArr: Array<any>} {
+  // Adds the array item to the stack if it needs to undergo iteration to serialise it. Otherwise it adds the serialized version of the item to the memoization dict
   let outputArr = [];
-  let premature = false;
+  let childNeedsIteration = false;
   for (const item of array) {
-    if (!dict.has(item)) {
-      if (!(item instanceof Object)) {
-        dict.set(item, item);
-      } else {
-        stack.push(element);
-        stack.push(item);
-        premature = true;
-        break;
-      }
+    const isItemInstanceOfObject = item instanceof Object;
+    if (!dict.has(item) && isItemInstanceOfObject) {
+      stack.push(item);
+      childNeedsIteration = true;
+      continue;
+    } else if (!dict.has(item) && !isItemInstanceOfObject) {
+      dict.set(item, item);
     }
-    if (dict.has(item)) {
-      dict.set(item, dict.get(item));
-      outputArr.push(dict.get(item));
-    }
+    outputArr.push(dict.get(item));
   }
-  return {premature, outputArr};
+  return {childNeedsIteration, outputArr};
 }
 
 function processKeyValuePair(
@@ -46,28 +42,74 @@ function processKeyValuePair(
   value: any,
   stack: Array<any>,
   dict: Map<any, any>,
-): {premature: boolean} {
-  let premature = false;
-  if (!dict.has(key)) {
-    if (!(key instanceof Object)) {
-      dict.set(key, key);
-    } else {
-      stack.push(element);
-      stack.push(key);
-      premature = true;
-      return {premature};
+): {childNeedsIteration: boolean} {
+  // Adds the key and value to the stack if it needs to undergo iteration to serialise it. Otherwise it adds the serialized version of key and value to the memoization dict
+  let childNeedsIteration = false;
+  const isKeyInstanceOfObject = key instanceof Object;
+  if (!dict.has(key) && !isKeyInstanceOfObject) {
+    dict.set(key, key);
+  } else if (!dict.has(key) && isKeyInstanceOfObject) {
+    stack.push(key);
+    childNeedsIteration = true;
+  }
+
+  const isValueInstanceOfObject = value instanceof Object;
+  if (!dict.has(value) && !isValueInstanceOfObject) {
+    dict.set(value, value);
+  } else if (!dict.has(value) && isValueInstanceOfObject) {
+    stack.push(value);
+    childNeedsIteration = true;
+  }
+  return {childNeedsIteration};
+}
+
+export function processMapElement(
+  obj: Map<any, any>,
+  dict: Map<any, any>,
+  stack: Array<any>,
+): {childNeedsIteration: boolean, outputArray: Array<any>} {
+  const arr = [];
+  let childNeedsIteration = false;
+  for (const item of [...obj]) {
+    const key = item[0];
+    const value = item[1];
+    childNeedsIteration =
+      childNeedsIteration ||
+      processKeyValuePair(obj, key, value, stack, dict).childNeedsIteration;
+    if (!childNeedsIteration && dict.has(key) && dict.has(value)) {
+      dict.set(item, [dict.get(key), dict.get(value)]);
+      arr.push([dict.get(key), dict.get(value)]);
     }
   }
-  if (!dict.has(value)) {
-    if (!(value instanceof Object)) {
-      dict.set(value, value);
-    } else {
-      stack.push(element);
-      stack.push(value);
-      premature = true;
+  return {childNeedsIteration, outputArray: arr};
+}
+
+export function processObjectToBeSerialized(
+  element: Object,
+  dict: Map<any, any>,
+  stack: Array<any>,
+): {childNeedsIteration: boolean, outputObject: Object} {
+  const array = Object.entries(element);
+  let obj = {};
+  let childNeedsIteration = false;
+  for (const item of array) {
+    const key = item[0];
+    const value = item[1];
+    childNeedsIteration =
+      childNeedsIteration ||
+      processKeyValuePair(element, key, value, stack, dict).childNeedsIteration;
+    if (!childNeedsIteration && dict.has(key) && dict.has(value)) {
+      const serializedKey = dict.get(key);
+      const serializedValue = dict.get(value);
+      if (
+        typeof serializedKey !== 'undefined' &&
+        typeof serializedValue !== 'undefined'
+      ) {
+        obj = {...obj, [serializedKey]: serializedValue};
+      }
     }
   }
-  return {premature};
+  return {childNeedsIteration, outputObject: obj};
 }
 
 export function makeObjectSerializable(obj: any): any {
@@ -77,38 +119,28 @@ export function makeObjectSerializable(obj: any): any {
   let stack = [obj];
   const dict: Map<any, any> = new Map();
   while (stack.length > 0) {
-    const element = stack.pop();
+    const element = stack[stack.length - 1];
     if (element instanceof Map) {
-      const arr = [];
-      let premature = false;
-      for (const item of [...element]) {
-        const key = item[0];
-        const value = item[1];
-        premature = processKeyValuePair(element, key, value, stack, dict)
-          .premature;
-        if (premature) {
-          break;
-        }
-        if (dict.has(key) && dict.has(value)) {
-          dict.set(item, [dict.get(key), dict.get(value)]);
-          arr.push([dict.get(key), dict.get(value)]);
-        }
-      }
-      if (premature) {
+      const {childNeedsIteration, outputArray} = processMapElement(
+        element,
+        dict,
+        stack,
+      );
+      if (childNeedsIteration) {
         continue;
       }
       dict.set(element, {
         __flipper_object_type__: 'Map',
-        data: arr,
+        data: outputArray,
       });
     } else if (element instanceof Set) {
-      const {premature, outputArr} = processArray(
+      const {childNeedsIteration, outputArr} = processArray(
         element,
         [...element],
         stack,
         dict,
       );
-      if (premature) {
+      if (childNeedsIteration) {
         continue;
       }
       dict.set(element, {
@@ -121,42 +153,28 @@ export function makeObjectSerializable(obj: any): any {
         data: element.toString(),
       });
     } else if (element instanceof Array) {
-      const {premature, outputArr} = processArray(
+      const {childNeedsIteration, outputArr} = processArray(
         element,
         element,
         stack,
         dict,
       );
-      if (premature) {
+      if (childNeedsIteration) {
         continue;
       }
       dict.set(element, outputArr);
     } else if (element instanceof Object) {
-      const array = Object.entries(element);
-      let obj = {};
-      let premature = false;
-      for (const item of array) {
-        const key = item[0];
-        const value = item[1];
-        premature = processKeyValuePair(element, key, value, stack, dict)
-          .premature;
-        if (premature) {
-          break;
-        }
-        const serializedKey = dict.get(key);
-        const serializedValue = dict.get(value);
-        if (
-          typeof serializedKey !== 'undefined' &&
-          typeof serializedValue !== 'undefined'
-        ) {
-          obj = {...obj, [serializedKey]: serializedValue};
-        }
-      }
-      if (premature) {
+      const {childNeedsIteration, outputObject} = processObjectToBeSerialized(
+        element,
+        dict,
+        stack,
+      );
+      if (childNeedsIteration) {
         continue;
       }
-      dict.set(element, obj);
+      dict.set(element, outputObject);
     }
+    stack.pop();
   }
   return dict.get(obj);
 }

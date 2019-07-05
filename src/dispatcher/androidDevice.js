@@ -10,6 +10,7 @@ import child_process from 'child_process';
 import type {Store} from '../reducers/index.js';
 import type BaseDevice from '../devices/BaseDevice';
 import type {Logger} from '../fb-interfaces/Logger.js';
+import type Client from '../Client.js';
 import {registerDeviceCallbackOnPlugins} from '../utils/onRegisterDevice.js';
 import {getAdbClient} from '../utils/adbClient';
 import {default as which} from 'which';
@@ -158,6 +159,43 @@ export default (store: Store, logger: Logger) => {
       name: androidDevice.title,
       serial: androidDevice.serial,
     });
+
+    // remove offline devices with same serial as the connected.
+    const reconnectedDevices: Array<string> = store
+      .getState()
+      .connections.devices.filter(
+        (device: BaseDevice) =>
+          device.serial === androidDevice.serial && device.isArchived,
+      )
+      .map(device => device.serial);
+
+    if (reconnectedDevices.length > 0) {
+      reconnectedDevices.forEach((device: string) => {
+        // remove all disconnected clients for the reconnected device
+        store
+          .getState()
+          .connections.clients.filter(
+            (client: Client) => client.query.device_id === device,
+          )
+          .forEach((client: Client) => {
+            store.dispatch({
+              type: 'CLIENT_REMOVED',
+              payload: client.id,
+            });
+            store.dispatch({
+              type: 'CLEAR_CLIENT_PLUGINS',
+              payload: client.id,
+            });
+          });
+      });
+
+      // remove archived devices of previously connected devices
+      store.dispatch({
+        type: 'UNREGISTER_DEVICES',
+        payload: new Set(reconnectedDevices),
+      });
+    }
+
     store.dispatch({
       type: 'REGISTER_DEVICE',
       payload: androidDevice,
@@ -178,11 +216,36 @@ export default (store: Store, logger: Logger) => {
         serial: id,
       }),
     );
+
+    const archivedDevices = deviceIds
+      .map(id => {
+        const device = store
+          .getState()
+          .connections.devices.find(device => device.serial === id);
+        if (device && !device.isArchived) {
+          return device.archive();
+        }
+      })
+      .filter(Boolean);
+
     store.dispatch({
       type: 'UNREGISTER_DEVICES',
       payload: new Set(deviceIds),
     });
+
+    archivedDevices.forEach((payload: BaseDevice) =>
+      store.dispatch({
+        type: 'REGISTER_DEVICE',
+        payload,
+      }),
+    );
   }
 
   watchAndroidDevices();
+
+  // cleanup method
+  return () =>
+    getAdbClient().then(client => {
+      client.kill();
+    });
 };

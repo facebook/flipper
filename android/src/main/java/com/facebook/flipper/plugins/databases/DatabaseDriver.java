@@ -1,8 +1,8 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the LICENSE
+ * file in the root directory of this source tree.
  */
 package com.facebook.flipper.plugins.databases;
 
@@ -45,6 +45,9 @@ public abstract class DatabaseDriver<DESCRIPTOR extends DatabaseDescriptor> {
   public abstract DatabaseGetTableStructureResponse getTableStructure(
       DESCRIPTOR databaseDescriptor, String table);
 
+  public abstract DatabaseGetTableInfoResponse getTableInfo(
+      DESCRIPTOR databaseDescriptor, String table);
+
   public abstract DatabaseExecuteSqlResponse executeSQL(
       DESCRIPTOR databaseDescriptor, String query);
 
@@ -76,18 +79,24 @@ public abstract class DatabaseDriver<DESCRIPTOR extends DatabaseDescriptor> {
     public final List<List<Object>> structureValues;
     public final List<String> indexesColumns;
     public final List<List<Object>> indexesValues;
-    public final String definition;
 
     public DatabaseGetTableStructureResponse(
         final List<String> structureColumns,
         final List<List<Object>> structureValues,
         final List<String> indexesColumns,
-        final List<List<Object>> indexesValues,
-        String definition) {
+        final List<List<Object>> indexesValues) {
       this.structureColumns = structureColumns;
       this.structureValues = structureValues;
       this.indexesColumns = indexesColumns;
       this.indexesValues = indexesValues;
+    }
+  }
+
+  public static class DatabaseGetTableInfoResponse {
+
+    public final String definition;
+
+    public DatabaseGetTableInfoResponse(String definition) {
       this.definition = definition;
     }
   }

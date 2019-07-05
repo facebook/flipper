@@ -17,6 +17,7 @@ import iosDevice from '../dispatcher/iOSDevice';
 import type Client from '../Client';
 
 let server;
+let androidCleanup;
 const store = createStore(reducers);
 
 beforeAll(() => {
@@ -28,7 +29,7 @@ beforeAll(() => {
 
   const logger = initLogger(store);
 
-  androidDevice(store, logger);
+  androidCleanup = androidDevice(store, logger);
   iosDevice(store, logger);
 
   server = new Server(logger, store);
@@ -65,5 +66,7 @@ test('Device can connect successfully', done => {
 }, 20000);
 
 afterAll(() => {
-  return server.close();
+  return androidCleanup().then(() => {
+    server.close();
+  });
 });

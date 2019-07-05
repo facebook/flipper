@@ -120,7 +120,7 @@ const INITIAL_COLUMN_ORDER = [
   },
   {
     key: 'time',
-    visible: false,
+    visible: true,
   },
   {
     key: 'pid',
@@ -637,6 +637,7 @@ export default class LogTable extends FlipperDevicePlugin<
           defaultFilters={DEFAULT_FILTERS}
           zebra={false}
           actions={<Button onClick={this.clearLogs}>Clear Logs</Button>}
+          allowRegexSearch={true}
           // If the logs is opened through deeplink, then don't scroll as the row is highlighted
           stickyBottom={
             !(this.props.deepLinkPayload && this.state.highlightedRows.size > 0)

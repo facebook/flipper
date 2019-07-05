@@ -24,6 +24,7 @@ module.exports = {
     'max-len': 0, // let's take prettier take care of this
     indent: 0, // let's take prettier take care of this
     'no-console': 0, // we're setting window.console in App.js
+    'prefer-promise-reject-errors': 1,
 
     // additional rules for this project
     'header/header': [2, 'block', {pattern}],

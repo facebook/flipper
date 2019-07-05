@@ -6,6 +6,7 @@
  */
 
 import type {Logger} from '../fb-interfaces/Logger';
+import Server from '../server';
 import {promisify} from 'util';
 const fs = require('fs');
 import {
@@ -361,8 +362,11 @@ export default class CertificateProvider {
       .then(dir => {
         return promisify(fs.readdir)(dir)
           .then(items => {
-            if (items.length !== 1) {
+            if (items.length > 1) {
               throw new Error('Conflict in temp dir');
+            }
+            if (items.length === 0) {
+              throw new Error('Failed to pull CSR from device');
             }
             return items[0];
           })

@@ -105,7 +105,7 @@ export default class FilterToken extends PureComponent<Props> {
   };
 
   showDetails = () => {
-    const menuTemplate = [];
+    const menuTemplate: Array<MenuItemConstructorOptions> = [];
 
     if (this.props.filter.type === 'enum') {
       menuTemplate.push(

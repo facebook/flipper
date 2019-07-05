@@ -12,7 +12,7 @@ import type {
 } from './ElementsInspector.js';
 import {reportInteraction} from '../../../utils/InteractionTracker';
 import ContextMenu from '../ContextMenu.js';
-import {PureComponent} from 'react';
+import {PureComponent, type Element as ReactElement} from 'react';
 import FlexRow from '../FlexRow.js';
 import FlexColumn from '../FlexColumn.js';
 import Glyph from '../Glyph.js';
@@ -205,6 +205,7 @@ type ElementsRowProps = {
   onElementHovered: ?(key: ?ElementID) => void,
   style?: Object,
   contextMenuExtensions: Array<ContextMenuExtension>,
+  decorateRow?: DecorateRow,
 };
 
 type ElementsRowState = {|
@@ -220,7 +221,7 @@ class ElementsRow extends PureComponent<ElementsRowProps, ElementsRowState> {
 
   interaction: (name: string, data: any) => void;
 
-  getContextMenu = (): Array<Electron$MenuItemOptions> => {
+  getContextMenu = (): Array<MenuItemConstructorOptions> => {
     const {props} = this;
     const items = [
       {
@@ -229,7 +230,7 @@ class ElementsRow extends PureComponent<ElementsRowProps, ElementsRowState> {
       {
         label: 'Copy',
         click: () => {
-          clipboard.writeText(props.element.name);
+          clipboard.writeText(props.element.name + ' id=' + props.element.id);
         },
       },
       {
@@ -283,6 +284,7 @@ class ElementsRow extends PureComponent<ElementsRowProps, ElementsRowState> {
       style,
       even,
       matchingSearchQuery,
+      decorateRow,
     } = this.props;
     const hasChildren = element.children && element.children.length > 0;
 
@@ -312,20 +314,22 @@ class ElementsRow extends PureComponent<ElementsRowProps, ElementsRowState> {
         ))
       : [];
 
-    const decoration = (() => {
-      switch (element.decoration) {
-        case 'litho':
-          return <DecorationImage src="icons/litho-logo.png" />;
-        case 'componentkit':
-          return <DecorationImage src="icons/componentkit-logo.png" />;
-        case 'componentscript':
-          return <DecorationImage src="icons/componentscript-logo.png" />;
-        case 'accessibility':
-          return <DecorationImage src="icons/accessibility.png" />;
-        default:
-          return null;
-      }
-    })();
+    const decoration = decorateRow
+      ? decorateRow(element)
+      : (() => {
+          switch (element.decoration) {
+            case 'litho':
+              return <DecorationImage src="icons/litho-logo.png" />;
+            case 'componentkit':
+              return <DecorationImage src="icons/componentkit-logo.png" />;
+            case 'componentscript':
+              return <DecorationImage src="icons/componentscript-logo.png" />;
+            case 'accessibility':
+              return <DecorationImage src="icons/accessibility.png" />;
+            default:
+              return null;
+          }
+        })();
 
     // when we hover over or select an expanded element with children, we show a line from the
     // bottom of the element to the next sibling
@@ -381,6 +385,8 @@ const ElementsBox = styled(FlexColumn)({
   overflow: 'auto',
 });
 
+export type DecorateRow = Element => ?ReactElement<empty>;
+
 type ElementsProps = {|
   root: ?ElementID,
   selected: ?ElementID,
@@ -392,6 +398,7 @@ type ElementsProps = {|
   onElementHovered: ?(key: ?ElementID) => void,
   alternateRowColor?: boolean,
   contextMenuExtensions?: Array<ContextMenuExtension>,
+  decorateRow?: DecorateRow,
 |};
 
 type ElementsState = {|
@@ -562,6 +569,7 @@ export class Elements extends PureComponent<ElementsProps, ElementsState> {
       focused,
       searchResults,
       contextMenuExtensions,
+      decorateRow,
     } = this.props;
     const {flatElements} = this.state;
 
@@ -600,6 +608,7 @@ export class Elements extends PureComponent<ElementsProps, ElementsState> {
         elements={elements}
         childrenCount={childrenCount}
         contextMenuExtensions={contextMenuExtensions || []}
+        decorateRow={decorateRow}
       />
     );
   };

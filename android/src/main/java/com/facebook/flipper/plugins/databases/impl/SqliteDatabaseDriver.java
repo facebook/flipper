@@ -1,8 +1,8 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the LICENSE
+ * file in the root directory of this source tree.
  */
 package com.facebook.flipper.plugins.databases.impl;
 
@@ -171,9 +171,7 @@ public class SqliteDatabaseDriver extends DatabaseDriver<SqliteDatabaseDescripto
       Cursor structureCursor = database.rawQuery("PRAGMA table_info(" + table + ")", null);
       Cursor foreignKeysCursor = database.rawQuery("PRAGMA foreign_key_list(" + table + ")", null);
       Cursor indexesCursor = database.rawQuery("PRAGMA index_list(" + table + ")", null);
-      Cursor definitionCursor =
-          database.rawQuery(
-              "SELECT sql FROM " + SCHEMA_TABLE + " WHERE name=?", new String[] {table});
+
       try {
         // Structure & foreign keys
 
@@ -234,17 +232,38 @@ public class SqliteDatabaseDriver extends DatabaseDriver<SqliteDatabaseDescripto
           }
         }
 
-        // Definition
-
-        definitionCursor.moveToFirst();
-        String definition = definitionCursor.getString(definitionCursor.getColumnIndex("sql"));
-
         return new DatabaseGetTableStructureResponse(
-            structureColumns, structureValues, indexesColumns, indexesValues, definition);
+            structureColumns, structureValues, indexesColumns, indexesValues);
+
       } finally {
         structureCursor.close();
         foreignKeysCursor.close();
         indexesCursor.close();
+      }
+    } finally {
+      database.close();
+    }
+  }
+
+  @Override
+  public DatabaseGetTableInfoResponse getTableInfo(
+      SqliteDatabaseDescriptor databaseDescriptor, String table) {
+    SQLiteDatabase database =
+        sqliteDatabaseConnectionProvider.openDatabase(databaseDescriptor.file);
+    try {
+
+      Cursor definitionCursor =
+          database.rawQuery(
+              "SELECT sql FROM " + SCHEMA_TABLE + " WHERE name=?", new String[] {table});
+      try {
+
+        // Definition
+        definitionCursor.moveToFirst();
+        String definition = definitionCursor.getString(definitionCursor.getColumnIndex("sql"));
+
+        return new DatabaseGetTableInfoResponse(definition);
+      } finally {
+        definitionCursor.close();
       }
     } finally {
       database.close();

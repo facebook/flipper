@@ -57,7 +57,7 @@ class UserAccount extends PureComponent<UserAccountProps> {
   };
 
   showDetails = () => {
-    const menuTemplate = [
+    const menuTemplate: Array<MenuItemConstructorOptions> = [
       {
         label: 'Sign Out',
         click: this.props.logout,

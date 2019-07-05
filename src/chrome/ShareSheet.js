@@ -17,11 +17,15 @@ import {
   Spacer,
   Input,
 } from 'flipper';
+import type {Logger} from '../fb-interfaces/Logger.js';
 import {shareFlipperData} from '../fb-stubs/user';
 import {exportStore, EXPORT_FLIPPER_TRACE_EVENT} from '../utils/exportData.js';
 import PropTypes from 'prop-types';
 import {clipboard} from 'electron';
+import ShareSheetErrorList from './ShareSheetErrorList.js';
 import {reportPlatformFailures} from '../utils/metrics';
+// $FlowFixMe: Missing type defs for node built-in.
+import {performance} from 'perf_hooks';
 export const SHARE_FLIPPER_TRACE_EVENT = 'share-flipper-link';
 
 const Container = styled(FlexColumn)({
@@ -39,6 +43,20 @@ const Uploading = styled(Text)({
   marginTop: 15,
 });
 
+const Copy = styled(Input)({
+  marginRight: 0,
+  marginBottom: 15,
+});
+
+const InfoText = styled(Text)({
+  lineHeight: 1.35,
+  marginBottom: 15,
+});
+
+const Title = styled(Text)({
+  marginBottom: 6,
+});
+
 const ErrorMessage = styled(Text)({
   display: 'block',
   marginTop: 6,
@@ -47,31 +65,9 @@ const ErrorMessage = styled(Text)({
   lineHeight: 1.35,
 });
 
-const Copy = styled(Input)({
-  marginRight: 0,
-  marginBottom: 15,
-});
-
-const Title = styled(Text)({
-  marginBottom: 6,
-});
-
-const InfoText = styled(Text)({
-  lineHeight: 1.35,
-  marginBottom: 15,
-});
-
-const Padder = styled('div')(
-  ({paddingLeft, paddingRight, paddingBottom, paddingTop}) => ({
-    paddingLeft: paddingLeft || 0,
-    paddingRight: paddingRight || 0,
-    paddingBottom: paddingBottom || 0,
-    paddingTop: paddingTop || 0,
-  }),
-);
-
 type Props = {
   onHide: () => mixed,
+  logger: Logger,
 };
 type State = {
   errorArray: Array<Error>,
@@ -96,6 +92,8 @@ export default class ShareSheet extends Component<Props, State> {
   };
 
   async componentDidMount() {
+    const mark = 'shareSheetExportUrl';
+    performance.mark(mark);
     try {
       const {serializedString, errorArray} = await reportPlatformFailures(
         exportStore(this.context.store),
@@ -115,6 +113,7 @@ export default class ShareSheet extends Component<Props, State> {
           requireInteraction: true,
         });
       }
+      this.props.logger.trackTimeSince(mark, 'export:url-success');
     } catch (e) {
       this.setState({
         result: {
@@ -122,7 +121,7 @@ export default class ShareSheet extends Component<Props, State> {
           error: e,
         },
       });
-      return;
+      this.props.logger.trackTimeSince(mark, 'export:url-error');
     }
   }
 
@@ -146,20 +145,7 @@ export default class ShareSheet extends Component<Props, State> {
                     data might contain sensitve information like access tokens
                     used in network requests.
                   </InfoText>
-                  {this.state.errorArray.length > 0 && (
-                    <Padder paddingBottom={8}>
-                      <FlexColumn>
-                        <Title bold>
-                          The following errors occurred while exporting your
-                          data
-                        </Title>
-                        {this.state.errorArray.map((e: Error) => {
-                          return (
-                            <ErrorMessage code>{e.toString()}</ErrorMessage>
-                          );
-                        })}
-                      </FlexColumn>
-                    </Padder>
+                  <ShareSheetErrorList errors={this.state.errorArray} />
                   )}
                 </>
               ) : (

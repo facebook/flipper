@@ -31,6 +31,7 @@ import createPaste from '../../../fb-stubs/createPaste.js';
 import debounceRender from 'react-debounce-render';
 import debounce from 'lodash.debounce';
 import {DEFAULT_ROW_HEIGHT} from './types';
+import textContent from '../../../utils/textContent.js';
 
 export type ManagedTableProps = {|
   /**
@@ -146,12 +147,6 @@ const Container = styled(FlexColumn)(props => ({
 
 const globalTableState: {[string]: TableColumnSizes} = {};
 
-function getTextContentOfRow(rowId: string) {
-  return Array.from(
-    document.querySelectorAll(`[data-key='${rowId}'] > *`) || [],
-  ).map(node => node.textContent);
-}
-
 class ManagedTable extends React.Component<
   ManagedTableProps,
   ManagedTableState,
@@ -258,6 +253,18 @@ class ManagedTable extends React.Component<
     ) {
       this.scrollToHighlightedRows();
     }
+    if (
+      this.props.stickyBottom &&
+      !this.state.shouldScrollToBottom &&
+      this.scrollRef &&
+      this.scrollRef.current &&
+      this.scrollRef.current.parentElement &&
+      this.scrollRef.current.parentElement instanceof HTMLElement &&
+      this.scrollRef.current.offsetHeight <=
+        this.scrollRef.current.parentElement.offsetHeight
+    ) {
+      this.setState({shouldScrollToBottom: true});
+    }
     this.firstUpdate = false;
   }
 
@@ -275,8 +282,13 @@ class ManagedTable extends React.Component<
     }
   };
 
-  onCopy = () => {
-    clipboard.writeText(this.getSelectedText());
+  onCopy = (withHeader: boolean) => {
+    clipboard.writeText(
+      [
+        ...(withHeader ? [this.getHeaderText()] : []),
+        this.getSelectedText(),
+      ].join('\n'),
+    );
   };
 
   onKeyDown = (e: KeyboardEvent) => {
@@ -289,7 +301,7 @@ class ManagedTable extends React.Component<
         (e.ctrlKey && process.platform !== 'darwin')) &&
       e.keyCode === 67
     ) {
-      this.onCopy();
+      this.onCopy(false);
     } else if (
       (e.keyCode === 38 || e.keyCode === 40) &&
       this.props.highlightableRows
@@ -383,10 +395,16 @@ class ManagedTable extends React.Component<
       e.button !== 0 ||
       (process.platform === 'darwin' && e.button === 0 && e.ctrlKey);
 
-    if (!contextClick) {
-      this.dragStartIndex = index;
-      document.addEventListener('mouseup', this.onStopDragSelecting);
+    if (contextClick) {
+      if (!highlightedRows.has(row.key)) {
+        highlightedRows.clear();
+        highlightedRows.add(row.key);
+      }
+      return;
     }
+
+    this.dragStartIndex = index;
+    document.addEventListener('mouseup', this.onStopDragSelecting);
 
     if (
       ((process.platform === 'darwin' && e.metaKey) ||
@@ -455,7 +473,8 @@ class ManagedTable extends React.Component<
       dragStartIndex &&
       current &&
       this.props.multiHighlight &&
-      this.props.highlightableRows
+      this.props.highlightableRows &&
+      !e.shiftKey // When shift key is pressed, it's a range select not a drag select
     ) {
       current.scrollToItem(index + 1);
       const startKey = this.props.rows[dragStartIndex].key;
@@ -465,11 +484,11 @@ class ManagedTable extends React.Component<
   };
 
   onCopyCell = (rowId: string, index: number) => {
-    const cellText = getTextContentOfRow(rowId)[index];
+    const cellText = this.getTextContentOfRow(rowId)[index];
     clipboard.writeText(cellText);
   };
 
-  buildContextMenuItems: () => Array<Electron$MenuItemOptions> = () => {
+  buildContextMenuItems: () => Array<MenuItemConstructorOptions> = () => {
     const {highlightedRows} = this.state;
     if (highlightedRows.size === 0) {
       return [];
@@ -479,7 +498,6 @@ class ManagedTable extends React.Component<
       highlightedRows.size === 1
         ? [
             {
-              click: this.onCopy,
               label: 'Copy cell',
               submenu: this.state.columnOrder
                 .filter(c => c.visible)
@@ -503,13 +521,32 @@ class ManagedTable extends React.Component<
           highlightedRows.size > 1
             ? `Copy ${highlightedRows.size} rows`
             : 'Copy row',
-        click: this.onCopy,
+        submenu: [
+          {label: 'With columns header', click: () => this.onCopy(true)},
+          {
+            label: 'Without columns header',
+            click: () => {
+              this.onCopy(false);
+            },
+          },
+        ],
       },
       {
         label: 'Create Paste',
-        click: () => createPaste(this.getSelectedText()),
+        click: () =>
+          createPaste(
+            [this.getHeaderText(), this.getSelectedText()].join('\n'),
+          ),
       },
     ];
+  };
+
+  getHeaderText = (): string => {
+    return this.state.columnOrder
+      .filter(c => c.visible)
+      .map(c => c.key)
+      .map(key => this.props.columns[key].value)
+      .join('\t');
   };
 
   getSelectedText = (): string => {
@@ -522,9 +559,19 @@ class ManagedTable extends React.Component<
       .filter(row => highlightedRows.has(row.key))
       .map(
         (row: TableBodyRow) =>
-          row.copyText || getTextContentOfRow(row.key).join('\t'),
+          row.copyText || this.getTextContentOfRow(row.key).join('\t'),
       )
       .join('\n');
+  };
+
+  getTextContentOfRow = (key: string): Array<string> => {
+    const row = this.props.rows.find(row => row.key === key);
+    if (!row) {
+      return [];
+    }
+    return this.state.columnOrder
+      .filter(({visible}) => visible)
+      .map(({key}) => textContent(row.columns[key].value));
   };
 
   onScroll = debounce(
@@ -540,12 +587,11 @@ class ManagedTable extends React.Component<
       const parent = current ? current.parentElement : null;
       if (
         this.props.stickyBottom &&
-        scrollDirection === 'forward' &&
-        !this.state.shouldScrollToBottom &&
         current &&
         parent instanceof HTMLElement &&
-        current.offsetHeight - (scrollOffset + parent.offsetHeight) <
-          parent.offsetHeight
+        scrollDirection === 'forward' &&
+        !this.state.shouldScrollToBottom &&
+        current.offsetHeight - parent.offsetHeight === scrollOffset
       ) {
         this.setState({shouldScrollToBottom: true});
       } else if (

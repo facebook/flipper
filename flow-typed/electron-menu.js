@@ -5,9 +5,6 @@
  * @format
  */
 
-type Electron$BrowserWindow = any;
-type Electron$NativeImage = any;
-
 type Electron$MenuRoles =
   | 'undo'
   | 'redo'
@@ -38,7 +35,7 @@ type Electron$MenuType =
   | 'checkbox'
   | 'radio';
 
-type Electron$MenuItemOptions = {
+type MenuItemConstructorOptions = {|
   click?: (
     menuItem: Electron$MenuItem,
     browserWindow: Object,
@@ -53,33 +50,14 @@ type Electron$MenuItemOptions = {
   enabled?: boolean,
   visible?: boolean,
   checked?: boolean,
-  submenu?: Electron$Menu | Array<Electron$MenuItemOptions>,
+  submenu?: Array<MenuItemConstructorOptions>,
   id?: string,
   position?: string,
-};
+|};
 
 declare class Electron$MenuItem {
-  constructor(options: Electron$MenuItemOptions): Electron$MenuItem;
+  constructor(options: MenuItemConstructorOptions): Electron$MenuItem;
   enabled: boolean;
   visible: boolean;
   checked: boolean;
-}
-
-declare class Electron$Menu {
-  static setApplicationMenu: (menu: Electron$Menu) => void;
-  static getApplicationMenu: () => ?Electron$Menu;
-  static sendActionToFirstResponder: (action: string) => void;
-  static buildFromTemplate: (
-    templates: Array<Electron$MenuItemOptions>,
-  ) => Electron$Menu;
-  popup: (
-    browserWindow: Object,
-    x?: number,
-    y?: number,
-    positioningItem?: number,
-  ) => void;
-  popup: (x?: number, y?: number, positioningItem?: number) => void;
-  append: (menuItem: Electron$MenuItem) => void;
-  insert: (pos: number, menuItem: Electron$MenuItem) => void;
-  items: Array<Electron$MenuItem>;
 }

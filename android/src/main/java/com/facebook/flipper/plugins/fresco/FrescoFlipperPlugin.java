@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the LICENSE
@@ -38,13 +38,13 @@ import com.facebook.imagepipeline.debug.FlipperImageTracker;
 import com.facebook.imagepipeline.image.CloseableBitmap;
 import com.facebook.imagepipeline.image.CloseableImage;
 import java.io.ByteArrayOutputStream;
-import java.io.Closeable;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.Nullable;
-import org.json.JSONArray;
 
 /**
  * Allows Sonar to display the contents of Fresco's caches. This is useful for developers to debug
@@ -175,12 +175,20 @@ public class FrescoFlipperPlugin extends BufferingFlipperPlugin
                   getImageData(
                       imageID, encodedBitmap, bitmap, mFlipperImageTracker.getUriString(cacheKey)));
             }
-            responder.success(
+
+            FlipperArray.Builder arrayBuilder = new FlipperArray.Builder();
+            for (FlipperObject obj : mEvents) {
+              arrayBuilder.put(obj);
+            }
+            mEvents.clear();
+
+            FlipperObject object =
                 new FlipperObject.Builder()
                     .put("levels", levels)
                     .put("imageDataList", imageDataListBuilder.build())
-                    .put("events", new FlipperArray(new JSONArray(mEvents)))
-                    .build());
+                    .put("events", arrayBuilder.build())
+                    .build();
+            responder.success(object);
           }
         });
     connection.receive(
@@ -509,11 +517,22 @@ public class FrescoFlipperPlugin extends BufferingFlipperPlugin
   }
 
   @Override
-  public void onCloseableReferenceLeak(SharedReference<Closeable> reference) {
+  public void onCloseableReferenceLeak(
+      SharedReference<Object> reference, @Nullable Throwable stacktrace) {
     final FlipperObject.Builder builder =
         new FlipperObject.Builder()
             .put("identityHashCode", System.identityHashCode(reference))
             .put("className", reference.get().getClass().getName());
+    if (stacktrace != null) {
+      builder.put("stacktrace", getStackTraceString(stacktrace));
+    }
     send(FRESCO_CLOSEABLE_REFERENCE_LEAK_EVENT, builder.build());
+  }
+
+  public static String getStackTraceString(Throwable tr) {
+    StringWriter sw = new StringWriter();
+    PrintWriter pw = new PrintWriter(sw);
+    tr.printStackTrace(pw);
+    return sw.toString();
   }
 }

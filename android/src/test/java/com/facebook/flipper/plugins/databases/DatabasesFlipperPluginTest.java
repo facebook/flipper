@@ -12,7 +12,6 @@ import static org.junit.Assert.assertThat;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import androidx.test.core.app.ApplicationProvider;
 import com.facebook.flipper.core.FlipperArray;
 import com.facebook.flipper.core.FlipperObject;
 import com.facebook.flipper.plugins.databases.DatabaseDriver.DatabaseExecuteSqlResponse;
@@ -29,6 +28,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.RuntimeEnvironment;
 
 @RunWith(RobolectricTestRunner.class)
 @Ignore
@@ -45,28 +45,26 @@ public class DatabasesFlipperPluginTest {
     connectionMock = new FlipperConnectionMock();
     responderMock = new FlipperResponderMock();
 
-    databaseHelper1 =
-        new DatabaseHelper(ApplicationProvider.getApplicationContext(), "database1.db");
+    databaseHelper1 = new DatabaseHelper(RuntimeEnvironment.application, "database1.db");
     databaseHelper1
         .getWritableDatabase()
         .execSQL("INSERT INTO first_table (column1, column2) VALUES('a','b')");
-    databaseHelper2 =
-        new DatabaseHelper(ApplicationProvider.getApplicationContext(), "database2.db");
+    databaseHelper2 = new DatabaseHelper(RuntimeEnvironment.application, "database2.db");
     databaseHelper2
         .getWritableDatabase()
         .execSQL("INSERT INTO first_table (column1, column2) VALUES('a','b')");
     plugin =
         new DatabasesFlipperPlugin(
             new SqliteDatabaseDriver(
-                ApplicationProvider.getApplicationContext(),
+                RuntimeEnvironment.application,
                 new SqliteDatabaseProvider() {
                   @Override
                   public List<File> getDatabaseFiles() {
                     return Arrays.asList(
-                        ApplicationProvider.getApplicationContext()
-                            .getDatabasePath(databaseHelper1.getDatabaseName()),
-                        ApplicationProvider.getApplicationContext()
-                            .getDatabasePath(databaseHelper2.getDatabaseName()));
+                        RuntimeEnvironment.application.getDatabasePath(
+                            databaseHelper1.getDatabaseName()),
+                        RuntimeEnvironment.application.getDatabasePath(
+                            databaseHelper2.getDatabaseName()));
                   }
                 }));
 
@@ -76,8 +74,8 @@ public class DatabasesFlipperPluginTest {
   @After
   public void tearDown() {
     databaseHelper1.close();
-    ApplicationProvider.getApplicationContext().deleteDatabase(databaseHelper1.getDatabaseName());
-    ApplicationProvider.getApplicationContext().deleteDatabase(databaseHelper2.getDatabaseName());
+    RuntimeEnvironment.application.deleteDatabase(databaseHelper1.getDatabaseName());
+    RuntimeEnvironment.application.deleteDatabase(databaseHelper2.getDatabaseName());
   }
 
   @Test
@@ -361,6 +359,27 @@ public class DatabasesFlipperPluginTest {
                                         .put("value", "column1,column2"))
                                 .build())
                         .build())
+                .build()));
+  }
+
+  @Test
+  public void testCommandGetTableInfo() throws Exception {
+    // Arrange
+    connectionMock.receivers.get("databaseList").onReceive(null, responderMock); // Load data
+
+    // Act
+    connectionMock
+        .receivers
+        .get("getTableInfo")
+        .onReceive(
+            new FlipperObject.Builder().put("databaseId", 1).put("table", "first_table").build(),
+            responderMock);
+
+    // Assert
+    assertThat(
+        responderMock.successes,
+        hasItem(
+            new FlipperObject.Builder()
                 .put(
                     "definition",
                     "CREATE TABLE first_table (_id INTEGER PRIMARY KEY AUTOINCREMENT,column1 TEXT,column2 TEXT)")

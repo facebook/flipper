@@ -25,7 +25,7 @@ import FlexRow from '../FlexRow.js';
 
 const invariant = require('invariant');
 
-type MenuTemplate = Array<Electron$MenuItemOptions>;
+type MenuTemplate = Array<MenuItemConstructorOptions>;
 
 const TableHeaderArrow = styled('span')({
   float: 'right',

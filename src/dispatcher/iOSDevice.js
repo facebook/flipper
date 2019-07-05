@@ -21,12 +21,23 @@ import {registerDeviceCallbackOnPlugins} from '../utils/onRegisterDevice.js';
 type iOSSimulatorDevice = {|
   state: 'Booted' | 'Shutdown' | 'Shutting Down',
   availability?: string,
-  isAvailable?: 'YES' | 'NO',
+  isAvailable?: 'YES' | 'NO' | true | false,
   name: string,
   udid: string,
 |};
 
 type IOSDeviceParams = {udid: string, type: DeviceType, name: string};
+
+function isAvailable(simulator: iOSSimulatorDevice): boolean {
+  // For some users "availability" is set, for others it's "isAvailable"
+  // It's not clear which key is set, so we are checking both.
+  // We've also seen isAvailable return "YES" and true, depending on version.
+  return (
+    simulator.availability === '(available)' ||
+    simulator.isAvailable === 'YES' ||
+    simulator.isAvailable === true
+  );
+}
 
 const portforwardingClient = isProduction()
   ? path.resolve(
@@ -53,6 +64,7 @@ if (typeof window !== 'undefined') {
 }
 
 function queryDevices(store: Store, logger: Logger): Promise<void> {
+  checkXcodeVersionMismatch();
   const {connections} = store.getState();
   const currentDeviceIDs: Set<string> = new Set(
     connections.devices
@@ -118,12 +130,7 @@ function getActiveSimulators(): Promise<Array<IOSDeviceParams>> {
 
       return simulators
         .filter(
-          simulator =>
-            simulator.state === 'Booted' &&
-            // For some users "availability" is set, for others it's "isAvailable"
-            // It's not clear which key is set, so we are checking both.
-            (simulator.availability === '(available)' ||
-              simulator.isAvailable === 'YES'),
+          simulator => simulator.state === 'Booted' && isAvailable(simulator),
         )
         .map(simulator => {
           return {
@@ -132,7 +139,8 @@ function getActiveSimulators(): Promise<Array<IOSDeviceParams>> {
             name: simulator.name,
           };
         });
-    });
+    })
+    .catch(_ => []);
 }
 
 function getActiveDevices(): Promise<Array<IOSDeviceParams>> {
@@ -140,6 +148,34 @@ function getActiveDevices(): Promise<Array<IOSDeviceParams>> {
     console.error(e.message);
     return [];
   });
+}
+
+let xcodeVersionMismatchFound = false;
+async function checkXcodeVersionMismatch() {
+  if (xcodeVersionMismatchFound) {
+    return;
+  }
+  const exec = promisify(child_process.exec);
+  try {
+    let {stdout: xcodeCLIVersion} = await exec('xcode-select -p');
+    xcodeCLIVersion = xcodeCLIVersion.trim();
+    const {stdout} = await exec('ps aux | grep CoreSimulator');
+    for (let line of stdout.split('\n')) {
+      const match = line.match(
+        /\/Applications\/Xcode[^/]*\.app\/Contents\/Developer/,
+      );
+      const runningVersion = match && match.length > 0 ? match[0].trim() : null;
+      if (runningVersion && runningVersion !== xcodeCLIVersion) {
+        console.error(
+          `Xcode version mismatch: Simulator is running from "${runningVersion}" while Xcode CLI is "${xcodeCLIVersion}". Running "xcode-select --switch ${runningVersion}" can fix this.`,
+        );
+        xcodeVersionMismatchFound = true;
+        break;
+      }
+    }
+  } catch (e) {
+    console.error(e);
+  }
 }
 
 export async function getActiveDevicesAndSimulators(): Promise<

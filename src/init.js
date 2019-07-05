@@ -27,11 +27,10 @@ const store = createStore(
   reducers,
   window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(),
 );
-persistStore(store);
 
 const logger = initLogger(store);
 const bugReporter = new BugReporter(logger, store);
-dispatcher(store, logger);
+
 GK.init();
 
 const AppFrame = () => (
@@ -54,8 +53,13 @@ function init() {
         ? path.join(__dirname, 'serviceWorker.js')
         : './serviceWorker.js',
     )
-    .then(r => {
-      (r.installing || r.active).postMessage({precachedIcons});
+    .then((r: ServiceWorkerRegistration) => {
+      const client = r.installing || r.active;
+      if (client != null) {
+        client.postMessage({precachedIcons});
+      } else {
+        console.error('Service worker registration failed: ', r);
+      }
     })
     .catch(console.error);
 
@@ -64,5 +68,9 @@ function init() {
   initCrashReporter(sessionId || '');
 }
 
-// make init function callable from outside
-window.Flipper.init = init;
+// rehydrate app state before exposing init
+persistStore(store, null, () => {
+  dispatcher(store, logger);
+  // make init function callable from outside
+  window.Flipper.init = init;
+});

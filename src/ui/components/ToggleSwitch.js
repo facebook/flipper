@@ -8,6 +8,7 @@
 import React from 'react';
 import styled from '../styled/index.js';
 import {colors} from './colors.js';
+import Text from './Text';
 
 export const StyledButton = styled('div')(props => ({
   cursor: 'pointer',
@@ -31,6 +32,11 @@ export const StyledButton = styled('div')(props => ({
   },
 }));
 
+const Label = styled(Text)({
+  marginLeft: 7,
+  marginRight: 7,
+});
+
 type Props = {
   /**
    * onClick handler.
@@ -41,6 +47,7 @@ type Props = {
    */
   toggled?: boolean,
   className?: string,
+  label?: string,
 };
 
 /**
@@ -56,11 +63,14 @@ type Props = {
 export default class ToggleButton extends React.Component<Props> {
   render() {
     return (
-      <StyledButton
-        className={this.props.className}
-        toggled={this.props.toggled}
-        onClick={this.props.onClick}
-      />
+      <>
+        <StyledButton
+          className={this.props.className}
+          toggled={this.props.toggled}
+          onClick={this.props.onClick}
+        />
+        {this.props.label && <Label>{this.props.label}</Label>}
+      </>
     );
   }
 }

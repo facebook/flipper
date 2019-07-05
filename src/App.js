@@ -26,6 +26,7 @@ import {
   ACTIVE_SHEET_SHARE_DATA,
   ACTIVE_SHEET_SIGN_IN,
   ACTIVE_SHEET_SHARE_DATA_IN_FILE,
+  ACTIVE_SHEET_PLUGIN_SHEET,
 } from './reducers/application.js';
 
 import type {Logger} from './fb-interfaces/Logger.js';
@@ -66,28 +67,33 @@ export class App extends React.Component<Props> {
   }
 
   getSheet = (onHide: () => mixed) => {
-    if (this.props.activeSheet === ACTIVE_SHEET_BUG_REPORTER) {
-      return (
-        <BugReporterDialog
-          bugReporter={this.props.bugReporter}
-          onHide={onHide}
-        />
-      );
-    } else if (this.props.activeSheet === ACTIVE_SHEET_PLUGIN_DEBUGGER) {
-      return <PluginDebugger onHide={onHide} />;
-    } else if (this.props.activeSheet === ACTIVE_SHEET_SHARE_DATA) {
-      return <ShareSheet onHide={onHide} />;
-    } else if (this.props.activeSheet === ACTIVE_SHEET_SIGN_IN) {
-      return <SignInSheet onHide={onHide} />;
-    } else if (this.props.activeSheet === ACTIVE_SHEET_SHARE_DATA_IN_FILE) {
-      const {exportFile} = this.props;
-      if (!exportFile) {
-        throw new Error('Tried to export data without passing the file path');
-      }
-      return <ShareSheetExportFile onHide={onHide} file={exportFile} />;
-    } else {
-      // contents are added via React.Portal
-      return null;
+    switch (this.props.activeSheet) {
+      case ACTIVE_SHEET_BUG_REPORTER:
+        return (
+          <BugReporterDialog
+            bugReporter={this.props.bugReporter}
+            onHide={onHide}
+          />
+        );
+      case ACTIVE_SHEET_PLUGIN_DEBUGGER:
+        return <PluginDebugger onHide={onHide} />;
+      case ACTIVE_SHEET_SHARE_DATA:
+        return <ShareSheet onHide={onHide} logger={this.props.logger} />;
+      case ACTIVE_SHEET_SIGN_IN:
+        return <SignInSheet onHide={onHide} />;
+      case ACTIVE_SHEET_SHARE_DATA_IN_FILE:
+        return (
+          <ShareSheetExportFile
+            onHide={onHide}
+            file={this.props.exportFile}
+            logger={this.props.logger}
+          />
+        );
+      case ACTIVE_SHEET_PLUGIN_SHEET:
+        // Currently unused.
+        return null;
+      default:
+        return null;
     }
   };
 

@@ -71,4 +71,5 @@ export type FrescoDebugOverlayEvent = {|
 export type AndroidCloseableReferenceLeakEvent = {|
   identityHashCode: string,
   className: string,
+  stacktrace: ?string,
 |};

@@ -7,6 +7,9 @@
 import type BaseDevice from '../devices/BaseDevice.js';
 import {FlipperDevicePlugin, FlipperPlugin} from '../plugin.js';
 import type {State as PluginStatesState} from '../reducers/pluginStates.js';
+import {pluginsClassMap} from './exportData.js';
+import type {State as PluginsState} from '../reducers/plugins.js';
+import type {PluginDefinition} from '../dispatcher/plugins';
 
 export function getPluginKey(
   selectedApp: ?string,
@@ -40,4 +43,27 @@ export function getPersistedState<PersistedState>(
     ...pluginStates[pluginKey],
   };
   return persistedState;
+}
+
+export function getActivePluginNames(plugins: PluginsState): Array<string> {
+  let pluginsMap: Map<
+    string,
+    Class<FlipperDevicePlugin<> | FlipperPlugin<>>,
+  > = pluginsClassMap(plugins);
+
+  let arr: Array<PluginDefinition> = plugins.disabledPlugins.concat(
+    plugins.gatekeepedPlugins,
+  );
+  arr.forEach((plugin: PluginDefinition) => {
+    if (pluginsMap.has(plugin.name)) {
+      pluginsMap.delete(plugin.name);
+    }
+  });
+
+  plugins.failedPlugins.forEach((plugin: [PluginDefinition, string]) => {
+    if (plugin[0] && plugin[0].name && pluginsMap.has(plugin[0].name)) {
+      pluginsMap.delete(plugin[0].name);
+    }
+  });
+  return [...pluginsMap.keys()];
 }

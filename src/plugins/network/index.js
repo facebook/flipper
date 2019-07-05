@@ -32,7 +32,11 @@ import {
 import {MockResponseDialog} from './MockResponseDialog';
 
 import type {Request, RequestId, Response} from './types.js';
-import {convertRequestToCurlCommand, getHeaderValue} from './utils.js';
+import {
+  convertRequestToCurlCommand,
+  getHeaderValue,
+  decodeBody,
+} from './utils.js';
 import RequestDetails from './RequestDetails.js';
 import {clipboard} from 'electron';
 import {URL} from 'url';
@@ -335,6 +339,31 @@ function buildRow(request: Request, response: ?Response): ?TableBodyRow {
         }
       : {};
 
+  let copyText = `# HTTP request for ${domain} (ID: ${request.id})
+## Request
+HTTP ${request.method} ${request.url}
+${request.headers
+  .map(({key, value}) => `${key}: ${String(value)}`)
+  .join('\n')}`;
+
+  if (request.data) {
+    copyText += `\n\n${decodeBody(request)}`;
+  }
+
+  if (response) {
+    copyText += `
+
+## Response
+HTTP ${response.status} ${response.reason}
+${response.headers
+  .map(({key, value}) => `${key}: ${String(value)}`)
+  .join('\n')}`;
+  }
+
+  if (response) {
+    copyText += `\n\n${decodeBody(response)}`;
+  }
+
   return {
     columns: {
       requestTimestamp: {
@@ -375,7 +404,7 @@ function buildRow(request: Request, response: ?Response): ?TableBodyRow {
     key: request.id,
     filterValue: `${request.method} ${request.url}`,
     sortKey: request.timestamp,
-    copyText: request.url,
+    copyText,
     highlightOnHover: true,
     style: style,
   };
@@ -510,6 +539,7 @@ class NetworkTable extends PureComponent<NetworkTableProps, NetworkTableState> {
           onRowHighlighted={this.props.onRowHighlighted}
           highlightedRows={this.props.highlightedRows}
           rowLineHeight={26}
+          allowRegexSearch={true}
           zebra={false}
           actions={
             <FlexRow>
@@ -598,10 +628,7 @@ class SizeColumn extends PureComponent<{
     if (lengthString != null && lengthString != '') {
       length = parseInt(lengthString, 10);
     } else if (response.data) {
-      // FIXME: T41427687 This is probably not the correct way to determine
-      // the correct byte size of the response, because String.length returns
-      // the number of characters, not bytes.
-      length = atob(response.data).length;
+      length = Buffer.byteLength(response.data, 'base64');
     }
     return length;
   }

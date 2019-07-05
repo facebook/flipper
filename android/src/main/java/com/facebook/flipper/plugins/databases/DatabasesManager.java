@@ -1,8 +1,8 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the LICENSE
+ * file in the root directory of this source tree.
  */
 package com.facebook.flipper.plugins.databases;
 
@@ -14,6 +14,7 @@ import com.facebook.flipper.core.FlipperReceiver;
 import com.facebook.flipper.core.FlipperResponder;
 import com.facebook.flipper.plugins.databases.DatabaseDriver.DatabaseExecuteSqlResponse;
 import com.facebook.flipper.plugins.databases.DatabaseDriver.DatabaseGetTableDataResponse;
+import com.facebook.flipper.plugins.databases.DatabaseDriver.DatabaseGetTableInfoResponse;
 import com.facebook.flipper.plugins.databases.DatabaseDriver.DatabaseGetTableStructureResponse;
 import java.util.Comparator;
 import java.util.List;
@@ -26,6 +27,7 @@ public class DatabasesManager {
   private static final String DATABASE_LIST_COMMAND = "databaseList";
   private static final String GET_TABLE_DATA_COMMAND = "getTableData";
   private static final String GET_TABLE_STRUCTURE_COMMAND = "getTableStructure";
+  private static final String GET_TABLE_INFO_COMMAND = "getTableInfo";
   private static final String EXECUTE_COMMAND = "execute";
 
   private final List<DatabaseDriver> mDatabaseDriverList;
@@ -152,8 +154,45 @@ public class DatabasesManager {
                           databaseDescriptorHolder.databaseDescriptor,
                           getTableStructureRequest.table);
                   responder.success(
-                      ObjectMapper.databaseGetTableStructureReponseToFlipperObject(
+                      ObjectMapper.databaseGetTableStructureResponseToFlipperObject(
                           databaseGetTableStructureResponse));
+                } catch (Exception e) {
+                  responder.error(
+                      ObjectMapper.toErrorFlipperObject(
+                          DatabasesErrorCodes.ERROR_SQL_EXECUTION_EXCEPTION, e.getMessage()));
+                }
+              }
+            }
+          }
+        });
+    connection.receive(
+        GET_TABLE_INFO_COMMAND,
+        new FlipperReceiver() {
+          @Override
+          public void onReceive(FlipperObject params, FlipperResponder responder) {
+            GetTableInfoRequest getTableInfoRequest =
+                ObjectMapper.flipperObjectToGetTableInfoRequest(params);
+            if (getTableInfoRequest == null) {
+              responder.error(
+                  ObjectMapper.toErrorFlipperObject(
+                      DatabasesErrorCodes.ERROR_INVALID_REQUEST,
+                      DatabasesErrorCodes.ERROR_INVALID_REQUEST_MESSAGE));
+            } else {
+              DatabaseDescriptorHolder databaseDescriptorHolder =
+                  mDatabaseDescriptorHolderSparseArray.get(getTableInfoRequest.databaseId);
+              if (databaseDescriptorHolder == null) {
+                responder.error(
+                    ObjectMapper.toErrorFlipperObject(
+                        DatabasesErrorCodes.ERROR_DATABASE_INVALID,
+                        DatabasesErrorCodes.ERROR_DATABASE_INVALID_MESSAGE));
+              } else {
+                try {
+                  DatabaseGetTableInfoResponse databaseGetTableInfoResponse =
+                      databaseDescriptorHolder.databaseDriver.getTableInfo(
+                          databaseDescriptorHolder.databaseDescriptor, getTableInfoRequest.table);
+                  responder.success(
+                      ObjectMapper.databaseGetTableInfoResponseToFlipperObject(
+                          databaseGetTableInfoResponse));
                 } catch (Exception e) {
                   responder.error(
                       ObjectMapper.toErrorFlipperObject(
@@ -253,6 +292,17 @@ public class DatabasesManager {
     public final String table;
 
     GetTableStructureRequest(int databaseId, String table) {
+      this.databaseId = databaseId;
+      this.table = table;
+    }
+  }
+
+  static class GetTableInfoRequest {
+
+    public final int databaseId;
+    public final String table;
+
+    GetTableInfoRequest(int databaseId, String table) {
       this.databaseId = databaseId;
       this.table = table;
     }

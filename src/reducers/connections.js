@@ -6,6 +6,7 @@
  */
 
 import type BaseDevice from '../devices/BaseDevice';
+import MacDevice from '../devices/MacDevice';
 import type Client from '../Client';
 import type {UninitializedClient} from '../UninitializedClient';
 import {isEqual} from 'lodash';
@@ -95,6 +96,7 @@ export type Action =
     };
 
 const DEFAULT_PLUGIN = 'DeviceLogs';
+const DEFAULT_DEVICE_BLACKLIST = [MacDevice];
 
 const INITAL_STATE: State = {
   devices: [],
@@ -141,7 +143,11 @@ const reducer = (state: State = INITAL_STATE, action: Action): State => {
         selectedPlugin: DEFAULT_PLUGIN,
       };
 
-      if (!selectedDevice) {
+      let canBeDefaultDevice = !DEFAULT_DEVICE_BLACKLIST.some(
+        blacklistedDevice => payload instanceof blacklistedDevice,
+      );
+
+      if (!selectedDevice && canBeDefaultDevice) {
         selectedDevice = payload;
         if (selectedPlugin) {
           // We already had a plugin selected, but no device. This is happening
@@ -183,7 +189,7 @@ const reducer = (state: State = INITAL_STATE, action: Action): State => {
       let selection = {};
       if (selectedDeviceWasRemoved) {
         selection = {
-          selectedDevice: devices[devices.length - 1],
+          selectedDevice: devices[devices.length - 1] || null,
           selectedApp: null,
           selectedPlugin: DEFAULT_PLUGIN,
         };
@@ -231,7 +237,9 @@ const reducer = (state: State = INITAL_STATE, action: Action): State => {
 
       return {
         ...state,
-        clients: state.clients.concat(payload),
+        clients: state.clients
+          .filter((client: Client) => client.id !== payload.id)
+          .concat(payload),
         uninitializedClients: state.uninitializedClients.filter(c => {
           return (
             c.deviceId !== payload.query.device_id ||

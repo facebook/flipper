@@ -98,6 +98,7 @@ static NSDictionary *YGUnitEnumMap = nil;
                      withValue: @{
                                   @"isAccessibilityElement": SKMutableObject(@(node.isAccessibilityElement)),
                                   @"accessibilityLabel": SKMutableObject(node.accessibilityLabel ?: @""),
+                                  @"accessibilityIdentifier": SKMutableObject(node.accessibilityIdentifier ?: @""),
                                   @"accessibilityValue": SKMutableObject(node.accessibilityValue ?: @""),
                                   @"accessibilityHint": SKMutableObject(node.accessibilityHint ?: @""),
                                   @"accessibilityTraits": AccessibilityTraitsDict(node.accessibilityTraits),

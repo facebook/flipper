@@ -24,6 +24,7 @@ export type Response = {|
   headers: Array<Header>,
   data: ?string,
   isMock: boolean,
+  insights: ?Insights,
 |};
 
 export type Header = {|
@@ -37,4 +38,25 @@ export type Route = {|
   data: string,
   isDuplicate: boolean,
   headers: Array<Header>,
+|}
+
+export type RetryInsights = {|
+  count: number,
+  limit: number,
+  timeSpent: number,
+|};
+
+export type Insights = {|
+  dnsLookupTime: ?number,
+  connectTime: ?number,
+  sslHandshakeTime: ?number,
+  preTransferTime: ?number,
+  redirectsTime: ?number,
+  timeToFirstByte: ?number,
+  transferTime: ?number,
+  postProcessingTime: ?number,
+  // Amount of transferred data can be different from total size of payload.
+  bytesTransfered: ?number,
+  transferSpeed: ?number,
+  retries: ?RetryInsights,
 |};
