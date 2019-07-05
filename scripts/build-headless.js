@@ -84,6 +84,10 @@ async function createZip(buildDir, distDir, targets) {
     platformPostfix = '';
   }
 
+  // Compiling all plugins takes a long time. Use this flag for quicker
+  // developement iteration by not including any plugins.
+  const skipPlugins = process.argv.indexOf('--no-plugins') > -1;
+
   process.env.BUILD_HEADLESS = 'true';
   const buildDir = await buildFolder();
   const distDir = path.join(__dirname, '..', 'dist');
@@ -93,7 +97,10 @@ async function createZip(buildDir, distDir, targets) {
   const versionNumber = getVersionNumber();
   const buildRevision = await genMercurialRevision();
   await preludeBundle(buildDir, versionNumber, buildRevision);
-  await compileDefaultPlugins(path.join(buildDir, PLUGINS_FOLDER_NAME));
+  await compileDefaultPlugins(
+    path.join(buildDir, PLUGINS_FOLDER_NAME),
+    skipPlugins,
+  );
   await createBinary([
     path.join(buildDir, 'bundle.js'),
     '--output',

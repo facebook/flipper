@@ -17,13 +17,15 @@ function die(err) {
   process.exit(1);
 }
 
-function compileDefaultPlugins(defaultPluginDir) {
+function compileDefaultPlugins(defaultPluginDir, skipAll = false) {
   return compilePlugins(
     null,
-    [
-      path.join(__dirname, '..', 'src', 'plugins'),
-      path.join(__dirname, '..', 'src', 'fb', 'plugins'),
-    ],
+    skipAll
+      ? []
+      : [
+          path.join(__dirname, '..', 'src', 'plugins'),
+          path.join(__dirname, '..', 'src', 'fb', 'plugins'),
+        ],
     defaultPluginDir,
     {force: true, failSilently: false},
   )
