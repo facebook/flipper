@@ -38,6 +38,7 @@ export const colors = {
   yellowTint: '#FEFBF2',
   purple: '#8C73C8', // Purple - Verbose
   purpleTint: '#E8E3F4',
+  purpleLight: '#ccc9d6', // purpleLight 90 - Highlighting row's background when it matches the query
   grey: '#88A2AB', // Grey - Debug
   greyTint: '#E7ECEE',
   greyTint2: '#e5e5e5', // Grey - Can be used in demarcation with greyStackTraceTint
