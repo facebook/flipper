@@ -63,15 +63,21 @@ function watchChanges(
   // eslint-disable-next-line no-console
   console.log('🕵️‍  Watching for plugin changes');
 
+  let delayedCompilation = {};
+  const kCompilationDelayMillis = 1000;
+
   Object.values(plugins).map(plugin =>
     fs.watch(plugin.rootDir, {recursive: true}, (eventType, filename) => {
       // only recompile for changes in not hidden files. Watchman might create
       // a file called .watchman-cookie
-      if (!filename.startsWith('.')) {
-        // eslint-disable-next-line no-console
-        console.log(`🕵️‍  Detected changes in ${plugin.name}`);
-        const watchOptions = Object.assign(options, {force: true});
-        compilePlugin(plugin, pluginCache, watchOptions).then(reloadCallback);
+      if (!filename.startsWith('.') && !delayedCompilation[plugin.name]) {
+        delayedCompilation[plugin.name] = setTimeout(() => {
+          delayedCompilation[plugin.name] = null;
+          // eslint-disable-next-line no-console
+          console.log(`🕵️‍  Detected changes in ${plugin.name}`);
+          const watchOptions = Object.assign(options, {force: true});
+          compilePlugin(plugin, pluginCache, watchOptions).then(reloadCallback);
+        }, kCompilationDelayMillis);
       }
     }),
   );
