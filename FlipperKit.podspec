@@ -83,9 +83,17 @@ Pod::Spec.new do |spec|
                                "HEADER_SEARCH_PATHS" => header_search_paths }
   end
 
+  spec.subspec 'FlipperKitLayoutTextSearchable' do |ss|
+    ss.header_dir = 'FlipperKitLayoutTextSearchable'
+    ss.compiler_flags = folly_compiler_flags
+    ss.source_files = 'iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutTextSearchable/FKTextSearchable.h'
+    ss.public_header_files = 'iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutTextSearchable/FKTextSearchable.h'
+  end
+
   spec.subspec "FlipperKitLayoutPlugin" do |ss|
     ss.header_dir = "FlipperKitLayoutPlugin"
     ss.dependency             'FlipperKit/Core'
+    ss.dependency             'FlipperKit/FlipperKitLayoutTextSearchable'
     ss.dependency             'Yoga', yoga_version
     ss.dependency             'YogaKit', yogakit_version
     ss.compiler_flags       = folly_compiler_flags
@@ -112,6 +120,7 @@ Pod::Spec.new do |spec|
     ss.dependency             'Yoga', yoga_version
     ss.dependency             'ComponentKit', '~> 0.27'
     ss.dependency             'FlipperKit/FlipperKitLayoutPlugin'
+    ss.dependency             'FlipperKit/FlipperKitLayoutTextSearchable'
     ss.compiler_flags       = folly_compiler_flags
     ss.public_header_files = 'iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutComponentKitSupport/FlipperKitLayoutComponentKitSupport.h',
                              'iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutComponentKitSupport/SKSubDescriptor.h'
