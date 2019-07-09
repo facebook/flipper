@@ -19,8 +19,6 @@ const appNotDebuggableRegex = /debuggable/;
 const operationNotPermittedRegex = /not permitted/;
 const logTag = 'androidContainerUtility';
 
-const adb = getAdbClient();
-
 export opaque type AppName = string;
 export opaque type Command = string;
 export opaque type FilePath = string;
@@ -77,7 +75,7 @@ function executeCommandAsApp(
   app: string,
   command: string,
 ): Promise<string> {
-  return adb
+  return getAdbClient()
     .then(client =>
       client.shell(deviceId, `echo '${command}' | run-as '${app}'`),
     )
