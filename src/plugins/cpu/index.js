@@ -6,7 +6,7 @@
  */
 
 import {FlipperDevicePlugin, Device} from 'flipper';
-var adb = require('adbkit-fb');
+let adb = require('adbkit-fb');
 import TemperatureTable from './TemperatureTable.js';
 
 import {

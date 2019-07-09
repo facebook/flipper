@@ -21,6 +21,7 @@ module.exports = {
     'no-catch-shadow': 0, // only relevant for IE8 and below
     'no-bitwise': 0, // bitwise operations needed in some places
     'consistent-return': 0,
+    'no-var': 2,
     'max-len': 0, // let's take prettier take care of this
     indent: 0, // let's take prettier take care of this
     'no-console': 0, // we're setting window.console in App.js

@@ -165,7 +165,7 @@ function transformRow(
   index: number,
 ): TableBodyRow {
   const transformedColumns = {};
-  for (var i = 0; i < columns.length; i++) {
+  for (let i = 0; i < columns.length; i++) {
     transformedColumns[columns[i]] = {value: renderValue(row[i])};
   }
   return {key: String(index), columns: transformedColumns};

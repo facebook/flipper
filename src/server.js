@@ -334,7 +334,7 @@ class ConnectionTracker {
   logConnectionAttempt(client: ClientQuery) {
     const key = `${client.os}-${client.device}-${client.app}`;
     const time = Date.now();
-    var entry = this.connectionAttempts.get(key) || [];
+    let entry = this.connectionAttempts.get(key) || [];
     entry.push(time);
     entry = entry.filter(t => t >= time - this.timeWindowMillis);
 
