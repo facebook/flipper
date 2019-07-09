@@ -122,11 +122,6 @@ export const checkGK = (gatekeepedPlugins: Array<PluginDefinition>) => (
   const result = GK.get(plugin.gatekeeper);
   if (!result) {
     gatekeepedPlugins.push(plugin);
-    console.warn(
-      'Plugin %s will be ignored as user is not part of the gatekeeper "%s".',
-      plugin.name,
-      plugin.gatekeeper,
-    );
   }
   return result;
 };
