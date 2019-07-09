@@ -544,7 +544,7 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin<
   };
 
   static trimCallStackIfPossible = (callstack: string): string => {
-    let regex = /Application Specific Information:/;
+    const regex = /Application Specific Information:/;
     const query = regex.exec(callstack);
     return query ? callstack.substring(0, query.index) : callstack;
   };
@@ -555,7 +555,7 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin<
     persistedState: PersistedState,
   ): Array<Notification> => {
     const filteredCrashes = persistedState.crashes.filter(crash => {
-      let ignore = !crash.name && !crash.reason;
+      const ignore = !crash.name && !crash.reason;
       if (ignore) {
         console.error('Ignored the notification for the crash', crash);
       }
@@ -563,7 +563,7 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin<
     });
     return filteredCrashes.map((crash: Crash) => {
       const id = crash.notificationID;
-      let name: string = crash.name || crash.reason;
+      const name: string = crash.name || crash.reason;
       let title: string = 'CRASH: ' + truncate(name, 50);
       title = `${
         name == crash.reason

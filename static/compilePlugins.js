@@ -39,7 +39,7 @@ module.exports = async (
   }
   watchChanges(plugins, reloadCallback, pluginCache, options);
   const dynamicPlugins = [];
-  for (let plugin of Object.values(plugins)) {
+  for (const plugin of Object.values(plugins)) {
     const dynamicOptions = Object.assign(options, {force: false});
     const compiledPlugin = await compilePlugin(
       plugin,

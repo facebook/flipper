@@ -355,7 +355,7 @@ const shadow = (props, hover) => {
   if (props.inactive) {
     return `inset 0 0 0 1px ${colors.light10}`;
   }
-  let shadow = ['1px 1px 5px rgba(0,0,0,0.1)'];
+  const shadow = ['1px 1px 5px rgba(0,0,0,0.1)'];
   if (props.isSelected) {
     shadow.push(`inset 0 0 0 2px ${colors.macOSTitleBarIconSelected}`);
   }

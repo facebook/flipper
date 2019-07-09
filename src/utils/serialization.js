@@ -20,7 +20,7 @@ function processArray(
   dict: Map<any, any>,
 ): {childNeedsIteration: boolean, outputArr: Array<any>} {
   // Adds the array item to the stack if it needs to undergo iteration to serialise it. Otherwise it adds the serialized version of the item to the memoization dict
-  let outputArr = [];
+  const outputArr = [];
   let childNeedsIteration = false;
   for (const item of array) {
     const isItemInstanceOfObject = item instanceof Object;
@@ -116,7 +116,7 @@ export function makeObjectSerializable(obj: any): any {
   if (!(obj instanceof Object)) {
     return obj;
   }
-  let stack = [obj];
+  const stack = [obj];
   const dict: Map<any, any> = new Map();
   while (stack.length > 0) {
     const element = stack[stack.length - 1];

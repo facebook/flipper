@@ -11,8 +11,8 @@ export default function promiseTimeout<T>(
   timeoutMessage: ?string,
 ): Promise<T> | Promise<void> {
   // Create a promise that rejects in <ms> milliseconds
-  let timeout = new Promise((resolve, reject) => {
-    let id = setTimeout(() => {
+  const timeout = new Promise((resolve, reject) => {
+    const id = setTimeout(() => {
       clearTimeout(id);
       reject(new Error(timeoutMessage || `Timed out in ${ms} ms.`));
     }, ms);

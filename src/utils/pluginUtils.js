@@ -46,12 +46,12 @@ export function getPersistedState<PersistedState>(
 }
 
 export function getActivePluginNames(plugins: PluginsState): Array<string> {
-  let pluginsMap: Map<
+  const pluginsMap: Map<
     string,
     Class<FlipperDevicePlugin<> | FlipperPlugin<>>,
   > = pluginsClassMap(plugins);
 
-  let arr: Array<PluginDefinition> = plugins.disabledPlugins.concat(
+  const arr: Array<PluginDefinition> = plugins.disabledPlugins.concat(
     plugins.gatekeepedPlugins,
   );
   arr.forEach((plugin: PluginDefinition) => {

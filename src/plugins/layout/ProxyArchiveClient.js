@@ -28,7 +28,7 @@ function constructSearchResultTree(
   AXMode: boolean,
   AXNode: ?Element,
 ): SearchResultTree {
-  let searchResult = {
+  const searchResult = {
     id: node.id,
     isMatch,
     hasChildren: children.length > 0,
@@ -118,7 +118,7 @@ class ProxyArchiveClient {
         }
         const {ids} = paramaters;
         const arr: Array<Element> = [];
-        for (let id: ElementID of ids) {
+        for (const id: ElementID of ids) {
           arr.push(this.persistedState.elements[id]);
         }
         return Promise.resolve({elements: arr});
@@ -129,7 +129,7 @@ class ProxyArchiveClient {
         }
         const {ids} = paramaters;
         const arr: Array<Element> = [];
-        for (let id: ElementID of ids) {
+        for (const id: ElementID of ids) {
           arr.push(this.persistedState.AXelements[id]);
         }
         return Promise.resolve({elements: arr});

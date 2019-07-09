@@ -76,7 +76,7 @@ export default class Server extends EventEmitter {
   ): Promise<RSocketServer> {
     const server = this;
     return new Promise((resolve, reject) => {
-      let rsServer;
+      let rsServer; // eslint-disable-line prefer-const
       const serverFactory = onConnect => {
         const transportServer = sslConfig
           ? tls.createServer(sslConfig, socket => {

@@ -143,7 +143,7 @@ const reducer = (state: State = INITAL_STATE, action: Action): State => {
         selectedPlugin: DEFAULT_PLUGIN,
       };
 
-      let canBeDefaultDevice = !DEFAULT_DEVICE_BLACKLIST.some(
+      const canBeDefaultDevice = !DEFAULT_DEVICE_BLACKLIST.some(
         blacklistedDevice => payload instanceof blacklistedDevice,
       );
 
@@ -272,7 +272,7 @@ const reducer = (state: State = INITAL_STATE, action: Action): State => {
     case 'CLIENT_REMOVED': {
       const {payload} = action;
 
-      let selected = {};
+      const selected = {};
       if (state.selectedApp === payload) {
         selected.selectedApp = null;
         selected.selectedPlugin = DEFAULT_PLUGIN;

@@ -29,7 +29,7 @@ class LocationsButton extends Component<Props> {
   goToLocation = (location: string) => {
     const {selectedDevice} = this.props;
     if (selectedDevice instanceof AndroidDevice) {
-      let shellCommand = `am start ${location}`;
+      const shellCommand = `am start ${location}`;
       selectedDevice.adb.shell(selectedDevice.serial, shellCommand);
     }
   };

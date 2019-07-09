@@ -90,8 +90,8 @@ export default class extends FlipperPlugin<SharedPreferencesState> {
 
   reducers = {
     UpdateSharedPreferences(state: SharedPreferencesState, results: Object) {
-      let update = results.update;
-      let entry = state.sharedPreferences[update.name] || {changesList: []};
+      const update = results.update;
+      const entry = state.sharedPreferences[update.name] || {changesList: []};
       entry.preferences = update.preferences;
       state.sharedPreferences[update.name] = entry;
       return {
@@ -170,7 +170,7 @@ export default class extends FlipperPlugin<SharedPreferencesState> {
         preferenceValue: newValue,
       })
       .then((results: SharedPreferences) => {
-        let update = {
+        const update = {
           name: this.state.selectedPreferences,
           preferences: results,
         };

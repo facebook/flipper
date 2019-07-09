@@ -22,7 +22,7 @@ async function exportMetrics(
   pluginsMap: Map<string, Class<FlipperDevicePlugin<> | FlipperPlugin<>>>,
 ): Promise<string> {
   const metrics: ExportMetricType = {};
-  for (let key in pluginStates) {
+  for (const key in pluginStates) {
     const pluginStateData = pluginStates[key];
     const arr = key.split('#');
     const pluginName = arr.pop();
