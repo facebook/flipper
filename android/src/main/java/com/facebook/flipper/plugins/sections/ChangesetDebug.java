@@ -56,6 +56,8 @@ public class ChangesetDebug implements ChangesetDebugListener {
 
     final String sourceName = SectionsLogEventUtils.applyNewChangeSetSourceToString(attribution);
 
+    createSectionTree(rootSection, "", tree, oldSection);
+
     sSectionsFlipperPlugin.onChangesetApplied(
         sourceName + " " + extra,
         isEventAsync(attribution),
@@ -72,6 +74,62 @@ public class ChangesetDebug implements ChangesetDebugListener {
         return true;
       default:
         return false;
+    }
+  }
+
+  /** Finds the section with the same global key in the previous tree, if it existed. */
+  private static Section findSectionInPreviousTree(Section previousRoot, String globalKey) {
+    if (previousRoot == null) {
+      return null;
+    }
+
+    if (previousRoot.getGlobalKey().equals(globalKey)) {
+      return previousRoot;
+    }
+
+    if (previousRoot.getChildren() == null) {
+      return null;
+    }
+
+    int count = previousRoot.getChildren().size();
+    for (int i = 0; i < count; i++) {
+      Section child = previousRoot.getChildren().get(i);
+      final Section previousSection = findSectionInPreviousTree(child, globalKey);
+
+      if (previousSection != null) {
+        return previousSection;
+      }
+    }
+
+    return null;
+  }
+
+  static void createSectionTree(
+      Section rootSection, String parentKey, FlipperArray.Builder tree, Section oldRootSection) {
+    if (rootSection == null) {
+      return;
+    }
+
+    final String globalKey = rootSection.getGlobalKey();
+    final FlipperObject.Builder nodeBuilder = new FlipperObject.Builder();
+
+    final Section oldSection = findSectionInPreviousTree(oldRootSection, globalKey);
+    final boolean isDirty = ChangesetDebugConfiguration.isSectionDirty(oldSection, rootSection);
+
+    nodeBuilder.put("identifier", globalKey);
+    nodeBuilder.put("name", rootSection.getSimpleName());
+    nodeBuilder.put("parent", parentKey);
+    nodeBuilder.put("isDirty", isDirty);
+    nodeBuilder.put("isReused", !isDirty);
+    nodeBuilder.put("didTriggerStateUpdate", false); // TODO
+    tree.put(nodeBuilder.build());
+
+    if (rootSection.getChildren() == null) {
+      return;
+    }
+
+    for (int i = 0; i < rootSection.getChildren().size(); i++) {
+      createSectionTree(rootSection.getChildren().get(i), globalKey, tree, oldRootSection);
     }
   }
 }
