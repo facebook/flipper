@@ -181,7 +181,7 @@ FB_LINKABLE(CKComponent_Sonar)
 
 - (NSDictionary<NSString *, SKNodeUpdateData> *)sonar_getDataMutations {
   return @{
-           @"CKComponentAccessibility.accessibilityEnabled": ^(NSNumber *value) {
+           @"Accessibility.accessibilityEnabled": ^(NSNumber *value) {
              CK::Component::Accessibility::SetForceAccessibilityEnabled([value boolValue]);
            }
            };
