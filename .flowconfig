@@ -8,6 +8,8 @@
 <PROJECT_ROOT>/src/fb/plugins/relaydevtools/relay-devtools/DevtoolsUI.js$
 .*/website/.*
 <PROJECT_ROOT>/src/plugins/sections/d3/d3.js$
+.*\.tsx
+.*\.ts
 
 [libs]
 flow-typed
@@ -20,7 +22,9 @@ emoji=true
 all=true
 include_warnings=true
 module.name_mapper='flipper' -> '<PROJECT_ROOT>/src/index.js'
-
+module.file_ext=.tsx
+module.name_mapper.extension='tsx' -> 'any'
+module.name_mapper.extension='ts' -> 'any'
 suppress_type=$FlowFixMe
 
 [strict]
