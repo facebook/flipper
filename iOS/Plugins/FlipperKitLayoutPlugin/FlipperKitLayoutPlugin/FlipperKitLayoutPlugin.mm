@@ -86,7 +86,7 @@
   [connection receive:@"getRoot" withBlock:^(NSDictionary *params, id<FlipperResponder> responder) {
     FlipperPerformBlockOnMainThread(^{ [weakSelf onCallGetRoot: responder]; }, responder);
   }];
-  
+
   [connection receive:@"getAllNodes" withBlock:^(NSDictionary *params, id<FlipperResponder> responder) {
     FlipperPerformBlockOnMainThread(^{ [weakSelf onCallGetAllNodesWithResponder: responder]; }, responder);
   }];
@@ -161,6 +161,19 @@
   [responder success:@{@"allNodes": @{@"rootElement": identifier, @"elements": allNodesDict}}];
 }
 
+- (NSMutableArray*)getChildrenForNode:(id)node withDescriptor:(SKNodeDescriptor*)descriptor {
+  NSMutableArray *children = [NSMutableArray new];
+  for (NSUInteger i = 0; i < [descriptor childCountForNode: node]; i++) {
+    id childNode = [descriptor childForNode: node atIndex: i];
+
+    NSString *childIdentifier = [self trackObject: childNode];
+    if (childIdentifier) {
+      [children addObject: childIdentifier];
+    }
+  }
+  return children;
+}
+
 - (void)onCallGetNodes:(NSArray<NSDictionary *> *)nodeIds withResponder:(id<FlipperResponder>)responder {
   NSMutableArray<NSDictionary *> *elements = [NSMutableArray new];
 
@@ -201,7 +214,11 @@
   SKNodeUpdateData updateDataForPath = [[descriptor dataMutationsForNode: node] objectForKey: dotJoinedPath];
   if (updateDataForPath != nil) {
     updateDataForPath(value);
-    [connection send: @"invalidate" withParams: @{ @"id": [descriptor identifierForNode: node] }];
+
+    NSMutableArray *children = [self getChildrenForNode:node withDescriptor:descriptor];
+    [connection send: @"invalidate" withParams: @{
+      @"nodes": @[@{@"id": [descriptor identifierForNode: node], @"children": children}]
+    }];
   }
 }
 
@@ -405,15 +422,7 @@
     data[namedPair.name] = namedPair.value;
   }
 
-  NSMutableArray *children = [NSMutableArray new];
-  for (NSUInteger i = 0; i < [nodeDescriptor childCountForNode: node]; i++) {
-    id childNode = [nodeDescriptor childForNode: node atIndex: i];
-
-    NSString *childIdentifier = [self trackObject: childNode];
-    if (childIdentifier) {
-      [children addObject: childIdentifier];
-    }
-  }
+  NSMutableArray *children = [self getChildrenForNode: node withDescriptor:nodeDescriptor];
 
   NSDictionary *nodeDic =
   @{
