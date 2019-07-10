@@ -63,7 +63,7 @@ function watchChanges(
   // eslint-disable-next-line no-console
   console.log('🕵️‍  Watching for plugin changes');
 
-  let delayedCompilation = {};
+  const delayedCompilation = {};
   const kCompilationDelayMillis = 1000;
 
   Object.values(plugins).map(plugin =>
