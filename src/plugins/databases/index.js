@@ -276,7 +276,7 @@ class PageInfo extends Component<
 
   onSubmit(e: SyntheticKeyboardEvent<>) {
     if (e.key === 'Enter') {
-      const rowNumber = parseInt(this.state.inputValue);
+      const rowNumber = parseInt(this.state.inputValue, 10);
       console.log(rowNumber);
       this.props.onChange(rowNumber - 1, this.props.count);
       this.setState({isOpen: false});
@@ -297,7 +297,7 @@ class PageInfo extends Component<
         <div style={{flex: 1}} />
         {this.state.isOpen ? (
           <Input
-            tabIndex={1}
+            tabIndex={-1}
             placeholder={this.props.currentRow + 1}
             onChange={this.onInputChanged.bind(this)}
             onKeyDown={this.onSubmit.bind(this)}
