@@ -115,7 +115,7 @@
     "rsocket-tcp-server": "^0.0.10",
     "socket.io": "^2.0.4",
     "string-natural-compare": "^2.0.2",
-    "tmp": "^0.1.0",
+    "tmp": "0.0.33",
     "uuid": "^3.3.2",
     "websocket": "^1.0.24",
     "which": "^1.3.1",
