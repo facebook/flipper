@@ -30,6 +30,7 @@ module.exports = {
     'no-console': 0, // we're setting window.console in App.js
     'no-multi-spaces': 2,
     'prefer-promise-reject-errors': 1,
+    'no-throw-literal': 'error',
     'no-extra-boolean-cast': 2,
     'no-extra-semi': 2,
     'no-unsafe-negation': 2,
