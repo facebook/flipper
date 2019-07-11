@@ -7,6 +7,7 @@
  */
 
 import {FlipperPlugin, FlexColumn} from 'flipper';
+import SearchBar from './components/SearchBar';
 
 type State = {||};
 
@@ -43,12 +44,19 @@ export default class extends FlipperPlugin<State, {}, PersistedState> {
     }
   };
 
+  navigateTo = (query: string) => {
+    this.getDevice().then(device => {
+      device.navigateToLocation(query);
+    });
+  };
+
   render() {
     return (
       <FlexColumn>
-        {this.props.persistedState.data.map((d, i) => (
-          <div key={i}>{JSON.stringify(d)}</div>
-        ))}
+        <SearchBar
+          onNavigate={this.navigateTo}
+          onFavorite={(query: string) => {}}
+        />
       </FlexColumn>
     );
   }
