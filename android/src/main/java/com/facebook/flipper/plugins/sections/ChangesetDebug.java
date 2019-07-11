@@ -8,12 +8,15 @@ package com.facebook.flipper.plugins.sections;
 
 import com.facebook.flipper.core.FlipperArray;
 import com.facebook.flipper.core.FlipperObject;
+import com.facebook.litho.sections.Change;
 import com.facebook.litho.sections.ChangesInfo;
 import com.facebook.litho.sections.ChangesetDebugConfiguration;
 import com.facebook.litho.sections.ChangesetDebugConfiguration.ChangesetDebugListener;
 import com.facebook.litho.sections.Section;
 import com.facebook.litho.sections.SectionsLogEventUtils;
 import com.facebook.litho.sections.SectionsLogEventUtils.ApplyNewChangeSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ChangesetDebug implements ChangesetDebugListener {
@@ -55,6 +58,7 @@ public class ChangesetDebug implements ChangesetDebugListener {
     final FlipperObject.Builder changesetData = new FlipperObject.Builder();
 
     final String sourceName = SectionsLogEventUtils.applyNewChangeSetSourceToString(attribution);
+    extractSidePanelChangesetData(changesInfo, changesetData, rootSection.getGlobalKey());
 
     createSectionTree(rootSection, "", tree, oldSection);
 
@@ -75,6 +79,52 @@ public class ChangesetDebug implements ChangesetDebugListener {
       default:
         return false;
     }
+  }
+
+  /** Extract the changesets for this section tree. */
+  private static void extractSidePanelChangesetData(
+      ChangesInfo changesInfo, FlipperObject.Builder changesetData, String globalKey) {
+    final FlipperObject.Builder sectionChangesetInfo = new FlipperObject.Builder();
+
+    final List<Change> changeList = changesInfo.getAllChanges();
+
+    final FlipperObject.Builder changesets = new FlipperObject.Builder();
+    for (int i = 0; i < changeList.size(); i++) {
+      final Change change = changeList.get(i);
+      final FlipperObject.Builder changeData = new FlipperObject.Builder();
+      changeData.put("type", Change.changeTypeToString(change.getType()));
+      changeData.put("index", change.getIndex());
+      if (change.getToIndex() >= 0) {
+        changeData.put("toIndex", change.getToIndex());
+      }
+
+      changeData.put("count", change.getCount());
+
+      changeData.put("render_infos", ChangesetDebugConfiguration.getRenderInfoNames(change));
+
+      changeData.put("prev_data", getDataNamesFromChange(change.getPrevData()));
+
+      changeData.put("next_data", getDataNamesFromChange(change.getNextData()));
+
+      changesets.put(i + "", changeData.build());
+    }
+    sectionChangesetInfo.put("changesets", changesets.build());
+
+    changesetData.put(globalKey, sectionChangesetInfo.build());
+  }
+
+  private static List<String> getDataNamesFromChange(List<?> data) {
+    final List<String> names = new ArrayList<>();
+
+    if (data == null) {
+      return names;
+    }
+
+    for (int i = 0; i < data.size(); i++) {
+      names.add(data.get(i).toString());
+    }
+
+    return names;
   }
 
   /** Finds the section with the same global key in the previous tree, if it existed. */
