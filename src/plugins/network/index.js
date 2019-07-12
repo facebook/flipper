@@ -124,7 +124,8 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
     responses: {},
     routes: [],
     showMockResponseDialog: false,
-  };
+    isMockResponseSupported: false,
+};
 
   static metricsReducer = (
     persistedState: PersistedState,
@@ -182,10 +183,13 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
 
   init() {
     if (this.props.persistedState.routes) {
-      this.client.call('mockResponses', {
-        routes: this.props.persistedState.routes,
-      });
+      this.informClientMockChange(this.props.persistedState.routes)
     }
+    this.client.supportsMethod('mockResponses').then(result =>
+      this.setState({
+        isMockResponseSupported: result
+      })
+    );
   }
 
   onKeyboardAction = (action: string) => {
@@ -219,6 +223,16 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
     this.props.setPersistedState({responses: {}, requests: {}});
   };
 
+  informClientMockChange = (routes) => {
+    this.client.supportsMethod('mockResponses').then(supported => {
+      if (supported) {
+        this.client.call('mockResponses', {
+          routes: routes
+        });
+      }
+    });
+  };
+
   handleRoutesChange = (routes: Route[]) => {
     // save to persisted state
     this.props.setPersistedState({
@@ -227,9 +241,7 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
     });
     console.log(routes);
     // inform client
-    this.client.call('mockResponses', {
-      routes: routes.filter(route => !route.isDuplicate),
-    });
+    this.informClientMockChange(routes.filter(route => !route.isDuplicate));
   };
 
   onMockButtonPressed = () => {
@@ -260,14 +272,13 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
     ) : null;
   };
 
-  render() {
+   render() {
     const {
       requests,
       responses,
       routes,
       showMockResponseDialog,
     } = this.props.persistedState;
-
     return (
       <FlexColumn grow={true}>
         <NetworkTable
@@ -284,6 +295,7 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
             this.state.selectedIds ? new Set(this.state.selectedIds) : null
           }
           handleRoutesChange={this.handleRoutesChange}
+          isMockResponseSupported={this.state.isMockResponseSupported}
         />
         <DetailSidebar width={500}>{this.renderSidebar()}</DetailSidebar>
       </FlexColumn>
@@ -303,6 +315,7 @@ type NetworkTableProps = {
   onMockButtonPressed: () => void,
   onCloseButtonPressed: () => void,
   showMockResponseDialog: boolean,
+  isMockResponseSupported: boolean,
 };
 
 type NetworkTableState = {|
@@ -544,7 +557,7 @@ class NetworkTable extends PureComponent<NetworkTableProps, NetworkTableState> {
           actions={
             <FlexRow>
               <Button onClick={this.props.clear}>Clear Table</Button>
-              <Button onClick={this.props.onMockButtonPressed}>Mock</Button>
+              {this.props.isMockResponseSupported && <Button onClick={this.props.onMockButtonPressed}>Mock</Button>}
             </FlexRow>
           }
         />
