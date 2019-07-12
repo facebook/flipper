@@ -125,7 +125,7 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
     routes: [],
     showMockResponseDialog: false,
     isMockResponseSupported: false,
-};
+  };
 
   static metricsReducer = (
     persistedState: PersistedState,
@@ -183,12 +183,12 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
 
   init() {
     if (this.props.persistedState.routes) {
-      this.informClientMockChange(this.props.persistedState.routes)
+      this.informClientMockChange(this.props.persistedState.routes);
     }
     this.client.supportsMethod('mockResponses').then(result =>
       this.setState({
-        isMockResponseSupported: result
-      })
+        isMockResponseSupported: result,
+      }),
     );
   }
 
@@ -223,11 +223,11 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
     this.props.setPersistedState({responses: {}, requests: {}});
   };
 
-  informClientMockChange = (routes) => {
+  informClientMockChange = routes => {
     this.client.supportsMethod('mockResponses').then(supported => {
       if (supported) {
         this.client.call('mockResponses', {
-          routes: routes
+          routes: routes,
         });
       }
     });
@@ -272,7 +272,7 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
     ) : null;
   };
 
-   render() {
+  render() {
     const {
       requests,
       responses,
@@ -557,7 +557,9 @@ class NetworkTable extends PureComponent<NetworkTableProps, NetworkTableState> {
           actions={
             <FlexRow>
               <Button onClick={this.props.clear}>Clear Table</Button>
-              {this.props.isMockResponseSupported && <Button onClick={this.props.onMockButtonPressed}>Mock</Button>}
+              {this.props.isMockResponseSupported && (
+                <Button onClick={this.props.onMockButtonPressed}>Mock</Button>
+              )}
             </FlexRow>
           }
         />

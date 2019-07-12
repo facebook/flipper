@@ -38,7 +38,7 @@ export type Route = {|
   data: string,
   isDuplicate: boolean,
   headers: Array<Header>,
-|}
+|};
 
 export type RetryInsights = {|
   count: number,
