@@ -122,11 +122,6 @@ export const checkGK = (gatekeepedPlugins: Array<PluginDefinition>) => (
   const result = GK.get(plugin.gatekeeper);
   if (!result) {
     gatekeepedPlugins.push(plugin);
-    console.warn(
-      'Plugin %s will be ignored as user is not part of the gatekeeper "%s".',
-      plugin.name,
-      plugin.gatekeeper,
-    );
   }
   return result;
 };
@@ -160,7 +155,7 @@ export const requirePlugin = (
       if (plugin.default) {
         plugin = plugin.default;
       }
-      if (!plugin.prototype instanceof FlipperBasePlugin) {
+      if (!(plugin.prototype instanceof FlipperBasePlugin)) {
         throw new Error(`Plugin ${plugin.name} is not a FlipperBasePlugin`);
       }
 

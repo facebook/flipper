@@ -76,7 +76,7 @@ export default class Server extends EventEmitter {
   ): Promise<RSocketServer> {
     const server = this;
     return new Promise((resolve, reject) => {
-      let rsServer;
+      let rsServer; // eslint-disable-line prefer-const
       const serverFactory = onConnect => {
         const transportServer = sslConfig
           ? tls.createServer(sslConfig, socket => {
@@ -334,7 +334,7 @@ class ConnectionTracker {
   logConnectionAttempt(client: ClientQuery) {
     const key = `${client.os}-${client.device}-${client.app}`;
     const time = Date.now();
-    var entry = this.connectionAttempts.get(key) || [];
+    let entry = this.connectionAttempts.get(key) || [];
     entry.push(time);
     entry = entry.filter(t => t >= time - this.timeWindowMillis);
 

@@ -21,10 +21,21 @@ module.exports = {
     'no-catch-shadow': 0, // only relevant for IE8 and below
     'no-bitwise': 0, // bitwise operations needed in some places
     'consistent-return': 0,
-    'max-len': 0, // let's take prettier take care of this
-    indent: 0, // let's take prettier take care of this
+    'no-var': 2,
+    'prefer-const': [2, {destructuring: 'all'}],
+    'prefer-spread': 1,
+    'prefer-rest-params': 1,
+    'max-len': 0, // lets prettier take care of this
+    indent: 0, // lets prettier take care of this
     'no-console': 0, // we're setting window.console in App.js
+    'no-multi-spaces': 2,
     'prefer-promise-reject-errors': 1,
+    'no-throw-literal': 'error',
+    'no-extra-boolean-cast': 2,
+    'no-extra-semi': 2,
+    'no-unsafe-negation': 2,
+    'no-useless-computed-key': 2,
+    'no-useless-rename': 2,
 
     // additional rules for this project
     'header/header': [2, 'block', {pattern}],

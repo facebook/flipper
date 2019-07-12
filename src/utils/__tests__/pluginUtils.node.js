@@ -41,18 +41,18 @@ function mockPluginDefinition(name: string): PluginDefinition {
 }
 
 test('getActivePluginNames with the plugins getting excluded', () => {
-  let state = mockPluginState(
+  const state = mockPluginState(
     [mockPluginDefinition('DevicePlugin1')],
     [mockPluginDefinition('ClientPlugin1')],
     [[mockPluginDefinition('DevicePlugin2'), 'DevicePlugin2']],
   );
-  let list = getActivePluginNames(state);
+  const list = getActivePluginNames(state);
   expect(list).toEqual(['ClientPlugin2']);
 });
 
 test('getActivePluginNames with the no plugins getting excluded', () => {
-  let state = mockPluginState([], [], []);
-  let list = getActivePluginNames(state);
+  const state = mockPluginState([], [], []);
+  const list = getActivePluginNames(state);
   expect(list).toEqual([
     'ClientPlugin1',
     'ClientPlugin2',

@@ -129,7 +129,7 @@ test('convertRequestToCurlCommand: malicious POST data', () => {
 });
 
 test('convertRequestToCurlCommand: control characters', () => {
-  let request: Request = {
+  const request: Request = {
     id: 'request id',
     timestamp: 1234567890,
     method: 'GET',
@@ -138,7 +138,7 @@ test('convertRequestToCurlCommand: control characters', () => {
     data: btoa('some=\u0007 \u0009 \u000C \u001B&other=param'),
   };
 
-  let command = convertRequestToCurlCommand(request);
+  const command = convertRequestToCurlCommand(request);
   expect(command).toEqual(
     "curl -v -X GET 'https://fbflipper.com/' -d $'some=\\u07 \\u09 \\u0c \\u1b&other=param'",
   );

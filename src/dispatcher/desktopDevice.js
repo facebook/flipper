@@ -12,7 +12,7 @@ import MacDevice from '../devices/MacDevice';
 import WindowsDevice from '../devices/WindowsDevice';
 
 export default (store: Store, logger: Logger) => {
-  var device;
+  let device;
   if (process.platform === 'darwin') {
     device = new MacDevice();
   } else if (process.platform === 'win32') {

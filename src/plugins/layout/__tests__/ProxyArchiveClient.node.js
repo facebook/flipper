@@ -49,7 +49,7 @@ function constructPersistedState(axMode: boolean): PersistedState {
 let state = constructPersistedState(false);
 
 function populateChildren(state: PersistedState, axMode: boolean) {
-  let elements = {};
+  const elements = {};
   elements['root'] = constructElement('root', 'root view', [
     'child0',
     'child1',
@@ -95,7 +95,7 @@ beforeEach(() => {
 });
 
 test('test the searchNode for root in axMode false', async () => {
-  let searchResult: ?SearchResultTree = await searchNodes(
+  const searchResult: ?SearchResultTree = await searchNodes(
     state.elements['root'],
     'root',
     false,
@@ -115,7 +115,7 @@ test('test the searchNode for root in axMode false', async () => {
 test('test the searchNode for root in axMode true', async () => {
   state = constructPersistedState(true);
   populateChildren(state, true);
-  let searchResult: ?SearchResultTree = await searchNodes(
+  const searchResult: ?SearchResultTree = await searchNodes(
     state.AXelements['root'],
     'RoOT',
     true,
@@ -133,7 +133,7 @@ test('test the searchNode for root in axMode true', async () => {
 });
 
 test('test the searchNode which matches just one child', async () => {
-  let searchResult: ?SearchResultTree = await searchNodes(
+  const searchResult: ?SearchResultTree = await searchNodes(
     state.elements['root'],
     'child0_child0',
     false,
@@ -169,14 +169,14 @@ test('test the searchNode which matches just one child', async () => {
 });
 
 test('test the searchNode for which matches multiple child', async () => {
-  let searchResult: ?SearchResultTree = await searchNodes(
+  const searchResult: ?SearchResultTree = await searchNodes(
     state.elements['root'],
     'child0',
     false,
     state,
   );
   expect(searchResult).toBeDefined();
-  let expectedSearchResult = {
+  const expectedSearchResult = {
     id: 'root',
     isMatch: false,
     hasChildren: true,
@@ -231,14 +231,14 @@ test('test the searchNode for which matches multiple child', async () => {
 });
 
 test('test the searchNode, it should not be case sensitive', async () => {
-  let searchResult: ?SearchResultTree = await searchNodes(
+  const searchResult: ?SearchResultTree = await searchNodes(
     state.elements['root'],
     'ChIlD0',
     false,
     state,
   );
   expect(searchResult).toBeDefined();
-  let expectedSearchResult = {
+  const expectedSearchResult = {
     id: 'root',
     isMatch: false,
     hasChildren: true,
@@ -293,7 +293,7 @@ test('test the searchNode, it should not be case sensitive', async () => {
 });
 
 test('test the searchNode for non existent query', async () => {
-  let searchResult: ?SearchResultTree = await searchNodes(
+  const searchResult: ?SearchResultTree = await searchNodes(
     state.elements['root'],
     'Unknown query',
     false,
@@ -303,22 +303,22 @@ test('test the searchNode for non existent query', async () => {
 });
 
 test('test the call method with getRoot', async () => {
-  let proxyClient = new ProxyArchiveClient(state);
-  let root: Element = await proxyClient.call('getRoot');
+  const proxyClient = new ProxyArchiveClient(state);
+  const root: Element = await proxyClient.call('getRoot');
   expect(root).toEqual(state.elements['root']);
 });
 
 test('test the call method with getAXRoot', async () => {
   state = constructPersistedState(true);
   populateChildren(state, true);
-  let proxyClient = new ProxyArchiveClient(state);
-  let root: Element = await proxyClient.call('getAXRoot');
+  const proxyClient = new ProxyArchiveClient(state);
+  const root: Element = await proxyClient.call('getAXRoot');
   expect(root).toEqual(state.AXelements['root']);
 });
 
 test('test the call method with getNodes', async () => {
-  let proxyClient = new ProxyArchiveClient(state);
-  let nodes: Array<Element> = await proxyClient.call('getNodes', {
+  const proxyClient = new ProxyArchiveClient(state);
+  const nodes: Array<Element> = await proxyClient.call('getNodes', {
     ids: ['child0_child1', 'child1_child0'],
   });
   expect(nodes).toEqual({
@@ -350,8 +350,8 @@ test('test the call method with getNodes', async () => {
 test('test the call method with getAXNodes', async () => {
   state = constructPersistedState(true);
   populateChildren(state, true);
-  let proxyClient = new ProxyArchiveClient(state);
-  let nodes: Array<Element> = await proxyClient.call('getAXNodes', {
+  const proxyClient = new ProxyArchiveClient(state);
+  const nodes: Array<Element> = await proxyClient.call('getAXNodes', {
     ids: ['child0_child1', 'child1_child0'],
   });
   expect(nodes).toEqual({
@@ -381,7 +381,7 @@ test('test the call method with getAXNodes', async () => {
 });
 
 test('test different methods of calls with no params', async () => {
-  let proxyClient = new ProxyArchiveClient(state);
+  const proxyClient = new ProxyArchiveClient(state);
   await expect(proxyClient.call('getNodes')).rejects.toThrow(
     new Error('Called getNodes with no params'),
   );
@@ -408,6 +408,6 @@ test('test different methods of calls with no params', async () => {
 });
 
 test('test call method isConsoleEnabled', () => {
-  let proxyClient = new ProxyArchiveClient(state);
+  const proxyClient = new ProxyArchiveClient(state);
   return expect(proxyClient.call('isConsoleEnabled')).resolves.toBe(false);
 });

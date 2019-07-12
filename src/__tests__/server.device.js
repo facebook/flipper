@@ -37,8 +37,8 @@ beforeAll(() => {
 });
 
 test('Device can connect successfully', done => {
-  var testFinished = false;
-  var disconnectedTooEarly = false;
+  let testFinished = false;
+  let disconnectedTooEarly = false;
   const registeredClients = [];
   server.addListener('new-client', (client: Client) => {
     // Check there is a connected device that has the same device_id as the new client

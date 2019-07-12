@@ -49,7 +49,7 @@ export default class TemperatureTable extends Component<TemperatureTableProps> {
   };
 
   buildRows = () => {
-    let rows = [];
+    const rows = [];
     for (const tz of Object.keys(this.props.temperatureMap).sort()) {
       rows.push(this.buildRow(tz, this.props.temperatureMap[tz]));
     }

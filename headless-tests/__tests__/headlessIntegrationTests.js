@@ -68,7 +68,9 @@ const runHeadless = memoize((args: Array<string>) => {
       } catch (e) {
         console.warn(stderrChunks.join(''));
         reject(
-          `Failed to parse headless output as JSON (${e.message}): ${stdout}`,
+          new Error(
+            `Failed to parse headless output as JSON (${e.message}): ${stdout}`,
+          ),
         );
       }
     });

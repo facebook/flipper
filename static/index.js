@@ -66,7 +66,7 @@ const argv = yargs
   .help()
   .parse(process.argv.slice(1));
 
-let {config, configPath, flipperDir} = setup(argv);
+const {config, configPath, flipperDir} = setup(argv);
 
 const pluginPaths = config.pluginPaths
   .concat(

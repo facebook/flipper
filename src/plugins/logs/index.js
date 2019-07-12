@@ -429,7 +429,7 @@ export default class LogTable extends FlipperDevicePlugin<
     if (highlightedRows.size <= 0) {
       // Check if the individual lines in the deeplinkPayload is matched or not.
       const arr = deepLinkPayload.split('\n');
-      for (let msg of arr) {
+      for (const msg of arr) {
         for (let i = rows.length - 1; i >= 0; i--) {
           if (rows[i].filterValue && rows[i].filterValue.includes(msg)) {
             highlightedRows.add(rows[i].key);

@@ -650,8 +650,14 @@ class ManagedTable extends React.Component<
 
     let computedWidth = 0;
     if (horizontallyScrollable) {
-      for (const col in columnSizes) {
-        const width = columnSizes[col];
+      for (let index = 0; index < columnOrder.length; index++) {
+        const col = columnOrder[index];
+
+        if (!col.visible) {
+          continue;
+        }
+
+        const width = columnSizes[col.key];
         if (isNaN(width)) {
           // non-numeric columns with, can't caluclate
           computedWidth = 0;

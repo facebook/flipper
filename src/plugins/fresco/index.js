@@ -302,7 +302,7 @@ export default class extends FlipperPlugin<PluginState, *, PersistedState> {
       this.props.setPersistedState({imagesMap: images}),
     );
 
-    let images = this.filterImages(
+    const images = this.filterImages(
       this.props.persistedState.images,
       this.props.persistedState.events,
       this.state.selectedSurface,

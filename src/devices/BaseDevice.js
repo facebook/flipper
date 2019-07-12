@@ -139,6 +139,10 @@ export default class BaseDevice {
     throw new Error('unimplemented');
   }
 
+  navigateToLocation(location: string) {
+    throw new Error('unimplemented');
+  }
+
   archive(): ?ArchivedDevice {
     return null;
   }

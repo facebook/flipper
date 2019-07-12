@@ -35,7 +35,7 @@ function generateClientIdentifierWithSalt(
   identifier: string,
   salt: string,
 ): string {
-  let array = identifier.split('#');
+  const array = identifier.split('#');
   const serial = array.pop();
   return array.join('#') + '#' + salt + '-' + serial;
 }
@@ -198,7 +198,7 @@ test('test processStore function for an iOS device connected with client plugin 
   expect(json).toBeDefined();
   //$FlowFixMe Flow doesn't that its a test and the assertion for null is already done
   const {pluginStates} = json.store;
-  let expectedPluginState = {
+  const expectedPluginState = {
     [generateClientIdentifierWithSalt(clientIdentifier, 'salt')]: {
       msg: 'Test plugin',
     },
@@ -258,7 +258,7 @@ test('test processStore function to have only the client for the selected device
   //$FlowFixMe Flow doesn't that its a test and the assertion for null is already added
   const {clients} = json;
   const {pluginStates} = json.store;
-  let expectedPluginState = {
+  const expectedPluginState = {
     [generateClientIdentifierWithSalt(selectedDeviceClientIdentifier, 'salt') +
     '#testapp']: {
       msg: 'Test plugin selected device',
@@ -313,7 +313,7 @@ test('test processStore function to have multiple clients for the selected devic
   //$FlowFixMe Flow doesn't that its a test and the assertion for null is already added
   const {clients} = json;
   const {pluginStates} = json.store;
-  let expectedPluginState = {
+  const expectedPluginState = {
     [generateClientIdentifierWithSalt(clientIdentifierApp1, 'salt') +
     '#testapp1']: {
       msg: 'Test plugin App1',
@@ -355,7 +355,7 @@ test('test processStore function for device plugin state and no clients', async 
   //$FlowFixMe Flow doesn't that its a test and the assertion for null is already done
   const {pluginStates} = json.store;
   const {clients} = json;
-  let expectedPluginState = {
+  const expectedPluginState = {
     'salt-serial#TestDevicePlugin': {msg: 'Test Device plugin'},
   };
   expect(pluginStates).toEqual(expectedPluginState);

@@ -6,7 +6,7 @@
  */
 
 import {FlipperDevicePlugin, Device} from 'flipper';
-var adb = require('adbkit-fb');
+const adb = require('adbkit-fb');
 import TemperatureTable from './TemperatureTable.js';
 
 import {
@@ -107,7 +107,7 @@ const Heading = styled('div')({
 
 // check if str is a number
 function isNormalInteger(str) {
-  let n = Math.floor(Number(str));
+  const n = Math.floor(Number(str));
   return String(n) === str && n >= 0;
 }
 
@@ -145,7 +145,7 @@ export default class CPUFrequencyTable extends FlipperDevicePlugin<CPUState> {
   }
 
   init() {
-    let device = ((this.device: any): AndroidDevice);
+    const device = ((this.device: any): AndroidDevice);
     this.adbClient = device.adb;
 
     this.updateHardwareInfo();
@@ -153,9 +153,9 @@ export default class CPUFrequencyTable extends FlipperDevicePlugin<CPUState> {
 
     // check how many cores we have on this device
     this.executeShell((output: string) => {
-      let idx = output.indexOf('-');
-      let cpuFreq = [];
-      let count = parseInt(output.substring(idx + 1), 10) + 1;
+      const idx = output.indexOf('-');
+      const cpuFreq = [];
+      const count = parseInt(output.substring(idx + 1), 10) + 1;
       for (let i = 0; i < count; ++i) {
         cpuFreq[i] = {
           cpu_id: i,
@@ -187,8 +187,8 @@ export default class CPUFrequencyTable extends FlipperDevicePlugin<CPUState> {
 
   updateCoreFrequency = (core: number, type: string) => {
     this.executeShell((output: string) => {
-      let cpuFreq = this.state.cpuFreq;
-      let newFreq = isNormalInteger(output) ? parseInt(output, 10) : -1;
+      const cpuFreq = this.state.cpuFreq;
+      const newFreq = isNormalInteger(output) ? parseInt(output, 10) : -1;
 
       // update table only if frequency changed
       if (cpuFreq[core][type] != newFreq) {
@@ -207,12 +207,12 @@ export default class CPUFrequencyTable extends FlipperDevicePlugin<CPUState> {
 
   updateAvailableFrequencies = (core: number) => {
     this.executeShell((output: string) => {
-      let cpuFreq = this.state.cpuFreq;
-      let freqs = output.split(' ').map((num: string) => {
+      const cpuFreq = this.state.cpuFreq;
+      const freqs = output.split(' ').map((num: string) => {
         return parseInt(num, 10);
       });
       cpuFreq[core].scaling_available_freqs = freqs;
-      let maxFreq = cpuFreq[core].scaling_max_freq;
+      const maxFreq = cpuFreq[core].scaling_max_freq;
       if (maxFreq > 0 && freqs.indexOf(maxFreq) == -1) {
         freqs.push(maxFreq); // always add scaling max to available frequencies
       }
@@ -224,7 +224,7 @@ export default class CPUFrequencyTable extends FlipperDevicePlugin<CPUState> {
 
   updateCoreGovernor = (core: number) => {
     this.executeShell((output: string) => {
-      let cpuFreq = this.state.cpuFreq;
+      const cpuFreq = this.state.cpuFreq;
       if (output.toLowerCase().includes('no such file')) {
         cpuFreq[core].scaling_governor = 'N/A';
       } else {
@@ -238,7 +238,7 @@ export default class CPUFrequencyTable extends FlipperDevicePlugin<CPUState> {
 
   readAvailableGovernors = (core: number) => {
     this.executeShell((output: string) => {
-      let cpuFreq = this.state.cpuFreq;
+      const cpuFreq = this.state.cpuFreq;
       cpuFreq[core].scaling_available_governors = output.split(' ');
 
       this.setState({
@@ -248,7 +248,7 @@ export default class CPUFrequencyTable extends FlipperDevicePlugin<CPUState> {
   };
 
   readCoreFrequency = (core: number) => {
-    let freq = this.state.cpuFreq[core];
+    const freq = this.state.cpuFreq[core];
     if (freq.cpuinfo_max_freq < 0) {
       this.updateCoreFrequency(core, 'cpuinfo_max_freq');
     }
@@ -296,21 +296,21 @@ export default class CPUFrequencyTable extends FlipperDevicePlugin<CPUState> {
   };
 
   readThermalZones = () => {
-    let thermal_dir = '/sys/class/thermal/';
-    let map = {};
+    const thermal_dir = '/sys/class/thermal/';
+    const map = {};
     this.executeShell(async (output: string) => {
       if (output.toLowerCase().includes('permission denied')) {
         this.setState({thermalAccessible: false});
         return;
       }
-      let dirs = output.split(/\s/);
-      let promises = [];
+      const dirs = output.split(/\s/);
+      const promises = [];
       for (let d of dirs) {
         d = d.trim();
         if (d.length == 0) {
           continue;
         }
-        let path = thermal_dir + d;
+        const path = thermal_dir + d;
         promises.push(this.readThermalZone(path, d, map));
       }
       await Promise.all(promises);
@@ -374,7 +374,7 @@ export default class CPUFrequencyTable extends FlipperDevicePlugin<CPUState> {
   };
 
   cleanup = () => {
-    let cpuFreq = this.state.cpuFreq;
+    const cpuFreq = this.state.cpuFreq;
     for (let i = 0; i < this.state.cpuCount; ++i) {
       cpuFreq[i].scaling_cur_freq = -1;
       cpuFreq[i].scaling_min_freq = -1;
@@ -394,7 +394,7 @@ export default class CPUFrequencyTable extends FlipperDevicePlugin<CPUState> {
   };
 
   buildRow = (freq: CPUFrequency, idx: number) => {
-    let selected = this.state.selectedIds.indexOf(idx) >= 0;
+    const selected = this.state.selectedIds.indexOf(idx) >= 0;
     let style = {};
     if (freq.scaling_cur_freq == -2) {
       style = {
@@ -466,11 +466,11 @@ export default class CPUFrequencyTable extends FlipperDevicePlugin<CPUState> {
     if (freq.scaling_available_freqs.length == 0) {
       return <Text>N/A</Text>;
     }
-    let info = freq;
+    const info = freq;
     return (
       <Text>
         {freq.scaling_available_freqs.map((freq, idx) => {
-          let style = {};
+          const style = {};
           if (
             freq == info.scaling_cur_freq ||
             freq == info.scaling_min_freq ||
@@ -519,15 +519,15 @@ export default class CPUFrequencyTable extends FlipperDevicePlugin<CPUState> {
 
   sidebarRows = (id: number) => {
     let availableFreqTitle = 'Scaling Available Frequencies';
-    let selected = this.state.cpuFreq[id];
+    const selected = this.state.cpuFreq[id];
     if (selected.scaling_available_freqs.length > 0) {
       availableFreqTitle +=
         ' (' + selected.scaling_available_freqs.length.toString() + ')';
     }
 
-    let keys = [availableFreqTitle, 'Scaling Available Governors'];
+    const keys = [availableFreqTitle, 'Scaling Available Governors'];
 
-    let vals = [
+    const vals = [
       this.buildAvailableFreqList(selected),
       this.buildAvailableGovList(selected),
     ];
@@ -540,8 +540,8 @@ export default class CPUFrequencyTable extends FlipperDevicePlugin<CPUState> {
     if (!this.state.displayCPUDetail || this.state.selectedIds.length == 0) {
       return null;
     }
-    let id = this.state.selectedIds[0];
-    let cols = {
+    const id = this.state.selectedIds[0];
+    const cols = {
       key: {
         value: 'key',
         resizable: true,
@@ -551,7 +551,7 @@ export default class CPUFrequencyTable extends FlipperDevicePlugin<CPUState> {
         resizable: true,
       },
     };
-    let colSizes = {
+    const colSizes = {
       key: '35%',
       value: 'flex',
     };

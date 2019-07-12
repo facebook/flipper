@@ -97,4 +97,9 @@ export default class AndroidDevice extends BaseDevice {
       [...this.logEntries],
     );
   }
+
+  navigateToLocation(location: string) {
+    const shellCommand = `am start ${encodeURI(location)}`;
+    this.adb.shell(this.serial, shellCommand);
+  }
 }

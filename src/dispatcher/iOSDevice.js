@@ -160,7 +160,7 @@ async function checkXcodeVersionMismatch() {
     let {stdout: xcodeCLIVersion} = await exec('xcode-select -p');
     xcodeCLIVersion = xcodeCLIVersion.trim();
     const {stdout} = await exec('ps aux | grep CoreSimulator');
-    for (let line of stdout.split('\n')) {
+    for (const line of stdout.split('\n')) {
       const match = line.match(
         /\/Applications\/Xcode[^/]*\.app\/Contents\/Developer/,
       );

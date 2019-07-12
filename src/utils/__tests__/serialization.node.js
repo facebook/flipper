@@ -19,12 +19,12 @@ class TestObject extends Object {
   set: ?Set<any>;
 }
 test('test makeObjectSerializable function for unnested object with no Set and Map', () => {
-  let obj = {key1: 'value1', key2: 'value2'};
+  const obj = {key1: 'value1', key2: 'value2'};
   const output = makeObjectSerializable(obj);
   expect(output).toEqual(obj);
 
   // Testing numbers
-  let obj2 = {key1: 1, key2: 2};
+  const obj2 = {key1: 1, key2: 2};
   const output2 = makeObjectSerializable(obj2);
   expect(output2).toEqual(obj2);
 });
@@ -36,27 +36,27 @@ test('makeObjectSerializable function for unnested object with values which retu
 });
 
 test('test deserializeObject function for unnested object with no Set and Map', () => {
-  let obj = {key1: 'value1', key2: 'value2'};
+  const obj = {key1: 'value1', key2: 'value2'};
   const output = deserializeObject(obj);
   expect(output).toEqual(obj);
 
   // Testing numbers
-  let obj2 = {key1: 1, key2: 2};
+  const obj2 = {key1: 1, key2: 2};
   const output2 = deserializeObject(obj2);
   expect(output2).toEqual(obj2);
 });
 
 test('test makeObjectSerializable and deserializeObject function for nested object with no Set and Map', () => {
-  let subObj = {key1: 'value1', key2: 'value2'};
-  let subObj2 = {key21: 'value21', key22: 'value22'};
-  let obj = {key1: subObj, key2: subObj2};
+  const subObj = {key1: 'value1', key2: 'value2'};
+  const subObj2 = {key21: 'value21', key22: 'value22'};
+  const obj = {key1: subObj, key2: subObj2};
   const output = makeObjectSerializable(obj);
   expect(output).toEqual(obj);
   expect(deserializeObject(output)).toEqual(obj);
 
-  let subObjNum = {key1: 1, key2: 2};
-  let subObjNum2 = {key21: 21, key22: 22};
-  let obj2 = {key1: subObjNum, key2: subObjNum2};
+  const subObjNum = {key1: 1, key2: 2};
+  const subObjNum2 = {key21: 21, key22: 22};
+  const obj2 = {key1: subObjNum, key2: subObjNum2};
   const output2 = makeObjectSerializable(obj2);
   expect(output2).toEqual(obj2);
   expect(deserializeObject(output2)).toEqual(obj2);
@@ -184,19 +184,19 @@ test('test makeObjectSerializable and deserializeObject function for custom Obje
 });
 
 test('test makeObjectSerializable and deserializeObject function for Array as input', () => {
-  let arr = [1, 2, 4, 5];
+  const arr = [1, 2, 4, 5];
   const output = makeObjectSerializable(arr);
   expect(output).toEqual(arr);
   expect(deserializeObject(output)).toEqual(arr);
 
-  let arrMap = [
+  const arrMap = [
     new Map([['a1', 'v1'], ['a2', 'v2']]),
     new Map([['b1', 'v1'], ['b2', 'v2']]),
     new Map([['c1', 'v1'], ['c2', 'v2']]),
     new Map([['d1', 'v1'], ['d2', 'v2']]),
   ];
 
-  let expectedArr = [
+  const expectedArr = [
     {
       __flipper_object_type__: 'Map',
       data: [['a1', 'v1'], ['a2', 'v2']],
@@ -218,7 +218,7 @@ test('test makeObjectSerializable and deserializeObject function for Array as in
   expect(outputMap).toEqual(expectedArr);
   expect(deserializeObject(outputMap)).toEqual(arrMap);
 
-  let arrStr = ['first', 'second', 'third', 'fourth'];
+  const arrStr = ['first', 'second', 'third', 'fourth'];
   const outputStr = makeObjectSerializable(arrStr);
   expect(outputStr).toEqual(arrStr);
   expect(deserializeObject(outputStr)).toEqual(arrStr);

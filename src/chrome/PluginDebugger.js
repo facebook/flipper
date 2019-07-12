@@ -161,7 +161,7 @@ class PluginDebugger extends Component<Props> {
   }
 
   getRows(): Array<TableBodyRow> {
-    let rows: Array<TableBodyRow> = [];
+    const rows: Array<TableBodyRow> = [];
 
     // bundled plugins are loaded from the defaultPlugins directory within
     // Flipper's package.

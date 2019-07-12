@@ -7,10 +7,10 @@
 import promiseTimeout from '../promiseTimeout';
 
 test('test promiseTimeout for timeout to happen', () => {
-  let promise = promiseTimeout(
+  const promise = promiseTimeout(
     200,
     new Promise((resolve, reject) => {
-      let id = setTimeout(() => {
+      const id = setTimeout(() => {
         clearTimeout(id);
         resolve();
       }, 500);
@@ -22,10 +22,10 @@ test('test promiseTimeout for timeout to happen', () => {
 });
 
 test('test promiseTimeout for timeout not to happen', () => {
-  let promise = promiseTimeout(
+  const promise = promiseTimeout(
     200,
     new Promise((resolve, reject) => {
-      let id = setTimeout(() => {
+      const id = setTimeout(() => {
         clearTimeout(id);
         resolve();
       }, 100);

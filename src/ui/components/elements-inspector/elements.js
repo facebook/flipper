@@ -26,6 +26,8 @@ const ROW_HEIGHT = 23;
 const backgroundColor = props => {
   if (props.selected) {
     return colors.macOSTitleBarIconSelected;
+  } else if (props.isQueryMatch) {
+    return colors.purpleLight;
   } else if (props.focused) {
     return '#00CF52';
   } else if (props.even) {
@@ -197,6 +199,7 @@ type ElementsRowProps = {
   selected: boolean,
   focused: boolean,
   matchingSearchQuery: ?string,
+  isQueryMatch: boolean,
   element: Element,
   even: boolean,
   onElementSelected: (key: ElementID) => void,
@@ -353,6 +356,7 @@ class ElementsRow extends PureComponent<ElementsRowProps, ElementsRowState> {
         onDoubleClick={this.onDoubleClick}
         onMouseEnter={this.onMouseEnter}
         onMouseLeave={this.onMouseLeave}
+        isQueryMatch={this.props.isQueryMatch}
         style={style}>
         <ElementsRowDecoration>
           {line}
@@ -370,6 +374,13 @@ class ElementsRow extends PureComponent<ElementsRowProps, ElementsRowState> {
       </ElementsRowContainer>
     );
   }
+}
+
+function containsKeyInSearchResults(
+  searchResults: ?ElementSearchResultSet,
+  key: ElementID,
+) {
+  return searchResults != undefined && searchResults.matches.has(key);
 }
 
 const ElementsContainer = styled(FlexColumn)({
@@ -600,10 +611,12 @@ export class Elements extends PureComponent<ElementsProps, ElementsState> {
         selected={selected === row.key}
         focused={focused === row.key}
         matchingSearchQuery={
-          searchResults && searchResults.matches.has(row.key)
-            ? searchResults.query
+          containsKeyInSearchResults(searchResults, row.key)
+            ? //$FlowFixMe: Checked that searchResults is not undefined in containsKeyInSearchResults
+              searchResults.query
             : null
         }
+        isQueryMatch={containsKeyInSearchResults(searchResults, row.key)}
         element={row.element}
         elements={elements}
         childrenCount={childrenCount}

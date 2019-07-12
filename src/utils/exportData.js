@@ -70,8 +70,8 @@ export function processPluginStates(
   devicePlugins: Map<string, Class<FlipperDevicePlugin<>>>,
 ): PluginStatesState {
   let pluginStates = {};
-  for (let key in allPluginStates) {
-    let keyArray = key.split('#');
+  for (const key in allPluginStates) {
+    const keyArray = key.split('#');
     const pluginName = keyArray.pop();
     const filteredClients = clients.filter(client => {
       // Remove the last entry related to plugin
@@ -94,7 +94,7 @@ export function processNotificationStates(
   allActiveNotifications: Array<PluginNotification>,
   devicePlugins: Map<string, Class<FlipperDevicePlugin<>>>,
 ): Array<PluginNotification> {
-  let activeNotifications = allActiveNotifications.filter(notif => {
+  const activeNotifications = allActiveNotifications.filter(notif => {
     const filteredClients = clients.filter(client =>
       notif.client ? client.id.includes(notif.client) : false,
     );
@@ -176,7 +176,7 @@ export const processStore = async (
   if (device) {
     const {serial} = device;
     const processedClients = processClients(clients, serial);
-    let processedPluginStates = processPluginStates(
+    const processedPluginStates = processPluginStates(
       processedClients,
       serial,
       pluginStates,
@@ -210,7 +210,7 @@ export async function fetchMetadata(
   const errorArray: Array<Error> = [];
   const clients = store.getState().connections.clients;
   const selectedDevice = store.getState().connections.selectedDevice;
-  for (let client of clients) {
+  for (const client of clients) {
     if (
       !selectedDevice ||
       selectedDevice.isArchived ||
@@ -218,7 +218,7 @@ export async function fetchMetadata(
     ) {
       continue;
     }
-    for (let plugin of client.plugins) {
+    for (const plugin of client.plugins) {
       const pluginClass: ?Class<
         FlipperDevicePlugin<> | FlipperPlugin<>,
       > = plugin ? pluginsMap.get(plugin) : null;

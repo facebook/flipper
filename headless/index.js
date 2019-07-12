@@ -146,7 +146,7 @@ async function exitActions(
   store: Store,
 ): Promise<void> {
   const {metrics, exit} = userArguments;
-  for (var exitAction of exitClosures) {
+  for (const exitAction of exitClosures) {
     try {
       const action = await exitAction(userArguments, store);
       if (action.exit) {
