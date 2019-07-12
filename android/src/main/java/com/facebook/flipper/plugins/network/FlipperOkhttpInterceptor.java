@@ -79,7 +79,9 @@ public class FlipperOkhttpInterceptor implements Interceptor, BufferingFlipperPl
 
       if (mockResponse.headers != null && mockResponse.headers.size() > 0) {
         for (NetworkReporter.Header header: mockResponse.headers) {
-          builder.header(header.name, header.value);
+          if(!TextUtils.isEmpty(header.name) && !TextUtils.isEmpty(header.value)) {
+            builder.header(header.name, header.value);
+          }
         }
       }
       return builder.build();
