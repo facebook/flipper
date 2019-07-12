@@ -5,14 +5,13 @@
  * @format
  */
 
-import type {ActiveSheet, LauncherMsg} from '../reducers/application';
+import {ActiveSheet, LauncherMsg} from '../reducers/application.js';
 
 import {
   colors,
   Button,
   ButtonGroup,
   FlexRow,
-  Component,
   Spacer,
   styled,
   Text,
@@ -33,6 +32,7 @@ import config from '../fb-stubs/config.js';
 import {isAutoUpdaterEnabled} from '../utils/argvUtils.js';
 import isProduction from '../utils/isProduction.js';
 import {clipboard} from 'electron';
+import React from 'react';
 
 const AppTitleBar = styled(FlexRow)(({focused}) => ({
   background: focused
@@ -54,22 +54,24 @@ const AppTitleBar = styled(FlexRow)(({focused}) => ({
   zIndex: 4,
 }));
 
-type OwnProps = {|
+type OwnProps = {
   version: string,
-|};
+};
 
-type Props = {|
-  ...OwnProps,
+type DispatchFromProps = {
+  toggleLeftSidebarVisible: (visible?: boolean) => void,
+  toggleRightSidebarVisible: (visible?: boolean) => void,
+  setActiveSheet: (sheet: ActiveSheet) => void,
+};
+
+type StateFromProps = {
   windowIsFocused: boolean,
   leftSidebarVisible: boolean,
   rightSidebarVisible: boolean,
   rightSidebarAvailable: boolean,
   downloadingImportData: boolean,
-  toggleLeftSidebarVisible: (visible?: boolean) => void,
-  toggleRightSidebarVisible: (visible?: boolean) => void,
-  setActiveSheet: (sheet: ActiveSheet) => void,
   launcherMsg: LauncherMsg,
-|};
+};
 
 const VersionText = styled(Text)({
   color: colors.light50,
@@ -84,7 +86,7 @@ const VersionText = styled(Text)({
   },
 });
 
-class Version extends Component<{children: string}, {copied: boolean}> {
+class Version extends React.Component<{children: string}, {copied: boolean}> {
   state = {
     copied: false,
   };
@@ -109,7 +111,8 @@ const Importing = styled(FlexRow)({
   marginLeft: 10,
 });
 
-class TitleBar extends Component<Props> {
+type Props = OwnProps & DispatchFromProps & StateFromProps;
+class TitleBar extends React.Component<Props> {
   render() {
     return (
       <AppTitleBar focused={this.props.windowIsFocused} className="toolbar">
@@ -161,7 +164,9 @@ class TitleBar extends Component<Props> {
   }
 }
 
-export default connect<Props, OwnProps, _, _, _, _>(
+// @TODO: TS_MIGRATION
+type Store = any;
+export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
   ({
     application: {
       windowIsFocused,

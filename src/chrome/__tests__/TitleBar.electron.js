@@ -5,7 +5,7 @@
  * @format
  */
 
-import TitleBar from '../TitleBar.js';
+import TitleBar from '../TitleBar.tsx';
 import renderer from 'react-test-renderer';
 import reducers from '../../reducers/index.js';
 import configureStore from 'redux-mock-store';
