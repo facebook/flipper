@@ -132,7 +132,7 @@ export class ManageMockResponsePanel extends Component<Props, State> {
   buildRows = () => {
     const {routes} = this.props;
     if (routes) {
-      let rows = [];
+      const rows = [];
       routes.forEach((route: Route, index: number) => {
         rows.push(this.buildRow(route, index));
       });
@@ -160,7 +160,7 @@ export class ManageMockResponsePanel extends Component<Props, State> {
   };
 
   checkDuplicate = (routes: Route[]) => {
-    let duplicateMap = {};
+    const duplicateMap = {};
     routes.forEach((r: Route, index: number) => {
       if (duplicateMap[r.method + '|' + r.requestUrl]) {
         r.isDuplicate = true;

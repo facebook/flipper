@@ -204,7 +204,7 @@ export class MockResponseDetails extends Component<Props, State> {
   buildRows = () => {
     const {route} = this.props;
     if (route && route.headers) {
-      let rows = [];
+      const rows = [];
       route.headers.forEach((header: Header, index: number) => {
         rows.push(this.buildRow(header, index));
       });
