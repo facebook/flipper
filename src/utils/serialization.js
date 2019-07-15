@@ -5,8 +5,9 @@
  * @format
  */
 
-export function serialize(obj: Object): string {
-  return JSON.stringify(makeObjectSerializable(obj));
+import {Idler} from './Idler';
+export async function serialize(obj: Object, idler?: Idler): Promise<string> {
+  return makeObjectSerializable(obj, idler).then(obj => JSON.stringify(obj));
 }
 
 export function deserialize(str: string): Object {
@@ -111,14 +112,16 @@ export function processObjectToBeSerialized(
   }
   return {childNeedsIteration, outputObject: obj};
 }
-
-export function makeObjectSerializable(obj: any): any {
+export async function makeObjectSerializable(obj: any, idler?: Idler): any {
   if (!(obj instanceof Object)) {
     return obj;
   }
   const stack = [obj];
   const dict: Map<any, any> = new Map();
   while (stack.length > 0) {
+    if (idler) {
+      await idler.idle();
+    }
     const element = stack[stack.length - 1];
     if (element instanceof Map) {
       const {childNeedsIteration, outputArray} = processMapElement(

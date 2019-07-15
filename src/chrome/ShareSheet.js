@@ -18,6 +18,7 @@ import {
   Input,
 } from 'flipper';
 import type {Logger} from '../fb-interfaces/Logger.js';
+import {Idler} from '../utils/Idler';
 import {shareFlipperData} from '../fb-stubs/user';
 import {exportStore, EXPORT_FLIPPER_TRACE_EVENT} from '../utils/exportData.js';
 import PropTypes from 'prop-types';
@@ -91,12 +92,14 @@ export default class ShareSheet extends Component<Props, State> {
     result: null,
   };
 
+  idler = new Idler();
+
   async componentDidMount() {
     const mark = 'shareSheetExportUrl';
     performance.mark(mark);
     try {
       const {serializedString, errorArray} = await reportPlatformFailures(
-        exportStore(this.context.store),
+        exportStore(this.context.store, this.idler),
         `${EXPORT_FLIPPER_TRACE_EVENT}:UI_LINK`,
       );
 
@@ -115,10 +118,11 @@ export default class ShareSheet extends Component<Props, State> {
       }
       this.props.logger.trackTimeSince(mark, 'export:url-success');
     } catch (e) {
+      const str = e instanceof Error ? e.toString() : e;
       this.setState({
         result: {
           error_class: 'EXPORT_ERROR',
-          error: e,
+          error: str,
         },
       });
       this.props.logger.trackTimeSince(mark, 'export:url-error');
@@ -126,6 +130,10 @@ export default class ShareSheet extends Component<Props, State> {
   }
 
   render() {
+    const onHide = () => {
+      this.props.onHide();
+      this.idler.cancel();
+    };
     return (
       <Container>
         {this.state.result ? (
@@ -160,18 +168,26 @@ export default class ShareSheet extends Component<Props, State> {
             </FlexColumn>
             <FlexRow>
               <Spacer />
-              <Button compact padded onClick={this.props.onHide}>
+              <Button compact padded onClick={onHide}>
                 Close
               </Button>
             </FlexRow>
           </>
         ) : (
-          <Center>
-            <LoadingIndicator size={30} />
-            <Uploading bold color={colors.macOSTitleBarIcon}>
-              Uploading Flipper trace...
-            </Uploading>
-          </Center>
+          <FlexColumn>
+            <Center>
+              <LoadingIndicator size={30} />
+              <Uploading bold color={colors.macOSTitleBarIcon}>
+                Uploading Flipper trace...
+              </Uploading>
+            </Center>
+            <FlexRow>
+              <Spacer />
+              <Button compact padded onClick={onHide}>
+                Cancel
+              </Button>
+            </FlexRow>
+          </FlexColumn>
         )}
       </Container>
     );

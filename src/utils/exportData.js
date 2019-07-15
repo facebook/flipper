@@ -25,7 +25,7 @@ import {readCurrentRevision} from './packageMetadata.js';
 import {tryCatchReportPlatformFailures} from './metrics';
 import {promisify} from 'util';
 import promiseTimeout from './promiseTimeout';
-
+import {Idler} from './Idler';
 export const IMPORT_FLIPPER_TRACE_EVENT = 'import-flipper-trace';
 export const EXPORT_FLIPPER_TRACE_EVENT = 'export-flipper-trace';
 
@@ -266,14 +266,12 @@ export async function getStoreExport(
   plugins.devicePlugins.forEach((val, key) => {
     pluginsMap.set(key, val);
   });
-
   const metadata = await fetchMetadata(pluginStates, pluginsMap, store);
   const {errorArray} = metadata;
   const newPluginState = metadata.pluginStates;
 
   const {activeNotifications} = store.getState().notifications;
   const {devicePlugins} = store.getState().plugins;
-
   const exportData = await processStore(
     activeNotifications,
     selectedDevice,
@@ -287,6 +285,7 @@ export async function getStoreExport(
 
 export function exportStore(
   store: MiddlewareAPI,
+  idler?: Idler,
 ): Promise<{serializedString: string, errorArray: Array<Error>}> {
   getLogger().track('usage', EXPORT_FLIPPER_TRACE_EVENT);
   return new Promise(async (resolve, reject) => {
@@ -296,11 +295,15 @@ export function exportStore(
         console.error('Make sure a device is connected');
         reject(new Error('No device is selected'));
       }
-      const serializedString = serialize(exportData);
-      if (serializedString.length <= 0) {
-        reject(new Error('Serialize function returned empty string'));
+      try {
+        const serializedString = await serialize(exportData, idler);
+        if (serializedString.length <= 0) {
+          reject(new Error('Serialize function returned empty string'));
+        }
+        resolve({serializedString, errorArray});
+      } catch (e) {
+        reject(e);
       }
-      resolve({serializedString, errorArray});
     } catch (e) {
       reject(e);
     }
@@ -310,8 +313,9 @@ export function exportStore(
 export const exportStoreToFile = (
   exportFilePath: string,
   store: Store,
+  idler?: Idler,
 ): Promise<{errorArray: Array<Error>}> => {
-  return exportStore(store).then(({serializedString, errorArray}) => {
+  return exportStore(store, idler).then(({serializedString, errorArray}) => {
     return promisify(fs.writeFile)(exportFilePath, serializedString).then(
       () => {
         return {errorArray};

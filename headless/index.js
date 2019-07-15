@@ -272,7 +272,7 @@ async function startFlipper(userArguments: UserArguments) {
   > = [
     (userArguments: UserArguments) => {
       if (userArguments.listDevices) {
-        return listDevices().then((devices: Array<BaseDevice>) => {
+        return listDevices().then(async (devices: Array<BaseDevice>) => {
           const mapped = devices.map(device => {
             return {
               os: device.os,
@@ -281,7 +281,7 @@ async function startFlipper(userArguments: UserArguments) {
               serial: device.serial,
             };
           });
-          return {exit: true, result: serialize(mapped)};
+          return {exit: true, result: await serialize(mapped)};
         });
       }
       return Promise.resolve({exit: false});
@@ -332,12 +332,14 @@ async function startFlipper(userArguments: UserArguments) {
   const exitActionClosures: Array<
     (userArguments: UserArguments, store: Store) => Promise<Action>,
   > = [
-    (userArguments: UserArguments, store: Store) => {
+    async (userArguments: UserArguments, store: Store) => {
       const {listPlugins} = userArguments;
       if (listPlugins) {
         return Promise.resolve({
           exit: true,
-          result: serialize(getActivePluginNames(store.getState().plugins)),
+          result: await serialize(
+            getActivePluginNames(store.getState().plugins),
+          ),
         });
       }
       return Promise.resolve({

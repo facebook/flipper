@@ -18,21 +18,21 @@ class TestObject extends Object {
   map: ?Map<any, any>;
   set: ?Set<any>;
 }
-test('test makeObjectSerializable function for unnested object with no Set and Map', () => {
+test('test makeObjectSerializable function for unnested object with no Set and Map', async () => {
   const obj = {key1: 'value1', key2: 'value2'};
-  const output = makeObjectSerializable(obj);
+  const output = await makeObjectSerializable(obj);
   expect(output).toEqual(obj);
 
   // Testing numbers
   const obj2 = {key1: 1, key2: 2};
-  const output2 = makeObjectSerializable(obj2);
+  const output2 = await makeObjectSerializable(obj2);
   expect(output2).toEqual(obj2);
 });
 
-test('makeObjectSerializable function for unnested object with values which returns false when put in an if condition', () => {
+test('makeObjectSerializable function for unnested object with values which returns false when put in an if condition', async () => {
   const obj2 = {key1: 0, key2: ''};
-  const output2 = makeObjectSerializable(obj2);
-  expect(output2).toEqual(obj2);
+  const output2 = await makeObjectSerializable(obj2);
+  return expect(output2).toEqual(obj2);
 });
 
 test('test deserializeObject function for unnested object with no Set and Map', () => {
@@ -46,25 +46,25 @@ test('test deserializeObject function for unnested object with no Set and Map', 
   expect(output2).toEqual(obj2);
 });
 
-test('test makeObjectSerializable and deserializeObject function for nested object with no Set and Map', () => {
+test('test makeObjectSerializable and deserializeObject function for nested object with no Set and Map', async () => {
   const subObj = {key1: 'value1', key2: 'value2'};
   const subObj2 = {key21: 'value21', key22: 'value22'};
   const obj = {key1: subObj, key2: subObj2};
-  const output = makeObjectSerializable(obj);
+  const output = await makeObjectSerializable(obj);
   expect(output).toEqual(obj);
   expect(deserializeObject(output)).toEqual(obj);
 
   const subObjNum = {key1: 1, key2: 2};
   const subObjNum2 = {key21: 21, key22: 22};
   const obj2 = {key1: subObjNum, key2: subObjNum2};
-  const output2 = makeObjectSerializable(obj2);
+  const output2 = await makeObjectSerializable(obj2);
   expect(output2).toEqual(obj2);
   expect(deserializeObject(output2)).toEqual(obj2);
 });
 
-test('test makeObjectSerializable and deserializeObject function for Map and Set with no nesting', () => {
+test('test makeObjectSerializable and deserializeObject function for Map and Set with no nesting', async () => {
   const map = new Map([['k1', 'v1'], ['k2', 'v2']]);
-  const output = makeObjectSerializable(map);
+  const output = await makeObjectSerializable(map);
   const expected = {
     __flipper_object_type__: 'Map',
     data: [['k1', 'v1'], ['k2', 'v2']],
@@ -73,7 +73,7 @@ test('test makeObjectSerializable and deserializeObject function for Map and Set
   expect(deserializeObject(output)).toEqual(map);
 
   const set = new Set([1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1]);
-  const outputSet = makeObjectSerializable(set);
+  const outputSet = await makeObjectSerializable(set);
   const expectedSet = {
     __flipper_object_type__: 'Set',
     data: [1, 2, 3, 4, 5, 6],
@@ -82,12 +82,12 @@ test('test makeObjectSerializable and deserializeObject function for Map and Set
   expect(deserializeObject(outputSet)).toEqual(set);
 });
 
-test('test makeObjectSerializable and deserializeObject function for Map and Set with nesting', () => {
+test('test makeObjectSerializable and deserializeObject function for Map and Set with nesting', async () => {
   const map = new Map([
     [{title: 'k1'}, {title: 'v1'}],
     [{title: 'k2'}, {title: 'v2'}],
   ]);
-  const output = makeObjectSerializable(map);
+  const output = await makeObjectSerializable(map);
   const expected = {
     __flipper_object_type__: 'Map',
     data: [[{title: 'k1'}, {title: 'v1'}], [{title: 'k2'}, {title: 'v2'}]],
@@ -103,7 +103,7 @@ test('test makeObjectSerializable and deserializeObject function for Map and Set
     {title: '5'},
     {title: '6'},
   ]);
-  const outputSet = makeObjectSerializable(set);
+  const outputSet = await makeObjectSerializable(set);
   const expectedSet = {
     __flipper_object_type__: 'Set',
     data: [
@@ -119,14 +119,14 @@ test('test makeObjectSerializable and deserializeObject function for Map and Set
   expect(deserializeObject(outputSet)).toEqual(set);
 });
 
-test('test makeObjectSerializable and deserializeObject function for custom Object', () => {
+test('test makeObjectSerializable and deserializeObject function for custom Object', async () => {
   const obj = new TestObject('title');
-  const output = makeObjectSerializable(obj);
+  const output = await makeObjectSerializable(obj);
   expect(output).toEqual(obj);
   expect(deserializeObject(output)).toEqual(obj);
 
   const nestedObj = new TestObject({title: 'nestedTitle'});
-  const nestedoutput = makeObjectSerializable(nestedObj);
+  const nestedoutput = await makeObjectSerializable(nestedObj);
   expect(nestedoutput).toEqual(nestedObj);
   expect(deserializeObject(nestedoutput)).toEqual(nestedObj);
 
@@ -134,7 +134,7 @@ test('test makeObjectSerializable and deserializeObject function for custom Obje
     {title: 'nestedTitle'},
     new Map([['k1', 'v1'], ['k2', 'v2']]),
   );
-  const nestedObjWithMapOutput = makeObjectSerializable(nestedObjWithMap);
+  const nestedObjWithMapOutput = await makeObjectSerializable(nestedObjWithMap);
   const expectedNestedObjWithMapOutput = {
     title: {title: 'nestedTitle'},
     map: {
@@ -158,7 +158,9 @@ test('test makeObjectSerializable and deserializeObject function for custom Obje
       {title: '6'},
     ]),
   );
-  const nestedObjWithMapSetOutput = makeObjectSerializable(nestedObjWithMapSet);
+  const nestedObjWithMapSetOutput = await makeObjectSerializable(
+    nestedObjWithMapSet,
+  );
   const expectedNestedObjWithMapSetOutput = {
     title: {title: 'nestedTitle'},
     map: {
@@ -183,9 +185,9 @@ test('test makeObjectSerializable and deserializeObject function for custom Obje
   );
 });
 
-test('test makeObjectSerializable and deserializeObject function for Array as input', () => {
+test('test makeObjectSerializable and deserializeObject function for Array as input', async () => {
   const arr = [1, 2, 4, 5];
-  const output = makeObjectSerializable(arr);
+  const output = await makeObjectSerializable(arr);
   expect(output).toEqual(arr);
   expect(deserializeObject(output)).toEqual(arr);
 
@@ -214,36 +216,36 @@ test('test makeObjectSerializable and deserializeObject function for Array as in
       data: [['d1', 'v1'], ['d2', 'v2']],
     },
   ];
-  const outputMap = makeObjectSerializable(arrMap);
+  const outputMap = await makeObjectSerializable(arrMap);
   expect(outputMap).toEqual(expectedArr);
   expect(deserializeObject(outputMap)).toEqual(arrMap);
 
   const arrStr = ['first', 'second', 'third', 'fourth'];
-  const outputStr = makeObjectSerializable(arrStr);
+  const outputStr = await makeObjectSerializable(arrStr);
   expect(outputStr).toEqual(arrStr);
   expect(deserializeObject(outputStr)).toEqual(arrStr);
 });
 
-test('test serialize and deserializeObject function for non Object input', () => {
-  expect(makeObjectSerializable('octopus')).toEqual('octopus');
-  expect(deserializeObject(makeObjectSerializable('octopus'))).toEqual(
+test('test serialize and deserializeObject function for non Object input', async () => {
+  expect(await makeObjectSerializable('octopus')).toEqual('octopus');
+  expect(deserializeObject(await makeObjectSerializable('octopus'))).toEqual(
     'octopus',
   );
-  expect(makeObjectSerializable(24567)).toEqual(24567);
-  expect(deserializeObject(makeObjectSerializable(24567))).toEqual(24567);
+  expect(await makeObjectSerializable(24567)).toEqual(24567);
+  expect(deserializeObject(await makeObjectSerializable(24567))).toEqual(24567);
 });
 
-test('test makeObjectSerializable and deserializeObject function for Date input', () => {
+test('test makeObjectSerializable and deserializeObject function for Date input', async () => {
   const date = new Date('2019-02-15');
   const expectedDate = {
     __flipper_object_type__: 'Date',
     data: date.toString(),
   };
-  expect(makeObjectSerializable(date)).toEqual(expectedDate);
-  expect(deserializeObject(makeObjectSerializable(date))).toEqual(date);
+  expect(await makeObjectSerializable(date)).toEqual(expectedDate);
+  expect(deserializeObject(await makeObjectSerializable(date))).toEqual(date);
 });
 
-test('test makeObjectSerializable and deserializeObject function for Map of Sets', () => {
+test('test makeObjectSerializable and deserializeObject function for Map of Sets', async () => {
   const map = new Map([
     ['k1', new Set([1, 2, 3, 4, 5, 6])],
     [new Set([1, 2]), new Map([['k3', 'v3']])],
@@ -258,11 +260,11 @@ test('test makeObjectSerializable and deserializeObject function for Map of Sets
       ],
     ],
   };
-  expect(makeObjectSerializable(map)).toEqual(expectedOutput);
-  expect(deserializeObject(makeObjectSerializable(map))).toEqual(map);
+  expect(await makeObjectSerializable(map)).toEqual(expectedOutput);
+  expect(deserializeObject(await makeObjectSerializable(map))).toEqual(map);
 });
 
-test('test makeObjectSerializable and deserializeObject function for Map, Dates and Set with complex nesting', () => {
+test('test makeObjectSerializable and deserializeObject function for Map, Dates and Set with complex nesting', async () => {
   const date1 = new Date('2019-02-15');
   const date2 = new Date('2019-02-16');
   const map = new Map([['k1', date1], ['k2', new Set([date2])]]);
@@ -279,6 +281,6 @@ test('test makeObjectSerializable and deserializeObject function for Map, Dates 
       ],
     ],
   };
-  expect(makeObjectSerializable(map)).toEqual(expectedOutput);
-  expect(deserializeObject(makeObjectSerializable(map))).toEqual(map);
+  expect(await makeObjectSerializable(map)).toEqual(expectedOutput);
+  expect(deserializeObject(await makeObjectSerializable(map))).toEqual(map);
 });

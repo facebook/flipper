@@ -42,7 +42,7 @@ async function exportMetrics(
       metrics[clientID] = mergedMetrics;
     }
   }
-  return Promise.resolve(serialize(metrics));
+  return Promise.resolve(await serialize(metrics));
 }
 
 export async function exportMetricsWithoutTrace(

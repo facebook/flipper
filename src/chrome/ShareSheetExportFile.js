@@ -19,6 +19,7 @@ import {reportPlatformFailures} from '../utils/metrics';
 // $FlowFixMe: Missing type defs for node built-in.
 import {performance} from 'perf_hooks';
 import type {Logger} from '../fb-interfaces/Logger.js';
+import {Idler} from '../utils/Idler';
 import {
   exportStoreToFile,
   EXPORT_FLIPPER_TRACE_EVENT,
@@ -82,6 +83,8 @@ export default class ShareSheetExportFile extends Component<Props, State> {
     result: null,
   };
 
+  idler = new Idler();
+
   async componentDidMount() {
     const mark = 'shareSheetExportFile';
     performance.mark(mark);
@@ -92,7 +95,7 @@ export default class ShareSheetExportFile extends Component<Props, State> {
         return;
       }
       const {errorArray} = await reportPlatformFailures(
-        exportStoreToFile(this.props.file, this.context.store),
+        exportStoreToFile(this.props.file, this.context.store, this.idler),
         `${EXPORT_FLIPPER_TRACE_EVENT}:UI_FILE`,
       );
       this.setState({errorArray, result: {success: true, error: null}});
@@ -104,10 +107,14 @@ export default class ShareSheetExportFile extends Component<Props, State> {
   }
 
   render() {
-    if (!this.props.file) {
-      return this.renderNoFileError();
-    }
+    const onHide = () => {
+      this.props.onHide();
+      this.idler.cancel();
+    };
 
+    if (!this.props.file) {
+      return this.renderNoFileError(onHide);
+    }
     const {result} = this.state;
     if (result) {
       const {success, error} = result;
@@ -125,7 +132,7 @@ export default class ShareSheetExportFile extends Component<Props, State> {
             </FlexColumn>
             <FlexRow>
               <Spacer />
-              <Button compact padded onClick={this.props.onHide}>
+              <Button compact padded onClick={onHide}>
                 Close
               </Button>
             </FlexRow>
@@ -141,7 +148,7 @@ export default class ShareSheetExportFile extends Component<Props, State> {
             </ErrorMessage>
             <FlexRow>
               <Spacer />
-              <Button compact padded onClick={this.props.onHide}>
+              <Button compact padded onClick={onHide}>
                 Close
               </Button>
             </FlexRow>
@@ -158,12 +165,18 @@ export default class ShareSheetExportFile extends Component<Props, State> {
               Exporting Flipper trace...
             </Uploading>
           </Center>
+          <FlexRow>
+            <Spacer />
+            <Button compact padded onClick={onHide}>
+              Cancel
+            </Button>
+          </FlexRow>
         </Container>
       );
     }
   }
 
-  renderNoFileError() {
+  renderNoFileError(onHide: () => void) {
     return (
       <Container>
         <Center>
@@ -171,7 +184,7 @@ export default class ShareSheetExportFile extends Component<Props, State> {
         </Center>
         <FlexRow>
           <Spacer />
-          <Button compact padded onClick={this.props.onHide}>
+          <Button compact padded onClick={onHide}>
             Close
           </Button>
         </FlexRow>
