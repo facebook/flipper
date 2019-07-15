@@ -43,8 +43,14 @@ export type ExportType = {|
 export function processClients(
   clients: Array<ClientExport>,
   serial: string,
+  statusUpdate?: (msg: string) => void,
 ): Array<ClientExport> {
-  return clients.filter(client => client.query.device_id === serial);
+  statusUpdate &&
+    statusUpdate(`Filtering Clients for the device id ${serial}...`);
+  const filteredClients = clients.filter(
+    client => client.query.device_id === serial,
+  );
+  return filteredClients;
 }
 
 export function pluginsClassMap(
@@ -68,8 +74,11 @@ export function processPluginStates(
   serial: string,
   allPluginStates: PluginStatesState,
   devicePlugins: Map<string, Class<FlipperDevicePlugin<>>>,
+  statusUpdate?: (msg: string) => void,
 ): PluginStatesState {
   let pluginStates = {};
+  statusUpdate &&
+    statusUpdate('Filtering the plugin states for the filtered Clients...');
   for (const key in allPluginStates) {
     const keyArray = key.split('#');
     const pluginName = keyArray.pop();
@@ -93,7 +102,10 @@ export function processNotificationStates(
   serial: string,
   allActiveNotifications: Array<PluginNotification>,
   devicePlugins: Map<string, Class<FlipperDevicePlugin<>>>,
+  statusUpdate?: (msg: string) => void,
 ): Array<PluginNotification> {
+  statusUpdate &&
+    statusUpdate('Filtering the notifications for the filtered Clients...');
   const activeNotifications = allActiveNotifications.filter(notif => {
     const filteredClients = clients.filter(client =>
       notif.client ? client.id.includes(notif.client) : false,
@@ -112,6 +124,7 @@ const addSaltToDeviceSerial = async (
   clients: Array<ClientExport>,
   pluginStates: PluginStatesState,
   pluginNotification: Array<PluginNotification>,
+  statusUpdate?: (msg: string) => void,
 ): Promise<ExportType> => {
   const {serial} = device;
   const newSerial = salt + '-' + serial;
@@ -122,6 +135,8 @@ const addSaltToDeviceSerial = async (
     device.os,
     device.getLogs(),
   );
+  statusUpdate &&
+    statusUpdate('Adding salt to the selected device id in the client data...');
   const updatedClients = clients.map((client: ClientExport) => {
     return {
       ...client,
@@ -130,6 +145,10 @@ const addSaltToDeviceSerial = async (
     };
   });
 
+  statusUpdate &&
+    statusUpdate(
+      'Adding salt to the selected device id in the plugin states...',
+    );
   const updatedPluginStates: PluginStatesState = {};
   for (let key in pluginStates) {
     if (!key.includes(serial)) {
@@ -142,6 +161,10 @@ const addSaltToDeviceSerial = async (
     updatedPluginStates[key] = pluginData;
   }
 
+  statusUpdate &&
+    statusUpdate(
+      'Adding salt to the selected device id in the notification data...',
+    );
   const updatedPluginNotifications = pluginNotification.map(notif => {
     if (!notif.client || !notif.client.includes(serial)) {
       throw new Error(
@@ -172,21 +195,24 @@ export const processStore = async (
   clients: Array<ClientExport>,
   devicePlugins: Map<string, Class<FlipperDevicePlugin<>>>,
   salt: string,
+  statusUpdate?: (msg: string) => void,
 ): Promise<?ExportType> => {
   if (device) {
     const {serial} = device;
-    const processedClients = processClients(clients, serial);
+    const processedClients = processClients(clients, serial, statusUpdate);
     const processedPluginStates = processPluginStates(
       processedClients,
       serial,
       pluginStates,
       devicePlugins,
+      statusUpdate,
     );
     const processedActiveNotifications = processNotificationStates(
       processedClients,
       serial,
       activeNotifications,
       devicePlugins,
+      statusUpdate,
     );
     // Adding salt to the device id, so that the device_id in the device list is unique.
     const exportFlipperData = await addSaltToDeviceSerial(
@@ -195,6 +221,7 @@ export const processStore = async (
       processedClients,
       processedPluginStates,
       processedActiveNotifications,
+      statusUpdate,
     );
     return exportFlipperData;
   }
@@ -205,6 +232,7 @@ export async function fetchMetadata(
   pluginStates: PluginStatesState,
   pluginsMap: Map<string, Class<FlipperDevicePlugin<> | FlipperPlugin<>>>,
   store: MiddlewareAPI,
+  statusUpdate?: (msg: string) => void,
 ): Promise<{pluginStates: PluginStatesState, errorArray: Array<Error>}> {
   const newPluginState = {...pluginStates};
   const errorArray: Array<Error> = [];
@@ -226,6 +254,8 @@ export async function fetchMetadata(
       if (exportState) {
         const key = pluginKey(client.id, plugin);
         try {
+          statusUpdate &&
+            statusUpdate(`Fetching metadata for plugin ${plugin}...`);
           const data = await promiseTimeout(
             120000, // Timeout in 2 mins
             exportState(callClient(client, plugin), newPluginState[key], store),
@@ -244,6 +274,7 @@ export async function fetchMetadata(
 
 export async function getStoreExport(
   store: MiddlewareAPI,
+  statusUpdate?: (msg: string) => void,
 ): Promise<{exportData: ?ExportType, errorArray: Array<Error>}> {
   const state = store.getState();
   const {clients} = state.connections;
@@ -266,7 +297,13 @@ export async function getStoreExport(
   plugins.devicePlugins.forEach((val, key) => {
     pluginsMap.set(key, val);
   });
-  const metadata = await fetchMetadata(pluginStates, pluginsMap, store);
+  statusUpdate && statusUpdate('Preparing to fetch metadata from client...');
+  const metadata = await fetchMetadata(
+    pluginStates,
+    pluginsMap,
+    store,
+    statusUpdate,
+  );
   const {errorArray} = metadata;
   const newPluginState = metadata.pluginStates;
 
@@ -279,6 +316,7 @@ export async function getStoreExport(
     clients.map(client => client.toJSON()),
     devicePlugins,
     uuid.v4(),
+    statusUpdate,
   );
   return {exportData, errorArray};
 }
@@ -286,16 +324,22 @@ export async function getStoreExport(
 export function exportStore(
   store: MiddlewareAPI,
   idler?: Idler,
+  statusUpdate?: (msg: string) => void,
 ): Promise<{serializedString: string, errorArray: Array<Error>}> {
   getLogger().track('usage', EXPORT_FLIPPER_TRACE_EVENT);
   return new Promise(async (resolve, reject) => {
     try {
-      const {exportData, errorArray} = await getStoreExport(store);
+      statusUpdate && statusUpdate('Preparing to export Flipper data...');
+      const {exportData, errorArray} = await getStoreExport(
+        store,
+        statusUpdate,
+      );
       if (!exportData) {
         console.error('Make sure a device is connected');
         reject(new Error('No device is selected'));
       }
       try {
+        statusUpdate && statusUpdate('Serializing Flipper data...');
         const serializedString = await serialize(exportData, idler);
         if (serializedString.length <= 0) {
           reject(new Error('Serialize function returned empty string'));
@@ -314,14 +358,17 @@ export const exportStoreToFile = (
   exportFilePath: string,
   store: Store,
   idler?: Idler,
+  statusUpdate?: (msg: string) => void,
 ): Promise<{errorArray: Array<Error>}> => {
-  return exportStore(store, idler).then(({serializedString, errorArray}) => {
-    return promisify(fs.writeFile)(exportFilePath, serializedString).then(
-      () => {
-        return {errorArray};
-      },
-    );
-  });
+  return exportStore(store, idler, statusUpdate).then(
+    ({serializedString, errorArray}) => {
+      return promisify(fs.writeFile)(exportFilePath, serializedString).then(
+        () => {
+          return {errorArray};
+        },
+      );
+    },
+  );
 };
 
 export function importDataToStore(data: string, store: Store) {

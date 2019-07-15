@@ -71,6 +71,7 @@ type State = {
     success: boolean,
     error: ?Error,
   },
+  statusUpdate: ?string,
 };
 
 export default class ShareSheetExportFile extends Component<Props, State> {
@@ -81,6 +82,7 @@ export default class ShareSheetExportFile extends Component<Props, State> {
   state = {
     errorArray: [],
     result: null,
+    statusUpdate: null,
   };
 
   idler = new Idler();
@@ -95,7 +97,14 @@ export default class ShareSheetExportFile extends Component<Props, State> {
         return;
       }
       const {errorArray} = await reportPlatformFailures(
-        exportStoreToFile(this.props.file, this.context.store, this.idler),
+        exportStoreToFile(
+          this.props.file,
+          this.context.store,
+          this.idler,
+          (msg: string) => {
+            this.setState({statusUpdate: msg});
+          },
+        ),
         `${EXPORT_FLIPPER_TRACE_EVENT}:UI_FILE`,
       );
       this.setState({errorArray, result: {success: true, error: null}});
@@ -115,7 +124,7 @@ export default class ShareSheetExportFile extends Component<Props, State> {
     if (!this.props.file) {
       return this.renderNoFileError(onHide);
     }
-    const {result} = this.state;
+    const {result, statusUpdate} = this.state;
     if (result) {
       const {success, error} = result;
       if (success) {
@@ -161,9 +170,15 @@ export default class ShareSheetExportFile extends Component<Props, State> {
         <Container>
           <Center>
             <LoadingIndicator size={30} />
-            <Uploading bold color={colors.macOSTitleBarIcon}>
-              Exporting Flipper trace...
-            </Uploading>
+            {statusUpdate && statusUpdate.length > 0 ? (
+              <Uploading bold color={colors.macOSTitleBarIcon}>
+                {statusUpdate}
+              </Uploading>
+            ) : (
+              <Uploading bold color={colors.macOSTitleBarIcon}>
+                Exporting Flipper trace...
+              </Uploading>
+            )}
           </Center>
           <FlexRow>
             <Spacer />

@@ -80,6 +80,7 @@ type State = {
     | {
         flipperUrl: string,
       },
+  statusUpdate: ?string,
 };
 
 export default class ShareSheet extends Component<Props, State> {
@@ -90,6 +91,7 @@ export default class ShareSheet extends Component<Props, State> {
   state = {
     errorArray: [],
     result: null,
+    statusUpdate: null,
   };
 
   idler = new Idler();
@@ -99,7 +101,9 @@ export default class ShareSheet extends Component<Props, State> {
     performance.mark(mark);
     try {
       const {serializedString, errorArray} = await reportPlatformFailures(
-        exportStore(this.context.store, this.idler),
+        exportStore(this.context.store, this.idler, (msg: string) => {
+          this.setState({statusUpdate: msg});
+        }),
         `${EXPORT_FLIPPER_TRACE_EVENT}:UI_LINK`,
       );
 
@@ -129,66 +133,80 @@ export default class ShareSheet extends Component<Props, State> {
     }
   }
 
+  renderTheProgessState(onHide: () => void, statusUpdate: ?string) {
+    return (
+      <Container>
+        <FlexColumn>
+          <Center>
+            <LoadingIndicator size={30} />
+            {statusUpdate && statusUpdate.length > 0 ? (
+              <Uploading bold color={colors.macOSTitleBarIcon}>
+                {statusUpdate}
+              </Uploading>
+            ) : (
+              <Uploading bold color={colors.macOSTitleBarIcon}>
+                Uploading Flipper trace...
+              </Uploading>
+            )}
+          </Center>
+          <FlexRow>
+            <Spacer />
+            <Button compact padded onClick={onHide}>
+              Close
+            </Button>
+          </FlexRow>
+        </FlexColumn>
+      </Container>
+    );
+  }
+
   render() {
     const onHide = () => {
       this.props.onHide();
       this.idler.cancel();
     };
+    const {result, statusUpdate, errorArray} = this.state;
+    if (!result || !result.flipperUrl) {
+      return this.renderTheProgessState(onHide, statusUpdate);
+    }
     return (
       <Container>
-        {this.state.result ? (
-          <>
-            <FlexColumn>
-              {this.state.result.flipperUrl ? (
-                <>
-                  <Title bold>Data Upload Successful</Title>
-                  <InfoText>
-                    Flipper's data was successfully uploaded. This URL can be
-                    used to share with other Flipper users. Opening it will
-                    import the data from your trace.
-                  </InfoText>
-                  <Copy value={this.state.result.flipperUrl} />
-                  <InfoText>
-                    When sharing your Flipper link, consider that the captured
-                    data might contain sensitve information like access tokens
-                    used in network requests.
-                  </InfoText>
-                  <ShareSheetErrorList errors={this.state.errorArray} />
-                  )}
-                </>
-              ) : (
-                <>
-                  <Title bold>{this.state.result.error_class || 'Error'}</Title>
-                  <ErrorMessage code>
-                    {this.state.result.error ||
-                      'The data could not be uploaded'}
-                  </ErrorMessage>
-                </>
-              )}
-            </FlexColumn>
-            <FlexRow>
-              <Spacer />
-              <Button compact padded onClick={onHide}>
-                Close
-              </Button>
-            </FlexRow>
-          </>
-        ) : (
+        <>
           <FlexColumn>
-            <Center>
-              <LoadingIndicator size={30} />
-              <Uploading bold color={colors.macOSTitleBarIcon}>
-                Uploading Flipper trace...
-              </Uploading>
-            </Center>
-            <FlexRow>
-              <Spacer />
-              <Button compact padded onClick={onHide}>
-                Cancel
-              </Button>
-            </FlexRow>
+            {result.flipperUrl ? (
+              <>
+                <Title bold>Data Upload Successful</Title>
+                <InfoText>
+                  Flipper's data was successfully uploaded. This URL can be used
+                  to share with other Flipper users. Opening it will import the
+                  data from your trace.
+                </InfoText>
+                <Copy value={result.flipperUrl} />
+                <InfoText>
+                  When sharing your Flipper link, consider that the captured
+                  data might contain sensitve information like access tokens
+                  used in network requests.
+                </InfoText>
+                <ShareSheetErrorList errors={errorArray} />
+                )}
+              </>
+            ) : (
+              <>
+                <Title bold>{result.error_class || 'Error'}</Title>
+                <ErrorMessage code>
+                  {result.error || 'The data could not be uploaded'}
+                </ErrorMessage>
+              </>
+            )}
           </FlexColumn>
-        )}
+          <FlexRow>
+            <Spacer />
+            <Button compact padded onClick={onHide}>
+              Close
+            </Button>
+          </FlexRow>
+        </>
+        )
       </Container>
     );
   }
