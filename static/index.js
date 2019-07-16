@@ -252,6 +252,7 @@ function tryCreateWindow() {
         scrollBounce: true,
         experimentalFeatures: true,
         nodeIntegration: true,
+        webviewTag: true,
       },
     });
     win.once('ready-to-show', () => win.show());
