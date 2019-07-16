@@ -24,10 +24,6 @@ export type Action =
   | {
       type: 'CLEAR_PLUGIN_STATE',
       payload: {id: string, devicePlugins: Set<string>},
-    }
-  | {
-      type: 'CLEAR_CLIENT_PLUGINS',
-      payload: string,
     };
 
 const INITIAL_STATE: State = {};
@@ -55,14 +51,6 @@ export default function reducer(
       // was removed. pluginKeys are in the form of ${clientID}#${pluginID}.
       const pluginId = pluginKey.split('#').pop();
       if (pluginId !== payload.id || payload.devicePlugins.has(pluginId)) {
-        newState[pluginKey] = state[pluginKey];
-      }
-      return newState;
-    }, {});
-  } else if (action.type === 'CLEAR_CLIENT_PLUGINS') {
-    const {payload} = action;
-    return Object.keys(state).reduce((newState, pluginKey) => {
-      if (!pluginKey.startsWith(payload)) {
         newState[pluginKey] = state[pluginKey];
       }
       return newState;

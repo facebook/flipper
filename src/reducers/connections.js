@@ -237,9 +237,7 @@ const reducer = (state: State = INITAL_STATE, action: Action): State => {
 
       return {
         ...state,
-        clients: state.clients
-          .filter((client: Client) => client.id !== payload.id)
-          .concat(payload),
+        clients: state.clients.concat(payload),
         uninitializedClients: state.uninitializedClients.filter(c => {
           return (
             c.deviceId !== payload.query.device_id ||
