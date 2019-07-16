@@ -17,7 +17,7 @@ import org.robolectric.RobolectricTestRunner;
 public class SectionsFlipperPluginTest {
   @Test
   public void greetingTest() throws Exception {
-    final SectionsFlipperPlugin plugin = new SectionsFlipperPlugin();
+    final SectionsFlipperPlugin plugin = new SectionsFlipperPlugin(true);
     final FlipperConnectionMock connection = new FlipperConnectionMock();
     final FlipperResponderMock responder = new FlipperResponderMock();
 

@@ -14,7 +14,12 @@ import com.facebook.flipper.plugins.sections.ChangesetDebug.ChangesetListener;
 
 public class SectionsFlipperPlugin implements FlipperPlugin, ChangesetListener {
 
+  private final boolean mEnableDebugging;
   private FlipperConnection mConnection;
+
+  public SectionsFlipperPlugin(boolean enableDebugging) {
+    mEnableDebugging = enableDebugging;
+  }
 
   @Override
   public String getId() {
@@ -23,6 +28,10 @@ public class SectionsFlipperPlugin implements FlipperPlugin, ChangesetListener {
 
   @Override
   public void onConnect(FlipperConnection connection) throws Exception {
+    if (!mEnableDebugging) {
+      return;
+    }
+
     mConnection = connection;
     ChangesetDebug.setListener(this);
   }
