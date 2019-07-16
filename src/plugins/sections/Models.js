@@ -26,12 +26,16 @@ export type UpdateTreeGenerationHierarchyGenerationPayload = {|
   id: string,
   reason: string,
   tree?: Array<{
-    didTriggerStateUpdate: boolean,
+    didTriggerStateUpdate?: boolean,
     identifier: string,
-    isDirty: boolean,
-    isReused: boolean,
+    isDirty?: boolean,
+    isReused?: boolean,
     name: string,
-    parent: string | 0,
+    parent: string | '',
+    inserted?: boolean,
+    removed?: boolean,
+    updated?: boolean,
+    unchanged?: boolean,
   }>,
 |};
 
@@ -40,15 +44,18 @@ export type UpdateTreeGenerationChangesetGenerationPayload = {|
   tree_generation_id: string,
   identifier: string,
   type: string,
-  changeset: {
-    inserted_items: {},
-    inserted_sections: {},
-    moved_items: {},
-    removed_sections: [],
-    updated_items: {
-      [key: string]: {
-        context: string,
-        model: string,
+  changesets: {
+    section_key: {
+      changesets: {
+        id: {
+          count: number,
+          index: number,
+          toIndex?: number,
+          type: string,
+          render_infos?: Array<String>,
+          prev_data?: Array<String>,
+          next_data?: Array<String>,
+        },
       },
     },
   },
@@ -56,14 +63,17 @@ export type UpdateTreeGenerationChangesetGenerationPayload = {|
 
 export type UpdateTreeGenerationChangesetApplicationPayload = {|
   changeset: {
-    inserted_items: {},
-    inserted_sections: {},
-    moved_items: {},
-    removed_sections: [],
-    updated_items: {
-      [key: string]: {
-        context: string,
-        model: string,
+    section_key: {
+      changesets: {
+        id: {
+          count: number,
+          index: number,
+          toIndex?: number,
+          type: string,
+          render_infos?: Array<String>,
+          prev_data?: Array<String>,
+          next_data?: Array<String>,
+        },
       },
     },
   },

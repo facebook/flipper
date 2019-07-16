@@ -54,10 +54,14 @@ const Container = styled('div')({
 type TreeData = Array<{
   identifier: string,
   name: string,
-  parent: string | 0,
-  didTriggerStateUpdate: boolean,
-  isReused: boolean,
-  isDirty: boolean,
+  parent: string | '',
+  didTriggerStateUpdate?: boolean,
+  isReused?: boolean,
+  isDirty?: boolean,
+  inserted?: boolean,
+  removed?: boolean,
+  updated?: boolean,
+  unchanged?: boolean,
 }>;
 
 type Props = {
@@ -92,6 +96,16 @@ export default class extends PureComponent<Props, State> {
         fill = colors.teal;
       } else if (n.isDirty) {
         fill = colors.grape;
+      }
+
+      if (n.removed) {
+        fill = colors.light20;
+      } else if (n.inserted) {
+        fill = colors.pinkDark1;
+      } else if (n.updated) {
+        fill = colors.orangeTint15;
+      } else if (n.unchanged) {
+        fill = colors.teal;
       }
 
       return {
@@ -226,9 +240,12 @@ export default class extends PureComponent<Props, State> {
             step="0.01"
           />
           <Spacer />
-          <Legend color={colors.lemon}>triggered state update</Legend>
-          <Legend color={colors.teal}>is reused</Legend>
-          <Legend color={colors.grape}>is dirty</Legend>
+          <Legend color={colors.light20}>Item removed</Legend>
+          <Legend color={colors.pinkDark1}>Item inserted</Legend>
+          <Legend color={colors.orangeTint15}>Item updated</Legend>
+          <Legend color={colors.teal}>Item/Section Reused</Legend>
+          <Legend color={colors.lemon}>Section triggered state update</Legend>
+          <Legend color={colors.grape}>Section is dirty</Legend>
         </Toolbar>
       </Fragment>
     );
