@@ -17,6 +17,7 @@ test('Idler should interrupt', async () => {
       }
       await idler.idle();
     }
+    // $FlowFixMe T47375728
     fail('Idler should have thrown an error');
   } catch (e) {
     expect(i).toEqual(100);

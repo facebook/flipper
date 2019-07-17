@@ -9,6 +9,7 @@ import React from 'react';
 import {FlexColumn, FlexRow} from 'flipper';
 import {connect} from 'react-redux';
 import WelcomeScreen from './chrome/WelcomeScreen.js';
+// $FlowFixMe T47375728
 import TitleBar from './chrome/TitleBar.tsx';
 import MainSidebar from './chrome/MainSidebar.js';
 import BugReporterDialog from './chrome/BugReporterDialog.js';

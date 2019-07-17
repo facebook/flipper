@@ -5,6 +5,7 @@
  * @format
  */
 
+// $FlowFixMe T47375728
 import TitleBar from '../TitleBar.tsx';
 import renderer from 'react-test-renderer';
 import reducers from '../../reducers/index.js';

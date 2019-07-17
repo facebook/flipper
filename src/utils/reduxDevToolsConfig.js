@@ -5,6 +5,7 @@
  * @format
  */
 
+// $FlowFixMe T47375728
 export const stateSanitizer = state => {
   let sanitizedState = state;
   if (state.connections) {
