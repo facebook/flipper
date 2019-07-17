@@ -13,8 +13,13 @@ type State = {||};
 
 type Data = {||};
 
+type NavigationEvent = {|
+  date: Date,
+  uri: ?String,
+|};
+
 type PersistedState = {|
-  data: Array<Data>,
+  navigationEvents: [NavigationEvent],
 |};
 
 export default class extends FlipperPlugin<State, {}, PersistedState> {
@@ -24,18 +29,28 @@ export default class extends FlipperPlugin<State, {}, PersistedState> {
   static keyboardActions = ['clear'];
 
   static defaultPersistedState: PersistedState = {
-    data: [],
+    navigationEvents: [],
   };
 
   static persistedStateReducer = (
     persistedState: PersistedState,
     method: string,
-    data: Data,
+    payload: Object,
   ): $Shape<PersistedState> => {
-    return {
-      ...persistedState,
-      data: persistedState.data.concat([data]),
-    };
+    switch (method) {
+      case 'nav_event':
+        return {
+          ...persistedState,
+          navigationEvents: [
+            ...persistedState.navigationEvents,
+            {uri: payload.uri, date: new Date()},
+          ],
+        };
+      default:
+        return {
+          ...persistedState,
+        };
+    }
   };
 
   onKeyboardAction = (action: string) => {
