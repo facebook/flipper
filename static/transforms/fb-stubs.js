@@ -28,7 +28,7 @@ module.exports = function(babel) {
         ) {
           if (requireFromFolder('fb', path.node.arguments[0].value)) {
             throw new Error(
-              'Do not requrie directly from fb/, but rather from fb-stubs/ to not break flow-typing and make sure stubs are uptodate.',
+              'Do not require directly from fb/, but rather from fb-stubs/ to not break flow-typing and make sure stubs are up-to-date.',
             );
           } else if (
             requireFromFolder('fb-stubs', path.node.arguments[0].value)
