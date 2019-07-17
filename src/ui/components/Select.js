@@ -77,7 +77,7 @@ export default class Select extends Component<{
 
     if (label) {
       select = (
-        <Label for={this.selectID}>
+        <Label htmlFor={this.selectID}>
           <LabelText>{label}</LabelText>
           {select}
         </Label>
