@@ -19,13 +19,15 @@ import reducers from './reducers/index.js';
 import dispatcher from './dispatcher/index.js';
 import TooltipProvider from './ui/components/TooltipProvider.js';
 import config from './utils/processConfig.js';
+import {stateSanitizer} from './utils/reduxDevToolsConfig.js';
 import {initLauncherHooks} from './utils/launcher.js';
 import initCrashReporter from './utils/electronCrashReporter';
 const path = require('path');
 
 const store = createStore(
   reducers,
-  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(),
+  window.__REDUX_DEVTOOLS_EXTENSION__ &&
+    window.__REDUX_DEVTOOLS_EXTENSION__({stateSanitizer}),
 );
 
 const logger = initLogger(store);
