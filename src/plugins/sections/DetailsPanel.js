@@ -32,6 +32,7 @@ type Props = {|
   onFocusChangeSet: (
     focusedChangeSet: ?UpdateTreeGenerationChangesetApplicationPayload,
   ) => void,
+  selectedNodeInfo: ?Object,
 |};
 
 export default class DetailsPanel extends Component<Props> {
@@ -78,6 +79,14 @@ export default class DetailsPanel extends Component<Props> {
           <Panel floating={false} heading="Changeset Details">
             <ManagedDataInspector
               data={this.props.focusedChangeSet.changeset}
+              expandRoot={true}
+            />
+          </Panel>
+        )}
+        {this.props.selectedNodeInfo && (
+          <Panel floating={false} heading="Selected Node Info">
+            <ManagedDataInspector
+              data={this.props.selectedNodeInfo}
               expandRoot={true}
             />
           </Panel>

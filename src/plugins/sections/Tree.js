@@ -66,6 +66,7 @@ type TreeData = Array<{
 
 type Props = {
   data: TreeData | SectionComponentHierarchy,
+  nodeClickHandler?: (node, evt) => void,
 };
 
 type State = {
@@ -227,6 +228,7 @@ export default class extends PureComponent<Props, State> {
                 },
               }}
               nodeSize={{x: 300, y: 100}}
+              onClick={this.props.nodeClickHandler}
             />
           )}
         </Container>

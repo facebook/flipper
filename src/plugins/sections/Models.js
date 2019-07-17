@@ -36,6 +36,8 @@ export type UpdateTreeGenerationHierarchyGenerationPayload = {|
     removed?: boolean,
     updated?: boolean,
     unchanged?: boolean,
+    isSection?: boolean,
+    isDataModel?: boolean,
   }>,
 |};
 

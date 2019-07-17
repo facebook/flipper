@@ -235,6 +235,7 @@ public class ChangesetDebug implements ChangesetDebugListener {
         nodeBuilder.put(
             "parent", section.getParent() == null ? null : section.getParent().getGlobalKey());
         nodeBuilder.put("removed", true);
+        nodeBuilder.put("isSection", true);
         tree.put(nodeBuilder.build());
       }
     }
@@ -380,21 +381,29 @@ public class ChangesetDebug implements ChangesetDebugListener {
       dataObject.put("inserted", operation == Change.INSERT || operation == Change.INSERT_RANGE);
       dataObject.put("removed", operation == Change.DELETE || operation == Change.DELETE_RANGE);
       dataObject.put("updated", operation == Change.UPDATE || operation == Change.UPDATE_RANGE);
+      dataObject.put("isDataModel", true);
       tree.put(dataObject.build());
     }
   }
 
   private static void createSectionTree(
       Section rootSection, FlipperArray.Builder tree, Section oldRootSection) {
-    createSectionTreeRecursive(rootSection, "", tree, oldRootSection);
+    createSectionTreeRecursive(rootSection, "", tree, oldRootSection, 0);
     addRemovedSectionNodes(oldRootSection, rootSection, tree);
   }
 
   private static void createSectionTreeRecursive(
-      Section rootSection, String parentKey, FlipperArray.Builder tree, Section oldRootSection) {
+      Section rootSection,
+      String parentKey,
+      FlipperArray.Builder tree,
+      Section oldRootSection,
+      int startIndex) {
     if (rootSection == null) {
       return;
     }
+
+    int endIndex = startIndex + ChangesetDebugConfiguration.getSectionCount(rootSection) - 1;
+    final String name = "[" + startIndex + ", " + endIndex + "] " + rootSection.getSimpleName();
 
     final String globalKey = rootSection.getGlobalKey();
     final FlipperObject.Builder nodeBuilder = new FlipperObject.Builder();
@@ -403,11 +412,12 @@ public class ChangesetDebug implements ChangesetDebugListener {
     final boolean isDirty = ChangesetDebugConfiguration.isSectionDirty(oldSection, rootSection);
 
     nodeBuilder.put("identifier", globalKey);
-    nodeBuilder.put("name", rootSection.getSimpleName());
+    nodeBuilder.put("name", name);
     nodeBuilder.put("parent", parentKey);
     nodeBuilder.put("isDirty", isDirty);
     nodeBuilder.put("isReused", !isDirty);
     nodeBuilder.put("didTriggerStateUpdate", false); // TODO
+    nodeBuilder.put("isSection", true);
     tree.put(nodeBuilder.build());
 
     if (rootSection.getChildren() == null) {
@@ -415,7 +425,12 @@ public class ChangesetDebug implements ChangesetDebugListener {
     }
 
     for (int i = 0; i < rootSection.getChildren().size(); i++) {
-      createSectionTreeRecursive(rootSection.getChildren().get(i), globalKey, tree, oldRootSection);
+      if (i > 0) {
+        startIndex +=
+            ChangesetDebugConfiguration.getSectionCount(rootSection.getChildren().get(i - 1));
+      }
+      createSectionTreeRecursive(
+          rootSection.getChildren().get(i), globalKey, tree, oldRootSection, startIndex);
     }
   }
 }

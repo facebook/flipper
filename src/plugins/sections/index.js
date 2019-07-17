@@ -59,6 +59,7 @@ const InfoBox = styled('div')(props => ({
 type State = {
   focusedChangeSet: ?UpdateTreeGenerationChangesetApplicationPayload,
   userSelectedGenerationId: ?string,
+  selectedTreeNode: ?Object,
 };
 
 type PersistedState = {
@@ -149,12 +150,14 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
   state = {
     focusedChangeSet: null,
     userSelectedGenerationId: null,
+    selectedTreeNode: null,
   };
 
   onTreeGenerationFocused = (focusedGenerationId: ?string) => {
     this.setState({
       focusedChangeSet: null,
       userSelectedGenerationId: focusedGenerationId,
+      selectedTreeNode: null,
     });
   };
 
@@ -163,20 +166,50 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
   ) => {
     this.setState({
       focusedChangeSet,
+      selectedTreeNode: null,
+    });
+  };
+
+  onNodeClicked = (targetNode, evt) => {
+    if (targetNode.attributes.isSection) {
+      this.setState({
+        selectedTreeNode: null,
+      });
+      return;
+    }
+
+    let dataModel;
+    const selectedTreeNode = {};
+    // Not all models can be parsed.
+    if (targetNode.attributes.isDataModel) {
+      try {
+        dataModel = JSON.parse(targetNode.attributes.identifier);
+      } catch (e) {
+        dataModel = targetNode.attributes.identifier;
+      }
+    }
+
+    this.setState({
+      selectedTreeNode: {dataModel},
     });
   };
 
   renderTreeHierarchy = (generation: ?TreeGeneration) => {
     if (generation && generation.tree && generation.tree.length > 0) {
       // Display component tree hierarchy, if any
-      return <Tree data={generation.tree} />;
+      return (
+        <Tree data={generation.tree} nodeClickHandler={this.onNodeClicked} />
+      );
     } else if (
       this.state.focusedChangeSet &&
       this.state.focusedChangeSet.section_component_hierarchy
     ) {
       // Display section component hierarchy for specific changeset
       return (
-        <Tree data={this.state.focusedChangeSet.section_component_hierarchy} />
+        <Tree
+          data={this.state.focusedChangeSet.section_component_hierarchy}
+          nodeClickHandler={this.onNodeClicked}
+        />
       );
     } else {
       return this.renderWaiting();
@@ -258,6 +291,7 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
             changeSets={focusedTreeGeneration?.changeSets}
             onFocusChangeSet={this.onFocusChangeSet}
             focusedChangeSet={this.state.focusedChangeSet}
+            selectedNodeInfo={this.state.selectedTreeNode}
           />
         </DetailSidebar>
       </React.Fragment>
