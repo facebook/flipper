@@ -21,7 +21,6 @@ import iosUtil from '../fb-stubs/iOSContainerUtility';
 import {reportPlatformFailures} from './metrics';
 import {getAdbClient} from './adbClient';
 import * as androidUtil from './androidContainerUtility';
-// $FlowFixMe T47375728
 import dateFormat from 'dateformat';
 const writeFile = promisify(fs.writeFile);
 const exists = promisify(fs.exists);
