@@ -22,7 +22,7 @@ import config from './utils/processConfig.js';
 import {stateSanitizer} from './utils/reduxDevToolsConfig.js';
 import {initLauncherHooks} from './utils/launcher.js';
 import initCrashReporter from './utils/electronCrashReporter';
-const path = require('path');
+import path from 'path';
 
 const store = createStore(
   reducers,
