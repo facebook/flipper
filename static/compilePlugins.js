@@ -38,18 +38,12 @@ module.exports = async (
     fs.mkdirSync(pluginCache);
   }
   watchChanges(plugins, reloadCallback, pluginCache, options);
-  const dynamicPlugins = [];
-  for (const plugin of Object.values(plugins)) {
+  const compilations = Object.values(plugins).map(plugin => {
     const dynamicOptions = Object.assign(options, {force: false});
-    const compiledPlugin = await compilePlugin(
-      plugin,
-      pluginCache,
-      dynamicOptions,
-    );
-    if (compiledPlugin) {
-      dynamicPlugins.push(compiledPlugin);
-    }
-  }
+    return compilePlugin(plugin, pluginCache, dynamicOptions);
+  });
+
+  const dynamicPlugins = (await Promise.all(compilations)).filter(c => c != null);
   console.log('✅  Compiled all plugins.');
   return dynamicPlugins;
 };
@@ -129,7 +123,7 @@ function entryPointForPluginFolder(pluginPath) {
   return fs
     .readdirSync(pluginPath)
     .filter(name =>
-      /*name.startsWith('flipper-plugin') && */ fs
+      fs
         .lstatSync(path.join(pluginPath, name))
         .isDirectory(),
     )
