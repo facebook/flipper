@@ -8,7 +8,7 @@
 import styled from '../styled/index.js';
 import {Component} from 'react';
 
-const PropTypes = require('prop-types');
+import PropTypes from 'prop-types';
 
 const ButtonGroupContainer = styled('div')({
   display: 'inline-flex',

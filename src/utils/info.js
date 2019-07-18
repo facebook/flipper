@@ -5,7 +5,7 @@
  * @format
  */
 
-const os = require('os');
+import os from 'os';
 
 export type Info = {
   arch: string,

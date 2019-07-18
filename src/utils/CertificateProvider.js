@@ -8,13 +8,13 @@
 import type {Logger} from '../fb-interfaces/Logger';
 import Server from '../server';
 import {promisify} from 'util';
-const fs = require('fs');
+import fs from 'fs';
 import {
   openssl,
   isInstalled as opensslInstalled,
 } from './openssl-wrapper-with-promises';
-const path = require('path');
-const tmp = require('tmp');
+import path from 'path';
+import tmp from 'tmp';
 const tmpFile = promisify(tmp.file);
 const tmpDir = promisify(tmp.dir);
 import iosUtil from '../fb-stubs/iOSContainerUtility';

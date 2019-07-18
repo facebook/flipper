@@ -6,7 +6,7 @@
  */
 
 import {exec as opensslWithCallback} from 'openssl-wrapper';
-const child_process = require('child_process');
+import child_process from 'child_process';
 
 export function openssl(action: string, options: {}): Promise<string> {
   return new Promise((resolve, reject) => {

@@ -9,7 +9,7 @@ import styled from '../styled/index.js';
 import {colors} from './colors.js';
 import {Component} from 'react';
 
-const PropTypes = require('prop-types');
+import PropTypes from 'prop-types';
 
 const defaultOptions = {
   backgroundColor: colors.blueGrey,

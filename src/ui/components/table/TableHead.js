@@ -23,7 +23,7 @@ import {colors} from '../colors.js';
 
 import FlexRow from '../FlexRow.js';
 
-const invariant = require('invariant');
+import invariant from 'invariant';
 
 type MenuTemplate = Array<MenuItemConstructorOptions>;
 
