@@ -14,7 +14,7 @@ import {
   Toolbar,
   Glyph,
 } from 'flipper';
-import SearchBarButton from './SearchBarButton';
+import {SearchBarButton} from './';
 
 type Props = {|
   onFavorite: (query: string) => void,
