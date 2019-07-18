@@ -16,7 +16,6 @@ import {FlipperDevicePlugin, FlipperPlugin, callClient} from '../plugin.js';
 import {default as BaseDevice} from '../devices/BaseDevice';
 import {default as ArchivedDevice} from '../devices/ArchivedDevice';
 import {default as Client} from '../Client';
-import {getInstance} from '../fb-stubs/Logger.js';
 import fs from 'fs';
 import uuid from 'uuid';
 import {remote} from 'electron';
@@ -429,7 +428,7 @@ export function importDataToStore(data: string, store: Store) {
         client.id,
         client.query,
         null,
-        getInstance(),
+        getLogger(),
         store,
         clientPlugins,
       ),
