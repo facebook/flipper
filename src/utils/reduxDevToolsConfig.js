@@ -4,39 +4,32 @@
  * LICENSE file in the root directory of this source tree.
  * @format
  */
+import type {State} from '../reducers/index';
+import type {DeviceExport} from '../devices/BaseDevice';
 
-// $FlowFixMe T47375728
-export const stateSanitizer = state => {
-  let sanitizedState = state;
-  if (state.connections) {
-    if (state.connections.devices) {
-      const {devices} = state.connections;
-      sanitizedState = {
-        ...sanitizedState,
-        connections: {
-          ...state.connections,
-          devices: devices.map(device => {
-            return {
-              ...device.toJSON(),
-              logs: '<<DEVICE_LOGS>>',
-            };
-          }),
-        },
-      };
-    }
-    if (state.connections.selectedDevice) {
-      const {selectedDevice} = state.connections;
-      sanitizedState = {
-        ...sanitizedState,
-        connections: {
-          ...sanitizedState.connections,
-          selectedDevice: {
-            ...selectedDevice.toJSON(),
-            logs: '<<DEVICE_LOGS>>',
-          },
-        },
-      };
-    }
+export const stateSanitizer = (state: State) => {
+  if (state.connections && state.connections.devices) {
+    const {devices} = state.connections;
+    const {selectedDevice} = state.connections;
+    return {
+      ...state,
+      connections: {
+        ...state.connections,
+        devices: devices.map<DeviceExport>(device => {
+          return {
+            ...device.toJSON(),
+            logs: [],
+          };
+        }),
+        selectedDevice: selectedDevice
+          ? {
+              ...selectedDevice.toJSON(),
+              logs: [],
+            }
+          : null,
+      },
+    };
   }
-  return sanitizedState;
+
+  return state;
 };
