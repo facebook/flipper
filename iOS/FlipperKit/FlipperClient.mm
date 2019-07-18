@@ -14,7 +14,6 @@
 #include <folly/io/async/ScopedEventBaseThread.h>
 #import <UIKit/UIKit.h>
 #include "SKStateUpdateCPPWrapper.h"
-#import "FlipperDiagnosticsViewController.h"
 #import "FlipperClient+Testing.h"
 #import "SKEnvironmentVariables.h"
 
