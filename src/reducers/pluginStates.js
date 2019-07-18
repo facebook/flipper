@@ -49,8 +49,9 @@ export default function reducer(
     return Object.keys(state).reduce((newState, pluginKey) => {
       // Only add the pluginState, if its from a plugin other than the one that
       // was removed. pluginKeys are in the form of ${clientID}#${pluginID}.
+      const clientId = pluginKey.slice(0, pluginKey.lastIndexOf('#'));
       const pluginId = pluginKey.split('#').pop();
-      if (pluginId !== payload.id || payload.devicePlugins.has(pluginId)) {
+      if (clientId !== payload.id || payload.devicePlugins.has(pluginId)) {
         newState[pluginKey] = state[pluginKey];
       }
       return newState;

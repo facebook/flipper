@@ -6,11 +6,27 @@
  */
 
 import {default as reducer, setPluginState} from '../pluginStates';
+import type {Action} from '../pluginStates';
 
 test('reduce setPluginState', () => {
-  const res = reducer(
+  const result = reducer(
     {},
     setPluginState({pluginKey: 'myPlugin', state: {a: 1}}),
   );
-  expect(res).toEqual({myPlugin: {a: 1}});
+  expect(result).toEqual({myPlugin: {a: 1}});
+});
+
+test('CLEAR_PLUGIN_STATE removes plugin state', () => {
+  const clientId = 'app1#device1';
+  const pluginKey = 'app1#device1#plugin1';
+
+  const action: Action = {
+    type: 'CLEAR_PLUGIN_STATE',
+    payload: {id: clientId, devicePlugins: new Set()},
+  };
+  const result = reducer(
+    {[pluginKey]: {a: 1}, 'anotherPlugin#key': {b: 2}},
+    action,
+  );
+  expect(result).toEqual({'anotherPlugin#key': {b: 2}});
 });
