@@ -23,7 +23,7 @@ export type Action =
     }
   | {
       type: 'CLEAR_PLUGIN_STATE',
-      payload: {id: string, devicePlugins: Set<string>},
+      payload: {clientId: string, devicePlugins: Set<string>},
     };
 
 const INITIAL_STATE: State = {};
@@ -51,7 +51,10 @@ export default function reducer(
       // was removed. pluginKeys are in the form of ${clientID}#${pluginID}.
       const clientId = pluginKey.slice(0, pluginKey.lastIndexOf('#'));
       const pluginId = pluginKey.split('#').pop();
-      if (clientId !== payload.id || payload.devicePlugins.has(pluginId)) {
+      if (
+        clientId !== payload.clientId ||
+        payload.devicePlugins.has(pluginId)
+      ) {
         newState[pluginKey] = state[pluginKey];
       }
       return newState;

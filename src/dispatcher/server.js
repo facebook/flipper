@@ -38,7 +38,7 @@ export default (store: Store, logger: Logger) => {
     store.dispatch({
       type: 'CLEAR_PLUGIN_STATE',
       payload: {
-        id,
+        clientId: id,
         devicePlugins: new Set([
           ...store.getState().plugins.devicePlugins.keys(),
         ]),

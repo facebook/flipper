@@ -22,7 +22,7 @@ test('CLEAR_PLUGIN_STATE removes plugin state', () => {
 
   const action: Action = {
     type: 'CLEAR_PLUGIN_STATE',
-    payload: {id: clientId, devicePlugins: new Set()},
+    payload: {clientId: clientId, devicePlugins: new Set()},
   };
   const result = reducer(
     {[pluginKey]: {a: 1}, 'anotherPlugin#key': {b: 2}},
