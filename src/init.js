@@ -13,6 +13,7 @@ import GK from './fb-stubs/GK.js';
 import {init as initLogger} from './fb-stubs/Logger';
 import App from './App.js';
 import BugReporter from './fb-stubs/BugReporter.js';
+import setupPrefetcher from './fb-stubs/Prefetcher.js';
 import {createStore} from 'redux';
 import {persistStore} from 'redux-persist';
 import reducers from './reducers/index.js';
@@ -68,6 +69,10 @@ function init() {
   initLauncherHooks(config(), store);
   const sessionId = store.getState().application.sessionId;
   initCrashReporter(sessionId || '');
+
+  requestIdleCallback(() => {
+    setupPrefetcher();
+  });
 }
 
 // rehydrate app state before exposing init
