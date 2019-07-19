@@ -97,9 +97,6 @@ export default class extends FlipperPlugin<PluginState, *, PersistedState> {
     persistedState: ?PersistedState,
     store: ?MiddlewareAPI,
   ): Promise<?PersistedState> => {
-    if (persistedState) {
-      return Promise.resolve(persistedState);
-    }
     const defaultPromise = Promise.resolve(persistedState);
     if (!store) {
       return defaultPromise;
@@ -110,8 +107,10 @@ export default class extends FlipperPlugin<PluginState, *, PersistedState> {
       }
       const {levels, events, imageDataList} = data;
       let pluginData: PersistedState = {
-        ...FlipperPlugin.defaultPersistedState,
-        images: [...levels.levels],
+        ...persistedState,
+        images: persistedState
+          ? [...persistedState.images, ...levels.levels]
+          : levels.levels,
         closeableReferenceLeaks:
           (persistedState && persistedState.closeableReferenceLeaks) || [],
       };
