@@ -30,6 +30,7 @@ function mockPluginState(
     gatekeepedPlugins,
     disabledPlugins,
     failedPlugins,
+    selectedPlugins: [],
   };
 }
 

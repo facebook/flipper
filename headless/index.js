@@ -39,6 +39,7 @@ type UserArguments = {|
   listDevices: boolean,
   device: string,
   listPlugins: boolean,
+  selectPlugins: Array<string>,
 |};
 
 yargs
@@ -88,6 +89,12 @@ yargs
         default: false,
         describe: 'Will print the list of supported plugins in the terminal',
         type: 'boolean',
+      });
+      yargs.option('select-plugins', {
+        default: [],
+        describe:
+          'The data/metrics would be exported only for the selected plugins',
+        type: 'array',
       });
       yargs.option('device', {
         default: undefined,
@@ -327,6 +334,21 @@ async function startFlipper(userArguments: UserArguments) {
         exit: false,
       });
     },
+    (userArguments: UserArguments, store: Store) => {
+      const {selectPlugins} = userArguments;
+      const selectedPlugins = selectPlugins.filter(selectPlugin => {
+        return selectPlugin != undefined;
+      });
+      if (selectedPlugins) {
+        store.dispatch({
+          type: 'SELECTED_PLUGINS',
+          payload: selectedPlugins,
+        });
+      }
+      return Promise.resolve({
+        exit: false,
+      });
+    },
   ];
 
   const exitActionClosures: Array<
@@ -352,6 +374,7 @@ async function startFlipper(userArguments: UserArguments) {
         return exportMetricsFromTrace(
           metrics,
           pluginsClassMap(store.getState().plugins),
+          store.getState().plugins.selectedPlugins,
         )
           .then(payload => {
             return {exit: true, result: payload ? payload.toString() : ''};

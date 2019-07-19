@@ -150,7 +150,7 @@ test('test generateNotifications helper function', () => {
 });
 
 test('test processStore function for empty state', () => {
-  const json = processStore([], null, {}, [], new Map(), 'salt');
+  const json = processStore([], null, {}, [], new Map(), 'salt', []);
   expect(json).resolves.toBeNull();
 });
 
@@ -162,6 +162,7 @@ test('test processStore function for an iOS device connected', async () => {
     [],
     new Map(),
     'salt',
+    [],
   );
   expect(json).toBeDefined();
   // $FlowFixMe Flow doesn't that its a test and the assertion for null is already done
@@ -194,6 +195,7 @@ test('test processStore function for an iOS device connected with client plugin 
     [generateClientFromDevice(device, 'testapp')],
     new Map(),
     'salt',
+    [],
   );
   expect(json).toBeDefined();
   //$FlowFixMe Flow doesn't that its a test and the assertion for null is already done
@@ -252,6 +254,7 @@ test('test processStore function to have only the client for the selected device
     ],
     new Map(),
     'salt',
+    [],
   );
 
   expect(json).toBeDefined();
@@ -308,6 +311,7 @@ test('test processStore function to have multiple clients for the selected devic
     ],
     new Map(),
     'salt',
+    [],
   );
   expect(json).toBeDefined();
   //$FlowFixMe Flow doesn't that its a test and the assertion for null is already added
@@ -350,6 +354,7 @@ test('test processStore function for device plugin state and no clients', async 
     [],
     new Map([['TestDevicePlugin', TestDevicePlugin]]),
     'salt',
+    [],
   );
   expect(json).toBeDefined();
   //$FlowFixMe Flow doesn't that its a test and the assertion for null is already done
@@ -382,6 +387,7 @@ test('test processStore function for unselected device plugin state and no clien
     [],
     new Map([['TestDevicePlugin', TestDevicePlugin]]),
     'salt',
+    [],
   );
   expect(json).toBeDefined();
   //$FlowFixMe Flow doesn't that its a test and the assertion for null is already done
@@ -420,6 +426,7 @@ test('test processStore function for notifications for selected device', async (
     [client],
     new Map([['TestDevicePlugin', TestDevicePlugin]]),
     'salt',
+    [],
   );
 
   expect(json).toBeDefined();
@@ -477,12 +484,106 @@ test('test processStore function for notifications for unselected device', async
     [client, unselectedclient],
     new Map(),
     'salt',
+    [],
   );
   expect(json).toBeDefined();
   //$FlowFixMe Flow doesn't that its a test and the assertion for null is already done
   const {pluginStates} = json.store;
   const {clients} = json;
   expect(pluginStates).toEqual({});
+  expect(clients).toEqual([generateClientFromClientWithSalt(client, 'salt')]);
+  const {activeNotifications} = json.store;
+  expect(activeNotifications).toEqual([]);
+});
+
+test('test processStore function for selected plugins', async () => {
+  const selectedDevice = new ArchivedDevice(
+    'serial',
+    'emulator',
+    'TestiPhone',
+    'iOS',
+    [],
+  );
+
+  const client = generateClientFromDevice(selectedDevice, 'app');
+  const pluginstates = {
+    [generateClientIdentifier(selectedDevice, 'app') + '#plugin1']: {
+      msg: 'Test plugin1',
+    },
+    [generateClientIdentifier(selectedDevice, 'app') + '#plugin2']: {
+      msg: 'Test plugin2',
+    },
+  };
+  const json = await processStore(
+    [],
+    selectedDevice,
+    pluginstates,
+    [client],
+    new Map(),
+    'salt',
+    ['plugin2'],
+  );
+  expect(json).toBeDefined();
+  //$FlowFixMe Flow doesn't that its a test and the assertion for null is already done
+  const {pluginStates} = json.store;
+  const {clients} = json;
+  expect(pluginStates).toEqual({
+    [generateClientIdentifierWithSalt(
+      generateClientIdentifier(selectedDevice, 'app'),
+      'salt',
+    ) + '#plugin2']: {
+      msg: 'Test plugin2',
+    },
+  });
+  expect(clients).toEqual([generateClientFromClientWithSalt(client, 'salt')]);
+  const {activeNotifications} = json.store;
+  expect(activeNotifications).toEqual([]);
+});
+
+test('test processStore function for no selected plugins', async () => {
+  const selectedDevice = new ArchivedDevice(
+    'serial',
+    'emulator',
+    'TestiPhone',
+    'iOS',
+    [],
+  );
+  const client = generateClientFromDevice(selectedDevice, 'app');
+  const pluginstates = {
+    [generateClientIdentifier(selectedDevice, 'app') + '#plugin1']: {
+      msg: 'Test plugin1',
+    },
+    [generateClientIdentifier(selectedDevice, 'app') + '#plugin2']: {
+      msg: 'Test plugin2',
+    },
+  };
+  const json = await processStore(
+    [],
+    selectedDevice,
+    pluginstates,
+    [client],
+    new Map(),
+    'salt',
+    [],
+  );
+  expect(json).toBeDefined();
+  //$FlowFixMe Flow doesn't that its a test and the assertion for null is already done
+  const {pluginStates} = json.store;
+  const {clients} = json;
+  expect(pluginStates).toEqual({
+    [generateClientIdentifierWithSalt(
+      generateClientIdentifier(selectedDevice, 'app'),
+      'salt',
+    ) + '#plugin2']: {
+      msg: 'Test plugin2',
+    },
+    [generateClientIdentifierWithSalt(
+      generateClientIdentifier(selectedDevice, 'app'),
+      'salt',
+    ) + '#plugin1']: {
+      msg: 'Test plugin1',
+    },
+  });
   expect(clients).toEqual([generateClientFromClientWithSalt(client, 'salt')]);
   const {activeNotifications} = json.store;
   expect(activeNotifications).toEqual([]);

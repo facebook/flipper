@@ -15,6 +15,7 @@ export type State = {
   gatekeepedPlugins: Array<PluginDefinition>,
   disabledPlugins: Array<PluginDefinition>,
   failedPlugins: Array<[PluginDefinition, string]>,
+  selectedPlugins: Array<string>,
 };
 
 type P = Class<FlipperPlugin<> | FlipperDevicePlugin<>>;
@@ -35,6 +36,10 @@ export type Action =
   | {
       type: 'FAILED_PLUGINS',
       payload: Array<[PluginDefinition, string]>,
+    }
+  | {
+      type: 'SELECTED_PLUGINS',
+      payload: Array<string>,
     };
 
 const INITIAL_STATE: State = {
@@ -43,6 +48,7 @@ const INITIAL_STATE: State = {
   gatekeepedPlugins: [],
   disabledPlugins: [],
   failedPlugins: [],
+  selectedPlugins: [],
 };
 
 export default function reducer(
@@ -86,6 +92,12 @@ export default function reducer(
     return {
       ...state,
       failedPlugins: state.failedPlugins.concat(action.payload),
+    };
+  } else if (action.type === 'SELECTED_PLUGINS') {
+    const {selectedPlugins} = state;
+    return {
+      ...state,
+      selectedPlugins: selectedPlugins.concat(action.payload),
     };
   } else {
     return state;

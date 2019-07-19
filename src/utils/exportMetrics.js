@@ -20,12 +20,16 @@ export type ExportMetricType = {[clientID: string]: MetricPluginType};
 async function exportMetrics(
   pluginStates: PluginStatesState,
   pluginsMap: Map<string, Class<FlipperDevicePlugin<> | FlipperPlugin<>>>,
+  selectedPlugins: Array<string>,
 ): Promise<string> {
   const metrics: ExportMetricType = {};
   for (const key in pluginStates) {
     const pluginStateData = pluginStates[key];
     const arr = key.split('#');
     const pluginName = arr.pop();
+    if (!selectedPlugins.includes(pluginName)) {
+      continue;
+    }
     const clientID = arr.join('#');
     const metricsReducer: ?(
       persistedState: any,
@@ -60,7 +64,11 @@ export async function exportMetricsWithoutTrace(
     console.error(errorArray);
   }
 
-  const metrics = await exportMetrics(newPluginStates, pluginsMap);
+  const metrics = await exportMetrics(
+    newPluginStates,
+    pluginsMap,
+    store.getState().plugins.selectedPlugins,
+  );
   return metrics;
 }
 
@@ -76,6 +84,7 @@ function parseJSON(str: string): ?any {
 export async function exportMetricsFromTrace(
   trace: string,
   pluginsMap: Map<string, Class<FlipperDevicePlugin<> | FlipperPlugin<>>>,
+  selectedPlugins: Array<string>,
 ): Promise<string> {
   const data = fs.readFileSync(trace, 'utf8');
   const parsedJSONData = parseJSON(data);
@@ -103,5 +112,5 @@ export async function exportMetricsFromTrace(
       ),
     );
   }
-  return await exportMetrics(pluginStates, pluginsMap);
+  return await exportMetrics(pluginStates, pluginsMap, selectedPlugins);
 }

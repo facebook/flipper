@@ -73,6 +73,7 @@ export function processPluginStates(
   serial: string,
   allPluginStates: PluginStatesState,
   devicePlugins: Map<string, Class<FlipperDevicePlugin<>>>,
+  selectedPlugins: Array<string>,
   statusUpdate?: (msg: string) => void,
 ): PluginStatesState {
   let pluginStates = {};
@@ -81,6 +82,9 @@ export function processPluginStates(
   for (const key in allPluginStates) {
     const keyArray = key.split('#');
     const pluginName = keyArray.pop();
+    if (selectedPlugins.length > 0 && !selectedPlugins.includes(pluginName)) {
+      continue;
+    }
     const filteredClients = clients.filter(client => {
       // Remove the last entry related to plugin
       return client.id.includes(keyArray.join('#'));
@@ -194,6 +198,7 @@ export const processStore = async (
   clients: Array<ClientExport>,
   devicePlugins: Map<string, Class<FlipperDevicePlugin<>>>,
   salt: string,
+  selectedPlugins: Array<string>,
   statusUpdate?: (msg: string) => void,
 ): Promise<?ExportType> => {
   if (device) {
@@ -204,6 +209,7 @@ export const processStore = async (
       serial,
       pluginStates,
       devicePlugins,
+      selectedPlugins,
       statusUpdate,
     );
     const processedActiveNotifications = processNotificationStates(
@@ -245,7 +251,12 @@ export async function fetchMetadata(
     ) {
       continue;
     }
-    for (const plugin of client.plugins) {
+    const selectedPlugins = store.getState().plugins.selectedPlugins;
+    const selectedFilteredPlugins =
+      selectedPlugins.length > 0
+        ? client.plugins.filter(plugin => selectedPlugins.includes(plugin))
+        : client.plugins;
+    for (const plugin of selectedFilteredPlugins) {
       const pluginClass: ?Class<
         FlipperDevicePlugin<> | FlipperPlugin<>,
       > = plugin ? pluginsMap.get(plugin) : null;
@@ -315,6 +326,7 @@ export async function getStoreExport(
     clients.map(client => client.toJSON()),
     devicePlugins,
     uuid.v4(),
+    store.getState().plugins.selectedPlugins,
     statusUpdate,
   );
   return {exportData, errorArray};

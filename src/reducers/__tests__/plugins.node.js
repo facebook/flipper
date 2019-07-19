@@ -36,6 +36,7 @@ test('add clientPlugin', () => {
       gatekeepedPlugins: [],
       failedPlugins: [],
       disabledPlugins: [],
+      selectedPlugins: [],
     },
     registerPlugins([testPlugin]),
   );
@@ -50,6 +51,7 @@ test('add devicePlugin', () => {
       gatekeepedPlugins: [],
       failedPlugins: [],
       disabledPlugins: [],
+      selectedPlugins: [],
     },
     registerPlugins([testDevicePlugin]),
   );
@@ -64,6 +66,7 @@ test('do not add plugin twice', () => {
       gatekeepedPlugins: [],
       failedPlugins: [],
       disabledPlugins: [],
+      selectedPlugins: [],
     },
     registerPlugins([testPlugin, testPlugin]),
   );
@@ -78,6 +81,7 @@ test('do not add other classes', () => {
       gatekeepedPlugins: [],
       failedPlugins: [],
       disabledPlugins: [],
+      selectedPlugins: [],
     },
     // $FlowFixMe testing wrong classes on purpose here
     registerPlugins([testBasePlugin]),
@@ -95,6 +99,7 @@ test('add gatekeeped plugin', () => {
       gatekeepedPlugins: [],
       failedPlugins: [],
       disabledPlugins: [],
+      selectedPlugins: [],
     },
     addGatekeepedPlugins(gatekeepedPlugins),
   );
