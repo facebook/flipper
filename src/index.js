@@ -5,7 +5,7 @@
  * @format
  */
 
-export {default as styled} from 'react-emotion';
+export {default as styled, keyframes} from 'react-emotion';
 export * from './ui/index.js';
 export * from './utils/index.js';
 export {default as GK} from './fb-stubs/GK.js';

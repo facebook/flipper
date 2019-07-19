@@ -8,6 +8,7 @@
 
 import {styled} from 'flipper';
 import {parseURIParameters} from '../util/uri';
+import {IconButton} from './';
 
 type Props = {|
   uri: ?string,
@@ -37,6 +38,16 @@ const NavigationInfoBoxContainer = styled('div')({
     userSelect: 'text',
     cursor: 'text',
   },
+  '.icon-container': {
+    display: 'inline-flex',
+    padding: 5,
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    '>*': {
+      marginRight: 2,
+    },
+  },
 });
 
 export default (props: Props) => {
@@ -51,6 +62,10 @@ export default (props: Props) => {
     const parameters = parseURIParameters(uri);
     return (
       <NavigationInfoBoxContainer>
+        <div className="icon-container">
+          <IconButton icon="star" outline={true} size={16} />
+          <IconButton icon="eye" size={16} />
+        </div>
         <div className="nav-info-text bold">uri:</div>
         <div className="nav-info-text selectable">{uri}</div>
         {parameters.size > 0 ? (

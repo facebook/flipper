@@ -14,7 +14,7 @@ import {
   Toolbar,
   Glyph,
 } from 'flipper';
-import {SearchBarButton} from './';
+import {IconButton} from './';
 
 type Props = {|
   onFavorite: (query: string) => void,
@@ -24,6 +24,22 @@ type Props = {|
 type State = {|
   query: string,
 |};
+
+const IconContainer = styled('div')({
+  display: 'inline-flex',
+  height: '16px',
+  alignItems: 'center',
+  '>*': {
+    marginLeft: 10,
+    '.icon-button': {
+      height: 16,
+    },
+    img: {
+      verticalAlign: 'top',
+      alignItems: 'none',
+    },
+  },
+});
 
 const SearchChevronContainer = styled('div')({
   marginRight: 12,
@@ -63,14 +79,20 @@ class SearchBar extends Component<Props, State> {
             <Glyph name="chevron-down" size={12} />
           </SearchChevronContainer>
         </SearchBox>
-        <SearchBarButton
-          icon="send"
-          onClick={() => this.navigateTo(this.state.query)}
-        />
-        <SearchBarButton
-          icon="star"
-          onClick={() => this.favorite(this.state.query)}
-        />
+        <IconContainer>
+          <IconButton
+            icon="send"
+            size={16}
+            outline={true}
+            onClick={() => this.navigateTo(this.state.query)}
+          />
+          <IconButton
+            icon="star"
+            size={16}
+            outline={true}
+            onClick={() => this.favorite(this.state.query)}
+          />
+        </IconContainer>
       </Toolbar>
     );
   };
