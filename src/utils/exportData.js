@@ -39,6 +39,32 @@ export type ExportType = {|
   },
 |};
 
+type ProcessPluginStatesOptions = {|
+  clients: Array<ClientExport>,
+  serial: string,
+  allPluginStates: PluginStatesState,
+  devicePlugins: Map<string, Class<FlipperDevicePlugin<>>>,
+  selectedPlugins: Array<string>,
+  statusUpdate?: (msg: string) => void,
+|};
+
+type ProcessNotificationStatesOptions = {
+  clients: Array<ClientExport>,
+  serial: string,
+  allActiveNotifications: Array<PluginNotification>,
+  devicePlugins: Map<string, Class<FlipperDevicePlugin<>>>,
+  statusUpdate?: (msg: string) => void,
+};
+
+type AddSaltToDeviceSerialOptions = {
+  salt: string,
+  device: BaseDevice,
+  clients: Array<ClientExport>,
+  pluginStates: PluginStatesState,
+  pluginNotification: Array<PluginNotification>,
+  statusUpdate?: (msg: string) => void,
+};
+
 export function processClients(
   clients: Array<ClientExport>,
   serial: string,
@@ -69,13 +95,17 @@ export function pluginsClassMap(
 }
 
 export function processPluginStates(
-  clients: Array<ClientExport>,
-  serial: string,
-  allPluginStates: PluginStatesState,
-  devicePlugins: Map<string, Class<FlipperDevicePlugin<>>>,
-  selectedPlugins: Array<string>,
-  statusUpdate?: (msg: string) => void,
+  options: ProcessPluginStatesOptions,
 ): PluginStatesState {
+  const {
+    clients,
+    serial,
+    allPluginStates,
+    devicePlugins,
+    selectedPlugins,
+    statusUpdate,
+  } = options;
+
   let pluginStates = {};
   statusUpdate &&
     statusUpdate('Filtering the plugin states for the filtered Clients...');
@@ -101,12 +131,15 @@ export function processPluginStates(
 }
 
 export function processNotificationStates(
-  clients: Array<ClientExport>,
-  serial: string,
-  allActiveNotifications: Array<PluginNotification>,
-  devicePlugins: Map<string, Class<FlipperDevicePlugin<>>>,
-  statusUpdate?: (msg: string) => void,
+  options: ProcessNotificationStatesOptions,
 ): Array<PluginNotification> {
+  const {
+    clients,
+    serial,
+    allActiveNotifications,
+    devicePlugins,
+    statusUpdate,
+  } = options;
   statusUpdate &&
     statusUpdate('Filtering the notifications for the filtered Clients...');
   const activeNotifications = allActiveNotifications.filter(notif => {
@@ -122,13 +155,16 @@ export function processNotificationStates(
 }
 
 const addSaltToDeviceSerial = async (
-  salt: string,
-  device: BaseDevice,
-  clients: Array<ClientExport>,
-  pluginStates: PluginStatesState,
-  pluginNotification: Array<PluginNotification>,
-  statusUpdate?: (msg: string) => void,
+  options: AddSaltToDeviceSerialOptions,
 ): Promise<ExportType> => {
+  const {
+    salt,
+    device,
+    clients,
+    pluginStates,
+    pluginNotification,
+    statusUpdate,
+  } = options;
   const {serial} = device;
   const newSerial = salt + '-' + serial;
   const newDevice = new ArchivedDevice(
@@ -191,7 +227,7 @@ const addSaltToDeviceSerial = async (
   };
 };
 
-export const processStore = async (
+type ProcessStoreOptions = {|
   activeNotifications: Array<PluginNotification>,
   device: ?BaseDevice,
   pluginStates: PluginStatesState,
@@ -200,34 +236,49 @@ export const processStore = async (
   salt: string,
   selectedPlugins: Array<string>,
   statusUpdate?: (msg: string) => void,
+|};
+
+export const processStore = async (
+  options: ProcessStoreOptions,
 ): Promise<?ExportType> => {
+  const {
+    activeNotifications,
+    device,
+    pluginStates,
+    clients,
+    devicePlugins,
+    salt,
+    selectedPlugins,
+    statusUpdate,
+  } = options;
+
   if (device) {
     const {serial} = device;
     const processedClients = processClients(clients, serial, statusUpdate);
-    const processedPluginStates = processPluginStates(
-      processedClients,
+    const processedPluginStates = processPluginStates({
+      clients: processedClients,
       serial,
-      pluginStates,
+      allPluginStates: pluginStates,
       devicePlugins,
       selectedPlugins,
       statusUpdate,
-    );
-    const processedActiveNotifications = processNotificationStates(
-      processedClients,
+    });
+    const processedActiveNotifications = processNotificationStates({
+      clients: processedClients,
       serial,
-      activeNotifications,
+      allActiveNotifications: activeNotifications,
       devicePlugins,
       statusUpdate,
-    );
+    });
     // Adding salt to the device id, so that the device_id in the device list is unique.
-    const exportFlipperData = await addSaltToDeviceSerial(
+    const exportFlipperData = await addSaltToDeviceSerial({
       salt,
       device,
-      processedClients,
-      processedPluginStates,
-      processedActiveNotifications,
+      clients: processedClients,
+      pluginStates: processedPluginStates,
+      pluginNotification: processedActiveNotifications,
       statusUpdate,
-    );
+    });
     return exportFlipperData;
   }
   return null;
@@ -319,16 +370,16 @@ export async function getStoreExport(
 
   const {activeNotifications} = store.getState().notifications;
   const {devicePlugins} = store.getState().plugins;
-  const exportData = await processStore(
+  const exportData = await processStore({
     activeNotifications,
-    selectedDevice,
-    newPluginState,
-    clients.map(client => client.toJSON()),
+    device: selectedDevice,
+    pluginStates: newPluginState,
+    clients: clients.map(client => client.toJSON()),
     devicePlugins,
-    uuid.v4(),
-    store.getState().plugins.selectedPlugins,
+    salt: uuid.v4(),
+    selectedPlugins: store.getState().plugins.selectedPlugins,
     statusUpdate,
-  );
+  });
   return {exportData, errorArray};
 }
 
