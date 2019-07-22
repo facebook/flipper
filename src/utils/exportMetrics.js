@@ -27,7 +27,7 @@ async function exportMetrics(
     const pluginStateData = pluginStates[key];
     const arr = key.split('#');
     const pluginName = arr.pop();
-    if (!selectedPlugins.includes(pluginName)) {
+    if (selectedPlugins.length > 0 && !selectedPlugins.includes(pluginName)) {
       continue;
     }
     const clientID = arr.join('#');
