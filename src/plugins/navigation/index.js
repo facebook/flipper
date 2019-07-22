@@ -42,11 +42,11 @@ export default class extends FlipperPlugin<State, {}, PersistedState> {
         return {
           ...persistedState,
           navigationEvents: [
-            ...persistedState.navigationEvents,
             {
               uri: payload.uri === undefined ? null : payload.uri,
               date: payload.date || new Date(),
             },
+            ...persistedState.navigationEvents,
           ],
         };
       default:

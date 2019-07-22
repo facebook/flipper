@@ -74,11 +74,11 @@ test('add incoming nav event to persisted state with nav events', () => {
       INCOMING_NAV_EVENT,
     );
     expect(newPersistedState.navigationEvents).toEqual([
-      ...persistedState.navigationEvents,
       {
         uri: 'mock://this_is_a_mock_uri/mock',
         date: DATE_MOCK_1,
       },
+      ...persistedState.navigationEvents,
     ]);
   } else {
     expect(reducer).not.toBeNull();
