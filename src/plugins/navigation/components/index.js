@@ -10,3 +10,4 @@ export {default as IconButton} from './IconButton';
 export {default as NavigationInfoBox} from './NavigationInfoBox';
 export {default as ScrollableFlexColumn} from './ScrollableFlexColumn';
 export {default as SearchBar} from './SearchBar';
+export {default as Timeline} from './Timeline';

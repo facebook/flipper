@@ -7,13 +7,13 @@
  */
 
 import {FlipperPlugin} from 'flipper';
-import {SearchBar, ScrollableFlexColumn} from './components';
+import {SearchBar, Timeline, ScrollableFlexColumn} from './components';
 
 type State = {||};
 
 type Data = {||};
 
-type NavigationEvent = {|
+export type NavigationEvent = {|
   date: ?Date,
   uri: ?string,
 |};
@@ -69,11 +69,16 @@ export default class extends FlipperPlugin<State, {}, PersistedState> {
   };
 
   render() {
+    const {persistedState} = this.props;
     return (
       <ScrollableFlexColumn>
         <SearchBar
           onNavigate={this.navigateTo}
           onFavorite={(query: string) => {}}
+        />
+        <Timeline
+          events={persistedState.navigationEvents}
+          onNavigate={this.navigateTo}
         />
       </ScrollableFlexColumn>
     );
