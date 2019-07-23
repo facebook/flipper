@@ -6,8 +6,8 @@
  * @flow strict-local
  */
 
-import {FlipperPlugin, FlexColumn} from 'flipper';
-import {SearchBar} from './components';
+import {FlipperPlugin} from 'flipper';
+import {SearchBar, ScrollableFlexColumn} from './components';
 
 type State = {||};
 
@@ -70,12 +70,12 @@ export default class extends FlipperPlugin<State, {}, PersistedState> {
 
   render() {
     return (
-      <FlexColumn>
+      <ScrollableFlexColumn>
         <SearchBar
           onNavigate={this.navigateTo}
           onFavorite={(query: string) => {}}
         />
-      </FlexColumn>
+      </ScrollableFlexColumn>
     );
   }
 }
