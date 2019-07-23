@@ -7,19 +7,28 @@
  */
 
 import {FlipperPlugin} from 'flipper';
-import {SearchBar, Timeline, ScrollableFlexColumn} from './components';
+import {
+  BookmarksSidebar,
+  SearchBar,
+  Timeline,
+  ScrollableFlexColumn,
+} from './components';
 
 type State = {||};
-
-type Data = {||};
 
 export type NavigationEvent = {|
   date: ?Date,
   uri: ?string,
 |};
 
+export type Bookmark = {|
+  uri: string,
+  commonName: ?string,
+|};
+
 export type PersistedState = {|
   navigationEvents: Array<NavigationEvent>,
+  bookmarks: Array<Bookmark>,
 |};
 
 export default class extends FlipperPlugin<State, {}, PersistedState> {
@@ -30,6 +39,7 @@ export default class extends FlipperPlugin<State, {}, PersistedState> {
 
   static defaultPersistedState: PersistedState = {
     navigationEvents: [],
+    bookmarks: [],
   };
 
   static persistedStateReducer = (
@@ -69,17 +79,15 @@ export default class extends FlipperPlugin<State, {}, PersistedState> {
   };
 
   render() {
-    const {persistedState} = this.props;
+    const {navigationEvents, bookmarks} = this.props.persistedState;
     return (
       <ScrollableFlexColumn>
         <SearchBar
           onNavigate={this.navigateTo}
           onFavorite={(query: string) => {}}
         />
-        <Timeline
-          events={persistedState.navigationEvents}
-          onNavigate={this.navigateTo}
-        />
+        <Timeline events={navigationEvents} onNavigate={this.navigateTo} />
+        <BookmarksSidebar bookmarks={bookmarks} />
       </ScrollableFlexColumn>
     );
   }

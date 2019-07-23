@@ -12,12 +12,14 @@ import type {PersistedState} from '../';
 
 function constructPersistedStateMock(): PersistedState {
   return {
+    bookmarks: [],
     navigationEvents: [],
   };
 }
 
 function constructPersistedStateMockWithEvents(): PersistedState {
   return {
+    bookmarks: [],
     navigationEvents: [
       {
         uri: 'mock://this_is_a_mock_uri/mock/1',

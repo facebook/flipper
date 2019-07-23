@@ -6,6 +6,7 @@
  * @flow strict-local
  */
 
+export {default as BookmarksSidebar} from './BookmarksSidebar';
 export {default as FavoriteButton} from './FavoriteButton';
 export {default as IconButton} from './IconButton';
 export {default as NavigationInfoBox} from './NavigationInfoBox';
