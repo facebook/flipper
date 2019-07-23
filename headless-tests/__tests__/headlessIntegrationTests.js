@@ -48,42 +48,48 @@ const basicArgs = [
   params.insecurePort,
 ];
 
-const runHeadless = memoize((args: Array<string>) => {
-  return new Promise((resolve, reject) => {
-    const stdoutChunks = [];
-    const stderrChunks = [];
-    console.info(`Running ${params.bin} ${args.join(' ')}`);
-    const process = spawn(params.bin, args, {});
-    process.stdout.setEncoding('utf8');
-    process.stdout.on('data', chunk => {
-      stdoutChunks.push(chunk);
-    });
-    process.stderr.on('data', chunk => {
-      stderrChunks.push(chunk);
-    });
-    process.stdout.on('end', chunk => {
-      const stdout = stdoutChunks.join('');
-      try {
-        resolve(JSON.parse(stdout));
-      } catch (e) {
-        console.warn(stderrChunks.join(''));
-        reject(
-          new Error(
-            `Failed to parse headless output as JSON (${e.message}): ${stdout}`,
-          ),
-        );
-      }
-    });
+const runHeadless = memoize(
+  (args: Array<string>): Promise<{output: Object, stderr: string}> => {
+    return new Promise((resolve, reject) => {
+      const stdoutChunks = [];
+      const stderrChunks = [];
+      console.info(`Running ${params.bin} ${args.join(' ')}`);
+      const process = spawn(params.bin, args, {});
+      process.stdout.setEncoding('utf8');
+      process.stdout.on('data', chunk => {
+        stdoutChunks.push(chunk);
+      });
+      process.stderr.on('data', chunk => {
+        stderrChunks.push(chunk);
+      });
+      process.stdout.on('end', chunk => {
+        const stdout = stdoutChunks.join('');
+        const stderr = stderrChunks.join('');
+        try {
+          console.log(stderr);
+          resolve({output: JSON.parse(stdout), stderr: stderr});
+        } catch (e) {
+          console.warn(stderr);
+          reject(
+            new Error(
+              `Failed to parse headless output as JSON (${
+                e.message
+              }): ${stdout}`,
+            ),
+          );
+        }
+      });
 
-    setTimeout(() => {
-      process.kill('SIGINT');
-    }, 20000);
-  });
-});
+      setTimeout(() => {
+        process.kill('SIGINT');
+      }, 20000);
+    });
+  },
+);
 
 function getPluginState(app: string, plugin: string): Promise<Object> {
   return runHeadless(basicArgs).then(result => {
-    const pluginStates = result.store.pluginStates;
+    const pluginStates = result.output.store.pluginStates;
     for (const pluginId of Object.keys(pluginStates)) {
       const matches = /([^#]+)#([^#]+)#([^#]+)#([^#]+)#([^#]+)/.exec(pluginId);
       if (
@@ -104,7 +110,7 @@ test(
   'Flipper app appears in exported clients',
   () => {
     return runHeadless(basicArgs).then(result => {
-      expect(result.clients.map(c => c.query.app)).toContain('Flipper');
+      expect(result.output.clients.map(c => c.query.app)).toContain('Flipper');
     });
   },
   TEST_TIMEOUT_MS,
@@ -114,7 +120,7 @@ test(
   'Output includes fileVersion',
   () => {
     return runHeadless(basicArgs).then(result => {
-      expect(result.fileVersion).toMatch(/[0-9]+\.[0-9]+\.[0-9]+/);
+      expect(result.output.fileVersion).toMatch(/[0-9]+\.[0-9]+\.[0-9]+/);
     });
   },
   TEST_TIMEOUT_MS,
@@ -124,7 +130,7 @@ test(
   'Output includes device',
   () => {
     return runHeadless(basicArgs).then(result => {
-      expect(result.device).toBeTruthy();
+      expect(result.output.device).toBeTruthy();
     });
   },
   TEST_TIMEOUT_MS,
@@ -134,7 +140,7 @@ test(
   'Output includes flipperReleaseRevision',
   () => {
     return runHeadless(basicArgs).then(result => {
-      expect(result.flipperReleaseRevision).toBeTruthy();
+      expect(result.output.flipperReleaseRevision).toBeTruthy();
     });
   },
   TEST_TIMEOUT_MS,
@@ -144,7 +150,7 @@ test(
   'Output includes store',
   () => {
     return runHeadless(basicArgs).then(result => {
-      expect(result.store).toBeTruthy();
+      expect(result.output.store).toBeTruthy();
     });
   },
   TEST_TIMEOUT_MS,
