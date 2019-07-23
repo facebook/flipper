@@ -8,7 +8,7 @@
 
 import {styled} from 'flipper';
 import {parseURIParameters} from '../util/uri';
-import {IconButton} from './';
+import {IconButton, FavoriteButton} from './';
 
 type Props = {|
   uri: ?string,
@@ -64,7 +64,11 @@ export default (props: Props) => {
     return (
       <NavigationInfoBoxContainer>
         <div className="icon-container">
-          <IconButton icon="star" outline={true} size={16} />
+          <FavoriteButton
+            highlighted={false}
+            size={16}
+            onClick={() => props.onFavorite(uri)}
+          />
           <IconButton
             icon="eye"
             size={16}

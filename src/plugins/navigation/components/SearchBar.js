@@ -14,7 +14,7 @@ import {
   Toolbar,
   Glyph,
 } from 'flipper';
-import {IconButton} from './';
+import {IconButton, FavoriteButton} from './';
 
 type Props = {|
   onFavorite: (query: string) => void,
@@ -29,12 +29,12 @@ const IconContainer = styled('div')({
   display: 'inline-flex',
   height: '16px',
   alignItems: 'center',
-  '>*': {
+  '': {
     marginLeft: 10,
     '.icon-button': {
       height: 16,
     },
-    img: {
+    'img,div': {
       verticalAlign: 'top',
       alignItems: 'none',
     },
@@ -86,10 +86,9 @@ class SearchBar extends Component<Props, State> {
             outline={true}
             onClick={() => this.navigateTo(this.state.query)}
           />
-          <IconButton
-            icon="star"
+          <FavoriteButton
             size={16}
-            outline={true}
+            highlighted={false}
             onClick={() => this.favorite(this.state.query)}
           />
         </IconContainer>
