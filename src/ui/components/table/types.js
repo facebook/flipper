@@ -7,6 +7,8 @@
 
 import type {Filter} from '../filter/types.js';
 
+import {List} from 'immutable';
+
 export const MINIMUM_COLUMN_WIDTH = 100;
 export const DEFAULT_COLUMN_WIDTH = 200;
 export const DEFAULT_ROW_HEIGHT = 23;
@@ -70,6 +72,8 @@ export type TableColumns = {
 };
 
 export type TableRows = Array<TableBodyRow>;
+
+export type TableRows_immutable = List<TableBodyRow>;
 
 export type TableRowSortOrder = {|
   key: string,

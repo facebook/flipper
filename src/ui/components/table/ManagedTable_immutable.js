@@ -11,7 +11,7 @@ import type {
   TableColumns,
   TableHighlightedRows,
   TableRowSortOrder,
-  TableRows,
+  TableRows_immutable,
   TableBodyRow,
   TableOnAddFilter,
 } from './types.js';
@@ -33,7 +33,7 @@ import debounce from 'lodash.debounce';
 import {DEFAULT_ROW_HEIGHT} from './types';
 import textContent from '../../../utils/textContent.js';
 
-export type ManagedTableProps = {|
+export type ManagedTableProps_immutable = {|
   /**
    * Column definitions.
    */
@@ -41,7 +41,7 @@ export type ManagedTableProps = {|
   /**
    * Row definitions.
    */
-  rows: TableRows,
+  rows: TableRows_immutable,
   /*
    * Globally unique key for persisting data between uses of a table such as column sizes.
    */
@@ -148,7 +148,7 @@ const Container = styled(FlexColumn)(props => ({
 const globalTableState: {[string]: TableColumnSizes} = {};
 
 class ManagedTable extends React.Component<
-  ManagedTableProps,
+  ManagedTableProps_immutable,
   ManagedTableState,
 > {
   static defaultProps = {
@@ -202,7 +202,7 @@ class ManagedTable extends React.Component<
     document.removeEventListener('keydown', this.onKeyDown);
   }
 
-  componentWillReceiveProps(nextProps: ManagedTableProps) {
+  componentWillReceiveProps(nextProps: ManagedTableProps_immutable) {
     // if columnSizes has changed
     if (nextProps.columnSizes !== this.props.columnSizes) {
       this.setState({
@@ -228,7 +228,7 @@ class ManagedTable extends React.Component<
     }
 
     if (
-      this.props.rows.length > nextProps.rows.length &&
+      this.props.rows.size > nextProps.rows.size &&
       this.tableRef &&
       this.tableRef.current
     ) {
@@ -238,11 +238,11 @@ class ManagedTable extends React.Component<
   }
 
   componentDidUpdate(
-    prevProps: ManagedTableProps,
+    prevProps: ManagedTableProps_immutable,
     prevState: ManagedTableState,
   ) {
     if (
-      this.props.rows.length !== prevProps.rows.length &&
+      this.props.rows.size !== prevProps.rows.size &&
       this.state.shouldScrollToBottom &&
       this.state.highlightedRows.size < 2
     ) {
@@ -314,13 +314,14 @@ class ManagedTable extends React.Component<
         row => row.key === lastItemKey,
       );
       const newIndex = Math.min(
-        rows.length - 1,
+        rows.size - 1,
         Math.max(0, e.keyCode === 38 ? lastItemIndex - 1 : lastItemIndex + 1),
       );
       if (!e.shiftKey) {
         highlightedRows.clear();
       }
-      highlightedRows.add(rows[newIndex].key);
+      // $FlowFixMe 0 <= newIndex <= rows.size - 1
+      highlightedRows.add(rows.get(newIndex).key);
       this.onRowHighlighted(highlightedRows, () => {
         const {current} = this.tableRef;
         if (current) {
@@ -374,8 +375,8 @@ class ManagedTable extends React.Component<
   scrollToBottom() {
     const {current: tableRef} = this.tableRef;
 
-    if (tableRef && this.props.rows.length > 1) {
-      tableRef.scrollToItem(this.props.rows.length - 1);
+    if (tableRef && this.props.rows.size > 1) {
+      tableRef.scrollToItem(this.props.rows.size - 1);
     }
   }
 
@@ -437,11 +438,13 @@ class ManagedTable extends React.Component<
     const selected = [];
     let startIndex = -1;
     let endIndex = -1;
-    for (let i = 0; i < this.props.rows.length; i++) {
-      if (this.props.rows[i].key === fromKey) {
+    for (let i = 0; i < this.props.rows.size; i++) {
+      // $FlowFixMe 0 <= newIndex <= rows.size - 1
+      if (this.props.rows.get(i).key === fromKey) {
         startIndex = i;
       }
-      if (this.props.rows[i].key === toKey) {
+      // $FlowFixMe 0 <= newIndex <= rows.size - 1
+      if (this.props.rows.get(i).key === toKey) {
         endIndex = i;
       }
       if (endIndex > -1 && startIndex > -1) {
@@ -455,7 +458,8 @@ class ManagedTable extends React.Component<
       i++
     ) {
       try {
-        selected.push(this.props.rows[i].key);
+        // $FlowFixMe 0 <= newIndex <= rows.size - 1
+        selected.push(this.props.rows.get(i).key);
       } catch (e) {}
     }
 
@@ -477,7 +481,8 @@ class ManagedTable extends React.Component<
       !e.shiftKey // When shift key is pressed, it's a range select not a drag select
     ) {
       current.scrollToItem(index + 1);
-      const startKey = this.props.rows[dragStartIndex].key;
+      // $FlowFixMe 0 <= newIndex <= rows.size - 1
+      const startKey = this.props.rows.get(dragStartIndex).key;
       const highlightedRows = new Set(this.selectInRange(startKey, row.key));
       this.onRowHighlighted(highlightedRows);
     }
@@ -618,17 +623,22 @@ class ManagedTable extends React.Component<
       .map(k => (k.visible ? k.key : null))
       .filter(Boolean);
 
+    const row = rows.get(index);
+    if (row == null) {
+      return;
+    }
+
     return (
       <TableRow
-        key={rows[index].key}
+        key={row.key}
         columnSizes={columnSizes}
         columnKeys={columnKeys}
-        onMouseDown={e => this.onHighlight(e, rows[index], index)}
-        onMouseEnter={e => this.onMouseEnterRow(e, rows[index], index)}
+        onMouseDown={e => this.onHighlight(e, row, index)}
+        onMouseEnter={e => this.onMouseEnterRow(e, row, index)}
         multiline={multiline}
         rowLineHeight={24}
-        highlighted={highlightedRows.has(rows[index].key)}
-        row={rows[index]}
+        highlighted={highlightedRows.has(row.key)}
+        row={row}
         index={index}
         style={style}
         onAddFilter={onAddFilter}
@@ -694,9 +704,9 @@ class ManagedTable extends React.Component<
                     this.buildContextMenuItems
                   }>
                   <List
-                    itemCount={rows.length}
+                    itemCount={rows.size}
                     itemSize={index =>
-                      (rows[index] && rows[index].height) ||
+                      (rows.get(index) && rows.get(index).height) ||
                       rowLineHeight ||
                       DEFAULT_ROW_HEIGHT
                     }

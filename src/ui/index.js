@@ -30,6 +30,7 @@ export {default as Popover} from './components/Popover.js';
 export type {
   TableColumns,
   TableRows,
+  TableRows_immutable,
   TableBodyColumn,
   TableBodyRow,
   TableHighlightedRows,
@@ -40,6 +41,13 @@ export type {
 } from './components/table/types.js';
 export {default as ManagedTable} from './components/table/ManagedTable.js';
 export type {ManagedTableProps} from './components/table/ManagedTable.js';
+export {
+  default as ManagedTable_immutable,
+} from './components/table/ManagedTable_immutable.js';
+export type {
+  ManagedTableProps_immutable,
+} from './components/table/ManagedTable_immutable.js';
+
 export type {Value} from './components/table/TypeBasedValueRenderer.js';
 export {renderValue} from './components/table/TypeBasedValueRenderer.js';
 
