@@ -7,7 +7,7 @@
 
 import type {
   TableHighlightedRows,
-  TableRows,
+  TableRows_immutable,
   TableColumnSizes,
   TableColumns,
 } from 'flipper';
@@ -16,13 +16,15 @@ import FlexColumn from './ui/components/FlexColumn';
 import Button from './ui/components/Button';
 import DetailSidebar from './chrome/DetailSidebar';
 import {FlipperPlugin} from './plugin';
-import SearchableTable from './ui/components/searchable/SearchableTable';
+import SearchableTable_immutable from './ui/components/searchable/SearchableTable_immutable';
 import textContent from './utils/textContent.js';
 import createPaste from './fb-stubs/createPaste.js';
 
+import {List, Map as ImmutableMap} from 'immutable';
+
 type ID = string;
 
-type RowData = {
+export type RowData = {
   id: ID,
 };
 
@@ -35,9 +37,9 @@ type Props<T> = {|
   buildRow: (row: T) => any,
 |};
 
-type PersistedState<T> = {|
-  rows: TableRows,
-  datas: {[key: ID]: T},
+export type PersistedState<T> = {|
+  rows: TableRows_immutable,
+  datas: ImmutableMap<ID, T>,
 |};
 
 type State = {|
@@ -58,41 +60,36 @@ type State = {|
  * the client in an unknown state.
  */
 export function createTablePlugin<T: RowData>(props: Props<T>) {
-  return class extends FlipperPlugin<State, *, PersistedState<T>> {
+  return class extends FlipperPlugin<State, *, PersistedState<*>> {
     static keyboardActions = ['clear', 'createPaste'];
 
-    static defaultPersistedState: PersistedState<T> = {
-      rows: [],
-      datas: {},
+    static defaultPersistedState = {
+      rows: List(),
+      datas: ImmutableMap<ID, T>(),
     };
 
     static persistedStateReducer = (
-      persistedState: PersistedState<T>,
+      persistedState: PersistedState<*>,
       method: string,
       payload: T | Array<T>,
-    ): $Shape<PersistedState<RowData>> => {
+    ): $Shape<PersistedState<T>> => {
       if (method === props.method) {
-        const newRows = [];
-        const newData = {};
-        const datas = Array.isArray(payload) ? payload : [payload];
-
-        for (const data of datas.reverse()) {
-          if (data.id == null) {
-            console.warn('The data sent did not contain an ID.', data);
-          }
-          if (persistedState.datas[data.id] == null) {
-            newData[data.id] = data;
-            newRows.push(props.buildRow(data));
-          }
-        }
-        return {
-          datas: {...persistedState.datas, ...newData},
-          rows: [...persistedState.rows, ...newRows],
-        };
+        return List(Array.isArray(payload) ? payload : [payload]).reduce(
+          (ps: PersistedState<*>, data: T) => {
+            if (data.id == null) {
+              console.warn('The data sent did not contain an ID.', data);
+            }
+            return {
+              datas: ps.datas.set(data.id, data),
+              rows: ps.rows.push(props.buildRow(data)),
+            };
+          },
+          persistedState,
+        );
       } else if (method === props.resetMethod) {
         return {
-          rows: [],
-          datas: {},
+          rows: List(),
+          datas: ImmutableMap(),
         };
       } else {
         return {};
@@ -113,8 +110,8 @@ export function createTablePlugin<T: RowData>(props: Props<T>) {
 
     clear = () => {
       this.props.setPersistedState({
-        rows: [],
-        datas: {},
+        rows: List(),
+        datas: ImmutableMap(),
       });
       this.setState({
         selectedIds: [],
@@ -154,7 +151,8 @@ export function createTablePlugin<T: RowData>(props: Props<T>) {
       const selectedId = selectedIds.length !== 1 ? null : selectedIds[0];
 
       if (selectedId != null) {
-        return renderSidebar(datas[selectedId]);
+        const data = datas.get(selectedId);
+        return data != null ? renderSidebar(data) : null;
       } else {
         return null;
       }
@@ -166,7 +164,7 @@ export function createTablePlugin<T: RowData>(props: Props<T>) {
 
       return (
         <FlexColumn grow={true}>
-          <SearchableTable
+          <SearchableTable_immutable
             key={this.constructor.id}
             rowLineHeight={28}
             floating={false}

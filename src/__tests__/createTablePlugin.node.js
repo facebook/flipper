@@ -6,15 +6,30 @@
  */
 
 import {createTablePlugin} from '../createTablePlugin.js';
+
+import type {TableRows_immutable} from 'flipper';
+
+//import type {PersistedState, RowData} from '../createTablePlugin.js';
 import {FlipperPlugin} from '../plugin.js';
+
+import {List, Map as ImmutableMap} from 'immutable';
 
 const PROPS = {
   method: 'method',
   resetMethod: 'resetMethod',
   columns: {},
   columnSizes: {},
-  renderSidebar: () => {},
-  buildRow: () => {},
+  renderSidebar: (r: {id: string}) => {},
+  buildRow: (r: {id: string}) => {},
+};
+
+type PersistedState<T> = {|
+  rows: TableRows_immutable,
+  datas: ImmutableMap<string, T>,
+|};
+
+type RowData = {
+  id: string,
 };
 
 test('createTablePlugin returns FlipperPlugin', () => {
@@ -24,29 +39,27 @@ test('createTablePlugin returns FlipperPlugin', () => {
 
 test('persistedStateReducer is resetting data', () => {
   const resetMethod = 'resetMethod';
-  const tablePlugin = createTablePlugin({...PROPS, resetMethod});
+  const tablePlugin = createTablePlugin<RowData>({...PROPS, resetMethod});
 
-  // $FlowFixMe persistedStateReducer exists for createTablePlugin
-  const {rows, datas} = tablePlugin.persistedStateReducer(
-    {
-      datas: {'1': {id: '1'}},
-      rows: [
-        {
-          key: '1',
-          columns: {
-            id: {
-              value: '1',
-            },
+  const ps: PersistedState<RowData> = {
+    datas: ImmutableMap({'1': {id: '1'}}),
+    rows: List([
+      {
+        key: '1',
+        columns: {
+          id: {
+            value: '1',
           },
         },
-      ],
-    },
-    resetMethod,
-    {},
-  );
+      },
+    ]),
+  };
 
-  expect(datas).toEqual({});
-  expect(rows).toEqual([]);
+  // $FlowFixMe persistedStateReducer exists for createTablePlugin
+  const {rows, datas} = tablePlugin.persistedStateReducer(ps, resetMethod, {});
+
+  expect(datas.toJSON()).toEqual({});
+  expect(rows.size).toBe(0);
 });
 
 test('persistedStateReducer is adding data', () => {
@@ -56,14 +69,11 @@ test('persistedStateReducer is adding data', () => {
 
   // $FlowFixMe persistedStateReducer exists for createTablePlugin
   const {rows, datas} = tablePlugin.persistedStateReducer(
-    {
-      datas: {},
-      rows: [],
-    },
+    tablePlugin.defaultPersistedState,
     method,
     {id},
   );
 
-  expect(rows.length).toBe(1);
-  expect(Object.keys(datas)).toEqual([id]);
+  expect(rows.size).toBe(1);
+  expect([...datas.keys()]).toEqual([id]);
 });
