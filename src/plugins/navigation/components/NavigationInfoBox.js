@@ -29,6 +29,7 @@ const NavigationInfoBoxContainer = styled('div')({
     color: '#707070',
     fontSize: '1.2em',
     lineHeight: '1.25em',
+    wordWrap: 'break-word',
   },
   '.nav-info-text.bold': {
     fontWeight: 'bold',
@@ -64,7 +65,11 @@ export default (props: Props) => {
       <NavigationInfoBoxContainer>
         <div className="icon-container">
           <IconButton icon="star" outline={true} size={16} />
-          <IconButton icon="eye" size={16} />
+          <IconButton
+            icon="eye"
+            size={16}
+            onClick={() => props.onNavigate(uri)}
+          />
         </div>
         <div className="nav-info-text bold">uri:</div>
         <div className="nav-info-text selectable">{uri}</div>
