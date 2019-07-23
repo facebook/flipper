@@ -494,11 +494,22 @@ public final class AccessibilityUtil {
 
       // EditText
       if (hasNodeText) {
-        // skip status checks for EditText, but description, role, and disabled are included
+        // skipped status checks above for EditText
+
+        // password
+        if (node.isPassword()) {
+          talkbackSegments.append("password" + delimiter);
+        }
+
+        // description
         talkbackSegments.append(nodeText + delimiter);
+
+        // role
         if (roleString.length() > 0) {
           talkbackSegments.append(roleString + delimiter);
         }
+
+        // disabled
         if (disabled) {
           talkbackSegments.append("disabled" + delimiter);
         }
