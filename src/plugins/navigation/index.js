@@ -87,7 +87,7 @@ export default class extends FlipperPlugin<State, {}, PersistedState> {
           onFavorite={(query: string) => {}}
         />
         <Timeline events={navigationEvents} onNavigate={this.navigateTo} />
-        <BookmarksSidebar bookmarks={bookmarks} />
+        <BookmarksSidebar bookmarks={bookmarks} onNavigate={this.navigateTo} />
       </ScrollableFlexColumn>
     );
   }
