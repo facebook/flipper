@@ -158,6 +158,9 @@ export {
 export {
   default as SearchableTable,
 } from './components/searchable/SearchableTable.js';
+export {
+  default as SearchableTable_immutable,
+} from './components/searchable/SearchableTable_immutable.js';
 export type {SearchableProps} from './components/searchable/Searchable.js';
 
 //
