@@ -79,6 +79,13 @@ class PluginContainer extends PureComponent<Props> {
     }
   };
 
+  componentWillUnmount() {
+    if (this.plugin) {
+      this.plugin._teardown();
+      this.plugin = null;
+    }
+  }
+
   render() {
     const {
       pluginState,
