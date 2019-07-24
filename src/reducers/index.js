@@ -64,7 +64,14 @@ export type Store = ReduxStore<State, Actions>;
 export type MiddlewareAPI = ReduxMiddlewareAPI<State, Actions>;
 
 export default combineReducers<_, Actions>({
-  application,
+  application: persistReducer(
+    {
+      key: 'application',
+      storage,
+      whitelist: ['flipperRating'],
+    },
+    application,
+  ),
   connections: persistReducer(
     {
       key: 'connections',

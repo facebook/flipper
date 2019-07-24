@@ -46,6 +46,7 @@ export type State = {
   serverPorts: ServerPorts,
   downloadingImportData: boolean,
   launcherMsg: LauncherMsg,
+  flipperRating: ?number,
 };
 
 type BooleanActionType =
@@ -81,6 +82,12 @@ export type Action =
         severity: 'warning' | 'error',
         message: string,
       },
+    }
+  | {
+      type: 'SET_FLIPPER_RATING',
+      payload: {
+        rating: number,
+      },
     };
 
 const initialState: () => State = () => ({
@@ -100,6 +107,7 @@ const initialState: () => State = () => ({
     severity: 'warning',
     message: '',
   },
+  flipperRating: null,
 });
 
 export default function reducer(state: State, action: Action): State {
@@ -146,6 +154,11 @@ export default function reducer(state: State, action: Action): State {
       ...state,
       launcherMsg: action.payload,
     };
+  } else if (action.type === 'SET_FLIPPER_RATING') {
+    return {
+      ...state,
+      flipperRating: action.payload.rating,
+    };
   } else {
     return state;
   }
@@ -182,4 +195,11 @@ export const toggleRightSidebarVisible = (payload?: boolean): Action => ({
 export const toggleRightSidebarAvailable = (payload?: boolean): Action => ({
   type: 'rightSidebarAvailable',
   payload,
+});
+
+export const setFlipperRating = (rating: number): Action => ({
+  type: 'SET_FLIPPER_RATING',
+  payload: {
+    rating,
+  },
 });

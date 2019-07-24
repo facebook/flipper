@@ -23,7 +23,9 @@ import {
   toggleLeftSidebarVisible,
   toggleRightSidebarVisible,
   ACTIVE_SHEET_BUG_REPORTER,
+  setFlipperRating,
 } from '../reducers/application.js';
+import RatingButton from './RatingButton.js';
 import DevicesButton from './DevicesButton.js';
 import ScreenCaptureButtons from './ScreenCaptureButtons.js';
 import AutoUpdateVersion from './AutoUpdateVersion.js';
@@ -62,6 +64,7 @@ type DispatchFromProps = {
   toggleLeftSidebarVisible: (visible?: boolean) => void,
   toggleRightSidebarVisible: (visible?: boolean) => void,
   setActiveSheet: (sheet: ActiveSheet) => void,
+  setFlipperRating: number => void,
 };
 
 type StateFromProps = {
@@ -71,6 +74,7 @@ type StateFromProps = {
   rightSidebarAvailable: boolean,
   downloadingImportData: boolean,
   launcherMsg: LauncherMsg,
+  flipperRating: ?number,
 };
 
 const VersionText = styled(Text)({
@@ -124,7 +128,14 @@ class TitleBar extends React.Component<Props> {
             &nbsp;Importing data...
           </Importing>
         )}
+
         <Spacer />
+        {config.showFlipperRating ? (
+          <RatingButton
+            rating={this.props.flipperRating}
+            onRatingChanged={this.props.setFlipperRating}
+          />
+        ) : null}
         <Version>{this.props.version + (isProduction() ? '' : '-dev')}</Version>
 
         {isAutoUpdaterEnabled() ? (
@@ -175,6 +186,7 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
       rightSidebarAvailable,
       downloadingImportData,
       launcherMsg,
+      flipperRating,
     },
   }) => ({
     windowIsFocused,
@@ -183,10 +195,12 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
     rightSidebarAvailable,
     downloadingImportData,
     launcherMsg,
+    flipperRating,
   }),
   {
     setActiveSheet,
     toggleLeftSidebarVisible,
     toggleRightSidebarVisible,
+    setFlipperRating,
   },
 )(TitleBar);
