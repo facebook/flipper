@@ -12,12 +12,16 @@ const {app, BrowserWindow, ipcMain, Notification} = require('electron');
 const path = require('path');
 const url = require('url');
 const fs = require('fs');
+const fixPath = require('fix-path');
 const {exec} = require('child_process');
 const compilePlugins = require('./compilePlugins.js');
 const setup = require('./setup');
 const delegateToLauncher = require('./launcher');
 const expandTilde = require('expand-tilde');
 const yargs = require('yargs');
+
+// Adds system PATH folders to process.env.PATH for MacOS production bundles.
+fixPath();
 
 // disable electron security warnings: https://github.com/electron/electron/blob/master/docs/tutorial/security.md#security-native-capabilities-and-your-responsibility
 process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = true;
