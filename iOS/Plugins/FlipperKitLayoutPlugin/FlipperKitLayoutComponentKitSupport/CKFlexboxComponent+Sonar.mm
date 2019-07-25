@@ -18,32 +18,39 @@
 FB_LINKABLE(CKFlexboxComponent_Sonar)
 @implementation CKFlexboxComponent (Sonar)
 
-- (NSArray<SKNamed<NSDictionary<NSString *, NSObject *> *> *> *)sonar_additionalDataOverride
+static NSDictionary<NSNumber *, NSString *> *CKFlexboxDirectionEnumMap;
+
+static NSDictionary<NSNumber *, NSString *> *CKFlexboxJustifyContentEnumMap;
+
+static NSDictionary<NSNumber *, NSString *> *CKFlexboxAlignItemsEnumMap;
+
+static NSDictionary<NSNumber *, NSString *> *CKFlexboxAlignContentEnumMap;
+
+static NSDictionary<NSNumber *, NSString *> *CKFlexboxWrapEnumMap;
+
++ (void)initialize
 {
-  static NSDictionary<NSNumber *, NSString *> *CKFlexboxDirectionEnumMap = @{
+  CKFlexboxDirectionEnumMap = @{
                                 @(CKFlexboxDirectionColumn): @"column",
                                 @(CKFlexboxDirectionRow): @"row",
                                 @(CKFlexboxDirectionColumnReverse): @"column-reverse",
                                 @(CKFlexboxDirectionRowReverse): @"row-reverse",
                                 };
-
-  static NSDictionary<NSNumber *, NSString *> *CKFlexboxJustifyContentEnumMap = @{
+  CKFlexboxJustifyContentEnumMap = @{
                                      @(CKFlexboxJustifyContentStart): @"start",
                                      @(CKFlexboxJustifyContentCenter): @"center",
                                      @(CKFlexboxJustifyContentEnd): @"end",
                                      @(CKFlexboxJustifyContentSpaceBetween): @"space-between",
                                      @(CKFlexboxJustifyContentSpaceAround): @"space-around",
                                      };
-
-  static NSDictionary<NSNumber *, NSString *> *CKFlexboxAlignItemsEnumMap = @{
+  CKFlexboxAlignItemsEnumMap = @{
                                  @(CKFlexboxAlignItemsStart): @"start",
                                  @(CKFlexboxAlignItemsEnd): @"end",
                                  @(CKFlexboxAlignItemsCenter): @"center",
                                  @(CKFlexboxAlignItemsBaseline): @"baseline",
                                  @(CKFlexboxAlignItemsStretch): @"stretch",
                                  };
-
-  static NSDictionary<NSNumber *, NSString *> *CKFlexboxAlignContentEnumMap = @{
+  CKFlexboxAlignContentEnumMap = @{
                                    @(CKFlexboxAlignContentStart): @"start",
                                    @(CKFlexboxAlignContentEnd): @"end",
                                    @(CKFlexboxAlignContentCenter): @"center",
@@ -51,28 +58,124 @@ FB_LINKABLE(CKFlexboxComponent_Sonar)
                                    @(CKFlexboxAlignContentSpaceAround): @"space-around",
                                    @(CKFlexboxAlignContentStretch): @"stretch",
                                    };
-
-  static NSDictionary<NSNumber *, NSString *> *CKFlexboxWrapEnumMap = @{
+  CKFlexboxWrapEnumMap = @{
                            @(CKFlexboxWrapWrap): @"wrap",
                            @(CKFlexboxWrapNoWrap): @"no-wrap",
                            @(CKFlexboxWrapWrapReverse): @"wrap-reverse",
                            };
+}
 
+- (NSArray<SKNamed<NSDictionary<NSString *, NSObject *> *> *> *)sonar_additionalDataOverride
+{
   CKFlexboxComponentStyle style;
   [[self valueForKey: @"_style"] getValue: &style];
 
   return @[[SKNamed
             newWithName:@"CKFlexboxComponent"
             withValue:@{
-              @"spacing": SKObject(@(style.spacing)),
-              @"direction": SKObject(CKFlexboxDirectionEnumMap[@(style.direction)]),
-              @"justifyContent": SKObject(CKFlexboxJustifyContentEnumMap[@(style.justifyContent)]),
-              @"alignItems": SKObject(CKFlexboxAlignItemsEnumMap[@(style.alignItems)]),
-              @"alignContent": SKObject(CKFlexboxAlignContentEnumMap[@(style.alignContent)]),
-              @"wrap": SKObject(CKFlexboxWrapEnumMap[@(style.wrap)]),
-              @"margin": SKObject(flexboxRect(style.margin)),
-              @"padding": SKObject(flexboxRect(style.padding)),
+              @"spacing": SKMutableObject(@(style.spacing)),
+              @"direction": SKMutableObject(CKFlexboxDirectionEnumMap[@(style.direction)]),
+              @"justifyContent": SKMutableObject(CKFlexboxJustifyContentEnumMap[@(style.justifyContent)]),
+              @"alignItems": SKMutableObject(CKFlexboxAlignItemsEnumMap[@(style.alignItems)]),
+              @"alignContent": SKMutableObject(CKFlexboxAlignContentEnumMap[@(style.alignContent)]),
+              @"wrap": SKMutableObject(CKFlexboxWrapEnumMap[@(style.wrap)]),
+              @"margin": SKMutableObject(flexboxRect(style.margin)),
+              @"padding": SKMutableObject(flexboxRect(style.padding)),
             }]];
+}
+
+- (void)setMutableData:(id)data {
+  CKFlexboxComponentStyle style;
+  [data getValue:&style];
+  [self setValue:data forKey:@"_style"];
+}
+
+- (NSDictionary<NSString *, SKNodeDataChanged> *)sonar_getDataMutationsChanged {
+  __block CKFlexboxComponentStyle style;
+  [[self valueForKey:@"_style"] getValue: &style];
+  return @{
+           @"CKFlexboxComponent.spacing": ^(NSNumber *value) {
+             style.spacing = value.floatValue;
+             return [NSValue value:&style withObjCType:@encode(CKFlexboxComponentStyle)];
+           },
+           @"CKFlexboxComponent.direction": ^(NSString *value) {
+             for (NSNumber *key in CKFlexboxDirectionEnumMap) {
+               if ([CKFlexboxDirectionEnumMap[key] isEqualToString:value]) {
+                 style.direction = (CKFlexboxDirection) key.intValue;
+                 break;
+               }
+             }
+             return [NSValue value:&style withObjCType:@encode(CKFlexboxComponentStyle)];
+           },
+           @"CKFlexboxComponent.alignContent": ^(NSString *value) {
+             for (NSNumber *key in CKFlexboxAlignContentEnumMap) {
+               if ([CKFlexboxAlignContentEnumMap[key] isEqualToString:value]) {
+                 style.alignContent = (CKFlexboxAlignContent) key.intValue;
+                 break;
+               }
+             }
+             return [NSValue value:&style withObjCType:@encode(CKFlexboxComponentStyle)];
+           },
+           @"CKFlexboxComponent.alignContent": ^(NSString *value) {
+             for (NSNumber *key in CKFlexboxAlignItemsEnumMap) {
+               if ([CKFlexboxAlignItemsEnumMap[key] isEqualToString:value]) {
+                 style.alignItems = (CKFlexboxAlignItems) key.intValue;
+                 break;
+               }
+             }
+             return [NSValue value:&style withObjCType:@encode(CKFlexboxComponentStyle)];
+           },
+           @"CKFlexboxComponent.justifyContent": ^(NSString *value) {
+             for (NSNumber *key in CKFlexboxJustifyContentEnumMap) {
+               if ([CKFlexboxJustifyContentEnumMap[key] isEqualToString:value]) {
+                 style.justifyContent = (CKFlexboxJustifyContent) key.intValue;
+                 break;
+               }
+             }
+             return [NSValue value:&style withObjCType:@encode(CKFlexboxComponentStyle)];
+           },
+           @"CKFlexboxComponent.wrap": ^(NSString *value) {
+             for (NSNumber *key in CKFlexboxWrapEnumMap) {
+               if ([CKFlexboxWrapEnumMap[key] isEqualToString:value]) {
+                 style.wrap = (CKFlexboxWrap) key.intValue;
+                 break;
+               }
+             }
+             return [NSValue value:&style withObjCType:@encode(CKFlexboxComponentStyle)];
+           },
+           @"CKFlexboxComponent.margin.bottom": ^(NSString *value) {
+             style.margin.bottom = relativeStructDimension(value);
+             return [NSValue value:&style withObjCType:@encode(CKFlexboxComponentStyle)];
+           },
+           @"CKFlexboxComponent.margin.top": ^(NSString *value) {
+             style.margin.top = relativeStructDimension(value);
+             return [NSValue value:&style withObjCType:@encode(CKFlexboxComponentStyle)];
+           },
+           @"CKFlexboxComponent.margin.end": ^(NSString *value) {
+             style.margin.end = relativeStructDimension(value);
+             return [NSValue value:&style withObjCType:@encode(CKFlexboxComponentStyle)];
+           },
+           @"CKFlexboxComponent.margin.start": ^(NSString *value) {
+             style.margin.start = relativeStructDimension(value);
+             return [NSValue value:&style withObjCType:@encode(CKFlexboxComponentStyle)];
+           },
+           @"CKFlexboxComponent.padding.bottom": ^(NSString *value) {
+             style.padding.bottom = relativeStructDimension(value);
+             return [NSValue value:&style withObjCType:@encode(CKFlexboxComponentStyle)];
+           },
+           @"CKFlexboxComponent.padding.top": ^(NSString *value) {
+             style.padding.top = relativeStructDimension(value);
+             return [NSValue value:&style withObjCType:@encode(CKFlexboxComponentStyle)];
+           },
+           @"CKFlexboxComponent.padding.end": ^(NSString *value) {
+             style.padding.end = relativeStructDimension(value);
+             return [NSValue value:&style withObjCType:@encode(CKFlexboxComponentStyle)];
+           },
+           @"CKFlexboxComponent.padding.start": ^(NSString *value) {
+             style.padding.start = relativeStructDimension(value);
+             return [NSValue value:&style withObjCType:@encode(CKFlexboxComponentStyle)];
+           },
+           };
 }
 
 @end

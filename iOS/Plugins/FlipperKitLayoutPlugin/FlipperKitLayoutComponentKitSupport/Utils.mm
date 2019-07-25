@@ -20,6 +20,16 @@ NSString *relativeDimension(CKRelativeDimension dimension) {
   }
 }
 
+CKRelativeDimension relativeStructDimension(NSString *dimension) {
+  if ([dimension hasSuffix:@"%"]) {
+    return CKRelativeDimension::Percent([[dimension substringToIndex:([dimension length] - 1)] integerValue]);
+  }
+  if ([dimension hasSuffix:@"pt"]) {
+    return CKRelativeDimension::Points([[dimension substringToIndex:([dimension length] - 2)] integerValue]);
+  }
+  return CKRelativeDimension::Auto();
+}
+
 NSDictionary<NSString *, NSString *> *flexboxRect(CKFlexboxSpacing spacing) {
   return @{
     @"top": relativeDimension(spacing.top.dimension()),
