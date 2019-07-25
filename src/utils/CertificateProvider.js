@@ -21,9 +21,6 @@ import iosUtil from '../fb-stubs/iOSContainerUtility';
 import {reportPlatformFailures} from './metrics';
 import {getAdbClient} from './adbClient';
 import * as androidUtil from './androidContainerUtility';
-import dateFormat from 'dateformat';
-const writeFile = promisify(fs.writeFile);
-const exists = promisify(fs.exists);
 
 // Desktop file paths
 const os = require('os');
@@ -31,20 +28,16 @@ const caKey = getFilePath('ca.key');
 const caCert = getFilePath('ca.crt');
 const serverKey = getFilePath('server.key');
 const serverCsr = getFilePath('server.csr');
+const serverSrl = getFilePath('server.srl');
 const serverCert = getFilePath('server.crt');
-const configFile = getFilePath('openssl.cfg');
-const certs = getFilePath('certs');
-const newCerts = getFilePath('newcerts');
-const database = getFilePath('index.txt');
-const caRequiredFiles = [caKey, caCert, newCerts, database, configFile];
 
 // Device file paths
 const csrFileName = 'app.csr';
 const deviceCAcertFile = 'sonarCA.crt';
 const deviceClientCertFile = 'device.crt';
 
-const caSubject = '/C=US/ST=CA/L=Menlo Park/O=Flipper/CN=SonarCA';
-const serverSubject = '/C=US/ST=CA/L=Menlo Park/O=Flipper/CN=localhost';
+const caSubject = '/C=US/ST=CA/L=Menlo Park/O=Sonar/CN=SonarCA';
+const serverSubject = '/C=US/ST=CA/L=Menlo Park/O=Sonar/CN=localhost';
 const minCertExpiryWindowSeconds = 24 * 60 * 60;
 const allowedAppNameRegex = /^[a-zA-Z0-9._\-]+$/;
 const logTag = 'CertificateProvider';
@@ -55,42 +48,6 @@ const logTag = 'CertificateProvider';
  */
 const x509SubjectCNRegex = /[=,]\s*CN=([^,]*)(,.*)?$/;
 
-const opensslConfig = `####################################################################
-[ ca ]
-default_ca	= CA_default		# The default ca section
-
-####################################################################
-[ CA_default ]
-
-dir		= ${getFilePath('')}		# Where everything is kept
-certs		= ${certs}		# Where the issued certs are kept
-crl_dir		= $dir/crl		# Where the issued crl are kept
-database	= ${database}	# database index file.
-unique_subject	= no			# allow creation of several certs with same subject.
-new_certs_dir	= ${newCerts}		# default place for new certs.
-serial		= $dir/serial 		# The current serial number
-crlnumber	= $dir/crlnumber	# the current crl number
-crl		= $dir/crl.pem 		# The current CRL
-
-name_opt 	= ca_default		# Subject Name options
-cert_opt 	= ca_default		# Certificate field options
-
-default_days	= 365			# how long to certify for
-default_crl_days= 30			# how long before next CRL
-default_md	= default		# use public key default MD
-preserve	= no			# keep passed DN ordering
-
-policy		= policy_match
-
-# For the CA policy
-[ policy_match ]
-countryName		= match
-stateOrProvinceName	= match
-organizationName	= match
-organizationalUnitName	= optional
-commonName		= supplied
-emailAddress		= optional`;
-
 export type SecureServerConfig = {|
   key: Buffer,
   cert: Buffer,
@@ -98,12 +55,6 @@ export type SecureServerConfig = {|
   requestCert: boolean,
   rejectUnauthorized: boolean,
 |};
-
-function getCertStartDate(): string {
-  const date = new Date();
-  date.setHours(date.getHours() - 1);
-  return dateFormat(date, 'yyyymmddHHMMss') + 'Z';
-}
 
 /*
  * This class is responsible for generating and deploying server and client
@@ -126,10 +77,8 @@ export default class CertificateProvider {
     this.logger = logger;
     this.adb = getAdbClient();
     this.certificateSetup = reportPlatformFailures(
-      this.ensureCertificateAuthorityExists().then(_ =>
-        this.ensureServerCertExists(),
-      ),
-      'certificateSetup',
+      this.ensureServerCertExists(),
+      'ensureServerCertExists',
     );
     this.server = server;
   }
@@ -213,14 +162,13 @@ export default class CertificateProvider {
     console.debug('Creating new client cert', logTag);
 
     return this.writeToTempFile(csr).then(path => {
-      return openssl('ca', {
-        cert: caCert,
+      return openssl('x509', {
+        req: true,
         in: path,
-        keyfile: caKey,
-        config: configFile,
-        batch: true,
-        startdate: getCertStartDate(),
-        create_serial: true,
+        CA: caCert,
+        CAkey: caKey,
+        CAcreateserial: true,
+        CAserial: serverSrl,
       });
     });
   }
@@ -252,33 +200,35 @@ export default class CertificateProvider {
       );
     }
     if (os === 'iOS' || os === 'windows') {
-      return writeFile(destination + filename, contents).catch(err => {
-        if (os === 'iOS') {
-          // Writing directly to FS failed. It's probably a physical device.
-          const relativePathInsideApp = this.getRelativePathInAppContainer(
-            destination,
+      return promisify(fs.writeFile)(destination + filename, contents).catch(
+        err => {
+          if (os === 'iOS') {
+            // Writing directly to FS failed. It's probably a physical device.
+            const relativePathInsideApp = this.getRelativePathInAppContainer(
+              destination,
+            );
+            return appNamePromise
+              .then(appName =>
+                this.getTargetiOSDeviceId(appName, destination, csr),
+              )
+              .then(udid => {
+                return appNamePromise.then(appName =>
+                  this.pushFileToiOSDevice(
+                    udid,
+                    appName,
+                    relativePathInsideApp,
+                    filename,
+                    contents,
+                  ),
+                );
+              });
+          }
+          throw new Error(
+            `Invalid appDirectory recieved from ${os} device: ${destination}: ` +
+              err.toString(),
           );
-          return appNamePromise
-            .then(appName =>
-              this.getTargetiOSDeviceId(appName, destination, csr),
-            )
-            .then(udid => {
-              return appNamePromise.then(appName =>
-                this.pushFileToiOSDevice(
-                  udid,
-                  appName,
-                  relativePathInsideApp,
-                  filename,
-                  contents,
-                ),
-              );
-            });
-        }
-        throw new Error(
-          `Invalid appDirectory recieved from ${os} device: ${destination}: ` +
-            err.toString(),
-        );
-      });
+        },
+      );
     }
     return Promise.reject(new Error(`Unsupported device os: ${os}`));
   }
@@ -292,7 +242,7 @@ export default class CertificateProvider {
   ): Promise<void> {
     return tmpDir({unsafeCleanup: true}).then(dir => {
       const filePath = path.resolve(dir, filename);
-      writeFile(filePath, contents).then(() =>
+      promisify(fs.writeFile)(filePath, contents).then(() =>
         iosUtil.push(udid, filePath, bundleId, destination),
       );
     });
@@ -488,15 +438,12 @@ export default class CertificateProvider {
   }
 
   ensureCertificateAuthorityExists(): Promise<void> {
-    return Promise.all(caRequiredFiles.map(exists))
-      .then(results => results.every(Boolean))
-      .then(hasRequiredFiles =>
-        hasRequiredFiles
-          ? Promise.resolve()
-          : this.generateCertificateAuthority(),
-      )
-      .then(_ => this.checkCertIsValid(caCert))
-      .catch(e => this.generateCertificateAuthority());
+    if (!fs.existsSync(caKey)) {
+      return this.generateCertificateAuthority();
+    }
+    return this.checkCertIsValid(caCert).catch(e =>
+      this.generateCertificateAuthority(),
+    );
   }
 
   checkCertIsValid(filename: string): Promise<void> {
@@ -558,12 +505,11 @@ export default class CertificateProvider {
   }
 
   generateCertificateAuthority(): Promise<void> {
+    if (!fs.existsSync(getFilePath(''))) {
+      fs.mkdirSync(getFilePath(''));
+    }
     console.log('Generating new CA', logTag);
-    return promisify(fs.mkdir)(getFilePath(''), {recursive: true})
-      .then(_ => writeFile(configFile, opensslConfig))
-      .then(_ => writeFile(database, ''))
-      .then(_ => promisify(fs.mkdir)(newCerts, {recursive: true}))
-      .then(_ => openssl('genrsa', {out: caKey, '2048': false}))
+    return openssl('genrsa', {out: caKey, '2048': false})
       .then(_ =>
         openssl('req', {
           new: true,
@@ -606,24 +552,23 @@ export default class CertificateProvider {
           subj: serverSubject,
         }),
       )
-      .then(_ => {
-        return openssl('ca', {
-          cert: caCert,
+      .then(_ =>
+        openssl('x509', {
+          req: true,
           in: serverCsr,
-          keyfile: caKey,
+          CA: caCert,
+          CAkey: caKey,
+          CAcreateserial: true,
+          CAserial: serverSrl,
           out: serverCert,
-          config: configFile,
-          batch: true,
-          startdate: getCertStartDate(),
-          create_serial: true,
-        });
-      })
+        }),
+      )
       .then(_ => undefined);
   }
 
   writeToTempFile(content: string): Promise<string> {
     return tmpFile().then((path, fd, cleanupCallback) =>
-      writeFile(path, content).then(_ => path),
+      promisify(fs.writeFile)(path, content).then(_ => path),
     );
   }
 }

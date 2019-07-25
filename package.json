@@ -84,7 +84,6 @@
     "codemirror": "^5.25.0",
     "cross-env": "^5.2.0",
     "dashify": "^2.0.0",
-    "dateformat": "^3.0.3",
     "deep-equal": "^1.0.1",
     "detect-port": "^1.1.1",
     "electron-devtools-installer": "^2.2.0",
