@@ -121,7 +121,5 @@ export function getIconUrl(
     }
   }
 
-  return `https://external.xx.fbcdn.net/assets/?name=${name}&variant=filled&size=${requestedSize}&set=facebook_icons&density=${requestedScale}x${
-    variant == 'outline' ? '&variant=outline' : ''
-  }`;
+  return `https://external.xx.fbcdn.net/assets/?name=${name}&variant=${variant}&size=${requestedSize}&set=facebook_icons&density=${requestedScale}x`;
 }
