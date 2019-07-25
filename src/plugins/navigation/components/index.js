@@ -10,6 +10,7 @@ export {default as BookmarksSidebar} from './BookmarksSidebar';
 export {default as FavoriteButton} from './FavoriteButton';
 export {default as IconButton} from './IconButton';
 export {default as NavigationInfoBox} from './NavigationInfoBox';
+export {default as SaveBookmarkDialog} from './SaveBookmarkDialog';
 export {default as ScrollableFlexColumn} from './ScrollableFlexColumn';
 export {default as SearchBar} from './SearchBar';
 export {default as Timeline} from './Timeline';
