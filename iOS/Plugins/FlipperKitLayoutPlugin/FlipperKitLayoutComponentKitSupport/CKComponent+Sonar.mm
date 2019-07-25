@@ -245,7 +245,11 @@ static CK::StaticMutex _mutex = CK_MUTEX_INITIALIZER;
 - (std::vector<CKComponent *>)sonar_renderChildren:(id)state {
   [self setMutableDataFromStorage];
   SEL resultSelector = NSSelectorFromString([[self class] swizzledMethodNameForRender]);
+#if defined(__aarch64__)
+  return ((std::vector<CKComponent *>(*)(CKComponent *, SEL, id))objc_msgSend)(self, resultSelector, state);
+#else
   return ((std::vector<CKComponent *>(*)(CKComponent *, SEL, id))objc_msgSend_stret)(self, resultSelector, state);
+#endif
 }
 
 - (NSDictionary<NSString *, SKNodeDataChanged> *)sonar_getDataMutationsChanged {
