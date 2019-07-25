@@ -21,6 +21,7 @@
 #import <objc/runtime.h>
 #import <objc/message.h>
 
+#import "CKCenterLayoutComponent+Sonar.h"
 #import "CKRatioLayoutComponent+Sonar.h"
 #import "CKFlexboxComponent+Sonar.h"
 #import "CKInsetComponent+Sonar.h"
