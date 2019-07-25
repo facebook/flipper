@@ -57,7 +57,7 @@ static CKFlexboxComponentChild findFlexboxLayoutParams(CKComponent *parent, CKCo
   SKComponentLayoutWrapper *const wrapper =
   [[SKComponentLayoutWrapper alloc] initWithLayout:layout
                                           position:CGPointMake(0, 0)
-                                         parentKey:[NSString stringWithFormat: @"%p.", layout.component]
+                                         parentKey:[NSString stringWithFormat: @"%d.", layout.component.treeNode.nodeIdentifier]
                                       reuseWrapper:reuseWrapper
                                               rootNode: root];
   // Cache the result.
@@ -97,7 +97,7 @@ static CKFlexboxComponentChild findFlexboxLayoutParams(CKComponent *parent, CKCo
                                                                                          position:child.position
                                                                                         parentKey:[_identifier stringByAppendingFormat:@"[%d].", index++]
                                                                                      reuseWrapper:reuseWrapper
-                                                                                             rootNode: nil
+                                                                                             rootNode:node
                                                   ];
         childWrapper->_isFlexboxChild = [_component isKindOfClass:[CKFlexboxComponent class]];
         childWrapper->_flexboxChild = findFlexboxLayoutParams(_component, child.layout.component);

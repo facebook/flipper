@@ -69,6 +69,11 @@
   return node.identifier;
 }
 
+- (NSString *)identifierForInvalidation:(SKComponentLayoutWrapper *)node
+{
+  return [NSString stringWithFormat:@"%p", node.rootNode];
+}
+
 - (NSString *)nameForNode:(SKComponentLayoutWrapper *)node {
   return [node.component sonar_getName];
 }

@@ -33,6 +33,11 @@
   @throw [NSString stringWithFormat:@"need to implement %@", NSStringFromSelector(_cmd)];
 }
 
+- (NSString *)identifierForInvalidation:(id)node
+{
+  return [self identifierForNode:node];
+}
+
 - (NSString *)nameForNode:(id)node {
   return NSStringFromClass([node class]);
 }

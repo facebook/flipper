@@ -44,6 +44,12 @@ typedef void (^SKNodeUpdateData)(id value);
 - (NSString *)identifierForNode:(T)node;
 
 /**
+  An ID which is equal between reflowing components is needed to get the identifier of root
+  node of a tree which need to be invalidated on FlipperKitLayoutPlugin side.
+*/
+- (NSString *)identifierForInvalidation:(T)node;
+
+/**
   The name used to identify this node in the Sonar desktop application. This is what
   will be visible in the hierarchy.
  */

@@ -9,10 +9,14 @@
 #import <FlipperKitLayoutPlugin/SKNamed.h>
 #import <FlipperKitLayoutPlugin/SKNodeDescriptor.h>
 
+typedef id (^SKNodeDataChanged)(id value);
+
 FB_LINK_REQUIRE_CATEGORY(CKComponent_Sonar)
 @interface CKComponent (Sonar)
 @property (assign, nonatomic) NSUInteger flipper_canBeReusedCounter;
 
+- (void)setMutableData:(id)data;
+- (NSDictionary<NSString *, SKNodeDataChanged> *)sonar_getDataMutationsChanged;
 - (NSArray<SKNamed<NSDictionary<NSString *, NSObject *> *> *> *)sonar_getData;
 - (NSDictionary<NSString *, SKNodeUpdateData> *)sonar_getDataMutations;
 - (NSString *)sonar_getName;

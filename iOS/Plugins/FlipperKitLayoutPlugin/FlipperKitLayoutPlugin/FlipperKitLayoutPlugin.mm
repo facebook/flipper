@@ -213,11 +213,13 @@
   NSString *dotJoinedPath = [path componentsJoinedByString: @"."];
   SKNodeUpdateData updateDataForPath = [[descriptor dataMutationsForNode: node] objectForKey: dotJoinedPath];
   if (updateDataForPath != nil) {
+    const auto identifierForInvalidation = [descriptor identifierForInvalidation:node];
+    id nodeForInvalidation = [_trackedObjects objectForKey:identifierForInvalidation];
+    SKNodeDescriptor *descriptorForInvalidation = [_descriptorMapper descriptorForClass:[nodeForInvalidation class]];
+    NSMutableArray *children = [self getChildrenForNode:nodeForInvalidation withDescriptor:descriptorForInvalidation];
     updateDataForPath(value);
-
-    NSMutableArray *children = [self getChildrenForNode:node withDescriptor:descriptor];
     [connection send: @"invalidate" withParams: @{
-      @"nodes": @[@{@"id": [descriptor identifierForNode: node], @"children": children}]
+      @"nodes": @[@{@"id": [descriptorForInvalidation identifierForNode: nodeForInvalidation], @"children": children}]
     }];
   }
 }
@@ -446,9 +448,7 @@
     return nil;
   }
 
-  if (! [_trackedObjects objectForKey: objectIdentifier]) {
-    [_trackedObjects setObject:object forKey:objectIdentifier];
-  }
+  [_trackedObjects setObject:object forKey:objectIdentifier];
 
   return objectIdentifier;
 }
