@@ -5,8 +5,8 @@
  * @format
  */
 
-import {Component, type Element} from 'react';
-import {Glyph} from 'flipper';
+import {Component, type Element, Fragment} from 'react';
+import {Glyph, Tooltip} from 'flipper';
 import {getInstance as getLogger} from '../fb-stubs/Logger';
 import GK from '../fb-stubs/GK';
 
@@ -72,6 +72,13 @@ export default class RatingButton extends Component<Props, State> {
           />
         </div>
       ));
-    return stars;
+    const button = <Fragment>{stars}</Fragment>;
+    return (
+      <Tooltip
+        options={{position: 'toLeft'}}
+        title="How would you rate Flipper?"
+        children={button}
+      />
+    );
   }
 }
