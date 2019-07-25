@@ -73,6 +73,7 @@ type DescriptionCommitOptions = {|
   value: any,
   keep: boolean,
   clear: boolean,
+  set: boolean,
 |};
 
 class NumberTextEditor extends PureComponent<{
@@ -90,6 +91,7 @@ class NumberTextEditor extends PureComponent<{
       clear: false,
       keep: true,
       value: val,
+      set: false,
     });
   };
 
@@ -99,12 +101,13 @@ class NumberTextEditor extends PureComponent<{
         this.props.type === 'number'
           ? parseFloat(this.props.value)
           : this.props.value;
-      this.props.commit({clear: true, keep: true, value: val});
+      this.props.commit({clear: true, keep: true, value: val, set: true});
     } else if (e.key === 'Escape') {
       this.props.commit({
         clear: true,
         keep: false,
         value: this.props.origValue,
+        set: false,
       });
     }
   };
@@ -116,7 +119,12 @@ class NumberTextEditor extends PureComponent<{
   };
 
   onNumberTextBlur = () => {
-    this.props.commit({clear: true, keep: true, value: this.props.value});
+    this.props.commit({
+      clear: true,
+      keep: true,
+      value: this.props.value,
+      set: true,
+    });
   };
 
   render() {
@@ -170,7 +178,9 @@ export default class DataDescription extends PureComponent<
     if (opts.keep && setValue && path) {
       const val = opts.value;
       this.setState({value: val});
-      setValue(path, val);
+      if (opts.set) {
+        setValue(path, val);
+      }
     }
 
     if (opts.clear) {
@@ -250,7 +260,12 @@ class ColorEditor extends Component<{
   commit: (opts: DescriptionCommitOptions) => void,
 }> {
   onBlur = () => {
-    this.props.commit({clear: true, keep: false, value: this.props.value});
+    this.props.commit({
+      clear: true,
+      keep: false,
+      value: this.props.value,
+      set: true,
+    });
   };
 
   onChange = ({
@@ -288,7 +303,7 @@ class ColorEditor extends Component<{
       return;
     }
 
-    this.props.commit({clear: false, keep: true, value: val});
+    this.props.commit({clear: false, keep: true, value: val, set: true});
   };
 
   render() {
@@ -435,7 +450,12 @@ class DataDescriptionContainer extends Component<{
   commit: (opts: DescriptionCommitOptions) => void,
 }> {
   onChangeCheckbox = (e: SyntheticInputEvent<HTMLInputElement>) => {
-    this.props.commit({clear: true, keep: true, value: e.target.checked});
+    this.props.commit({
+      clear: true,
+      keep: true,
+      value: e.target.checked,
+      set: true,
+    });
   };
 
   render(): any {
