@@ -45,7 +45,26 @@ export function getPersistedState<PersistedState>(
   return persistedState;
 }
 
-export function getActivePluginNames(plugins: PluginsState): Array<string> {
+export function getActivePersistentPlugins(
+  pluginsState: PluginStatesState,
+  plugins: PluginsState,
+): Array<string> {
+  const pluginsMap: Map<
+    string,
+    Class<FlipperDevicePlugin<> | FlipperPlugin<>>,
+  > = pluginsClassMap(plugins);
+  return getPersistentPlugins(plugins).filter(plugin => {
+    const pluginClass = pluginsMap.get(plugin);
+    const keys = Object.keys(pluginsState).map(key => key.split('#').pop());
+    return (
+      (pluginClass && pluginClass.exportPersistedState != undefined) ||
+      plugin == 'DeviceLogs' ||
+      keys.includes(plugin)
+    );
+  });
+}
+
+export function getPersistentPlugins(plugins: PluginsState): Array<string> {
   const pluginsMap: Map<
     string,
     Class<FlipperDevicePlugin<> | FlipperPlugin<>>,
@@ -65,5 +84,16 @@ export function getActivePluginNames(plugins: PluginsState): Array<string> {
       pluginsMap.delete(plugin[0].name);
     }
   });
-  return [...pluginsMap.keys()];
+
+  const activePlugins = [...pluginsMap.keys()];
+
+  return activePlugins.filter(plugin => {
+    const pluginClass = pluginsMap.get(plugin);
+    return (
+      plugin == 'DeviceLogs' ||
+      (pluginClass &&
+        (pluginClass.defaultPersistedState != undefined ||
+          pluginClass.exportPersistedState != undefined))
+    );
+  });
 }

@@ -16,6 +16,7 @@ import BugReporterDialog from './chrome/BugReporterDialog.js';
 import ErrorBar from './chrome/ErrorBar.js';
 import ShareSheet from './chrome/ShareSheet.js';
 import SignInSheet from './chrome/SignInSheet.js';
+import ExportDataPluginSheet from './chrome/ExportDataPluginSheet.js';
 import ShareSheetExportFile from './chrome/ShareSheetExportFile.js';
 import PluginContainer from './PluginContainer.js';
 import Sheet from './chrome/Sheet.js';
@@ -27,14 +28,14 @@ import {
   ACTIVE_SHEET_SHARE_DATA,
   ACTIVE_SHEET_SIGN_IN,
   ACTIVE_SHEET_SHARE_DATA_IN_FILE,
+  ACTIVE_SHEET_SELECT_PLUGINS_TO_EXPORT,
   ACTIVE_SHEET_PLUGIN_SHEET,
 } from './reducers/application.js';
-
+import type {ShareType} from './reducers/application.js';
 import type {Logger} from './fb-interfaces/Logger.js';
 import type BugReporter from './fb-stubs/BugReporter.js';
 import type BaseDevice from './devices/BaseDevice.js';
 import type {ActiveSheet} from './reducers/application.js';
-
 const version = remote.app.getVersion();
 
 type OwnProps = {|
@@ -48,7 +49,7 @@ type Props = {|
   selectedDevice: ?BaseDevice,
   error: ?string,
   activeSheet: ActiveSheet,
-  exportFile: ?string,
+  share: ?ShareType,
 |};
 
 export class App extends React.Component<Props> {
@@ -68,7 +69,8 @@ export class App extends React.Component<Props> {
   }
 
   getSheet = (onHide: () => mixed) => {
-    switch (this.props.activeSheet) {
+    const {activeSheet} = this.props;
+    switch (activeSheet) {
       case ACTIVE_SHEET_BUG_REPORTER:
         return (
           <BugReporterDialog
@@ -82,11 +84,17 @@ export class App extends React.Component<Props> {
         return <ShareSheet onHide={onHide} logger={this.props.logger} />;
       case ACTIVE_SHEET_SIGN_IN:
         return <SignInSheet onHide={onHide} />;
+      case ACTIVE_SHEET_SELECT_PLUGINS_TO_EXPORT:
+        return <ExportDataPluginSheet onHide={onHide} />;
       case ACTIVE_SHEET_SHARE_DATA_IN_FILE:
         return (
           <ShareSheetExportFile
             onHide={onHide}
-            file={this.props.exportFile}
+            file={
+              this.props.share && this.props.share.type === 'file'
+                ? this.props.share.file
+                : undefined
+            }
             logger={this.props.logger}
           />
         );
@@ -119,13 +127,13 @@ export class App extends React.Component<Props> {
 
 export default connect<Props, OwnProps, _, _, _, _>(
   ({
-    application: {leftSidebarVisible, activeSheet, exportFile},
+    application: {leftSidebarVisible, activeSheet, share},
     connections: {selectedDevice, error},
   }) => ({
     leftSidebarVisible,
     selectedDevice,
     activeSheet,
-    exportFile,
+    share: share,
     error,
   }),
 )(App);

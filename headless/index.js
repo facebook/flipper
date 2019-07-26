@@ -21,7 +21,7 @@ import {listDevices} from '../src/utils/listDevices';
 // $FlowFixMe this file exist, trust me, flow!
 import setup from '../static/setup.js';
 import type {Store} from '../src/reducers';
-import {getActivePluginNames} from '../src/utils/pluginUtils.js';
+import {getPersistentPlugins} from '../src/utils/pluginUtils.js';
 import {serialize} from '../src/utils/serialization';
 import type BaseDevice from '../src/devices/BaseDevice';
 
@@ -360,7 +360,7 @@ async function startFlipper(userArguments: UserArguments) {
         return Promise.resolve({
           exit: true,
           result: await serialize(
-            getActivePluginNames(store.getState().plugins),
+            getPersistentPlugins(store.getState().plugins),
           ),
         });
       }

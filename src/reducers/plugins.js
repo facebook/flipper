@@ -94,15 +94,19 @@ export default function reducer(
       failedPlugins: state.failedPlugins.concat(action.payload),
     };
   } else if (action.type === 'SELECTED_PLUGINS') {
-    const {selectedPlugins} = state;
     return {
       ...state,
-      selectedPlugins: selectedPlugins.concat(action.payload),
+      selectedPlugins: action.payload,
     };
   } else {
     return state;
   }
 }
+
+export const selectedPlugins = (payload: Array<string>): Action => ({
+  type: 'SELECTED_PLUGINS',
+  payload,
+});
 
 export const registerPlugins = (payload: Array<P>): Action => ({
   type: 'REGISTER_PLUGINS',

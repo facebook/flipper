@@ -10,6 +10,7 @@ import {showOpenDialog} from './utils/exportData.js';
 import {
   setExportDataToFileActiveSheet,
   setActiveSheet,
+  setSelectPluginsToExportActiveSheet,
   ACTIVE_SHEET_SHARE_DATA,
 } from './reducers/application';
 import type {Store} from './reducers/';
@@ -201,7 +202,9 @@ function getTemplate(
             if (!file) {
               return;
             }
-            store.dispatch(setExportDataToFileActiveSheet(file));
+            store.dispatch(
+              setSelectPluginsToExportActiveSheet({type: 'file', file: file}),
+            );
           },
         );
       },
@@ -212,7 +215,7 @@ function getTemplate(
       label: 'Sharable Link',
       accelerator: 'CommandOrControl+Shift+E',
       click: async function(item: Object, focusedWindow: Object) {
-        store.dispatch(setActiveSheet(ACTIVE_SHEET_SHARE_DATA));
+        store.dispatch(setSelectPluginsToExportActiveSheet({type: 'link'}));
       },
     });
   }

@@ -12,6 +12,8 @@ export const ACTIVE_SHEET_PLUGIN_SHEET: 'PLUGIN_SHEET' = 'PLUGIN_SHEET';
 export const ACTIVE_SHEET_BUG_REPORTER: 'BUG_REPORTER' = 'BUG_REPORTER';
 export const ACTIVE_SHEET_PLUGIN_DEBUGGER: 'PLUGIN_DEBUGGER' =
   'PLUGIN_DEBUGGER';
+export const ACTIVE_SHEET_SELECT_PLUGINS_TO_EXPORT: 'SELECT_PLUGINS_TO_EXPORT' =
+  'SELECT_PLUGINS_TO_EXPORT';
 export const ACTIVE_SHEET_SHARE_DATA: 'SHARE_DATA' = 'SHARE_DATA';
 export const ACTIVE_SHEET_SIGN_IN: 'SIGN_IN' = 'SIGN_IN';
 export const ACTIVE_SHEET_SHARE_DATA_IN_FILE: 'SHARE_DATA_IN_FILE' =
@@ -24,6 +26,7 @@ export type ActiveSheet =
   | typeof ACTIVE_SHEET_SHARE_DATA
   | typeof ACTIVE_SHEET_SIGN_IN
   | typeof ACTIVE_SHEET_SHARE_DATA_IN_FILE
+  | typeof ACTIVE_SHEET_SELECT_PLUGINS_TO_EXPORT
   | null;
 
 export type LauncherMsg = {
@@ -35,13 +38,20 @@ export type ServerPorts = {
   secure: number,
 };
 
+export type ShareType =
+  | {
+      type: 'file',
+      file: string,
+    }
+  | {type: 'link'};
+
 export type State = {
   leftSidebarVisible: boolean,
   rightSidebarVisible: boolean,
   rightSidebarAvailable: boolean,
   windowIsFocused: boolean,
   activeSheet: ActiveSheet,
-  exportFile: ?string,
+  share: ?ShareType,
   sessionId: ?string,
   serverPorts: ServerPorts,
   downloadingImportData: boolean,
@@ -70,6 +80,10 @@ export type Action =
       payload: {file: string},
     }
   | {
+      type: typeof ACTIVE_SHEET_SELECT_PLUGINS_TO_EXPORT,
+      payload: ShareType,
+    }
+  | {
       type: 'SET_SERVER_PORTS',
       payload: {
         insecure: number,
@@ -96,7 +110,7 @@ const initialState: () => State = () => ({
   rightSidebarAvailable: false,
   windowIsFocused: remote.getCurrentWindow().isFocused(),
   activeSheet: null,
-  exportFile: null,
+  share: null,
   sessionId: uuidv1(),
   serverPorts: {
     insecure: 8089,
@@ -142,7 +156,13 @@ export default function reducer(state: State, action: Action): State {
     return {
       ...state,
       activeSheet: ACTIVE_SHEET_SHARE_DATA_IN_FILE,
-      exportFile: action.payload.file,
+      share: {type: 'file', file: action.payload.file},
+    };
+  } else if (action.type === ACTIVE_SHEET_SELECT_PLUGINS_TO_EXPORT) {
+    return {
+      ...state,
+      activeSheet: ACTIVE_SHEET_SELECT_PLUGINS_TO_EXPORT,
+      share: action.payload,
     };
   } else if (action.type === 'SET_SERVER_PORTS') {
     return {
@@ -169,6 +189,13 @@ export const toggleAction = (
   payload?: boolean,
 ): Action => ({
   type,
+  payload,
+});
+
+export const setSelectPluginsToExportActiveSheet = (
+  payload: ShareType,
+): Action => ({
+  type: ACTIVE_SHEET_SELECT_PLUGINS_TO_EXPORT,
   payload,
 });
 

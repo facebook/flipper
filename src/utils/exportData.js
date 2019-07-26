@@ -62,6 +62,7 @@ type AddSaltToDeviceSerialOptions = {
   clients: Array<ClientExport>,
   pluginStates: PluginStatesState,
   pluginNotification: Array<PluginNotification>,
+  selectedPlugins: Array<string>,
   statusUpdate?: (msg: string) => void,
 };
 
@@ -164,6 +165,7 @@ const addSaltToDeviceSerial = async (
     pluginStates,
     pluginNotification,
     statusUpdate,
+    selectedPlugins,
   } = options;
   const {serial} = device;
   const newSerial = salt + '-' + serial;
@@ -172,7 +174,7 @@ const addSaltToDeviceSerial = async (
     device.deviceType,
     device.title,
     device.os,
-    device.getLogs(),
+    selectedPlugins.includes('DeviceLogs') ? device.getLogs() : [],
   );
   statusUpdate &&
     statusUpdate('Adding salt to the selected device id in the client data...');
@@ -278,6 +280,7 @@ export const processStore = async (
       pluginStates: processedPluginStates,
       pluginNotification: processedActiveNotifications,
       statusUpdate,
+      selectedPlugins,
     });
     return exportFlipperData;
   }
