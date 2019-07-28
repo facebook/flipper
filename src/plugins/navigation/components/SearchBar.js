@@ -16,9 +16,12 @@ import {
 } from 'flipper';
 import {IconButton, FavoriteButton} from './';
 
+import type {Bookmark} from '../';
+
 type Props = {|
   onFavorite: (query: string) => void,
   onNavigate: (query: string) => void,
+  bookmarks: Map<string, Bookmark>,
 |};
 
 type State = {|
@@ -63,6 +66,8 @@ class SearchBar extends Component<Props, State> {
   };
 
   render = () => {
+    const {bookmarks} = this.props;
+    const {query} = this.state;
     return (
       <Toolbar>
         <SearchBox>
@@ -79,19 +84,21 @@ class SearchBar extends Component<Props, State> {
             <Glyph name="chevron-down" size={12} />
           </SearchChevronContainer>
         </SearchBox>
-        <IconContainer>
-          <IconButton
-            icon="send"
-            size={16}
-            outline={true}
-            onClick={() => this.navigateTo(this.state.query)}
-          />
-          <FavoriteButton
-            size={16}
-            highlighted={false}
-            onClick={() => this.favorite(this.state.query)}
-          />
-        </IconContainer>
+        {query.length > 0 ? (
+          <IconContainer>
+            <IconButton
+              icon="send"
+              size={16}
+              outline={true}
+              onClick={() => this.navigateTo(this.state.query)}
+            />
+            <FavoriteButton
+              size={16}
+              highlighted={bookmarks.has(query)}
+              onClick={() => this.favorite(this.state.query)}
+            />
+          </IconContainer>
+        ) : null}
       </Toolbar>
     );
   };

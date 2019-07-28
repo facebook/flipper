@@ -11,6 +11,7 @@ import {parseURIParameters} from '../util/uri';
 import {IconButton, FavoriteButton} from './';
 
 type Props = {|
+  isBookmarked: boolean,
   uri: ?string,
   onNavigate: (query: string) => void,
   onFavorite: (query: string) => void,
@@ -52,7 +53,7 @@ const NavigationInfoBoxContainer = styled('div')({
 });
 
 export default (props: Props) => {
-  const {uri} = props;
+  const {uri, isBookmarked} = props;
   if (uri == null) {
     return (
       <NavigationInfoBoxContainer>
@@ -65,7 +66,7 @@ export default (props: Props) => {
       <NavigationInfoBoxContainer>
         <div className="icon-container">
           <FavoriteButton
-            highlighted={false}
+            highlighted={isBookmarked}
             size={16}
             onClick={() => props.onFavorite(uri)}
           />

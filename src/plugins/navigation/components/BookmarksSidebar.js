@@ -11,7 +11,7 @@ import {DetailSidebar, FlexCenter, styled, colors} from 'flipper';
 import type {Bookmark} from '../';
 
 type Props = {|
-  bookmarks: Array<Bookmark>,
+  bookmarks: Map<string, Bookmark>,
   onNavigate: string => void,
 |};
 
@@ -57,11 +57,11 @@ export default (props: Props) => {
   const {bookmarks, onNavigate} = props;
   return (
     <DetailSidebar>
-      {bookmarks.length === 0 ? (
+      {bookmarks.size === 0 ? (
         <NoData grow>No Bookmarks</NoData>
       ) : (
         <BookmarksList>
-          {bookmarks.map(bookmark => (
+          {[...bookmarks.values()].map(bookmark => (
             <div
               className="bookmark-container"
               role="button"

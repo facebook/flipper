@@ -9,12 +9,18 @@
 import {FlipperPlugin} from 'flipper';
 import {
   BookmarksSidebar,
+  SaveBookmarkDialog,
   SearchBar,
   Timeline,
   ScrollableFlexColumn,
 } from './components';
+import {readBookmarksFromDB, writeBookmarkToDB} from './util/indexedDB';
 
-type State = {||};
+type State = {|
+  bookmarks: Map<string, Bookmark>,
+  shouldShowSaveBookmarkDialog: boolean,
+  saveBookmarkURI: ?string,
+|};
 
 export type NavigationEvent = {|
   date: ?Date,
@@ -23,12 +29,11 @@ export type NavigationEvent = {|
 
 export type Bookmark = {|
   uri: string,
-  commonName: ?string,
+  commonName: string,
 |};
 
 export type PersistedState = {|
   navigationEvents: Array<NavigationEvent>,
-  bookmarks: Array<Bookmark>,
 |};
 
 export default class extends FlipperPlugin<State, {}, PersistedState> {
@@ -39,7 +44,12 @@ export default class extends FlipperPlugin<State, {}, PersistedState> {
 
   static defaultPersistedState: PersistedState = {
     navigationEvents: [],
-    bookmarks: [],
+  };
+
+  state = {
+    bookmarks: new Map<string, Bookmark>(),
+    shouldShowSaveBookmarkDialog: false,
+    saveBookmarkURI: null,
   };
 
   static persistedStateReducer = (
@@ -66,6 +76,12 @@ export default class extends FlipperPlugin<State, {}, PersistedState> {
     }
   };
 
+  componentDidMount = () => {
+    readBookmarksFromDB().then(bookmarks => {
+      this.setState({bookmarks});
+    });
+  };
+
   onKeyboardAction = (action: string) => {
     if (action === 'clear') {
       this.props.setPersistedState({navigationEvents: []});
@@ -78,16 +94,45 @@ export default class extends FlipperPlugin<State, {}, PersistedState> {
     });
   };
 
+  onFavorite = (uri: string) => {
+    this.setState({shouldShowSaveBookmarkDialog: true, saveBookmarkURI: uri});
+  };
+
+  addBookmark = (bookmark: Bookmark) => {
+    const newBookmark = {
+      uri: bookmark.uri,
+      commonName:
+        bookmark.commonName.length > 0 ? bookmark.commonName : bookmark.uri,
+    };
+    writeBookmarkToDB(newBookmark);
+    const newMapRef = this.state.bookmarks;
+    newMapRef.set(newBookmark.uri, newBookmark);
+    this.setState({bookmarks: newMapRef});
+  };
+
   render() {
-    const {navigationEvents, bookmarks} = this.props.persistedState;
+    const {bookmarks, shouldShowSaveBookmarkDialog} = this.state;
+    const {navigationEvents} = this.props.persistedState;
     return (
       <ScrollableFlexColumn>
         <SearchBar
+          bookmarks={bookmarks}
           onNavigate={this.navigateTo}
-          onFavorite={(query: string) => {}}
+          onFavorite={this.onFavorite}
         />
-        <Timeline events={navigationEvents} onNavigate={this.navigateTo} />
+        <Timeline
+          bookmarks={bookmarks}
+          events={navigationEvents}
+          onNavigate={this.navigateTo}
+          onFavorite={this.onFavorite}
+        />
         <BookmarksSidebar bookmarks={bookmarks} onNavigate={this.navigateTo} />
+        <SaveBookmarkDialog
+          shouldShow={shouldShowSaveBookmarkDialog}
+          uri={this.state.saveBookmarkURI}
+          onHide={() => this.setState({shouldShowSaveBookmarkDialog: false})}
+          onSubmit={this.addBookmark}
+        />
       </ScrollableFlexColumn>
     );
   }

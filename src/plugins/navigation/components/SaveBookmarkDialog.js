@@ -7,12 +7,15 @@
  */
 
 import {Button, FlexColumn, Input, Sheet, styled} from 'flipper';
+import {useState} from 'react';
+
+import type {Bookmark} from '../';
 
 type Props = {|
   uri: ?string,
   shouldShow: boolean,
   onHide: ?() => void,
-  onSubmit: ?(uri: string) => void,
+  onSubmit: Bookmark => void,
 |};
 
 const Container = styled(FlexColumn)({
@@ -45,6 +48,7 @@ const NameInput = styled(Input)({
 
 export default (props: Props) => {
   const {shouldShow, onHide, onSubmit, uri} = props;
+  const [commonName, setCommonName] = useState('');
   if (uri == null || !shouldShow) {
     return null;
   } else {
@@ -54,19 +58,30 @@ export default (props: Props) => {
           return (
             <Container>
               <Title>Save to bookmarks...</Title>
-              <NameInput placeholder="Name..." />
+              <NameInput
+                placeholder="Name..."
+                value={commonName}
+                onChange={event => setCommonName(event.target.value)}
+              />
               <URIContainer>{uri}</URIContainer>
               <ButtonContainer>
-                <Button onClick={() => hide()} compact padded>
+                <Button
+                  onClick={() => {
+                    hide();
+                    setCommonName('');
+                  }}
+                  compact
+                  padded>
                   Cancel
                 </Button>
                 <Button
                   type="primary"
                   onClick={() => {
                     hide();
-                    if (onSubmit != null) {
-                      onSubmit(uri);
-                    }
+                    onSubmit({uri, commonName});
+                    // The component state is remembered even after unmounting.
+                    // Thus it is necessary to reset the commonName here.
+                    setCommonName('');
                   }}
                   compact
                   padded>

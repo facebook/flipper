@@ -9,11 +9,13 @@
 import {styled} from 'flipper';
 import {NavigationInfoBox} from './';
 
-import type {NavigationEvent} from '../';
+import type {Bookmark, NavigationEvent} from '../';
 
 type Props = {|
+  bookmarks: Map<string, Bookmark>,
   events: Array<NavigationEvent>,
   onNavigate: string => void,
+  onFavorite: string => void,
 |};
 
 const TimelineContainer = styled('div')({
@@ -22,14 +24,16 @@ const TimelineContainer = styled('div')({
 });
 
 export default (props: Props) => {
+  const {bookmarks, events, onNavigate, onFavorite} = props;
   return (
     <TimelineContainer>
-      {props.events.map((event: NavigationEvent) => {
+      {events.map((event: NavigationEvent) => {
         return (
           <NavigationInfoBox
+            isBookmarked={event.uri != null ? bookmarks.has(event.uri) : false}
             uri={event.uri}
-            onNavigate={props.onNavigate}
-            onFavorite={() => {}} // stubbed for now
+            onNavigate={onNavigate}
+            onFavorite={onFavorite}
           />
         );
       })}
