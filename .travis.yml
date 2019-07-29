@@ -81,6 +81,7 @@ matrix:
         - tail -100 ./build.log
     - language: android
       os: linux
+      dist: trusty
       android:
         components:
           - tools
