@@ -14,7 +14,7 @@ import {
   Toolbar,
   Glyph,
 } from 'flipper';
-import {IconButton, FavoriteButton} from './';
+import {AutoCompleteSheet, IconButton, FavoriteButton} from './';
 
 import type {Bookmark} from '../flow-types';
 
@@ -26,6 +26,8 @@ type Props = {|
 
 type State = {|
   query: string,
+  inputFocused: boolean,
+  autoCompleteSheetOpen: boolean,
 |};
 
 const IconContainer = styled('div')({
@@ -44,12 +46,24 @@ const IconContainer = styled('div')({
   },
 });
 
-const SearchChevronContainer = styled('div')({
-  marginRight: 12,
+const ToolbarContainer = styled('div')({
+  '.drop-shadow': {
+    boxShadow: '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)',
+  },
+});
+
+const SearchInputContainer = styled('div')({
+  height: '100%',
+  width: '100%',
+  marginLeft: 5,
+  marginRight: 9,
+  position: 'relative',
 });
 
 class SearchBar extends Component<Props, State> {
   state = {
+    inputFocused: false,
+    autoCompleteSheetOpen: false,
     query: '',
   };
 
@@ -58,6 +72,7 @@ class SearchBar extends Component<Props, State> {
   };
 
   navigateTo = (query: string) => {
+    this.setState({query});
     this.props.onNavigate(query);
   };
 
@@ -67,39 +82,61 @@ class SearchBar extends Component<Props, State> {
 
   render = () => {
     const {bookmarks} = this.props;
-    const {query} = this.state;
+    const {autoCompleteSheetOpen, inputFocused, query} = this.state;
     return (
-      <Toolbar>
-        <SearchBox>
-          <SearchInput
-            onChange={this.queryInputChanged}
-            onKeyPress={e => {
-              if (e.key === 'Enter') {
-                this.navigateTo(this.state.query);
-              }
-            }}
-            placeholder="Navigate To..."
-          />
-          <SearchChevronContainer>
-            <Glyph name="chevron-down" size={12} />
-          </SearchChevronContainer>
-        </SearchBox>
-        {query.length > 0 ? (
-          <IconContainer>
-            <IconButton
-              icon="send"
-              size={16}
-              outline={true}
-              onClick={() => this.navigateTo(this.state.query)}
-            />
-            <FavoriteButton
-              size={16}
-              highlighted={bookmarks.has(query)}
-              onClick={() => this.favorite(this.state.query)}
-            />
-          </IconContainer>
-        ) : null}
-      </Toolbar>
+      <ToolbarContainer>
+        <Toolbar>
+          <SearchBox className={inputFocused ? 'drop-shadow' : null}>
+            <SearchInputContainer>
+              <SearchInput
+                value={query}
+                onBlur={() =>
+                  this.setState({
+                    autoCompleteSheetOpen: false,
+                    inputFocused: false,
+                  })
+                }
+                onFocus={() =>
+                  this.setState({
+                    autoCompleteSheetOpen: true,
+                    inputFocused: true,
+                  })
+                }
+                onChange={this.queryInputChanged}
+                onKeyPress={e => {
+                  if (e.key === 'Enter') {
+                    this.navigateTo(this.state.query);
+                    e.target.blur();
+                  }
+                }}
+                placeholder="Navigate To..."
+              />
+              {autoCompleteSheetOpen ? (
+                <AutoCompleteSheet
+                  bookmarks={bookmarks}
+                  onNavigate={this.navigateTo}
+                  onHighlighted={newQuery => this.setState({query: newQuery})}
+                />
+              ) : null}
+            </SearchInputContainer>
+          </SearchBox>
+          {query.length > 0 ? (
+            <IconContainer>
+              <IconButton
+                icon="send"
+                size={16}
+                outline={true}
+                onClick={() => this.navigateTo(this.state.query)}
+              />
+              <FavoriteButton
+                size={16}
+                highlighted={bookmarks.has(query)}
+                onClick={() => this.favorite(this.state.query)}
+              />
+            </IconContainer>
+          ) : null}
+        </Toolbar>
+      </ToolbarContainer>
     );
   };
 }
