@@ -122,20 +122,9 @@ export default class Client extends EventEmitter {
 
     this.responder = {
       fireAndForget: (payload: {data: string}) =>
-        rIC(
-          () => {
-            const mark = 'onMessageCallback';
-            performance.mark(mark);
-            try {
-              client.onMessage(payload.data);
-            } finally {
-              this.logger.trackTimeSince(mark);
-            }
-          },
-          {
-            timeout: 500,
-          },
-        ),
+        rIC(() => client.onMessage(payload.data), {
+          timeout: 500,
+        }),
     };
 
     if (conn) {
