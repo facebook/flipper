@@ -64,7 +64,7 @@ type DispatchFromProps = {
   toggleLeftSidebarVisible: (visible?: boolean) => void,
   toggleRightSidebarVisible: (visible?: boolean) => void,
   setActiveSheet: (sheet: ActiveSheet) => void,
-  setFlipperRating: number => void,
+  setFlipperRating: (rating: number) => void,
 };
 
 type StateFromProps = {
@@ -74,7 +74,7 @@ type StateFromProps = {
   rightSidebarAvailable: boolean,
   downloadingImportData: boolean,
   launcherMsg: LauncherMsg,
-  flipperRating: ?number,
+  flipperRating: number | null,
 };
 
 const VersionText = styled(Text)({

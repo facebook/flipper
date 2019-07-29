@@ -13,7 +13,7 @@ const pattern = /^\*\n \* Copyright 20\d{2}-present Facebook\.\n \* This source 
 module.exports = {
   parser: 'babel-eslint',
   extends: 'fbjs',
-  plugins: [...fbjs.plugins, 'header', 'prettier'],
+  plugins: [...fbjs.plugins, 'header', 'prettier', '@typescript-eslint'],
   rules: {
     // disable rules from eslint-config-fbjs
     'react/react-in-jsx-scope': 0, // not needed with our metro implementation

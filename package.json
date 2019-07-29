@@ -51,6 +51,7 @@
   },
   "devDependencies": {
     "@jest-runner/electron": "^2.0.1",
+    "@typescript-eslint/eslint-plugin": "^1.11.0",
     "babel-eslint": "^10.0.1",
     "electron": "^5.0.2",
     "electron-builder": "^20.38.5",
