@@ -141,12 +141,12 @@
     "start": "cross-env NODE_ENV=development node scripts/start-dev-server.js",
     "build": "yarn rm-dist && cross-env NODE_ENV=production node scripts/build-release.js $@",
     "build-headless": "yarn rm-dist && mkdir dist && cross-env NODE_ENV=production node scripts/build-headless.js $@",
-    "fix": "eslint . --fix --ext *.js,*.tsx",
+    "fix": "eslint . --fix --ext .js,.tsx",
     "test": "jest --testPathPattern=node\\.js$ --no-cache",
     "test:debug": "node --inspect node_modules/.bin/jest --runInBand",
     "test-electron": "jest --testPathPattern=electron\\.js$ --testEnvironment=@jest-runner/electron/environment --runner=@jest-runner/electron --no-cache",
     "test-with-device": "USE_ELECTRON_STUBS=1 jest --testPathPattern=device\\.js$ --detectOpenHandles --no-cache",
-    "lint": "eslint . --ext *.js,*.tsx && flow check && tsc --noemit"
+    "lint": "eslint . --ext .js,.tsx && flow check && tsc --noemit"
   },
   "optionalDependencies": {
     "7zip-bin-mac": "^1.0.1"
