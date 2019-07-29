@@ -92,3 +92,18 @@ export const readBookmarksFromDB: () => Promise<Map<string, Bookmark>> = () => {
       .catch(reject);
   });
 };
+
+export const removeBookmark: (uri: string) => Promise<void> = uri => {
+  return new Promise((resolve, reject) => {
+    openNavigationPluginDB()
+      .then((db: IDBDatabase) => {
+        const bookmarksObjectStore = db
+          .transaction(BOOKMARKS_KEY, 'readwrite')
+          .objectStore(BOOKMARKS_KEY);
+        const request = bookmarksObjectStore.delete(uri);
+        request.onsuccess = resolve;
+        request.onerror = event => reject(event.target.error);
+      })
+      .catch(reject);
+  });
+};

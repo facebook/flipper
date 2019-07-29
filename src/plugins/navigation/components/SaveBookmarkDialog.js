@@ -13,8 +13,10 @@ import type {Bookmark} from '../flow-types';
 
 type Props = {|
   uri: ?string,
+  edit: boolean,
   shouldShow: boolean,
   onHide: ?() => void,
+  onRemove: string => void,
   onSubmit: Bookmark => void,
 |};
 
@@ -47,7 +49,7 @@ const NameInput = styled(Input)({
 });
 
 export default (props: Props) => {
-  const {shouldShow, onHide, onSubmit, uri} = props;
+  const {edit, shouldShow, onHide, onRemove, onSubmit, uri} = props;
   const [commonName, setCommonName] = useState('');
   if (uri == null || !shouldShow) {
     return null;
@@ -57,7 +59,9 @@ export default (props: Props) => {
         {hide => {
           return (
             <Container>
-              <Title>Save to bookmarks...</Title>
+              <Title>
+                {edit ? 'Edit bookmark...' : 'Save to bookmarks...'}
+              </Title>
               <NameInput
                 placeholder="Name..."
                 value={commonName}
@@ -74,6 +78,20 @@ export default (props: Props) => {
                   padded>
                   Cancel
                 </Button>
+                {edit ? (
+                  <Button
+                    type="danger"
+                    onClick={() => {
+                      hide();
+                      onRemove(uri);
+                      setCommonName('');
+                    }}
+                    compact
+                    padded>
+                    Remove
+                  </Button>
+                ) : null}
+
                 <Button
                   type="primary"
                   onClick={() => {

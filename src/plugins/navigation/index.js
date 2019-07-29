@@ -14,7 +14,11 @@ import {
   Timeline,
   ScrollableFlexColumn,
 } from './components';
-import {readBookmarksFromDB, writeBookmarkToDB} from './util/indexedDB';
+import {
+  removeBookmark,
+  readBookmarksFromDB,
+  writeBookmarkToDB,
+} from './util/indexedDB';
 
 import type {
   State,
@@ -97,8 +101,19 @@ export default class extends FlipperPlugin<State, {}, PersistedState> {
     this.setState({bookmarks: newMapRef});
   };
 
+  removeBookmark = (uri: string) => {
+    removeBookmark(uri);
+    const newMapRef = this.state.bookmarks;
+    newMapRef.delete(uri);
+    this.setState({bookmarks: newMapRef});
+  };
+
   render() {
-    const {bookmarks, shouldShowSaveBookmarkDialog} = this.state;
+    const {
+      bookmarks,
+      saveBookmarkURI,
+      shouldShowSaveBookmarkDialog,
+    } = this.state;
     const {navigationEvents} = this.props.persistedState;
     return (
       <ScrollableFlexColumn>
@@ -116,9 +131,13 @@ export default class extends FlipperPlugin<State, {}, PersistedState> {
         <BookmarksSidebar bookmarks={bookmarks} onNavigate={this.navigateTo} />
         <SaveBookmarkDialog
           shouldShow={shouldShowSaveBookmarkDialog}
-          uri={this.state.saveBookmarkURI}
+          uri={saveBookmarkURI}
           onHide={() => this.setState({shouldShowSaveBookmarkDialog: false})}
+          edit={
+            saveBookmarkURI != null ? bookmarks.has(saveBookmarkURI) : false
+          }
           onSubmit={this.addBookmark}
+          onRemove={this.removeBookmark}
         />
       </ScrollableFlexColumn>
     );
