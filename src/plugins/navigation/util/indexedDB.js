@@ -6,7 +6,7 @@
  * @flow strict-local
  */
 
-import type {Bookmark} from '../';
+import type {Bookmark} from '../flow-types';
 
 const FLIPPER_NAVIGATION_PLUGIN_DB = 'flipper_navigation_plugin_db';
 const FLIPPER_NAVIGATION_PLUGIN_DB_VERSION = 1;

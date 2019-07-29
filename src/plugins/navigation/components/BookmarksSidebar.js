@@ -8,7 +8,7 @@
 
 import {DetailSidebar, FlexCenter, styled, colors} from 'flipper';
 
-import type {Bookmark} from '../';
+import type {Bookmark} from '../flow-types';
 
 type Props = {|
   bookmarks: Map<string, Bookmark>,

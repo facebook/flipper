@@ -8,7 +8,7 @@
 
 import NavigationPlugin from '../';
 
-import type {PersistedState} from '../';
+import type {PersistedState} from '../flow-types';
 
 function constructPersistedStateMock(): PersistedState {
   return {

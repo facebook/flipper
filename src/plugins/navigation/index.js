@@ -16,25 +16,12 @@ import {
 } from './components';
 import {readBookmarksFromDB, writeBookmarkToDB} from './util/indexedDB';
 
-type State = {|
-  bookmarks: Map<string, Bookmark>,
-  shouldShowSaveBookmarkDialog: boolean,
-  saveBookmarkURI: ?string,
-|};
-
-export type NavigationEvent = {|
-  date: ?Date,
-  uri: ?string,
-|};
-
-export type Bookmark = {|
-  uri: string,
-  commonName: string,
-|};
-
-export type PersistedState = {|
-  navigationEvents: Array<NavigationEvent>,
-|};
+import type {
+  State,
+  PersistedState,
+  Bookmark,
+  NavigationEvent,
+} from './flow-types';
 
 export default class extends FlipperPlugin<State, {}, PersistedState> {
   static title = 'Navigation';

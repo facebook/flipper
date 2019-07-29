@@ -9,7 +9,7 @@
 import {styled} from 'flipper';
 import {NavigationInfoBox} from './';
 
-import type {Bookmark, NavigationEvent} from '../';
+import type {Bookmark, NavigationEvent} from '../flow-types';
 
 type Props = {|
   bookmarks: Map<string, Bookmark>,

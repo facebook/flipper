@@ -9,7 +9,7 @@
 import {Button, FlexColumn, Input, Sheet, styled} from 'flipper';
 import {useState} from 'react';
 
-import type {Bookmark} from '../';
+import type {Bookmark} from '../flow-types';
 
 type Props = {|
   uri: ?string,

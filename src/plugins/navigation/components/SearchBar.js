@@ -16,7 +16,7 @@ import {
 } from 'flipper';
 import {IconButton, FavoriteButton} from './';
 
-import type {Bookmark} from '../';
+import type {Bookmark} from '../flow-types';
 
 type Props = {|
   onFavorite: (query: string) => void,
