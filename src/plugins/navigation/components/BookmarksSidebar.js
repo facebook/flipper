@@ -53,6 +53,10 @@ const BookmarksList = styled('div')({
   },
 });
 
+const alphabetizeBookmarkCompare = (b1: Bookmark, b2: Bookmark) => {
+  return b1.uri < b2.uri ? -1 : b1.uri > b2.uri ? 1 : 0;
+};
+
 export default (props: Props) => {
   const {bookmarks, onNavigate} = props;
   return (
@@ -61,18 +65,22 @@ export default (props: Props) => {
         <NoData grow>No Bookmarks</NoData>
       ) : (
         <BookmarksList>
-          {[...bookmarks.values()].map(bookmark => (
-            <div
-              className="bookmark-container"
-              role="button"
-              tabIndex={0}
-              onClick={() => {
-                onNavigate(bookmark.uri);
-              }}>
-              <div className="bookmark-common-name">{bookmark.commonName}</div>
-              <div className="bookmark-uri">{bookmark.uri}</div>
-            </div>
-          ))}
+          {[...bookmarks.values()]
+            .sort(alphabetizeBookmarkCompare)
+            .map(bookmark => (
+              <div
+                className="bookmark-container"
+                role="button"
+                tabIndex={0}
+                onClick={() => {
+                  onNavigate(bookmark.uri);
+                }}>
+                <div className="bookmark-common-name">
+                  {bookmark.commonName}
+                </div>
+                <div className="bookmark-uri">{bookmark.uri}</div>
+              </div>
+            ))}
         </BookmarksList>
       )}
     </DetailSidebar>
