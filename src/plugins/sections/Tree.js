@@ -62,11 +62,13 @@ type TreeData = Array<{
   removed?: boolean,
   updated?: boolean,
   unchanged?: boolean,
+  isSection?: boolean,
+  isDataModel?: boolean,
 }>;
 
 type Props = {
   data: TreeData | SectionComponentHierarchy,
-  nodeClickHandler?: (node, evt) => void,
+  nodeClickHandler?: (node: any, evt: InputEvent) => void,
 };
 
 type State = {

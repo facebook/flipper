@@ -170,7 +170,7 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
     });
   };
 
-  onNodeClicked = (targetNode, evt) => {
+  onNodeClicked = (targetNode: any, evt: InputEvent) => {
     if (targetNode.attributes.isSection) {
       this.setState({
         selectedTreeNode: null,
@@ -179,7 +179,6 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
     }
 
     let dataModel;
-    const selectedTreeNode = {};
     // Not all models can be parsed.
     if (targetNode.attributes.isDataModel) {
       try {
