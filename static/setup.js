@@ -16,9 +16,10 @@ module.exports = function(argv) {
 
   // emulator/emulator is more reliable than tools/emulator, so prefer it if
   // it exists
-  process.env.PATH = `${process.env.ANDROID_HOME}/emulator:${
-    process.env.ANDROID_HOME
-  }/tools:${process.env.PATH}`;
+  process.env.PATH =
+    ['emulator', 'tools', 'platform-tools']
+      .map(directory => `${process.env.ANDROID_HOME}/${directory}`)
+      .join(':') + `:${process.env.PATH}`;
 
   // ensure .flipper folder and config exist
   const flipperDir = path.join(os.homedir(), '.flipper');
