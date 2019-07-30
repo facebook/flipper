@@ -6,8 +6,14 @@
  */
 
 import {Idler} from './Idler';
-export async function serialize(obj: Object, idler?: Idler): Promise<string> {
-  return makeObjectSerializable(obj, idler).then(obj => JSON.stringify(obj));
+export async function serialize(
+  obj: Object,
+  idler?: Idler,
+  statusUpdate?: (msg: string) => void,
+): Promise<string> {
+  return makeObjectSerializable(obj, idler, statusUpdate).then(obj =>
+    JSON.stringify(obj),
+  );
 }
 
 export function deserialize(str: string): Object {
@@ -112,12 +118,19 @@ export function processObjectToBeSerialized(
   }
   return {childNeedsIteration, outputObject: obj};
 }
-export async function makeObjectSerializable(obj: any, idler?: Idler): any {
+export async function makeObjectSerializable(
+  obj: any,
+  idler?: Idler,
+  statusUpdate?: (msg: string) => void,
+): any {
   if (!(obj instanceof Object)) {
     return obj;
   }
   const stack = [obj];
   const dict: Map<any, any> = new Map();
+  let numIterations = 0;
+  let prevStackLength = stack.length;
+  let accumulator = prevStackLength;
   while (stack.length > 0) {
     if (idler) {
       await idler.idle();
@@ -178,6 +191,13 @@ export async function makeObjectSerializable(obj: any, idler?: Idler): any {
       dict.set(element, outputObject);
     }
     stack.pop();
+    ++numIterations;
+    accumulator +=
+      stack.length >= prevStackLength ? stack.length - prevStackLength + 1 : 0;
+    const percentage = (numIterations / accumulator) * 100;
+    statusUpdate &&
+      statusUpdate(`Serializing Flipper (${percentage.toFixed(2)}%) `);
+    prevStackLength = stack.length;
   }
   return dict.get(obj);
 }

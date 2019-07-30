@@ -405,7 +405,11 @@ export function exportStore(
       }
       try {
         statusUpdate && statusUpdate('Serializing Flipper data...');
-        const serializedString = await serialize(exportData, idler);
+        const serializedString = await serialize(
+          exportData,
+          idler,
+          statusUpdate,
+        );
         if (serializedString.length <= 0) {
           reject(new Error('Serialize function returned empty string'));
         }
