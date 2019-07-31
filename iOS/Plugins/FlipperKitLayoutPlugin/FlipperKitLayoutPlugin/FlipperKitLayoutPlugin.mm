@@ -148,6 +148,18 @@
   return;
 }
 
+- (void)populateAllNodesFromNode:(nonnull NSString *)identifier inArray:(nonnull NSMutableArray<NSDictionary *> *)mutableArray {
+  NSDictionary *nodeDict = [self getNode:identifier];
+  if (nodeDict == nil) {
+    return;
+  }
+  [mutableArray addObject:nodeDict];
+  NSArray *children = nodeDict[@"children"];
+  for (NSString *childIdentifier in children) {
+    [self populateAllNodesFromNode:childIdentifier inArray:mutableArray];
+  }
+}
+
 - (void)onCallGetAllNodesWithResponder:(nonnull id<FlipperResponder>)responder {
   NSMutableArray<NSDictionary*> *allNodes = @[].mutableCopy;
   NSString *identifier = [self trackObject: _rootNode];
@@ -216,11 +228,11 @@
     const auto identifierForInvalidation = [descriptor identifierForInvalidation:node];
     id nodeForInvalidation = [_trackedObjects objectForKey:identifierForInvalidation];
     SKNodeDescriptor *descriptorForInvalidation = [_descriptorMapper descriptorForClass:[nodeForInvalidation class]];
-    NSMutableArray *children = [self getChildrenForNode:nodeForInvalidation withDescriptor:descriptorForInvalidation];
     updateDataForPath(value);
-    [connection send: @"invalidate" withParams: @{
-      @"nodes": @[@{@"id": [descriptorForInvalidation identifierForNode: nodeForInvalidation], @"children": children}]
-    }];
+    
+    NSMutableArray *nodesForInvalidation = [NSMutableArray new];
+    [self populateAllNodesFromNode:[descriptorForInvalidation identifierForNode:nodeForInvalidation] inArray:nodesForInvalidation];
+    [connection send: @"invalidateWithData" withParams: @{@"nodes": nodesForInvalidation}];
   }
 }
 

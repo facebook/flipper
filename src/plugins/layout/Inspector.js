@@ -15,7 +15,7 @@ import {ElementsInspector} from 'flipper';
 import {Component} from 'react';
 import debounce from 'lodash.debounce';
 
-import type {PersistedState} from './';
+import type {PersistedState, ElementMap} from './';
 
 type GetNodesOptions = {
   force?: boolean,
@@ -45,6 +45,9 @@ export default class Inspector extends Component<Props> {
       GET_NODES: this.props.ax ? 'getAXNodes' : 'getNodes',
       SET_HIGHLIGHTED: 'setHighlighted',
       SELECT: this.props.ax ? 'selectAX' : 'select',
+      INVALIDATE_WITH_DATA: this.props.ax
+        ? 'invalidateWithDataAX'
+        : 'invalidateWithData',
     };
   }
 
@@ -114,6 +117,14 @@ export default class Inspector extends Component<Props> {
     );
 
     this.props.client.subscribe(
+      this.call().INVALIDATE_WITH_DATA,
+      (obj: {nodes: Array<Element>}) => {
+        const {nodes} = obj;
+        this.invalidateWithData(nodes);
+      },
+    );
+
+    this.props.client.subscribe(
       this.call().SELECT,
       ({path}: {path: Array<ElementID>}) => {
         this.getAndExpandPath(path);
@@ -157,6 +168,28 @@ export default class Inspector extends Component<Props> {
       ).find((e: Element) => e.extraInfo?.linkedAXNode === selectedAXElement);
       this.props.onSelect(linkedNode?.id);
     }
+  }
+
+  invalidateWithData(elements: Array<Element>): void {
+    if (elements.length === 0) {
+      return;
+    }
+    const updatedElements: ElementMap = elements.reduce(
+      (acc: ElementMap, element: Element) => {
+        acc[element.id] = {
+          ...element,
+          expanded: this.elements()[element.id]?.expanded,
+        };
+        return acc;
+      },
+      new Map(),
+    );
+    this.props.setPersistedState({
+      [this.props.ax ? 'AXelements' : 'elements']: {
+        ...this.elements(),
+        ...updatedElements,
+      },
+    });
   }
 
   invalidate(ids: Array<ElementID>): Promise<Array<Element>> {
