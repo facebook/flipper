@@ -6,7 +6,7 @@ matrix:
     - language: node_js
       os: linux
       node_js:
-        - "10"
+        - "11"
 
       install:
         - cd website
