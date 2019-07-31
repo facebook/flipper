@@ -75,7 +75,19 @@ export const precachedIcons: Array<string> = [
     name: 'chevron-down',
     size: 8,
   },
-].map(icon => getIconUrl(icon.name, icon.size || undefined));
+  {
+    name: 'star',
+    size: 16,
+    variant: 'filled',
+  },
+  {
+    name: 'star',
+    size: 16,
+    variant: 'outline',
+  },
+].map(icon =>
+  getIconUrl(icon.name, icon.size || undefined, icon.variant || undefined),
+);
 
 export function getIconUrl(
   name: string,
