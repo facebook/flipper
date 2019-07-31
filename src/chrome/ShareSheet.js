@@ -225,7 +225,6 @@ export default class ShareSheet extends Component<Props, State> {
                   used in network requests.
                 </InfoText>
                 <ShareSheetErrorList errors={errorArray} />
-                )}
               </>
             ) : (
               <>
@@ -243,7 +242,6 @@ export default class ShareSheet extends Component<Props, State> {
             </Button>
           </FlexRow>
         </>
-        )
       </Container>
     );
   }
