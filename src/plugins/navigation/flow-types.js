@@ -6,10 +6,12 @@
  * @flow strict-local
  */
 
+export type URI = string;
+
 export type State = {|
-  bookmarks: Map<string, Bookmark>,
+  bookmarks: Map<URI, Bookmark>,
   shouldShowSaveBookmarkDialog: boolean,
-  saveBookmarkURI: ?string,
+  saveBookmarkURI: ?URI,
 |};
 
 export type PersistedState = {|
@@ -18,10 +20,21 @@ export type PersistedState = {|
 
 export type NavigationEvent = {|
   date: ?Date,
-  uri: ?string,
+  uri: ?URI,
 |};
 
 export type Bookmark = {|
-  uri: string,
+  uri: URI,
   commonName: string,
+|};
+
+export type AutoCompleteProvider = {|
+  icon: string,
+  matchPatterns: Map<string, URI>,
+|};
+
+export type AutoCompleteLineItem = {|
+  icon: string,
+  matchPattern: string,
+  uri: URI,
 |};
