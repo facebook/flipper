@@ -7,7 +7,8 @@
 
 import {remote} from 'electron';
 import uuidv1 from 'uuid/v1';
-
+import {type Element as ReactElement} from 'react';
+import CancellableExportStatus from '../chrome/CancellableExportStatus';
 export const ACTIVE_SHEET_PLUGIN_SHEET: 'PLUGIN_SHEET' = 'PLUGIN_SHEET';
 export const ACTIVE_SHEET_BUG_REPORTER: 'BUG_REPORTER' = 'BUG_REPORTER';
 export const ACTIVE_SHEET_PLUGIN_DEBUGGER: 'PLUGIN_DEBUGGER' =
@@ -18,6 +19,9 @@ export const ACTIVE_SHEET_SHARE_DATA: 'SHARE_DATA' = 'SHARE_DATA';
 export const ACTIVE_SHEET_SIGN_IN: 'SIGN_IN' = 'SIGN_IN';
 export const ACTIVE_SHEET_SHARE_DATA_IN_FILE: 'SHARE_DATA_IN_FILE' =
   'SHARE_DATA_IN_FILE';
+export const SET_EXPORT_STATUS_MESSAGE: 'SET_EXPORT_STATUS_MESSAGE' =
+  'SET_EXPORT_STATUS_MESSAGE';
+export const UNSET_SHARE: 'UNSET_SHARE' = 'UNSET_SHARE';
 
 export type ActiveSheet =
   | typeof ACTIVE_SHEET_PLUGIN_SHEET
@@ -38,12 +42,12 @@ export type ServerPorts = {
   secure: number,
 };
 
-export type ShareType =
-  | {
-      type: 'file',
-      file: string,
-    }
-  | {type: 'link'};
+type SubShareType = {type: 'file', file: string} | {type: 'link'};
+
+export type ShareType = {
+  statusComponent?: ReactElement<typeof CancellableExportStatus>,
+  ...SubShareType,
+};
 
 export type State = {
   leftSidebarVisible: boolean,
@@ -102,6 +106,13 @@ export type Action =
       payload: {
         rating: number,
       },
+    }
+  | {
+      type: typeof UNSET_SHARE,
+    }
+  | {
+      type: typeof SET_EXPORT_STATUS_MESSAGE,
+      payload: ReactElement<typeof CancellableExportStatus>,
     };
 
 const initialState: () => State = () => ({
@@ -179,6 +190,18 @@ export default function reducer(state: State, action: Action): State {
       ...state,
       flipperRating: action.payload.rating,
     };
+  } else if (action.type === 'SET_EXPORT_STATUS_MESSAGE') {
+    if (state.share) {
+      const {share} = state;
+      return {
+        ...state,
+        //$FlowFixMe: T48110490, its not able to understand for which case it needs to apply the changes
+        share: {...share, statusComponent: action.payload},
+      };
+    }
+    return state;
+  } else if (action.type === 'UNSET_SHARE') {
+    return {...state, share: null};
   } else {
     return state;
   }
@@ -189,6 +212,17 @@ export const toggleAction = (
   payload?: boolean,
 ): Action => ({
   type,
+  payload,
+});
+
+export const unsetShare = (): Action => ({
+  type: UNSET_SHARE,
+});
+
+export const setExportStatusComponent = (
+  payload: ReactElement<typeof CancellableExportStatus>,
+): Action => ({
+  type: SET_EXPORT_STATUS_MESSAGE,
   payload,
 });
 

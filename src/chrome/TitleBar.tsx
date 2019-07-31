@@ -5,7 +5,7 @@
  * @format
  */
 
-import {ActiveSheet, LauncherMsg} from '../reducers/application.js';
+import {ActiveSheet, LauncherMsg, ShareType} from '../reducers/application.js';
 
 import {
   colors,
@@ -75,6 +75,7 @@ type StateFromProps = {
   downloadingImportData: boolean,
   launcherMsg: LauncherMsg,
   flipperRating: number | null,
+  share: ShareType | null | undefined,
 };
 
 const VersionText = styled(Text)({
@@ -115,20 +116,36 @@ const Importing = styled(FlexRow)({
   marginLeft: 10,
 });
 
+function statusMessageComponent(
+  downloadingImportData: boolean,
+  statusComponent?: React.ReactElement<any> | undefined,
+) {
+  if (downloadingImportData) {
+    return (
+      <Importing>
+        <LoadingIndicator size={16} />
+        &nbsp;Importing data...
+      </Importing>
+    );
+  }
+  if (statusComponent) {
+    return statusComponent;
+  }
+  return;
+}
+
 type Props = OwnProps & DispatchFromProps & StateFromProps;
-class TitleBar extends React.Component<Props> {
+class TitleBar extends React.Component<Props, StateFromProps> {
   render() {
+    const {share} = this.props;
     return (
       <AppTitleBar focused={this.props.windowIsFocused} className="toolbar">
         <DevicesButton />
         <ScreenCaptureButtons />
-        {this.props.downloadingImportData && (
-          <Importing>
-            <LoadingIndicator size={16} />
-            &nbsp;Importing data...
-          </Importing>
+        {statusMessageComponent(
+          this.props.downloadingImportData,
+          share != null ? share.statusComponent : undefined,
         )}
-
         <Spacer />
         {config.showFlipperRating ? (
           <RatingButton
@@ -187,6 +204,7 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
       downloadingImportData,
       launcherMsg,
       flipperRating,
+      share,
     },
   }) => ({
     windowIsFocused,
@@ -196,6 +214,7 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
     downloadingImportData,
     launcherMsg,
     flipperRating,
+    share,
   }),
   {
     setActiveSheet,

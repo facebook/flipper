@@ -17,6 +17,7 @@ import {
   Spacer,
   Input,
 } from 'flipper';
+import {setExportStatusComponent, unsetShare} from '../reducers/application';
 import type {Logger} from '../fb-interfaces/Logger.js';
 import {Idler} from '../utils/Idler';
 import {shareFlipperData} from '../fb-stubs/user';
@@ -25,6 +26,7 @@ import PropTypes from 'prop-types';
 import {clipboard} from 'electron';
 import ShareSheetErrorList from './ShareSheetErrorList.js';
 import {reportPlatformFailures} from '../utils/metrics';
+import CancellableExportStatus from './CancellableExportStatus';
 // $FlowFixMe: Missing type defs for node built-in.
 import {performance} from 'perf_hooks';
 export const SHARE_FLIPPER_TRACE_EVENT = 'share-flipper-link';
@@ -71,6 +73,7 @@ type Props = {
   logger: Logger,
 };
 type State = {
+  runInBackground: boolean,
   errorArray: Array<Error>,
   result:
     | ?{
@@ -92,9 +95,24 @@ export default class ShareSheet extends Component<Props, State> {
     errorArray: [],
     result: null,
     statusUpdate: null,
+    runInBackground: false,
   };
 
   idler = new Idler();
+
+  dispatchAndUpdateToolBarStatus(msg: string) {
+    this.context.store.dispatch(
+      setExportStatusComponent(
+        <CancellableExportStatus
+          msg={msg}
+          onCancel={() => {
+            this.idler.cancel();
+            this.context.store.dispatch(unsetShare());
+          }}
+        />,
+      ),
+    );
+  }
 
   async componentDidMount() {
     const mark = 'shareSheetExportUrl';
@@ -102,10 +120,16 @@ export default class ShareSheet extends Component<Props, State> {
     try {
       const {serializedString, errorArray} = await reportPlatformFailures(
         exportStore(this.context.store, this.idler, (msg: string) => {
-          this.setState({statusUpdate: msg});
+          if (this.state.runInBackground) {
+            this.dispatchAndUpdateToolBarStatus(msg);
+          } else {
+            this.setState({statusUpdate: msg});
+          }
         }),
         `${EXPORT_FLIPPER_TRACE_EVENT}:UI_LINK`,
       );
+
+      this.context.store.dispatch(unsetShare());
 
       const result = await reportPlatformFailures(
         shareFlipperData(serializedString),
@@ -151,6 +175,19 @@ export default class ShareSheet extends Component<Props, State> {
           </Center>
           <FlexRow>
             <Spacer />
+            <Button
+              compact
+              padded
+              onClick={() => {
+                this.setState({runInBackground: true});
+                const {statusUpdate} = this.state;
+                if (statusUpdate) {
+                  this.dispatchAndUpdateToolBarStatus(statusUpdate);
+                }
+                this.props.onHide();
+              }}>
+              Run In Background
+            </Button>
             <Button compact padded onClick={onHide}>
               Close
             </Button>

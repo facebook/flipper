@@ -15,7 +15,9 @@ import {
   FlexRow,
   Spacer,
 } from 'flipper';
+import {setExportStatusComponent, unsetShare} from '../reducers/application';
 import {reportPlatformFailures} from '../utils/metrics';
+import CancellableExportStatus from './CancellableExportStatus';
 // $FlowFixMe: Missing type defs for node built-in.
 import {performance} from 'perf_hooks';
 import type {Logger} from '../fb-interfaces/Logger.js';
@@ -72,6 +74,7 @@ type State = {
     error: ?Error,
   },
   statusUpdate: ?string,
+  runInBackground: boolean,
 };
 
 export default class ShareSheetExportFile extends Component<Props, State> {
@@ -83,9 +86,24 @@ export default class ShareSheetExportFile extends Component<Props, State> {
     errorArray: [],
     result: null,
     statusUpdate: null,
+    runInBackground: false,
   };
 
   idler = new Idler();
+
+  dispatchAndUpdateToolBarStatus(msg: string) {
+    this.context.store.dispatch(
+      setExportStatusComponent(
+        <CancellableExportStatus
+          msg={msg}
+          onCancel={() => {
+            this.idler.cancel();
+            this.context.store.dispatch(unsetShare());
+          }}
+        />,
+      ),
+    );
+  }
 
   async componentDidMount() {
     const mark = 'shareSheetExportFile';
@@ -102,11 +120,24 @@ export default class ShareSheetExportFile extends Component<Props, State> {
           this.context.store,
           this.idler,
           (msg: string) => {
-            this.setState({statusUpdate: msg});
+            if (this.state.runInBackground) {
+              this.dispatchAndUpdateToolBarStatus(msg);
+            } else {
+              this.setState({statusUpdate: msg});
+            }
           },
         ),
         `${EXPORT_FLIPPER_TRACE_EVENT}:UI_FILE`,
       );
+      this.context.store.dispatch(unsetShare());
+      if (this.state.runInBackground) {
+        new window.Notification('Sharable Flipper trace created', {
+          //$FlowFixMe: Already checked that props.file exists
+          body: `Flipper trace exported to the ${this.props.file}`,
+          requireInteraction: true,
+        });
+        return;
+      }
       this.setState({errorArray, result: {success: true, error: null}});
       this.props.logger.trackTimeSince(mark, 'export:file-success');
     } catch (err) {
@@ -182,6 +213,19 @@ export default class ShareSheetExportFile extends Component<Props, State> {
           </Center>
           <FlexRow>
             <Spacer />
+            <Button
+              compact
+              padded
+              onClick={() => {
+                this.setState({runInBackground: true});
+                const {statusUpdate} = this.state;
+                if (statusUpdate) {
+                  this.dispatchAndUpdateToolBarStatus(statusUpdate);
+                }
+                this.props.onHide();
+              }}>
+              Run In Background
+            </Button>
             <Button compact padded onClick={onHide}>
               Cancel
             </Button>
