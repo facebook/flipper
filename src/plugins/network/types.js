@@ -33,14 +33,6 @@ export type Header = {|
   value: string,
 |};
 
-export type Route = {|
-  requestUrl: string,
-  method: string,
-  data: string,
-  isDuplicate: boolean,
-  headers: Array<Header>,
-|};
-
 export type RetryInsights = {|
   count: number,
   limit: number,
