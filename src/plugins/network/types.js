@@ -23,6 +23,7 @@ export type Response = {|
   reason: string,
   headers: Array<Header>,
   data: ?string,
+  isMock: boolean,
   insights: ?Insights,
   isMock: boolean,
 |};
@@ -30,6 +31,14 @@ export type Response = {|
 export type Header = {|
   key: string,
   value: string,
+|};
+
+export type Route = {|
+  requestUrl: string,
+  method: string,
+  data: string,
+  isDuplicate: boolean,
+  headers: Array<Header>,
 |};
 
 export type RetryInsights = {|
