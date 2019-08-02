@@ -7,8 +7,8 @@
 
 import React from 'react';
 import styled from '../styled/index.js';
-const PropTypes = require('prop-types');
-import {getIconUrl} from '../../utils/icons.js';
+import PropTypes from 'prop-types';
+import {getIconURL} from '../../utils/icons.js';
 
 const ColoredIconBlack = styled('img')(({size}) => ({
   height: size,
@@ -91,7 +91,11 @@ export default class Glyph extends React.Component<{
         className={className}
         color={color}
         size={size}
-        src={getIconUrl(name, size, variant)}
+        src={getIconURL(
+          variant === 'outline' ? `${name}-outline` : name,
+          size,
+          typeof window !== 'undefined' ? window.devicePixelRatio : 1,
+        )}
       />
     );
   }
