@@ -101,7 +101,9 @@ public class InspectorFlipperPluginTest {
                 .put("children", new FlipperArray.Builder().put("test"))
                 .put("attributes", new FlipperArray.Builder())
                 .put("decoration", (String) null)
-                .put("extraInfo", new FlipperObject.Builder().put("hasAXNode", true))
+                .put(
+                    "extraInfo",
+                    new FlipperObject.Builder().put("linkedNode", "com.facebook.flipper"))
                 .build()));
   }
 

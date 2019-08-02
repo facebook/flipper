@@ -445,10 +445,9 @@ public class ViewDescriptor extends NodeDescriptor<View> {
 
   @Override
   public FlipperObject getExtraInfo(View node) {
-    return new FlipperObject.Builder()
-        .put("focused", AccessibilityUtil.isAXFocused(node))
-        .put("hasAXNode", true)
-        .build();
+    // Views of all kinds are their own linked node because they show up in both the ax and non-ax
+    // tree
+    return new FlipperObject.Builder().put("linkedNode", getId(node)).build();
   }
 
   @Nullable

@@ -15,7 +15,7 @@ const TEST_TIMEOUT_MS = 30 * 1000;
 const layoutPathsToExcludeFromSnapshots = [
   'id',
   'children.*',
-  'extraInfo.linkedAXNode',
+  'extraInfo.linkedNode',
   'data.View.*.value',
   'data.View.*.*.value',
   'data.View.*.*.*.value',
@@ -197,7 +197,7 @@ test('test layout snapshot stripping', () => {
     id: 2,
     children: [1, 2, 3],
     extraInfo: {
-      linkedAXNode: 55,
+      linkedNode: 55,
       somethingElse: 44,
     },
     data: {View: {bounds: {something: {value: 4}}}},
@@ -216,7 +216,7 @@ test('test layout snapshot stripping', () => {
     id: 'PLACEHOLDER',
     children: ['PLACEHOLDER', 'PLACEHOLDER', 'PLACEHOLDER'],
     extraInfo: {
-      linkedAXNode: 'PLACEHOLDER',
+      linkedNode: 'PLACEHOLDER',
       somethingElse: 44,
     },
     data: {View: {bounds: {something: {value: 'PLACEHOLDER'}}}},

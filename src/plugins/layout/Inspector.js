@@ -147,26 +147,28 @@ export default class Inspector extends Component<Props> {
 
     if (
       ax &&
-      selectedElement !== prevProps.selectedElement &&
-      selectedElement
+      selectedElement &&
+      selectedElement !== prevProps.selectedElement
     ) {
-      // selected element changed, find linked AX element
-      const linkedAXNode: ?ElementID = this.props.persistedState.elements[
+      // selected element in non-AX tree changed, find linked element in AX tree
+      const newlySelectedElem = this.props.persistedState.elements[
         selectedElement
-      ]?.extraInfo?.linkedAXNode;
-      this.props.onSelect(linkedAXNode);
+      ];
+      if (newlySelectedElem) {
+        this.props.onSelect(newlySelectedElem.extraInfo?.linkedNode);
+      }
     } else if (
       !ax &&
-      selectedAXElement !== prevProps.selectedAXElement &&
-      selectedAXElement
+      selectedAXElement &&
+      selectedAXElement !== prevProps.selectedAXElement
     ) {
-      // selected AX element changed, find linked element
-      // $FlowFixMe Object.values retunes mixed type
-      const linkedNode: ?Element = Object.values(
-        this.props.persistedState.elements,
-        // $FlowFixMe it's an Element not mixed
-      ).find((e: Element) => e.extraInfo?.linkedAXNode === selectedAXElement);
-      this.props.onSelect(linkedNode?.id);
+      // selected element in AX tree changed, find linked element in non-AX tree
+      const newlySelectedAXElem = this.props.persistedState.AXelements[
+        selectedAXElement
+      ];
+      if (newlySelectedAXElem) {
+        this.props.onSelect(newlySelectedAXElem.extraInfo?.linkedNode);
+      }
     }
   }
 

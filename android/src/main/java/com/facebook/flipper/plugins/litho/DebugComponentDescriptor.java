@@ -307,13 +307,13 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
 
     if (hostView != null) {
       try {
-        extraInfo.put("linkedAXNode", descriptor.getId(hostView));
+        extraInfo.put("linkedNode", descriptor.getId(hostView));
       } catch (Exception ignored) {
         // doesn't have linked node descriptor
       }
     } else if (lithoView != null) {
       try {
-        extraInfo.put("linkedAXNode", descriptor.getId(lithoView));
+        extraInfo.put("linkedNode", descriptor.getId(lithoView)).put("expandWithParent", true);
       } catch (Exception ignored) {
         // doesn't add linked node descriptor
       }
