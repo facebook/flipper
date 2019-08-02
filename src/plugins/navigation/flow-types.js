@@ -9,13 +9,14 @@
 export type URI = string;
 
 export type State = {|
-  bookmarks: Map<URI, Bookmark>,
   shouldShowSaveBookmarkDialog: boolean,
   saveBookmarkURI: ?URI,
 |};
 
 export type PersistedState = {|
+  bookmarks: Map<URI, Bookmark>,
   navigationEvents: Array<NavigationEvent>,
+  bookmarksProvider: AutoCompleteProvider,
 |};
 
 export type NavigationEvent = {|

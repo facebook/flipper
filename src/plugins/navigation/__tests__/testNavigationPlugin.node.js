@@ -7,17 +7,22 @@
  */
 
 import NavigationPlugin from '../';
+import {DefaultProvider} from '../util/autoCompleteProvider';
 
-import type {PersistedState} from '../flow-types';
+import type {Bookmark, PersistedState, URI} from '../flow-types';
 
 function constructPersistedStateMock(): PersistedState {
   return {
+    bookmarksProvider: new DefaultProvider(),
+    bookmarks: new Map<URI, Bookmark>(),
     navigationEvents: [],
   };
 }
 
 function constructPersistedStateMockWithEvents(): PersistedState {
   return {
+    bookmarksProvider: new DefaultProvider(),
+    bookmarks: new Map<URI, Bookmark>(),
     navigationEvents: [
       {
         uri: 'mock://this_is_a_mock_uri/mock/1',

@@ -19,6 +19,10 @@ import {
   readBookmarksFromDB,
   writeBookmarkToDB,
 } from './util/indexedDB';
+import {
+  bookmarksToAutoCompleteProvider,
+  DefaultProvider,
+} from './util/autoCompleteProvider';
 
 import type {
   State,
@@ -35,10 +39,11 @@ export default class extends FlipperPlugin<State, {}, PersistedState> {
 
   static defaultPersistedState: PersistedState = {
     navigationEvents: [],
+    bookmarks: new Map<string, Bookmark>(),
+    bookmarksProvider: new DefaultProvider(),
   };
 
   state = {
-    bookmarks: new Map<string, Bookmark>(),
     shouldShowSaveBookmarkDialog: false,
     saveBookmarkURI: null,
   };
@@ -69,7 +74,10 @@ export default class extends FlipperPlugin<State, {}, PersistedState> {
 
   componentDidMount = () => {
     readBookmarksFromDB().then(bookmarks => {
-      this.setState({bookmarks});
+      this.props.setPersistedState({
+        bookmarks: bookmarks,
+        bookmarksProvider: bookmarksToAutoCompleteProvider(bookmarks),
+      });
     });
   };
 
@@ -95,29 +103,38 @@ export default class extends FlipperPlugin<State, {}, PersistedState> {
       commonName:
         bookmark.commonName.length > 0 ? bookmark.commonName : bookmark.uri,
     };
+
     writeBookmarkToDB(newBookmark);
-    const newMapRef = this.state.bookmarks;
+    const newMapRef = this.props.persistedState.bookmarks;
     newMapRef.set(newBookmark.uri, newBookmark);
-    this.setState({bookmarks: newMapRef});
+    this.props.setPersistedState({
+      bookmarks: newMapRef,
+      bookmarksProvider: bookmarksToAutoCompleteProvider(newMapRef),
+    });
   };
 
   removeBookmark = (uri: string) => {
     removeBookmark(uri);
-    const newMapRef = this.state.bookmarks;
+    const newMapRef = this.props.persistedState.bookmarks;
     newMapRef.delete(uri);
-    this.setState({bookmarks: newMapRef});
+    this.props.setPersistedState({
+      bookmarks: newMapRef,
+      bookmarksProvider: bookmarksToAutoCompleteProvider(newMapRef),
+    });
   };
 
   render() {
+    const {saveBookmarkURI, shouldShowSaveBookmarkDialog} = this.state;
     const {
       bookmarks,
-      saveBookmarkURI,
-      shouldShowSaveBookmarkDialog,
-    } = this.state;
-    const {navigationEvents} = this.props.persistedState;
+      bookmarksProvider,
+      navigationEvents,
+    } = this.props.persistedState;
+    const autoCompleteProviders = [bookmarksProvider];
     return (
       <ScrollableFlexColumn>
         <SearchBar
+          providers={autoCompleteProviders}
           bookmarks={bookmarks}
           onNavigate={this.navigateTo}
           onFavorite={this.onFavorite}

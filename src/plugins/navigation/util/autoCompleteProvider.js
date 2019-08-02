@@ -13,6 +13,12 @@ import type {
   AutoCompleteLineItem,
 } from '../flow-types';
 
+export function DefaultProvider(): AutoCompleteProvider {
+  this.icon = 'caution';
+  this.matchPatterns = new Map<string, URI>();
+  return this;
+}
+
 export const bookmarksToAutoCompleteProvider: (
   Map<URI, Bookmark>,
 ) => AutoCompleteProvider = bookmarks => {
