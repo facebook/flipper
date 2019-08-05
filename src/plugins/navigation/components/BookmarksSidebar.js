@@ -67,8 +67,9 @@ export default (props: Props) => {
         <BookmarksList>
           {[...bookmarks.values()]
             .sort(alphabetizeBookmarkCompare)
-            .map(bookmark => (
+            .map((bookmark, idx) => (
               <div
+                key={idx}
                 className="bookmark-container"
                 role="button"
                 tabIndex={0}
