@@ -9,7 +9,6 @@
 .*/website/.*
 <PROJECT_ROOT>/src/plugins/sections/d3/d3.js$
 .*\.tsx
-.*\.ts
 
 [libs]
 flow-typed
@@ -21,15 +20,10 @@ module.use_strict=true
 emoji=true
 all=true
 include_warnings=true
+module.name_mapper='^\(.*\)\.tsx$' -> 'TsStub'
 module.name_mapper='flipper' -> '<PROJECT_ROOT>/src/index.js'
-module.file_ext=.js
-module.file_ext=.jsx
-module.file_ext=.json
-module.file_ext=.mjs
-module.file_ext=.tsx
-module.name_mapper.extension='tsx' -> 'any'
-module.name_mapper.extension='ts' -> 'any'
 suppress_type=$FlowFixMe
+module.system=haste
 
 [strict]
 deprecated-type
