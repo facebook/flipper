@@ -39,3 +39,8 @@ export type AutoCompleteLineItem = {|
   matchPattern: string,
   uri: URI,
 |};
+
+export type AppMatchPattern = {|
+  className: string,
+  pattern: string,
+|};
