@@ -12,7 +12,7 @@ import type {
   TableColumns,
 } from 'flipper';
 import type {Counter} from './LogWatcher.js';
-import type {DeviceLogEntry} from '../../devices/BaseDevice.js';
+import type {DeviceLogEntry} from '../../devices/BaseDevice.tsx';
 import type {Props as PluginProps} from '../../plugin';
 
 import {

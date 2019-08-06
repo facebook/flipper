@@ -5,12 +5,12 @@
  * @format
  */
 
-import type {DeviceType, DeviceShell} from './BaseDevice.js';
+import type {DeviceType, DeviceShell} from './BaseDevice.tsx';
 
 import {Priority} from 'adbkit-logcat-fb';
 import child_process from 'child_process';
 import child_process_promise from 'child-process-es6-promise';
-import BaseDevice from './BaseDevice.js';
+import BaseDevice from './BaseDevice.tsx';
 import ArchivedDevice from './ArchivedDevice.js';
 
 type ADBClient = any;

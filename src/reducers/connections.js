@@ -5,7 +5,7 @@
  * @format
  */
 
-import type BaseDevice from '../devices/BaseDevice';
+import type BaseDevice from '../devices/BaseDevice.tsx';
 import MacDevice from '../devices/MacDevice';
 import type Client from '../Client';
 import type {UninitializedClient} from '../UninitializedClient';

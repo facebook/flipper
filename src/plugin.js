@@ -13,7 +13,7 @@ import type {Store, MiddlewareAPI} from './reducers/index.js';
 import type {MetricType} from './utils/exportMetrics.js';
 import React from 'react';
 import type {Node} from 'react';
-import BaseDevice from './devices/BaseDevice.js';
+import BaseDevice from './devices/BaseDevice.tsx';
 import AndroidDevice from './devices/AndroidDevice';
 import IOSDevice from './devices/IOSDevice';
 

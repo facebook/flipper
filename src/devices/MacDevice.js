@@ -5,7 +5,7 @@
  * @format
  */
 
-import BaseDevice from './BaseDevice.js';
+import BaseDevice from './BaseDevice.tsx';
 
 export default class MacDevice extends BaseDevice {
   os = 'MacOS';

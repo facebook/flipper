@@ -6,11 +6,11 @@
  */
 
 import type {FlipperPlugin, FlipperBasePlugin} from './plugin.js';
-import type BaseDevice from './devices/BaseDevice.js';
+import type BaseDevice from './devices/BaseDevice.tsx';
 import type {App} from './App.js';
 import type {Logger} from './fb-interfaces/Logger.js';
 import type {Store} from './reducers/index.js';
-import type {OS} from './devices/BaseDevice.js';
+import type {OS} from './devices/BaseDevice.tsx';
 import {FlipperDevicePlugin} from './plugin.js';
 import {setPluginState} from './reducers/pluginStates.js';
 import {ReactiveSocket, PartialResponder} from 'rsocket-core';

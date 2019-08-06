@@ -23,7 +23,7 @@ import setup from '../static/setup.js';
 import type {Store} from '../src/reducers';
 import {getPersistentPlugins} from '../src/utils/pluginUtils.js';
 import {serialize} from '../src/utils/serialization';
-import type BaseDevice from '../src/devices/BaseDevice';
+import type BaseDevice from '../src/devices/BaseDevice.tsx';
 
 import {getStringFromErrorLike} from '../src/utils/index';
 
