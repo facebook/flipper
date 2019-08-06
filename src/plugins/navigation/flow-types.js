@@ -17,6 +17,8 @@ export type PersistedState = {|
   bookmarks: Map<URI, Bookmark>,
   navigationEvents: Array<NavigationEvent>,
   bookmarksProvider: AutoCompleteProvider,
+  appMatchPatterns: Array<AppMatchPattern>,
+  appMatchPatternsProvider: AutoCompleteProvider,
 |};
 
 export type NavigationEvent = {|

@@ -11,6 +11,7 @@ import type {
   Bookmark,
   AutoCompleteProvider,
   AutoCompleteLineItem,
+  AppMatchPattern,
 } from '../flow-types';
 
 export function DefaultProvider(): AutoCompleteProvider {
@@ -31,6 +32,24 @@ export const bookmarksToAutoCompleteProvider: (
     autoCompleteProvider.matchPatterns.set(matchPattern, uri);
   });
   return autoCompleteProvider;
+};
+
+export const appMatchPatternsToAutoCompleteProvider = (
+  appMatchPatterns: Array<AppMatchPattern>,
+) => {
+  const autoCompleteProvider = {
+    icon: 'mobile',
+    matchPatterns: new Map<string, URI>(),
+  };
+  appMatchPatterns.forEach(appMatchPattern => {
+    const matchPattern =
+      appMatchPattern.className + ' - ' + appMatchPattern.pattern;
+    autoCompleteProvider.matchPatterns.set(
+      matchPattern,
+      appMatchPattern.pattern,
+    );
+  });
+  return (autoCompleteProvider: AutoCompleteProvider);
 };
 
 export const filterMatchPatterns: (
@@ -70,7 +89,7 @@ export const filterProvidersToLineItems: (
   for (const provider of providers) {
     const filteredProvider = filterProvider(provider, query, itemsLeft);
     filteredProvider.matchPatterns.forEach((uri, matchPattern) => {
-      lineItems.unshift({
+      lineItems.push({
         icon: provider.icon,
         matchPattern,
         uri,

@@ -20,9 +20,11 @@ import {
   writeBookmarkToDB,
 } from './util/indexedDB';
 import {
+  appMatchPatternsToAutoCompleteProvider,
   bookmarksToAutoCompleteProvider,
   DefaultProvider,
 } from './util/autoCompleteProvider';
+import {getAppMatchPatterns} from './util/appMatchPatterns';
 
 import type {
   State,
@@ -41,6 +43,8 @@ export default class extends FlipperPlugin<State, {}, PersistedState> {
     navigationEvents: [],
     bookmarks: new Map<string, Bookmark>(),
     bookmarksProvider: new DefaultProvider(),
+    appMatchPatterns: [],
+    appMatchPatternsProvider: new DefaultProvider(),
   };
 
   state = {
@@ -73,6 +77,19 @@ export default class extends FlipperPlugin<State, {}, PersistedState> {
   };
 
   componentDidMount = () => {
+    const {selectedApp} = this.props;
+    getAppMatchPatterns(selectedApp)
+      .then(patterns => {
+        this.props.setPersistedState({
+          appMatchPatterns: patterns,
+          appMatchPatternsProvider: appMatchPatternsToAutoCompleteProvider(
+            patterns,
+          ),
+        });
+      })
+      .catch(() => {
+        /* Silently fail here. */
+      });
     readBookmarksFromDB().then(bookmarks => {
       this.props.setPersistedState({
         bookmarks: bookmarks,
@@ -128,9 +145,10 @@ export default class extends FlipperPlugin<State, {}, PersistedState> {
     const {
       bookmarks,
       bookmarksProvider,
+      appMatchPatternsProvider,
       navigationEvents,
     } = this.props.persistedState;
-    const autoCompleteProviders = [bookmarksProvider];
+    const autoCompleteProviders = [bookmarksProvider, appMatchPatternsProvider];
     return (
       <ScrollableFlexColumn>
         <SearchBar
