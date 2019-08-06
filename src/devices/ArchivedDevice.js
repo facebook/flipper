@@ -4,13 +4,13 @@
  * LICENSE file in the root directory of this source tree.
  * @format
  */
-import BaseDevice from './BaseDevice.tsx';
+import BaseDevice from './BaseDevice.js';
 import type {
   DeviceType,
   OS,
   DeviceShell,
   DeviceLogEntry,
-} from './BaseDevice.tsx';
+} from './BaseDevice.js';
 
 export default class ArchivedDevice extends BaseDevice {
   constructor(

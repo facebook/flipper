@@ -5,7 +5,7 @@
  * @format
  */
 import {promisify} from 'util';
-import type {DeviceType} from '../devices/BaseDevice.tsx';
+import type {DeviceType} from '../devices/BaseDevice';
 const exec = promisify(require('child_process').exec);
 
 const errorMessage = 'Physical iOS devices not yet supported';

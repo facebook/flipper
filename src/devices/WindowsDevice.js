@@ -5,7 +5,7 @@
  * @format
  */
 
-import BaseDevice from './BaseDevice.tsx';
+import BaseDevice from './BaseDevice.js';
 
 export default class WindowsDevice extends BaseDevice {
   os = 'Windows';

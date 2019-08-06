@@ -6,7 +6,7 @@
  */
 
 import reducer from '../connections';
-import BaseDevice from '../../devices/BaseDevice.tsx';
+import BaseDevice from '../../devices/BaseDevice';
 import type {State} from '../connections';
 
 test('REGISTER_DEVICE doesnt remove error', () => {

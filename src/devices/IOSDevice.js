@@ -5,9 +5,9 @@
  * @format
  */
 
-import type {DeviceType, LogLevel, DeviceLogEntry} from './BaseDevice.tsx';
+import type {DeviceType, LogLevel, DeviceLogEntry} from './BaseDevice.js';
 import child_process from 'child_process';
-import BaseDevice from './BaseDevice.tsx';
+import BaseDevice from './BaseDevice.js';
 import JSONStream from 'JSONStream';
 import {Transform} from 'stream';
 

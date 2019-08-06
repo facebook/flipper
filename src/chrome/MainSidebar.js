@@ -7,7 +7,7 @@
 
 import {FlipperBasePlugin} from '../plugin.js';
 import config from '../fb-stubs/config';
-import type BaseDevice from '../devices/BaseDevice.tsx';
+import type BaseDevice from '../devices/BaseDevice.js';
 import type Client from '../Client.js';
 import type {UninitializedClient} from '../UninitializedClient.js';
 import type {PluginNotification} from '../reducers/notifications';

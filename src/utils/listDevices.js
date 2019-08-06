@@ -6,7 +6,7 @@
  */
 import {getActiveAndroidDevices} from '../dispatcher/androidDevice';
 import {getActiveDevicesAndSimulators} from '../dispatcher/iOSDevice';
-import type BaseDevice from '../devices/BaseDevice.tsx';
+import type BaseDevice from '../devices/BaseDevice';
 
 export async function listDevices(): Promise<Array<BaseDevice>> {
   const androidDevices = await getActiveAndroidDevices();

@@ -5,7 +5,8 @@
  * @format
  */
 
-import stream from 'stream';
+import type stream from 'stream';
+import type ArchivedDevice from './ArchivedDevice';
 
 export type LogLevel =
   | 'unknown'
@@ -16,7 +17,7 @@ export type LogLevel =
   | 'error'
   | 'fatal';
 
-export type DeviceLogEntry = {
+export type DeviceLogEntry = {|
   date: Date,
   pid: number,
   tid: number,
@@ -24,7 +25,7 @@ export type DeviceLogEntry = {
   type: LogLevel,
   tag: string,
   message: string,
-};
+|};
 
 export type DeviceShell = {
   stdout: stream.Readable,
@@ -40,13 +41,13 @@ export type DeviceType =
   | 'archivedEmulator'
   | 'archivedPhysical';
 
-export type DeviceExport = {
+export type DeviceExport = {|
   os: string,
   title: string,
   deviceType: DeviceType,
   serial: string,
   logs: Array<DeviceLogEntry>,
-};
+|};
 
 export type OS = 'iOS' | 'Android' | 'Windows' | 'MacOS';
 
@@ -70,7 +71,7 @@ export default class BaseDevice {
   serial: string;
 
   // possible src of icon to display next to the device title
-  icon: string | null | undefined;
+  icon: ?string;
 
   logListeners: Map<Symbol, DeviceLogListener> = new Map();
   logEntries: Array<DeviceLogEntry> = [];
@@ -134,7 +135,7 @@ export default class BaseDevice {
     this.logListeners.delete(id);
   }
 
-  spawnShell(): DeviceShell | null | undefined {
+  spawnShell(): ?DeviceShell {
     throw new Error('unimplemented');
   }
 
@@ -142,7 +143,7 @@ export default class BaseDevice {
     throw new Error('unimplemented');
   }
 
-  archive(): any | null | undefined {
+  archive(): ?ArchivedDevice {
     return null;
   }
 }
