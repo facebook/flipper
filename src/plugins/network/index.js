@@ -229,8 +229,13 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
   informClientMockChange = (routes: Map<RequestId, Route>) => {
     this.client.supportsMethod('mockResponses').then(supported => {
       if (supported) {
+        const routesValuesArray = [...routes.values()];
         this.client.call('mockResponses', {
-          routes: routes,
+          routes: routesValuesArray.map((route: Route) => 
+          ({
+            ...route,
+            headers: [...route.headers.values()],
+          })),
         });
       }
     });
@@ -242,7 +247,6 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
       ...this.props.persistedState,
       routes: routes,
     });
-    console.log(routes);
     // inform client
     const filteredMap = new Map(
       [...routes].filter(([k, route]) => !route.isDuplicate),
