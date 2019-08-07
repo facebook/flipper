@@ -10,3 +10,4 @@
 NSString *relativeDimension(CKRelativeDimension dimension);
 NSDictionary<NSString *, NSString *> *flexboxRect(CKFlexboxSpacing spacing);
 CKRelativeDimension relativeStructDimension(NSString *dimension);
+NSDictionary<NSString *, NSString *> *ckcomponentSize(CKComponentSize size);

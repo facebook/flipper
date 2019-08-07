@@ -27,6 +27,7 @@
 #import "CKInsetComponent+Sonar.h"
 #import "CKStatelessComponent+Sonar.h"
 #import "FKDataStorageForLiveEditing.h"
+#import "Utils.h"
 
 /** This protocol isn't actually adopted anywhere, it just lets us use the SEL below */
 @protocol SonarKitLayoutComponentKitOverrideInformalProtocol
@@ -138,6 +139,7 @@ static CK::StaticMutex _mutex = CK_MUTEX_INITIALIZER;
                               withValue: @{
                                            @"frame": SKObject(self.viewContext.frame),
                                            @"controller": SKObject(NSStringFromClass([self.controller class])),
+                                           @"size": SKObject(ckcomponentSize([self size])),
                                            }]];
 
   auto const canBeReusedCounter = self.flipper_canBeReusedCounter;

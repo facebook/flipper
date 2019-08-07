@@ -130,6 +130,7 @@
            @"flexGrow": SKObject(@(child.flexGrow)),
            @"flexShrink": SKObject(@(child.flexShrink)),
            @"zIndex": SKObject(@(child.zIndex)),
+           @"sizeConstraints": SKObject(ckcomponentSize(child.sizeConstraints)),
            @"useTextRounding": SKObject(@(child.useTextRounding)),
            @"margin": flexboxRect(child.margin),
            @"flexBasis": relativeDimension(child.flexBasis),
