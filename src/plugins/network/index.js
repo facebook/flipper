@@ -231,8 +231,7 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
       if (supported) {
         const routesValuesArray = [...routes.values()];
         this.client.call('mockResponses', {
-          routes: routesValuesArray.map((route: Route) => 
-          ({
+          routes: routesValuesArray.map((route: Route) => ({
             ...route,
             headers: [...route.headers.values()],
           })),
