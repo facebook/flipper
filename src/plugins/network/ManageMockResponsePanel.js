@@ -19,18 +19,19 @@ import {
   ContextMenu,
 } from 'flipper';
 
-import {Route} from './types';
+import type {Route} from './types';
 
 import {MockResponseDetails} from './MockResponseDetails';
-import type {RequestId} from './types';
+import type {RequestId, Header} from './types';
 
 type Props = {
-  routes: Route[],
-  handleRoutesChange: (routes: Route[]) => void,
+  routes: Map<RequestId, Route>,
+  handleRoutesChange: (routes: Map<RequestId, Route>) => void,
 };
 
 type State = {
-  selectedIds: [],
+  selectedIds: Array<RequestId>,
+  routes: Map<RequestId, Route>,
 };
 
 const ColumnSizes = {
@@ -104,9 +105,10 @@ export class ManageMockResponsePanel extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
+      ...this.state,
       selectedIds:
-        this.props.routes !== undefined && this.props.routes.length > 0
-          ? [0]
+        this.props.routes !== undefined && this.props.routes.size > 0
+          ? ['0']
           : [],
     };
   }
@@ -115,7 +117,9 @@ export class ManageMockResponsePanel extends Component<Props, State> {
     const {selectedIds} = this.state;
     const selectedId = selectedIds.length === 1 ? selectedIds[0] : null;
     const routes = this.props.routes;
-    routes.splice(selectedId, 1);
+    if (selectedId !== null) {
+      routes.delete(selectedId);
+    }
 
     this.checkDuplicate(routes);
 
@@ -133,7 +137,8 @@ export class ManageMockResponsePanel extends Component<Props, State> {
     const {routes} = this.props;
     if (routes) {
       const rows = [];
-      routes.forEach((route: Route, index: number) => {
+
+      routes.forEach((route: Route, index: RequestId) => {
         rows.push(this.buildRow(route, index));
       });
       return rows;
@@ -141,7 +146,7 @@ export class ManageMockResponsePanel extends Component<Props, State> {
     return [];
   };
 
-  buildRow = (route: Route, index: number) => {
+  buildRow = (route: Route, index: RequestId) => {
     return {
       columns: {
         route: {
@@ -159,31 +164,38 @@ export class ManageMockResponsePanel extends Component<Props, State> {
     };
   };
 
-  checkDuplicate = (routes: Route[]) => {
+  checkDuplicate = (routes?: Map<RequestId, Route>) => {
     const duplicateMap = {};
-    routes.forEach((r: Route, index: number) => {
-      if (duplicateMap[r.method + '|' + r.requestUrl]) {
-        r.isDuplicate = true;
-      } else {
-        r.isDuplicate = false;
-        duplicateMap[r.method + '|' + r.requestUrl] = true;
-      }
-    });
+    if (routes && routes.size > 0) {
+      routes.forEach((r: Route, index: RequestId) => {
+        if (duplicateMap[r.method + '|' + r.requestUrl]) {
+          r.isDuplicate = true;
+        } else {
+          r.isDuplicate = false;
+          duplicateMap[r.method + '|' + r.requestUrl] = true;
+        }
+      });
+    }
   };
 
   addRow = () => {
     const route = {
       requestUrl: '/',
       method: 'GET',
+      data: '',
+      headers: new Map<RequestId, Header>(),
+      isDuplicate: false,
     };
-    const newRoutes = [...this.props.routes, route];
+    const newKey = this.props.routes.size > 0 ? this.props.routes.size : 0;
+    const routes = this.props.routes;
+    routes.set(newKey + '', route);
 
-    this.checkDuplicate(newRoutes);
+    this.checkDuplicate(routes);
 
-    this.props.handleRoutesChange(newRoutes);
+    this.props.handleRoutesChange(routes);
 
     this.setState({
-      selectedIds: [newRoutes.length - 1],
+      selectedIds: [routes.size - 1 + ''],
     });
   };
 
@@ -194,13 +206,14 @@ export class ManageMockResponsePanel extends Component<Props, State> {
     const routes = this.props.routes;
 
     // Set route
-    routes[selectedId] = route;
+    routes.set(selectedId, route);
 
     // Check duplicate
     this.checkDuplicate(routes);
 
     this.setState(
       {
+        ...this.state,
         routes: routes,
       },
       () => {
@@ -213,8 +226,8 @@ export class ManageMockResponsePanel extends Component<Props, State> {
     const {selectedIds} = this.state;
     const {routes} = this.props;
     const selectedId = selectedIds.length === 1 ? selectedIds[0] : null;
-
-    return selectedId != null ? (
+    const route = selectedId ? routes.get(selectedId) : null;
+    return selectedId != null && route != null ? (
       <Panel
         grow={true}
         collapsable={false}
@@ -223,7 +236,7 @@ export class ManageMockResponsePanel extends Component<Props, State> {
         <MockResponseDetails
           key={selectedId}
           id={selectedId}
-          route={routes[selectedId]}
+          route={route}
           handleRouteChange={this.handleRouteChange}
         />
       </Panel>

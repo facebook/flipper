@@ -31,7 +31,7 @@ import {
 
 import {MockResponseDialog} from './MockResponseDialog';
 
-import type {Request, RequestId, Response} from './types.js';
+import type {Request, RequestId, Response, Route} from './types.js';
 import {
   convertRequestToCurlCommand,
   getHeaderValue,
@@ -41,17 +41,18 @@ import RequestDetails from './RequestDetails.js';
 import {clipboard} from 'electron';
 import {URL} from 'url';
 import type {Notification} from '../../plugin';
-import type {Route} from './types';
 
 type PersistedState = {|
   requests: {[id: RequestId]: Request},
   responses: {[id: RequestId]: Response},
-  routes: Route[],
+  routes: Map<RequestId, Route>,
   showMockResponseDialog: boolean,
+  isMockResponseSupported: boolean,
 |};
 
 type State = {|
   selectedIds: Array<RequestId>,
+  isMockResponseSupported: boolean,
 |};
 
 const COLUMN_SIZE = {
@@ -122,7 +123,7 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
   static defaultPersistedState = {
     requests: {},
     responses: {},
-    routes: [],
+    routes: new Map(),
     showMockResponseDialog: false,
     isMockResponseSupported: false,
   };
@@ -187,6 +188,7 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
     }
     this.client.supportsMethod('mockResponses').then(result =>
       this.setState({
+        ...this.state,
         isMockResponseSupported: result,
       }),
     );
@@ -199,6 +201,7 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
   };
 
   state = {
+    ...this.state,
     selectedIds: this.props.deepLinkPayload ? [this.props.deepLinkPayload] : [],
   };
 
@@ -223,7 +226,7 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
     this.props.setPersistedState({responses: {}, requests: {}});
   };
 
-  informClientMockChange = routes => {
+  informClientMockChange = (routes: Map<RequestId, Route>) => {
     this.client.supportsMethod('mockResponses').then(supported => {
       if (supported) {
         this.client.call('mockResponses', {
@@ -233,7 +236,7 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
     });
   };
 
-  handleRoutesChange = (routes: Route[]) => {
+  handleRoutesChange = (routes: Map<RequestId, Route>) => {
     // save to persisted state
     this.props.setPersistedState({
       ...this.props.persistedState,
@@ -241,7 +244,10 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
     });
     console.log(routes);
     // inform client
-    this.informClientMockChange(routes.filter(route => !route.isDuplicate));
+    const filteredMap = new Map(
+      [...routes].filter(([k, route]) => !route.isDuplicate),
+    );
+    this.informClientMockChange(filteredMap);
   };
 
   onMockButtonPressed = () => {
@@ -284,7 +290,7 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
         <NetworkTable
           requests={requests || {}}
           responses={responses || {}}
-          routes={routes || []}
+          routes={routes || new Map()}
           onMockButtonPressed={this.onMockButtonPressed}
           onCloseButtonPressed={this.onCloseButtonPressed}
           showMockResponseDialog={showMockResponseDialog}
@@ -310,8 +316,8 @@ type NetworkTableProps = {
   copyRequestCurlCommand: () => void,
   onRowHighlighted: (keys: TableHighlightedRows) => void,
   highlightedRows: ?Set<string>,
-  routes: Route[],
-  handleRoutesChange: (routes: Route[]) => void,
+  routes: Map<RequestId, Route>,
+  handleRoutesChange: (routes: Map<RequestId, Route>) => void,
   onMockButtonPressed: () => void,
   onCloseButtonPressed: () => void,
   showMockResponseDialog: boolean,
@@ -320,7 +326,7 @@ type NetworkTableProps = {
 
 type NetworkTableState = {|
   sortedRows: TableRows,
-  routes: Route[],
+  routes: Map<RequestId, Route>,
 |};
 
 function formatTimestamp(timestamp: number): string {
@@ -430,9 +436,9 @@ function calculateState(
   },
   nextProps: NetworkTableProps,
   rows: TableRows = [],
-  routes: Route[] = [],
+  routes: Map<RequestId, Route> = new Map(),
 ): NetworkTableState {
-  routes = [...nextProps.routes];
+  routes = new Map([...nextProps.routes]);
   rows = [...rows];
   if (Object.keys(nextProps.requests).length === 0) {
     // cleared

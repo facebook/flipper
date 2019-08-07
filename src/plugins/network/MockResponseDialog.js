@@ -8,13 +8,13 @@
 import {Component, FlexColumn, Button, styled} from 'flipper';
 
 import {ManageMockResponsePanel} from './ManageMockResponsePanel';
-import type {Route} from './types';
+import type {Route, RequestId} from './types';
 
 type Props = {
-  routes: Route[],
+  routes: Map<RequestId, Route>,
   onHide: () => void,
   onDismiss: () => void,
-  handleRoutesChange: (routes: Route[]) => void,
+  handleRoutesChange: (routes: Map<RequestId, Route>) => void,
 };
 
 const Title = styled('div')({

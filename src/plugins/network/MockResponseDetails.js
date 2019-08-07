@@ -28,12 +28,12 @@ import type {RequestId, Header} from './types';
 type Props = {
   id: RequestId,
   route: Route,
-  handleRouteChange: (selectedId: RequestId, route: Route) => {},
+  handleRouteChange: (selectedId: RequestId, route: Route) => void,
 };
 
 type State = {
   activeTab: string,
-  selectedHeaderIds: [],
+  selectedHeaderIds: Array<RequestId>,
 };
 
 const StyledSelectContainer = styled(FlexRow)({
@@ -150,6 +150,7 @@ const StyledContextMenu = styled(ContextMenu)({
 export class MockResponseDetails extends Component<Props, State> {
   state = {
     activeTab: 'data',
+    selectedHeaderIds: [],
   };
 
   updateRouteChange = (route: Route) => {
@@ -162,50 +163,65 @@ export class MockResponseDetails extends Component<Props, State> {
     this.updateRouteChange(route);
   };
 
-  handleURLInputChange = event => {
+  handleURLInputChange = (event: any) => {
     const route = this.props.route;
     route.requestUrl = event.target.value;
     this.updateRouteChange(route);
   };
 
-  handleDataTextAreaChange = event => {
+  handleDataTextAreaChange = (event: any) => {
     const route = this.props.route;
     route.data = event.target.value;
     this.updateRouteChange(route);
   };
 
-  handleHeaderNameChange = event => {
+  handleHeaderNameChange = (event: any) => {
     const route = this.props.route;
     const {selectedHeaderIds} = this.state;
     const selectedId =
       selectedHeaderIds.length === 1 ? selectedHeaderIds[0] : null;
-    route.headers[selectedId].key = event.target.value;
-    this.updateRouteChange(route);
+    if (selectedId != null) {
+      const header = route.headers.get(selectedId);
+      if (header) {
+        header.key = event.target.value;
+        route.headers.set(selectedId, header);
+        this.updateRouteChange(route);
+      }
+    }
   };
 
-  handleHeaderValueChange = event => {
+  handleHeaderValueChange = (event: any) => {
     const route = this.props.route;
     const {selectedHeaderIds} = this.state;
     const selectedId =
       selectedHeaderIds.length === 1 ? selectedHeaderIds[0] : null;
-    route.headers[selectedId].value = event.target.value;
-    this.updateRouteChange(route);
+    if (selectedId != null) {
+      const header = route.headers.get(selectedId);
+      if (header) {
+        header.value = event.target.value;
+        route.headers.set(selectedId, header);
+        this.updateRouteChange(route);
+      }
+    }
   };
 
   onRowHighlighted = (selectedIds: Array<RequestId>) =>
     this.setState({selectedHeaderIds: selectedIds});
 
   onActive = (key: ?string) => {
-    this.setState({
-      activeTab: key,
-    });
+    if (key) {
+      this.setState({
+        ...this.state,
+        activeTab: key,
+      });
+    }
   };
 
   buildRows = () => {
     const {route} = this.props;
     if (route && route.headers) {
       const rows = [];
-      route.headers.forEach((header: Header, index: number) => {
+      route.headers.forEach((header: Header, index: RequestId) => {
         rows.push(this.buildRow(header, index));
       });
       return rows;
@@ -213,7 +229,7 @@ export class MockResponseDetails extends Component<Props, State> {
     return [];
   };
 
-  buildRow = (header: Header, index: number) => {
+  buildRow = (header: Header, index: RequestId) => {
     const {selectedHeaderIds} = this.state;
     const selectedId = selectedHeaderIds
       ? selectedHeaderIds.length === 1
@@ -269,8 +285,11 @@ export class MockResponseDetails extends Component<Props, State> {
       value: '',
     };
     const route = this.props.route;
-    const headers = route.headers ? route.headers : [];
-    headers.push(header);
+    const headers = route.headers
+      ? route.headers
+      : new Map<RequestId, Header>();
+    const index = route.headers ? route.headers.size : 0;
+    headers.set(index + '', header);
     route.headers = headers;
     this.updateRouteChange(route);
   };
@@ -283,8 +302,10 @@ export class MockResponseDetails extends Component<Props, State> {
       ? selectedHeaderIds.length === 1
         ? selectedHeaderIds[0]
         : null
-      : 0;
-    headers.splice(selectedId, 1);
+      : '0';
+    if (selectedId && selectedId != null) {
+      headers.delete(selectedId);
+    }
     route.headers = headers;
     this.updateRouteChange(route);
   };
