@@ -216,7 +216,8 @@ public class ApplicationDescriptor extends NodeDescriptor<ApplicationWrapper> {
 
   @Override
   public FlipperObject getExtraInfo(ApplicationWrapper node) {
-    return new FlipperObject.Builder().put("hasAXNode", true).build();
+    // Application node is it's own linkedNode because it shows up in both the ax and non-ax tree
+    return new FlipperObject.Builder().put("linkedNode", getId(node)).build();
   }
 
   @Override

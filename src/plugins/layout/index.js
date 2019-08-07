@@ -20,6 +20,7 @@ import {
   Toolbar,
   Sidebar,
   DetailSidebar,
+  VerticalRule,
 } from 'flipper';
 import Inspector from './Inspector';
 import ToolbarIcon from './ToolbarIcon';
@@ -168,6 +169,17 @@ export default class Layout extends FlipperPlugin<State, void, PersistedState> {
       />
     );
 
+    const axInspector = this.state.inAXMode && (
+      <Inspector
+        {...inspectorProps}
+        onSelect={selectedAXElement => this.setState({selectedAXElement})}
+        showsSidebar={true}
+        ax
+      />
+    );
+
+    const divider = this.state.inAXMode && <VerticalRule />;
+
     return (
       <FlexColumn grow={true}>
         {this.state.init && (
@@ -211,23 +223,9 @@ export default class Layout extends FlipperPlugin<State, void, PersistedState> {
             </Toolbar>
 
             <FlexRow grow={true}>
-              {this.state.inAXMode ? (
-                <>
-                  <Sidebar position="left" maxWidth={Infinity}>
-                    {inspector}
-                  </Sidebar>
-                  <Inspector
-                    {...inspectorProps}
-                    onSelect={selectedAXElement =>
-                      this.setState({selectedAXElement})
-                    }
-                    showsSidebar={true}
-                    ax
-                  />
-                </>
-              ) : (
-                inspector
-              )}
+              {inspector}
+              {divider}
+              {axInspector}
             </FlexRow>
             <DetailSidebar>
               <InspectorSidebar

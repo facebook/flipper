@@ -59,6 +59,7 @@ export type Props<T> = {
   deepLinkPayload: ?string,
   selectPlugin: (pluginID: string, deepLinkPayload: ?string) => boolean,
   isArchivedDevice: boolean,
+  selectedApp: ?string,
 };
 
 export class FlipperBasePlugin<

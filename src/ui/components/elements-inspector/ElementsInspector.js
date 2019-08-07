@@ -36,9 +36,8 @@ export type ElementAttribute = {|
 |};
 
 export type ElementExtraInfo = {|
-  nonAXWithAXChild?: boolean,
-  linkedAXNode?: string,
-  focused?: boolean,
+  linkedNode?: string, // id of linked node in opposite tree
+  expandWithParent?: boolean,
 |};
 
 export type Element = {|
@@ -86,21 +85,19 @@ export default class ElementsInspector extends Component<{
     } = this.props;
 
     return (
-      <FlexRow grow={true}>
-        <Elements
-          onElementExpanded={onElementExpanded}
-          onElementSelected={onElementSelected}
-          onElementHovered={onElementHovered}
-          selected={selected}
-          focused={focused}
-          searchResults={searchResults}
-          root={root}
-          elements={elements}
-          alternateRowColor={alternateRowColor}
-          contextMenuExtensions={contextMenuExtensions}
-          decorateRow={decorateRow}
-        />
-      </FlexRow>
+      <Elements
+        onElementExpanded={onElementExpanded}
+        onElementSelected={onElementSelected}
+        onElementHovered={onElementHovered}
+        selected={selected}
+        focused={focused}
+        searchResults={searchResults}
+        root={root}
+        elements={elements}
+        alternateRowColor={alternateRowColor}
+        contextMenuExtensions={contextMenuExtensions}
+        decorateRow={decorateRow}
+      />
     );
   }
 }

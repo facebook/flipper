@@ -81,7 +81,11 @@ type ImagesMetaData = {|
   imageDataList: Array<ImageData>,
 |};
 
-export default class extends FlipperPlugin<PluginState, *, PersistedState> {
+export default class FlipperImagesPlugin extends FlipperPlugin<
+  PluginState,
+  *,
+  PersistedState,
+> {
   static defaultPersistedState: PersistedState = {
     images: [],
     events: [],
@@ -98,50 +102,112 @@ export default class extends FlipperPlugin<PluginState, *, PersistedState> {
     store: ?MiddlewareAPI,
   ): Promise<?PersistedState> => {
     const defaultPromise = Promise.resolve(persistedState);
+    if (!persistedState) {
+      persistedState = FlipperImagesPlugin.defaultPersistedState;
+    }
     if (!store) {
       return defaultPromise;
     }
-    return callClient('getAllImageData').then((data: ImagesMetaData) => {
-      if (!data) {
-        return;
-      }
-      const {levels, events, imageDataList} = data;
-      let pluginData: PersistedState = {
-        ...persistedState,
-        images: persistedState
-          ? [...persistedState.images, ...levels.levels]
-          : levels.levels,
-        closeableReferenceLeaks:
-          (persistedState && persistedState.closeableReferenceLeaks) || [],
-      };
+    const selectedDevice = store.getState().connections.selectedDevice;
+    if (selectedDevice && selectedDevice.os === 'iOS') {
+      return Promise.all([
+        callClient('listImages'),
+        callClient('getAllImageEventsInfo'),
+      ]).then(async ([responseImages, responseEvents]) => {
+        const levels: ImagesList = responseImages.levels;
+        const events: Array<ImageEventWithId> = responseEvents.events;
+        let pluginData: PersistedState = {
+          ...persistedState,
+          images: persistedState
+            ? [...persistedState.images, ...levels]
+            : levels,
+          closeableReferenceLeaks:
+            (persistedState && persistedState.closeableReferenceLeaks) || [],
+        };
 
-      events.forEach((event: ImageEventWithId, index) => {
-        if (!event) {
+        events.forEach((event: ImageEventWithId, index) => {
+          if (!event) {
+            return;
+          }
+          const {attribution} = event;
+          if (
+            attribution &&
+            attribution instanceof Array &&
+            attribution.length > 0
+          ) {
+            const surface = attribution[0].trim();
+            if (surface.length > 0) {
+              pluginData.surfaceList.add(surface);
+            }
+          }
+          pluginData = {
+            ...pluginData,
+            events: [{eventId: index, ...event}, ...pluginData.events],
+          };
+        });
+        const idSet: Set<string> = levels.reduce((acc, level: CacheInfo) => {
+          level.imageIds.forEach(id => {
+            acc.add(id);
+          });
+          return acc;
+        }, new Set());
+        const imageDataList: Array<ImageData> = [];
+        for (const id: string of idSet) {
+          const imageData: ImageData = await callClient('getImage', {
+            imageId: id,
+          });
+          imageDataList.push(imageData);
+        }
+        imageDataList.forEach((data: ImageData) => {
+          const imagesMap = {...pluginData.imagesMap};
+          imagesMap[data.imageId] = data;
+          pluginData.imagesMap = imagesMap;
+        });
+        return pluginData;
+      });
+    } else {
+      return callClient('getAllImageData').then((data: ImagesMetaData) => {
+        if (!data) {
           return;
         }
-        const {attribution} = event;
-        if (
-          attribution &&
-          attribution instanceof Array &&
-          attribution.length > 0
-        ) {
-          const surface = attribution[0].trim();
-          if (surface.length > 0) {
-            pluginData.surfaceList.add(surface);
-          }
-        }
-        pluginData = {
-          ...pluginData,
-          events: [{eventId: index, ...event}, ...pluginData.events],
+        const {levels, events, imageDataList} = data;
+        let pluginData: PersistedState = {
+          ...persistedState,
+          images: persistedState
+            ? [...persistedState.images, ...levels.levels]
+            : levels.levels,
+          closeableReferenceLeaks:
+            (persistedState && persistedState.closeableReferenceLeaks) || [],
         };
-      });
 
-      imageDataList.forEach((imageData: ImageData) => {
-        const {imageId} = imageData;
-        pluginData.imagesMap[imageId] = imageData;
+        events.forEach((event: ImageEventWithId, index) => {
+          if (!event) {
+            return;
+          }
+          const {attribution} = event;
+          if (
+            attribution &&
+            attribution instanceof Array &&
+            attribution.length > 0
+          ) {
+            const surface = attribution[0] ? attribution[0].trim() : undefined;
+            if (surface && surface.length > 0) {
+              pluginData.surfaceList.add(surface);
+            }
+          }
+          pluginData = {
+            ...pluginData,
+            events: [{eventId: index, ...event}, ...pluginData.events],
+          };
+        });
+
+        imageDataList.forEach((imageData: ImageData) => {
+          const {imageId} = imageData;
+          pluginData.imagesMap[imageId] = imageData;
+        });
+        return pluginData;
       });
-      return pluginData;
-    });
+    }
   };
 
   static persistedStateReducer = (
@@ -164,8 +230,8 @@ export default class extends FlipperPlugin<PluginState, *, PersistedState> {
       const {surfaceList} = persistedState;
       const {attribution} = event;
       if (attribution instanceof Array && attribution.length > 0) {
-        const surface = attribution[0].trim();
-        if (surface.length > 0) {
+        const surface = attribution[0] ? attribution[0].trim() : undefined;
+        if (surface && surface.length > 0) {
           surfaceList.add(surface);
         }
       }

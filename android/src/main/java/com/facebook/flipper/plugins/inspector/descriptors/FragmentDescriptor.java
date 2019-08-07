@@ -77,7 +77,7 @@ public class FragmentDescriptor extends NodeDescriptor<Fragment> {
 
   @Override
   public FlipperObject getExtraInfo(Fragment node) {
-    return new FlipperObject.Builder().put("nonAXWithAXChild", true).build();
+    return new FlipperObject.Builder().put("expandWithParent", true).build();
   }
 
   @Nullable

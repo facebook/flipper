@@ -50,7 +50,7 @@ type Props = {|
   target: Client | BaseDevice | null,
   pluginKey: ?string,
   deepLinkPayload: ?string,
-
+  selectedApp: ?string,
   selectPlugin: (payload: {|
     selectedPlugin: ?string,
     selectedApp?: ?string,
@@ -94,6 +94,7 @@ class PluginContainer extends PureComponent<Props> {
       pluginKey,
       target,
       isArchivedDevice,
+      selectedApp,
     } = this.props;
     if (!activePlugin || !target || !pluginKey) {
       console.warn(`No selected plugin. Rendering empty!`);
@@ -102,6 +103,7 @@ class PluginContainer extends PureComponent<Props> {
     const props: PluginProps<Object> = {
       key: pluginKey,
       logger: this.props.logger,
+      selectedApp,
       persistedState: activePlugin.defaultPersistedState
         ? {
             ...activePlugin.defaultPersistedState,
@@ -190,6 +192,7 @@ export default connect<Props, OwnProps, _, _, _, _>(
       deepLinkPayload,
       pluginKey,
       isArchivedDevice,
+      selectedApp,
     };
   },
   {

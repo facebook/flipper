@@ -16,18 +16,20 @@ import {
 } from 'flipper';
 import {AutoCompleteSheet, IconButton, FavoriteButton} from './';
 
-import type {Bookmark} from '../flow-types';
+import type {AutoCompleteProvider, Bookmark} from '../flow-types';
 
 type Props = {|
   onFavorite: (query: string) => void,
   onNavigate: (query: string) => void,
   bookmarks: Map<string, Bookmark>,
+  providers: Array<AutoCompleteProvider>,
 |};
 
 type State = {|
   query: string,
   inputFocused: boolean,
   autoCompleteSheetOpen: boolean,
+  searchInputValue: string,
 |};
 
 const IconContainer = styled('div')({
@@ -65,73 +67,84 @@ class SearchBar extends Component<Props, State> {
     inputFocused: false,
     autoCompleteSheetOpen: false,
     query: '',
+    searchInputValue: '',
   };
 
-  favorite = (query: string) => {
-    this.props.onFavorite(query);
+  favorite = (searchInputValue: string) => {
+    this.props.onFavorite(searchInputValue);
   };
 
-  navigateTo = (query: string) => {
-    this.setState({query});
-    this.props.onNavigate(query);
+  navigateTo = (searchInputValue: string) => {
+    this.setState({query: searchInputValue, searchInputValue});
+    this.props.onNavigate(searchInputValue);
   };
 
   queryInputChanged = (event: SyntheticInputEvent<>) => {
-    this.setState({query: event.target.value});
+    const value = event.target.value;
+    this.setState({query: value, searchInputValue: value});
   };
 
   render = () => {
-    const {bookmarks} = this.props;
-    const {autoCompleteSheetOpen, inputFocused, query} = this.state;
+    const {bookmarks, providers} = this.props;
+    const {
+      autoCompleteSheetOpen,
+      inputFocused,
+      searchInputValue,
+      query,
+    } = this.state;
     return (
       <ToolbarContainer>
         <Toolbar>
           <SearchBox className={inputFocused ? 'drop-shadow' : null}>
             <SearchInputContainer>
               <SearchInput
-                value={query}
+                value={searchInputValue}
                 onBlur={() =>
                   this.setState({
                     autoCompleteSheetOpen: false,
                     inputFocused: false,
                   })
                 }
-                onFocus={() =>
+                onFocus={event => {
+                  event.target.select();
                   this.setState({
                     autoCompleteSheetOpen: true,
                     inputFocused: true,
-                  })
-                }
+                  });
+                }}
                 onChange={this.queryInputChanged}
                 onKeyPress={e => {
                   if (e.key === 'Enter') {
-                    this.navigateTo(this.state.query);
+                    this.navigateTo(this.state.searchInputValue);
                     e.target.blur();
                   }
                 }}
                 placeholder="Navigate To..."
               />
-              {autoCompleteSheetOpen ? (
+              {autoCompleteSheetOpen && query.length > 0 ? (
                 <AutoCompleteSheet
-                  bookmarks={bookmarks}
+                  providers={providers}
                   onNavigate={this.navigateTo}
-                  onHighlighted={newQuery => this.setState({query: newQuery})}
+                  onHighlighted={newInputValue =>
+                    this.setState({searchInputValue: newInputValue})
+                  }
+                  query={query}
                 />
               ) : null}
             </SearchInputContainer>
           </SearchBox>
-          {query.length > 0 ? (
+          {searchInputValue.length > 0 ? (
             <IconContainer>
               <IconButton
                 icon="send"
                 size={16}
                 outline={true}
-                onClick={() => this.navigateTo(this.state.query)}
+                onClick={() => this.navigateTo(searchInputValue)}
               />
               <FavoriteButton
                 size={16}
-                highlighted={bookmarks.has(query)}
-                onClick={() => this.favorite(this.state.query)}
+                highlighted={bookmarks.has(searchInputValue)}
+                onClick={() => this.favorite(searchInputValue)}
               />
             </IconContainer>
           ) : null}

@@ -6,22 +6,23 @@
  * @flow strict-local
  */
 
-import {styled} from 'flipper';
-import {useEffect, useState} from 'react';
+import {Glyph, styled} from 'flipper';
+import {useItemNavigation} from '../hooks/autoCompleteSheet';
+import {filterProvidersToLineItems} from '../util/autoCompleteProvider';
 
-import type {Bookmark} from '../flow-types';
+import type {AutoCompleteProvider} from '../flow-types';
 
 type Props = {|
-  bookmarks: Map<string, Bookmark>,
+  providers: Array<AutoCompleteProvider>,
   onHighlighted: string => void,
   onNavigate: string => void,
+  query: string,
 |};
 
 const MAX_ITEMS = 5;
 
 const AutoCompleteSheetContainer = styled('div')({
   width: '100%',
-  overflowY: 'scroll',
   position: 'absolute',
   top: '100%',
   backgroundColor: 'white',
@@ -44,56 +45,26 @@ const SheetItem = styled('div')({
   },
 });
 
-// Menu Item Navigation Hook
-const useItemNavigation = (
-  bookmarks: Array<Bookmark>,
-  onHighlighted: string => void,
-) => {
-  const [selectedItem, setSelectedItem] = useState(-1);
-
-  const handleKeyPress = ({key}) => {
-    switch (key) {
-      case 'ArrowDown': {
-        const newSelectedItem =
-          selectedItem < MAX_ITEMS - 1 ? selectedItem + 1 : selectedItem;
-        setSelectedItem(newSelectedItem);
-        onHighlighted(bookmarks[newSelectedItem].uri);
-        break;
-      }
-      case 'ArrowUp': {
-        const newSelectedItem =
-          selectedItem > 0 ? selectedItem - 1 : selectedItem;
-        setSelectedItem(newSelectedItem);
-        onHighlighted(bookmarks[newSelectedItem].uri);
-        break;
-      }
-      default:
-        break;
-    }
-  };
-
-  useEffect(() => {
-    window.addEventListener('keydown', handleKeyPress);
-    return () => {
-      window.removeEventListener('keydown', handleKeyPress);
-    };
-  });
-
-  return selectedItem;
-};
+const SheetItemIcon = styled('span')({
+  padding: 8,
+});
 
 export default (props: Props) => {
-  const {bookmarks, onHighlighted, onNavigate} = props;
-  const filteredBookmarks = [...bookmarks.values()].slice(0, MAX_ITEMS);
-  const selectedItem = useItemNavigation(filteredBookmarks, onHighlighted);
+  const {providers, onHighlighted, onNavigate, query} = props;
+  const lineItems = filterProvidersToLineItems(providers, query, MAX_ITEMS);
+  lineItems.unshift({uri: query, matchPattern: query, icon: 'send'});
+  const selectedItem = useItemNavigation(lineItems, onHighlighted);
   return (
     <AutoCompleteSheetContainer>
-      {filteredBookmarks.map((bookmark, idx) => (
+      {lineItems.map((lineItem, idx) => (
         <SheetItem
           className={idx === selectedItem ? 'selected' : null}
-          key={bookmark.uri}
-          onMouseDown={() => onNavigate(bookmark.uri)}>
-          {bookmark.uri}
+          key={idx}
+          onMouseDown={() => onNavigate(lineItem.uri)}>
+          <SheetItemIcon>
+            <Glyph name={lineItem.icon} size={16} variant="outline" />
+          </SheetItemIcon>
+          {lineItem.matchPattern}
         </SheetItem>
       ))}
     </AutoCompleteSheetContainer>

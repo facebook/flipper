@@ -5,133 +5,88 @@
  * @format
  */
 
-// list of icons that are prefetched in the service worker when launching the app
-export const precachedIcons: Array<string> = [
-  {
-    name: 'arrow-right',
-    size: 12,
-  },
-  {
-    name: 'caution-octagon',
-  },
-  {
-    name: 'caution-triangle',
-  },
-  {
-    name: 'info-circle',
-  },
-  {
-    name: 'magic-wand',
-    size: 20,
-  },
-  {
-    name: 'magnifying-glass',
-  },
-  {
-    name: 'minus-circle',
-    size: 12,
-  },
-  {
-    name: 'mobile',
-    size: 12,
-  },
-  {
-    name: 'box',
-    size: 12,
-  },
-  {
-    name: 'desktop',
-    size: 12,
-  },
-  {
-    name: 'bug',
-    size: 12,
-  },
-  {
-    name: 'posts',
-    size: 20,
-  },
-  {
-    name: 'rocket',
-    size: 20,
-  },
-  {
-    name: 'tools',
-    size: 20,
-  },
-  {
-    name: 'triangle-down',
-    size: 12,
-  },
-  {
-    name: 'triangle-right',
-    size: 12,
-  },
-  {
-    name: 'chevron-right',
-    size: 8,
-  },
-  {
-    name: 'chevron-down',
-    size: 8,
-  },
-  {
-    name: 'star',
-    size: 16,
-    variant: 'filled',
-  },
-  {
-    name: 'star',
-    size: 16,
-    variant: 'outline',
-  },
-].map(icon =>
-  getIconUrl(icon.name, icon.size || undefined, icon.variant || undefined),
-);
+/* This file needs to be plain JS to be imported by scripts/build-release.js */
+/* eslint-disable import/no-commonjs */
 
-export function getIconUrl(
-  name: string,
-  size?: number = 16,
-  variant?: 'filled' | 'outline' = 'filled',
-): string {
-  if (name.indexOf('/') > -1) {
-    return name;
-  }
+const AVAILABLE_SIZES = [8, 10, 12, 16, 18, 20, 24, 32];
+const DENSITIES = [1, 1.5, 2, 3, 4];
+const fs = require('fs');
+const path = require('path');
+const {remote} = require('electron');
 
-  const AVAILABLE_SIZES = [8, 10, 12, 16, 18, 20, 24, 32];
-  const SCALE = [1, 1.5, 2, 3, 4];
+module.exports = {
+  ICONS: {
+    'arrow-right': [12],
+    'caution-octagon': [16],
+    'caution-triangle': [16],
+    'info-circle': [16],
+    'magic-wand': [20],
+    'magnifying-glass': [20],
+    'minus-circle': [12],
+    mobile: [12],
+    box: [12],
+    desktop: [12],
+    bug: [12],
+    posts: [20],
+    rocket: [20],
+    tools: [20],
+    'triangle-down': [12],
+    'triangle-right': [12],
+    'chevron-right': [8],
+    'chevron-down': [8],
+    star: [16],
+    'star-outline': [16],
+  },
 
-  let requestedSize: number = size;
-  if (!AVAILABLE_SIZES.includes(size)) {
-    // find the next largest size
-    const possibleSize: ?number = AVAILABLE_SIZES.find(size => {
-      return size > requestedSize;
-    });
-
-    // set to largest size if the real size is larger than what we have
-    if (possibleSize == null) {
-      requestedSize = Math.max(...AVAILABLE_SIZES);
-    } else {
-      requestedSize = possibleSize;
+  // $FlowFixMe: not using flow in this file
+  getIconURL(name, size, density) {
+    if (name.indexOf('/') > -1) {
+      return name;
     }
-  }
 
-  let requestedScale: number =
-    typeof window !== 'undefined' ? window.devicePixelRatio : 1;
+    let requestedSize = size;
+    if (!AVAILABLE_SIZES.includes(size)) {
+      // find the next largest size
+      const possibleSize = AVAILABLE_SIZES.find(size => {
+        return size > requestedSize;
+      });
 
-  if (!SCALE.includes(requestedScale)) {
-    // find the next largest size
-    const possibleScale: ?number = SCALE.find(scale => {
-      return scale > requestedScale;
-    });
-
-    // set to largest size if the real size is larger than what we have
-    if (possibleScale == null) {
-      requestedScale = Math.max(...SCALE);
-    } else {
-      requestedScale = possibleScale;
+      // set to largest size if the real size is larger than what we have
+      if (possibleSize == null) {
+        requestedSize = Math.max(...AVAILABLE_SIZES);
+      } else {
+        requestedSize = possibleSize;
+      }
     }
-  }
 
-  return `https://external.xx.fbcdn.net/assets/?name=${name}&variant=${variant}&size=${requestedSize}&set=facebook_icons&density=${requestedScale}x`;
-}
+    if (!DENSITIES.includes(density)) {
+      // find the next largest size
+      const possibleDensity = DENSITIES.find(scale => {
+        return scale > density;
+      });
+
+      // set to largest size if the real size is larger than what we have
+      if (possibleDensity == null) {
+        density = Math.max(...DENSITIES);
+      } else {
+        density = possibleDensity;
+      }
+    }
+
+    let variant = 'filled';
+    if (name.endsWith('-outline')) {
+      name = name.replace('-outline', '');
+      variant = 'outline';
+    }
+
+    const localPath = path.join('icons', `${name}-${size}@${density}x.png`);
+    // resolve icon locally if possible
+    if (
+      remote &&
+      fs.existsSync(path.join(remote.app.getAppPath(), localPath))
+    ) {
+      return localPath;
+    }
+    return `https://external.xx.fbcdn.net/assets/?name=${name}&variant=${variant}&size=${requestedSize}&set=facebook_icons&density=${density}x`;
+  },
+};

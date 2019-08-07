@@ -15,28 +15,40 @@ function transform({filename, options, src}) {
   const presets = [require('../node_modules/@babel/preset-react')];
   const isPlugin =
     options.projectRoot && !__dirname.startsWith(options.projectRoot);
+  const isTypeScript = filename.endsWith('.tsx');
 
   let ast = babylon.parse(src, {
     filename,
-    plugins: [
-      'jsx',
-      ['flow', {all: true}],
-      'classProperties',
-      'objectRestSpread',
-      'optionalChaining',
-    ],
+    plugins: isTypeScript
+      ? ['jsx', 'typescript', 'classProperties']
+      : [
+          'jsx',
+          ['flow', {all: true}],
+          'classProperties',
+          'objectRestSpread',
+          'optionalChaining',
+        ],
     sourceType: 'module',
   });
 
   // run babel
-  const plugins = [
-    require('../node_modules/@babel/plugin-transform-modules-commonjs'),
-    require('../node_modules/@babel/plugin-proposal-object-rest-spread'),
-    require('../node_modules/@babel/plugin-proposal-class-properties'),
-    require('../node_modules/@babel/plugin-transform-flow-strip-types'),
-    require('../node_modules/@babel/plugin-proposal-optional-chaining'),
-    require('./dynamic-requires.js'),
-  ];
+  const plugins = [];
+
+  if (!isTypeScript) {
+    plugins.push(
+      require('../node_modules/@babel/plugin-transform-modules-commonjs'),
+      require('../node_modules/@babel/plugin-proposal-object-rest-spread'),
+      require('../node_modules/@babel/plugin-proposal-class-properties'),
+      require('../node_modules/@babel/plugin-transform-flow-strip-types'),
+      require('../node_modules/@babel/plugin-proposal-optional-chaining'),
+      require('./dynamic-requires.js'),
+    );
+  } else {
+    plugins.push(
+      require('../node_modules/@babel/plugin-transform-typescript'),
+      require('../node_modules/@babel/plugin-transform-modules-commonjs'),
+    );
+  }
 
   if (
     fs.existsSync(

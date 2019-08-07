@@ -130,6 +130,10 @@ export type ManagedTableProps = {|
    * Table scroll horizontally, if needed
    */
   horizontallyScrollable?: boolean,
+  /**
+   * Whether to allow navigation via arrow keys. Default: true
+   */
+  enableKeyboardNavigation?: boolean,
 |};
 
 type ManagedTableState = {|
@@ -155,6 +159,7 @@ class ManagedTable extends React.Component<
     highlightableRows: true,
     multiHighlight: false,
     autoHeight: false,
+    enableKeyboardNavigation: true,
   };
 
   getTableKey = (): string => {
@@ -304,7 +309,8 @@ class ManagedTable extends React.Component<
       this.onCopy(false);
     } else if (
       (e.keyCode === 38 || e.keyCode === 40) &&
-      this.props.highlightableRows
+      this.props.highlightableRows &&
+      this.props.enableKeyboardNavigation
     ) {
       // arrow navigation
       const {rows} = this.props;

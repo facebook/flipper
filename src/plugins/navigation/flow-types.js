@@ -9,13 +9,16 @@
 export type URI = string;
 
 export type State = {|
-  bookmarks: Map<URI, Bookmark>,
   shouldShowSaveBookmarkDialog: boolean,
   saveBookmarkURI: ?URI,
 |};
 
 export type PersistedState = {|
+  bookmarks: Map<URI, Bookmark>,
   navigationEvents: Array<NavigationEvent>,
+  bookmarksProvider: AutoCompleteProvider,
+  appMatchPatterns: Array<AppMatchPattern>,
+  appMatchPatternsProvider: AutoCompleteProvider,
 |};
 
 export type NavigationEvent = {|
@@ -37,4 +40,9 @@ export type AutoCompleteLineItem = {|
   icon: string,
   matchPattern: string,
   uri: URI,
+|};
+
+export type AppMatchPattern = {|
+  className: string,
+  pattern: string,
 |};

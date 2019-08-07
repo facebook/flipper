@@ -48,6 +48,7 @@ export default class RatingButton extends Component<Props, State> {
       .fill(true)
       .map<Element<*>>((_, index) => (
         <div
+          key={index}
           role="button"
           tabIndex={0}
           onMouseEnter={() => {
