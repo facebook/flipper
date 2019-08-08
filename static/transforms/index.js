@@ -47,6 +47,7 @@ function transform({filename, options, src}) {
     plugins.push(
       require('../node_modules/@babel/plugin-transform-typescript'),
       require('../node_modules/@babel/plugin-transform-modules-commonjs'),
+      require('../node_modules/@babel/plugin-proposal-class-properties'),
     );
   }
 
