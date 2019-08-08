@@ -5,17 +5,11 @@
  * @format
  */
 
-import {
-  FlexRow,
-  colors,
-  LoadingIndicator,
-  Glyph,
-  Component,
-  styled,
-} from 'flipper';
+import {FlexRow, colors, LoadingIndicator, Glyph, styled} from 'flipper';
 import {remote} from 'electron';
 import isProduction from '../utils/isProduction.js';
 import config from '../fb-stubs/config.js';
+import React, {Component} from 'react';
 
 const Container = styled(FlexRow)({
   alignItems: 'center',
@@ -36,7 +30,7 @@ type Props = {
 };
 
 export default class AutoUpdateVersion extends Component<Props, State> {
-  state = {
+  state: State = {
     updater: 'update-not-available',
   };
 
@@ -54,7 +48,7 @@ export default class AutoUpdateVersion extends Component<Props, State> {
       remote.autoUpdater.on('update-downloaded', () => {
         this.setState({updater: 'update-downloaded'});
 
-        const notification = new window.Notification('Update available', {
+        const notification = new Notification('Update available', {
           body: 'Restart Flipper to update to the latest version.',
           requireInteraction: true,
         });

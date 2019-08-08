@@ -28,7 +28,7 @@ import {
 import RatingButton from './RatingButton.js';
 import DevicesButton from './DevicesButton.js';
 import ScreenCaptureButtons from './ScreenCaptureButtons.js';
-import AutoUpdateVersion from './AutoUpdateVersion.js';
+import AutoUpdateVersion from './AutoUpdateVersion';
 import UpdateIndicator from './UpdateIndicator.js';
 import config from '../fb-stubs/config.js';
 import {isAutoUpdaterEnabled} from '../utils/argvUtils.js';
