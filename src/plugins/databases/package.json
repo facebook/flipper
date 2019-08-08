@@ -6,6 +6,8 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
+    "sql-formatter": "^2.3.3",
+    "dateformat": "^3.0.3"
   },
   "bugs": {
     "email": "oncall+flipper@xmail.facebook.com",

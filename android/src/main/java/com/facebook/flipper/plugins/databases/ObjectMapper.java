@@ -173,17 +173,21 @@ public class ObjectMapper {
       DatabaseExecuteSqlResponse databaseExecuteSqlResponse) {
 
     FlipperArray.Builder columnBuilder = new FlipperArray.Builder();
-    for (String columnName : databaseExecuteSqlResponse.columns) {
-      columnBuilder.put(columnName);
+    if (databaseExecuteSqlResponse.columns != null) {
+      for (String columnName : databaseExecuteSqlResponse.columns) {
+        columnBuilder.put(columnName);
+      }
     }
 
     FlipperArray.Builder rowBuilder = new FlipperArray.Builder();
-    for (List<Object> row : databaseExecuteSqlResponse.values) {
-      FlipperArray.Builder valueBuilder = new FlipperArray.Builder();
-      for (Object item : row) {
-        valueBuilder.put(objectAndTypeToFlipperObject(item));
+    if (databaseExecuteSqlResponse.values != null) {
+      for (List<Object> row : databaseExecuteSqlResponse.values) {
+        FlipperArray.Builder valueBuilder = new FlipperArray.Builder();
+        for (Object item : row) {
+          valueBuilder.put(objectAndTypeToFlipperObject(item));
+        }
+        rowBuilder.put(valueBuilder.build());
       }
-      rowBuilder.put(valueBuilder.build());
     }
 
     return new FlipperObject.Builder()

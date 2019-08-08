@@ -1,7 +1,6 @@
 [ignore]
 .*/scripts/.*
 .*/coverage/.*
-.*/node_modules/.*
 .*/build/.*
 .*/dist/.*
 .*/static/.*
@@ -9,6 +8,7 @@
 .*/website/.*
 <PROJECT_ROOT>/src/plugins/sections/d3/d3.js$
 .*\.tsx
+.*flow-typed/.*
 
 [libs]
 flow-typed
