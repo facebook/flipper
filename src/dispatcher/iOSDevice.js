@@ -6,7 +6,7 @@
  */
 
 import type {ChildProcess} from 'child_process';
-import type {Store} from '../reducers/index.js';
+import type {Store} from '../reducers/index.tsx';
 import type {Logger} from '../fb-interfaces/Logger.js';
 import type {DeviceType} from '../devices/BaseDevice';
 import {promisify} from 'util';

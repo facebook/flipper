@@ -6,9 +6,9 @@
  */
 import type BaseDevice from '../devices/BaseDevice.js';
 import {FlipperDevicePlugin, FlipperPlugin} from '../plugin.js';
-import type {State as PluginStatesState} from '../reducers/pluginStates.js';
+import type {State as PluginStatesState} from '../reducers/pluginStates.tsx';
 import {pluginsClassMap} from './exportData.js';
-import type {State as PluginsState} from '../reducers/plugins.js';
+import type {State as PluginsState} from '../reducers/plugins.tsx';
 import type {PluginDefinition} from '../dispatcher/plugins';
 
 export function getPluginKey(

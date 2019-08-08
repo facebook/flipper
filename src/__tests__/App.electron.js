@@ -8,7 +8,7 @@ import React from 'react';
 import {App} from '../App.js';
 import {Provider} from 'react-redux';
 import renderer from 'react-test-renderer';
-import reducers from '../reducers/index.js';
+import reducers from '../reducers/index.tsx';
 import configureStore from 'redux-mock-store';
 import {init as initLogger} from '../fb-stubs/Logger';
 import BugReporter from '../fb-stubs/BugReporter.js';

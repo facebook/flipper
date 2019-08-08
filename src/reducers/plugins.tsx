@@ -6,19 +6,18 @@
  */
 
 import {FlipperPlugin, FlipperDevicePlugin} from '../plugin.js';
-
-import type {PluginDefinition} from '../dispatcher/plugins';
+import {PluginDefinition} from '../dispatcher/plugins';
 
 export type State = {
-  devicePlugins: Map<string, Class<FlipperDevicePlugin<>>>,
-  clientPlugins: Map<string, Class<FlipperPlugin<>>>,
+  devicePlugins: Map<string, typeof FlipperDevicePlugin>,
+  clientPlugins: Map<string, typeof FlipperPlugin>,
   gatekeepedPlugins: Array<PluginDefinition>,
   disabledPlugins: Array<PluginDefinition>,
   failedPlugins: Array<[PluginDefinition, string]>,
   selectedPlugins: Array<string>,
 };
 
-type P = Class<FlipperPlugin<> | FlipperDevicePlugin<>>;
+type P = typeof FlipperPlugin | typeof FlipperDevicePlugin;
 
 export type Action =
   | {

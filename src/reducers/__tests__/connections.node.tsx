@@ -7,7 +7,7 @@
 
 import reducer from '../connections';
 import BaseDevice from '../../devices/BaseDevice';
-import type {State} from '../connections';
+import {State} from '../connections';
 
 test('REGISTER_DEVICE doesnt remove error', () => {
   const initialState: State = reducer(undefined, {

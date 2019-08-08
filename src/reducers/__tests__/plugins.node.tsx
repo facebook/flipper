@@ -83,7 +83,6 @@ test('do not add other classes', () => {
       disabledPlugins: [],
       selectedPlugins: [],
     },
-    // $FlowFixMe testing wrong classes on purpose here
     registerPlugins([testBasePlugin]),
   );
   expect(res.devicePlugins.size).toEqual(0);

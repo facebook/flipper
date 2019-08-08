@@ -8,7 +8,7 @@ import type {FlipperPlugin, FlipperDevicePlugin} from './plugin.js';
 import type {Logger} from './fb-interfaces/Logger';
 import BaseDevice from './devices/BaseDevice.js';
 import type {Props as PluginProps} from './plugin';
-import {pluginKey as getPluginKey} from './reducers/pluginStates';
+import {pluginKey as getPluginKey} from './reducers/pluginStates.tsx';
 import Client from './Client.js';
 import {
   ErrorBoundary,
@@ -21,8 +21,8 @@ import {
 } from 'flipper';
 import React from 'react';
 import {connect} from 'react-redux';
-import {setPluginState} from './reducers/pluginStates.js';
-import {selectPlugin} from './reducers/connections';
+import {setPluginState} from './reducers/pluginStates.tsx';
+import {selectPlugin} from './reducers/connections.tsx';
 import NotificationsHub from './NotificationsHub';
 import {activateMenuItems} from './MenuBar.js';
 

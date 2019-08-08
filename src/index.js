@@ -24,10 +24,10 @@ export {clipboard} from 'electron';
 export * from './fb-stubs/constants.js';
 export * from './fb-stubs/createPaste.js';
 export {connect} from 'react-redux';
-export {selectPlugin} from './reducers/connections';
+export {selectPlugin} from './reducers/connections.tsx';
 export {getPluginKey, getPersistedState} from './utils/pluginUtils.js';
 export {default as BaseDevice} from './devices/BaseDevice.js';
-export type {Store, MiddlewareAPI} from './reducers/index.js';
+export type {Store, MiddlewareAPI} from './reducers/index.tsx';
 
 export {
   default as SidebarExtensions,

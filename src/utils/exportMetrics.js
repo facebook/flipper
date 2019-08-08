@@ -6,8 +6,8 @@
  */
 import type {FlipperPlugin, FlipperDevicePlugin} from 'flipper';
 import {serialize} from './serialization';
-import type {State as PluginStatesState} from '../reducers/pluginStates';
-import type {Store} from '../reducers';
+import type {State as PluginStatesState} from '../reducers/pluginStates.tsx';
+import type {Store} from '../reducers/index.tsx';
 import fs from 'fs';
 import type {ExportType} from './exportData';
 import {fetchMetadata, pluginsClassMap} from './exportData';

@@ -9,7 +9,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import Sidebar from '../ui/components/Sidebar';
 import {connect} from 'react-redux';
-import {toggleRightSidebarAvailable} from '../reducers/application.js';
+import {toggleRightSidebarAvailable} from '../reducers/application.tsx';
 
 type OwnProps = {|
   children: any,

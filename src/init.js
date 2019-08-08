@@ -15,7 +15,7 @@ import BugReporter from './fb-stubs/BugReporter.js';
 import setupPrefetcher from './fb-stubs/Prefetcher.js';
 import {createStore} from 'redux';
 import {persistStore} from 'redux-persist';
-import reducers from './reducers/index.js';
+import reducers from './reducers/index.tsx';
 import dispatcher from './dispatcher/index.js';
 import TooltipProvider from './ui/components/TooltipProvider.js';
 import config from './utils/processConfig.js';

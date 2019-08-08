@@ -6,17 +6,17 @@
  */
 
 import {Component, connect} from 'flipper';
-import type {ShareType} from '../reducers/application.js';
-import type {State as PluginState} from '../reducers/plugins.js';
-import type {State as PluginStatesState} from '../reducers/pluginStates.js';
-import type {ActiveSheet} from '../reducers/application.js';
-import {selectedPlugins as actionForSelectedPlugins} from '../reducers/plugins.js';
+import type {ShareType} from '../reducers/application.tsx';
+import type {State as PluginState} from '../reducers/plugins.tsx';
+import type {State as PluginStatesState} from '../reducers/pluginStates.tsx';
+import type {ActiveSheet} from '../reducers/application.tsx';
+import {selectedPlugins as actionForSelectedPlugins} from '../reducers/plugins.tsx';
 import {getActivePersistentPlugins} from '../utils/pluginUtils';
 import {
   ACTIVE_SHEET_SHARE_DATA,
   setActiveSheet as getActiveSheetAction,
   setExportDataToFileActiveSheet as getExportDataToFileActiveSheetAction,
-} from '../reducers/application.js';
+} from '../reducers/application.tsx';
 import SelectPluginSheet from './SelectPluginSheet';
 
 type OwnProps = {|

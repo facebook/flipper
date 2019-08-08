@@ -5,10 +5,9 @@
  * @format
  */
 
-// $FlowFixMe T47375728
 import TitleBar from '../TitleBar.tsx';
 import renderer from 'react-test-renderer';
-import reducers from '../../reducers/index.js';
+import reducers from '../../reducers/index.tsx';
 import configureStore from 'redux-mock-store';
 import {Provider} from 'react-redux';
 

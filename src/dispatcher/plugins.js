@@ -5,10 +5,10 @@
  * @format
  */
 
-import type {Store} from '../reducers/index.js';
+import type {Store} from '../reducers/index.tsx';
 import type {Logger} from '../fb-interfaces/Logger.js';
 import type {FlipperPlugin, FlipperDevicePlugin} from '../plugin.js';
-import type {State} from '../reducers/plugins';
+import type {State} from '../reducers/plugins.tsx';
 
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -18,7 +18,7 @@ import {
   addGatekeepedPlugins,
   addDisabledPlugins,
   addFailedPlugins,
-} from '../reducers/plugins';
+} from '../reducers/plugins.tsx';
 import {remote} from 'electron';
 import GK from '../fb-stubs/GK';
 import {FlipperBasePlugin} from '../plugin.js';

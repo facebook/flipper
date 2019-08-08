@@ -8,7 +8,7 @@
 import {default as reducer, login, logout} from '../user';
 
 test('login', () => {
-  const userData = {username: 'Jane Doe'};
+  const userData = {name: 'Jane Doe'};
   const res = reducer({}, login(userData));
   expect(res).toEqual(userData);
 });
@@ -16,7 +16,7 @@ test('login', () => {
 test('logout', () => {
   const res = reducer(
     {
-      username: 'Jane Doe',
+      name: 'Jane Doe',
     },
     logout(),
   );

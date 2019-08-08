@@ -10,7 +10,7 @@ import {ActiveSheet} from '../reducers/application';
 
 import {styled, FlexRow, Glyph, Text, colors} from 'flipper';
 import {logout} from '../reducers/user';
-import {setActiveSheet, ACTIVE_SHEET_SIGN_IN} from '../reducers/application.js';
+import {setActiveSheet, ACTIVE_SHEET_SIGN_IN} from '../reducers/application';
 import {connect} from 'react-redux';
 import electron from 'electron';
 import {findDOMNode} from 'react-dom';

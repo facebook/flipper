@@ -5,33 +5,32 @@
  * @format
  */
 
-import type BaseDevice from '../devices/BaseDevice';
+import BaseDevice from '../devices/BaseDevice';
 import MacDevice from '../devices/MacDevice';
-import type Client from '../Client';
-import type {UninitializedClient} from '../UninitializedClient';
+import Client from '../Client';
+import {UninitializedClient} from '../UninitializedClient';
 import {isEqual} from 'lodash';
 import iosUtil from '../fb-stubs/iOSContainerUtility';
-// $FlowFixMe perf_hooks is a new API in node
 import {performance} from 'perf_hooks';
 
-export type State = {|
+export type State = {
   devices: Array<BaseDevice>,
   androidEmulators: Array<string>,
-  selectedDevice: ?BaseDevice,
-  selectedPlugin: ?string,
-  selectedApp: ?string,
-  userPreferredDevice: ?string,
-  userPreferredPlugin: ?string,
-  userPreferredApp: ?string,
-  error: ?string,
+  selectedDevice: null | BaseDevice,
+  selectedPlugin: null | string,
+  selectedApp: null | string,
+  userPreferredDevice: null | string,
+  userPreferredPlugin: null | string,
+  userPreferredApp: null | string,
+  error: null | string,
   clients: Array<Client>,
   uninitializedClients: Array<{
     client: UninitializedClient,
     deviceId?: string,
     errorMessage?: string,
   }>,
-  deepLinkPayload: ?string,
-|};
+  deepLinkPayload: null | string,
+};
 
 export type Action =
   | {
@@ -52,11 +51,11 @@ export type Action =
     }
   | {
       type: 'SELECT_PLUGIN',
-      payload: {|
-        selectedPlugin: ?string,
-        selectedApp: ?string,
-        deepLinkPayload: ?string,
-      |},
+      payload: {
+        selectedPlugin: null | string,
+        selectedApp?: null | string,
+        deepLinkPayload: null | string,
+      },
     }
   | {
       type: 'SELECT_USER_PREFERRED_PLUGIN',
@@ -64,7 +63,7 @@ export type Action =
     }
   | {
       type: 'SERVER_ERROR',
-      payload: ?string,
+      payload: null | string,
     }
   | {
       type: 'NEW_CLIENT',
@@ -138,7 +137,7 @@ const reducer = (state: State = INITAL_STATE, action: Action): State => {
       let {selectedDevice, selectedPlugin} = state;
 
       // select the default plugin
-      let selection = {
+      let selection: Partial<State> = {
         selectedApp: null,
         selectedPlugin: DEFAULT_PLUGIN,
       };
@@ -270,7 +269,7 @@ const reducer = (state: State = INITAL_STATE, action: Action): State => {
     case 'CLIENT_REMOVED': {
       const {payload} = action;
 
-      const selected = {};
+      const selected: Partial<State> = {};
       if (state.selectedApp === payload) {
         selected.selectedApp = null;
         selected.selectedPlugin = DEFAULT_PLUGIN;
@@ -374,11 +373,11 @@ export const preferDevice = (payload: string): Action => ({
   payload,
 });
 
-export const selectPlugin = (payload: {|
-  selectedPlugin: ?string,
-  selectedApp?: ?string,
-  deepLinkPayload: ?string,
-|}): Action => ({
+export const selectPlugin = (payload: {
+  selectedPlugin: null | string,
+  selectedApp?: null | string,
+  deepLinkPayload: null | string,
+}): Action => ({
   type: 'SELECT_PLUGIN',
   payload,
 });

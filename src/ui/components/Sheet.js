@@ -11,9 +11,9 @@ import {connect} from 'react-redux';
 import {
   ACTIVE_SHEET_PLUGIN_SHEET,
   setActiveSheet,
-} from '../../reducers/application.js';
+} from '../../reducers/application.tsx';
 
-import type {ActiveSheet} from '../../reducers/application';
+import type {ActiveSheet} from '../../reducers/application.tsx';
 
 export const PLUGIN_SHEET_ELEMENT_ID = 'pluginSheetContents';
 

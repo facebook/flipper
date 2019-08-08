@@ -7,13 +7,13 @@
 
 import {Component} from 'react';
 import {Transition} from 'react-transition-group';
-import {setActiveSheet} from '../reducers/application.js';
+import {setActiveSheet} from '../reducers/application.tsx';
 import {connect} from 'react-redux';
 import {styled} from 'flipper';
 import {PLUGIN_SHEET_ELEMENT_ID} from '../ui/components/Sheet';
-import {ACTIVE_SHEET_PLUGIN_SHEET} from '../reducers/application';
+import {ACTIVE_SHEET_PLUGIN_SHEET} from '../reducers/application.tsx';
 
-import type {ActiveSheet} from '../reducers/application';
+import type {ActiveSheet} from '../reducers/application.tsx';
 
 const DialogContainer = styled('div')(({state}) => ({
   transform: `translate(-50%, ${

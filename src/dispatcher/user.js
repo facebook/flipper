@@ -5,9 +5,9 @@
  * @format
  */
 
-import type {Store} from '../reducers/index.js';
+import type {Store} from '../reducers/index.tsx';
 import type {Logger} from '../fb-interfaces/Logger.js';
-import {login} from '../reducers/user';
+import {login} from '../reducers/user.tsx';
 import {getUser, logoutUser} from '../fb-stubs/user';
 
 export default (store: Store, logger: Logger) => {

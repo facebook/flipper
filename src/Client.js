@@ -9,17 +9,17 @@ import type {FlipperPlugin, FlipperBasePlugin} from './plugin.js';
 import type BaseDevice from './devices/BaseDevice.js';
 import type {App} from './App.js';
 import type {Logger} from './fb-interfaces/Logger.js';
-import type {Store} from './reducers/index.js';
+import type {Store} from './reducers/index.tsx';
 import type {OS} from './devices/BaseDevice.js';
 import {FlipperDevicePlugin} from './plugin.js';
-import {setPluginState} from './reducers/pluginStates.js';
+import {setPluginState} from './reducers/pluginStates.tsx';
 import {ReactiveSocket, PartialResponder} from 'rsocket-core';
 // $FlowFixMe perf_hooks is a new API in node
 import {performance} from 'perf_hooks';
 import {reportPlatformFailures} from './utils/metrics';
 import {reportPluginFailures} from './utils/metrics';
 import {default as isProduction} from './utils/isProduction.js';
-import {registerPlugins} from './reducers/plugins';
+import {registerPlugins} from './reducers/plugins.tsx';
 import createTableNativePlugin from './plugins/TableNativePlugin';
 
 const EventEmitter = require('events');
@@ -71,7 +71,7 @@ const handleError = (store: Store, deviceSerial: ?string, error: ErrorType) => {
         name: 'Plugin Error',
         reason: JSON.stringify(error),
       };
-  // $FlowFixMe: We checked persistedStateReducer exists
+
   const newPluginState = crashReporterPlugin.persistedStateReducer(
     persistedState,
     'flipper-crash-report',

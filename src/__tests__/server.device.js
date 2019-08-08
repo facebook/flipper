@@ -7,7 +7,7 @@
 
 import Server from '../server.js';
 import {init as initLogger} from '../fb-stubs/Logger';
-import reducers from '../reducers/index.js';
+import reducers from '../reducers/index.tsx';
 import {createStore} from 'redux';
 import path from 'path';
 import os from 'os';

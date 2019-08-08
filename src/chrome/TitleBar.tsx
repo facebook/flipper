@@ -5,8 +5,16 @@
  * @format
  */
 
-import {ActiveSheet, LauncherMsg, ShareType} from '../reducers/application.js';
-
+import {
+  ActiveSheet,
+  LauncherMsg,
+  ShareType,
+  setActiveSheet,
+  toggleLeftSidebarVisible,
+  toggleRightSidebarVisible,
+  ACTIVE_SHEET_BUG_REPORTER,
+  setFlipperRating,
+} from '../reducers/application';
 import {
   colors,
   Button,
@@ -18,13 +26,6 @@ import {
   LoadingIndicator,
 } from 'flipper';
 import {connect} from 'react-redux';
-import {
-  setActiveSheet,
-  toggleLeftSidebarVisible,
-  toggleRightSidebarVisible,
-  ACTIVE_SHEET_BUG_REPORTER,
-  setFlipperRating,
-} from '../reducers/application.js';
 import RatingButton from './RatingButton.js';
 import DevicesButton from './DevicesButton.js';
 import ScreenCaptureButtons from './ScreenCaptureButtons.js';
@@ -35,6 +36,7 @@ import {isAutoUpdaterEnabled} from '../utils/argvUtils.js';
 import isProduction from '../utils/isProduction.js';
 import {clipboard} from 'electron';
 import React from 'react';
+import {State} from 'src/reducers';
 
 const AppTitleBar = styled(FlexRow)(({focused}) => ({
   background: focused
@@ -118,7 +120,7 @@ const Importing = styled(FlexRow)({
 
 function statusMessageComponent(
   downloadingImportData: boolean,
-  statusComponent?: React.ReactElement<any> | undefined,
+  statusComponent?: React.ReactNode | undefined,
 ) {
   if (downloadingImportData) {
     return (
@@ -192,9 +194,7 @@ class TitleBar extends React.Component<Props, StateFromProps> {
   }
 }
 
-// @TODO: TS_MIGRATION
-type Store = any;
-export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
+export default connect<StateFromProps, DispatchFromProps, OwnProps, State>(
   ({
     application: {
       windowIsFocused,

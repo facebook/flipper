@@ -12,8 +12,8 @@ import {
   setActiveSheet,
   setSelectPluginsToExportActiveSheet,
   ACTIVE_SHEET_SHARE_DATA,
-} from './reducers/application';
-import type {Store} from './reducers/';
+} from './reducers/application.tsx';
+import type {Store} from './reducers/index.tsx';
 import electron from 'electron';
 import {ENABLE_SHAREABLE_LINK} from 'flipper';
 export type DefaultKeyboardAction = 'clear' | 'goToBottom' | 'createPaste';

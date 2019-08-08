@@ -5,7 +5,7 @@
  * @format
  */
 
-import type {Store} from '../reducers/index.js';
+import type {Store} from '../reducers/index.tsx';
 import type {Logger} from '../fb-interfaces/Logger.js';
 
 import MacDevice from '../devices/MacDevice';

@@ -8,7 +8,7 @@
 import type {SecureServerConfig} from './utils/CertificateProvider';
 import type {Logger} from './fb-interfaces/Logger';
 import type {ClientQuery} from './Client.js';
-import type {Store} from './reducers/index.js';
+import type {Store} from './reducers/index.tsx';
 
 import CertificateProvider from './utils/CertificateProvider';
 import {RSocketServer, ReactiveSocket} from 'rsocket-core';

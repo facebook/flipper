@@ -7,8 +7,7 @@
 
 import {remote} from 'electron';
 import uuidv1 from 'uuid/v1';
-import {type Element as ReactElement} from 'react';
-import CancellableExportStatus from '../chrome/CancellableExportStatus';
+
 export const ACTIVE_SHEET_PLUGIN_SHEET: 'PLUGIN_SHEET' = 'PLUGIN_SHEET';
 export const ACTIVE_SHEET_BUG_REPORTER: 'BUG_REPORTER' = 'BUG_REPORTER';
 export const ACTIVE_SHEET_PLUGIN_DEBUGGER: 'PLUGIN_DEBUGGER' =
@@ -42,12 +41,16 @@ export type ServerPorts = {
   secure: number,
 };
 
-type SubShareType = {type: 'file', file: string} | {type: 'link'};
+type SubShareType =
+  | {
+      type: 'file',
+      file: string,
+    }
+  | {type: 'link'};
 
 export type ShareType = {
-  statusComponent?: ReactElement<typeof CancellableExportStatus>,
-  ...SubShareType,
-};
+  statusComponent?: React.ReactNode,
+} & SubShareType;
 
 export type State = {
   leftSidebarVisible: boolean,
@@ -55,12 +58,12 @@ export type State = {
   rightSidebarAvailable: boolean,
   windowIsFocused: boolean,
   activeSheet: ActiveSheet,
-  share: ?ShareType,
-  sessionId: ?string,
+  share: ShareType | null,
+  sessionId: string | null,
   serverPorts: ServerPorts,
   downloadingImportData: boolean,
   launcherMsg: LauncherMsg,
-  flipperRating: ?number,
+  flipperRating: number | null,
 };
 
 type BooleanActionType =
@@ -108,11 +111,11 @@ export type Action =
       },
     }
   | {
-      type: typeof UNSET_SHARE,
+      type: 'UNSET_SHARE',
     }
   | {
-      type: typeof SET_EXPORT_STATUS_MESSAGE,
-      payload: ReactElement<typeof CancellableExportStatus>,
+      type: 'SET_EXPORT_STATUS_MESSAGE',
+      payload: React.ReactNode,
     };
 
 const initialState: () => State = () => ({
@@ -195,7 +198,6 @@ export default function reducer(state: State, action: Action): State {
       const {share} = state;
       return {
         ...state,
-        //$FlowFixMe: T48110490, its not able to understand for which case it needs to apply the changes
         share: {...share, statusComponent: action.payload},
       };
     }
@@ -212,17 +214,6 @@ export const toggleAction = (
   payload?: boolean,
 ): Action => ({
   type,
-  payload,
-});
-
-export const unsetShare = (): Action => ({
-  type: UNSET_SHARE,
-});
-
-export const setExportStatusComponent = (
-  payload: ReactElement<typeof CancellableExportStatus>,
-): Action => ({
-  type: SET_EXPORT_STATUS_MESSAGE,
   payload,
 });
 

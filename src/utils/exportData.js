@@ -5,13 +5,13 @@
  * @format
  */
 import {getInstance as getLogger} from '../fb-stubs/Logger';
-import type {Store, MiddlewareAPI} from '../reducers';
+import type {Store, MiddlewareAPI} from '../reducers.tsx';
 import type {DeviceExport} from '../devices/BaseDevice';
-import type {State as PluginStates} from '../reducers/pluginStates';
-import type {PluginNotification} from '../reducers/notifications.js';
+import type {State as PluginStates} from '../reducers/pluginStates.tsx';
+import type {PluginNotification} from '../reducers/notifications.tsx';
 import type {ClientExport} from '../Client.js';
-import type {State as PluginStatesState} from '../reducers/pluginStates';
-import {pluginKey} from '../reducers/pluginStates';
+import type {State as PluginStatesState} from '../reducers/pluginStates.tsx';
+import {pluginKey} from '../reducers/pluginStates.tsx';
 import {FlipperDevicePlugin, FlipperPlugin, callClient} from '../plugin.js';
 import {default as BaseDevice} from '../devices/BaseDevice';
 import {default as ArchivedDevice} from '../devices/ArchivedDevice';

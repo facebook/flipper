@@ -7,7 +7,7 @@
 
 import type {Logger} from '../fb-interfaces/Logger';
 
-import type {Store} from '../reducers/index.js';
+import type {Store} from '../reducers/index.tsx';
 
 export default class BugReporter {
   constructor(logManager: Logger, store: Store) {}

@@ -4,13 +4,13 @@
  * LICENSE file in the root directory of this source tree.
  * @format
  */
-import type {Notification} from '../plugin';
+import {Notification} from '../plugin';
 
-export type PluginNotification = {|
+export type PluginNotification = {
   notification: Notification,
   pluginId: string,
-  client: ?string,
-|};
+  client: null | string,
+};
 
 export type State = {
   activeNotifications: Array<PluginNotification>,
@@ -24,7 +24,7 @@ type ActiveNotificationsAction = {
   type: 'SET_ACTIVE_NOTIFICATIONS',
   payload: {
     notifications: Array<Notification>,
-    client: ?string,
+    client: null | string,
     pluginId: string,
   },
 };
@@ -37,7 +37,7 @@ export type Action =
       type: 'SET_ACTIVE_NOTIFICATIONS',
       payload: {
         notifications: Array<Notification>,
-        client: ?string,
+        client: null | string,
         pluginId: string,
       },
     }
@@ -139,7 +139,7 @@ function activeNotificationsReducer(
 
 export function setActiveNotifications(payload: {
   notifications: Array<Notification>,
-  client: ?string,
+  client: null | string,
   pluginId: string,
 }): Action {
   return {
@@ -154,14 +154,14 @@ export function clearAllNotifications(): Action {
   };
 }
 
-export function updatePluginBlacklist(payload: Array<string>) {
+export function updatePluginBlacklist(payload: Array<string>): Action {
   return {
     type: 'UPDATE_PLUGIN_BLACKLIST',
     payload,
   };
 }
 
-export function updateCategoryBlacklist(payload: Array<string>) {
+export function updateCategoryBlacklist(payload: Array<string>): Action {
   return {
     type: 'UPDATE_CATEGORY_BLACKLIST',
     payload,

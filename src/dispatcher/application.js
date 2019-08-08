@@ -6,9 +6,9 @@
  */
 
 import {remote, ipcRenderer} from 'electron';
-import type {Store} from '../reducers/index.js';
+import type {Store} from '../reducers/index.tsx';
 import type {Logger} from '../fb-interfaces/Logger.js';
-import {toggleAction} from '../reducers/application';
+import {toggleAction} from '../reducers/application.tsx';
 import {parseFlipperPorts} from '../utils/environmentVariables';
 import {
   importDataToStore,
@@ -17,7 +17,7 @@ import {
 } from '../utils/exportData';
 import {tryCatchReportPlatformFailures} from '../utils/metrics';
 
-import {selectPlugin} from '../reducers/connections';
+import {selectPlugin} from '../reducers/connections.tsx';
 import qs from 'query-string';
 
 export const uriComponents = (url: string) => {

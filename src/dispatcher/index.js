@@ -16,7 +16,7 @@ import plugins from './plugins';
 import user from './user';
 
 import type {Logger} from '../fb-interfaces/Logger.js';
-import type {Store} from '../reducers/index.js';
+import type {Store} from '../reducers/index.tsx';
 import type {Dispatcher} from './types';
 
 export default function(store: Store, logger: Logger): () => Promise<void> {

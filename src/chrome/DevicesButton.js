@@ -9,7 +9,7 @@ import {Component, Button, styled} from 'flipper';
 import {connect} from 'react-redux';
 import {spawn} from 'child_process';
 import {dirname} from 'path';
-import {selectDevice, preferDevice} from '../reducers/connections.js';
+import {selectDevice, preferDevice} from '../reducers/connections.tsx';
 import {default as which} from 'which';
 import {promisify} from 'util';
 import {showOpenDialog} from '../utils/exportData';

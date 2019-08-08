@@ -5,7 +5,7 @@
  * @format
  */
 
-import type {State} from '../notifications';
+import {State} from '../notifications';
 
 import {
   default as reducer,
