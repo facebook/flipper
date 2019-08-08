@@ -5,8 +5,9 @@
  * @format
  */
 
-import type {LauncherMsg} from '../reducers/application.js';
-import {colors, Component, FlexRow, Glyph, styled} from 'flipper';
+import {LauncherMsg} from '../reducers/application.js';
+import {colors, FlexRow, Glyph, styled} from 'flipper';
+import React, {Component} from 'react';
 
 const Container = styled(FlexRow)({
   alignItems: 'center',
@@ -24,11 +25,9 @@ function getSeverityColor(severity: 'warning' | 'error'): string {
     case 'error':
       return colors.cherry;
   }
-  // Flow isn't smart enough to see that the above is already exhaustive.
-  return '';
 }
 
-export default class UpdateIndicator extends Component<Props, void> {
+export default class UpdateIndicator extends Component<Props> {
   render() {
     if (this.props.launcherMsg.message.length == 0) {
       return null;
