@@ -59,25 +59,25 @@ const AppTitleBar = styled(FlexRow)(({focused}) => ({
 }));
 
 type OwnProps = {
-  version: string,
+  version: string;
 };
 
 type DispatchFromProps = {
-  toggleLeftSidebarVisible: (visible?: boolean) => void,
-  toggleRightSidebarVisible: (visible?: boolean) => void,
-  setActiveSheet: (sheet: ActiveSheet) => void,
-  setFlipperRating: (rating: number) => void,
+  toggleLeftSidebarVisible: (visible?: boolean) => void;
+  toggleRightSidebarVisible: (visible?: boolean) => void;
+  setActiveSheet: (sheet: ActiveSheet) => void;
+  setFlipperRating: (rating: number) => void;
 };
 
 type StateFromProps = {
-  windowIsFocused: boolean,
-  leftSidebarVisible: boolean,
-  rightSidebarVisible: boolean,
-  rightSidebarAvailable: boolean,
-  downloadingImportData: boolean,
-  launcherMsg: LauncherMsg,
-  flipperRating: number | null,
-  share: ShareType | null | undefined,
+  windowIsFocused: boolean;
+  leftSidebarVisible: boolean;
+  rightSidebarVisible: boolean;
+  rightSidebarAvailable: boolean;
+  downloadingImportData: boolean;
+  launcherMsg: LauncherMsg;
+  flipperRating: number | null;
+  share: ShareType | null | undefined;
 };
 
 const VersionText = styled(Text)({

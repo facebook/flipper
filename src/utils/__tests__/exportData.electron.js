@@ -10,7 +10,7 @@ import {default as ArchivedDevice} from '../../devices/ArchivedDevice';
 import {processStore} from '../exportData';
 import {FlipperDevicePlugin} from '../../plugin.js';
 import type {Notification} from '../../plugin.js';
-import type {ClientExport} from '../../Client.js';
+import type {ClientExport} from '../../Client.tsx';
 
 class TestDevicePlugin extends FlipperDevicePlugin {
   static id = 'TestDevicePlugin';

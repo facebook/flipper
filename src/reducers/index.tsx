@@ -43,12 +43,12 @@ type Actions =
   | {type: 'INIT'};
 
 export type State = {
-  application: ApplicationState,
-  connections: DevicesState,
-  pluginStates: PluginStatesState,
-  notifications: NotificationsState,
-  plugins: PluginsState,
-  user: UserState,
+  application: ApplicationState;
+  connections: DevicesState;
+  pluginStates: PluginStatesState;
+  notifications: NotificationsState;
+  plugins: PluginsState;
+  user: UserState;
 };
 
 export type Store = ReduxStore<State, Actions>;

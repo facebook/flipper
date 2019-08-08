@@ -19,7 +19,7 @@ export {
 } from './plugin.js';
 export type {PluginClient, Props} from './plugin.js';
 export type {MetricType} from './utils/exportMetrics.js';
-export {default as Client} from './Client.js';
+export {default as Client} from './Client.tsx';
 export {clipboard} from 'electron';
 export * from './fb-stubs/constants.js';
 export * from './fb-stubs/createPaste.js';

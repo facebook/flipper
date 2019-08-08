@@ -15,7 +15,7 @@ const Container = styled(FlexRow)({
 });
 
 type Props = {
-  launcherMsg: LauncherMsg,
+  launcherMsg: LauncherMsg;
 };
 
 function getSeverityColor(severity: 'warning' | 'error'): string {

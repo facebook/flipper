@@ -52,12 +52,15 @@
   "devDependencies": {
     "@jest-runner/electron": "^2.0.1",
     "@types/react-dom": "^16.8.5",
+    "@types/invariant": "^2.2.30",
     "@types/jest": "^24.0.16",
     "@types/react": "^16.8.24",
     "@types/react-redux": "^7.1.1",
     "@types/redux-persist": "^4.3.1",
+    "@types/rsocket-core": "^0.0.2",
     "@types/uuid": "^3.4.5",
     "@typescript-eslint/eslint-plugin": "^1.11.0",
+    "@typescript-eslint/parser": "^1.13.0",
     "babel-code-frame": "^6.26.0",
     "babel-eslint": "^10.0.1",
     "electron": "^5.0.8",
@@ -81,6 +84,7 @@
     "typescript": "^3.5.2"
   },
   "dependencies": {
+    "@types/rsocket-tcp-server": "^0.0.2",
     "JSONStream": "^1.3.1",
     "adbkit-fb": "2.10.1",
     "ansi-to-html": "^0.6.3",
@@ -147,10 +151,10 @@
     "build": "yarn rm-dist && cross-env NODE_ENV=production node scripts/build-release.js $@",
     "build-headless": "yarn rm-dist && mkdir dist && cross-env NODE_ENV=production node scripts/build-headless.js $@",
     "fix": "eslint . --fix --ext .js,.tsx",
-    "test": "jest --testPathPattern=node\\.js$ --no-cache",
+    "test": "jest --testPathPattern=\"node\\.(js|tsx)$\" --no-cache",
     "test:debug": "node --inspect node_modules/.bin/jest --runInBand",
-    "test-electron": "jest --testPathPattern=electron\\.js$ --testEnvironment=@jest-runner/electron/environment --runner=@jest-runner/electron --no-cache",
-    "test-with-device": "USE_ELECTRON_STUBS=1 jest --testPathPattern=device\\.js$ --detectOpenHandles --no-cache",
+    "test-electron": "jest --testPathPattern=\"electron\\.(js|tsx)$\" --testEnvironment=@jest-runner/electron/environment --runner=@jest-runner/electron --no-cache",
+    "test-with-device": "USE_ELECTRON_STUBS=1 jest --testPathPattern=\"device\\.(js|tsx)$\" --detectOpenHandles --no-cache",
     "lint": "eslint . --ext .js,.tsx && flow check && tsc --noemit"
   },
   "optionalDependencies": {

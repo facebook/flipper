@@ -44,12 +44,12 @@ const UserName = styled(Text)({
 type OwnProps = {};
 
 type DispatchFromProps = {
-  logout: () => void,
-  setActiveSheet: (activeSheet: ActiveSheet) => void,
+  logout: () => void;
+  setActiveSheet: (activeSheet: ActiveSheet) => void;
 };
 
 type StateFromProps = {
-  user: User,
+  user: User;
 };
 
 type Props = OwnProps & DispatchFromProps & StateFromProps;

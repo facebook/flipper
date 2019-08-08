@@ -7,7 +7,7 @@
 
 import type {FlipperDevicePlugin, FlipperPlugin} from '../plugin';
 import type {PluginDefinition} from '../dispatcher/plugins';
-import type Client from '../Client';
+import type Client from '../Client.tsx';
 import type {TableBodyRow} from '../ui/components/table/types';
 
 import {Component, Fragment} from 'react';

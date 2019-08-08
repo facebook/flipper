@@ -7,47 +7,47 @@
 import {Notification} from '../plugin';
 
 export type PluginNotification = {
-  notification: Notification,
-  pluginId: string,
-  client: null | string,
+  notification: Notification;
+  pluginId: string;
+  client: null | string;
 };
 
 export type State = {
-  activeNotifications: Array<PluginNotification>,
-  invalidatedNotifications: Array<PluginNotification>,
-  blacklistedPlugins: Array<string>,
-  blacklistedCategories: Array<string>,
-  clearedNotifications: Set<string>,
+  activeNotifications: Array<PluginNotification>;
+  invalidatedNotifications: Array<PluginNotification>;
+  blacklistedPlugins: Array<string>;
+  blacklistedCategories: Array<string>;
+  clearedNotifications: Set<string>;
 };
 
 type ActiveNotificationsAction = {
-  type: 'SET_ACTIVE_NOTIFICATIONS',
+  type: 'SET_ACTIVE_NOTIFICATIONS';
   payload: {
-    notifications: Array<Notification>,
-    client: null | string,
-    pluginId: string,
-  },
+    notifications: Array<Notification>;
+    client: null | string;
+    pluginId: string;
+  };
 };
 
 export type Action =
   | {
-      type: 'CLEAR_ALL_NOTIFICATIONS',
+      type: 'CLEAR_ALL_NOTIFICATIONS';
     }
   | {
-      type: 'SET_ACTIVE_NOTIFICATIONS',
+      type: 'SET_ACTIVE_NOTIFICATIONS';
       payload: {
-        notifications: Array<Notification>,
-        client: null | string,
-        pluginId: string,
-      },
+        notifications: Array<Notification>;
+        client: null | string;
+        pluginId: string;
+      };
     }
   | {
-      type: 'UPDATE_PLUGIN_BLACKLIST',
-      payload: Array<string>,
+      type: 'UPDATE_PLUGIN_BLACKLIST';
+      payload: Array<string>;
     }
   | {
-      type: 'UPDATE_CATEGORY_BLACKLIST',
-      payload: Array<string>,
+      type: 'UPDATE_CATEGORY_BLACKLIST';
+      payload: Array<string>;
     };
 
 const INITIAL_STATE: State = {
@@ -138,9 +138,9 @@ function activeNotificationsReducer(
 }
 
 export function setActiveNotifications(payload: {
-  notifications: Array<Notification>,
-  client: null | string,
-  pluginId: string,
+  notifications: Array<Notification>;
+  client: null | string;
+  pluginId: string;
 }): Action {
   return {
     type: 'SET_ACTIVE_NOTIFICATIONS',

@@ -5,39 +5,38 @@
  * @format
  */
 
-import type {SecureServerConfig} from './utils/CertificateProvider';
-import type {Logger} from './fb-interfaces/Logger';
-import type {ClientQuery} from './Client.js';
-import type {Store} from './reducers/index.tsx';
-
+import {SecureServerConfig} from './utils/CertificateProvider';
+import {Logger} from './fb-interfaces/Logger';
+import {ClientQuery} from './Client';
+import {Store} from './reducers/index';
 import CertificateProvider from './utils/CertificateProvider';
-import {RSocketServer, ReactiveSocket} from 'rsocket-core';
+import {RSocketServer} from 'rsocket-core';
 import RSocketTCPServer from 'rsocket-tcp-server';
 import {Single} from 'rsocket-flowable';
-import Client from './Client.js';
-import type {UninitializedClient} from './UninitializedClient';
+import Client from './Client';
+import {UninitializedClient} from './UninitializedClient';
 import {reportPlatformFailures} from './utils/metrics';
+import EventEmitter from 'events';
+import invariant from 'invariant';
+import tls from 'tls';
+import net from 'net';
+import {RSocketClientSocket} from 'rsocket-core/RSocketClient';
 
-const EventEmitter = (require('events'): any);
-const invariant = require('invariant');
-const tls = require('tls');
-const net = require('net');
+type ClientInfo = {
+  connection: RSocketClientSocket<any, any> | null | undefined;
+  client: Client;
+};
 
-type RSocket = {|
-  fireAndForget(payload: {data: string}): void,
-  connectionStatus(): any,
-  close(): void,
-|};
+declare interface Server {
+  on(event: 'new-client', callback: (client: Client) => void): this;
+  on(event: 'error', callback: (err: Error) => void): this;
+  on(event: 'clients-change', callback: () => void): this;
+}
 
-type ClientInfo = {|
-  connection: ?ReactiveSocket,
-  client: Client,
-|};
-
-export default class Server extends EventEmitter {
+class Server extends EventEmitter {
   connections: Map<string, ClientInfo>;
-  secureServer: Promise<RSocketServer>;
-  insecureServer: Promise<RSocketServer>;
+  secureServer: Promise<RSocketServer<any, any>>;
+  insecureServer: Promise<RSocketServer<any, any>>;
   certificateProvider: CertificateProvider;
   connectionTracker: ConnectionTracker;
   logger: Logger;
@@ -52,10 +51,6 @@ export default class Server extends EventEmitter {
     this.connectionTracker = new ConnectionTracker(logger);
     this.store = store;
   }
-
-  on: ((event: 'new-client', callback: (client: Client) => void) => void) &
-    ((event: 'error', callback: (err: Error) => void) => void) &
-    ((event: 'clients-change', callback: () => void) => void);
 
   init() {
     const {insecure, secure} = this.store.getState().application.serverPorts;
@@ -73,10 +68,10 @@ export default class Server extends EventEmitter {
   startServer(
     port: number,
     sslConfig?: SecureServerConfig,
-  ): Promise<RSocketServer> {
+  ): Promise<RSocketServer<any, any>> {
     const server = this;
     return new Promise((resolve, reject) => {
-      let rsServer; // eslint-disable-line prefer-const
+      let rsServer: RSocketServer<any, any> | undefined; // eslint-disable-line prefer-const
       const serverFactory = onConnect => {
         const transportServer = sslConfig
           ? tls.createServer(sslConfig, socket => {
@@ -115,7 +110,10 @@ export default class Server extends EventEmitter {
     });
   }
 
-  _trustedRequestHandler = (conn: RSocket, connectRequest: {data: string}) => {
+  _trustedRequestHandler = (
+    conn: RSocketClientSocket<any, any>,
+    connectRequest: {data: string},
+  ) => {
     const server = this;
 
     const clientData: ClientQuery = JSON.parse(connectRequest.data);
@@ -139,10 +137,10 @@ export default class Server extends EventEmitter {
   };
 
   _untrustedRequestHandler = (
-    conn: RSocket,
+    _conn: RSocketClientSocket<any, any>,
     connectRequest: {data: string},
   ) => {
-    const clientData = JSON.parse(connectRequest.data);
+    const clientData: ClientQuery = JSON.parse(connectRequest.data);
     this.connectionTracker.logConnectionAttempt(clientData);
 
     const client: UninitializedClient = {
@@ -170,17 +168,17 @@ export default class Server extends EventEmitter {
           return;
         }
 
-        const json: {|
-          method: 'signCertificate',
-          csr: string,
-          destination: string,
-        |} = rawData;
+        const json: {
+          method: 'signCertificate';
+          csr: string;
+          destination: string;
+        } = rawData;
         if (json.method === 'signCertificate') {
           console.debug('CSR received from device', 'server');
 
           const {csr, destination} = json;
           return new Single(subscriber => {
-            subscriber.onSubscribe();
+            subscriber.onSubscribe(undefined);
             reportPlatformFailures(
               this.certificateProvider.processCertificateSigningRequest(
                 csr,
@@ -217,19 +215,20 @@ export default class Server extends EventEmitter {
           return;
         }
 
-        let rawData;
+        let json:
+          | {
+              method: 'signCertificate';
+              csr: string;
+              destination: string;
+            }
+          | undefined;
         try {
-          rawData = JSON.parse(payload.data);
+          json = JSON.parse(payload.data);
         } catch (err) {
           console.error(`Invalid JSON: ${payload.data}`, 'server');
           return;
         }
 
-        const json: {|
-          method: 'signCertificate',
-          csr: string,
-          destination: string,
-        |} = rawData;
         if (json.method === 'signCertificate') {
           console.debug('CSR received from device', 'server');
           const {csr, destination} = json;
@@ -259,7 +258,10 @@ export default class Server extends EventEmitter {
     return null;
   }
 
-  addConnection(conn: ReactiveSocket, query: ClientQuery): Client {
+  addConnection(
+    conn: RSocketClientSocket<any, any>,
+    query: ClientQuery,
+  ): Client {
     invariant(query, 'expected query');
 
     const id = `${query.app}#${query.os}#${query.device}#${query.device_id}`;
@@ -349,3 +351,5 @@ class ConnectionTracker {
     }
   }
 }
+
+export default Server;

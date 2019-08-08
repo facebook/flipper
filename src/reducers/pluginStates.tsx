@@ -6,7 +6,7 @@
  */
 
 export type State = {
-  [pluginKey: string]: Object,
+  [pluginKey: string]: Object;
 };
 
 export const pluginKey = (serial: string, pluginName: string): string => {
@@ -15,15 +15,15 @@ export const pluginKey = (serial: string, pluginName: string): string => {
 
 export type Action =
   | {
-      type: 'SET_PLUGIN_STATE',
+      type: 'SET_PLUGIN_STATE';
       payload: {
-        pluginKey: string,
-        state: Object,
-      },
+        pluginKey: string;
+        state: Object;
+      };
     }
   | {
-      type: 'CLEAR_PLUGIN_STATE',
-      payload: {clientId: string, devicePlugins: Set<string>},
+      type: 'CLEAR_PLUGIN_STATE';
+      payload: {clientId: string; devicePlugins: Set<string>};
     };
 
 const INITIAL_STATE: State = {};
@@ -65,8 +65,8 @@ export default function reducer(
 }
 
 export const setPluginState = (payload: {
-  pluginKey: string,
-  state: Object,
+  pluginKey: string;
+  state: Object;
 }): Action => ({
   type: 'SET_PLUGIN_STATE',
   payload,

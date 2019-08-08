@@ -9,7 +9,7 @@ import type {Logger} from './fb-interfaces/Logger';
 import BaseDevice from './devices/BaseDevice.js';
 import type {Props as PluginProps} from './plugin';
 import {pluginKey as getPluginKey} from './reducers/pluginStates.tsx';
-import Client from './Client.js';
+import Client from './Client.tsx';
 import {
   ErrorBoundary,
   PureComponent,

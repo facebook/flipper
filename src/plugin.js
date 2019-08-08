@@ -8,7 +8,7 @@
 import type {KeyboardActions} from './MenuBar.js';
 import type {App} from './App.js';
 import type {Logger} from './fb-interfaces/Logger.js';
-import type Client from './Client.js';
+import type Client from './Client.tsx';
 import type {Store, MiddlewareAPI} from './reducers/index.tsx';
 import type {MetricType} from './utils/exportMetrics.js';
 import React from 'react';

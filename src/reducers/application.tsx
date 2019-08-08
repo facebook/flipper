@@ -33,37 +33,37 @@ export type ActiveSheet =
   | null;
 
 export type LauncherMsg = {
-  message: string,
-  severity: 'warning' | 'error',
+  message: string;
+  severity: 'warning' | 'error';
 };
 export type ServerPorts = {
-  insecure: number,
-  secure: number,
+  insecure: number;
+  secure: number;
 };
 
 type SubShareType =
   | {
-      type: 'file',
-      file: string,
+      type: 'file';
+      file: string;
     }
   | {type: 'link'};
 
 export type ShareType = {
-  statusComponent?: React.ReactNode,
+  statusComponent?: React.ReactNode;
 } & SubShareType;
 
 export type State = {
-  leftSidebarVisible: boolean,
-  rightSidebarVisible: boolean,
-  rightSidebarAvailable: boolean,
-  windowIsFocused: boolean,
-  activeSheet: ActiveSheet,
-  share: ShareType | null,
-  sessionId: string | null,
-  serverPorts: ServerPorts,
-  downloadingImportData: boolean,
-  launcherMsg: LauncherMsg,
-  flipperRating: number | null,
+  leftSidebarVisible: boolean;
+  rightSidebarVisible: boolean;
+  rightSidebarAvailable: boolean;
+  windowIsFocused: boolean;
+  activeSheet: ActiveSheet;
+  share: ShareType | null;
+  sessionId: string | null;
+  serverPorts: ServerPorts;
+  downloadingImportData: boolean;
+  launcherMsg: LauncherMsg;
+  flipperRating: number | null;
 };
 
 type BooleanActionType =
@@ -75,47 +75,47 @@ type BooleanActionType =
 
 export type Action =
   | {
-      type: BooleanActionType,
-      payload?: boolean,
+      type: BooleanActionType;
+      payload?: boolean;
     }
   | {
-      type: 'SET_ACTIVE_SHEET',
-      payload: ActiveSheet,
+      type: 'SET_ACTIVE_SHEET';
+      payload: ActiveSheet;
     }
   | {
-      type: typeof ACTIVE_SHEET_SHARE_DATA_IN_FILE,
-      payload: {file: string},
+      type: typeof ACTIVE_SHEET_SHARE_DATA_IN_FILE;
+      payload: {file: string};
     }
   | {
-      type: typeof ACTIVE_SHEET_SELECT_PLUGINS_TO_EXPORT,
-      payload: ShareType,
+      type: typeof ACTIVE_SHEET_SELECT_PLUGINS_TO_EXPORT;
+      payload: ShareType;
     }
   | {
-      type: 'SET_SERVER_PORTS',
+      type: 'SET_SERVER_PORTS';
       payload: {
-        insecure: number,
-        secure: number,
-      },
+        insecure: number;
+        secure: number;
+      };
     }
   | {
-      type: 'LAUNCHER_MSG',
+      type: 'LAUNCHER_MSG';
       payload: {
-        severity: 'warning' | 'error',
-        message: string,
-      },
+        severity: 'warning' | 'error';
+        message: string;
+      };
     }
   | {
-      type: 'SET_FLIPPER_RATING',
+      type: 'SET_FLIPPER_RATING';
       payload: {
-        rating: number,
-      },
+        rating: number;
+      };
     }
   | {
-      type: 'UNSET_SHARE',
+      type: 'UNSET_SHARE';
     }
   | {
-      type: 'SET_EXPORT_STATUS_MESSAGE',
-      payload: React.ReactNode,
+      type: 'SET_EXPORT_STATUS_MESSAGE';
+      payload: React.ReactNode;
     };
 
 const initialState: () => State = () => ({

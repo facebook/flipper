@@ -11,7 +11,7 @@ import {performance} from 'perf_hooks';
 
 import type {Store} from '../reducers/index.tsx';
 import type {Logger} from '../fb-interfaces/Logger.js';
-import type Client from '../Client';
+import type Client from '../Client.tsx';
 
 export default (store: Store, logger: Logger) => {
   let droppedFrames: number = 0;

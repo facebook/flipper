@@ -46,8 +46,8 @@ function transform({filename, options, src}) {
   } else {
     plugins.push(
       require('../node_modules/@babel/plugin-transform-typescript'),
-      require('../node_modules/@babel/plugin-transform-modules-commonjs'),
       require('../node_modules/@babel/plugin-proposal-class-properties'),
+      require('../node_modules/@babel/plugin-transform-modules-commonjs'),
     );
   }
 
@@ -73,13 +73,11 @@ function transform({filename, options, src}) {
     // electron imports are working out of the box.
     plugins.push(require('./electron-requires.js'));
   }
-
   if (isPlugin) {
     plugins.push(require('./flipper-requires.js'));
   } else {
     plugins.push(require('./import-react.js'));
   }
-
   ast = babel.transformFromAst(ast, src, {
     ast: true,
     babelrc: !filename.includes('node_modules'),

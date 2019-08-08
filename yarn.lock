@@ -1062,6 +1062,11 @@
   resolved "https://registry.yarnpkg.com/@types/debug/-/debug-4.1.4.tgz#56eec47706f0fd0b7c694eae2f3172e6b0b769da"
   integrity sha512-D9MyoQFI7iP5VdpEyPZyjjqIJ8Y8EDNQFIFVLOmeg1rI1xiHOChyUPMPRUVfqFCerxfE+yS3vMyj37F6IdtOoQ==
 
+"@types/eslint-visitor-keys@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@types/eslint-visitor-keys/-/eslint-visitor-keys-1.0.0.tgz#1ee30d79544ca84d68d4b3cdb0af4f205663dd2d"
+  integrity sha512-OCutwjDZ4aFS6PB1UZ988C4YgwlBHJd6wCeQqaLdmadZ/7e+w79+hbMUFC1QXDNCmdyoRfAFdm0RypzwR+Qpag==
+
 "@types/events@*":
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/@types/events/-/events-3.0.0.tgz#2862f3f58a9a7f7c3e78d79f130dd4d71c25c2a7"
@@ -1083,6 +1088,11 @@
   dependencies:
     "@types/react" "*"
     hoist-non-react-statics "^3.3.0"
+
+"@types/invariant@^2.2.30":
+  version "2.2.30"
+  resolved "https://registry.yarnpkg.com/@types/invariant/-/invariant-2.2.30.tgz#20efa342807606ada5483731a8137cb1561e5fe9"
+  integrity sha512-98fB+yo7imSD2F7PF7GIpELNgtLNgo5wjivu0W5V4jx+KVVJxo6p/qN4zdzSTBWy4/sN3pPyXwnhRSD28QX+ag==
 
 "@types/istanbul-lib-coverage@*", "@types/istanbul-lib-coverage@^2.0.0":
   version "2.0.1"
@@ -1173,6 +1183,40 @@
   dependencies:
     redux-persist "*"
 
+"@types/rsocket-core@*", "@types/rsocket-core@^0.0.2":
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/@types/rsocket-core/-/rsocket-core-0.0.2.tgz#9f5d5b1acc2269a53ed2dd8185432b5b7fcdda86"
+  integrity sha512-dUpBxZ6f+dCw+Q9GM/OOqz5iPrU3VghfOzf/qnvE0ok7PwO//opHbOYAwXHGwCHxdDbntH4yy3NUYe0KchCZRQ==
+  dependencies:
+    "@types/node" "*"
+    "@types/rsocket-flowable" "*"
+    "@types/rsocket-types" "*"
+
+"@types/rsocket-flowable@*":
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/@types/rsocket-flowable/-/rsocket-flowable-0.0.2.tgz#2a795798e3bcde5905772a4acc692290e32e85aa"
+  integrity sha512-yBbwAjta5kWuR+DINmxEJJ1Nfy8/JUCEVFnrzlqVGk0u85Apki5GUY5mjEeDIwWVWdTUt/jXoPemdv74wBdBHg==
+  dependencies:
+    "@types/rsocket-types" "*"
+
+"@types/rsocket-tcp-server@^0.0.2":
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/@types/rsocket-tcp-server/-/rsocket-tcp-server-0.0.2.tgz#3eb1cf6dcde76b151c8ba8b3247c729053a8c201"
+  integrity sha512-BHNM/IHkaLiwW3bYBOoYJIlo93f4/mKCX4oldEYdHN8xV9yGhC/YSIrECYC3OrK1kcsnXcHzkJkqKnKSxwQ2yg==
+  dependencies:
+    "@types/node" "*"
+    "@types/rsocket-core" "*"
+    "@types/rsocket-flowable" "*"
+    "@types/rsocket-types" "*"
+
+"@types/rsocket-types@*":
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/@types/rsocket-types/-/rsocket-types-0.0.1.tgz#680b1dc908fed9c83d1ff440177aa568ca5af807"
+  integrity sha512-pJnPxlLMCFmBCi9ofm/OCnGEXWuaHAMY7dL/NTTltk6MnAPkpCorOG96RRCq/JPmLUb/3OOrfLoh+MXxpltcVg==
+  dependencies:
+    "@types/node" "*"
+    "@types/rsocket-flowable" "*"
+
 "@types/stack-utils@^1.0.1":
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@types/stack-utils/-/stack-utils-1.0.1.tgz#0a851d3bd96498fa25c33ab7278ed3bd65f06c3e"
@@ -1209,6 +1253,16 @@
     "@types/json-schema" "^7.0.3"
     "@typescript-eslint/typescript-estree" "1.13.0"
     eslint-scope "^4.0.0"
+
+"@typescript-eslint/parser@^1.13.0":
+  version "1.13.0"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/parser/-/parser-1.13.0.tgz#61ac7811ea52791c47dc9fd4dd4a184fae9ac355"
+  integrity sha512-ITMBs52PCPgLb2nGPoeT4iU3HdQZHcPaZVw+7CsFagRJHUhyeTgorEwHXhFf3e7Evzi8oujKNpHc8TONth8AdQ==
+  dependencies:
+    "@types/eslint-visitor-keys" "^1.0.0"
+    "@typescript-eslint/experimental-utils" "1.13.0"
+    "@typescript-eslint/typescript-estree" "1.13.0"
+    eslint-visitor-keys "^1.0.0"
 
 "@typescript-eslint/typescript-estree@1.13.0":
   version "1.13.0"

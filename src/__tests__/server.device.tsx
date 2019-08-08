@@ -5,16 +5,16 @@
  * @format
  */
 
-import Server from '../server.js';
+import Server from '../server';
 import {init as initLogger} from '../fb-stubs/Logger';
-import reducers from '../reducers/index.tsx';
+import reducers from '../reducers/index';
 import {createStore} from 'redux';
 import path from 'path';
 import os from 'os';
 import fs from 'fs';
 import androidDevice from '../dispatcher/androidDevice';
 import iosDevice from '../dispatcher/iOSDevice';
-import type Client from '../Client';
+import Client from '../Client';
 
 let server;
 let androidCleanup;

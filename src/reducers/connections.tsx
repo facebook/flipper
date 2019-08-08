@@ -14,84 +14,84 @@ import iosUtil from '../fb-stubs/iOSContainerUtility';
 import {performance} from 'perf_hooks';
 
 export type State = {
-  devices: Array<BaseDevice>,
-  androidEmulators: Array<string>,
-  selectedDevice: null | BaseDevice,
-  selectedPlugin: null | string,
-  selectedApp: null | string,
-  userPreferredDevice: null | string,
-  userPreferredPlugin: null | string,
-  userPreferredApp: null | string,
-  error: null | string,
-  clients: Array<Client>,
+  devices: Array<BaseDevice>;
+  androidEmulators: Array<string>;
+  selectedDevice: null | BaseDevice;
+  selectedPlugin: null | string;
+  selectedApp: null | string;
+  userPreferredDevice: null | string;
+  userPreferredPlugin: null | string;
+  userPreferredApp: null | string;
+  error: null | string;
+  clients: Array<Client>;
   uninitializedClients: Array<{
-    client: UninitializedClient,
-    deviceId?: string,
-    errorMessage?: string,
-  }>,
-  deepLinkPayload: null | string,
+    client: UninitializedClient;
+    deviceId?: string;
+    errorMessage?: string;
+  }>;
+  deepLinkPayload: null | string;
 };
 
 export type Action =
   | {
-      type: 'UNREGISTER_DEVICES',
-      payload: Set<string>,
+      type: 'UNREGISTER_DEVICES';
+      payload: Set<string>;
     }
   | {
-      type: 'REGISTER_DEVICE',
-      payload: BaseDevice,
+      type: 'REGISTER_DEVICE';
+      payload: BaseDevice;
     }
   | {
-      type: 'REGISTER_ANDROID_EMULATORS',
-      payload: Array<string>,
+      type: 'REGISTER_ANDROID_EMULATORS';
+      payload: Array<string>;
     }
   | {
-      type: 'SELECT_DEVICE',
-      payload: BaseDevice,
+      type: 'SELECT_DEVICE';
+      payload: BaseDevice;
     }
   | {
-      type: 'SELECT_PLUGIN',
+      type: 'SELECT_PLUGIN';
       payload: {
-        selectedPlugin: null | string,
-        selectedApp?: null | string,
-        deepLinkPayload: null | string,
-      },
+        selectedPlugin: null | string;
+        selectedApp?: null | string;
+        deepLinkPayload: null | string;
+      };
     }
   | {
-      type: 'SELECT_USER_PREFERRED_PLUGIN',
-      payload: string,
+      type: 'SELECT_USER_PREFERRED_PLUGIN';
+      payload: string;
     }
   | {
-      type: 'SERVER_ERROR',
-      payload: null | string,
+      type: 'SERVER_ERROR';
+      payload: null | string;
     }
   | {
-      type: 'NEW_CLIENT',
-      payload: Client,
+      type: 'NEW_CLIENT';
+      payload: Client;
     }
   | {
-      type: 'NEW_CLIENT_SANITY_CHECK',
-      payload: Client,
+      type: 'NEW_CLIENT_SANITY_CHECK';
+      payload: Client;
     }
   | {
-      type: 'CLIENT_REMOVED',
-      payload: string,
+      type: 'CLIENT_REMOVED';
+      payload: string;
     }
   | {
-      type: 'PREFER_DEVICE',
-      payload: string,
+      type: 'PREFER_DEVICE';
+      payload: string;
     }
   | {
-      type: 'START_CLIENT_SETUP',
-      payload: UninitializedClient,
+      type: 'START_CLIENT_SETUP';
+      payload: UninitializedClient;
     }
   | {
-      type: 'FINISH_CLIENT_SETUP',
-      payload: {client: UninitializedClient, deviceId: string},
+      type: 'FINISH_CLIENT_SETUP';
+      payload: {client: UninitializedClient; deviceId: string};
     }
   | {
-      type: 'CLIENT_SETUP_ERROR',
-      payload: {client: UninitializedClient, error: Error},
+      type: 'CLIENT_SETUP_ERROR';
+      payload: {client: UninitializedClient; error: Error};
     };
 
 const DEFAULT_PLUGIN = 'DeviceLogs';
@@ -374,9 +374,9 @@ export const preferDevice = (payload: string): Action => ({
 });
 
 export const selectPlugin = (payload: {
-  selectedPlugin: null | string,
-  selectedApp?: null | string,
-  deepLinkPayload: null | string,
+  selectedPlugin: null | string;
+  selectedApp?: null | string;
+  deepLinkPayload: null | string;
 }): Action => ({
   type: 'SELECT_PLUGIN',
   payload,

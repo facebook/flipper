@@ -7,7 +7,7 @@
 
 import type {Element} from 'flipper';
 import type {PluginClient} from 'flipper';
-import type Client from '../../Client.js';
+import type Client from '../../Client.tsx';
 import type {Logger} from '../../fb-interfaces/Logger.js';
 
 import {

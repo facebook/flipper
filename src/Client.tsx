@@ -5,45 +5,54 @@
  * @format
  */
 
-import type {FlipperPlugin, FlipperBasePlugin} from './plugin.js';
-import type BaseDevice from './devices/BaseDevice.js';
-import type {App} from './App.js';
-import type {Logger} from './fb-interfaces/Logger.js';
-import type {Store} from './reducers/index.tsx';
-import type {OS} from './devices/BaseDevice.js';
-import {FlipperDevicePlugin} from './plugin.js';
-import {setPluginState} from './reducers/pluginStates.tsx';
-import {ReactiveSocket, PartialResponder} from 'rsocket-core';
-// $FlowFixMe perf_hooks is a new API in node
+import {
+  FlipperPlugin,
+  FlipperBasePlugin,
+  FlipperDevicePlugin,
+} from './plugin.js';
+import BaseDevice, {OS} from './devices/BaseDevice.js';
+import {App} from './App.js';
+import {Logger} from './fb-interfaces/Logger.js';
+import {Store} from './reducers/index';
+import {setPluginState} from './reducers/pluginStates';
+import {RSocketClientSocket} from 'rsocket-core/RSocketClient';
 import {performance} from 'perf_hooks';
-import {reportPlatformFailures} from './utils/metrics';
-import {reportPluginFailures} from './utils/metrics';
+import {reportPlatformFailures, reportPluginFailures} from './utils/metrics';
 import {default as isProduction} from './utils/isProduction.js';
-import {registerPlugins} from './reducers/plugins.tsx';
+import {registerPlugins} from './reducers/plugins';
 import createTableNativePlugin from './plugins/TableNativePlugin';
-
-const EventEmitter = require('events');
-const invariant = require('invariant');
+import EventEmitter from 'events';
+import invariant from 'invariant';
+import {Responder} from 'rsocket-types/ReactiveSocketTypes';
 
 type Plugins = Array<string>;
 
-export type ClientQuery = {|
-  app: string,
-  os: OS,
-  device: string,
-  device_id: string,
-  sdk_version?: number,
-|};
+export type ClientQuery = {
+  app: string;
+  os: OS;
+  device: string;
+  device_id: string;
+  sdk_version?: number;
+};
 
-export type ClientExport = {|
-  id: string,
-  query: ClientQuery,
-|};
+export type ClientExport = {
+  id: string;
+  query: ClientQuery;
+};
 
-type ErrorType = {message: string, stacktrace: string, name: string};
-type RequestMetadata = {method: string, id: number, params: ?Object};
+type ErrorType = {message: string; stacktrace: string; name: string};
+type Params = {
+  api: string;
+  method: string;
+  params?: Object;
+};
+type RequestMetadata = {method: string; id: number; params: Params | undefined};
 
-const handleError = (store: Store, deviceSerial: ?string, error: ErrorType) => {
+const handleError = (
+  store: Store,
+  deviceSerial: string | undefined,
+  error: ErrorType,
+) => {
   if (isProduction()) {
     return;
   }
@@ -88,13 +97,39 @@ const handleError = (store: Store, deviceSerial: ?string, error: ErrorType) => {
 };
 
 export default class Client extends EventEmitter {
+  app: App;
+  connected: boolean;
+  id: string;
+  query: ClientQuery;
+  sdkVersion: number;
+  messageIdCounter: number;
+  plugins: Plugins;
+  connection: RSocketClientSocket<any, any> | null | undefined;
+  responder: Partial<Responder<any, any>>;
+  store: Store;
+  activePlugins: Set<string>;
+  device: Promise<BaseDevice>;
+  logger: Logger;
+  lastSeenDeviceList: Array<BaseDevice>;
+  broadcastCallbacks: Map<string, Map<string, Set<Function>>>;
+
+  requestCallbacks: Map<
+    number,
+    {
+      resolve: (data: any) => void;
+      reject: (err: Error) => void;
+      metadata: RequestMetadata;
+      // eslint-disable-next-line prettier/prettier
+      }
+  >;
+
   constructor(
     id: string,
     query: ClientQuery,
-    conn: ?ReactiveSocket,
+    conn: RSocketClientSocket<any, any> | null | undefined,
     logger: Logger,
     store: Store,
-    plugins: ?Plugins,
+    plugins?: Plugins | null | undefined,
   ) {
     super();
     this.connected = true;
@@ -114,11 +149,11 @@ export default class Client extends EventEmitter {
     const client = this;
     // node.js doesn't support requestIdleCallback
     const rIC =
-      typeof requestIdleCallback === 'undefined'
-        ? (cb, options) => {
+      typeof window === 'undefined'
+        ? (cb, _) => {
             cb();
           }
-        : requestIdleCallback;
+        : window.requestIdleCallback;
 
     this.responder = {
       fireAndForget: (payload: {data: string}) =>
@@ -150,10 +185,10 @@ export default class Client extends EventEmitter {
     }
     this.device = reportPlatformFailures(
       new Promise((resolve, reject) => {
-        const device: ?BaseDevice = this.store
+        const device = this.store
           .getState()
           .connections.devices.find(
-            (device: BaseDevice) => device.serial === this.query.device_id,
+            device => device.serial === this.query.device_id,
           );
         if (device) {
           resolve(device);
@@ -167,7 +202,7 @@ export default class Client extends EventEmitter {
           }
           this.lastSeenDeviceList = this.store.getState().connections.devices;
           const matchingDevice = newDeviceList.find(
-            (device: BaseDevice) => device.serial === this.query.device_id,
+            device => device.serial === this.query.device_id,
           );
           if (matchingDevice) {
             resolve(matchingDevice);
@@ -185,32 +220,7 @@ export default class Client extends EventEmitter {
     );
   }
 
-  app: App;
-  connected: boolean;
-  id: string;
-  query: ClientQuery;
-  sdkVersion: number;
-  messageIdCounter: number;
-  plugins: Plugins;
-  connection: ?ReactiveSocket;
-  responder: PartialResponder;
-  store: Store;
-  activePlugins: Set<string>;
-  device: Promise<BaseDevice>;
-  logger: Logger;
-  lastSeenDeviceList: Array<BaseDevice>;
-  broadcastCallbacks: Map<?string, Map<string, Set<Function>>>;
-
-  requestCallbacks: Map<
-    number,
-    {|
-      resolve: (data: any) => void,
-      reject: (err: Error) => void,
-      metadata: RequestMetadata,
-    |},
-  >;
-
-  supportsPlugin(Plugin: Class<FlipperPlugin<>>): boolean {
+  supportsPlugin(Plugin: typeof FlipperPlugin): boolean {
     return this.plugins.includes(Plugin.id);
   }
 
@@ -221,9 +231,10 @@ export default class Client extends EventEmitter {
 
   // get the supported plugins
   async getPlugins(): Promise<Plugins> {
-    const plugins = await this.rawCall('getPlugins', false).then(
-      data => data.plugins,
-    );
+    const plugins = await this.rawCall<{plugins: Plugins}>(
+      'getPlugins',
+      false,
+    ).then(data => data.plugins);
     this.plugins = plugins;
     const nativeplugins = plugins
       .map(plugin => /_nativeplugin_([^_]+)_([^_]+)/.exec(plugin))
@@ -249,15 +260,16 @@ export default class Client extends EventEmitter {
     this.emit('plugins-change');
   }
 
-  deviceSerial(): Promise<string> {
-    return this.device
-      .then(device => device.serial)
-      .catch(e => {
-        console.error(
-          'Using "" for deviceId because client has no matching device',
-        );
-        return '';
-      });
+  async deviceSerial(): Promise<string> {
+    try {
+      const device = await this.device;
+      return device.serial;
+    } catch (e) {
+      console.error(
+        'Using "" for deviceId because client has no matching device',
+      );
+      return '';
+    }
   }
 
   onMessage(msg: string) {
@@ -273,13 +285,13 @@ export default class Client extends EventEmitter {
       return;
     }
 
-    const data: {|
-      id?: number,
-      method?: string,
-      params?: Object,
-      success?: Object,
-      error?: Object,
-    |} = rawData;
+    const data: {
+      id?: number;
+      method?: string;
+      params?: Params;
+      success?: Object;
+      error?: ErrorType;
+    } = rawData;
 
     console.debug(data, 'message:receive');
 
@@ -303,7 +315,7 @@ export default class Client extends EventEmitter {
         const params = data.params;
         invariant(params, 'expected params');
 
-        const persistingPlugin: ?Class<FlipperBasePlugin<>> =
+        const persistingPlugin: typeof FlipperBasePlugin | null =
           this.store.getState().plugins.clientPlugins.get(params.api) ||
           this.store.getState().plugins.devicePlugins.get(params.api);
         if (persistingPlugin && persistingPlugin.persistedStateReducer) {
@@ -319,7 +331,6 @@ export default class Client extends EventEmitter {
             ...persistingPlugin.defaultPersistedState,
             ...this.store.getState().pluginStates[pluginKey],
           };
-          // $FlowFixMe: We checked persistedStateReducer exists
           const newPluginState = persistingPlugin.persistedStateReducer(
             persistedState,
             params.method,
@@ -339,7 +350,7 @@ export default class Client extends EventEmitter {
           return;
         }
 
-        const methodCallbacks: ?Set<Function> = apiCallbacks.get(params.method);
+        const methodCallbacks = apiCallbacks.get(params.method);
         if (methodCallbacks) {
           for (const callback of methodCallbacks) {
             callback(params.params);
@@ -362,11 +373,11 @@ export default class Client extends EventEmitter {
 
   onResponse(
     data: {
-      success?: Object,
-      error?: Object,
+      success?: Object;
+      error?: ErrorType;
     },
-    resolve: any => any,
-    reject: any => any,
+    resolve: (a: Object) => any,
+    reject: (error: ErrorType) => any,
   ) {
     if (data.success) {
       resolve(data.success);
@@ -388,7 +399,7 @@ export default class Client extends EventEmitter {
   }
 
   subscribe(
-    api: ?string = null,
+    api: string | null = null,
     method: string,
     callback: (params: Object) => void,
   ) {
@@ -406,7 +417,7 @@ export default class Client extends EventEmitter {
     methodCallbacks.add(callback);
   }
 
-  unsubscribe(api: ?string = null, method: string, callback: Function) {
+  unsubscribe(api: string | null = null, method: string, callback: Function) {
     const apiCallbacks = this.broadcastCallbacks.get(api);
     if (!apiCallbacks) {
       return;
@@ -419,11 +430,7 @@ export default class Client extends EventEmitter {
     methodCallbacks.delete(callback);
   }
 
-  rawCall(
-    method: string,
-    fromPlugin: boolean,
-    params?: Object,
-  ): Promise<Object> {
+  rawCall<T>(method: string, fromPlugin: boolean, params?: Params): Promise<T> {
     return new Promise((resolve, reject) => {
       const id = this.messageIdCounter++;
       const metadata: RequestMetadata = {
@@ -442,7 +449,7 @@ export default class Client extends EventEmitter {
         params,
       };
 
-      const plugin = params?.api;
+      const plugin = params ? params.api : undefined;
 
       console.debug(data, 'message:call');
 
@@ -465,10 +472,10 @@ export default class Client extends EventEmitter {
                 if (!fromPlugin || this.isAcceptingMessagesFromPlugin(plugin)) {
                   const logEventName = this.getLogEventName(data);
                   this.logger.trackTimeSince(mark, logEventName);
-                  const response: {|
-                    success?: Object,
-                    error?: Object,
-                  |} = JSON.parse(payload.data);
+                  const response: {
+                    success?: Object;
+                    error?: ErrorType;
+                  } = JSON.parse(payload.data);
                   this.onResponse(response, resolve, reject);
                 }
               },
@@ -493,7 +500,7 @@ export default class Client extends EventEmitter {
     this.logger.trackTimeSince(mark, logEventName);
   }
 
-  isAcceptingMessagesFromPlugin(plugin: ?string) {
+  isAcceptingMessagesFromPlugin(plugin: string | null | undefined) {
     return this.connection && (!plugin || this.activePlugins.has(plugin));
   }
 
@@ -553,12 +560,16 @@ export default class Client extends EventEmitter {
     return this.rawSend('execute', {api, method, params});
   }
 
-  supportsMethod(api: string, method: string): Promise<boolean> {
+  async supportsMethod(api: string, method: string): Promise<boolean> {
     if (this.sdkVersion < 2) {
       return Promise.resolve(false);
     }
-    return this.rawCall('isMethodSupported', true, {api, method}).then(
-      response => response.isSupported,
-    );
+    const response = await this.rawCall<{
+      isSupported: boolean;
+    }>('isMethodSupported', true, {
+      api,
+      method,
+    });
+    return response.isSupported;
   }
 }

@@ -9,36 +9,36 @@ import {FlipperPlugin, FlipperDevicePlugin} from '../plugin.js';
 import {PluginDefinition} from '../dispatcher/plugins';
 
 export type State = {
-  devicePlugins: Map<string, typeof FlipperDevicePlugin>,
-  clientPlugins: Map<string, typeof FlipperPlugin>,
-  gatekeepedPlugins: Array<PluginDefinition>,
-  disabledPlugins: Array<PluginDefinition>,
-  failedPlugins: Array<[PluginDefinition, string]>,
-  selectedPlugins: Array<string>,
+  devicePlugins: Map<string, typeof FlipperDevicePlugin>;
+  clientPlugins: Map<string, typeof FlipperPlugin>;
+  gatekeepedPlugins: Array<PluginDefinition>;
+  disabledPlugins: Array<PluginDefinition>;
+  failedPlugins: Array<[PluginDefinition, string]>;
+  selectedPlugins: Array<string>;
 };
 
 type P = typeof FlipperPlugin | typeof FlipperDevicePlugin;
 
 export type Action =
   | {
-      type: 'REGISTER_PLUGINS',
-      payload: Array<P>,
+      type: 'REGISTER_PLUGINS';
+      payload: Array<P>;
     }
   | {
-      type: 'GATEKEEPED_PLUGINS',
-      payload: Array<PluginDefinition>,
+      type: 'GATEKEEPED_PLUGINS';
+      payload: Array<PluginDefinition>;
     }
   | {
-      type: 'DISABLED_PLUGINS',
-      payload: Array<PluginDefinition>,
+      type: 'DISABLED_PLUGINS';
+      payload: Array<PluginDefinition>;
     }
   | {
-      type: 'FAILED_PLUGINS',
-      payload: Array<[PluginDefinition, string]>,
+      type: 'FAILED_PLUGINS';
+      payload: Array<[PluginDefinition, string]>;
     }
   | {
-      type: 'SELECTED_PLUGINS',
-      payload: Array<string>,
+      type: 'SELECTED_PLUGINS';
+      payload: Array<string>;
     };
 
 const INITIAL_STATE: State = {

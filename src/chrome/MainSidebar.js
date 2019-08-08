@@ -8,8 +8,8 @@
 import {FlipperBasePlugin} from '../plugin.js';
 import config from '../fb-stubs/config';
 import type BaseDevice from '../devices/BaseDevice.js';
-import type Client from '../Client.js';
-import type {UninitializedClient} from '../UninitializedClient.js';
+import type Client from '../Client.tsx';
+import type {UninitializedClient} from '../UninitializedClient.tsx';
 import type {PluginNotification} from '../reducers/notifications.tsx';
 import type {ActiveSheet} from '../reducers/application.tsx';
 

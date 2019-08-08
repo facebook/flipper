@@ -6,7 +6,7 @@
  */
 
 import type {Logger} from '../fb-interfaces/Logger';
-import Server from '../server';
+import Server from '../server.tsx';
 import {promisify} from 'util';
 import fs from 'fs';
 import {

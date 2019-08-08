@@ -90,7 +90,7 @@ const Logo = styled('img')({
 
 type Props = {};
 type State = {
-  isMounted: boolean,
+  isMounted: boolean;
 };
 
 export default class WelcomeScreen extends PureComponent<Props, State> {

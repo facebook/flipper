@@ -21,12 +21,12 @@ type State = {
     | 'checking-for-update'
     | 'update-available'
     | 'update-not-available'
-    | 'update-downloaded',
-  error?: string,
+    | 'update-downloaded';
+  error?: string;
 };
 
 type Props = {
-  version: string,
+  version: string;
 };
 
 export default class AutoUpdateVersion extends Component<Props, State> {
@@ -63,11 +63,11 @@ export default class AutoUpdateVersion extends Component<Props, State> {
         this.setState({updater: 'checking-for-update'});
       });
 
-      remote.autoUpdater.on('update-available', error => {
+      remote.autoUpdater.on('update-available', () => {
         this.setState({updater: 'update-available'});
       });
 
-      remote.autoUpdater.on('update-not-available', error => {
+      remote.autoUpdater.on('update-not-available', () => {
         this.setState({updater: 'update-not-available'});
       });
 

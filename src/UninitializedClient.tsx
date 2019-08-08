@@ -6,7 +6,7 @@
  */
 
 export type UninitializedClient = {
-  os: string,
-  deviceName: string,
-  appName: string,
+  os: string;
+  deviceName: string;
+  appName: string;
 };
