@@ -8,7 +8,7 @@
 .*/website/.*
 <PROJECT_ROOT>/src/plugins/sections/d3/d3.js$
 .*\.tsx
-.*flow-typed/.*
+.*/node_modules/.*
 
 [libs]
 flow-typed
