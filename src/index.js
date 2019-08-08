@@ -8,7 +8,7 @@
 export {default as styled, keyframes} from 'react-emotion';
 export * from './ui/index.js';
 export * from './utils/index.js';
-export {default as GK} from './fb-stubs/GK.js';
+export {default as GK} from './fb-stubs/GK.tsx';
 export {default as createPaste} from './fb-stubs/createPaste.js';
 export {graphQLQuery} from './fb-stubs/user.js';
 export {

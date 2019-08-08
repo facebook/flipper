@@ -8,7 +8,7 @@
 import {Provider} from 'react-redux';
 import ReactDOM from 'react-dom';
 import {ContextMenuProvider} from 'flipper';
-import GK from './fb-stubs/GK.js';
+import GK from './fb-stubs/GK.tsx';
 import {init as initLogger} from './fb-stubs/Logger';
 import App from './App.js';
 import BugReporter from './fb-stubs/BugReporter.js';

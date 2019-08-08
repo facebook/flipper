@@ -20,7 +20,7 @@ import {
   addFailedPlugins,
 } from '../reducers/plugins.tsx';
 import {remote} from 'electron';
-import GK from '../fb-stubs/GK';
+import GK from '../fb-stubs/GK.tsx';
 import {FlipperBasePlugin} from '../plugin.tsx';
 import {setupMenuBar} from '../MenuBar.js';
 import path from 'path';

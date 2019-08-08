@@ -18,7 +18,7 @@ import {
   updateCategoryBlacklist,
 } from '../reducers/notifications.tsx';
 import {textContent} from '../utils/index';
-import GK from '../fb-stubs/GK';
+import GK from '../fb-stubs/GK.tsx';
 
 type NotificationEvents = 'show' | 'click' | 'close' | 'reply' | 'action';
 const NOTIFICATION_THROTTLE = 5 * 1000; // in milliseconds

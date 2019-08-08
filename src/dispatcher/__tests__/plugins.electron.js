@@ -17,7 +17,7 @@ import {FlipperPlugin} from '../../plugin.tsx';
 import reducers from '../../reducers/index.tsx';
 import {init as initLogger} from '../../fb-stubs/Logger.js';
 import configureStore from 'redux-mock-store';
-import {TEST_PASSING_GK, TEST_FAILING_GK} from '../../fb-stubs/GK';
+import {TEST_PASSING_GK, TEST_FAILING_GK} from '../../fb-stubs/GK.tsx';
 import TestPlugin from './TestPlugin';
 
 const mockStore = configureStore([])(reducers(undefined, {type: 'INIT'}));
