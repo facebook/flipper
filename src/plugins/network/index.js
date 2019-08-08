@@ -35,7 +35,7 @@ import {
 import RequestDetails from './RequestDetails.js';
 import {clipboard} from 'electron';
 import {URL} from 'url';
-import type {Notification} from '../../plugin';
+import type {Notification} from '../../plugin.tsx';
 
 type PersistedState = {|
   requests: {[id: RequestId]: Request},

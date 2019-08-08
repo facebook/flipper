@@ -12,7 +12,7 @@ import type {PluginNotification} from '../reducers/notifications.tsx';
 import type {ClientExport} from '../Client.tsx';
 import type {State as PluginStatesState} from '../reducers/pluginStates.tsx';
 import {pluginKey} from '../reducers/pluginStates.tsx';
-import {FlipperDevicePlugin, FlipperPlugin, callClient} from '../plugin.js';
+import {FlipperDevicePlugin, FlipperPlugin, callClient} from '../plugin.tsx';
 import {default as BaseDevice} from '../devices/BaseDevice';
 import {default as ArchivedDevice} from '../devices/ArchivedDevice';
 import {default as Client} from '../Client.tsx';

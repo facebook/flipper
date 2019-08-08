@@ -17,7 +17,7 @@ import {
 } from '../index';
 import styled from '../styled/index';
 import type {TableBodyRow, TableRows} from 'flipper';
-import type {PluginClient} from '../../plugin';
+import type {PluginClient} from '../../plugin.tsx';
 
 type ValueWithType = {|
   type: string,

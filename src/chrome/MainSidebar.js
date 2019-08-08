@@ -5,7 +5,7 @@
  * @format
  */
 
-import {FlipperBasePlugin} from '../plugin.js';
+import {FlipperBasePlugin} from '../plugin.tsx';
 import config from '../fb-stubs/config';
 import type BaseDevice from '../devices/BaseDevice.js';
 import type Client from '../Client.tsx';

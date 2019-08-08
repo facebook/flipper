@@ -5,11 +5,7 @@
  * @format
  */
 
-import {
-  FlipperPlugin,
-  FlipperBasePlugin,
-  FlipperDevicePlugin,
-} from './plugin.js';
+import {FlipperPlugin, FlipperDevicePlugin} from './plugin';
 import BaseDevice, {OS} from './devices/BaseDevice.js';
 import {App} from './App.js';
 import {Logger} from './fb-interfaces/Logger.js';
@@ -315,7 +311,9 @@ export default class Client extends EventEmitter {
         const params = data.params;
         invariant(params, 'expected params');
 
-        const persistingPlugin: typeof FlipperBasePlugin | null =
+        const persistingPlugin:
+          | typeof FlipperPlugin
+          | typeof FlipperDevicePlugin =
           this.store.getState().plugins.clientPlugins.get(params.api) ||
           this.store.getState().plugins.devicePlugins.get(params.api);
         if (persistingPlugin && persistingPlugin.persistedStateReducer) {

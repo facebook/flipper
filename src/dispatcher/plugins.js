@@ -7,7 +7,7 @@
 
 import type {Store} from '../reducers/index.tsx';
 import type {Logger} from '../fb-interfaces/Logger.js';
-import type {FlipperPlugin, FlipperDevicePlugin} from '../plugin.js';
+import type {FlipperPlugin, FlipperDevicePlugin} from '../plugin.tsx';
 import type {State} from '../reducers/plugins.tsx';
 
 import React from 'react';
@@ -21,7 +21,7 @@ import {
 } from '../reducers/plugins.tsx';
 import {remote} from 'electron';
 import GK from '../fb-stubs/GK';
-import {FlipperBasePlugin} from '../plugin.js';
+import {FlipperBasePlugin} from '../plugin.tsx';
 import {setupMenuBar} from '../MenuBar.js';
 import path from 'path';
 import {default as config} from '../utils/processConfig.js';

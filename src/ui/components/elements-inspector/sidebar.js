@@ -6,7 +6,7 @@
  */
 
 import type {Element} from './ElementsInspector.js';
-import type {PluginClient} from '../../../plugin';
+import type {PluginClient} from '../../../plugin.tsx';
 import type Client from '../../../Client.tsx';
 import type {Logger} from '../../../fb-interfaces/Logger.js';
 import Panel from '../Panel.js';

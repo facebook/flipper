@@ -16,8 +16,8 @@ export {
   FlipperPlugin,
   FlipperDevicePlugin,
   callClient,
-} from './plugin.js';
-export type {PluginClient, Props} from './plugin.js';
+} from './plugin.tsx';
+export type {PluginClient, Props} from './plugin.tsx';
 export type {MetricType} from './utils/exportMetrics.js';
 export {default as Client} from './Client.tsx';
 export {clipboard} from 'electron';

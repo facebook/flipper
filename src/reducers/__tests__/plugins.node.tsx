@@ -14,17 +14,18 @@ import {
   FlipperBasePlugin,
   FlipperPlugin,
   FlipperDevicePlugin,
-} from '../../plugin.js';
+  BaseAction,
+} from '../../plugin';
 
-const testBasePlugin = class extends FlipperBasePlugin {
+const testPlugin = class extends FlipperPlugin<any, BaseAction, any> {
   static id = 'TestPlugin';
 };
 
-const testPlugin = class extends FlipperPlugin {
-  static id = 'TestPlugin';
-};
-
-const testDevicePlugin = class extends FlipperDevicePlugin {
+const testDevicePlugin = class extends FlipperDevicePlugin<
+  any,
+  BaseAction,
+  any
+> {
   static id = 'TestDevicePlugin';
 };
 
@@ -71,22 +72,6 @@ test('do not add plugin twice', () => {
     registerPlugins([testPlugin, testPlugin]),
   );
   expect(res.clientPlugins.size).toEqual(1);
-});
-
-test('do not add other classes', () => {
-  const res = reducer(
-    {
-      devicePlugins: new Map(),
-      clientPlugins: new Map(),
-      gatekeepedPlugins: [],
-      failedPlugins: [],
-      disabledPlugins: [],
-      selectedPlugins: [],
-    },
-    registerPlugins([testBasePlugin]),
-  );
-  expect(res.devicePlugins.size).toEqual(0);
-  expect(res.devicePlugins.size).toEqual(0);
 });
 
 test('add gatekeeped plugin', () => {

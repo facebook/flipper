@@ -5,7 +5,7 @@
  * @format
  */
 
-import type {PluginClient} from '../../plugin';
+import type {PluginClient} from '../../plugin.tsx';
 import type {Value} from '../../ui/components/table/TypeBasedValueRenderer';
 
 type ClientCall<Params, Response> = Params => Promise<Response>;

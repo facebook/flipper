@@ -5,7 +5,7 @@
  * @format
  */
 
-import type {FlipperDevicePlugin, FlipperPlugin} from '../plugin';
+import type {FlipperDevicePlugin, FlipperPlugin} from '../plugin.tsx';
 import type {PluginDefinition} from '../dispatcher/plugins';
 import type Client from '../Client.tsx';
 import type {TableBodyRow} from '../ui/components/table/types';

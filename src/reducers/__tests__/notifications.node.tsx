@@ -15,7 +15,9 @@ import {
   updateCategoryBlacklist,
 } from '../notifications';
 
-const notification = {
+import {Notification} from '../../plugin';
+
+const notification: Notification = {
   id: 'id',
   title: 'title',
   message: 'message',

@@ -31,7 +31,7 @@ import {
 } from 'flipper';
 import ImagesSidebar from './ImagesSidebar.js';
 import ImagePool from './ImagePool.js';
-import type {Notification} from '../../plugin';
+import type {Notification} from '../../plugin.tsx';
 
 export type ImageEventWithId = ImageEvent & {eventId: number};
 

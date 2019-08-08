@@ -5,7 +5,7 @@
  * @format
  */
 import type {Store} from '../reducers/index.tsx';
-import {FlipperPlugin, FlipperDevicePlugin} from '../plugin.js';
+import {FlipperPlugin, FlipperDevicePlugin} from '../plugin.tsx';
 import type BaseDevice from '../devices/BaseDevice.js';
 import {setPluginState} from '../reducers/pluginStates.tsx';
 import {getPersistedState} from '../utils/pluginUtils.js';

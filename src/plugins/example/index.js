@@ -7,7 +7,7 @@
  */
 
 import {Button, Input, FlipperPlugin, FlexColumn, styled, Text} from 'flipper';
-import type {Notification} from '../../plugin';
+import type {Notification} from '../../plugin.tsx';
 type DisplayMessageResponse = {
   greeting: string,
 };

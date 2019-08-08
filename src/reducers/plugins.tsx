@@ -5,7 +5,7 @@
  * @format
  */
 
-import {FlipperPlugin, FlipperDevicePlugin} from '../plugin.js';
+import {FlipperPlugin, FlipperDevicePlugin} from '../plugin';
 import {PluginDefinition} from '../dispatcher/plugins';
 
 export type State = {
@@ -64,10 +64,10 @@ export default function reducer(
 
       // $FlowFixMe Flow doesn't know prototype
       if (p.prototype instanceof FlipperDevicePlugin) {
-        // $FlowFixMe Flow doesn't know p must be Class<FlipperDevicePlugin> here
+        // @ts-ignore doesn't know p must be typeof FlipperDevicePlugin here
         devicePlugins.set(p.id, p);
       } else if (p.prototype instanceof FlipperPlugin) {
-        // $FlowFixMe Flow doesn't know p must be Class<FlipperPlugin> here
+        // @ts-ignore doesn't know p must be typeof FlipperPlugin here
         clientPlugins.set(p.id, p);
       }
     });

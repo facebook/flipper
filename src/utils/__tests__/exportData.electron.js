@@ -8,8 +8,8 @@
 import {default as BaseDevice} from '../../devices/BaseDevice';
 import {default as ArchivedDevice} from '../../devices/ArchivedDevice';
 import {processStore} from '../exportData';
-import {FlipperDevicePlugin} from '../../plugin.js';
-import type {Notification} from '../../plugin.js';
+import {FlipperDevicePlugin} from '../../plugin.tsx';
+import type {Notification} from '../../plugin.tsx';
 import type {ClientExport} from '../../Client.tsx';
 
 class TestDevicePlugin extends FlipperDevicePlugin {
