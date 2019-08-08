@@ -33,7 +33,7 @@ import React from 'react';
 import NotificationsHub from '../NotificationsHub.js';
 import {selectPlugin} from '../reducers/connections.js';
 import {setActiveSheet} from '../reducers/application.js';
-import UserAccount from './UserAccount.js';
+import UserAccount from './UserAccount.tsx';
 import {connect} from 'react-redux';
 
 const ListItem = styled('div')(({active}) => ({
