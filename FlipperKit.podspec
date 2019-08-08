@@ -118,7 +118,7 @@ Pod::Spec.new do |spec|
     ss.header_dir = "FlipperKitLayoutComponentKitSupport"
     ss.dependency             'FlipperKit/Core'
     ss.dependency             'Yoga', yoga_version
-    ss.dependency             'ComponentKit', '~> 0.27'
+    ss.dependency             'ComponentKit', '~> 0.0'
     ss.dependency             'FlipperKit/FlipperKitLayoutPlugin'
     ss.dependency             'FlipperKit/FlipperKitLayoutTextSearchable'
     ss.compiler_flags       = folly_compiler_flags
