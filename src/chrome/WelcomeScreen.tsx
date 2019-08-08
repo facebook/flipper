@@ -7,7 +7,6 @@
 
 import {
   styled,
-  PureComponent,
   FlexColumn,
   FlexRow,
   Text,
@@ -17,6 +16,7 @@ import {
 } from 'flipper';
 import isProduction from '../utils/isProduction.js';
 import {shell, remote} from 'electron';
+import React, {PureComponent} from 'react';
 
 const Container = styled(FlexColumn)({
   height: '100%',
@@ -98,7 +98,7 @@ export default class WelcomeScreen extends PureComponent<Props, State> {
     isMounted: false,
   };
 
-  timer: ?TimeoutID;
+  timer: NodeJS.Timeout | null | undefined;
 
   componentDidMount() {
     // waiting sometime before showing the welcome screen to allow Flipper to
