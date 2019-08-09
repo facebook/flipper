@@ -5,7 +5,7 @@
  * @format
  * @flow
  */
-import type {DeviceLogEntry} from '../devices/BaseDevice.tsx';
+import {DeviceLogEntry} from '../devices/BaseDevice';
 
 export function shouldParseAndroidLog(
   entry: DeviceLogEntry,
