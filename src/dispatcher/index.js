@@ -7,7 +7,7 @@
 
 import androidDevice from './androidDevice.tsx';
 import iOSDevice from './iOSDevice';
-import desktopDevice from './desktopDevice';
+import desktopDevice from './desktopDevice.tsx';
 import application from './application.tsx';
 import tracking from './tracking.tsx';
 import server from './server.tsx';
