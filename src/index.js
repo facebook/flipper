@@ -10,7 +10,7 @@ export * from './ui/index.js';
 export * from './utils/index.js';
 export {default as GK} from './fb-stubs/GK.tsx';
 export {default as createPaste} from './fb-stubs/createPaste.tsx';
-export {graphQLQuery} from './fb-stubs/user.js';
+export {graphQLQuery} from './fb-stubs/user.tsx';
 export {
   FlipperBasePlugin,
   FlipperPlugin,

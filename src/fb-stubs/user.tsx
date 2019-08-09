@@ -21,20 +21,20 @@ export async function shareFlipperData(
   trace: string,
 ): Promise<
   | {
-      id: string,
-      os: 'string',
-      deviceType: string,
-      plugins: string[],
-      fileUrl: string,
-      flipperUrl: string,
+      id: string;
+      os: 'string';
+      deviceType: string;
+      plugins: string[];
+      fileUrl: string;
+      flipperUrl: string;
     }
   | {
-      error: string,
-      error_class: string,
-      stacktrace: string,
-    },
+      error: string;
+      error_class: string;
+      stacktrace: string;
+    }
 > {
-  new window.Notification('Feature not implemented');
+  new Notification('Feature not implemented');
   return Promise.reject();
 }
 
