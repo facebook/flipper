@@ -5,7 +5,7 @@
  * @format
  */
 
-import {getInstance as getLogger} from '../fb-stubs/Logger';
+import {getInstance as getLogger} from '../fb-stubs/Logger.tsx';
 
 export function reportInteraction(
   componentType: string,

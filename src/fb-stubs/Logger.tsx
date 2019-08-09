@@ -5,14 +5,14 @@
  * @format
  */
 
-import type {TrackType, Logger} from '../fb-interfaces/Logger';
-import type {Store} from '../reducers/index.tsx';
+import {TrackType, Logger} from '../fb-interfaces/Logger';
+import {Store} from '../reducers/index';
 import ScribeLogger from './ScribeLogger';
 
-let instance: ?StubLogger = null;
+let instance: StubLogger = null;
 
 type Args = {
-  isHeadless?: boolean,
+  isHeadless?: boolean;
 };
 
 class StubLogger implements Logger {
@@ -22,9 +22,9 @@ class StubLogger implements Logger {
 
   scribeLogger: ScribeLogger;
 
-  track(type: TrackType, event: string, data: ?any, plugin?: string) {}
+  track(type: TrackType, event: string, data?: any, plugin?: string) {}
 
-  trackTimeSince(mark: string, eventName: ?string) {}
+  trackTimeSince(mark: string, eventName?: string) {}
 
   info(data: any, category: string) {}
 

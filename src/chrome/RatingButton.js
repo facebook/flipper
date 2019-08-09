@@ -7,7 +7,7 @@
 
 import {Component, type Element, Fragment} from 'react';
 import {Glyph, Tooltip} from 'flipper';
-import {getInstance as getLogger} from '../fb-stubs/Logger';
+import {getInstance as getLogger} from '../fb-stubs/Logger.tsx';
 import GK from '../fb-stubs/GK.tsx';
 
 type Props = {

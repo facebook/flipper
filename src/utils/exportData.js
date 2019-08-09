@@ -4,8 +4,8 @@
  * LICENSE file in the root directory of this source tree.
  * @format
  */
-import {getInstance as getLogger} from '../fb-stubs/Logger';
 import type {Store, MiddlewareAPI} from '../reducers.tsx';
+import {getInstance as getLogger} from '../fb-stubs/Logger.tsx';
 import type {DeviceExport} from '../devices/BaseDevice.tsx';
 import type {State as PluginStates} from '../reducers/pluginStates.tsx';
 import type {PluginNotification} from '../reducers/notifications.tsx';

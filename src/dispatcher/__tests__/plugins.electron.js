@@ -15,7 +15,7 @@ import path from 'path';
 import {remote} from 'electron';
 import {FlipperPlugin} from '../../plugin.tsx';
 import reducers from '../../reducers/index.tsx';
-import {init as initLogger} from '../../fb-stubs/Logger.js';
+import {init as initLogger} from '../../fb-stubs/Logger.tsx';
 import configureStore from 'redux-mock-store';
 import {TEST_PASSING_GK, TEST_FAILING_GK} from '../../fb-stubs/GK.tsx';
 import TestPlugin from './TestPlugin';

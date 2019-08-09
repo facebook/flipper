@@ -5,7 +5,7 @@
  * @format
  */
 
-import {getInstance} from '../fb-stubs/Logger';
+import {getInstance} from '../fb-stubs/Logger.tsx';
 
 export class UnsupportedError extends Error {
   constructor(message: string) {
