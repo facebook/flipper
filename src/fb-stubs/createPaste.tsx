@@ -5,6 +5,8 @@
  * @format
  */
 
-export default function createPaste(input: string): Promise<?string> {
+export default function createPaste(
+  input: string,
+): Promise<string | undefined> {
   return Promise.reject('Not implemented!');
 }

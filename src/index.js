@@ -9,7 +9,7 @@ export {default as styled, keyframes} from 'react-emotion';
 export * from './ui/index.js';
 export * from './utils/index.js';
 export {default as GK} from './fb-stubs/GK.tsx';
-export {default as createPaste} from './fb-stubs/createPaste.js';
+export {default as createPaste} from './fb-stubs/createPaste.tsx';
 export {graphQLQuery} from './fb-stubs/user.js';
 export {
   FlipperBasePlugin,
@@ -22,7 +22,6 @@ export type {MetricType} from './utils/exportMetrics.js';
 export {default as Client} from './Client.tsx';
 export {clipboard} from 'electron';
 export * from './fb-stubs/constants.js';
-export * from './fb-stubs/createPaste.js';
 export {connect} from 'react-redux';
 export {selectPlugin} from './reducers/connections.tsx';
 export {getPluginKey, getPersistedState} from './utils/pluginUtils.js';
