@@ -13,7 +13,7 @@ import tracking from './tracking';
 import server from './server';
 import notifications from './notifications';
 import plugins from './plugins';
-import user from './user';
+import user from './user.tsx';
 
 import type {Logger} from '../fb-interfaces/Logger.js';
 import type {Store} from '../reducers/index.tsx';
