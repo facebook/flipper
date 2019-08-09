@@ -12,7 +12,7 @@ import GK from './fb-stubs/GK.tsx';
 import {init as initLogger} from './fb-stubs/Logger';
 import App from './App.js';
 import BugReporter from './fb-stubs/BugReporter.tsx';
-import setupPrefetcher from './fb-stubs/Prefetcher.js';
+import setupPrefetcher from './fb-stubs/Prefetcher.tsx';
 import {createStore} from 'redux';
 import {persistStore} from 'redux-persist';
 import reducers from './reducers/index.tsx';
