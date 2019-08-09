@@ -10,8 +10,7 @@ import isProduction from './isProduction';
 
 export const isAutoUpdaterEnabled = () =>
   // TODO(T39788540): Centralise config access and avoid parsing multiple times.
-  // $FlowFixMe: env is not in the type defs.
-  JSON.parse(electron.remote?.process.env.CONFIG || process.env.CONFIG || '{}')
+  JSON.parse(electron.remote.process.env.CONFIG || process.env.CONFIG || '{}')
     .updaterEnabled &&
   isProduction() &&
   process.platform === 'darwin';

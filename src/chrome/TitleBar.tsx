@@ -32,7 +32,7 @@ import ScreenCaptureButtons from './ScreenCaptureButtons.js';
 import AutoUpdateVersion from './AutoUpdateVersion';
 import UpdateIndicator from './UpdateIndicator';
 import config from '../fb-stubs/config';
-import {isAutoUpdaterEnabled} from '../utils/argvUtils.js';
+import {isAutoUpdaterEnabled} from '../utils/argvUtils';
 import isProduction from '../utils/isProduction.js';
 import {clipboard} from 'electron';
 import React from 'react';
