@@ -10,4 +10,4 @@ import {Logger} from '../fb-interfaces/Logger';
 export type Dispatcher = (
   store: Store,
   logger: Logger,
-) => (() => Promise<void>) | null;
+) => (() => Promise<void>) | null | void;

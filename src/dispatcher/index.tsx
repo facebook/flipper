@@ -5,19 +5,19 @@
  * @format
  */
 
-import androidDevice from './androidDevice.tsx';
+import androidDevice from './androidDevice';
 import iOSDevice from './iOSDevice';
-import desktopDevice from './desktopDevice.tsx';
-import application from './application.tsx';
-import tracking from './tracking.tsx';
-import server from './server.tsx';
+import desktopDevice from './desktopDevice';
+import application from './application';
+import tracking from './tracking';
+import server from './server';
 import notifications from './notifications';
 import plugins from './plugins';
-import user from './user.tsx';
+import user from './user';
 
-import type {Logger} from '../fb-interfaces/Logger.js';
-import type {Store} from '../reducers/index.tsx';
-import type {Dispatcher} from './types.tsx';
+import {Logger} from '../fb-interfaces/Logger.js';
+import {Store} from '../reducers/index';
+import {Dispatcher} from './types';
 
 export default function(store: Store, logger: Logger): () => Promise<void> {
   const dispatchers: Array<Dispatcher> = [

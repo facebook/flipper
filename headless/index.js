@@ -9,7 +9,7 @@ import path from 'path';
 import {createStore} from 'redux';
 import {applyMiddleware} from 'redux';
 import yargs from 'yargs';
-import dispatcher from '../src/dispatcher/index.js';
+import dispatcher from '../src/dispatcher/index.tsx';
 import {init as initLogger} from '../src/fb-stubs/Logger.js';
 import reducers from '../src/reducers/index.tsx';
 import {exportStore, pluginsClassMap} from '../src/utils/exportData.js';

@@ -16,7 +16,7 @@ import setupPrefetcher from './fb-stubs/Prefetcher.tsx';
 import {createStore} from 'redux';
 import {persistStore} from 'redux-persist';
 import reducers from './reducers/index.tsx';
-import dispatcher from './dispatcher/index.js';
+import dispatcher from './dispatcher/index.tsx';
 import TooltipProvider from './ui/components/TooltipProvider.js';
 import config from './utils/processConfig.js';
 import {stateSanitizer} from './utils/reduxDevToolsConfig.js';
