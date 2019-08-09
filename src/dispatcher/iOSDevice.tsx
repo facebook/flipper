@@ -5,28 +5,28 @@
  * @format
  */
 
-import type {ChildProcess} from 'child_process';
-import type {Store} from '../reducers/index.tsx';
-import type {Logger} from '../fb-interfaces/Logger.js';
-import type {DeviceType} from '../devices/BaseDevice.tsx';
+import {ChildProcess} from 'child_process';
+import {Store} from '../reducers/index';
+import {Logger} from '../fb-interfaces/Logger.js';
+import {DeviceType} from '../devices/BaseDevice';
 import {promisify} from 'util';
 import path from 'path';
 import child_process from 'child_process';
 const execFile = child_process.execFile;
-import iosUtil from '../fb-stubs/iOSContainerUtility.tsx';
-import IOSDevice from '../devices/IOSDevice.tsx';
+import iosUtil from '../fb-stubs/iOSContainerUtility';
+import IOSDevice from '../devices/IOSDevice';
 import isProduction from '../utils/isProduction.js';
-import GK from '../fb-stubs/GK.tsx';
+import GK from '../fb-stubs/GK';
 import {registerDeviceCallbackOnPlugins} from '../utils/onRegisterDevice.js';
-type iOSSimulatorDevice = {|
-  state: 'Booted' | 'Shutdown' | 'Shutting Down',
-  availability?: string,
-  isAvailable?: 'YES' | 'NO' | true | false,
-  name: string,
-  udid: string,
-|};
+type iOSSimulatorDevice = {
+  state: 'Booted' | 'Shutdown' | 'Shutting Down';
+  availability?: string;
+  isAvailable?: 'YES' | 'NO' | true | false;
+  name: string;
+  udid: string;
+};
 
-type IOSDeviceParams = {udid: string, type: DeviceType, name: string};
+type IOSDeviceParams = {udid: string; type: DeviceType; name: string};
 
 function isAvailable(simulator: iOSSimulatorDevice): boolean {
   // For some users "availability" is set, for others it's "isAvailable"
@@ -123,9 +123,10 @@ function getActiveSimulators(): Promise<Array<IOSDeviceParams>> {
   )
     .then(({stdout}) => JSON.parse(stdout).devices)
     .then(simulatorDevices => {
+      // @ts-ignore
       const simulators: Array<iOSSimulatorDevice> = Object.values(
         simulatorDevices,
-        // $FlowFixMe
+        // @ts-ignore
       ).reduce((acc, cv) => acc.concat(cv), []);
 
       return simulators
@@ -137,7 +138,7 @@ function getActiveSimulators(): Promise<Array<IOSDeviceParams>> {
             udid: simulator.udid,
             type: 'emulator',
             name: simulator.name,
-          };
+          } as IOSDeviceParams;
         });
     })
     .catch(_ => []);
@@ -179,7 +180,7 @@ async function checkXcodeVersionMismatch() {
 }
 
 export async function getActiveDevicesAndSimulators(): Promise<
-  Array<IOSDevice>,
+  Array<IOSDevice>
 > {
   const activeDevices: Array<Array<IOSDeviceParams>> = await Promise.all([
     getActiveSimulators(),
