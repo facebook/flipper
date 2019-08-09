@@ -5,20 +5,20 @@
  * @format
  */
 
-import type {Store} from '../reducers/index.tsx';
-import type {Logger} from '../fb-interfaces/Logger.js';
-import type {PluginNotification} from '../reducers/notifications.tsx';
-import type {FlipperPlugin, FlipperDevicePlugin} from '../plugin.tsx';
+import {Store} from '../reducers/index';
+import {Logger} from '../fb-interfaces/Logger.js';
+import {PluginNotification} from '../reducers/notifications';
+import {FlipperPlugin, FlipperDevicePlugin} from '../plugin';
 import isHeadless from '../utils/isHeadless.js';
 import {ipcRenderer} from 'electron';
-import {selectPlugin} from '../reducers/connections.tsx';
+import {selectPlugin} from '../reducers/connections';
 import {
   setActiveNotifications,
   updatePluginBlacklist,
   updateCategoryBlacklist,
-} from '../reducers/notifications.tsx';
+} from '../reducers/notifications';
 import {textContent} from '../utils/index';
-import GK from '../fb-stubs/GK.tsx';
+import GK from '../fb-stubs/GK';
 
 type NotificationEvents = 'show' | 'click' | 'close' | 'reply' | 'action';
 const NOTIFICATION_THROTTLE = 5 * 1000; // in milliseconds
@@ -85,19 +85,21 @@ export default (store: Store, logger: Logger) => {
   store.subscribe(() => {
     const {notifications, pluginStates} = store.getState();
 
-    const clientPlugins: Map<string, Class<FlipperPlugin<>>> = store.getState()
+    const clientPlugins: Map<string, typeof FlipperPlugin> = store.getState()
       .plugins.clientPlugins;
 
     const devicePlugins: Map<
       string,
-      Class<FlipperDevicePlugin<>>,
+      typeof FlipperDevicePlugin
     > = store.getState().plugins.devicePlugins;
 
     const pluginMap: Map<
       string,
-      Class<FlipperPlugin<> | FlipperDevicePlugin<>>,
-      //$FlowFixMe Flow complains that FlipperPlugin and FlipperDevicePlugin are incompatible, where as we have already mentioned the type of the class it can take in the type
-    > = new Map([...clientPlugins, ...devicePlugins]);
+      typeof FlipperPlugin | typeof FlipperDevicePlugin
+    > = new Map<string, typeof FlipperDevicePlugin | typeof FlipperPlugin>([
+      ...clientPlugins,
+      ...devicePlugins,
+    ]);
 
     Object.keys(pluginStates).forEach(key => {
       if (knownPluginStates.get(key) !== pluginStates[key]) {
@@ -105,9 +107,9 @@ export default (store: Store, logger: Logger) => {
         const split = key.split('#');
         const pluginId = split.pop();
         const client = split.join('#');
-        const persistingPlugin: ?Class<
-          FlipperPlugin<> | FlipperDevicePlugin<>,
-        > = pluginMap.get(pluginId);
+        const persistingPlugin:
+          | typeof FlipperPlugin
+          | typeof FlipperDevicePlugin = pluginMap.get(pluginId);
         if (persistingPlugin && persistingPlugin.getActiveNotifications) {
           store.dispatch(
             setActiveNotifications({
@@ -153,6 +155,7 @@ export default (store: Store, logger: Logger) => {
         ipcRenderer.send('sendNotification', {
           payload: {
             title: n.notification.title,
+            // @ts-ignore Remove this when textContent is converted to tsx
             body: textContent(n.notification.message),
             actions: [
               {
@@ -165,7 +168,7 @@ export default (store: Store, logger: Logger) => {
               },
               {
                 type: 'button',
-                text: `Hide all ${pluginMap.get(n.pluginId)?.title || ''}`,
+                text: `Hide all ${pluginMap.get(n.pluginId).title || ''}`,
               },
             ],
             closeButtonText: 'Hide',
