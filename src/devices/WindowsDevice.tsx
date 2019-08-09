@@ -5,13 +5,12 @@
  * @format
  */
 
-import BaseDevice from './BaseDevice.tsx';
+import BaseDevice from './BaseDevice';
 
 export default class WindowsDevice extends BaseDevice {
-  os = 'Windows';
-
   constructor() {
     super('', 'physical', 'Windows');
+    this.os = 'Windows';
   }
 
   teardown() {}

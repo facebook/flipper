@@ -9,7 +9,7 @@ import type {Store} from '../reducers/index.tsx';
 import type {Logger} from '../fb-interfaces/Logger.js';
 
 import MacDevice from '../devices/MacDevice.tsx';
-import WindowsDevice from '../devices/WindowsDevice';
+import WindowsDevice from '../devices/WindowsDevice.tsx';
 
 export default (store: Store, logger: Logger) => {
   let device;
