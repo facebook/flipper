@@ -5,12 +5,12 @@
  * @format
  */
 
-import Server from '../server.tsx';
+import Server from '../server';
 
-import type {Store} from '../reducers/index.tsx';
-import type {Logger} from '../fb-interfaces/Logger.js';
-import type Client from '../Client.tsx';
-import type {UninitializedClient} from '../UninitializedClient.tsx';
+import {Store} from '../reducers/index';
+import {Logger} from '../fb-interfaces/Logger.js';
+import Client from '../Client.js';
+import {UninitializedClient} from '../UninitializedClient';
 
 export default (store: Store, logger: Logger) => {
   const server = new Server(logger, store);
@@ -67,7 +67,7 @@ export default (store: Store, logger: Logger) => {
 
   server.addListener(
     'finish-client-setup',
-    (payload: {client: UninitializedClient, deviceId: string}) => {
+    (payload: {client: UninitializedClient; deviceId: string}) => {
       store.dispatch({
         type: 'FINISH_CLIENT_SETUP',
         payload: payload,
@@ -77,7 +77,7 @@ export default (store: Store, logger: Logger) => {
 
   server.addListener(
     'client-setup-error',
-    (payload: {client: UninitializedClient, error: Error}) => {
+    (payload: {client: UninitializedClient; error: Error}) => {
       store.dispatch({
         type: 'CLIENT_SETUP_ERROR',
         payload: payload,

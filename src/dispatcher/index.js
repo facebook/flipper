@@ -10,7 +10,7 @@ import iOSDevice from './iOSDevice';
 import desktopDevice from './desktopDevice';
 import application from './application';
 import tracking from './tracking.tsx';
-import server from './server';
+import server from './server.tsx';
 import notifications from './notifications';
 import plugins from './plugins';
 import user from './user.tsx';
