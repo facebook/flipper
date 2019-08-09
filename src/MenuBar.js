@@ -15,7 +15,7 @@ import {
 } from './reducers/application.tsx';
 import type {Store} from './reducers/index.tsx';
 import electron from 'electron';
-import {ENABLE_SHAREABLE_LINK} from 'flipper';
+import {constants} from 'flipper';
 export type DefaultKeyboardAction = 'clear' | 'goToBottom' | 'createPaste';
 export type TopLevelMenu = 'Edit' | 'View' | 'Window' | 'Help';
 const {dialog} = electron.remote;
@@ -210,7 +210,7 @@ function getTemplate(
       },
     },
   ];
-  if (ENABLE_SHAREABLE_LINK) {
+  if (constants.ENABLE_SHAREABLE_LINK) {
     exportSubmenu.push({
       label: 'Sharable Link',
       accelerator: 'CommandOrControl+Shift+E',

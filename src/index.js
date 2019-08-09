@@ -21,7 +21,7 @@ export type {PluginClient, Props} from './plugin.tsx';
 export type {MetricType} from './utils/exportMetrics.js';
 export {default as Client} from './Client.tsx';
 export {clipboard} from 'electron';
-export * from './fb-stubs/constants.js';
+export {default as constants} from './fb-stubs/constants.tsx';
 export {connect} from 'react-redux';
 export {selectPlugin} from './reducers/connections.tsx';
 export {getPluginKey, getPersistedState} from './utils/pluginUtils.js';
