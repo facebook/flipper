@@ -6,9 +6,9 @@
  */
 
 import {remote, ipcRenderer} from 'electron';
-import type {Store} from '../reducers/index.tsx';
-import type {Logger} from '../fb-interfaces/Logger.js';
-import {toggleAction} from '../reducers/application.tsx';
+import {toggleAction} from '../reducers/application';
+import {Store} from '../reducers/index.js';
+import {Logger} from '../fb-interfaces/Logger.js';
 import {parseFlipperPorts} from '../utils/environmentVariables';
 import {
   importDataToStore,
@@ -17,21 +17,21 @@ import {
 } from '../utils/exportData';
 import {tryCatchReportPlatformFailures} from '../utils/metrics';
 
-import {selectPlugin} from '../reducers/connections.tsx';
+import {selectPlugin} from '../reducers/connections';
 import qs from 'query-string';
 
-export const uriComponents = (url: string) => {
+export const uriComponents = (url: string): Array<string> => {
   if (!url) {
     return [];
   }
-  const match: ?Array<string> = url.match(
+  const match: Array<string> | undefined | null = url.match(
     /^flipper:\/\/([^\/]*)\/([^\/]*)\/?(.*)$/,
   );
   if (match) {
-    return (match
+    return match
       .map(decodeURIComponent)
       .slice(1)
-      .filter(Boolean): Array<string>);
+      .filter(Boolean);
   }
   return [];
 };
@@ -54,7 +54,7 @@ export default (store: Store, logger: Logger) => {
   ipcRenderer.on('flipper-protocol-handler', (event, url) => {
     if (url.startsWith('flipper://import')) {
       const {search} = new URL(url);
-      const download = qs.parse(search)?.url;
+      const download = qs.parse(search) ? qs.parse(search) : undefined;
       store.dispatch(toggleAction('downloadingImportData', true));
       return (
         download &&

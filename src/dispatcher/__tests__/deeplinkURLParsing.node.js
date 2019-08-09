@@ -5,7 +5,7 @@
  * @format
  */
 
-import {uriComponents} from '../application.js';
+import {uriComponents} from '../application.tsx';
 
 test('test parsing of deeplink URL', () => {
   const url = 'flipper://app/plugin/meta/data';
