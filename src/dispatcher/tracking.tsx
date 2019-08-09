@@ -9,9 +9,9 @@ import {ipcRenderer} from 'electron';
 // $FlowFixMe perf_hooks is a new API in node
 import {performance} from 'perf_hooks';
 
-import type {Store} from '../reducers/index.tsx';
-import type {Logger} from '../fb-interfaces/Logger.js';
-import type Client from '../Client.tsx';
+import {Store} from '../reducers/index';
+import {Logger} from '../fb-interfaces/Logger.js';
+import Client from '../Client';
 
 export default (store: Store, logger: Logger) => {
   let droppedFrames: number = 0;

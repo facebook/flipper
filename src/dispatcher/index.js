@@ -9,7 +9,7 @@ import androidDevice from './androidDevice';
 import iOSDevice from './iOSDevice';
 import desktopDevice from './desktopDevice';
 import application from './application';
-import tracking from './tracking';
+import tracking from './tracking.tsx';
 import server from './server';
 import notifications from './notifications';
 import plugins from './plugins';
