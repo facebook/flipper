@@ -11,7 +11,7 @@ import {ContextMenuProvider} from 'flipper';
 import GK from './fb-stubs/GK.tsx';
 import {init as initLogger} from './fb-stubs/Logger';
 import App from './App.js';
-import BugReporter from './fb-stubs/BugReporter.js';
+import BugReporter from './fb-stubs/BugReporter.tsx';
 import setupPrefetcher from './fb-stubs/Prefetcher.js';
 import {createStore} from 'redux';
 import {persistStore} from 'redux-persist';
