@@ -7,7 +7,7 @@
 
 export function parseFlipperPorts(
   envVar: string,
-): ?{insecure: number, secure: number} {
+): {insecure: number; secure: number} | undefined {
   const components = envVar.split(',');
   const ports = components.map(x => parseInt(x, 10));
 
