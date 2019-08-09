@@ -4,7 +4,7 @@
  * LICENSE file in the root directory of this source tree.
  * @format
  */
-import BaseDevice from '../../../devices/BaseDevice';
+import BaseDevice from '../../../devices/BaseDevice.tsx';
 import CrashReporterPlugin from '../../crash_reporter';
 import type {PersistedState, Crash} from '../../crash_reporter';
 import {

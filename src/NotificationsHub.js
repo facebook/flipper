@@ -38,7 +38,7 @@ import {
 } from './reducers/notifications.tsx';
 import {selectPlugin} from './reducers/connections.tsx';
 import {textContent} from './utils/index';
-import createPaste from './fb-stubs/createPaste';
+import createPaste from './fb-stubs/createPaste.tsx';
 
 export default class Notifications extends FlipperDevicePlugin<{}> {
   static id = 'notifications';

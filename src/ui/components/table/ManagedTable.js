@@ -27,7 +27,7 @@ import TableHead from './TableHead.js';
 import TableRow from './TableRow.js';
 import ContextMenu from '../ContextMenu.js';
 import FlexColumn from '../FlexColumn.js';
-import createPaste from '../../../fb-stubs/createPaste.js';
+import createPaste from '../../../fb-stubs/createPaste.tsx';
 import debounceRender from 'react-debounce-render';
 import debounce from 'lodash.debounce';
 import {DEFAULT_ROW_HEIGHT} from './types';

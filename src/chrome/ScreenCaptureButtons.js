@@ -7,8 +7,8 @@
 
 import {Button, ButtonGroup, Component} from 'flipper';
 import {connect} from 'react-redux';
-import AndroidDevice from '../devices/AndroidDevice';
-import IOSDevice from '../devices/IOSDevice';
+import AndroidDevice from '../devices/AndroidDevice.tsx';
+import IOSDevice from '../devices/IOSDevice.tsx';
 import expandTilde from 'expand-tilde';
 import fs from 'fs';
 import os from 'os';
@@ -18,7 +18,7 @@ import {remote} from 'electron';
 import path from 'path';
 import {reportPlatformFailures} from '../utils/metrics';
 import config from '../utils/processConfig';
-import type BaseDevice from '../devices/BaseDevice';
+import type BaseDevice from '../devices/BaseDevice.tsx';
 
 const CAPTURE_LOCATION = expandTilde(
   config().screenCapturePath || remote.app.getPath('desktop'),

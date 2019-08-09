@@ -11,10 +11,11 @@
     "moduleResolution": "node",
     "baseUrl": ".",
     "downlevelIteration": true,
+    "esModuleInterop": true,
     "paths": {
       "flipper": ["./src/index.js"]
     }
   },
-  "include": ["src/**/*", "types/globals.tsx"],
+  "include": ["src/**/*", "types/globals.tsx", "types/nodejs.tsx"],
   "exclude": ["node_modules", "**/*.spec.ts"]
 }

@@ -33,9 +33,8 @@ import {
   ACTIVE_SHEET_PLUGIN_SHEET,
 } from './reducers/application.tsx';
 import type {Logger} from './fb-interfaces/Logger.js';
-import type BugReporter from './fb-stubs/BugReporter.js';
-import type BaseDevice from './devices/BaseDevice.js';
-
+import type BugReporter from './fb-stubs/BugReporter.tsx';
+import type BaseDevice from './devices/BaseDevice.tsx';
 const version = remote.app.getVersion();
 
 type OwnProps = {|

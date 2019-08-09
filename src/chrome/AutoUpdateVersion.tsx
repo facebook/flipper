@@ -8,8 +8,8 @@
 import {FlexRow, colors, LoadingIndicator, Glyph, styled} from 'flipper';
 import {remote} from 'electron';
 import isProduction from '../utils/isProduction.js';
-import config from '../fb-stubs/config.js';
 import React, {Component} from 'react';
+import config from '../fb-stubs/config';
 
 const Container = styled(FlexRow)({
   alignItems: 'center',

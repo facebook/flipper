@@ -8,7 +8,7 @@
 import {getPersistentPlugins, getActivePersistentPlugins} from '../pluginUtils';
 import type {State as PluginsState} from '../../reducers/plugins.tsx';
 import type {State as PluginStatesState} from '../../reducers/pluginStates.tsx';
-import type {PluginDefinition} from '../../dispatcher/plugins';
+import type {PluginDefinition} from '../../dispatcher/plugins.tsx';
 import {FlipperBasePlugin} from '../../..';
 import type {MiddlewareAPI} from '../../reducers/index.tsx';
 class MockFlipperPluginWithDefaultPersistedState extends FlipperBasePlugin<

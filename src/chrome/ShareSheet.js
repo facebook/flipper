@@ -23,7 +23,7 @@ import {
 } from '../reducers/application.tsx';
 import type {Logger} from '../fb-interfaces/Logger.js';
 import {Idler} from '../utils/Idler';
-import {shareFlipperData} from '../fb-stubs/user';
+import {shareFlipperData} from '../fb-stubs/user.tsx';
 import {exportStore, EXPORT_FLIPPER_TRACE_EVENT} from '../utils/exportData.js';
 import PropTypes from 'prop-types';
 import {clipboard} from 'electron';

@@ -4,7 +4,7 @@
  * LICENSE file in the root directory of this source tree.
  * @format
  */
-import {shouldParseAndroidLog} from '../crashReporterUtility.js';
+import {shouldParseAndroidLog} from '../crashReporterUtility.tsx';
 import type {DeviceLogEntry, LogLevel} from 'flipper';
 
 function getAndroidLog(

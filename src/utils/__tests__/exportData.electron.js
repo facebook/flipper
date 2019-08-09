@@ -5,8 +5,8 @@
  * @format
  */
 
-import {default as BaseDevice} from '../../devices/BaseDevice';
-import {default as ArchivedDevice} from '../../devices/ArchivedDevice';
+import {default as BaseDevice} from '../../devices/BaseDevice.tsx';
+import {default as ArchivedDevice} from '../../devices/ArchivedDevice.tsx';
 import {processStore} from '../exportData';
 import {FlipperDevicePlugin} from '../../plugin.tsx';
 import type {Notification} from '../../plugin.tsx';

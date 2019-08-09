@@ -6,7 +6,7 @@
  */
 
 import {FlipperPlugin, FlipperDevicePlugin} from './plugin';
-import BaseDevice, {OS} from './devices/BaseDevice.js';
+import BaseDevice, {OS} from './devices/BaseDevice';
 import {App} from './App.js';
 import {Logger} from './fb-interfaces/Logger.js';
 import {Store} from './reducers/index';

@@ -5,7 +5,7 @@
  * @format
  */
 import {State} from '../reducers/index.tsx';
-import type {DeviceExport} from '../devices/BaseDevice';
+import type {DeviceExport} from '../devices/BaseDevice.tsx';
 
 export const stateSanitizer = (state: State) => {
   if (state.connections && state.connections.devices) {

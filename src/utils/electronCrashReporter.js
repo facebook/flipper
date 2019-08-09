@@ -9,7 +9,7 @@ import {exists, mkdir} from 'fs';
 import {promisify} from 'util';
 import {crashReporter, remote} from 'electron';
 import isProduction from '../utils/isProduction.js';
-import {IS_PUBLIC_BUILD} from '../fb-stubs/constants';
+import constants from '../fb-stubs/constants.tsx';
 import {tmpName} from 'tmp';
 import {resolve} from 'path';
 
@@ -35,7 +35,7 @@ export default function initCrashReporter(sessionId: string): Promise<void> {
           productName: 'Flipper',
           companyName: 'Facebook',
           submitURL: 'https://www.facebook.com/intern/flipper/crash_upload',
-          uploadToServer: isProduction() && !IS_PUBLIC_BUILD,
+          uploadToServer: isProduction() && !constants.IS_PUBLIC_BUILD,
           ignoreSystemCrashHandler: true,
           extra: {
             flipper_version: flipperVersion,

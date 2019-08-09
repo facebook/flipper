@@ -5,7 +5,7 @@
  * @format
  */
 
-import type BugReporter from '../fb-stubs/BugReporter.js';
+import type BugReporter from '../fb-stubs/BugReporter.tsx';
 import type {FlipperDevicePlugin, FlipperPlugin} from '../plugin.tsx';
 import {Fragment, Component} from 'react';
 import {connect} from 'react-redux';

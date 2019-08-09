@@ -9,9 +9,9 @@ import path from 'path';
 import {createStore} from 'redux';
 import {applyMiddleware} from 'redux';
 import yargs from 'yargs';
-import dispatcher from '../src/dispatcher/index.js';
-import {init as initLogger} from '../src/fb-stubs/Logger.js';
+import dispatcher from '../src/dispatcher/index.tsx';
 import reducers from '../src/reducers/index.tsx';
+import {init as initLogger} from '../src/fb-stubs/Logger.tsx';
 import {exportStore, pluginsClassMap} from '../src/utils/exportData.js';
 import {
   exportMetricsWithoutTrace,
@@ -23,7 +23,7 @@ import setup from '../static/setup.js';
 import type {Store} from '../src/reducers/index.tsx';
 import {getPersistentPlugins} from '../src/utils/pluginUtils.js';
 import {serialize} from '../src/utils/serialization';
-import type BaseDevice from '../src/devices/BaseDevice';
+import type BaseDevice from '../src/devices/BaseDevice.tsx';
 
 import {getStringFromErrorLike} from '../src/utils/index';
 

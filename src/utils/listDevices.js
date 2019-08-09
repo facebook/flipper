@@ -4,9 +4,9 @@
  * LICENSE file in the root directory of this source tree.
  * @format
  */
-import {getActiveAndroidDevices} from '../dispatcher/androidDevice';
-import {getActiveDevicesAndSimulators} from '../dispatcher/iOSDevice';
-import type BaseDevice from '../devices/BaseDevice';
+import {getActiveAndroidDevices} from '../dispatcher/androidDevice.tsx';
+import {getActiveDevicesAndSimulators} from '../dispatcher/iOSDevice.tsx';
+import type BaseDevice from '../devices/BaseDevice.tsx';
 
 export async function listDevices(): Promise<Array<BaseDevice>> {
   const androidDevices = await getActiveAndroidDevices();
