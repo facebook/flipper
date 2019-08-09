@@ -5,13 +5,12 @@
  * @format
  */
 
-import BaseDevice from './BaseDevice.tsx';
+import BaseDevice from './BaseDevice';
 
 export default class MacDevice extends BaseDevice {
-  os = 'MacOS';
-
   constructor() {
     super('', 'physical', 'Mac');
+    this.os = 'MacOS';
   }
 
   teardown() {}
