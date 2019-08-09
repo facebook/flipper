@@ -13,7 +13,7 @@ import type {
 } from 'flipper';
 import type {Counter} from './LogWatcher.js';
 import type {DeviceLogEntry} from '../../devices/BaseDevice.js';
-import type {Props as PluginProps} from '../../plugin';
+import type {Props as PluginProps} from '../../plugin.tsx';
 
 import {
   Text,

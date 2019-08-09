@@ -7,14 +7,14 @@
 
 import AndroidDevice from '../devices/AndroidDevice';
 import child_process from 'child_process';
-import type {Store} from '../reducers/index.js';
+import type {Store} from '../reducers/index.tsx';
 import type BaseDevice from '../devices/BaseDevice';
 import type {Logger} from '../fb-interfaces/Logger.js';
 import {registerDeviceCallbackOnPlugins} from '../utils/onRegisterDevice.js';
 import {getAdbClient} from '../utils/adbClient';
 import {default as which} from 'which';
 import {promisify} from 'util';
-import type {ServerPorts} from '../reducers/application';
+import type {ServerPorts} from '../reducers/application.tsx';
 
 function createDevice(
   adbClient: any,

@@ -6,7 +6,7 @@
  */
 
 import type {ChildProcess} from 'child_process';
-import type {Store} from '../reducers/index.js';
+import type {Store} from '../reducers/index.tsx';
 import type {Logger} from '../fb-interfaces/Logger.js';
 import type {DeviceType} from '../devices/BaseDevice';
 import {promisify} from 'util';
@@ -16,7 +16,7 @@ const execFile = child_process.execFile;
 import IOSDevice from '../devices/IOSDevice';
 import iosUtil from '../fb-stubs/iOSContainerUtility';
 import isProduction from '../utils/isProduction.js';
-import GK from '../fb-stubs/GK';
+import GK from '../fb-stubs/GK.tsx';
 import {registerDeviceCallbackOnPlugins} from '../utils/onRegisterDevice.js';
 type iOSSimulatorDevice = {|
   state: 'Booted' | 'Shutdown' | 'Shutting Down',

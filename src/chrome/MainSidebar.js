@@ -5,13 +5,13 @@
  * @format
  */
 
-import {FlipperBasePlugin} from '../plugin.js';
+import {FlipperBasePlugin} from '../plugin.tsx';
 import config from '../fb-stubs/config';
 import type BaseDevice from '../devices/BaseDevice.js';
-import type Client from '../Client.js';
-import type {UninitializedClient} from '../UninitializedClient.js';
-import type {PluginNotification} from '../reducers/notifications';
-import type {ActiveSheet} from '../reducers/application';
+import type Client from '../Client.tsx';
+import type {UninitializedClient} from '../UninitializedClient.tsx';
+import type {PluginNotification} from '../reducers/notifications.tsx';
+import type {ActiveSheet} from '../reducers/application.tsx';
 
 import {
   PureComponent,
@@ -31,9 +31,9 @@ import {
 } from 'flipper';
 import React from 'react';
 import NotificationsHub from '../NotificationsHub.js';
-import {selectPlugin} from '../reducers/connections.js';
-import {setActiveSheet} from '../reducers/application.js';
-import UserAccount from './UserAccount.js';
+import {selectPlugin} from '../reducers/connections.tsx';
+import {setActiveSheet} from '../reducers/application.tsx';
+import UserAccount from './UserAccount.tsx';
 import {connect} from 'react-redux';
 
 const ListItem = styled('div')(({active}) => ({

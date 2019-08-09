@@ -5,8 +5,7 @@
  * @format
  */
 
-import {default as reducer, setPluginState} from '../pluginStates';
-import type {Action} from '../pluginStates';
+import {default as reducer, setPluginState, Action} from '../pluginStates';
 
 test('reduce setPluginState', () => {
   const result = reducer(

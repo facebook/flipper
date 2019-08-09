@@ -5,12 +5,12 @@
  * @format
  */
 
-import Server from '../server.js';
+import Server from '../server.tsx';
 
-import type {Store} from '../reducers/index.js';
+import type {Store} from '../reducers/index.tsx';
 import type {Logger} from '../fb-interfaces/Logger.js';
-import type Client from '../Client.js';
-import type {UninitializedClient} from '../UninitializedClient';
+import type Client from '../Client.tsx';
+import type {UninitializedClient} from '../UninitializedClient.tsx';
 
 export default (store: Store, logger: Logger) => {
   const server = new Server(logger, store);

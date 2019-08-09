@@ -4,7 +4,7 @@
  * LICENSE file in the root directory of this source tree.
  * @format
  */
-import type {Store} from '../reducers/index.js';
+import type {Store} from '../reducers/index.tsx';
 import type {Logger} from '../fb-interfaces/Logger';
 
 export type Dispatcher = (store: Store, logger: Logger) => ?() => Promise<void>;

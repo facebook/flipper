@@ -8,8 +8,7 @@
 import React from 'react';
 import {FlexColumn, FlexRow} from 'flipper';
 import {connect} from 'react-redux';
-import WelcomeScreen from './chrome/WelcomeScreen.js';
-// $FlowFixMe T47375728
+import WelcomeScreen from './chrome/WelcomeScreen.tsx';
 import TitleBar from './chrome/TitleBar.tsx';
 import MainSidebar from './chrome/MainSidebar.js';
 import BugReporterDialog from './chrome/BugReporterDialog.js';
@@ -23,6 +22,8 @@ import Sheet from './chrome/Sheet.js';
 import {ipcRenderer, remote} from 'electron';
 import PluginDebugger from './chrome/PluginDebugger.js';
 import {
+  ShareType,
+  ActiveSheet,
   ACTIVE_SHEET_BUG_REPORTER,
   ACTIVE_SHEET_PLUGIN_DEBUGGER,
   ACTIVE_SHEET_SHARE_DATA,
@@ -30,8 +31,7 @@ import {
   ACTIVE_SHEET_SHARE_DATA_IN_FILE,
   ACTIVE_SHEET_SELECT_PLUGINS_TO_EXPORT,
   ACTIVE_SHEET_PLUGIN_SHEET,
-} from './reducers/application.js';
-import type {ShareType} from './reducers/application.js';
+} from './reducers/application.tsx';
 import type {Logger} from './fb-interfaces/Logger.js';
 import type BugReporter from './fb-stubs/BugReporter.js';
 import type BaseDevice from './devices/BaseDevice.js';

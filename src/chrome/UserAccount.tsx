@@ -5,15 +5,16 @@
  * @format
  */
 
-import type {User} from '../reducers/user';
-import type {ActiveSheet} from '../reducers/application';
+import {User} from '../reducers/user';
+import {ActiveSheet} from '../reducers/application';
 
-import {styled, PureComponent, FlexRow, Glyph, Text, colors} from 'flipper';
+import {styled, FlexRow, Glyph, Text, colors} from 'flipper';
 import {logout} from '../reducers/user';
-import {setActiveSheet, ACTIVE_SHEET_SIGN_IN} from '../reducers/application.js';
+import {setActiveSheet, ACTIVE_SHEET_SIGN_IN} from '../reducers/application';
 import {connect} from 'react-redux';
 import electron from 'electron';
 import {findDOMNode} from 'react-dom';
+import React, {PureComponent} from 'react';
 
 const Container = styled(FlexRow)({
   alignItems: 'center',
@@ -40,16 +41,22 @@ const UserName = styled(Text)({
   textOverflow: 'ellipsis',
 });
 
-type UserAccountProps = {|
-  user: User,
-  logout: () => void,
-  setActiveSheet: (activeSheet: ActiveSheet) => void,
-|};
+type OwnProps = {};
 
-class UserAccount extends PureComponent<UserAccountProps> {
-  _ref: ?Element;
+type DispatchFromProps = {
+  logout: () => void;
+  setActiveSheet: (activeSheet: ActiveSheet) => void;
+};
 
-  setRef = (ref: React.ElementRef<*>) => {
+type StateFromProps = {
+  user: User;
+};
+
+type Props = OwnProps & DispatchFromProps & StateFromProps;
+class UserAccount extends PureComponent<Props> {
+  _ref: Element | null | undefined;
+
+  setRef = (ref: React.ReactInstance) => {
     const element = findDOMNode(ref);
     if (element instanceof HTMLElement) {
       this._ref = element;
@@ -57,7 +64,7 @@ class UserAccount extends PureComponent<UserAccountProps> {
   };
 
   showDetails = () => {
-    const menuTemplate: Array<MenuItemConstructorOptions> = [
+    const menuTemplate: Array<Electron.MenuItemConstructorOptions> = [
       {
         label: 'Sign Out',
         click: this.props.logout,
@@ -65,19 +72,26 @@ class UserAccount extends PureComponent<UserAccountProps> {
     ];
 
     const menu = electron.remote.Menu.buildFromTemplate(menuTemplate);
-    const {bottom, left} = this._ref ? this._ref.getBoundingClientRect() : {};
+    const {bottom = null, left = null} = this._ref
+      ? this._ref.getBoundingClientRect()
+      : {};
     menu.popup({
       window: electron.remote.getCurrentWindow(),
+      // @ts-ignore async is not part of public api in electron menu popup
       async: true,
-      x: parseInt(left, 10),
-      y: parseInt(bottom, 10) + 8,
+      x: left || 10,
+      y: (bottom || 10) + 8,
     });
   };
 
   render() {
-    return this.props.user?.name ? (
+    const {user} = this.props;
+    const name = user ? user.name : null;
+    return name ? (
       <Container innerRef={this.setRef} onClick={this.showDetails}>
-        <ProfilePic src={this.props.user.profile_picture?.uri} />
+        <ProfilePic
+          src={user.profile_picture ? user.profile_picture.uri : null}
+        />
         <UserName>{this.props.user.name}</UserName>
         <Glyph name="chevron-down" size={10} variant="outline" />
       </Container>
@@ -96,7 +110,9 @@ class UserAccount extends PureComponent<UserAccountProps> {
   }
 }
 
-export default connect<UserAccountProps, {||}, _, _, _, _>(
+// @TODO: TS_MIGRATION
+type Store = any;
+export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
   ({user}) => ({
     user,
   }),

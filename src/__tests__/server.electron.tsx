@@ -7,7 +7,7 @@
 
 import {init as initLogger} from '../fb-stubs/Logger';
 import Server from '../server';
-import reducers from '../reducers/index.js';
+import reducers from '../reducers/index';
 import configureStore from 'redux-mock-store';
 import path from 'path';
 import os from 'os';

@@ -2,6 +2,7 @@
   "compilerOptions": {
     "module": "system",
     "lib": ["es7", "dom"],
+    "target": "es6",
     "removeComments": true,
     "preserveConstEnums": true,
     "outFile": "../../built/local/tsc.js",
@@ -9,10 +10,11 @@
     "jsx": "react",
     "moduleResolution": "node",
     "baseUrl": ".",
+    "downlevelIteration": true,
     "paths": {
       "flipper": ["./src/index.js"]
     }
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "types/globals.tsx"],
   "exclude": ["node_modules", "**/*.spec.ts"]
 }

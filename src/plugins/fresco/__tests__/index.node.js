@@ -9,7 +9,7 @@ import FrescoPlugin from '../index.js';
 import type {PersistedState, ImageEventWithId} from '../index.js';
 import type {AndroidCloseableReferenceLeakEvent} from '../api.js';
 import type {MetricType} from 'flipper';
-import type {Notification} from '../../../plugin';
+import type {Notification} from '../../../plugin.tsx';
 
 function mockPersistedState(
   imageSizes: Array<{

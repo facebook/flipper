@@ -5,41 +5,40 @@
  * @format
  */
 
-import {FlipperPlugin, FlipperDevicePlugin} from '../plugin.js';
-
-import type {PluginDefinition} from '../dispatcher/plugins';
+import {FlipperPlugin, FlipperDevicePlugin} from '../plugin';
+import {PluginDefinition} from '../dispatcher/plugins';
 
 export type State = {
-  devicePlugins: Map<string, Class<FlipperDevicePlugin<>>>,
-  clientPlugins: Map<string, Class<FlipperPlugin<>>>,
-  gatekeepedPlugins: Array<PluginDefinition>,
-  disabledPlugins: Array<PluginDefinition>,
-  failedPlugins: Array<[PluginDefinition, string]>,
-  selectedPlugins: Array<string>,
+  devicePlugins: Map<string, typeof FlipperDevicePlugin>;
+  clientPlugins: Map<string, typeof FlipperPlugin>;
+  gatekeepedPlugins: Array<PluginDefinition>;
+  disabledPlugins: Array<PluginDefinition>;
+  failedPlugins: Array<[PluginDefinition, string]>;
+  selectedPlugins: Array<string>;
 };
 
-type P = Class<FlipperPlugin<> | FlipperDevicePlugin<>>;
+type P = typeof FlipperPlugin | typeof FlipperDevicePlugin;
 
 export type Action =
   | {
-      type: 'REGISTER_PLUGINS',
-      payload: Array<P>,
+      type: 'REGISTER_PLUGINS';
+      payload: Array<P>;
     }
   | {
-      type: 'GATEKEEPED_PLUGINS',
-      payload: Array<PluginDefinition>,
+      type: 'GATEKEEPED_PLUGINS';
+      payload: Array<PluginDefinition>;
     }
   | {
-      type: 'DISABLED_PLUGINS',
-      payload: Array<PluginDefinition>,
+      type: 'DISABLED_PLUGINS';
+      payload: Array<PluginDefinition>;
     }
   | {
-      type: 'FAILED_PLUGINS',
-      payload: Array<[PluginDefinition, string]>,
+      type: 'FAILED_PLUGINS';
+      payload: Array<[PluginDefinition, string]>;
     }
   | {
-      type: 'SELECTED_PLUGINS',
-      payload: Array<string>,
+      type: 'SELECTED_PLUGINS';
+      payload: Array<string>;
     };
 
 const INITIAL_STATE: State = {
@@ -65,10 +64,10 @@ export default function reducer(
 
       // $FlowFixMe Flow doesn't know prototype
       if (p.prototype instanceof FlipperDevicePlugin) {
-        // $FlowFixMe Flow doesn't know p must be Class<FlipperDevicePlugin> here
+        // @ts-ignore doesn't know p must be typeof FlipperDevicePlugin here
         devicePlugins.set(p.id, p);
       } else if (p.prototype instanceof FlipperPlugin) {
-        // $FlowFixMe Flow doesn't know p must be Class<FlipperPlugin> here
+        // @ts-ignore doesn't know p must be typeof FlipperPlugin here
         clientPlugins.set(p.id, p);
       }
     });

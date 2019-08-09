@@ -21,6 +21,8 @@ import {
   Sidebar,
   DetailSidebar,
   VerticalRule,
+  Button,
+  GK,
 } from 'flipper';
 import Inspector from './Inspector';
 import ToolbarIcon from './ToolbarIcon';
@@ -180,6 +182,8 @@ export default class Layout extends FlipperPlugin<State, void, PersistedState> {
 
     const divider = this.state.inAXMode && <VerticalRule />;
 
+    const showAnalyzeYogaPerformanceButton = GK.get('flipper_yogaperformance');
+
     return (
       <FlexColumn grow={true}>
         {this.state.init && (
@@ -235,6 +239,19 @@ export default class Layout extends FlipperPlugin<State, void, PersistedState> {
                 onValueChanged={this.onDataValueChanged}
                 logger={this.props.logger}
               />
+              {showAnalyzeYogaPerformanceButton &&
+              element &&
+              element.decoration === 'litho' ? (
+                <Button
+                  icon={'share-external'}
+                  compact={true}
+                  style={{marginTop: 8, marginRight: 12}}
+                  onClick={() => {
+                    this.props.selectPlugin('YogaPerformance', element.id);
+                  }}>
+                  Analyze Yoga Performance
+                </Button>
+              ) : null}
             </DetailSidebar>
           </>
         )}

@@ -5,7 +5,7 @@
  * @format
  */
 
-import type {PluginClient} from '../../plugin';
+import type {PluginClient} from '../../plugin.tsx';
 import type {Value} from '../../ui/components/table/TypeBasedValueRenderer';
 
 type ClientCall<Params, Response> = Params => Promise<Response>;
@@ -48,6 +48,28 @@ type GetTableStructureResponse = {
   definition: string,
 };
 
+type ExecuteSqlRequest = {
+  databaseId: number,
+  value: string,
+};
+
+type ExecuteSqlResponse = {
+  type: string,
+  columns: Array<string>,
+  values: Array<Array<Value>>,
+  insertedId: number,
+  affectedCount: number,
+};
+
+type GetTableInfoRequest = {
+  databaseId: number,
+  table: string,
+};
+
+type GetTableInfoResponse = {
+  definition: string,
+};
+
 export class DatabaseClient {
   client: PluginClient;
 
@@ -67,4 +89,12 @@ export class DatabaseClient {
     GetTableStructureRequest,
     GetTableStructureResponse,
   > = params => this.client.call('getTableStructure', params);
+
+  getExecution: ClientCall<ExecuteSqlRequest, ExecuteSqlResponse> = params =>
+    this.client.call('execute', params);
+
+  getTableInfo: ClientCall<
+    GetTableInfoRequest,
+    GetTableInfoResponse,
+  > = params => this.client.call('getTableInfo', params);
 }

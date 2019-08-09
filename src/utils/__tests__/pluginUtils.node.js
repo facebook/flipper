@@ -6,11 +6,11 @@
  */
 
 import {getPersistentPlugins, getActivePersistentPlugins} from '../pluginUtils';
-import type {State as PluginsState} from '../../reducers/plugins.js';
-import type {State as PluginStatesState} from '../../reducers/pluginStates.js';
+import type {State as PluginsState} from '../../reducers/plugins.tsx';
+import type {State as PluginStatesState} from '../../reducers/pluginStates.tsx';
 import type {PluginDefinition} from '../../dispatcher/plugins';
 import {FlipperBasePlugin} from '../../..';
-import type {MiddlewareAPI} from '../../reducers/index.js';
+import type {MiddlewareAPI} from '../../reducers/index.tsx';
 class MockFlipperPluginWithDefaultPersistedState extends FlipperBasePlugin<
   *,
   *,
@@ -46,15 +46,11 @@ function mockPluginState(
 ): PluginsState {
   return {
     devicePlugins: new Map([
-      //$FlowFixMe: Just for testing
       ['DevicePlugin1', MockFlipperPluginWithDefaultPersistedState],
-      //$FlowFixMe: Just for testing
       ['DevicePlugin2', MockFlipperPluginWithDefaultPersistedState],
     ]),
     clientPlugins: new Map([
-      //$FlowFixMe: Just for testing
       ['ClientPlugin1', MockFlipperPluginWithDefaultPersistedState],
-      //$FlowFixMe: Just for testing
       ['ClientPlugin2', MockFlipperPluginWithDefaultPersistedState],
     ]),
     gatekeepedPlugins,
@@ -95,15 +91,11 @@ test('getPersistentPlugins with no plugins getting excluded', () => {
 test('getPersistentPlugins, where the plugins with exportPersistedState not getting excluded', () => {
   const state: PluginsState = {
     devicePlugins: new Map([
-      //$FlowFixMe: Just for testing
       ['DevicePlugin1', MockFlipperPluginWithExportPersistedState],
-      //$FlowFixMe: Just for testing
       ['DevicePlugin2', MockFlipperPluginWithExportPersistedState],
     ]),
     clientPlugins: new Map([
-      //$FlowFixMe: Just for testing
       ['ClientPlugin1', MockFlipperPluginWithExportPersistedState],
-      //$FlowFixMe: Just for testing
       ['ClientPlugin2', MockFlipperPluginWithExportPersistedState],
     ]),
     gatekeepedPlugins: [],
@@ -123,15 +115,11 @@ test('getPersistentPlugins, where the plugins with exportPersistedState not gett
 test('getPersistentPlugins, where the non persistent plugins getting excluded', () => {
   const state: PluginsState = {
     devicePlugins: new Map([
-      //$FlowFixMe: Just for testing
       ['DevicePlugin1', MockFlipperPluginWithNoPersistedState],
-      //$FlowFixMe: Just for testing
       ['DevicePlugin2', MockFlipperPluginWithDefaultPersistedState],
     ]),
     clientPlugins: new Map([
-      //$FlowFixMe: Just for testing
       ['ClientPlugin1', MockFlipperPluginWithDefaultPersistedState],
-      //$FlowFixMe: Just for testing
       ['ClientPlugin2', MockFlipperPluginWithNoPersistedState],
     ]),
     gatekeepedPlugins: [],
@@ -146,15 +134,11 @@ test('getPersistentPlugins, where the non persistent plugins getting excluded', 
 test('getActivePersistentPlugins, where the non persistent plugins getting excluded', () => {
   const state: PluginsState = {
     devicePlugins: new Map([
-      //$FlowFixMe: Just for testing
       ['DevicePlugin1', MockFlipperPluginWithNoPersistedState],
-      //$FlowFixMe: Just for testing
       ['DevicePlugin2', MockFlipperPluginWithDefaultPersistedState],
     ]),
     clientPlugins: new Map([
-      //$FlowFixMe: Just for testing
       ['ClientPlugin1', MockFlipperPluginWithDefaultPersistedState],
-      //$FlowFixMe: Just for testing
       ['ClientPlugin2', MockFlipperPluginWithNoPersistedState],
     ]),
     gatekeepedPlugins: [],
@@ -175,15 +159,11 @@ test('getActivePersistentPlugins, where the non persistent plugins getting exclu
 test('getActivePersistentPlugins, where the plugins not in pluginState gets excluded', () => {
   const state: PluginsState = {
     devicePlugins: new Map([
-      //$FlowFixMe: Just for testing
       ['DevicePlugin1', MockFlipperPluginWithDefaultPersistedState],
-      //$FlowFixMe: Just for testing
       ['DevicePlugin2', MockFlipperPluginWithDefaultPersistedState],
     ]),
     clientPlugins: new Map([
-      //$FlowFixMe: Just for testing
       ['ClientPlugin1', MockFlipperPluginWithDefaultPersistedState],
-      //$FlowFixMe: Just for testing
       ['ClientPlugin2', MockFlipperPluginWithDefaultPersistedState],
     ]),
     gatekeepedPlugins: [],

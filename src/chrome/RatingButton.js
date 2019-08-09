@@ -8,7 +8,7 @@
 import {Component, type Element, Fragment} from 'react';
 import {Glyph, Tooltip} from 'flipper';
 import {getInstance as getLogger} from '../fb-stubs/Logger';
-import GK from '../fb-stubs/GK';
+import GK from '../fb-stubs/GK.tsx';
 
 type Props = {
   rating: ?number,

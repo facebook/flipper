@@ -32,7 +32,7 @@ import fs from 'fs';
 import os from 'os';
 import util from 'util';
 import path from 'path';
-import type {Notification} from '../../plugin';
+import type {Notification} from '../../plugin.tsx';
 import type {Store, DeviceLogEntry, OS, Props} from 'flipper';
 import {Component} from 'react';
 

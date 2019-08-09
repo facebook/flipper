@@ -8,14 +8,14 @@
 import {Provider} from 'react-redux';
 import ReactDOM from 'react-dom';
 import {ContextMenuProvider} from 'flipper';
-import GK from './fb-stubs/GK.js';
+import GK from './fb-stubs/GK.tsx';
 import {init as initLogger} from './fb-stubs/Logger';
 import App from './App.js';
 import BugReporter from './fb-stubs/BugReporter.js';
 import setupPrefetcher from './fb-stubs/Prefetcher.js';
 import {createStore} from 'redux';
 import {persistStore} from 'redux-persist';
-import reducers from './reducers/index.js';
+import reducers from './reducers/index.tsx';
 import dispatcher from './dispatcher/index.js';
 import TooltipProvider from './ui/components/TooltipProvider.js';
 import config from './utils/processConfig.js';

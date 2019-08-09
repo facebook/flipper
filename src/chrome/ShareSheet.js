@@ -17,7 +17,10 @@ import {
   Spacer,
   Input,
 } from 'flipper';
-import {setExportStatusComponent, unsetShare} from '../reducers/application';
+import {
+  setExportStatusComponent,
+  unsetShare,
+} from '../reducers/application.tsx';
 import type {Logger} from '../fb-interfaces/Logger.js';
 import {Idler} from '../utils/Idler';
 import {shareFlipperData} from '../fb-stubs/user';

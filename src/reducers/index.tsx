@@ -5,42 +5,33 @@
  * @format
  */
 
-import {combineReducers} from 'redux';
-import application from './application.js';
-import connections from './connections.js';
-import pluginStates from './pluginStates.js';
-import notifications from './notifications.js';
-import plugins from './plugins.js';
-import user from './user.js';
+import {combineReducers, Dispatch} from 'redux';
+import application, {
+  State as ApplicationState,
+  Action as ApplicationAction,
+} from './application';
+import connections, {
+  State as DevicesState,
+  Action as DevicesAction,
+} from './connections';
+import pluginStates, {
+  State as PluginStatesState,
+  Action as PluginStatesAction,
+} from './pluginStates';
+import notifications, {
+  State as NotificationsState,
+  Action as NotificationsAction,
+} from './notifications';
+import plugins, {
+  State as PluginsState,
+  Action as PluginsAction,
+} from './plugins';
+import user, {State as UserState, Action as UserAction} from './user';
 
 import {persistReducer} from 'redux-persist';
 import storage from 'redux-persist/lib/storage/index.js';
 
-import type {
-  State as ApplicationState,
-  Action as ApplicationAction,
-} from './application.js';
-import type {
-  State as DevicesState,
-  Action as DevicesAction,
-} from './connections.js';
-import type {
-  State as PluginStatesState,
-  Action as PluginStatesAction,
-} from './pluginStates.js';
-import type {
-  State as NotificationsState,
-  Action as NotificationsAction,
-} from './notifications.js';
-import type {
-  State as PluginsState,
-  Action as PluginsAction,
-} from './plugins.js';
-import type {State as UserState, Action as UserAction} from './user.js';
-import type {
-  Store as ReduxStore,
-  MiddlewareAPI as ReduxMiddlewareAPI,
-} from 'redux';
+import {Store as ReduxStore, MiddlewareAPI as ReduxMiddlewareAPI} from 'redux';
 
 type Actions =
   | ApplicationAction
@@ -49,21 +40,21 @@ type Actions =
   | NotificationsAction
   | PluginsAction
   | UserAction
-  | {|type: 'INIT'|};
+  | {type: 'INIT'};
 
-export type State = {|
-  application: ApplicationState,
-  connections: DevicesState,
-  pluginStates: PluginStatesState,
-  notifications: NotificationsState,
-  plugins: PluginsState,
-  user: UserState,
-|};
+export type State = {
+  application: ApplicationState;
+  connections: DevicesState;
+  pluginStates: PluginStatesState;
+  notifications: NotificationsState;
+  plugins: PluginsState;
+  user: UserState;
+};
 
 export type Store = ReduxStore<State, Actions>;
-export type MiddlewareAPI = ReduxMiddlewareAPI<State, Actions>;
+export type MiddlewareAPI = ReduxMiddlewareAPI<Dispatch<Actions>, State>;
 
-export default combineReducers<_, Actions>({
+export default combineReducers<State, Actions>({
   application: persistReducer(
     {
       key: 'application',

@@ -5,17 +5,11 @@
  * @format
  */
 
-import {
-  FlexRow,
-  colors,
-  LoadingIndicator,
-  Glyph,
-  Component,
-  styled,
-} from 'flipper';
+import {FlexRow, colors, LoadingIndicator, Glyph, styled} from 'flipper';
 import {remote} from 'electron';
 import isProduction from '../utils/isProduction.js';
 import config from '../fb-stubs/config.js';
+import React, {Component} from 'react';
 
 const Container = styled(FlexRow)({
   alignItems: 'center',
@@ -27,16 +21,16 @@ type State = {
     | 'checking-for-update'
     | 'update-available'
     | 'update-not-available'
-    | 'update-downloaded',
-  error?: string,
+    | 'update-downloaded';
+  error?: string;
 };
 
 type Props = {
-  version: string,
+  version: string;
 };
 
 export default class AutoUpdateVersion extends Component<Props, State> {
-  state = {
+  state: State = {
     updater: 'update-not-available',
   };
 
@@ -54,7 +48,7 @@ export default class AutoUpdateVersion extends Component<Props, State> {
       remote.autoUpdater.on('update-downloaded', () => {
         this.setState({updater: 'update-downloaded'});
 
-        const notification = new window.Notification('Update available', {
+        const notification = new Notification('Update available', {
           body: 'Restart Flipper to update to the latest version.',
           requireInteraction: true,
         });
@@ -69,11 +63,11 @@ export default class AutoUpdateVersion extends Component<Props, State> {
         this.setState({updater: 'checking-for-update'});
       });
 
-      remote.autoUpdater.on('update-available', error => {
+      remote.autoUpdater.on('update-available', () => {
         this.setState({updater: 'update-available'});
       });
 
-      remote.autoUpdater.on('update-not-available', error => {
+      remote.autoUpdater.on('update-not-available', () => {
         this.setState({updater: 'update-not-available'});
       });
 

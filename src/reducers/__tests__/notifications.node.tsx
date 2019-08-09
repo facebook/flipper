@@ -5,7 +5,7 @@
  * @format
  */
 
-import type {State} from '../notifications';
+import {State} from '../notifications';
 
 import {
   default as reducer,
@@ -15,7 +15,9 @@ import {
   updateCategoryBlacklist,
 } from '../notifications';
 
-const notification = {
+import {Notification} from '../../plugin';
+
+const notification: Notification = {
   id: 'id',
   title: 'title',
   message: 'message',

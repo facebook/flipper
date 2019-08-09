@@ -6,14 +6,14 @@
  */
 
 import type {Element} from './ElementsInspector.js';
-import type {PluginClient} from '../../../plugin';
-import type Client from '../../../Client.js';
+import type {PluginClient} from '../../../plugin.tsx';
+import type Client from '../../../Client.tsx';
 import type {Logger} from '../../../fb-interfaces/Logger.js';
 import Panel from '../Panel.js';
 import ManagedDataInspector from '../data-inspector/ManagedDataInspector.js';
 import {Component} from 'react';
 import {Console} from '../console';
-import GK from '../../../fb-stubs/GK';
+import GK from '../../../fb-stubs/GK.tsx';
 
 const deepEqual = require('deep-equal');
 

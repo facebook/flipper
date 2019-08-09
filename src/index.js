@@ -8,7 +8,7 @@
 export {default as styled, keyframes} from 'react-emotion';
 export * from './ui/index.js';
 export * from './utils/index.js';
-export {default as GK} from './fb-stubs/GK.js';
+export {default as GK} from './fb-stubs/GK.tsx';
 export {default as createPaste} from './fb-stubs/createPaste.js';
 export {graphQLQuery} from './fb-stubs/user.js';
 export {
@@ -16,18 +16,18 @@ export {
   FlipperPlugin,
   FlipperDevicePlugin,
   callClient,
-} from './plugin.js';
-export type {PluginClient, Props} from './plugin.js';
+} from './plugin.tsx';
+export type {PluginClient, Props} from './plugin.tsx';
 export type {MetricType} from './utils/exportMetrics.js';
-export {default as Client} from './Client.js';
+export {default as Client} from './Client.tsx';
 export {clipboard} from 'electron';
 export * from './fb-stubs/constants.js';
 export * from './fb-stubs/createPaste.js';
 export {connect} from 'react-redux';
-export {selectPlugin} from './reducers/connections';
+export {selectPlugin} from './reducers/connections.tsx';
 export {getPluginKey, getPersistedState} from './utils/pluginUtils.js';
 export {default as BaseDevice} from './devices/BaseDevice.js';
-export type {Store, MiddlewareAPI} from './reducers/index.js';
+export type {Store, MiddlewareAPI} from './reducers/index.tsx';
 
 export {
   default as SidebarExtensions,

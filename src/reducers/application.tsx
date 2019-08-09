@@ -7,8 +7,7 @@
 
 import {remote} from 'electron';
 import uuidv1 from 'uuid/v1';
-import {type Element as ReactElement} from 'react';
-import CancellableExportStatus from '../chrome/CancellableExportStatus';
+
 export const ACTIVE_SHEET_PLUGIN_SHEET: 'PLUGIN_SHEET' = 'PLUGIN_SHEET';
 export const ACTIVE_SHEET_BUG_REPORTER: 'BUG_REPORTER' = 'BUG_REPORTER';
 export const ACTIVE_SHEET_PLUGIN_DEBUGGER: 'PLUGIN_DEBUGGER' =
@@ -34,33 +33,37 @@ export type ActiveSheet =
   | null;
 
 export type LauncherMsg = {
-  message: string,
-  severity: 'warning' | 'error',
+  message: string;
+  severity: 'warning' | 'error';
 };
 export type ServerPorts = {
-  insecure: number,
-  secure: number,
+  insecure: number;
+  secure: number;
 };
 
-type SubShareType = {type: 'file', file: string} | {type: 'link'};
+type SubShareType =
+  | {
+      type: 'file';
+      file: string;
+    }
+  | {type: 'link'};
 
 export type ShareType = {
-  statusComponent?: ReactElement<typeof CancellableExportStatus>,
-  ...SubShareType,
-};
+  statusComponent?: React.ReactNode;
+} & SubShareType;
 
 export type State = {
-  leftSidebarVisible: boolean,
-  rightSidebarVisible: boolean,
-  rightSidebarAvailable: boolean,
-  windowIsFocused: boolean,
-  activeSheet: ActiveSheet,
-  share: ?ShareType,
-  sessionId: ?string,
-  serverPorts: ServerPorts,
-  downloadingImportData: boolean,
-  launcherMsg: LauncherMsg,
-  flipperRating: ?number,
+  leftSidebarVisible: boolean;
+  rightSidebarVisible: boolean;
+  rightSidebarAvailable: boolean;
+  windowIsFocused: boolean;
+  activeSheet: ActiveSheet;
+  share: ShareType | null;
+  sessionId: string | null;
+  serverPorts: ServerPorts;
+  downloadingImportData: boolean;
+  launcherMsg: LauncherMsg;
+  flipperRating: number | null;
 };
 
 type BooleanActionType =
@@ -72,47 +75,47 @@ type BooleanActionType =
 
 export type Action =
   | {
-      type: BooleanActionType,
-      payload?: boolean,
+      type: BooleanActionType;
+      payload?: boolean;
     }
   | {
-      type: 'SET_ACTIVE_SHEET',
-      payload: ActiveSheet,
+      type: 'SET_ACTIVE_SHEET';
+      payload: ActiveSheet;
     }
   | {
-      type: typeof ACTIVE_SHEET_SHARE_DATA_IN_FILE,
-      payload: {file: string},
+      type: typeof ACTIVE_SHEET_SHARE_DATA_IN_FILE;
+      payload: {file: string};
     }
   | {
-      type: typeof ACTIVE_SHEET_SELECT_PLUGINS_TO_EXPORT,
-      payload: ShareType,
+      type: typeof ACTIVE_SHEET_SELECT_PLUGINS_TO_EXPORT;
+      payload: ShareType;
     }
   | {
-      type: 'SET_SERVER_PORTS',
+      type: 'SET_SERVER_PORTS';
       payload: {
-        insecure: number,
-        secure: number,
-      },
+        insecure: number;
+        secure: number;
+      };
     }
   | {
-      type: 'LAUNCHER_MSG',
+      type: 'LAUNCHER_MSG';
       payload: {
-        severity: 'warning' | 'error',
-        message: string,
-      },
+        severity: 'warning' | 'error';
+        message: string;
+      };
     }
   | {
-      type: 'SET_FLIPPER_RATING',
+      type: 'SET_FLIPPER_RATING';
       payload: {
-        rating: number,
-      },
+        rating: number;
+      };
     }
   | {
-      type: typeof UNSET_SHARE,
+      type: 'UNSET_SHARE';
     }
   | {
-      type: typeof SET_EXPORT_STATUS_MESSAGE,
-      payload: ReactElement<typeof CancellableExportStatus>,
+      type: 'SET_EXPORT_STATUS_MESSAGE';
+      payload: React.ReactNode;
     };
 
 const initialState: () => State = () => ({
@@ -195,7 +198,6 @@ export default function reducer(state: State, action: Action): State {
       const {share} = state;
       return {
         ...state,
-        //$FlowFixMe: T48110490, its not able to understand for which case it needs to apply the changes
         share: {...share, statusComponent: action.payload},
       };
     }
@@ -212,17 +214,6 @@ export const toggleAction = (
   payload?: boolean,
 ): Action => ({
   type,
-  payload,
-});
-
-export const unsetShare = (): Action => ({
-  type: UNSET_SHARE,
-});
-
-export const setExportStatusComponent = (
-  payload: ReactElement<typeof CancellableExportStatus>,
-): Action => ({
-  type: SET_EXPORT_STATUS_MESSAGE,
   payload,
 });
 

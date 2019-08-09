@@ -6,7 +6,7 @@
  */
 
 import type {TrackType, Logger} from '../fb-interfaces/Logger';
-import type {Store} from '../reducers/index';
+import type {Store} from '../reducers/index.tsx';
 import ScribeLogger from './ScribeLogger';
 
 let instance: ?StubLogger = null;

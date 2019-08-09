@@ -10,6 +10,15 @@ const fbjs = require('eslint-config-fbjs');
 // enforces copyright header and @format directive to be present in every file
 const pattern = /^\*\n \* Copyright 20\d{2}-present Facebook\.\n \* This source code is licensed under the MIT license found in the\n \* LICENSE file in the root directory of this source tree\.\n \* @format\n./;
 
+const prettierConfig = {
+  requirePragma: true,
+  singleQuote: true,
+  trailingComma: 'all',
+  bracketSpacing: false,
+  jsxBracketSameLine: true,
+  parser: 'flow',
+};
+
 module.exports = {
   parser: 'babel-eslint',
   extends: 'fbjs',
@@ -39,17 +48,17 @@ module.exports = {
 
     // additional rules for this project
     'header/header': [2, 'block', {pattern}],
-    'prettier/prettier': [
-      2,
-      {
-        requirePragma: true,
-        singleQuote: true,
-        trailingComma: 'all',
-        bracketSpacing: false,
-        jsxBracketSameLine: true,
-        parser: 'flow',
-      },
-    ],
+    'prettier/prettier': [2, prettierConfig],
     'flowtype/object-type-delimiter': [0],
   },
+  overrides: [
+    {
+      files: ['*.tsx'],
+      parser: '@typescript-eslint/parser',
+      rules: {
+        'prettier/prettier': [2, {...prettierConfig, parser: 'typescript'}],
+        '@typescript-eslint/no-unused-vars': [1, {argsIgnorePattern: '^_'}],
+      },
+    },
+  ],
 };

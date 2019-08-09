@@ -11,7 +11,7 @@ import {applyMiddleware} from 'redux';
 import yargs from 'yargs';
 import dispatcher from '../src/dispatcher/index.js';
 import {init as initLogger} from '../src/fb-stubs/Logger.js';
-import reducers from '../src/reducers/index.js';
+import reducers from '../src/reducers/index.tsx';
 import {exportStore, pluginsClassMap} from '../src/utils/exportData.js';
 import {
   exportMetricsWithoutTrace,
@@ -20,7 +20,7 @@ import {
 import {listDevices} from '../src/utils/listDevices';
 // $FlowFixMe this file exist, trust me, flow!
 import setup from '../static/setup.js';
-import type {Store} from '../src/reducers';
+import type {Store} from '../src/reducers/index.tsx';
 import {getPersistentPlugins} from '../src/utils/pluginUtils.js';
 import {serialize} from '../src/utils/serialization';
 import type BaseDevice from '../src/devices/BaseDevice';

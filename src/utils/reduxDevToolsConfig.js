@@ -4,7 +4,7 @@
  * LICENSE file in the root directory of this source tree.
  * @format
  */
-import type {State} from '../reducers/index';
+import {State} from '../reducers/index.tsx';
 import type {DeviceExport} from '../devices/BaseDevice';
 
 export const stateSanitizer = (state: State) => {

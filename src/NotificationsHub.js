@@ -11,7 +11,7 @@ import type {
   FlipperPlugin,
   Device,
 } from 'flipper';
-import type {PluginNotification} from './reducers/notifications';
+import type {PluginNotification} from './reducers/notifications.tsx';
 import type {Logger} from './fb-interfaces/Logger';
 
 import {
@@ -35,8 +35,8 @@ import {
   clearAllNotifications,
   updatePluginBlacklist,
   updateCategoryBlacklist,
-} from './reducers/notifications';
-import {selectPlugin} from './reducers/connections';
+} from './reducers/notifications.tsx';
+import {selectPlugin} from './reducers/connections.tsx';
 import {textContent} from './utils/index';
 import createPaste from './fb-stubs/createPaste';
 

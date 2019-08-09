@@ -5,20 +5,20 @@
  * @format
  */
 
-import type {Store} from '../reducers/index.js';
+import type {Store} from '../reducers/index.tsx';
 import type {Logger} from '../fb-interfaces/Logger.js';
-import type {PluginNotification} from '../reducers/notifications';
-import type {FlipperPlugin, FlipperDevicePlugin} from '../plugin.js';
+import type {PluginNotification} from '../reducers/notifications.tsx';
+import type {FlipperPlugin, FlipperDevicePlugin} from '../plugin.tsx';
 import isHeadless from '../utils/isHeadless.js';
 import {ipcRenderer} from 'electron';
-import {selectPlugin} from '../reducers/connections';
+import {selectPlugin} from '../reducers/connections.tsx';
 import {
   setActiveNotifications,
   updatePluginBlacklist,
   updateCategoryBlacklist,
-} from '../reducers/notifications';
+} from '../reducers/notifications.tsx';
 import {textContent} from '../utils/index';
-import GK from '../fb-stubs/GK';
+import GK from '../fb-stubs/GK.tsx';
 
 type NotificationEvents = 'show' | 'click' | 'close' | 'reply' | 'action';
 const NOTIFICATION_THROTTLE = 5 * 1000; // in milliseconds

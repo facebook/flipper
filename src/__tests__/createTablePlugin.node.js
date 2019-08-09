@@ -10,7 +10,7 @@ import {createTablePlugin} from '../createTablePlugin.js';
 import type {TableRows_immutable} from 'flipper';
 
 //import type {PersistedState, RowData} from '../createTablePlugin.js';
-import {FlipperPlugin} from '../plugin.js';
+import {FlipperPlugin} from '../plugin.tsx';
 
 import {List, Map as ImmutableMap} from 'immutable';
 

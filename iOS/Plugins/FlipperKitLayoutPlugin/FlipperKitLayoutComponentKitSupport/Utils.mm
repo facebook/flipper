@@ -39,4 +39,15 @@ NSDictionary<NSString *, NSString *> *flexboxRect(CKFlexboxSpacing spacing) {
   };
 }
 
+NSDictionary<NSString *, NSString *> *ckcomponentSize(CKComponentSize size) {
+  return @{
+    @"width": relativeDimension(size.width),
+    @"height": relativeDimension(size.height),
+    @"minWidth": relativeDimension(size.minWidth),
+    @"minHeight": relativeDimension(size.minHeight),
+    @"maxWidth": relativeDimension(size.maxWidth),
+    @"maxHeight": relativeDimension(size.maxHeight),
+  };
+}
+
 #endif

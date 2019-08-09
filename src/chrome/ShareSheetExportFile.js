@@ -15,7 +15,10 @@ import {
   FlexRow,
   Spacer,
 } from 'flipper';
-import {setExportStatusComponent, unsetShare} from '../reducers/application';
+import {
+  setExportStatusComponent,
+  unsetShare,
+} from '../reducers/application.tsx';
 import {reportPlatformFailures} from '../utils/metrics';
 import CancellableExportStatus from './CancellableExportStatus';
 // $FlowFixMe: Missing type defs for node built-in.

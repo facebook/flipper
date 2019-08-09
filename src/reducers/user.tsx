@@ -6,21 +6,21 @@
  */
 
 export type User = {
-  name?: string,
+  name?: string;
   profile_picture?: {
-    uri: string,
-  },
+    uri: string;
+  };
 };
 
 export type State = User;
 
 export type Action =
   | {
-      type: 'LOGIN',
-      payload: User,
+      type: 'LOGIN';
+      payload: User;
     }
   | {
-      type: 'LOGOUT',
+      type: 'LOGOUT';
     };
 
 const INITIAL_STATE: State = {};

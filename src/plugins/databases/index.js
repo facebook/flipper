@@ -18,6 +18,11 @@ import {
   Input,
   colors,
   getStringFromErrorLike,
+  Spacer,
+  Textarea,
+  DetailSidebar,
+  Panel,
+  ManagedDataInspector,
 } from 'flipper';
 import {Component} from 'react';
 import type {
@@ -29,6 +34,8 @@ import {DatabaseClient} from './ClientProtocol';
 import {renderValue} from 'flipper';
 import type {Value} from 'flipper';
 import ButtonNavigation from './ButtonNavigation';
+import sqlFormatter from 'sql-formatter';
+import dateFormat from 'dateformat';
 
 const PAGE_SIZE = 50;
 
@@ -51,11 +58,17 @@ type DatabasesPluginState = {|
   pageRowNumber: number,
   databases: Array<DatabaseEntry>,
   outdatedDatabaseList: boolean,
-  viewMode: 'data' | 'structure',
+  viewMode: 'data' | 'structure' | 'SQL' | 'tableInfo' | 'queryHistory',
   error: ?null,
   currentPage: ?Page,
   currentStructure: ?Structure,
   currentSort: ?TableRowSortOrder,
+  query: ?Query,
+  queryResult: ?QueryResult,
+  favorites: Array<string>,
+  executionTime: number,
+  tableInfo: string,
+  queryHistory: Array<Query>,
 |};
 
 type Page = {
@@ -77,6 +90,18 @@ type Structure = {|
   indexesValues: Array<TableBodyRow>,
 |};
 
+type QueryResult = {
+  table: ?QueriedTable,
+  id: ?number,
+  count: ?number,
+};
+
+type QueriedTable = {
+  columns: Array<string>,
+  rows: Array<TableBodyRow>,
+  highlightedRows: Array<number>,
+};
+
 type Actions =
   | SelectDatabaseEvent
   | SelectDatabaseTableEvent
@@ -84,17 +109,29 @@ type Actions =
   | UpdateViewModeEvent
   | UpdatePageEvent
   | UpdateStructureEvent
+  | DisplaySelectEvent
+  | DisplayInsertEvent
+  | DisplayUpdateDeleteEvent
+  | UpdateTableInfoEvent
   | NextPageEvent
   | PreviousPageEvent
+  | ExecuteEvent
   | RefreshEvent
+  | UpdateFavoritesEvent
   | SortByChangedEvent
-  | GoToRowEvent;
+  | GoToRowEvent
+  | UpdateQueryEvent;
 
 type DatabaseEntry = {
   id: number,
   name: string,
   tables: Array<string>,
 };
+
+type Query = {|
+  value: string,
+  time: string,
+|};
 
 type UpdateDatabasesEvent = {|
   databases: Array<{name: string, id: number, tables: Array<string>}>,
@@ -113,7 +150,7 @@ type SelectDatabaseTableEvent = {|
 
 type UpdateViewModeEvent = {|
   type: 'UpdateViewMode',
-  viewMode: 'data' | 'structure',
+  viewMode: 'data' | 'structure' | 'SQL' | 'tableInfo' | 'queryHistory',
 |};
 
 type UpdatePageEvent = {|
@@ -137,6 +174,27 @@ type UpdateStructureEvent = {|
   indexesValues: Array<Array<any>>,
 |};
 
+type DisplaySelectEvent = {|
+  type: 'DisplaySelect',
+  columns: Array<string>,
+  values: Array<Array<any>>,
+|};
+
+type DisplayInsertEvent = {|
+  type: 'DisplayInsert',
+  id: number,
+|};
+
+type DisplayUpdateDeleteEvent = {|
+  type: 'DisplayUpdateDelete',
+  count: number,
+|};
+
+type UpdateTableInfoEvent = {|
+  type: 'UpdateTableInfo',
+  tableInfo: string,
+|};
+
 type NextPageEvent = {
   type: 'NextPage',
 };
@@ -145,8 +203,16 @@ type PreviousPageEvent = {
   type: 'PreviousPage',
 };
 
+type ExecuteEvent = {
+  type: 'Execute',
+};
+
 type RefreshEvent = {
   type: 'Refresh',
+};
+
+type UpdateFavoritesEvent = {
+  type: 'UpdateFavorites',
 };
 
 type SortByChangedEvent = {
@@ -157,6 +223,11 @@ type SortByChangedEvent = {
 type GoToRowEvent = {
   type: 'GoToRow',
   row: number,
+};
+
+type UpdateQueryEvent = {
+  type: 'UpdateQuery',
+  value: string,
 };
 
 function transformRow(
@@ -250,6 +321,47 @@ function renderDatabaseIndexes(structure: ?Structure) {
   );
 }
 
+function renderQueryHistory(history: Array<Query>) {
+  if (!history || typeof history === 'undefined') {
+    return null;
+  }
+  const columns = {
+    time: {
+      value: 'Time',
+      resizable: true,
+    },
+    query: {
+      value: 'Query',
+      resizable: true,
+    },
+  };
+  const rows = [];
+  if (history.length > 0) {
+    for (const query of history) {
+      const time = query.time;
+      const value = query.value;
+      rows.push({
+        key: query,
+        columns: {time: {value: time}, query: {value: value}},
+      });
+    }
+  }
+
+  return (
+    <FlexRow grow={true}>
+      <ManagedTable
+        style={{paddingLeft: 16}}
+        floating={false}
+        columns={columns}
+        columnSizes={{time: 75}}
+        zebra={true}
+        rows={rows}
+        horizontallyScrollable={true}
+      />
+    </FlexRow>
+  );
+}
+
 type PageInfoProps = {
   currentRow: number,
   count: number,
@@ -277,7 +389,6 @@ class PageInfo extends Component<
   onSubmit(e: SyntheticKeyboardEvent<>) {
     if (e.key === 'Enter') {
       const rowNumber = parseInt(this.state.inputValue, 10);
-      console.log(rowNumber);
       this.props.onChange(rowNumber - 1, this.props.count);
       this.setState({isOpen: false});
     }
@@ -331,6 +442,12 @@ export default class DatabasesPlugin extends FlipperPlugin<
     currentPage: null,
     currentStructure: null,
     currentSort: null,
+    query: null,
+    queryResult: null,
+    favorites: [],
+    executionTime: 0,
+    tableInfo: '',
+    queryHistory: [],
   };
 
   reducers = [
@@ -414,6 +531,7 @@ export default class DatabasesPlugin extends FlipperPlugin<
         return {
           ...state,
           viewMode: event.viewMode,
+          error: null,
         };
       },
     ],
@@ -459,6 +577,73 @@ export default class DatabasesPlugin extends FlipperPlugin<
       },
     ],
     [
+      'DisplaySelect',
+      (
+        state: DatabasesPluginState,
+        event: DisplaySelectEvent,
+      ): DatabasesPluginState => {
+        return {
+          ...state,
+          queryResult: {
+            table: {
+              columns: event.columns,
+              rows: event.values.map((row: Array<Value>, index: number) =>
+                transformRow(event.columns, row, index),
+              ),
+              highlightedRows: [],
+            },
+            id: null,
+            count: null,
+          },
+        };
+      },
+    ],
+    [
+      'DisplayInsert',
+      (
+        state: DatabasesPluginState,
+        event: DisplayInsertEvent,
+      ): DatabasesPluginState => {
+        return {
+          ...state,
+          queryResult: {
+            table: null,
+            id: event.id,
+            count: null,
+          },
+        };
+      },
+    ],
+
+    [
+      'DisplayUpdateDelete',
+      (
+        state: DatabasesPluginState,
+        event: DisplayUpdateDeleteEvent,
+      ): DatabasesPluginState => {
+        return {
+          ...state,
+          queryResult: {
+            table: null,
+            id: null,
+            count: event.count,
+          },
+        };
+      },
+    ],
+    [
+      'UpdateTableInfo',
+      (
+        state: DatabasesPluginState,
+        event: UpdateTableInfoEvent,
+      ): DatabasesPluginState => {
+        return {
+          ...state,
+          tableInfo: event.tableInfo,
+        };
+      },
+    ],
+    [
       'NextPage',
       (
         state: DatabasesPluginState,
@@ -481,6 +666,66 @@ export default class DatabasesPlugin extends FlipperPlugin<
           ...state,
           pageRowNumber: Math.max(state.pageRowNumber - PAGE_SIZE, 0),
           currentPage: null,
+        };
+      },
+    ],
+    [
+      'Execute',
+      (
+        state: DatabasesPluginState,
+        results: ExecuteEvent,
+      ): DatabasesPluginState => {
+        const timeBefore = Date.now();
+        if (
+          this.state.query !== null &&
+          typeof this.state.query !== 'undefined'
+        ) {
+          this.databaseClient
+            .getExecution({
+              databaseId: state.selectedDatabase,
+              value: this.state.query.value,
+            })
+            .then(data => {
+              this.setState({
+                error: null,
+                executionTime: Date.now() - timeBefore,
+              });
+              if (data.type === 'select') {
+                this.dispatchAction({
+                  type: 'DisplaySelect',
+                  columns: data.columns,
+                  values: data.values,
+                });
+              } else if (data.type === 'insert') {
+                this.dispatchAction({
+                  type: 'DisplayInsert',
+                  id: data.insertedId,
+                });
+              } else if (data.type === 'update_delete') {
+                this.dispatchAction({
+                  type: 'DisplayUpdateDelete',
+                  count: data.affectedCount,
+                });
+              }
+            })
+            .catch(e => {
+              this.setState({error: e});
+            });
+        }
+        let newHistory = this.state.queryHistory;
+        const newQuery = this.state.query;
+        if (
+          newQuery !== null &&
+          typeof newQuery !== 'undefined' &&
+          newHistory !== null &&
+          typeof newHistory !== 'undefined'
+        ) {
+          newQuery.time = dateFormat(new Date(), 'hh:MM:ss');
+          newHistory = newHistory.concat(newQuery);
+        }
+        return {
+          ...state,
+          queryHistory: newHistory,
         };
       },
     ],
@@ -520,6 +765,32 @@ export default class DatabasesPlugin extends FlipperPlugin<
       },
     ],
     [
+      'UpdateFavorites',
+      (
+        state: DatabasesPluginState,
+        event: UpdateFavoritesEvent,
+      ): DatabasesPluginState => {
+        let newFavorites = state.favorites;
+        if (
+          state.query &&
+          state.query !== null &&
+          typeof state.query !== 'undefined'
+        ) {
+          const value = state.query.value;
+          if (newFavorites.includes(value)) {
+            const index = newFavorites.indexOf(value);
+            newFavorites.splice(index, 1);
+          } else {
+            newFavorites = state.favorites.concat(value);
+          }
+        }
+        return {
+          ...state,
+          favorites: newFavorites,
+        };
+      },
+    ],
+    [
       'UpdateViewMode',
       (
         state: DatabasesPluginState,
@@ -528,6 +799,7 @@ export default class DatabasesPlugin extends FlipperPlugin<
         return {
           ...state,
           viewMode: event.viewMode,
+          error: null,
         };
       },
     ],
@@ -539,6 +811,18 @@ export default class DatabasesPlugin extends FlipperPlugin<
           currentSort: event.sortOrder,
           pageRowNumber: 0,
           currentPage: null,
+        };
+      },
+    ],
+    [
+      'UpdateQuery',
+      (state: DatabasesPluginState, event: UpdateQueryEvent) => {
+        return {
+          ...state,
+          query: {
+            value: event.value,
+            time: dateFormat(new Date(), 'hh:MM:ss'),
+          },
         };
       },
     ],
@@ -576,7 +860,6 @@ export default class DatabasesPlugin extends FlipperPlugin<
           start: newState.pageRowNumber,
         })
         .then(data => {
-          console.log(data);
           this.dispatchAction({
             type: 'UpdatePage',
             databaseId: databaseId,
@@ -604,7 +887,6 @@ export default class DatabasesPlugin extends FlipperPlugin<
           table: table,
         })
         .then(data => {
-          console.log(data);
           this.dispatchAction({
             type: 'UpdateStructure',
             databaseId: databaseId,
@@ -619,6 +901,28 @@ export default class DatabasesPlugin extends FlipperPlugin<
           this.setState({error: e});
         });
     }
+    if (
+      newState.viewMode === 'tableInfo' &&
+      newState.currentStructure === null &&
+      databaseId &&
+      table
+    ) {
+      this.databaseClient
+        .getTableInfo({
+          databaseId: databaseId,
+          table: table,
+        })
+        .then(data => {
+          this.dispatchAction({
+            type: 'UpdateTableInfo',
+            tableInfo: data.definition,
+          });
+        })
+        .catch(e => {
+          this.setState({error: e});
+        });
+    }
+
     if (!previousState.outdatedDatabaseList && newState.outdatedDatabaseList) {
       this.databaseClient.getDatabases({}).then(databases => {
         this.dispatchAction({
@@ -647,8 +951,27 @@ export default class DatabasesPlugin extends FlipperPlugin<
     this.dispatchAction({type: 'UpdateViewMode', viewMode: 'structure'});
   };
 
+  onSQLClicked = () => {
+    this.dispatchAction({type: 'UpdateViewMode', viewMode: 'SQL'});
+  };
+
+  onTableInfoClicked = () => {
+    this.dispatchAction({type: 'UpdateViewMode', viewMode: 'tableInfo'});
+  };
+
+  onQueryHistoryClicked = () => {
+    this.dispatchAction({type: 'UpdateViewMode', viewMode: 'queryHistory'});
+  };
+
   onRefreshClicked = () => {
+    this.setState({error: null});
     this.dispatchAction({type: 'Refresh'});
+  };
+
+  onFavoritesClicked = () => {
+    this.dispatchAction({
+      type: 'UpdateFavorites',
+    });
   };
 
   onDatabaseSelected = (selected: string) => {
@@ -674,8 +997,23 @@ export default class DatabasesPlugin extends FlipperPlugin<
     this.dispatchAction({type: 'PreviousPage'});
   };
 
+  onExecuteClicked = () => {
+    this.dispatchAction({type: 'Execute'});
+  };
+
+  onFavoriteClicked = (selected: any) => {
+    this.setState({query: selected.target.value});
+  };
+
   onGoToRow = (row: number, count: number) => {
     this.dispatchAction({type: 'GoToRow', row: row});
+  };
+
+  onQueryChanged = (selected: any) => {
+    this.dispatchAction({
+      type: 'UpdateQuery',
+      value: selected.target.value,
+    });
   };
 
   renderStructure() {
@@ -683,6 +1021,153 @@ export default class DatabasesPlugin extends FlipperPlugin<
       renderDatabaseColumns(this.state.currentStructure),
       renderDatabaseIndexes(this.state.currentStructure),
     ];
+  }
+
+  renderSidebar = (table: QueriedTable) => {
+    if (
+      table.highlightedRows === null ||
+      typeof table.highlightedRows === 'undefined' ||
+      table.highlightedRows.length !== 1
+    ) {
+      return null;
+    }
+    const id = table.highlightedRows[0];
+    const cols = {
+      col: {
+        value: 'Column',
+        resizable: true,
+      },
+      val: {
+        value: 'Value',
+        resizable: true,
+      },
+    };
+    const colSizes = {
+      col: '35%',
+      val: 'flex',
+    };
+    return (
+      <DetailSidebar width={500}>
+        <Panel
+          padded={true}
+          heading="Row details"
+          floating={false}
+          collapsable={true}
+          grow={true}>
+          <ManagedTable
+            highlightableRows={false}
+            columnSizes={colSizes}
+            multiline={true}
+            columns={cols}
+            autoHeight={true}
+            floating={false}
+            zebra={true}
+            rows={this.sidebarRows(id, table)}
+          />
+        </Panel>
+      </DetailSidebar>
+    );
+  };
+
+  sidebarRows = (id: number, table: QueriedTable) => {
+    const columns = table.columns;
+    const row = table.rows[id];
+    const sidebarArray = [];
+    for (let i = 0; i < columns.length; i++) {
+      sidebarArray.push(
+        this.buildSidebarRow(columns[i], row.columns[columns[i]].value),
+      );
+    }
+    return sidebarArray;
+  };
+
+  buildSidebarRow = (key: string, val: any) => {
+    let output = '';
+    try {
+      output = (
+        <ManagedDataInspector
+          data={JSON.parse(val.props.children)}
+          expandRoot={true}
+        />
+      );
+    } catch (error) {
+      output = val;
+    }
+    return {
+      columns: {
+        col: {value: <Text>{key}</Text>},
+        val: {
+          value: output,
+        },
+      },
+      key: key,
+    };
+  };
+
+  renderQuery(query: ?QueryResult) {
+    if (!query || query === null) {
+      return null;
+    }
+    if (
+      query.table &&
+      typeof query.table !== 'undefined' &&
+      query.table !== null
+    ) {
+      const table = query.table;
+      const columns = table.columns;
+      const rows = table.rows;
+      return (
+        <FlexRow grow={true} style={{paddingTop: 18}}>
+          <ManagedTable
+            floating={false}
+            multiline={true}
+            columnOrder={columns.map(name => ({
+              key: name,
+              visible: true,
+            }))}
+            columns={columns.reduce((acc, val) => {
+              acc[val] = {value: val, resizable: true};
+              return acc;
+            }, {})}
+            zebra={true}
+            rows={rows}
+            horizontallyScrollable={true}
+            onRowHighlighted={highlightedRows => {
+              this.setState({
+                queryResult: {
+                  table: {
+                    columns: columns,
+                    rows: rows,
+                    highlightedRows: highlightedRows,
+                  },
+                  id: null,
+                  count: null,
+                },
+              });
+            }}
+          />
+          {this.renderSidebar(table)}
+        </FlexRow>
+      );
+    } else if (query.id && query.id !== null) {
+      return (
+        <FlexRow grow={true} style={{paddingTop: 18}}>
+          <Text style={{paddingTop: 8, paddingLeft: 8}}>
+            Row id: {query.id}
+          </Text>
+        </FlexRow>
+      );
+    } else if (query.count && query.count !== null) {
+      return (
+        <FlexRow grow={true} style={{paddingTop: 18}}>
+          <Text style={{paddingTop: 8, paddingLeft: 8}}>
+            Rows affected: {query.count}
+          </Text>
+        </FlexRow>
+      );
+    } else {
+      return null;
+    }
   }
 
   render() {
@@ -697,53 +1182,177 @@ export default class DatabasesPlugin extends FlipperPlugin<
 
     return (
       <FlexColumn style={{flex: 1}}>
-        <Toolbar position="top" style={{paddingLeft: 8}}>
-          <BoldSpan style={{marginRight: 16}}>Database</BoldSpan>
-          <Select
-            options={this.state.databases
-              .map(x => x.name)
-              .reduce((obj, item) => {
-                obj[item] = item;
-                return obj;
-              }, {})}
-            selected={
-              this.state.databases[this.state.selectedDatabase - 1]?.name
-            }
-            onChange={this.onDatabaseSelected}
-          />
-          <BoldSpan style={{marginLeft: 16, marginRight: 16}}>Table</BoldSpan>
-          <Select
-            options={tableOptions}
-            selected={this.state.selectedDatabaseTable}
-            onChange={this.onDatabaseTableSelected}
-          />
-          <div />
-          <Button onClick={this.onRefreshClicked}>Refresh</Button>
-          <Button style={{marginLeft: 'auto', display: 'none'}}>
-            Execute SQL
-          </Button>
+        <Toolbar position="top" style={{paddingLeft: 16}}>
+          <ButtonGroup>
+            <Button
+              icon={'data-table'}
+              onClick={this.onDataClicked}
+              selected={this.state.viewMode === 'data'}>
+              Data
+            </Button>
+            <Button
+              icon={'gears-two'}
+              onClick={this.onStructureClicked}
+              selected={this.state.viewMode === 'structure'}>
+              Structure
+            </Button>
+            <Button
+              icon={'magnifying-glass'}
+              onClick={this.onSQLClicked}
+              selected={this.state.viewMode === 'SQL'}>
+              SQL
+            </Button>
+            <Button
+              icon={'info-cursive'}
+              onClick={this.onTableInfoClicked}
+              selected={this.state.viewMode === 'tableInfo'}>
+              Table Info
+            </Button>
+            <Button
+              icon={'on-this-day'}
+              iconSize={12}
+              onClick={this.onQueryHistoryClicked}
+              selected={this.state.viewMode === 'queryHistory'}>
+              Query History
+            </Button>
+          </ButtonGroup>
         </Toolbar>
+        {this.state.viewMode === 'data' ||
+        this.state.viewMode === 'structure' ||
+        this.state.viewMode === 'tableInfo' ? (
+          <Toolbar position="top" style={{paddingLeft: 16}}>
+            <BoldSpan style={{marginRight: 16}}>Database</BoldSpan>
+            <Select
+              options={this.state.databases
+                .map(x => x.name)
+                .reduce((obj, item) => {
+                  obj[item] = item;
+                  return obj;
+                }, {})}
+              selected={
+                this.state.databases[this.state.selectedDatabase - 1]?.name
+              }
+              onChange={this.onDatabaseSelected}
+            />
+            <BoldSpan style={{marginLeft: 16, marginRight: 16}}>Table</BoldSpan>
+            <Select
+              options={tableOptions}
+              selected={this.state.selectedDatabaseTable}
+              onChange={this.onDatabaseTableSelected}
+            />
+            <div />
+            <Button onClick={this.onRefreshClicked}>Refresh</Button>
+          </Toolbar>
+        ) : null}
+        {this.state.viewMode === 'SQL' ? (
+          <div>
+            <Toolbar position="top" style={{paddingLeft: 16}}>
+              <BoldSpan style={{marginRight: 16}}>Database</BoldSpan>
+              <Select
+                options={this.state.databases
+                  .map(x => x.name)
+                  .reduce((obj, item) => {
+                    obj[item] = item;
+                    return obj;
+                  }, {})}
+                selected={
+                  this.state.databases[this.state.selectedDatabase - 1]?.name
+                }
+                onChange={this.onDatabaseSelected}
+              />
+            </Toolbar>
+            {
+              <Textarea
+                style={{
+                  width: '98%',
+                  height: '40%',
+                  marginLeft: 16,
+                  marginTop: '1%',
+                  marginBottom: '1%',
+                }}
+                onChange={this.onQueryChanged.bind(this)}
+                placeholder="Type query here.."
+                value={
+                  this.state.query !== null &&
+                  typeof this.state.query !== 'undefined'
+                    ? this.state.query.value
+                    : null
+                }
+              />
+            }
+            <Toolbar
+              position="top"
+              style={{paddingLeft: 16, paddingTop: 24, paddingBottom: 24}}>
+              <ButtonGroup>
+                <Button
+                  icon={'star'}
+                  iconSize={14}
+                  iconVariant={
+                    this.state.query !== null &&
+                    typeof this.state.query !== 'undefined' &&
+                    this.state.favorites.includes(this.state.query.value)
+                      ? 'filled'
+                      : 'outline'
+                  }
+                  onClick={this.onFavoritesClicked}
+                />
+                {this.state.favorites !== null ? (
+                  <Button
+                    dropdown={this.state.favorites.map(option => {
+                      return {
+                        click: () => {
+                          this.setState({
+                            query: {
+                              value: option,
+                              time: dateFormat(new Date(), 'hh:MM:ss'),
+                            },
+                          });
+                          this.onQueryChanged.bind(this);
+                        },
+                        label: option,
+                      };
+                    })}>
+                    Choose from previous queries
+                  </Button>
+                ) : null}
+              </ButtonGroup>
+              <Spacer />
+              <ButtonGroup>
+                <Button onClick={this.onExecuteClicked}>Execute</Button>
+              </ButtonGroup>
+            </Toolbar>
+          </div>
+        ) : null}
         <FlexColumn grow={true}>
           {this.state.viewMode === 'data'
             ? renderTable(this.state.currentPage, this)
-            : this.renderStructure()}
+            : null}
+          {this.state.viewMode === 'structure' ? this.renderStructure() : null}
+          {this.state.viewMode === 'SQL'
+            ? this.renderQuery(this.state.queryResult)
+            : null}
+          {this.state.viewMode === 'tableInfo' ? (
+            <Textarea
+              style={{
+                width: '98%',
+                height: '100%',
+                marginLeft: '1%',
+                marginTop: '1%',
+                marginBottom: '1%',
+                readOnly: true,
+              }}
+              value={sqlFormatter.format(this.state.tableInfo)}
+            />
+          ) : null}
+          {this.state.viewMode === 'queryHistory'
+            ? renderQueryHistory(this.state.queryHistory)
+            : null}
         </FlexColumn>
         <Toolbar position="bottom" style={{paddingLeft: 8}}>
           <FlexRow grow={true}>
-            <ButtonGroup>
-              <Button
-                icon={'data-table'}
-                onClick={this.onDataClicked}
-                selected={this.state.viewMode === 'data'}>
-                Data
-              </Button>
-              <Button
-                icon={'gears-two'}
-                onClick={this.onStructureClicked}
-                selected={this.state.viewMode === 'structure'}>
-                Structure
-              </Button>
-            </ButtonGroup>
+            {this.state.viewMode === 'SQL' && this.state.executionTime !== 0 ? (
+              <Text> {this.state.executionTime} ms </Text>
+            ) : null}
             {this.state.viewMode === 'data' && this.state.currentPage ? (
               <PageInfo
                 currentRow={this.state.currentPage.start}

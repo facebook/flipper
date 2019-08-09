@@ -18,7 +18,7 @@ import {
   colors,
 } from 'flipper';
 import {writeKeychain, getUser} from '../fb-stubs/user';
-import {login} from '../reducers/user';
+import {login} from '../reducers/user.tsx';
 import {connect} from 'react-redux';
 
 const Container = styled(FlexColumn)({
