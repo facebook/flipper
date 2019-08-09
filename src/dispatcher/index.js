@@ -17,7 +17,7 @@ import user from './user.tsx';
 
 import type {Logger} from '../fb-interfaces/Logger.js';
 import type {Store} from '../reducers/index.tsx';
-import type {Dispatcher} from './types';
+import type {Dispatcher} from './types.tsx';
 
 export default function(store: Store, logger: Logger): () => Promise<void> {
   const dispatchers: Array<Dispatcher> = [
