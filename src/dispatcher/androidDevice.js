@@ -5,7 +5,7 @@
  * @format
  */
 
-import AndroidDevice from '../devices/AndroidDevice';
+import AndroidDevice from '../devices/AndroidDevice.tsx';
 import child_process from 'child_process';
 import type {Store} from '../reducers/index.tsx';
 import type BaseDevice from '../devices/BaseDevice.tsx';

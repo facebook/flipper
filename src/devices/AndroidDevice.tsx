@@ -5,12 +5,11 @@
  * @format
  */
 
-import type {DeviceType, DeviceShell} from './BaseDevice.tsx';
-import BaseDevice from './BaseDevice.tsx';
+import BaseDevice, {DeviceType, DeviceShell, LogLevel} from './BaseDevice';
 import {Priority} from 'adbkit-logcat-fb';
 import child_process from 'child_process';
 import child_process_promise from 'child-process-es6-promise';
-import ArchivedDevice from './ArchivedDevice.tsx';
+import ArchivedDevice from './ArchivedDevice';
 
 type ADBClient = any;
 
@@ -23,10 +22,11 @@ export default class AndroidDevice extends BaseDevice {
   ) {
     super(serial, deviceType, title);
     this.adb = adb;
-
+    this.os = 'Android';
+    this.icon = 'icons/android.svg';
     this.adb.openLogcat(this.serial).then(reader => {
       reader.on('entry', entry => {
-        let type = 'unknown';
+        let type: LogLevel = 'unknown';
         if (entry.priority === Priority.VERBOSE) {
           type = 'verbose';
         }
@@ -58,8 +58,6 @@ export default class AndroidDevice extends BaseDevice {
     });
   }
 
-  icon = 'icons/android.svg';
-  os = 'Android';
   adb: ADBClient;
   pidAppMapping: {[key: number]: string} = {};
   logReader: any;
@@ -78,7 +76,7 @@ export default class AndroidDevice extends BaseDevice {
     });
   }
 
-  spawnShell(): ?DeviceShell {
+  spawnShell(): DeviceShell | null | undefined {
     return child_process.spawn('adb', ['-s', this.serial, 'shell', '-t', '-t']);
   }
 

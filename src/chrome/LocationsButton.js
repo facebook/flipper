@@ -9,7 +9,6 @@ import {Button, Component, styled} from 'flipper';
 import {connect} from 'react-redux';
 
 import type BaseDevice from '../devices/BaseDevice.tsx';
-import AndroidDevice from '../devices/AndroidDevice';
 
 type OwnProps = {|
   locations: Array<string>,
