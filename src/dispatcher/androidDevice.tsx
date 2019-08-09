@@ -5,21 +5,21 @@
  * @format
  */
 
-import AndroidDevice from '../devices/AndroidDevice.tsx';
+import AndroidDevice from '../devices/AndroidDevice';
 import child_process from 'child_process';
-import type {Store} from '../reducers/index.tsx';
-import type BaseDevice from '../devices/BaseDevice.tsx';
-import type {Logger} from '../fb-interfaces/Logger.js';
+import {Store} from '../reducers/index';
+import BaseDevice from '../devices/BaseDevice';
+import {Logger} from '../fb-interfaces/Logger.js';
 import {registerDeviceCallbackOnPlugins} from '../utils/onRegisterDevice.js';
 import {getAdbClient} from '../utils/adbClient';
 import {default as which} from 'which';
 import {promisify} from 'util';
-import type {ServerPorts} from '../reducers/application.tsx';
+import {ServerPorts} from '../reducers/application';
 
 function createDevice(
   adbClient: any,
   device: any,
-  ports: ?ServerPorts,
+  ports?: ServerPorts,
 ): Promise<AndroidDevice> {
   return new Promise((resolve, reject) => {
     const type =
@@ -49,7 +49,9 @@ export async function getActiveAndroidDevices(): Promise<Array<BaseDevice>> {
   );
 }
 
-function getRunningEmulatorName(id: string): Promise<?string> {
+function getRunningEmulatorName(
+  id: string,
+): Promise<string | null | undefined> {
   return new Promise((resolve, reject) => {
     const port = id.replace('emulator-', '');
     // The GNU version of netcat doesn't terminate after 1s when
@@ -59,7 +61,7 @@ function getRunningEmulatorName(id: string): Promise<?string> {
     child_process.exec(
       `echo "avd name" | nc -w 1 localhost ${port}`,
       {timeout: 1000, encoding: 'utf-8'},
-      (error: ?Error, data) => {
+      (error: Error | null | undefined, data) => {
         if (data != null && typeof data === 'string') {
           const match = data.trim().match(/(.*)\r\nOK$/);
           resolve(match != null && match.length > 0 ? match[1] : null);
@@ -79,7 +81,7 @@ export default (store: Store, logger: Logger) => {
       .then(emulatorPath => {
         child_process.exec(
           `${emulatorPath} -list-avds`,
-          (error: ?Error, data: ?string) => {
+          (error: Error | null, data: string | null) => {
             if (error != null || data == null) {
               console.error(error || 'Failed to list AVDs');
               return;
@@ -102,7 +104,9 @@ export default (store: Store, logger: Logger) => {
               if (err.message === 'Connection closed') {
                 // adb server has shutdown, remove all android devices
                 const {connections} = store.getState();
-                const deviceIDsToRemove: Array<string> = connections.devices
+                const deviceIDsToRemove: Array<
+                  string
+                > = connections.devices
                   .filter(
                     (device: BaseDevice) => device instanceof AndroidDevice,
                   )

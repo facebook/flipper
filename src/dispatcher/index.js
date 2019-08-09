@@ -5,7 +5,7 @@
  * @format
  */
 
-import androidDevice from './androidDevice';
+import androidDevice from './androidDevice.tsx';
 import iOSDevice from './iOSDevice';
 import desktopDevice from './desktopDevice';
 import application from './application';

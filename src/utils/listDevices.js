@@ -4,7 +4,7 @@
  * LICENSE file in the root directory of this source tree.
  * @format
  */
-import {getActiveAndroidDevices} from '../dispatcher/androidDevice';
+import {getActiveAndroidDevices} from '../dispatcher/androidDevice.tsx';
 import {getActiveDevicesAndSimulators} from '../dispatcher/iOSDevice';
 import type BaseDevice from '../devices/BaseDevice.tsx';
 
