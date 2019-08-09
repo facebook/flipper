@@ -5,15 +5,15 @@
  * @format
  */
 import {promisify} from 'util';
-import type {DeviceType} from '../devices/BaseDevice';
+import {DeviceType} from '../devices/BaseDevice';
 const exec = promisify(require('child_process').exec);
 
 const errorMessage = 'Physical iOS devices not yet supported';
 
 export type DeviceTarget = {
-  udid: string,
-  type: DeviceType,
-  name: string,
+  udid: string;
+  type: DeviceType;
+  name: string;
 };
 
 function isAvailable(): boolean {

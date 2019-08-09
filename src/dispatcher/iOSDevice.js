@@ -14,7 +14,7 @@ import path from 'path';
 import child_process from 'child_process';
 const execFile = child_process.execFile;
 import IOSDevice from '../devices/IOSDevice';
-import iosUtil from '../fb-stubs/iOSContainerUtility';
+import iosUtil from '../fb-stubs/iOSContainerUtility.tsx';
 import isProduction from '../utils/isProduction.js';
 import GK from '../fb-stubs/GK.tsx';
 import {registerDeviceCallbackOnPlugins} from '../utils/onRegisterDevice.js';

@@ -17,7 +17,7 @@ import path from 'path';
 import tmp from 'tmp';
 const tmpFile = promisify(tmp.file);
 const tmpDir = promisify(tmp.dir);
-import iosUtil from '../fb-stubs/iOSContainerUtility';
+import iosUtil from '../fb-stubs/iOSContainerUtility.tsx';
 import {reportPlatformFailures} from './metrics';
 import {getAdbClient} from './adbClient';
 import * as androidUtil from './androidContainerUtility';
