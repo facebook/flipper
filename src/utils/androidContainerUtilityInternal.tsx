@@ -10,7 +10,7 @@
  * opaque types will ensure the commands are only ever run on validated
  * arguments.
  */
-import {getAdbClient} from './adbClient.tsx';
+import {getAdbClient} from './adbClient';
 import {UnsupportedError} from './metrics';
 const adbkit = require('adbkit-fb');
 
@@ -19,10 +19,10 @@ const appNotDebuggableRegex = /debuggable/;
 const operationNotPermittedRegex = /not permitted/;
 const logTag = 'androidContainerUtility';
 
-export opaque type AppName = string;
-export opaque type Command = string;
-export opaque type FilePath = string;
-export opaque type FileContent = string;
+export type AppName = string;
+export type Command = string;
+export type FilePath = string;
+export type FileContent = string;
 
 export function validateAppName(app: string): Promise<AppName> {
   if (app.match(allowedAppNameRegex)) {
