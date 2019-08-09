@@ -16,8 +16,8 @@ import {ScribeLogger} from './ScribeLogger';
 export type ObjectError =
   | Error
   | {
-      message: string,
-      stack?: string,
+      message: string;
+      stack?: string;
     };
 
 export default class ErrorReporter {
