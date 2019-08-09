@@ -5,41 +5,39 @@
  * @format
  */
 
-import type {DeviceType, LogLevel, DeviceLogEntry} from './BaseDevice.tsx';
+import {DeviceType, LogLevel, DeviceLogEntry} from './BaseDevice';
 import child_process from 'child_process';
-import BaseDevice from './BaseDevice.tsx';
+import BaseDevice from './BaseDevice';
 import JSONStream from 'JSONStream';
 import {Transform} from 'stream';
 
 type IOSLogLevel = 'Default' | 'Info' | 'Debug' | 'Error' | 'Fault';
 
-type RawLogEntry = {|
-  eventMessage: string,
-  machTimestamp: number,
-  messageType: IOSLogLevel,
-  processID: number,
-  processImagePath: string,
-  processImageUUID: string,
-  processUniqueID: number,
-  senderImagePath: string,
-  senderImageUUID: string,
-  senderProgramCounter: number,
-  threadID: number,
-  timestamp: string,
-  timezoneName: string,
-  traceID: string,
-|};
+type RawLogEntry = {
+  eventMessage: string;
+  machTimestamp: number;
+  messageType: IOSLogLevel;
+  processID: number;
+  processImagePath: string;
+  processImageUUID: string;
+  processUniqueID: number;
+  senderImagePath: string;
+  senderImageUUID: string;
+  senderProgramCounter: number;
+  threadID: number;
+  timestamp: string;
+  timezoneName: string;
+  traceID: string;
+};
 
 export default class IOSDevice extends BaseDevice {
-  icon = 'icons/ios.svg';
-  os = 'iOS';
-
   log: any;
   buffer: string;
 
   constructor(serial: string, deviceType: DeviceType, title: string) {
     super(serial, deviceType, title);
-
+    this.icon = 'icons/ios.svg';
+    this.os = 'iOS';
     this.buffer = '';
     this.log = this.startLogListener();
   }

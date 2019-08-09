@@ -8,7 +8,7 @@
 import {Button, ButtonGroup, Component} from 'flipper';
 import {connect} from 'react-redux';
 import AndroidDevice from '../devices/AndroidDevice.tsx';
-import IOSDevice from '../devices/IOSDevice';
+import IOSDevice from '../devices/IOSDevice.tsx';
 import expandTilde from 'expand-tilde';
 import fs from 'fs';
 import os from 'os';

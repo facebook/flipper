@@ -44,5 +44,5 @@ export {default as DetailSidebar} from './chrome/DetailSidebar.js';
 export {default as Device} from './devices/BaseDevice.tsx';
 export {default as AndroidDevice} from './devices/AndroidDevice.tsx';
 export {default as ArchivedDevice} from './devices/ArchivedDevice.tsx';
-export {default as IOSDevice} from './devices/IOSDevice.js';
+export {default as IOSDevice} from './devices/IOSDevice.tsx';
 export type {OS} from './devices/BaseDevice.tsx';
