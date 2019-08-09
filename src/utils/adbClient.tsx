@@ -28,15 +28,9 @@ function createClient() {
     ? `${process.env.ANDROID_HOME}/platform-tools/adb`
     : 'adb';
   return reportPlatformFailures(
-    promisify(child_process.exec)(`${adbPath} start-server`)
-      .then(result => {
-        if (result.error) {
-          throw new Error(
-            `Failed to start adb server: ${result.stderr.toString()}`,
-          );
-        }
-      })
-      .then(() => adbkit.createClient(adbConfig())),
+    promisify(child_process.exec)(`${adbPath} start-server`).then(() =>
+      adbkit.createClient(adbConfig()),
+    ),
     'createADBClient.shell',
   ).catch(err => {
     console.error(

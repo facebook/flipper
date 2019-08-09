@@ -10,7 +10,7 @@
  * opaque types will ensure the commands are only ever run on validated
  * arguments.
  */
-import {getAdbClient} from './adbClient';
+import {getAdbClient} from './adbClient.tsx';
 import {UnsupportedError} from './metrics';
 const adbkit = require('adbkit-fb');
 
