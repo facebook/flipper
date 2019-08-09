@@ -10,8 +10,8 @@
  * The recommended way to use this, is to instantiate it inside Logger,
  * so that all logged errors get reported to this class.
  */
-export function cleanStack(stack: string, loc: ?string) {}
-import type ScribeLogger from './ScribeLogger';
+export function cleanStack(stack: string, loc?: string) {}
+import {ScribeLogger} from './ScribeLogger';
 
 export type ObjectError =
   | Error
