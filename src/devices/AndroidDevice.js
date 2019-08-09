@@ -10,7 +10,7 @@ import BaseDevice from './BaseDevice.tsx';
 import {Priority} from 'adbkit-logcat-fb';
 import child_process from 'child_process';
 import child_process_promise from 'child-process-es6-promise';
-import ArchivedDevice from './ArchivedDevice.js';
+import ArchivedDevice from './ArchivedDevice.tsx';
 
 type ADBClient = any;
 
