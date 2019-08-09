@@ -5,10 +5,10 @@
  * @format
  */
 
-import type {Store} from '../reducers/index.tsx';
-import type {Logger} from '../fb-interfaces/Logger.js';
-import type {FlipperPlugin, FlipperDevicePlugin} from '../plugin.tsx';
-import type {State} from '../reducers/plugins.tsx';
+import {Store} from '../reducers/index';
+import {Logger} from '../fb-interfaces/Logger.js';
+import {FlipperPlugin, FlipperDevicePlugin} from '../plugin';
+import {State} from '../reducers/plugins';
 
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -18,25 +18,25 @@ import {
   addGatekeepedPlugins,
   addDisabledPlugins,
   addFailedPlugins,
-} from '../reducers/plugins.tsx';
+} from '../reducers/plugins';
 import {remote} from 'electron';
-import GK from '../fb-stubs/GK.tsx';
-import {FlipperBasePlugin} from '../plugin.tsx';
+import GK from '../fb-stubs/GK';
+import {FlipperBasePlugin} from '../plugin';
 import {setupMenuBar} from '../MenuBar.js';
 import path from 'path';
 import {default as config} from '../utils/processConfig.js';
 import isProduction from '../utils/isProduction';
 
 export type PluginDefinition = {
-  name: string,
-  out: string,
-  gatekeeper?: string,
-  entry?: string,
+  name: string;
+  out: string;
+  gatekeeper?: string;
+  entry?: string;
 };
 
 export default (store: Store, logger: Logger) => {
   // expose Flipper and exact globally for dynamically loaded plugins
-  const globalObject = typeof window === 'undefined' ? global : window;
+  const globalObject: any = typeof window === 'undefined' ? global : window;
   globalObject.React = React;
   globalObject.ReactDOM = ReactDOM;
   globalObject.Flipper = Flipper;
@@ -46,7 +46,7 @@ export default (store: Store, logger: Logger) => {
   const failedPlugins: Array<[PluginDefinition, string]> = [];
 
   const initialPlugins: Array<
-    Class<FlipperPlugin<> | FlipperDevicePlugin<>>,
+    typeof FlipperPlugin | typeof FlipperDevicePlugin
   > = [...getBundledPlugins(), ...getDynamicPlugins()]
     .filter(checkDisabled(disabledPlugins))
     .filter(checkGK(gatekeepedPlugins))
@@ -58,7 +58,7 @@ export default (store: Store, logger: Logger) => {
   store.dispatch(addFailedPlugins(failedPlugins));
   store.dispatch(registerPlugins(initialPlugins));
 
-  let state: ?State = null;
+  let state: State | null = null;
   store.subscribe(() => {
     const newState = store.getState().plugins;
     if (state !== newState) {
@@ -87,7 +87,8 @@ function getBundledPlugins(): Array<PluginDefinition> {
 
   let bundledPlugins: Array<PluginDefinition> = [];
   try {
-    bundledPlugins = global.electronRequire(
+    // TODO We can probably define this in the globals file.
+    bundledPlugins = (global as any).electronRequire(
       path.join(pluginPath, 'index.json'),
     );
   } catch (e) {
@@ -105,7 +106,7 @@ export function getDynamicPlugins() {
   try {
     dynamicPlugins = JSON.parse(
       // $FlowFixMe process.env not defined in electron API spec
-      remote?.process.env.PLUGINS || process.env.PLUGINS || '[]',
+      (remote && remote.process.env.PLUGINS) || process.env.PLUGINS || '[]',
     );
   } catch (e) {
     console.error(e);
@@ -145,11 +146,11 @@ export const checkDisabled = (disabledPlugins: Array<PluginDefinition>) => (
 
 export const requirePlugin = (
   failedPlugins: Array<[PluginDefinition, string]>,
-  reqFn: Function = global.electronRequire,
+  reqFn: Function = (global as any).electronRequire,
 ) => {
   return (
     pluginDefinition: PluginDefinition,
-  ): ?Class<FlipperPlugin<> | FlipperDevicePlugin<>> => {
+  ): typeof FlipperPlugin | typeof FlipperDevicePlugin => {
     try {
       let plugin = reqFn(pluginDefinition.out);
       if (plugin.default) {

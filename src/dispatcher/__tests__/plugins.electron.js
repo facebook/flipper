@@ -10,7 +10,7 @@ import dispatcher, {
   checkDisabled,
   checkGK,
   requirePlugin,
-} from '../plugins';
+} from '../plugins.tsx';
 import path from 'path';
 import {remote} from 'electron';
 import {FlipperPlugin} from '../../plugin.tsx';

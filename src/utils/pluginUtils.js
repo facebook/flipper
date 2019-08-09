@@ -9,7 +9,7 @@ import type {State as PluginStatesState} from '../reducers/pluginStates.tsx';
 import type BaseDevice from '../devices/BaseDevice.tsx';
 import {pluginsClassMap} from './exportData.js';
 import type {State as PluginsState} from '../reducers/plugins.tsx';
-import type {PluginDefinition} from '../dispatcher/plugins';
+import type {PluginDefinition} from '../dispatcher/plugins.tsx';
 
 export function getPluginKey(
   selectedApp: ?string,
