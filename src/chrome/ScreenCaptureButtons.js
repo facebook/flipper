@@ -18,7 +18,7 @@ import {remote} from 'electron';
 import path from 'path';
 import {reportPlatformFailures} from '../utils/metrics';
 import config from '../utils/processConfig';
-import type BaseDevice from '../devices/BaseDevice';
+import type BaseDevice from '../devices/BaseDevice.tsx';
 
 const CAPTURE_LOCATION = expandTilde(
   config().screenCapturePath || remote.app.getPath('desktop'),

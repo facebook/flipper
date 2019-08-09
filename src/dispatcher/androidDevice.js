@@ -8,7 +8,7 @@
 import AndroidDevice from '../devices/AndroidDevice';
 import child_process from 'child_process';
 import type {Store} from '../reducers/index.tsx';
-import type BaseDevice from '../devices/BaseDevice';
+import type BaseDevice from '../devices/BaseDevice.tsx';
 import type {Logger} from '../fb-interfaces/Logger.js';
 import {registerDeviceCallbackOnPlugins} from '../utils/onRegisterDevice.js';
 import {getAdbClient} from '../utils/adbClient';

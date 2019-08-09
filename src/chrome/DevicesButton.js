@@ -14,7 +14,7 @@ import {default as which} from 'which';
 import {promisify} from 'util';
 import {showOpenDialog} from '../utils/exportData';
 import PropTypes from 'prop-types';
-import type BaseDevice from '../devices/BaseDevice.js';
+import type BaseDevice from '../devices/BaseDevice.tsx';
 
 const whichPromise = promisify(which);
 

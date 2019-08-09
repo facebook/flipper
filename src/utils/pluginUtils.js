@@ -4,9 +4,9 @@
  * LICENSE file in the root directory of this source tree.
  * @format
  */
-import type BaseDevice from '../devices/BaseDevice.js';
 import {FlipperDevicePlugin, FlipperPlugin} from '../plugin.tsx';
 import type {State as PluginStatesState} from '../reducers/pluginStates.tsx';
+import type BaseDevice from '../devices/BaseDevice.tsx';
 import {pluginsClassMap} from './exportData.js';
 import type {State as PluginsState} from '../reducers/plugins.tsx';
 import type {PluginDefinition} from '../dispatcher/plugins';

@@ -12,7 +12,7 @@ import Client from './Client';
 import {Store, MiddlewareAPI} from './reducers/index';
 import {MetricType} from './utils/exportMetrics.js';
 import {ReactNode, Component} from 'react';
-import BaseDevice from './devices/BaseDevice.js';
+import BaseDevice from './devices/BaseDevice';
 
 // This function is intended to be called from outside of the plugin.
 // If you want to `call` from the plugin use, this.client.call
@@ -163,7 +163,7 @@ export class FlipperDevicePlugin<
 
   constructor(props: Props<P>) {
     super(props);
-    // $FlowFixMe props.target will be instance of Device
+    // @ts-ignore props.target will be instance of Device
     this.device = props.target;
   }
 
@@ -192,7 +192,7 @@ export class FlipperPlugin<
     super(props);
     const {id} = this.constructor;
     this.subscriptions = [];
-    // $FlowFixMe props.target will be instance of Client
+    // @ts-ignore props.target will be instance of Client
     this.realClient = props.target;
     this.client = {
       call: (method, params) => this.realClient.call(id, method, true, params),
