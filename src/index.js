@@ -30,7 +30,7 @@ export type {Store, MiddlewareAPI} from './reducers/index.tsx';
 
 export {
   default as SidebarExtensions,
-} from './fb-stubs/LayoutInspectorSidebarExtensions.js';
+} from './fb-stubs/LayoutInspectorSidebarExtensions.tsx';
 export {
   DeviceLogListener,
   DeviceLogEntry,
