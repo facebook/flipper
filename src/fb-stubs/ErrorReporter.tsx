@@ -11,7 +11,7 @@
  * so that all logged errors get reported to this class.
  */
 export function cleanStack(stack: string, loc?: string) {}
-import {ScribeLogger} from './ScribeLogger';
+import ScribeLogger from './ScribeLogger';
 
 export type ObjectError =
   | Error

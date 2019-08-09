@@ -5,12 +5,12 @@
  * @format
  */
 
-export type ScribeMessage = {|
-  category: string,
-  message: string,
-|};
+export type ScribeMessage = {
+  category: string;
+  message: string;
+};
 
-import type {Logger} from '../fb-interfaces/Logger.js';
+import {Logger} from '../fb-interfaces/Logger.js';
 
 export default class ScribeLogger {
   constructor(logger: Logger) {}
