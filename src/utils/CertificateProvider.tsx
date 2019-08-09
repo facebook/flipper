@@ -5,8 +5,8 @@
  * @format
  */
 
-import type {Logger} from '../fb-interfaces/Logger';
-import Server from '../server.tsx';
+import {Logger} from '../fb-interfaces/Logger';
+import Server from '../server';
 import {promisify} from 'util';
 import fs from 'fs';
 import {
@@ -17,9 +17,9 @@ import path from 'path';
 import tmp from 'tmp';
 const tmpFile = promisify(tmp.file);
 const tmpDir = promisify(tmp.dir);
-import iosUtil from '../fb-stubs/iOSContainerUtility.tsx';
+import iosUtil from '../fb-stubs/iOSContainerUtility';
 import {reportPlatformFailures} from './metrics';
-import {getAdbClient} from './adbClient.tsx';
+import {getAdbClient} from './adbClient';
 import * as androidUtil from './androidContainerUtility';
 
 // Desktop file paths
@@ -48,13 +48,13 @@ const logTag = 'CertificateProvider';
  */
 const x509SubjectCNRegex = /[=,]\s*CN=([^,]*)(,.*)?$/;
 
-export type SecureServerConfig = {|
-  key: Buffer,
-  cert: Buffer,
-  ca: Buffer,
-  requestCert: boolean,
-  rejectUnauthorized: boolean,
-|};
+export type SecureServerConfig = {
+  key: Buffer;
+  cert: Buffer;
+  ca: Buffer;
+  requestCert: boolean;
+  rejectUnauthorized: boolean;
+};
 
 /*
  * This class is responsible for generating and deploying server and client
@@ -87,7 +87,7 @@ export default class CertificateProvider {
     unsanitizedCsr: string,
     os: string,
     appDirectory: string,
-  ): Promise<{|deviceId: string|}> {
+  ): Promise<{deviceId: string}> {
     const csr = this.santitizeString(unsanitizedCsr);
     if (csr === '') {
       return Promise.reject(new Error(`Received empty CSR from ${os} device`));
@@ -408,7 +408,7 @@ export default class CertificateProvider {
           });
         });
       })
-      .then(subject => {
+      .then((subject: string) => {
         const matches = subject.trim().match(x509SubjectCNRegex);
         if (!matches || matches.length < 2) {
           throw new Error(`Cannot extract CN from ${subject}`);
