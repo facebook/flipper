@@ -26,7 +26,7 @@ import {
   DefaultProvider,
 } from './util/autoCompleteProvider';
 import {getAppMatchPatterns} from './util/appMatchPatterns';
-import {getRequiredParameters} from './util/uri';
+import {getRequiredParameters, filterOptionalParameters} from './util/uri';
 
 import type {
   State,
@@ -114,7 +114,7 @@ export default class extends FlipperPlugin<State, {}, PersistedState> {
     const requiredParameters = getRequiredParameters(query);
     if (requiredParameters.length === 0) {
       this.getDevice().then(device => {
-        device.navigateToLocation(query);
+        device.navigateToLocation(filterOptionalParameters(query));
       });
     } else {
       this.setState({

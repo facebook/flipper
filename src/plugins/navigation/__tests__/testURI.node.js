@@ -10,6 +10,7 @@ import {
   getRequiredParameters,
   parameterIsNumberType,
   replaceRequiredParametersWithValues,
+  filterOptionalParameters,
 } from '../util/uri';
 
 test('parse required parameters from uri', () => {
@@ -51,4 +52,12 @@ test('detect if required parameter is numeric type', () => {
 
 test('detect if required parameter is not numeric type', () => {
   expect(parameterIsNumberType('{numerictype}')).toBe(false);
+});
+
+test('filter optional parameters from uri', () => {
+  const testURI =
+    'fb://test_uri/{?param_here}/?parameter1={parameter1}&parameter2={?parameter2}&numericParameter={#numericParameter}&parameter3={?parameter3}';
+  const expextedResult =
+    'fb://test_uri/?parameter1={parameter1}&numericParameter={#numericParameter}';
+  expect(filterOptionalParameters(testURI)).toBe(expextedResult);
 });

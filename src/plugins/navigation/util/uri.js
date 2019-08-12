@@ -8,6 +8,10 @@
 
 import querystring from 'querystring';
 
+export const filterOptionalParameters: string => string = (uri: string) => {
+  return uri.replace(/[/&]?([^&?={}\/]*=)?{\?.*?}/g, '');
+};
+
 export const parseURIParameters: string => Map<string, string> = (
   query: string,
 ) => {
