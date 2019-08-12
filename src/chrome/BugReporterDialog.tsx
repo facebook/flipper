@@ -5,9 +5,9 @@
  * @format
  */
 
-import type BugReporter from '../fb-stubs/BugReporter.tsx';
-import type {FlipperDevicePlugin, FlipperPlugin} from '../plugin.tsx';
-import {Fragment, Component} from 'react';
+import BugReporter from '../fb-stubs/BugReporter';
+import {FlipperPlugin, FlipperDevicePlugin} from '../plugin';
+import React, {Fragment, Component} from 'react';
 import {connect} from 'react-redux';
 import {
   Button,
@@ -22,6 +22,7 @@ import {
   Glyph,
   styled,
 } from 'flipper';
+import {State as Store} from '../reducers';
 
 const Container = styled(FlexColumn)({
   padding: 10,
@@ -82,20 +83,30 @@ const InfoBox = styled(FlexRow)({
   lineHeight: '130%',
 });
 
-type State = {|
-  description: string,
-  title: string,
-  submitting: boolean,
-  success: ?number,
-  error: ?string,
-|};
+type State = {
+  description: string;
+  title: string;
+  submitting: boolean;
+  success: number | null | undefined;
+  error: string | null | undefined;
+};
 
-type Props = {|
-  bugReporter: BugReporter,
-  activePlugin: ?Class<FlipperPlugin<> | FlipperDevicePlugin<>>,
-  onHide: () => mixed,
-|};
+type OwnProps = {
+  bugReporter: BugReporter;
+  onHide: () => any;
+};
 
+type DispatchFromProps = {};
+
+type StateFromProps = {
+  activePlugin:
+    | typeof FlipperPlugin
+    | typeof FlipperDevicePlugin
+    | null
+    | undefined;
+};
+
+type Props = OwnProps & StateFromProps & DispatchFromProps;
 class BugReporterDialog extends Component<Props, State> {
   state = {
     description: '',
@@ -108,11 +119,11 @@ class BugReporterDialog extends Component<Props, State> {
   titleRef: HTMLElement;
   descriptionRef: HTMLElement;
 
-  onDescriptionChange = (e: SyntheticInputEvent<HTMLInputElement>) => {
+  onDescriptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({description: e.target.value});
   };
 
-  onTitleChange = (e: SyntheticInputEvent<HTMLInputElement>) => {
+  onTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({title: e.target.value});
   };
 
@@ -187,6 +198,7 @@ class BugReporterDialog extends Component<Props, State> {
   render() {
     let content;
     const {title, success, error, description, submitting} = this.state;
+    const {activePlugin} = this.props;
 
     if (success) {
       content = (
@@ -234,32 +246,28 @@ class BugReporterDialog extends Component<Props, State> {
             onChange={this.onDescriptionChange}
             disabled={submitting}
           />
-          {this.props.activePlugin?.bugs && (
+          {activePlugin && activePlugin.bugs && (
             <InfoBox>
               <Icon color={colors.light50} name="info-circle" />
               <span>
                 If you bug is related to the{' '}
                 <strong>
-                  {this.props.activePlugin?.title ||
-                    this.props.activePlugin?.id}{' '}
+                  {(activePlugin && activePlugin.title) || activePlugin.id}{' '}
                   plugin
                 </strong>
-                {this.props.activePlugin?.bugs?.url && (
+                {activePlugin && activePlugin.bugs && activePlugin.bugs.url && (
                   <span>
                     , you might find useful information about it here:{' '}
-                    <Link href={this.props.activePlugin?.bugs?.url || ''}>
-                      {this.props.activePlugin?.bugs?.url}
+                    <Link href={activePlugin.bugs.url || ''}>
+                      {activePlugin.bugs.url}
                     </Link>
                   </span>
                 )}
-                {this.props.activePlugin?.bugs?.email && (
+                {activePlugin && activePlugin.bugs && activePlugin.bugs.email && (
                   <span>
                     , you might also want contact{' '}
-                    <Link
-                      href={
-                        'mailto:' + String(this.props.activePlugin?.bugs?.email)
-                      }>
-                      {this.props.activePlugin?.bugs?.email}
+                    <Link href={'mailto:' + String(activePlugin.bugs.email)}>
+                      {activePlugin.bugs.email}
                     </Link>
                     , the author/oncall of this plugin, directly
                   </span>
@@ -297,8 +305,7 @@ class BugReporterDialog extends Component<Props, State> {
   }
 }
 
-// $FlowFixMe
-export default connect(
+export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
   ({
     plugins: {devicePlugins, clientPlugins},
     connections: {selectedPlugin},

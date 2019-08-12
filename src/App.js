@@ -11,7 +11,7 @@ import {connect} from 'react-redux';
 import WelcomeScreen from './chrome/WelcomeScreen.tsx';
 import TitleBar from './chrome/TitleBar.tsx';
 import MainSidebar from './chrome/MainSidebar.js';
-import BugReporterDialog from './chrome/BugReporterDialog.js';
+import BugReporterDialog from './chrome/BugReporterDialog.tsx';
 import ErrorBar from './chrome/ErrorBar.tsx';
 import ShareSheet from './chrome/ShareSheet.js';
 import SignInSheet from './chrome/SignInSheet.js';
