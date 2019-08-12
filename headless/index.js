@@ -21,7 +21,7 @@ import {listDevices} from '../src/utils/listDevices';
 // $FlowFixMe this file exist, trust me, flow!
 import setup from '../static/setup.js';
 import type {Store} from '../src/reducers/index.tsx';
-import {getPersistentPlugins} from '../src/utils/pluginUtils.js';
+import {getPersistentPlugins} from '../src/utils/pluginUtils.tsx';
 import {serialize} from '../src/utils/serialization';
 import type BaseDevice from '../src/devices/BaseDevice.tsx';
 
@@ -312,7 +312,6 @@ async function startFlipper(userArguments: UserArguments) {
           if (matchedDevice) {
             if (matchedDevice.constructor.name === 'AndroidDevice') {
               const ports = store.getState().application.serverPorts;
-              //$FlowFixMe: Checked the class name before calling reverse.
               matchedDevice.reverse([ports.secure, ports.insecure]);
             }
             store.dispatch({

@@ -8,7 +8,7 @@ import type {Store} from '../reducers/index.tsx';
 import {FlipperPlugin, FlipperDevicePlugin} from '../plugin.tsx';
 import {setPluginState} from '../reducers/pluginStates.tsx';
 import type BaseDevice from '../devices/BaseDevice.tsx';
-import {getPersistedState} from '../utils/pluginUtils.js';
+import {getPersistedState} from '../utils/pluginUtils.tsx';
 
 export function registerDeviceCallbackOnPlugins(
   store: Store,

@@ -4,16 +4,16 @@
  * LICENSE file in the root directory of this source tree.
  * @format
  */
-import {FlipperDevicePlugin, FlipperPlugin} from '../plugin.tsx';
-import type {State as PluginStatesState} from '../reducers/pluginStates.tsx';
-import type BaseDevice from '../devices/BaseDevice.tsx';
+import {FlipperDevicePlugin, FlipperPlugin} from '../plugin';
+import BaseDevice from '../devices/BaseDevice';
+import {State as PluginStatesState} from '../reducers/pluginStates';
 import {pluginsClassMap} from './exportData.js';
-import type {State as PluginsState} from '../reducers/plugins.tsx';
-import type {PluginDefinition} from '../dispatcher/plugins.tsx';
+import {State as PluginsState} from '../reducers/plugins';
+import {PluginDefinition} from '../dispatcher/plugins';
 
 export function getPluginKey(
-  selectedApp: ?string,
-  baseDevice: ?BaseDevice,
+  selectedApp: string | null,
+  baseDevice: BaseDevice | null,
   pluginID: string,
 ): string {
   if (selectedApp) {
@@ -28,12 +28,9 @@ export function getPluginKey(
 
 export function getPersistedState<PersistedState>(
   pluginKey: string,
-  persistingPlugin: ?Class<
-    | FlipperPlugin<*, *, PersistedState>
-    | FlipperDevicePlugin<*, *, PersistedState>,
-  >,
+  persistingPlugin: typeof FlipperPlugin | typeof FlipperDevicePlugin | null,
   pluginStates: PluginStatesState,
-): ?PersistedState {
+): PersistedState | null {
   if (!persistingPlugin) {
     return null;
   }
@@ -51,7 +48,7 @@ export function getActivePersistentPlugins(
 ): Array<string> {
   const pluginsMap: Map<
     string,
-    Class<FlipperDevicePlugin<> | FlipperPlugin<>>,
+    typeof FlipperDevicePlugin | typeof FlipperPlugin
   > = pluginsClassMap(plugins);
   return getPersistentPlugins(plugins).filter(plugin => {
     const pluginClass = pluginsMap.get(plugin);
@@ -67,7 +64,7 @@ export function getActivePersistentPlugins(
 export function getPersistentPlugins(plugins: PluginsState): Array<string> {
   const pluginsMap: Map<
     string,
-    Class<FlipperDevicePlugin<> | FlipperPlugin<>>,
+    typeof FlipperDevicePlugin | typeof FlipperPlugin
   > = pluginsClassMap(plugins);
 
   const arr: Array<PluginDefinition> = plugins.disabledPlugins.concat(

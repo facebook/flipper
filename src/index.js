@@ -24,7 +24,7 @@ export {clipboard} from 'electron';
 export {default as constants} from './fb-stubs/constants.tsx';
 export {connect} from 'react-redux';
 export {selectPlugin} from './reducers/connections.tsx';
-export {getPluginKey, getPersistedState} from './utils/pluginUtils.js';
+export {getPluginKey, getPersistedState} from './utils/pluginUtils.tsx';
 export type {Store, MiddlewareAPI} from './reducers/index.tsx';
 export {default as BaseDevice} from './devices/BaseDevice.tsx';
 

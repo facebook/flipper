@@ -11,7 +11,7 @@ import type {State as PluginState} from '../reducers/plugins.tsx';
 import type {State as PluginStatesState} from '../reducers/pluginStates.tsx';
 import type {ActiveSheet} from '../reducers/application.tsx';
 import {selectedPlugins as actionForSelectedPlugins} from '../reducers/plugins.tsx';
-import {getActivePersistentPlugins} from '../utils/pluginUtils';
+import {getActivePersistentPlugins} from '../utils/pluginUtils.tsx';
 import {
   ACTIVE_SHEET_SHARE_DATA,
   setActiveSheet as getActiveSheetAction,
