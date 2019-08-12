@@ -5,17 +5,16 @@
  * @format
  */
 
-import {FlipperBasePlugin} from '../plugin.tsx';
-import config from '../fb-stubs/config.tsx';
-import type BaseDevice from '../devices/BaseDevice.tsx';
-import type Client from '../Client.tsx';
-import type {UninitializedClient} from '../UninitializedClient.tsx';
-import type {PluginNotification} from '../reducers/notifications.tsx';
-import type {ActiveSheet} from '../reducers/application.tsx';
+import config from '../fb-stubs/config';
+import BaseDevice from '../devices/BaseDevice';
+import Client from '../Client';
+import {UninitializedClient} from '../UninitializedClient';
+import {FlipperBasePlugin} from '../plugin';
+import {PluginNotification} from '../reducers/notifications';
+import {ActiveSheet} from '../reducers/application';
+import {State as Store} from '../reducers';
 
 import {
-  PureComponent,
-  Component,
   Sidebar,
   FlexBox,
   colors,
@@ -29,11 +28,11 @@ import {
   FlipperDevicePlugin,
   LoadingIndicator,
 } from 'flipper';
-import React from 'react';
+import React, {Component, PureComponent} from 'react';
 import NotificationsHub from '../NotificationsHub.js';
-import {selectPlugin} from '../reducers/connections.tsx';
-import {setActiveSheet} from '../reducers/application.tsx';
-import UserAccount from './UserAccount.tsx';
+import {selectPlugin} from '../reducers/connections';
+import {setActiveSheet} from '../reducers/application';
+import UserAccount from './UserAccount';
 import {connect} from 'react-redux';
 
 const ListItem = styled('div')(({active}) => ({
@@ -123,10 +122,10 @@ function PluginIcon({
   name,
   color,
 }: {
-  isActive: boolean,
-  backgroundColor?: string,
-  name: string,
-  color: string,
+  isActive: boolean;
+  backgroundColor?: string;
+  name: string;
+  color: string;
 }) {
   return (
     <PluginShape backgroundColor={backgroundColor}>
@@ -136,10 +135,10 @@ function PluginIcon({
 }
 
 class PluginSidebarListItem extends Component<{
-  onClick: () => void,
-  isActive: boolean,
-  plugin: Class<FlipperBasePlugin<>>,
-  app?: ?string,
+  onClick: () => void;
+  isActive: boolean;
+  plugin: typeof FlipperBasePlugin;
+  app?: string | null | undefined;
 }> {
   render() {
     const {isActive, plugin} = this.props;
@@ -189,29 +188,36 @@ function centerInSidebar(component) {
   });
 }
 
-type MainSidebarProps = {|
-  selectedPlugin: ?string,
-  selectedApp: ?string,
-  selectedDevice: ?BaseDevice,
-  windowIsFocused: boolean,
-  selectPlugin: (payload: {|
-    selectedPlugin: ?string,
-    selectedApp: ?string,
-    deepLinkPayload: ?string,
-  |}) => void,
-  clients: Array<Client>,
-  uninitializedClients: Array<{
-    client: UninitializedClient,
-    deviceId?: string,
-    errorMessage?: string,
-  }>,
-  numNotifications: number,
-  devicePlugins: Map<string, Class<FlipperDevicePlugin<>>>,
-  clientPlugins: Map<string, Class<FlipperPlugin<>>>,
-  setActiveSheet: (activeSheet: ActiveSheet) => void,
-|};
+type OwnProps = {};
 
-class MainSidebar extends PureComponent<MainSidebarProps> {
+type StateFromProps = {
+  numNotifications: number;
+  windowIsFocused: boolean;
+  selectedDevice: BaseDevice | null | undefined;
+  selectedPlugin: string | null | undefined;
+  selectedApp: string | null | undefined;
+  clients: Array<Client>;
+  uninitializedClients: Array<{
+    client: UninitializedClient;
+    deviceId?: string;
+    errorMessage?: string;
+  }>;
+  devicePlugins: Map<string, typeof FlipperDevicePlugin>;
+  clientPlugins: Map<string, typeof FlipperPlugin>;
+};
+
+type DispatchFromProps = {
+  selectPlugin: (payload: {
+    selectedPlugin: string | null | undefined;
+    selectedApp: string | null | undefined;
+    deepLinkPayload: string | null | undefined;
+  }) => void;
+
+  setActiveSheet: (activeSheet: ActiveSheet) => void;
+};
+
+type Props = OwnProps & StateFromProps & DispatchFromProps;
+class MainSidebar extends PureComponent<Props> {
   render() {
     const {
       selectedDevice,
@@ -273,7 +279,7 @@ class MainSidebar extends PureComponent<MainSidebarProps> {
             Array.from(this.props.devicePlugins.values())
               .filter(plugin => plugin.supportsDevice(selectedDevice))
               .sort(byPluginNameOrId)
-              .map((plugin: Class<FlipperDevicePlugin<>>) => (
+              .map((plugin: typeof FlipperDevicePlugin) => (
                 <PluginSidebarListItem
                   key={plugin.id}
                   isActive={plugin.id === selectedPlugin}
@@ -301,11 +307,11 @@ class MainSidebar extends PureComponent<MainSidebarProps> {
                 <SidebarHeader>{client.query.app}</SidebarHeader>
                 {Array.from(this.props.clientPlugins.values())
                   .filter(
-                    (p: Class<FlipperPlugin<>>) =>
+                    (p: typeof FlipperDevicePlugin) =>
                       client.plugins.indexOf(p.id) > -1,
                   )
                   .sort(byPluginNameOrId)
-                  .map((plugin: Class<FlipperPlugin<>>) => (
+                  .map((plugin: typeof FlipperDevicePlugin) => (
                     <PluginSidebarListItem
                       key={plugin.id}
                       isActive={
@@ -352,7 +358,7 @@ class MainSidebar extends PureComponent<MainSidebarProps> {
   }
 }
 
-export default connect<MainSidebarProps, {||}, _, _, _, _>(
+export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
   ({
     application: {windowIsFocused},
     connections: {
