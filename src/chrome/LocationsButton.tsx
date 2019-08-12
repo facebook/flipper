@@ -5,25 +5,29 @@
  * @format
  */
 
-import {Button, Component, styled} from 'flipper';
+import {Button, styled} from 'flipper';
 import {connect} from 'react-redux';
+import React, {Component} from 'react';
+import {State} from '../reducers';
 
-import type BaseDevice from '../devices/BaseDevice.tsx';
+import BaseDevice from '../devices/BaseDevice';
 
-type OwnProps = {|
-  locations: Array<string>,
-  selectedLocation?: string,
-|};
+type OwnProps = {
+  locations: Array<string>;
+  selectedLocation?: string;
+};
 
-type Props = {|
-  ...OwnProps,
-  selectedDevice?: BaseDevice,
-|};
+type StateFromProps = {
+  selectedDevice: BaseDevice | null | undefined;
+};
+
+type DispatchFromProps = {};
 
 const DropdownButton = styled(Button)({
   fontSize: 11,
 });
 
+type Props = OwnProps & StateFromProps & DispatchFromProps;
 class LocationsButton extends Component<Props> {
   goToLocation = (location: string) => {
     const {selectedDevice} = this.props;
@@ -51,7 +55,7 @@ class LocationsButton extends Component<Props> {
   }
 }
 
-export default connect<Props, OwnProps, _, _, _, _>(
+export default connect<StateFromProps, DispatchFromProps, OwnProps, State>(
   ({connections: {selectedDevice}}) => ({
     selectedDevice,
   }),
