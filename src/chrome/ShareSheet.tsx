@@ -148,13 +148,15 @@ export default class ShareSheet extends Component<Props, State> {
       }
       this.props.logger.trackTimeSince(mark, 'export:url-success');
     } catch (e) {
-      const str = e instanceof Error ? e.toString() : e;
-      this.setState({
-        result: {
-          error_class: 'EXPORT_ERROR',
-          error: str,
-        },
-      });
+      if (!this.state.runInBackground) {
+        const str = e instanceof Error ? e.toString() : e;
+        this.setState({
+          result: {
+            error_class: 'EXPORT_ERROR',
+            error: str,
+          },
+        });
+      }
       this.props.logger.trackTimeSince(mark, 'export:url-error');
     }
   }

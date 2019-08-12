@@ -140,7 +140,9 @@ export default class ShareSheetExportFile extends Component<Props, State> {
       this.setState({errorArray, result: {success: true, error: null}});
       this.props.logger.trackTimeSince(mark, 'export:file-success');
     } catch (err) {
-      this.setState({errorArray: [], result: {success: false, error: err}});
+      if (!this.state.runInBackground) {
+        this.setState({errorArray: [], result: {success: false, error: err}});
+      }
       this.props.logger.trackTimeSince(mark, 'export:file-error');
     }
   }
