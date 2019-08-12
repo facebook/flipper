@@ -6,7 +6,7 @@
  * @flow strict-local
  */
 
-import {styled} from 'flipper';
+import {colors, FlexCenter, styled} from 'flipper';
 import {NavigationInfoBox} from './';
 
 import type {Bookmark, NavigationEvent} from '../flow-types';
@@ -23,13 +23,23 @@ const TimelineContainer = styled('div')({
   flexGrow: 1,
 });
 
+const NoData = styled(FlexCenter)({
+  height: '100%',
+  fontSize: 18,
+  backgroundColor: colors.macOSTitleBarBackgroundBlur,
+  color: colors.macOSTitleBarIcon,
+});
+
 export default (props: Props) => {
   const {bookmarks, events, onNavigate, onFavorite} = props;
-  return (
+  return events.length === 0 ? (
+    <NoData>No Navigation Events to Show</NoData>
+  ) : (
     <TimelineContainer>
-      {events.map((event: NavigationEvent) => {
+      {events.map((event: NavigationEvent, idx) => {
         return (
           <NavigationInfoBox
+            key={idx}
             isBookmarked={event.uri != null ? bookmarks.has(event.uri) : false}
             uri={event.uri}
             onNavigate={onNavigate}
