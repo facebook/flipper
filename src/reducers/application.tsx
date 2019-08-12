@@ -7,7 +7,8 @@
 
 import {remote} from 'electron';
 import uuidv1 from 'uuid/v1';
-
+import {ReactElement} from 'react';
+import CancellableExportStatus from '../chrome/CancellableExportStatus';
 export const ACTIVE_SHEET_PLUGIN_SHEET: 'PLUGIN_SHEET' = 'PLUGIN_SHEET';
 export const ACTIVE_SHEET_BUG_REPORTER: 'BUG_REPORTER' = 'BUG_REPORTER';
 export const ACTIVE_SHEET_PLUGIN_DEBUGGER: 'PLUGIN_DEBUGGER' =
@@ -214,6 +215,17 @@ export const toggleAction = (
   payload?: boolean,
 ): Action => ({
   type,
+  payload,
+});
+
+export const unsetShare = (): Action => ({
+  type: UNSET_SHARE,
+});
+
+export const setExportStatusComponent = (
+  payload: ReactElement<typeof CancellableExportStatus>,
+): Action => ({
+  type: SET_EXPORT_STATUS_MESSAGE,
   payload,
 });
 
