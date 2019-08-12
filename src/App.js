@@ -15,7 +15,7 @@ import BugReporterDialog from './chrome/BugReporterDialog.tsx';
 import ErrorBar from './chrome/ErrorBar.tsx';
 import ShareSheet from './chrome/ShareSheet.js';
 import SignInSheet from './chrome/SignInSheet.js';
-import ExportDataPluginSheet from './chrome/ExportDataPluginSheet.js';
+import ExportDataPluginSheet from './chrome/ExportDataPluginSheet.tsx';
 import ShareSheetExportFile from './chrome/ShareSheetExportFile.js';
 import PluginContainer from './PluginContainer.js';
 import Sheet from './chrome/Sheet.js';

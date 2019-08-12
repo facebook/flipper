@@ -5,35 +5,40 @@
  * @format
  */
 
-import {Component, connect} from 'flipper';
-import type {ShareType} from '../reducers/application.tsx';
-import type {State as PluginState} from '../reducers/plugins.tsx';
-import type {State as PluginStatesState} from '../reducers/pluginStates.tsx';
-import type {ActiveSheet} from '../reducers/application.tsx';
-import {selectedPlugins as actionForSelectedPlugins} from '../reducers/plugins.tsx';
-import {getActivePersistentPlugins} from '../utils/pluginUtils.tsx';
+import {connect} from 'react-redux';
+import React, {Component} from 'react';
+import {ShareType} from '../reducers/application';
+import {State as PluginState} from '../reducers/plugins';
+import {State as PluginStatesState} from '../reducers/pluginStates';
+import {State as Store} from '../reducers';
+import {ActiveSheet} from '../reducers/application';
+import {selectedPlugins as actionForSelectedPlugins} from '../reducers/plugins';
+import {getActivePersistentPlugins} from '../utils/pluginUtils';
 import {
   ACTIVE_SHEET_SHARE_DATA,
   setActiveSheet as getActiveSheetAction,
   setExportDataToFileActiveSheet as getExportDataToFileActiveSheetAction,
-} from '../reducers/application.tsx';
+} from '../reducers/application';
 import SelectPluginSheet from './SelectPluginSheet';
 
-type OwnProps = {|
-  onHide: () => mixed,
-|};
+type OwnProps = {
+  onHide: () => any;
+};
 
-type Props = {|
-  ...OwnProps,
-  share: ShareType,
-  plugins: PluginState,
-  pluginStates: PluginStatesState,
-  selectedPlugins: (payload: Array<string>) => void,
-  setActiveSheet: (payload: ActiveSheet) => void,
-  setExportDataToFileActiveSheet: (payload: string) => void,
-|};
+type StateFromProps = {
+  share: ShareType;
+  plugins: PluginState;
+  pluginStates: PluginStatesState;
+};
 
-class ExportDataPluginSheet extends Component<Props, *> {
+type DispatchFromProps = {
+  selectedPlugins: (payload: Array<string>) => void;
+  setActiveSheet: (payload: ActiveSheet) => void;
+  setExportDataToFileActiveSheet: (payload: string) => void;
+};
+
+type Props = OwnProps & StateFromProps & DispatchFromProps;
+class ExportDataPluginSheet extends Component<Props> {
   render() {
     const {plugins, pluginStates, onHide} = this.props;
     return (
@@ -79,9 +84,9 @@ class ExportDataPluginSheet extends Component<Props, *> {
   }
 }
 
-export default connect<Props, OwnProps, _, _, _, _>(
+export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
   ({application: {share}, plugins, pluginStates}) => ({
-    share: share,
+    share,
     plugins,
     pluginStates,
   }),
