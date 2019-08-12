@@ -9,7 +9,7 @@ import {exists, mkdir} from 'fs';
 import {promisify} from 'util';
 import {crashReporter, remote} from 'electron';
 import isProduction from '../utils/isProduction.js';
-import constants from '../fb-stubs/constants.tsx';
+import constants from '../fb-stubs/constants';
 import {tmpName} from 'tmp';
 import {resolve} from 'path';
 
