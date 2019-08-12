@@ -5,18 +5,18 @@
  * @format
  */
 
-import {Component, type Element, Fragment} from 'react';
+import React, {Component, Fragment} from 'react';
 import {Glyph, Tooltip} from 'flipper';
-import {getInstance as getLogger} from '../fb-stubs/Logger.tsx';
-import GK from '../fb-stubs/GK.tsx';
+import {getInstance as getLogger} from '../fb-stubs/Logger';
+import GK from '../fb-stubs/GK';
 
 type Props = {
-  rating: ?number,
-  onRatingChanged: number => void,
+  rating: number | null | undefined;
+  onRatingChanged: (rating: number) => void;
 };
 
 type State = {
-  hoveredRating: ?number,
+  hoveredRating: number | null | undefined;
 };
 
 export default class RatingButton extends Component<Props, State> {
@@ -46,7 +46,7 @@ export default class RatingButton extends Component<Props, State> {
     }
     const stars = Array(5)
       .fill(true)
-      .map<Element<*>>((_, index) => (
+      .map<JSX.Element>((_, index) => (
         <div
           key={index}
           role="button"

@@ -26,7 +26,7 @@ import {
   LoadingIndicator,
 } from 'flipper';
 import {connect} from 'react-redux';
-import RatingButton from './RatingButton.js';
+import RatingButton from './RatingButton';
 import DevicesButton from './DevicesButton';
 import ScreenCaptureButtons from './ScreenCaptureButtons.js';
 import AutoUpdateVersion from './AutoUpdateVersion';
