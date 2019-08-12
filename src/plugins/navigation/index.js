@@ -13,6 +13,7 @@ import {
   SearchBar,
   Timeline,
   ScrollableFlexColumn,
+  RequiredParametersDialog,
 } from './components';
 import {
   removeBookmark,
@@ -25,6 +26,7 @@ import {
   DefaultProvider,
 } from './util/autoCompleteProvider';
 import {getAppMatchPatterns} from './util/appMatchPatterns';
+import {getRequiredParameters} from './util/uri';
 
 import type {
   State,
@@ -50,6 +52,9 @@ export default class extends FlipperPlugin<State, {}, PersistedState> {
   state = {
     shouldShowSaveBookmarkDialog: false,
     saveBookmarkURI: null,
+    shouldShowURIErrorDialog: false,
+    currentURI: '',
+    requiredParameters: [],
   };
 
   static persistedStateReducer = (
@@ -105,9 +110,18 @@ export default class extends FlipperPlugin<State, {}, PersistedState> {
   };
 
   navigateTo = (query: string) => {
-    this.getDevice().then(device => {
-      device.navigateToLocation(query);
-    });
+    this.setState({currentURI: query});
+    const requiredParameters = getRequiredParameters(query);
+    if (requiredParameters.length === 0) {
+      this.getDevice().then(device => {
+        device.navigateToLocation(query);
+      });
+    } else {
+      this.setState({
+        requiredParameters,
+        shouldShowURIErrorDialog: true,
+      });
+    }
   };
 
   onFavorite = (uri: string) => {
@@ -141,7 +155,13 @@ export default class extends FlipperPlugin<State, {}, PersistedState> {
   };
 
   render() {
-    const {saveBookmarkURI, shouldShowSaveBookmarkDialog} = this.state;
+    const {
+      currentURI,
+      saveBookmarkURI,
+      shouldShowSaveBookmarkDialog,
+      shouldShowURIErrorDialog,
+      requiredParameters,
+    } = this.state;
     const {
       bookmarks,
       bookmarksProvider,
@@ -156,6 +176,7 @@ export default class extends FlipperPlugin<State, {}, PersistedState> {
           bookmarks={bookmarks}
           onNavigate={this.navigateTo}
           onFavorite={this.onFavorite}
+          uriFromAbove={currentURI}
         />
         <Timeline
           bookmarks={bookmarks}
@@ -173,6 +194,13 @@ export default class extends FlipperPlugin<State, {}, PersistedState> {
           }
           onSubmit={this.addBookmark}
           onRemove={this.removeBookmark}
+        />
+        <RequiredParametersDialog
+          shouldShow={shouldShowURIErrorDialog}
+          onHide={() => this.setState({shouldShowURIErrorDialog: false})}
+          uri={currentURI}
+          requiredParameters={requiredParameters}
+          onSubmit={this.navigateTo}
         />
       </ScrollableFlexColumn>
     );

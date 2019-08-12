@@ -23,3 +23,38 @@ export const parseURIParameters: string => Map<string, string> = (
   }
   return parametersMap;
 };
+
+export const parameterIsNumberType = (parameter: string) => {
+  const regExp = /^{(#|\?#)/g;
+  return regExp.test(parameter);
+};
+
+export const replaceRequiredParametersWithValues = (
+  uri: string,
+  values: Array<string>,
+) => {
+  const parameterRegExp = /{[^?]*?}/g;
+  const replaceRegExp = /{[^?]*?}/;
+  let newURI = uri;
+  let index = 0;
+  let match = parameterRegExp.exec(uri);
+  while (match != null) {
+    newURI = newURI.replace(replaceRegExp, values[index]);
+    match = parameterRegExp.exec(uri);
+    index++;
+  }
+  return newURI;
+};
+
+export const getRequiredParameters = (uri: string) => {
+  const parameterRegExp = /{[^?]*?}/g;
+  const matches: Array<string> = [];
+  let match = parameterRegExp.exec(uri);
+  while (match != null) {
+    if (match[0]) {
+      matches.push(match[0]);
+    }
+    match = parameterRegExp.exec(uri);
+  }
+  return matches;
+};
