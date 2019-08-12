@@ -5,10 +5,11 @@
  * @format
  */
 
-import {Button, ButtonGroup, Component} from 'flipper';
+import {Button, ButtonGroup} from 'flipper';
+import React, {Component} from 'react';
 import {connect} from 'react-redux';
-import AndroidDevice from '../devices/AndroidDevice.tsx';
-import IOSDevice from '../devices/IOSDevice.tsx';
+import AndroidDevice from '../devices/AndroidDevice';
+import IOSDevice from '../devices/IOSDevice';
 import expandTilde from 'expand-tilde';
 import fs from 'fs';
 import os from 'os';
@@ -17,8 +18,9 @@ import {exec, spawn} from 'child_process';
 import {remote} from 'electron';
 import path from 'path';
 import {reportPlatformFailures} from '../utils/metrics';
-import config from '../utils/processConfig.tsx';
-import type BaseDevice from '../devices/BaseDevice.tsx';
+import config from '../utils/processConfig';
+import BaseDevice from '../devices/BaseDevice';
+import {State as Store} from '../reducers';
 
 const CAPTURE_LOCATION = expandTilde(
   config().screenCapturePath || remote.app.getPath('desktop'),
@@ -26,20 +28,29 @@ const CAPTURE_LOCATION = expandTilde(
 
 type PullTransfer = any;
 
-type Props = {|
-  selectedDevice: ?BaseDevice,
-|};
+type OwnProps = {};
 
-type State = {|
-  pullingData: boolean,
-  recording: boolean,
-  recordingEnabled: boolean,
-  capturingScreenshot: boolean,
-|};
+type StateFromProps = {
+  selectedDevice:
+    | BaseDevice
+    | typeof AndroidDevice
+    | typeof IOSDevice
+    | null
+    | undefined;
+};
+
+type DispatchFromProps = {};
+
+type State = {
+  pullingData: boolean;
+  recording: boolean;
+  recordingEnabled: boolean;
+  capturingScreenshot: boolean;
+};
 
 function openFile(path: string) {
   const child = spawn(getOpenCommand(), [path]);
-  child.on('exit', (code, signal) => {
+  child.on('exit', code => {
     if (code != 0) {
       console.error(`${getOpenCommand()} failed with exit code ${code}`);
     }
@@ -73,9 +84,10 @@ function writePngStreamToFile(stream: PullTransfer): Promise<string> {
   });
 }
 
+type Props = OwnProps & StateFromProps & DispatchFromProps;
 class ScreenCaptureButtons extends Component<Props, State> {
-  iOSRecorder: ?any;
-  videoPath: ?string;
+  iOSRecorder: any | null | undefined;
+  videoPath: string | null | undefined;
 
   state = {
     pullingData: false,
@@ -118,7 +130,7 @@ class ScreenCaptureButtons extends Component<Props, State> {
     }
   };
 
-  captureScreenshot = (): ?Promise<void> => {
+  captureScreenshot: Promise<void> | any = () => {
     const {selectedDevice} = this.props;
 
     if (selectedDevice instanceof AndroidDevice) {
@@ -135,7 +147,7 @@ class ScreenCaptureButtons extends Component<Props, State> {
         new Promise((resolve, reject) => {
           exec(
             `xcrun simctl io booted screenshot "${screenshotPath}"`,
-            async (err, data) => {
+            async err => {
               if (err) {
                 reject(err);
               } else {
@@ -298,7 +310,7 @@ class ScreenCaptureButtons extends Component<Props, State> {
   }
 }
 
-export default connect<Props, {||}, _, _, _, _>(
+export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
   ({connections: {selectedDevice}}) => ({
     selectedDevice,
   }),

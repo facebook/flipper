@@ -28,7 +28,7 @@ import {
 import {connect} from 'react-redux';
 import RatingButton from './RatingButton';
 import DevicesButton from './DevicesButton';
-import ScreenCaptureButtons from './ScreenCaptureButtons.js';
+import ScreenCaptureButtons from './ScreenCaptureButtons';
 import AutoUpdateVersion from './AutoUpdateVersion';
 import UpdateIndicator from './UpdateIndicator';
 import config from '../fb-stubs/config';
