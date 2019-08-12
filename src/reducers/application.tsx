@@ -267,12 +267,3 @@ export const setFlipperRating = (rating: number): Action => ({
     rating,
   },
 });
-
-export const unsetShare = (): Action => ({
-  type: UNSET_SHARE,
-});
-
-export const setExportStatusComponent = (payload: JSX.Element): Action => ({
-  type: SET_EXPORT_STATUS_MESSAGE,
-  payload,
-});
