@@ -18,7 +18,7 @@ import SignInSheet from './chrome/SignInSheet.tsx';
 import ExportDataPluginSheet from './chrome/ExportDataPluginSheet.tsx';
 import ShareSheetExportFile from './chrome/ShareSheetExportFile.tsx';
 import PluginContainer from './PluginContainer.js';
-import Sheet from './chrome/Sheet.js';
+import Sheet from './chrome/Sheet.tsx';
 import {ipcRenderer, remote} from 'electron';
 import PluginDebugger from './chrome/PluginDebugger.tsx';
 import {

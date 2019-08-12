@@ -5,15 +5,16 @@
  * @format
  */
 
-import {Component} from 'react';
+import React, {Component} from 'react';
 import {Transition} from 'react-transition-group';
-import {setActiveSheet} from '../reducers/application.tsx';
+import {setActiveSheet} from '../reducers/application';
 import {connect} from 'react-redux';
 import {styled} from 'flipper';
 import {PLUGIN_SHEET_ELEMENT_ID} from '../ui/components/Sheet';
-import {ACTIVE_SHEET_PLUGIN_SHEET} from '../reducers/application.tsx';
+import {ACTIVE_SHEET_PLUGIN_SHEET} from '../reducers/application';
+import {State as Store} from '../reducers';
 
-import type {ActiveSheet} from '../reducers/application.tsx';
+import {ActiveSheet} from '../reducers/application';
 
 const DialogContainer = styled('div')(({state}) => ({
   transform: `translate(-50%, ${
@@ -35,26 +36,29 @@ const DialogContainer = styled('div')(({state}) => ({
   boxShadow: '0 5px 13px rgba(0, 0, 0, 0.2)',
 }));
 
-type OwnProps = {|
-  children: (onHide: () => mixed) => any,
-|};
+type OwnProps = {
+  children: (onHide: () => any) => any;
+};
 
-type Props = {|
-  ...OwnProps,
-  activeSheet: ActiveSheet,
-  onHideSheet: () => void,
-|};
+type StateFromProps = {
+  activeSheet: ActiveSheet;
+};
 
-type State = {|
-  isVisible: boolean,
-|};
+type DispatchFromProps = {
+  onHideSheet: () => void;
+};
 
+type State = {
+  isVisible: boolean;
+};
+
+type Props = OwnProps & StateFromProps & DispatchFromProps;
 class Sheet extends Component<Props, State> {
   state = {
     isVisible: Boolean(this.props.activeSheet),
   };
 
-  static getDerivedStateFromProps(props: Props, state: State) {
+  static getDerivedStateFromProps(props: Props) {
     if (!props.activeSheet) {
       return {
         isVisible: true,
@@ -110,7 +114,7 @@ class Sheet extends Component<Props, State> {
   }
 }
 
-export default connect<Props, OwnProps, _, _, _, _>(
+export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
   ({application: {activeSheet}}) => ({
     activeSheet,
   }),
