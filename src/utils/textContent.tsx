@@ -5,7 +5,7 @@
  * @format
  */
 
-import type {Node} from 'react';
+import {ReactNode, ReactElement} from 'react';
 
 function isReactElement(object: any) {
   return (
@@ -19,9 +19,9 @@ function isReactElement(object: any) {
  * Recursively walks through all children of a React element and returns
  * the string representation of the leafs concatenated.
  */
-export default (node: Node): string => {
+export default (node: ReactNode): string => {
   let res = '';
-  const traverse = (node: Node) => {
+  const traverse = (node: ReactNode) => {
     if (typeof node === 'string' || typeof node === 'number') {
       // this is a leaf, add it to the result string
       res += node;
@@ -30,8 +30,7 @@ export default (node: Node): string => {
       node.forEach(traverse);
     } else if (isReactElement(node)) {
       // node is a react element access its children an recursively stringify them
-      // $FlowFixMe
-      const {children} = node.props;
+      const {children} = (node as ReactElement).props;
       if (Array.isArray(children)) {
         children.forEach(traverse);
       } else {

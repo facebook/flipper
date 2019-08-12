@@ -17,7 +17,7 @@ import Button from './ui/components/Button';
 import DetailSidebar from './chrome/DetailSidebar';
 import {FlipperPlugin} from './plugin.tsx';
 import SearchableTable_immutable from './ui/components/searchable/SearchableTable_immutable';
-import textContent from './utils/textContent.js';
+import textContent from './utils/textContent.tsx';
 import createPaste from './fb-stubs/createPaste.tsx';
 
 import {List, Map as ImmutableMap} from 'immutable';

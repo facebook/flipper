@@ -10,7 +10,7 @@ import type {SearchableProps} from './Searchable.js';
 import {PureComponent} from 'react';
 import ManagedTable_immutable from '../table/ManagedTable_immutable.js';
 
-import textContent from '../../../utils/textContent.js';
+import textContent from '../../../utils/textContent.tsx';
 import Searchable from './Searchable.js';
 import deepEqual from 'deep-equal';
 
