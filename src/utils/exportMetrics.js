@@ -9,8 +9,8 @@ import {serialize} from './serialization';
 import type {State as PluginStatesState} from '../reducers/pluginStates.tsx';
 import type {Store} from '../reducers/index.tsx';
 import fs from 'fs';
-import type {ExportType} from './exportData';
-import {fetchMetadata, pluginsClassMap} from './exportData';
+import type {ExportType} from './exportData.tsx';
+import {fetchMetadata, pluginsClassMap} from './exportData.tsx';
 import {deserializeObject} from './serialization';
 
 export type MetricType = {[metricName: string]: number};

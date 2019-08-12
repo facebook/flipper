@@ -28,7 +28,7 @@ import {Idler} from '../utils/Idler';
 import {
   exportStoreToFile,
   EXPORT_FLIPPER_TRACE_EVENT,
-} from '../utils/exportData.js';
+} from '../utils/exportData.tsx';
 import PropTypes from 'prop-types';
 import ShareSheetErrorList from './ShareSheetErrorList.js';
 

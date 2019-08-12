@@ -7,7 +7,7 @@
 
 import {default as BaseDevice} from '../../devices/BaseDevice.tsx';
 import {default as ArchivedDevice} from '../../devices/ArchivedDevice.tsx';
-import {processStore} from '../exportData';
+import {processStore} from '../exportData.tsx';
 import {FlipperDevicePlugin} from '../../plugin.tsx';
 import type {Notification} from '../../plugin.tsx';
 import type {ClientExport} from '../../Client.tsx';

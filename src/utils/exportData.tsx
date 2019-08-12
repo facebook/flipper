@@ -4,18 +4,18 @@
  * LICENSE file in the root directory of this source tree.
  * @format
  */
-import type {Store, MiddlewareAPI} from '../reducers.tsx';
-import {getInstance as getLogger} from '../fb-stubs/Logger.tsx';
-import type {DeviceExport} from '../devices/BaseDevice.tsx';
-import type {State as PluginStates} from '../reducers/pluginStates.tsx';
-import type {PluginNotification} from '../reducers/notifications.tsx';
-import type {ClientExport} from '../Client.tsx';
-import type {State as PluginStatesState} from '../reducers/pluginStates.tsx';
-import {pluginKey} from '../reducers/pluginStates.tsx';
-import {FlipperDevicePlugin, FlipperPlugin, callClient} from '../plugin.tsx';
-import {default as BaseDevice} from '../devices/BaseDevice.tsx';
-import {default as Client} from '../Client.tsx';
-import {default as ArchivedDevice} from '../devices/ArchivedDevice.tsx';
+import {getInstance as getLogger} from '../fb-stubs/Logger';
+import {Store, MiddlewareAPI} from '../reducers';
+import {DeviceExport} from '../devices/BaseDevice';
+import {State as PluginStates} from '../reducers/pluginStates';
+import {PluginNotification} from '../reducers/notifications';
+import {ClientExport} from '../Client.js';
+import {State as PluginStatesState} from '../reducers/pluginStates';
+import {pluginKey} from '../reducers/pluginStates';
+import {FlipperDevicePlugin, FlipperPlugin, callClient} from '../plugin';
+import {default as BaseDevice} from '../devices/BaseDevice';
+import {default as ArchivedDevice} from '../devices/ArchivedDevice';
+import {default as Client} from '../Client';
 import fs from 'fs';
 import uuid from 'uuid';
 import {remote} from 'electron';
@@ -23,47 +23,47 @@ import {serialize, deserialize} from './serialization';
 import {readCurrentRevision} from './packageMetadata.js';
 import {tryCatchReportPlatformFailures} from './metrics';
 import {promisify} from 'util';
-import promiseTimeout from './promiseTimeout.tsx';
+import promiseTimeout from './promiseTimeout';
 import {Idler} from './Idler';
 export const IMPORT_FLIPPER_TRACE_EVENT = 'import-flipper-trace';
 export const EXPORT_FLIPPER_TRACE_EVENT = 'export-flipper-trace';
 
-export type ExportType = {|
-  fileVersion: string,
-  flipperReleaseRevision: ?string,
-  clients: Array<ClientExport>,
-  device: ?DeviceExport,
+export type ExportType = {
+  fileVersion: string;
+  flipperReleaseRevision: string | null;
+  clients: Array<ClientExport>;
+  device: DeviceExport | null;
   store: {
-    pluginStates: PluginStates,
-    activeNotifications: Array<PluginNotification>,
-  },
-|};
+    pluginStates: PluginStates;
+    activeNotifications: Array<PluginNotification>;
+  };
+};
 
-type ProcessPluginStatesOptions = {|
-  clients: Array<ClientExport>,
-  serial: string,
-  allPluginStates: PluginStatesState,
-  devicePlugins: Map<string, Class<FlipperDevicePlugin<>>>,
-  selectedPlugins: Array<string>,
-  statusUpdate?: (msg: string) => void,
-|};
+type ProcessPluginStatesOptions = {
+  clients: Array<ClientExport>;
+  serial: string;
+  allPluginStates: PluginStatesState;
+  devicePlugins: Map<string, typeof FlipperDevicePlugin>;
+  selectedPlugins: Array<string>;
+  statusUpdate?: (msg: string) => void;
+};
 
 type ProcessNotificationStatesOptions = {
-  clients: Array<ClientExport>,
-  serial: string,
-  allActiveNotifications: Array<PluginNotification>,
-  devicePlugins: Map<string, Class<FlipperDevicePlugin<>>>,
-  statusUpdate?: (msg: string) => void,
+  clients: Array<ClientExport>;
+  serial: string;
+  allActiveNotifications: Array<PluginNotification>;
+  devicePlugins: Map<string, typeof FlipperDevicePlugin>;
+  statusUpdate?: (msg: string) => void;
 };
 
 type AddSaltToDeviceSerialOptions = {
-  salt: string,
-  device: BaseDevice,
-  clients: Array<ClientExport>,
-  pluginStates: PluginStatesState,
-  pluginNotification: Array<PluginNotification>,
-  selectedPlugins: Array<string>,
-  statusUpdate?: (msg: string) => void,
+  salt: string;
+  device: BaseDevice;
+  clients: Array<ClientExport>;
+  pluginStates: PluginStatesState;
+  pluginNotification: Array<PluginNotification>;
+  selectedPlugins: Array<string>;
+  statusUpdate?: (msg: string) => void;
 };
 
 export function processClients(
@@ -81,10 +81,10 @@ export function processClients(
 
 export function pluginsClassMap(
   plugins: PluginStates,
-): Map<string, Class<FlipperDevicePlugin<> | FlipperPlugin<>>> {
+): Map<string, typeof FlipperDevicePlugin | typeof FlipperPlugin> {
   const pluginsMap: Map<
     string,
-    Class<FlipperDevicePlugin<> | FlipperPlugin<>>,
+    typeof FlipperDevicePlugin | typeof FlipperPlugin
   > = new Map([]);
   plugins.clientPlugins.forEach((val, key) => {
     pluginsMap.set(key, val);
@@ -216,7 +216,7 @@ const addSaltToDeviceSerial = async (
     }
     return {...notif, client: notif.client.replace(serial, newSerial)};
   });
-  const revision: ?string = await readCurrentRevision();
+  const revision: string | null = await readCurrentRevision();
   return {
     fileVersion: remote.app.getVersion(),
     flipperReleaseRevision: revision,
@@ -229,20 +229,20 @@ const addSaltToDeviceSerial = async (
   };
 };
 
-type ProcessStoreOptions = {|
-  activeNotifications: Array<PluginNotification>,
-  device: ?BaseDevice,
-  pluginStates: PluginStatesState,
-  clients: Array<ClientExport>,
-  devicePlugins: Map<string, Class<FlipperDevicePlugin<>>>,
-  salt: string,
-  selectedPlugins: Array<string>,
-  statusUpdate?: (msg: string) => void,
-|};
+type ProcessStoreOptions = {
+  activeNotifications: Array<PluginNotification>;
+  device: BaseDevice | null;
+  pluginStates: PluginStatesState;
+  clients: Array<ClientExport>;
+  devicePlugins: Map<string, typeof FlipperDevicePlugin>;
+  salt: string;
+  selectedPlugins: Array<string>;
+  statusUpdate?: (msg: string) => void;
+};
 
 export const processStore = async (
   options: ProcessStoreOptions,
-): Promise<?ExportType> => {
+): Promise<ExportType | null> => {
   const {
     activeNotifications,
     device,
@@ -289,10 +289,10 @@ export const processStore = async (
 
 export async function fetchMetadata(
   pluginStates: PluginStatesState,
-  pluginsMap: Map<string, Class<FlipperDevicePlugin<> | FlipperPlugin<>>>,
+  pluginsMap: Map<string, typeof FlipperDevicePlugin | typeof FlipperPlugin>,
   store: MiddlewareAPI,
   statusUpdate?: (msg: string) => void,
-): Promise<{pluginStates: PluginStatesState, errorArray: Array<Error>}> {
+): Promise<{pluginStates: PluginStatesState; errorArray: Array<Error>}> {
   const newPluginState = {...pluginStates};
   const errorArray: Array<Error> = [];
   const clients = store.getState().connections.clients;
@@ -311,9 +311,10 @@ export async function fetchMetadata(
         ? client.plugins.filter(plugin => selectedPlugins.includes(plugin))
         : client.plugins;
     for (const plugin of selectedFilteredPlugins) {
-      const pluginClass: ?Class<
-        FlipperDevicePlugin<> | FlipperPlugin<>,
-      > = plugin ? pluginsMap.get(plugin) : null;
+      const pluginClass:
+        | typeof FlipperDevicePlugin
+        | typeof FlipperPlugin
+        | null = plugin ? pluginsMap.get(plugin) : null;
       const exportState = pluginClass ? pluginClass.exportPersistedState : null;
       if (exportState) {
         const key = pluginKey(client.id, plugin);
@@ -339,7 +340,7 @@ export async function fetchMetadata(
 export async function getStoreExport(
   store: MiddlewareAPI,
   statusUpdate?: (msg: string) => void,
-): Promise<{exportData: ?ExportType, errorArray: Array<Error>}> {
+): Promise<{exportData: ExportType | null; errorArray: Array<Error>}> {
   const state = store.getState();
   const {clients} = state.connections;
   const {pluginStates} = state;
@@ -353,7 +354,7 @@ export async function getStoreExport(
 
   const pluginsMap: Map<
     string,
-    Class<FlipperDevicePlugin<> | FlipperPlugin<>>,
+    typeof FlipperDevicePlugin | typeof FlipperPlugin
   > = new Map([]);
   plugins.clientPlugins.forEach((val, key) => {
     pluginsMap.set(key, val);
@@ -390,7 +391,7 @@ export function exportStore(
   store: MiddlewareAPI,
   idler?: Idler,
   statusUpdate?: (msg: string) => void,
-): Promise<{serializedString: string, errorArray: Array<Error>}> {
+): Promise<{serializedString: string; errorArray: Array<Error>}> {
   getLogger().track('usage', EXPORT_FLIPPER_TRACE_EVENT);
   return new Promise(async (resolve, reject) => {
     try {

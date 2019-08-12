@@ -6,7 +6,7 @@
  */
 
 import type {FlipperPlugin, FlipperDevicePlugin} from './plugin.tsx';
-import {showOpenDialog} from './utils/exportData.js';
+import {showOpenDialog} from './utils/exportData.tsx';
 import {
   setExportDataToFileActiveSheet,
   setActiveSheet,

@@ -12,7 +12,7 @@ import {dirname} from 'path';
 import {selectDevice, preferDevice} from '../reducers/connections.tsx';
 import {default as which} from 'which';
 import {promisify} from 'util';
-import {showOpenDialog} from '../utils/exportData';
+import {showOpenDialog} from '../utils/exportData.tsx';
 import PropTypes from 'prop-types';
 import type BaseDevice from '../devices/BaseDevice.tsx';
 

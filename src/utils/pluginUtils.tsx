@@ -7,7 +7,7 @@
 import {FlipperDevicePlugin, FlipperPlugin} from '../plugin';
 import BaseDevice from '../devices/BaseDevice';
 import {State as PluginStatesState} from '../reducers/pluginStates';
-import {pluginsClassMap} from './exportData.js';
+import {pluginsClassMap} from './exportData';
 import {State as PluginsState} from '../reducers/plugins';
 import {PluginDefinition} from '../dispatcher/plugins';
 

@@ -12,7 +12,7 @@ import yargs from 'yargs';
 import dispatcher from '../src/dispatcher/index.tsx';
 import reducers from '../src/reducers/index.tsx';
 import {init as initLogger} from '../src/fb-stubs/Logger.tsx';
-import {exportStore, pluginsClassMap} from '../src/utils/exportData.js';
+import {exportStore, pluginsClassMap} from '../src/utils/exportData.tsx';
 import {
   exportMetricsWithoutTrace,
   exportMetricsFromTrace,
