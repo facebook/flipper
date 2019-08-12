@@ -7,7 +7,7 @@
 
 import {FlexRow, colors, LoadingIndicator, Glyph, styled} from 'flipper';
 import {remote} from 'electron';
-import isProduction from '../utils/isProduction.js';
+import isProduction from '../utils/isProduction';
 import React, {Component} from 'react';
 import config from '../fb-stubs/config';
 

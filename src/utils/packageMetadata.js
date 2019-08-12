@@ -7,7 +7,7 @@
 
 import electron from 'electron';
 import lodash from 'lodash';
-import isProduction from './isProduction';
+import isProduction from './isProduction.tsx';
 import path from 'path';
 import fs from 'fs';
 import {promisify} from 'util';

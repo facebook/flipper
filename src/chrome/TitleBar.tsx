@@ -33,7 +33,7 @@ import AutoUpdateVersion from './AutoUpdateVersion';
 import UpdateIndicator from './UpdateIndicator';
 import config from '../fb-stubs/config';
 import {isAutoUpdaterEnabled} from '../utils/argvUtils';
-import isProduction from '../utils/isProduction.js';
+import isProduction from '../utils/isProduction';
 import {clipboard} from 'electron';
 import React from 'react';
 import {State} from 'src/reducers';

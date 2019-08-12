@@ -8,5 +8,6 @@
 declare module NodeJS {
   interface Global {
     electronRequire: (name: string) => void;
+    window: Window | undefined;
   }
 }

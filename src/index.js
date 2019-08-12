@@ -37,7 +37,7 @@ export {
   LogLevel,
 } from './devices/BaseDevice.tsx';
 export {shouldParseAndroidLog} from './utils/crashReporterUtility.tsx';
-export {default as isProduction} from './utils/isProduction.js';
+export {default as isProduction} from './utils/isProduction.tsx';
 export {createTablePlugin} from './createTablePlugin.js';
 export {default as DetailSidebar} from './chrome/DetailSidebar.js';
 

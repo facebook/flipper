@@ -14,7 +14,7 @@ import {
   colors,
   brandColors,
 } from 'flipper';
-import isProduction from '../utils/isProduction.js';
+import isProduction from '../utils/isProduction';
 import {shell, remote} from 'electron';
 import React, {PureComponent} from 'react';
 
