@@ -11,26 +11,22 @@ import {
   colors,
   Text,
   LoadingIndicator,
-  Component,
   FlexRow,
   Spacer,
 } from 'flipper';
-import {
-  setExportStatusComponent,
-  unsetShare,
-} from '../reducers/application.tsx';
+import React, {Component} from 'react';
+import {setExportStatusComponent, unsetShare} from '../reducers/application';
 import {reportPlatformFailures} from '../utils/metrics';
-import CancellableExportStatus from './CancellableExportStatus.tsx';
-// $FlowFixMe: Missing type defs for node built-in.
+import CancellableExportStatus from './CancellableExportStatus';
 import {performance} from 'perf_hooks';
-import type {Logger} from '../fb-interfaces/Logger.js';
+import {Logger} from '../fb-interfaces/Logger.js';
 import {Idler} from '../utils/Idler';
 import {
   exportStoreToFile,
   EXPORT_FLIPPER_TRACE_EVENT,
-} from '../utils/exportData.tsx';
+} from '../utils/exportData';
 import PropTypes from 'prop-types';
-import ShareSheetErrorList from './ShareSheetErrorList.tsx';
+import ShareSheetErrorList from './ShareSheetErrorList';
 
 const Container = styled(FlexColumn)({
   padding: 20,
@@ -65,19 +61,22 @@ const InfoText = styled(Text)({
 });
 
 type Props = {
-  onHide: () => mixed,
-  file: ?string,
-  logger: Logger,
+  onHide: () => any;
+  file: string | null | undefined;
+  logger: Logger;
 };
 
 type State = {
-  errorArray: Array<Error>,
-  result: ?{
-    success: boolean,
-    error: ?Error,
-  },
-  statusUpdate: ?string,
-  runInBackground: boolean,
+  errorArray: Array<Error>;
+  result:
+    | {
+        success: boolean;
+        error: Error | null | undefined;
+      }
+    | null
+    | undefined;
+  statusUpdate: string | null | undefined;
+  runInBackground: boolean;
 };
 
 export default class ShareSheetExportFile extends Component<Props, State> {
@@ -112,8 +111,6 @@ export default class ShareSheetExportFile extends Component<Props, State> {
     const mark = 'shareSheetExportFile';
     performance.mark(mark);
     try {
-      // Flow doesn't allow us to check for this earlier because `performance` is untyped
-      // and could presumably do anything.
       if (!this.props.file) {
         return;
       }
@@ -134,8 +131,7 @@ export default class ShareSheetExportFile extends Component<Props, State> {
       );
       this.context.store.dispatch(unsetShare());
       if (this.state.runInBackground) {
-        new window.Notification('Sharable Flipper trace created', {
-          //$FlowFixMe: Already checked that props.file exists
+        new Notification('Sharable Flipper trace created', {
           body: `Flipper trace exported to the ${this.props.file}`,
           requireInteraction: true,
         });
@@ -187,7 +183,7 @@ export default class ShareSheetExportFile extends Component<Props, State> {
           <Container>
             <Title bold>Error</Title>
             <ErrorMessage code>
-              {error?.message || 'File could not be saved.'}
+              {(error && error.message) || 'File could not be saved.'}
             </ErrorMessage>
             <FlexRow>
               <Spacer />
