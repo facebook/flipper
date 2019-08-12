@@ -5,12 +5,10 @@
  * @format
  */
 
-import type {FlipperDevicePlugin, FlipperPlugin} from '../plugin.tsx';
-import type {PluginDefinition} from '../dispatcher/plugins.tsx';
-import type Client from '../Client.tsx';
-import type {TableBodyRow} from '../ui/components/table/types';
-
-import {Component, Fragment} from 'react';
+import {PluginDefinition} from '../dispatcher/plugins';
+import Client from '../Client';
+import {TableBodyRow} from '../ui/components/table/types';
+import React, {Component, Fragment} from 'react';
 import {connect} from 'react-redux';
 import {
   FlexColumn,
@@ -22,6 +20,7 @@ import {
   Link,
 } from 'flipper';
 import StatusIndicator from '../ui/components/StatusIndicator';
+import {State as Store} from '../reducers';
 
 const Container = styled(FlexColumn)({
   padding: 10,
@@ -64,16 +63,21 @@ const Lamp = props => (
   <StatusIndicator statusColor={props.on ? colors.lime : colors.red} />
 );
 
-type Props = {|
-  devicePlugins: Array<FlipperDevicePlugin<>>,
-  clientPlugins: Array<FlipperPlugin<>>,
-  gatekeepedPlugins: Array<PluginDefinition>,
-  disabledPlugins: Array<PluginDefinition>,
-  failedPlugins: Array<[PluginDefinition, string]>,
-  clients: Array<Client>,
-  selectedDevice: ?string,
-  onHide: () => mixed,
-|};
+type StateFromProps = {
+  gatekeepedPlugins: Array<PluginDefinition>;
+  disabledPlugins: Array<PluginDefinition>;
+  failedPlugins: Array<[PluginDefinition, string]>;
+  clients: Array<Client>;
+  selectedDevice: string | null | undefined;
+  devicePlugins: Array<PluginDefinition>;
+  clientPlugins: Array<PluginDefinition>;
+};
+
+type DispatchFromProps = {};
+
+type OwnProps = {
+  onHide: () => any;
+};
 
 const COLUMNS = {
   lamp: {
@@ -105,14 +109,15 @@ const COLUMNS_SIZES = {
   source: 140,
 };
 
+type Props = OwnProps & StateFromProps & DispatchFromProps;
 class PluginDebugger extends Component<Props> {
   buildRow(
     name: string,
     loaded: boolean,
     status: string,
-    GKname: ?string,
-    GKpassing: ?boolean,
-    pluginPath: ?string,
+    GKname: string | null | undefined,
+    GKpassing: boolean | null | undefined,
+    pluginPath: string | null | undefined,
   ): TableBodyRow {
     return {
       key: name.toLowerCase(),
@@ -191,10 +196,8 @@ class PluginDebugger extends Component<Props> {
           plugin.id,
           true,
           '',
-          // $FlowFixMe: Flow doesn't know this is inherited from FlipperBasePlugin
           plugin.gatekeeper,
           true,
-          // $FlowFixMe: Flow doesn't know this is inherited from FlipperBasePlugin
           externalPluginPath(plugin),
         ),
       ),
@@ -206,10 +209,8 @@ class PluginDebugger extends Component<Props> {
           plugin.id,
           true,
           '',
-          // $FlowFixMe: Flow doesn't know this is inherited from FlipperBasePlugin
           plugin.gatekeeper,
           true,
-          // $FlowFixMe: Flow doesn't know this is inherited from FlipperBasePlugin
           externalPluginPath(plugin),
         ),
       ),
@@ -325,8 +326,7 @@ class PluginDebugger extends Component<Props> {
   }
 }
 
-// $FlowFixMe
-export default connect(
+export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
   ({
     plugins: {
       devicePlugins,
@@ -343,6 +343,6 @@ export default connect(
     clients,
     disabledPlugins,
     failedPlugins,
-    selectedDevice: selectedDevice?.serial,
+    selectedDevice: selectedDevice && selectedDevice.serial,
   }),
 )(PluginDebugger);

@@ -28,8 +28,9 @@ import {default as config} from '../utils/processConfig';
 import isProduction from '../utils/isProduction';
 
 export type PluginDefinition = {
+  id?: string;
   name: string;
-  out: string;
+  out?: string;
   gatekeeper?: string;
   entry?: string;
 };

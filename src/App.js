@@ -20,7 +20,7 @@ import ShareSheetExportFile from './chrome/ShareSheetExportFile.js';
 import PluginContainer from './PluginContainer.js';
 import Sheet from './chrome/Sheet.js';
 import {ipcRenderer, remote} from 'electron';
-import PluginDebugger from './chrome/PluginDebugger.js';
+import PluginDebugger from './chrome/PluginDebugger.tsx';
 import {
   ShareType,
   ActiveSheet,
