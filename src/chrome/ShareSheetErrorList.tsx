@@ -5,11 +5,12 @@
  * @format
  */
 
-import {PureComponent, FlexColumn, Text, styled} from 'flipper';
+import React, {PureComponent} from 'react';
+import {FlexColumn, Text, styled} from 'flipper';
 
-type Props = {|
-  errors: Array<Error>,
-|};
+type Props = {
+  errors: Array<Error>;
+};
 
 const ErrorMessage = styled(Text)({
   display: 'block',

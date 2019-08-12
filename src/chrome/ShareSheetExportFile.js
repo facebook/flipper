@@ -30,7 +30,7 @@ import {
   EXPORT_FLIPPER_TRACE_EVENT,
 } from '../utils/exportData.tsx';
 import PropTypes from 'prop-types';
-import ShareSheetErrorList from './ShareSheetErrorList.js';
+import ShareSheetErrorList from './ShareSheetErrorList.tsx';
 
 const Container = styled(FlexColumn)({
   padding: 20,

@@ -24,7 +24,7 @@ import {shareFlipperData} from '../fb-stubs/user';
 import {exportStore, EXPORT_FLIPPER_TRACE_EVENT} from '../utils/exportData';
 import PropTypes from 'prop-types';
 import {clipboard} from 'electron';
-import ShareSheetErrorList from './ShareSheetErrorList.js';
+import ShareSheetErrorList from './ShareSheetErrorList';
 import {reportPlatformFailures} from '../utils/metrics';
 import CancellableExportStatus from './CancellableExportStatus';
 // $FlowFixMe: Missing type defs for node built-in.
