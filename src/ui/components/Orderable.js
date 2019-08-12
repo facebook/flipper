@@ -5,7 +5,7 @@
  * @format
  */
 
-import type {Rect} from '../../utils/geometry.js';
+import type {Rect} from '../../utils/geometry.tsx';
 import styled from '../styled/index.js';
 import {Component} from 'react';
 

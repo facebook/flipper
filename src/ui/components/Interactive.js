@@ -5,7 +5,7 @@
  * @format
  */
 
-import type {Rect} from '../../utils/geometry.js';
+import type {Rect} from '../../utils/geometry.tsx';
 import LowPassFilter from '../../utils/LowPassFilter.js';
 import {
   getDistanceTo,
