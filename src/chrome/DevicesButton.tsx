@@ -5,27 +5,35 @@
  * @format
  */
 
-import {Component, Button, styled} from 'flipper';
+import {Button, styled} from 'flipper';
 import {connect} from 'react-redux';
 import {spawn} from 'child_process';
 import {dirname} from 'path';
-import {selectDevice, preferDevice} from '../reducers/connections.tsx';
+import {selectDevice, preferDevice} from '../reducers/connections';
 import {default as which} from 'which';
 import {promisify} from 'util';
-import {showOpenDialog} from '../utils/exportData.tsx';
+import {showOpenDialog} from '../utils/exportData';
 import PropTypes from 'prop-types';
-import type BaseDevice from '../devices/BaseDevice.tsx';
+import BaseDevice from '../devices/BaseDevice';
+import React, {Component} from 'react';
+import {State} from '../reducers';
 
 const whichPromise = promisify(which);
 
-type Props = {
-  selectedDevice: ?BaseDevice,
-  androidEmulators: Array<string>,
-  devices: Array<BaseDevice>,
-  selectDevice: (device: BaseDevice) => void,
-  preferDevice: (device: string) => void,
+type StateFromProps = {
+  selectedDevice: BaseDevice | null | undefined;
+  androidEmulators: Array<string>;
+  devices: Array<BaseDevice>;
 };
 
+type DispatchFromProps = {
+  selectDevice: (device: BaseDevice) => void;
+  preferDevice: (device: string) => void;
+};
+
+type OwnProps = {};
+
+type Props = OwnProps & StateFromProps & DispatchFromProps;
 const DropdownButton = styled(Button)({
   fontSize: 11,
 });
@@ -39,8 +47,8 @@ class DevicesButton extends Component<Props> {
     // On Linux, you must run the emulator from the directory it's in because
     // reasons ...
     whichPromise('emulator')
-      .catch(e => `${process.env.ANDROID_HOME || ''}/tools/emulator`)
-      .then(emulatorPath => {
+      .catch(() => `${process.env.ANDROID_HOME || ''}/tools/emulator`)
+      .then((emulatorPath: string) => {
         const child = spawn(emulatorPath, [`@${name}`], {
           detached: true,
           cwd: dirname(emulatorPath),
@@ -64,14 +72,14 @@ class DevicesButton extends Component<Props> {
     let buttonLabel = 'No device selected';
     let icon = 'minus-circle';
 
-    if (selectedDevice?.isArchived) {
-      buttonLabel = `${selectedDevice?.title || 'Unknown device'} (offline)`;
+    if (selectedDevice && selectedDevice.isArchived) {
+      buttonLabel = `${selectedDevice.title || 'Unknown device'} (offline)`;
       icon = 'box';
-    } else if (selectedDevice?.deviceType === 'physical') {
-      buttonLabel = selectedDevice?.title || 'Unknown device';
+    } else if (selectedDevice && selectedDevice.deviceType === 'physical') {
+      buttonLabel = selectedDevice.title || 'Unknown device';
       icon = 'mobile';
-    } else if (selectedDevice?.deviceType === 'emulator') {
-      buttonLabel = selectedDevice?.title || 'Unknown emulator';
+    } else if (selectedDevice && selectedDevice.deviceType === 'emulator') {
+      buttonLabel = selectedDevice.title || 'Unknown emulator';
       icon = 'desktop';
     }
 
@@ -172,7 +180,7 @@ class DevicesButton extends Component<Props> {
     );
   }
 }
-export default connect<Props, {||}, _, _, _, _>(
+export default connect<StateFromProps, DispatchFromProps, OwnProps, State>(
   ({connections: {devices, androidEmulators, selectedDevice}}) => ({
     devices,
     androidEmulators,
