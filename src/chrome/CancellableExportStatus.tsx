@@ -7,7 +7,7 @@
 
 import {FlexRow, Button} from '../ui/index';
 import {styled, LoadingIndicator, Text} from 'flipper';
-import {Component} from 'react';
+import React, {Component} from 'react';
 import {colors} from '../ui/components/colors';
 
 const Wrapper = styled(FlexRow)({
@@ -17,8 +17,8 @@ const Wrapper = styled(FlexRow)({
 });
 
 type Props = {
-  msg: string,
-  onCancel: void => void,
+  msg: string;
+  onCancel: () => void;
 };
 
 export default class CancellableExportStatus extends Component<Props> {

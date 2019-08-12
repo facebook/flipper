@@ -29,7 +29,7 @@ import PropTypes from 'prop-types';
 import {clipboard} from 'electron';
 import ShareSheetErrorList from './ShareSheetErrorList.js';
 import {reportPlatformFailures} from '../utils/metrics';
-import CancellableExportStatus from './CancellableExportStatus';
+import CancellableExportStatus from './CancellableExportStatus.tsx';
 // $FlowFixMe: Missing type defs for node built-in.
 import {performance} from 'perf_hooks';
 export const SHARE_FLIPPER_TRACE_EVENT = 'share-flipper-link';

@@ -20,7 +20,7 @@ import {
   unsetShare,
 } from '../reducers/application.tsx';
 import {reportPlatformFailures} from '../utils/metrics';
-import CancellableExportStatus from './CancellableExportStatus';
+import CancellableExportStatus from './CancellableExportStatus.tsx';
 // $FlowFixMe: Missing type defs for node built-in.
 import {performance} from 'perf_hooks';
 import type {Logger} from '../fb-interfaces/Logger.js';
