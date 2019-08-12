@@ -12,7 +12,7 @@ import {
   maybeSnapLeft,
   maybeSnapTop,
   SNAP_SIZE,
-} from '../../utils/snap.js';
+} from '../../utils/snap.tsx';
 import styled from '../styled/index.js';
 import invariant from 'invariant';
 import React from 'react';

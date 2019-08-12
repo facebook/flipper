@@ -5,7 +5,7 @@
  * @format
  */
 
-import type {Rect} from './geometry.js';
+import {Rect} from './geometry.js';
 
 export const SNAP_SIZE = 16;
 
@@ -19,10 +19,10 @@ export function getPossibleSnappedPosition(
     getGap,
     getNew,
   }: {
-    getNew: (win: Rect) => number,
-    getGap: (win: Rect) => number,
+    getNew: (win: Rect) => number;
+    getGap: (win: Rect) => number;
   },
-): ?number {
+): number | undefined {
   for (const win of windows) {
     const gap = Math.abs(getGap(win));
     if (gap >= 0 && gap < SNAP_SIZE) {
@@ -87,7 +87,6 @@ export function maybeSnapLeft(
   // │A│B│
   // └─┴─┘
   const snapRight = getPossibleSnappedPosition(windows, {
-    debug: true,
     getGap: win => win.left - (props.width + left),
     getNew: win => win.left - props.width,
   });
