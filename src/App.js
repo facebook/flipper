@@ -13,7 +13,7 @@ import TitleBar from './chrome/TitleBar.tsx';
 import MainSidebar from './chrome/MainSidebar.tsx';
 import BugReporterDialog from './chrome/BugReporterDialog.tsx';
 import ErrorBar from './chrome/ErrorBar.tsx';
-import ShareSheet from './chrome/ShareSheet.js';
+import ShareSheet from './chrome/ShareSheet.tsx';
 import SignInSheet from './chrome/SignInSheet.js';
 import ExportDataPluginSheet from './chrome/ExportDataPluginSheet.tsx';
 import ShareSheetExportFile from './chrome/ShareSheetExportFile.js';

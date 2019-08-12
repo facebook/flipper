@@ -12,24 +12,21 @@ import {
   colors,
   Text,
   LoadingIndicator,
-  Component,
   FlexRow,
   Spacer,
   Input,
 } from 'flipper';
-import {
-  setExportStatusComponent,
-  unsetShare,
-} from '../reducers/application.tsx';
-import type {Logger} from '../fb-interfaces/Logger.js';
+import React, {Component} from 'react';
+import {setExportStatusComponent, unsetShare} from '../reducers/application';
+import {Logger} from '../fb-interfaces/Logger.js';
 import {Idler} from '../utils/Idler';
-import {shareFlipperData} from '../fb-stubs/user.tsx';
-import {exportStore, EXPORT_FLIPPER_TRACE_EVENT} from '../utils/exportData.tsx';
+import {shareFlipperData} from '../fb-stubs/user';
+import {exportStore, EXPORT_FLIPPER_TRACE_EVENT} from '../utils/exportData';
 import PropTypes from 'prop-types';
 import {clipboard} from 'electron';
 import ShareSheetErrorList from './ShareSheetErrorList.js';
 import {reportPlatformFailures} from '../utils/metrics';
-import CancellableExportStatus from './CancellableExportStatus.tsx';
+import CancellableExportStatus from './CancellableExportStatus';
 // $FlowFixMe: Missing type defs for node built-in.
 import {performance} from 'perf_hooks';
 export const SHARE_FLIPPER_TRACE_EVENT = 'share-flipper-link';
@@ -72,21 +69,23 @@ const ErrorMessage = styled(Text)({
 });
 
 type Props = {
-  onHide: () => mixed,
-  logger: Logger,
+  onHide: () => any;
+  logger: Logger;
 };
 type State = {
-  runInBackground: boolean,
-  errorArray: Array<Error>,
+  runInBackground: boolean;
+  errorArray: Array<Error>;
   result:
-    | ?{
-        error_class: string,
-        error: string,
+    | {
+        error_class: string;
+        error: string;
       }
     | {
-        flipperUrl: string,
-      },
-  statusUpdate: ?string,
+        flipperUrl: string;
+      }
+    | null
+    | undefined;
+  statusUpdate: string | null | undefined;
 };
 
 export default class ShareSheet extends Component<Props, State> {
@@ -142,7 +141,7 @@ export default class ShareSheet extends Component<Props, State> {
       this.setState({errorArray, result});
       if (result.flipperUrl) {
         clipboard.writeText(String(result.flipperUrl));
-        new window.Notification('Sharable Flipper trace created', {
+        new Notification('Sharable Flipper trace created', {
           body: 'URL copied to clipboard',
           requireInteraction: true,
         });
@@ -160,7 +159,10 @@ export default class ShareSheet extends Component<Props, State> {
     }
   }
 
-  renderTheProgessState(onHide: () => void, statusUpdate: ?string) {
+  renderTheProgessState(
+    onHide: () => void,
+    statusUpdate: string | null | undefined,
+  ) {
     return (
       <Container>
         <FlexColumn>
