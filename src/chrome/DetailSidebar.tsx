@@ -9,21 +9,24 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import Sidebar from '../ui/components/Sidebar';
 import {connect} from 'react-redux';
-import {toggleRightSidebarAvailable} from '../reducers/application.tsx';
+import {toggleRightSidebarAvailable} from '../reducers/application';
 
-type OwnProps = {|
-  children: any,
-  width?: number,
-  minWidth?: number,
-|};
-
-type Props = {
-  ...OwnProps,
-  rightSidebarVisible: boolean,
-  rightSidebarAvailable: boolean,
-  toggleRightSidebarAvailable: (visible?: boolean) => any,
+type OwnProps = {
+  children: any;
+  width?: number;
+  minWidth?: number;
 };
 
+type StateFromProps = {
+  rightSidebarVisible: boolean;
+  rightSidebarAvailable: boolean;
+};
+
+type DispatchFromProps = {
+  toggleRightSidebarAvailable: (visible?: boolean) => any;
+};
+
+type Props = OwnProps & StateFromProps & DispatchFromProps;
 class DetailSidebar extends React.Component<Props> {
   componentDidMount() {
     this.updateSidebarAvailablility();
@@ -59,7 +62,9 @@ class DetailSidebar extends React.Component<Props> {
   }
 }
 
-export default connect<Props, OwnProps, _, _, _, _>(
+// @TODO: TS_MIGRATION
+type Store = any;
+export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
   ({application: {rightSidebarVisible, rightSidebarAvailable}}) => ({
     rightSidebarVisible,
     rightSidebarAvailable,

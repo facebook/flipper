@@ -14,7 +14,7 @@ import type {
 
 import FlexColumn from './ui/components/FlexColumn';
 import Button from './ui/components/Button';
-import DetailSidebar from './chrome/DetailSidebar';
+import DetailSidebar from './chrome/DetailSidebar.tsx';
 import {FlipperPlugin} from './plugin.tsx';
 import SearchableTable_immutable from './ui/components/searchable/SearchableTable_immutable';
 import textContent from './utils/textContent.tsx';
