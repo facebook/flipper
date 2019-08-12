@@ -8,10 +8,10 @@
 export default function promiseTimeout<T>(
   ms: number,
   promise: Promise<T>,
-  timeoutMessage: ?string,
-): Promise<T> | Promise<void> {
+  timeoutMessage?: string,
+): Promise<T> {
   // Create a promise that rejects in <ms> milliseconds
-  const timeout = new Promise((resolve, reject) => {
+  const timeout: Promise<T> = new Promise((resolve, reject) => {
     const id = setTimeout(() => {
       clearTimeout(id);
       reject(new Error(timeoutMessage || `Timed out in ${ms} ms.`));

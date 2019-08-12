@@ -23,7 +23,7 @@ import {serialize, deserialize} from './serialization';
 import {readCurrentRevision} from './packageMetadata.js';
 import {tryCatchReportPlatformFailures} from './metrics';
 import {promisify} from 'util';
-import promiseTimeout from './promiseTimeout';
+import promiseTimeout from './promiseTimeout.tsx';
 import {Idler} from './Idler';
 export const IMPORT_FLIPPER_TRACE_EVENT = 'import-flipper-trace';
 export const EXPORT_FLIPPER_TRACE_EVENT = 'export-flipper-trace';
