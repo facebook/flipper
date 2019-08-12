@@ -6,7 +6,12 @@
  */
 
 export type LogTypes = 'error' | 'warn' | 'info' | 'debug';
-export type TrackType = 'duration' | 'usage' | 'performance' | 'success-rate';
+export type TrackType =
+  | 'duration'
+  | 'usage'
+  | 'performance'
+  | 'success-rate'
+  | 'operation-cancelled';
 
 export interface Logger {
   track(type: TrackType, event: string, data: ?any, plugin?: string): void;

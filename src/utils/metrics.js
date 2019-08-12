@@ -6,6 +6,7 @@
  */
 
 import {getInstance} from '../fb-stubs/Logger.tsx';
+import {CancelledPromiseError} from './errors.tsx';
 
 export class UnsupportedError extends Error {
   constructor(message: string) {
@@ -30,11 +31,17 @@ export function reportPlatformFailures<T>(
       return fulfilledValue;
     },
     rejectionReason => {
-      logPlatformSuccessRate(name, {
-        isSuccess: false,
-        supportedOperation: !(rejectionReason instanceof UnsupportedError),
-        error: rejectionReason,
-      });
+      if (rejectionReason instanceof CancelledPromiseError) {
+        logPlatformSuccessRate(name, {
+          isCancelled: true,
+        });
+      } else {
+        logPlatformSuccessRate(name, {
+          isSuccess: false,
+          supportedOperation: !(rejectionReason instanceof UnsupportedError),
+          error: rejectionReason,
+        });
+      }
       return Promise.reject(rejectionReason);
     },
   );
@@ -58,11 +65,17 @@ export function reportPluginFailures<T>(
       return fulfilledValue;
     },
     rejectionReason => {
-      logPluginSuccessRate(name, plugin, {
-        isSuccess: false,
-        supportedOperation: !(rejectionReason instanceof UnsupportedError),
-        error: rejectionReason,
-      });
+      if (rejectionReason instanceof CancelledPromiseError) {
+        logPluginSuccessRate(name, plugin, {
+          isCancelled: true,
+        });
+      } else {
+        logPluginSuccessRate(name, plugin, {
+          isSuccess: false,
+          supportedOperation: !(rejectionReason instanceof UnsupportedError),
+          error: rejectionReason,
+        });
+      }
       return Promise.reject(rejectionReason);
     },
   );
@@ -92,11 +105,14 @@ export function tryCatchReportPlatformFailures<T>(
 
 type Result =
   | {isSuccess: true}
+  | {isCancelled: true}
   | {isSuccess: false, supportedOperation: boolean, error: any};
 
 function logPlatformSuccessRate(name: string, result: Result) {
   if (result.isSuccess) {
     getInstance().track('success-rate', name, {value: 1});
+  } else if (result.isCancelled) {
+    getInstance().track('operation-cancelled', name);
   } else {
     getInstance().track('success-rate', name, {
       value: 0,
@@ -109,6 +125,8 @@ function logPlatformSuccessRate(name: string, result: Result) {
 function logPluginSuccessRate(name: string, plugin: string, result: Result) {
   if (result.isSuccess) {
     getInstance().track('success-rate', name, {value: 1}, plugin);
+  } else if (result.isCancelled) {
+    getInstance().track('operation-cancelled', name, undefined, plugin);
   } else {
     getInstance().track(
       'success-rate',

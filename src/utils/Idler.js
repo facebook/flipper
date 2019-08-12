@@ -4,6 +4,9 @@
  * LICENSE file in the root directory of this source tree.
  * @format
  */
+
+import {CancelledPromiseError} from './errors.tsx';
+
 export class Idler {
   lastIdle: number;
   interval: number;
@@ -17,7 +20,7 @@ export class Idler {
 
   idle(): Promise<void> {
     if (this.kill) {
-      throw new Error('Idler got killed');
+      throw new CancelledPromiseError('Idler got killed');
     }
     const now = performance.now();
     if (now - this.lastIdle > this.interval) {
