@@ -4,13 +4,12 @@
  * LICENSE file in the root directory of this source tree.
  * @format
  */
-import type {FlipperPlugin, FlipperDevicePlugin} from 'flipper';
+import {FlipperPlugin, FlipperDevicePlugin} from 'flipper';
 import {serialize} from './serialization';
-import type {State as PluginStatesState} from '../reducers/pluginStates.tsx';
-import type {Store} from '../reducers/index.tsx';
+import {State as PluginStatesState} from '../reducers/pluginStates';
+import {Store} from '../reducers';
 import fs from 'fs';
-import type {ExportType} from './exportData.tsx';
-import {fetchMetadata, pluginsClassMap} from './exportData.tsx';
+import {ExportType, fetchMetadata, pluginsClassMap} from './exportData';
 import {deserializeObject} from './serialization';
 
 export type MetricType = {[metricName: string]: number};
@@ -19,7 +18,7 @@ export type ExportMetricType = {[clientID: string]: MetricPluginType};
 
 async function exportMetrics(
   pluginStates: PluginStatesState,
-  pluginsMap: Map<string, Class<FlipperDevicePlugin<> | FlipperPlugin<>>>,
+  pluginsMap: Map<string, typeof FlipperDevicePlugin | typeof FlipperPlugin>,
   selectedPlugins: Array<string>,
 ): Promise<string> {
   const metrics: ExportMetricType = {};
@@ -31,9 +30,10 @@ async function exportMetrics(
       continue;
     }
     const clientID = arr.join('#');
-    const metricsReducer: ?(
+    const plugin = pluginsMap.get(pluginName);
+    const metricsReducer: (
       persistedState: any,
-    ) => Promise<MetricType> = pluginsMap.get(pluginName)?.metricsReducer;
+    ) => Promise<MetricType> | undefined = plugin && plugin.metricsReducer;
     if (pluginsMap.has(pluginName) && metricsReducer) {
       const metricsObject = await metricsReducer(pluginStateData);
       const pluginObject = {};
@@ -52,10 +52,10 @@ async function exportMetrics(
 export async function exportMetricsWithoutTrace(
   store: Store,
   pluginStates: PluginStatesState,
-): Promise<?string> {
+): Promise<string | null> {
   const pluginsMap: Map<
     string,
-    Class<FlipperDevicePlugin<> | FlipperPlugin<>>,
+    typeof FlipperDevicePlugin | typeof FlipperPlugin
   > = pluginsClassMap(store.getState().plugins);
   const metadata = await fetchMetadata(pluginStates, pluginsMap, store);
   const newPluginStates = metadata.pluginStates;
@@ -72,7 +72,7 @@ export async function exportMetricsWithoutTrace(
   return metrics;
 }
 
-function parseJSON(str: string): ?any {
+function parseJSON(str: string): any {
   try {
     return JSON.parse(str);
   } catch (e) {
@@ -83,7 +83,7 @@ function parseJSON(str: string): ?any {
 
 export async function exportMetricsFromTrace(
   trace: string,
-  pluginsMap: Map<string, Class<FlipperDevicePlugin<> | FlipperPlugin<>>>,
+  pluginsMap: Map<string, typeof FlipperDevicePlugin | typeof FlipperPlugin>,
   selectedPlugins: Array<string>,
 ): Promise<string> {
   const data = fs.readFileSync(trace, 'utf8');

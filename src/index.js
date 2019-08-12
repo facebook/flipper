@@ -18,8 +18,8 @@ export {
   callClient,
 } from './plugin.tsx';
 export type {PluginClient, Props} from './plugin.tsx';
-export type {MetricType} from './utils/exportMetrics.js';
 export {default as Client} from './Client.tsx';
+export type {MetricType} from './utils/exportMetrics.tsx';
 export {clipboard} from 'electron';
 export {default as constants} from './fb-stubs/constants.tsx';
 export {connect} from 'react-redux';

@@ -7,10 +7,10 @@
 import {getInstance as getLogger} from '../fb-stubs/Logger';
 import {Store, MiddlewareAPI} from '../reducers';
 import {DeviceExport} from '../devices/BaseDevice';
-import {State as PluginStates} from '../reducers/pluginStates';
+import {State as PluginStatesState} from '../reducers/pluginStates';
 import {PluginNotification} from '../reducers/notifications';
 import {ClientExport} from '../Client.js';
-import {State as PluginStatesState} from '../reducers/pluginStates';
+import {State as PluginsState} from '../reducers/plugins';
 import {pluginKey} from '../reducers/pluginStates';
 import {FlipperDevicePlugin, FlipperPlugin, callClient} from '../plugin';
 import {default as BaseDevice} from '../devices/BaseDevice';
@@ -34,7 +34,7 @@ export type ExportType = {
   clients: Array<ClientExport>;
   device: DeviceExport | null;
   store: {
-    pluginStates: PluginStates;
+    pluginStates: PluginStatesState;
     activeNotifications: Array<PluginNotification>;
   };
 };
@@ -80,7 +80,7 @@ export function processClients(
 }
 
 export function pluginsClassMap(
-  plugins: PluginStates,
+  plugins: PluginsState,
 ): Map<string, typeof FlipperDevicePlugin | typeof FlipperPlugin> {
   const pluginsMap: Map<
     string,
@@ -190,7 +190,7 @@ const addSaltToDeviceSerial = async (
     statusUpdate(
       'Adding salt to the selected device id in the plugin states...',
     );
-  const updatedPluginStates: PluginStatesState = {};
+  const updatedPluginStates = {};
   for (let key in pluginStates) {
     if (!key.includes(serial)) {
       throw new Error(

@@ -6,10 +6,10 @@
  */
 
 export type Rect = {
-  top: number,
-  left: number,
-  height: number,
-  width: number,
+  top: number;
+  left: number;
+  height: number;
+  width: number;
 };
 
 export function isOverlappedRect(a: Rect, b: Rect): boolean {

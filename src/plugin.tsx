@@ -10,7 +10,7 @@ import {App} from './App.js';
 import {Logger} from './fb-interfaces/Logger.js';
 import Client from './Client';
 import {Store, MiddlewareAPI} from './reducers/index';
-import {MetricType} from './utils/exportMetrics.js';
+import {MetricType} from './utils/exportMetrics';
 import {ReactNode, Component} from 'react';
 import BaseDevice from './devices/BaseDevice';
 

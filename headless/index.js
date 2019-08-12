@@ -16,7 +16,7 @@ import {exportStore, pluginsClassMap} from '../src/utils/exportData.tsx';
 import {
   exportMetricsWithoutTrace,
   exportMetricsFromTrace,
-} from '../src/utils/exportMetrics.js';
+} from '../src/utils/exportMetrics.tsx';
 import {listDevices} from '../src/utils/listDevices';
 // $FlowFixMe this file exist, trust me, flow!
 import setup from '../static/setup.js';

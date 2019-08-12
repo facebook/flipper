@@ -17,7 +17,7 @@ declare module plugin {
   import type {Logger} from './fb-interfaces/Logger.js';
   import type Client from './Client.js';
   import type {Store, MiddlewareAPI} from './reducers/index.js';
-  import type {MetricType} from './utils/exportMetrics.js';
+  import type {MetricType} from './utils/exportMetrics.tsx';
   import type {Node} from 'react';
   import type BaseDevice from './devices/BaseDevice.js';
   import type AndroidDevice from './devices/AndroidDevice';
