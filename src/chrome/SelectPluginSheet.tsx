@@ -6,7 +6,6 @@
  */
 
 import {
-  Component,
   Text,
   FlexColumn,
   styled,
@@ -17,21 +16,22 @@ import {
   colors,
   View,
 } from 'flipper';
+import React, {Component} from 'react';
 
 export type PluginSelection = Map<string, boolean>;
 
-type Props = {|
-  onSelect: (plugins: Array<string>) => void,
-  onHide: () => mixed,
-  plugins: PluginSelection,
-|};
+type Props = {
+  onSelect: (plugins: Array<string>) => void;
+  onHide: () => any;
+  plugins: PluginSelection;
+};
 
 const Title = styled(Text)({
   margin: 6,
 });
 
 type State = {
-  plugins: PluginSelection,
+  plugins: PluginSelection;
 };
 
 const Container = styled(FlexColumn)({
@@ -64,9 +64,9 @@ const Padder = styled('div')(
 );
 
 type PluginRowComponentProps = {
-  name: string,
-  selected: boolean,
-  onChange: (name: string, selected: boolean) => void,
+  name: string;
+  selected: boolean;
+  onChange: (name: string, selected: boolean) => void;
 };
 
 class PluginRowComponent extends Component<PluginRowComponentProps> {
@@ -97,7 +97,7 @@ class PluginRowComponent extends Component<PluginRowComponentProps> {
 }
 
 export default class SelectPluginSheet extends Component<Props, State> {
-  state = {plugins: new Map()};
+  state = {plugins: new Map<string, boolean>()};
   static getDerivedStateFromProps(props: Props, state: State) {
     if (state.plugins.size > 0) {
       return null;
@@ -128,20 +128,18 @@ export default class SelectPluginSheet extends Component<Props, State> {
             Select the plugins for which you want to export the data
           </Title>
           <PluginRowComponentContainer>
-            {Array.from(plugins.entries()).map(
-              ([pluginID: string, selected: boolean]) => {
-                return (
-                  <PluginRowComponent
-                    name={pluginID}
-                    selected={selected}
-                    onChange={(id: string, selected: boolean) => {
-                      plugins.set(id, selected);
-                      this.setState({plugins});
-                    }}
-                  />
-                );
-              },
-            )}
+            {Array.from(plugins.entries()).map(([pluginID, selected]) => {
+              return (
+                <PluginRowComponent
+                  name={pluginID}
+                  selected={selected}
+                  onChange={(id: string, selected: boolean) => {
+                    plugins.set(id, selected);
+                    this.setState({plugins});
+                  }}
+                />
+              );
+            })}
           </PluginRowComponentContainer>
         </FlexColumn>
         <Padder paddingTop={8} paddingBottom={2}>
