@@ -20,7 +20,7 @@ import dispatcher from './dispatcher/index.tsx';
 import TooltipProvider from './ui/components/TooltipProvider.js';
 import config from './utils/processConfig.tsx';
 import {stateSanitizer} from './utils/reduxDevToolsConfig.tsx';
-import {initLauncherHooks} from './utils/launcher.js';
+import {initLauncherHooks} from './utils/launcher.tsx';
 import initCrashReporter from './utils/electronCrashReporter.tsx';
 import path from 'path';
 

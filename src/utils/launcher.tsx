@@ -5,8 +5,8 @@
  * @format
  */
 
-import type {ProcessConfig} from './processConfig.tsx';
-import type {Store} from '../reducers/index.tsx';
+import {ProcessConfig} from './processConfig';
+import {Store} from '../reducers/index';
 
 export function initLauncherHooks(config: ProcessConfig, store: Store) {
   if (config.launcherMsg) {
