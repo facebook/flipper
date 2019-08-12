@@ -6,6 +6,7 @@
  */
 
 import {styled, colors} from 'flipper';
+import React from 'react';
 
 const ErrorBarContainer = styled('div')({
   backgroundColor: colors.cherry,
@@ -19,7 +20,11 @@ const ErrorBarContainer = styled('div')({
   zIndex: 2,
 });
 
-export default function ErrorBar(props: {|text: ?string|}) {
+type Props = {
+  text: string | null | undefined;
+};
+
+export default function ErrorBar(props: Props) {
   if (props.text == null) {
     return null;
   } else {
