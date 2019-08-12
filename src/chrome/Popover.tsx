@@ -6,7 +6,6 @@
  */
 
 import {
-  PureComponent,
   FlexColumn,
   FlexRow,
   FlexBox,
@@ -15,6 +14,7 @@ import {
   styled,
   colors,
 } from 'flipper';
+import React, {PureComponent} from 'react';
 
 const Anchor = styled('img')({
   zIndex: 6,
@@ -126,21 +126,21 @@ const Action = styled(Button)({
   },
 });
 
-type Props = {|
+type Props = {
   sections: Array<{
-    title: string,
+    title: string;
     items: Array<{
-      title: string,
-      subtitle: string,
-      onClick?: Function,
-      icon?: React.Element<*>,
-    }>,
-  }>,
-  onDismiss: Function,
-|};
+      title: string;
+      subtitle: string;
+      onClick: (() => void) | null | undefined;
+      icon: Element | null | undefined;
+    }>;
+  }>;
+  onDismiss: Function;
+};
 
 export default class Popover extends PureComponent<Props> {
-  _ref: ?Element;
+  _ref: Element | null | undefined;
 
   componentDidMount() {
     window.document.addEventListener('click', this.handleClick);
@@ -150,14 +150,13 @@ export default class Popover extends PureComponent<Props> {
     window.document.addEventListener('click', this.handleClick);
   }
 
-  handleClick = (e: SyntheticMouseEvent<>) => {
-    // $FlowFixMe
-    if (this._ref && !this._ref.contains(e.target)) {
+  handleClick = (e: MouseEvent) => {
+    if (this._ref && !this._ref.contains(e.target as HTMLElement)) {
       this.props.onDismiss();
     }
   };
 
-  _setRef = (ref: ?Element) => {
+  _setRef = (ref?: Element) => {
     this._ref = ref;
   };
 
