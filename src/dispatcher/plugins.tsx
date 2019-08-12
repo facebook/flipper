@@ -24,7 +24,7 @@ import GK from '../fb-stubs/GK';
 import {FlipperBasePlugin} from '../plugin';
 import {setupMenuBar} from '../MenuBar.js';
 import path from 'path';
-import {default as config} from '../utils/processConfig.js';
+import {default as config} from '../utils/processConfig';
 import isProduction from '../utils/isProduction';
 
 export type PluginDefinition = {
