@@ -10,16 +10,17 @@ import {
   Button,
   styled,
   Text,
-  Component,
   FlexRow,
   Spacer,
   Input,
   Link,
   colors,
 } from 'flipper';
-import {login} from '../reducers/user.tsx';
-import {writeKeychain, getUser} from '../fb-stubs/user.tsx';
+import React, {Component} from 'react';
+import {writeKeychain, getUser} from '../fb-stubs/user';
+import {login} from '../reducers/user';
 import {connect} from 'react-redux';
+import {State as Store} from '../reducers';
 
 const Container = styled(FlexColumn)({
   padding: 20,
@@ -40,21 +41,23 @@ const TokenInput = styled(Input)({
   marginRight: 0,
 });
 
-type OwnProps = {|
-  onHide: () => mixed,
-|};
-
-type Props = {|
-  ...OwnProps,
-  login: (user: Object) => mixed,
-|};
-
-type State = {
-  token: string,
-  loading: boolean,
-  error: ?string,
+type OwnProps = {
+  onHide: () => any;
 };
 
+type StateFromProps = {};
+
+type DispatchFromProps = {
+  login: (user: Object) => any;
+};
+
+type State = {
+  token: string;
+  loading: boolean;
+  error: string | null | undefined;
+};
+
+type Props = OwnProps & StateFromProps & DispatchFromProps;
 class SignInSheet extends Component<Props, State> {
   state = {
     token: '',
@@ -118,7 +121,7 @@ class SignInSheet extends Component<Props, State> {
   }
 }
 
-export default connect<Props, OwnProps, _, _, _, _>(
+export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
   () => ({}),
   {login},
 )(SignInSheet);

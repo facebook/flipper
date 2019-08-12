@@ -14,7 +14,7 @@ import MainSidebar from './chrome/MainSidebar.tsx';
 import BugReporterDialog from './chrome/BugReporterDialog.tsx';
 import ErrorBar from './chrome/ErrorBar.tsx';
 import ShareSheet from './chrome/ShareSheet.tsx';
-import SignInSheet from './chrome/SignInSheet.js';
+import SignInSheet from './chrome/SignInSheet.tsx';
 import ExportDataPluginSheet from './chrome/ExportDataPluginSheet.tsx';
 import ShareSheetExportFile from './chrome/ShareSheetExportFile.tsx';
 import PluginContainer from './PluginContainer.js';
