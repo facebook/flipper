@@ -5,7 +5,7 @@
  * @format
  */
 
-import {Idler} from './Idler';
+import {Idler} from './Idler.tsx';
 export async function serialize(
   obj: Object,
   idler?: Idler,

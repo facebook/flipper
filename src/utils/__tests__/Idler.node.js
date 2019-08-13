@@ -5,7 +5,7 @@
  * @format
  */
 
-import {Idler} from '../Idler';
+import {Idler} from '../Idler.tsx';
 
 test('Idler should interrupt', async () => {
   const idler = new Idler();

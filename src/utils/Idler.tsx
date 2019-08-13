@@ -5,7 +5,7 @@
  * @format
  */
 
-import {CancelledPromiseError} from './errors.tsx';
+import {CancelledPromiseError} from './errors';
 
 export class Idler {
   lastIdle: number;
