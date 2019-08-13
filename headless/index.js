@@ -17,7 +17,7 @@ import {
   exportMetricsWithoutTrace,
   exportMetricsFromTrace,
 } from '../src/utils/exportMetrics.tsx';
-import {listDevices} from '../src/utils/listDevices';
+import {listDevices} from '../src/utils/listDevices.tsx';
 // $FlowFixMe this file exist, trust me, flow!
 import setup from '../static/setup.js';
 import type {Store} from '../src/reducers/index.tsx';
