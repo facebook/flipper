@@ -6,7 +6,7 @@
  */
 
 export default class LowPassFilter {
-  constructor(smoothing?: number = 0.9) {
+  constructor(smoothing: number = 0.9) {
     this.smoothing = smoothing;
     this.buffer = [];
     this.bufferMaxSize = 5;
