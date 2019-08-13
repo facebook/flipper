@@ -8,12 +8,12 @@
 import os from 'os';
 
 export type Info = {
-  arch: string,
-  platform: string,
-  unixname: string,
+  arch: string;
+  platform: string;
+  unixname: string;
   versions: {
-    [key: string]: ?string,
-  },
+    [key: string]: string | undefined;
+  };
 };
 
 /**
