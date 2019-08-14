@@ -5,8 +5,13 @@
  * @format
  */
 
-import {getInstance} from '../fb-stubs/Logger.tsx';
-import {CancelledPromiseError} from './errors.tsx';
+import {getInstance} from '../fb-stubs/Logger';
+import {CancelledPromiseError} from './errors';
+
+type Result =
+  | {kind: 'success'}
+  | {kind: 'cancelled'}
+  | {kind: 'failure'; supportedOperation: boolean; error: any};
 
 export class UnsupportedError extends Error {
   constructor(message: string) {
@@ -27,17 +32,17 @@ export function reportPlatformFailures<T>(
 ): Promise<T> {
   return promise.then(
     fulfilledValue => {
-      logPlatformSuccessRate(name, {isSuccess: true});
+      logPlatformSuccessRate(name, {kind: 'success'});
       return fulfilledValue;
     },
     rejectionReason => {
       if (rejectionReason instanceof CancelledPromiseError) {
         logPlatformSuccessRate(name, {
-          isCancelled: true,
+          kind: 'cancelled',
         });
       } else {
         logPlatformSuccessRate(name, {
-          isSuccess: false,
+          kind: 'failure',
           supportedOperation: !(rejectionReason instanceof UnsupportedError),
           error: rejectionReason,
         });
@@ -61,17 +66,17 @@ export function reportPluginFailures<T>(
 ): Promise<T> {
   return promise.then(
     fulfilledValue => {
-      logPluginSuccessRate(name, plugin, {isSuccess: true});
+      logPluginSuccessRate(name, plugin, {kind: 'success'});
       return fulfilledValue;
     },
     rejectionReason => {
       if (rejectionReason instanceof CancelledPromiseError) {
-        logPluginSuccessRate(name, plugin, {
-          isCancelled: true,
+        logPlatformSuccessRate(name, {
+          kind: 'cancelled',
         });
       } else {
-        logPluginSuccessRate(name, plugin, {
-          isSuccess: false,
+        logPlatformSuccessRate(name, {
+          kind: 'failure',
           supportedOperation: !(rejectionReason instanceof UnsupportedError),
           error: rejectionReason,
         });
@@ -91,11 +96,11 @@ export function tryCatchReportPlatformFailures<T>(
 ): T {
   try {
     const result = closure();
-    logPlatformSuccessRate(name, {isSuccess: true});
+    logPlatformSuccessRate(name, {kind: 'success'});
     return result;
   } catch (e) {
     logPlatformSuccessRate(name, {
-      isSuccess: false,
+      kind: 'failure',
       supportedOperation: !(e instanceof UnsupportedError),
       error: e,
     });
@@ -103,15 +108,10 @@ export function tryCatchReportPlatformFailures<T>(
   }
 }
 
-type Result =
-  | {isSuccess: true}
-  | {isCancelled: true}
-  | {isSuccess: false, supportedOperation: boolean, error: any};
-
 function logPlatformSuccessRate(name: string, result: Result) {
-  if (result.isSuccess) {
+  if (result.kind === 'success') {
     getInstance().track('success-rate', name, {value: 1});
-  } else if (result.isCancelled) {
+  } else if (result.kind === 'cancelled') {
     getInstance().track('operation-cancelled', name);
   } else {
     getInstance().track('success-rate', name, {
@@ -123,9 +123,9 @@ function logPlatformSuccessRate(name: string, result: Result) {
 }
 
 function logPluginSuccessRate(name: string, plugin: string, result: Result) {
-  if (result.isSuccess) {
+  if (result.kind === 'success') {
     getInstance().track('success-rate', name, {value: 1}, plugin);
-  } else if (result.isCancelled) {
+  } else if (result.kind === 'cancelled') {
     getInstance().track('operation-cancelled', name, undefined, plugin);
   } else {
     getInstance().track(

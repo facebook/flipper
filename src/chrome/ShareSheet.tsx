@@ -20,7 +20,7 @@ import React, {Component} from 'react';
 import {setExportStatusComponent, unsetShare} from '../reducers/application';
 import {Logger} from '../fb-interfaces/Logger.js';
 import {Idler} from '../utils/Idler';
-import {shareFlipperData} from '../fb-stubs/user';
+import {shareFlipperData, DataExportResult} from '../fb-stubs/user';
 import {exportStore, EXPORT_FLIPPER_TRACE_EVENT} from '../utils/exportData';
 import PropTypes from 'prop-types';
 import {clipboard} from 'electron';
@@ -139,8 +139,8 @@ export default class ShareSheet extends Component<Props, State> {
       );
 
       this.setState({errorArray, result});
-      if (result.flipperUrl) {
-        clipboard.writeText(String(result.flipperUrl));
+      if ((result as DataExportResult).flipperUrl) {
+        clipboard.writeText(String((result as DataExportResult).flipperUrl));
         new Notification('Sharable Flipper trace created', {
           body: 'URL copied to clipboard',
           requireInteraction: true,

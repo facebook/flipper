@@ -17,23 +17,24 @@ export function logoutUser(): Promise<void> {
   return Promise.reject();
 }
 
+export type DataExportResult = {
+  id: string;
+  os: 'string';
+  deviceType: string;
+  plugins: string[];
+  fileUrl: string;
+  flipperUrl: string;
+};
+
+export type DataExportError = {
+  error: string;
+  error_class: string;
+  stacktrace: string;
+};
+
 export async function shareFlipperData(
   trace: string,
-): Promise<
-  | {
-      id: string;
-      os: 'string';
-      deviceType: string;
-      plugins: string[];
-      fileUrl: string;
-      flipperUrl: string;
-    }
-  | {
-      error: string;
-      error_class: string;
-      stacktrace: string;
-    }
-> {
+): Promise<DataExportError | DataExportResult> {
   new Notification('Feature not implemented');
   return Promise.reject();
 }
