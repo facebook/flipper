@@ -5,5 +5,5 @@
  * @format
  */
 
-export {default as textContent} from './textContent.tsx';
-export {getStringFromErrorLike} from './errors.tsx';
+export {default as textContent} from './textContent';
+export {getStringFromErrorLike} from './errors';

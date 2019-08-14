@@ -7,7 +7,7 @@
 
 export {default as styled, keyframes} from 'react-emotion';
 export * from './ui/index.js';
-export * from './utils/index.js';
+export {getStringFromErrorLike, textContent} from './utils/index.tsx';
 export {default as GK} from './fb-stubs/GK.tsx';
 export {default as createPaste} from './fb-stubs/createPaste.tsx';
 export {graphQLQuery} from './fb-stubs/user.tsx';

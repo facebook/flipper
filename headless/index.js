@@ -25,7 +25,7 @@ import {getPersistentPlugins} from '../src/utils/pluginUtils.tsx';
 import {serialize} from '../src/utils/serialization';
 import type BaseDevice from '../src/devices/BaseDevice.tsx';
 
-import {getStringFromErrorLike} from '../src/utils/index';
+import {getStringFromErrorLike} from '../src/utils/index.tsx';
 
 type Action = {|exit: true, result: string|} | {|exit: false|};
 
