@@ -7,7 +7,12 @@
  */
 
 import {Button, FlexColumn, Input, Sheet, styled, Glyph, colors} from 'flipper';
-import {replaceRequiredParametersWithValues} from '../util/uri';
+import {
+  replaceRequiredParametersWithValues,
+  parameterIsNumberType,
+  validateParameter,
+  liveEdit,
+} from '../util/uri';
 import {useRequiredParameterFormValidator} from '../hooks/requiredParameters';
 
 import type {URI} from '../flow-types';
@@ -36,10 +41,16 @@ const Text = styled('span')({
   lineHeight: 1.3,
 });
 
+const ErrorLabel = styled('span')({
+  color: colors.yellow,
+  lineHeight: 1.4,
+});
+
 const URIContainer = styled('div')({
   lineHeight: 1.3,
   marginLeft: 2,
   marginBottom: 8,
+  marginTop: 10,
   overflowWrap: 'break-word',
 });
 
@@ -49,8 +60,9 @@ const ButtonContainer = styled('div')({
 
 const RequiredParameterInput = styled(Input)({
   margin: 0,
-  marginBottom: 10,
+  marginTop: 8,
   height: 30,
+  width: '100%',
 });
 
 const WarningIconContainer = styled('span')({
@@ -81,24 +93,29 @@ export default (props: Props) => {
                 </WarningIconContainer>
                 <Text>
                   This uri has required parameters denoted by {'{parameter}'}.
-                  Numeric fields are spcified with a '#' symbol. Please fix the
-                  errors to navigate to the specified uri.
                 </Text>
               </Title>
               {requiredParameters.map((paramater, idx) => (
-                <RequiredParameterInput
-                  key={idx}
-                  onChange={event =>
-                    setValuesArray([
-                      ...values.slice(0, idx),
-                      event.target.value,
-                      ...values.slice(idx + 1),
-                    ])
-                  }
-                  placeholder={paramater}
-                />
+                <div key={idx}>
+                  <RequiredParameterInput
+                    onChange={event =>
+                      setValuesArray([
+                        ...values.slice(0, idx),
+                        event.target.value,
+                        ...values.slice(idx + 1),
+                      ])
+                    }
+                    name={paramater}
+                    placeholder={paramater}
+                  />
+                  {values[idx] &&
+                  parameterIsNumberType(paramater) &&
+                  !validateParameter(values[idx], paramater) ? (
+                    <ErrorLabel>Parameter must be a number</ErrorLabel>
+                  ) : null}
+                </div>
               ))}
-              <URIContainer>{uri}</URIContainer>
+              <URIContainer>{liveEdit(uri, values)}</URIContainer>
               <ButtonContainer>
                 <Button
                   onClick={() => {

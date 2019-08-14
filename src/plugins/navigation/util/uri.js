@@ -8,6 +8,13 @@
 
 import querystring from 'querystring';
 
+export const validateParameter = (value: string, parameter: string) => {
+  return (
+    value &&
+    (parameterIsNumberType(parameter) ? !isNaN(parseInt(value, 10)) : true)
+  );
+};
+
 export const filterOptionalParameters: string => string = (uri: string) => {
   return uri.replace(/[/&]?([^&?={}\/]*=)?{\?.*?}/g, '');
 };
@@ -61,4 +68,16 @@ export const getRequiredParameters = (uri: string) => {
     match = parameterRegExp.exec(uri);
   }
   return matches;
+};
+
+export const liveEdit = (uri: string, formValues: Array<string>): string => {
+  const parameterRegExp = /({[^?]*?})/g;
+  const uriArray = uri.split(parameterRegExp);
+  return uriArray.reduce((acc, uriComponent, idx) => {
+    if (idx % 2 === 0 || !formValues[(idx - 1) / 2]) {
+      return acc + uriComponent;
+    } else {
+      return acc + formValues[(idx - 1) / 2];
+    }
+  });
 };

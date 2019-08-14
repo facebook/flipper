@@ -112,11 +112,12 @@ export default class extends FlipperPlugin<State, {}, PersistedState> {
   };
 
   navigateTo = (query: string) => {
-    this.props.setPersistedState({currentURI: query});
-    const requiredParameters = getRequiredParameters(query);
+    const filteredQuery = filterOptionalParameters(query);
+    this.props.setPersistedState({currentURI: filteredQuery});
+    const requiredParameters = getRequiredParameters(filteredQuery);
     if (requiredParameters.length === 0) {
       this.getDevice().then(device => {
-        device.navigateToLocation(filterOptionalParameters(query));
+        device.navigateToLocation(filterOptionalParameters(filteredQuery));
       });
     } else {
       this.setState({

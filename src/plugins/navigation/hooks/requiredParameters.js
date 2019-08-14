@@ -7,14 +7,7 @@
  */
 
 import {useEffect, useState} from 'react';
-import {parameterIsNumberType} from '../util/uri';
-
-const validateParameter = (value: string, parameter: string) => {
-  return (
-    value.length > 0 &&
-    (parameterIsNumberType(parameter) ? !isNaN(parseInt(value, 10)) : true)
-  );
-};
+import {validateParameter} from '../util/uri';
 
 export const useRequiredParameterFormValidator = (
   requiredParameters: Array<string>,
