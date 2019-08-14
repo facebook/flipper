@@ -7,6 +7,7 @@
 
 import {Provider} from 'react-redux';
 import ReactDOM from 'react-dom';
+import {useState, useEffect} from 'react';
 import {ContextMenuProvider} from 'flipper';
 import GK from './fb-stubs/GK.tsx';
 import {init as initLogger} from './fb-stubs/Logger.tsx';
@@ -22,7 +23,10 @@ import config from './utils/processConfig.tsx';
 import {stateSanitizer} from './utils/reduxDevToolsConfig.tsx';
 import {initLauncherHooks} from './utils/launcher.tsx';
 import initCrashReporter from './utils/electronCrashReporter.tsx';
+import fbConfig from './fb-stubs/config.tsx';
+import {isFBEmployee} from './utils/fbEmployee.js';
 import path from 'path';
+import WarningEmployee from './chrome/WarningEmployee.tsx';
 
 const store = createStore(
   reducers,
@@ -35,15 +39,34 @@ const bugReporter = new BugReporter(logger, store);
 
 GK.init();
 
-const AppFrame = () => (
-  <TooltipProvider>
-    <ContextMenuProvider>
-      <Provider store={store}>
-        <App logger={logger} bugReporter={bugReporter} />
-      </Provider>
-    </ContextMenuProvider>
-  </TooltipProvider>
-);
+const AppFrame = () => {
+  const [warnEmployee, setWarnEmployee] = useState(false);
+  useEffect(() => {
+    if (fbConfig.warnFBEmployees) {
+      isFBEmployee().then(isEmployee => {
+        setWarnEmployee(isEmployee);
+      });
+    }
+  }, []);
+
+  return (
+    <TooltipProvider>
+      <ContextMenuProvider>
+        <Provider store={store}>
+          {warnEmployee ? (
+            <WarningEmployee
+              onClick={e => {
+                setWarnEmployee(false);
+              }}
+            />
+          ) : (
+            <App logger={logger} bugReporter={bugReporter} />
+          )}
+        </Provider>
+      </ContextMenuProvider>
+    </TooltipProvider>
+  );
+};
 
 function init() {
   // $FlowFixMe: this element exists!
