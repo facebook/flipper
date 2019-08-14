@@ -7,6 +7,7 @@
 
 declare module NodeJS {
   interface Global {
+    __REVISION__: string | undefined;
     electronRequire: (name: string) => void;
     window: Window | undefined;
   }

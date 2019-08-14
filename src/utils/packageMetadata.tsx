@@ -7,7 +7,7 @@
 
 import electron from 'electron';
 import lodash from 'lodash';
-import isProduction from './isProduction.tsx';
+import isProduction from './isProduction';
 import path from 'path';
 import fs from 'fs';
 import {promisify} from 'util';
@@ -17,17 +17,20 @@ const getPackageJSON = async () => {
     isProduction() && electron.remote
       ? electron.remote.app.getAppPath()
       : process.cwd();
-  const content = await promisify(fs.readFile)(path.join(base, 'package.json'));
+  const content = await promisify(fs.readFile)(
+    path.join(base, 'package.json'),
+    'utf-8',
+  );
   return JSON.parse(content);
 };
 
-export const readCurrentRevision: () => Promise<?string> = lodash.memoize(
-  async () => {
-    // This is provided as part of the bundling process for headless.
-    if (global.__REVISION__) {
-      return global.__REVISION__;
-    }
-    const json = await getPackageJSON();
-    return json.revision;
-  },
-);
+export const readCurrentRevision: () => Promise<
+  string | undefined
+> = lodash.memoize(async () => {
+  // This is provided as part of the bundling process for headless.
+  if (global.__REVISION__) {
+    return global.__REVISION__;
+  }
+  const json = await getPackageJSON();
+  return json.revision;
+});

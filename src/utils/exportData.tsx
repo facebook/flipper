@@ -20,7 +20,7 @@ import fs from 'fs';
 import uuid from 'uuid';
 import {remote} from 'electron';
 import {serialize, deserialize} from './serialization';
-import {readCurrentRevision} from './packageMetadata.js';
+import {readCurrentRevision} from './packageMetadata';
 import {tryCatchReportPlatformFailures} from './metrics';
 import {promisify} from 'util';
 import promiseTimeout from './promiseTimeout';
