@@ -13,6 +13,7 @@ import type {Bookmark, PersistedState, URI} from '../flow-types';
 
 function constructPersistedStateMock(): PersistedState {
   return {
+    currentURI: '',
     appMatchPatterns: [],
     appMatchPatternsProvider: new DefaultProvider(),
     bookmarksProvider: new DefaultProvider(),
@@ -23,6 +24,7 @@ function constructPersistedStateMock(): PersistedState {
 
 function constructPersistedStateMockWithEvents(): PersistedState {
   return {
+    currentURI: '',
     appMatchPatterns: [],
     appMatchPatternsProvider: new DefaultProvider(),
     bookmarksProvider: new DefaultProvider(),

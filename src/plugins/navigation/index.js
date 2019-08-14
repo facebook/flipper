@@ -44,6 +44,7 @@ export default class extends FlipperPlugin<State, {}, PersistedState> {
   static defaultPersistedState: PersistedState = {
     navigationEvents: [],
     bookmarks: new Map<string, Bookmark>(),
+    currentURI: '',
     bookmarksProvider: new DefaultProvider(),
     appMatchPatterns: [],
     appMatchPatternsProvider: new DefaultProvider(),
@@ -53,7 +54,6 @@ export default class extends FlipperPlugin<State, {}, PersistedState> {
     shouldShowSaveBookmarkDialog: false,
     saveBookmarkURI: null,
     shouldShowURIErrorDialog: false,
-    currentURI: '',
     requiredParameters: [],
   };
 
@@ -66,6 +66,8 @@ export default class extends FlipperPlugin<State, {}, PersistedState> {
       case 'nav_event':
         return {
           ...persistedState,
+          currentURI:
+            payload.uri == null ? persistedState.currentURI : payload.uri,
           navigationEvents: [
             {
               uri: payload.uri === undefined ? null : payload.uri,
@@ -110,7 +112,7 @@ export default class extends FlipperPlugin<State, {}, PersistedState> {
   };
 
   navigateTo = (query: string) => {
-    this.setState({currentURI: query});
+    this.props.setPersistedState({currentURI: query});
     const requiredParameters = getRequiredParameters(query);
     if (requiredParameters.length === 0) {
       this.getDevice().then(device => {
@@ -156,7 +158,6 @@ export default class extends FlipperPlugin<State, {}, PersistedState> {
 
   render() {
     const {
-      currentURI,
       saveBookmarkURI,
       shouldShowSaveBookmarkDialog,
       shouldShowURIErrorDialog,
@@ -165,6 +166,7 @@ export default class extends FlipperPlugin<State, {}, PersistedState> {
     const {
       bookmarks,
       bookmarksProvider,
+      currentURI,
       appMatchPatternsProvider,
       navigationEvents,
     } = this.props.persistedState;

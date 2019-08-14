@@ -19,6 +19,7 @@ import {
   colors,
   Button,
   ButtonGroup,
+  ButtonGroupChain,
   FlexRow,
   Spacer,
   styled,
@@ -28,6 +29,7 @@ import {
 import {connect} from 'react-redux';
 import RatingButton from './RatingButton';
 import DevicesButton from './DevicesButton';
+import LocationsButton from './LocationsButton';
 import ScreenCaptureButtons from './ScreenCaptureButtons';
 import AutoUpdateVersion from './AutoUpdateVersion';
 import UpdateIndicator from './UpdateIndicator';
@@ -78,6 +80,7 @@ type StateFromProps = {
   launcherMsg: LauncherMsg;
   flipperRating: number | null;
   share: ShareType | null | undefined;
+  navPluginIsActive: boolean;
 };
 
 const VersionText = styled(Text)({
@@ -139,10 +142,18 @@ function statusMessageComponent(
 type Props = OwnProps & DispatchFromProps & StateFromProps;
 class TitleBar extends React.Component<Props, StateFromProps> {
   render() {
-    const {share} = this.props;
+    const {navPluginIsActive, share} = this.props;
     return (
       <AppTitleBar focused={this.props.windowIsFocused} className="toolbar">
-        <DevicesButton />
+        {navPluginIsActive ? (
+          <ButtonGroupChain iconSize={14}>
+            <DevicesButton />
+            <LocationsButton />
+          </ButtonGroupChain>
+        ) : (
+          <DevicesButton />
+        )}
+
         <ScreenCaptureButtons />
         {statusMessageComponent(
           this.props.downloadingImportData,
@@ -206,6 +217,7 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, State>(
       flipperRating,
       share,
     },
+    pluginStates,
   }) => ({
     windowIsFocused,
     leftSidebarVisible,
@@ -215,6 +227,9 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, State>(
     launcherMsg,
     flipperRating,
     share,
+    navPluginIsActive: Object.keys(pluginStates).some(key =>
+      /#Navigation$/.test(key),
+    ),
   }),
   {
     setActiveSheet,

@@ -9,7 +9,6 @@
 export type URI = string;
 
 export type State = {|
-  currentURI: string,
   shouldShowSaveBookmarkDialog: boolean,
   shouldShowURIErrorDialog: boolean,
   saveBookmarkURI: ?URI,
@@ -22,6 +21,7 @@ export type PersistedState = {|
   bookmarksProvider: AutoCompleteProvider,
   appMatchPatterns: Array<AppMatchPattern>,
   appMatchPatternsProvider: AutoCompleteProvider,
+  currentURI: string,
 |};
 
 export type NavigationEvent = {|
