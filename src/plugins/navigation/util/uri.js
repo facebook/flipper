@@ -11,7 +11,10 @@ import querystring from 'querystring';
 export const validateParameter = (value: string, parameter: string) => {
   return (
     value &&
-    (parameterIsNumberType(parameter) ? !isNaN(parseInt(value, 10)) : true)
+    (parameterIsNumberType(parameter) ? !isNaN(parseInt(value, 10)) : true) &&
+    (parameterIsBooleanType(parameter)
+      ? value === 'true' || value === 'false'
+      : true)
   );
 };
 
@@ -37,6 +40,11 @@ export const parseURIParameters: string => Map<string, string> = (
 
 export const parameterIsNumberType = (parameter: string) => {
   const regExp = /^{(#|\?#)/g;
+  return regExp.test(parameter);
+};
+
+export const parameterIsBooleanType = (parameter: string) => {
+  const regExp = /^{(!|\?!)/g;
   return regExp.test(parameter);
 };
 

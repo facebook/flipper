@@ -10,6 +10,7 @@ import {Button, FlexColumn, Input, Sheet, styled, Glyph, colors} from 'flipper';
 import {
   replaceRequiredParametersWithValues,
   parameterIsNumberType,
+  parameterIsBooleanType,
   validateParameter,
   liveEdit,
 } from '../util/uri';
@@ -112,6 +113,13 @@ export default (props: Props) => {
                   parameterIsNumberType(paramater) &&
                   !validateParameter(values[idx], paramater) ? (
                     <ErrorLabel>Parameter must be a number</ErrorLabel>
+                  ) : null}
+                  {values[idx] &&
+                  parameterIsBooleanType(paramater) &&
+                  !validateParameter(values[idx], paramater) ? (
+                    <ErrorLabel>
+                      Parameter must be either 'true' or 'false'
+                    </ErrorLabel>
                   ) : null}
                 </div>
               ))}
