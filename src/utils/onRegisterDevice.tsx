@@ -4,16 +4,16 @@
  * LICENSE file in the root directory of this source tree.
  * @format
  */
-import type {Store} from '../reducers/index.tsx';
-import {FlipperPlugin, FlipperDevicePlugin} from '../plugin.tsx';
-import {setPluginState} from '../reducers/pluginStates.tsx';
-import type BaseDevice from '../devices/BaseDevice.tsx';
-import {getPersistedState} from '../utils/pluginUtils.tsx';
+import {Store} from '../reducers/index';
+import {FlipperPlugin, FlipperDevicePlugin} from '../plugin';
+import {setPluginState} from '../reducers/pluginStates';
+import BaseDevice from '../devices/BaseDevice';
+import {getPersistedState} from '../utils/pluginUtils';
 
 export function registerDeviceCallbackOnPlugins(
   store: Store,
-  devicePlugins: Map<string, Class<FlipperDevicePlugin<>>>,
-  clientPlugins: Map<string, Class<FlipperPlugin<>>>,
+  devicePlugins: Map<string, typeof FlipperDevicePlugin>,
+  clientPlugins: Map<string, typeof FlipperPlugin>,
   device: BaseDevice,
 ) {
   const callRegisterDeviceHook = plugin => {

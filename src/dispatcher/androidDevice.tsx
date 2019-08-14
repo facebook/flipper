@@ -10,7 +10,7 @@ import child_process from 'child_process';
 import {Store} from '../reducers/index';
 import BaseDevice from '../devices/BaseDevice';
 import {Logger} from '../fb-interfaces/Logger.js';
-import {registerDeviceCallbackOnPlugins} from '../utils/onRegisterDevice.js';
+import {registerDeviceCallbackOnPlugins} from '../utils/onRegisterDevice';
 import {getAdbClient} from '../utils/adbClient';
 import {default as which} from 'which';
 import {promisify} from 'util';
