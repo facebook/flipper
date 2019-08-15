@@ -11,14 +11,14 @@ const exec = util.promisify(require('child_process').exec);
 const cmd = 'klist --json';
 const endWith = '@THEFACEBOOK.COM';
 
-export function isFBEmployee(): Promise<boolean> {
+export async function isFBEmployee(): Promise<boolean> {
   return exec(cmd).then(
-    (stdobj: {stderr: string, stdout: string}) => {
+    (stdobj: {stderr: string; stdout: string}) => {
       const principal = String(JSON.parse(stdobj.stdout).principal);
 
       return principal.endsWith(endWith);
     },
-    err => {
+    (_err: Error) => {
       return false;
     },
   );

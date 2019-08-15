@@ -24,7 +24,7 @@ import {stateSanitizer} from './utils/reduxDevToolsConfig';
 import {initLauncherHooks} from './utils/launcher';
 import initCrashReporter from './utils/electronCrashReporter';
 import fbConfig from './fb-stubs/config';
-import {isFBEmployee} from './utils/fbEmployee.js';
+import {isFBEmployee} from './utils/fbEmployee';
 import WarningEmployee from './chrome/WarningEmployee';
 import React from 'react';
 
