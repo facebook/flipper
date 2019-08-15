@@ -22,7 +22,7 @@ import {listDevices} from '../src/utils/listDevices.tsx';
 import setup from '../static/setup.js';
 import type {Store} from '../src/reducers/index.tsx';
 import {getPersistentPlugins} from '../src/utils/pluginUtils.tsx';
-import {serialize} from '../src/utils/serialization';
+import {serialize} from '../src/utils/serialization.tsx';
 import type BaseDevice from '../src/devices/BaseDevice.tsx';
 
 import {getStringFromErrorLike} from '../src/utils/index.tsx';

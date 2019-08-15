@@ -5,7 +5,7 @@
  * @format
  */
 
-import {Idler} from './Idler.tsx';
+import {Idler} from './Idler';
 export async function serialize(
   obj: Object,
   idler?: Idler,
@@ -16,16 +16,16 @@ export async function serialize(
   );
 }
 
-export function deserialize(str: string): Object {
+export function deserialize(str: string): any {
   return deserializeObject(JSON.parse(str));
 }
 
 function processArray(
   element: any,
-  array: [any],
+  array: Array<any>,
   stack: Array<any>,
   dict: Map<any, any>,
-): {childNeedsIteration: boolean, outputArr: Array<any>} {
+): {childNeedsIteration: boolean; outputArr: Array<any>} {
   // Adds the array item to the stack if it needs to undergo iteration to serialise it. Otherwise it adds the serialized version of the item to the memoization dict
   const outputArr = [];
   let childNeedsIteration = false;
@@ -74,7 +74,7 @@ export function processMapElement(
   obj: Map<any, any>,
   dict: Map<any, any>,
   stack: Array<any>,
-): {childNeedsIteration: boolean, outputArray: Array<any>} {
+): {childNeedsIteration: boolean; outputArray: Array<any>} {
   const arr = [];
   let childNeedsIteration = false;
   for (const item of [...obj]) {
@@ -95,7 +95,7 @@ export function processObjectToBeSerialized(
   element: Object,
   dict: Map<any, any>,
   stack: Array<any>,
-): {childNeedsIteration: boolean, outputObject: Object} {
+): {childNeedsIteration: boolean; outputObject: Object} {
   const array = Object.entries(element);
   let obj = {};
   let childNeedsIteration = false;
@@ -122,7 +122,7 @@ export async function makeObjectSerializable(
   obj: any,
   idler?: Idler,
   statusUpdate?: (msg: string) => void,
-): any {
+): Promise<any> {
   if (!(obj instanceof Object)) {
     return obj;
   }
@@ -213,6 +213,7 @@ export function deserializeObject(obj: any): any {
     switch (type) {
       case 'Map': {
         return new Map(
+          // @ts-ignore
           [...obj.data].map(item => [...item].map(deserializeObject)),
         );
       }

@@ -5,7 +5,7 @@
  * @format
  */
 
-import {makeObjectSerializable, deserializeObject} from '../serialization';
+import {makeObjectSerializable, deserializeObject} from '../serialization.tsx';
 
 class TestObject extends Object {
   constructor(title: Object, map: ?Map<any, any>, set: ?Set<any>) {
