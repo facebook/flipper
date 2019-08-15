@@ -5,13 +5,13 @@
  * @format
  */
 import React from 'react';
-import {App} from '../App.js';
+import {App} from '../App';
 import {Provider} from 'react-redux';
 import renderer from 'react-test-renderer';
-import reducers from '../reducers/index.tsx';
+import reducers from '../reducers/index';
 import configureStore from 'redux-mock-store';
-import {init as initLogger} from '../fb-stubs/Logger.tsx';
-import BugReporter from '../fb-stubs/BugReporter.tsx';
+import {init as initLogger} from '../fb-stubs/Logger';
+import BugReporter from '../fb-stubs/BugReporter';
 
 // create redux store with initial state
 const mockStore = configureStore([])(reducers(undefined, {type: 'INIT'}));

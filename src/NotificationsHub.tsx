@@ -5,17 +5,9 @@
  * @format
  */
 
-import type {
-  SearchableProps,
-  FlipperBasePlugin,
-  FlipperPlugin,
-  Device,
-} from 'flipper';
-import type {PluginNotification} from './reducers/notifications.tsx';
-import type {Logger} from './fb-interfaces/Logger';
-
+import {SearchableProps, FlipperBasePlugin, FlipperPlugin} from 'flipper';
+import {Logger} from './fb-interfaces/Logger';
 import {
-  FlipperDevicePlugin,
   Searchable,
   Button,
   ButtonGroup,
@@ -27,30 +19,38 @@ import {
   styled,
   colors,
 } from 'flipper';
+import {FlipperDevicePlugin, BaseAction} from './plugin';
 import {connect} from 'react-redux';
 import React, {Component, Fragment} from 'react';
 import {clipboard} from 'electron';
 import PropTypes from 'prop-types';
 import {
+  PluginNotification,
   clearAllNotifications,
   updatePluginBlacklist,
   updateCategoryBlacklist,
-} from './reducers/notifications.tsx';
-import {selectPlugin} from './reducers/connections.tsx';
-import {textContent} from './utils/index.tsx';
-import createPaste from './fb-stubs/createPaste.tsx';
+} from './reducers/notifications';
+import {selectPlugin} from './reducers/connections';
+import {State as Store} from './reducers/index';
+import textContent from './utils/textContent';
+import createPaste from './fb-stubs/createPaste';
+import {KeyboardActions} from './MenuBar';
 
-export default class Notifications extends FlipperDevicePlugin<{}> {
+export default class Notifications<
+  S,
+  A extends BaseAction,
+  P
+> extends FlipperDevicePlugin<S, A, P> {
   static id = 'notifications';
   static title = 'Notifications';
   static icon = 'bell';
-  static keyboardActions = ['clear'];
+  static keyboardActions: KeyboardActions = ['clear'];
 
   static contextTypes = {
     store: PropTypes.object.isRequired,
   };
 
-  static supportsDevice(device: Device) {
+  static supportsDevice() {
     return false;
   }
 
@@ -99,33 +99,36 @@ export default class Notifications extends FlipperDevicePlugin<{}> {
   }
 }
 
-type OwnProps = {|
-  ...SearchableProps,
-  onClear: () => void,
-  selectedID: ?string,
-  logger: Logger,
-|};
+type OwnProps = {
+  onClear: () => void;
+  selectedID: string | null | undefined;
+  logger: Logger;
+} & SearchableProps;
 
-type Props = {|
-  ...OwnProps,
-  activeNotifications: Array<PluginNotification>,
-  invalidatedNotifications: Array<PluginNotification>,
-  blacklistedPlugins: Array<string>,
-  blacklistedCategories: Array<string>,
-  devicePlugins: Map<string, Class<FlipperDevicePlugin<>>>,
-  clientPlugins: Map<string, Class<FlipperPlugin<>>>,
-  updatePluginBlacklist: (blacklist: Array<string>) => mixed,
-  updateCategoryBlacklist: (blacklist: Array<string>) => mixed,
-  selectPlugin: (payload: {|
-    selectedPlugin: ?string,
-    selectedApp: ?string,
-    deepLinkPayload: ?string,
-  |}) => mixed,
-|};
+type StateFromProps = {
+  activeNotifications: Array<PluginNotification>;
+  invalidatedNotifications: Array<PluginNotification>;
+  blacklistedPlugins: Array<string>;
+  blacklistedCategories: Array<string>;
+  devicePlugins: Map<string, typeof FlipperDevicePlugin>;
+  clientPlugins: Map<string, typeof FlipperPlugin>;
+};
 
-type State = {|
-  selectedNotification: ?string,
-|};
+type DispatchFromProps = {
+  selectPlugin: (payload: {
+    selectedPlugin: string | null | undefined;
+    selectedApp: string | null | undefined;
+    deepLinkPayload: string | null | undefined;
+  }) => any;
+  updatePluginBlacklist: (blacklist: Array<string>) => any;
+  updateCategoryBlacklist: (blacklist: Array<string>) => any;
+};
+
+type Props = OwnProps & StateFromProps & DispatchFromProps;
+
+type State = {
+  selectedNotification: string | null | undefined;
+};
 
 const Content = styled(FlexColumn)({
   padding: '0 10px',
@@ -327,7 +330,12 @@ class NotificationsTable extends Component<Props, State> {
   }
 }
 
-const ConnectedNotificationsTable = connect<Props, OwnProps, _, _, _, _>(
+const ConnectedNotificationsTable = connect<
+  StateFromProps,
+  DispatchFromProps,
+  OwnProps,
+  Store
+>(
   ({
     notifications: {
       activeNotifications,
@@ -351,7 +359,10 @@ const ConnectedNotificationsTable = connect<Props, OwnProps, _, _, _, _>(
   },
 )(Searchable(NotificationsTable));
 
-const shadow = (props, hover) => {
+const shadow = (
+  props: {isSelected?: boolean; inactive?: boolean},
+  _hover?: boolean,
+) => {
   if (props.inactive) {
     return `inset 0 0 0 1px ${colors.light10}`;
   }
@@ -448,27 +459,30 @@ const NotificationButton = styled('div')({
 });
 
 type ItemProps = {
-  ...PluginNotification,
-  onHighlight?: () => mixed,
-  onHidePlugin?: () => mixed,
-  onHideCategory?: () => mixed,
-  isSelected?: boolean,
-  inactive?: boolean,
-  selectPlugin?: (payload: {|
-    selectedPlugin: ?string,
-    selectedApp: ?string,
-    deepLinkPayload: ?string,
-  |}) => mixed,
-  logger?: Logger,
-  plugin: ?Class<FlipperBasePlugin<>>,
+  onHighlight?: () => any;
+  onHidePlugin?: () => any;
+  onHideCategory?: () => any;
+  onClear?: () => any;
+  isSelected?: boolean;
+  inactive?: boolean;
+  selectPlugin?: (payload: {
+    selectedPlugin: string | null | undefined;
+    selectedApp: string | null | undefined;
+    deepLinkPayload: string | null | undefined;
+  }) => any;
+  logger?: Logger;
+  plugin: typeof FlipperBasePlugin | null | undefined;
 };
 
-type ItemState = {|
-  reportedNotHelpful: boolean,
-|};
+type ItemState = {
+  reportedNotHelpful: boolean;
+};
 
-class NotificationItem extends Component<ItemProps, ItemState> {
-  constructor(props: ItemProps) {
+class NotificationItem extends Component<
+  ItemProps & PluginNotification,
+  ItemState
+> {
+  constructor(props: ItemProps & PluginNotification) {
     super(props);
     const items = [];
     if (props.onHidePlugin && props.plugin) {
@@ -566,7 +580,7 @@ class NotificationItem extends Component<ItemProps, ItemState> {
         isSelected={isSelected}
         inactive={inactive}
         items={this.contextMenuItems}>
-        <Glyph name={plugin?.icon || 'bell'} size={12} />
+        <Glyph name={(plugin ? plugin.icon : 'bell') || 'bell'} size={12} />
         <NotificationContent isSelected={isSelected}>
           <Title>{notification.title}</Title>
           {notification.message}

@@ -4,27 +4,30 @@
  * LICENSE file in the root directory of this source tree.
  * @format
  */
-import type {FlipperPlugin, FlipperDevicePlugin} from './plugin.tsx';
-import type {Logger} from './fb-interfaces/Logger';
-import type {Props as PluginProps} from './plugin.tsx';
-import {pluginKey as getPluginKey} from './reducers/pluginStates.tsx';
-import Client from './Client.tsx';
-import BaseDevice from './devices/BaseDevice.tsx';
+import {
+  FlipperPlugin,
+  FlipperDevicePlugin,
+  Props as PluginProps,
+} from './plugin';
+import {Logger} from './fb-interfaces/Logger';
+import BaseDevice from './devices/BaseDevice';
+import {pluginKey as getPluginKey} from './reducers/pluginStates';
+import Client from './Client';
 import {
   ErrorBoundary,
-  PureComponent,
   FlexColumn,
   FlexRow,
   colors,
   styled,
   ArchivedDevice,
 } from 'flipper';
-import React from 'react';
+import React, {PureComponent} from 'react';
 import {connect} from 'react-redux';
-import {setPluginState} from './reducers/pluginStates.tsx';
-import {selectPlugin} from './reducers/connections.tsx';
+import {setPluginState} from './reducers/pluginStates';
+import {selectPlugin} from './reducers/connections';
+import {State as Store} from './reducers/index';
 import NotificationsHub from './NotificationsHub';
-import {activateMenuItems} from './MenuBar.js';
+import {activateMenuItems} from './MenuBar';
 
 const Container = styled(FlexColumn)({
   width: 0,
@@ -39,34 +42,48 @@ const SidebarContainer = styled(FlexRow)({
   overflow: 'scroll',
 });
 
-type OwnProps = {|
-  logger: Logger,
-|};
+type OwnProps = {
+  logger: Logger;
+};
 
-type Props = {|
-  ...OwnProps,
-  pluginState: Object,
-  activePlugin: ?Class<FlipperPlugin<> | FlipperDevicePlugin<>>,
-  target: Client | BaseDevice | null,
-  pluginKey: ?string,
-  deepLinkPayload: ?string,
-  selectedApp: ?string,
-  selectPlugin: (payload: {|
-    selectedPlugin: ?string,
-    selectedApp?: ?string,
-    deepLinkPayload: ?string,
-  |}) => mixed,
+type StateFromProps = {
+  pluginState: Object;
+  activePlugin: typeof FlipperPlugin | typeof FlipperDevicePlugin;
+  target: Client | BaseDevice | null;
+  pluginKey: string | null | undefined;
+  deepLinkPayload: string | null | undefined;
+  selectedApp: string | null | undefined;
+  isArchivedDevice: boolean;
+};
+
+type DispatchFromProps = {
+  selectPlugin: (payload: {
+    selectedPlugin: string | null | undefined;
+    selectedApp?: string | null | undefined;
+    deepLinkPayload: string | null | undefined;
+  }) => any;
   setPluginState: (payload: {
-    pluginKey: string,
-    state: Object,
-  }) => void,
-  isArchivedDevice: boolean,
-|};
+    pluginKey: string;
+    state: Partial<Object>;
+  }) => void;
+};
+
+type Props = StateFromProps & DispatchFromProps & OwnProps;
 
 class PluginContainer extends PureComponent<Props> {
-  plugin: ?FlipperPlugin<> | FlipperDevicePlugin<>;
+  plugin:
+    | FlipperPlugin<any, any, any>
+    | FlipperDevicePlugin<any, any, any>
+    | null
+    | undefined;
 
-  refChanged = (ref: ?FlipperPlugin<> | FlipperDevicePlugin<>) => {
+  refChanged = (
+    ref:
+      | FlipperPlugin<any, any, any>
+      | FlipperDevicePlugin<any, any, any>
+      | null
+      | undefined,
+  ) => {
     if (this.plugin) {
       this.plugin._teardown();
       this.plugin = null;
@@ -100,7 +117,16 @@ class PluginContainer extends PureComponent<Props> {
       console.warn(`No selected plugin. Rendering empty!`);
       return null;
     }
-    const props: PluginProps<Object> = {
+    const props: PluginProps<Object> & {
+      key: string;
+      ref: (
+        ref:
+          | FlipperPlugin<any, any, any>
+          | FlipperDevicePlugin<any, any, any>
+          | null
+          | undefined,
+      ) => void;
+    } = {
       key: pluginKey,
       logger: this.props.logger,
       selectedApp,
@@ -113,7 +139,10 @@ class PluginContainer extends PureComponent<Props> {
       setPersistedState: state => setPluginState({pluginKey, state}),
       target,
       deepLinkPayload: this.props.deepLinkPayload,
-      selectPlugin: (pluginID: string, deepLinkPayload: ?string) => {
+      selectPlugin: (
+        pluginID: string,
+        deepLinkPayload: string | null | undefined,
+      ) => {
         const {target} = this.props;
         // check if plugin will be available
         if (
@@ -148,9 +177,8 @@ class PluginContainer extends PureComponent<Props> {
   }
 }
 
-export default connect<Props, OwnProps, _, _, _, _>(
+export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
   ({
-    application: {rightSidebarVisible, rightSidebarAvailable},
     connections: {
       selectedPlugin,
       selectedDevice,
@@ -163,7 +191,10 @@ export default connect<Props, OwnProps, _, _, _, _>(
   }) => {
     let pluginKey = null;
     let target = null;
-    let activePlugin: ?Class<FlipperPlugin<> | FlipperDevicePlugin<>> = null;
+    let activePlugin:
+      | typeof FlipperDevicePlugin
+      | typeof FlipperPlugin
+      | null = null;
 
     if (selectedPlugin) {
       if (selectedPlugin === NotificationsHub.id) {
@@ -185,6 +216,7 @@ export default connect<Props, OwnProps, _, _, _, _>(
     const isArchivedDevice = !selectedDevice
       ? false
       : selectedDevice instanceof ArchivedDevice;
+
     return {
       pluginState: pluginStates[pluginKey],
       activePlugin,

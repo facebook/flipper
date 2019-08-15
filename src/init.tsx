@@ -8,30 +8,34 @@
 import {Provider} from 'react-redux';
 import ReactDOM from 'react-dom';
 import {useState, useEffect} from 'react';
-import {ContextMenuProvider} from 'flipper';
-import GK from './fb-stubs/GK.tsx';
-import {init as initLogger} from './fb-stubs/Logger.tsx';
-import App from './App.js';
-import BugReporter from './fb-stubs/BugReporter.tsx';
-import setupPrefetcher from './fb-stubs/Prefetcher.tsx';
+import ContextMenuProvider from './ui/components/ContextMenuProvider.js';
+import GK from './fb-stubs/GK';
+import {init as initLogger} from './fb-stubs/Logger';
+import App from './App';
+import BugReporter from './fb-stubs/BugReporter';
+import setupPrefetcher from './fb-stubs/Prefetcher';
 import {createStore} from 'redux';
 import {persistStore} from 'redux-persist';
-import reducers from './reducers/index.tsx';
-import dispatcher from './dispatcher/index.tsx';
+import reducers, {Actions, State as StoreState} from './reducers/index';
+import dispatcher from './dispatcher/index';
 import TooltipProvider from './ui/components/TooltipProvider.js';
-import config from './utils/processConfig.tsx';
-import {stateSanitizer} from './utils/reduxDevToolsConfig.tsx';
-import {initLauncherHooks} from './utils/launcher.tsx';
-import initCrashReporter from './utils/electronCrashReporter.tsx';
-import fbConfig from './fb-stubs/config.tsx';
+import config from './utils/processConfig';
+import {stateSanitizer} from './utils/reduxDevToolsConfig';
+import {initLauncherHooks} from './utils/launcher';
+import initCrashReporter from './utils/electronCrashReporter';
+import fbConfig from './fb-stubs/config';
 import {isFBEmployee} from './utils/fbEmployee.js';
-import path from 'path';
-import WarningEmployee from './chrome/WarningEmployee.tsx';
+import WarningEmployee from './chrome/WarningEmployee';
+import React from 'react';
 
-const store = createStore(
+const store = createStore<StoreState, Actions, any, any>(
   reducers,
-  window.__REDUX_DEVTOOLS_EXTENSION__ &&
-    window.__REDUX_DEVTOOLS_EXTENSION__({stateSanitizer}),
+  window.__REDUX_DEVTOOLS_EXTENSION__
+    ? window.__REDUX_DEVTOOLS_EXTENSION__({
+        // @ts-ignore
+        stateSanitizer,
+      })
+    : undefined,
 );
 
 const logger = initLogger(store);
@@ -55,7 +59,7 @@ const AppFrame = () => {
         <Provider store={store}>
           {warnEmployee ? (
             <WarningEmployee
-              onClick={e => {
+              onClick={() => {
                 setWarnEmployee(false);
               }}
             />
@@ -69,13 +73,12 @@ const AppFrame = () => {
 };
 
 function init() {
-  // $FlowFixMe: this element exists!
   ReactDOM.render(<AppFrame />, document.getElementById('root'));
   initLauncherHooks(config(), store);
   const sessionId = store.getState().application.sessionId;
   initCrashReporter(sessionId || '');
 
-  requestIdleCallback(() => {
+  window.requestIdleCallback(() => {
     setupPrefetcher();
   });
 }

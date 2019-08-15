@@ -5,31 +5,27 @@
  * @format
  */
 
-import {createTablePlugin} from '../createTablePlugin.js';
-
-import type {TableRows_immutable} from 'flipper';
-
-//import type {PersistedState, RowData} from '../createTablePlugin.js';
-import {FlipperPlugin} from '../plugin.tsx';
-
+import {createTablePlugin} from '../createTablePlugin';
+import {FlipperPlugin} from '../plugin';
 import {List, Map as ImmutableMap} from 'immutable';
+import {TableRows_immutable} from '../ui/components/table/types.js';
 
 const PROPS = {
   method: 'method',
   resetMethod: 'resetMethod',
   columns: {},
   columnSizes: {},
-  renderSidebar: (r: {id: string}) => {},
-  buildRow: (r: {id: string}) => {},
+  renderSidebar: () => {},
+  buildRow: () => {},
 };
 
-type PersistedState<T> = {|
-  rows: TableRows_immutable,
-  datas: ImmutableMap<string, T>,
-|};
+type PersistedState<T> = {
+  rows: TableRows_immutable;
+  datas: ImmutableMap<string, T>;
+};
 
 type RowData = {
-  id: string,
+  id: string;
 };
 
 test('createTablePlugin returns FlipperPlugin', () => {
@@ -55,8 +51,9 @@ test('persistedStateReducer is resetting data', () => {
     ]),
   };
 
-  // $FlowFixMe persistedStateReducer exists for createTablePlugin
-  const {rows, datas} = tablePlugin.persistedStateReducer(ps, resetMethod, {});
+  const {rows, datas} = tablePlugin.persistedStateReducer(ps, resetMethod, {
+    id: '0',
+  });
 
   expect(datas.toJSON()).toEqual({});
   expect(rows.size).toBe(0);

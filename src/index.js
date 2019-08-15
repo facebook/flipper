@@ -38,7 +38,7 @@ export {
 } from './devices/BaseDevice.tsx';
 export {shouldParseAndroidLog} from './utils/crashReporterUtility.tsx';
 export {default as isProduction} from './utils/isProduction.tsx';
-export {createTablePlugin} from './createTablePlugin.js';
+export {createTablePlugin} from './createTablePlugin.tsx';
 export {default as DetailSidebar} from './chrome/DetailSidebar.tsx';
 
 export {default as Device} from './devices/BaseDevice.tsx';

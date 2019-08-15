@@ -5,46 +5,46 @@
  * @format
  */
 
-import type {
+import {
   TableHighlightedRows,
   TableRows_immutable,
   TableColumnSizes,
   TableColumns,
 } from 'flipper';
-
 import FlexColumn from './ui/components/FlexColumn';
 import Button from './ui/components/Button';
-import DetailSidebar from './chrome/DetailSidebar.tsx';
-import {FlipperPlugin} from './plugin.tsx';
+import DetailSidebar from './chrome/DetailSidebar';
+import {FlipperPlugin} from './plugin';
 import SearchableTable_immutable from './ui/components/searchable/SearchableTable_immutable';
-import textContent from './utils/textContent.tsx';
-import createPaste from './fb-stubs/createPaste.tsx';
-
+import textContent from './utils/textContent';
+import createPaste from './fb-stubs/createPaste';
 import {List, Map as ImmutableMap} from 'immutable';
+import React from 'react';
+import {KeyboardActions} from './MenuBar';
 
 type ID = string;
 
-export type RowData = {
-  id: ID,
+export interface RowData {
+  id: ID;
+}
+
+type Props<T> = {
+  method: string;
+  resetMethod?: string;
+  columns: TableColumns;
+  columnSizes: TableColumnSizes;
+  renderSidebar: (row: T) => any;
+  buildRow: (row: T) => any;
 };
 
-type Props<T> = {|
-  method: string,
-  resetMethod?: string,
-  columns: TableColumns,
-  columnSizes: TableColumnSizes,
-  renderSidebar: (row: T) => any,
-  buildRow: (row: T) => any,
-|};
+export type PersistedState<T> = {
+  rows: TableRows_immutable;
+  datas: ImmutableMap<ID, T>;
+};
 
-export type PersistedState<T> = {|
-  rows: TableRows_immutable,
-  datas: ImmutableMap<ID, T>,
-|};
-
-type State = {|
-  selectedIds: Array<ID>,
-|};
+type State = {
+  selectedIds: Array<ID>;
+};
 
 /**
  * createTablePlugin creates a Plugin class which handles fetching data from the client and
@@ -59,9 +59,10 @@ type State = {|
  * data provided. This is useful when connecting to Flipper for this first time, or reconnecting to
  * the client in an unknown state.
  */
-export function createTablePlugin<T: RowData>(props: Props<T>) {
-  return class extends FlipperPlugin<State, *, PersistedState<*>> {
-    static keyboardActions = ['clear', 'createPaste'];
+export function createTablePlugin<T extends RowData>(props: Props<T>) {
+  // @ts-ignore
+  return class extends FlipperPlugin<State, any, PersistedState<T>> {
+    static keyboardActions: KeyboardActions = ['clear', 'createPaste'];
 
     static defaultPersistedState = {
       rows: List(),
@@ -69,13 +70,13 @@ export function createTablePlugin<T: RowData>(props: Props<T>) {
     };
 
     static persistedStateReducer = (
-      persistedState: PersistedState<*>,
+      persistedState: PersistedState<T>,
       method: string,
       payload: T | Array<T>,
-    ): $Shape<PersistedState<T>> => {
+    ): Partial<PersistedState<T>> => {
       if (method === props.method) {
         return List(Array.isArray(payload) ? payload : [payload]).reduce(
-          (ps: PersistedState<*>, data: T) => {
+          (ps: PersistedState<any>, data: T) => {
             if (data.id == null) {
               console.warn('The data sent did not contain an ID.', data);
             }

@@ -5,39 +5,25 @@
  * @format
  */
 
-import type {FlipperPlugin, FlipperDevicePlugin} from './plugin.tsx';
-import {showOpenDialog} from './utils/exportData.tsx';
-import {
-  setExportDataToFileActiveSheet,
-  setActiveSheet,
-  setSelectPluginsToExportActiveSheet,
-  ACTIVE_SHEET_SHARE_DATA,
-} from './reducers/application.tsx';
-import type {Store} from './reducers/index.tsx';
-import electron from 'electron';
-import {constants} from 'flipper';
-export type DefaultKeyboardAction = 'clear' | 'goToBottom' | 'createPaste';
-export type TopLevelMenu = 'Edit' | 'View' | 'Window' | 'Help';
-const {dialog} = electron.remote;
+import {FlipperPlugin, FlipperDevicePlugin} from './plugin';
+import {showOpenDialog} from './utils/exportData';
+import {setSelectPluginsToExportActiveSheet} from './reducers/application';
+import {Store} from './reducers/';
+import electron, {MenuItemConstructorOptions} from 'electron';
+import constants from './fb-stubs/constants';
 import os from 'os';
 import path from 'path';
 
-type MenuItem = {|
-  label?: string,
-  accelerator?: string,
-  role?: string,
-  click?: Function,
-  submenu?: Array<MenuItem>,
-  type?: string,
-  enabled?: boolean,
-|};
+export type DefaultKeyboardAction = 'clear' | 'goToBottom' | 'createPaste';
+export type TopLevelMenu = 'Edit' | 'View' | 'Window' | 'Help';
+const {dialog} = electron.remote;
 
-export type KeyboardAction = {|
-  action: string,
-  label: string,
-  accelerator?: string,
-  topLevelMenu: TopLevelMenu,
-|};
+export type KeyboardAction = {
+  action: string;
+  label: string;
+  accelerator?: string;
+  topLevelMenu: TopLevelMenu;
+};
 
 const defaultKeyboardActions: Array<KeyboardAction> = [
   {
@@ -61,7 +47,7 @@ const defaultKeyboardActions: Array<KeyboardAction> = [
 
 export type KeyboardActions = Array<DefaultKeyboardAction | KeyboardAction>;
 
-const menuItems: Map<string, Object> = new Map();
+const menuItems: Map<string, electron.MenuItem> = new Map();
 
 let pluginActionHandler;
 function actionHandler(action: string) {
@@ -73,7 +59,7 @@ function actionHandler(action: string) {
 }
 
 export function setupMenuBar(
-  plugins: Array<Class<FlipperPlugin<> | FlipperDevicePlugin<>>>,
+  plugins: Array<typeof FlipperPlugin | typeof FlipperDevicePlugin>,
   store: Store,
 ) {
   const template = getTemplate(
@@ -82,12 +68,9 @@ export function setupMenuBar(
     store,
   );
   // collect all keyboard actions from all plugins
-  const registeredActions: Set<?KeyboardAction> = new Set(
+  const registeredActions: Set<KeyboardAction> = new Set(
     plugins
-      .map(
-        (plugin: Class<FlipperPlugin<> | FlipperDevicePlugin<>>) =>
-          plugin.keyboardActions || [],
-      )
+      .map(plugin => plugin.keyboardActions || [])
       .reduce((acc: KeyboardActions, cv) => acc.concat(cv), [])
       .map((action: DefaultKeyboardAction | KeyboardAction) =>
         typeof action === 'string'
@@ -130,7 +113,7 @@ export function setupMenuBar(
 function appendMenuItem(
   template: Array<MenuItemConstructorOptions>,
   actionHandler: (action: string) => void,
-  item: ?KeyboardAction,
+  item: KeyboardAction,
 ) {
   const keyboardAction = item;
   if (keyboardAction == null) {
@@ -140,7 +123,7 @@ function appendMenuItem(
     menu => menu.label === keyboardAction.topLevelMenu,
   );
   if (itemIndex > -1 && template[itemIndex].submenu != null) {
-    template[itemIndex].submenu.push({
+    (template[itemIndex].submenu as MenuItemConstructorOptions[]).push({
       click: () => actionHandler(keyboardAction.action),
       label: keyboardAction.label,
       accelerator: keyboardAction.accelerator,
@@ -150,7 +133,9 @@ function appendMenuItem(
 }
 
 export function activateMenuItems(
-  activePlugin: FlipperPlugin<> | FlipperDevicePlugin<>,
+  activePlugin:
+    | FlipperPlugin<any, any, any>
+    | FlipperDevicePlugin<any, any, any>,
 ) {
   // disable all keyboard actions
   for (const item of menuItems) {
@@ -183,15 +168,15 @@ export function activateMenuItems(
 }
 
 function getTemplate(
-  app: Object,
-  shell: Object,
+  app: electron.App,
+  shell: electron.Shell,
   store: Store,
 ): Array<MenuItemConstructorOptions> {
   const exportSubmenu = [
     {
       label: 'File...',
       accelerator: 'CommandOrControl+E',
-      click: function(item: Object, focusedWindow: Object) {
+      click: function() {
         dialog.showSaveDialog(
           null,
           {
@@ -214,20 +199,20 @@ function getTemplate(
     exportSubmenu.push({
       label: 'Sharable Link',
       accelerator: 'CommandOrControl+Shift+E',
-      click: async function(item: Object, focusedWindow: Object) {
+      click: function() {
         store.dispatch(setSelectPluginsToExportActiveSheet({type: 'link'}));
       },
     });
   }
 
-  const template = [
+  const template: MenuItemConstructorOptions[] = [
     {
       label: 'File',
       submenu: [
         {
           label: 'Open File...',
           accelerator: 'CommandOrControl+O',
-          click: function(item: Object, focusedWindow: Object) {
+          click: function() {
             showOpenDialog(store);
           },
         },
@@ -281,7 +266,10 @@ function getTemplate(
         {
           label: 'Reload',
           accelerator: 'CmdOrCtrl+R',
-          click: function(item: Object, focusedWindow: Object) {
+          click: function(
+            _,
+            focusedWindow: electron.BrowserWindow | undefined,
+          ) {
             if (focusedWindow) {
               focusedWindow.reload();
             }
@@ -296,7 +284,10 @@ function getTemplate(
               return 'F11';
             }
           })(),
-          click: function(item: Object, focusedWindow: Object) {
+          click: function(
+            _,
+            focusedWindow: electron.BrowserWindow | undefined,
+          ) {
             if (focusedWindow) {
               focusedWindow.setFullScreen(!focusedWindow.isFullScreen());
             }
@@ -311,8 +302,12 @@ function getTemplate(
               return 'Ctrl+Shift+I';
             }
           })(),
-          click: function(item: Object, focusedWindow: Object) {
+          click: function(
+            _,
+            focusedWindow: electron.BrowserWindow | undefined,
+          ) {
             if (focusedWindow) {
+              // @ts-ignore: https://github.com/electron/electron/issues/7832
               focusedWindow.toggleDevTools();
             }
           },
@@ -414,11 +409,11 @@ function getTemplate(
         },
       ],
     });
-    const windowMenu = template.find(function(m: Object) {
+    const windowMenu = template.find(function(m) {
       return m.role === 'window';
     });
     if (windowMenu) {
-      windowMenu.submenu.push(
+      (windowMenu.submenu as MenuItemConstructorOptions[]).push(
         {
           type: 'separator',
         },

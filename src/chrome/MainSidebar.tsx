@@ -29,7 +29,7 @@ import {
   LoadingIndicator,
 } from 'flipper';
 import React, {Component, PureComponent} from 'react';
-import NotificationsHub from '../NotificationsHub.js';
+import NotificationsHub from '../NotificationsHub';
 import {selectPlugin} from '../reducers/connections';
 import {setActiveSheet} from '../reducers/application';
 import UserAccount from './UserAccount';

@@ -8,22 +8,22 @@
 import React from 'react';
 import {FlexColumn, FlexRow} from 'flipper';
 import {connect} from 'react-redux';
-import WelcomeScreen from './chrome/WelcomeScreen.tsx';
-import TitleBar from './chrome/TitleBar.tsx';
-import MainSidebar from './chrome/MainSidebar.tsx';
-import BugReporterDialog from './chrome/BugReporterDialog.tsx';
-import ErrorBar from './chrome/ErrorBar.tsx';
-import ShareSheet from './chrome/ShareSheet.tsx';
-import SignInSheet from './chrome/SignInSheet.tsx';
-import ExportDataPluginSheet from './chrome/ExportDataPluginSheet.tsx';
-import ShareSheetExportFile from './chrome/ShareSheetExportFile.tsx';
-import PluginContainer from './PluginContainer.js';
-import Sheet from './chrome/Sheet.tsx';
+import WelcomeScreen from './chrome/WelcomeScreen';
+import TitleBar from './chrome/TitleBar';
+import MainSidebar from './chrome/MainSidebar';
+import BugReporterDialog from './chrome/BugReporterDialog';
+import ErrorBar from './chrome/ErrorBar';
+import ShareSheet from './chrome/ShareSheet';
+import SignInSheet from './chrome/SignInSheet';
+import ExportDataPluginSheet from './chrome/ExportDataPluginSheet';
+import ShareSheetExportFile from './chrome/ShareSheetExportFile';
+import PluginContainer from './PluginContainer';
+import Sheet from './chrome/Sheet';
 import {ipcRenderer, remote} from 'electron';
-import PluginDebugger from './chrome/PluginDebugger.tsx';
+import PluginDebugger from './chrome/PluginDebugger';
 import {
-  ShareType,
   ActiveSheet,
+  ShareType,
   ACTIVE_SHEET_BUG_REPORTER,
   ACTIVE_SHEET_PLUGIN_DEBUGGER,
   ACTIVE_SHEET_SHARE_DATA,
@@ -31,25 +31,27 @@ import {
   ACTIVE_SHEET_SHARE_DATA_IN_FILE,
   ACTIVE_SHEET_SELECT_PLUGINS_TO_EXPORT,
   ACTIVE_SHEET_PLUGIN_SHEET,
-} from './reducers/application.tsx';
-import type {Logger} from './fb-interfaces/Logger.js';
-import type BugReporter from './fb-stubs/BugReporter.tsx';
-import type BaseDevice from './devices/BaseDevice.tsx';
+} from './reducers/application';
+import {Logger} from './fb-interfaces/Logger.js';
+import BugReporter from './fb-stubs/BugReporter';
+import BaseDevice from './devices/BaseDevice';
+import {State as Store} from './reducers/index';
 const version = remote.app.getVersion();
 
-type OwnProps = {|
-  logger: Logger,
-  bugReporter: BugReporter,
-|};
+type OwnProps = {
+  logger: Logger;
+  bugReporter: BugReporter;
+};
 
-type Props = {|
-  ...OwnProps,
-  leftSidebarVisible: boolean,
-  selectedDevice: ?BaseDevice,
-  error: ?string,
-  activeSheet: ActiveSheet,
-  share: ?ShareType,
-|};
+type StateFromProps = {
+  leftSidebarVisible: boolean;
+  selectedDevice: BaseDevice | undefined;
+  error: string | null | undefined;
+  activeSheet: ActiveSheet;
+  share: ShareType | undefined;
+};
+
+type Props = StateFromProps & OwnProps;
 
 export class App extends React.Component<Props> {
   componentDidMount() {
@@ -67,7 +69,7 @@ export class App extends React.Component<Props> {
     ipcRenderer.send('componentDidMount');
   }
 
-  getSheet = (onHide: () => mixed) => {
+  getSheet = (onHide: () => any) => {
     const {activeSheet} = this.props;
     switch (activeSheet) {
       case ACTIVE_SHEET_BUG_REPORTER:
@@ -124,7 +126,7 @@ export class App extends React.Component<Props> {
   }
 }
 
-export default connect<Props, OwnProps, _, _, _, _>(
+export default connect<StateFromProps, {}, OwnProps, Store>(
   ({
     application: {leftSidebarVisible, activeSheet, share},
     connections: {selectedDevice, error},
