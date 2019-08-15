@@ -52,6 +52,7 @@ android {
 
     dependencies {
         compileOnly deps.lithoAnnotations
+        compileOnly deps.proguardAnnotations
         implementation project(':fbjni')
         implementation deps.soloader
         implementation deps.jsr305
