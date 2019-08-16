@@ -27,6 +27,13 @@ namespace jni {
 class JClass;
 class JObject;
 
+namespace detail {
+
+/// Lookup a class by name.  This should only be used internally.
+jclass findClass(JNIEnv* env, const char* name);
+
+}
+
 /// Lookup a class by name. Note this functions returns an alias_ref that
 /// points to a leaked global reference.  This is appropriate for classes
 /// that are never unloaded (which is any class in an Android app and most
@@ -83,7 +90,7 @@ bool isSameObject(alias_ref<JObject> lhs, alias_ref<JObject> rhs) noexcept;
 //
 // While users of a JavaClass-type can lookup methods and fields through the
 // underlying JClass, those calls can only be checked at runtime. It is recommended
-// that the JavaClass-type instead explicitly expose its methods as in the example
+// that the JavaClass-type instead explicitly expose it's methods as in the example
 // above.
 
 namespace detail {
@@ -114,10 +121,12 @@ public:
   template<typename T>
   local_ref<T*> getFieldValue(JField<T*> field) const noexcept;
 
-  /// Set the value of field. Any Java type is accepted, including the primitive types
-  /// and raw reference types.
+  /// Set the value of field. Any Java type is accepted.
   template<typename T>
   void setFieldValue(JField<T> field, T value) noexcept;
+  template<typename T,
+           typename = typename std::enable_if<IsPlainJniReference<T>(), T>::type>
+  void setFieldValue(JField<T> field, alias_ref<T> value) noexcept;
 
   /// Convenience method to create a std::string representing the object
   std::string toString() const;
@@ -233,11 +242,18 @@ class JClass : public JavaClass<JClass, JObject, jclass> {
   ///     makeNativeMethod("nativeMethodWithExplicitDescriptor",
   ///                      "(Lcom/facebook/example/MyClass;)V",
   ///                      methodWithExplicitDescriptor),
+  ///     makeCriticalNativeMethod_DO_NOT_USE_OR_YOU_WILL_BE_FIRED("criticalNativeMethodWithAutomaticDescriptor",
+  ///                              criticalNativeMethodWithAutomaticDescriptor),
+  ///     makeCriticalNativeMethod_DO_NOT_USE_OR_YOU_WILL_BE_FIRED("criticalNativeMethodWithExplicitDescriptor",
+  ///                              "(IIF)Z",
+  ///                              criticalNativeMethodWithExplicitDescriptor),
   ///  });
   ///
   /// By default, C++ exceptions raised will be converted to Java exceptions.
   /// To avoid this and get the "standard" JNI behavior of a crash when a C++
   /// exception is crashing out of the JNI method, declare the method noexcept.
+  /// This does NOT apply to critical native methods, where exceptions causes
+  /// a crash.
   void registerNatives(std::initializer_list<NativeMethod> methods);
 
   /// Check to see if the class is assignable from another class
@@ -287,10 +303,12 @@ class JClass : public JavaClass<JClass, JObject, jclass> {
   template<typename T>
   local_ref<T*> getStaticFieldValue(JStaticField<T*> field) noexcept;
 
-  /// Set the value of field. Any Java type is accepted, including the primitive types
-  /// and raw reference types.
+  /// Set the value of field. Any Java type is accepted.
   template<typename T>
   void setStaticFieldValue(JStaticField<T> field, T value) noexcept;
+  template<typename T,
+           typename = typename std::enable_if<IsPlainJniReference<T>(), T>::type>
+  void setStaticFieldValue(JStaticField<T> field, alias_ref<T> value) noexcept;
 
   /// Allocates a new object and invokes the specified constructor
   template<typename R, typename... Args>

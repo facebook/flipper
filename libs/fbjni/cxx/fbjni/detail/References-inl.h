@@ -174,6 +174,29 @@ operator!=(const T1& a, const T2& b) {
   return !(a == b);
 }
 
+template<typename T1>
+inline enable_if_t<IsNonWeakReference<T1>(), bool>
+operator==(const T1& a, std::nullptr_t) {
+  return getPlainJniReference(a) == nullptr;
+}
+
+template<typename T1>
+inline enable_if_t<IsNonWeakReference<T1>(), bool>
+operator==(std::nullptr_t, const T1& a) {
+  return nullptr == getPlainJniReference(a);
+}
+
+template<typename T1>
+inline enable_if_t<IsNonWeakReference<T1>(), bool>
+operator!=(const T1& a, std::nullptr_t) {
+  return !(a == nullptr);
+}
+
+template<typename T1>
+inline enable_if_t<IsNonWeakReference<T1>(), bool>
+operator!=(std::nullptr_t, const T1& a) {
+  return !(nullptr == getPlainJniReference(a));
+}
 
 // base_owned_ref ///////////////////////////////////////////////////////////////////////
 
@@ -185,7 +208,9 @@ inline base_owned_ref<T, Alloc>::base_owned_ref() noexcept
 template<typename T, typename Alloc>
 inline base_owned_ref<T, Alloc>::base_owned_ref(std::nullptr_t t) noexcept
   : base_owned_ref(static_cast<javaobject>(nullptr))
-{}
+{
+  (void)t;
+}
 
 template<typename T, typename Alloc>
 inline base_owned_ref<T, Alloc>::base_owned_ref(const base_owned_ref& other)

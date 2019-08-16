@@ -33,7 +33,7 @@
 namespace facebook {
 namespace jni {
 
-// This will get the reflected Java Method from the method_id, get its invoke
+// This will get the reflected Java Method from the method_id, get it's invoke
 // method, and call the method via that. This shouldn't ever be needed, but
 // Android 6.0 crashes when calling a method on a java.lang.Proxy via jni.
 template <typename... Args>

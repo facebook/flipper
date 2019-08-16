@@ -33,7 +33,7 @@ public class DestructorThread {
     private Destructor next;
     private Destructor previous;
 
-    Destructor(Object referent) {
+    public Destructor(Object referent) {
       super(referent, sReferenceQueue);
       sDestructorStack.push(this);
     }
@@ -43,16 +43,16 @@ public class DestructorThread {
     }
 
     /** Callback which is invoked when the original object has been garbage collected. */
-    abstract void destruct();
+    protected abstract void destruct();
   }
 
   /** A list to keep all active Destructors in memory confined to the Destructor thread. */
-  private static DestructorList sDestructorList;
+  private static final DestructorList sDestructorList;
   /** A thread safe stack where new Destructors are placed before being add to sDestructorList. */
-  private static DestructorStack sDestructorStack;
+  private static final DestructorStack sDestructorStack;
 
-  private static ReferenceQueue sReferenceQueue;
-  private static Thread sThread;
+  private static final ReferenceQueue sReferenceQueue;
+  private static final Thread sThread;
 
   static {
     sDestructorStack = new DestructorStack();
@@ -86,14 +86,14 @@ public class DestructorThread {
 
   private static class Terminus extends Destructor {
     @Override
-    void destruct() {
+    protected void destruct() {
       throw new IllegalStateException("Cannot destroy Terminus Destructor.");
     }
   }
 
   /** This is a thread safe, lock-free Treiber-like Stack of Destructors. */
   private static class DestructorStack {
-    private AtomicReference<Destructor> mHead = new AtomicReference<>();
+    private final AtomicReference<Destructor> mHead = new AtomicReference<>();
 
     public void push(Destructor newHead) {
       Destructor oldHead;
@@ -115,7 +115,7 @@ public class DestructorThread {
 
   /** A doubly-linked list of Destructors. */
   private static class DestructorList {
-    private Destructor mHead;
+    private final Destructor mHead;
 
     public DestructorList() {
       mHead = new Terminus();

@@ -249,6 +249,26 @@ template<typename T1, typename T2>
 enable_if_t<IsNonWeakReference<T1>() && IsNonWeakReference<T2>(), bool>
 operator!=(const T1& a, const T2& b);
 
+/**
+ * Compare references against nullptr
+ */
+template<typename T1>
+enable_if_t<IsNonWeakReference<T1>(), bool>
+operator==(const T1& a, std::nullptr_t);
+
+template<typename T1>
+enable_if_t<IsNonWeakReference<T1>(), bool>
+operator==(std::nullptr_t, const T1& a);
+
+template<typename T1>
+enable_if_t<IsNonWeakReference<T1>(), bool>
+operator!=(const T1& a, std::nullptr_t);
+
+template<typename T1>
+enable_if_t<IsNonWeakReference<T1>(), bool>
+operator!=(std::nullptr_t, const T1& a);
+
+
 template<typename T, typename Alloc>
 class base_owned_ref {
  public:

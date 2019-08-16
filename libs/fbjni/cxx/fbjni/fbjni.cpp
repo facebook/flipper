@@ -52,26 +52,29 @@ jint initialize(JavaVM* vm, std::function<void()>&& init_fn) noexcept {
   return JNI_VERSION_1_6;
 }
 
-alias_ref<JClass> findClassStatic(const char* name) {
-  const auto env = detail::currentOrNull();
+namespace detail {
+
+jclass findClass(JNIEnv* env, const char* name) {
   if (!env) {
     throw std::runtime_error("Unable to retrieve JNIEnv*.");
   }
-  local_ref<jclass> cls = adopt_local(env->FindClass(name));
+  jclass cls = env->FindClass(name);
   FACEBOOK_JNI_THROW_EXCEPTION_IF(!cls);
-  auto leaking_ref = (jclass)env->NewGlobalRef(cls.get());
-  FACEBOOK_JNI_THROW_EXCEPTION_IF(!leaking_ref);
-  return wrap_alias(leaking_ref);
+  return cls;
+}
+
 }
 
 local_ref<JClass> findClassLocal(const char* name) {
-  const auto env = detail::currentOrNull();
-  if (!env) {
-    throw std::runtime_error("Unable to retrieve JNIEnv*.");
-  }
-  auto cls = env->FindClass(name);
-  FACEBOOK_JNI_THROW_EXCEPTION_IF(!cls);
-  return adopt_local(cls);
+  return adopt_local(detail::findClass(detail::currentOrNull(), name));
+}
+
+alias_ref<JClass> findClassStatic(const char* name) {
+  JNIEnv* env = detail::currentOrNull();
+  auto cls = adopt_local(detail::findClass(env, name));
+  auto leaking_ref = (jclass)env->NewGlobalRef(cls.get());
+  FACEBOOK_JNI_THROW_EXCEPTION_IF(!leaking_ref);
+  return wrap_alias(leaking_ref);
 }
 
 
@@ -104,7 +107,7 @@ local_ref<JString> make_jstring(const char* utf8) {
     // The only difference between utf8 and modifiedUTF8 is in encoding 4-byte UTF8 chars
     // and '\0' that is encoded on 2 bytes.
     //
-    // Since modifiedUTF8-encoded string can be no shorter than its UTF8 conterpart we
+    // Since modifiedUTF8-encoded string can be no shorter than it's UTF8 conterpart we
     // know that if those two strings are of the same length we don't need to do any
     // conversion -> no 4-byte chars nor '\0'.
     result = env->NewStringUTF(utf8);
@@ -194,7 +197,7 @@ DEFINE_PRIMITIVE_METHODS(jdouble, Double, double)
 
 namespace detail {
 
-detail::BaseHybridClass* HybridDestructor::getNativePointer() {
+detail::BaseHybridClass* HybridDestructor::getNativePointer() const {
   static auto pointerField = javaClassStatic()->getField<jlong>("mNativePointer");
   auto* value = reinterpret_cast<detail::BaseHybridClass*>(getFieldValue(pointerField));
   if (!value) {

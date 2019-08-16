@@ -48,6 +48,11 @@ inline void JObject::setFieldValue(JField<T> field, T value) noexcept {
   field.set(self(), value);
 }
 
+template<typename T, typename>
+inline void JObject::setFieldValue(JField<T> field, alias_ref<T> value) noexcept {
+  setFieldValue(field, value.get());
+}
+
 inline std::string JObject::toString() const {
   static const auto method = findClassLocal("java/lang/Object")->getMethod<jstring()>("toString");
 
@@ -288,6 +293,11 @@ inline void JClass::setStaticFieldValue(JStaticField<T> field, T value) noexcept
   field.set(self(), value);
 }
 
+template<typename T, typename>
+inline void JClass::setStaticFieldValue(JStaticField<T> field, alias_ref<T> value) noexcept {
+  setStaticFieldValue(field, value.get());
+}
+
 template<typename R, typename... Args>
 inline local_ref<R> JClass::newObject(
     JConstructor<R(Args...)> constructor,
@@ -444,7 +454,6 @@ local_ref<typename JArrayClass<T>::javaobject> adopt_local_array(jobjectArray re
 template <typename JArrayType>
 auto JPrimitiveArray<JArrayType>::getRegion(jsize start, jsize length)
     -> std::unique_ptr<T[]> {
-  using T = typename jtype_traits<JArrayType>::entry_type;
   auto buf = std::unique_ptr<T[]>{new T[length]};
   getRegion(start, length, buf.get());
   return buf;
@@ -513,6 +522,8 @@ class PinnedCriticalAlloc {
       T** elements,
       size_t* size,
       jboolean* isCopy) {
+    (void)start;
+    (void)length;
     const auto env = Environment::current();
     *elements = static_cast<T*>(env->GetPrimitiveArrayCritical(array.get(), isCopy));
     FACEBOOK_JNI_THROW_EXCEPTION_IF(!elements);
@@ -524,6 +535,8 @@ class PinnedCriticalAlloc {
       jint start,
       jint size,
       jint mode) {
+    (void)start;
+    (void)size;
     const auto env = Environment::current();
     env->ReleasePrimitiveArrayCritical(array.get(), elements, mode);
   }
