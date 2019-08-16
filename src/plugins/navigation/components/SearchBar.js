@@ -50,7 +50,6 @@ const ToolbarContainer = styled('div')({
 });
 
 const SearchInputContainer = styled('div')({
-  height: '100%',
   width: '100%',
   marginLeft: 5,
   marginRight: 9,

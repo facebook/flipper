@@ -24,7 +24,7 @@ const MAX_ITEMS = 5;
 const AutoCompleteSheetContainer = styled('div')({
   width: '100%',
   position: 'absolute',
-  top: '100%',
+  top: 'calc(100% - 3px)',
   backgroundColor: 'white',
   zIndex: 1,
   borderBottomRightRadius: 10,
