@@ -385,7 +385,7 @@ function calculateState(
     }
   }
 
-  rows.sort((a, b) => (String(a.sortKey) > String(b.sortKey) ? 1 : -1));
+  rows.sort((a, b) => Number(a.sortKey) - Number(b.sortKey));
 
   return {
     sortedRows: rows,
