@@ -12,8 +12,8 @@ import type {
   TableColumns,
 } from 'flipper';
 import type {Counter} from './LogWatcher.js';
-import type {DeviceLogEntry} from '../../devices/BaseDevice.js';
-import type {Props as PluginProps} from '../../plugin';
+import type {Props as PluginProps} from '../../plugin.tsx';
+import type {DeviceLogEntry} from '../../devices/BaseDevice.tsx';
 
 import {
   Text,
@@ -120,7 +120,7 @@ const INITIAL_COLUMN_ORDER = [
   },
   {
     key: 'time',
-    visible: false,
+    visible: true,
   },
   {
     key: 'pid',
@@ -429,7 +429,7 @@ export default class LogTable extends FlipperDevicePlugin<
     if (highlightedRows.size <= 0) {
       // Check if the individual lines in the deeplinkPayload is matched or not.
       const arr = deepLinkPayload.split('\n');
-      for (let msg of arr) {
+      for (const msg of arr) {
         for (let i = rows.length - 1; i >= 0; i--) {
           if (rows[i].filterValue && rows[i].filterValue.includes(msg)) {
             highlightedRows.add(rows[i].key);
@@ -637,6 +637,7 @@ export default class LogTable extends FlipperDevicePlugin<
           defaultFilters={DEFAULT_FILTERS}
           zebra={false}
           actions={<Button onClick={this.clearLogs}>Clear Logs</Button>}
+          allowRegexSearch={true}
           // If the logs is opened through deeplink, then don't scroll as the row is highlighted
           stickyBottom={
             !(this.props.deepLinkPayload && this.state.highlightedRows.size > 0)

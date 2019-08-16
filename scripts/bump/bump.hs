@@ -29,12 +29,14 @@ releaseReplacements :: [(FilePath, Pattern Version)]
 releaseReplacements =
   [("gradle.properties", "VERSION_NAME=" *> anyVersion)
   ,("docs/getting-started.md", spaces >> "debugImplementation 'com.facebook.flipper:flipper:" *> releaseVersion <* "'")
+  ,("docs/getting-started.md", spaces >> "releaseImplementation 'com.facebook.flipper:flipper-noop:" *> releaseVersion <* "'")
   ]
 
 snapshotReplacements :: [(FilePath, Pattern Version)]
 snapshotReplacements =
   [("gradle.properties", "VERSION_NAME=" *> anyVersion)
   ,("docs/getting-started.md", spaces >> "debugImplementation 'com.facebook.flipper:flipper:" *> snapshotVersion <* "'")
+  ,("docs/getting-started.md", spaces >> "releaseImplementation 'com.facebook.flipper:flipper-noop:" *> snapshotVersion <* "'")
   ]
 
 flipperPath :: FilePath -> FilePath

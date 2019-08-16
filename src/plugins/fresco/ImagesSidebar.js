@@ -13,6 +13,8 @@ import {
   Text,
   Panel,
   ManagedDataInspector,
+  FlexColumn,
+  FlexRow,
   colors,
   styled,
 } from 'flipper';
@@ -26,6 +28,10 @@ type ImagesSidebarState = {};
 
 const DataDescriptionKey = styled('span')({
   color: colors.grapeDark1,
+});
+
+const WordBreakFlexColumn = styled(FlexColumn)({
+  wordBreak: 'break-all',
 });
 
 export default class ImagesSidebar extends Component<
@@ -51,15 +57,23 @@ export default class ImagesSidebar extends Component<
       return null;
     }
     return (
-      <p>
-        <DataDescriptionKey>URI</DataDescriptionKey>
-        <span key="sep">: </span>
-        <DataDescription
-          type="string"
-          value={this.props.image.uri}
-          setValue={function(path: Array<string>, val: any) {}}
-        />
-      </p>
+      <Panel heading="Sources" floating={false}>
+        <FlexRow>
+          <FlexColumn>
+            <DataDescriptionKey>URI</DataDescriptionKey>
+          </FlexColumn>
+          <FlexColumn>
+            <span key="sep">:&nbsp;</span>
+          </FlexColumn>
+          <WordBreakFlexColumn>
+            <DataDescription
+              type="string"
+              value={this.props.image.uri}
+              setValue={null}
+            />
+          </WordBreakFlexColumn>
+        </FlexRow>
+      </Panel>
     );
   }
 }
@@ -67,21 +81,14 @@ export default class ImagesSidebar extends Component<
 class EventDetails extends Component<{
   event: ImageEventWithId,
 }> {
-  static Container = styled(Panel)({
-    flexShrink: 0,
-    marginTop: '15px',
-  });
-
   render() {
     const {event} = this.props;
 
     return (
-      <EventDetails.Container
+      <Panel
         heading={<RequestHeader event={event} />}
         floating={false}
-        padded={false}
-        grow={false}
-        collapsed={false}>
+        padded={true}>
         <p>
           <DataDescriptionKey>Attribution</DataDescriptionKey>
           <span key="sep">: </span>
@@ -124,7 +131,7 @@ class EventDetails extends Component<{
           />
         </p>
         {this.renderViewportData()}
-      </EventDetails.Container>
+      </Panel>
     );
   }
 

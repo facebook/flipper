@@ -5,28 +5,27 @@
  * @format
  */
 
-import {uriComponents} from '../application.js';
+import {uriComponents} from '../application.tsx';
 
 test('test parsing of deeplink URL', () => {
   const url = 'flipper://app/plugin/meta/data';
-  let components = uriComponents(url);
+  const components = uriComponents(url);
   expect(components).toEqual(['app', 'plugin', 'meta/data']);
 });
 
 test('test parsing of deeplink URL when arguments are less', () => {
   const url = 'flipper://app/';
-  let components = uriComponents(url);
+  const components = uriComponents(url);
   expect(components).toEqual(['app']);
 });
 
 test('test parsing of deeplink URL when url is null', () => {
-  // $FlowFixMe
-  let components = uriComponents(null);
+  const components = uriComponents(null);
   expect(components).toEqual([]);
 });
 
 test('test parsing of deeplink URL when pattern does not match', () => {
   const url = 'Some random string';
-  let components = uriComponents(url);
+  const components = uriComponents(url);
   expect(components).toEqual([]);
 });

@@ -3,13 +3,13 @@
 // This source code is licensed under the MIT license found in the LICENSE file
 // in the root directory of this source tree.
 
-buildscript { 
+buildscript {
     repositories {
         google()
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.4.0'
+        classpath 'com.android.tools.build:gradle:3.4.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$KOTLIN_VERSION"
     }
 }
@@ -65,6 +65,7 @@ ext.deps = [
         // Annotations
         jsr305             : 'com.google.code.findbugs:jsr305:3.0.2',
         inferAnnotations   : 'com.facebook.infer.annotation:infer-annotation:0.11.2',
+        proguardAnnotations: 'com.facebook.yoga:proguard-annotations:1.14.1',
         // Litho
         lithoAnnotations   : "com.facebook.litho:litho-annotations:$LITHO_VERSION",
         lithoCore          : "com.facebook.litho:litho-core:$LITHO_VERSION",
@@ -89,8 +90,7 @@ ext.deps = [
         testCore           : 'androidx.test:core:1.1.0',
         testRules          : 'androidx.test:rules:1.1.0',
         // Plugin dependencies
-        rhino              : 'org.mozilla:rhino:1.7.10',
-        frescoFlipper      : 'com.facebook.fresco:flipper:1.13.0',
-        frescoStetho       : 'com.facebook.fresco:stetho:1.13.0',
-        fresco             : 'com.facebook.fresco:fresco:1.13.0'
+        frescoFlipper      : 'com.facebook.fresco:flipper:2.0.0',
+        frescoStetho       : 'com.facebook.fresco:stetho:2.0.0',
+        fresco             : 'com.facebook.fresco:fresco:2.0.0'
 ]

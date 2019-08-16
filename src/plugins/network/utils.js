@@ -24,17 +24,17 @@ export function decodeBody(container: Request | Response): string {
   }
 
   const b64Decoded = atob(container.data);
-  const body =
-    getHeaderValue(container.headers, 'Content-Encoding') === 'gzip'
-      ? decompress(b64Decoded)
-      : b64Decoded;
-
-  // Data is transferred as base64 encoded bytes to support unicode characters,
-  // we need to decode the bytes here to display the correct unicode characters.
   try {
-    return decodeURIComponent(escape(body));
+    if (getHeaderValue(container.headers, 'Content-Encoding') === 'gzip') {
+      // for gzip, use pako to decompress directly to unicode string
+      return decompress(b64Decoded);
+    }
+
+    // Data is transferred as base64 encoded bytes to support unicode characters,
+    // we need to decode the bytes here to display the correct unicode characters.
+    return decodeURIComponent(escape(b64Decoded));
   } catch (e) {
-    console.warn('Discarding malformed body:', escape(body));
+    console.warn('Discarding malformed body:', escape(b64Decoded));
     return '';
   }
 }
@@ -44,20 +44,18 @@ function decompress(body: string): string {
 
   const byteArray = new Uint8Array(charArray);
 
-  let data;
   try {
     if (body) {
-      data = pako.inflate(byteArray);
+      return pako.inflate(byteArray, {to: 'string'});
     } else {
       return body;
     }
   } catch (e) {
     // Sometimes Content-Encoding is 'gzip' but the body is already decompressed.
     // Assume this is the case when decompression fails.
-    return body;
   }
 
-  return String.fromCharCode.apply(null, new Uint8Array(data));
+  return body;
 }
 
 export function convertRequestToCurlCommand(request: Request): string {

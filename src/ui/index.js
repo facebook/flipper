@@ -12,6 +12,7 @@ export {
   default as ButtonNavigationGroup,
 } from './components/ButtonNavigationGroup.js';
 export {default as ButtonGroup} from './components/ButtonGroup.js';
+export {default as ButtonGroupChain} from './components/ButtonGroupChain.js';
 
 //
 export {colors, darkColors, brandColors} from './components/colors.js';
@@ -25,10 +26,11 @@ export {default as LoadingIndicator} from './components/LoadingIndicator.js';
 //
 export {default as Popover} from './components/Popover.js';
 
-//
+// tables
 export type {
   TableColumns,
   TableRows,
+  TableRows_immutable,
   TableBodyColumn,
   TableBodyRow,
   TableHighlightedRows,
@@ -39,6 +41,15 @@ export type {
 } from './components/table/types.js';
 export {default as ManagedTable} from './components/table/ManagedTable.js';
 export type {ManagedTableProps} from './components/table/ManagedTable.js';
+export {
+  default as ManagedTable_immutable,
+} from './components/table/ManagedTable_immutable.js';
+export type {
+  ManagedTableProps_immutable,
+} from './components/table/ManagedTable_immutable.js';
+
+export type {Value} from './components/table/TypeBasedValueRenderer.js';
+export {renderValue} from './components/table/TypeBasedValueRenderer.js';
 
 //
 export type {
@@ -122,6 +133,7 @@ export {default as ModalOverlay} from './components/ModalOverlay.js';
 export {default as Tooltip} from './components/Tooltip.js';
 export {default as TooltipProvider} from './components/TooltipProvider.js';
 export {default as ResizeSensor} from './components/ResizeSensor.js';
+export {default as StatusIndicator} from './components/StatusIndicator.js';
 
 // typography
 export {default as HorizontalRule} from './components/HorizontalRule.js';
@@ -146,6 +158,9 @@ export {
 export {
   default as SearchableTable,
 } from './components/searchable/SearchableTable.js';
+export {
+  default as SearchableTable_immutable,
+} from './components/searchable/SearchableTable_immutable.js';
 export type {SearchableProps} from './components/searchable/Searchable.js';
 
 //

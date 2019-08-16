@@ -56,6 +56,14 @@ DEFINE_BOXED_PRIMITIVE(double, Double)
 
 #undef DEFINE_BOXED_PRIMITIVE
 
+template<typename T>
+inline typename std::enable_if<
+  (std::is_same<T, long long>::value || std::is_same<T, int64_t>::value) && !std::is_same<T, jlong>::value,
+  local_ref<jobject>
+>::type autobox(T val) {
+  return JLong::valueOf(val);
+}
+
 struct JVoid : public jni::JavaClass<JVoid> {
   static auto constexpr kJavaDescriptor = "Ljava/lang/Void;";
 };

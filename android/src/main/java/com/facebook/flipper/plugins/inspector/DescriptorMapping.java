@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the LICENSE
@@ -65,21 +65,21 @@ public class DescriptorMapping {
     mMapping.put(clazz, descriptor);
   }
 
-  NodeDescriptor<?> descriptorForClass(Class<?> clazz) {
+  public NodeDescriptor<?> descriptorForClass(Class<?> clazz) {
     while (!mMapping.containsKey(clazz)) {
       clazz = clazz.getSuperclass();
     }
     return mMapping.get(clazz);
   }
 
-  void onConnect(FlipperConnection connection) {
+  public void onConnect(FlipperConnection connection) {
     for (NodeDescriptor descriptor : mMapping.values()) {
       descriptor.setConnection(connection);
       descriptor.setDescriptorMapping(this);
     }
   }
 
-  void onDisconnect() {
+  public void onDisconnect() {
     for (NodeDescriptor descriptor : mMapping.values()) {
       descriptor.setConnection(null);
     }

@@ -22,6 +22,7 @@
 
 #import <FlipperKitLayoutPlugin/SKHighlightOverlay.h>
 #import <FlipperKitLayoutPlugin/SKObject.h>
+#import <FlipperKitLayoutTextSearchable/FKTextSearchable.h>
 
 #import "SKSubDescriptor.h"
 #import "SKComponentLayoutWrapper.h"
@@ -68,6 +69,11 @@
   return node.identifier;
 }
 
+- (NSString *)identifierForInvalidation:(SKComponentLayoutWrapper *)node
+{
+  return [NSString stringWithFormat:@"%p", node.rootNode];
+}
+
 - (NSString *)nameForNode:(SKComponentLayoutWrapper *)node {
   return [node.component sonar_getName];
 }
@@ -86,7 +92,10 @@
 
 - (id)childForNode:(SKComponentLayoutWrapper *)node atIndex:(NSUInteger)index {
     if (node.children.size() == 0) {
-      return nil;
+      if (node.rootNode == node.component.viewContext.view) {
+        return nil;
+      }
+      return node.component.viewContext.view;
     }
     return node.children[index];
 }
@@ -121,6 +130,7 @@
            @"flexGrow": SKObject(@(child.flexGrow)),
            @"flexShrink": SKObject(@(child.flexShrink)),
            @"zIndex": SKObject(@(child.zIndex)),
+           @"sizeConstraints": SKObject(ckcomponentSize(child.sizeConstraints)),
            @"useTextRounding": SKObject(@(child.useTextRounding)),
            @"margin": flexboxRect(child.margin),
            @"flexBasis": relativeDimension(child.flexBasis),
@@ -188,6 +198,24 @@
   }
 
   [touch finish];
+}
+
+- (BOOL)matchesQuery:(NSString *)query forNode:(id)node {
+    if ([super matchesQuery:query forNode:node]) {
+        return YES;
+    }
+    if ([node isKindOfClass:[SKComponentLayoutWrapper class]]) {
+        const auto layoutWrapper = (SKComponentLayoutWrapper *)node;
+        if ([layoutWrapper.component conformsToProtocol:@protocol(FKTextSearchable)]) {
+            NSString *text = ((id<FKTextSearchable>)layoutWrapper.component).searchableText;
+            return [self string:text contains:query];
+        }
+    }
+    return NO;
+}
+
+- (BOOL)string:(NSString *)string contains:(NSString *)substring {
+    return string != nil && substring != nil && [string rangeOfString: substring options: NSCaseInsensitiveSearch].location != NSNotFound;
 }
 
 @end

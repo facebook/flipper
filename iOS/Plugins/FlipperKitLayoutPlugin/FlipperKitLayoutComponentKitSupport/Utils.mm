@@ -20,12 +20,33 @@ NSString *relativeDimension(CKRelativeDimension dimension) {
   }
 }
 
+CKRelativeDimension relativeStructDimension(NSString *dimension) {
+  if ([dimension hasSuffix:@"%"]) {
+    return CKRelativeDimension::Percent([[dimension substringToIndex:([dimension length] - 1)] integerValue]);
+  }
+  if ([dimension hasSuffix:@"pt"]) {
+    return CKRelativeDimension::Points([[dimension substringToIndex:([dimension length] - 2)] integerValue]);
+  }
+  return CKRelativeDimension::Auto();
+}
+
 NSDictionary<NSString *, NSString *> *flexboxRect(CKFlexboxSpacing spacing) {
   return @{
     @"top": relativeDimension(spacing.top.dimension()),
     @"bottom": relativeDimension(spacing.bottom.dimension()),
     @"start": relativeDimension(spacing.start.dimension()),
     @"end": relativeDimension(spacing.end.dimension())
+  };
+}
+
+NSDictionary<NSString *, NSString *> *ckcomponentSize(CKComponentSize size) {
+  return @{
+    @"width": relativeDimension(size.width),
+    @"height": relativeDimension(size.height),
+    @"minWidth": relativeDimension(size.minWidth),
+    @"minHeight": relativeDimension(size.minHeight),
+    @"maxWidth": relativeDimension(size.maxWidth),
+    @"maxHeight": relativeDimension(size.maxHeight),
   };
 }
 

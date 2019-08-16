@@ -101,7 +101,9 @@ public class InspectorFlipperPluginTest {
                 .put("children", new FlipperArray.Builder().put("test"))
                 .put("attributes", new FlipperArray.Builder())
                 .put("decoration", (String) null)
-                .put("extraInfo", new FlipperObject.Builder().put("hasAXNode", true))
+                .put(
+                    "extraInfo",
+                    new FlipperObject.Builder().put("linkedNode", "com.facebook.flipper"))
                 .build()));
   }
 
@@ -325,7 +327,7 @@ public class InspectorFlipperPluginTest {
     String name;
     List<TestNode> children = new ArrayList<>();
     FlipperObject data;
-    List<Named<String>> atttributes = new ArrayList<>();
+    List<Named<String>> attributes = new ArrayList<>();
     String decoration;
     boolean highlighted;
     Rect bounds = new Rect();
@@ -377,7 +379,7 @@ public class InspectorFlipperPluginTest {
 
     @Override
     public List<Named<String>> getAttributes(TestNode node) {
-      return node.atttributes;
+      return node.attributes;
     }
 
     @Override

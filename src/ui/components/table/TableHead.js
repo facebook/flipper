@@ -23,9 +23,9 @@ import {colors} from '../colors.js';
 
 import FlexRow from '../FlexRow.js';
 
-const invariant = require('invariant');
+import invariant from 'invariant';
 
-type MenuTemplate = Array<Electron$MenuItemOptions>;
+type MenuTemplate = Array<MenuItemConstructorOptions>;
 
 const TableHeaderArrow = styled('span')({
   float: 'right',
@@ -171,7 +171,8 @@ class TableHeadColumn extends PureComponent<{
         <TableHeaderColumnInteractive
           grow={true}
           resizable={RIGHT_RESIZABLE}
-          onResize={this.onResize}>
+          onResize={this.onResize}
+          minWidth={20}>
           {children}
         </TableHeaderColumnInteractive>
       );

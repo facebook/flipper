@@ -11,8 +11,8 @@ import ContextMenu from '../ContextMenu.js';
 import Tooltip from '../Tooltip.js';
 import styled from '../../styled/index.js';
 import DataPreview from './DataPreview.js';
-import createPaste from '../../../fb-stubs/createPaste.js';
-import {reportInteraction} from '../../../utils/InteractionTracker.js';
+import createPaste from '../../../fb-stubs/createPaste.tsx';
+import {reportInteraction} from '../../../utils/InteractionTracker.tsx';
 import {getSortedKeys} from './utils.js';
 import {colors} from '../colors.js';
 import {clipboard} from 'electron';
@@ -178,17 +178,17 @@ const defaultValueExtractor: DataValueExtractor = (value: any) => {
 
 const rootContextMenuCache: WeakMap<
   Object,
-  Array<Electron$MenuItemOptions>,
+  Array<MenuItemConstructorOptions>,
 > = new WeakMap();
 
-function getRootContextMenu(data: Object): Array<Electron$MenuItemOptions> {
+function getRootContextMenu(data: Object): Array<MenuItemConstructorOptions> {
   const cached = rootContextMenuCache.get(data);
   if (cached != null) {
     return cached;
   }
 
   const stringValue = JSON.stringify(data, null, 2);
-  const menu: Array<Electron$MenuItemOptions> = [
+  const menu: Array<MenuItemConstructorOptions> = [
     {
       label: 'Copy entire tree',
       click: () => clipboard.writeText(stringValue),

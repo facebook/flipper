@@ -21,7 +21,6 @@ import {
   getPersistedState,
   BaseDevice,
   shouldParseAndroidLog,
-  StackTrace,
   Text,
   colors,
   Toolbar,
@@ -33,7 +32,7 @@ import fs from 'fs';
 import os from 'os';
 import util from 'util';
 import path from 'path';
-import type {Notification} from '../../plugin';
+import type {Notification} from '../../plugin.tsx';
 import type {Store, DeviceLogEntry, OS, Props} from 'flipper';
 import {Component} from 'react';
 
@@ -57,7 +56,7 @@ type CrashSelectorProps = {|
 
 export type Crash = {|
   notificationID: string,
-  callstack: string,
+  callstack: ?string,
   reason: string,
   name: string,
   date: Date,
@@ -104,7 +103,7 @@ const Line = styled(View)({
 });
 
 const Container = styled(FlexColumn)({
-  overflow: 'hidden',
+  overflow: 'scroll',
   flexShrink: 0,
 });
 
@@ -115,7 +114,12 @@ const Value = styled(Text)({
   maxHeight: 200,
   flexGrow: 1,
   textOverflow: 'ellipsis',
+  whiteSpace: 'normal',
+  wordWrap: 'break-word',
+  lineHeight: 2,
+  marginLeft: 8,
   marginRight: 8,
+  overflow: 'hidden',
 });
 
 const FlexGrowColumn = styled(FlexColumn)({
@@ -163,6 +167,11 @@ const StyledSelectContainer = styled(FlexRow)({
 const StyledSelect = styled(Select)({
   height: '100%',
   maxWidth: 200,
+});
+
+const StackTraceContainer = styled(FlexColumn)({
+  backgroundColor: colors.greyStackTraceTint,
+  flexShrink: 0,
 });
 
 export function getNewPersisitedStateFromCrashLog(
@@ -422,12 +431,9 @@ class CrashSelector extends Component<CrashSelectorProps> {
             grow={true}
             selected={selectedCrashID || 'NoCrashID'}
             options={crashes || {NoCrashID: 'No Crash'}}
-            onChange={(title: string) => {
-              for (const key in crashes) {
-                if (crashes[key] === title && onCrashChange) {
-                  onCrashChange(key);
-                  return;
-                }
+            onChangeWithKey={(key: string) => {
+              if (onCrashChange) {
+                onCrashChange(key);
               }
             }}
           />
@@ -458,27 +464,43 @@ class HeaderRow extends Component<HeaderRowProps> {
   render() {
     const {title, value} = this.props;
     return (
-      <Padder paddingTop={8} paddingBottom={2}>
+      <Padder paddingTop={8} paddingBottom={2} paddingLeft={8}>
         <Container>
-          <Padder paddingLeft={8}>
-            <FlexRow>
-              <Title>{title}</Title>
-              <ContextMenu
-                items={[
-                  {
-                    label: 'copy',
-                    click: () => {
-                      clipboard.writeText(value);
-                    },
+          <FlexRow>
+            <Title>{title}</Title>
+            <ContextMenu
+              items={[
+                {
+                  label: 'copy',
+                  click: () => {
+                    clipboard.writeText(value);
                   },
-                ]}>
-                <Value code={true}>{value}</Value>
-              </ContextMenu>
-            </FlexRow>
-          </Padder>
+                },
+              ]}>
+              <Value code={true}>{value}</Value>
+            </ContextMenu>
+          </FlexRow>
           <Line />
         </Container>
       </Padder>
+    );
+  }
+}
+
+type StackTraceComponentProps = {
+  stacktrace: string,
+};
+
+class StackTraceComponent extends Component<StackTraceComponentProps> {
+  render() {
+    const {stacktrace} = this.props;
+    return (
+      <StackTraceContainer>
+        <Padder paddingTop={8} paddingBottom={2} paddingLeft={8}>
+          <Value code={true}>{stacktrace}</Value>
+        </Padder>
+        <Line />
+      </StackTraceContainer>
     );
   }
 }
@@ -522,7 +544,7 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin<
   };
 
   static trimCallStackIfPossible = (callstack: string): string => {
-    let regex = /Application Specific Information:/;
+    const regex = /Application Specific Information:/;
     const query = regex.exec(callstack);
     return query ? callstack.substring(0, query.index) : callstack;
   };
@@ -533,15 +555,15 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin<
     persistedState: PersistedState,
   ): Array<Notification> => {
     const filteredCrashes = persistedState.crashes.filter(crash => {
-      let ignore = !crash.name && !crash.reason;
+      const ignore = !crash.name && !crash.reason;
       if (ignore) {
         console.error('Ignored the notification for the crash', crash);
       }
-      return ignore;
+      return !ignore;
     });
     return filteredCrashes.map((crash: Crash) => {
       const id = crash.notificationID;
-      let name: string = crash.name || crash.reason;
+      const name: string = crash.name || crash.reason;
       let title: string = 'CRASH: ' + truncate(name, 50);
       title = `${
         name == crash.reason
@@ -676,15 +698,14 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin<
       );
       const selectedCrashID = crash.notificationID;
       const onCrashChange = id => {
-        const newSelectedCrash = crashes.find(element => {
-          return element.notificationID === id;
-        });
+        const newSelectedCrash = crashes.find(
+          element => element.notificationID === id,
+        );
         this.setState({crash: newSelectedCrash});
-        console.log('onCrashChange called', id);
       };
-      const callstackString = crash.callstack;
 
-      const children = crash.callstack.split('\n').map(str => {
+      const callstackString = crash.callstack || '';
+      const children = callstackString.split('\n').map(str => {
         return {message: str};
       });
       const crashSelector: CrashSelectorProps = {
@@ -699,7 +720,9 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin<
             <CrashReporterBar
               crashSelector={crashSelector}
               openLogsCallback={() => {
-                this.openInLogs(crash.callstack);
+                if (crash.callstack) {
+                  this.openInLogs(crash.callstack);
+                }
               }}
             />
           ) : (
@@ -721,12 +744,9 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin<
                 },
               ]}>
               <Line />
-              <StackTrace
-                children={children}
-                isCrash={false}
-                padded={false}
-                backgroundColor={colors.greyStackTraceTint}
-              />
+              {children.map(child => {
+                return <StackTraceComponent stacktrace={child.message} />;
+              })}
             </ContextMenu>
           </ScrollableColumn>
         </FlexColumn>

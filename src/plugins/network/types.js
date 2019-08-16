@@ -23,9 +23,31 @@ export type Response = {|
   reason: string,
   headers: Array<Header>,
   data: ?string,
+  insights: ?Insights,
 |};
 
 export type Header = {|
   key: string,
   value: string,
+|};
+
+export type RetryInsights = {|
+  count: number,
+  limit: number,
+  timeSpent: number,
+|};
+
+export type Insights = {|
+  dnsLookupTime: ?number,
+  connectTime: ?number,
+  sslHandshakeTime: ?number,
+  preTransferTime: ?number,
+  redirectsTime: ?number,
+  timeToFirstByte: ?number,
+  transferTime: ?number,
+  postProcessingTime: ?number,
+  // Amount of transferred data can be different from total size of payload.
+  bytesTransfered: ?number,
+  transferSpeed: ?number,
+  retries: ?RetryInsights,
 |};

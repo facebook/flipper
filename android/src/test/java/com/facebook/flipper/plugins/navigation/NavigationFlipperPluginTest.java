@@ -19,10 +19,9 @@ import org.robolectric.RobolectricTestRunner;
 
 @RunWith(RobolectricTestRunner.class)
 public class NavigationFlipperPluginTest {
-
   @Test
   public void greetingTest() throws Exception {
-    final NavigationFlipperPlugin plugin = new NavigationFlipperPlugin();
+    final NavigationFlipperPlugin plugin = NavigationFlipperPlugin.getInstance();
     final FlipperConnectionMock connection = new FlipperConnectionMock();
     final FlipperResponderMock responder = new FlipperResponderMock();
 
@@ -33,3 +32,6 @@ public class NavigationFlipperPluginTest {
         responder.successes, hasItem(new FlipperObject.Builder().put("greeting", "Hello").build()));
   }
 }
+
+/* @scarf-info: do not remove, more info: https://fburl.com/scarf */
+/* @scarf-generated: flipper-plugin android/test/PluginTest.java 0bfa32e5-fb15-4705-81f8-86260a1f3f8e */

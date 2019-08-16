@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the LICENSE
@@ -42,6 +42,12 @@ typedef void (^SKNodeUpdateData)(id value);
   in order to identify nodes.
  */
 - (NSString *)identifierForNode:(T)node;
+
+/**
+  An ID which is equal between reflowing components is needed to get the identifier of root
+  node of a tree which need to be invalidated on FlipperKitLayoutPlugin side.
+*/
+- (NSString *)identifierForInvalidation:(T)node;
 
 /**
   The name used to identify this node in the Sonar desktop application. This is what

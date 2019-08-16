@@ -5,7 +5,7 @@
  * @format
  */
 
-import {default as config, resetConfigForTesting} from '../processConfig.js';
+import {default as config, resetConfigForTesting} from '../processConfig.tsx';
 
 afterEach(() => {
   resetConfigForTesting();

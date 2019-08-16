@@ -20,6 +20,9 @@ import {
   Toolbar,
   Sidebar,
   DetailSidebar,
+  VerticalRule,
+  Button,
+  GK,
 } from 'flipper';
 import Inspector from './Inspector';
 import ToolbarIcon from './ToolbarIcon';
@@ -94,7 +97,12 @@ export default class Layout extends FlipperPlugin<State, void, PersistedState> {
       }
     });
 
-    this.setState({init: true});
+    this.setState({
+      init: true,
+      selectedElement: this.props.deepLinkPayload
+        ? this.props.deepLinkPayload
+        : null,
+    });
   }
 
   onToggleTargetMode = () => {
@@ -163,6 +171,19 @@ export default class Layout extends FlipperPlugin<State, void, PersistedState> {
       />
     );
 
+    const axInspector = this.state.inAXMode && (
+      <Inspector
+        {...inspectorProps}
+        onSelect={selectedAXElement => this.setState({selectedAXElement})}
+        showsSidebar={true}
+        ax
+      />
+    );
+
+    const divider = this.state.inAXMode && <VerticalRule />;
+
+    const showAnalyzeYogaPerformanceButton = GK.get('flipper_yogaperformance');
+
     return (
       <FlexColumn grow={true}>
         {this.state.init && (
@@ -201,27 +222,14 @@ export default class Layout extends FlipperPlugin<State, void, PersistedState> {
                   this.setState({searchResults})
                 }
                 inAXMode={this.state.inAXMode}
+                initialQuery={this.props.deepLinkPayload}
               />
             </Toolbar>
 
             <FlexRow grow={true}>
-              {this.state.inAXMode ? (
-                <>
-                  <Sidebar position="left" maxWidth={Infinity}>
-                    {inspector}
-                  </Sidebar>
-                  <Inspector
-                    {...inspectorProps}
-                    onSelect={selectedAXElement =>
-                      this.setState({selectedAXElement})
-                    }
-                    showsSidebar={true}
-                    ax
-                  />
-                </>
-              ) : (
-                inspector
-              )}
+              {inspector}
+              {divider}
+              {axInspector}
             </FlexRow>
             <DetailSidebar>
               <InspectorSidebar
@@ -231,6 +239,19 @@ export default class Layout extends FlipperPlugin<State, void, PersistedState> {
                 onValueChanged={this.onDataValueChanged}
                 logger={this.props.logger}
               />
+              {showAnalyzeYogaPerformanceButton &&
+              element &&
+              element.decoration === 'litho' ? (
+                <Button
+                  icon={'share-external'}
+                  compact={true}
+                  style={{marginTop: 8, marginRight: 12}}
+                  onClick={() => {
+                    this.props.selectPlugin('YogaPerformance', element.id);
+                  }}>
+                  Analyze Yoga Performance
+                </Button>
+              ) : null}
             </DetailSidebar>
           </>
         )}

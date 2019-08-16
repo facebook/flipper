@@ -4,7 +4,10 @@
       "features/index",
       "features/logs-plugin",
       "features/layout-plugin",
+      "features/navigation-plugin",
       "features/network-plugin",
+      "features/databases-plugin",
+      "features/images-plugin",
       "features/sandbox-plugin",
       "features/shared-preferences-plugin",
       "features/leak-canary-plugin",
@@ -13,13 +16,13 @@
     ]
   },
   "setup": {
-    "Using Flipper": [
-      "getting-started",
-      "troubleshooting"
-    ],
+    "Using Flipper": ["getting-started", "troubleshooting"],
     "Plugin Setup": [
       "setup/layout-plugin",
+      "setup/navigation-plugin",
       "setup/network-plugin",
+      "setup/databases-plugin",
+      "setup/images-plugin",
       "setup/sandbox-plugin",
       "setup/shared-preferences-plugin",
       "setup/leak-canary-plugin",
@@ -54,9 +57,6 @@
       "extending/establishing-a-connection",
       "extending/supporting-layout"
     ],
-    "Internals": [
-      "extending/arch",
-      "extending/layout-inspector"
-    ]
+    "Internals": ["extending/arch", "extending/layout-inspector"]
   }
 }

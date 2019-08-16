@@ -27,10 +27,11 @@ import TableHead from './TableHead.js';
 import TableRow from './TableRow.js';
 import ContextMenu from '../ContextMenu.js';
 import FlexColumn from '../FlexColumn.js';
-import createPaste from '../../../fb-stubs/createPaste.js';
+import createPaste from '../../../fb-stubs/createPaste.tsx';
 import debounceRender from 'react-debounce-render';
 import debounce from 'lodash.debounce';
 import {DEFAULT_ROW_HEIGHT} from './types';
+import textContent from '../../../utils/textContent.tsx';
 
 export type ManagedTableProps = {|
   /**
@@ -116,6 +117,7 @@ export type ManagedTableProps = {|
    * Allows to create context menu items for rows.
    */
   buildContextMenuItems?: () => MenuTemplate,
+  initialSortOrder?: ?TableRowSortOrder,
   /**
    * Callback when sorting changes.
    */
@@ -128,6 +130,10 @@ export type ManagedTableProps = {|
    * Table scroll horizontally, if needed
    */
   horizontallyScrollable?: boolean,
+  /**
+   * Whether to allow navigation via arrow keys. Default: true
+   */
+  enableKeyboardNavigation?: boolean,
 |};
 
 type ManagedTableState = {|
@@ -139,17 +145,11 @@ type ManagedTableState = {|
 |};
 
 const Container = styled(FlexColumn)(props => ({
-  overflow: props.overflow ? 'scroll' : 'visible',
+  overflow: props.canOverflow ? 'scroll' : 'visible',
   flexGrow: 1,
 }));
 
 const globalTableState: {[string]: TableColumnSizes} = {};
-
-function getTextContentOfRow(rowId: string) {
-  return Array.from(
-    document.querySelectorAll(`[data-key='${rowId}'] > *`) || [],
-  ).map(node => node.textContent);
-}
 
 class ManagedTable extends React.Component<
   ManagedTableProps,
@@ -159,6 +159,7 @@ class ManagedTable extends React.Component<
     highlightableRows: true,
     multiHighlight: false,
     autoHeight: false,
+    enableKeyboardNavigation: true,
   };
 
   getTableKey = (): string => {
@@ -178,7 +179,7 @@ class ManagedTable extends React.Component<
     columnSizes:
       this.props.tableKey && globalTableState[this.props.tableKey]
         ? globalTableState[this.props.tableKey]
-        : {},
+        : this.props.columnSizes || {},
     highlightedRows: this.props.highlightedRows || new Set(),
     sortOrder: this.props.initialSortOrder || null,
     shouldScrollToBottom: Boolean(this.props.stickyBottom),
@@ -257,6 +258,18 @@ class ManagedTable extends React.Component<
     ) {
       this.scrollToHighlightedRows();
     }
+    if (
+      this.props.stickyBottom &&
+      !this.state.shouldScrollToBottom &&
+      this.scrollRef &&
+      this.scrollRef.current &&
+      this.scrollRef.current.parentElement &&
+      this.scrollRef.current.parentElement instanceof HTMLElement &&
+      this.scrollRef.current.offsetHeight <=
+        this.scrollRef.current.parentElement.offsetHeight
+    ) {
+      this.setState({shouldScrollToBottom: true});
+    }
     this.firstUpdate = false;
   }
 
@@ -274,8 +287,13 @@ class ManagedTable extends React.Component<
     }
   };
 
-  onCopy = () => {
-    clipboard.writeText(this.getSelectedText());
+  onCopy = (withHeader: boolean) => {
+    clipboard.writeText(
+      [
+        ...(withHeader ? [this.getHeaderText()] : []),
+        this.getSelectedText(),
+      ].join('\n'),
+    );
   };
 
   onKeyDown = (e: KeyboardEvent) => {
@@ -288,10 +306,11 @@ class ManagedTable extends React.Component<
         (e.ctrlKey && process.platform !== 'darwin')) &&
       e.keyCode === 67
     ) {
-      this.onCopy();
+      this.onCopy(false);
     } else if (
       (e.keyCode === 38 || e.keyCode === 40) &&
-      this.props.highlightableRows
+      this.props.highlightableRows &&
+      this.props.enableKeyboardNavigation
     ) {
       // arrow navigation
       const {rows} = this.props;
@@ -371,11 +390,6 @@ class ManagedTable extends React.Component<
     row: TableBodyRow,
     index: number,
   ) => {
-    if (e.button !== 0 || !this.props.highlightableRows) {
-      // Only highlight rows when using primary mouse button,
-      // otherwise do nothing, to not interfere context menus.
-      return;
-    }
     if (e.shiftKey) {
       // prevents text selection
       e.preventDefault();
@@ -383,11 +397,24 @@ class ManagedTable extends React.Component<
 
     let {highlightedRows} = this.state;
 
+    const contextClick =
+      e.button !== 0 ||
+      (process.platform === 'darwin' && e.button === 0 && e.ctrlKey);
+
+    if (contextClick) {
+      if (!highlightedRows.has(row.key)) {
+        highlightedRows.clear();
+        highlightedRows.add(row.key);
+      }
+      return;
+    }
+
     this.dragStartIndex = index;
     document.addEventListener('mouseup', this.onStopDragSelecting);
 
     if (
-      ((e.metaKey && process.platform === 'darwin') || e.ctrlKey) &&
+      ((process.platform === 'darwin' && e.metaKey) ||
+        (process.platform !== 'darwin' && e.ctrlKey)) &&
       this.props.multiHighlight
     ) {
       highlightedRows.add(row.key);
@@ -452,7 +479,8 @@ class ManagedTable extends React.Component<
       dragStartIndex &&
       current &&
       this.props.multiHighlight &&
-      this.props.highlightableRows
+      this.props.highlightableRows &&
+      !e.shiftKey // When shift key is pressed, it's a range select not a drag select
     ) {
       current.scrollToItem(index + 1);
       const startKey = this.props.rows[dragStartIndex].key;
@@ -461,14 +489,12 @@ class ManagedTable extends React.Component<
     }
   };
 
-  onCopyCell = (rowId: string, column: string) => {
-    const cellText = getTextContentOfRow(rowId)[
-      Object.keys(this.props.columns).indexOf(column)
-    ];
+  onCopyCell = (rowId: string, index: number) => {
+    const cellText = this.getTextContentOfRow(rowId)[index];
     clipboard.writeText(cellText);
   };
 
-  buildContextMenuItems: () => Array<Electron$MenuItemOptions> = () => {
+  buildContextMenuItems: () => Array<MenuItemConstructorOptions> = () => {
     const {highlightedRows} = this.state;
     if (highlightedRows.size === 0) {
       return [];
@@ -478,16 +504,18 @@ class ManagedTable extends React.Component<
       highlightedRows.size === 1
         ? [
             {
-              click: this.onCopy,
               label: 'Copy cell',
-              submenu: Object.keys(this.props.columns).map((column, index) => ({
-                label: this.props.columns[column].value,
-                click: () => {
-                  const rowId = this.state.highlightedRows.values().next()
-                    .value;
-                  rowId && this.onCopyCell(rowId, column);
-                },
-              })),
+              submenu: this.state.columnOrder
+                .filter(c => c.visible)
+                .map(c => c.key)
+                .map((column, index) => ({
+                  label: this.props.columns[column].value,
+                  click: () => {
+                    const rowId = this.state.highlightedRows.values().next()
+                      .value;
+                    rowId && this.onCopyCell(rowId, index);
+                  },
+                })),
             },
           ]
         : [];
@@ -499,13 +527,32 @@ class ManagedTable extends React.Component<
           highlightedRows.size > 1
             ? `Copy ${highlightedRows.size} rows`
             : 'Copy row',
-        click: this.onCopy,
+        submenu: [
+          {label: 'With columns header', click: () => this.onCopy(true)},
+          {
+            label: 'Without columns header',
+            click: () => {
+              this.onCopy(false);
+            },
+          },
+        ],
       },
       {
         label: 'Create Paste',
-        click: () => createPaste(this.getSelectedText()),
+        click: () =>
+          createPaste(
+            [this.getHeaderText(), this.getSelectedText()].join('\n'),
+          ),
       },
     ];
+  };
+
+  getHeaderText = (): string => {
+    return this.state.columnOrder
+      .filter(c => c.visible)
+      .map(c => c.key)
+      .map(key => this.props.columns[key].value)
+      .join('\t');
   };
 
   getSelectedText = (): string => {
@@ -518,9 +565,19 @@ class ManagedTable extends React.Component<
       .filter(row => highlightedRows.has(row.key))
       .map(
         (row: TableBodyRow) =>
-          row.copyText || getTextContentOfRow(row.key).join('\t'),
+          row.copyText || this.getTextContentOfRow(row.key).join('\t'),
       )
       .join('\n');
+  };
+
+  getTextContentOfRow = (key: string): Array<string> => {
+    const row = this.props.rows.find(row => row.key === key);
+    if (!row) {
+      return [];
+    }
+    return this.state.columnOrder
+      .filter(({visible}) => visible)
+      .map(({key}) => textContent(row.columns[key].value));
   };
 
   onScroll = debounce(
@@ -536,12 +593,11 @@ class ManagedTable extends React.Component<
       const parent = current ? current.parentElement : null;
       if (
         this.props.stickyBottom &&
-        scrollDirection === 'forward' &&
-        !this.state.shouldScrollToBottom &&
         current &&
         parent instanceof HTMLElement &&
-        current.offsetHeight - (scrollOffset + parent.offsetHeight) <
-          parent.offsetHeight
+        scrollDirection === 'forward' &&
+        !this.state.shouldScrollToBottom &&
+        current.offsetHeight - parent.offsetHeight === scrollOffset
       ) {
         this.setState({shouldScrollToBottom: true});
       } else if (
@@ -600,8 +656,14 @@ class ManagedTable extends React.Component<
 
     let computedWidth = 0;
     if (horizontallyScrollable) {
-      for (const col in columnSizes) {
-        const width = columnSizes[col];
+      for (let index = 0; index < columnOrder.length; index++) {
+        const col = columnOrder[index];
+
+        if (!col.visible) {
+          continue;
+        }
+
+        const width = columnSizes[col.key];
         if (isNaN(width)) {
           // non-numeric columns with, can't caluclate
           computedWidth = 0;
@@ -613,7 +675,7 @@ class ManagedTable extends React.Component<
     }
 
     return (
-      <Container overflow={horizontallyScrollable}>
+      <Container canOverflow={horizontallyScrollable}>
         {hideHeader !== true && (
           <TableHead
             columnOrder={columnOrder}

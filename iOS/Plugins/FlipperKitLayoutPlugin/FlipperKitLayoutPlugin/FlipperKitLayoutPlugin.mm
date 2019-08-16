@@ -86,7 +86,7 @@
   [connection receive:@"getRoot" withBlock:^(NSDictionary *params, id<FlipperResponder> responder) {
     FlipperPerformBlockOnMainThread(^{ [weakSelf onCallGetRoot: responder]; }, responder);
   }];
-  
+
   [connection receive:@"getAllNodes" withBlock:^(NSDictionary *params, id<FlipperResponder> responder) {
     FlipperPerformBlockOnMainThread(^{ [weakSelf onCallGetAllNodesWithResponder: responder]; }, responder);
   }];
@@ -148,6 +148,18 @@
   return;
 }
 
+- (void)populateAllNodesFromNode:(nonnull NSString *)identifier inArray:(nonnull NSMutableArray<NSDictionary *> *)mutableArray {
+  NSDictionary *nodeDict = [self getNode:identifier];
+  if (nodeDict == nil) {
+    return;
+  }
+  [mutableArray addObject:nodeDict];
+  NSArray *children = nodeDict[@"children"];
+  for (NSString *childIdentifier in children) {
+    [self populateAllNodesFromNode:childIdentifier inArray:mutableArray];
+  }
+}
+
 - (void)onCallGetAllNodesWithResponder:(nonnull id<FlipperResponder>)responder {
   NSMutableArray<NSDictionary*> *allNodes = @[].mutableCopy;
   NSString *identifier = [self trackObject: _rootNode];
@@ -159,6 +171,19 @@
   NSMutableDictionary *allNodesDict = @{}.mutableCopy;
   [self populateAllNodesFromNode:identifier inDictionary:allNodesDict];
   [responder success:@{@"allNodes": @{@"rootElement": identifier, @"elements": allNodesDict}}];
+}
+
+- (NSMutableArray*)getChildrenForNode:(id)node withDescriptor:(SKNodeDescriptor*)descriptor {
+  NSMutableArray *children = [NSMutableArray new];
+  for (NSUInteger i = 0; i < [descriptor childCountForNode: node]; i++) {
+    id childNode = [descriptor childForNode: node atIndex: i];
+
+    NSString *childIdentifier = [self trackObject: childNode];
+    if (childIdentifier) {
+      [children addObject: childIdentifier];
+    }
+  }
+  return children;
 }
 
 - (void)onCallGetNodes:(NSArray<NSDictionary *> *)nodeIds withResponder:(id<FlipperResponder>)responder {
@@ -200,8 +225,14 @@
   NSString *dotJoinedPath = [path componentsJoinedByString: @"."];
   SKNodeUpdateData updateDataForPath = [[descriptor dataMutationsForNode: node] objectForKey: dotJoinedPath];
   if (updateDataForPath != nil) {
+    const auto identifierForInvalidation = [descriptor identifierForInvalidation:node];
+    id nodeForInvalidation = [_trackedObjects objectForKey:identifierForInvalidation];
+    SKNodeDescriptor *descriptorForInvalidation = [_descriptorMapper descriptorForClass:[nodeForInvalidation class]];
     updateDataForPath(value);
-    [connection send: @"invalidate" withParams: @{ @"id": [descriptor identifierForNode: node] }];
+    
+    NSMutableArray *nodesForInvalidation = [NSMutableArray new];
+    [self populateAllNodesFromNode:[descriptorForInvalidation identifierForNode:nodeForInvalidation] inArray:nodesForInvalidation];
+    [connection send: @"invalidateWithData" withParams: @{@"nodes": nodesForInvalidation}];
   }
 }
 
@@ -405,15 +436,7 @@
     data[namedPair.name] = namedPair.value;
   }
 
-  NSMutableArray *children = [NSMutableArray new];
-  for (NSUInteger i = 0; i < [nodeDescriptor childCountForNode: node]; i++) {
-    id childNode = [nodeDescriptor childForNode: node atIndex: i];
-
-    NSString *childIdentifier = [self trackObject: childNode];
-    if (childIdentifier) {
-      [children addObject: childIdentifier];
-    }
-  }
+  NSMutableArray *children = [self getChildrenForNode: node withDescriptor:nodeDescriptor];
 
   NSDictionary *nodeDic =
   @{
@@ -437,9 +460,7 @@
     return nil;
   }
 
-  if (! [_trackedObjects objectForKey: objectIdentifier]) {
-    [_trackedObjects setObject:object forKey:objectIdentifier];
-  }
+  [_trackedObjects setObject:object forKey:objectIdentifier];
 
   return objectIdentifier;
 }

@@ -11,6 +11,8 @@ apply plugin: 'maven'
 android {
     compileSdkVersion rootProject.compileSdkVersion
     buildToolsVersion rootProject.buildToolsVersion
+    // Uncomment this and enable the database plugin test when roboelectric is upgraded
+    // testOptions.unitTests.includeAndroidResources = true
 
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
@@ -50,6 +52,7 @@ android {
 
     dependencies {
         compileOnly deps.lithoAnnotations
+        compileOnly deps.proguardAnnotations
         implementation project(':fbjni')
         implementation deps.soloader
         implementation deps.jsr305
@@ -60,7 +63,6 @@ android {
         implementation deps.lithoSectionsDebug
         implementation deps.lithoSectionsCore
         implementation deps.lithoWidget
-        implementation deps.rhino
         implementation deps.fresco
         implementation deps.frescoFlipper
         implementation deps.frescoStetho
@@ -68,6 +70,8 @@ android {
 
         testImplementation deps.mockito
         testImplementation deps.robolectric
+        testImplementation deps.testCore
+        testImplementation deps.testRules
         testImplementation deps.hamcrest
         testImplementation deps.junit
     }

@@ -12,12 +12,16 @@ const {app, BrowserWindow, ipcMain, Notification} = require('electron');
 const path = require('path');
 const url = require('url');
 const fs = require('fs');
+const fixPath = require('fix-path');
 const {exec} = require('child_process');
 const compilePlugins = require('./compilePlugins.js');
 const setup = require('./setup');
 const delegateToLauncher = require('./launcher');
 const expandTilde = require('expand-tilde');
 const yargs = require('yargs');
+
+// Adds system PATH folders to process.env.PATH for MacOS production bundles.
+fixPath();
 
 // disable electron security warnings: https://github.com/electron/electron/blob/master/docs/tutorial/security.md#security-native-capabilities-and-your-responsibility
 process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = true;
@@ -66,7 +70,7 @@ const argv = yargs
   .help()
   .parse(process.argv.slice(1));
 
-let {config, configPath, flipperDir} = setup(argv);
+const {config, configPath, flipperDir} = setup(argv);
 
 const pluginPaths = config.pluginPaths
   .concat(
@@ -251,6 +255,8 @@ function tryCreateWindow() {
         webSecurity: false,
         scrollBounce: true,
         experimentalFeatures: true,
+        nodeIntegration: true,
+        webviewTag: true,
       },
     });
     win.once('ready-to-show', () => win.show());

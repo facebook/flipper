@@ -81,6 +81,8 @@ type ImagesCacheOverviewProps = {
   onImageSelected: (selectedImage: ImageId) => void,
   imagesMap: ImagesMap,
   events: Array<ImageEventWithId>,
+  onTrackLeaks: (enabled: boolean) => void,
+  isLeakTrackingEnabled: boolean,
 };
 
 type ImagesCacheOverviewState = {|
@@ -160,7 +162,7 @@ export default class ImagesCacheOverview extends PureComponent<
         onKeyDown={this.onKeyDown}
         tabIndex="0">
         <Toolbar position="top">
-          <Button icon="cross-outline" onClick={this.props.onTrimMemory}>
+          <Button icon="trash" onClick={this.props.onTrimMemory}>
             Trim Memory
           </Button>
           <Button onClick={this.props.onRefresh}>Refresh</Button>
@@ -183,6 +185,11 @@ export default class ImagesCacheOverview extends PureComponent<
             toggled={this.props.coldStartFilter}
             onClick={this.props.onColdStartChange}
             label="Show Cold Start Images"
+          />
+          <Toggle
+            toggled={this.props.isLeakTrackingEnabled}
+            onClick={this.props.onTrackLeaks}
+            label="Track Leaks"
           />
           <Spacer />
           <input

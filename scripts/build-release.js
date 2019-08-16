@@ -17,6 +17,8 @@ const {
   getVersionNumber,
   genMercurialRevision,
 } = require('./build-utils.js');
+const fetch = require('node-fetch');
+const {ICONS, getIconURL} = require('../src/utils/icons.js');
 
 function generateManifest(versionNumber) {
   const filePath = path.join(__dirname, '..', 'dist');
@@ -112,13 +114,53 @@ function copyStaticFolder(buildFolder) {
   });
 }
 
+function downloadIcons(buildFolder) {
+  const iconURLs = Object.entries(ICONS).reduce((acc, [name, sizes]) => {
+    acc.push(
+      // get icons in @1x and @2x
+      ...sizes.map(size => ({name, size, density: 1})),
+      ...sizes.map(size => ({name, size, density: 2})),
+    );
+    return acc;
+  }, []);
+
+  return Promise.all(
+    iconURLs.map(({name, size, density}) =>
+      fetch(getIconURL(name, size, density))
+        .then(res => {
+          if (res.status !== 200) {
+            throw new Error(`Could not download the icon: ${name}`);
+          }
+          return res;
+        })
+        .then(
+          res =>
+            new Promise((resolve, reject) => {
+              const fileStream = fs.createWriteStream(
+                path.join(
+                  buildFolder,
+                  'icons',
+                  `${name}-${size}@${density}x.png`,
+                ),
+              );
+              res.body.pipe(fileStream);
+              res.body.on('error', reject);
+              fileStream.on('finish', resolve);
+            }),
+        )
+        .catch(console.error),
+    ),
+  );
+}
+
 (async () => {
   const dir = await buildFolder();
   // eslint-disable-next-line no-console
   console.log('Created build directory', dir);
   copyStaticFolder(dir);
+  await downloadIcons(dir);
   await compileDefaultPlugins(path.join(dir, 'defaultPlugins'));
-  await compile(dir, path.join(__dirname, '..', 'src', 'init.js'));
+  await compile(dir, path.join(__dirname, '..', 'src', 'init.tsx'));
   const versionNumber = getVersionNumber();
   const hgRevision = await genMercurialRevision();
   modifyPackageManifest(dir, versionNumber, hgRevision);

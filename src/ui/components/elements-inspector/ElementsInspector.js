@@ -7,7 +7,7 @@
 
 import {Component} from 'react';
 import FlexRow from '../FlexRow.js';
-import {Elements} from './elements.js';
+import {Elements, type DecorateRow} from './elements.js';
 import type {ContextMenuExtension} from 'flipper';
 
 export type ElementID = string;
@@ -36,9 +36,8 @@ export type ElementAttribute = {|
 |};
 
 export type ElementExtraInfo = {|
-  nonAXWithAXChild?: boolean,
-  linkedAXNode?: string,
-  focused?: boolean,
+  linkedNode?: string, // id of linked node in opposite tree
+  expandWithParent?: boolean,
 |};
 
 export type Element = {|
@@ -65,6 +64,7 @@ export default class ElementsInspector extends Component<{
   useAppSidebar?: boolean,
   alternateRowColor?: boolean,
   contextMenuExtensions?: Array<ContextMenuExtension>,
+  decorateRow?: DecorateRow,
 }> {
   static defaultProps = {
     alternateRowColor: true,
@@ -81,23 +81,23 @@ export default class ElementsInspector extends Component<{
       searchResults,
       alternateRowColor,
       contextMenuExtensions,
+      decorateRow,
     } = this.props;
 
     return (
-      <FlexRow grow={true}>
-        <Elements
-          onElementExpanded={onElementExpanded}
-          onElementSelected={onElementSelected}
-          onElementHovered={onElementHovered}
-          selected={selected}
-          focused={focused}
-          searchResults={searchResults}
-          root={root}
-          elements={elements}
-          alternateRowColor={alternateRowColor}
-          contextMenuExtensions={contextMenuExtensions}
-        />
-      </FlexRow>
+      <Elements
+        onElementExpanded={onElementExpanded}
+        onElementSelected={onElementSelected}
+        onElementHovered={onElementHovered}
+        selected={selected}
+        focused={focused}
+        searchResults={searchResults}
+        root={root}
+        elements={elements}
+        alternateRowColor={alternateRowColor}
+        contextMenuExtensions={contextMenuExtensions}
+        decorateRow={decorateRow}
+      />
     );
   }
 }

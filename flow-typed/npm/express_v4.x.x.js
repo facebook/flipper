@@ -1,7 +1,4 @@
-// flow-typed signature: 45384ed25d019e0595020cc30e78b80f
-// flow-typed version: d11eab7bb5/express_v4.x.x/flow_>=v0.32.x
-
-import type { Server } from 'http';
+import * as http from 'http';
 import type { Socket } from 'net';
 
 declare type express$RouterOptions = {
@@ -104,8 +101,10 @@ declare class express$Response extends http$ServerResponse mixins express$Reques
 
 declare type express$NextFunction = (err?: ?Error | 'route') => mixed;
 declare type express$Middleware =
-  ((req: express$Request, res: express$Response, next: express$NextFunction) => mixed) |
-  ((error: Error, req: express$Request, res: express$Response, next: express$NextFunction) => mixed);
+  // $FlowFixMe: $SubType is deprecated; waiting for upstream to fix this.
+  ((req: $Subtype<express$Request>, res: express$Response, next: express$NextFunction) => mixed) |
+  // $FlowFixMe: $SubType is deprecated; waiting for upstream to fix this.
+  ((error: Error, req: $Subtype<express$Request>, res: express$Response, next: express$NextFunction) => mixed);
 declare interface express$RouteMethodType<T> {
   (middleware: express$Middleware): T;
   (...middleware: Array<express$Middleware>): T;
@@ -151,28 +150,29 @@ declare class express$Router extends express$Route {
   use(...middleware: Array<express$Middleware>): this;
   use(path: express$Path|express$Path[], ...middleware: Array<express$Middleware>): this;
   use(path: string, router: express$Router): this;
-  handle(req: http$IncomingMessage, res: http$ServerResponse, next: express$NextFunction): void;
+  handle(req: http$IncomingMessage<>, res: http$ServerResponse, next: express$NextFunction): void;
   param(
     param: string,
     callback: (
-      req: express$Request,
+      // $FlowFixMe: $SubType is deprecated; waiting for upstream to fix this.
+      req: $Subtype<express$Request>,
       res: express$Response,
       next: express$NextFunction,
       id: string
     ) => mixed
   ): void;
-  (req: http$IncomingMessage, res: http$ServerResponse, next?: ?express$NextFunction): void;
+  (req: http$IncomingMessage<>, res: http$ServerResponse, next?: ?express$NextFunction): void;
 }
 
 declare class express$Application extends express$Router mixins events$EventEmitter {
   constructor(): void;
   locals: {[name: string]: mixed};
   mountpath: string;
-  listen(port: number, hostname?: string, backlog?: number, callback?: (err?: ?Error) => mixed): ?Server;
-  listen(port: number, hostname?: string, callback?: (err?: ?Error) => mixed): ?Server;
-  listen(port: number, callback?: (err?: ?Error) => mixed): ?Server;
-  listen(path: string, callback?: (err?: ?Error) => mixed): ?Server;
-  listen(handle: Object, callback?: (err?: ?Error) => mixed): ?Server;
+  listen(port: number, hostname?: string, backlog?: number, callback?: (err?: ?Error) => mixed): ?http.Server;
+  listen(port: number, hostname?: string, callback?: (err?: ?Error) => mixed): ?http.Server;
+  listen(port: number, callback?: (err?: ?Error) => mixed): ?http.Server;
+  listen(path: string, callback?: (err?: ?Error) => mixed): ?http.Server;
+  listen(handle: Object, callback?: (err?: ?Error) => mixed): ?http.Server;
   disable(name: string): void;
   disabled(name: string): boolean;
   enable(name: string): express$Application;
@@ -184,9 +184,9 @@ declare class express$Application extends express$Router mixins events$EventEmit
   //   get(name: string): mixed;
   set(name: string, value: mixed): mixed;
   render(name: string, optionsOrFunction: {[name: string]: mixed}, callback: express$RenderCallback): void;
-  handle(req: http$IncomingMessage, res: http$ServerResponse, next?: ?express$NextFunction): void;
+  handle(req: http$IncomingMessage<>, res: http$ServerResponse, next?: ?express$NextFunction): void;
   // callable signature is not inherited
-  (req: http$IncomingMessage, res: http$ServerResponse, next?: ?express$NextFunction): void;
+  (req: http$IncomingMessage<>, res: http$ServerResponse, next?: ?express$NextFunction): void;
 }
 
 declare module 'express' {

@@ -10,14 +10,14 @@ import dispatcher, {
   checkDisabled,
   checkGK,
   requirePlugin,
-} from '../plugins';
+} from '../plugins.tsx';
 import path from 'path';
 import {remote} from 'electron';
-import {FlipperPlugin} from '../../plugin';
-import reducers from '../../reducers/index.js';
-import {init as initLogger} from '../../fb-stubs/Logger.js';
+import {FlipperPlugin} from '../../plugin.tsx';
+import reducers from '../../reducers/index.tsx';
+import {init as initLogger} from '../../fb-stubs/Logger.tsx';
 import configureStore from 'redux-mock-store';
-import {TEST_PASSING_GK, TEST_FAILING_GK} from '../../fb-stubs/GK';
+import {TEST_PASSING_GK, TEST_FAILING_GK} from '../../fb-stubs/GK.tsx';
 import TestPlugin from './TestPlugin';
 
 const mockStore = configureStore([])(reducers(undefined, {type: 'INIT'}));
@@ -122,10 +122,7 @@ test('requirePlugin loads plugin', () => {
     homepage,
     out: path.join(__dirname, 'TestPlugin.js'),
   });
-  // $FlowFixMe
   expect(plugin.prototype).toBeInstanceOf(FlipperPlugin);
-  // $FlowFixMe
   expect(plugin.homepage).toBe(homepage);
-  // $FlowFixMe
   expect(plugin.id).toBe(TestPlugin.id);
 });

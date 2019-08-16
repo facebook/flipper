@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the LICENSE
@@ -551,7 +551,7 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
 
   private boolean hasAXNode(FlipperObject node) {
     FlipperObject extraInfo = node.getObject("extraInfo");
-    return extraInfo != null && extraInfo.getBoolean("hasAXNode");
+    return extraInfo != null && extraInfo.getBoolean("linkedNode");
   }
 
   public SearchResultNode searchTree(String query, Object obj, boolean axEnabled) throws Exception {

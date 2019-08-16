@@ -1,13 +1,14 @@
 [ignore]
 .*/scripts/.*
 .*/coverage/.*
-.*/node_modules/.*
 .*/build/.*
 .*/dist/.*
 .*/static/.*
 <PROJECT_ROOT>/src/fb/plugins/relaydevtools/relay-devtools/DevtoolsUI.js$
 .*/website/.*
-<PROJECT_ROOT>/src/fb/plugins/sections/d3/d3.js$
+<PROJECT_ROOT>/src/plugins/sections/d3/d3.js$
+.*\.tsx
+.*/node_modules/.*
 
 [libs]
 flow-typed
@@ -19,9 +20,12 @@ module.use_strict=true
 emoji=true
 all=true
 include_warnings=true
+module.name_mapper='^.*plugin\.flow\.js$' -> 'plugin'
+module.name_mapper='^.*plugin\.tsx$' -> 'plugin'
+module.name_mapper='^\(.*\)\.tsx$' -> 'TsStub'
 module.name_mapper='flipper' -> '<PROJECT_ROOT>/src/index.js'
-
 suppress_type=$FlowFixMe
+module.system=haste
 
 [strict]
 deprecated-type
@@ -33,4 +37,4 @@ untyped-import
 untyped-type-import
 
 [version]
-^0.91.0
+0.104.0

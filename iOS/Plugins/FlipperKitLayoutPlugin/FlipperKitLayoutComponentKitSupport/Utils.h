@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the LICENSE
@@ -9,3 +9,5 @@
 
 NSString *relativeDimension(CKRelativeDimension dimension);
 NSDictionary<NSString *, NSString *> *flexboxRect(CKFlexboxSpacing spacing);
+CKRelativeDimension relativeStructDimension(NSString *dimension);
+NSDictionary<NSString *, NSString *> *ckcomponentSize(CKComponentSize size);

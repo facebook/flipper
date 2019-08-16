@@ -7,7 +7,7 @@
  */
 #import "FlipperCppBridgingConnection.h"
 
-#import <FBCxxUtils/FBCxxFollyDynamicConvert.h>
+#import <FBCxxFollyDynamicConvert/FBCxxFollyDynamicConvert.h>
 
 #import "FlipperCppBridgingResponder.h"
 

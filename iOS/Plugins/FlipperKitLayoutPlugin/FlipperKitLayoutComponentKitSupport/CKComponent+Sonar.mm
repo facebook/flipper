@@ -14,10 +14,20 @@
 #import <ComponentKit/CKComponentInternal.h>
 #import <ComponentKit/CKComponentSubclass.h>
 #import <ComponentKit/CKComponentViewConfiguration.h>
+#import <ComponentKit/CKComponentDebugController.h>
+#import <ComponentKit/CKMutex.h>
 #import <FlipperKitLayoutPlugin/SKNamed.h>
 #import <FlipperKitLayoutPlugin/SKObject.h>
+#import <objc/runtime.h>
+#import <objc/message.h>
 
+#import "CKCenterLayoutComponent+Sonar.h"
+#import "CKRatioLayoutComponent+Sonar.h"
+#import "CKFlexboxComponent+Sonar.h"
+#import "CKInsetComponent+Sonar.h"
 #import "CKStatelessComponent+Sonar.h"
+#import "FKDataStorageForLiveEditing.h"
+#import "Utils.h"
 
 /** This protocol isn't actually adopted anywhere, it just lets us use the SEL below */
 @protocol SonarKitLayoutComponentKitOverrideInformalProtocol
@@ -55,6 +65,30 @@ static NSDictionary<NSString *, NSObject *> *AccessibilityContextDict(CKComponen
 
 FB_LINKABLE(CKComponent_Sonar)
 @implementation CKComponent (Sonar)
+
+static FKDataStorageForLiveEditing *_dataStorage;
+static NSMutableSet<NSString *> *_swizzledClasses;
+static CK::StaticMutex _mutex = CK_MUTEX_INITIALIZER;
+
++ (void)swizzleOriginalSEL:(SEL)originalSEL to:(SEL)replacementSEL
+{
+  Class targetClass = self;
+  Method original = class_getInstanceMethod(targetClass, originalSEL);
+  Method replacement = class_getInstanceMethod(targetClass, replacementSEL);
+  BOOL didAddMethod =
+  class_addMethod(targetClass,
+                  originalSEL,
+                  method_getImplementation(replacement),
+                  method_getTypeEncoding(replacement));
+  if (didAddMethod) {
+    class_replaceMethod(targetClass,
+                        replacementSEL,
+                        method_getImplementation(original),
+                        method_getTypeEncoding(original));
+  } else {
+    method_exchangeImplementations(original, replacement);
+  }
+}
 
 - (NSString *)sonar_getName
 {
@@ -105,6 +139,7 @@ FB_LINKABLE(CKComponent_Sonar)
                               withValue: @{
                                            @"frame": SKObject(self.viewContext.frame),
                                            @"controller": SKObject(NSStringFromClass([self.controller class])),
+                                           @"size": SKObject(ckcomponentSize([self size])),
                                            }]];
 
   auto const canBeReusedCounter = self.flipper_canBeReusedCounter;
@@ -169,7 +204,6 @@ FB_LINKABLE(CKComponent_Sonar)
                              @"accessibilityEnabled": SKMutableObject(@(CK::Component::Accessibility::IsAccessibilityEnabled())),
                              }]];
   }
-
   if ([self respondsToSelector:@selector(sonar_additionalDataOverride)]) {
     [data addObjectsFromArray:[(id)self sonar_additionalDataOverride]];
   }
@@ -177,12 +211,93 @@ FB_LINKABLE(CKComponent_Sonar)
   return data;
 }
 
+- (void)setMutableData:(id)value {
+
+}
+
+- (void) setMutableDataFromStorage {
+  const auto globalID = self.treeNode.nodeIdentifier;
+  id data = [_dataStorage dataForTreeNodeIdentifier:globalID];
+  if (data) {
+    [self setMutableData:data];
+  }
+}
+
++ (NSString *)swizzledMethodNameForRender {
+  return [NSString stringWithFormat:@"sonar_render_%@", NSStringFromClass(self)];
+}
+
++ (SEL)registerNewImplementation:(SEL)selector {
+  SEL resultSelector = sel_registerName([[self swizzledMethodNameForRender] UTF8String]);
+  Method method = class_getInstanceMethod(self, selector);
+  class_addMethod(self,
+                  resultSelector,
+                  method_getImplementation(method),
+                  method_getTypeEncoding(method)
+                  );
+  return resultSelector;
+}
+
+- (CKComponent *)sonar_render:(id)state {
+  [self setMutableDataFromStorage];
+  SEL resultSelector = NSSelectorFromString([[self class] swizzledMethodNameForRender]);
+  return ((CKComponent *(*)(CKComponent *, SEL, id))objc_msgSend)(self, resultSelector, state);
+}
+
+- (std::vector<CKComponent *>)sonar_renderChildren:(id)state {
+  [self setMutableDataFromStorage];
+  SEL resultSelector = NSSelectorFromString([[self class] swizzledMethodNameForRender]);
+#if defined(__aarch64__)
+  return ((std::vector<CKComponent *>(*)(CKComponent *, SEL, id))objc_msgSend)(self, resultSelector, state);
+#else
+  return ((std::vector<CKComponent *>(*)(CKComponent *, SEL, id))objc_msgSend_stret)(self, resultSelector, state);
+#endif
+}
+
+- (NSDictionary<NSString *, SKNodeDataChanged> *)sonar_getDataMutationsChanged {
+  return @{};
+}
+
 - (NSDictionary<NSString *, SKNodeUpdateData> *)sonar_getDataMutations {
-  return @{
-           @"CKComponentAccessibility.accessibilityEnabled": ^(NSNumber *value) {
-             CK::Component::Accessibility::SetForceAccessibilityEnabled([value boolValue]);
-           }
-           };
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    _dataStorage = [[FKDataStorageForLiveEditing alloc] init];
+    _swizzledClasses = [[NSMutableSet alloc] init];
+  });
+  {
+    CK::StaticMutexLocker l(_mutex);
+    if (![_swizzledClasses containsObject:NSStringFromClass([self class])]) {
+      [_swizzledClasses addObject:NSStringFromClass([self class])];
+      if ([self respondsToSelector:@selector(render:)]) {
+        SEL replacement = [[self class] registerNewImplementation:@selector(sonar_render:)];
+        [[self class] swizzleOriginalSEL:@selector(render:) to:replacement];
+      } else if ([self respondsToSelector:@selector(renderChildren:)]) {
+        SEL replacement = [[self class] registerNewImplementation:@selector(sonar_renderChildren:)];
+        [[self class] swizzleOriginalSEL:@selector(renderChildren:) to:replacement];
+      } else {
+        CKAssert(NO, @"Only CKRenderLayoutComponent and CKRenderLayoutWithChildrenComponent children are now able to be live editable");
+      }
+    }
+  }
+  NSDictionary<NSString *, SKNodeDataChanged> *dataChanged = [self sonar_getDataMutationsChanged];
+  NSMutableDictionary *dataMutation = [[NSMutableDictionary alloc] init];
+  [dataMutation addEntriesFromDictionary:@{
+                                           @"Accessibility.accessibilityEnabled": ^(NSNumber *value) {
+    CK::Component::Accessibility::SetForceAccessibilityEnabled([value boolValue]);
+  }
+                                           }
+   ];
+  const auto globalID = self.treeNode.nodeIdentifier;
+  for (NSString *key in dataChanged) {
+    const auto block = dataChanged[key];
+    [dataMutation setObject:^(id value) {
+      id data = block(value);
+      [_dataStorage setData:data forTreeNodeIdentifier:globalID];
+      [CKComponentDebugController reflowComponentsWithTreeNodeIdentifier:globalID];
+    }
+                     forKey:key];
+  }
+  return dataMutation;
 }
 
 static char const kCanBeReusedKey = ' ';

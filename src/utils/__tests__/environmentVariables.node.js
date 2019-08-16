@@ -5,7 +5,7 @@
  * @format
  */
 
-import {parseFlipperPorts} from '../environmentVariables';
+import {parseFlipperPorts} from '../environmentVariables.tsx';
 
 test('Valid port overrides are parsed correctly', () => {
   const overrides = parseFlipperPorts('1111,2222');

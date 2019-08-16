@@ -18,11 +18,11 @@ import {
 } from 'flipper';
 import ErrorBlock from '../ui/components/ErrorBlock';
 import FlexColumn from '../ui/components/FlexColumn';
-import DetailSidebar from '../chrome/DetailSidebar';
-import {FlipperPlugin} from '../plugin';
+import DetailSidebar from '../chrome/DetailSidebar.tsx';
+import {FlipperPlugin} from '../plugin.tsx';
 import SearchableTable from '../ui/components/searchable/SearchableTable';
-import textContent from '../utils/textContent.js';
-import createPaste from '../fb-stubs/createPaste.js';
+import textContent from '../utils/textContent.tsx';
+import createPaste from '../fb-stubs/createPaste.tsx';
 
 import type {Node} from 'react';
 import type {

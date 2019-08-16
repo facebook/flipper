@@ -53,8 +53,8 @@ function generateFieldsList(
   lines: string[],
   i: number,
 ): {|staticFields: {}, instanceFields: {}, packages: {}|} {
-  let staticFields = {};
-  let instanceFields = {};
+  const staticFields = {};
+  const instanceFields = {};
 
   let staticValues = {};
   let instanceValues = {};
@@ -62,7 +62,7 @@ function generateFieldsList(
   let elementId = -1;
   let elementIdStr = String(-1);
 
-  let packages = {};
+  const packages = {};
 
   // Process everything between Details and Excluded Refs
   while (
@@ -127,8 +127,8 @@ function processLeak(output: Leak[], leakInfo: string): Leak[] {
 
   // Elements shows a Object's classname and package, wheras elementsSimple shows
   // just its classname
-  let elements = {};
-  let elementsSimple = {};
+  const elements = {};
+  const elementsSimple = {};
 
   let rootElementId = '';
 

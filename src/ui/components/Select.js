@@ -33,8 +33,12 @@ export default class Select extends Component<{
   options: {
     [key: string]: string,
   },
-  /** Callback when the selected value changes */
-  onChange: (key: string) => void,
+  /** DEPRECATED: Callback when the selected value changes. The callback is called with the displayed value. */
+  onChange?: (value: string) => void,
+
+  /** Callback when the selected value changes. The callback is called with the key for the displayed value */
+  onChangeWithKey?: (key: string) => void,
+
   /** Selected key */
   selected?: ?string,
   /** Label shown next to the dropdown */
@@ -45,7 +49,12 @@ export default class Select extends Component<{
   selectID: string = Math.random().toString(36);
 
   onChange = (event: Object) => {
-    this.props.onChange(event.target.value);
+    if (this.props.onChangeWithKey) {
+      this.props.onChangeWithKey(event.target.value);
+    }
+    if (this.props.onChange) {
+      this.props.onChange(this.props.options[event.target.value]);
+    }
   };
 
   render() {
@@ -56,16 +65,19 @@ export default class Select extends Component<{
         grow={grow}
         id={this.selectID}
         onChange={this.onChange}
-        className={className}>
-        {Object.keys(options).map(key => (
-          <option selected={key === selected}>{options[key]}</option>
+        className={className}
+        value={selected || ''}>
+        {Object.keys(options).map((key, index) => (
+          <option value={key} key={index}>
+            {options[key]}
+          </option>
         ))}
       </SelectMenu>
     );
 
     if (label) {
       select = (
-        <Label for={this.selectID}>
+        <Label htmlFor={this.selectID}>
           <LabelText>{label}</LabelText>
           {select}
         </Label>

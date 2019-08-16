@@ -64,7 +64,7 @@ class JCppException : public JavaClass<JCppException, JThrowable> {
 class JniException : public std::exception {
  public:
   JniException();
-  ~JniException();
+  ~JniException() override;
 
   explicit JniException(alias_ref<jthrowable> throwable);
 
@@ -74,7 +74,7 @@ class JniException : public std::exception {
 
   local_ref<JThrowable> getThrowable() const noexcept;
 
-  virtual const char* what() const noexcept;
+  const char* what() const noexcept override;
 
   void setJavaException() const noexcept;
 

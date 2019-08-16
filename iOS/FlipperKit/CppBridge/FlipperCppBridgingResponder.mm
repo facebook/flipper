@@ -7,7 +7,7 @@
  */
 #import "FlipperCppBridgingResponder.h"
 
-#import <FBCxxUtils/FBCxxFollyDynamicConvert.h>
+#import <FBCxxFollyDynamicConvert/FBCxxFollyDynamicConvert.h>
 
 @implementation FlipperCppBridgingResponder {
   std::shared_ptr<facebook::flipper::FlipperResponder> responder_;

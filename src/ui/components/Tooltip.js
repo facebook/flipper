@@ -11,7 +11,7 @@ import type {TooltipOptions} from './TooltipProvider.js';
 import styled from '../styled/index.js';
 import {Component} from 'react';
 
-const PropTypes = require('prop-types');
+import PropTypes from 'prop-types';
 
 const TooltipContainer = styled('div')({
   display: 'contents',

@@ -5,7 +5,7 @@
  * @format
  */
 
-import {FlipperPlugin} from '../../plugin.js';
+import {FlipperPlugin} from '../../plugin.tsx';
 
 export default class extends FlipperPlugin {
   static id = 'Static ID';

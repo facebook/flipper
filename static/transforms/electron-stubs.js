@@ -5,10 +5,10 @@
  * @format
  */
 
-var babylon = require('@babel/parser');
-var fs = require('fs');
+const babylon = require('@babel/parser');
+const fs = require('fs');
 
-var electronStubs = babylon.parseExpression(
+const electronStubs = babylon.parseExpression(
   fs.readFileSync('static/electron-stubs.notjs').toString(),
 );
 

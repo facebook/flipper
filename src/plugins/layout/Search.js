@@ -33,6 +33,7 @@ type Props = {
   onSearchResults: (searchResults: ElementSearchResultSet) => void,
   setPersistedState: (state: $Shape<PersistedState>) => void,
   persistedState: PersistedState,
+  initialQuery: ?string,
 };
 
 type State = {
@@ -66,6 +67,16 @@ export default class Search extends Component<Props, State> {
       this.performSearch(this.state.value);
     }
   };
+
+  componentDidMount() {
+    if (this.props.initialQuery) {
+      const queryString = this.props.initialQuery
+        ? this.props.initialQuery
+        : '';
+      clearTimeout(this.timer);
+      this.timer = setTimeout(() => this.performSearch(queryString), 200);
+    }
+  }
 
   performSearch(query: string) {
     this.setState({

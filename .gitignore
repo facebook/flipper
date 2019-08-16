@@ -18,6 +18,11 @@ local.properties
 .gradle/
 .idea
 .externalNativeBuild
+.project
+.settings
+**/.classpath
+android/*/bin/**/*.class
+libs/*/bin/**/*.class
 
 # Mac OS X
 *.DS_Store

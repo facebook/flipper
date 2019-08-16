@@ -69,7 +69,7 @@ export default class LeakCanary extends FlipperPlugin<State> {
       // collapsed state of the tree view
       const newLeaks = processLeaks(results.leaks.slice(this.state.leaksCount));
 
-      let leaks = this.state.leaks;
+      const leaks = this.state.leaks;
       for (let i = 0; i < newLeaks.length; i++) {
         leaks.push(newLeaks[i]);
       }

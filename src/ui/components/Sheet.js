@@ -8,9 +8,12 @@
 import {Component} from 'react';
 import {createPortal} from 'react-dom';
 import {connect} from 'react-redux';
-import {setActiveSheet} from '../../reducers/application.js';
+import {
+  ACTIVE_SHEET_PLUGIN_SHEET,
+  setActiveSheet,
+} from '../../reducers/application.tsx';
 
-import type {ActiveSheet} from '../../reducers/application';
+import type {ActiveSheet} from '../../reducers/application.tsx';
 
 export const PLUGIN_SHEET_ELEMENT_ID = 'pluginSheetContents';
 
@@ -21,6 +24,10 @@ type Props = {
    * the sheet.
    */
   children: (onHide: () => void) => ?React.Node,
+  /**
+   * Function that is called when the sheet becomes hidden.
+   */
+  onHideSheet: () => void,
   setActiveSheet: (sheet: ActiveSheet) => any,
   activeSheet: ActiveSheet,
 };
@@ -58,7 +65,19 @@ class Sheet extends Component<Props, State> {
     if (prevState.content !== this.state.content) {
       this.showSheetIfContentsAvailable();
     }
+    if (
+      prevProps.activeSheet === ACTIVE_SHEET_PLUGIN_SHEET &&
+      this.props.activeSheet !== ACTIVE_SHEET_PLUGIN_SHEET
+    ) {
+      this.onHideSheet();
+    }
   }
+
+  onHideSheet = () => {
+    if (this.props.onHideSheet != null) {
+      this.props.onHideSheet();
+    }
+  };
 
   showSheetIfContentsAvailable = () => {
     if (this.state.content) {

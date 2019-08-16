@@ -5,14 +5,14 @@
  * @format
  */
 
-import type {Rect} from '../../utils/geometry.js';
-import LowPassFilter from '../../utils/LowPassFilter.js';
+import type {Rect} from '../../utils/geometry.tsx';
+import LowPassFilter from '../../utils/LowPassFilter.tsx';
 import {
   getDistanceTo,
   maybeSnapLeft,
   maybeSnapTop,
   SNAP_SIZE,
-} from '../../utils/snap.js';
+} from '../../utils/snap.tsx';
 import styled from '../styled/index.js';
 import invariant from 'invariant';
 import React from 'react';

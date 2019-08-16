@@ -7,13 +7,11 @@
 
 import type {Element} from 'flipper';
 import type {PluginClient} from 'flipper';
-import type Client from '../../Client.js';
+import type Client from '../../Client.tsx';
 import type {Logger} from '../../fb-interfaces/Logger.js';
 
 import {
-  GK,
   ManagedDataInspector,
-  Console,
   Panel,
   FlexCenter,
   styled,
@@ -95,34 +93,7 @@ type Props = {|
   logger: Logger,
 |};
 
-type State = {|
-  isConsoleEnabled: boolean,
-|};
-
-export default class Sidebar extends Component<Props, State> {
-  state = {
-    isConsoleEnabled: false,
-  };
-
-  constructor(props: Props) {
-    super(props);
-    this.checkIfConsoleIsEnabled();
-  }
-
-  componentDidUpdate(prevProps: Props, prevState: State) {
-    if (prevProps.client !== this.props.client) {
-      this.checkIfConsoleIsEnabled();
-    }
-  }
-
-  checkIfConsoleIsEnabled() {
-    this.props.client
-      .call('isConsoleEnabled')
-      .then((result: {isEnabled: boolean}) => {
-        this.setState({isConsoleEnabled: result.isEnabled});
-      });
-  }
-
+export default class Sidebar extends Component<Props> {
   render() {
     const {element} = this.props;
     if (!element || !element.data) {
@@ -181,13 +152,6 @@ export default class Sidebar extends Component<Props, State> {
       }
     }
 
-    if (GK.get('sonar_show_console_plugin') && this.state.isConsoleEnabled) {
-      sections.push(
-        <Panel heading="JS Console" floating={false} grow={false}>
-          <Console client={this.props.client} getContext={() => element.id} />
-        </Panel>,
-      );
-    }
     return sections;
   }
 }

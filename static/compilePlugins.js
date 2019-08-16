@@ -38,18 +38,12 @@ module.exports = async (
     fs.mkdirSync(pluginCache);
   }
   watchChanges(plugins, reloadCallback, pluginCache, options);
-  const dynamicPlugins = [];
-  for (let plugin of Object.values(plugins)) {
+  const compilations = Object.values(plugins).map(plugin => {
     const dynamicOptions = Object.assign(options, {force: false});
-    const compiledPlugin = await compilePlugin(
-      plugin,
-      pluginCache,
-      dynamicOptions,
-    );
-    if (compiledPlugin) {
-      dynamicPlugins.push(compiledPlugin);
-    }
-  }
+    return compilePlugin(plugin, pluginCache, dynamicOptions);
+  });
+
+  const dynamicPlugins = (await Promise.all(compilations)).filter(c => c != null);
   console.log('✅  Compiled all plugins.');
   return dynamicPlugins;
 };
@@ -63,15 +57,21 @@ function watchChanges(
   // eslint-disable-next-line no-console
   console.log('🕵️‍  Watching for plugin changes');
 
+  const delayedCompilation = {};
+  const kCompilationDelayMillis = 1000;
+
   Object.values(plugins).map(plugin =>
     fs.watch(plugin.rootDir, {recursive: true}, (eventType, filename) => {
       // only recompile for changes in not hidden files. Watchman might create
       // a file called .watchman-cookie
-      if (!filename.startsWith('.')) {
-        // eslint-disable-next-line no-console
-        console.log(`🕵️‍  Detected changes in ${plugin.name}`);
-        const watchOptions = Object.assign(options, {force: true});
-        compilePlugin(plugin, pluginCache, watchOptions).then(reloadCallback);
+      if (!filename.startsWith('.') && !delayedCompilation[plugin.name]) {
+        delayedCompilation[plugin.name] = setTimeout(() => {
+          delayedCompilation[plugin.name] = null;
+          // eslint-disable-next-line no-console
+          console.log(`🕵️‍  Detected changes in ${plugin.name}`);
+          const watchOptions = Object.assign(options, {force: true});
+          compilePlugin(plugin, pluginCache, watchOptions).then(reloadCallback);
+        }, kCompilationDelayMillis);
       }
     }),
   );
@@ -123,7 +123,7 @@ function entryPointForPluginFolder(pluginPath) {
   return fs
     .readdirSync(pluginPath)
     .filter(name =>
-      /*name.startsWith('flipper-plugin') && */ fs
+      fs
         .lstatSync(path.join(pluginPath, name))
         .isDirectory(),
     )

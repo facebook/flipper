@@ -5,7 +5,7 @@
  * @format
  */
 
-const naturalCompare = require('string-natural-compare');
+import naturalCompare from 'string-natural-compare';
 
 export function getSortedKeys(obj: Object): Array<string> {
   return Object.keys(obj).sort(naturalCompare);

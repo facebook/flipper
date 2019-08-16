@@ -5,7 +5,13 @@
  * @format
  */
 
-import type {Request, Response, Header} from './types.js';
+import type {
+  Request,
+  Response,
+  Header,
+  Insights,
+  RetryInsights,
+} from './types.js';
 
 import {
   Component,
@@ -19,6 +25,7 @@ import {
   colors,
 } from 'flipper';
 import {decodeBody, getHeaderValue} from './utils.js';
+import {formatBytes} from './index.js';
 
 import querystring from 'querystring';
 // $FlowFixMe
@@ -198,6 +205,11 @@ export default class RequestDetails extends Component<
             options={RequestDetails.BodyOptions}
           />
         </Panel>
+        {response && response.insights ? (
+          <Panel heading={'Insights'} floating={false} collapsed={true}>
+            <InsightsInspector insights={response.insights} />
+          </Panel>
+        ) : null}
       </RequestDetails.Container>
     );
   }
@@ -715,3 +727,69 @@ const BodyFormatters: Array<BodyFormatter> = [
 ];
 
 const TextBodyFormatters: Array<BodyFormatter> = [new JSONTextFormatter()];
+
+class InsightsInspector extends Component<{insights: Insights}> {
+  formatTime(value: number): string {
+    return `${value} ms`;
+  }
+
+  formatSpeed(value: number): string {
+    return `${formatBytes(value)}/sec`;
+  }
+
+  formatRetries(retry: RetryInsights): string {
+    const timesWord = retry.limit === 1 ? 'time' : 'times';
+
+    return `${this.formatTime(retry.timeSpent)} (${
+      retry.count
+    } ${timesWord} out of ${retry.limit})`;
+  }
+
+  buildRow<T>(name: string, value: ?T, formatter: T => string): any {
+    return value
+      ? {
+          columns: {
+            key: {
+              value: <WrappingText>{name}</WrappingText>,
+            },
+            value: {
+              value: <WrappingText>{formatter(value)}</WrappingText>,
+            },
+          },
+          copyText: `${name}: ${formatter(value)}`,
+          key: name,
+        }
+      : null;
+  }
+
+  render() {
+    const insights = this.props.insights;
+    const {buildRow, formatTime, formatSpeed, formatRetries} = this;
+
+    const rows = [
+      buildRow('Retries', insights.retries, formatRetries.bind(this)),
+      buildRow('DNS lookup time', insights.dnsLookupTime, formatTime),
+      buildRow('Connect time', insights.connectTime, formatTime),
+      buildRow('SSL handshake time', insights.sslHandshakeTime, formatTime),
+      buildRow('Pretransfer time', insights.preTransferTime, formatTime),
+      buildRow('Redirect time', insights.redirectsTime, formatTime),
+      buildRow('First byte wait time', insights.timeToFirstByte, formatTime),
+      buildRow('Data transfer time', insights.transferTime, formatTime),
+      buildRow('Post processing time', insights.postProcessingTime, formatTime),
+      buildRow('Bytes transfered', insights.bytesTransfered, formatBytes),
+      buildRow('Transfer speed', insights.transferSpeed, formatSpeed),
+    ].filter(r => r != null);
+
+    return rows.length > 0 ? (
+      <ManagedTable
+        multiline={true}
+        columnSizes={KeyValueColumnSizes}
+        columns={KeyValueColumns}
+        rows={rows}
+        autoHeight={true}
+        floating={false}
+        zebra={false}
+      />
+    ) : null;
+  }
+}

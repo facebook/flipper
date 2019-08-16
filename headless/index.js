@@ -9,15 +9,38 @@ import path from 'path';
 import {createStore} from 'redux';
 import {applyMiddleware} from 'redux';
 import yargs from 'yargs';
-
-import dispatcher from '../src/dispatcher/index.js';
-import {init as initLogger} from '../src/fb-stubs/Logger.js';
-import reducers from '../src/reducers/index.js';
-import {exportStore} from '../src/utils/exportData.js';
-import exportMetrics from '../src/utils/exportMetrics.js';
-
+import dispatcher from '../src/dispatcher/index.tsx';
+import reducers from '../src/reducers/index.tsx';
+import {init as initLogger} from '../src/fb-stubs/Logger.tsx';
+import {exportStore, pluginsClassMap} from '../src/utils/exportData.tsx';
+import {
+  exportMetricsWithoutTrace,
+  exportMetricsFromTrace,
+} from '../src/utils/exportMetrics.tsx';
+import {listDevices} from '../src/utils/listDevices.tsx';
 // $FlowFixMe this file exist, trust me, flow!
 import setup from '../static/setup.js';
+import type {Store} from '../src/reducers/index.tsx';
+import {getPersistentPlugins} from '../src/utils/pluginUtils.tsx';
+import {serialize} from '../src/utils/serialization.tsx';
+import type BaseDevice from '../src/devices/BaseDevice.tsx';
+
+import {getStringFromErrorLike} from '../src/utils/index.tsx';
+
+type Action = {|exit: true, result: string|} | {|exit: false|};
+
+type UserArguments = {|
+  securePort: string,
+  insecurePort: string,
+  dev: boolean,
+  exit: 'sigint' | 'disconnect',
+  verbose: boolean,
+  metrics: string,
+  listDevices: boolean,
+  device: string,
+  listPlugins: boolean,
+  selectPlugins: Array<string>,
+|};
 
 yargs
   .usage('$0 [args]')
@@ -53,10 +76,31 @@ yargs
         type: 'boolean',
       });
       yargs.option('metrics', {
-        alias: 'metrics',
-        default: false,
+        default: undefined,
         describe: 'Will export metrics instead of data when flipper terminates',
+        type: 'string',
+      });
+      yargs.option('list-devices', {
+        default: false,
+        describe: 'Will print the list of devices in the terminal',
         type: 'boolean',
+      });
+      yargs.option('list-plugins', {
+        default: false,
+        describe: 'Will print the list of supported plugins in the terminal',
+        type: 'boolean',
+      });
+      yargs.option('select-plugins', {
+        default: [],
+        describe:
+          'The data/metrics would be exported only for the selected plugins',
+        type: 'array',
+      });
+      yargs.option('device', {
+        default: undefined,
+        describe:
+          'The identifier passed will be matched against the udid of the available devices and the matched device would be selected',
+        type: 'string',
       });
     },
     startFlipper,
@@ -64,14 +108,105 @@ yargs
   .version(global.__VERSION__)
   .help().argv; // http://yargs.js.org/docs/#api-argv
 
-function startFlipper({
-  dev,
-  verbose,
-  metrics,
-  exit,
-  'insecure-port': insecurePort,
-  'secure-port': securePort,
-}) {
+function shouldExportMetric(metrics): boolean {
+  if (!metrics) {
+    return process.argv.includes('--metrics');
+  }
+  return true;
+}
+
+function outputAndExit(output: string): void {
+  console.log(`Finished. Outputting ${output.length} characters.`);
+  process.stdout.write(output, () => {
+    process.exit(0);
+  });
+}
+
+function errorAndExit(error: any): void {
+  process.stderr.write(getStringFromErrorLike(error), () => {
+    process.exit(1);
+  });
+}
+
+async function earlyExitActions(
+  exitClosures: Array<(userArguments: UserArguments) => Promise<Action>>,
+  userArguments: UserArguments,
+  originalConsole: typeof global.console,
+): Promise<void> {
+  for (const exitAction of exitClosures) {
+    try {
+      const action = await exitAction(userArguments);
+      if (action.exit) {
+        outputAndExit(action.result);
+      }
+    } catch (e) {
+      errorAndExit(e);
+    }
+  }
+}
+
+async function exitActions(
+  exitClosures: Array<
+    (userArguments: UserArguments, store: Store) => Promise<Action>,
+  >,
+  userArguments: UserArguments,
+  store: Store,
+): Promise<void> {
+  const {metrics, exit} = userArguments;
+  for (const exitAction of exitClosures) {
+    try {
+      const action = await exitAction(userArguments, store);
+      if (action.exit) {
+        outputAndExit(action.result);
+      }
+    } catch (e) {
+      errorAndExit(e);
+    }
+  }
+
+  if (exit == 'sigint') {
+    process.on('SIGINT', async () => {
+      try {
+        if (shouldExportMetric(metrics) && !metrics) {
+          const state = store.getState();
+          const payload = await exportMetricsWithoutTrace(
+            store,
+            state.pluginStates,
+          );
+          outputAndExit(payload.toString());
+        } else {
+          const {serializedString, errorArray} = await exportStore(store);
+          errorArray.forEach(console.error);
+          outputAndExit(serializedString);
+        }
+      } catch (e) {
+        errorAndExit(e);
+      }
+    });
+  }
+}
+
+async function storeModifyingActions(
+  storeModifyingClosures: Array<
+    (userArguments: UserArguments, store: Store) => Promise<Action>,
+  >,
+  userArguments: UserArguments,
+  store: Store,
+): Promise<void> {
+  for (const closure of storeModifyingClosures) {
+    try {
+      const action = await closure(userArguments, store);
+      if (action.exit) {
+        outputAndExit(action.result);
+      }
+    } catch (e) {
+      errorAndExit(e);
+    }
+  }
+}
+
+async function startFlipper(userArguments: UserArguments) {
+  const {verbose, metrics, exit, insecurePort, securePort} = userArguments;
   console.error(`
    _____ _ _
   |   __| |_|___ ___ ___ ___
@@ -109,20 +244,23 @@ function startFlipper({
       // TODO(T42325892): Investigate why the export stalls without exiting the
       // current eventloop task here.
       setTimeout(() => {
-        if (metrics) {
-          exportMetrics(store)
+        if (shouldExportMetric(metrics) && !metrics) {
+          const state = store.getState();
+          exportMetricsWithoutTrace(state, state.pluginStates)
             .then(payload => {
-              originalConsole.log(payload);
-              process.exit();
+              outputAndExit(payload || '');
             })
-            .catch(console.error);
+            .catch(e => {
+              errorAndExit(e);
+            });
         } else {
           exportStore(store)
             .then(({serializedString}) => {
-              originalConsole.log(serializedString);
-              process.exit();
+              outputAndExit(serializedString);
             })
-            .catch(console.error);
+            .catch(e => {
+              errorAndExit(e);
+            });
         }
       }, 10);
     }
@@ -135,23 +273,122 @@ function startFlipper({
     devToolsEnhancer.composeWithDevTools(applyMiddleware(headlessMiddleware)),
   );
   const logger = initLogger(store, {isHeadless: true});
-  dispatcher(store, logger);
 
-  if (exit == 'sigint') {
-    process.on('SIGINT', async () => {
-      try {
-        if (metrics) {
-          const payload = await exportMetrics(store);
-          originalConsole.log(payload);
-        } else {
-          const {serializedString, errorArray} = await exportStore(store);
-          errorArray.forEach(console.error);
-          originalConsole.log(serializedString);
-        }
-      } catch (e) {
-        console.error(e);
+  const earlyExitClosures: Array<
+    (userArguments: UserArguments) => Promise<Action>,
+  > = [
+    (userArguments: UserArguments) => {
+      if (userArguments.listDevices) {
+        return listDevices().then(async (devices: Array<BaseDevice>) => {
+          const mapped = devices.map(device => {
+            return {
+              os: device.os,
+              title: device.title,
+              deviceType: device.deviceType,
+              serial: device.serial,
+            };
+          });
+          return {exit: true, result: await serialize(mapped)};
+        });
       }
-      process.exit();
-    });
-  }
+      return Promise.resolve({exit: false});
+    },
+  ];
+
+  await earlyExitActions(earlyExitClosures, userArguments);
+
+  const cleanupDispatchers = dispatcher(store, logger);
+
+  const storeModifyingClosures: Array<
+    (userArguments: UserArguments, store: Store) => Promise<Action>,
+  > = [
+    (userArguments: UserArguments, store: Store) => {
+      const {device: selectedDeviceID} = userArguments;
+      if (selectedDeviceID) {
+        return listDevices().then(devices => {
+          const matchedDevice = devices.find(
+            device => device.serial === selectedDeviceID,
+          );
+          if (matchedDevice) {
+            if (matchedDevice.constructor.name === 'AndroidDevice') {
+              const ports = store.getState().application.serverPorts;
+              matchedDevice.reverse([ports.secure, ports.insecure]);
+            }
+            store.dispatch({
+              type: 'REGISTER_DEVICE',
+              payload: matchedDevice,
+            });
+            store.dispatch({
+              type: 'SELECT_DEVICE',
+              payload: matchedDevice,
+            });
+            return {exit: false};
+          }
+          return Promise.reject(
+            new Error(`No device matching the serial ${selectedDeviceID}`),
+          );
+        });
+      }
+      return Promise.resolve({
+        exit: false,
+      });
+    },
+    (userArguments: UserArguments, store: Store) => {
+      const {selectPlugins} = userArguments;
+      const selectedPlugins = selectPlugins.filter(selectPlugin => {
+        return selectPlugin != undefined;
+      });
+      if (selectedPlugins) {
+        store.dispatch({
+          type: 'SELECTED_PLUGINS',
+          payload: selectedPlugins,
+        });
+      }
+      return Promise.resolve({
+        exit: false,
+      });
+    },
+  ];
+
+  const exitActionClosures: Array<
+    (userArguments: UserArguments, store: Store) => Promise<Action>,
+  > = [
+    async (userArguments: UserArguments, store: Store) => {
+      const {listPlugins} = userArguments;
+      if (listPlugins) {
+        return Promise.resolve({
+          exit: true,
+          result: await serialize(
+            getPersistentPlugins(store.getState().plugins),
+          ),
+        });
+      }
+      return Promise.resolve({
+        exit: false,
+      });
+    },
+    (userArguments: UserArguments, store: Store) => {
+      const {metrics} = userArguments;
+      if (shouldExportMetric(metrics) && metrics && metrics.length > 0) {
+        return exportMetricsFromTrace(
+          metrics,
+          pluginsClassMap(store.getState().plugins),
+          store.getState().plugins.selectedPlugins,
+        )
+          .then(payload => {
+            return {exit: true, result: payload ? payload.toString() : ''};
+          })
+          .catch(error => {
+            return {exit: true, result: error};
+          });
+      }
+      return Promise.resolve({exit: false});
+    },
+  ];
+
+  await storeModifyingActions(storeModifyingClosures, userArguments, store);
+
+  await exitActions(exitActionClosures, userArguments, store);
+
+  await cleanupDispatchers();
 }

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the LICENSE
@@ -8,9 +8,11 @@ package com.facebook.flipper.sample;
 
 import android.app.Application;
 import android.content.Context;
+import android.database.DatabaseUtils;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.flipper.android.AndroidFlipperClient;
 import com.facebook.flipper.core.FlipperClient;
+import com.facebook.flipper.plugins.navigation.NavigationFlipperPlugin;
 import com.facebook.flipper.sample.network.NetworkClient;
 import com.facebook.soloader.SoLoader;
 
@@ -22,6 +24,7 @@ public class FlipperSampleApplication extends Application {
     Fresco.initialize(this);
 
     final FlipperClient client = AndroidFlipperClient.getInstance(this);
+    client.addPlugin(NavigationFlipperPlugin.getInstance());
 
     final FlipperInitializer.IntializationResult initializationResult =
         FlipperInitializer.initFlipperPlugins(this, client);
@@ -33,5 +36,11 @@ public class FlipperSampleApplication extends Application {
         .edit()
         .putInt("SomeKey", 1337)
         .apply();
+
+    Database1Helper db1Helper = new Database1Helper(this);
+    Database2Helper db2Helper = new Database2Helper(this);
+
+    DatabaseUtils.queryNumEntries(db1Helper.getReadableDatabase(), "db1_first_table", null, null);
+    DatabaseUtils.queryNumEntries(db2Helper.getReadableDatabase(), "db2_first_table", null, null);
   }
 }

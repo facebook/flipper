@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the LICENSE
@@ -13,6 +13,7 @@ import com.facebook.common.internal.Predicate;
 import com.facebook.common.memory.manager.DebugMemoryManager;
 import com.facebook.common.memory.manager.NoOpDebugMemoryManager;
 import com.facebook.common.references.CloseableReference;
+import com.facebook.common.references.SharedReference;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.backends.pipeline.info.ImageLoadStatus;
 import com.facebook.drawee.backends.pipeline.info.ImageOriginUtils;
@@ -31,12 +32,16 @@ import com.facebook.imagepipeline.bitmaps.PlatformBitmapFactory;
 import com.facebook.imagepipeline.cache.CountingMemoryCacheInspector;
 import com.facebook.imagepipeline.cache.CountingMemoryCacheInspector.DumpInfoEntry;
 import com.facebook.imagepipeline.core.ImagePipelineFactory;
+import com.facebook.imagepipeline.debug.CloseableReferenceLeakTracker;
 import com.facebook.imagepipeline.debug.DebugImageTracker;
 import com.facebook.imagepipeline.debug.FlipperImageTracker;
 import com.facebook.imagepipeline.image.CloseableBitmap;
 import com.facebook.imagepipeline.image.CloseableImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.Nullable;
@@ -45,10 +50,13 @@ import javax.annotation.Nullable;
  * Allows Sonar to display the contents of Fresco's caches. This is useful for developers to debug
  * what images are being held in cache as they navigate through their app.
  */
-public class FrescoFlipperPlugin extends BufferingFlipperPlugin implements ImagePerfDataListener {
+public class FrescoFlipperPlugin extends BufferingFlipperPlugin
+    implements ImagePerfDataListener, CloseableReferenceLeakTracker.Listener {
 
   private static final String FRESCO_EVENT = "events";
   private static final String FRESCO_DEBUGOVERLAY_EVENT = "debug_overlay_event";
+  private static final String FRESCO_CLOSEABLE_REFERENCE_LEAK_EVENT =
+      "closeable_reference_leak_event";
 
   private static final int BITMAP_PREVIEW_WIDTH = 150;
   private static final int BITMAP_PREVIEW_HEIGHT = 150;
@@ -70,6 +78,7 @@ public class FrescoFlipperPlugin extends BufferingFlipperPlugin implements Image
   private final DebugMemoryManager mMemoryManager;
   private final FlipperPerfLogger mPerfLogger;
   @Nullable private final FrescoFlipperDebugPrefHelper mDebugPrefHelper;
+  private final List<FlipperObject> mEvents = new ArrayList<>();
 
   public FrescoFlipperPlugin(
       DebugImageTracker imageTracker,
@@ -77,7 +86,8 @@ public class FrescoFlipperPlugin extends BufferingFlipperPlugin implements Image
       @Nullable FlipperObjectHelper flipperObjectHelper,
       DebugMemoryManager memoryManager,
       FlipperPerfLogger perfLogger,
-      @Nullable FrescoFlipperDebugPrefHelper debugPrefHelper) {
+      @Nullable FrescoFlipperDebugPrefHelper debugPrefHelper,
+      @Nullable CloseableReferenceLeakTracker closeableReferenceLeakTracker) {
     mFlipperImageTracker =
         imageTracker instanceof FlipperImageTracker
             ? (FlipperImageTracker) imageTracker
@@ -87,6 +97,10 @@ public class FrescoFlipperPlugin extends BufferingFlipperPlugin implements Image
     mMemoryManager = memoryManager;
     mPerfLogger = perfLogger;
     mDebugPrefHelper = debugPrefHelper;
+
+    if (closeableReferenceLeakTracker != null) {
+      closeableReferenceLeakTracker.setListener(this);
+    }
   }
 
   public FrescoFlipperPlugin() {
@@ -96,6 +110,7 @@ public class FrescoFlipperPlugin extends BufferingFlipperPlugin implements Image
         null,
         new NoOpDebugMemoryManager(),
         new NoOpFlipperPerfLogger(),
+        null,
         null);
   }
 
@@ -111,6 +126,26 @@ public class FrescoFlipperPlugin extends BufferingFlipperPlugin implements Image
   @Override
   public void onConnect(FlipperConnection connection) {
     super.onConnect(connection);
+    connection.receive(
+        "getAllImageEventsInfo",
+        new FlipperReceiver() {
+          @Override
+          public void onReceive(FlipperObject params, FlipperResponder responder) throws Exception {
+            if (!ensureFrescoInitialized(responder)) {
+              return;
+            }
+
+            FlipperArray.Builder arrayBuilder = new FlipperArray.Builder();
+            for (FlipperObject obj : mEvents) {
+              arrayBuilder.put(obj);
+            }
+            mEvents.clear();
+
+            FlipperObject object =
+                new FlipperObject.Builder().put("events", arrayBuilder.build()).build();
+            responder.success(object);
+          }
+        });
 
     connection.receive(
         "listImages",
@@ -127,29 +162,11 @@ public class FrescoFlipperPlugin extends BufferingFlipperPlugin implements Image
                 new CountingMemoryCacheInspector<>(
                         imagePipelineFactory.getBitmapCountingMemoryCache())
                     .dumpCacheContent();
-
             responder.success(
-                new FlipperObject.Builder()
-                    .put(
-                        "levels",
-                        new FlipperArray.Builder()
-                            .put(
-                                new FlipperObject.Builder()
-                                    .put("cacheType", "On screen bitmaps")
-                                    .put("sizeBytes", memoryCache.size - memoryCache.lruSize)
-                                    .put("imageIds", buildImageIdList(memoryCache.sharedEntries))
-                                    .build())
-                            .put(
-                                new FlipperObject.Builder()
-                                    .put("cacheType", "Bitmap memory cache")
-                                    .put("clearKey", "memory")
-                                    .put("sizeBytes", memoryCache.size)
-                                    .put("maxSizeBytes", memoryCache.maxSize)
-                                    .put("imageIds", buildImageIdList(memoryCache.lruEntries))
-                                    .build())
-                            // TODO (t31947642): list images on disk
-                            .build())
-                    .build());
+                getImageList(
+                    memoryCache,
+                    buildImageIdList(memoryCache.sharedEntries),
+                    buildImageIdList(memoryCache.lruEntries)));
             mPerfLogger.endMarker("Sonar.Fresco.listImages");
           }
         });
@@ -180,20 +197,20 @@ public class FrescoFlipperPlugin extends BufferingFlipperPlugin implements Image
               mPerfLogger.cancelMarker("Sonar.Fresco.getImage");
               return;
             }
-            final CloseableBitmap bitmap = (CloseableBitmap) ref.get();
-            String encodedBitmap =
-                bitmapToBase64Preview(bitmap.getUnderlyingBitmap(), mPlatformBitmapFactory);
 
-            responder.success(
-                new FlipperObject.Builder()
-                    .put("imageId", imageId)
-                    .put("uri", mFlipperImageTracker.getUriString(cacheKey))
-                    .put("width", bitmap.getWidth())
-                    .put("height", bitmap.getHeight())
-                    .put("sizeBytes", bitmap.getSizeInBytes())
-                    .put("data", encodedBitmap)
-                    .build());
+            if (ref.get() instanceof CloseableBitmap) {
+              final CloseableBitmap bitmap = (CloseableBitmap) ref.get();
+              String encodedBitmap =
+                  bitmapToBase64Preview(bitmap.getUnderlyingBitmap(), mPlatformBitmapFactory);
 
+              responder.success(
+                  getImageData(
+                      imageId, encodedBitmap, bitmap, mFlipperImageTracker.getUriString(cacheKey)));
+            } else {
+              // TODO: T48376327, it might happened that ref.get() may not be casted to
+              // CloseableBitmap, this issue is tracked in the before mentioned task
+              responder.success();
+            }
             mPerfLogger.endMarker("Sonar.Fresco.getImage");
           }
         });
@@ -264,6 +281,45 @@ public class FrescoFlipperPlugin extends BufferingFlipperPlugin implements Image
           });
       sendDebugOverlayEnabledEvent(mDebugPrefHelper.isDebugOverlayEnabled());
     }
+  }
+
+  private FlipperObject getImageList(
+      CountingMemoryCacheInspector.DumpInfo memoryCache,
+      FlipperArray memoryCacheSharedEntries,
+      FlipperArray memoryCacheLRUEntries) {
+    return new FlipperObject.Builder()
+        .put(
+            "levels",
+            new FlipperArray.Builder()
+                .put(
+                    new FlipperObject.Builder()
+                        .put("cacheType", "On screen bitmaps")
+                        .put("sizeBytes", memoryCache.size - memoryCache.lruSize)
+                        .put("imageIds", memoryCacheSharedEntries)
+                        .build())
+                .put(
+                    new FlipperObject.Builder()
+                        .put("cacheType", "Bitmap memory cache")
+                        .put("clearKey", "memory")
+                        .put("sizeBytes", memoryCache.size)
+                        .put("maxSizeBytes", memoryCache.maxSize)
+                        .put("imageIds", memoryCacheLRUEntries)
+                        .build())
+                // TODO (t31947642): list images on disk
+                .build())
+        .build();
+  }
+
+  private FlipperObject getImageData(
+      String imageID, String encodedBitmap, CloseableBitmap bitmap, String uriString) {
+    return new FlipperObject.Builder()
+        .put("imageId", imageID)
+        .put("uri", uriString)
+        .put("width", bitmap.getWidth())
+        .put("height", bitmap.getHeight())
+        .put("sizeBytes", bitmap.getSizeInBytes())
+        .put("data", encodedBitmap)
+        .build();
   }
 
   private boolean ensureFrescoInitialized(FlipperResponder responder) {
@@ -358,7 +414,8 @@ public class FrescoFlipperPlugin extends BufferingFlipperPlugin implements Image
       return;
     }
 
-    FlipperImageTracker.ImageDebugData data = mFlipperImageTracker.getDebugDataForRequestId(requestId);
+    FlipperImageTracker.ImageDebugData data =
+        mFlipperImageTracker.getDebugDataForRequestId(requestId);
     if (data == null) {
       return;
     }
@@ -403,8 +460,9 @@ public class FrescoFlipperPlugin extends BufferingFlipperPlugin implements Image
               .put("height", imagePerfData.getOnScreenHeightPx())
               .build());
     }
-
-    send(FRESCO_EVENT, response.build());
+    FlipperObject responseObject = response.build();
+    mEvents.add(responseObject);
+    send(FRESCO_EVENT, responseObject);
   }
 
   public void onImageVisibilityUpdated(ImagePerfData imagePerfData, int visibilityState) {
@@ -418,5 +476,25 @@ public class FrescoFlipperPlugin extends BufferingFlipperPlugin implements Image
 
   private static void respondError(FlipperResponder responder, String errorReason) {
     responder.error(new FlipperObject.Builder().put("reason", errorReason).build());
+  }
+
+  @Override
+  public void onCloseableReferenceLeak(
+      SharedReference<Object> reference, @Nullable Throwable stacktrace) {
+    final FlipperObject.Builder builder =
+        new FlipperObject.Builder()
+            .put("identityHashCode", System.identityHashCode(reference))
+            .put("className", reference.get().getClass().getName());
+    if (stacktrace != null) {
+      builder.put("stacktrace", getStackTraceString(stacktrace));
+    }
+    send(FRESCO_CLOSEABLE_REFERENCE_LEAK_EVENT, builder.build());
+  }
+
+  public static String getStackTraceString(Throwable tr) {
+    StringWriter sw = new StringWriter();
+    PrintWriter pw = new PrintWriter(sw);
+    tr.printStackTrace(pw);
+    return sw.toString();
   }
 }

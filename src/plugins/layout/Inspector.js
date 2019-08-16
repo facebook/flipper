@@ -15,7 +15,7 @@ import {ElementsInspector} from 'flipper';
 import {Component} from 'react';
 import debounce from 'lodash.debounce';
 
-import type {PersistedState} from './';
+import type {PersistedState, ElementMap} from './';
 
 type GetNodesOptions = {
   force?: boolean,
@@ -45,6 +45,9 @@ export default class Inspector extends Component<Props> {
       GET_NODES: this.props.ax ? 'getAXNodes' : 'getNodes',
       SET_HIGHLIGHTED: 'setHighlighted',
       SELECT: this.props.ax ? 'selectAX' : 'select',
+      INVALIDATE_WITH_DATA: this.props.ax
+        ? 'invalidateWithDataAX'
+        : 'invalidateWithData',
     };
   }
 
@@ -109,14 +112,15 @@ export default class Inspector extends Component<Props> {
         const ids = nodes
           .map(n => [n.id, ...(n.children || [])])
           .reduce((acc, cv) => acc.concat(cv), []);
-        this.getNodes(ids, {}).then(nodes => {
-          nodes.forEach(node => {
-            // Check if there are new IDs in the children array, and call getNodes()
-            // if there are any
-            const cIds = node.children.filter(c => !this.elements()[c]);
-            this.getNodes(cIds, {});
-          });
-        });
+        this.invalidate(ids);
+      },
+    );
+
+    this.props.client.subscribe(
+      this.call().INVALIDATE_WITH_DATA,
+      (obj: {nodes: Array<Element>}) => {
+        const {nodes} = obj;
+        this.invalidateWithData(nodes);
       },
     );
 
@@ -143,27 +147,64 @@ export default class Inspector extends Component<Props> {
 
     if (
       ax &&
-      selectedElement !== prevProps.selectedElement &&
-      selectedElement
+      selectedElement &&
+      selectedElement !== prevProps.selectedElement
     ) {
-      // selected element changed, find linked AX element
-      const linkedAXNode: ?ElementID = this.props.persistedState.elements[
+      // selected element in non-AX tree changed, find linked element in AX tree
+      const newlySelectedElem = this.props.persistedState.elements[
         selectedElement
-      ]?.extraInfo?.linkedAXNode;
-      this.props.onSelect(linkedAXNode);
+      ];
+      if (newlySelectedElem) {
+        this.props.onSelect(newlySelectedElem.extraInfo?.linkedNode);
+      }
     } else if (
       !ax &&
-      selectedAXElement !== prevProps.selectedAXElement &&
-      selectedAXElement
+      selectedAXElement &&
+      selectedAXElement !== prevProps.selectedAXElement
     ) {
-      // selected AX element changed, find linked element
-      // $FlowFixMe Object.values retunes mixed type
-      const linkedNode: ?Element = Object.values(
-        this.props.persistedState.elements,
-        // $FlowFixMe it's an Element not mixed
-      ).find((e: Element) => e.extraInfo?.linkedAXNode === selectedAXElement);
-      this.props.onSelect(linkedNode?.id);
+      // selected element in AX tree changed, find linked element in non-AX tree
+      const newlySelectedAXElem = this.props.persistedState.AXelements[
+        selectedAXElement
+      ];
+      if (newlySelectedAXElem) {
+        this.props.onSelect(newlySelectedAXElem.extraInfo?.linkedNode);
+      }
     }
+  }
+
+  invalidateWithData(elements: Array<Element>): void {
+    if (elements.length === 0) {
+      return;
+    }
+    const updatedElements: ElementMap = elements.reduce(
+      (acc: ElementMap, element: Element) => {
+        acc[element.id] = {
+          ...element,
+          expanded: this.elements()[element.id]?.expanded,
+        };
+        return acc;
+      },
+      new Map(),
+    );
+    this.props.setPersistedState({
+      [this.props.ax ? 'AXelements' : 'elements']: {
+        ...this.elements(),
+        ...updatedElements,
+      },
+    });
+  }
+
+  invalidate(ids: Array<ElementID>): Promise<Array<Element>> {
+    if (ids.length === 0) {
+      return Promise.resolve([]);
+    }
+    return this.getNodes(ids, {}).then((elements: Array<Element>) => {
+      const children = elements
+        .filter((element: Element) => this.elements()[element.id]?.expanded)
+        .map((element: Element) => element.children)
+        .reduce((acc, val) => acc.concat(val), []);
+      return this.invalidate(children);
+    });
   }
 
   updateElement(id: ElementID, data: Object) {

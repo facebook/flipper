@@ -8,6 +8,7 @@
 #if FB_SONARKIT_ENABLED
 
 #import "SKNodeDescriptor.h"
+#import <FlipperKitLayoutTextSearchable/FKTextSearchable.h>
 
 @implementation SKNodeDescriptor
 {
@@ -30,6 +31,11 @@
 
 - (NSString *)identifierForNode:(id)node {
   @throw [NSString stringWithFormat:@"need to implement %@", NSStringFromSelector(_cmd)];
+}
+
+- (NSString *)identifierForInvalidation:(id)node
+{
+  return [self identifierForNode:node];
 }
 
 - (NSString *)nameForNode:(id)node {
@@ -71,7 +77,13 @@
 
 - (BOOL)matchesQuery:(NSString *)query forNode:(id)node {
     NSString *name = [self nameForNode: node];
-  return [self string:name contains:query] || [self string:[self identifierForNode: node] contains: query];
+    NSString *text = nil;
+    if ([node conformsToProtocol:@protocol(FKTextSearchable)]) {
+        text = [node searchableText];
+    }
+    return [self string:name contains:query] ||
+    [self string:[self identifierForNode: node] contains: query] ||
+    [self string:text contains:query];
 }
 
 - (BOOL)string:(NSString *)string contains:(NSString *)substring {
@@ -79,5 +91,6 @@
 }
 
 @end
+
 
 #endif

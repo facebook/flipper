@@ -127,15 +127,17 @@ const StyledButton = styled('div')(props => ({
     marginLeft: 0,
   },
 
-  '&:active': {
-    borderColor: colors.macOSTitleBarButtonBorder,
-    borderBottomColor: colors.macOSTitleBarButtonBorderBottom,
-    background: `linear-gradient(to bottom, ${
-      colors.macOSTitleBarButtonBackgroundActiveHighlight
-    } 1px, ${colors.macOSTitleBarButtonBackgroundActive} 0%, ${
-      colors.macOSTitleBarButtonBorderBlur
-    } 100%)`,
-  },
+  '&:active': props.disabled
+    ? null
+    : {
+        borderColor: colors.macOSTitleBarButtonBorder,
+        borderBottomColor: colors.macOSTitleBarButtonBorderBottom,
+        background: `linear-gradient(to bottom, ${
+          colors.macOSTitleBarButtonBackgroundActiveHighlight
+        } 1px, ${colors.macOSTitleBarButtonBackgroundActive} 0%, ${
+          colors.macOSTitleBarButtonBorderBlur
+        } 100%)`,
+      },
 
   '&:disabled': {
     borderColor: borderColor(props),
@@ -161,6 +163,10 @@ const Icon = styled(Glyph)(({hasText}) => ({
 }));
 
 type Props = {
+  /**
+   * onMouseUp handler.
+   */
+  onMouseDown?: (event: SyntheticMouseEvent<>) => any,
   /**
    * onClick handler.
    */
@@ -188,7 +194,7 @@ type Props = {
   /**
    * Dropdown menu template shown on click.
    */
-  dropdown?: Array<Electron$MenuItemOptions>,
+  dropdown?: Array<MenuItemConstructorOptions>,
   /**
    * Name of the icon dispalyed next to the text
    */
@@ -225,6 +231,7 @@ type Props = {
 
 type State = {
   active: boolean,
+  wasClosed: boolean,
 };
 
 /**
@@ -240,18 +247,22 @@ class Button extends React.Component<
 
   state = {
     active: false,
+    wasClosed: false,
   };
 
   _ref = React.createRef();
 
-  onMouseDown = () => this.setState({active: true});
-  onMouseUp = () => this.setState({active: false});
-
-  onClick = (e: SyntheticMouseEvent<>) => {
+  onMouseDown = (e: SyntheticMouseEvent<>) => {
+    this.setState({active: true, wasClosed: false});
+    if (this.props.onMouseDown != null) {
+      this.props.onMouseDown(e);
+    }
+  };
+  onMouseUp = () => {
     if (this.props.disabled === true) {
       return;
     }
-    if (this.props.dropdown) {
+    if (this.props.dropdown && !this.state.wasClosed) {
       const menu = electron.remote.Menu.buildFromTemplate(this.props.dropdown);
       const position = {};
       const {current} = this._ref;
@@ -267,7 +278,17 @@ class Button extends React.Component<
         window: electron.remote.getCurrentWindow(),
         async: true,
         ...position,
+        callback: () => {
+          this.setState({wasClosed: true});
+        },
       });
+    }
+    this.setState({active: false, wasClosed: false});
+  };
+
+  onClick = (e: SyntheticMouseEvent<>) => {
+    if (this.props.disabled === true) {
+      return;
     }
     if (this.props.onClick) {
       this.props.onClick(e);
