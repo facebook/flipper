@@ -199,7 +199,7 @@ export default class CertificateProvider {
           androidUtil.push(deviceId, appName, destination + filename, contents),
       );
     }
-    if (os === 'iOS' || os === 'windows') {
+    if (os === 'iOS' || os === 'windows' || os == 'MacOS') {
       return promisify(fs.writeFile)(destination + filename, contents).catch(
         err => {
           if (os === 'iOS') {
