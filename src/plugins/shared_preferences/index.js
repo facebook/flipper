@@ -235,7 +235,7 @@ export default class extends FlipperPlugin<SharedPreferencesState> {
                       value: element.name,
                     },
                     value: {
-                      value: element.value,
+                      value: String(element.value),
                     },
                   },
 
