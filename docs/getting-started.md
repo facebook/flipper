@@ -99,7 +99,7 @@ dependencies {
 
 ## Setup your iOS app
 
-We support both Swift and Objective-C for Flipper with CocoaPods as build and distribution mechanism.
+We support both Swift and Objective-C for Flipper with CocoaPods as build and distribution mechanism. For CocoaPods 1.7+ following is the configuration.
 
 ### CocoaPods
 
@@ -107,18 +107,46 @@ We support both Swift and Objective-C for Flipper with CocoaPods as build and di
 <!--Objective-C-->
 ```ruby
 project 'MyApp.xcodeproj'
-swift_version = "4.1"
 flipperkit_version = '0.23.4'
 
 target 'MyApp' do
   platform :ios, '9.0'
-
+  # use_framework!
   pod 'FlipperKit', '~>' + flipperkit_version
   pod 'FlipperKit/FlipperKitLayoutComponentKitSupport', '~>' + flipperkit_version
   pod 'FlipperKit/SKIOSNetworkPlugin', '~>' + flipperkit_version
   pod 'FlipperKit/FlipperKitUserDefaultsPlugin', '~>' + flipperkit_version
+
+  # If you use `use_frameworks!` in your Podfile,
+  # uncomment the below $static_framework array and also
+  # the pre_install section.  This will cause Flipper and
+  # it's dependencies to be built as a static library and all other pods to
+  # be dynamic.
+  # $static_framework = ['FlipperKit', 'Flipper', 'Flipper-Folly',
+  #   'CocoaAsyncSocket', 'ComponentKit', 'DoubleConversion',
+  #   'glog', 'Flipper-PeerTalk', 'Flipper-RSocket', 'Yoga', 'YogaKit',
+  #   'CocoaLibEvent', 'openssl-ios-bitcode', 'boost-for-react-native']
+  #
+  # pre_install do |installer|
+  #   Pod::Installer::Xcode::TargetValidator.send(:define_method, :verify_no_static_framework_transitive_dependencies) {}
+  #   installer.pod_targets.each do |pod|
+  #       if $static_framework.include?(pod.name)
+  #         def pod.build_type;
+  #           Pod::Target::BuildType.static_library
+  #         end
+  #       end
+  #     end
+  # end
+
   # This post_install hook adds the -DFB_SONARKIT_ENABLED=1 flag to OTHER_CFLAGS, necessary to expose Flipper classes in the header files
   post_install do |installer|
+    installer.pods_project.targets.each do |target|
+      if target.name == 'YogaKit'
+        target.build_configurations.each do |config|
+          config.build_settings['SWIFT_VERSION'] = '4.1'
+        end
+      end
+    end
     file_name = Dir.glob("*.xcodeproj")[0]
     app_project = Xcodeproj::Project.open(file_name)
     app_project.native_targets.each do |target|
@@ -139,7 +167,6 @@ end
 <!--Swift-->
 ```ruby
 project 'MyApp.xcodeproj'
-swift_version = "4.1"
 flipperkit_version = '0.23.4'
 
 target 'MyApp' do
@@ -154,26 +181,34 @@ target 'MyApp' do
   # If you use `use_frameworks!` in your Podfile,
   # uncomment the below $static_framework array and also
   # the pre_install section.  This will cause Flipper and
-  # it's dependencies to be static and all other pods to
+  # it's dependencies to be built as a static library and all other pods to
   # be dynamic.
-
   # $static_framework = ['FlipperKit', 'Flipper', 'Flipper-Folly',
   #   'CocoaAsyncSocket', 'ComponentKit', 'DoubleConversion',
   #   'glog', 'Flipper-PeerTalk', 'Flipper-RSocket', 'Yoga', 'YogaKit',
-  #   'CocoaLibEvent', 'OpenSSL-Static', 'boost-for-react-native']
+  #   'CocoaLibEvent', 'openssl-ios-bitcode', 'boost-for-react-native']
   #
   # pre_install do |installer|
   #   Pod::Installer::Xcode::TargetValidator.send(:define_method, :verify_no_static_framework_transitive_dependencies) {}
   #   installer.pod_targets.each do |pod|
-  #     if $static_framework.include?(pod.name)
-  #       pod.instance_variable_set(:@host_requires_frameworks, false)
+  #       if $static_framework.include?(pod.name)
+  #         def pod.build_type;
+  #           Pod::Target::BuildType.static_library
+  #         end
+  #       end
   #     end
-  #   end
   # end
 
 
   # This post_install hook adds the -DFB_SONARKIT_ENABLED flag to OTHER_SWIFT_FLAGS, necessary to build swift target
   post_install do |installer|
+    installer.pods_project.targets.each do |target|
+      if target.name == 'YogaKit'
+        target.build_configurations.each do |config|
+          config.build_settings['SWIFT_VERSION'] = '4.1'
+        end
+      end
+    end
     file_name = Dir.glob("*.xcodeproj")[0]
     app_project = Xcodeproj::Project.open(file_name)
     app_project.native_targets.each do |target|
