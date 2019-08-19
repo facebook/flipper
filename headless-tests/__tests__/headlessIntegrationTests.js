@@ -224,7 +224,7 @@ test('test layout snapshot stripping', () => {
   });
 });
 
-test('Sample app layout hierarchy matches snapshot', () => {
+test.skip('Sample app layout hierarchy matches snapshot', () => {
   return getPluginState('Flipper', 'Inspector').then(state => {
     expect(state.rootAXElement).toBe('com.facebook.flipper.sample');
     expect(state.rootElement).toBe('com.facebook.flipper.sample');
