@@ -144,7 +144,7 @@ export {default as Heading} from './components/Heading.js';
 // filters
 export type {Filter} from './components/filter/types.js';
 
-export {default as MarkerTimeline} from './components/MarkerTimeline.js';
+export {default as MarkerTimeline} from './components/MarkerTimeline.tsx';
 
 export {default as StackTrace} from './components/StackTrace.js';
 

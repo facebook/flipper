@@ -6,27 +6,28 @@
  */
 
 import {Component} from 'react';
-import styled from '../styled/index.js';
-import Text from './Text.js';
-import FlexRow from './FlexRow.js';
-import {colors} from './colors.tsx';
+import styled from 'react-emotion';
+import Text from './Text';
+import FlexRow from './FlexRow';
+import {colors} from './colors';
+import React from 'react';
 
 type DataPoint = {
-  time: number,
-  color?: string,
-  label: string,
-  key: string,
+  time: number;
+  color?: string;
+  label: string;
+  key: string;
 };
 
-type Props = {|
-  onClick?: (keys: Array<string>) => mixed,
-  selected?: ?string,
-  points: Array<DataPoint>,
-  lineHeight: number,
-  maxGap: number,
-|};
+type Props = {
+  onClick?: (keys: Array<string>) => void;
+  selected?: string | null | undefined;
+  points: DataPoint[];
+  lineHeight: number;
+  maxGap: number;
+};
 
-const Markers = styled('div')(props => ({
+const Markers = styled('div')((props: {totalTime: number}) => ({
   position: 'relative',
   margin: 10,
   height: props.totalTime,
@@ -41,61 +42,70 @@ const Markers = styled('div')(props => ({
   },
 }));
 
-const Point = styled(FlexRow)(props => ({
-  position: 'absolute',
-  top: props.positionY,
-  left: 0,
-  right: 10,
-  cursor: props.onClick ? 'pointer' : 'default',
-  borderRadius: 3,
-  alignItems: 'flex-start',
-  lineHeight: '16px',
-  ':hover': {
-    background: `linear-gradient(to top, rgba(255,255,255,0) 0, #ffffff 10px)`,
-    paddingBottom: 5,
-    zIndex: 2,
-    '> span': {
-      whiteSpace: 'initial',
-    },
-  },
-  '::before': {
-    position: 'relative',
-    textAlign: 'center',
-    fontSize: 8,
-    fontWeight: '500',
-    content: props.number ? `'${props.number}'` : '""',
-    display: 'inline-block',
-    width: 9,
-    height: 9,
-    flexShrink: 0,
-    color: 'rgba(0,0,0,0.4)',
-    lineHeight: '9px',
-    borderRadius: '999em',
-    border: '1px solid rgba(0,0,0,0.2)',
-    backgroundColor: props.threadColor,
-    marginRight: 6,
-    zIndex: 3,
-    boxShadow: props.selected
-      ? `0 0 0 2px ${colors.macOSTitleBarIconSelected}`
-      : null,
-  },
-  '::after': {
-    content: props.cut ? '""' : null,
+const Point = styled(FlexRow)(
+  (props: {
+    positionY: number;
+    onClick: Function;
+    number: number;
+    threadColor: string;
+    selected: boolean;
+    cut: boolean;
+  }) => ({
     position: 'absolute',
-    width: 11,
-    top: -20,
+    top: props.positionY,
     left: 0,
-    height: 2,
-    background: colors.white,
-    borderTop: `1px solid ${colors.light30}`,
-    borderBottom: `1px solid ${colors.light30}`,
-    transform: `skewY(-10deg)`,
-  },
-}));
+    right: 10,
+    cursor: props.onClick ? 'pointer' : 'default',
+    borderRadius: 3,
+    alignItems: 'flex-start',
+    lineHeight: '16px',
+    ':hover': {
+      background: `linear-gradient(to top, rgba(255,255,255,0) 0, #ffffff 10px)`,
+      paddingBottom: 5,
+      zIndex: 2,
+      '> span': {
+        whiteSpace: 'initial',
+      },
+    },
+    '::before': {
+      position: 'relative',
+      textAlign: 'center',
+      fontSize: 8,
+      fontWeight: 500,
+      content: props.number ? `'${props.number}'` : '""',
+      display: 'inline-block',
+      width: 9,
+      height: 9,
+      flexShrink: 0,
+      color: 'rgba(0,0,0,0.4)',
+      lineHeight: '9px',
+      borderRadius: '999em',
+      border: '1px solid rgba(0,0,0,0.2)',
+      backgroundColor: props.threadColor,
+      marginRight: 6,
+      zIndex: 3,
+      boxShadow: props.selected
+        ? `0 0 0 2px ${colors.macOSTitleBarIconSelected}`
+        : null,
+    },
+    '::after': {
+      content: props.cut ? '""' : null,
+      position: 'absolute',
+      width: 11,
+      top: -20,
+      left: 0,
+      height: 2,
+      background: colors.white,
+      borderTop: `1px solid ${colors.light30}`,
+      borderBottom: `1px solid ${colors.light30}`,
+      transform: `skewY(-10deg)`,
+    },
+  }),
+);
 
 const Time = styled('span')({
   color: colors.light30,
-  fontWeight: '300',
+  fontWeight: 300,
   marginRight: 4,
   marginTop: -2,
 });
@@ -107,17 +117,17 @@ const Code = styled(Text)({
 });
 
 type TimePoint = {
-  timestamp: number,
-  markerNames: Array<string>,
-  markerKeys: Array<string>,
-  isCut: boolean,
-  positionY: number,
-  color: string,
+  timestamp: number;
+  markerNames: Array<string>;
+  markerKeys: Array<string>;
+  isCut: boolean;
+  positionY: number;
+  color: string;
 };
 
-type State = {|
-  timePoints: Array<TimePoint>,
-|};
+type State = {
+  timePoints: Array<TimePoint>;
+};
 
 export default class MarkerTimeline extends Component<Props, State> {
   static defaultProps = {
@@ -126,9 +136,9 @@ export default class MarkerTimeline extends Component<Props, State> {
   };
 
   static getDerivedStateFromProps(props: Props) {
-    const sortedMarkers: Array<[number, Array<DataPoint>]> = Array.from(
+    const sortedMarkers: [number, DataPoint[]][] = Array.from(
       props.points
-        .reduce((acc: Map<number, Array<DataPoint>>, cv: DataPoint) => {
+        .reduce((acc: Map<number, DataPoint[]>, cv: DataPoint) => {
           const list = acc.get(cv.time);
           if (list) {
             list.push(cv);
@@ -136,7 +146,7 @@ export default class MarkerTimeline extends Component<Props, State> {
             acc.set(cv.time, [cv]);
           }
           return acc;
-        }, (new Map(): Map<number, Array<DataPoint>>))
+        }, new Map())
         .entries(),
     ).sort((a, b) => a[0] - b[0]);
 
