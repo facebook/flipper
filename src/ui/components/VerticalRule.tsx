@@ -5,7 +5,7 @@
  * @format
  */
 
-import styled from '../styled/index.js';
+import styled from 'react-emotion';
 
 export default styled('div')({
   backgroundColor: '#c9ced4',
