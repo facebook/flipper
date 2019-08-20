@@ -201,13 +201,13 @@ export default class extends FlipperPlugin<SharedPreferencesState> {
         <Heading>
           <span style={{marginRight: '16px'}}>Preference File</span>
           <Select
-            options={Object.keys(this.state.sharedPreferences).reduce(
-              (obj, item) => {
+            options={Object.keys(this.state.sharedPreferences)
+              .sort((a, b) => (a.toLowerCase() > b.toLowerCase() ? 1 : -1))
+              .reduce((obj, item) => {
                 obj[item] = item;
                 return obj;
-              },
-              {},
-            )}
+              }, {})}
+            selected={this.state.selectedPreferences}
             onChange={this.onSharedPreferencesSelected}
           />
         </Heading>
@@ -235,7 +235,7 @@ export default class extends FlipperPlugin<SharedPreferencesState> {
                       value: element.name,
                     },
                     value: {
-                      value: element.value,
+                      value: String(element.value),
                     },
                   },
 
