@@ -136,7 +136,7 @@ export {default as ResizeSensor} from './components/ResizeSensor.tsx';
 export {default as StatusIndicator} from './components/StatusIndicator.tsx';
 
 // typography
-export {default as HorizontalRule} from './components/HorizontalRule.js';
+export {default as HorizontalRule} from './components/HorizontalRule.tsx';
 export {default as VerticalRule} from './components/VerticalRule.tsx';
 export {default as Label} from './components/Label.tsx';
 export {default as Heading} from './components/Heading.js';
