@@ -5,7 +5,7 @@
  * @format
  */
 
-import styled from '../styled/index.js';
+import styled from 'react-emotion';
 
 /**
  * A TextParagraph component.
