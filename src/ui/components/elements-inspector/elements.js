@@ -11,7 +11,7 @@ import type {
   ElementSearchResultSet,
 } from './ElementsInspector.js';
 import {reportInteraction} from '../../../utils/InteractionTracker.tsx';
-import ContextMenu from '../ContextMenu.js';
+import ContextMenu from '../ContextMenu.tsx';
 import {PureComponent, type Element as ReactElement} from 'react';
 import FlexRow from '../FlexRow.tsx';
 import FlexColumn from '../FlexColumn.tsx';

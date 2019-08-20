@@ -16,7 +16,7 @@ import type {
   TableOnAddFilter,
 } from './types.js';
 
-import type {MenuTemplate} from '../ContextMenu.js';
+import type {MenuTemplate} from '../ContextMenu.tsx';
 
 import React from 'react';
 import styled from '../../styled/index.js';
@@ -25,7 +25,7 @@ import {VariableSizeList as List} from 'react-window';
 import {clipboard} from 'electron';
 import TableHead from './TableHead.js';
 import TableRow from './TableRow.js';
-import ContextMenu from '../ContextMenu.js';
+import ContextMenu from '../ContextMenu.tsx';
 import FlexColumn from '../FlexColumn.tsx';
 import createPaste from '../../../fb-stubs/createPaste.tsx';
 import debounceRender from 'react-debounce-render';

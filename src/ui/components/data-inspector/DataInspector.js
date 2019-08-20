@@ -7,7 +7,7 @@
 
 import DataDescription from './DataDescription.js';
 import {Component} from 'react';
-import ContextMenu from '../ContextMenu.js';
+import ContextMenu from '../ContextMenu.tsx';
 import Tooltip from '../Tooltip.tsx';
 import styled from '../../styled/index.js';
 import DataPreview from './DataPreview.js';

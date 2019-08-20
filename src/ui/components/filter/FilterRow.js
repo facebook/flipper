@@ -7,7 +7,7 @@
 
 import type {Filter} from './types.js';
 import {PureComponent} from 'react';
-import ContextMenu from '../ContextMenu.js';
+import ContextMenu from '../ContextMenu.tsx';
 import textContent from '../../../utils/textContent.tsx';
 import styled from '../../styled/index.js';
 import {colors} from '../colors.tsx';

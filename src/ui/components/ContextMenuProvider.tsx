@@ -6,10 +6,10 @@
  */
 
 import {Component} from 'react';
-import styled from '../styled/index.js';
-import electron from 'electron';
-
-const PropTypes = require('prop-types');
+import styled from 'react-emotion';
+import electron, {MenuItemConstructorOptions} from 'electron';
+import React from 'react';
+import PropTypes from 'prop-types';
 
 type MenuTemplate = Array<MenuItemConstructorOptions>;
 
@@ -21,9 +21,9 @@ const Container = styled('div')({
  * Flipper's root is already wrapped with this component, so plugins should not
  * need to use this. ContextMenu is what you probably want to use.
  */
-export default class ContextMenuProvider extends Component<{|
-  children: React$Node,
-|}> {
+export default class ContextMenuProvider extends Component<{
+  children: React.ReactNode;
+}> {
   static childContextTypes = {
     appendToContextMenu: PropTypes.func,
   };
@@ -41,6 +41,7 @@ export default class ContextMenuProvider extends Component<{|
   onContextMenu = () => {
     const menu = electron.remote.Menu.buildFromTemplate(this._menuTemplate);
     this._menuTemplate = [];
+    // @ts-ignore: async is private electron API
     menu.popup({window: electron.remote.getCurrentWindow(), async: true});
   };
 

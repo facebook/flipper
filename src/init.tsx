@@ -8,7 +8,7 @@
 import {Provider} from 'react-redux';
 import ReactDOM from 'react-dom';
 import {useState, useEffect} from 'react';
-import ContextMenuProvider from './ui/components/ContextMenuProvider.js';
+import ContextMenuProvider from './ui/components/ContextMenuProvider';
 import GK from './fb-stubs/GK';
 import {init as initLogger} from './fb-stubs/Logger';
 import App from './App';

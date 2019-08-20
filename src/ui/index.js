@@ -96,8 +96,8 @@ export {Component, PureComponent} from 'react';
 // context menus and dropdowns
 export {
   default as ContextMenuProvider,
-} from './components/ContextMenuProvider.js';
-export {default as ContextMenu} from './components/ContextMenu.js';
+} from './components/ContextMenuProvider.tsx';
+export {default as ContextMenu} from './components/ContextMenu.tsx';
 
 // file
 export type {FileListFile, FileListFiles} from './components/FileList.tsx';

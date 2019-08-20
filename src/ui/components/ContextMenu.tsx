@@ -6,20 +6,21 @@
  */
 
 import * as React from 'react';
-import FlexColumn from './FlexColumn.tsx';
+import FlexColumn from './FlexColumn';
 import PropTypes from 'prop-types';
+import {MenuItemConstructorOptions} from 'electron';
 
 export type MenuTemplate = Array<MenuItemConstructorOptions>;
 
 type Props = {
   /** List of items in the context menu. Used for static menus. */
-  items?: MenuTemplate,
+  items?: MenuTemplate;
   /** Function to generate the menu. Called right before the menu is showed. Used for dynamic menus. */
-  buildItems?: () => MenuTemplate,
+  buildItems?: () => MenuTemplate;
   /** Nodes that should have a context menu */
-  children: React$Node,
+  children: React.ReactNode;
   /** The component that is used to wrap the children. Defaults to `FlexColumn`. */
-  component: React.ComponentType<any> | string,
+  component: React.ComponentType<any> | string;
 };
 
 /**
@@ -38,7 +39,7 @@ export default class ContextMenu extends React.Component<Props> {
     appendToContextMenu: PropTypes.func,
   };
 
-  onContextMenu = (e: SyntheticMouseEvent<>) => {
+  onContextMenu = () => {
     if (typeof this.context.appendToContextMenu === 'function') {
       if (this.props.items != null) {
         this.context.appendToContextMenu(this.props.items);
@@ -50,7 +51,7 @@ export default class ContextMenu extends React.Component<Props> {
 
   render() {
     const {
-      items: _itesm,
+      items: _items,
       buildItems: _buildItems,
       component,
       ...props
