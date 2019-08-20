@@ -5,8 +5,8 @@
  * @format
  */
 
-import styled from '../styled/index.js';
-import {colors} from './colors.tsx';
+import styled from 'react-emotion';
+import {colors} from './colors';
 
 export const inputStyle = (compact: boolean) => ({
   border: `1px solid ${colors.light15}`,
@@ -24,7 +24,7 @@ export const inputStyle = (compact: boolean) => ({
   },
 });
 
-const Input = styled('input')(({compact}) => ({
+const Input = styled('input')(({compact}: {compact?: boolean}) => ({
   ...inputStyle(compact),
   padding: compact ? '0 5px' : '0 10px',
 }));

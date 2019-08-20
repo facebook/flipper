@@ -12,7 +12,7 @@ import {SketchPicker} from 'react-color';
 import {Component, Fragment} from 'react';
 import Popover from '../Popover.tsx';
 import {colors} from '../colors.tsx';
-import Input from '../Input.js';
+import Input from '../Input.tsx';
 
 const NullValue = styled('span')({
   color: 'rgb(128, 128, 128)',

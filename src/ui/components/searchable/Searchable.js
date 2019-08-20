@@ -10,7 +10,7 @@ import type {TableColumns} from '../table/types';
 import {PureComponent} from 'react';
 import Toolbar from '../Toolbar.tsx';
 import FlexRow from '../FlexRow.js';
-import Input from '../Input.js';
+import Input from '../Input.tsx';
 import {colors} from '../colors.tsx';
 import Text from '../Text.tsx';
 import FlexBox from '../FlexBox.js';
