@@ -5,10 +5,11 @@
  * @format
  */
 
-import styled from '../styled/index.js';
-import {colors} from './colors.tsx';
+import styled from 'react-emotion';
+import {colors} from './colors';
 import {Component} from 'react';
 import {shell} from 'electron';
+import React from 'react';
 
 const StyledLink = styled('span')({
   color: colors.highlight,
@@ -19,8 +20,8 @@ const StyledLink = styled('span')({
 });
 
 export default class Link extends Component<{
-  href: string,
-  children?: React$Node,
+  href: string;
+  children?: React.ReactNode;
 }> {
   onClick = () => {
     shell.openExternal(this.props.href);

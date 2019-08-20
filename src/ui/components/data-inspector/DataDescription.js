@@ -4,7 +4,7 @@
  * LICENSE file in the root directory of this source tree.
  * @format
  */
-import Link from '../Link';
+import Link from '../Link.tsx';
 import type {DataInspectorSetValue} from './DataInspector.js';
 import {PureComponent} from 'react';
 import styled from '../../styled/index.js';

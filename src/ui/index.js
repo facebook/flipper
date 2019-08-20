@@ -127,7 +127,7 @@ export {default as Toolbar, Spacer} from './components/Toolbar.tsx';
 export {default as Panel} from './components/Panel.tsx';
 export {default as Text} from './components/Text.tsx';
 export {default as TextParagraph} from './components/TextParagraph.tsx';
-export {default as Link} from './components/Link.js';
+export {default as Link} from './components/Link.tsx';
 export {default as PathBreadcrumbs} from './components/PathBreadcrumbs.tsx';
 export {default as ModalOverlay} from './components/ModalOverlay.tsx';
 export {default as Tooltip} from './components/Tooltip.tsx';
