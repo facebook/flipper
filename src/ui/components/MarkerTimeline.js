@@ -9,7 +9,7 @@ import {Component} from 'react';
 import styled from '../styled/index.js';
 import Text from './Text.js';
 import FlexRow from './FlexRow.js';
-import {colors} from './colors.js';
+import {colors} from './colors.tsx';
 
 type DataPoint = {
   time: number,

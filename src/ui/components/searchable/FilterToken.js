@@ -10,7 +10,7 @@ import {PureComponent} from 'react';
 import Text from '../Text.js';
 import styled from '../../styled/index.js';
 import {findDOMNode} from 'react-dom';
-import {colors} from '../colors.js';
+import {colors} from '../colors.tsx';
 import electron from 'electron';
 
 const Token = styled(Text)(props => ({

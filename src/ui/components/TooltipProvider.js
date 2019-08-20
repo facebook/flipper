@@ -6,7 +6,7 @@
  */
 
 import styled from '../styled/index.js';
-import {colors} from './colors.js';
+import {colors} from './colors.tsx';
 import {Component} from 'react';
 
 import PropTypes from 'prop-types';

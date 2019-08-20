@@ -6,7 +6,7 @@
  */
 
 import styled from '../styled/index.js';
-import {colors} from './colors.js';
+import {colors} from './colors.tsx';
 
 export const inputStyle = (compact: boolean) => ({
   border: `1px solid ${colors.light15}`,

@@ -7,7 +7,7 @@
 
 import Interactive from './Interactive.js';
 import FlexColumn from './FlexColumn.js';
-import {colors} from './colors';
+import {colors} from './colors.tsx';
 import {Component} from 'react';
 import styled from '../styled/index.js';
 

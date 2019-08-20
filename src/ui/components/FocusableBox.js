@@ -7,7 +7,7 @@
 
 import {Component} from 'react';
 import Box from './Box.js';
-import {colors} from './colors';
+import {colors} from './colors.tsx';
 import styled from '../styled/index.js';
 
 const FocusableBoxBorder = styled(Box)({

@@ -19,7 +19,7 @@ import {PureComponent} from 'react';
 import ContextMenu from '../ContextMenu.js';
 import Interactive from '../Interactive.js';
 import styled from '../../styled/index.js';
-import {colors} from '../colors.js';
+import {colors} from '../colors.tsx';
 
 import FlexRow from '../FlexRow.js';
 

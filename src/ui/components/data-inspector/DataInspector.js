@@ -14,7 +14,7 @@ import DataPreview from './DataPreview.js';
 import createPaste from '../../../fb-stubs/createPaste.tsx';
 import {reportInteraction} from '../../../utils/InteractionTracker.tsx';
 import {getSortedKeys} from './utils.js';
-import {colors} from '../colors.js';
+import {colors} from '../colors.tsx';
 import {clipboard} from 'electron';
 
 const deepEqual = require('deep-equal');

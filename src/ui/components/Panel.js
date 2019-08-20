@@ -9,7 +9,7 @@ import React from 'react';
 import styled from '../styled/index.js';
 import FlexColumn from './FlexColumn.js';
 import FlexBox from './FlexBox.js';
-import {colors} from './colors.js';
+import {colors} from './colors.tsx';
 import Glyph from './Glyph.js';
 
 const BORDER = '1px solid #dddfe2';

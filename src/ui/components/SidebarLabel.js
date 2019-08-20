@@ -5,7 +5,7 @@
  * @format
  */
 
-import {colors} from './colors.js';
+import {colors} from './colors.tsx';
 import Label from './Label.js';
 import styled from '../styled/index.js';
 

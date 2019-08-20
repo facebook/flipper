@@ -15,7 +15,7 @@ export {default as ButtonGroup} from './components/ButtonGroup.js';
 export {default as ButtonGroupChain} from './components/ButtonGroupChain.js';
 
 //
-export {colors, darkColors, brandColors} from './components/colors.js';
+export {colors, darkColors, brandColors} from './components/colors.tsx';
 
 //
 export {default as Glyph} from './components/Glyph.js';

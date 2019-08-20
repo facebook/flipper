@@ -16,7 +16,7 @@ import React from 'react';
 import FilterRow from '../filter/FilterRow.js';
 import styled from '../../styled/index.js';
 import FlexRow from '../FlexRow.js';
-import {colors} from '../colors.js';
+import {colors} from '../colors.tsx';
 import {normaliseColumnWidth} from './utils.js';
 import {DEFAULT_ROW_HEIGHT} from './types';
 

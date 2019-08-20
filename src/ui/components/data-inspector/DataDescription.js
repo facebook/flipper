@@ -11,7 +11,7 @@ import styled from '../../styled/index.js';
 import {SketchPicker} from 'react-color';
 import {Component, Fragment} from 'react';
 import Popover from '../Popover.js';
-import {colors} from '../colors.js';
+import {colors} from '../colors.tsx';
 import Input from '../Input.js';
 
 const NullValue = styled('span')({

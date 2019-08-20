@@ -10,7 +10,7 @@ import Glyph from './Glyph.js';
 import PropTypes from 'prop-types';
 import electron from 'electron';
 import styled from '../styled/index.js';
-import {colors} from './colors.js';
+import {colors} from './colors.tsx';
 import {connect} from 'react-redux';
 import {findDOMNode} from 'react-dom';
 import {keyframes} from 'react-emotion';

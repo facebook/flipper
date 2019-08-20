@@ -10,7 +10,7 @@ import {PureComponent} from 'react';
 import ContextMenu from '../ContextMenu.js';
 import textContent from '../../../utils/textContent.tsx';
 import styled from '../../styled/index.js';
-import {colors} from '../colors.js';
+import {colors} from '../colors.tsx';
 
 const FilterText = styled('div')({
   display: 'flex',

@@ -5,7 +5,7 @@
  * @format
  */
 
-import {colors} from './colors.js';
+import {colors} from './colors.tsx';
 import FlexRow from './FlexRow.js';
 import FlexBox from './FlexBox.js';
 import styled from '../styled/index.js';

@@ -8,7 +8,7 @@
 import {PureComponent} from 'react';
 import FlexColumn from './FlexColumn.js';
 import styled from '../styled/index.js';
-import {colors} from './colors.js';
+import {colors} from './colors.tsx';
 
 const Anchor = styled('img')({
   zIndex: 6,

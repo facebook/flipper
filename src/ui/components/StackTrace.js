@@ -7,7 +7,7 @@
 
 import {Component} from 'react';
 import Text from './Text';
-import {colors} from './colors';
+import {colors} from './colors.tsx';
 import ManagedTable from './table/ManagedTable';
 import FlexRow from './FlexRow';
 import Glyph from './Glyph';
