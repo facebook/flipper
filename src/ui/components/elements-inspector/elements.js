@@ -17,7 +17,7 @@ import FlexRow from '../FlexRow.js';
 import FlexColumn from '../FlexColumn.js';
 import Glyph from '../Glyph.js';
 import {colors} from '../colors.tsx';
-import Text from '../Text.js';
+import Text from '../Text.tsx';
 import styled from '../../styled/index.js';
 import {clipboard} from 'electron';
 

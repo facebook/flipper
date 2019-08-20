@@ -6,7 +6,7 @@
  */
 import {default as styled} from 'react-emotion';
 import {colors} from '../colors.tsx';
-import {default as Text} from '../Text';
+import {default as Text} from '../Text.tsx';
 
 export type Value =
   | {

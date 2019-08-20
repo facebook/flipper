@@ -7,7 +7,7 @@
 
 import type {Filter} from 'flipper';
 import {PureComponent} from 'react';
-import Text from '../Text.js';
+import Text from '../Text.tsx';
 import styled from '../../styled/index.js';
 import {findDOMNode} from 'react-dom';
 import {colors} from '../colors.tsx';

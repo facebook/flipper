@@ -125,7 +125,7 @@ export {default as FlexColumn} from './components/FlexColumn.js';
 export {default as FlexCenter} from './components/FlexCenter.js';
 export {default as Toolbar, Spacer} from './components/Toolbar.js';
 export {default as Panel} from './components/Panel.tsx';
-export {default as Text} from './components/Text.js';
+export {default as Text} from './components/Text.tsx';
 export {default as TextParagraph} from './components/TextParagraph.js';
 export {default as Link} from './components/Link.js';
 export {default as PathBreadcrumbs} from './components/PathBreadcrumbs.tsx';

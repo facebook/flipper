@@ -12,7 +12,7 @@ import Toolbar from '../Toolbar.js';
 import FlexRow from '../FlexRow.js';
 import Input from '../Input.js';
 import {colors} from '../colors.tsx';
-import Text from '../Text.js';
+import Text from '../Text.tsx';
 import FlexBox from '../FlexBox.js';
 import Glyph from '../Glyph.js';
 import FilterToken from './FilterToken.js';

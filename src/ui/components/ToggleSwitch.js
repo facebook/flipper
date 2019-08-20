@@ -8,7 +8,7 @@
 import React from 'react';
 import styled from '../styled/index.js';
 import {colors} from './colors.tsx';
-import Text from './Text';
+import Text from './Text.tsx';
 
 export const StyledButton = styled('div')(props => ({
   cursor: 'pointer',
