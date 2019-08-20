@@ -5,12 +5,13 @@
  * @format
  */
 
-import ErrorBlock from './ErrorBlock.js';
+import ErrorBlock from './ErrorBlock';
 import {Component} from 'react';
-import Heading from './Heading.tsx';
-import Button from './Button.js';
-import View from './View.tsx';
-import styled from '../styled/index.js';
+import Heading from './Heading';
+import Button from './Button';
+import View from './View';
+import styled from 'react-emotion';
+import React from 'react';
 
 const ErrorBoundaryContainer = styled(View)({
   overflow: 'auto',
@@ -24,25 +25,25 @@ const ErrorBoundaryStack = styled(ErrorBlock)({
 
 type ErrorBoundaryProps = {
   /** Function to dynamically generate the heading of the ErrorBox. */
-  buildHeading?: (err: Error) => string,
+  buildHeading?: (err: Error) => string;
   /** Heading of the ErrorBox. Used as an alternative to `buildHeading`. */
-  heading?: string,
+  heading?: string;
   /** Whether the stacktrace of the error is shown in the error box */
-  showStack?: boolean,
+  showStack?: boolean;
   /** Code that might throw errors that will be catched */
-  children?: React$Node,
+  children?: React.ReactNode;
 };
 
-type ErrorBoundaryState = {|
-  error: ?Error,
-|};
+type ErrorBoundaryState = {
+  error: Error | null | undefined;
+};
 
 /**
  * Boundary catching errors and displaying an ErrorBlock instead.
  */
 export default class ErrorBoundary extends Component<
   ErrorBoundaryProps,
-  ErrorBoundaryState,
+  ErrorBoundaryState
 > {
   constructor(props: ErrorBoundaryProps, context: Object) {
     super(props, context);
