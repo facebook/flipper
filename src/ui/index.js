@@ -77,7 +77,7 @@ export {default as Select} from './components/Select.tsx';
 export {default as Checkbox} from './components/Checkbox.tsx';
 
 // code
-export {default as CodeBlock} from './components/CodeBlock.js';
+export {default as CodeBlock} from './components/CodeBlock.tsx';
 
 // error
 export {default as ErrorBlock} from './components/ErrorBlock.tsx';
