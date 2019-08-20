@@ -18,7 +18,7 @@ import Glyph from '../Glyph.js';
 import FilterToken from './FilterToken.js';
 import styled from '../../styled/index.js';
 import debounce from 'lodash.debounce';
-import ToggleSwitch from '../ToggleSwitch';
+import ToggleSwitch from '../ToggleSwitch.tsx';
 
 const SearchBar = styled(Toolbar)({
   height: 42,

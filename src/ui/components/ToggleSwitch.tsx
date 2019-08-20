@@ -6,11 +6,11 @@
  */
 
 import React from 'react';
-import styled from '../styled/index.js';
-import {colors} from './colors.tsx';
-import Text from './Text.tsx';
+import styled from 'react-emotion';
+import {colors} from './colors';
+import Text from './Text';
 
-export const StyledButton = styled('div')(props => ({
+export const StyledButton = styled('div')((props: {toggled: boolean}) => ({
   cursor: 'pointer',
   width: '30px',
   height: '16px',
@@ -41,13 +41,13 @@ type Props = {
   /**
    * onClick handler.
    */
-  onClick?: (event: SyntheticMouseEvent<>) => void,
+  onClick?: (event: React.MouseEvent) => void;
   /**
    * whether the button is toggled
    */
-  toggled?: boolean,
-  className?: string,
-  label?: string,
+  toggled?: boolean;
+  className?: string;
+  label?: string;
 };
 
 /**
