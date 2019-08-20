@@ -6,9 +6,8 @@
  */
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-
-import styled from '../styled/index.js';
-import Glyph from './Glyph.tsx';
+import styled from 'react-emotion';
+import Glyph from './Glyph';
 
 const IconContainer = styled('div')({
   width: 0,
@@ -18,37 +17,39 @@ const IconContainer = styled('div')({
   pointerEvents: 'none',
 });
 
-const ButtonGroupChainContainer = styled('div')(props => ({
-  display: 'inline-flex',
-  marginLeft: 10,
-  '&:first-child>*:not(:first-child):nth-child(odd)': {
-    paddingLeft: props.iconSize + 6,
-  },
-  '&:first-child>*': {
-    borderRightStyle: 'none',
-    borderLeftStyle: 'none',
-  },
-  '&:first-child>:first-child': {
-    borderLeftStyle: 'solid',
-  },
-  '&:first-child>:last-child': {
-    borderRightStyle: 'solid',
-  },
-}));
+const ButtonGroupChainContainer = styled('div')(
+  (props: {iconSize: number}) => ({
+    display: 'inline-flex',
+    marginLeft: 10,
+    '&:first-child>*:not(:first-child):nth-child(odd)': {
+      paddingLeft: props.iconSize + 6,
+    },
+    '&:first-child>*': {
+      borderRightStyle: 'none',
+      borderLeftStyle: 'none',
+    },
+    '&:first-child>:first-child': {
+      borderLeftStyle: 'solid',
+    },
+    '&:first-child>:last-child': {
+      borderRightStyle: 'solid',
+    },
+  }),
+);
 
 type Props = {
   /**
    * Children.
    */
-  children: React$Node,
+  children: React.ReactNode;
   /**
    * Size of the button seperator icon in pixels.
    */
-  iconSize: 8 | 10 | 12 | 16 | 18 | 20 | 24 | 32,
+  iconSize: 8 | 10 | 12 | 16 | 18 | 20 | 24 | 32;
   /**
    * Name of the icon seperating the buttons. Defaults to 'chevron-right'.
    */
-  icon?: string,
+  icon?: string;
 };
 
 /**
@@ -65,6 +66,10 @@ type Props = {
  * ```
  */
 export default class ButtonGroupChain extends Component<Props> {
+  static childContextTypes = {
+    inButtonGroup: PropTypes.bool,
+  };
+
   getChildContext() {
     return {inButtonGroup: true};
   }
@@ -91,7 +96,3 @@ export default class ButtonGroupChain extends Component<Props> {
     );
   }
 }
-
-ButtonGroupChain.childContextTypes = {
-  inButtonGroup: PropTypes.bool,
-};

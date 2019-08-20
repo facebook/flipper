@@ -5,22 +5,23 @@
  * @format
  */
 
-import ButtonGroup from './ButtonGroup.js';
-import Button from './Button.js';
+import ButtonGroup from './ButtonGroup';
+import Button from './Button';
+import React from 'react';
 
 /**
  * Button group to navigate back and forth.
  */
-export default function ButtonNavigationGroup(props: {|
+export default function ButtonNavigationGroup(props: {
   /** Back button is enabled */
-  canGoBack: boolean,
+  canGoBack: boolean;
   /** Forwards button is enabled */
-  canGoForward: boolean,
+  canGoForward: boolean;
   /** Callback when back button is clicked */
-  onBack: () => void,
+  onBack: () => void;
   /** Callback when forwards button is clicked */
-  onForward: () => void,
-|}) {
+  onForward: () => void;
+}) {
   return (
     <ButtonGroup>
       <Button disabled={!props.canGoBack} onClick={props.onBack}>

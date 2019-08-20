@@ -5,15 +5,16 @@
  * @format
  */
 
-import * as React from 'react';
-import Glyph from './Glyph.tsx';
+import React from 'react';
 import PropTypes from 'prop-types';
-import electron from 'electron';
-import styled from '../styled/index.js';
-import {colors} from './colors.tsx';
+import electron, {MenuItemConstructorOptions} from 'electron';
+import styled from 'react-emotion';
+import {colors} from './colors';
 import {connect} from 'react-redux';
 import {findDOMNode} from 'react-dom';
 import {keyframes} from 'react-emotion';
+import {State as Store} from '../../reducers/index';
+import Glyph, {IconSize} from './Glyph';
 
 const borderColor = props => {
   if (!props.windowIsFocused) {
@@ -84,163 +85,174 @@ const pulse = keyframes({
   },
 });
 
-const StyledButton = styled('div')(props => ({
-  backgroundColor: !props.windowIsFocused
-    ? colors.macOSTitleBarButtonBackgroundBlur
-    : colors.white,
-  backgroundImage: backgroundImage(props),
-  borderStyle: 'solid',
-  borderWidth: 1,
-  borderColor: borderColor(props),
-  borderBottomColor: borderBottomColor(props),
-  color: color(props),
-  borderRadius: 4,
-  position: 'relative',
-  padding: props.padded ? '0 15px' : '0 6px',
-  height: props.compact === true ? 24 : 28,
-  margin: 0,
-  marginLeft: props.inButtonGroup === true ? 0 : 10,
-  minWidth: 34,
-  display: 'inline-flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  flexShrink: 0,
-
-  boxShadow:
-    props.pulse && props.windowIsFocused
-      ? `0 0 0 ${colors.macOSTitleBarIconSelected}`
-      : '',
-  animation: props.pulse && props.windowIsFocused ? `${pulse} 1s infinite` : '',
-
-  '&:not(:first-child)': {
-    borderTopLeftRadius: props.inButtonGroup === true ? 0 : 4,
-    borderBottomLeftRadius: props.inButtonGroup === true ? 0 : 4,
-  },
-
-  '&:not(:last-child)': {
-    borderTopRightRadius: props.inButtonGroup === true ? 0 : 4,
-    borderBottomRightRadius: props.inButtonGroup === true ? 0 : 4,
-    borderRight: props.inButtonGroup === true ? 0 : '',
-  },
-
-  '&:first-of-type': {
-    marginLeft: 0,
-  },
-
-  '&:active': props.disabled
-    ? null
-    : {
-        borderColor: colors.macOSTitleBarButtonBorder,
-        borderBottomColor: colors.macOSTitleBarButtonBorderBottom,
-        background: `linear-gradient(to bottom, ${
-          colors.macOSTitleBarButtonBackgroundActiveHighlight
-        } 1px, ${colors.macOSTitleBarButtonBackgroundActive} 0%, ${
-          colors.macOSTitleBarButtonBorderBlur
-        } 100%)`,
-      },
-
-  '&:disabled': {
+const StyledButton = styled('div')(
+  (props: {
+    windowIsFocused?: boolean;
+    compact?: boolean;
+    inButtonGroup?: boolean;
+    padded?: boolean;
+    pulse?: boolean;
+    disabled?: boolean;
+    dropdown?: Array<MenuItemConstructorOptions>;
+  }) => ({
+    backgroundColor: !props.windowIsFocused
+      ? colors.macOSTitleBarButtonBackgroundBlur
+      : colors.white,
+    backgroundImage: backgroundImage(props),
+    borderStyle: 'solid',
+    borderWidth: 1,
     borderColor: borderColor(props),
     borderBottomColor: borderBottomColor(props),
-    pointerEvents: 'none',
-  },
+    color: color(props),
+    borderRadius: 4,
+    position: 'relative',
+    padding: props.padded ? '0 15px' : '0 6px',
+    height: props.compact === true ? 24 : 28,
+    margin: 0,
+    marginLeft: props.inButtonGroup === true ? 0 : 10,
+    minWidth: 34,
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexShrink: 0,
 
-  '&:hover::before': {
-    content: props.dropdown ? "''" : 'normal',
-    position: 'absolute',
-    bottom: 1,
-    right: 2,
-    borderStyle: 'solid',
-    borderWidth: '4px 3px 0 3px',
-    borderColor: `${
-      colors.macOSTitleBarIcon
-    } transparent transparent transparent`,
-  },
-}));
+    boxShadow:
+      props.pulse && props.windowIsFocused
+        ? `0 0 0 ${colors.macOSTitleBarIconSelected}`
+        : '',
+    animation:
+      props.pulse && props.windowIsFocused ? `${pulse} 1s infinite` : '',
 
-const Icon = styled(Glyph)(({hasText}) => ({
+    '&:not(:first-child)': {
+      borderTopLeftRadius: props.inButtonGroup === true ? 0 : 4,
+      borderBottomLeftRadius: props.inButtonGroup === true ? 0 : 4,
+    },
+
+    '&:not(:last-child)': {
+      borderTopRightRadius: props.inButtonGroup === true ? 0 : 4,
+      borderBottomRightRadius: props.inButtonGroup === true ? 0 : 4,
+      borderRight: props.inButtonGroup === true ? 0 : '',
+    },
+
+    '&:first-of-type': {
+      marginLeft: 0,
+    },
+
+    '&:active': props.disabled
+      ? null
+      : {
+          borderColor: colors.macOSTitleBarButtonBorder,
+          borderBottomColor: colors.macOSTitleBarButtonBorderBottom,
+          background: `linear-gradient(to bottom, ${
+            colors.macOSTitleBarButtonBackgroundActiveHighlight
+          } 1px, ${colors.macOSTitleBarButtonBackgroundActive} 0%, ${
+            colors.macOSTitleBarButtonBorderBlur
+          } 100%)`,
+        },
+
+    '&:disabled': {
+      borderColor: borderColor(props),
+      borderBottomColor: borderBottomColor(props),
+      pointerEvents: 'none',
+    },
+
+    '&:hover::before': {
+      content: props.dropdown ? "''" : 'normal',
+      position: 'absolute',
+      bottom: 1,
+      right: 2,
+      borderStyle: 'solid',
+      borderWidth: '4px 3px 0 3px',
+      borderColor: `${
+        colors.macOSTitleBarIcon
+      } transparent transparent transparent`,
+    },
+  }),
+);
+
+const Icon = styled(Glyph)(({hasText}: {hasText: boolean}) => ({
   marginRight: hasText ? 3 : 0,
 }));
 
-type Props = {
+type OwnProps = {
   /**
    * onMouseUp handler.
    */
-  onMouseDown?: (event: SyntheticMouseEvent<>) => any,
+  onMouseDown?: (event: React.MouseEvent) => any;
   /**
    * onClick handler.
    */
-  onClick?: (event: SyntheticMouseEvent<>) => any,
+  onClick?: (event: React.MouseEvent) => any;
   /**
    * Whether this button is disabled.
    */
-  disabled?: boolean,
+  disabled?: boolean;
   /**
    * Whether this button is large. Increases padding and line-height.
    */
-  large?: boolean,
+  large?: boolean;
   /**
    * Whether this button is compact. Decreases padding and line-height.
    */
-  compact?: boolean,
+  compact?: boolean;
   /**
    * Type of button.
    */
-  type?: 'primary' | 'success' | 'warning' | 'danger',
+  type?: 'primary' | 'success' | 'warning' | 'danger';
   /**
    * Children.
    */
-  children?: React$Node,
+  children?: React.ReactNode;
   /**
    * Dropdown menu template shown on click.
    */
-  dropdown?: Array<MenuItemConstructorOptions>,
+  dropdown?: Array<MenuItemConstructorOptions>;
   /**
    * Name of the icon dispalyed next to the text
    */
-  icon?: string,
+  icon?: string;
   /**
    * Size of the icon in pixels.
    */
-  iconSize?: number,
+  iconSize?: IconSize;
   /**
    * For toggle buttons, if the button is selected
    */
-  selected?: boolean,
+  selected?: boolean;
   /**
    * Button is pulsing
    */
-  pulse?: boolean,
+  pulse?: boolean;
   /**
    * URL to open in the browser on click
    */
-  href?: string,
+  href?: string;
   /**
    * Whether the button should render depressed into its socket
    */
-  depressed?: boolean,
+  depressed?: boolean;
   /**
    * Style of the icon. `filled` is the default
    */
-  iconVariant?: 'filled' | 'outline',
+  iconVariant?: 'filled' | 'outline';
   /**
    * Whether the button should have additional padding left and right.
    */
-  padded?: boolean,
+  padded?: boolean;
 };
 
 type State = {
-  active: boolean,
-  wasClosed: boolean,
+  active: boolean;
+  wasClosed: boolean;
 };
+
+type StateFromProps = {windowIsFocused: boolean};
+type Props = OwnProps & StateFromProps;
 
 /**
  * A simple button, used in many parts of the application.
  */
-class Button extends React.Component<
-  Props & {windowIsFocused: boolean},
-  State,
-> {
+class Button extends React.Component<Props, State> {
   static contextTypes = {
     inButtonGroup: PropTypes.bool,
   };
@@ -250,9 +262,9 @@ class Button extends React.Component<
     wasClosed: false,
   };
 
-  _ref = React.createRef();
+  _ref = React.createRef<React.Component<typeof StyledButton>>();
 
-  onMouseDown = (e: SyntheticMouseEvent<>) => {
+  onMouseDown = (e: React.MouseEvent) => {
     this.setState({active: true, wasClosed: false});
     if (this.props.onMouseDown != null) {
       this.props.onMouseDown(e);
@@ -264,18 +276,22 @@ class Button extends React.Component<
     }
     if (this.props.dropdown && !this.state.wasClosed) {
       const menu = electron.remote.Menu.buildFromTemplate(this.props.dropdown);
-      const position = {};
+      const position: {
+        x?: number;
+        y?: number;
+      } = {};
       const {current} = this._ref;
       if (current) {
         const node = findDOMNode(current);
         if (node instanceof Element) {
           const {left, bottom} = node.getBoundingClientRect();
-          position.x = parseInt(left, 10);
-          position.y = parseInt(bottom + 6, 10);
+          position.x = left;
+          position.y = bottom + 6;
         }
       }
       menu.popup({
         window: electron.remote.getCurrentWindow(),
+        // @ts-ignore: async is private API in electron
         async: true,
         ...position,
         callback: () => {
@@ -286,7 +302,7 @@ class Button extends React.Component<
     this.setState({active: false, wasClosed: false});
   };
 
-  onClick = (e: SyntheticMouseEvent<>) => {
+  onClick = (e: React.MouseEvent) => {
     if (this.props.disabled === true) {
       return;
     }
@@ -341,7 +357,7 @@ class Button extends React.Component<
     return (
       <StyledButton
         {...props}
-        ref={this._ref}
+        ref={this._ref as any}
         windowIsFocused={windowIsFocused}
         onClick={this.onClick}
         onMouseDown={this.onMouseDown}
@@ -354,9 +370,8 @@ class Button extends React.Component<
   }
 }
 
-const ConnectedButton = connect(({application: {windowIsFocused}}) => ({
-  windowIsFocused,
-}))(Button);
-
-// $FlowFixMe
-export default (ConnectedButton: StyledComponent<Props>);
+export default connect<StateFromProps, {}, OwnProps, Store>(
+  ({application: {windowIsFocused}}) => ({
+    windowIsFocused,
+  }),
+)(Button);

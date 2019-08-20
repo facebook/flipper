@@ -5,9 +5,8 @@
  * @format
  */
 
-import styled from '../styled/index.js';
-import {Component} from 'react';
-
+import styled from 'react-emotion';
+import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 
 const ButtonGroupContainer = styled('div')({
@@ -30,8 +29,12 @@ const ButtonGroupContainer = styled('div')({
  * ```
  */
 export default class ButtonGroup extends Component<{
-  children: React$Node,
+  children: React.ReactNode;
 }> {
+  static childContextTypes = {
+    inButtonGroup: PropTypes.bool,
+  };
+
   getChildContext() {
     return {inButtonGroup: true};
   }
@@ -40,7 +43,3 @@ export default class ButtonGroup extends Component<{
     return <ButtonGroupContainer>{this.props.children}</ButtonGroupContainer>;
   }
 }
-
-ButtonGroup.childContextTypes = {
-  inButtonGroup: PropTypes.bool,
-};

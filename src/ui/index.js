@@ -6,13 +6,13 @@
  */
 
 export {default as styled} from 'react-emotion';
-export {default as Button} from './components/Button.js';
+export {default as Button} from './components/Button.tsx';
 export {default as ToggleButton} from './components/ToggleSwitch.tsx';
 export {
   default as ButtonNavigationGroup,
-} from './components/ButtonNavigationGroup.js';
-export {default as ButtonGroup} from './components/ButtonGroup.js';
-export {default as ButtonGroupChain} from './components/ButtonGroupChain.js';
+} from './components/ButtonNavigationGroup.tsx';
+export {default as ButtonGroup} from './components/ButtonGroup.tsx';
+export {default as ButtonGroupChain} from './components/ButtonGroupChain.tsx';
 
 //
 export {colors, darkColors, brandColors} from './components/colors.tsx';
