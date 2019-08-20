@@ -246,7 +246,7 @@ export default class Client extends EventEmitter {
         }
       })
       .filter(Boolean);
-    this.store.dispatch(registerPlugins(nativeplugins));
+    this.store.dispatch(registerPlugins(nativeplugins as any));
     return plugins;
   }
 

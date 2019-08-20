@@ -5,89 +5,86 @@
  * @format
  */
 
-import {
-  ManagedDataInspector,
-  Panel,
-  colors,
-  styled,
-  Text,
-  Toolbar,
-  Spacer,
-  Button,
-  Select,
-} from 'flipper';
+import ManagedDataInspector from '../ui/components/data-inspector/ManagedDataInspector';
+import Panel from '../ui/components/Panel';
+import {colors} from '../ui/components/colors';
+import styled from 'react-emotion';
+import Text from '../ui/components/Text';
+import Toolbar from '../ui/components/Toolbar';
+import Spacer from '../ui/components/Toolbar';
+import Button from '../ui/components/Button';
+import Select from '../ui/components/Select';
 import ErrorBlock from '../ui/components/ErrorBlock';
 import FlexColumn from '../ui/components/FlexColumn';
-import DetailSidebar from '../chrome/DetailSidebar.tsx';
-import {FlipperPlugin} from '../plugin.tsx';
 import SearchableTable from '../ui/components/searchable/SearchableTable';
-import textContent from '../utils/textContent.tsx';
-import createPaste from '../fb-stubs/createPaste.tsx';
-
-import type {Node} from 'react';
-import type {
-  TableHighlightedRows,
-  TableRows,
-  TableColumnSizes,
-  TableColumns,
-  TableColumnOrderVal,
-  TableBodyRow,
-} from 'flipper';
+import TableHighlightedRows from '../ui/components/table/types';
+import TableRows from '../ui/components/table/types';
+import TableColumnSizes from '../ui/components/table/types';
+import TableColumns from '../ui/components/table/types';
+import TableColumnOrderVal from '../ui/components/table/types';
+import TableBodyRow from '../ui/components/table/types';
+import DetailSidebar from '../chrome/DetailSidebar';
+import {FlipperPlugin} from '../plugin';
+import textContent from '../utils/textContent';
+import createPaste from '../fb-stubs/createPaste';
+import {ReactNode} from 'react';
+import React from 'react';
+import {KeyboardActions} from 'src/MenuBar';
 
 type ID = string;
 
 type TableMetadata = {
-  topToolbar?: ToolbarSection,
-  bottomToolbar?: ToolbarSection,
-  columns: TableColumns,
-  columnSizes?: TableColumnSizes,
-  columnOrder?: Array<TableColumnOrderVal>,
-  filterableColumns?: Set<string>,
+  topToolbar?: ToolbarSection;
+  bottomToolbar?: ToolbarSection;
+  columns: TableColumns;
+  columnSizes?: TableColumnSizes;
+  columnOrder?: Array<TableColumnOrderVal>;
+  filterableColumns?: Set<string>;
 };
 
-type PersistedState = {|
-  rows: TableRows,
-  datas: {[key: ID]: NumberedRowData},
-  tableMetadata: ?TableMetadata,
-|};
+type PersistedState = {
+  rows: TableRows;
+  datas: {[key: string]: NumberedRowData};
+  tableMetadata: TableMetadata | null | undefined;
+};
 
-type State = {|
-  selectedIds: Array<ID>,
-  error: ?string,
-|};
+type State = {
+  selectedIds: Array<ID>;
+  error: string | null | undefined;
+};
 
 type RowData = {
-  id: string,
-  columns: {[key: string]: any},
-  sidebar?: Array<SidebarSection>,
+  id: string;
+  columns: {[key: string]: any};
+  sidebar?: Array<SidebarSection>;
 };
 
 type NumberedRowData = {
-  id: string,
-  columns: {[key: string]: any},
-  sidebar?: Array<SidebarSection>,
-  rowNumber: number,
+  id: string;
+  columns: {[key: string]: any};
+  sidebar?: Array<SidebarSection>;
+  rowNumber: number;
 };
 
 type SidebarSection = JsonSection | ToolbarSection;
 type JsonSection = {
-  type: 'json',
-  title: string,
-  content: string,
+  type: 'json';
+  title: string;
+  content: string;
 };
 type ToolbarSection = {
-  type: 'toolbar',
-  items: Array<ToolbarItem>,
+  type: 'toolbar';
+  items: Array<ToolbarItem>;
 };
 type ToolbarItem =
-  | {type: 'link', destination: string, label: string}
+  | {type: 'link'; destination: string; label: string}
   | {
-      type: 'input',
-      inputType: 'select',
-      id: string,
-      label: string,
-      options: Array<string>,
-      value: string,
+      type: 'input';
+      inputType: 'select';
+      id: string;
+      label: string;
+      options: Array<string>;
+      value: string;
     };
 
 const NonWrappingText = styled(Text)({
@@ -97,7 +94,7 @@ const NonWrappingText = styled(Text)({
   userSelect: 'none',
 });
 
-const BooleanValue = styled(NonWrappingText)(props => ({
+const BooleanValue = styled(NonWrappingText)((props: {active?: boolean}) => ({
   '&::before': {
     content: '""',
     display: 'inline-block',
@@ -110,7 +107,7 @@ const BooleanValue = styled(NonWrappingText)(props => ({
   },
 }));
 
-const Label = styled('Span')({
+const Label = styled('span')({
   fontSize: 12,
   color: '#90949c',
   fontWeight: 'bold',
@@ -119,7 +116,7 @@ const Label = styled('Span')({
   marginRight: 12,
 });
 
-function renderValue({type, value}: {type: string, value: any}) {
+function renderValue({type, value}: {type: string; value: any}) {
   switch (type) {
     case 'boolean':
       return (
@@ -132,7 +129,10 @@ function renderValue({type, value}: {type: string, value: any}) {
   }
 }
 
-function buildRow(rowData: RowData, previousRowData: ?RowData): TableBodyRow {
+function buildRow(
+  rowData: RowData,
+  previousRowData: RowData | null | undefined,
+): TableBodyRow {
   if (!rowData.columns) {
     throw new Error('defaultBuildRow used with incorrect data format.');
   }
@@ -140,8 +140,13 @@ function buildRow(rowData: RowData, previousRowData: ?RowData): TableBodyRow {
     previousRowData && previousRowData.columns
       ? Object.keys(previousRowData.columns).reduce((map, key) => {
           if (key !== 'id') {
+            let value = null;
+            if (previousRowData && previousRowData.columns) {
+              value = previousRowData.columns[key].value;
+            }
+
             map[key] = {
-              value: (previousRowData?.columns || {})[key].value,
+              value,
               isFilterable: true,
             };
           }
@@ -183,7 +188,7 @@ function renderToolbar(section: ToolbarSection) {
               obj[item] = item;
               return obj;
             }, {})}
-            value={item.value}
+            selected={item.value}
             onChange={() => {}}
           />,
         ];
@@ -197,7 +202,7 @@ function renderToolbar(section: ToolbarSection) {
   );
 }
 
-function renderSidebarForRow(rowData: RowData): Node {
+function renderSidebarForRow(rowData: RowData): ReactNode {
   if (!rowData.sidebar) {
     return null;
   }
@@ -207,7 +212,10 @@ function renderSidebarForRow(rowData: RowData): Node {
   return rowData.sidebar.map(renderSidebarSection);
 }
 
-function renderSidebarSection(section: SidebarSection, index: number): Node {
+function renderSidebarSection(
+  section: SidebarSection,
+  index: number,
+): ReactNode {
   switch (section.type) {
     case 'json':
       return (
@@ -227,12 +235,13 @@ function renderSidebarSection(section: SidebarSection, index: number): Node {
 }
 
 type IncomingMessage =
-  | {method: 'updateRows', data: Array<RowData>}
+  | {method: 'updateRows'; data: Array<RowData>}
   | {method: 'clearTable'};
 
 export default function createTableNativePlugin(id: string, title: string) {
-  return class extends FlipperPlugin<State, *, PersistedState> {
-    static keyboardActions = ['clear', 'createPaste'];
+  // @ts-ignore
+  return class extends FlipperPlugin<State, any, PersistedState> {
+    static keyboardActions: KeyboardActions = ['clear', 'createPaste'];
     static id = id || '';
     static title = title || '';
 
@@ -245,7 +254,7 @@ export default function createTableNativePlugin(id: string, title: string) {
     static typedPersistedStateReducer = (
       persistedState: PersistedState,
       message: IncomingMessage,
-    ): $Shape<PersistedState> => {
+    ): Partial<PersistedState> => {
       if (message.method === 'updateRows') {
         const newRows = [];
         const newData = {};
@@ -256,7 +265,7 @@ export default function createTableNativePlugin(id: string, title: string) {
               `updateRows: row is missing id: ${JSON.stringify(rowData)}`,
             );
           }
-          const previousRowData: ?NumberedRowData =
+          const previousRowData: NumberedRowData | null | undefined =
             persistedState.datas[rowData.id];
           const newRow: TableBodyRow = buildRow(rowData, previousRowData);
           if (persistedState.datas[rowData.id] == null) {
@@ -292,14 +301,20 @@ export default function createTableNativePlugin(id: string, title: string) {
       }
     };
 
-    static persistedStateReducer = (
+    static persistedStateReducer(
       persistedState: PersistedState,
-      method: string,
-      data: any,
-    ): $Shape<PersistedState> => {
-      // $FlowFixMe Unsafely treat the recieved message as what we're expecting.
-      return this.typedPersistedStateReducer(persistedState, {method, data});
-    };
+      method: 'updateRows' | 'clearTable',
+      data: Array<RowData> | undefined,
+    ): Partial<PersistedState> {
+      const message: IncomingMessage =
+        method === 'updateRows'
+          ? {
+              method,
+              data,
+            }
+          : {method};
+      return this.typedPersistedStateReducer(persistedState, message);
+    }
 
     state = {
       selectedIds: [],
