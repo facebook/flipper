@@ -5,17 +5,17 @@
  * @format
  */
 
-import ButtonGroup from './ButtonGroup.js';
+import ButtonGroup from './ButtonGroup';
 import {Component} from 'react';
-import Button from './Button.js';
-
-const path = require('path');
+import Button from './Button';
+import path from 'path';
+import React from 'react';
 
 class PathBreadcrumbsItem extends Component<{
-  name: string,
-  path: string,
-  isFolder: boolean,
-  onClick: (path: string) => void,
+  name: string;
+  path: string;
+  isFolder: boolean;
+  onClick: (path: string) => void;
 }> {
   onClick = () => {
     this.props.onClick(this.props.path);
@@ -26,11 +26,11 @@ class PathBreadcrumbsItem extends Component<{
   }
 }
 
-export default function PathBreadcrumbs(props: {|
-  path: string,
-  isFile?: boolean,
-  onClick: (path: string) => void,
-|}) {
+export default function PathBreadcrumbs(props: {
+  path: string;
+  isFile?: boolean;
+  onClick: (path: string) => void;
+}) {
   const parts = props.path === path.sep ? [''] : props.path.split(path.sep);
   const {onClick} = props;
 
