@@ -5,10 +5,10 @@
  * @format
  */
 
-import styled from '../styled/index.js';
-import {inputStyle} from './Input.js';
+import styled from 'react-emotion';
+import {inputStyle} from './Input';
 
-export default styled('textarea')(({compact}) => ({
+export default styled('textarea')(({compact}: {compact?: boolean}) => ({
   ...inputStyle(compact),
   lineHeight: 'normal',
   padding: compact ? '5px' : '8px',

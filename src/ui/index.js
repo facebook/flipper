@@ -72,7 +72,7 @@ export {default as Tab} from './components/Tab.tsx';
 
 // inputs
 export {default as Input} from './components/Input.js';
-export {default as Textarea} from './components/Textarea.js';
+export {default as Textarea} from './components/Textarea.tsx';
 export {default as Select} from './components/Select.tsx';
 export {default as Checkbox} from './components/Checkbox.js';
 
