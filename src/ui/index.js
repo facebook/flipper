@@ -88,7 +88,7 @@ export {default as ErrorBoundary} from './components/ErrorBoundary.js';
 export type {OrderableOrder} from './components/Orderable.tsx';
 export {default as Interactive} from './components/Interactive.js';
 export {default as Orderable} from './components/Orderable.tsx';
-export {default as VirtualList} from './components/VirtualList.js';
+export {default as VirtualList} from './components/VirtualList.tsx';
 
 // base components
 export {Component, PureComponent} from 'react';

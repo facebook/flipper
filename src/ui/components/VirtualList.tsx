@@ -5,21 +5,25 @@
  * @format
  */
 
-import FlexColumn from './FlexColumn.js';
+import FlexColumn from './FlexColumn';
 import {Component} from 'react';
-import View from './View.tsx';
-import styled from '../styled/index.js';
+import View from './View';
+import styled from 'react-emotion';
+import React from 'react';
+import {HeightProperty, TopProperty} from 'csstype';
 
-const Inner = styled(FlexColumn)(({height}) => ({
-  alignItems: 'flex-start',
-  height,
-  minHeight: '100%',
-  minWidth: '100%',
-  overflow: 'visible',
-  width: '100%',
-}));
+const Inner = styled(FlexColumn)(
+  ({height}: {height: HeightProperty<number>}) => ({
+    alignItems: 'flex-start',
+    height,
+    minHeight: '100%',
+    minWidth: '100%',
+    overflow: 'visible',
+    width: '100%',
+  }),
+);
 
-const Content = styled(FlexColumn)(({top}) => ({
+const Content = styled(FlexColumn)(({top}: {top: TopProperty<number>}) => ({
   alignItems: 'flex-start',
   height: '100%',
   marginTop: top,
@@ -27,23 +31,23 @@ const Content = styled(FlexColumn)(({top}) => ({
   overflow: 'visible',
 }));
 
-type VirtualListProps = {|
-  data: Array<any>,
-  renderRow: (data: any, i: number) => any,
-  rowHeight: number,
-  overscanCount: number,
-  sync?: number,
-  wrapInner?: (data: any) => any,
-|};
+type VirtualListProps = {
+  data: Array<any>;
+  renderRow: (data: any, i: number) => any;
+  rowHeight: number;
+  overscanCount: number;
+  sync?: boolean;
+  wrapInner?: (data: any) => any;
+};
 
-type VirtualListState = {|
-  offset: number,
-  height: number,
-|};
+type VirtualListState = {
+  offset: number;
+  height: number;
+};
 
 export default class VirtualList extends Component<
   VirtualListProps,
-  VirtualListState,
+  VirtualListState
 > {
   constructor(props: VirtualListProps, context: Object) {
     super(props, context);
