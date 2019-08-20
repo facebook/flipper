@@ -93,7 +93,7 @@ public class AccessibilityEvaluationUtil {
       try {
         ViewCompat.onInitializeAccessibilityNodeInfo(childView, childNode);
 
-        if (!node.isVisibleToUser()) {
+        if (!childNode.isVisibleToUser()) {
           continue;
         }
 
