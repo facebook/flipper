@@ -12,7 +12,7 @@ import Tooltip from '../Tooltip.js';
 import styled from '../../styled/index.js';
 import DataPreview from './DataPreview.js';
 import createPaste from '../../../fb-stubs/createPaste.tsx';
-import {reportInteraction} from '../../../utils/InteractionTracker.js';
+import {reportInteraction} from '../../../utils/InteractionTracker.tsx';
 import {getSortedKeys} from './utils.js';
 import {colors} from '../colors.js';
 import {clipboard} from 'electron';

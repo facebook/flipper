@@ -12,20 +12,20 @@ import yargs from 'yargs';
 import dispatcher from '../src/dispatcher/index.tsx';
 import reducers from '../src/reducers/index.tsx';
 import {init as initLogger} from '../src/fb-stubs/Logger.tsx';
-import {exportStore, pluginsClassMap} from '../src/utils/exportData.js';
+import {exportStore, pluginsClassMap} from '../src/utils/exportData.tsx';
 import {
   exportMetricsWithoutTrace,
   exportMetricsFromTrace,
-} from '../src/utils/exportMetrics.js';
-import {listDevices} from '../src/utils/listDevices';
+} from '../src/utils/exportMetrics.tsx';
+import {listDevices} from '../src/utils/listDevices.tsx';
 // $FlowFixMe this file exist, trust me, flow!
 import setup from '../static/setup.js';
 import type {Store} from '../src/reducers/index.tsx';
-import {getPersistentPlugins} from '../src/utils/pluginUtils.js';
-import {serialize} from '../src/utils/serialization';
+import {getPersistentPlugins} from '../src/utils/pluginUtils.tsx';
+import {serialize} from '../src/utils/serialization.tsx';
 import type BaseDevice from '../src/devices/BaseDevice.tsx';
 
-import {getStringFromErrorLike} from '../src/utils/index';
+import {getStringFromErrorLike} from '../src/utils/index.tsx';
 
 type Action = {|exit: true, result: string|} | {|exit: false|};
 
@@ -312,7 +312,6 @@ async function startFlipper(userArguments: UserArguments) {
           if (matchedDevice) {
             if (matchedDevice.constructor.name === 'AndroidDevice') {
               const ports = store.getState().application.serverPorts;
-              //$FlowFixMe: Checked the class name before calling reverse.
               matchedDevice.reverse([ports.secure, ports.insecure]);
             }
             store.dispatch({

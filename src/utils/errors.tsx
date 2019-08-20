@@ -5,6 +5,12 @@
  * @format
  */
 
+export class CancelledPromiseError extends Error {
+  constructor(msg: string) {
+    super(msg);
+    this.name = 'CancelledPromiseError';
+  }
+}
 export function getStringFromErrorLike(e: any) {
   if (typeof e == 'string') {
     return e;

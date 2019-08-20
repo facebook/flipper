@@ -5,11 +5,19 @@
  * @format
  */
 
+import {StoreEnhancerStoreCreator} from 'redux';
+
 export {};
 type RequestIdleHandle = number;
 
 declare global {
   interface Window {
+    __REDUX_DEVTOOLS_EXTENSION__: undefined | StoreEnhancerStoreCreator;
+
+    Flipper: {
+      init: () => void;
+    };
+
     // rIC not supportedin TS: https://github.com/Microsoft/TypeScript/issues/21309
     requestIdleCallback: (
       callback: (deadline: {

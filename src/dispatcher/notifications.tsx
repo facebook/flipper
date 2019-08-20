@@ -9,7 +9,7 @@ import {Store} from '../reducers/index';
 import {Logger} from '../fb-interfaces/Logger.js';
 import {PluginNotification} from '../reducers/notifications';
 import {FlipperPlugin, FlipperDevicePlugin} from '../plugin';
-import isHeadless from '../utils/isHeadless.js';
+import isHeadless from '../utils/isHeadless';
 import {ipcRenderer} from 'electron';
 import {selectPlugin} from '../reducers/connections';
 import {

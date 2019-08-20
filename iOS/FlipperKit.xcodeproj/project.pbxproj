@@ -109,7 +109,7 @@
 				53915C9D2152E3030090EEA6 /* FlipperPlugin.h */,
 				53915C9E2152E3030090EEA6 /* FlipperUtil.m */,
 				53915C9F2152E3030090EEA6 /* Utilities */,
-				53915CA42152E3040090EEA6 /* FBCxxUtils */,
+				53915CA42152E3040090EEA6 /* FBCxxFollyDynamicConvert */,
 				53915CA72152E3040090EEA6 /* FlipperStateUpdateListener.h */,
 				53915CA82152E3040090EEA6 /* CppBridge */,
 				53915CAE2152E3040090EEA6 /* SKMacros.h */,
@@ -138,13 +138,13 @@
 			path = PortForwarding;
 			sourceTree = "<group>";
 		};
-		53915CA42152E3040090EEA6 /* FBCxxUtils */ = {
+		53915CA42152E3040090EEA6 /* FBCxxFollyDynamicConvert */ = {
 			isa = PBXGroup;
 			children = (
 				53915CA52152E3040090EEA6 /* FBCxxFollyDynamicConvert.mm */,
 				53915CA62152E3040090EEA6 /* FBCxxFollyDynamicConvert.h */,
 			);
-			path = FBCxxUtils;
+			path = FBCxxFollyDynamicConvert;
 			sourceTree = "<group>";
 		};
 		53915CA82152E3040090EEA6 /* CppBridge */ = {

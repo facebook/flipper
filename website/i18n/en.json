@@ -81,6 +81,9 @@
       "features/logs-plugin": {
         "title": "Logs"
       },
+      "features/navigation-plugin": {
+        "title": "Navigation"
+      },
       "features/network-plugin": {
         "title": "Network"
       },
@@ -115,6 +118,10 @@
       "setup/leak-canary-plugin": {
         "title": "LeakCanary Setup",
         "sidebar_label": "LeakCanary"
+      },
+      "setup/navigation-plugin": {
+        "title": "Navigation Plugin Setup",
+        "sidebar_label": "Navigation"
       },
       "setup/network-plugin": {
         "title": "Network Setup",

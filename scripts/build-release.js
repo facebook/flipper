@@ -160,7 +160,7 @@ function downloadIcons(buildFolder) {
   copyStaticFolder(dir);
   await downloadIcons(dir);
   await compileDefaultPlugins(path.join(dir, 'defaultPlugins'));
-  await compile(dir, path.join(__dirname, '..', 'src', 'init.js'));
+  await compile(dir, path.join(__dirname, '..', 'src', 'init.tsx'));
   const versionNumber = getVersionNumber();
   const hgRevision = await genMercurialRevision();
   modifyPackageManifest(dir, versionNumber, hgRevision);

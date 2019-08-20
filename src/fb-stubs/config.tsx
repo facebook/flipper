@@ -10,4 +10,5 @@ export default {
   bugReportButtonVisible: false,
   showLogin: false,
   showFlipperRating: false,
+  warnFBEmployees: true,
 };

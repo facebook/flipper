@@ -15,9 +15,9 @@ import child_process from 'child_process';
 const execFile = child_process.execFile;
 import iosUtil from '../fb-stubs/iOSContainerUtility';
 import IOSDevice from '../devices/IOSDevice';
-import isProduction from '../utils/isProduction.js';
+import isProduction from '../utils/isProduction';
 import GK from '../fb-stubs/GK';
-import {registerDeviceCallbackOnPlugins} from '../utils/onRegisterDevice.js';
+import {registerDeviceCallbackOnPlugins} from '../utils/onRegisterDevice';
 type iOSSimulatorDevice = {
   state: 'Booted' | 'Shutdown' | 'Shutting Down';
   availability?: string;

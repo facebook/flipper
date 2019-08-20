@@ -31,7 +31,7 @@ class HybridDestructor : public JavaClass<HybridDestructor> {
   public:
     static auto constexpr kJavaDescriptor = "Lcom/facebook/jni/HybridData$Destructor;";
 
-  detail::BaseHybridClass* getNativePointer();
+  detail::BaseHybridClass* getNativePointer() const;
 
   void setNativePointer(std::unique_ptr<detail::BaseHybridClass> new_value);
 };
@@ -134,7 +134,7 @@ public:
 
     // This will reach into the java object and extract the C++ instance from
     // the mHybridData and return it.
-    T* cthis();
+    T* cthis() const;
 
     friend class HybridClass;
     friend T;
@@ -162,7 +162,7 @@ protected:
   using detail::HybridTraits<Base>::CxxBase::CxxBase;
 
   static void registerHybrid(std::initializer_list<NativeMethod> methods) {
-    javaClassStatic()->registerNatives(methods);
+    javaClassLocal()->registerNatives(methods);
   }
 
   static local_ref<detail::HybridData> makeHybridData(std::unique_ptr<T> cxxPart) {
@@ -235,11 +235,13 @@ public:
   // particular java class) to be hoisted to a common function.  If
   // mapException returns, then the std::exception will be translated
   // to Java.
-  static void mapException(const std::exception& ex) {}
+  static void mapException(const std::exception& ex) {
+    (void)ex;
+  }
 };
 
 template <typename T, typename B>
-inline T* HybridClass<T, B>::JavaPart::cthis() {
+inline T* HybridClass<T, B>::JavaPart::cthis() const {
   detail::BaseHybridClass* result = 0;
   static bool isHybrid = detail::HybridClassBase::isHybridClassBase(this->getClass());
   if (isHybrid) {

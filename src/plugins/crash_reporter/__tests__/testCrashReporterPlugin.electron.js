@@ -13,7 +13,7 @@ import {
   parsePath,
   shouldShowCrashNotification,
 } from '../../crash_reporter';
-import {getPluginKey, getPersistedState} from '../../../utils/pluginUtils.js';
+import {getPluginKey, getPersistedState} from '../../../utils/pluginUtils.tsx';
 
 function setDefaultPersistedState(defaultState: PersistedState) {
   CrashReporterPlugin.defaultPersistedState = defaultState;
@@ -208,7 +208,6 @@ test('test getNewPersisitedStateFromCrashLog for non-empty defaultPersistedState
   const content =
     'Blaa Blaaa \n Blaa Blaaa \n Exception Type:  SIGSEGV \n Blaa Blaa \n Blaa Blaa';
   expect(perisistedState).toBeDefined();
-  // $FlowFixMe: Checked if perisistedState is defined or not
   const {crashes} = perisistedState;
   expect(crashes).toBeDefined();
   expect(crashes.length).toEqual(1);

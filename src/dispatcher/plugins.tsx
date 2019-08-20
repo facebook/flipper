@@ -9,7 +9,6 @@ import {Store} from '../reducers/index';
 import {Logger} from '../fb-interfaces/Logger.js';
 import {FlipperPlugin, FlipperDevicePlugin} from '../plugin';
 import {State} from '../reducers/plugins';
-
 import React from 'react';
 import ReactDOM from 'react-dom';
 import * as Flipper from '../index.js';
@@ -22,14 +21,15 @@ import {
 import {remote} from 'electron';
 import GK from '../fb-stubs/GK';
 import {FlipperBasePlugin} from '../plugin';
-import {setupMenuBar} from '../MenuBar.js';
+import {setupMenuBar} from '../MenuBar';
 import path from 'path';
-import {default as config} from '../utils/processConfig.js';
+import {default as config} from '../utils/processConfig';
 import isProduction from '../utils/isProduction';
 
 export type PluginDefinition = {
+  id?: string;
   name: string;
-  out: string;
+  out?: string;
   gatekeeper?: string;
   entry?: string;
 };

@@ -43,14 +43,14 @@ Pod::Spec.new do |spec|
                              "HEADER_SEARCH_PATHS" => header_search_paths }
   end
 
-  spec.subspec 'FBCxxUtils' do |ss|
-    ss.header_dir = 'FBCxxUtils'
+  spec.subspec 'FBCxxFollyDynamicConvert' do |ss|
+    ss.header_dir = 'FBCxxFollyDynamicConvert'
     ss.compiler_flags = folly_compiler_flags
     ss.dependency 'Flipper-Folly', '~> 2.0'
-    ss.source_files = 'iOS/FlipperKit/FBCxxUtils/**/*.{h,mm}'
+    ss.source_files = 'iOS/FlipperKit/FBCxxFollyDynamicConvert/**/*.{h,mm}'
     # We set these files as private headers since they only need to be accessed
     # by other FlipperKit source files
-    ss.private_header_files = 'iOS/FlipperKit/FBCxxUtils/**/*.h'
+    ss.private_header_files = 'iOS/FlipperKit/FBCxxFollyDynamicConvert/**/*.h'
     header_search_paths = "\"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/DoubleConversion\""
     ss.pod_target_xcconfig = { "USE_HEADERMAP" => "NO",
                                "ONLY_ACTIVE_ARCH": "YES",
@@ -69,7 +69,7 @@ Pod::Spec.new do |spec|
 
   spec.subspec "Core" do |ss|
     ss.dependency 'FlipperKit/FBDefines'
-    ss.dependency 'FlipperKit/FBCxxUtils'
+    ss.dependency 'FlipperKit/FBCxxFollyDynamicConvert'
     ss.dependency 'FlipperKit/CppBridge'
     ss.dependency 'FlipperKit/FKPortForwarding'
     ss.dependency 'Flipper', '~>'+flipperkit_version

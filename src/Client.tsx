@@ -14,7 +14,7 @@ import {setPluginState} from './reducers/pluginStates';
 import {RSocketClientSocket} from 'rsocket-core/RSocketClient';
 import {performance} from 'perf_hooks';
 import {reportPlatformFailures, reportPluginFailures} from './utils/metrics';
-import {default as isProduction} from './utils/isProduction.js';
+import {default as isProduction} from './utils/isProduction';
 import {registerPlugins} from './reducers/plugins';
 import createTableNativePlugin from './plugins/TableNativePlugin';
 import EventEmitter from 'events';

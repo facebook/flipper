@@ -13,6 +13,7 @@ import {
   SearchBar,
   Timeline,
   ScrollableFlexColumn,
+  RequiredParametersDialog,
 } from './components';
 import {
   removeBookmark,
@@ -25,6 +26,7 @@ import {
   DefaultProvider,
 } from './util/autoCompleteProvider';
 import {getAppMatchPatterns} from './util/appMatchPatterns';
+import {getRequiredParameters, filterOptionalParameters} from './util/uri';
 
 import type {
   State,
@@ -42,6 +44,7 @@ export default class extends FlipperPlugin<State, {}, PersistedState> {
   static defaultPersistedState: PersistedState = {
     navigationEvents: [],
     bookmarks: new Map<string, Bookmark>(),
+    currentURI: '',
     bookmarksProvider: new DefaultProvider(),
     appMatchPatterns: [],
     appMatchPatternsProvider: new DefaultProvider(),
@@ -50,6 +53,8 @@ export default class extends FlipperPlugin<State, {}, PersistedState> {
   state = {
     shouldShowSaveBookmarkDialog: false,
     saveBookmarkURI: null,
+    shouldShowURIErrorDialog: false,
+    requiredParameters: [],
   };
 
   static persistedStateReducer = (
@@ -61,6 +66,8 @@ export default class extends FlipperPlugin<State, {}, PersistedState> {
       case 'nav_event':
         return {
           ...persistedState,
+          currentURI:
+            payload.uri == null ? persistedState.currentURI : payload.uri,
           navigationEvents: [
             {
               uri: payload.uri === undefined ? null : payload.uri,
@@ -105,9 +112,19 @@ export default class extends FlipperPlugin<State, {}, PersistedState> {
   };
 
   navigateTo = (query: string) => {
-    this.getDevice().then(device => {
-      device.navigateToLocation(query);
-    });
+    const filteredQuery = filterOptionalParameters(query);
+    this.props.setPersistedState({currentURI: filteredQuery});
+    const requiredParameters = getRequiredParameters(filteredQuery);
+    if (requiredParameters.length === 0) {
+      this.getDevice().then(device => {
+        device.navigateToLocation(filterOptionalParameters(filteredQuery));
+      });
+    } else {
+      this.setState({
+        requiredParameters,
+        shouldShowURIErrorDialog: true,
+      });
+    }
   };
 
   onFavorite = (uri: string) => {
@@ -141,10 +158,16 @@ export default class extends FlipperPlugin<State, {}, PersistedState> {
   };
 
   render() {
-    const {saveBookmarkURI, shouldShowSaveBookmarkDialog} = this.state;
+    const {
+      saveBookmarkURI,
+      shouldShowSaveBookmarkDialog,
+      shouldShowURIErrorDialog,
+      requiredParameters,
+    } = this.state;
     const {
       bookmarks,
       bookmarksProvider,
+      currentURI,
       appMatchPatternsProvider,
       navigationEvents,
     } = this.props.persistedState;
@@ -156,6 +179,7 @@ export default class extends FlipperPlugin<State, {}, PersistedState> {
           bookmarks={bookmarks}
           onNavigate={this.navigateTo}
           onFavorite={this.onFavorite}
+          uriFromAbove={currentURI}
         />
         <Timeline
           bookmarks={bookmarks}
@@ -173,6 +197,13 @@ export default class extends FlipperPlugin<State, {}, PersistedState> {
           }
           onSubmit={this.addBookmark}
           onRemove={this.removeBookmark}
+        />
+        <RequiredParametersDialog
+          shouldShow={shouldShowURIErrorDialog}
+          onHide={() => this.setState({shouldShowURIErrorDialog: false})}
+          uri={currentURI}
+          requiredParameters={requiredParameters}
+          onSubmit={this.navigateTo}
         />
       </ScrollableFlexColumn>
     );

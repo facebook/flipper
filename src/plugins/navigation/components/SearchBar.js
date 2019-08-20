@@ -6,14 +6,7 @@
  * @flow strict-local
  */
 
-import {
-  Component,
-  styled,
-  SearchBox,
-  SearchInput,
-  Toolbar,
-  Glyph,
-} from 'flipper';
+import {Component, styled, SearchBox, SearchInput, Toolbar} from 'flipper';
 import {AutoCompleteSheet, IconButton, FavoriteButton} from './';
 
 import type {AutoCompleteProvider, Bookmark} from '../flow-types';
@@ -23,6 +16,7 @@ type Props = {|
   onNavigate: (query: string) => void,
   bookmarks: Map<string, Bookmark>,
   providers: Array<AutoCompleteProvider>,
+  uriFromAbove: string,
 |};
 
 type State = {|
@@ -30,6 +24,7 @@ type State = {|
   inputFocused: boolean,
   autoCompleteSheetOpen: boolean,
   searchInputValue: string,
+  prevURIFromAbove: string,
 |};
 
 const IconContainer = styled('div')({
@@ -55,7 +50,6 @@ const ToolbarContainer = styled('div')({
 });
 
 const SearchInputContainer = styled('div')({
-  height: '100%',
   width: '100%',
   marginLeft: 5,
   marginRight: 9,
@@ -68,6 +62,7 @@ class SearchBar extends Component<Props, State> {
     autoCompleteSheetOpen: false,
     query: '',
     searchInputValue: '',
+    prevURIFromAbove: '',
   };
 
   favorite = (searchInputValue: string) => {
@@ -82,6 +77,19 @@ class SearchBar extends Component<Props, State> {
   queryInputChanged = (event: SyntheticInputEvent<>) => {
     const value = event.target.value;
     this.setState({query: value, searchInputValue: value});
+  };
+
+  static getDerivedStateFromProps = (newProps: Props, state: State) => {
+    const {uriFromAbove: newURIFromAbove} = newProps;
+    const {prevURIFromAbove} = state;
+    if (newURIFromAbove !== prevURIFromAbove) {
+      return {
+        searchInputValue: newURIFromAbove,
+        query: newURIFromAbove,
+        prevURIFromAbove: newURIFromAbove,
+      };
+    }
+    return null;
   };
 
   render = () => {

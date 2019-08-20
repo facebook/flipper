@@ -53,3 +53,36 @@ The following devices are known to be incompatible or face issues with flipper:
 
 ### File an Issue
 Still not working? File an issue on [GitHub](https://github.com/facebook/flipper/issues) with the chrome DevTools logs and the output from the diagnostics screen, if relevant.
+
+## Android
+
+Build error after including the Flipper dependency:
+
+```
+Exception from call site #4 bootstrap method
+```
+
+This can happen because we include [OkHttp3](https://github.com/square/okhttp/issues/4597#issuecomment-461204144) as dependency which makes use of Java 8 features. There are two ways of dealing with this:
+
+**Enable Java 8 support**
+
+Add this to your Gradle config:
+
+```groovy
+android { 
+  compileOptions { 
+    targetCompatibility = "8"
+    sourceCompatibility = "8"
+   }
+ }
+ ```
+ 
+ **Exclude the OkHttp3 dependency**
+ 
+ Alternatively, if you don't plan on making use of OkHttp, you can exclude the dependency from the build entirely:
+ 
+ ```
+debugImplementation('com.facebook.flipper:flipper:*') {
+  exclude group: 'com.squareup.okhttp3'
+}
+```

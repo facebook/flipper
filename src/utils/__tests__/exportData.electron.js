@@ -7,7 +7,7 @@
 
 import {default as BaseDevice} from '../../devices/BaseDevice.tsx';
 import {default as ArchivedDevice} from '../../devices/ArchivedDevice.tsx';
-import {processStore} from '../exportData';
+import {processStore} from '../exportData.tsx';
 import {FlipperDevicePlugin} from '../../plugin.tsx';
 import type {Notification} from '../../plugin.tsx';
 import type {ClientExport} from '../../Client.tsx';
@@ -173,7 +173,6 @@ test('test processStore function for an iOS device connected', async () => {
     selectedPlugins: [],
   });
   expect(json).toBeDefined();
-  // $FlowFixMe Flow doesn't that its a test and the assertion for null is already done
   const {device, clients} = json;
   expect(device).toBeDefined();
   expect(clients).toEqual([]);
@@ -206,7 +205,6 @@ test('test processStore function for an iOS device connected with client plugin 
     selectedPlugins: [],
   });
   expect(json).toBeDefined();
-  //$FlowFixMe Flow doesn't that its a test and the assertion for null is already done
   const {pluginStates} = json.store;
   const expectedPluginState = {
     [generateClientIdentifierWithSalt(clientIdentifier, 'salt')]: {
@@ -265,7 +263,6 @@ test('test processStore function to have only the client for the selected device
   });
 
   expect(json).toBeDefined();
-  //$FlowFixMe Flow doesn't that its a test and the assertion for null is already added
   const {clients} = json;
   const {pluginStates} = json.store;
   const expectedPluginState = {
@@ -321,7 +318,6 @@ test('test processStore function to have multiple clients for the selected devic
     selectedPlugins: [],
   });
   expect(json).toBeDefined();
-  //$FlowFixMe Flow doesn't that its a test and the assertion for null is already added
   const {clients} = json;
   const {pluginStates} = json.store;
   const expectedPluginState = {
@@ -364,7 +360,6 @@ test('test processStore function for device plugin state and no clients', async 
     selectedPlugins: [],
   });
   expect(json).toBeDefined();
-  //$FlowFixMe Flow doesn't that its a test and the assertion for null is already done
   const {pluginStates} = json.store;
   const {clients} = json;
   const expectedPluginState = {
@@ -397,7 +392,6 @@ test('test processStore function for unselected device plugin state and no clien
     selectedPlugins: [],
   });
   expect(json).toBeDefined();
-  //$FlowFixMe Flow doesn't that its a test and the assertion for null is already done
   const {pluginStates} = json.store;
   const {clients} = json;
   expect(pluginStates).toEqual({});
@@ -436,7 +430,6 @@ test('test processStore function for notifications for selected device', async (
   });
 
   expect(json).toBeDefined();
-  //$FlowFixMe Flow doesn't that its a test and the assertion for null is already done
   const {pluginStates} = json.store;
   const {clients} = json;
   expect(pluginStates).toEqual({});
@@ -493,7 +486,6 @@ test('test processStore function for notifications for unselected device', async
     selectedPlugins: [],
   });
   expect(json).toBeDefined();
-  //$FlowFixMe Flow doesn't that its a test and the assertion for null is already done
   const {pluginStates} = json.store;
   const {clients} = json;
   expect(pluginStates).toEqual({});
@@ -530,7 +522,6 @@ test('test processStore function for selected plugins', async () => {
     selectedPlugins: ['plugin2'],
   });
   expect(json).toBeDefined();
-  //$FlowFixMe Flow doesn't that its a test and the assertion for null is already done
   const {pluginStates} = json.store;
   const {clients} = json;
   expect(pluginStates).toEqual({
@@ -574,7 +565,6 @@ test('test processStore function for no selected plugins', async () => {
   });
 
   expect(json).toBeDefined();
-  //$FlowFixMe Flow doesn't that its a test and the assertion for null is already done
   const {pluginStates} = json.store;
   const {clients} = json;
   expect(pluginStates).toEqual({

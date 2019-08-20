@@ -122,10 +122,7 @@ test('requirePlugin loads plugin', () => {
     homepage,
     out: path.join(__dirname, 'TestPlugin.js'),
   });
-  // $FlowFixMe
   expect(plugin.prototype).toBeInstanceOf(FlipperPlugin);
-  // $FlowFixMe
   expect(plugin.homepage).toBe(homepage);
-  // $FlowFixMe
   expect(plugin.id).toBe(TestPlugin.id);
 });

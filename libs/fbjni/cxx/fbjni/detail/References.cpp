@@ -29,12 +29,23 @@ namespace {
 #ifdef __ANDROID__
 
 int32_t getAndroidApiLevel() {
-  auto cls = findClassLocal("android/os/Build$VERSION");
-  auto fld = cls->getStaticField<int32_t>("SDK_INT");
-  if (fld) {
-    return cls->getStaticFieldValue(fld);
+  // This is called from the static local initializer in
+  // isObjectRefType(), and creating fbjni references can call
+  // isObjectRefType().  So, to avoid recursively entering the block
+  // where the static is initialized (which is undefined behavior), we
+  // avoid using standard fbjni references here.
+
+  JNIEnv* env = Environment::current();
+  jclass cls = detail::findClass(env, "android/os/Build$VERSION");
+  jfieldID field = env->GetStaticFieldID(cls, "SDK_INT",
+                                         jtype_traits<jint>::descriptor().c_str());
+  if (!field) {
+    env->DeleteLocalRef(cls);
   }
-  return 0;
+  FACEBOOK_JNI_THROW_EXCEPTION_IF(!field);
+  int32_t ret = env->GetStaticIntField(cls, field);
+  env->DeleteLocalRef(cls);
+  return ret;
 }
 
 bool doesGetObjectRefTypeWork() {
@@ -54,13 +65,15 @@ bool doesGetObjectRefTypeWork() {
 }
 
 bool isObjectRefType(jobject reference, jobjectRefType refType) {
+  // null-check first so that we short-circuit during (safe) global
+  // constructors, where we won't have an Environment::current() yet
+  if (!reference) {
+    return true;
+  }
 
-// TODO Rather than setting it true, use doesGetObjectRefTypeWork(). But it
-// causes sample app to freeze
-  static bool getObjectRefTypeWorks = true;
+  static bool getObjectRefTypeWorks = doesGetObjectRefTypeWork();
 
   return
-    !reference ||
     !getObjectRefTypeWorks ||
     Environment::current()->GetObjectRefType(reference) == refType;
 }

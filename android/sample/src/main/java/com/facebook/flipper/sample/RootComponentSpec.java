@@ -62,6 +62,12 @@ public class RootComponentSpec {
                 .key("5")
                 .textSizeSp(20)
                 .clickHandler(RootComponent.loadImage(c)))
+        .child(
+            Text.create(c)
+                .text("Navigate to another page")
+                .key("5")
+                .textSizeSp(20)
+                .clickHandler(RootComponent.openAlternateActivityOne(c)))
         .child(displayImage ? FrescoImage.create(c).controller(controller) : null)
         .build();
   }
@@ -84,6 +90,12 @@ public class RootComponentSpec {
   @OnEvent(ClickEvent.class)
   static void openDiagnostics(final ComponentContext c) {
     final Intent intent = new Intent(c.getAndroidContext(), FlipperDiagnosticActivity.class);
+    c.getAndroidContext().startActivity(intent);
+  }
+
+  @OnEvent(ClickEvent.class)
+  static void openAlternateActivityOne(final ComponentContext c) {
+    final Intent intent = new Intent(c.getAndroidContext(), DeepLinkActivity.class);
     c.getAndroidContext().startActivity(intent);
   }
 

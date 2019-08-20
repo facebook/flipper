@@ -4,7 +4,7 @@
  * LICENSE file in the root directory of this source tree.
  * @format
  */
-import promiseTimeout from '../promiseTimeout';
+import promiseTimeout from '../promiseTimeout.tsx';
 
 test('test promiseTimeout for timeout to happen', () => {
   const promise = promiseTimeout(

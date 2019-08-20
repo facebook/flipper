@@ -7,7 +7,7 @@
 
 export {default as styled, keyframes} from 'react-emotion';
 export * from './ui/index.js';
-export * from './utils/index.js';
+export {getStringFromErrorLike, textContent} from './utils/index.tsx';
 export {default as GK} from './fb-stubs/GK.tsx';
 export {default as createPaste} from './fb-stubs/createPaste.tsx';
 export {graphQLQuery} from './fb-stubs/user.tsx';
@@ -18,13 +18,13 @@ export {
   callClient,
 } from './plugin.tsx';
 export type {PluginClient, Props} from './plugin.tsx';
-export type {MetricType} from './utils/exportMetrics.js';
 export {default as Client} from './Client.tsx';
+export type {MetricType} from './utils/exportMetrics.tsx';
 export {clipboard} from 'electron';
 export {default as constants} from './fb-stubs/constants.tsx';
 export {connect} from 'react-redux';
 export {selectPlugin} from './reducers/connections.tsx';
-export {getPluginKey, getPersistedState} from './utils/pluginUtils.js';
+export {getPluginKey, getPersistedState} from './utils/pluginUtils.tsx';
 export type {Store, MiddlewareAPI} from './reducers/index.tsx';
 export {default as BaseDevice} from './devices/BaseDevice.tsx';
 
@@ -37,9 +37,9 @@ export {
   LogLevel,
 } from './devices/BaseDevice.tsx';
 export {shouldParseAndroidLog} from './utils/crashReporterUtility.tsx';
-export {default as isProduction} from './utils/isProduction.js';
-export {createTablePlugin} from './createTablePlugin.js';
-export {default as DetailSidebar} from './chrome/DetailSidebar.js';
+export {default as isProduction} from './utils/isProduction.tsx';
+export {createTablePlugin} from './createTablePlugin.tsx';
+export {default as DetailSidebar} from './chrome/DetailSidebar.tsx';
 
 export {default as Device} from './devices/BaseDevice.tsx';
 export {default as AndroidDevice} from './devices/AndroidDevice.tsx';

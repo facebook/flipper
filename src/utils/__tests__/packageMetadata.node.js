@@ -5,7 +5,7 @@
  * @format
  */
 
-import {readCurrentRevision} from '../packageMetadata.js';
+import {readCurrentRevision} from '../packageMetadata.tsx';
 
 test('readCurrentRevision does not return something meaningful in dev mode', async () => {
   const ret = await readCurrentRevision();

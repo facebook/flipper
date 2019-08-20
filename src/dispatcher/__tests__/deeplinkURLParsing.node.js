@@ -20,7 +20,6 @@ test('test parsing of deeplink URL when arguments are less', () => {
 });
 
 test('test parsing of deeplink URL when url is null', () => {
-  // $FlowFixMe
   const components = uriComponents(null);
   expect(components).toEqual([]);
 });

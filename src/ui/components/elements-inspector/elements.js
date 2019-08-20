@@ -10,7 +10,7 @@ import type {
   Element,
   ElementSearchResultSet,
 } from './ElementsInspector.js';
-import {reportInteraction} from '../../../utils/InteractionTracker';
+import {reportInteraction} from '../../../utils/InteractionTracker.tsx';
 import ContextMenu from '../ContextMenu.js';
 import {PureComponent, type Element as ReactElement} from 'react';
 import FlexRow from '../FlexRow.js';

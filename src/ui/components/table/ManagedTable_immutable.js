@@ -31,7 +31,7 @@ import createPaste from '../../../fb-stubs/createPaste.tsx';
 import debounceRender from 'react-debounce-render';
 import debounce from 'lodash.debounce';
 import {DEFAULT_ROW_HEIGHT} from './types';
-import textContent from '../../../utils/textContent.js';
+import textContent from '../../../utils/textContent.tsx';
 
 export type ManagedTableProps_immutable = {|
   /**

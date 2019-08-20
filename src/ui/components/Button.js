@@ -164,6 +164,10 @@ const Icon = styled(Glyph)(({hasText}) => ({
 
 type Props = {
   /**
+   * onMouseUp handler.
+   */
+  onMouseDown?: (event: SyntheticMouseEvent<>) => any,
+  /**
    * onClick handler.
    */
   onClick?: (event: SyntheticMouseEvent<>) => any,
@@ -248,7 +252,12 @@ class Button extends React.Component<
 
   _ref = React.createRef();
 
-  onMouseDown = () => this.setState({active: true, wasClosed: false});
+  onMouseDown = (e: SyntheticMouseEvent<>) => {
+    this.setState({active: true, wasClosed: false});
+    if (this.props.onMouseDown != null) {
+      this.props.onMouseDown(e);
+    }
+  };
   onMouseUp = () => {
     if (this.props.disabled === true) {
       return;

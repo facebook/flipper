@@ -33,7 +33,7 @@ import storage from 'redux-persist/lib/storage/index.js';
 
 import {Store as ReduxStore, MiddlewareAPI as ReduxMiddlewareAPI} from 'redux';
 
-type Actions =
+export type Actions =
   | ApplicationAction
   | DevicesAction
   | PluginStatesAction

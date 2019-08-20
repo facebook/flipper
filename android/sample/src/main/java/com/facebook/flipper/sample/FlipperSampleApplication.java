@@ -12,6 +12,7 @@ import android.database.DatabaseUtils;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.flipper.android.AndroidFlipperClient;
 import com.facebook.flipper.core.FlipperClient;
+import com.facebook.flipper.plugins.navigation.NavigationFlipperPlugin;
 import com.facebook.flipper.sample.network.NetworkClient;
 import com.facebook.soloader.SoLoader;
 
@@ -23,6 +24,7 @@ public class FlipperSampleApplication extends Application {
     Fresco.initialize(this);
 
     final FlipperClient client = AndroidFlipperClient.getInstance(this);
+    client.addPlugin(NavigationFlipperPlugin.getInstance());
 
     final FlipperInitializer.IntializationResult initializationResult =
         FlipperInitializer.initFlipperPlugins(this, client);
