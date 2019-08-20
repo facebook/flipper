@@ -10,7 +10,7 @@ import type {PluginClient} from '../../../plugin.tsx';
 import type Client from '../../../Client.tsx';
 import type {Logger} from '../../../fb-interfaces/Logger.js';
 import Panel from '../Panel.tsx';
-import ManagedDataInspector from '../data-inspector/ManagedDataInspector.js';
+import ManagedDataInspector from '../data-inspector/ManagedDataInspector.tsx';
 import {Component} from 'react';
 import {Console} from '../console.tsx';
 import GK from '../../../fb-stubs/GK.tsx';

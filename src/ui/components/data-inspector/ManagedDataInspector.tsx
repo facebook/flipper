@@ -5,49 +5,47 @@
  * @format
  */
 
-import type {
-  DataValueExtractor,
-  DataInspectorExpanded,
-} from './DataInspector.tsx';
+import {DataValueExtractor, DataInspectorExpanded} from './DataInspector';
 import {PureComponent} from 'react';
-import DataInspector from './DataInspector.tsx';
+import DataInspector from './DataInspector';
+import React from 'react';
 
-type ManagedDataInspectorProps = {|
+type ManagedDataInspectorProps = {
   /**
    * Object to inspect.
    */
-  data: any,
+  data: any;
   /**
    * Object to compare with the provided `data` property.
    * Differences will be styled accordingly in the UI.
    */
-  diff?: any,
+  diff?: any;
   /**
    * Whether to expand the root by default.
    */
-  expandRoot?: boolean,
+  expandRoot?: boolean;
   /**
    * An optional callback that will explode a value into its type and value.
    * Useful for inspecting serialised data.
    */
-  extractValue?: DataValueExtractor,
+  extractValue?: DataValueExtractor;
   /**
    * Callback when a value is edited.
    */
-  setValue?: (path: Array<string>, val: any) => void,
+  setValue?: (path: Array<string>, val: any) => void;
   /**
    * Whether all objects and arrays should be collapsed by default.
    */
-  collapsed?: boolean,
+  collapsed?: boolean;
   /**
    * Object of all properties that will have tooltips
    */
-  tooltips?: Object,
-|};
+  tooltips?: Object;
+};
 
-type ManagedDataInspectorState = {|
-  expanded: DataInspectorExpanded,
-|};
+type ManagedDataInspectorState = {
+  expanded: DataInspectorExpanded;
+};
 
 /**
  * Wrapper around `DataInspector` that handles expanded state.
@@ -57,7 +55,7 @@ type ManagedDataInspectorState = {|
  */
 export default class ManagedDataInspector extends PureComponent<
   ManagedDataInspectorProps,
-  ManagedDataInspectorState,
+  ManagedDataInspectorState
 > {
   constructor(props: ManagedDataInspectorProps, context: Object) {
     super(props, context);

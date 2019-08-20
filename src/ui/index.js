@@ -61,7 +61,7 @@ export {
 } from './components/data-inspector/DataInspector.tsx';
 export {
   default as ManagedDataInspector,
-} from './components/data-inspector/ManagedDataInspector.js';
+} from './components/data-inspector/ManagedDataInspector.tsx';
 export {
   default as DataDescription,
 } from './components/data-inspector/DataDescription.js';

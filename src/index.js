@@ -93,7 +93,7 @@ export {
 } from './ui/components/data-inspector/DataInspector.tsx';
 export {
   default as ManagedDataInspector,
-} from './ui/components/data-inspector/ManagedDataInspector.js';
+} from './ui/components/data-inspector/ManagedDataInspector.tsx';
 export {
   default as DataDescription,
 } from './ui/components/data-inspector/DataDescription.js';
