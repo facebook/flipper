@@ -5,12 +5,9 @@
  * @format
  */
 
-import type TooltipProvider from './TooltipProvider.js';
-import type {TooltipOptions} from './TooltipProvider.js';
-
-import styled from '../styled/index.js';
-import {Component} from 'react';
-
+import TooltipProvider, {TooltipOptions} from './TooltipProvider';
+import styled from 'react-emotion';
+import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 
 const TooltipContainer = styled('div')({
@@ -19,14 +16,14 @@ const TooltipContainer = styled('div')({
 
 type TooltipProps = {
   /** Content shown in the tooltip */
-  title: React$Node,
+  title: React.ReactNode;
   /** Component that will show the tooltip */
-  children: React$Node,
-  options?: TooltipOptions,
+  children: React.ReactNode;
+  options?: TooltipOptions;
 };
 
 type TooltipState = {
-  open: boolean,
+  open: boolean;
 };
 
 export default class Tooltip extends Component<TooltipProps, TooltipState> {
@@ -35,10 +32,10 @@ export default class Tooltip extends Component<TooltipProps, TooltipState> {
   };
 
   context: {
-    TOOLTIP_PROVIDER: TooltipProvider,
+    TOOLTIP_PROVIDER: TooltipProvider;
   };
 
-  ref: ?HTMLDivElement;
+  ref: HTMLDivElement | null;
 
   state = {
     open: false,
@@ -66,7 +63,7 @@ export default class Tooltip extends Component<TooltipProps, TooltipState> {
     this.setState({open: false});
   };
 
-  setRef = (ref: ?HTMLDivElement) => {
+  setRef = (ref: HTMLDivElement | null) => {
     this.ref = ref;
   };
 

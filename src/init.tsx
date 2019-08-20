@@ -18,7 +18,7 @@ import {createStore} from 'redux';
 import {persistStore} from 'redux-persist';
 import reducers, {Actions, State as StoreState} from './reducers/index';
 import dispatcher from './dispatcher/index';
-import TooltipProvider from './ui/components/TooltipProvider.js';
+import TooltipProvider from './ui/components/TooltipProvider';
 import config from './utils/processConfig';
 import {stateSanitizer} from './utils/reduxDevToolsConfig';
 import {initLauncherHooks} from './utils/launcher';

@@ -5,11 +5,24 @@
  * @format
  */
 
-import styled from '../styled/index.js';
-import {colors} from './colors.tsx';
+import styled from 'react-emotion';
+import {colors} from './colors';
 import {Component} from 'react';
-
 import PropTypes from 'prop-types';
+import {
+  TopProperty,
+  LeftProperty,
+  BottomProperty,
+  RightProperty,
+  BackgroundColorProperty,
+  LineHeightProperty,
+  PaddingProperty,
+  BorderRadiusProperty,
+  MaxWidthProperty,
+  ColorProperty,
+  WidthProperty,
+} from 'csstype';
+import React from 'react';
 
 const defaultOptions = {
   backgroundColor: colors.blueGrey,
@@ -25,33 +38,49 @@ const defaultOptions = {
 };
 
 export type TooltipOptions = {
-  backgroundColor?: string,
-  position?: 'below' | 'above' | 'toRight' | 'toLeft',
-  color?: string,
-  showTail?: boolean,
-  maxWidth?: string,
-  width?: string,
-  borderRadius?: number,
-  padding?: string,
-  lineHeight?: string,
-  delay?: number, // in milliseconds
+  backgroundColor?: string;
+  position?: 'below' | 'above' | 'toRight' | 'toLeft';
+  color?: string;
+  showTail?: boolean;
+  maxWidth?: string;
+  width?: string;
+  borderRadius?: number;
+  padding?: string;
+  lineHeight?: string;
+  delay?: number; // in milliseconds
 };
 
-const TooltipBubble = styled('div')(props => ({
-  position: 'absolute',
-  zIndex: 99999999999,
-  backgroundColor: props.options.backgroundColor,
-  lineHeight: props.options.lineHeight,
-  padding: props.options.padding,
-  borderRadius: props.options.borderRadius,
-  width: props.options.width,
-  maxWidth: props.options.maxWidth,
-  top: props.top,
-  left: props.left,
-  bottom: props.bottom,
-  right: props.right,
-  color: props.options.color,
-}));
+const TooltipBubble = styled('div')(
+  (props: {
+    top: TopProperty<number>;
+    left: LeftProperty<number>;
+    bottom: BottomProperty<number>;
+    right: RightProperty<number>;
+    options: {
+      backgroundColor: BackgroundColorProperty;
+      lineHeight: LineHeightProperty<number>;
+      padding: PaddingProperty<number>;
+      borderRadius: BorderRadiusProperty<number>;
+      width: WidthProperty<number>;
+      maxWidth: MaxWidthProperty<number>;
+      color: ColorProperty;
+    };
+  }) => ({
+    position: 'absolute',
+    zIndex: 99999999999,
+    backgroundColor: props.options.backgroundColor,
+    lineHeight: props.options.lineHeight,
+    padding: props.options.padding,
+    borderRadius: props.options.borderRadius,
+    width: props.options.width,
+    maxWidth: props.options.maxWidth,
+    top: props.top,
+    left: props.left,
+    bottom: props.bottom,
+    right: props.right,
+    color: props.options.color,
+  }),
+);
 
 // vertical offset on bubble when position is 'below'
 const BUBBLE_BELOW_POSITION_VERTICAL_OFFSET = -10;
@@ -64,40 +93,50 @@ const TAIL_AB_POSITION_HORIZONTAL_OFFSET = 15;
 // vertical offset on tail when position is 'toLeft' or 'toRight'
 const TAIL_LR_POSITION_HORIZONTAL_OFFSET = 5;
 
-const TooltipTail = styled('div')(props => ({
-  position: 'absolute',
-  display: 'block',
-  whiteSpace: 'pre',
-  height: '10px',
-  width: '10px',
-  lineHeight: '0',
-  zIndex: 99999999998,
-  transform: 'rotate(45deg)',
-  backgroundColor: props.options.backgroundColor,
-  top: props.top,
-  left: props.left,
-  bottom: props.bottom,
-  right: props.right,
-}));
+const TooltipTail = styled('div')(
+  (props: {
+    top: TopProperty<number>;
+    left: LeftProperty<number>;
+    bottom: BottomProperty<number>;
+    right: RightProperty<number>;
+    options: {
+      backgroundColor: BackgroundColorProperty;
+    };
+  }) => ({
+    position: 'absolute',
+    display: 'block',
+    whiteSpace: 'pre',
+    height: '10px',
+    width: '10px',
+    lineHeight: '0',
+    zIndex: 99999999998,
+    transform: 'rotate(45deg)',
+    backgroundColor: props.options.backgroundColor,
+    top: props.top,
+    left: props.left,
+    bottom: props.bottom,
+    right: props.right,
+  }),
+);
 
 type TooltipProps = {
-  children: React$Node,
+  children: React.ReactNode;
 };
 
 type TooltipObject = {
-  rect: ClientRect,
-  title: React$Node,
-  options: TooltipOptions,
+  rect: ClientRect;
+  title: React.ReactNode;
+  options: TooltipOptions;
 };
 
 type TooltipState = {
-  tooltip: ?TooltipObject,
-  timeoutID: ?TimeoutID,
+  tooltip: TooltipObject | null | undefined;
+  timeoutID: ReturnType<typeof setTimeout> | null | undefined;
 };
 
 export default class TooltipProvider extends Component<
   TooltipProps,
-  TooltipState,
+  TooltipState
 > {
   static childContextTypes = {
     TOOLTIP_PROVIDER: PropTypes.object,
@@ -112,7 +151,11 @@ export default class TooltipProvider extends Component<
     return {TOOLTIP_PROVIDER: this};
   }
 
-  open(container: HTMLDivElement, title: React$Node, options: TooltipOptions) {
+  open(
+    container: HTMLDivElement,
+    title: React.ReactNode,
+    options: TooltipOptions,
+  ) {
     const node = container.childNodes[0];
     if (node == null || !(node instanceof HTMLElement)) {
       return;
@@ -153,10 +196,10 @@ export default class TooltipProvider extends Component<
       return null;
     }
 
-    let left = 'auto';
-    let top = 'auto';
-    let bottom = 'auto';
-    let right = 'auto';
+    let left: LeftProperty<number> = 'auto';
+    let top: TopProperty<number> = 'auto';
+    let bottom: BottomProperty<number> = 'auto';
+    let right: RightProperty<number> = 'auto';
 
     if (opts.position === 'below') {
       left = tooltip.rect.left + TAIL_AB_POSITION_HORIZONTAL_OFFSET;
@@ -189,10 +232,10 @@ export default class TooltipProvider extends Component<
 
   getTooltipBubble(tooltip: TooltipObject) {
     const opts = Object.assign(defaultOptions, tooltip.options);
-    let left = 'auto';
-    let top = 'auto';
-    let bottom = 'auto';
-    let right = 'auto';
+    let left: LeftProperty<number> = 'auto';
+    let top: TopProperty<number> = 'auto';
+    let bottom: BottomProperty<number> = 'auto';
+    let right: RightProperty<number> = 'auto';
 
     if (opts.position === 'below') {
       left = tooltip.rect.left;

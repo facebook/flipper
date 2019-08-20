@@ -130,8 +130,8 @@ export {default as TextParagraph} from './components/TextParagraph.tsx';
 export {default as Link} from './components/Link.js';
 export {default as PathBreadcrumbs} from './components/PathBreadcrumbs.tsx';
 export {default as ModalOverlay} from './components/ModalOverlay.tsx';
-export {default as Tooltip} from './components/Tooltip.js';
-export {default as TooltipProvider} from './components/TooltipProvider.js';
+export {default as Tooltip} from './components/Tooltip.tsx';
+export {default as TooltipProvider} from './components/TooltipProvider.tsx';
 export {default as ResizeSensor} from './components/ResizeSensor.tsx';
 export {default as StatusIndicator} from './components/StatusIndicator.tsx';
 
