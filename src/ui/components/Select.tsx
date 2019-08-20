@@ -7,7 +7,8 @@
 
 import {Component} from 'react';
 import Text from './Text';
-import styled from '../styled';
+import styled from 'react-emotion';
+import React from 'react';
 
 const Label = styled('label')({
   display: 'flex',
@@ -15,11 +16,11 @@ const Label = styled('label')({
 });
 
 const LabelText = styled(Text)({
-  fontWeight: '500',
+  fontWeight: 500,
   marginRight: 5,
 });
 
-const SelectMenu = styled('select')(({grow}) => ({
+const SelectMenu = styled('select')(({grow}: {grow?: boolean}) => ({
   flexGrow: grow ? 1 : null,
 }));
 
@@ -28,27 +29,27 @@ const SelectMenu = styled('select')(({grow}) => ({
  */
 export default class Select extends Component<{
   /** Additional className added to the element */
-  className?: string,
+  className?: string;
   /** Additional className added to the element */
   options: {
-    [key: string]: string,
-  },
+    [key: string]: string;
+  };
   /** DEPRECATED: Callback when the selected value changes. The callback is called with the displayed value. */
-  onChange?: (value: string) => void,
+  onChange?: (value: string) => void;
 
   /** Callback when the selected value changes. The callback is called with the key for the displayed value */
-  onChangeWithKey?: (key: string) => void,
+  onChangeWithKey?: (key: string) => void;
 
   /** Selected key */
-  selected?: ?string,
+  selected?: string | null | undefined;
   /** Label shown next to the dropdown */
-  label?: string,
+  label?: string;
   /** Select box should take all available space */
-  grow?: boolean,
+  grow?: boolean;
 }> {
   selectID: string = Math.random().toString(36);
 
-  onChange = (event: Object) => {
+  onChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     if (this.props.onChangeWithKey) {
       this.props.onChangeWithKey(event.target.value);
     }
