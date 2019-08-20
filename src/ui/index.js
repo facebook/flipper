@@ -142,7 +142,7 @@ export {default as Label} from './components/Label.tsx';
 export {default as Heading} from './components/Heading.tsx';
 
 // filters
-export type {Filter} from './components/filter/types.js';
+export type {Filter} from './components/filter/types.tsx';
 
 export {default as MarkerTimeline} from './components/MarkerTimeline.tsx';
 

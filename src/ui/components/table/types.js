@@ -5,7 +5,7 @@
  * @format
  */
 
-import type {Filter} from '../filter/types.js';
+import type {Filter} from '../filter/types.tsx';
 
 import {List} from 'immutable';
 

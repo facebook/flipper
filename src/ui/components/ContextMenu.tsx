@@ -21,6 +21,7 @@ type Props = {
   children: React.ReactNode;
   /** The component that is used to wrap the children. Defaults to `FlexColumn`. */
   component: React.ComponentType<any> | string;
+  onMouseDown: (e: React.MouseEvent) => any;
 };
 
 /**

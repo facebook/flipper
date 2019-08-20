@@ -13,7 +13,7 @@ import type {
 } from './types.js';
 
 import React from 'react';
-import FilterRow from '../filter/FilterRow.js';
+import FilterRow from '../filter/FilterRow.tsx';
 import styled from '../../styled/index.js';
 import FlexRow from '../FlexRow.tsx';
 import {colors} from '../colors.tsx';

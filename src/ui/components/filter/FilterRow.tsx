@@ -5,12 +5,12 @@
  * @format
  */
 
-import type {Filter} from './types.js';
-import {PureComponent} from 'react';
-import ContextMenu from '../ContextMenu.tsx';
-import textContent from '../../../utils/textContent.tsx';
-import styled from '../../styled/index.js';
-import {colors} from '../colors.tsx';
+import {Filter} from './types.js';
+import React, {PureComponent} from 'react';
+import ContextMenu from '../ContextMenu';
+import textContent from '../../../utils/textContent';
+import styled from 'react-emotion';
+import {colors} from '../colors';
 
 const FilterText = styled('div')({
   display: 'flex',
@@ -40,13 +40,13 @@ const FilterText = styled('div')({
 });
 
 type Props = {
-  children: React.Node,
-  addFilter: (filter: Filter) => void,
-  filterKey: string,
+  children: React.ReactNode;
+  addFilter: (filter: Filter) => void;
+  filterKey: string;
 };
 
 export default class FilterRow extends PureComponent<Props> {
-  onClick = (e: SyntheticMouseEvent<>) => {
+  onClick = (e: React.MouseEvent) => {
     if (e.button === 0) {
       this.props.addFilter({
         type: e.metaKey || e.altKey ? 'exclude' : 'include',
