@@ -109,7 +109,7 @@ export {
   DesktopDropdownItem,
   DesktopDropdownSelectedItem,
   DesktopDropdown,
-} from './components/desktop-toolbar.js';
+} from './components/desktop-toolbar.tsx';
 
 // utility elements
 export {default as View} from './components/View.js';
