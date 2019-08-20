@@ -154,14 +154,14 @@ export {
   SearchInput,
   SearchIcon,
   default as Searchable,
-} from './components/searchable/Searchable.js';
+} from './components/searchable/Searchable.tsx';
 export {
   default as SearchableTable,
-} from './components/searchable/SearchableTable.js';
+} from './components/searchable/SearchableTable.tsx';
 export {
   default as SearchableTable_immutable,
-} from './components/searchable/SearchableTable_immutable.js';
-export type {SearchableProps} from './components/searchable/Searchable.js';
+} from './components/searchable/SearchableTable_immutable.tsx';
+export type {SearchableProps} from './components/searchable/Searchable.tsx';
 
 //
 export type {

@@ -14,7 +14,7 @@ import type {
 
 import React from 'react';
 import FilterRow from '../filter/FilterRow.tsx';
-import styled from '../../styled/index.js';
+import styled from 'react-emotion';
 import FlexRow from '../FlexRow.tsx';
 import {colors} from '../colors.tsx';
 import {normaliseColumnWidth} from './utils.js';

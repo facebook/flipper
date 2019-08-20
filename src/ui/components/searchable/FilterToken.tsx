@@ -5,53 +5,59 @@
  * @format
  */
 
-import type {Filter} from 'flipper';
+import {Filter} from '../filter/types';
 import {PureComponent} from 'react';
-import Text from '../Text.tsx';
-import styled from '../../styled/index.js';
+import Text from '../Text';
+import styled from 'react-emotion';
 import {findDOMNode} from 'react-dom';
-import {colors} from '../colors.tsx';
-import electron from 'electron';
+import {colors} from '../colors';
+import electron, {MenuItemConstructorOptions} from 'electron';
+import React from 'react';
+import {ColorProperty} from 'csstype';
 
-const Token = styled(Text)(props => ({
-  display: 'inline-flex',
-  alignItems: 'center',
-  backgroundColor: props.focused
-    ? colors.macOSHighlightActive
-    : props.color || colors.macOSHighlight,
-  borderRadius: 4,
-  marginRight: 4,
-  padding: 4,
-  paddingLeft: 6,
-  height: 21,
-  color: props.focused ? 'white' : 'inherit',
-  '&:active': {
-    backgroundColor: colors.macOSHighlightActive,
-    color: colors.white,
-  },
-  '&:first-of-type': {
-    marginLeft: 3,
-  },
-}));
+const Token = styled(Text)(
+  (props: {focused?: boolean; color?: ColorProperty}) => ({
+    display: 'inline-flex',
+    alignItems: 'center',
+    backgroundColor: props.focused
+      ? colors.macOSHighlightActive
+      : props.color || colors.macOSHighlight,
+    borderRadius: 4,
+    marginRight: 4,
+    padding: 4,
+    paddingLeft: 6,
+    height: 21,
+    color: props.focused ? 'white' : 'inherit',
+    '&:active': {
+      backgroundColor: colors.macOSHighlightActive,
+      color: colors.white,
+    },
+    '&:first-of-type': {
+      marginLeft: 3,
+    },
+  }),
+);
 
-const Key = styled(Text)(props => ({
-  position: 'relative',
-  fontWeight: 500,
-  paddingRight: 12,
-  textTransform: 'capitalize',
-  lineHeight: '21px',
-  '&:after': {
-    content: props.type === 'exclude' ? '"≠"' : '"="',
-    paddingLeft: 5,
-    position: 'absolute',
-    top: -1,
-    right: 0,
-    fontSize: 14,
-  },
-  '&:active:after': {
-    backgroundColor: colors.macOSHighlightActive,
-  },
-}));
+const Key = styled(Text)(
+  (props: {type: 'exclude' | 'include' | 'enum'; focused?: boolean}) => ({
+    position: 'relative',
+    fontWeight: 500,
+    paddingRight: 12,
+    textTransform: 'capitalize',
+    lineHeight: '21px',
+    '&:after': {
+      content: props.type === 'exclude' ? '"≠"' : '"="',
+      paddingLeft: 5,
+      position: 'absolute',
+      top: -1,
+      right: 0,
+      fontSize: 14,
+    },
+    '&:active:after': {
+      backgroundColor: colors.macOSHighlightActive,
+    },
+  }),
+);
 
 const Value = styled(Text)({
   whiteSpace: 'nowrap',
@@ -62,7 +68,7 @@ const Value = styled(Text)({
   paddingLeft: 3,
 });
 
-const Chevron = styled('div')(props => ({
+const Chevron = styled('div')((props: {focused?: boolean}) => ({
   border: 0,
   paddingLeft: 3,
   paddingRight: 1,
@@ -81,23 +87,24 @@ const Chevron = styled('div')(props => ({
   },
 }));
 
-type Props = {|
-  filter: Filter,
-  focused: boolean,
-  index: number,
-  onFocus: (focusedToken: number) => void,
-  onBlur: () => void,
-  onDelete: (deletedToken: number) => void,
-  onReplace: (index: number, filter: Filter) => void,
-|};
+type Props = {
+  filter: Filter;
+  focused: boolean;
+  index: number;
+  onFocus: (focusedToken: number) => void;
+  onBlur: () => void;
+  onDelete: (deletedToken: number) => void;
+  onReplace: (index: number, filter: Filter) => void;
+};
 
 export default class FilterToken extends PureComponent<Props> {
-  _ref: ?Element;
+  _ref: Element | undefined;
 
   onMouseDown = () => {
     if (
-      this.props.filter.persistent == null ||
-      this.props.filter.persistent === false
+      this.props.filter.type !== 'enum' ||
+      (this.props.filter.persistent == null ||
+        this.props.filter.persistent === false)
     ) {
       this.props.onFocus(this.props.index);
     }
@@ -112,7 +119,7 @@ export default class FilterToken extends PureComponent<Props> {
         ...this.props.filter.enum.map(({value, label}) => ({
           label,
           click: () => this.changeEnum(value),
-          type: 'checkbox',
+          type: 'checkbox' as 'checkbox',
           checked: this.props.filter.value.indexOf(value) > -1,
         })),
       );
@@ -144,12 +151,14 @@ export default class FilterToken extends PureComponent<Props> {
       );
     }
     const menu = electron.remote.Menu.buildFromTemplate(menuTemplate);
-    const {bottom, left} = this._ref ? this._ref.getBoundingClientRect() : {};
+    const {bottom, left} = this._ref.getBoundingClientRect();
+
     menu.popup({
       window: electron.remote.getCurrentWindow(),
+      // @ts-ignore: async is private API
       async: true,
-      x: parseInt(left, 10),
-      y: parseInt(bottom, 10) + 8,
+      x: left,
+      y: bottom + 8,
     });
   };
 
@@ -185,7 +194,7 @@ export default class FilterToken extends PureComponent<Props> {
     }
   };
 
-  setRef = (ref: React.ElementRef<*>) => {
+  setRef = (ref: React.ReactInstance) => {
     const element = findDOMNode(ref);
     if (element instanceof HTMLElement) {
       this._ref = element;

@@ -51,8 +51,10 @@
   },
   "devDependencies": {
     "@jest-runner/electron": "^2.0.1",
+    "@types/deep-equal": "^1.0.1",
     "@types/invariant": "^2.2.30",
     "@types/jest": "^24.0.16",
+    "@types/lodash.debounce": "^4.0.6",
     "@types/react": "^16.8.24",
     "@types/react-dom": "^16.8.5",
     "@types/react-redux": "^7.1.1",

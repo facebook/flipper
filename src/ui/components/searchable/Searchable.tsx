@@ -5,20 +5,21 @@
  * @format
  */
 
-import type {Filter} from 'flipper';
-import type {TableColumns} from '../table/types';
+import {Filter} from '../filter/types';
+import {TableColumns} from '../table/types';
 import {PureComponent} from 'react';
-import Toolbar from '../Toolbar.tsx';
-import FlexRow from '../FlexRow.tsx';
-import Input from '../Input.tsx';
-import {colors} from '../colors.tsx';
-import Text from '../Text.tsx';
-import FlexBox from '../FlexBox.tsx';
-import Glyph from '../Glyph.tsx';
-import FilterToken from './FilterToken.js';
-import styled from '../../styled/index.js';
+import Toolbar from '../Toolbar';
+import FlexRow from '../FlexRow';
+import Input from '../Input';
+import {colors} from '../colors';
+import Text from '../Text';
+import FlexBox from '../FlexBox';
+import Glyph from '../Glyph';
+import FilterToken from './FilterToken';
+import styled from 'react-emotion';
 import debounce from 'lodash.debounce';
-import ToggleSwitch from '../ToggleSwitch.tsx';
+import ToggleSwitch from '../ToggleSwitch';
+import React from 'react';
 
 const SearchBar = styled(Toolbar)({
   height: 42,
@@ -35,22 +36,24 @@ export const SearchBox = styled(FlexBox)({
   paddingLeft: 4,
 });
 
-export const SearchInput = styled(Input)(props => ({
-  border: props.focus ? '1px solid black' : 0,
-  ...(props.regex ? {fontFamily: 'monospace'} : {}),
-  padding: 0,
-  fontSize: '1em',
-  flexGrow: 1,
-  height: 'auto',
-  lineHeight: '100%',
-  marginLeft: 2,
-  width: '100%',
-  color: props.regex && !props.isValidInput ? colors.red : colors.black,
-  '&::-webkit-input-placeholder': {
-    color: colors.placeholder,
-    fontWeight: 300,
-  },
-}));
+export const SearchInput = styled(Input)(
+  (props: {focus?: boolean; regex?: boolean; isValidInput?: boolean}) => ({
+    border: props.focus ? '1px solid black' : 0,
+    ...(props.regex ? {fontFamily: 'monospace'} : {}),
+    padding: 0,
+    fontSize: '1em',
+    flexGrow: 1,
+    height: 'auto',
+    lineHeight: '100%',
+    marginLeft: 2,
+    width: '100%',
+    color: props.regex && !props.isValidInput ? colors.red : colors.black,
+    '&::-webkit-input-placeholder': {
+      color: colors.placeholder,
+      fontWeight: 300,
+    },
+  }),
+);
 
 const Clear = styled(Text)({
   position: 'absolute',
@@ -83,34 +86,34 @@ const Actions = styled(FlexRow)({
   flexShrink: 0,
 });
 
-export type SearchableProps = {|
-  addFilter: (filter: Filter) => void,
-  searchTerm: string,
-  filters: Array<Filter>,
-  allowRegexSearch?: boolean,
-  regexEnabled?: boolean,
-|};
-
-type Props = {|
-  placeholder?: string,
-  actions: React.Node,
-  tableKey: string,
-  columns?: TableColumns,
-  onFilterChange: (filters: Array<Filter>) => void,
-  defaultFilters: Array<Filter>,
-  allowRegexSearch: boolean,
-|};
-
-type State = {
-  filters: Array<Filter>,
-  focusedToken: number,
-  searchTerm: string,
-  hasFocus: boolean,
-  regexEnabled: boolean,
-  compiledRegex: ?RegExp,
+export type SearchableProps = {
+  addFilter: (filter: Filter) => void;
+  searchTerm: string;
+  filters: Array<Filter>;
+  allowRegexSearch?: boolean;
+  regexEnabled?: boolean;
 };
 
-function compileRegex(s: string): ?RegExp {
+type Props = {
+  placeholder?: string;
+  actions: React.ReactNode;
+  tableKey: string;
+  columns?: TableColumns;
+  onFilterChange: (filters: Array<Filter>) => void;
+  defaultFilters: Array<Filter>;
+  allowRegexSearch: boolean;
+};
+
+type State = {
+  filters: Array<Filter>;
+  focusedToken: number;
+  searchTerm: string;
+  hasFocus: boolean;
+  regexEnabled: boolean;
+  compiledRegex: RegExp | null | undefined;
+};
+
+function compileRegex(s: string): RegExp | null {
   try {
     return new RegExp(s);
   } catch (e) {
@@ -135,7 +138,7 @@ const Searchable = (
       compiledRegex: null,
     };
 
-    _inputRef: ?HTMLInputElement;
+    _inputRef: HTMLInputElement | undefined;
 
     componentDidMount() {
       window.document.addEventListener('keydown', this.onKeyDown);
@@ -223,7 +226,7 @@ const Searchable = (
       window.document.removeEventListener('keydown', this.onKeyDown);
     }
 
-    getTableKey = (): ?string => {
+    getTableKey = (): string | null | undefined => {
       if (this.props.tableKey) {
         return this.props.tableKey;
       } else if (this.props.columns) {
@@ -238,7 +241,7 @@ const Searchable = (
       }
     };
 
-    onKeyDown = (e: SyntheticKeyboardEvent<>) => {
+    onKeyDown = (e: KeyboardEvent) => {
       const ctrlOrCmd = e =>
         (e.metaKey && process.platform === 'darwin') ||
         (e.ctrlKey && process.platform !== 'darwin');
@@ -252,11 +255,12 @@ const Searchable = (
         this._inputRef.blur();
         this.setState({searchTerm: ''});
       } else if (e.key === 'Backspace' && this.hasFocus()) {
+        const lastFilter = this.state.filters[this.state.filters.length - 1];
         if (
           this.state.focusedToken === -1 &&
           this.state.searchTerm === '' &&
           this._inputRef &&
-          !this.state.filters[this.state.filters.length - 1].persistent
+          (lastFilter.type !== 'enum' || !lastFilter.persistent)
         ) {
           this._inputRef.blur();
           this.setState({focusedToken: this.state.filters.length - 1});
@@ -274,7 +278,7 @@ const Searchable = (
       }
     };
 
-    onChangeSearchTerm = (e: SyntheticInputEvent<HTMLInputElement>) => {
+    onChangeSearchTerm = (e: React.ChangeEvent<HTMLInputElement>) => {
       this.setState({
         searchTerm: e.target.value,
         compiledRegex: compileRegex(e.target.value),
@@ -291,9 +295,9 @@ const Searchable = (
         match.forEach((filter: string) => {
           const separator =
             filter.indexOf(':') > filter.indexOf('=') ? ':' : '=';
-          let [key, ...value] = filter.split(separator);
-          value = value.join(separator).trim();
-          let type = 'include';
+          let [key, ...values] = filter.split(separator);
+          let value = values.join(separator).trim();
+          let type: 'include' | 'exclude' | 'enum' = 'include';
           // if value starts with !, it's an exclude filter
           if (value.indexOf('!') === 0) {
             type = 'exclude';
@@ -315,7 +319,7 @@ const Searchable = (
       }
     }, 200);
 
-    setInputRef = (ref: ?HTMLInputElement) => {
+    setInputRef = (ref: HTMLInputElement | undefined) => {
       this._inputRef = ref;
     };
 
@@ -326,12 +330,13 @@ const Searchable = (
       if (filterIndex > -1) {
         const filters = [...this.state.filters];
         const defaultFilter: Filter = this.props.defaultFilters[filterIndex];
+        const filter = filters[filterIndex];
         if (
           defaultFilter != null &&
           defaultFilter.type === 'enum' &&
-          filters[filterIndex].type === 'enum'
+          filter.type === 'enum'
         ) {
-          filters[filterIndex].enum = defaultFilter.enum;
+          filter.enum = defaultFilter.enum;
         }
         this.setState({filters});
         // filter for this key already exists
@@ -339,7 +344,7 @@ const Searchable = (
       }
       // persistent filters are always at the front
       const filters =
-        filter.persistent === true
+        filter.type === 'enum' && filter.persistent === true
           ? [filter, ...this.state.filters]
           : this.state.filters.concat(filter);
       this.setState({
@@ -397,14 +402,14 @@ const Searchable = (
     clear = () =>
       this.setState({
         filters: this.state.filters.filter(
-          f => f.persistent != null && f.persistent === true,
+          f => f.type === 'enum' && f.persistent === true,
         ),
         searchTerm: '',
       });
 
     getPersistKey = () => `SEARCHABLE_STORAGE_KEY_${this.getTableKey() || ''}`;
 
-    render(): React.Node {
+    render() {
       const {placeholder, actions, ...props} = this.props;
       return [
         <SearchBar position="top" key="searchbar">
@@ -438,7 +443,7 @@ const Searchable = (
                   ? this.state.compiledRegex !== null
                   : true
               }
-              regex={this.state.regexEnabled && this.state.searchTerm}
+              regex={Boolean(this.state.regexEnabled && this.state.searchTerm)}
             />
           </SearchBox>
           {this.props.allowRegexSearch ? (

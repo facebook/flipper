@@ -5,26 +5,24 @@
  * @format
  */
 
-import type {ManagedTableProps, TableBodyRow, Filter} from 'flipper';
-import type {SearchableProps} from './Searchable.js';
-import {PureComponent} from 'react';
-import ManagedTable from '../table/ManagedTable.js';
-
-import textContent from '../../../utils/textContent.tsx';
-import Searchable from './Searchable.js';
+import {Filter} from '../filter/types';
+import ManagedTable, {ManagedTableProps} from '../table/ManagedTable.js';
+import {TableBodyRow} from '../table/types.js';
+import Searchable, {SearchableProps} from './Searchable';
+import React, {PureComponent} from 'react';
+import textContent from '../../../utils/textContent';
 import deepEqual from 'deep-equal';
 
-type Props = {|
-  ...ManagedTableProps,
-  ...SearchableProps,
+type Props = {
   /** Reference to the table */
-  innerRef?: (ref: React.ElementRef<*>) => void,
+  innerRef?: (ref: React.RefObject<any>) => void;
   /** Filters that are added to the filterbar by default */
-  defaultFilters: Array<Filter>,
-|};
+  defaultFilters: Array<Filter>;
+} & ManagedTableProps &
+  SearchableProps;
 
 type State = {
-  filterRows: (row: TableBodyRow) => boolean,
+  filterRows: (row: TableBodyRow) => boolean;
 };
 
 const rowMatchesFilters = (filters: Array<Filter>, row: TableBodyRow) =>

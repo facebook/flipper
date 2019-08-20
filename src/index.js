@@ -157,15 +157,15 @@ export {
   SearchBox,
   SearchInput,
   SearchIcon,
+  SearchableProps,
   default as Searchable,
-} from './ui/components/searchable/Searchable.js';
+} from './ui/components/searchable/Searchable.tsx';
 export {
   default as SearchableTable,
-} from './ui/components/searchable/SearchableTable.js';
+} from './ui/components/searchable/SearchableTable.tsx';
 export {
   default as SearchableTable_immutable,
-} from './ui/components/searchable/SearchableTable_immutable.js';
-export {SearchableProps} from './ui/components/searchable/Searchable.js';
+} from './ui/components/searchable/SearchableTable_immutable.tsx';
 export {
   ElementID,
   ElementData,
