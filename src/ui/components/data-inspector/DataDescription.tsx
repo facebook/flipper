@@ -4,15 +4,16 @@
  * LICENSE file in the root directory of this source tree.
  * @format
  */
-import Link from '../Link.tsx';
-import type {DataInspectorSetValue} from './DataInspector.tsx';
+import Link from '../Link';
+import {DataInspectorSetValue} from './DataInspector';
 import {PureComponent} from 'react';
 import styled from '../../styled/index.js';
 import {SketchPicker} from 'react-color';
 import {Component, Fragment} from 'react';
-import Popover from '../Popover.tsx';
-import {colors} from '../colors.tsx';
-import Input from '../Input.tsx';
+import Popover from '../Popover';
+import {colors} from '../colors';
+import Input from '../Input';
+import React, {KeyboardEvent} from 'react';
 
 const NullValue = styled('span')({
   color: 'rgb(128, 128, 128)',
@@ -38,7 +39,7 @@ const NumberValue = styled('span')({
   color: colors.tealDark1,
 });
 
-const ColorBox = styled('span')(props => ({
+const ColorBox = styled('span')((props: {color: string}) => ({
   backgroundColor: props.color,
   boxShadow: 'inset 0 0 1px rgba(0, 0, 0, 1)',
   display: 'inline-block',
@@ -62,27 +63,27 @@ const ColorPickerDescription = styled('div')({
   position: 'relative',
 });
 
-type DataDescriptionProps = {|
-  path?: Array<string>,
-  type: string,
-  value: any,
-  setValue: ?DataInspectorSetValue,
-|};
+type DataDescriptionProps = {
+  path?: Array<string>;
+  type: string;
+  value: any;
+  setValue: DataInspectorSetValue | null | undefined;
+};
 
-type DescriptionCommitOptions = {|
-  value: any,
-  keep: boolean,
-  clear: boolean,
-  set: boolean,
-|};
+type DescriptionCommitOptions = {
+  value: any;
+  keep: boolean;
+  clear: boolean;
+  set: boolean;
+};
 
 class NumberTextEditor extends PureComponent<{
-  commit: (opts: DescriptionCommitOptions) => void,
-  type: string,
-  value: any,
-  origValue: any,
+  commit: (opts: DescriptionCommitOptions) => void;
+  type: string;
+  value: any;
+  origValue: any;
 }> {
-  onNumberTextInputChange = (e: SyntheticInputEvent<HTMLInputElement>) => {
+  onNumberTextInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val =
       this.props.type === 'number'
         ? parseFloat(e.target.value)
@@ -95,7 +96,7 @@ class NumberTextEditor extends PureComponent<{
     });
   };
 
-  onNumberTextInputKeyDown = (e: SyntheticKeyboardEvent<*>) => {
+  onNumberTextInputKeyDown = (e: KeyboardEvent) => {
     if (e.key === 'Enter') {
       const val =
         this.props.type === 'number'
@@ -112,7 +113,7 @@ class NumberTextEditor extends PureComponent<{
     }
   };
 
-  onNumberTextRef = (ref: ?HTMLElement) => {
+  onNumberTextRef = (ref: HTMLElement | undefined | null) => {
     if (ref) {
       ref.focus();
     }
@@ -128,7 +129,7 @@ class NumberTextEditor extends PureComponent<{
   };
 
   render() {
-    const extraProps: Object = {};
+    const extraProps: any = {};
     if (this.props.type === 'number') {
       // render as a HTML number input
       extraProps.type = 'number';
@@ -153,15 +154,15 @@ class NumberTextEditor extends PureComponent<{
   }
 }
 
-type DataDescriptionState = {|
-  editing: boolean,
-  origValue: any,
-  value: any,
-|};
+type DataDescriptionState = {
+  editing: boolean;
+  origValue: any;
+  value: any;
+};
 
 export default class DataDescription extends PureComponent<
   DataDescriptionProps,
-  DataDescriptionState,
+  DataDescriptionState
 > {
   constructor(props: DataDescriptionProps, context: Object) {
     super(props, context);
@@ -256,8 +257,8 @@ export default class DataDescription extends PureComponent<
 }
 
 class ColorEditor extends Component<{
-  value: any,
-  commit: (opts: DescriptionCommitOptions) => void,
+  value: any;
+  commit: (opts: DescriptionCommitOptions) => void;
 }> {
   onBlur = () => {
     this.props.commit({
@@ -272,8 +273,8 @@ class ColorEditor extends Component<{
     hex,
     rgb: {a, b, g, r},
   }: {
-    hex: string,
-    rgb: {a: number, b: number, g: number, r: number},
+    hex: string;
+    rgb: {a: number; b: number; g: number; r: number};
   }) => {
     const prev = this.props.value;
 
@@ -349,11 +350,11 @@ class ColorEditor extends Component<{
 }
 
 class DataDescriptionPreview extends Component<{
-  type: string,
-  value: any,
-  editable: boolean,
-  commit: (opts: DescriptionCommitOptions) => void,
-  onEdit?: () => void,
+  type: string;
+  value: any;
+  editable: boolean;
+  commit: (opts: DescriptionCommitOptions) => void;
+  onEdit?: () => void;
 }> {
   onClick = () => {
     const {onEdit} = this.props;
@@ -389,12 +390,15 @@ class DataDescriptionPreview extends Component<{
 
 function parseColor(
   val: string | number,
-): ?{|
-  r: number,
-  g: number,
-  b: number,
-  a: number,
-|} {
+):
+  | {
+      r: number;
+      g: number;
+      b: number;
+      a: number;
+    }
+  | undefined
+  | null {
   if (typeof val === 'number') {
     const a = ((val >> 24) & 0xff) / 255;
     const r = (val >> 16) & 0xff;
@@ -444,12 +448,12 @@ function parseColor(
 }
 
 class DataDescriptionContainer extends Component<{
-  type: string,
-  value: any,
-  editable: boolean,
-  commit: (opts: DescriptionCommitOptions) => void,
+  type: string;
+  value: any;
+  editable: boolean;
+  commit: (opts: DescriptionCommitOptions) => void;
 }> {
-  onChangeCheckbox = (e: SyntheticInputEvent<HTMLInputElement>) => {
+  onChangeCheckbox = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.props.commit({
       clear: true,
       keep: true,

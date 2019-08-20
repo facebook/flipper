@@ -5,7 +5,7 @@
  * @format
  */
 
-import DataDescription from './DataDescription.js';
+import DataDescription from './DataDescription';
 import {Component} from 'react';
 import ContextMenu from '../ContextMenu';
 import Tooltip from '../Tooltip';

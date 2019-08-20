@@ -64,7 +64,7 @@ export {
 } from './components/data-inspector/ManagedDataInspector.tsx';
 export {
   default as DataDescription,
-} from './components/data-inspector/DataDescription.js';
+} from './components/data-inspector/DataDescription.tsx';
 
 // tabs
 export {default as Tabs} from './components/Tabs.tsx';

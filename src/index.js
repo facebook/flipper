@@ -96,7 +96,7 @@ export {
 } from './ui/components/data-inspector/ManagedDataInspector.tsx';
 export {
   default as DataDescription,
-} from './ui/components/data-inspector/DataDescription.js';
+} from './ui/components/data-inspector/DataDescription.tsx';
 export {default as Tabs} from './ui/components/Tabs.tsx';
 export {default as Tab} from './ui/components/Tab.tsx';
 export {default as Input} from './ui/components/Input.tsx';
