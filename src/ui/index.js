@@ -133,7 +133,7 @@ export {default as ModalOverlay} from './components/ModalOverlay.tsx';
 export {default as Tooltip} from './components/Tooltip.js';
 export {default as TooltipProvider} from './components/TooltipProvider.js';
 export {default as ResizeSensor} from './components/ResizeSensor.tsx';
-export {default as StatusIndicator} from './components/StatusIndicator.js';
+export {default as StatusIndicator} from './components/StatusIndicator.tsx';
 
 // typography
 export {default as HorizontalRule} from './components/HorizontalRule.js';

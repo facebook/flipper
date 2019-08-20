@@ -6,16 +6,16 @@
  */
 
 import {colors, styled} from 'flipper';
-import type {Element} from 'react';
+import {BackgroundColorProperty, HeightProperty} from 'csstype';
 
 type Props = {
-  statusColor: string,
-  diameter?: number | string,
-  title?: string,
+  statusColor: BackgroundColorProperty;
+  diameter?: HeightProperty<number>;
+  title?: string;
 };
 
-const StatusIndicator: Props => Element<'div'> = styled('div')(
-  ({statusColor, diameter = 10, title}) => ({
+const StatusIndicator = styled('div')(
+  ({statusColor, diameter = 10, title}: Props) => ({
     alignSelf: 'center',
     backgroundColor: statusColor,
     border: `1px solid ${colors.blackAlpha30}`,
