@@ -5,8 +5,9 @@
  * @format
  */
 
-import styled from '../styled/index.js';
+import styled from 'react-emotion';
 import {Component} from 'react';
+import React from 'react';
 
 const IFrame = styled('iframe')({
   height: '100%',
@@ -24,11 +25,11 @@ const IFrame = styled('iframe')({
  */
 export default class ResizeSensor extends Component<{
   /** Callback when resize happened */
-  onResize: (e: UIEvent) => void,
+  onResize: (e: UIEvent) => void;
 }> {
-  iframe: ?HTMLIFrameElement;
+  iframe: HTMLIFrameElement | undefined;
 
-  setRef = (ref: ?HTMLIFrameElement) => {
+  setRef = (ref: HTMLIFrameElement | undefined) => {
     this.iframe = ref;
   };
 
@@ -50,7 +51,7 @@ export default class ResizeSensor extends Component<{
     }
   }
 
-  handleResize = () => {
-    window.requestAnimationFrame(this.props.onResize);
+  handleResize = (e: UIEvent) => {
+    window.requestAnimationFrame(() => this.props.onResize(e));
   };
 }

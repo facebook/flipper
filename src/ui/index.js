@@ -132,7 +132,7 @@ export {default as PathBreadcrumbs} from './components/PathBreadcrumbs.tsx';
 export {default as ModalOverlay} from './components/ModalOverlay.tsx';
 export {default as Tooltip} from './components/Tooltip.js';
 export {default as TooltipProvider} from './components/TooltipProvider.js';
-export {default as ResizeSensor} from './components/ResizeSensor.js';
+export {default as ResizeSensor} from './components/ResizeSensor.tsx';
 export {default as StatusIndicator} from './components/StatusIndicator.js';
 
 // typography
