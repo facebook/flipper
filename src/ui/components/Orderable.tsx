@@ -5,58 +5,59 @@
  * @format
  */
 
-import type {Rect} from '../../utils/geometry.tsx';
-import styled from '../styled/index.js';
+import {Rect} from '../../utils/geometry';
+import styled from 'react-emotion';
 import {Component} from 'react';
-
-const React = require('react');
+import React from 'react';
 
 export type OrderableOrder = Array<string>;
 
 type OrderableOrientation = 'horizontal' | 'vertical';
 
 type OrderableProps = {
-  items: {[key: string]: React.Element<*>},
-  orientation: OrderableOrientation,
-  onChange?: (order: OrderableOrder, key: string) => void,
-  order?: ?OrderableOrder,
-  className?: string,
-  reverse?: boolean,
-  altKey?: boolean,
-  moveDelay?: number,
-  dragOpacity?: number,
-  ignoreChildEvents?: boolean,
+  items: {[key: string]: React.ReactNode};
+  orientation: OrderableOrientation;
+  onChange?: (order: OrderableOrder, key: string) => void;
+  order?: OrderableOrder | null | undefined;
+  className?: string;
+  reverse?: boolean;
+  altKey?: boolean;
+  moveDelay?: number;
+  dragOpacity?: number;
+  ignoreChildEvents?: boolean;
 };
 
-type OrderableState = {|
-  order?: ?OrderableOrder,
-  movingOrder?: ?OrderableOrder,
-|};
+type OrderableState = {
+  order?: OrderableOrder | null | undefined;
+  movingOrder?: OrderableOrder | null | undefined;
+};
 
 type TabSizes = {
-  [key: string]: Rect,
+  [key: string]: Rect;
 };
 
 const OrderableContainer = styled('div')({
   position: 'relative',
 });
 
-const OrderableItemContainer = styled('div')(props => ({
-  display: props.orientation === 'vertical' ? 'block' : 'inline-block',
-}));
+const OrderableItemContainer = styled('div')(
+  (props: {orientation: 'vertical' | 'horizontal'}) => ({
+    display: props.orientation === 'vertical' ? 'block' : 'inline-block',
+  }),
+);
 
 class OrderableItem extends Component<{
-  orientation: OrderableOrientation,
-  id: string,
-  children?: React$Node,
-  addRef: (key: string, ref: HTMLElement) => void,
-  startMove: (KEY: string, event: SyntheticMouseEvent<>) => void,
+  orientation: OrderableOrientation;
+  id: string;
+  children?: React.ReactNode;
+  addRef: (key: string, ref: HTMLElement) => void;
+  startMove: (KEY: string, event: React.MouseEvent) => void;
 }> {
   addRef = (ref: HTMLElement) => {
     this.props.addRef(this.props.id, ref);
   };
 
-  startMove = (event: SyntheticMouseEvent<>) => {
+  startMove = (event: React.MouseEvent) => {
     this.props.startMove(this.props.id, event);
   };
 
@@ -75,7 +76,7 @@ class OrderableItem extends Component<{
 
 export default class Orderable extends React.Component<
   OrderableProps,
-  OrderableState,
+  OrderableState
 > {
   constructor(props: OrderableProps, context: Object) {
     super(props, context);
@@ -84,8 +85,8 @@ export default class Orderable extends React.Component<
     this.setProps(props);
   }
 
-  _mousemove: ?Function;
-  _mouseup: ?Function;
+  _mousemove: (this: GlobalEventHandlers, ev: MouseEvent) => any | undefined;
+  _mouseup: (this: GlobalEventHandlers, ev: MouseEvent) => any | undefined;
   timer: any;
 
   sizeKey: 'width' | 'height';
@@ -93,9 +94,9 @@ export default class Orderable extends React.Component<
   mouseKey: 'offsetX' | 'offsetY';
   screenKey: 'screenX' | 'screenY';
 
-  containerRef: ?HTMLElement;
+  containerRef: HTMLElement | undefined;
   tabRefs: {
-    [key: string]: ?HTMLElement,
+    [key: string]: HTMLElement | undefined;
   };
 
   static defaultProps = {
@@ -122,15 +123,17 @@ export default class Orderable extends React.Component<
     this.setProps(nextProps);
   }
 
-  startMove = (key: string, event: SyntheticMouseEvent<*>) => {
+  startMove = (key: string, event: React.MouseEvent<Element, MouseEvent>) => {
     if (this.props.altKey === true && event.altKey === false) {
       return;
     }
 
     if (this.props.ignoreChildEvents === true) {
       const tabRef = this.tabRefs[key];
-      // $FlowFixMe parentNode not implemented
-      if (event.target !== tabRef && event.target.parentNode !== tabRef) {
+      if (
+        event.currentTarget !== tabRef &&
+        event.currentTarget.parentNode !== tabRef
+      ) {
         return;
       }
     }
@@ -155,7 +158,7 @@ export default class Orderable extends React.Component<
     }
   };
 
-  _startMove(activeKey: string, event: SyntheticMouseEvent<>) {
+  _startMove(activeKey: string, event: React.MouseEvent) {
     // $FlowFixMe
     const clickOffset = event.nativeEvent[this.mouseKey];
 
@@ -283,7 +286,11 @@ export default class Orderable extends React.Component<
     this.setState({movingOrder: order});
   }
 
-  moveTabs(order: OrderableOrder, activeKey: ?string, sizes: TabSizes) {
+  moveTabs(
+    order: OrderableOrder,
+    activeKey: string | null | undefined,
+    sizes: TabSizes,
+  ) {
     let offset = 0;
     for (const key of order) {
       const size = sizes[key];
@@ -369,7 +376,7 @@ export default class Orderable extends React.Component<
     this.reset();
   }
 
-  addRef = (key: string, elem: ?HTMLElement) => {
+  addRef = (key: string, elem: HTMLElement | undefined) => {
     this.tabRefs[key] = elem;
   };
 

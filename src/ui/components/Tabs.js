@@ -7,7 +7,7 @@
 
 import FlexColumn from './FlexColumn.js';
 import styled from '../styled/index.js';
-import Orderable from './Orderable.js';
+import Orderable from './Orderable.tsx';
 import FlexRow from './FlexRow.js';
 import {colors} from './colors.tsx';
 import Tab from './Tab.js';
