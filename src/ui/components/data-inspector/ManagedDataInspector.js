@@ -8,9 +8,9 @@
 import type {
   DataValueExtractor,
   DataInspectorExpanded,
-} from './DataInspector.js';
+} from './DataInspector.tsx';
 import {PureComponent} from 'react';
-import DataInspector from './DataInspector.js';
+import DataInspector from './DataInspector.tsx';
 
 type ManagedDataInspectorProps = {|
   /**

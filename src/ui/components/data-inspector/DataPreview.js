@@ -5,10 +5,10 @@
  * @format
  */
 
-import type {DataValueExtractor} from './DataInspector.js';
+import type {DataValueExtractor} from './DataInspector.tsx';
 import DataDescription from './DataDescription.js';
-import {InspectorName} from './DataInspector.js';
-import styled from '../../styled/index.js';
+import {InspectorName} from './DataInspector.tsx';
+import styled from 'react-emotion';
 import {getSortedKeys} from './utils.js';
 import {PureComponent} from 'react';
 

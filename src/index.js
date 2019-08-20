@@ -87,10 +87,10 @@ export {
 export {
   DataValueExtractor,
   DataInspectorExpanded,
-} from './ui/components/data-inspector/DataInspector.js';
+} from './ui/components/data-inspector/DataInspector.tsx';
 export {
   default as DataInspector,
-} from './ui/components/data-inspector/DataInspector.js';
+} from './ui/components/data-inspector/DataInspector.tsx';
 export {
   default as ManagedDataInspector,
 } from './ui/components/data-inspector/ManagedDataInspector.js';

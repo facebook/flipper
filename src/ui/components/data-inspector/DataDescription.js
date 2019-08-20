@@ -5,7 +5,7 @@
  * @format
  */
 import Link from '../Link.tsx';
-import type {DataInspectorSetValue} from './DataInspector.js';
+import type {DataInspectorSetValue} from './DataInspector.tsx';
 import {PureComponent} from 'react';
 import styled from '../../styled/index.js';
 import {SketchPicker} from 'react-color';

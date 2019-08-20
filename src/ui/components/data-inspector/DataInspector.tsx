@@ -7,27 +7,30 @@
 
 import DataDescription from './DataDescription.js';
 import {Component} from 'react';
-import ContextMenu from '../ContextMenu.tsx';
-import Tooltip from '../Tooltip.tsx';
-import styled from '../../styled/index.js';
+import ContextMenu from '../ContextMenu';
+import Tooltip from '../Tooltip';
+import styled from 'react-emotion';
 import DataPreview from './DataPreview.js';
-import createPaste from '../../../fb-stubs/createPaste.tsx';
-import {reportInteraction} from '../../../utils/InteractionTracker.tsx';
+import createPaste from '../../../fb-stubs/createPaste';
+import {reportInteraction} from '../../../utils/InteractionTracker';
 import {getSortedKeys} from './utils.js';
-import {colors} from '../colors.tsx';
+import {colors} from '../colors';
 import {clipboard} from 'electron';
+import deepEqual from 'deep-equal';
+import React from 'react';
+import {TooltipOptions} from '../TooltipProvider.js';
 
-const deepEqual = require('deep-equal');
-
-const BaseContainer = styled('div')(props => ({
-  fontFamily: 'Menlo, monospace',
-  fontSize: 11,
-  lineHeight: '17px',
-  filter: props.disabled ? 'grayscale(100%)' : '',
-  margin: props.depth === 0 ? '7.5px 0' : '0',
-  paddingLeft: 10,
-  userSelect: 'text',
-}));
+const BaseContainer = styled('div')(
+  (props: {depth?: number; disabled?: boolean}) => ({
+    fontFamily: 'Menlo, monospace',
+    fontSize: 11,
+    lineHeight: '17px',
+    filter: props.disabled ? 'grayscale(100%)' : '',
+    margin: props.depth === 0 ? '7.5px 0' : '0',
+    paddingLeft: 10,
+    userSelect: 'text',
+  }),
+);
 
 const RecursiveBaseWrapper = styled('span')({
   color: colors.red,
@@ -53,7 +56,7 @@ export const InspectorName = styled('span')({
   color: colors.grapeDark1,
 });
 
-const nameTooltipOptions = {
+const nameTooltipOptions: TooltipOptions = {
   position: 'toLeft',
   showTail: true,
 };
@@ -61,83 +64,86 @@ const nameTooltipOptions = {
 export type DataValueExtractor = (
   value: any,
   depth: number,
-) => ?{|
-  mutable: boolean,
-  type: string,
-  value: any,
-|};
+) =>
+  | {
+      mutable: boolean;
+      type: string;
+      value: any;
+    }
+  | undefined
+  | null;
 
 export type DataInspectorSetValue = (path: Array<string>, val: any) => void;
 
 export type DataInspectorExpanded = {
-  [key: string]: boolean,
+  [key: string]: boolean;
 };
 
 export type DiffMetadataExtractor = (
   data: any,
   diff: any,
   key: string,
-) => Array<{|
-  data: any,
-  diff?: any,
-  status?: 'added' | 'removed',
-|}>;
+) => Array<{
+  data: any;
+  diff?: any;
+  status?: 'added' | 'removed';
+}>;
 
 type DataInspectorProps = {
   /**
    * Object to inspect.
    */
-  data: any,
+  data: any;
   /**
    * Object to compare with the provided `data` property.
    * Differences will be styled accordingly in the UI.
    */
-  diff?: any,
+  diff?: any;
   /**
    * Current name of this value.
    */
-  name?: string,
+  name?: string;
   /**
    * Current depth.
    */
-  depth: number,
+  depth: number;
   /**
    * An array containing the current location of the data relative to its root.
    */
-  path: Array<string>,
+  path: Array<string>;
   /**
    * Whether to expand the root by default.
    */
-  expandRoot?: boolean,
+  expandRoot?: boolean;
   /**
    * An array of paths that are currently expanded.
    */
-  expanded: DataInspectorExpanded,
+  expanded: DataInspectorExpanded;
   /**
    * An optional callback that will explode a value into its type and value.
    * Useful for inspecting serialised data.
    */
-  extractValue?: DataValueExtractor,
+  extractValue?: DataValueExtractor;
   /**
    * Callback whenever the current expanded paths is changed.
    */
-  onExpanded?: ?(expanded: DataInspectorExpanded) => void,
+  onExpanded?: ((expanded: DataInspectorExpanded) => void) | undefined | null;
   /**
    * Callback when a value is edited.
    */
-  setValue?: ?DataInspectorSetValue,
+  setValue?: DataInspectorSetValue | undefined | null;
   /**
    * Whether all objects and arrays should be collapsed by default.
    */
-  collapsed?: boolean,
+  collapsed?: boolean;
   /**
    * Ancestry of parent objects, used to avoid recursive objects.
    */
-  ancestry: Array<Object>,
+  ancestry: Array<Object>;
   /**
    * Object of properties that will have tooltips
    */
-  tooltips?: Object,
+  tooltips?: Object;
 };
 
 const defaultValueExtractor: DataValueExtractor = (value: any) => {
@@ -178,17 +184,19 @@ const defaultValueExtractor: DataValueExtractor = (value: any) => {
 
 const rootContextMenuCache: WeakMap<
   Object,
-  Array<MenuItemConstructorOptions>,
+  Array<Electron.MenuItemConstructorOptions>
 > = new WeakMap();
 
-function getRootContextMenu(data: Object): Array<MenuItemConstructorOptions> {
+function getRootContextMenu(
+  data: Object,
+): Array<Electron.MenuItemConstructorOptions> {
   const cached = rootContextMenuCache.get(data);
   if (cached != null) {
     return cached;
   }
 
   const stringValue = JSON.stringify(data, null, 2);
-  const menu: Array<MenuItemConstructorOptions> = [
+  const menu: Array<Electron.MenuItemConstructorOptions> = [
     {
       label: 'Copy entire tree',
       click: () => clipboard.writeText(stringValue),
@@ -225,8 +233,8 @@ function isPureObject(obj: Object) {
 
 const diffMetadataExtractor: DiffMetadataExtractor = (
   data: any,
-  diff?: any,
   key: string,
+  diff?: any,
 ) => {
   if (diff == null) {
     return [{data: data[key]}];
@@ -294,12 +302,12 @@ function isComponentExpanded(
  * [`<ManagedDataInspector>`]().
  */
 export default class DataInspector extends Component<DataInspectorProps> {
-  static defaultProps: {|
-    expanded: DataInspectorExpanded,
-    depth: number,
-    path: Array<string>,
-    ancestry: Array<Object>,
-  |} = {
+  static defaultProps: {
+    expanded: DataInspectorExpanded;
+    depth: number;
+    path: Array<string>;
+    ancestry: Array<Object>;
+  } = {
     expanded: {},
     depth: 0,
     path: [],
@@ -309,7 +317,7 @@ export default class DataInspector extends Component<DataInspectorProps> {
   interaction: (name: string) => void;
 
   constructor(props: DataInspectorProps) {
-    super();
+    super(props);
     this.interaction = reportInteraction('DataInspector', props.path.join(':'));
   }
 
@@ -492,7 +500,7 @@ export default class DataInspector extends Component<DataInspectorProps> {
       });
 
       for (const key of keys) {
-        const diffMetadataArr = diffMetadataExtractor(value, diffValue, key);
+        const diffMetadataArr = diffMetadataExtractor(value, key, diffValue);
         for (const metadata of diffMetadataArr) {
           const dataInspectorNode = (
             <DataInspector

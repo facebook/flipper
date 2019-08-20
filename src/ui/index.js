@@ -55,10 +55,10 @@ export {renderValue} from './components/table/TypeBasedValueRenderer.tsx';
 export type {
   DataValueExtractor,
   DataInspectorExpanded,
-} from './components/data-inspector/DataInspector.js';
+} from './components/data-inspector/DataInspector.tsx';
 export {
   default as DataInspector,
-} from './components/data-inspector/DataInspector.js';
+} from './components/data-inspector/DataInspector.tsx';
 export {
   default as ManagedDataInspector,
 } from './components/data-inspector/ManagedDataInspector.js';
