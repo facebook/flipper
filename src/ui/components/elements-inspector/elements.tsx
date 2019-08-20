@@ -5,25 +5,27 @@
  * @format
  */
 
-import type {
-  ElementID,
-  Element,
-  ElementSearchResultSet,
-} from './ElementsInspector.js';
-import {reportInteraction} from '../../../utils/InteractionTracker.tsx';
-import ContextMenu from '../ContextMenu.tsx';
-import {PureComponent, type Element as ReactElement} from 'react';
-import FlexRow from '../FlexRow.tsx';
-import FlexColumn from '../FlexColumn.tsx';
-import Glyph from '../Glyph.tsx';
-import {colors} from '../colors.tsx';
-import Text from '../Text.tsx';
-import styled from '../../styled/index.js';
-import {clipboard} from 'electron';
+import {ElementID, Element, ElementSearchResultSet} from './ElementsInspector';
+import {reportInteraction} from '../../../utils/InteractionTracker';
+import ContextMenu from '../ContextMenu';
+import {PureComponent, ReactElement} from 'react';
+import FlexRow from '../FlexRow';
+import FlexColumn from '../FlexColumn';
+import Glyph from '../Glyph';
+import {colors} from '../colors';
+import Text from '../Text';
+import styled from 'react-emotion';
+import {clipboard, MenuItemConstructorOptions} from 'electron';
+import React, {MouseEvent, KeyboardEvent} from 'react';
 
 const ROW_HEIGHT = 23;
 
-const backgroundColor = props => {
+const backgroundColor = (props: {
+  selected: boolean;
+  focused: boolean;
+  isQueryMatch: boolean;
+  even: boolean;
+}) => {
   if (props.selected) {
     return colors.macOSTitleBarIconSelected;
   } else if (props.isQueryMatch) {
@@ -37,7 +39,7 @@ const backgroundColor = props => {
   }
 };
 
-const backgroundColorHover = props => {
+const backgroundColorHover = (props: {selected: boolean; focused: boolean}) => {
   if (props.selected) {
     return colors.macOSTitleBarIconSelected;
   } else if (props.focused) {
@@ -47,7 +49,7 @@ const backgroundColorHover = props => {
   }
 };
 
-const ElementsRowContainer = styled(ContextMenu)(props => ({
+const ElementsRowContainer = styled(ContextMenu)((props: any) => ({
   flexDirection: 'row',
   alignItems: 'center',
   backgroundColor: backgroundColor(props),
@@ -79,7 +81,7 @@ const ElementsRowDecoration = styled(FlexRow)({
   top: -1,
 });
 
-const ElementsLine = styled('div')(props => ({
+const ElementsLine = styled('div')((props: {childrenCount: number}) => ({
   backgroundColor: colors.light20,
   height: props.childrenCount * ROW_HEIGHT - 4,
   position: 'absolute',
@@ -119,13 +121,13 @@ const ElementsRowAttributeValue = styled('span')({
 });
 
 class PartialHighlight extends PureComponent<{
-  selected: boolean,
-  highlighted: ?string,
-  content: string,
+  selected: boolean;
+  highlighted: string | undefined | null;
+  content: string;
 }> {
-  static HighlightedText = styled('span')(({selected}) => ({
+  static HighlightedText = styled('span')((props: {selected: boolean}) => ({
     backgroundColor: colors.lemon,
-    color: selected ? `${colors.grapeDark3} !important` : 'auto',
+    color: props.selected ? `${colors.grapeDark3} !important` : 'auto',
   }));
 
   render() {
@@ -161,10 +163,10 @@ class PartialHighlight extends PureComponent<{
 }
 
 class ElementsRowAttribute extends PureComponent<{
-  name: string,
-  value: string,
-  matchingSearchQuery: ?string,
-  selected: boolean,
+  name: string;
+  value: string;
+  matchingSearchQuery: string | undefined | null;
+  selected: boolean;
 }> {
   render() {
     const {name, value, matchingSearchQuery, selected} = this.props;
@@ -185,35 +187,38 @@ class ElementsRowAttribute extends PureComponent<{
   }
 }
 
-type FlatElement = {|
-  key: ElementID,
-  element: Element,
-  level: number,
-|};
+type FlatElement = {
+  key: ElementID;
+  element: Element;
+  level: number;
+};
 
 type FlatElements = Array<FlatElement>;
 
 type ElementsRowProps = {
-  id: ElementID,
-  level: number,
-  selected: boolean,
-  focused: boolean,
-  matchingSearchQuery: ?string,
-  isQueryMatch: boolean,
-  element: Element,
-  even: boolean,
-  onElementSelected: (key: ElementID) => void,
-  onElementExpanded: (key: ElementID, deep: boolean) => void,
-  childrenCount: number,
-  onElementHovered: ?(key: ?ElementID) => void,
-  style?: Object,
-  contextMenuExtensions: Array<ContextMenuExtension>,
-  decorateRow?: DecorateRow,
+  id: ElementID;
+  level: number;
+  selected: boolean;
+  focused: boolean;
+  matchingSearchQuery: string | undefined | null;
+  isQueryMatch: boolean;
+  element: Element;
+  even: boolean;
+  onElementSelected: (key: ElementID) => void;
+  onElementExpanded: (key: ElementID, deep: boolean) => void;
+  childrenCount: number;
+  onElementHovered:
+    | ((key: ElementID | undefined | null) => void)
+    | undefined
+    | null;
+  style?: Object;
+  contextMenuExtensions: Array<ContextMenuExtension>;
+  decorateRow?: DecorateRow;
 };
 
-type ElementsRowState = {|
-  hovered: boolean,
-|};
+type ElementsRowState = {
+  hovered: boolean;
+};
 
 class ElementsRow extends PureComponent<ElementsRowProps, ElementsRowState> {
   constructor(props: ElementsRowProps, context: Object) {
@@ -226,7 +231,7 @@ class ElementsRow extends PureComponent<ElementsRowProps, ElementsRowState> {
 
   getContextMenu = (): Array<MenuItemConstructorOptions> => {
     const {props} = this;
-    const items = [
+    const items: Array<MenuItemConstructorOptions> = [
       {
         type: 'separator',
       },
@@ -259,7 +264,7 @@ class ElementsRow extends PureComponent<ElementsRowProps, ElementsRowState> {
     this.interaction('selected', {level: this.props.level});
   };
 
-  onDoubleClick = (event: SyntheticMouseEvent<*>) => {
+  onDoubleClick = (event: MouseEvent<any>) => {
     this.props.onElementExpanded(this.props.id, event.altKey);
   };
 
@@ -307,12 +312,10 @@ class ElementsRow extends PureComponent<ElementsRowProps, ElementsRowState> {
     const attributes = element.attributes
       ? element.attributes.map(attr => (
           <ElementsRowAttribute
-            key={attr.name}
             name={attr.name}
             value={attr.value}
             matchingSearchQuery={matchingSearchQuery}
             selected={selected}
-            focused={focused}
           />
         ))
       : [];
@@ -377,7 +380,7 @@ class ElementsRow extends PureComponent<ElementsRowProps, ElementsRowState> {
 }
 
 function containsKeyInSearchResults(
-  searchResults: ?ElementSearchResultSet,
+  searchResults: ElementSearchResultSet | undefined | null,
   key: ElementID,
 ) {
   return searchResults != undefined && searchResults.matches.has(key);
@@ -396,32 +399,35 @@ const ElementsBox = styled(FlexColumn)({
   overflow: 'auto',
 });
 
-export type DecorateRow = Element => ?ReactElement<empty>;
+export type DecorateRow = (e: Element) => ReactElement<any> | undefined | null;
 
-type ElementsProps = {|
-  root: ?ElementID,
-  selected: ?ElementID,
-  focused?: ?ElementID,
-  searchResults: ?ElementSearchResultSet,
-  elements: {[key: ElementID]: Element},
-  onElementSelected: (key: ElementID) => void,
-  onElementExpanded: (key: ElementID, deep: boolean) => void,
-  onElementHovered: ?(key: ?ElementID) => void,
-  alternateRowColor?: boolean,
-  contextMenuExtensions?: Array<ContextMenuExtension>,
-  decorateRow?: DecorateRow,
-|};
+type ElementsProps = {
+  root: ElementID | undefined | null;
+  selected: ElementID | undefined | null;
+  focused?: ElementID | undefined | null;
+  searchResults: ElementSearchResultSet | undefined | null;
+  elements: {[key: string]: Element};
+  onElementSelected: (key: ElementID) => void;
+  onElementExpanded: (key: ElementID, deep: boolean) => void;
+  onElementHovered:
+    | ((key: ElementID | undefined | null) => void)
+    | undefined
+    | null;
+  alternateRowColor?: boolean;
+  contextMenuExtensions?: Array<ContextMenuExtension>;
+  decorateRow?: DecorateRow;
+};
 
-type ElementsState = {|
-  flatKeys: Array<ElementID>,
-  flatElements: FlatElements,
-  maxDepth: number,
-|};
+type ElementsState = {
+  flatKeys: Array<ElementID>;
+  flatElements: FlatElements;
+  maxDepth: number;
+};
 
-export type ContextMenuExtension = {|
-  label: string,
-  click: ElementID => void,
-|};
+export type ContextMenuExtension = {
+  label: string;
+  click: (element: ElementID) => any;
+};
 
 export class Elements extends PureComponent<ElementsProps, ElementsState> {
   static defaultProps = {
@@ -437,14 +443,14 @@ export class Elements extends PureComponent<ElementsProps, ElementsState> {
   }
 
   componentDidMount() {
-    this.setProps(this.props, true);
+    this.setProps(this.props);
   }
 
   componentWillReceiveProps(nextProps: ElementsProps) {
     this.setProps(nextProps);
   }
 
-  setProps(props: ElementsProps, force?: boolean) {
+  setProps(props: ElementsProps) {
     const flatElements: FlatElements = [];
     const flatKeys = [];
 
@@ -488,7 +494,7 @@ export class Elements extends PureComponent<ElementsProps, ElementsState> {
     this.props.onElementSelected(key);
   };
 
-  onKeyDown = (e: SyntheticKeyboardEvent<*>) => {
+  onKeyDown = (e: KeyboardEvent<any>) => {
     const {selected} = this.props;
     if (selected == null) {
       return;
@@ -572,7 +578,6 @@ export class Elements extends PureComponent<ElementsProps, ElementsState> {
 
   buildRow = (row: FlatElement, index: number) => {
     const {
-      elements,
       onElementExpanded,
       onElementHovered,
       onElementSelected,
@@ -618,7 +623,6 @@ export class Elements extends PureComponent<ElementsProps, ElementsState> {
         }
         isQueryMatch={containsKeyInSearchResults(searchResults, row.key)}
         element={row.element}
-        elements={elements}
         childrenCount={childrenCount}
         contextMenuExtensions={contextMenuExtensions || []}
         decorateRow={decorateRow}
@@ -629,7 +633,7 @@ export class Elements extends PureComponent<ElementsProps, ElementsState> {
   render() {
     return (
       <ElementsBox>
-        <ElementsContainer tabIndex="0" onKeyDown={this.onKeyDown}>
+        <ElementsContainer onKeyDown={this.onKeyDown}>
           {this.state.flatElements.map(this.buildRow)}
         </ElementsContainer>
       </ElementsBox>

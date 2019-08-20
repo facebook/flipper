@@ -5,25 +5,26 @@
  * @format
  */
 
-import type {Element} from './ElementsInspector.js';
-import type {PluginClient} from '../../../plugin.tsx';
-import type Client from '../../../Client.tsx';
-import type {Logger} from '../../../fb-interfaces/Logger.js';
-import Panel from '../Panel.tsx';
-import ManagedDataInspector from '../data-inspector/ManagedDataInspector.tsx';
+import {Element} from './ElementsInspector';
+import {PluginClient} from '../../../plugin';
+import Client from '../../../Client';
+import {Logger} from '../../../fb-interfaces/Logger.js';
+import Panel from '../Panel';
+import ManagedDataInspector from '../data-inspector/ManagedDataInspector';
 import {Component} from 'react';
-import {Console} from '../console.tsx';
-import GK from '../../../fb-stubs/GK.tsx';
+import {Console} from '../console';
+import GK from '../../../fb-stubs/GK';
+import React from 'react';
 
-const deepEqual = require('deep-equal');
+import deepEqual from 'deep-equal';
 
 type OnValueChanged = (path: Array<string>, val: any) => void;
 
 type InspectorSidebarSectionProps = {
-  data: any,
-  id: string,
-  onValueChanged: ?OnValueChanged,
-  tooltips?: Object,
+  data: any;
+  id: string;
+  onValueChanged: OnValueChanged | undefined | null;
+  tooltips?: Object;
 };
 
 class InspectorSidebarSection extends Component<InspectorSidebarSectionProps> {
@@ -74,19 +75,19 @@ class InspectorSidebarSection extends Component<InspectorSidebarSectionProps> {
   }
 }
 
-type Props = {|
-  element: ?Element,
-  tooltips?: Object,
-  onValueChanged: ?OnValueChanged,
-  client: PluginClient,
-  realClient: Client,
-  logger: Logger,
-  extensions?: Array<Function>,
-|};
+type Props = {
+  element: Element | undefined | null;
+  tooltips?: Object;
+  onValueChanged: OnValueChanged | undefined | null;
+  client: PluginClient;
+  realClient: Client;
+  logger: Logger;
+  extensions?: Array<Function>;
+};
 
-type State = {|
-  isConsoleEnabled: boolean,
-|};
+type State = {
+  isConsoleEnabled: boolean;
+};
 
 export class InspectorSidebar extends Component<Props, State> {
   state = {
@@ -144,7 +145,7 @@ export class InspectorSidebar extends Component<Props, State> {
               console.error(
                 `ElementsInspector unable to parse extra section: ${extraSection}`,
               );
-              data = {};
+              data = null;
             }
           }
           sections.push(

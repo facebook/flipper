@@ -170,15 +170,15 @@ export type {
   ElementAttribute,
   Element,
   ElementSearchResultSet,
-} from './components/elements-inspector/ElementsInspector.js';
-export {Elements} from './components/elements-inspector/elements.js';
+} from './components/elements-inspector/ElementsInspector.tsx';
+export {Elements} from './components/elements-inspector/elements.tsx';
 export type {
   ContextMenuExtension,
-} from './components/elements-inspector/elements.js';
+} from './components/elements-inspector/elements.tsx';
 export {
   default as ElementsInspector,
-} from './components/elements-inspector/ElementsInspector.js';
-export {InspectorSidebar} from './components/elements-inspector/sidebar.js';
+} from './components/elements-inspector/ElementsInspector.tsx';
+export {InspectorSidebar} from './components/elements-inspector/sidebar.tsx';
 
 export {Console} from './components/console.tsx';
 

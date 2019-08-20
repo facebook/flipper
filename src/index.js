@@ -172,14 +172,14 @@ export {
   ElementAttribute,
   Element,
   ElementSearchResultSet,
-} from './ui/components/elements-inspector/ElementsInspector.js';
-export {Elements} from './ui/components/elements-inspector/elements.js';
+} from './ui/components/elements-inspector/ElementsInspector.tsx';
+export {Elements} from './ui/components/elements-inspector/elements.tsx';
 export {
   ContextMenuExtension,
-} from './ui/components/elements-inspector/elements.js';
+} from './ui/components/elements-inspector/elements.tsx';
 export {
   default as ElementsInspector,
-} from './ui/components/elements-inspector/ElementsInspector.js';
-export {InspectorSidebar} from './ui/components/elements-inspector/sidebar.js';
+} from './ui/components/elements-inspector/ElementsInspector.tsx';
+export {InspectorSidebar} from './ui/components/elements-inspector/sidebar.tsx';
 export {Console} from './ui/components/console.tsx';
 export {default as Sheet} from './ui/components/Sheet.tsx';
