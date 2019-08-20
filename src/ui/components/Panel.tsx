@@ -6,10 +6,10 @@
  */
 
 import React from 'react';
-import styled from '../styled/index.js';
+import styled from 'react-emotion';
 import FlexColumn from './FlexColumn.js';
 import FlexBox from './FlexBox.js';
-import {colors} from './colors.tsx';
+import {colors} from './colors';
 import Glyph from './Glyph.js';
 
 const BORDER = '1px solid #dddfe2';
@@ -24,96 +24,102 @@ const Chevron = styled(Glyph)({
  * A Panel component.
  */
 export default class Panel extends React.Component<
-  {|
+  {
     /**
      * Class name to customise styling.
      */
-    className?: string,
+    className?: string;
     /**
      * Whether this panel is floating from the rest of the UI. ie. if it has
      * margin and a border.
      */
-    floating?: boolean,
+    floating?: boolean;
     /**
      * Whether the panel takes up all the space it can. Equivalent to the following CSS:
      *
      *  height: 100%;
      *  width: 100%;
      */
-    grow?: boolean,
+    grow?: boolean;
     /**
      * Heading for this panel. If this is anything other than a string then no
      * padding is applied to the heading.
      */
-    heading: React$Node,
+    heading: React.ReactNode;
     /**
      * Contents of the panel.
      */
-    children?: React$Node,
+    children?: React.ReactNode;
     /**
      * Whether the panel header and body have padding.
      */
-    padded?: boolean,
+    padded?: boolean;
     /**
      * Whether the panel can be collapsed. Defaults to true
      */
-    collapsable: boolean,
+    collapsable: boolean;
     /**
      * Initial state for panel if it is collapsable
      */
-    collapsed?: boolean,
+    collapsed?: boolean;
     /**
      * Heading for this panel. If this is anything other than a string then no
      * padding is applied to the heading.
      */
-    accessory?: React$Node,
-  |},
-  {
-    collapsed: boolean,
+    accessory?: React.ReactNode;
   },
+  {
+    collapsed: boolean;
+  }
 > {
-  static defaultProps: {|
-    floating: boolean,
-    grow: boolean,
-    collapsable: boolean,
-  |} = {
+  static defaultProps: {
+    floating: boolean;
+    grow: boolean;
+    collapsable: boolean;
+  } = {
     grow: false,
     floating: true,
     collapsable: true,
   };
 
-  static PanelContainer = styled(FlexColumn)(props => ({
-    flexShrink: 0,
-    padding: props.floating ? 10 : 0,
-    borderBottom: props.collapsed ? 'none' : BORDER,
-  }));
+  static PanelContainer = styled(FlexColumn)(
+    (props: {floating?: boolean; collapsed?: boolean}) => ({
+      flexShrink: 0,
+      padding: props.floating ? 10 : 0,
+      borderBottom: props.collapsed ? 'none' : BORDER,
+    }),
+  );
 
-  static PanelHeader = styled(FlexBox)(props => ({
-    backgroundColor: '#f6f7f9',
-    border: props.floating ? BORDER : 'none',
-    borderBottom: BORDER,
-    borderTopLeftRadius: 2,
-    borderTopRightRadius: 2,
-    justifyContent: 'space-between',
-    lineHeight: '27px',
-    fontWeight: 500,
-    flexShrink: 0,
-    padding: props.padded ? '0 10px' : 0,
-    '&:not(:first-child)': {
-      borderTop: BORDER,
-    },
-  }));
+  static PanelHeader = styled(FlexBox)(
+    (props: {floating?: boolean; padded?: boolean}) => ({
+      backgroundColor: '#f6f7f9',
+      border: props.floating ? BORDER : 'none',
+      borderBottom: BORDER,
+      borderTopLeftRadius: 2,
+      borderTopRightRadius: 2,
+      justifyContent: 'space-between',
+      lineHeight: '27px',
+      fontWeight: 500,
+      flexShrink: 0,
+      padding: props.padded ? '0 10px' : 0,
+      '&:not(:first-child)': {
+        borderTop: BORDER,
+      },
+    }),
+  );
 
-  static PanelBody = styled(FlexColumn)(props => ({
-    backgroundColor: '#fff',
-    border: props.floating ? BORDER : 'none',
-    borderBottomLeftRadius: 2,
-    borderBottomRightRadius: 2,
-    borderTop: 'none',
-    flexGrow: 1,
-    padding: props.padded ? 10 : 0,
-    overflow: 'visible',
-  }));
+  static PanelBody = styled(FlexColumn)(
+    (props: {floating?: boolean; padded?: boolean}) => ({
+      backgroundColor: '#fff',
+      border: props.floating ? BORDER : 'none',
+      borderBottomLeftRadius: 2,
+      borderBottomRightRadius: 2,
+      borderTop: 'none',
+      flexGrow: 1,
+      padding: props.padded ? 10 : 0,
+      overflow: 'visible',
+    }),
+  );
   state = {
     collapsed: this.props.collapsed == null ? false : this.props.collapsed,
   };
