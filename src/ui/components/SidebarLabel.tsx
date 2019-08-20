@@ -6,7 +6,7 @@
  */
 
 import {colors} from './colors';
-import Label from './Label.js';
+import Label from './Label';
 import styled from 'react-emotion';
 
 export default styled(Label)({
