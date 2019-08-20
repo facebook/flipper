@@ -8,7 +8,7 @@
 import {DataValueExtractor, InspectorName} from './DataInspector';
 import DataDescription from './DataDescription';
 import styled from 'react-emotion';
-import {getSortedKeys} from './utils.js';
+import {getSortedKeys} from './utils';
 import {PureComponent} from 'react';
 import React from 'react';
 

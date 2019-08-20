@@ -13,7 +13,7 @@ import styled from 'react-emotion';
 import createPaste from '../../../fb-stubs/createPaste';
 import {reportInteraction} from '../../../utils/InteractionTracker';
 import DataPreview from './DataPreview';
-import {getSortedKeys} from './utils.js';
+import {getSortedKeys} from './utils';
 import {colors} from '../colors';
 import {clipboard} from 'electron';
 import deepEqual from 'deep-equal';
