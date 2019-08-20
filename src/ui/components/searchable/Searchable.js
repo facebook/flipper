@@ -14,7 +14,7 @@ import Input from '../Input.tsx';
 import {colors} from '../colors.tsx';
 import Text from '../Text.tsx';
 import FlexBox from '../FlexBox.js';
-import Glyph from '../Glyph.js';
+import Glyph from '../Glyph.tsx';
 import FilterToken from './FilterToken.js';
 import styled from '../../styled/index.js';
 import debounce from 'lodash.debounce';

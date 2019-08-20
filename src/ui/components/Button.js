@@ -6,7 +6,7 @@
  */
 
 import * as React from 'react';
-import Glyph from './Glyph.js';
+import Glyph from './Glyph.tsx';
 import PropTypes from 'prop-types';
 import electron from 'electron';
 import styled from '../styled/index.js';

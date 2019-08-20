@@ -8,7 +8,7 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 
 import styled from '../styled/index.js';
-import Glyph from './Glyph.js';
+import Glyph from './Glyph.tsx';
 
 const IconContainer = styled('div')({
   width: 0,

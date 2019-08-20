@@ -15,7 +15,7 @@ import ContextMenu from '../ContextMenu.js';
 import {PureComponent, type Element as ReactElement} from 'react';
 import FlexRow from '../FlexRow.js';
 import FlexColumn from '../FlexColumn.js';
-import Glyph from '../Glyph.js';
+import Glyph from '../Glyph.tsx';
 import {colors} from '../colors.tsx';
 import Text from '../Text.tsx';
 import styled from '../../styled/index.js';

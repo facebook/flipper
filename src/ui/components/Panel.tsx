@@ -10,7 +10,7 @@ import styled from 'react-emotion';
 import FlexColumn from './FlexColumn.js';
 import FlexBox from './FlexBox.js';
 import {colors} from './colors';
-import Glyph from './Glyph.js';
+import Glyph from './Glyph';
 
 const BORDER = '1px solid #dddfe2';
 

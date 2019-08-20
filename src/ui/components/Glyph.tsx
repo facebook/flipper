@@ -6,41 +6,45 @@
  */
 
 import React from 'react';
-import styled from '../styled/index.js';
+import styled from 'react-emotion';
 import PropTypes from 'prop-types';
 import {getIconURL} from '../../utils/icons.js';
 
-const ColoredIconBlack = styled('img')(({size}) => ({
+export type IconSize = 8 | 10 | 12 | 16 | 18 | 20 | 24 | 32;
+
+const ColoredIconBlack = styled('img')(({size}: {size: number}) => ({
   height: size,
   verticalAlign: 'middle',
   width: size,
   flexShrink: 0,
 }));
 
-const ColoredIconCustom = styled('div')(props => ({
-  height: props.size,
-  verticalAlign: 'middle',
-  width: props.size,
-  backgroundColor: props.color,
-  display: 'inline-block',
-  maskImage: `url('${props.src}')`,
-  maskSize: '100% 100%',
-  WebkitMaskImage: `url('${props.src}')`,
-  WebkitMaskSize: '100% 100%',
-  flexShrink: 0,
-}));
+const ColoredIconCustom = styled('div')(
+  (props: {size: number; color: string; src: string}) => ({
+    height: props.size,
+    verticalAlign: 'middle',
+    width: props.size,
+    backgroundColor: props.color,
+    display: 'inline-block',
+    maskImage: `url('${props.src}')`,
+    maskSize: '100% 100%',
+    WebkitMaskImage: `url('${props.src}')`,
+    WebkitMaskSize: '100% 100%',
+    flexShrink: 0,
+  }),
+);
 
 function ColoredIcon(
-  props: {|
-    name: string,
-    src: string,
-    size?: number,
-    className?: string,
-    color?: string,
-  |},
-  context: {|
-    glyphColor?: string,
-  |},
+  props: {
+    name: string;
+    src: string;
+    size?: number;
+    className?: string;
+    color?: string;
+  },
+  context: {
+    glyphColor?: string;
+  },
 ) {
   const {color = context.glyphColor, name, size = 16, src} = props;
 
@@ -76,11 +80,11 @@ ColoredIcon.contextTypes = {
 };
 
 export default class Glyph extends React.Component<{
-  name: string,
-  size?: 8 | 10 | 12 | 16 | 18 | 20 | 24 | 32,
-  variant?: 'filled' | 'outline',
-  className?: string,
-  color?: string,
+  name: string;
+  size?: IconSize;
+  variant?: 'filled' | 'outline';
+  className?: string;
+  color?: string;
 }> {
   render() {
     const {name, size, variant, color, className} = this.props;

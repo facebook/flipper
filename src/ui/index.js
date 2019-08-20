@@ -18,7 +18,7 @@ export {default as ButtonGroupChain} from './components/ButtonGroupChain.js';
 export {colors, darkColors, brandColors} from './components/colors.tsx';
 
 //
-export {default as Glyph} from './components/Glyph.js';
+export {default as Glyph} from './components/Glyph.tsx';
 
 //
 export {default as LoadingIndicator} from './components/LoadingIndicator.tsx';
