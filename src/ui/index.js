@@ -21,7 +21,7 @@ export {colors, darkColors, brandColors} from './components/colors.tsx';
 export {default as Glyph} from './components/Glyph.js';
 
 //
-export {default as LoadingIndicator} from './components/LoadingIndicator.js';
+export {default as LoadingIndicator} from './components/LoadingIndicator.tsx';
 
 //
 export {default as Popover} from './components/Popover.tsx';

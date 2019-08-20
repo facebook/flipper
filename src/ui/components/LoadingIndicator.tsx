@@ -5,7 +5,7 @@
  * @format
  */
 
-import styled from '../styled/index.js';
+import styled from 'react-emotion';
 import {keyframes} from 'react-emotion';
 
 const animation = keyframes({
@@ -17,7 +17,7 @@ const animation = keyframes({
   },
 });
 
-const LoadingIndicator = styled('div')(props => ({
+const LoadingIndicator = styled('div')((props: {size: number}) => ({
   animation: `${animation} 1s infinite linear`,
   width: props.size,
   height: props.size,
