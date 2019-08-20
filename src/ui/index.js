@@ -100,9 +100,9 @@ export {
 export {default as ContextMenu} from './components/ContextMenu.js';
 
 // file
-export type {FileListFile, FileListFiles} from './components/FileList.js';
-export {default as FileList} from './components/FileList.js';
-export {default as File} from './components/File.js';
+export type {FileListFile, FileListFiles} from './components/FileList.tsx';
+export {default as FileList} from './components/FileList.tsx';
+export {default as File} from './components/File.tsx';
 
 // context menu items
 export {

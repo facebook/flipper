@@ -5,33 +5,31 @@
  * @format
  */
 
-import {Component} from 'react';
+import React, {Component} from 'react';
+import fs from 'fs';
 
-const React = require('react');
-const fs = require('fs');
-
-type FileProps = {|
+type FileProps = {
   /** Path to the file in the file system */
-  src: string,
+  src: string;
   /** Initial content that should be shown while the file is loading */
-  buffer?: ?string,
+  buffer?: string | null | undefined;
   /** Encoding to parse the contents of the file. Defaults to UTF-8. */
-  encoding: string,
+  encoding: string;
   /** Content that should be rendered, when the file loading failed. */
-  onError?: (err: Error) => React.Element<any>,
+  onError?: (err: Error) => React.ReactNode;
   /** Content that should be rendered, while the file is loaded. */
-  onLoading?: () => React.Element<any>,
+  onLoading?: () => React.ReactNode;
   /** Callback when the data is successfully loaded. */
-  onData?: (content: string) => void,
+  onData?: (content: string) => void;
   /** Content that should be rendered, when the file is successfully loaded. This ususally should render the file's contents. */
-  onLoad: (content: string) => React.Element<any>,
-|};
+  onLoad: (content: string) => React.ReactNode;
+};
 
-type FileState = {|
-  error: ?Error,
-  loaded: boolean,
-  content: string,
-|};
+type FileState = {
+  error: Error | null | undefined;
+  loaded: boolean;
+  content: string;
+};
 
 /**
  * Wrapper for loading file content from the file system.

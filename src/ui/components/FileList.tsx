@@ -6,43 +6,42 @@
  */
 
 import {Component} from 'react';
-
-const path = require('path');
-const fs = require('fs');
+import path from 'path';
+import fs from 'fs';
 
 const EMPTY_MAP = new Map();
 const EMPTY_FILE_LIST_STATE = {error: null, files: EMPTY_MAP};
 
 export type FileListFileType = 'file' | 'folder';
 
-export type FileListFile = {|
-  name: string,
-  src: string,
-  type: FileListFileType,
-  size: number,
-  mtime: number,
-  atime: number,
-  ctime: number,
-  birthtime: number,
-|};
+export type FileListFile = {
+  name: string;
+  src: string;
+  type: FileListFileType;
+  size: number;
+  mtime: number;
+  atime: number;
+  ctime: number;
+  birthtime: number;
+};
 
 export type FileListFiles = Array<FileListFile>;
 
 type FileListProps = {
   /** Path to the folder */
-  src: string,
+  src: string;
   /** Content to be rendered in case of an error */
-  onError?: ?(err: Error) => React$Node,
+  onError?: (err: Error) => React.ReactNode | null | undefined;
   /** Content to be rendered while loading */
-  onLoad?: () => void,
+  onLoad?: () => void;
   /** Content to be rendered when the file list is loaded */
-  onFiles: (files: FileListFiles) => React$Node,
+  onFiles: (files: FileListFiles) => React.ReactNode;
 };
 
-type FileListState = {|
-  files: Map<string, FileListFile>,
-  error: ?Error,
-|};
+type FileListState = {
+  files: Map<string, FileListFile>;
+  error: Error | null | undefined;
+};
 
 /**
  * List the contents of a folder from the user's file system. The file system is watched for
@@ -54,7 +53,7 @@ export default class FileList extends Component<FileListProps, FileListState> {
     this.state = EMPTY_FILE_LIST_STATE;
   }
 
-  watcher: ?fs.FSWatcher;
+  watcher: fs.FSWatcher | null | undefined;
 
   fetchFile(name: string): Promise<FileListFile> {
     return new Promise((resolve, reject) => {
