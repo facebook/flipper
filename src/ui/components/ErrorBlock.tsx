@@ -5,9 +5,9 @@
  * @format
  */
 
-import styled from '../styled/index.js';
+import styled from 'react-emotion';
 import React from 'react';
-import CodeBlock from './CodeBlock.js';
+import CodeBlock from './CodeBlock';
 
 export const ErrorBlockContainer = styled(CodeBlock)({
   backgroundColor: '#f2dede',
@@ -23,9 +23,9 @@ export const ErrorBlockContainer = styled(CodeBlock)({
  */
 export default class ErrorBlock extends React.Component<{
   /** Error message to display. Error object's `stack` or `message` property is used. */
-  error: Error | string | void,
+  error: Error | string | void;
   /** Additional className added to the container. */
-  className?: string,
+  className?: string;
 }> {
   render() {
     const {className, error} = this.props;

@@ -80,8 +80,8 @@ export {default as Checkbox} from './components/Checkbox.js';
 export {default as CodeBlock} from './components/CodeBlock.js';
 
 // error
-export {default as ErrorBlock} from './components/ErrorBlock.js';
-export {ErrorBlockContainer} from './components/ErrorBlock.js';
+export {default as ErrorBlock} from './components/ErrorBlock.tsx';
+export {ErrorBlockContainer} from './components/ErrorBlock.tsx';
 export {default as ErrorBoundary} from './components/ErrorBoundary.tsx';
 
 // interactive components
