@@ -7,9 +7,16 @@
 
 import Interactive from './Interactive.js';
 import FlexColumn from './FlexColumn.js';
-import {colors} from './colors.tsx';
+import {colors} from './colors';
 import {Component} from 'react';
-import styled from '../styled/index.js';
+import styled from 'react-emotion';
+import {
+  BackgroundClipProperty,
+  HeightProperty,
+  WidthProperty,
+  BackgroundColorProperty,
+} from 'csstype';
+import React from 'react';
 
 const SidebarInteractiveContainer = styled(Interactive)({
   flex: 'none',
@@ -17,74 +24,81 @@ const SidebarInteractiveContainer = styled(Interactive)({
 
 type SidebarPosition = 'left' | 'top' | 'right' | 'bottom';
 
-const SidebarContainer = styled(FlexColumn)(props => ({
-  backgroundColor: props.backgroundColor || colors.macOSTitleBarBackgroundBlur,
-  borderLeft: props.position === 'right' ? '1px solid #b3b3b3' : 'none',
-  borderTop: props.position === 'bottom' ? '1px solid #b3b3b3' : 'none',
-  borderRight: props.position === 'left' ? '1px solid #b3b3b3' : 'none',
-  borderBottom: props.position === 'top' ? '1px solid #b3b3b3' : 'none',
-  height: '100%',
-  overflowX: 'hidden',
-  overflowY: 'auto',
-  textOverflow: props.overflow ? 'ellipsis' : 'auto',
-  whiteSpace: props.overflow ? 'nowrap' : 'normal',
-}));
+const SidebarContainer = styled(FlexColumn)(
+  (props: {
+    position: 'right' | 'top' | 'left' | 'bottom';
+    backgroundColor?: BackgroundClipProperty;
+    overflow?: boolean;
+  }) => ({
+    backgroundColor:
+      props.backgroundColor || colors.macOSTitleBarBackgroundBlur,
+    borderLeft: props.position === 'right' ? '1px solid #b3b3b3' : 'none',
+    borderTop: props.position === 'bottom' ? '1px solid #b3b3b3' : 'none',
+    borderRight: props.position === 'left' ? '1px solid #b3b3b3' : 'none',
+    borderBottom: props.position === 'top' ? '1px solid #b3b3b3' : 'none',
+    height: '100%',
+    overflowX: 'hidden',
+    overflowY: 'auto',
+    textOverflow: props.overflow ? 'ellipsis' : 'auto',
+    whiteSpace: props.overflow ? 'nowrap' : 'normal',
+  }),
+);
 
 type SidebarProps = {
   /**
    * Position of the sidebar.
    */
-  position: SidebarPosition,
+  position: SidebarPosition;
 
   /**
    * Default width of the sidebar.  Only used for left/right sidebars.
    */
-  width?: number,
+  width?: number;
   /**
    * Minimum sidebar width. Only used for left/right sidebars.
    */
-  minWidth?: number,
+  minWidth?: number;
   /**
    * Maximum sidebar width. Only used for left/right sidebars.
    */
-  maxWidth?: number,
+  maxWidth?: number;
 
   /**
    * Default height of the sidebar.
    */
-  height?: number,
+  height?: number;
   /**
    * Minimum sidebar height. Only used for top/bottom sidebars.
    */
-  minHeight?: number,
+  minHeight?: number;
   /**
    * Maximum sidebar height. Only used for top/bottom sidebars.
    */
-  maxHeight?: number,
+  maxHeight?: number;
 
   /**
    * Background color.
    */
-  backgroundColor?: string,
+  backgroundColor?: BackgroundColorProperty;
   /**
    * Callback when the sidebar size ahs changed.
    */
-  onResize?: (width: number, height: number) => void,
+  onResize?: (width: number, height: number) => void;
   /**
    * Contents of the sidebar.
    */
-  children?: React$Node,
+  children?: React.ReactNode;
   /**
    * Class name to customise styling.
    */
-  className?: string,
+  className?: string;
 };
 
-type SidebarState = {|
-  width?: number,
-  height?: number,
-  userChange: boolean,
-|};
+type SidebarState = {
+  width?: WidthProperty<number>;
+  height?: HeightProperty<number>;
+  userChange: boolean;
+};
 
 /**
  * A resizable sidebar.
@@ -120,7 +134,12 @@ export default class Sidebar extends Component<SidebarProps, SidebarState> {
 
   render() {
     const {backgroundColor, onResize, position, children} = this.props;
-    let height, minHeight, maxHeight, width, minWidth, maxWidth;
+    let height: number;
+    let minHeight: number;
+    let maxHeight: number;
+    let width: number;
+    let minWidth: number;
+    let maxWidth: number;
 
     const resizable: {[key: string]: boolean} = {};
     if (position === 'left') {

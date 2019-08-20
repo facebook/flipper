@@ -5,9 +5,9 @@
  * @format
  */
 
-import {colors} from './colors.tsx';
+import {colors} from './colors';
 import Label from './Label.js';
-import styled from '../styled/index.js';
+import styled from 'react-emotion';
 
 export default styled(Label)({
   color: colors.blackAlpha30,
