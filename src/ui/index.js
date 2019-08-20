@@ -182,4 +182,4 @@ export {InspectorSidebar} from './components/elements-inspector/sidebar.js';
 
 export {Console} from './components/console.tsx';
 
-export {default as Sheet} from './components/Sheet.js';
+export {default as Sheet} from './components/Sheet.tsx';

@@ -11,30 +11,38 @@ import {connect} from 'react-redux';
 import {
   ACTIVE_SHEET_PLUGIN_SHEET,
   setActiveSheet,
-} from '../../reducers/application.tsx';
-
-import type {ActiveSheet} from '../../reducers/application.tsx';
+  ActiveSheet,
+} from '../../reducers/application';
+import {State as Store} from '../../reducers';
 
 export const PLUGIN_SHEET_ELEMENT_ID = 'pluginSheetContents';
 
-type Props = {
+type OwnProps = {
   /**
    * Function as child component (FaCC) to render the contents of the sheet.
    * A `onHide` function is passed as argument, that can be called to remove
    * the sheet.
    */
-  children: (onHide: () => void) => ?React.Node,
+  children: (onHide: () => void) => React.ReactNode | undefined;
+  onHideSheet: () => void;
+};
+
+type StateFromProps = {
   /**
    * Function that is called when the sheet becomes hidden.
    */
-  onHideSheet: () => void,
-  setActiveSheet: (sheet: ActiveSheet) => any,
-  activeSheet: ActiveSheet,
+  activeSheet: ActiveSheet;
+};
+
+type DispatchFromProps = {
+  setActiveSheet: (sheet: ActiveSheet) => any;
 };
 
 type State = {
-  content: ?React.Node,
+  content: React.ReactNode | undefined;
 };
+
+type Props = OwnProps & DispatchFromProps & StateFromProps;
 
 /**
  * Usage: <Sheet>{onHide => <YourSheetContent onHide={onHide} />}</Sheet>
@@ -101,8 +109,7 @@ class Sheet extends Component<Props, State> {
   }
 }
 
-// $FlowFixMe
-export default connect(
+export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
   ({application: {activeSheet}}) => ({activeSheet}),
   {setActiveSheet},
 )(Sheet);
