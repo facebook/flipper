@@ -10,7 +10,7 @@ import {PureComponent} from 'react';
 import styled from '../../styled/index.js';
 import {SketchPicker} from 'react-color';
 import {Component, Fragment} from 'react';
-import Popover from '../Popover.js';
+import Popover from '../Popover.tsx';
 import {colors} from '../colors.tsx';
 import Input from '../Input.js';
 

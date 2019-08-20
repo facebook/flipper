@@ -5,10 +5,10 @@
  * @format
  */
 
-import {PureComponent} from 'react';
+import React, {PureComponent} from 'react';
 import FlexColumn from './FlexColumn.js';
-import styled from '../styled/index.js';
-import {colors} from './colors.tsx';
+import styled from 'react-emotion';
+import {colors} from './colors';
 
 const Anchor = styled('img')({
   zIndex: 6,
@@ -18,7 +18,12 @@ const Anchor = styled('img')({
   transform: 'translate(-50%, calc(100% + 2px))',
 });
 
-const PopoverContainer = styled(FlexColumn)(props => ({
+type Opts = {
+  minWidth?: number;
+  skewLeft?: boolean;
+};
+
+const PopoverContainer = styled(FlexColumn)((props: {opts?: Opts}) => ({
   backgroundColor: colors.white,
   borderRadius: 7,
   border: '1px solid rgba(0,0,0,0.3)',
@@ -48,14 +53,14 @@ const PopoverContainer = styled(FlexColumn)(props => ({
   },
 }));
 
-type Props = {|
-  children: React.Node,
-  onDismiss: Function,
-  forceOpts?: Object,
-|};
+type Props = {
+  children: React.ReactNode;
+  onDismiss: Function;
+  forceOpts?: Opts;
+};
 
 export default class Popover extends PureComponent<Props> {
-  _ref: ?Element;
+  _ref: Element | undefined;
 
   componentDidMount() {
     window.document.addEventListener('click', this.handleClick);
@@ -67,30 +72,25 @@ export default class Popover extends PureComponent<Props> {
     window.document.addEventListener('keydown', this.handleKeydown);
   }
 
-  handleClick = (e: SyntheticMouseEvent<>) => {
-    // $FlowFixMe
-    if (this._ref && !this._ref.contains(e.target)) {
+  handleClick = (e: KeyboardEvent) => {
+    if (this._ref && !this._ref.contains(e.target as Node)) {
       this.props.onDismiss();
     }
   };
 
-  handleKeydown = (e: SyntheticKeyboardEvent<>) => {
+  handleKeydown = (e: KeyboardEvent) => {
     if (e.key === 'Escape') {
       this.props.onDismiss();
     }
   };
 
-  _setRef = (ref: ?Element) => {
+  _setRef = (ref: Element | undefined) => {
     this._ref = ref;
   };
 
   render() {
     return [
-      <Anchor
-        src="./anchor.svg"
-        key="anchor"
-        opts={this.props.forceOpts || {}}
-      />,
+      <Anchor src="./anchor.svg" key="anchor" />,
       <PopoverContainer
         innerRef={this._setRef}
         key="popup"

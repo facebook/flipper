@@ -24,7 +24,7 @@ export {default as Glyph} from './components/Glyph.js';
 export {default as LoadingIndicator} from './components/LoadingIndicator.js';
 
 //
-export {default as Popover} from './components/Popover.js';
+export {default as Popover} from './components/Popover.tsx';
 
 // tables
 export type {
