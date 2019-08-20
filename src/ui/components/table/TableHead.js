@@ -17,7 +17,7 @@ import type {
 import {normaliseColumnWidth, isPercentage} from './utils.js';
 import {PureComponent} from 'react';
 import ContextMenu from '../ContextMenu.js';
-import Interactive from '../Interactive.js';
+import Interactive from '../Interactive.tsx';
 import styled from '../../styled/index.js';
 import {colors} from '../colors.tsx';
 

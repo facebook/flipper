@@ -5,31 +5,34 @@
  * @format
  */
 
-import type {Rect} from '../../utils/geometry.tsx';
-import LowPassFilter from '../../utils/LowPassFilter.tsx';
+import {Rect} from '../../utils/geometry';
+import LowPassFilter from '../../utils/LowPassFilter';
 import {
   getDistanceTo,
   maybeSnapLeft,
   maybeSnapTop,
   SNAP_SIZE,
-} from '../../utils/snap.tsx';
-import styled from '../styled/index.js';
+} from '../../utils/snap';
+import styled from 'react-emotion';
 import invariant from 'invariant';
 import React from 'react';
 
 const WINDOW_CURSOR_BOUNDARY = 5;
 
-type CursorState = {|
-  top: number,
-  left: number,
-|};
+type CursorState = {
+  top: number;
+  left: number;
+};
 
-type ResizingSides = ?{|
-  left?: boolean,
-  top?: boolean,
-  bottom?: boolean,
-  right?: boolean,
-|};
+type ResizingSides =
+  | {
+      left?: boolean;
+      top?: boolean;
+      bottom?: boolean;
+      right?: boolean;
+    }
+  | null
+  | undefined;
 
 const ALL_RESIZABLE: ResizingSides = {
   bottom: true,
@@ -38,52 +41,52 @@ const ALL_RESIZABLE: ResizingSides = {
   top: true,
 };
 
-type InteractiveProps = {|
-  isMovableAnchor?: (event: SyntheticMouseEvent<>) => boolean,
-  onMoveStart?: () => void,
-  onMoveEnd?: () => void,
-  onMove?: (top: number, left: number, event: SyntheticMouseEvent<>) => void,
-  id?: string,
-  movable?: boolean,
-  hidden?: boolean,
-  moving?: boolean,
-  grow?: boolean,
-  siblings?: $Shape<{[key: string]: $Shape<Rect>}>,
-  updateCursor?: (cursor: ?string) => void,
-  zIndex?: number,
-  top?: number,
-  left?: number,
-  minTop: number,
-  minLeft: number,
-  width?: number | string,
-  height?: number | string,
-  minWidth: number,
-  minHeight: number,
-  maxWidth?: number,
-  maxHeight?: number,
-  onCanResize?: (sides: ResizingSides) => void,
-  onResizeStart?: () => void,
-  onResizeEnd?: () => void,
-  onResize?: (width: number, height: number) => void,
-  resizing?: boolean,
-  resizable?: boolean | ResizingSides,
-  innerRef?: (elem: HTMLElement) => void,
-  style?: Object,
-  className?: string,
-  children?: React$Element<*>,
-|};
+type InteractiveProps = {
+  isMovableAnchor?: (event: React.MouseEvent) => boolean;
+  onMoveStart?: () => void;
+  onMoveEnd?: () => void;
+  onMove?: (top: number, left: number, event: MouseEvent) => void;
+  id?: string;
+  movable?: boolean;
+  hidden?: boolean;
+  moving?: boolean;
+  grow?: boolean;
+  siblings?: Partial<{[key: string]: Rect}>;
+  updateCursor?: (cursor?: string | null | undefined) => void;
+  zIndex?: number;
+  top?: number;
+  left?: number;
+  minTop?: number;
+  minLeft?: number;
+  width?: number | string;
+  height?: number | string;
+  minWidth: number;
+  minHeight: number;
+  maxWidth?: number;
+  maxHeight?: number;
+  onCanResize?: (sides: ResizingSides) => void;
+  onResizeStart?: () => void;
+  onResizeEnd?: () => void;
+  onResize?: (width: number, height: number) => void;
+  resizing?: boolean;
+  resizable?: boolean | ResizingSides;
+  innerRef?: (elem: HTMLElement) => void;
+  style?: Object;
+  className?: string;
+  children?: React.ReactNode;
+};
 
-type InteractiveState = {|
-  moving: boolean,
-  movingInitialProps: ?InteractiveProps,
-  movingInitialCursor: ?CursorState,
-  cursor: ?string,
-  resizingSides: ResizingSides,
-  couldResize: boolean,
-  resizing: boolean,
-  resizingInitialRect: ?Rect,
-  resizingInitialCursor: ?CursorState,
-|};
+type InteractiveState = {
+  moving: boolean;
+  movingInitialProps: InteractiveProps | null | undefined;
+  movingInitialCursor: CursorState | null | undefined;
+  cursor: string | null | undefined;
+  resizingSides: ResizingSides;
+  couldResize: boolean;
+  resizing: boolean;
+  resizingInitialRect: Rect | null | undefined;
+  resizingInitialCursor: CursorState | null | undefined;
+};
 
 const InteractiveContainer = styled('div')({
   willChange: 'transform, height, width, z-index',
@@ -91,7 +94,7 @@ const InteractiveContainer = styled('div')({
 
 export default class Interactive extends React.Component<
   InteractiveProps,
-  InteractiveState,
+  InteractiveState
 > {
   constructor(props: InteractiveProps, context: Object) {
     super(props, context);
@@ -114,9 +117,9 @@ export default class Interactive extends React.Component<
   globalMouse: boolean;
   ref: HTMLElement;
 
-  nextTop: ?number;
-  nextLeft: ?number;
-  nextEvent: ?SyntheticMouseEvent<>;
+  nextTop: number | null | undefined;
+  nextLeft: number | null | undefined;
+  nextEvent: MouseEvent | null | undefined;
 
   static defaultProps = {
     minHeight: 0,
@@ -125,7 +128,7 @@ export default class Interactive extends React.Component<
     minWidth: 0,
   };
 
-  onMouseMove = (event: SyntheticMouseEvent<>) => {
+  onMouseMove = (event: MouseEvent) => {
     if (this.state.moving) {
       this.calculateMove(event);
     } else if (this.state.resizing) {
@@ -135,7 +138,7 @@ export default class Interactive extends React.Component<
     }
   };
 
-  startAction = (event: SyntheticMouseEvent<>) => {
+  startAction = (event: React.MouseEvent) => {
     this.globalMouse = true;
     window.addEventListener('pointerup', this.endAction, {passive: true});
     window.addEventListener('pointermove', this.onMouseMove, {passive: true});
@@ -148,7 +151,7 @@ export default class Interactive extends React.Component<
     }
   };
 
-  startTitleAction(event: SyntheticMouseEvent<>) {
+  startTitleAction(event: React.MouseEvent) {
     if (this.state.couldResize) {
       this.startResizeAction(event);
     } else if (this.props.movable === true) {
@@ -156,7 +159,7 @@ export default class Interactive extends React.Component<
     }
   }
 
-  startMoving(event: SyntheticMouseEvent<>) {
+  startMoving(event: React.MouseEvent) {
     const {onMoveStart} = this.props;
     if (onMoveStart) {
       onMoveStart();
@@ -229,13 +232,13 @@ export default class Interactive extends React.Component<
     return closeWindows;
   }
 
-  startWindowAction(event: SyntheticMouseEvent<>) {
+  startWindowAction(event: React.MouseEvent) {
     if (this.state.couldResize) {
       this.startResizeAction(event);
     }
   }
 
-  startResizeAction(event: SyntheticMouseEvent<>) {
+  startResizeAction(event: React.MouseEvent) {
     event.stopPropagation();
     event.preventDefault();
 
@@ -254,7 +257,10 @@ export default class Interactive extends React.Component<
     });
   }
 
-  componentDidUpdate(prevProps: InteractiveProps, prevState: InteractiveState) {
+  componentDidUpdate(
+    _prevProps: InteractiveProps,
+    prevState: InteractiveState,
+  ) {
     if (prevState.cursor !== this.state.cursor) {
       const {updateCursor} = this.props;
       if (updateCursor) {
@@ -323,13 +329,13 @@ export default class Interactive extends React.Component<
     }
   };
 
-  onClick = (e: SyntheticMouseEvent<>) => {
+  onClick = (e: React.MouseEvent) => {
     if (this.state.couldResize) {
       e.stopPropagation();
     }
   };
 
-  calculateMove(event: SyntheticMouseEvent<>) {
+  calculateMove(event: MouseEvent) {
     const {movingInitialCursor, movingInitialProps} = this.state;
 
     invariant(movingInitialProps, 'TODO');
@@ -380,7 +386,7 @@ export default class Interactive extends React.Component<
     onResize(width, height);
   }
 
-  move(top: number, left: number, event: SyntheticMouseEvent<>) {
+  move(top: number, left: number, event: MouseEvent) {
     top = Math.max(this.props.minTop, top);
     left = Math.max(this.props.minLeft, left);
 
@@ -395,7 +401,7 @@ export default class Interactive extends React.Component<
     }
   }
 
-  calculateResize(event: SyntheticMouseEvent<>) {
+  calculateResize(event: MouseEvent) {
     const {
       resizingInitialCursor,
       resizingInitialRect,
@@ -514,13 +520,15 @@ export default class Interactive extends React.Component<
   }
 
   checkIfResizable(
-    event: SyntheticMouseEvent<>,
-  ): ?{|
-    left: boolean,
-    right: boolean,
-    top: boolean,
-    bottom: boolean,
-  |} {
+    event: MouseEvent,
+  ):
+    | {
+        left: boolean;
+        right: boolean;
+        top: boolean;
+        bottom: boolean;
+      }
+    | undefined {
     const canResize = this.getResizable();
     if (!canResize) {
       return;
@@ -546,7 +554,7 @@ export default class Interactive extends React.Component<
     };
   }
 
-  calculateResizable(event: SyntheticMouseEvent<>) {
+  calculateResizable(event: MouseEvent) {
     const resizing = this.checkIfResizable(event);
     if (!resizing) {
       return;
@@ -629,7 +637,7 @@ export default class Interactive extends React.Component<
 
     const {onCanResize} = this.props;
     if (onCanResize) {
-      onCanResize();
+      onCanResize({});
     }
 
     this.setState({
@@ -648,16 +656,16 @@ export default class Interactive extends React.Component<
     }
   };
 
-  onLocalMouseMove = (event: SyntheticMouseEvent<>) => {
+  onLocalMouseMove = (event: React.MouseEvent) => {
     if (!this.globalMouse) {
-      this.onMouseMove(event);
+      this.onMouseMove(event.nativeEvent);
     }
   };
 
   render() {
     const {grow, height, left, movable, top, width, zIndex} = this.props;
 
-    const style: Object = {
+    const style: React.CSSProperties = {
       cursor: this.state.cursor,
       zIndex: zIndex == null ? 'auto' : zIndex,
     };

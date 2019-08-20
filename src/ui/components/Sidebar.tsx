@@ -5,7 +5,7 @@
  * @format
  */
 
-import Interactive from './Interactive.js';
+import Interactive from './Interactive';
 import FlexColumn from './FlexColumn.js';
 import {colors} from './colors';
 import {Component} from 'react';
