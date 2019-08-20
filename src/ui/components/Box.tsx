@@ -5,8 +5,8 @@
  * @format
  */
 
-import FlexBox from './FlexBox.tsx';
-import styled from '../styled/index.js';
+import FlexBox from './FlexBox';
+import styled from 'react-emotion';
 
 export default styled(FlexBox)({
   height: '100%',

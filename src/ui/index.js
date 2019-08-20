@@ -118,7 +118,7 @@ export {default as Block} from './components/Block.js';
 export {default as FocusableBox} from './components/FocusableBox.tsx';
 export {default as Sidebar} from './components/Sidebar.tsx';
 export {default as SidebarLabel} from './components/SidebarLabel.tsx';
-export {default as Box} from './components/Box.js';
+export {default as Box} from './components/Box.tsx';
 export {default as FlexBox} from './components/FlexBox.tsx';
 export {default as FlexRow} from './components/FlexRow.tsx';
 export {default as FlexColumn} from './components/FlexColumn.tsx';
