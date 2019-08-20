@@ -123,7 +123,7 @@ export {default as FlexBox} from './components/FlexBox.js';
 export {default as FlexRow} from './components/FlexRow.js';
 export {default as FlexColumn} from './components/FlexColumn.js';
 export {default as FlexCenter} from './components/FlexCenter.js';
-export {default as Toolbar, Spacer} from './components/Toolbar.js';
+export {default as Toolbar, Spacer} from './components/Toolbar.tsx';
 export {default as Panel} from './components/Panel.tsx';
 export {default as Text} from './components/Text.tsx';
 export {default as TextParagraph} from './components/TextParagraph.tsx';

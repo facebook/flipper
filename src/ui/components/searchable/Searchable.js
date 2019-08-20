@@ -8,7 +8,7 @@
 import type {Filter} from 'flipper';
 import type {TableColumns} from '../table/types';
 import {PureComponent} from 'react';
-import Toolbar from '../Toolbar.js';
+import Toolbar from '../Toolbar.tsx';
 import FlexRow from '../FlexRow.js';
 import Input from '../Input.js';
 import {colors} from '../colors.tsx';
