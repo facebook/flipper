@@ -139,7 +139,7 @@ export {default as StatusIndicator} from './components/StatusIndicator.tsx';
 export {default as HorizontalRule} from './components/HorizontalRule.tsx';
 export {default as VerticalRule} from './components/VerticalRule.tsx';
 export {default as Label} from './components/Label.tsx';
-export {default as Heading} from './components/Heading.js';
+export {default as Heading} from './components/Heading.tsx';
 
 // filters
 export type {Filter} from './components/filter/types.js';

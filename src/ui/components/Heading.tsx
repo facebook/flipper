@@ -5,7 +5,8 @@
  * @format
  */
 
-import styled from '../styled/index.js';
+import styled from 'react-emotion';
+import React from 'react';
 
 const LargeHeading = styled('div')({
   fontSize: 18,
@@ -30,11 +31,11 @@ export default function Heading(props: {
   /**
    * Level of the heading. A number from 1-6. Where 1 is the largest heading.
    */
-  level?: number,
+  level?: number;
   /**
    * Children.
    */
-  children?: React$Node,
+  children?: React.ReactNode;
 }) {
   if (props.level === 1) {
     return <LargeHeading>{props.children}</LargeHeading>;

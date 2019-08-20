@@ -7,7 +7,7 @@
 
 import ErrorBlock from './ErrorBlock.js';
 import {Component} from 'react';
-import Heading from './Heading.js';
+import Heading from './Heading.tsx';
 import Button from './Button.js';
 import View from './View.tsx';
 import styled from '../styled/index.js';
