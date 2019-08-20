@@ -6,9 +6,10 @@
  */
 
 import {Component} from 'react';
-import Box from './Box.js';
-import {colors} from './colors.tsx';
-import styled from '../styled/index.js';
+import Box from './Box';
+import {colors} from './colors';
+import styled from 'react-emotion';
+import React from 'react';
 
 const FocusableBoxBorder = styled(Box)({
   border: `1px solid ${colors.highlight}`,
@@ -20,13 +21,19 @@ const FocusableBoxBorder = styled(Box)({
   top: '0',
 });
 
+type Props = {
+  onBlur?: (e: React.FocusEvent) => void;
+  onFocus?: (e: React.FocusEvent) => void;
+  focusable?: boolean;
+};
+
 export default class FocusableBox extends Component<
-  Object,
-  {|
-    focused: boolean,
-  |},
+  Props,
+  {
+    focused: boolean;
+  }
 > {
-  constructor(props: Object, context: Object) {
+  constructor(props: Props, context: Object) {
     super(props, context);
     this.state = {focused: false};
   }
@@ -35,7 +42,7 @@ export default class FocusableBox extends Component<
     focusable: true,
   };
 
-  onBlur = (e: SyntheticFocusEvent<>) => {
+  onBlur = (e: React.FocusEvent) => {
     const {onBlur} = this.props;
     if (onBlur) {
       onBlur(e);
@@ -45,7 +52,7 @@ export default class FocusableBox extends Component<
     }
   };
 
-  onFocus = (e: SyntheticFocusEvent<>) => {
+  onFocus = (e: React.FocusEvent) => {
     const {onFocus} = this.props;
     if (onFocus) {
       onFocus(e);
@@ -59,7 +66,7 @@ export default class FocusableBox extends Component<
     const {props} = this;
 
     return (
-      <Box {...props} onFocus={this.onFocus} onBlur={this.onBlur} tabIndex="0">
+      <Box {...props} onFocus={this.onFocus} onBlur={this.onBlur} tabIndex={0}>
         {props.children}
         {this.state.focused && <FocusableBoxBorder />}
       </Box>
