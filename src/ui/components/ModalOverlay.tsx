@@ -5,8 +5,9 @@
  * @format
  */
 
-import styled from '../styled/index.js';
+import styled from 'react-emotion';
 import {Component} from 'react';
+import React from 'react';
 
 const Overlay = styled('div')({
   alignItems: 'center',
@@ -22,8 +23,8 @@ const Overlay = styled('div')({
 });
 
 export default class ModalOverlay extends Component<{
-  onClose: () => void,
-  children?: React$Node,
+  onClose: () => void;
+  children?: React.ReactNode;
 }> {
   ref: HTMLElement;
 
@@ -31,7 +32,7 @@ export default class ModalOverlay extends Component<{
     this.ref = ref;
   };
 
-  onClick = (e: SyntheticMouseEvent<>) => {
+  onClick = (e: React.MouseEvent) => {
     if (e.target === this.ref) {
       this.props.onClose();
     }
