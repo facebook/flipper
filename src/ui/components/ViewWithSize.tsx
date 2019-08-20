@@ -8,24 +8,24 @@
 import {Component} from 'react';
 
 type ViewWithSizeProps = {
-  onSize: (width: number, height: number) => any,
+  onSize: (width: number, height: number) => any;
 };
 
-type ViewWithSizeState = {|
-  width: number,
-  height: number,
-|};
+type ViewWithSizeState = {
+  width: number;
+  height: number;
+};
 
 export default class ViewWithSize extends Component<
   ViewWithSizeProps,
-  ViewWithSizeState,
+  ViewWithSizeState
 > {
   constructor(props: ViewWithSizeProps, context: Object) {
     super(props, context);
     this.state = {height: window.innerHeight, width: window.innerWidth};
   }
 
-  _onResize: Function;
+  _onResize: (event: UIEvent) => void;
 
   componentDidMount() {
     this._onResize = () => {
