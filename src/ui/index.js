@@ -114,7 +114,7 @@ export {
 // utility elements
 export {default as View} from './components/View.tsx';
 export {default as ViewWithSize} from './components/ViewWithSize.tsx';
-export {default as Block} from './components/Block.js';
+export {default as Block} from './components/Block.tsx';
 export {default as FocusableBox} from './components/FocusableBox.tsx';
 export {default as Sidebar} from './components/Sidebar.tsx';
 export {default as SidebarLabel} from './components/SidebarLabel.tsx';
