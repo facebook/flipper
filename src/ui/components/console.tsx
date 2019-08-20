@@ -4,52 +4,50 @@
  * LICENSE file in the root directory of this source tree.
  * @format
  */
-import {Component} from 'react';
-import {
-  CodeBlock,
-  colors,
-  ManagedTable,
-  FlexColumn,
-  Text,
-  ManagedDataInspector,
-  Input,
-  View,
-} from '../index';
-import styled from '../styled/index';
-import type {TableBodyRow, TableRows} from 'flipper';
-import type {PluginClient} from '../../plugin.tsx';
+import React, {Component} from 'react';
+import CodeBlock from './CodeBlock';
+import {colors} from './colors';
+import ManagedTable from './table/ManagedTable';
+import FlexColumn from './FlexColumn';
+import Text from './Text';
+import ManagedDataInspector from './data-inspector/ManagedDataInspector';
+import Input from './Input';
+import View from './View';
+import styled from 'react-emotion';
+import {TableBodyRow, TableRows} from './table/types';
+import {PluginClient} from '../../plugin';
 
-type ValueWithType = {|
-  type: string,
-  value: any,
-|};
-type SuccessResult = {|
-  isSuccess: true,
-  value: ValueWithType,
-|};
-type FailedResult = {|
-  isSuccess: false,
-  error: string,
-|};
+type ValueWithType = {
+  type: string;
+  value: any;
+};
+type SuccessResult = {
+  isSuccess: true;
+  value: ValueWithType;
+};
+type FailedResult = {
+  isSuccess: false;
+  error: string;
+};
 
 type CommandResult = SuccessResult | FailedResult;
 
 type Props = {
-  client: PluginClient,
-  getContext: () => string,
+  client: PluginClient;
+  getContext: () => string;
 };
 type State = {
-  isConsoleEnabled: boolean,
-  script: string,
+  isConsoleEnabled: boolean;
+  script: string;
   previousExecutions: Array<{
-    command: string,
-    result: CommandResult,
-  }>,
+    command: string;
+    result: CommandResult;
+  }>;
 };
 
 class ConsoleError extends Component<{
-  error: Error | string | void,
-  className?: string,
+  error: Error | string | void;
+  className?: string;
 }> {
   static Container = styled(CodeBlock)({
     backgroundColor: colors.redTint,
@@ -62,10 +60,9 @@ class ConsoleError extends Component<{
 
   render() {
     const {className, error} = this.props;
-
     return (
       <ConsoleError.Container className={className}>
-        {error}
+        {(error || '').toString()}
       </ConsoleError.Container>
     );
   }
@@ -133,11 +130,11 @@ export class Console extends Component<Props, State> {
       });
   };
 
-  onInputChange = (event: SyntheticInputEvent<>) => {
+  onInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({script: event.target.value});
   };
 
-  onSubmit = (event: SyntheticEvent<>) => {
+  onSubmit = (event: React.FormEvent) => {
     if (this.state.script != '') {
       this.executeScriptOnDevice();
     }
@@ -166,7 +163,7 @@ export class Console extends Component<Props, State> {
               collapsed={true}
             />
           ) : (
-            <ConsoleError error={result.error} />
+            <ConsoleError error={(result as FailedResult).error} />
           ),
         },
       },

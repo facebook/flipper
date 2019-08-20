@@ -180,6 +180,6 @@ export {
 } from './components/elements-inspector/ElementsInspector.js';
 export {InspectorSidebar} from './components/elements-inspector/sidebar.js';
 
-export {Console} from './components/console.js';
+export {Console} from './components/console.tsx';
 
 export {default as Sheet} from './components/Sheet.js';

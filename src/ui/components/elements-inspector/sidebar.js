@@ -12,7 +12,7 @@ import type {Logger} from '../../../fb-interfaces/Logger.js';
 import Panel from '../Panel.js';
 import ManagedDataInspector from '../data-inspector/ManagedDataInspector.js';
 import {Component} from 'react';
-import {Console} from '../console';
+import {Console} from '../console.tsx';
 import GK from '../../../fb-stubs/GK.tsx';
 
 const deepEqual = require('deep-equal');
