@@ -5,9 +5,14 @@
  * @format
  */
 
-import styled from '../styled/index.js';
+import styled from 'react-emotion';
 
-const View = styled('div')(props => ({
+type Props = {
+  grow?: boolean;
+  scrollable?: boolean;
+};
+
+const View = styled('div')((props: Props) => ({
   height: props.grow ? '100%' : 'auto',
   overflow: props.scrollable ? 'auto' : 'visible',
   position: 'relative',

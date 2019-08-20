@@ -5,7 +5,7 @@
  * @format
  */
 
-import View from './View.js';
+import View from './View.tsx';
 import styled from '../styled/index.js';
 
 type Props = {

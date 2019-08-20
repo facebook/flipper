@@ -7,7 +7,7 @@
 
 import FlexColumn from './FlexColumn.js';
 import {Component} from 'react';
-import View from './View.js';
+import View from './View.tsx';
 import styled from '../styled/index.js';
 
 const Inner = styled(FlexColumn)(({height}) => ({
