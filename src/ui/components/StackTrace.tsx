@@ -7,43 +7,57 @@
 
 import {Component} from 'react';
 import Text from './Text';
-import {colors} from './colors.tsx';
+import {colors} from './colors';
 import ManagedTable from './table/ManagedTable';
 import FlexRow from './FlexRow';
 import Glyph from './Glyph';
-import styled from '../styled';
+import styled from 'react-emotion';
+import React from 'react';
+import {BackgroundColorProperty} from 'csstype';
 
-const Padder = styled('div')(({padded, backgroundColor}) => ({
-  padding: padded ? 10 : 0,
-  backgroundColor,
-}));
+const Padder = styled('div')(
+  ({
+    padded,
+    backgroundColor,
+  }: {
+    padded: boolean;
+    backgroundColor: BackgroundColorProperty;
+  }) => ({
+    padding: padded ? 10 : 0,
+    backgroundColor,
+  }),
+);
 
-const Container = styled('div')(({isCrash, padded}) => ({
-  backgroundColor: isCrash ? colors.redTint : 'transprent',
-  border: padded
-    ? `1px solid ${isCrash ? colors.red : colors.light15}`
-    : 'none',
-  borderRadius: padded ? 5 : 0,
-  overflow: 'hidden',
-}));
+const Container = styled('div')(
+  ({isCrash, padded}: {isCrash?: boolean; padded?: boolean}) => ({
+    backgroundColor: isCrash ? colors.redTint : 'transprent',
+    border: padded
+      ? `1px solid ${isCrash ? colors.red : colors.light15}`
+      : 'none',
+    borderRadius: padded ? 5 : 0,
+    overflow: 'hidden',
+  }),
+);
 
-const Title = styled(FlexRow)(({isCrash}) => ({
+const Title = styled(FlexRow)(({isCrash}: {isCrash?: boolean}) => ({
   color: isCrash ? colors.red : 'inherit',
   padding: 8,
   alignItems: 'center',
   minHeight: 32,
 }));
 
-const Reason = styled(Text)(({isCrash}) => ({
+const Reason = styled(Text)(({isCrash}: {isCrash?: boolean}) => ({
   color: isCrash ? colors.red : colors.light80,
   fontWeight: 'bold',
   fontSize: 13,
 }));
 
-const Line = styled(Text)(({isCrash, isBold}) => ({
-  color: isCrash ? colors.red : colors.light80,
-  fontWeight: isBold ? 'bold' : 'normal',
-}));
+const Line = styled(Text)(
+  ({isCrash, isBold}: {isCrash?: boolean; isBold?: boolean}) => ({
+    color: isCrash ? colors.red : colors.light80,
+    fontWeight: isBold ? 'bold' : 'normal',
+  }),
+);
 
 const Icon = styled(Glyph)({marginRight: 5});
 
@@ -60,29 +74,29 @@ const COLUMNS = {
  */
 export default class StackTrace extends Component<{
   children: Array<{
-    isBold?: boolean,
-    library?: ?string,
-    address?: ?string,
-    caller?: ?string,
-    lineNumber?: ?string,
-    message?: ?string,
-  }>,
+    isBold?: boolean;
+    library?: string | null | undefined;
+    address?: string | null | undefined;
+    caller?: string | null | undefined;
+    lineNumber?: string | null | undefined;
+    message?: string | null | undefined;
+  }>;
   /**
    * Reason for the crash, displayed above the trace
    */
-  reason?: string,
+  reason?: string;
   /**
    * Does the trace show a crash
    */
-  isCrash?: boolean,
+  isCrash?: boolean;
   /**
    * Display the stack trace in a padded container
    */
-  padded?: boolean,
+  padded?: boolean;
   /**
    * Background color of the stack trace
    */
-  backgroundColor?: string,
+  backgroundColor?: string;
 }> {
   render() {
     const {children} = this.props;
@@ -109,7 +123,7 @@ export default class StackTrace extends Component<{
         COLUMNS[cv] === 'flex'
           ? 'flex'
           : children.reduce(
-              (acc, line) => Math.max(acc, line[cv]?.length || 0),
+              (acc, line) => Math.max(acc, line[cv] ? line[cv].length : 0 || 0),
               0,
             ) *
               8 +
@@ -125,7 +139,7 @@ export default class StackTrace extends Component<{
           align: cv === 'lineNumber' ? 'right' : 'left',
           value: (
             <Line code isCrash={this.props.isCrash} bold={l.isBold || false}>
-              {l[cv]}
+              {String(l[cv])}
             </Line>
           ),
         };
