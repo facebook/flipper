@@ -74,7 +74,7 @@ export {default as Tab} from './components/Tab.tsx';
 export {default as Input} from './components/Input.tsx';
 export {default as Textarea} from './components/Textarea.tsx';
 export {default as Select} from './components/Select.tsx';
-export {default as Checkbox} from './components/Checkbox.js';
+export {default as Checkbox} from './components/Checkbox.tsx';
 
 // code
 export {default as CodeBlock} from './components/CodeBlock.js';

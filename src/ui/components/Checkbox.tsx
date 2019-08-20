@@ -6,13 +6,14 @@
  */
 
 import {PureComponent} from 'react';
-import styled from '../styled/index.js';
+import styled from 'react-emotion';
+import React from 'react';
 
 type CheckboxProps = {
   /** Whether the checkbox is checked. */
-  checked: boolean,
+  checked: boolean;
   /** Called when a state change is triggered */
-  onChange: (checked: boolean) => void,
+  onChange: (checked: boolean) => void;
 };
 
 const CheckboxContainer = styled('input')({
@@ -25,7 +26,7 @@ const CheckboxContainer = styled('input')({
  * A checkbox to toggle UI state
  */
 export default class Checkbox extends PureComponent<CheckboxProps> {
-  onChange = (e: SyntheticInputEvent<HTMLInputElement>) => {
+  onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.props.onChange(e.target.checked);
   };
 
