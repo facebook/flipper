@@ -25,10 +25,7 @@ import {
   ManagedDataInspector,
 } from 'flipper';
 import {Component} from 'react';
-import type {
-  TableBodyRow,
-  TableRowSortOrder,
-} from '../../ui/components/table/types';
+import type {TableBodyRow, TableRowSortOrder} from 'flipper';
 import {FlipperPlugin} from 'flipper';
 import {DatabaseClient} from './ClientProtocol';
 import {renderValue} from 'flipper';

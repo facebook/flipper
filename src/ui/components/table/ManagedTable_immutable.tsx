@@ -5,161 +5,154 @@
  * @format
  */
 
-import type {
+import {
   TableColumnOrder,
   TableColumnSizes,
   TableColumns,
   TableHighlightedRows,
   TableRowSortOrder,
-  TableRows,
+  TableRows_immutable,
   TableBodyRow,
   TableOnAddFilter,
-} from './types.js';
-
-import type {MenuTemplate} from '../ContextMenu.tsx';
+} from './types';
+import {MenuTemplate} from '../ContextMenu';
 
 import React from 'react';
-import styled from '../../styled/index.js';
+import styled from 'react-emotion';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import {VariableSizeList as List} from 'react-window';
-import {clipboard} from 'electron';
-import TableHead from './TableHead.js';
-import TableRow from './TableRow.js';
-import ContextMenu from '../ContextMenu.tsx';
-import FlexColumn from '../FlexColumn.tsx';
-import createPaste from '../../../fb-stubs/createPaste.tsx';
+import {clipboard, MenuItemConstructorOptions} from 'electron';
+import TableHead from './TableHead';
+import TableRow from './TableRow';
+import ContextMenu from '../ContextMenu';
+import FlexColumn from '../FlexColumn';
+import createPaste from '../../../fb-stubs/createPaste';
 import debounceRender from 'react-debounce-render';
 import debounce from 'lodash.debounce';
 import {DEFAULT_ROW_HEIGHT} from './types';
-import textContent from '../../../utils/textContent.tsx';
+import textContent from '../../../utils/textContent';
 
-export type ManagedTableProps = {|
+export type ManagedTableProps_immutable = {
   /**
    * Column definitions.
    */
-  columns: TableColumns,
+  columns: TableColumns;
   /**
    * Row definitions.
    */
-  rows: TableRows,
+  rows: TableRows_immutable;
   /*
    * Globally unique key for persisting data between uses of a table such as column sizes.
    */
-  tableKey?: string,
+  tableKey?: string;
   /**
    * Whether the table has a border.
    */
-  floating?: boolean,
+  floating?: boolean;
   /**
    * Whether a row can span over multiple lines. Otherwise lines cannot wrap and
    * are truncated.
    */
-  multiline?: boolean,
+  multiline?: boolean;
   /**
    * Whether the body is scrollable. When this is set to `true` then the table
    * is not scrollable.
    */
-  autoHeight?: boolean,
+  autoHeight?: boolean;
   /**
    * Order of columns.
    */
-  columnOrder?: TableColumnOrder,
+  columnOrder?: TableColumnOrder;
   /**
    * Initial size of the columns.
    */
-  columnSizes?: TableColumnSizes,
+  columnSizes?: TableColumnSizes;
   /**
    * Value to filter rows on. Alternative to the `filter` prop.
    */
-  filterValue?: string,
+  filterValue?: string;
   /**
    * Callback to filter rows.
    */
-  filter?: (row: TableBodyRow) => boolean,
+  filter?: (row: TableBodyRow) => boolean;
   /**
    * Callback when the highlighted rows change.
    */
-  onRowHighlighted?: (keys: TableHighlightedRows) => void,
+  onRowHighlighted?: (keys: TableHighlightedRows) => void;
   /**
    * Whether rows can be highlighted or not.
    */
-  highlightableRows?: boolean,
+  highlightableRows?: boolean;
   /**
    * Whether multiple rows can be highlighted or not.
    */
-  multiHighlight?: boolean,
+  multiHighlight?: boolean;
   /**
    * Height of each row.
    */
-  rowLineHeight?: number,
+  rowLineHeight?: number;
   /**
    * This makes it so the scroll position sticks to the bottom of the window.
    * Useful for streaming data like requests, logs etc.
    */
-  stickyBottom?: boolean,
+  stickyBottom?: boolean;
   /**
    * Used by SearchableTable to add filters for rows.
    */
-  onAddFilter?: TableOnAddFilter,
+  onAddFilter?: TableOnAddFilter;
   /**
    * Enable or disable zebra striping.
    */
-  zebra?: boolean,
+  zebra?: boolean;
   /**
    * Whether to hide the column names at the top of the table.
    */
-  hideHeader?: boolean,
+  hideHeader?: boolean;
   /**
    * Rows that are highlighted initially.
    */
-  highlightedRows?: Set<string>,
+  highlightedRows?: Set<string>;
   /**
    * Allows to create context menu items for rows.
    */
-  buildContextMenuItems?: () => MenuTemplate,
-  initialSortOrder?: ?TableRowSortOrder,
+  buildContextMenuItems?: () => MenuTemplate;
   /**
    * Callback when sorting changes.
    */
-  onSort?: (order: TableRowSortOrder) => void,
+  onSort?: (order: TableRowSortOrder) => void;
   /**
    * Initial sort order of the table.
    */
-  initialSortOrder?: ?TableRowSortOrder,
+  initialSortOrder?: TableRowSortOrder;
   /**
    * Table scroll horizontally, if needed
    */
-  horizontallyScrollable?: boolean,
-  /**
-   * Whether to allow navigation via arrow keys. Default: true
-   */
-  enableKeyboardNavigation?: boolean,
-|};
+  horizontallyScrollable?: boolean;
+};
 
-type ManagedTableState = {|
-  highlightedRows: Set<string>,
-  sortOrder: ?TableRowSortOrder,
-  columnOrder: TableColumnOrder,
-  columnSizes: TableColumnSizes,
-  shouldScrollToBottom: boolean,
-|};
+type ManagedTableState = {
+  highlightedRows: Set<string>;
+  sortOrder?: TableRowSortOrder;
+  columnOrder: TableColumnOrder;
+  columnSizes: TableColumnSizes;
+  shouldScrollToBottom: boolean;
+};
 
-const Container = styled(FlexColumn)(props => ({
+const Container = styled(FlexColumn)((props: {canOverflow?: boolean}) => ({
   overflow: props.canOverflow ? 'scroll' : 'visible',
   flexGrow: 1,
 }));
 
-const globalTableState: {[string]: TableColumnSizes} = {};
+const globalTableState: {[key: string]: TableColumnSizes} = {};
 
 class ManagedTable extends React.Component<
-  ManagedTableProps,
-  ManagedTableState,
+  ManagedTableProps_immutable,
+  ManagedTableState
 > {
   static defaultProps = {
     highlightableRows: true,
     multiHighlight: false,
     autoHeight: false,
-    enableKeyboardNavigation: true,
   };
 
   getTableKey = (): string => {
@@ -188,10 +181,10 @@ class ManagedTable extends React.Component<
   tableRef = React.createRef<List>();
 
   scrollRef: {
-    current: null | HTMLDivElement,
+    current: null | HTMLDivElement;
   } = React.createRef();
 
-  dragStartIndex: ?number = null;
+  dragStartIndex: number | null = null;
 
   // We want to call scrollToHighlightedRows on componentDidMount. However, at
   // this time, tableRef is still null, because AutoSizer needs one render to
@@ -207,7 +200,7 @@ class ManagedTable extends React.Component<
     document.removeEventListener('keydown', this.onKeyDown);
   }
 
-  componentWillReceiveProps(nextProps: ManagedTableProps) {
+  componentWillReceiveProps(nextProps: ManagedTableProps_immutable) {
     // if columnSizes has changed
     if (nextProps.columnSizes !== this.props.columnSizes) {
       this.setState({
@@ -225,7 +218,7 @@ class ManagedTable extends React.Component<
     // if columnOrder has changed
     if (nextProps.columnOrder !== this.props.columnOrder) {
       if (this.tableRef && this.tableRef.current) {
-        this.tableRef.current.resetAfterIndex(0);
+        this.tableRef.current.resetAfterIndex(0, true);
       }
       this.setState({
         columnOrder: nextProps.columnOrder,
@@ -233,21 +226,21 @@ class ManagedTable extends React.Component<
     }
 
     if (
-      this.props.rows.length > nextProps.rows.length &&
+      this.props.rows.size > nextProps.rows.size &&
       this.tableRef &&
       this.tableRef.current
     ) {
       // rows were filtered, we need to recalculate heights
-      this.tableRef.current.resetAfterIndex(0);
+      this.tableRef.current.resetAfterIndex(0, true);
     }
   }
 
   componentDidUpdate(
-    prevProps: ManagedTableProps,
+    prevProps: ManagedTableProps_immutable,
     prevState: ManagedTableState,
   ) {
     if (
-      this.props.rows.length !== prevProps.rows.length &&
+      this.props.rows.size !== prevProps.rows.size &&
       this.state.shouldScrollToBottom &&
       this.state.highlightedRows.size < 2
     ) {
@@ -309,8 +302,7 @@ class ManagedTable extends React.Component<
       this.onCopy(false);
     } else if (
       (e.keyCode === 38 || e.keyCode === 40) &&
-      this.props.highlightableRows &&
-      this.props.enableKeyboardNavigation
+      this.props.highlightableRows
     ) {
       // arrow navigation
       const {rows} = this.props;
@@ -320,13 +312,14 @@ class ManagedTable extends React.Component<
         row => row.key === lastItemKey,
       );
       const newIndex = Math.min(
-        rows.length - 1,
+        rows.size - 1,
         Math.max(0, e.keyCode === 38 ? lastItemIndex - 1 : lastItemIndex + 1),
       );
       if (!e.shiftKey) {
         highlightedRows.clear();
       }
-      highlightedRows.add(rows[newIndex].key);
+      // $FlowFixMe 0 <= newIndex <= rows.size - 1
+      highlightedRows.add(rows.get(newIndex).key);
       this.onRowHighlighted(highlightedRows, () => {
         const {current} = this.tableRef;
         if (current) {
@@ -336,7 +329,7 @@ class ManagedTable extends React.Component<
     }
   };
 
-  onRowHighlighted = (highlightedRows: Set<string>, cb?: Function) => {
+  onRowHighlighted = (highlightedRows: Set<string>, cb?: () => void) => {
     if (!this.props.highlightableRows) {
       return;
     }
@@ -380,16 +373,12 @@ class ManagedTable extends React.Component<
   scrollToBottom() {
     const {current: tableRef} = this.tableRef;
 
-    if (tableRef && this.props.rows.length > 1) {
-      tableRef.scrollToItem(this.props.rows.length - 1);
+    if (tableRef && this.props.rows.size > 1) {
+      tableRef.scrollToItem(this.props.rows.size - 1);
     }
   }
 
-  onHighlight = (
-    e: SyntheticMouseEvent<>,
-    row: TableBodyRow,
-    index: number,
-  ) => {
+  onHighlight = (e: React.MouseEvent, row: TableBodyRow, index: number) => {
     if (e.shiftKey) {
       // prevents text selection
       e.preventDefault();
@@ -443,11 +432,13 @@ class ManagedTable extends React.Component<
     const selected = [];
     let startIndex = -1;
     let endIndex = -1;
-    for (let i = 0; i < this.props.rows.length; i++) {
-      if (this.props.rows[i].key === fromKey) {
+    for (let i = 0; i < this.props.rows.size; i++) {
+      // $FlowFixMe 0 <= newIndex <= rows.size - 1
+      if (this.props.rows.get(i).key === fromKey) {
         startIndex = i;
       }
-      if (this.props.rows[i].key === toKey) {
+      // $FlowFixMe 0 <= newIndex <= rows.size - 1
+      if (this.props.rows.get(i).key === toKey) {
         endIndex = i;
       }
       if (endIndex > -1 && startIndex > -1) {
@@ -461,18 +452,15 @@ class ManagedTable extends React.Component<
       i++
     ) {
       try {
-        selected.push(this.props.rows[i].key);
+        // $FlowFixMe 0 <= newIndex <= rows.size - 1
+        selected.push(this.props.rows.get(i).key);
       } catch (e) {}
     }
 
     return selected;
   };
 
-  onMouseEnterRow = (
-    e: SyntheticMouseEvent<>,
-    row: TableBodyRow,
-    index: number,
-  ) => {
+  onMouseEnterRow = (e: React.MouseEvent, row: TableBodyRow, index: number) => {
     const {dragStartIndex} = this;
     const {current} = this.tableRef;
     if (
@@ -483,7 +471,8 @@ class ManagedTable extends React.Component<
       !e.shiftKey // When shift key is pressed, it's a range select not a drag select
     ) {
       current.scrollToItem(index + 1);
-      const startKey = this.props.rows[dragStartIndex].key;
+      // $FlowFixMe 0 <= newIndex <= rows.size - 1
+      const startKey = this.props.rows.get(dragStartIndex).key;
       const highlightedRows = new Set(this.selectInRange(startKey, row.key));
       this.onRowHighlighted(highlightedRows);
     }
@@ -494,7 +483,7 @@ class ManagedTable extends React.Component<
     clipboard.writeText(cellText);
   };
 
-  buildContextMenuItems: () => Array<MenuItemConstructorOptions> = () => {
+  buildContextMenuItems: () => MenuItemConstructorOptions[] = () => {
     const {highlightedRows} = this.state;
     if (highlightedRows.size === 0) {
       return [];
@@ -585,9 +574,9 @@ class ManagedTable extends React.Component<
       scrollDirection,
       scrollOffset,
     }: {
-      scrollDirection: 'forward' | 'backward',
-      scrollOffset: number,
-      scrollUpdateWasRequested: boolean,
+      scrollDirection: 'forward' | 'backward';
+      scrollOffset: number;
+      scrollUpdateWasRequested: boolean;
     }) => {
       const {current} = this.scrollRef;
       const parent = current ? current.parentElement : null;
@@ -612,34 +601,32 @@ class ManagedTable extends React.Component<
   );
 
   getRow = ({index, style}) => {
-    const {
-      onAddFilter,
-      multiline,
-      zebra,
-      rows,
-      horizontallyScrollable,
-    } = this.props;
+    const {onAddFilter, multiline, zebra, rows} = this.props;
     const {columnOrder, columnSizes, highlightedRows} = this.state;
     const columnKeys = columnOrder
       .map(k => (k.visible ? k.key : null))
       .filter(Boolean);
 
+    const row = rows.get(index);
+    if (row == null) {
+      return;
+    }
+
     return (
       <TableRow
-        key={rows[index].key}
+        key={row.key}
         columnSizes={columnSizes}
         columnKeys={columnKeys}
-        onMouseDown={e => this.onHighlight(e, rows[index], index)}
-        onMouseEnter={e => this.onMouseEnterRow(e, rows[index], index)}
+        onMouseDown={e => this.onHighlight(e, row, index)}
+        onMouseEnter={e => this.onMouseEnterRow(e, row, index)}
         multiline={multiline}
         rowLineHeight={24}
-        highlighted={highlightedRows.has(rows[index].key)}
-        row={rows[index]}
+        highlighted={highlightedRows.has(row.key)}
+        row={row}
         index={index}
         style={style}
         onAddFilter={onAddFilter}
         zebra={zebra}
-        horizontallyScrollable={horizontallyScrollable}
       />
     );
   };
@@ -664,12 +651,12 @@ class ManagedTable extends React.Component<
         }
 
         const width = columnSizes[col.key];
-        if (isNaN(width)) {
+        if (typeof width === 'number' && isNaN(width)) {
           // non-numeric columns with, can't caluclate
           computedWidth = 0;
           break;
         } else {
-          computedWidth += parseInt(width, 10);
+          computedWidth += parseInt(String(width), 10);
         }
       }
     }
@@ -700,9 +687,9 @@ class ManagedTable extends React.Component<
                     this.buildContextMenuItems
                   }>
                   <List
-                    itemCount={rows.length}
+                    itemCount={rows.size}
                     itemSize={index =>
-                      (rows[index] && rows[index].height) ||
+                      (rows.get(index) && rows.get(index).height) ||
                       rowLineHeight ||
                       DEFAULT_ROW_HEIGHT
                     }

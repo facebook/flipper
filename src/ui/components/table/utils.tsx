@@ -6,7 +6,7 @@
  */
 
 export function normaliseColumnWidth(
-  width: void | string | number,
+  width: string | number | null | undefined,
 ): number | string {
   if (width == null || width === 'flex') {
     // default
@@ -26,6 +26,6 @@ export function normaliseColumnWidth(
   throw new TypeError(`Unknown value ${width} for table column width`);
 }
 
-export function isPercentage(width: mixed): boolean {
+export function isPercentage(width: any): boolean {
   return typeof width === 'string' && width[width.length - 1] === '%';
 }

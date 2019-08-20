@@ -60,8 +60,8 @@ type InteractiveProps = {
   minLeft?: number;
   width?: number | string;
   height?: number | string;
-  minWidth: number;
-  minHeight: number;
+  minWidth?: number;
+  minHeight?: number;
   maxWidth?: number;
   maxHeight?: number;
   onCanResize?: (sides: ResizingSides) => void;

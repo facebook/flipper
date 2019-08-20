@@ -5,24 +5,25 @@
  * @format
  */
 import {default as styled} from 'react-emotion';
-import {colors} from '../colors.tsx';
-import {default as Text} from '../Text.tsx';
+import {colors} from '../colors';
+import {default as Text} from '../Text';
+import React from 'react';
 
 export type Value =
   | {
-      type: 'string',
-      value: string,
+      type: 'string';
+      value: string;
     }
   | {
-      type: 'boolean',
-      value: boolean,
+      type: 'boolean';
+      value: boolean;
     }
   | {
-      type: 'integer' | 'float' | 'double' | 'number',
-      value: number,
+      type: 'integer' | 'float' | 'double' | 'number';
+      value: number;
     }
   | {
-      type: 'null',
+      type: 'null';
     };
 
 const NonWrappingText = styled(Text)({
@@ -32,7 +33,7 @@ const NonWrappingText = styled(Text)({
   userSelect: 'none',
 });
 
-const BooleanValue = styled(NonWrappingText)(props => ({
+const BooleanValue = styled(NonWrappingText)((props: {active?: boolean}) => ({
   '&::before': {
     content: '""',
     display: 'inline-block',
@@ -63,6 +64,6 @@ export function renderValue(val: Value) {
     case 'null':
       return <NonWrappingText>NULL</NonWrappingText>;
     default:
-      return <NonWrappingText>{val.value}</NonWrappingText>;
+      return <NonWrappingText />;
   }
 }

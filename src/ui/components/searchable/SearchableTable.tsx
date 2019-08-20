@@ -6,8 +6,8 @@
  */
 
 import {Filter} from '../filter/types';
-import ManagedTable, {ManagedTableProps} from '../table/ManagedTable.js';
-import {TableBodyRow} from '../table/types.js';
+import ManagedTable, {ManagedTableProps} from '../table/ManagedTable';
+import {TableBodyRow} from '../table/types';
 import Searchable, {SearchableProps} from './Searchable';
 import React, {PureComponent} from 'react';
 import textContent from '../../../utils/textContent';

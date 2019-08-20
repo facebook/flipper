@@ -14,6 +14,7 @@ import Glyph from './Glyph';
 import styled from 'react-emotion';
 import React from 'react';
 import {BackgroundColorProperty} from 'csstype';
+import {TableBodyRow} from './table/types';
 
 const Padder = styled('div')(
   ({
@@ -132,8 +133,8 @@ export default class StackTrace extends Component<{
       return acc;
     }, {});
 
-    const rows = children.map((l, i) => ({
-      key: i,
+    const rows: TableBodyRow[] = children.map((l, i) => ({
+      key: String(i),
       columns: Object.keys(columns).reduce((acc, cv) => {
         acc[cv] = {
           align: cv === 'lineNumber' ? 'right' : 'left',

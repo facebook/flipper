@@ -16,6 +16,6 @@
       "flipper": ["./src/index.js"]
     }
   },
-  "include": ["src/**/*", "types/globals.tsx", "types/nodejs.tsx"],
+  "include": ["src/**/*", "types/*"],
   "exclude": ["node_modules", "**/*.spec.ts"]
 }

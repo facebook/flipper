@@ -17,12 +17,14 @@ import Select from '../ui/components/Select';
 import ErrorBlock from '../ui/components/ErrorBlock';
 import FlexColumn from '../ui/components/FlexColumn';
 import SearchableTable from '../ui/components/searchable/SearchableTable';
-import TableHighlightedRows from '../ui/components/table/types';
-import TableRows from '../ui/components/table/types';
-import TableColumnSizes from '../ui/components/table/types';
-import TableColumns from '../ui/components/table/types';
-import TableColumnOrderVal from '../ui/components/table/types';
-import TableBodyRow from '../ui/components/table/types';
+import {
+  TableHighlightedRows,
+  TableRows,
+  TableColumnSizes,
+  TableColumns,
+  TableColumnOrderVal,
+  TableBodyRow,
+} from '../ui/components/table/types';
 import DetailSidebar from '../chrome/DetailSidebar';
 import {FlipperPlugin} from '../plugin';
 import textContent from '../utils/textContent';

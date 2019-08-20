@@ -5,27 +5,24 @@
  * @format
  */
 
-import type {
+import {
   TableColumnOrder,
   TableColumnSizes,
   TableColumns,
   TableOnColumnResize,
   TableOnSort,
   TableRowSortOrder,
-} from './types.js';
-
-import {normaliseColumnWidth, isPercentage} from './utils.js';
+} from './types';
+import {normaliseColumnWidth, isPercentage} from './utils';
 import {PureComponent} from 'react';
-import ContextMenu from '../ContextMenu.tsx';
-import Interactive from '../Interactive.tsx';
-import styled from '../../styled/index.js';
-import {colors} from '../colors.tsx';
-
-import FlexRow from '../FlexRow.tsx';
-
+import ContextMenu from '../ContextMenu';
+import Interactive from '../Interactive';
+import styled from 'react-emotion';
+import {colors} from '../colors';
+import FlexRow from '../FlexRow';
 import invariant from 'invariant';
-
-type MenuTemplate = Array<MenuItemConstructorOptions>;
+import {MenuItemConstructorOptions} from 'electron';
+import React from 'react';
 
 const TableHeaderArrow = styled('span')({
   float: 'right',
@@ -43,41 +40,45 @@ const TableHeaderColumnContainer = styled('div')({
   padding: '0 8px',
 });
 
-const TableHeadContainer = styled(FlexRow)(props => ({
-  borderBottom: `1px solid ${colors.sectionHeaderBorder}`,
-  color: colors.light50,
-  flexShrink: 0,
-  left: 0,
-  overflow: 'hidden',
-  right: 0,
-  textAlign: 'left',
-  top: 0,
-  zIndex: 2,
-  minWidth: props.horizontallyScrollable ? 'min-content' : 0,
-}));
-
-const TableHeadColumnContainer = styled('div')(props => ({
-  position: 'relative',
-  backgroundColor: colors.white,
-  flexShrink: props.width === 'flex' ? 1 : 0,
-  height: 23,
-  lineHeight: '23px',
-  fontSize: '0.85em',
-  fontWeight: 500,
-  width: props.width === 'flex' ? '100%' : props.width,
-  '&::after': {
-    position: 'absolute',
-    content: '""',
+const TableHeadContainer = styled(FlexRow)(
+  (props: {horizontallyScrollable?: boolean}) => ({
+    borderBottom: `1px solid ${colors.sectionHeaderBorder}`,
+    color: colors.light50,
+    flexShrink: 0,
+    left: 0,
+    overflow: 'hidden',
     right: 0,
-    top: 5,
-    height: 13,
-    width: 1,
-    background: colors.light15,
-  },
-  '&:last-child::after': {
-    display: 'none',
-  },
-}));
+    textAlign: 'left',
+    top: 0,
+    zIndex: 2,
+    minWidth: props.horizontallyScrollable ? 'min-content' : 0,
+  }),
+);
+
+const TableHeadColumnContainer = styled('div')(
+  (props: {width: string | number}) => ({
+    position: 'relative',
+    backgroundColor: colors.white,
+    flexShrink: props.width === 'flex' ? 1 : 0,
+    height: 23,
+    lineHeight: '23px',
+    fontSize: '0.85em',
+    fontWeight: 500,
+    width: props.width === 'flex' ? '100%' : props.width,
+    '&::after': {
+      position: 'absolute',
+      content: '""',
+      right: 0,
+      top: 5,
+      height: 13,
+      width: 1,
+      background: colors.light15,
+    },
+    '&:last-child::after': {
+      display: 'none',
+    },
+  }),
+);
 
 const RIGHT_RESIZABLE = {right: true};
 
@@ -86,19 +87,19 @@ function calculatePercentage(parentWidth: number, selfWidth: number): string {
 }
 
 class TableHeadColumn extends PureComponent<{
-  id: string,
-  width: string | number,
-  sortable: ?boolean,
-  isResizable: boolean,
-  leftHasResizer: boolean,
-  hasFlex: boolean,
-  sortOrder: ?TableRowSortOrder,
-  onSort: ?TableOnSort,
-  columnSizes: TableColumnSizes,
-  onColumnResize: ?TableOnColumnResize,
-  children?: React$Node,
-  title?: string,
-  horizontallyScrollable?: boolean,
+  id: string;
+  width: string | number;
+  sortable?: boolean;
+  isResizable: boolean;
+  leftHasResizer: boolean;
+  hasFlex: boolean;
+  sortOrder?: TableRowSortOrder;
+  onSort?: TableOnSort;
+  columnSizes: TableColumnSizes;
+  onColumnResize?: TableOnColumnResize;
+  children?: React.ReactNode;
+  title?: string;
+  horizontallyScrollable?: boolean;
 }> {
   ref: HTMLElement;
 
@@ -131,7 +132,7 @@ class TableHeadColumn extends PureComponent<{
       return;
     }
 
-    let normalizedWidth = newWidth;
+    let normalizedWidth: number | string = newWidth;
 
     // normalise number to a percentage if we were originally passed a percentage
     if (isPercentage(width)) {
@@ -191,16 +192,16 @@ class TableHeadColumn extends PureComponent<{
 }
 
 export default class TableHead extends PureComponent<{
-  columnOrder: TableColumnOrder,
-  onColumnOrder: ?(order: TableColumnOrder) => void,
-  columns: TableColumns,
-  sortOrder: ?TableRowSortOrder,
-  onSort: ?TableOnSort,
-  columnSizes: TableColumnSizes,
-  onColumnResize: ?TableOnColumnResize,
-  horizontallyScrollable?: boolean,
+  columnOrder: TableColumnOrder;
+  onColumnOrder?: (order: TableColumnOrder) => void;
+  columns: TableColumns;
+  sortOrder?: TableRowSortOrder;
+  onSort?: TableOnSort;
+  columnSizes: TableColumnSizes;
+  onColumnResize?: TableOnColumnResize;
+  horizontallyScrollable?: boolean;
 }> {
-  buildContextMenu = (): MenuTemplate => {
+  buildContextMenu = (): MenuItemConstructorOptions[] => {
     const visibles = this.props.columnOrder
       .map(c => (c.visible ? c.key : null))
       .filter(Boolean)
@@ -231,7 +232,7 @@ export default class TableHead extends PureComponent<{
             }
           }
         },
-        type: 'checkbox',
+        type: 'checkbox' as 'checkbox',
         checked: visible,
       };
     });

@@ -38,18 +38,18 @@ export type {
   TableColumnOrder,
   TableColumnOrderVal,
   TableColumnSizes,
-} from './components/table/types.js';
-export {default as ManagedTable} from './components/table/ManagedTable.js';
-export type {ManagedTableProps} from './components/table/ManagedTable.js';
+} from './components/table/types.tsx';
+export {default as ManagedTable} from './components/table/ManagedTable.tsx';
+export type {ManagedTableProps} from './components/table/ManagedTable.tsx';
 export {
   default as ManagedTable_immutable,
-} from './components/table/ManagedTable_immutable.js';
+} from './components/table/ManagedTable_immutable.tsx';
 export type {
   ManagedTableProps_immutable,
-} from './components/table/ManagedTable_immutable.js';
+} from './components/table/ManagedTable_immutable.tsx';
 
-export type {Value} from './components/table/TypeBasedValueRenderer.js';
-export {renderValue} from './components/table/TypeBasedValueRenderer.js';
+export type {Value} from './components/table/TypeBasedValueRenderer.tsx';
+export {renderValue} from './components/table/TypeBasedValueRenderer.tsx';
 
 //
 export type {

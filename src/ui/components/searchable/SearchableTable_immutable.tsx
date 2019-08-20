@@ -6,11 +6,11 @@
  */
 
 import {Filter} from '../filter/types';
-import {ManagedTableProps_immutable} from '../table/ManagedTable_immutable.js';
-import {TableBodyRow} from '../table/types.js';
+import {ManagedTableProps_immutable} from '../table/ManagedTable_immutable';
+import {TableBodyRow} from '../table/types';
 import Searchable, {SearchableProps} from './Searchable';
 import {PureComponent} from 'react';
-import ManagedTable_immutable from '../table/ManagedTable_immutable.js';
+import ManagedTable_immutable from '../table/ManagedTable_immutable';
 import textContent from '../../../utils/textContent';
 import deepEqual from 'deep-equal';
 import React from 'react';

@@ -5,8 +5,7 @@
  * @format
  */
 
-import type {PluginClient} from '../../plugin.tsx';
-import type {Value} from '../../ui/components/table/TypeBasedValueRenderer';
+import type {PluginClient, Value} from 'flipper';
 
 type ClientCall<Params, Response> = Params => Promise<Response>;
 
