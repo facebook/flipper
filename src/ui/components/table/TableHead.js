@@ -21,7 +21,7 @@ import Interactive from '../Interactive.tsx';
 import styled from '../../styled/index.js';
 import {colors} from '../colors.tsx';
 
-import FlexRow from '../FlexRow.js';
+import FlexRow from '../FlexRow.tsx';
 
 import invariant from 'invariant';
 

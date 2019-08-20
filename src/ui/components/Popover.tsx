@@ -6,7 +6,7 @@
  */
 
 import React, {PureComponent} from 'react';
-import FlexColumn from './FlexColumn.js';
+import FlexColumn from './FlexColumn';
 import styled from 'react-emotion';
 import {colors} from './colors';
 

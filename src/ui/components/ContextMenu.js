@@ -6,7 +6,7 @@
  */
 
 import * as React from 'react';
-import FlexColumn from './FlexColumn.js';
+import FlexColumn from './FlexColumn.tsx';
 import PropTypes from 'prop-types';
 
 export type MenuTemplate = Array<MenuItemConstructorOptions>;

@@ -5,7 +5,7 @@
  * @format
  */
 
-import FlexBox from './FlexBox.js';
+import FlexBox from './FlexBox.tsx';
 import styled from '../styled/index.js';
 
 export default styled(FlexBox)({

@@ -5,10 +5,10 @@
  * @format
  */
 
-import FlexColumn from './FlexColumn.js';
+import FlexColumn from './FlexColumn';
 import styled from 'react-emotion';
 import Orderable from './Orderable';
-import FlexRow from './FlexRow.js';
+import FlexRow from './FlexRow';
 import {colors} from './colors';
 import Tab, {Props as TabProps} from './Tab';
 import {WidthProperty} from 'csstype';

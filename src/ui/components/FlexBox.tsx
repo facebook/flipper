@@ -5,12 +5,12 @@
  * @format
  */
 
-import View from './View.tsx';
-import styled from '../styled/index.js';
+import View from './View';
+import styled from 'react-emotion';
 
 type Props = {
   /** Flexbox's shrink property. Set to `0`, to disable shrinking. */
-  shrink: number,
+  shrink?: boolean;
 };
 
 /**

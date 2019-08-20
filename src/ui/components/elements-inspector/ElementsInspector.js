@@ -6,7 +6,7 @@
  */
 
 import {Component} from 'react';
-import FlexRow from '../FlexRow.js';
+import FlexRow from '../FlexRow.tsx';
 import {Elements, type DecorateRow} from './elements.js';
 import type {ContextMenuExtension} from 'flipper';
 

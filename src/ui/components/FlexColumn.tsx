@@ -5,12 +5,12 @@
  * @format
  */
 
-import FlexBox from './FlexBox.js';
-import styled from '../styled/index.js';
+import FlexBox from './FlexBox';
+import styled from 'react-emotion';
 
 /**
- * A container displaying its children in a row
+ * A container displaying its children in a column
  */
 export default styled(FlexBox)({
-  flexDirection: 'row',
+  flexDirection: 'column',
 });

@@ -7,8 +7,8 @@
 
 import React from 'react';
 import styled from 'react-emotion';
-import FlexColumn from './FlexColumn.js';
-import FlexBox from './FlexBox.js';
+import FlexColumn from './FlexColumn';
+import FlexBox from './FlexBox';
 import {colors} from './colors';
 import Glyph from './Glyph';
 

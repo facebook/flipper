@@ -5,8 +5,8 @@
  * @format
  */
 
-import View from './View.tsx';
-import styled from '../styled/index.js';
+import View from './View';
+import styled from 'react-emotion';
 
 /**
  * A container displaying its children horizontally and vertically centered.
