@@ -10,9 +10,9 @@ import {Component} from 'react';
 import ContextMenu from '../ContextMenu';
 import Tooltip from '../Tooltip';
 import styled from 'react-emotion';
-import DataPreview from './DataPreview.js';
 import createPaste from '../../../fb-stubs/createPaste';
 import {reportInteraction} from '../../../utils/InteractionTracker';
+import DataPreview from './DataPreview';
 import {getSortedKeys} from './utils.js';
 import {colors} from '../colors';
 import {clipboard} from 'electron';
@@ -574,7 +574,6 @@ export default class DataInspector extends Component<DataInspectorProps> {
         <DataPreview
           type={type}
           value={value}
-          setValue={setValue}
           extractValue={this.extractValue}
           depth={depth}
         />

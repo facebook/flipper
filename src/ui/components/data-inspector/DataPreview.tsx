@@ -5,12 +5,12 @@
  * @format
  */
 
-import type {DataValueExtractor} from './DataInspector.tsx';
+import {DataValueExtractor, InspectorName} from './DataInspector';
 import DataDescription from './DataDescription.js';
-import {InspectorName} from './DataInspector.tsx';
 import styled from 'react-emotion';
 import {getSortedKeys} from './utils.js';
 import {PureComponent} from 'react';
+import React from 'react';
 
 const PreviewContainer = styled('span')({
   fontStyle: 'italic',
@@ -30,11 +30,11 @@ function intersperse(arr, sep) {
 }
 
 export default class DataPreview extends PureComponent<{
-  type: string,
-  value: any,
-  depth: number,
-  extractValue: DataValueExtractor,
-  maxProperties: number,
+  type: string;
+  value: any;
+  depth: number;
+  extractValue: DataValueExtractor;
+  maxProperties: number;
 }> {
   static defaultProps = {
     maxProperties: 5,
