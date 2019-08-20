@@ -67,8 +67,8 @@ export {
 } from './components/data-inspector/DataDescription.js';
 
 // tabs
-export {default as Tabs} from './components/Tabs.js';
-export {default as Tab} from './components/Tab.js';
+export {default as Tabs} from './components/Tabs.tsx';
+export {default as Tab} from './components/Tab.tsx';
 
 // inputs
 export {default as Input} from './components/Input.js';

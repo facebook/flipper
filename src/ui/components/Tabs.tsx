@@ -6,35 +6,39 @@
  */
 
 import FlexColumn from './FlexColumn.js';
-import styled from '../styled/index.js';
-import Orderable from './Orderable.tsx';
+import styled from 'react-emotion';
+import Orderable from './Orderable';
 import FlexRow from './FlexRow.js';
-import {colors} from './colors.tsx';
-import Tab from './Tab.js';
+import {colors} from './colors';
+import Tab, {Props as TabProps} from './Tab';
+import {WidthProperty} from 'csstype';
+import React from 'react';
 
 const TabList = styled(FlexRow)({
   alignItems: 'stretch',
 });
 
-const TabListItem = styled('div')(props => ({
-  backgroundColor: props.active ? colors.light15 : colors.light02,
-  borderBottom: '1px solid #dddfe2',
-  boxShadow: props.active ? 'inset 0px 0px 3px rgba(0,0,0,0.25)' : 'none',
-  color: colors.dark80,
-  flex: 1,
-  fontSize: 13,
-  lineHeight: '28px',
-  overflow: 'hidden',
-  padding: '0 10px',
-  position: 'relative',
-  textAlign: 'center',
-  textOverflow: 'ellipsis',
-  whiteSpace: 'nowrap',
+const TabListItem = styled('div')(
+  (props: {active?: boolean; width?: WidthProperty<number>}) => ({
+    backgroundColor: props.active ? colors.light15 : colors.light02,
+    borderBottom: '1px solid #dddfe2',
+    boxShadow: props.active ? 'inset 0px 0px 3px rgba(0,0,0,0.25)' : 'none',
+    color: colors.dark80,
+    flex: 1,
+    fontSize: 13,
+    lineHeight: '28px',
+    overflow: 'hidden',
+    padding: '0 10px',
+    position: 'relative',
+    textAlign: 'center',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
 
-  '&:hover': {
-    backgroundColor: props.active ? colors.light15 : colors.light05,
-  },
-}));
+    '&:hover': {
+      backgroundColor: props.active ? colors.light15 : colors.light05,
+    },
+  }),
+);
 
 const TabListAddItem = styled(TabListItem)({
   borderRight: 'none',
@@ -75,59 +79,59 @@ const TabContent = styled('div')({
 /**
  * A Tabs component.
  */
-export default function Tabs(props: {|
+export default function Tabs(props: {
   /**
    * Callback for when the active tab has changed.
    */
-  onActive?: (key: ?string) => void,
+  onActive?: (key: string | null | undefined) => void;
   /**
    * The key of the default active tab.
    */
-  defaultActive?: string,
+  defaultActive?: string;
   /**
    * The key of the currently active tab.
    */
-  active?: ?string,
+  active?: string | null | undefined;
   /**
    * Tab elements.
    */
-  children?: Array<React$Element<any>>,
+  children?: React.ReactElement<TabProps>[] | React.ReactElement<TabProps>;
   /**
    * Whether the tabs can be reordered by the user.
    */
-  orderable?: boolean,
+  orderable?: boolean;
   /**
    * Callback when the tab order changes.
    */
-  onOrder?: (order: Array<string>) => void,
+  onOrder?: (order: Array<string>) => void;
   /**
    * Order of tabs.
    */
-  order?: Array<string>,
+  order?: Array<string>;
   /**
    * Whether to include the contents of every tab in the DOM and just toggle
    * its visibility.
    */
-  persist?: boolean,
+  persist?: boolean;
   /**
    * Whether to include a button to create additional items.
    */
-  newable?: boolean,
+  newable?: boolean;
   /**
    * Callback for when the new button is clicked.
    */
-  onNew?: () => void,
+  onNew?: () => void;
   /**
    * Elements to insert before all tabs in the tab list.
    */
-  before?: Array<React$Node>,
+  before?: Array<React.ReactNode>;
   /**
    * Elements to insert after all tabs in the tab list.
    */
-  after?: Array<React$Node>,
-|}) {
+  after?: Array<React.ReactNode>;
+}) {
   const {onActive} = props;
-  const active: ?string =
+  const active: string | undefined =
     props.active == null ? props.defaultActive : props.active;
 
   // array of other components that aren't tabs
@@ -143,8 +147,9 @@ export default function Tabs(props: {|
   const tabContents = [];
   const tabSiblings = [];
 
-  function add(comps) {
-    for (const comp of [].concat(comps || [])) {
+  function add(comps: React.ReactElement | React.ReactElement[]) {
+    const compsArray: React.ReactElement<TabProps>[] = [].concat(comps || []);
+    for (const comp of compsArray) {
       if (Array.isArray(comp)) {
         add(comp);
         continue;
@@ -194,7 +199,7 @@ export default function Tabs(props: {|
           onMouseDown={
             !isActive &&
             onActive &&
-            ((event: SyntheticMouseEvent<>) => {
+            ((event: React.MouseEvent) => {
               if (event.target !== closeButton) {
                 onActive(key);
               }
