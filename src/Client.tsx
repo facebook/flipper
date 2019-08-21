@@ -100,6 +100,7 @@ export default class Client extends EventEmitter {
   sdkVersion: number;
   messageIdCounter: number;
   plugins: Plugins;
+  showAllPlugins: boolean;
   connection: RSocketClientSocket<any, any> | null | undefined;
   responder: Partial<Responder<any, any>>;
   store: Store;
@@ -130,6 +131,7 @@ export default class Client extends EventEmitter {
     super();
     this.connected = true;
     this.plugins = plugins ? plugins : [];
+    this.showAllPlugins = false;
     this.connection = conn;
     this.id = id;
     this.query = query;

@@ -92,6 +92,10 @@ export type Action =
   | {
       type: 'CLIENT_SETUP_ERROR';
       payload: {client: UninitializedClient; error: Error};
+    }
+  | {
+      type: 'CLIENT_SHOW_MORE_OR_LESS';
+      payload: string;
     };
 
 const DEFAULT_PLUGIN = 'DeviceLogs';
@@ -336,6 +340,19 @@ const reducer = (state: State = INITAL_STATE, action: Action): State => {
         error: `Client setup error: ${errorMessage}`,
       };
     }
+    case 'CLIENT_SHOW_MORE_OR_LESS': {
+      const {payload} = action;
+
+      return {
+        ...state,
+        clients: state.clients.map((client: Client) => {
+          if (client.id === payload) {
+            client.showAllPlugins = !client.showAllPlugins;
+          }
+          return client;
+        }),
+      };
+    }
     default:
       return state;
   }
@@ -379,6 +396,11 @@ export const selectPlugin = (payload: {
   deepLinkPayload: null | string;
 }): Action => ({
   type: 'SELECT_PLUGIN',
+  payload,
+});
+
+export const showMoreOrLessPlugins = (payload: string): Action => ({
+  type: 'CLIENT_SHOW_MORE_OR_LESS',
   payload,
 });
 

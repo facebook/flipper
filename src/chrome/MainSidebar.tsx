@@ -13,6 +13,7 @@ import {FlipperBasePlugin} from '../plugin';
 import {PluginNotification} from '../reducers/notifications';
 import {ActiveSheet} from '../reducers/application';
 import {State as Store} from '../reducers';
+import {isTopUsedPlugin} from '../fb-stubs/pluginUsage';
 
 import {
   Sidebar,
@@ -30,7 +31,7 @@ import {
 } from 'flipper';
 import React, {Component, PureComponent} from 'react';
 import NotificationsHub from '../NotificationsHub';
-import {selectPlugin} from '../reducers/connections';
+import {selectPlugin, showMoreOrLessPlugins} from '../reducers/connections';
 import {setActiveSheet} from '../reducers/application';
 import UserAccount from './UserAccount';
 import {connect} from 'react-redux';
@@ -115,6 +116,13 @@ const PluginDebugger = styled(FlexBox)(props => ({
   overflow: 'hidden',
   textOverflow: 'ellipsis',
 }));
+
+const PluginShowMoreOrLess = styled(ListItem)({
+  color: colors.blue,
+  fontSize: 10,
+  lineHeight: '10px',
+  paddingBottom: 5,
+});
 
 function PluginIcon({
   isActive,
@@ -214,6 +222,8 @@ type DispatchFromProps = {
   }) => void;
 
   setActiveSheet: (activeSheet: ActiveSheet) => void;
+
+  showMoreOrLessPlugins: (payload: string) => void;
 };
 
 type Props = OwnProps & StateFromProps & DispatchFromProps;
@@ -310,6 +320,10 @@ class MainSidebar extends PureComponent<Props> {
                     (p: typeof FlipperDevicePlugin) =>
                       client.plugins.indexOf(p.id) > -1,
                   )
+                  .filter(
+                    (p: typeof FlipperDevicePlugin) =>
+                      client.showAllPlugins || isTopUsedPlugin(p.title, 5),
+                  )
                   .sort(byPluginNameOrId)
                   .map((plugin: typeof FlipperDevicePlugin) => (
                     <PluginSidebarListItem
@@ -329,6 +343,10 @@ class MainSidebar extends PureComponent<Props> {
                       app={client.query.app}
                     />
                   ))}
+                <PluginShowMoreOrLess
+                  onClick={() => this.props.showMoreOrLessPlugins(client.id)}>
+                  {client.showAllPlugins ? 'Show less' : 'Show more'}
+                </PluginShowMoreOrLess>
               </React.Fragment>
             ))}
           {uninitializedClients.map(entry => (
@@ -389,5 +407,6 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
   {
     selectPlugin,
     setActiveSheet,
+    showMoreOrLessPlugins,
   },
 )(MainSidebar);
