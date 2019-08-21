@@ -119,7 +119,7 @@ using WrapperPlugin = facebook::flipper::FlipperCppWrapperPlugin;
   return nil;
 }
 
-- (void)start;
+- (void)start
 {
 #if !TARGET_OS_SIMULATOR
   _secureServer = [FKPortForwardingServer new];
