@@ -61,12 +61,14 @@
 <li>package.json</li>
 <li>index.js</li>
 </ul>
-<p>The best way to initialize a JS plugin is to create a directory, and run <code>yarn init</code> inside it. Make sure your package name is the same as the identifier of the client plugin. After that create an <code>index.js</code> file which will be the entry point to your plugin. An example <code>package.json</code> file could look like this:</p>
+<p>The best way to initialize a JS plugin is to create a directory, and run <code>yarn init</code> inside it. Make sure your package name is the same as the identifier of the client plugin, e.g. if your Java plugin returns <code>myplugin</code> from its <code>getId()</code> method, the <code>name</code> field in your <code>package.json</code> should also be <code>myplugin</code>.</p>
+<p>Plugins can be written in plain ES6 JavaScript, <a href="https://flow.org/">Flow</a> or <a href="https://www.typescriptlang.org/">TypeScript</a> but we recommend you use TypeScript for the best development experience. We also recommend you use the file extension <code>.tsx</code> when using TypeScript which adds support for inline React expressions.</p>
+<p>After <code>yarn init</code> finishes, create an <code>index.tsx</code> file which will be the entry point to your plugin. An example <code>package.json</code> file could look like this:</p>
 <p>Example <code>package.json</code>:</p>
 <pre><code class="hljs">{
   <span class="hljs-attr">"name"</span>: <span class="hljs-string">"myplugin"</span>,
   <span class="hljs-attr">"version"</span>: <span class="hljs-string">"1.0.0"</span>,
-  <span class="hljs-attr">"main"</span>: <span class="hljs-string">"index.js"</span>,
+  <span class="hljs-attr">"main"</span>: <span class="hljs-string">"index.tsx"</span>,
   <span class="hljs-attr">"license"</span>: <span class="hljs-string">"MIT"</span>,
   <span class="hljs-attr">"dependencies"</span>: {},
   <span class="hljs-attr">"title"</span>: <span class="hljs-string">"My Plugin"</span>,
@@ -81,8 +83,8 @@
 <p><code>title</code> Shown in the main sidebar as the human readable name of the plugin.</p>
 <p><code>icon</code> Determines the plugin icon which is displayed in the main sidebar.</p>
 <p><code>bugs</code> Specify an email and/or url, where plugin bugs should be reported.</p>
-<p>In <code>index.js</code> you will define the plugin in JavaScript. This file must export a default class that extends <code>FlipperPlugin</code>. Browse our <a href="js-plugin-api">JS API docs</a> to see what you can do, and make sure to check out our <a href="/docs/extending/ui-components.html">UI Component Library</a> for lots of pre-made components.</p>
-<p>Example <code>index.js</code>:</p>
+<p>In <code>index.tsx</code> you will define the plugin in JavaScript. This file must export a default class that extends <code>FlipperPlugin</code>. Browse our <a href="js-plugin-api">JS API docs</a> to see what you can do, and make sure to check out our <a href="/docs/extending/ui-components.html">UI Component Library</a> for lots of pre-made components.</p>
+<p>Example <code>index.tsx</code>:</p>
 <pre><code class="hljs css language-js"><span class="hljs-keyword">import</span> {FlipperPlugin} <span class="hljs-keyword">from</span> <span class="hljs-string">'flipper'</span>;
 
 <span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">FlipperPlugin</span> </span>{
@@ -103,12 +105,12 @@
 <pre><code class="hljs">~ flipper-plugins/
     my-plugin/
       package<span class="hljs-selector-class">.json</span>
-      index<span class="hljs-selector-class">.js</span>
+      index<span class="hljs-selector-class">.tsx</span>
 </code></pre>
 <h3><a class="anchor" aria-hidden="true" id="npm-dependencies"></a><a href="#npm-dependencies" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>npm dependencies</h3>
 <p>If you need any dependencies in your plugin, you can install them using <code>yarn add</code>. The Flipper UI components exported from <code>flipper</code>, as well as <code>react</code> and <code>react-dom</code> don't need to be installed as dependencies. Our plugin-loader makes these dependencies available to your plugin.</p>
 <h3><a class="anchor" aria-hidden="true" id="es6-babel-transforms-and-bundling"></a><a href="#es6-babel-transforms-and-bundling" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>ES6, babel-transforms and bundling</h3>
-<p>Our plugin-loader is capable of all ES6 goodness, flow annotations and JSX and applies the required babel-transforms without you having to care about this. Also you don't need to bundle your plugin, you can simply use ES6 imports and it will work out of the box.</p>
+<p>Our plugin-loader is capable of all ES6 goodness, Flow annotations, TypeScript, and JSX and applies the required babel-transforms without you having to care about this. You don't need to bundle your plugin, you can simply use ES6 imports and it will work out of the box.</p>
 <h2><a class="anchor" aria-hidden="true" id="working-on-the-core"></a><a href="#working-on-the-core" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Working on the core</h2>
 <p>If you only want to work on a plugin, you don't need to run the development build of Flipper, but you can use the production release. However, if you want to contribute to Flipper's core, add additional UI components, or do anything outside the scope of a single plugins this is how you run the development version of Flipper.</p>
 <p>Make sure you have a recent version of node.js and yarn installed on your system (node ≥ 8, yarn ≥ 1.5). Then run the following commands:</p>
