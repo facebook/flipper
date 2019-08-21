@@ -285,8 +285,8 @@ class Button extends React.Component<Props, State> {
         const node = findDOMNode(current);
         if (node instanceof Element) {
           const {left, bottom} = node.getBoundingClientRect();
-          position.x = left;
-          position.y = bottom + 6;
+          position.x = Math.floor(left);
+          position.y = Math.floor(bottom) + 6;
         }
       }
       menu.popup({
