@@ -100,6 +100,7 @@ export default class Client extends EventEmitter {
   sdkVersion: number;
   messageIdCounter: number;
   plugins: Plugins;
+  lessPlugins: Plugins;
   showAllPlugins: boolean;
   connection: RSocketClientSocket<any, any> | null | undefined;
   responder: Partial<Responder<any, any>>;
@@ -117,7 +118,7 @@ export default class Client extends EventEmitter {
       reject: (err: Error) => void;
       metadata: RequestMetadata;
       // eslint-disable-next-line prettier/prettier
-      }
+    }
   >;
 
   constructor(

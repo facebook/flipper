@@ -22,6 +22,7 @@ export type State = {
   userPreferredDevice: null | string;
   userPreferredPlugin: null | string;
   userPreferredApp: null | string;
+  userLRUPlugins: Map<string, Array<string>>;
   error: null | string;
   clients: Array<Client>;
   uninitializedClients: Array<{
@@ -31,6 +32,8 @@ export type State = {
   }>;
   deepLinkPayload: null | string;
 };
+
+const MAX_MINIMUM_PLUGINS = 5;
 
 export type Action =
   | {
@@ -110,6 +113,7 @@ const INITAL_STATE: State = {
   userPreferredDevice: null,
   userPreferredPlugin: null,
   userPreferredApp: null,
+  userLRUPlugins: new Map(),
   error: null,
   clients: [],
   uninitializedClients: [],
@@ -211,11 +215,21 @@ const reducer = (state: State = INITAL_STATE, action: Action): State => {
         performance.mark(`activePlugin-${selectedPlugin}`);
       }
 
+      const LRUPlugins =
+        state.userLRUPlugins[selectedApp || state.userPreferredApp] || [];
+      const idxLRU = LRUPlugins.indexOf(selectedPlugin);
+      if (idxLRU > 0) {
+        LRUPlugins.splice(idxLRU, 1);
+      }
+      LRUPlugins.unshift(selectedPlugin);
+      LRUPlugins.splice(MAX_MINIMUM_PLUGINS);
+
       return {
         ...state,
         ...payload,
         userPreferredApp: selectedApp || state.userPreferredApp,
         userPreferredPlugin: selectedPlugin,
+        userLRUPlugins: {...state.userLRUPlugins, [selectedApp]: LRUPlugins},
       };
     }
     case 'SELECT_USER_PREFERRED_PLUGIN': {
@@ -224,8 +238,18 @@ const reducer = (state: State = INITAL_STATE, action: Action): State => {
     }
     case 'NEW_CLIENT': {
       const {payload} = action;
-      const {userPreferredApp, userPreferredPlugin} = state;
+      const {userPreferredApp, userPreferredPlugin, userLRUPlugins} = state;
       let {selectedApp, selectedPlugin} = state;
+
+      const lessPlugins = userLRUPlugins[payload.id];
+      if (lessPlugins) {
+        payload.lessPlugins = lessPlugins.concat(
+          payload.plugins.filter(p => !lessPlugins.includes(p)),
+        );
+      } else {
+        payload.lessPlugins = payload.plugins;
+      }
+      payload.lessPlugins = payload.lessPlugins.slice(0, MAX_MINIMUM_PLUGINS);
 
       if (
         userPreferredApp &&
@@ -247,6 +271,10 @@ const reducer = (state: State = INITAL_STATE, action: Action): State => {
             c.client.appName !== payload.query.app
           );
         }),
+        userLRUPlugins: {
+          ...state.userLRUPlugins,
+          [payload.id]: payload.lessPlugins,
+        },
         selectedApp,
         selectedPlugin,
       };
@@ -348,6 +376,7 @@ const reducer = (state: State = INITAL_STATE, action: Action): State => {
         clients: state.clients.map((client: Client) => {
           if (client.id === payload) {
             client.showAllPlugins = !client.showAllPlugins;
+            client.lessPlugins = state.userLRUPlugins[payload];
           }
           return client;
         }),

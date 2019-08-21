@@ -71,6 +71,7 @@ export default combineReducers<State, Actions>({
         'userPreferredDevice',
         'userPreferredPlugin',
         'userPreferredApp',
+        'userLRUPlugins',
       ],
     },
     connections,
