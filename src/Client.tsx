@@ -175,6 +175,20 @@ export default class Client extends EventEmitter {
     }
   }
 
+  /// Sort plugins by LRU order stored in lessPlugins; if not, sort by alphabet
+  byClientLRU(a: typeof FlipperPlugin, b: typeof FlipperPlugin): number {
+    const hasA = this.lessPlugins.includes(a.id);
+    const hasB = this.lessPlugins.includes(b.id);
+    if (hasA && hasB) {
+      return this.lessPlugins.indexOf(a.id) > this.lessPlugins.indexOf(b.id)
+        ? 1
+        : -1;
+    } else if (hasA !== hasB) {
+      return hasB ? 1 : -1;
+    }
+    return (a.title || a.id) > (b.title || b.id) ? 1 : -1;
+  }
+
   /* All clients should have a corresponding Device in the store.
      However, clients can connect before a device is registered, so wait a
      while for the device to be registered if it isn't already. */

@@ -215,10 +215,11 @@ const reducer = (state: State = INITAL_STATE, action: Action): State => {
         performance.mark(`activePlugin-${selectedPlugin}`);
       }
 
-      const LRUPlugins =
-        state.userLRUPlugins[selectedApp || state.userPreferredApp] || [];
+      const LRUPlugins = (
+        state.userLRUPlugins[selectedApp || state.userPreferredApp] || []
+      ).slice();
       const idxLRU = LRUPlugins.indexOf(selectedPlugin);
-      if (idxLRU > 0) {
+      if (idxLRU >= 0) {
         LRUPlugins.splice(idxLRU, 1);
       }
       LRUPlugins.unshift(selectedPlugin);
@@ -241,13 +242,13 @@ const reducer = (state: State = INITAL_STATE, action: Action): State => {
       const {userPreferredApp, userPreferredPlugin, userLRUPlugins} = state;
       let {selectedApp, selectedPlugin} = state;
 
-      const lessPlugins = userLRUPlugins[payload.id];
+      const lessPlugins = (userLRUPlugins[payload.id] || []).slice();
       if (lessPlugins) {
         payload.lessPlugins = lessPlugins.concat(
           payload.plugins.filter(p => !lessPlugins.includes(p)),
         );
       } else {
-        payload.lessPlugins = payload.plugins;
+        payload.lessPlugins = payload.plugins.slice();
       }
       payload.lessPlugins = payload.lessPlugins.slice(0, MAX_MINIMUM_PLUGINS);
 

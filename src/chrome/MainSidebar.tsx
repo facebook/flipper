@@ -13,7 +13,6 @@ import {FlipperBasePlugin} from '../plugin';
 import {PluginNotification} from '../reducers/notifications';
 import {ActiveSheet} from '../reducers/application';
 import {State as Store} from '../reducers';
-import {isTopUsedPlugin} from '../fb-stubs/pluginUsage';
 
 import {
   Sidebar,
@@ -318,13 +317,12 @@ class MainSidebar extends PureComponent<Props> {
                 {Array.from(this.props.clientPlugins.values())
                   .filter(
                     (p: typeof FlipperDevicePlugin) =>
-                      client.plugins.indexOf(p.id) > -1,
+                      (client.showAllPlugins
+                        ? client.plugins
+                        : client.lessPlugins
+                      ).indexOf(p.id) > -1,
                   )
-                  .filter(
-                    (p: typeof FlipperDevicePlugin) =>
-                      client.showAllPlugins || isTopUsedPlugin(p.title, 5),
-                  )
-                  .sort(byPluginNameOrId)
+                  .sort((a, b) => client.byClientLRU(a, b))
                   .map((plugin: typeof FlipperDevicePlugin) => (
                     <PluginSidebarListItem
                       key={plugin.id}
