@@ -53,7 +53,7 @@ public class FlipperOkhttpInterceptor implements Interceptor, BufferingFlipperPl
 
     // Check if there is a mock response
     Response mockResponse = getMockResponse(request);
-    Response response = mockResponse != null ? getMockResponse(request) : chain.proceed(request);
+    Response response = mockResponse != null ? mockResponse : chain.proceed(request);
 
     ResponseBody body = response.body();
     ResponseInfo responseInfo = convertResponse(response, body, identifier);
