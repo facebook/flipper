@@ -10,6 +10,12 @@ import child_process from 'child_process';
 import BaseDevice from './BaseDevice';
 import JSONStream from 'JSONStream';
 import {Transform} from 'stream';
+import electron from 'electron';
+import fs from 'fs';
+import uuid from 'uuid/v1';
+import path from 'path';
+import {promisify} from 'util';
+import {exec} from 'child_process';
 
 type IOSLogLevel = 'Default' | 'Info' | 'Debug' | 'Error' | 'Fault';
 
@@ -40,6 +46,18 @@ export default class IOSDevice extends BaseDevice {
     this.os = 'iOS';
     this.buffer = '';
     this.log = this.startLogListener();
+  }
+
+  screenshot(): Promise<Buffer> {
+    const tmpImageName = uuid() + '.png';
+    const tmpDirectory = (electron.app || electron.remote.app).getPath('temp');
+    const tmpFilePath = path.join(tmpDirectory, tmpImageName);
+    const command = `xcrun simctl io booted screenshot ${tmpFilePath}`;
+    return promisify(exec)(command)
+      .then(() => promisify(fs.readFile)(tmpFilePath))
+      .then(buffer => {
+        return promisify(fs.unlink)(tmpFilePath).then(() => buffer);
+      });
   }
 
   teardown() {

@@ -10,6 +10,7 @@ import {Priority} from 'adbkit-logcat-fb';
 import child_process from 'child_process';
 import child_process_promise from 'child-process-es6-promise';
 import ArchivedDevice from './ArchivedDevice';
+import {ReadStream} from 'fs';
 
 type ADBClient = any;
 
@@ -98,5 +99,19 @@ export default class AndroidDevice extends BaseDevice {
   navigateToLocation(location: string) {
     const shellCommand = `am start ${encodeURI(location)}`;
     this.adb.shell(this.serial, shellCommand);
+  }
+
+  screenshot(): Promise<Buffer> {
+    return new Promise((resolve, reject) => {
+      this.adb.screencap(this.serial).then((stream: ReadStream) => {
+        const chunks: Array<Buffer> = [];
+        stream
+          .on('data', (chunk: Buffer) => chunks.push(chunk))
+          .once('end', () => {
+            resolve(Buffer.concat(chunks));
+          })
+          .once('error', reject);
+      });
+    });
   }
 }

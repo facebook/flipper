@@ -5,7 +5,7 @@
  * @format
  */
 
-import {Button, ButtonGroup} from 'flipper';
+import {Button, ButtonGroup, writeBufferToFile} from 'flipper';
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import AndroidDevice from '../devices/AndroidDevice';
@@ -26,17 +26,10 @@ const CAPTURE_LOCATION = expandTilde(
   config().screenCapturePath || remote.app.getPath('desktop'),
 );
 
-type PullTransfer = any;
-
 type OwnProps = {};
 
 type StateFromProps = {
-  selectedDevice:
-    | BaseDevice
-    | typeof AndroidDevice
-    | typeof IOSDevice
-    | null
-    | undefined;
+  selectedDevice: BaseDevice | null | undefined;
 };
 
 type DispatchFromProps = {};
@@ -71,17 +64,6 @@ function getOpenCommand(): string {
 
 function getFileName(extension: 'png' | 'mp4'): string {
   return `Screen Capture ${new Date().toISOString()}.${extension}`;
-}
-
-function writePngStreamToFile(stream: PullTransfer): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const pngPath = path.join(CAPTURE_LOCATION, getFileName('png'));
-    stream.on('end', () => {
-      resolve(pngPath);
-    });
-    stream.on('error', reject);
-    stream.pipe(fs.createWriteStream(pngPath));
-  });
 }
 
 type Props = OwnProps & StateFromProps & DispatchFromProps;
@@ -132,32 +114,14 @@ class ScreenCaptureButtons extends Component<Props, State> {
 
   captureScreenshot: Promise<void> | any = () => {
     const {selectedDevice} = this.props;
-
-    if (selectedDevice instanceof AndroidDevice) {
-      return reportPlatformFailures(
-        selectedDevice.adb
-          .screencap(selectedDevice.serial)
-          .then(writePngStreamToFile)
-          .then(openFile),
-        'captureScreenshotAndroid',
-      ).catch(console.error);
-    } else if (selectedDevice instanceof IOSDevice) {
-      const screenshotPath = path.join(CAPTURE_LOCATION, getFileName('png'));
-      return reportPlatformFailures(
-        new Promise((resolve, reject) => {
-          exec(
-            `xcrun simctl io booted screenshot "${screenshotPath}"`,
-            async err => {
-              if (err) {
-                reject(err);
-              } else {
-                openFile(screenshotPath);
-                resolve();
-              }
-            },
-          );
-        }),
-        'captureScreenshotIos',
+    const pngPath = path.join(CAPTURE_LOCATION, getFileName('png'));
+    if (selectedDevice != null) {
+      reportPlatformFailures(
+        selectedDevice
+          .screenshot()
+          .then((buffer: Buffer) => writeBufferToFile(pngPath, buffer))
+          .then((path: string) => openFile(path)),
+        'captureScreenshot',
       );
     }
   };

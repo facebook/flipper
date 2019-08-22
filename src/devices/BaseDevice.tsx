@@ -145,4 +145,10 @@ export default class BaseDevice {
   archive(): any | null | undefined {
     return null;
   }
+
+  screenshot(): Promise<Buffer> {
+    return Promise.reject(
+      new Error('No screenshot support for current device'),
+    );
+  }
 }
