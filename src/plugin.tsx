@@ -5,8 +5,8 @@
  * @format
  */
 
-import {KeyboardActions} from './MenuBar.js';
-import {App} from './App.js';
+import {KeyboardActions} from './MenuBar';
+import {App} from './App';
 import {Logger} from './fb-interfaces/Logger.js';
 import Client from './Client';
 import {Store, MiddlewareAPI} from './reducers/index';

@@ -7,6 +7,7 @@
 
 import React, {Component} from 'react';
 import {Transition} from 'react-transition-group';
+import {TransitionStatus} from 'react-transition-group/Transition';
 import {setActiveSheet} from '../reducers/application';
 import {connect} from 'react-redux';
 import {styled} from 'flipper';
@@ -16,7 +17,7 @@ import {State as Store} from '../reducers';
 
 import {ActiveSheet} from '../reducers/application';
 
-const DialogContainer = styled('div')(({state}) => ({
+const DialogContainer = styled('div')(({state}: {state: TransitionStatus}) => ({
   transform: `translate(-50%, ${
     state === 'entering' || state === 'exiting' || state === 'exited'
       ? 'calc(-100% - 20px)'

@@ -166,8 +166,7 @@ class PluginContainer extends PureComponent<Props> {
         <Container key="plugin">
           <ErrorBoundary
             heading={`Plugin "${activePlugin.title ||
-              'Unknown'}" encountered an error during render`}
-            logger={this.props.logger}>
+              'Unknown'}" encountered an error during render`}>
             {React.createElement(activePlugin, props)}
           </ErrorBoundary>
         </Container>

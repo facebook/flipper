@@ -239,7 +239,7 @@ type OwnProps = {
    * Whether the button should have additional padding left and right.
    */
   padded?: boolean;
-};
+} & React.HTMLProps<HTMLDivElement>;
 
 type State = {
   active: boolean;

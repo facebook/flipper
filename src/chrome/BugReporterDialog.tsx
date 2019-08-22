@@ -43,7 +43,7 @@ const Center = styled(Text)({
 });
 
 const Title = styled('div')({
-  fontWeight: '500',
+  fontWeight: 500,
   marginTop: 8,
   marginLeft: 2,
   marginBottom: 8,
@@ -119,7 +119,7 @@ class BugReporterDialog extends Component<Props, State> {
   titleRef: HTMLElement;
   descriptionRef: HTMLElement;
 
-  onDescriptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  onDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     this.setState({description: e.target.value});
   };
 

@@ -7,7 +7,7 @@
 import Link from '../Link';
 import {DataInspectorSetValue} from './DataInspector';
 import {PureComponent} from 'react';
-import styled from '../../styled/index.js';
+import styled from 'react-emotion';
 import {SketchPicker} from 'react-color';
 import {Component, Fragment} from 'react';
 import Popover from '../Popover';

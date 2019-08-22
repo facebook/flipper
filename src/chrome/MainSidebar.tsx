@@ -34,8 +34,9 @@ import {selectPlugin, showMoreOrLessPlugins} from '../reducers/connections';
 import {setActiveSheet} from '../reducers/application';
 import UserAccount from './UserAccount';
 import {connect} from 'react-redux';
+import {BackgroundColorProperty} from 'csstype';
 
-const ListItem = styled('div')(({active}) => ({
+const ListItem = styled('div')(({active}: {active?: boolean}) => ({
   paddingLeft: 10,
   display: 'flex',
   alignItems: 'center',
@@ -64,49 +65,53 @@ const SidebarHeader = styled(FlexBox)({
   flexShrink: 0,
 });
 
-const PluginShape = styled(FlexBox)(({backgroundColor}) => ({
-  marginRight: 5,
-  backgroundColor,
-  borderRadius: 3,
-  flexShrink: 0,
-  width: 18,
-  height: 18,
-  justifyContent: 'center',
-  alignItems: 'center',
-}));
+const PluginShape = styled(FlexBox)(
+  ({backgroundColor}: {backgroundColor: BackgroundColorProperty}) => ({
+    marginRight: 5,
+    backgroundColor,
+    borderRadius: 3,
+    flexShrink: 0,
+    width: 18,
+    height: 18,
+    justifyContent: 'center',
+    alignItems: 'center',
+  }),
+);
 
-const PluginName = styled(Text)(props => ({
-  minWidth: 0,
-  textOverflow: 'ellipsis',
-  whiteSpace: 'nowrap',
-  overflow: 'hidden',
-  display: 'flex',
-  flexDirection: 'row',
-  justifyContent: 'space-between',
-  flexGrow: 1,
-  '::after': {
-    fontSize: 12,
-    display: props.count ? 'inline-block' : 'none',
-    padding: '0 8px',
-    lineHeight: '17px',
-    height: 17,
-    alignSelf: 'center',
-    content: `"${props.count}"`,
-    borderRadius: '999em',
-    color: props.isActive ? colors.macOSTitleBarIconSelected : colors.white,
-    backgroundColor: props.isActive
-      ? colors.white
-      : colors.macOSTitleBarIconSelected,
-    fontWeight: 500,
-  },
-}));
+const PluginName = styled(Text)(
+  (props: {isActive?: boolean; count?: number}) => ({
+    minWidth: 0,
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    flexGrow: 1,
+    '::after': {
+      fontSize: 12,
+      display: props.count ? 'inline-block' : 'none',
+      padding: '0 8px',
+      lineHeight: '17px',
+      height: 17,
+      alignSelf: 'center',
+      content: `"${props.count}"`,
+      borderRadius: '999em',
+      color: props.isActive ? colors.macOSTitleBarIconSelected : colors.white,
+      backgroundColor: props.isActive
+        ? colors.white
+        : colors.macOSTitleBarIconSelected,
+      fontWeight: 500,
+    },
+  }),
+);
 
 const Plugins = styled(FlexColumn)({
   flexGrow: 1,
   overflow: 'auto',
 });
 
-const PluginDebugger = styled(FlexBox)(props => ({
+const PluginDebugger = styled(FlexBox)({
   color: colors.blackAlpha50,
   alignItems: 'center',
   padding: 10,
@@ -114,7 +119,7 @@ const PluginDebugger = styled(FlexBox)(props => ({
   whiteSpace: 'nowrap',
   overflow: 'hidden',
   textOverflow: 'ellipsis',
-}));
+});
 
 const PluginShowMoreOrLess = styled(ListItem)({
   color: colors.blue,
@@ -316,14 +321,14 @@ class MainSidebar extends PureComponent<Props> {
                 <SidebarHeader>{client.query.app}</SidebarHeader>
                 {Array.from(this.props.clientPlugins.values())
                   .filter(
-                    (p: typeof FlipperDevicePlugin) =>
+                    p =>
                       (client.showAllPlugins
                         ? client.plugins
                         : client.lessPlugins
                       ).indexOf(p.id) > -1,
                   )
                   .sort((a, b) => client.byClientLRU(a, b))
-                  .map((plugin: typeof FlipperDevicePlugin) => (
+                  .map(plugin => (
                     <PluginSidebarListItem
                       key={plugin.id}
                       isActive={

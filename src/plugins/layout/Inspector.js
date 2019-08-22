@@ -73,7 +73,6 @@ export default class Inspector extends Component<Props> {
     if (!this.props.ax) {
       return null;
     }
-    // $FlowFixMe: Object.values returns Array<mixed>
     const elements: Array<Element> = Object.values(
       this.props.persistedState.AXelements,
     );

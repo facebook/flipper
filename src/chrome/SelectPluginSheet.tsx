@@ -55,7 +55,17 @@ const PluginRowComponentContainer = styled(FlexColumn)({
 });
 
 const Padder = styled('div')(
-  ({paddingLeft, paddingRight, paddingBottom, paddingTop}) => ({
+  ({
+    paddingLeft,
+    paddingRight,
+    paddingBottom,
+    paddingTop,
+  }: {
+    paddingLeft?: number;
+    paddingRight?: number;
+    paddingBottom?: number;
+    paddingTop?: number;
+  }) => ({
     paddingLeft: paddingLeft || 0,
     paddingRight: paddingRight || 0,
     paddingBottom: paddingBottom || 0,

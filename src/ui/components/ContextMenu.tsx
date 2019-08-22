@@ -12,7 +12,7 @@ import {MenuItemConstructorOptions} from 'electron';
 
 export type MenuTemplate = Array<MenuItemConstructorOptions>;
 
-type Props = {
+type Props<C> = {
   /** List of items in the context menu. Used for static menus. */
   items?: MenuTemplate;
   /** Function to generate the menu. Called right before the menu is showed. Used for dynamic menus. */
@@ -22,7 +22,7 @@ type Props = {
   /** The component that is used to wrap the children. Defaults to `FlexColumn`. */
   component: React.ComponentType<any> | string;
   onMouseDown?: (e: React.MouseEvent) => any;
-};
+} & C;
 
 /**
  * Native context menu that is shown on secondary click.
@@ -31,7 +31,7 @@ type Props = {
  *
  * Separators can be added by `{type: 'separator'}`
  */
-export default class ContextMenu extends React.Component<Props> {
+export default class ContextMenu<C = any> extends React.Component<Props<C>> {
   static defaultProps = {
     component: FlexColumn,
   };

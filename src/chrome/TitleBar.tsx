@@ -40,7 +40,7 @@ import {clipboard} from 'electron';
 import React from 'react';
 import {State} from 'src/reducers';
 
-const AppTitleBar = styled(FlexRow)(({focused}) => ({
+const AppTitleBar = styled(FlexRow)(({focused}: {focused?: boolean}) => ({
   background: focused
     ? `linear-gradient(to bottom, ${colors.macOSTitleBarBackgroundTop} 0%, ${
         colors.macOSTitleBarBackgroundBottom
@@ -146,7 +146,7 @@ class TitleBar extends React.Component<Props, StateFromProps> {
     return (
       <AppTitleBar focused={this.props.windowIsFocused} className="toolbar">
         {navPluginIsActive ? (
-          <ButtonGroupChain iconSize={14}>
+          <ButtonGroupChain iconSize={12}>
             <DevicesButton />
             <LocationsButton />
           </ButtonGroupChain>

@@ -11,7 +11,7 @@ import {FlipperPlugin, FlipperDevicePlugin} from '../plugin';
 import {State} from '../reducers/plugins';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import * as Flipper from '../index.js';
+import * as Flipper from '../index';
 import {
   registerPlugins,
   addGatekeepedPlugins,

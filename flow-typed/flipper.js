@@ -11,18 +11,18 @@
 // than the original flow one. (Persisted State generic param being used
 // in reducers etc.
 
-declare module plugin {
-  import type {KeyboardActions} from './MenuBar.js';
-  import type {App} from './App.js';
-  import type {Logger} from './fb-interfaces/Logger.js';
-  import type Client from './Client.js';
-  import type {Store, MiddlewareAPI} from './reducers/index.js';
-  import type {MetricType} from './utils/exportMetrics.tsx';
-  import type {Node} from 'react';
-  import type BaseDevice from './devices/BaseDevice.js';
-  import type AndroidDevice from './devices/AndroidDevice';
-  import type IOSDevice from './devices/IOSDevice';
+import type {KeyboardActions} from './MenuBar.js';
+import type {App} from './App.js';
+import type {Logger} from './fb-interfaces/Logger.js';
+import type Client from './Client.js';
+import type {Store, MiddlewareAPI} from './reducers/index.js';
+import type {MetricType} from './utils/exportMetrics.tsx';
+import type {Node} from 'react';
+import type BaseDevice from './devices/BaseDevice.js';
+import type AndroidDevice from './devices/AndroidDevice';
+import type IOSDevice from './devices/IOSDevice';
 
+declare module 'flipper' {
   // This function is intended to be called from outside of the plugin.
   // If you want to `call` from the plugin use, this.client.call
   declare function callClient(
@@ -172,4 +172,99 @@ declare module plugin {
 
     _init(): void;
   }
+
+  declare var AndroidDevice: any;
+  declare var BaseDevice: any;
+  declare var Block: any;
+  declare var Box: any;
+  declare var Button: any;
+  declare var ButtonGroup: any;
+  declare var Checkbox: any;
+  declare var CodeBlock: any;
+  declare var Component: any;
+  declare var ContextMenu: any;
+  declare var DataDescription: any;
+  declare var DataInspector: any;
+  declare var DetailSidebar: any;
+  declare var Device: any;
+  declare var DeviceLogEntry: any;
+  declare var Element: any;
+  declare var ElementID: any;
+  declare var ElementSearchResultSet: any;
+  declare var ElementsInspector: any;
+  declare var ErrorBlock: any;
+  declare var ErrorBlockContainer: any;
+  declare var Filter: any;
+  declare var FlexBox: any;
+  declare var FlexCenter: any;
+  declare var FlexColumn: any;
+  declare var FlexRow: any;
+  declare var FlipperBasePlugin: any;
+  declare var FlipperPlugin: any;
+  declare var GK: any;
+  declare var Glyph: any;
+  declare var Heading: any;
+  declare var HorizontalRule: any;
+  declare var Input: any;
+  declare var Label: any;
+  declare var Link: any;
+  declare var LoadingIndicator: any;
+  declare var LogLevel: any;
+  declare var ManagedDataInspector: any;
+  declare var ManagedTable: any;
+  declare var ManagedTable_immutable: any;
+  declare var MarkerTimeline: any;
+  declare var MetricType: any;
+  declare var MiddlewareAPI: any;
+  declare var OS: any;
+  declare var Panel: any;
+  declare var PureComponent: any;
+  declare var SearchBox: any;
+  declare var SearchIcon: any;
+  declare var SearchInput: any;
+  declare var Searchable: any;
+  declare var SearchableProps: any;
+  declare var SearchableTable: any;
+  declare var SearchableTable_immutable: any;
+  declare var Select: any;
+  declare var Sheet: any;
+  declare var Sidebar: any;
+  declare var SidebarExtensions: any;
+  declare var Spacer: any;
+  declare var StackTrace: any;
+  declare var StatusIndicator: any;
+  declare var Store: any;
+  declare var Tab: any;
+  declare var TableBodyRow: any;
+  declare var TableColumnOrder: any;
+  declare var TableColumnSizes: any;
+  declare var TableColumns: any;
+  declare var TableHighlightedRows: any;
+  declare var TableRowSortOrder: any;
+  declare var TableRows: any;
+  declare var TableRows_immutable: any;
+  declare var Tabs: any;
+  declare var Text: any;
+  declare var Textarea: any;
+  declare var ToggleButton: any;
+  declare var Toolbar: any;
+  declare var Tooltip: any;
+  declare var Value: any;
+  declare var VerticalRule: any;
+  declare var View: any;
+  declare var bufferToBlob: any;
+  declare var clipboard: any;
+  declare var colors: any;
+  declare var constants: any;
+  declare var createPaste: any;
+  declare var createTablePlugin: any;
+  declare var getPersistedState: any;
+  declare var getPluginKey: any;
+  declare var getStringFromErrorLike: any;
+  declare var isProduction: any;
+  declare var keyframes: any;
+  declare var renderValue: any;
+  declare var shouldParseAndroidLog: any;
+  declare var styled: any;
+  declare var textContent: any;
 }

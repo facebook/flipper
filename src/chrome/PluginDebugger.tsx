@@ -33,7 +33,7 @@ const InfoText = styled(Text)({
 });
 
 const Title = styled('div')({
-  fontWeight: '500',
+  fontWeight: 500,
   marginBottom: 10,
   marginTop: 8,
 });
@@ -116,7 +116,6 @@ class PluginDebugger extends Component<Props> {
     loaded: boolean,
     status: string,
     GKname: string | null | undefined,
-    GKpassing: boolean | null | undefined,
     pluginPath: string | null | undefined,
   ): TableBodyRow {
     return {
@@ -125,11 +124,7 @@ class PluginDebugger extends Component<Props> {
         lamp: {value: <Lamp on={loaded} />},
         name: {value: <Ellipsis>{name}</Ellipsis>},
         status: {
-          value: status ? (
-            <Ellipsis title={status} passing={false}>
-              {status}
-            </Ellipsis>
-          ) : null,
+          value: status ? <Ellipsis title={status}>{status}</Ellipsis> : null,
         },
         gk: {
           value: GKname && (
@@ -184,7 +179,6 @@ class PluginDebugger extends Component<Props> {
           false,
           'GK disabled',
           plugin.gatekeeper,
-          false,
           externalPluginPath(plugin),
         ),
       ),
@@ -197,7 +191,6 @@ class PluginDebugger extends Component<Props> {
           true,
           '',
           plugin.gatekeeper,
-          true,
           externalPluginPath(plugin),
         ),
       ),
@@ -210,7 +203,6 @@ class PluginDebugger extends Component<Props> {
           true,
           '',
           plugin.gatekeeper,
-          true,
           externalPluginPath(plugin),
         ),
       ),
@@ -223,7 +215,6 @@ class PluginDebugger extends Component<Props> {
           false,
           'disabled',
           null,
-          null,
           externalPluginPath(plugin),
         ),
       ),
@@ -235,7 +226,6 @@ class PluginDebugger extends Component<Props> {
           plugin.name,
           false,
           status,
-          null,
           null,
           externalPluginPath(plugin),
         ),
@@ -335,7 +325,7 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
       disabledPlugins,
       failedPlugins,
     },
-    connections: {selectedPlugin, clients, selectedDevice},
+    connections: {clients, selectedDevice},
   }) => ({
     devicePlugins: Array.from(devicePlugins.values()),
     clientPlugins: Array.from(clientPlugins.values()),

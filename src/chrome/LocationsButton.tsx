@@ -36,7 +36,7 @@ const DropdownButton = styled(Button)({
   fontSize: 11,
 });
 
-const shortenText = (text: String, MAX_CHARACTERS = 30): String => {
+const shortenText = (text: string, MAX_CHARACTERS = 30): string => {
   if (text.length <= MAX_CHARACTERS) {
     return text;
   } else {

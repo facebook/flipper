@@ -161,7 +161,6 @@ export default class extends Component<Props, State> {
     ) {
       const node = document.querySelector(`[data-id="${focusedGenerationId}"]`);
       if (node) {
-        // $FlowFixMe scrollIntoViewIfNeeded exists
         node.scrollIntoViewIfNeeded();
       }
     }

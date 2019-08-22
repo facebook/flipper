@@ -26,7 +26,7 @@ const Container = styled(FlexColumn)({
   backgroundColor: colors.light02,
 });
 
-const Welcome = styled(FlexColumn)(({isMounted}) => ({
+const Welcome = styled(FlexColumn)(({isMounted}: {isMounted?: boolean}) => ({
   width: 460,
   background: colors.white,
   borderRadius: 10,
