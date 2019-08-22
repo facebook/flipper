@@ -171,7 +171,10 @@ class TitleBar extends React.Component<Props, StateFromProps> {
         {isAutoUpdaterEnabled() ? (
           <AutoUpdateVersion version={this.props.version} />
         ) : (
-          <UpdateIndicator launcherMsg={this.props.launcherMsg} />
+          <UpdateIndicator
+            launcherMsg={this.props.launcherMsg}
+            version={this.props.version}
+          />
         )}
         {config.bugReportButtonVisible && (
           <Button
