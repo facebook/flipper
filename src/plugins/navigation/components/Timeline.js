@@ -6,7 +6,7 @@
  * @flow strict-local
  */
 
-import {colors, FlexCenter, styled} from 'flipper';
+import {colors, FlexCenter, styled, LoadingIndicator} from 'flipper';
 import {NavigationInfoBox} from './';
 
 import type {Bookmark, NavigationEvent} from '../flow-types';
@@ -23,11 +23,28 @@ const TimelineContainer = styled('div')({
   flexGrow: 1,
 });
 
+const NavigationEventContainer = styled('div')({
+  display: 'flex',
+  margin: 20,
+});
+
 const NoData = styled(FlexCenter)({
   height: '100%',
   fontSize: 18,
   backgroundColor: colors.macOSTitleBarBackgroundBlur,
   color: colors.macOSTitleBarIcon,
+});
+
+const ScreenshotContainer = styled('div')({
+  width: 200,
+  minWidth: 200,
+  margin: 10,
+  border: `1px solid ${colors.highlight}`,
+  borderRadius: '10px',
+  overflow: 'hidden',
+  img: {
+    width: '100%',
+  },
 });
 
 export default (props: Props) => {
@@ -38,13 +55,28 @@ export default (props: Props) => {
     <TimelineContainer>
       {events.map((event: NavigationEvent, idx) => {
         return (
-          <NavigationInfoBox
-            key={idx}
-            isBookmarked={event.uri != null ? bookmarks.has(event.uri) : false}
-            uri={event.uri}
-            onNavigate={onNavigate}
-            onFavorite={onFavorite}
-          />
+          <NavigationEventContainer>
+            {event.uri != null ? (
+              <ScreenshotContainer>
+                {event.screenshot != null ? (
+                  <img src={event.screenshot} />
+                ) : (
+                  <FlexCenter grow>
+                    <LoadingIndicator />
+                  </FlexCenter>
+                )}
+              </ScreenshotContainer>
+            ) : null}
+            <NavigationInfoBox
+              key={idx}
+              isBookmarked={
+                event.uri != null ? bookmarks.has(event.uri) : false
+              }
+              uri={event.uri}
+              onNavigate={onNavigate}
+              onFavorite={onFavorite}
+            />
+          </NavigationEventContainer>
         );
       })}
     </TimelineContainer>

@@ -6,7 +6,7 @@
  * @flow strict-local
  */
 
-import {FlipperPlugin} from 'flipper';
+import {FlipperPlugin, bufferToBlob} from 'flipper';
 import {
   BookmarksSidebar,
   SaveBookmarkDialog,
@@ -63,19 +63,6 @@ export default class extends FlipperPlugin<State, {}, PersistedState> {
     payload: NavigationEvent,
   ): $Shape<PersistedState> => {
     switch (method) {
-      case 'nav_event':
-        return {
-          ...persistedState,
-          currentURI:
-            payload.uri == null ? persistedState.currentURI : payload.uri,
-          navigationEvents: [
-            {
-              uri: payload.uri === undefined ? null : payload.uri,
-              date: payload.date || new Date(),
-            },
-            ...persistedState.navigationEvents,
-          ],
-        };
       default:
         return {
           ...persistedState,
@@ -83,8 +70,38 @@ export default class extends FlipperPlugin<State, {}, PersistedState> {
     }
   };
 
+  subscribeToNavigationEvents = () => {
+    this.client.subscribe('nav_event', payload => {
+      let {persistedState} = this.props;
+      const {setPersistedState} = this.props;
+      const navigationEvent: NavigationEvent = {
+        uri: payload.uri === undefined ? null : payload.uri,
+        date: payload.date || new Date(),
+        screenshot: null,
+      };
+      setPersistedState({
+        ...persistedState,
+        currentURI:
+          payload.uri == null ? persistedState.currentURI : payload.uri,
+        navigationEvents: [navigationEvent, ...persistedState.navigationEvents],
+      });
+      // Wait for view to render and then take a screenshot
+      setTimeout(() => {
+        persistedState = this.props.persistedState;
+        this.getDevice()
+          .then(device => device.screenshot())
+          .then((buffer: Buffer) => {
+            const blobURL = URL.createObjectURL(bufferToBlob(buffer));
+            navigationEvent.screenshot = blobURL;
+            setPersistedState({...persistedState});
+          });
+      }, 1000);
+    });
+  };
+
   componentDidMount = () => {
     const {selectedApp} = this.props;
+    this.subscribeToNavigationEvents();
     getAppMatchPatterns(selectedApp)
       .then(patterns => {
         this.props.setPersistedState({
