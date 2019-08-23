@@ -29,7 +29,7 @@
 namespace facebook {
 namespace flipper {
 
-static FlipperClient* kInstance;
+static FlipperClient* kInstance{nullptr};
 
 using folly::dynamic;
 
