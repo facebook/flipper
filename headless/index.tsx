@@ -8,46 +8,44 @@
 import path from 'path';
 import {createStore} from 'redux';
 import {applyMiddleware} from 'redux';
-import yargs from 'yargs';
-import dispatcher from '../src/dispatcher/index.tsx';
-import reducers from '../src/reducers/index.tsx';
-import {init as initLogger} from '../src/fb-stubs/Logger.tsx';
-import {exportStore, pluginsClassMap} from '../src/utils/exportData.tsx';
+import yargs, {Argv} from 'yargs';
+import dispatcher from '../src/dispatcher/index';
+import reducers from '../src/reducers/index';
+import {init as initLogger} from '../src/fb-stubs/Logger';
+import {exportStore, pluginsClassMap} from '../src/utils/exportData';
 import {
   exportMetricsWithoutTrace,
   exportMetricsFromTrace,
-} from '../src/utils/exportMetrics.tsx';
-import {listDevices} from '../src/utils/listDevices.tsx';
-// $FlowFixMe this file exist, trust me, flow!
+} from '../src/utils/exportMetrics';
+import {listDevices} from '../src/utils/listDevices';
 import setup from '../static/setup.js';
-import type {Store} from '../src/reducers/index.tsx';
-import {getPersistentPlugins} from '../src/utils/pluginUtils.tsx';
-import {serialize} from '../src/utils/serialization.tsx';
-import type BaseDevice from '../src/devices/BaseDevice.tsx';
+import {Store} from '../src/reducers/index';
+import {getPersistentPlugins} from '../src/utils/pluginUtils';
+import {serialize} from '../src/utils/serialization';
+import {getStringFromErrorLike} from '../src/utils/index';
+import AndroidDevice from '../src/devices/AndroidDevice';
 
-import {getStringFromErrorLike} from '../src/utils/index.tsx';
+type Action = {exit: boolean; result?: string};
 
-type Action = {|exit: true, result: string|} | {|exit: false|};
-
-type UserArguments = {|
-  securePort: string,
-  insecurePort: string,
-  dev: boolean,
-  exit: 'sigint' | 'disconnect',
-  verbose: boolean,
-  metrics: string,
-  listDevices: boolean,
-  device: string,
-  listPlugins: boolean,
-  selectPlugins: Array<string>,
-|};
+type UserArguments = {
+  securePort: string;
+  insecurePort: string;
+  dev: boolean;
+  exit: 'sigint' | 'disconnect';
+  verbose: boolean;
+  metrics: string;
+  listDevices: boolean;
+  device: string;
+  listPlugins: boolean;
+  selectPlugins: Array<string>;
+};
 
 yargs
   .usage('$0 [args]')
-  .command(
+  .command<UserArguments>(
     '*',
     'Start a headless Flipper instance',
-    yargs => {
+    (yargs: Argv<UserArguments>) => {
       yargs.option('secure-port', {
         default: '8088',
         describe: 'Secure port the Flipper server should run on.',
@@ -102,6 +100,7 @@ yargs
           'The identifier passed will be matched against the udid of the available devices and the matched device would be selected',
         type: 'string',
       });
+      return yargs;
     },
     startFlipper,
   )
@@ -131,7 +130,7 @@ function errorAndExit(error: any): void {
 async function earlyExitActions(
   exitClosures: Array<(userArguments: UserArguments) => Promise<Action>>,
   userArguments: UserArguments,
-  originalConsole: typeof global.console,
+  _originalConsole?: typeof global.console,
 ): Promise<void> {
   for (const exitAction of exitClosures) {
     try {
@@ -147,7 +146,7 @@ async function earlyExitActions(
 
 async function exitActions(
   exitClosures: Array<
-    (userArguments: UserArguments, store: Store) => Promise<Action>,
+    (userArguments: UserArguments, store: Store) => Promise<Action>
   >,
   userArguments: UserArguments,
   store: Store,
@@ -188,7 +187,7 @@ async function exitActions(
 
 async function storeModifyingActions(
   storeModifyingClosures: Array<
-    (userArguments: UserArguments, store: Store) => Promise<Action>,
+    (userArguments: UserArguments, store: Store) => Promise<Action>
   >,
   userArguments: UserArguments,
   store: Store,
@@ -217,10 +216,10 @@ async function startFlipper(userArguments: UserArguments) {
   // redirect all logging to stderr
   const originalConsole = global.console;
   global.console = new Proxy(console, {
-    get: function(obj, prop) {
+    get: function(_obj, prop) {
       return (...args) => {
         if (prop === 'error' || verbose) {
-          originalConsole.error(`[${prop}] `, ...args);
+          originalConsole.error(`[${String(prop)}] `, ...args);
         }
       };
     },
@@ -275,21 +274,20 @@ async function startFlipper(userArguments: UserArguments) {
   const logger = initLogger(store, {isHeadless: true});
 
   const earlyExitClosures: Array<
-    (userArguments: UserArguments) => Promise<Action>,
+    (userArguments: UserArguments) => Promise<Action>
   > = [
-    (userArguments: UserArguments) => {
+    async (userArguments: UserArguments) => {
       if (userArguments.listDevices) {
-        return listDevices().then(async (devices: Array<BaseDevice>) => {
-          const mapped = devices.map(device => {
-            return {
-              os: device.os,
-              title: device.title,
-              deviceType: device.deviceType,
-              serial: device.serial,
-            };
-          });
-          return {exit: true, result: await serialize(mapped)};
+        const devices = await listDevices();
+        const mapped = devices.map(device => {
+          return {
+            os: device.os,
+            title: device.title,
+            deviceType: device.deviceType,
+            serial: device.serial,
+          };
         });
+        return {exit: true, result: await serialize(mapped)};
       }
       return Promise.resolve({exit: false});
     },
@@ -300,40 +298,37 @@ async function startFlipper(userArguments: UserArguments) {
   const cleanupDispatchers = dispatcher(store, logger);
 
   const storeModifyingClosures: Array<
-    (userArguments: UserArguments, store: Store) => Promise<Action>,
+    (userArguments: UserArguments, store: Store) => Promise<Action>
   > = [
-    (userArguments: UserArguments, store: Store) => {
+    async (userArguments: UserArguments, store: Store) => {
       const {device: selectedDeviceID} = userArguments;
       if (selectedDeviceID) {
-        return listDevices().then(devices => {
-          const matchedDevice = devices.find(
-            device => device.serial === selectedDeviceID,
-          );
-          if (matchedDevice) {
-            if (matchedDevice.constructor.name === 'AndroidDevice') {
-              const ports = store.getState().application.serverPorts;
-              matchedDevice.reverse([ports.secure, ports.insecure]);
-            }
-            store.dispatch({
-              type: 'REGISTER_DEVICE',
-              payload: matchedDevice,
-            });
-            store.dispatch({
-              type: 'SELECT_DEVICE',
-              payload: matchedDevice,
-            });
-            return {exit: false};
+        const devices = await listDevices();
+        const matchedDevice = devices.find(
+          device => device.serial === selectedDeviceID,
+        );
+        if (matchedDevice) {
+          if (matchedDevice instanceof AndroidDevice) {
+            const ports = store.getState().application.serverPorts;
+            matchedDevice.reverse([ports.secure, ports.insecure]);
           }
-          return Promise.reject(
-            new Error(`No device matching the serial ${selectedDeviceID}`),
-          );
-        });
+          store.dispatch({
+            type: 'REGISTER_DEVICE',
+            payload: matchedDevice,
+          });
+          store.dispatch({
+            type: 'SELECT_DEVICE',
+            payload: matchedDevice,
+          });
+          return {exit: false};
+        }
+        throw new Error(`No device matching the serial ${selectedDeviceID}`);
       }
-      return Promise.resolve({
+      return {
         exit: false,
-      });
+      };
     },
-    (userArguments: UserArguments, store: Store) => {
+    async (userArguments: UserArguments, store: Store) => {
       const {selectPlugins} = userArguments;
       const selectedPlugins = selectPlugins.filter(selectPlugin => {
         return selectPlugin != undefined;
@@ -344,14 +339,14 @@ async function startFlipper(userArguments: UserArguments) {
           payload: selectedPlugins,
         });
       }
-      return Promise.resolve({
+      return {
         exit: false,
-      });
+      };
     },
   ];
 
   const exitActionClosures: Array<
-    (userArguments: UserArguments, store: Store) => Promise<Action>,
+    (userArguments: UserArguments, store: Store) => Promise<Action>
   > = [
     async (userArguments: UserArguments, store: Store) => {
       const {listPlugins} = userArguments;
@@ -367,20 +362,19 @@ async function startFlipper(userArguments: UserArguments) {
         exit: false,
       });
     },
-    (userArguments: UserArguments, store: Store) => {
+    async (userArguments: UserArguments, store: Store) => {
       const {metrics} = userArguments;
       if (shouldExportMetric(metrics) && metrics && metrics.length > 0) {
-        return exportMetricsFromTrace(
-          metrics,
-          pluginsClassMap(store.getState().plugins),
-          store.getState().plugins.selectedPlugins,
-        )
-          .then(payload => {
-            return {exit: true, result: payload ? payload.toString() : ''};
-          })
-          .catch(error => {
-            return {exit: true, result: error};
-          });
+        try {
+          const payload = await exportMetricsFromTrace(
+            metrics,
+            pluginsClassMap(store.getState().plugins),
+            store.getState().plugins.selectedPlugins,
+          );
+          return {exit: true, result: payload ? payload.toString() : ''};
+        } catch (error) {
+          return {exit: true, result: error};
+        }
       }
       return Promise.resolve({exit: false});
     },

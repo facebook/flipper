@@ -13,9 +13,9 @@
     "downlevelIteration": true,
     "esModuleInterop": true,
     "paths": {
-      "flipper": ["./src/index.js"]
+      "flipper": ["./src/index.tsx"]
     }
   },
-  "include": ["src/**/*", "types/*"],
+  "include": ["src/**/*", "types/*", "headless/*"],
   "exclude": ["node_modules", "**/*.spec.ts"]
 }
