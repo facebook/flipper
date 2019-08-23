@@ -16,7 +16,6 @@ import path from 'path';
 
 export type DefaultKeyboardAction = 'clear' | 'goToBottom' | 'createPaste';
 export type TopLevelMenu = 'Edit' | 'View' | 'Window' | 'Help';
-const {dialog} = electron.remote;
 
 export type KeyboardAction = {
   action: string;
@@ -177,7 +176,7 @@ function getTemplate(
       label: 'File...',
       accelerator: 'CommandOrControl+E',
       click: function() {
-        dialog.showSaveDialog(
+        electron.remote.dialog.showSaveDialog(
           null,
           {
             title: 'FlipperExport',
