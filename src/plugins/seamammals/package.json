@@ -1,7 +1,7 @@
 {
     "name": "sea-mammals",
     "version": "1.0.0",
-    "main": "index.js",
+    "main": "index.tsx",
     "license": "MIT",
     "icon": "apps",
     "title": "Sea Mammals",

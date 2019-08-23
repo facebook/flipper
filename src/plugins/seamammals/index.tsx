@@ -3,7 +3,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  * @format
- * @flow strict-local
  */
 
 import {
@@ -22,9 +21,9 @@ import React from 'react';
 type Id = number;
 
 type Row = {
-  id: Id,
-  title: string,
-  url: string,
+  id: Id;
+  title: string;
+  url: string;
 };
 
 function renderSidebar(row: Row) {
@@ -36,33 +35,32 @@ function renderSidebar(row: Row) {
 }
 
 type State = {
-  selectedID: ?string,
+  selectedID: string | null;
 };
 
 type PersistedState = {
-  [key: string]: Row,
+  [key: string]: Row;
 };
 
 export default class SeaMammals extends FlipperPlugin<
   State,
-  void,
-  PersistedState,
+  any,
+  PersistedState
 > {
   static defaultPersistedState = {};
 
-  static persistedStateReducer = (
+  static persistedStateReducer<PersistedState>(
     persistedState: PersistedState,
     method: string,
     payload: Row,
-  ) => {
+  ) {
     if (method === 'newRow') {
-      return {
-        ...persistedState,
+      return Object.assign({}, persistedState, {
         [payload.id]: payload,
-      };
+      });
     }
     return persistedState;
-  };
+  }
 
   static Container = styled(FlexRow)({
     backgroundColor: colors.macOSTitleBarBackgroundBlur,
@@ -100,12 +98,13 @@ export default class SeaMammals extends FlipperPlugin<
   }
 }
 
-class Card extends React.Component<{
-  ...Row,
-  onSelect: () => void,
-  selected: boolean,
-}> {
-  static Container = styled(FlexColumn)(props => ({
+class Card extends React.Component<
+  {
+    onSelect: () => void;
+    selected: boolean;
+  } & Row
+> {
+  static Container = styled(FlexColumn)((props: {selected?: boolean}) => ({
     margin: 10,
     borderRadius: 5,
     border: '2px solid black',
