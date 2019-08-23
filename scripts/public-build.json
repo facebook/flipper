@@ -46,6 +46,11 @@
         "shell":
           "curl -x fwdproxy:8080 $(cat RELEASE.json | jq -r '.upload_url' | sed -e 's#{?name,label}##')'?access_token='$(secrets_tool get SONAR_GITHUB_TOKEN)'&name=Flipper.zip' --header 'Content-Type: application/zip' --upload-file $SANDCASTLE_NEXUS'/Flipper-mac.zip' -X POST",
         "shell_type": "SandcastleLocalShell"
+      },
+      {
+        "name": "NPM publish",
+        "required": true,
+        "shell": "cd ../xplat/sonar-public/scripts/ && ./npm-publish.sh __VERSION__"
       }
     ]
   },
