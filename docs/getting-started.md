@@ -61,6 +61,10 @@ Now you can initialize Flipper in your Application's `onCreate` method, which in
 initializing SoLoader (for loading the C++ part of Flipper) and starting a `FlipperClient`.
 
 ```java
+import com.facebook.flipper.android.AndroidFlipperClient;
+import com.facebook.flipper.android.utils.FlipperUtils;
+import com.facebook.flipper.core.FlipperClient;
+
 public class MyApplication extends Application {
 
   @Override
