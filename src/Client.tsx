@@ -92,6 +92,11 @@ const handleError = (
   }
 };
 
+export const MAX_MINIMUM_PLUGINS = 5;
+export const SHOW_REMAINING_PLUGIN_IF_LESS_THAN = 3;
+export const SAVED_PLUGINS_COUNT =
+  MAX_MINIMUM_PLUGINS + SHOW_REMAINING_PLUGIN_IF_LESS_THAN;
+
 export default class Client extends EventEmitter {
   app: App;
   connected: boolean;
@@ -176,15 +181,24 @@ export default class Client extends EventEmitter {
   }
 
   /// Sort plugins by LRU order stored in lessPlugins; if not, sort by alphabet
-  byClientLRU(a: typeof FlipperPlugin, b: typeof FlipperPlugin): number {
-    const hasA = this.lessPlugins.includes(a.id);
-    const hasB = this.lessPlugins.includes(b.id);
-    if (hasA && hasB) {
-      return this.lessPlugins.indexOf(a.id) > this.lessPlugins.indexOf(b.id)
-        ? 1
-        : -1;
-    } else if (hasA !== hasB) {
-      return hasB ? 1 : -1;
+  byClientLRU(
+    pluginsCount: number,
+    a: typeof FlipperPlugin,
+    b: typeof FlipperPlugin,
+  ): number {
+    // Sanity check
+    if (this.lessPlugins !== null) {
+      const showPluginsCount =
+        pluginsCount >= MAX_MINIMUM_PLUGINS + SHOW_REMAINING_PLUGIN_IF_LESS_THAN
+          ? MAX_MINIMUM_PLUGINS
+          : pluginsCount;
+      let idxA = this.lessPlugins.indexOf(a.id);
+      idxA = idxA < 0 || idxA >= showPluginsCount ? showPluginsCount : idxA;
+      let idxB = this.lessPlugins.indexOf(b.id);
+      idxB = idxB < 0 || idxB >= showPluginsCount ? showPluginsCount : idxB;
+      if (idxA !== idxB) {
+        return idxA > idxB ? 1 : -1;
+      }
     }
     return (a.title || a.id) > (b.title || b.id) ? 1 : -1;
   }

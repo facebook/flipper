@@ -12,6 +12,7 @@ import {UninitializedClient} from '../UninitializedClient';
 import {isEqual} from 'lodash';
 import iosUtil from '../fb-stubs/iOSContainerUtility';
 import {performance} from 'perf_hooks';
+import {SAVED_PLUGINS_COUNT} from '../Client';
 
 export type State = {
   devices: Array<BaseDevice>;
@@ -32,8 +33,6 @@ export type State = {
   }>;
   deepLinkPayload: null | string;
 };
-
-const MAX_MINIMUM_PLUGINS = 5;
 
 export type Action =
   | {
@@ -99,7 +98,8 @@ export type Action =
   | {
       type: 'CLIENT_SHOW_MORE_OR_LESS';
       payload: string;
-    };
+    }
+  | {type: 'CLEAR_LRU_PLUGINS_HISTORY'};
 
 const DEFAULT_PLUGIN = 'DeviceLogs';
 const DEFAULT_DEVICE_BLACKLIST = [MacDevice];
@@ -215,20 +215,19 @@ const reducer = (state: State = INITAL_STATE, action: Action): State => {
         performance.mark(`activePlugin-${selectedPlugin}`);
       }
 
-      const LRUPlugins = (
-        state.userLRUPlugins[selectedApp || state.userPreferredApp] || []
-      ).slice();
+      const userPreferredApp = selectedApp || state.userPreferredApp;
+      const LRUPlugins = (state.userLRUPlugins[userPreferredApp] || []).slice();
       const idxLRU = LRUPlugins.indexOf(selectedPlugin);
       if (idxLRU >= 0) {
         LRUPlugins.splice(idxLRU, 1);
       }
       LRUPlugins.unshift(selectedPlugin);
-      LRUPlugins.splice(MAX_MINIMUM_PLUGINS);
+      LRUPlugins.splice(SAVED_PLUGINS_COUNT);
 
       return {
         ...state,
         ...payload,
-        userPreferredApp: selectedApp || state.userPreferredApp,
+        userPreferredApp: userPreferredApp,
         userPreferredPlugin: selectedPlugin,
         userLRUPlugins: {...state.userLRUPlugins, [selectedApp]: LRUPlugins},
       };
@@ -242,15 +241,7 @@ const reducer = (state: State = INITAL_STATE, action: Action): State => {
       const {userPreferredApp, userPreferredPlugin, userLRUPlugins} = state;
       let {selectedApp, selectedPlugin} = state;
 
-      const lessPlugins = (userLRUPlugins[payload.id] || []).slice();
-      if (lessPlugins) {
-        payload.lessPlugins = lessPlugins.concat(
-          payload.plugins.filter(p => !lessPlugins.includes(p)),
-        );
-      } else {
-        payload.lessPlugins = payload.plugins.slice();
-      }
-      payload.lessPlugins = payload.lessPlugins.slice(0, MAX_MINIMUM_PLUGINS);
+      payload.lessPlugins = (userLRUPlugins[payload.id] || []).slice();
 
       if (
         userPreferredApp &&
@@ -381,6 +372,18 @@ const reducer = (state: State = INITAL_STATE, action: Action): State => {
           }
           return client;
         }),
+      };
+    }
+    case 'CLEAR_LRU_PLUGINS_HISTORY': {
+      const clearLRUPlugins: Map<string, Array<string>> = new Map();
+      state.userLRUPlugins.forEach((_, key) => {
+        if (key !== null) {
+          clearLRUPlugins.set(key, []);
+        }
+      });
+      return {
+        ...state,
+        userLRUPlugins: clearLRUPlugins,
       };
     }
     default:

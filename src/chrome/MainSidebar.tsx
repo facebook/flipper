@@ -35,6 +35,10 @@ import {setActiveSheet} from '../reducers/application';
 import UserAccount from './UserAccount';
 import {connect} from 'react-redux';
 import {BackgroundColorProperty} from 'csstype';
+import {
+  MAX_MINIMUM_PLUGINS,
+  SHOW_REMAINING_PLUGIN_IF_LESS_THAN,
+} from '../Client';
 
 const ListItem = styled('div')(({active}: {active?: boolean}) => ({
   paddingLeft: 10,
@@ -316,42 +320,61 @@ class MainSidebar extends PureComponent<Props> {
                 // Display their plugins under all selected devices until they die out
                 client.query.device_id === 'unknown',
             )
-            .map((client: Client) => (
-              <React.Fragment key={client.id}>
-                <SidebarHeader>{client.query.app}</SidebarHeader>
-                {Array.from(this.props.clientPlugins.values())
-                  .filter(
-                    p =>
-                      (client.showAllPlugins
-                        ? client.plugins
-                        : client.lessPlugins
-                      ).indexOf(p.id) > -1,
-                  )
-                  .sort((a, b) => client.byClientLRU(a, b))
-                  .map(plugin => (
-                    <PluginSidebarListItem
-                      key={plugin.id}
-                      isActive={
-                        plugin.id === selectedPlugin &&
-                        selectedApp === client.id
-                      }
+            .map((client: Client) => {
+              const plugins = Array.from(
+                this.props.clientPlugins.values(),
+              ).filter(
+                (p: typeof FlipperPlugin) => client.plugins.indexOf(p.id) > -1,
+              );
+
+              const minShowPluginsCount =
+                plugins.length <
+                MAX_MINIMUM_PLUGINS + SHOW_REMAINING_PLUGIN_IF_LESS_THAN
+                  ? plugins.length
+                  : MAX_MINIMUM_PLUGINS;
+
+              return (
+                <React.Fragment key={client.id}>
+                  <SidebarHeader>{client.query.app}</SidebarHeader>
+                  {plugins
+                    .sort((a: typeof FlipperPlugin, b: typeof FlipperPlugin) =>
+                      client.byClientLRU(plugins.length, a, b),
+                    )
+                    .slice(
+                      0,
+                      client.showAllPlugins
+                        ? client.plugins.length
+                        : minShowPluginsCount,
+                    )
+                    .map((plugin: typeof FlipperPlugin) => (
+                      <PluginSidebarListItem
+                        key={plugin.id}
+                        isActive={
+                          plugin.id === selectedPlugin &&
+                          selectedApp === client.id
+                        }
+                        onClick={() =>
+                          selectPlugin({
+                            selectedPlugin: plugin.id,
+                            selectedApp: client.id,
+                            deepLinkPayload: null,
+                          })
+                        }
+                        plugin={plugin}
+                        app={client.query.app}
+                      />
+                    ))}
+                  {plugins.length > minShowPluginsCount && (
+                    <PluginShowMoreOrLess
                       onClick={() =>
-                        selectPlugin({
-                          selectedPlugin: plugin.id,
-                          selectedApp: client.id,
-                          deepLinkPayload: null,
-                        })
-                      }
-                      plugin={plugin}
-                      app={client.query.app}
-                    />
-                  ))}
-                <PluginShowMoreOrLess
-                  onClick={() => this.props.showMoreOrLessPlugins(client.id)}>
-                  {client.showAllPlugins ? 'Show less' : 'Show more'}
-                </PluginShowMoreOrLess>
-              </React.Fragment>
-            ))}
+                        this.props.showMoreOrLessPlugins(client.id)
+                      }>
+                      {client.showAllPlugins ? 'Show less' : 'Show more'}
+                    </PluginShowMoreOrLess>
+                  )}
+                </React.Fragment>
+              );
+            })}
           {uninitializedClients.map(entry => (
             <React.Fragment key={JSON.stringify(entry.client)}>
               <SidebarHeader>{entry.client.appName}</SidebarHeader>
