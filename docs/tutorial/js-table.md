@@ -47,13 +47,16 @@ you can also specify a title to show in the Flipper sidebar and an icon to displ
 {
   "name": "sea-mammals",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "index.tsx",
   "license": "MIT",
   "icon": "apps",
-  "title": "Sea Mammals"
+  "title": "Sea Mammals",
+  "dependencies": {
+    "flipper": "latest"
+  }
 }
 ```
-*See [package.json](https://github.com/facebook/flipper/blob/7dae5771d96ea76b75796d3b3a2c78746e581e3f/src/plugins/seamammals/package.json)*
+*See [package.json](https://github.com/facebook/flipper/blob/master/src/plugins/seamammals/package.json)*
 
 ## Building a Table
 
@@ -171,7 +174,7 @@ Now that we've build all the individual pieces, we
 just need to hook it all up using `createTablePlugin`:
 
 ```javascript
-export default createTablePlugin({
+export default createTablePlugin<Row>({
   method: 'newRow',
   columns,
   columnSizes,
@@ -179,7 +182,7 @@ export default createTablePlugin({
   buildRow,
 });
 ```
-*See [index.js](https://github.com/facebook/flipper/blob/7dae5771d96ea76b75796d3b3a2c78746e581e3f/src/plugins/seamammals/index.js)*
+*See [index.tsx](https://github.com/facebook/flipper/blob/master/src/plugins/seamammals/index.tsx)*
 
 The `method` we define here corresponds to the name
 of the function we call on the native side to inform

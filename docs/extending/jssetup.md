@@ -5,7 +5,7 @@ title: JavaScript Plugin Definition
 
 All JavaScript Flipper plugins must be self-contained in a directory. This directory must contain at a minimum the following two files:
 * package.json
-* index.js
+* index.tsx
 
 The best way to initialize a JS plugin is to create a directory, and run `yarn init` inside it. Make sure your package name is the same as the identifier of the client plugin, e.g. if your Java plugin returns `myplugin` from its `getId()` method, the `name` field in your `package.json` should also be `myplugin`.
 
@@ -25,6 +25,9 @@ Example `package.json`:
   "icon": "apps",
   "bugs": {
     "email": "you@example.com"
+  },
+  "dependencies": {
+    "flipper": "latest"
   }
 }
 ```
@@ -73,7 +76,7 @@ Plugin File Structure:
 
 ### npm dependencies
 
-If you need any dependencies in your plugin, you can install them using `yarn add`. The Flipper UI components exported from `flipper`, as well as `react` and `react-dom` don't need to be installed as dependencies. Our plugin-loader makes these dependencies available to your plugin.
+If you need any dependencies in your plugin, you can install them using `yarn add`.
 
 ### ES6, babel-transforms and bundling
 
