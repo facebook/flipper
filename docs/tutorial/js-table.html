@@ -87,13 +87,16 @@ you can also specify a title to show in the Flipper sidebar and an icon to displ
 <pre><code class="hljs css language-json">{
   <span class="hljs-attr">"name"</span>: <span class="hljs-string">"sea-mammals"</span>,
   <span class="hljs-attr">"version"</span>: <span class="hljs-string">"1.0.0"</span>,
-  <span class="hljs-attr">"main"</span>: <span class="hljs-string">"index.js"</span>,
+  <span class="hljs-attr">"main"</span>: <span class="hljs-string">"index.tsx"</span>,
   <span class="hljs-attr">"license"</span>: <span class="hljs-string">"MIT"</span>,
   <span class="hljs-attr">"icon"</span>: <span class="hljs-string">"apps"</span>,
-  <span class="hljs-attr">"title"</span>: <span class="hljs-string">"Sea Mammals"</span>
+  <span class="hljs-attr">"title"</span>: <span class="hljs-string">"Sea Mammals"</span>,
+  <span class="hljs-attr">"dependencies"</span>: {
+    <span class="hljs-attr">"flipper"</span>: <span class="hljs-string">"latest"</span>
+  }
 }
 </code></pre>
-<p><em>See <a href="https://github.com/facebook/flipper/blob/7dae5771d96ea76b75796d3b3a2c78746e581e3f/src/plugins/seamammals/package.json">package.json</a></em></p>
+<p><em>See <a href="https://github.com/facebook/flipper/blob/master/src/plugins/seamammals/package.json">package.json</a></em></p>
 <h2><a class="anchor" aria-hidden="true" id="building-a-table"></a><a href="#building-a-table" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Building a Table</h2>
 <p>We have found that one of the most useful things you can do to understand how your app works
 is to give you easy access to the underlying data used to display items on screen. A very
@@ -183,7 +186,7 @@ any row and copy the content to their clipboard.</p>
 <h3><a class="anchor" aria-hidden="true" id="putting-it-all-to-work"></a><a href="#putting-it-all-to-work" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Putting it all to work</h3>
 <p>Now that we've build all the individual pieces, we
 just need to hook it all up using <code>createTablePlugin</code>:</p>
-<pre><code class="hljs css language-javascript"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> createTablePlugin({
+<pre><code class="hljs css language-javascript"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> createTablePlugin&lt;Row&gt;({
   <span class="hljs-attr">method</span>: <span class="hljs-string">'newRow'</span>,
   columns,
   columnSizes,
@@ -191,7 +194,7 @@ just need to hook it all up using <code>createTablePlugin</code>:</p>
   buildRow,
 });
 </code></pre>
-<p><em>See <a href="https://github.com/facebook/flipper/blob/7dae5771d96ea76b75796d3b3a2c78746e581e3f/src/plugins/seamammals/index.js">index.js</a></em></p>
+<p><em>See <a href="https://github.com/facebook/flipper/blob/master/src/plugins/seamammals/index.tsx">index.tsx</a></em></p>
 <p>The <code>method</code> we define here corresponds to the name
 of the function we call on the native side to inform
 the desktop about new data we want to display.</p>
