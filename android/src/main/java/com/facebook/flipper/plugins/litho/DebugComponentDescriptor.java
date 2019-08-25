@@ -518,5 +518,4 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
     // TODO add support for Type.Dimension or similar
     return InspectorValue.mutable(Enum, v.toString());
   }
-
 }

@@ -54,7 +54,8 @@ public abstract class FlipperObjectHelper {
   }
 
   @Nullable
-  public FlipperObject toFlipperObject(@Nullable FlipperImageTracker.ImageDebugData imageDebugData) {
+  public FlipperObject toFlipperObject(
+      @Nullable FlipperImageTracker.ImageDebugData imageDebugData) {
     if (imageDebugData == null) {
       return null;
     }

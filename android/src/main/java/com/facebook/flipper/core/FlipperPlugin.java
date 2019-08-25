@@ -35,7 +35,7 @@ public interface FlipperPlugin {
   void onDisconnect() throws Exception;
 
   /**
-   Returns true if the plugin is meant to be run in background too, otherwise it returns false.
+   * Returns true if the plugin is meant to be run in background too, otherwise it returns false.
    */
   boolean runInBackground();
 }

@@ -38,6 +38,5 @@ public abstract class TablePlugin implements NativePlugin {
         return false;
       }
     };
-    }
-
+  }
 }

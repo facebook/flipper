@@ -53,10 +53,7 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
   }
 
   public InspectorFlipperPlugin(Context context, DescriptorMapping descriptorMapping) {
-    this(
-        new ApplicationWrapper(getAppContextFromContext(context)),
-        descriptorMapping,
-        null);
+    this(new ApplicationWrapper(getAppContextFromContext(context)), descriptorMapping, null);
   }
 
   public InspectorFlipperPlugin(
@@ -64,10 +61,7 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
       DescriptorMapping descriptorMapping,
       @Nullable List<ExtensionCommand> extensions) {
 
-    this(
-        new ApplicationWrapper(getAppContextFromContext(context)),
-        descriptorMapping,
-        extensions);
+    this(new ApplicationWrapper(getAppContextFromContext(context)), descriptorMapping, extensions);
   }
 
   // Package visible for testing
