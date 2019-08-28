@@ -134,12 +134,12 @@ export default class Sidebar extends Component<SidebarProps, SidebarState> {
 
   render() {
     const {backgroundColor, onResize, position, children} = this.props;
-    let height: number;
-    let minHeight: number;
-    let maxHeight: number;
-    let width: number;
-    let minWidth: number;
-    let maxWidth: number;
+    let height: number | undefined;
+    let minHeight: number | undefined;
+    let maxHeight: number | undefined;
+    let width: number | undefined;
+    let minWidth: number | undefined;
+    let maxWidth: number | undefined;
 
     const resizable: {[key: string]: boolean} = {};
     if (position === 'left') {

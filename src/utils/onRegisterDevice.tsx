@@ -5,7 +5,7 @@
  * @format
  */
 import {Store} from '../reducers/index';
-import {FlipperPlugin, FlipperDevicePlugin, FlipperBasePlugin} from '../plugin';
+import {FlipperPlugin, FlipperDevicePlugin} from '../plugin';
 import {setPluginState} from '../reducers/pluginStates';
 import BaseDevice from '../devices/BaseDevice';
 import {getPersistedState} from '../utils/pluginUtils';
@@ -16,7 +16,9 @@ export function registerDeviceCallbackOnPlugins(
   clientPlugins: Map<string, typeof FlipperPlugin>,
   device: BaseDevice,
 ) {
-  const callRegisterDeviceHook = (plugin: typeof FlipperBasePlugin) => {
+  const callRegisterDeviceHook = (
+    plugin: typeof FlipperDevicePlugin | typeof FlipperPlugin,
+  ) => {
     if (plugin.onRegisterDevice) {
       plugin.onRegisterDevice(
         store,

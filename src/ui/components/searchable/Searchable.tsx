@@ -143,7 +143,13 @@ const Searchable = (
     componentDidMount() {
       window.document.addEventListener('keydown', this.onKeyDown);
       const {defaultFilters} = this.props;
-      let savedState;
+      let savedState:
+        | {
+            filters: Array<Filter>;
+            regexEnabled?: boolean;
+            searchTerm?: string;
+          }
+        | undefined;
 
       if (this.getTableKey()) {
         try {
@@ -163,16 +169,19 @@ const Searchable = (
             const filterIndex = savedStateFilters.findIndex(
               f => f.key === defaultFilter.key,
             );
-            if (filterIndex > -1) {
+            const savedDefaultFilter = savedStateFilters[filterIndex];
+            if (filterIndex > -1 && savedDefaultFilter.type === 'enum') {
               if (defaultFilter.type === 'enum') {
-                savedStateFilters[filterIndex].enum = defaultFilter.enum;
+                savedDefaultFilter.enum = defaultFilter.enum;
               }
               const filters = new Set(
-                savedStateFilters[filterIndex].enum.map(filter => filter.value),
+                savedDefaultFilter.enum.map(filter => filter.value),
               );
-              savedStateFilters[filterIndex].value = savedStateFilters[
+              savedStateFilters[
                 filterIndex
-              ].value.filter(value => filters.has(value));
+              ].value = savedDefaultFilter.value.filter(value =>
+                filters.has(value),
+              );
             }
           });
         }
@@ -242,7 +251,7 @@ const Searchable = (
     };
 
     onKeyDown = (e: KeyboardEvent) => {
-      const ctrlOrCmd = e =>
+      const ctrlOrCmd = (e: KeyboardEvent) =>
         (e.metaKey && process.platform === 'darwin') ||
         (e.ctrlKey && process.platform !== 'darwin');
 
