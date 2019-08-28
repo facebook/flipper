@@ -60,6 +60,11 @@ export default class IOSDevice extends BaseDevice {
       });
   }
 
+  navigateToLocation(location: string) {
+    const command = `xcrun simctl openurl booted "${location}"`;
+    exec(command);
+  }
+
   teardown() {
     if (this.log) {
       this.log.kill();
