@@ -23,11 +23,10 @@ export type ProcessConfig = {
   launcherEnabled: boolean;
 };
 
-let configObj = null;
+let configObj: ProcessConfig | null = null;
 export default function config(): ProcessConfig {
   if (configObj === null) {
     const json = JSON.parse(
-      // $FlowFixMe: process.env not in type defs
       (remote && remote.process.env.CONFIG) || process.env.CONFIG || '{}',
     );
     configObj = {
