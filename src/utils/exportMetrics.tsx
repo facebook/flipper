@@ -26,17 +26,21 @@ async function exportMetrics(
     const pluginStateData = pluginStates[key];
     const arr = key.split('#');
     const pluginName = arr.pop();
-    if (selectedPlugins.length > 0 && !selectedPlugins.includes(pluginName)) {
+    if (
+      pluginName === undefined ||
+      (selectedPlugins.length > 0 && !selectedPlugins.includes(pluginName))
+    ) {
       continue;
     }
     const clientID = arr.join('#');
     const plugin = pluginsMap.get(pluginName);
-    const metricsReducer: (
-      persistedState: any,
-    ) => Promise<MetricType> | undefined = plugin && plugin.metricsReducer;
+    const metricsReducer:
+      | (<U>(persistedState: U) => Promise<MetricType>)
+      | null
+      | undefined = plugin && plugin.metricsReducer;
     if (pluginsMap.has(pluginName) && metricsReducer) {
       const metricsObject = await metricsReducer(pluginStateData);
-      const pluginObject = {};
+      const pluginObject: MetricPluginType = {};
       pluginObject[pluginName] = metricsObject;
       if (!metrics[clientID]) {
         metrics[clientID] = pluginObject;
