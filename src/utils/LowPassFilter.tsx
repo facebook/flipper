@@ -24,7 +24,15 @@ export default class LowPassFilter {
     let removed: number = 0;
 
     if (this.hasFullBuffer()) {
-      removed = this.buffer.shift();
+      const tmp: number | undefined = this.buffer.shift();
+
+      if (tmp === undefined) {
+        throw new Error(
+          'Invariant violation: Buffer reported full but shift returned nothing.',
+        );
+      }
+
+      removed = tmp;
     }
 
     this.buffer.push(value);
