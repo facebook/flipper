@@ -633,7 +633,7 @@ export class Elements extends PureComponent<ElementsProps, ElementsState> {
   render() {
     return (
       <ElementsBox>
-        <ElementsContainer onKeyDown={this.onKeyDown}>
+        <ElementsContainer onKeyDown={this.onKeyDown} tabIndex={0}>
           {this.state.flatElements.map(this.buildRow)}
         </ElementsContainer>
       </ElementsBox>
