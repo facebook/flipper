@@ -4,7 +4,7 @@
  * LICENSE file in the root directory of this source tree.
  * @format
  */
-import {FlipperDevicePlugin, FlipperPlugin} from '../plugin';
+import {FlipperDevicePlugin, FlipperPlugin, FlipperBasePlugin} from '../plugin';
 import BaseDevice from '../devices/BaseDevice';
 import {State as PluginStatesState} from '../reducers/pluginStates';
 import {pluginsClassMap} from './exportData';
@@ -28,7 +28,7 @@ export function getPluginKey(
 
 export function getPersistedState<PersistedState>(
   pluginKey: string,
-  persistingPlugin: typeof FlipperPlugin | typeof FlipperDevicePlugin | null,
+  persistingPlugin: typeof FlipperBasePlugin | null,
   pluginStates: PluginStatesState,
 ): PersistedState | null {
   if (!persistingPlugin) {
