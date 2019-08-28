@@ -56,7 +56,7 @@ export default (props: Props) => {
       {events.map((event: NavigationEvent, idx) => {
         return (
           <NavigationEventContainer>
-            {event.uri != null ? (
+            {event.uri != null || event.className != null ? (
               <ScreenshotContainer>
                 {event.screenshot != null ? (
                   <img src={event.screenshot} />
@@ -72,6 +72,7 @@ export default (props: Props) => {
               isBookmarked={
                 event.uri != null ? bookmarks.has(event.uri) : false
               }
+              className={event.className}
               uri={event.uri}
               onNavigate={onNavigate}
               onFavorite={onFavorite}

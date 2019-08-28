@@ -75,14 +75,17 @@ export default class extends FlipperPlugin<State, {}, PersistedState> {
       let {persistedState} = this.props;
       const {setPersistedState} = this.props;
       const navigationEvent: NavigationEvent = {
-        uri: payload.uri === undefined ? null : payload.uri,
+        uri: payload.uri === undefined ? null : decodeURIComponent(payload.uri),
         date: payload.date || new Date(),
+        className: payload.class === undefined ? null : payload.class,
         screenshot: null,
       };
       setPersistedState({
         ...persistedState,
         currentURI:
-          payload.uri == null ? persistedState.currentURI : payload.uri,
+          payload.uri == null
+            ? persistedState.currentURI
+            : decodeURIComponent(payload.uri),
         navigationEvents: [navigationEvent, ...persistedState.navigationEvents],
       });
       // Wait for view to render and then take a screenshot

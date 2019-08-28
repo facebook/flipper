@@ -27,6 +27,7 @@ export type PersistedState = {|
 export type NavigationEvent = {|
   date: ?Date,
   uri: ?URI,
+  className: ?string,
   screenshot: ?string,
 |};
 

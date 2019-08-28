@@ -13,6 +13,7 @@ import {IconButton, FavoriteButton} from './';
 type Props = {|
   isBookmarked: boolean,
   uri: ?string,
+  className: ?string,
   onNavigate: (query: string) => void,
   onFavorite: (query: string) => void,
 |};
@@ -53,40 +54,50 @@ const NavigationInfoBoxContainer = styled('div')({
 });
 
 export default (props: Props) => {
-  const {uri, isBookmarked} = props;
-  if (uri == null) {
+  const {uri, isBookmarked, className} = props;
+  if (uri == null && className == null) {
     return (
       <NavigationInfoBoxContainer>
         <div className="nav-info-text">View has no URI information</div>
       </NavigationInfoBoxContainer>
     );
   } else {
-    const parameters = parseURIParameters(uri);
+    const parameters = uri != null ? parseURIParameters(uri) : null;
     return (
       <NavigationInfoBoxContainer>
-        <div className="icon-container">
-          <FavoriteButton
-            highlighted={isBookmarked}
-            size={16}
-            onClick={() => props.onFavorite(uri)}
-          />
-          <IconButton
-            icon="eye"
-            size={16}
-            onClick={() => props.onNavigate(uri)}
-          />
-        </div>
-        <div className="nav-info-text bold">uri:</div>
-        <div className="nav-info-text selectable">{uri}</div>
-        {parameters.size > 0 ? (
+        {uri != null ? (
           <>
-            <div className="nav-info-text bold">parameters:</div>
-            {Array.from(parameters, ([key, value]) => (
-              <div key={key} className="nav-info-text selectable">
-                {key}
-                {value ? `: ${value}` : ''}
-              </div>
-            ))}
+            <div className="icon-container">
+              <FavoriteButton
+                highlighted={isBookmarked}
+                size={16}
+                onClick={() => props.onFavorite(uri)}
+              />
+              <IconButton
+                icon="eye"
+                size={16}
+                onClick={() => props.onNavigate(uri)}
+              />
+            </div>
+            <div className="nav-info-text bold">uri:</div>
+            <div className="nav-info-text selectable">{uri}</div>
+            {parameters != null && parameters.size > 0 ? (
+              <>
+                <div className="nav-info-text bold">parameters:</div>
+                {Array.from(parameters, ([key, value]) => (
+                  <div key={key} className="nav-info-text selectable">
+                    {key}
+                    {value ? `: ${value}` : ''}
+                  </div>
+                ))}
+              </>
+            ) : null}
+          </>
+        ) : null}
+        {className != null ? (
+          <>
+            <div className="nav-info-text bold">Class Name:</div>
+            <div className="nav-info-text selectable">{className}</div>
           </>
         ) : null}
       </NavigationInfoBoxContainer>
