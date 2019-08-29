@@ -20,7 +20,7 @@ const ColoredIconBlack = styled('img')(({size}: {size: number}) => ({
 }));
 
 const ColoredIconCustom = styled('div')(
-  (props: {size: number; color: string; src: string}) => ({
+  (props: {size: number; color?: string; src: string}) => ({
     height: props.size,
     verticalAlign: 'middle',
     width: props.size,
