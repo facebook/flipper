@@ -8,7 +8,7 @@
 import {FlipperPlugin, FlipperDevicePlugin} from './plugin';
 import BaseDevice, {OS} from './devices/BaseDevice';
 import {App} from './App.js';
-import {Logger} from './fb-interfaces/Logger.js';
+import {Logger} from './fb-interfaces/Logger';
 import {Store} from './reducers/index';
 import {setPluginState} from './reducers/pluginStates';
 import {RSocketClientSocket} from 'rsocket-core/RSocketClient';

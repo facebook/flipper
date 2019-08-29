@@ -8,7 +8,7 @@
 import Server from '../server';
 
 import {Store} from '../reducers/index';
-import {Logger} from '../fb-interfaces/Logger.js';
+import {Logger} from '../fb-interfaces/Logger';
 import Client from '../Client.js';
 import {UninitializedClient} from '../UninitializedClient';
 

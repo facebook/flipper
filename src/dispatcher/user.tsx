@@ -6,7 +6,7 @@
  */
 
 import {Store} from '../reducers/index';
-import {Logger} from '../fb-interfaces/Logger.js';
+import {Logger} from '../fb-interfaces/Logger';
 import {login} from '../reducers/user';
 import {getUser, logoutUser} from '../fb-stubs/user';
 

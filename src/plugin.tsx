@@ -7,7 +7,7 @@
 
 import {KeyboardActions} from './MenuBar';
 import {App} from './App';
-import {Logger} from './fb-interfaces/Logger.js';
+import {Logger} from './fb-interfaces/Logger';
 import Client from './Client';
 import {Store, MiddlewareAPI} from './reducers/index';
 import {MetricType} from './utils/exportMetrics';

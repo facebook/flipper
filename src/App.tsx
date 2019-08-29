@@ -32,7 +32,7 @@ import {
   ACTIVE_SHEET_SELECT_PLUGINS_TO_EXPORT,
   ACTIVE_SHEET_PLUGIN_SHEET,
 } from './reducers/application';
-import {Logger} from './fb-interfaces/Logger.js';
+import {Logger} from './fb-interfaces/Logger';
 import BugReporter from './fb-stubs/BugReporter';
 import BaseDevice from './devices/BaseDevice';
 import {State as Store} from './reducers/index';

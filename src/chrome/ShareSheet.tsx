@@ -18,7 +18,7 @@ import {
 } from 'flipper';
 import React, {Component} from 'react';
 import {setExportStatusComponent, unsetShare} from '../reducers/application';
-import {Logger} from '../fb-interfaces/Logger.js';
+import {Logger} from '../fb-interfaces/Logger';
 import {Idler} from '../utils/Idler';
 import {shareFlipperData, DataExportResult} from '../fb-stubs/user';
 import {exportStore, EXPORT_FLIPPER_TRACE_EVENT} from '../utils/exportData';

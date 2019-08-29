@@ -10,7 +10,7 @@ import {ipcRenderer} from 'electron';
 import {performance} from 'perf_hooks';
 
 import {Store} from '../reducers/index';
-import {Logger} from '../fb-interfaces/Logger.js';
+import {Logger} from '../fb-interfaces/Logger';
 import Client from '../Client';
 
 export default (store: Store, logger: Logger) => {

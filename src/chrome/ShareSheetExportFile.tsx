@@ -19,7 +19,7 @@ import {setExportStatusComponent, unsetShare} from '../reducers/application';
 import {reportPlatformFailures} from '../utils/metrics';
 import CancellableExportStatus from './CancellableExportStatus';
 import {performance} from 'perf_hooks';
-import {Logger} from '../fb-interfaces/Logger.js';
+import {Logger} from '../fb-interfaces/Logger';
 import {Idler} from '../utils/Idler';
 import {
   exportStoreToFile,

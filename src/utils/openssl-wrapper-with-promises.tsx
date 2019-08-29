@@ -5,16 +5,17 @@
  * @format
  */
 
-import {exec as opensslWithCallback} from 'openssl-wrapper';
+import {exec as opensslWithCallback, Action} from 'openssl-wrapper';
 import child_process from 'child_process';
 
-export function openssl(action: string, options: {}): Promise<string> {
+export function openssl(action: Action, options: {}): Promise<string> {
   return new Promise((resolve, reject) => {
     opensslWithCallback(action, options, (err, buffer) => {
       if (err) {
         reject(err);
+      } else if (buffer) {
+        resolve(buffer.toString());
       }
-      resolve(buffer.toString());
     });
   });
 }

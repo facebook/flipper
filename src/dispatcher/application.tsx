@@ -8,7 +8,7 @@
 import {remote, ipcRenderer} from 'electron';
 import {toggleAction} from '../reducers/application';
 import {Store} from '../reducers/index.js';
-import {Logger} from '../fb-interfaces/Logger.js';
+import {Logger} from '../fb-interfaces/Logger';
 import {parseFlipperPorts} from '../utils/environmentVariables';
 import {
   importDataToStore,

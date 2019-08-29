@@ -14,16 +14,19 @@ import {
   isInstalled as opensslInstalled,
 } from './openssl-wrapper-with-promises';
 import path from 'path';
-import tmp from 'tmp';
-const tmpFile = promisify(tmp.file);
-const tmpDir = promisify(tmp.dir);
+import tmp, {DirOptions, FileOptions} from 'tmp';
 import iosUtil from '../fb-stubs/iOSContainerUtility';
 import {reportPlatformFailures} from './metrics';
 import {getAdbClient} from './adbClient';
 import * as androidUtil from './androidContainerUtility';
+import os from 'os';
+
+const tmpFile = promisify(tmp.file) as (
+  options?: FileOptions,
+) => Promise<string>;
+const tmpDir = promisify(tmp.dir) as (options?: DirOptions) => Promise<string>;
 
 // Desktop file paths
-const os = require('os');
 const caKey = getFilePath('ca.key');
 const caCert = getFilePath('ca.crt');
 const serverKey = getFilePath('server.key');
@@ -398,7 +401,7 @@ export default class CertificateProvider {
         }),
       )
       .then(([path, subject]) => {
-        return new Promise(function(resolve, reject) {
+        return new Promise<string>(function(resolve, reject) {
           fs.unlink(path, err => {
             if (err) {
               reject(err);
@@ -408,7 +411,7 @@ export default class CertificateProvider {
           });
         });
       })
-      .then((subject: string) => {
+      .then(subject => {
         const matches = subject.trim().match(x509SubjectCNRegex);
         if (!matches || matches.length < 2) {
           throw new Error(`Cannot extract CN from ${subject}`);
@@ -441,14 +444,14 @@ export default class CertificateProvider {
     if (!fs.existsSync(caKey)) {
       return this.generateCertificateAuthority();
     }
-    return this.checkCertIsValid(caCert).catch(e =>
+    return this.checkCertIsValid(caCert).catch(() =>
       this.generateCertificateAuthority(),
     );
   }
 
   checkCertIsValid(filename: string): Promise<void> {
     if (!fs.existsSync(filename)) {
-      return Promise.reject();
+      return Promise.reject(new Error(`${filename} does not exist`));
     }
     // openssl checkend is a nice feature but it only checks for certificates
     // expiring in the future, not those that have already expired.
@@ -459,7 +462,7 @@ export default class CertificateProvider {
       checkend: minCertExpiryWindowSeconds,
       in: filename,
     })
-      .then(output => undefined)
+      .then(() => undefined)
       .catch(e => {
         console.warn(`Certificate will expire soon: ${filename}`, logTag);
         throw e;
@@ -492,7 +495,9 @@ export default class CertificateProvider {
   }
 
   verifyServerCertWasIssuedByCA() {
-    const options = {CAfile: caCert};
+    const options: {
+      [key: string]: any;
+    } = {CAfile: caCert};
     options[serverCert] = false;
     return openssl('verify', options).then(output => {
       const verified = output.match(/[^:]+: OK/);
@@ -534,8 +539,8 @@ export default class CertificateProvider {
     }
 
     return this.checkCertIsValid(serverCert)
-      .then(_ => this.verifyServerCertWasIssuedByCA())
-      .catch(e => this.generateServerCertificate());
+      .then(() => this.verifyServerCertWasIssuedByCA())
+      .catch(() => this.generateServerCertificate());
   }
 
   generateServerCertificate(): Promise<void> {
@@ -567,7 +572,7 @@ export default class CertificateProvider {
   }
 
   writeToTempFile(content: string): Promise<string> {
-    return tmpFile().then((path, fd, cleanupCallback) =>
+    return tmpFile().then(path =>
       promisify(fs.writeFile)(path, content).then(_ => path),
     );
   }

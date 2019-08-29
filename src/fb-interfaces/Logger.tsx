@@ -14,9 +14,9 @@ export type TrackType =
   | 'operation-cancelled';
 
 export interface Logger {
-  track(type: TrackType, event: string, data: ?any, plugin?: string): void;
+  track(type: TrackType, event: string, data?: any, plugin?: string): void;
 
-  trackTimeSince(mark: string, eventName: ?string): void;
+  trackTimeSince(mark: string, eventName?: string | null | undefined): void;
 
   info(data: any, category: string): void;
 

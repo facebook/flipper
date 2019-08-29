@@ -10,7 +10,7 @@ export type ScribeMessage = {
   message: string;
 };
 
-import {Logger} from '../fb-interfaces/Logger.js';
+import {Logger} from '../fb-interfaces/Logger';
 
 export default class ScribeLogger {
   constructor(logger: Logger) {}
