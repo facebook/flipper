@@ -110,15 +110,49 @@ public class ChangesetDebug implements ChangesetDebugListener {
 
       changeData.put("render_infos", ChangesetDebugConfiguration.getRenderInfoNames(change));
 
-      changeData.put("prev_data", getDataNamesFromChange(change.getPrevData()));
+      changeData.put("prev_data", getPrevDataFromChange(change));
 
-      changeData.put("next_data", getDataNamesFromChange(change.getNextData()));
+      changeData.put("next_data", getNextDataFromChange(change));
 
       changesets.put(i + "", changeData.build());
     }
     sectionChangesetInfo.put("changesets", changesets.build());
 
     changesetData.put(globalKey, sectionChangesetInfo.build());
+  }
+
+  private static List getPrevDataFromChange(Change change) {
+    if (change.getPrevData() != null) {
+      return getDataNamesFromChange(change.getPrevData());
+    }
+
+    List data = new ArrayList<>();
+    if (change.getRenderInfo() != null) {
+      data.add(change.getRenderInfo().getDebugInfo("SCS_DATA_INFO_PREV"));
+    } else if (change.getRenderInfos() != null) {
+      for (int i = 0; i < change.getRenderInfos().size(); i++) {
+        data.add(change.getRenderInfos().get(i).getDebugInfo("SCS_DATA_INFO_PREV"));
+      }
+    }
+
+    return data;
+  }
+
+  private static List getNextDataFromChange(Change change) {
+    if (change.getNextData() != null) {
+      return getDataNamesFromChange(change.getNextData());
+    }
+
+    List data = new ArrayList<>();
+    if (change.getRenderInfo() != null) {
+      data.add(change.getRenderInfo().getDebugInfo("SCS_DATA_INFO_NEXT"));
+    } else if (change.getRenderInfos() != null) {
+      for (int i = 0; i < change.getRenderInfos().size(); i++) {
+        data.add(change.getRenderInfos().get(i).getDebugInfo("SCS_DATA_INFO_NEXT"));
+      }
+    }
+
+    return data;
   }
 
   private static List<String> getDataNamesFromChange(List<?> data) {
@@ -307,6 +341,8 @@ public class ChangesetDebug implements ChangesetDebugListener {
             DataModelChangeInfo dataInfo = new DataModelChangeInfo();
             if (change.getNextData() != null) {
               dataInfo.model = change.getNextData().get(0);
+            } else {
+              dataInfo.model = getNextDataFromChange(change);
             }
             dataInfo.sectionKey =
                 (String) change.getRenderInfo().getDebugInfo("section_global_key");
@@ -324,6 +360,8 @@ public class ChangesetDebug implements ChangesetDebugListener {
               DataModelChangeInfo dataInfo = new DataModelChangeInfo();
               if (change.getNextData() != null) {
                 dataInfo.model = change.getNextData().get(item);
+              } else {
+                dataInfo.model = getNextDataFromChange(change);
               }
               dataInfo.operation = Change.INSERT_RANGE;
               dataInfo.sectionKey =
@@ -350,14 +388,18 @@ public class ChangesetDebug implements ChangesetDebugListener {
         case Change.UPDATE:
           {
             int getPosition = getPositionWithChangesApplied(dataInfos, index);
-            dataInfos.get(getPosition).operation = Change.UPDATE;
+            DataModelChangeInfo dataInfo = dataInfos.get(getPosition);
+            dataInfo.operation = Change.UPDATE;
+            dataInfo.model = getNextDataFromChange(change);
             break;
           }
         case Change.UPDATE_RANGE:
           {
             for (int updateIndex = index; updateIndex < index + change.getCount(); updateIndex++) {
               int getPosition = getPositionWithChangesApplied(dataInfos, updateIndex);
-              dataInfos.get(getPosition).operation = Change.UPDATE_RANGE;
+              DataModelChangeInfo dataInfo = dataInfos.get(getPosition);
+              dataInfo.operation = Change.UPDATE_RANGE;
+              dataInfo.model = getNextDataFromChange(change);
             }
             break;
           }
