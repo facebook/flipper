@@ -7,7 +7,7 @@
  */
 
 import {Glyph, styled} from 'flipper';
-import {useItemNavigation} from '../hooks/autoCompleteSheet';
+import {useItemNavigation} from '../hooks/autoCompleteSheet.tsx';
 import {filterProvidersToLineItems} from '../util/autoCompleteProvider.tsx';
 
 import type {AutoCompleteProvider} from '../flow-types';
