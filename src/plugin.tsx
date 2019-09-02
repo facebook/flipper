@@ -14,22 +14,24 @@ import {MetricType} from './utils/exportMetrics';
 import {ReactNode, Component} from 'react';
 import BaseDevice from './devices/BaseDevice';
 
+type Parameters = any;
+
 // This function is intended to be called from outside of the plugin.
 // If you want to `call` from the plugin use, this.client.call
 export function callClient(
   client: Client,
   id: string,
-): (string, params: Object | null) => Promise<Object> {
+): (method: string, params: Parameters) => Promise<any> {
   return (method, params) => client.call(id, method, false, params);
 }
 
 export interface PluginClient {
   // eslint-disable-next-line
-  send(method: string, params?: Object): void;
+  send(method: string, params?: Parameters): void;
   // eslint-disable-next-line
-  call(method: string, params?: Object): Promise<any>;
+  call(method: string, params?: Parameters): Promise<any>;
   // eslint-disable-next-line
-  subscribe(method: string, callback: (params: any) => void): void;
+  subscribe(method: string, callback: (params: Parameters) => void): void;
   // eslint-disable-next-line
   supportsMethod(method: string): Promise<boolean>;
 }
@@ -61,6 +63,8 @@ export type BaseAction = {
   type: string;
 };
 
+type StaticPersistedState = any;
+
 export abstract class FlipperBasePlugin<
   State,
   Actions extends BaseAction,
@@ -82,26 +86,32 @@ export abstract class FlipperBasePlugin<
   static screenshot: string | null;
   static defaultPersistedState: any;
   static persistedStateReducer:
-    | (<U>(persistedState: U, method: string, data: Object) => Partial<U>)
+    | ((
+        persistedState: StaticPersistedState,
+        method: string,
+        data: any,
+      ) => StaticPersistedState)
     | null;
-  static metricsReducer: (<U>(persistedState: U) => Promise<MetricType>) | null;
+  static metricsReducer:
+    | ((persistedState: StaticPersistedState) => Promise<MetricType>)
+    | null;
   static exportPersistedState:
-    | (<U>(
-        callClient: (string, params: Object | null) => Promise<Object>,
-        persistedState: U | null,
-        store: MiddlewareAPI | null,
-      ) => Promise<U>)
+    | ((
+        callClient: (method: string, params?: any) => Promise<any>,
+        persistedState: StaticPersistedState | undefined,
+        store: MiddlewareAPI | undefined,
+      ) => Promise<StaticPersistedState | undefined>)
     | null;
   static getActiveNotifications:
-    | (<U>(persistedState: U) => Array<Notification>)
+    | ((persistedState: StaticPersistedState) => Array<Notification>)
     | null;
   static onRegisterDevice:
-    | (<U>(
+    | ((
         store: Store,
         baseDevice: BaseDevice,
         setPersistedState: (
           pluginKey: string,
-          newPluginState: U | null,
+          newPluginState: StaticPersistedState | null,
         ) => void,
       ) => void)
     | null;
@@ -114,7 +124,7 @@ export abstract class FlipperBasePlugin<
   screenshot: never;
 
   reducers: {
-    [actionName: string]: (state: State, actionData: Object) => Partial<State>;
+    [actionName: string]: (state: State, actionData: any) => Partial<State>;
   } = {};
   app: App;
   onKeyboardAction: ((action: string) => void) | null;
