@@ -14,7 +14,7 @@ import {
   validateParameter,
   liveEdit,
 } from '../util/uri.tsx';
-import {useRequiredParameterFormValidator} from '../hooks/requiredParameters';
+import {useRequiredParameterFormValidator} from '../hooks/requiredParameters.tsx';
 
 import type {URI} from '../flow-types';
 
