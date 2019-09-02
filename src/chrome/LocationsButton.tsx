@@ -9,7 +9,7 @@ import {Button, styled} from 'flipper';
 import {connect} from 'react-redux';
 import React, {Component} from 'react';
 import {State as Store} from '../reducers';
-import {readBookmarksFromDB} from '../plugins/navigation/util/indexedDB.js';
+import {readBookmarksFromDB} from '../plugins/navigation/util/indexedDB';
 import {State as NavPluginState} from '../plugins/navigation/flow-types';
 import BaseDevice from '../devices/BaseDevice';
 import {State as PluginState} from 'src/reducers/pluginStates';

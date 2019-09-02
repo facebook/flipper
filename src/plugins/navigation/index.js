@@ -19,7 +19,7 @@ import {
   removeBookmark,
   readBookmarksFromDB,
   writeBookmarkToDB,
-} from './util/indexedDB';
+} from './util/indexedDB.tsx';
 import {
   appMatchPatternsToAutoCompleteProvider,
   bookmarksToAutoCompleteProvider,
