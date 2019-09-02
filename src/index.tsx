@@ -10,7 +10,7 @@ export * from './ui/index';
 export {getStringFromErrorLike, textContent} from './utils/index';
 export {default as GK} from './fb-stubs/GK';
 export {default as createPaste} from './fb-stubs/createPaste';
-export {graphQLQuery} from './fb-stubs/user';
+export {internGraphAPIRequest, graphQLQuery} from './fb-stubs/user';
 export {
   FlipperBasePlugin,
   FlipperPlugin,

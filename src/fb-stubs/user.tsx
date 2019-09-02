@@ -9,6 +9,15 @@ export function getUser() {
   return Promise.reject();
 }
 
+export async function internGraphAPIRequest(
+  endpoint: string,
+  formFields: {
+    [key: string]: any;
+  } = {},
+): Promise<any> {
+  return Promise.reject();
+}
+
 export async function graphQLQuery(query: string) {
   return Promise.reject();
 }
