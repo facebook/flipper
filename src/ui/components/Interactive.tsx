@@ -80,7 +80,7 @@ type InteractiveState = {
   moving: boolean;
   movingInitialProps: InteractiveProps | null | undefined;
   movingInitialCursor: CursorState | null | undefined;
-  cursor: string | null | undefined;
+  cursor: string | undefined;
   resizingSides: ResizingSides;
   couldResize: boolean;
   resizing: boolean;
@@ -101,7 +101,7 @@ export default class Interactive extends React.Component<
 
     this.state = {
       couldResize: false,
-      cursor: null,
+      cursor: undefined,
       moving: false,
       movingInitialCursor: null,
       movingInitialProps: null,
@@ -115,7 +115,7 @@ export default class Interactive extends React.Component<
   }
 
   globalMouse: boolean;
-  ref: HTMLElement;
+  ref: HTMLElement | undefined;
 
   nextTop: number | null | undefined;
   nextLeft: number | null | undefined;
@@ -222,9 +222,11 @@ export default class Interactive extends React.Component<
         }
 
         const win = siblings[key];
-        const distance = getDistanceTo(rect, win);
-        if (distance <= SNAP_SIZE) {
-          closeWindows.push(win);
+        if (win) {
+          const distance = getDistanceTo(rect, win);
+          if (distance <= SNAP_SIZE) {
+            closeWindows.push(win);
+          }
         }
       }
     }
@@ -343,11 +345,11 @@ export default class Interactive extends React.Component<
 
     const {clientX: cursorLeft, clientY: cursorTop} = event;
 
-    const movedLeft = movingInitialCursor.left - cursorLeft;
-    const movedTop = movingInitialCursor.top - cursorTop;
+    const movedLeft = movingInitialCursor!.left - cursorLeft;
+    const movedTop = movingInitialCursor!.top - cursorTop;
 
-    let newLeft = (movingInitialProps.left || 0) - movedLeft;
-    let newTop = (movingInitialProps.top || 0) - movedTop;
+    let newLeft = (movingInitialProps!.left || 0) - movedLeft;
+    let newTop = (movingInitialProps!.top || 0) - movedTop;
 
     if (event.altKey) {
       const snapProps = this.getRect();
@@ -372,8 +374,8 @@ export default class Interactive extends React.Component<
       return;
     }
 
-    width = Math.max(this.props.minWidth, width);
-    height = Math.max(this.props.minHeight, height);
+    width = Math.max(this.props.minWidth || 0, width);
+    height = Math.max(this.props.minHeight || 0, height);
 
     const {maxHeight, maxWidth} = this.props;
     if (maxWidth != null) {
@@ -387,8 +389,8 @@ export default class Interactive extends React.Component<
   }
 
   move(top: number, left: number, event: MouseEvent) {
-    top = Math.max(this.props.minTop, top);
-    left = Math.max(this.props.minLeft, left);
+    top = Math.max(this.props.minTop || 0, top);
+    left = Math.max(this.props.minLeft || 0, left);
 
     if (top === this.props.top && left === this.props.left) {
       // noop
@@ -412,36 +414,36 @@ export default class Interactive extends React.Component<
     invariant(resizingInitialCursor, 'TODO');
     invariant(resizingSides, 'TODO');
 
-    const deltaLeft = resizingInitialCursor.left - event.clientX;
-    const deltaTop = resizingInitialCursor.top - event.clientY;
+    const deltaLeft = resizingInitialCursor!.left - event.clientX;
+    const deltaTop = resizingInitialCursor!.top - event.clientY;
 
-    let newLeft = resizingInitialRect.left;
-    let newTop = resizingInitialRect.top;
+    let newLeft = resizingInitialRect!.left;
+    let newTop = resizingInitialRect!.top;
 
-    let newWidth = resizingInitialRect.width;
-    let newHeight = resizingInitialRect.height;
+    let newWidth = resizingInitialRect!.width;
+    let newHeight = resizingInitialRect!.height;
 
     // right
-    if (resizingSides.right === true) {
+    if (resizingSides!.right === true) {
       newWidth -= deltaLeft;
     }
 
     // bottom
-    if (resizingSides.bottom === true) {
+    if (resizingSides!.bottom === true) {
       newHeight -= deltaTop;
     }
 
     const rect = this.getRect();
 
     // left
-    if (resizingSides.left === true) {
+    if (resizingSides!.left === true) {
       newLeft -= deltaLeft;
       newWidth += deltaLeft;
 
       if (this.props.movable === true) {
         // prevent from being shrunk past the minimum width
         const right = rect.left + rect.width;
-        const maxLeft = right - this.props.minWidth;
+        const maxLeft = right - (this.props.minWidth || 0);
 
         let cleanLeft = Math.max(0, newLeft);
         cleanLeft = Math.min(cleanLeft, maxLeft);
@@ -451,14 +453,14 @@ export default class Interactive extends React.Component<
     }
 
     // top
-    if (resizingSides.top === true) {
+    if (resizingSides!.top === true) {
       newTop -= deltaTop;
       newHeight += deltaTop;
 
       if (this.props.movable === true) {
         // prevent from being shrunk past the minimum height
         const bottom = rect.top + rect.height;
-        const maxTop = bottom - this.props.minHeight;
+        const maxTop = bottom - (this.props.minHeight || 0);
 
         let cleanTop = Math.max(0, newTop);
         cleanTop = Math.min(cleanTop, maxTop);
@@ -470,23 +472,23 @@ export default class Interactive extends React.Component<
     if (event.altKey) {
       const windows = this.getPossibleTargetWindows(rect);
 
-      if (resizingSides.left === true) {
+      if (resizingSides!.left === true) {
         const newLeft2 = maybeSnapLeft(rect, windows, newLeft);
         newWidth += newLeft - newLeft2;
         newLeft = newLeft2;
       }
 
-      if (resizingSides.top === true) {
+      if (resizingSides!.top === true) {
         const newTop2 = maybeSnapTop(rect, windows, newTop);
         newHeight += newTop - newTop2;
         newTop = newTop2;
       }
 
-      if (resizingSides.bottom === true) {
+      if (resizingSides!.bottom === true) {
         newHeight = maybeSnapTop(rect, windows, newTop + newHeight) - newTop;
       }
 
-      if (resizingSides.right === true) {
+      if (resizingSides!.right === true) {
         newWidth = maybeSnapLeft(rect, windows, newLeft + newWidth) - newLeft;
       }
     }
@@ -500,10 +502,10 @@ export default class Interactive extends React.Component<
     invariant(ref, 'expected ref');
 
     return {
-      height: ref.offsetHeight || 0,
+      height: ref!.offsetHeight || 0,
       left: props.left || 0,
       top: props.top || 0,
-      width: ref.offsetWidth || 0,
+      width: ref!.offsetWidth || 0,
     };
   }
 
@@ -531,6 +533,10 @@ export default class Interactive extends React.Component<
     | undefined {
     const canResize = this.getResizable();
     if (!canResize) {
+      return;
+    }
+
+    if (!this.ref) {
       return;
     }
 
