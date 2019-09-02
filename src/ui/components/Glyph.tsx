@@ -87,7 +87,7 @@ export default class Glyph extends React.Component<{
   color?: string;
 }> {
   render() {
-    const {name, size, variant, color, className} = this.props;
+    const {name, size = 16, variant, color, className} = this.props;
 
     return (
       <ColoredIcon
