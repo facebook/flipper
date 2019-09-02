@@ -3,20 +3,21 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  * @format
- * @flow strict-local
  */
 
 import {styled} from 'flipper';
-import {parseURIParameters} from '../util/uri.tsx';
-import {IconButton, FavoriteButton} from './';
+import {parseURIParameters} from '../util/uri';
+import IconButton from './IconButton';
+import FavoriteButton from './FavoriteButton';
+import React from 'react';
 
-type Props = {|
-  isBookmarked: boolean,
-  uri: ?string,
-  className: ?string,
-  onNavigate: (query: string) => void,
-  onFavorite: (query: string) => void,
-|};
+type Props = {
+  isBookmarked: boolean;
+  uri: string | null;
+  className: string | null;
+  onNavigate: (query: string) => void;
+  onFavorite: (query: string) => void;
+};
 
 const NavigationInfoBoxContainer = styled('div')({
   backgroundColor: '#FDFDEA',
