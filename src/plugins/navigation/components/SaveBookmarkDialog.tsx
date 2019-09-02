@@ -3,22 +3,20 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  * @format
- * @flow strict-local
  */
 
 import {Button, FlexColumn, Input, Sheet, styled} from 'flipper';
-import {useState} from 'react';
+import React, {useState} from 'react';
+import {Bookmark, URI} from '../types';
 
-import type {Bookmark} from '../flow-types';
-
-type Props = {|
-  uri: ?string,
-  edit: boolean,
-  shouldShow: boolean,
-  onHide: ?() => void,
-  onRemove: string => void,
-  onSubmit: Bookmark => void,
-|};
+type Props = {
+  uri: string | null;
+  edit: boolean;
+  shouldShow: boolean;
+  onHide?: () => void;
+  onRemove: (uri: URI) => void;
+  onSubmit: (bookmark: Bookmark) => void;
+};
 
 const Container = styled(FlexColumn)({
   padding: 10,
@@ -26,7 +24,7 @@ const Container = styled(FlexColumn)({
 });
 
 const Title = styled('div')({
-  fontWeight: '500',
+  fontWeight: 500,
   marginTop: 8,
   marginLeft: 2,
   marginBottom: 8,
@@ -56,7 +54,7 @@ export default (props: Props) => {
   } else {
     return (
       <Sheet onHideSheet={onHide}>
-        {hide => {
+        {(onHide: () => void) => {
           return (
             <Container>
               <Title>
@@ -65,13 +63,15 @@ export default (props: Props) => {
               <NameInput
                 placeholder="Name..."
                 value={commonName}
-                onChange={event => setCommonName(event.target.value)}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+                  setCommonName(event.target.value)
+                }
               />
               <URIContainer>{uri}</URIContainer>
               <ButtonContainer>
                 <Button
                   onClick={() => {
-                    hide();
+                    onHide();
                     setCommonName('');
                   }}
                   compact
@@ -82,7 +82,7 @@ export default (props: Props) => {
                   <Button
                     type="danger"
                     onClick={() => {
-                      hide();
+                      onHide();
                       onRemove(uri);
                       setCommonName('');
                     }}
@@ -95,7 +95,7 @@ export default (props: Props) => {
                 <Button
                   type="primary"
                   onClick={() => {
-                    hide();
+                    onHide();
                     onSubmit({uri, commonName});
                     // The component state is remembered even after unmounting.
                     // Thus it is necessary to reset the commonName here.

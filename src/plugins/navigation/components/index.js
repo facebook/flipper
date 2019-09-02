@@ -14,7 +14,7 @@ export {default as NavigationInfoBox} from './NavigationInfoBox.tsx';
 export {
   default as RequiredParametersDialog,
 } from './RequiredParametersDialog.tsx';
-export {default as SaveBookmarkDialog} from './SaveBookmarkDialog';
+export {default as SaveBookmarkDialog} from './SaveBookmarkDialog.tsx';
 export {default as ScrollableFlexColumn} from './ScrollableFlexColumn';
 export {default as SearchBar} from './SearchBar';
 export {default as Timeline} from './Timeline';
