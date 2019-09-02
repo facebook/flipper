@@ -24,7 +24,7 @@ import {
   appMatchPatternsToAutoCompleteProvider,
   bookmarksToAutoCompleteProvider,
   DefaultProvider,
-} from './util/autoCompleteProvider';
+} from './util/autoCompleteProvider.tsx';
 import {getAppMatchPatterns} from './util/appMatchPatterns';
 import {getRequiredParameters, filterOptionalParameters} from './util/uri.tsx';
 

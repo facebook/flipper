@@ -6,7 +6,7 @@
  * @flow strict-local
  */
 
-import {filterMatchPatterns} from '../util/autoCompleteProvider';
+import {filterMatchPatterns} from '../util/autoCompleteProvider.tsx';
 
 import type {URI} from '../flow-types';
 
