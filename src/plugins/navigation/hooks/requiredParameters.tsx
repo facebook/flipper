@@ -29,5 +29,5 @@ export const useRequiredParameterFormValidator = (
       setIsValid(false);
     }
   });
-  return [isValid, values, setValuesArray];
+  return {isValid, values, setValuesArray};
 };

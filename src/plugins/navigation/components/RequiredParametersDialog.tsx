@@ -3,7 +3,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  * @format
- * @flow strict-local
  */
 
 import {Button, FlexColumn, Input, Sheet, styled, Glyph, colors} from 'flipper';
@@ -13,18 +12,19 @@ import {
   parameterIsBooleanType,
   validateParameter,
   liveEdit,
-} from '../util/uri.tsx';
-import {useRequiredParameterFormValidator} from '../hooks/requiredParameters.tsx';
+} from '../util/uri';
+import {useRequiredParameterFormValidator} from '../hooks/requiredParameters';
+import React from 'react';
 
-import type {URI} from '../flow-types';
+import {URI} from '../types';
 
-type Props = {|
-  uri: string,
-  requiredParameters: Array<string>,
-  shouldShow: boolean,
-  onHide: ?() => void,
-  onSubmit: URI => void,
-|};
+type Props = {
+  uri: string;
+  requiredParameters: Array<string>;
+  shouldShow: boolean;
+  onHide?: () => void;
+  onSubmit: (uri: URI) => void;
+};
 
 const Container = styled(FlexColumn)({
   padding: 10,
@@ -72,7 +72,7 @@ const WarningIconContainer = styled('span')({
 
 export default (props: Props) => {
   const {shouldShow, onHide, onSubmit, uri, requiredParameters} = props;
-  const [isValid, values, setValuesArray] = useRequiredParameterFormValidator(
+  const {isValid, values, setValuesArray} = useRequiredParameterFormValidator(
     requiredParameters,
   );
   if (uri == null || !shouldShow) {
@@ -80,7 +80,7 @@ export default (props: Props) => {
   } else {
     return (
       <Sheet onHideSheet={onHide}>
-        {hide => {
+        {(hide: () => void) => {
           return (
             <Container>
               <Title>
@@ -99,7 +99,7 @@ export default (props: Props) => {
               {requiredParameters.map((paramater, idx) => (
                 <div key={idx}>
                   <RequiredParameterInput
-                    onChange={event =>
+                    onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
                       setValuesArray([
                         ...values.slice(0, idx),
                         event.target.value,
@@ -138,7 +138,7 @@ export default (props: Props) => {
                   Cancel
                 </Button>
                 <Button
-                  type={isValid ? 'primary' : null}
+                  type={isValid ? 'primary' : undefined}
                   onClick={() => {
                     onSubmit(replaceRequiredParametersWithValues(uri, values));
                     if (onHide != null) {

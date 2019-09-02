@@ -24,7 +24,7 @@ type OwnProps = {
    * the sheet.
    */
   children: (onHide: () => void) => React.ReactNode | undefined;
-  onHideSheet: () => void;
+  onHideSheet?: () => void;
 };
 
 type StateFromProps = {

@@ -11,7 +11,9 @@ export {default as BookmarksSidebar} from './BookmarksSidebar.tsx';
 export {default as FavoriteButton} from './FavoriteButton.tsx';
 export {default as IconButton} from './IconButton.tsx';
 export {default as NavigationInfoBox} from './NavigationInfoBox.tsx';
-export {default as RequiredParametersDialog} from './RequiredParametersDialog';
+export {
+  default as RequiredParametersDialog,
+} from './RequiredParametersDialog.tsx';
 export {default as SaveBookmarkDialog} from './SaveBookmarkDialog';
 export {default as ScrollableFlexColumn} from './ScrollableFlexColumn';
 export {default as SearchBar} from './SearchBar';
