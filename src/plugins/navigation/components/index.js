@@ -6,7 +6,7 @@
  * @flow strict-local
  */
 
-export {default as AutoCompleteSheet} from './AutoCompleteSheet';
+export {default as AutoCompleteSheet} from './AutoCompleteSheet.tsx';
 export {default as BookmarksSidebar} from './BookmarksSidebar.tsx';
 export {default as FavoriteButton} from './FavoriteButton.tsx';
 export {default as IconButton} from './IconButton.tsx';

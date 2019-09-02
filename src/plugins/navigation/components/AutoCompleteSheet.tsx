@@ -3,21 +3,20 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  * @format
- * @flow strict-local
  */
 
 import {Glyph, styled} from 'flipper';
-import {useItemNavigation} from '../hooks/autoCompleteSheet.tsx';
-import {filterProvidersToLineItems} from '../util/autoCompleteProvider.tsx';
+import {useItemNavigation} from '../hooks/autoCompleteSheet';
+import {filterProvidersToLineItems} from '../util/autoCompleteProvider';
+import {AutoCompleteProvider, AutoCompleteLineItem, URI} from '../types';
+import React from 'react';
 
-import type {AutoCompleteProvider} from '../flow-types';
-
-type Props = {|
-  providers: Array<AutoCompleteProvider>,
-  onHighlighted: string => void,
-  onNavigate: string => void,
-  query: string,
-|};
+type Props = {
+  providers: Array<AutoCompleteProvider>;
+  onHighlighted: (uri: URI) => void;
+  onNavigate: (uri: URI) => void;
+  query: string;
+};
 
 const MAX_ITEMS = 5;
 
@@ -56,9 +55,9 @@ export default (props: Props) => {
   const selectedItem = useItemNavigation(lineItems, onHighlighted);
   return (
     <AutoCompleteSheetContainer>
-      {lineItems.map((lineItem, idx) => (
+      {lineItems.map((lineItem: AutoCompleteLineItem, idx: number) => (
         <SheetItem
-          className={idx === selectedItem ? 'selected' : null}
+          className={idx === selectedItem ? 'selected' : ''}
           key={idx}
           onMouseDown={() => onNavigate(lineItem.uri)}>
           <SheetItemIcon>
