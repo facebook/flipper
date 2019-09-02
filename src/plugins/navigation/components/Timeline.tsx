@@ -3,20 +3,19 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  * @format
- * @flow strict-local
  */
 
 import {colors, FlexCenter, styled, LoadingIndicator} from 'flipper';
-import {NavigationInfoBox} from './';
+import NavigationInfoBox from './NavigationInfoBox';
+import {Bookmark, NavigationEvent, URI} from '../types';
+import React from 'react';
 
-import type {Bookmark, NavigationEvent} from '../flow-types';
-
-type Props = {|
-  bookmarks: Map<string, Bookmark>,
-  events: Array<NavigationEvent>,
-  onNavigate: string => void,
-  onFavorite: string => void,
-|};
+type Props = {
+  bookmarks: Map<string, Bookmark>;
+  events: Array<NavigationEvent>;
+  onNavigate: (uri: URI) => void;
+  onFavorite: (uri: URI) => void;
+};
 
 const TimelineContainer = styled('div')({
   overflowY: 'scroll',
@@ -53,7 +52,7 @@ export default (props: Props) => {
     <NoData>No Navigation Events to Show</NoData>
   ) : (
     <TimelineContainer>
-      {events.map((event: NavigationEvent, idx) => {
+      {events.map((event: NavigationEvent, idx: number) => {
         return (
           <NavigationEventContainer>
             {event.uri != null || event.className != null ? (
@@ -62,7 +61,7 @@ export default (props: Props) => {
                   <img src={event.screenshot} />
                 ) : (
                   <FlexCenter grow>
-                    <LoadingIndicator />
+                    <LoadingIndicator size={32} />
                   </FlexCenter>
                 )}
               </ScreenshotContainer>

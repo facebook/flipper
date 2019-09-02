@@ -16,4 +16,4 @@ export {
 } from './RequiredParametersDialog.tsx';
 export {default as SaveBookmarkDialog} from './SaveBookmarkDialog.tsx';
 export {default as SearchBar} from './SearchBar';
-export {default as Timeline} from './Timeline';
+export {default as Timeline} from './Timeline.tsx';
