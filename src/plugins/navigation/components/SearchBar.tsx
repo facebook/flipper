@@ -6,9 +6,7 @@
  */
 
 import {styled, SearchBox, SearchInput, Toolbar} from 'flipper';
-import AutoCompleteSheet from './AutoCompleteSheet';
-import IconButton from './IconButton';
-import FavoriteButton from './FavoriteButton';
+import {AutoCompleteSheet, IconButton, FavoriteButton} from './';
 import {AutoCompleteProvider, Bookmark, URI} from '../types';
 import React, {Component} from 'react';
 

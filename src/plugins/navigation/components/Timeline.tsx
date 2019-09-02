@@ -6,7 +6,7 @@
  */
 
 import {colors, FlexCenter, styled, LoadingIndicator} from 'flipper';
-import NavigationInfoBox from './NavigationInfoBox';
+import {NavigationInfoBox} from './';
 import {Bookmark, NavigationEvent, URI} from '../types';
 import React from 'react';
 

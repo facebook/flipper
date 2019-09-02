@@ -6,7 +6,7 @@
  */
 
 import {styled, IconSize, colors} from 'flipper';
-import IconButton from './IconButton';
+import {IconButton} from './';
 import React from 'react';
 
 type Props = {

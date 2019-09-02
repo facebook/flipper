@@ -13,7 +13,7 @@ import {
   SearchBar,
   Timeline,
   RequiredParametersDialog,
-} from './components';
+} from './components/index.tsx';
 import {
   removeBookmark,
   readBookmarksFromDB,
