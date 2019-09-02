@@ -3,7 +3,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  * @format
- * @flow strict-local
  */
 
 import querystring from 'querystring';
@@ -18,13 +17,11 @@ export const validateParameter = (value: string, parameter: string) => {
   );
 };
 
-export const filterOptionalParameters: string => string = (uri: string) => {
+export const filterOptionalParameters = (uri: string) => {
   return uri.replace(/[/&]?([^&?={}\/]*=)?{\?.*?}/g, '');
 };
 
-export const parseURIParameters: string => Map<string, string> = (
-  query: string,
-) => {
+export const parseURIParameters = (query: string) => {
   // get parameters from query string and store in Map
   const parameters = query
     .split('?')
@@ -33,7 +30,7 @@ export const parseURIParameters: string => Map<string, string> = (
   const parametersObj = querystring.parse(parameters);
   const parametersMap = new Map<string, string>();
   for (const key in parametersObj) {
-    parametersMap.set(key, parametersObj[key]);
+    parametersMap.set(key, parametersObj[key] as string);
   }
   return parametersMap;
 };
@@ -78,7 +75,7 @@ export const getRequiredParameters = (uri: string) => {
   return matches;
 };
 
-export const liveEdit = (uri: string, formValues: Array<string>): string => {
+export const liveEdit = (uri: string, formValues: Array<string>) => {
   const parameterRegExp = /({[^?]*?})/g;
   const uriArray = uri.split(parameterRegExp);
   return uriArray.reduce((acc, uriComponent, idx) => {

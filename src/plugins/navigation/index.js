@@ -26,7 +26,7 @@ import {
   DefaultProvider,
 } from './util/autoCompleteProvider';
 import {getAppMatchPatterns} from './util/appMatchPatterns';
-import {getRequiredParameters, filterOptionalParameters} from './util/uri';
+import {getRequiredParameters, filterOptionalParameters} from './util/uri.tsx';
 
 import type {
   State,

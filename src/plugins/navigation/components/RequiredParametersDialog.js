@@ -13,7 +13,7 @@ import {
   parameterIsBooleanType,
   validateParameter,
   liveEdit,
-} from '../util/uri';
+} from '../util/uri.tsx';
 import {useRequiredParameterFormValidator} from '../hooks/requiredParameters';
 
 import type {URI} from '../flow-types';

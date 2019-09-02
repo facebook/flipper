@@ -7,7 +7,7 @@
  */
 
 import {useEffect, useState} from 'react';
-import {validateParameter} from '../util/uri';
+import {validateParameter} from '../util/uri.tsx';
 
 export const useRequiredParameterFormValidator = (
   requiredParameters: Array<string>,

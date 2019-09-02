@@ -7,7 +7,7 @@
  */
 
 import {styled} from 'flipper';
-import {parseURIParameters} from '../util/uri';
+import {parseURIParameters} from '../util/uri.tsx';
 import {IconButton, FavoriteButton} from './';
 
 type Props = {|
