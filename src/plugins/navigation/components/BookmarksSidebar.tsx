@@ -3,17 +3,16 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  * @format
- * @flow strict-local
  */
 
 import {DetailSidebar, FlexCenter, styled, colors} from 'flipper';
+import {Bookmark, URI} from '../types';
+import React from 'react';
 
-import type {Bookmark} from '../flow-types';
-
-type Props = {|
-  bookmarks: Map<string, Bookmark>,
-  onNavigate: string => void,
-|};
+type Props = {
+  bookmarks: Map<string, Bookmark>;
+  onNavigate: (uri: URI) => void;
+};
 
 const NoData = styled(FlexCenter)({
   fontSize: 18,

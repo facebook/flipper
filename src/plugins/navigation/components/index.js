@@ -7,7 +7,7 @@
  */
 
 export {default as AutoCompleteSheet} from './AutoCompleteSheet';
-export {default as BookmarksSidebar} from './BookmarksSidebar';
+export {default as BookmarksSidebar} from './BookmarksSidebar.tsx';
 export {default as FavoriteButton} from './FavoriteButton.tsx';
 export {default as IconButton} from './IconButton.tsx';
 export {default as NavigationInfoBox} from './NavigationInfoBox.tsx';
