@@ -206,7 +206,11 @@ export default class extends FlipperPlugin<State, {}, PersistedState> {
           onNavigate={this.navigateTo}
           onFavorite={this.onFavorite}
         />
-        <BookmarksSidebar bookmarks={bookmarks} onNavigate={this.navigateTo} />
+        <BookmarksSidebar
+          bookmarks={bookmarks}
+          onRemove={this.removeBookmark}
+          onNavigate={this.navigateTo}
+        />
         <SaveBookmarkDialog
           shouldShow={shouldShowSaveBookmarkDialog}
           uri={saveBookmarkURI}

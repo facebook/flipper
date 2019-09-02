@@ -7,11 +7,13 @@
 
 import {DetailSidebar, FlexCenter, styled, colors} from 'flipper';
 import {Bookmark, URI} from '../types';
+import {IconButton} from './';
 import React from 'react';
 
 type Props = {
   bookmarks: Map<string, Bookmark>;
   onNavigate: (uri: URI) => void;
+  onRemove: (uri: URI) => void;
 };
 
 const NoData = styled(FlexCenter)({
@@ -20,21 +22,25 @@ const NoData = styled(FlexCenter)({
 });
 
 const BookmarksList = styled('div')({
-  color: colors.macOSTitleBarIcon,
   overflowY: 'scroll',
   overflowX: 'hidden',
   height: '100%',
+  backgroundColor: colors.white,
   '.bookmark-container': {
     width: '100%',
-    padding: '5px 10px',
+    padding: '10px',
     cursor: 'pointer',
-  },
-  '.bookmark-container:hover': {
-    backgroundColor: 'rgba(155, 155, 155, 0.2)',
+    borderBottom: `1px ${colors.greyTint} solid`,
   },
   '.bookmark-container:active': {
-    backgroundColor: '#4d84f5',
-    color: '#FFF',
+    backgroundColor: colors.highlight,
+    color: colors.white,
+  },
+  '.bookmarks-title': {
+    backgroundColor: colors.light02,
+    padding: '10px',
+    borderBottom: `1px ${colors.greyTint} solid`,
+    fontWeight: 'bold',
   },
   '.bookmark-common-name': {
     fontSize: 14,
@@ -42,6 +48,10 @@ const BookmarksList = styled('div')({
     whiteSpace: 'nowrap',
     textOverflow: 'ellipsis',
     lineHeight: 1.2,
+    fontWeight: 'bold',
+  },
+  '.bookmark-container:active>.bookmark-uri': {
+    color: colors.white,
   },
   '.bookmark-uri': {
     fontSize: 10,
@@ -49,7 +59,13 @@ const BookmarksList = styled('div')({
     whiteSpace: 'nowrap',
     textOverflow: 'ellipsis',
     lineHeight: 1.2,
+    color: colors.greyTint3,
   },
+});
+
+const DeleteButton = styled('div')({
+  padding: 10,
+  float: 'right',
 });
 
 const alphabetizeBookmarkCompare = (b1: Bookmark, b2: Bookmark) => {
@@ -57,29 +73,41 @@ const alphabetizeBookmarkCompare = (b1: Bookmark, b2: Bookmark) => {
 };
 
 export default (props: Props) => {
-  const {bookmarks, onNavigate} = props;
+  const {bookmarks, onNavigate, onRemove} = props;
   return (
     <DetailSidebar>
       {bookmarks.size === 0 ? (
         <NoData grow>No Bookmarks</NoData>
       ) : (
         <BookmarksList>
+          <div className="bookmarks-title">Bookmarks</div>
           {[...bookmarks.values()]
             .sort(alphabetizeBookmarkCompare)
             .map((bookmark, idx) => (
-              <div
-                key={idx}
-                className="bookmark-container"
-                role="button"
-                tabIndex={0}
-                onClick={() => {
-                  onNavigate(bookmark.uri);
-                }}>
-                <div className="bookmark-common-name">
-                  {bookmark.commonName}
+              <>
+                <DeleteButton>
+                  <IconButton
+                    color={colors.macOSTitleBarButtonBackgroundActive}
+                    outline={false}
+                    icon="cross-circle"
+                    size={16}
+                    onClick={() => onRemove(bookmark.uri)}
+                  />
+                </DeleteButton>
+                <div
+                  key={idx}
+                  className="bookmark-container"
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => {
+                    onNavigate(bookmark.uri);
+                  }}>
+                  <div className="bookmark-common-name">
+                    {bookmark.commonName}
+                  </div>
+                  <div className="bookmark-uri">{bookmark.uri}</div>
                 </div>
-                <div className="bookmark-uri">{bookmark.uri}</div>
-              </div>
+              </>
             ))}
         </BookmarksList>
       )}
