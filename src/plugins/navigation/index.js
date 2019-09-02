@@ -6,13 +6,12 @@
  * @flow strict-local
  */
 
-import {FlipperPlugin, bufferToBlob} from 'flipper';
+import {FlipperPlugin, bufferToBlob, FlexColumn} from 'flipper';
 import {
   BookmarksSidebar,
   SaveBookmarkDialog,
   SearchBar,
   Timeline,
-  ScrollableFlexColumn,
   RequiredParametersDialog,
 } from './components';
 import {
@@ -193,7 +192,7 @@ export default class extends FlipperPlugin<State, {}, PersistedState> {
     } = this.props.persistedState;
     const autoCompleteProviders = [bookmarksProvider, appMatchPatternsProvider];
     return (
-      <ScrollableFlexColumn>
+      <FlexColumn grow>
         <SearchBar
           providers={autoCompleteProviders}
           bookmarks={bookmarks}
@@ -225,7 +224,7 @@ export default class extends FlipperPlugin<State, {}, PersistedState> {
           requiredParameters={requiredParameters}
           onSubmit={this.navigateTo}
         />
-      </ScrollableFlexColumn>
+      </FlexColumn>
     );
   }
 }
