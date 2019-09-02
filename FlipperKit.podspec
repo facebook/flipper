@@ -1,5 +1,4 @@
 folly_compiler_flags = '-DDEBUG=1 -DFLIPPER_OSS=1 -DFB_SONARKIT_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_LIBGFLAGS=0 -DFOLLY_HAVE_LIBJEMALLOC=0 -DFOLLY_HAVE_PREADV=0 -DFOLLY_HAVE_PWRITEV=0 -DFOLLY_HAVE_TFO=0 -DFOLLY_USE_SYMBOLIZER=0'
-yoga_version = '~> 1.14'
 yogakit_version = '~> 1.14'
 flipperkit_version = '0.23.4'
 Pod::Spec.new do |spec|
@@ -94,7 +93,6 @@ Pod::Spec.new do |spec|
     ss.header_dir = "FlipperKitLayoutPlugin"
     ss.dependency             'FlipperKit/Core'
     ss.dependency             'FlipperKit/FlipperKitLayoutTextSearchable'
-    ss.dependency             'Yoga', yoga_version
     ss.dependency             'YogaKit', yogakit_version
     ss.compiler_flags       = folly_compiler_flags
     ss.public_header_files  = 'iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutPlugin/FlipperKitLayoutPlugin.h',
@@ -117,7 +115,6 @@ Pod::Spec.new do |spec|
   spec.subspec "FlipperKitLayoutComponentKitSupport" do |ss|
     ss.header_dir = "FlipperKitLayoutComponentKitSupport"
     ss.dependency             'FlipperKit/Core'
-    ss.dependency             'Yoga', yoga_version
     ss.dependency             'ComponentKit', '~> 0.0'
     ss.dependency             'FlipperKit/FlipperKitLayoutPlugin'
     ss.dependency             'FlipperKit/FlipperKitLayoutTextSearchable'
