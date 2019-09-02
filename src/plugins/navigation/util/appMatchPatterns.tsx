@@ -3,15 +3,14 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  * @format
- * @flow strict-local
  */
 
 import fs from 'fs';
 import path from 'path';
 
-import type {AppMatchPattern} from '../flow-types';
+import {AppMatchPattern} from '../types';
 
-const extractAppNameFromSelectedApp = (selectedApp: ?string) => {
+const extractAppNameFromSelectedApp = (selectedApp: string | null) => {
   if (selectedApp == null) {
     return null;
   } else {
@@ -19,7 +18,7 @@ const extractAppNameFromSelectedApp = (selectedApp: ?string) => {
   }
 };
 
-export const getAppMatchPatterns = (selectedApp: ?string) => {
+export const getAppMatchPatterns = (selectedApp: string | null) => {
   return new Promise<Array<AppMatchPattern>>((resolve, reject) => {
     const appName = extractAppNameFromSelectedApp(selectedApp);
     if (appName === 'Facebook') {
