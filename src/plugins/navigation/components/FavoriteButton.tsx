@@ -5,14 +5,15 @@
  * @format
  */
 
-import {styled} from 'flipper';
-import {IconButton} from './';
+import {styled, IconSize, colors} from 'flipper';
+import IconButton from './IconButton';
+import React from 'react';
 
-type Props = {|
-  onClick?: () => void,
-  highlighted: boolean,
-  size: 8 | 10 | 12 | 16 | 18 | 20 | 24 | 32,
-|};
+type Props = {
+  onClick?: () => void;
+  highlighted: boolean;
+  size: IconSize;
+};
 
 const FavoriteButtonContainer = styled('div')({
   position: 'relative',
@@ -31,7 +32,7 @@ export default (props: Props) => {
       {highlighted ? (
         <IconButton
           outline={false}
-          color="#FFD700"
+          color={colors.lemon}
           icon="star"
           {...iconButtonProps}
         />
