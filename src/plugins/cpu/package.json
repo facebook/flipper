@@ -1,7 +1,7 @@
 {
   "name": "DeviceCPU",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "index.tsx",
   "license": "MIT",
   "dependencies": {
     "adbkit-fb": "2.10.1"

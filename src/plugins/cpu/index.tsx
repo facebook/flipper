@@ -6,8 +6,8 @@
  */
 
 import {FlipperDevicePlugin, Device} from 'flipper';
-const adb = require('adbkit-fb');
-import TemperatureTable from './TemperatureTable.js';
+import adb from 'adbkit-fb';
+import TemperatureTable from './TemperatureTable';
 
 import {
   FlexColumn,
@@ -21,37 +21,39 @@ import {
   DetailSidebar,
   ToggleButton,
 } from 'flipper';
+import React from 'react';
 
 type ADBClient = any;
 type AndroidDevice = {
-  adb: ADBClient,
+  adb: ADBClient;
 };
 type TableRows = any;
 
 // we keep vairable name with underline for to physical path mappings on device
-type CPUFrequency = {|
-  cpu_id: number,
-  scaling_cur_freq: number,
-  scaling_min_freq: number,
-  scaling_max_freq: number,
-  scaling_available_freqs: Array<number>,
-  scaling_governor: string,
-  scaling_available_governors: Array<string>,
-  cpuinfo_max_freq: number,
-  cpuinfo_min_freq: number,
-|};
+type CPUFrequency = {
+  [index: string]: number | Array<number> | string | Array<string>;
+  cpu_id: number;
+  scaling_cur_freq: number;
+  scaling_min_freq: number;
+  scaling_max_freq: number;
+  scaling_available_freqs: Array<number>;
+  scaling_governor: string;
+  scaling_available_governors: Array<string>;
+  cpuinfo_max_freq: number;
+  cpuinfo_min_freq: number;
+};
 
-type CPUState = {|
-  cpuFreq: Array<CPUFrequency>,
-  cpuCount: number,
-  monitoring: boolean,
-  hardwareInfo: string,
-  selectedIds: Array<number>,
-  temperatureMap: any,
-  thermalAccessible: boolean,
-  displayThermalInfo: boolean,
-  displayCPUDetail: boolean,
-|};
+type CPUState = {
+  cpuFreq: Array<CPUFrequency>;
+  cpuCount: number;
+  monitoring: boolean;
+  hardwareInfo: string;
+  selectedIds: Array<number>;
+  temperatureMap: any;
+  thermalAccessible: boolean;
+  displayThermalInfo: boolean;
+  displayCPUDetail: boolean;
+};
 
 type ShellCallBack = (output: string) => any;
 
@@ -106,13 +108,13 @@ const Heading = styled('div')({
 });
 
 // check if str is a number
-function isNormalInteger(str) {
+function isNormalInteger(str: string) {
   const n = Math.floor(Number(str));
   return String(n) === str && n >= 0;
 }
 
 // format frequency to MHz, GHz
-function formatFrequency(freq) {
+function formatFrequency(freq: number) {
   if (freq == -1) {
     return 'N/A';
   } else if (freq == -2) {
@@ -124,13 +126,16 @@ function formatFrequency(freq) {
   }
 }
 
-export default class CPUFrequencyTable extends FlipperDevicePlugin<CPUState> {
+export default class CPUFrequencyTable extends FlipperDevicePlugin<
+  CPUState,
+  any,
+  any
+> {
   adbClient: ADBClient;
-  intervalID: ?IntervalID;
-
-  state = {
-    cpuFreq: [],
+  intervalID: NodeJS.Timer | null = null;
+  state: CPUState = {
     cpuCount: 0,
+    cpuFreq: [],
     monitoring: false,
     hardwareInfo: '',
     selectedIds: [],
@@ -145,7 +150,7 @@ export default class CPUFrequencyTable extends FlipperDevicePlugin<CPUState> {
   }
 
   init() {
-    const device = ((this.device: any): AndroidDevice);
+    const device = (this.device as any) as AndroidDevice;
     this.adbClient = device.adb;
 
     this.updateHardwareInfo();
@@ -172,15 +177,21 @@ export default class CPUFrequencyTable extends FlipperDevicePlugin<CPUState> {
       this.setState({
         cpuCount: count,
         cpuFreq: cpuFreq,
+        monitoring: false,
+        hardwareInfo: '',
+        selectedIds: [],
+        temperatureMap: {},
+        thermalAccessible: true,
+        displayThermalInfo: false,
+        displayCPUDetail: true,
       });
     }, 'cat /sys/devices/system/cpu/possible');
   }
-
   executeShell = (callback: ShellCallBack, command: string) => {
     return this.adbClient
       .shell(this.device.serial, command)
       .then(adb.util.readAll)
-      .then(function(output) {
+      .then(function(output: {toString: () => {trim: () => string}}) {
         return callback(output.toString().trim());
       });
   };
@@ -189,7 +200,6 @@ export default class CPUFrequencyTable extends FlipperDevicePlugin<CPUState> {
     this.executeShell((output: string) => {
       const cpuFreq = this.state.cpuFreq;
       const newFreq = isNormalInteger(output) ? parseInt(output, 10) : -1;
-
       // update table only if frequency changed
       if (cpuFreq[core][type] != newFreq) {
         cpuFreq[core][type] = newFreq;
@@ -327,7 +337,7 @@ export default class CPUFrequencyTable extends FlipperDevicePlugin<CPUState> {
         return;
       }
       return this.executeShell((temp: string) => {
-        if (isNaN(temp)) {
+        if (Number.isNaN(Number(temp))) {
           return;
         }
         map[type] = {
@@ -470,7 +480,7 @@ export default class CPUFrequencyTable extends FlipperDevicePlugin<CPUState> {
     return (
       <Text>
         {freq.scaling_available_freqs.map((freq, idx) => {
-          const style = {};
+          const style: React.CSSProperties = {};
           if (
             freq == info.scaling_cur_freq ||
             freq == info.scaling_min_freq ||
@@ -637,7 +647,6 @@ export default class CPUFrequencyTable extends FlipperDevicePlugin<CPUState> {
           )}
           &nbsp; {this.state.hardwareInfo}
           <ToggleButton
-            position="right"
             toggled={this.state.displayThermalInfo}
             onClick={this.toggleThermalSidebar}
           />
@@ -663,7 +672,7 @@ export default class CPUFrequencyTable extends FlipperDevicePlugin<CPUState> {
             rows={this.frequencyRows(this.state.cpuFreq)}
             onRowHighlighted={selectedIds => {
               this.setState({
-                selectedIds: selectedIds,
+                selectedIds: selectedIds.map(parseInt),
               });
             }}
           />

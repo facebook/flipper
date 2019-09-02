@@ -6,6 +6,7 @@
  */
 
 import {Component, Text, SearchableTable} from 'flipper';
+import React from 'react';
 
 const ColumnSizes = {
   thermal_zone: 'flex',
@@ -29,7 +30,7 @@ const Columns = {
 };
 
 type TemperatureTableProps = {
-  temperatureMap: any,
+  temperatureMap: any;
 };
 
 export default class TemperatureTable extends Component<TemperatureTableProps> {
