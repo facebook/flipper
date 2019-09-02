@@ -82,6 +82,7 @@ handleRes cur prev = do
   if delta > 0 then do
     eprintf ("TSC Strict Mode regression. "%d%" new violations introduced:\n") delta
     forM_ (errors cur \\ errors prev) $ eprintf ("- "%w%"\n")
+    eprintf "Please visit https://fburl.com/strictflipper for more information.\n"
     return $ ExitFailure 1
   else do
     printf ("TSC Strict Mode test passed. Delta: "%d%"\n") delta
