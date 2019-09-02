@@ -3,23 +3,28 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  * @format
- * @flow
  */
 
 import {Button, Input, FlipperPlugin, FlexColumn, styled, Text} from 'flipper';
-import type {Notification} from '../../plugin.tsx';
+import React from 'react';
+
 type DisplayMessageResponse = {
-  greeting: string,
+  greeting: string;
+};
+
+type Message = {
+  id: number;
+  msg: string | null | undefined;
 };
 
 type State = {
-  prompt: string,
-  message: string,
+  prompt: string;
+  message: string;
 };
 
 type PersistedState = {
-  currentNotificationIds: Array<number>,
-  receivedMessage: ?string,
+  currentNotificationIds: Array<number>;
+  receivedMessage: string | null;
 };
 
 const Container = styled(FlexColumn)({
@@ -28,7 +33,7 @@ const Container = styled(FlexColumn)({
   padding: 20,
 });
 
-export default class extends FlipperPlugin<*, State, PersistedState> {
+export default class Example extends FlipperPlugin<State, any, PersistedState> {
   static defaultPersistedState = {
     currentNotificationIds: [],
     receivedMessage: null,
@@ -42,43 +47,39 @@ export default class extends FlipperPlugin<*, State, PersistedState> {
   /*
    * Reducer to process incoming "send" messages from the mobile counterpart.
    */
-  static persistedStateReducer = (
+  static persistedStateReducer(
     persistedState: PersistedState,
     method: string,
-    payload: Object,
-  ): PersistedState => {
+    payload: Message,
+  ) {
     if (method === 'triggerNotification') {
-      return {
-        ...persistedState,
+      return Object.assign({}, persistedState, {
         currentNotificationIds: persistedState.currentNotificationIds.concat([
           payload.id,
         ]),
-      };
+      });
     }
     if (method === 'displayMessage') {
-      return {
-        ...persistedState,
+      return Object.assign({}, persistedState, {
         receivedMessage: payload.msg,
-      };
+      });
     }
-    return persistedState || {};
-  };
+    return persistedState;
+  }
 
   /*
    * Callback to provide the currently active notifications.
    */
-  static getActiveNotifications = (
-    persistedState: PersistedState,
-  ): Array<Notification> => {
+  static getActiveNotifications(persistedState: PersistedState) {
     return persistedState.currentNotificationIds.map((x: number) => {
       return {
         id: 'test-notification:' + x,
         message: 'Example Notification',
-        severity: 'warning',
+        severity: 'warning' as 'warning',
         title: 'Notification: ' + x,
       };
     });
-  };
+  }
 
   /*
    * Call a method of the mobile counterpart, to display a message.
@@ -86,7 +87,7 @@ export default class extends FlipperPlugin<*, State, PersistedState> {
   sendMessage() {
     this.client
       .call('displayMessage', {message: this.state.message || 'Weeeee!'})
-      .then((params: DisplayMessageResponse) => {
+      .then((_params: DisplayMessageResponse) => {
         this.setState({
           prompt: 'Nice',
         });

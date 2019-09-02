@@ -1,7 +1,7 @@
 {
   "name": "Example",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "index.tsx",
   "license": "MIT",
   "title": "Example Plugin",
   "icon": "apps",
