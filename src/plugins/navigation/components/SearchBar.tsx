@@ -3,29 +3,30 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  * @format
- * @flow strict-local
  */
 
-import {Component, styled, SearchBox, SearchInput, Toolbar} from 'flipper';
-import {AutoCompleteSheet, IconButton, FavoriteButton} from './';
+import {styled, SearchBox, SearchInput, Toolbar} from 'flipper';
+import AutoCompleteSheet from './AutoCompleteSheet';
+import IconButton from './IconButton';
+import FavoriteButton from './FavoriteButton';
+import {AutoCompleteProvider, Bookmark, URI} from '../types';
+import React, {Component} from 'react';
 
-import type {AutoCompleteProvider, Bookmark} from '../flow-types';
+type Props = {
+  onFavorite: (query: URI) => void;
+  onNavigate: (query: URI) => void;
+  bookmarks: Map<URI, Bookmark>;
+  providers: Array<AutoCompleteProvider>;
+  uriFromAbove: URI;
+};
 
-type Props = {|
-  onFavorite: (query: string) => void,
-  onNavigate: (query: string) => void,
-  bookmarks: Map<string, Bookmark>,
-  providers: Array<AutoCompleteProvider>,
-  uriFromAbove: string,
-|};
-
-type State = {|
-  query: string,
-  inputFocused: boolean,
-  autoCompleteSheetOpen: boolean,
-  searchInputValue: string,
-  prevURIFromAbove: string,
-|};
+type State = {
+  query: URI;
+  inputFocused: boolean;
+  autoCompleteSheetOpen: boolean;
+  searchInputValue: URI;
+  prevURIFromAbove: URI;
+};
 
 const IconContainer = styled('div')({
   display: 'inline-flex',
@@ -74,7 +75,7 @@ class SearchBar extends Component<Props, State> {
     this.props.onNavigate(searchInputValue);
   };
 
-  queryInputChanged = (event: SyntheticInputEvent<>) => {
+  queryInputChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
     this.setState({query: value, searchInputValue: value});
   };
@@ -103,7 +104,7 @@ class SearchBar extends Component<Props, State> {
     return (
       <ToolbarContainer>
         <Toolbar>
-          <SearchBox className={inputFocused ? 'drop-shadow' : null}>
+          <SearchBox className={inputFocused ? 'drop-shadow' : ''}>
             <SearchInputContainer>
               <SearchInput
                 value={searchInputValue}
@@ -113,7 +114,7 @@ class SearchBar extends Component<Props, State> {
                     inputFocused: false,
                   })
                 }
-                onFocus={event => {
+                onFocus={(event: React.FocusEvent<HTMLInputElement>) => {
                   event.target.select();
                   this.setState({
                     autoCompleteSheetOpen: true,
@@ -121,10 +122,10 @@ class SearchBar extends Component<Props, State> {
                   });
                 }}
                 onChange={this.queryInputChanged}
-                onKeyPress={e => {
+                onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) => {
                   if (e.key === 'Enter') {
                     this.navigateTo(this.state.searchInputValue);
-                    e.target.blur();
+                    (e.target as HTMLInputElement).blur();
                   }
                 }}
                 placeholder="Navigate To..."
@@ -133,7 +134,7 @@ class SearchBar extends Component<Props, State> {
                 <AutoCompleteSheet
                   providers={providers}
                   onNavigate={this.navigateTo}
-                  onHighlighted={newInputValue =>
+                  onHighlighted={(newInputValue: URI) =>
                     this.setState({searchInputValue: newInputValue})
                   }
                   query={query}
