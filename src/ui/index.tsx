@@ -16,7 +16,7 @@ export {default as ButtonGroupChain} from './components/ButtonGroupChain';
 
 export {colors, darkColors, brandColors} from './components/colors';
 
-export {default as Glyph} from './components/Glyph';
+export {default as Glyph, IconSize} from './components/Glyph';
 
 export {default as LoadingIndicator} from './components/LoadingIndicator';
 

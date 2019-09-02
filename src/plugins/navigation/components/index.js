@@ -9,7 +9,7 @@
 export {default as AutoCompleteSheet} from './AutoCompleteSheet';
 export {default as BookmarksSidebar} from './BookmarksSidebar';
 export {default as FavoriteButton} from './FavoriteButton';
-export {default as IconButton} from './IconButton';
+export {default as IconButton} from './IconButton.tsx';
 export {default as NavigationInfoBox} from './NavigationInfoBox';
 export {default as RequiredParametersDialog} from './RequiredParametersDialog';
 export {default as SaveBookmarkDialog} from './SaveBookmarkDialog';

@@ -5,7 +5,8 @@
  * @format
  */
 
-import {Glyph, styled, keyframes} from 'flipper';
+import {Glyph, styled, keyframes, IconSize} from 'flipper';
+import React from 'react';
 
 const shrinkAnimation = keyframes({
   '0%': {
@@ -16,13 +17,13 @@ const shrinkAnimation = keyframes({
   },
 });
 
-type Props = {|
-  icon: string,
-  outline?: boolean,
-  onClick?: () => void,
-  color?: string,
-  size: 8 | 10 | 12 | 16 | 18 | 20 | 24 | 32,
-|};
+type Props = {
+  icon: string;
+  outline?: boolean;
+  onClick?: () => void;
+  color?: string;
+  size: IconSize;
+};
 
 const RippleEffect = styled('div')({
   padding: 5,
