@@ -5,7 +5,7 @@
  * @format
  */
 
-import type {TableBodyRow} from 'flipper';
+import {TableBodyRow} from 'flipper';
 
 import {
   PureComponent,
@@ -19,22 +19,23 @@ import {
   colors,
   styled,
 } from 'flipper';
+import React from 'react';
 
 export type Counter = {
-  expression: RegExp,
-  count: number,
-  notify: boolean,
-  label: string,
+  expression: RegExp;
+  count: number;
+  notify: boolean;
+  label: string;
 };
 
-type Props = {|
-  onChange: (counters: Array<Counter>) => void,
-  counters: Array<Counter>,
-|};
+type Props = {
+  onChange: (counters: Array<Counter>) => void;
+  counters: Array<Counter>;
+};
 
 type State = {
-  input: string,
-  highlightedRow: ?string,
+  input: string;
+  highlightedRow: string | null;
 };
 
 const ColumnSizes = {
@@ -93,7 +94,7 @@ export default class LogWatcher extends PureComponent<Props, State> {
     highlightedRow: null,
   };
 
-  _inputRef: ?HTMLInputElement;
+  _inputRef: HTMLInputElement | undefined;
 
   onAdd = () => {
     if (
@@ -116,7 +117,7 @@ export default class LogWatcher extends PureComponent<Props, State> {
     this.setState({input: ''});
   };
 
-  onChange = (e: SyntheticInputEvent<HTMLInputElement>) => {
+  onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({
       input: e.target.value,
     });
@@ -169,7 +170,7 @@ export default class LogWatcher extends PureComponent<Props, State> {
     });
   };
 
-  onKeyDown = (e: SyntheticKeyboardEvent<>) => {
+  onKeyDown = (e: React.KeyboardEvent) => {
     if (
       (e.key === 'Delete' || e.key === 'Backspace') &&
       this.state.highlightedRow != null
@@ -182,7 +183,7 @@ export default class LogWatcher extends PureComponent<Props, State> {
     }
   };
 
-  onSubmit = (e: SyntheticKeyboardEvent<>) => {
+  onSubmit = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       this.onAdd();
     }
@@ -194,6 +195,7 @@ export default class LogWatcher extends PureComponent<Props, State> {
         <WatcherPanel
           heading="Expression Watcher"
           floating={false}
+          collapsable={true}
           padded={false}>
           <Toolbar>
             <ExpressionInput

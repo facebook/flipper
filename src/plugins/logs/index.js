@@ -11,7 +11,7 @@ import type {
   TableColumnSizes,
   TableColumns,
 } from 'flipper';
-import type {Counter} from './LogWatcher.js';
+import type {Counter} from './LogWatcher.tsx';
 import type {Props as PluginProps} from '../../plugin.tsx';
 import type {DeviceLogEntry} from '../../devices/BaseDevice.tsx';
 
@@ -31,7 +31,7 @@ import {
   createPaste,
   textContent,
 } from 'flipper';
-import LogWatcher from './LogWatcher';
+import LogWatcher from './LogWatcher.tsx';
 
 const LOG_WATCHER_LOCAL_STORAGE_KEY = 'LOG_WATCHER_LOCAL_STORAGE_KEY';
 
