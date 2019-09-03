@@ -85,7 +85,7 @@
     "jest-fetch-mock": "^2.1.0",
     "prettier": "1.17.0",
     "redux-mock-store": "^1.5.3",
-    "typescript": "^3.5.2"
+    "typescript": "^3.6.2"
   },
   "dependencies": {
     "@types/promise-retry": "^1.1.3",
