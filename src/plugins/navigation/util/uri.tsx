@@ -86,3 +86,7 @@ export const liveEdit = (uri: string, formValues: Array<string>) => {
     }
   });
 };
+
+export const stripQueryParameters = (uri: string) => {
+  return uri.replace(/\?.*$/g, '');
+};

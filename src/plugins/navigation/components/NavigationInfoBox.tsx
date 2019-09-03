@@ -5,11 +5,20 @@
  * @format
  */
 
-import {styled} from 'flipper';
-import {parseURIParameters} from '../util/uri';
-import IconButton from './IconButton';
-import FavoriteButton from './FavoriteButton';
+import {
+  styled,
+  colors,
+  ManagedTable,
+  TableBodyRow,
+  FlexCenter,
+  LoadingIndicator,
+  Button,
+  Glyph,
+} from 'flipper';
+import {parseURIParameters, stripQueryParameters} from '../util/uri';
 import React from 'react';
+
+const BOX_HEIGHT = 240;
 
 type Props = {
   isBookmarked: boolean;
@@ -17,89 +26,179 @@ type Props = {
   className: string | null;
   onNavigate: (query: string) => void;
   onFavorite: (query: string) => void;
+  screenshot: string | null;
+  date: Date | null;
 };
 
-const NavigationInfoBoxContainer = styled('div')({
-  backgroundColor: '#FDFDEA',
-  maxWidth: 500,
-  height: 'fit-content',
-  padding: 20,
-  borderRadius: 10,
-  margin: 20,
-  width: 'fit-content',
+const ScreenshotContainer = styled('div')({
+  width: 200,
+  minWidth: 200,
+  overflow: 'hidden',
+  borderLeft: `1px ${colors.blueGreyTint90} solid`,
   position: 'relative',
-  '.nav-info-text': {
-    color: '#707070',
-    fontSize: '1.2em',
-    lineHeight: '1.25em',
-    wordWrap: 'break-word',
-  },
-  '.nav-info-text.bold': {
-    fontWeight: 'bold',
-    marginTop: '10px',
-  },
-  '.nav-info-text.selectable': {
-    userSelect: 'text',
-    cursor: 'text',
-  },
-  '.icon-container': {
-    display: 'inline-flex',
-    padding: 5,
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    '>*': {
-      marginRight: 2,
-    },
+  img: {
+    width: '100%',
   },
 });
 
+const NoData = styled('div')({
+  color: colors.light30,
+  fontSize: 14,
+});
+
+const NavigationDataContainer = styled('div')({
+  alignItems: 'flex-start',
+  flexGrow: 1,
+  position: 'relative',
+});
+
+const Footer = styled('div')({
+  width: '100%',
+  padding: '10px',
+  borderTop: `1px ${colors.blueGreyTint90} solid`,
+  display: 'flex',
+  alignItems: 'center',
+});
+
+const Seperator = styled('div')({
+  flexGrow: 1,
+});
+
+const TimeContainer = styled('div')({
+  color: colors.light30,
+  fontSize: 14,
+});
+
+const NavigationInfoBoxContainer = styled('div')({
+  display: 'flex',
+  height: BOX_HEIGHT,
+  borderRadius: 10,
+  flexGrow: 1,
+  overflow: 'hidden',
+  marginBottom: 10,
+  backgroundColor: colors.white,
+  boxShadow: '1px 1px 5px rgba(0,0,0,0.1)',
+});
+
+const Header = styled('div')({
+  fontSize: 18,
+  fontWeight: 500,
+  userSelect: 'text',
+  cursor: 'text',
+  padding: 10,
+  borderBottom: `1px ${colors.blueGreyTint90} solid`,
+  display: 'flex',
+});
+
+const ClassNameContainer = styled('div')({
+  color: colors.light30,
+});
+
+const ParametersContainer = styled('div')({
+  height: 150,
+  '&>*': {
+    height: 150,
+    marginBottom: 20,
+  },
+});
+
+const NoParamters = styled(FlexCenter)({
+  fontSize: 18,
+  color: colors.light10,
+});
+
+const buildParameterTable = (parameters: Map<string, string>) => {
+  const tableRows: Array<TableBodyRow> = [];
+  let idx = 0;
+  parameters.forEach((parameter_value, parameter) => {
+    tableRows.push({
+      key: idx.toString(),
+      columns: {
+        parameter: {
+          value: parameter,
+        },
+        value: {
+          value: parameter_value,
+        },
+      },
+    });
+    idx++;
+  });
+  return (
+    <ManagedTable
+      columns={{parameter: {value: 'Parameter'}, value: {value: 'Value'}}}
+      rows={tableRows}
+      zebra={false}
+    />
+  );
+};
+
 export default (props: Props) => {
-  const {uri, isBookmarked, className} = props;
+  const {
+    uri,
+    isBookmarked,
+    className,
+    screenshot,
+    onNavigate,
+    onFavorite,
+    date,
+  } = props;
   if (uri == null && className == null) {
-    return (
-      <NavigationInfoBoxContainer>
-        <div className="nav-info-text">View has no URI information</div>
-      </NavigationInfoBoxContainer>
-    );
+    return <NoData>Unknown Navigation Event</NoData>;
   } else {
     const parameters = uri != null ? parseURIParameters(uri) : null;
     return (
       <NavigationInfoBoxContainer>
-        {uri != null ? (
-          <>
-            <div className="icon-container">
-              <FavoriteButton
-                highlighted={isBookmarked}
-                size={16}
-                onClick={() => props.onFavorite(uri)}
-              />
-              <IconButton
-                icon="eye"
-                size={16}
-                onClick={() => props.onNavigate(uri)}
-              />
-            </div>
-            <div className="nav-info-text bold">uri:</div>
-            <div className="nav-info-text selectable">{uri}</div>
-            {parameters != null && parameters.size > 0 ? (
+        <NavigationDataContainer>
+          <Header>
+            {uri != null ? stripQueryParameters(uri) : ''}
+            <Seperator />
+            {className != null ? (
               <>
-                <div className="nav-info-text bold">parameters:</div>
-                {Array.from(parameters, ([key, value]) => (
-                  <div key={key} className="nav-info-text selectable">
-                    {key}
-                    {value ? `: ${value}` : ''}
-                  </div>
-                ))}
+                <Glyph
+                  color={colors.light30}
+                  size={16}
+                  name="paper-fold-text"
+                />
+                &nbsp;
+                <ClassNameContainer>
+                  {className != null ? className : ''}
+                </ClassNameContainer>
               </>
             ) : null}
-          </>
-        ) : null}
-        {className != null ? (
-          <>
-            <div className="nav-info-text bold">Class Name:</div>
-            <div className="nav-info-text selectable">{className}</div>
-          </>
+          </Header>
+          <ParametersContainer>
+            {parameters != null && parameters.size > 0 ? (
+              buildParameterTable(parameters)
+            ) : (
+              <NoParamters grow>No Parameters for this Event</NoParamters>
+            )}
+          </ParametersContainer>
+          <Footer>
+            {uri != null ? (
+              <>
+                <Button onClick={() => onNavigate(uri)}>Open</Button>
+                <Button onClick={() => onFavorite(uri)}>
+                  {isBookmarked ? 'Edit Bookmark' : 'Bookmark'}
+                </Button>
+              </>
+            ) : null}
+            <Seperator />
+            <TimeContainer>
+              {date != null ? date.toTimeString() : ''}
+            </TimeContainer>
+          </Footer>
+        </NavigationDataContainer>
+        {uri != null || className != null ? (
+          <ScreenshotContainer>
+            {screenshot != null ? (
+              <img src={screenshot} />
+            ) : (
+              <FlexCenter grow>
+                <LoadingIndicator size={32} />
+              </FlexCenter>
+            )}
+          </ScreenshotContainer>
         ) : null}
       </NavigationInfoBoxContainer>
     );

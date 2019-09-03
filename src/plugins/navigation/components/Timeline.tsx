@@ -5,10 +5,10 @@
  * @format
  */
 
-import {colors, FlexCenter, styled, LoadingIndicator} from 'flipper';
+import {colors, FlexCenter, styled} from 'flipper';
 import {NavigationInfoBox} from './';
 import {Bookmark, NavigationEvent, URI} from '../types';
-import React from 'react';
+import React, {useRef} from 'react';
 
 type Props = {
   bookmarks: Map<string, Bookmark>;
@@ -20,6 +20,8 @@ type Props = {
 const TimelineContainer = styled('div')({
   overflowY: 'scroll',
   flexGrow: 1,
+  backgroundColor: colors.light02,
+  scrollBehavior: 'smooth',
 });
 
 const NavigationEventContainer = styled('div')({
@@ -34,38 +36,16 @@ const NoData = styled(FlexCenter)({
   color: colors.macOSTitleBarIcon,
 });
 
-const ScreenshotContainer = styled('div')({
-  width: 200,
-  minWidth: 200,
-  margin: 10,
-  border: `1px solid ${colors.highlight}`,
-  borderRadius: '10px',
-  overflow: 'hidden',
-  img: {
-    width: '100%',
-  },
-});
-
 export default (props: Props) => {
   const {bookmarks, events, onNavigate, onFavorite} = props;
+  const timelineRef = useRef<HTMLDivElement>(null);
   return events.length === 0 ? (
     <NoData>No Navigation Events to Show</NoData>
   ) : (
-    <TimelineContainer>
+    <TimelineContainer innerRef={timelineRef}>
       {events.map((event: NavigationEvent, idx: number) => {
         return (
           <NavigationEventContainer>
-            {event.uri != null || event.className != null ? (
-              <ScreenshotContainer>
-                {event.screenshot != null ? (
-                  <img src={event.screenshot} />
-                ) : (
-                  <FlexCenter grow>
-                    <LoadingIndicator size={32} />
-                  </FlexCenter>
-                )}
-              </ScreenshotContainer>
-            ) : null}
             <NavigationInfoBox
               key={idx}
               isBookmarked={
@@ -73,8 +53,15 @@ export default (props: Props) => {
               }
               className={event.className}
               uri={event.uri}
-              onNavigate={onNavigate}
+              onNavigate={uri => {
+                if (timelineRef.current != null) {
+                  timelineRef.current.scrollTo(0, 0);
+                }
+                onNavigate(uri);
+              }}
               onFavorite={onFavorite}
+              screenshot={event.screenshot}
+              date={event.date}
             />
           </NavigationEventContainer>
         );
