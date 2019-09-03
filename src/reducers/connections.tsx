@@ -13,6 +13,11 @@ import {isEqual} from 'lodash';
 import iosUtil from '../fb-stubs/iOSContainerUtility';
 import {performance} from 'perf_hooks';
 import {SAVED_PLUGINS_COUNT} from '../Client';
+import isHeadless from '../utils/isHeadless';
+const WelcomeScreen = isHeadless()
+  ? require('../chrome/WelcomeScreenHeadless').default
+  : require('../chrome/WelcomeScreen').default;
+export type StaticView = null | typeof WelcomeScreen;
 
 export type State = {
   devices: Array<BaseDevice>;
@@ -32,6 +37,7 @@ export type State = {
     errorMessage?: string;
   }>;
   deepLinkPayload: null | string;
+  staticView: StaticView;
 };
 
 export type Action =
@@ -99,11 +105,14 @@ export type Action =
       type: 'CLIENT_SHOW_MORE_OR_LESS';
       payload: string;
     }
-  | {type: 'CLEAR_LRU_PLUGINS_HISTORY'};
+  | {type: 'CLEAR_LRU_PLUGINS_HISTORY'}
+  | {
+      type: 'SET_STATIC_VIEW';
+      payload: StaticView;
+    };
 
 const DEFAULT_PLUGIN = 'DeviceLogs';
 const DEFAULT_DEVICE_BLACKLIST = [MacDevice];
-
 const INITAL_STATE: State = {
   devices: [],
   androidEmulators: [],
@@ -118,15 +127,24 @@ const INITAL_STATE: State = {
   clients: [],
   uninitializedClients: [],
   deepLinkPayload: null,
+  staticView: WelcomeScreen,
 };
 
 const reducer = (state: State = INITAL_STATE, action: Action): State => {
   switch (action.type) {
+    case 'SET_STATIC_VIEW': {
+      const {payload} = action;
+      return {
+        ...state,
+        staticView: payload,
+      };
+    }
     case 'SELECT_DEVICE': {
       const {payload} = action;
       return {
         ...state,
         selectedApp: null,
+        staticView: null,
         selectedPlugin: DEFAULT_PLUGIN,
         selectedDevice: payload,
         userPreferredDevice: payload.title,
@@ -143,7 +161,7 @@ const reducer = (state: State = INITAL_STATE, action: Action): State => {
       const {payload} = action;
       const devices = state.devices.concat(payload);
       let {selectedDevice, selectedPlugin} = state;
-
+      let staticView: StaticView = state.staticView;
       // select the default plugin
       let selection: Partial<State> = {
         selectedApp: null,
@@ -156,6 +174,7 @@ const reducer = (state: State = INITAL_STATE, action: Action): State => {
 
       if (!selectedDevice && canBeDefaultDevice) {
         selectedDevice = payload;
+        staticView = null;
         if (selectedPlugin) {
           // We already had a plugin selected, but no device. This is happening
           // when the Client connected before the Device.
@@ -163,6 +182,7 @@ const reducer = (state: State = INITAL_STATE, action: Action): State => {
         }
       } else if (payload.title === state.userPreferredDevice) {
         selectedDevice = payload;
+        staticView = null;
       } else {
         // We didn't select the newly connected device, so we don't want to
         // change the plugin.
@@ -175,6 +195,7 @@ const reducer = (state: State = INITAL_STATE, action: Action): State => {
         // select device if none was selected before
         selectedDevice,
         ...selection,
+        staticView,
       };
     }
     case 'UNREGISTER_DEVICES': {
@@ -197,6 +218,7 @@ const reducer = (state: State = INITAL_STATE, action: Action): State => {
       if (selectedDeviceWasRemoved) {
         selection = {
           selectedDevice: devices[devices.length - 1] || null,
+          staticView: selectedDevice != null ? null : WelcomeScreen,
           selectedApp: null,
           selectedPlugin: DEFAULT_PLUGIN,
         };

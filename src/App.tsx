@@ -8,7 +8,6 @@
 import React from 'react';
 import {FlexColumn, FlexRow} from 'flipper';
 import {connect} from 'react-redux';
-import WelcomeScreen from './chrome/WelcomeScreen';
 import TitleBar from './chrome/TitleBar';
 import MainSidebar from './chrome/MainSidebar';
 import BugReporterDialog from './chrome/BugReporterDialog';
@@ -34,8 +33,8 @@ import {
 } from './reducers/application';
 import {Logger} from './fb-interfaces/Logger';
 import BugReporter from './fb-stubs/BugReporter';
-import BaseDevice from './devices/BaseDevice';
 import {State as Store} from './reducers/index';
+import {StaticView} from './reducers/connections';
 const version = remote.app.getVersion();
 
 type OwnProps = {
@@ -45,10 +44,10 @@ type OwnProps = {
 
 type StateFromProps = {
   leftSidebarVisible: boolean;
-  selectedDevice: BaseDevice | undefined;
-  error: string | null | undefined;
+  error: string | null;
   activeSheet: ActiveSheet;
-  share: ShareType | undefined;
+  share: ShareType | null;
+  staticView: StaticView;
 };
 
 type Props = StateFromProps & OwnProps;
@@ -58,7 +57,7 @@ export class App extends React.Component<Props> {
     // track time since launch
     const [s, ns] = process.hrtime();
     const launchEndTime = s * 1e3 + ns / 1e6;
-    ipcRenderer.on('getLaunchTime', (event, launchStartTime) => {
+    ipcRenderer.on('getLaunchTime', (_: any, launchStartTime: number) => {
       this.props.logger.track(
         'performance',
         'launchTime',
@@ -114,10 +113,10 @@ export class App extends React.Component<Props> {
         <Sheet>{this.getSheet}</Sheet>
         <FlexRow grow={true}>
           {this.props.leftSidebarVisible && <MainSidebar />}
-          {this.props.selectedDevice ? (
-            <PluginContainer logger={this.props.logger} />
+          {this.props.staticView != null ? (
+            React.createElement(this.props.staticView)
           ) : (
-            <WelcomeScreen />
+            <PluginContainer logger={this.props.logger} />
           )}
         </FlexRow>
         <ErrorBar text={this.props.error} />
@@ -129,12 +128,12 @@ export class App extends React.Component<Props> {
 export default connect<StateFromProps, {}, OwnProps, Store>(
   ({
     application: {leftSidebarVisible, activeSheet, share},
-    connections: {selectedDevice, error},
+    connections: {error, staticView},
   }) => ({
     leftSidebarVisible,
-    selectedDevice,
     activeSheet,
     share: share,
     error,
+    staticView,
   }),
 )(App);
