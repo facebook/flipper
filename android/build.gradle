@@ -35,6 +35,11 @@ android {
         abortOnError false
     }
 
+    configurations {
+        extractHeaders
+        extractJNI
+    }
+
     sourceSets {
         test {
             java {
@@ -53,7 +58,9 @@ android {
     dependencies {
         compileOnly deps.lithoAnnotations
         compileOnly deps.proguardAnnotations
-        implementation project(':fbjni')
+        implementation 'com.facebook.fbjni:fbjni:0.0.1'
+        extractHeaders 'com.facebook.fbjni:fbjni:0.0.1:headers'
+        extractJNI 'com.facebook.fbjni:fbjni:0.0.1'
         implementation deps.soloader
         implementation deps.jsr305
         implementation deps.supportAppCompat
@@ -87,3 +94,36 @@ task sourcesJar(type: Jar) {
 }
 
 artifacts.add('archives', sourcesJar)
+
+task extractAARHeaders {
+    doLast {
+        configurations.extractHeaders.files.each {
+            def file = it.absoluteFile
+            copy {
+                from zipTree(file)
+                into "$buildDir/$file.name"
+                include "**/*.h"
+            }
+        }
+    }
+}
+
+task extractJNIFiles {
+    doLast {
+        configurations.extractJNI.files.each {
+            def file = it.absoluteFile
+            copy {
+                from zipTree(file)
+                into "$buildDir/$file.name"
+                include "jni/**/*"
+            }
+        }
+    }
+}
+
+tasks.whenTaskAdded { task ->
+    if (task.name.contains('externalNativeBuild')) {
+        task.dependsOn(extractAARHeaders)
+        task.dependsOn(extractJNIFiles)
+    }
+}
