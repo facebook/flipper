@@ -50,10 +50,10 @@ repositories {
 }
 
 dependencies {
-  debugImplementation 'com.facebook.flipper:flipper:0.23.4'
+  debugImplementation 'com.facebook.flipper:flipper:0.23.5'
   debugImplementation 'com.facebook.soloader:soloader:0.5.1'
 
-  releaseImplementation 'com.facebook.flipper:flipper-noop:0.23.4'
+  releaseImplementation 'com.facebook.flipper:flipper-noop:0.23.5'
 }
 ```
 
@@ -111,7 +111,7 @@ We support both Swift and Objective-C for Flipper with CocoaPods as build and di
 <!--Objective-C-->
 ```ruby
 project 'MyApp.xcodeproj'
-flipperkit_version = '0.23.4'
+flipperkit_version = '0.23.5'
 
 target 'MyApp' do
   platform :ios, '9.0'
@@ -171,7 +171,7 @@ end
 <!--Swift-->
 ```ruby
 project 'MyApp.xcodeproj'
-flipperkit_version = '0.23.4'
+flipperkit_version = '0.23.5'
 
 target 'MyApp' do
   platform :ios, '9.0'
