@@ -11,7 +11,7 @@ set(rsocket_DIR ${external_DIR}/RSocket/)
 set(easywsclient_DIR ../libs/)
 set(glog_DIR ${external_DIR}/glog)
 set(BOOST_DIR ${external_DIR}/boost/boost_1_63_0/)
-set(LIBEVENT_DIR ${external_DIR}/LibEvent/libevent-release-2.1.9/)
+set(LIBEVENT_DIR ${external_DIR}/LibEvent/libevent-2.1.11-stable/)
 set(DOUBLECONVERSION_DIR ${external_DIR}/double-conversion/double-conversion-3.0.0/)
 set(OPENSSL_DIR ${external_DIR}/OpenSSL/openssl-1.1.0h/)
 

@@ -25,8 +25,8 @@ android {
 
         externalNativeBuild {
             cmake {
-                arguments '-DANDROID_TOOLCHAIN=clang', '-DANDROID_STL=c++_shared'
-                targets 'flipper', 'event', 'event_extra', 'event_core'
+                arguments '-DANDROID_TOOLCHAIN=clang', '-DANDROID_STL=c++_shared', '-DEVENT__DISABLE_OPENSSL=on'
+                targets 'flipper', 'event_shared', 'event_extra_shared', 'event_core_shared'
             }
         }
     }
