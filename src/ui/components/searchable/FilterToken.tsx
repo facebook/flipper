@@ -151,15 +151,17 @@ export default class FilterToken extends PureComponent<Props> {
       );
     }
     const menu = electron.remote.Menu.buildFromTemplate(menuTemplate);
-    const {bottom, left} = this._ref.getBoundingClientRect();
+    if (this._ref) {
+      const {bottom, left} = this._ref.getBoundingClientRect();
 
-    menu.popup({
-      window: electron.remote.getCurrentWindow(),
-      // @ts-ignore: async is private API
-      async: true,
-      x: left,
-      y: bottom + 8,
-    });
+      menu.popup({
+        window: electron.remote.getCurrentWindow(),
+        // @ts-ignore: async is private API
+        async: true,
+        x: left,
+        y: bottom + 8,
+      });
+    }
   };
 
   toggleFilter = () => {
@@ -207,7 +209,8 @@ export default class FilterToken extends PureComponent<Props> {
     let value = '';
 
     if (filter.type === 'enum') {
-      const getEnum = value => filter.enum.find(e => e.value === value);
+      const getEnum = (value: string) =>
+        filter.enum.find(e => e.value === value);
       const firstValue = getEnum(filter.value[0]);
       const secondValue = getEnum(filter.value[1]);
       if (filter.value.length === 0) {
