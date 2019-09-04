@@ -11,7 +11,7 @@ import org.apache.tools.ant.filters.ReplaceTokens
 // Increment this when making changes to any of the native
 // dependencies.
 // !!!
-final def CACHE_REVISION = 28
+final def CACHE_REVISION = 29
 
 final def externalDir = new File("$projectDir/external")
 final def downloadsDir = new File("$externalDir/downloads")
@@ -148,7 +148,7 @@ task finalizeFolly(dependsOn: [finalizeFollyWithDemangle], type: Copy) {
 }
 
 task downloadLibEvent(dependsOn: [], type: Download) {
-    src 'https://github.com/priteshrnandgaonkar/libevent/archive/release-2.1.9.tar.gz'
+    src 'https://github.com/libevent/libevent/releases/download/release-2.1.11-stable/libevent-2.1.11-stable.tar.gz'
     onlyIfNewer true
     overwrite false
     dest new File(downloadsDir, 'libevent-' + getDownloadFileName(src))
@@ -158,16 +158,22 @@ task prepareLibEvent(dependsOn: [downloadLibEvent], type: Copy) {
     onlyIf { isCacheOutOfDate(CACHE_REVISION) }
     from tarTree(downloadLibEvent.dest)
     from './overrides/LibEvent/'
-    include 'libevent-release-2.1.9/**/*', 'build.gradle', 'ApplicationManifest.xml'
+    include 'libevent-2.1.11-stable/**/*', 'build.gradle', 'ApplicationManifest.xml'
     includeEmptyDirs = false
     into "$externalDir/LibEvent"
 }
 
-task finalizeLibEvent(dependsOn: [prepareLibEvent], type: Copy) {
+task prepareLibEvent2(dependsOn: [prepareLibEvent], type: Copy) {
     from './overrides/LibEvent/'
     include 'event-config.h'
     includeEmptyDirs = false
-    into "$externalDir/LibEvent/libevent-release-2.1.9/include/event2/"
+    into "$externalDir/LibEvent/libevent-2.1.11-stable/include/event2/"
+}
+
+task finalizeLibEvent(dependsOn: [prepareLibEvent2], type: Copy) {
+    from './overrides/LibEvent/'
+    include 'CMakeLists.txt'
+    into "$externalDir/LibEvent/libevent-2.1.11-stable/"
 }
 
 task downloadOpenSSLSource(dependsOn: [], type: Download) {

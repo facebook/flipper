@@ -36,7 +36,7 @@ set(external_DIR ${PROJECT_SOURCE_DIR}/third-party/external)
 set(libfolly_DIR ${external_DIR}/folly/)
 set(glog_DIR ${external_DIR}/glog)
 set(BOOST_DIR ${external_DIR}/boost/boost_1_63_0/)
-set(LIBEVENT_DIR ${external_DIR}/LibEvent/libevent-release-2.1.9/)
+set(LIBEVENT_DIR ${external_DIR}/LibEvent/libevent-2.1.11-stable/)
 
 set(build_DIR ${CMAKE_SOURCE_DIR}/build)
 
