@@ -31,10 +31,11 @@ import {
   updateCategoryBlacklist,
 } from './reducers/notifications';
 import {selectPlugin} from './reducers/connections';
-import {State as Store} from './reducers/index';
+import {State as StoreState} from './reducers/index';
 import textContent from './utils/textContent';
 import createPaste from './fb-stubs/createPaste';
 import {KeyboardActions} from './MenuBar';
+import {Store} from 'redux';
 
 export default class Notifications<
   S,
@@ -61,14 +62,12 @@ export default class Notifications<
   };
 
   onClear = () => {
-    this.context.store.dispatch(clearAllNotifications());
+    (this.context.store as Store<StoreState>).dispatch(clearAllNotifications());
   };
 
   render() {
-    const {
-      blacklistedPlugins,
-      blacklistedCategories,
-    } = this.context.store.getState().notifications;
+    const {blacklistedPlugins, blacklistedCategories} = (this.context
+      .store as Store<StoreState>).getState().notifications;
     return (
       <ConnectedNotificationsTable
         onClear={this.onClear}
@@ -114,9 +113,9 @@ type StateFromProps = {
 
 type DispatchFromProps = {
   selectPlugin: (payload: {
-    selectedPlugin: string | null | undefined;
-    selectedApp: string | null | undefined;
-    deepLinkPayload: string | null | undefined;
+    selectedPlugin: string | null;
+    selectedApp: string | null;
+    deepLinkPayload: string | null;
   }) => any;
   updatePluginBlacklist: (blacklist: Array<string>) => any;
   updateCategoryBlacklist: (blacklist: Array<string>) => any;
@@ -159,13 +158,13 @@ const NoContent = styled(FlexColumn)({
   color: colors.light30,
 });
 
-class NotificationsTable extends Component<Props, State> {
+class NotificationsTable extends Component<Props & SearchableProps, State> {
   contextMenuItems = [{label: 'Clear all', click: this.props.onClear}];
   state: State = {
     selectedNotification: this.props.selectedID,
   };
 
-  componentDidUpdate(prevProps: Props) {
+  componentDidUpdate(prevProps: Props & SearchableProps) {
     if (this.props.filters.length !== prevProps.filters.length) {
       this.props.updatePluginBlacklist(
         this.props.filters
@@ -330,7 +329,7 @@ const ConnectedNotificationsTable = connect<
   StateFromProps,
   DispatchFromProps,
   OwnProps,
-  Store
+  StoreState
 >(
   ({
     notifications: {
@@ -470,9 +469,9 @@ type ItemProps = {
   isSelected?: boolean;
   inactive?: boolean;
   selectPlugin?: (payload: {
-    selectedPlugin: string | null | undefined;
-    selectedApp: string | null | undefined;
-    deepLinkPayload: string | null | undefined;
+    selectedPlugin: string | null;
+    selectedApp: string | null;
+    deepLinkPayload: string | null;
   }) => any;
   logger?: Logger;
   plugin: typeof FlipperBasePlugin | null | undefined;
@@ -510,7 +509,7 @@ class NotificationItem extends Component<
   }
 
   state = {reportedNotHelpful: false};
-  contextMenuItems;
+  contextMenuItems: Array<{label: string; click: (() => any) | undefined}>;
   deepLinkButton = React.createRef();
 
   createPaste = () => {
