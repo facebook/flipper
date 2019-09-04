@@ -23,6 +23,7 @@ local.properties
 **/.classpath
 android/*/bin/**/*.class
 libs/*/bin/**/*.class
+.cxx
 
 # Mac OS X
 *.DS_Store
