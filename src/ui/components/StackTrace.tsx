@@ -14,15 +14,20 @@ import Glyph from './Glyph';
 import styled from 'react-emotion';
 import React from 'react';
 import {BackgroundColorProperty} from 'csstype';
-import {TableBodyRow} from './table/types';
+import {
+  TableBodyRow,
+  TableColumnSizes,
+  TableColumns,
+  TableBodyColumn,
+} from './table/types';
 
 const Padder = styled('div')(
   ({
     padded,
     backgroundColor,
   }: {
-    padded: boolean;
-    backgroundColor: BackgroundColorProperty;
+    padded?: boolean;
+    backgroundColor?: BackgroundColorProperty;
   }) => ({
     padding: padded ? 10 : 0,
     backgroundColor,
@@ -70,18 +75,20 @@ const COLUMNS = {
   caller: 200,
 };
 
+type Child = {
+  isBold?: boolean;
+  library?: string | null | undefined;
+  address?: string | null | undefined;
+  caller?: string | null | undefined;
+  lineNumber?: string | null | undefined;
+  message?: string | null | undefined;
+};
+
 /**
  * Display a stack trace
  */
 export default class StackTrace extends Component<{
-  children: Array<{
-    isBold?: boolean;
-    library?: string | null | undefined;
-    address?: string | null | undefined;
-    caller?: string | null | undefined;
-    lineNumber?: string | null | undefined;
-    message?: string | null | undefined;
-  }>;
+  children: Child[];
   /**
    * Reason for the crash, displayed above the trace
    */
@@ -105,10 +112,12 @@ export default class StackTrace extends Component<{
       return null;
     }
 
-    const columns = Object.keys(children[0]).reduce((acc, cv) => {
+    const columns = (Object.keys(children[0]) as Array<keyof Child>).reduce<
+      TableColumns
+    >((acc, cv) => {
       if (cv !== 'isBold') {
         acc[cv] = {
-          label: cv,
+          value: cv,
         };
       }
       return acc;
@@ -119,12 +128,15 @@ export default class StackTrace extends Component<{
       visible: Boolean(columns[key]),
     }));
 
-    const columnSizes = Object.keys(COLUMNS).reduce((acc, cv) => {
+    const columnSizes = (Object.keys(COLUMNS) as Array<
+      keyof typeof COLUMNS
+    >).reduce<TableColumnSizes>((acc, cv: keyof typeof COLUMNS) => {
       acc[cv] =
         COLUMNS[cv] === 'flex'
           ? 'flex'
           : children.reduce(
-              (acc, line) => Math.max(acc, line[cv] ? line[cv].length : 0 || 0),
+              (acc, line) =>
+                Math.max(acc, line[cv] ? line[cv]!.length : 0 || 0),
               0,
             ) *
               8 +
@@ -135,7 +147,9 @@ export default class StackTrace extends Component<{
 
     const rows: TableBodyRow[] = children.map((l, i) => ({
       key: String(i),
-      columns: Object.keys(columns).reduce((acc, cv) => {
+      columns: (Object.keys(columns) as Array<keyof Child>).reduce<{
+        [key: string]: TableBodyColumn;
+      }>((acc, cv) => {
         acc[cv] = {
           align: cv === 'lineNumber' ? 'right' : 'left',
           value: (
