@@ -84,7 +84,7 @@ function init() {
 }
 
 // rehydrate app state before exposing init
-persistStore(store, null, () => {
+persistStore(store, undefined, () => {
   dispatcher(store, logger);
   // make init function callable from outside
   window.Flipper.init = init;
