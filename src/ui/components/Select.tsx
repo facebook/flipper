@@ -20,8 +20,8 @@ const LabelText = styled(Text)({
   marginRight: 5,
 });
 
-const SelectMenu = styled('select')(({grow}: {grow?: boolean}) => ({
-  flexGrow: grow ? 1 : null,
+const SelectMenu = styled('select')((props: {grow?: boolean}) => ({
+  flexGrow: props.grow ? 1 : 0,
 }));
 
 /**
