@@ -13,45 +13,39 @@ import {
   SearchBar,
   Timeline,
   RequiredParametersDialog,
-} from './components/index.tsx';
+} from './components';
 import {
   removeBookmark,
   readBookmarksFromDB,
   writeBookmarkToDB,
-} from './util/indexedDB.tsx';
+} from './util/indexedDB';
 import {
   appMatchPatternsToAutoCompleteProvider,
   bookmarksToAutoCompleteProvider,
   DefaultProvider,
-} from './util/autoCompleteProvider.tsx';
-import {getAppMatchPatterns} from './util/appMatchPatterns.tsx';
-import {getRequiredParameters, filterOptionalParameters} from './util/uri.tsx';
+} from './util/autoCompleteProvider';
+import {getAppMatchPatterns} from './util/appMatchPatterns';
+import {getRequiredParameters, filterOptionalParameters} from './util/uri';
+import {State, PersistedState, Bookmark, NavigationEvent} from './types';
+import React from 'react';
 
-import type {
-  State,
-  PersistedState,
-  Bookmark,
-  NavigationEvent,
-} from './flow-types';
-
-export default class extends FlipperPlugin<State, {}, PersistedState> {
+export default class extends FlipperPlugin<State, any, PersistedState> {
   static title = 'Navigation';
   static id = 'Navigation';
   static icon = 'directions';
-  static keyboardActions = ['clear'];
 
-  static defaultPersistedState: PersistedState = {
+  static defaultPersistedState = {
     navigationEvents: [],
     bookmarks: new Map<string, Bookmark>(),
     currentURI: '',
-    bookmarksProvider: new DefaultProvider(),
+    bookmarksProvider: DefaultProvider(),
     appMatchPatterns: [],
-    appMatchPatternsProvider: new DefaultProvider(),
+    appMatchPatternsProvider: DefaultProvider(),
   };
 
   state = {
     shouldShowSaveBookmarkDialog: false,
-    saveBookmarkURI: null,
+    saveBookmarkURI: null as (string | null),
     shouldShowURIErrorDialog: false,
     requiredParameters: [],
   };
@@ -59,8 +53,7 @@ export default class extends FlipperPlugin<State, {}, PersistedState> {
   static persistedStateReducer = (
     persistedState: PersistedState,
     method: string,
-    payload: NavigationEvent,
-  ): $Shape<PersistedState> => {
+  ) => {
     switch (method) {
       default:
         return {
@@ -122,12 +115,6 @@ export default class extends FlipperPlugin<State, {}, PersistedState> {
         bookmarksProvider: bookmarksToAutoCompleteProvider(bookmarks),
       });
     });
-  };
-
-  onKeyboardAction = (action: string) => {
-    if (action === 'clear') {
-      this.props.setPersistedState({navigationEvents: []});
-    }
   };
 
   navigateTo = (query: string) => {

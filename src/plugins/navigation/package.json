@@ -1,7 +1,7 @@
 {
   "name": "flipper-plugin-navigation",
   "version": "0.0.1",
-  "main": "index.js",
+  "main": "index.tsx",
   "license": "MIT",
   "title": "Navigation",
   "icon": "directions",
