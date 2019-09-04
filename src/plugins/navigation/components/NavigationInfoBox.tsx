@@ -36,6 +36,8 @@ const ScreenshotContainer = styled('div')({
   overflow: 'hidden',
   borderLeft: `1px ${colors.blueGreyTint90} solid`,
   position: 'relative',
+  height: '100%',
+  borderRadius: 10,
   img: {
     width: '100%',
   },
@@ -44,6 +46,7 @@ const ScreenshotContainer = styled('div')({
 const NoData = styled('div')({
   color: colors.light30,
   fontSize: 14,
+  position: 'relative',
 });
 
 const NavigationDataContainer = styled('div')({
@@ -74,7 +77,7 @@ const NavigationInfoBoxContainer = styled('div')({
   height: BOX_HEIGHT,
   borderRadius: 10,
   flexGrow: 1,
-  overflow: 'hidden',
+  position: 'relative',
   marginBottom: 10,
   backgroundColor: colors.white,
   boxShadow: '1px 1px 5px rgba(0,0,0,0.1)',
@@ -105,6 +108,27 @@ const ParametersContainer = styled('div')({
 const NoParamters = styled(FlexCenter)({
   fontSize: 18,
   color: colors.light10,
+});
+
+const TimelineCircle = styled('div')({
+  width: 18,
+  height: 18,
+  top: 11,
+  left: -33,
+  backgroundColor: colors.light02,
+  border: `4px solid ${colors.highlight}`,
+  borderRadius: '50%',
+  position: 'absolute',
+});
+
+const TimelineMiniCircle = styled('div')({
+  width: 12,
+  height: 12,
+  top: 1,
+  left: -30,
+  borderRadius: '50%',
+  backgroundColor: colors.highlight,
+  position: 'absolute',
 });
 
 const buildParameterTable = (parameters: Map<string, string>) => {
@@ -144,11 +168,19 @@ export default (props: Props) => {
     date,
   } = props;
   if (uri == null && className == null) {
-    return <NoData>Unknown Navigation Event</NoData>;
+    return (
+      <>
+        <NoData>
+          <TimelineMiniCircle />
+          Unknown Navigation Event
+        </NoData>
+      </>
+    );
   } else {
     const parameters = uri != null ? parseURIParameters(uri) : null;
     return (
       <NavigationInfoBoxContainer>
+        <TimelineCircle />
         <NavigationDataContainer>
           <Header>
             {uri != null ? stripQueryParameters(uri) : ''}
