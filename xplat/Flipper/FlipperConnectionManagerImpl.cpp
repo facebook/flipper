@@ -356,7 +356,6 @@ rsocket::Payload toRSocketPayload(dynamic data) {
             "Error: Skipping sending message larger than max rsocket payload: ") +
         json.substr(0, 100) + "...";
     log(logMessage);
-    DCHECK_LE(payloadLength, maxPayloadSize);
     throw std::length_error(logMessage);
   }
 
