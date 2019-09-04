@@ -7,7 +7,15 @@
 
 import type {SectionComponentHierarchy} from './Models';
 
-import {PureComponent, styled, Toolbar, Spacer, colors} from 'flipper';
+import {
+  Button,
+  Glyph,
+  PureComponent,
+  styled,
+  Toolbar,
+  Spacer,
+  colors,
+} from 'flipper';
 import {Tree} from 'react-d3-tree';
 import {Fragment} from 'react';
 
@@ -51,6 +59,17 @@ const Container = styled('div')({
     '10px 10px,10px 10px,100px 100px,100px 100px,100px 100px,100px 100px,100px 100px,100px 100px',
 });
 
+const LabelContainer = styled('div')({
+  display: 'flex',
+});
+
+const IconButton = styled('div')({
+  position: 'relative',
+  left: 5,
+  top: -8,
+  background: colors.white,
+});
+
 type TreeData = Array<{
   identifier: string,
   name: string,
@@ -80,14 +99,46 @@ type State = {
   zoom: number,
 };
 
-const NodeLabel = (props: {
-  nodeData: {
-    name: string,
-  },
-}) => {
-  const name = props?.nodeData?.name;
-  return <Label title={name}>{name}</Label>;
-};
+class NodeLabel extends PureComponent<Props, State> {
+  state = {
+    collapsed: false,
+  };
+
+  showNodeData = e => {
+    e.stopPropagation();
+    this.props.onLabelClicked(this.props?.nodeData);
+  };
+
+  toggleClicked = () => {
+    this.setState({
+      collapsed: !this.state.collapsed,
+    });
+  };
+
+  render() {
+    const name = this.props?.nodeData?.name;
+    const isSection = this.props?.nodeData?.attributes.isSection;
+    const chevron = this.state.collapsed ? 'chevron-right' : 'chevron-left';
+
+    return (
+      <LabelContainer>
+        <Label title={name} onClick={this.showNodeData}>
+          {name}
+        </Label>
+        {isSection && (
+          <IconButton onClick={this.toggleClicked}>
+            <Glyph
+              color={colors.blueGreyTint70}
+              name={chevron}
+              variant={'filled'}
+              size={12}
+            />
+          </IconButton>
+        )}
+      </LabelContainer>
+    );
+  }
+}
 
 export default class extends PureComponent<Props, State> {
   treeFromFlatArray = (data: TreeData) => {
@@ -214,7 +265,9 @@ export default class extends PureComponent<Props, State> {
               zoom={this.state.zoom}
               nodeLabelComponent={{
                 // $FlowFixMe props are passed in by react-d3-tree
-                render: <NodeLabel />,
+                render: (
+                  <NodeLabel onLabelClicked={this.props.nodeClickHandler} />
+                ),
               }}
               allowForeignObjects
               nodeSvgShape={{
@@ -230,7 +283,6 @@ export default class extends PureComponent<Props, State> {
                 },
               }}
               nodeSize={{x: 300, y: 100}}
-              onClick={this.props.nodeClickHandler}
             />
           )}
         </Container>

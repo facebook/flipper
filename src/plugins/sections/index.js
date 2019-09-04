@@ -172,8 +172,10 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
 
   onNodeClicked = (targetNode: any, evt: InputEvent) => {
     if (targetNode.attributes.isSection) {
+      const sectionData = {};
+      sectionData['global_key'] = targetNode.attributes.identifier;
       this.setState({
-        selectedTreeNode: null,
+        selectedTreeNode: {sectionData},
       });
       return;
     }
