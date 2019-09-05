@@ -16,7 +16,13 @@ import {keyframes} from 'react-emotion';
 import {State as Store} from '../../reducers/index';
 import Glyph, {IconSize} from './Glyph';
 
-const borderColor = props => {
+type ButtonType = 'primary' | 'success' | 'warning' | 'danger';
+
+const borderColor = (props: {
+  windowIsFocused?: boolean;
+  type?: ButtonType;
+  depressed?: boolean;
+}) => {
   if (!props.windowIsFocused) {
     return colors.macOSTitleBarButtonBorderBlur;
   } else if (props.type === 'danger') {
@@ -29,7 +35,11 @@ const borderColor = props => {
     return colors.macOSTitleBarButtonBorder;
   }
 };
-const borderBottomColor = props => {
+const borderBottomColor = (props: {
+  windowIsFocused?: boolean;
+  type?: ButtonType;
+  depressed?: boolean;
+}) => {
   if (!props.windowIsFocused) {
     return colors.macOSTitleBarButtonBorderBlur;
   } else if (props.type === 'danger') {
@@ -41,7 +51,11 @@ const borderBottomColor = props => {
   }
 };
 
-const backgroundImage = props => {
+const backgroundImage = (props: {
+  windowIsFocused?: boolean;
+  type?: ButtonType;
+  depressed?: boolean;
+}) => {
   if (props.windowIsFocused) {
     if (props.depressed) {
       return `linear-gradient(to bottom, ${
@@ -61,7 +75,11 @@ const backgroundImage = props => {
   }
 };
 
-const color = props => {
+const color = (props: {
+  windowIsFocused?: boolean;
+  type?: ButtonType;
+  disabled?: boolean;
+}) => {
   if (props.type === 'danger' && props.windowIsFocused) {
     return colors.red;
   } else if (props.type === 'primary' && props.windowIsFocused) {
@@ -198,7 +216,7 @@ type OwnProps = {
   /**
    * Type of button.
    */
-  type?: 'primary' | 'success' | 'warning' | 'danger';
+  type?: ButtonType;
   /**
    * Children.
    */
