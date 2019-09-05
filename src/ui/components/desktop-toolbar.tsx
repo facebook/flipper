@@ -107,7 +107,7 @@ export class DesktopDropdownItem extends React.Component<
         {...props}
         onMouseEnter={this.onMouseEnter}
         onMouseLeave={this.onMouseLeave}
-        onClick={typeof onClick === 'function' && this.onClick}>
+        onClick={typeof onClick === 'function' ? this.onClick : undefined}>
         {children}
         {hovered && typeof onHover === 'function' && onHover()}
       </DesktopDropdownItemContainer>
