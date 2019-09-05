@@ -452,7 +452,7 @@ export class Elements extends PureComponent<ElementsProps, ElementsState> {
 
   setProps(props: ElementsProps) {
     const flatElements: FlatElements = [];
-    const flatKeys = [];
+    const flatKeys: Array<ElementID> = [];
 
     let maxDepth = 0;
 
@@ -616,9 +616,8 @@ export class Elements extends PureComponent<ElementsProps, ElementsState> {
         selected={selected === row.key}
         focused={focused === row.key}
         matchingSearchQuery={
-          containsKeyInSearchResults(searchResults, row.key)
-            ? //$FlowFixMe: Checked that searchResults is not undefined in containsKeyInSearchResults
-              searchResults.query
+          searchResults && containsKeyInSearchResults(searchResults, row.key)
+            ? searchResults.query
             : null
         }
         isQueryMatch={containsKeyInSearchResults(searchResults, row.key)}
