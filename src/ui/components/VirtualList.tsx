@@ -61,7 +61,7 @@ export default class VirtualList extends Component<
     overscanCount: 10,
   };
 
-  ref: HTMLElement;
+  ref: HTMLElement | undefined;
 
   setRef = (ref: HTMLElement) => {
     this.ref = ref;
@@ -74,7 +74,7 @@ export default class VirtualList extends Component<
   };
 
   handleScroll = () => {
-    this.setState({offset: this.ref.scrollTop});
+    this.setState({offset: this.ref ? this.ref.scrollTop : 0});
     if (this.props.sync === true) {
       this.forceUpdate();
     }
