@@ -39,14 +39,14 @@ export default class ResizeSensor extends Component<{
 
   componentDidMount() {
     const {iframe} = this;
-    if (iframe != null) {
+    if (iframe != null && iframe.contentWindow != null) {
       iframe.contentWindow.addEventListener('resize', this.handleResize);
     }
   }
 
   componentWillUnmount() {
     const {iframe} = this;
-    if (iframe != null) {
+    if (iframe != null && iframe.contentWindow != null) {
       iframe.contentWindow.removeEventListener('resize', this.handleResize);
     }
   }
