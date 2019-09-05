@@ -66,7 +66,7 @@ export default class ToggleButton extends React.Component<Props> {
       <>
         <StyledButton
           className={this.props.className}
-          toggled={this.props.toggled}
+          toggled={this.props.toggled || false}
           onClick={this.props.onClick}
         />
         {this.props.label && <Label>{this.props.label}</Label>}
