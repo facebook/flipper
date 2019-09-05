@@ -42,7 +42,7 @@ class InspectorSidebarSection extends Component<InspectorSidebarSectionProps> {
     );
   }
 
-  extractValue = (val: any, depth: number) => {
+  extractValue = (val: any) => {
     if (val && val.__type__) {
       return {
         mutable: Boolean(val.__mutable__),
@@ -99,7 +99,7 @@ export class InspectorSidebar extends Component<Props, State> {
     this.checkIfConsoleIsEnabled();
   }
 
-  componentDidUpdate(prevProps: Props, prevState: State) {
+  componentDidUpdate(prevProps: Props) {
     if (prevProps.client !== this.props.client) {
       this.checkIfConsoleIsEnabled();
     }
@@ -134,7 +134,12 @@ export class InspectorSidebar extends Component<Props, State> {
     for (const key in element.data) {
       if (key === 'Extra Sections') {
         for (const extraSection in element.data[key]) {
-          let data = element.data[key][extraSection];
+          let data:
+            | string
+            | number
+            | boolean
+            | {__type__: string; value: any}
+            | null = element.data[key][extraSection];
 
           // data might be sent as stringified JSON, we want to parse it for a nicer persentation.
           if (typeof data === 'string') {
