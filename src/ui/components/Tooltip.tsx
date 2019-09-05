@@ -31,11 +31,11 @@ export default class Tooltip extends Component<TooltipProps, TooltipState> {
     TOOLTIP_PROVIDER: PropTypes.object,
   };
 
-  context: {
+  context!: {
     TOOLTIP_PROVIDER: TooltipProvider;
   };
 
-  ref: HTMLDivElement | null;
+  ref: HTMLDivElement | undefined;
 
   state = {
     open: false,
@@ -63,7 +63,7 @@ export default class Tooltip extends Component<TooltipProps, TooltipState> {
     this.setState({open: false});
   };
 
-  setRef = (ref: HTMLDivElement | null) => {
+  setRef = (ref: HTMLDivElement | undefined) => {
     this.ref = ref;
   };
 

@@ -142,7 +142,7 @@ export default class TooltipProvider extends Component<
     TOOLTIP_PROVIDER: PropTypes.object,
   };
 
-  state = {
+  state: TooltipState = {
     tooltip: null,
     timeoutID: undefined,
   };
