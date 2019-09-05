@@ -9,8 +9,9 @@
 
 #import "SKTapListenerImpl.h"
 
-#import "SKHighlightOverlay.h"
 #import "SKHiddenWindow.h"
+
+#import <FlipperKitHighlightOverlay/SKHighlightOverlay.h>
 
 @implementation SKTapListenerImpl
 {

@@ -10,12 +10,12 @@
 #import "SKViewDescriptor.h"
 
 #import "SKDescriptorMapper.h"
-#import "SKHighlightOverlay.h"
 #import "SKNamed.h"
 #import "SKObject.h"
 #import "SKYogaKitHelper.h"
 #import "UIColor+SKSonarValueCoder.h"
 #import <YogaKit/UIView+Yoga.h>
+#import <FlipperKitHighlightOverlay/SKHighlightOverlay.h>
 
 @implementation SKViewDescriptor
 

@@ -82,6 +82,13 @@ Pod::Spec.new do |spec|
                                "HEADER_SEARCH_PATHS" => header_search_paths }
   end
 
+  spec.subspec 'FlipperKitHighlightOverlay' do |ss|
+    ss.header_dir = 'FlipperKitHighlightOverlay'
+    ss.compiler_flags = folly_compiler_flags
+    ss.source_files = 'iOS/Plugins/FlipperKitPluginUtils/FlipperKitHighlightOverlay/SKHighlightOverlay.{h,mm}'
+    ss.public_header_files = 'iOS/Plugins/FlipperKitPluginUtils/FlipperKitHighlightOverlay/SKHighlightOverlay.h'
+  end
+
   spec.subspec 'FlipperKitLayoutTextSearchable' do |ss|
     ss.header_dir = 'FlipperKitLayoutTextSearchable'
     ss.compiler_flags = folly_compiler_flags
@@ -93,6 +100,7 @@ Pod::Spec.new do |spec|
     ss.header_dir = "FlipperKitLayoutPlugin"
     ss.dependency             'FlipperKit/Core'
     ss.dependency             'FlipperKit/FlipperKitLayoutTextSearchable'
+    ss.dependency             'FlipperKit/FlipperKitHighlightOverlay'
     ss.dependency             'YogaKit', yogakit_version
     ss.compiler_flags       = folly_compiler_flags
     ss.public_header_files  = 'iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutPlugin/FlipperKitLayoutPlugin.h',
@@ -103,7 +111,6 @@ Pod::Spec.new do |spec|
                               'iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutPlugin/SKNodeDescriptor.h',
                               'iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutPlugin/SKNamed.h',
                               'iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutPlugin/SKObject.h',
-                              'iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutPlugin/SKHighlightOverlay.h',
                               'iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutPlugin/UIColor+SKSonarValueCoder.h',
                               'iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutPlugin/utils/SKObjectHash.h',
                               'iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutPlugin/utils/SKSwizzle.h',
@@ -118,6 +125,7 @@ Pod::Spec.new do |spec|
     ss.dependency             'ComponentKit', '~> 0.0'
     ss.dependency             'FlipperKit/FlipperKitLayoutPlugin'
     ss.dependency             'FlipperKit/FlipperKitLayoutTextSearchable'
+    ss.dependency             'FlipperKit/FlipperKitHighlightOverlay'
     ss.compiler_flags       = folly_compiler_flags
     ss.public_header_files = 'iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutComponentKitSupport/FlipperKitLayoutComponentKitSupport.h',
                              'iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutComponentKitSupport/SKSubDescriptor.h'

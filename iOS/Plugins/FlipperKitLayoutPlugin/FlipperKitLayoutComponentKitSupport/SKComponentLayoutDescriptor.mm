@@ -20,7 +20,7 @@
 #import <ComponentKit/CKInsetComponent.h>
 #import <ComponentKit/CKFlexboxComponent.h>
 
-#import <FlipperKitLayoutPlugin/SKHighlightOverlay.h>
+#import <FlipperKitHighlightOverlay/SKHighlightOverlay.h>
 #import <FlipperKitLayoutPlugin/SKObject.h>
 #import <FlipperKitLayoutTextSearchable/FKTextSearchable.h>
 
