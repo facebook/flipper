@@ -26,7 +26,7 @@ import {
   SearchableTable,
   FlipperPlugin,
 } from 'flipper';
-import type {Request, RequestId, Response} from './types.js';
+import type {Request, RequestId, Response} from './types.tsx';
 import {
   convertRequestToCurlCommand,
   getHeaderValue,
@@ -150,7 +150,6 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
     persistedState: PersistedState,
   ): Array<Notification> => {
     const responses = persistedState ? persistedState.responses || [] : [];
-    // $FlowFixMe Object.values returns Array<mixed>, but we know it is Array<Response>
     const r: Array<Response> = Object.values(responses);
 
     return (

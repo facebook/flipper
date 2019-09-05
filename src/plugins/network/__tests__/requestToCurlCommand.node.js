@@ -6,7 +6,7 @@
  */
 
 import {convertRequestToCurlCommand} from '../utils.js';
-import type {Request} from '../types.js';
+import type {Request} from '../types.tsx';
 
 test('convertRequestToCurlCommand: simple GET', () => {
   const request: Request = {

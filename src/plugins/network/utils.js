@@ -7,7 +7,7 @@
 
 // $FlowFixMe
 import pako from 'pako';
-import type {Request, Response, Header} from './types.js';
+import type {Request, Response, Header} from './types.tsx';
 
 export function getHeaderValue(headers: Array<Header>, key: string): string {
   for (const header of headers) {

@@ -11,7 +11,7 @@ import type {
   Header,
   Insights,
   RetryInsights,
-} from './types.js';
+} from './types.tsx';
 
 import {
   Component,
