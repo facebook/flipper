@@ -26,7 +26,7 @@ export default class ModalOverlay extends Component<{
   onClose: () => void;
   children?: React.ReactNode;
 }> {
-  ref: HTMLElement;
+  ref: HTMLElement | null | undefined;
 
   setRef = (ref: HTMLElement) => {
     this.ref = ref;
