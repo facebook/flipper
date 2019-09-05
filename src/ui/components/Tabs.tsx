@@ -139,16 +139,20 @@ export default function Tabs(props: {
   const after = props.after || [];
 
   //
-  const tabs = {};
+  const tabs: {
+    [key: string]: React.ReactNode;
+  } = {};
 
   // a list of keys
   const keys = props.order ? props.order.slice() : [];
 
-  const tabContents = [];
-  const tabSiblings = [];
+  const tabContents: React.ReactNode[] = [];
+  const tabSiblings: React.ReactNode[] = [];
 
   function add(comps: React.ReactElement | React.ReactElement[]) {
-    const compsArray: React.ReactElement<TabProps>[] = [].concat(comps || []);
+    const compsArray: React.ReactElement<TabProps>[] = Array.isArray(comps)
+      ? comps
+      : [comps];
     for (const comp of compsArray) {
       if (Array.isArray(comp)) {
         add(comp);
@@ -189,7 +193,7 @@ export default function Tabs(props: {
         continue;
       }
 
-      let closeButton;
+      let closeButton: HTMLDivElement | undefined;
 
       tabs[key] = (
         <TabListItem
@@ -197,13 +201,13 @@ export default function Tabs(props: {
           width={width}
           active={isActive}
           onMouseDown={
-            !isActive &&
-            onActive &&
-            ((event: React.MouseEvent) => {
-              if (event.target !== closeButton) {
-                onActive(key);
-              }
-            })
+            !isActive && onActive
+              ? (event: React.MouseEvent<HTMLDivElement>) => {
+                  if (event.target !== closeButton) {
+                    onActive(key);
+                  }
+                }
+              : undefined
           }>
           {comp.props.label}
           {closable && (
@@ -215,8 +219,9 @@ export default function Tabs(props: {
                   const newActive = keys[index + 1] || keys[index - 1] || null;
                   onActive(newActive);
                 }
-
-                onClose();
+                if (onClose) {
+                  onClose();
+                }
               }}>
               X
             </CloseButton>
@@ -226,7 +231,9 @@ export default function Tabs(props: {
     }
   }
 
-  add(props.children);
+  if (props.children) {
+    add(props.children);
+  }
 
   let tabList;
   if (props.orderable === true) {
