@@ -12,6 +12,7 @@ import {
   TextAlignProperty,
   FontFamilyProperty,
   WhiteSpaceProperty,
+  WordWrapProperty,
 } from 'csstype';
 
 /**
@@ -27,7 +28,7 @@ const Text = styled('span')(
     code?: boolean;
     family?: FontFamilyProperty;
     selectable?: boolean;
-    wordWrap?;
+    wordWrap?: WordWrapProperty;
     whiteSpace?: WhiteSpaceProperty;
   }) => ({
     color: props.color ? props.color : 'inherit',
