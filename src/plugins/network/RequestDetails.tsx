@@ -5,13 +5,7 @@
  * @format
  */
 
-import type {
-  Request,
-  Response,
-  Header,
-  Insights,
-  RetryInsights,
-} from './types.tsx';
+import {Request, Response, Header, Insights, RetryInsights} from './types';
 
 import {
   Component,
@@ -24,11 +18,11 @@ import {
   styled,
   colors,
 } from 'flipper';
-import {decodeBody, getHeaderValue} from './utils.tsx';
-import {formatBytes} from './index.js';
+import {decodeBody, getHeaderValue} from './utils';
+import {formatBytes} from './index';
+import React from 'react';
 
 import querystring from 'querystring';
-// $FlowFixMe
 import xmlBeautifier from 'xml-beautifier';
 
 const WrappingText = styled(Text)({
@@ -55,17 +49,17 @@ const KeyValueColumns = {
 };
 
 type RequestDetailsProps = {
-  request: Request,
-  response: ?Response,
+  request: Request;
+  response: Response | null | undefined;
 };
 
 type RequestDetailsState = {
-  bodyFormat: string,
+  bodyFormat: string;
 };
 
 export default class RequestDetails extends Component<
   RequestDetailsProps,
-  RequestDetailsState,
+  RequestDetailsState
 > {
   static Container = styled(FlexColumn)({
     height: '100%',
@@ -219,21 +213,21 @@ class QueryInspector extends Component<{queryParams: URLSearchParams}> {
   render() {
     const {queryParams} = this.props;
 
-    const rows = [];
-    for (const kv of queryParams.entries()) {
+    const rows: any = [];
+    queryParams.forEach((value: string, key: string) => {
       rows.push({
         columns: {
           key: {
-            value: <WrappingText>{kv[0]}</WrappingText>,
+            value: <WrappingText>{key}</WrappingText>,
           },
           value: {
-            value: <WrappingText>{kv[1]}</WrappingText>,
+            value: <WrappingText>{value}</WrappingText>,
           },
         },
-        copyText: kv[1],
-        key: kv[0],
+        copyText: value,
+        key: key,
       });
-    }
+    });
 
     return rows.length > 0 ? (
       <ManagedTable
@@ -250,37 +244,40 @@ class QueryInspector extends Component<{queryParams: URLSearchParams}> {
 }
 
 type HeaderInspectorProps = {
-  headers: Array<Header>,
+  headers: Array<Header>;
 };
 
 type HeaderInspectorState = {
-  computedHeaders: Object,
+  computedHeaders: Object;
 };
 
 class HeaderInspector extends Component<
   HeaderInspectorProps,
-  HeaderInspectorState,
+  HeaderInspectorState
 > {
   render() {
-    const computedHeaders = this.props.headers.reduce((sum, header) => {
-      return {...sum, [header.key]: header.value};
-    }, {});
+    const computedHeaders: Map<string, string> = this.props.headers.reduce(
+      (sum, header) => {
+        return sum.set(header.key, header.value);
+      },
+      new Map(),
+    );
 
-    const rows = [];
-    for (const key in computedHeaders) {
+    const rows: any = [];
+    computedHeaders.forEach((value: string, key: string) => {
       rows.push({
         columns: {
           key: {
             value: <WrappingText>{key}</WrappingText>,
           },
           value: {
-            value: <WrappingText>{computedHeaders[key]}</WrappingText>,
+            value: <WrappingText>{value}</WrappingText>,
           },
         },
-        copyText: computedHeaders[key],
+        copyText: value,
         key,
       });
-    }
+    });
 
     return rows.length > 0 ? (
       <ManagedTable
@@ -302,13 +299,13 @@ const BodyContainer = styled('div')({
 });
 
 type BodyFormatter = {
-  formatRequest?: (request: Request) => any,
-  formatResponse?: (request: Request, response: Response) => any,
+  formatRequest?: (request: Request) => any;
+  formatResponse?: (request: Request, response: Response) => any;
 };
 
 class RequestBodyInspector extends Component<{
-  request: Request,
-  formattedText: boolean,
+  request: Request;
+  formattedText: boolean;
 }> {
   render() {
     const {request, formattedText} = this.props;
@@ -337,9 +334,9 @@ class RequestBodyInspector extends Component<{
 }
 
 class ResponseBodyInspector extends Component<{
-  response: Response,
-  request: Request,
-  formattedText: boolean,
+  response: Response;
+  request: Request;
+  formattedText: boolean;
 }> {
   render() {
     const {request, response, formattedText} = this.props;
@@ -374,12 +371,12 @@ const MediaContainer = styled(FlexColumn)({
 });
 
 type ImageWithSizeProps = {
-  src: string,
+  src: string;
 };
 
 type ImageWithSizeState = {
-  width: number,
-  height: number,
+  width: number;
+  height: number;
 };
 
 class ImageWithSize extends Component<ImageWithSizeProps, ImageWithSizeState> {
@@ -394,7 +391,7 @@ class ImageWithSize extends Component<ImageWithSizeProps, ImageWithSizeState> {
     fontSize: 14,
   });
 
-  constructor(props, context) {
+  constructor(props: ImageWithSizeProps, context: any) {
     super(props, context);
     this.state = {
       width: 0,
@@ -595,7 +592,7 @@ class LogEventFormatter {
   formatRequest = (request: Request) => {
     if (request.url.indexOf('logging_client_event') > 0) {
       const data = querystring.parse(decodeBody(request));
-      if (data.message) {
+      if (typeof data.message === 'string') {
         data.message = JSON.parse(data.message);
       }
       return <ManagedDataInspector expandRoot={true} data={data} />;
@@ -607,7 +604,7 @@ class GraphQLBatchFormatter {
   formatRequest = (request: Request) => {
     if (request.url.indexOf('graphqlbatch') > 0) {
       const data = querystring.parse(decodeBody(request));
-      if (data.queries) {
+      if (typeof data.queries === 'string') {
         data.queries = JSON.parse(data.queries);
       }
       return <ManagedDataInspector expandRoot={true} data={data} />;
@@ -643,10 +640,10 @@ class GraphQLFormatter {
   formatRequest = (request: Request) => {
     if (request.url.indexOf('graphql') > 0) {
       const data = querystring.parse(decodeBody(request));
-      if (data.variables) {
+      if (typeof data.variables === 'string') {
         data.variables = JSON.parse(data.variables);
       }
-      if (data.query_params) {
+      if (typeof data.query_params === 'string') {
         data.query_params = JSON.parse(data.query_params);
       }
       return <ManagedDataInspector expandRoot={true} data={data} />;
@@ -745,7 +742,11 @@ class InsightsInspector extends Component<{insights: Insights}> {
     } ${timesWord} out of ${retry.limit})`;
   }
 
-  buildRow<T>(name: string, value: ?T, formatter: T => string): any {
+  buildRow<T>(
+    name: string,
+    value: T | null | undefined,
+    formatter: (value: T) => string,
+  ): any {
     return value
       ? {
           columns: {

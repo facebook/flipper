@@ -1,7 +1,7 @@
 {
   "name": "Network",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "index.tsx",
   "license": "MIT",
   "dependencies": {
     "pako": "^1.0.6",

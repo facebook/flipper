@@ -5,13 +5,10 @@
  * @format
  */
 
-import type {
-  TableHighlightedRows,
-  TableRows,
-  TableBodyRow,
-  MetricType,
-} from 'flipper';
+import {TableHighlightedRows, TableRows, TableBodyRow} from 'flipper';
 import {padStart} from 'lodash';
+import React from 'react';
+import {MenuItemConstructorOptions} from 'electron';
 
 import {
   ContextMenu,
@@ -26,25 +23,21 @@ import {
   SearchableTable,
   FlipperPlugin,
 } from 'flipper';
-import type {Request, RequestId, Response} from './types.tsx';
-import {
-  convertRequestToCurlCommand,
-  getHeaderValue,
-  decodeBody,
-} from './utils.tsx';
-import RequestDetails from './RequestDetails.js';
+import {Request, RequestId, Response} from './types';
+import {convertRequestToCurlCommand, getHeaderValue, decodeBody} from './utils';
+import RequestDetails from './RequestDetails';
 import {clipboard} from 'electron';
 import {URL} from 'url';
-import type {Notification} from '../../plugin.tsx';
+import {DefaultKeyboardAction} from 'src/MenuBar';
 
-type PersistedState = {|
-  requests: {[id: RequestId]: Request},
-  responses: {[id: RequestId]: Response},
-|};
+type PersistedState = {
+  requests: Map<RequestId, Request>;
+  responses: Map<RequestId, Response>;
+};
 
-type State = {|
-  selectedIds: Array<RequestId>,
-|};
+type State = {
+  selectedIds: Array<RequestId>;
+};
 
 const COLUMN_SIZE = {
   requestTimestamp: 100,
@@ -67,27 +60,13 @@ const COLUMN_ORDER = [
 ];
 
 const COLUMNS = {
-  requestTimestamp: {
-    value: 'Request Time',
-  },
-  responseTimestamp: {
-    value: 'Response Time',
-  },
-  domain: {
-    value: 'Domain',
-  },
-  method: {
-    value: 'Method',
-  },
-  status: {
-    value: 'Status',
-  },
-  size: {
-    value: 'Size',
-  },
-  duration: {
-    value: 'Duration',
-  },
+  requestTimestamp: {value: 'Request Time'},
+  responseTimestamp: {value: 'Response Time'},
+  domain: {value: 'Domain'},
+  method: {value: 'Method'},
+  status: {value: 'Status'},
+  size: {value: 'Size'},
+  duration: {value: 'Duration'},
 };
 
 export function formatBytes(count: number): string {
@@ -108,66 +87,75 @@ const TextEllipsis = styled(Text)({
   paddingTop: 4,
 });
 
-export default class extends FlipperPlugin<State, *, PersistedState> {
-  static keyboardActions = ['clear'];
+export default class extends FlipperPlugin<State, any, PersistedState> {
+  static keyboardActions: Array<DefaultKeyboardAction> = ['clear'];
   static subscribed = [];
   static defaultPersistedState = {
-    requests: {},
-    responses: {},
+    requests: new Map(),
+    responses: new Map(),
   };
 
-  static metricsReducer = (
-    persistedState: PersistedState,
-  ): Promise<MetricType> => {
-    const failures = Object.keys(persistedState.responses).reduce(function(
+  static metricsReducer(persistedState: PersistedState) {
+    const failures = Object.values(persistedState.responses).reduce(function(
       previous,
-      key,
+      values,
     ) {
-      return previous + (persistedState.responses[key].status >= 400);
+      return previous + (values.status >= 400 ? 1 : 0);
     },
     0);
     return Promise.resolve({NUMBER_NETWORK_FAILURES: failures});
-  };
+  }
 
-  static persistedStateReducer = (
+  static persistedStateReducer(
     persistedState: PersistedState,
     method: string,
     data: Request | Response,
-  ): PersistedState => {
-    const dataType: 'requests' | 'responses' = data.url
-      ? 'requests'
-      : 'responses';
-    return {
-      ...persistedState,
-      [dataType]: {
-        ...persistedState[dataType],
-        [data.id]: data,
-      },
-    };
-  };
+  ) {
+    switch (method) {
+      case 'newRequest':
+        return Object.assign({}, persistedState, {
+          requests: new Map(persistedState.requests).set(
+            data.id,
+            data as Request,
+          ),
+        });
+      case 'newResponse':
+        return Object.assign({}, persistedState, {
+          responses: new Map(persistedState.responses).set(
+            data.id,
+            data as Response,
+          ),
+        });
+      default:
+        return persistedState;
+    }
+  }
 
-  static getActiveNotifications = (
-    persistedState: PersistedState,
-  ): Array<Notification> => {
-    const responses = persistedState ? persistedState.responses || [] : [];
-    const r: Array<Response> = Object.values(responses);
+  static getActiveNotifications(persistedState: PersistedState) {
+    const responses = persistedState
+      ? persistedState.responses || new Map()
+      : new Map();
+    const r: Array<Response> = Array.from(responses.values());
 
     return (
       r
         // Show error messages for all status codes indicating a client or server error
         .filter((response: Response) => response.status >= 400)
-        .map((response: Response) => ({
-          id: response.id,
-          title: `HTTP ${response.status}: Network request failed`,
-          message: `Request to "${persistedState.requests[response.id]?.url ||
-            '(URL missing)'}" failed. ${response.reason}`,
-          severity: 'error',
-          timestamp: response.timestamp,
-          category: `HTTP${response.status}`,
-          action: response.id,
-        }))
+        .map((response: Response) => {
+          const request = persistedState.requests.get(response.id);
+          const url: string = (request && request.url) || '(URL missing)';
+          return {
+            id: response.id,
+            title: `HTTP ${response.status}: Network request failed`,
+            message: `Request to ${url} failed. ${response.reason}`,
+            severity: 'error' as 'error',
+            timestamp: response.timestamp,
+            category: `HTTP${response.status}`,
+            action: response.id,
+          };
+        })
     );
-  };
+  }
 
   onKeyboardAction = (action: string) => {
     if (action === 'clear') {
@@ -190,14 +178,17 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
       return;
     }
 
-    const request = requests[selectedIds[0]];
+    const request = requests.get(selectedIds[0]);
+    if (!request) {
+      return;
+    }
     const command = convertRequestToCurlCommand(request);
     clipboard.writeText(command);
   };
 
   clearLogs = () => {
     this.setState({selectedIds: []});
-    this.props.setPersistedState({responses: {}, requests: {}});
+    this.props.setPersistedState({responses: new Map(), requests: new Map()});
   };
 
   renderSidebar = () => {
@@ -205,13 +196,20 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
     const {selectedIds} = this.state;
     const selectedId = selectedIds.length === 1 ? selectedIds[0] : null;
 
-    return selectedId != null ? (
+    if (!selectedId) {
+      return null;
+    }
+    const requestWithId = requests.get(selectedId);
+    if (!requestWithId) {
+      return null;
+    }
+    return (
       <RequestDetails
         key={selectedId}
-        request={requests[selectedId]}
-        response={responses[selectedId]}
+        request={requestWithId}
+        response={responses.get(selectedId)}
       />
-    ) : null;
+    );
   };
 
   render() {
@@ -220,8 +218,8 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
     return (
       <FlexColumn grow={true}>
         <NetworkTable
-          requests={requests || {}}
-          responses={responses || {}}
+          requests={requests || new Map()}
+          responses={responses || new Map()}
           clear={this.clearLogs}
           copyRequestCurlCommand={this.copyRequestCurlCommand}
           onRowHighlighted={this.onRowHighlighted}
@@ -236,17 +234,17 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
 }
 
 type NetworkTableProps = {
-  requests: {[id: RequestId]: Request},
-  responses: {[id: RequestId]: Response},
-  clear: () => void,
-  copyRequestCurlCommand: () => void,
-  onRowHighlighted: (keys: TableHighlightedRows) => void,
-  highlightedRows: ?Set<string>,
+  requests: Map<RequestId, Request>;
+  responses: Map<RequestId, Response>;
+  clear: () => void;
+  copyRequestCurlCommand: () => void;
+  onRowHighlighted: (keys: TableHighlightedRows) => void;
+  highlightedRows: Set<string> | null | undefined;
 };
 
-type NetworkTableState = {|
-  sortedRows: TableRows,
-|};
+type NetworkTableState = {
+  sortedRows: TableRows;
+};
 
 function formatTimestamp(timestamp: number): string {
   const date = new Date(timestamp);
@@ -261,9 +259,12 @@ function formatTimestamp(timestamp: number): string {
   )}`;
 }
 
-function buildRow(request: Request, response: ?Response): ?TableBodyRow {
+function buildRow(
+  request: Request,
+  response: Response | null | undefined,
+): TableBodyRow | null | undefined {
   if (request == null) {
-    return;
+    return null;
   }
   const url = new URL(request.url);
   const domain = url.host + url.pathname;
@@ -273,7 +274,10 @@ function buildRow(request: Request, response: ?Response): ?TableBodyRow {
 ## Request
 HTTP ${request.method} ${request.url}
 ${request.headers
-  .map(({key, value}) => `${key}: ${String(value)}`)
+  .map(
+    ({key, value}: {key: string; value: string}): string =>
+      `${key}: ${String(value)}`,
+  )
   .join('\n')}`;
 
   if (request.data) {
@@ -286,7 +290,10 @@ ${request.headers
 ## Response
 HTTP ${response.status} ${response.reason}
 ${response.headers
-  .map(({key, value}) => `${key}: ${String(value)}`)
+  .map(
+    ({key, value}: {key: string; value: string}): string =>
+      `${key}: ${String(value)}`,
+  )
   .join('\n')}`;
   }
 
@@ -341,50 +348,49 @@ ${response.headers
 
 function calculateState(
   props: {
-    requests: {[id: RequestId]: Request},
-    responses: {[id: RequestId]: Response},
+    requests: Map<RequestId, Request>;
+    responses: Map<RequestId, Response>;
   },
   nextProps: NetworkTableProps,
   rows: TableRows = [],
 ): NetworkTableState {
   rows = [...rows];
 
-  if (Object.keys(nextProps.requests).length === 0) {
+  // if (nextProps.requests.size === undefined || nextProps.requests.size === 0) {
+  if (nextProps.requests.size === 0) {
     // cleared
     rows = [];
   } else if (props.requests !== nextProps.requests) {
     // new request
-    for (const requestId in nextProps.requests) {
-      if (props.requests[requestId] == null) {
-        const newRow = buildRow(
-          nextProps.requests[requestId],
-          nextProps.responses[requestId],
-        );
+    nextProps.requests.forEach((request: Request, requestId: RequestId) => {
+      if (props.requests.get(requestId) == null) {
+        const newRow = buildRow(request, nextProps.responses.get(requestId));
         if (newRow) {
           rows.push(newRow);
         }
       }
-    }
+    });
   } else if (props.responses !== nextProps.responses) {
     // new response
-    for (const responseId in nextProps.responses) {
-      if (props.responses[responseId] == null) {
-        const newRow = buildRow(
-          nextProps.requests[responseId],
-          nextProps.responses[responseId],
-        );
-        const index = rows.findIndex(
-          r => r.key === nextProps.requests[responseId]?.id,
-        );
+    const resId = Array.from(nextProps.responses.keys()).find(
+      (responseId: RequestId) => !props.responses.get(responseId),
+    );
+    if (resId) {
+      const request = nextProps.requests.get(resId);
+      // sanity check; to pass null check
+      if (request) {
+        const newRow = buildRow(request, nextProps.responses.get(resId));
+        const index = rows.findIndex((r: TableBodyRow) => r.key === request.id);
         if (index > -1 && newRow) {
           rows[index] = newRow;
         }
-        break;
       }
     }
   }
 
-  rows.sort((a, b) => Number(a.sortKey) - Number(b.sortKey));
+  rows.sort(
+    (a: TableBodyRow, b: TableBodyRow) => Number(a.sortKey) - Number(b.sortKey),
+  );
 
   return {
     sortedRows: rows,
@@ -400,8 +406,8 @@ class NetworkTable extends PureComponent<NetworkTableProps, NetworkTableState> {
     super(props);
     this.state = calculateState(
       {
-        requests: {},
-        responses: {},
+        requests: new Map(),
+        responses: new Map(),
       },
       props,
     );
@@ -411,13 +417,20 @@ class NetworkTable extends PureComponent<NetworkTableProps, NetworkTableState> {
     this.setState(calculateState(this.props, nextProps, this.state.sortedRows));
   }
 
-  contextMenuItems() {
+  contextMenuItems(): Array<MenuItemConstructorOptions> {
+    type ContextMenuType =
+      | 'normal'
+      | 'separator'
+      | 'submenu'
+      | 'checkbox'
+      | 'radio';
+    const separator: ContextMenuType = 'separator';
     const {clear, copyRequestCurlCommand, highlightedRows} = this.props;
     const highlightedMenuItems =
       highlightedRows && highlightedRows.size === 1
         ? [
             {
-              type: 'separator',
+              type: separator,
             },
             {
               label: 'Copy as cURL',
@@ -428,7 +441,7 @@ class NetworkTable extends PureComponent<NetworkTableProps, NetworkTableState> {
 
     return highlightedMenuItems.concat([
       {
-        type: 'separator',
+        type: separator,
       },
       {
         label: 'Clear all',
@@ -439,7 +452,9 @@ class NetworkTable extends PureComponent<NetworkTableProps, NetworkTableState> {
 
   render() {
     return (
-      <NetworkTable.ContextMenu items={this.contextMenuItems()}>
+      <NetworkTable.ContextMenu
+        items={this.contextMenuItems()}
+        component={FlexColumn}>
         <SearchableTable
           virtual={true}
           multiline={false}
@@ -468,7 +483,7 @@ const Icon = styled(Glyph)({
 });
 
 class StatusColumn extends PureComponent<{
-  children?: number,
+  children?: number;
 }> {
   render() {
     const {children} = this.props;
@@ -488,8 +503,8 @@ class StatusColumn extends PureComponent<{
 }
 
 class DurationColumn extends PureComponent<{
-  request: Request,
-  response: ?Response,
+  request: Request;
+  response: Response | null | undefined;
 }> {
   static Text = styled(Text)({
     flex: 1,
@@ -511,7 +526,7 @@ class DurationColumn extends PureComponent<{
 }
 
 class SizeColumn extends PureComponent<{
-  response: ?Response,
+  response: Response | null | undefined;
 }> {
   static Text = styled(Text)({
     flex: 1,
@@ -529,7 +544,11 @@ class SizeColumn extends PureComponent<{
     }
   }
 
-  getResponseLength(response) {
+  getResponseLength(response: Response | null | undefined) {
+    if (!response) {
+      return 0;
+    }
+
     let length = 0;
     const lengthString = response.headers
       ? getHeaderValue(response.headers, 'content-length')
