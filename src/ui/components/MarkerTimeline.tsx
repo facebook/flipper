@@ -45,8 +45,8 @@ const Markers = styled('div')((props: {totalTime: number}) => ({
 const Point = styled(FlexRow)(
   (props: {
     positionY: number;
-    onClick: Function;
-    number: number;
+    onClick: Function | undefined;
+    number: number | undefined;
     threadColor: string;
     selected: boolean;
     cut: boolean;
@@ -86,10 +86,10 @@ const Point = styled(FlexRow)(
       zIndex: 3,
       boxShadow: props.selected
         ? `0 0 0 2px ${colors.macOSTitleBarIconSelected}`
-        : null,
+        : undefined,
     },
     '::after': {
-      content: props.cut ? '""' : null,
+      content: props.cut ? '""' : undefined,
       position: 'absolute',
       width: 11,
       top: -20,
@@ -215,8 +215,14 @@ export default class MarkerTimeline extends Component<Props, State> {
               cut={p.isCut}
               positionY={p.positionY}
               onClick={onClick ? () => onClick(p.markerKeys) : undefined}
-              selected={p.markerKeys.includes(this.props.selected)}
-              number={p.markerNames.length > 1 ? p.markerNames.length : null}>
+              selected={
+                this.props.selected
+                  ? p.markerKeys.includes(this.props.selected)
+                  : false
+              }
+              number={
+                p.markerNames.length > 1 ? p.markerNames.length : undefined
+              }>
               <Time>{p.timestamp}ms</Time>{' '}
               <Code code>{p.markerNames.join(', ')}</Code>
             </Point>
