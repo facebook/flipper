@@ -341,7 +341,21 @@ class ColorEditor extends Component<{
               colors.pink,
               colors.grape,
             ]}
-            onChange={this.onChange}
+            onChange={(color: {
+              hex: string;
+              hsl: {
+                a?: number;
+                h: number;
+                l: number;
+                s: number;
+              };
+              rgb: {a?: number; b: number; g: number; r: number};
+            }) => {
+              this.onChange({
+                hex: color.hex,
+                rgb: {...color.rgb, a: color.rgb.a || 1},
+              });
+            }}
           />
         </Popover>
       </ColorPickerDescription>
@@ -432,7 +446,7 @@ function parseColor(
 
   // extract alpha if passed AARRGGBB
   if (val.length === 8) {
-    a = parseInt(parts.shift(), 16) / 255;
+    a = parseInt(parts.shift() || '0', 16) / 255;
   }
 
   const size = val.length;
