@@ -68,7 +68,7 @@ export default class extends FlipperPlugin<State, any, PersistedState> {
       const {setPersistedState} = this.props;
       const navigationEvent: NavigationEvent = {
         uri: payload.uri === undefined ? null : decodeURIComponent(payload.uri),
-        date: payload.date || new Date(),
+        date: new Date(payload.date) || new Date(),
         className: payload.class === undefined ? null : payload.class,
         screenshot: null,
       };
