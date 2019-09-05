@@ -1,0 +1,17 @@
+{
+  "name": "React",
+  "version": "1.0.1",
+  "main": "index.tsx",
+  "license": "MIT",
+  "dependencies": {
+    "address": "^1.1.2",
+    "get-port": "^4.0.0",
+    "react-devtools-core": "^4.0.6"
+  },
+  "title": "React Devtools",
+  "icon": "app-react",
+  "bugs": {
+    "email": "danielbuechele@fb.com"
+  },
+  "devDependencies": {}
+}
