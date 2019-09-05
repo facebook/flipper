@@ -10,7 +10,7 @@ import {connect} from 'react-redux';
 import React, {Component} from 'react';
 import {State as Store} from '../reducers';
 import {readBookmarksFromDB} from '../plugins/navigation/util/indexedDB';
-import {State as NavPluginState} from '../plugins/navigation/flow-types';
+import {PersistedState as NavPluginState} from '../plugins/navigation/types';
 import BaseDevice from '../devices/BaseDevice';
 import {State as PluginState} from 'src/reducers/pluginStates';
 
@@ -109,10 +109,9 @@ class LocationsButton extends Component<Props, State> {
 }
 
 const mapStateFromPluginStatesToProps = (pluginStates: PluginState) => {
-  const navPluginState: NavPluginState =
-    pluginStates[
-      Object.keys(pluginStates).find(key => /#Navigation$/.test(key))
-    ];
+  const navPluginState = pluginStates[
+    Object.keys(pluginStates).find(key => /#Navigation$/.test(key))
+  ] as (NavPluginState | null);
   const currentURI = navPluginState && navPluginState.currentURI;
   return {
     currentURI,
