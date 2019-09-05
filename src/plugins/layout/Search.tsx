@@ -5,10 +5,11 @@
  * @format
  */
 
-import type {PluginClient, ElementSearchResultSet, Element} from 'flipper';
-import type {PersistedState, ElementMap} from './';
-
+import {PersistedState, ElementMap} from './';
 import {
+  PluginClient,
+  ElementSearchResultSet,
+  Element,
   SearchInput,
   SearchBox,
   SearchIcon,
@@ -17,28 +18,29 @@ import {
   colors,
 } from 'flipper';
 import {Component} from 'react';
+import React from 'react';
 
-export type SearchResultTree = {|
-  id: string,
-  isMatch: boolean,
-  hasChildren: boolean,
-  children: ?Array<SearchResultTree>,
-  element: Element,
-  axElement: ?Element, // Not supported in iOS
-|};
+export type SearchResultTree = {
+  id: string;
+  isMatch: boolean;
+  hasChildren: boolean;
+  children: Array<SearchResultTree>;
+  element: Element;
+  axElement: Element | null; // Not supported in iOS
+};
 
 type Props = {
-  client: PluginClient,
-  inAXMode: boolean,
-  onSearchResults: (searchResults: ElementSearchResultSet) => void,
-  setPersistedState: (state: $Shape<PersistedState>) => void,
-  persistedState: PersistedState,
-  initialQuery: ?string,
+  client: PluginClient;
+  inAXMode: boolean;
+  onSearchResults: (searchResults: ElementSearchResultSet) => void;
+  setPersistedState: (state: Partial<PersistedState>) => void;
+  persistedState: PersistedState;
+  initialQuery: string | null;
 };
 
 type State = {
-  value: string,
-  outstandingSearchQuery: ?string,
+  value: string;
+  outstandingSearchQuery: string | null;
 };
 
 const LoadingSpinner = styled(LoadingIndicator)({
@@ -53,16 +55,18 @@ export default class Search extends Component<Props, State> {
     outstandingSearchQuery: null,
   };
 
-  timer: TimeoutID;
+  timer: NodeJS.Timeout | undefined;
 
-  onChange = (e: SyntheticInputEvent<>) => {
-    clearTimeout(this.timer);
+  onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (this.timer) {
+      clearTimeout(this.timer);
+    }
     const {value} = e.target;
     this.setState({value});
     this.timer = setTimeout(() => this.performSearch(value), 200);
   };
 
-  onKeyDown = (e: SyntheticKeyboardEvent<>) => {
+  onKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       this.performSearch(this.state.value);
     }
@@ -73,7 +77,9 @@ export default class Search extends Component<Props, State> {
       const queryString = this.props.initialQuery
         ? this.props.initialQuery
         : '';
-      clearTimeout(this.timer);
+      if (this.timer) {
+        clearTimeout(this.timer);
+      }
       this.timer = setTimeout(() => this.performSearch(queryString), 200);
     }
   }
@@ -102,8 +108,8 @@ export default class Search extends Component<Props, State> {
       results,
       query,
     }: {
-      results: ?SearchResultTree,
-      query: string,
+      results: SearchResultTree | null;
+      query: string;
     },
     axMode: boolean,
   ) {
@@ -159,13 +165,14 @@ export default class Search extends Component<Props, State> {
   }
 
   getElementsFromSearchResultTree(
-    tree: ?SearchResultTree,
+    tree: SearchResultTree | null,
   ): Array<SearchResultTree> {
     if (!tree) {
       return [];
     }
     let elements = [
       {
+        children: [] as Array<SearchResultTree>,
         id: tree.id,
         isMatch: tree.isMatch,
         hasChildren: Boolean(tree.children),

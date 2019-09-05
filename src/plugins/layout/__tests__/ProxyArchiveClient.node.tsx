@@ -9,9 +9,9 @@ import {
   default as ProxyArchiveClient,
   searchNodes,
 } from '../ProxyArchiveClient';
-import type {PersistedState} from '../index';
-import type {ElementID, Element} from 'flipper';
-import type {SearchResultTree} from '../Search';
+import {PersistedState, ElementMap} from '../index';
+import {ElementID, Element} from 'flipper';
+import {SearchResultTree} from '../Search';
 
 function constructElement(
   id: string,
@@ -49,7 +49,7 @@ function constructPersistedState(axMode: boolean): PersistedState {
 let state = constructPersistedState(false);
 
 function populateChildren(state: PersistedState, axMode: boolean) {
-  const elements = {};
+  const elements: ElementMap = {};
   elements['root'] = constructElement('root', 'root view', [
     'child0',
     'child1',
@@ -95,7 +95,7 @@ beforeEach(() => {
 });
 
 test('test the searchNode for root in axMode false', async () => {
-  const searchResult: ?SearchResultTree = await searchNodes(
+  const searchResult: SearchResultTree | null = await searchNodes(
     state.elements['root'],
     'root',
     false,
@@ -106,7 +106,7 @@ test('test the searchNode for root in axMode false', async () => {
     id: 'root',
     isMatch: true,
     hasChildren: false,
-    children: null,
+    children: [],
     element: state.elements['root'],
     axElement: null,
   });
@@ -115,7 +115,7 @@ test('test the searchNode for root in axMode false', async () => {
 test('test the searchNode for root in axMode true', async () => {
   state = constructPersistedState(true);
   populateChildren(state, true);
-  const searchResult: ?SearchResultTree = await searchNodes(
+  const searchResult: SearchResultTree | null = await searchNodes(
     state.AXelements['root'],
     'RoOT',
     true,
@@ -126,14 +126,14 @@ test('test the searchNode for root in axMode true', async () => {
     id: 'root',
     isMatch: true,
     hasChildren: false,
-    children: null,
+    children: [],
     element: state.AXelements['root'], // Even though AXElement exists, normal element will exist too
     axElement: state.AXelements['root'],
   });
 });
 
 test('test the searchNode which matches just one child', async () => {
-  const searchResult: ?SearchResultTree = await searchNodes(
+  const searchResult: SearchResultTree | null = await searchNodes(
     state.elements['root'],
     'child0_child0',
     false,
@@ -154,7 +154,7 @@ test('test the searchNode which matches just one child', async () => {
             id: 'child0_child0',
             isMatch: true,
             hasChildren: false,
-            children: null,
+            children: [],
             element: state.elements['child0_child0'],
             axElement: null,
           },
@@ -169,7 +169,7 @@ test('test the searchNode which matches just one child', async () => {
 });
 
 test('test the searchNode for which matches multiple child', async () => {
-  const searchResult: ?SearchResultTree = await searchNodes(
+  const searchResult: SearchResultTree | null = await searchNodes(
     state.elements['root'],
     'child0',
     false,
@@ -190,7 +190,7 @@ test('test the searchNode for which matches multiple child', async () => {
             id: 'child0_child0',
             isMatch: true,
             hasChildren: false,
-            children: null,
+            children: [],
             element: state.elements['child0_child0'],
             axElement: null,
           },
@@ -198,7 +198,7 @@ test('test the searchNode for which matches multiple child', async () => {
             id: 'child0_child1',
             isMatch: true,
             hasChildren: false,
-            children: null,
+            children: [],
             element: state.elements['child0_child1'],
             axElement: null,
           },
@@ -215,7 +215,7 @@ test('test the searchNode for which matches multiple child', async () => {
             id: 'child1_child0',
             isMatch: true,
             hasChildren: false,
-            children: null,
+            children: [],
             element: state.elements['child1_child0'],
             axElement: null,
           },
@@ -231,7 +231,7 @@ test('test the searchNode for which matches multiple child', async () => {
 });
 
 test('test the searchNode, it should not be case sensitive', async () => {
-  const searchResult: ?SearchResultTree = await searchNodes(
+  const searchResult: SearchResultTree | null = await searchNodes(
     state.elements['root'],
     'ChIlD0',
     false,
@@ -252,7 +252,7 @@ test('test the searchNode, it should not be case sensitive', async () => {
             id: 'child0_child0',
             isMatch: true,
             hasChildren: false,
-            children: null,
+            children: [],
             element: state.elements['child0_child0'],
             axElement: null,
           },
@@ -260,7 +260,7 @@ test('test the searchNode, it should not be case sensitive', async () => {
             id: 'child0_child1',
             isMatch: true,
             hasChildren: false,
-            children: null,
+            children: [],
             element: state.elements['child0_child1'],
             axElement: null,
           },
@@ -277,7 +277,7 @@ test('test the searchNode, it should not be case sensitive', async () => {
             id: 'child1_child0',
             isMatch: true,
             hasChildren: false,
-            children: null,
+            children: [],
             element: state.elements['child1_child0'],
             axElement: null,
           },
@@ -293,7 +293,7 @@ test('test the searchNode, it should not be case sensitive', async () => {
 });
 
 test('test the searchNode for non existent query', async () => {
-  const searchResult: ?SearchResultTree = await searchNodes(
+  const searchResult: SearchResultTree | null = await searchNodes(
     state.elements['root'],
     'Unknown query',
     false,

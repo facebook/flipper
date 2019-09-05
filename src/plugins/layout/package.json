@@ -1,7 +1,7 @@
 {
   "name": "Inspector",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "index.tsx",
   "license": "MIT",
   "dependencies": {
     "deep-equal": "^1.0.1",
@@ -13,5 +13,8 @@
   "bugs": {
     "email": "oncall+flipper@xmail.facebook.com",
     "url": "https://fb.workplace.com/groups/230455004101832/"
+  },
+  "devDependencies": {
+    "@types/lodash.clonedeep": "^4.5.6"
   }
 }

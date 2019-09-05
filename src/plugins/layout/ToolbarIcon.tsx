@@ -6,13 +6,14 @@
  */
 
 import {Glyph, styled, colors} from 'flipper';
+import React from 'react';
 
-type Props = {|
-  title: string,
-  icon: string,
-  active: boolean,
-  onClick: () => void,
-|};
+type Props = {
+  title: string;
+  icon: string;
+  active: boolean;
+  onClick: () => void;
+};
 
 const ToolbarIcon = styled('div')({
   marginRight: 9,

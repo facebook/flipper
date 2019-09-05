@@ -5,20 +5,16 @@
  * @format
  */
 
-import type {
+import {
   ElementID,
   Element,
   ElementSearchResultSet,
   MiddlewareAPI,
   PluginClient,
-} from 'flipper';
-
-import {
   FlexColumn,
   FlexRow,
   FlipperPlugin,
   Toolbar,
-  Sidebar,
   DetailSidebar,
   VerticalRule,
   Button,
@@ -29,37 +25,42 @@ import ToolbarIcon from './ToolbarIcon';
 import InspectorSidebar from './InspectorSidebar';
 import Search from './Search';
 import ProxyArchiveClient from './ProxyArchiveClient';
+import React from 'react';
 
-type State = {|
-  init: boolean,
-  inTargetMode: boolean,
-  inAXMode: boolean,
-  inAlignmentMode: boolean,
-  selectedElement: ?ElementID,
-  selectedAXElement: ?ElementID,
-  searchResults: ?ElementSearchResultSet,
-|};
+type State = {
+  init: boolean;
+  inTargetMode: boolean;
+  inAXMode: boolean;
+  inAlignmentMode: boolean;
+  selectedElement: ElementID | null | undefined;
+  selectedAXElement: ElementID | null | undefined;
+  searchResults: ElementSearchResultSet | null;
+};
 
-export type ElementMap = {[key: ElementID]: Element};
+export type ElementMap = {[key: string]: Element};
 
-export type PersistedState = {|
-  rootElement: ?ElementID,
-  rootAXElement: ?ElementID,
-  elements: ElementMap,
-  AXelements: ElementMap,
-|};
+export type PersistedState = {
+  rootElement: ElementID | null;
+  rootAXElement: ElementID | null;
+  elements: ElementMap;
+  AXelements: ElementMap;
+};
 
-export default class Layout extends FlipperPlugin<State, void, PersistedState> {
-  static exportPersistedState = (
-    callClient: (string, ?Object) => Promise<Object>,
-    persistedState: ?PersistedState,
-    store: ?MiddlewareAPI,
-  ): Promise<?PersistedState> => {
-    const defaultPromise = Promise.resolve(persistedState);
+export default class Layout extends FlipperPlugin<State, any, PersistedState> {
+  static exportPersistedState = async (
+    callClient: (
+      method: 'getAllNodes',
+    ) => Promise<{
+      allNodes: PersistedState;
+    }>,
+    persistedState: PersistedState | undefined,
+    store: MiddlewareAPI | undefined,
+  ): Promise<PersistedState | undefined> => {
     if (!store) {
-      return defaultPromise;
+      return persistedState;
     }
-    return callClient('getAllNodes').then(({allNodes}) => allNodes);
+    const {allNodes} = await callClient('getAllNodes');
+    return allNodes;
   };
 
   static defaultPersistedState = {
@@ -69,7 +70,7 @@ export default class Layout extends FlipperPlugin<State, void, PersistedState> {
     AXelements: {},
   };
 
-  state = {
+  state: State = {
     init: false,
     inTargetMode: false,
     inAXMode: false,
@@ -154,13 +155,12 @@ export default class Layout extends FlipperPlugin<State, void, PersistedState> {
       searchResults: this.state.searchResults,
     };
 
-    let element;
-    if (this.state.inAXMode && this.state.selectedAXElement) {
-      element = this.props.persistedState.AXelements[
-        this.state.selectedAXElement
-      ];
-    } else if (this.state.selectedElement) {
-      element = this.props.persistedState.elements[this.state.selectedElement];
+    let element: Element | null = null;
+    const {selectedAXElement, selectedElement, inAXMode} = this.state;
+    if (inAXMode && selectedAXElement) {
+      element = this.props.persistedState.AXelements[selectedAXElement];
+    } else if (selectedElement) {
+      element = this.props.persistedState.elements[selectedElement];
     }
 
     const inspector = (
@@ -247,7 +247,7 @@ export default class Layout extends FlipperPlugin<State, void, PersistedState> {
                   compact={true}
                   style={{marginTop: 8, marginRight: 12}}
                   onClick={() => {
-                    this.props.selectPlugin('YogaPerformance', element.id);
+                    this.props.selectPlugin('YogaPerformance', element!.id);
                   }}>
                   Analyze Yoga Performance
                 </Button>

@@ -5,22 +5,21 @@
  * @format
  */
 
-import type {Element} from 'flipper';
-import type {PluginClient} from 'flipper';
-import type Client from '../../Client.tsx';
-import type {Logger} from '../../fb-interfaces/Logger.tsx';
-
 import {
   ManagedDataInspector,
   Panel,
   FlexCenter,
   styled,
   colors,
+  PluginClient,
   SidebarExtensions,
+  Element,
 } from 'flipper';
+import Client from '../../Client';
+import {Logger} from '../../fb-interfaces/Logger';
 import {Component} from 'react';
-
-const deepEqual = require('deep-equal');
+import deepEqual from 'deep-equal';
+import React from 'react';
 
 const NoData = styled(FlexCenter)({
   fontSize: 18,
@@ -30,10 +29,10 @@ const NoData = styled(FlexCenter)({
 type OnValueChanged = (path: Array<string>, val: any) => void;
 
 type InspectorSidebarSectionProps = {
-  data: any,
-  id: string,
-  onValueChanged: ?OnValueChanged,
-  tooltips?: Object,
+  data: any;
+  id: string;
+  onValueChanged: OnValueChanged | null;
+  tooltips?: Object;
 };
 
 class InspectorSidebarSection extends Component<InspectorSidebarSectionProps> {
@@ -51,7 +50,7 @@ class InspectorSidebarSection extends Component<InspectorSidebarSectionProps> {
     );
   }
 
-  extractValue = (val: any, depth: number) => {
+  extractValue = (val: any, _depth: number) => {
     if (val && val.__type__) {
       return {
         mutable: Boolean(val.__mutable__),
@@ -84,14 +83,14 @@ class InspectorSidebarSection extends Component<InspectorSidebarSectionProps> {
   }
 }
 
-type Props = {|
-  element: ?Element,
-  tooltips?: Object,
-  onValueChanged: ?OnValueChanged,
-  client: PluginClient,
-  realClient: Client,
-  logger: Logger,
-|};
+type Props = {
+  element: Element | null;
+  tooltips?: Object;
+  onValueChanged: OnValueChanged | null;
+  client: PluginClient;
+  realClient: Client;
+  logger: Logger;
+};
 
 export default class Sidebar extends Component<Props> {
   render() {
@@ -115,12 +114,13 @@ export default class Sidebar extends Component<Props> {
     for (const key in element.data) {
       if (key === 'Extra Sections') {
         for (const extraSection in element.data[key]) {
-          let data = element.data[key][extraSection];
+          const section = element.data[key][extraSection];
+          let data = {};
 
           // data might be sent as stringified JSON, we want to parse it for a nicer persentation.
-          if (typeof data === 'string') {
+          if (typeof section === 'string') {
             try {
-              data = JSON.parse(data);
+              data = JSON.parse(section);
             } catch (e) {
               // data was not a valid JSON, type is required to be an object
               console.error(
@@ -128,6 +128,8 @@ export default class Sidebar extends Component<Props> {
               );
               data = {};
             }
+          } else {
+            data = section;
           }
           sections.push(
             <InspectorSidebarSection

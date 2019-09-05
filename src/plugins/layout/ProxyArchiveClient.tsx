@@ -5,15 +5,18 @@
  * @format
  */
 
-import type {Element, ElementID} from 'flipper';
-import type {PersistedState} from './index';
-import type {SearchResultTree} from './Search';
-// $FlowFixMe
+import {Element} from 'flipper';
+import {PersistedState} from './index';
+import {SearchResultTree} from './Search';
 import cloneDeep from 'lodash.clonedeep';
 
 const propsForPersistedState = (
   AXMode: boolean,
-): {ROOT: string, ELEMENTS: string, ELEMENT: string} => {
+): {
+  ROOT: 'rootAXElement' | 'rootElement';
+  ELEMENTS: 'AXelements' | 'elements';
+  ELEMENT: 'axElement' | 'element';
+} => {
   return {
     ROOT: AXMode ? 'rootAXElement' : 'rootElement',
     ELEMENTS: AXMode ? 'AXelements' : 'elements',
@@ -25,14 +28,14 @@ function constructSearchResultTree(
   node: Element,
   isMatch: boolean,
   children: Array<SearchResultTree>,
-  AXMode: boolean,
-  AXNode: ?Element,
+  _AXMode: boolean,
+  AXNode: Element | null,
 ): SearchResultTree {
   const searchResult = {
     id: node.id,
     isMatch,
     hasChildren: children.length > 0,
-    children: children.length > 0 ? children : null,
+    children: children.length > 0 ? children : [],
     element: node,
     axElement: AXNode,
   };
@@ -49,7 +52,7 @@ export function searchNodes(
   query: string,
   AXMode: boolean,
   state: PersistedState,
-): ?SearchResultTree {
+): SearchResultTree | null {
   // Even if the axMode is true, we will have to search the normal elements too.
   // The AXEelements will automatically populated in constructSearchResultTree
   const elements = state[propsForPersistedState(false).ELEMENTS];
@@ -83,20 +86,19 @@ class ProxyArchiveClient {
     this.persistedState = cloneDeep(persistedState);
   }
   persistedState: PersistedState;
-  subscribe(method: string, callback: (params: any) => void): void {
+  subscribe(_method: string, _callback: (params: any) => void): void {
     return;
   }
 
-  supportsMethod(method: string): Promise<boolean> {
+  supportsMethod(_method: string): Promise<boolean> {
     return Promise.resolve(false);
   }
 
-  send(method: string, params?: Object): void {
+  send(_method: string, _params?: Object): void {
     return;
   }
 
-  call(method: string, params?: Object): Promise<any> {
-    const paramaters = params;
+  call(method: string, paramaters?: {[key: string]: any}): Promise<any> {
     switch (method) {
       case 'getRoot': {
         const {rootElement} = this.persistedState;
@@ -118,7 +120,7 @@ class ProxyArchiveClient {
         }
         const {ids} = paramaters;
         const arr: Array<Element> = [];
-        for (const id: ElementID of ids) {
+        for (const id of ids) {
           arr.push(this.persistedState.elements[id]);
         }
         return Promise.resolve({elements: arr});
@@ -129,7 +131,7 @@ class ProxyArchiveClient {
         }
         const {ids} = paramaters;
         const arr: Array<Element> = [];
-        for (const id: ElementID of ids) {
+        for (const id of ids) {
           arr.push(this.persistedState.AXelements[id]);
         }
         return Promise.resolve({elements: arr});
@@ -148,7 +150,7 @@ class ProxyArchiveClient {
             new Error('query is not passed as a params to getSearchResults'),
           );
         }
-        let element = {};
+        let element: Element;
         if (axEnabled) {
           if (!rootAXElement) {
             return Promise.reject(new Error('rootAXElement is undefined'));

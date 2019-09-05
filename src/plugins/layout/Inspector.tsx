@@ -5,36 +5,36 @@
  * @format
  */
 
-import type {
+import {
   ElementID,
   Element,
   PluginClient,
+  ElementsInspector,
   ElementSearchResultSet,
 } from 'flipper';
-import {ElementsInspector} from 'flipper';
 import {Component} from 'react';
 import debounce from 'lodash.debounce';
-
-import type {PersistedState, ElementMap} from './';
+import {PersistedState, ElementMap} from './';
+import React from 'react';
 
 type GetNodesOptions = {
-  force?: boolean,
-  ax?: boolean,
-  forAccessibilityEvent?: boolean,
+  force?: boolean;
+  ax?: boolean;
+  forAccessibilityEvent?: boolean;
 };
 
 type Props = {
-  ax?: boolean,
-  client: PluginClient,
-  showsSidebar: boolean,
-  inAlignmentMode?: boolean,
-  selectedElement: ?ElementID,
-  selectedAXElement: ?ElementID,
-  onSelect: (ids: ?ElementID) => void,
-  onDataValueChanged: (path: Array<string>, value: any) => void,
-  setPersistedState: (state: $Shape<PersistedState>) => void,
-  persistedState: PersistedState,
-  searchResults: ?ElementSearchResultSet,
+  ax?: boolean;
+  client: PluginClient;
+  showsSidebar: boolean;
+  inAlignmentMode?: boolean;
+  selectedElement: ElementID | null | undefined;
+  selectedAXElement: ElementID | null | undefined;
+  onSelect: (ids: ElementID | null | undefined) => void;
+  onDataValueChanged: (path: Array<string>, value: any) => void;
+  setPersistedState: (state: Partial<PersistedState>) => void;
+  persistedState: PersistedState;
+  searchResults: ElementSearchResultSet | null;
 };
 
 export default class Inspector extends Component<Props> {
@@ -76,8 +76,12 @@ export default class Inspector extends Component<Props> {
     const elements: Array<Element> = Object.values(
       this.props.persistedState.AXelements,
     );
-    return elements.find(i => i?.data?.Accessibility?.['accessibility-focused'])
-      ?.id;
+    const focusedElement = elements.find(i =>
+      Boolean(
+        i.data.Accessibility && i.data.Accessibility['accessibility-focused'],
+      ),
+    );
+    return focusedElement ? focusedElement.id : null;
   };
 
   getAXContextMenuExtensions = () =>
@@ -106,7 +110,7 @@ export default class Inspector extends Component<Props> {
       ({
         nodes,
       }: {
-        nodes: Array<{id: ElementID, children: Array<ElementID>}>,
+        nodes: Array<{id: ElementID; children: Array<ElementID>}>;
       }) => {
         const ids = nodes
           .map(n => [n.id, ...(n.children || [])])
@@ -154,7 +158,11 @@ export default class Inspector extends Component<Props> {
         selectedElement
       ];
       if (newlySelectedElem) {
-        this.props.onSelect(newlySelectedElem.extraInfo?.linkedNode);
+        this.props.onSelect(
+          newlySelectedElem.extraInfo
+            ? newlySelectedElem.extraInfo.linkedNode
+            : null,
+        );
       }
     } else if (
       !ax &&
@@ -166,7 +174,11 @@ export default class Inspector extends Component<Props> {
         selectedAXElement
       ];
       if (newlySelectedAXElem) {
-        this.props.onSelect(newlySelectedAXElem.extraInfo?.linkedNode);
+        this.props.onSelect(
+          newlySelectedAXElem.extraInfo
+            ? newlySelectedAXElem.extraInfo.linkedNode
+            : null,
+        );
       }
     }
   }
@@ -179,11 +191,13 @@ export default class Inspector extends Component<Props> {
       (acc: ElementMap, element: Element) => {
         acc[element.id] = {
           ...element,
-          expanded: this.elements()[element.id]?.expanded,
+          expanded: this.elements()[element.id]
+            ? this.elements()[element.id].expanded
+            : false,
         };
         return acc;
       },
-      new Map(),
+      {},
     );
     this.props.setPersistedState({
       [this.props.ax ? 'AXelements' : 'elements']: {
@@ -193,17 +207,19 @@ export default class Inspector extends Component<Props> {
     });
   }
 
-  invalidate(ids: Array<ElementID>): Promise<Array<Element>> {
+  async invalidate(ids: Array<ElementID>): Promise<Array<Element>> {
     if (ids.length === 0) {
       return Promise.resolve([]);
     }
-    return this.getNodes(ids, {}).then((elements: Array<Element>) => {
-      const children = elements
-        .filter((element: Element) => this.elements()[element.id]?.expanded)
-        .map((element: Element) => element.children)
-        .reduce((acc, val) => acc.concat(val), []);
-      return this.invalidate(children);
-    });
+    const elements = await this.getNodes(ids, {});
+    const children = elements
+      .filter(
+        (element: Element) =>
+          this.elements()[element.id] && this.elements()[element.id].expanded,
+      )
+      .map((element: Element) => element.children)
+      .reduce((acc, val) => acc.concat(val), []);
+    return this.invalidate(children);
   }
 
   updateElement(id: ElementID, data: Object) {
@@ -225,7 +241,7 @@ export default class Inspector extends Component<Props> {
       // element has no children so we're as deep as we can be
       return;
     }
-    return this.getChildren(element.id, {}).then((elements: Array<Element>) => {
+    return this.getChildren(element.id, {}).then(() => {
       if (element.children.length >= 2) {
         // element has two or more children so we can stop expanding
         return;
@@ -245,32 +261,32 @@ export default class Inspector extends Component<Props> {
     return this.getNodes(this.elements()[id].children, options);
   }
 
-  getNodes(
+  async getNodes(
     ids: Array<ElementID> = [],
     options: GetNodesOptions,
   ): Promise<Array<Element>> {
-    const {forAccessibilityEvent} = options;
-
     if (ids.length > 0) {
-      return this.props.client
-        .call(this.call().GET_NODES, {
+      const {forAccessibilityEvent} = options;
+      const {
+        elements,
+      }: {elements: Array<Element>} = await this.props.client.call(
+        this.call().GET_NODES,
+        {
           ids,
           forAccessibilityEvent,
           selected: false,
-        })
-        .then(({elements}) => {
-          elements.forEach(e => this.updateElement(e.id, e));
-          return elements;
-        });
+        },
+      );
+      elements.forEach(e => this.updateElement(e.id, e));
+      return elements;
     } else {
-      return Promise.resolve([]);
+      return [];
     }
   }
 
-  getAndExpandPath(path: Array<ElementID>) {
-    return Promise.all(path.map(id => this.getChildren(id, {}))).then(() => {
-      this.onElementSelected(path[path.length - 1]);
-    });
+  async getAndExpandPath(path: Array<ElementID>) {
+    await Promise.all(path.map(id => this.getChildren(id, {})));
+    this.onElementSelected(path[path.length - 1]);
   }
 
   onElementSelected = debounce((selectedKey: ElementID) => {
@@ -278,7 +294,7 @@ export default class Inspector extends Component<Props> {
     this.props.onSelect(selectedKey);
   });
 
-  onElementHovered = debounce((key: ?ElementID) =>
+  onElementHovered = debounce((key: ElementID | null | undefined) =>
     this.props.client.call(this.call().SET_HIGHLIGHTED, {
       id: key,
       isAlignmentMode: this.props.inAlignmentMode,
