@@ -16,13 +16,13 @@ const PreviewContainer = styled('span')({
   fontStyle: 'italic',
 });
 
-function intersperse(arr, sep) {
+function intersperse(arr: Array<any>, sep: string) {
   if (arr.length === 0) {
     return [];
   }
 
   return arr.slice(1).reduce(
-    (xs, x, i) => {
+    (xs: any, x: any) => {
       return xs.concat([sep, x]);
     },
     [arr[0]],
@@ -48,7 +48,7 @@ export default class DataPreview extends PureComponent<{
         <PreviewContainer>
           {'['}
           {intersperse(
-            value.map((element, index) => {
+            value.map((element: any, index: number) => {
               const res = extractValue(element, depth + 1);
               if (!res) {
                 return null;
