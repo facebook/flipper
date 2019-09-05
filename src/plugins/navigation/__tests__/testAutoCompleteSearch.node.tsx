@@ -6,17 +6,14 @@
  * @flow strict-local
  */
 
-import {filterMatchPatterns} from '../util/autoCompleteProvider.tsx';
+import {filterMatchPatterns} from '../util/autoCompleteProvider';
 
-import type {URI} from '../flow-types';
+import {URI} from '../types';
 
 // choose all k length combinations from array
-const stringCombination: (Array<string>, number) => Array<string> = (
-  patterns,
-  k,
-) => {
+const stringCombination = (patterns: Array<string>, k: number) => {
   const n = patterns.length;
-  const returnArr = new Array(0);
+  const returnArr: Array<string> = new Array(0);
   const args = new Array(k).fill(0).map((_, idx) => idx);
   (function build(args) {
     const pattern = args.map(i => patterns[i]).join('');

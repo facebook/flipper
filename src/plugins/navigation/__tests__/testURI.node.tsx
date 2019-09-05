@@ -11,7 +11,7 @@ import {
   parameterIsNumberType,
   replaceRequiredParametersWithValues,
   filterOptionalParameters,
-} from '../util/uri.tsx';
+} from '../util/uri';
 
 test('parse required parameters from uri', () => {
   const testURI =
