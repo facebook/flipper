@@ -25,12 +25,11 @@ export default class ViewWithSize extends Component<
     this.state = {height: window.innerHeight, width: window.innerWidth};
   }
 
-  _onResize: (event: UIEvent) => void;
+  _onResize = () => {
+    this.setState({height: window.innerHeight, width: window.innerWidth});
+  };
 
   componentDidMount() {
-    this._onResize = () => {
-      this.setState({height: window.innerHeight, width: window.innerWidth});
-    };
     window.addEventListener('resize', this._onResize);
   }
 
