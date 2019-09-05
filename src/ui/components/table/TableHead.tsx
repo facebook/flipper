@@ -101,10 +101,10 @@ class TableHeadColumn extends PureComponent<{
   title?: string;
   horizontallyScrollable?: boolean;
 }> {
-  ref: HTMLElement;
+  ref: HTMLElement | undefined;
 
   componentDidMount() {
-    if (this.props.horizontallyScrollable) {
+    if (this.props.horizontallyScrollable && this.ref) {
       // measure initial width
       this.onResize(this.ref.offsetWidth);
     }
@@ -135,12 +135,12 @@ class TableHeadColumn extends PureComponent<{
     let normalizedWidth: number | string = newWidth;
 
     // normalise number to a percentage if we were originally passed a percentage
-    if (isPercentage(width)) {
+    if (isPercentage(width) && this.ref) {
       const {parentElement} = this.ref;
       invariant(parentElement, 'expected there to be parentElement');
 
-      const parentWidth = parentElement.clientWidth;
-      const {childNodes} = parentElement;
+      const parentWidth = parentElement!.clientWidth;
+      const {childNodes} = parentElement!;
 
       const lastElem = childNodes[childNodes.length - 1];
       const right =
@@ -260,7 +260,9 @@ export default class TableHead extends PureComponent<{
 
     let lastResizable = true;
 
-    const colElems = {};
+    const colElems: {
+      [key: string]: JSX.Element;
+    } = {};
     for (const column of columnOrder) {
       if (!column.visible) {
         continue;

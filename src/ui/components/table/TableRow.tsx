@@ -60,18 +60,18 @@ const TableBodyRowContainer = styled(FlexRow)(
   (props: TableBodyRowContainerProps) => ({
     backgroundColor: backgroundColor(props),
     boxShadow: props.zebra ? 'none' : 'inset 0 -1px #E9EBEE',
-    color: props.highlighted ? colors.white : props.color || 'inherit',
+    color: props.highlighted ? colors.white : props.color || undefined,
     '& *': {
-      color: props.highlighted ? `${colors.white} !important` : null,
+      color: props.highlighted ? `${colors.white} !important` : undefined,
     },
     '& img': {
       backgroundColor: props.highlighted
         ? `${colors.white} !important`
-        : 'none',
+        : undefined,
     },
     height: props.multiline ? 'auto' : props.rowLineHeight,
     lineHeight: `${String(props.rowLineHeight || DEFAULT_ROW_HEIGHT)}px`,
-    fontWeight: props.fontWeight || 'inherit',
+    fontWeight: props.fontWeight,
     overflow: 'hidden',
     width: '100%',
     userSelect: 'none',
@@ -114,7 +114,7 @@ type Props = {
   highlighted: boolean;
   row: TableBodyRow;
   index: number;
-  style?: React.CSSProperties | null;
+  style?: React.CSSProperties | undefined;
   onAddFilter?: TableOnAddFilter;
   zebra?: boolean;
 };
@@ -160,7 +160,7 @@ export default class TableRow extends React.PureComponent<Props> {
 
           const isFilterable = Boolean(col && col.isFilterable);
           const value = col && col.value ? col.value : null;
-          const title = col && col.title ? col.title : null;
+          const title = col && col.title ? col.title : '';
 
           return (
             <TableBodyColumnContainer

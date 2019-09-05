@@ -44,13 +44,13 @@ export type TableHeaderColumn = {
 
 export type TableBodyRow = {
   key: string;
-  height?: number | null | undefined;
-  filterValue?: string | null | undefined;
-  backgroundColor?: string | null | undefined;
+  height?: number | undefined;
+  filterValue?: string | undefined;
+  backgroundColor?: string | undefined;
   sortKey?: string | number;
   style?: Object;
-  type?: string | null | undefined;
-  highlightedBackgroundColor?: BackgroundColorProperty | null | undefined;
+  type?: string | undefined;
+  highlightedBackgroundColor?: BackgroundColorProperty | undefined;
   onDoubleClick?: (e: React.MouseEvent) => void;
   copyText?: string;
   highlightOnHover?: boolean;

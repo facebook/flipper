@@ -30,6 +30,7 @@ import debounceRender from 'react-debounce-render';
 import debounce from 'lodash.debounce';
 import {DEFAULT_ROW_HEIGHT} from './types';
 import textContent from '../../../utils/textContent';
+import {notNull} from '../../../utils/typeUtils';
 
 export type ManagedTableProps = {
   /**
@@ -178,7 +179,7 @@ class ManagedTable extends React.Component<
         ? globalTableState[this.props.tableKey]
         : this.props.columnSizes || {},
     highlightedRows: this.props.highlightedRows || new Set(),
-    sortOrder: this.props.initialSortOrder || null,
+    sortOrder: this.props.initialSortOrder || undefined,
     shouldScrollToBottom: Boolean(this.props.stickyBottom),
   };
 
@@ -216,11 +217,14 @@ class ManagedTable extends React.Component<
     }
 
     if (this.props.highlightedRows !== nextProps.highlightedRows) {
-      this.setState({highlightedRows: nextProps.highlightedRows});
+      this.setState({highlightedRows: nextProps.highlightedRows || new Set()});
     }
 
     // if columnOrder has changed
-    if (nextProps.columnOrder !== this.props.columnOrder) {
+    if (
+      nextProps.columnOrder !== this.props.columnOrder &&
+      nextProps.columnOrder
+    ) {
       if (this.tableRef && this.tableRef.current) {
         this.tableRef.current.resetAfterIndex(0, true);
       }
@@ -413,7 +417,7 @@ class ManagedTable extends React.Component<
       highlightedRows.add(row.key);
     } else if (e.shiftKey && this.props.multiHighlight) {
       // range select
-      const lastItemKey = Array.from(this.state.highlightedRows).pop();
+      const lastItemKey = Array.from(this.state.highlightedRows).pop()!;
       highlightedRows = new Set([
         ...highlightedRows,
         ...this.selectInRange(lastItemKey, row.key),
@@ -600,12 +604,12 @@ class ManagedTable extends React.Component<
     100,
   );
 
-  getRow = ({index, style}) => {
+  getRow = ({index, style}: {index: number; style: React.CSSProperties}) => {
     const {onAddFilter, multiline, zebra, rows} = this.props;
     const {columnOrder, columnSizes, highlightedRows} = this.state;
     const columnKeys = columnOrder
       .map(k => (k.visible ? k.key : null))
-      .filter(Boolean);
+      .filter(notNull);
 
     return (
       <TableRow

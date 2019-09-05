@@ -31,6 +31,7 @@ import debounceRender from 'react-debounce-render';
 import debounce from 'lodash.debounce';
 import {DEFAULT_ROW_HEIGHT} from './types';
 import textContent from '../../../utils/textContent';
+import {notNull} from '../../../utils/typeUtils';
 
 export type ManagedTableProps_immutable = {
   /**
@@ -174,7 +175,7 @@ class ManagedTable extends React.Component<
         ? globalTableState[this.props.tableKey]
         : this.props.columnSizes || {},
     highlightedRows: this.props.highlightedRows || new Set(),
-    sortOrder: this.props.initialSortOrder || null,
+    sortOrder: this.props.initialSortOrder || undefined,
     shouldScrollToBottom: Boolean(this.props.stickyBottom),
   };
 
@@ -212,11 +213,14 @@ class ManagedTable extends React.Component<
     }
 
     if (this.props.highlightedRows !== nextProps.highlightedRows) {
-      this.setState({highlightedRows: nextProps.highlightedRows});
+      this.setState({highlightedRows: nextProps.highlightedRows || new Set()});
     }
 
     // if columnOrder has changed
-    if (nextProps.columnOrder !== this.props.columnOrder) {
+    if (
+      nextProps.columnOrder !== this.props.columnOrder &&
+      nextProps.columnOrder
+    ) {
       if (this.tableRef && this.tableRef.current) {
         this.tableRef.current.resetAfterIndex(0, true);
       }
@@ -319,7 +323,7 @@ class ManagedTable extends React.Component<
         highlightedRows.clear();
       }
       // $FlowFixMe 0 <= newIndex <= rows.size - 1
-      highlightedRows.add(rows.get(newIndex).key);
+      highlightedRows.add(rows.get(newIndex)!.key);
       this.onRowHighlighted(highlightedRows, () => {
         const {current} = this.tableRef;
         if (current) {
@@ -409,7 +413,7 @@ class ManagedTable extends React.Component<
       highlightedRows.add(row.key);
     } else if (e.shiftKey && this.props.multiHighlight) {
       // range select
-      const lastItemKey = Array.from(this.state.highlightedRows).pop();
+      const lastItemKey = Array.from(this.state.highlightedRows).pop()!;
       highlightedRows = new Set([
         ...highlightedRows,
         ...this.selectInRange(lastItemKey, row.key),
@@ -434,11 +438,11 @@ class ManagedTable extends React.Component<
     let endIndex = -1;
     for (let i = 0; i < this.props.rows.size; i++) {
       // $FlowFixMe 0 <= newIndex <= rows.size - 1
-      if (this.props.rows.get(i).key === fromKey) {
+      if (this.props.rows.get(i)!.key === fromKey) {
         startIndex = i;
       }
       // $FlowFixMe 0 <= newIndex <= rows.size - 1
-      if (this.props.rows.get(i).key === toKey) {
+      if (this.props.rows.get(i)!.key === toKey) {
         endIndex = i;
       }
       if (endIndex > -1 && startIndex > -1) {
@@ -453,7 +457,7 @@ class ManagedTable extends React.Component<
     ) {
       try {
         // $FlowFixMe 0 <= newIndex <= rows.size - 1
-        selected.push(this.props.rows.get(i).key);
+        selected.push(this.props.rows.get(i)!.key);
       } catch (e) {}
     }
 
@@ -472,7 +476,7 @@ class ManagedTable extends React.Component<
     ) {
       current.scrollToItem(index + 1);
       // $FlowFixMe 0 <= newIndex <= rows.size - 1
-      const startKey = this.props.rows.get(dragStartIndex).key;
+      const startKey = this.props.rows.get(dragStartIndex)!.key;
       const highlightedRows = new Set(this.selectInRange(startKey, row.key));
       this.onRowHighlighted(highlightedRows);
     }
@@ -600,16 +604,16 @@ class ManagedTable extends React.Component<
     100,
   );
 
-  getRow = ({index, style}) => {
+  getRow = ({index, style}: {index: number; style: React.CSSProperties}) => {
     const {onAddFilter, multiline, zebra, rows} = this.props;
     const {columnOrder, columnSizes, highlightedRows} = this.state;
     const columnKeys = columnOrder
       .map(k => (k.visible ? k.key : null))
-      .filter(Boolean);
+      .filter(notNull);
 
     const row = rows.get(index);
     if (row == null) {
-      return;
+      return null;
     }
 
     return (
@@ -689,7 +693,7 @@ class ManagedTable extends React.Component<
                   <List
                     itemCount={rows.size}
                     itemSize={index =>
-                      (rows.get(index) && rows.get(index).height) ||
+                      (rows.get(index) && rows.get(index)!.height) ||
                       rowLineHeight ||
                       DEFAULT_ROW_HEIGHT
                     }
