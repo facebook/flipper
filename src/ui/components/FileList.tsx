@@ -83,7 +83,7 @@ export default class FileList extends Component<FileListProps, FileListState> {
   fetchFiles(callback?: Function) {
     const {src} = this.props;
 
-    const setState = data => {
+    const setState = (data: FileListState) => {
       if (!hasChangedDir()) {
         this.setState(data);
       }
@@ -112,14 +112,16 @@ export default class FileList extends Component<FileListProps, FileListState> {
         }
 
         const name = files.shift();
-        this.fetchFile(name)
-          .then(data => {
-            filesSet.set(name, data);
-            next();
-          })
-          .catch(err => {
-            setState({error: err, files: EMPTY_MAP});
-          });
+        if (name) {
+          this.fetchFile(name)
+            .then(data => {
+              filesSet.set(name, data);
+              next();
+            })
+            .catch(err => {
+              setState({error: err, files: EMPTY_MAP});
+            });
+        }
       };
 
       next();
