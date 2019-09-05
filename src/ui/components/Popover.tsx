@@ -33,19 +33,21 @@ const PopoverContainer = styled(FlexColumn)((props: {opts?: Opts}) => ({
   bottom: 0,
   marginTop: 15,
   left: '50%',
-  minWidth: props.opts.minWidth || 'auto',
-  transform: props.opts.skewLeft
-    ? 'translate(calc(-100% + 22px), calc(100% + 15px))'
-    : 'translate(-50%, calc(100% + 15px))',
+  minWidth: (props.opts && props.opts.minWidth) || 'auto',
+  transform:
+    props.opts && props.opts.skewLeft
+      ? 'translate(calc(-100% + 22px), calc(100% + 15px))'
+      : 'translate(-50%, calc(100% + 15px))',
   overflow: 'hidden',
   '&::before': {
     content: '""',
     display: 'block',
     position: 'absolute',
     left: '50%',
-    transform: props.opts.skewLeft
-      ? 'translateX(calc(-100% + 22px))'
-      : 'translateX(-50%)',
+    transform:
+      props.opts && props.opts.skewLeft
+        ? 'translateX(calc(-100% + 22px))'
+        : 'translateX(-50%)',
     height: 13,
     top: -13,
     width: 26,
@@ -72,7 +74,7 @@ export default class Popover extends PureComponent<Props> {
     window.document.addEventListener('keydown', this.handleKeydown);
   }
 
-  handleClick = (e: KeyboardEvent) => {
+  handleClick = (e: MouseEvent) => {
     if (this._ref && !this._ref.contains(e.target as Node)) {
       this.props.onDismiss();
     }
