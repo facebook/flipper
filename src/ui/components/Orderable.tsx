@@ -85,14 +85,14 @@ export default class Orderable extends React.Component<
     this.setProps(props);
   }
 
-  _mousemove: (this: GlobalEventHandlers, ev: MouseEvent) => any | undefined;
-  _mouseup: (this: GlobalEventHandlers, ev: MouseEvent) => any | undefined;
+  _mousemove: ((this: GlobalEventHandlers, ev: MouseEvent) => any) | undefined;
+  _mouseup: ((this: GlobalEventHandlers, ev: MouseEvent) => any) | undefined;
   timer: any;
 
-  sizeKey: 'width' | 'height';
-  offsetKey: 'left' | 'top';
-  mouseKey: 'offsetX' | 'offsetY';
-  screenKey: 'screenX' | 'screenY';
+  sizeKey: 'width' | 'height' = 'width';
+  offsetKey: 'left' | 'top' = 'left';
+  mouseKey: 'offsetX' | 'offsetY' = 'offsetX';
+  screenKey: 'screenX' | 'screenY' = 'screenX';
 
   containerRef: HTMLElement | undefined;
   tabRefs: {
@@ -159,7 +159,6 @@ export default class Orderable extends React.Component<
   };
 
   _startMove(activeKey: string, event: React.MouseEvent) {
-    // $FlowFixMe
     const clickOffset = event.nativeEvent[this.mouseKey];
 
     // calculate offsets before we start moving element
