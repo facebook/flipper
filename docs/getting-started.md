@@ -270,7 +270,7 @@ AppDelegate.
   [client addPlugin: [[FlipperKitLayoutPlugin alloc] initWithRootNode: application
                                                  withDescriptorMapper: layoutDescriptorMapper]];
 
-  [client addPlugin:[[FKUserDefaultsPlugin alloc] initWithSuiteName:nil]];  [client start];
+  [client addPlugin:[[FKUserDefaultsPlugin alloc] initWithSuiteName:nil]];
   [client addPlugin: [[FlipperKitNetworkPlugin alloc] initWithNetworkAdapter:[SKIOSNetworkAdapter new]]];
   [client start];
   ...
