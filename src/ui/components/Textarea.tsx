@@ -9,7 +9,7 @@ import styled from 'react-emotion';
 import {inputStyle} from './Input';
 
 export default styled('textarea')(({compact}: {compact?: boolean}) => ({
-  ...inputStyle(compact),
+  ...inputStyle(compact || false),
   lineHeight: 'normal',
   padding: compact ? '5px' : '8px',
   resize: 'none',
