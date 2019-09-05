@@ -31,7 +31,7 @@ import {
   convertRequestToCurlCommand,
   getHeaderValue,
   decodeBody,
-} from './utils.js';
+} from './utils.tsx';
 import RequestDetails from './RequestDetails.js';
 import {clipboard} from 'electron';
 import {URL} from 'url';

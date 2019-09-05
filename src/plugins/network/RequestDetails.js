@@ -24,7 +24,7 @@ import {
   styled,
   colors,
 } from 'flipper';
-import {decodeBody, getHeaderValue} from './utils.js';
+import {decodeBody, getHeaderValue} from './utils.tsx';
 import {formatBytes} from './index.js';
 
 import querystring from 'querystring';
