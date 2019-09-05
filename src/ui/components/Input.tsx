@@ -25,7 +25,7 @@ export const inputStyle = (compact: boolean) => ({
 });
 
 const Input = styled('input')(({compact}: {compact?: boolean}) => ({
-  ...inputStyle(compact),
+  ...inputStyle(compact || false),
   padding: compact ? '0 5px' : '0 10px',
 }));
 
