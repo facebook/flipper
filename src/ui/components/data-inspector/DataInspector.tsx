@@ -6,6 +6,7 @@
  */
 
 import DataDescription from './DataDescription';
+import {MenuTemplate} from '../ContextMenu';
 import {Component} from 'react';
 import ContextMenu from '../ContextMenu';
 import Tooltip from '../Tooltip';
@@ -143,7 +144,7 @@ type DataInspectorProps = {
   /**
    * Object of properties that will have tooltips
    */
-  tooltips?: Object;
+  tooltips?: any;
 };
 
 const defaultValueExtractor: DataValueExtractor = (value: any) => {
@@ -314,7 +315,7 @@ export default class DataInspector extends Component<DataInspectorProps> {
     ancestry: [],
   };
 
-  interaction: (name: string) => void;
+  interaction: (name: string, data?: any) => void;
 
   constructor(props: DataInspectorProps) {
     super(props);
@@ -601,7 +602,7 @@ export default class DataInspector extends Component<DataInspectorProps> {
       }
     }
 
-    const contextMenuItems = [];
+    const contextMenuItems: MenuTemplate = [];
 
     if (isExpandable) {
       contextMenuItems.push(
@@ -618,7 +619,8 @@ export default class DataInspector extends Component<DataInspectorProps> {
     contextMenuItems.push(
       {
         label: 'Copy',
-        click: () => clipboard.writeText(window.getSelection().toString()),
+        click: () =>
+          clipboard.writeText((window.getSelection() || '').toString()),
       },
       {
         label: 'Copy value',
@@ -633,7 +635,8 @@ export default class DataInspector extends Component<DataInspectorProps> {
           Boolean(this.props.setValue) === true && Boolean(setValue) === false
         }>
         <ContextMenu component="span" items={contextMenuItems}>
-          <PropertyContainer onClick={isExpandable ? this.handleClick : null}>
+          <PropertyContainer
+            onClick={isExpandable ? this.handleClick : undefined}>
             {expandedPaths && <ExpandControl>{expandGlyph}</ExpandControl>}
             {descriptionOrPreview}
             {wrapperStart}
