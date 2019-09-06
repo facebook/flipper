@@ -136,6 +136,8 @@ export default class CertificateProvider {
       return this.getTargetAndroidDeviceId(appName, appDirectory, csr);
     } else if (os === 'iOS') {
       return this.getTargetiOSDeviceId(appName, appDirectory, csr);
+    } else if (os == 'MacOS') {
+      return Promise.resolve('');
     }
     return Promise.resolve('unknown');
   }
