@@ -13,6 +13,7 @@
 #import <FlipperKitLayoutComponentKitSupport/FlipperKitLayoutComponentKitSupport.h>
 #import <FlipperKitExamplePlugin/FlipperKitExamplePlugin.h>
 #import <SKIOSNetworkPlugin/SKIOSNetworkAdapter.h>
+#import <FlipperKitReactPlugin/FlipperKitReactPlugin.h>
 #import <FlipperKitUserDefaultsPlugin/FKUserDefaultsPlugin.h>
 
 #import "MainViewController.h"
@@ -40,6 +41,7 @@
 
   [[FlipperClient sharedClient] addPlugin: [[FlipperKitNetworkPlugin alloc] initWithNetworkAdapter:[SKIOSNetworkAdapter new]]];
   [client addPlugin:[FlipperKitExamplePlugin sharedInstance]];
+  [client addPlugin:[FlipperKitReactPlugin new]];
   [client start];
 
   UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"MainStoryBoard" bundle:nil];

@@ -9,6 +9,7 @@ target 'Sample' do
   pod 'FlipperKit/SKIOSNetworkPlugin', :path => '../../FlipperKit.podspec'
   pod 'FlipperKit/FlipperKitUserDefaultsPlugin', :path => '../../FlipperKit.podspec'
   pod 'FlipperKit/FlipperKitExamplePlugin', :path => '../../FlipperKit.podspec'
+  pod 'FlipperKit/FlipperKitReactPlugin', :path => '../../FlipperKit.podspec'
   pod 'Flipper', :path => '../../Flipper.podspec'
 
   # If you use `use_frameworks!` in your Podfile,

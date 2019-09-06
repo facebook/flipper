@@ -12,8 +12,6 @@
 #import <FlipperKit/FlipperConnection.h>
 #import <FlipperKit/FlipperResponder.h>
 
-#import "Plugins.h"
-
 @implementation FlipperKitReactPlugin
 
 - (NSString*)identifier {
@@ -31,10 +29,5 @@
 }
 
 @end
-
-void FlipperKitReactPluginInit(FlipperClient *client)
-{
-  [client addPlugin:[FlipperKitReactPlugin new]];
-}
 
 #endif
