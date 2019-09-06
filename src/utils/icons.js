@@ -34,8 +34,8 @@ module.exports = {
     'triangle-right': [12],
     'chevron-right': [8],
     'chevron-down': [8],
-    star: [16],
-    'star-outline': [16],
+    star: [16, 24],
+    'star-outline': [16, 24],
   },
 
   // $FlowFixMe: not using flow in this file

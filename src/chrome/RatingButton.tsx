@@ -6,7 +6,16 @@
  */
 
 import React, {Component, ReactElement} from 'react';
-import {Glyph, Popover, FlexColumn, FlexRow, Button, Checkbox} from 'flipper';
+import {
+  Glyph,
+  Popover,
+  FlexColumn,
+  FlexRow,
+  Button,
+  Checkbox,
+  styled,
+  Input,
+} from 'flipper';
 import GK from '../fb-stubs/GK';
 import * as UserFeedback from '../fb-stubs/UserFeedback';
 import {FeedbackPrompt} from '../fb-stubs/UserFeedback';
@@ -36,6 +45,14 @@ class PredefinedComment extends Component<{
   }
 }
 
+const Row = styled(FlexRow)({
+  marginTop: 5,
+  marginBottom: 5,
+  justifyContent: 'center',
+  textAlign: 'center',
+  color: '#9a9a9a',
+});
+
 class FeedbackComponent extends Component<
   {
     submitRating: (rating: number) => void;
@@ -54,6 +71,7 @@ class FeedbackComponent extends Component<
     allowUserInfoSharing: boolean;
     nextAction: NextAction;
     predefinedComments: {[key: string]: boolean};
+    comment: string;
   }
 > {
   state = {
@@ -65,6 +83,7 @@ class FeedbackComponent extends Component<
       (acc, cv) => ({...acc, [cv]: false}),
       {},
     ),
+    comment: '',
   };
   onSubmitRating(newRating: number) {
     const nextAction = newRating <= 2 ? 'leave-comment' : 'finished';
@@ -116,15 +135,15 @@ class FeedbackComponent extends Component<
             this.onSubmitRating(index + 1);
           }}>
           <Glyph
-            name="star"
-            color="grey"
-            variant={
+            name={
               (this.state.hoveredRating
               ? index < this.state.hoveredRating
               : index < (this.state.rating || 0))
-                ? 'filled'
-                : 'outline'
+                ? 'star'
+                : 'star-outline'
             }
+            color="grey"
+            size={24}
           />
         </div>
       ));
@@ -132,8 +151,8 @@ class FeedbackComponent extends Component<
     switch (this.state.nextAction) {
       case 'select-rating':
         body = [
-          <FlexRow>{this.props.promptData.bodyText}</FlexRow>,
-          <FlexRow>{stars}</FlexRow>,
+          <Row>{this.props.promptData.bodyText}</Row>,
+          <Row style={{margin: 'auto'}}>{stars}</Row>,
         ];
         break;
       case 'leave-comment':
@@ -154,18 +173,27 @@ class FeedbackComponent extends Component<
           />
         ));
         body = [
-          <FlexRow>{predefinedComments}</FlexRow>,
-          <FlexRow>{this.props.promptData.commentPlaceholder}</FlexRow>,
-          <FlexRow>
+          <Row>{predefinedComments}</Row>,
+          <Row>
+            <Input
+              style={{height: 30, width: '100%'}}
+              placeholder={this.props.promptData.commentPlaceholder}
+              value={this.state.comment}
+              onChange={e => this.setState({comment: e.target.value})}
+            />
+          </Row>,
+          <Row>
             <Checkbox
               checked={this.state.allowUserInfoSharing}
               onChange={this.onAllowUserSharingChanged.bind(this)}
             />
             {'Tool owner can contact me '}
-            <Button onClick={() => this.onCommentSubmitted('some comment')}>
+          </Row>,
+          <Row>
+            <Button onClick={() => this.onCommentSubmitted(this.state.comment)}>
               Submit
             </Button>
-          </FlexRow>,
+          </Row>,
         ];
         break;
       case 'finished':
@@ -177,12 +205,19 @@ class FeedbackComponent extends Component<
       }
     }
     return (
-      <FlexColumn>
-        <FlexRow>
+      <FlexColumn
+        style={{
+          width: 400,
+          paddingLeft: 20,
+          paddingRight: 20,
+          paddingTop: 10,
+          paddingBottom: 10,
+        }}>
+        <Row style={{color: 'black', fontSize: 20}}>
           {this.state.nextAction === 'finished'
             ? this.props.promptData.postSubmitHeading
             : this.props.promptData.preSubmitHeading}
-        </FlexRow>
+        </Row>
         {body}
       </FlexColumn>
     );
@@ -232,32 +267,31 @@ export default class RatingButton extends Component<Props, State> {
     if (!promptData) {
       return null;
     }
-    const stars = (
-      <div onClick={this.onClick.bind(this)}>
-        <Glyph
-          name="star"
-          color="grey"
-          variant={this.state.isShown ? 'filled' : 'outline'}
-        />
+    return (
+      <div style={{position: 'relative'}}>
+        <div onClick={this.onClick.bind(this)}>
+          <Glyph
+            name="star"
+            color="grey"
+            variant={this.state.isShown ? 'filled' : 'outline'}
+          />
+        </div>
+        {this.state.isShown ? (
+          <Popover
+            onDismiss={() => {}}
+            children={
+              <FeedbackComponent
+                submitRating={this.submitRating.bind(this)}
+                submitComment={this.submitComment.bind(this)}
+                close={() => {
+                  this.setState({isShown: false});
+                }}
+                promptData={promptData}
+              />
+            }
+          />
+        ) : null}
       </div>
     );
-    return [
-      stars,
-      this.state.isShown ? (
-        <Popover
-          onDismiss={() => {}}
-          children={
-            <FeedbackComponent
-              submitRating={this.submitRating.bind(this)}
-              submitComment={this.submitComment.bind(this)}
-              close={() => {
-                this.setState({isShown: false});
-              }}
-              promptData={promptData}
-            />
-          }
-        />
-      ) : null,
-    ];
   }
 }
