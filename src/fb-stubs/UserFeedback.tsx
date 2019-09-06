@@ -10,6 +10,8 @@ export type FeedbackPrompt = {
   postSubmitHeading: string;
   commentPlaceholder: string;
   bodyText: string;
+  predefinedComments: Array<string>;
+  shouldPopup: boolean;
 };
 
 export async function submitRating(rating: number): Promise<void> {
@@ -24,8 +26,5 @@ export async function submitComment(
   throw new Error('Method not implemented.');
 }
 export async function getPrompt(): Promise<FeedbackPrompt> {
-  throw new Error('Method not implemented.');
-}
-export async function shouldShowPrompt(): Promise<boolean> {
   throw new Error('Method not implemented.');
 }

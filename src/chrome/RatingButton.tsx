@@ -9,16 +9,32 @@ import React, {Component, ReactElement} from 'react';
 import {Glyph, Popover, FlexColumn, FlexRow, Button, Checkbox} from 'flipper';
 import GK from '../fb-stubs/GK';
 import * as UserFeedback from '../fb-stubs/UserFeedback';
+import {FeedbackPrompt} from '../fb-stubs/UserFeedback';
 
 type Props = {
   onRatingChanged: (rating: number) => void;
 };
 
 type State = {
+  promptData: FeedbackPrompt | null;
   isShown: boolean;
 };
 
 type NextAction = 'select-rating' | 'leave-comment' | 'finished';
+
+class PredefinedComment extends Component<{
+  comment: string;
+  selected: boolean;
+  onClick: (_: unknown) => unknown;
+}> {
+  render() {
+    return (
+      <div onClick={this.props.onClick}>
+        {this.props.comment + (this.props.selected ? ' - Y' : ' - N')}
+      </div>
+    );
+  }
+}
 
 class FeedbackComponent extends Component<
   {
@@ -30,6 +46,7 @@ class FeedbackComponent extends Component<
       allowUserInfoSharing: boolean,
     ) => void;
     close(): void;
+    promptData: FeedbackPrompt;
   },
   {
     rating: number | null;
@@ -44,7 +61,10 @@ class FeedbackComponent extends Component<
     hoveredRating: 0,
     allowUserInfoSharing: true,
     nextAction: 'select-rating' as NextAction,
-    predefinedComments: {'Too slow': false, Rubbish: false},
+    predefinedComments: this.props.promptData.predefinedComments.reduce(
+      (acc, cv) => ({...acc, [cv]: false}),
+      {},
+    ),
   };
   onSubmitRating(newRating: number) {
     const nextAction = newRating <= 2 ? 'leave-comment' : 'finished';
@@ -112,22 +132,36 @@ class FeedbackComponent extends Component<
     switch (this.state.nextAction) {
       case 'select-rating':
         body = [
-          <FlexRow>
-            How would you rate your overall satisfaction with Flipper?
-          </FlexRow>,
+          <FlexRow>{this.props.promptData.bodyText}</FlexRow>,
           <FlexRow>{stars}</FlexRow>,
         ];
         break;
       case 'leave-comment':
+        const predefinedComments = Object.entries(
+          this.state.predefinedComments,
+        ).map((c: [string, unknown]) => (
+          <PredefinedComment
+            comment={c[0]}
+            selected={Boolean(c[1])}
+            onClick={() =>
+              this.setState({
+                predefinedComments: {
+                  ...this.state.predefinedComments,
+                  [c[0]]: !c[1],
+                },
+              })
+            }
+          />
+        ));
         body = [
-          <FlexRow>Predefined comment buttons here...</FlexRow>,
-          <FlexRow>Comment input box here...</FlexRow>,
+          <FlexRow>{predefinedComments}</FlexRow>,
+          <FlexRow>{this.props.promptData.commentPlaceholder}</FlexRow>,
           <FlexRow>
             <Checkbox
               checked={this.state.allowUserInfoSharing}
               onChange={this.onAllowUserSharingChanged.bind(this)}
             />
-            Can contact me.{' '}
+            {'Tool owner can contact me '}
             <Button onClick={() => this.onCommentSubmitted('some comment')}>
               Submit
             </Button>
@@ -146,8 +180,8 @@ class FeedbackComponent extends Component<
       <FlexColumn>
         <FlexRow>
           {this.state.nextAction === 'finished'
-            ? 'Feedback Received'
-            : "We'd love your feedback"}
+            ? this.props.promptData.postSubmitHeading
+            : this.props.promptData.preSubmitHeading}
         </FlexRow>
         {body}
       </FlexColumn>
@@ -157,8 +191,16 @@ class FeedbackComponent extends Component<
 
 export default class RatingButton extends Component<Props, State> {
   state = {
+    promptData: null,
     isShown: false,
   };
+
+  constructor(props: Props) {
+    super(props);
+    UserFeedback.getPrompt().then(prompt =>
+      this.setState({promptData: prompt}),
+    );
+  }
 
   onClick() {
     this.setState({isShown: !this.state.isShown});
@@ -186,6 +228,10 @@ export default class RatingButton extends Component<Props, State> {
     if (!GK.get('flipper_rating')) {
       return null;
     }
+    const promptData = this.state.promptData;
+    if (!promptData) {
+      return null;
+    }
     const stars = (
       <div onClick={this.onClick.bind(this)}>
         <Glyph
@@ -207,6 +253,7 @@ export default class RatingButton extends Component<Props, State> {
               close={() => {
                 this.setState({isShown: false});
               }}
+              promptData={promptData}
             />
           }
         />
