@@ -161,10 +161,7 @@ class TitleBar extends React.Component<Props, StateFromProps> {
         )}
         <Spacer />
         {config.showFlipperRating ? (
-          <RatingButton
-            rating={this.props.flipperRating}
-            onRatingChanged={this.props.setFlipperRating}
-          />
+          <RatingButton onRatingChanged={this.props.setFlipperRating} />
         ) : null}
         <Version>{this.props.version + (isProduction() ? '' : '-dev')}</Version>
 
