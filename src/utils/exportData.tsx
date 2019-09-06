@@ -521,6 +521,9 @@ export function showOpenDialog(store: Store) {
   remote.dialog.showOpenDialog(
     {
       properties: ['openFile'],
+      filters: [
+        {extensions: ['flipper', 'json', 'txt'], name: 'Flipper files'},
+      ],
     },
     (files: Array<string>) => {
       if (files !== undefined && files.length > 0) {

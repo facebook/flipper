@@ -209,7 +209,7 @@ function getTemplate(
       label: 'File',
       submenu: [
         {
-          label: 'Open File...',
+          label: 'Import Flipper File...',
           accelerator: 'CommandOrControl+O',
           click: function() {
             showOpenDialog(store);
