@@ -51,10 +51,11 @@ export type DeviceExport = {
 export type OS = 'iOS' | 'Android' | 'Windows' | 'MacOS';
 
 export default class BaseDevice {
-  constructor(serial: string, deviceType: DeviceType, title: string) {
+  constructor(serial: string, deviceType: DeviceType, title: string, os: OS) {
     this.serial = serial;
     this.title = title;
     this.deviceType = deviceType;
+    this.os = os;
   }
 
   // operating system of this device

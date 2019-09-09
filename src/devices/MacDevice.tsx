@@ -9,8 +9,7 @@ import BaseDevice from './BaseDevice';
 
 export default class MacDevice extends BaseDevice {
   constructor() {
-    super('', 'physical', 'Mac');
-    this.os = 'MacOS';
+    super('', 'physical', 'Mac', 'MacOS');
   }
 
   teardown() {}

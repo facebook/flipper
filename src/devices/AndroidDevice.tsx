@@ -21,9 +21,8 @@ export default class AndroidDevice extends BaseDevice {
     title: string,
     adb: ADBClient,
   ) {
-    super(serial, deviceType, title);
+    super(serial, deviceType, title, 'Android');
     this.adb = adb;
-    this.os = 'Android';
     this.icon = 'icons/android.svg';
     this.adb.openLogcat(this.serial).then(reader => {
       reader.on('entry', entry => {

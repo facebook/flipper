@@ -20,7 +20,7 @@ test('REGISTER_DEVICE doesnt remove error', () => {
 
   const endState = reducer(initialState, {
     type: 'REGISTER_DEVICE',
-    payload: new BaseDevice('serial', 'physical', 'title'),
+    payload: new BaseDevice('serial', 'physical', 'title', 'Android'),
   });
 
   expect(endState.error).toEqual('something went wrong');

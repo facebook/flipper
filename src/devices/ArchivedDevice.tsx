@@ -22,8 +22,7 @@ export default class ArchivedDevice extends BaseDevice {
     } else if (archivedDeviceType === 'physical') {
       archivedDeviceType = 'archivedPhysical';
     }
-    super(serial, archivedDeviceType, title);
-    this.os = os;
+    super(serial, archivedDeviceType, title, os);
     this.logs = logEntries;
   }
 
