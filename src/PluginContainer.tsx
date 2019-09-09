@@ -48,24 +48,21 @@ type OwnProps = {
 
 type StateFromProps = {
   pluginState: Object;
-  activePlugin: typeof FlipperPlugin | typeof FlipperDevicePlugin;
+  activePlugin: typeof FlipperPlugin | typeof FlipperDevicePlugin | null;
   target: Client | BaseDevice | null;
-  pluginKey: string | null | undefined;
-  deepLinkPayload: string | null | undefined;
-  selectedApp: string | null | undefined;
+  pluginKey: string | null;
+  deepLinkPayload: string | null;
+  selectedApp: string | null;
   isArchivedDevice: boolean;
 };
 
 type DispatchFromProps = {
   selectPlugin: (payload: {
-    selectedPlugin: string | null | undefined;
-    selectedApp?: string | null | undefined;
-    deepLinkPayload: string | null | undefined;
+    selectedPlugin: string | null;
+    selectedApp?: string | null;
+    deepLinkPayload: string | null;
   }) => any;
-  setPluginState: (payload: {
-    pluginKey: string;
-    state: Partial<Object>;
-  }) => void;
+  setPluginState: (payload: {pluginKey: string; state: Object}) => void;
 };
 
 type Props = StateFromProps & DispatchFromProps & OwnProps;
@@ -136,13 +133,10 @@ class PluginContainer extends PureComponent<Props> {
             ...pluginState,
           }
         : pluginState,
-      setPersistedState: state => setPluginState({pluginKey, state}),
+      setPersistedState: _state => setPluginState({pluginKey, state: Object}),
       target,
       deepLinkPayload: this.props.deepLinkPayload,
-      selectPlugin: (
-        pluginID: string,
-        deepLinkPayload: string | null | undefined,
-      ) => {
+      selectPlugin: (pluginID: string, deepLinkPayload: string | null) => {
         const {target} = this.props;
         // check if plugin will be available
         if (
@@ -199,14 +193,15 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
       if (selectedPlugin === NotificationsHub.id) {
         activePlugin = NotificationsHub;
       } else if (selectedPlugin) {
-        activePlugin = devicePlugins.get(selectedPlugin);
+        activePlugin = devicePlugins.get(selectedPlugin) || null;
       }
       target = selectedDevice;
-      if (activePlugin) {
+      if (selectedDevice && activePlugin) {
         pluginKey = getPluginKey(selectedDevice.serial, activePlugin.id);
       } else {
-        target = clients.find((client: Client) => client.id === selectedApp);
-        activePlugin = clientPlugins.get(selectedPlugin);
+        target =
+          clients.find((client: Client) => client.id === selectedApp) || null;
+        activePlugin = clientPlugins.get(selectedPlugin) || null;
         if (activePlugin && target) {
           pluginKey = getPluginKey(target.id, activePlugin.id);
         }
@@ -216,15 +211,16 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
       ? false
       : selectedDevice instanceof ArchivedDevice;
 
-    return {
-      pluginState: pluginStates[pluginKey],
-      activePlugin,
+    const s: StateFromProps = {
+      pluginState: pluginStates[pluginKey as string],
+      activePlugin: activePlugin,
       target,
       deepLinkPayload,
       pluginKey,
       isArchivedDevice,
       selectedApp,
     };
+    return s;
   },
   {
     setPluginState,
