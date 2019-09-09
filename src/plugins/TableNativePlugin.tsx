@@ -140,20 +140,23 @@ function buildRow(
   }
   const oldColumns =
     previousRowData && previousRowData.columns
-      ? Object.keys(previousRowData.columns).reduce((map, key) => {
-          if (key !== 'id') {
-            let value = null;
-            if (previousRowData && previousRowData.columns) {
-              value = previousRowData.columns[key].value;
-            }
+      ? Object.keys(previousRowData.columns).reduce(
+          (map: {[key: string]: {value: any; isFilterable: boolean}}, key) => {
+            if (key !== 'id') {
+              let value = null;
+              if (previousRowData && previousRowData.columns) {
+                value = previousRowData.columns[key].value;
+              }
 
-            map[key] = {
-              value,
-              isFilterable: true,
-            };
-          }
-          return map;
-        }, {})
+              map[key] = {
+                value,
+                isFilterable: true,
+              };
+            }
+            return map;
+          },
+          {},
+        )
       : {};
   const columns = Object.keys(rowData.columns).reduce((map, key) => {
     if (rowData.columns && key !== 'id') {
@@ -186,10 +189,13 @@ function renderToolbar(section: ToolbarSection) {
         return [
           <Label>{item.label}</Label>,
           <Select
-            options={item.options.reduce((obj, item) => {
-              obj[item] = item;
-              return obj;
-            }, {})}
+            options={item.options.reduce(
+              (obj: {[key: string]: string}, item) => {
+                obj[item] = item;
+                return obj;
+              },
+              {},
+            )}
             selected={item.value}
             onChange={() => {}}
           />,
@@ -259,7 +265,7 @@ export default function createTableNativePlugin(id: string, title: string) {
     ): Partial<PersistedState> => {
       if (message.method === 'updateRows') {
         const newRows = [];
-        const newData = {};
+        const newData: {[key: string]: NumberedRowData} = {};
 
         for (const rowData of message.data.reverse()) {
           if (rowData.id == null) {
@@ -312,14 +318,14 @@ export default function createTableNativePlugin(id: string, title: string) {
         method === 'updateRows'
           ? {
               method,
-              data,
+              data: data || [],
             }
           : {method};
       return this.typedPersistedStateReducer(persistedState, message);
     }
 
     state = {
-      selectedIds: [],
+      selectedIds: [] as Array<ID>,
       error: null,
     };
 
@@ -366,7 +372,7 @@ export default function createTableNativePlugin(id: string, title: string) {
         return;
       }
       let paste = '';
-      const mapFn = row =>
+      const mapFn = (row: TableBodyRow) =>
         (
           (this.props.persistedState.tableMetadata &&
             Object.keys(this.props.persistedState.tableMetadata.columns)) ||

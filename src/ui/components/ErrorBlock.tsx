@@ -23,7 +23,7 @@ export const ErrorBlockContainer = styled(CodeBlock)({
  */
 export default class ErrorBlock extends React.Component<{
   /** Error message to display. Error object's `stack` or `message` property is used. */
-  error: Error | string | void;
+  error: Error | string | null;
   /** Additional className added to the container. */
   className?: string;
 }> {
