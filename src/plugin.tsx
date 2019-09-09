@@ -116,19 +116,12 @@ export abstract class FlipperBasePlugin<
         ) => void,
       ) => void)
     | null;
-  // forbid instance properties that should be static
-  title: never;
-  id: never;
-  persist: never;
-  icon: never;
-  keyboardActions: never;
-  screenshot: never;
 
   reducers: {
     [actionName: string]: (state: State, actionData: any) => Partial<State>;
   } = {};
   app: App;
-  onKeyboardAction: ((action: string) => void) | null;
+  onKeyboardAction: ((action: string) => void) | undefined;
 
   toJSON() {
     return `<${this.constructor.name}#${this.constructor.id}>`;
@@ -172,7 +165,7 @@ export abstract class FlipperBasePlugin<
     }
 
     if (typeof action === 'function') {
-      this.setState(action.call(this, this.state, actionData));
+      this.setState(action.call(this, this.state, actionData) as State);
     } else {
       // $FlowFixMe
       throw new TypeError(`Reducer ${actionData.type} isn't a function`);
@@ -217,6 +210,7 @@ export class FlipperPlugin<
   ['constructor']: typeof FlipperPlugin;
   constructor(props: Props<P>) {
     super(props);
+    // @ts-ignore constructor should be assigned already
     const {id} = this.constructor;
     this.subscriptions = [];
     // @ts-ignore props.target will be instance of Client
