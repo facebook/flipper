@@ -72,7 +72,7 @@ export default class SeaMammals extends FlipperPlugin<
   });
 
   state = {
-    selectedID: null,
+    selectedID: null as string | null,
   };
 
   render() {
@@ -90,8 +90,7 @@ export default class SeaMammals extends FlipperPlugin<
           />
         ))}
         <DetailSidebar>
-          {typeof selectedID === 'string' &&
-            renderSidebar(persistedState[selectedID])}
+          {selectedID && renderSidebar(persistedState[selectedID])}
         </DetailSidebar>
       </SeaMammals.Container>
     );
