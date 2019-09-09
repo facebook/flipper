@@ -4,9 +4,9 @@
  * LICENSE file in the root directory of this source tree.
  * @format
  */
-import {promisify} from 'util';
 import {DeviceType} from '../devices/BaseDevice';
-const exec = promisify(require('child_process').exec);
+import promisify_child_process from 'promisify-child-process';
+import {notNull} from '../utils/typeUtils';
 
 const errorMessage = 'Physical iOS devices not yet supported';
 
@@ -20,38 +20,40 @@ function isAvailable(): boolean {
   return false;
 }
 
-function targets(): Promise<Array<DeviceTarget>> {
-  return exec('instruments -s devices').then(({stdout}) =>
-    stdout
-      .toString()
-      .split('\n')
-      .map(line => line.trim())
-      .map(line => /(.+) \([^(]+\) \[(.*)\]( \(Simulator\))?/.exec(line))
-      .filter(Boolean)
-      .filter(
-        ([match, name, udid, isSim]) =>
-          !isSim && (name.includes('iPhone') || name.includes('iPad')),
-      )
-      .map(([match, name, udid]) => {
-        return {udid: udid, type: 'physical', name: name};
-      }),
-  );
+async function targets(): Promise<Array<DeviceTarget>> {
+  const {stdout} = await promisify_child_process.exec('instruments -s devices');
+  if (!stdout) {
+    return [];
+  }
+  return stdout
+    .toString()
+    .split('\n')
+    .map(line => line.trim())
+    .map(line => /(.+) \([^(]+\) \[(.*)\]( \(Simulator\))?/.exec(line))
+    .filter(notNull)
+    .filter(
+      ([_match, name, _udid, isSim]) =>
+        !isSim && (name.includes('iPhone') || name.includes('iPad')),
+    )
+    .map(([_match, name, udid]) => {
+      return {udid: udid, type: 'physical', name: name};
+    });
 }
 
 function push(
-  udid: string,
-  src: string,
-  bundleId: string,
-  dst: string,
+  _udid: string,
+  _src: string,
+  _bundleId: string,
+  _dst: string,
 ): Promise<void> {
   return Promise.reject(errorMessage);
 }
 
 function pull(
-  udid: string,
-  src: string,
-  bundleId: string,
-  dst: string,
+  _udid: string,
+  _src: string,
+  _bundleId: string,
+  _dst: string,
 ): Promise<void> {
   return Promise.reject(errorMessage);
 }
