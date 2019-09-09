@@ -107,7 +107,13 @@ export default (store: Store, logger: Logger) => {
         const split = key.split('#');
         const pluginId = split.pop();
         const client = split.join('#');
+
+        if (!pluginId) {
+          return;
+        }
+
         const persistingPlugin:
+          | undefined
           | typeof FlipperPlugin
           | typeof FlipperDevicePlugin = pluginMap.get(pluginId);
         if (persistingPlugin && persistingPlugin.getActiveNotifications) {
