@@ -87,7 +87,7 @@ const runHeadless = memoize(
   },
 );
 
-function getPluginState(app: string, plugin: string): Promise<Object> {
+function getPluginState(app: string, plugin: string): Promise<string> {
   return runHeadless(basicArgs).then(result => {
     const pluginStates = result.output.store.pluginStates;
     for (const pluginId of Object.keys(pluginStates)) {
@@ -225,7 +225,8 @@ test('test layout snapshot stripping', () => {
 });
 
 test('Sample app layout hierarchy matches snapshot', () => {
-  return getPluginState('Flipper', 'Inspector').then(state => {
+  return getPluginState('Flipper', 'Inspector').then(result => {
+    const state = JSON.parse(result);
     expect(state.rootAXElement).toBe('com.facebook.flipper.sample');
     expect(state.rootElement).toBe('com.facebook.flipper.sample');
     const canonicalizedElements = Object.values(state.elements)

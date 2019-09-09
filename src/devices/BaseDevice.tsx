@@ -41,7 +41,7 @@ export type DeviceType =
   | 'archivedPhysical';
 
 export type DeviceExport = {
-  os: string;
+  os: OS;
   title: string;
   deviceType: DeviceType;
   serial: string;

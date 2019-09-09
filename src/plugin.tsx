@@ -13,7 +13,8 @@ import {Store, MiddlewareAPI} from './reducers/index';
 import {MetricType} from './utils/exportMetrics';
 import {ReactNode, Component} from 'react';
 import BaseDevice from './devices/BaseDevice';
-
+import {serialize, deserialize} from './utils/serialization';
+import {Idler} from './utils/Idler';
 type Parameters = any;
 
 // This function is intended to be called from outside of the plugin.
@@ -135,6 +136,22 @@ export abstract class FlipperBasePlugin<
 
   // methods to be overriden by plugins
   init(): void {}
+  static serializePersistedState: (
+    persistedState: StaticPersistedState,
+    statusUpdate?: (msg: string) => void,
+    idler?: Idler,
+  ) => Promise<string> = (
+    persistedState: StaticPersistedState,
+    statusUpdate?: (msg: string) => void,
+    idler?: Idler,
+  ) => {
+    return serialize(persistedState, idler, statusUpdate);
+  };
+  static deserializePersistedState: (
+    serializedString: string,
+  ) => StaticPersistedState = (serializedString: string) => {
+    return deserialize(serializedString);
+  };
   teardown(): void {}
   computeNotifications(
     _props: Props<PersistedState>,

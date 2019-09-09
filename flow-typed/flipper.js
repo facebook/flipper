@@ -94,6 +94,14 @@ declare module 'flipper' {
       persistedState: ?PersistedState,
       store: ?MiddlewareAPI,
     ) => Promise<?PersistedState>;
+    static serializePersistedState: (
+      persistedState: PersistedState,
+      statusUpdate?: (msg: string) => void,
+      idler?: Idler,
+    ) => Promise<string>;
+    static deserializePersistedState: (
+      serializedString: string,
+    ) => PersistedState;
     static getActiveNotifications: ?(
       persistedState: PersistedState,
     ) => Array<Notification>;

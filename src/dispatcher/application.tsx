@@ -51,14 +51,14 @@ export default (store: Store, logger: Logger) => {
     });
   });
 
-  ipcRenderer.on('flipper-protocol-handler', (event, url) => {
-    if (url.startsWith('flipper://import')) {
-      const {search} = new URL(url);
-      const download = qs.parse(search) ? qs.parse(search) : undefined;
+  ipcRenderer.on('flipper-protocol-handler', (event, query: string) => {
+    if (query.startsWith('flipper://import')) {
+      const {search} = new URL(query);
+      const {url} = qs.parse(search);
       store.dispatch(toggleAction('downloadingImportData', true));
       return (
-        download &&
-        fetch(String(download))
+        typeof url === 'string' &&
+        fetch(url)
           .then(res => res.text())
           .then(data => importDataToStore(data, store))
           .then(() => {
@@ -70,7 +70,7 @@ export default (store: Store, logger: Logger) => {
           })
       );
     }
-    const match = uriComponents(url);
+    const match = uriComponents(query);
     if (match.length > 1) {
       // flipper://<client>/<pluginId>/<payload>
       return store.dispatch(

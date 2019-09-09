@@ -12,7 +12,12 @@ import {PluginNotification} from '../reducers/notifications';
 import {ClientExport} from '../Client.js';
 import {State as PluginsState} from '../reducers/plugins';
 import {pluginKey} from '../reducers/pluginStates';
-import {FlipperDevicePlugin, FlipperPlugin, callClient} from '../plugin';
+import {
+  FlipperDevicePlugin,
+  FlipperPlugin,
+  callClient,
+  FlipperBasePlugin,
+} from '../plugin';
 import {default as BaseDevice} from '../devices/BaseDevice';
 import {default as ArchivedDevice} from '../devices/ArchivedDevice';
 import {default as Client} from '../Client';
@@ -28,13 +33,16 @@ import {Idler} from './Idler';
 export const IMPORT_FLIPPER_TRACE_EVENT = 'import-flipper-trace';
 export const EXPORT_FLIPPER_TRACE_EVENT = 'export-flipper-trace';
 
+export type PluginStatesExportState = {
+  [pluginKey: string]: string;
+};
 export type ExportType = {
   fileVersion: string;
   flipperReleaseRevision: string | null;
   clients: Array<ClientExport>;
   device: DeviceExport | null;
   store: {
-    pluginStates: PluginStatesState;
+    pluginStates: PluginStatesExportState;
     activeNotifications: Array<PluginNotification>;
   };
 };
@@ -56,11 +64,15 @@ type ProcessNotificationStatesOptions = {
   statusUpdate?: (msg: string) => void;
 };
 
+type SerializePluginStatesOptions = {
+  pluginStates: PluginStatesState;
+};
+
 type AddSaltToDeviceSerialOptions = {
   salt: string;
   device: BaseDevice;
   clients: Array<ClientExport>;
-  pluginStates: PluginStatesState;
+  pluginStates: PluginStatesExportState;
   pluginNotification: Array<PluginNotification>;
   selectedPlugins: Array<string>;
   statusUpdate?: (msg: string) => void;
@@ -107,7 +119,7 @@ export function processPluginStates(
     statusUpdate,
   } = options;
 
-  let pluginStates = {};
+  let pluginStates: PluginStatesState = {};
   statusUpdate &&
     statusUpdate('Filtering the plugin states for the filtered Clients...');
   for (const key in allPluginStates) {
@@ -154,6 +166,61 @@ export function processNotificationStates(
   });
   return activeNotifications;
 }
+
+const serializePluginStates = async (
+  pluginStates: PluginStatesState,
+  clientPlugins: Map<string, typeof FlipperPlugin>,
+  devicePlugins: Map<string, typeof FlipperDevicePlugin>,
+  statusUpdate?: (msg: string) => void,
+  idler?: Idler,
+): Promise<PluginStatesExportState> => {
+  const pluginsMap: Map<string, typeof FlipperBasePlugin> = new Map([]);
+  clientPlugins.forEach((val, key) => {
+    pluginsMap.set(key, val);
+  });
+  devicePlugins.forEach((val, key) => {
+    pluginsMap.set(key, val);
+  });
+  const pluginExportState: PluginStatesExportState = {};
+  for (const key in pluginStates) {
+    const keyArray = key.split('#');
+    const pluginName = keyArray.pop();
+    statusUpdate && statusUpdate(`Serialising ${pluginName}...`);
+
+    const pluginClass = pluginsMap.get(pluginName);
+    if (pluginClass) {
+      pluginExportState[key] = await pluginClass.serializePersistedState(
+        pluginStates[key],
+        statusUpdate,
+        idler,
+      );
+    }
+  }
+  return pluginExportState;
+};
+
+const deserializePluginStates = (
+  pluginStatesExportState: PluginStatesExportState,
+  clientPlugins: Map<string, typeof FlipperPlugin>,
+  devicePlugins: Map<string, typeof FlipperDevicePlugin>,
+): PluginStatesState => {
+  const pluginsMap: Map<string, typeof FlipperBasePlugin> = new Map([]);
+  clientPlugins.forEach((val, key) => {
+    pluginsMap.set(key, val);
+  });
+  devicePlugins.forEach((val, key) => {
+    pluginsMap.set(key, val);
+  });
+  const pluginsState: PluginStatesState = {};
+  for (const key in pluginStatesExportState) {
+    const keyArray = key.split('#');
+    const pluginName = keyArray.pop();
+    pluginsState[key] = pluginsMap
+      .get(pluginName)
+      .deserializePersistedState(pluginStatesExportState[key]);
+  }
+  return pluginsState;
+};
 
 const addSaltToDeviceSerial = async (
   options: AddSaltToDeviceSerialOptions,
@@ -235,6 +302,7 @@ type ProcessStoreOptions = {
   pluginStates: PluginStatesState;
   clients: Array<ClientExport>;
   devicePlugins: Map<string, typeof FlipperDevicePlugin>;
+  clientPlugins: Map<string, typeof FlipperPlugin>;
   salt: string;
   selectedPlugins: Array<string>;
   statusUpdate?: (msg: string) => void;
@@ -242,6 +310,7 @@ type ProcessStoreOptions = {
 
 export const processStore = async (
   options: ProcessStoreOptions,
+  idler?: Idler,
 ): Promise<ExportType | null> => {
   const {
     activeNotifications,
@@ -249,6 +318,7 @@ export const processStore = async (
     pluginStates,
     clients,
     devicePlugins,
+    clientPlugins,
     salt,
     selectedPlugins,
     statusUpdate,
@@ -272,16 +342,25 @@ export const processStore = async (
       devicePlugins,
       statusUpdate,
     });
+
+    const exportPluginState = await serializePluginStates(
+      processedPluginStates,
+      clientPlugins,
+      devicePlugins,
+      statusUpdate,
+      idler,
+    );
     // Adding salt to the device id, so that the device_id in the device list is unique.
     const exportFlipperData = await addSaltToDeviceSerial({
       salt,
       device,
       clients: processedClients,
-      pluginStates: processedPluginStates,
+      pluginStates: exportPluginState,
       pluginNotification: processedActiveNotifications,
       statusUpdate,
       selectedPlugins,
     });
+
     return exportFlipperData;
   }
   return null;
@@ -340,6 +419,7 @@ export async function fetchMetadata(
 export async function getStoreExport(
   store: MiddlewareAPI,
   statusUpdate?: (msg: string) => void,
+  idler?: Idler,
 ): Promise<{exportData: ExportType | null; errorArray: Array<Error>}> {
   const state = store.getState();
   const {clients} = state.connections;
@@ -373,17 +453,21 @@ export async function getStoreExport(
   const newPluginState = metadata.pluginStates;
 
   const {activeNotifications} = store.getState().notifications;
-  const {devicePlugins} = store.getState().plugins;
-  const exportData = await processStore({
-    activeNotifications,
-    device: selectedDevice,
-    pluginStates: newPluginState,
-    clients: clients.map(client => client.toJSON()),
-    devicePlugins,
-    salt: uuid.v4(),
-    selectedPlugins: store.getState().plugins.selectedPlugins,
-    statusUpdate,
-  });
+  const {devicePlugins, clientPlugins} = store.getState().plugins;
+  const exportData = await processStore(
+    {
+      activeNotifications,
+      device: selectedDevice,
+      pluginStates: newPluginState,
+      clients: clients.map(client => client.toJSON()),
+      devicePlugins,
+      clientPlugins,
+      salt: uuid.v4(),
+      selectedPlugins: store.getState().plugins.selectedPlugins,
+      statusUpdate,
+    },
+    idler,
+  );
   return {exportData, errorArray};
 }
 
@@ -399,6 +483,7 @@ export function exportStore(
       const {exportData, errorArray} = await getStoreExport(
         store,
         statusUpdate,
+        idler,
       );
       if (!exportData) {
         console.error('Make sure a device is connected');
@@ -443,8 +528,11 @@ export const exportStoreToFile = (
 
 export function importDataToStore(data: string, store: Store) {
   getLogger().track('usage', IMPORT_FLIPPER_TRACE_EVENT);
-  const json = deserialize(data);
+  const json: ExportType = deserialize(data);
   const {device, clients} = json;
+  if (device == null) {
+    return;
+  }
   const {serial, deviceType, title, os, logs} = device;
   const archivedDevice = new ArchivedDevice(
     serial,
@@ -474,25 +562,33 @@ export function importDataToStore(data: string, store: Store) {
   });
 
   const {pluginStates} = json.store;
-  const keys = Object.keys(pluginStates);
+  const processedPluginStates: PluginStatesState = deserializePluginStates(
+    pluginStates,
+    store.getState().plugins.clientPlugins,
+    store.getState().plugins.devicePlugins,
+  );
+  const keys = Object.keys(processedPluginStates);
   keys.forEach(key => {
     store.dispatch({
       type: 'SET_PLUGIN_STATE',
       payload: {
         pluginKey: key,
-        state: pluginStates[key],
+        state: processedPluginStates[key],
       },
     });
   });
   clients.forEach(client => {
-    const clientPlugins = keys
+    const clientPlugins: Array<string> = keys
       .filter(key => {
         const arr = key.split('#');
         arr.pop();
         const clientPlugin = arr.join('#');
         return client.id === clientPlugin;
       })
-      .map(client => client.split('#').pop());
+      .map(client => {
+        const elem = client.split('#').pop();
+        return elem || '';
+      });
     store.dispatch({
       type: 'NEW_CLIENT',
       payload: new Client(
