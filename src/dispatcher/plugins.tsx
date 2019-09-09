@@ -25,6 +25,7 @@ import {setupMenuBar} from '../MenuBar';
 import path from 'path';
 import {default as config} from '../utils/processConfig';
 import isProduction from '../utils/isProduction';
+import {notNull} from '../utils/typeUtils';
 
 export type PluginDefinition = {
   id?: string;
@@ -51,7 +52,7 @@ export default (store: Store, logger: Logger) => {
     .filter(checkDisabled(disabledPlugins))
     .filter(checkGK(gatekeepedPlugins))
     .map(requirePlugin(failedPlugins))
-    .filter(Boolean);
+    .filter(notNull);
 
   store.dispatch(addGatekeepedPlugins(gatekeepedPlugins));
   store.dispatch(addDisabledPlugins(disabledPlugins));
@@ -87,18 +88,19 @@ function getBundledPlugins(): Array<PluginDefinition> {
 
   let bundledPlugins: Array<PluginDefinition> = [];
   try {
-    // TODO We can probably define this in the globals file.
-    bundledPlugins = (global as any).electronRequire(
+    bundledPlugins = global.electronRequire(
       path.join(pluginPath, 'index.json'),
     );
   } catch (e) {
     console.error(e);
   }
 
-  return bundledPlugins.map(plugin => ({
-    ...plugin,
-    out: path.join(pluginPath, plugin.out),
-  }));
+  return bundledPlugins
+    .filter(plugin => notNull(plugin.out))
+    .map(plugin => ({
+      ...plugin,
+      out: path.join(pluginPath, plugin.out!),
+    }));
 }
 
 export function getDynamicPlugins() {
@@ -146,11 +148,11 @@ export const checkDisabled = (disabledPlugins: Array<PluginDefinition>) => (
 
 export const requirePlugin = (
   failedPlugins: Array<[PluginDefinition, string]>,
-  reqFn: Function = (global as any).electronRequire,
+  reqFn: Function = global.electronRequire,
 ) => {
   return (
     pluginDefinition: PluginDefinition,
-  ): typeof FlipperPlugin | typeof FlipperDevicePlugin => {
+  ): typeof FlipperPlugin | typeof FlipperDevicePlugin | null => {
     try {
       let plugin = reqFn(pluginDefinition.out);
       if (plugin.default) {
@@ -169,7 +171,8 @@ export const requirePlugin = (
             'Field "id" not allowed in package.json. The plugin\'s name will be used as ID"',
           );
         } else {
-          plugin[key] = plugin[key] || pluginDefinition[key];
+          plugin[key] =
+            plugin[key] || pluginDefinition[key as keyof PluginDefinition];
         }
       });
 
