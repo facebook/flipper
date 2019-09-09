@@ -16,12 +16,11 @@ Flipper (formerly Sonar) is a platform for debugging mobile apps on iOS and Andr
   - [Desktop](#desktop)
     - [Running from source](#running-from-source)
     - [Building standalone application](#building-standalone-application)
-  - [iOS SDK + Sample App](#ios-sdk--sample-app)
-  - [Android SDK + Sample app](#android-sdk--sample-app)
-  - [Documentation](#documentation)
-  - [Contributing](#contributing)
-  - [License](#license)
-
+- [iOS SDK + Sample App](#ios-sdk--sample-app)
+- [Android SDK + Sample app](#android-sdk--sample-app)
+- [Documentation](#documentation)
+- [Contributing](#contributing)
+- [License](#license)
 
 ## Mobile development
 
@@ -80,6 +79,7 @@ NOTE: If you're on Windows, you need to use Yarn 1.5.1 until [this issue](https:
 ```
 yarn build --mac --version $buildNumber
 ```
+
 ## iOS SDK + Sample App
 
 ```
