@@ -8,7 +8,7 @@
 import BaseDevice, {DeviceType, DeviceShell, LogLevel} from './BaseDevice';
 import {Priority} from 'adbkit-logcat-fb';
 import child_process from 'child_process';
-import child_process_promise from 'child-process-es6-promise';
+import promisify_child_process from 'promisify-child-process';
 import ArchivedDevice from './ArchivedDevice';
 import {ReadStream} from 'fs';
 
@@ -82,7 +82,9 @@ export default class AndroidDevice extends BaseDevice {
 
   clearLogs(): Promise<void> {
     this.logEntries = [];
-    return child_process_promise.spawn('adb', ['logcat', '-c']);
+    return promisify_child_process
+      .spawn('adb', ['logcat', '-c'])
+      .then(_ => undefined);
   }
 
   archive(): ArchivedDevice {
