@@ -9,7 +9,7 @@ import {TrackType, Logger} from '../fb-interfaces/Logger';
 import {Store} from '../reducers/index';
 import ScribeLogger from './ScribeLogger';
 
-let instance: StubLogger = null;
+let instance: StubLogger | null = null;
 
 type Args = {
   isHeadless?: boolean;
