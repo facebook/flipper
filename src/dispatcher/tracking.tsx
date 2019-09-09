@@ -53,8 +53,8 @@ export default (store: Store, logger: Logger) => {
       return;
     }
 
-    let app: string;
-    let sdkVersion: number;
+    let app: string | null = null;
+    let sdkVersion: number | null = null;
 
     if (selectedApp) {
       const client = clients.find((c: Client) => c.id === selectedApp);
