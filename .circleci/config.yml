@@ -2,7 +2,7 @@ version: 2.1
 executors:
   default-executor:
     docker:
-      - image: circleci/android:api-28-ndk-r17b
+      - image: circleci/android:api-29-ndk
 
     environment:
       _JAVA_OPTIONS: "-Xmx1500m -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:ParallelGCThreads=2 -XX:ConcGCThreads=2 -XX:ParallelGCThreads=2 -Djava.util.concurrent.ForkJoinPool.common.parallelism=2"
@@ -12,7 +12,7 @@ jobs:
   snapshot:
     executor: default-executor
     docker:
-      - image: circleci/android:api-28-ndk-r17b
+      - image: circleci/android:api-29-ndk
     steps:
       - checkout
       - run:
@@ -23,7 +23,7 @@ jobs:
   release:
     executor: default-executor
     docker:
-      - image: circleci/android:api-28-ndk-r17b
+      - image: circleci/android:api-29-ndk
     steps:
       - checkout
       - run:
