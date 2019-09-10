@@ -53,32 +53,46 @@ public class ChangesetDebug implements ChangesetDebugListener {
 
   public void onChangesetApplied(
       Section rootSection,
+      Section oldSection,
       ChangesInfo changesInfo,
       String surfaceId,
-      ChangesetDebugInfo changesetDebugInfo) {}
+      @ApplyNewChangeSet int source,
+      String attribution) {}
 
   public void onChangesetApplied(
       Section rootSection,
-      Section oldRootSection,
       ChangesInfo changesInfo,
       String surfaceId,
-      @ApplyNewChangeSet int attribution,
-      String extra) {
+      ChangesetDebugInfo changesetDebugInfo) {
     final FlipperArray.Builder tree = new FlipperArray.Builder();
     final FlipperObject.Builder changesetData = new FlipperObject.Builder();
+    final Section oldRootSection = changesetDebugInfo.getOldSection();
+    final int eventSource = changesetDebugInfo.getSource();
+    final String attribution = changesetDebugInfo.getAttribution();
+    final String stateUpdateAttribution = changesetDebugInfo.getUpdateStateAttribution();
 
-    final String sourceName = SectionsLogEventUtils.applyNewChangeSetSourceToString(attribution);
+    final String eventSourceName =
+        SectionsLogEventUtils.applyNewChangeSetSourceToString(eventSource);
 
     extractSidePanelChangesetData(changesInfo, changesetData, rootSection.getGlobalKey());
 
-    createSectionTree(rootSection, tree, oldRootSection);
+    createSectionTree(rootSection, tree, oldRootSection, stateUpdateAttribution);
 
     List<DataModelChangeInfo> prevData = getDataFromPreviousTree(oldRootSection);
     applyChangesInfoOnPreviousData(prevData, changesInfo, tree);
 
+    String eventSourceSection;
+    if (stateUpdateAttribution == null) {
+      eventSourceSection = rootSection == null ? "" : rootSection.getSimpleName();
+    } else {
+      final Section updatedStateSection =
+          findSectionInPreviousTree(oldRootSection, stateUpdateAttribution);
+      eventSourceSection = updatedStateSection == null ? "" : updatedStateSection.getSimpleName();
+    }
+
     sSectionsFlipperPlugin.onChangesetApplied(
-        sourceName + " " + extra,
-        isEventAsync(attribution),
+        eventSourceName + " " + eventSourceSection,
+        isEventAsync(eventSource),
         surfaceId,
         sChangesetIdGenerator.incrementAndGet() + "-" + surfaceId,
         tree.build(),
@@ -262,9 +276,13 @@ public class ChangesetDebug implements ChangesetDebugListener {
   }
 
   private static void addRemovedSectionNodes(
-      Section previousRoot, Section currentRoot, final FlipperArray.Builder tree) {
+      Section previousRoot,
+      Section currentRoot,
+      final FlipperArray.Builder tree,
+      String stateUpdateAttribution) {
     final Map<String, Section> prevSections = serializeChildren(previousRoot);
     final Map<String, Section> currSections = serializeChildren(currentRoot);
+    final boolean checkStateUpdateTrigger = stateUpdateAttribution != null;
 
     for (String prevSectionKey : prevSections.keySet()) {
       if (!currSections.containsKey(prevSectionKey)) {
@@ -276,6 +294,9 @@ public class ChangesetDebug implements ChangesetDebugListener {
             "parent", section.getParent() == null ? null : section.getParent().getGlobalKey());
         nodeBuilder.put("removed", true);
         nodeBuilder.put("isSection", true);
+        if (checkStateUpdateTrigger && stateUpdateAttribution.equals(prevSectionKey)) {
+          nodeBuilder.put("didTriggerStateUpdate", true);
+        }
         tree.put(nodeBuilder.build());
       }
     }
@@ -435,9 +456,12 @@ public class ChangesetDebug implements ChangesetDebugListener {
   }
 
   private static void createSectionTree(
-      Section rootSection, FlipperArray.Builder tree, Section oldRootSection) {
-    createSectionTreeRecursive(rootSection, "", tree, oldRootSection, 0);
-    addRemovedSectionNodes(oldRootSection, rootSection, tree);
+      Section rootSection,
+      FlipperArray.Builder tree,
+      Section oldRootSection,
+      String stateUpdateAttribution) {
+    createSectionTreeRecursive(rootSection, "", tree, oldRootSection, 0, stateUpdateAttribution);
+    addRemovedSectionNodes(oldRootSection, rootSection, tree, stateUpdateAttribution);
   }
 
   private static void createSectionTreeRecursive(
@@ -445,7 +469,8 @@ public class ChangesetDebug implements ChangesetDebugListener {
       String parentKey,
       FlipperArray.Builder tree,
       Section oldRootSection,
-      int startIndex) {
+      int startIndex,
+      String stateUpdateAttribution) {
     if (rootSection == null) {
       return;
     }
@@ -458,13 +483,15 @@ public class ChangesetDebug implements ChangesetDebugListener {
 
     final Section oldSection = findSectionInPreviousTree(oldRootSection, globalKey);
     final boolean isDirty = ChangesetDebugConfiguration.isSectionDirty(oldSection, rootSection);
+    final boolean triggeredStateUpdate =
+        stateUpdateAttribution != null && stateUpdateAttribution.equals(globalKey);
 
     nodeBuilder.put("identifier", globalKey);
     nodeBuilder.put("name", name);
     nodeBuilder.put("parent", parentKey);
     nodeBuilder.put("isDirty", isDirty);
     nodeBuilder.put("isReused", !isDirty);
-    nodeBuilder.put("didTriggerStateUpdate", false); // TODO
+    nodeBuilder.put("didTriggerStateUpdate", triggeredStateUpdate);
     nodeBuilder.put("isSection", true);
     tree.put(nodeBuilder.build());
 
@@ -478,7 +505,12 @@ public class ChangesetDebug implements ChangesetDebugListener {
             ChangesetDebugConfiguration.getSectionCount(rootSection.getChildren().get(i - 1));
       }
       createSectionTreeRecursive(
-          rootSection.getChildren().get(i), globalKey, tree, oldRootSection, startIndex);
+          rootSection.getChildren().get(i),
+          globalKey,
+          tree,
+          oldRootSection,
+          startIndex,
+          stateUpdateAttribution);
     }
   }
 }
