@@ -45,7 +45,7 @@ public class SectionsFlipperPlugin implements FlipperPlugin, ChangesetListener {
   }
 
   /**
-   * @param name Name of event
+   * @param eventName Name of event
    * @param isAsync Whether the event was sync or async
    * @param surfaceId SectionTree tag
    * @param id Changeset generation unique id
@@ -54,7 +54,9 @@ public class SectionsFlipperPlugin implements FlipperPlugin, ChangesetListener {
    */
   @Override
   public void onChangesetApplied(
-      String name,
+      String eventName,
+      String eventSource,
+      String updateStateMethodName,
       boolean isAsync,
       String surfaceId,
       String id,
@@ -63,16 +65,26 @@ public class SectionsFlipperPlugin implements FlipperPlugin, ChangesetListener {
     if (mConnection == null) {
       return;
     }
+
+    final String reason = eventName + " " + eventSource;
+    final FlipperObject.Builder eventPayloadBuilder = new FlipperObject.Builder();
+    eventPayloadBuilder.put("Event", eventName);
+    eventPayloadBuilder.put("Async", isAsync);
+    eventPayloadBuilder.put("Section", eventSource);
+    if (updateStateMethodName != null) {
+      eventPayloadBuilder.put("Update state method", updateStateMethodName);
+    }
+
     mConnection.send(
         "addEvent",
         new FlipperObject.Builder()
             .put("id", id)
             .put("update_mode", isAsync ? 0 : 1)
-            .put("reason", name)
+            .put("reason", reason)
             .put("surface_key", surfaceId)
             .put("tree_generation_timestamp", 10000) // TODO
             .put("stack_trace", new FlipperArray.Builder().build())
-            .put("payload", new FlipperObject.Builder().build())
+            .put("payload", eventPayloadBuilder.build())
             .build());
 
     mConnection.send(
@@ -82,7 +94,7 @@ public class SectionsFlipperPlugin implements FlipperPlugin, ChangesetListener {
             .put("hierarchy_generation_timestamp", 10000) // TODO
             .put("hierarchy_generation_duration", 0) // TODO
             .put("tree", tree)
-            .put("reason", name)
+            .put("reason", eventName)
             .build());
 
     // Not sure both CHANGESET_GENERATED and CHANGESET_APPLIED need to sent here, need

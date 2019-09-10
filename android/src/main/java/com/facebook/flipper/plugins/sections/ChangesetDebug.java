@@ -32,7 +32,9 @@ public class ChangesetDebug implements ChangesetDebugListener {
 
   public interface ChangesetListener {
     void onChangesetApplied(
-        String name,
+        String eventName,
+        String eventSource,
+        String updateStateMethodName,
         boolean isAsync,
         String surfaceId,
         String id,
@@ -90,8 +92,12 @@ public class ChangesetDebug implements ChangesetDebugListener {
       eventSourceSection = updatedStateSection == null ? "" : updatedStateSection.getSimpleName();
     }
 
+    final String stateUpdateMethodName = stateUpdateAttribution == null ? null : attribution;
+
     sSectionsFlipperPlugin.onChangesetApplied(
-        eventSourceName + " " + eventSourceSection,
+        eventSourceName,
+        eventSourceSection,
+        stateUpdateMethodName,
         isEventAsync(eventSource),
         surfaceId,
         sChangesetIdGenerator.incrementAndGet() + "-" + surfaceId,
