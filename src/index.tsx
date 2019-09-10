@@ -16,6 +16,7 @@ export {
   FlipperPlugin,
   FlipperDevicePlugin,
   callClient,
+  Notification,
 } from './plugin';
 export {PluginClient, Props} from './plugin';
 export {default as Client} from './Client';

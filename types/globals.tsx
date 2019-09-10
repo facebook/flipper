@@ -6,6 +6,7 @@
  */
 
 import {StoreEnhancerStoreCreator} from 'redux';
+import {ResizeObserver} from './ResizeObserver.d';
 
 export {};
 type RequestIdleHandle = number;
@@ -29,5 +30,6 @@ declare global {
       },
     ) => RequestIdleHandle;
     cancelIdleCallback: (handle: RequestIdleHandle) => void;
+    ResizeObserver: ResizeObserver;
   }
 }
