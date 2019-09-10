@@ -5,8 +5,20 @@
  * @format
  */
 
+interface Device {
+  id: string;
+  type: 'emulator' | 'device' | 'offline';
+}
+
+interface Util {
+  readAll: (stream: NodeJS.ReadStream) => Promise<Buffer>;
+}
+
 declare module 'adbkit-fb' {
   const util: any;
   const adbkit: any;
-  export function createClient({port: number, host: string}): any;
+  export interface Client {
+    listDevices: () => Promise<Device[]>;
+  }
+  export function createClient(config: {port: number; host: string}): Client;
 }

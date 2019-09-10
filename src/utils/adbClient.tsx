@@ -9,9 +9,10 @@ import {promisify} from 'util';
 import child_process from 'child_process';
 import promiseRetry from 'promise-retry';
 import adbConfig from '../utils/adbConfig';
-import adbkit from 'adbkit-fb';
+import adbkit, {Client} from 'adbkit-fb';
 
-let instance;
+const MAX_RETRIES = 5;
+let instance: Promise<Client>;
 
 export function getAdbClient(): Promise<any> {
   if (!instance) {
@@ -23,11 +24,11 @@ export function getAdbClient(): Promise<any> {
 /* Adbkit will attempt to start the adb server if it's not already running,
    however, it sometimes fails with ENOENT errors. So instead, we start it
    manually before requesting a client. */
-function createClient() {
+function createClient(): Promise<Client> {
   const adbPath = process.env.ANDROID_HOME
     ? `${process.env.ANDROID_HOME}/platform-tools/adb`
     : 'adb';
-  return reportPlatformFailures(
+  return reportPlatformFailures<Client>(
     promisify(child_process.exec)(`${adbPath} start-server`).then(() =>
       adbkit.createClient(adbConfig()),
     ),
@@ -39,26 +40,29 @@ function createClient() {
     );
 
     /* In the event that starting adb with the above method fails, fallback
-       to using adbkit, though its known to be unreliable. */
-    const unsafeClient = adbkit.createClient(adbConfig());
-    return reportPlatformFailures(
-      promiseRetry(
-        (retry, number) => {
+         to using adbkit, though its known to be unreliable. */
+    const unsafeClient: Client = adbkit.createClient(adbConfig());
+    return reportPlatformFailures<Client>(
+      promiseRetry<Client>(
+        (retry, attempt): Promise<Client> => {
           return unsafeClient
             .listDevices()
             .then(() => {
               return unsafeClient;
             })
-            .catch(e => {
+            .catch((e: Error) => {
               console.warn(
                 `Failed to start adb client. Retrying. ${e.message}`,
               );
-              retry(e);
+              if (attempt <= MAX_RETRIES) {
+                retry(e);
+              }
+              throw e;
             });
         },
         {
           minTimeout: 200,
-          retries: 5,
+          retries: MAX_RETRIES,
         },
       ),
       'createADBClient.adbkit',
