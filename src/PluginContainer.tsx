@@ -62,7 +62,7 @@ type DispatchFromProps = {
     selectedApp?: string | null;
     deepLinkPayload: string | null;
   }) => any;
-  setPluginState: (payload: {pluginKey: string; state: Object}) => void;
+  setPluginState: (payload: {pluginKey: string; state: any}) => void;
 };
 
 type Props = StateFromProps & DispatchFromProps & OwnProps;
@@ -133,7 +133,7 @@ class PluginContainer extends PureComponent<Props> {
             ...pluginState,
           }
         : pluginState,
-      setPersistedState: _state => setPluginState({pluginKey, state: Object}),
+      setPersistedState: state => setPluginState({pluginKey, state}),
       target,
       deepLinkPayload: this.props.deepLinkPayload,
       selectPlugin: (pluginID: string, deepLinkPayload: string | null) => {
