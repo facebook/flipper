@@ -9,6 +9,7 @@ import {remote} from 'electron';
 import uuidv1 from 'uuid/v1';
 import {ReactElement} from 'react';
 import CancellableExportStatus from '../chrome/CancellableExportStatus';
+import {Actions} from './';
 export const ACTIVE_SHEET_PLUGIN_SHEET: 'PLUGIN_SHEET' = 'PLUGIN_SHEET';
 export const ACTIVE_SHEET_BUG_REPORTER: 'BUG_REPORTER' = 'BUG_REPORTER';
 export const ACTIVE_SHEET_PLUGIN_DEBUGGER: 'PLUGIN_DEBUGGER' =
@@ -139,7 +140,10 @@ const initialState: () => State = () => ({
   flipperRating: null,
 });
 
-export default function reducer(state: State, action: Action): State {
+export default function reducer(
+  state: State | undefined,
+  action: Actions,
+): State {
   state = state || initialState();
   if (
     action.type === 'leftSidebarVisible' ||

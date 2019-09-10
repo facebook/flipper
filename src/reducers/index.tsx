@@ -28,10 +28,11 @@ import plugins, {
 } from './plugins';
 import user, {State as UserState, Action as UserAction} from './user';
 
-import {persistReducer} from 'redux-persist';
-import storage from 'redux-persist/lib/storage/index.js';
+import {persistReducer, PersistPartial} from 'redux-persist';
 
 import {Store as ReduxStore, MiddlewareAPI as ReduxMiddlewareAPI} from 'redux';
+// @ts-ignore: explicitly need to import index.js, otherwise index.native.js is imported, because redux-persist assumes we are react-native, because we are using metro-bundler
+import storage from 'redux-persist/lib/storage/index.js';
 
 export type Actions =
   | ApplicationAction
@@ -43,19 +44,19 @@ export type Actions =
   | {type: 'INIT'};
 
 export type State = {
-  application: ApplicationState;
-  connections: DevicesState;
+  application: ApplicationState & PersistPartial;
+  connections: DevicesState & PersistPartial;
   pluginStates: PluginStatesState;
-  notifications: NotificationsState;
+  notifications: NotificationsState & PersistPartial;
   plugins: PluginsState;
-  user: UserState;
+  user: UserState & PersistPartial;
 };
 
 export type Store = ReduxStore<State, Actions>;
 export type MiddlewareAPI = ReduxMiddlewareAPI<Dispatch<Actions>, State>;
 
 export default combineReducers<State, Actions>({
-  application: persistReducer(
+  application: persistReducer<ApplicationState, Actions>(
     {
       key: 'application',
       storage,
@@ -63,7 +64,7 @@ export default combineReducers<State, Actions>({
     },
     application,
   ),
-  connections: persistReducer(
+  connections: persistReducer<DevicesState, Actions>(
     {
       key: 'connections',
       storage,

@@ -5,7 +5,7 @@
  * @format
  */
 import {Notification} from '../plugin';
-
+import {Actions} from './';
 export type PluginNotification = {
   notification: Notification;
   pluginId: string;
@@ -60,7 +60,7 @@ const INITIAL_STATE: State = {
 
 export default function reducer(
   state: State = INITIAL_STATE,
-  action: Action,
+  action: Actions,
 ): State {
   switch (action.type) {
     case 'SET_ACTIVE_NOTIFICATIONS': {

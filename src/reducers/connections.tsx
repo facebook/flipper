@@ -14,6 +14,7 @@ import iosUtil from '../fb-stubs/iOSContainerUtility';
 import {performance} from 'perf_hooks';
 import {SAVED_PLUGINS_COUNT} from '../Client';
 import isHeadless from '../utils/isHeadless';
+import {Actions} from '.';
 const WelcomeScreen = isHeadless()
   ? require('../chrome/WelcomeScreenHeadless').default
   : require('../chrome/WelcomeScreen').default;
@@ -130,7 +131,7 @@ const INITAL_STATE: State = {
   staticView: WelcomeScreen,
 };
 
-const reducer = (state: State = INITAL_STATE, action: Action): State => {
+const reducer = (state: State = INITAL_STATE, action: Actions): State => {
   switch (action.type) {
     case 'SET_STATIC_VIEW': {
       const {payload} = action;
@@ -417,7 +418,7 @@ const reducer = (state: State = INITAL_STATE, action: Action): State => {
   }
 };
 
-export default (state: State = INITAL_STATE, action: Action): State => {
+export default (state: State = INITAL_STATE, action: Actions): State => {
   const nextState = reducer(state, action);
 
   if (nextState.selectedDevice) {

@@ -7,6 +7,7 @@
 
 import {FlipperPlugin, FlipperDevicePlugin} from '../plugin';
 import {PluginDefinition} from '../dispatcher/plugins';
+import {Actions} from '.';
 
 export type State = {
   devicePlugins: Map<string, typeof FlipperDevicePlugin>;
@@ -51,8 +52,8 @@ const INITIAL_STATE: State = {
 };
 
 export default function reducer(
-  state: State = INITIAL_STATE,
-  action: Action,
+  state: State | undefined = INITIAL_STATE,
+  action: Actions,
 ): State {
   if (action.type === 'REGISTER_PLUGINS') {
     const {devicePlugins, clientPlugins} = state;

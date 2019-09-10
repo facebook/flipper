@@ -5,6 +5,8 @@
  * @format
  */
 
+import {Actions} from './';
+
 export type User = {
   name?: string;
   profile_picture?: {
@@ -27,7 +29,7 @@ const INITIAL_STATE: State = {};
 
 export default function reducer(
   state: State = INITIAL_STATE,
-  action: Action,
+  action: Actions,
 ): State {
   if (action.type === 'LOGOUT') {
     return {};

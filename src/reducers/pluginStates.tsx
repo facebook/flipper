@@ -5,6 +5,8 @@
  * @format
  */
 
+import {Actions} from '.';
+
 export type State = {
   [pluginKey: string]: Object;
 };
@@ -29,8 +31,8 @@ export type Action =
 const INITIAL_STATE: State = {};
 
 export default function reducer(
-  state: State = INITIAL_STATE,
-  action: Action,
+  state: State | undefined = INITIAL_STATE,
+  action: Actions,
 ): State {
   if (action.type === 'SET_PLUGIN_STATE') {
     const newPluginState = action.payload.state;
