@@ -14,6 +14,7 @@ import {setPluginState} from './reducers/pluginStates';
 import {RSocketClientSocket} from 'rsocket-core/RSocketClient';
 import {performance} from 'perf_hooks';
 import {reportPlatformFailures, reportPluginFailures} from './utils/metrics';
+import {notNull} from './utils/typeUtils';
 import {default as isProduction} from './utils/isProduction';
 import {registerPlugins} from './reducers/plugins';
 import createTableNativePlugin from './plugins/TableNativePlugin';
@@ -77,11 +78,14 @@ const handleError = (
         reason: JSON.stringify(error),
       };
 
-  const newPluginState = crashReporterPlugin.persistedStateReducer(
-    persistedState,
-    'flipper-crash-report',
-    payload,
-  );
+  const newPluginState =
+    crashReporterPlugin.persistedStateReducer == null
+      ? persistedState
+      : crashReporterPlugin.persistedStateReducer(
+          persistedState,
+          'flipper-crash-report',
+          payload,
+        );
   if (persistedState !== newPluginState) {
     store.dispatch(
       setPluginState({
@@ -98,20 +102,20 @@ export const SAVED_PLUGINS_COUNT =
   MAX_MINIMUM_PLUGINS + SHOW_REMAINING_PLUGIN_IF_LESS_THAN;
 
 export default class Client extends EventEmitter {
-  app: App;
+  app: App | undefined;
   connected: boolean;
   id: string;
   query: ClientQuery;
   sdkVersion: number;
   messageIdCounter: number;
   plugins: Plugins;
-  lessPlugins: Plugins;
+  lessPlugins: Plugins | undefined;
   showAllPlugins: boolean;
   connection: RSocketClientSocket<any, any> | null | undefined;
   responder: Partial<Responder<string, any>>;
   store: Store;
   activePlugins: Set<string>;
-  device: Promise<BaseDevice>;
+  device: Promise<BaseDevice> | undefined;
   logger: Logger;
   lastSeenDeviceList: Array<BaseDevice>;
   broadcastCallbacks: Map<string, Map<string, Set<Function>>>;
@@ -154,7 +158,7 @@ export default class Client extends EventEmitter {
     // node.js doesn't support requestIdleCallback
     const rIC =
       typeof window === 'undefined'
-        ? (cb, _) => {
+        ? (cb: Function, _: any) => {
             cb();
           }
         : window.requestIdleCallback;
@@ -187,7 +191,7 @@ export default class Client extends EventEmitter {
     b: typeof FlipperPlugin,
   ): number {
     // Sanity check
-    if (this.lessPlugins !== null) {
+    if (this.lessPlugins != null) {
       const showPluginsCount =
         pluginsCount >= MAX_MINIMUM_PLUGINS + SHOW_REMAINING_PLUGIN_IF_LESS_THAN
           ? MAX_MINIMUM_PLUGINS
@@ -265,7 +269,7 @@ export default class Client extends EventEmitter {
     this.plugins = plugins;
     const nativeplugins = plugins
       .map(plugin => /_nativeplugin_([^_]+)_([^_]+)/.exec(plugin))
-      .filter(Boolean)
+      .filter(notNull)
       .map(([id, type, title]) => {
         // TODO put this in another component, and make the "types" registerable
         switch (type) {
@@ -290,6 +294,10 @@ export default class Client extends EventEmitter {
   async deviceSerial(): Promise<string> {
     try {
       const device = await this.device;
+      if (!device) {
+        console.error('Using "" for deviceId device is not ready');
+        return '';
+      }
       return device.serial;
     } catch (e) {
       console.error(
@@ -339,12 +347,13 @@ export default class Client extends EventEmitter {
       } else if (method === 'refreshPlugins') {
         this.refreshPlugins();
       } else if (method === 'execute') {
-        const params = data.params;
+        const params: Params = data.params as Params;
         invariant(params, 'expected params');
 
         const persistingPlugin:
           | typeof FlipperPlugin
-          | typeof FlipperDevicePlugin =
+          | typeof FlipperDevicePlugin
+          | undefined =
           this.store.getState().plugins.clientPlugins.get(params.api) ||
           this.store.getState().plugins.devicePlugins.get(params.api);
         if (persistingPlugin && persistingPlugin.persistedStateReducer) {
@@ -405,11 +414,11 @@ export default class Client extends EventEmitter {
       success?: Object;
       error?: ErrorType;
     },
-    resolve: (a: Object) => any,
+    resolve: ((a: any) => any) | undefined,
     reject: (error: ErrorType) => any,
   ) {
     if (data.success) {
-      resolve(data.success);
+      resolve && resolve(data.success);
     } else if (data.error) {
       reject(data.error);
       const {error} = data;
@@ -427,11 +436,7 @@ export default class Client extends EventEmitter {
     return {id: this.id, query: this.query};
   }
 
-  subscribe(
-    api: string | null = null,
-    method: string,
-    callback: (params: Object) => void,
-  ) {
+  subscribe(api: string, method: string, callback: (params: Object) => void) {
     let apiCallbacks = this.broadcastCallbacks.get(api);
     if (!apiCallbacks) {
       apiCallbacks = new Map();
@@ -446,7 +451,7 @@ export default class Client extends EventEmitter {
     methodCallbacks.add(callback);
   }
 
-  unsubscribe(api: string | null = null, method: string, callback: Function) {
+  unsubscribe(api: string, method: string, callback: Function) {
     const apiCallbacks = this.broadcastCallbacks.get(api);
     if (!apiCallbacks) {
       return;
