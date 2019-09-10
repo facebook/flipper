@@ -239,8 +239,12 @@ const reducer = (state: State = INITAL_STATE, action: Actions): State => {
       }
 
       const userPreferredApp = selectedApp || state.userPreferredApp;
-      const LRUPlugins =
-        (userPreferredApp && state.userLRUPlugins[userPreferredApp]) || [];
+      // Need to recreate an array to make sure that it doesn't refer to the
+      // array that is showed in on the screen and the array that is kept for
+      // least recently used plugins reference
+      const LRUPlugins = [
+        ...((userPreferredApp && state.userLRUPlugins[userPreferredApp]) || []),
+      ];
       const idxLRU =
         (selectedPlugin && LRUPlugins.indexOf(selectedPlugin)) || -1;
       if (idxLRU >= 0) {
