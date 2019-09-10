@@ -106,11 +106,11 @@ export default class IOSDevice extends BaseDevice {
         {},
       );
 
-      this.log.on('error', err => {
+      this.log.on('error', (err: Error) => {
         console.error(err);
       });
 
-      this.log.stderr.on('data', data => {
+      this.log.stderr.on('data', (data: Buffer) => {
         console.error(data.toString());
       });
 
@@ -163,7 +163,7 @@ export default class IOSDevice extends BaseDevice {
       '',
     );
 
-    const tag = entry.processImagePath.split('/').pop();
+    const tag = entry.processImagePath.split('/').pop() || '';
 
     return {
       date: new Date(entry.timestamp),
