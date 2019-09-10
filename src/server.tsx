@@ -19,8 +19,9 @@ import {reportPlatformFailures} from './utils/metrics';
 import EventEmitter from 'events';
 import invariant from 'invariant';
 import tls from 'tls';
-import net from 'net';
+import net, {Socket} from 'net';
 import {RSocketClientSocket} from 'rsocket-core/RSocketClient';
+import {Responder, Payload, ReactiveSocket} from 'rsocket-types';
 
 type ClientInfo = {
   connection: RSocketClientSocket<any, any> | null | undefined;
@@ -49,6 +50,12 @@ class Server extends EventEmitter {
     this.connections = new Map();
     this.certificateProvider = new CertificateProvider(this, logger);
     this.connectionTracker = new ConnectionTracker(logger);
+    // eslint-disable-next-line prefer-promise-reject-errors
+    this.secureServer = Promise.reject();
+    // eslint-disable-next-line prefer-promise-reject-errors
+    this.insecureServer = Promise.reject();
+    // eslint-disable-next-line prefer-promise-reject-errors
+    this.initialisePromise = Promise.reject();
     this.store = store;
   }
 
@@ -72,7 +79,7 @@ class Server extends EventEmitter {
     const server = this;
     return new Promise((resolve, reject) => {
       let rsServer: RSocketServer<any, any> | undefined; // eslint-disable-line prefer-const
-      const serverFactory = onConnect => {
+      const serverFactory = (onConnect: (socket: Socket) => void) => {
         const transportServer = sslConfig
           ? tls.createServer(sslConfig, socket => {
               onConnect(socket);
@@ -96,7 +103,6 @@ class Server extends EventEmitter {
           });
         return transportServer;
       };
-
       rsServer = new RSocketServer({
         getRequestHandler: sslConfig
           ? this._trustedRequestHandler
@@ -106,22 +112,24 @@ class Server extends EventEmitter {
           serverFactory: serverFactory,
         }),
       });
-      rsServer.start();
+      rsServer && rsServer.start();
     });
   }
 
   _trustedRequestHandler = (
-    conn: RSocketClientSocket<any, any>,
-    connectRequest: {data: string},
-  ) => {
+    socket: ReactiveSocket<string, any>,
+    payload: Payload<string, any>,
+  ): Partial<Responder<string, any>> => {
     const server = this;
-
-    const clientData: ClientQuery = JSON.parse(connectRequest.data);
+    if (!payload.data) {
+      return {};
+    }
+    const clientData: ClientQuery = JSON.parse(payload.data);
     this.connectionTracker.logConnectionAttempt(clientData);
 
-    const client = this.addConnection(conn, clientData);
+    const client = this.addConnection(socket, clientData);
 
-    conn.connectionStatus().subscribe({
+    socket.connectionStatus().subscribe({
       onNext(payload) {
         if (payload.kind == 'ERROR' || payload.kind == 'CLOSED') {
           console.debug(`Device disconnected ${client.id}`, 'server');
@@ -137,10 +145,13 @@ class Server extends EventEmitter {
   };
 
   _untrustedRequestHandler = (
-    _conn: RSocketClientSocket<any, any>,
-    connectRequest: {data: string},
-  ) => {
-    const clientData: ClientQuery = JSON.parse(connectRequest.data);
+    socket: ReactiveSocket<string, any>,
+    payload: Payload<string, any>,
+  ): Partial<Responder<string, any>> => {
+    if (!payload.data) {
+      return {};
+    }
+    const clientData: ClientQuery = JSON.parse(payload.data);
     this.connectionTracker.logConnectionAttempt(clientData);
 
     const client: UninitializedClient = {
@@ -151,9 +162,11 @@ class Server extends EventEmitter {
     this.emit('start-client-setup', client);
 
     return {
-      requestResponse: (payload: {data: string}) => {
+      requestResponse: (
+        payload: Payload<string, any>,
+      ): Single<Payload<string, any>> => {
         if (typeof payload.data !== 'string') {
-          return;
+          return new Single(_ => {});
         }
 
         let rawData;
@@ -165,7 +178,7 @@ class Server extends EventEmitter {
             'clientMessage',
             'server',
           );
-          return;
+          return new Single(_ => {});
         }
 
         const json: {
@@ -205,12 +218,13 @@ class Server extends EventEmitter {
               });
           });
         }
+        return new Single(_ => {});
       },
 
       // Leaving this here for a while for backwards compatibility,
       // but for up to date SDKs it will no longer used.
       // We can delete it after the SDK change has been using requestResponse for a few weeks.
-      fireAndForget: (payload: {data: string}) => {
+      fireAndForget: (payload: Payload<string, any>) => {
         if (typeof payload.data !== 'string') {
           return;
         }
@@ -229,7 +243,7 @@ class Server extends EventEmitter {
           return;
         }
 
-        if (json.method === 'signCertificate') {
+        if (json && json.method === 'signCertificate') {
           console.debug('CSR received from device', 'server');
           const {csr, destination} = json;
           this.certificateProvider

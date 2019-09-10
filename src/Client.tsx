@@ -108,7 +108,7 @@ export default class Client extends EventEmitter {
   lessPlugins: Plugins;
   showAllPlugins: boolean;
   connection: RSocketClientSocket<any, any> | null | undefined;
-  responder: Partial<Responder<any, any>>;
+  responder: Partial<Responder<string, any>>;
   store: Store;
   activePlugins: Set<string>;
   device: Promise<BaseDevice>;
