@@ -199,6 +199,10 @@ class FeedbackComponent extends Component<
               placeholder={this.props.promptData.commentPlaceholder}
               value={this.state.comment}
               onChange={e => this.setState({comment: e.target.value})}
+              onKeyDown={e =>
+                e.key == 'Enter' && this.onCommentSubmitted(this.state.comment)
+              }
+              autoFocus={true}
             />
           </Row>,
           <Row>
