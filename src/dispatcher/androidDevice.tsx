@@ -15,6 +15,7 @@ import {getAdbClient} from '../utils/adbClient';
 import {default as which} from 'which';
 import {promisify} from 'util';
 import {ServerPorts} from '../reducers/application';
+import {EventEmitter} from 'events';
 
 function createDevice(
   adbClient: any,
@@ -27,23 +28,30 @@ function createDevice(
         ? 'emulator'
         : 'physical';
 
-    adbClient.getProperties(device.id).then(async props => {
-      let name = props['ro.product.model'];
-      if (type === 'emulator') {
-        name = (await getRunningEmulatorName(device.id)) || name;
-      }
-      const androidDevice = new AndroidDevice(device.id, type, name, adbClient);
-      if (ports) {
-        androidDevice.reverse([ports.secure, ports.insecure]);
-      }
-      resolve(androidDevice);
-    });
+    adbClient
+      .getProperties(device.id)
+      .then(async (props: {[key: string]: string}) => {
+        let name = props['ro.product.model'];
+        if (type === 'emulator') {
+          name = (await getRunningEmulatorName(device.id)) || name;
+        }
+        const androidDevice = new AndroidDevice(
+          device.id,
+          type,
+          name,
+          adbClient,
+        );
+        if (ports) {
+          androidDevice.reverse([ports.secure, ports.insecure]);
+        }
+        resolve(androidDevice);
+      });
   });
 }
 
 export async function getActiveAndroidDevices(): Promise<Array<BaseDevice>> {
   const client = await getAdbClient();
-  const androidDevices = await client.listDevices();
+  const androidDevices: Array<AndroidDevice> = await client.listDevices();
   return await Promise.all(
     androidDevices.map(device => createDevice(client, device)),
   );
@@ -99,7 +107,7 @@ export default (store: Store, logger: Logger) => {
       .then(client => {
         client
           .trackDevices()
-          .then(tracker => {
+          .then((tracker: EventEmitter) => {
             tracker.on('error', err => {
               if (err.message === 'Connection closed') {
                 // adb server has shutdown, remove all android devices
@@ -138,7 +146,7 @@ export default (store: Store, logger: Logger) => {
               unregisterDevices([device.id]);
             });
           })
-          .catch(err => {
+          .catch((err: {code: string}) => {
             if (err.code === 'ECONNREFUSED') {
               // adb server isn't running
             } else {
