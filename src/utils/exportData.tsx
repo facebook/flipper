@@ -9,7 +9,7 @@ import {Store, MiddlewareAPI} from '../reducers';
 import {DeviceExport} from '../devices/BaseDevice';
 import {State as PluginStatesState} from '../reducers/pluginStates';
 import {PluginNotification} from '../reducers/notifications';
-import {ClientExport} from '../Client.js';
+import {ClientExport, ClientQuery} from '../Client.js';
 import {State as PluginsState} from '../reducers/plugins';
 import {pluginKey} from '../reducers/pluginStates';
 import {
@@ -23,7 +23,7 @@ import {default as ArchivedDevice} from '../devices/ArchivedDevice';
 import {default as Client} from '../Client';
 import fs from 'fs';
 import uuid from 'uuid';
-import {remote} from 'electron';
+import {remote, OpenDialogOptions} from 'electron';
 import {serialize, deserialize} from './serialization';
 import {readCurrentRevision} from './packageMetadata';
 import {tryCatchReportPlatformFailures} from './metrics';
@@ -38,7 +38,7 @@ export type PluginStatesExportState = {
 };
 export type ExportType = {
   fileVersion: string;
-  flipperReleaseRevision: string | null;
+  flipperReleaseRevision: string | undefined;
   clients: Array<ClientExport>;
   device: DeviceExport | null;
   store: {
@@ -125,7 +125,11 @@ export function processPluginStates(
   for (const key in allPluginStates) {
     const keyArray = key.split('#');
     const pluginName = keyArray.pop();
-    if (selectedPlugins.length > 0 && !selectedPlugins.includes(pluginName)) {
+    if (
+      pluginName &&
+      selectedPlugins.length > 0 &&
+      !selectedPlugins.includes(pluginName)
+    ) {
       continue;
     }
     const filteredClients = clients.filter(client => {
@@ -134,7 +138,7 @@ export function processPluginStates(
     });
     if (
       filteredClients.length > 0 ||
-      (devicePlugins.has(pluginName) && serial === keyArray[0])
+      (pluginName && devicePlugins.has(pluginName) && serial === keyArray[0])
     ) {
       // There need not be any client for device Plugins
       pluginStates = {...pluginStates, [key]: allPluginStates[key]};
@@ -187,7 +191,7 @@ const serializePluginStates = async (
     const pluginName = keyArray.pop();
     statusUpdate && statusUpdate(`Serialising ${pluginName}...`);
 
-    const pluginClass = pluginsMap.get(pluginName);
+    const pluginClass = pluginName ? pluginsMap.get(pluginName) : null;
     if (pluginClass) {
       pluginExportState[key] = await pluginClass.serializePersistedState(
         pluginStates[key],
@@ -215,9 +219,15 @@ const deserializePluginStates = (
   for (const key in pluginStatesExportState) {
     const keyArray = key.split('#');
     const pluginName = keyArray.pop();
-    pluginsState[key] = pluginsMap
-      .get(pluginName)
-      .deserializePersistedState(pluginStatesExportState[key]);
+    if (!pluginName || !pluginsMap.get(pluginName)) {
+      continue;
+    }
+    const pluginClass = pluginsMap.get(pluginName);
+    if (pluginClass) {
+      pluginsState[key] = pluginClass.deserializePersistedState(
+        pluginStatesExportState[key],
+      );
+    }
   }
   return pluginsState;
 };
@@ -257,7 +267,7 @@ const addSaltToDeviceSerial = async (
     statusUpdate(
       'Adding salt to the selected device id in the plugin states...',
     );
-  const updatedPluginStates = {};
+  const updatedPluginStates: PluginStatesExportState = {};
   for (let key in pluginStates) {
     if (!key.includes(serial)) {
       throw new Error(
@@ -283,7 +293,7 @@ const addSaltToDeviceSerial = async (
     }
     return {...notif, client: notif.client.replace(serial, newSerial)};
   });
-  const revision: string | null = await readCurrentRevision();
+  const revision: string | undefined = await readCurrentRevision();
   return {
     fileVersion: remote.app.getVersion(),
     flipperReleaseRevision: revision,
@@ -393,6 +403,7 @@ export async function fetchMetadata(
       const pluginClass:
         | typeof FlipperDevicePlugin
         | typeof FlipperPlugin
+        | undefined
         | null = plugin ? pluginsMap.get(plugin) : null;
       const exportState = pluginClass ? pluginClass.exportPersistedState : null;
       if (exportState) {
@@ -485,11 +496,7 @@ export function exportStore(
         statusUpdate,
         idler,
       );
-      if (!exportData) {
-        console.error('Make sure a device is connected');
-        reject(new Error('No device is selected'));
-      }
-      try {
+      if (exportData != null) {
         statusUpdate && statusUpdate('Serializing Flipper data...');
         const serializedString = await serialize(
           exportData,
@@ -500,8 +507,9 @@ export function exportStore(
           reject(new Error('Serialize function returned empty string'));
         }
         resolve({serializedString, errorArray});
-      } catch (e) {
-        reject(e);
+      } else {
+        console.error('Make sure a device is connected');
+        reject(new Error('No device is selected'));
       }
     } catch (e) {
       reject(e);
@@ -577,7 +585,7 @@ export function importDataToStore(data: string, store: Store) {
       },
     });
   });
-  clients.forEach(client => {
+  clients.forEach((client: {id: string; query: ClientQuery}) => {
     const clientPlugins: Array<string> = keys
       .filter(key => {
         const arr = key.split('#');
@@ -585,10 +593,7 @@ export function importDataToStore(data: string, store: Store) {
         const clientPlugin = arr.join('#');
         return client.id === clientPlugin;
       })
-      .map(client => {
-        const elem = client.split('#').pop();
-        return elem || '';
-      });
+      .map(client => client.split('#').pop() || '');
     store.dispatch({
       type: 'NEW_CLIENT',
       payload: new Client(
@@ -614,19 +619,15 @@ export const importFileToStore = (file: string, store: Store) => {
 };
 
 export function showOpenDialog(store: Store) {
-  remote.dialog.showOpenDialog(
-    {
-      properties: ['openFile'],
-      filters: [
-        {extensions: ['flipper', 'json', 'txt'], name: 'Flipper files'},
-      ],
-    },
-    (files: Array<string>) => {
-      if (files !== undefined && files.length > 0) {
-        tryCatchReportPlatformFailures(() => {
-          importFileToStore(files[0], store);
-        }, `${IMPORT_FLIPPER_TRACE_EVENT}:UI`);
-      }
-    },
-  );
+  const options: OpenDialogOptions = {
+    properties: ['openFile'],
+    filters: [{extensions: ['flipper', 'json', 'txt'], name: 'Flipper files'}],
+  };
+  remote.dialog.showOpenDialog(options, (filePaths?: Array<string>) => {
+    if (filePaths !== undefined && filePaths.length > 0) {
+      tryCatchReportPlatformFailures(() => {
+        importFileToStore(filePaths[0], store);
+      }, `${IMPORT_FLIPPER_TRACE_EVENT}:UI`);
+    }
+  });
 }
