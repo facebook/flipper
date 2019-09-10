@@ -24,8 +24,8 @@ export default class AndroidDevice extends BaseDevice {
     super(serial, deviceType, title, 'Android');
     this.adb = adb;
     this.icon = 'icons/android.svg';
-    this.adb.openLogcat(this.serial).then(reader => {
-      reader.on('entry', entry => {
+    this.adb.openLogcat(this.serial).then((reader: any) => {
+      reader.on('entry', (entry: any) => {
         let type: LogLevel = 'unknown';
         if (entry.priority === Priority.VERBOSE) {
           type = 'verbose';
