@@ -12,6 +12,7 @@ import com.facebook.flipper.core.FlipperObject;
 import com.facebook.litho.sections.Change;
 import com.facebook.litho.sections.ChangesInfo;
 import com.facebook.litho.sections.ChangesetDebugConfiguration;
+import com.facebook.litho.sections.ChangesetDebugConfiguration.ChangesetDebugInfo;
 import com.facebook.litho.sections.ChangesetDebugConfiguration.ChangesetDebugListener;
 import com.facebook.litho.sections.Section;
 import com.facebook.litho.sections.SectionsLogEventUtils;
@@ -50,7 +51,12 @@ public class ChangesetDebug implements ChangesetDebugListener {
     sSectionsFlipperPlugin = listener;
   }
 
-  @Override
+  public void onChangesetApplied(
+      Section rootSection,
+      ChangesInfo changesInfo,
+      String surfaceId,
+      ChangesetDebugInfo changesetDebugInfo) {}
+
   public void onChangesetApplied(
       Section rootSection,
       Section oldRootSection,
