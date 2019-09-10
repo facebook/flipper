@@ -36,11 +36,29 @@ class PredefinedComment extends Component<{
   selected: boolean;
   onClick: (_: unknown) => unknown;
 }> {
+  static Container = styled('div')((props: {selected: boolean}) => {
+    return {
+      border: '1px solid #f2f3f5',
+      cursor: 'pointer',
+      borderRadius: 24,
+      backgroundColor: props.selected ? '#ecf3ff' : '#f2f3f5',
+      marginBottom: 4,
+      marginRight: 4,
+      padding: '4px 8px',
+      color: props.selected ? 'rgb(56, 88, 152)' : undefined,
+      borderColor: props.selected ? '#3578e5' : undefined,
+      ':hover': {
+        borderColor: '#3578e5',
+      },
+    };
+  });
   render() {
     return (
-      <div onClick={this.props.onClick}>
-        {this.props.comment + (this.props.selected ? ' - Y' : ' - N')}
-      </div>
+      <PredefinedComment.Container
+        onClick={this.props.onClick}
+        selected={this.props.selected}>
+        {this.props.comment}
+      </PredefinedComment.Container>
     );
   }
 }
@@ -51,6 +69,7 @@ const Row = styled(FlexRow)({
   justifyContent: 'center',
   textAlign: 'center',
   color: '#9a9a9a',
+  flexWrap: 'wrap',
 });
 
 class FeedbackComponent extends Component<
