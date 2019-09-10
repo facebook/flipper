@@ -90,7 +90,7 @@ class FeedbackComponent extends Component<
     this.setState({rating: newRating, nextAction: nextAction});
     this.props.submitRating(newRating);
     if (nextAction === 'finished') {
-      setTimeout(this.props.close, 1000);
+      setTimeout(this.props.close, 1500);
     }
   }
   onCommentSubmitted(comment: string) {
@@ -197,7 +197,7 @@ class FeedbackComponent extends Component<
         ];
         break;
       case 'finished':
-        body = [];
+        body = [<Row>Thanks!</Row>];
         break;
       default: {
         console.error('Illegal state: nextAction: ' + this.state.nextAction);
