@@ -72,6 +72,15 @@ const Row = styled(FlexRow)({
   flexWrap: 'wrap',
 });
 
+type FeedbackComponentState = {
+  rating: number | null;
+  hoveredRating: number;
+  allowUserInfoSharing: boolean;
+  nextAction: NextAction;
+  predefinedComments: {[key: string]: boolean};
+  comment: string;
+};
+
 class FeedbackComponent extends Component<
   {
     submitRating: (rating: number) => void;
@@ -84,16 +93,9 @@ class FeedbackComponent extends Component<
     close(): void;
     promptData: FeedbackPrompt;
   },
-  {
-    rating: number | null;
-    hoveredRating: number;
-    allowUserInfoSharing: boolean;
-    nextAction: NextAction;
-    predefinedComments: {[key: string]: boolean};
-    comment: string;
-  }
+  FeedbackComponentState
 > {
-  state = {
+  state: FeedbackComponentState = {
     rating: null,
     hoveredRating: 0,
     allowUserInfoSharing: true,
