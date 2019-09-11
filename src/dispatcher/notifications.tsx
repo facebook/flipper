@@ -35,7 +35,7 @@ export default (store: Store, logger: Logger) => {
   ipcRenderer.on(
     'notificationEvent',
     (
-      e,
+      _e: Error,
       eventName: NotificationEvents,
       pluginNotification: PluginNotification,
       arg: null | string | number,
@@ -158,10 +158,10 @@ export default (store: Store, logger: Logger) => {
           // within the NOTIFICATION_THROTTLE.
           return;
         }
+        const plugin = pluginMap.get(n.pluginId);
         ipcRenderer.send('sendNotification', {
           payload: {
             title: n.notification.title,
-            // @ts-ignore Remove this when textContent is converted to tsx
             body: textContent(n.notification.message),
             actions: [
               {
@@ -174,7 +174,7 @@ export default (store: Store, logger: Logger) => {
               },
               {
                 type: 'button',
-                text: `Hide all ${pluginMap.get(n.pluginId).title || ''}`,
+                text: `Hide all ${plugin != null ? plugin.title : ''}`,
               },
             ],
             closeButtonText: 'Hide',
