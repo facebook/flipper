@@ -7,14 +7,16 @@
 
 import {init as initLogger} from '../fb-stubs/Logger';
 import Server from '../server';
-import reducers from '../reducers/index';
+import reducers, {Store} from '../reducers/index';
 import configureStore from 'redux-mock-store';
 import path from 'path';
 import os from 'os';
 import fs from 'fs';
 
-let server;
-const mockStore = configureStore([])(reducers(undefined, {type: 'INIT'}));
+let server: Server | null = null;
+const mockStore: Store = configureStore([])(
+  reducers(undefined, {type: 'INIT'}),
+) as Store;
 
 beforeAll(() => {
   // create config directory, which is usually created by static/index.js
@@ -33,7 +35,7 @@ test('servers starting at ports', done => {
 
   // Resolve promise when we get a listen event for each port
   const listenerPromise = new Promise((resolve, reject) => {
-    server.addListener('listening', port => {
+    server!.addListener('listening', port => {
       if (!serversToBeStarted.has(port)) {
         throw Error(`unknown server started at port ${port}`);
       } else {
@@ -47,11 +49,11 @@ test('servers starting at ports', done => {
   });
 
   // Initialise server after the listeners have been setup
-  server.init();
+  server!.init();
 
   return listenerPromise;
 });
 
 afterAll(() => {
-  return server.close();
+  return server!.close();
 });
