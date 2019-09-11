@@ -55,8 +55,8 @@ test('persistedStateReducer is resetting data', () => {
     id: '0',
   });
 
-  expect(datas.toJSON()).toEqual({});
-  expect(rows.size).toBe(0);
+  expect(datas!.toJSON()).toEqual({});
+  expect(rows!.size).toBe(0);
 });
 
 test('persistedStateReducer is adding data', () => {
@@ -71,6 +71,6 @@ test('persistedStateReducer is adding data', () => {
     {id},
   );
 
-  expect(rows.size).toBe(1);
-  expect([...datas.keys()]).toEqual([id]);
+  expect(rows!.size).toBe(1);
+  expect([...datas!.keys()]).toEqual([id]);
 });
