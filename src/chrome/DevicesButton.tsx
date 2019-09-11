@@ -48,15 +48,19 @@ class DevicesButton extends Component<Props> {
     // reasons ...
     whichPromise('emulator')
       .catch(() => `${process.env.ANDROID_HOME || ''}/tools/emulator`)
-      .then((emulatorPath: string) => {
-        const child = spawn(emulatorPath, [`@${name}`], {
-          detached: true,
-          cwd: dirname(emulatorPath),
-        });
-        child.stderr.on('data', data => {
-          console.error(`Android emulator error: ${data}`);
-        });
-        child.on('error', console.error);
+      .then(emulatorPath => {
+        if (emulatorPath) {
+          const child = spawn(emulatorPath, [`@${name}`], {
+            detached: true,
+            cwd: dirname(emulatorPath),
+          });
+          child.stderr.on('data', data => {
+            console.error(`Android emulator error: ${data}`);
+          });
+          child.on('error', console.error);
+        } else {
+          throw new Error('Could not get emulator path');
+        }
       })
       .catch(console.error);
     this.props.preferDevice(name);
@@ -155,7 +159,7 @@ class DevicesButton extends Component<Props> {
         }));
       if (emulators.length > 0) {
         dropdown.push(
-          {type: 'separator'},
+          {type: 'separator' as 'separator'},
           {
             label: 'Launch Android emulators',
             enabled: false,
@@ -165,7 +169,7 @@ class DevicesButton extends Component<Props> {
       }
     }
     if (dropdown.length > 0) {
-      dropdown.push({type: 'separator'});
+      dropdown.push({type: 'separator' as 'separator'});
     }
     dropdown.push({
       label: 'Open File...',
