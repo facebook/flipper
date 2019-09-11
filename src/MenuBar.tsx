@@ -10,6 +10,7 @@ import {showOpenDialog} from './utils/exportData';
 import {setSelectPluginsToExportActiveSheet} from './reducers/application';
 import {Store} from './reducers/';
 import electron, {MenuItemConstructorOptions} from 'electron';
+import {notNull} from './utils/typeUtils';
 import constants from './fb-stubs/constants';
 import os from 'os';
 import path from 'path';
@@ -48,7 +49,7 @@ export type KeyboardActions = Array<DefaultKeyboardAction | KeyboardAction>;
 
 const menuItems: Map<string, electron.MenuItem> = new Map();
 
-let pluginActionHandler;
+let pluginActionHandler: ((action: string) => void) | null;
 function actionHandler(action: string) {
   if (pluginActionHandler) {
     pluginActionHandler(action);
@@ -75,7 +76,8 @@ export function setupMenuBar(
         typeof action === 'string'
           ? defaultKeyboardActions.find(a => a.action === action)
           : action,
-      ),
+      )
+      .filter(notNull),
   );
 
   // add keyboard actions to
@@ -100,7 +102,7 @@ export function setupMenuBar(
         const menuItem = menu.submenu.items.find(
           menuItem => menuItem.label === label,
         );
-        menuItems.set(action, menuItem);
+        menuItem && menuItems.set(action, menuItem);
       }
     }
   });
@@ -177,12 +179,13 @@ function getTemplate(
       accelerator: 'CommandOrControl+E',
       click: function() {
         electron.remote.dialog.showSaveDialog(
+          // @ts-ignore This appears to work but isn't allowed by the types
           null,
           {
             title: 'FlipperExport',
             defaultPath: path.join(os.homedir(), 'FlipperExport.flipper'),
           },
-          async file => {
+          async (file: string) => {
             if (!file) {
               return;
             }
