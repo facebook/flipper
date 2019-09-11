@@ -39,6 +39,7 @@ import {
   MAX_MINIMUM_PLUGINS,
   SHOW_REMAINING_PLUGIN_IF_LESS_THAN,
 } from '../Client';
+import {StyledOtherComponent} from 'create-emotion-styled';
 
 const ListItem = styled('div')(({active}: {active?: boolean}) => ({
   paddingLeft: 10,
@@ -70,7 +71,7 @@ const SidebarHeader = styled(FlexBox)({
 });
 
 const PluginShape = styled(FlexBox)(
-  ({backgroundColor}: {backgroundColor: BackgroundColorProperty}) => ({
+  ({backgroundColor}: {backgroundColor?: BackgroundColorProperty}) => ({
     marginRight: 5,
     backgroundColor,
     borderRadius: 3,
@@ -159,7 +160,7 @@ class PluginSidebarListItem extends Component<{
   render() {
     const {isActive, plugin} = this.props;
     const app = this.props.app || 'Facebook';
-    let iconColor = brandColors[app];
+    let iconColor: string | undefined = (brandColors as any)[app];
 
     if (!iconColor) {
       const pluginColors = [
@@ -195,7 +196,9 @@ const Spinner = centerInSidebar(LoadingIndicator);
 
 const ErrorIndicator = centerInSidebar(Glyph);
 
-function centerInSidebar(component) {
+function centerInSidebar(
+  component: StyledOtherComponent<any, {}, any> | React.ComponentType<any>,
+) {
   return styled(component)({
     marginTop: '10px',
     marginBottom: '10px',
@@ -224,9 +227,9 @@ type StateFromProps = {
 
 type DispatchFromProps = {
   selectPlugin: (payload: {
-    selectedPlugin: string | null | undefined;
-    selectedApp: string | null | undefined;
-    deepLinkPayload: string | null | undefined;
+    selectedPlugin: string | null;
+    selectedApp: string | null;
+    deepLinkPayload: string | null;
   }) => void;
 
   setActiveSheet: (activeSheet: ActiveSheet) => void;
@@ -253,8 +256,10 @@ class MainSidebar extends PureComponent<Props> {
       )
       .sort((a, b) => (a.query.app || '').localeCompare(b.query.app));
 
-    const byPluginNameOrId = (a, b) =>
-      (a.title || a.id) > (b.title || b.id) ? 1 : -1;
+    const byPluginNameOrId = (
+      a: typeof FlipperBasePlugin,
+      b: typeof FlipperBasePlugin,
+    ) => ((a.title || a.id) > (b.title || b.id) ? 1 : -1);
 
     return (
       <Sidebar
