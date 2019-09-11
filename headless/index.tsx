@@ -6,11 +6,11 @@
  */
 
 import path from 'path';
-import {createStore} from 'redux';
+import {createStore, Dispatch, Middleware, MiddlewareAPI} from 'redux';
 import {applyMiddleware} from 'redux';
 import yargs, {Argv} from 'yargs';
 import dispatcher from '../src/dispatcher/index';
-import reducers from '../src/reducers/index';
+import reducers, {Actions, State} from '../src/reducers/index';
 import {init as initLogger} from '../src/fb-stubs/Logger';
 import {exportStore, pluginsClassMap} from '../src/utils/exportData';
 import {
@@ -19,11 +19,11 @@ import {
 } from '../src/utils/exportMetrics';
 import {listDevices} from '../src/utils/listDevices';
 import setup from '../static/setup.js';
-import {Store} from '../src/reducers/index';
 import {getPersistentPlugins} from '../src/utils/pluginUtils';
 import {serialize} from '../src/utils/serialization';
 import {getStringFromErrorLike} from '../src/utils/index';
 import AndroidDevice from '../src/devices/AndroidDevice';
+import {Store} from 'flipper';
 
 type Action = {exit: boolean; result?: string};
 
@@ -40,7 +40,7 @@ type UserArguments = {
   selectPlugins: Array<string>;
 };
 
-yargs
+(yargs as Argv<UserArguments>)
   .usage('$0 [args]')
   .command<UserArguments>(
     '*',
@@ -107,14 +107,15 @@ yargs
   .version(global.__VERSION__)
   .help().argv; // http://yargs.js.org/docs/#api-argv
 
-function shouldExportMetric(metrics): boolean {
+function shouldExportMetric(metrics: string): boolean {
   if (!metrics) {
     return process.argv.includes('--metrics');
   }
   return true;
 }
 
-function outputAndExit(output: string): void {
+function outputAndExit(output: string | null | undefined): void {
+  output = output || '';
   console.log(`Finished. Outputting ${output.length} characters.`);
   process.stdout.write(output, () => {
     process.exit(0);
@@ -172,7 +173,7 @@ async function exitActions(
             store,
             state.pluginStates,
           );
-          outputAndExit(payload.toString());
+          outputAndExit(payload);
         } else {
           const {serializedString, errorArray} = await exportStore(store);
           errorArray.forEach(console.error);
@@ -217,7 +218,7 @@ async function startFlipper(userArguments: UserArguments) {
   const originalConsole = global.console;
   global.console = new Proxy(console, {
     get: function(_obj, prop) {
-      return (...args) => {
+      return (...args: any[]) => {
         if (prop === 'error' || verbose) {
           originalConsole.error(`[${String(prop)}] `, ...args);
         }
@@ -238,18 +239,20 @@ async function startFlipper(userArguments: UserArguments) {
   // needs to be required after WebSocket polyfill is loaded
   const devToolsEnhancer = require('remote-redux-devtools');
 
-  const headlessMiddleware = store => next => action => {
+  const headlessMiddleware: Middleware<{}, State, any> = (
+    store: MiddlewareAPI<Dispatch<Actions>, State>,
+  ) => (next: Dispatch<Actions>) => (action: Actions) => {
     if (exit == 'disconnect' && action.type == 'CLIENT_REMOVED') {
       // TODO(T42325892): Investigate why the export stalls without exiting the
       // current eventloop task here.
       setTimeout(() => {
         if (shouldExportMetric(metrics) && !metrics) {
           const state = store.getState();
-          exportMetricsWithoutTrace(state, state.pluginStates)
-            .then(payload => {
+          exportMetricsWithoutTrace(store as Store, state.pluginStates)
+            .then((payload: string | null) => {
               outputAndExit(payload || '');
             })
-            .catch(e => {
+            .catch((e: Error) => {
               errorAndExit(e);
             });
         } else {
@@ -257,7 +260,7 @@ async function startFlipper(userArguments: UserArguments) {
             .then(({serializedString}) => {
               outputAndExit(serializedString);
             })
-            .catch(e => {
+            .catch((e: Error) => {
               errorAndExit(e);
             });
         }
@@ -267,7 +270,7 @@ async function startFlipper(userArguments: UserArguments) {
   };
 
   setup({});
-  const store = createStore(
+  const store = createStore<State, Actions, {}, {}>(
     reducers,
     devToolsEnhancer.composeWithDevTools(applyMiddleware(headlessMiddleware)),
   );
