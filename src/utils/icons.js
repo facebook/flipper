@@ -79,7 +79,10 @@ module.exports = {
       variant = 'outline';
     }
 
-    const localPath = path.join('icons', `${name}-${size}@${density}x.png`);
+    const localPath = path.join(
+      'icons',
+      `${name}-${variant}-${size}@${density}x.png`,
+    );
     // resolve icon locally if possible
     if (
       remote &&
