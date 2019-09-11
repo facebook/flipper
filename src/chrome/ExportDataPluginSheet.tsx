@@ -20,13 +20,14 @@ import {
   setExportDataToFileActiveSheet as getExportDataToFileActiveSheetAction,
 } from '../reducers/application';
 import SelectPluginSheet from './SelectPluginSheet';
+import {Dispatch, Action} from 'redux';
 
 type OwnProps = {
   onHide: () => any;
 };
 
 type StateFromProps = {
-  share: ShareType;
+  share: ShareType | null;
   plugins: PluginState;
   pluginStates: PluginStatesState;
 };
@@ -90,17 +91,15 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
     plugins,
     pluginStates,
   }),
-  dispatch => {
-    return {
-      selectedPlugins: (plugins: Array<string>) => {
-        dispatch(actionForSelectedPlugins(plugins));
-      },
-      setActiveSheet: (payload: ActiveSheet) => {
-        dispatch(getActiveSheetAction(payload));
-      },
-      setExportDataToFileActiveSheet: (payload: string) => {
-        dispatch(getExportDataToFileActiveSheetAction(payload));
-      },
-    };
-  },
+  (dispatch: Dispatch<Action<any>>) => ({
+    selectedPlugins: (plugins: Array<string>) => {
+      dispatch(actionForSelectedPlugins(plugins));
+    },
+    setActiveSheet: (payload: ActiveSheet) => {
+      dispatch(getActiveSheetAction(payload));
+    },
+    setExportDataToFileActiveSheet: (payload: string) => {
+      dispatch(getExportDataToFileActiveSheetAction(payload));
+    },
+  }),
 )(ExportDataPluginSheet);
