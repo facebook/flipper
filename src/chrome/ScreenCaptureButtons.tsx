@@ -119,8 +119,8 @@ class ScreenCaptureButtons extends Component<Props, State> {
       reportPlatformFailures(
         selectedDevice
           .screenshot()
-          .then((buffer: Buffer) => writeBufferToFile(pngPath, buffer))
-          .then((path: string) => openFile(path)),
+          .then(buffer => writeBufferToFile(pngPath, buffer))
+          .then(path => openFile(path)),
         'captureScreenshot',
       );
     }
@@ -206,13 +206,15 @@ class ScreenCaptureButtons extends Component<Props, State> {
     dst: string,
   ): Promise<string> => {
     return new Promise((resolve, reject) => {
-      return device.adb.pull(device.serial, src).then(stream => {
-        stream.on('end', () => {
-          resolve(dst);
+      return device.adb
+        .pull(device.serial, src)
+        .then((stream: NodeJS.ReadStream) => {
+          stream.on('end', () => {
+            resolve(dst);
+          });
+          stream.on('error', reject);
+          stream.pipe(fs.createWriteStream(dst));
         });
-        stream.on('error', reject);
-        stream.pipe(fs.createWriteStream(dst));
-      });
     });
   };
 
@@ -236,7 +238,7 @@ class ScreenCaptureButtons extends Component<Props, State> {
     return device.adb
       .shell(device.serial, command)
       .then(adb.util.readAll)
-      .then(output => output.toString().trim());
+      .then((output: Buffer) => output.toString().trim());
   };
 
   onRecordingClicked = () => {

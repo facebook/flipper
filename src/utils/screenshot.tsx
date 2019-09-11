@@ -11,7 +11,10 @@ import fs from 'fs';
  * Writes a buffer to a specified file path.
  * Returns a Promise which resolves to the file path.
  */
-export const writeBufferToFile = (filePath: string, buffer: Buffer) => {
+export const writeBufferToFile = (
+  filePath: string,
+  buffer: Buffer,
+): Promise<string> => {
   return new Promise((resolve, reject) => {
     fs.writeFile(filePath, buffer, err => {
       if (err) {

@@ -15,7 +15,7 @@ interface Util {
 }
 
 declare module 'adbkit-fb' {
-  const util: any;
+  const util: Util;
   const adbkit: any;
   export interface Client {
     listDevices: () => Promise<Device[]>;
