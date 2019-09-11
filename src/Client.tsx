@@ -115,7 +115,9 @@ export default class Client extends EventEmitter {
   responder: Partial<Responder<string, any>>;
   store: Store;
   activePlugins: Set<string>;
-  device: Promise<BaseDevice> | undefined;
+  device: Promise<BaseDevice>;
+  _deviceResolve: (device: BaseDevice) => void = _ => {};
+  _deviceSet: boolean = false;
   logger: Logger;
   lastSeenDeviceList: Array<BaseDevice>;
   broadcastCallbacks: Map<string, Map<string, Set<Function>>>;
@@ -153,6 +155,10 @@ export default class Client extends EventEmitter {
     this.requestCallbacks = new Map();
     this.activePlugins = new Set();
     this.lastSeenDeviceList = [];
+
+    this.device = new Promise((resolve, _reject) => {
+      this._deviceResolve = resolve;
+    });
 
     const client = this;
     // node.js doesn't support requestIdleCallback
@@ -211,11 +217,11 @@ export default class Client extends EventEmitter {
      However, clients can connect before a device is registered, so wait a
      while for the device to be registered if it isn't already. */
   setMatchingDevice(): void {
-    if (this.device) {
+    if (this._deviceSet) {
       return;
     }
-    this.device = reportPlatformFailures(
-      new Promise((resolve, reject) => {
+    reportPlatformFailures(
+      new Promise<BaseDevice>((resolve, reject) => {
         const device = this.store
           .getState()
           .connections.devices.find(
@@ -248,7 +254,10 @@ export default class Client extends EventEmitter {
         }, 5000);
       }),
       'client-setMatchingDevice',
-    );
+    ).then(device => {
+      this._deviceSet = true;
+      this._deviceResolve(device);
+    });
   }
 
   supportsPlugin(Plugin: typeof FlipperPlugin): boolean {

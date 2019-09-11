@@ -120,7 +120,7 @@ export abstract class FlipperBasePlugin<
   reducers: {
     [actionName: string]: (state: State, actionData: any) => Partial<State>;
   } = {};
-  app: App;
+  app: App | null = null;
   onKeyboardAction: ((action: string) => void) | undefined;
 
   toJSON() {
