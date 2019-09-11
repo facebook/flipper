@@ -18,6 +18,8 @@ import {
   styled,
   colors,
   Link,
+  FlipperPlugin,
+  FlipperDevicePlugin,
 } from 'flipper';
 import StatusIndicator from '../ui/components/StatusIndicator';
 import {State as Store} from '../reducers';
@@ -59,7 +61,7 @@ const TableContainer = styled('div')({
   display: 'flex',
 });
 
-const Lamp = props => (
+const Lamp = (props: {on: boolean}) => (
   <StatusIndicator statusColor={props.on ? colors.lime : colors.red} />
 );
 
@@ -69,8 +71,8 @@ type StateFromProps = {
   failedPlugins: Array<[PluginDefinition, string]>;
   clients: Array<Client>;
   selectedDevice: string | null | undefined;
-  devicePlugins: Array<PluginDefinition>;
-  clientPlugins: Array<PluginDefinition>;
+  devicePlugins: Array<typeof FlipperDevicePlugin>;
+  clientPlugins: Array<typeof FlipperPlugin>;
 };
 
 type DispatchFromProps = {};
@@ -165,7 +167,7 @@ class PluginDebugger extends Component<Props> {
 
     // bundled plugins are loaded from the defaultPlugins directory within
     // Flipper's package.
-    const externalPluginPath = (p: PluginDefinition) =>
+    const externalPluginPath = (p: any) =>
       p.out
         ? p.out.startsWith('./defaultPlugins/')
           ? null
@@ -327,8 +329,10 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
     },
     connections: {clients, selectedDevice},
   }) => ({
-    devicePlugins: Array.from(devicePlugins.values()),
-    clientPlugins: Array.from(clientPlugins.values()),
+    devicePlugins: Array.from<typeof FlipperDevicePlugin>(
+      devicePlugins.values(),
+    ),
+    clientPlugins: Array.from<typeof FlipperPlugin>(clientPlugins.values()),
     gatekeepedPlugins,
     clients,
     disabledPlugins,
