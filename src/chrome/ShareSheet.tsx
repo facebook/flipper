@@ -20,14 +20,17 @@ import React, {Component} from 'react';
 import {setExportStatusComponent, unsetShare} from '../reducers/application';
 import {Logger} from '../fb-interfaces/Logger';
 import {Idler} from '../utils/Idler';
-import {shareFlipperData, DataExportResult} from '../fb-stubs/user';
+import {
+  shareFlipperData,
+  DataExportResult,
+  DataExportError,
+} from '../fb-stubs/user';
 import {exportStore, EXPORT_FLIPPER_TRACE_EVENT} from '../utils/exportData';
 import PropTypes from 'prop-types';
 import {clipboard} from 'electron';
 import ShareSheetErrorList from './ShareSheetErrorList';
 import {reportPlatformFailures} from '../utils/metrics';
 import CancellableExportStatus from './CancellableExportStatus';
-// $FlowFixMe: Missing type defs for node built-in.
 import {performance} from 'perf_hooks';
 export const SHARE_FLIPPER_TRACE_EVENT = 'share-flipper-link';
 
@@ -72,19 +75,11 @@ type Props = {
   onHide: () => any;
   logger: Logger;
 };
+
 type State = {
   runInBackground: boolean;
   errorArray: Array<Error>;
-  result:
-    | {
-        error_class: string;
-        error: string;
-      }
-    | {
-        flipperUrl: string;
-      }
-    | null
-    | undefined;
+  result: DataExportError | DataExportResult | null | undefined;
   statusUpdate: string | null | undefined;
 };
 
@@ -93,7 +88,7 @@ export default class ShareSheet extends Component<Props, State> {
     store: PropTypes.object.isRequired,
   };
 
-  state = {
+  state: State = {
     errorArray: [],
     result: null,
     statusUpdate: null,
@@ -149,13 +144,19 @@ export default class ShareSheet extends Component<Props, State> {
       this.props.logger.trackTimeSince(mark, 'export:url-success');
     } catch (e) {
       if (!this.state.runInBackground) {
-        const str = e instanceof Error ? e.toString() : e;
-        this.setState({
-          result: {
-            error_class: 'EXPORT_ERROR',
-            error: str,
-          },
-        });
+        const result: DataExportError = {
+          error_class: 'EXPORT_ERROR',
+          error: '',
+          stacktrace: '',
+        };
+
+        if (e instanceof Error) {
+          result.error = e.message;
+          result.stacktrace = e.stack || '';
+        } else {
+          result.error = e;
+        }
+        this.setState({result});
       }
       this.props.logger.trackTimeSince(mark, 'export:url-error');
     }
@@ -210,14 +211,15 @@ export default class ShareSheet extends Component<Props, State> {
       this.idler.cancel();
     };
     const {result, statusUpdate, errorArray} = this.state;
-    if (!result || !result.flipperUrl) {
+    if (!result || !(result as DataExportResult).flipperUrl) {
       return this.renderTheProgessState(onHide, statusUpdate);
     }
+
     return (
       <Container>
         <>
           <FlexColumn>
-            {result.flipperUrl ? (
+            {(result as DataExportResult).flipperUrl ? (
               <>
                 <Title bold>Data Upload Successful</Title>
                 <InfoText>
@@ -225,7 +227,7 @@ export default class ShareSheet extends Component<Props, State> {
                   to share with other Flipper users. Opening it will import the
                   data from your trace.
                 </InfoText>
-                <Copy value={result.flipperUrl} />
+                <Copy value={(result as DataExportResult).flipperUrl} />
                 <InfoText>
                   When sharing your Flipper link, consider that the captured
                   data might contain sensitve information like access tokens
@@ -235,9 +237,12 @@ export default class ShareSheet extends Component<Props, State> {
               </>
             ) : (
               <>
-                <Title bold>{result.error_class || 'Error'}</Title>
+                <Title bold>
+                  {(result as DataExportError).error_class || 'Error'}
+                </Title>
                 <ErrorMessage code>
-                  {result.error || 'The data could not be uploaded'}
+                  {(result as DataExportError).error ||
+                    'The data could not be uploaded'}
                 </ErrorMessage>
               </>
             )}

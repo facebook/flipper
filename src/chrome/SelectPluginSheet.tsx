@@ -116,7 +116,7 @@ export default class SelectPluginSheet extends Component<Props, State> {
   }
 
   onSubmit(plugins: PluginSelection) {
-    const selectedArray = Array.from(plugins.entries()).reduce(
+    const selectedArray = Array.from(plugins.entries()).reduce<string[]>(
       (acc, [plugin, selected]) => {
         if (selected) {
           acc.push(plugin);

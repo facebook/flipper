@@ -84,7 +84,7 @@ export default class ShareSheetExportFile extends Component<Props, State> {
     store: PropTypes.object.isRequired,
   };
 
-  state = {
+  state: State = {
     errorArray: [],
     result: null,
     statusUpdate: null,
