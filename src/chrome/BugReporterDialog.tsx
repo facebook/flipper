@@ -116,8 +116,8 @@ class BugReporterDialog extends Component<Props, State> {
     error: null,
   };
 
-  titleRef: HTMLElement;
-  descriptionRef: HTMLElement;
+  titleRef?: HTMLElement;
+  descriptionRef?: HTMLElement;
 
   onDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     this.setState({description: e.target.value});
@@ -134,14 +134,18 @@ class BugReporterDialog extends Component<Props, State> {
       this.setState({
         error: 'Title required.',
       });
-      this.titleRef.focus();
+      if (this.titleRef) {
+        this.titleRef.focus();
+      }
       return;
     }
     if (!description) {
       this.setState({
         error: 'Description required.',
       });
-      this.descriptionRef.focus();
+      if (this.descriptionRef) {
+        this.descriptionRef.focus();
+      }
       return;
     }
 
@@ -310,7 +314,8 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
     plugins: {devicePlugins, clientPlugins},
     connections: {selectedPlugin},
   }) => ({
-    activePlugin:
-      devicePlugins.get(selectedPlugin) || clientPlugins.get(selectedPlugin),
+    activePlugin: selectedPlugin
+      ? devicePlugins.get(selectedPlugin) || clientPlugins.get(selectedPlugin)
+      : null,
   }),
 )(BugReporterDialog);
