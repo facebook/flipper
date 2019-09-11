@@ -16,12 +16,14 @@ import {State as PluginState} from 'src/reducers/pluginStates';
 
 type State = {
   bookmarks: Array<Bookmark>;
+  hasRetrievedBookmarks: boolean;
+  retreivingBookmarks: boolean;
 };
 
 type OwnProps = {};
 
 type StateFromProps = {
-  currentURI: string;
+  currentURI: string | undefined;
   selectedDevice: BaseDevice | null | undefined;
 };
 
@@ -51,7 +53,7 @@ const shortenText = (text: string, MAX_CHARACTERS = 30): string => {
 
 type Props = OwnProps & StateFromProps & DispatchFromProps;
 class LocationsButton extends Component<Props, State> {
-  state = {
+  state: State = {
     bookmarks: [],
     hasRetrievedBookmarks: false,
     retreivingBookmarks: false,
@@ -109,10 +111,16 @@ class LocationsButton extends Component<Props, State> {
 }
 
 const mapStateFromPluginStatesToProps = (pluginStates: PluginState) => {
-  const navPluginState = pluginStates[
-    Object.keys(pluginStates).find(key => /#Navigation$/.test(key))
-  ] as (NavPluginState | null);
-  const currentURI = navPluginState && navPluginState.currentURI;
+  const pluginKey = Object.keys(pluginStates).find(key =>
+    /#Navigation$/.test(key),
+  );
+  let currentURI: string | undefined;
+  if (pluginKey) {
+    const navPluginState = pluginStates[pluginKey] as
+      | NavPluginState
+      | undefined;
+    currentURI = navPluginState && navPluginState.currentURI;
+  }
   return {
     currentURI,
   };
