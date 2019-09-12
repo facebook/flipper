@@ -264,7 +264,6 @@ export default class extends PureComponent<Props, State> {
               translate={this.state.translate}
               zoom={this.state.zoom}
               nodeLabelComponent={{
-                // $FlowFixMe props are passed in by react-d3-tree
                 render: (
                   <NodeLabel onLabelClicked={this.props.nodeClickHandler} />
                 ),
