@@ -22,9 +22,19 @@ class Index extends React.Component {
             </h2>
             <div className="row">
               <a
-                className="landing-btn primary"
+                className="landing-btn landing-btn-left primary"
                 href="https://www.facebook.com/fbflipper/public/mac">
-                Download
+                Download Mac
+              </a>
+              <a
+                className="landing-btn landing-btn-middle primary"
+                href="https://www.facebook.com/fbflipper/public/linux">
+                Linux
+              </a>
+              <a
+                className="landing-btn landing-btn-right primary"
+                href="https://www.facebook.com/fbflipper/public/windows">
+                Windows
               </a>
               <a className="landing-btn" href="/docs/features/index.html">
                 Learn more
