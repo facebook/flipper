@@ -20,6 +20,8 @@ import GK from '../fb-stubs/GK';
 import * as UserFeedback from '../fb-stubs/UserFeedback';
 import {FeedbackPrompt} from '../fb-stubs/UserFeedback';
 
+const useEligibilityCheck = GK.get('flipper_use_itsr_eligibility_check');
+
 type Props = {
   onRatingChanged: (rating: number) => void;
 };
@@ -254,7 +256,7 @@ export default class RatingButton extends Component<Props, State> {
   state = {
     promptData: null,
     isShown: false,
-    userIsEligible: !GK.get('flipper_use_itsr_eligibility_check'),
+    userIsEligible: !useEligibilityCheck,
   };
 
   constructor(props: Props) {
@@ -265,7 +267,11 @@ export default class RatingButton extends Component<Props, State> {
   }
 
   onClick() {
-    this.setState({isShown: !this.state.isShown});
+    const willBeShown = !this.state.isShown;
+    this.setState({isShown: willBeShown});
+    if (!willBeShown && useEligibilityCheck) {
+      UserFeedback.dismiss();
+    }
   }
 
   submitRating(rating: number) {

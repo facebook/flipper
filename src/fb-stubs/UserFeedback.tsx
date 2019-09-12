@@ -27,6 +27,9 @@ export async function submitComment(
 ): Promise<void> {
   throw new Error('Method not implemented.');
 }
+export async function dismiss(): Promise<void> {
+  throw new Error('Method not implemented.');
+}
 export async function getPrompt(): Promise<FeedbackPrompt> {
   throw new Error('Method not implemented.');
 }
