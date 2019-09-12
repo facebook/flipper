@@ -27,6 +27,7 @@ type Props = {
 type State = {
   promptData: FeedbackPrompt | null;
   isShown: boolean;
+  userIsEligible: boolean;
 };
 
 type NextAction = 'select-rating' | 'leave-comment' | 'finished';
@@ -253,6 +254,7 @@ export default class RatingButton extends Component<Props, State> {
   state = {
     promptData: null,
     isShown: false,
+    userIsEligible: !GK.get('flipper_use_itsr_eligibility_check'),
   };
 
   constructor(props: Props) {
@@ -287,6 +289,13 @@ export default class RatingButton extends Component<Props, State> {
   render() {
     if (!GK.get('flipper_rating')) {
       return null;
+    }
+    if (!this.state.userIsEligible) {
+      return (
+        <UserFeedback.StarRatingsEligibilityChecker
+          callback={isEligible => this.setState({userIsEligible: isEligible})}
+        />
+      );
     }
     const promptData = this.state.promptData;
     if (!promptData) {

@@ -5,6 +5,8 @@
  * @format
  */
 
+import {Component} from 'react';
+
 export type FeedbackPrompt = {
   preSubmitHeading: string;
   postSubmitHeading: string;
@@ -28,3 +30,6 @@ export async function submitComment(
 export async function getPrompt(): Promise<FeedbackPrompt> {
   throw new Error('Method not implemented.');
 }
+export class StarRatingsEligibilityChecker extends Component<{
+  callback: (userIsEligible: boolean) => void;
+}> {}
