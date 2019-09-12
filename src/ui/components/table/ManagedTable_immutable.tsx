@@ -322,7 +322,6 @@ class ManagedTable extends React.Component<
       if (!e.shiftKey) {
         highlightedRows.clear();
       }
-      // $FlowFixMe 0 <= newIndex <= rows.size - 1
       highlightedRows.add(rows.get(newIndex)!.key);
       this.onRowHighlighted(highlightedRows, () => {
         const {current} = this.tableRef;
@@ -437,11 +436,9 @@ class ManagedTable extends React.Component<
     let startIndex = -1;
     let endIndex = -1;
     for (let i = 0; i < this.props.rows.size; i++) {
-      // $FlowFixMe 0 <= newIndex <= rows.size - 1
       if (this.props.rows.get(i)!.key === fromKey) {
         startIndex = i;
       }
-      // $FlowFixMe 0 <= newIndex <= rows.size - 1
       if (this.props.rows.get(i)!.key === toKey) {
         endIndex = i;
       }
@@ -456,7 +453,6 @@ class ManagedTable extends React.Component<
       i++
     ) {
       try {
-        // $FlowFixMe 0 <= newIndex <= rows.size - 1
         selected.push(this.props.rows.get(i)!.key);
       } catch (e) {}
     }
@@ -475,7 +471,6 @@ class ManagedTable extends React.Component<
       !e.shiftKey // When shift key is pressed, it's a range select not a drag select
     ) {
       current.scrollToItem(index + 1);
-      // $FlowFixMe 0 <= newIndex <= rows.size - 1
       const startKey = this.props.rows.get(dragStartIndex)!.key;
       const highlightedRows = new Set(this.selectInRange(startKey, row.key));
       this.onRowHighlighted(highlightedRows);

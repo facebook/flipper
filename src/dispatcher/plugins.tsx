@@ -107,7 +107,6 @@ export function getDynamicPlugins() {
   let dynamicPlugins: Array<PluginDefinition> = [];
   try {
     dynamicPlugins = JSON.parse(
-      // $FlowFixMe process.env not defined in electron API spec
       (remote && remote.process.env.PLUGINS) || process.env.PLUGINS || '[]',
     );
   } catch (e) {

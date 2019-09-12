@@ -6,7 +6,6 @@
  */
 
 import {ipcRenderer} from 'electron';
-// $FlowFixMe perf_hooks is a new API in node
 import {performance} from 'perf_hooks';
 
 import {Store} from '../reducers/index';

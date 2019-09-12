@@ -12,8 +12,14 @@ export {};
 type RequestIdleHandle = number;
 
 declare global {
+  interface StoreEnhancerStateSanitizer {
+    stateSanitizer: Function;
+  }
+
   interface Window {
-    __REDUX_DEVTOOLS_EXTENSION__: undefined | StoreEnhancerStoreCreator;
+    __REDUX_DEVTOOLS_EXTENSION__:
+      | undefined
+      | StoreEnhancerStoreCreator & StoreEnhancerStateSanitizer;
 
     Flipper: {
       init: () => void;

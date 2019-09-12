@@ -367,7 +367,6 @@ export default class Client extends EventEmitter {
           this.store.getState().plugins.devicePlugins.get(params.api);
         if (persistingPlugin && persistingPlugin.persistedStateReducer) {
           let pluginKey = `${this.id}#${params.api}`;
-          //$FlowFixMe
           if (persistingPlugin.prototype instanceof FlipperDevicePlugin) {
             // For device plugins, we are just using the device id instead of client id as the prefix.
             this.deviceSerial().then(

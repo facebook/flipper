@@ -64,7 +64,6 @@ test('persistedStateReducer is adding data', () => {
   const tablePlugin = createTablePlugin({...PROPS, method});
   const id = '1';
 
-  // $FlowFixMe persistedStateReducer exists for createTablePlugin
   const {rows, datas} = tablePlugin.persistedStateReducer(
     tablePlugin.defaultPersistedState,
     method,

@@ -202,13 +202,11 @@ export default class Orderable extends React.Component<
       {passive: true},
     );
 
-    // $FlowFixMe
     const screenClickPos = event.nativeEvent[this.screenKey];
 
     document.addEventListener(
       'mousemove',
       (this._mousemove = (event: MouseEvent) => {
-        // $FlowFixMe
         const goingOpposite = event[this.screenKey] < screenClickPos;
         this.possibleMove(activeKey, goingOpposite, event, clickOffset, sizes);
       }),
@@ -230,7 +228,7 @@ export default class Orderable extends React.Component<
     if (containerRef) {
       const containerRect: Rect = containerRef.getBoundingClientRect();
 
-      let newActivePos = // $FlowFixMe
+      let newActivePos =
         event[this.screenKey] - containerRect[this.offsetKey] - cursorOffset;
       newActivePos = Math.max(-1, newActivePos);
       newActivePos = Math.min(

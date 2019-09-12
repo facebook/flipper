@@ -157,17 +157,14 @@ export abstract class FlipperBasePlugin<
   _teardown(): void {}
 
   dispatchAction(actionData: Actions) {
-    // $FlowFixMe
     const action = this.reducers[actionData.type];
     if (!action) {
-      // $FlowFixMe
       throw new ReferenceError(`Unknown action ${actionData.type}`);
     }
 
     if (typeof action === 'function') {
       this.setState(action.call(this, this.state, actionData) as State);
     } else {
-      // $FlowFixMe
       throw new TypeError(`Reducer ${actionData.type} isn't a function`);
     }
   }

@@ -63,7 +63,6 @@ export default function reducer(
         return;
       }
 
-      // $FlowFixMe Flow doesn't know prototype
       if (p.prototype instanceof FlipperDevicePlugin) {
         // @ts-ignore doesn't know p must be typeof FlipperDevicePlugin here
         devicePlugins.set(p.id, p);

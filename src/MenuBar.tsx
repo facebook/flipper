@@ -98,7 +98,6 @@ export function setupMenuBar(
         menuItem => menuItem.label === topLevelMenu,
       );
       if (menu) {
-        // $FlowFixMe submenu is missing in electron API spec
         const menuItem = menu.submenu.items.find(
           menuItem => menuItem.label === label,
         );
