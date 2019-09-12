@@ -12,7 +12,7 @@ ROOT_DIR=$(cd "$THIS_DIR" && hg root)
 
 cd "$ROOT_DIR/xplat/sonar"
 
-# Sonar's Electron dependency downloads itself via a post-install script.
+# Flipper's Electron dependency downloads itself via a post-install script.
 # When running in Sandcastle or devservers, the module install will fail
 # because we can't reach the internet. Setting the fwdproxy is dangerous, so
 # the next best thing is to install the modules with `--ignore-scripts`.
