@@ -3,6 +3,7 @@ executors:
   default-executor:
     docker:
       - image: circleci/android:api-29-ndk
+    resource_class: large
 
     environment:
       _JAVA_OPTIONS: "-Xmx1500m -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:ParallelGCThreads=2 -XX:ConcGCThreads=2 -XX:ParallelGCThreads=2 -Djava.util.concurrent.ForkJoinPool.common.parallelism=2"
@@ -11,8 +12,6 @@ executors:
 jobs:
   snapshot:
     executor: default-executor
-    docker:
-      - image: circleci/android:api-29-ndk
     steps:
       - checkout
       - run:
@@ -22,8 +21,6 @@ jobs:
             ./gradlew :android:assembleRelease && scripts/publish-android-snapshot.sh
   release:
     executor: default-executor
-    docker:
-      - image: circleci/android:api-29-ndk
     steps:
       - checkout
       - run:
@@ -54,10 +51,8 @@ workflows:
   version: 2
   build-and-deploy:
     jobs:
-      - snapshot:
-          filters:
-            branches:
-              only: master
+      # TODO: Restore before landing.
+      - snapshot
       - release:
           filters:
             tags:
