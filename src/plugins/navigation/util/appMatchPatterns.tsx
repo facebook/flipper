@@ -7,7 +7,7 @@
 
 import fs from 'fs';
 import path from 'path';
-
+import {BaseDevice, AndroidDevice, IOSDevice} from 'flipper';
 import {AppMatchPattern} from '../types';
 
 const extractAppNameFromSelectedApp = (selectedApp: string | null) => {
@@ -18,14 +18,22 @@ const extractAppNameFromSelectedApp = (selectedApp: string | null) => {
   }
 };
 
-export const getAppMatchPatterns = (selectedApp: string | null) => {
+export const getAppMatchPatterns = (
+  selectedApp: string | null,
+  device: BaseDevice,
+) => {
   return new Promise<Array<AppMatchPattern>>((resolve, reject) => {
     const appName = extractAppNameFromSelectedApp(selectedApp);
     if (appName === 'Facebook') {
-      const patternsPath = path.join(
-        'facebook',
-        'facebook-match-patterns.json',
-      );
+      let filename: string;
+      if (device instanceof AndroidDevice) {
+        filename = 'facebook-match-patterns-android.json';
+      } else if (device instanceof IOSDevice) {
+        filename = 'facebook-match-patterns-ios.json';
+      } else {
+        return;
+      }
+      const patternsPath = path.join('facebook', filename);
       fs.readFile(patternsPath, (err, data) => {
         if (err) {
           reject(err);

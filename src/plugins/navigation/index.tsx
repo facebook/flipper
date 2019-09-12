@@ -26,7 +26,13 @@ import {
 } from './util/autoCompleteProvider';
 import {getAppMatchPatterns} from './util/appMatchPatterns';
 import {getRequiredParameters, filterOptionalParameters} from './util/uri';
-import {State, PersistedState, Bookmark, NavigationEvent} from './types';
+import {
+  State,
+  PersistedState,
+  Bookmark,
+  NavigationEvent,
+  AppMatchPattern,
+} from './types';
 import React from 'react';
 
 export default class extends FlipperPlugin<State, any, PersistedState> {
@@ -97,8 +103,9 @@ export default class extends FlipperPlugin<State, any, PersistedState> {
   componentDidMount = () => {
     const {selectedApp} = this.props;
     this.subscribeToNavigationEvents();
-    getAppMatchPatterns(selectedApp)
-      .then(patterns => {
+    this.getDevice()
+      .then(device => getAppMatchPatterns(selectedApp, device))
+      .then((patterns: Array<AppMatchPattern>) => {
         this.props.setPersistedState({
           appMatchPatterns: patterns,
           appMatchPatternsProvider: appMatchPatternsToAutoCompleteProvider(
