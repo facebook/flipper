@@ -82,8 +82,7 @@ export default class AndroidDevice extends BaseDevice {
 
   clearLogs(): Promise<void> {
     this.logEntries = [];
-    return spawn('adb', ['logcat', '-c'])
-      .then(_ => undefined);
+    return spawn('adb', ['logcat', '-c']).then(_ => undefined);
   }
 
   archive(): ArchivedDevice {
