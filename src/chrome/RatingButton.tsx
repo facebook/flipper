@@ -30,6 +30,7 @@ type State = {
   promptData: FeedbackPrompt | null;
   isShown: boolean;
   userIsEligible: boolean;
+  hasTriggered: boolean;
 };
 
 type NextAction = 'select-rating' | 'leave-comment' | 'finished';
@@ -257,6 +258,7 @@ export default class RatingButton extends Component<Props, State> {
     promptData: null,
     isShown: false,
     userIsEligible: !useEligibilityCheck,
+    hasTriggered: false,
   };
 
   constructor(props: Props) {
@@ -268,7 +270,7 @@ export default class RatingButton extends Component<Props, State> {
 
   onClick() {
     const willBeShown = !this.state.isShown;
-    this.setState({isShown: willBeShown});
+    this.setState({isShown: willBeShown, hasTriggered: true});
     if (!willBeShown && useEligibilityCheck) {
       UserFeedback.dismiss();
     }
@@ -292,6 +294,19 @@ export default class RatingButton extends Component<Props, State> {
     );
   }
 
+  triggerPopover() {
+    if (!this.state.hasTriggered) {
+      this.setState({isShown: true, hasTriggered: true});
+    }
+  }
+
+  setIsEligible(isEligible: boolean) {
+    this.setState({userIsEligible: isEligible});
+    if (isEligible) {
+      setTimeout(this.triggerPopover.bind(this), 30000);
+    }
+  }
+
   render() {
     if (!GK.get('flipper_rating')) {
       return null;
@@ -299,7 +314,7 @@ export default class RatingButton extends Component<Props, State> {
     if (!this.state.userIsEligible) {
       return (
         <UserFeedback.StarRatingsEligibilityChecker
-          callback={isEligible => this.setState({userIsEligible: isEligible})}
+          callback={this.setIsEligible.bind(this)}
         />
       );
     }
