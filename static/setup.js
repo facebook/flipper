@@ -48,6 +48,7 @@ module.exports = function(argv) {
   config = {
     ...config,
     updaterEnabled: argv.updater,
+    launcherEnabled: argv.launcher,
     launcherMsg: argv.launcherMsg,
   };
 
