@@ -247,7 +247,6 @@ type IncomingMessage =
   | {method: 'clearTable'};
 
 export default function createTableNativePlugin(id: string, title: string) {
-  // @ts-ignore
   return class extends FlipperPlugin<State, any, PersistedState> {
     static keyboardActions: KeyboardActions = ['clear', 'createPaste'];
     static id = id || '';
@@ -311,16 +310,17 @@ export default function createTableNativePlugin(id: string, title: string) {
 
     static persistedStateReducer(
       persistedState: PersistedState,
-      method: 'updateRows' | 'clearTable',
+      method: string,
       data: Array<RowData> | undefined,
     ): Partial<PersistedState> {
+      const methodEnum = method as 'updateRows' | 'clearTable';
       const message: IncomingMessage =
-        method === 'updateRows'
+        methodEnum === 'updateRows'
           ? {
-              method,
+              method: methodEnum,
               data: data || [],
             }
-          : {method};
+          : {method: methodEnum};
       return this.typedPersistedStateReducer(persistedState, message);
     }
 
