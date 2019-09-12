@@ -32,7 +32,7 @@ const store = createStore<StoreState, Actions, any, any>(
   reducers,
   window.__REDUX_DEVTOOLS_EXTENSION__
     ? window.__REDUX_DEVTOOLS_EXTENSION__({
-        // @ts-ignore
+        // @ts-ignore: stateSanitizer is not part of type definition.
         stateSanitizer,
       })
     : undefined,
