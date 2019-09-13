@@ -20,6 +20,7 @@ import {reportPlatformFailures} from './metrics';
 import {getAdbClient} from './adbClient';
 import * as androidUtil from './androidContainerUtility';
 import os from 'os';
+import {Client as ADBClient} from 'adbkit-fb';
 
 const tmpFile = promisify(tmp.file) as (
   options?: FileOptions,
@@ -72,7 +73,7 @@ export type SecureServerConfig = {
  */
 export default class CertificateProvider {
   logger: Logger;
-  adb: Promise<any>;
+  adb: Promise<ADBClient>;
   certificateSetup: Promise<void>;
   server: Server;
 
@@ -260,7 +261,7 @@ export default class CertificateProvider {
   ): Promise<string> {
     return this.adb
       .then(client => client.listDevices())
-      .then((devices: Array<{id: string}>) => {
+      .then(devices => {
         if (devices.length === 0) {
           throw new Error('No Android devices found');
         }

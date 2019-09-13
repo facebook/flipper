@@ -14,7 +14,7 @@ import adbkit, {Client} from 'adbkit-fb';
 const MAX_RETRIES = 5;
 let instance: Promise<Client>;
 
-export function getAdbClient(): Promise<any> {
+export function getAdbClient(): Promise<Client> {
   if (!instance) {
     instance = reportPlatformFailures(createClient(), 'createADBClient');
   }

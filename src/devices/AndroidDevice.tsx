@@ -6,14 +6,13 @@
  */
 
 import BaseDevice, {DeviceType, DeviceShell, LogLevel} from './BaseDevice';
-import adb from 'adbkit-fb';
+import adb, {Client as ADBClient} from 'adbkit-fb';
 import {Priority} from 'adbkit-logcat-fb';
 import child_process from 'child_process';
 import {spawn} from 'promisify-child-process';
 import ArchivedDevice from './ArchivedDevice';
 import {createWriteStream} from 'fs';
 
-type ADBClient = any;
 const DEVICE_RECORDING_DIR = '/sdcard/flipper_recorder';
 
 export default class AndroidDevice extends BaseDevice {
@@ -26,8 +25,8 @@ export default class AndroidDevice extends BaseDevice {
     super(serial, deviceType, title, 'Android');
     this.adb = adb;
     this.icon = 'icons/android.svg';
-    this.adb.openLogcat(this.serial).then((reader: any) => {
-      reader.on('entry', (entry: any) => {
+    this.adb.openLogcat(this.serial).then(reader => {
+      reader.on('entry', entry => {
         let type: LogLevel = 'unknown';
         if (entry.priority === Priority.VERBOSE) {
           type = 'verbose';
@@ -62,7 +61,6 @@ export default class AndroidDevice extends BaseDevice {
 
   adb: ADBClient;
   pidAppMapping: {[key: number]: string} = {};
-  logReader: any;
   private recordingDestination?: string;
 
   supportedColumns(): Array<string> {
@@ -105,7 +103,7 @@ export default class AndroidDevice extends BaseDevice {
 
   screenshot(): Promise<Buffer> {
     return new Promise((resolve, reject) => {
-      this.adb.screencap(this.serial).then((stream: NodeJS.WriteStream) => {
+      this.adb.screencap(this.serial).then(stream => {
         const chunks: Array<Buffer> = [];
         stream
           .on('data', (chunk: Buffer) => chunks.push(chunk))
@@ -149,13 +147,11 @@ export default class AndroidDevice extends BaseDevice {
       .then(
         () =>
           new Promise((resolve, reject) =>
-            this.adb
-              .pull(this.serial, recordingLocation)
-              .then((stream: NodeJS.WriteStream) => {
-                stream.on('end', resolve);
-                stream.on('error', reject);
-                stream.pipe(createWriteStream(destination));
-              }),
+            this.adb.pull(this.serial, recordingLocation).then(stream => {
+              stream.on('end', resolve);
+              stream.on('error', reject);
+              stream.pipe(createWriteStream(destination));
+            }),
           ),
       );
   }

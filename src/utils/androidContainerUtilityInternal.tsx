@@ -12,7 +12,7 @@
  */
 import {getAdbClient} from './adbClient';
 import {UnsupportedError} from './metrics';
-const adbkit = require('adbkit-fb');
+import adbkit from 'adbkit-fb';
 
 const allowedAppNameRegex = /^[a-zA-Z0-9._\-]+$/;
 const appNotDebuggableRegex = /debuggable/;

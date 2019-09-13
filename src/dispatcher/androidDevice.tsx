@@ -15,43 +15,36 @@ import {getAdbClient} from '../utils/adbClient';
 import {default as which} from 'which';
 import {promisify} from 'util';
 import {ServerPorts} from '../reducers/application';
-import {EventEmitter} from 'events';
+import {Client as ADBClient} from 'adbkit-fb';
 
 function createDevice(
-  adbClient: any,
+  adbClient: ADBClient,
   device: any,
   ports?: ServerPorts,
 ): Promise<AndroidDevice> {
-  return new Promise((resolve, reject) => {
+  return new Promise(resolve => {
     const type =
       device.type !== 'device' || device.id.startsWith('emulator')
         ? 'emulator'
         : 'physical';
 
-    adbClient
-      .getProperties(device.id)
-      .then(async (props: {[key: string]: string}) => {
-        let name = props['ro.product.model'];
-        if (type === 'emulator') {
-          name = (await getRunningEmulatorName(device.id)) || name;
-        }
-        const androidDevice = new AndroidDevice(
-          device.id,
-          type,
-          name,
-          adbClient,
-        );
-        if (ports) {
-          androidDevice.reverse([ports.secure, ports.insecure]);
-        }
-        resolve(androidDevice);
-      });
+    adbClient.getProperties(device.id).then(async props => {
+      let name = props['ro.product.model'];
+      if (type === 'emulator') {
+        name = (await getRunningEmulatorName(device.id)) || name;
+      }
+      const androidDevice = new AndroidDevice(device.id, type, name, adbClient);
+      if (ports) {
+        androidDevice.reverse([ports.secure, ports.insecure]);
+      }
+      resolve(androidDevice);
+    });
   });
 }
 
 export async function getActiveAndroidDevices(): Promise<Array<BaseDevice>> {
   const client = await getAdbClient();
-  const androidDevices: Array<AndroidDevice> = await client.listDevices();
+  const androidDevices = await client.listDevices();
   return await Promise.all(
     androidDevices.map(device => createDevice(client, device)),
   );
@@ -85,7 +78,7 @@ export default (store: Store, logger: Logger) => {
   const watchAndroidDevices = () => {
     // get emulators
     promisify(which)('emulator')
-      .catch(e => `${process.env.ANDROID_HOME || ''}/tools/emulator`)
+      .catch(() => `${process.env.ANDROID_HOME || ''}/tools/emulator`)
       .then(emulatorPath => {
         child_process.exec(
           `${emulatorPath} -list-avds`,
@@ -107,7 +100,7 @@ export default (store: Store, logger: Logger) => {
       .then(client => {
         client
           .trackDevices()
-          .then((tracker: EventEmitter) => {
+          .then(tracker => {
             tracker.on('error', err => {
               if (err.message === 'Connection closed') {
                 // adb server has shutdown, remove all android devices
