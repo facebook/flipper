@@ -77,13 +77,9 @@ export default class AndroidDevice extends BaseDevice {
     });
   }
 
-  spawnShell(): DeviceShell | null | undefined {
-    return child_process.spawn('adb', ['-s', this.serial, 'shell', '-t', '-t']);
-  }
-
   clearLogs(): Promise<void> {
     this.logEntries = [];
-    return spawn('adb', ['logcat', '-c']).then(_ => undefined);
+    return this.executeShell(['logcat', '-c']);
   }
 
   archive(): ArchivedDevice {
@@ -126,7 +122,7 @@ export default class AndroidDevice extends BaseDevice {
     }
   }
 
-  private async executeShell(command: string): Promise<void> {
+  private async executeShell(command: string | string[]): Promise<void> {
     const output = await this.adb
       .shell(this.serial, command)
       .then(adb.util.readAll)

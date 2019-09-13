@@ -135,10 +135,6 @@ export default class BaseDevice {
     this.logListeners.delete(id);
   }
 
-  spawnShell(): DeviceShell | null | undefined {
-    throw new Error('unimplemented');
-  }
-
   navigateToLocation(location: string) {
     throw new Error('unimplemented');
   }
