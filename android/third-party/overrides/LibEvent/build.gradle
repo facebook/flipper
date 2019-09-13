@@ -16,7 +16,7 @@ android {
         targetSdkVersion rootProject.targetSdkVersion
         externalNativeBuild {
             cmake {
-                arguments '-DANDROID_TOOLCHAIN=clang', '-DEVENT__DISABLE_OPENSSL=on'
+                arguments '-DANDROID_TOOLCHAIN=clang'
             }
         }
     }
