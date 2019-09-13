@@ -11,7 +11,6 @@ import {FlipperPlugin, AndroidDevice, styled} from 'flipper';
 import React from 'react';
 import getPort from 'get-port';
 import address from 'address';
-import {reverse} from './ADB';
 
 const Container = styled('div')({
   display: 'flex',
@@ -82,7 +81,8 @@ export default class extends FlipperPlugin<{}, any, {}> {
       this.client.call('config', {port, host});
 
       if (['quest', 'go', 'pacific'].includes(device.title.toLowerCase())) {
-        reverse(port, port);
+        const device = await this.getDevice();
+        (device as AndroidDevice).reverse([port, port]);
       }
     }
   }
