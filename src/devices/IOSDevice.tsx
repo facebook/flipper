@@ -6,7 +6,7 @@
  */
 
 import {DeviceType, LogLevel, DeviceLogEntry} from './BaseDevice';
-import child_process from 'child_process';
+import child_process, {ChildProcess} from 'child_process';
 import BaseDevice from './BaseDevice';
 import JSONStream from 'JSONStream';
 import {Transform} from 'stream';
@@ -39,6 +39,8 @@ type RawLogEntry = {
 export default class IOSDevice extends BaseDevice {
   log: any;
   buffer: string;
+  private recordingProcess?: ChildProcess;
+  private recordingLocation?: string;
 
   constructor(serial: string, deviceType: DeviceType, title: string) {
     super(serial, deviceType, title, 'iOS');
@@ -138,11 +140,11 @@ export default class IOSDevice extends BaseDevice {
 
   static parseLogEntry(entry: RawLogEntry): DeviceLogEntry {
     const LOG_MAPPING: Map<IOSLogLevel, LogLevel> = new Map([
-      ['Default', 'debug'],
-      ['Info', 'info'],
-      ['Debug', 'debug'],
-      ['Error', 'error'],
-      ['Fault', 'fatal'],
+      ['Default' as IOSLogLevel, 'debug' as LogLevel],
+      ['Info' as IOSLogLevel, 'info' as LogLevel],
+      ['Debug' as IOSLogLevel, 'debug' as LogLevel],
+      ['Error' as IOSLogLevel, 'error' as LogLevel],
+      ['Fault' as IOSLogLevel, 'fatal' as LogLevel],
     ]);
     let type: LogLevel = LOG_MAPPING.get(entry.messageType) || 'unknown';
 
@@ -173,6 +175,27 @@ export default class IOSDevice extends BaseDevice {
       message: entry.eventMessage,
       type,
     };
+  }
+
+  async screenCaptureAvailable() {
+    return this.deviceType === 'emulator';
+  }
+
+  async startScreenCapture(destination: string) {
+    this.recordingProcess = exec(
+      `xcrun simctl io booted recordVideo "${destination}"`,
+    );
+    this.recordingLocation = destination;
+  }
+
+  async stopScreenCaputre(): Promise<string | null> {
+    if (this.recordingProcess && this.recordingLocation) {
+      this.recordingProcess.kill('SIGINT');
+      const {recordingLocation} = this;
+      this.recordingLocation = undefined;
+      return recordingLocation;
+    }
+    return null;
   }
 }
 

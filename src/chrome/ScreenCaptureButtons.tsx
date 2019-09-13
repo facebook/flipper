@@ -8,13 +8,9 @@
 import {Button, ButtonGroup, writeBufferToFile} from 'flipper';
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
-import AndroidDevice from '../devices/AndroidDevice';
-import IOSDevice from '../devices/IOSDevice';
 import expandTilde from 'expand-tilde';
-import fs from 'fs';
 import os from 'os';
-import adb from 'adbkit-fb';
-import {exec, spawn} from 'child_process';
+import {spawn} from 'child_process';
 import {remote} from 'electron';
 import path from 'path';
 import {reportPlatformFailures} from '../utils/metrics';
@@ -35,13 +31,15 @@ type StateFromProps = {
 type DispatchFromProps = {};
 
 type State = {
-  pullingData: boolean;
   recording: boolean;
   recordingEnabled: boolean;
   capturingScreenshot: boolean;
 };
 
-function openFile(path: string) {
+function openFile(path: string | null) {
+  if (!path) {
+    return;
+  }
   const child = spawn(getOpenCommand(), [path]);
   child.on('exit', code => {
     if (code != 0) {
@@ -68,11 +66,9 @@ function getFileName(extension: 'png' | 'mp4'): string {
 
 type Props = OwnProps & StateFromProps & DispatchFromProps;
 class ScreenCaptureButtons extends Component<Props, State> {
-  iOSRecorder: any | null | undefined;
   videoPath: string | null | undefined;
 
   state = {
-    pullingData: false,
     recording: false,
     recordingEnabled: false,
     capturingScreenshot: false,
@@ -83,33 +79,17 @@ class ScreenCaptureButtons extends Component<Props, State> {
   }
 
   componentWillReceiveProps(nextProps: Props) {
-    this.checkIfRecordingIsAvailable(nextProps);
+    if (nextProps.selectedDevice !== this.props.selectedDevice) {
+      this.checkIfRecordingIsAvailable(nextProps);
+    }
   }
 
-  checkIfRecordingIsAvailable = (props: Props = this.props): void => {
+  checkIfRecordingIsAvailable = async (props: Props = this.props) => {
     const {selectedDevice} = props;
-
-    if (selectedDevice instanceof AndroidDevice) {
-      this.executeShell(
-        selectedDevice,
-        `[ ! -f /system/bin/screenrecord ] && echo "File does not exist"`,
-      ).then(output =>
-        this.setState({
-          recordingEnabled: !output,
-        }),
-      );
-    } else if (
-      selectedDevice instanceof IOSDevice &&
-      selectedDevice.deviceType === 'emulator'
-    ) {
-      this.setState({
-        recordingEnabled: true,
-      });
-    } else {
-      this.setState({
-        recordingEnabled: false,
-      });
-    }
+    const recordingEnabled = selectedDevice
+      ? await selectedDevice.screenCaptureAvailable()
+      : false;
+    this.setState({recordingEnabled});
   };
 
   captureScreenshot: Promise<void> | any = () => {
@@ -126,119 +106,29 @@ class ScreenCaptureButtons extends Component<Props, State> {
     }
   };
 
-  startRecording = () => {
+  startRecording = async () => {
     const {selectedDevice} = this.props;
-    const videoPath = path.join(CAPTURE_LOCATION, getFileName('mp4'));
-    this.videoPath = videoPath;
-    if (selectedDevice instanceof AndroidDevice) {
-      const devicePath = '/sdcard/flipper_recorder';
-
-      this.setState({
-        recording: true,
-      });
-
-      this.executeShell(
-        selectedDevice,
-        `mkdir -p "${devicePath}" && echo -n > "${devicePath}/.nomedia"`,
-      )
-        .then(output => {
-          if (output) {
-            throw output;
-          }
-        })
-        .then(() =>
-          this.executeShell(
-            selectedDevice,
-            `screenrecord --bugreport "${devicePath}/video.mp4"`,
-          ),
-        )
-        .then(output => {
-          if (output) {
-            throw output;
-          }
-        })
-        .then(() => {
-          this.setState({
-            recording: false,
-            pullingData: true,
-          });
-        })
-        .then(
-          (): Promise<string> =>
-            this.pullFromDevice(
-              selectedDevice,
-              `${devicePath}/video.mp4`,
-              videoPath,
-            ),
-        )
-        .then(openFile)
-        .then(() => this.executeShell(selectedDevice, `rm -rf "${devicePath}"`))
-        .then(output => {
-          if (output) {
-            throw output;
-          }
-        })
-        .then(() => {
-          this.setState({
-            pullingData: false,
-          });
-        })
-        .catch(error => {
-          console.error(`unable to capture video: ${error}`);
-          this.setState({
-            recording: false,
-            pullingData: false,
-          });
-        });
-    } else if (selectedDevice instanceof IOSDevice) {
-      this.setState({
-        recording: true,
-      });
-      this.iOSRecorder = exec(
-        `xcrun simctl io booted recordVideo "${videoPath}"`,
-      );
+    if (!selectedDevice) {
+      return;
     }
-  };
+    const videoPath = path.join(CAPTURE_LOCATION, getFileName('mp4'));
+    await selectedDevice.startScreenCapture(videoPath);
 
-  pullFromDevice = (
-    device: AndroidDevice,
-    src: string,
-    dst: string,
-  ): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      return device.adb
-        .pull(device.serial, src)
-        .then((stream: NodeJS.ReadStream) => {
-          stream.on('end', () => {
-            resolve(dst);
-          });
-          stream.on('error', reject);
-          stream.pipe(fs.createWriteStream(dst));
-        });
+    this.setState({
+      recording: true,
     });
   };
 
-  stopRecording = () => {
-    const {videoPath} = this;
+  stopRecording = async () => {
     const {selectedDevice} = this.props;
-    this.videoPath = null;
-
-    if (selectedDevice instanceof AndroidDevice) {
-      this.executeShell(selectedDevice, `pgrep 'screenrecord' -L 2`);
-    } else if (this.iOSRecorder && videoPath) {
-      this.iOSRecorder.kill('SIGINT');
-      this.setState({
-        recording: false,
-      });
-      openFile(videoPath);
+    if (!selectedDevice) {
+      return;
     }
-  };
-
-  executeShell = (device: AndroidDevice, command: string): Promise<string> => {
-    return device.adb
-      .shell(device.serial, command)
-      .then(adb.util.readAll)
-      .then((output: Buffer) => output.toString().trim());
+    const path = await selectedDevice.stopScreenCapture();
+    this.setState({
+      recording: false,
+    });
+    openFile(path);
   };
 
   onRecordingClicked = () => {

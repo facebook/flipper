@@ -152,4 +152,16 @@ export default class BaseDevice {
       new Error('No screenshot support for current device'),
     );
   }
+
+  async screenCaptureAvailable(): Promise<boolean> {
+    return false;
+  }
+
+  async startScreenCapture(destination: string) {
+    throw new Error('startScreenCapture not implemented on BaseDevice ');
+  }
+
+  async stopScreenCapture(): Promise<string | null> {
+    return null;
+  }
 }

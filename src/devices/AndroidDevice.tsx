@@ -6,13 +6,15 @@
  */
 
 import BaseDevice, {DeviceType, DeviceShell, LogLevel} from './BaseDevice';
+import adb from 'adbkit-fb';
 import {Priority} from 'adbkit-logcat-fb';
 import child_process from 'child_process';
 import {spawn} from 'promisify-child-process';
 import ArchivedDevice from './ArchivedDevice';
-import {ReadStream} from 'fs';
+import {createWriteStream} from 'fs';
 
 type ADBClient = any;
+const DEVICE_RECORDING_DIR = '/sdcard/flipper_recorder';
 
 export default class AndroidDevice extends BaseDevice {
   constructor(
@@ -61,6 +63,7 @@ export default class AndroidDevice extends BaseDevice {
   adb: ADBClient;
   pidAppMapping: {[key: number]: string} = {};
   logReader: any;
+  private recordingDestination?: string;
 
   supportedColumns(): Array<string> {
     return ['date', 'pid', 'tid', 'tag', 'message', 'type', 'time'];
@@ -102,7 +105,7 @@ export default class AndroidDevice extends BaseDevice {
 
   screenshot(): Promise<Buffer> {
     return new Promise((resolve, reject) => {
-      this.adb.screencap(this.serial).then((stream: ReadStream) => {
+      this.adb.screencap(this.serial).then((stream: NodeJS.WriteStream) => {
         const chunks: Array<Buffer> = [];
         stream
           .on('data', (chunk: Buffer) => chunks.push(chunk))
@@ -112,5 +115,58 @@ export default class AndroidDevice extends BaseDevice {
           .once('error', reject);
       });
     });
+  }
+
+  async screenCaptureAvailable(): Promise<boolean> {
+    try {
+      await this.executeShell(
+        `[ ! -f /system/bin/screenrecord ] && echo "File does not exist"`,
+      );
+      return true;
+    } catch (_e) {
+      return false;
+    }
+  }
+
+  private async executeShell(command: string): Promise<void> {
+    const output = await this.adb
+      .shell(this.serial, command)
+      .then(adb.util.readAll)
+      .then((output: Buffer) => output.toString().trim());
+    if (output) {
+      throw new Error(output);
+    }
+  }
+
+  async startScreenCapture(destination: string) {
+    await this.executeShell(
+      `mkdir -p "${DEVICE_RECORDING_DIR}" && echo -n > "${DEVICE_RECORDING_DIR}/.nomedia"`,
+    );
+    this.recordingDestination = destination;
+    const recordingLocation = `${DEVICE_RECORDING_DIR}/video.mp4`;
+    this.adb
+      .shell(this.serial, `screenrecord --bugreport "${recordingLocation}"`)
+      .then(
+        () =>
+          new Promise((resolve, reject) =>
+            this.adb
+              .pull(this.serial, recordingLocation)
+              .then((stream: NodeJS.WriteStream) => {
+                stream.on('end', resolve);
+                stream.on('error', reject);
+                stream.pipe(createWriteStream(destination));
+              }),
+          ),
+      );
+  }
+
+  async stopScreenCapture(): Promise<string> {
+    const {recordingDestination} = this;
+    if (!recordingDestination) {
+      return Promise.reject(new Error('Recording was not properly started'));
+    }
+    this.recordingDestination = undefined;
+    await this.adb.shell(this.serial, `pgrep 'screenrecord' -L 2`);
+    return recordingDestination;
   }
 }
