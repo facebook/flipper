@@ -8,7 +8,7 @@
 // This module declaration is a stub!
 // Please extend this as needed.
 
-declare module 'adbkit-logcat-fb' {
+declare module 'adbkit-logcat' {
   type PriorityValue = number;
 
   interface Reader extends NodeJS.EventEmitter {

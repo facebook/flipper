@@ -20,7 +20,7 @@ import {reportPlatformFailures} from './metrics';
 import {getAdbClient} from './adbClient';
 import * as androidUtil from './androidContainerUtility';
 import os from 'os';
-import {Client as ADBClient} from 'adbkit-fb';
+import {Client as ADBClient} from 'adbkit';
 
 const tmpFile = promisify(tmp.file) as (
   options?: FileOptions,

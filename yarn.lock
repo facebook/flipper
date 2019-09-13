@@ -1434,23 +1434,10 @@ acorn@^7.0.0:
   resolved "https://registry.yarnpkg.com/acorn/-/acorn-7.0.0.tgz#26b8d1cd9a9b700350b71c0905546f64d1284e7a"
   integrity sha512-PaF/MduxijYYt7unVGRuds1vBC9bFxbNf+VWqhOClfdgy7RlVkQqt610ig1/yxTgsDIfW1cWDel5EBbOy3jdtQ==
 
-adbkit-fb@2.10.1:
-  version "2.10.1"
-  resolved "https://registry.yarnpkg.com/adbkit-fb/-/adbkit-fb-2.10.1.tgz#accd6209d8da9388124ace97f4fc3047aead18cc"
-  integrity sha512-ERq2JXpDkr/tpSDYKwQ4SbBakozBWnWbz3Pjc8EQ1bGCzxD0XkAnUjTaW4ANX9ijrj/fWgrCqp3FDTNq8fIYDQ==
-  dependencies:
-    adbkit-logcat-fb "^1.1.0"
-    adbkit-monkey "~1.0.1"
-    bluebird "~2.9.24"
-    commander "^2.3.0"
-    debug "~2.6.3"
-    node-forge "^0.7.1"
-    split "~0.3.3"
-
-adbkit-logcat-fb@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/adbkit-logcat-fb/-/adbkit-logcat-fb-1.1.0.tgz#af6416c7be95c18220a128a320276602881ec6b7"
-  integrity sha512-4A4gpQk0Y+xryVvQRkXFTMiqRauwGDQU5CKujymtcS/CQP78oDWfHkbjtm2ryc7O9DqrMlnsGRch1q41ErXJlA==
+adbkit-logcat@2, adbkit-logcat@^1.1.0, adbkit-logcat@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/adbkit-logcat/-/adbkit-logcat-2.0.1.tgz#d4986b9fc7cfda42733389d46a52124abef43ca5"
+  integrity sha512-MznVzzEzcrWhIaIyblll+a0AL1TICJe/yuaia7HDYTAtiNabR/9amJkAnLt30U8/W7MVBc3mvU1jB/6MJ/TYHw==
 
 adbkit-monkey@~1.0.1:
   version "1.0.1"
@@ -1458,6 +1445,19 @@ adbkit-monkey@~1.0.1:
   integrity sha1-8pG+cBou/FZ6Y/x6pq/N7TFDC+E=
   dependencies:
     async "~0.2.9"
+
+adbkit@^2.11.1:
+  version "2.11.1"
+  resolved "https://registry.yarnpkg.com/adbkit/-/adbkit-2.11.1.tgz#7da847fe561254f3121088947bc1907ef053e894"
+  integrity sha512-hDTiRg9NX3HQt7WoDAPCplUpvzr4ZzQa2lq7BdTTJ/iOZ6O7YNAs6UYD8sFAiBEcYHDRIyq3cm9sZP6uZnhvXw==
+  dependencies:
+    adbkit-logcat "^1.1.0"
+    adbkit-monkey "~1.0.1"
+    bluebird "~2.9.24"
+    commander "^2.3.0"
+    debug "~2.6.3"
+    node-forge "^0.7.1"
+    split "~0.3.3"
 
 address@^1.0.1:
   version "1.1.0"

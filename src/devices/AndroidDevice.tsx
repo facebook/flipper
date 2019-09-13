@@ -5,11 +5,9 @@
  * @format
  */
 
-import BaseDevice, {DeviceType, DeviceShell, LogLevel} from './BaseDevice';
-import adb, {Client as ADBClient} from 'adbkit-fb';
-import {Priority} from 'adbkit-logcat-fb';
-import child_process from 'child_process';
-import {spawn} from 'promisify-child-process';
+import BaseDevice, {DeviceType, LogLevel} from './BaseDevice';
+import adb, {Client as ADBClient} from 'adbkit';
+import {Priority} from 'adbkit-logcat';
 import ArchivedDevice from './ArchivedDevice';
 import {createWriteStream} from 'fs';
 

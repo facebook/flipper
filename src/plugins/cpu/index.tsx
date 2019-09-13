@@ -5,8 +5,8 @@
  * @format
  */
 
-import {FlipperDevicePlugin, Device} from 'flipper';
-import adb from 'adbkit-fb';
+import {FlipperDevicePlugin, Device, AndroidDevice} from 'flipper';
+import adb, {Client as ADBClient} from 'adbkit';
 import TemperatureTable from './TemperatureTable';
 
 import {
@@ -23,10 +23,6 @@ import {
 } from 'flipper';
 import React from 'react';
 
-type ADBClient = any;
-type AndroidDevice = {
-  adb: ADBClient;
-};
 type TableRows = any;
 
 // we keep vairable name with underline for to physical path mappings on device
@@ -131,7 +127,6 @@ export default class CPUFrequencyTable extends FlipperDevicePlugin<
   any,
   any
 > {
-  adbClient: ADBClient;
   intervalID: NodeJS.Timer | null = null;
   state: CPUState = {
     cpuCount: 0,
@@ -150,9 +145,6 @@ export default class CPUFrequencyTable extends FlipperDevicePlugin<
   }
 
   init() {
-    const device = (this.device as any) as AndroidDevice;
-    this.adbClient = device.adb;
-
     this.updateHardwareInfo();
     this.readThermalZones();
 
@@ -188,7 +180,7 @@ export default class CPUFrequencyTable extends FlipperDevicePlugin<
     }, 'cat /sys/devices/system/cpu/possible');
   }
   executeShell = (callback: ShellCallBack, command: string) => {
-    return this.adbClient
+    return (this.device as AndroidDevice).adb
       .shell(this.device.serial, command)
       .then(adb.util.readAll)
       .then(function(output: {toString: () => {trim: () => string}}) {

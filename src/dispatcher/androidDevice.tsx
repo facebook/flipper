@@ -15,7 +15,7 @@ import {getAdbClient} from '../utils/adbClient';
 import {default as which} from 'which';
 import {promisify} from 'util';
 import {ServerPorts} from '../reducers/application';
-import {Client as ADBClient} from 'adbkit-fb';
+import {Client as ADBClient} from 'adbkit';
 
 function createDevice(
   adbClient: ADBClient,

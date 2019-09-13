@@ -41,7 +41,7 @@ interface DeviceTracker extends NodeJS.EventEmitter {
   on(event: 'end', listener: () => void): this;
 }
 
-declare module 'adbkit-fb' {
+declare module 'adbkit' {
   const util: Util;
   const adbkit: any;
   export interface Client {
@@ -62,7 +62,8 @@ declare module 'adbkit-fb' {
       options?: {
         clear?: boolean;
       },
-    ) => Promise<import('adbkit-logcat-fb').Reader>;
+      callback?: any,
+    ) => Promise<import('adbkit-logcat').Reader>;
     getProperties: (serial: string) => Promise<{[key: string]: string}>;
     trackDevices: () => Promise<DeviceTracker>;
     kill: () => Promise<boolean>;

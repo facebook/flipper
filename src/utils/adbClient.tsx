@@ -9,7 +9,7 @@ import {promisify} from 'util';
 import child_process from 'child_process';
 import promiseRetry from 'promise-retry';
 import adbConfig from '../utils/adbConfig';
-import adbkit, {Client} from 'adbkit-fb';
+import adbkit, {Client} from 'adbkit';
 
 const MAX_RETRIES = 5;
 let instance: Promise<Client>;

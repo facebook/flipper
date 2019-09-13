@@ -2,23 +2,10 @@
 # yarn lockfile v1
 
 
-adbkit-fb@2.10.1:
-  version "2.10.1"
-  resolved "https://registry.yarnpkg.com/adbkit-fb/-/adbkit-fb-2.10.1.tgz#accd6209d8da9388124ace97f4fc3047aead18cc"
-  integrity sha512-ERq2JXpDkr/tpSDYKwQ4SbBakozBWnWbz3Pjc8EQ1bGCzxD0XkAnUjTaW4ANX9ijrj/fWgrCqp3FDTNq8fIYDQ==
-  dependencies:
-    adbkit-logcat-fb "^1.1.0"
-    adbkit-monkey "~1.0.1"
-    bluebird "~2.9.24"
-    commander "^2.3.0"
-    debug "~2.6.3"
-    node-forge "^0.7.1"
-    split "~0.3.3"
-
-adbkit-logcat-fb@^1.1.0:
+adbkit-logcat@^1.1.0:
   version "1.1.0"
-  resolved "https://registry.yarnpkg.com/adbkit-logcat-fb/-/adbkit-logcat-fb-1.1.0.tgz#af6416c7be95c18220a128a320276602881ec6b7"
-  integrity sha512-4A4gpQk0Y+xryVvQRkXFTMiqRauwGDQU5CKujymtcS/CQP78oDWfHkbjtm2ryc7O9DqrMlnsGRch1q41ErXJlA==
+  resolved "https://registry.yarnpkg.com/adbkit-logcat/-/adbkit-logcat-1.1.0.tgz#01d7f9b0cef9093a30bcb3b007efff301508962f"
+  integrity sha1-Adf5sM75CTowvLOwB+//MBUIli8=
 
 adbkit-monkey@~1.0.1:
   version "1.0.1"
@@ -26,6 +13,19 @@ adbkit-monkey@~1.0.1:
   integrity sha1-8pG+cBou/FZ6Y/x6pq/N7TFDC+E=
   dependencies:
     async "~0.2.9"
+
+adbkit@^2.11.1:
+  version "2.11.1"
+  resolved "https://registry.yarnpkg.com/adbkit/-/adbkit-2.11.1.tgz#7da847fe561254f3121088947bc1907ef053e894"
+  integrity sha512-hDTiRg9NX3HQt7WoDAPCplUpvzr4ZzQa2lq7BdTTJ/iOZ6O7YNAs6UYD8sFAiBEcYHDRIyq3cm9sZP6uZnhvXw==
+  dependencies:
+    adbkit-logcat "^1.1.0"
+    adbkit-monkey "~1.0.1"
+    bluebird "~2.9.24"
+    commander "^2.3.0"
+    debug "~2.6.3"
+    node-forge "^0.7.1"
+    split "~0.3.3"
 
 async@~0.2.9:
   version "0.2.10"
@@ -38,9 +38,9 @@ bluebird@~2.9.24:
   integrity sha1-L3tOyAIWMoqf3evfacjUlC/v99g=
 
 commander@^2.3.0:
-  version "2.18.0"
-  resolved "https://registry.yarnpkg.com/commander/-/commander-2.18.0.tgz#2bf063ddee7c7891176981a2cc798e5754bc6970"
-  integrity sha512-6CYPa+JP2ftfRU2qkDK+UTVeQYosOg/2GbcjIcKPHfinyOLPVGXu/ovN86RP49Re5ndJK1N0kuiidFFuepc4ZQ==
+  version "2.20.0"
+  resolved "https://registry.yarnpkg.com/commander/-/commander-2.20.0.tgz#d58bb2b5c1ee8f87b0d340027e9e94e222c5a422"
+  integrity sha512-7j2y+40w61zy6YC2iRNpUe/NwhNyoXrYpHMrSunaMG64nRnaf96zO/KMQR4OyN/UnE5KLyEBnKHd4aG3rskjpQ==
 
 debug@~2.6.3:
   version "2.6.9"
