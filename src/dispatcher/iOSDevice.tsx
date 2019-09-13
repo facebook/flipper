@@ -122,12 +122,10 @@ function getActiveSimulators(): Promise<Array<IOSDeviceParams>> {
     },
   )
     .then(({stdout}) => JSON.parse(stdout).devices)
-    .then(simulatorDevices => {
-      // @ts-ignore
+    .then((simulatorDevices: Array<iOSSimulatorDevice>) => {
       const simulators: Array<iOSSimulatorDevice> = Object.values(
         simulatorDevices,
-        // @ts-ignore
-      ).reduce((acc, cv) => acc.concat(cv), []);
+      ).reduce((acc: Array<iOSSimulatorDevice>, cv) => acc.concat(cv), []);
 
       return simulators
         .filter(
