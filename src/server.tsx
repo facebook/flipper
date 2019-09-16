@@ -318,7 +318,7 @@ class Server extends EventEmitter {
       // section because it refers to the name given by client which is not fixed
       // for android emulators, so it is indicated as outdated so that developers
       // might want to update SDK to get rid of this connection swap problem
-      if (query.sdk_version && query.sdk_version < 3) {
+      if (!query.sdk_version || query.sdk_version < 3) {
         query.app += ' (Outdated SDK)';
       }
 
