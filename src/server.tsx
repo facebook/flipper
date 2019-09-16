@@ -41,13 +41,13 @@ declare interface Server {
 
 class Server extends EventEmitter {
   connections: Map<string, ClientInfo>;
-  secureServer: Promise<RSocketServer<any, any>>;
-  insecureServer: Promise<RSocketServer<any, any>>;
+  secureServer: Promise<RSocketServer<any, any>> | null;
+  insecureServer: Promise<RSocketServer<any, any>> | null;
   certificateProvider: CertificateProvider;
   connectionTracker: ConnectionTracker;
   logger: Logger;
   store: Store;
-  initialisePromise: Promise<void>;
+  initialisePromise: Promise<void> | null;
 
   constructor(logger: Logger, store: Store) {
     super();
@@ -55,12 +55,9 @@ class Server extends EventEmitter {
     this.connections = new Map();
     this.certificateProvider = new CertificateProvider(this, logger);
     this.connectionTracker = new ConnectionTracker(logger);
-    // eslint-disable-next-line prefer-promise-reject-errors
-    this.secureServer = Promise.reject();
-    // eslint-disable-next-line prefer-promise-reject-errors
-    this.insecureServer = Promise.reject();
-    // eslint-disable-next-line prefer-promise-reject-errors
-    this.initialisePromise = Promise.reject();
+    this.secureServer = null;
+    this.insecureServer = null;
+    this.initialisePromise = null;
     this.store = store;
   }
 
@@ -280,8 +277,9 @@ class Server extends EventEmitter {
     if (this.initialisePromise) {
       return this.initialisePromise.then(_ => {
         return Promise.all([
-          this.secureServer.then(server => server.stop()),
-          this.insecureServer.then(server => server.stop()),
+          this.secureServer && this.secureServer.then(server => server.stop()),
+          this.insecureServer &&
+            this.insecureServer.then(server => server.stop()),
         ]).then(() => undefined);
       });
     }
