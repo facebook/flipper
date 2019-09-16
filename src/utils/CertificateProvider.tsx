@@ -346,7 +346,12 @@ export default class CertificateProvider {
     return androidUtil
       .pull(deviceId, processName, directory + csrFileName)
       .then(deviceCsr => {
-        return this.santitizeString(deviceCsr.toString()) === csr;
+        // Santitize both of the string before comparation
+        // The csr string extraction on client side return string in both way
+        return (
+          this.santitizeString(deviceCsr.toString()) ===
+          this.santitizeString(csr)
+        );
       });
   }
 

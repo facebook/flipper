@@ -112,7 +112,6 @@ export default class Client extends EventEmitter {
   lessPlugins: Plugins | undefined;
   showAllPlugins: boolean;
   connection: RSocketClientSocket<any, any> | null | undefined;
-  responder: Partial<Responder<string, any>>;
   store: Store;
   activePlugins: Set<string>;
   device: Promise<BaseDevice>;
@@ -121,6 +120,7 @@ export default class Client extends EventEmitter {
   logger: Logger;
   lastSeenDeviceList: Array<BaseDevice>;
   broadcastCallbacks: Map<string, Map<string, Set<Function>>>;
+  rIC: any;
 
   requestCallbacks: Map<
     number,
@@ -162,19 +162,12 @@ export default class Client extends EventEmitter {
 
     const client = this;
     // node.js doesn't support requestIdleCallback
-    const rIC =
+    this.rIC =
       typeof window === 'undefined'
         ? (cb: Function, _: any) => {
             cb();
           }
-        : window.requestIdleCallback;
-
-    this.responder = {
-      fireAndForget: (payload: {data: string}) =>
-        rIC(() => client.onMessage(payload.data), {
-          timeout: 500,
-        }),
-    };
+        : window.requestIdleCallback.bind(window);
 
     if (conn) {
       conn.connectionStatus().subscribe({

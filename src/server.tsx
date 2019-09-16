@@ -28,6 +28,11 @@ type ClientInfo = {
   client: Client;
 };
 
+type ClientCsrQuery = {
+  csr?: string | undefined;
+  csr_path?: string | undefined;
+};
+
 declare interface Server {
   on(event: 'new-client', callback: (client: Client) => void): this;
   on(event: 'error', callback: (err: Error) => void): this;
@@ -124,16 +129,24 @@ class Server extends EventEmitter {
     if (!payload.data) {
       return {};
     }
-    const clientData: ClientQuery = JSON.parse(payload.data);
+    const clientData: ClientQuery & ClientCsrQuery = JSON.parse(payload.data);
     this.connectionTracker.logConnectionAttempt(clientData);
 
-    const client = this.addConnection(socket, clientData);
+    const {app, os, device, device_id, sdk_version, csr, csr_path} = clientData;
+
+    const client: Promise<Client> = this.addConnection(
+      socket,
+      {app, os, device, device_id, sdk_version},
+      {csr, csr_path},
+    );
 
     socket.connectionStatus().subscribe({
       onNext(payload) {
         if (payload.kind == 'ERROR' || payload.kind == 'CLOSED') {
-          console.debug(`Device disconnected ${client.id}`, 'server');
-          server.removeConnection(client.id);
+          client.then(client => {
+            console.debug(`Device disconnected ${client.id}`, 'server');
+            server.removeConnection(client.id);
+          });
         }
       },
       onSubscribe(subscription) {
@@ -141,7 +154,14 @@ class Server extends EventEmitter {
       },
     });
 
-    return client.responder;
+    return {
+      fireAndForget: (payload: {data: string}) =>
+        client.then(client => {
+          client.rIC(() => client.onMessage(payload.data), {
+            timeout: 500,
+          });
+        }),
+    };
   };
 
   _untrustedRequestHandler = (
@@ -272,49 +292,66 @@ class Server extends EventEmitter {
     return null;
   }
 
-  addConnection(
+  async addConnection(
     conn: RSocketClientSocket<any, any>,
     query: ClientQuery,
-  ): Client {
+    csrQuery: ClientCsrQuery,
+  ): Promise<Client> {
     invariant(query, 'expected query');
 
-    const id = `${query.app}#${query.os}#${query.device}#${query.device_id}`;
-    console.debug(`Device connected: ${id}`, 'server');
+    // try to get id by comparing giving `csr` to file from `csr_path`
+    // otherwise, use given device_id
+    const {csr_path, csr} = csrQuery;
+    return (csr_path && csr
+      ? this.certificateProvider.extractAppNameFromCSR(csr).then(appName => {
+          return this.certificateProvider.getTargetDeviceId(
+            query.os,
+            appName,
+            csr_path,
+            csr,
+          );
+        })
+      : Promise.resolve(query.device_id)
+    ).then(csrId => {
+      query.device_id = csrId;
+      const id = `${query.app}#${query.os}#${query.device}#${csrId}`;
+      console.debug(`Device connected: ${id}`, 'server');
 
-    const client = new Client(id, query, conn, this.logger, this.store);
+      const client = new Client(id, query, conn, this.logger, this.store);
 
-    const info = {
-      client,
-      connection: conn,
-    };
+      const info = {
+        client,
+        connection: conn,
+      };
 
-    client.init().then(() => {
-      console.debug(
-        `Device client initialised: ${id}. Supported plugins: ${client.plugins.join(
-          ', ',
-        )}`,
-        'server',
-      );
+      client.init().then(() => {
+        console.debug(
+          `Device client initialised: ${id}. Supported plugins: ${client.plugins.join(
+            ', ',
+          )}`,
+          'server',
+        );
 
-      /* If a device gets disconnected without being cleaned up properly,
-       * Flipper won't be aware until it attempts to reconnect.
-       * When it does we need to terminate the zombie connection.
-       */
-      if (this.connections.has(id)) {
-        const connectionInfo = this.connections.get(id);
-        connectionInfo &&
-          connectionInfo.connection &&
-          connectionInfo.connection.close();
-        this.removeConnection(id);
-      }
+        /* If a device gets disconnected without being cleaned up properly,
+         * Flipper won't be aware until it attempts to reconnect.
+         * When it does we need to terminate the zombie connection.
+         */
+        if (this.connections.has(id)) {
+          const connectionInfo = this.connections.get(id);
+          connectionInfo &&
+            connectionInfo.connection &&
+            connectionInfo.connection.close();
+          this.removeConnection(id);
+        }
 
-      this.connections.set(id, info);
-      this.emit('new-client', client);
-      this.emit('clients-change');
-      client.emit('plugins-change');
+        this.connections.set(id, info);
+        this.emit('new-client', client);
+        this.emit('clients-change');
+        client.emit('plugins-change');
+      });
+
+      return client;
     });
-
-    return client;
   }
 
   attachFakeClient(client: Client) {
