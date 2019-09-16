@@ -149,7 +149,7 @@ const Container = styled(FlexColumn)((props: {canOverflow?: boolean}) => ({
 
 const globalTableState: {[key: string]: TableColumnSizes} = {};
 
-class ManagedTable extends React.Component<
+export class ManagedTable extends React.Component<
   ManagedTableProps,
   ManagedTableState
 > {
@@ -607,7 +607,7 @@ class ManagedTable extends React.Component<
   getRow = ({index, style}: {index: number; style: React.CSSProperties}) => {
     const {onAddFilter, multiline, zebra, rows} = this.props;
     const {columnOrder, columnSizes, highlightedRows} = this.state;
-    const columnKeys = columnOrder
+    const columnKeys: Array<string> = columnOrder
       .map(k => (k.visible ? k.key : null))
       .filter(notNull);
 

@@ -70,7 +70,10 @@ export {
   TableColumnOrderVal,
   TableColumnSizes,
 } from './ui/components/table/types';
-export {default as ManagedTable} from './ui/components/table/ManagedTable';
+export {
+  default as ManagedTable,
+  ManagedTable as ManagedTableClass,
+} from './ui/components/table/ManagedTable';
 export {ManagedTableProps} from './ui/components/table/ManagedTable';
 export {
   default as ManagedTable_immutable,
