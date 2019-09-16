@@ -239,11 +239,12 @@ const reducer = (state: State = INITAL_STATE, action: Actions): State => {
       }
 
       const userPreferredApp = selectedApp || state.userPreferredApp;
+      const selectedAppName = extractAppNameFromAppId(userPreferredApp);
       // Need to recreate an array to make sure that it doesn't refer to the
       // array that is showed in on the screen and the array that is kept for
       // least recently used plugins reference
       const LRUPlugins = [
-        ...((userPreferredApp && state.userLRUPlugins[userPreferredApp]) || []),
+        ...((selectedAppName && state.userLRUPlugins[selectedAppName]) || []),
       ];
       const idxLRU =
         (selectedPlugin && LRUPlugins.indexOf(selectedPlugin)) || -1;
@@ -257,10 +258,10 @@ const reducer = (state: State = INITAL_STATE, action: Actions): State => {
         ...payload,
         userPreferredApp: userPreferredApp,
         userPreferredPlugin: selectedPlugin,
-        userLRUPlugins: selectedApp
+        userLRUPlugins: selectedAppName
           ? {
               ...state.userLRUPlugins,
-              [selectedApp]: LRUPlugins,
+              [selectedAppName]: LRUPlugins,
             }
           : {...state.userLRUPlugins},
       };
@@ -274,7 +275,8 @@ const reducer = (state: State = INITAL_STATE, action: Actions): State => {
       const {userPreferredApp, userPreferredPlugin, userLRUPlugins} = state;
       let {selectedApp, selectedPlugin} = state;
 
-      payload.lessPlugins = userLRUPlugins[payload.id] || [];
+      const appName = extractAppNameFromAppId(payload.id);
+      payload.lessPlugins = (appName && userLRUPlugins[appName]) || [];
       if (
         userPreferredApp &&
         userPreferredPlugin &&
@@ -393,13 +395,14 @@ const reducer = (state: State = INITAL_STATE, action: Actions): State => {
     }
     case 'CLIENT_SHOW_MORE_OR_LESS': {
       const {payload} = action;
+      const appName = extractAppNameFromAppId(payload);
 
       return {
         ...state,
         clients: state.clients.map((client: Client) => {
-          if (client.id === payload) {
+          if (appName && extractAppNameFromAppId(client.id) === appName) {
             client.showAllPlugins = !client.showAllPlugins;
-            client.lessPlugins = state.userLRUPlugins[payload] || [];
+            client.lessPlugins = state.userLRUPlugins[appName] || [];
           }
           return client;
         }),
@@ -472,3 +475,10 @@ export const userPreferredPlugin = (payload: string): Action => ({
   type: 'SELECT_USER_PREFERRED_PLUGIN',
   payload,
 });
+
+function extractAppNameFromAppId(appId: string | null): string | null {
+  const nameRegex = /([^#]+)#/;
+  const matchedRegex = appId ? appId.match(nameRegex) : null;
+  // Expect the name of the app to be on the first matching
+  return matchedRegex && matchedRegex[1];
+}
