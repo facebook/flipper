@@ -12,6 +12,7 @@ const Metro = require('metro');
 const util = require('util');
 const recursiveReaddir = require('recursive-readdir');
 const expandTilde = require('expand-tilde');
+const pMap = require('p-map');
 const HOME_DIR = require('os').homedir();
 
 /* eslint-disable prettier/prettier */
@@ -38,12 +39,12 @@ module.exports = async (
     fs.mkdirSync(pluginCache);
   }
   watchChanges(plugins, reloadCallback, pluginCache, options);
-  const compilations = Object.values(plugins).map(plugin => {
+  const compilations = pMap(Object.values(plugins), plugin => {
     const dynamicOptions = Object.assign(options, {force: false});
     return compilePlugin(plugin, pluginCache, dynamicOptions);
-  });
+  }, {concurrency: 4});
 
-  const dynamicPlugins = (await Promise.all(compilations)).filter(c => c != null);
+  const dynamicPlugins = (await compilations).filter(c => c != null);
   console.log('✅  Compiled all plugins.');
   return dynamicPlugins;
 };
