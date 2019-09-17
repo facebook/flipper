@@ -19,6 +19,7 @@ import {
   VerticalRule,
   Button,
   GK,
+  Idler,
 } from 'flipper';
 import Inspector from './Inspector';
 import ToolbarIcon from './ToolbarIcon';
@@ -61,6 +62,25 @@ export default class Layout extends FlipperPlugin<State, any, PersistedState> {
     }
     const {allNodes} = await callClient('getAllNodes');
     return allNodes;
+  };
+
+  static serializePersistedState: (
+    persistedState: PersistedState,
+    statusUpdate?: (msg: string) => void,
+    idler?: Idler,
+  ) => Promise<string> = (
+    persistedState: PersistedState,
+    statusUpdate?: (msg: string) => void,
+    _idler?: Idler,
+  ) => {
+    statusUpdate && statusUpdate('Serializing Inspector Plugin...');
+    return Promise.resolve(JSON.stringify(persistedState));
+  };
+
+  static deserializePersistedState: (
+    serializedString: string,
+  ) => PersistedState = (serializedString: string) => {
+    return JSON.parse(serializedString);
   };
 
   static defaultPersistedState = {
