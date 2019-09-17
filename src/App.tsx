@@ -30,11 +30,13 @@ import {
   ACTIVE_SHEET_SHARE_DATA_IN_FILE,
   ACTIVE_SHEET_SELECT_PLUGINS_TO_EXPORT,
   ACTIVE_SHEET_PLUGIN_SHEET,
+  ACTIVE_SHEET_PLUGIN_INSTALLER,
 } from './reducers/application';
 import {Logger} from './fb-interfaces/Logger';
 import BugReporter from './fb-stubs/BugReporter';
 import {State as Store} from './reducers/index';
 import {StaticView} from './reducers/connections';
+import PluginInstaller from './chrome/PluginInstaller';
 const version = remote.app.getVersion();
 
 type OwnProps = {
@@ -86,6 +88,8 @@ export class App extends React.Component<Props> {
         return <SignInSheet onHide={onHide} />;
       case ACTIVE_SHEET_SELECT_PLUGINS_TO_EXPORT:
         return <ExportDataPluginSheet onHide={onHide} />;
+      case ACTIVE_SHEET_PLUGIN_INSTALLER:
+        return <PluginInstaller onHide={onHide} />;
       case ACTIVE_SHEET_SHARE_DATA_IN_FILE:
         return (
           <ShareSheetExportFile

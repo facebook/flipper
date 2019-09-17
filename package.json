@@ -51,6 +51,7 @@
   },
   "devDependencies": {
     "@jest-runner/electron": "^2.0.1",
+    "@types/algoliasearch": "^3.30.19",
     "@types/deep-equal": "^1.0.1",
     "@types/expand-tilde": "^2.0.0",
     "@types/fs-extra": "^8.0.0",
@@ -102,6 +103,7 @@
     "JSONStream": "^1.3.1",
     "adbkit": "^2.11.1",
     "adbkit-logcat": "^2.0.1",
+    "algoliasearch": "^3.34.0",
     "ansi-to-html": "^0.6.3",
     "async-mutex": "^0.1.3",
     "chalk": "^2.3.0",
@@ -111,6 +113,7 @@
     "dashify": "^2.0.0",
     "deep-equal": "^1.0.1",
     "detect-port": "^1.1.1",
+    "download-tarball": "^2.0.0",
     "electron-devtools-installer": "^2.2.0",
     "emotion": "^9.2.6",
     "expand-tilde": "^2.0.2",
