@@ -13,6 +13,7 @@ import {readBookmarksFromDB} from '../plugins/navigation/util/indexedDB';
 import {PersistedState as NavPluginState} from '../plugins/navigation/types';
 import BaseDevice from '../devices/BaseDevice';
 import {State as PluginState} from 'src/reducers/pluginStates';
+import {platform} from 'os';
 
 type State = {
   bookmarks: Array<Bookmark>;
@@ -59,10 +60,29 @@ class LocationsButton extends Component<Props, State> {
     retreivingBookmarks: false,
   };
 
+  componentWillMount() {
+    document.addEventListener('keydown', this.keyDown);
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('keydown', this.keyDown);
+  }
+
   goToLocation = (location: string) => {
     const {selectedDevice} = this.props;
     if (selectedDevice != null) {
       selectedDevice.navigateToLocation(location);
+    }
+  };
+
+  keyDown = (e: KeyboardEvent) => {
+    if (
+      ((platform() === 'darwin' && e.metaKey) ||
+        (platform() !== 'darwin' && e.ctrlKey)) &&
+      /^\d$/.test(e.key) &&
+      this.state.bookmarks.length >= parseInt(e.key, 10)
+    ) {
+      this.goToLocation(this.state.bookmarks[parseInt(e.key, 10) - 1].uri);
     }
   };
 
@@ -92,11 +112,12 @@ class LocationsButton extends Component<Props, State> {
             label: 'Bookmarks',
             enabled: false,
           },
-          ...bookmarks.map(bookmark => {
+          ...bookmarks.map((bookmark, i) => {
             return {
               click: () => {
                 this.goToLocation(bookmark.uri);
               },
+              accelerator: i < 9 ? `CmdOrCtrl+${i + 1}` : undefined,
               label: shortenText(
                 bookmark.commonName + ' - ' + bookmark.uri,
                 100,
