@@ -115,19 +115,20 @@ export default class ShareSheet extends Component<Props, State> {
     const mark = 'shareSheetExportUrl';
     performance.mark(mark);
     try {
+      const statusUpdate = (msg: string) => {
+        if (this.state.runInBackground) {
+          this.dispatchAndUpdateToolBarStatus(msg);
+        } else {
+          this.setState({statusUpdate: msg});
+        }
+      };
       const {serializedString, errorArray} = await reportPlatformFailures(
-        exportStore(this.context.store, this.idler, (msg: string) => {
-          if (this.state.runInBackground) {
-            this.dispatchAndUpdateToolBarStatus(msg);
-          } else {
-            this.setState({statusUpdate: msg});
-          }
-        }),
+        exportStore(this.context.store, this.idler, statusUpdate),
         `${EXPORT_FLIPPER_TRACE_EVENT}:UI_LINK`,
       );
 
       this.context.store.dispatch(unsetShare());
-
+      statusUpdate('Uploading Flipper Trace...');
       const result = await reportPlatformFailures(
         shareFlipperData(serializedString),
         `${SHARE_FLIPPER_TRACE_EVENT}`,
