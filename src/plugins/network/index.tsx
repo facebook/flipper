@@ -125,6 +125,14 @@ export default class extends FlipperPlugin<State, any, PersistedState> {
     }
   }
 
+  static serializePersistedState = (persistedState: PersistedState) => {
+    return Promise.resolve(JSON.stringify(persistedState));
+  };
+
+  static deserializePersistedState = (serializedString: string) => {
+    return JSON.parse(serializedString);
+  };
+
   static getActiveNotifications(persistedState: PersistedState) {
     const responses = persistedState
       ? persistedState.responses || new Map()
