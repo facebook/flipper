@@ -367,7 +367,7 @@ export default class CertificateProvider {
     return tmpDir({unsafeCleanup: true})
       .then(dir => {
         return iosUtil
-          .pull(deviceId, originalFile, bundleId, dir)
+          .pull(deviceId, originalFile, bundleId, path.join(dir, csrFileName))
           .then(() => dir);
       })
       .then(dir => {
