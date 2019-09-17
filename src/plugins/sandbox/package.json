@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
+  "keywords": ["flipper-plugin"],
   "gatekeeper": "sonar_sandbox_plugin",
   "icon": "translate",
   "bugs": {

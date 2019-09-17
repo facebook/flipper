@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "index.tsx",
   "license": "MIT",
+  "keywords": ["flipper-plugin"],
   "dependencies": {
     "pako": "^1.0.6",
     "@types/pako": "^1.0.1",

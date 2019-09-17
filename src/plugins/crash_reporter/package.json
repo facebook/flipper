@@ -5,6 +5,7 @@
   "main": "index.js",
   "repository": "https://github.com/facebook/flipper",
   "license": "MIT",
+  "keywords": ["flipper-plugin"],
   "title": "Crash Reporter",
   "bugs": {
     "email": "prit91@fb.com",

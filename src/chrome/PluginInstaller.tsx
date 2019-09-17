@@ -111,7 +111,6 @@ export default function(props: {onHide: () => any}) {
         </SearchBox>
       </Toolbar>
       <ManagedTable_immutable
-        key="FuryEvents"
         rowLineHeight={28}
         floating={false}
         multiline={true}

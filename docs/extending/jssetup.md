@@ -20,6 +20,7 @@ Example `package.json`:
   "version": "1.0.0",
   "main": "index.tsx",
   "license": "MIT",
+  "keywords": ["flipper-plugin"],
   "dependencies": {},
   "title": "My Plugin",
   "icon": "apps",

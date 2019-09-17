@@ -49,6 +49,7 @@ you can also specify a title to show in the Flipper sidebar and an icon to displ
   "version": "1.0.0",
   "main": "index.tsx",
   "license": "MIT",
+  "keywords": ["flipper-plugin"],
   "icon": "apps",
   "title": "Sea Mammals",
   "dependencies": {

@@ -3,6 +3,7 @@
   "version": "1.0.1",
   "main": "index.tsx",
   "license": "MIT",
+  "keywords": ["flipper-plugin"],
   "dependencies": {
     "address": "^1.1.2",
     "get-port": "^4.0.0",

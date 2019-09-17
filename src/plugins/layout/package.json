@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "index.tsx",
   "license": "MIT",
+  "keywords": ["flipper-plugin"],
   "dependencies": {
     "deep-equal": "^1.0.1",
     "lodash.clonedeep": "^4.5.0",
