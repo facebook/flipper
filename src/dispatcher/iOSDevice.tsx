@@ -149,6 +149,18 @@ function getActiveDevices(): Promise<Array<IOSDeviceParams>> {
   });
 }
 
+function queryDevicesForever(store: Store, logger: Logger) {
+  queryDevices(store, logger)
+    .then(() => {
+      // It's important to schedule the next check AFTER the current one has completed
+      // to avoid simultaneous queries which can cause multiple user input prompts.
+      setTimeout(() => queryDevicesForever(store, logger), 3000);
+    })
+    .catch(err => {
+      console.error(err);
+    });
+}
+
 let xcodeVersionMismatchFound = false;
 async function checkXcodeVersionMismatch() {
   if (xcodeVersionMismatchFound) {
@@ -196,14 +208,5 @@ export default (store: Store, logger: Logger) => {
   if (process.platform !== 'darwin') {
     return;
   }
-  queryDevices(store, logger)
-    .then(() => {
-      const simulatorUpdateInterval = setInterval(() => {
-        queryDevices(store, logger).catch(err => {
-          console.error(err);
-          clearInterval(simulatorUpdateInterval);
-        });
-      }, 3000);
-    })
-    .catch(console.error);
+  queryDevicesForever(store, logger);
 };
