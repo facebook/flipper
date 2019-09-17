@@ -5,7 +5,16 @@
  * @format
  */
 
-import {DetailSidebar, FlexCenter, styled, colors} from 'flipper';
+import {
+  DetailSidebar,
+  FlexCenter,
+  styled,
+  colors,
+  FlexRow,
+  FlexColumn,
+  Text,
+  Panel,
+} from 'flipper';
 import {Bookmark, URI} from '../types';
 import {IconButton} from './';
 import React from 'react';
@@ -26,46 +35,45 @@ const BookmarksList = styled('div')({
   overflowX: 'hidden',
   height: '100%',
   backgroundColor: colors.white,
-  '.bookmark-container': {
-    width: '100%',
-    padding: '10px',
-    cursor: 'pointer',
-    borderBottom: `1px ${colors.greyTint} solid`,
+});
+
+const BookmarkContainer = styled(FlexRow)({
+  width: '100%',
+  padding: 10,
+  height: 55,
+  alignItems: 'center',
+  cursor: 'pointer',
+  borderBottom: `1px ${colors.greyTint} solid`,
+  ':last-child': {
+    borderBottom: '0',
   },
-  '.bookmark-container:active': {
+  ':active': {
     backgroundColor: colors.highlight,
     color: colors.white,
   },
-  '.bookmarks-title': {
-    backgroundColor: colors.light02,
-    padding: '10px',
-    borderBottom: `1px ${colors.greyTint} solid`,
-    fontWeight: 'bold',
-  },
-  '.bookmark-common-name': {
-    fontSize: 14,
-    overflowX: 'hidden',
-    whiteSpace: 'nowrap',
-    textOverflow: 'ellipsis',
-    lineHeight: 1.2,
-    fontWeight: 'bold',
-  },
-  '.bookmark-container:active>.bookmark-uri': {
+  ':active *': {
     color: colors.white,
-  },
-  '.bookmark-uri': {
-    fontSize: 10,
-    overflowX: 'hidden',
-    whiteSpace: 'nowrap',
-    textOverflow: 'ellipsis',
-    lineHeight: 1.2,
-    color: colors.greyTint3,
   },
 });
 
-const DeleteButton = styled('div')({
-  padding: 10,
-  float: 'right',
+const BookmarkTitle = styled(Text)({
+  fontSize: '1.1em',
+  overflowX: 'hidden',
+  whiteSpace: 'nowrap',
+  textOverflow: 'ellipsis',
+  fontWeight: 500,
+});
+
+const BookmarkSubtitle = styled(Text)({
+  overflowX: 'hidden',
+  whiteSpace: 'nowrap',
+  textOverflow: 'ellipsis',
+  color: colors.greyTint3,
+  marginTop: 4,
+});
+
+const TextContainer = styled(FlexColumn)({
+  justifyContent: 'center',
 });
 
 const alphabetizeBookmarkCompare = (b1: Bookmark, b2: Bookmark) => {
@@ -76,16 +84,29 @@ export default (props: Props) => {
   const {bookmarks, onNavigate, onRemove} = props;
   return (
     <DetailSidebar>
-      {bookmarks.size === 0 ? (
-        <NoData grow>No Bookmarks</NoData>
-      ) : (
-        <BookmarksList>
-          <div className="bookmarks-title">Bookmarks</div>
-          {[...bookmarks.values()]
-            .sort(alphabetizeBookmarkCompare)
-            .map((bookmark, idx) => (
-              <>
-                <DeleteButton>
+      <Panel heading="Bookmarks" floating={false} padded={false}>
+        {bookmarks.size === 0 ? (
+          <NoData grow>No Bookmarks</NoData>
+        ) : (
+          <BookmarksList>
+            {[...bookmarks.values()]
+              .sort(alphabetizeBookmarkCompare)
+              .map((bookmark, idx) => (
+                <BookmarkContainer
+                  key={idx}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => {
+                    onNavigate(bookmark.uri);
+                  }}>
+                  <TextContainer grow>
+                    <BookmarkTitle>
+                      {bookmark.commonName || bookmark.uri}
+                    </BookmarkTitle>
+                    {!bookmark.commonName && (
+                      <BookmarkSubtitle>{bookmark.uri}</BookmarkSubtitle>
+                    )}
+                  </TextContainer>
                   <IconButton
                     color={colors.macOSTitleBarButtonBackgroundActive}
                     outline={false}
@@ -93,24 +114,11 @@ export default (props: Props) => {
                     size={16}
                     onClick={() => onRemove(bookmark.uri)}
                   />
-                </DeleteButton>
-                <div
-                  key={idx}
-                  className="bookmark-container"
-                  role="button"
-                  tabIndex={0}
-                  onClick={() => {
-                    onNavigate(bookmark.uri);
-                  }}>
-                  <div className="bookmark-common-name">
-                    {bookmark.commonName}
-                  </div>
-                  <div className="bookmark-uri">{bookmark.uri}</div>
-                </div>
-              </>
-            ))}
-        </BookmarksList>
-      )}
+                </BookmarkContainer>
+              ))}
+          </BookmarksList>
+        )}
+      </Panel>
     </DetailSidebar>
   );
 };
