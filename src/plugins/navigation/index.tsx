@@ -59,45 +59,45 @@ export default class extends FlipperPlugin<State, any, PersistedState> {
   static persistedStateReducer = (
     persistedState: PersistedState,
     method: string,
+    payload: any,
   ) => {
     switch (method) {
-      default:
+      case 'nav_event':
+        const navigationEvent: NavigationEvent = {
+          uri:
+            payload.uri === undefined ? null : decodeURIComponent(payload.uri),
+          date: new Date(payload.date) || new Date(),
+          className: payload.class === undefined ? null : payload.class,
+          screenshot: null,
+        };
+
         return {
           ...persistedState,
+          currentURI:
+            navigationEvent.uri == null
+              ? persistedState.currentURI
+              : decodeURIComponent(navigationEvent.uri),
+          navigationEvents: [
+            navigationEvent,
+            ...persistedState.navigationEvents,
+          ],
         };
+      default:
+        return persistedState;
     }
   };
 
   subscribeToNavigationEvents = () => {
-    this.client.subscribe('nav_event', payload => {
-      let {persistedState} = this.props;
-      const {setPersistedState} = this.props;
-      const navigationEvent: NavigationEvent = {
-        uri: payload.uri === undefined ? null : decodeURIComponent(payload.uri),
-        date: new Date(payload.date) || new Date(),
-        className: payload.class === undefined ? null : payload.class,
-        screenshot: null,
-      };
-      setPersistedState({
-        ...persistedState,
-        currentURI:
-          payload.uri == null
-            ? persistedState.currentURI
-            : decodeURIComponent(payload.uri),
-        navigationEvents: [navigationEvent, ...persistedState.navigationEvents],
-      });
+    this.client.subscribe('nav_event', () =>
       // Wait for view to render and then take a screenshot
-      setTimeout(() => {
-        persistedState = this.props.persistedState;
-        this.getDevice()
-          .then(device => device.screenshot())
-          .then((buffer: Buffer) => {
-            const blobURL = URL.createObjectURL(bufferToBlob(buffer));
-            navigationEvent.screenshot = blobURL;
-            setPersistedState({...persistedState});
-          });
-      }, 1000);
-    });
+      setTimeout(async () => {
+        const device = await this.getDevice();
+        const screenshot = await device.screenshot();
+        const blobURL = URL.createObjectURL(bufferToBlob(screenshot));
+        this.props.persistedState.navigationEvents[0].screenshot = blobURL;
+        this.props.setPersistedState({...this.props.persistedState});
+      }, 1000),
+    );
   };
 
   componentDidMount = () => {
