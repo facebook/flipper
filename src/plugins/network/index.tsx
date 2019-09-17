@@ -31,8 +31,8 @@ import {URL} from 'url';
 import {DefaultKeyboardAction} from 'src/MenuBar';
 
 type PersistedState = {
-  requests: Map<RequestId, Request>;
-  responses: Map<RequestId, Response>;
+  requests: {[id: string]: Request};
+  responses: {[id: string]: Response};
 };
 
 type State = {
@@ -114,17 +114,11 @@ export default class extends FlipperPlugin<State, any, PersistedState> {
     switch (method) {
       case 'newRequest':
         return Object.assign({}, persistedState, {
-          requests: new Map(persistedState.requests).set(
-            data.id,
-            data as Request,
-          ),
+          requests: {...persistedState.requests, [data.id]: data as Request},
         });
       case 'newResponse':
         return Object.assign({}, persistedState, {
-          responses: new Map(persistedState.responses).set(
-            data.id,
-            data as Response,
-          ),
+          responses: {...persistedState.responses, [data.id]: data as Response},
         });
       default:
         return persistedState;
@@ -135,14 +129,13 @@ export default class extends FlipperPlugin<State, any, PersistedState> {
     const responses = persistedState
       ? persistedState.responses || new Map()
       : new Map();
-    const r: Array<Response> = Array.from(responses.values());
-
+    const r: Array<Response> = Object.values(responses);
     return (
       r
         // Show error messages for all status codes indicating a client or server error
         .filter((response: Response) => response.status >= 400)
         .map((response: Response) => {
-          const request = persistedState.requests.get(response.id);
+          const request = persistedState.requests[response.id];
           const url: string = (request && request.url) || '(URL missing)';
           return {
             id: response.id,
@@ -178,7 +171,7 @@ export default class extends FlipperPlugin<State, any, PersistedState> {
       return;
     }
 
-    const request = requests.get(selectedIds[0]);
+    const request = requests[selectedIds[0]];
     if (!request) {
       return;
     }
@@ -188,7 +181,7 @@ export default class extends FlipperPlugin<State, any, PersistedState> {
 
   clearLogs = () => {
     this.setState({selectedIds: []});
-    this.props.setPersistedState({responses: new Map(), requests: new Map()});
+    this.props.setPersistedState({responses: {}, requests: {}});
   };
 
   renderSidebar = () => {
@@ -199,7 +192,7 @@ export default class extends FlipperPlugin<State, any, PersistedState> {
     if (!selectedId) {
       return null;
     }
-    const requestWithId = requests.get(selectedId);
+    const requestWithId = requests[selectedId];
     if (!requestWithId) {
       return null;
     }
@@ -207,7 +200,7 @@ export default class extends FlipperPlugin<State, any, PersistedState> {
       <RequestDetails
         key={selectedId}
         request={requestWithId}
-        response={responses.get(selectedId)}
+        response={responses[selectedId]}
       />
     );
   };
@@ -218,8 +211,8 @@ export default class extends FlipperPlugin<State, any, PersistedState> {
     return (
       <FlexColumn grow={true}>
         <NetworkTable
-          requests={requests || new Map()}
-          responses={responses || new Map()}
+          requests={requests || {}}
+          responses={responses || {}}
           clear={this.clearLogs}
           copyRequestCurlCommand={this.copyRequestCurlCommand}
           onRowHighlighted={this.onRowHighlighted}
@@ -234,8 +227,8 @@ export default class extends FlipperPlugin<State, any, PersistedState> {
 }
 
 type NetworkTableProps = {
-  requests: Map<RequestId, Request>;
-  responses: Map<RequestId, Response>;
+  requests: {[id: string]: Request};
+  responses: {[id: string]: Response};
   clear: () => void;
   copyRequestCurlCommand: () => void;
   onRowHighlighted: (keys: TableHighlightedRows) => void;
@@ -348,38 +341,37 @@ ${response.headers
 
 function calculateState(
   props: {
-    requests: Map<RequestId, Request>;
-    responses: Map<RequestId, Response>;
+    requests: {[id: string]: Request};
+    responses: {[id: string]: Response};
   },
   nextProps: NetworkTableProps,
   rows: TableRows = [],
 ): NetworkTableState {
   rows = [...rows];
 
-  // if (nextProps.requests.size === undefined || nextProps.requests.size === 0) {
-  if (nextProps.requests.size === 0) {
+  if (Object.keys(nextProps.requests).length === 0) {
     // cleared
     rows = [];
   } else if (props.requests !== nextProps.requests) {
     // new request
-    nextProps.requests.forEach((request: Request, requestId: RequestId) => {
-      if (props.requests.get(requestId) == null) {
-        const newRow = buildRow(request, nextProps.responses.get(requestId));
+    for (const [requestId, request] of Object.entries(nextProps.requests)) {
+      if (props.requests[requestId] == null) {
+        const newRow = buildRow(request, nextProps.responses[requestId]);
         if (newRow) {
           rows.push(newRow);
         }
       }
-    });
+    }
   } else if (props.responses !== nextProps.responses) {
     // new response
-    const resId = Array.from(nextProps.responses.keys()).find(
-      (responseId: RequestId) => !props.responses.get(responseId),
+    const resId = Object.keys(nextProps.responses).find(
+      (responseId: RequestId) => !props.responses[responseId],
     );
     if (resId) {
-      const request = nextProps.requests.get(resId);
+      const request = nextProps.requests[resId];
       // sanity check; to pass null check
       if (request) {
-        const newRow = buildRow(request, nextProps.responses.get(resId));
+        const newRow = buildRow(request, nextProps.responses[resId]);
         const index = rows.findIndex((r: TableBodyRow) => r.key === request.id);
         if (index > -1 && newRow) {
           rows[index] = newRow;
@@ -406,8 +398,8 @@ class NetworkTable extends PureComponent<NetworkTableProps, NetworkTableState> {
     super(props);
     this.state = calculateState(
       {
-        requests: new Map(),
-        responses: new Map(),
+        requests: {},
+        responses: {},
       },
       props,
     );
