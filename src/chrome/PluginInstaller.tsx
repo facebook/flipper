@@ -133,15 +133,20 @@ const TableButton = styled(Button)({
   marginTop: 2,
 });
 
+const Spinner = styled(LoadingIndicator)({
+  marginTop: 6,
+});
+
 function InstallButton(props: {
   name: string;
   version: string;
   onInstall: () => void;
+  installed: boolean;
 }) {
-  type InstallAction = 'Install' | 'Downloading' | 'Remove';
+  type InstallAction = 'Install' | 'Waiting' | 'Remove';
 
   const onInstall = useCallback(async () => {
-    setAction('Downloading');
+    setAction('Waiting');
     const filename = `${props.name}-${props.version}.tgz`;
     await download({
       url: `https://registry.npmjs.org/${props.name}/-/${filename}`,
@@ -156,14 +161,18 @@ function InstallButton(props: {
   }, [props.name, props.version]);
 
   const onRemove = useCallback(async () => {
-    fs.remove(path.join(PLUGIN_DIR, props.name));
+    setAction('Waiting');
+    await fs.remove(path.join(PLUGIN_DIR, props.name));
+    props.onInstall();
     setAction('Install');
   }, [props.name]);
 
-  const [action, setAction] = useState<InstallAction>('Install');
+  const [action, setAction] = useState<InstallAction>(
+    props.installed ? 'Remove' : 'Install',
+  );
 
-  if (action === 'Downloading') {
-    return <LoadingIndicator size={16} />;
+  if (action === 'Waiting') {
+    return <Spinner size={16} />;
   }
   return (
     <TableButton
@@ -185,7 +194,16 @@ function useNPMSearch(
     return client.initIndex('npm-search');
   }, []);
 
+  const [installedPlugins, setInstalledPlugins] = useState(
+    new Map<string, PluginDefinition>(),
+  );
+
+  useEffect(() => {
+    getInstalledPlugns().then(setInstalledPlugins);
+  }, []);
+
   const onInstall = useCallback(async () => {
+    setInstalledPlugins(await getInstalledPlugns());
     setRestartRequired(true);
   }, []);
 
@@ -215,13 +233,14 @@ function useNPMSearch(
               name={h.name}
               version={h.version}
               onInstall={onInstall}
+              installed={installedPlugins.has(h.name)}
             />
           ),
           align: 'center' as 'center',
         },
       },
     }),
-    [],
+    [installedPlugins],
   );
 
   const [searchResults, setSearchResults] = useState<PluginDefinition[]>([]);
@@ -234,10 +253,36 @@ function useNPMSearch(
         hitsPerPage: 20,
       });
 
-      setSearchResults(hits);
+      setSearchResults(hits.filter(hit => !installedPlugins.has(hit.name)));
       setQuery(query);
     })();
-  }, [query]);
+  }, [query, installedPlugins]);
 
-  return List(searchResults.map(createRow));
+  const results = Array.from(installedPlugins.values()).concat(searchResults);
+  return List(results.map(createRow));
+}
+
+async function getInstalledPlugns() {
+  const dirs = await fs.readdir(PLUGIN_DIR);
+  const plugins = await Promise.all<[string, PluginDefinition]>(
+    dirs.map(
+      name =>
+        new Promise(async (resolve, reject) => {
+          if (!(await fs.lstat(path.join(PLUGIN_DIR, name))).isDirectory()) {
+            return resolve(undefined);
+          }
+
+          const packageJSON = await fs.readFile(
+            path.join(PLUGIN_DIR, name, 'package.json'),
+          );
+
+          try {
+            resolve([name, JSON.parse(packageJSON.toString())]);
+          } catch (e) {
+            reject(e);
+          }
+        }),
+    ),
+  );
+  return new Map(plugins.filter(Boolean));
 }
