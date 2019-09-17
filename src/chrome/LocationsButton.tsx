@@ -9,7 +9,10 @@ import {Button, styled} from 'flipper';
 import {connect} from 'react-redux';
 import React, {Component} from 'react';
 import {State as Store} from '../reducers';
-import {readBookmarksFromDB} from '../plugins/navigation/util/indexedDB';
+import {
+  readBookmarksFromDB,
+  writeBookmarkToDB,
+} from '../plugins/navigation/util/indexedDB';
 import {PersistedState as NavPluginState} from '../plugins/navigation/types';
 import BaseDevice from '../devices/BaseDevice';
 import {State as PluginState} from 'src/reducers/pluginStates';
@@ -32,7 +35,7 @@ type DispatchFromProps = {};
 
 type Bookmark = {
   uri: string;
-  commonName: string;
+  commonName: string | null;
 };
 
 const DropdownButton = styled(Button)({
@@ -103,28 +106,48 @@ class LocationsButton extends Component<Props, State> {
   render() {
     const {currentURI} = this.props;
     const {bookmarks} = this.state;
+
+    const dropdown: any[] = [
+      {
+        label: 'Bookmarks',
+        enabled: false,
+      },
+      ...bookmarks.map((bookmark, i) => {
+        return {
+          click: () => {
+            this.goToLocation(bookmark.uri);
+          },
+          accelerator: i < 9 ? `CmdOrCtrl+${i + 1}` : undefined,
+          label: shortenText(
+            (bookmark.commonName ? bookmark.commonName + ' - ' : '') +
+              bookmark.uri,
+            100,
+          ),
+        };
+      }),
+    ];
+
+    if (currentURI) {
+      dropdown.push(
+        {type: 'separator'},
+        {
+          label: 'Bookmark Current Location',
+          click: async () => {
+            await writeBookmarkToDB({
+              uri: currentURI,
+              commonName: null,
+            });
+            this.updateBookmarks();
+          },
+        },
+      );
+    }
+
     return (
       <DropdownButton
         onMouseDown={this.updateBookmarks}
         compact={true}
-        dropdown={[
-          {
-            label: 'Bookmarks',
-            enabled: false,
-          },
-          ...bookmarks.map((bookmark, i) => {
-            return {
-              click: () => {
-                this.goToLocation(bookmark.uri);
-              },
-              accelerator: i < 9 ? `CmdOrCtrl+${i + 1}` : undefined,
-              label: shortenText(
-                bookmark.commonName + ' - ' + bookmark.uri,
-                100,
-              ),
-            };
-          }),
-        ]}>
+        dropdown={dropdown}>
         {(currentURI && shortenText(currentURI)) || '(none)'}
       </DropdownButton>
     );

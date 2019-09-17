@@ -32,7 +32,7 @@ export type NavigationEvent = {
 
 export type Bookmark = {
   uri: URI;
-  commonName: string;
+  commonName: string | null;
 };
 
 export type AutoCompleteProvider = {

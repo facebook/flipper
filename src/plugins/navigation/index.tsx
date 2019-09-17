@@ -147,8 +147,7 @@ export default class extends FlipperPlugin<State, any, PersistedState> {
   addBookmark = (bookmark: Bookmark) => {
     const newBookmark = {
       uri: bookmark.uri,
-      commonName:
-        bookmark.commonName.length > 0 ? bookmark.commonName : bookmark.uri,
+      commonName: bookmark.commonName,
     };
 
     writeBookmarkToDB(newBookmark);
