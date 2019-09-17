@@ -20,12 +20,18 @@ import {
   Glyph,
   Link,
   Text,
+  LoadingIndicator,
 } from 'flipper';
 import React, {useCallback, useState, useMemo, useEffect} from 'react';
 import {remote} from 'electron';
 import {List} from 'immutable';
 import algoliasearch from 'algoliasearch';
+import path from 'path';
+import fs from 'fs-extra';
+import download from 'download-tarball';
+import {homedir} from 'os';
 
+const PLUGIN_DIR = path.join(homedir(), '.flipper', 'thirdparty');
 const ALGOLIA_APPLICATION_ID = 'OFCNCOG2CU';
 const ALGOLIA_API_KEY = 'f54e21fa3a2a0160595bb058179bfb1e';
 
@@ -127,6 +133,48 @@ const TableButton = styled(Button)({
   marginTop: 2,
 });
 
+function InstallButton(props: {
+  name: string;
+  version: string;
+  onInstall: () => void;
+}) {
+  type InstallAction = 'Install' | 'Downloading' | 'Remove';
+
+  const onInstall = useCallback(async () => {
+    setAction('Downloading');
+    const filename = `${props.name}-${props.version}.tgz`;
+    await download({
+      url: `https://registry.npmjs.org/${props.name}/-/${filename}`,
+      dir: PLUGIN_DIR,
+    });
+    await fs.rename(
+      path.join(PLUGIN_DIR, 'package'),
+      path.join(PLUGIN_DIR, props.name),
+    );
+    props.onInstall();
+    setAction('Remove');
+  }, [props.name, props.version]);
+
+  const onRemove = useCallback(async () => {
+    fs.remove(path.join(PLUGIN_DIR, props.name));
+    setAction('Install');
+  }, [props.name]);
+
+  const [action, setAction] = useState<InstallAction>('Install');
+
+  if (action === 'Downloading') {
+    return <LoadingIndicator size={16} />;
+  }
+  return (
+    <TableButton
+      compact
+      type={action === 'Install' ? 'primary' : undefined}
+      onClick={action === 'Install' ? onInstall : onRemove}>
+      {action}
+    </TableButton>
+  );
+}
+
 function useNPMSearch(
   setRestartRequired: (restart: boolean) => void,
   query: string,
@@ -135,6 +183,10 @@ function useNPMSearch(
   const index = useMemo(() => {
     const client = algoliasearch(ALGOLIA_APPLICATION_ID, ALGOLIA_API_KEY);
     return client.initIndex('npm-search');
+  }, []);
+
+  const onInstall = useCallback(async () => {
+    setRestartRequired(true);
   }, []);
 
   const createRow = useCallback(
@@ -158,7 +210,13 @@ function useNPMSearch(
           ),
         },
         install: {
-          value: <TableButton>Install</TableButton>,
+          value: (
+            <InstallButton
+              name={h.name}
+              version={h.version}
+              onInstall={onInstall}
+            />
+          ),
           align: 'center' as 'center',
         },
       },
