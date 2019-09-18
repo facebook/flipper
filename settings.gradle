@@ -29,3 +29,7 @@ project(':libevent').projectDir = file('android/third-party/external/LibEvent/')
 project(':rsocket').projectDir = file('android/third-party/external/RSocket/')
 project(':third-party').projectDir = file('android/third-party/')
 project(':noop').projectDir = file('android/no-op/')
+
+// Plugins
+include ':fresco-plugin'
+project(':fresco-plugin').projectDir = file('android/plugins/fresco')
