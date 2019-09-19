@@ -1,13 +1,13 @@
 {
-  "name": "Example",
+  "name": "flipper-plugin-example",
   "version": "1.0.0",
+  "description": "An example for a Flipper plugin",
   "main": "index.tsx",
   "license": "MIT",
   "keywords": ["flipper-plugin"],
   "title": "Example Plugin",
   "icon": "apps",
   "bugs": {
-    "email": "oncall+flipper@xmail.facebook.com",
-    "url": "https://fb.workplace.com/groups/230455004101832/"
+    "url": "https://fbflipper.com/"
   }
 }
