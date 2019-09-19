@@ -399,7 +399,7 @@ class MainSidebar extends PureComponent<Props> {
             variant="outline"
             color={colors.blackAlpha30}
           />
-          &nbsp;Plugin not showing?
+          &nbsp;Manage Plugins...
         </PluginDebugger>
         {config.showLogin && <UserAccount />}
       </Sidebar>

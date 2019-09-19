@@ -7,7 +7,11 @@
 
 import {FlipperPlugin, FlipperDevicePlugin} from './plugin';
 import {showOpenDialog} from './utils/exportData';
-import {setSelectPluginsToExportActiveSheet} from './reducers/application';
+import {
+  setSelectPluginsToExportActiveSheet,
+  setActiveSheet,
+  ACTIVE_SHEET_PLUGINS,
+} from './reducers/application';
 import {Store} from './reducers/';
 import electron, {MenuItemConstructorOptions} from 'electron';
 import {notNull} from './utils/typeUtils';
@@ -292,6 +296,12 @@ function getTemplate(
             if (focusedWindow) {
               focusedWindow.setFullScreen(!focusedWindow.isFullScreen());
             }
+          },
+        },
+        {
+          label: 'Manage Plugins...',
+          click: function() {
+            store.dispatch(setActiveSheet(ACTIVE_SHEET_PLUGINS));
           },
         },
         {
