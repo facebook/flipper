@@ -36,3 +36,6 @@ project(':fresco-plugin').projectDir = file('android/plugins/fresco')
 
 include ':network-plugin'
 project(':network-plugin').projectDir = file('android/plugins/network')
+
+include ':litho-plugin'
+project(':litho-plugin').projectDir = file('android/plugins/litho')

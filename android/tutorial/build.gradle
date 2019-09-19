@@ -47,6 +47,7 @@ dependencies {
     implementation project(':android')
     implementation project(':fresco-plugin')
     implementation project(':network-plugin')
+    implementation project(':litho-plugin')
     implementation deps.soloader
 
     // Litho

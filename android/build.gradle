@@ -56,7 +56,6 @@ android {
     }
 
     dependencies {
-        compileOnly deps.lithoAnnotations
         compileOnly deps.proguardAnnotations
         implementation 'com.facebook.fbjni:fbjni:0.0.1'
         extractHeaders 'com.facebook.fbjni:fbjni:0.0.1:headers'
@@ -65,10 +64,6 @@ android {
         implementation deps.jsr305
         implementation deps.supportAppCompat
         implementation deps.stetho
-        implementation deps.lithoCore
-        implementation deps.lithoSectionsDebug
-        implementation deps.lithoSectionsCore
-        implementation deps.lithoWidget
         compileOnly deps.leakcanary
 
         testImplementation deps.mockito
