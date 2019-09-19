@@ -12,28 +12,54 @@ import FlexRow from './FlexRow';
 import {colors} from './colors';
 import Tab, {Props as TabProps} from './Tab';
 import {WidthProperty} from 'csstype';
-import React from 'react';
+import React, {useContext} from 'react';
+import {TabsContext} from './TabsContainer';
 
 const TabList = styled(FlexRow)({
+  justifyContent: 'center',
   alignItems: 'stretch',
 });
 
 const TabListItem = styled('div')(
-  (props: {active?: boolean; width?: WidthProperty<number>}) => ({
-    backgroundColor: props.active ? colors.light15 : colors.light02,
-    borderBottom: '1px solid #dddfe2',
-    boxShadow: props.active ? 'inset 0px 0px 3px rgba(0,0,0,0.25)' : 'none',
-    color: colors.dark80,
-    flex: 1,
+  (props: {
+    active?: boolean;
+    width?: WidthProperty<number>;
+    container?: boolean;
+  }) => ({
+    background: props.container
+      ? props.active
+        ? 'linear-gradient(to bottom, #67a6f7 0%, #0072FA 100%)'
+        : `linear-gradient(to bottom, white 0%,${
+            colors.macOSTitleBarButtonBackgroundBlur
+          } 100%)`
+      : props.active
+      ? colors.light15
+      : colors.light02,
+    borderBottom: props.container ? '1px solid #B8B8B8' : '1px solid #dddfe2',
+    boxShadow:
+      props.active && props.container
+        ? 'inset 0px 0px 3px rgba(0,0,0,0.25)'
+        : 'none',
+    color: props.container && props.active ? colors.white : colors.dark80,
+    flex: props.container ? 'unset' : 1,
+    top: props.container ? -11 : 0,
+    fontWeight: 500,
     fontSize: 13,
-    lineHeight: '28px',
+    lineHeight: props.container ? '22px' : '28px',
     overflow: 'hidden',
     padding: '0 10px',
     position: 'relative',
     textAlign: 'center',
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap',
-
+    '&:first-child': {
+      borderTopLeftRadius: props.container ? 3 : 0,
+      borderBottomLeftRadius: props.container ? 3 : 0,
+    },
+    '&:last-child': {
+      borderTopRightRadius: props.container ? 3 : 0,
+      borderBottomRightRadius: props.container ? 3 : 0,
+    },
     '&:hover': {
       backgroundColor: props.active ? colors.light15 : colors.light05,
     },
@@ -130,6 +156,8 @@ export default function Tabs(props: {
    */
   after?: Array<React.ReactNode>;
 }) {
+  const tabsContainer = useContext(TabsContext);
+
   const {onActive} = props;
   const active: string | undefined =
     props.active == null ? props.defaultActive : props.active;
@@ -200,6 +228,7 @@ export default function Tabs(props: {
           key={key}
           width={width}
           active={isActive}
+          container={tabsContainer}
           onMouseDown={
             !isActive && onActive
               ? (event: React.MouseEvent<HTMLDivElement>) => {
@@ -235,7 +264,7 @@ export default function Tabs(props: {
     add(props.children);
   }
 
-  let tabList;
+  let tabList: React.ReactNode;
   if (props.orderable === true) {
     tabList = (
       <OrderableContainer key="orderable-list">
@@ -250,7 +279,7 @@ export default function Tabs(props: {
   } else {
     tabList = [];
     for (const key in tabs) {
-      tabList.push(tabs[key]);
+      (tabList as Array<React.ReactNode>).push(tabs[key]);
     }
   }
 

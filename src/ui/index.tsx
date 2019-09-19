@@ -64,6 +64,7 @@ export {
 // tabs
 export {default as Tabs} from './components/Tabs';
 export {default as Tab} from './components/Tab';
+export {default as TabsContainer} from './components/TabsContainer';
 
 // inputs
 export {default as Input} from './components/Input';
