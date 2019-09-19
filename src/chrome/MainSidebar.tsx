@@ -11,7 +11,7 @@ import Client from '../Client';
 import {UninitializedClient} from '../UninitializedClient';
 import {FlipperBasePlugin} from '../plugin';
 import {PluginNotification} from '../reducers/notifications';
-import {ActiveSheet} from '../reducers/application';
+import {ActiveSheet, ACTIVE_SHEET_PLUGINS} from '../reducers/application';
 import {State as Store} from '../reducers';
 
 import {
@@ -392,7 +392,7 @@ class MainSidebar extends PureComponent<Props> {
           ))}
         </Plugins>
         <PluginDebugger
-          onClick={() => this.props.setActiveSheet('PLUGIN_DEBUGGER')}>
+          onClick={() => this.props.setActiveSheet(ACTIVE_SHEET_PLUGINS)}>
           <Glyph
             name="question-circle"
             size={16}

@@ -11,8 +11,6 @@ import {TableBodyRow} from '../ui/components/table/types';
 import React, {Component, Fragment} from 'react';
 import {connect} from 'react-redux';
 import {
-  FlexColumn,
-  Button,
   Text,
   ManagedTable,
   styled,
@@ -24,20 +22,9 @@ import {
 import StatusIndicator from '../ui/components/StatusIndicator';
 import {State as Store} from '../reducers';
 
-const Container = styled(FlexColumn)({
-  padding: 10,
-  width: 700,
-});
-
 const InfoText = styled(Text)({
   lineHeight: '130%',
   marginBottom: 8,
-});
-
-const Title = styled('div')({
-  fontWeight: 500,
-  marginBottom: 10,
-  marginTop: 8,
 });
 
 const Ellipsis = styled(Text)({
@@ -46,16 +33,11 @@ const Ellipsis = styled(Text)({
   whiteSpace: 'nowrap',
 });
 
-const Row = styled(FlexColumn)({
-  alignItems: 'flex-end',
-});
-
 const TableContainer = styled('div')({
   borderRadius: 4,
   overflow: 'hidden',
   border: `1px solid ${colors.macOSTitleBarButtonBorder}`,
   marginTop: 10,
-  marginBottom: 10,
   backgroundColor: colors.white,
   height: 400,
   display: 'flex',
@@ -77,9 +59,7 @@ type StateFromProps = {
 
 type DispatchFromProps = {};
 
-type OwnProps = {
-  onHide: () => any;
-};
+type OwnProps = {};
 
 const COLUMNS = {
   lamp: {
@@ -304,17 +284,7 @@ class PluginDebugger extends Component<Props> {
         </Fragment>
       );
     }
-    return (
-      <Container>
-        <Title>Plugin Status</Title>
-        {content}
-        <Row>
-          <Button compact padded onClick={this.props.onHide}>
-            Close
-          </Button>
-        </Row>
-      </Container>
-    );
+    return content;
   }
 }
 

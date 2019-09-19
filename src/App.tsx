@@ -19,24 +19,22 @@ import ShareSheetExportFile from './chrome/ShareSheetExportFile';
 import PluginContainer from './PluginContainer';
 import Sheet from './chrome/Sheet';
 import {ipcRenderer, remote} from 'electron';
-import PluginDebugger from './chrome/PluginDebugger';
 import {
   ActiveSheet,
   ShareType,
   ACTIVE_SHEET_BUG_REPORTER,
-  ACTIVE_SHEET_PLUGIN_DEBUGGER,
+  ACTIVE_SHEET_PLUGINS,
   ACTIVE_SHEET_SHARE_DATA,
   ACTIVE_SHEET_SIGN_IN,
   ACTIVE_SHEET_SHARE_DATA_IN_FILE,
   ACTIVE_SHEET_SELECT_PLUGINS_TO_EXPORT,
   ACTIVE_SHEET_PLUGIN_SHEET,
-  ACTIVE_SHEET_PLUGIN_INSTALLER,
 } from './reducers/application';
 import {Logger} from './fb-interfaces/Logger';
 import BugReporter from './fb-stubs/BugReporter';
 import {State as Store} from './reducers/index';
 import {StaticView} from './reducers/connections';
-import PluginInstaller from './chrome/PluginInstaller';
+import PluginManager from './chrome/PluginManager';
 const version = remote.app.getVersion();
 
 type OwnProps = {
@@ -80,16 +78,14 @@ export class App extends React.Component<Props> {
             onHide={onHide}
           />
         );
-      case ACTIVE_SHEET_PLUGIN_DEBUGGER:
-        return <PluginDebugger onHide={onHide} />;
+      case ACTIVE_SHEET_PLUGINS:
+        return <PluginManager onHide={onHide} />;
       case ACTIVE_SHEET_SHARE_DATA:
         return <ShareSheet onHide={onHide} logger={this.props.logger} />;
       case ACTIVE_SHEET_SIGN_IN:
         return <SignInSheet onHide={onHide} />;
       case ACTIVE_SHEET_SELECT_PLUGINS_TO_EXPORT:
         return <ExportDataPluginSheet onHide={onHide} />;
-      case ACTIVE_SHEET_PLUGIN_INSTALLER:
-        return <PluginInstaller onHide={onHide} />;
       case ACTIVE_SHEET_SHARE_DATA_IN_FILE:
         return (
           <ShareSheetExportFile

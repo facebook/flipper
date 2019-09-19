@@ -41,12 +41,6 @@ type PluginDefinition = {
   description: string;
 };
 
-const Container = styled(FlexColumn)({
-  width: 600,
-  height: 400,
-  background: colors.white,
-});
-
 const EllipsisText = styled(Text)({
   overflow: 'hidden',
   textOverflow: 'ellipsis',
@@ -75,6 +69,14 @@ const columns = {
   },
 };
 
+const Container = styled(FlexColumn)({
+  height: 300,
+  backgroundColor: colors.white,
+  borderRadius: 4,
+  overflow: 'hidden',
+  border: `1px solid ${colors.macOSTitleBarButtonBorder}`,
+});
+
 const RestartBar = styled(FlexColumn)({
   backgroundColor: colors.red,
   color: colors.white,
@@ -84,7 +86,7 @@ const RestartBar = styled(FlexColumn)({
   textAlign: 'center',
 });
 
-export default function(props: {onHide: () => any}) {
+export default function() {
   const [restartRequired, setRestartRequired] = useState(false);
   const [query, setQuery] = useState('');
   const rows = useNPMSearch(setRestartRequired, query, setQuery);
@@ -120,10 +122,6 @@ export default function(props: {onHide: () => any}) {
         highlightedRows={new Set()}
         rows={rows}
       />
-      <Toolbar position="bottom">
-        <Spacer />
-        <Button onClick={props.onHide}>Close</Button>
-      </Toolbar>
     </Container>
   );
 }
@@ -210,7 +208,7 @@ function useNPMSearch(
     (h: PluginDefinition) => ({
       key: h.name,
       columns: {
-        name: {value: <EllipsisText bold>{h.name}</EllipsisText>},
+        name: {value: <EllipsisText>{h.name}</EllipsisText>},
         version: {
           value: <EllipsisText>{h.version}</EllipsisText>,
           align: 'flex-end' as 'flex-end',
