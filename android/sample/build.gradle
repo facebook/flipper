@@ -68,5 +68,6 @@ dependencies {
 
     debugImplementation project(':android')
     debugImplementation project(':fresco-plugin')
+    debugImplementation project(':network-plugin')
     releaseImplementation project(':noop')
 }

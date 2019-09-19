@@ -46,6 +46,7 @@ dependencies {
     // Check out the "sample" app to see how to separate your build flavors.
     implementation project(':android')
     implementation project(':fresco-plugin')
+    implementation project(':network-plugin')
     implementation deps.soloader
 
     // Litho
