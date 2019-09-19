@@ -70,9 +70,6 @@ android {
         implementation deps.lithoSectionsDebug
         implementation deps.lithoSectionsCore
         implementation deps.lithoWidget
-        implementation deps.fresco
-        implementation deps.frescoFlipper
-        implementation deps.frescoStetho
         compileOnly deps.leakcanary
 
         testImplementation deps.mockito

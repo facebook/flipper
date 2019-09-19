@@ -67,5 +67,6 @@ dependencies {
     testImplementation deps.junit
 
     debugImplementation project(':android')
+    debugImplementation project(':fresco-plugin')
     releaseImplementation project(':noop')
 }
