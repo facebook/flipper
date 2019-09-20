@@ -57,7 +57,7 @@ export function _push(
   return executeCommandAsApp(
     deviceId,
     app,
-    `echo "${contents}" > '${filename}' && chmod 600 '${filename}'`,
+    `echo "${contents}" > '${filename}' && chmod 644 '${filename}'`,
   ).then(output => undefined);
 }
 
