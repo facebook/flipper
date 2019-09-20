@@ -25,3 +25,5 @@ android {
         compileOnly deps.jsr305
     }
 }
+
+apply from: rootProject.file('gradle/release.gradle')

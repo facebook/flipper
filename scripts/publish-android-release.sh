@@ -16,5 +16,8 @@ elif [ "$IS_SNAPSHOT" != "" ]; then
   exit 1
 else
   openssl aes-256-cbc -d -in scripts/bintray-publish-keys.enc -k "$ANDROID_PUBLISH_KEY" >> "$BASEDIR/gradle.properties"
-  "$BASEDIR"/gradlew :android:bintrayUpload :noop:bintrayUpload -PdryRun=false
+  # Need to list the projects individually here because of a bug in the gradle-bintray-plugin that
+  # tries to upload projects not meant for distribution (like our root project) and throws an NPE
+  # in that case.
+  "$BASEDIR"/gradlew :android:bintrayUpload :noop:bintrayUpload :fresco-plugin:bintrayUpload :network-plugin:bintrayUpload :litho-plugin:bintrayUpload -PdryRun=false
 fi
