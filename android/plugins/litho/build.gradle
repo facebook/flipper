@@ -26,6 +26,9 @@ android {
         implementation deps.lithoWidget
         implementation deps.supportAppCompat
         compileOnly deps.jsr305
+
+        testImplementation deps.junit
+        testImplementation deps.robolectric
     }
 }
 
