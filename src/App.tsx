@@ -6,7 +6,7 @@
  */
 
 import React from 'react';
-import {FlexColumn, FlexRow} from 'flipper';
+import {FlexColumn, FlexRow, Client} from 'flipper';
 import {connect} from 'react-redux';
 import TitleBar from './chrome/TitleBar';
 import MainSidebar from './chrome/MainSidebar';
@@ -35,6 +35,7 @@ import BugReporter from './fb-stubs/BugReporter';
 import {State as Store} from './reducers/index';
 import {StaticView} from './reducers/connections';
 import PluginManager from './chrome/PluginManager';
+import BaseDevice from './devices/BaseDevice';
 const version = remote.app.getVersion();
 
 type OwnProps = {
@@ -48,6 +49,8 @@ type StateFromProps = {
   activeSheet: ActiveSheet;
   share: ShareType | null;
   staticView: StaticView;
+  clients: Array<Client>;
+  selectedDevice: null | BaseDevice;
 };
 
 type Props = StateFromProps & OwnProps;
@@ -114,7 +117,7 @@ export class App extends React.Component<Props> {
         <FlexRow grow={true}>
           {this.props.leftSidebarVisible && <MainSidebar />}
           {this.props.staticView != null ? (
-            React.createElement(this.props.staticView)
+            React.createElement(this.props.staticView, this.props)
           ) : (
             <PluginContainer logger={this.props.logger} />
           )}
@@ -128,12 +131,14 @@ export class App extends React.Component<Props> {
 export default connect<StateFromProps, {}, OwnProps, Store>(
   ({
     application: {leftSidebarVisible, activeSheet, share},
-    connections: {error, staticView},
+    connections: {error, staticView, clients, selectedDevice},
   }) => ({
     leftSidebarVisible,
     activeSheet,
     share: share,
     error,
     staticView,
+    clients,
+    selectedDevice,
   }),
 )(App);

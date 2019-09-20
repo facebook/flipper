@@ -13,7 +13,6 @@ import {FlipperBasePlugin} from '../plugin';
 import {PluginNotification} from '../reducers/notifications';
 import {ActiveSheet, ACTIVE_SHEET_PLUGINS} from '../reducers/application';
 import {State as Store} from '../reducers';
-
 import {
   Sidebar,
   FlexBox,
@@ -30,7 +29,12 @@ import {
 } from 'flipper';
 import React, {Component, PureComponent} from 'react';
 import NotificationsHub from '../NotificationsHub';
-import {selectPlugin, showMoreOrLessPlugins} from '../reducers/connections';
+import {
+  selectPlugin,
+  showMoreOrLessPlugins,
+  StaticView,
+  setStaticView,
+} from '../reducers/connections';
 import {setActiveSheet} from '../reducers/application';
 import UserAccount from './UserAccount';
 import {connect} from 'react-redux';
@@ -40,6 +44,7 @@ import {
   SHOW_REMAINING_PLUGIN_IF_LESS_THAN,
 } from '../Client';
 import {StyledOtherComponent} from 'create-emotion-styled';
+import SupportRequestForm from '../fb-stubs/SupportRequestForm';
 
 const ListItem = styled('div')(({active}: {active?: boolean}) => ({
   paddingLeft: 10,
@@ -213,6 +218,7 @@ type StateFromProps = {
   numNotifications: number;
   windowIsFocused: boolean;
   selectedDevice: BaseDevice | null | undefined;
+  staticView: StaticView;
   selectedPlugin: string | null | undefined;
   selectedApp: string | null | undefined;
   clients: Array<Client>;
@@ -231,9 +237,8 @@ type DispatchFromProps = {
     selectedApp: string | null;
     deepLinkPayload: string | null;
   }) => void;
-
   setActiveSheet: (activeSheet: ActiveSheet) => void;
-
+  setStaticView: (payload: StaticView) => void;
   showMoreOrLessPlugins: (payload: string) => void;
 };
 
@@ -243,12 +248,18 @@ class MainSidebar extends PureComponent<Props> {
     const {
       selectedDevice,
       selectedPlugin,
+      staticView,
       selectedApp,
       selectPlugin,
+      setStaticView,
       windowIsFocused,
       numNotifications,
     } = this.props;
     let {clients, uninitializedClients} = this.props;
+    const showLithoForm =
+      GK.get('flipper_support_requests') &&
+      selectedDevice &&
+      selectedDevice.os === 'Android';
     clients = clients
       .filter(
         (client: Client) =>
@@ -292,6 +303,25 @@ class MainSidebar extends PureComponent<Props> {
                 count={numNotifications}
                 isActive={selectedPlugin === NotificationsHub.id}>
                 {NotificationsHub.title}
+              </PluginName>
+            </ListItem>
+          )}
+          {showLithoForm && (
+            <ListItem
+              active={staticView != null && staticView === SupportRequestForm}
+              onClick={() => setStaticView(SupportRequestForm)}>
+              <PluginIcon
+                color={colors.light50}
+                name={'bell'}
+                isActive={
+                  staticView != null && staticView === SupportRequestForm
+                }
+              />
+              <PluginName
+                isActive={
+                  staticView != null && staticView === SupportRequestForm
+                }>
+                Litho Support Request
               </PluginName>
             </ListItem>
           )}
@@ -416,6 +446,7 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
       selectedApp,
       clients,
       uninitializedClients,
+      staticView,
     },
     notifications: {activeNotifications, blacklistedPlugins},
     plugins: {devicePlugins, clientPlugins},
@@ -428,6 +459,7 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
     })(),
     windowIsFocused,
     selectedDevice,
+    staticView,
     selectedPlugin,
     selectedApp,
     clients,
@@ -437,6 +469,7 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
   }),
   {
     selectPlugin,
+    setStaticView,
     setActiveSheet,
     showMoreOrLessPlugins,
   },

@@ -18,7 +18,12 @@ import {Actions} from '.';
 const WelcomeScreen = isHeadless()
   ? require('../chrome/WelcomeScreenHeadless').default
   : require('../chrome/WelcomeScreen').default;
-export type StaticView = null | typeof WelcomeScreen;
+import SupportRequestForm from '../fb-stubs/SupportRequestForm';
+
+export type StaticView =
+  | null
+  | typeof WelcomeScreen
+  | typeof SupportRequestForm;
 
 export type State = {
   devices: Array<BaseDevice>;
@@ -135,9 +140,11 @@ const reducer = (state: State = INITAL_STATE, action: Actions): State => {
   switch (action.type) {
     case 'SET_STATIC_VIEW': {
       const {payload} = action;
+      const {selectedPlugin} = state;
       return {
         ...state,
         staticView: payload,
+        selectedPlugin: payload != null ? null : selectedPlugin,
       };
     }
     case 'SELECT_DEVICE': {
@@ -256,6 +263,7 @@ const reducer = (state: State = INITAL_STATE, action: Actions): State => {
       return {
         ...state,
         ...payload,
+        staticView: null,
         userPreferredApp: userPreferredApp,
         userPreferredPlugin: selectedPlugin,
         userLRUPlugins: selectedAppName
@@ -449,6 +457,11 @@ export default (state: State = INITAL_STATE, action: Actions): State => {
 
 export const selectDevice = (payload: BaseDevice): Action => ({
   type: 'SELECT_DEVICE',
+  payload,
+});
+
+export const setStaticView = (payload: StaticView): Action => ({
+  type: 'SET_STATIC_VIEW',
   payload,
 });
 
