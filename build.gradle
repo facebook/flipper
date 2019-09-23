@@ -31,11 +31,6 @@ subprojects {
         mavenCentral()
         jcenter()
 
-        maven {
-            // TODO: Remove once this is on official JCenter.
-            url 'https://dl.bintray.com/facebook/maven/'
-        }
-
         if (isSnapshot()) {
             maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
         }
