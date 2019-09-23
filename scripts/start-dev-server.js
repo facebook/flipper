@@ -107,7 +107,7 @@ function startAssetServer(port) {
   const server = http.createServer(app);
 
   return new Promise((resolve, reject) => {
-    server.listen(port, () => resolve({app, server}));
+    server.listen(port, 'localhost', () => resolve({app, server}));
   });
 }
 
