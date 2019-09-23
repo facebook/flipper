@@ -58,9 +58,9 @@ android {
     dependencies {
         compileOnly deps.lithoAnnotations
         compileOnly deps.proguardAnnotations
-        implementation 'com.facebook.fbjni:fbjni:0.0.1'
-        extractHeaders 'com.facebook.fbjni:fbjni:0.0.1:headers'
-        extractJNI 'com.facebook.fbjni:fbjni:0.0.1'
+        implementation 'com.facebook.fbjni:fbjni:0.0.2'
+        extractHeaders 'com.facebook.fbjni:fbjni:0.0.2:headers'
+        extractJNI 'com.facebook.fbjni:fbjni:0.0.2'
         implementation deps.soloader
         implementation deps.jsr305
         implementation deps.supportAppCompat
