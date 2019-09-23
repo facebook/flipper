@@ -124,14 +124,20 @@ export default class extends FlipperPlugin<State, any, PersistedState> {
     });
   };
 
-  navigateTo = (query: string) => {
+  navigateTo = async (query: string) => {
     const filteredQuery = filterOptionalParameters(query);
     this.props.setPersistedState({currentURI: filteredQuery});
     const requiredParameters = getRequiredParameters(filteredQuery);
     if (requiredParameters.length === 0) {
-      this.getDevice().then(device => {
+      const device = await this.getDevice();
+      if (this.realClient.query.app === 'Facebook' && device.os === 'iOS') {
+        // use custom navigate_to event for Wilde
+        this.client.send('navigate_to', {
+          url: filterOptionalParameters(filteredQuery),
+        });
+      } else {
         device.navigateToLocation(filterOptionalParameters(filteredQuery));
-      });
+      }
     } else {
       this.setState({
         requiredParameters,
