@@ -20,8 +20,6 @@ import GK from '../fb-stubs/GK';
 import * as UserFeedback from '../fb-stubs/UserFeedback';
 import {FeedbackPrompt} from '../fb-stubs/UserFeedback';
 
-const useEligibilityCheck = GK.get('flipper_use_itsr_eligibility_check');
-
 type Props = {
   onRatingChanged: (rating: number) => void;
 };
@@ -29,7 +27,6 @@ type Props = {
 type State = {
   promptData: FeedbackPrompt | null;
   isShown: boolean;
-  userIsEligible: boolean;
   hasTriggered: boolean;
 };
 
@@ -254,24 +251,26 @@ class FeedbackComponent extends Component<
 }
 
 export default class RatingButton extends Component<Props, State> {
-  state = {
+  state: State = {
     promptData: null,
     isShown: false,
-    userIsEligible: !useEligibilityCheck,
     hasTriggered: false,
   };
 
   constructor(props: Props) {
     super(props);
-    UserFeedback.getPrompt().then(prompt =>
-      this.setState({promptData: prompt}),
-    );
+    if (GK.get('flipper_rating')) {
+      UserFeedback.getPrompt().then(prompt => {
+        this.setState({promptData: prompt});
+        setTimeout(this.triggerPopover.bind(this), 30000);
+      });
+    }
   }
 
   onClick() {
     const willBeShown = !this.state.isShown;
     this.setState({isShown: willBeShown, hasTriggered: true});
-    if (!willBeShown && useEligibilityCheck) {
+    if (!willBeShown) {
       UserFeedback.dismiss();
     }
   }
@@ -300,26 +299,15 @@ export default class RatingButton extends Component<Props, State> {
     }
   }
 
-  setIsEligible(isEligible: boolean) {
-    this.setState({userIsEligible: isEligible});
-    if (isEligible) {
-      setTimeout(this.triggerPopover.bind(this), 30000);
-    }
-  }
-
   render() {
-    if (!GK.get('flipper_rating')) {
-      return null;
-    }
-    if (!this.state.userIsEligible) {
-      return (
-        <UserFeedback.StarRatingsEligibilityChecker
-          callback={this.setIsEligible.bind(this)}
-        />
-      );
-    }
     const promptData = this.state.promptData;
     if (!promptData) {
+      return null;
+    }
+    if (
+      !promptData.shouldPopup ||
+      (this.state.hasTriggered && !this.state.isShown)
+    ) {
       return null;
     }
     return (

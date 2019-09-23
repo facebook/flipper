@@ -33,6 +33,3 @@ export async function dismiss(): Promise<void> {
 export async function getPrompt(): Promise<FeedbackPrompt> {
   throw new Error('Method not implemented.');
 }
-export class StarRatingsEligibilityChecker extends Component<{
-  callback: (userIsEligible: boolean) => void;
-}> {}
