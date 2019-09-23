@@ -39,6 +39,17 @@ declare interface Server {
   on(event: 'clients-change', callback: () => void): this;
 }
 
+function appNameWithUpdateHint(query: ClientQuery): string {
+  // in previous version (before 3), app may not appear in correct device
+  // section because it refers to the name given by client which is not fixed
+  // for android emulators, so it is indicated as outdated so that developers
+  // might want to update SDK to get rid of this connection swap problem
+  if (!query.sdk_version || query.sdk_version < 3) {
+    return query.app + ' (Outdated SDK)';
+  }
+  return query.app;
+}
+
 class Server extends EventEmitter {
   connections: Map<string, ClientInfo>;
   secureServer: Promise<RSocketServer<any, any>> | null;
@@ -174,7 +185,7 @@ class Server extends EventEmitter {
     const client: UninitializedClient = {
       os: clientData.os,
       deviceName: clientData.device,
-      appName: clientData.app,
+      appName: appNameWithUpdateHint(clientData),
     };
     this.emit('start-client-setup', client);
 
@@ -312,13 +323,7 @@ class Server extends EventEmitter {
       : Promise.resolve(query.device_id)
     ).then(csrId => {
       query.device_id = csrId;
-      // in previous version (before 3), app may not appear in correct device
-      // section because it refers to the name given by client which is not fixed
-      // for android emulators, so it is indicated as outdated so that developers
-      // might want to update SDK to get rid of this connection swap problem
-      if (!query.sdk_version || query.sdk_version < 3) {
-        query.app += ' (Outdated SDK)';
-      }
+      query.app = appNameWithUpdateHint(query);
 
       const id = `${query.app}#${query.os}#${query.device}#${csrId}`;
       console.debug(`Device connected: ${id}`, 'server');
