@@ -50,10 +50,10 @@ repositories {
 }
 
 dependencies {
-  debugImplementation 'com.facebook.flipper:flipper:0.23.7'
+  debugImplementation 'com.facebook.flipper:flipper:0.24.0'
   debugImplementation 'com.facebook.soloader:soloader:0.5.1'
 
-  releaseImplementation 'com.facebook.flipper:flipper-noop:0.23.7'
+  releaseImplementation 'com.facebook.flipper:flipper-noop:0.24.0'
 }
 ```
 
