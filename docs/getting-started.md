@@ -111,7 +111,7 @@ We support both Swift and Objective-C for Flipper with CocoaPods as build and di
 <!--Objective-C-->
 ```ruby
 project 'MyApp.xcodeproj'
-flipperkit_version = '0.23.7'
+flipperkit_version = '0.24.0'
 
 target 'MyApp' do
   platform :ios, '9.0'
@@ -171,7 +171,7 @@ end
 <!--Swift-->
 ```ruby
 project 'MyApp.xcodeproj'
-flipperkit_version = '0.23.7'
+flipperkit_version = '0.24.0'
 
 target 'MyApp' do
   platform :ios, '9.0'
