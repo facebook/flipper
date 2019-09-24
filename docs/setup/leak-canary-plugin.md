@@ -26,7 +26,7 @@ Next, build a custom RefWatcher using RecordLeakService: (see [LeakCanary docs](
 import com.facebook.flipper.plugins.leakcanary.RecordLeakService;
 
 RefWatcher refWatcher = LeakCanary.refWatcher(this)
-    .listenerServiceClass(RecordLeakService.class);
+    .listenerServiceClass(RecordLeakService.class)
     .buildAndInstall();
 ```
 
