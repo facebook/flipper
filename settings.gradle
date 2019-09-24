@@ -39,3 +39,6 @@ project(':network-plugin').projectDir = file('android/plugins/network')
 
 include ':litho-plugin'
 project(':litho-plugin').projectDir = file('android/plugins/litho')
+
+include ':leakcanary-plugin'
+project(':leakcanary-plugin').projectDir = file('android/plugins/leakcanary')
