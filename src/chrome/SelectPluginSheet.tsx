@@ -16,7 +16,9 @@ import {
   colors,
   View,
 } from 'flipper';
+import {unsetShare} from '../reducers/application';
 import React, {Component} from 'react';
+import PropTypes from 'prop-types';
 
 export type PluginSelection = Map<string, boolean>;
 
@@ -107,6 +109,10 @@ class PluginRowComponent extends Component<PluginRowComponentProps> {
 }
 
 export default class SelectPluginSheet extends Component<Props, State> {
+  static contextTypes = {
+    store: PropTypes.object.isRequired,
+  };
+
   state = {plugins: new Map<string, boolean>()};
   static getDerivedStateFromProps(props: Props, state: State) {
     if (state.plugins.size > 0) {
@@ -128,7 +134,10 @@ export default class SelectPluginSheet extends Component<Props, State> {
     this.props.onSelect(selectedArray);
   }
   render() {
-    const {onHide} = this.props;
+    const onHide = () => {
+      this.context.store.dispatch(unsetShare());
+      this.props.onHide();
+    };
     const {plugins} = this.state;
 
     return (

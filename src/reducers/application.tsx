@@ -47,7 +47,10 @@ type SubShareType =
       type: 'file';
       file: string;
     }
-  | {type: 'link'};
+  | {
+      type: 'link';
+      url?: string;
+    };
 
 export type ShareType = {
   statusComponent?: React.ReactNode;
@@ -117,6 +120,10 @@ export type Action =
   | {
       type: 'SET_EXPORT_STATUS_MESSAGE';
       payload: React.ReactNode;
+    }
+  | {
+      type: 'SET_EXPORT_URL';
+      payload: string;
     };
 
 const initialState: () => State = () => ({
@@ -208,6 +215,12 @@ export default function reducer(
     return state;
   } else if (action.type === 'UNSET_SHARE') {
     return {...state, share: null};
+  } else if (action.type === 'SET_EXPORT_URL') {
+    const share = state.share;
+    if (share && share.type === 'link') {
+      return {...state, share: {...share, url: action.payload}};
+    }
+    return state;
   } else {
     return state;
   }
@@ -269,4 +282,9 @@ export const setFlipperRating = (rating: number): Action => ({
   payload: {
     rating,
   },
+});
+
+export const setExportURL = (result: string): Action => ({
+  type: 'SET_EXPORT_URL',
+  payload: result,
 });

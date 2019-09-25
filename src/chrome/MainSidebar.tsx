@@ -312,7 +312,7 @@ class MainSidebar extends PureComponent<Props> {
               onClick={() => setStaticView(SupportRequestForm)}>
               <PluginIcon
                 color={colors.light50}
-                name={'bell'}
+                name={'app-dailies'}
                 isActive={
                   staticView != null && staticView === SupportRequestForm
                 }

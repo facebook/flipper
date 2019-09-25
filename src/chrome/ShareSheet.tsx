@@ -17,7 +17,11 @@ import {
   Input,
 } from 'flipper';
 import React, {Component} from 'react';
-import {setExportStatusComponent, unsetShare} from '../reducers/application';
+import {
+  setExportStatusComponent,
+  unsetShare,
+  setExportURL,
+} from '../reducers/application';
 import {Logger} from '../fb-interfaces/Logger';
 import {Idler} from '../utils/Idler';
 import {
@@ -127,7 +131,6 @@ export default class ShareSheet extends Component<Props, State> {
         `${EXPORT_FLIPPER_TRACE_EVENT}:UI_LINK`,
       );
 
-      this.context.store.dispatch(unsetShare());
       statusUpdate('Uploading Flipper Trace...');
       const result = await reportPlatformFailures(
         shareFlipperData(serializedString),
@@ -135,8 +138,10 @@ export default class ShareSheet extends Component<Props, State> {
       );
 
       this.setState({errorArray, result});
-      if ((result as DataExportResult).flipperUrl) {
-        clipboard.writeText(String((result as DataExportResult).flipperUrl));
+      const flipperUrl = (result as DataExportResult).flipperUrl;
+      if (flipperUrl) {
+        clipboard.writeText(String(flipperUrl));
+        this.context.store.dispatch(setExportURL(flipperUrl));
         new Notification('Sharable Flipper trace created', {
           body: 'URL copied to clipboard',
           requireInteraction: true,
@@ -159,6 +164,7 @@ export default class ShareSheet extends Component<Props, State> {
         }
         this.setState({result});
       }
+      this.context.store.dispatch(unsetShare());
       this.props.logger.trackTimeSince(mark, 'export:url-error');
     }
   }
@@ -208,6 +214,7 @@ export default class ShareSheet extends Component<Props, State> {
 
   render() {
     const onHide = () => {
+      this.context.store.dispatch(unsetShare());
       this.props.onHide();
       this.idler.cancel();
     };

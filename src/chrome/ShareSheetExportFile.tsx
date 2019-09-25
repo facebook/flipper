@@ -149,6 +149,7 @@ export default class ShareSheetExportFile extends Component<Props, State> {
 
   render() {
     const onHide = () => {
+      this.context.store.dispatch(unsetShare());
       this.props.onHide();
       this.idler.cancel();
     };
