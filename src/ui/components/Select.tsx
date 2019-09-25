@@ -30,7 +30,7 @@ const SelectMenu = styled('select')((props: {grow?: boolean}) => ({
 export default class Select extends Component<{
   /** Additional className added to the element */
   className?: string;
-  /** Additional className added to the element */
+  /** The list of options to display */
   options: {
     [key: string]: string;
   };
