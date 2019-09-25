@@ -64,7 +64,6 @@ android {
         implementation deps.jsr305
         implementation deps.supportAppCompat
         implementation deps.stetho
-        compileOnly deps.leakcanary
 
         testImplementation deps.mockito
         testImplementation deps.robolectric
