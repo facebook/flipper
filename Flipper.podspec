@@ -1,4 +1,4 @@
-flipperkit_version = '0.24.1'
+flipperkit_version = '0.24.2'
 Pod::Spec.new do |spec|
   spec.name = 'Flipper'
   spec.version = flipperkit_version
