@@ -102,9 +102,15 @@ void FlipperClient::startBackgroundPlugins() {
        ++it) {
     std::cout << it->first << std::endl;
     if (it->second.get()->runInBackground()) {
-      auto& conn = connections_[it->first];
-      conn = std::make_shared<FlipperConnectionImpl>(socket_.get(), it->first);
-      it->second.get()->didConnect(conn);
+      try {
+        auto& conn = connections_[it->first];
+        conn =
+            std::make_shared<FlipperConnectionImpl>(socket_.get(), it->first);
+        it->second.get()->didConnect(conn);
+      } catch (std::exception& e) {
+        log("Exception starting background plugin: " + it->first + ". " +
+            e.what());
+      }
     }
   }
 }
