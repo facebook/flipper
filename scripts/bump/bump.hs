@@ -1,5 +1,5 @@
 #!/usr/bin/env stack
--- stack --resolver lts-13.4 --install-ghc runghc --package turtle --package system-filepath --package foldl
+-- stack --resolver lts-14.7 --install-ghc runghc --package turtle --package system-filepath --package foldl
 {-
 Copyright (c) Facebook, Inc. and its affiliates.
 
