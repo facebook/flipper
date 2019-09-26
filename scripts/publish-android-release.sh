@@ -19,5 +19,5 @@ else
   # Need to list the projects individually here because of a bug in the gradle-bintray-plugin that
   # tries to upload projects not meant for distribution (like our root project) and throws an NPE
   # in that case.
-  "$BASEDIR"/gradlew :android:bintrayUpload :noop:bintrayUpload :fresco-plugin:bintrayUpload :network-plugin:bintrayUpload :litho-plugin:bintrayUpload -PdryRun=false
+  "$BASEDIR"/gradlew :android:bintrayUpload :noop:bintrayUpload :fresco-plugin:bintrayUpload :network-plugin:bintrayUpload :litho-plugin:bintrayUpload :leakcanary-plugin:bintrayUpload -PdryRun=false
 fi
