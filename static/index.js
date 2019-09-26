@@ -74,7 +74,7 @@ const {config, configPath, flipperDir} = setup(argv);
 
 const pluginPaths = config.pluginPaths
   .concat(
-    path.join(configPath, 'thirdparty'),
+    path.join(configPath, '..', 'thirdparty'),
     path.join(__dirname, '..', 'src', 'plugins'),
     path.join(__dirname, '..', 'src', 'fb', 'plugins'),
   )

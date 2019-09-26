@@ -28,12 +28,15 @@ import {List} from 'immutable';
 import algoliasearch from 'algoliasearch';
 import path from 'path';
 import fs from 'fs-extra';
-import download from 'download-tarball';
 import {homedir} from 'os';
+import {PluginManager as PM} from 'live-plugin-manager';
 
 const PLUGIN_DIR = path.join(homedir(), '.flipper', 'thirdparty');
 const ALGOLIA_APPLICATION_ID = 'OFCNCOG2CU';
 const ALGOLIA_API_KEY = 'f54e21fa3a2a0160595bb058179bfb1e';
+const PluginManager = new PM({
+  ignoredDependencies: ['flipper', 'react', 'react-dom', '@types/*'],
+});
 
 type PluginDefinition = {
   name: string;
@@ -144,15 +147,32 @@ function InstallButton(props: {
 
   const onInstall = useCallback(async () => {
     setAction('Waiting');
-    const filename = `${props.name}-${props.version}.tgz`;
-    await download({
-      url: `https://registry.npmjs.org/${props.name}/-/${filename}`,
-      dir: PLUGIN_DIR,
-    });
-    await fs.rename(
-      path.join(PLUGIN_DIR, 'package'),
-      path.join(PLUGIN_DIR, props.name),
+    await fs.ensureDir(PLUGIN_DIR);
+    // create empty watchman config (required by metro's file watcher)
+    await fs.writeFile(path.join(PLUGIN_DIR, '.watchmanconfig'), '{}');
+
+    // install the plugin and all it's dependencies into node_modules
+    PluginManager.options.pluginsPath = path.join(
+      PLUGIN_DIR,
+      props.name,
+      'node_modules',
     );
+    await PluginManager.install(props.name);
+
+    // move the plugin itself out of the node_modules folder
+    const pluginDir = path.join(
+      PLUGIN_DIR,
+      props.name,
+      'node_modules',
+      props.name,
+    );
+    const pluginFiles = await fs.readdir(pluginDir);
+    await Promise.all(
+      pluginFiles.map(f =>
+        fs.move(path.join(pluginDir, f), path.join(pluginDir, '..', '..', f)),
+      ),
+    );
+
     props.onInstall();
     setAction('Remove');
   }, [props.name, props.version]);

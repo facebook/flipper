@@ -41,6 +41,7 @@ const BUILTINS = [
   'v8',
   'repl',
   'timers',
+  'node-fetch',
 ];
 
 const IGNORED_MODULES = [

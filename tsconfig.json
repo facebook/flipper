@@ -11,9 +11,9 @@
     "moduleResolution": "node",
     "baseUrl": ".",
     "downlevelIteration": true,
-    "esModuleInterop": true,
     "paths": {
-      "flipper": ["./src/index.tsx"]
+      "flipper": ["./src/index.tsx"],
+      "live-plugin-manager": ["./types/live-plugin-manager.d.tsx"]
     },
     "strict": true
   },

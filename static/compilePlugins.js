@@ -61,21 +61,25 @@ function watchChanges(
   const delayedCompilation = {};
   const kCompilationDelayMillis = 1000;
 
-  Object.values(plugins).map(plugin =>
-    fs.watch(plugin.rootDir, {recursive: true}, (eventType, filename) => {
-      // only recompile for changes in not hidden files. Watchman might create
-      // a file called .watchman-cookie
-      if (!filename.startsWith('.') && !delayedCompilation[plugin.name]) {
-        delayedCompilation[plugin.name] = setTimeout(() => {
-          delayedCompilation[plugin.name] = null;
-          // eslint-disable-next-line no-console
-          console.log(`🕵️‍  Detected changes in ${plugin.name}`);
-          const watchOptions = Object.assign(options, {force: true});
-          compilePlugin(plugin, pluginCache, watchOptions).then(reloadCallback);
-        }, kCompilationDelayMillis);
-      }
-    }),
-  );
+  Object.values(plugins)
+    // no hot reloading for plugins in .flipper folder. This is to prevent
+    // Flipper from reloading, while we are doing changes on thirdparty plugins.
+    .filter(plugin => !plugin.rootDir.startsWith(path.join(HOME_DIR, '.flipper')))
+    .map(plugin =>
+      fs.watch(plugin.rootDir, {recursive: true}, (eventType, filename) => {
+        // only recompile for changes in not hidden files. Watchman might create
+        // a file called .watchman-cookie
+        if (!filename.startsWith('.') && !delayedCompilation[plugin.name]) {
+          delayedCompilation[plugin.name] = setTimeout(() => {
+            delayedCompilation[plugin.name] = null;
+            // eslint-disable-next-line no-console
+            console.log(`🕵️‍  Detected changes in ${plugin.name}`);
+            const watchOptions = Object.assign(options, {force: true});
+            compilePlugin(plugin, pluginCache, watchOptions).then(reloadCallback);
+          }, kCompilationDelayMillis);
+        }
+      }),
+    );
 }
 function hash(string) {
   let hash = 0;
@@ -208,6 +212,7 @@ async function compilePlugin(
             ),
           },
           resolver: {
+            sourceExts: ['tsx', 'ts', 'js'],
             blacklistRE: /\/(sonar|flipper-public)\/dist\//,
           },
         },
