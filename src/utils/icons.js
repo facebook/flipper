@@ -14,6 +14,29 @@ const fs = require('fs');
 const path = require('path');
 const {remote} = require('electron');
 
+const ICONS = {
+  'arrow-right': [12],
+  'caution-octagon': [16],
+  'caution-triangle': [16],
+  'info-circle': [16],
+  'magic-wand': [20],
+  'magnifying-glass': [20],
+  'minus-circle': [12],
+  mobile: [12],
+  box: [12],
+  desktop: [12],
+  bug: [12],
+  posts: [20],
+  rocket: [20],
+  tools: [20],
+  'triangle-down': [12],
+  'triangle-right': [12],
+  'chevron-right': [8],
+  'chevron-down': [8],
+  star: [16, 24],
+  'star-outline': [16, 24],
+};
+
 // Takes a string like 'star', or 'star-outline', and converts it to
 // {trimmedName: 'star', variant: 'filled'} or {trimmedName: 'star', variant: 'outline'}
 function getIconPartsFromName(icon) {
@@ -26,7 +49,6 @@ function getIconPartsFromName(icon) {
 // $FlowFixMe not using flow in this file
 function buildLocalIconPath(name, size, density) {
   const icon = getIconPartsFromName(name);
-
   return path.join(
     'icons',
     `${icon.trimmedName}-${icon.variant}-${size}@${density}x.png`,
@@ -36,36 +58,24 @@ function buildLocalIconPath(name, size, density) {
 // $FlowFixMe not using flow in this file
 function buildIconURL(name, size, density) {
   const icon = getIconPartsFromName(name);
-  return `https://external.xx.fbcdn.net/assets/?name=${
+  const url = `https://external.xx.fbcdn.net/assets/?name=${
     icon.trimmedName
   }&variant=${
     icon.variant
   }&size=${size}&set=facebook_icons&density=${density}x`;
+  if (
+    typeof window !== 'undefined' &&
+    (!ICONS[name] || !ICONS[name].includes(size))
+  ) {
+    console.warn(
+      `Using uncached icon: "${name}: [${size}]" Add it to icons.js to preload it.`,
+    );
+  }
+  return url;
 }
 
 module.exports = {
-  ICONS: {
-    'arrow-right': [12],
-    'caution-octagon': [16],
-    'caution-triangle': [16],
-    'info-circle': [16],
-    'magic-wand': [20],
-    'magnifying-glass': [20],
-    'minus-circle': [12],
-    mobile: [12],
-    box: [12],
-    desktop: [12],
-    bug: [12],
-    posts: [20],
-    rocket: [20],
-    tools: [20],
-    'triangle-down': [12],
-    'triangle-right': [12],
-    'chevron-right': [8],
-    'chevron-down': [8],
-    star: [16, 24],
-    'star-outline': [16, 24],
-  },
+  ICONS: ICONS,
 
   buildLocalIconPath: buildLocalIconPath,
   buildIconURL: buildIconURL,
