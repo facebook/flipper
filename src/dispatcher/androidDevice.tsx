@@ -6,6 +6,7 @@
  */
 
 import AndroidDevice from '../devices/AndroidDevice';
+import KaiOSDevice from '../devices/KaiOSDevice';
 import child_process from 'child_process';
 import {Store} from '../reducers/index';
 import BaseDevice from '../devices/BaseDevice';
@@ -33,11 +34,16 @@ function createDevice(
       if (type === 'emulator') {
         name = (await getRunningEmulatorName(device.id)) || name;
       }
-      const androidDevice = new AndroidDevice(device.id, type, name, adbClient);
+      const isKaiOSDevice = Object.keys(props).some(
+        name => name.startsWith('kaios') || name.startsWith('ro.kaios'),
+      );
+      const androidLikeDevice = new (isKaiOSDevice
+        ? KaiOSDevice
+        : AndroidDevice)(device.id, type, name, adbClient);
       if (ports) {
-        androidDevice.reverse([ports.secure, ports.insecure]);
+        androidLikeDevice.reverse([ports.secure, ports.insecure]);
       }
-      resolve(androidDevice);
+      resolve(androidLikeDevice);
     });
   });
 }
