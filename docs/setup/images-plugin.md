@@ -13,7 +13,7 @@ The Fresco images plugin is shipped as a separate Maven artifact:
 
 ```groovy
 dependencies {
-  debugImplementation 'com.facebook.flipper:flipper-fresco-plugin:0.24.0'
+  debugImplementation 'com.facebook.flipper:flipper-fresco-plugin:0.25.0'
 }
 ```
 
