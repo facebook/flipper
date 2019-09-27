@@ -20,7 +20,7 @@ const ICONS = {
   'caution-triangle': [16],
   'info-circle': [16],
   'magic-wand': [20],
-  'magnifying-glass': [20],
+  'magnifying-glass': [16, 20],
   'minus-circle': [12],
   mobile: [12],
   box: [12],
@@ -35,6 +35,17 @@ const ICONS = {
   'chevron-down': [8],
   star: [16, 24],
   'star-outline': [16, 24],
+  camera: [12],
+  camcorder: [12],
+  'bell-null': [12],
+  'question-circle-outline': [16],
+  'chevron-down-outline': [10],
+  'app-dailies': [12],
+  apps: [12],
+  internet: [12],
+  profile: [12],
+  target: [12],
+  bird: [12],
 };
 
 // Takes a string like 'star', or 'star-outline', and converts it to
