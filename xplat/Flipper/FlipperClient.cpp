@@ -170,9 +170,9 @@ void FlipperClient::onDisconnected() {
 void FlipperClient::onMessageReceived(
     const dynamic& message,
     std::unique_ptr<FlipperResponder> uniqueResponder) {
-    // Convert to shared pointer so we can hold on to it while passing it to the plugin, and still use it
-    // to respond with an error if we catch an exception.
-    std::shared_ptr<FlipperResponder> responder = std::move(uniqueResponder);
+  // Convert to shared pointer so we can hold on to it while passing it to the
+  // plugin, and still use it to respond with an error if we catch an exception.
+  std::shared_ptr<FlipperResponder> responder = std::move(uniqueResponder);
   try {
     std::lock_guard<std::mutex> lock(mutex_);
     const auto& method = message["method"];
@@ -237,9 +237,7 @@ void FlipperClient::onMessageReceived(
       }
       const auto& conn = connections_.at(params["api"].getString());
       conn->call(
-          params["method"].getString(),
-          params.getDefault("params"),
-          responder);
+          params["method"].getString(), params.getDefault("params"), responder);
       return;
     }
 
