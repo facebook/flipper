@@ -14,6 +14,35 @@ const fs = require('fs');
 const path = require('path');
 const {remote} = require('electron');
 
+// Takes a string like 'star', or 'star-outline', and converts it to
+// {trimmedName: 'star', variant: 'filled'} or {trimmedName: 'star', variant: 'outline'}
+function getIconPartsFromName(icon) {
+  const isOutlineVersion = icon.endsWith('-outline');
+  const trimmedName = isOutlineVersion ? icon.replace('-outline', '') : icon;
+  const variant = isOutlineVersion ? 'outline' : 'filled';
+  return {trimmedName: trimmedName, variant: variant};
+}
+
+// $FlowFixMe not using flow in this file
+function buildLocalIconPath(name, size, density) {
+  const icon = getIconPartsFromName(name);
+
+  return path.join(
+    'icons',
+    `${icon.trimmedName}-${icon.variant}-${size}@${density}x.png`,
+  );
+}
+
+// $FlowFixMe not using flow in this file
+function buildIconURL(name, size, density) {
+  const icon = getIconPartsFromName(name);
+  return `https://external.xx.fbcdn.net/assets/?name=${
+    icon.trimmedName
+  }&variant=${
+    icon.variant
+  }&size=${size}&set=facebook_icons&density=${density}x`;
+}
+
 module.exports = {
   ICONS: {
     'arrow-right': [12],
@@ -37,6 +66,9 @@ module.exports = {
     star: [16, 24],
     'star-outline': [16, 24],
   },
+
+  buildLocalIconPath: buildLocalIconPath,
+  buildIconURL: buildIconURL,
 
   // $FlowFixMe: not using flow in this file
   getIconURL(name, size, density) {
@@ -73,16 +105,7 @@ module.exports = {
       }
     }
 
-    let variant = 'filled';
-    if (name.endsWith('-outline')) {
-      name = name.replace('-outline', '');
-      variant = 'outline';
-    }
-
-    const localPath = path.join(
-      'icons',
-      `${name}-${variant}-${size}@${density}x.png`,
-    );
+    const localPath = buildLocalIconPath(name, size, density);
     // resolve icon locally if possible
     if (
       remote &&
@@ -90,6 +113,6 @@ module.exports = {
     ) {
       return localPath;
     }
-    return `https://external.xx.fbcdn.net/assets/?name=${name}&variant=${variant}&size=${requestedSize}&set=facebook_icons&density=${density}x`;
+    return buildIconURL(name, requestedSize, density);
   },
 };
