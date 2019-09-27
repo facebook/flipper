@@ -41,6 +41,8 @@ module.exports = function(argv) {
     };
   } catch (e) {
     // file not readable or not parsable, overwrite it with the new config
+    console.warn(`Failed to read ${configPath}: ${e}`);
+    console.info('Writing new default config.');
     fs.writeFileSync(configPath, JSON.stringify(config));
   }
 
