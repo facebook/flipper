@@ -85,7 +85,7 @@ std::string ConnectionContextStore::getDeviceId() {
     auto maybeDeviceId = folly::parseJson(config)["deviceId"];
     return maybeDeviceId.isString() ? maybeDeviceId.getString()
                                     : deviceData_.deviceId;
-  } catch (std::exception& e) {
+  } catch (std::exception&) {
     return deviceData_.deviceId;
   }
 }
