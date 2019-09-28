@@ -269,6 +269,7 @@ declare module 'flipper' {
   declare var getPersistedState: any;
   declare var getPluginKey: any;
   declare var getStringFromErrorLike: any;
+  declare var graphQLQuery: any;
   declare var isProduction: any;
   declare var keyframes: any;
   declare var renderValue: any;
