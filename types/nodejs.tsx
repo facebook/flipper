@@ -13,5 +13,6 @@ declare module NodeJS {
     window: Window | undefined;
     WebSocket: any;
     fetch: any;
+    originalConsole: Console | undefined;
   }
 }
