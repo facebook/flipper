@@ -17,6 +17,7 @@ import {reportPlatformFailures} from '../utils/metrics';
 import config from '../utils/processConfig';
 import BaseDevice from '../devices/BaseDevice';
 import {State as Store} from '../reducers';
+import open from 'open';
 
 const CAPTURE_LOCATION = expandTilde(
   config().screenCapturePath || remote.app.getPath('desktop'),
@@ -36,27 +37,15 @@ type State = {
   capturingScreenshot: boolean;
 };
 
-function openFile(path: string | null) {
+async function openFile(path: string | null) {
   if (!path) {
     return;
   }
-  const child = spawn(getOpenCommand(), [path]);
-  child.on('exit', code => {
-    if (code != 0) {
-      console.error(`${getOpenCommand()} failed with exit code ${code}`);
-    }
-  });
-}
 
-function getOpenCommand(): string {
-  //TODO: TESTED ONLY ON MAC!
-  switch (os.platform()) {
-    case 'win32':
-      return 'start';
-    case 'linux':
-      return 'xdg-open';
-    default:
-      return 'open';
+  try {
+    await open(path);
+  } catch (e) {
+    console.error(`Opening ${path} failed with error ${e}.`);
   }
 }
 
