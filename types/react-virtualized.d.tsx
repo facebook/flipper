@@ -8,4 +8,7 @@
 declare module 'react-virtualized' {
   const AutoSizer: any;
   const Collection: any;
+  const CellMeasurerCache: any;
+  const CellMeasurer: any;
+  const List: any;
 }
