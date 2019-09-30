@@ -9,8 +9,6 @@ import {Button, ButtonGroup, writeBufferToFile} from 'flipper';
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import expandTilde from 'expand-tilde';
-import os from 'os';
-import {spawn} from 'child_process';
 import {remote} from 'electron';
 import path from 'path';
 import {reportPlatformFailures} from '../utils/metrics';
@@ -50,7 +48,8 @@ async function openFile(path: string | null) {
 }
 
 function getFileName(extension: 'png' | 'mp4'): string {
-  return `Screen Capture ${new Date().toISOString()}.${extension}`;
+  // Windows does not like `:` in its filenames. Yes, I know ...
+  return `screencap-${new Date().toISOString().replace(/:/g, '')}.${extension}`;
 }
 
 type Props = OwnProps & StateFromProps & DispatchFromProps;
