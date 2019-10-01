@@ -180,8 +180,7 @@ export class FlipperDevicePlugin<
 
   constructor(props: Props<P>) {
     super(props);
-    // @ts-ignore props.target will be instance of Device
-    this.device = props.target;
+    this.device = props.target as BaseDevice;
   }
 
   _init() {
