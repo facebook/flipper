@@ -91,7 +91,7 @@ class Sheet extends Component<Props, State> {
     return (
       <Transition
         in={Boolean(this.props.activeSheet) && this.state.isVisible}
-        timeout={300}
+        timeout={0}
         onExited={() => this.props.onHideSheet()}>
         {state => (
           <DialogContainer state={state}>
