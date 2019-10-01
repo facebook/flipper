@@ -59,7 +59,7 @@ export default class AndroidDevice extends BaseDevice {
 
   adb: ADBClient;
   pidAppMapping: {[key: number]: string} = {};
-  private recordingDestination?: string;
+  private recordingProcess?: Promise<string>;
 
   supportedColumns(): Array<string> {
     return ['date', 'pid', 'tid', 'tag', 'message', 'type', 'time'];
@@ -134,12 +134,12 @@ export default class AndroidDevice extends BaseDevice {
     await this.executeShell(
       `mkdir -p "${DEVICE_RECORDING_DIR}" && echo -n > "${DEVICE_RECORDING_DIR}/.nomedia"`,
     );
-    this.recordingDestination = destination;
     const recordingLocation = `${DEVICE_RECORDING_DIR}/video.mp4`;
-    this.adb
+    this.recordingProcess = this.adb
       .shell(this.serial, `screenrecord --bugreport "${recordingLocation}"`)
+      .then(adb.util.readAll)
       .then(
-        () =>
+        _ =>
           new Promise((resolve, reject) =>
             this.adb.pull(this.serial, recordingLocation).then(stream => {
               stream.on('end', resolve);
@@ -147,16 +147,18 @@ export default class AndroidDevice extends BaseDevice {
               stream.pipe(createWriteStream(destination));
             }),
           ),
-      );
+      )
+      .then(_ => destination);
   }
 
   async stopScreenCapture(): Promise<string> {
-    const {recordingDestination} = this;
-    if (!recordingDestination) {
+    const {recordingProcess} = this;
+    if (!recordingProcess) {
       return Promise.reject(new Error('Recording was not properly started'));
     }
-    this.recordingDestination = undefined;
     await this.adb.shell(this.serial, `pgrep 'screenrecord' -L 2`);
-    return recordingDestination;
+    const destination = await recordingProcess;
+    this.recordingProcess = undefined;
+    return destination;
   }
 }
