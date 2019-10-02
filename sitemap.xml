@@ -52,5 +52,6 @@
 <url> <loc>https://fbflipper.com/docs/tutorial/intro.html</loc> <changefreq>hourly</changefreq> <priority>1.0</priority> <xhtml:link rel="alternate" hreflang="en" href="https://fbflipper.com/docs/tutorial/intro.html" /> </url>
 <url> <loc>https://fbflipper.com/docs/tutorial/ios.html</loc> <changefreq>hourly</changefreq> <priority>1.0</priority> <xhtml:link rel="alternate" hreflang="en" href="https://fbflipper.com/docs/tutorial/ios.html" /> </url>
 <url> <loc>https://fbflipper.com/docs/tutorial/js-custom.html</loc> <changefreq>hourly</changefreq> <priority>1.0</priority> <xhtml:link rel="alternate" hreflang="en" href="https://fbflipper.com/docs/tutorial/js-custom.html" /> </url>
+<url> <loc>https://fbflipper.com/docs/tutorial/js-publishing.html</loc> <changefreq>hourly</changefreq> <priority>1.0</priority> <xhtml:link rel="alternate" hreflang="en" href="https://fbflipper.com/docs/tutorial/js-publishing.html" /> </url>
 <url> <loc>https://fbflipper.com/docs/tutorial/js-table.html</loc> <changefreq>hourly</changefreq> <priority>1.0</priority> <xhtml:link rel="alternate" hreflang="en" href="https://fbflipper.com/docs/tutorial/js-table.html" /> </url>
 </urlset>
