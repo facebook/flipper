@@ -100,7 +100,7 @@ export default class extends FlipperPlugin<State, any, PersistedState> {
     );
   };
 
-  componentDidMount = () => {
+  componentDidMount() {
     const {selectedApp} = this.props;
     this.subscribeToNavigationEvents();
     this.getDevice()
@@ -122,7 +122,7 @@ export default class extends FlipperPlugin<State, any, PersistedState> {
         bookmarksProvider: bookmarksToAutoCompleteProvider(bookmarks),
       });
     });
-  };
+  }
 
   navigateTo = async (query: string) => {
     const filteredQuery = filterOptionalParameters(query);

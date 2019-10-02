@@ -391,9 +391,9 @@ export default class CPUFrequencyTable extends FlipperDevicePlugin<
     });
   };
 
-  teardown = () => {
+  teardown() {
     this.cleanup();
-  };
+  }
 
   buildRow = (freq: CPUFrequency, idx: number) => {
     const selected = this.state.selectedIds.indexOf(idx) >= 0;

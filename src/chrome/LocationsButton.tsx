@@ -99,9 +99,9 @@ class LocationsButton extends Component<Props, State> {
     });
   };
 
-  componentDidMount = () => {
+  componentDidMount() {
     this.updateBookmarks();
-  };
+  }
 
   render() {
     const {currentURI} = this.props;

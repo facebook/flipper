@@ -91,7 +91,7 @@ class SearchBar extends Component<Props, State> {
     return null;
   };
 
-  render = () => {
+  render() {
     const {bookmarks, providers} = this.props;
     const {
       autoCompleteSheetOpen,
@@ -158,7 +158,7 @@ class SearchBar extends Component<Props, State> {
         </Toolbar>
       </ToolbarContainer>
     );
-  };
+  }
 }
 
 export default SearchBar;
