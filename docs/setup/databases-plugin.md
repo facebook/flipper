@@ -10,7 +10,7 @@ To use the databases plugin, you need to add the plugin to your Flipper client i
 
 Instantiate and add the plugin in `FlipperClient`.
 ```java
-import com.facebook.flipper.plugins.crashreporter.DatabasesPlugin;
+import com.facebook.flipper.plugins.databases.DatabasesFlipperPlugin;
 
 client.addPlugin(new DatabasesFlipperPlugin(context));
 ```
