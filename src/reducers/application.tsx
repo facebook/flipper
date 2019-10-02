@@ -42,7 +42,7 @@ export type ServerPorts = {
   secure: number;
 };
 
-type StatusMessageType = {
+export type StatusMessageType = {
   msg: string;
   sender: string;
 };
