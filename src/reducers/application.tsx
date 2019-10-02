@@ -42,6 +42,11 @@ export type ServerPorts = {
   secure: number;
 };
 
+type StatusMessageType = {
+  msg: string;
+  sender: string;
+};
+
 type SubShareType =
   | {
       type: 'file';
@@ -68,6 +73,7 @@ export type State = {
   downloadingImportData: boolean;
   launcherMsg: LauncherMsg;
   flipperRating: number | null;
+  statusMessages: Array<string>;
 };
 
 type BooleanActionType =
@@ -124,9 +130,17 @@ export type Action =
   | {
       type: 'SET_EXPORT_URL';
       payload: string;
+    }
+  | {
+      type: 'ADD_STATUS_MSG';
+      payload: {msg: string; sender: string};
+    }
+  | {
+      type: 'REMOVE_STATUS_MSG';
+      payload: {msg: string; sender: string};
     };
 
-const initialState: () => State = () => ({
+export const initialState: () => State = () => ({
   leftSidebarVisible: true,
   rightSidebarVisible: true,
   rightSidebarAvailable: false,
@@ -144,7 +158,19 @@ const initialState: () => State = () => ({
     message: '',
   },
   flipperRating: null,
+  statusMessages: [],
 });
+
+function statusMessage(sender: string, msg: string): string {
+  const messageTrimmed = msg.trim();
+  const senderTrimmed = sender.trim();
+  let statusMessage = senderTrimmed.length > 0 ? senderTrimmed : '';
+  statusMessage =
+    statusMessage.length > 0 && messageTrimmed.length > 0
+      ? `${statusMessage}: ${messageTrimmed}`
+      : '';
+  return statusMessage;
+}
 
 export default function reducer(
   state: State | undefined,
@@ -221,6 +247,25 @@ export default function reducer(
       return {...state, share: {...share, url: action.payload}};
     }
     return state;
+  } else if (action.type === 'ADD_STATUS_MSG') {
+    const {sender, msg} = action.payload;
+    const statusMsg = statusMessage(sender, msg);
+    if (statusMsg.length > 0) {
+      return {
+        ...state,
+        statusMessages: [...state.statusMessages, statusMsg],
+      };
+    }
+    return state;
+  } else if (action.type === 'REMOVE_STATUS_MSG') {
+    const {sender, msg} = action.payload;
+    const statusMsg = statusMessage(sender, msg);
+    if (statusMsg.length > 0) {
+      const statusMessages = [...state.statusMessages];
+      statusMessages.splice(statusMessages.indexOf(statusMsg), 1);
+      return {...state, statusMessages};
+    }
+    return state;
   } else {
     return state;
   }
@@ -287,4 +332,14 @@ export const setFlipperRating = (rating: number): Action => ({
 export const setExportURL = (result: string): Action => ({
   type: 'SET_EXPORT_URL',
   payload: result,
+});
+
+export const addStatusMessage = (payload: StatusMessageType): Action => ({
+  type: 'ADD_STATUS_MSG',
+  payload,
+});
+
+export const removeStatusMessage = (payload: StatusMessageType): Action => ({
+  type: 'REMOVE_STATUS_MSG',
+  payload,
 });

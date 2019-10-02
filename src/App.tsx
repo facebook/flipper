@@ -36,6 +36,7 @@ import {State as Store} from './reducers/index';
 import {StaticView} from './reducers/connections';
 import PluginManager from './chrome/PluginManager';
 import BaseDevice from './devices/BaseDevice';
+import StatusBar from './chrome/StatusBar';
 const version = remote.app.getVersion();
 
 type OwnProps = {
@@ -122,6 +123,7 @@ export class App extends React.Component<Props> {
             <PluginContainer logger={this.props.logger} />
           )}
         </FlexRow>
+        <StatusBar />
         <ErrorBar text={this.props.error} />
       </FlexColumn>
     );
