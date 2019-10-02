@@ -156,6 +156,10 @@
         "title": "Building Custom UI",
         "sidebar_label": "Custom UI"
       },
+      "tutorial/js-publishing": {
+        "title": "Publishing your Plugin",
+        "sidebar_label": "Publishing"
+      },
       "tutorial/js-table": {
         "title": "Showing a table"
       }
