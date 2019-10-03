@@ -185,26 +185,25 @@ target 'MyApp' do
   pod 'FlipperKit/SKIOSNetworkPlugin', '~>' + flipperkit_version, :configuration => 'Debug'
   pod 'FlipperKit/FlipperKitUserDefaultsPlugin', '~>' + flipperkit_version, :configuration => 'Debug'
 
-  # If you use `use_frameworks!` in your Podfile,
-  # uncomment the below $static_framework array and also
-  # the pre_install section.  This will cause Flipper and
-  # it's dependencies to be built as a static library and all other pods to
-  # be dynamic.
-  # $static_framework = ['FlipperKit', 'Flipper', 'Flipper-Folly',
-  #   'CocoaAsyncSocket', 'ComponentKit', 'DoubleConversion',
-  #   'glog', 'Flipper-PeerTalk', 'Flipper-RSocket', 'Yoga', 'YogaKit',
-  #   'CocoaLibEvent', 'openssl-ios-bitcode', 'boost-for-react-native']
-  #
-  # pre_install do |installer|
-  #   Pod::Installer::Xcode::TargetValidator.send(:define_method, :verify_no_static_framework_transitive_dependencies) {}
-  #   installer.pod_targets.each do |pod|
-  #       if $static_framework.include?(pod.name)
-  #         def pod.build_type;
-  #           Pod::Target::BuildType.static_library
-  #         end
-  #       end
-  #     end
-  # end
+  def flipper_pre_install_static_frameworks(installer)
+    $static_framework = ['FlipperKit', 'Flipper', 'Flipper-Folly',
+    'CocoaAsyncSocket', 'ComponentKit', 'DoubleConversion',
+    'glog', 'Flipper-PeerTalk', 'Flipper-RSocket', 'Yoga', 'YogaKit',
+    'CocoaLibEvent', 'openssl-ios-bitcode', 'boost-for-react-native']
+
+    installer.pod_targets.each do |pod|
+      if $static_framework.include?(pod.name)
+        def pod.build_type;
+          Pod::Target::BuildType.static_library
+        end
+      end
+    end
+  end
+
+  pre_install do |installer|
+    # Apply this only if you have defined use_frameworks!
+    # flipper_pre_install_static_frameworks(installer)
+  end
 
 
   # This post_install hook adds the -DFB_SONARKIT_ENABLED flag to OTHER_SWIFT_FLAGS, necessary to build swift target
