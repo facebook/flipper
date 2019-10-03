@@ -167,6 +167,8 @@ target 'MyApp' do
 
   # For enabling Flipper.
   flipper_pods()
+
+  # Add new pods below this line
 end
 ```
 <!--Swift-->
