@@ -116,10 +116,10 @@ flipperkit_version = '0.25.0'
 target 'MyApp' do
   platform :ios, '9.0'
   # use_framework!
-  pod 'FlipperKit', '~>' + flipperkit_version
-  pod 'FlipperKit/FlipperKitLayoutComponentKitSupport', '~>' + flipperkit_version
-  pod 'FlipperKit/SKIOSNetworkPlugin', '~>' + flipperkit_version
-  pod 'FlipperKit/FlipperKitUserDefaultsPlugin', '~>' + flipperkit_version
+  pod 'FlipperKit', '~>' + flipperkit_version, :configuration => 'Debug'
+  pod 'FlipperKit/FlipperKitLayoutComponentKitSupport', '~>' + flipperkit_version, :configuration => 'Debug'
+  pod 'FlipperKit/SKIOSNetworkPlugin', '~>' + flipperkit_version, :configuration => 'Debug'
+  pod 'FlipperKit/FlipperKitUserDefaultsPlugin', '~>' + flipperkit_version, :configuration => 'Debug'
 
   # If you use `use_frameworks!` in your Podfile,
   # uncomment the below $static_framework array and also
@@ -176,11 +176,11 @@ flipperkit_version = '0.25.0'
 target 'MyApp' do
   platform :ios, '9.0'
 
-  pod 'FlipperKit', '~>' + flipperkit_version
+  pod 'FlipperKit', '~>' + flipperkit_version, :configuration => 'Debug'
   # Layout and network plugins are not yet supported for swift projects
-  pod 'FlipperKit/FlipperKitLayoutComponentKitSupport', '~>' + flipperkit_version
-  pod 'FlipperKit/SKIOSNetworkPlugin', '~>' + flipperkit_version
-  pod 'FlipperKit/FlipperKitUserDefaultsPlugin', '~>' + flipperkit_version
+  pod 'FlipperKit/FlipperKitLayoutComponentKitSupport', '~>' + flipperkit_version, :configuration => 'Debug'
+  pod 'FlipperKit/SKIOSNetworkPlugin', '~>' + flipperkit_version, :configuration => 'Debug'
+  pod 'FlipperKit/FlipperKitUserDefaultsPlugin', '~>' + flipperkit_version, :configuration => 'Debug'
 
   # If you use `use_frameworks!` in your Podfile,
   # uncomment the below $static_framework array and also
