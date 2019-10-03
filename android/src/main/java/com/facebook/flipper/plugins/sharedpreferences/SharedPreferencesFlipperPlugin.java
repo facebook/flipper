@@ -102,7 +102,7 @@ public class SharedPreferencesFlipperPlugin implements FlipperPlugin {
     mSharedPreferences = new HashMap<>(descriptors.size());
     for (SharedPreferencesDescriptor descriptor : descriptors) {
       SharedPreferences preferences =
-          context.getSharedPreferences(descriptor.name, descriptor.mode);
+          descriptor.getSharedPreferences(context);
       preferences.registerOnSharedPreferenceChangeListener(onSharedPreferenceChangeListener);
       mSharedPreferences.put(preferences, descriptor);
     }
@@ -251,6 +251,10 @@ public class SharedPreferencesFlipperPlugin implements FlipperPlugin {
       }
       this.name = name;
       this.mode = mode;
+    }
+
+    public SharedPreferences getSharedPreferences(Context context) {
+        return context.getSharedPreferences(name, mode);
     }
   }
 }
