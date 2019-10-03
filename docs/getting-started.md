@@ -111,16 +111,23 @@ We support both Swift and Objective-C for Flipper with CocoaPods as build and di
 <!--Objective-C-->
 ```ruby
 project 'MyApp.xcodeproj'
-flipperkit_version = '0.25.0'
+
+def flipper_pods()
+  flipperkit_version = '0.25.0'
+  pod 'FlipperKit', '~>' + flipperkit_version, :configuration => 'Debug'
+  pod 'FlipperKit/FlipperKitLayoutComponentKitSupport', '~>' + flipperkit_version, :configuration => 'Debug'
+  pod 'FlipperKit/SKIOSNetworkPlugin', '~>' + flipperkit_version, :configuration => 'Debug'
+  pod 'FlipperKit/FlipperKitUserDefaultsPlugin', '~>' + flipperkit_version, :configuration => 'Debug'
+  pod 'FlipperKit/FlipperKitReactPlugin', '~>' + flipperkit_version, :configuration => 'Debug'
+end
 
 target 'MyApp' do
   platform :ios, '9.0'
   # use_modular_headers!
   # use_frameworks!
-  pod 'FlipperKit', '~>' + flipperkit_version, :configuration => 'Debug'
-  pod 'FlipperKit/FlipperKitLayoutComponentKitSupport', '~>' + flipperkit_version, :configuration => 'Debug'
-  pod 'FlipperKit/SKIOSNetworkPlugin', '~>' + flipperkit_version, :configuration => 'Debug'
-  pod 'FlipperKit/FlipperKitUserDefaultsPlugin', '~>' + flipperkit_version, :configuration => 'Debug'
+
+  # For enabling Flipper.
+  flipper_pods()
 
   def flipper_pre_install_static_frameworks(installer)
     $static_framework = ['FlipperKit', 'Flipper', 'Flipper-Folly',
