@@ -28,11 +28,11 @@ Flipper aims to be your number one companion for mobile app development on iOS a
 
 ## Extending Flipper
 
-Flipper is built as a platform. In addition to using the tools already included, you can create your own plugins to visualize and debug data from your mobile apps. Flipper takes care of sending data back and forth, calling functions, and listening for events on the mobile app.
+Flipper is built as a platform. In addition to using the tools already included, you can create your plugins to visualize and debug data from your mobile apps. Flipper takes care of sending data back and forth, calling functions, and listening for events on the mobile app.
 
 ## Contributing to Flipper
 
-Both Flipper's desktop app and native mobile SDKs are open-source and MIT licensed. This enables you to see and understand how we are building plugins, and of course join the community and help improve Flipper. We are excited to see what you will build on this platform.
+Both Flipper's desktop app and native mobile SDKs are open-source and MIT licensed. This enables you to see and understand how we are building plugins, and of course, join the community and help improve Flipper. We are excited to see what you will build on this platform.
 
 # In this repo
 
@@ -75,7 +75,7 @@ NOTE: If you're on Windows, you need to use Yarn 1.5.1 until [this issue](https:
 
 ### Building standalone application
 
-Provide either `--mac`, `--win`, `--linux` or any combination of them
+Provide either `--mac`, `--win`, `--Linux` or any combination of them
 to `yarn build` to build a release zip file for the given platform(s). E.g.
 
 ```
@@ -98,9 +98,9 @@ You can omit `--repo-update` to speed up the installation, but watch out as you 
 
 ## Android SDK + Sample app
 
-Start up an android emulator and run the following in the project root:
+Startup an android emulator and run the following in the project root:
 ```
-./gradlew :sample:installDebug
+./gradlew :sample:install debug
 ```
 
 ## Documentation
