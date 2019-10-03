@@ -151,6 +151,7 @@ export default class SelectPluginSheet extends Component<Props, State> {
               return (
                 <PluginRowComponent
                   name={pluginID}
+                  key={pluginID}
                   selected={selected}
                   onChange={(id: string, selected: boolean) => {
                     plugins.set(id, selected);
