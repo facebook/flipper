@@ -121,6 +121,45 @@ def flipper_pods()
   pod 'FlipperKit/FlipperKitReactPlugin', '~>' + flipperkit_version, :configuration => 'Debug'
 end
 
+def flipper_pre_install_static_frameworks(installer)
+  $static_framework = ['FlipperKit', 'Flipper', 'Flipper-Folly',
+  'CocoaAsyncSocket', 'ComponentKit', 'DoubleConversion',
+  'glog', 'Flipper-PeerTalk', 'Flipper-RSocket', 'Yoga', 'YogaKit',
+  'CocoaLibEvent', 'openssl-ios-bitcode', 'boost-for-react-native']
+
+  installer.pod_targets.each do |pod|
+    if $static_framework.include?(pod.name)
+      def pod.build_type;
+        Pod::Target::BuildType.static_library
+      end
+    end
+  end
+end
+
+def flipper_post_install(installer)
+  installer.pods_project.targets.each do |target|
+    if target.name == 'YogaKit'
+      target.build_configurations.each do |config|
+        config.build_settings['SWIFT_VERSION'] = '4.1'
+      end
+    end
+  end
+  file_name = Dir.glob("*.xcodeproj")[0]
+  app_project = Xcodeproj::Project.open(file_name)
+  app_project.native_targets.each do |target|
+    target.build_configurations.each do |config|
+      cflags = config.build_settings['OTHER_CFLAGS'] || '$(inherited) '
+      unless cflags.include? '-DFB_SONARKIT_ENABLED=1'
+        puts 'Adding -DFB_SONARKIT_ENABLED=1 in OTHER_CFLAGS...'
+        cflags << '-DFB_SONARKIT_ENABLED=1'
+      end
+      config.build_settings['OTHER_CFLAGS'] = cflags
+    end
+    app_project.save
+  end
+  installer.pods_project.save
+end
+
 target 'MyApp' do
   platform :ios, '9.0'
   # use_modular_headers!
@@ -128,54 +167,6 @@ target 'MyApp' do
 
   # For enabling Flipper.
   flipper_pods()
-
-  def flipper_pre_install_static_frameworks(installer)
-    $static_framework = ['FlipperKit', 'Flipper', 'Flipper-Folly',
-    'CocoaAsyncSocket', 'ComponentKit', 'DoubleConversion',
-    'glog', 'Flipper-PeerTalk', 'Flipper-RSocket', 'Yoga', 'YogaKit',
-    'CocoaLibEvent', 'openssl-ios-bitcode', 'boost-for-react-native']
-
-    installer.pod_targets.each do |pod|
-      if $static_framework.include?(pod.name)
-        def pod.build_type;
-          Pod::Target::BuildType.static_library
-        end
-      end
-    end
-  end
-  
-  pre_install do |installer|
-    Pod::Installer::Xcode::TargetValidator.send(:define_method, :verify_no_static_framework_transitive_dependencies) {}
-
-    # Apply this only if you have defined use_frameworks!
-    # flipper_pre_install_static_frameworks(installer)
-  end
-
-
-  # This post_install hook adds the -DFB_SONARKIT_ENABLED=1 flag to OTHER_CFLAGS, necessary to expose Flipper classes in the header files
-  post_install do |installer|
-    installer.pods_project.targets.each do |target|
-      if target.name == 'YogaKit'
-        target.build_configurations.each do |config|
-          config.build_settings['SWIFT_VERSION'] = '4.1'
-        end
-      end
-    end
-    file_name = Dir.glob("*.xcodeproj")[0]
-    app_project = Xcodeproj::Project.open(file_name)
-    app_project.native_targets.each do |target|
-      target.build_configurations.each do |config|
-        cflags = config.build_settings['OTHER_CFLAGS'] || '$(inherited) '
-        unless cflags.include? '-DFB_SONARKIT_ENABLED=1'
-          puts 'Adding -DFB_SONARKIT_ENABLED=1 in OTHER_CFLAGS...'
-          cflags << '-DFB_SONARKIT_ENABLED=1'
-        end
-        config.build_settings['OTHER_CFLAGS'] = cflags
-      end
-      app_project.save
-    end
-    installer.pods_project.save
-   end
 end
 ```
 <!--Swift-->
