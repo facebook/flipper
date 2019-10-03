@@ -3,7 +3,7 @@ id: react-native
 title: React Native
 ---
 
-This tutorial was inspired by http://blog.nparashuram.com/2019/09/using-flipper-with-react-native.html
+_inspired by [a blog post by Ram N](http://blog.nparashuram.com/2019/09/using-flipper-with-react-native.html)_
 
 Flipper helps you debug [React Native](https://facebook.github.io/react-native/) apps running in an emulator/simulator or connected physical development devices. Flipper consists of two parts:
 
@@ -80,7 +80,7 @@ buildscript {
 }
 ```
 
-Now, we must create a new file inside `android/app/src/debug/java/com/yourappname/ReactNativeFlipper.java`. this a `debug`puorpose file.
+Now, we must create a new file inside `android/app/src/debug/java/com/yourappname/ReactNativeFlipper.java`.
 
 Here, there are the following plugins integrations:
 
@@ -93,11 +93,12 @@ Here, there are the following plugins integrations:
 - React devtools
 
 ```java
-/\*\*
-- Copyright (c) Facebook, Inc. and its affiliates.
-- <p>This source code is licensed under the MIT license found in the LICENSE file in the root
-- directory of this source tree.
-\*/
+/**
+* Copyright (c) Facebook, Inc. and its affiliates.
+*
+* <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+* directory of this source tree.
+*/
 package com.yourappname;
 
 import android.content.Context;
@@ -188,9 +189,11 @@ public class MainApplication extends Application implements ReactApplication {
   }
 
   /**
-    - Loads Flipper in React Native templates.
-    - @param context
-  \*/
+   * Loads Flipper in React Native templates. Call this in the onCreate method with something like
+   * initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
+   *
+   * @param context
+   */
   private static void initializeFlipper(Context context, ReactInstanceManager reactInstanceManager) {
     if (BuildConfig.DEBUG) {
       try {
@@ -212,7 +215,7 @@ public class MainApplication extends Application implements ReactApplication {
 }
 ```
 
-Finally, open Flipper desktop app, and run `npm run android` in your terminal.
+Finally, open the Flipper desktop app, and run `yarn android` in your terminal.
 
 ## iOS
 
@@ -339,7 +342,7 @@ Here, there are the following plugins integrations:
 
 <!--END_DOCUSAURUS_CODE_TABS-->
 
-Finally, open Flipper desktop app, and run `npm run ios` in your terminal.
+Finally, open the Flipper desktop app, and run `yarn ios` in your terminal.
 
 <div class="warning">
 
