@@ -238,7 +238,11 @@ class ElementsRow extends PureComponent<ElementsRowProps, ElementsRowState> {
       {
         label: 'Copy',
         click: () => {
-          clipboard.writeText(props.element.name + ' id=' + props.element.id);
+          const attrs = props.element.attributes.reduce(
+            (acc, val) => acc + ` ${val.name}=${val.value}`,
+            '',
+          );
+          clipboard.writeText(`${props.element.name}${attrs}`);
         },
       },
       {
