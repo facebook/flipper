@@ -88,4 +88,5 @@ persistStore(store, undefined, () => {
   dispatcher(store, logger);
   // make init function callable from outside
   window.Flipper.init = init;
+  window.dispatchEvent(new Event('flipper-store-ready'));
 });
