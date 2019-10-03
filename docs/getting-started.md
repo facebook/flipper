@@ -115,7 +115,8 @@ flipperkit_version = '0.25.0'
 
 target 'MyApp' do
   platform :ios, '9.0'
-  # use_framework!
+  # use_modular_headers!
+  # use_frameworks!
   pod 'FlipperKit', '~>' + flipperkit_version, :configuration => 'Debug'
   pod 'FlipperKit/FlipperKitLayoutComponentKitSupport', '~>' + flipperkit_version, :configuration => 'Debug'
   pod 'FlipperKit/SKIOSNetworkPlugin', '~>' + flipperkit_version, :configuration => 'Debug'
