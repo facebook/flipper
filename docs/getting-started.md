@@ -20,7 +20,7 @@ Once you start Flipper and launch an emulator/simulator or connect a device, you
 
 ![Logs plugin](/docs/assets/initial.png)
 
-### Setup your Android app
+## Setup your Android app
 
 Add the following permissions to your `AndroidManifest.xml`. The SDK needs these to communicate with the desktop app on localhost via adb. It won't make any external internet requests.
 
@@ -109,6 +109,7 @@ We support both Swift and Objective-C for Flipper with CocoaPods as build and di
 
 <!--DOCUSAURUS_CODE_TABS-->
 <!--Objective-C-->
+
 ```ruby
 project 'MyApp.xcodeproj'
 flipperkit_version = '0.25.0'
@@ -168,7 +169,9 @@ target 'MyApp' do
    end
 end
 ```
+
 <!--Swift-->
+
 ```ruby
 project 'MyApp.xcodeproj'
 flipperkit_version = '0.25.0'
@@ -237,6 +240,7 @@ target 'MyApp' do
   end
 end
 ```
+
 <!--END_DOCUSAURUS_CODE_TABS-->
 
 You need to compile your project with the `FB_SONARKIT_ENABLED=1` compiler flag. The above `post_install` hook adds this compiler flag to your project settings.
@@ -244,6 +248,7 @@ You need to compile your project with the `FB_SONARKIT_ENABLED=1` compiler flag.
 <div class="warning">
 
 On the first run of `pod install`, `FB_SONARKIT_ENABLED=1` may not be added in the "Build Settings" of your project, but in all the subsequent runs of `pod install`, the above `post_install` hook successfully adds the compiler flag. So before running your app, make sure that `FB_SONARKIT_ENABLED=1` is present in `OTHER_CFLAGS` and `OTHER_SWIFT_FLAGS` for Objective-C and Swift projects respectively.
+
 </div>
 
 Install the dependencies by running `pod install`. You can now import and initialize Flipper in your
@@ -252,6 +257,7 @@ AppDelegate.
 <!--DOCUSAURUS_CODE_TABS-->
 
 <!--Objective-C-->
+
 ```objective-c
 #import <FlipperKit/FlipperClient.h>
 #import <FlipperKitLayoutPlugin/FlipperKitLayoutPlugin.h>
@@ -277,7 +283,9 @@ AppDelegate.
 }
 @end
 ```
+
 <!--Swift-->
+
 ```swift
 import UIKit
 import FlipperKit
@@ -298,6 +306,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   }
 }
 ```
+
 <!--END_DOCUSAURUS_CODE_TABS-->
 
 <div class="warning">
