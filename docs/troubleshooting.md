@@ -8,7 +8,7 @@ We hope that flipper works well out of the box, but the software is a work in pr
 
 ## Mac Desktop app
 
-### Flipper won't launch
+### Flipper won't launch on Mac
 
 * If the window is appearing, try opening the Chrome DevTools within Flipper. To do so, from the View menu select Toggle Developer Tools or press CMD+Option+I and check if there are any errors on the console.
 * Launch Flipper from the command line using `/Applications/Flipper.app/Contents/MacOS/Flipper`. This should give you some logs, that might be helpful when debugging.
