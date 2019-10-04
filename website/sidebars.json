@@ -16,7 +16,7 @@
     ]
   },
   "setup": {
-    "Using Flipper": ["getting-started", "troubleshooting", "react-native"],
+    "Using Flipper": ["getting-started", "troubleshooting"],
     "Plugin Setup": [
       "setup/layout-plugin",
       "setup/navigation-plugin",

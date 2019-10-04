@@ -99,9 +99,6 @@
       "getting-started": {
         "title": "Getting Started"
       },
-      "react-native": {
-        "title": "React Native"
-      },
       "setup/crash-reporter-plugin": {
         "title": "Crash Reporter Setup",
         "sidebar_label": "Crash Reporter"
