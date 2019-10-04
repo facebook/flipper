@@ -30,10 +30,12 @@ import path from 'path';
 import fs from 'fs-extra';
 import {homedir} from 'os';
 import {PluginManager as PM} from 'live-plugin-manager';
+import {reportPlatformFailures, reportUsage} from '../utils/metrics';
 
 const PLUGIN_DIR = path.join(homedir(), '.flipper', 'thirdparty');
 const ALGOLIA_APPLICATION_ID = 'OFCNCOG2CU';
 const ALGOLIA_API_KEY = 'f54e21fa3a2a0160595bb058179bfb1e';
+const TAG = 'PluginInstaller';
 const PluginManager = new PM({
   ignoredDependencies: ['flipper', 'react', 'react-dom', '@types/*'],
 });
@@ -146,6 +148,7 @@ function InstallButton(props: {
   type InstallAction = 'Install' | 'Waiting' | 'Remove';
 
   const onInstall = useCallback(async () => {
+    reportUsage(`${TAG}:install`, undefined, props.name);
     setAction('Waiting');
     await fs.ensureDir(PLUGIN_DIR);
     // create empty watchman config (required by metro's file watcher)
@@ -178,6 +181,7 @@ function InstallButton(props: {
   }, [props.name, props.version]);
 
   const onRemove = useCallback(async () => {
+    reportUsage(`${TAG}:remove`, undefined, props.name);
     setAction('Waiting');
     await fs.remove(path.join(PLUGIN_DIR, props.name));
     props.onInstall();
@@ -195,7 +199,11 @@ function InstallButton(props: {
     <TableButton
       compact
       type={action === 'Install' ? 'primary' : undefined}
-      onClick={action === 'Install' ? onInstall : onRemove}>
+      onClick={
+        action === 'Install'
+          ? () => reportPlatformFailures(onInstall(), `${TAG}:install`)
+          : () => reportPlatformFailures(onRemove(), `${TAG}:remove`)
+      }>
       {action}
     </TableButton>
   );
@@ -216,7 +224,11 @@ function useNPMSearch(
   );
 
   useEffect(() => {
-    getInstalledPlugns().then(setInstalledPlugins);
+    reportUsage(`${TAG}:open`);
+    reportPlatformFailures(
+      getInstalledPlugns(),
+      `${TAG}:getInstalledPlugins`,
+    ).then(setInstalledPlugins);
   }, []);
 
   const onInstall = useCallback(async () => {
@@ -264,11 +276,14 @@ function useNPMSearch(
 
   useEffect(() => {
     (async () => {
-      const {hits} = await index.search({
-        query,
-        filters: 'keywords:flipper-plugin',
-        hitsPerPage: 20,
-      });
+      const {hits} = await reportPlatformFailures(
+        index.search({
+          query,
+          filters: 'keywords:flipper-plugin',
+          hitsPerPage: 20,
+        }),
+        `${TAG}:queryIndex`,
+      );
 
       setSearchResults(hits.filter(hit => !installedPlugins.has(hit.name)));
       setQuery(query);
