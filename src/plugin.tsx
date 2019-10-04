@@ -101,6 +101,8 @@ export abstract class FlipperBasePlugin<
         callClient: (method: string, params?: any) => Promise<any>,
         persistedState: StaticPersistedState | undefined,
         store: MiddlewareAPI | undefined,
+        idler?: Idler,
+        statusUpdate?: (msg: string) => void,
       ) => Promise<StaticPersistedState | undefined>)
     | null;
   static getActiveNotifications:

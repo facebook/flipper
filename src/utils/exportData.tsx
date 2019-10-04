@@ -381,6 +381,7 @@ export async function fetchMetadata(
   pluginsMap: Map<string, typeof FlipperDevicePlugin | typeof FlipperPlugin>,
   store: MiddlewareAPI,
   statusUpdate?: (msg: string) => void,
+  idler?: Idler,
 ): Promise<{pluginStates: PluginStatesState; errorArray: Array<Error>}> {
   const newPluginState = {...pluginStates};
   const errorArray: Array<Error> = [];
@@ -413,7 +414,13 @@ export async function fetchMetadata(
             statusUpdate(`Fetching metadata for plugin ${plugin}...`);
           const data = await promiseTimeout(
             120000, // Timeout in 2 mins
-            exportState(callClient(client, plugin), newPluginState[key], store),
+            exportState(
+              callClient(client, plugin),
+              newPluginState[key],
+              store,
+              idler,
+              statusUpdate,
+            ),
             `Timed out while collecting data for ${plugin}`,
           );
           newPluginState[key] = data;
@@ -459,6 +466,7 @@ export async function getStoreExport(
     pluginsMap,
     store,
     statusUpdate,
+    idler,
   );
   const {errorArray} = metadata;
   const newPluginState = metadata.pluginStates;
