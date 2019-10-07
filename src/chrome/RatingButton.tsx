@@ -73,6 +73,32 @@ const Row = styled(FlexRow)({
   flexWrap: 'wrap',
 });
 
+const DismissRow = styled(Row)({
+  marginBottom: 0,
+  marginTop: 10,
+});
+
+const DismissButton = styled('span')({
+  '&:hover': {
+    textDecoration: 'underline',
+    cursor: 'pointer',
+  },
+});
+
+const Spacer = styled(FlexColumn)({
+  flexGrow: 1,
+});
+
+function dismissRow(dismiss: () => void) {
+  return (
+    <DismissRow>
+      <Spacer />
+      <DismissButton onClick={dismiss}>Dismiss</DismissButton>
+      <Spacer />
+    </DismissRow>
+  );
+}
+
 type FeedbackComponentState = {
   rating: number | null;
   hoveredRating: number;
@@ -91,7 +117,8 @@ class FeedbackComponent extends Component<
       selectedPredefinedComments: Array<string>,
       allowUserInfoSharing: boolean,
     ) => void;
-    close(): void;
+    close: () => void;
+    dismiss: () => void;
     promptData: FeedbackPrompt;
   },
   FeedbackComponentState
@@ -175,6 +202,7 @@ class FeedbackComponent extends Component<
         body = [
           <Row>{this.props.promptData.bodyText}</Row>,
           <Row style={{margin: 'auto'}}>{stars}</Row>,
+          dismissRow(this.props.dismiss),
         ];
         break;
       case 'leave-comment':
@@ -220,6 +248,7 @@ class FeedbackComponent extends Component<
               Submit
             </Button>
           </Row>,
+          dismissRow(this.props.dismiss),
         ];
         break;
       case 'finished':
@@ -329,6 +358,7 @@ export default class RatingButton extends Component<Props, State> {
                 close={() => {
                   this.setState({isShown: false});
                 }}
+                dismiss={this.onClick.bind(this)}
                 promptData={promptData}
               />
             }
