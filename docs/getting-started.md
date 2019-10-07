@@ -348,10 +348,9 @@ with Gradle 5.
 We provide a "no-op" implementation of some oft-used Flipper interfaces you can
 use to make it easier to strip Flipper from your release builds.
 
-`android/build.gradle`
+`android/app/build.gradle`
 
 ```groovy
-
 android {
   packagingOptions {
     ...
@@ -359,22 +358,13 @@ android {
   }
 }
 
-allprojects {
-  repositories {
-    jcenter()
-  }
-}
-
-buildscript {
+dependencies {
   ...
-  dependencies {
-    ...
-    debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
-      exclude group:'com.facebook.yoga'
-      exclude group:'com.facebook.flipper', module: 'fbjni'
-      exclude group:'com.facebook.litho', module: 'litho-annotations'
-      exclude group:'com.squareup.okhttp3'
-    }
+  debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
+    exclude group:'com.facebook.yoga'
+    exclude group:'com.facebook.flipper', module: 'fbjni'
+    exclude group:'com.facebook.litho', module: 'litho-annotations'
+    exclude group:'com.squareup.okhttp3'
   }
 }
 ```
