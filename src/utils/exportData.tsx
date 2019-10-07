@@ -413,7 +413,7 @@ export async function fetchMetadata(
           statusUpdate &&
             statusUpdate(`Fetching metadata for plugin ${plugin}...`);
           const data = await promiseTimeout(
-            120000, // Timeout in 2 mins
+            240000, // Fetching MobileConfig data takes ~ 3 mins, thus keeping timeout at 4 mins.
             exportState(
               callClient(client, plugin),
               newPluginState[key],
@@ -421,6 +421,7 @@ export async function fetchMetadata(
               idler,
               statusUpdate,
             ),
+
             `Timed out while collecting data for ${plugin}`,
           );
           newPluginState[key] = data;
