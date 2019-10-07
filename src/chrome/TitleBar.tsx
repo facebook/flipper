@@ -14,6 +14,7 @@ import {
   toggleRightSidebarVisible,
   ACTIVE_SHEET_BUG_REPORTER,
   setFlipperRating,
+  ACTIVE_SHEET_SETTINGS,
 } from '../reducers/application';
 import {
   colors,
@@ -181,6 +182,12 @@ class TitleBar extends React.Component<Props, StateFromProps> {
             icon="bug"
           />
         )}
+        <Button
+          icon="settings"
+          title="Settings"
+          compact={true}
+          onClick={() => this.props.setActiveSheet(ACTIVE_SHEET_SETTINGS)}
+        />
         <ButtonGroup>
           <Button
             compact={true}

@@ -11,6 +11,7 @@ import {
   setSelectPluginsToExportActiveSheet,
   setActiveSheet,
   ACTIVE_SHEET_PLUGINS,
+  ACTIVE_SHEET_SETTINGS,
 } from './reducers/application';
 import {Store} from './reducers/';
 import electron, {MenuItemConstructorOptions} from 'electron';
@@ -214,6 +215,11 @@ function getTemplate(
     {
       label: 'File',
       submenu: [
+        {
+          label: 'Preferences',
+          accelerator: 'Cmd+,',
+          click: () => store.dispatch(setActiveSheet(ACTIVE_SHEET_SETTINGS)),
+        },
         {
           label: 'Import Flipper File...',
           accelerator: 'CommandOrControl+O',

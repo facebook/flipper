@@ -26,6 +26,7 @@ import {
   ACTIVE_SHEET_PLUGINS,
   ACTIVE_SHEET_SHARE_DATA,
   ACTIVE_SHEET_SIGN_IN,
+  ACTIVE_SHEET_SETTINGS,
   ACTIVE_SHEET_SHARE_DATA_IN_FILE,
   ACTIVE_SHEET_SELECT_PLUGINS_TO_EXPORT,
   ACTIVE_SHEET_PLUGIN_SHEET,
@@ -37,6 +38,7 @@ import {StaticView} from './reducers/connections';
 import PluginManager from './chrome/PluginManager';
 import BaseDevice from './devices/BaseDevice';
 import StatusBar from './chrome/StatusBar';
+import SettingsSheet from './chrome/SettingsSheet';
 const version = remote.app.getVersion();
 
 type OwnProps = {
@@ -88,6 +90,8 @@ export class App extends React.Component<Props> {
         return <ShareSheet onHide={onHide} logger={this.props.logger} />;
       case ACTIVE_SHEET_SIGN_IN:
         return <SignInSheet onHide={onHide} />;
+      case ACTIVE_SHEET_SETTINGS:
+        return <SettingsSheet onHide={onHide} />;
       case ACTIVE_SHEET_SELECT_PLUGINS_TO_EXPORT:
         return <ExportDataPluginSheet onHide={onHide} />;
       case ACTIVE_SHEET_SHARE_DATA_IN_FILE:

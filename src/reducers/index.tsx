@@ -26,6 +26,10 @@ import plugins, {
   State as PluginsState,
   Action as PluginsAction,
 } from './plugins';
+import settings, {
+  State as SettingsState,
+  Action as SettingsAction,
+} from './settings';
 import user, {State as UserState, Action as UserAction} from './user';
 
 import {persistReducer, PersistPartial} from 'redux-persist';
@@ -41,6 +45,7 @@ export type Actions =
   | NotificationsAction
   | PluginsAction
   | UserAction
+  | SettingsAction
   | {type: 'INIT'};
 
 export type State = {
@@ -50,6 +55,7 @@ export type State = {
   notifications: NotificationsState & PersistPartial;
   plugins: PluginsState;
   user: UserState & PersistPartial;
+  settingsState: SettingsState & PersistPartial;
 };
 
 export type Store = ReduxStore<State, Actions>;
@@ -93,5 +99,9 @@ export default combineReducers<State, Actions>({
       storage,
     },
     user,
+  ),
+  settingsState: persistReducer(
+    {key: 'settings', storage, whitelist: ['settings']},
+    settings,
   ),
 });
