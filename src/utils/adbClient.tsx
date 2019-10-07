@@ -10,13 +10,15 @@ import child_process from 'child_process';
 import promiseRetry from 'promise-retry';
 import adbConfig from '../utils/adbConfig';
 import adbkit, {Client} from 'adbkit';
+import {Store} from '../reducers/index';
+import path from 'path';
 
 const MAX_RETRIES = 5;
 let instance: Promise<Client>;
 
-export function getAdbClient(): Promise<Client> {
+export function getAdbClient(store: Store): Promise<Client> {
   if (!instance) {
-    instance = reportPlatformFailures(createClient(), 'createADBClient');
+    instance = reportPlatformFailures(createClient(store), 'createADBClient');
   }
   return instance;
 }
@@ -24,10 +26,9 @@ export function getAdbClient(): Promise<Client> {
 /* Adbkit will attempt to start the adb server if it's not already running,
    however, it sometimes fails with ENOENT errors. So instead, we start it
    manually before requesting a client. */
-function createClient(): Promise<Client> {
-  const adbPath = process.env.ANDROID_HOME
-    ? `${process.env.ANDROID_HOME}/platform-tools/adb`
-    : 'adb';
+function createClient(store: Store): Promise<Client> {
+  const androidHome = store.getState().settingsState.androidHome;
+  const adbPath = path.resolve(androidHome, 'platform-tools/adb');
   return reportPlatformFailures<Client>(
     promisify(child_process.exec)(`${adbPath} start-server`).then(() =>
       adbkit.createClient(adbConfig()),

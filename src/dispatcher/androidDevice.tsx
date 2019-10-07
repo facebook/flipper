@@ -48,8 +48,10 @@ function createDevice(
   });
 }
 
-export async function getActiveAndroidDevices(): Promise<Array<BaseDevice>> {
-  const client = await getAdbClient();
+export async function getActiveAndroidDevices(
+  store: Store,
+): Promise<Array<BaseDevice>> {
+  const client = await getAdbClient(store);
   const androidDevices = await client.listDevices();
   return await Promise.all(
     androidDevices.map(device => createDevice(client, device)),
@@ -102,7 +104,7 @@ export default (store: Store, logger: Logger) => {
         );
       });
 
-    getAdbClient()
+    getAdbClient(store)
       .then(client => {
         client
           .trackDevices()
@@ -233,7 +235,7 @@ export default (store: Store, logger: Logger) => {
 
   // cleanup method
   return () =>
-    getAdbClient().then(client => {
+    getAdbClient(store).then(client => {
       client.kill();
     });
 };

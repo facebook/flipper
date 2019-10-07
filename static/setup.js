@@ -10,17 +10,6 @@ const os = require('os');
 const fs = require('fs');
 
 module.exports = function(argv) {
-  if (!process.env.ANDROID_HOME) {
-    process.env.ANDROID_HOME = '/opt/android_sdk';
-  }
-
-  // emulator/emulator is more reliable than tools/emulator, so prefer it if
-  // it exists
-  process.env.PATH =
-    ['emulator', 'tools', 'platform-tools']
-      .map(directory => `${process.env.ANDROID_HOME}/${directory}`)
-      .join(':') + `:${process.env.PATH}`;
-
   // ensure .flipper folder and config exist
   const flipperDir = path.join(os.homedir(), '.flipper');
   if (!fs.existsSync(flipperDir)) {
