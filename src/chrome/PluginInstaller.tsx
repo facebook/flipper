@@ -21,6 +21,7 @@ import {
   Link,
   Text,
   LoadingIndicator,
+  Tooltip,
 } from 'flipper';
 import React, {useCallback, useState, useMemo, useEffect} from 'react';
 import {remote} from 'electron';
@@ -139,72 +140,106 @@ const Spinner = styled(LoadingIndicator)({
   marginTop: 6,
 });
 
+const AlignedGlyph = styled(Glyph)({
+  marginTop: 6,
+});
+
 function InstallButton(props: {
   name: string;
   version: string;
   onInstall: () => void;
   installed: boolean;
 }) {
-  type InstallAction = 'Install' | 'Waiting' | 'Remove';
+  type InstallAction =
+    | {kind: 'Install'}
+    | {kind: 'Waiting'}
+    | {kind: 'Remove'}
+    | {kind: 'Error'; error: string};
 
-  const onInstall = useCallback(async () => {
-    reportUsage(`${TAG}:install`, undefined, props.name);
-    setAction('Waiting');
-    await fs.ensureDir(PLUGIN_DIR);
-    // create empty watchman config (required by metro's file watcher)
-    await fs.writeFile(path.join(PLUGIN_DIR, '.watchmanconfig'), '{}');
+  const catchError = (fn: () => Promise<void>) => async () => {
+    try {
+      await fn();
+    } catch (err) {
+      setAction({kind: 'Error', error: err.toString()});
+    }
+  };
 
-    // install the plugin and all it's dependencies into node_modules
-    PluginManager.options.pluginsPath = path.join(
-      PLUGIN_DIR,
-      props.name,
-      'node_modules',
-    );
-    await PluginManager.install(props.name);
+  const onInstall = useCallback(
+    catchError(async () => {
+      reportUsage(`${TAG}:install`, undefined, props.name);
+      setAction({kind: 'Waiting'});
+      await fs.ensureDir(PLUGIN_DIR);
+      // create empty watchman config (required by metro's file watcher)
+      await fs.writeFile(path.join(PLUGIN_DIR, '.watchmanconfig'), '{}');
 
-    // move the plugin itself out of the node_modules folder
-    const pluginDir = path.join(
-      PLUGIN_DIR,
-      props.name,
-      'node_modules',
-      props.name,
-    );
-    const pluginFiles = await fs.readdir(pluginDir);
-    await Promise.all(
-      pluginFiles.map(f =>
-        fs.move(path.join(pluginDir, f), path.join(pluginDir, '..', '..', f)),
-      ),
-    );
+      // install the plugin and all it's dependencies into node_modules
+      PluginManager.options.pluginsPath = path.join(
+        PLUGIN_DIR,
+        props.name,
+        'node_modules',
+      );
+      await PluginManager.install(props.name);
 
-    props.onInstall();
-    setAction('Remove');
-  }, [props.name, props.version]);
+      // move the plugin itself out of the node_modules folder
+      const pluginDir = path.join(
+        PLUGIN_DIR,
+        props.name,
+        'node_modules',
+        props.name,
+      );
+      const pluginFiles = await fs.readdir(pluginDir);
+      await Promise.all(
+        pluginFiles.map(f =>
+          fs.move(path.join(pluginDir, f), path.join(pluginDir, '..', '..', f)),
+        ),
+      );
 
-  const onRemove = useCallback(async () => {
-    reportUsage(`${TAG}:remove`, undefined, props.name);
-    setAction('Waiting');
-    await fs.remove(path.join(PLUGIN_DIR, props.name));
-    props.onInstall();
-    setAction('Install');
-  }, [props.name]);
-
-  const [action, setAction] = useState<InstallAction>(
-    props.installed ? 'Remove' : 'Install',
+      props.onInstall();
+      setAction({kind: 'Remove'});
+    }),
+    [props.name, props.version],
   );
 
-  if (action === 'Waiting') {
+  const onRemove = useCallback(
+    catchError(async () => {
+      reportUsage(`${TAG}:remove`, undefined, props.name);
+      setAction({kind: 'Waiting'});
+      await fs.remove(path.join(PLUGIN_DIR, props.name));
+      props.onInstall();
+      setAction({kind: 'Install'});
+    }),
+    [props.name],
+  );
+
+  const [action, setAction] = useState<InstallAction>(
+    props.installed ? {kind: 'Remove'} : {kind: 'Install'},
+  );
+
+  if (action.kind === 'Waiting') {
     return <Spinner size={16} />;
+  }
+  if (action.kind === 'Error') {
+    const glyph = (
+      <AlignedGlyph color={colors.orange} size={16} name="caution-triangle" />
+    );
+    return (
+      <Tooltip
+        options={{position: 'toRight'}}
+        title={`Something went wrong: ${action.error}`}
+        children={glyph}
+      />
+    );
   }
   return (
     <TableButton
       compact
-      type={action === 'Install' ? 'primary' : undefined}
+      type={action.kind === 'Install' ? 'primary' : undefined}
       onClick={
-        action === 'Install'
+        action.kind === 'Install'
           ? () => reportPlatformFailures(onInstall(), `${TAG}:install`)
           : () => reportPlatformFailures(onRemove(), `${TAG}:remove`)
       }>
-      {action}
+      {action.kind}
     </TableButton>
   );
 }
@@ -251,7 +286,11 @@ function useNPMSearch(
               <EllipsisText>{h.description}</EllipsisText>
               <Spacer />
               <Link href={`https://yarnpkg.com/en/package/${h.name}`}>
-                <Glyph color={colors.light20} name="info-circle" size={16} />
+                <AlignedGlyph
+                  color={colors.light20}
+                  name="info-circle"
+                  size={16}
+                />
               </Link>
             </FlexRow>
           ),
