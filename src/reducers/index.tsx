@@ -27,11 +27,14 @@ import plugins, {
   Action as PluginsAction,
 } from './plugins';
 import settings, {
-  State as SettingsState,
+  Settings as SettingsState,
   Action as SettingsAction,
 } from './settings';
 import user, {State as UserState, Action as UserAction} from './user';
-
+import JsonFileStorage from '../utils/jsonFileReduxPersistStorage';
+import os from 'os';
+import {resolve} from 'path';
+import xdg from 'xdg-basedir';
 import {persistReducer, PersistPartial} from 'redux-persist';
 
 import {Store as ReduxStore, MiddlewareAPI as ReduxMiddlewareAPI} from 'redux';
@@ -60,6 +63,14 @@ export type State = {
 
 export type Store = ReduxStore<State, Actions>;
 export type MiddlewareAPI = ReduxMiddlewareAPI<Dispatch<Actions>, State>;
+
+const settingsStorage = new JsonFileStorage(
+  resolve(
+    ...(xdg.config ? [xdg.config] : [os.homedir(), '.config']),
+    'flipper',
+    'settings.json',
+  ),
+);
 
 export default combineReducers<State, Actions>({
   application: persistReducer<ApplicationState, Actions>(
@@ -101,7 +112,7 @@ export default combineReducers<State, Actions>({
     user,
   ),
   settingsState: persistReducer(
-    {key: 'settings', storage, whitelist: ['settings']},
+    {key: 'settings', storage: settingsStorage},
     settings,
   ),
 });

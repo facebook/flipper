@@ -11,10 +11,6 @@ export type Settings = {
   androidHome: string;
 };
 
-export type State = {
-  settings: Settings;
-};
-
 export type Action =
   | {type: 'INIT'}
   | {
@@ -22,21 +18,16 @@ export type Action =
       payload: Settings;
     };
 
-const initialState: State = {
-  settings: {
-    androidHome: '/opt/android_sdk',
-  },
+const initialState: Settings = {
+  androidHome: '/opt/android_sdk',
 };
 
 export default function reducer(
-  state: State = initialState,
+  state: Settings = initialState,
   action: Actions,
-): State {
+): Settings {
   if (action.type === 'UPDATE_SETTINGS') {
-    return {
-      ...state,
-      settings: action.payload,
-    };
+    return action.payload;
   }
   return state;
 }

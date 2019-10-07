@@ -5,7 +5,9 @@
  * @format
  */
 
-import {promises} from 'fs';
+import {promises, exists} from 'fs';
+import path from 'path';
+import {promisify} from 'util';
 
 /**
  * Redux-persist storage engine for storing state in a human readable JSON file.
@@ -28,14 +30,12 @@ export default class JsonFileStorage {
       .then(buffer => buffer.toString())
       .then(this.deserializeValue)
       .catch(e => {
-        console.error(
+        console.warn(
           `Failed to read settings file: "${
             this.filepath
           }". ${e}. Replacing file with default settings.`,
         );
-        return promises
-          .writeFile(this.filepath, JSON.stringify({}))
-          .then(() => ({}));
+        return this.writeContents(JSON.stringify({})).then(() => ({}));
       });
   }
 
@@ -51,7 +51,7 @@ export default class JsonFileStorage {
   setItem(_key: string, value: any, callback?: (_: any) => any): Promise<any> {
     const originalValue = this.parseFile();
     const writePromise = originalValue.then(_ =>
-      promises.writeFile(this.filepath, this.serializeValue(value)),
+      this.writeContents(this.serializeValue(value)),
     );
 
     return Promise.all([originalValue, writePromise]).then(([o, _]) => {
@@ -61,8 +61,7 @@ export default class JsonFileStorage {
   }
 
   removeItem(_key: string, callback?: () => any): Promise<void> {
-    return promises
-      .writeFile(this.filepath, JSON.stringify({}))
+    return this.writeContents(JSON.stringify({}))
       .then(_ => callback && callback())
       .then(() => {});
   }
@@ -85,5 +84,14 @@ export default class JsonFileStorage {
         return acc;
       }, {});
     return JSON.stringify(reconstructedObject);
+  }
+
+  writeContents(content: string): Promise<void> {
+    const dir = path.dirname(this.filepath);
+    return promisify(exists)(dir)
+      .then(dirExists =>
+        dirExists ? Promise.resolve() : promises.mkdir(dir, {recursive: true}),
+      )
+      .then(() => promises.writeFile(this.filepath, content));
   }
 }

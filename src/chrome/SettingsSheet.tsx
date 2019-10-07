@@ -163,6 +163,6 @@ class SignInSheet extends Component<Props, State> {
 }
 
 export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
-  ({settingsState}) => ({settings: settingsState.settings}),
+  ({settingsState}) => ({settings: settingsState}),
   {updateSettings},
 )(SignInSheet);
