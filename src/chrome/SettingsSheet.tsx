@@ -25,6 +25,7 @@ import {flush} from '../utils/persistor';
 import {promises as fs} from 'fs';
 import {remote} from 'electron';
 import path from 'path';
+import isEqual from 'lodash.isequal';
 
 const Container = styled(FlexColumn)({
   padding: 20,
@@ -158,7 +159,12 @@ class SignInSheet extends Component<Props, State> {
           <Button compact padded onClick={this.props.onHide}>
             Cancel
           </Button>
-          <Button type="primary" compact padded onClick={this.applyChanges}>
+          <Button
+            disabled={isEqual(this.props.settings, this.state.updatedSettings)}
+            type="primary"
+            compact
+            padded
+            onClick={this.applyChanges}>
             Apply and Restart
           </Button>
         </FlexRow>
