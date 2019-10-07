@@ -21,6 +21,7 @@ import {updateSettings, Action} from '../reducers/settings';
 import {connect} from 'react-redux';
 import {State as Store} from '../reducers';
 import {Settings} from '../reducers/settings';
+import {flush} from '../utils/persistor';
 import {promises as fs} from 'fs';
 import {remote} from 'electron';
 import path from 'path';
@@ -129,6 +130,10 @@ class SignInSheet extends Component<Props, State> {
   applyChanges = async () => {
     this.props.updateSettings(this.state.updatedSettings);
     this.props.onHide();
+    flush().then(() => {
+      remote.app.relaunch();
+      remote.app.exit();
+    });
   };
 
   render() {
@@ -154,7 +159,7 @@ class SignInSheet extends Component<Props, State> {
             Cancel
           </Button>
           <Button type="primary" compact padded onClick={this.applyChanges}>
-            Apply
+            Apply and Restart
           </Button>
         </FlexRow>
       </Container>

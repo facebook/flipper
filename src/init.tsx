@@ -26,6 +26,7 @@ import initCrashReporter from './utils/electronCrashReporter';
 import fbConfig from './fb-stubs/config';
 import {isFBEmployee} from './utils/fbEmployee';
 import WarningEmployee from './chrome/WarningEmployee';
+import {setPersistor} from './utils/persistor';
 import React from 'react';
 import path from 'path';
 
@@ -100,7 +101,7 @@ function init() {
 }
 
 // rehydrate app state before exposing init
-persistStore(store, undefined, () => {
+const persistor = persistStore(store, undefined, () => {
   // Make sure process state is set before dispatchers run
   setProcessState(store);
   dispatcher(store, logger);
@@ -108,3 +109,5 @@ persistStore(store, undefined, () => {
   window.Flipper.init = init;
   window.dispatchEvent(new Event('flipper-store-ready'));
 });
+
+setPersistor(persistor);
