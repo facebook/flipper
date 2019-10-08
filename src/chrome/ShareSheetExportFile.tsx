@@ -50,7 +50,7 @@ const InfoText = styled(Text)({
 
 type Props = {
   onHide: () => void;
-  file: string | null;
+  file: string;
   logger: Logger;
 };
 
@@ -202,9 +202,6 @@ export default class ShareSheetExportFile extends Component<Props, State> {
   }
 
   render() {
-    if (!this.props.file) {
-      return this.renderNoFileError(this.context);
-    }
     const {result, statusUpdate} = this.state;
     switch (result.kind) {
       case 'success':
@@ -214,21 +211,5 @@ export default class ShareSheetExportFile extends Component<Props, State> {
       case 'pending':
         return this.renderPending(this.context, statusUpdate);
     }
-  }
-
-  renderNoFileError(context: any) {
-    return (
-      <Container>
-        <Center>
-          <Title bold>No file selected</Title>
-        </Center>
-        <FlexRow>
-          <Spacer />
-          <Button compact padded onClick={() => this.cancelAndHide(context)}>
-            Close
-          </Button>
-        </FlexRow>
-      </Container>
-    );
   }
 }

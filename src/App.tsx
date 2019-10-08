@@ -97,16 +97,17 @@ export class App extends React.Component<Props> {
           <ShareSheetExportUrl onHide={onHide} logger={this.props.logger} />
         );
       case ACTIVE_SHEET_SHARE_DATA_IN_FILE:
-        return (
+        return this.props.share && this.props.share.type === 'file' ? (
           <ShareSheetExportFile
             onHide={onHide}
-            file={
-              this.props.share && this.props.share.type === 'file'
-                ? this.props.share.file
-                : null
-            }
+            file={this.props.share.file}
             logger={this.props.logger}
           />
+        ) : (
+          (() => {
+            console.error('No file provided when calling share sheet.');
+            return null;
+          })()
         );
       case ACTIVE_SHEET_PLUGIN_SHEET:
         // Currently unused.
