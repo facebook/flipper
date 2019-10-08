@@ -7,9 +7,11 @@
 
 import {remote, ipcRenderer} from 'electron';
 import {toggleAction} from '../reducers/application';
+import {setStaticView} from '../reducers/connections';
 import {Store} from '../reducers/index.js';
 import {Logger} from '../fb-interfaces/Logger';
 import {parseFlipperPorts} from '../utils/environmentVariables';
+import SupportRequestFormManager from '../fb-stubs/SupportRequestFormManager';
 import {
   importDataToStore,
   importFileToStore,
@@ -71,6 +73,8 @@ export default (store: Store, logger: Logger) => {
               store.dispatch(toggleAction('downloadingImportData', false));
             })
         );
+      } else if (query === 'flipper://support-form?form=Litho') {
+        store.dispatch(setStaticView(SupportRequestFormManager));
       }
       const match = uriComponents(query);
       if (match.length > 1) {
