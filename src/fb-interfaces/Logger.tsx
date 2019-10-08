@@ -13,6 +13,11 @@ export type TrackType =
   | 'success-rate'
   | 'operation-cancelled';
 
+export type Args = {
+  isHeadless?: boolean;
+  isTest?: boolean;
+};
+
 export interface Logger {
   track(type: TrackType, event: string, data?: any, plugin?: string): void;
 
