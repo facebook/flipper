@@ -12,7 +12,7 @@ import TitleBar from './chrome/TitleBar';
 import MainSidebar from './chrome/MainSidebar';
 import BugReporterDialog from './chrome/BugReporterDialog';
 import ErrorBar from './chrome/ErrorBar';
-import ShareSheet from './chrome/ShareSheet';
+import ShareSheetExportUrl from './chrome/ShareSheetExportUrl';
 import SignInSheet from './chrome/SignInSheet';
 import ExportDataPluginSheet from './chrome/ExportDataPluginSheet';
 import ShareSheetExportFile from './chrome/ShareSheetExportFile';
@@ -86,14 +86,16 @@ export class App extends React.Component<Props> {
         );
       case ACTIVE_SHEET_PLUGINS:
         return <PluginManager onHide={onHide} />;
-      case ACTIVE_SHEET_SHARE_DATA:
-        return <ShareSheet onHide={onHide} logger={this.props.logger} />;
       case ACTIVE_SHEET_SIGN_IN:
         return <SignInSheet onHide={onHide} />;
       case ACTIVE_SHEET_SETTINGS:
         return <SettingsSheet onHide={onHide} />;
       case ACTIVE_SHEET_SELECT_PLUGINS_TO_EXPORT:
         return <ExportDataPluginSheet onHide={onHide} />;
+      case ACTIVE_SHEET_SHARE_DATA:
+        return (
+          <ShareSheetExportUrl onHide={onHide} logger={this.props.logger} />
+        );
       case ACTIVE_SHEET_SHARE_DATA_IN_FILE:
         return (
           <ShareSheetExportFile

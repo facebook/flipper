@@ -87,7 +87,7 @@ type State = {
   statusUpdate: string | null | undefined;
 };
 
-export default class ShareSheet extends Component<Props, State> {
+export default class ShareSheetExportUrl extends Component<Props, State> {
   static contextTypes = {
     store: PropTypes.object.isRequired,
   };
