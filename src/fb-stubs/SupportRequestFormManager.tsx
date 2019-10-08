@@ -8,7 +8,10 @@
 import Text from '../ui/components/FlexRow';
 import React, {PureComponent} from 'react';
 
-export default class SupportRequestForm extends PureComponent<void, void> {
+export default class SupportRequestFormManager extends PureComponent<
+  void,
+  void
+> {
   render() {
     return <Text> Implement your own Bug creator </Text>;
   }

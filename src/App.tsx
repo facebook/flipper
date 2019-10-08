@@ -36,7 +36,6 @@ import BugReporter from './fb-stubs/BugReporter';
 import {State as Store} from './reducers/index';
 import {StaticView} from './reducers/connections';
 import PluginManager from './chrome/PluginManager';
-import BaseDevice from './devices/BaseDevice';
 import StatusBar from './chrome/StatusBar';
 import SettingsSheet from './chrome/SettingsSheet';
 const version = remote.app.getVersion();
@@ -52,8 +51,6 @@ type StateFromProps = {
   activeSheet: ActiveSheet;
   share: ShareType | null;
   staticView: StaticView;
-  clients: Array<Client>;
-  selectedDevice: null | BaseDevice;
 };
 
 type Props = StateFromProps & OwnProps;
@@ -125,7 +122,7 @@ export class App extends React.Component<Props> {
         <FlexRow grow={true}>
           {this.props.leftSidebarVisible && <MainSidebar />}
           {this.props.staticView != null ? (
-            React.createElement(this.props.staticView, this.props)
+            React.createElement(this.props.staticView)
           ) : (
             <PluginContainer logger={this.props.logger} />
           )}
@@ -140,14 +137,12 @@ export class App extends React.Component<Props> {
 export default connect<StateFromProps, {}, OwnProps, Store>(
   ({
     application: {leftSidebarVisible, activeSheet, share},
-    connections: {error, staticView, clients, selectedDevice},
+    connections: {error, staticView},
   }) => ({
     leftSidebarVisible,
     activeSheet,
     share: share,
     error,
     staticView,
-    clients,
-    selectedDevice,
   }),
 )(App);

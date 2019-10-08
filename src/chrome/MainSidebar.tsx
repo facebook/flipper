@@ -44,7 +44,7 @@ import {
   SHOW_REMAINING_PLUGIN_IF_LESS_THAN,
 } from '../Client';
 import {StyledOtherComponent} from 'create-emotion-styled';
-import SupportRequestForm from '../fb-stubs/SupportRequestForm';
+import SupportRequestFormManager from '../fb-stubs/SupportRequestFormManager';
 
 const ListItem = styled('div')(({active}: {active?: boolean}) => ({
   paddingLeft: 10,
@@ -304,18 +304,20 @@ class MainSidebar extends PureComponent<Props> {
           )}
           {GK.get('flipper_support_requests') && (
             <ListItem
-              active={staticView != null && staticView === SupportRequestForm}
-              onClick={() => setStaticView(SupportRequestForm)}>
+              active={
+                staticView != null && staticView === SupportRequestFormManager
+              }
+              onClick={() => setStaticView(SupportRequestFormManager)}>
               <PluginIcon
                 color={colors.light50}
                 name={'app-dailies'}
                 isActive={
-                  staticView != null && staticView === SupportRequestForm
+                  staticView != null && staticView === SupportRequestFormManager
                 }
               />
               <PluginName
                 isActive={
-                  staticView != null && staticView === SupportRequestForm
+                  staticView != null && staticView === SupportRequestFormManager
                 }>
                 Litho Support Request
               </PluginName>

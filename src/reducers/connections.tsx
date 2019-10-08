@@ -18,7 +18,7 @@ import {Actions} from '.';
 const WelcomeScreen = isHeadless()
   ? require('../chrome/WelcomeScreenHeadless').default
   : require('../chrome/WelcomeScreen').default;
-import SupportRequestForm from '../fb-stubs/SupportRequestForm';
+import SupportRequestForm from '../fb-stubs/SupportRequestFormManager';
 
 export type StaticView =
   | null
