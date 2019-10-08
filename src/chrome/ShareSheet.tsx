@@ -170,7 +170,7 @@ export default class ShareSheet extends Component<Props, State> {
   }
 
   renderTheProgessState(
-    onHide: () => void,
+    cancelAndHide: () => void,
     statusUpdate: string | null | undefined,
   ) {
     return (
@@ -190,9 +190,13 @@ export default class ShareSheet extends Component<Props, State> {
           </Center>
           <FlexRow>
             <Spacer />
+            <Button compact padded onClick={cancelAndHide}>
+              Cancel
+            </Button>
             <Button
               compact
               padded
+              type="primary"
               onClick={() => {
                 this.setState({runInBackground: true});
                 const {statusUpdate} = this.state;
@@ -203,9 +207,6 @@ export default class ShareSheet extends Component<Props, State> {
               }}>
               Run In Background
             </Button>
-            <Button compact padded onClick={onHide}>
-              Close
-            </Button>
           </FlexRow>
         </FlexColumn>
       </Container>
@@ -213,14 +214,14 @@ export default class ShareSheet extends Component<Props, State> {
   }
 
   render() {
-    const onHide = () => {
+    const cancelAndHide = () => {
       this.context.store.dispatch(unsetShare());
       this.props.onHide();
       this.idler.cancel();
     };
     const {result, statusUpdate, errorArray} = this.state;
     if (!result || !(result as DataExportResult).flipperUrl) {
-      return this.renderTheProgessState(onHide, statusUpdate);
+      return this.renderTheProgessState(cancelAndHide, statusUpdate);
     }
 
     return (
@@ -257,7 +258,7 @@ export default class ShareSheet extends Component<Props, State> {
           </FlexColumn>
           <FlexRow>
             <Spacer />
-            <Button compact padded onClick={onHide}>
+            <Button compact padded onClick={cancelAndHide}>
               Close
             </Button>
           </FlexRow>

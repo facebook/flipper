@@ -165,7 +165,7 @@ export default class ShareSheetExportFile extends Component<Props, State> {
         </FlexColumn>
         <FlexRow>
           <Spacer />
-          <Button compact padded onClick={() => this.onHide(context)}>
+          <Button compact padded onClick={() => this.cancelAndHide(context)}>
             Close
           </Button>
         </FlexRow>
@@ -182,7 +182,7 @@ export default class ShareSheetExportFile extends Component<Props, State> {
         </ErrorMessage>
         <FlexRow>
           <Spacer />
-          <Button compact padded onClick={() => this.onHide(context)}>
+          <Button compact padded onClick={() => this.cancelAndHide(context)}>
             Close
           </Button>
         </FlexRow>
@@ -207,9 +207,13 @@ export default class ShareSheetExportFile extends Component<Props, State> {
         </Center>
         <FlexRow>
           <Spacer />
+          <Button compact padded onClick={() => this.cancelAndHide(context)}>
+            Cancel
+          </Button>
           <Button
             compact
             padded
+            type="primary"
             onClick={() => {
               this.setState({runInBackground: true});
               const {statusUpdate} = this.state;
@@ -220,15 +224,12 @@ export default class ShareSheetExportFile extends Component<Props, State> {
             }}>
             Run In Background
           </Button>
-          <Button compact padded onClick={() => this.onHide(context)}>
-            Cancel
-          </Button>
         </FlexRow>
       </Container>
     );
   }
 
-  onHide(context: any) {
+  cancelAndHide(context: any) {
     context.store.dispatch(unsetShare());
     this.props.onHide();
     this.idler.cancel();
@@ -236,7 +237,7 @@ export default class ShareSheetExportFile extends Component<Props, State> {
 
   render() {
     if (!this.props.file) {
-      return this.renderNoFileError();
+      return this.renderNoFileError(this.context);
     }
     const {result, statusUpdate} = this.state;
     switch (result.kind) {
@@ -249,7 +250,7 @@ export default class ShareSheetExportFile extends Component<Props, State> {
     }
   }
 
-  renderNoFileError() {
+  renderNoFileError(context: any) {
     return (
       <Container>
         <Center>
@@ -257,7 +258,7 @@ export default class ShareSheetExportFile extends Component<Props, State> {
         </Center>
         <FlexRow>
           <Spacer />
-          <Button compact padded onClick={this.onHide}>
+          <Button compact padded onClick={() => this.cancelAndHide(context)}>
             Close
           </Button>
         </FlexRow>
