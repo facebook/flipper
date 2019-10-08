@@ -4,16 +4,7 @@
  * LICENSE file in the root directory of this source tree.
  * @format
  */
-import {
-  FlexColumn,
-  Button,
-  styled,
-  colors,
-  Text,
-  LoadingIndicator,
-  FlexRow,
-  Spacer,
-} from 'flipper';
+import {FlexColumn, Button, styled, Text, FlexRow, Spacer} from 'flipper';
 import React, {Component} from 'react';
 import {setExportStatusComponent, unsetShare} from '../reducers/application';
 import {reportPlatformFailures} from '../utils/metrics';
@@ -27,6 +18,7 @@ import {
 } from '../utils/exportData';
 import PropTypes from 'prop-types';
 import ShareSheetErrorList from './ShareSheetErrorList';
+import ShareSheetPendingDialog from './ShareSheetPendingDialog';
 
 const Container = styled(FlexColumn)({
   padding: 20,
@@ -37,10 +29,6 @@ const Center = styled(FlexColumn)({
   alignItems: 'center',
   paddingTop: 50,
   paddingBottom: 50,
-});
-
-const Uploading = styled(Text)({
-  marginTop: 15,
 });
 
 const ErrorMessage = styled(Text)({
@@ -192,40 +180,18 @@ export default class ShareSheetExportFile extends Component<Props, State> {
 
   renderPending(context: any, statusUpdate: string | null) {
     return (
-      <Container>
-        <Center>
-          <LoadingIndicator size={30} />
-          {statusUpdate && statusUpdate.length > 0 ? (
-            <Uploading bold color={colors.macOSTitleBarIcon}>
-              {statusUpdate}
-            </Uploading>
-          ) : (
-            <Uploading bold color={colors.macOSTitleBarIcon}>
-              Exporting Flipper trace...
-            </Uploading>
-          )}
-        </Center>
-        <FlexRow>
-          <Spacer />
-          <Button compact padded onClick={() => this.cancelAndHide(context)}>
-            Cancel
-          </Button>
-          <Button
-            compact
-            padded
-            type="primary"
-            onClick={() => {
-              this.setState({runInBackground: true});
-              const {statusUpdate} = this.state;
-              if (statusUpdate) {
-                this.dispatchAndUpdateToolBarStatus(statusUpdate);
-              }
-              this.props.onHide();
-            }}>
-            Run In Background
-          </Button>
-        </FlexRow>
-      </Container>
+      <ShareSheetPendingDialog
+        statusUpdate={statusUpdate}
+        statusMessage="Exporting Flipper trace..."
+        onCancel={() => this.cancelAndHide(context)}
+        onRunInBackground={() => {
+          this.setState({runInBackground: true});
+          if (statusUpdate) {
+            this.dispatchAndUpdateToolBarStatus(statusUpdate);
+          }
+          this.props.onHide();
+        }}
+      />
     );
   }
 

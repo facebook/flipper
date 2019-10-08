@@ -36,6 +36,7 @@ import ShareSheetErrorList from './ShareSheetErrorList';
 import {reportPlatformFailures} from '../utils/metrics';
 import CancellableExportStatus from './CancellableExportStatus';
 import {performance} from 'perf_hooks';
+import ShareSheetPendingDialog from './ShareSheetPendingDialog';
 export const SHARE_FLIPPER_TRACE_EVENT = 'share-flipper-link';
 
 const Container = styled(FlexColumn)({
@@ -84,7 +85,7 @@ type State = {
   runInBackground: boolean;
   errorArray: Array<Error>;
   result: DataExportError | DataExportResult | null | undefined;
-  statusUpdate: string | null | undefined;
+  statusUpdate: string | null;
 };
 
 export default class ShareSheetExportUrl extends Component<Props, State> {
@@ -169,47 +170,20 @@ export default class ShareSheetExportUrl extends Component<Props, State> {
     }
   }
 
-  renderTheProgessState(
-    cancelAndHide: () => void,
-    statusUpdate: string | null | undefined,
-  ) {
+  renderPending(cancelAndHide: () => void, statusUpdate: string | null) {
     return (
-      <Container>
-        <FlexColumn>
-          <Center>
-            <LoadingIndicator size={30} />
-            {statusUpdate && statusUpdate.length > 0 ? (
-              <Uploading bold color={colors.macOSTitleBarIcon}>
-                {statusUpdate}
-              </Uploading>
-            ) : (
-              <Uploading bold color={colors.macOSTitleBarIcon}>
-                Uploading Flipper trace...
-              </Uploading>
-            )}
-          </Center>
-          <FlexRow>
-            <Spacer />
-            <Button compact padded onClick={cancelAndHide}>
-              Cancel
-            </Button>
-            <Button
-              compact
-              padded
-              type="primary"
-              onClick={() => {
-                this.setState({runInBackground: true});
-                const {statusUpdate} = this.state;
-                if (statusUpdate) {
-                  this.dispatchAndUpdateToolBarStatus(statusUpdate);
-                }
-                this.props.onHide();
-              }}>
-              Run In Background
-            </Button>
-          </FlexRow>
-        </FlexColumn>
-      </Container>
+      <ShareSheetPendingDialog
+        statusUpdate={statusUpdate}
+        statusMessage="Uploading Flipper trace..."
+        onCancel={cancelAndHide}
+        onRunInBackground={() => {
+          this.setState({runInBackground: true});
+          if (statusUpdate) {
+            this.dispatchAndUpdateToolBarStatus(statusUpdate);
+          }
+          this.props.onHide();
+        }}
+      />
     );
   }
 
@@ -221,7 +195,7 @@ export default class ShareSheetExportUrl extends Component<Props, State> {
     };
     const {result, statusUpdate, errorArray} = this.state;
     if (!result || !(result as DataExportResult).flipperUrl) {
-      return this.renderTheProgessState(cancelAndHide, statusUpdate);
+      return this.renderPending(cancelAndHide, statusUpdate);
     }
 
     return (
