@@ -41,7 +41,7 @@ const PluginManager = new PM({
   ignoredDependencies: ['flipper', 'react', 'react-dom', '@types/*'],
 });
 
-type PluginDefinition = {
+export type PluginDefinition = {
   name: string;
   version: string;
   description: string;
@@ -92,10 +92,31 @@ const RestartBar = styled(FlexColumn)({
   textAlign: 'center',
 });
 
-export default function() {
+type Props = {
+  searchIndexFactory: () => algoliasearch.Index;
+  getInstalledPlugins: () => Promise<Map<string, PluginDefinition>>;
+  autoHeight: boolean;
+};
+
+const defaultProps: Props = {
+  searchIndexFactory: () => {
+    const client = algoliasearch(ALGOLIA_APPLICATION_ID, ALGOLIA_API_KEY);
+    return client.initIndex('npm-search');
+  },
+  getInstalledPlugins: _getInstalledPlugins,
+  autoHeight: false,
+};
+
+const PluginInstaller = function props(props: Props) {
   const [restartRequired, setRestartRequired] = useState(false);
   const [query, setQuery] = useState('');
-  const rows = useNPMSearch(setRestartRequired, query, setQuery);
+  const rows = useNPMSearch(
+    setRestartRequired,
+    query,
+    setQuery,
+    props.searchIndexFactory,
+    props.getInstalledPlugins,
+  );
   const restartApp = useCallback(() => {
     remote.app.relaunch();
     remote.app.exit();
@@ -126,11 +147,14 @@ export default function() {
         columns={columns}
         highlightableRows={false}
         highlightedRows={new Set()}
+        autoHeight={props.autoHeight}
         rows={rows}
       />
     </Container>
   );
-}
+};
+PluginInstaller.defaultProps = defaultProps;
+export default PluginInstaller;
 
 const TableButton = styled(Button)({
   marginTop: 2,
@@ -248,29 +272,27 @@ function useNPMSearch(
   setRestartRequired: (restart: boolean) => void,
   query: string,
   setQuery: (query: string) => void,
+  searchClientFactory: () => algoliasearch.Index,
+  getInstalledPlugins: () => Promise<Map<string, PluginDefinition>>,
 ): TableRows_immutable {
-  const index = useMemo(() => {
-    const client = algoliasearch(ALGOLIA_APPLICATION_ID, ALGOLIA_API_KEY);
-    return client.initIndex('npm-search');
-  }, []);
-
+  const index = useMemo(searchClientFactory, []);
   const [installedPlugins, setInstalledPlugins] = useState(
     new Map<string, PluginDefinition>(),
   );
 
-  useEffect(() => {
-    reportUsage(`${TAG}:open`);
+  const getAndSetInstalledPlugins = () =>
     reportPlatformFailures(
       getInstalledPlugins(),
       `${TAG}:getInstalledPlugins`,
     ).then(setInstalledPlugins);
+
+  useEffect(() => {
+    reportUsage(`${TAG}:open`);
+    getAndSetInstalledPlugins();
   }, []);
 
   const onInstall = useCallback(async () => {
-    reportPlatformFailures(
-      getInstalledPlugins(),
-      `${TAG}:getInstalledPlugins`,
-    ).then(setInstalledPlugins);
+    getAndSetInstalledPlugins();
     setRestartRequired(true);
   }, []);
 
@@ -336,7 +358,7 @@ function useNPMSearch(
   return List(results.map(createRow));
 }
 
-async function getInstalledPlugins() {
+async function _getInstalledPlugins(): Promise<Map<string, PluginDefinition>> {
   const dirs = await fs.readdir(PLUGIN_DIR);
   const plugins = await Promise.all<[string, PluginDefinition]>(
     dirs.map(
