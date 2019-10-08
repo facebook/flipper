@@ -261,13 +261,16 @@ function useNPMSearch(
   useEffect(() => {
     reportUsage(`${TAG}:open`);
     reportPlatformFailures(
-      getInstalledPlugns(),
+      getInstalledPlugins(),
       `${TAG}:getInstalledPlugins`,
     ).then(setInstalledPlugins);
   }, []);
 
   const onInstall = useCallback(async () => {
-    setInstalledPlugins(await getInstalledPlugns());
+    reportPlatformFailures(
+      getInstalledPlugins(),
+      `${TAG}:getInstalledPlugins`,
+    ).then(setInstalledPlugins);
     setRestartRequired(true);
   }, []);
 
@@ -333,7 +336,7 @@ function useNPMSearch(
   return List(results.map(createRow));
 }
 
-async function getInstalledPlugns() {
+async function getInstalledPlugins() {
   const dirs = await fs.readdir(PLUGIN_DIR);
   const plugins = await Promise.all<[string, PluginDefinition]>(
     dirs.map(
