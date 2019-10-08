@@ -9,9 +9,7 @@ import {
   FlexColumn,
   Button,
   styled,
-  colors,
   Text,
-  LoadingIndicator,
   FlexRow,
   Spacer,
   Input,
@@ -44,16 +42,6 @@ const Container = styled(FlexColumn)({
   width: 500,
 });
 
-const Center = styled(FlexColumn)({
-  alignItems: 'center',
-  paddingTop: 50,
-  paddingBottom: 50,
-});
-
-const Uploading = styled(Text)({
-  marginTop: 15,
-});
-
 const Copy = styled(Input)({
   marginRight: 0,
   marginBottom: 15,
@@ -84,7 +72,7 @@ type Props = {
 type State = {
   runInBackground: boolean;
   errorArray: Array<Error>;
-  result: DataExportError | DataExportResult | null | undefined;
+  result: DataExportError | DataExportResult | null;
   statusUpdate: string | null;
 };
 
@@ -133,6 +121,8 @@ export default class ShareSheetExportUrl extends Component<Props, State> {
       );
 
       statusUpdate('Uploading Flipper Trace...');
+      // TODO(T55169042): Implement error handling. Result is not tested
+      // its result type right now, causing the upload indicator to stall forever.
       const result = await reportPlatformFailures(
         shareFlipperData(serializedString),
         `${SHARE_FLIPPER_TRACE_EVENT}`,
