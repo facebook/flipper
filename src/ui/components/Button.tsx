@@ -20,14 +20,15 @@ type ButtonType = 'primary' | 'success' | 'warning' | 'danger';
 
 const borderColor = (props: {
   windowIsFocused?: boolean;
+  disabled?: boolean;
   type?: ButtonType;
   depressed?: boolean;
 }) => {
   if (!props.windowIsFocused) {
     return colors.macOSTitleBarButtonBorderBlur;
-  } else if (props.type === 'danger') {
+  } else if (props.type === 'danger' && !props.disabled) {
     return colors.red;
-  } else if (props.type === 'primary') {
+  } else if (props.type === 'primary' && !props.disabled) {
     return '#237FF1';
   } else if (props.depressed) {
     return colors.macOSTitleBarButtonBorderBottom;
@@ -37,14 +38,15 @@ const borderColor = (props: {
 };
 const borderBottomColor = (props: {
   windowIsFocused?: boolean;
+  disabled?: boolean;
   type?: ButtonType;
   depressed?: boolean;
 }) => {
   if (!props.windowIsFocused) {
     return colors.macOSTitleBarButtonBorderBlur;
-  } else if (props.type === 'danger') {
+  } else if (props.type === 'danger' && !props.disabled) {
     return colors.red;
-  } else if (props.type === 'primary') {
+  } else if (props.type === 'primary' && !props.disabled) {
     return '#237FF1';
   } else {
     return colors.macOSTitleBarButtonBorderBottom;
@@ -53,10 +55,11 @@ const borderBottomColor = (props: {
 
 const backgroundImage = (props: {
   windowIsFocused?: boolean;
+  disabled?: boolean;
   type?: ButtonType;
   depressed?: boolean;
 }) => {
-  if (props.windowIsFocused) {
+  if (props.windowIsFocused && !props.disabled) {
     if (props.depressed) {
       return `linear-gradient(to bottom, ${
         colors.macOSTitleBarBorderBlur
@@ -80,9 +83,13 @@ const color = (props: {
   type?: ButtonType;
   disabled?: boolean;
 }) => {
-  if (props.type === 'danger' && props.windowIsFocused) {
+  if (props.type === 'danger' && props.windowIsFocused && !props.disabled) {
     return colors.red;
-  } else if (props.type === 'primary' && props.windowIsFocused) {
+  } else if (
+    props.type === 'primary' &&
+    props.windowIsFocused &&
+    !props.disabled
+  ) {
     return colors.white;
   } else if (props.disabled) {
     return colors.macOSTitleBarIconBlur;
@@ -113,9 +120,10 @@ const StyledButton = styled('div')(
     disabled?: boolean;
     dropdown?: Array<MenuItemConstructorOptions>;
   }) => ({
-    backgroundColor: !props.windowIsFocused
-      ? colors.macOSTitleBarButtonBackgroundBlur
-      : colors.white,
+    backgroundColor:
+      props.windowIsFocused && !props.disabled
+        ? colors.white
+        : colors.macOSTitleBarButtonBackgroundBlur,
     backgroundImage: backgroundImage(props),
     borderStyle: 'solid',
     borderWidth: 1,

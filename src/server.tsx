@@ -64,7 +64,7 @@ class Server extends EventEmitter {
     super();
     this.logger = logger;
     this.connections = new Map();
-    this.certificateProvider = new CertificateProvider(this, logger);
+    this.certificateProvider = new CertificateProvider(this, logger, store);
     this.connectionTracker = new ConnectionTracker(logger);
     this.secureServer = null;
     this.insecureServer = null;

@@ -9,9 +9,7 @@ import {
   FlexColumn,
   Button,
   styled,
-  colors,
   Text,
-  LoadingIndicator,
   FlexRow,
   Spacer,
   Input,
@@ -36,21 +34,12 @@ import ShareSheetErrorList from './ShareSheetErrorList';
 import {reportPlatformFailures} from '../utils/metrics';
 import CancellableExportStatus from './CancellableExportStatus';
 import {performance} from 'perf_hooks';
+import ShareSheetPendingDialog from './ShareSheetPendingDialog';
 export const SHARE_FLIPPER_TRACE_EVENT = 'share-flipper-link';
 
 const Container = styled(FlexColumn)({
   padding: 20,
   width: 500,
-});
-
-const Center = styled(FlexColumn)({
-  alignItems: 'center',
-  paddingTop: 50,
-  paddingBottom: 50,
-});
-
-const Uploading = styled(Text)({
-  marginTop: 15,
 });
 
 const Copy = styled(Input)({
@@ -83,11 +72,11 @@ type Props = {
 type State = {
   runInBackground: boolean;
   errorArray: Array<Error>;
-  result: DataExportError | DataExportResult | null | undefined;
-  statusUpdate: string | null | undefined;
+  result: DataExportError | DataExportResult | null;
+  statusUpdate: string | null;
 };
 
-export default class ShareSheet extends Component<Props, State> {
+export default class ShareSheetExportUrl extends Component<Props, State> {
   static contextTypes = {
     store: PropTypes.object.isRequired,
   };
@@ -132,6 +121,8 @@ export default class ShareSheet extends Component<Props, State> {
       );
 
       statusUpdate('Uploading Flipper Trace...');
+      // TODO(T55169042): Implement error handling. Result is not tested
+      // its result type right now, causing the upload indicator to stall forever.
       const result = await reportPlatformFailures(
         shareFlipperData(serializedString),
         `${SHARE_FLIPPER_TRACE_EVENT}`,
@@ -169,58 +160,32 @@ export default class ShareSheet extends Component<Props, State> {
     }
   }
 
-  renderTheProgessState(
-    onHide: () => void,
-    statusUpdate: string | null | undefined,
-  ) {
+  renderPending(cancelAndHide: () => void, statusUpdate: string | null) {
     return (
-      <Container>
-        <FlexColumn>
-          <Center>
-            <LoadingIndicator size={30} />
-            {statusUpdate && statusUpdate.length > 0 ? (
-              <Uploading bold color={colors.macOSTitleBarIcon}>
-                {statusUpdate}
-              </Uploading>
-            ) : (
-              <Uploading bold color={colors.macOSTitleBarIcon}>
-                Uploading Flipper trace...
-              </Uploading>
-            )}
-          </Center>
-          <FlexRow>
-            <Spacer />
-            <Button
-              compact
-              padded
-              onClick={() => {
-                this.setState({runInBackground: true});
-                const {statusUpdate} = this.state;
-                if (statusUpdate) {
-                  this.dispatchAndUpdateToolBarStatus(statusUpdate);
-                }
-                this.props.onHide();
-              }}>
-              Run In Background
-            </Button>
-            <Button compact padded onClick={onHide}>
-              Close
-            </Button>
-          </FlexRow>
-        </FlexColumn>
-      </Container>
+      <ShareSheetPendingDialog
+        statusUpdate={statusUpdate}
+        statusMessage="Uploading Flipper trace..."
+        onCancel={cancelAndHide}
+        onRunInBackground={() => {
+          this.setState({runInBackground: true});
+          if (statusUpdate) {
+            this.dispatchAndUpdateToolBarStatus(statusUpdate);
+          }
+          this.props.onHide();
+        }}
+      />
     );
   }
 
   render() {
-    const onHide = () => {
+    const cancelAndHide = () => {
       this.context.store.dispatch(unsetShare());
       this.props.onHide();
       this.idler.cancel();
     };
     const {result, statusUpdate, errorArray} = this.state;
     if (!result || !(result as DataExportResult).flipperUrl) {
-      return this.renderTheProgessState(onHide, statusUpdate);
+      return this.renderPending(cancelAndHide, statusUpdate);
     }
 
     return (
@@ -257,7 +222,7 @@ export default class ShareSheet extends Component<Props, State> {
           </FlexColumn>
           <FlexRow>
             <Spacer />
-            <Button compact padded onClick={onHide}>
+            <Button compact padded onClick={cancelAndHide}>
               Close
             </Button>
           </FlexRow>

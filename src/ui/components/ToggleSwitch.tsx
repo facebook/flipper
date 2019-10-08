@@ -19,6 +19,7 @@ export const StyledButton = styled('div')((props: {toggled: boolean}) => ({
   borderRadius: '100px',
   position: 'relative',
   marginLeft: '15px',
+  flexShrink: 0,
   '&::after': {
     content: '""',
     position: 'absolute',

@@ -21,6 +21,7 @@ import {getAdbClient} from './adbClient';
 import * as androidUtil from './androidContainerUtility';
 import os from 'os';
 import {Client as ADBClient} from 'adbkit';
+import {Store} from '../reducers/index';
 
 const tmpFile = promisify(tmp.file) as (
   options?: FileOptions,
@@ -77,9 +78,9 @@ export default class CertificateProvider {
   certificateSetup: Promise<void>;
   server: Server;
 
-  constructor(server: Server, logger: Logger) {
+  constructor(server: Server, logger: Logger, store: Store) {
     this.logger = logger;
-    this.adb = getAdbClient();
+    this.adb = getAdbClient(store);
     this.certificateSetup = reportPlatformFailures(
       this.ensureServerCertExists(),
       'ensureServerCertExists',
@@ -200,9 +201,15 @@ export default class CertificateProvider {
       const deviceIdPromise = appNamePromise.then(app =>
         this.getTargetAndroidDeviceId(app, destination, csr),
       );
-      return Promise.all([deviceIdPromise, appNamePromise]).then(
-        ([deviceId, appName]) =>
-          androidUtil.push(deviceId, appName, destination + filename, contents),
+      return Promise.all([deviceIdPromise, appNamePromise, this.adb]).then(
+        ([deviceId, appName, adbClient]) =>
+          androidUtil.push(
+            adbClient,
+            deviceId,
+            appName,
+            destination + filename,
+            contents,
+          ),
       );
     }
     if (os === 'iOS' || os === 'windows' || os == 'MacOS') {
@@ -343,8 +350,15 @@ export default class CertificateProvider {
     processName: string,
     csr: string,
   ): Promise<boolean> {
-    return androidUtil
-      .pull(deviceId, processName, directory + csrFileName)
+    return this.adb
+      .then(adbClient =>
+        androidUtil.pull(
+          adbClient,
+          deviceId,
+          processName,
+          directory + csrFileName,
+        ),
+      )
       .then(deviceCsr => {
         // Santitize both of the string before comparation
         // The csr string extraction on client side return string in both way

@@ -151,6 +151,7 @@ export default class SelectPluginSheet extends Component<Props, State> {
               return (
                 <PluginRowComponent
                   name={pluginID}
+                  key={pluginID}
                   selected={selected}
                   onChange={(id: string, selected: boolean) => {
                     plugins.set(id, selected);
@@ -164,17 +165,17 @@ export default class SelectPluginSheet extends Component<Props, State> {
         <Padder paddingTop={8} paddingBottom={2}>
           <FlexRow>
             <Spacer />
+            <Button compact padded onClick={onHide}>
+              Close
+            </Button>
             <Button
               compact
               padded
-              type={'success'}
+              type="primary"
               onClick={() => {
                 this.onSubmit(this.state.plugins);
               }}>
               Submit
-            </Button>
-            <Button compact padded onClick={onHide}>
-              Close
             </Button>
           </FlexRow>
         </Padder>

@@ -281,7 +281,7 @@ async function startFlipper(userArguments: UserArguments) {
   > = [
     async (userArguments: UserArguments) => {
       if (userArguments.listDevices) {
-        const devices = await listDevices();
+        const devices = await listDevices(store);
         const mapped = devices.map(device => {
           return {
             os: device.os,
@@ -306,7 +306,7 @@ async function startFlipper(userArguments: UserArguments) {
     async (userArguments: UserArguments, store: Store) => {
       const {device: selectedDeviceID} = userArguments;
       if (selectedDeviceID) {
-        const devices = await listDevices();
+        const devices = await listDevices(store);
         const matchedDevice = devices.find(
           device => device.serial === selectedDeviceID,
         );

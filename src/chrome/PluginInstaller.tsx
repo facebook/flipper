@@ -21,6 +21,7 @@ import {
   Link,
   Text,
   LoadingIndicator,
+  Tooltip,
 } from 'flipper';
 import React, {useCallback, useState, useMemo, useEffect} from 'react';
 import {remote} from 'electron';
@@ -30,10 +31,12 @@ import path from 'path';
 import fs from 'fs-extra';
 import {homedir} from 'os';
 import {PluginManager as PM} from 'live-plugin-manager';
+import {reportPlatformFailures, reportUsage} from '../utils/metrics';
 
 const PLUGIN_DIR = path.join(homedir(), '.flipper', 'thirdparty');
 const ALGOLIA_APPLICATION_ID = 'OFCNCOG2CU';
 const ALGOLIA_API_KEY = 'f54e21fa3a2a0160595bb058179bfb1e';
+const TAG = 'PluginInstaller';
 const PluginManager = new PM({
   ignoredDependencies: ['flipper', 'react', 'react-dom', '@types/*'],
 });
@@ -137,66 +140,106 @@ const Spinner = styled(LoadingIndicator)({
   marginTop: 6,
 });
 
+const AlignedGlyph = styled(Glyph)({
+  marginTop: 6,
+});
+
 function InstallButton(props: {
   name: string;
   version: string;
   onInstall: () => void;
   installed: boolean;
 }) {
-  type InstallAction = 'Install' | 'Waiting' | 'Remove';
+  type InstallAction =
+    | {kind: 'Install'}
+    | {kind: 'Waiting'}
+    | {kind: 'Remove'}
+    | {kind: 'Error'; error: string};
 
-  const onInstall = useCallback(async () => {
-    setAction('Waiting');
-    await fs.ensureDir(PLUGIN_DIR);
-    // create empty watchman config (required by metro's file watcher)
-    await fs.writeFile(path.join(PLUGIN_DIR, '.watchmanconfig'), '{}');
+  const catchError = (fn: () => Promise<void>) => async () => {
+    try {
+      await fn();
+    } catch (err) {
+      setAction({kind: 'Error', error: err.toString()});
+    }
+  };
 
-    // install the plugin and all it's dependencies into node_modules
-    PluginManager.options.pluginsPath = path.join(
-      PLUGIN_DIR,
-      props.name,
-      'node_modules',
-    );
-    await PluginManager.install(props.name);
+  const onInstall = useCallback(
+    catchError(async () => {
+      reportUsage(`${TAG}:install`, undefined, props.name);
+      setAction({kind: 'Waiting'});
+      await fs.ensureDir(PLUGIN_DIR);
+      // create empty watchman config (required by metro's file watcher)
+      await fs.writeFile(path.join(PLUGIN_DIR, '.watchmanconfig'), '{}');
 
-    // move the plugin itself out of the node_modules folder
-    const pluginDir = path.join(
-      PLUGIN_DIR,
-      props.name,
-      'node_modules',
-      props.name,
-    );
-    const pluginFiles = await fs.readdir(pluginDir);
-    await Promise.all(
-      pluginFiles.map(f =>
-        fs.move(path.join(pluginDir, f), path.join(pluginDir, '..', '..', f)),
-      ),
-    );
+      // install the plugin and all it's dependencies into node_modules
+      PluginManager.options.pluginsPath = path.join(
+        PLUGIN_DIR,
+        props.name,
+        'node_modules',
+      );
+      await PluginManager.install(props.name);
 
-    props.onInstall();
-    setAction('Remove');
-  }, [props.name, props.version]);
+      // move the plugin itself out of the node_modules folder
+      const pluginDir = path.join(
+        PLUGIN_DIR,
+        props.name,
+        'node_modules',
+        props.name,
+      );
+      const pluginFiles = await fs.readdir(pluginDir);
+      await Promise.all(
+        pluginFiles.map(f =>
+          fs.move(path.join(pluginDir, f), path.join(pluginDir, '..', '..', f)),
+        ),
+      );
 
-  const onRemove = useCallback(async () => {
-    setAction('Waiting');
-    await fs.remove(path.join(PLUGIN_DIR, props.name));
-    props.onInstall();
-    setAction('Install');
-  }, [props.name]);
-
-  const [action, setAction] = useState<InstallAction>(
-    props.installed ? 'Remove' : 'Install',
+      props.onInstall();
+      setAction({kind: 'Remove'});
+    }),
+    [props.name, props.version],
   );
 
-  if (action === 'Waiting') {
+  const onRemove = useCallback(
+    catchError(async () => {
+      reportUsage(`${TAG}:remove`, undefined, props.name);
+      setAction({kind: 'Waiting'});
+      await fs.remove(path.join(PLUGIN_DIR, props.name));
+      props.onInstall();
+      setAction({kind: 'Install'});
+    }),
+    [props.name],
+  );
+
+  const [action, setAction] = useState<InstallAction>(
+    props.installed ? {kind: 'Remove'} : {kind: 'Install'},
+  );
+
+  if (action.kind === 'Waiting') {
     return <Spinner size={16} />;
+  }
+  if (action.kind === 'Error') {
+    const glyph = (
+      <AlignedGlyph color={colors.orange} size={16} name="caution-triangle" />
+    );
+    return (
+      <Tooltip
+        options={{position: 'toRight'}}
+        title={`Something went wrong: ${action.error}`}
+        children={glyph}
+      />
+    );
   }
   return (
     <TableButton
       compact
-      type={action === 'Install' ? 'primary' : undefined}
-      onClick={action === 'Install' ? onInstall : onRemove}>
-      {action}
+      type={action.kind === 'Install' ? 'primary' : undefined}
+      onClick={
+        action.kind === 'Install'
+          ? () => reportPlatformFailures(onInstall(), `${TAG}:install`)
+          : () => reportPlatformFailures(onRemove(), `${TAG}:remove`)
+      }>
+      {action.kind}
     </TableButton>
   );
 }
@@ -216,11 +259,18 @@ function useNPMSearch(
   );
 
   useEffect(() => {
-    getInstalledPlugns().then(setInstalledPlugins);
+    reportUsage(`${TAG}:open`);
+    reportPlatformFailures(
+      getInstalledPlugins(),
+      `${TAG}:getInstalledPlugins`,
+    ).then(setInstalledPlugins);
   }, []);
 
   const onInstall = useCallback(async () => {
-    setInstalledPlugins(await getInstalledPlugns());
+    reportPlatformFailures(
+      getInstalledPlugins(),
+      `${TAG}:getInstalledPlugins`,
+    ).then(setInstalledPlugins);
     setRestartRequired(true);
   }, []);
 
@@ -239,7 +289,11 @@ function useNPMSearch(
               <EllipsisText>{h.description}</EllipsisText>
               <Spacer />
               <Link href={`https://yarnpkg.com/en/package/${h.name}`}>
-                <Glyph color={colors.light20} name="info-circle" size={16} />
+                <AlignedGlyph
+                  color={colors.light20}
+                  name="info-circle"
+                  size={16}
+                />
               </Link>
             </FlexRow>
           ),
@@ -264,11 +318,14 @@ function useNPMSearch(
 
   useEffect(() => {
     (async () => {
-      const {hits} = await index.search({
-        query,
-        filters: 'keywords:flipper-plugin',
-        hitsPerPage: 20,
-      });
+      const {hits} = await reportPlatformFailures(
+        index.search({
+          query,
+          filters: 'keywords:flipper-plugin',
+          hitsPerPage: 20,
+        }),
+        `${TAG}:queryIndex`,
+      );
 
       setSearchResults(hits.filter(hit => !installedPlugins.has(hit.name)));
       setQuery(query);
@@ -279,7 +336,7 @@ function useNPMSearch(
   return List(results.map(createRow));
 }
 
-async function getInstalledPlugns() {
+async function getInstalledPlugins() {
   const dirs = await fs.readdir(PLUGIN_DIR);
   const plugins = await Promise.all<[string, PluginDefinition]>(
     dirs.map(

@@ -46,6 +46,9 @@ const ICONS = {
   profile: [12],
   target: [12],
   bird: [12],
+  settings: [12],
+  directions: [12],
+  'dots-3-circle-outline': [16],
 };
 
 // Takes a string like 'star', or 'star-outline', and converts it to

@@ -108,6 +108,19 @@ export function tryCatchReportPlatformFailures<T>(
   }
 }
 
+/**
+ * Track usage of a feature.
+ * @param action Unique name for the action performed. E.g. captureScreenshot
+ * @param data Optional additional metadata attached to the event.
+ */
+export function reportUsage(
+  action: string,
+  data?: {[key: string]: string},
+  plugin?: string,
+) {
+  getInstance().track('usage', action, data, plugin);
+}
+
 function logPlatformSuccessRate(name: string, result: Result) {
   if (result.kind === 'success') {
     getInstance().track('success-rate', name, {value: 1});

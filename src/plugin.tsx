@@ -101,6 +101,8 @@ export abstract class FlipperBasePlugin<
         callClient: (method: string, params?: any) => Promise<any>,
         persistedState: StaticPersistedState | undefined,
         store: MiddlewareAPI | undefined,
+        idler?: Idler,
+        statusUpdate?: (msg: string) => void,
       ) => Promise<StaticPersistedState | undefined>)
     | null;
   static getActiveNotifications:
@@ -209,8 +211,7 @@ export class FlipperPlugin<
     // @ts-ignore constructor should be assigned already
     const {id} = this.constructor;
     this.subscriptions = [];
-    // @ts-ignore props.target will be instance of Client
-    this.realClient = props.target;
+    this.realClient = props.target as Client;
     this.client = {
       call: (method, params) => this.realClient.call(id, method, true, params),
       send: (method, params) => this.realClient.send(id, method, params),
