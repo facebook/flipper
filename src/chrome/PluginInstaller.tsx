@@ -311,11 +311,7 @@ function useNPMSearch(
               <EllipsisText>{h.description}</EllipsisText>
               <Spacer />
               <Link href={`https://yarnpkg.com/en/package/${h.name}`}>
-                <AlignedGlyph
-                  color={colors.light20}
-                  name="info-circle"
-                  size={16}
-                />
+                <Glyph color={colors.light20} name="info-circle" size={16} />
               </Link>
             </FlexRow>
           ),
