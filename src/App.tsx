@@ -101,7 +101,7 @@ export class App extends React.Component<Props> {
             file={
               this.props.share && this.props.share.type === 'file'
                 ? this.props.share.file
-                : undefined
+                : null
             }
             logger={this.props.logger}
           />

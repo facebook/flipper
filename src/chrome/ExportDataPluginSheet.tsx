@@ -23,7 +23,7 @@ import SelectPluginSheet from './SelectPluginSheet';
 import {Dispatch, Action} from 'redux';
 
 type OwnProps = {
-  onHide: () => any;
+  onHide: () => void;
 };
 
 type StateFromProps = {
