@@ -256,10 +256,6 @@ class MainSidebar extends PureComponent<Props> {
       numNotifications,
     } = this.props;
     let {clients, uninitializedClients} = this.props;
-    const showLithoForm =
-      GK.get('flipper_support_requests') &&
-      selectedDevice &&
-      selectedDevice.os === 'Android';
     clients = clients
       .filter(
         (client: Client) =>
@@ -306,7 +302,7 @@ class MainSidebar extends PureComponent<Props> {
               </PluginName>
             </ListItem>
           )}
-          {showLithoForm && (
+          {GK.get('flipper_support_requests') && (
             <ListItem
               active={staticView != null && staticView === SupportRequestForm}
               onClick={() => setStaticView(SupportRequestForm)}>
