@@ -311,16 +311,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 ## Setup you React Native app
 
-_inspired by [a blog post by Ram N](http://blog.nparashuram.com/2019/09/using-flipper-with-react-native.html)_
+_Inspired by [a blog post by Ram N](http://blog.nparashuram.com/2019/09/using-flipper-with-react-native.html)_
 
-Integrate Flipper with React Native, is a bit different than a native app.
+Integrating Flipper with React Native, is a bit different than a native app.
 
 ### Android
 
-First, Add this line to your `android/gradle.properties`
+First, add this line to your `android/gradle.properties`
 
 ```groovy
-# On Android, React Native has issues with higher versions
+# On Android, React Native currently has issues with higher versions
 FLIPPER_VERSION=0.23.4
 ```
 
@@ -354,6 +354,7 @@ use to make it easier to strip Flipper from your release builds.
 android {
   packagingOptions {
     ...
+    // This line is required to prevent React Native from crash
     pickFirst '**/libc++_shared.so'
   }
 }
@@ -369,9 +370,9 @@ dependencies {
 }
 ```
 
-Now, we must create a new file inside `android/app/src/debug/java/com/yourappname/ReactNativeFlipper.java`.
+Now, we create a new file inside `android/app/src/debug/java/com/yourappname/ReactNativeFlipper.java`.
 
-Here, there are the following plugins integrations:
+These are the suggested plugins integrations:
 
 - Layout Inspector
 - Network
@@ -382,12 +383,6 @@ Here, there are the following plugins integrations:
 - React devtools
 
 ```java
-/**
-* Copyright (c) Facebook, Inc. and its affiliates.
-*
-* <p>This source code is licensed under the MIT license found in the LICENSE file in the root
-* directory of this source tree.
-*/
 package com.yourappname;
 
 import android.content.Context;
@@ -411,47 +406,48 @@ import okhttp3.OkHttpClient;
 public class ReactNativeFlipper {
 
   public static void initializeFlipper(Context context, final ReactInstanceManager reactInstanceManager) {
-    if (FlipperUtils.shouldEnableFlipper(context)) {
-      final FlipperClient client = AndroidFlipperClient.getInstance(context);
+    if (!FlipperUtils.shouldEnableFlipper(context)) {
+      return;
+    }
+    final FlipperClient client = AndroidFlipperClient.getInstance(context);
 
-      client.addPlugin(new InspectorFlipperPlugin(context, DescriptorMapping.withDefaults()));
-      client.addPlugin(new ReactFlipperPlugin());
-      client.addPlugin(new DatabasesFlipperPlugin(context));
-      client.addPlugin(new SharedPreferencesFlipperPlugin(context));
-      client.addPlugin(CrashReporterPlugin.getInstance());
+    client.addPlugin(new InspectorFlipperPlugin(context, DescriptorMapping.withDefaults()));
+    client.addPlugin(new ReactFlipperPlugin());
+    client.addPlugin(new DatabasesFlipperPlugin(context));
+    client.addPlugin(new SharedPreferencesFlipperPlugin(context));
+    client.addPlugin(CrashReporterPlugin.getInstance());
 
-      final NetworkFlipperPlugin networkFlipperPlugin = new NetworkFlipperPlugin();
-      NetworkingModule.setCustomClientBuilder(
-          new NetworkingModule.CustomClientBuilder() {
+    final NetworkFlipperPlugin networkFlipperPlugin = new NetworkFlipperPlugin();
+    NetworkingModule.setCustomClientBuilder(
+        new NetworkingModule.CustomClientBuilder() {
+          @Override
+          public void apply(OkHttpClient.Builder builder) {
+            builder.addNetworkInterceptor(new FlipperOkhttpInterceptor(networkFlipperPlugin));
+          }
+        });
+    client.addPlugin(networkFlipperPlugin);
+    client.start();
+
+    // Fresco Plugin needs to ensure that ImagePipelineFactory is initialized
+    // Hence we run if after all native modules have been initialized
+    ReactContext reactContext = reactInstanceManager.getCurrentReactContext();
+    if (reactContext == null) {
+      reactInstanceManager.addReactInstanceEventListener(
+          new ReactInstanceManager.ReactInstanceEventListener() {
             @Override
-            public void apply(OkHttpClient.Builder builder) {
-              builder.addNetworkInterceptor(new FlipperOkhttpInterceptor(networkFlipperPlugin));
+            public void onReactContextInitialized(ReactContext reactContext) {
+              reactInstanceManager.removeReactInstanceEventListener(this);
+              reactContext.runOnNativeModulesQueueThread(
+                  new Runnable() {
+                    @Override
+                    public void run() {
+                      client.addPlugin(new FrescoFlipperPlugin());
+                    }
+                  });
             }
           });
-      client.addPlugin(networkFlipperPlugin);
-      client.start();
-
-      // Fresco Plugin needs to ensure that ImagePipelineFactory is initialized
-      // Hence we run if after all native modules have been initialized
-      ReactContext reactContext = reactInstanceManager.getCurrentReactContext();
-      if (reactContext == null) {
-        reactInstanceManager.addReactInstanceEventListener(
-            new ReactInstanceManager.ReactInstanceEventListener() {
-              @Override
-              public void onReactContextInitialized(ReactContext reactContext) {
-                reactInstanceManager.removeReactInstanceEventListener(this);
-                reactContext.runOnNativeModulesQueueThread(
-                    new Runnable() {
-                      @Override
-                      public void run() {
-                        client.addPlugin(new FrescoFlipperPlugin());
-                      }
-                    });
-              }
-            });
-      } else {
-        client.addPlugin(new FrescoFlipperPlugin());
-      }
+    } else {
+      client.addPlugin(new FrescoFlipperPlugin());
     }
   }
 }
@@ -460,7 +456,7 @@ public class ReactNativeFlipper {
 Now you can initialize Flipper in your Application's `onCreate` method, which involves
 initializing SoLoader (for loading the C++ part of Flipper) and starting a `FlipperClient`.
 
-For this, we should edit our `android/app/src/main/java/com/yourappname/MainApplication.java` file.
+For this, we edit the `android/app/src/main/java/com/yourappname/MainApplication.java` file.
 
 ```java
 package com.yourappname;
@@ -584,7 +580,7 @@ On the first run of `pod install`, `FB_SONARKIT_ENABLED=1` may not be added in t
 Install the dependencies by running `cd ios && pod install`. You can now import and initialize Flipper in your
 `ios/your-app-name/AppDelegate.m`.
 
-Here, there are the following plugins integrations:
+The code below enabled the following integrations:
 
 - Layout Inspector
 - Network
