@@ -6,25 +6,24 @@
  */
 package com.facebook.flipper.plugins.network;
 
+import android.text.TextUtils;
+import com.facebook.flipper.core.*;
+import com.facebook.flipper.plugins.common.BufferingFlipperPlugin;
 import com.facebook.flipper.plugins.network.NetworkReporter.RequestInfo;
 import com.facebook.flipper.plugins.network.NetworkReporter.ResponseInfo;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import javax.annotation.Nullable;
-import okhttp3.Headers;
-import okhttp3.Interceptor;
-import okhttp3.Request;
-import okhttp3.Response;
-import okhttp3.ResponseBody;
+import okhttp3.*;
 import okio.Buffer;
 import okio.BufferedSource;
 
-public class FlipperOkhttpInterceptor implements Interceptor {
+public class FlipperOkhttpInterceptor
+    implements Interceptor, BufferingFlipperPlugin.ConnectionListener {
 
   public @Nullable NetworkFlipperPlugin plugin;
+
+  private Map<String, ResponseInfo> mockResponeMap = new HashMap<>();
 
   public FlipperOkhttpInterceptor() {
     this.plugin = null;
@@ -32,6 +31,11 @@ public class FlipperOkhttpInterceptor implements Interceptor {
 
   public FlipperOkhttpInterceptor(NetworkFlipperPlugin plugin) {
     this.plugin = plugin;
+    this.plugin.setConnectionListener(this);
+  }
+
+  protected void registerMockResponse(String requestUrl, String method, ResponseInfo response) {
+    mockResponeMap.put(requestUrl + "|" + method, response);
   }
 
   @Override
@@ -39,11 +43,44 @@ public class FlipperOkhttpInterceptor implements Interceptor {
     Request request = chain.request();
     String identifier = UUID.randomUUID().toString();
     plugin.reportRequest(convertRequest(request, identifier));
-    Response response = chain.proceed(request);
+
+    // Check if there is a mock response
+    Response mockResponse = getMockResponse(request);
+    Response response = mockResponse != null ? getMockResponse(request) : chain.proceed(request);
+
     ResponseBody body = response.body();
     ResponseInfo responseInfo = convertResponse(response, body, identifier);
+    responseInfo.isMock = mockResponse != null;
     plugin.reportResponse(responseInfo);
     return response;
+  }
+
+  @Nullable
+  private Response getMockResponse(Request request) {
+    String url = request.url().toString();
+    String method = request.method();
+    ResponseInfo mockResponse = mockResponeMap.get(url + "|" + method);
+
+    if (mockResponse != null) {
+      Response.Builder builder = new Response.Builder();
+      builder
+          .request(request)
+          .protocol(Protocol.HTTP_1_1)
+          .code(mockResponse.statusCode)
+          .message(mockResponse.statusReason)
+          .receivedResponseAtMillis(System.currentTimeMillis())
+          .body(ResponseBody.create(MediaType.parse("application/text"), mockResponse.body));
+
+      if (mockResponse.headers != null && mockResponse.headers.size() > 0) {
+        for (NetworkReporter.Header header : mockResponse.headers) {
+          if (!TextUtils.isEmpty(header.name) && !TextUtils.isEmpty(header.value)) {
+            builder.header(header.name, header.value);
+          }
+        }
+      }
+      return builder.build();
+    }
+    return null;
   }
 
   private static byte[] bodyToByteArray(final Request request) throws IOException {
@@ -91,4 +128,50 @@ public class FlipperOkhttpInterceptor implements Interceptor {
     }
     return list;
   }
+
+  @Override
+  public void onConnect(FlipperConnection connection) {
+    connection.receive(
+        "mockResponses",
+        new FlipperReceiver() {
+          @Override
+          public void onReceive(FlipperObject params, FlipperResponder responder) throws Exception {
+            FlipperArray array = params.getArray("routes");
+            mockResponeMap.clear();
+
+            for (int i = 0; i < array.length(); i++) {
+              FlipperObject route = array.getObject(i);
+              String data = route.getString("data");
+              String requestUrl = route.getString("requestUrl");
+              String method = route.getString("method");
+              FlipperArray headersArray = route.getArray("headers");
+
+              if (!TextUtils.isEmpty(data)
+                  && !TextUtils.isEmpty(requestUrl)
+                  && !TextUtils.isEmpty(method)) {
+                ResponseInfo mockResponse = new ResponseInfo();
+                mockResponse.body = data.getBytes();
+                mockResponse.statusCode = 200;
+                mockResponse.statusReason = "OK";
+
+                if (headersArray != null) {
+                  List<NetworkReporter.Header> headers = new ArrayList<>();
+                  for (int j = 0; j < headersArray.length(); j++) {
+                    FlipperObject header = headersArray.getObject(j);
+                    headers.add(
+                        new NetworkReporter.Header(
+                            header.getString("key"), header.getString("value")));
+                  }
+                  mockResponse.headers = headers;
+                }
+                registerMockResponse(requestUrl, method, mockResponse);
+              }
+            }
+            responder.success();
+          }
+        });
+  }
+
+  @Override
+  public void onDisconnect() {}
 }

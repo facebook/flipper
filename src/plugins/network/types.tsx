@@ -23,6 +23,7 @@ export type Response = {
   reason: string;
   headers: Array<Header>;
   data: string | null | undefined;
+  isMock: boolean;
   insights: Insights | null | undefined;
 };
 
@@ -50,4 +51,12 @@ export type Insights = {
   bytesTransfered: number | null | undefined;
   transferSpeed: number | null | undefined;
   retries: RetryInsights | null | undefined;
+};
+
+export type Route = {
+  requestUrl: string;
+  method: string;
+  data: string;
+  isDuplicate: boolean;
+  headers: Map<RequestId, Header>;
 };
