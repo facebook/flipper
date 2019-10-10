@@ -41,7 +41,11 @@ matrix:
 
     - language: objective-c
 
-      cache: cocoapods
+      cache:
+        cocoapods: true
+        directories:
+          - $HOME/Library/Caches/CocoaPods/Pods/Release/
+
 
       before_install:
         - gem install cocoapods
