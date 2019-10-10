@@ -5,26 +5,16 @@
  * @format
  */
 
-import {
-  FlexColumn,
-  Button,
-  styled,
-  Text,
-  FlexRow,
-  Spacer,
-  Input,
-  colors,
-  Glyph,
-} from 'flipper';
-import React, {Component, useState} from 'react';
+import {FlexColumn, Button, styled, Text, FlexRow, Spacer} from 'flipper';
+import React, {Component} from 'react';
 import {updateSettings, Action} from '../reducers/settings';
 import {connect} from 'react-redux';
 import {State as Store} from '../reducers';
 import {Settings} from '../reducers/settings';
 import {flush} from '../utils/persistor';
-import {promises as fs} from 'fs';
+import ToggledSection from './settings/ToggledSection';
+import {FilePathConfigField} from './settings/configFields';
 import {remote} from 'electron';
-import path from 'path';
 import isEqual from 'lodash.isequal';
 
 const Container = styled(FlexColumn)({
@@ -37,26 +27,6 @@ const Title = styled(Text)({
   marginRight: 10,
   fontWeight: 100,
   fontSize: '40px',
-});
-
-const InfoText = styled(Text)({
-  lineHeight: 1.35,
-  paddingTop: 5,
-});
-
-const FileInputBox = styled(Input)(({isValid}: {isValid: boolean}) => ({
-  marginRight: 0,
-  flexGrow: 1,
-  fontFamily: 'monospace',
-  color: isValid ? undefined : colors.red,
-  marginLeft: 10,
-  marginTop: 'auto',
-  marginBottom: 'auto',
-}));
-
-const CenteredGlyph = styled(Glyph)({
-  margin: 'auto',
-  marginLeft: 10,
 });
 
 type OwnProps = {
@@ -75,56 +45,9 @@ type State = {
   updatedSettings: Settings;
 };
 
-function FilePathConfigField(props: {
-  label: string;
-  defaultValue: string;
-  onChange: (path: string) => void;
-}) {
-  const [value, setValue] = useState(props.defaultValue);
-  const [isValid, setIsValid] = useState(true);
-  fs.stat(value)
-    .then(stat => setIsValid(stat.isDirectory()))
-    .catch(_ => setIsValid(false));
-  return (
-    <FlexRow>
-      <InfoText>{props.label}</InfoText>
-      <FileInputBox
-        placeholder={props.label}
-        value={value}
-        isValid={isValid}
-        onChange={e => {
-          setValue(e.target.value);
-          props.onChange(e.target.value);
-          fs.stat(e.target.value)
-            .then(stat => setIsValid(stat.isDirectory()))
-            .catch(_ => setIsValid(false));
-        }}
-      />
-      <FlexColumn
-        onClick={() =>
-          remote.dialog.showOpenDialog(
-            {
-              properties: ['openDirectory', 'showHiddenFiles'],
-              defaultPath: path.resolve('/'),
-            },
-            (paths: Array<string> | undefined) => {
-              paths && setValue(paths[0]);
-              paths && props.onChange(paths[0]);
-            },
-          )
-        }>
-        <CenteredGlyph name="dots-3-circle" variant="outline" />
-      </FlexColumn>
-      {isValid ? null : (
-        <CenteredGlyph name="caution-triangle" color={colors.yellow} />
-      )}
-    </FlexRow>
-  );
-}
-
 type Props = OwnProps & StateFromProps & DispatchFromProps;
-class SignInSheet extends Component<Props, State> {
-  state = {
+class SettingsSheet extends Component<Props, State> {
+  state: State = {
     updatedSettings: {...this.props.settings},
   };
 
@@ -141,18 +64,31 @@ class SignInSheet extends Component<Props, State> {
     return (
       <Container>
         <Title>Settings</Title>
-        <FilePathConfigField
-          label="Android SDK Location"
-          defaultValue={this.state.updatedSettings.androidHome}
+        <ToggledSection
+          label="Android"
+          enabled={this.state.updatedSettings.enableAndroid}
           onChange={v => {
             this.setState({
               updatedSettings: {
                 ...this.state.updatedSettings,
-                androidHome: v,
+                enableAndroid: v,
               },
             });
-          }}
-        />
+          }}>
+          <FilePathConfigField
+            label="Android SDK Location"
+            defaultValue={this.state.updatedSettings.androidHome}
+            onChange={v => {
+              this.setState({
+                updatedSettings: {
+                  ...this.state.updatedSettings,
+                  androidHome: v,
+                },
+              });
+            }}
+          />
+        </ToggledSection>
+
         <br />
         <FlexRow>
           <Spacer />
@@ -176,4 +112,4 @@ class SignInSheet extends Component<Props, State> {
 export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
   ({settingsState}) => ({settings: settingsState}),
   {updateSettings},
-)(SignInSheet);
+)(SettingsSheet);

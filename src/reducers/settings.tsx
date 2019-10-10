@@ -9,6 +9,7 @@ import {Actions} from './index';
 
 export type Settings = {
   androidHome: string;
+  enableAndroid: boolean;
 };
 
 export type Action =
@@ -20,6 +21,7 @@ export type Action =
 
 const initialState: Settings = {
   androidHome: '/opt/android_sdk',
+  enableAndroid: true,
 };
 
 export default function reducer(
