@@ -18,7 +18,7 @@ import Glyph from '../Glyph';
 import FilterToken from './FilterToken';
 import styled from 'react-emotion';
 import debounce from 'lodash.debounce';
-import ToggleSwitch from '../ToggleSwitch';
+import ToggleButton from '../ToggleSwitch';
 import React from 'react';
 
 const SearchBar = styled(Toolbar)({
@@ -456,7 +456,7 @@ const Searchable = (
             />
           </SearchBox>
           {this.props.allowRegexSearch ? (
-            <ToggleSwitch
+            <ToggleButton
               toggled={this.state.regexEnabled}
               onClick={this.onRegexToggled}
               label={'Regex'}
