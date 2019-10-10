@@ -76,6 +76,7 @@ export type State = {
   launcherMsg: LauncherMsg;
   flipperRating: number | null;
   statusMessages: Array<string>;
+  xcodeCommandLineToolsDetected: boolean;
 };
 
 type BooleanActionType =
@@ -140,6 +141,12 @@ export type Action =
   | {
       type: 'REMOVE_STATUS_MSG';
       payload: {msg: string; sender: string};
+    }
+  | {
+      type: 'SET_XCODE_DETECTED';
+      payload: {
+        isDetected: boolean;
+      };
     };
 
 export const initialState: () => State = () => ({
@@ -161,6 +168,7 @@ export const initialState: () => State = () => ({
   },
   flipperRating: null,
   statusMessages: [],
+  xcodeCommandLineToolsDetected: false,
 });
 
 function statusMessage(sender: string, msg: string): string {
@@ -268,6 +276,8 @@ export default function reducer(
       return {...state, statusMessages};
     }
     return state;
+  } else if (action.type === 'SET_XCODE_DETECTED') {
+    return {...state, xcodeCommandLineToolsDetected: action.payload.isDetected};
   } else {
     return state;
   }
@@ -344,4 +354,9 @@ export const addStatusMessage = (payload: StatusMessageType): Action => ({
 export const removeStatusMessage = (payload: StatusMessageType): Action => ({
   type: 'REMOVE_STATUS_MSG',
   payload,
+});
+
+export const setXcodeDetected = (isDetected: boolean): Action => ({
+  type: 'SET_XCODE_DETECTED',
+  payload: {isDetected},
 });

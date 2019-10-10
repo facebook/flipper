@@ -10,7 +10,13 @@ import BaseDevice from '../devices/BaseDevice';
 import {Store} from '../reducers/index';
 
 export async function listDevices(store: Store): Promise<Array<BaseDevice>> {
-  const androidDevices = await getActiveAndroidDevices(store);
-  const iOSDevices: BaseDevice[] = await getActiveDevicesAndSimulators();
-  return iOSDevices.concat(androidDevices);
+  const state = store.getState();
+  const androidDevices = state.settingsState.enableAndroid
+    ? await getActiveAndroidDevices(store)
+    : [];
+  const iOSDevices: BaseDevice[] = state.application
+    .xcodeCommandLineToolsDetected
+    ? await getActiveDevicesAndSimulators()
+    : [];
+  return [...androidDevices, ...iOSDevices];
 }
