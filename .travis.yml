@@ -40,7 +40,6 @@ matrix:
         - yarn build --mac --version=$TRAVIS_BUILD_NUMBER
 
     - language: objective-c
-
       cache:
         cocoapods: true
         directories:
@@ -67,7 +66,12 @@ matrix:
         - IPHONESIMULATOR=$(xcodebuild -showsdks | grep -o "iphonesimulator[0-9]\\+\\.[0-9]\\+$")
         - travis_wait xcodebuild clean build -workspace Sample.xcworkspace -scheme Sample -sdk $IPHONESIMULATOR -quiet > ./build.log
         - tail -100 ./build.log
+
     - language: objective-c
+      cache:
+        cocoapods: true
+        directories:
+          - $HOME/Library/Caches/CocoaPods/Pods/Release/
 
       before_install:
         - gem install cocoapods
@@ -87,6 +91,7 @@ matrix:
         - IPHONESIMULATOR=$(xcodebuild -showsdks | grep -o "iphonesimulator[0-9]\\+\\.[0-9]\\+$")
         - travis_wait xcodebuild clean build -workspace SampleSwift.xcworkspace -scheme SampleSwift -sdk $IPHONESIMULATOR -quiet > ./build.log
         - tail -100 ./build.log
+
     - language: android
       os: linux
       dist: trusty
