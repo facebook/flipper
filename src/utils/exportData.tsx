@@ -612,6 +612,7 @@ export function importDataToStore(data: string, store: Store) {
         getLogger(),
         store,
         clientPlugins,
+        archivedDevice,
       ),
     });
   });

@@ -139,6 +139,7 @@ export default class Client extends EventEmitter {
     logger: Logger,
     store: Store,
     plugins?: Plugins | null | undefined,
+    device?: BaseDevice,
   ) {
     super();
     this.connected = true;
@@ -156,9 +157,11 @@ export default class Client extends EventEmitter {
     this.activePlugins = new Set();
     this.lastSeenDeviceList = [];
 
-    this.device = new Promise((resolve, _reject) => {
-      this._deviceResolve = resolve;
-    });
+    this.device = device
+      ? Promise.resolve(device)
+      : new Promise((resolve, _reject) => {
+          this._deviceResolve = resolve;
+        });
 
     const client = this;
     // node.js doesn't support requestIdleCallback
