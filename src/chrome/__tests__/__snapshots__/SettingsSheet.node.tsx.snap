@@ -1,0 +1,540 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SettingsSheet snapshot with android enabled 1`] = `
+<div
+  className="css-58lehk"
+>
+  <span
+    className="css-1lhexul"
+  >
+    Settings
+  </span>
+  <div
+    className="css-1k4677w"
+  >
+    <div
+      className="css-a1glw"
+    >
+      <div
+        className="css-xu6aw0"
+        onClick={[Function]}
+      >
+        <div
+          className="css-5fb050"
+        />
+        <span
+          className="css-1ppqprl"
+        >
+          Android Developer
+        </span>
+      </div>
+    </div>
+    <div
+      className="css-77h5wk"
+    >
+      <div
+        className="css-1qb4gb9"
+      >
+        <span
+          className="css-1244i8h"
+        >
+          Android SDK Location
+        </span>
+        <input
+          className="css-g76x1o"
+          onChange={[Function]}
+          placeholder="Android SDK Location"
+          type="text"
+        />
+        <div
+          className="css-1k4677w"
+          onClick={[Function]}
+        >
+          <img
+            alt="dots-3-circle"
+            className="css-1x9cv9"
+            size={16}
+            src="https://external.xx.fbcdn.net/assets/?name=dots-3-circle&variant=outline&size=16&set=facebook_icons&density=1x"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    className="css-1k4677w"
+  >
+    <div
+      className="css-a1glw"
+    >
+      <div
+        className="css-xu6aw0"
+        onClick={[Function]}
+      >
+        <div
+          className="css-1bpd2m8"
+        />
+        <span
+          className="css-1ppqprl"
+        >
+          iOS Developer
+        </span>
+      </div>
+      <div
+        className="css-ivsi5g"
+      />
+    </div>
+    <div
+      className="css-77h5wk"
+    >
+       
+      <div
+        className="css-1qb4gb9"
+      >
+        <span
+          className="css-1244i8h"
+        >
+          Use xcode-select to enable or switch between xcode versions
+        </span>
+        <div
+          className="css-ivsi5g"
+        />
+      </div>
+      <div
+        className="css-ivsi5g"
+      />
+    </div>
+  </div>
+  <br />
+  <div
+    className="css-a1glw"
+  >
+    <div
+      className="css-12zzrdt"
+    />
+    <div
+      className="css-1awwm1c"
+      onClick={[Function]}
+      onMouseDown={[Function]}
+      onMouseUp={[Function]}
+    >
+      Cancel
+    </div>
+    <div
+      className="css-ytyipw"
+      disabled={true}
+      onClick={[Function]}
+      onMouseDown={[Function]}
+      onMouseUp={[Function]}
+      type="primary"
+    >
+      Apply and Restart
+    </div>
+  </div>
+</div>
+`;
+
+exports[`SettingsSheet snapshot with android home set 1`] = `
+<div
+  className="css-58lehk"
+>
+  <span
+    className="css-1lhexul"
+  >
+    Settings
+  </span>
+  <div
+    className="css-1k4677w"
+  >
+    <div
+      className="css-a1glw"
+    >
+      <div
+        className="css-xu6aw0"
+        onClick={[Function]}
+      >
+        <div
+          className="css-1bpd2m8"
+        />
+        <span
+          className="css-1ppqprl"
+        >
+          Android Developer
+        </span>
+      </div>
+    </div>
+    <div
+      className="css-77h5wk"
+    >
+      <div
+        className="css-1qb4gb9"
+      >
+        <span
+          className="css-1244i8h"
+        >
+          Android SDK Location
+        </span>
+        <input
+          className="css-g76x1o"
+          onChange={[Function]}
+          placeholder="Android SDK Location"
+          type="text"
+          value="/my/sdk/location"
+        />
+        <div
+          className="css-1k4677w"
+          onClick={[Function]}
+        >
+          <img
+            alt="dots-3-circle"
+            className="css-1x9cv9"
+            size={16}
+            src="https://external.xx.fbcdn.net/assets/?name=dots-3-circle&variant=outline&size=16&set=facebook_icons&density=1x"
+          />
+        </div>
+      </div>
+      <div
+        className="css-ivsi5g"
+      />
+    </div>
+  </div>
+  <div
+    className="css-1k4677w"
+  >
+    <div
+      className="css-a1glw"
+    >
+      <div
+        className="css-xu6aw0"
+        onClick={[Function]}
+      >
+        <div
+          className="css-1bpd2m8"
+        />
+        <span
+          className="css-1ppqprl"
+        >
+          iOS Developer
+        </span>
+      </div>
+      <div
+        className="css-ivsi5g"
+      />
+    </div>
+    <div
+      className="css-77h5wk"
+    >
+       
+      <div
+        className="css-1qb4gb9"
+      >
+        <span
+          className="css-1244i8h"
+        >
+          Use xcode-select to enable or switch between xcode versions
+        </span>
+        <div
+          className="css-ivsi5g"
+        />
+      </div>
+      <div
+        className="css-ivsi5g"
+      />
+    </div>
+  </div>
+  <br />
+  <div
+    className="css-a1glw"
+  >
+    <div
+      className="css-12zzrdt"
+    />
+    <div
+      className="css-1awwm1c"
+      onClick={[Function]}
+      onMouseDown={[Function]}
+      onMouseUp={[Function]}
+    >
+      Cancel
+    </div>
+    <div
+      className="css-ytyipw"
+      disabled={true}
+      onClick={[Function]}
+      onMouseDown={[Function]}
+      onMouseUp={[Function]}
+      type="primary"
+    >
+      Apply and Restart
+    </div>
+  </div>
+</div>
+`;
+
+exports[`SettingsSheet snapshot with iOS enabled 1`] = `
+<div
+  className="css-58lehk"
+>
+  <span
+    className="css-1lhexul"
+  >
+    Settings
+  </span>
+  <div
+    className="css-1k4677w"
+  >
+    <div
+      className="css-a1glw"
+    >
+      <div
+        className="css-xu6aw0"
+        onClick={[Function]}
+      >
+        <div
+          className="css-1bpd2m8"
+        />
+        <span
+          className="css-1ppqprl"
+        >
+          Android Developer
+        </span>
+      </div>
+    </div>
+    <div
+      className="css-77h5wk"
+    >
+      <div
+        className="css-1qb4gb9"
+      >
+        <span
+          className="css-1244i8h"
+        >
+          Android SDK Location
+        </span>
+        <input
+          className="css-g76x1o"
+          onChange={[Function]}
+          placeholder="Android SDK Location"
+          type="text"
+        />
+        <div
+          className="css-1k4677w"
+          onClick={[Function]}
+        >
+          <img
+            alt="dots-3-circle"
+            className="css-1x9cv9"
+            size={16}
+            src="https://external.xx.fbcdn.net/assets/?name=dots-3-circle&variant=outline&size=16&set=facebook_icons&density=1x"
+          />
+        </div>
+      </div>
+      <div
+        className="css-ivsi5g"
+      />
+    </div>
+  </div>
+  <div
+    className="css-1k4677w"
+  >
+    <div
+      className="css-a1glw"
+    >
+      <div
+        className="css-xu6aw0"
+        onClick={[Function]}
+      >
+        <div
+          className="css-5fb050"
+        />
+        <span
+          className="css-1ppqprl"
+        >
+          iOS Developer
+        </span>
+      </div>
+      <div
+        className="css-ivsi5g"
+      />
+    </div>
+    <div
+      className="css-77h5wk"
+    >
+       
+      <div
+        className="css-1qb4gb9"
+      >
+        <span
+          className="css-1244i8h"
+        >
+          Use xcode-select to enable or switch between xcode versions
+        </span>
+        <div
+          className="css-ivsi5g"
+        />
+      </div>
+    </div>
+  </div>
+  <br />
+  <div
+    className="css-a1glw"
+  >
+    <div
+      className="css-12zzrdt"
+    />
+    <div
+      className="css-1awwm1c"
+      onClick={[Function]}
+      onMouseDown={[Function]}
+      onMouseUp={[Function]}
+    >
+      Cancel
+    </div>
+    <div
+      className="css-ytyipw"
+      disabled={true}
+      onClick={[Function]}
+      onMouseDown={[Function]}
+      onMouseUp={[Function]}
+      type="primary"
+    >
+      Apply and Restart
+    </div>
+  </div>
+</div>
+`;
+
+exports[`SettingsSheet snapshot with nothing enabled 1`] = `
+<div
+  className="css-58lehk"
+>
+  <span
+    className="css-1lhexul"
+  >
+    Settings
+  </span>
+  <div
+    className="css-1k4677w"
+  >
+    <div
+      className="css-a1glw"
+    >
+      <div
+        className="css-xu6aw0"
+        onClick={[Function]}
+      >
+        <div
+          className="css-1bpd2m8"
+        />
+        <span
+          className="css-1ppqprl"
+        >
+          Android Developer
+        </span>
+      </div>
+    </div>
+    <div
+      className="css-77h5wk"
+    >
+      <div
+        className="css-1qb4gb9"
+      >
+        <span
+          className="css-1244i8h"
+        >
+          Android SDK Location
+        </span>
+        <input
+          className="css-g76x1o"
+          onChange={[Function]}
+          placeholder="Android SDK Location"
+          type="text"
+        />
+        <div
+          className="css-1k4677w"
+          onClick={[Function]}
+        >
+          <img
+            alt="dots-3-circle"
+            className="css-1x9cv9"
+            size={16}
+            src="https://external.xx.fbcdn.net/assets/?name=dots-3-circle&variant=outline&size=16&set=facebook_icons&density=1x"
+          />
+        </div>
+      </div>
+      <div
+        className="css-ivsi5g"
+      />
+    </div>
+  </div>
+  <div
+    className="css-1k4677w"
+  >
+    <div
+      className="css-a1glw"
+    >
+      <div
+        className="css-xu6aw0"
+        onClick={[Function]}
+      >
+        <div
+          className="css-1bpd2m8"
+        />
+        <span
+          className="css-1ppqprl"
+        >
+          iOS Developer
+        </span>
+      </div>
+      <div
+        className="css-ivsi5g"
+      />
+    </div>
+    <div
+      className="css-77h5wk"
+    >
+       
+      <div
+        className="css-1qb4gb9"
+      >
+        <span
+          className="css-1244i8h"
+        >
+          Use xcode-select to enable or switch between xcode versions
+        </span>
+        <div
+          className="css-ivsi5g"
+        />
+      </div>
+      <div
+        className="css-ivsi5g"
+      />
+    </div>
+  </div>
+  <br />
+  <div
+    className="css-a1glw"
+  >
+    <div
+      className="css-12zzrdt"
+    />
+    <div
+      className="css-1awwm1c"
+      onClick={[Function]}
+      onMouseDown={[Function]}
+      onMouseUp={[Function]}
+    >
+      Cancel
+    </div>
+    <div
+      className="css-ytyipw"
+      disabled={true}
+      onClick={[Function]}
+      onMouseDown={[Function]}
+      onMouseUp={[Function]}
+      type="primary"
+    >
+      Apply and Restart
+    </div>
+  </div>
+</div>
+`;
