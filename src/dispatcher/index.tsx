@@ -18,11 +18,12 @@ import user from './user';
 import {Logger} from '../fb-interfaces/Logger';
 import {Store} from '../reducers/index';
 import {Dispatcher} from './types';
+import {notNull} from '../utils/typeUtils';
 
 export default function(store: Store, logger: Logger): () => Promise<void> {
   const dispatchers: Array<Dispatcher> = [
     application,
-    androidDevice,
+    store.getState().settingsState.enableAndroid ? androidDevice : null,
     iOSDevice,
     desktopDevice,
     tracking,
@@ -30,7 +31,7 @@ export default function(store: Store, logger: Logger): () => Promise<void> {
     notifications,
     plugins,
     user,
-  ];
+  ].filter(notNull);
   const globalCleanup = dispatchers
     .map(dispatcher => dispatcher(store, logger))
     .filter(Boolean);
