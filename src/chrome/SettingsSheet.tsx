@@ -13,7 +13,7 @@ import {State as Store} from '../reducers';
 import {Settings} from '../reducers/settings';
 import {flush} from '../utils/persistor';
 import ToggledSection from './settings/ToggledSection';
-import {FilePathConfigField} from './settings/configFields';
+import {FilePathConfigField, ConfigText} from './settings/configFields';
 import {remote} from 'electron';
 import isEqual from 'lodash.isequal';
 
@@ -35,6 +35,7 @@ type OwnProps = {
 
 type StateFromProps = {
   settings: Settings;
+  isXcodeDetected: boolean;
 };
 
 type DispatchFromProps = {
@@ -65,8 +66,8 @@ class SettingsSheet extends Component<Props, State> {
       <Container>
         <Title>Settings</Title>
         <ToggledSection
-          label="Android"
-          enabled={this.state.updatedSettings.enableAndroid}
+          label="Android Developer"
+          toggled={this.state.updatedSettings.enableAndroid}
           onChange={v => {
             this.setState({
               updatedSettings: {
@@ -88,7 +89,18 @@ class SettingsSheet extends Component<Props, State> {
             }}
           />
         </ToggledSection>
-
+        <ToggledSection
+          label="iOS Developer"
+          toggled={this.props.isXcodeDetected}
+          frozen>
+          {' '}
+          <ConfigText
+            content={
+              'Use xcode-select to enable or switch between xcode versions'
+            }
+            frozen
+          />
+        </ToggledSection>
         <br />
         <FlexRow>
           <Spacer />
@@ -110,6 +122,9 @@ class SettingsSheet extends Component<Props, State> {
 }
 
 export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
-  ({settingsState}) => ({settings: settingsState}),
+  ({settingsState, application}) => ({
+    settings: settingsState,
+    isXcodeDetected: application.xcodeCommandLineToolsDetected,
+  }),
   {updateSettings},
 )(SettingsSheet);

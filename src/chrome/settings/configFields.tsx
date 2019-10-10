@@ -36,10 +36,21 @@ const CenteredGlyph = styled(Glyph)({
   marginLeft: 10,
 });
 
+const GreyedOutOverlay = styled('div')({
+  backgroundColor: '#EFEEEF',
+  borderRadius: 4,
+  opacity: 0.6,
+  height: '100%',
+  position: 'absolute',
+  left: 0,
+  right: 0,
+});
+
 export function FilePathConfigField(props: {
   label: string;
   defaultValue: string;
   onChange: (path: string) => void;
+  frozen?: boolean;
 }) {
   const [value, setValue] = useState(props.defaultValue);
   const [isValid, setIsValid] = useState(true);
@@ -80,6 +91,16 @@ export function FilePathConfigField(props: {
       {isValid ? null : (
         <CenteredGlyph name="caution-triangle" color={colors.yellow} />
       )}
+      {props.frozen && <GreyedOutOverlay />}
+    </ConfigFieldContainer>
+  );
+}
+
+export function ConfigText(props: {content: string; frozen?: boolean}) {
+  return (
+    <ConfigFieldContainer>
+      <InfoText>{props.content}</InfoText>
+      {props.frozen && <GreyedOutOverlay />}
     </ConfigFieldContainer>
   );
 }

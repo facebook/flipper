@@ -17,28 +17,31 @@ const GreyedOutOverlay = styled('div')({
   opacity: 0.6,
   height: '100%',
   position: 'absolute',
-  left: 50,
+  left: 0,
   right: 0,
 });
 
 export default function ToggledSection(props: {
   label: string;
-  enabled: boolean;
-  onChange: (value: boolean) => void;
-  children: React.ReactNode;
+  toggled: boolean;
+  onChange?: (value: boolean) => void;
+  children?: React.ReactNode;
+  // Whether to disallow interactions with this toggle
+  frozen?: boolean;
 }) {
   return (
     <FlexColumn>
       <FlexRow>
         <ToggleButton
           label={props.label}
-          onClick={() => props.onChange(!props.enabled)}
-          toggled={props.enabled}
+          onClick={() => props.onChange && props.onChange(!props.toggled)}
+          toggled={props.toggled}
         />
+        {props.frozen && <GreyedOutOverlay />}
       </FlexRow>
       <IndentedSection>
         {props.children}
-        {props.enabled ? null : <GreyedOutOverlay />}
+        {props.toggled ? null : <GreyedOutOverlay />}
       </IndentedSection>
     </FlexColumn>
   );
