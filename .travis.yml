@@ -59,7 +59,7 @@ matrix:
       install:
         - cd iOS/Sample
         - rm -f Podfile.lock
-        - travis_wait 30 pod install --silent
+        - pod install --verbose
         - cd ../../
 
       script:
@@ -80,7 +80,7 @@ matrix:
       install:
         - cd iOS/SampleSwift
         - rm -f Podfile.lock
-        - travis_wait 30 pod install --verbose
+        - pod install --verbose
         - cd ../../
       script:
         - cd iOS/SampleSwift
