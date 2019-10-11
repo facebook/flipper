@@ -17,6 +17,7 @@ const {remote} = require('electron');
 const ICONS = {
   'app-dailies': [12],
   'arrow-right': [12],
+  'bell-null-outline': [12, 24],
   'bell-null': [12],
   'caution-octagon': [16],
   'caution-triangle': [16],
@@ -32,8 +33,10 @@ const ICONS = {
   'star-outline': [16, 24],
   'triangle-down': [12],
   'triangle-right': [12],
+  accessibility: [16],
   apps: [12],
   bird: [12],
+  borders: [16],
   box: [12],
   bug: [12],
   camcorder: [12],
@@ -47,7 +50,7 @@ const ICONS = {
   rocket: [20],
   settings: [12],
   star: [16, 24],
-  target: [12],
+  target: [12, 16],
   tools: [20],
 };
 
