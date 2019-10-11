@@ -130,7 +130,7 @@ target 'MyApp' do
   # $static_framework = ['FlipperKit', 'Flipper', 'Flipper-Folly',
   #   'CocoaAsyncSocket', 'ComponentKit', 'DoubleConversion',
   #   'glog', 'Flipper-PeerTalk', 'Flipper-RSocket', 'Yoga', 'YogaKit',
-  #   'CocoaLibEvent', 'openssl-ios-bitcode', 'boost-for-react-native']
+  #   'CocoaLibEvent', 'OpenSSL-Universal', 'boost-for-react-native']
   #
   # pre_install do |installer|
   #   Pod::Installer::Xcode::TargetValidator.send(:define_method, :verify_no_static_framework_transitive_dependencies) {}
@@ -193,7 +193,7 @@ target 'MyApp' do
   # $static_framework = ['FlipperKit', 'Flipper', 'Flipper-Folly',
   #   'CocoaAsyncSocket', 'ComponentKit', 'DoubleConversion',
   #   'glog', 'Flipper-PeerTalk', 'Flipper-RSocket', 'Yoga', 'YogaKit',
-  #   'CocoaLibEvent', 'openssl-ios-bitcode', 'boost-for-react-native']
+  #   'CocoaLibEvent', 'OpenSSL-Universal', 'boost-for-react-native']
   #
   # pre_install do |installer|
   #   Pod::Installer::Xcode::TargetValidator.send(:define_method, :verify_no_static_framework_transitive_dependencies) {}
