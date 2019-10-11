@@ -29,6 +29,7 @@ import {List} from 'immutable';
 import algoliasearch from 'algoliasearch';
 import path from 'path';
 import fs from 'fs-extra';
+import {promisify} from 'util';
 import {homedir} from 'os';
 import {PluginManager as PM} from 'live-plugin-manager';
 import {reportPlatformFailures, reportUsage} from '../utils/metrics';
@@ -355,6 +356,11 @@ function useNPMSearch(
 }
 
 async function _getInstalledPlugins(): Promise<Map<string, PluginDefinition>> {
+  const pluginDirExists = await promisify(fs.exists)(PLUGIN_DIR);
+
+  if (!pluginDirExists) {
+    return new Map();
+  }
   const dirs = await fs.readdir(PLUGIN_DIR);
   const plugins = await Promise.all<[string, PluginDefinition]>(
     dirs.map(
