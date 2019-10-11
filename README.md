@@ -32,7 +32,7 @@ Flipper is built as a platform. In addition to using the tools already included,
 
 ## Contributing to Flipper
 
-Both Flipper's desktop app and native mobile SDKs are open-source and MIT licensed. This enables you to see and understand how we are building plugins, and of course join the community and help improve Flipper. We are excited to see what you will build on this platform.
+Both Flipper's desktop app and native mobile SDKs are open-source and MIT licensed. This enables you to see and understand how we are building plugins, and of course, join the community and help improve Flipper. We are excited to see what you will build on this platform.
 
 # In this repo
 
@@ -98,9 +98,9 @@ You can omit `--repo-update` to speed up the installation, but watch out as you 
 
 ## Android SDK + Sample app
 
-Start up an android emulator and run the following in the project root:
+Startup an android emulator and run the following in the project root:
 ```
-./gradlew :sample:installDebug
+./gradlew :sample:install debug
 ```
 
 ## Documentation
