@@ -1,8 +1,12 @@
 {
   "groups": {
-    "default": {
+    "main": {
       "packages": [
-        "package.json",
+        "package.json"
+      ]
+    },
+    "plugins": {
+      "packages": [
         "src/plugins/cpu/package.json",
         "src/plugins/crash_reporter/package.json",
         "src/plugins/databases/package.json",
@@ -19,7 +23,11 @@
         "src/plugins/sections/d3/package.json",
         "src/plugins/sections/package.json",
         "src/plugins/shared_preferences/package.json",
-        "src/utils/js-client/package.json",
+        "src/utils/js-client/package.json"
+      ]
+    },
+    "website": {
+      "packages": [
         "static/package.json",
         "website/package.json"
       ]
