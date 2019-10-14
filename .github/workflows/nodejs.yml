@@ -23,5 +23,3 @@ jobs:
       run: yarn lint
     - name: test
       run: yarn test
-    - name: test electron
-      run: yarn test-electron
