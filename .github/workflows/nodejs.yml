@@ -20,4 +20,6 @@ jobs:
     - name: yarn install, build, and test
       run: |
         yarn
+        yarn lint
         yarn test
+        yarn test-electron
