@@ -81,7 +81,7 @@ ColoredIcon.contextTypes = {
   glyphColor: PropTypes.string,
 };
 
-export default class Glyph extends React.Component<{
+export default class Glyph extends React.PureComponent<{
   name: string;
   size?: IconSize;
   variant?: 'filled' | 'outline';
