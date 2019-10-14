@@ -45,9 +45,7 @@ import {State} from 'src/reducers';
 
 const AppTitleBar = styled(FlexRow)(({focused}: {focused?: boolean}) => ({
   background: focused
-    ? `linear-gradient(to bottom, ${colors.macOSTitleBarBackgroundTop} 0%, ${
-        colors.macOSTitleBarBackgroundBottom
-      } 100%)`
+    ? `linear-gradient(to bottom, ${colors.macOSTitleBarBackgroundTop} 0%, ${colors.macOSTitleBarBackgroundBottom} 100%)`
     : colors.macOSTitleBarBackgroundBlur,
   borderBottom: `1px solid ${
     focused ? colors.macOSTitleBarBorder : colors.macOSTitleBarBorderBlur

@@ -77,11 +77,7 @@ function buildLocalIconPath(name, size, density) {
 // $FlowFixMe not using flow in this file
 function buildIconURL(name, size, density) {
   const icon = getIconPartsFromName(name);
-  const url = `https://external.xx.fbcdn.net/assets/?name=${
-    icon.trimmedName
-  }&variant=${
-    icon.variant
-  }&size=${size}&set=facebook_icons&density=${density}x`;
+  const url = `https://external.xx.fbcdn.net/assets/?name=${icon.trimmedName}&variant=${icon.variant}&size=${size}&set=facebook_icons&density=${density}x`;
   if (
     typeof window !== 'undefined' &&
     (!ICONS[name] || !ICONS[name].includes(size))

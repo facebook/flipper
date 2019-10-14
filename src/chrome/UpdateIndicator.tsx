@@ -84,9 +84,7 @@ export default class UpdateIndicator extends React.PureComponent<Props, State> {
     return (
       <Tooltip
         options={{position: 'toLeft'}}
-        title={`Update to Flipper v${
-          result.version
-        } available. Click to download.`}
+        title={`Update to Flipper v${result.version} available. Click to download.`}
         children={container}
       />
     );

@@ -289,9 +289,7 @@ const addSaltToDeviceSerial = async (
   const updatedPluginNotifications = pluginNotification.map(notif => {
     if (!notif.client || !notif.client.includes(serial)) {
       throw new Error(
-        `Error while exporting, plugin state (${
-          notif.pluginId
-        }) does not have ${serial} in it`,
+        `Error while exporting, plugin state (${notif.pluginId}) does not have ${serial} in it`,
       );
     }
     return {...notif, client: notif.client.replace(serial, newSerial)};

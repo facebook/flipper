@@ -33,9 +33,7 @@ export default class JsonFileStorage {
       .then(this.deserializeValue)
       .catch(e => {
         console.warn(
-          `Failed to read settings file: "${
-            this.filepath
-          }". ${e}. Replacing file with default settings.`,
+          `Failed to read settings file: "${this.filepath}". ${e}. Replacing file with default settings.`,
         );
         return this.writeContents(JSON.stringify({})).then(() => ({}));
       });

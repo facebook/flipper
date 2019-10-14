@@ -38,9 +38,7 @@ const SurfaceContainer = styled(FlexColumn)(props => ({
     bottom: 0,
     right: -15,
     width: 15,
-    background: `linear-gradient(90deg, ${
-      colors.macOSTitleBarBackgroundBlur
-    } 0%, transparent 100%)`,
+    background: `linear-gradient(90deg, ${colors.macOSTitleBarBackgroundBlur} 0%, transparent 100%)`,
     zIndex: 3,
     position: 'absolute',
   },

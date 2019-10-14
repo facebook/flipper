@@ -31,9 +31,7 @@ const TabListItem = styled('div')(
     background: props.container
       ? props.active
         ? 'linear-gradient(to bottom, #67a6f7 0%, #0072FA 100%)'
-        : `linear-gradient(to bottom, white 0%,${
-            colors.macOSTitleBarButtonBackgroundBlur
-          } 100%)`
+        : `linear-gradient(to bottom, white 0%,${colors.macOSTitleBarButtonBackgroundBlur} 100%)`
       : props.active
       ? colors.light15
       : colors.light02,

@@ -387,9 +387,7 @@ const reducer = (state: State = INITAL_STATE, action: Actions): State => {
       const errorMessage =
         payload.error instanceof Error ? payload.error.message : payload.error;
       console.error(
-        `Client setup error: ${errorMessage} while setting up client: ${
-          payload.client.os
-        }:${payload.client.deviceName}:${payload.client.appName}`,
+        `Client setup error: ${errorMessage} while setting up client: ${payload.client.os}:${payload.client.deviceName}:${payload.client.appName}`,
       );
       return {
         ...state,

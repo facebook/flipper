@@ -50,44 +50,43 @@ const basicArgs = [
   params.insecurePort,
 ];
 
-const runHeadless = memoize(
-  (args: Array<string>): Promise<{output: Object, stderr: string}> => {
-    return new Promise((resolve, reject) => {
-      const stdoutChunks = [];
-      const stderrChunks = [];
-      console.info(`Running ${params.bin} ${args.join(' ')}`);
-      const process = spawn(params.bin, args, {});
-      process.stdout.setEncoding('utf8');
-      process.stdout.on('data', chunk => {
-        stdoutChunks.push(chunk);
-      });
-      process.stderr.on('data', chunk => {
-        stderrChunks.push(chunk);
-      });
-      process.stdout.on('end', chunk => {
-        const stdout = stdoutChunks.join('');
-        const stderr = stderrChunks.join('');
-        try {
-          console.log(stderr);
-          resolve({output: JSON.parse(stdout), stderr: stderr});
-        } catch (e) {
-          console.warn(stderr);
-          reject(
-            new Error(
-              `Failed to parse headless output as JSON (${
-                e.message
-              }): ${stdout}`,
-            ),
-          );
-        }
-      });
-
-      setTimeout(() => {
-        process.kill('SIGINT');
-      }, 20000);
+const runHeadless = memoize((args: Array<string>): Promise<{
+  output: Object,
+  stderr: string,
+}> => {
+  return new Promise((resolve, reject) => {
+    const stdoutChunks = [];
+    const stderrChunks = [];
+    console.info(`Running ${params.bin} ${args.join(' ')}`);
+    const process = spawn(params.bin, args, {});
+    process.stdout.setEncoding('utf8');
+    process.stdout.on('data', chunk => {
+      stdoutChunks.push(chunk);
     });
-  },
-);
+    process.stderr.on('data', chunk => {
+      stderrChunks.push(chunk);
+    });
+    process.stdout.on('end', chunk => {
+      const stdout = stdoutChunks.join('');
+      const stderr = stderrChunks.join('');
+      try {
+        console.log(stderr);
+        resolve({output: JSON.parse(stdout), stderr: stderr});
+      } catch (e) {
+        console.warn(stderr);
+        reject(
+          new Error(
+            `Failed to parse headless output as JSON (${e.message}): ${stdout}`,
+          ),
+        );
+      }
+    });
+
+    setTimeout(() => {
+      process.kill('SIGINT');
+    }, 20000);
+  });
+});
 
 function getPluginState(app: string, plugin: string): Promise<string> {
   return runHeadless(basicArgs).then(result => {
