@@ -54,10 +54,10 @@
     "main": "d3.js"
   },
   "devDependencies": {
-    "jsdom": "3",
-    "seedrandom": "2",
+    "jsdom": "^15.1.1",
+    "seedrandom": "^3.0.5",
     "smash": "0.0",
-    "uglify-js": "2.6.2",
+    "uglify-js": "3.6.1",
     "vows": "0.8"
   },
   "scripts": {
