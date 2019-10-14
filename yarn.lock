@@ -711,13 +711,6 @@
   dependencies:
     regenerator-runtime "^0.13.2"
 
-"@babel/runtime@^7.1.2":
-  version "7.6.3"
-  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.6.3.tgz#935122c74c73d2240cafd32ddb5fc2a6cd35cf1f"
-  integrity sha512-kq6anf9JGjW8Nt5rYfEuGRaEAaH1mkv3Bbu6rYvLOpPh/RusSJXuKPEAoZ7L7gybZkchE8+NV5g9vKF4AGAtsA==
-  dependencies:
-    regenerator-runtime "^0.13.2"
-
 "@babel/runtime@^7.5.5", "@babel/runtime@^7.6.0":
   version "7.6.2"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.6.2.tgz#c3d6e41b304ef10dcf13777a33e7694ec4a9a6dd"
@@ -1341,10 +1334,18 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react@*", "@types/react@16.8.24":
+"@types/react@*":
   version "16.8.24"
   resolved "https://registry.yarnpkg.com/@types/react/-/react-16.8.24.tgz#8d1ea1fcbfa214220da3d3c04e506f1077b0deac"
   integrity sha512-VpFHUoD37YNY2+lr/+c7qL/tZsIU/bKuskUF3tmGUArbxIcQdb5j3zvo4cuuzu2A6UaVmVn7sJ4PgWYNFEBGzg==
+  dependencies:
+    "@types/prop-types" "*"
+    csstype "^2.2.0"
+
+"@types/react@16.9.5":
+  version "16.9.5"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-16.9.5.tgz#079dabd918b19b32118c25fd00a786bb6d0d5e51"
+  integrity sha512-jQ12VMiFOWYlp+j66dghOWcmDDwhca0bnlcTxS4Qz/fh5gi6wpaZDthPEu/Gc/YlAuO87vbiUXL8qKstFvuOaA==
   dependencies:
     "@types/prop-types" "*"
     csstype "^2.2.0"
@@ -7337,7 +7338,7 @@ prompts@^2.0.1:
     kleur "^3.0.2"
     sisteransi "^1.0.0"
 
-prop-types@^15.5.10, prop-types@^15.6.0, prop-types@^15.6.1, prop-types@^15.6.2, prop-types@^15.7.2:
+prop-types@^15.5.10, prop-types@^15.6.0, prop-types@^15.6.2, prop-types@^15.7.2:
   version "15.7.2"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.7.2.tgz#52c41e75b8c87e72b9d9360e0206b99dcbffa6c5"
   integrity sha512-8QQikdH7//R2vurIJSutZ1smHYTcLpRWEOlHnzcWHmBYrOGUysKwSsrC89BCiFj3CbrfJ/nXFdJepOVrY1GCHQ==
@@ -7499,43 +7500,37 @@ react-emotion@^9.2.6:
     babel-plugin-emotion "^9.2.11"
     create-emotion-styled "^9.2.8"
 
-react-is@^16.6.0:
-  version "16.10.2"
-  resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.10.2.tgz#984120fd4d16800e9a738208ab1fba422d23b5ab"
-  integrity sha512-INBT1QEgtcCCgvccr5/86CfD71fw9EPmDxgiJX4I2Ddr6ZsV6iFXsuby+qWJPtmNuMY0zByTsG4468P7nHuNWA==
-
 react-is@^16.7.0, react-is@^16.8.1, react-is@^16.8.4, react-is@^16.8.6:
   version "16.8.6"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.8.6.tgz#5bbc1e2d29141c9fbdfed456343fe2bc430a6a16"
   integrity sha512-aUk3bHfZ2bRSVFFbbeVS4i+lNPZr3/WM5jT2J5omUVV1zzcs1nAaf3l51ctA5FFvCRbhrH0bdAsRRQddFJZPtA==
 
-react-lifecycles-compat@^3.0.0:
-  version "3.0.4"
-  resolved "https://registry.yarnpkg.com/react-lifecycles-compat/-/react-lifecycles-compat-3.0.4.tgz#4f1a273afdfc8f3488a8c516bfda78f872352362"
-  integrity sha512-fBASbA6LnOU9dOU2eW7aQ8xmYBSXUIWr+UmF9b1efZBazGNO+rcXT/icdKnYm2pTwcRylVUYwW7H1PHfLekVzA==
+react-is@^16.9.0:
+  version "16.10.2"
+  resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.10.2.tgz#984120fd4d16800e9a738208ab1fba422d23b5ab"
+  integrity sha512-INBT1QEgtcCCgvccr5/86CfD71fw9EPmDxgiJX4I2Ddr6ZsV6iFXsuby+qWJPtmNuMY0zByTsG4468P7nHuNWA==
 
-react-redux@^5.0.7:
-  version "5.1.2"
-  resolved "https://registry.yarnpkg.com/react-redux/-/react-redux-5.1.2.tgz#b19cf9e21d694422727bf798e934a916c4080f57"
-  integrity sha512-Ns1G0XXc8hDyH/OcBHOxNgQx9ayH3SPxBnFCOidGKSle8pKihysQw2rG/PmciUQRoclhVBO8HMhiRmGXnDja9Q==
+react-redux@^7.1.1:
+  version "7.1.1"
+  resolved "https://registry.yarnpkg.com/react-redux/-/react-redux-7.1.1.tgz#ce6eee1b734a7a76e0788b3309bf78ff6b34fa0a"
+  integrity sha512-QsW0vcmVVdNQzEkrgzh2W3Ksvr8cqpAv5FhEk7tNEft+5pp7rXxAudTz3VOPawRkLIepItpkEIyLcN/VVXzjTg==
   dependencies:
-    "@babel/runtime" "^7.1.2"
+    "@babel/runtime" "^7.5.5"
     hoist-non-react-statics "^3.3.0"
     invariant "^2.2.4"
-    loose-envify "^1.1.0"
-    prop-types "^15.6.1"
-    react-is "^16.6.0"
-    react-lifecycles-compat "^3.0.0"
+    loose-envify "^1.4.0"
+    prop-types "^15.7.2"
+    react-is "^16.9.0"
 
-react-test-renderer@16.8.6:
-  version "16.8.6"
-  resolved "https://registry.yarnpkg.com/react-test-renderer/-/react-test-renderer-16.8.6.tgz#188d8029b8c39c786f998aa3efd3ffe7642d5ba1"
-  integrity sha512-H2srzU5IWYT6cZXof6AhUcx/wEyJddQ8l7cLM/F7gDXYyPr4oq+vCIxJYXVGhId1J706sqziAjuOEjyNkfgoEw==
+react-test-renderer@16.10.2:
+  version "16.10.2"
+  resolved "https://registry.yarnpkg.com/react-test-renderer/-/react-test-renderer-16.10.2.tgz#4d8492f8678c9b43b721a7d79ed0840fdae7c518"
+  integrity sha512-k9Qzyev6cTIcIfrhgrFlYQAFxh5EEDO6ALNqYqmKsWVA7Q/rUMTay5nD3nthi6COmYsd4ghVYyi8U86aoeMqYQ==
   dependencies:
     object-assign "^4.1.1"
     prop-types "^15.6.2"
     react-is "^16.8.6"
-    scheduler "^0.13.6"
+    scheduler "^0.16.2"
 
 react-transition-group@^4.3.0:
   version "4.3.0"
@@ -7745,10 +7740,15 @@ redux-mock-store@^1.5.3:
   dependencies:
     lodash.isplainobject "^4.0.6"
 
-redux-persist@*, redux-persist@^5.10.0:
+redux-persist@*:
   version "5.10.0"
   resolved "https://registry.yarnpkg.com/redux-persist/-/redux-persist-5.10.0.tgz#5d8d802c5571e55924efc1c3a9b23575283be62b"
   integrity sha512-sSJAzNq7zka3qVHKce1hbvqf0Vf5DuTVm7dr4GtsqQVOexnrvbV47RWFiPxQ8fscnyiuWyD2O92DOxPl0tGCRg==
+
+redux-persist@^6.0.0:
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/redux-persist/-/redux-persist-6.0.0.tgz#b4d2972f9859597c130d40d4b146fecdab51b3a8"
+  integrity sha512-71LLMbUq2r02ng2We9S215LtPu3fY0KgaGE0k8WRgl6RkqxtGfl7HUozz1Dftwsb0D/5mZ8dwAaPbtnzfvbEwQ==
 
 redux@^4.0.0:
   version "4.0.4"
@@ -8080,50 +8080,50 @@ rn-host-detect@^1.1.5:
   resolved "https://registry.yarnpkg.com/rn-host-detect/-/rn-host-detect-1.1.5.tgz#fbecb982b73932f34529e97932b9a63e58d8deb6"
   integrity sha512-ufk2dFT3QeP9HyZ/xTuMtW27KnFy815CYitJMqQm+pgG3ZAtHBsrU8nXizNKkqXGy3bQmhEoloVbrfbvMJMqkg==
 
-rsocket-core@^0.0.10:
-  version "0.0.10"
-  resolved "https://registry.yarnpkg.com/rsocket-core/-/rsocket-core-0.0.10.tgz#937b2d1e562e80e86e20fea445be37e0e2f88962"
-  integrity sha512-u7PolLWw2yP2l/xLUegfr0YhfYorbw+gk98QeKSb8c8Qe+1/jTuwgKI/hfFvkHkx9ByrX8FFNv64EsPDcbcfvA==
+rsocket-core@^0.0.11:
+  version "0.0.11"
+  resolved "https://registry.yarnpkg.com/rsocket-core/-/rsocket-core-0.0.11.tgz#3dbbc19c178b00416335421f41410115adb473f3"
+  integrity sha512-S1pAUi7ODfNkAJcb2KMOhKbuI9Bty1CWEnyRlxpzAKY9npegCUWHA9A7eiPELMz/FhGpiWLRDpvzPoXPUxkQ4w==
   dependencies:
     fbjs "^0.8.12"
-    rsocket-flowable "^0.0.10"
-    rsocket-types "^0.0.10"
+    rsocket-flowable "^0.0.11"
+    rsocket-types "^0.0.11"
 
-rsocket-flowable@^0.0.10:
-  version "0.0.10"
-  resolved "https://registry.yarnpkg.com/rsocket-flowable/-/rsocket-flowable-0.0.10.tgz#6e02f87145fde0d73b165f37b98bd39e7a95b50d"
-  integrity sha512-H8DWjne8atb1wtQ7cFhQV1Rq6MmRGniqaP6x8zM1avx2qt4SfyQDC9BlKRMDcwxkqt03MHz9MzYKsWfV44lUDg==
+rsocket-flowable@^0.0.11:
+  version "0.0.11"
+  resolved "https://registry.yarnpkg.com/rsocket-flowable/-/rsocket-flowable-0.0.11.tgz#ac399fe6c706cba47e1b600f8a9ec7ebdae11929"
+  integrity sha512-tsImlNzE6sqDSvUajUMM45+KIgckdcPQGiHKca/F08b4F/QJpjxykNCrEIUpZarIPIl6ULFqeQRCv0nVZXuvAg==
   dependencies:
     fbjs "^0.8.12"
 
-rsocket-tcp-client@^0.0.10:
-  version "0.0.10"
-  resolved "https://registry.yarnpkg.com/rsocket-tcp-client/-/rsocket-tcp-client-0.0.10.tgz#ca9146fbc78bf77da61f4f69dad200673c7f5313"
-  integrity sha512-6axwyp/5X/8QGwOjYrfN4Ij844V5NkRp7LzzdZqtpHEDt09Vlf4aJ74VIx4vSDqlK4Hzs/8tjf/D00lFnhHhDg==
+rsocket-tcp-client@^0.0.11:
+  version "0.0.11"
+  resolved "https://registry.yarnpkg.com/rsocket-tcp-client/-/rsocket-tcp-client-0.0.11.tgz#4b3896dff052c1c17e2dabe97d6bac3b2839bd64"
+  integrity sha512-maYzZjD+46/8A2LQt52fPurXi0d9EnUkmh9AlWBbjBspO9wC+L46H2/p8nlYsBQAfssmeFZdj+mXZ0a3UlXdBQ==
   dependencies:
     fbjs "^0.8.12"
-    rsocket-core "^0.0.10"
-    rsocket-flowable "^0.0.10"
+    rsocket-core "^0.0.11"
+    rsocket-flowable "^0.0.11"
 
-rsocket-tcp-server@^0.0.10:
-  version "0.0.10"
-  resolved "https://registry.yarnpkg.com/rsocket-tcp-server/-/rsocket-tcp-server-0.0.10.tgz#3f50b6555eca5ecfb0efbdffae6cd3b0ab28f3d3"
-  integrity sha512-tc2VkW/fNYtkcx33UeLW47mqi+c13Nqm/3OHjPeYD9FoUCYdvytrq8P1dPy23q83/ID3tTfrKFA/GoLFSLC4fg==
+rsocket-tcp-server@^0.0.11:
+  version "0.0.11"
+  resolved "https://registry.yarnpkg.com/rsocket-tcp-server/-/rsocket-tcp-server-0.0.11.tgz#f572482f47f8bf73933d3451aff38dfc2120579c"
+  integrity sha512-444vGcnThfJ8uABbWFv9i5gCwomhLmn523WpLo8bmqLyBm5GVtTfizPuzHawsJiK5RTjiAGSdHEJ7uSaKoi3RA==
   dependencies:
     fbjs "^0.8.12"
-    rsocket-core "^0.0.10"
-    rsocket-flowable "^0.0.10"
-    rsocket-tcp-client "^0.0.10"
-    rsocket-types "^0.0.10"
+    rsocket-core "^0.0.11"
+    rsocket-flowable "^0.0.11"
+    rsocket-tcp-client "^0.0.11"
+    rsocket-types "^0.0.11"
 
-rsocket-types@^0.0.10:
-  version "0.0.10"
-  resolved "https://registry.yarnpkg.com/rsocket-types/-/rsocket-types-0.0.10.tgz#5065fc0d8d7531fbf71aad330370b6adbbc7a97b"
-  integrity sha512-EO0iSSt5AOvEysUtA0Fm0i+pNWNcPIDLPAD0kP8Tk/IwYGyr303USF+1n2H9wuLMqqBQwWSv5E/VG46TztZJdg==
+rsocket-types@^0.0.11:
+  version "0.0.11"
+  resolved "https://registry.yarnpkg.com/rsocket-types/-/rsocket-types-0.0.11.tgz#06e1583d5b2fcc70d952deb475a9b7573ba3d712"
+  integrity sha512-EaS6OHH4BkfRW0j2/o1eaGGrhpQ/q94zkFFWDZuLjE6nEB797JSvLw00+knqBfdBNxib3xG9AY2dMIhEw8XteA==
   dependencies:
     buffer "^5.0.6"
     fbjs "^0.8.12"
-    rsocket-flowable "^0.0.10"
+    rsocket-flowable "^0.0.11"
 
 rsvp@^4.8.4:
   version "4.8.5"
@@ -8214,6 +8214,14 @@ scheduler@^0.13.6:
   version "0.13.6"
   resolved "https://registry.yarnpkg.com/scheduler/-/scheduler-0.13.6.tgz#466a4ec332467b31a91b9bf74e5347072e4cd889"
   integrity sha512-IWnObHt413ucAYKsD9J1QShUKkbKLQQHdxRyw73sw4FN26iWr3DY/H34xGPe4nmL1DwXyWmSWmMrA9TfQbE/XQ==
+  dependencies:
+    loose-envify "^1.1.0"
+    object-assign "^4.1.1"
+
+scheduler@^0.16.2:
+  version "0.16.2"
+  resolved "https://registry.yarnpkg.com/scheduler/-/scheduler-0.16.2.tgz#f74cd9d33eff6fc554edfb79864868e4819132c1"
+  integrity sha512-BqYVWqwz6s1wZMhjFvLfVR5WXP7ZY32M/wYPo04CcuPM7XZEbV2TBNW7Z0UkguPTl0dWMA59VbNXxK6q+pHItg==
   dependencies:
     loose-envify "^1.1.0"
     object-assign "^4.1.1"
