@@ -178,21 +178,23 @@ function InstallButton(props: {
   installed: boolean;
 }) {
   type InstallAction =
-    | {kind: 'Install'}
+    | {kind: 'Install'; error?: string}
     | {kind: 'Waiting'}
-    | {kind: 'Remove'}
-    | {kind: 'Error'; error: string};
+    | {kind: 'Remove'; error?: string};
 
-  const catchError = (fn: () => Promise<void>) => async () => {
+  const catchError = (
+    actionKind: 'Install' | 'Remove',
+    fn: () => Promise<void>,
+  ) => async () => {
     try {
       await fn();
     } catch (err) {
-      setAction({kind: 'Error', error: err.toString()});
+      setAction({kind: actionKind, error: err.toString()});
     }
   };
 
-  const onInstall = useCallback(
-    catchError(async () => {
+  const performInstall = useCallback(
+    catchError('Install', async () => {
       reportUsage(`${TAG}:install`, undefined, props.name);
       setAction({kind: 'Waiting'});
       await fs.ensureDir(PLUGIN_DIR);
@@ -227,8 +229,8 @@ function InstallButton(props: {
     [props.name, props.version],
   );
 
-  const onRemove = useCallback(
-    catchError(async () => {
+  const performRemove = useCallback(
+    catchError('Remove', async () => {
       reportUsage(`${TAG}:remove`, undefined, props.name);
       setAction({kind: 'Waiting'});
       await fs.remove(path.join(PLUGIN_DIR, props.name));
@@ -245,30 +247,38 @@ function InstallButton(props: {
   if (action.kind === 'Waiting') {
     return <Spinner size={16} />;
   }
-  if (action.kind === 'Error') {
-    const glyph = (
-      <AlignedGlyph color={colors.orange} size={16} name="caution-triangle" />
-    );
-    return (
-      <Tooltip
-        options={{position: 'toRight'}}
-        title={`Something went wrong: ${action.error}`}
-        children={glyph}
-      />
-    );
+  if ((action.kind === 'Install' || action.kind === 'Remove') && action.error) {
   }
-  return (
+  const button = (
     <TableButton
       compact
       type={action.kind === 'Install' ? 'primary' : undefined}
       onClick={
         action.kind === 'Install'
-          ? () => reportPlatformFailures(onInstall(), `${TAG}:install`)
-          : () => reportPlatformFailures(onRemove(), `${TAG}:remove`)
+          ? () => reportPlatformFailures(performInstall(), `${TAG}:install`)
+          : () => reportPlatformFailures(performRemove(), `${TAG}:remove`)
       }>
       {action.kind}
     </TableButton>
   );
+
+  if (action.error) {
+    const glyph = (
+      <AlignedGlyph color={colors.orange} size={16} name="caution-triangle" />
+    );
+    return (
+      <FlexRow>
+        <Tooltip
+          options={{position: 'toLeft'}}
+          title={`Something went wrong: ${action.error}`}
+          children={glyph}
+        />
+        {button}
+      </FlexRow>
+    );
+  } else {
+    return button;
+  }
 }
 
 function useNPMSearch(
