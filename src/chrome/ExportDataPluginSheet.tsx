@@ -37,7 +37,10 @@ type StateFromProps = {
 type DispatchFromProps = {
   selectedPlugins: (payload: Array<string>) => void;
   setActiveSheet: (payload: ActiveSheet) => void;
-  setExportDataToFileActiveSheet: (payload: string) => void;
+  setExportDataToFileActiveSheet: (payload: {
+    file: string;
+    closeOnFinish: boolean;
+  }) => void;
 };
 
 type Props = OwnProps & StateFromProps & DispatchFromProps;
@@ -61,7 +64,10 @@ class ExportDataPluginSheet extends Component<Props> {
               case 'file': {
                 const file = share.file;
                 if (file) {
-                  this.props.setExportDataToFileActiveSheet(file);
+                  this.props.setExportDataToFileActiveSheet({
+                    file,
+                    closeOnFinish: true,
+                  });
                 } else {
                   console.error('share.file is undefined');
                 }
@@ -100,7 +106,10 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
     setActiveSheet: (payload: ActiveSheet) => {
       dispatch(getActiveSheetAction(payload));
     },
-    setExportDataToFileActiveSheet: (payload: string) => {
+    setExportDataToFileActiveSheet: (payload: {
+      file: string;
+      closeOnFinish: boolean;
+    }) => {
       dispatch(getExportDataToFileActiveSheetAction(payload));
     },
   }),

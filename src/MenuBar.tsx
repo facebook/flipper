@@ -196,7 +196,11 @@ function getTemplate(
               return;
             }
             store.dispatch(
-              setSelectPluginsToExportActiveSheet({type: 'file', file: file}),
+              setSelectPluginsToExportActiveSheet({
+                type: 'file',
+                file: file,
+                closeOnFinish: false,
+              }),
             );
           },
         );
@@ -208,7 +212,12 @@ function getTemplate(
       label: 'Sharable Link',
       accelerator: 'CommandOrControl+Shift+E',
       click: function() {
-        store.dispatch(setSelectPluginsToExportActiveSheet({type: 'link'}));
+        store.dispatch(
+          setSelectPluginsToExportActiveSheet({
+            type: 'link',
+            closeOnFinish: false,
+          }),
+        );
       },
     });
   }

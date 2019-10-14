@@ -93,7 +93,13 @@ export class App extends React.Component<Props> {
         return <ExportDataPluginSheet onHide={onHide} />;
       case ACTIVE_SHEET_SHARE_DATA:
         return (
-          <ShareSheetExportUrl onHide={onHide} logger={this.props.logger} />
+          <ShareSheetExportUrl
+            onHide={onHide}
+            logger={this.props.logger}
+            closeOnFinish={
+              this.props.share != null && this.props.share.closeOnFinish
+            }
+          />
         );
       case ACTIVE_SHEET_SHARE_DATA_IN_FILE:
         return this.props.share && this.props.share.type === 'file' ? (

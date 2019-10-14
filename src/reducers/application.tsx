@@ -63,6 +63,7 @@ type SubShareType =
 
 export type ShareType = {
   statusComponent?: React.ReactNode;
+  closeOnFinish: boolean;
 } & SubShareType;
 
 export type State = {
@@ -99,7 +100,7 @@ export type Action =
     }
   | {
       type: typeof ACTIVE_SHEET_SHARE_DATA_IN_FILE;
-      payload: {file: string};
+      payload: {file: string; closeOnFinish: boolean};
     }
   | {
       type: typeof ACTIVE_SHEET_SELECT_PLUGINS_TO_EXPORT;
@@ -219,7 +220,11 @@ export default function reducer(
     return {
       ...state,
       activeSheet: ACTIVE_SHEET_SHARE_DATA_IN_FILE,
-      share: {type: 'file', file: action.payload.file},
+      share: {
+        type: 'file',
+        file: action.payload.file,
+        closeOnFinish: action.payload.closeOnFinish,
+      },
     };
   } else if (action.type === ACTIVE_SHEET_SELECT_PLUGINS_TO_EXPORT) {
     return {
@@ -311,9 +316,12 @@ export const setSelectPluginsToExportActiveSheet = (
   payload,
 });
 
-export const setExportDataToFileActiveSheet = (file: string): Action => ({
+export const setExportDataToFileActiveSheet = (payload: {
+  file: string;
+  closeOnFinish: boolean;
+}): Action => ({
   type: ACTIVE_SHEET_SHARE_DATA_IN_FILE,
-  payload: {file},
+  payload: payload,
 });
 
 export const setActiveSheet = (payload: ActiveSheet): Action => ({

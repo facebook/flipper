@@ -69,6 +69,7 @@ const ErrorMessage = styled(Text)({
 type Props = {
   onHide: () => any;
   logger: Logger;
+  closeOnFinish: boolean;
 };
 
 type State = {
@@ -162,6 +163,24 @@ export default class ShareSheetExportUrl extends Component<Props, State> {
     }
   }
 
+  sheetHidden: boolean = false;
+
+  hideSheet = () => {
+    this.sheetHidden = true;
+    this.props.onHide();
+    this.idler.cancel();
+  };
+
+  componentDidUpdate() {
+    const {result} = this.state;
+    if (!result || !(result as DataExportResult).flipperUrl) {
+      return;
+    }
+    if (!this.sheetHidden && this.props.closeOnFinish) {
+      this.hideSheet();
+    }
+  }
+
   renderPending(cancelAndHide: () => void, statusUpdate: string | null) {
     return (
       <ShareSheetPendingDialog
@@ -182,9 +201,9 @@ export default class ShareSheetExportUrl extends Component<Props, State> {
   render() {
     const cancelAndHide = () => {
       this.context.store.dispatch(unsetShare());
-      this.props.onHide();
-      this.idler.cancel();
+      this.hideSheet();
     };
+
     const {result, statusUpdate, errorArray} = this.state;
     if (!result || !(result as DataExportResult).flipperUrl) {
       return this.renderPending(cancelAndHide, statusUpdate);
