@@ -152,8 +152,8 @@
     "redux": "^4.0.0",
     "redux-persist": "^5.10.0",
     "remote-redux-devtools": "^0.5.16",
-    "rsocket-core": "^0.0.10",
-    "rsocket-tcp-server": "^0.0.10",
+    "rsocket-core": "0.0.10",
+    "rsocket-tcp-server": "0.0.10",
     "socket.io": "^2.0.4",
     "string-natural-compare": "^2.0.2",
     "tmp": "0.0.33",
@@ -168,12 +168,18 @@
   },
   "greenkeeper": {
     "ignore": [
+      "@types/react",
+      "@types/react-redux",
       "electron",
       "electron-builder",
       "emotion",
-      "react-emotion",
       "react",
       "react-dom",
+      "react-emotion",
+      "react-redux",
+      "react-test-renderer",
+      "rsocket-core",
+      "rsocket-tcp-server",
       "tmp"
     ]
   },

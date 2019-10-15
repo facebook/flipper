@@ -8080,7 +8080,7 @@ rn-host-detect@^1.1.5:
   resolved "https://registry.yarnpkg.com/rn-host-detect/-/rn-host-detect-1.1.5.tgz#fbecb982b73932f34529e97932b9a63e58d8deb6"
   integrity sha512-ufk2dFT3QeP9HyZ/xTuMtW27KnFy815CYitJMqQm+pgG3ZAtHBsrU8nXizNKkqXGy3bQmhEoloVbrfbvMJMqkg==
 
-rsocket-core@^0.0.10:
+rsocket-core@0.0.10, rsocket-core@^0.0.10:
   version "0.0.10"
   resolved "https://registry.yarnpkg.com/rsocket-core/-/rsocket-core-0.0.10.tgz#937b2d1e562e80e86e20fea445be37e0e2f88962"
   integrity sha512-u7PolLWw2yP2l/xLUegfr0YhfYorbw+gk98QeKSb8c8Qe+1/jTuwgKI/hfFvkHkx9ByrX8FFNv64EsPDcbcfvA==
@@ -8105,7 +8105,7 @@ rsocket-tcp-client@^0.0.10:
     rsocket-core "^0.0.10"
     rsocket-flowable "^0.0.10"
 
-rsocket-tcp-server@^0.0.10:
+rsocket-tcp-server@0.0.10:
   version "0.0.10"
   resolved "https://registry.yarnpkg.com/rsocket-tcp-server/-/rsocket-tcp-server-0.0.10.tgz#3f50b6555eca5ecfb0efbdffae6cd3b0ab28f3d3"
   integrity sha512-tc2VkW/fNYtkcx33UeLW47mqi+c13Nqm/3OHjPeYD9FoUCYdvytrq8P1dPy23q83/ID3tTfrKFA/GoLFSLC4fg==
