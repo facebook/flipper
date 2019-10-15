@@ -76,6 +76,7 @@ export default (store: Store, logger: Logger) => {
             })
         );
       } else if (query === 'flipper://support-form?form=Litho') {
+        logger.track('usage', 'support-form-source', {source: 'deeplink'});
         store.dispatch(setStaticView(SupportRequestFormManager));
       }
       const match = uriComponents(query);
