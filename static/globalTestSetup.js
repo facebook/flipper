@@ -9,7 +9,7 @@
 
 const defaultConsoleError = console.error;
 
-console.error = function(message, ...args) {
+console.error = function(...args) {
   defaultConsoleError(
     'console.error used in a test. This will be an error in the near future.',
   );
