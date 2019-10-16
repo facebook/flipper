@@ -16,6 +16,7 @@ import java.util.List;
 
 public class NetworkFlipperPlugin extends BufferingFlipperPlugin implements NetworkReporter {
   public static final String ID = "Network";
+  private static final int MAX_BODY_SIZE_IN_BYTES = 1024 * 1024;
 
   private final List<NetworkResponseFormatter> mFormatters;
 
@@ -112,6 +113,10 @@ public class NetworkFlipperPlugin extends BufferingFlipperPlugin implements Netw
     final Header contentType = responseInfo.getFirstHeader("content-type");
     if (contentType == null) {
       return false;
+    }
+
+    if (responseInfo.body != null && responseInfo.body.length > MAX_BODY_SIZE_IN_BYTES) {
+      return true;
     }
 
     return contentType.value.contains("image/")
