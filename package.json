@@ -130,7 +130,7 @@
     "lodash.isequal": "^4.5.0",
     "mkdirp": "^0.5.1",
     "node-fetch": "^2.3.0",
-    "open": "^6.4.0",
+    "open": "^7.0.0",
     "openssl-wrapper": "^0.3.4",
     "p-map": "^3.0.0",
     "pkg": "^4.3.7",
