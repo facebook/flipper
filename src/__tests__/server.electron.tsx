@@ -7,6 +7,13 @@
  * @format
  */
 
+jest.mock('../fb/Logger');
+try {
+  jest.mock('../fb/Logger');
+} catch {
+  // Allowed to fail when fb modules are not present.
+}
+
 import {init as initLogger} from '../fb-stubs/Logger';
 import Server from '../server';
 import reducers, {Store} from '../reducers/index';
