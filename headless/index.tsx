@@ -216,17 +216,13 @@ async function startFlipper(userArguments: UserArguments) {
   |__|  |_|_|  _|  _|___|_| v${global.__VERSION__}
             |_| |_|
   `);
+
   // redirect all logging to stderr
-  const originalConsole = global.console;
-  global.console = new Proxy(console, {
-    get: function(_obj, prop) {
-      return (...args: any[]) => {
-        if (prop === 'error' || verbose) {
-          originalConsole.error(`[${String(prop)}] `, ...args);
-        }
-      };
-    },
-  });
+  const overriddenMethods = ['debug', 'info', 'log', 'warn', 'error'];
+  for (const method of overriddenMethods) {
+    (global.console as {[key: string]: any})[method] =
+      method === 'error' || verbose ? global.console.error : () => {};
+  }
 
   // Polyfills
   global.WebSocket = require('ws'); // used for redux devtools
