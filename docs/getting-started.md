@@ -22,14 +22,7 @@ Once you start Flipper and launch an emulator/simulator or connect a device, you
 
 ## Setup your Android app
 
-Add the following permissions to your `AndroidManifest.xml`. The SDK needs these to communicate with the desktop app on localhost via adb. It won't make any external internet requests.
-
-```xml
-<uses-permission android:name="android.permission.INTERNET" />
-<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-```
-
-It's recommended that you add the following activity to the manifest too, which can help diagnose integration issues and other problems:
+It's recommended that you add the following activity to the manifest, which can help diagnose integration issues and other problems:
 
 ```xml
 <activity android:name="com.facebook.flipper.android.diagnostics.FlipperDiagnosticActivity"
