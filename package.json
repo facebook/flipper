@@ -13,6 +13,12 @@
     "appId": "flipper",
     "productName": "Flipper",
     "artifactName": "Flipper-${os}.${ext}",
+    "protocols": {
+      "name": "flipper",
+      "schemes": [
+        "flipper"
+      ]
+    },
     "mac": {
       "category": "public.app-category.developer-tools",
       "extendInfo": {
