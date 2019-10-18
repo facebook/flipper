@@ -7,11 +7,17 @@
  * @format
  */
 
+jest.mock('../../fb-stubs/Logger');
+try {
+  jest.mock('../../fb/Logger');
+} catch {
+  // Allowed to fail when fb modules are not present.
+}
+
 import {default as PluginInstaller, PluginDefinition} from '../PluginInstaller';
 
 import React from 'react';
 import {render, waitForElement} from '@testing-library/react';
-import {init as initLogger} from '../../fb-stubs/Logger';
 import configureStore from 'redux-mock-store';
 
 const mockStore = configureStore([])({application: {sessionId: 'mysession'}});
@@ -31,7 +37,6 @@ const indexMock: algoliasearch.Index = ({
 
 beforeEach(() => {
   indexMock.search = jest.fn(async () => SEARCH_RESULTS);
-  initLogger(mockStore as any, {isTest: true});
 });
 
 test('load PluginInstaller list', async () => {

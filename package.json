@@ -48,6 +48,7 @@
   },
   "jest": {
     "transform": {
+      "^.*__tests__/.*\\.tsx?$": "ts-jest",
       "\\.(js|tsx?)$": "<rootDir>/static/transforms/index.js"
     },
     "setupFiles": [
@@ -100,6 +101,7 @@
     "jest-fetch-mock": "^2.1.0",
     "prettier": "^1.18.2",
     "redux-mock-store": "^1.5.3",
+    "ts-jest": "^24.1.0",
     "typescript": "^3.6.2"
   },
   "dependencies": {
