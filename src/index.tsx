@@ -48,6 +48,7 @@ export {default as Device} from './devices/BaseDevice';
 export {default as AndroidDevice} from './devices/AndroidDevice';
 export {default as ArchivedDevice} from './devices/ArchivedDevice';
 export {default as IOSDevice} from './devices/IOSDevice';
+export {default as KaiOSDevice} from './devices/KaiOSDevice';
 export {OS} from './devices/BaseDevice';
 export {default as Button} from './ui/components/Button';
 export {default as ToggleButton} from './ui/components/ToggleSwitch';
