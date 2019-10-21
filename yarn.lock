@@ -1502,14 +1502,23 @@
     "@typescript-eslint/typescript-estree" "2.1.1-alpha.4+6a5c77c"
     eslint-scope "^5.0.0"
 
-"@typescript-eslint/parser@^2.1.1-alpha.4":
-  version "2.1.1-alpha.4"
-  resolved "https://registry.yarnpkg.com/@typescript-eslint/parser/-/parser-2.1.1-alpha.4.tgz#c28d8c95898be5e0f3aef61e5866920886a7d1bd"
-  integrity sha512-7ItIthPv7AD8Od14FOtMMNpUXdNFnDG+zFulHwji09kvYkb5uX1BQULTN8I7gye0C8VuRtcFh8en2NiSs5/KPg==
+"@typescript-eslint/experimental-utils@2.5.0":
+  version "2.5.0"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/experimental-utils/-/experimental-utils-2.5.0.tgz#383a97ded9a7940e5053449f6d73995e782b8fb1"
+  integrity sha512-UgcQGE0GKJVChyRuN1CWqDW8Pnu7+mVst0aWrhiyuUD1J9c+h8woBdT4XddCvhcXDodTDVIfE3DzGHVjp7tUeQ==
+  dependencies:
+    "@types/json-schema" "^7.0.3"
+    "@typescript-eslint/typescript-estree" "2.5.0"
+    eslint-scope "^5.0.0"
+
+"@typescript-eslint/parser@^2.5.0":
+  version "2.5.0"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/parser/-/parser-2.5.0.tgz#858030ddd808fbbe88e03f42e5971efaccb8218a"
+  integrity sha512-9UBMiAwIDWSl79UyogaBdj3hidzv6exjKUx60OuZuFnJf56tq/UMpdPcX09YmGqE8f4AnAueYtBxV8IcAT3jdQ==
   dependencies:
     "@types/eslint-visitor-keys" "^1.0.0"
-    "@typescript-eslint/experimental-utils" "2.1.1-alpha.4+6a5c77c"
-    "@typescript-eslint/typescript-estree" "2.1.1-alpha.4+6a5c77c"
+    "@typescript-eslint/experimental-utils" "2.5.0"
+    "@typescript-eslint/typescript-estree" "2.5.0"
     eslint-visitor-keys "^1.1.0"
 
 "@typescript-eslint/typescript-estree@2.1.1-alpha.4+6a5c77c":
@@ -1517,6 +1526,17 @@
   resolved "https://registry.yarnpkg.com/@typescript-eslint/typescript-estree/-/typescript-estree-2.1.1-alpha.4.tgz#14eb554cbe7344b598d6918cc277e0efae22df40"
   integrity sha512-M3gbjrIJQ0KMqCGYYrIcKXaYZ39tPb9dqO/CWMMgpLjTMhfPKNNHOpgsSrIYZj4tldeLw0byzGChQCbJGzF8tg==
   dependencies:
+    glob "^7.1.4"
+    is-glob "^4.0.1"
+    lodash.unescape "4.0.1"
+    semver "^6.3.0"
+
+"@typescript-eslint/typescript-estree@2.5.0":
+  version "2.5.0"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/typescript-estree/-/typescript-estree-2.5.0.tgz#40ada624d6217ef092a3a79ed30d947ad4f212ce"
+  integrity sha512-AXURyF8NcA3IsnbjNX1v9qbwa0dDoY9YPcKYR2utvMHoUcu3636zrz0gRWtVAyxbPCkhyKuGg6WZIyi2Fc79CA==
+  dependencies:
+    debug "^4.1.1"
     glob "^7.1.4"
     is-glob "^4.0.1"
     lodash.unescape "4.0.1"
