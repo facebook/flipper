@@ -16,8 +16,8 @@ import {Settings} from '../reducers/settings';
 import {flush} from '../utils/persistor';
 import ToggledSection from './settings/ToggledSection';
 import {FilePathConfigField, ConfigText} from './settings/configFields';
-import {remote} from 'electron';
 import isEqual from 'lodash.isequal';
+import restartFlipper from '../utils/restartFlipper';
 
 const Container = styled(FlexColumn)({
   padding: 20,
@@ -58,8 +58,7 @@ class SettingsSheet extends Component<Props, State> {
     this.props.updateSettings(this.state.updatedSettings);
     this.props.onHide();
     flush().then(() => {
-      remote.app.relaunch();
-      remote.app.exit();
+      restartFlipper();
     });
   };
 

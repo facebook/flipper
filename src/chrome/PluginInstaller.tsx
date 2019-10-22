@@ -35,6 +35,7 @@ import {promisify} from 'util';
 import {homedir} from 'os';
 import {PluginManager as PM} from 'live-plugin-manager';
 import {reportPlatformFailures, reportUsage} from '../utils/metrics';
+import restartFlipper from '../utils/restartFlipper';
 
 const PLUGIN_DIR = path.join(homedir(), '.flipper', 'thirdparty');
 const ALGOLIA_APPLICATION_ID = 'OFCNCOG2CU';
@@ -121,8 +122,7 @@ const PluginInstaller = function props(props: Props) {
     props.getInstalledPlugins,
   );
   const restartApp = useCallback(() => {
-    remote.app.relaunch();
-    remote.app.exit();
+    restartFlipper();
   }, []);
 
   return (
