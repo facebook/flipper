@@ -7,5 +7,11 @@
  * @format
  */
 
-export default async function setupPrefetcher() {}
-export const shouldInstallPrefetcher = () => false;
+import {Tristate} from 'src/reducers/settings';
+
+export default function(_props: {
+  enabledInConfig: Tristate;
+  onChange: (v: Tristate) => void;
+}) {
+  return null;
+}

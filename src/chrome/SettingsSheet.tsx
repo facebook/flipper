@@ -18,6 +18,7 @@ import ToggledSection from './settings/ToggledSection';
 import {FilePathConfigField, ConfigText} from './settings/configFields';
 import isEqual from 'lodash.isequal';
 import restartFlipper from '../utils/restartFlipper';
+import LauncherSettingsPanel from '../fb-stubs/LauncherSettingsPanel';
 
 const Container = styled(FlexColumn)({
   padding: 20,
@@ -102,6 +103,17 @@ class SettingsSheet extends Component<Props, State> {
             frozen
           />
         </ToggledSection>
+        <LauncherSettingsPanel
+          enabledInConfig={this.state.updatedSettings.enablePrefetching}
+          onChange={v => {
+            this.setState({
+              updatedSettings: {
+                ...this.state.updatedSettings,
+                enablePrefetching: v,
+              },
+            });
+          }}
+        />
         <br />
         <FlexRow>
           <Spacer />
