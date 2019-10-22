@@ -7,5 +7,7 @@
  * @format
  */
 
-export default async function setupPrefetcher() {}
+import {Settings} from '../reducers/settings';
+
+export default async function setupPrefetcher(_settings: Settings) {}
 export const shouldInstallPrefetcher = () => false;
