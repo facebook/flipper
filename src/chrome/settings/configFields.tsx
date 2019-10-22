@@ -57,7 +57,12 @@ export function FilePathConfigField(props: {
   const [value, setValue] = useState(props.defaultValue);
   const [isValid, setIsValid] = useState(true);
   fs.stat(value)
-    .then(stat => setIsValid(stat.isDirectory()))
+    .then(stat => stat.isDirectory())
+    .then(valid => {
+      if (valid !== isValid) {
+        setIsValid(valid);
+      }
+    })
     .catch(_ => setIsValid(false));
 
   return (
@@ -71,7 +76,12 @@ export function FilePathConfigField(props: {
           setValue(e.target.value);
           props.onChange(e.target.value);
           fs.stat(e.target.value)
-            .then(stat => setIsValid(stat.isDirectory()))
+            .then(stat => stat.isDirectory())
+            .then(valid => {
+              if (valid !== isValid) {
+                setIsValid(valid);
+              }
+            })
             .catch(_ => setIsValid(false));
         }}
       />
