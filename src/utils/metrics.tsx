@@ -73,11 +73,11 @@ export function reportPluginFailures<T>(
     },
     rejectionReason => {
       if (rejectionReason instanceof CancelledPromiseError) {
-        logPlatformSuccessRate(name, {
+        logPluginSuccessRate(name, plugin, {
           kind: 'cancelled',
         });
       } else {
-        logPlatformSuccessRate(name, {
+        logPluginSuccessRate(name, plugin, {
           kind: 'failure',
           supportedOperation: !(rejectionReason instanceof UnsupportedError),
           error: rejectionReason,

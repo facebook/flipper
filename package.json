@@ -56,7 +56,8 @@
     ],
     "moduleNameMapper": {
       "^flipper$": "<rootDir>/src/index.tsx"
-    }
+    },
+    "clearMocks": true
   },
   "devDependencies": {
     "@jest-runner/electron": "^2.0.1",

@@ -9,7 +9,16 @@
 
 import {Store} from '../../reducers/index';
 import {getStringFromErrorLike} from '../../utils/errors';
-import {Args, Logger, TrackType} from '../../fb-interfaces/Logger';
+import {Args, Logger} from '../../fb-interfaces/Logger';
+
+const instance = {
+  track: jest.fn(),
+  trackTimeSince: jest.fn(),
+  info: jest.fn(),
+  warn: jest.fn(),
+  error: jest.fn(),
+  debug: jest.fn(),
+};
 
 export function extractError(
   ...data: Array<any>
@@ -22,30 +31,10 @@ export function extractError(
   };
 }
 
-export class FBLogger implements Logger {
-  constructor(_store?: Store, _args?: Args) {}
-
-  track(_type: TrackType, _event: string, _data?: any, _plugin?: string) {}
-
-  trackTimeSince(_mark: string, _eventName?: string) {}
-
-  info = (..._data: Array<any>) => {};
-
-  warn = (..._data: Array<any>) => {};
-
-  error = (..._data: Array<any>) => {};
-
-  debug = (..._data: Array<any>) => {};
-
-  getLogs(): Array<string> {
-    return [];
-  }
-}
-
 export function init(_store: Store, _args?: Args): Logger {
-  return new FBLogger();
+  return instance;
 }
 
 export function getInstance(): Logger {
-  return new FBLogger();
+  return instance;
 }
