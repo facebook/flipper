@@ -18,6 +18,7 @@ export const ErrorBlockContainer = styled(CodeBlock)({
   color: '#a94442',
   overflow: 'auto',
   padding: 10,
+  whiteSpace: 'pre',
 });
 
 /**
