@@ -2891,10 +2891,10 @@ core-js-pure@3.1.4:
   resolved "https://registry.yarnpkg.com/core-js-pure/-/core-js-pure-3.1.4.tgz#5fa17dc77002a169a3566cc48dc774d2e13e3769"
   integrity sha512-uJ4Z7iPNwiu1foygbcZYJsJs1jiXrTTCvxfLDXNhI/I+NHbSIEyr548y4fcsCEyWY0XgfAG/qqaunJ1SThHenA==
 
-core-js@^1.0.0:
-  version "1.2.7"
-  resolved "https://registry.yarnpkg.com/core-js/-/core-js-1.2.7.tgz#652294c14651db28fa93bd2d5ff2983a4f08c636"
-  integrity sha1-ZSKUwUZR2yj6k70tX/KYOk8IxjY=
+core-js@^2.4.1:
+  version "2.6.10"
+  resolved "https://registry.yarnpkg.com/core-js/-/core-js-2.6.10.tgz#8a5b8391f8cc7013da703411ce5b585706300d7f"
+  integrity sha512-I39t74+4t+zau64EN1fE5v2W31Adtc/REhzWN+gWRRXg6WH5qAsZm62DHpQ1+Yhe4047T55jvzz7MUqF/dBBlA==
 
 core-js@^3.0.0:
   version "3.1.4"
@@ -4058,12 +4058,18 @@ fb-watchman@^2.0.0:
   dependencies:
     bser "^2.0.0"
 
-fbjs@^0.8.12:
-  version "0.8.17"
-  resolved "https://registry.yarnpkg.com/fbjs/-/fbjs-0.8.17.tgz#c4d598ead6949112653d6588b01a5cdcd9f90fdd"
-  integrity sha1-xNWY6taUkRJlPWWIsBpc3Nn5D90=
+fbjs-css-vars@^1.0.0:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/fbjs-css-vars/-/fbjs-css-vars-1.0.2.tgz#216551136ae02fe255932c3ec8775f18e2c078b8"
+  integrity sha512-b2XGFAFdWZWg0phtAWLHCk836A1Xann+I+Dgd3Gk64MHKZO44FfoD1KxyvbSh0qZsIoXQGGlVztIY+oitJPpRQ==
+
+fbjs@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/fbjs/-/fbjs-1.0.0.tgz#52c215e0883a3c86af2a7a776ed51525ae8e0a5a"
+  integrity sha512-MUgcMEJaFhCaF1QtWGnmq9ZDRAzECTCRAF7O6UZIlAlkTs1SasiX9aP0Iw7wfD2mJ7wDTNfg2w7u5fSCwJk1OA==
   dependencies:
-    core-js "^1.0.0"
+    core-js "^2.4.1"
+    fbjs-css-vars "^1.0.0"
     isomorphic-fetch "^2.1.1"
     loose-envify "^1.0.0"
     object-assign "^4.1.0"
@@ -8119,50 +8125,50 @@ rn-host-detect@^1.1.5:
   resolved "https://registry.yarnpkg.com/rn-host-detect/-/rn-host-detect-1.1.5.tgz#fbecb982b73932f34529e97932b9a63e58d8deb6"
   integrity sha512-ufk2dFT3QeP9HyZ/xTuMtW27KnFy815CYitJMqQm+pgG3ZAtHBsrU8nXizNKkqXGy3bQmhEoloVbrfbvMJMqkg==
 
-rsocket-core@0.0.10, rsocket-core@^0.0.10:
-  version "0.0.10"
-  resolved "https://registry.yarnpkg.com/rsocket-core/-/rsocket-core-0.0.10.tgz#937b2d1e562e80e86e20fea445be37e0e2f88962"
-  integrity sha512-u7PolLWw2yP2l/xLUegfr0YhfYorbw+gk98QeKSb8c8Qe+1/jTuwgKI/hfFvkHkx9ByrX8FFNv64EsPDcbcfvA==
+rsocket-core@^0.0.16:
+  version "0.0.16"
+  resolved "https://registry.yarnpkg.com/rsocket-core/-/rsocket-core-0.0.16.tgz#0a823877bcb7769ad479c9b609cc5dd6c8389b50"
+  integrity sha512-mzA5yhSxO5BaAGqpaTzmZBhQD/Ig2Uez/I2KTYGQu8fGlzYhyCv+QHmt9dQ4qkGu1bqBkR/nSD6NtyY/CIfGgw==
   dependencies:
-    fbjs "^0.8.12"
-    rsocket-flowable "^0.0.10"
-    rsocket-types "^0.0.10"
+    fbjs "^1.0.0"
+    rsocket-flowable "^0.0.14"
+    rsocket-types "^0.0.16"
 
-rsocket-flowable@^0.0.10:
-  version "0.0.10"
-  resolved "https://registry.yarnpkg.com/rsocket-flowable/-/rsocket-flowable-0.0.10.tgz#6e02f87145fde0d73b165f37b98bd39e7a95b50d"
-  integrity sha512-H8DWjne8atb1wtQ7cFhQV1Rq6MmRGniqaP6x8zM1avx2qt4SfyQDC9BlKRMDcwxkqt03MHz9MzYKsWfV44lUDg==
+rsocket-flowable@^0.0.14:
+  version "0.0.14"
+  resolved "https://registry.yarnpkg.com/rsocket-flowable/-/rsocket-flowable-0.0.14.tgz#5195dbd2972a98afe4a4ee082904fbc5890bc630"
+  integrity sha512-vK85yDj0DRpoTV1jQZF0JmSuQz4qj2DHMyV744I9h/8AP5jVJhuN1D+ArKQvP0VWXjFoRK23ObVMnoSdSkk4pg==
   dependencies:
-    fbjs "^0.8.12"
+    fbjs "^1.0.0"
 
-rsocket-tcp-client@^0.0.10:
-  version "0.0.10"
-  resolved "https://registry.yarnpkg.com/rsocket-tcp-client/-/rsocket-tcp-client-0.0.10.tgz#ca9146fbc78bf77da61f4f69dad200673c7f5313"
-  integrity sha512-6axwyp/5X/8QGwOjYrfN4Ij844V5NkRp7LzzdZqtpHEDt09Vlf4aJ74VIx4vSDqlK4Hzs/8tjf/D00lFnhHhDg==
+rsocket-tcp-client@^0.0.16:
+  version "0.0.16"
+  resolved "https://registry.yarnpkg.com/rsocket-tcp-client/-/rsocket-tcp-client-0.0.16.tgz#c9acdb57a8eba2e36f7d5c7cf14a97202203f0fd"
+  integrity sha512-Vqvw+08g71zbElhjAH5frSJpn8mHMzE1xt3D9eN3ftH3G8ByZgKimow0ElH6yGZ/Nh90749l329wkI7w/B1jOQ==
   dependencies:
-    fbjs "^0.8.12"
-    rsocket-core "^0.0.10"
-    rsocket-flowable "^0.0.10"
+    fbjs "^1.0.0"
+    rsocket-core "^0.0.16"
+    rsocket-flowable "^0.0.14"
 
-rsocket-tcp-server@0.0.10:
-  version "0.0.10"
-  resolved "https://registry.yarnpkg.com/rsocket-tcp-server/-/rsocket-tcp-server-0.0.10.tgz#3f50b6555eca5ecfb0efbdffae6cd3b0ab28f3d3"
-  integrity sha512-tc2VkW/fNYtkcx33UeLW47mqi+c13Nqm/3OHjPeYD9FoUCYdvytrq8P1dPy23q83/ID3tTfrKFA/GoLFSLC4fg==
+rsocket-tcp-server@^0.0.16:
+  version "0.0.16"
+  resolved "https://registry.yarnpkg.com/rsocket-tcp-server/-/rsocket-tcp-server-0.0.16.tgz#49922bd55e57c3f8f90e49bc357a9b73029a5fdf"
+  integrity sha512-8DD71CLwFHWZSF+4agMNHkINvpNQgIHBjByYPqdR4Hp2bi3PGZ9FarBYTC1l+YEXgv22y1oTgDXwQNv5kFvLKA==
   dependencies:
-    fbjs "^0.8.12"
-    rsocket-core "^0.0.10"
-    rsocket-flowable "^0.0.10"
-    rsocket-tcp-client "^0.0.10"
-    rsocket-types "^0.0.10"
+    fbjs "^1.0.0"
+    rsocket-core "^0.0.16"
+    rsocket-flowable "^0.0.14"
+    rsocket-tcp-client "^0.0.16"
+    rsocket-types "^0.0.16"
 
-rsocket-types@^0.0.10:
-  version "0.0.10"
-  resolved "https://registry.yarnpkg.com/rsocket-types/-/rsocket-types-0.0.10.tgz#5065fc0d8d7531fbf71aad330370b6adbbc7a97b"
-  integrity sha512-EO0iSSt5AOvEysUtA0Fm0i+pNWNcPIDLPAD0kP8Tk/IwYGyr303USF+1n2H9wuLMqqBQwWSv5E/VG46TztZJdg==
+rsocket-types@^0.0.16:
+  version "0.0.16"
+  resolved "https://registry.yarnpkg.com/rsocket-types/-/rsocket-types-0.0.16.tgz#2113dcf8e25478d6764f1e3e84ad4a97d16a6fde"
+  integrity sha512-zOJ2u5bgooj8QewqoIoaeEn1FHDZSyHp7VuDSiEJAAjTTQpYyEqKpLTvqi+tazRCBOTfulMBijootTI18VVeIg==
   dependencies:
     buffer "^5.0.6"
-    fbjs "^0.8.12"
-    rsocket-flowable "^0.0.10"
+    fbjs "^1.0.0"
+    rsocket-flowable "^0.0.14"
 
 rsvp@^4.8.4:
   version "4.8.5"

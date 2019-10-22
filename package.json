@@ -162,8 +162,8 @@
     "redux": "^4.0.0",
     "redux-persist": "^6.0.0",
     "remote-redux-devtools": "^0.5.16",
-    "rsocket-core": "0.0.10",
-    "rsocket-tcp-server": "0.0.10",
+    "rsocket-core": "^0.0.16",
+    "rsocket-tcp-server": "^0.0.16",
     "socket.io": "^2.0.4",
     "string-natural-compare": "^2.0.2",
     "tmp": "0.0.33",
@@ -184,8 +184,6 @@
       "emotion",
       "react-emotion",
       "react-redux",
-      "rsocket-core",
-      "rsocket-tcp-server",
       "tmp"
     ]
   },
