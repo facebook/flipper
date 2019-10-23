@@ -12,6 +12,7 @@ import React from 'react';
 
 const IndentedSection = styled(FlexColumn)({
   paddingLeft: 50,
+  paddingBottom: 10,
 });
 const GreyedOutOverlay = styled('div')({
   backgroundColor: '#EFEEEF',
