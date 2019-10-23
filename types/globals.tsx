@@ -9,6 +9,7 @@
 
 import {StoreEnhancerStoreCreator} from 'redux';
 import {ResizeObserver} from './ResizeObserver.d';
+import {Store} from '../src/reducers';
 
 export {};
 type RequestIdleHandle = number;
@@ -19,6 +20,8 @@ declare global {
   }
 
   interface Window {
+    flipperGlobalStoreDispatch: Store['dispatch'];
+
     __REDUX_DEVTOOLS_EXTENSION__:
       | undefined
       | StoreEnhancerStoreCreator & StoreEnhancerStateSanitizer;

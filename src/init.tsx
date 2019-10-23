@@ -101,6 +101,7 @@ function init() {
   initLauncherHooks(config(), store);
   const sessionId = store.getState().application.sessionId;
   initCrashReporter(sessionId || '');
+  window.flipperGlobalStoreDispatch = store.dispatch;
 }
 
 // rehydrate app state before exposing init
