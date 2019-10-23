@@ -15,7 +15,7 @@ try {
 }
 
 import {reportPlatformFailures, reportPluginFailures} from '../metrics';
-import {getInstance} from '../../fb/Logger';
+import {getInstance} from '../../fb-stubs/Logger';
 import {CancelledPromiseError} from '../errors';
 import {mocked} from 'ts-jest/utils';
 
