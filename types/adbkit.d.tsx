@@ -25,6 +25,7 @@ interface PullTransfer extends NodeJS.WriteStream {
   ): this;
   on(event: 'error', listener: (err: Error) => void): this;
   on(event: 'end', listener: () => void): this;
+  on(event: 'resize', listener: () => void): this;
 }
 
 interface DeviceTracker extends NodeJS.EventEmitter {
