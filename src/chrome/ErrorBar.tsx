@@ -76,14 +76,8 @@ function ErrorTile({
   const [collapsed, setCollapsed] = useState(true);
   return (
     <ErrorRow>
-      <FlexRow>
-        <FlexColumn style={{flexGrow: 1}}>{error.message}</FlexColumn>
-        {error.occurrences! > 1 && (
-          <ErrorCounter title="Nr of times this error occurred">
-            {error.occurrences}
-          </ErrorCounter>
-        )}
-        <FlexColumn style={{marginLeft: '8px'}}>
+      <FlexRow style={{flexDirection: 'row-reverse'}}>
+        <ButtonSection>
           <ButtonGroup>
             {(error.details || error.error) && (
               <Button onClick={() => setCollapsed(s => !s)}>
@@ -92,6 +86,20 @@ function ErrorTile({
             )}
             <Button onClick={onDismiss}>Dismiss</Button>
           </ButtonGroup>
+        </ButtonSection>
+        {error.occurrences! > 1 && (
+          <ErrorCounter title="Nr of times this error occurred">
+            {error.occurrences}
+          </ErrorCounter>
+        )}
+        <FlexColumn
+          style={
+            collapsed
+              ? {overflow: 'hidden', whiteSpace: 'nowrap', flexGrow: 1}
+              : {flexGrow: 1}
+          }
+          title={error.message}>
+          {error.message}
         </FlexColumn>
       </FlexRow>
       {!collapsed && (
@@ -153,6 +161,12 @@ const ErrorRow = styled('div')({
   lineHeight: '28px',
 });
 
+const ButtonSection = styled(FlexColumn)({
+  marginLeft: '8px',
+  flexShrink: 0,
+  flexGrow: 0,
+});
+
 const ErrorCounter = styled(FlexColumn)({
   backgroundColor: colors.cherryDark3,
   color: colors.cherry,
@@ -162,4 +176,7 @@ const ErrorCounter = styled(FlexColumn)({
   marginTop: 2,
   lineHeight: '24px',
   textAlign: 'center',
+  flexShrink: 0,
+  flexGrow: 0,
+  marginLeft: '8px',
 });
