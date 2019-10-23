@@ -17,6 +17,7 @@ import {ReactNode, Component} from 'react';
 import BaseDevice from './devices/BaseDevice';
 import {serialize, deserialize} from './utils/serialization';
 import {Idler} from './utils/Idler';
+import {StaticView} from './reducers/connections';
 type Parameters = any;
 
 // This function is intended to be called from outside of the plugin.
@@ -60,6 +61,7 @@ export type Props<T> = {
   selectPlugin: (pluginID: string, deepLinkPayload: string | null) => boolean;
   isArchivedDevice: boolean;
   selectedApp: string | null;
+  setStaticView: (payload: StaticView) => void;
 };
 
 export type BaseAction = {

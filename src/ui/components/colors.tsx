@@ -261,6 +261,8 @@ export const colors = {
   sectionHeaderBorder: '#DDDFE2',
   placeholder: '#A7AAB1',
   info: '#5ACFEC',
+  // Warning colors
+  warningTint: '#ecd9ad',
 };
 
 export const darkColors = {
