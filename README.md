@@ -24,7 +24,7 @@ Flipper (formerly Sonar) is a platform for debugging mobile apps on iOS and Andr
 
 ## Mobile development
 
-Flipper aims to be your number one companion for mobile app development on iOS and Android. Therefore, we provide a bunch of useful tools including a log viewer, interactive layout inspector, and network inspector.
+Flipper aims to be your number one companion for mobile app development on iOS and Android. Therefore, we provide a bunch of useful tools, including a log viewer, interactive layout inspector, and network inspector.
 
 ## Extending Flipper
 
@@ -32,7 +32,7 @@ Flipper is built as a platform. In addition to using the tools already included,
 
 ## Contributing to Flipper
 
-Both Flipper's desktop app and native mobile SDKs are open-source and MIT licensed. This enables you to see and understand how we are building plugins, and of course join the community and help improve Flipper. We are excited to see what you will build on this platform.
+Both Flipper's desktop app and native mobile SDKs are open-source and MIT licensed. This enables you to see and understand how we are building plugins, and of course, join the community and help improve Flipper. We are excited to see what you will build on this platform.
 
 # In this repo
 
