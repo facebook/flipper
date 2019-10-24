@@ -57,7 +57,6 @@ export type PersistedState = {
 const FlipperADBarContainer = styled(FlexRow)({
   backgroundColor: colors.warningTint,
   flexGrow: 1,
-  height: 50,
   justifyContent: 'center',
   alignItems: 'center',
   borderWidth: 2,
@@ -65,6 +64,10 @@ const FlipperADBarContainer = styled(FlexRow)({
 
 const FlipperADText = styled(Text)({
   padding: 10,
+});
+
+const FlipperADButton = styled(Button)({
+  margin: 10,
 });
 
 export default class Layout extends FlipperPlugin<State, any, PersistedState> {
@@ -76,13 +79,13 @@ export default class Layout extends FlipperPlugin<State, any, PersistedState> {
           automatically attaches critical information for reproducing your issue
           with just a single click.
         </FlipperADText>
-        <Button
+        <FlipperADButton
           type="primary"
           onClick={() => {
             this.props.setStaticView(SupportRequestFormManager);
           }}>
           Try it out
-        </Button>
+        </FlipperADButton>
       </FlipperADBarContainer>
     );
   }
