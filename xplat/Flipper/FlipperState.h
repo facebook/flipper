@@ -7,10 +7,11 @@
 
 #pragma once
 
+#include <map>
 #include <memory>
+#include <mutex>
 #include <string>
 #include <vector>
-#include <map>
 
 class FlipperStep;
 class FlipperStateUpdateListener;
@@ -21,20 +22,23 @@ namespace flipper {
 enum State { success, in_progress, failed };
 
 class StateElement {
-public:
-  StateElement(std::string name, State state): name_(name), state_(state) {};
+ public:
+  StateElement(std::string name, State state) : name_(name), state_(state){};
   std::string name_;
   State state_;
 };
 
-}
-}
+} // namespace flipper
+} // namespace facebook
 
 class FlipperState {
   friend FlipperStep;
 
  public:
   FlipperState();
+  // Update listeners are responsible for their own
+  // synchronization. There is no guarantee about which thread they
+  // may be called on.
   void setUpdateListener(std::shared_ptr<FlipperStateUpdateListener>);
   std::string getState();
   std::vector<facebook::flipper::StateElement> getStateElements();
@@ -50,6 +54,7 @@ class FlipperState {
   void failed(std::string, std::string);
   void started(std::string);
 
+  std::mutex mutex; // Protects all our member variables.
   std::shared_ptr<FlipperStateUpdateListener> mListener = nullptr;
   std::string logs;
   std::vector<std::string> insertOrder;
