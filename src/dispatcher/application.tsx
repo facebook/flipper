@@ -58,6 +58,7 @@ export default (store: Store, logger: Logger) => {
   ipcRenderer.on(
     'flipper-protocol-handler',
     (_event: string, query: string) => {
+      const uri = new URL(query);
       if (query.startsWith('flipper://import')) {
         const {search} = new URL(query);
         const {url} = qs.parse(search);
@@ -75,9 +76,17 @@ export default (store: Store, logger: Logger) => {
               store.dispatch(toggleAction('downloadingImportData', false));
             })
         );
-      } else if (query === 'flipper://support-form?form=Litho') {
-        logger.track('usage', 'support-form-source', {source: 'deeplink'});
-        store.dispatch(setStaticView(SupportRequestFormManager));
+      } else if (
+        uri.protocol === 'flipper:' &&
+        uri.pathname.includes('support-form')
+      ) {
+        const formParam = uri.searchParams.get('form');
+        if (formParam && formParam.toUpperCase() === 'litho'.toUpperCase()) {
+          // Right now we just support Litho
+          logger.track('usage', 'support-form-source', {source: 'deeplink'});
+          store.dispatch(setStaticView(SupportRequestFormManager));
+        }
+        return;
       }
       const match = uriComponents(query);
       if (match.length > 1) {
