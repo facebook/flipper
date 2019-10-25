@@ -5,6 +5,8 @@
  * @format
  */
 
+import {Actions} from '.';
+
 export type State = {
   [pluginKey: string]: Object;
 };
@@ -29,8 +31,8 @@ export type Action =
 const INITIAL_STATE: State = {};
 
 export default function reducer(
-  state: State = INITIAL_STATE,
-  action: Action,
+  state: State | undefined = INITIAL_STATE,
+  action: Actions,
 ): State {
   if (action.type === 'SET_PLUGIN_STATE') {
     const newPluginState = action.payload.state;
@@ -46,14 +48,14 @@ export default function reducer(
     return {...state};
   } else if (action.type === 'CLEAR_PLUGIN_STATE') {
     const {payload} = action;
-    return Object.keys(state).reduce((newState, pluginKey) => {
+    return Object.keys(state).reduce((newState: State, pluginKey) => {
       // Only add the pluginState, if its from a plugin other than the one that
       // was removed. pluginKeys are in the form of ${clientID}#${pluginID}.
       const clientId = pluginKey.slice(0, pluginKey.lastIndexOf('#'));
       const pluginId = pluginKey.split('#').pop();
       if (
         clientId !== payload.clientId ||
-        payload.devicePlugins.has(pluginId)
+        (pluginId && payload.devicePlugins.has(pluginId))
       ) {
         newState[pluginKey] = state[pluginKey];
       }

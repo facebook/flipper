@@ -6,10 +6,16 @@
  */
 
 import {DeviceType, LogLevel, DeviceLogEntry} from './BaseDevice';
-import child_process from 'child_process';
+import child_process, {ChildProcess} from 'child_process';
 import BaseDevice from './BaseDevice';
 import JSONStream from 'JSONStream';
 import {Transform} from 'stream';
+import electron from 'electron';
+import fs from 'fs';
+import uuid from 'uuid/v1';
+import path from 'path';
+import {promisify} from 'util';
+import {exec} from 'child_process';
 
 type IOSLogLevel = 'Default' | 'Info' | 'Debug' | 'Error' | 'Fault';
 
@@ -33,13 +39,31 @@ type RawLogEntry = {
 export default class IOSDevice extends BaseDevice {
   log: any;
   buffer: string;
+  private recordingProcess?: ChildProcess;
+  private recordingLocation?: string;
 
   constructor(serial: string, deviceType: DeviceType, title: string) {
-    super(serial, deviceType, title);
+    super(serial, deviceType, title, 'iOS');
     this.icon = 'icons/ios.svg';
-    this.os = 'iOS';
     this.buffer = '';
     this.log = this.startLogListener();
+  }
+
+  screenshot(): Promise<Buffer> {
+    const tmpImageName = uuid() + '.png';
+    const tmpDirectory = (electron.app || electron.remote.app).getPath('temp');
+    const tmpFilePath = path.join(tmpDirectory, tmpImageName);
+    const command = `xcrun simctl io booted screenshot ${tmpFilePath}`;
+    return promisify(exec)(command)
+      .then(() => promisify(fs.readFile)(tmpFilePath))
+      .then(buffer => {
+        return promisify(fs.unlink)(tmpFilePath).then(() => buffer);
+      });
+  }
+
+  navigateToLocation(location: string) {
+    const command = `xcrun simctl openurl booted "${location}"`;
+    exec(command);
   }
 
   teardown() {
@@ -84,11 +108,11 @@ export default class IOSDevice extends BaseDevice {
         {},
       );
 
-      this.log.on('error', err => {
+      this.log.on('error', (err: Error) => {
         console.error(err);
       });
 
-      this.log.stderr.on('data', data => {
+      this.log.stderr.on('data', (data: Buffer) => {
         console.error(data.toString());
       });
 
@@ -116,11 +140,11 @@ export default class IOSDevice extends BaseDevice {
 
   static parseLogEntry(entry: RawLogEntry): DeviceLogEntry {
     const LOG_MAPPING: Map<IOSLogLevel, LogLevel> = new Map([
-      ['Default', 'debug'],
-      ['Info', 'info'],
-      ['Debug', 'debug'],
-      ['Error', 'error'],
-      ['Fault', 'fatal'],
+      ['Default' as IOSLogLevel, 'debug' as LogLevel],
+      ['Info' as IOSLogLevel, 'info' as LogLevel],
+      ['Debug' as IOSLogLevel, 'debug' as LogLevel],
+      ['Error' as IOSLogLevel, 'error' as LogLevel],
+      ['Fault' as IOSLogLevel, 'fatal' as LogLevel],
     ]);
     let type: LogLevel = LOG_MAPPING.get(entry.messageType) || 'unknown';
 
@@ -141,7 +165,7 @@ export default class IOSDevice extends BaseDevice {
       '',
     );
 
-    const tag = entry.processImagePath.split('/').pop();
+    const tag = entry.processImagePath.split('/').pop() || '';
 
     return {
       date: new Date(entry.timestamp),
@@ -151,6 +175,27 @@ export default class IOSDevice extends BaseDevice {
       message: entry.eventMessage,
       type,
     };
+  }
+
+  async screenCaptureAvailable() {
+    return this.deviceType === 'emulator';
+  }
+
+  async startScreenCapture(destination: string) {
+    this.recordingProcess = exec(
+      `xcrun simctl io booted recordVideo "${destination}"`,
+    );
+    this.recordingLocation = destination;
+  }
+
+  async stopScreenCaputre(): Promise<string | null> {
+    if (this.recordingProcess && this.recordingLocation) {
+      this.recordingProcess.kill('SIGINT');
+      const {recordingLocation} = this;
+      this.recordingLocation = undefined;
+      return recordingLocation;
+    }
+    return null;
   }
 }
 

@@ -55,8 +55,8 @@ test('persistedStateReducer is resetting data', () => {
     id: '0',
   });
 
-  expect(datas.toJSON()).toEqual({});
-  expect(rows.size).toBe(0);
+  expect(datas!.toJSON()).toEqual({});
+  expect(rows!.size).toBe(0);
 });
 
 test('persistedStateReducer is adding data', () => {
@@ -64,13 +64,12 @@ test('persistedStateReducer is adding data', () => {
   const tablePlugin = createTablePlugin({...PROPS, method});
   const id = '1';
 
-  // $FlowFixMe persistedStateReducer exists for createTablePlugin
   const {rows, datas} = tablePlugin.persistedStateReducer(
     tablePlugin.defaultPersistedState,
     method,
     {id},
   );
 
-  expect(rows.size).toBe(1);
-  expect([...datas.keys()]).toEqual([id]);
+  expect(rows!.size).toBe(1);
+  expect([...datas!.keys()]).toEqual([id]);
 });

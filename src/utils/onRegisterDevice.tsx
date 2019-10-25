@@ -16,7 +16,9 @@ export function registerDeviceCallbackOnPlugins(
   clientPlugins: Map<string, typeof FlipperPlugin>,
   device: BaseDevice,
 ) {
-  const callRegisterDeviceHook = plugin => {
+  const callRegisterDeviceHook = (
+    plugin: typeof FlipperDevicePlugin | typeof FlipperPlugin,
+  ) => {
     if (plugin.onRegisterDevice) {
       plugin.onRegisterDevice(
         store,

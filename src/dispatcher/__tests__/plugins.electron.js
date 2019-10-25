@@ -13,7 +13,7 @@ import dispatcher, {
 } from '../plugins.tsx';
 import path from 'path';
 import {remote} from 'electron';
-import {FlipperPlugin} from '../../plugin.tsx';
+import {FlipperPlugin} from 'flipper';
 import reducers from '../../reducers/index.tsx';
 import {init as initLogger} from '../../fb-stubs/Logger.tsx';
 import configureStore from 'redux-mock-store';

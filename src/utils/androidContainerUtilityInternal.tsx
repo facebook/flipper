@@ -10,9 +10,8 @@
  * opaque types will ensure the commands are only ever run on validated
  * arguments.
  */
-import {getAdbClient} from './adbClient';
 import {UnsupportedError} from './metrics';
-const adbkit = require('adbkit-fb');
+import adbkit, {Client} from 'adbkit';
 
 const allowedAppNameRegex = /^[a-zA-Z0-9._\-]+$/;
 const appNotDebuggableRegex = /debuggable/;
@@ -48,6 +47,7 @@ export function validateFileContent(content: string): Promise<FileContent> {
 }
 
 export function _push(
+  client: Client,
   deviceId: string,
   app: AppName,
   filename: FilePath,
@@ -55,30 +55,31 @@ export function _push(
 ): Promise<void> {
   console.debug(`Deploying ${filename} to ${deviceId}:${app}`, logTag);
   return executeCommandAsApp(
+    client,
     deviceId,
     app,
-    `echo "${contents}" > '${filename}' && chmod 600 '${filename}'`,
+    `echo "${contents}" > '${filename}' && chmod 644 '${filename}'`,
   ).then(output => undefined);
 }
 
 export function _pull(
+  client: Client,
   deviceId: string,
   app: AppName,
   path: FilePath,
 ): Promise<string> {
-  return executeCommandAsApp(deviceId, app, `cat '${path}'`);
+  return executeCommandAsApp(client, deviceId, app, `cat '${path}'`);
 }
 
 // Keep this method private since it relies on pre-validated arguments
 function executeCommandAsApp(
+  client: Client,
   deviceId: string,
   app: string,
   command: string,
 ): Promise<string> {
-  return getAdbClient()
-    .then(client =>
-      client.shell(deviceId, `echo '${command}' | run-as '${app}'`),
-    )
+  return client
+    .shell(deviceId, `echo '${command}' | run-as '${app}'`)
     .then(adbkit.util.readAll)
     .then(buffer => buffer.toString())
     .then(output => {

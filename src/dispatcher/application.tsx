@@ -7,9 +7,11 @@
 
 import {remote, ipcRenderer} from 'electron';
 import {toggleAction} from '../reducers/application';
+import {setStaticView} from '../reducers/connections';
 import {Store} from '../reducers/index.js';
-import {Logger} from '../fb-interfaces/Logger.js';
+import {Logger} from '../fb-interfaces/Logger';
 import {parseFlipperPorts} from '../utils/environmentVariables';
+import SupportRequestFormManager from '../fb-stubs/SupportRequestFormManager';
 import {
   importDataToStore,
   importFileToStore,
@@ -51,39 +53,44 @@ export default (store: Store, logger: Logger) => {
     });
   });
 
-  ipcRenderer.on('flipper-protocol-handler', (event, url) => {
-    if (url.startsWith('flipper://import')) {
-      const {search} = new URL(url);
-      const download = qs.parse(search) ? qs.parse(search) : undefined;
-      store.dispatch(toggleAction('downloadingImportData', true));
-      return (
-        download &&
-        fetch(String(download))
-          .then(res => res.text())
-          .then(data => importDataToStore(data, store))
-          .then(() => {
-            store.dispatch(toggleAction('downloadingImportData', false));
-          })
-          .catch((e: Error) => {
-            console.error(e);
-            store.dispatch(toggleAction('downloadingImportData', false));
-          })
-      );
-    }
-    const match = uriComponents(url);
-    if (match.length > 1) {
-      // flipper://<client>/<pluginId>/<payload>
-      return store.dispatch(
-        selectPlugin({
-          selectedApp: match[0],
-          selectedPlugin: match[1],
-          deepLinkPayload: match[2],
-        }),
-      );
-    }
-  });
+  ipcRenderer.on(
+    'flipper-protocol-handler',
+    (_event: string, query: string) => {
+      if (query.startsWith('flipper://import')) {
+        const {search} = new URL(query);
+        const {url} = qs.parse(search);
+        store.dispatch(toggleAction('downloadingImportData', true));
+        return (
+          typeof url === 'string' &&
+          fetch(url)
+            .then(res => res.text())
+            .then(data => importDataToStore(data, store))
+            .then(() => {
+              store.dispatch(toggleAction('downloadingImportData', false));
+            })
+            .catch((e: Error) => {
+              console.error(e);
+              store.dispatch(toggleAction('downloadingImportData', false));
+            })
+        );
+      } else if (query === 'flipper://support-form?form=Litho') {
+        store.dispatch(setStaticView(SupportRequestFormManager));
+      }
+      const match = uriComponents(query);
+      if (match.length > 1) {
+        // flipper://<client>/<pluginId>/<payload>
+        return store.dispatch(
+          selectPlugin({
+            selectedApp: match[0],
+            selectedPlugin: match[1],
+            deepLinkPayload: match[2],
+          }),
+        );
+      }
+    },
+  );
 
-  ipcRenderer.on('open-flipper-file', (event, url) => {
+  ipcRenderer.on('open-flipper-file', (_event: string, url: string) => {
     tryCatchReportPlatformFailures(() => {
       return importFileToStore(url, store);
     }, `${IMPORT_FLIPPER_TRACE_EVENT}:Deeplink`);

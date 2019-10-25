@@ -7,7 +7,7 @@
 
 import Server from '../server';
 import {init as initLogger} from '../fb-stubs/Logger';
-import reducers from '../reducers/index';
+import reducers, {Store} from '../reducers/index';
 import {createStore} from 'redux';
 import path from 'path';
 import os from 'os';
@@ -15,10 +15,11 @@ import fs from 'fs';
 import androidDevice from '../dispatcher/androidDevice';
 import iosDevice from '../dispatcher/iOSDevice';
 import Client from '../Client';
+import {BaseDevice} from 'flipper';
 
-let server;
-let androidCleanup;
-const store = createStore(reducers);
+let server: Server;
+let androidCleanup: () => Promise<void>;
+const store: Store = createStore(reducers);
 
 beforeAll(() => {
   // create config directory, which is usually created by static/index.js
@@ -39,13 +40,15 @@ beforeAll(() => {
 test('Device can connect successfully', done => {
   let testFinished = false;
   let disconnectedTooEarly = false;
-  const registeredClients = [];
+  const registeredClients: Client[] = [];
   server.addListener('new-client', (client: Client) => {
     // Check there is a connected device that has the same device_id as the new client
     const deviceId = client.query.device_id;
     expect(deviceId).toBeTruthy();
     const devices = store.getState().connections.devices;
-    expect(devices.map(device => device.serial)).toContain(deviceId);
+    expect(devices.map((device: BaseDevice) => device.serial)).toContain(
+      deviceId,
+    );
 
     // Make sure it only connects once
     registeredClients.push(client);
@@ -58,15 +61,15 @@ test('Device can connect successfully', done => {
       done();
     }, 5000);
   });
-  server.addListener('removed-client', (id: string) => {
+  server.addListener('removed-client', (_id: string) => {
     if (!testFinished) {
       disconnectedTooEarly = true;
     }
   });
 }, 20000);
 
-afterAll(() => {
-  return androidCleanup().then(() => {
+afterAll(() =>
+  androidCleanup().then(() => {
     server.close();
-  });
-});
+  }),
+);

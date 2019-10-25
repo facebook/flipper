@@ -6,7 +6,7 @@
  */
 
 import {Store} from '../reducers/index';
-import {Logger} from '../fb-interfaces/Logger.js';
+import {Logger} from '../fb-interfaces/Logger';
 
 import MacDevice from '../devices/MacDevice';
 import WindowsDevice from '../devices/WindowsDevice';

@@ -26,12 +26,20 @@ import plugins, {
   State as PluginsState,
   Action as PluginsAction,
 } from './plugins';
+import settings, {
+  Settings as SettingsState,
+  Action as SettingsAction,
+} from './settings';
 import user, {State as UserState, Action as UserAction} from './user';
-
-import {persistReducer} from 'redux-persist';
-import storage from 'redux-persist/lib/storage/index.js';
+import JsonFileStorage from '../utils/jsonFileReduxPersistStorage';
+import os from 'os';
+import {resolve} from 'path';
+import xdg from 'xdg-basedir';
+import {persistReducer, PersistPartial} from 'redux-persist';
 
 import {Store as ReduxStore, MiddlewareAPI as ReduxMiddlewareAPI} from 'redux';
+// @ts-ignore: explicitly need to import index.js, otherwise index.native.js is imported, because redux-persist assumes we are react-native, because we are using metro-bundler
+import storage from 'redux-persist/lib/storage/index.js';
 
 export type Actions =
   | ApplicationAction
@@ -40,22 +48,32 @@ export type Actions =
   | NotificationsAction
   | PluginsAction
   | UserAction
+  | SettingsAction
   | {type: 'INIT'};
 
 export type State = {
-  application: ApplicationState;
-  connections: DevicesState;
+  application: ApplicationState & PersistPartial;
+  connections: DevicesState & PersistPartial;
   pluginStates: PluginStatesState;
-  notifications: NotificationsState;
+  notifications: NotificationsState & PersistPartial;
   plugins: PluginsState;
-  user: UserState;
+  user: UserState & PersistPartial;
+  settingsState: SettingsState & PersistPartial;
 };
 
 export type Store = ReduxStore<State, Actions>;
 export type MiddlewareAPI = ReduxMiddlewareAPI<Dispatch<Actions>, State>;
 
+const settingsStorage = new JsonFileStorage(
+  resolve(
+    ...(xdg.config ? [xdg.config] : [os.homedir(), '.config']),
+    'flipper',
+    'settings.json',
+  ),
+);
+
 export default combineReducers<State, Actions>({
-  application: persistReducer(
+  application: persistReducer<ApplicationState, Actions>(
     {
       key: 'application',
       storage,
@@ -63,7 +81,7 @@ export default combineReducers<State, Actions>({
     },
     application,
   ),
-  connections: persistReducer(
+  connections: persistReducer<DevicesState, Actions>(
     {
       key: 'connections',
       storage,
@@ -71,6 +89,7 @@ export default combineReducers<State, Actions>({
         'userPreferredDevice',
         'userPreferredPlugin',
         'userPreferredApp',
+        'userLRUPlugins',
       ],
     },
     connections,
@@ -91,5 +110,9 @@ export default combineReducers<State, Actions>({
       storage,
     },
     user,
+  ),
+  settingsState: persistReducer(
+    {key: 'settings', storage: settingsStorage},
+    settings,
   ),
 });

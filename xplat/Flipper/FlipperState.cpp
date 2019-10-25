@@ -49,10 +49,11 @@ void FlipperState::success(std::string step) {
 }
 
 void FlipperState::failed(std::string step, std::string errorMessage) {
+  std::string message = "[Failed] " + step + ": " + errorMessage;
 #if FLIPPER_DEBUG_LOG
-  log("[failed] " + step);
+  log(message);
 #endif
-  logs = logs + "[Failed] " + step + ": " + errorMessage + "\n";
+  logs = logs + message + "\n";
   stateMap[step] = State::failed;
   if (mListener) {
     mListener->onUpdate();

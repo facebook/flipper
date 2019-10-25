@@ -14,6 +14,7 @@ import {
   toggleRightSidebarVisible,
   ACTIVE_SHEET_BUG_REPORTER,
   setFlipperRating,
+  ACTIVE_SHEET_SETTINGS,
 } from '../reducers/application';
 import {
   colors,
@@ -40,7 +41,7 @@ import {clipboard} from 'electron';
 import React from 'react';
 import {State} from 'src/reducers';
 
-const AppTitleBar = styled(FlexRow)(({focused}) => ({
+const AppTitleBar = styled(FlexRow)(({focused}: {focused?: boolean}) => ({
   background: focused
     ? `linear-gradient(to bottom, ${colors.macOSTitleBarBackgroundTop} 0%, ${
         colors.macOSTitleBarBackgroundBottom
@@ -57,7 +58,7 @@ const AppTitleBar = styled(FlexRow)(({focused}) => ({
   paddingRight: 10,
   justifyContent: 'space-between',
   WebkitAppRegion: 'drag',
-  zIndex: 4,
+  zIndex: 6,
 }));
 
 type OwnProps = {
@@ -146,7 +147,7 @@ class TitleBar extends React.Component<Props, StateFromProps> {
     return (
       <AppTitleBar focused={this.props.windowIsFocused} className="toolbar">
         {navPluginIsActive ? (
-          <ButtonGroupChain iconSize={14}>
+          <ButtonGroupChain iconSize={12}>
             <DevicesButton />
             <LocationsButton />
           </ButtonGroupChain>
@@ -161,17 +162,17 @@ class TitleBar extends React.Component<Props, StateFromProps> {
         )}
         <Spacer />
         {config.showFlipperRating ? (
-          <RatingButton
-            rating={this.props.flipperRating}
-            onRatingChanged={this.props.setFlipperRating}
-          />
+          <RatingButton onRatingChanged={this.props.setFlipperRating} />
         ) : null}
         <Version>{this.props.version + (isProduction() ? '' : '-dev')}</Version>
 
         {isAutoUpdaterEnabled() ? (
           <AutoUpdateVersion version={this.props.version} />
         ) : (
-          <UpdateIndicator launcherMsg={this.props.launcherMsg} />
+          <UpdateIndicator
+            launcherMsg={this.props.launcherMsg}
+            version={this.props.version}
+          />
         )}
         {config.bugReportButtonVisible && (
           <Button
@@ -181,6 +182,12 @@ class TitleBar extends React.Component<Props, StateFromProps> {
             icon="bug"
           />
         )}
+        <Button
+          icon="settings"
+          title="Settings"
+          compact={true}
+          onClick={() => this.props.setActiveSheet(ACTIVE_SHEET_SETTINGS)}
+        />
         <ButtonGroup>
           <Button
             compact={true}

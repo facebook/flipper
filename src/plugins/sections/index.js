@@ -172,8 +172,10 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
 
   onNodeClicked = (targetNode: any, evt: InputEvent) => {
     if (targetNode.attributes.isSection) {
+      const sectionData = {};
+      sectionData['global_key'] = targetNode.attributes.identifier;
       this.setState({
-        selectedTreeNode: null,
+        selectedTreeNode: {sectionData},
       });
       return;
     }
@@ -272,7 +274,6 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
         </Toolbar>
         <Sidebar position="top" minHeight={80} height={80}>
           <EventTable
-            // $FlowFixMe Object.values returns Array<mixed>: https://github.com/facebook/flow/issues/2221
             generations={Object.values(generations)}
             focusedGenerationId={focusedGenerationId}
             onClick={this.onTreeGenerationFocused}

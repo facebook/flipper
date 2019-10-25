@@ -5,45 +5,168 @@
  * @format
  */
 
-import React, {Component, Fragment} from 'react';
-import {Glyph, Tooltip} from 'flipper';
-import {getInstance as getLogger} from '../fb-stubs/Logger';
+import React, {Component, ReactElement} from 'react';
+import {
+  Glyph,
+  Popover,
+  FlexColumn,
+  FlexRow,
+  Button,
+  Checkbox,
+  styled,
+  Input,
+} from 'flipper';
 import GK from '../fb-stubs/GK';
+import * as UserFeedback from '../fb-stubs/UserFeedback';
+import {FeedbackPrompt} from '../fb-stubs/UserFeedback';
 
 type Props = {
-  rating: number | null | undefined;
   onRatingChanged: (rating: number) => void;
 };
 
 type State = {
-  hoveredRating: number | null | undefined;
+  promptData: FeedbackPrompt | null;
+  isShown: boolean;
+  hasTriggered: boolean;
 };
 
-export default class RatingButton extends Component<Props, State> {
-  state = {
-    hoveredRating: null,
-  };
+type NextAction = 'select-rating' | 'leave-comment' | 'finished';
 
-  onRatingChanged(rating: number) {
-    const previousRating = this.props.rating;
-    if (rating === previousRating) {
-      return;
-    }
-    this.props.onRatingChanged(rating);
-    getLogger().track('usage', 'flipper-rating-changed', {
-      rating,
-      previousRating,
-    });
-  }
-
+class PredefinedComment extends Component<{
+  comment: string;
+  selected: boolean;
+  onClick: (_: unknown) => unknown;
+}> {
+  static Container = styled('div')((props: {selected: boolean}) => {
+    return {
+      border: '1px solid #f2f3f5',
+      cursor: 'pointer',
+      borderRadius: 24,
+      backgroundColor: props.selected ? '#ecf3ff' : '#f2f3f5',
+      marginBottom: 4,
+      marginRight: 4,
+      padding: '4px 8px',
+      color: props.selected ? 'rgb(56, 88, 152)' : undefined,
+      borderColor: props.selected ? '#3578e5' : undefined,
+      ':hover': {
+        borderColor: '#3578e5',
+      },
+    };
+  });
   render() {
-    if (!GK.get('flipper_rating')) {
-      return null;
+    return (
+      <PredefinedComment.Container
+        onClick={this.props.onClick}
+        selected={this.props.selected}>
+        {this.props.comment}
+      </PredefinedComment.Container>
+    );
+  }
+}
+
+const Row = styled(FlexRow)({
+  marginTop: 5,
+  marginBottom: 5,
+  justifyContent: 'center',
+  textAlign: 'center',
+  color: '#9a9a9a',
+  flexWrap: 'wrap',
+});
+
+const DismissRow = styled(Row)({
+  marginBottom: 0,
+  marginTop: 10,
+});
+
+const DismissButton = styled('span')({
+  '&:hover': {
+    textDecoration: 'underline',
+    cursor: 'pointer',
+  },
+});
+
+const Spacer = styled(FlexColumn)({
+  flexGrow: 1,
+});
+
+function dismissRow(dismiss: () => void) {
+  return (
+    <DismissRow>
+      <Spacer />
+      <DismissButton onClick={dismiss}>Dismiss</DismissButton>
+      <Spacer />
+    </DismissRow>
+  );
+}
+
+type FeedbackComponentState = {
+  rating: number | null;
+  hoveredRating: number;
+  allowUserInfoSharing: boolean;
+  nextAction: NextAction;
+  predefinedComments: {[key: string]: boolean};
+  comment: string;
+};
+
+class FeedbackComponent extends Component<
+  {
+    submitRating: (rating: number) => void;
+    submitComment: (
+      rating: number,
+      comment: string,
+      selectedPredefinedComments: Array<string>,
+      allowUserInfoSharing: boolean,
+    ) => void;
+    close: () => void;
+    dismiss: () => void;
+    promptData: FeedbackPrompt;
+  },
+  FeedbackComponentState
+> {
+  state: FeedbackComponentState = {
+    rating: null,
+    hoveredRating: 0,
+    allowUserInfoSharing: true,
+    nextAction: 'select-rating' as NextAction,
+    predefinedComments: this.props.promptData.predefinedComments.reduce(
+      (acc, cv) => ({...acc, [cv]: false}),
+      {},
+    ),
+    comment: '',
+  };
+  onSubmitRating(newRating: number) {
+    const nextAction = newRating <= 2 ? 'leave-comment' : 'finished';
+    this.setState({rating: newRating, nextAction: nextAction});
+    this.props.submitRating(newRating);
+    if (nextAction === 'finished') {
+      setTimeout(this.props.close, 1500);
     }
-    const rating = this.props.rating || 0;
-    if (rating < 0 || rating > 5) {
-      throw new Error(`Rating must be between 0 and 5. Value: ${rating}`);
+  }
+  onCommentSubmitted(comment: string) {
+    this.setState({nextAction: 'finished'});
+    const selectedPredefinedComments: Array<string> = Object.entries(
+      this.state.predefinedComments,
+    )
+      .map(x => ({comment: x[0], enabled: x[1]}))
+      .filter(x => x.enabled)
+      .map(x => x.comment);
+    const currentRating = this.state.rating;
+    if (currentRating) {
+      this.props.submitComment(
+        currentRating,
+        comment,
+        selectedPredefinedComments,
+        this.state.allowUserInfoSharing,
+      );
+    } else {
+      console.error('Illegal state: Submitting comment with no rating set.');
     }
+    setTimeout(this.props.close, 1000);
+  }
+  onAllowUserSharingChanged(allowed: boolean) {
+    this.setState({allowUserInfoSharing: allowed});
+  }
+  render() {
     const stars = Array(5)
       .fill(true)
       .map<JSX.Element>((_, index) => (
@@ -55,31 +178,193 @@ export default class RatingButton extends Component<Props, State> {
             this.setState({hoveredRating: index + 1});
           }}
           onMouseLeave={() => {
-            this.setState({hoveredRating: null});
+            this.setState({hoveredRating: 0});
           }}
           onClick={() => {
-            this.onRatingChanged(index + 1);
+            this.onSubmitRating(index + 1);
           }}>
           <Glyph
-            name="star"
-            color="grey"
-            variant={
+            name={
               (this.state.hoveredRating
               ? index < this.state.hoveredRating
-              : index < rating)
-                ? 'filled'
-                : 'outline'
+              : index < (this.state.rating || 0))
+                ? 'star'
+                : 'star-outline'
             }
+            color="grey"
+            size={24}
           />
         </div>
       ));
-    const button = <Fragment>{stars}</Fragment>;
+    let body: Array<ReactElement>;
+    switch (this.state.nextAction) {
+      case 'select-rating':
+        body = [
+          <Row>{this.props.promptData.bodyText}</Row>,
+          <Row style={{margin: 'auto'}}>{stars}</Row>,
+          dismissRow(this.props.dismiss),
+        ];
+        break;
+      case 'leave-comment':
+        const predefinedComments = Object.entries(
+          this.state.predefinedComments,
+        ).map((c: [string, unknown]) => (
+          <PredefinedComment
+            comment={c[0]}
+            selected={Boolean(c[1])}
+            onClick={() =>
+              this.setState({
+                predefinedComments: {
+                  ...this.state.predefinedComments,
+                  [c[0]]: !c[1],
+                },
+              })
+            }
+          />
+        ));
+        body = [
+          <Row>{predefinedComments}</Row>,
+          <Row>
+            <Input
+              style={{height: 30, width: '100%'}}
+              placeholder={this.props.promptData.commentPlaceholder}
+              value={this.state.comment}
+              onChange={e => this.setState({comment: e.target.value})}
+              onKeyDown={e =>
+                e.key == 'Enter' && this.onCommentSubmitted(this.state.comment)
+              }
+              autoFocus={true}
+            />
+          </Row>,
+          <Row>
+            <Checkbox
+              checked={this.state.allowUserInfoSharing}
+              onChange={this.onAllowUserSharingChanged.bind(this)}
+            />
+            {'Tool owner can contact me '}
+          </Row>,
+          <Row>
+            <Button onClick={() => this.onCommentSubmitted(this.state.comment)}>
+              Submit
+            </Button>
+          </Row>,
+          dismissRow(this.props.dismiss),
+        ];
+        break;
+      case 'finished':
+        body = [<Row>Thanks!</Row>];
+        break;
+      default: {
+        console.error('Illegal state: nextAction: ' + this.state.nextAction);
+        return null;
+      }
+    }
     return (
-      <Tooltip
-        options={{position: 'toLeft'}}
-        title="How would you rate Flipper?"
-        children={button}
-      />
+      <FlexColumn
+        style={{
+          width: 400,
+          paddingLeft: 20,
+          paddingRight: 20,
+          paddingTop: 10,
+          paddingBottom: 10,
+        }}>
+        <Row style={{color: 'black', fontSize: 20}}>
+          {this.state.nextAction === 'finished'
+            ? this.props.promptData.postSubmitHeading
+            : this.props.promptData.preSubmitHeading}
+        </Row>
+        {body}
+      </FlexColumn>
+    );
+  }
+}
+
+export default class RatingButton extends Component<Props, State> {
+  state: State = {
+    promptData: null,
+    isShown: false,
+    hasTriggered: false,
+  };
+
+  constructor(props: Props) {
+    super(props);
+    if (GK.get('flipper_rating')) {
+      UserFeedback.getPrompt().then(prompt => {
+        this.setState({promptData: prompt});
+        setTimeout(this.triggerPopover.bind(this), 30000);
+      });
+    }
+  }
+
+  onClick() {
+    const willBeShown = !this.state.isShown;
+    this.setState({isShown: willBeShown, hasTriggered: true});
+    if (!willBeShown) {
+      UserFeedback.dismiss();
+    }
+  }
+
+  submitRating(rating: number) {
+    UserFeedback.submitRating(rating);
+  }
+
+  submitComment(
+    rating: number,
+    comment: string,
+    selectedPredefinedComments: Array<string>,
+    allowUserInfoSharing: boolean,
+  ) {
+    UserFeedback.submitComment(
+      rating,
+      comment,
+      selectedPredefinedComments,
+      allowUserInfoSharing,
+    );
+  }
+
+  triggerPopover() {
+    if (!this.state.hasTriggered) {
+      this.setState({isShown: true, hasTriggered: true});
+    }
+  }
+
+  render() {
+    const promptData = this.state.promptData;
+    if (!promptData) {
+      return null;
+    }
+    if (
+      !promptData.shouldPopup ||
+      (this.state.hasTriggered && !this.state.isShown)
+    ) {
+      return null;
+    }
+    return (
+      <div style={{position: 'relative'}}>
+        <div onClick={this.onClick.bind(this)}>
+          <Glyph
+            name="star"
+            color="grey"
+            variant={this.state.isShown ? 'filled' : 'outline'}
+          />
+        </div>
+        {this.state.isShown ? (
+          <Popover
+            onDismiss={() => {}}
+            children={
+              <FeedbackComponent
+                submitRating={this.submitRating.bind(this)}
+                submitComment={this.submitComment.bind(this)}
+                close={() => {
+                  this.setState({isShown: false});
+                }}
+                dismiss={this.onClick.bind(this)}
+                promptData={promptData}
+              />
+            }
+          />
+        ) : null}
+      </div>
     );
   }
 }

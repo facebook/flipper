@@ -29,7 +29,7 @@ matrix:
             branch: master
     - language: node_js
       node_js:
-        - "10"
+        - "11"
 
       install:
         - yarn
@@ -44,6 +44,8 @@ matrix:
       cache: cocoapods
 
       before_install:
+        - gem install cocoapods
+        - pod --version
         - rm -rf iOS/Sample/Pods
         - rm -f iOS/Sample/Podfile.lock
         - rm -f iOS/Sample/build.log
@@ -53,7 +55,7 @@ matrix:
       install:
         - cd iOS/Sample
         - rm -f Podfile.lock
-        - travis_wait pod install --silent
+        - travis_wait 30 pod install --silent
         - cd ../../
 
       script:
@@ -64,6 +66,8 @@ matrix:
     - language: objective-c
 
       before_install:
+        - gem install cocoapods
+        - pod --version
         - rm -rf iOS/SampleSwift/Pods
         - rm -f iOS/SampleSwift/Podfile.lock
         - rm -f iOS/SampleSwift/build.log
@@ -72,7 +76,7 @@ matrix:
       install:
         - cd iOS/SampleSwift
         - rm -f Podfile.lock
-        - travis_wait pod install --silent
+        - travis_wait 30 pod install --silent
         - cd ../../
       script:
         - cd iOS/SampleSwift
@@ -107,12 +111,12 @@ matrix:
       before_install:
         - yes | sdkmanager "platforms;android-27"
         - echo "y" | sdkmanager "cmake;3.6.4111459"
-        - wget -q https://dl.google.com/android/repository/android-ndk-r17b-linux-x86_64.zip
+        - wget -q https://dl.google.com/android/repository/android-ndk-r20-linux-x86_64.zip
         - mkdir -p temp-android-ndk
-        - mv ./android-ndk-r17b-linux-x86_64.zip temp-android-ndk
+        - mv ./android-ndk-r20-linux-x86_64.zip temp-android-ndk
         - cd temp-android-ndk
-        - unzip -q android-ndk-r17b-linux-x86_64.zip
-        - export ANDROID_NDK_HOME=`pwd`/android-ndk-r17b
+        - unzip -q android-ndk-r20-linux-x86_64.zip
+        - export ANDROID_NDK_HOME=`pwd`/android-ndk-r20
         - export PATH=${PATH}:${ANDROID_NDK_HOME}
         - cd ../
       script:

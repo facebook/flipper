@@ -11,31 +11,20 @@ import {TableBodyRow} from '../ui/components/table/types';
 import React, {Component, Fragment} from 'react';
 import {connect} from 'react-redux';
 import {
-  FlexColumn,
-  Button,
   Text,
   ManagedTable,
   styled,
   colors,
   Link,
+  FlipperPlugin,
+  FlipperDevicePlugin,
 } from 'flipper';
 import StatusIndicator from '../ui/components/StatusIndicator';
 import {State as Store} from '../reducers';
 
-const Container = styled(FlexColumn)({
-  padding: 10,
-  width: 700,
-});
-
 const InfoText = styled(Text)({
   lineHeight: '130%',
   marginBottom: 8,
-});
-
-const Title = styled('div')({
-  fontWeight: '500',
-  marginBottom: 10,
-  marginTop: 8,
 });
 
 const Ellipsis = styled(Text)({
@@ -44,22 +33,17 @@ const Ellipsis = styled(Text)({
   whiteSpace: 'nowrap',
 });
 
-const Row = styled(FlexColumn)({
-  alignItems: 'flex-end',
-});
-
 const TableContainer = styled('div')({
   borderRadius: 4,
   overflow: 'hidden',
   border: `1px solid ${colors.macOSTitleBarButtonBorder}`,
   marginTop: 10,
-  marginBottom: 10,
   backgroundColor: colors.white,
   height: 400,
   display: 'flex',
 });
 
-const Lamp = props => (
+const Lamp = (props: {on: boolean}) => (
   <StatusIndicator statusColor={props.on ? colors.lime : colors.red} />
 );
 
@@ -69,15 +53,13 @@ type StateFromProps = {
   failedPlugins: Array<[PluginDefinition, string]>;
   clients: Array<Client>;
   selectedDevice: string | null | undefined;
-  devicePlugins: Array<PluginDefinition>;
-  clientPlugins: Array<PluginDefinition>;
+  devicePlugins: Array<typeof FlipperDevicePlugin>;
+  clientPlugins: Array<typeof FlipperPlugin>;
 };
 
 type DispatchFromProps = {};
 
-type OwnProps = {
-  onHide: () => any;
-};
+type OwnProps = {};
 
 const COLUMNS = {
   lamp: {
@@ -116,7 +98,6 @@ class PluginDebugger extends Component<Props> {
     loaded: boolean,
     status: string,
     GKname: string | null | undefined,
-    GKpassing: boolean | null | undefined,
     pluginPath: string | null | undefined,
   ): TableBodyRow {
     return {
@@ -125,11 +106,7 @@ class PluginDebugger extends Component<Props> {
         lamp: {value: <Lamp on={loaded} />},
         name: {value: <Ellipsis>{name}</Ellipsis>},
         status: {
-          value: status ? (
-            <Ellipsis title={status} passing={false}>
-              {status}
-            </Ellipsis>
-          ) : null,
+          value: status ? <Ellipsis title={status}>{status}</Ellipsis> : null,
         },
         gk: {
           value: GKname && (
@@ -170,7 +147,7 @@ class PluginDebugger extends Component<Props> {
 
     // bundled plugins are loaded from the defaultPlugins directory within
     // Flipper's package.
-    const externalPluginPath = (p: PluginDefinition) =>
+    const externalPluginPath = (p: any) =>
       p.out
         ? p.out.startsWith('./defaultPlugins/')
           ? null
@@ -184,7 +161,6 @@ class PluginDebugger extends Component<Props> {
           false,
           'GK disabled',
           plugin.gatekeeper,
-          false,
           externalPluginPath(plugin),
         ),
       ),
@@ -197,7 +173,6 @@ class PluginDebugger extends Component<Props> {
           true,
           '',
           plugin.gatekeeper,
-          true,
           externalPluginPath(plugin),
         ),
       ),
@@ -210,7 +185,6 @@ class PluginDebugger extends Component<Props> {
           true,
           '',
           plugin.gatekeeper,
-          true,
           externalPluginPath(plugin),
         ),
       ),
@@ -223,7 +197,6 @@ class PluginDebugger extends Component<Props> {
           false,
           'disabled',
           null,
-          null,
           externalPluginPath(plugin),
         ),
       ),
@@ -235,7 +208,6 @@ class PluginDebugger extends Component<Props> {
           plugin.name,
           false,
           status,
-          null,
           null,
           externalPluginPath(plugin),
         ),
@@ -312,17 +284,7 @@ class PluginDebugger extends Component<Props> {
         </Fragment>
       );
     }
-    return (
-      <Container>
-        <Title>Plugin Status</Title>
-        {content}
-        <Row>
-          <Button compact padded onClick={this.props.onHide}>
-            Close
-          </Button>
-        </Row>
-      </Container>
-    );
+    return content;
   }
 }
 
@@ -335,10 +297,12 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
       disabledPlugins,
       failedPlugins,
     },
-    connections: {selectedPlugin, clients, selectedDevice},
+    connections: {clients, selectedDevice},
   }) => ({
-    devicePlugins: Array.from(devicePlugins.values()),
-    clientPlugins: Array.from(clientPlugins.values()),
+    devicePlugins: Array.from<typeof FlipperDevicePlugin>(
+      devicePlugins.values(),
+    ),
+    clientPlugins: Array.from<typeof FlipperPlugin>(clientPlugins.values()),
     gatekeepedPlugins,
     clients,
     disabledPlugins,

@@ -26,7 +26,7 @@ export function getInfo(): Info {
     platform: process.platform,
     unixname: os.userInfo().username,
     versions: {
-      electron: process.versions['atom-shell'],
+      electron: process.versions.electron,
       node: process.versions.node,
     },
   };

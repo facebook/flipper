@@ -1,9 +1,8 @@
 /*
- *  Copyright (c) 2018-present, Facebook, Inc. and its affiliates.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- *  This source code is licensed under the MIT license found in the LICENSE
- *  file in the root directory of this source tree.
- *
+ * This source code is licensed under the MIT license found in the LICENSE
+ * file in the root directory of this source tree.
  */
 #if FB_SONARKIT_ENABLED
 #import <vector>
@@ -51,7 +50,7 @@
 #pragma mark - SKNetworkReporterDelegate
 
 
-- (void)didObserveRequest:(SKRequestInfo *)request;
+- (void)didObserveRequest:(SKRequestInfo *)request
 {
   NSMutableArray<NSDictionary<NSString *, id> *> *headers = [NSMutableArray new];
   for (NSString *key in [request.request.allHTTPHeaderFields allKeys]) {

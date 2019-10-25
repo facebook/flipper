@@ -16,7 +16,9 @@ import {
   colors,
   View,
 } from 'flipper';
+import {unsetShare} from '../reducers/application';
 import React, {Component} from 'react';
+import PropTypes from 'prop-types';
 
 export type PluginSelection = Map<string, boolean>;
 
@@ -55,7 +57,17 @@ const PluginRowComponentContainer = styled(FlexColumn)({
 });
 
 const Padder = styled('div')(
-  ({paddingLeft, paddingRight, paddingBottom, paddingTop}) => ({
+  ({
+    paddingLeft,
+    paddingRight,
+    paddingBottom,
+    paddingTop,
+  }: {
+    paddingLeft?: number;
+    paddingRight?: number;
+    paddingBottom?: number;
+    paddingTop?: number;
+  }) => ({
     paddingLeft: paddingLeft || 0,
     paddingRight: paddingRight || 0,
     paddingBottom: paddingBottom || 0,
@@ -97,6 +109,10 @@ class PluginRowComponent extends Component<PluginRowComponentProps> {
 }
 
 export default class SelectPluginSheet extends Component<Props, State> {
+  static contextTypes = {
+    store: PropTypes.object.isRequired,
+  };
+
   state = {plugins: new Map<string, boolean>()};
   static getDerivedStateFromProps(props: Props, state: State) {
     if (state.plugins.size > 0) {
@@ -106,7 +122,7 @@ export default class SelectPluginSheet extends Component<Props, State> {
   }
 
   onSubmit(plugins: PluginSelection) {
-    const selectedArray = Array.from(plugins.entries()).reduce(
+    const selectedArray = Array.from(plugins.entries()).reduce<string[]>(
       (acc, [plugin, selected]) => {
         if (selected) {
           acc.push(plugin);
@@ -118,7 +134,10 @@ export default class SelectPluginSheet extends Component<Props, State> {
     this.props.onSelect(selectedArray);
   }
   render() {
-    const {onHide} = this.props;
+    const onHide = () => {
+      this.context.store.dispatch(unsetShare());
+      this.props.onHide();
+    };
     const {plugins} = this.state;
 
     return (
@@ -132,6 +151,7 @@ export default class SelectPluginSheet extends Component<Props, State> {
               return (
                 <PluginRowComponent
                   name={pluginID}
+                  key={pluginID}
                   selected={selected}
                   onChange={(id: string, selected: boolean) => {
                     plugins.set(id, selected);
@@ -145,17 +165,17 @@ export default class SelectPluginSheet extends Component<Props, State> {
         <Padder paddingTop={8} paddingBottom={2}>
           <FlexRow>
             <Spacer />
+            <Button compact padded onClick={onHide}>
+              Close
+            </Button>
             <Button
               compact
               padded
-              type={'success'}
+              type="primary"
               onClick={() => {
                 this.onSubmit(this.state.plugins);
               }}>
               Submit
-            </Button>
-            <Button compact padded onClick={onHide}>
-              Close
             </Button>
           </FlexRow>
         </Padder>

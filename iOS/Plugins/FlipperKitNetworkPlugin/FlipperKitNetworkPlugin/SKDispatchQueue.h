@@ -16,6 +16,7 @@ namespace facebook {
     {
     public:
       virtual void async(dispatch_block_t block) = 0;
+      virtual ~DispatchQueue() { }
     };
 
     class GCDQueue: public DispatchQueue

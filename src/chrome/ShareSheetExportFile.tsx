@@ -4,22 +4,13 @@
  * LICENSE file in the root directory of this source tree.
  * @format
  */
-import {
-  FlexColumn,
-  Button,
-  styled,
-  colors,
-  Text,
-  LoadingIndicator,
-  FlexRow,
-  Spacer,
-} from 'flipper';
+import {FlexColumn, Button, styled, Text, FlexRow, Spacer} from 'flipper';
 import React, {Component} from 'react';
 import {setExportStatusComponent, unsetShare} from '../reducers/application';
 import {reportPlatformFailures} from '../utils/metrics';
 import CancellableExportStatus from './CancellableExportStatus';
 import {performance} from 'perf_hooks';
-import {Logger} from '../fb-interfaces/Logger.js';
+import {Logger} from '../fb-interfaces/Logger';
 import {Idler} from '../utils/Idler';
 import {
   exportStoreToFile,
@@ -27,6 +18,7 @@ import {
 } from '../utils/exportData';
 import PropTypes from 'prop-types';
 import ShareSheetErrorList from './ShareSheetErrorList';
+import ShareSheetPendingDialog from './ShareSheetPendingDialog';
 
 const Container = styled(FlexColumn)({
   padding: 20,
@@ -37,10 +29,6 @@ const Center = styled(FlexColumn)({
   alignItems: 'center',
   paddingTop: 50,
   paddingBottom: 50,
-});
-
-const Uploading = styled(Text)({
-  marginTop: 15,
 });
 
 const ErrorMessage = styled(Text)({
@@ -61,8 +49,8 @@ const InfoText = styled(Text)({
 });
 
 type Props = {
-  onHide: () => any;
-  file: string | null | undefined;
+  onHide: () => void;
+  file: string;
   logger: Logger;
 };
 
@@ -70,12 +58,16 @@ type State = {
   errorArray: Array<Error>;
   result:
     | {
-        success: boolean;
-        error: Error | null | undefined;
+        kind: 'success';
       }
-    | null
-    | undefined;
-  statusUpdate: string | null | undefined;
+    | {
+        kind: 'error';
+        error: Error;
+      }
+    | {
+        kind: 'pending';
+      };
+  statusUpdate: string | null;
   runInBackground: boolean;
 };
 
@@ -84,9 +76,9 @@ export default class ShareSheetExportFile extends Component<Props, State> {
     store: PropTypes.object.isRequired,
   };
 
-  state = {
+  state: State = {
     errorArray: [],
-    result: null,
+    result: {kind: 'pending'},
     statusUpdate: null,
     runInBackground: false,
   };
@@ -137,118 +129,87 @@ export default class ShareSheetExportFile extends Component<Props, State> {
         });
         return;
       }
-      this.setState({errorArray, result: {success: true, error: null}});
+      this.setState({errorArray, result: {kind: 'success'}});
       this.props.logger.trackTimeSince(mark, 'export:file-success');
     } catch (err) {
       if (!this.state.runInBackground) {
-        this.setState({errorArray: [], result: {success: false, error: err}});
+        this.setState({errorArray: [], result: {kind: 'error', error: err}});
       }
       this.props.logger.trackTimeSince(mark, 'export:file-error');
     }
   }
 
-  render() {
-    const onHide = () => {
-      this.props.onHide();
-      this.idler.cancel();
-    };
-
-    if (!this.props.file) {
-      return this.renderNoFileError(onHide);
-    }
-    const {result, statusUpdate} = this.state;
-    if (result) {
-      const {success, error} = result;
-      if (success) {
-        return (
-          <Container>
-            <FlexColumn>
-              <Title bold>Data Exported Successfully</Title>
-              <InfoText>
-                When sharing your Flipper data, consider that the captured data
-                might contain sensitive information like access tokens used in
-                network requests.
-              </InfoText>
-              <ShareSheetErrorList errors={this.state.errorArray} />
-            </FlexColumn>
-            <FlexRow>
-              <Spacer />
-              <Button compact padded onClick={onHide}>
-                Close
-              </Button>
-            </FlexRow>
-          </Container>
-        );
-      }
-      if (error) {
-        return (
-          <Container>
-            <Title bold>Error</Title>
-            <ErrorMessage code>
-              {(error && error.message) || 'File could not be saved.'}
-            </ErrorMessage>
-            <FlexRow>
-              <Spacer />
-              <Button compact padded onClick={onHide}>
-                Close
-              </Button>
-            </FlexRow>
-          </Container>
-        );
-      }
-      return null;
-    } else {
-      return (
-        <Container>
-          <Center>
-            <LoadingIndicator size={30} />
-            {statusUpdate && statusUpdate.length > 0 ? (
-              <Uploading bold color={colors.macOSTitleBarIcon}>
-                {statusUpdate}
-              </Uploading>
-            ) : (
-              <Uploading bold color={colors.macOSTitleBarIcon}>
-                Exporting Flipper trace...
-              </Uploading>
-            )}
-          </Center>
-          <FlexRow>
-            <Spacer />
-            <Button
-              compact
-              padded
-              onClick={() => {
-                this.setState({runInBackground: true});
-                const {statusUpdate} = this.state;
-                if (statusUpdate) {
-                  this.dispatchAndUpdateToolBarStatus(statusUpdate);
-                }
-                this.props.onHide();
-              }}>
-              Run In Background
-            </Button>
-            <Button compact padded onClick={onHide}>
-              Cancel
-            </Button>
-          </FlexRow>
-        </Container>
-      );
-    }
-  }
-
-  renderNoFileError(onHide: () => void) {
+  renderSuccess(context: any) {
     return (
       <Container>
-        <Center>
-          <Title bold>No file selected</Title>
-        </Center>
+        <FlexColumn>
+          <Title bold>Data Exported Successfully</Title>
+          <InfoText>
+            When sharing your Flipper data, consider that the captured data
+            might contain sensitive information like access tokens used in
+            network requests.
+          </InfoText>
+          <ShareSheetErrorList errors={this.state.errorArray} />
+        </FlexColumn>
         <FlexRow>
           <Spacer />
-          <Button compact padded onClick={onHide}>
+          <Button compact padded onClick={() => this.cancelAndHide(context)}>
             Close
           </Button>
         </FlexRow>
       </Container>
     );
+  }
+
+  renderError(context: any, result: {kind: 'error'; error: Error}) {
+    return (
+      <Container>
+        <Title bold>Error</Title>
+        <ErrorMessage code>
+          {result.error.message || 'File could not be saved.'}
+        </ErrorMessage>
+        <FlexRow>
+          <Spacer />
+          <Button compact padded onClick={() => this.cancelAndHide(context)}>
+            Close
+          </Button>
+        </FlexRow>
+      </Container>
+    );
+  }
+
+  renderPending(context: any, statusUpdate: string | null) {
+    return (
+      <ShareSheetPendingDialog
+        statusUpdate={statusUpdate}
+        statusMessage="Exporting Flipper trace..."
+        onCancel={() => this.cancelAndHide(context)}
+        onRunInBackground={() => {
+          this.setState({runInBackground: true});
+          if (statusUpdate) {
+            this.dispatchAndUpdateToolBarStatus(statusUpdate);
+          }
+          this.props.onHide();
+        }}
+      />
+    );
+  }
+
+  cancelAndHide(context: any) {
+    context.store.dispatch(unsetShare());
+    this.props.onHide();
+    this.idler.cancel();
+  }
+
+  render() {
+    const {result, statusUpdate} = this.state;
+    switch (result.kind) {
+      case 'success':
+        return this.renderSuccess(this.context);
+      case 'error':
+        return this.renderError(this.context, result);
+      case 'pending':
+        return this.renderPending(this.context, statusUpdate);
+    }
   }
 }

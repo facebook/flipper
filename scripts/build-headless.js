@@ -93,7 +93,7 @@ async function createZip(buildDir, distDir, targets) {
   const distDir = path.join(__dirname, '..', 'dist');
   // eslint-disable-next-line no-console
   console.log('Created build directory', buildDir);
-  await compile(buildDir, path.join(__dirname, '..', 'headless', 'index.js'));
+  await compile(buildDir, path.join(__dirname, '..', 'headless', 'index.tsx'));
   const versionNumber = getVersionNumber();
   const buildRevision = await genMercurialRevision();
   await preludeBundle(buildDir, versionNumber, buildRevision);

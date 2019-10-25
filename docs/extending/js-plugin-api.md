@@ -3,7 +3,7 @@ id: js-plugin-api
 title: JavaScript Plugin API
 ---
 
-Provided a plugin is setup as defined in [JS Plugin Definiton](js-setup), the basic requirement of a Flipper plugin is that `index.js` exports a default class that extends `FlipperPlugin`.
+Provided a plugin is setup as defined in [JS Plugin Definiton](js-setup), the basic requirement of a Flipper plugin is that `index.tsx` exports a default class that extends `FlipperPlugin`.
 
 `FlipperPlugin` is an extension of `React.Component` with extra Flipper-related functionality. This means to define the UI of your plugin, you just need to implement this React component.
 
@@ -69,7 +69,7 @@ Sometimes it's desirable for a plugin to be able to process incoming messages fr
 
 To do this, define a static `persistedStateReducer` function in the plugin class:
 ```
-static persistedStateReducer(
+static persistedStateReducer<PersistedState>(
     persistedState: PersistedState,
     method: string,
     data: Object
@@ -92,7 +92,7 @@ static getActiveNotifications(
 When the user clicks on a notification, they will be sent back to your plugin with the [deepLinkPayload](#deeplinkpayload) equal to the notification's action.
 
 ## Type Parameters
-`FlipperPlugin<S, A, P>` can optionally take the following type parameters. It is highly recommended you provide them to benefit from type safety, but you can pass `*` when not using these features.
+`FlipperPlugin<S, A, P>` can optionally take the following type parameters. It is highly recommended you provide them to benefit from type safety, but you can pass `any` when not using these features.
 
 **State**: Specifies the type of the FlipperPlugin state. A `FlipperPlugin` is a React component, and this is equivalent to the React state type parameter.
 

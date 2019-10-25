@@ -11,9 +11,8 @@ import Client from '../Client';
 import {UninitializedClient} from '../UninitializedClient';
 import {FlipperBasePlugin} from '../plugin';
 import {PluginNotification} from '../reducers/notifications';
-import {ActiveSheet} from '../reducers/application';
+import {ActiveSheet, ACTIVE_SHEET_PLUGINS} from '../reducers/application';
 import {State as Store} from '../reducers';
-
 import {
   Sidebar,
   FlexBox,
@@ -30,12 +29,24 @@ import {
 } from 'flipper';
 import React, {Component, PureComponent} from 'react';
 import NotificationsHub from '../NotificationsHub';
-import {selectPlugin} from '../reducers/connections';
+import {
+  selectPlugin,
+  showMoreOrLessPlugins,
+  StaticView,
+  setStaticView,
+} from '../reducers/connections';
 import {setActiveSheet} from '../reducers/application';
 import UserAccount from './UserAccount';
 import {connect} from 'react-redux';
+import {BackgroundColorProperty} from 'csstype';
+import {
+  MAX_MINIMUM_PLUGINS,
+  SHOW_REMAINING_PLUGIN_IF_LESS_THAN,
+} from '../Client';
+import {StyledOtherComponent} from 'create-emotion-styled';
+import SupportRequestFormManager from '../fb-stubs/SupportRequestFormManager';
 
-const ListItem = styled('div')(({active}) => ({
+const ListItem = styled('div')(({active}: {active?: boolean}) => ({
   paddingLeft: 10,
   display: 'flex',
   alignItems: 'center',
@@ -64,49 +75,53 @@ const SidebarHeader = styled(FlexBox)({
   flexShrink: 0,
 });
 
-const PluginShape = styled(FlexBox)(({backgroundColor}) => ({
-  marginRight: 5,
-  backgroundColor,
-  borderRadius: 3,
-  flexShrink: 0,
-  width: 18,
-  height: 18,
-  justifyContent: 'center',
-  alignItems: 'center',
-}));
+const PluginShape = styled(FlexBox)(
+  ({backgroundColor}: {backgroundColor?: BackgroundColorProperty}) => ({
+    marginRight: 5,
+    backgroundColor,
+    borderRadius: 3,
+    flexShrink: 0,
+    width: 18,
+    height: 18,
+    justifyContent: 'center',
+    alignItems: 'center',
+  }),
+);
 
-const PluginName = styled(Text)(props => ({
-  minWidth: 0,
-  textOverflow: 'ellipsis',
-  whiteSpace: 'nowrap',
-  overflow: 'hidden',
-  display: 'flex',
-  flexDirection: 'row',
-  justifyContent: 'space-between',
-  flexGrow: 1,
-  '::after': {
-    fontSize: 12,
-    display: props.count ? 'inline-block' : 'none',
-    padding: '0 8px',
-    lineHeight: '17px',
-    height: 17,
-    alignSelf: 'center',
-    content: `"${props.count}"`,
-    borderRadius: '999em',
-    color: props.isActive ? colors.macOSTitleBarIconSelected : colors.white,
-    backgroundColor: props.isActive
-      ? colors.white
-      : colors.macOSTitleBarIconSelected,
-    fontWeight: 500,
-  },
-}));
+const PluginName = styled(Text)(
+  (props: {isActive?: boolean; count?: number}) => ({
+    minWidth: 0,
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    flexGrow: 1,
+    '::after': {
+      fontSize: 12,
+      display: props.count ? 'inline-block' : 'none',
+      padding: '0 8px',
+      lineHeight: '17px',
+      height: 17,
+      alignSelf: 'center',
+      content: `"${props.count}"`,
+      borderRadius: '999em',
+      color: props.isActive ? colors.macOSTitleBarIconSelected : colors.white,
+      backgroundColor: props.isActive
+        ? colors.white
+        : colors.macOSTitleBarIconSelected,
+      fontWeight: 500,
+    },
+  }),
+);
 
 const Plugins = styled(FlexColumn)({
   flexGrow: 1,
   overflow: 'auto',
 });
 
-const PluginDebugger = styled(FlexBox)(props => ({
+const PluginDebugger = styled(FlexBox)({
   color: colors.blackAlpha50,
   alignItems: 'center',
   padding: 10,
@@ -114,7 +129,14 @@ const PluginDebugger = styled(FlexBox)(props => ({
   whiteSpace: 'nowrap',
   overflow: 'hidden',
   textOverflow: 'ellipsis',
-}));
+});
+
+const PluginShowMoreOrLess = styled(ListItem)({
+  color: colors.blue,
+  fontSize: 10,
+  lineHeight: '10px',
+  paddingBottom: 5,
+});
 
 function PluginIcon({
   isActive,
@@ -143,7 +165,7 @@ class PluginSidebarListItem extends Component<{
   render() {
     const {isActive, plugin} = this.props;
     const app = this.props.app || 'Facebook';
-    let iconColor = brandColors[app];
+    let iconColor: string | undefined = (brandColors as any)[app];
 
     if (!iconColor) {
       const pluginColors = [
@@ -179,7 +201,9 @@ const Spinner = centerInSidebar(LoadingIndicator);
 
 const ErrorIndicator = centerInSidebar(Glyph);
 
-function centerInSidebar(component) {
+function centerInSidebar(
+  component: StyledOtherComponent<any, {}, any> | React.ComponentType<any>,
+) {
   return styled(component)({
     marginTop: '10px',
     marginBottom: '10px',
@@ -194,6 +218,7 @@ type StateFromProps = {
   numNotifications: number;
   windowIsFocused: boolean;
   selectedDevice: BaseDevice | null | undefined;
+  staticView: StaticView;
   selectedPlugin: string | null | undefined;
   selectedApp: string | null | undefined;
   clients: Array<Client>;
@@ -208,12 +233,13 @@ type StateFromProps = {
 
 type DispatchFromProps = {
   selectPlugin: (payload: {
-    selectedPlugin: string | null | undefined;
-    selectedApp: string | null | undefined;
-    deepLinkPayload: string | null | undefined;
+    selectedPlugin: string | null;
+    selectedApp: string | null;
+    deepLinkPayload: string | null;
   }) => void;
-
   setActiveSheet: (activeSheet: ActiveSheet) => void;
+  setStaticView: (payload: StaticView) => void;
+  showMoreOrLessPlugins: (payload: string) => void;
 };
 
 type Props = OwnProps & StateFromProps & DispatchFromProps;
@@ -222,8 +248,10 @@ class MainSidebar extends PureComponent<Props> {
     const {
       selectedDevice,
       selectedPlugin,
+      staticView,
       selectedApp,
       selectPlugin,
+      setStaticView,
       windowIsFocused,
       numNotifications,
     } = this.props;
@@ -235,8 +263,10 @@ class MainSidebar extends PureComponent<Props> {
       )
       .sort((a, b) => (a.query.app || '').localeCompare(b.query.app));
 
-    const byPluginNameOrId = (a, b) =>
-      (a.title || a.id) > (b.title || b.id) ? 1 : -1;
+    const byPluginNameOrId = (
+      a: typeof FlipperBasePlugin,
+      b: typeof FlipperBasePlugin,
+    ) => ((a.title || a.id) > (b.title || b.id) ? 1 : -1);
 
     return (
       <Sidebar
@@ -272,6 +302,27 @@ class MainSidebar extends PureComponent<Props> {
               </PluginName>
             </ListItem>
           )}
+          {GK.get('flipper_support_requests') && (
+            <ListItem
+              active={
+                staticView != null && staticView === SupportRequestFormManager
+              }
+              onClick={() => setStaticView(SupportRequestFormManager)}>
+              <PluginIcon
+                color={colors.light50}
+                name={'app-dailies'}
+                isActive={
+                  staticView != null && staticView === SupportRequestFormManager
+                }
+              />
+              <PluginName
+                isActive={
+                  staticView != null && staticView === SupportRequestFormManager
+                }>
+                Litho Support Request
+              </PluginName>
+            </ListItem>
+          )}
           {selectedDevice && (
             <SidebarHeader>{selectedDevice.title}</SidebarHeader>
           )}
@@ -302,35 +353,61 @@ class MainSidebar extends PureComponent<Props> {
                 // Display their plugins under all selected devices until they die out
                 client.query.device_id === 'unknown',
             )
-            .map((client: Client) => (
-              <React.Fragment key={client.id}>
-                <SidebarHeader>{client.query.app}</SidebarHeader>
-                {Array.from(this.props.clientPlugins.values())
-                  .filter(
-                    (p: typeof FlipperDevicePlugin) =>
-                      client.plugins.indexOf(p.id) > -1,
-                  )
-                  .sort(byPluginNameOrId)
-                  .map((plugin: typeof FlipperDevicePlugin) => (
-                    <PluginSidebarListItem
-                      key={plugin.id}
-                      isActive={
-                        plugin.id === selectedPlugin &&
-                        selectedApp === client.id
-                      }
+            .map((client: Client) => {
+              const plugins = Array.from(
+                this.props.clientPlugins.values(),
+              ).filter(
+                (p: typeof FlipperPlugin) => client.plugins.indexOf(p.id) > -1,
+              );
+
+              const minShowPluginsCount =
+                plugins.length <
+                MAX_MINIMUM_PLUGINS + SHOW_REMAINING_PLUGIN_IF_LESS_THAN
+                  ? plugins.length
+                  : MAX_MINIMUM_PLUGINS;
+
+              return (
+                <React.Fragment key={client.id}>
+                  <SidebarHeader>{client.query.app}</SidebarHeader>
+                  {plugins
+                    .sort((a: typeof FlipperPlugin, b: typeof FlipperPlugin) =>
+                      client.byClientLRU(plugins.length, a, b),
+                    )
+                    .slice(
+                      0,
+                      client.showAllPlugins
+                        ? client.plugins.length
+                        : minShowPluginsCount,
+                    )
+                    .map((plugin: typeof FlipperPlugin) => (
+                      <PluginSidebarListItem
+                        key={plugin.id}
+                        isActive={
+                          plugin.id === selectedPlugin &&
+                          selectedApp === client.id
+                        }
+                        onClick={() =>
+                          selectPlugin({
+                            selectedPlugin: plugin.id,
+                            selectedApp: client.id,
+                            deepLinkPayload: null,
+                          })
+                        }
+                        plugin={plugin}
+                        app={client.query.app}
+                      />
+                    ))}
+                  {plugins.length > minShowPluginsCount && (
+                    <PluginShowMoreOrLess
                       onClick={() =>
-                        selectPlugin({
-                          selectedPlugin: plugin.id,
-                          selectedApp: client.id,
-                          deepLinkPayload: null,
-                        })
-                      }
-                      plugin={plugin}
-                      app={client.query.app}
-                    />
-                  ))}
-              </React.Fragment>
-            ))}
+                        this.props.showMoreOrLessPlugins(client.id)
+                      }>
+                      {client.showAllPlugins ? 'Show less' : 'Show more'}
+                    </PluginShowMoreOrLess>
+                  )}
+                </React.Fragment>
+              );
+            })}
           {uninitializedClients.map(entry => (
             <React.Fragment key={JSON.stringify(entry.client)}>
               <SidebarHeader>{entry.client.appName}</SidebarHeader>
@@ -343,14 +420,14 @@ class MainSidebar extends PureComponent<Props> {
           ))}
         </Plugins>
         <PluginDebugger
-          onClick={() => this.props.setActiveSheet('PLUGIN_DEBUGGER')}>
+          onClick={() => this.props.setActiveSheet(ACTIVE_SHEET_PLUGINS)}>
           <Glyph
             name="question-circle"
             size={16}
             variant="outline"
             color={colors.blackAlpha30}
           />
-          &nbsp;Plugin not showing?
+          &nbsp;Manage Plugins...
         </PluginDebugger>
         {config.showLogin && <UserAccount />}
       </Sidebar>
@@ -367,6 +444,7 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
       selectedApp,
       clients,
       uninitializedClients,
+      staticView,
     },
     notifications: {activeNotifications, blacklistedPlugins},
     plugins: {devicePlugins, clientPlugins},
@@ -379,6 +457,7 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
     })(),
     windowIsFocused,
     selectedDevice,
+    staticView,
     selectedPlugin,
     selectedApp,
     clients,
@@ -388,6 +467,8 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
   }),
   {
     selectPlugin,
+    setStaticView,
     setActiveSheet,
+    showMoreOrLessPlugins,
   },
 )(MainSidebar);

@@ -7,8 +7,17 @@
 import BaseDevice from './BaseDevice';
 import {DeviceType, OS, DeviceShell, DeviceLogEntry} from './BaseDevice';
 
+function normalizeArchivedDeviceType(deviceType: DeviceType): DeviceType {
+  let archivedDeviceType = deviceType;
+  if (archivedDeviceType === 'emulator') {
+    archivedDeviceType = 'archivedEmulator';
+  } else if (archivedDeviceType === 'physical') {
+    archivedDeviceType = 'archivedPhysical';
+  }
+  return archivedDeviceType;
+}
+
 export default class ArchivedDevice extends BaseDevice {
-  // @ts-ignore: Super needs to be on the first line
   constructor(
     serial: string,
     deviceType: DeviceType,
@@ -16,14 +25,7 @@ export default class ArchivedDevice extends BaseDevice {
     os: OS,
     logEntries: Array<DeviceLogEntry>,
   ) {
-    let archivedDeviceType = deviceType;
-    if (archivedDeviceType === 'emulator') {
-      archivedDeviceType = 'archivedEmulator';
-    } else if (archivedDeviceType === 'physical') {
-      archivedDeviceType = 'archivedPhysical';
-    }
-    super(serial, archivedDeviceType, title);
-    this.os = os;
+    super(serial, normalizeArchivedDeviceType(deviceType), title, os);
     this.logs = logEntries;
   }
 

@@ -1,21 +1,20 @@
 /*
- *  Copyright (c) 2018-present, Facebook, Inc. and its affiliates.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- *  This source code is licensed under the MIT license found in the LICENSE
- *  file in the root directory of this source tree.
- *
+ * This source code is licensed under the MIT license found in the LICENSE
+ * file in the root directory of this source tree.
  */
 #if FB_SONARKIT_ENABLED
 
 #import "SKViewDescriptor.h"
 
 #import "SKDescriptorMapper.h"
-#import "SKHighlightOverlay.h"
 #import "SKNamed.h"
 #import "SKObject.h"
 #import "SKYogaKitHelper.h"
 #import "UIColor+SKSonarValueCoder.h"
 #import <YogaKit/UIView+Yoga.h>
+#import <FlipperKitHighlightOverlay/SKHighlightOverlay.h>
 
 @implementation SKViewDescriptor
 

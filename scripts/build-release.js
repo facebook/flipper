@@ -18,7 +18,11 @@ const {
   genMercurialRevision,
 } = require('./build-utils.js');
 const fetch = require('node-fetch');
-const {ICONS, getIconURL} = require('../src/utils/icons.js');
+const {
+  ICONS,
+  buildLocalIconPath,
+  getIconURL,
+} = require('../src/utils/icons.js');
 
 function generateManifest(versionNumber) {
   const filePath = path.join(__dirname, '..', 'dist');
@@ -137,11 +141,7 @@ function downloadIcons(buildFolder) {
           res =>
             new Promise((resolve, reject) => {
               const fileStream = fs.createWriteStream(
-                path.join(
-                  buildFolder,
-                  'icons',
-                  `${name}-${size}@${density}x.png`,
-                ),
+                path.join(buildFolder, buildLocalIconPath(name, size, density)),
               );
               res.body.pipe(fileStream);
               res.body.on('error', reject);

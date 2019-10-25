@@ -14,16 +14,21 @@ import {
   isInstalled as opensslInstalled,
 } from './openssl-wrapper-with-promises';
 import path from 'path';
-import tmp from 'tmp';
-const tmpFile = promisify(tmp.file);
-const tmpDir = promisify(tmp.dir);
+import tmp, {DirOptions, FileOptions} from 'tmp';
 import iosUtil from '../fb-stubs/iOSContainerUtility';
 import {reportPlatformFailures} from './metrics';
 import {getAdbClient} from './adbClient';
 import * as androidUtil from './androidContainerUtility';
+import os from 'os';
+import {Client as ADBClient} from 'adbkit';
+import {Store} from '../reducers/index';
+
+const tmpFile = promisify(tmp.file) as (
+  options?: FileOptions,
+) => Promise<string>;
+const tmpDir = promisify(tmp.dir) as (options?: DirOptions) => Promise<string>;
 
 // Desktop file paths
-const os = require('os');
 const caKey = getFilePath('ca.key');
 const caCert = getFilePath('ca.crt');
 const serverKey = getFilePath('server.key');
@@ -69,13 +74,13 @@ export type SecureServerConfig = {
  */
 export default class CertificateProvider {
   logger: Logger;
-  adb: Promise<any>;
+  adb: Promise<ADBClient>;
   certificateSetup: Promise<void>;
   server: Server;
 
-  constructor(server: Server, logger: Logger) {
+  constructor(server: Server, logger: Logger, store: Store) {
     this.logger = logger;
-    this.adb = getAdbClient();
+    this.adb = getAdbClient(store);
     this.certificateSetup = reportPlatformFailures(
       this.ensureServerCertExists(),
       'ensureServerCertExists',
@@ -133,6 +138,8 @@ export default class CertificateProvider {
       return this.getTargetAndroidDeviceId(appName, appDirectory, csr);
     } else if (os === 'iOS') {
       return this.getTargetiOSDeviceId(appName, appDirectory, csr);
+    } else if (os == 'MacOS') {
+      return Promise.resolve('');
     }
     return Promise.resolve('unknown');
   }
@@ -194,9 +201,15 @@ export default class CertificateProvider {
       const deviceIdPromise = appNamePromise.then(app =>
         this.getTargetAndroidDeviceId(app, destination, csr),
       );
-      return Promise.all([deviceIdPromise, appNamePromise]).then(
-        ([deviceId, appName]) =>
-          androidUtil.push(deviceId, appName, destination + filename, contents),
+      return Promise.all([deviceIdPromise, appNamePromise, this.adb]).then(
+        ([deviceId, appName, adbClient]) =>
+          androidUtil.push(
+            adbClient,
+            deviceId,
+            appName,
+            destination + filename,
+            contents,
+          ),
       );
     }
     if (os === 'iOS' || os === 'windows' || os == 'MacOS') {
@@ -255,7 +268,7 @@ export default class CertificateProvider {
   ): Promise<string> {
     return this.adb
       .then(client => client.listDevices())
-      .then((devices: Array<{id: string}>) => {
+      .then(devices => {
         if (devices.length === 0) {
           throw new Error('No Android devices found');
         }
@@ -337,10 +350,22 @@ export default class CertificateProvider {
     processName: string,
     csr: string,
   ): Promise<boolean> {
-    return androidUtil
-      .pull(deviceId, processName, directory + csrFileName)
+    return this.adb
+      .then(adbClient =>
+        androidUtil.pull(
+          adbClient,
+          deviceId,
+          processName,
+          directory + csrFileName,
+        ),
+      )
       .then(deviceCsr => {
-        return this.santitizeString(deviceCsr.toString()) === csr;
+        // Santitize both of the string before comparation
+        // The csr string extraction on client side return string in both way
+        return (
+          this.santitizeString(deviceCsr.toString()) ===
+          this.santitizeString(csr)
+        );
       });
   }
 
@@ -356,7 +381,7 @@ export default class CertificateProvider {
     return tmpDir({unsafeCleanup: true})
       .then(dir => {
         return iosUtil
-          .pull(deviceId, originalFile, bundleId, dir)
+          .pull(deviceId, originalFile, bundleId, path.join(dir, csrFileName))
           .then(() => dir);
       })
       .then(dir => {
@@ -398,7 +423,7 @@ export default class CertificateProvider {
         }),
       )
       .then(([path, subject]) => {
-        return new Promise(function(resolve, reject) {
+        return new Promise<string>(function(resolve, reject) {
           fs.unlink(path, err => {
             if (err) {
               reject(err);
@@ -408,7 +433,7 @@ export default class CertificateProvider {
           });
         });
       })
-      .then((subject: string) => {
+      .then(subject => {
         const matches = subject.trim().match(x509SubjectCNRegex);
         if (!matches || matches.length < 2) {
           throw new Error(`Cannot extract CN from ${subject}`);
@@ -441,14 +466,14 @@ export default class CertificateProvider {
     if (!fs.existsSync(caKey)) {
       return this.generateCertificateAuthority();
     }
-    return this.checkCertIsValid(caCert).catch(e =>
+    return this.checkCertIsValid(caCert).catch(() =>
       this.generateCertificateAuthority(),
     );
   }
 
   checkCertIsValid(filename: string): Promise<void> {
     if (!fs.existsSync(filename)) {
-      return Promise.reject();
+      return Promise.reject(new Error(`${filename} does not exist`));
     }
     // openssl checkend is a nice feature but it only checks for certificates
     // expiring in the future, not those that have already expired.
@@ -459,7 +484,7 @@ export default class CertificateProvider {
       checkend: minCertExpiryWindowSeconds,
       in: filename,
     })
-      .then(output => undefined)
+      .then(() => undefined)
       .catch(e => {
         console.warn(`Certificate will expire soon: ${filename}`, logTag);
         throw e;
@@ -492,7 +517,9 @@ export default class CertificateProvider {
   }
 
   verifyServerCertWasIssuedByCA() {
-    const options = {CAfile: caCert};
+    const options: {
+      [key: string]: any;
+    } = {CAfile: caCert};
     options[serverCert] = false;
     return openssl('verify', options).then(output => {
       const verified = output.match(/[^:]+: OK/);
@@ -534,8 +561,8 @@ export default class CertificateProvider {
     }
 
     return this.checkCertIsValid(serverCert)
-      .then(_ => this.verifyServerCertWasIssuedByCA())
-      .catch(e => this.generateServerCertificate());
+      .then(() => this.verifyServerCertWasIssuedByCA())
+      .catch(() => this.generateServerCertificate());
   }
 
   generateServerCertificate(): Promise<void> {
@@ -567,7 +594,7 @@ export default class CertificateProvider {
   }
 
   writeToTempFile(content: string): Promise<string> {
-    return tmpFile().then((path, fd, cleanupCallback) =>
+    return tmpFile().then(path =>
       promisify(fs.writeFile)(path, content).then(_ => path),
     );
   }

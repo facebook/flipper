@@ -9,8 +9,7 @@ import BaseDevice from './BaseDevice';
 
 export default class WindowsDevice extends BaseDevice {
   constructor() {
-    super('', 'physical', 'Windows');
-    this.os = 'Windows';
+    super('', 'physical', 'Windows', 'Windows');
   }
 
   teardown() {}

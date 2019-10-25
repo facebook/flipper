@@ -6,22 +6,24 @@
  */
 
 import AndroidDevice from '../devices/AndroidDevice';
+import KaiOSDevice from '../devices/KaiOSDevice';
 import child_process from 'child_process';
 import {Store} from '../reducers/index';
 import BaseDevice from '../devices/BaseDevice';
-import {Logger} from '../fb-interfaces/Logger.js';
+import {Logger} from '../fb-interfaces/Logger';
 import {registerDeviceCallbackOnPlugins} from '../utils/onRegisterDevice';
 import {getAdbClient} from '../utils/adbClient';
 import {default as which} from 'which';
 import {promisify} from 'util';
 import {ServerPorts} from '../reducers/application';
+import {Client as ADBClient} from 'adbkit';
 
 function createDevice(
-  adbClient: any,
+  adbClient: ADBClient,
   device: any,
   ports?: ServerPorts,
 ): Promise<AndroidDevice> {
-  return new Promise((resolve, reject) => {
+  return new Promise(resolve => {
     const type =
       device.type !== 'device' || device.id.startsWith('emulator')
         ? 'emulator'
@@ -32,17 +34,24 @@ function createDevice(
       if (type === 'emulator') {
         name = (await getRunningEmulatorName(device.id)) || name;
       }
-      const androidDevice = new AndroidDevice(device.id, type, name, adbClient);
+      const isKaiOSDevice = Object.keys(props).some(
+        name => name.startsWith('kaios') || name.startsWith('ro.kaios'),
+      );
+      const androidLikeDevice = new (isKaiOSDevice
+        ? KaiOSDevice
+        : AndroidDevice)(device.id, type, name, adbClient);
       if (ports) {
-        androidDevice.reverse([ports.secure, ports.insecure]);
+        androidLikeDevice.reverse([ports.secure, ports.insecure]);
       }
-      resolve(androidDevice);
+      resolve(androidLikeDevice);
     });
   });
 }
 
-export async function getActiveAndroidDevices(): Promise<Array<BaseDevice>> {
-  const client = await getAdbClient();
+export async function getActiveAndroidDevices(
+  store: Store,
+): Promise<Array<BaseDevice>> {
+  const client = await getAdbClient(store);
   const androidDevices = await client.listDevices();
   return await Promise.all(
     androidDevices.map(device => createDevice(client, device)),
@@ -77,7 +86,7 @@ export default (store: Store, logger: Logger) => {
   const watchAndroidDevices = () => {
     // get emulators
     promisify(which)('emulator')
-      .catch(e => `${process.env.ANDROID_HOME || ''}/tools/emulator`)
+      .catch(() => `${process.env.ANDROID_HOME || ''}/tools/emulator`)
       .then(emulatorPath => {
         child_process.exec(
           `${emulatorPath} -list-avds`,
@@ -95,7 +104,7 @@ export default (store: Store, logger: Logger) => {
         );
       });
 
-    getAdbClient()
+    getAdbClient(store)
       .then(client => {
         client
           .trackDevices()
@@ -138,7 +147,7 @@ export default (store: Store, logger: Logger) => {
               unregisterDevices([device.id]);
             });
           })
-          .catch(err => {
+          .catch((err: {code: string}) => {
             if (err.code === 'ECONNREFUSED') {
               // adb server isn't running
             } else {
@@ -226,7 +235,7 @@ export default (store: Store, logger: Logger) => {
 
   // cleanup method
   return () =>
-    getAdbClient().then(client => {
+    getAdbClient(store).then(client => {
       client.kill();
     });
 };

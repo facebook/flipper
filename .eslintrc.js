@@ -57,7 +57,15 @@ module.exports = {
       parser: '@typescript-eslint/parser',
       rules: {
         'prettier/prettier': [2, {...prettierConfig, parser: 'typescript'}],
-        '@typescript-eslint/no-unused-vars': [1, {argsIgnorePattern: '^_'}],
+        '@typescript-eslint/no-unused-vars': [
+          1,
+          {
+            ignoreRestSiblings: true,
+            varsIgnorePattern: '^_',
+            argsIgnorePattern: '^_',
+            caughtErrorsIgnorePattern: '^_',
+          },
+        ],
       },
     },
   ],

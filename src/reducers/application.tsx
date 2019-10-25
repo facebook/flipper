@@ -9,14 +9,15 @@ import {remote} from 'electron';
 import uuidv1 from 'uuid/v1';
 import {ReactElement} from 'react';
 import CancellableExportStatus from '../chrome/CancellableExportStatus';
+import {Actions} from './';
 export const ACTIVE_SHEET_PLUGIN_SHEET: 'PLUGIN_SHEET' = 'PLUGIN_SHEET';
 export const ACTIVE_SHEET_BUG_REPORTER: 'BUG_REPORTER' = 'BUG_REPORTER';
-export const ACTIVE_SHEET_PLUGIN_DEBUGGER: 'PLUGIN_DEBUGGER' =
-  'PLUGIN_DEBUGGER';
+export const ACTIVE_SHEET_PLUGINS: 'PLUGINS' = 'PLUGINS';
 export const ACTIVE_SHEET_SELECT_PLUGINS_TO_EXPORT: 'SELECT_PLUGINS_TO_EXPORT' =
   'SELECT_PLUGINS_TO_EXPORT';
 export const ACTIVE_SHEET_SHARE_DATA: 'SHARE_DATA' = 'SHARE_DATA';
 export const ACTIVE_SHEET_SIGN_IN: 'SIGN_IN' = 'SIGN_IN';
+export const ACTIVE_SHEET_SETTINGS: 'SETTINGS' = 'SETTINGS';
 export const ACTIVE_SHEET_SHARE_DATA_IN_FILE: 'SHARE_DATA_IN_FILE' =
   'SHARE_DATA_IN_FILE';
 export const SET_EXPORT_STATUS_MESSAGE: 'SET_EXPORT_STATUS_MESSAGE' =
@@ -26,9 +27,10 @@ export const UNSET_SHARE: 'UNSET_SHARE' = 'UNSET_SHARE';
 export type ActiveSheet =
   | typeof ACTIVE_SHEET_PLUGIN_SHEET
   | typeof ACTIVE_SHEET_BUG_REPORTER
-  | typeof ACTIVE_SHEET_PLUGIN_DEBUGGER
+  | typeof ACTIVE_SHEET_PLUGINS
   | typeof ACTIVE_SHEET_SHARE_DATA
   | typeof ACTIVE_SHEET_SIGN_IN
+  | typeof ACTIVE_SHEET_SETTINGS
   | typeof ACTIVE_SHEET_SHARE_DATA_IN_FILE
   | typeof ACTIVE_SHEET_SELECT_PLUGINS_TO_EXPORT
   | null;
@@ -42,12 +44,20 @@ export type ServerPorts = {
   secure: number;
 };
 
+export type StatusMessageType = {
+  msg: string;
+  sender: string;
+};
+
 type SubShareType =
   | {
       type: 'file';
       file: string;
     }
-  | {type: 'link'};
+  | {
+      type: 'link';
+      url?: string;
+    };
 
 export type ShareType = {
   statusComponent?: React.ReactNode;
@@ -65,6 +75,7 @@ export type State = {
   downloadingImportData: boolean;
   launcherMsg: LauncherMsg;
   flipperRating: number | null;
+  statusMessages: Array<string>;
 };
 
 type BooleanActionType =
@@ -117,9 +128,21 @@ export type Action =
   | {
       type: 'SET_EXPORT_STATUS_MESSAGE';
       payload: React.ReactNode;
+    }
+  | {
+      type: 'SET_EXPORT_URL';
+      payload: string;
+    }
+  | {
+      type: 'ADD_STATUS_MSG';
+      payload: {msg: string; sender: string};
+    }
+  | {
+      type: 'REMOVE_STATUS_MSG';
+      payload: {msg: string; sender: string};
     };
 
-const initialState: () => State = () => ({
+export const initialState: () => State = () => ({
   leftSidebarVisible: true,
   rightSidebarVisible: true,
   rightSidebarAvailable: false,
@@ -137,9 +160,24 @@ const initialState: () => State = () => ({
     message: '',
   },
   flipperRating: null,
+  statusMessages: [],
 });
 
-export default function reducer(state: State, action: Action): State {
+function statusMessage(sender: string, msg: string): string {
+  const messageTrimmed = msg.trim();
+  const senderTrimmed = sender.trim();
+  let statusMessage = senderTrimmed.length > 0 ? senderTrimmed : '';
+  statusMessage =
+    statusMessage.length > 0 && messageTrimmed.length > 0
+      ? `${statusMessage}: ${messageTrimmed}`
+      : '';
+  return statusMessage;
+}
+
+export default function reducer(
+  state: State | undefined,
+  action: Actions,
+): State {
   state = state || initialState();
   if (
     action.type === 'leftSidebarVisible' ||
@@ -205,6 +243,31 @@ export default function reducer(state: State, action: Action): State {
     return state;
   } else if (action.type === 'UNSET_SHARE') {
     return {...state, share: null};
+  } else if (action.type === 'SET_EXPORT_URL') {
+    const share = state.share;
+    if (share && share.type === 'link') {
+      return {...state, share: {...share, url: action.payload}};
+    }
+    return state;
+  } else if (action.type === 'ADD_STATUS_MSG') {
+    const {sender, msg} = action.payload;
+    const statusMsg = statusMessage(sender, msg);
+    if (statusMsg.length > 0) {
+      return {
+        ...state,
+        statusMessages: [...state.statusMessages, statusMsg],
+      };
+    }
+    return state;
+  } else if (action.type === 'REMOVE_STATUS_MSG') {
+    const {sender, msg} = action.payload;
+    const statusMsg = statusMessage(sender, msg);
+    if (statusMsg.length > 0) {
+      const statusMessages = [...state.statusMessages];
+      statusMessages.splice(statusMessages.indexOf(statusMsg), 1);
+      return {...state, statusMessages};
+    }
+    return state;
   } else {
     return state;
   }
@@ -266,4 +329,19 @@ export const setFlipperRating = (rating: number): Action => ({
   payload: {
     rating,
   },
+});
+
+export const setExportURL = (result: string): Action => ({
+  type: 'SET_EXPORT_URL',
+  payload: result,
+});
+
+export const addStatusMessage = (payload: StatusMessageType): Action => ({
+  type: 'ADD_STATUS_MSG',
+  payload,
+});
+
+export const removeStatusMessage = (payload: StatusMessageType): Action => ({
+  type: 'REMOVE_STATUS_MSG',
+  payload,
 });

@@ -7,7 +7,7 @@
 
 import {ChildProcess} from 'child_process';
 import {Store} from '../reducers/index';
-import {Logger} from '../fb-interfaces/Logger.js';
+import {Logger} from '../fb-interfaces/Logger';
 import {DeviceType} from '../devices/BaseDevice';
 import {promisify} from 'util';
 import path from 'path';
@@ -122,12 +122,10 @@ function getActiveSimulators(): Promise<Array<IOSDeviceParams>> {
     },
   )
     .then(({stdout}) => JSON.parse(stdout).devices)
-    .then(simulatorDevices => {
-      // @ts-ignore
+    .then((simulatorDevices: Array<iOSSimulatorDevice>) => {
       const simulators: Array<iOSSimulatorDevice> = Object.values(
         simulatorDevices,
-        // @ts-ignore
-      ).reduce((acc, cv) => acc.concat(cv), []);
+      ).reduce((acc: Array<iOSSimulatorDevice>, cv) => acc.concat(cv), []);
 
       return simulators
         .filter(
@@ -149,6 +147,18 @@ function getActiveDevices(): Promise<Array<IOSDeviceParams>> {
     console.error(e.message);
     return [];
   });
+}
+
+function queryDevicesForever(store: Store, logger: Logger) {
+  queryDevices(store, logger)
+    .then(() => {
+      // It's important to schedule the next check AFTER the current one has completed
+      // to avoid simultaneous queries which can cause multiple user input prompts.
+      setTimeout(() => queryDevicesForever(store, logger), 3000);
+    })
+    .catch(err => {
+      console.error(err);
+    });
 }
 
 let xcodeVersionMismatchFound = false;
@@ -198,14 +208,5 @@ export default (store: Store, logger: Logger) => {
   if (process.platform !== 'darwin') {
     return;
   }
-  queryDevices(store, logger)
-    .then(() => {
-      const simulatorUpdateInterval = setInterval(() => {
-        queryDevices(store, logger).catch(err => {
-          console.error(err);
-          clearInterval(simulatorUpdateInterval);
-        });
-      }, 3000);
-    })
-    .catch(console.error);
+  queryDevicesForever(store, logger);
 };

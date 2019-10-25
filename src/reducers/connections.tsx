@@ -12,6 +12,18 @@ import {UninitializedClient} from '../UninitializedClient';
 import {isEqual} from 'lodash';
 import iosUtil from '../fb-stubs/iOSContainerUtility';
 import {performance} from 'perf_hooks';
+import {SAVED_PLUGINS_COUNT} from '../Client';
+import isHeadless from '../utils/isHeadless';
+import {Actions} from '.';
+const WelcomeScreen = isHeadless()
+  ? require('../chrome/WelcomeScreenHeadless').default
+  : require('../chrome/WelcomeScreen').default;
+import SupportRequestForm from '../fb-stubs/SupportRequestFormManager';
+
+export type StaticView =
+  | null
+  | typeof WelcomeScreen
+  | typeof SupportRequestForm;
 
 export type State = {
   devices: Array<BaseDevice>;
@@ -22,6 +34,7 @@ export type State = {
   userPreferredDevice: null | string;
   userPreferredPlugin: null | string;
   userPreferredApp: null | string;
+  userLRUPlugins: {[key: string]: Array<string>};
   error: null | string;
   clients: Array<Client>;
   uninitializedClients: Array<{
@@ -30,6 +43,7 @@ export type State = {
     errorMessage?: string;
   }>;
   deepLinkPayload: null | string;
+  staticView: StaticView;
 };
 
 export type Action =
@@ -92,11 +106,19 @@ export type Action =
   | {
       type: 'CLIENT_SETUP_ERROR';
       payload: {client: UninitializedClient; error: Error};
+    }
+  | {
+      type: 'CLIENT_SHOW_MORE_OR_LESS';
+      payload: string;
+    }
+  | {type: 'CLEAR_LRU_PLUGINS_HISTORY'}
+  | {
+      type: 'SET_STATIC_VIEW';
+      payload: StaticView;
     };
 
 const DEFAULT_PLUGIN = 'DeviceLogs';
 const DEFAULT_DEVICE_BLACKLIST = [MacDevice];
-
 const INITAL_STATE: State = {
   devices: [],
   androidEmulators: [],
@@ -106,19 +128,31 @@ const INITAL_STATE: State = {
   userPreferredDevice: null,
   userPreferredPlugin: null,
   userPreferredApp: null,
+  userLRUPlugins: {},
   error: null,
   clients: [],
   uninitializedClients: [],
   deepLinkPayload: null,
+  staticView: WelcomeScreen,
 };
 
-const reducer = (state: State = INITAL_STATE, action: Action): State => {
+const reducer = (state: State = INITAL_STATE, action: Actions): State => {
   switch (action.type) {
+    case 'SET_STATIC_VIEW': {
+      const {payload} = action;
+      const {selectedPlugin} = state;
+      return {
+        ...state,
+        staticView: payload,
+        selectedPlugin: payload != null ? null : selectedPlugin,
+      };
+    }
     case 'SELECT_DEVICE': {
       const {payload} = action;
       return {
         ...state,
         selectedApp: null,
+        staticView: null,
         selectedPlugin: DEFAULT_PLUGIN,
         selectedDevice: payload,
         userPreferredDevice: payload.title,
@@ -135,7 +169,7 @@ const reducer = (state: State = INITAL_STATE, action: Action): State => {
       const {payload} = action;
       const devices = state.devices.concat(payload);
       let {selectedDevice, selectedPlugin} = state;
-
+      let staticView: StaticView = state.staticView;
       // select the default plugin
       let selection: Partial<State> = {
         selectedApp: null,
@@ -148,6 +182,7 @@ const reducer = (state: State = INITAL_STATE, action: Action): State => {
 
       if (!selectedDevice && canBeDefaultDevice) {
         selectedDevice = payload;
+        staticView = null;
         if (selectedPlugin) {
           // We already had a plugin selected, but no device. This is happening
           // when the Client connected before the Device.
@@ -155,6 +190,7 @@ const reducer = (state: State = INITAL_STATE, action: Action): State => {
         }
       } else if (payload.title === state.userPreferredDevice) {
         selectedDevice = payload;
+        staticView = null;
       } else {
         // We didn't select the newly connected device, so we don't want to
         // change the plugin.
@@ -167,6 +203,7 @@ const reducer = (state: State = INITAL_STATE, action: Action): State => {
         // select device if none was selected before
         selectedDevice,
         ...selection,
+        staticView,
       };
     }
     case 'UNREGISTER_DEVICES': {
@@ -189,6 +226,7 @@ const reducer = (state: State = INITAL_STATE, action: Action): State => {
       if (selectedDeviceWasRemoved) {
         selection = {
           selectedDevice: devices[devices.length - 1] || null,
+          staticView: selectedDevice != null ? null : WelcomeScreen,
           selectedApp: null,
           selectedPlugin: DEFAULT_PLUGIN,
         };
@@ -207,11 +245,33 @@ const reducer = (state: State = INITAL_STATE, action: Action): State => {
         performance.mark(`activePlugin-${selectedPlugin}`);
       }
 
+      const userPreferredApp = selectedApp || state.userPreferredApp;
+      const selectedAppName = extractAppNameFromAppId(userPreferredApp);
+      // Need to recreate an array to make sure that it doesn't refer to the
+      // array that is showed in on the screen and the array that is kept for
+      // least recently used plugins reference
+      const LRUPlugins = [
+        ...((selectedAppName && state.userLRUPlugins[selectedAppName]) || []),
+      ];
+      const idxLRU =
+        (selectedPlugin && LRUPlugins.indexOf(selectedPlugin)) || -1;
+      if (idxLRU >= 0) {
+        LRUPlugins.splice(idxLRU, 1);
+      }
+      selectedPlugin && LRUPlugins.unshift(selectedPlugin);
+      LRUPlugins.splice(SAVED_PLUGINS_COUNT);
       return {
         ...state,
         ...payload,
-        userPreferredApp: selectedApp || state.userPreferredApp,
+        staticView: null,
+        userPreferredApp: userPreferredApp,
         userPreferredPlugin: selectedPlugin,
+        userLRUPlugins: selectedAppName
+          ? {
+              ...state.userLRUPlugins,
+              [selectedAppName]: LRUPlugins,
+            }
+          : {...state.userLRUPlugins},
       };
     }
     case 'SELECT_USER_PREFERRED_PLUGIN': {
@@ -220,9 +280,11 @@ const reducer = (state: State = INITAL_STATE, action: Action): State => {
     }
     case 'NEW_CLIENT': {
       const {payload} = action;
-      const {userPreferredApp, userPreferredPlugin} = state;
+      const {userPreferredApp, userPreferredPlugin, userLRUPlugins} = state;
       let {selectedApp, selectedPlugin} = state;
 
+      const appName = extractAppNameFromAppId(payload.id);
+      payload.lessPlugins = (appName && userLRUPlugins[appName]) || [];
       if (
         userPreferredApp &&
         userPreferredPlugin &&
@@ -233,7 +295,6 @@ const reducer = (state: State = INITAL_STATE, action: Action): State => {
         selectedApp = userPreferredApp;
         selectedPlugin = userPreferredPlugin;
       }
-
       return {
         ...state,
         clients: state.clients.concat(payload),
@@ -243,6 +304,10 @@ const reducer = (state: State = INITAL_STATE, action: Action): State => {
             c.client.appName !== payload.query.app
           );
         }),
+        userLRUPlugins: {
+          ...state.userLRUPlugins,
+          [payload.id]: payload.lessPlugins,
+        },
         selectedApp,
         selectedPlugin,
       };
@@ -336,12 +401,39 @@ const reducer = (state: State = INITAL_STATE, action: Action): State => {
         error: `Client setup error: ${errorMessage}`,
       };
     }
+    case 'CLIENT_SHOW_MORE_OR_LESS': {
+      const {payload} = action;
+      const appName = extractAppNameFromAppId(payload);
+
+      return {
+        ...state,
+        clients: state.clients.map((client: Client) => {
+          if (appName && extractAppNameFromAppId(client.id) === appName) {
+            client.showAllPlugins = !client.showAllPlugins;
+            client.lessPlugins = state.userLRUPlugins[appName] || [];
+          }
+          return client;
+        }),
+      };
+    }
+    case 'CLEAR_LRU_PLUGINS_HISTORY': {
+      const clearLRUPlugins: {[key: string]: Array<string>} = {};
+      Object.keys(state.userLRUPlugins).forEach((key: string) => {
+        if (key !== null) {
+          clearLRUPlugins[key] = [];
+        }
+      });
+      return {
+        ...state,
+        userLRUPlugins: clearLRUPlugins,
+      };
+    }
     default:
       return state;
   }
 };
 
-export default (state: State = INITAL_STATE, action: Action): State => {
+export default (state: State = INITAL_STATE, action: Actions): State => {
   const nextState = reducer(state, action);
 
   if (nextState.selectedDevice) {
@@ -368,6 +460,11 @@ export const selectDevice = (payload: BaseDevice): Action => ({
   payload,
 });
 
+export const setStaticView = (payload: StaticView): Action => ({
+  type: 'SET_STATIC_VIEW',
+  payload,
+});
+
 export const preferDevice = (payload: string): Action => ({
   type: 'PREFER_DEVICE',
   payload,
@@ -382,7 +479,19 @@ export const selectPlugin = (payload: {
   payload,
 });
 
+export const showMoreOrLessPlugins = (payload: string): Action => ({
+  type: 'CLIENT_SHOW_MORE_OR_LESS',
+  payload,
+});
+
 export const userPreferredPlugin = (payload: string): Action => ({
   type: 'SELECT_USER_PREFERRED_PLUGIN',
   payload,
 });
+
+function extractAppNameFromAppId(appId: string | null): string | null {
+  const nameRegex = /([^#]+)#/;
+  const matchedRegex = appId ? appId.match(nameRegex) : null;
+  // Expect the name of the app to be on the first matching
+  return matchedRegex && matchedRegex[1];
+}

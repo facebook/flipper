@@ -90,7 +90,7 @@ class UserAccount extends PureComponent<Props> {
     return name ? (
       <Container innerRef={this.setRef} onClick={this.showDetails}>
         <ProfilePic
-          src={user.profile_picture ? user.profile_picture.uri : null}
+          src={user.profile_picture ? user.profile_picture.uri : undefined}
         />
         <UserName>{this.props.user.name}</UserName>
         <Glyph name="chevron-down" size={10} variant="outline" />

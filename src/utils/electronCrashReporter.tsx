@@ -10,12 +10,16 @@ import {promisify} from 'util';
 import {crashReporter, remote} from 'electron';
 import isProduction from '../utils/isProduction';
 import constants from '../fb-stubs/constants';
-import {tmpName} from 'tmp';
+import {tmpName as tmpNameCallback, TmpNameOptions} from 'tmp';
 import {resolve} from 'path';
+
+const tmpName = promisify(tmpNameCallback) as (
+  options?: TmpNameOptions,
+) => Promise<string>;
 
 // Cross platform way to find the /tmp directory or equivalent.
 // The tempPath set should be persistent across app restarts.
-const tempPathPromise: Promise<string> = promisify(tmpName)({
+const tempPathPromise: Promise<string> = tmpName({
   template: '/tmp/tmp-XXXXXX',
 }).then(name => resolve(name, '..', 'flipper'));
 

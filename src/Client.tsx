@@ -8,12 +8,13 @@
 import {FlipperPlugin, FlipperDevicePlugin} from './plugin';
 import BaseDevice, {OS} from './devices/BaseDevice';
 import {App} from './App.js';
-import {Logger} from './fb-interfaces/Logger.js';
+import {Logger} from './fb-interfaces/Logger';
 import {Store} from './reducers/index';
 import {setPluginState} from './reducers/pluginStates';
 import {RSocketClientSocket} from 'rsocket-core/RSocketClient';
 import {performance} from 'perf_hooks';
 import {reportPlatformFailures, reportPluginFailures} from './utils/metrics';
+import {notNull} from './utils/typeUtils';
 import {default as isProduction} from './utils/isProduction';
 import {registerPlugins} from './reducers/plugins';
 import createTableNativePlugin from './plugins/TableNativePlugin';
@@ -77,11 +78,14 @@ const handleError = (
         reason: JSON.stringify(error),
       };
 
-  const newPluginState = crashReporterPlugin.persistedStateReducer(
-    persistedState,
-    'flipper-crash-report',
-    payload,
-  );
+  const newPluginState =
+    crashReporterPlugin.persistedStateReducer == null
+      ? persistedState
+      : crashReporterPlugin.persistedStateReducer(
+          persistedState,
+          'flipper-crash-report',
+          payload,
+        );
   if (persistedState !== newPluginState) {
     store.dispatch(
       setPluginState({
@@ -92,22 +96,31 @@ const handleError = (
   }
 };
 
+export const MAX_MINIMUM_PLUGINS = 5;
+export const SHOW_REMAINING_PLUGIN_IF_LESS_THAN = 3;
+export const SAVED_PLUGINS_COUNT =
+  MAX_MINIMUM_PLUGINS + SHOW_REMAINING_PLUGIN_IF_LESS_THAN;
+
 export default class Client extends EventEmitter {
-  app: App;
+  app: App | undefined;
   connected: boolean;
   id: string;
   query: ClientQuery;
   sdkVersion: number;
   messageIdCounter: number;
   plugins: Plugins;
+  lessPlugins: Plugins | undefined;
+  showAllPlugins: boolean;
   connection: RSocketClientSocket<any, any> | null | undefined;
-  responder: Partial<Responder<any, any>>;
   store: Store;
   activePlugins: Set<string>;
   device: Promise<BaseDevice>;
+  _deviceResolve: (device: BaseDevice) => void = _ => {};
+  _deviceSet: boolean = false;
   logger: Logger;
   lastSeenDeviceList: Array<BaseDevice>;
   broadcastCallbacks: Map<string, Map<string, Set<Function>>>;
+  rIC: any;
 
   requestCallbacks: Map<
     number,
@@ -116,7 +129,7 @@ export default class Client extends EventEmitter {
       reject: (err: Error) => void;
       metadata: RequestMetadata;
       // eslint-disable-next-line prettier/prettier
-      }
+    }
   >;
 
   constructor(
@@ -130,6 +143,7 @@ export default class Client extends EventEmitter {
     super();
     this.connected = true;
     this.plugins = plugins ? plugins : [];
+    this.showAllPlugins = false;
     this.connection = conn;
     this.id = id;
     this.query = query;
@@ -142,21 +156,18 @@ export default class Client extends EventEmitter {
     this.activePlugins = new Set();
     this.lastSeenDeviceList = [];
 
+    this.device = new Promise((resolve, _reject) => {
+      this._deviceResolve = resolve;
+    });
+
     const client = this;
     // node.js doesn't support requestIdleCallback
-    const rIC =
+    this.rIC =
       typeof window === 'undefined'
-        ? (cb, _) => {
+        ? (cb: Function, _: any) => {
             cb();
           }
-        : window.requestIdleCallback;
-
-    this.responder = {
-      fireAndForget: (payload: {data: string}) =>
-        rIC(() => client.onMessage(payload.data), {
-          timeout: 500,
-        }),
-    };
+        : window.requestIdleCallback.bind(window);
 
     if (conn) {
       conn.connectionStatus().subscribe({
@@ -172,15 +183,38 @@ export default class Client extends EventEmitter {
     }
   }
 
+  /// Sort plugins by LRU order stored in lessPlugins; if not, sort by alphabet
+  byClientLRU(
+    pluginsCount: number,
+    a: typeof FlipperPlugin,
+    b: typeof FlipperPlugin,
+  ): number {
+    // Sanity check
+    if (this.lessPlugins != null) {
+      const showPluginsCount =
+        pluginsCount >= MAX_MINIMUM_PLUGINS + SHOW_REMAINING_PLUGIN_IF_LESS_THAN
+          ? MAX_MINIMUM_PLUGINS
+          : pluginsCount;
+      let idxA = this.lessPlugins.indexOf(a.id);
+      idxA = idxA < 0 || idxA >= showPluginsCount ? showPluginsCount : idxA;
+      let idxB = this.lessPlugins.indexOf(b.id);
+      idxB = idxB < 0 || idxB >= showPluginsCount ? showPluginsCount : idxB;
+      if (idxA !== idxB) {
+        return idxA > idxB ? 1 : -1;
+      }
+    }
+    return (a.title || a.id) > (b.title || b.id) ? 1 : -1;
+  }
+
   /* All clients should have a corresponding Device in the store.
      However, clients can connect before a device is registered, so wait a
      while for the device to be registered if it isn't already. */
   setMatchingDevice(): void {
-    if (this.device) {
+    if (this._deviceSet) {
       return;
     }
-    this.device = reportPlatformFailures(
-      new Promise((resolve, reject) => {
+    reportPlatformFailures(
+      new Promise<BaseDevice>((resolve, reject) => {
         const device = this.store
           .getState()
           .connections.devices.find(
@@ -213,7 +247,10 @@ export default class Client extends EventEmitter {
         }, 5000);
       }),
       'client-setMatchingDevice',
-    );
+    ).then(device => {
+      this._deviceSet = true;
+      this._deviceResolve(device);
+    });
   }
 
   supportsPlugin(Plugin: typeof FlipperPlugin): boolean {
@@ -234,7 +271,7 @@ export default class Client extends EventEmitter {
     this.plugins = plugins;
     const nativeplugins = plugins
       .map(plugin => /_nativeplugin_([^_]+)_([^_]+)/.exec(plugin))
-      .filter(Boolean)
+      .filter(notNull)
       .map(([id, type, title]) => {
         // TODO put this in another component, and make the "types" registerable
         switch (type) {
@@ -246,7 +283,7 @@ export default class Client extends EventEmitter {
         }
       })
       .filter(Boolean);
-    this.store.dispatch(registerPlugins(nativeplugins));
+    this.store.dispatch(registerPlugins(nativeplugins as any));
     return plugins;
   }
 
@@ -259,6 +296,10 @@ export default class Client extends EventEmitter {
   async deviceSerial(): Promise<string> {
     try {
       const device = await this.device;
+      if (!device) {
+        console.error('Using "" for deviceId device is not ready');
+        return '';
+      }
       return device.serial;
     } catch (e) {
       console.error(
@@ -308,17 +349,17 @@ export default class Client extends EventEmitter {
       } else if (method === 'refreshPlugins') {
         this.refreshPlugins();
       } else if (method === 'execute') {
-        const params = data.params;
+        const params: Params = data.params as Params;
         invariant(params, 'expected params');
 
         const persistingPlugin:
           | typeof FlipperPlugin
-          | typeof FlipperDevicePlugin =
+          | typeof FlipperDevicePlugin
+          | undefined =
           this.store.getState().plugins.clientPlugins.get(params.api) ||
           this.store.getState().plugins.devicePlugins.get(params.api);
         if (persistingPlugin && persistingPlugin.persistedStateReducer) {
           let pluginKey = `${this.id}#${params.api}`;
-          //$FlowFixMe
           if (persistingPlugin.prototype instanceof FlipperDevicePlugin) {
             // For device plugins, we are just using the device id instead of client id as the prefix.
             this.deviceSerial().then(
@@ -374,11 +415,11 @@ export default class Client extends EventEmitter {
       success?: Object;
       error?: ErrorType;
     },
-    resolve: (a: Object) => any,
+    resolve: ((a: any) => any) | undefined,
     reject: (error: ErrorType) => any,
   ) {
     if (data.success) {
-      resolve(data.success);
+      resolve && resolve(data.success);
     } else if (data.error) {
       reject(data.error);
       const {error} = data;
@@ -396,11 +437,7 @@ export default class Client extends EventEmitter {
     return {id: this.id, query: this.query};
   }
 
-  subscribe(
-    api: string | null = null,
-    method: string,
-    callback: (params: Object) => void,
-  ) {
+  subscribe(api: string, method: string, callback: (params: Object) => void) {
     let apiCallbacks = this.broadcastCallbacks.get(api);
     if (!apiCallbacks) {
       apiCallbacks = new Map();
@@ -415,7 +452,7 @@ export default class Client extends EventEmitter {
     methodCallbacks.add(callback);
   }
 
-  unsubscribe(api: string | null = null, method: string, callback: Function) {
+  unsubscribe(api: string, method: string, callback: Function) {
     const apiCallbacks = this.broadcastCallbacks.get(api);
     if (!apiCallbacks) {
       return;

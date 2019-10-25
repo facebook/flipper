@@ -196,7 +196,11 @@ export async function makeObjectSerializable(
       stack.length >= prevStackLength ? stack.length - prevStackLength + 1 : 0;
     const percentage = (numIterations / accumulator) * 100;
     statusUpdate &&
-      statusUpdate(`Serializing Flipper (${percentage.toFixed(2)}%) `);
+      statusUpdate(
+        `Serializing Flipper: ${numIterations} / ${accumulator} (${percentage.toFixed(
+          2,
+        )}%) `,
+      );
     prevStackLength = stack.length;
   }
   return dict.get(obj);

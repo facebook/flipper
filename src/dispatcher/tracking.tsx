@@ -6,11 +6,10 @@
  */
 
 import {ipcRenderer} from 'electron';
-// $FlowFixMe perf_hooks is a new API in node
 import {performance} from 'perf_hooks';
 
 import {Store} from '../reducers/index';
-import {Logger} from '../fb-interfaces/Logger.js';
+import {Logger} from '../fb-interfaces/Logger';
 import Client from '../Client';
 
 export default (store: Store, logger: Logger) => {
@@ -53,8 +52,8 @@ export default (store: Store, logger: Logger) => {
       return;
     }
 
-    let app: string;
-    let sdkVersion: number;
+    let app: string | null = null;
+    let sdkVersion: number | null = null;
 
     if (selectedApp) {
       const client = clients.find((c: Client) => c.id === selectedApp);

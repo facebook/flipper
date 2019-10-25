@@ -8,7 +8,11 @@
 declare module NodeJS {
   interface Global {
     __REVISION__: string | undefined;
-    electronRequire: (name: string) => void;
+    __VERSION__: string;
+    electronRequire: (name: string) => any;
     window: Window | undefined;
+    WebSocket: any;
+    fetch: any;
+    originalConsole: Console | undefined;
   }
 }

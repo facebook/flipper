@@ -8,7 +8,6 @@
 import electron from 'electron';
 
 const _isProduction = !/node_modules[\\/]electron[\\/]/.test(
-  // $FlowFixMe: execPath exists, but is not in electron API spec
   process.execPath || electron.remote.process.execPath,
 );
 

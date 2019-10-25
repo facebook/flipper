@@ -6,7 +6,13 @@
  */
 
 export default () => {
-  let port = parseInt(process.env.ANDROID_ADB_SERVER_PORT, 10) || 5037;
+  const serverPortString = process.env.ANDROID_ADB_SERVER_PORT;
+  let port = 5037;
+  if (serverPortString) {
+    const parsedInt = parseInt(serverPortString, 10);
+    port = isNaN(parsedInt) ? port : parsedInt;
+  }
+
   let host = 'localhost';
 
   const socket = (process.env.ADB_SERVER_SOCKET || '').trim();

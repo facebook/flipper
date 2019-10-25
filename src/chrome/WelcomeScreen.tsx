@@ -5,18 +5,19 @@
  * @format
  */
 
-import {
-  styled,
-  FlexColumn,
-  FlexRow,
-  Text,
-  Glyph,
-  colors,
-  brandColors,
-} from 'flipper';
+import {styled} from '../ui/index';
+import FlexColumn from '../ui/components/FlexColumn';
+import FlexRow from '../ui/components/FlexRow';
+import Text from '../ui/components/FlexRow';
+import Glyph from '../ui/components/Glyph';
+import {colors, brandColors} from '../ui/components/colors';
 import isProduction from '../utils/isProduction';
-import {shell, remote} from 'electron';
-import React, {PureComponent} from 'react';
+import isHeadless from '../utils/isHeadless';
+const {shell, remote} = !isHeadless()
+  ? require('electron')
+  : {shell: undefined, remote: undefined};
+import {PureComponent} from 'react';
+import React from 'react';
 
 const Container = styled(FlexColumn)({
   height: '100%',
@@ -26,7 +27,7 @@ const Container = styled(FlexColumn)({
   backgroundColor: colors.light02,
 });
 
-const Welcome = styled(FlexColumn)(({isMounted}) => ({
+const Welcome = styled(FlexColumn)(({isMounted}: {isMounted?: boolean}) => ({
   width: 460,
   background: colors.white,
   borderRadius: 10,
@@ -43,6 +44,7 @@ const Title = styled(Text)({
   textAlign: 'center',
   color: colors.light50,
   marginBottom: 16,
+  flexDirection: 'column',
 });
 
 const Version = styled(Text)({
@@ -51,6 +53,7 @@ const Version = styled(Text)({
   fontWeight: 300,
   color: colors.light30,
   marginBottom: 60,
+  flexDirection: 'column',
 });
 
 const Item = styled(FlexRow)({
@@ -125,12 +128,13 @@ export default class WelcomeScreen extends PureComponent<Props, State> {
           <Logo src="./icon.png" />
           <Title>Welcome to Flipper</Title>
           <Version>
-            {isProduction()
+            {isProduction() && remote
               ? `Version ${remote.app.getVersion()}`
               : 'Development Mode'}
           </Version>
           <Item
             onClick={() =>
+              shell &&
               shell.openExternal(
                 'https://fbflipper.com/docs/getting-started.html',
               )
@@ -145,6 +149,7 @@ export default class WelcomeScreen extends PureComponent<Props, State> {
           </Item>
           <Item
             onClick={() =>
+              shell &&
               shell.openExternal(
                 'https://fbflipper.com/docs/tutorial/intro.html',
               )
@@ -157,6 +162,7 @@ export default class WelcomeScreen extends PureComponent<Props, State> {
           </Item>
           <Item
             onClick={() =>
+              shell &&
               shell.openExternal(
                 'https://fbflipper.com/docs/getting-started.html',
               )
@@ -169,6 +175,7 @@ export default class WelcomeScreen extends PureComponent<Props, State> {
           </Item>
           <Item
             onClick={() =>
+              shell &&
               shell.openExternal('https://github.com/facebook/flipper/issues')
             }>
             <Icon size={20} name="posts" color={brandColors.Flipper} />

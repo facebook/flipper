@@ -6,13 +6,13 @@
  */
 #pragma once
 
-#include "FlipperInitConfig.h"
-#include "FlipperConnectionManager.h"
-#include "FlipperState.h"
 #include <folly/Executor.h>
 #include <folly/io/async/EventBase.h>
 #include <rsocket/RSocket.h>
 #include <mutex>
+#include "FlipperConnectionManager.h"
+#include "FlipperInitConfig.h"
+#include "FlipperState.h"
 
 namespace facebook {
 namespace flipper {
@@ -27,7 +27,10 @@ class FlipperConnectionManagerImpl : public FlipperConnectionManager {
   friend ConnectionEvents;
 
  public:
-  FlipperConnectionManagerImpl(FlipperInitConfig config, std::shared_ptr<FlipperState> state, std::shared_ptr<ConnectionContextStore> contextStore);
+  FlipperConnectionManagerImpl(
+      FlipperInitConfig config,
+      std::shared_ptr<FlipperState> state,
+      std::shared_ptr<ConnectionContextStore> contextStore);
 
   ~FlipperConnectionManagerImpl();
 

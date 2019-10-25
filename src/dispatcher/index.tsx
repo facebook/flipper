@@ -15,7 +15,7 @@ import notifications from './notifications';
 import plugins from './plugins';
 import user from './user';
 
-import {Logger} from '../fb-interfaces/Logger.js';
+import {Logger} from '../fb-interfaces/Logger';
 import {Store} from '../reducers/index';
 import {Dispatcher} from './types';
 

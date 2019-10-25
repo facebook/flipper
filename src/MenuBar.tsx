@@ -7,16 +7,21 @@
 
 import {FlipperPlugin, FlipperDevicePlugin} from './plugin';
 import {showOpenDialog} from './utils/exportData';
-import {setSelectPluginsToExportActiveSheet} from './reducers/application';
+import {
+  setSelectPluginsToExportActiveSheet,
+  setActiveSheet,
+  ACTIVE_SHEET_PLUGINS,
+  ACTIVE_SHEET_SETTINGS,
+} from './reducers/application';
 import {Store} from './reducers/';
 import electron, {MenuItemConstructorOptions} from 'electron';
+import {notNull} from './utils/typeUtils';
 import constants from './fb-stubs/constants';
 import os from 'os';
 import path from 'path';
 
 export type DefaultKeyboardAction = 'clear' | 'goToBottom' | 'createPaste';
 export type TopLevelMenu = 'Edit' | 'View' | 'Window' | 'Help';
-const {dialog} = electron.remote;
 
 export type KeyboardAction = {
   action: string;
@@ -49,7 +54,7 @@ export type KeyboardActions = Array<DefaultKeyboardAction | KeyboardAction>;
 
 const menuItems: Map<string, electron.MenuItem> = new Map();
 
-let pluginActionHandler;
+let pluginActionHandler: ((action: string) => void) | null;
 function actionHandler(action: string) {
   if (pluginActionHandler) {
     pluginActionHandler(action);
@@ -76,7 +81,8 @@ export function setupMenuBar(
         typeof action === 'string'
           ? defaultKeyboardActions.find(a => a.action === action)
           : action,
-      ),
+      )
+      .filter(notNull),
   );
 
   // add keyboard actions to
@@ -97,11 +103,10 @@ export function setupMenuBar(
         menuItem => menuItem.label === topLevelMenu,
       );
       if (menu) {
-        // $FlowFixMe submenu is missing in electron API spec
         const menuItem = menu.submenu.items.find(
           menuItem => menuItem.label === label,
         );
-        menuItems.set(action, menuItem);
+        menuItem && menuItems.set(action, menuItem);
       }
     }
   });
@@ -177,13 +182,14 @@ function getTemplate(
       label: 'File...',
       accelerator: 'CommandOrControl+E',
       click: function() {
-        dialog.showSaveDialog(
+        electron.remote.dialog.showSaveDialog(
+          // @ts-ignore This appears to work but isn't allowed by the types
           null,
           {
             title: 'FlipperExport',
             defaultPath: path.join(os.homedir(), 'FlipperExport.flipper'),
           },
-          async file => {
+          async (file: string) => {
             if (!file) {
               return;
             }
@@ -210,7 +216,12 @@ function getTemplate(
       label: 'File',
       submenu: [
         {
-          label: 'Open File...',
+          label: 'Preferences',
+          accelerator: 'Cmd+,',
+          click: () => store.dispatch(setActiveSheet(ACTIVE_SHEET_SETTINGS)),
+        },
+        {
+          label: 'Import Flipper File...',
           accelerator: 'CommandOrControl+O',
           click: function() {
             showOpenDialog(store);
@@ -291,6 +302,12 @@ function getTemplate(
             if (focusedWindow) {
               focusedWindow.setFullScreen(!focusedWindow.isFullScreen());
             }
+          },
+        },
+        {
+          label: 'Manage Plugins...',
+          click: function() {
+            store.dispatch(setActiveSheet(ACTIVE_SHEET_PLUGINS));
           },
         },
         {

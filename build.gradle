@@ -9,7 +9,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.4.1'
+        classpath 'com.android.tools.build:gradle:3.5.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$KOTLIN_VERSION"
     }
 }
@@ -39,9 +39,9 @@ subprojects {
 
 ext {
     minSdkVersion = 15
-    targetSdkVersion = 28
-    compileSdkVersion = 28
-    buildToolsVersion = '28.0.3'
+    targetSdkVersion = 29
+    compileSdkVersion = 29
+    buildToolsVersion = '29.0.2'
     sourceCompatibilityVersion = JavaVersion.VERSION_1_7
     targetCompatibilityVersion = JavaVersion.VERSION_1_7
 }
@@ -60,7 +60,7 @@ ext.deps = [
         // Arch
         archPaging         : 'android.arch.paging:runtime:1.0.0',
         // First-party
-        soloader           : 'com.facebook.soloader:soloader:0.6.0',
+        soloader           : 'com.facebook.soloader:soloader:0.8.0',
         screenshot         : 'com.facebook.testing.screenshot:core:0.5.0',
         // Annotations
         jsr305             : 'com.google.code.findbugs:jsr305:3.0.2',

@@ -5,37 +5,13 @@
  * @format
  */
 
-import {TrackType, Logger} from '../fb-interfaces/Logger';
+import {Logger, Args} from '../fb-interfaces/Logger';
+import StubLogger from '../utils/StubLogger';
 import {Store} from '../reducers/index';
-import ScribeLogger from './ScribeLogger';
 
-let instance: StubLogger = null;
+let instance: StubLogger | null = null;
 
-type Args = {
-  isHeadless?: boolean;
-};
-
-class StubLogger implements Logger {
-  constructor(store: Store, args?: Args) {
-    this.scribeLogger = new ScribeLogger(this);
-  }
-
-  scribeLogger: ScribeLogger;
-
-  track(type: TrackType, event: string, data?: any, plugin?: string) {}
-
-  trackTimeSince(mark: string, eventName?: string) {}
-
-  info(data: any, category: string) {}
-
-  warn(data: any, category: string) {}
-
-  error(data: any, category: string) {}
-
-  debug(data: any, category: string) {}
-}
-
-export function init(store: Store, args?: Args): Logger {
+export function init(store: Store, _args?: Args): Logger {
   if (instance) {
     throw new Error('Attempted to initialize Logger when already initialized');
   }

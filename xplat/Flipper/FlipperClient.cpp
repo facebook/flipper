@@ -29,7 +29,7 @@
 namespace facebook {
 namespace flipper {
 
-static FlipperClient* kInstance;
+static FlipperClient* kInstance{nullptr};
 
 using folly::dynamic;
 
@@ -102,9 +102,15 @@ void FlipperClient::startBackgroundPlugins() {
        ++it) {
     std::cout << it->first << std::endl;
     if (it->second.get()->runInBackground()) {
-      auto& conn = connections_[it->first];
-      conn = std::make_shared<FlipperConnectionImpl>(socket_.get(), it->first);
-      it->second.get()->didConnect(conn);
+      try {
+        auto& conn = connections_[it->first];
+        conn =
+            std::make_shared<FlipperConnectionImpl>(socket_.get(), it->first);
+        it->second.get()->didConnect(conn);
+      } catch (std::exception& e) {
+        log("Exception starting background plugin: " + it->first + ". " +
+            e.what());
+      }
     }
   }
 }
@@ -164,9 +170,9 @@ void FlipperClient::onDisconnected() {
 void FlipperClient::onMessageReceived(
     const dynamic& message,
     std::unique_ptr<FlipperResponder> uniqueResponder) {
-    // Convert to shared pointer so we can hold on to it while passing it to the plugin, and still use it
-    // to respond with an error if we catch an exception.
-    std::shared_ptr<FlipperResponder> responder = std::move(uniqueResponder);
+  // Convert to shared pointer so we can hold on to it while passing it to the
+  // plugin, and still use it to respond with an error if we catch an exception.
+  std::shared_ptr<FlipperResponder> responder = std::move(uniqueResponder);
   try {
     std::lock_guard<std::mutex> lock(mutex_);
     const auto& method = message["method"];
@@ -231,9 +237,7 @@ void FlipperClient::onMessageReceived(
       }
       const auto& conn = connections_.at(params["api"].getString());
       conn->call(
-          params["method"].getString(),
-          params.getDefault("params"),
-          responder);
+          params["method"].getString(), params.getDefault("params"), responder);
       return;
     }
 

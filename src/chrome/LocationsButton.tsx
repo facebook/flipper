@@ -9,19 +9,25 @@ import {Button, styled} from 'flipper';
 import {connect} from 'react-redux';
 import React, {Component} from 'react';
 import {State as Store} from '../reducers';
-import {readBookmarksFromDB} from '../plugins/navigation/util/indexedDB.js';
-import {State as NavPluginState} from '../plugins/navigation/flow-types';
+import {
+  readBookmarksFromDB,
+  writeBookmarkToDB,
+} from '../plugins/navigation/util/indexedDB';
+import {PersistedState as NavPluginState} from '../plugins/navigation/types';
 import BaseDevice from '../devices/BaseDevice';
 import {State as PluginState} from 'src/reducers/pluginStates';
+import {platform} from 'os';
 
 type State = {
   bookmarks: Array<Bookmark>;
+  hasRetrievedBookmarks: boolean;
+  retreivingBookmarks: boolean;
 };
 
 type OwnProps = {};
 
 type StateFromProps = {
-  currentURI: string;
+  currentURI: string | undefined;
   selectedDevice: BaseDevice | null | undefined;
 };
 
@@ -29,14 +35,14 @@ type DispatchFromProps = {};
 
 type Bookmark = {
   uri: string;
-  commonName: string;
+  commonName: string | null;
 };
 
 const DropdownButton = styled(Button)({
   fontSize: 11,
 });
 
-const shortenText = (text: String, MAX_CHARACTERS = 30): String => {
+const shortenText = (text: string, MAX_CHARACTERS = 30): string => {
   if (text.length <= MAX_CHARACTERS) {
     return text;
   } else {
@@ -51,16 +57,35 @@ const shortenText = (text: String, MAX_CHARACTERS = 30): String => {
 
 type Props = OwnProps & StateFromProps & DispatchFromProps;
 class LocationsButton extends Component<Props, State> {
-  state = {
+  state: State = {
     bookmarks: [],
     hasRetrievedBookmarks: false,
     retreivingBookmarks: false,
   };
 
+  componentWillMount() {
+    document.addEventListener('keydown', this.keyDown);
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('keydown', this.keyDown);
+  }
+
   goToLocation = (location: string) => {
     const {selectedDevice} = this.props;
     if (selectedDevice != null) {
       selectedDevice.navigateToLocation(location);
+    }
+  };
+
+  keyDown = (e: KeyboardEvent) => {
+    if (
+      ((platform() === 'darwin' && e.metaKey) ||
+        (platform() !== 'darwin' && e.ctrlKey)) &&
+      /^\d$/.test(e.key) &&
+      this.state.bookmarks.length >= parseInt(e.key, 10)
+    ) {
+      this.goToLocation(this.state.bookmarks[parseInt(e.key, 10) - 1].uri);
     }
   };
 
@@ -74,34 +99,55 @@ class LocationsButton extends Component<Props, State> {
     });
   };
 
-  componentDidMount = () => {
+  componentDidMount() {
     this.updateBookmarks();
-  };
+  }
 
   render() {
     const {currentURI} = this.props;
     const {bookmarks} = this.state;
+
+    const dropdown: any[] = [
+      {
+        label: 'Bookmarks',
+        enabled: false,
+      },
+      ...bookmarks.map((bookmark, i) => {
+        return {
+          click: () => {
+            this.goToLocation(bookmark.uri);
+          },
+          accelerator: i < 9 ? `CmdOrCtrl+${i + 1}` : undefined,
+          label: shortenText(
+            (bookmark.commonName ? bookmark.commonName + ' - ' : '') +
+              bookmark.uri,
+            100,
+          ),
+        };
+      }),
+    ];
+
+    if (currentURI) {
+      dropdown.push(
+        {type: 'separator'},
+        {
+          label: 'Bookmark Current Location',
+          click: async () => {
+            await writeBookmarkToDB({
+              uri: currentURI,
+              commonName: null,
+            });
+            this.updateBookmarks();
+          },
+        },
+      );
+    }
+
     return (
       <DropdownButton
         onMouseDown={this.updateBookmarks}
         compact={true}
-        dropdown={[
-          {
-            label: 'Bookmarks',
-            enabled: false,
-          },
-          ...bookmarks.map(bookmark => {
-            return {
-              click: () => {
-                this.goToLocation(bookmark.uri);
-              },
-              label: shortenText(
-                bookmark.commonName + ' - ' + bookmark.uri,
-                100,
-              ),
-            };
-          }),
-        ]}>
+        dropdown={dropdown}>
         {(currentURI && shortenText(currentURI)) || '(none)'}
       </DropdownButton>
     );
@@ -109,11 +155,16 @@ class LocationsButton extends Component<Props, State> {
 }
 
 const mapStateFromPluginStatesToProps = (pluginStates: PluginState) => {
-  const navPluginState: NavPluginState =
-    pluginStates[
-      Object.keys(pluginStates).find(key => /#Navigation$/.test(key))
-    ];
-  const currentURI = navPluginState && navPluginState.currentURI;
+  const pluginKey = Object.keys(pluginStates).find(key =>
+    /#Navigation$/.test(key),
+  );
+  let currentURI: string | undefined;
+  if (pluginKey) {
+    const navPluginState = pluginStates[pluginKey] as
+      | NavPluginState
+      | undefined;
+    currentURI = navPluginState && navPluginState.currentURI;
+  }
   return {
     currentURI,
   };

@@ -12,6 +12,7 @@ import com.facebook.flipper.core.FlipperObject;
 import com.facebook.flipper.core.FlipperPlugin;
 import com.facebook.flipper.core.FlipperReceiver;
 import com.facebook.flipper.core.FlipperResponder;
+import java.util.Date;
 
 public class NavigationFlipperPlugin implements FlipperPlugin {
 
@@ -21,9 +22,21 @@ public class NavigationFlipperPlugin implements FlipperPlugin {
 
   private NavigationFlipperPlugin() {}
 
+  @Deprecated
   public void sendNavigationEvent(@Nullable String keyURI) {
+    sendNavigationEvent(keyURI, null, null);
+  }
+
+  public void sendNavigationEvent(
+      @Nullable String keyURI, @Nullable String className, @Nullable Date date) {
     if (mConnection != null) {
-      mConnection.send("nav_event", new FlipperObject.Builder().put("uri", keyURI).build());
+      FlipperObject sendObject =
+          new FlipperObject.Builder()
+              .put("uri", keyURI)
+              .put("date", date != null ? date : new Date())
+              .put("class", className)
+              .build();
+      mConnection.send("nav_event", sendObject);
     }
   }
 

@@ -34,11 +34,10 @@ static constexpr int maxPayloadSize = 0xFFFFFF;
 // Not a public-facing version number.
 // Used for compatibility checking with desktop flipper.
 // To be bumped for every core platform interface change.
-static constexpr int sdkVersion = 2;
+static constexpr int sdkVersion = 3;
 
 namespace facebook {
 namespace flipper {
-
 
 class ConnectionEvents : public rsocket::RSocketConnectionEvents {
  private:
@@ -189,10 +188,13 @@ void FlipperConnectionManagerImpl::connectSecurely() {
   if (deviceId.compare("unknown")) {
     loadingDeviceId->complete();
   }
-  parameters.payload = rsocket::Payload(
-      folly::toJson(folly::dynamic::object("os", deviceData_.os)(
-          "device", deviceData_.device)("device_id", deviceId)(
-          "app", deviceData_.app)("sdk_version", sdkVersion)));
+
+  parameters.payload = rsocket::Payload(folly::toJson(folly::dynamic::object(
+      "csr", contextStore_->getCertificateSigningRequest().c_str())(
+      "csr_path", contextStore_->getCertificateDirectoryPath().c_str())(
+      "os", deviceData_.os)("device", deviceData_.device)(
+      "device_id", deviceId)("app", deviceData_.app)(
+      "sdk_version", sdkVersion)));
   address.setFromHostPort(deviceData_.host, securePort);
 
   std::shared_ptr<folly::SSLContext> sslContext =
@@ -356,7 +358,6 @@ rsocket::Payload toRSocketPayload(dynamic data) {
             "Error: Skipping sending message larger than max rsocket payload: ") +
         json.substr(0, 100) + "...";
     log(logMessage);
-    DCHECK_LE(payloadLength, maxPayloadSize);
     throw std::length_error(logMessage);
   }
 

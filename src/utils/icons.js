@@ -14,29 +14,87 @@ const fs = require('fs');
 const path = require('path');
 const {remote} = require('electron');
 
+const ICONS = {
+  'app-dailies': [12],
+  'arrow-right': [12],
+  'bell-null': [12],
+  'caution-octagon': [16],
+  'caution-triangle': [16],
+  'chevron-down-outline': [10],
+  'chevron-down': [8],
+  'chevron-right': [8],
+  'cross-circle': [16],
+  'dots-3-circle-outline': [16],
+  'info-circle': [16],
+  'magic-wand': [20],
+  'magnifying-glass': [16, 20],
+  'minus-circle': [12],
+  'plus-circle': [16],
+  'question-circle-outline': [16],
+  'star-outline': [16, 24],
+  'triangle-down': [12],
+  'triangle-right': [12],
+  apps: [12],
+  bird: [12],
+  box: [12],
+  bug: [12],
+  camcorder: [12],
+  camera: [12],
+  desktop: [12],
+  directions: [12],
+  internet: [12],
+  mobile: [12],
+  posts: [20],
+  profile: [12],
+  rocket: [20],
+  settings: [12],
+  star: [16, 24],
+  target: [12],
+  tools: [20],
+};
+
+// Takes a string like 'star', or 'star-outline', and converts it to
+// {trimmedName: 'star', variant: 'filled'} or {trimmedName: 'star', variant: 'outline'}
+function getIconPartsFromName(icon) {
+  const isOutlineVersion = icon.endsWith('-outline');
+  const trimmedName = isOutlineVersion ? icon.replace('-outline', '') : icon;
+  const variant = isOutlineVersion ? 'outline' : 'filled';
+  return {trimmedName: trimmedName, variant: variant};
+}
+
+// $FlowFixMe not using flow in this file
+function buildLocalIconPath(name, size, density) {
+  const icon = getIconPartsFromName(name);
+  return path.join(
+    'icons',
+    `${icon.trimmedName}-${icon.variant}-${size}@${density}x.png`,
+  );
+}
+
+// $FlowFixMe not using flow in this file
+function buildIconURL(name, size, density) {
+  const icon = getIconPartsFromName(name);
+  const url = `https://external.xx.fbcdn.net/assets/?name=${
+    icon.trimmedName
+  }&variant=${
+    icon.variant
+  }&size=${size}&set=facebook_icons&density=${density}x`;
+  if (
+    typeof window !== 'undefined' &&
+    (!ICONS[name] || !ICONS[name].includes(size))
+  ) {
+    console.warn(
+      `Using uncached icon: "${name}: [${size}]" Add it to icons.js to preload it.`,
+    );
+  }
+  return url;
+}
+
 module.exports = {
-  ICONS: {
-    'arrow-right': [12],
-    'caution-octagon': [16],
-    'caution-triangle': [16],
-    'info-circle': [16],
-    'magic-wand': [20],
-    'magnifying-glass': [20],
-    'minus-circle': [12],
-    mobile: [12],
-    box: [12],
-    desktop: [12],
-    bug: [12],
-    posts: [20],
-    rocket: [20],
-    tools: [20],
-    'triangle-down': [12],
-    'triangle-right': [12],
-    'chevron-right': [8],
-    'chevron-down': [8],
-    star: [16],
-    'star-outline': [16],
-  },
+  ICONS: ICONS,
+
+  buildLocalIconPath: buildLocalIconPath,
+  buildIconURL: buildIconURL,
 
   // $FlowFixMe: not using flow in this file
   getIconURL(name, size, density) {
@@ -73,13 +131,7 @@ module.exports = {
       }
     }
 
-    let variant = 'filled';
-    if (name.endsWith('-outline')) {
-      name = name.replace('-outline', '');
-      variant = 'outline';
-    }
-
-    const localPath = path.join('icons', `${name}-${size}@${density}x.png`);
+    const localPath = buildLocalIconPath(name, size, density);
     // resolve icon locally if possible
     if (
       remote &&
@@ -87,6 +139,6 @@ module.exports = {
     ) {
       return localPath;
     }
-    return `https://external.xx.fbcdn.net/assets/?name=${name}&variant=${variant}&size=${requestedSize}&set=facebook_icons&density=${density}x`;
+    return buildIconURL(name, requestedSize, density);
   },
 };

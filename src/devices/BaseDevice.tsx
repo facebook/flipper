@@ -41,7 +41,7 @@ export type DeviceType =
   | 'archivedPhysical';
 
 export type DeviceExport = {
-  os: string;
+  os: OS;
   title: string;
   deviceType: DeviceType;
   serial: string;
@@ -51,10 +51,11 @@ export type DeviceExport = {
 export type OS = 'iOS' | 'Android' | 'Windows' | 'MacOS';
 
 export default class BaseDevice {
-  constructor(serial: string, deviceType: DeviceType, title: string) {
+  constructor(serial: string, deviceType: DeviceType, title: string, os: OS) {
     this.serial = serial;
     this.title = title;
     this.deviceType = deviceType;
+    this.os = os;
   }
 
   // operating system of this device
@@ -134,15 +135,29 @@ export default class BaseDevice {
     this.logListeners.delete(id);
   }
 
-  spawnShell(): DeviceShell | null | undefined {
-    throw new Error('unimplemented');
-  }
-
   navigateToLocation(location: string) {
     throw new Error('unimplemented');
   }
 
   archive(): any | null | undefined {
+    return null;
+  }
+
+  screenshot(): Promise<Buffer> {
+    return Promise.reject(
+      new Error('No screenshot support for current device'),
+    );
+  }
+
+  async screenCaptureAvailable(): Promise<boolean> {
+    return false;
+  }
+
+  async startScreenCapture(destination: string) {
+    throw new Error('startScreenCapture not implemented on BaseDevice ');
+  }
+
+  async stopScreenCapture(): Promise<string | null> {
     return null;
   }
 }

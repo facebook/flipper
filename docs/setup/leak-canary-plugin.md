@@ -5,10 +5,11 @@ sidebar_label: LeakCanary
 ---
 
 Ensure that you already have an explicit dependency in your application's
-`build.gradle`, e.g.
+`build.gradle` including the plugin dependency, e.g.
 
 ```groovy
 dependencies {
+  debugImplementation 'com.facebook.flipper:flipper-leakcanary-plugin:0.25.0'
   debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.6.1'
   releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.6.1'
 }
@@ -26,7 +27,7 @@ Next, build a custom RefWatcher using RecordLeakService: (see [LeakCanary docs](
 import com.facebook.flipper.plugins.leakcanary.RecordLeakService;
 
 RefWatcher refWatcher = LeakCanary.refWatcher(this)
-    .listenerServiceClass(RecordLeakService.class);
+    .listenerServiceClass(RecordLeakService.class)
     .buildAndInstall();
 ```
 

@@ -7,9 +7,10 @@
 import {getActiveAndroidDevices} from '../dispatcher/androidDevice';
 import {getActiveDevicesAndSimulators} from '../dispatcher/iOSDevice';
 import BaseDevice from '../devices/BaseDevice';
+import {Store} from '../reducers/index';
 
-export async function listDevices(): Promise<Array<BaseDevice>> {
-  const androidDevices = await getActiveAndroidDevices();
+export async function listDevices(store: Store): Promise<Array<BaseDevice>> {
+  const androidDevices = await getActiveAndroidDevices(store);
   const iOSDevices: BaseDevice[] = await getActiveDevicesAndSimulators();
   return iOSDevices.concat(androidDevices);
 }

@@ -31,10 +31,11 @@ import {
   updateCategoryBlacklist,
 } from './reducers/notifications';
 import {selectPlugin} from './reducers/connections';
-import {State as Store} from './reducers/index';
+import {State as StoreState} from './reducers/index';
 import textContent from './utils/textContent';
 import createPaste from './fb-stubs/createPaste';
 import {KeyboardActions} from './MenuBar';
+import {Store} from 'redux';
 
 export default class Notifications<
   S,
@@ -61,14 +62,12 @@ export default class Notifications<
   };
 
   onClear = () => {
-    this.context.store.dispatch(clearAllNotifications());
+    (this.context.store as Store<StoreState>).dispatch(clearAllNotifications());
   };
 
   render() {
-    const {
-      blacklistedPlugins,
-      blacklistedCategories,
-    } = this.context.store.getState().notifications;
+    const {blacklistedPlugins, blacklistedCategories} = (this.context
+      .store as Store<StoreState>).getState().notifications;
     return (
       <ConnectedNotificationsTable
         onClear={this.onClear}
@@ -78,13 +77,11 @@ export default class Notifications<
         defaultFilters={[
           ...blacklistedPlugins.map(value => ({
             value,
-            invertible: false,
             type: 'exclude',
             key: 'plugin',
           })),
           ...blacklistedCategories.map(value => ({
             value,
-            invertible: false,
             type: 'exclude',
             key: 'category',
           })),
@@ -103,7 +100,7 @@ type OwnProps = {
   onClear: () => void;
   selectedID: string | null | undefined;
   logger: Logger;
-} & SearchableProps;
+} & Partial<SearchableProps>;
 
 type StateFromProps = {
   activeNotifications: Array<PluginNotification>;
@@ -116,9 +113,9 @@ type StateFromProps = {
 
 type DispatchFromProps = {
   selectPlugin: (payload: {
-    selectedPlugin: string | null | undefined;
-    selectedApp: string | null | undefined;
-    deepLinkPayload: string | null | undefined;
+    selectedPlugin: string | null;
+    selectedApp: string | null;
+    deepLinkPayload: string | null;
   }) => any;
   updatePluginBlacklist: (blacklist: Array<string>) => any;
   updateCategoryBlacklist: (blacklist: Array<string>) => any;
@@ -161,13 +158,13 @@ const NoContent = styled(FlexColumn)({
   color: colors.light30,
 });
 
-class NotificationsTable extends Component<Props, State> {
+class NotificationsTable extends Component<Props & SearchableProps, State> {
   contextMenuItems = [{label: 'Clear all', click: this.props.onClear}];
   state: State = {
     selectedNotification: this.props.selectedID,
   };
 
-  componentDidUpdate(prevProps: Props) {
+  componentDidUpdate(prevProps: Props & SearchableProps) {
     if (this.props.filters.length !== prevProps.filters.length) {
       this.props.updatePluginBlacklist(
         this.props.filters
@@ -200,7 +197,6 @@ class NotificationsTable extends Component<Props, State> {
       value: pluginId,
       type: 'exclude',
       key: 'plugin',
-      invertible: false,
     });
     this.props.updatePluginBlacklist(
       this.props.blacklistedPlugins.concat(pluginId),
@@ -213,7 +209,6 @@ class NotificationsTable extends Component<Props, State> {
       value: category,
       type: 'exclude',
       key: 'category',
-      invertible: false,
     });
     this.props.updatePluginBlacklist(
       this.props.blacklistedCategories.concat(category),
@@ -334,7 +329,7 @@ const ConnectedNotificationsTable = connect<
   StateFromProps,
   DispatchFromProps,
   OwnProps,
-  Store
+  StoreState
 >(
   ({
     notifications: {
@@ -379,7 +374,13 @@ const SEVERITY_COLOR_MAP = {
   error: colors.red,
 };
 
-const NotificationBox = styled(FlexRow)(props => ({
+type NotificationBoxProps = {
+  inactive?: boolean;
+  isSelected?: boolean;
+  severity: keyof typeof SEVERITY_COLOR_MAP;
+};
+
+const NotificationBox = styled(FlexRow)((props: NotificationBoxProps) => ({
   backgroundColor: props.inactive ? 'transparent' : colors.white,
   opacity: props.inactive ? 0.5 : 1,
   alignItems: 'flex-start',
@@ -418,15 +419,17 @@ const Title = styled('div')({
   fontSize: '1.1em',
 });
 
-const NotificationContent = styled(FlexColumn)(props => ({
-  marginLeft: 6,
-  marginRight: 10,
-  flexGrow: 1,
-  overflow: 'hidden',
-  maxHeight: props.isSelected ? 'none' : 56,
-  lineHeight: 1.4,
-  color: props.isSelected ? colors.light50 : colors.light30,
-}));
+const NotificationContent = styled(FlexColumn)(
+  (props: {isSelected?: boolean}) => ({
+    marginLeft: 6,
+    marginRight: 10,
+    flexGrow: 1,
+    overflow: 'hidden',
+    maxHeight: props.isSelected ? 'none' : 56,
+    lineHeight: 1.4,
+    color: props.isSelected ? colors.light50 : colors.light30,
+  }),
+);
 
 const Actions = styled(FlexRow)({
   alignItems: 'center',
@@ -466,9 +469,9 @@ type ItemProps = {
   isSelected?: boolean;
   inactive?: boolean;
   selectPlugin?: (payload: {
-    selectedPlugin: string | null | undefined;
-    selectedApp: string | null | undefined;
-    deepLinkPayload: string | null | undefined;
+    selectedPlugin: string | null;
+    selectedApp: string | null;
+    deepLinkPayload: string | null;
   }) => any;
   logger?: Logger;
   plugin: typeof FlipperBasePlugin | null | undefined;
@@ -506,7 +509,7 @@ class NotificationItem extends Component<
   }
 
   state = {reportedNotHelpful: false};
-  contextMenuItems;
+  contextMenuItems: Array<{label: string; click: (() => any) | undefined}>;
   deepLinkButton = React.createRef();
 
   createPaste = () => {
@@ -537,7 +540,7 @@ class NotificationItem extends Component<
     }
   };
 
-  reportNotUseful = (e: UIEvent) => {
+  reportNotUseful = (e: React.MouseEvent<any>) => {
     e.preventDefault();
     e.stopPropagation();
     if (this.props.logger) {
@@ -550,7 +553,7 @@ class NotificationItem extends Component<
     this.setState({reportedNotHelpful: true});
   };
 
-  onHide = (e: UIEvent) => {
+  onHide = (e: React.MouseEvent<any>) => {
     e.preventDefault();
     e.stopPropagation();
     if (this.props.onHideCategory) {
@@ -572,7 +575,7 @@ class NotificationItem extends Component<
     const {action} = notification;
 
     return (
-      <ContextMenu
+      <ContextMenu<React.ComponentProps<typeof NotificationBox>>
         data-role="notification"
         component={NotificationBox}
         severity={notification.severity}
@@ -617,16 +620,16 @@ class NotificationItem extends Component<
         {action && !inactive && !isSelected && (
           <FlexColumn style={{alignSelf: 'center'}}>
             {action && (
-              <NotificationButton compact onClick={this.openDeeplink}>
+              <NotificationButton onClick={this.openDeeplink}>
                 Open
               </NotificationButton>
             )}
             {this.state.reportedNotHelpful ? (
-              <NotificationButton compact onClick={this.onHide}>
+              <NotificationButton onClick={this.onHide}>
                 Hide
               </NotificationButton>
             ) : (
-              <NotificationButton compact onClick={this.reportNotUseful}>
+              <NotificationButton onClick={this.reportNotUseful}>
                 Not helpful
               </NotificationButton>
             )}

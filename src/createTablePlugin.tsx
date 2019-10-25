@@ -21,6 +21,7 @@ import createPaste from './fb-stubs/createPaste';
 import {List, Map as ImmutableMap} from 'immutable';
 import React from 'react';
 import {KeyboardActions} from './MenuBar';
+import {TableBodyRow} from './ui';
 
 type ID = string;
 
@@ -60,7 +61,6 @@ type State = {
  * the client in an unknown state.
  */
 export function createTablePlugin<T extends RowData>(props: Props<T>) {
-  // @ts-ignore
   return class extends FlipperPlugin<State, any, PersistedState<T>> {
     static keyboardActions: KeyboardActions = ['clear', 'createPaste'];
 
@@ -97,7 +97,7 @@ export function createTablePlugin<T extends RowData>(props: Props<T>) {
       }
     };
 
-    state = {
+    state: State = {
       selectedIds: [],
     };
 
@@ -121,7 +121,7 @@ export function createTablePlugin<T extends RowData>(props: Props<T>) {
 
     createPaste = () => {
       let paste = '';
-      const mapFn = row =>
+      const mapFn = (row: TableBodyRow) =>
         Object.keys(props.columns)
           .map(key => textContent(row.columns[key].value))
           .join('\t');
@@ -129,7 +129,9 @@ export function createTablePlugin<T extends RowData>(props: Props<T>) {
       if (this.state.selectedIds.length > 0) {
         // create paste from selection
         paste = this.props.persistedState.rows
-          .filter(row => this.state.selectedIds.indexOf(row.key) > -1)
+          .filter(
+            (row: TableBodyRow) => this.state.selectedIds.indexOf(row.key) > -1,
+          )
           .map(mapFn)
           .join('\n');
       } else {

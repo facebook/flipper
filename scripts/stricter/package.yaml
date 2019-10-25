@@ -1,0 +1,16 @@
+name:                stricter
+version:             0.0.2
+
+dependencies:
+  - base >= 4.7 && < 5
+  - turtle
+  - typed-process
+  - system-filepath
+  - foldl
+  - text
+  - bytestring
+
+executables:
+  stricter:
+    source-dirs:      .
+    main:             stricter.hs

@@ -16,12 +16,11 @@ Flipper (formerly Sonar) is a platform for debugging mobile apps on iOS and Andr
   - [Desktop](#desktop)
     - [Running from source](#running-from-source)
     - [Building standalone application](#building-standalone-application)
-  - [iOS SDK + Sample App](#ios-sdk--sample-app)
-  - [Android SDK + Sample app](#android-sdk--sample-app)
-  - [Documentation](#documentation)
-  - [Contributing](#contributing)
-  - [License](#license)
-
+- [iOS SDK + Sample App](#ios-sdk--sample-app)
+- [Android SDK + Sample app](#android-sdk--sample-app)
+- [Documentation](#documentation)
+- [Contributing](#contributing)
+- [License](#license)
 
 ## Mobile development
 
@@ -55,7 +54,6 @@ Please refer to our [Getting Started guide](https://fbflipper.com/docs/getting-s
 
 ## Requirements
 
-* macOS (Flipper works on Linux and Windows, too, but we only support macOS officially at the moment.)
 * node >= 8
 * yarn >= 1.5
 * iOS developer tools (for developing iOS plugins)
@@ -77,9 +75,15 @@ NOTE: If you're on Windows, you need to use Yarn 1.5.1 until [this issue](https:
 
 ### Building standalone application
 
+Provide either `--mac`, `--win`, `--linux` or any combination of them
+to `yarn build` to build a release zip file for the given platform(s). E.g.
+
 ```
 yarn build --mac --version $buildNumber
 ```
+
+You can find the resulting artifact in the `dist/` folder.
+
 ## iOS SDK + Sample App
 
 ```

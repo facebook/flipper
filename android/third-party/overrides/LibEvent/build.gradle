@@ -30,7 +30,7 @@ android {
     }
     externalNativeBuild {
         cmake {
-            path 'libevent-release-2.1.9/CMakeLists.txt'
+            path 'libevent-2.1.11-stable/CMakeLists.txt'
         }
     }
 }

@@ -1,10 +1,11 @@
 {
   "name": "DeviceCPU",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "index.tsx",
   "license": "MIT",
+  "keywords": ["flipper-plugin"],
   "dependencies": {
-    "adbkit-fb": "2.10.1"
+    "adbkit": "^2.11.1"
   },
   "title": "CPU",
   "icon": "underline",

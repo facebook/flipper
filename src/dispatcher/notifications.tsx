@@ -6,7 +6,7 @@
  */
 
 import {Store} from '../reducers/index';
-import {Logger} from '../fb-interfaces/Logger.js';
+import {Logger} from '../fb-interfaces/Logger';
 import {PluginNotification} from '../reducers/notifications';
 import {FlipperPlugin, FlipperDevicePlugin} from '../plugin';
 import isHeadless from '../utils/isHeadless';
@@ -35,7 +35,7 @@ export default (store: Store, logger: Logger) => {
   ipcRenderer.on(
     'notificationEvent',
     (
-      e,
+      _e: Error,
       eventName: NotificationEvents,
       pluginNotification: PluginNotification,
       arg: null | string | number,
@@ -107,7 +107,13 @@ export default (store: Store, logger: Logger) => {
         const split = key.split('#');
         const pluginId = split.pop();
         const client = split.join('#');
+
+        if (!pluginId) {
+          return;
+        }
+
         const persistingPlugin:
+          | undefined
           | typeof FlipperPlugin
           | typeof FlipperDevicePlugin = pluginMap.get(pluginId);
         if (persistingPlugin && persistingPlugin.getActiveNotifications) {
@@ -152,10 +158,10 @@ export default (store: Store, logger: Logger) => {
           // within the NOTIFICATION_THROTTLE.
           return;
         }
+        const plugin = pluginMap.get(n.pluginId);
         ipcRenderer.send('sendNotification', {
           payload: {
             title: n.notification.title,
-            // @ts-ignore Remove this when textContent is converted to tsx
             body: textContent(n.notification.message),
             actions: [
               {
@@ -168,7 +174,7 @@ export default (store: Store, logger: Logger) => {
               },
               {
                 type: 'button',
-                text: `Hide all ${pluginMap.get(n.pluginId).title || ''}`,
+                text: `Hide all ${plugin != null ? plugin.title : ''}`,
               },
             ],
             closeButtonText: 'Hide',

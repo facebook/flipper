@@ -19,12 +19,18 @@ import {reportPlatformFailures} from './utils/metrics';
 import EventEmitter from 'events';
 import invariant from 'invariant';
 import tls from 'tls';
-import net from 'net';
+import net, {Socket} from 'net';
 import {RSocketClientSocket} from 'rsocket-core/RSocketClient';
+import {Responder, Payload, ReactiveSocket} from 'rsocket-types';
 
 type ClientInfo = {
   connection: RSocketClientSocket<any, any> | null | undefined;
   client: Client;
+};
+
+type ClientCsrQuery = {
+  csr?: string | undefined;
+  csr_path?: string | undefined;
 };
 
 declare interface Server {
@@ -33,22 +39,36 @@ declare interface Server {
   on(event: 'clients-change', callback: () => void): this;
 }
 
+function appNameWithUpdateHint(query: ClientQuery): string {
+  // in previous version (before 3), app may not appear in correct device
+  // section because it refers to the name given by client which is not fixed
+  // for android emulators, so it is indicated as outdated so that developers
+  // might want to update SDK to get rid of this connection swap problem
+  if (!query.sdk_version || query.sdk_version < 3) {
+    return query.app + ' (Outdated SDK)';
+  }
+  return query.app;
+}
+
 class Server extends EventEmitter {
   connections: Map<string, ClientInfo>;
-  secureServer: Promise<RSocketServer<any, any>>;
-  insecureServer: Promise<RSocketServer<any, any>>;
+  secureServer: Promise<RSocketServer<any, any>> | null;
+  insecureServer: Promise<RSocketServer<any, any>> | null;
   certificateProvider: CertificateProvider;
   connectionTracker: ConnectionTracker;
   logger: Logger;
   store: Store;
-  initialisePromise: Promise<void>;
+  initialisePromise: Promise<void> | null;
 
   constructor(logger: Logger, store: Store) {
     super();
     this.logger = logger;
     this.connections = new Map();
-    this.certificateProvider = new CertificateProvider(this, logger);
+    this.certificateProvider = new CertificateProvider(this, logger, store);
     this.connectionTracker = new ConnectionTracker(logger);
+    this.secureServer = null;
+    this.insecureServer = null;
+    this.initialisePromise = null;
     this.store = store;
   }
 
@@ -72,7 +92,7 @@ class Server extends EventEmitter {
     const server = this;
     return new Promise((resolve, reject) => {
       let rsServer: RSocketServer<any, any> | undefined; // eslint-disable-line prefer-const
-      const serverFactory = onConnect => {
+      const serverFactory = (onConnect: (socket: Socket) => void) => {
         const transportServer = sslConfig
           ? tls.createServer(sslConfig, socket => {
               onConnect(socket);
@@ -96,7 +116,6 @@ class Server extends EventEmitter {
           });
         return transportServer;
       };
-
       rsServer = new RSocketServer({
         getRequestHandler: sslConfig
           ? this._trustedRequestHandler
@@ -106,26 +125,36 @@ class Server extends EventEmitter {
           serverFactory: serverFactory,
         }),
       });
-      rsServer.start();
+      rsServer && rsServer.start();
     });
   }
 
   _trustedRequestHandler = (
-    conn: RSocketClientSocket<any, any>,
-    connectRequest: {data: string},
-  ) => {
+    socket: ReactiveSocket<string, any>,
+    payload: Payload<string, any>,
+  ): Partial<Responder<string, any>> => {
     const server = this;
-
-    const clientData: ClientQuery = JSON.parse(connectRequest.data);
+    if (!payload.data) {
+      return {};
+    }
+    const clientData: ClientQuery & ClientCsrQuery = JSON.parse(payload.data);
     this.connectionTracker.logConnectionAttempt(clientData);
 
-    const client = this.addConnection(conn, clientData);
+    const {app, os, device, device_id, sdk_version, csr, csr_path} = clientData;
 
-    conn.connectionStatus().subscribe({
+    const client: Promise<Client> = this.addConnection(
+      socket,
+      {app, os, device, device_id, sdk_version},
+      {csr, csr_path},
+    );
+
+    socket.connectionStatus().subscribe({
       onNext(payload) {
         if (payload.kind == 'ERROR' || payload.kind == 'CLOSED') {
-          console.debug(`Device disconnected ${client.id}`, 'server');
-          server.removeConnection(client.id);
+          client.then(client => {
+            console.debug(`Device disconnected ${client.id}`, 'server');
+            server.removeConnection(client.id);
+          });
         }
       },
       onSubscribe(subscription) {
@@ -133,27 +162,39 @@ class Server extends EventEmitter {
       },
     });
 
-    return client.responder;
+    return {
+      fireAndForget: (payload: {data: string}) =>
+        client.then(client => {
+          client.rIC(() => client.onMessage(payload.data), {
+            timeout: 500,
+          });
+        }),
+    };
   };
 
   _untrustedRequestHandler = (
-    _conn: RSocketClientSocket<any, any>,
-    connectRequest: {data: string},
-  ) => {
-    const clientData: ClientQuery = JSON.parse(connectRequest.data);
+    socket: ReactiveSocket<string, any>,
+    payload: Payload<string, any>,
+  ): Partial<Responder<string, any>> => {
+    if (!payload.data) {
+      return {};
+    }
+    const clientData: ClientQuery = JSON.parse(payload.data);
     this.connectionTracker.logConnectionAttempt(clientData);
 
     const client: UninitializedClient = {
       os: clientData.os,
       deviceName: clientData.device,
-      appName: clientData.app,
+      appName: appNameWithUpdateHint(clientData),
     };
     this.emit('start-client-setup', client);
 
     return {
-      requestResponse: (payload: {data: string}) => {
+      requestResponse: (
+        payload: Payload<string, any>,
+      ): Single<Payload<string, any>> => {
         if (typeof payload.data !== 'string') {
-          return;
+          return new Single(_ => {});
         }
 
         let rawData;
@@ -165,7 +206,7 @@ class Server extends EventEmitter {
             'clientMessage',
             'server',
           );
-          return;
+          return new Single(_ => {});
         }
 
         const json: {
@@ -205,12 +246,13 @@ class Server extends EventEmitter {
               });
           });
         }
+        return new Single(_ => {});
       },
 
       // Leaving this here for a while for backwards compatibility,
       // but for up to date SDKs it will no longer used.
       // We can delete it after the SDK change has been using requestResponse for a few weeks.
-      fireAndForget: (payload: {data: string}) => {
+      fireAndForget: (payload: Payload<string, any>) => {
         if (typeof payload.data !== 'string') {
           return;
         }
@@ -229,7 +271,7 @@ class Server extends EventEmitter {
           return;
         }
 
-        if (json.method === 'signCertificate') {
+        if (json && json.method === 'signCertificate') {
           console.debug('CSR received from device', 'server');
           const {csr, destination} = json;
           this.certificateProvider
@@ -246,8 +288,9 @@ class Server extends EventEmitter {
     if (this.initialisePromise) {
       return this.initialisePromise.then(_ => {
         return Promise.all([
-          this.secureServer.then(server => server.stop()),
-          this.insecureServer.then(server => server.stop()),
+          this.secureServer && this.secureServer.then(server => server.stop()),
+          this.insecureServer &&
+            this.insecureServer.then(server => server.stop()),
         ]).then(() => undefined);
       });
     }
@@ -258,49 +301,68 @@ class Server extends EventEmitter {
     return null;
   }
 
-  addConnection(
+  async addConnection(
     conn: RSocketClientSocket<any, any>,
     query: ClientQuery,
-  ): Client {
+    csrQuery: ClientCsrQuery,
+  ): Promise<Client> {
     invariant(query, 'expected query');
 
-    const id = `${query.app}#${query.os}#${query.device}#${query.device_id}`;
-    console.debug(`Device connected: ${id}`, 'server');
+    // try to get id by comparing giving `csr` to file from `csr_path`
+    // otherwise, use given device_id
+    const {csr_path, csr} = csrQuery;
+    return (csr_path && csr
+      ? this.certificateProvider.extractAppNameFromCSR(csr).then(appName => {
+          return this.certificateProvider.getTargetDeviceId(
+            query.os,
+            appName,
+            csr_path,
+            csr,
+          );
+        })
+      : Promise.resolve(query.device_id)
+    ).then(csrId => {
+      query.device_id = csrId;
+      query.app = appNameWithUpdateHint(query);
 
-    const client = new Client(id, query, conn, this.logger, this.store);
+      const id = `${query.app}#${query.os}#${query.device}#${csrId}`;
+      console.debug(`Device connected: ${id}`, 'server');
 
-    const info = {
-      client,
-      connection: conn,
-    };
+      const client = new Client(id, query, conn, this.logger, this.store);
 
-    client.init().then(() => {
-      console.debug(
-        `Device client initialised: ${id}. Supported plugins: ${client.plugins.join(
-          ', ',
-        )}`,
-        'server',
-      );
+      const info = {
+        client,
+        connection: conn,
+      };
 
-      /* If a device gets disconnected without being cleaned up properly,
-       * Flipper won't be aware until it attempts to reconnect.
-       * When it does we need to terminate the zombie connection.
-       */
-      if (this.connections.has(id)) {
-        const connectionInfo = this.connections.get(id);
-        connectionInfo &&
-          connectionInfo.connection &&
-          connectionInfo.connection.close();
-        this.removeConnection(id);
-      }
+      client.init().then(() => {
+        console.debug(
+          `Device client initialised: ${id}. Supported plugins: ${client.plugins.join(
+            ', ',
+          )}`,
+          'server',
+        );
 
-      this.connections.set(id, info);
-      this.emit('new-client', client);
-      this.emit('clients-change');
-      client.emit('plugins-change');
+        /* If a device gets disconnected without being cleaned up properly,
+         * Flipper won't be aware until it attempts to reconnect.
+         * When it does we need to terminate the zombie connection.
+         */
+        if (this.connections.has(id)) {
+          const connectionInfo = this.connections.get(id);
+          connectionInfo &&
+            connectionInfo.connection &&
+            connectionInfo.connection.close();
+          this.removeConnection(id);
+        }
+
+        this.connections.set(id, info);
+        this.emit('new-client', client);
+        this.emit('clients-change');
+        client.emit('plugins-change');
+      });
+
+      return client;
     });
-
-    return client;
   }
 
   attachFakeClient(client: Client) {

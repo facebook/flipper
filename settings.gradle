@@ -6,7 +6,6 @@
 
 include ':android'
 include ':folly'
-include ':fbjni'
 include ':easywsclient'
 include ':sonarcpp'
 include ':sample'
@@ -18,7 +17,6 @@ include ':rsocket'
 include ':third-party'
 include ':noop'
 
-project(':fbjni').projectDir = file('libs/fbjni')
 project(':easywsclient').projectDir = file('libs/easywsclient')
 project(':sonarcpp').projectDir = file('xplat')
 project(':sample').projectDir = file('android/sample')
@@ -31,3 +29,16 @@ project(':libevent').projectDir = file('android/third-party/external/LibEvent/')
 project(':rsocket').projectDir = file('android/third-party/external/RSocket/')
 project(':third-party').projectDir = file('android/third-party/')
 project(':noop').projectDir = file('android/no-op/')
+
+// Plugins
+include ':fresco-plugin'
+project(':fresco-plugin').projectDir = file('android/plugins/fresco')
+
+include ':network-plugin'
+project(':network-plugin').projectDir = file('android/plugins/network')
+
+include ':litho-plugin'
+project(':litho-plugin').projectDir = file('android/plugins/litho')
+
+include ':leakcanary-plugin'
+project(':leakcanary-plugin').projectDir = file('android/plugins/leakcanary')

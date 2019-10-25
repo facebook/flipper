@@ -5,7 +5,7 @@
  * @format
  */
 
-import {addEntriesToState, processEntry} from '../index';
+import {addEntriesToState, processEntry} from '../index.tsx';
 
 const entry = {
   tag: 'OpenGLRenderer',
