@@ -48,7 +48,7 @@ export type PersistedState = {
 };
 
 type PluginState = {
-  selectedSurface: string,
+  selectedSurfaces: Set<string>,
   selectedImage: ?ImageId,
   isDebugOverlayEnabled: boolean,
   isAutoRefreshEnabled: boolean,
@@ -272,7 +272,7 @@ export default class FlipperImagesPlugin extends FlipperPlugin<
   nextEventId: number = 1;
 
   state = {
-    selectedSurface: surfaceDefaultText,
+    selectedSurfaces: new Set([surfaceDefaultText]),
     selectedImage: null,
     isDebugOverlayEnabled: false,
     isAutoRefreshEnabled: false,
@@ -283,12 +283,13 @@ export default class FlipperImagesPlugin extends FlipperPlugin<
   filterImages = (
     images: ImagesList,
     events: Array<ImageEventWithId>,
-    surface: string,
+    surfaces: Set<string>,
     coldStart: boolean,
   ): ImagesList => {
-    if (!surface || (surface === surfaceDefaultText && !coldStart)) {
+    if (!surfaces || (surfaces.has(surfaceDefaultText) && !coldStart)) {
       return images;
     }
+
     const imageList = images.map((image: CacheInfo) => {
       const imageIdList = image.imageIds.filter(imageID => {
         const filteredEvents = events.filter((event: ImageEventWithId) => {
@@ -298,13 +299,14 @@ export default class FlipperImagesPlugin extends FlipperPlugin<
             event.imageIds &&
             event.imageIds.includes(imageID);
 
-          if (surface === surfaceDefaultText) {
+          if (surfaces.has(surfaceDefaultText)) {
             return output && coldStart && event.coldStart;
           }
+
           return (
             (!coldStart || (coldStart && event.coldStart)) &&
             output &&
-            event.attribution[0] == surface
+            surfaces.has(event.attribution[0])
           );
         });
         return filteredEvents.length > 0;
@@ -330,9 +332,10 @@ export default class FlipperImagesPlugin extends FlipperPlugin<
     const images = this.filterImages(
       this.props.persistedState.images,
       this.props.persistedState.events,
-      this.state.selectedSurface,
+      this.state.selectedSurfaces,
       this.state.coldStartFilter,
     );
+
     this.setState({images});
   }
 
@@ -342,17 +345,18 @@ export default class FlipperImagesPlugin extends FlipperPlugin<
 
   updateImagesOnUI = (
     images: ImagesList,
-    surface: string,
+    surfaces: Set<string>,
     coldStart: boolean,
   ) => {
     const filteredImages = this.filterImages(
       images,
       this.props.persistedState.events,
-      surface,
+      surfaces,
       coldStart,
     );
+
     this.setState({
-      selectedSurface: surface,
+      selectedSurfaces: surfaces,
       images: filteredImages,
       coldStartFilter: coldStart,
     });
@@ -366,7 +370,7 @@ export default class FlipperImagesPlugin extends FlipperPlugin<
       this.props.setPersistedState({images: response.levels});
       this.updateImagesOnUI(
         this.props.persistedState.images,
-        this.state.selectedSurface,
+        this.state.selectedSurfaces,
         this.state.coldStartFilter,
       );
     });
@@ -431,10 +435,10 @@ export default class FlipperImagesPlugin extends FlipperPlugin<
     return <ImagesSidebar image={maybeImage} events={events} />;
   };
 
-  onSurfaceChange = (surface: string) => {
+  onSurfaceChange = (surfaces: Set<string>) => {
     this.updateImagesOnUI(
       this.props.persistedState.images,
-      surface,
+      surfaces,
       this.state.coldStartFilter,
     );
   };
@@ -442,7 +446,7 @@ export default class FlipperImagesPlugin extends FlipperPlugin<
   onColdStartChange = (checked: boolean) => {
     this.updateImagesOnUI(
       this.props.persistedState.images,
-      this.state.selectedSurface,
+      this.state.selectedSurfaces,
       checked,
     );
   };
@@ -457,15 +461,22 @@ export default class FlipperImagesPlugin extends FlipperPlugin<
   render() {
     const options = [...this.props.persistedState.surfaceList].reduce(
       (acc, item) => {
-        return {...acc, [item]: item};
+        return [...acc, item];
       },
-      {[surfaceDefaultText]: surfaceDefaultText},
+      [surfaceDefaultText],
     );
+    let {selectedSurfaces} = this.state;
+
+    if (selectedSurfaces.has(surfaceDefaultText)) {
+      selectedSurfaces = new Set(options);
+    }
+
     return (
       <React.Fragment>
         <ImagesCacheOverview
-          surfaceOptions={options}
-          selectedSurface={this.state.selectedSurface}
+          allSurfacesOption={surfaceDefaultText}
+          surfaceOptions={new Set(options)}
+          selectedSurfaces={selectedSurfaces}
           onChangeSurface={this.onSurfaceChange}
           coldStartFilter={this.state.coldStartFilter}
           onColdStartChange={this.onColdStartChange}

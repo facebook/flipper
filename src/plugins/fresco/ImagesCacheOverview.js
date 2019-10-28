@@ -24,6 +24,7 @@ import {
   ToggleButton,
   Text,
 } from 'flipper';
+import MultipleSelect from './MultipleSelect.js';
 import type {ImagesMap} from './ImagePool.js';
 import {clipboard} from 'electron';
 import {PureComponent} from 'react';
@@ -69,9 +70,10 @@ function Toggle(props: ToggleProps) {
 type ImagesCacheOverviewProps = {
   onColdStartChange: (checked: boolean) => void,
   coldStartFilter: boolean,
-  surfaceOptions: {[key: string]: string},
-  selectedSurface: string,
-  onChangeSurface: (key: string) => void,
+  allSurfacesOption: string,
+  surfaceOptions: Set<string>,
+  selectedSurfaces: Set<string>,
+  onChangeSurface: (key: Set<string>) => void,
   images: ImagesList,
   onClear: (type: string) => void,
   onTrimMemory: () => void,
@@ -152,12 +154,47 @@ export default class ImagesCacheOverview extends PureComponent<
   onChangeSize = (e: SyntheticInputEvent<HTMLInputElement>) =>
     this.setState({size: parseInt(e.target.value, 10)});
 
+  onSurfaceOptionsChange = (selectedItem: string, checked: boolean) => {
+    const {allSurfacesOption, surfaceOptions} = this.props;
+    const selectedSurfaces = new Set([...this.props.selectedSurfaces]);
+
+    if (checked && selectedItem === allSurfacesOption) {
+      this.props.onChangeSurface(surfaceOptions);
+
+      return;
+    }
+
+    if (!checked && selectedSurfaces.size === 1) {
+      return;
+    }
+
+    if (selectedItem !== allSurfacesOption) {
+      selectedSurfaces.delete(allSurfacesOption);
+
+      if (checked) {
+        selectedSurfaces.add(selectedItem);
+      } else {
+        selectedSurfaces.delete(selectedItem);
+      }
+    }
+
+    if (
+      surfaceOptions.size - selectedSurfaces.size === 1 &&
+      !selectedSurfaces.has(allSurfacesOption)
+    ) {
+      selectedSurfaces.add(allSurfacesOption);
+    }
+
+    this.props.onChangeSurface(selectedSurfaces);
+  };
+
   render() {
     const hasImages =
       this.props.images.reduce(
         (c, cacheInfo) => c + cacheInfo.imageIds.length,
         0,
       ) > 0;
+
     return (
       <ImagesCacheOverview.Container
         grow={true}
@@ -168,10 +205,11 @@ export default class ImagesCacheOverview extends PureComponent<
             Trim Memory
           </Button>
           <Button onClick={this.props.onRefresh}>Refresh</Button>
-          <StyledSelect
+          <MultipleSelect
+            selected={this.props.selectedSurfaces}
             options={this.props.surfaceOptions}
-            selected={this.props.selectedSurface}
-            onChange={this.props.onChangeSurface}
+            onChange={this.onSurfaceOptionsChange}
+            label="Surfaces"
           />
           <Toggle
             onClick={this.onEnableAutoRefreshToggled}
@@ -208,7 +246,7 @@ export default class ImagesCacheOverview extends PureComponent<
           </ImagesCacheOverview.Empty>
         ) : (
           <ImagesCacheOverview.Content>
-            {this.props.images.map(data => {
+            {this.props.images.map((data, index) => {
               const maxSize = data.maxSizeBytes;
               const subtitle = maxSize
                 ? formatMB(data.sizeBytes) + ' / ' + formatMB(maxSize)
@@ -218,6 +256,7 @@ export default class ImagesCacheOverview extends PureComponent<
                 : null;
               return (
                 <ImageGrid
+                  key={index}
                   title={data.cacheType}
                   subtitle={subtitle}
                   images={data.imageIds}
