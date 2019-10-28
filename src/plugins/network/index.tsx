@@ -309,23 +309,23 @@ export default class extends FlipperPlugin<State, any, PersistedState> {
 }
 
 type NetworkTableProps = {
-  requests: {[id: string]: Request},
-  responses: {[id: string]: Response},
-  clear: () => void,
-  copyRequestCurlCommand: () => void,
-  onRowHighlighted: (keys: TableHighlightedRows) => void,
+  requests: {[id: string]: Request};
+  responses: {[id: string]: Response};
+  clear: () => void;
+  copyRequestCurlCommand: () => void;
+  onRowHighlighted: (keys: TableHighlightedRows) => void;
   highlightedRows: Set<string> | null | undefined;
-  routes: Map<RequestId, Route>,
-  handleRoutesChange: (routes: Map<RequestId, Route>) => void,
-  onMockButtonPressed: () => void,
-  onCloseButtonPressed: () => void,
-  showMockResponseDialog: boolean,
-  isMockResponseSupported: boolean,
+  routes: Map<RequestId, Route>;
+  handleRoutesChange: (routes: Map<RequestId, Route>) => void;
+  onMockButtonPressed: () => void;
+  onCloseButtonPressed: () => void;
+  showMockResponseDialog: boolean;
+  isMockResponseSupported: boolean;
 };
 
 type NetworkTableState = {
-  sortedRows: TableRows,
-  routes: Map<RequestId, Route>,
+  sortedRows: TableRows;
+  routes: Map<RequestId, Route>;
 };
 
 function formatTimestamp(timestamp: number): string {
@@ -543,7 +543,7 @@ class NetworkTable extends PureComponent<NetworkTableProps, NetworkTableState> {
 
   render() {
     return (
-      <NetworkTable.ContextMenu 
+      <NetworkTable.ContextMenu
         items={this.contextMenuItems()}
         component={FlexColumn}>
         {this.props.showMockResponseDialog ? (
