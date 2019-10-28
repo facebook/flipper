@@ -118,6 +118,12 @@ const PluginName = styled(Text)(
   }),
 );
 
+const CategoryName = styled(PluginName)({
+  color: colors.macOSSidebarSectionTitle,
+  textTransform: 'uppercase',
+  fontSize: '0.9em',
+});
+
 const Plugins = styled(FlexColumn)({
   flexGrow: 1,
   overflow: 'auto',
@@ -386,34 +392,45 @@ class MainSidebar extends PureComponent<Props, State> {
               return (
                 <React.Fragment key={client.id}>
                   <SidebarHeader>{client.query.app}</SidebarHeader>
-                  {plugins
-                    .sort((a: typeof FlipperPlugin, b: typeof FlipperPlugin) =>
-                      client.byClientLRU(plugins.length, a, b),
-                    )
-                    .slice(
-                      0,
-                      client.showAllPlugins
-                        ? client.plugins.length
-                        : minShowPluginsCount,
-                    )
-                    .map((plugin: typeof FlipperPlugin) => (
-                      <PluginSidebarListItem
-                        key={plugin.id}
-                        isActive={
-                          plugin.id === selectedPlugin &&
-                          selectedApp === client.id
-                        }
-                        onClick={() =>
-                          selectPlugin({
-                            selectedPlugin: plugin.id,
-                            selectedApp: client.id,
-                            deepLinkPayload: null,
-                          })
-                        }
-                        plugin={plugin}
-                        app={client.query.app}
-                      />
-                    ))}
+                  {groupPluginsByCategory(
+                    plugins
+                      .sort(
+                        (a: typeof FlipperPlugin, b: typeof FlipperPlugin) =>
+                          client.byClientLRU(plugins.length, a, b),
+                      )
+                      .slice(
+                        0,
+                        client.showAllPlugins
+                          ? client.plugins.length
+                          : minShowPluginsCount,
+                      ),
+                  ).map(([category, plugins]) => (
+                    <>
+                      {category && (
+                        <ListItem>
+                          <CategoryName>{category}</CategoryName>
+                        </ListItem>
+                      )}
+                      {plugins.map(plugin => (
+                        <PluginSidebarListItem
+                          key={plugin.id}
+                          isActive={
+                            plugin.id === selectedPlugin &&
+                            selectedApp === client.id
+                          }
+                          onClick={() =>
+                            selectPlugin({
+                              selectedPlugin: plugin.id,
+                              selectedApp: client.id,
+                              deepLinkPayload: null,
+                            })
+                          }
+                          plugin={plugin}
+                          app={client.query.app}
+                        />
+                      ))}
+                    </>
+                  ))}
                   {plugins.length > minShowPluginsCount && (
                     <PluginShowMoreOrLess
                       onClick={() =>
@@ -450,6 +467,27 @@ class MainSidebar extends PureComponent<Props, State> {
       </Sidebar>
     );
   }
+}
+
+type PluginsByCategory = [string, (typeof FlipperPlugin)[]][];
+
+function groupPluginsByCategory(
+  plugins: (typeof FlipperPlugin)[],
+): PluginsByCategory {
+  // Pre condition: plugins are already sorted globally
+  const byCategory: {[cat: string]: (typeof FlipperPlugin)[]} = {};
+  const res: PluginsByCategory = [];
+  plugins.forEach(plugin => {
+    const category = plugin.category || '';
+    (byCategory[category] || (byCategory[category] = [])).push(plugin);
+  });
+  // Sort categories
+  Object.keys(byCategory)
+    .sort()
+    .forEach(category => {
+      res.push([category, byCategory[category]]);
+    });
+  return res;
 }
 
 export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(

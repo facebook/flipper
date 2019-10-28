@@ -77,6 +77,7 @@ export abstract class FlipperBasePlugin<
 > extends Component<Props<PersistedState>, State> {
   abstract ['constructor']: any;
   static title: string | null = null;
+  static category: string | null = null;
   static id: string = '';
   static icon: string | null = null;
   static gatekeeper: string | null = null;
