@@ -29,7 +29,7 @@ import {
   FlipperDevicePlugin,
   LoadingIndicator,
 } from 'flipper';
-import React, {Component, PureComponent} from 'react';
+import React, {Component, PureComponent, Fragment} from 'react';
 import NotificationsHub from '../NotificationsHub';
 import {
   selectPlugin,
@@ -405,7 +405,7 @@ class MainSidebar extends PureComponent<Props, State> {
                           : minShowPluginsCount,
                       ),
                   ).map(([category, plugins]) => (
-                    <>
+                    <Fragment key={category}>
                       {category && (
                         <ListItem>
                           <CategoryName>{category}</CategoryName>
@@ -429,7 +429,7 @@ class MainSidebar extends PureComponent<Props, State> {
                           app={client.query.app}
                         />
                       ))}
-                    </>
+                    </Fragment>
                   ))}
                   {plugins.length > minShowPluginsCount && (
                     <PluginShowMoreOrLess
