@@ -1,7 +1,9 @@
 /**
- * Copyright 2018-present Facebook.
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
  * @format
  */
 
@@ -82,9 +84,7 @@ export default class UpdateIndicator extends React.PureComponent<Props, State> {
     return (
       <Tooltip
         options={{position: 'toLeft'}}
-        title={`Update to Flipper v${
-          result.version
-        } available. Click to download.`}
+        title={`Update to Flipper v${result.version} available. Click to download.`}
         children={container}
       />
     );

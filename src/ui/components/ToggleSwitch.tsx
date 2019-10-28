@@ -1,7 +1,9 @@
 /**
- * Copyright 2018-present Facebook.
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
  * @format
  */
 
@@ -9,9 +11,9 @@ import React from 'react';
 import styled from 'react-emotion';
 import {colors} from './colors';
 import Text from './Text';
+import FlexRow from './FlexRow';
 
 export const StyledButton = styled('div')((props: {toggled: boolean}) => ({
-  cursor: 'pointer',
   width: '30px',
   height: '16px',
   background: props.toggled ? colors.green : colors.grey,
@@ -32,6 +34,11 @@ export const StyledButton = styled('div')((props: {toggled: boolean}) => ({
     transition: 'all cubic-bezier(0.3, 1.5, 0.7, 1) 0.3s',
   },
 }));
+
+const Container = styled(FlexRow)({
+  alignItems: 'center',
+  cursor: 'pointer',
+});
 
 const Label = styled(Text)({
   marginLeft: 7,
@@ -64,14 +71,13 @@ type Props = {
 export default class ToggleButton extends React.Component<Props> {
   render() {
     return (
-      <>
+      <Container onClick={this.props.onClick}>
         <StyledButton
           className={this.props.className}
           toggled={this.props.toggled || false}
-          onClick={this.props.onClick}
         />
         {this.props.label && <Label>{this.props.label}</Label>}
-      </>
+      </Container>
     );
   }
 }

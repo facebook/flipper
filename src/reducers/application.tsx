@@ -1,7 +1,9 @@
 /**
- * Copyright 2018-present Facebook.
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
  * @format
  */
 
@@ -61,6 +63,7 @@ type SubShareType =
 
 export type ShareType = {
   statusComponent?: React.ReactNode;
+  closeOnFinish: boolean;
 } & SubShareType;
 
 export type State = {
@@ -76,6 +79,7 @@ export type State = {
   launcherMsg: LauncherMsg;
   flipperRating: number | null;
   statusMessages: Array<string>;
+  xcodeCommandLineToolsDetected: boolean;
 };
 
 type BooleanActionType =
@@ -96,7 +100,7 @@ export type Action =
     }
   | {
       type: typeof ACTIVE_SHEET_SHARE_DATA_IN_FILE;
-      payload: {file: string};
+      payload: {file: string; closeOnFinish: boolean};
     }
   | {
       type: typeof ACTIVE_SHEET_SELECT_PLUGINS_TO_EXPORT;
@@ -140,6 +144,12 @@ export type Action =
   | {
       type: 'REMOVE_STATUS_MSG';
       payload: {msg: string; sender: string};
+    }
+  | {
+      type: 'SET_XCODE_DETECTED';
+      payload: {
+        isDetected: boolean;
+      };
     };
 
 export const initialState: () => State = () => ({
@@ -161,6 +171,7 @@ export const initialState: () => State = () => ({
   },
   flipperRating: null,
   statusMessages: [],
+  xcodeCommandLineToolsDetected: false,
 });
 
 function statusMessage(sender: string, msg: string): string {
@@ -209,7 +220,11 @@ export default function reducer(
     return {
       ...state,
       activeSheet: ACTIVE_SHEET_SHARE_DATA_IN_FILE,
-      share: {type: 'file', file: action.payload.file},
+      share: {
+        type: 'file',
+        file: action.payload.file,
+        closeOnFinish: action.payload.closeOnFinish,
+      },
     };
   } else if (action.type === ACTIVE_SHEET_SELECT_PLUGINS_TO_EXPORT) {
     return {
@@ -268,6 +283,8 @@ export default function reducer(
       return {...state, statusMessages};
     }
     return state;
+  } else if (action.type === 'SET_XCODE_DETECTED') {
+    return {...state, xcodeCommandLineToolsDetected: action.payload.isDetected};
   } else {
     return state;
   }
@@ -299,9 +316,12 @@ export const setSelectPluginsToExportActiveSheet = (
   payload,
 });
 
-export const setExportDataToFileActiveSheet = (file: string): Action => ({
+export const setExportDataToFileActiveSheet = (payload: {
+  file: string;
+  closeOnFinish: boolean;
+}): Action => ({
   type: ACTIVE_SHEET_SHARE_DATA_IN_FILE,
-  payload: {file},
+  payload: payload,
 });
 
 export const setActiveSheet = (payload: ActiveSheet): Action => ({
@@ -344,4 +364,9 @@ export const addStatusMessage = (payload: StatusMessageType): Action => ({
 export const removeStatusMessage = (payload: StatusMessageType): Action => ({
   type: 'REMOVE_STATUS_MSG',
   payload,
+});
+
+export const setXcodeDetected = (isDetected: boolean): Action => ({
+  type: 'SET_XCODE_DETECTED',
+  payload: {isDetected},
 });

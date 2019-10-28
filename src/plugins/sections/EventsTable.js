@@ -1,7 +1,9 @@
 /**
- * Copyright 2018-present Facebook.
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
  * @format
  */
 
@@ -36,9 +38,7 @@ const SurfaceContainer = styled(FlexColumn)(props => ({
     bottom: 0,
     right: -15,
     width: 15,
-    background: `linear-gradient(90deg, ${
-      colors.macOSTitleBarBackgroundBlur
-    } 0%, transparent 100%)`,
+    background: `linear-gradient(90deg, ${colors.macOSTitleBarBackgroundBlur} 0%, transparent 100%)`,
     zIndex: 3,
     position: 'absolute',
   },

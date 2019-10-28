@@ -1,0 +1,36 @@
+{
+  "groups": {
+    "main": {
+      "packages": [
+        "package.json"
+      ]
+    },
+    "plugins": {
+      "packages": [
+        "src/plugins/cpu/package.json",
+        "src/plugins/crash_reporter/package.json",
+        "src/plugins/databases/package.json",
+        "src/plugins/example/package.json",
+        "src/plugins/fresco/package.json",
+        "src/plugins/layout/package.json",
+        "src/plugins/leak_canary/package.json",
+        "src/plugins/logs/package.json",
+        "src/plugins/navigation/package.json",
+        "src/plugins/network/package.json",
+        "src/plugins/reactdevtools/package.json",
+        "src/plugins/sandbox/package.json",
+        "src/plugins/seamammals/package.json",
+        "src/plugins/sections/d3/package.json",
+        "src/plugins/sections/package.json",
+        "src/plugins/shared_preferences/package.json",
+        "src/utils/js-client/package.json"
+      ]
+    },
+    "website": {
+      "packages": [
+        "static/package.json",
+        "website/package.json"
+      ]
+    }
+  }
+}

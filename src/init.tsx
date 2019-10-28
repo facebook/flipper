@@ -1,7 +1,9 @@
 /**
- * Copyright 2018-present Facebook.
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
  * @format
  */
 
@@ -75,7 +77,8 @@ const AppFrame = () => {
 };
 
 function setProcessState(store: Store) {
-  const androidHome = store.getState().settingsState.androidHome;
+  const settings = store.getState().settingsState;
+  const androidHome = settings.androidHome;
 
   if (!process.env.ANDROID_HOME) {
     process.env.ANDROID_HOME = androidHome;
@@ -87,6 +90,10 @@ function setProcessState(store: Store) {
     ['emulator', 'tools', 'platform-tools']
       .map(directory => path.resolve(androidHome, directory))
       .join(':') + `:${process.env.PATH}`;
+
+  window.requestIdleCallback(() => {
+    setupPrefetcher(settings);
+  });
 }
 
 function init() {
@@ -94,10 +101,7 @@ function init() {
   initLauncherHooks(config(), store);
   const sessionId = store.getState().application.sessionId;
   initCrashReporter(sessionId || '');
-
-  window.requestIdleCallback(() => {
-    setupPrefetcher();
-  });
+  window.flipperGlobalStoreDispatch = store.dispatch;
 }
 
 // rehydrate app state before exposing init

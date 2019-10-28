@@ -1,7 +1,9 @@
 /**
- * Copyright 2018-present Facebook.
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
  * @format
  */
 
@@ -31,9 +33,7 @@ export default class JsonFileStorage {
       .then(this.deserializeValue)
       .catch(e => {
         console.warn(
-          `Failed to read settings file: "${
-            this.filepath
-          }". ${e}. Replacing file with default settings.`,
+          `Failed to read settings file: "${this.filepath}". ${e}. Replacing file with default settings.`,
         );
         return this.writeContents(JSON.stringify({})).then(() => ({}));
       });

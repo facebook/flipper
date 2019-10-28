@@ -1,7 +1,9 @@
 /**
- * Copyright 2018-present Facebook.
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
  * @format
  */
 
@@ -71,11 +73,11 @@ export function reportPluginFailures<T>(
     },
     rejectionReason => {
       if (rejectionReason instanceof CancelledPromiseError) {
-        logPlatformSuccessRate(name, {
+        logPluginSuccessRate(name, plugin, {
           kind: 'cancelled',
         });
       } else {
-        logPlatformSuccessRate(name, {
+        logPluginSuccessRate(name, plugin, {
           kind: 'failure',
           supportedOperation: !(rejectionReason instanceof UnsupportedError),
           error: rejectionReason,

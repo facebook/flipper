@@ -1,7 +1,9 @@
 /**
- * Copyright 2018-present Facebook.
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
  * @format
  */
 
@@ -43,9 +45,7 @@ import {State} from 'src/reducers';
 
 const AppTitleBar = styled(FlexRow)(({focused}: {focused?: boolean}) => ({
   background: focused
-    ? `linear-gradient(to bottom, ${colors.macOSTitleBarBackgroundTop} 0%, ${
-        colors.macOSTitleBarBackgroundBottom
-      } 100%)`
+    ? `linear-gradient(to bottom, ${colors.macOSTitleBarBackgroundTop} 0%, ${colors.macOSTitleBarBackgroundBottom} 100%)`
     : colors.macOSTitleBarBackgroundBlur,
   borderBottom: `1px solid ${
     focused ? colors.macOSTitleBarBorder : colors.macOSTitleBarBorderBlur

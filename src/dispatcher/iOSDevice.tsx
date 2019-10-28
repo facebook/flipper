@@ -1,12 +1,15 @@
 /**
- * Copyright 2018-present Facebook.
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
  * @format
  */
 
 import {ChildProcess} from 'child_process';
 import {Store} from '../reducers/index';
+import {setXcodeDetected} from '../reducers/application';
 import {Logger} from '../fb-interfaces/Logger';
 import {DeviceType} from '../devices/BaseDevice';
 import {promisify} from 'util';
@@ -150,7 +153,7 @@ function getActiveDevices(): Promise<Array<IOSDeviceParams>> {
 }
 
 function queryDevicesForever(store: Store, logger: Logger) {
-  queryDevices(store, logger)
+  return queryDevices(store, logger)
     .then(() => {
       // It's important to schedule the next check AFTER the current one has completed
       // to avoid simultaneous queries which can cause multiple user input prompts.
@@ -189,6 +192,12 @@ async function checkXcodeVersionMismatch() {
   }
 }
 
+async function isXcodeDetected(): Promise<boolean> {
+  return promisify(child_process.exec)('xcode-select -p')
+    .then(_ => true)
+    .catch(_ => false);
+}
+
 export async function getActiveDevicesAndSimulators(): Promise<
   Array<IOSDevice>
 > {
@@ -208,5 +217,12 @@ export default (store: Store, logger: Logger) => {
   if (process.platform !== 'darwin') {
     return;
   }
-  queryDevicesForever(store, logger);
+  isXcodeDetected()
+    .then(isDetected => {
+      store.dispatch(setXcodeDetected(isDetected));
+      return isDetected;
+    })
+    .then(isDetected =>
+      isDetected ? queryDevicesForever(store, logger) : Promise.resolve(),
+    );
 };

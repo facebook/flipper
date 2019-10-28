@@ -1,7 +1,9 @@
 /**
- * Copyright 2018-present Facebook.
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
  * @format
  */
 
@@ -61,17 +63,11 @@ const backgroundImage = (props: {
 }) => {
   if (props.windowIsFocused && !props.disabled) {
     if (props.depressed) {
-      return `linear-gradient(to bottom, ${
-        colors.macOSTitleBarBorderBlur
-      } 1px, ${colors.macOSTitleBarButtonBorderBlur} 0%, ${
-        colors.macOSTitleBarButtonBackgroundActive
-      } 100%)`;
+      return `linear-gradient(to bottom, ${colors.macOSTitleBarBorderBlur} 1px, ${colors.macOSTitleBarButtonBorderBlur} 0%, ${colors.macOSTitleBarButtonBackgroundActive} 100%)`;
     } else if (props.type === 'primary') {
       return `linear-gradient(to bottom, #67a6f7 0%, #0072FA 100%)`;
     } else {
-      return `linear-gradient(to bottom, transparent 0%,${
-        colors.macOSTitleBarButtonBackground
-      } 100%)`;
+      return `linear-gradient(to bottom, transparent 0%,${colors.macOSTitleBarButtonBackground} 100%)`;
     }
   } else {
     return 'none';
@@ -169,11 +165,7 @@ const StyledButton = styled('div')(
       : {
           borderColor: colors.macOSTitleBarButtonBorder,
           borderBottomColor: colors.macOSTitleBarButtonBorderBottom,
-          background: `linear-gradient(to bottom, ${
-            colors.macOSTitleBarButtonBackgroundActiveHighlight
-          } 1px, ${colors.macOSTitleBarButtonBackgroundActive} 0%, ${
-            colors.macOSTitleBarButtonBorderBlur
-          } 100%)`,
+          background: `linear-gradient(to bottom, ${colors.macOSTitleBarButtonBackgroundActiveHighlight} 1px, ${colors.macOSTitleBarButtonBackgroundActive} 0%, ${colors.macOSTitleBarButtonBorderBlur} 100%)`,
         },
 
     '&:disabled': {
@@ -189,9 +181,7 @@ const StyledButton = styled('div')(
       right: 2,
       borderStyle: 'solid',
       borderWidth: '4px 3px 0 3px',
-      borderColor: `${
-        colors.macOSTitleBarIcon
-      } transparent transparent transparent`,
+      borderColor: `${colors.macOSTitleBarIcon} transparent transparent transparent`,
     },
   }),
 );

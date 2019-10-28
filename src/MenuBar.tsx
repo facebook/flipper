@@ -1,7 +1,9 @@
 /**
- * Copyright 2018-present Facebook.
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
  * @format
  */
 
@@ -194,7 +196,11 @@ function getTemplate(
               return;
             }
             store.dispatch(
-              setSelectPluginsToExportActiveSheet({type: 'file', file: file}),
+              setSelectPluginsToExportActiveSheet({
+                type: 'file',
+                file: file,
+                closeOnFinish: false,
+              }),
             );
           },
         );
@@ -206,7 +212,12 @@ function getTemplate(
       label: 'Sharable Link',
       accelerator: 'CommandOrControl+Shift+E',
       click: function() {
-        store.dispatch(setSelectPluginsToExportActiveSheet({type: 'link'}));
+        store.dispatch(
+          setSelectPluginsToExportActiveSheet({
+            type: 'link',
+            closeOnFinish: false,
+          }),
+        );
       },
     });
   }

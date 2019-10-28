@@ -1,9 +1,12 @@
 /**
- * Copyright 2018-present Facebook.
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
  * @format
  */
+
 import BaseDevice from '../../../devices/BaseDevice.tsx';
 import CrashReporterPlugin from '../../crash_reporter';
 import type {PersistedState, Crash} from '../../crash_reporter';

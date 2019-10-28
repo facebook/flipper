@@ -1,0 +1,19 @@
+{
+  "name": "kaios-graphs",
+  "version": "1.0.0",
+  "main": "index.tsx",
+  "license": "MIT",
+  "title": "KaiOS RAM graph",
+  "icon": "apps",
+  "bugs": {
+    "email": "oncall+wa_kaios@xmail.facebook.com",
+    "url": "https://fb.workplace.com/groups/wa.kaios/"
+  },
+  "dependencies": {
+    "adbkit": "^2.11.1",
+    "recharts": "1.7.1"
+  },
+  "devDependencies": {
+    "@types/recharts": "1.7.1"
+  }
+}

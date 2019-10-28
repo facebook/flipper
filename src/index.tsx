@@ -1,7 +1,9 @@
 /**
- * Copyright 2018-present Facebook.
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
  * @format
  */
 
@@ -22,9 +24,12 @@ export {PluginClient, Props} from './plugin';
 export {default as Client} from './Client';
 export {MetricType} from './utils/exportMetrics';
 export {clipboard} from 'electron';
+export {
+  default as SupportRequestFormManager,
+} from './fb-stubs/SupportRequestFormManager';
 export {default as constants} from './fb-stubs/constants';
 export {connect} from 'react-redux';
-export {selectPlugin} from './reducers/connections';
+export {selectPlugin, StaticView} from './reducers/connections';
 export {writeBufferToFile, bufferToBlob} from './utils/screenshot';
 export {getPluginKey, getPersistedState} from './utils/pluginUtils';
 export {Idler} from './utils/Idler';
@@ -46,6 +51,7 @@ export {default as Device} from './devices/BaseDevice';
 export {default as AndroidDevice} from './devices/AndroidDevice';
 export {default as ArchivedDevice} from './devices/ArchivedDevice';
 export {default as IOSDevice} from './devices/IOSDevice';
+export {default as KaiOSDevice} from './devices/KaiOSDevice';
 export {OS} from './devices/BaseDevice';
 export {default as Button} from './ui/components/Button';
 export {default as ToggleButton} from './ui/components/ToggleSwitch';
