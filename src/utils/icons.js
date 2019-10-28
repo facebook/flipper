@@ -1,7 +1,9 @@
 /**
- * Copyright 2018-present Facebook.
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
  * @format
  */
 
@@ -17,6 +19,7 @@ const {remote} = require('electron');
 const ICONS = {
   'app-dailies': [12],
   'arrow-right': [12],
+  'bell-null-outline': [12, 24],
   'bell-null': [12],
   'caution-octagon': [16],
   'caution-triangle': [16],
@@ -34,8 +37,10 @@ const ICONS = {
   'star-outline': [16, 24],
   'triangle-down': [12],
   'triangle-right': [12],
+  accessibility: [16],
   apps: [12],
   bird: [12],
+  borders: [16],
   box: [12],
   bug: [12],
   camcorder: [12],
@@ -49,7 +54,7 @@ const ICONS = {
   rocket: [20],
   settings: [12],
   star: [16, 24],
-  target: [12],
+  target: [12, 16],
   tools: [20],
 };
 
@@ -74,11 +79,7 @@ function buildLocalIconPath(name, size, density) {
 // $FlowFixMe not using flow in this file
 function buildIconURL(name, size, density) {
   const icon = getIconPartsFromName(name);
-  const url = `https://external.xx.fbcdn.net/assets/?name=${
-    icon.trimmedName
-  }&variant=${
-    icon.variant
-  }&size=${size}&set=facebook_icons&density=${density}x`;
+  const url = `https://external.xx.fbcdn.net/assets/?name=${icon.trimmedName}&variant=${icon.variant}&size=${size}&set=facebook_icons&density=${density}x`;
   if (
     typeof window !== 'undefined' &&
     (!ICONS[name] || !ICONS[name].includes(size))

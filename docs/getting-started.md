@@ -22,14 +22,7 @@ Once you start Flipper and launch an emulator/simulator or connect a device, you
 
 ## Setup your Android app
 
-Add the following permissions to your `AndroidManifest.xml`. The SDK needs these to communicate with the desktop app on localhost via adb. It won't make any external internet requests.
-
-```xml
-<uses-permission android:name="android.permission.INTERNET" />
-<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-```
-
-It's recommended that you add the following activity to the manifest too, which can help diagnose integration issues and other problems:
+It's recommended that you add the following activity to the manifest, which can help diagnose integration issues and other problems:
 
 ```xml
 <activity android:name="com.facebook.flipper.android.diagnostics.FlipperDiagnosticActivity"
@@ -50,10 +43,10 @@ repositories {
 }
 
 dependencies {
-  debugImplementation 'com.facebook.flipper:flipper:0.25.0'
+  debugImplementation 'com.facebook.flipper:flipper:0.26.0'
   debugImplementation 'com.facebook.soloader:soloader:0.5.1'
 
-  releaseImplementation 'com.facebook.flipper:flipper-noop:0.25.0'
+  releaseImplementation 'com.facebook.flipper:flipper-noop:0.26.0'
 }
 ```
 
@@ -94,10 +87,10 @@ repositories {
 }
 
 dependencies {
-  debugImplementation 'com.facebook.flipper:flipper:0.25.1-SNAPSHOT'
+  debugImplementation 'com.facebook.flipper:flipper:0.26.1-SNAPSHOT'
   debugImplementation 'com.facebook.soloader:soloader:0.5.1'
 
-  releaseImplementation 'com.facebook.flipper:flipper-noop:0.25.1-SNAPSHOT'
+  releaseImplementation 'com.facebook.flipper:flipper-noop:0.26.1-SNAPSHOT'
 }
 ```
 
@@ -112,7 +105,7 @@ We support both Swift and Objective-C for Flipper with CocoaPods as build and di
 
 ```ruby
 project 'MyApp.xcodeproj'
-flipperkit_version = '0.25.0'
+flipperkit_version = '0.26.0'
 
 target 'MyApp' do
   platform :ios, '9.0'
@@ -130,7 +123,7 @@ target 'MyApp' do
   # $static_framework = ['FlipperKit', 'Flipper', 'Flipper-Folly',
   #   'CocoaAsyncSocket', 'ComponentKit', 'DoubleConversion',
   #   'glog', 'Flipper-PeerTalk', 'Flipper-RSocket', 'Yoga', 'YogaKit',
-  #   'CocoaLibEvent', 'openssl-ios-bitcode', 'boost-for-react-native']
+  #   'CocoaLibEvent', 'OpenSSL-Universal', 'boost-for-react-native']
   #
   # pre_install do |installer|
   #   Pod::Installer::Xcode::TargetValidator.send(:define_method, :verify_no_static_framework_transitive_dependencies) {}
@@ -174,7 +167,7 @@ end
 
 ```ruby
 project 'MyApp.xcodeproj'
-flipperkit_version = '0.25.0'
+flipperkit_version = '0.26.0'
 
 target 'MyApp' do
   platform :ios, '9.0'
@@ -193,7 +186,7 @@ target 'MyApp' do
   # $static_framework = ['FlipperKit', 'Flipper', 'Flipper-Folly',
   #   'CocoaAsyncSocket', 'ComponentKit', 'DoubleConversion',
   #   'glog', 'Flipper-PeerTalk', 'Flipper-RSocket', 'Yoga', 'YogaKit',
-  #   'CocoaLibEvent', 'openssl-ios-bitcode', 'boost-for-react-native']
+  #   'CocoaLibEvent', 'OpenSSL-Universal', 'boost-for-react-native']
   #
   # pre_install do |installer|
   #   Pod::Installer::Xcode::TargetValidator.send(:define_method, :verify_no_static_framework_transitive_dependencies) {}

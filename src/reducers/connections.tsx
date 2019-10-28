@@ -1,7 +1,9 @@
 /**
- * Copyright 2018-present Facebook.
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
  * @format
  */
 
@@ -25,6 +27,13 @@ export type StaticView =
   | typeof WelcomeScreen
   | typeof SupportRequestForm;
 
+export type FlipperError = {
+  occurrences?: number;
+  message: string;
+  details?: string;
+  error?: Error | string;
+};
+
 export type State = {
   devices: Array<BaseDevice>;
   androidEmulators: Array<string>;
@@ -35,7 +44,7 @@ export type State = {
   userPreferredPlugin: null | string;
   userPreferredApp: null | string;
   userLRUPlugins: {[key: string]: Array<string>};
-  error: null | string;
+  errors: FlipperError[];
   clients: Array<Client>;
   uninitializedClients: Array<{
     client: UninitializedClient;
@@ -77,7 +86,7 @@ export type Action =
     }
   | {
       type: 'SERVER_ERROR';
-      payload: null | string;
+      payload: null | FlipperError;
     }
   | {
       type: 'NEW_CLIENT';
@@ -105,7 +114,7 @@ export type Action =
     }
   | {
       type: 'CLIENT_SETUP_ERROR';
-      payload: {client: UninitializedClient; error: Error};
+      payload: {client: UninitializedClient; error: FlipperError};
     }
   | {
       type: 'CLIENT_SHOW_MORE_OR_LESS';
@@ -115,6 +124,10 @@ export type Action =
   | {
       type: 'SET_STATIC_VIEW';
       payload: StaticView;
+    }
+  | {
+      type: 'DISMISS_ERROR';
+      payload: number;
     };
 
 const DEFAULT_PLUGIN = 'DeviceLogs';
@@ -129,7 +142,7 @@ const INITAL_STATE: State = {
   userPreferredPlugin: null,
   userPreferredApp: null,
   userLRUPlugins: {},
-  error: null,
+  errors: [],
   clients: [],
   uninitializedClients: [],
   deepLinkPayload: null,
@@ -354,7 +367,10 @@ const reducer = (state: State = INITAL_STATE, action: Actions): State => {
     }
     case 'SERVER_ERROR': {
       const {payload} = action;
-      return {...state, error: payload};
+      if (!payload) {
+        return state;
+      }
+      return {...state, errors: mergeError(state.errors, payload)};
     }
     case 'START_CLIENT_SETUP': {
       const {payload} = action;
@@ -383,12 +399,11 @@ const reducer = (state: State = INITAL_STATE, action: Actions): State => {
       const {payload} = action;
 
       const errorMessage =
-        payload.error instanceof Error ? payload.error.message : payload.error;
-      console.error(
-        `Client setup error: ${errorMessage} while setting up client: ${
-          payload.client.os
-        }:${payload.client.deviceName}:${payload.client.appName}`,
-      );
+        payload.error instanceof Error
+          ? payload.error.message
+          : '' + payload.error;
+      const details = `Client setup error: ${errorMessage} while setting up client: ${payload.client.os}:${payload.client.deviceName}:${payload.client.appName}`;
+      console.error(details);
       return {
         ...state,
         uninitializedClients: state.uninitializedClients
@@ -398,7 +413,11 @@ const reducer = (state: State = INITAL_STATE, action: Actions): State => {
               : c,
           )
           .sort((a, b) => a.client.appName.localeCompare(b.client.appName)),
-        error: `Client setup error: ${errorMessage}`,
+        errors: mergeError(state.errors, {
+          message: `Client setup error: ${errorMessage}`,
+          details,
+          error: payload.error instanceof Error ? payload.error : undefined,
+        }),
       };
     }
     case 'CLIENT_SHOW_MORE_OR_LESS': {
@@ -428,6 +447,14 @@ const reducer = (state: State = INITAL_STATE, action: Actions): State => {
         userLRUPlugins: clearLRUPlugins,
       };
     }
+    case 'DISMISS_ERROR': {
+      const errors = state.errors.slice();
+      errors.splice(action.payload, 1);
+      return {
+        ...state,
+        errors,
+      };
+    }
     default:
       return state;
   }
@@ -438,22 +465,47 @@ export default (state: State = INITAL_STATE, action: Actions): State => {
 
   if (nextState.selectedDevice) {
     const {selectedDevice} = nextState;
-    const deviceNotSupportedError = 'iOS Devices are not yet supported';
+    const deviceNotSupportedErrorMessage = 'iOS Devices are not yet supported';
     const error =
       selectedDevice.os === 'iOS' &&
       selectedDevice.deviceType === 'physical' &&
       !iosUtil.isAvailable()
-        ? deviceNotSupportedError
+        ? deviceNotSupportedErrorMessage
         : null;
 
-    if (nextState.error === deviceNotSupportedError) {
-      nextState.error = error;
-    } else {
-      nextState.error = error || nextState.error;
+    if (error) {
+      const deviceNotSupportedError = nextState.errors.find(
+        error => error.message === deviceNotSupportedErrorMessage,
+      );
+      if (deviceNotSupportedError) {
+        deviceNotSupportedError.message = error;
+      } else {
+        nextState.errors.push({message: error});
+      }
     }
   }
   return nextState;
 };
+
+function mergeError(
+  errors: FlipperError[],
+  newError: FlipperError,
+): FlipperError[] {
+  const idx = errors.findIndex(error => error.message === newError.message);
+  const results = errors.slice();
+  if (idx !== -1) {
+    results[idx] = {
+      ...newError,
+      occurrences: (errors[idx].occurrences || 0) + 1,
+    };
+  } else {
+    results.push({
+      ...newError,
+      occurrences: 1,
+    });
+  }
+  return results;
+}
 
 export const selectDevice = (payload: BaseDevice): Action => ({
   type: 'SELECT_DEVICE',
@@ -495,3 +547,8 @@ function extractAppNameFromAppId(appId: string | null): string | null {
   // Expect the name of the app to be on the first matching
   return matchedRegex && matchedRegex[1];
 }
+
+export const dismissError = (index: number): Action => ({
+  type: 'DISMISS_ERROR',
+  payload: index,
+});

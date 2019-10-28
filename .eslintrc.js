@@ -1,14 +1,16 @@
 /**
- * Copyright 2018-present Facebook.
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
  * @format
  */
 
 const fbjs = require('eslint-config-fbjs');
 
 // enforces copyright header and @format directive to be present in every file
-const pattern = /^\*\n \* Copyright 20\d{2}-present Facebook\.\n \* This source code is licensed under the MIT license found in the\n \* LICENSE file in the root directory of this source tree\.\n \* @format\n./;
+const pattern = /^\*\n[\S\s]*Facebook[\S\s]* \* @format\n/;
 
 const prettierConfig = {
   requirePragma: true,

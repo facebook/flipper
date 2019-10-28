@@ -1,7 +1,9 @@
 /**
- * Copyright 2018-present Facebook.
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
  * @format
  */
 
@@ -243,7 +245,22 @@ type DispatchFromProps = {
 };
 
 type Props = OwnProps & StateFromProps & DispatchFromProps;
-class MainSidebar extends PureComponent<Props> {
+type State = {showSupportForm: boolean};
+class MainSidebar extends PureComponent<Props, State> {
+  state: State = {showSupportForm: GK.get('flipper_support_requests')};
+  static getDerivedStateFromProps(props: Props, state: State) {
+    if (
+      !state.showSupportForm &&
+      props.staticView === SupportRequestFormManager
+    ) {
+      // Show SupportForm option even when GK is false and support form is shown.
+      // That means the user has used deeplink to open support form.
+      // Once the variable is true, it will be true for the whole session.
+      return {showSupportForm: true};
+    }
+    return state;
+  }
+
   render() {
     const {
       selectedDevice,
@@ -302,7 +319,7 @@ class MainSidebar extends PureComponent<Props> {
               </PluginName>
             </ListItem>
           )}
-          {GK.get('flipper_support_requests') && (
+          {this.state.showSupportForm && (
             <ListItem
               active={
                 staticView != null && staticView === SupportRequestFormManager

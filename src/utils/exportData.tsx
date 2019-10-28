@@ -1,9 +1,12 @@
 /**
- * Copyright 2018-present Facebook.
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
  * @format
  */
+
 import {getInstance as getLogger} from '../fb-stubs/Logger';
 import {Store, MiddlewareAPI} from '../reducers';
 import {DeviceExport} from '../devices/BaseDevice';
@@ -286,9 +289,7 @@ const addSaltToDeviceSerial = async (
   const updatedPluginNotifications = pluginNotification.map(notif => {
     if (!notif.client || !notif.client.includes(serial)) {
       throw new Error(
-        `Error while exporting, plugin state (${
-          notif.pluginId
-        }) does not have ${serial} in it`,
+        `Error while exporting, plugin state (${notif.pluginId}) does not have ${serial} in it`,
       );
     }
     return {...notif, client: notif.client.replace(serial, newSerial)};
@@ -612,6 +613,7 @@ export function importDataToStore(data: string, store: Store) {
         getLogger(),
         store,
         clientPlugins,
+        archivedDevice,
       ),
     });
   });

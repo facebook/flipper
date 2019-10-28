@@ -1,7 +1,9 @@
 /**
- * Copyright 2019-present Facebook.
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
  * @format
  */
 
@@ -44,9 +46,8 @@ export default function WarningEmployee(props: {
     <Container>
       <Box>
         <Warning>
-          You are using the open-source version of Flipper. You will get access
-          to more plugins. To use the internal version, please install it from
-          Managed Software Center
+          You are using the open-source version of Flipper. Install the internal
+          build from Managed Software Center to get access to more plugins.
         </Warning>
         <AckButton onClick={props.onClick}>Okay</AckButton>
       </Box>

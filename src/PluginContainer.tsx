@@ -1,9 +1,12 @@
 /**
- * Copyright 2018-present Facebook.
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
  * @format
  */
+
 import {
   FlipperPlugin,
   FlipperDevicePlugin,
@@ -21,6 +24,7 @@ import {
   styled,
   ArchivedDevice,
 } from 'flipper';
+import {StaticView, setStaticView} from './reducers/connections';
 import React, {PureComponent} from 'react';
 import {connect} from 'react-redux';
 import {setPluginState} from './reducers/pluginStates';
@@ -63,6 +67,7 @@ type DispatchFromProps = {
     deepLinkPayload: string | null;
   }) => any;
   setPluginState: (payload: {pluginKey: string; state: any}) => void;
+  setStaticView: (payload: StaticView) => void;
 };
 
 type Props = StateFromProps & DispatchFromProps & OwnProps;
@@ -133,6 +138,7 @@ class PluginContainer extends PureComponent<Props> {
             ...pluginState,
           }
         : pluginState,
+      setStaticView: (payload: StaticView) => this.props.setStaticView(payload),
       setPersistedState: state => setPluginState({pluginKey, state}),
       target,
       deepLinkPayload: this.props.deepLinkPayload,
@@ -225,5 +231,6 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
   {
     setPluginState,
     selectPlugin,
+    setStaticView,
   },
 )(PluginContainer);

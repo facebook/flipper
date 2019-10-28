@@ -1,12 +1,14 @@
 /**
- * Copyright 2018-present Facebook.
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
  * @format
  */
 
 import React from 'react';
-import {FlexColumn, FlexRow, Client} from 'flipper';
+import {FlexColumn, FlexRow} from 'flipper';
 import {connect} from 'react-redux';
 import TitleBar from './chrome/TitleBar';
 import MainSidebar from './chrome/MainSidebar';
@@ -34,7 +36,7 @@ import {
 import {Logger} from './fb-interfaces/Logger';
 import BugReporter from './fb-stubs/BugReporter';
 import {State as Store} from './reducers/index';
-import {StaticView} from './reducers/connections';
+import {StaticView, FlipperError} from './reducers/connections';
 import PluginManager from './chrome/PluginManager';
 import StatusBar from './chrome/StatusBar';
 import SettingsSheet from './chrome/SettingsSheet';
@@ -47,7 +49,7 @@ type OwnProps = {
 
 type StateFromProps = {
   leftSidebarVisible: boolean;
-  error: string | null;
+  errors: FlipperError[];
   activeSheet: ActiveSheet;
   share: ShareType | null;
   staticView: StaticView;
@@ -91,7 +93,13 @@ export class App extends React.Component<Props> {
         return <ExportDataPluginSheet onHide={onHide} />;
       case ACTIVE_SHEET_SHARE_DATA:
         return (
-          <ShareSheetExportUrl onHide={onHide} logger={this.props.logger} />
+          <ShareSheetExportUrl
+            onHide={onHide}
+            logger={this.props.logger}
+            closeOnFinish={
+              this.props.share != null && this.props.share.closeOnFinish
+            }
+          />
         );
       case ACTIVE_SHEET_SHARE_DATA_IN_FILE:
         return this.props.share && this.props.share.type === 'file' ? (
@@ -118,6 +126,7 @@ export class App extends React.Component<Props> {
     return (
       <FlexColumn grow={true}>
         <TitleBar version={version} />
+        <ErrorBar />
         <Sheet>{this.getSheet}</Sheet>
         <FlexRow grow={true}>
           {this.props.leftSidebarVisible && <MainSidebar />}
@@ -128,7 +137,6 @@ export class App extends React.Component<Props> {
           )}
         </FlexRow>
         <StatusBar />
-        <ErrorBar text={this.props.error} />
       </FlexColumn>
     );
   }
@@ -137,12 +145,12 @@ export class App extends React.Component<Props> {
 export default connect<StateFromProps, {}, OwnProps, Store>(
   ({
     application: {leftSidebarVisible, activeSheet, share},
-    connections: {error, staticView},
+    connections: {errors, staticView},
   }) => ({
     leftSidebarVisible,
     activeSheet,
     share: share,
-    error,
+    errors,
     staticView,
   }),
 )(App);

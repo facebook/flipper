@@ -1,9 +1,10 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the LICENSE
- * file in the root directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.flipper.plugins.network;
 
 import android.util.Base64;
@@ -15,6 +16,7 @@ import java.util.List;
 
 public class NetworkFlipperPlugin extends BufferingFlipperPlugin implements NetworkReporter {
   public static final String ID = "Network";
+  private static final int MAX_BODY_SIZE_IN_BYTES = 1024 * 1024;
 
   private final List<NetworkResponseFormatter> mFormatters;
 
@@ -112,6 +114,10 @@ public class NetworkFlipperPlugin extends BufferingFlipperPlugin implements Netw
     final Header contentType = responseInfo.getFirstHeader("content-type");
     if (contentType == null) {
       return false;
+    }
+
+    if (responseInfo.body != null && responseInfo.body.length > MAX_BODY_SIZE_IN_BYTES) {
+      return true;
     }
 
     return contentType.value.contains("image/")

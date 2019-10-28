@@ -1,7 +1,9 @@
 /**
- * Copyright 2018-present Facebook.
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
  * @format
  */
 
@@ -35,7 +37,8 @@ import JsonFileStorage from '../utils/jsonFileReduxPersistStorage';
 import os from 'os';
 import {resolve} from 'path';
 import xdg from 'xdg-basedir';
-import {persistReducer, PersistPartial} from 'redux-persist';
+import {persistReducer} from 'redux-persist';
+import {PersistPartial} from 'redux-persist/es/persistReducer';
 
 import {Store as ReduxStore, MiddlewareAPI as ReduxMiddlewareAPI} from 'redux';
 // @ts-ignore: explicitly need to import index.js, otherwise index.native.js is imported, because redux-persist assumes we are react-native, because we are using metro-bundler

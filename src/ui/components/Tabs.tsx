@@ -1,7 +1,9 @@
 /**
- * Copyright 2018-present Facebook.
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
  * @format
  */
 
@@ -29,9 +31,7 @@ const TabListItem = styled('div')(
     background: props.container
       ? props.active
         ? 'linear-gradient(to bottom, #67a6f7 0%, #0072FA 100%)'
-        : `linear-gradient(to bottom, white 0%,${
-            colors.macOSTitleBarButtonBackgroundBlur
-          } 100%)`
+        : `linear-gradient(to bottom, white 0%,${colors.macOSTitleBarButtonBackgroundBlur} 100%)`
       : props.active
       ? colors.light15
       : colors.light02,

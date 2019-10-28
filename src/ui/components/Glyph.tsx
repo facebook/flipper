@@ -1,7 +1,9 @@
 /**
- * Copyright 2018-present Facebook.
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
  * @format
  */
 
@@ -79,7 +81,7 @@ ColoredIcon.contextTypes = {
   glyphColor: PropTypes.string,
 };
 
-export default class Glyph extends React.Component<{
+export default class Glyph extends React.PureComponent<{
   name: string;
   size?: IconSize;
   variant?: 'filled' | 'outline';

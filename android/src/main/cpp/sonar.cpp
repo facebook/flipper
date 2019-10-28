@@ -1,9 +1,10 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the LICENSE
- * file in the root directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 #include <memory>
 
 #ifdef FLIPPER_OSS
@@ -29,8 +30,6 @@ using namespace facebook::flipper;
 namespace {
 
 void handleException(const std::exception& e) {
-  // TODO: T35898390, report and log the exception in scribe
-  // TODO: T35898500, send flipper notification
   std::string message = "Exception caught in C++ and suppressed: ";
   message += e.what();
   __android_log_write(ANDROID_LOG_ERROR, "FLIPPER", message.c_str());

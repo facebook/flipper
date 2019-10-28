@@ -1,7 +1,9 @@
 /**
- * Copyright 2018-present Facebook.
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
  * @format
  */
 
@@ -20,6 +22,11 @@ import {
   Button,
   GK,
   Idler,
+  Text,
+  styled,
+  colors,
+  SupportRequestFormManager,
+  constants,
 } from 'flipper';
 import Inspector from './Inspector';
 import ToolbarIcon from './ToolbarIcon';
@@ -47,7 +54,42 @@ export type PersistedState = {
   AXelements: ElementMap;
 };
 
+const FlipperADBarContainer = styled(FlexRow)({
+  backgroundColor: colors.warningTint,
+  flexGrow: 1,
+  justifyContent: 'center',
+  alignItems: 'center',
+  borderWidth: 2,
+});
+
+const FlipperADText = styled(Text)({
+  padding: 10,
+});
+
+const FlipperADButton = styled(Button)({
+  margin: 10,
+});
+
 export default class Layout extends FlipperPlugin<State, any, PersistedState> {
+  FlipperADBar() {
+    return (
+      <FlipperADBarContainer>
+        <FlipperADText>
+          You can now submit support requests to Litho Group from Flipper. This
+          automatically attaches critical information for reproducing your issue
+          with just a single click.
+        </FlipperADText>
+        <FlipperADButton
+          type="primary"
+          onClick={() => {
+            this.props.setStaticView(SupportRequestFormManager);
+          }}>
+          Try it out
+        </FlipperADButton>
+      </FlipperADBarContainer>
+    );
+  }
+
   static exportPersistedState = async (
     callClient: (
       method: 'getAllNodes',
@@ -162,7 +204,7 @@ export default class Layout extends FlipperPlugin<State, any, PersistedState> {
       ax: this.state.inAXMode,
     });
   };
-
+  showFlipperADBar: boolean = false;
   render() {
     const inspectorProps = {
       client: this.getClient(),
@@ -182,7 +224,9 @@ export default class Layout extends FlipperPlugin<State, any, PersistedState> {
     } else if (selectedElement) {
       element = this.props.persistedState.elements[selectedElement];
     }
-
+    if (!constants.IS_PUBLIC_BUILD && !this.showFlipperADBar) {
+      this.showFlipperADBar = element != null && element.decoration === 'litho';
+    }
     const inspector = (
       <Inspector
         {...inspectorProps}
@@ -245,12 +289,12 @@ export default class Layout extends FlipperPlugin<State, any, PersistedState> {
                 initialQuery={this.props.deepLinkPayload}
               />
             </Toolbar>
-
             <FlexRow grow={true}>
               {inspector}
               {divider}
               {axInspector}
             </FlexRow>
+            {this.showFlipperADBar && this.FlipperADBar()}
             <DetailSidebar>
               <InspectorSidebar
                 client={this.getClient()}

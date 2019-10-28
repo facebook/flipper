@@ -1,7 +1,9 @@
 /**
- * Copyright 2018-present Facebook.
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
  * @format
  */
 
@@ -18,11 +20,12 @@ import user from './user';
 import {Logger} from '../fb-interfaces/Logger';
 import {Store} from '../reducers/index';
 import {Dispatcher} from './types';
+import {notNull} from '../utils/typeUtils';
 
 export default function(store: Store, logger: Logger): () => Promise<void> {
   const dispatchers: Array<Dispatcher> = [
     application,
-    androidDevice,
+    store.getState().settingsState.enableAndroid ? androidDevice : null,
     iOSDevice,
     desktopDevice,
     tracking,
@@ -30,7 +33,7 @@ export default function(store: Store, logger: Logger): () => Promise<void> {
     notifications,
     plugins,
     user,
-  ];
+  ].filter(notNull);
   const globalCleanup = dispatchers
     .map(dispatcher => dispatcher(store, logger))
     .filter(Boolean);

@@ -13,7 +13,7 @@
   "icon": "target",
   "bugs": {
     "email": "oncall+flipper@xmail.facebook.com",
-    "url": "https://fb.workplace.com/groups/230455004101832/"
+    "url": "https://fb.workplace.com/groups/flippersupport/"
   },
   "devDependencies": {
     "@types/lodash.clonedeep": "^4.5.6"

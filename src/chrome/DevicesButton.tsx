@@ -1,7 +1,9 @@
 /**
- * Copyright 2018-present Facebook.
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
  * @format
  */
 
@@ -11,14 +13,11 @@ import {spawn} from 'child_process';
 import {dirname} from 'path';
 import {selectDevice, preferDevice} from '../reducers/connections';
 import {default as which} from 'which';
-import {promisify} from 'util';
 import {showOpenDialog} from '../utils/exportData';
 import PropTypes from 'prop-types';
 import BaseDevice from '../devices/BaseDevice';
 import React, {Component} from 'react';
 import {State} from '../reducers';
-
-const whichPromise = promisify(which);
 
 type StateFromProps = {
   selectedDevice: BaseDevice | null | undefined;
@@ -46,7 +45,7 @@ class DevicesButton extends Component<Props> {
   launchEmulator = (name: string) => {
     // On Linux, you must run the emulator from the directory it's in because
     // reasons ...
-    whichPromise('emulator')
+    which('emulator')
       .then(emulatorPath => {
         if (emulatorPath) {
           const child = spawn(emulatorPath, [`@${name}`], {

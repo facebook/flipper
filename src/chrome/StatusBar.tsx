@@ -1,7 +1,9 @@
 /**
- * Copyright 2018-present Facebook.
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
  * @format
  */
 
@@ -38,7 +40,7 @@ export function statusBarView(props: Props): ReactElement | null {
   }
 }
 
-export default connect<Props, void, void, State>(
+export default connect<Props, void, {}, State>(
   ({application: {statusMessages}}) => {
     if (statusMessages.length > 0) {
       return {statusMessage: statusMessages[statusMessages.length - 1]};
