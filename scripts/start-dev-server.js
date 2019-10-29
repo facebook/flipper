@@ -67,7 +67,7 @@ function startMetroServer(app) {
       ),
     },
     resolver: {
-      blacklistRE: /(\/(sonar|flipper)\/dist\/)|(.*\.native\.js)/,
+      blacklistRE: /\/(sonar|flipper)\/dist\//,
     },
     watch: true,
   }).then(metroBundlerServer => {
