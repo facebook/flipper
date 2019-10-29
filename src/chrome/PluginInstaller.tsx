@@ -26,12 +26,10 @@ import {
   Tooltip,
 } from 'flipper';
 import React, {useCallback, useState, useMemo, useEffect} from 'react';
-import {remote} from 'electron';
 import {List} from 'immutable';
 import algoliasearch from 'algoliasearch';
 import path from 'path';
 import fs from 'fs-extra';
-import {promisify} from 'util';
 import {homedir} from 'os';
 import {PluginManager as PM} from 'live-plugin-manager';
 import {reportPlatformFailures, reportUsage} from '../utils/metrics';
@@ -368,7 +366,7 @@ function useNPMSearch(
 }
 
 async function _getInstalledPlugins(): Promise<Map<string, PluginDefinition>> {
-  const pluginDirExists = await promisify(fs.exists)(PLUGIN_DIR);
+  const pluginDirExists = await fs.pathExists(PLUGIN_DIR);
 
   if (!pluginDirExists) {
     return new Map();
