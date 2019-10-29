@@ -27,7 +27,6 @@ import {default as Client} from '../Client';
 import fs from 'fs';
 import uuid from 'uuid';
 import {remote, OpenDialogOptions} from 'electron';
-import {serialize, deserialize} from './serialization';
 import {readCurrentRevision} from './packageMetadata';
 import {tryCatchReportPlatformFailures} from './metrics';
 import {promisify} from 'util';
@@ -509,11 +508,7 @@ export function exportStore(
       );
       if (exportData != null) {
         statusUpdate && statusUpdate('Serializing Flipper data...');
-        const serializedString = await serialize(
-          exportData,
-          idler,
-          statusUpdate,
-        );
+        const serializedString = JSON.stringify(exportData);
         if (serializedString.length <= 0) {
           reject(new Error('Serialize function returned empty string'));
         }
@@ -547,7 +542,7 @@ export const exportStoreToFile = (
 
 export function importDataToStore(data: string, store: Store) {
   getLogger().track('usage', IMPORT_FLIPPER_TRACE_EVENT);
-  const json: ExportType = deserialize(data);
+  const json: ExportType = JSON.parse(data);
   const {device, clients} = json;
   if (device == null) {
     return;
@@ -558,7 +553,11 @@ export function importDataToStore(data: string, store: Store) {
     deviceType,
     title,
     os,
-    logs ? logs : [],
+    logs
+      ? logs.map(l => {
+          return {...l, date: new Date(l.date)};
+        })
+      : [],
   );
   const devices = store.getState().connections.devices;
   const matchedDevices = devices.filter(
