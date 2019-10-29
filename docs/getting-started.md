@@ -555,7 +555,7 @@ target 'your-app-name' do
   end
 
   # For enabling Flipper.
-  # Note that if you use_framework!, flipper will no work.
+  # Note that if you use_framework!, flipper will not work.
   # Disable these lines if you are doing use_framework!
   flipper_pods()
   post_install do |installer|
@@ -611,7 +611,7 @@ The code below enables the following integrations:
 - (void) initializeFlipper:(UIApplication *)application {
   #ifdef DEBUG
     FlipperClient *client = [FlipperClient sharedClient];
-    SKDescriptorMapper \*layoutDescriptorMapper = [[SKDescriptorMapper alloc] initWithDefaults];
+    SKDescriptorMapper *layoutDescriptorMapper = [[SKDescriptorMapper alloc] initWithDefaults];
     [client addPlugin: [[FlipperKitLayoutPlugin alloc] initWithRootNode: application withDescriptorMapper: layoutDescriptorMapper]];
     [client addPlugin:[[FKUserDefaultsPlugin alloc] initWithSuiteName:nil]]; [client start];
     [client addPlugin: [[FlipperKitNetworkPlugin alloc] initWithNetworkAdapter:[SKIOSNetworkAdapter new]]];
