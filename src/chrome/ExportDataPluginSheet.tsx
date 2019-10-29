@@ -21,7 +21,7 @@ import {
   setActiveSheet as getActiveSheetAction,
   setExportDataToFileActiveSheet as getExportDataToFileActiveSheetAction,
 } from '../reducers/application';
-import SelectPluginSheet from './SelectPluginSheet';
+import ListView from './ListView';
 import {Dispatch, Action} from 'redux';
 
 type OwnProps = {
@@ -48,7 +48,9 @@ class ExportDataPluginSheet extends Component<Props> {
   render() {
     const {plugins, pluginStates, onHide} = this.props;
     return (
-      <SelectPluginSheet
+      <ListView
+        type="multiple"
+        title="Select the plugins for which you want to export the data"
         onSelect={selectedArray => {
           this.props.selectedPlugins(selectedArray);
           const {share} = this.props;
@@ -75,17 +77,21 @@ class ExportDataPluginSheet extends Component<Props> {
             }
           }
         }}
-        plugins={getActivePersistentPlugins(pluginStates, plugins).reduce(
+        elements={getActivePersistentPlugins(pluginStates, plugins)}
+        selectedElements={getActivePersistentPlugins(
+          pluginStates,
+          plugins,
+        ).reduce(
           (acc, plugin) => {
-            acc.set(
-              plugin,
-              plugins.selectedPlugins.length <= 0
-                ? true
-                : plugins.selectedPlugins.includes(plugin),
-            );
+            if (
+              plugins.selectedPlugins.length <= 0 ||
+              plugins.selectedPlugins.includes(plugin)
+            ) {
+              acc.add(plugin);
+            }
             return acc;
           },
-          new Map(),
+          new Set([]) as Set<string>,
         )}
         onHide={onHide}
       />
