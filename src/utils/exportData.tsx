@@ -200,6 +200,7 @@ const serializePluginStates = async (
         pluginStates[key],
         statusUpdate,
         idler,
+        pluginName,
       );
     }
   }

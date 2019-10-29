@@ -140,12 +140,19 @@ export abstract class FlipperBasePlugin<
     persistedState: StaticPersistedState,
     statusUpdate?: (msg: string) => void,
     idler?: Idler,
+    pluginName?: string,
   ) => Promise<string> = (
     persistedState: StaticPersistedState,
     statusUpdate?: (msg: string) => void,
     idler?: Idler,
+    pluginName?: string,
   ) => {
-    return serialize(persistedState, idler, statusUpdate);
+    return serialize(
+      persistedState,
+      idler,
+      statusUpdate,
+      pluginName != null ? `Serializing ${pluginName}` : undefined,
+    );
   };
   static deserializePersistedState: (
     serializedString: string,

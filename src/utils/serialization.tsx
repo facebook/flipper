@@ -12,8 +12,9 @@ export async function serialize(
   obj: Object,
   idler?: Idler,
   statusUpdate?: (msg: string) => void,
+  statusMsg?: string,
 ): Promise<string> {
-  return makeObjectSerializable(obj, idler, statusUpdate).then(obj =>
+  return makeObjectSerializable(obj, idler, statusUpdate, statusMsg).then(obj =>
     JSON.stringify(obj),
   );
 }
@@ -124,6 +125,7 @@ export async function makeObjectSerializable(
   obj: any,
   idler?: Idler,
   statusUpdate?: (msg: string) => void,
+  statusMsg?: string,
 ): Promise<any> {
   if (!(obj instanceof Object)) {
     return obj;
@@ -199,7 +201,8 @@ export async function makeObjectSerializable(
     const percentage = (numIterations / accumulator) * 100;
     statusUpdate &&
       statusUpdate(
-        `Serializing Flipper: ${numIterations} / ${accumulator} (${percentage.toFixed(
+        `${statusMsg ||
+          'Serializing Flipper '}: ${numIterations} / ${accumulator} (${percentage.toFixed(
           2,
         )}%) `,
       );
