@@ -169,8 +169,7 @@ public class FlipperOkhttpInterceptor
               String method = route.getString("method");
               FlipperArray headersArray = route.getArray("headers");
 
-              if (!TextUtils.isEmpty(data)
-                  && !TextUtils.isEmpty(requestUrl)
+              if (!TextUtils.isEmpty(requestUrl)
                   && !TextUtils.isEmpty(method)) {
                 ResponseInfo mockResponse = new ResponseInfo();
                 mockResponse.body = data.getBytes();
