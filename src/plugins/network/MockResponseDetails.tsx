@@ -273,9 +273,6 @@ export class MockResponseDetails extends Component<Props, State> {
             </FlexBox>
           ),
         },
-        warning: {
-          value: <HeaderGlyph name="caution-triangle" color={colors.yellow} />,
-        },
       },
       key: index,
     };
