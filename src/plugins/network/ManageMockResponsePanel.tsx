@@ -112,18 +112,19 @@ export class ManageMockResponsePanel extends Component<Props, State> {
         this.props.routes !== undefined && this.props.routes.size > 0
           ? ['0']
           : [],
+      routes: this.props.routes
     };
   }
 
   deleteRoute = () => {
     const {selectedIds} = this.state;
     const selectedId = selectedIds.length === 1 ? selectedIds[0] : null;
-    const routes = this.props.routes;
+    const routes = this.state.routes;
     if (selectedId !== null) {
       routes.delete(selectedId);
     }
 
-    this.checkDuplicate(routes);
+    this.checkDuplicate();
 
     this.setState(
       {
@@ -166,7 +167,8 @@ export class ManageMockResponsePanel extends Component<Props, State> {
     };
   };
 
-  checkDuplicate = (routes: Map<RequestId, Route>) => {
+  checkDuplicate = () => {
+    const routes = new Map(this.state.routes);
     if (routes.size > 0) {
       const duplicateMap: {[key: string]: boolean} = {};
       routes.forEach((r: Route) => {
@@ -176,6 +178,10 @@ export class ManageMockResponsePanel extends Component<Props, State> {
           r.isDuplicate = false;
           duplicateMap[r.method + '|' + r.requestUrl] = true;
         }
+      });
+      this.setState({
+          ...this.state,
+        routes: routes
       });
     }
   };
@@ -188,11 +194,11 @@ export class ManageMockResponsePanel extends Component<Props, State> {
       headers: new Map<RequestId, Header>(),
       isDuplicate: false,
     };
-    const newKey = this.props.routes.size > 0 ? this.props.routes.size : 0;
-    const routes = this.props.routes;
+    const newKey = this.state.routes.size > 0 ? this.state.routes.size : 0;
+    const routes = this.state.routes;
     routes.set(newKey + '', route);
 
-    this.checkDuplicate(routes);
+    this.checkDuplicate();
 
     this.props.handleRoutesChange(routes);
 
@@ -205,13 +211,13 @@ export class ManageMockResponsePanel extends Component<Props, State> {
     this.setState({selectedIds: selectedIds});
 
   handleRouteChange = (selectedId: RequestId, route: Route) => {
-    const routes = this.props.routes;
+    const routes = this.state.routes;
 
     // Set route
     routes.set(selectedId, route);
 
     // Check duplicate
-    this.checkDuplicate(routes);
+    this.checkDuplicate();
 
     this.setState(
       {
