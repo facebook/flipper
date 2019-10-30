@@ -8,14 +8,29 @@
 package com.facebook.flipper.plugins.network;
 
 import android.text.TextUtils;
-import com.facebook.flipper.core.*;
+import com.facebook.flipper.core.FlipperArray;
+import com.facebook.flipper.core.FlipperConnection;
+import com.facebook.flipper.core.FlipperObject;
+import com.facebook.flipper.core.FlipperReceiver;
+import com.facebook.flipper.core.FlipperResponder;
 import com.facebook.flipper.plugins.common.BufferingFlipperPlugin;
 import com.facebook.flipper.plugins.network.NetworkReporter.RequestInfo;
 import com.facebook.flipper.plugins.network.NetworkReporter.ResponseInfo;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import javax.annotation.Nullable;
-import okhttp3.*;
+import okhttp3.Headers;
+import okhttp3.Interceptor;
+import okhttp3.MediaType;
+import okhttp3.Protocol;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 import okio.Buffer;
 import okio.BufferedSource;
 
@@ -24,7 +39,7 @@ public class FlipperOkhttpInterceptor
 
   public @Nullable NetworkFlipperPlugin plugin;
 
-  private Map<String, ResponseInfo> mockResponeMap = new HashMap<>();
+  private Map<String, ResponseInfo> mockResponseMap = new HashMap<>();
 
   public FlipperOkhttpInterceptor() {
     this.plugin = null;
@@ -36,7 +51,7 @@ public class FlipperOkhttpInterceptor
   }
 
   protected void registerMockResponse(String requestUrl, String method, ResponseInfo response) {
-    mockResponeMap.put(requestUrl + "|" + method, response);
+    mockResponseMap.put(requestUrl + "|" + method, response);
   }
 
   @Override
@@ -60,7 +75,7 @@ public class FlipperOkhttpInterceptor
   private Response getMockResponse(Request request) {
     String url = request.url().toString();
     String method = request.method();
-    ResponseInfo mockResponse = mockResponeMap.get(url + "|" + method);
+    ResponseInfo mockResponse = mockResponseMap.get(url + "|" + method);
 
     if (mockResponse != null) {
       Response.Builder builder = new Response.Builder();
@@ -138,7 +153,7 @@ public class FlipperOkhttpInterceptor
           @Override
           public void onReceive(FlipperObject params, FlipperResponder responder) throws Exception {
             FlipperArray array = params.getArray("routes");
-            mockResponeMap.clear();
+            mockResponseMap.clear();
 
             for (int i = 0; i < array.length(); i++) {
               FlipperObject route = array.getObject(i);
