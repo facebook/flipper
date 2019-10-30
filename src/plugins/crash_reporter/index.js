@@ -176,6 +176,8 @@ const StackTraceContainer = styled(FlexColumn)({
   flexShrink: 0,
 });
 
+const UNKNOWN_CRASH_REASON = 'Cannot figure out the cause';
+
 export function getNewPersisitedStateFromCrashLog(
   persistedState: ?PersistedState,
   persistingPlugin: Class<FlipperDevicePlugin<> | FlipperPlugin<>>,
@@ -265,7 +267,7 @@ export function parseCrashLog(
   os: OS,
   logDate: ?Date,
 ): CrashLog {
-  const stubString = 'Cannot figure out the cause';
+  const fallbackReason = UNKNOWN_CRASH_REASON;
   switch (os) {
     case 'iOS': {
       const regex = /Exception Type: *[\w]*/;
@@ -273,8 +275,7 @@ export function parseCrashLog(
       const exceptionString = arr ? arr[0] : '';
       const exceptionRegex = /[\w]*$/;
       const tmp = exceptionRegex.exec(exceptionString);
-      const exception =
-        tmp && tmp[0].length ? tmp[0] : 'Cannot figure out the cause';
+      const exception = tmp && tmp[0].length ? tmp[0] : fallbackReason;
 
       let date = logDate;
       if (!date) {
@@ -299,7 +300,7 @@ export function parseCrashLog(
     case 'Android': {
       const regForName = /.*\n/;
       const nameRegArr = regForName.exec(content);
-      let name = nameRegArr ? nameRegArr[0] : stubString;
+      let name = nameRegArr ? nameRegArr[0] : fallbackReason;
       const regForCallStack = /\tat[\w\s\n.$&+,:;=?@#|'<>.^*()%!-]*$/;
       const callStackArray = regForCallStack.exec(content);
       const callStack = callStackArray ? callStackArray[0] : '';
@@ -311,7 +312,7 @@ export function parseCrashLog(
       const reason =
         remainingString.length > 0
           ? remainingString.split('\n').pop()
-          : stubString;
+          : fallbackReason;
       if (name[name.length - 1] === '\n') {
         name = name.slice(0, -1);
       }
@@ -558,10 +559,11 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin<
   ): Array<Notification> => {
     const filteredCrashes = persistedState.crashes.filter(crash => {
       const ignore = !crash.name && !crash.reason;
-      if (ignore) {
+      const unknownCrashCause = crash.reason === UNKNOWN_CRASH_REASON;
+      if (ignore || unknownCrashCause) {
         console.error('Ignored the notification for the crash', crash);
       }
-      return !ignore;
+      return !ignore && !unknownCrashCause;
     });
     return filteredCrashes.map((crash: Crash) => {
       const id = crash.notificationID;
@@ -717,6 +719,7 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin<
         selectedCrashID,
         onCrashChange,
       };
+      const showReason = crash.reason !== UNKNOWN_CRASH_REASON;
       return (
         <FlexColumn>
           {this.device.os == 'Android' ? (
@@ -733,7 +736,9 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin<
           )}
           <ScrollableColumn>
             <HeaderRow title="Name" value={crash.name} />
-            <HeaderRow title="Reason" value={crash.reason} />
+            {showReason ? (
+              <HeaderRow title="Reason" value={crash.reason} />
+            ) : null}
             <Padder paddingLeft={8} paddingTop={4} paddingBottom={2}>
               <Title> Stacktrace </Title>
             </Padder>
