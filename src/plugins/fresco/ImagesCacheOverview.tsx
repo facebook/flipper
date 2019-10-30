@@ -7,8 +7,8 @@
  * @format
  */
 
-import type {ImageId, ImageData, ImagesList} from './api.js';
-import type {ImageEventWithId} from './index.js';
+import {CacheInfo, ImageId, ImageData, ImagesList} from './api';
+import {ImageEventWithId} from './index';
 
 import {
   Toolbar,
@@ -24,10 +24,10 @@ import {
   ToggleButton,
   Text,
 } from 'flipper';
-import MultipleSelect from './MultipleSelect.js';
-import type {ImagesMap} from './ImagePool.js';
+import MultipleSelect from './MultipleSelect';
+import {ImagesMap} from './ImagePool';
 import {clipboard} from 'electron';
-import {PureComponent} from 'react';
+import React, {ChangeEvent, KeyboardEvent, PureComponent} from 'react';
 
 function formatMB(bytes: number) {
   return Math.floor(bytes / (1024 * 1024)) + 'MB';
@@ -37,11 +37,11 @@ function formatKB(bytes: number) {
   return Math.floor(bytes / 1024) + 'KB';
 }
 
-type ToggleProps = {|
-  label: string,
-  onClick?: (newValue: boolean) => void,
-  toggled: boolean,
-|};
+type ToggleProps = {
+  label: string;
+  onClick?: (newValue: boolean) => void;
+  toggled: boolean;
+};
 
 const ToolbarToggleButton = styled(ToggleButton)(_props => ({
   alignSelf: 'center',
@@ -68,31 +68,31 @@ function Toggle(props: ToggleProps) {
 }
 
 type ImagesCacheOverviewProps = {
-  onColdStartChange: (checked: boolean) => void,
-  coldStartFilter: boolean,
-  allSurfacesOption: string,
-  surfaceOptions: Set<string>,
-  selectedSurfaces: Set<string>,
-  onChangeSurface: (key: Set<string>) => void,
-  images: ImagesList,
-  onClear: (type: string) => void,
-  onTrimMemory: () => void,
-  onRefresh: () => void,
-  onEnableDebugOverlay: (enabled: boolean) => void,
-  isDebugOverlayEnabled: boolean,
-  onEnableAutoRefresh: (enabled: boolean) => void,
-  isAutoRefreshEnabled: boolean,
-  onImageSelected: (selectedImage: ImageId) => void,
-  imagesMap: ImagesMap,
-  events: Array<ImageEventWithId>,
-  onTrackLeaks: (enabled: boolean) => void,
-  isLeakTrackingEnabled: boolean,
+  onColdStartChange: (checked: boolean) => void;
+  coldStartFilter: boolean;
+  allSurfacesOption: string;
+  surfaceOptions: Set<string>;
+  selectedSurfaces: Set<string>;
+  onChangeSurface: (key: Set<string>) => void;
+  images: ImagesList;
+  onClear: (type: string) => void;
+  onTrimMemory: () => void;
+  onRefresh: () => void;
+  onEnableDebugOverlay: (enabled: boolean) => void;
+  isDebugOverlayEnabled: boolean;
+  onEnableAutoRefresh: (enabled: boolean) => void;
+  isAutoRefreshEnabled: boolean;
+  onImageSelected: (selectedImage: ImageId) => void;
+  imagesMap: ImagesMap;
+  events: Array<ImageEventWithId>;
+  onTrackLeaks: (enabled: boolean) => void;
+  isLeakTrackingEnabled: boolean;
 };
 
-type ImagesCacheOverviewState = {|
-  selectedImage: ?ImageId,
-  size: number,
-|};
+type ImagesCacheOverviewState = {
+  selectedImage: ImageId | null;
+  size: number;
+};
 
 const StyledSelect = styled(Select)(props => ({
   marginLeft: 6,
@@ -103,8 +103,13 @@ const StyledSelect = styled(Select)(props => ({
 
 export default class ImagesCacheOverview extends PureComponent<
   ImagesCacheOverviewProps,
-  ImagesCacheOverviewState,
+  ImagesCacheOverviewState
 > {
+  state = {
+    selectedImage: null,
+    size: 150,
+  };
+
   static Container = styled(FlexColumn)({
     backgroundColor: colors.white,
   });
@@ -121,17 +126,12 @@ export default class ImagesCacheOverview extends PureComponent<
     width: '100%',
   });
 
-  state = {
-    selectedImage: undefined,
-    size: 150,
-  };
-
   onImageSelected = (selectedImage: ImageId) => {
     this.setState({selectedImage});
     this.props.onImageSelected(selectedImage);
   };
 
-  onKeyDown = (e: SyntheticKeyboardEvent<*>) => {
+  onKeyDown = (e: KeyboardEvent) => {
     const selectedImage = this.state.selectedImage;
     const imagesMap = this.props.imagesMap;
 
@@ -151,7 +151,7 @@ export default class ImagesCacheOverview extends PureComponent<
     this.props.onEnableAutoRefresh(!this.props.isAutoRefreshEnabled);
   };
 
-  onChangeSize = (e: SyntheticInputEvent<HTMLInputElement>) =>
+  onChangeSize = (e: ChangeEvent<HTMLInputElement>) =>
     this.setState({size: parseInt(e.target.value, 10)});
 
   onSurfaceOptionsChange = (selectedItem: string, checked: boolean) => {
@@ -199,7 +199,7 @@ export default class ImagesCacheOverview extends PureComponent<
       <ImagesCacheOverview.Container
         grow={true}
         onKeyDown={this.onKeyDown}
-        tabIndex="0">
+        tabIndex={0}>
         <Toolbar position="top">
           <Button icon="trash" onClick={this.props.onTrimMemory}>
             Trim Memory
@@ -242,18 +242,19 @@ export default class ImagesCacheOverview extends PureComponent<
         </Toolbar>
         {!hasImages ? (
           <ImagesCacheOverview.Empty>
-            <LoadingIndicator />
+            <LoadingIndicator size={50} />
           </ImagesCacheOverview.Empty>
         ) : (
           <ImagesCacheOverview.Content>
-            {this.props.images.map((data, index) => {
+            {this.props.images.map((data: CacheInfo, index: number) => {
               const maxSize = data.maxSizeBytes;
               const subtitle = maxSize
                 ? formatMB(data.sizeBytes) + ' / ' + formatMB(maxSize)
                 : formatMB(data.sizeBytes);
-              const onClear = data.clearKey
-                ? () => this.props.onClear(data.clearKey)
-                : null;
+              const onClear =
+                data.clearKey !== undefined
+                  ? () => this.props.onClear(data.clearKey as string)
+                  : undefined;
               return (
                 <ImageGrid
                   key={index}
@@ -277,15 +278,15 @@ export default class ImagesCacheOverview extends PureComponent<
 }
 
 class ImageGrid extends PureComponent<{
-  title: string,
-  subtitle: string,
-  images: Array<ImageId>,
-  selectedImage: ?ImageId,
-  onImageSelected: (image: ImageId) => void,
-  onClear: ?() => void,
-  imagesMap: ImagesMap,
-  size: number,
-  events: Array<ImageEventWithId>,
+  title: string;
+  subtitle: string;
+  images: Array<ImageId>;
+  selectedImage: ImageId | null;
+  onImageSelected: (image: ImageId) => void;
+  onClear: (() => void) | undefined;
+  imagesMap: ImagesMap;
+  size: number;
+  events: Array<ImageEventWithId>;
 }> {
   static Content = styled('div')({
     paddingLeft: 15,
@@ -325,9 +326,9 @@ class ImageGrid extends PureComponent<{
 }
 
 class ImageGridHeader extends PureComponent<{
-  title: string,
-  subtitle: string,
-  onClear: ?() => void,
+  title: string;
+  subtitle: string;
+  onClear: (() => void) | undefined;
 }> {
   static Container = styled(FlexRow)({
     color: colors.dark70,
@@ -384,20 +385,20 @@ class ImageGridHeader extends PureComponent<{
 }
 
 class ImageItem extends PureComponent<{
-  imageId: ImageId,
-  image: ?ImageData,
-  selected: boolean,
-  onSelected: (image: ImageId) => void,
-  size: number,
-  numberOfRequests: number,
+  imageId: ImageId;
+  image: ImageData;
+  selected: boolean;
+  onSelected: (image: ImageId) => void;
+  size: number;
+  numberOfRequests: number;
 }> {
-  static Container = styled(FlexBox)(({size}) => ({
+  static Container = styled(FlexBox)((props: {size: number}) => ({
     float: 'left',
     alignItems: 'center',
     justifyContent: 'center',
     flexShrink: 0,
-    height: size,
-    width: size,
+    height: props.size,
+    width: props.size,
     borderRadius: 4,
     marginRight: 15,
     marginBottom: 15,
@@ -415,7 +416,7 @@ class ImageItem extends PureComponent<{
     padding: '0 0',
   });
 
-  static SelectedHighlight = styled('div')(props => ({
+  static SelectedHighlight = styled('div')((props: {selected: boolean}) => ({
     borderColor: colors.highlight,
     borderStyle: 'solid',
     borderWidth: props.selected ? 3 : 0,
@@ -428,23 +429,25 @@ class ImageItem extends PureComponent<{
     top: 0,
   }));
 
-  static HoverOverlay = styled(FlexColumn)(props => ({
-    alignItems: 'center',
-    backgroundColor: colors.whiteAlpha80,
-    bottom: props.selected ? 4 : 0,
-    fontSize: props.size > 100 ? 16 : 11,
-    justifyContent: 'center',
-    left: props.selected ? 4 : 0,
-    opacity: 0,
-    position: 'absolute',
-    right: props.selected ? 4 : 0,
-    top: props.selected ? 4 : 0,
-    overflow: 'hidden',
-    transition: '.1s opacity',
-    '&:hover': {
-      opacity: 1,
-    },
-  }));
+  static HoverOverlay = styled(FlexColumn)(
+    (props: {selected: boolean; size: number}) => ({
+      alignItems: 'center',
+      backgroundColor: colors.whiteAlpha80,
+      bottom: props.selected ? 4 : 0,
+      fontSize: props.size > 100 ? 16 : 11,
+      justifyContent: 'center',
+      left: props.selected ? 4 : 0,
+      opacity: 0,
+      position: 'absolute',
+      right: props.selected ? 4 : 0,
+      top: props.selected ? 4 : 0,
+      overflow: 'hidden',
+      transition: '.1s opacity',
+      '&:hover': {
+        opacity: 1,
+      },
+    }),
+  );
 
   static MemoryLabel = styled('span')({
     fontWeight: 600,

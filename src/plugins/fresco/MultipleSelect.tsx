@@ -8,7 +8,7 @@
  */
 
 import {Block, Button, colors, FlexColumn, styled, Glyph} from 'flipper';
-import React, {Component} from 'react';
+import React, {ChangeEvent, Component} from 'react';
 
 const Container = styled(Block)({
   position: 'relative',
@@ -54,26 +54,26 @@ const StyledGlyph = styled(Glyph)({
 });
 
 type State = {
-  visibleList: boolean,
+  visibleList: boolean;
 };
 
 export default class MultipleSelect extends Component<
   {
-    selected: Set<string>,
+    selected: Set<string>;
 
-    options: Set<string>,
+    options: Set<string>;
 
-    onChange: (selectedItem: string, checked: boolean) => void,
+    onChange: (selectedItem: string, checked: boolean) => void;
 
-    label: string,
+    label: string;
   },
-  State,
+  State
 > {
   state = {
     visibleList: false,
   };
 
-  handleOnChange = (event: SyntheticInputEvent<HTMLInputElement>) => {
+  handleOnChange = (event: ChangeEvent<HTMLInputElement>) => {
     const {
       target: {value, checked},
     } = event;

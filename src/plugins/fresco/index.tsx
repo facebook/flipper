@@ -7,7 +7,7 @@
  * @format
  */
 
-import type {
+import {
   ImageId,
   ImageData,
   ImagesList,
@@ -16,12 +16,12 @@ import type {
   FrescoDebugOverlayEvent,
   AndroidCloseableReferenceLeakEvent,
   CacheInfo,
-} from './api.js';
+} from './api';
 import {Fragment} from 'react';
-import type {ImagesMap} from './ImagePool.js';
-import type {MetricType, MiddlewareAPI} from 'flipper';
+import {ImagesMap} from './ImagePool';
+import {MetricType, MiddlewareAPI} from 'flipper';
 import React from 'react';
-import ImagesCacheOverview from './ImagesCacheOverview.js';
+import ImagesCacheOverview from './ImagesCacheOverview';
 import {
   FlipperPlugin,
   FlexRow,
@@ -31,29 +31,29 @@ import {
   styled,
   isProduction,
 } from 'flipper';
-import ImagesSidebar from './ImagesSidebar.js';
-import ImagePool from './ImagePool.js';
-import type {Notification} from '../../plugin.tsx';
+import ImagesSidebar from './ImagesSidebar';
+import ImagePool from './ImagePool';
+import {Notification, BaseAction} from '../../plugin';
 
 export type ImageEventWithId = ImageEvent & {eventId: number};
 
 export type PersistedState = {
-  surfaceList: Set<string>,
-  images: ImagesList,
-  events: Array<ImageEventWithId>,
-  imagesMap: ImagesMap,
-  closeableReferenceLeaks: Array<AndroidCloseableReferenceLeakEvent>,
-  isLeakTrackingEnabled: boolean,
-  nextEventId: number,
+  surfaceList: Set<string>;
+  images: ImagesList;
+  events: Array<ImageEventWithId>;
+  imagesMap: ImagesMap;
+  closeableReferenceLeaks: Array<AndroidCloseableReferenceLeakEvent>;
+  isLeakTrackingEnabled: boolean;
+  nextEventId: number;
 };
 
 type PluginState = {
-  selectedSurfaces: Set<string>,
-  selectedImage: ?ImageId,
-  isDebugOverlayEnabled: boolean,
-  isAutoRefreshEnabled: boolean,
-  images: ImagesList,
-  coldStartFilter: boolean,
+  selectedSurfaces: Set<string>;
+  selectedImage: ImageId | null;
+  isDebugOverlayEnabled: boolean;
+  isAutoRefreshEnabled: boolean;
+  images: ImagesList;
+  coldStartFilter: boolean;
 };
 
 const EmptySidebar = styled(FlexRow)({
@@ -70,23 +70,23 @@ export const InlineFlexRow = styled(FlexRow)({
 
 const surfaceDefaultText = 'SELECT ALL SURFACES';
 
-const debugLog = (...args) => {
+const debugLog = (...args: any[]) => {
   if (!isProduction()) {
     // eslint-disable-next-line no-console
     console.log(...args);
   }
 };
 
-type ImagesMetaData = {|
-  levels: ImagesListResponse,
-  events: Array<ImageEventWithId>,
-  imageDataList: Array<ImageData>,
-|};
+type ImagesMetaData = {
+  levels: ImagesListResponse;
+  events: Array<ImageEventWithId>;
+  imageDataList: Array<ImageData>;
+};
 
 export default class FlipperImagesPlugin extends FlipperPlugin<
   PluginState,
-  *,
-  PersistedState,
+  BaseAction,
+  PersistedState
 > {
   static defaultPersistedState: PersistedState = {
     images: [],
@@ -99,10 +99,10 @@ export default class FlipperImagesPlugin extends FlipperPlugin<
   };
 
   static exportPersistedState = (
-    callClient: (string, ?Object) => Promise<Object>,
-    persistedState: ?PersistedState,
-    store: ?MiddlewareAPI,
-  ): Promise<?PersistedState> => {
+    callClient: (method: string, params?: any) => Promise<any>,
+    persistedState: PersistedState,
+    store?: MiddlewareAPI,
+  ): Promise<PersistedState> => {
     const defaultPromise = Promise.resolve(persistedState);
     if (!persistedState) {
       persistedState = FlipperImagesPlugin.defaultPersistedState;
@@ -149,9 +149,9 @@ export default class FlipperImagesPlugin extends FlipperPlugin<
           acc.add(id);
         });
         return acc;
-      }, new Set());
+      }, new Set<string>());
       const imageDataList: Array<ImageData> = [];
-      for (const id: string of idSet) {
+      for (const id of idSet) {
         try {
           const imageData: ImageData = await callClient('getImage', {
             imageId: id,
@@ -173,10 +173,10 @@ export default class FlipperImagesPlugin extends FlipperPlugin<
   static persistedStateReducer = (
     persistedState: PersistedState,
     method: string,
-    data: Object,
+    data: AndroidCloseableReferenceLeakEvent | ImageEvent,
   ): PersistedState => {
     if (method == 'closeable_reference_leak_event') {
-      const event: AndroidCloseableReferenceLeakEvent = data;
+      const event: AndroidCloseableReferenceLeakEvent = data as AndroidCloseableReferenceLeakEvent;
       return {
         ...persistedState,
         closeableReferenceLeaks: persistedState.closeableReferenceLeaks.concat(
@@ -184,8 +184,7 @@ export default class FlipperImagesPlugin extends FlipperPlugin<
         ),
       };
     } else if (method == 'events') {
-      const event: ImageEvent = data;
-
+      const event: ImageEvent = data as ImageEvent;
       debugLog('Received events', event);
       const {surfaceList} = persistedState;
       const {attribution} = event;
@@ -267,11 +266,7 @@ export default class FlipperImagesPlugin extends FlipperPlugin<
         category: 'closeablereference_leak',
       }));
 
-  state: PluginState;
-  imagePool: ImagePool;
-  nextEventId: number = 1;
-
-  state = {
+  state: PluginState = {
     selectedSurfaces: new Set([surfaceDefaultText]),
     selectedImage: null,
     isDebugOverlayEnabled: false,
@@ -279,6 +274,8 @@ export default class FlipperImagesPlugin extends FlipperPlugin<
     images: [],
     coldStartFilter: false,
   };
+  imagePool: ImagePool | undefined;
+  nextEventId: number = 1;
 
   filterImages = (
     images: ImagesList,
@@ -340,7 +337,7 @@ export default class FlipperImagesPlugin extends FlipperPlugin<
   }
 
   teardown() {
-    this.imagePool.clear();
+    this.imagePool ? this.imagePool.clear() : undefined;
   }
 
   updateImagesOnUI = (
@@ -365,7 +362,7 @@ export default class FlipperImagesPlugin extends FlipperPlugin<
     debugLog('Requesting images list (reason=' + reason + ')');
     this.client.call('listImages').then((response: ImagesListResponse) => {
       response.levels.forEach(data =>
-        this.imagePool.fetchImages(data.imageIds),
+        this.imagePool ? this.imagePool.fetchImages(data.imageIds) : undefined,
       );
       this.props.setPersistedState({images: response.levels});
       this.updateImagesOnUI(
@@ -409,7 +406,7 @@ export default class FlipperImagesPlugin extends FlipperPlugin<
     debugLog('<- getImage requested for ' + imageId);
     this.client.call('getImage', {imageId}).then((image: ImageData) => {
       debugLog('-> getImage ' + imageId + ' returned');
-      this.imagePool._fetchCompleted(image);
+      this.imagePool ? this.imagePool._fetchCompleted(image) : undefined;
     });
   };
 

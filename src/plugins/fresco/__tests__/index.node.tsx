@@ -7,23 +7,26 @@
  * @format
  */
 
-import FrescoPlugin from '../index.js';
-import type {PersistedState, ImageEventWithId} from '../index.js';
-import type {AndroidCloseableReferenceLeakEvent} from '../api.js';
-import type {MetricType} from 'flipper';
-import type {Notification} from '../../../plugin.tsx';
+import FrescoPlugin from '../index';
+import {PersistedState, ImageEventWithId} from '../index';
+import {AndroidCloseableReferenceLeakEvent} from '../api';
+import {MetricType} from 'flipper';
+import {Notification} from '../../../plugin';
+import {ImagesMap} from '../ImagePool';
+
+type ScanDisplayTime = {[scan_number: number]: number};
 
 function mockPersistedState(
   imageSizes: Array<{
-    width: number,
-    height: number,
+    width: number;
+    height: number;
   }> = [],
   viewport: {
-    width: number,
-    height: number,
+    width: number;
+    height: number;
   } = {width: 150, height: 150},
 ): PersistedState {
-  const scanDisplayTime = {};
+  const scanDisplayTime: ScanDisplayTime = {};
   scanDisplayTime[1] = 3;
   const events: Array<ImageEventWithId> = [
     {
@@ -38,16 +41,19 @@ function mockPersistedState(
     },
   ];
 
-  const imagesMap = imageSizes.reduce((acc, val, index) => {
-    acc[index] = {
-      imageId: String(index),
-      width: val.width,
-      height: val.height,
-      sizeBytes: 10,
-      data: undefined,
-    };
-    return acc;
-  }, {});
+  const imagesMap = imageSizes.reduce(
+    (acc, val, index) => {
+      acc[index] = {
+        imageId: String(index),
+        width: val.width,
+        height: val.height,
+        sizeBytes: 10,
+        data: 'undefined',
+      };
+      return acc;
+    },
+    {} as ImagesMap,
+  );
 
   return {
     surfaceList: new Set(),
@@ -184,9 +190,8 @@ test('the metric reducer with the no viewPort data in events', () => {
   const metrics = metricsReducer(persistedState);
   return expect(metrics).resolves.toMatchObject({WASTED_BYTES: 0});
 });
-
 test('the metric reducer with the multiple events', () => {
-  const scanDisplayTime = {};
+  const scanDisplayTime: ScanDisplayTime = {};
   scanDisplayTime[1] = 3;
   const events: Array<ImageEventWithId> = [
     {
@@ -228,22 +233,27 @@ test('the metric reducer with the multiple events', () => {
       height: 300,
     },
   ];
-  const imagesMap = imageSizes.reduce((acc, val, index) => {
-    acc[index] = {
-      imageId: String(index),
-      width: val.width,
-      height: val.height,
-      sizeBytes: 10,
-      data: undefined,
-    };
-    return acc;
-  }, {});
+  const imagesMap = imageSizes.reduce(
+    (acc, val, index) => {
+      acc[index] = {
+        imageId: String(index),
+        width: val.width,
+        height: val.height,
+        sizeBytes: 10,
+        data: 'undefined',
+      };
+      return acc;
+    },
+    {} as ImagesMap,
+  );
   const persistedState = {
-    surfaceList: new Set(),
+    surfaceList: new Set<string>(),
     images: [],
     nextEventId: 0,
     events,
     imagesMap,
+    closeableReferenceLeaks: [],
+    isLeakTrackingEnabled: true,
   };
   const metricsReducer = FrescoPlugin.metricsReducer;
   expect(metricsReducer).toBeDefined();
@@ -255,7 +265,7 @@ test('the metric reducer with the multiple events', () => {
 test('closeable reference metrics on empty state', () => {
   const metricsReducer: (
     persistedState: PersistedState,
-  ) => Promise<MetricType> = (FrescoPlugin.metricsReducer: any);
+  ) => Promise<MetricType> = FrescoPlugin.metricsReducer;
   const persistedState = mockPersistedState();
   const metrics = metricsReducer(persistedState);
   return expect(metrics).resolves.toMatchObject({CLOSEABLE_REFERENCE_LEAKS: 0});
@@ -264,7 +274,7 @@ test('closeable reference metrics on empty state', () => {
 test('closeable reference metrics on input', () => {
   const metricsReducer: (
     persistedState: PersistedState,
-  ) => Promise<MetricType> = (FrescoPlugin.metricsReducer: any);
+  ) => Promise<MetricType> = FrescoPlugin.metricsReducer;
   const closeableReferenceLeaks: Array<AndroidCloseableReferenceLeakEvent> = [
     {
       identityHashCode: 'deadbeef',
@@ -288,7 +298,7 @@ test('closeable reference metrics on input', () => {
 test('notifications for leaks', () => {
   const notificationReducer: (
     persistedState: PersistedState,
-  ) => Array<Notification> = (FrescoPlugin.getActiveNotifications: any);
+  ) => Array<Notification> = FrescoPlugin.getActiveNotifications;
   const closeableReferenceLeaks: Array<AndroidCloseableReferenceLeakEvent> = [
     {
       identityHashCode: 'deadbeef',

@@ -7,15 +7,15 @@
  * @format
  */
 
-import type {ImageId, ImageData} from './api.js';
+import {ImageId, ImageData} from './api.js';
 
-export type ImagesMap = {[imageId: ImageId]: ImageData};
+export type ImagesMap = {[imageId in ImageId]: ImageData};
 
 const maxInflightRequests = 10;
 
 export default class ImagePool {
   cache: ImagesMap = {};
-  requested: {[imageId: ImageId]: boolean} = {};
+  requested: {[imageId in ImageId]: boolean} = {};
   queued: Array<ImageId> = [];
   inFlightRequests: number = 0;
   fetchImage: (imageId: ImageId) => void;
@@ -59,7 +59,8 @@ export default class ImagePool {
     delete this.requested[image.imageId];
 
     if (this.queued.length > 0) {
-      this.fetchImage(this.queued.pop());
+      const popped = this.queued.pop() as string;
+      this.fetchImage(popped);
     } else {
       this.inFlightRequests--;
     }
