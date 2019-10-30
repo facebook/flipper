@@ -25,6 +25,9 @@ import okio.BufferedSource;
 
 public class FlipperOkhttpInterceptor implements Interceptor {
 
+  // Limit body size (request or response) reporting to 100KB to avoid OOM
+  public static final int MAX_BODY_BYTES = 100 * 1024;
+
   public @Nullable NetworkFlipperPlugin plugin;
 
   public FlipperOkhttpInterceptor() {
@@ -50,7 +53,7 @@ public class FlipperOkhttpInterceptor implements Interceptor {
   private static byte[] bodyToByteArray(final Request request) throws IOException {
     final Buffer buffer = new Buffer();
     request.body().writeTo(buffer);
-    return buffer.readByteArray();
+    return buffer.readByteArray(Math.min(buffer.size(), MAX_BODY_BYTES));
   }
 
   private RequestInfo convertRequest(Request request, String identifier) throws IOException {
@@ -77,7 +80,7 @@ public class FlipperOkhttpInterceptor implements Interceptor {
     info.statusCode = response.code();
     info.headers = headers;
     BufferedSource source = body.source();
-    source.request(Long.MAX_VALUE);
+    source.request(MAX_BODY_BYTES);
     Buffer buffer = source.buffer().clone();
     info.body = buffer.readByteArray();
     return info;
