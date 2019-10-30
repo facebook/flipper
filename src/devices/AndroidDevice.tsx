@@ -167,15 +167,15 @@ export default class AndroidDevice extends BaseDevice {
 
   async getProcessName(pid: number): Promise<string> {
     return await this.adb.shell(this.serial, "ps | grep '" + pid + "'")
-        .then(adbkit.util.readAll)
-        .then(buffer => buffer.toString())
-        .then(output => {
-          const index = output.toString().lastIndexOf(" ");
-          if (index > -1) {
-            return output.substr(index + 1).trim();
-          } else {
-            return "unknown-process";
-          }
-        });
+      .then(adbkit.util.readAll)
+      .then(buffer => buffer.toString())
+      .then(output => {
+        const index = output.toString().lastIndexOf(' ');
+        if (index > -1) {
+          return output.substr(index + 1).trim();
+        } else {
+          return 'unknown-process';
+        }
+      });
   }
 }

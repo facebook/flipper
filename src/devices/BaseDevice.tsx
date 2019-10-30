@@ -124,7 +124,7 @@ export default class BaseDevice {
   }
 
   getProcessName(pid: number): Promise<string> {
-    return Promise.reject(() => new Error("Not supported"));
+    return Promise.reject(() => new Error('Not supported'));
   }
 
   getLogs() {
