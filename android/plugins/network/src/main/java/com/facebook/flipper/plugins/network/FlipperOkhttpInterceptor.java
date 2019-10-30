@@ -39,7 +39,7 @@ public class FlipperOkhttpInterceptor
 
   public @Nullable NetworkFlipperPlugin plugin;
 
-  private Map<String, ResponseInfo> mockResponseMap = new HashMap<>();
+  private Map<String, Map<String,ResponseInfo>> mockResponseMap = new HashMap<>();
 
   public FlipperOkhttpInterceptor() {
     this.plugin = null;
@@ -51,7 +51,12 @@ public class FlipperOkhttpInterceptor
   }
 
   protected void registerMockResponse(String requestUrl, String method, ResponseInfo response) {
-    mockResponseMap.put(requestUrl + "|" + method, response);
+    Map<String, ResponseInfo> subMap = mockResponseMap.get(requestUrl);
+    if (subMap == null) {
+      subMap = new HashMap<>();
+      mockResponseMap.put(requestUrl, subMap);
+    }
+    subMap.put(method, response);
   }
 
   @Override
@@ -75,28 +80,30 @@ public class FlipperOkhttpInterceptor
   private Response getMockResponse(Request request) {
     String url = request.url().toString();
     String method = request.method();
-    ResponseInfo mockResponse = mockResponseMap.get(url + "|" + method);
 
-    if (mockResponse != null) {
-      Response.Builder builder = new Response.Builder();
-      builder
-          .request(request)
-          .protocol(Protocol.HTTP_1_1)
-          .code(mockResponse.statusCode)
-          .message(mockResponse.statusReason)
-          .receivedResponseAtMillis(System.currentTimeMillis())
-          .body(ResponseBody.create(MediaType.parse("application/text"), mockResponse.body));
+    if (mockResponseMap.get(url) == null ||
+      mockResponseMap.get(url).get(method) == null) {
+      return null;
+    }
 
-      if (mockResponse.headers != null && mockResponse.headers.size() > 0) {
-        for (NetworkReporter.Header header : mockResponse.headers) {
-          if (!TextUtils.isEmpty(header.name) && !TextUtils.isEmpty(header.value)) {
-            builder.header(header.name, header.value);
-          }
+    ResponseInfo mockResponse = mockResponseMap.get(url).get(method);
+    Response.Builder builder = new Response.Builder();
+    builder
+      .request(request)
+      .protocol(Protocol.HTTP_1_1)
+      .code(mockResponse.statusCode)
+      .message(mockResponse.statusReason)
+      .receivedResponseAtMillis(System.currentTimeMillis())
+      .body(ResponseBody.create(MediaType.parse("application/text"), mockResponse.body));
+
+    if (mockResponse.headers != null && mockResponse.headers.size() > 0) {
+      for (NetworkReporter.Header header : mockResponse.headers) {
+        if (!TextUtils.isEmpty(header.name) && !TextUtils.isEmpty(header.value)) {
+          builder.header(header.name, header.value);
         }
       }
-      return builder.build();
     }
-    return null;
+    return builder.build();
   }
 
   private static byte[] bodyToByteArray(final Request request) throws IOException {
