@@ -582,6 +582,7 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin<
         severity: 'error',
         title: title,
         action: id,
+        category: crash.reason || 'Unknown reason',
       };
     });
   };
