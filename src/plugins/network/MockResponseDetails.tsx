@@ -359,8 +359,7 @@ export class MockResponseDetails extends Component<Props, State> {
             />
           </Tab>
           <Tab key={'headers'} label={'Headers'}>
-            <StyledContextMenu
-              component={FlexColumn}>
+            <StyledContextMenu component={FlexColumn}>
               <ManagedTable
                 hideHeader={true}
                 multiline={true}

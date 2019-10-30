@@ -112,7 +112,7 @@ export class ManageMockResponsePanel extends Component<Props, State> {
         this.props.routes !== undefined && this.props.routes.size > 0
           ? ['0']
           : [],
-      routes: this.props.routes
+      routes: this.props.routes,
     };
   }
 
@@ -180,8 +180,8 @@ export class ManageMockResponsePanel extends Component<Props, State> {
         }
       });
       this.setState({
-          ...this.state,
-        routes: routes
+        ...this.state,
+        routes: routes,
       });
     }
   };
@@ -265,8 +265,8 @@ export class ManageMockResponsePanel extends Component<Props, State> {
             &nbsp;Add Route
           </AddRouteButton>
           <ManageMockResponsePanel.ContextMenu
-              component={FlexColumn}
-              items={this.contextMenuItems()}>
+            component={FlexColumn}
+            items={this.contextMenuItems()}>
             <ManagedTable
               hideHeader={true}
               multiline={true}
