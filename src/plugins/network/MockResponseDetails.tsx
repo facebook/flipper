@@ -41,7 +41,7 @@ type State = {
 const StyledSelectContainer = styled(FlexRow)({
   paddingLeft: 6,
   paddingTop: 2,
-  paddingBottom: 2,
+  paddingBottom: 24,
   height: '100%',
   flexGrow: 1,
 });
