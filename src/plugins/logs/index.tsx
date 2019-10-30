@@ -489,9 +489,17 @@ export default class LogTable extends FlipperDevicePlugin<
     };
 
     this.logListener = this.device.addLogListener((entry: DeviceLogEntry) => {
-      const processedEntry = processEntry(entry, String(this.counter++));
-      this.incrementCounterIfNeeded(processedEntry.entry);
-      this.scheduleEntryForBatch(processedEntry);
+      // Get the Process name from `pid` and add the process name as App column
+      const {pid} = entry;
+
+      this.device.getProcessName(pid).then( (processName) => {
+        // Set process name
+        entry.app = processName;
+
+        const processedEntry = processEntry(entry, String(this.counter++));
+        this.incrementCounterIfNeeded(processedEntry.entry);
+        this.scheduleEntryForBatch(processedEntry);
+      });
     });
   }
 

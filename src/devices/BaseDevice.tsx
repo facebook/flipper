@@ -123,6 +123,10 @@ export default class BaseDevice {
     this._notifyLogListeners(entry);
   }
 
+  getProcessName(pid: number): Promise<string> {
+    return Promise.reject(() => new Error("Not supported"));
+  }
+
   getLogs() {
     return this.logEntries;
   }

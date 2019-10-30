@@ -286,6 +286,11 @@ const Searchable = (
         this.removeFilter(this.state.focusedToken);
       } else if (e.key === 'Enter' && this.hasFocus() && this._inputRef) {
         this.matchTags(this._inputRef.value, true);
+        this.setState({
+            searchTerm: ''
+        });
+
+        this._inputRef.blur();
       }
     };
 

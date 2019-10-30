@@ -8,7 +8,8 @@
  */
 
 import BaseDevice, {DeviceType, LogLevel} from './BaseDevice';
-import adb, {Client as ADBClient} from 'adbkit';
+import adb from 'adbkit';
+import adbkit, {Client as ADBClient} from 'adbkit';
 import {Priority} from 'adbkit-logcat';
 import ArchivedDevice from './ArchivedDevice';
 import {createWriteStream} from 'fs';
@@ -64,7 +65,7 @@ export default class AndroidDevice extends BaseDevice {
   private recordingProcess?: Promise<string>;
 
   supportedColumns(): Array<string> {
-    return ['date', 'pid', 'tid', 'tag', 'message', 'type', 'time'];
+    return ['app', 'date', 'pid', 'tid', 'tag', 'message', 'type', 'time'];
   }
 
   reverse(ports: [number, number]): Promise<void> {
@@ -162,5 +163,19 @@ export default class AndroidDevice extends BaseDevice {
     const destination = await recordingProcess;
     this.recordingProcess = undefined;
     return destination;
+  }
+
+  async getProcessName(pid: number): Promise<string> {
+    return await this.adb.shell(this.serial, "ps | grep '" + pid + "'")
+        .then(adbkit.util.readAll)
+        .then(buffer => buffer.toString())
+        .then(output => {
+          const index = output.toString().lastIndexOf(" ");
+          if (index > -1) {
+            return output.substr(index + 1).trim();
+          } else {
+            return "unknown-process";
+          }
+        });
   }
 }
