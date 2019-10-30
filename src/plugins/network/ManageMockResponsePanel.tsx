@@ -166,9 +166,9 @@ export class ManageMockResponsePanel extends Component<Props, State> {
     };
   };
 
-  checkDuplicate = (routes?: Map<RequestId, Route>) => {
-    const duplicateMap: {[key: string]: boolean} = {};
-    if (routes && routes.size > 0) {
+  checkDuplicate = (routes: Map<RequestId, Route>) => {
+    if (routes.size > 0) {
+      const duplicateMap: {[key: string]: boolean} = {};
       routes.forEach((r: Route) => {
         if (duplicateMap[r.method + '|' + r.requestUrl]) {
           r.isDuplicate = true;
@@ -258,8 +258,9 @@ export class ManageMockResponsePanel extends Component<Props, State> {
             />
             &nbsp;Add Route
           </AddRouteButton>
-          // @ts-ignore
-          <ManageMockResponsePanel.ContextMenu items={this.contextMenuItems()}>
+          <ManageMockResponsePanel.ContextMenu
+              component={FlexColumn}
+              items={this.contextMenuItems()}>
             <ManagedTable
               hideHeader={true}
               multiline={true}
