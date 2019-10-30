@@ -59,6 +59,11 @@ h6 {
   border: 1px solid #777;
 }
 
+.splash .landing-btn.landing-btn-label {
+  background-color: #0066af;
+  border-color: #0066af;
+}
+
 .landing-btn-left {
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
