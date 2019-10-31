@@ -12,7 +12,7 @@ The network plugin is shipped as a separate Maven artifact:
 
 ```groovy
 dependencies {
-  debugImplementation 'com.facebook.flipper:flipper-network-plugin:0.26.0'
+  debugImplementation 'com.facebook.flipper:flipper-network-plugin:0.27.0'
 }
 ```
 
