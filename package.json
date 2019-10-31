@@ -166,7 +166,7 @@
     "rsocket-core": "^0.0.16",
     "rsocket-tcp-server": "^0.0.16",
     "socket.io": "^2.0.4",
-    "string-natural-compare": "^2.0.2",
+    "string-natural-compare": "^3.0.0",
     "tmp": "0.0.33",
     "uuid": "^3.3.2",
     "websocket": "^1.0.24",
