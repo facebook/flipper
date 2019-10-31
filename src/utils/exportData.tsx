@@ -34,6 +34,7 @@ import promiseTimeout from './promiseTimeout';
 import {Idler} from './Idler';
 export const IMPORT_FLIPPER_TRACE_EVENT = 'import-flipper-trace';
 export const EXPORT_FLIPPER_TRACE_EVENT = 'export-flipper-trace';
+export const EXPORT_FLIPPER_TRACE_TIME_EVENT = 'export-flipper-trace-time';
 
 export type PluginStatesExportState = {
   [pluginKey: string]: string;
@@ -499,6 +500,7 @@ export function exportStore(
 ): Promise<{serializedString: string; errorArray: Array<Error>}> {
   getLogger().track('usage', EXPORT_FLIPPER_TRACE_EVENT);
   return new Promise(async (resolve, reject) => {
+    performance.mark(EXPORT_FLIPPER_TRACE_TIME_EVENT);
     try {
       statusUpdate && statusUpdate('Preparing to export Flipper data...');
       const {exportData, errorArray} = await getStoreExport(
@@ -512,6 +514,13 @@ export function exportStore(
         if (serializedString.length <= 0) {
           reject(new Error('Serialize function returned empty string'));
         }
+        getLogger().trackTimeSince(
+          EXPORT_FLIPPER_TRACE_TIME_EVENT,
+          EXPORT_FLIPPER_TRACE_TIME_EVENT,
+          {
+            plugins: store.getState().plugins.selectedPlugins,
+          },
+        );
         resolve({serializedString, errorArray});
       } else {
         console.error('Make sure a device is connected');

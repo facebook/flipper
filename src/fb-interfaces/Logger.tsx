@@ -23,7 +23,11 @@ export type Args = {
 export interface Logger {
   track(type: TrackType, event: string, data?: any, plugin?: string): void;
 
-  trackTimeSince(mark: string, eventName?: string | null | undefined): void;
+  trackTimeSince(
+    mark: string,
+    eventName?: string | null | undefined,
+    data?: any,
+  ): void;
 
   info(data: any, category: string): void;
 
