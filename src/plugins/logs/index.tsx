@@ -492,7 +492,7 @@ export default class LogTable extends FlipperDevicePlugin<
       // Get the Process name from `pid` and add the process name as App column
       const {pid} = entry;
 
-      this.device.getProcessName(pid).then( (processName) => {
+      this.device.getProcessName(pid).then(processName => {
         // Set process name
         entry.app = processName;
 

@@ -166,7 +166,8 @@ export default class AndroidDevice extends BaseDevice {
   }
 
   async getProcessName(pid: number): Promise<string> {
-    return await this.adb.shell(this.serial, "ps | grep '" + pid + "'")
+    return await this.adb
+      .shell(this.serial, "ps | grep '" + pid + "'")
       .then(adbkit.util.readAll)
       .then(buffer => buffer.toString())
       .then(output => {

@@ -287,7 +287,7 @@ const Searchable = (
       } else if (e.key === 'Enter' && this.hasFocus() && this._inputRef) {
         this.matchTags(this._inputRef.value, true);
         this.setState({
-            searchTerm: ''
+          searchTerm: '',
         });
 
         this._inputRef.blur();
