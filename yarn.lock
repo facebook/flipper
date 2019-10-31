@@ -7882,10 +7882,10 @@ string-length@^2.0.0:
     astral-regex "^1.0.0"
     strip-ansi "^4.0.0"
 
-string-natural-compare@^2.0.2:
-  version "2.0.3"
-  resolved "https://registry.yarnpkg.com/string-natural-compare/-/string-natural-compare-2.0.3.tgz#9dbe1dd65490a5fe14f7a5c9bc686fc67cb9c6e4"
-  integrity sha512-4Kcl12rNjc+6EKhY8QyDVuQTAlMWwRiNbsxnVwBUKFr7dYPQuXVrtNU4sEkjF9LHY0AY6uVbB3ktbkIH4LC+BQ==
+string-natural-compare@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/string-natural-compare/-/string-natural-compare-3.0.0.tgz#63168425adb16d67f93e2a827dfae4c8749de424"
+  integrity sha512-6GOOrKCOYxpunA7PS6uwjNNofe4Am+YCqLTWJqRP6KVX4TH/RbMGSB1NqY88nPV6rVdMrdRtyrww1TVDFzfIsg==
 
 string-width@^1.0.1:
   version "1.0.2"
