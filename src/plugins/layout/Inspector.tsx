@@ -303,15 +303,24 @@ export default class Inspector extends Component<Props> {
     }),
   );
 
-  onElementExpanded = (id: ElementID, deep: boolean) => {
-    const expanded = !this.elements()[id].expanded;
-    this.updateElement(id, {expanded});
-    if (expanded) {
-      this.getChildren(id, {}).then(children => {
-        if (deep) {
-          children.forEach(child => this.onElementExpanded(child.id, deep));
-        }
-      });
+  onElementExpanded = (
+    id: ElementID,
+    deep: boolean,
+    forceExpand: boolean = false,
+  ) => {
+    const shouldExpand = forceExpand || !this.elements()[id].expanded;
+    if (shouldExpand) {
+      this.updateElement(id, {expanded: shouldExpand});
+    }
+    this.getChildren(id, {}).then(children => {
+      if (deep) {
+        children.forEach(child =>
+          this.onElementExpanded(child.id, deep, shouldExpand),
+        );
+      }
+    });
+    if (!shouldExpand) {
+      this.updateElement(id, {expanded: shouldExpand});
     }
   };
 
