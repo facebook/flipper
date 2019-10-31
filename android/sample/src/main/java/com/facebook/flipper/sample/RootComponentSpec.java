@@ -24,6 +24,7 @@ import com.facebook.litho.annotations.OnUpdateState;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.fresco.FrescoImage;
 import com.facebook.litho.widget.Text;
+import com.facebook.yoga.YogaEdge;
 
 @LayoutSpec
 public class RootComponentSpec {
@@ -37,39 +38,49 @@ public class RootComponentSpec {
             Text.create(c)
                 .text("Tap to hit get request")
                 .key("1")
+                .marginDip(YogaEdge.ALL, 10)
                 .textSizeSp(20)
                 .clickHandler(RootComponent.hitGetRequest(c)))
         .child(
             Text.create(c)
                 .text("Tap to hit post request")
                 .key("2")
+                .marginDip(YogaEdge.ALL, 10)
                 .textSizeSp(20)
                 .clickHandler(RootComponent.hitPostRequest(c)))
         .child(
             Text.create(c)
                 .text("Trigger Notification")
                 .key("3")
+                .marginDip(YogaEdge.ALL, 10)
                 .textSizeSp(20)
                 .clickHandler(RootComponent.triggerNotification(c)))
         .child(
             Text.create(c)
                 .text("Diagnose connection issues")
                 .key("4")
+                .marginDip(YogaEdge.ALL, 10)
                 .textSizeSp(20)
                 .clickHandler(RootComponent.openDiagnostics(c)))
         .child(
             Text.create(c)
                 .text("Load Fresco image")
                 .key("5")
+                .marginDip(YogaEdge.ALL, 10)
                 .textSizeSp(20)
                 .clickHandler(RootComponent.loadImage(c)))
         .child(
             Text.create(c)
                 .text("Navigate to another page")
-                .key("5")
+                .key("6")
+                .marginDip(YogaEdge.ALL, 10)
                 .textSizeSp(20)
                 .clickHandler(RootComponent.openAlternateActivityOne(c)))
-        .child(displayImage ? FrescoImage.create(c).controller(controller) : null)
+        .child(displayImage ?
+                FrescoImage.create(c).controller(controller)
+                    .marginDip(YogaEdge.ALL, 10)
+                    .widthDip(150)
+                    .heightDip(150) : null)
         .build();
   }
 
