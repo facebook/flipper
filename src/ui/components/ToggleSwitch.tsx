@@ -56,6 +56,7 @@ type Props = {
   toggled?: boolean;
   className?: string;
   label?: string;
+  tooltip?: string;
 };
 
 /**
@@ -71,7 +72,7 @@ type Props = {
 export default class ToggleButton extends React.Component<Props> {
   render() {
     return (
-      <Container onClick={this.props.onClick}>
+      <Container onClick={this.props.onClick} title={this.props.tooltip}>
         <StyledButton
           className={this.props.className}
           toggled={this.props.toggled || false}
