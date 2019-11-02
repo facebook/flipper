@@ -27,7 +27,6 @@ import {default as Client} from '../Client';
 import fs from 'fs';
 import uuid from 'uuid';
 import {remote, OpenDialogOptions} from 'electron';
-import {serialize, deserialize} from './serialization';
 import {readCurrentRevision} from './packageMetadata';
 import {tryCatchReportPlatformFailures} from './metrics';
 import {promisify} from 'util';
@@ -35,6 +34,7 @@ import promiseTimeout from './promiseTimeout';
 import {Idler} from './Idler';
 export const IMPORT_FLIPPER_TRACE_EVENT = 'import-flipper-trace';
 export const EXPORT_FLIPPER_TRACE_EVENT = 'export-flipper-trace';
+export const EXPORT_FLIPPER_TRACE_TIME_EVENT = 'export-flipper-trace-time';
 
 export type PluginStatesExportState = {
   [pluginKey: string]: string;
@@ -200,6 +200,7 @@ const serializePluginStates = async (
         pluginStates[key],
         statusUpdate,
         idler,
+        pluginName,
       );
     }
   }
@@ -499,6 +500,7 @@ export function exportStore(
 ): Promise<{serializedString: string; errorArray: Array<Error>}> {
   getLogger().track('usage', EXPORT_FLIPPER_TRACE_EVENT);
   return new Promise(async (resolve, reject) => {
+    performance.mark(EXPORT_FLIPPER_TRACE_TIME_EVENT);
     try {
       statusUpdate && statusUpdate('Preparing to export Flipper data...');
       const {exportData, errorArray} = await getStoreExport(
@@ -508,14 +510,17 @@ export function exportStore(
       );
       if (exportData != null) {
         statusUpdate && statusUpdate('Serializing Flipper data...');
-        const serializedString = await serialize(
-          exportData,
-          idler,
-          statusUpdate,
-        );
+        const serializedString = JSON.stringify(exportData);
         if (serializedString.length <= 0) {
           reject(new Error('Serialize function returned empty string'));
         }
+        getLogger().trackTimeSince(
+          EXPORT_FLIPPER_TRACE_TIME_EVENT,
+          EXPORT_FLIPPER_TRACE_TIME_EVENT,
+          {
+            plugins: store.getState().plugins.selectedPlugins,
+          },
+        );
         resolve({serializedString, errorArray});
       } else {
         console.error('Make sure a device is connected');
@@ -546,7 +551,7 @@ export const exportStoreToFile = (
 
 export function importDataToStore(data: string, store: Store) {
   getLogger().track('usage', IMPORT_FLIPPER_TRACE_EVENT);
-  const json: ExportType = deserialize(data);
+  const json: ExportType = JSON.parse(data);
   const {device, clients} = json;
   if (device == null) {
     return;
@@ -557,7 +562,11 @@ export function importDataToStore(data: string, store: Store) {
     deviceType,
     title,
     os,
-    logs ? logs : [],
+    logs
+      ? logs.map(l => {
+          return {...l, date: new Date(l.date)};
+        })
+      : [],
   );
   const devices = store.getState().connections.devices;
   const matchedDevices = devices.filter(

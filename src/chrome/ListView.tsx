@@ -22,20 +22,31 @@ import {unsetShare} from '../reducers/application';
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 
-export type PluginSelection = Map<string, boolean>;
+export type SelectionType = 'multiple' | 'single';
+
+type SubType =
+  | {
+      selectedElements: Set<string>;
+      type: 'multiple';
+    }
+  | {
+      selectedElement: string;
+      type: 'single';
+    };
 
 type Props = {
-  onSelect: (plugins: Array<string>) => void;
+  onSelect: (elements: Array<string>) => void;
   onHide: () => any;
-  plugins: PluginSelection;
-};
+  elements: Array<string>;
+  title: string;
+} & SubType;
 
 const Title = styled(Text)({
   margin: 6,
 });
 
 type State = {
-  plugins: PluginSelection;
+  selectedElements: Set<string>;
 };
 
 const Container = styled(FlexColumn)({
@@ -51,7 +62,7 @@ const Line = styled(View)({
   flexShrink: 0,
 });
 
-const PluginRowComponentContainer = styled(FlexColumn)({
+const RowComponentContainer = styled(FlexColumn)({
   overflow: 'scroll',
   height: 'auto',
   backgroundColor: colors.white,
@@ -77,13 +88,13 @@ const Padder = styled('div')(
   }),
 );
 
-type PluginRowComponentProps = {
+type RowComponentProps = {
   name: string;
   selected: boolean;
   onChange: (name: string, selected: boolean) => void;
 };
 
-class PluginRowComponent extends Component<PluginRowComponentProps> {
+class RowComponent extends Component<RowComponentProps> {
   render() {
     const {name, selected, onChange} = this.props;
     return (
@@ -110,59 +121,67 @@ class PluginRowComponent extends Component<PluginRowComponentProps> {
   }
 }
 
-export default class SelectPluginSheet extends Component<Props, State> {
+export default class ListView extends Component<Props, State> {
   static contextTypes = {
     store: PropTypes.object.isRequired,
   };
 
-  state = {plugins: new Map<string, boolean>()};
+  state: State = {selectedElements: new Set([])};
   static getDerivedStateFromProps(props: Props, state: State) {
-    if (state.plugins.size > 0) {
+    if (state.selectedElements.size > 0) {
       return null;
     }
-    return {plugins: props.plugins};
+    if (props.type === 'multiple') {
+      return {selectedElements: props.selectedElements};
+    } else if (props.type === 'single') {
+      return {selectedElements: new Set([props.selectedElement])};
+    }
+
+    return null;
   }
 
-  onSubmit(plugins: PluginSelection) {
-    const selectedArray = Array.from(plugins.entries()).reduce<string[]>(
-      (acc, [plugin, selected]) => {
-        if (selected) {
-          acc.push(plugin);
-        }
-        return acc;
-      },
-      [],
-    );
-    this.props.onSelect(selectedArray);
-  }
+  handleChange = (id: string, selected: boolean) => {
+    if (this.props.type === 'single') {
+      if (!selected) {
+        this.setState({selectedElements: new Set([])});
+      } else {
+        this.setState({selectedElements: new Set([id])});
+      }
+    } else {
+      if (selected) {
+        this.setState({
+          selectedElements: new Set([...this.state.selectedElements, id]),
+        });
+      } else {
+        const selectedElements = new Set([...this.state.selectedElements]);
+        selectedElements.delete(id);
+        this.setState({selectedElements});
+      }
+    }
+  };
+
   render() {
     const onHide = () => {
       this.context.store.dispatch(unsetShare());
       this.props.onHide();
     };
-    const {plugins} = this.state;
 
     return (
       <Container>
         <FlexColumn>
-          <Title>
-            Select the plugins for which you want to export the data
-          </Title>
-          <PluginRowComponentContainer>
-            {Array.from(plugins.entries()).map(([pluginID, selected]) => {
+          <Title>{this.props.title}</Title>
+          <RowComponentContainer>
+            {this.props.elements.map(id => {
               return (
-                <PluginRowComponent
-                  name={pluginID}
-                  key={pluginID}
-                  selected={selected}
-                  onChange={(id: string, selected: boolean) => {
-                    plugins.set(id, selected);
-                    this.setState({plugins});
-                  }}
+                <RowComponent
+                  name={id}
+                  key={id}
+                  selected={this.state.selectedElements.has(id)}
+                  onChange={this.handleChange}
                 />
               );
             })}
-          </PluginRowComponentContainer>
+          </RowComponentContainer>
         </FlexColumn>
         <Padder paddingTop={8} paddingBottom={2}>
           <FlexRow>
@@ -175,7 +194,7 @@ export default class SelectPluginSheet extends Component<Props, State> {
               padded
               type="primary"
               onClick={() => {
-                this.onSubmit(this.state.plugins);
+                this.props.onSelect([...this.state.selectedElements]);
               }}>
               Submit
             </Button>

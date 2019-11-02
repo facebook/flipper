@@ -60,6 +60,7 @@ function rowMatchesRegex(values: Array<string>, regex: string): boolean {
 function rowMatchesSearchTerm(
   searchTerm: string,
   isRegex: boolean,
+  isBodySearchEnabled: boolean,
   row: TableBodyRow,
 ): boolean {
   if (searchTerm == null || searchTerm.length === 0) {
@@ -68,6 +69,14 @@ function rowMatchesSearchTerm(
   const rowValues = Object.keys(row.columns).map(key =>
     textContent(row.columns[key].value),
   );
+  if (isBodySearchEnabled) {
+    if (row.requestBody) {
+      rowValues.push(row.requestBody);
+    }
+    if (row.responseBody) {
+      rowValues.push(row.responseBody);
+    }
+  }
   if (isRegex) {
     return rowMatchesRegex(rowValues, searchTerm);
   }
@@ -80,9 +89,10 @@ const filterRowsFactory = (
   filters: Array<Filter>,
   searchTerm: string,
   regexSearch: boolean,
+  bodySearch: boolean,
 ) => (row: TableBodyRow): boolean =>
   rowMatchesFilters(filters, row) &&
-  rowMatchesSearchTerm(searchTerm, regexSearch, row);
+  rowMatchesSearchTerm(searchTerm, regexSearch, bodySearch, row);
 
 class SearchableManagedTable extends PureComponent<Props, State> {
   static defaultProps = {
@@ -94,6 +104,7 @@ class SearchableManagedTable extends PureComponent<Props, State> {
       this.props.filters,
       this.props.searchTerm,
       this.props.regexEnabled || false,
+      this.props.bodySearchEnabled || false,
     ),
   };
 
@@ -105,6 +116,7 @@ class SearchableManagedTable extends PureComponent<Props, State> {
     if (
       nextProps.searchTerm !== this.props.searchTerm ||
       nextProps.regexEnabled != this.props.regexEnabled ||
+      nextProps.bodySearchEnabled != this.props.bodySearchEnabled ||
       !deepEqual(this.props.filters, nextProps.filters)
     ) {
       this.setState({
@@ -112,6 +124,7 @@ class SearchableManagedTable extends PureComponent<Props, State> {
           nextProps.filters,
           nextProps.searchTerm,
           nextProps.regexEnabled || false,
+          nextProps.bodySearchEnabled || false,
         ),
       });
     }

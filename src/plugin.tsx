@@ -77,6 +77,7 @@ export abstract class FlipperBasePlugin<
 > extends Component<Props<PersistedState>, State> {
   abstract ['constructor']: any;
   static title: string | null = null;
+  static category: string | null = null;
   static id: string = '';
   static icon: string | null = null;
   static gatekeeper: string | null = null;
@@ -139,12 +140,19 @@ export abstract class FlipperBasePlugin<
     persistedState: StaticPersistedState,
     statusUpdate?: (msg: string) => void,
     idler?: Idler,
+    pluginName?: string,
   ) => Promise<string> = (
     persistedState: StaticPersistedState,
     statusUpdate?: (msg: string) => void,
     idler?: Idler,
+    pluginName?: string,
   ) => {
-    return serialize(persistedState, idler, statusUpdate);
+    return serialize(
+      persistedState,
+      idler,
+      statusUpdate,
+      pluginName != null ? `Serializing ${pluginName}` : undefined,
+    );
   };
   static deserializePersistedState: (
     serializedString: string,

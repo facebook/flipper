@@ -491,7 +491,7 @@ export default class LogTable extends FlipperDevicePlugin<
     this.logListener = this.device.addLogListener((entry: DeviceLogEntry) => {
       const processedEntry = processEntry(entry, String(this.counter++));
       this.incrementCounterIfNeeded(processedEntry.entry);
-      this.scheudleEntryForBatch(processedEntry);
+      this.scheduleEntryForBatch(processedEntry);
     });
   }
 
@@ -518,7 +518,7 @@ export default class LogTable extends FlipperDevicePlugin<
     }
   };
 
-  scheudleEntryForBatch = (item: {
+  scheduleEntryForBatch = (item: {
     row: TableBodyRow;
     entry: DeviceLogEntry;
   }) => {

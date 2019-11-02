@@ -372,8 +372,11 @@ ${request.headers
   )
   .join('\n')}`;
 
-  if (request.data) {
-    copyText += `\n\n${decodeBody(request)}`;
+  const requestData = request.data ? decodeBody(request) : null;
+  const responseData = response && response.data ? decodeBody(response) : null;
+
+  if (requestData) {
+    copyText += `\n\n${requestData}`;
   }
 
   if (response) {
@@ -389,8 +392,8 @@ ${response.headers
   .join('\n')}`;
   }
 
-  if (response) {
-    copyText += `\n\n${decodeBody(response)}`;
+  if (responseData) {
+    copyText += `\n\n${responseData}`;
   }
 
   return {
@@ -436,6 +439,8 @@ ${response.headers
     copyText,
     highlightOnHover: true,
     style: style,
+    requestBody: requestData,
+    responseBody: responseData,
   };
 }
 
@@ -574,6 +579,7 @@ class NetworkTable extends PureComponent<NetworkTableProps, NetworkTableState> {
           highlightedRows={this.props.highlightedRows}
           rowLineHeight={26}
           allowRegexSearch={true}
+          allowBodySearch={true}
           zebra={false}
           actions={
             <FlexRow>

@@ -93,7 +93,9 @@ export type SearchableProps = {
   searchTerm: string;
   filters: Array<Filter>;
   allowRegexSearch?: boolean;
+  allowBodySearch?: boolean;
   regexEnabled?: boolean;
+  bodySearchEnabled?: boolean;
 };
 
 type Props = {
@@ -104,6 +106,7 @@ type Props = {
   onFilterChange: (filters: Array<Filter>) => void;
   defaultFilters: Array<Filter>;
   allowRegexSearch: boolean;
+  allowBodySearch: boolean;
 };
 
 type State = {
@@ -112,6 +115,7 @@ type State = {
   searchTerm: string;
   hasFocus: boolean;
   regexEnabled: boolean;
+  bodySearchEnabled: boolean;
   compiledRegex: RegExp | null | undefined;
 };
 
@@ -137,6 +141,7 @@ const Searchable = (
       searchTerm: '',
       hasFocus: false,
       regexEnabled: false,
+      bodySearchEnabled: false,
       compiledRegex: null,
     };
 
@@ -149,6 +154,7 @@ const Searchable = (
         | {
             filters: Array<Filter>;
             regexEnabled?: boolean;
+            bodySearchEnabled?: boolean;
             searchTerm?: string;
           }
         | undefined;
@@ -192,6 +198,8 @@ const Searchable = (
           searchTerm: searchTerm,
           filters: savedState.filters || this.state.filters,
           regexEnabled: savedState.regexEnabled || this.state.regexEnabled,
+          bodySearchEnabled:
+            savedState.bodySearchEnabled || this.state.bodySearchEnabled,
           compiledRegex: compileRegex(searchTerm),
         });
       }
@@ -202,6 +210,7 @@ const Searchable = (
         this.getTableKey() &&
         (prevState.searchTerm !== this.state.searchTerm ||
           prevState.regexEnabled != this.state.regexEnabled ||
+          prevState.bodySearchEnabled != this.state.bodySearchEnabled ||
           prevState.filters !== this.state.filters)
       ) {
         window.localStorage.setItem(
@@ -210,6 +219,7 @@ const Searchable = (
             searchTerm: this.state.searchTerm,
             filters: this.state.filters,
             regexEnabled: this.state.regexEnabled,
+            bodySearchEnabled: this.state.bodySearchEnabled,
           }),
         );
         if (this.props.onFilterChange != null) {
@@ -406,6 +416,12 @@ const Searchable = (
       });
     };
 
+    onBodySearchToggled = () => {
+      this.setState({
+        bodySearchEnabled: !this.state.bodySearchEnabled,
+      });
+    };
+
     hasFocus = (): boolean => {
       return this.state.focusedToken !== -1 || this.state.hasFocus;
     };
@@ -464,6 +480,16 @@ const Searchable = (
               label={'Regex'}
             />
           ) : null}
+          {this.props.allowBodySearch ? (
+            <ToggleButton
+              toggled={this.state.bodySearchEnabled}
+              onClick={this.onBodySearchToggled}
+              label={'Body'}
+              tooltip={
+                'Search request and response bodies (warning: this can be quite slow)'
+              }
+            />
+          ) : null}
           {(this.state.searchTerm || this.state.filters.length > 0) && (
             <Clear onClick={this.clear}>&times;</Clear>
           )}
@@ -475,6 +501,7 @@ const Searchable = (
           addFilter={this.addFilter}
           searchTerm={this.state.searchTerm}
           regexEnabled={this.state.regexEnabled}
+          bodySearchEnabled={this.state.bodySearchEnabled}
           filters={this.state.filters}
         />,
       ];

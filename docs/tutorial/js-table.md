@@ -52,6 +52,7 @@ you can also specify a title to show in the Flipper sidebar and an icon to displ
   "keywords": ["flipper-plugin"],
   "icon": "apps",
   "title": "Sea Mammals",
+  "category": "Example Plugin",
   "dependencies": {
     "flipper": "latest"
   }

@@ -15,5 +15,8 @@
   },
   "devDependencies": {
     "@types/recharts": "1.7.1"
+  },
+  "resolutions": {
+    "@types/react": "16.9.11"
   }
 }

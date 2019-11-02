@@ -7,8 +7,8 @@
  * @format
  */
 
-import type {ImageData} from './api.js';
-import type {ImageEventWithId} from './index.js';
+import {ImageData} from './api';
+import {ImageEventWithId} from './index';
 import {
   Component,
   DataDescription,
@@ -20,10 +20,11 @@ import {
   colors,
   styled,
 } from 'flipper';
+import React from 'react';
 
 type ImagesSidebarProps = {
-  image: ?ImageData,
-  events: Array<ImageEventWithId>,
+  image: ImageData;
+  events: Array<ImageEventWithId>;
 };
 
 type ImagesSidebarState = {};
@@ -38,7 +39,7 @@ const WordBreakFlexColumn = styled(FlexColumn)({
 
 export default class ImagesSidebar extends Component<
   ImagesSidebarProps,
-  ImagesSidebarState,
+  ImagesSidebarState
 > {
   render() {
     return (
@@ -81,7 +82,7 @@ export default class ImagesSidebar extends Component<
 }
 
 class EventDetails extends Component<{
-  event: ImageEventWithId,
+  event: ImageEventWithId;
 }> {
   render() {
     const {event} = this.props;
@@ -158,9 +159,9 @@ class EventDetails extends Component<{
 }
 
 class RequestHeader extends Component<{
-  event: ImageEventWithId,
+  event: ImageEventWithId;
 }> {
-  dateString = timestamp => {
+  dateString = (timestamp: number) => {
     const date = new Date(timestamp);
     return `${date.toTimeString().split(' ')[0]}.${(
       '000' + date.getMilliseconds()

@@ -23,10 +23,15 @@ class Index extends React.Component {
               API.
             </h2>
             <div className="row">
-              <a
-                className="landing-btn landing-btn-left primary"
+              <p
+                className="landing-btn landing-btn-left landing-btn-label"
                 href="https://www.facebook.com/fbflipper/public/mac">
-                Download Mac
+                Download
+              </p>
+              <a
+                className="landing-btn landing-btn-middle primary"
+                href="https://www.facebook.com/fbflipper/public/mac">
+                Mac
               </a>
               <a
                 className="landing-btn landing-btn-middle primary"

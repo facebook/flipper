@@ -253,6 +253,14 @@ class ElementsRow extends PureComponent<ElementsRowProps, ElementsRowState> {
           this.props.onElementExpanded(this.props.id, false);
         },
       },
+      {
+        label: props.element.expanded
+          ? 'Collapse all child elements'
+          : 'Expand all child elements',
+        click: () => {
+          this.props.onElementExpanded(this.props.id, true);
+        },
+      },
     ];
 
     for (const extension of props.contextMenuExtensions) {

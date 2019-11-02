@@ -43,10 +43,10 @@ repositories {
 }
 
 dependencies {
-  debugImplementation 'com.facebook.flipper:flipper:0.26.0'
+  debugImplementation 'com.facebook.flipper:flipper:0.27.0'
   debugImplementation 'com.facebook.soloader:soloader:0.5.1'
 
-  releaseImplementation 'com.facebook.flipper:flipper-noop:0.26.0'
+  releaseImplementation 'com.facebook.flipper:flipper-noop:0.27.0'
 }
 ```
 
@@ -87,10 +87,10 @@ repositories {
 }
 
 dependencies {
-  debugImplementation 'com.facebook.flipper:flipper:0.26.1-SNAPSHOT'
+  debugImplementation 'com.facebook.flipper:flipper:0.27.1-SNAPSHOT'
   debugImplementation 'com.facebook.soloader:soloader:0.5.1'
 
-  releaseImplementation 'com.facebook.flipper:flipper-noop:0.26.1-SNAPSHOT'
+  releaseImplementation 'com.facebook.flipper:flipper-noop:0.27.1-SNAPSHOT'
 }
 ```
 
@@ -105,7 +105,7 @@ We support both Swift and Objective-C for Flipper with CocoaPods as build and di
 
 ```ruby
 project 'MyApp.xcodeproj'
-flipperkit_version = '0.26.0'
+flipperkit_version = '0.27.0'
 
 target 'MyApp' do
   platform :ios, '9.0'
@@ -167,7 +167,7 @@ end
 
 ```ruby
 project 'MyApp.xcodeproj'
-flipperkit_version = '0.26.0'
+flipperkit_version = '0.27.0'
 
 target 'MyApp' do
   platform :ios, '9.0'
@@ -555,7 +555,7 @@ target 'your-app-name' do
   end
 
   # For enabling Flipper.
-  # Note that if you use_framework!, flipper will no work.
+  # Note that if you use_framework!, flipper will not work.
   # Disable these lines if you are doing use_framework!
   flipper_pods()
   post_install do |installer|
@@ -611,7 +611,7 @@ The code below enables the following integrations:
 - (void) initializeFlipper:(UIApplication *)application {
   #ifdef DEBUG
     FlipperClient *client = [FlipperClient sharedClient];
-    SKDescriptorMapper \*layoutDescriptorMapper = [[SKDescriptorMapper alloc] initWithDefaults];
+    SKDescriptorMapper *layoutDescriptorMapper = [[SKDescriptorMapper alloc] initWithDefaults];
     [client addPlugin: [[FlipperKitLayoutPlugin alloc] initWithRootNode: application withDescriptorMapper: layoutDescriptorMapper]];
     [client addPlugin:[[FKUserDefaultsPlugin alloc] initWithSuiteName:nil]]; [client start];
     [client addPlugin: [[FlipperKitNetworkPlugin alloc] initWithNetworkAdapter:[SKIOSNetworkAdapter new]]];

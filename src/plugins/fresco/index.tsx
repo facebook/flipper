@@ -7,7 +7,7 @@
  * @format
  */
 
-import type {
+import {
   ImageId,
   ImageData,
   ImagesList,
@@ -16,12 +16,12 @@ import type {
   FrescoDebugOverlayEvent,
   AndroidCloseableReferenceLeakEvent,
   CacheInfo,
-} from './api.js';
+} from './api';
 import {Fragment} from 'react';
-import type {ImagesMap} from './ImagePool.js';
-import type {MetricType, MiddlewareAPI} from 'flipper';
+import {ImagesMap} from './ImagePool';
+import {MetricType, MiddlewareAPI} from 'flipper';
 import React from 'react';
-import ImagesCacheOverview from './ImagesCacheOverview.js';
+import ImagesCacheOverview from './ImagesCacheOverview';
 import {
   FlipperPlugin,
   FlexRow,
@@ -31,29 +31,29 @@ import {
   styled,
   isProduction,
 } from 'flipper';
-import ImagesSidebar from './ImagesSidebar.js';
-import ImagePool from './ImagePool.js';
-import type {Notification} from '../../plugin.tsx';
+import ImagesSidebar from './ImagesSidebar';
+import ImagePool from './ImagePool';
+import {Notification, BaseAction} from '../../plugin';
 
 export type ImageEventWithId = ImageEvent & {eventId: number};
 
 export type PersistedState = {
-  surfaceList: Set<string>,
-  images: ImagesList,
-  events: Array<ImageEventWithId>,
-  imagesMap: ImagesMap,
-  closeableReferenceLeaks: Array<AndroidCloseableReferenceLeakEvent>,
-  isLeakTrackingEnabled: boolean,
-  nextEventId: number,
+  surfaceList: Set<string>;
+  images: ImagesList;
+  events: Array<ImageEventWithId>;
+  imagesMap: ImagesMap;
+  closeableReferenceLeaks: Array<AndroidCloseableReferenceLeakEvent>;
+  isLeakTrackingEnabled: boolean;
+  nextEventId: number;
 };
 
 type PluginState = {
-  selectedSurface: string,
-  selectedImage: ?ImageId,
-  isDebugOverlayEnabled: boolean,
-  isAutoRefreshEnabled: boolean,
-  images: ImagesList,
-  coldStartFilter: boolean,
+  selectedSurfaces: Set<string>;
+  selectedImage: ImageId | null;
+  isDebugOverlayEnabled: boolean;
+  isAutoRefreshEnabled: boolean;
+  images: ImagesList;
+  coldStartFilter: boolean;
 };
 
 const EmptySidebar = styled(FlexRow)({
@@ -70,23 +70,23 @@ export const InlineFlexRow = styled(FlexRow)({
 
 const surfaceDefaultText = 'SELECT ALL SURFACES';
 
-const debugLog = (...args) => {
+const debugLog = (...args: any[]) => {
   if (!isProduction()) {
     // eslint-disable-next-line no-console
     console.log(...args);
   }
 };
 
-type ImagesMetaData = {|
-  levels: ImagesListResponse,
-  events: Array<ImageEventWithId>,
-  imageDataList: Array<ImageData>,
-|};
+type ImagesMetaData = {
+  levels: ImagesListResponse;
+  events: Array<ImageEventWithId>;
+  imageDataList: Array<ImageData>;
+};
 
 export default class FlipperImagesPlugin extends FlipperPlugin<
   PluginState,
-  *,
-  PersistedState,
+  BaseAction,
+  PersistedState
 > {
   static defaultPersistedState: PersistedState = {
     images: [],
@@ -99,10 +99,10 @@ export default class FlipperImagesPlugin extends FlipperPlugin<
   };
 
   static exportPersistedState = (
-    callClient: (string, ?Object) => Promise<Object>,
-    persistedState: ?PersistedState,
-    store: ?MiddlewareAPI,
-  ): Promise<?PersistedState> => {
+    callClient: (method: string, params?: any) => Promise<any>,
+    persistedState: PersistedState,
+    store?: MiddlewareAPI,
+  ): Promise<PersistedState> => {
     const defaultPromise = Promise.resolve(persistedState);
     if (!persistedState) {
       persistedState = FlipperImagesPlugin.defaultPersistedState;
@@ -149,9 +149,9 @@ export default class FlipperImagesPlugin extends FlipperPlugin<
           acc.add(id);
         });
         return acc;
-      }, new Set());
+      }, new Set<string>());
       const imageDataList: Array<ImageData> = [];
-      for (const id: string of idSet) {
+      for (const id of idSet) {
         try {
           const imageData: ImageData = await callClient('getImage', {
             imageId: id,
@@ -173,10 +173,10 @@ export default class FlipperImagesPlugin extends FlipperPlugin<
   static persistedStateReducer = (
     persistedState: PersistedState,
     method: string,
-    data: Object,
+    data: AndroidCloseableReferenceLeakEvent | ImageEvent,
   ): PersistedState => {
     if (method == 'closeable_reference_leak_event') {
-      const event: AndroidCloseableReferenceLeakEvent = data;
+      const event: AndroidCloseableReferenceLeakEvent = data as AndroidCloseableReferenceLeakEvent;
       return {
         ...persistedState,
         closeableReferenceLeaks: persistedState.closeableReferenceLeaks.concat(
@@ -184,8 +184,7 @@ export default class FlipperImagesPlugin extends FlipperPlugin<
         ),
       };
     } else if (method == 'events') {
-      const event: ImageEvent = data;
-
+      const event: ImageEvent = data as ImageEvent;
       debugLog('Received events', event);
       const {surfaceList} = persistedState;
       const {attribution} = event;
@@ -267,28 +266,27 @@ export default class FlipperImagesPlugin extends FlipperPlugin<
         category: 'closeablereference_leak',
       }));
 
-  state: PluginState;
-  imagePool: ImagePool;
-  nextEventId: number = 1;
-
-  state = {
-    selectedSurface: surfaceDefaultText,
+  state: PluginState = {
+    selectedSurfaces: new Set([surfaceDefaultText]),
     selectedImage: null,
     isDebugOverlayEnabled: false,
     isAutoRefreshEnabled: false,
     images: [],
     coldStartFilter: false,
   };
+  imagePool: ImagePool | undefined;
+  nextEventId: number = 1;
 
   filterImages = (
     images: ImagesList,
     events: Array<ImageEventWithId>,
-    surface: string,
+    surfaces: Set<string>,
     coldStart: boolean,
   ): ImagesList => {
-    if (!surface || (surface === surfaceDefaultText && !coldStart)) {
+    if (!surfaces || (surfaces.has(surfaceDefaultText) && !coldStart)) {
       return images;
     }
+
     const imageList = images.map((image: CacheInfo) => {
       const imageIdList = image.imageIds.filter(imageID => {
         const filteredEvents = events.filter((event: ImageEventWithId) => {
@@ -298,13 +296,14 @@ export default class FlipperImagesPlugin extends FlipperPlugin<
             event.imageIds &&
             event.imageIds.includes(imageID);
 
-          if (surface === surfaceDefaultText) {
+          if (surfaces.has(surfaceDefaultText)) {
             return output && coldStart && event.coldStart;
           }
+
           return (
             (!coldStart || (coldStart && event.coldStart)) &&
             output &&
-            event.attribution[0] == surface
+            surfaces.has(event.attribution[0])
           );
         });
         return filteredEvents.length > 0;
@@ -330,29 +329,31 @@ export default class FlipperImagesPlugin extends FlipperPlugin<
     const images = this.filterImages(
       this.props.persistedState.images,
       this.props.persistedState.events,
-      this.state.selectedSurface,
+      this.state.selectedSurfaces,
       this.state.coldStartFilter,
     );
+
     this.setState({images});
   }
 
   teardown() {
-    this.imagePool.clear();
+    this.imagePool ? this.imagePool.clear() : undefined;
   }
 
   updateImagesOnUI = (
     images: ImagesList,
-    surface: string,
+    surfaces: Set<string>,
     coldStart: boolean,
   ) => {
     const filteredImages = this.filterImages(
       images,
       this.props.persistedState.events,
-      surface,
+      surfaces,
       coldStart,
     );
+
     this.setState({
-      selectedSurface: surface,
+      selectedSurfaces: surfaces,
       images: filteredImages,
       coldStartFilter: coldStart,
     });
@@ -361,12 +362,12 @@ export default class FlipperImagesPlugin extends FlipperPlugin<
     debugLog('Requesting images list (reason=' + reason + ')');
     this.client.call('listImages').then((response: ImagesListResponse) => {
       response.levels.forEach(data =>
-        this.imagePool.fetchImages(data.imageIds),
+        this.imagePool ? this.imagePool.fetchImages(data.imageIds) : undefined,
       );
       this.props.setPersistedState({images: response.levels});
       this.updateImagesOnUI(
         this.props.persistedState.images,
-        this.state.selectedSurface,
+        this.state.selectedSurfaces,
         this.state.coldStartFilter,
       );
     });
@@ -405,7 +406,7 @@ export default class FlipperImagesPlugin extends FlipperPlugin<
     debugLog('<- getImage requested for ' + imageId);
     this.client.call('getImage', {imageId}).then((image: ImageData) => {
       debugLog('-> getImage ' + imageId + ' returned');
-      this.imagePool._fetchCompleted(image);
+      this.imagePool ? this.imagePool._fetchCompleted(image) : undefined;
     });
   };
 
@@ -431,10 +432,10 @@ export default class FlipperImagesPlugin extends FlipperPlugin<
     return <ImagesSidebar image={maybeImage} events={events} />;
   };
 
-  onSurfaceChange = (surface: string) => {
+  onSurfaceChange = (surfaces: Set<string>) => {
     this.updateImagesOnUI(
       this.props.persistedState.images,
-      surface,
+      surfaces,
       this.state.coldStartFilter,
     );
   };
@@ -442,7 +443,7 @@ export default class FlipperImagesPlugin extends FlipperPlugin<
   onColdStartChange = (checked: boolean) => {
     this.updateImagesOnUI(
       this.props.persistedState.images,
-      this.state.selectedSurface,
+      this.state.selectedSurfaces,
       checked,
     );
   };
@@ -457,15 +458,22 @@ export default class FlipperImagesPlugin extends FlipperPlugin<
   render() {
     const options = [...this.props.persistedState.surfaceList].reduce(
       (acc, item) => {
-        return {...acc, [item]: item};
+        return [...acc, item];
       },
-      {[surfaceDefaultText]: surfaceDefaultText},
+      [surfaceDefaultText],
     );
+    let {selectedSurfaces} = this.state;
+
+    if (selectedSurfaces.has(surfaceDefaultText)) {
+      selectedSurfaces = new Set(options);
+    }
+
     return (
       <React.Fragment>
         <ImagesCacheOverview
-          surfaceOptions={options}
-          selectedSurface={this.state.selectedSurface}
+          allSurfacesOption={surfaceDefaultText}
+          surfaceOptions={new Set(options)}
+          selectedSurfaces={selectedSurfaces}
           onChangeSurface={this.onSurfaceChange}
           coldStartFilter={this.state.coldStartFilter}
           onColdStartChange={this.onColdStartChange}
