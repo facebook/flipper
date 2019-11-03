@@ -64,7 +64,7 @@ export default class ManagedDataInspector extends PureComponent<
     super(props, context);
     this.state = {
       expanded: {},
-      data: this.props.data
+      data: this.props.data,
     };
   }
 
@@ -75,8 +75,8 @@ export default class ManagedDataInspector extends PureComponent<
   componentWillReceiveProps(nextProps: ManagedDataInspectorProps): void {
     this.setState({
       data: {
-        ...nextProps.data
-      }
+        ...nextProps.data,
+      },
     });
   }
 
