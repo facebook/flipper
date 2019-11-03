@@ -47,6 +47,7 @@ type ManagedDataInspectorProps = {
 
 type ManagedDataInspectorState = {
   expanded: DataInspectorExpanded;
+  data: any;
 };
 
 /**
@@ -63,6 +64,7 @@ export default class ManagedDataInspector extends PureComponent<
     super(props, context);
     this.state = {
       expanded: {},
+      data: this.props.data
     };
   }
 
@@ -70,10 +72,18 @@ export default class ManagedDataInspector extends PureComponent<
     this.setState({expanded});
   };
 
+  componentWillReceiveProps(nextProps: ManagedDataInspectorProps): void {
+    this.setState({
+      data: {
+        ...nextProps.data
+      }
+    });
+  }
+
   render() {
     return (
       <DataInspector
-        data={this.props.data}
+        data={this.state.data}
         diff={this.props.diff}
         extractValue={this.props.extractValue}
         setValue={this.props.setValue}
