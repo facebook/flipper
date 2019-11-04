@@ -72,7 +72,7 @@
     "@types/lodash.isequal": "^4.5.5",
     "@types/react": "16.9.11",
     "@types/react-dom": "^16.9.2",
-    "@types/react-redux": "^7.1.1",
+    "@types/react-redux": "^7.1.5",
     "@types/react-virtualized-auto-sizer": "^1.0.0",
     "@types/react-window": "^1.8.1",
     "@types/redux-persist": "^4.3.1",
@@ -155,7 +155,7 @@
     "react-devtools-core": "^4.0.6",
     "react-dom": "^16.11.0",
     "react-emotion": "^9.2.6",
-    "react-redux": "^5.0.7",
+    "react-redux": "^7.1.1",
     "react-test-renderer": "^16.11.0",
     "react-transition-group": "^4.3.0",
     "react-virtualized-auto-sizer": "^1.0.2",
@@ -179,12 +179,10 @@
   },
   "greenkeeper": {
     "ignore": [
-      "@types/react-redux",
       "electron",
       "electron-builder",
       "emotion",
       "react-emotion",
-      "react-redux",
       "tmp"
     ]
   },

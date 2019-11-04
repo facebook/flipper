@@ -17,6 +17,8 @@ import {
   Input,
 } from 'flipper';
 import React, {Component} from 'react';
+import {ReactReduxContext} from 'react-redux';
+import {store} from '../init';
 import {
   setExportStatusComponent,
   unsetShare,
@@ -30,7 +32,6 @@ import {
   DataExportError,
 } from '../fb-stubs/user';
 import {exportStore, EXPORT_FLIPPER_TRACE_EVENT} from '../utils/exportData';
-import PropTypes from 'prop-types';
 import {clipboard} from 'electron';
 import ShareSheetErrorList from './ShareSheetErrorList';
 import {reportPlatformFailures} from '../utils/metrics';
@@ -80,10 +81,6 @@ type State = {
 };
 
 export default class ShareSheetExportUrl extends Component<Props, State> {
-  static contextTypes = {
-    store: PropTypes.object.isRequired,
-  };
-
   state: State = {
     errorArray: [],
     result: null,
@@ -94,13 +91,13 @@ export default class ShareSheetExportUrl extends Component<Props, State> {
   idler = new Idler();
 
   dispatchAndUpdateToolBarStatus(msg: string) {
-    this.context.store.dispatch(
+    store.dispatch(
       setExportStatusComponent(
         <CancellableExportStatus
           msg={msg}
           onCancel={() => {
             this.idler.cancel();
-            this.context.store.dispatch(unsetShare());
+            store.dispatch(unsetShare());
           }}
         />,
       ),
@@ -119,7 +116,7 @@ export default class ShareSheetExportUrl extends Component<Props, State> {
         }
       };
       const {serializedString, errorArray} = await reportPlatformFailures(
-        exportStore(this.context.store, this.idler, statusUpdate),
+        exportStore(store, this.idler, statusUpdate),
         `${EXPORT_FLIPPER_TRACE_EVENT}:UI_LINK`,
       );
 
@@ -135,7 +132,7 @@ export default class ShareSheetExportUrl extends Component<Props, State> {
       const flipperUrl = (result as DataExportResult).flipperUrl;
       if (flipperUrl) {
         clipboard.writeText(String(flipperUrl));
-        this.context.store.dispatch(setExportURL(flipperUrl));
+        store.dispatch(setExportURL(flipperUrl));
         new Notification('Sharable Flipper trace created', {
           body: 'URL copied to clipboard',
           requireInteraction: true,
@@ -158,7 +155,7 @@ export default class ShareSheetExportUrl extends Component<Props, State> {
         }
         this.setState({result});
       }
-      this.context.store.dispatch(unsetShare());
+      store.dispatch(unsetShare());
       this.props.logger.trackTimeSince(mark, 'export:url-error');
     }
   }
@@ -181,74 +178,82 @@ export default class ShareSheetExportUrl extends Component<Props, State> {
     }
   }
 
-  renderPending(cancelAndHide: () => void, statusUpdate: string | null) {
+  cancelAndHide = (store: any) => () => {
+    store.dispatch(unsetShare());
+    this.hideSheet();
+  };
+
+  renderPending(statusUpdate: string | null) {
     return (
-      <ShareSheetPendingDialog
-        statusUpdate={statusUpdate}
-        statusMessage="Uploading Flipper trace..."
-        onCancel={cancelAndHide}
-        onRunInBackground={() => {
-          this.setState({runInBackground: true});
-          if (statusUpdate) {
-            this.dispatchAndUpdateToolBarStatus(statusUpdate);
-          }
-          this.props.onHide();
-        }}
-      />
+      <ReactReduxContext.Consumer>
+        {({store}) => (
+          <ShareSheetPendingDialog
+            statusUpdate={statusUpdate}
+            statusMessage="Uploading Flipper trace..."
+            onCancel={this.cancelAndHide(store)}
+            onRunInBackground={() => {
+              this.setState({runInBackground: true});
+              if (statusUpdate) {
+                this.dispatchAndUpdateToolBarStatus(statusUpdate);
+              }
+              this.props.onHide();
+            }}
+          />
+        )}
+      </ReactReduxContext.Consumer>
     );
   }
 
   render() {
-    const cancelAndHide = () => {
-      this.context.store.dispatch(unsetShare());
-      this.hideSheet();
-    };
-
     const {result, statusUpdate, errorArray} = this.state;
     if (!result || !(result as DataExportResult).flipperUrl) {
-      return this.renderPending(cancelAndHide, statusUpdate);
+      return this.renderPending(statusUpdate);
     }
 
     return (
-      <Container>
-        <>
-          <FlexColumn>
-            {(result as DataExportResult).flipperUrl ? (
-              <>
-                <Title bold>Data Upload Successful</Title>
-                <InfoText>
-                  Flipper's data was successfully uploaded. This URL can be used
-                  to share with other Flipper users. Opening it will import the
-                  data from your trace.
-                </InfoText>
-                <Copy value={(result as DataExportResult).flipperUrl} />
-                <InfoText>
-                  When sharing your Flipper link, consider that the captured
-                  data might contain sensitve information like access tokens
-                  used in network requests.
-                </InfoText>
-                <ShareSheetErrorList errors={errorArray} />
-              </>
-            ) : (
-              <>
-                <Title bold>
-                  {(result as DataExportError).error_class || 'Error'}
-                </Title>
-                <ErrorMessage code>
-                  {(result as DataExportError).error ||
-                    'The data could not be uploaded'}
-                </ErrorMessage>
-              </>
-            )}
-          </FlexColumn>
-          <FlexRow>
-            <Spacer />
-            <Button compact padded onClick={cancelAndHide}>
-              Close
-            </Button>
-          </FlexRow>
-        </>
-      </Container>
+      <ReactReduxContext.Consumer>
+        {({store}) => (
+          <Container>
+            <>
+              <FlexColumn>
+                {(result as DataExportResult).flipperUrl ? (
+                  <>
+                    <Title bold>Data Upload Successful</Title>
+                    <InfoText>
+                      Flipper's data was successfully uploaded. This URL can be
+                      used to share with other Flipper users. Opening it will
+                      import the data from your trace.
+                    </InfoText>
+                    <Copy value={(result as DataExportResult).flipperUrl} />
+                    <InfoText>
+                      When sharing your Flipper link, consider that the captured
+                      data might contain sensitve information like access tokens
+                      used in network requests.
+                    </InfoText>
+                    <ShareSheetErrorList errors={errorArray} />
+                  </>
+                ) : (
+                  <>
+                    <Title bold>
+                      {(result as DataExportError).error_class || 'Error'}
+                    </Title>
+                    <ErrorMessage code>
+                      {(result as DataExportError).error ||
+                        'The data could not be uploaded'}
+                    </ErrorMessage>
+                  </>
+                )}
+              </FlexColumn>
+              <FlexRow>
+                <Spacer />
+                <Button compact padded onClick={this.cancelAndHide(store)}>
+                  Close
+                </Button>
+              </FlexRow>
+            </>
+          </Container>
+        )}
+      </ReactReduxContext.Consumer>
     );
   }
 }

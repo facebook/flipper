@@ -702,7 +702,7 @@
     pirates "^4.0.0"
     source-map-support "^0.5.9"
 
-"@babel/runtime@^7.0.0", "@babel/runtime@^7.1.2", "@babel/runtime@^7.1.5", "@babel/runtime@^7.4.2", "@babel/runtime@^7.4.5", "@babel/runtime@^7.5.5", "@babel/runtime@^7.6.0", "@babel/runtime@^7.6.2", "@babel/runtime@^7.6.3":
+"@babel/runtime@^7.0.0", "@babel/runtime@^7.1.5", "@babel/runtime@^7.4.2", "@babel/runtime@^7.4.5", "@babel/runtime@^7.5.5", "@babel/runtime@^7.6.0", "@babel/runtime@^7.6.2", "@babel/runtime@^7.6.3":
   version "7.6.3"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.6.3.tgz#935122c74c73d2240cafd32ddb5fc2a6cd35cf1f"
   integrity sha512-kq6anf9JGjW8Nt5rYfEuGRaEAaH1mkv3Bbu6rYvLOpPh/RusSJXuKPEAoZ7L7gybZkchE8+NV5g9vKF4AGAtsA==
@@ -1265,7 +1265,7 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react-redux@^7.1.1":
+"@types/react-redux@^7.1.5":
   version "7.1.5"
   resolved "https://registry.yarnpkg.com/@types/react-redux/-/react-redux-7.1.5.tgz#c7a528d538969250347aa53c52241051cf886bd3"
   integrity sha512-ZoNGQMDxh5ENY7PzU7MVonxDzS1l/EWiy8nUhDqxFqUZn4ovboCyvk4Djf68x6COb7vhGTKjyjxHxtFdAA5sUA==
@@ -6685,7 +6685,7 @@ prompts@^2.0.1:
     kleur "^3.0.3"
     sisteransi "^1.0.3"
 
-prop-types@^15.5.10, prop-types@^15.6.0, prop-types@^15.6.1, prop-types@^15.6.2, prop-types@^15.7.2:
+prop-types@^15.5.10, prop-types@^15.6.0, prop-types@^15.6.2, prop-types@^15.7.2:
   version "15.7.2"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.7.2.tgz#52c41e75b8c87e72b9d9360e0206b99dcbffa6c5"
   integrity sha512-8QQikdH7//R2vurIJSutZ1smHYTcLpRWEOlHnzcWHmBYrOGUysKwSsrC89BCiFj3CbrfJ/nXFdJepOVrY1GCHQ==
@@ -6830,28 +6830,27 @@ react-emotion@^9.2.6:
     babel-plugin-emotion "^9.2.11"
     create-emotion-styled "^9.2.8"
 
-react-is@^16.6.0, react-is@^16.7.0, react-is@^16.8.1, react-is@^16.8.4, react-is@^16.8.6:
+react-is@^16.7.0, react-is@^16.8.1, react-is@^16.8.4, react-is@^16.8.6:
   version "16.10.2"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.10.2.tgz#984120fd4d16800e9a738208ab1fba422d23b5ab"
   integrity sha512-INBT1QEgtcCCgvccr5/86CfD71fw9EPmDxgiJX4I2Ddr6ZsV6iFXsuby+qWJPtmNuMY0zByTsG4468P7nHuNWA==
 
-react-lifecycles-compat@^3.0.0:
-  version "3.0.4"
-  resolved "https://registry.yarnpkg.com/react-lifecycles-compat/-/react-lifecycles-compat-3.0.4.tgz#4f1a273afdfc8f3488a8c516bfda78f872352362"
-  integrity sha512-fBASbA6LnOU9dOU2eW7aQ8xmYBSXUIWr+UmF9b1efZBazGNO+rcXT/icdKnYm2pTwcRylVUYwW7H1PHfLekVzA==
+react-is@^16.9.0:
+  version "16.11.0"
+  resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.11.0.tgz#b85dfecd48ad1ce469ff558a882ca8e8313928fa"
+  integrity sha512-gbBVYR2p8mnriqAwWx9LbuUrShnAuSCNnuPGyc7GJrMVQtPDAh8iLpv7FRuMPFb56KkaVZIYSz1PrjI9q0QPCw==
 
-react-redux@^5.0.7:
-  version "5.1.2"
-  resolved "https://registry.yarnpkg.com/react-redux/-/react-redux-5.1.2.tgz#b19cf9e21d694422727bf798e934a916c4080f57"
-  integrity sha512-Ns1G0XXc8hDyH/OcBHOxNgQx9ayH3SPxBnFCOidGKSle8pKihysQw2rG/PmciUQRoclhVBO8HMhiRmGXnDja9Q==
+react-redux@^7.1.1:
+  version "7.1.1"
+  resolved "https://registry.yarnpkg.com/react-redux/-/react-redux-7.1.1.tgz#ce6eee1b734a7a76e0788b3309bf78ff6b34fa0a"
+  integrity sha512-QsW0vcmVVdNQzEkrgzh2W3Ksvr8cqpAv5FhEk7tNEft+5pp7rXxAudTz3VOPawRkLIepItpkEIyLcN/VVXzjTg==
   dependencies:
-    "@babel/runtime" "^7.1.2"
+    "@babel/runtime" "^7.5.5"
     hoist-non-react-statics "^3.3.0"
     invariant "^2.2.4"
-    loose-envify "^1.1.0"
-    prop-types "^15.6.1"
-    react-is "^16.6.0"
-    react-lifecycles-compat "^3.0.0"
+    loose-envify "^1.4.0"
+    prop-types "^15.7.2"
+    react-is "^16.9.0"
 
 react-test-renderer@^16.11.0:
   version "16.11.0"

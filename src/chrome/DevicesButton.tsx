@@ -8,13 +8,12 @@
  */
 
 import {Button, styled} from 'flipper';
-import {connect} from 'react-redux';
+import {connect, ReactReduxContext} from 'react-redux';
 import {spawn} from 'child_process';
 import {dirname} from 'path';
 import {selectDevice, preferDevice} from '../reducers/connections';
 import {default as which} from 'which';
 import {showOpenDialog} from '../utils/exportData';
-import PropTypes from 'prop-types';
 import BaseDevice from '../devices/BaseDevice';
 import React, {Component} from 'react';
 import {State} from '../reducers';
@@ -38,10 +37,6 @@ const DropdownButton = styled(Button)({
 });
 
 class DevicesButton extends Component<Props> {
-  static contextTypes = {
-    store: PropTypes.object.isRequired,
-  };
-
   launchEmulator = (name: string) => {
     // On Linux, you must run the emulator from the directory it's in because
     // reasons ...
@@ -85,7 +80,7 @@ class DevicesButton extends Component<Props> {
       icon = 'desktop';
     }
 
-    const dropdown = [];
+    const dropdown: any[] = [];
 
     // Physical devices
     const connectedDevices = [
@@ -169,16 +164,22 @@ class DevicesButton extends Component<Props> {
     if (dropdown.length > 0) {
       dropdown.push({type: 'separator' as 'separator'});
     }
-    dropdown.push({
-      label: 'Open File...',
-      click: () => {
-        showOpenDialog(this.context.store);
-      },
-    });
     return (
-      <DropdownButton compact={true} icon={icon} dropdown={dropdown}>
-        {buttonLabel}
-      </DropdownButton>
+      <ReactReduxContext.Consumer>
+        {({store}) => {
+          dropdown.push({
+            label: 'Open File...',
+            click: () => {
+              showOpenDialog(store);
+            },
+          });
+          return (
+            <DropdownButton compact={true} icon={icon} dropdown={dropdown}>
+              {buttonLabel}
+            </DropdownButton>
+          );
+        }}
+      </ReactReduxContext.Consumer>
     );
   }
 }
