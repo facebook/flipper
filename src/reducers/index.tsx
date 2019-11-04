@@ -28,6 +28,10 @@ import plugins, {
   State as PluginsState,
   Action as PluginsAction,
 } from './plugins';
+import supportForm, {
+  State as SupportFormState,
+  Action as SupportFormAction,
+} from './supportForm';
 import settings, {
   Settings as SettingsState,
   Action as SettingsAction,
@@ -52,6 +56,7 @@ export type Actions =
   | PluginsAction
   | UserAction
   | SettingsAction
+  | SupportFormAction
   | {type: 'INIT'};
 
 export type State = {
@@ -62,6 +67,7 @@ export type State = {
   plugins: PluginsState;
   user: UserState & PersistPartial;
   settingsState: SettingsState & PersistPartial;
+  supportForm: SupportFormState;
 };
 
 export type Store = ReduxStore<State, Actions>;
@@ -107,6 +113,7 @@ export default combineReducers<State, Actions>({
     notifications,
   ),
   plugins,
+  supportForm,
   user: persistReducer(
     {
       key: 'user',
