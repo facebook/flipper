@@ -45,8 +45,7 @@ import {persistReducer} from 'redux-persist';
 import {PersistPartial} from 'redux-persist/es/persistReducer';
 
 import {Store as ReduxStore, MiddlewareAPI as ReduxMiddlewareAPI} from 'redux';
-// @ts-ignore: explicitly need to import index.js, otherwise index.native.js is imported, because redux-persist assumes we are react-native, because we are using metro-bundler
-import storage from 'redux-persist/lib/storage/index.js';
+import storage from 'redux-persist/lib/storage';
 
 export type Actions =
   | ApplicationAction
