@@ -66,6 +66,10 @@ export type ShareType = {
   closeOnFinish: boolean;
 } & SubShareType;
 
+export type NTUsersFormData = {
+  flipper_trace: string | null;
+};
+
 export type State = {
   leftSidebarVisible: boolean;
   rightSidebarVisible: boolean;
@@ -80,6 +84,7 @@ export type State = {
   flipperRating: number | null;
   statusMessages: Array<string>;
   xcodeCommandLineToolsDetected: boolean;
+  supportForm: {webState: NTUsersFormData} | null;
 };
 
 type BooleanActionType =
@@ -150,6 +155,12 @@ export type Action =
       payload: {
         isDetected: boolean;
       };
+    }
+  | {
+      type: 'SET_SUPPORT_FORM_STATE';
+      payload: {
+        webState: NTUsersFormData;
+      } | null;
     };
 
 export const initialState: () => State = () => ({
@@ -172,6 +183,7 @@ export const initialState: () => State = () => ({
   flipperRating: null,
   statusMessages: [],
   xcodeCommandLineToolsDetected: false,
+  supportForm: null,
 });
 
 function statusMessage(sender: string, msg: string): string {
@@ -285,6 +297,8 @@ export default function reducer(
     return state;
   } else if (action.type === 'SET_XCODE_DETECTED') {
     return {...state, xcodeCommandLineToolsDetected: action.payload.isDetected};
+  } else if (action.type === 'SET_SUPPORT_FORM_STATE') {
+    return {...state, supportForm: action.payload};
   } else {
     return state;
   }
@@ -369,4 +383,11 @@ export const removeStatusMessage = (payload: StatusMessageType): Action => ({
 export const setXcodeDetected = (isDetected: boolean): Action => ({
   type: 'SET_XCODE_DETECTED',
   payload: {isDetected},
+});
+
+export const setSupportFormState = (
+  payload: {webState: NTUsersFormData} | null,
+): Action => ({
+  type: 'SET_SUPPORT_FORM_STATE',
+  payload,
 });
