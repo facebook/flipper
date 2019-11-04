@@ -28,10 +28,6 @@ type PropsFromState = {
   sessionId: string | null;
 };
 
-type OwnProps = {
-  onRatingChanged: (rating: number) => void;
-};
-
 type State = {
   promptData: FeedbackPrompt | null;
   isShown: boolean;
@@ -287,14 +283,14 @@ class FeedbackComponent extends Component<
   }
 }
 
-class RatingButton extends Component<PropsFromState & OwnProps, State> {
+class RatingButton extends Component<PropsFromState, State> {
   state: State = {
     promptData: null,
     isShown: false,
     hasTriggered: false,
   };
 
-  constructor(props: PropsFromState & OwnProps) {
+  constructor(props: PropsFromState) {
     super(props);
     if (GK.get('flipper_rating')) {
       UserFeedback.getPrompt().then(prompt => {
@@ -378,6 +374,6 @@ class RatingButton extends Component<PropsFromState & OwnProps, State> {
   }
 }
 
-export default connect<{sessionId: string | null}, null, OwnProps, Store>(
+export default connect<{sessionId: string | null}, null, {}, Store>(
   ({application: {sessionId}}) => ({sessionId}),
 )(RatingButton);

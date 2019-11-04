@@ -48,8 +48,6 @@ export default (store: Store, logger: Logger) => {
       clients,
     } = store.getState().connections;
 
-    const {flipperRating} = store.getState().application;
-
     if (!selectedDevice || !selectedPlugin) {
       return;
     }
@@ -73,7 +71,6 @@ export default (store: Store, logger: Logger) => {
       plugin: selectedPlugin,
       app,
       sdkVersion,
-      flipperRating,
     };
 
     // reset dropped frames counter

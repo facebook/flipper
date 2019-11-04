@@ -59,7 +59,7 @@ export type Actions =
   | {type: 'INIT'};
 
 export type State = {
-  application: ApplicationState & PersistPartial;
+  application: ApplicationState;
   connections: DevicesState & PersistPartial;
   pluginStates: PluginStatesState;
   notifications: NotificationsState & PersistPartial;
@@ -81,14 +81,7 @@ const settingsStorage = new JsonFileStorage(
 );
 
 export default combineReducers<State, Actions>({
-  application: persistReducer<ApplicationState, Actions>(
-    {
-      key: 'application',
-      storage,
-      whitelist: ['flipperRating'],
-    },
-    application,
-  ),
+  application,
   connections: persistReducer<DevicesState, Actions>(
     {
       key: 'connections',

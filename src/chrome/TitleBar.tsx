@@ -15,7 +15,6 @@ import {
   toggleLeftSidebarVisible,
   toggleRightSidebarVisible,
   ACTIVE_SHEET_BUG_REPORTER,
-  setFlipperRating,
   ACTIVE_SHEET_SETTINGS,
 } from '../reducers/application';
 import {
@@ -69,7 +68,6 @@ type DispatchFromProps = {
   toggleLeftSidebarVisible: (visible?: boolean) => void;
   toggleRightSidebarVisible: (visible?: boolean) => void;
   setActiveSheet: (sheet: ActiveSheet) => void;
-  setFlipperRating: (rating: number) => void;
 };
 
 type StateFromProps = {
@@ -79,7 +77,6 @@ type StateFromProps = {
   rightSidebarAvailable: boolean;
   downloadingImportData: boolean;
   launcherMsg: LauncherMsg;
-  flipperRating: number | null;
   share: ShareType | null | undefined;
   navPluginIsActive: boolean;
 };
@@ -161,9 +158,7 @@ class TitleBar extends React.Component<Props, StateFromProps> {
           share != null ? share.statusComponent : undefined,
         )}
         <Spacer />
-        {config.showFlipperRating ? (
-          <RatingButton onRatingChanged={this.props.setFlipperRating} />
-        ) : null}
+        {config.showFlipperRating ? <RatingButton /> : null}
         <Version>{this.props.version + (isProduction() ? '' : '-dev')}</Version>
 
         {isAutoUpdaterEnabled() ? (
@@ -221,7 +216,6 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, State>(
       rightSidebarAvailable,
       downloadingImportData,
       launcherMsg,
-      flipperRating,
       share,
     },
     pluginStates,
@@ -232,7 +226,6 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, State>(
     rightSidebarAvailable,
     downloadingImportData,
     launcherMsg,
-    flipperRating,
     share,
     navPluginIsActive: Object.keys(pluginStates).some(key =>
       /#Navigation$/.test(key),
@@ -242,6 +235,5 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, State>(
     setActiveSheet,
     toggleLeftSidebarVisible,
     toggleRightSidebarVisible,
-    setFlipperRating,
   },
 )(TitleBar);
