@@ -35,7 +35,7 @@ export default class JsonFileStorage {
         console.warn(
           `Failed to read settings file: "${this.filepath}". ${e}. Replacing file with default settings.`,
         );
-        return this.writeContents(JSON.stringify({})).then(() => ({}));
+        return this.writeContents(prettyStringify({})).then(() => ({}));
       });
   }
 
@@ -61,7 +61,7 @@ export default class JsonFileStorage {
   }
 
   removeItem(_key: string, callback?: () => any): Promise<void> {
-    return this.writeContents(JSON.stringify({}))
+    return this.writeContents(prettyStringify({}))
       .then(_ => callback && callback())
       .then(() => {});
   }
@@ -73,7 +73,7 @@ export default class JsonFileStorage {
         acc[cv[0]] = cv[1];
         return acc;
       }, {});
-    return JSON.stringify(reconstructedObject);
+    return prettyStringify(reconstructedObject);
   }
 
   deserializeValue(value: string): string {
@@ -94,4 +94,8 @@ export default class JsonFileStorage {
       )
       .then(() => promises.writeFile(this.filepath, content));
   }
+}
+
+function prettyStringify(data: Object) {
+  return JSON.stringify(data, null, 2);
 }
