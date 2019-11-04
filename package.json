@@ -144,6 +144,7 @@
     "open": "^7.0.0",
     "openssl-wrapper": "^0.3.4",
     "p-map": "^3.0.0",
+    "patch-package": "^6.2.0",
     "pkg": "^4.3.7",
     "promise-retry": "^1.1.1",
     "promisify-child-process": "^3.1.1",
@@ -188,7 +189,7 @@
   },
   "scripts": {
     "preinstall": "yarn config set ignore-engines",
-    "postinstall": "node scripts/yarn-install.js",
+    "postinstall": "node scripts/yarn-install.js && patch-package",
     "rm-dist": "rm -rf dist",
     "rm-modules": "rm -rf node_modules static/node_modules",
     "rm-temp": "rm -rf $TMPDIR/jest* $TMPDIR/react-native-packager*",

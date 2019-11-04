@@ -1,0 +1,29 @@
+diff --git a/node_modules/adbkit/lib/adb/parser.js b/node_modules/adbkit/lib/adb/parser.js
+index 1b66bda..295c8f6 100644
+--- a/node_modules/adbkit/lib/adb/parser.js
++++ b/node_modules/adbkit/lib/adb/parser.js
+@@ -52,7 +52,7 @@ Parser = (function() {
+ 
+   Parser.prototype.readAll = function() {
+     var all, endListener, errorListener, resolver, tryRead;
+-    all = new Buffer(0);
++    all = Buffer.alloc(0);
+     resolver = Promise.defer();
+     tryRead = (function(_this) {
+       return function() {
+diff --git a/node_modules/adbkit/lib/adb/protocol.js b/node_modules/adbkit/lib/adb/protocol.js
+index d1377d0..2edd7ba 100644
+--- a/node_modules/adbkit/lib/adb/protocol.js
++++ b/node_modules/adbkit/lib/adb/protocol.js
+@@ -33,9 +33,9 @@ Protocol = (function() {
+ 
+   Protocol.encodeData = function(data) {
+     if (!Buffer.isBuffer(data)) {
+-      data = new Buffer(data);
++      data = Buffer.from(data);
+     }
+-    return Buffer.concat([new Buffer(Protocol.encodeLength(data.length)), data]);
++    return Buffer.concat([Buffer.from(Protocol.encodeLength(data.length)), data]);
+   };
+ 
+   return Protocol;
