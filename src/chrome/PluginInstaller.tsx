@@ -126,8 +126,7 @@ const PluginInstaller = function props(props: Props) {
     query,
     setQuery,
     props.searchIndexFactory,
-    // TODO(T56693735): Refactor this to directly take props.
-    async () => props.installedPlugins,
+    props.installedPlugins,
     props.refreshInstalledPlugins,
   );
   const restartApp = useCallback(() => {
@@ -294,28 +293,17 @@ function useNPMSearch(
   query: string,
   setQuery: (query: string) => void,
   searchClientFactory: () => algoliasearch.Index,
-  getInstalledPlugins: () => Promise<Map<string, PluginDefinition>>,
+  installedPlugins: Map<string, PluginDefinition>,
   refreshInstalledPlugins: () => void,
 ): TableRows_immutable {
   const index = useMemo(searchClientFactory, []);
-  const [installedPlugins, setInstalledPlugins] = useState(
-    new Map<string, PluginDefinition>(),
-  );
-
-  const getAndSetInstalledPlugins = () =>
-    reportPlatformFailures(
-      getInstalledPlugins(),
-      `${TAG}:getInstalledPlugins`,
-    ).then(setInstalledPlugins);
 
   useEffect(() => {
     reportUsage(`${TAG}:open`);
-    getAndSetInstalledPlugins();
   }, []);
 
   const onInstall = useCallback(async () => {
     refreshInstalledPlugins();
-    getAndSetInstalledPlugins();
     setRestartRequired(true);
   }, []);
 
