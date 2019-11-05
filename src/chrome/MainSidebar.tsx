@@ -28,6 +28,7 @@ import {
   FlipperPlugin,
   FlipperDevicePlugin,
   LoadingIndicator,
+  Button,
 } from 'flipper';
 import React, {Component, PureComponent, Fragment} from 'react';
 import NotificationsHub from '../NotificationsHub';
@@ -251,9 +252,13 @@ type DispatchFromProps = {
 };
 
 type Props = OwnProps & StateFromProps & DispatchFromProps;
-type State = {showSupportForm: boolean};
+type State = {showSupportForm: boolean; selectedClientIndex: number};
 class MainSidebar extends PureComponent<Props, State> {
-  state: State = {showSupportForm: GK.get('flipper_support_requests')};
+  state: State = {
+    showSupportForm: GK.get('flipper_support_requests'),
+    // Not to be confused with selectedApp prop, this one only used to remember the client drowdown selector
+    selectedClientIndex: 0,
+  };
   static getDerivedStateFromProps(props: Props, state: State) {
     if (
       !state.showSupportForm &&
@@ -272,7 +277,6 @@ class MainSidebar extends PureComponent<Props, State> {
       selectedDevice,
       selectedPlugin,
       staticView,
-      selectedApp,
       selectPlugin,
       setStaticView,
       windowIsFocused,
@@ -282,9 +286,16 @@ class MainSidebar extends PureComponent<Props, State> {
     clients = clients
       .filter(
         (client: Client) =>
-          selectedDevice && selectedDevice.supportsOS(client.query.os),
+          (selectedDevice &&
+            selectedDevice.supportsOS(client.query.os) &&
+            client.query.device_id === selectedDevice.serial) ||
+          // Old android sdk versions don't know their device_id
+          // Display their plugins under all selected devices until they die out
+          client.query.device_id === 'unknown',
       )
       .sort((a, b) => (a.query.app || '').localeCompare(b.query.app));
+    const client: Client | null =
+      clients[this.state.selectedClientIndex] || null;
 
     const byPluginNameOrId = (
       a: typeof FlipperBasePlugin,
@@ -367,81 +378,29 @@ class MainSidebar extends PureComponent<Props, State> {
                   plugin={plugin}
                 />
               ))}
-          {clients
-            .filter(
-              (client: Client) =>
-                (selectedDevice &&
-                  client.query.device_id === selectedDevice.serial) ||
-                // Old android sdk versions don't know their device_id
-                // Display their plugins under all selected devices until they die out
-                client.query.device_id === 'unknown',
-            )
-            .map((client: Client) => {
-              const plugins = Array.from(
-                this.props.clientPlugins.values(),
-              ).filter(
-                (p: typeof FlipperPlugin) => client.plugins.indexOf(p.id) > -1,
-              );
-
-              const minShowPluginsCount =
-                plugins.length <
-                MAX_MINIMUM_PLUGINS + SHOW_REMAINING_PLUGIN_IF_LESS_THAN
-                  ? plugins.length
-                  : MAX_MINIMUM_PLUGINS;
-
-              return (
-                <React.Fragment key={client.id}>
-                  <SidebarHeader>{client.query.app}</SidebarHeader>
-                  {groupPluginsByCategory(
-                    plugins
-                      .sort(
-                        (a: typeof FlipperPlugin, b: typeof FlipperPlugin) =>
-                          client.byClientLRU(plugins.length, a, b),
-                      )
-                      .slice(
-                        0,
-                        client.showAllPlugins
-                          ? client.plugins.length
-                          : minShowPluginsCount,
-                      ),
-                  ).map(([category, plugins]) => (
-                    <Fragment key={category}>
-                      {category && (
-                        <ListItem>
-                          <CategoryName>{category}</CategoryName>
-                        </ListItem>
-                      )}
-                      {plugins.map(plugin => (
-                        <PluginSidebarListItem
-                          key={plugin.id}
-                          isActive={
-                            plugin.id === selectedPlugin &&
-                            selectedApp === client.id
-                          }
-                          onClick={() =>
-                            selectPlugin({
-                              selectedPlugin: plugin.id,
-                              selectedApp: client.id,
-                              deepLinkPayload: null,
-                            })
-                          }
-                          plugin={plugin}
-                          app={client.query.app}
-                        />
-                      ))}
-                    </Fragment>
-                  ))}
-                  {plugins.length > minShowPluginsCount && (
-                    <PluginShowMoreOrLess
-                      onClick={() =>
-                        this.props.showMoreOrLessPlugins(client.id)
-                      }>
-                      {client.showAllPlugins ? 'Show less' : 'Show more'}
-                    </PluginShowMoreOrLess>
-                  )}
-                </React.Fragment>
-              );
-            })}
+          <ListItem style={{marginTop: 20}}>
+            <Button
+              title="Select a client to see available plugins"
+              compact={true}
+              dropdown={clients.map((c, index) => ({
+                checked: client === c,
+                label: c.query.app,
+                type: 'checkbox',
+                click: () => this.setState({selectedClientIndex: index}),
+              }))}
+              style={{
+                fontSize: 11,
+                width: '100%',
+                overflow: 'hidden',
+              }}>
+              {clients.length === 0
+                ? '(Not connected to client)'
+                : this.state.selectedClientIndex >= clients.length
+                ? '(Select a client)'
+                : client.query.app}{' '}
+            </Button>
+          </ListItem>
+          {this.renderClientPlugins(client)}
           {uninitializedClients.map(entry => (
             <React.Fragment key={JSON.stringify(entry.client)}>
               <SidebarHeader>{entry.client.appName}</SidebarHeader>
@@ -465,6 +424,69 @@ class MainSidebar extends PureComponent<Props, State> {
         </PluginDebugger>
         {config.showLogin && <UserAccount />}
       </Sidebar>
+    );
+  }
+
+  renderClientPlugins(client: Client | null) {
+    if (!client) {
+      return null;
+    }
+    const {selectedPlugin, selectedApp, selectPlugin} = this.props;
+    const plugins = Array.from(this.props.clientPlugins.values()).filter(
+      (p: typeof FlipperPlugin) => client.plugins.indexOf(p.id) > -1,
+    );
+
+    const minShowPluginsCount =
+      plugins.length < MAX_MINIMUM_PLUGINS + SHOW_REMAINING_PLUGIN_IF_LESS_THAN
+        ? plugins.length
+        : MAX_MINIMUM_PLUGINS;
+
+    return (
+      <React.Fragment key={client.id}>
+        {groupPluginsByCategory(
+          plugins
+            .sort((a: typeof FlipperPlugin, b: typeof FlipperPlugin) =>
+              client.byClientLRU(plugins.length, a, b),
+            )
+            .slice(
+              0,
+              client.showAllPlugins
+                ? client.plugins.length
+                : minShowPluginsCount,
+            ),
+        ).map(([category, plugins]) => (
+          <Fragment key={category}>
+            {category && (
+              <ListItem>
+                <CategoryName>{category}</CategoryName>
+              </ListItem>
+            )}
+            {plugins.map(plugin => (
+              <PluginSidebarListItem
+                key={plugin.id}
+                isActive={
+                  plugin.id === selectedPlugin && selectedApp === client.id
+                }
+                onClick={() =>
+                  selectPlugin({
+                    selectedPlugin: plugin.id,
+                    selectedApp: client.id,
+                    deepLinkPayload: null,
+                  })
+                }
+                plugin={plugin}
+                app={client.query.app}
+              />
+            ))}
+          </Fragment>
+        ))}
+        {plugins.length > minShowPluginsCount && (
+          <PluginShowMoreOrLess
+            onClick={() => this.props.showMoreOrLessPlugins(client.id)}>
+            {client.showAllPlugins ? 'Show less' : 'Show more'}
+          </PluginShowMoreOrLess>
+        )}
+      </React.Fragment>
     );
   }
 }
