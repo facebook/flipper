@@ -20,7 +20,7 @@ import {
 
 export const PLUGIN_DIR = path.join(homedir(), '.flipper', 'thirdparty');
 
-async function getInstalledPlugins(): Promise<PluginMap> {
+export async function readInstalledPlugins(): Promise<PluginMap> {
   const pluginDirExists = await fs.pathExists(PLUGIN_DIR);
 
   if (!pluginDirExists) {
@@ -50,8 +50,15 @@ async function getInstalledPlugins(): Promise<PluginMap> {
   return new Map(plugins.filter(Boolean));
 }
 
-export default (store: Store, _logger: Logger) => {
-  getInstalledPlugins().then(plugins =>
+function refreshInstalledPlugins(store: Store) {
+  readInstalledPlugins().then(plugins =>
     store.dispatch(registerInstalledPlugins(plugins)),
   );
+}
+
+export default (store: Store, _logger: Logger) => {
+  // This needn't happen immediately and is (light) I/O work.
+  window.requestIdleCallback(() => {
+    refreshInstalledPlugins(store);
+  });
 };

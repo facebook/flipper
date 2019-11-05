@@ -33,10 +33,15 @@ import fs from 'fs-extra';
 import {PluginManager as PM} from 'live-plugin-manager';
 import {reportPlatformFailures, reportUsage} from '../utils/metrics';
 import restartFlipper from '../utils/restartFlipper';
-import {PluginMap, PluginDefinition} from '../reducers/pluginManager';
-import {PLUGIN_DIR} from '../dispatcher/pluginManager';
-import {State as AppState} from '../reducers';
+import {
+  PluginMap,
+  PluginDefinition,
+  registerInstalledPlugins,
+} from '../reducers/pluginManager';
+import {PLUGIN_DIR, readInstalledPlugins} from '../dispatcher/pluginManager';
+import {State as AppState, Store} from '../reducers';
 import {connect} from 'react-redux';
+import {Dispatch, Action} from 'redux';
 
 const ALGOLIA_APPLICATION_ID = 'OFCNCOG2CU';
 const ALGOLIA_API_KEY = 'f54e21fa3a2a0160595bb058179bfb1e';
@@ -94,19 +99,22 @@ type PropsFromState = {
   installedPlugins: PluginMap;
 };
 
+type DispatchFromProps = {
+  refreshInstalledPlugins: () => void;
+};
+
 type OwnProps = {
   searchIndexFactory: () => algoliasearch.Index;
   autoHeight: boolean;
 };
 
-type Props = OwnProps & PropsFromState;
+type Props = OwnProps & PropsFromState & DispatchFromProps;
 
-const defaultProps: Props = {
+const defaultProps: OwnProps = {
   searchIndexFactory: () => {
     const client = algoliasearch(ALGOLIA_APPLICATION_ID, ALGOLIA_API_KEY);
     return client.initIndex('npm-search');
   },
-  installedPlugins: new Map(),
   autoHeight: false,
 };
 
@@ -120,6 +128,7 @@ const PluginInstaller = function props(props: Props) {
     props.searchIndexFactory,
     // TODO(T56693735): Refactor this to directly take props.
     async () => props.installedPlugins,
+    props.refreshInstalledPlugins,
   );
   const restartApp = useCallback(() => {
     restartFlipper();
@@ -286,6 +295,7 @@ function useNPMSearch(
   setQuery: (query: string) => void,
   searchClientFactory: () => algoliasearch.Index,
   getInstalledPlugins: () => Promise<Map<string, PluginDefinition>>,
+  refreshInstalledPlugins: () => void,
 ): TableRows_immutable {
   const index = useMemo(searchClientFactory, []);
   const [installedPlugins, setInstalledPlugins] = useState(
@@ -304,6 +314,7 @@ function useNPMSearch(
   }, []);
 
   const onInstall = useCallback(async () => {
+    refreshInstalledPlugins();
     getAndSetInstalledPlugins();
     setRestartRequired(true);
   }, []);
@@ -366,9 +377,15 @@ function useNPMSearch(
   return List(results.map(createRow));
 }
 
-export default connect<PropsFromState, {}, OwnProps, AppState>(
+export default connect<PropsFromState, DispatchFromProps, OwnProps, AppState>(
   ({pluginManager: {installedPlugins}}) => ({
     installedPlugins,
   }),
-  {},
+  (dispatch: Dispatch<Action<any>>) => ({
+    refreshInstalledPlugins: () => {
+      readInstalledPlugins().then(plugins =>
+        dispatch(registerInstalledPlugins(plugins)),
+      );
+    },
+  }),
 )(PluginInstaller);
