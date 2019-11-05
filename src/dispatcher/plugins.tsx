@@ -13,6 +13,7 @@ import {FlipperPlugin, FlipperDevicePlugin} from '../plugin';
 import {State} from '../reducers/plugins';
 import React from 'react';
 import ReactDOM from 'react-dom';
+import adbkit from 'adbkit';
 import * as Flipper from '../index';
 import {
   registerPlugins,
@@ -43,6 +44,7 @@ export default (store: Store, logger: Logger) => {
   globalObject.React = React;
   globalObject.ReactDOM = ReactDOM;
   globalObject.Flipper = Flipper;
+  globalObject.adbkit = adbkit;
 
   const gatekeepedPlugins: Array<PluginDefinition> = [];
   const disabledPlugins: Array<PluginDefinition> = [];

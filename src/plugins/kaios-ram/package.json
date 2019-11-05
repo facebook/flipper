@@ -10,7 +10,6 @@
     "url": "https://fb.workplace.com/groups/wa.kaios/"
   },
   "dependencies": {
-    "adbkit": "^2.11.1",
     "recharts": "1.7.1"
   },
   "devDependencies": {

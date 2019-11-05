@@ -4,9 +4,6 @@
   "main": "index.tsx",
   "license": "MIT",
   "keywords": ["flipper-plugin"],
-  "dependencies": {
-    "adbkit": "^2.11.1"
-  },
   "title": "CPU",
   "icon": "underline",
   "bugs": {
