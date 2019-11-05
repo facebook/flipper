@@ -342,8 +342,6 @@ class ElementsRow extends PureComponent<ElementsRowProps, ElementsRowState> {
               return <DecorationImage src="icons/litho-logo.png" />;
             case 'componentkit':
               return <DecorationImage src="icons/componentkit-logo.png" />;
-            case 'componentscript':
-              return <DecorationImage src="icons/componentscript-logo.png" />;
             case 'accessibility':
               return <DecorationImage src="icons/accessibility.png" />;
             default:
