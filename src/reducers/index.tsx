@@ -36,6 +36,10 @@ import settings, {
   Settings as SettingsState,
   Action as SettingsAction,
 } from './settings';
+import pluginManager, {
+  State as PluginManagerState,
+  Action as PluginManagerAction,
+} from './pluginManager';
 import user, {State as UserState, Action as UserAction} from './user';
 import JsonFileStorage from '../utils/jsonFileReduxPersistStorage';
 import os from 'os';
@@ -56,6 +60,7 @@ export type Actions =
   | UserAction
   | SettingsAction
   | SupportFormAction
+  | PluginManagerAction
   | {type: 'INIT'};
 
 export type State = {
@@ -67,6 +72,7 @@ export type State = {
   user: UserState & PersistPartial;
   settingsState: SettingsState & PersistPartial;
   supportForm: SupportFormState;
+  pluginManager: PluginManagerState;
 };
 
 export type Store = ReduxStore<State, Actions>;
@@ -106,6 +112,7 @@ export default combineReducers<State, Actions>({
   ),
   plugins,
   supportForm,
+  pluginManager,
   user: persistReducer(
     {
       key: 'user',

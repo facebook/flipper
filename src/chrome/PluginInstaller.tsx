@@ -30,24 +30,20 @@ import {List} from 'immutable';
 import algoliasearch from 'algoliasearch';
 import path from 'path';
 import fs from 'fs-extra';
-import {homedir} from 'os';
 import {PluginManager as PM} from 'live-plugin-manager';
 import {reportPlatformFailures, reportUsage} from '../utils/metrics';
 import restartFlipper from '../utils/restartFlipper';
+import {PluginMap, PluginDefinition} from '../reducers/pluginManager';
+import {PLUGIN_DIR} from '../dispatcher/pluginManager';
+import {State as AppState} from '../reducers';
+import {connect} from 'react-redux';
 
-const PLUGIN_DIR = path.join(homedir(), '.flipper', 'thirdparty');
 const ALGOLIA_APPLICATION_ID = 'OFCNCOG2CU';
 const ALGOLIA_API_KEY = 'f54e21fa3a2a0160595bb058179bfb1e';
 const TAG = 'PluginInstaller';
 const PluginManager = new PM({
   ignoredDependencies: ['flipper', 'react', 'react-dom', '@types/*'],
 });
-
-export type PluginDefinition = {
-  name: string;
-  version: string;
-  description: string;
-};
 
 const EllipsisText = styled(Text)({
   overflow: 'hidden',
@@ -94,18 +90,23 @@ const RestartBar = styled(FlexColumn)({
   textAlign: 'center',
 });
 
-type Props = {
+type PropsFromState = {
+  installedPlugins: PluginMap;
+};
+
+type OwnProps = {
   searchIndexFactory: () => algoliasearch.Index;
-  getInstalledPlugins: () => Promise<Map<string, PluginDefinition>>;
   autoHeight: boolean;
 };
+
+type Props = OwnProps & PropsFromState;
 
 const defaultProps: Props = {
   searchIndexFactory: () => {
     const client = algoliasearch(ALGOLIA_APPLICATION_ID, ALGOLIA_API_KEY);
     return client.initIndex('npm-search');
   },
-  getInstalledPlugins: _getInstalledPlugins,
+  installedPlugins: new Map(),
   autoHeight: false,
 };
 
@@ -117,7 +118,8 @@ const PluginInstaller = function props(props: Props) {
     query,
     setQuery,
     props.searchIndexFactory,
-    props.getInstalledPlugins,
+    // TODO(T56693735): Refactor this to directly take props.
+    async () => props.installedPlugins,
   );
   const restartApp = useCallback(() => {
     restartFlipper();
@@ -155,7 +157,6 @@ const PluginInstaller = function props(props: Props) {
   );
 };
 PluginInstaller.defaultProps = defaultProps;
-export default PluginInstaller;
 
 const TableButton = styled(Button)({
   marginTop: 2,
@@ -365,32 +366,9 @@ function useNPMSearch(
   return List(results.map(createRow));
 }
 
-async function _getInstalledPlugins(): Promise<Map<string, PluginDefinition>> {
-  const pluginDirExists = await fs.pathExists(PLUGIN_DIR);
-
-  if (!pluginDirExists) {
-    return new Map();
-  }
-  const dirs = await fs.readdir(PLUGIN_DIR);
-  const plugins = await Promise.all<[string, PluginDefinition]>(
-    dirs.map(
-      name =>
-        new Promise(async (resolve, reject) => {
-          if (!(await fs.lstat(path.join(PLUGIN_DIR, name))).isDirectory()) {
-            return resolve(undefined);
-          }
-
-          const packageJSON = await fs.readFile(
-            path.join(PLUGIN_DIR, name, 'package.json'),
-          );
-
-          try {
-            resolve([name, JSON.parse(packageJSON.toString())]);
-          } catch (e) {
-            reject(e);
-          }
-        }),
-    ),
-  );
-  return new Map(plugins.filter(Boolean));
-}
+export default connect<PropsFromState, {}, OwnProps, AppState>(
+  ({pluginManager: {installedPlugins}}) => ({
+    installedPlugins,
+  }),
+  {},
+)(PluginInstaller);
