@@ -24,7 +24,8 @@ const ICONS = {
   'caution-octagon': [16],
   'caution-triangle': [16],
   'chevron-down-outline': [10],
-  'chevron-down': [8],
+  'chevron-down': [8, 12],
+  'chevron-up': [8, 12],
   'chevron-right': [8],
   'dots-3-circle-outline': [16],
   'info-circle': [16],
@@ -52,6 +53,8 @@ const ICONS = {
   rocket: [20],
   settings: [12],
   star: [16, 24],
+  'star-slash': [16],
+  'life-event-major': [16],
   target: [12, 16],
   tools: [20],
 };
@@ -77,7 +80,12 @@ function buildLocalIconPath(name, size, density) {
 // $FlowFixMe not using flow in this file
 function buildIconURL(name, size, density) {
   const icon = getIconPartsFromName(name);
-  const url = `https://external.xx.fbcdn.net/assets/?name=${icon.trimmedName}&variant=${icon.variant}&size=${size}&set=facebook_icons&density=${density}x`;
+  // eslint-disable-next-line prettier/prettier
+  const url = `https://external.xx.fbcdn.net/assets/?name=${
+    icon.trimmedName
+  }&variant=${
+    icon.variant
+  }&size=${size}&set=facebook_icons&density=${density}x`;
   if (
     typeof window !== 'undefined' &&
     (!ICONS[name] || !ICONS[name].includes(size))

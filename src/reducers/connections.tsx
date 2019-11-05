@@ -14,7 +14,6 @@ import {UninitializedClient} from '../UninitializedClient';
 import {isEqual} from 'lodash';
 import iosUtil from '../fb-stubs/iOSContainerUtility';
 import {performance} from 'perf_hooks';
-import {SAVED_PLUGINS_COUNT} from '../Client';
 import isHeadless from '../utils/isHeadless';
 import {Actions} from '.';
 const WelcomeScreen = isHeadless()
@@ -43,7 +42,7 @@ export type State = {
   userPreferredDevice: null | string;
   userPreferredPlugin: null | string;
   userPreferredApp: null | string;
-  userLRUPlugins: {[key: string]: Array<string>};
+  userStarredPlugins: {[key: string]: Array<string>};
   errors: FlipperError[];
   clients: Array<Client>;
   uninitializedClients: Array<{
@@ -117,17 +116,19 @@ export type Action =
       payload: {client: UninitializedClient; error: FlipperError};
     }
   | {
-      type: 'CLIENT_SHOW_MORE_OR_LESS';
-      payload: string;
-    }
-  | {type: 'CLEAR_LRU_PLUGINS_HISTORY'}
-  | {
       type: 'SET_STATIC_VIEW';
       payload: StaticView;
     }
   | {
       type: 'DISMISS_ERROR';
       payload: number;
+    }
+  | {
+      type: 'STAR_PLUGIN';
+      payload: {
+        selectedPlugin: string;
+        selectedApp: string;
+      };
     };
 
 const DEFAULT_PLUGIN = 'DeviceLogs';
@@ -141,7 +142,7 @@ const INITAL_STATE: State = {
   userPreferredDevice: null,
   userPreferredPlugin: null,
   userPreferredApp: null,
-  userLRUPlugins: {},
+  userStarredPlugins: {},
   errors: [],
   clients: [],
   uninitializedClients: [],
@@ -259,45 +260,43 @@ const reducer = (state: State = INITAL_STATE, action: Actions): State => {
       }
 
       const userPreferredApp = selectedApp || state.userPreferredApp;
-      const selectedAppName = extractAppNameFromAppId(userPreferredApp);
-      // Need to recreate an array to make sure that it doesn't refer to the
-      // array that is showed in on the screen and the array that is kept for
-      // least recently used plugins reference
-      const LRUPlugins = [
-        ...((selectedAppName && state.userLRUPlugins[selectedAppName]) || []),
-      ];
-      const idxLRU =
-        (selectedPlugin && LRUPlugins.indexOf(selectedPlugin)) || -1;
-      if (idxLRU >= 0) {
-        LRUPlugins.splice(idxLRU, 1);
-      }
-      selectedPlugin && LRUPlugins.unshift(selectedPlugin);
-      LRUPlugins.splice(SAVED_PLUGINS_COUNT);
       return {
         ...state,
         ...payload,
         staticView: null,
         userPreferredApp: userPreferredApp,
         userPreferredPlugin: selectedPlugin,
-        userLRUPlugins: selectedAppName
-          ? {
-              ...state.userLRUPlugins,
-              [selectedAppName]: LRUPlugins,
-            }
-          : {...state.userLRUPlugins},
       };
     }
+    case 'STAR_PLUGIN': {
+      const {selectedPlugin, selectedApp} = action.payload;
+      const starredPluginsForApp = [
+        ...(state.userStarredPlugins[selectedApp] || []),
+      ];
+      const idx = starredPluginsForApp.indexOf(selectedPlugin);
+      if (idx === -1) {
+        starredPluginsForApp.push(selectedPlugin);
+      } else {
+        starredPluginsForApp.splice(idx, 1);
+      }
+      return {
+        ...state,
+        userStarredPlugins: {
+          ...state.userStarredPlugins,
+          [selectedApp]: starredPluginsForApp,
+        },
+      };
+    }
+
     case 'SELECT_USER_PREFERRED_PLUGIN': {
       const {payload} = action;
       return {...state, userPreferredPlugin: payload};
     }
     case 'NEW_CLIENT': {
       const {payload} = action;
-      const {userPreferredApp, userPreferredPlugin, userLRUPlugins} = state;
+      const {userPreferredApp, userPreferredPlugin} = state;
       let {selectedApp, selectedPlugin} = state;
 
-      const appName = extractAppNameFromAppId(payload.id);
-      payload.lessPlugins = (appName && userLRUPlugins[appName]) || [];
       if (
         userPreferredApp &&
         userPreferredPlugin &&
@@ -317,10 +316,6 @@ const reducer = (state: State = INITAL_STATE, action: Actions): State => {
             c.client.appName !== payload.query.app
           );
         }),
-        userLRUPlugins: {
-          ...state.userLRUPlugins,
-          [payload.id]: payload.lessPlugins,
-        },
         selectedApp,
         selectedPlugin,
       };
@@ -420,33 +415,6 @@ const reducer = (state: State = INITAL_STATE, action: Actions): State => {
         }),
       };
     }
-    case 'CLIENT_SHOW_MORE_OR_LESS': {
-      const {payload} = action;
-      const appName = extractAppNameFromAppId(payload);
-
-      return {
-        ...state,
-        clients: state.clients.map((client: Client) => {
-          if (appName && extractAppNameFromAppId(client.id) === appName) {
-            client.showAllPlugins = !client.showAllPlugins;
-            client.lessPlugins = state.userLRUPlugins[appName] || [];
-          }
-          return client;
-        }),
-      };
-    }
-    case 'CLEAR_LRU_PLUGINS_HISTORY': {
-      const clearLRUPlugins: {[key: string]: Array<string>} = {};
-      Object.keys(state.userLRUPlugins).forEach((key: string) => {
-        if (key !== null) {
-          clearLRUPlugins[key] = [];
-        }
-      });
-      return {
-        ...state,
-        userLRUPlugins: clearLRUPlugins,
-      };
-    }
     case 'DISMISS_ERROR': {
       const errors = state.errors.slice();
       errors.splice(action.payload, 1);
@@ -531,8 +499,11 @@ export const selectPlugin = (payload: {
   payload,
 });
 
-export const showMoreOrLessPlugins = (payload: string): Action => ({
-  type: 'CLIENT_SHOW_MORE_OR_LESS',
+export const starPlugin = (payload: {
+  selectedPlugin: string;
+  selectedApp: string;
+}): Action => ({
+  type: 'STAR_PLUGIN',
   payload,
 });
 

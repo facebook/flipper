@@ -175,3 +175,4 @@ export {InspectorSidebar} from './components/elements-inspector/sidebar';
 export {Console} from './components/console';
 
 export {default as Sheet} from './components/Sheet';
+export {StarButton} from './components/StarButton';
