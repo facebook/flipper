@@ -9,46 +9,8 @@
 
 import {Store} from '../reducers/index';
 import {Logger} from '../fb-interfaces/Logger';
-import path from 'path';
-import fs from 'fs-extra';
-import {homedir} from 'os';
-import {
-  registerInstalledPlugins,
-  PluginMap,
-  PluginDefinition,
-} from '../reducers/pluginManager';
-
-export const PLUGIN_DIR = path.join(homedir(), '.flipper', 'thirdparty');
-
-export async function readInstalledPlugins(): Promise<PluginMap> {
-  const pluginDirExists = await fs.pathExists(PLUGIN_DIR);
-
-  if (!pluginDirExists) {
-    return new Map();
-  }
-  const dirs = await fs.readdir(PLUGIN_DIR);
-  const plugins = await Promise.all<[string, PluginDefinition]>(
-    dirs.map(
-      name =>
-        new Promise(async (resolve, reject) => {
-          if (!(await fs.lstat(path.join(PLUGIN_DIR, name))).isDirectory()) {
-            return resolve(undefined);
-          }
-
-          const packageJSON = await fs.readFile(
-            path.join(PLUGIN_DIR, name, 'package.json'),
-          );
-
-          try {
-            resolve([name, JSON.parse(packageJSON.toString())]);
-          } catch (e) {
-            reject(e);
-          }
-        }),
-    ),
-  );
-  return new Map(plugins.filter(Boolean));
-}
+import {registerInstalledPlugins} from '../reducers/pluginManager';
+import {readInstalledPlugins} from '../utils/pluginManager';
 
 function refreshInstalledPlugins(store: Store) {
   readInstalledPlugins().then(plugins =>

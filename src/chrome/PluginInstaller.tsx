@@ -30,7 +30,6 @@ import {List} from 'immutable';
 import algoliasearch from 'algoliasearch';
 import path from 'path';
 import fs from 'fs-extra';
-import {PluginManager as PM} from 'live-plugin-manager';
 import {reportPlatformFailures, reportUsage} from '../utils/metrics';
 import restartFlipper from '../utils/restartFlipper';
 import {
@@ -38,17 +37,17 @@ import {
   PluginDefinition,
   registerInstalledPlugins,
 } from '../reducers/pluginManager';
-import {PLUGIN_DIR, readInstalledPlugins} from '../dispatcher/pluginManager';
-import {State as AppState, Store} from '../reducers';
+import {
+  PLUGIN_DIR,
+  readInstalledPlugins,
+  providePluginManager,
+  provideSearchIndex,
+} from '../utils/pluginManager';
+import {State as AppState} from '../reducers';
 import {connect} from 'react-redux';
 import {Dispatch, Action} from 'redux';
 
-const ALGOLIA_APPLICATION_ID = 'OFCNCOG2CU';
-const ALGOLIA_API_KEY = 'f54e21fa3a2a0160595bb058179bfb1e';
 const TAG = 'PluginInstaller';
-const PluginManager = new PM({
-  ignoredDependencies: ['flipper', 'react', 'react-dom', '@types/*'],
-});
 
 const EllipsisText = styled(Text)({
   overflow: 'hidden',
@@ -111,10 +110,7 @@ type OwnProps = {
 type Props = OwnProps & PropsFromState & DispatchFromProps;
 
 const defaultProps: OwnProps = {
-  searchIndexFactory: () => {
-    const client = algoliasearch(ALGOLIA_APPLICATION_ID, ALGOLIA_API_KEY);
-    return client.initIndex('npm-search');
-  },
+  searchIndexFactory: provideSearchIndex,
   autoHeight: false,
 };
 
@@ -208,13 +204,14 @@ function InstallButton(props: {
       // create empty watchman config (required by metro's file watcher)
       await fs.writeFile(path.join(PLUGIN_DIR, '.watchmanconfig'), '{}');
 
+      const pluginManager = providePluginManager();
       // install the plugin and all it's dependencies into node_modules
-      PluginManager.options.pluginsPath = path.join(
+      pluginManager.options.pluginsPath = path.join(
         PLUGIN_DIR,
         props.name,
         'node_modules',
       );
-      await PluginManager.install(props.name);
+      await pluginManager.install(props.name);
 
       // move the plugin itself out of the node_modules folder
       const pluginDir = path.join(
