@@ -472,7 +472,9 @@ class MainSidebar extends PureComponent<Props, State> {
         selectedPlugin: plugin,
       });
     };
-    const allPlugins = Array.from(this.props.clientPlugins.values());
+    const allPlugins = Array.from(this.props.clientPlugins.values()).filter(
+      (p: typeof FlipperPlugin) => client.plugins.indexOf(p.id) > -1,
+    );
     const favoritePlugins: FlipperPlugins = getFavoritePlugins(
       client,
       allPlugins,
