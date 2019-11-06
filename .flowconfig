@@ -9,6 +9,7 @@
 <PROJECT_ROOT>/src/plugins/sections/d3/d3.js$
 .*\.tsx
 .*/node_modules/.*
+<PROJECT_ROOT>/doctor/.*
 
 [libs]
 flow-typed
