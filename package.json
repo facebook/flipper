@@ -103,7 +103,7 @@
     "prettier": "^1.18.2",
     "redux-mock-store": "^1.5.3",
     "ts-jest": "^24.1.0",
-    "typescript": "^3.6.2"
+    "typescript": "^3.7.2"
   },
   "dependencies": {
     "@types/promise-retry": "^1.1.3",
