@@ -20,11 +20,13 @@ const WelcomeScreen = isHeadless()
   ? require('../chrome/WelcomeScreenHeadless').default
   : require('../chrome/WelcomeScreen').default;
 import SupportRequestForm from '../fb-stubs/SupportRequestFormManager';
+import SupportRequestFormV2 from '../fb-stubs/SupportRequestFormV2';
 
 export type StaticView =
   | null
   | typeof WelcomeScreen
-  | typeof SupportRequestForm;
+  | typeof SupportRequestForm
+  | typeof SupportRequestFormV2;
 
 export type FlipperError = {
   occurrences?: number;

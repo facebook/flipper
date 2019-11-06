@@ -15,12 +15,15 @@ import {
   ACTIVE_SHEET_PLUGINS,
   ACTIVE_SHEET_SETTINGS,
 } from './reducers/application';
+import {setStaticView} from './reducers/connections';
+import SupportRequestFormV2 from './fb-stubs/SupportRequestFormV2';
 import {Store} from './reducers/';
 import electron, {MenuItemConstructorOptions} from 'electron';
 import {notNull} from './utils/typeUtils';
 import constants from './fb-stubs/constants';
 import os from 'os';
 import path from 'path';
+import GK from './fb-stubs/GK';
 
 export type DefaultKeyboardAction = 'clear' | 'goToBottom' | 'createPaste';
 export type TopLevelMenu = 'Edit' | 'View' | 'Window' | 'Help';
@@ -221,28 +224,44 @@ function getTemplate(
       },
     });
   }
+  const fileSubmenu: MenuItemConstructorOptions[] = [
+    {
+      label: 'Preferences',
+      accelerator: 'Cmd+,',
+      click: () => store.dispatch(setActiveSheet(ACTIVE_SHEET_SETTINGS)),
+    },
+    {
+      label: 'Import Flipper File...',
+      accelerator: 'CommandOrControl+O',
+      click: function() {
+        showOpenDialog(store);
+      },
+    },
+    {
+      label: 'Export',
+      submenu: exportSubmenu,
+    },
+  ];
+  if (GK.get('support_requests_v2')) {
+    const supportRequestSubmenu = [
+      {
+        label: 'Create...',
+        click: function() {
+          // Dispatch an action to open the export screen of Support Request form
+          store.dispatch(setStaticView(SupportRequestFormV2));
+        },
+      },
+    ];
+    fileSubmenu.push({
+      label: 'Support Requests',
+      submenu: supportRequestSubmenu,
+    });
+  }
 
   const template: MenuItemConstructorOptions[] = [
     {
       label: 'File',
-      submenu: [
-        {
-          label: 'Preferences',
-          accelerator: 'Cmd+,',
-          click: () => store.dispatch(setActiveSheet(ACTIVE_SHEET_SETTINGS)),
-        },
-        {
-          label: 'Import Flipper File...',
-          accelerator: 'CommandOrControl+O',
-          click: function() {
-            showOpenDialog(store);
-          },
-        },
-        {
-          label: 'Export',
-          submenu: exportSubmenu,
-        },
-      ],
+      submenu: fileSubmenu,
     },
     {
       label: 'Edit',
