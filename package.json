@@ -71,7 +71,7 @@
     "@types/lodash.debounce": "^4.0.6",
     "@types/lodash.isequal": "^4.5.5",
     "@types/react": "16.9.11",
-    "@types/react-dom": "^16.9.2",
+    "@types/react-dom": "^16.9.4",
     "@types/react-redux": "^7.1.5",
     "@types/react-virtualized-auto-sizer": "^1.0.0",
     "@types/react-window": "^1.8.1",
@@ -103,7 +103,7 @@
     "prettier": "^1.18.2",
     "redux-mock-store": "^1.5.3",
     "ts-jest": "^24.1.0",
-    "typescript": "^3.7.2"
+    "typescript": "^3.6.2"
   },
   "dependencies": {
     "@types/promise-retry": "^1.1.3",
