@@ -75,6 +75,7 @@ const SidebarButton = styled(Button)(({small}: {small?: boolean}) => ({
   background: 'none',
   padding: 0,
   justifyContent: 'left',
+  whiteSpace: 'nowrap',
 }));
 
 const PluginShape = styled(FlexBox)(
