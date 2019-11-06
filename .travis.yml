@@ -28,6 +28,7 @@ matrix:
           on:
             branch: master
     - language: node_js
+      os: linux
       node_js:
         - "11"
 
@@ -37,7 +38,7 @@ matrix:
       script:
         - yarn lint
         - yarn test
-        - yarn build --mac --version=$TRAVIS_BUILD_NUMBER
+        - yarn build --linux --version=$TRAVIS_BUILD_NUMBER
 
     - language: objective-c
       cache:
