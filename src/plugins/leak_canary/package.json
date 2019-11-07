@@ -1,12 +1,13 @@
 {
   "name": "LeakCanary",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "index.tsx",
   "license": "MIT",
-  "keywords": ["flipper-plugin"],
-  "dependencies": {
-    "lodash": "^4.17.5"
-  },
+  "keywords": [
+    "flipper-plugin"
+  ],
+  "dependencies": {},
+  "devDependencies": {},
   "icon": "bird",
   "title": "LeakCanary",
   "bugs": {
