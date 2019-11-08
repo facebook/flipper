@@ -24,6 +24,7 @@ import {List, Map as ImmutableMap} from 'immutable';
 import React from 'react';
 import {KeyboardActions} from './MenuBar';
 import {TableBodyRow} from './ui';
+import {Idler} from './utils/Idler';
 
 type ID = string;
 
@@ -99,6 +100,34 @@ export function createTablePlugin<T extends RowData>(props: Props<T>) {
       }
     };
 
+    static serializePersistedState: (
+      persistedState: PersistedState<T>,
+      statusUpdate?: (msg: string) => void,
+      idler?: Idler,
+      pluginName?: string,
+    ) => Promise<string> = async (
+      persistedState: PersistedState<T>,
+      _statusUpdate?: (msg: string) => void,
+      _idler?: Idler,
+      _pluginName?: string,
+    ) => {
+      const serializable = {
+        rows: persistedState.rows,
+        datas: persistedState.datas.toArray(),
+      };
+      return JSON.stringify(serializable);
+    };
+
+    static deserializePersistedState: (
+      serializedString: string,
+    ) => PersistedState<T> = (serializedString: string) => {
+      const parse = JSON.parse(serializedString);
+      return {
+        rows: List(parse.rows) as TableRows_immutable,
+        datas: ImmutableMap(parse.datas) as ImmutableMap<ID, T>,
+      };
+    };
+
     state: State = {
       selectedIds: [],
     };
@@ -166,7 +195,6 @@ export function createTablePlugin<T extends RowData>(props: Props<T>) {
     render() {
       const {columns, columnSizes} = props;
       const {rows} = this.props.persistedState;
-
       return (
         <FlexColumn grow={true}>
           <SearchableTable_immutable
