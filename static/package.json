@@ -10,7 +10,7 @@
     "@babel/plugin-proposal-class-properties": "^7.7.0",
     "@babel/plugin-proposal-object-rest-spread": "^7.6.2",
     "@babel/plugin-proposal-optional-chaining": "^7.6.0",
-    "@babel/plugin-transform-flow-strip-types": "^7.4.0",
+    "@babel/plugin-transform-flow-strip-types": "^7.6.3",
     "@babel/plugin-transform-modules-commonjs": "^7.4.0",
     "@babel/plugin-transform-typescript": "^7.5.5",
     "@babel/preset-react": "^7.0.0",
