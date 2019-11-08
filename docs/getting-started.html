@@ -142,6 +142,7 @@ AppDelegate.</p>
 <p>Finally, you need to add plugins to your Flipper client. Above we have only added the Layout Inspector plugin to get you started. See <a href="/docs/setup/network-plugin.html">Network Plugin</a> and <a href="/docs/setup/layout-plugin.html">Layout Inspector Plugin</a> for information on how to add them, and also enable Litho or ComponentKit support. You can check the sample apps in the <a href="https://github.com/facebook/flipper">GitHub repo</a> for examples of integrating other plugins.</p>
 <h2><a class="anchor" aria-hidden="true" id="setup-your-react-native-app"></a><a href="#setup-your-react-native-app" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Setup your React Native app</h2>
 <p><em>Inspired by <a href="http://blog.nparashuram.com/2019/09/using-flipper-with-react-native.html">a blog post by Ram N</a>.</em></p>
+<p><em>This version of the tutorial is written against React Native 0.61.4. You can find versions of this guide for older versions of React Native <a href="https://github.com/facebook/flipper/blob/da25241f7fbb06dffd913958559044d758c54fb8/docs/getting-started.md#setup-your-react-native-app">here</a></em></p>
 <p>Integrating Flipper with React Native is a bit different than with a native app.</p>
 <h3><a class="anchor" aria-hidden="true" id="android"></a><a href="#android" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Android</h3>
 <p>First, add this line to your <code>android/gradle.properties</code>:</p>
@@ -150,8 +151,7 @@ FLIPPER_VERSION=0.23.4
 </code></pre>
 <p>Add the following permissions to your <code>AndroidManifest.xml</code>. The SDK needs these to communicate with the desktop app on localhost via adb. It won't make any external internet requests.</p>
 <p><code>android/app/src/main/AndroidManifest.xml</code></p>
-<pre><code class="hljs css language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">uses-permission</span> <span class="hljs-attr">android:name</span>=<span class="hljs-string">"android.permission.INTERNET"</span> /&gt;</span>
-<span class="hljs-tag">&lt;<span class="hljs-name">uses-permission</span> <span class="hljs-attr">android:name</span>=<span class="hljs-string">"android.permission.ACCESS_WIFI_STATE"</span> /&gt;</span>
+<pre><code class="hljs css language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">uses-permission</span> <span class="hljs-attr">android:name</span>=<span class="hljs-string">"android.permission.ACCESS_WIFI_STATE"</span> /&gt;</span>
 </code></pre>
 <p>It's recommended that you add the following activity to the manifest too, which can help diagnose integration issues and other problems:</p>
 <pre><code class="hljs css language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">activity</span> <span class="hljs-attr">android:name</span>=<span class="hljs-string">"com.facebook.flipper.android.diagnostics.FlipperDiagnosticActivity"</span>
@@ -174,6 +174,8 @@ use to make it easier to strip Flipper from your release builds.</p>
 
 dependencies {
   ...
+  implementation <span class="hljs-string">'com.facebook.soloader:soloader:0.6.0+'</span>
+
   debugImplementation(<span class="hljs-string">"com.facebook.flipper:flipper:${FLIPPER_VERSION}"</span>) {
     exclude <span class="hljs-string">group:</span><span class="hljs-string">'com.facebook.yoga'</span>
     exclude <span class="hljs-string">group:</span><span class="hljs-string">'com.facebook.flipper'</span>, <span class="hljs-string">module:</span> <span class="hljs-string">'fbjni'</span>
@@ -182,7 +184,7 @@ dependencies {
   }
 }
 </code></pre>
-<p>Now, we create a new file inside <code>android/app/src/debug/java/com/yourappname/ReactNativeFlipper.java</code>.</p>
+<p>Now, we create a new file: <code>android/app/src/debug/java/com/yourappname/ReactNativeFlipper.java</code>. (Replace the <code>yourappname</code> namespace with something appropriate for your project)</p>
 <p>These are the suggested plugins integrations:</p>
 <ul>
 <li>Layout Inspector</li>
@@ -193,7 +195,7 @@ dependencies {
 <li>Crash Reporter</li>
 <li>React devtools</li>
 </ul>
-<pre><code class="hljs css language-java"><span class="hljs-keyword">package</span> com.yourappname;
+<pre><code class="hljs css language-java"><span class="hljs-keyword">package</span> com.yourappname; <span class="hljs-comment">// &lt;--- use your own namespace chosen above!</span>
 
 <span class="hljs-keyword">import</span> android.content.Context;
 <span class="hljs-keyword">import</span> com.facebook.flipper.android.AndroidFlipperClient;
@@ -214,6 +216,10 @@ dependencies {
 <span class="hljs-keyword">import</span> okhttp3.OkHttpClient;
 
 <span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ReactNativeFlipper</span> </span>{
+
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">initializeFlipper</span><span class="hljs-params">(Context context)</span> </span>{
+    ReactNativeFlipper.initializeFlipper(context, <span class="hljs-keyword">null</span>);
+  }
 
   <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">initializeFlipper</span><span class="hljs-params">(Context context, <span class="hljs-keyword">final</span> ReactInstanceManager reactInstanceManager)</span> </span>{
     <span class="hljs-keyword">if</span> (!FlipperUtils.shouldEnableFlipper(context)) {
@@ -240,7 +246,7 @@ dependencies {
 
     <span class="hljs-comment">// Fresco Plugin needs to ensure that ImagePipelineFactory is initialized</span>
     <span class="hljs-comment">// Hence we run if after all native modules have been initialized</span>
-    ReactContext reactContext = reactInstanceManager.getCurrentReactContext();
+    ReactContext reactContext = reactInstanceManager == <span class="hljs-keyword">null</span> ? <span class="hljs-keyword">null</span> : reactInstanceManager.getCurrentReactContext();
     <span class="hljs-keyword">if</span> (reactContext == <span class="hljs-keyword">null</span>) {
       reactInstanceManager.addReactInstanceEventListener(
           <span class="hljs-keyword">new</span> ReactInstanceManager.ReactInstanceEventListener() {
@@ -265,57 +271,47 @@ dependencies {
 <p>Now you can initialize Flipper in your Application's <code>onCreate</code> method, which involves
 initializing SoLoader (for loading the C++ part of Flipper) and starting a <code>FlipperClient</code>.</p>
 <p>For this, we edit the <code>android/app/src/main/java/com/yourappname/MainApplication.java</code> file.</p>
-<pre><code class="hljs css language-java"><span class="hljs-keyword">package</span> com.yourappname;
+<pre><code class="hljs css language-java"><span class="hljs-keyword">package</span> com.yourappname;<span class="hljs-comment">// &lt;--- use your own namespace chosen above!</span>
 
 <span class="hljs-keyword">import</span> ...
-<span class="hljs-keyword">import</span> com.facebook.react.ReactInstanceManager;
+<span class="hljs-keyword">import</span> com.facebook.react.ReactInstanceManager; <span class="hljs-comment">// &lt;---- add this import</span>
 
 <span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MainApplication</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Application</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">ReactApplication</span> </span>{
   ...
 
   <span class="hljs-meta">@Override</span>
   <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">onCreate</span><span class="hljs-params">()</span> </span>{
-    ...
-    initializeFlipper(<span class="hljs-keyword">this</span>, getReactNativeHost().getReactInstanceManager());
-  }
-
-  <span class="hljs-comment">/**
-   * Loads Flipper in React Native templates. Call this in the onCreate method with something like
-   * initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
-   *
-   * <span class="hljs-doctag">@param</span> context
-   */</span>
-  <span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">initializeFlipper</span><span class="hljs-params">(Context context, ReactInstanceManager reactInstanceManager)</span> </span>{
-    <span class="hljs-keyword">if</span> (BuildConfig.DEBUG) {
-      <span class="hljs-keyword">try</span> {
-        Class&lt;?&gt; aClass = Class.forName(<span class="hljs-string">"com.yourappname.ReactNativeFlipper"</span>);
-        aClass
-          .getMethod(<span class="hljs-string">"initializeFlipper"</span>, Context.class, ReactInstanceManager.class)
-          .invoke(<span class="hljs-keyword">null</span>, context, reactInstanceManager);
-      } <span class="hljs-keyword">catch</span> (ClassNotFoundException e) {
-        e.printStackTrace();
-      } <span class="hljs-keyword">catch</span> (NoSuchMethodException e) {
-      e.printStackTrace();
-      } <span class="hljs-keyword">catch</span> (IllegalAccessException e) {
-        e.printStackTrace();
-      } <span class="hljs-keyword">catch</span> (InvocationTargetException e) {
-        e.printStackTrace();
-      }
-    }
+    <span class="hljs-keyword">super</span>.onCreate();
+    SoLoader.init(<span class="hljs-keyword">this</span>, <span class="hljs-comment">/* native exopackage */</span> <span class="hljs-keyword">false</span>);
+    initializeFlipper(<span class="hljs-keyword">this</span>, getReactNativeHost().getReactInstanceManager()); <span class="hljs-comment">// &lt;---- start flipper integration</span>
   }
 }
 </code></pre>
+<p>In the same file, modify the generated <code>initializeFlipper</code> method to</p>
+<pre><code class="hljs css language-java">  <span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">initializeFlipper</span><span class="hljs-params">(Context context, ReactInstanceManager reactInstanceManager)</span> </span>{
+    <span class="hljs-keyword">if</span> (BuildConfig.DEBUG) {
+      <span class="hljs-keyword">try</span> {
+        <span class="hljs-comment">/*
+         We use reflection here to pick up the class that initializes Flipper,
+        since Flipper library is not available in release mode
+        */</span>
+        Class&lt;?&gt; aClass = Class.forName(<span class="hljs-string">"com.yourappname.ReactNativeFlipper"</span>); <span class="hljs-comment">// &lt;--- use your own namespace chosen above!</span>
+        aClass.getMethod(<span class="hljs-string">"initializeFlipper"</span>, Context.class, ReactInstanceManager.class).invoke(<span class="hljs-keyword">null</span>, context, reactInstanceManager);
+      } <span class="hljs-keyword">catch</span> (ClassNotFoundException e) {
+        <span class="hljs-comment">/* All catch clauses as generated by RN */</span>
+        ...
+      }
+    }
+  }
+</code></pre>
 <p>Finally, open the Flipper desktop app, and run <code>yarn android</code> in your terminal.</p>
 <h3><a class="anchor" aria-hidden="true" id="ios"></a><a href="#ios" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>iOS</h3>
+<p><em>Make sure you are using <a href="https://download.developer.apple.com/Developer_Tools/Xcode_10.3/Xcode_10.3.xip">XCode 10</a>. The following guide doesn't work (yet) for XCode 11. Run <code>sudo xcode-select -s /Applications/Xcode_10.XXX/Contents/Developer/</code> to select the right xcode version.</em></p>
 <p>We support both Swift and Objective-C for Flipper with CocoaPods as build and distribution mechanism. For CocoaPods 1.7+ following is the configuration.</p>
 <h4><a class="anchor" aria-hidden="true" id="cocoapods-1"></a><a href="#cocoapods-1" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>CocoaPods</h4>
 <p><code>ios/Podfile</code></p>
-<div class="tabs"><div class="nav-tabs"><div id="tab-group-26-tab-27" class="nav-link active" data-group="group_26" data-tab="tab-group-26-content-27">Objective-C</div></div><div class="tab-content"><div id="tab-group-26-content-27" class="tab-pane active" data-group="group_26" tabindex="-1"><div><span><pre><code class="hljs css language-ruby">platform <span class="hljs-symbol">:ios</span>, <span class="hljs-string">'9.0'</span><br /><br /><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">flipper_pods</span><span class="hljs-params">()</span></span><br />  flipperkit_version = <span class="hljs-string">'0.25'</span><br />  pod <span class="hljs-string">'FlipperKit'</span>, <span class="hljs-string">'~&gt;'</span> + flipperkit_version, <span class="hljs-symbol">:configuration</span> =&gt; <span class="hljs-string">'Debug'</span><br />  pod <span class="hljs-string">'FlipperKit/FlipperKitLayoutPlugin'</span>, <span class="hljs-string">'~&gt;'</span> + flipperkit_version, <span class="hljs-symbol">:configuration</span> =&gt; <span class="hljs-string">'Debug'</span><br />  pod <span class="hljs-string">'FlipperKit/SKIOSNetworkPlugin'</span>, <span class="hljs-string">'~&gt;'</span> + flipperkit_version, <span class="hljs-symbol">:configuration</span> =&gt; <span class="hljs-string">'Debug'</span><br />  pod <span class="hljs-string">'FlipperKit/FlipperKitUserDefaultsPlugin'</span>, <span class="hljs-string">'~&gt;'</span> + flipperkit_version, <span class="hljs-symbol">:configuration</span> =&gt; <span class="hljs-string">'Debug'</span><br /><span class="hljs-keyword">end</span><br /><br /><span class="hljs-comment"># Post Install processing for Flipper</span><br /><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">flipper_post_install</span><span class="hljs-params">(installer)</span></span><br />  installer.pods_project.targets.each <span class="hljs-keyword">do</span> <span class="hljs-params">|target|</span><br />    <span class="hljs-keyword">if</span> target.name == <span class="hljs-string">'YogaKit'</span><br />      target.build_configurations.each <span class="hljs-keyword">do</span> <span class="hljs-params">|config|</span><br />        config.build_settings[<span class="hljs-string">'SWIFT_VERSION'</span>] = <span class="hljs-string">'4.1'</span><br />      <span class="hljs-keyword">end</span><br />    <span class="hljs-keyword">end</span><br />  <span class="hljs-keyword">end</span><br />  file_name = Dir.glob(<span class="hljs-string">"*.xcodeproj"</span>)[<span class="hljs-number">0</span>]<br />  app_project = Xcodeproj::Project.open(file_name)<br />  app_project.native_targets.each <span class="hljs-keyword">do</span> <span class="hljs-params">|target|</span><br />    target.build_configurations.each <span class="hljs-keyword">do</span> <span class="hljs-params">|config|</span><br />      cflags = config.build_settings[<span class="hljs-string">'OTHER_CFLAGS'</span>] <span class="hljs-params">||</span> <span class="hljs-string">'$(inherited) '</span><br />      <span class="hljs-keyword">unless</span> cflags.<span class="hljs-keyword">include</span>? <span class="hljs-string">'-DFB_SONARKIT_ENABLED=1'</span><br />        puts <span class="hljs-string">'Adding -DFB_SONARKIT_ENABLED=1 in OTHER_CFLAGS...'</span><br />        cflags &lt;&lt; <span class="hljs-string">'-DFB_SONARKIT_ENABLED=1'</span><br />      <span class="hljs-keyword">end</span><br />      config.build_settings[<span class="hljs-string">'OTHER_CFLAGS'</span>] = cflags<br />    <span class="hljs-keyword">end</span><br />    app_project.save<br />  <span class="hljs-keyword">end</span><br />  installer.pods_project.save<br /><span class="hljs-keyword">end</span><br /><br />target <span class="hljs-string">'your-app-name'</span> <span class="hljs-keyword">do</span><br />  ...<br /><br />  target <span class="hljs-string">'your-app-nameTests'</span> <span class="hljs-keyword">do</span><br />    inherit! <span class="hljs-symbol">:complete</span><br />    <span class="hljs-comment"># Pods for testing</span><br />  <span class="hljs-keyword">end</span><br /><br />  <span class="hljs-comment"># For enabling Flipper.</span><br />  <span class="hljs-comment"># Note that if you use_framework!, flipper will not work.</span><br />  <span class="hljs-comment"># Disable these lines if you are doing use_framework!</span><br />  flipper_pods()<br />  post_install <span class="hljs-keyword">do</span> <span class="hljs-params">|installer|</span><br />    flipper_post_install(installer)<br />  <span class="hljs-keyword">end</span><br /><span class="hljs-keyword">end</span><br /></code></pre>
+<div class="tabs"><div class="nav-tabs"><div id="tab-group-26-tab-27" class="nav-link active" data-group="group_26" data-tab="tab-group-26-content-27">Objective-C</div></div><div class="tab-content"><div id="tab-group-26-content-27" class="tab-pane active" data-group="group_26" tabindex="-1"><div><span><pre><code class="hljs css language-ruby">platform <span class="hljs-symbol">:ios</span>, <span class="hljs-string">'9.0'</span><br /><br /><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">flipper_pods</span><span class="hljs-params">()</span></span><br />  flipperkit_version = <span class="hljs-string">'0.27'</span><br />  pod <span class="hljs-string">'FlipperKit'</span>, <span class="hljs-string">'~&gt;'</span> + flipperkit_version, <span class="hljs-symbol">:configuration</span> =&gt; <span class="hljs-string">'Debug'</span><br />  pod <span class="hljs-string">'FlipperKit/FlipperKitLayoutPlugin'</span>, <span class="hljs-string">'~&gt;'</span> + flipperkit_version, <span class="hljs-symbol">:configuration</span> =&gt; <span class="hljs-string">'Debug'</span><br />  pod <span class="hljs-string">'FlipperKit/SKIOSNetworkPlugin'</span>, <span class="hljs-string">'~&gt;'</span> + flipperkit_version, <span class="hljs-symbol">:configuration</span> =&gt; <span class="hljs-string">'Debug'</span><br />  pod <span class="hljs-string">'FlipperKit/FlipperKitUserDefaultsPlugin'</span>, <span class="hljs-string">'~&gt;'</span> + flipperkit_version, <span class="hljs-symbol">:configuration</span> =&gt; <span class="hljs-string">'Debug'</span><br /><span class="hljs-keyword">end</span><br /><br /><span class="hljs-comment"># Post Install processing for Flipper</span><br /><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">flipper_post_install</span><span class="hljs-params">(installer)</span></span><br />  installer.pods_project.targets.each <span class="hljs-keyword">do</span> <span class="hljs-params">|target|</span><br />    <span class="hljs-keyword">if</span> target.name == <span class="hljs-string">'YogaKit'</span><br />      target.build_configurations.each <span class="hljs-keyword">do</span> <span class="hljs-params">|config|</span><br />        config.build_settings[<span class="hljs-string">'SWIFT_VERSION'</span>] = <span class="hljs-string">'4.1'</span><br />      <span class="hljs-keyword">end</span><br />    <span class="hljs-keyword">end</span><br />  <span class="hljs-keyword">end</span><br />  file_name = Dir.glob(<span class="hljs-string">"*.xcodeproj"</span>)[<span class="hljs-number">0</span>]<br />  app_project = Xcodeproj::Project.open(file_name)<br />  app_project.native_targets.each <span class="hljs-keyword">do</span> <span class="hljs-params">|target|</span><br />    target.build_configurations.each <span class="hljs-keyword">do</span> <span class="hljs-params">|config|</span><br />      cflags = config.build_settings[<span class="hljs-string">'OTHER_CFLAGS'</span>] <span class="hljs-params">||</span> <span class="hljs-string">'$(inherited) '</span><br />      <span class="hljs-keyword">unless</span> cflags.<span class="hljs-keyword">include</span>? <span class="hljs-string">'-DFB_SONARKIT_ENABLED=1'</span><br />        puts <span class="hljs-string">'Adding -DFB_SONARKIT_ENABLED=1 in OTHER_CFLAGS...'</span><br />        cflags &lt;&lt; <span class="hljs-string">'-DFB_SONARKIT_ENABLED=1'</span><br />      <span class="hljs-keyword">end</span><br />      config.build_settings[<span class="hljs-string">'OTHER_CFLAGS'</span>] = cflags<br />    <span class="hljs-keyword">end</span><br />    app_project.save<br />  <span class="hljs-keyword">end</span><br />  installer.pods_project.save<br /><span class="hljs-keyword">end</span><br /><br />target <span class="hljs-string">'your-app-name'</span> <span class="hljs-keyword">do</span><br />  ...<br /><br /><br />  <span class="hljs-comment"># Replace the existing yoga import with the following (adding modular_headers):</span><br />  pod <span class="hljs-string">'Yoga'</span>, <span class="hljs-symbol">:path</span> =&gt; <span class="hljs-string">'../node_modules/react-native/ReactCommon/yoga'</span>, <span class="hljs-symbol">:modular_headers</span> =&gt; <span class="hljs-literal">true</span><br /><br />  ...<br />  use_native_modules!<br /><br />  <span class="hljs-comment"># For enabling Flipper.</span><br />  <span class="hljs-comment"># Note that if you use_framework!, flipper will not work.</span><br />  <span class="hljs-comment"># Disable these lines if you are doing use_framework!</span><br />  flipper_pods()<br />  post_install <span class="hljs-keyword">do</span> <span class="hljs-params">|installer|</span><br />    flipper_post_install(installer)<br />  <span class="hljs-keyword">end</span><br /><span class="hljs-keyword">end</span><br /></code></pre>
 </span></div></div></div></div>
-<p>You need to compile your project with the <code>FB_SONARKIT_ENABLED=1</code> compiler flag. The above <code>post_install</code> hook adds this compiler flag to your project settings.</p>
-<div class="warning">
-<p>On the first run of <code>pod install</code>, <code>FB_SONARKIT_ENABLED=1</code> may not be added in the &quot;Build Settings&quot; of your project, but in all the subsequent runs of <code>pod install</code>, the above <code>post_install</code> hook successfully adds the compiler flag. So before running your app, make sure that <code>FB_SONARKIT_ENABLED=1</code> is present in <code>OTHER_CFLAGS</code> and <code>OTHER_SWIFT_FLAGS</code> for Objective-C and Swift projects respectively.</p>
-</div>
 <p>Install the dependencies by running <code>cd ios &amp;&amp; pod install</code>. You can now import and initialize Flipper in your
 <code>ios/your-app-name/AppDelegate.m</code>.</p>
 <p>The code below enables the following integrations:</p>
