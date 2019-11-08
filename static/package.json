@@ -5,7 +5,7 @@
   "license": "MIT",
   "dependencies": {
     "@babel/core": "^7.7.2",
-    "@babel/generator": "^7.4.0",
+    "@babel/generator": "^7.7.2",
     "@babel/parser": "^7.4.2",
     "@babel/plugin-proposal-class-properties": "^7.4.0",
     "@babel/plugin-proposal-object-rest-spread": "^7.4.0",
