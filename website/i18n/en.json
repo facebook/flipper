@@ -160,6 +160,10 @@
         "title": "Publishing your Plugin",
         "sidebar_label": "Publishing"
       },
+      "tutorial/js-setup": {
+        "title": "Building a Flipper desktop plugin",
+        "sidebar_label": "Building a desktop plugin"
+      },
       "tutorial/js-table": {
         "title": "Showing a table"
       }
