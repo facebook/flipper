@@ -34,7 +34,7 @@ import promiseTimeout from './promiseTimeout';
 import {Idler} from './Idler';
 export const IMPORT_FLIPPER_TRACE_EVENT = 'import-flipper-trace';
 export const EXPORT_FLIPPER_TRACE_EVENT = 'export-flipper-trace';
-export const EXPORT_FLIPPER_TRACE_TIME_EVENT = 'export-flipper-trace-time';
+export const EXPORT_FLIPPER_TRACE_TIME_SERIALIZATION_EVENT = `${EXPORT_FLIPPER_TRACE_EVENT}:serialization`;
 
 export type PluginStatesExportState = {
   [pluginKey: string]: string;
@@ -193,7 +193,8 @@ const serializePluginStates = async (
     const keyArray = key.split('#');
     const pluginName = keyArray.pop();
     statusUpdate && statusUpdate(`Serialising ${pluginName}...`);
-
+    const serializationMarker = `${EXPORT_FLIPPER_TRACE_EVENT}:serialization-per-plugin`;
+    performance.mark(serializationMarker);
     const pluginClass = pluginName ? pluginsMap.get(pluginName) : null;
     if (pluginClass) {
       pluginExportState[key] = await pluginClass.serializePersistedState(
@@ -202,6 +203,9 @@ const serializePluginStates = async (
         idler,
         pluginName,
       );
+      getLogger().trackTimeSince(serializationMarker, serializationMarker, {
+        plugin: pluginName,
+      });
     }
   }
   return pluginExportState;
@@ -411,6 +415,8 @@ export async function fetchMetadata(
       const exportState = pluginClass ? pluginClass.exportPersistedState : null;
       if (exportState) {
         const key = pluginKey(client.id, plugin);
+        const fetchMetaDataMarker = `${EXPORT_FLIPPER_TRACE_EVENT}:fetch-meta-data-per-plugin`;
+        performance.mark(fetchMetaDataMarker);
         try {
           statusUpdate &&
             statusUpdate(`Fetching metadata for plugin ${plugin}...`);
@@ -426,9 +432,16 @@ export async function fetchMetadata(
 
             `Timed out while collecting data for ${plugin}`,
           );
+          getLogger().trackTimeSince(fetchMetaDataMarker, fetchMetaDataMarker, {
+            plugin,
+          });
           newPluginState[key] = data;
         } catch (e) {
           errorArray.push(e);
+          getLogger().trackTimeSince(fetchMetaDataMarker, fetchMetaDataMarker, {
+            plugin,
+            error: e,
+          });
           continue;
         }
       }
@@ -464,6 +477,8 @@ export async function getStoreExport(
     pluginsMap.set(key, val);
   });
   statusUpdate && statusUpdate('Preparing to fetch metadata from client...');
+  const fetchMetaDataMarker = `${EXPORT_FLIPPER_TRACE_EVENT}:fetch-meta-data`;
+  performance.mark(fetchMetaDataMarker);
   const metadata = await fetchMetadata(
     pluginStates,
     pluginsMap,
@@ -471,6 +486,9 @@ export async function getStoreExport(
     statusUpdate,
     idler,
   );
+  getLogger().trackTimeSince(fetchMetaDataMarker, fetchMetaDataMarker, {
+    plugins: store.getState().plugins.selectedPlugins,
+  });
   const {errorArray} = metadata;
   const newPluginState = metadata.pluginStates;
 
@@ -500,7 +518,7 @@ export function exportStore(
 ): Promise<{serializedString: string; errorArray: Array<Error>}> {
   getLogger().track('usage', EXPORT_FLIPPER_TRACE_EVENT);
   return new Promise(async (resolve, reject) => {
-    performance.mark(EXPORT_FLIPPER_TRACE_TIME_EVENT);
+    performance.mark(EXPORT_FLIPPER_TRACE_TIME_SERIALIZATION_EVENT);
     try {
       statusUpdate && statusUpdate('Preparing to export Flipper data...');
       const {exportData, errorArray} = await getStoreExport(
@@ -515,8 +533,8 @@ export function exportStore(
           reject(new Error('Serialize function returned empty string'));
         }
         getLogger().trackTimeSince(
-          EXPORT_FLIPPER_TRACE_TIME_EVENT,
-          EXPORT_FLIPPER_TRACE_TIME_EVENT,
+          EXPORT_FLIPPER_TRACE_TIME_SERIALIZATION_EVENT,
+          EXPORT_FLIPPER_TRACE_TIME_SERIALIZATION_EVENT,
           {
             plugins: store.getState().plugins.selectedPlugins,
           },

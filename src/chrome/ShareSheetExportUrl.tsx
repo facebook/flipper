@@ -38,6 +38,7 @@ import {reportPlatformFailures} from '../utils/metrics';
 import CancellableExportStatus from './CancellableExportStatus';
 import {performance} from 'perf_hooks';
 import ShareSheetPendingDialog from './ShareSheetPendingDialog';
+import {getInstance as getLogger} from '../fb-stubs/Logger';
 export const SHARE_FLIPPER_TRACE_EVENT = 'share-flipper-link';
 
 const Container = styled(FlexColumn)({
@@ -119,7 +120,8 @@ export default class ShareSheetExportUrl extends Component<Props, State> {
         exportStore(store, this.idler, statusUpdate),
         `${EXPORT_FLIPPER_TRACE_EVENT}:UI_LINK`,
       );
-
+      const uploadMarker = `${EXPORT_FLIPPER_TRACE_EVENT}:upload`;
+      performance.mark(uploadMarker);
       statusUpdate('Uploading Flipper Trace...');
       // TODO(T55169042): Implement error handling. Result is not tested
       // its result type right now, causing the upload indicator to stall forever.
@@ -127,7 +129,9 @@ export default class ShareSheetExportUrl extends Component<Props, State> {
         shareFlipperData(serializedString),
         `${SHARE_FLIPPER_TRACE_EVENT}`,
       );
-
+      getLogger().trackTimeSince(uploadMarker, uploadMarker, {
+        plugins: store.getState().plugins.selectedPlugins,
+      });
       this.setState({errorArray, result});
       const flipperUrl = (result as DataExportResult).flipperUrl;
       if (flipperUrl) {

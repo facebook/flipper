@@ -7,6 +7,12 @@
  * @format
  */
 
+try {
+  jest.mock('../../fb/Logger');
+} catch (e) {
+  jest.mock('../../fb-stubs/Logger');
+}
+
 import {default as BaseDevice} from '../../devices/BaseDevice';
 import {default as ArchivedDevice} from '../../devices/ArchivedDevice';
 import {processStore} from '../exportData';
