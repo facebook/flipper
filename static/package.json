@@ -13,7 +13,7 @@
     "@babel/plugin-transform-flow-strip-types": "^7.6.3",
     "@babel/plugin-transform-modules-commonjs": "^7.7.0",
     "@babel/plugin-transform-typescript": "^7.7.2",
-    "@babel/preset-react": "^7.0.0",
+    "@babel/preset-react": "^7.7.0",
     "expand-tilde": "^2.0.2",
     "fix-path": "^2.1.0",
     "mem": "^5.1.1",
