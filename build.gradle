@@ -17,7 +17,7 @@ buildscript {
 }
 
 plugins {
-    id 'de.undercouch.download' version '3.4.3'
+    id 'de.undercouch.download' version '4.0.1'
     id 'com.jfrog.bintray' version '1.8.4'
     id 'com.github.dcendents.android-maven' version '2.1'
     id 'com.github.ben-manes.versions' version '0.21.0'
