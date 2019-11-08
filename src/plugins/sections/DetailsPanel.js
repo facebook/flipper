@@ -50,6 +50,7 @@ export default class DetailsPanel extends Component<Props> {
       <React.Fragment>
         {eventUserInfo && (
           <Panel
+            key="eventUserInfo"
             collapsable={false}
             floating={false}
             heading={'Event User Info'}>
@@ -57,7 +58,11 @@ export default class DetailsPanel extends Component<Props> {
           </Panel>
         )}
         {changeSets && changeSets.length > 0 ? (
-          <Panel collapsable={false} floating={false} heading={'Changesets'}>
+          <Panel
+            key="Changesets"
+            collapsable={false}
+            floating={false}
+            heading={'Changesets'}>
             <MarkerTimeline
               points={changeSets.map(p => ({
                 label:
@@ -79,7 +84,10 @@ export default class DetailsPanel extends Component<Props> {
           <NoContent>No changes sets available</NoContent>
         )}
         {this.props.focusedChangeSet && (
-          <Panel floating={false} heading="Changeset Details">
+          <Panel
+            key="Changeset Details"
+            floating={false}
+            heading="Changeset Details">
             <ManagedDataInspector
               data={this.props.focusedChangeSet.changeset}
               expandRoot={true}
@@ -87,7 +95,10 @@ export default class DetailsPanel extends Component<Props> {
           </Panel>
         )}
         {this.props.selectedNodeInfo && (
-          <Panel floating={false} heading="Selected Node Info">
+          <Panel
+            key="Selected Node Info"
+            floating={false}
+            heading="Selected Node Info">
             <ManagedDataInspector
               data={this.props.selectedNodeInfo}
               expandRoot={true}

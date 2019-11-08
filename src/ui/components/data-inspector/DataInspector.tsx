@@ -525,10 +525,12 @@ export default class DataInspector extends Component<DataInspectorProps> {
 
           switch (metadata.status) {
             case 'added':
-              propertyNodes.push(<Added>{dataInspectorNode}</Added>);
+              propertyNodes.push(<Added key={key}>{dataInspectorNode}</Added>);
               break;
             case 'removed':
-              propertyNodes.push(<Removed>{dataInspectorNode}</Removed>);
+              propertyNodes.push(
+                <Removed key={key}>{dataInspectorNode}</Removed>,
+              );
               break;
             default:
               propertyNodes.push(dataInspectorNode);

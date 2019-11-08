@@ -326,6 +326,7 @@ class ElementsRow extends PureComponent<ElementsRowProps, ElementsRowState> {
     const attributes = element.attributes
       ? element.attributes.map(attr => (
           <ElementsRowAttribute
+            key={attr.name}
             name={attr.name}
             value={attr.value}
             matchingSearchQuery={matchingSearchQuery}
