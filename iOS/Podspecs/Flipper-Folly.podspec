@@ -67,6 +67,7 @@ Pod::Spec.new do |spec|
                       "folly/io/async/ssl/*.cpp",
                       "folly/lang/*.cpp",
                       "folly/memory/*.cpp",
+                      "folly/memory/detail/*.cpp",
                       "folly/net/*.cpp",
                       "folly/portability/*.cpp",
                       "folly/ssl/*.cpp",
