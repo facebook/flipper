@@ -134,7 +134,6 @@ class PartialHighlight extends PureComponent<{
 
   render() {
     const {highlighted, content, selected} = this.props;
-    let renderedValue;
     if (
       content &&
       highlighted != null &&
@@ -148,19 +147,18 @@ class PartialHighlight extends PureComponent<{
       const before = content.substring(0, highlightStart);
       const match = content.substring(highlightStart, highlightEnd);
       const after = content.substring(highlightEnd);
-      renderedValue = [
+      return (
         <span>
           {before}
           <PartialHighlight.HighlightedText selected={selected}>
             {match}
           </PartialHighlight.HighlightedText>
           {after}
-        </span>,
-      ];
+        </span>
+      );
     } else {
-      renderedValue = <span>{content}</span>;
+      return <span>{content}</span>;
     }
-    return renderedValue;
   }
 }
 

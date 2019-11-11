@@ -93,14 +93,17 @@ export default class Popover extends PureComponent<Props> {
   };
 
   render() {
-    return [
-      <Anchor src="./anchor.svg" key="anchor" />,
-      <PopoverContainer
-        innerRef={this._setRef}
-        key="popup"
-        opts={this.props.forceOpts || {}}>
-        {this.props.children}
-      </PopoverContainer>,
-    ];
+    return (
+      <>
+        <Anchor src="./anchor.svg" key="anchor" />
+        <PopoverContainer
+          innerRef={this._setRef}
+          key="popup"
+          opts={this.props.forceOpts || {}}>
+          {this.props.children}
+        </PopoverContainer>
+        ,
+      </>
+    );
   }
 }

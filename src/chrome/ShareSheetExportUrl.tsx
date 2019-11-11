@@ -228,7 +228,10 @@ export default class ShareSheetExportUrl extends Component<Props, State> {
                       used to share with other Flipper users. Opening it will
                       import the data from your trace.
                     </InfoText>
-                    <Copy value={(result as DataExportResult).flipperUrl} />
+                    <Copy
+                      value={(result as DataExportResult).flipperUrl}
+                      readOnly
+                    />
                     <InfoText>
                       When sharing your Flipper link, consider that the captured
                       data might contain sensitve information like access tokens
