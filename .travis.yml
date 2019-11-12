@@ -33,6 +33,8 @@ matrix:
         - "11"
 
       install:
+        - cat node_modules/adbkit/lib/adb/parser.js
+        - cat node_modules/adbkit/lib/adb/protocol.js
         - yarn
 
       script:
