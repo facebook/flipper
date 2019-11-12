@@ -77,6 +77,21 @@ export function getHealthchecks(): Healthchecks {
                       .length < 1,
                 }),
               },
+              {
+                label: 'Does Instruments exist',
+                isRequired: true,
+                run: async (_: EnvironmentInfo) => {
+                  const hasInstruments = await promisify(exec)(
+                    'which instruments',
+                  )
+                    .then(_ => true)
+                    .catch(_ => false);
+
+                  return {
+                    hasProblem: !hasInstruments,
+                  };
+                },
+              },
             ],
           },
         }
