@@ -9,6 +9,8 @@
 
 import {getEnvInfo, EnvironmentInfo} from './environmentInfo';
 export {getEnvInfo} from './environmentInfo';
+import {exec} from 'child_process';
+import {promisify} from 'util';
 
 type HealthcheckCategory = {
   label: string;
@@ -64,6 +66,15 @@ export function getHealthchecks(): Healthchecks {
                 isRequired: true,
                 run: async (e: EnvironmentInfo) => ({
                   hasProblem: e.IDEs == null || e.IDEs.Xcode == null,
+                }),
+              },
+              {
+                label: 'Is xcode-select set',
+                isRequired: true,
+                run: async (e: EnvironmentInfo) => ({
+                  hasProblem:
+                    (await promisify(exec)('xcode-select -p')).stdout.trim()
+                      .length < 1,
                 }),
               },
             ],
