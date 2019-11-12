@@ -44,9 +44,7 @@ export function getHealthchecks(): Healthchecks {
           label: 'OpenSSL Installed',
           isRequired: true,
           run: async (_: EnvironmentInfo) => {
-            const isAvailable = await promisify(exec)('openssl version')
-              .then(() => true)
-              .catch(() => false);
+            const isAvailable = await commandSucceeds('openssl version');
             return {
               hasProblem: !isAvailable,
             };
@@ -91,20 +89,16 @@ export function getHealthchecks(): Healthchecks {
                 label: 'xcode-select set',
                 isRequired: true,
                 run: async (_: EnvironmentInfo) => ({
-                  hasProblem:
-                    (await promisify(exec)('xcode-select -p')).stdout.trim()
-                      .length < 1,
+                  hasProblem: !(await commandSucceeds('xcode-select -p')),
                 }),
               },
               {
                 label: 'Instruments exists',
                 isRequired: true,
                 run: async (_: EnvironmentInfo) => {
-                  const hasInstruments = await promisify(exec)(
+                  const hasInstruments = await commandSucceeds(
                     'which instruments',
-                  )
-                    .then(_ => true)
-                    .catch(_ => false);
+                  );
 
                   return {
                     hasProblem: !hasInstruments,
@@ -145,4 +139,10 @@ export async function runHealthchecks() {
     ]),
   );
   return results;
+}
+
+async function commandSucceeds(command: string): Promise<boolean> {
+  return await promisify(exec)(command)
+    .then(() => true)
+    .catch(() => false);
 }
