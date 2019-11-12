@@ -26,7 +26,7 @@ type DispatchFromProps = {
 type Props = DispatchFromProps & StateFromProps;
 
 const ErrorBar = memo(function ErrorBar(props: Props) {
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
 
   if (!props.errors.length) {
     return null;
