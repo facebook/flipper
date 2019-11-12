@@ -19,6 +19,7 @@ type HealthcheckCategory = {
 };
 
 type Healthchecks = {
+  common: HealthcheckCategory;
   android: HealthcheckCategory;
   ios?: HealthcheckCategory;
 };
@@ -35,6 +36,24 @@ type Healthcheck = {
 
 export function getHealthchecks(): Healthchecks {
   return {
+    common: {
+      label: 'Common',
+      isRequired: true,
+      healthchecks: [
+        {
+          label: 'OpenSSL Installed',
+          isRequired: true,
+          run: async (_: EnvironmentInfo) => {
+            const isAvailable = await promisify(exec)('openssl version')
+              .then(() => true)
+              .catch(() => false);
+            return {
+              hasProblem: !isAvailable,
+            };
+          },
+        },
+      ],
+    },
     android: {
       label: 'Android',
       isRequired: false,
@@ -69,16 +88,16 @@ export function getHealthchecks(): Healthchecks {
                 }),
               },
               {
-                label: 'Is xcode-select set',
+                label: 'xcode-select set',
                 isRequired: true,
-                run: async (e: EnvironmentInfo) => ({
+                run: async (_: EnvironmentInfo) => ({
                   hasProblem:
                     (await promisify(exec)('xcode-select -p')).stdout.trim()
                       .length < 1,
                 }),
               },
               {
-                label: 'Does Instruments exist',
+                label: 'Instruments exists',
                 isRequired: true,
                 run: async (_: EnvironmentInfo) => {
                   const hasInstruments = await promisify(exec)(
