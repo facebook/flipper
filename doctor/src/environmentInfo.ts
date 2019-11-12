@@ -23,6 +23,12 @@ export type EnvironmentInfo = {
         }
       | 'Not Found';
   };
+  IDEs: {
+    Xcode: {
+      version: string;
+      path: string;
+    };
+  };
 };
 
 export async function getEnvInfo(): Promise<EnvironmentInfo> {
@@ -30,6 +36,7 @@ export async function getEnvInfo(): Promise<EnvironmentInfo> {
     await run(
       {
         SDKs: ['iOS SDK', 'Android SDK'],
+        IDEs: ['Xcode'],
       },
       {json: true, showNotFound: true},
     ),

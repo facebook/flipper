@@ -59,6 +59,13 @@ export function getHealthchecks(): Healthchecks {
                   hasProblem: e.SDKs['iOS SDK'].Platforms.length === 0,
                 }),
               },
+              {
+                label: 'XCode Installed',
+                isRequired: true,
+                run: async (e: EnvironmentInfo) => ({
+                  hasProblem: e.IDEs == null || e.IDEs.Xcode == null,
+                }),
+              },
             ],
           },
         }
