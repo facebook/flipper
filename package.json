@@ -189,7 +189,7 @@
   },
   "scripts": {
     "preinstall": "yarn config set ignore-engines",
-    "postinstall": "node scripts/yarn-install.js && patch-package",
+    "postinstall": "node scripts/yarn-install.js && patch-package --use-yarn",
     "rm-dist": "rm -rf dist",
     "rm-modules": "rm -rf node_modules static/node_modules",
     "rm-temp": "rm -rf $TMPDIR/jest* $TMPDIR/react-native-packager*",
