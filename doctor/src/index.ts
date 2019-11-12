@@ -7,10 +7,12 @@
  * @format
  */
 
-import {EnvironmentInfo} from './environmentInfo';
+import {getEnvInfo, EnvironmentInfo} from './environmentInfo';
+export {getEnvInfo} from './environmentInfo';
 
 type HealthcheckCategory = {
   label: string;
+  isRequired: boolean;
   healthchecks: Healthcheck[];
 };
 
@@ -21,24 +23,25 @@ type Healthchecks = {
 
 type Healthcheck = {
   label: string;
+  isRequired?: boolean;
   run: (
     env: EnvironmentInfo,
-  ) => {
+  ) => Promise<{
     hasProblem: boolean;
-    isRequired?: boolean;
-  };
+  }>;
 };
 
 export function getHealthchecks(): Healthchecks {
   return {
     android: {
       label: 'Android',
+      isRequired: false,
       healthchecks: [
         {
           label: 'SDK Installed',
-          run: (e: EnvironmentInfo) => ({
-            hasProblem: e.SDKs['Android SDK'] != 'Not Found',
-            isRequired: false,
+          isRequired: true,
+          run: async (e: EnvironmentInfo) => ({
+            hasProblem: e.SDKs['Android SDK'] === 'Not Found',
           }),
         },
       ],
@@ -47,12 +50,13 @@ export function getHealthchecks(): Healthchecks {
       ? {
           ios: {
             label: 'iOS',
+            isRequired: false,
             healthchecks: [
               {
                 label: 'SDK Installed',
-                run: (e: EnvironmentInfo) => ({
+                isRequired: true,
+                run: async (e: EnvironmentInfo) => ({
                   hasProblem: e.SDKs['iOS SDK'].Platforms.length === 0,
-                  isRequired: false,
                 }),
               },
             ],
@@ -60,4 +64,33 @@ export function getHealthchecks(): Healthchecks {
         }
       : {}),
   };
+}
+
+export async function runHealthchecks() {
+  const environmentInfo = await getEnvInfo();
+  const healthchecks = getHealthchecks();
+  const results = await Promise.all(
+    Object.entries(healthchecks).map(async ([key, category]) => [
+      key,
+      category
+        ? {
+            label: category.label,
+            results: await Promise.all(
+              category.healthchecks.map(async ({label, run, isRequired}) => ({
+                label,
+                isRequired: isRequired ?? true,
+                result: await run(environmentInfo).catch(e => {
+                  console.error(e);
+                  // TODO Improve result type to be: OK | Problem(message, fix...)
+                  return {
+                    hasProblem: true,
+                  };
+                }),
+              })),
+            ),
+          }
+        : {},
+    ]),
+  );
+  return results;
 }
