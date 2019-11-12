@@ -47,6 +47,9 @@ export type State = {
   userStarredPlugins: {[key: string]: Array<string>};
   errors: FlipperError[];
   clients: Array<Client>;
+  // refers to the client that is selected in the main side bar, not to be confused with
+  // selectedApp, which represents the app of the currently active plugin!
+  selectedClient: string;
   uninitializedClients: Array<{
     client: UninitializedClient;
     deviceId?: string;
@@ -131,6 +134,10 @@ export type Action =
         selectedPlugin: string;
         selectedApp: string;
       };
+    }
+  | {
+      type: 'SELECT_CLIENT';
+      payload: string;
     };
 
 const DEFAULT_PLUGIN = 'DeviceLogs';
@@ -147,6 +154,7 @@ const INITAL_STATE: State = {
   userStarredPlugins: {},
   errors: [],
   clients: [],
+  selectedClient: '',
   uninitializedClients: [],
   deepLinkPayload: null,
   staticView: WelcomeScreen,
@@ -425,6 +433,12 @@ const reducer = (state: State = INITAL_STATE, action: Actions): State => {
         errors,
       };
     }
+    case 'SELECT_CLIENT': {
+      return {
+        ...state,
+        selectedClient: action.payload,
+      };
+    }
     default:
       return state;
   }
@@ -514,14 +528,12 @@ export const userPreferredPlugin = (payload: string): Action => ({
   payload,
 });
 
-function extractAppNameFromAppId(appId: string | null): string | null {
-  const nameRegex = /([^#]+)#/;
-  const matchedRegex = appId ? appId.match(nameRegex) : null;
-  // Expect the name of the app to be on the first matching
-  return matchedRegex && matchedRegex[1];
-}
-
 export const dismissError = (index: number): Action => ({
   type: 'DISMISS_ERROR',
   payload: index,
+});
+
+export const selectClient = (clientId: string): Action => ({
+  type: 'SELECT_CLIENT',
+  payload: clientId,
 });

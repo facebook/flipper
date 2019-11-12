@@ -38,6 +38,7 @@ import {
   starPlugin,
   StaticView,
   setStaticView,
+  selectClient,
 } from '../reducers/connections';
 import {setActiveSheet} from '../reducers/application';
 import UserAccount from './UserAccount';
@@ -222,6 +223,7 @@ type StateFromProps = {
   selectedApp: string | null | undefined;
   userStarredPlugins: Store['connections']['userStarredPlugins'];
   clients: Array<Client>;
+  selectedClient: string;
   uninitializedClients: Array<{
     client: UninitializedClient;
     deviceId?: string;
@@ -237,6 +239,7 @@ type DispatchFromProps = {
     selectedApp: string | null;
     deepLinkPayload: string | null;
   }) => void;
+  selectClient: typeof selectClient;
   setActiveSheet: (activeSheet: ActiveSheet) => void;
   setStaticView: (payload: StaticView) => void;
   starPlugin: typeof starPlugin;
@@ -245,14 +248,11 @@ type DispatchFromProps = {
 type Props = OwnProps & StateFromProps & DispatchFromProps;
 type State = {
   showSupportForm: boolean;
-  selectedClientIndex: number;
   showAllPlugins: boolean;
 };
 class MainSidebar extends PureComponent<Props, State> {
   state: State = {
     showSupportForm: GK.get('flipper_support_requests'),
-    // Not to be confused with selectedApp prop, this one only used to remember the client drowdown selector
-    selectedClientIndex: 0,
     showAllPlugins: false,
   };
   static getDerivedStateFromProps(props: Props, state: State) {
@@ -271,6 +271,8 @@ class MainSidebar extends PureComponent<Props, State> {
   render() {
     const {
       selectedDevice,
+      selectedClient,
+      selectClient,
       selectedPlugin,
       staticView,
       selectPlugin,
@@ -290,8 +292,9 @@ class MainSidebar extends PureComponent<Props, State> {
           client.query.device_id === 'unknown',
       )
       .sort((a, b) => (a.query.app || '').localeCompare(b.query.app));
-    const client: Client | null =
-      clients[this.state.selectedClientIndex] || null;
+    const client: Client | undefined = clients.find(
+      client => client.query.app === selectedClient,
+    );
 
     return (
       <Sidebar
@@ -328,16 +331,16 @@ class MainSidebar extends PureComponent<Props, State> {
             <SidebarButton
               title="Select an app to see available plugins"
               compact={true}
-              dropdown={clients.map((c, index) => ({
+              dropdown={clients.map(c => ({
                 checked: client === c,
                 label: c.query.app,
                 type: 'checkbox',
-                click: () => this.setState({selectedClientIndex: index}),
+                click: () => selectClient(c.query.app),
               }))}>
               {clients.length === 0 ? (
-                '(Not connected to app)'
-              ) : this.state.selectedClientIndex >= clients.length ? (
-                '(Select app)'
+                '(Not connected clients)'
+              ) : !client ? (
+                '(Select client)'
               ) : (
                 <>
                   {client.query.app}
@@ -463,7 +466,7 @@ class MainSidebar extends PureComponent<Props, State> {
     ));
   }
 
-  renderClientPlugins(client: Client | null) {
+  renderClientPlugins(client?: Client) {
     if (!client) {
       return null;
     }
@@ -594,6 +597,7 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
       selectedDevice,
       selectedPlugin,
       selectedApp,
+      selectedClient,
       userStarredPlugins,
       clients,
       uninitializedClients,
@@ -610,6 +614,7 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
     })(),
     windowIsFocused,
     selectedDevice,
+    selectedClient,
     staticView,
     selectedPlugin,
     selectedApp,
@@ -621,6 +626,7 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
   }),
   {
     selectPlugin,
+    selectClient,
     setStaticView,
     setActiveSheet,
     starPlugin,
