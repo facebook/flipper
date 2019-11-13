@@ -155,8 +155,14 @@ export default function Tabs(props: {
    * Elements to insert after all tabs in the tab list.
    */
   after?: Array<React.ReactNode>;
+  /**
+   * By default tabs are rendered in mac-style tabs, with a negative offset.
+   * By setting classic mode the classic style is rendered.
+   */
+  classic?: boolean;
 }) {
-  const tabsContainer = useContext(TabsContext);
+  const tabsContainer =
+    props.classic === true ? false : useContext(TabsContext);
 
   const {onActive} = props;
   const active: string | undefined =
