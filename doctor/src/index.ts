@@ -34,6 +34,18 @@ type Healthcheck = {
   }>;
 };
 
+type CategoryResult = [
+  string,
+  {
+    label: string;
+    results: Array<{
+      label: string;
+      isRequired: boolean;
+      result: {hasProblem: boolean};
+    }>;
+  },
+];
+
 export function getHealthchecks(): Healthchecks {
   return {
     common: {
@@ -112,32 +124,36 @@ export function getHealthchecks(): Healthchecks {
   };
 }
 
-export async function runHealthchecks() {
+export async function runHealthchecks(): Promise<Array<CategoryResult>> {
   const environmentInfo = await getEnvInfo();
-  const healthchecks = getHealthchecks();
-  const results = await Promise.all(
-    Object.entries(healthchecks).map(async ([key, category]) => [
-      key,
-      category
-        ? {
-            label: category.label,
-            results: await Promise.all(
-              category.healthchecks.map(async ({label, run, isRequired}) => ({
-                label,
-                isRequired: isRequired ?? true,
-                result: await run(environmentInfo).catch(e => {
-                  console.error(e);
-                  // TODO Improve result type to be: OK | Problem(message, fix...)
-                  return {
-                    hasProblem: true,
-                  };
-                }),
-              })),
-            ),
-          }
-        : {},
-    ]),
-  );
+  const healthchecks: Healthchecks = getHealthchecks();
+  const results: Array<CategoryResult> = (await Promise.all(
+    Object.entries(healthchecks).map(async ([key, category]) => {
+      if (!category) {
+        return null;
+      }
+      const categoryResult: CategoryResult = [
+        key,
+        {
+          label: category.label,
+          results: await Promise.all(
+            category.healthchecks.map(async ({label, run, isRequired}) => ({
+              label,
+              isRequired: isRequired ?? true,
+              result: await run(environmentInfo).catch(e => {
+                console.error(e);
+                // TODO Improve result type to be: OK | Problem(message, fix...)
+                return {
+                  hasProblem: true,
+                };
+              }),
+            })),
+          ),
+        },
+      ];
+      return categoryResult;
+    }),
+  )).filter(notNull);
   return results;
 }
 
@@ -145,4 +161,8 @@ async function commandSucceeds(command: string): Promise<boolean> {
   return await promisify(exec)(command)
     .then(() => true)
     .catch(() => false);
+}
+
+export function notNull<T>(x: T | null | undefined): x is T {
+  return x !== null && x !== undefined;
 }
