@@ -669,8 +669,9 @@ export function showOpenDialog(store: Store) {
     properties: ['openFile'],
     filters: [{extensions: ['flipper', 'json', 'txt'], name: 'Flipper files'}],
   };
-  remote.dialog.showOpenDialog(options, (filePaths?: Array<string>) => {
-    if (filePaths !== undefined && filePaths.length > 0) {
+  remote.dialog.showOpenDialog(options).then(result => {
+    const filePaths = result.filePaths;
+    if (filePaths.length > 0) {
       tryCatchReportPlatformFailures(() => {
         importFileToStore(filePaths[0], store);
       }, `${IMPORT_FLIPPER_TRACE_EVENT}:UI`);
