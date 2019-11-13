@@ -64,7 +64,12 @@ export async function exportMetricsWithoutTrace(
     string,
     typeof FlipperDevicePlugin | typeof FlipperPlugin
   > = pluginsClassMap(store.getState().plugins);
-  const metadata = await fetchMetadata(pluginStates, pluginsMap, store);
+  const metadata = await fetchMetadata(
+    store.getState().connections.clients,
+    pluginStates,
+    pluginsMap,
+    store,
+  );
   const newPluginStates = metadata.pluginStates;
   const {errorArray} = metadata;
   if (errorArray.length > 0) {

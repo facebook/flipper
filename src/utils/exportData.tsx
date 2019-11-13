@@ -383,6 +383,7 @@ export const processStore = async (
 };
 
 export async function fetchMetadata(
+  clients: Client[],
   pluginStates: PluginStatesState,
   pluginsMap: Map<string, typeof FlipperDevicePlugin | typeof FlipperPlugin>,
   store: MiddlewareAPI,
@@ -391,7 +392,6 @@ export async function fetchMetadata(
 ): Promise<{pluginStates: PluginStatesState; errorArray: Array<Error>}> {
   const newPluginState = {...pluginStates};
   const errorArray: Array<Error> = [];
-  const clients = store.getState().connections.clients;
   const selectedDevice = store.getState().connections.selectedDevice;
   for (const client of clients) {
     if (
@@ -457,6 +457,9 @@ export async function getStoreExport(
 ): Promise<{exportData: ExportType | null; errorArray: Array<Error>}> {
   const state = store.getState();
   const {clients} = state.connections;
+  const client = clients.find(
+    client => client.query.app === state.connections.selectedClient,
+  );
   const {pluginStates} = state;
   const {plugins} = state;
   const {selectedDevice} = store.getState().connections;
@@ -465,6 +468,9 @@ export async function getStoreExport(
   }
   // TODO: T39612653 Make Client mockable. Currently rsocket logic is tightly coupled.
   // Not passing the entire state as currently Client is not mockable.
+  if (!client) {
+    throw new Error('Please select a client before exporting data.');
+  }
 
   const pluginsMap: Map<
     string,
@@ -480,6 +486,7 @@ export async function getStoreExport(
   const fetchMetaDataMarker = `${EXPORT_FLIPPER_TRACE_EVENT}:fetch-meta-data`;
   performance.mark(fetchMetaDataMarker);
   const metadata = await fetchMetadata(
+    [client],
     pluginStates,
     pluginsMap,
     store,
@@ -499,7 +506,7 @@ export async function getStoreExport(
       activeNotifications,
       device: selectedDevice,
       pluginStates: newPluginState,
-      clients: clients.map(client => client.toJSON()),
+      clients: [client.toJSON()],
       devicePlugins,
       clientPlugins,
       salt: uuid.v4(),
