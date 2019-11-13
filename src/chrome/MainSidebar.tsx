@@ -354,7 +354,7 @@ class MainSidebar extends PureComponent<Props, State> {
                 click: () => selectClient(c.query.app),
               }))}>
               {clients.length === 0 ? (
-                '(Not connected clients)'
+                '(No clients connected)'
               ) : !client ? (
                 '(Select client)'
               ) : (
