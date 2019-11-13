@@ -41,19 +41,16 @@ function mockPersistedState(
     },
   ];
 
-  const imagesMap = imageSizes.reduce(
-    (acc, val, index) => {
-      acc[index] = {
-        imageId: String(index),
-        width: val.width,
-        height: val.height,
-        sizeBytes: 10,
-        data: 'undefined',
-      };
-      return acc;
-    },
-    {} as ImagesMap,
-  );
+  const imagesMap = imageSizes.reduce((acc, val, index) => {
+    acc[index] = {
+      imageId: String(index),
+      width: val.width,
+      height: val.height,
+      sizeBytes: 10,
+      data: 'undefined',
+    };
+    return acc;
+  }, {} as ImagesMap);
 
   return {
     surfaceList: new Set(),
@@ -233,19 +230,16 @@ test('the metric reducer with the multiple events', () => {
       height: 300,
     },
   ];
-  const imagesMap = imageSizes.reduce(
-    (acc, val, index) => {
-      acc[index] = {
-        imageId: String(index),
-        width: val.width,
-        height: val.height,
-        sizeBytes: 10,
-        data: 'undefined',
-      };
-      return acc;
-    },
-    {} as ImagesMap,
-  );
+  const imagesMap = imageSizes.reduce((acc, val, index) => {
+    acc[index] = {
+      imageId: String(index),
+      width: val.width,
+      height: val.height,
+      sizeBytes: 10,
+      data: 'undefined',
+    };
+    return acc;
+  }, {} as ImagesMap);
   const persistedState = {
     surfaceList: new Set<string>(),
     images: [],

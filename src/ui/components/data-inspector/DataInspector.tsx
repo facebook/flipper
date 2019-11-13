@@ -260,7 +260,10 @@ const diffMetadataExtractor: DiffMetadataExtractor = (
     // Check if there's a difference between the original value and
     // the value from the diff prop
     // The property name still exists, but the values may be different.
-    return [{data: val, status: 'added'}, {data: diffVal, status: 'removed'}];
+    return [
+      {data: val, status: 'added'},
+      {data: diffVal, status: 'removed'},
+    ];
   }
 
   return Object.prototype.hasOwnProperty.call(data, key) ? [{data: val}] : [];

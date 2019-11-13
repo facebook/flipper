@@ -105,8 +105,8 @@ export default class FilterToken extends PureComponent<Props> {
   onMouseDown = () => {
     if (
       this.props.filter.type !== 'enum' ||
-      (this.props.filter.persistent == null ||
-        this.props.filter.persistent === false)
+      this.props.filter.persistent == null ||
+      this.props.filter.persistent === false
     ) {
       this.props.onFocus(this.props.index);
     }

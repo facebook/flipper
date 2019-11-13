@@ -47,7 +47,7 @@ import {BackgroundColorProperty} from 'csstype';
 import {StyledOtherComponent} from 'create-emotion-styled';
 import SupportRequestFormManager from '../fb-stubs/SupportRequestFormManager';
 
-type FlipperPlugins = (typeof FlipperPlugin)[];
+type FlipperPlugins = typeof FlipperPlugin[];
 type PluginsByCategory = [string, FlipperPlugins][];
 
 const ListItem = styled('div')(({active}: {active?: boolean}) => ({

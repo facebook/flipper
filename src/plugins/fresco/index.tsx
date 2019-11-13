@@ -110,7 +110,6 @@ export default class FlipperImagesPlugin extends FlipperPlugin<
     if (!store) {
       return defaultPromise;
     }
-    const selectedDevice = store.getState().connections.selectedDevice;
     return Promise.all([
       callClient('listImages'),
       callClient('getAllImageEventsInfo'),
@@ -244,7 +243,7 @@ export default class FlipperImagesPlugin extends FlipperPlugin<
   }: PersistedState): Array<Notification> =>
     closeableReferenceLeaks
       .filter(_ => isLeakTrackingEnabled)
-      .map((event: AndroidCloseableReferenceLeakEvent, index) => ({
+      .map((event: AndroidCloseableReferenceLeakEvent) => ({
         id: event.identityHashCode,
         title: `Leaked CloseableReference: ${event.className}`,
         message: (

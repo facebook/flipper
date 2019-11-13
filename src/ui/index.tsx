@@ -10,9 +10,7 @@
 export {default as styled} from 'react-emotion';
 export {default as Button} from './components/Button';
 export {default as ToggleButton} from './components/ToggleSwitch';
-export {
-  default as ButtonNavigationGroup,
-} from './components/ButtonNavigationGroup';
+export {default as ButtonNavigationGroup} from './components/ButtonNavigationGroup';
 export {default as ButtonGroup} from './components/ButtonGroup';
 export {default as ButtonGroupChain} from './components/ButtonGroupChain';
 
@@ -39,12 +37,8 @@ export {
 } from './components/table/types';
 export {default as ManagedTable} from './components/table/ManagedTable';
 export {ManagedTableProps} from './components/table/ManagedTable';
-export {
-  default as ManagedTable_immutable,
-} from './components/table/ManagedTable_immutable';
-export {
-  ManagedTableProps_immutable,
-} from './components/table/ManagedTable_immutable';
+export {default as ManagedTable_immutable} from './components/table/ManagedTable_immutable';
+export {ManagedTableProps_immutable} from './components/table/ManagedTable_immutable';
 
 export {Value} from './components/table/TypeBasedValueRenderer';
 export {renderValue} from './components/table/TypeBasedValueRenderer';
@@ -53,15 +47,9 @@ export {
   DataValueExtractor,
   DataInspectorExpanded,
 } from './components/data-inspector/DataInspector';
-export {
-  default as DataInspector,
-} from './components/data-inspector/DataInspector';
-export {
-  default as ManagedDataInspector,
-} from './components/data-inspector/ManagedDataInspector';
-export {
-  default as DataDescription,
-} from './components/data-inspector/DataDescription';
+export {default as DataInspector} from './components/data-inspector/DataInspector';
+export {default as ManagedDataInspector} from './components/data-inspector/ManagedDataInspector';
+export {default as DataDescription} from './components/data-inspector/DataDescription';
 
 // tabs
 export {default as Tabs} from './components/Tabs';
@@ -151,12 +139,8 @@ export {
   SearchIcon,
   default as Searchable,
 } from './components/searchable/Searchable';
-export {
-  default as SearchableTable,
-} from './components/searchable/SearchableTable';
-export {
-  default as SearchableTable_immutable,
-} from './components/searchable/SearchableTable_immutable';
+export {default as SearchableTable} from './components/searchable/SearchableTable';
+export {default as SearchableTable_immutable} from './components/searchable/SearchableTable_immutable';
 export {SearchableProps} from './components/searchable/Searchable';
 
 export {
@@ -168,9 +152,7 @@ export {
 } from './components/elements-inspector/ElementsInspector';
 export {Elements} from './components/elements-inspector/elements';
 export {ContextMenuExtension} from './components/elements-inspector/elements';
-export {
-  default as ElementsInspector,
-} from './components/elements-inspector/ElementsInspector';
+export {default as ElementsInspector} from './components/elements-inspector/ElementsInspector';
 export {InspectorSidebar} from './components/elements-inspector/sidebar';
 
 export {Console} from './components/console';

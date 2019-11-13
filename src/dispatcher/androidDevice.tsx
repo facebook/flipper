@@ -115,9 +115,7 @@ export default (store: Store, logger: Logger) => {
               if (err.message === 'Connection closed') {
                 // adb server has shutdown, remove all android devices
                 const {connections} = store.getState();
-                const deviceIDsToRemove: Array<
-                  string
-                > = connections.devices
+                const deviceIDsToRemove: Array<string> = connections.devices
                   .filter(
                     (device: BaseDevice) => device instanceof AndroidDevice,
                   )

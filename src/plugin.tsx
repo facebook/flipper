@@ -82,12 +82,10 @@ export abstract class FlipperBasePlugin<
   static icon: string | null = null;
   static gatekeeper: string | null = null;
   static entry: string | null = null;
-  static bugs:
-    | ({
-        email?: string;
-        url?: string;
-      })
-    | null = null;
+  static bugs: {
+    email?: string;
+    url?: string;
+  } | null = null;
   static keyboardActions: KeyboardActions | null;
   static screenshot: string | null;
   static defaultPersistedState: any;

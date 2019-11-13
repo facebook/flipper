@@ -66,7 +66,10 @@ test('persistedStateReducer is adding data', () => {
   const tablePlugin = createTablePlugin({...PROPS, method});
   const id = '1';
 
-  const {rows, datas} = tablePlugin.persistedStateReducer(
+  const {
+    rows,
+    datas,
+  } = tablePlugin.persistedStateReducer(
     tablePlugin.defaultPersistedState,
     method,
     {id},
