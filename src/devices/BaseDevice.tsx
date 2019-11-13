@@ -78,6 +78,8 @@ export default class BaseDevice {
   logListeners: Map<Symbol, DeviceLogListener> = new Map();
   logEntries: Array<DeviceLogEntry> = [];
   isArchived: boolean = false;
+  // if imported, stores the original source location
+  source = '';
 
   supportsOS(os: OS) {
     return os.toLowerCase() === this.os.toLowerCase();

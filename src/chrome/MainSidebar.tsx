@@ -305,9 +305,25 @@ class MainSidebar extends PureComponent<Props, State> {
         }>
         <Plugins>
           {selectedDevice && (
-            <ListItem>
-              <SidebarButton>{selectedDevice.title}</SidebarButton>
-            </ListItem>
+            <>
+              <ListItem>
+                <SidebarButton>{selectedDevice.title}</SidebarButton>
+              </ListItem>
+              {selectedDevice.isArchived && selectedDevice.source ? (
+                <ListItem
+                  style={{
+                    fontSize: 9,
+                    lineHeight: '11px',
+                    color: colors.light30,
+                    wordBreak: 'break-all',
+                    paddingBottom: '10px',
+                  }}>
+                  Snapshot imported from:
+                  <br />
+                  {selectedDevice.source}
+                </ListItem>
+              ) : null}
+            </>
           )}
           {selectedDevice &&
             Array.from(this.props.devicePlugins.values())

@@ -67,7 +67,7 @@ export default (store: Store, logger: Logger) => {
           typeof url === 'string' &&
           fetch(url)
             .then(res => res.text())
-            .then(data => importDataToStore(data, store))
+            .then(data => importDataToStore(url, data, store))
             .then(() => {
               store.dispatch(toggleAction('downloadingImportData', false));
             })

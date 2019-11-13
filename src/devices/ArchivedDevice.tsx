@@ -27,9 +27,11 @@ export default class ArchivedDevice extends BaseDevice {
     title: string,
     os: OS,
     logEntries: Array<DeviceLogEntry>,
+    source: string = '',
   ) {
     super(serial, normalizeArchivedDeviceType(deviceType), title, os);
     this.logs = logEntries;
+    this.source = source;
   }
 
   logs: Array<DeviceLogEntry>;

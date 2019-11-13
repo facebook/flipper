@@ -574,7 +574,7 @@ export const exportStoreToFile = (
   );
 };
 
-export function importDataToStore(data: string, store: Store) {
+export function importDataToStore(source: string, data: string, store: Store) {
   getLogger().track('usage', IMPORT_FLIPPER_TRACE_EVENT);
   const json: ExportType = JSON.parse(data);
   const {device, clients} = json;
@@ -592,6 +592,7 @@ export function importDataToStore(data: string, store: Store) {
           return {...l, date: new Date(l.date)};
         })
       : [],
+    source,
   );
   const devices = store.getState().connections.devices;
   const matchedDevices = devices.filter(
@@ -659,7 +660,7 @@ export const importFileToStore = (file: string, store: Store) => {
       console.error(err);
       return;
     }
-    importDataToStore(data, store);
+    importDataToStore(file, data, store);
   });
 };
 

@@ -70,7 +70,9 @@ class DevicesButton extends Component<Props> {
     let icon = 'minus-circle';
 
     if (selectedDevice && selectedDevice.isArchived) {
-      buttonLabel = `${selectedDevice.title || 'Unknown device'} (offline)`;
+      buttonLabel = `${selectedDevice.title || 'Unknown device'} ${
+        selectedDevice.source ? '(imported)' : '(offline)'
+      }`;
       icon = 'box';
     } else if (selectedDevice && selectedDevice.deviceType === 'physical') {
       buttonLabel = selectedDevice.title || 'Unknown device';
@@ -129,7 +131,9 @@ class DevicesButton extends Component<Props> {
         .map((device: BaseDevice) => ({
           click: () => selectDevice(device),
           checked: device === selectedDevice,
-          label: `📦 ${device.title} (offline)`,
+          label: `📦 ${device.title} ${
+            device.source ? '(imported)' : '(offline)'
+          }`,
           type: 'checkbox',
         })),
     ];
