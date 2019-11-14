@@ -42,12 +42,15 @@ import {
   readInstalledPlugins,
   providePluginManager,
   provideSearchIndex,
+  findPluginUpdates,
+  UpdateResult,
 } from '../utils/pluginManager';
 import {State as AppState} from '../reducers';
 import {connect} from 'react-redux';
 import {Dispatch, Action} from 'redux';
 
 const TAG = 'PluginInstaller';
+const ENABLE_PLUGIN_UPDATES = false;
 
 const EllipsisText = styled(Text)({
   overflow: 'hidden',
@@ -114,6 +117,26 @@ const defaultProps: OwnProps = {
   autoHeight: false,
 };
 
+type UpdatablePlugin = {
+  updateStatus: UpdateResult;
+};
+
+type UpdatablePluginDefinition = PluginDefinition & UpdatablePlugin;
+
+// exported for testing
+export function annotatePluginsWithUpdates(
+  installedPlugins: Map<string, PluginDefinition>,
+  updates: Map<string, UpdateResult>,
+): Map<string, UpdatablePluginDefinition> {
+  const annotated: Array<[string, UpdatablePluginDefinition]> = Array.from(
+    installedPlugins.entries(),
+  ).map(([key, value]) => {
+    const updateStatus = updates.get(key) || {kind: 'up-to-date'};
+    return [key, {...value, updateStatus: updateStatus}];
+  });
+  return new Map(annotated);
+}
+
 const PluginInstaller = function props(props: Props) {
   const [restartRequired, setRestartRequired] = useState(false);
   const [query, setQuery] = useState('');
@@ -174,16 +197,25 @@ const AlignedGlyph = styled(Glyph)({
   marginTop: 6,
 });
 
+function liftUpdatable(val: PluginDefinition): UpdatablePluginDefinition {
+  return {
+    ...val,
+    updateStatus: {kind: 'up-to-date'},
+  };
+}
+
 function InstallButton(props: {
   name: string;
   version: string;
   onInstall: () => void;
   installed: boolean;
+  updateStatus: UpdateResult;
 }) {
   type InstallAction =
     | {kind: 'Install'; error?: string}
     | {kind: 'Waiting'}
-    | {kind: 'Remove'; error?: string};
+    | {kind: 'Remove'; error?: string}
+    | {kind: 'Update'; error?: string};
 
   const catchError = (
     actionKind: 'Install' | 'Remove',
@@ -245,7 +277,11 @@ function InstallButton(props: {
   );
 
   const [action, setAction] = useState<InstallAction>(
-    props.installed ? {kind: 'Remove'} : {kind: 'Install'},
+    props.updateStatus.kind === 'update-available'
+      ? {kind: 'Update'}
+      : props.installed
+      ? {kind: 'Remove'}
+      : {kind: 'Install'},
   );
 
   if (action.kind === 'Waiting') {
@@ -256,12 +292,20 @@ function InstallButton(props: {
   const button = (
     <TableButton
       compact
-      type={action.kind === 'Install' ? 'primary' : undefined}
-      onClick={
-        action.kind === 'Install'
-          ? () => reportPlatformFailures(performInstall(), `${TAG}:install`)
-          : () => reportPlatformFailures(performRemove(), `${TAG}:remove`)
-      }>
+      type={action.kind !== 'Remove' ? 'primary' : undefined}
+      onClick={() => {
+        switch (action.kind) {
+          case 'Install':
+            reportPlatformFailures(performInstall(), `${TAG}:install`);
+            break;
+          case 'Remove':
+            reportPlatformFailures(performRemove(), `${TAG}:remove`);
+            break;
+          case 'Update':
+            alert('Not implemented yet.');
+            break;
+        }
+      }}>
       {action.kind}
     </TableButton>
   );
@@ -305,7 +349,7 @@ function useNPMSearch(
   }, []);
 
   const createRow = useCallback(
-    (h: PluginDefinition) => ({
+    (h: UpdatablePluginDefinition) => ({
       key: h.name,
       columns: {
         name: {value: <EllipsisText>{h.name}</EllipsisText>},
@@ -331,6 +375,7 @@ function useNPMSearch(
               version={h.version}
               onInstall={onInstall}
               installed={installedPlugins.has(h.name)}
+              updateStatus={h.updateStatus}
             />
           ),
           align: 'center' as 'center',
@@ -340,7 +385,13 @@ function useNPMSearch(
     [installedPlugins],
   );
 
-  const [searchResults, setSearchResults] = useState<PluginDefinition[]>([]);
+  const [searchResults, setSearchResults] = useState<
+    UpdatablePluginDefinition[]
+  >([]);
+  const [
+    updateAnnotatedInstalledPlugins,
+    setUpdateAnnotatedInstalledPlugins,
+  ] = useState<Map<string, UpdatablePluginDefinition>>(new Map());
 
   useEffect(() => {
     (async () => {
@@ -353,12 +404,27 @@ function useNPMSearch(
         `${TAG}:queryIndex`,
       );
 
-      setSearchResults(hits.filter(hit => !installedPlugins.has(hit.name)));
+      setSearchResults(
+        hits.filter(hit => !installedPlugins.has(hit.name)).map(liftUpdatable),
+      );
       setQuery(query);
     })();
   }, [query, installedPlugins]);
 
-  const results = Array.from(installedPlugins.values()).concat(searchResults);
+  useEffect(() => {
+    (async () => {
+      const updates = ENABLE_PLUGIN_UPDATES
+        ? new Map(await findPluginUpdates(installedPlugins))
+        : new Map();
+      setUpdateAnnotatedInstalledPlugins(
+        annotatePluginsWithUpdates(installedPlugins, updates),
+      );
+    })();
+  }, [installedPlugins]);
+
+  const results = Array.from(updateAnnotatedInstalledPlugins.values()).concat(
+    searchResults,
+  );
   return List(results.map(createRow));
 }
 
