@@ -42,7 +42,7 @@ import {
   readInstalledPlugins,
   providePluginManager,
   provideSearchIndex,
-  findPluginUpdates,
+  findPluginUpdates as _findPluginUpdates,
   UpdateResult,
 } from '../utils/pluginManager';
 import {State as AppState} from '../reducers';
@@ -50,7 +50,6 @@ import {connect} from 'react-redux';
 import {Dispatch, Action} from 'redux';
 
 const TAG = 'PluginInstaller';
-const ENABLE_PLUGIN_UPDATES = false;
 
 const EllipsisText = styled(Text)({
   overflow: 'hidden',
@@ -108,6 +107,9 @@ type DispatchFromProps = {
 type OwnProps = {
   searchIndexFactory: () => algoliasearch.Index;
   autoHeight: boolean;
+  findPluginUpdates: (
+    currentPlugins: PluginMap,
+  ) => Promise<[string, UpdateResult][]>;
 };
 
 type Props = OwnProps & PropsFromState & DispatchFromProps;
@@ -115,6 +117,7 @@ type Props = OwnProps & PropsFromState & DispatchFromProps;
 const defaultProps: OwnProps = {
   searchIndexFactory: provideSearchIndex,
   autoHeight: false,
+  findPluginUpdates: _findPluginUpdates,
 };
 
 type UpdatablePlugin = {
@@ -147,6 +150,7 @@ const PluginInstaller = function props(props: Props) {
     props.searchIndexFactory,
     props.installedPlugins,
     props.refreshInstalledPlugins,
+    props.findPluginUpdates,
   );
   const restartApp = useCallback(() => {
     restartFlipper();
@@ -218,23 +222,31 @@ function InstallButton(props: {
     | {kind: 'Update'; error?: string};
 
   const catchError = (
-    actionKind: 'Install' | 'Remove',
+    actionKind: 'Install' | 'Remove' | 'Update',
     fn: () => Promise<void>,
   ) => async () => {
     try {
       await fn();
     } catch (err) {
+      console.error(err);
       setAction({kind: actionKind, error: err.toString()});
     }
   };
 
-  const performInstall = useCallback(
-    catchError('Install', async () => {
-      reportUsage(`${TAG}:install`, undefined, props.name);
+  const mkInstallCallback = (action: 'Install' | 'Update') =>
+    catchError(action, async () => {
+      reportUsage(
+        action === 'Install' ? `${TAG}:install` : `${TAG}:update`,
+        undefined,
+        props.name,
+      );
       setAction({kind: 'Waiting'});
       await fs.ensureDir(PLUGIN_DIR);
       // create empty watchman config (required by metro's file watcher)
       await fs.writeFile(path.join(PLUGIN_DIR, '.watchmanconfig'), '{}');
+
+      // Clean up existing destination files.
+      await fs.remove(path.join(PLUGIN_DIR, props.name));
 
       const pluginManager = providePluginManager();
       // install the plugin and all it's dependencies into node_modules
@@ -261,9 +273,17 @@ function InstallButton(props: {
 
       props.onInstall();
       setAction({kind: 'Remove'});
-    }),
-    [props.name, props.version],
-  );
+    });
+
+  const performInstall = useCallback(mkInstallCallback('Install'), [
+    props.name,
+    props.version,
+  ]);
+
+  const performUpdate = useCallback(mkInstallCallback('Update'), [
+    props.name,
+    props.version,
+  ]);
 
   const performRemove = useCallback(
     catchError('Remove', async () => {
@@ -302,7 +322,7 @@ function InstallButton(props: {
             reportPlatformFailures(performRemove(), `${TAG}:remove`);
             break;
           case 'Update':
-            alert('Not implemented yet.');
+            reportPlatformFailures(performUpdate(), `${TAG}:update`);
             break;
         }
       }}>
@@ -336,6 +356,9 @@ function useNPMSearch(
   searchClientFactory: () => algoliasearch.Index,
   installedPlugins: Map<string, PluginDefinition>,
   refreshInstalledPlugins: () => void,
+  findPluginUpdates: (
+    currentPlugins: PluginMap,
+  ) => Promise<[string, UpdateResult][]>,
 ): TableRows_immutable {
   const index = useMemo(searchClientFactory, []);
 
@@ -413,9 +436,7 @@ function useNPMSearch(
 
   useEffect(() => {
     (async () => {
-      const updates = ENABLE_PLUGIN_UPDATES
-        ? new Map(await findPluginUpdates(installedPlugins))
-        : new Map();
+      const updates = new Map(await findPluginUpdates(installedPlugins));
       setUpdateAnnotatedInstalledPlugins(
         annotatePluginsWithUpdates(installedPlugins, updates),
       );
