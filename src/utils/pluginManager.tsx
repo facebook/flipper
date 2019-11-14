@@ -13,6 +13,8 @@ import {homedir} from 'os';
 import {PluginMap, PluginDefinition} from '../reducers/pluginManager';
 import {PluginManager as PM} from 'live-plugin-manager';
 import algoliasearch from 'algoliasearch';
+import NpmApi, {Package} from 'npm-api';
+import semver from 'semver';
 
 const ALGOLIA_APPLICATION_ID = 'OFCNCOG2CU';
 const ALGOLIA_API_KEY = 'f54e21fa3a2a0160595bb058179bfb1e';
@@ -60,4 +62,37 @@ export async function readInstalledPlugins(): Promise<PluginMap> {
     ),
   );
   return new Map(plugins.filter(Boolean));
+}
+
+export type UpdateResult =
+  | {kind: 'up-to-date'}
+  | {kind: 'error'; error: Error}
+  | {kind: 'update-available'; version: string};
+
+export async function findPluginUpdates(
+  currentPlugins: PluginMap,
+): Promise<[string, UpdateResult][]> {
+  const npm = new NpmApi();
+
+  return Promise.all(
+    Array.from(currentPlugins.values()).map(
+      async (
+        currentPlugin: PluginDefinition,
+      ): Promise<[string, UpdateResult]> =>
+        npm
+          .repo(currentPlugin.name)
+          .package()
+          .then((pkg: Package): [string, UpdateResult] => {
+            if (semver.lt(currentPlugin.version, pkg.version)) {
+              return [
+                currentPlugin.name,
+                {kind: 'update-available', version: pkg.version},
+              ];
+            } else {
+              return [currentPlugin.name, {kind: 'up-to-date'}];
+            }
+          })
+          .catch(err => [currentPlugin.name, {kind: 'error', error: err}]),
+    ),
+  );
 }

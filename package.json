@@ -142,6 +142,7 @@
     "lodash.isequal": "^4.5.0",
     "mkdirp": "^0.5.1",
     "node-fetch": "^2.3.0",
+    "npm-api": "^1.0.0",
     "open": "^7.0.0",
     "openssl-wrapper": "^0.3.4",
     "p-map": "^3.0.0",
