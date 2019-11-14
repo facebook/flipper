@@ -214,7 +214,7 @@ function getTemplate(
   ];
   if (constants.ENABLE_SHAREABLE_LINK) {
     exportSubmenu.push({
-      label: 'Sharable Link',
+      label: 'Shareable Link',
       accelerator: 'CommandOrControl+Shift+E',
       click: function() {
         store.dispatch(

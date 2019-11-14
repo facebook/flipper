@@ -30,6 +30,7 @@ import {
   LoadingIndicator,
   Button,
   StarButton,
+  ArchivedDevice,
 } from 'flipper';
 import React, {Component, PureComponent, Fragment} from 'react';
 import NotificationsHub from '../NotificationsHub';
@@ -46,6 +47,7 @@ import {connect} from 'react-redux';
 import {BackgroundColorProperty} from 'csstype';
 import {StyledOtherComponent} from 'create-emotion-styled';
 import SupportRequestFormManager from '../fb-stubs/SupportRequestFormManager';
+import SupportRequestDetails from '../fb-stubs/SupportRequestDetails';
 
 type FlipperPlugins = typeof FlipperPlugin[];
 type PluginsByCategory = [string, FlipperPlugins][];
@@ -309,20 +311,7 @@ class MainSidebar extends PureComponent<Props, State> {
               <ListItem>
                 <SidebarButton>{selectedDevice.title}</SidebarButton>
               </ListItem>
-              {selectedDevice.isArchived && selectedDevice.source ? (
-                <ListItem
-                  style={{
-                    fontSize: 9,
-                    lineHeight: '11px',
-                    color: colors.light30,
-                    wordBreak: 'break-all',
-                    paddingBottom: '10px',
-                  }}>
-                  Snapshot imported from:
-                  <br />
-                  {selectedDevice.source}
-                </ListItem>
-              ) : null}
+              {this.showArchivedDeviceDetails(selectedDevice)}
             </>
           )}
           {selectedDevice &&
@@ -444,6 +433,51 @@ class MainSidebar extends PureComponent<Props, State> {
         </ListItem>
         {config.showLogin && <UserAccount />}
       </Sidebar>
+    );
+  }
+
+  showArchivedDeviceDetails(selectedDevice: BaseDevice) {
+    if (!selectedDevice.isArchived || !selectedDevice.source) {
+      return null;
+    }
+    const {staticView, setStaticView} = this.props;
+    return (
+      <>
+        <ListItem
+          style={{
+            fontSize: 9,
+            lineHeight: '11px',
+            color: colors.light30,
+            wordBreak: 'break-all',
+            paddingBottom: '10px',
+          }}>
+          Snapshot imported from:
+          <br />
+          {selectedDevice.source}
+        </ListItem>
+        {this.state.showSupportForm &&
+          (selectedDevice as ArchivedDevice).supportRequestDetails && (
+            <ListItem
+              active={
+                staticView != null && staticView === SupportRequestDetails
+              }
+              onClick={() => setStaticView(SupportRequestDetails)}>
+              <PluginIcon
+                color={colors.light50}
+                name={'app-dailies'}
+                isActive={
+                  staticView != null && staticView === SupportRequestDetails
+                }
+              />
+              <PluginName
+                isActive={
+                  staticView != null && staticView === SupportRequestDetails
+                }>
+                Support Request Details
+              </PluginName>
+            </ListItem>
+          )}
+      </>
     );
   }
 

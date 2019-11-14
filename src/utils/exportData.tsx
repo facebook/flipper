@@ -48,6 +48,7 @@ export type ExportType = {
     pluginStates: PluginStatesExportState;
     activeNotifications: Array<PluginNotification>;
   };
+  supportRequestDetails?: SupportRequestDetailsMetaData;
 };
 
 type ProcessPluginStatesOptions = {
@@ -79,6 +80,15 @@ type AddSaltToDeviceSerialOptions = {
   pluginNotification: Array<PluginNotification>;
   selectedPlugins: Array<string>;
   statusUpdate?: (msg: string) => void;
+};
+
+export type SupportRequestDetailsMetaData = {
+  title: string;
+  app: string;
+  description: string;
+  commitHash: string;
+  screenshots: {image: string; description: string}[];
+  videos: {url: string; description: string}[];
 };
 
 export function processClients(
@@ -577,7 +587,7 @@ export const exportStoreToFile = (
 export function importDataToStore(source: string, data: string, store: Store) {
   getLogger().track('usage', IMPORT_FLIPPER_TRACE_EVENT);
   const json: ExportType = JSON.parse(data);
-  const {device, clients} = json;
+  const {device, clients, supportRequestDetails} = json;
   if (device == null) {
     return;
   }
@@ -593,6 +603,7 @@ export function importDataToStore(source: string, data: string, store: Store) {
         })
       : [],
     source,
+    supportRequestDetails,
   );
   const devices = store.getState().connections.devices;
   const matchedDevices = devices.filter(

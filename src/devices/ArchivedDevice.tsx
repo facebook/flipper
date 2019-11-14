@@ -9,6 +9,7 @@
 
 import BaseDevice from './BaseDevice';
 import {DeviceType, OS, DeviceShell, DeviceLogEntry} from './BaseDevice';
+import {SupportRequestDetailsMetaData} from '../utils/exportData';
 
 function normalizeArchivedDeviceType(deviceType: DeviceType): DeviceType {
   let archivedDeviceType = deviceType;
@@ -28,15 +29,19 @@ export default class ArchivedDevice extends BaseDevice {
     os: OS,
     logEntries: Array<DeviceLogEntry>,
     source: string = '',
+    supportRequestDetails?: SupportRequestDetailsMetaData,
   ) {
     super(serial, normalizeArchivedDeviceType(deviceType), title, os);
     this.logs = logEntries;
     this.source = source;
+    this.supportRequestDetails = supportRequestDetails;
   }
 
   logs: Array<DeviceLogEntry>;
 
   isArchived = true;
+
+  supportRequestDetails?: SupportRequestDetailsMetaData;
 
   getLogs() {
     return this.logs;
