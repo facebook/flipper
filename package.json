@@ -156,7 +156,7 @@
     "react-color": "^2.11.7",
     "react-debounce-render": "^5.0.0",
     "react-devtools-core": "^4.0.6",
-    "react-dom": "^16.11.0",
+    "react-dom": "^16.12.0",
     "react-emotion": "^9.2.6",
     "react-player": "^1.14.1",
     "react-redux": "^7.1.1",
