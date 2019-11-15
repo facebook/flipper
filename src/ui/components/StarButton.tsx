@@ -18,6 +18,7 @@ const DownscaledGlyph = styled(Glyph)({
   height: 12,
   width: 12,
 });
+DownscaledGlyph.displayName = 'StarButton:DownscaledGlyph';
 
 export function StarButton({
   starred,

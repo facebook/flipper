@@ -23,6 +23,7 @@ import React from 'react';
 const SidebarInteractiveContainer = styled(Interactive)({
   flex: 'none',
 });
+SidebarInteractiveContainer.displayName = 'Sidebar:SidebarInteractiveContainer';
 
 type SidebarPosition = 'left' | 'top' | 'right' | 'bottom';
 
@@ -45,6 +46,7 @@ const SidebarContainer = styled(FlexColumn)(
     whiteSpace: props.overflow ? 'nowrap' : 'normal',
   }),
 );
+SidebarContainer.displayName = 'Sidebar:SidebarContainer';
 
 type SidebarProps = {
   /**

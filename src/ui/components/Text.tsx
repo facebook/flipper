@@ -55,5 +55,6 @@ const Text = styled('span')(
         : props.whiteSpace,
   }),
 );
+Text.displayName = 'Text';
 
 export default Text;

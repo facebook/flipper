@@ -23,6 +23,7 @@ const CheckboxContainer = styled('input')({
   marginRight: 5,
   verticalAlign: 'middle',
 });
+CheckboxContainer.displayName = 'Checkbox:CheckboxContainer';
 
 /**
  * A checkbox to toggle UI state

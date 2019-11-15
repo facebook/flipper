@@ -23,6 +23,7 @@ const Overlay = styled('div')({
   top: 0,
   zIndex: 99999,
 });
+Overlay.displayName = 'ModalOverlay:Overlay';
 
 export default class ModalOverlay extends Component<{
   onClose: () => void;

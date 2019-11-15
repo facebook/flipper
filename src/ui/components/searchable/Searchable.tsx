@@ -27,6 +27,7 @@ const SearchBar = styled(Toolbar)({
   height: 42,
   padding: 6,
 });
+SearchBar.displayName = 'Searchable:SearchBar';
 
 export const SearchBox = styled(FlexBox)({
   backgroundColor: colors.white,
@@ -37,6 +38,7 @@ export const SearchBox = styled(FlexBox)({
   alignItems: 'center',
   paddingLeft: 4,
 });
+SearchBox.displayName = 'Searchable:SearchBox';
 
 export const SearchInput = styled(Input)(
   (props: {focus?: boolean; regex?: boolean; isValidInput?: boolean}) => ({
@@ -56,6 +58,7 @@ export const SearchInput = styled(Input)(
     },
   }),
 );
+SearchInput.displayName = 'Searchable:SearchInput';
 
 const Clear = styled(Text)({
   position: 'absolute',
@@ -75,6 +78,7 @@ const Clear = styled(Text)({
     backgroundColor: 'rgba(0,0,0,0.15)',
   },
 });
+Clear.displayName = 'Searchable:Clear';
 
 export const SearchIcon = styled(Glyph)({
   marginRight: 3,
@@ -82,11 +86,13 @@ export const SearchIcon = styled(Glyph)({
   marginTop: -1,
   minWidth: 16,
 });
+SearchIcon.displayName = 'Searchable:SearchIcon';
 
 const Actions = styled(FlexRow)({
   marginLeft: 8,
   flexShrink: 0,
 });
+Actions.displayName = 'Searchable:Actions';
 
 export type SearchableProps = {
   addFilter: (filter: Filter) => void;
@@ -131,6 +137,8 @@ const Searchable = (
   Component: React.ComponentType<any>,
 ): React.ComponentType<any> =>
   class extends PureComponent<Props, State> {
+    static displayName = `Searchable(${Component.displayName})`;
+
     static defaultProps = {
       placeholder: 'Search...',
     };

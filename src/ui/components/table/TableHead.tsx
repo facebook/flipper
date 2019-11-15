@@ -29,6 +29,7 @@ import React from 'react';
 const TableHeaderArrow = styled('span')({
   float: 'right',
 });
+TableHeaderArrow.displayName = 'TableHead:TableHeaderArrow';
 
 const TableHeaderColumnInteractive = styled(Interactive)({
   display: 'inline-block',
@@ -37,10 +38,13 @@ const TableHeaderColumnInteractive = styled(Interactive)({
   whiteSpace: 'nowrap',
   width: '100%',
 });
+TableHeaderColumnInteractive.displayName =
+  'TableHead:TableHeaderColumnInteractive';
 
 const TableHeaderColumnContainer = styled('div')({
   padding: '0 8px',
 });
+TableHeaderColumnContainer.displayName = 'TableHead:TableHeaderColumnContainer';
 
 const TableHeadContainer = styled(FlexRow)(
   (props: {horizontallyScrollable?: boolean}) => ({
@@ -56,6 +60,7 @@ const TableHeadContainer = styled(FlexRow)(
     minWidth: props.horizontallyScrollable ? 'min-content' : 0,
   }),
 );
+TableHeadContainer.displayName = 'TableHead:TableHeadContainer';
 
 const TableHeadColumnContainer = styled('div')(
   (props: {width: string | number}) => ({
@@ -81,6 +86,7 @@ const TableHeadColumnContainer = styled('div')(
     },
   }),
 );
+TableHeadColumnContainer.displayName = 'TableHead:TableHeadColumnContainer';
 
 const RIGHT_RESIZABLE = {right: true};
 

@@ -19,5 +19,6 @@ const TextParagraph = styled('div')({
     marginBottom: 0,
   },
 });
+TextParagraph.displayName = 'TextParagraph';
 
 export default TextParagraph;

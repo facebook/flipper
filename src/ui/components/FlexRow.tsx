@@ -13,6 +13,9 @@ import styled from 'react-emotion';
 /**
  * A container displaying its children in a row
  */
-export default styled(FlexBox)({
+const FlexRow = styled(FlexBox)({
   flexDirection: 'row',
 });
+FlexRow.displayName = 'FlexRow';
+
+export default FlexRow;

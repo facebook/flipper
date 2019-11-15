@@ -15,6 +15,7 @@ import PropTypes from 'prop-types';
 const TooltipContainer = styled('div')({
   display: 'contents',
 });
+TooltipContainer.displayName = 'Tooltip:TooltipContainer';
 
 type TooltipProps = {
   /** Content shown in the tooltip */

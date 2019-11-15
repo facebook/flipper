@@ -40,6 +40,7 @@ const FilterText = styled('div')({
     color: `${colors.white} !important`,
   },
 });
+FilterText.displayName = 'FilterRow:FilterText';
 
 type Props = {
   children: React.ReactNode;

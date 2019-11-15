@@ -43,6 +43,7 @@ const Markers = styled('div')((props: {totalTime: number}) => ({
     left: 5,
   },
 }));
+Markers.displayName = 'MarkerTimeline:Markers';
 
 const Point = styled(FlexRow)(
   (props: {
@@ -104,6 +105,7 @@ const Point = styled(FlexRow)(
     },
   }),
 );
+Point.displayName = 'MakerTimeline:Point';
 
 const Time = styled('span')({
   color: colors.light30,
@@ -111,12 +113,14 @@ const Time = styled('span')({
   marginRight: 4,
   marginTop: -2,
 });
+Time.displayName = 'MakerTimeline:Time';
 
 const Code = styled(Text)({
   overflow: 'hidden',
   textOverflow: 'ellipsis',
   marginTop: -1,
 });
+Code.displayName = 'MakerTimeline:Code';
 
 type TimePoint = {
   timestamp: number;

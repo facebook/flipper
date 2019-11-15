@@ -13,8 +13,11 @@ import styled from 'react-emotion';
 /**
  * A container displaying its children horizontally and vertically centered.
  */
-export default styled(View)({
+const FlexCenter = styled(View)({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
 });
+FlexCenter.displayName = 'FlexCenter';
+
+export default FlexCenter;

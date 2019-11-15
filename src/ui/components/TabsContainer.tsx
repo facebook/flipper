@@ -19,10 +19,11 @@ const Container = styled('div')({
   marginTop: 11,
   marginBottom: 10,
 });
+Container.displayName = 'TabsContainer:Container';
 
 export const TabsContext = React.createContext(true);
 
-export default function(props: {children: any}) {
+export default function TabsContainer(props: {children: any}) {
   return (
     <Container>
       <TabsContext.Provider value={true}>{props.children}</TabsContext.Provider>

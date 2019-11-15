@@ -9,8 +9,11 @@
 
 import styled from 'react-emotion';
 
-export default styled('div')({
+const HorizontalRule = styled('div')({
   backgroundColor: '#c9ced4',
   height: 1,
   margin: '5px 0',
 });
+HorizontalRule.displayName = 'HorizontalRule';
+
+export default HorizontalRule;

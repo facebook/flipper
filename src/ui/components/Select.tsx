@@ -16,15 +16,18 @@ const Label = styled('label')({
   display: 'flex',
   alignItems: 'center',
 });
+Label.displayName = 'Select:Label';
 
 const LabelText = styled(Text)({
   fontWeight: 500,
   marginRight: 5,
 });
+LabelText.displayName = 'Select:LabelText';
 
 const SelectMenu = styled('select')((props: {grow?: boolean}) => ({
   flexGrow: props.grow ? 1 : 0,
 }));
+SelectMenu.displayName = 'Select:SelectMenu';
 
 /**
  * Dropdown to select from a list of options

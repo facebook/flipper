@@ -93,6 +93,7 @@ type InteractiveState = {
 const InteractiveContainer = styled('div')({
   willChange: 'transform, height, width, z-index',
 });
+InteractiveContainer.displayName = 'Interactive:InteractiveContainer';
 
 export default class Interactive extends React.Component<
   InteractiveProps,

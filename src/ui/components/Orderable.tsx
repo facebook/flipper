@@ -41,12 +41,14 @@ type TabSizes = {
 const OrderableContainer = styled('div')({
   position: 'relative',
 });
+OrderableContainer.displayName = 'Orderable:OrderableContainer';
 
 const OrderableItemContainer = styled('div')(
   (props: {orientation: 'vertical' | 'horizontal'}) => ({
     display: props.orientation === 'vertical' ? 'block' : 'inline-block',
   }),
 );
+OrderableItemContainer.displayName = 'Orderable:OrderableItemContainer';
 
 class OrderableItem extends Component<{
   orientation: OrderableOrientation;

@@ -10,9 +10,12 @@
 import styled from 'react-emotion';
 import {inputStyle} from './Input';
 
-export default styled('textarea')(({compact}: {compact?: boolean}) => ({
+const Textarea = styled('textarea')(({compact}: {compact?: boolean}) => ({
   ...inputStyle(compact || false),
   lineHeight: 'normal',
   padding: compact ? '5px' : '8px',
   resize: 'none',
 }));
+Textarea.displayName = 'Textarea';
+
+export default Textarea;

@@ -21,26 +21,32 @@ import React, {KeyboardEvent} from 'react';
 const NullValue = styled('span')({
   color: 'rgb(128, 128, 128)',
 });
+NullValue.displayName = 'DataDescription:NullValue';
 
 const UndefinedValue = styled('span')({
   color: 'rgb(128, 128, 128)',
 });
+UndefinedValue.displayName = 'DataDescription:UndefinedValue';
 
 const StringValue = styled('span')({
   color: colors.cherryDark1,
 });
+StringValue.displayName = 'DataDescription:StringValue';
 
 const ColorValue = styled('span')({
   color: colors.blueGrey,
 });
+ColorValue.displayName = 'DataDescription:ColorValue';
 
 const SymbolValue = styled('span')({
   color: 'rgb(196, 26, 22)',
 });
+SymbolValue.displayName = 'DataDescription:SymbolValue';
 
 const NumberValue = styled('span')({
   color: colors.tealDark1,
 });
+NumberValue.displayName = 'DataDescription:NumberValue';
 
 const ColorBox = styled('span')((props: {color: string}) => ({
   backgroundColor: props.color,
@@ -51,20 +57,24 @@ const ColorBox = styled('span')((props: {color: string}) => ({
   verticalAlign: 'middle',
   width: 12,
 }));
+ColorBox.displayName = 'DataDescription:ColorBox';
 
 const FunctionKeyword = styled('span')({
   color: 'rgb(170, 13, 145)',
   fontStyle: 'italic',
 });
+FunctionKeyword.displayName = 'DataDescription:FunctionKeyword';
 
 const FunctionName = styled('span')({
   fontStyle: 'italic',
 });
+FunctionName.displayName = 'DataDescription:FunctionName';
 
 const ColorPickerDescription = styled('div')({
   display: 'inline',
   position: 'relative',
 });
+ColorPickerDescription.displayName = 'DataDescription:ColorPickerDescription';
 
 type DataDescriptionProps = {
   path?: Array<string>;

@@ -21,6 +21,7 @@ const Chevron = styled(Glyph)({
   marginLeft: -2,
   marginBottom: 1,
 });
+Chevron.displayName = 'Panel:Chevron';
 
 /**
  * A Panel component.

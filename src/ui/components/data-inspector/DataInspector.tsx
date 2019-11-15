@@ -34,18 +34,22 @@ const BaseContainer = styled('div')(
     userSelect: 'text',
   }),
 );
+BaseContainer.displayName = 'DataInspector:BaseContainer';
 
 const RecursiveBaseWrapper = styled('span')({
   color: colors.red,
 });
+RecursiveBaseWrapper.displayName = 'DataInspector:RecursiveBaseWrapper';
 
 const Wrapper = styled('span')({
   color: '#555',
 });
+Wrapper.displayName = 'DataInspector:Wrapper';
 
 const PropertyContainer = styled('span')({
   paddingTop: '2px',
 });
+PropertyContainer.displayName = 'DataInspector:PropertyContainer';
 
 const ExpandControl = styled('span')({
   color: '#6e6e6e',
@@ -54,10 +58,12 @@ const ExpandControl = styled('span')({
   marginRight: 5,
   whiteSpace: 'pre',
 });
+ExpandControl.displayName = 'DataInspector:ExpandControl';
 
 export const InspectorName = styled('span')({
   color: colors.grapeDark1,
 });
+InspectorName.displayName = 'DataInspector:InspectorName';
 
 const nameTooltipOptions: TooltipOptions = {
   position: 'toLeft',

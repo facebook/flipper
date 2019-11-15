@@ -148,6 +148,7 @@ const Container = styled(FlexColumn)((props: {canOverflow?: boolean}) => ({
   overflow: props.canOverflow ? 'scroll' : 'visible',
   flexGrow: 1,
 }));
+Container.displayName = 'ManagedTable:Container';
 
 const globalTableState: {[key: string]: TableColumnSizes} = {};
 

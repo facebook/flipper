@@ -18,6 +18,7 @@ type MenuTemplate = Array<MenuItemConstructorOptions>;
 const Container = styled('div')({
   display: 'contents',
 });
+Container.displayName = 'ContextMenuProvider:Container';
 
 /**
  * Flipper's root is already wrapped with this component, so plugins should not

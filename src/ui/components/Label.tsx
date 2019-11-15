@@ -9,7 +9,10 @@
 
 import styled from 'react-emotion';
 
-export default styled('div')({
+const Label = styled('div')({
   fontSize: 12,
   fontWeight: 'bold',
 });
+Label.displayName = 'Label';
+
+export default Label;

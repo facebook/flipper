@@ -39,6 +39,7 @@ const Token = styled(Text)(
     },
   }),
 );
+Token.displayName = 'FilterToken:Token';
 
 const Key = styled(Text)(
   (props: {type: 'exclude' | 'include' | 'enum'; focused?: boolean}) => ({
@@ -60,6 +61,7 @@ const Key = styled(Text)(
     },
   }),
 );
+Key.displayName = 'FilterToken:Key';
 
 const Value = styled(Text)({
   whiteSpace: 'nowrap',
@@ -69,6 +71,7 @@ const Value = styled(Text)({
   lineHeight: '21px',
   paddingLeft: 3,
 });
+Value.displayName = 'FilterToken:Value';
 
 const Chevron = styled('div')((props: {focused?: boolean}) => ({
   border: 0,
@@ -88,6 +91,7 @@ const Chevron = styled('div')((props: {focused?: boolean}) => ({
     backgroundColor: 'transparent',
   },
 }));
+Chevron.displayName = 'FilterToken:Chevron';
 
 type Props = {
   filter: Filter;

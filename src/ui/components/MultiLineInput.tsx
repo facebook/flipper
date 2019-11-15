@@ -30,5 +30,6 @@ const MultiLineInput = styled('textarea')({
   ...multilineStyle,
   padding: '0 10px',
 });
+MultiLineInput.displayName = 'MultiLineInput';
 
 export default MultiLineInput;

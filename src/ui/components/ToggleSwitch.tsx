@@ -34,16 +34,19 @@ export const StyledButton = styled('div')((props: {toggled: boolean}) => ({
     transition: 'all cubic-bezier(0.3, 1.5, 0.7, 1) 0.3s',
   },
 }));
+StyledButton.displayName = 'ToggleSwitch:StyledButton';
 
 const Container = styled(FlexRow)({
   alignItems: 'center',
   cursor: 'pointer',
 });
+Container.displayName = 'ToggleSwitch:Container';
 
 const Label = styled(Text)({
   marginLeft: 7,
   marginRight: 7,
 });
+Label.displayName = 'ToggleSwitch:Label';
 
 type Props = {
   /**

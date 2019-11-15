@@ -185,10 +185,12 @@ const StyledButton = styled('div')(
     },
   }),
 );
+StyledButton.displayName = 'Button:StyledButton';
 
 const Icon = styled(Glyph)(({hasText}: {hasText: boolean}) => ({
   marginRight: hasText ? 3 : 0,
 }));
+Icon.displayName = 'Button:Icon';
 
 type OwnProps = {
   /**

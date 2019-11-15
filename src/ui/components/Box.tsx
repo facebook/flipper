@@ -10,9 +10,12 @@
 import FlexBox from './FlexBox';
 import styled from 'react-emotion';
 
-export default styled(FlexBox)({
+const Box = styled(FlexBox)({
   height: '100%',
   overflow: 'auto',
   position: 'relative',
   width: '100%',
 });
+Box.displayName = 'Box';
+
+export default Box;

@@ -19,11 +19,13 @@ const ErrorBoundaryContainer = styled(View)({
   overflow: 'auto',
   padding: 10,
 });
+ErrorBoundaryContainer.displayName = 'ErrorBoundary:ErrorBoundaryContainer';
 
 const ErrorBoundaryStack = styled(ErrorBlock)({
   marginBottom: 10,
   whiteSpace: 'pre',
 });
+ErrorBoundaryStack.displayName = 'ErrorBoundary:ErrorBoundaryStack';
 
 type ErrorBoundaryProps = {
   /** Function to dynamically generate the heading of the ErrorBox. */

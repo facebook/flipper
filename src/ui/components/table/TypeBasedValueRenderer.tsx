@@ -35,6 +35,7 @@ const NonWrappingText = styled(Text)({
   whiteSpace: 'nowrap',
   userSelect: 'none',
 });
+NonWrappingText.displayName = 'TypeBasedValueRenderer:NonWrappingText';
 
 const BooleanValue = styled(NonWrappingText)((props: {active?: boolean}) => ({
   '&::before': {
@@ -48,6 +49,7 @@ const BooleanValue = styled(NonWrappingText)((props: {active?: boolean}) => ({
     marginTop: 1,
   },
 }));
+BooleanValue.displayName = 'TypeBasedValueRenderer:BooleanValue';
 
 export function renderValue(val: Value) {
   switch (val.type) {

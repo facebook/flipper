@@ -20,6 +20,7 @@ const ColoredIconBlack = styled('img')(({size}: {size: number}) => ({
   width: size,
   flexShrink: 0,
 }));
+ColoredIconBlack.displayName = 'Glyph:ColoredIconBlack';
 
 const ColoredIconCustom = styled('div')(
   (props: {size: number; color?: string; src: string}) => ({
@@ -35,6 +36,7 @@ const ColoredIconCustom = styled('div')(
     flexShrink: 0,
   }),
 );
+ColoredIconCustom.displayName = 'Glyph:ColoredIconCustom';
 
 function ColoredIcon(
   props: {
@@ -79,7 +81,7 @@ function ColoredIcon(
     );
   }
 }
-
+ColoredIcon.displayName = 'Glyph:ColoredIcon';
 ColoredIcon.contextTypes = {
   glyphColor: PropTypes.string,
 };

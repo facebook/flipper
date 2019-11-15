@@ -72,6 +72,7 @@ const ElementsRowContainer = styled(ContextMenu)((props: any) => ({
     backgroundColor: backgroundColorHover(props),
   },
 }));
+ElementsRowContainer.displayName = 'Elements:ElementsRowContainer';
 
 const ElementsRowDecoration = styled(FlexRow)({
   flexShrink: 0,
@@ -82,6 +83,7 @@ const ElementsRowDecoration = styled(FlexRow)({
   width: 16,
   top: -1,
 });
+ElementsRowDecoration.displayName = 'Elements:ElementsRowDecoration';
 
 const ElementsLine = styled('div')((props: {childrenCount: number}) => ({
   backgroundColor: colors.light20,
@@ -93,12 +95,14 @@ const ElementsLine = styled('div')((props: {childrenCount: number}) => ({
   width: 2,
   borderRadius: '999em',
 }));
+ElementsLine.displayName = 'Elements:ElementsLine';
 
 const DecorationImage = styled('img')({
   height: 12,
   marginRight: 5,
   width: 12,
 });
+DecorationImage.displayName = 'Elements:DecorationImage';
 
 const NoShrinkText = styled(Text)({
   flexShrink: 0,
@@ -107,20 +111,25 @@ const NoShrinkText = styled(Text)({
   userSelect: 'none',
   fontWeight: 400,
 });
+NoShrinkText.displayName = 'Elements:NoShrinkText';
 
 const ElementsRowAttributeContainer = styled(NoShrinkText)({
   color: colors.dark80,
   fontWeight: 300,
   marginLeft: 5,
 });
+ElementsRowAttributeContainer.displayName =
+  'Elements:ElementsRowAttributeContainer';
 
 const ElementsRowAttributeKey = styled('span')({
   color: colors.tomato,
 });
+ElementsRowAttributeKey.displayName = 'Elements:ElementsRowAttributeKey';
 
 const ElementsRowAttributeValue = styled('span')({
   color: colors.slateDark3,
 });
+ElementsRowAttributeValue.displayName = 'Elements:ElementsRowAttributeValue';
 
 class PartialHighlight extends PureComponent<{
   selected: boolean;
@@ -403,12 +412,14 @@ const ElementsContainer = styled(FlexColumn)({
   minWidth: '100%',
   overflow: 'auto',
 });
+ElementsContainer.displayName = 'Elements:ElementsContainer';
 
 const ElementsBox = styled(FlexColumn)({
   alignItems: 'flex-start',
   flex: 1,
   overflow: 'auto',
 });
+ElementsBox.displayName = 'Elements:ElementsBox';
 
 export type DecorateRow = (e: Element) => ReactElement<any> | undefined | null;
 

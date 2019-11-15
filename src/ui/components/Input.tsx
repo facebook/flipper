@@ -31,6 +31,8 @@ const Input = styled('input')(({compact}: {compact?: boolean}) => ({
   padding: compact ? '0 5px' : '0 10px',
 }));
 
+Input.displayName = 'Input';
+
 Input.defaultProps = {
   type: 'text',
 };
