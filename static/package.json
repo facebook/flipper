@@ -23,7 +23,7 @@
     "recursive-readdir": "2.2.2",
     "ws": "7.2.0",
     "xdg-basedir": "^4.0.0",
-    "yargs": "^14.2.0"
+    "yargs": "^15.0.1"
   },
   "devDependencies": {},
   "resolutions": {
