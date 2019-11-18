@@ -131,7 +131,7 @@ export default class extends FlipperPlugin<SharedPreferencesState> {
           },
         };
       }
-      newEntry.changesList = [...entry.changesList, change];
+      newEntry.changesList = [change, ...entry.changesList];
       return {
         ...state,
         sharedPreferences: {
