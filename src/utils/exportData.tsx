@@ -469,7 +469,7 @@ export async function getStoreExport(
   const state = store.getState();
   const {clients} = state.connections;
   const client = clients.find(
-    client => client.query.app === state.connections.selectedApp,
+    client => client.id === state.connections.selectedApp,
   );
   const {pluginStates} = state;
   const {plugins} = state;
