@@ -48,7 +48,7 @@ const ICONS = {
   desktop: [12],
   directions: [12],
   internet: [12],
-  mobile: [12, 32],
+  mobile: [12, 16, 32],
   posts: [20],
   profile: [12],
   rocket: [20],

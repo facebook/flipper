@@ -283,7 +283,6 @@ class MainSidebar extends PureComponent<Props, State> {
       staticView,
       selectPlugin,
       setStaticView,
-      windowIsFocused,
       numNotifications,
       uninitializedClients,
     } = this.props;
@@ -291,12 +290,7 @@ class MainSidebar extends PureComponent<Props, State> {
     const client: Client | undefined = getClientById(clients, selectedApp);
 
     return (
-      <Sidebar
-        position="left"
-        width={200}
-        backgroundColor={
-          process.platform === 'darwin' && windowIsFocused ? 'transparent' : ''
-        }>
+      <Sidebar position="left" width={200} backgroundColor={colors.light02}>
         <Plugins>
           {selectedDevice ? (
             <>
@@ -451,18 +445,6 @@ class MainSidebar extends PureComponent<Props, State> {
     const {staticView, setStaticView} = this.props;
     return (
       <>
-        <ListItem
-          style={{
-            fontSize: 9,
-            lineHeight: '11px',
-            color: colors.light30,
-            wordBreak: 'break-all',
-            paddingBottom: '10px',
-          }}>
-          Snapshot imported from:
-          <br />
-          {selectedDevice.source}
-        </ListItem>
         {this.state.showSupportForm &&
           (selectedDevice as ArchivedDevice).supportRequestDetails && (
             <ListItem
@@ -562,7 +544,7 @@ class MainSidebar extends PureComponent<Props, State> {
                 color: colors.light30,
                 fontStyle: 'italic',
               }}>
-              star your favorite plugins!
+              Star your favorite plugins!
             </div>
           </ListItem>
         ) : (

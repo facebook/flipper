@@ -32,6 +32,7 @@ import {tryCatchReportPlatformFailures} from './metrics';
 import {promisify} from 'util';
 import promiseTimeout from './promiseTimeout';
 import {Idler} from './Idler';
+import {setStaticView} from '../reducers/connections';
 export const IMPORT_FLIPPER_TRACE_EVENT = 'import-flipper-trace';
 export const EXPORT_FLIPPER_TRACE_EVENT = 'export-flipper-trace';
 export const EXPORT_FLIPPER_TRACE_TIME_SERIALIZATION_EVENT = `${EXPORT_FLIPPER_TRACE_EVENT}:serialization`;
@@ -664,6 +665,12 @@ export function importDataToStore(source: string, data: string, store: Store) {
       ),
     });
   });
+  if (supportRequestDetails) {
+    store.dispatch(
+      // Late require to avoid circular dependency issue
+      setStaticView(require('../fb-stubs/SupportRequestDetails').default),
+    );
+  }
 }
 
 export const importFileToStore = (file: string, store: Store) => {
