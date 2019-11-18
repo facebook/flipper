@@ -20,7 +20,7 @@ import {
 } from 'flipper';
 import {FlipperPlugin} from 'flipper';
 
-const {clone} = require('lodash');
+import {clone} from 'lodash';
 
 type SharedPreferencesChangeEvent = {|
   preferences: string,
@@ -97,8 +97,12 @@ export default class extends FlipperPlugin<SharedPreferencesState> {
       entry.preferences = update.preferences;
       state.sharedPreferences[update.name] = entry;
       return {
+        ...state,
         selectedPreferences: state.selectedPreferences || update.name,
-        sharedPreferences: state.sharedPreferences,
+        sharedPreferences: {
+          ...state.sharedPreferences,
+          [update.name]: entry,
+        },
       };
     },
 
@@ -108,15 +112,32 @@ export default class extends FlipperPlugin<SharedPreferencesState> {
       if (entry == null) {
         return state;
       }
+      let newEntry;
       if (change.deleted) {
-        delete entry.preferences[change.name];
+        const newPreferences = {
+          ...entry.preferences,
+        };
+        delete newPreferences[change.name];
+        newEntry = {
+          ...entry,
+          preferences: newPreferences,
+        };
       } else {
-        entry.preferences[change.name] = change.value;
+        newEntry = {
+          ...entry,
+          preferences: {
+            ...entry.preferences,
+            [change.name]: change.value,
+          },
+        };
       }
-      entry.changesList = [change, ...entry.changesList];
+      newEntry.changesList = [...entry.changesList, change];
       return {
-        selectedPreferences: state.selectedPreferences,
-        sharedPreferences: state.sharedPreferences,
+        ...state,
+        sharedPreferences: {
+          ...state.sharedPreferences,
+          [change.preferences]: newEntry,
+        },
       };
     },
 
@@ -125,6 +146,7 @@ export default class extends FlipperPlugin<SharedPreferencesState> {
       event: Object,
     ) {
       return {
+        ...state,
         selectedPreferences: event.selected,
         sharedPreferences: state.sharedPreferences,
       };
