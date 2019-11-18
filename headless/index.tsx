@@ -314,6 +314,9 @@ async function startFlipper(userArguments: UserArguments) {
             const ports = store.getState().application.serverPorts;
             matchedDevice.reverse([ports.secure, ports.insecure]);
           }
+          matchedDevice.loadDevicePlugins(
+            store.getState().plugins.devicePlugins,
+          );
           store.dispatch({
             type: 'REGISTER_DEVICE',
             payload: matchedDevice,

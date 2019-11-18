@@ -91,6 +91,7 @@ async function queryDevices(store: Store, logger: Logger): Promise<void> {
             serial: udid,
           });
           const iOSDevice = new IOSDevice(udid, type, name);
+          iOSDevice.loadDevicePlugins(store.getState().plugins.devicePlugins);
           store.dispatch({
             type: 'REGISTER_DEVICE',
             payload: iOSDevice,

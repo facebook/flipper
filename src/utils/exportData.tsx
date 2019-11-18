@@ -468,7 +468,7 @@ export async function getStoreExport(
   const state = store.getState();
   const {clients} = state.connections;
   const client = clients.find(
-    client => client.query.app === state.connections.selectedClient,
+    client => client.query.app === state.connections.selectedApp,
   );
   const {pluginStates} = state;
   const {plugins} = state;
@@ -616,6 +616,7 @@ export function importDataToStore(source: string, data: string, store: Store) {
     });
     return;
   }
+  archivedDevice.loadDevicePlugins(store.getState().plugins.devicePlugins);
   store.dispatch({
     type: 'REGISTER_DEVICE',
     payload: archivedDevice,

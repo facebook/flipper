@@ -265,3 +265,10 @@ export class FlipperPlugin<
     this.init();
   }
 }
+
+export function sortPluginsByName(
+  a: typeof FlipperBasePlugin,
+  b: typeof FlipperBasePlugin,
+): number {
+  return (a.title || a.id) > (b.title || b.id) ? 1 : -1;
+}

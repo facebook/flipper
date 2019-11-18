@@ -11,7 +11,7 @@ import config from '../fb-stubs/config';
 import BaseDevice from '../devices/BaseDevice';
 import Client from '../Client';
 import {UninitializedClient} from '../UninitializedClient';
-import {FlipperBasePlugin} from '../plugin';
+import {FlipperBasePlugin, sortPluginsByName} from '../plugin';
 import {PluginNotification} from '../reducers/notifications';
 import {ActiveSheet, ACTIVE_SHEET_PLUGINS} from '../reducers/application';
 import {State as Store} from '../reducers';
@@ -31,6 +31,8 @@ import {
   Button,
   StarButton,
   ArchivedDevice,
+  Heading,
+  Spacer,
 } from 'flipper';
 import React, {Component, PureComponent, Fragment} from 'react';
 import NotificationsHub from '../NotificationsHub';
@@ -40,6 +42,8 @@ import {
   StaticView,
   setStaticView,
   selectClient,
+  getAvailableClients,
+  getClientById,
 } from '../reducers/connections';
 import {setActiveSheet} from '../reducers/application';
 import UserAccount from './UserAccount';
@@ -56,7 +60,7 @@ const ListItem = styled('div')(({active}: {active?: boolean}) => ({
   paddingLeft: 10,
   display: 'flex',
   alignItems: 'center',
-  marginBottom: 2,
+  marginBottom: 6,
   flexShrink: 0,
   backgroundColor: active ? colors.macOSTitleBarIconSelected : 'none',
   color: active ? colors.white : colors.macOSSidebarSectionItem,
@@ -83,7 +87,7 @@ const SidebarButton = styled(Button)(({small}: {small?: boolean}) => ({
 
 const PluginShape = styled(FlexBox)(
   ({backgroundColor}: {backgroundColor?: BackgroundColorProperty}) => ({
-    marginRight: 5,
+    marginRight: 8,
     backgroundColor,
     borderRadius: 3,
     flexShrink: 0,
@@ -91,6 +95,7 @@ const PluginShape = styled(FlexBox)(
     height: 18,
     justifyContent: 'center',
     alignItems: 'center',
+    top: '-1px',
   }),
 );
 
@@ -225,7 +230,6 @@ type StateFromProps = {
   selectedApp: string | null | undefined;
   userStarredPlugins: Store['connections']['userStarredPlugins'];
   clients: Array<Client>;
-  selectedClient: string;
   uninitializedClients: Array<{
     client: UninitializedClient;
     deviceId?: string;
@@ -273,30 +277,18 @@ class MainSidebar extends PureComponent<Props, State> {
   render() {
     const {
       selectedDevice,
-      selectedClient,
       selectClient,
       selectedPlugin,
+      selectedApp,
       staticView,
       selectPlugin,
       setStaticView,
       windowIsFocused,
       numNotifications,
+      uninitializedClients,
     } = this.props;
-    let {clients, uninitializedClients} = this.props;
-    clients = clients
-      .filter(
-        (client: Client) =>
-          (selectedDevice &&
-            selectedDevice.supportsOS(client.query.os) &&
-            client.query.device_id === selectedDevice.serial) ||
-          // Old android sdk versions don't know their device_id
-          // Display their plugins under all selected devices until they die out
-          client.query.device_id === 'unknown',
-      )
-      .sort((a, b) => (a.query.app || '').localeCompare(b.query.app));
-    const client: Client | undefined = clients.find(
-      client => client.query.app === selectedClient,
-    );
+    const clients = getAvailableClients(selectedDevice, this.props.clients);
+    const client: Client | undefined = getClientById(clients, selectedApp);
 
     return (
       <Sidebar
@@ -306,71 +298,87 @@ class MainSidebar extends PureComponent<Props, State> {
           process.platform === 'darwin' && windowIsFocused ? 'transparent' : ''
         }>
         <Plugins>
-          {selectedDevice && (
+          {selectedDevice ? (
             <>
               <ListItem>
                 <SidebarButton>{selectedDevice.title}</SidebarButton>
               </ListItem>
               {this.showArchivedDeviceDetails(selectedDevice)}
-            </>
-          )}
-          {selectedDevice &&
-            Array.from(this.props.devicePlugins.values())
-              .filter(plugin => plugin.supportsDevice(selectedDevice))
-              .sort(sortPluginsByName)
-              .map((plugin: typeof FlipperDevicePlugin) => (
-                <PluginSidebarListItem
-                  key={plugin.id}
-                  isActive={plugin.id === selectedPlugin}
-                  onClick={() =>
-                    selectPlugin({
-                      selectedPlugin: plugin.id,
-                      selectedApp: null,
-                      deepLinkPayload: null,
-                    })
-                  }
-                  plugin={plugin}
-                />
-              ))}
-          <ListItem>
-            <SidebarButton
-              title="Select an app to see available plugins"
-              compact={true}
-              dropdown={clients.map(c => ({
-                checked: client === c,
-                label: c.query.app,
-                type: 'checkbox',
-                click: () => selectClient(c.query.app),
-              }))}>
-              {clients.length === 0 ? (
-                '(No clients connected)'
-              ) : !client ? (
-                '(Select client)'
-              ) : (
-                <>
-                  {client.query.app}
-                  {clients.length > 1 && (
-                    <Glyph
-                      size={12}
-                      name="chevron-down"
-                      style={{marginLeft: 8}}
-                    />
+              {selectedDevice.devicePlugins.map(pluginName => {
+                const plugin = this.props.devicePlugins.get(pluginName)!;
+                return (
+                  <PluginSidebarListItem
+                    key={plugin.id}
+                    isActive={plugin.id === selectedPlugin}
+                    onClick={() =>
+                      selectPlugin({
+                        selectedPlugin: plugin.id,
+                        selectedApp: null,
+                        deepLinkPayload: null,
+                      })
+                    }
+                    plugin={plugin}
+                  />
+                );
+              })}
+              <ListItem>
+                <SidebarButton
+                  title="Select an app to see available plugins"
+                  compact={true}
+                  dropdown={clients.map(c => ({
+                    checked: client === c,
+                    label: c.query.app,
+                    type: 'checkbox',
+                    click: () => selectClient(c.id),
+                  }))}>
+                  {clients.length === 0 ? (
+                    <>
+                      <Glyph
+                        name="mobile-engagement"
+                        size={16}
+                        color={colors.red}
+                        style={{marginRight: 10}}
+                      />
+                      No clients connected
+                    </>
+                  ) : !client ? (
+                    'Select client'
+                  ) : (
+                    <>
+                      {client.query.app}
+                      <Glyph
+                        size={12}
+                        name="chevron-down"
+                        style={{marginLeft: 8}}
+                      />
+                    </>
                   )}
-                </>
-              )}
-            </SidebarButton>
-          </ListItem>
-          {this.renderClientPlugins(client)}
-          {uninitializedClients.map(entry => (
-            <ListItem key={JSON.stringify(entry.client)}>
-              {entry.client.appName}
-              {entry.errorMessage ? (
-                <ErrorIndicator name={'mobile-cross'} size={16} />
-              ) : (
-                <Spinner size={16} />
-              )}
+                </SidebarButton>
+              </ListItem>
+              {this.renderClientPlugins(client)}
+              {uninitializedClients.map(entry => (
+                <ListItem key={JSON.stringify(entry.client)}>
+                  {entry.client.appName}
+                  {entry.errorMessage ? (
+                    <ErrorIndicator name={'mobile-cross'} size={16} />
+                  ) : (
+                    <Spinner size={16} />
+                  )}
+                </ListItem>
+              ))}
+            </>
+          ) : (
+            <ListItem
+              style={{
+                textAlign: 'center',
+                marginTop: 50,
+                flexDirection: 'column',
+              }}>
+              <Glyph name="mobile" size={32} color={colors.red}></Glyph>
+              <Spacer style={{height: 20}} />
+              <Heading>Select a device to get started</Heading>
             </ListItem>
-          ))}
+          )}
         </Plugins>
         {!GK.get('flipper_disable_notifications') && (
           <ListItem
@@ -535,13 +543,26 @@ class MainSidebar extends PureComponent<Props, State> {
       this.props.userStarredPlugins,
       true,
     );
+    const showAllPlugins =
+      this.state.showAllPlugins ||
+      favoritePlugins.length === 0 ||
+      // If the plugin is part of the hidden section, make sure sidebar is expanded
+      (client.plugins.includes(this.props.selectedPlugin!) &&
+        !favoritePlugins.find(
+          plugin => plugin.id === this.props.selectedPlugin,
+        ));
     return (
       <>
         {favoritePlugins.length === 0 ? (
           <ListItem>
-            <div style={{textAlign: 'center', width: '100%'}}>
-              Star some plugins!
-              <hr style={{width: '100%'}} />
+            <div
+              style={{
+                textAlign: 'center',
+                width: '100%',
+                color: colors.light30,
+                fontStyle: 'italic',
+              }}>
+              star your favorite plugins!
             </div>
           </ListItem>
         ) : (
@@ -562,12 +583,10 @@ class MainSidebar extends PureComponent<Props, State> {
                     showAllPlugins: !state.showAllPlugins,
                   }))
                 }>
-                {this.state.showAllPlugins ? 'Show less' : 'Show more'}
+                {showAllPlugins ? 'Show less' : 'Show more'}
                 <Glyph
                   size={8}
-                  name={
-                    this.state.showAllPlugins ? 'chevron-up' : 'chevron-down'
-                  }
+                  name={showAllPlugins ? 'chevron-up' : 'chevron-down'}
                   style={{
                     marginLeft: 4,
                   }}
@@ -582,7 +601,7 @@ class MainSidebar extends PureComponent<Props, State> {
             overflow: 'auto',
             height: 'auto',
           }}>
-          {this.state.showAllPlugins || favoritePlugins.length === 0
+          {showAllPlugins
             ? this.renderPluginsByCategory(
                 client,
                 getFavoritePlugins(
@@ -633,13 +652,6 @@ function groupPluginsByCategory(plugins: FlipperPlugins): PluginsByCategory {
   return res;
 }
 
-function sortPluginsByName(
-  a: typeof FlipperBasePlugin,
-  b: typeof FlipperBasePlugin,
-): number {
-  return (a.title || a.id) > (b.title || b.id) ? 1 : -1;
-}
-
 export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
   ({
     application: {windowIsFocused},
@@ -647,7 +659,6 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
       selectedDevice,
       selectedPlugin,
       selectedApp,
-      selectedClient,
       userStarredPlugins,
       clients,
       uninitializedClients,
@@ -664,7 +675,6 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
     })(),
     windowIsFocused,
     selectedDevice,
-    selectedClient,
     staticView,
     selectedPlugin,
     selectedApp,

@@ -22,6 +22,7 @@ export default (store: Store, logger: Logger) => {
   } else {
     return;
   }
+  device.loadDevicePlugins(store.getState().plugins.devicePlugins);
   store.dispatch({
     type: 'REGISTER_DEVICE',
     payload: device,

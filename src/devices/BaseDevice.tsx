@@ -8,6 +8,8 @@
  */
 
 import stream from 'stream';
+import {FlipperDevicePlugin} from 'flipper';
+import {sortPluginsByName} from '../plugin';
 
 export type LogLevel =
   | 'unknown'
@@ -80,6 +82,9 @@ export default class BaseDevice {
   isArchived: boolean = false;
   // if imported, stores the original source location
   source = '';
+
+  // sorted list of supported device plugins
+  devicePlugins!: string[];
 
   supportsOS(os: OS) {
     return os.toLowerCase() === this.os.toLowerCase();
@@ -163,5 +168,12 @@ export default class BaseDevice {
 
   async stopScreenCapture(): Promise<string | null> {
     return null;
+  }
+
+  loadDevicePlugins(devicePlugins?: Map<string, typeof FlipperDevicePlugin>) {
+    this.devicePlugins = Array.from(devicePlugins ? devicePlugins.values() : [])
+      .filter(plugin => plugin.supportsDevice(this))
+      .sort(sortPluginsByName)
+      .map(plugin => plugin.id);
   }
 }

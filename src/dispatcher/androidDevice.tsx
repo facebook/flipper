@@ -186,6 +186,7 @@ export default (store: Store, logger: Logger) => {
       payload: new Set(reconnectedDevices),
     });
 
+    androidDevice.loadDevicePlugins(store.getState().plugins.devicePlugins);
     store.dispatch({
       type: 'REGISTER_DEVICE',
       payload: androidDevice,
@@ -223,12 +224,13 @@ export default (store: Store, logger: Logger) => {
       payload: new Set(deviceIds),
     });
 
-    archivedDevices.forEach((payload: BaseDevice) =>
+    archivedDevices.forEach((device: BaseDevice) => {
+      device.loadDevicePlugins(store.getState().plugins.devicePlugins);
       store.dispatch({
         type: 'REGISTER_DEVICE',
-        payload,
-      }),
-    );
+        payload: device,
+      });
+    });
   }
 
   watchAndroidDevices();
