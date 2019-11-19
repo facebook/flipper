@@ -16,6 +16,7 @@ export type AddEventPayload = {|
   id: string,
   reason: string,
   stack_trace: Array<string>,
+  skip_stack_trace_format?: boolean,
   surface_key: string,
   event_timestamp: number,
   update_mode: number,

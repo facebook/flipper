@@ -284,7 +284,12 @@ export default class extends FlipperPlugin<State, *, PersistedState> {
         {this.renderTreeHierarchy(focusedTreeGeneration)}
         {focusedTreeGeneration && (
           <Sidebar position="bottom" minHeight={100} height={250}>
-            <StackTrace data={focusedTreeGeneration.stack_trace} />
+            <StackTrace
+              data={focusedTreeGeneration.stack_trace}
+              skip_stack_trace_format={
+                focusedTreeGeneration.skip_stack_trace_format
+              }
+            />
           </Sidebar>
         )}
         <DetailSidebar>
