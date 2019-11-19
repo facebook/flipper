@@ -64,6 +64,12 @@ public class LithoRecyclerViewDescriptor extends NodeDescriptor<LithoRecylerView
   }
 
   @Override
+  public int getAXChildCount(LithoRecylerView node) throws Exception {
+    final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
+    return descriptor.getAXChildCount(node);
+  }
+
+  @Override
   public Object getChildAt(LithoRecylerView node, int index) throws Exception {
     // TODO T39526148 account for the case above
     final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
@@ -78,12 +84,24 @@ public class LithoRecyclerViewDescriptor extends NodeDescriptor<LithoRecylerView
   }
 
   @Override
+  public Object getAXChildAt(LithoRecylerView node, int index) throws Exception {
+    final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
+    return descriptor.getAXChildAt(node, index);
+  }
+
+  @Override
   public List<Named<FlipperObject>> getData(LithoRecylerView node) throws Exception {
     final List<Named<FlipperObject>> props = new ArrayList<>();
     final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
     props.addAll(descriptor.getData(node));
 
     return props;
+  }
+
+  @Override
+  public List<Named<FlipperObject>> getAXData(LithoRecylerView node) throws Exception {
+    final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
+    return descriptor.getAXData(node);
   }
 
   @Override
