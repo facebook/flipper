@@ -27,7 +27,6 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import androidx.core.view.MarginLayoutParamsCompat;
 import androidx.core.view.ViewCompat;
-import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import com.facebook.flipper.core.ErrorReportingRunnable;
 import com.facebook.flipper.core.FlipperDynamic;
 import com.facebook.flipper.core.FlipperObject;
@@ -40,7 +39,6 @@ import com.facebook.flipper.plugins.inspector.descriptors.utils.AccessibilityEva
 import com.facebook.flipper.plugins.inspector.descriptors.utils.AccessibilityRoleUtil;
 import com.facebook.flipper.plugins.inspector.descriptors.utils.AccessibilityUtil;
 import com.facebook.flipper.plugins.inspector.descriptors.utils.EnumMapping;
-import com.facebook.flipper.plugins.inspector.descriptors.utils.ViewAccessibilityHelper;
 import com.facebook.stetho.common.android.ResourcesUtil;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -88,21 +86,7 @@ public class ViewDescriptor extends NodeDescriptor<View> {
 
   @Override
   public String getAXName(View node) throws Exception {
-    AccessibilityNodeInfoCompat nodeInfo = ViewAccessibilityHelper.createNodeInfoFromView(node);
-    if (nodeInfo != null) {
-
-      CharSequence name = nodeInfo.getClassName();
-      nodeInfo.recycle();
-
-      if (name != null && name != "") {
-        return name.toString();
-      }
-    }
-
-    // A node may have no name if a custom role description was set, but no
-    // role, or if the AccessibilityNodeInfo could not be generated. If this is
-    // the case name just give this node a generic name.
-    return "AccessibilityNode";
+    return node.getClass().getSimpleName();
   }
 
   @Override
