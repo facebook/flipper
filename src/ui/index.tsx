@@ -159,6 +159,7 @@ export {Console} from './components/console';
 
 export {default as Sheet} from './components/Sheet';
 export {StarButton} from './components/StarButton';
+export {Markdown} from './components/Markdown';
 
 export {default as BottomSpaced} from './components/BottomSpaced';
 export {default as SmallText} from './components/SmallText';

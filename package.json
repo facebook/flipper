@@ -158,6 +158,7 @@
     "react-devtools-core": "^4.0.6",
     "react-dom": "^16.11.0",
     "react-emotion": "^9.2.6",
+    "react-markdown": "^4.2.2",
     "react-player": "^1.14.1",
     "react-redux": "^7.1.1",
     "react-test-renderer": "^16.11.0",
