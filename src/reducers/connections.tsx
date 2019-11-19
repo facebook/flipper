@@ -155,6 +155,8 @@ const INITAL_STATE: State = {
   deepLinkPayload: null,
   staticView: WelcomeScreen,
 };
+// Please sync with NotificationsHub
+const STATIC_PLUGINS_ID: Array<string> = ['notifications'];
 
 const reducer = (state: State = INITAL_STATE, action: Actions): State => {
   switch (action.type) {
@@ -549,6 +551,7 @@ function updateSelection(state: Readonly<State>): State {
   const availablePlugins: string[] = [
     ...(device?.devicePlugins || []),
     ...(client?.plugins || []),
+    ...STATIC_PLUGINS_ID,
   ];
 
   if (
