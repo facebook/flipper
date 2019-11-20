@@ -169,7 +169,7 @@
     "redux-persist": "^6.0.0",
     "remote-redux-devtools": "^0.5.16",
     "rsocket-core": "^0.0.16",
-    "rsocket-tcp-server": "^0.0.16",
+    "rsocket-tcp-server": "^0.0.17",
     "socket.io": "^2.0.4",
     "string-natural-compare": "^3.0.0",
     "tmp": "0.0.33",
