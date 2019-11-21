@@ -17,8 +17,6 @@ export const inputStyle = (compact: boolean) => ({
   fontSize: '1em',
   height: compact ? '17px' : '28px',
   lineHeight: compact ? '17px' : '28px',
-  marginRight: 5,
-
   '&:disabled': {
     backgroundColor: '#ddd',
     borderColor: '#ccc',

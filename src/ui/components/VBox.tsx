@@ -13,9 +13,9 @@ import FlexColumn from './FlexColumn';
 /**
  * Container that applies a standardized bottom margin for vertical spacing
  */
-const BottomSpaced = styled(FlexColumn)({
+const VBox = styled(FlexColumn)({
   marginBottom: 10,
 });
-BottomSpaced.displayName = 'BottomSpaced';
+VBox.displayName = 'VBox';
 
-export default BottomSpaced;
+export default VBox;
