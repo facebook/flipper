@@ -7,10 +7,10 @@
  * @format
  */
 
-import {getEnvInfo, EnvironmentInfo} from './environmentInfo';
-export {getEnvInfo} from './environmentInfo';
 import {exec} from 'child_process';
 import {promisify} from 'util';
+import {EnvironmentInfo, getEnvInfo} from './environmentInfo';
+export {getEnvInfo} from './environmentInfo';
 
 type HealthcheckCategory = {
   label: string;
@@ -31,6 +31,7 @@ type Healthcheck = {
     env: EnvironmentInfo,
   ) => Promise<{
     hasProblem: boolean;
+    helpUrl?: string;
   }>;
 };
 
@@ -54,7 +55,6 @@ export function getHealthchecks(): Healthchecks {
       healthchecks: [
         {
           label: 'OpenSSL Installed',
-          isRequired: true,
           run: async (_: EnvironmentInfo) => {
             const isAvailable = await commandSucceeds('openssl version');
             return {
@@ -73,6 +73,12 @@ export function getHealthchecks(): Healthchecks {
           isRequired: true,
           run: async (e: EnvironmentInfo) => ({
             hasProblem: e.SDKs['Android SDK'] === 'Not Found',
+          }),
+        },
+        {
+          label: 'ANDROID_HOME set',
+          run: async (e: EnvironmentInfo) => ({
+            hasProblem: !!process.env.ANDROID_HOME,
           }),
         },
       ],
@@ -127,33 +133,35 @@ export function getHealthchecks(): Healthchecks {
 export async function runHealthchecks(): Promise<Array<CategoryResult>> {
   const environmentInfo = await getEnvInfo();
   const healthchecks: Healthchecks = getHealthchecks();
-  const results: Array<CategoryResult> = (await Promise.all(
-    Object.entries(healthchecks).map(async ([key, category]) => {
-      if (!category) {
-        return null;
-      }
-      const categoryResult: CategoryResult = [
-        key,
-        {
-          label: category.label,
-          results: await Promise.all(
-            category.healthchecks.map(async ({label, run, isRequired}) => ({
-              label,
-              isRequired: isRequired ?? true,
-              result: await run(environmentInfo).catch(e => {
-                console.error(e);
-                // TODO Improve result type to be: OK | Problem(message, fix...)
-                return {
-                  hasProblem: true,
-                };
-              }),
-            })),
-          ),
-        },
-      ];
-      return categoryResult;
-    }),
-  )).filter(notNull);
+  const results: Array<CategoryResult> = (
+    await Promise.all(
+      Object.entries(healthchecks).map(async ([key, category]) => {
+        if (!category) {
+          return null;
+        }
+        const categoryResult: CategoryResult = [
+          key,
+          {
+            label: category.label,
+            results: await Promise.all(
+              category.healthchecks.map(async ({label, run, isRequired}) => ({
+                label,
+                isRequired: isRequired ?? true,
+                result: await run(environmentInfo).catch(e => {
+                  console.error(e);
+                  // TODO Improve result type to be: OK | Problem(message, fix...)
+                  return {
+                    hasProblem: true,
+                  };
+                }),
+              })),
+            ),
+          },
+        ];
+        return categoryResult;
+      }),
+    )
+  ).filter(notNull);
   return results;
 }
 

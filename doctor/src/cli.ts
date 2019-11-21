@@ -7,10 +7,29 @@
  * @format
  */
 
-import {runHealthchecks} from './index';
+import {getHealthchecks} from './index';
+import {getEnvInfo} from './environmentInfo';
 
 (async () => {
-  const results = await runHealthchecks();
+  const environmentInfo = await getEnvInfo();
+  console.log(JSON.stringify(environmentInfo));
+  const healthchecks = getHealthchecks();
+  const results = await Promise.all(
+    Object.entries(healthchecks).map(async ([key, category]) => [
+      key,
+      category
+        ? {
+            label: category.label,
+            results: await Promise.all(
+              category.healthchecks.map(async ({label, run}) => ({
+                label,
+                result: await run(environmentInfo),
+              })),
+            ),
+          }
+        : {},
+    ]),
+  );
 
   console.log(JSON.stringify(results, null, 2));
 })();

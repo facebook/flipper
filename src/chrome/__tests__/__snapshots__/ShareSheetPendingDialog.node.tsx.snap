@@ -12,7 +12,7 @@ exports[`ShareSheetPendingDialog is rendered with status update 1`] = `
       size={30}
     />
     <span
-      className="css-18qh9b2"
+      className="css-91luyc"
       color="#6f6f6f"
     >
       Update
@@ -57,7 +57,7 @@ exports[`ShareSheetPendingDialog is rendered without status update 1`] = `
       size={30}
     />
     <span
-      className="css-18qh9b2"
+      className="css-91luyc"
       color="#6f6f6f"
     />
   </div>
