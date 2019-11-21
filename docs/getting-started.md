@@ -50,6 +50,19 @@ dependencies {
 }
 ```
 
+<div class="warning">
+
+Please note that our `flipper-noop` package provides a limited subset of the
+APIs provided by the `flipper` package and does not provide any plugin stubs.
+It is recommended that you keep all Flipper instantiation code in a separate
+build variant to ensure it doesn't accidentally make it into your production
+builds. Check out [the sample
+app](https://github.com/facebook/flipper/tree/master/android/sample/src) to
+see how to organise your Flipper initialization into debug and release
+variants.
+
+</div>
+
 Now you can initialize Flipper in your Application's `onCreate` method, which involves
 initializing SoLoader (for loading the C++ part of Flipper) and starting a `FlipperClient`.
 
