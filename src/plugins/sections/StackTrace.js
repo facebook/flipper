@@ -22,12 +22,12 @@ function isSystemLibrary(libraryName: ?string): boolean {
 
 type Props = {
   data: Array<string>,
-  skip_stack_trace_format?: boolean,
+  skipStackTraceFormat?: boolean,
 };
 
 export default class extends React.Component<Props> {
   render() {
-    if (this.props.skip_stack_trace_format) {
+    if (this.props.skipStackTraceFormat) {
       return (
         <StackTrace backgroundColor={colors.white}>
           {this.props.data.map(stack_trace_line => {
