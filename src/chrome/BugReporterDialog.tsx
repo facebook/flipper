@@ -236,9 +236,9 @@ class BugReporterDialog extends Component<Props, State> {
     } else {
       content = (
         <Fragment>
-          <Title>Report a bug...</Title>
+          <Title>Report a bug in Flipper</Title>
           <TitleInput
-            placeholder="Title..."
+            placeholder="Title"
             value={title}
             innerRef={this.setTitleRef}
             onChange={this.onTitleChange}
@@ -246,7 +246,7 @@ class BugReporterDialog extends Component<Props, State> {
           />
 
           <DescriptionTextarea
-            placeholder="Describe your problem in as much detail as possible..."
+            placeholder="Describe your problem in as much detail as possible."
             value={description}
             innerRef={this.setDescriptionRef}
             onChange={this.onDescriptionChange}

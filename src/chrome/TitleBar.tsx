@@ -181,7 +181,7 @@ class TitleBar extends React.Component<Props, StateFromProps> {
           <Button
             compact={true}
             onClick={() => this.props.setActiveSheet(ACTIVE_SHEET_BUG_REPORTER)}
-            title="Report Bug"
+            title="Report Bug in Flipper"
             icon="bug"
           />
         )}
