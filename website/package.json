@@ -18,6 +18,7 @@
   },
   "dependencies": {},
   "resolutions": {
-    "underscore.string": "3.3.5"
+    "underscore.string": "3.3.5",
+    "ws": "3.3.1"
   }
 }
