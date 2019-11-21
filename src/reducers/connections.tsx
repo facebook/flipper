@@ -219,6 +219,7 @@ const reducer = (state: State = INITAL_STATE, action: Actions): State => {
 
       return updateSelection({
         ...state,
+        staticView: null,
         selectedApp,
         selectedPlugin,
         userPreferredPlugin: selectedPlugin || state.userPreferredPlugin,
@@ -519,6 +520,10 @@ function canBeDefaultDevice(device: BaseDevice) {
  * @param state
  */
 function updateSelection(state: Readonly<State>): State {
+  if (state.staticView && state.staticView !== WelcomeScreen) {
+    return state;
+  }
+
   const updates: Partial<State> = {
     staticView: null,
   };
@@ -569,7 +574,5 @@ function updateSelection(state: Readonly<State>): State {
     updates.selectedPlugin = DEFAULT_PLUGIN;
   }
 
-  const res = {...state, ...updates};
-  console.log(res.selectedDevice, res.selectedApp, res.selectedPlugin);
-  return res;
+  return {...state, ...updates};
 }

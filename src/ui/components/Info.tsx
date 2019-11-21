@@ -49,6 +49,7 @@ const InfoWrapper = styled(FlexColumn)(({type}: {type: InfoProps['type']}) => ({
   border: `1px solid ${color[type]}`,
   background: bgColor[type],
 }));
+InfoWrapper.displayName = 'InfoWrapper';
 
 /**
  * Shows an info box with some text and a symbol.

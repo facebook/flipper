@@ -30,9 +30,9 @@ import {
   LoadingIndicator,
   Button,
   StarButton,
-  ArchivedDevice,
   Heading,
   Spacer,
+  ArchivedDevice,
 } from 'flipper';
 import React, {Component, PureComponent, Fragment} from 'react';
 import NotificationsHub from '../NotificationsHub';
