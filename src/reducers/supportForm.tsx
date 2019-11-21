@@ -13,6 +13,8 @@ export type SupportFormV2State = {
   description: string;
   commitHash: string;
   appName: string;
+  screenshots?: {image: string; description: string}[];
+  videos?: {url: string; description: string}[];
 };
 
 export type State = {
@@ -27,6 +29,9 @@ export type Action =
   | {
       type: 'SET_SUPPORT_FORM_V2_STATE';
       payload: SupportFormV2State;
+    }
+  | {
+      type: 'RESET_SUPPORT_FORM_V2_STATE';
     };
 
 export type NTUsersFormData = {
@@ -66,6 +71,8 @@ export default function reducer(
       ...state,
       supportFormV2: action.payload,
     };
+  } else if (action.type === 'RESET_SUPPORT_FORM_V2_STATE') {
+    return initialState();
   } else {
     return state;
   }
@@ -81,4 +88,8 @@ export const setSupportFormState = (
 export const setSupportFormV2State = (payload: SupportFormV2State): Action => ({
   type: 'SET_SUPPORT_FORM_V2_STATE',
   payload,
+});
+
+export const resetSupportFormV2State = (): Action => ({
+  type: 'RESET_SUPPORT_FORM_V2_STATE',
 });

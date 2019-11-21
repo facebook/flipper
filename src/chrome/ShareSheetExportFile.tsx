@@ -29,12 +29,6 @@ const Container = styled(FlexColumn)({
   width: 500,
 });
 
-const Center = styled(FlexColumn)({
-  alignItems: 'center',
-  paddingTop: 50,
-  paddingBottom: 50,
-});
-
 const ErrorMessage = styled(Text)({
   display: 'block',
   marginTop: 6,

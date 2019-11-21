@@ -39,6 +39,7 @@ import CancellableExportStatus from './CancellableExportStatus';
 import {performance} from 'perf_hooks';
 import ShareSheetPendingDialog from './ShareSheetPendingDialog';
 import {getInstance as getLogger} from '../fb-stubs/Logger';
+import {resetSupportFormV2State} from '../reducers/supportForm';
 export const SHARE_FLIPPER_TRACE_EVENT = 'share-flipper-link';
 
 const Container = styled(FlexColumn)({
@@ -142,6 +143,7 @@ export default class ShareSheetExportUrl extends Component<Props, State> {
           requireInteraction: true,
         });
       }
+      store.dispatch(resetSupportFormV2State());
       this.props.logger.trackTimeSince(mark, 'export:url-success');
     } catch (e) {
       if (!this.state.runInBackground) {

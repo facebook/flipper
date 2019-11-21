@@ -7,6 +7,9 @@
  * @format
  */
 
+import os from 'os';
+import path from 'path';
+import electron from 'electron';
 import {getInstance as getLogger} from '../fb-stubs/Logger';
 import {Store, MiddlewareAPI} from '../reducers';
 import {DeviceExport} from '../devices/BaseDevice';
@@ -33,6 +36,12 @@ import {promisify} from 'util';
 import promiseTimeout from './promiseTimeout';
 import {Idler} from './Idler';
 import {setStaticView} from '../reducers/connections';
+import {
+  SupportFormV2State,
+  resetSupportFormV2State,
+} from '../reducers/supportForm';
+import {setSelectPluginsToExportActiveSheet} from '../reducers/application';
+
 export const IMPORT_FLIPPER_TRACE_EVENT = 'import-flipper-trace';
 export const EXPORT_FLIPPER_TRACE_EVENT = 'export-flipper-trace';
 export const EXPORT_FLIPPER_TRACE_TIME_SERIALIZATION_EVENT = `${EXPORT_FLIPPER_TRACE_EVENT}:serialization`;
@@ -49,7 +58,7 @@ export type ExportType = {
     pluginStates: PluginStatesExportState;
     activeNotifications: Array<PluginNotification>;
   };
-  supportRequestDetails?: SupportRequestDetailsMetaData;
+  supportRequestDetails?: SupportFormV2State;
 };
 
 type ProcessPluginStatesOptions = {
@@ -81,15 +90,6 @@ type AddSaltToDeviceSerialOptions = {
   pluginNotification: Array<PluginNotification>;
   selectedPlugins: Array<string>;
   statusUpdate?: (msg: string) => void;
-};
-
-export type SupportRequestDetailsMetaData = {
-  title: string;
-  app: string;
-  description: string;
-  commitHash: string;
-  screenshots: {image: string; description: string}[];
-  videos: {url: string; description: string}[];
 };
 
 export function processClients(
@@ -545,6 +545,7 @@ export function exportStore(
         idler,
       );
       if (exportData != null) {
+        exportData.supportRequestDetails = store.getState().supportForm?.supportFormV2;
         statusUpdate && statusUpdate('Serializing Flipper data...');
         const serializedString = JSON.stringify(exportData);
         if (serializedString.length <= 0) {
@@ -578,6 +579,7 @@ export const exportStoreToFile = (
     ({serializedString, errorArray}) => {
       return promisify(fs.writeFile)(exportFilePath, serializedString).then(
         () => {
+          store.dispatch(resetSupportFormV2State());
           return {errorArray};
         },
       );
@@ -696,4 +698,38 @@ export function showOpenDialog(store: Store) {
       }, `${IMPORT_FLIPPER_TRACE_EVENT}:UI`);
     }
   });
+}
+
+export function startFileExport(dispatch: Store['dispatch']) {
+  electron.remote.dialog
+    .showSaveDialog(
+      // @ts-ignore This appears to work but isn't allowed by the types
+      null,
+      {
+        title: 'FlipperExport',
+        defaultPath: path.join(os.homedir(), 'FlipperExport.flipper'),
+      },
+    )
+    .then(async (result: electron.SaveDialogReturnValue) => {
+      const file = result.filePath;
+      if (!file) {
+        return;
+      }
+      dispatch(
+        setSelectPluginsToExportActiveSheet({
+          type: 'file',
+          file: file,
+          closeOnFinish: false,
+        }),
+      );
+    });
+}
+
+export function startLinkExport(dispatch: Store['dispatch']) {
+  dispatch(
+    setSelectPluginsToExportActiveSheet({
+      type: 'link',
+      closeOnFinish: false,
+    }),
+  );
 }

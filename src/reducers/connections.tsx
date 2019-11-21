@@ -169,6 +169,14 @@ const reducer = (state: State = INITAL_STATE, action: Actions): State => {
         selectedPlugin: payload != null ? null : selectedPlugin,
       };
     }
+
+    case 'RESET_SUPPORT_FORM_V2_STATE': {
+      return updateSelection({
+        ...state,
+        staticView: null,
+      });
+    }
+
     case 'SELECT_DEVICE': {
       const {payload} = action;
       return updateSelection({
