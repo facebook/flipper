@@ -54,6 +54,7 @@ import {BackgroundColorProperty} from 'csstype';
 import {StyledOtherComponent} from 'create-emotion-styled';
 import SupportRequestFormManager from '../fb-stubs/SupportRequestFormManager';
 import SupportRequestDetails from '../fb-stubs/SupportRequestDetails';
+import SupportRequestFormV2 from '../fb-stubs/SupportRequestFormV2';
 
 type FlipperPlugins = typeof FlipperPlugin[];
 type PluginsByCategory = [string, FlipperPlugins][];
@@ -405,27 +406,25 @@ class MainSidebar extends PureComponent<Props, State> {
             </PluginName>
           </ListItem>
         )}
-        {this.state.showSupportForm && (
-          <ListItem
-            active={
-              staticView != null && staticView === SupportRequestFormManager
-            }
-            onClick={() => setStaticView(SupportRequestFormManager)}>
-            <PluginIcon
-              color={colors.light50}
-              name={'app-dailies'}
-              isActive={
-                staticView != null && staticView === SupportRequestFormManager
-              }
-            />
-            <PluginName
-              isActive={
-                staticView != null && staticView === SupportRequestFormManager
-              }>
-              Litho Support Request
-            </PluginName>
-          </ListItem>
-        )}
+        {this.state.showSupportForm &&
+          (function() {
+            const supportRequestFormImpl = GK.get('support_requests_v2')
+              ? SupportRequestFormV2
+              : SupportRequestFormManager;
+            const active = staticView && staticView === supportRequestFormImpl;
+            return (
+              <ListItem
+                active={active}
+                onClick={() => setStaticView(supportRequestFormImpl)}>
+                <PluginIcon
+                  color={colors.light50}
+                  name={'app-dailies'}
+                  isActive={active}
+                />
+                <PluginName isActive={active}>Litho Support Request</PluginName>
+              </ListItem>
+            );
+          })()}
         <ListItem
           onClick={() => this.props.setActiveSheet(ACTIVE_SHEET_PLUGINS)}>
           <PluginIcon
