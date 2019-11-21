@@ -33,6 +33,8 @@ import {
   Heading,
   Spacer,
   ArchivedDevice,
+  SmallText,
+  Info,
 } from 'flipper';
 import React, {Component, PureComponent, Fragment} from 'react';
 import NotificationsHub from '../NotificationsHub';
@@ -445,6 +447,11 @@ class MainSidebar extends PureComponent<Props, State> {
     const {staticView, setStaticView} = this.props;
     return (
       <>
+        <ListItem>
+          <Info type="warning" small>
+            {selectedDevice.source ? 'Imported device' : 'Archived device'}
+          </Info>
+        </ListItem>
         {this.state.showSupportForm &&
           (selectedDevice as ArchivedDevice).supportRequestDetails && (
             <ListItem
@@ -537,15 +544,7 @@ class MainSidebar extends PureComponent<Props, State> {
       <>
         {favoritePlugins.length === 0 ? (
           <ListItem>
-            <div
-              style={{
-                textAlign: 'center',
-                width: '100%',
-                color: colors.light30,
-                fontStyle: 'italic',
-              }}>
-              Star your favorite plugins!
-            </div>
+            <SmallText center>Star your favorite plugins!</SmallText>
           </ListItem>
         ) : (
           <>

@@ -20,6 +20,7 @@ import FlexColumn from './FlexColumn';
 export type InfoProps = {
   children: React.ReactNode;
   type: 'info' | 'spinning' | 'warning' | 'error';
+  small?: boolean;
 };
 
 const icons = {
@@ -42,30 +43,33 @@ const bgColor = {
   spinning: 'transparent',
 };
 
-const InfoWrapper = styled(FlexColumn)(({type}: {type: InfoProps['type']}) => ({
-  padding: 10,
-  borderRadius: 4,
-  color: color[type],
-  border: `1px solid ${color[type]}`,
-  background: bgColor[type],
-}));
+const InfoWrapper = styled(FlexColumn)(
+  ({type, small}: Pick<InfoProps, 'type' | 'small'>) => ({
+    padding: small ? '0 4px' : 10,
+    borderRadius: 4,
+    color: color[type],
+    border: `1px solid ${color[type]}`,
+    background: bgColor[type],
+    width: '100%',
+  }),
+);
 InfoWrapper.displayName = 'InfoWrapper';
 
 /**
  * Shows an info box with some text and a symbol.
  * Supported types: info | spinning | warning | error
  */
-function Info({type, children}: InfoProps) {
+function Info({type, children, small}: InfoProps) {
   return (
-    <InfoWrapper type={type}>
+    <InfoWrapper type={type} small={small}>
       <HBox>
         {type === 'spinning' ? (
-          <LoadingIndicator size={24} />
+          <LoadingIndicator size={small ? 12 : 24} />
         ) : (
           <Glyph
             name={icons[type]}
             color={color[type]}
-            size={24}
+            size={small ? 12 : 24}
             variant="filled"
           />
         )}

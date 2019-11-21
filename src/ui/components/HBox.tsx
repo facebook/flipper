@@ -42,7 +42,9 @@ const HBox: React.FC<{
     width: '100%',
     shrink: 1,
     grow: 1,
-  };
+    display: 'flex',
+    flexDirection: 'column',
+  } as const;
 
   switch (grow) {
     case 'right':

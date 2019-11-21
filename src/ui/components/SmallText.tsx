@@ -14,11 +14,13 @@ import Text from './Text';
 /**
  * Subtle text that should not draw attention
  */
-const SmallText = styled(Text)({
+const SmallText = styled(Text)(({center}: {center?: boolean}) => ({
   color: colors.light20,
   size: 10,
   fontStyle: 'italic',
-});
+  textAlign: center ? 'center' : undefined,
+  width: '100%',
+}));
 SmallText.displayName = 'SmallText';
 
 export default SmallText;
