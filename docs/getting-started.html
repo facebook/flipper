@@ -87,16 +87,6 @@ dependencies {
   releaseImplementation <span class="hljs-string">'com.facebook.flipper:flipper-noop:0.28.0'</span>
 }
 </code></pre>
-<div class="warning">
-<p>Please note that our <code>flipper-noop</code> package provides a limited subset of the
-APIs provided by the <code>flipper</code> package and does not provide any plugin stubs.
-It is recommended that you keep all Flipper instantiation code in a separate
-build variant to ensure it doesn't accidentally make it into your production
-builds. Check out <a href="https://github.com/facebook/flipper/tree/master/android/sample/src">the sample
-app</a> to
-see how to organise your Flipper initialization into debug and release
-variants.</p>
-</div>
 <p>Now you can initialize Flipper in your Application's <code>onCreate</code> method, which involves
 initializing SoLoader (for loading the C++ part of Flipper) and starting a <code>FlipperClient</code>.</p>
 <pre><code class="hljs css language-java"><span class="hljs-keyword">import</span> com.facebook.flipper.android.AndroidFlipperClient;
