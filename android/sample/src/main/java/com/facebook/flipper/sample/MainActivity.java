@@ -12,7 +12,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.facebook.flipper.android.AndroidFlipperClient;
 import com.facebook.flipper.core.FlipperClient;
 import com.facebook.flipper.plugins.example.ExampleFlipperPlugin;
-import com.facebook.flipper.plugins.navigation.NavigationFlipperPlugin;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
 
@@ -22,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
   protected void onCreate(final Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    NavigationFlipperPlugin.getInstance().sendNavigationEvent("flipper://demo_page/");
+    NavigationFacade.sendNavigationEvent("flipper://deep_link_activity/");
 
     final ComponentContext c = new ComponentContext(this);
     setContentView(LithoView.create(c, RootComponent.create(c).build()));
