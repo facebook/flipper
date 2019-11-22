@@ -26,10 +26,13 @@ void FlipperRSocketResponder::handleFireAndForget(
   const auto payload = request.moveDataToString();
   std::unique_ptr<FireAndForgetBasedFlipperResponder> responder;
   auto message = folly::parseJson(payload);
-  if (message.find("id") != message.items().end()) {
-    auto id = message["id"].getInt();
+  auto idItr = message.find("id");
+  if (idItr == message.items().end()) {
     responder =
-        std::make_unique<FireAndForgetBasedFlipperResponder>(websocket_, id);
+        std::make_unique<FireAndForgetBasedFlipperResponder>(websocket_);
+  } else {
+    responder = std::make_unique<FireAndForgetBasedFlipperResponder>(
+        websocket_, idItr->second.getInt());
   }
 
   websocket_->onMessageReceived(
