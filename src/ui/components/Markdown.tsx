@@ -19,10 +19,12 @@ const Row = styled('div')({
   marginBottom: 5,
 });
 const Heading = styled('div')((props: {level: number}) => ({
-  fontSize: props.level === 1 ? 25 : 18,
+  fontSize: props.level === 1 ? 18 : 12,
+  textTransform: props.level > 1 ? 'uppercase' : undefined,
+  color: props.level > 1 ? '#90949c' : undefined,
   marginTop: 10,
   marginBottom: 10,
-  fontWeight: 'bold',
+  fontWeight: props.level > 1 ? 'bold' : 'normal',
 }));
 const ListItem = styled('li')({
   'list-style-type': 'circle',
@@ -31,6 +33,7 @@ const ListItem = styled('li')({
 });
 const Strong = styled('span')({
   fontWeight: 'bold',
+  color: '#1d2129',
 });
 const Emphasis = styled('span')({
   fontStyle: 'italic',
@@ -38,6 +41,7 @@ const Emphasis = styled('span')({
 const Quote = styled(Row)({
   padding: 10,
   backgroundColor: '#f1f2f3',
+  fontSize: 13,
 });
 const Code = styled('span')({
   fontFamily: '"Courier New", Courier, monospace',
@@ -58,7 +62,6 @@ class CodeBlock extends PureComponent<{value: string; language: string}> {
 }
 const Link = styled('span')({
   color: colors.blue,
-  textDecoration: 'underline',
 });
 class LinkReference extends PureComponent<{href: string}> {
   render() {
