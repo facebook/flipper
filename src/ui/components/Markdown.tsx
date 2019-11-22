@@ -19,7 +19,8 @@ const Row = styled('div')({
   marginBottom: 5,
 });
 const Heading = styled('div')((props: {level: number}) => ({
-  fontSize: Math.max(10, 20 - (props.level - 1) * 4),
+  fontSize: props.level === 1 ? 25 : 18,
+  marginTop: 10,
   marginBottom: 10,
   fontWeight: 'bold',
 }));
