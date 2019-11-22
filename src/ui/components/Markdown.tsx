@@ -69,33 +69,22 @@ class LinkReference extends PureComponent<{href: string}> {
   }
 }
 
-export class Markdown extends PureComponent<{
-  source: string;
-}> {
-  containerRef: RefObject<HTMLDivElement> = React.createRef();
-
-  componentDidMount() {
-    ReactDOM.render(
-      <ReactMarkdown
-        source={this.props.source}
-        renderers={{
-          heading: Heading,
-          listItem: ListItem,
-          paragraph: Row,
-          strong: Strong,
-          emphasis: Emphasis,
-          inlineCode: Code,
-          code: CodeBlock,
-          blockquote: Quote,
-          link: LinkReference,
-          linkReference: LinkReference,
-        }}
-      />,
-      this.containerRef.current,
-    );
-  }
-
-  render() {
-    return <div ref={this.containerRef}></div>;
-  }
+export function Markdown(props: {source: string}) {
+  return (
+    <ReactMarkdown
+      source={props.source}
+      renderers={{
+        heading: Heading,
+        listItem: ListItem,
+        paragraph: Row,
+        strong: Strong,
+        emphasis: Emphasis,
+        inlineCode: Code,
+        code: CodeBlock,
+        blockquote: Quote,
+        link: LinkReference,
+        linkReference: LinkReference,
+      }}
+    />
+  );
 }
