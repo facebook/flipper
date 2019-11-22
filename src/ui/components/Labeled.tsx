@@ -10,6 +10,7 @@
 import React from 'react';
 import Label from './Label';
 import VBox from './VBox';
+import FlexColumn from './FlexColumn';
 
 /**
  * Vertically arranged section that starts with a label and includes standard margins
@@ -17,7 +18,7 @@ import VBox from './VBox';
 const Labeled: React.FC<{title: string}> = ({title, children}) => (
   <VBox>
     <Label style={{marginBottom: 6}}>{title}</Label>
-    {children}
+    <FlexColumn>{children}</FlexColumn>
   </VBox>
 );
 

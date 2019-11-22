@@ -626,7 +626,9 @@ export class ManagedTable extends React.Component<
         highlighted={highlightedRows.has(rows[index].key)}
         row={rows[index]}
         index={index}
-        style={style}
+        style={
+          rows[index].height ? {...style, height: rows[index].height} : style
+        }
         onAddFilter={onAddFilter}
         zebra={zebra}
       />

@@ -168,3 +168,4 @@ export {default as Labeled} from './components/Labeled';
 export {default as RoundedSection} from './components/RoundedSection';
 export {default as CenteredView} from './components/CenteredView';
 export {default as Info} from './components/Info';
+export {default as Bordered} from './components/Bordered';

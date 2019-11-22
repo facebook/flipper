@@ -20,6 +20,7 @@ import {
   Link,
   FlipperPlugin,
   FlipperDevicePlugin,
+  Bordered,
 } from 'flipper';
 import StatusIndicator from '../ui/components/StatusIndicator';
 import {State as Store} from '../reducers';
@@ -35,14 +36,9 @@ const Ellipsis = styled(Text)({
   whiteSpace: 'nowrap',
 });
 
-const TableContainer = styled('div')({
-  borderRadius: 4,
-  overflow: 'hidden',
-  border: `1px solid ${colors.macOSTitleBarButtonBorder}`,
+const TableContainer = styled(Bordered)({
   marginTop: 10,
-  backgroundColor: colors.white,
   height: 400,
-  display: 'flex',
 });
 
 const Lamp = (props: {on: boolean}) => (
