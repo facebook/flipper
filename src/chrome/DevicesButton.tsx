@@ -12,11 +12,17 @@ import {connect, ReactReduxContext} from 'react-redux';
 import {spawn} from 'child_process';
 import {dirname} from 'path';
 import {selectDevice, preferDevice} from '../reducers/connections';
+import {
+  setActiveSheet,
+  ActiveSheet,
+  ACTIVE_SHEET_JS_EMULATOR_LAUNCHER,
+} from '../reducers/application';
 import {default as which} from 'which';
 import {showOpenDialog} from '../utils/exportData';
 import BaseDevice from '../devices/BaseDevice';
 import React, {Component} from 'react';
 import {State} from '../reducers';
+import GK from '../fb-stubs/GK';
 
 type StateFromProps = {
   selectedDevice: BaseDevice | null | undefined;
@@ -27,6 +33,7 @@ type StateFromProps = {
 type DispatchFromProps = {
   selectDevice: (device: BaseDevice) => void;
   preferDevice: (device: string) => void;
+  setActiveSheet: (sheet: ActiveSheet) => void;
 };
 
 type OwnProps = {};
@@ -154,17 +161,30 @@ class DevicesButton extends Component<Props> {
           label: name,
           click: () => this.launchEmulator(name),
         }));
-      if (emulators.length > 0) {
+
+      // Launch JS emulator
+      if (GK.get('flipper_js_client_emulator')) {
+        if (emulators.length > 0) {
+          dropdown.push(
+            {type: 'separator' as 'separator'},
+            {
+              label: 'Launch Android emulators',
+              enabled: false,
+            },
+            ...emulators,
+          );
+        }
         dropdown.push(
           {type: 'separator' as 'separator'},
           {
-            label: 'Launch Android emulators',
-            enabled: false,
+            label: 'Launch JS Web App',
+            click: () =>
+              this.props.setActiveSheet(ACTIVE_SHEET_JS_EMULATOR_LAUNCHER),
           },
-          ...emulators,
         );
       }
     }
+
     if (dropdown.length > 0) {
       dropdown.push({type: 'separator' as 'separator'});
     }
@@ -196,5 +216,6 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, State>(
   {
     selectDevice,
     preferDevice,
+    setActiveSheet,
   },
 )(DevicesButton);
