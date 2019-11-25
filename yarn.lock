@@ -7830,15 +7830,6 @@ roarr@^2.14.4:
     semver-compare "^1.0.0"
     sprintf-js "^1.1.2"
 
-rsocket-core@^0.0.17:
-  version "0.0.17"
-  resolved "https://registry.yarnpkg.com/rsocket-core/-/rsocket-core-0.0.17.tgz#20c184ac5f476cbd0dd7dee588ce7515696537d6"
-  integrity sha512-nChnqHMIJcUVY3UbiDtv84v2uqV6WpmVqSFZD6X5nsvRrWr2e6ZOVslOOmYDAFJQw2EbLWksbTWyoST5tVxvyQ==
-  dependencies:
-    fbjs "^1.0.0"
-    rsocket-flowable "^0.0.14"
-    rsocket-types "^0.0.16"
-
 rsocket-core@^0.0.18:
   version "0.0.18"
   resolved "https://registry.yarnpkg.com/rsocket-core/-/rsocket-core-0.0.18.tgz#195cb45f301a5962f9702e7d634957aecd2788ce"
@@ -7855,24 +7846,24 @@ rsocket-flowable@^0.0.14:
   dependencies:
     fbjs "^1.0.0"
 
-rsocket-tcp-client@^0.0.17:
-  version "0.0.17"
-  resolved "https://registry.yarnpkg.com/rsocket-tcp-client/-/rsocket-tcp-client-0.0.17.tgz#bb4519b3c9d6e5e2f90486de8a2123e547f71e18"
-  integrity sha512-kGshztt8OgKqkTIXCxKzPOfFiW+nfw0mRT7QT/cVX/ZZpr7ba9Dk1OowHfOsAUA/8Mlyc8sgNom4IkRpjJK2/A==
+rsocket-tcp-client@^0.0.18:
+  version "0.0.18"
+  resolved "https://registry.yarnpkg.com/rsocket-tcp-client/-/rsocket-tcp-client-0.0.18.tgz#4c5e618c35bb3904b05d5d02aabe8d59e8e20985"
+  integrity sha512-gx2J/tN1t5O1JM8i4NKeWUtvKx/DlpxKOfEVw+kV0qm37T/9QvOMpQmeqTpRxEBaYvLHBYmX2ysZev3CuaZ1Mw==
   dependencies:
     fbjs "^1.0.0"
-    rsocket-core "^0.0.17"
+    rsocket-core "^0.0.18"
     rsocket-flowable "^0.0.14"
 
-rsocket-tcp-server@^0.0.17:
-  version "0.0.17"
-  resolved "https://registry.yarnpkg.com/rsocket-tcp-server/-/rsocket-tcp-server-0.0.17.tgz#5dbf6d2f83e1bb6c9385b7f5714fd37dd0ef3a3b"
-  integrity sha512-fzY2JGvoUraJFLUHXT8YA5eO8Jzk1itNktVcaQy4c6LAhLix2UfClJ0Zcwtl1TVQSSLjgF8VJAaawLrWa1tV+Q==
+rsocket-tcp-server@^0.0.18:
+  version "0.0.18"
+  resolved "https://registry.yarnpkg.com/rsocket-tcp-server/-/rsocket-tcp-server-0.0.18.tgz#2d87072f21410f272a0bee95683af6c70a2477ac"
+  integrity sha512-823my8JEcXvkPHEmm0c3k0/di3ZncmsETetlk6GNPrxpjPAigTxaLfoW/gA25IuUG4YPhBHPpzVHRQOMSu61Bw==
   dependencies:
     fbjs "^1.0.0"
-    rsocket-core "^0.0.17"
+    rsocket-core "^0.0.18"
     rsocket-flowable "^0.0.14"
-    rsocket-tcp-client "^0.0.17"
+    rsocket-tcp-client "^0.0.18"
     rsocket-types "^0.0.16"
 
 rsocket-types@^0.0.16:
