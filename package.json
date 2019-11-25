@@ -41,7 +41,7 @@
     ]
   },
   "resolutions": {
-    "@jest-runner/electron/electron": "7.1.2",
+    "@jest-runner/electron/electron": "5.0.11",
     "adbkit/adbkit-logcat": "2",
     "@types/react": "16.9.11",
     "@types/react-dom": "16.9.2"
@@ -60,7 +60,7 @@
     "clearMocks": true
   },
   "devDependencies": {
-    "@jest-runner/electron": "^2.0.2",
+    "@jest-runner/electron": "^2.0.1",
     "@testing-library/react": "^9.3.0",
     "@types/algoliasearch": "^3.30.19",
     "@types/deep-equal": "^1.0.1",
@@ -85,8 +85,8 @@
     "@typescript-eslint/parser": "^2.1.1-alpha.4",
     "babel-code-frame": "^6.26.0",
     "babel-eslint": "^10.0.1",
-    "electron": "7.1.2",
-    "electron-builder": "22.1.0",
+    "electron": "^5.0.11",
+    "electron-builder": "^20.38.5",
     "eslint": "^6.5.1",
     "eslint-config-fbjs": "^3.1.1",
     "eslint-plugin-babel": "^5.3.0",
@@ -185,6 +185,8 @@
   },
   "greenkeeper": {
     "ignore": [
+      "electron",
+      "electron-builder",
       "emotion",
       "react-emotion",
       "tmp"
