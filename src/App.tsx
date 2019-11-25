@@ -19,7 +19,6 @@ import ShareSheetExportUrl from './chrome/ShareSheetExportUrl';
 import SignInSheet from './chrome/SignInSheet';
 import ExportDataPluginSheet from './chrome/ExportDataPluginSheet';
 import ShareSheetExportFile from './chrome/ShareSheetExportFile';
-import JSEmulatorLauncherSheet from './chrome/JSEmulatorLauncherSheet';
 import PluginContainer from './PluginContainer';
 import Sheet from './chrome/Sheet';
 import {ipcRenderer, remote} from 'electron';
@@ -35,7 +34,6 @@ import {
   ACTIVE_SHEET_SHARE_DATA_IN_FILE,
   ACTIVE_SHEET_SELECT_PLUGINS_TO_EXPORT,
   ACTIVE_SHEET_PLUGIN_SHEET,
-  ACTIVE_SHEET_JS_EMULATOR_LAUNCHER,
 } from './reducers/application';
 import {Logger} from './fb-interfaces/Logger';
 import BugReporter from './fb-stubs/BugReporter';
@@ -124,8 +122,6 @@ export class App extends React.Component<Props> {
       case ACTIVE_SHEET_PLUGIN_SHEET:
         // Currently unused.
         return null;
-      case ACTIVE_SHEET_JS_EMULATOR_LAUNCHER:
-        return <JSEmulatorLauncherSheet onHide={onHide} />;
       default:
         return null;
     }

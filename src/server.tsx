@@ -16,7 +16,6 @@ import {RSocketServer} from 'rsocket-core';
 import RSocketTCPServer from 'rsocket-tcp-server';
 import {Single} from 'rsocket-flowable';
 import Client from './Client';
-import {FlipperClientConnection} from './Client';
 import {UninitializedClient} from './UninitializedClient';
 import {reportPlatformFailures} from './utils/metrics';
 import EventEmitter from 'events';
@@ -24,11 +23,9 @@ import invariant from 'invariant';
 import tls from 'tls';
 import net, {Socket} from 'net';
 import {Responder, Payload, ReactiveSocket} from 'rsocket-types';
-import GK from './fb-stubs/GK';
-import {initJsEmulatorIPC} from './utils/js-client/serverUtils';
 
 type ClientInfo = {
-  connection: FlipperClientConnection<any, any> | null | undefined;
+  connection: ReactiveSocket<any, any> | null | undefined;
   client: Client;
 };
 
@@ -86,11 +83,6 @@ class Server extends EventEmitter {
         return;
       });
     reportPlatformFailures(this.initialisePromise, 'initializeServer');
-
-    if (GK.get('flipper_js_client_emulator')) {
-      initJsEmulatorIPC(this.store, this.logger, this, this.connections);
-    }
-
     return this.initialisePromise;
   }
 
@@ -311,7 +303,7 @@ class Server extends EventEmitter {
   }
 
   async addConnection(
-    conn: FlipperClientConnection<any, any>,
+    conn: ReactiveSocket<any, any>,
     query: ClientQuery,
     csrQuery: ClientCsrQuery,
   ): Promise<Client> {
