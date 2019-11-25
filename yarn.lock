@@ -1267,6 +1267,11 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-12.12.5.tgz#66103d2eddc543d44a04394abb7be52506d7f290"
   integrity sha512-KEjODidV4XYUlJBF3XdjSH5FWoMCtO0utnhtdLf1AgeuZLOrRbvmU/gaRCVg7ZaQDjVf3l84egiY0mRNe5xE4A==
 
+"@types/node@^12.12.12":
+  version "12.12.12"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-12.12.12.tgz#529bc3e73dbb35dd9e90b0a1c83606a9d3264bdb"
+  integrity sha512-MGuvYJrPU0HUwqF7LqvIj50RZUX23Z+m583KBygKYUZLlZ88n6w28XRNJRJgsHukLEnLz6w6SvxZoLgbr5wLqQ==
+
 "@types/node@^12.12.7":
   version "12.12.7"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-12.12.7.tgz#01e4ea724d9e3bd50d90c11fd5980ba317d8fa11"
@@ -4129,11 +4134,12 @@ flatted@^2.0.0:
   resolved "https://registry.yarnpkg.com/flatted/-/flatted-2.0.1.tgz#69e57caa8f0eacbc281d2e2cb458d46fdb449e08"
   integrity sha512-a1hQMktqW9Nmqr5aktAux3JMNqaucxGcjtjWnZLHX7yyPCmlSV3M54nGYbqT8K+0GhF3NBgmJCc3ma+WOgX8Jg==
 
-flipper-doctor@^0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/flipper-doctor/-/flipper-doctor-0.2.0.tgz#b0b1b51f3e6b99cf82eefe68098b74f75455e9d4"
-  integrity sha512-OQ+L4bm6OEcVGmmeQVwWJcPx6y6letE9BV+vkT2pS49jk2q1q++aJ+Z+aH7P0f/VfXpGYc3JaNUhMFie0A6LVQ==
+flipper-doctor@^0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/flipper-doctor/-/flipper-doctor-0.2.1.tgz#aed801c5f12a012a555a0d82e4b93bce88263f3f"
+  integrity sha512-JjEEEMWWxD4P899SX7huVMr44ERmGSeUZk+IAgWFhHxCvrQDoFYGjK2GFvwMn6vV08RpEPxBXiYhflnSOk/wJg==
   dependencies:
+    "@types/node" "^12.12.12"
     envinfo "^7.4.0"
 
 flow-bin@0.112.0:
