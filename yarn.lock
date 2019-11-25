@@ -1378,10 +1378,19 @@
   resolved "https://registry.yarnpkg.com/@types/retry/-/retry-0.12.0.tgz#2b35eccfcee7d38cd72ad99232fbd58bffb3c84d"
   integrity sha512-wWKOClTTiizcZhXnPY4wikVAwmdYHp8q6DmC+EJUzAMsycb7HB32Kh9RN4+0gExjmPmZSAQjgURXIGATPegAvA==
 
-"@types/rsocket-core@*", "@types/rsocket-core@^0.0.2":
+"@types/rsocket-core@*":
   version "0.0.2"
   resolved "https://registry.yarnpkg.com/@types/rsocket-core/-/rsocket-core-0.0.2.tgz#9f5d5b1acc2269a53ed2dd8185432b5b7fcdda86"
   integrity sha512-dUpBxZ6f+dCw+Q9GM/OOqz5iPrU3VghfOzf/qnvE0ok7PwO//opHbOYAwXHGwCHxdDbntH4yy3NUYe0KchCZRQ==
+  dependencies:
+    "@types/node" "*"
+    "@types/rsocket-flowable" "*"
+    "@types/rsocket-types" "*"
+
+"@types/rsocket-core@^0.0.3":
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/@types/rsocket-core/-/rsocket-core-0.0.3.tgz#7a2d188002aaa62690fa97bd92138434e6b31cda"
+  integrity sha512-dCVQF0manLKbkcAggnafCR7Nkl5wBm3mqydcSUOA8JWeGeSp2k4aXTImhASkgFdyulB/RzGSUEIPOaJR4sB3qA==
   dependencies:
     "@types/node" "*"
     "@types/rsocket-flowable" "*"
