@@ -32,7 +32,9 @@ export default class Link extends Component<{
 
   render() {
     return (
-      <StyledLink onClick={this.onClick}>{this.props.children}</StyledLink>
+      <StyledLink onClick={this.onClick}>
+        {this.props.children || this.props.href}
+      </StyledLink>
     );
   }
 }
