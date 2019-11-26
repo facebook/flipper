@@ -17,6 +17,7 @@ import React from 'react';
 const PreviewContainer = styled('span')({
   fontStyle: 'italic',
 });
+PreviewContainer.displayName = 'DataPreview:PreviewContainer';
 
 function intersperse(arr: Array<any>, sep: string) {
   if (arr.length === 0) {

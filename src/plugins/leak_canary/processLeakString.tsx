@@ -8,8 +8,39 @@
  * @flow
  */
 
-import type {Leak} from './index.js';
-import type {Element} from 'flipper';
+import {Leak} from './index';
+import {Element} from 'flipper';
+
+/**
+ * Utility Function to add a child element
+ * @param childElementId
+ * @param elementId
+ * @param elements
+ */
+function safeAddChildElementId(
+  childElementId: string,
+  elementId: string,
+  elements: Map<string, Element>,
+) {
+  const element = elements.get(elementId);
+  if (element && element.children) {
+    element.children.push(childElementId);
+  }
+}
+
+function toObjectMap(
+  dict: Map<any, any>,
+  deep: boolean = false,
+): {[key: string]: any} {
+  const result: {[key: string]: any} = {};
+  for (let [key, value] of dict.entries()) {
+    if (deep && value instanceof Map) {
+      value = toObjectMap(value, true);
+    }
+    result[String(key)] = value;
+  }
+  return result;
+}
 
 /**
  * Creates an Element (for ElementsInspector) representing a single Object in
@@ -25,8 +56,8 @@ function getElementSimple(str: string, id: string): Element {
     name = match[5];
   }
   return {
-    id: id,
-    name: name,
+    id,
+    name,
     expanded: true,
     children: [],
     attributes: [],
@@ -54,17 +85,21 @@ const RETAINED_SIZE_INDICATOR = '* Retaining: ';
 function generateFieldsList(
   lines: string[],
   i: number,
-): {|staticFields: {}, instanceFields: {}, packages: {}|} {
-  const staticFields = {};
-  const instanceFields = {};
+): {
+  staticFields: Map<string, Map<string, string>>;
+  instanceFields: Map<string, Map<string, string>>;
+  packages: Map<string, string>;
+} {
+  const staticFields = new Map<string, Map<string, string>>();
+  const instanceFields = new Map<string, Map<string, string>>();
 
-  let staticValues = {};
-  let instanceValues = {};
+  let staticValues = new Map<string, string>();
+  let instanceValues = new Map<string, string>();
 
   let elementId = -1;
-  let elementIdStr = String(-1);
+  let elementIdStr = '';
 
-  const packages = {};
+  const packages = new Map<string, any>();
 
   // Process everything between Details and Excluded Refs
   while (
@@ -74,10 +109,10 @@ function generateFieldsList(
     const line = lines[i];
     if (line.startsWith('*')) {
       if (elementId != -1) {
-        staticFields[elementIdStr] = staticValues;
-        instanceFields[elementIdStr] = instanceValues;
-        staticValues = {};
-        instanceValues = {};
+        staticFields.set(elementIdStr, staticValues);
+        instanceFields.set(elementIdStr, instanceValues);
+        staticValues = new Map<string, string>();
+        instanceValues = new Map<string, string>();
       }
       elementId++;
       elementIdStr = String(elementId);
@@ -88,7 +123,7 @@ function generateFieldsList(
       if (match) {
         pkg = match[3];
       }
-      packages[elementIdStr] = pkg;
+      packages.set(elementIdStr, pkg);
     } else {
       // Field/value pairs represented in input lines as
       // | fieldName = value
@@ -99,22 +134,18 @@ function generateFieldsList(
 
         if (fieldName.startsWith(STATIC_PREFIX)) {
           const strippedFieldName = fieldName.substr(7);
-          staticValues[strippedFieldName] = fieldValue;
+          staticValues.set(strippedFieldName, fieldValue);
         } else {
-          instanceValues[fieldName] = fieldValue;
+          instanceValues.set(fieldName, fieldValue);
         }
       }
     }
     i++;
   }
-  staticFields[elementIdStr] = staticValues;
-  instanceFields[elementIdStr] = instanceValues;
+  staticFields.set(elementIdStr, staticValues);
+  instanceFields.set(elementIdStr, instanceValues);
 
-  return {
-    staticFields: staticFields,
-    instanceFields: instanceFields,
-    packages: packages,
-  };
+  return {staticFields, instanceFields, packages};
 }
 
 /**
@@ -129,8 +160,8 @@ function processLeak(output: Leak[], leakInfo: string): Leak[] {
 
   // Elements shows a Object's classname and package, wheras elementsSimple shows
   // just its classname
-  const elements = {};
-  const elementsSimple = {};
+  const elements = new Map<string, Element>();
+  const elementsSimple = new Map<string, Element>();
 
   let rootElementId = '';
 
@@ -145,27 +176,29 @@ function processLeak(output: Leak[], leakInfo: string): Leak[] {
   }
 
   let elementId = 0;
-  let elementIdStr = '';
+  let elementIdStr = String(elementId);
+  // Last element is leaked object
+  let leakedObjName = '';
   while (i < lines.length && lines[i].startsWith('*')) {
     const line = lines[i];
 
-    elementIdStr = String(elementId);
-    const prevIdStr = String(elementId - 1);
+    const prevElementIdStr = String(elementId - 1);
     if (elementId !== 0) {
       // Add element to previous element's children
-      elements[prevIdStr].children.push(elementIdStr);
-      elementsSimple[prevIdStr].children.push(elementIdStr);
+      safeAddChildElementId(elementIdStr, prevElementIdStr, elements);
+      safeAddChildElementId(elementIdStr, prevElementIdStr, elementsSimple);
     } else {
       rootElementId = elementIdStr;
     }
-    elements[elementIdStr] = getElementSimple(line, elementIdStr);
-    elementsSimple[elementIdStr] = getElementSimple(line, elementIdStr);
+    const element = getElementSimple(line, elementIdStr);
+    leakedObjName = element.name;
+    elements.set(elementIdStr, element);
+    elementsSimple.set(elementIdStr, element);
 
     i++;
     elementId++;
+    elementIdStr = String(elementId);
   }
-  // Last element is leaked object
-  const leakedObjName = elements[elementIdStr].name;
 
   while (
     i < lines.length &&
@@ -197,23 +230,25 @@ function processLeak(output: Leak[], leakInfo: string): Leak[] {
 
   // While elementsSimple remains as-is, elements has the package of each class
   // inserted, in order to enable 'Show full class path'
-  Object.keys(packages).forEach(elementId => {
-    const pkg = packages[elementId];
-    const simpleName = elements[elementId].name;
-    // Gets everything before the field name, which is replaced by the package
-    const match = simpleName.match(/([^\. ]*)(.*)/);
-    if (match) {
-      elements[elementId].name = pkg + match[2];
+  for (const [elementId, pkg] of packages.entries()) {
+    const element = elements.get(elementId);
+    if (!element) {
+      continue;
     }
-  });
+    // Gets everything before the field name, which is replaced by the package
+    const match = element.name.match(/([^\. ]*)(.*)/);
+    if (match && match.length === 3) {
+      element.name = pkg + match[2];
+    }
+  }
 
   output.push({
-    root: rootElementId,
-    elements: elements,
-    elementsSimple: elementsSimple,
-    staticFields: staticFields,
-    instanceFields: instanceFields,
     title: leakedObjName,
+    root: rootElementId,
+    elements: toObjectMap(elements),
+    elementsSimple: toObjectMap(elementsSimple),
+    staticFields: toObjectMap(staticFields, true),
+    instanceFields: toObjectMap(instanceFields, true),
     retainedSize: retainedSize,
   });
   return output;

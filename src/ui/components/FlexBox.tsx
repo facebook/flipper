@@ -18,7 +18,10 @@ type Props = {
 /**
  * A container using flexbox to layout its children
  */
-export default styled(View)(({shrink}: Props) => ({
+const FlexBox = styled(View)(({shrink}: Props) => ({
   display: 'flex',
   flexShrink: shrink == null || shrink ? 1 : 0,
 }));
+FlexBox.displayName = 'FlexBox';
+
+export default FlexBox;

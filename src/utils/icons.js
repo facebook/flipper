@@ -18,25 +18,38 @@ const {remote} = require('electron');
 
 const ICONS = {
   'app-dailies': [12],
+  'app-react': [12],
   'arrow-right': [12],
+  bell: [12],
   'bell-null-outline': [12, 24],
   'bell-null': [12],
+  'building-city': [12],
+  'brush-paint': [12],
   'caution-octagon': [16],
-  'caution-triangle': [16],
+  'caution-triangle': [12, 16, 24],
   'chevron-down-outline': [10],
-  'chevron-down': [8],
-  'chevron-right': [8],
-  'cross-circle': [16],
+  'chevron-down': [8, 12],
+  'chevron-up': [8, 12],
+  'chevron-right': [8, 12, 16],
+  compose: [12],
+  'cross-circle': [12, 16, 24],
   'dots-3-circle-outline': [16],
-  'info-circle': [16],
-  'magic-wand': [20],
+  'first-aid': [12],
+  'flash-default': [12],
+  'info-circle': [12, 16, 24],
+  'magic-wand': [12, 20],
   'magnifying-glass': [16, 20],
   'minus-circle': [12],
   'plus-circle': [16],
+  'mobile-engagement': [16],
+  network: [12],
+  'news-feed': [12],
   'question-circle-outline': [16],
-  'star-outline': [16, 24],
+  'star-outline': [12, 16, 24],
+  trending: [12],
   'triangle-down': [12],
   'triangle-right': [12],
+  'thought-bubble': [12],
   accessibility: [16],
   apps: [12],
   bird: [12],
@@ -45,17 +58,33 @@ const ICONS = {
   bug: [12],
   camcorder: [12],
   camera: [12],
+  caution: [16],
+  cross: [16],
+  checkmark: [16],
+  dashboard: [12],
   desktop: [12],
   directions: [12],
+  download: [16],
   internet: [12],
-  mobile: [12],
+  messages: [12],
+  mobile: [12, 16, 32],
   posts: [20],
+  power: [16],
   profile: [12],
+  'refresh-left': [16],
   rocket: [20],
   settings: [12],
-  star: [16, 24],
+  share: [16],
+  star: [12, 16, 24],
+  tree: [12],
+  translate: [12],
+  trash: [12, 16],
+  'star-slash': [16],
+  'life-event-major': [16],
   target: [12, 16],
-  tools: [20],
+  tools: [12, 20],
+  'washing-machine': [12],
+  'watch-tv': [12],
 };
 
 // Takes a string like 'star', or 'star-outline', and converts it to
@@ -79,7 +108,12 @@ function buildLocalIconPath(name, size, density) {
 // $FlowFixMe not using flow in this file
 function buildIconURL(name, size, density) {
   const icon = getIconPartsFromName(name);
-  const url = `https://external.xx.fbcdn.net/assets/?name=${icon.trimmedName}&variant=${icon.variant}&size=${size}&set=facebook_icons&density=${density}x`;
+  // eslint-disable-next-line prettier/prettier
+  const url = `https://external.xx.fbcdn.net/assets/?name=${
+    icon.trimmedName
+  }&variant=${
+    icon.variant
+  }&size=${size}&set=facebook_icons&density=${density}x`;
   if (
     typeof window !== 'undefined' &&
     (!ICONS[name] || !ICONS[name].includes(size))

@@ -35,6 +35,7 @@ const Padder = styled('div')(
     backgroundColor,
   }),
 );
+Padder.displayName = 'StackTrace:Padder';
 
 const Container = styled('div')(
   ({isCrash, padded}: {isCrash?: boolean; padded?: boolean}) => ({
@@ -46,6 +47,7 @@ const Container = styled('div')(
     overflow: 'hidden',
   }),
 );
+Container.displayName = 'StackTrace:Container';
 
 const Title = styled(FlexRow)(({isCrash}: {isCrash?: boolean}) => ({
   color: isCrash ? colors.red : 'inherit',
@@ -53,12 +55,14 @@ const Title = styled(FlexRow)(({isCrash}: {isCrash?: boolean}) => ({
   alignItems: 'center',
   minHeight: 32,
 }));
+Title.displayName = 'StackTrace:Title';
 
 const Reason = styled(Text)(({isCrash}: {isCrash?: boolean}) => ({
   color: isCrash ? colors.red : colors.light80,
   fontWeight: 'bold',
   fontSize: 13,
 }));
+Reason.displayName = 'StackTrace:Reason';
 
 const Line = styled(Text)(
   ({isCrash, isBold}: {isCrash?: boolean; isBold?: boolean}) => ({
@@ -66,8 +70,10 @@ const Line = styled(Text)(
     fontWeight: isBold ? 'bold' : 'normal',
   }),
 );
+Line.displayName = 'StackTrace:Line';
 
 const Icon = styled(Glyph)({marginRight: 5});
+Icon.displayName = 'StackTrace:Icon';
 
 const COLUMNS = {
   lineNumber: 40,

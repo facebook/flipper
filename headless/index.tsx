@@ -274,9 +274,9 @@ async function startFlipper(userArguments: UserArguments) {
   );
   const logger = initLogger(store, {isHeadless: true});
 
-  const earlyExitClosures: Array<
-    (userArguments: UserArguments) => Promise<Action>
-  > = [
+  const earlyExitClosures: Array<(
+    userArguments: UserArguments,
+  ) => Promise<Action>> = [
     async (userArguments: UserArguments) => {
       if (userArguments.listDevices) {
         const devices = await listDevices(store);
@@ -298,9 +298,10 @@ async function startFlipper(userArguments: UserArguments) {
 
   const cleanupDispatchers = dispatcher(store, logger);
 
-  const storeModifyingClosures: Array<
-    (userArguments: UserArguments, store: Store) => Promise<Action>
-  > = [
+  const storeModifyingClosures: Array<(
+    userArguments: UserArguments,
+    store: Store,
+  ) => Promise<Action>> = [
     async (userArguments: UserArguments, store: Store) => {
       const {device: selectedDeviceID} = userArguments;
       if (selectedDeviceID) {
@@ -313,6 +314,9 @@ async function startFlipper(userArguments: UserArguments) {
             const ports = store.getState().application.serverPorts;
             matchedDevice.reverse([ports.secure, ports.insecure]);
           }
+          matchedDevice.loadDevicePlugins(
+            store.getState().plugins.devicePlugins,
+          );
           store.dispatch({
             type: 'REGISTER_DEVICE',
             payload: matchedDevice,
@@ -346,9 +350,10 @@ async function startFlipper(userArguments: UserArguments) {
     },
   ];
 
-  const exitActionClosures: Array<
-    (userArguments: UserArguments, store: Store) => Promise<Action>
-  > = [
+  const exitActionClosures: Array<(
+    userArguments: UserArguments,
+    store: Store,
+  ) => Promise<Action>> = [
     async (userArguments: UserArguments, store: Store) => {
       const {listPlugins} = userArguments;
       if (listPlugins) {

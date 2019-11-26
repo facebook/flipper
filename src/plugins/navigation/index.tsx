@@ -53,7 +53,7 @@ export default class extends FlipperPlugin<State, any, PersistedState> {
 
   state = {
     shouldShowSaveBookmarkDialog: false,
-    saveBookmarkURI: null as (string | null),
+    saveBookmarkURI: null as string | null,
     shouldShowURIErrorDialog: false,
     requiredParameters: [],
   };

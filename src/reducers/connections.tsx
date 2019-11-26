@@ -14,18 +14,19 @@ import {UninitializedClient} from '../UninitializedClient';
 import {isEqual} from 'lodash';
 import iosUtil from '../fb-stubs/iOSContainerUtility';
 import {performance} from 'perf_hooks';
-import {SAVED_PLUGINS_COUNT} from '../Client';
 import isHeadless from '../utils/isHeadless';
 import {Actions} from '.';
 const WelcomeScreen = isHeadless()
   ? require('../chrome/WelcomeScreenHeadless').default
   : require('../chrome/WelcomeScreen').default;
 import SupportRequestForm from '../fb-stubs/SupportRequestFormManager';
+import SupportRequestFormV2 from '../fb-stubs/SupportRequestFormV2';
 
 export type StaticView =
   | null
   | typeof WelcomeScreen
-  | typeof SupportRequestForm;
+  | typeof SupportRequestForm
+  | typeof SupportRequestFormV2;
 
 export type FlipperError = {
   occurrences?: number;
@@ -39,11 +40,11 @@ export type State = {
   androidEmulators: Array<string>;
   selectedDevice: null | BaseDevice;
   selectedPlugin: null | string;
-  selectedApp: null | string;
+  selectedApp: null | string | undefined;
   userPreferredDevice: null | string;
   userPreferredPlugin: null | string;
   userPreferredApp: null | string;
-  userLRUPlugins: {[key: string]: Array<string>};
+  userStarredPlugins: {[key: string]: Array<string>};
   errors: FlipperError[];
   clients: Array<Client>;
   uninitializedClients: Array<{
@@ -117,17 +118,23 @@ export type Action =
       payload: {client: UninitializedClient; error: FlipperError};
     }
   | {
-      type: 'CLIENT_SHOW_MORE_OR_LESS';
-      payload: string;
-    }
-  | {type: 'CLEAR_LRU_PLUGINS_HISTORY'}
-  | {
       type: 'SET_STATIC_VIEW';
       payload: StaticView;
     }
   | {
       type: 'DISMISS_ERROR';
       payload: number;
+    }
+  | {
+      type: 'STAR_PLUGIN';
+      payload: {
+        selectedPlugin: string;
+        selectedApp: string;
+      };
+    }
+  | {
+      type: 'SELECT_CLIENT';
+      payload: string;
     };
 
 const DEFAULT_PLUGIN = 'DeviceLogs';
@@ -141,13 +148,15 @@ const INITAL_STATE: State = {
   userPreferredDevice: null,
   userPreferredPlugin: null,
   userPreferredApp: null,
-  userLRUPlugins: {},
+  userStarredPlugins: {},
   errors: [],
   clients: [],
   uninitializedClients: [],
   deepLinkPayload: null,
   staticView: WelcomeScreen,
 };
+// Please sync with NotificationsHub
+const STATIC_PLUGINS_ID: Array<string> = ['notifications'];
 
 const reducer = (state: State = INITAL_STATE, action: Actions): State => {
   switch (action.type) {
@@ -160,16 +169,23 @@ const reducer = (state: State = INITAL_STATE, action: Actions): State => {
         selectedPlugin: payload != null ? null : selectedPlugin,
       };
     }
+
+    case 'RESET_SUPPORT_FORM_V2_STATE': {
+      return updateSelection({
+        ...state,
+        staticView: null,
+      });
+    }
+
     case 'SELECT_DEVICE': {
       const {payload} = action;
-      return {
+      return updateSelection({
         ...state,
-        selectedApp: null,
-        staticView: null,
-        selectedPlugin: DEFAULT_PLUGIN,
         selectedDevice: payload,
-        userPreferredDevice: payload.title,
-      };
+        userPreferredDevice: payload
+          ? payload.title
+          : state.userPreferredDevice,
+      });
     }
     case 'REGISTER_ANDROID_EMULATORS': {
       const {payload} = action;
@@ -180,76 +196,27 @@ const reducer = (state: State = INITAL_STATE, action: Actions): State => {
     }
     case 'REGISTER_DEVICE': {
       const {payload} = action;
-      const devices = state.devices.concat(payload);
-      let {selectedDevice, selectedPlugin} = state;
-      let staticView: StaticView = state.staticView;
-      // select the default plugin
-      let selection: Partial<State> = {
-        selectedApp: null,
-        selectedPlugin: DEFAULT_PLUGIN,
-      };
 
-      const canBeDefaultDevice = !DEFAULT_DEVICE_BLACKLIST.some(
-        blacklistedDevice => payload instanceof blacklistedDevice,
-      );
-
-      if (!selectedDevice && canBeDefaultDevice) {
-        selectedDevice = payload;
-        staticView = null;
-        if (selectedPlugin) {
-          // We already had a plugin selected, but no device. This is happening
-          // when the Client connected before the Device.
-          selection = {};
-        }
-      } else if (payload.title === state.userPreferredDevice) {
-        selectedDevice = payload;
-        staticView = null;
-      } else {
-        // We didn't select the newly connected device, so we don't want to
-        // change the plugin.
-        selection = {};
-      }
-
-      return {
+      return updateSelection({
         ...state,
-        devices,
-        // select device if none was selected before
-        selectedDevice,
-        ...selection,
-        staticView,
-      };
+        devices: state.devices.concat(payload),
+      });
     }
+
     case 'UNREGISTER_DEVICES': {
       const {payload} = action;
-      const {selectedDevice} = state;
-      let selectedDeviceWasRemoved = false;
       const devices = state.devices.filter((device: BaseDevice) => {
         if (payload.has(device.serial)) {
-          if (selectedDevice === device) {
-            // removed device is the selected
-            selectedDeviceWasRemoved = true;
-          }
           return false;
         } else {
           return true;
         }
       });
 
-      let selection = {};
-      if (selectedDeviceWasRemoved) {
-        selection = {
-          selectedDevice: devices[devices.length - 1] || null,
-          staticView: selectedDevice != null ? null : WelcomeScreen,
-          selectedApp: null,
-          selectedPlugin: DEFAULT_PLUGIN,
-        };
-      }
-
-      return {
+      return updateSelection({
         ...state,
         devices,
-        ...selection,
-      };
+      });
     }
     case 'SELECT_PLUGIN': {
       const {payload} = action;
@@ -258,57 +225,44 @@ const reducer = (state: State = INITAL_STATE, action: Actions): State => {
         performance.mark(`activePlugin-${selectedPlugin}`);
       }
 
-      const userPreferredApp = selectedApp || state.userPreferredApp;
-      const selectedAppName = extractAppNameFromAppId(userPreferredApp);
-      // Need to recreate an array to make sure that it doesn't refer to the
-      // array that is showed in on the screen and the array that is kept for
-      // least recently used plugins reference
-      const LRUPlugins = [
-        ...((selectedAppName && state.userLRUPlugins[selectedAppName]) || []),
+      return updateSelection({
+        ...state,
+        staticView: null,
+        selectedApp,
+        selectedPlugin,
+        userPreferredPlugin: selectedPlugin || state.userPreferredPlugin,
+      });
+    }
+
+    case 'STAR_PLUGIN': {
+      const {selectedPlugin, selectedApp} = action.payload;
+      const starredPluginsForApp = [
+        ...(state.userStarredPlugins[selectedApp] || []),
       ];
-      const idxLRU =
-        (selectedPlugin && LRUPlugins.indexOf(selectedPlugin)) || -1;
-      if (idxLRU >= 0) {
-        LRUPlugins.splice(idxLRU, 1);
+      const idx = starredPluginsForApp.indexOf(selectedPlugin);
+      if (idx === -1) {
+        starredPluginsForApp.push(selectedPlugin);
+      } else {
+        starredPluginsForApp.splice(idx, 1);
       }
-      selectedPlugin && LRUPlugins.unshift(selectedPlugin);
-      LRUPlugins.splice(SAVED_PLUGINS_COUNT);
       return {
         ...state,
-        ...payload,
-        staticView: null,
-        userPreferredApp: userPreferredApp,
-        userPreferredPlugin: selectedPlugin,
-        userLRUPlugins: selectedAppName
-          ? {
-              ...state.userLRUPlugins,
-              [selectedAppName]: LRUPlugins,
-            }
-          : {...state.userLRUPlugins},
+        userStarredPlugins: {
+          ...state.userStarredPlugins,
+          [selectedApp]: starredPluginsForApp,
+        },
       };
     }
+
     case 'SELECT_USER_PREFERRED_PLUGIN': {
       const {payload} = action;
       return {...state, userPreferredPlugin: payload};
     }
+
     case 'NEW_CLIENT': {
       const {payload} = action;
-      const {userPreferredApp, userPreferredPlugin, userLRUPlugins} = state;
-      let {selectedApp, selectedPlugin} = state;
 
-      const appName = extractAppNameFromAppId(payload.id);
-      payload.lessPlugins = (appName && userLRUPlugins[appName]) || [];
-      if (
-        userPreferredApp &&
-        userPreferredPlugin &&
-        payload.id === userPreferredApp &&
-        payload.plugins.includes(userPreferredPlugin)
-      ) {
-        // user preferred client did reconnect, so let's select it
-        selectedApp = userPreferredApp;
-        selectedPlugin = userPreferredPlugin;
-      }
-      return {
+      return updateSelection({
         ...state,
         clients: state.clients.concat(payload),
         uninitializedClients: state.uninitializedClients.filter(c => {
@@ -317,14 +271,18 @@ const reducer = (state: State = INITAL_STATE, action: Actions): State => {
             c.client.appName !== payload.query.app
           );
         }),
-        userLRUPlugins: {
-          ...state.userLRUPlugins,
-          [payload.id]: payload.lessPlugins,
-        },
-        selectedApp,
-        selectedPlugin,
-      };
+      });
     }
+
+    case 'SELECT_CLIENT': {
+      const {payload} = action;
+      return updateSelection({
+        ...state,
+        selectedApp: payload,
+        userPreferredApp: payload || state.userPreferredApp,
+      });
+    }
+
     case 'NEW_CLIENT_SANITY_CHECK': {
       const {payload} = action;
       // Check for clients initialised when there is no matching device
@@ -341,26 +299,19 @@ const reducer = (state: State = INITAL_STATE, action: Actions): State => {
           );
         }
       }
-
       return state;
     }
+
     case 'CLIENT_REMOVED': {
       const {payload} = action;
-
-      const selected: Partial<State> = {};
-      if (state.selectedApp === payload) {
-        selected.selectedApp = null;
-        selected.selectedPlugin = DEFAULT_PLUGIN;
-      }
-
-      return {
+      return updateSelection({
         ...state,
-        ...selected,
         clients: state.clients.filter(
           (client: Client) => client.id !== payload,
         ),
-      };
+      });
     }
+
     case 'PREFER_DEVICE': {
       const {payload: userPreferredDevice} = action;
       return {...state, userPreferredDevice};
@@ -418,33 +369,6 @@ const reducer = (state: State = INITAL_STATE, action: Actions): State => {
           details,
           error: payload.error instanceof Error ? payload.error : undefined,
         }),
-      };
-    }
-    case 'CLIENT_SHOW_MORE_OR_LESS': {
-      const {payload} = action;
-      const appName = extractAppNameFromAppId(payload);
-
-      return {
-        ...state,
-        clients: state.clients.map((client: Client) => {
-          if (appName && extractAppNameFromAppId(client.id) === appName) {
-            client.showAllPlugins = !client.showAllPlugins;
-            client.lessPlugins = state.userLRUPlugins[appName] || [];
-          }
-          return client;
-        }),
-      };
-    }
-    case 'CLEAR_LRU_PLUGINS_HISTORY': {
-      const clearLRUPlugins: {[key: string]: Array<string>} = {};
-      Object.keys(state.userLRUPlugins).forEach((key: string) => {
-        if (key !== null) {
-          clearLRUPlugins[key] = [];
-        }
-      });
-      return {
-        ...state,
-        userLRUPlugins: clearLRUPlugins,
       };
     }
     case 'DISMISS_ERROR': {
@@ -531,24 +455,132 @@ export const selectPlugin = (payload: {
   payload,
 });
 
-export const showMoreOrLessPlugins = (payload: string): Action => ({
-  type: 'CLIENT_SHOW_MORE_OR_LESS',
+export const starPlugin = (payload: {
+  selectedPlugin: string;
+  selectedApp: string;
+}): Action => ({
+  type: 'STAR_PLUGIN',
   payload,
 });
-
-export const userPreferredPlugin = (payload: string): Action => ({
-  type: 'SELECT_USER_PREFERRED_PLUGIN',
-  payload,
-});
-
-function extractAppNameFromAppId(appId: string | null): string | null {
-  const nameRegex = /([^#]+)#/;
-  const matchedRegex = appId ? appId.match(nameRegex) : null;
-  // Expect the name of the app to be on the first matching
-  return matchedRegex && matchedRegex[1];
-}
 
 export const dismissError = (index: number): Action => ({
   type: 'DISMISS_ERROR',
   payload: index,
 });
+
+export const selectClient = (clientId: string): Action => ({
+  type: 'SELECT_CLIENT',
+  payload: clientId,
+});
+
+export function getAvailableClients(
+  device: null | undefined | BaseDevice,
+  clients: Client[],
+): Client[] {
+  if (!device) {
+    return [];
+  }
+  return clients
+    .filter(
+      (client: Client) =>
+        (device &&
+          device.supportsOS(client.query.os) &&
+          client.query.device_id === device.serial) ||
+        // Old android sdk versions don't know their device_id
+        // Display their plugins under all selected devices until they die out
+        client.query.device_id === 'unknown',
+    )
+    .sort((a, b) => (a.query.app || '').localeCompare(b.query.app));
+}
+
+function getBestAvailableClient(
+  device: BaseDevice | null | undefined,
+  clients: Client[],
+  preferredClient: string | null,
+): Client | undefined {
+  const availableClients = getAvailableClients(device, clients);
+  if (availableClients.length === 0) {
+    return undefined;
+  }
+  return (
+    getClientById(availableClients, preferredClient) ||
+    availableClients[0] ||
+    null
+  );
+}
+
+export function getClientById(
+  clients: Client[],
+  clientId: string | null | undefined,
+): Client | undefined {
+  return clients.find(client => client.id === clientId);
+}
+
+function canBeDefaultDevice(device: BaseDevice) {
+  return !DEFAULT_DEVICE_BLACKLIST.some(
+    blacklistedDevice => device instanceof blacklistedDevice,
+  );
+}
+
+/**
+ * This function, given the current state, tries to build to build the best
+ * selection possible, preselection device if there is non, plugins based on preferences, etc
+ * @param state
+ */
+function updateSelection(state: Readonly<State>): State {
+  if (state.staticView && state.staticView !== WelcomeScreen) {
+    return state;
+  }
+
+  const updates: Partial<State> = {
+    staticView: null,
+  };
+  // Find the selected device if it still exists
+  let device: BaseDevice | null =
+    state.selectedDevice && state.devices.includes(state.selectedDevice)
+      ? state.selectedDevice
+      : null;
+  if (!device) {
+    device =
+      state.devices.find(
+        device => device.title === state.userPreferredDevice,
+      ) ||
+      state.devices.find(device => canBeDefaultDevice(device)) ||
+      null;
+  }
+  updates.selectedDevice = device;
+  if (!device) {
+    updates.staticView = WelcomeScreen;
+  }
+
+  // Select client based on device
+  const client = getBestAvailableClient(
+    device,
+    state.clients,
+    state.selectedApp || state.userPreferredApp,
+  );
+  updates.selectedApp = client ? client.id : null;
+
+  const availablePlugins: string[] = [
+    ...(device?.devicePlugins || []),
+    ...(client?.plugins || []),
+    ...STATIC_PLUGINS_ID,
+  ];
+
+  if (
+    // Try the preferred plugin first
+    state.userPreferredPlugin &&
+    availablePlugins.includes(state.userPreferredPlugin)
+  ) {
+    updates.selectedPlugin = state.userPreferredPlugin;
+  } else if (
+    !state.selectedPlugin ||
+    !availablePlugins.includes(state.selectedPlugin)
+  ) {
+    // currently selected plugin is not available in this state,
+    // fall back to the default
+    updates.selectedPlugin = DEFAULT_PLUGIN;
+  }
+
+  return {...state, ...updates};
+}

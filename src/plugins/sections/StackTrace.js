@@ -22,10 +22,23 @@ function isSystemLibrary(libraryName: ?string): boolean {
 
 type Props = {
   data: Array<string>,
+  skipStackTraceFormat?: boolean,
 };
 
 export default class extends React.Component<Props> {
   render() {
+    if (this.props.skipStackTraceFormat) {
+      return (
+        <StackTrace backgroundColor={colors.white}>
+          {this.props.data.map(stack_trace_line => {
+            return {
+              caller: stack_trace_line,
+            };
+          })}
+        </StackTrace>
+      );
+    }
+
     return (
       <StackTrace backgroundColor={colors.white}>
         {/* We need to filter out from the stack trace any reference to the plugin such that the information is more coincised and focused */}

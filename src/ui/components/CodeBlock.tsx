@@ -9,6 +9,9 @@
 
 import styled from 'react-emotion';
 
-export default styled('div')({
+const CodeBlock = styled('div')({
   fontFamily: 'monospace',
 });
+CodeBlock.displayName = 'CodeBlock';
+
+export default CodeBlock;

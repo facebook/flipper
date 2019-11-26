@@ -17,15 +17,7 @@ const expandTilde = require('expand-tilde');
 const pMap = require('p-map');
 const HOME_DIR = require('os').homedir();
 
-/* eslint-disable prettier/prettier */
-/*::
-type CompileOptions = {|
-  force: boolean,
-  failSilently: boolean,
-|};
-*/
-
-const DEFAULT_COMPILE_OPTIONS /*: CompileOptions */ = {
+const DEFAULT_COMPILE_OPTIONS = {
   force: false,
   failSilently: true,
 };
@@ -41,10 +33,14 @@ module.exports = async (
     fs.mkdirSync(pluginCache);
   }
   watchChanges(plugins, reloadCallback, pluginCache, options);
-  const compilations = pMap(Object.values(plugins), plugin => {
-    const dynamicOptions = Object.assign(options, {force: false});
-    return compilePlugin(plugin, pluginCache, dynamicOptions);
-  }, {concurrency: 4});
+  const compilations = pMap(
+    Object.values(plugins),
+    plugin => {
+      const dynamicOptions = Object.assign(options, {force: false});
+      return compilePlugin(plugin, pluginCache, dynamicOptions);
+    },
+    {concurrency: 4},
+  );
 
   const dynamicPlugins = (await compilations).filter(c => c != null);
   console.log('✅  Compiled all plugins.');
@@ -62,11 +58,12 @@ function watchChanges(
 
   const delayedCompilation = {};
   const kCompilationDelayMillis = 1000;
-
   Object.values(plugins)
     // no hot reloading for plugins in .flipper folder. This is to prevent
     // Flipper from reloading, while we are doing changes on thirdparty plugins.
-    .filter(plugin => !plugin.rootDir.startsWith(path.join(HOME_DIR, '.flipper')))
+    .filter(
+      plugin => !plugin.rootDir.startsWith(path.join(HOME_DIR, '.flipper')),
+    )
     .map(plugin =>
       fs.watch(plugin.rootDir, {recursive: true}, (eventType, filename) => {
         // only recompile for changes in not hidden files. Watchman might create
@@ -77,7 +74,9 @@ function watchChanges(
             // eslint-disable-next-line no-console
             console.log(`🕵️‍  Detected changes in ${plugin.name}`);
             const watchOptions = Object.assign(options, {force: true});
-            compilePlugin(plugin, pluginCache, watchOptions).then(reloadCallback);
+            compilePlugin(plugin, pluginCache, watchOptions).then(
+              reloadCallback,
+            );
           }, kCompilationDelayMillis);
         }
       }),
@@ -129,11 +128,7 @@ function entryPointForPluginFolder(pluginPath) {
   }
   return fs
     .readdirSync(pluginPath)
-    .filter(name =>
-      fs
-        .lstatSync(path.join(pluginPath, name))
-        .isDirectory(),
-    )
+    .filter(name => fs.lstatSync(path.join(pluginPath, name)).isDirectory())
     .filter(Boolean)
     .map(name => {
       let packageJSON;
@@ -178,7 +173,7 @@ function mostRecentlyChanged(dir) {
 async function compilePlugin(
   {rootDir, name, entry, packageJSON},
   pluginCache,
-  options/*: CompileOptions */,
+  options,
 ) {
   const fileName = `${name}@${packageJSON.version || '0.0.0'}.js`;
   const out = path.join(pluginCache, fileName);
@@ -215,7 +210,7 @@ async function compilePlugin(
           },
           resolver: {
             sourceExts: ['tsx', 'ts', 'js'],
-            blacklistRE: /\/(sonar|flipper-public)\/dist\//,
+            blacklistRE: /\/(sonar|flipper-public)\/dist\/|(\.native\.js$)/,
           },
         },
         {

@@ -148,6 +148,7 @@ const Container = styled(FlexColumn)((props: {canOverflow?: boolean}) => ({
   overflow: props.canOverflow ? 'scroll' : 'visible',
   flexGrow: 1,
 }));
+Container.displayName = 'ManagedTable:Container';
 
 const globalTableState: {[key: string]: TableColumnSizes} = {};
 
@@ -625,7 +626,9 @@ export class ManagedTable extends React.Component<
         highlighted={highlightedRows.has(rows[index].key)}
         row={rows[index]}
         index={index}
-        style={style}
+        style={
+          rows[index].height ? {...style, height: rows[index].height} : style
+        }
         onAddFilter={onAddFilter}
         zebra={zebra}
       />

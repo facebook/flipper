@@ -7,6 +7,7 @@
  * @format
  */
 
+import React from 'react';
 import {
   Panel,
   FlexRow,
@@ -20,29 +21,30 @@ import {
   Button,
   styled,
 } from 'flipper';
-import type {ElementID, Element} from 'flipper';
+import {Element} from 'flipper';
 import {processLeaks} from './processLeakString';
 
 type State = {
-  leaks: Leak[],
-  selectedIdx: ?number,
-  selectedEid: ?string,
-  showFullClassPaths: boolean,
-  leaksCount: number,
+  leaks: Leak[];
+  selectedIdx: number | null;
+  selectedEid: string | null;
+  showFullClassPaths: boolean;
+  leaksCount: number;
 };
 
 type LeakReport = {
-  leaks: string[],
+  leaks: string[];
 };
 
+export type Fields = {[key: string]: string};
 export type Leak = {
-  title: string,
-  root: string,
-  elements: {[key: ElementID]: Element},
-  elementsSimple: {[key: ElementID]: Element},
-  instanceFields: {},
-  staticFields: {},
-  retainedSize: string,
+  title: string;
+  root: string;
+  elements: {[key: string]: Element};
+  elementsSimple: {[key: string]: Element};
+  instanceFields: {[key: string]: Fields};
+  staticFields: {[key: string]: Fields};
+  retainedSize: string;
 };
 
 const Window = styled(FlexRow)({
@@ -55,8 +57,12 @@ const ToolbarItem = styled(FlexRow)({
   marginLeft: '8px',
 });
 
-export default class LeakCanary extends FlipperPlugin<State> {
-  state = {
+export default class LeakCanary<PersistedState> extends FlipperPlugin<
+  State,
+  {type: 'LeakCanary'},
+  PersistedState
+> {
+  state: State = {
     leaks: [],
     selectedIdx: null,
     selectedEid: null,
@@ -101,13 +107,15 @@ export default class LeakCanary extends FlipperPlugin<State> {
   };
 
   _toggleElement = (leakIdx: number, eid: string) => {
-    const leaks = this.state.leaks;
+    const {leaks} = this.state;
     const leak = leaks[leakIdx];
 
     const element = leak.elements[eid];
-    element.expanded = !element.expanded;
-
     const elementSimple = leak.elementsSimple[eid];
+    if (!element || !elementSimple) {
+      return;
+    }
+    element.expanded = !element.expanded;
     elementSimple.expanded = !elementSimple.expanded;
 
     this.setState({
@@ -121,8 +129,8 @@ export default class LeakCanary extends FlipperPlugin<State> {
    */
   _extractValue(
     value: any,
-    depth: number,
-  ): {|mutable: boolean, type: string, value: any|} {
+    _: number, // depth
+  ): {mutable: boolean; type: string; value: any} {
     if (!isNaN(value)) {
       return {mutable: false, type: 'number', value: value};
     } else if (value == 'true' || value == 'false') {
@@ -189,7 +197,7 @@ export default class LeakCanary extends FlipperPlugin<State> {
                       this._selectElement(idx, eid);
                     }}
                     onElementHovered={() => {}}
-                    onElementExpanded={(eid, deep) => {
+                    onElementExpanded={(eid /*, deep*/) => {
                       this._toggleElement(idx, eid);
                     }}
                     onValueChanged={() => {}}

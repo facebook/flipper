@@ -9,6 +9,12 @@
 
 import styled from 'react-emotion';
 
-export default styled('div')({
+/**
+ * A Block styled div
+ */
+const Block = styled('div')({
   display: 'block',
 });
+Block.displayName = 'Block';
+
+export default Block;

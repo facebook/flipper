@@ -36,14 +36,14 @@ public class RootComponentSpec {
     return Column.create(c)
         .child(
             Text.create(c)
-                .text("Tap to hit get request")
+                .text("Send GET request")
                 .key("1")
                 .marginDip(YogaEdge.ALL, 10)
                 .textSizeSp(20)
                 .clickHandler(RootComponent.hitGetRequest(c)))
         .child(
             Text.create(c)
-                .text("Tap to hit post request")
+                .text("Send POST request")
                 .key("2")
                 .marginDip(YogaEdge.ALL, 10)
                 .textSizeSp(20)

@@ -7,3 +7,4 @@ flow-typed
 lib
 !.eslintrc.js
 dist
+website/build

@@ -16,6 +16,7 @@ import server from './server';
 import notifications from './notifications';
 import plugins from './plugins';
 import user from './user';
+import pluginManager from './pluginManager';
 
 import {Logger} from '../fb-interfaces/Logger';
 import {Store} from '../reducers/index';
@@ -33,6 +34,7 @@ export default function(store: Store, logger: Logger): () => Promise<void> {
     notifications,
     plugins,
     user,
+    pluginManager,
   ].filter(notNull);
   const globalCleanup = dispatchers
     .map(dispatcher => dispatcher(store, logger))

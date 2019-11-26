@@ -20,7 +20,7 @@ import {
 } from 'flipper';
 import {unsetShare} from '../reducers/application';
 import React, {Component} from 'react';
-import PropTypes from 'prop-types';
+import {ReactReduxContext} from 'react-redux';
 
 export type SelectionType = 'multiple' | 'single';
 
@@ -122,10 +122,6 @@ class RowComponent extends Component<RowComponentProps> {
 }
 
 export default class ListView extends Component<Props, State> {
-  static contextTypes = {
-    store: PropTypes.object.isRequired,
-  };
-
   state: State = {selectedElements: new Set([])};
   static getDerivedStateFromProps(props: Props, state: State) {
     if (state.selectedElements.size > 0) {
@@ -161,46 +157,51 @@ export default class ListView extends Component<Props, State> {
   };
 
   render() {
-    const onHide = () => {
-      this.context.store.dispatch(unsetShare());
-      this.props.onHide();
-    };
-
     return (
-      <Container>
-        <FlexColumn>
-          <Title>{this.props.title}</Title>
-          <RowComponentContainer>
-            {this.props.elements.map(id => {
-              return (
-                <RowComponent
-                  name={id}
-                  key={id}
-                  selected={this.state.selectedElements.has(id)}
-                  onChange={this.handleChange}
-                />
-              );
-            })}
-          </RowComponentContainer>
-        </FlexColumn>
-        <Padder paddingTop={8} paddingBottom={2}>
-          <FlexRow>
-            <Spacer />
-            <Button compact padded onClick={onHide}>
-              Close
-            </Button>
-            <Button
-              compact
-              padded
-              type="primary"
-              onClick={() => {
-                this.props.onSelect([...this.state.selectedElements]);
-              }}>
-              Submit
-            </Button>
-          </FlexRow>
-        </Padder>
-      </Container>
+      <ReactReduxContext.Consumer>
+        {({store}) => {
+          const onHide = () => {
+            store.dispatch(unsetShare());
+            this.props.onHide();
+          };
+          return (
+            <Container>
+              <FlexColumn>
+                <Title>{this.props.title}</Title>
+                <RowComponentContainer>
+                  {this.props.elements.map(id => {
+                    return (
+                      <RowComponent
+                        name={id}
+                        key={id}
+                        selected={this.state.selectedElements.has(id)}
+                        onChange={this.handleChange}
+                      />
+                    );
+                  })}
+                </RowComponentContainer>
+              </FlexColumn>
+              <Padder paddingTop={8} paddingBottom={2}>
+                <FlexRow>
+                  <Spacer />
+                  <Button compact padded onClick={onHide}>
+                    Close
+                  </Button>
+                  <Button
+                    compact
+                    padded
+                    type="primary"
+                    onClick={() => {
+                      this.props.onSelect([...this.state.selectedElements]);
+                    }}>
+                    Submit
+                  </Button>
+                </FlexRow>
+              </Padder>
+            </Container>
+          );
+        }}
+      </ReactReduxContext.Consumer>
     );
   }
 }

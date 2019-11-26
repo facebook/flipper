@@ -8,19 +8,23 @@
  */
 
 import {FlipperPlugin, FlipperDevicePlugin} from './plugin';
-import {showOpenDialog} from './utils/exportData';
 import {
-  setSelectPluginsToExportActiveSheet,
+  showOpenDialog,
+  startFileExport,
+  startLinkExport,
+} from './utils/exportData';
+import {
   setActiveSheet,
   ACTIVE_SHEET_PLUGINS,
   ACTIVE_SHEET_SETTINGS,
 } from './reducers/application';
+import {setStaticView} from './reducers/connections';
+import SupportRequestFormV2 from './fb-stubs/SupportRequestFormV2';
 import {Store} from './reducers/';
 import electron, {MenuItemConstructorOptions} from 'electron';
 import {notNull} from './utils/typeUtils';
 import constants from './fb-stubs/constants';
-import os from 'os';
-import path from 'path';
+import GK from './fb-stubs/GK';
 
 export type DefaultKeyboardAction = 'clear' | 'goToBottom' | 'createPaste';
 export type TopLevelMenu = 'Edit' | 'View' | 'Window' | 'Help';
@@ -183,66 +187,54 @@ function getTemplate(
     {
       label: 'File...',
       accelerator: 'CommandOrControl+E',
-      click: function() {
-        electron.remote.dialog.showSaveDialog(
-          // @ts-ignore This appears to work but isn't allowed by the types
-          null,
-          {
-            title: 'FlipperExport',
-            defaultPath: path.join(os.homedir(), 'FlipperExport.flipper'),
-          },
-          async (file: string) => {
-            if (!file) {
-              return;
-            }
-            store.dispatch(
-              setSelectPluginsToExportActiveSheet({
-                type: 'file',
-                file: file,
-                closeOnFinish: false,
-              }),
-            );
-          },
-        );
-      },
+      click: () => startFileExport(store.dispatch),
     },
   ];
   if (constants.ENABLE_SHAREABLE_LINK) {
     exportSubmenu.push({
-      label: 'Sharable Link',
+      label: 'Shareable Link',
       accelerator: 'CommandOrControl+Shift+E',
+      click: () => startLinkExport(store.dispatch),
+    });
+  }
+  const fileSubmenu: MenuItemConstructorOptions[] = [
+    {
+      label: 'Preferences',
+      accelerator: 'Cmd+,',
+      click: () => store.dispatch(setActiveSheet(ACTIVE_SHEET_SETTINGS)),
+    },
+    {
+      label: 'Import Flipper File...',
+      accelerator: 'CommandOrControl+O',
       click: function() {
-        store.dispatch(
-          setSelectPluginsToExportActiveSheet({
-            type: 'link',
-            closeOnFinish: false,
-          }),
-        );
+        showOpenDialog(store);
       },
+    },
+    {
+      label: 'Export',
+      submenu: exportSubmenu,
+    },
+  ];
+  if (GK.get('support_requests_v2')) {
+    const supportRequestSubmenu = [
+      {
+        label: 'Create...',
+        click: function() {
+          // Dispatch an action to open the export screen of Support Request form
+          store.dispatch(setStaticView(SupportRequestFormV2));
+        },
+      },
+    ];
+    fileSubmenu.push({
+      label: 'Support Requests',
+      submenu: supportRequestSubmenu,
     });
   }
 
   const template: MenuItemConstructorOptions[] = [
     {
       label: 'File',
-      submenu: [
-        {
-          label: 'Preferences',
-          accelerator: 'Cmd+,',
-          click: () => store.dispatch(setActiveSheet(ACTIVE_SHEET_SETTINGS)),
-        },
-        {
-          label: 'Import Flipper File...',
-          accelerator: 'CommandOrControl+O',
-          click: function() {
-            showOpenDialog(store);
-          },
-        },
-        {
-          label: 'Export',
-          submenu: exportSubmenu,
-        },
-      ],
+      submenu: fileSubmenu,
     },
     {
       label: 'Edit',

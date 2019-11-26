@@ -1,0 +1,51 @@
+diff --git a/node_modules/jsonparse/jsonparse.js b/node_modules/jsonparse/jsonparse.js
+index 3991060..83f1458 100644
+--- a/node_modules/jsonparse/jsonparse.js
++++ b/node_modules/jsonparse/jsonparse.js
+@@ -56,7 +56,7 @@ function Parser() {
+   this.value = undefined;
+ 
+   this.string = undefined; // string data
+-  this.stringBuffer = Buffer.alloc ? Buffer.alloc(STRING_BUFFER_SIZE) : new Buffer(STRING_BUFFER_SIZE);
++  this.stringBuffer = Buffer.alloc(STRING_BUFFER_SIZE);
+   this.stringBufferOffset = 0;
+   this.unicode = undefined; // unicode escapes
+   this.highSurrogate = undefined;
+@@ -67,7 +67,7 @@ function Parser() {
+   this.state = VALUE;
+   this.bytes_remaining = 0; // number of bytes remaining in multi byte utf8 char to read after split boundary
+   this.bytes_in_sequence = 0; // bytes in multi byte utf8 char to read
+-  this.temp_buffs = { "2": new Buffer(2), "3": new Buffer(3), "4": new Buffer(4) }; // for rebuilding chars split before boundary is reached
++  this.temp_buffs = { "2": Buffer.alloc(2), "3": Buffer.alloc(3), "4": Buffer.alloc(4) }; // for rebuilding chars split before boundary is reached
+ 
+   // Stream offset
+   this.offset = -1;
+@@ -125,7 +125,7 @@ proto.appendStringBuf = function (buf, start, end) {
+   this.stringBufferOffset += size;
+ };
+ proto.write = function (buffer) {
+-  if (typeof buffer === "string") buffer = new Buffer(buffer);
++  if (typeof buffer === "string") buffer = Buffer.from(buffer);
+   var n;
+   for (var i = 0, l = buffer.length; i < l; i++) {
+     if (this.tState === START){
+@@ -221,16 +221,16 @@ proto.write = function (buffer) {
+           var intVal = parseInt(this.unicode, 16);
+           this.unicode = undefined;
+           if (this.highSurrogate !== undefined && intVal >= 0xDC00 && intVal < (0xDFFF + 1)) { //<56320,57343> - lowSurrogate
+-            this.appendStringBuf(new Buffer(String.fromCharCode(this.highSurrogate, intVal)));
++            this.appendStringBuf(Buffer.from(String.fromCharCode(this.highSurrogate, intVal)));
+             this.highSurrogate = undefined;
+           } else if (this.highSurrogate === undefined && intVal >= 0xD800 && intVal < (0xDBFF + 1)) { //<55296,56319> - highSurrogate
+             this.highSurrogate = intVal;
+           } else {
+             if (this.highSurrogate !== undefined) {
+-              this.appendStringBuf(new Buffer(String.fromCharCode(this.highSurrogate)));
++              this.appendStringBuf(Buffer.from(String.fromCharCode(this.highSurrogate)));
+               this.highSurrogate = undefined;
+             }
+-            this.appendStringBuf(new Buffer(String.fromCharCode(intVal)));
++            this.appendStringBuf(Buffer.from(String.fromCharCode(intVal)));
+           }
+           this.tState = STRING1;
+         }

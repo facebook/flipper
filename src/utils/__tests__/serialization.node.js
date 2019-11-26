@@ -65,11 +65,17 @@ test('test makeObjectSerializable and deserializeObject function for nested obje
 });
 
 test('test makeObjectSerializable and deserializeObject function for Map and Set with no nesting', async () => {
-  const map = new Map([['k1', 'v1'], ['k2', 'v2']]);
+  const map = new Map([
+    ['k1', 'v1'],
+    ['k2', 'v2'],
+  ]);
   const output = await makeObjectSerializable(map);
   const expected = {
     __flipper_object_type__: 'Map',
-    data: [['k1', 'v1'], ['k2', 'v2']],
+    data: [
+      ['k1', 'v1'],
+      ['k2', 'v2'],
+    ],
   };
   expect(output).toEqual(expected);
   expect(deserializeObject(output)).toEqual(map);
@@ -92,7 +98,10 @@ test('test makeObjectSerializable and deserializeObject function for Map and Set
   const output = await makeObjectSerializable(map);
   const expected = {
     __flipper_object_type__: 'Map',
-    data: [[{title: 'k1'}, {title: 'v1'}], [{title: 'k2'}, {title: 'v2'}]],
+    data: [
+      [{title: 'k1'}, {title: 'v1'}],
+      [{title: 'k2'}, {title: 'v2'}],
+    ],
   };
   expect(output).toEqual(expected);
   expect(deserializeObject(output)).toEqual(map);
@@ -134,14 +143,20 @@ test('test makeObjectSerializable and deserializeObject function for custom Obje
 
   const nestedObjWithMap = new TestObject(
     {title: 'nestedTitle'},
-    new Map([['k1', 'v1'], ['k2', 'v2']]),
+    new Map([
+      ['k1', 'v1'],
+      ['k2', 'v2'],
+    ]),
   );
   const nestedObjWithMapOutput = await makeObjectSerializable(nestedObjWithMap);
   const expectedNestedObjWithMapOutput = {
     title: {title: 'nestedTitle'},
     map: {
       __flipper_object_type__: 'Map',
-      data: [['k1', 'v1'], ['k2', 'v2']],
+      data: [
+        ['k1', 'v1'],
+        ['k2', 'v2'],
+      ],
     },
     set: undefined,
   };
@@ -150,7 +165,10 @@ test('test makeObjectSerializable and deserializeObject function for custom Obje
 
   const nestedObjWithMapSet = new TestObject(
     {title: 'nestedTitle'},
-    new Map([['k1', 'v1'], ['k2', 'v2']]),
+    new Map([
+      ['k1', 'v1'],
+      ['k2', 'v2'],
+    ]),
     new Set([
       {title: '1'},
       {title: '2'},
@@ -167,7 +185,10 @@ test('test makeObjectSerializable and deserializeObject function for custom Obje
     title: {title: 'nestedTitle'},
     map: {
       __flipper_object_type__: 'Map',
-      data: [['k1', 'v1'], ['k2', 'v2']],
+      data: [
+        ['k1', 'v1'],
+        ['k2', 'v2'],
+      ],
     },
     set: {
       __flipper_object_type__: 'Set',
@@ -194,28 +215,52 @@ test('test makeObjectSerializable and deserializeObject function for Array as in
   expect(deserializeObject(output)).toEqual(arr);
 
   const arrMap = [
-    new Map([['a1', 'v1'], ['a2', 'v2']]),
-    new Map([['b1', 'v1'], ['b2', 'v2']]),
-    new Map([['c1', 'v1'], ['c2', 'v2']]),
-    new Map([['d1', 'v1'], ['d2', 'v2']]),
+    new Map([
+      ['a1', 'v1'],
+      ['a2', 'v2'],
+    ]),
+    new Map([
+      ['b1', 'v1'],
+      ['b2', 'v2'],
+    ]),
+    new Map([
+      ['c1', 'v1'],
+      ['c2', 'v2'],
+    ]),
+    new Map([
+      ['d1', 'v1'],
+      ['d2', 'v2'],
+    ]),
   ];
 
   const expectedArr = [
     {
       __flipper_object_type__: 'Map',
-      data: [['a1', 'v1'], ['a2', 'v2']],
+      data: [
+        ['a1', 'v1'],
+        ['a2', 'v2'],
+      ],
     },
     {
       __flipper_object_type__: 'Map',
-      data: [['b1', 'v1'], ['b2', 'v2']],
+      data: [
+        ['b1', 'v1'],
+        ['b2', 'v2'],
+      ],
     },
     {
       __flipper_object_type__: 'Map',
-      data: [['c1', 'v1'], ['c2', 'v2']],
+      data: [
+        ['c1', 'v1'],
+        ['c2', 'v2'],
+      ],
     },
     {
       __flipper_object_type__: 'Map',
-      data: [['d1', 'v1'], ['d2', 'v2']],
+      data: [
+        ['d1', 'v1'],
+        ['d2', 'v2'],
+      ],
     },
   ];
   const outputMap = await makeObjectSerializable(arrMap);
@@ -269,7 +314,10 @@ test('test makeObjectSerializable and deserializeObject function for Map of Sets
 test('test makeObjectSerializable and deserializeObject function for Map, Dates and Set with complex nesting', async () => {
   const date1 = new Date('2019-02-15');
   const date2 = new Date('2019-02-16');
-  const map = new Map([['k1', date1], ['k2', new Set([date2])]]);
+  const map = new Map([
+    ['k1', date1],
+    ['k2', new Set([date2])],
+  ]);
   const expectedOutput = {
     __flipper_object_type__: 'Map',
     data: [

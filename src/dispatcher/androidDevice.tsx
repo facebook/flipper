@@ -115,9 +115,7 @@ export default (store: Store, logger: Logger) => {
               if (err.message === 'Connection closed') {
                 // adb server has shutdown, remove all android devices
                 const {connections} = store.getState();
-                const deviceIDsToRemove: Array<
-                  string
-                > = connections.devices
+                const deviceIDsToRemove: Array<string> = connections.devices
                   .filter(
                     (device: BaseDevice) => device instanceof AndroidDevice,
                   )
@@ -188,6 +186,7 @@ export default (store: Store, logger: Logger) => {
       payload: new Set(reconnectedDevices),
     });
 
+    androidDevice.loadDevicePlugins(store.getState().plugins.devicePlugins);
     store.dispatch({
       type: 'REGISTER_DEVICE',
       payload: androidDevice,
@@ -225,12 +224,13 @@ export default (store: Store, logger: Logger) => {
       payload: new Set(deviceIds),
     });
 
-    archivedDevices.forEach((payload: BaseDevice) =>
+    archivedDevices.forEach((device: BaseDevice) => {
+      device.loadDevicePlugins(store.getState().plugins.devicePlugins);
       store.dispatch({
         type: 'REGISTER_DEVICE',
-        payload,
-      }),
-    );
+        payload: device,
+      });
+    });
   }
 
   watchAndroidDevices();

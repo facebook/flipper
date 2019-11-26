@@ -9,15 +9,7 @@
 
 import type {SectionComponentHierarchy} from './Models';
 
-import {
-  Button,
-  Glyph,
-  PureComponent,
-  styled,
-  Toolbar,
-  Spacer,
-  colors,
-} from 'flipper';
+import {Glyph, PureComponent, styled, Toolbar, Spacer, colors} from 'flipper';
 import {Tree} from 'react-d3-tree';
 import {Fragment} from 'react';
 

@@ -58,8 +58,9 @@ public class LithoViewDescriptor extends NodeDescriptor<LithoView> {
   }
 
   @Override
-  public int getAXChildCount(LithoView node) {
-    return node.getChildCount();
+  public int getAXChildCount(LithoView node) throws Exception {
+    final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
+    return descriptor.getAXChildCount(node);
   }
 
   @Override
@@ -68,8 +69,9 @@ public class LithoViewDescriptor extends NodeDescriptor<LithoView> {
   }
 
   @Override
-  public @Nullable Object getAXChildAt(LithoView node, int index) {
-    return node.getChildAt(index);
+  public @Nullable Object getAXChildAt(LithoView node, int index) throws Exception {
+    final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
+    return descriptor.getChildAt(node, index);
   }
 
   @Override

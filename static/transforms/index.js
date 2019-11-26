@@ -22,7 +22,7 @@ function transform({filename, options, src}) {
   let ast = babylon.parse(src, {
     filename,
     plugins: isTypeScript
-      ? ['jsx', 'typescript', 'classProperties']
+      ? ['jsx', 'typescript', 'classProperties', 'optionalChaining']
       : [
           'jsx',
           ['flow', {all: true}],
@@ -50,6 +50,7 @@ function transform({filename, options, src}) {
       require('../node_modules/@babel/plugin-transform-typescript'),
       require('../node_modules/@babel/plugin-proposal-class-properties'),
       require('../node_modules/@babel/plugin-transform-modules-commonjs'),
+      require('../node_modules/@babel/plugin-proposal-optional-chaining'),
     );
   }
 

@@ -7,7 +7,7 @@
  * @format
  */
 
-import {styled, colors} from 'flipper';
+import {styled, colors, Glyph} from 'flipper';
 import React, {useState, memo} from 'react';
 import {connect} from 'react-redux';
 import {FlipperError, dismissError} from '../reducers/connections';
@@ -26,7 +26,7 @@ type DispatchFromProps = {
 type Props = DispatchFromProps & StateFromProps;
 
 const ErrorBar = memo(function ErrorBar(props: Props) {
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
 
   if (!props.errors.length) {
     return null;
@@ -51,7 +51,13 @@ const ErrorBar = memo(function ErrorBar(props: Props) {
       <DismissAllErrors
         onClick={() => setCollapsed(c => !c)}
         title="Show / hide errors">
-        {collapsed ? `▼ ${errorCount}` : '▲'}
+        <Glyph
+          color={colors.white}
+          size={8}
+          name={collapsed ? 'chevron-down' : 'chevron-up'}
+          style={{marginRight: 4}}
+        />
+        {collapsed && errorCount}
       </DismissAllErrors>
     </ErrorBarContainer>
   );

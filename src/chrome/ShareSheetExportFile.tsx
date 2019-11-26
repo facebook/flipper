@@ -19,19 +19,14 @@ import {
   exportStoreToFile,
   EXPORT_FLIPPER_TRACE_EVENT,
 } from '../utils/exportData';
-import PropTypes from 'prop-types';
 import ShareSheetErrorList from './ShareSheetErrorList';
 import ShareSheetPendingDialog from './ShareSheetPendingDialog';
+import {ReactReduxContext} from 'react-redux';
+import {store} from '../init';
 
 const Container = styled(FlexColumn)({
   padding: 20,
   width: 500,
-});
-
-const Center = styled(FlexColumn)({
-  alignItems: 'center',
-  paddingTop: 50,
-  paddingBottom: 50,
 });
 
 const ErrorMessage = styled(Text)({
@@ -75,10 +70,6 @@ type State = {
 };
 
 export default class ShareSheetExportFile extends Component<Props, State> {
-  static contextTypes = {
-    store: PropTypes.object.isRequired,
-  };
-
   state: State = {
     errorArray: [],
     result: {kind: 'pending'},
@@ -89,13 +80,13 @@ export default class ShareSheetExportFile extends Component<Props, State> {
   idler = new Idler();
 
   dispatchAndUpdateToolBarStatus(msg: string) {
-    this.context.store.dispatch(
+    store.dispatch(
       setExportStatusComponent(
         <CancellableExportStatus
           msg={msg}
           onCancel={() => {
             this.idler.cancel();
-            this.context.store.dispatch(unsetShare());
+            store.dispatch(unsetShare());
           }}
         />,
       ),
@@ -110,21 +101,16 @@ export default class ShareSheetExportFile extends Component<Props, State> {
         return;
       }
       const {errorArray} = await reportPlatformFailures(
-        exportStoreToFile(
-          this.props.file,
-          this.context.store,
-          this.idler,
-          (msg: string) => {
-            if (this.state.runInBackground) {
-              this.dispatchAndUpdateToolBarStatus(msg);
-            } else {
-              this.setState({statusUpdate: msg});
-            }
-          },
-        ),
+        exportStoreToFile(this.props.file, store, this.idler, (msg: string) => {
+          if (this.state.runInBackground) {
+            this.dispatchAndUpdateToolBarStatus(msg);
+          } else {
+            this.setState({statusUpdate: msg});
+          }
+        }),
         `${EXPORT_FLIPPER_TRACE_EVENT}:UI_FILE`,
       );
-      this.context.store.dispatch(unsetShare());
+      store.dispatch(unsetShare());
       if (this.state.runInBackground) {
         new Notification('Sharable Flipper trace created', {
           body: `Flipper trace exported to the ${this.props.file}`,
@@ -142,64 +128,76 @@ export default class ShareSheetExportFile extends Component<Props, State> {
     }
   }
 
-  renderSuccess(context: any) {
+  renderSuccess() {
     return (
-      <Container>
-        <FlexColumn>
-          <Title bold>Data Exported Successfully</Title>
-          <InfoText>
-            When sharing your Flipper data, consider that the captured data
-            might contain sensitive information like access tokens used in
-            network requests.
-          </InfoText>
-          <ShareSheetErrorList errors={this.state.errorArray} />
-        </FlexColumn>
-        <FlexRow>
-          <Spacer />
-          <Button compact padded onClick={() => this.cancelAndHide(context)}>
-            Close
-          </Button>
-        </FlexRow>
-      </Container>
+      <ReactReduxContext.Consumer>
+        {({store}) => (
+          <Container>
+            <FlexColumn>
+              <Title bold>Data Exported Successfully</Title>
+              <InfoText>
+                When sharing your Flipper data, consider that the captured data
+                might contain sensitive information like access tokens used in
+                network requests.
+              </InfoText>
+              <ShareSheetErrorList errors={this.state.errorArray} />
+            </FlexColumn>
+            <FlexRow>
+              <Spacer />
+              <Button compact padded onClick={() => this.cancelAndHide(store)}>
+                Close
+              </Button>
+            </FlexRow>
+          </Container>
+        )}
+      </ReactReduxContext.Consumer>
     );
   }
 
-  renderError(context: any, result: {kind: 'error'; error: Error}) {
+  renderError(result: {kind: 'error'; error: Error}) {
     return (
-      <Container>
-        <Title bold>Error</Title>
-        <ErrorMessage code>
-          {result.error.message || 'File could not be saved.'}
-        </ErrorMessage>
-        <FlexRow>
-          <Spacer />
-          <Button compact padded onClick={() => this.cancelAndHide(context)}>
-            Close
-          </Button>
-        </FlexRow>
-      </Container>
+      <ReactReduxContext.Consumer>
+        {({store}) => (
+          <Container>
+            <Title bold>Error</Title>
+            <ErrorMessage code>
+              {result.error.message || 'File could not be saved.'}
+            </ErrorMessage>
+            <FlexRow>
+              <Spacer />
+              <Button compact padded onClick={() => this.cancelAndHide(store)}>
+                Close
+              </Button>
+            </FlexRow>
+          </Container>
+        )}
+      </ReactReduxContext.Consumer>
     );
   }
 
-  renderPending(context: any, statusUpdate: string | null) {
+  renderPending(statusUpdate: string | null) {
     return (
-      <ShareSheetPendingDialog
-        statusUpdate={statusUpdate}
-        statusMessage="Exporting Flipper trace..."
-        onCancel={() => this.cancelAndHide(context)}
-        onRunInBackground={() => {
-          this.setState({runInBackground: true});
-          if (statusUpdate) {
-            this.dispatchAndUpdateToolBarStatus(statusUpdate);
-          }
-          this.props.onHide();
-        }}
-      />
+      <ReactReduxContext.Consumer>
+        {({store}) => (
+          <ShareSheetPendingDialog
+            statusUpdate={statusUpdate}
+            statusMessage="Exporting Flipper trace..."
+            onCancel={() => this.cancelAndHide(store)}
+            onRunInBackground={() => {
+              this.setState({runInBackground: true});
+              if (statusUpdate) {
+                this.dispatchAndUpdateToolBarStatus(statusUpdate);
+              }
+              this.props.onHide();
+            }}
+          />
+        )}
+      </ReactReduxContext.Consumer>
     );
   }
 
-  cancelAndHide(context: any) {
-    context.store.dispatch(unsetShare());
+  cancelAndHide(store: any) {
+    store.dispatch(unsetShare());
     this.props.onHide();
     this.idler.cancel();
   }
@@ -208,11 +206,11 @@ export default class ShareSheetExportFile extends Component<Props, State> {
     const {result, statusUpdate} = this.state;
     switch (result.kind) {
       case 'success':
-        return this.renderSuccess(this.context);
+        return this.renderSuccess();
       case 'error':
-        return this.renderError(this.context, result);
+        return this.renderError(result);
       case 'pending':
-        return this.renderPending(this.context, statusUpdate);
+        return this.renderPending(statusUpdate);
     }
   }
 }

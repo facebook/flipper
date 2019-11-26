@@ -13,7 +13,7 @@ import {App} from './App.js';
 import {Logger} from './fb-interfaces/Logger';
 import {Store} from './reducers/index';
 import {setPluginState} from './reducers/pluginStates';
-import {RSocketClientSocket} from 'rsocket-core/RSocketClient';
+import {ReactiveSocket} from 'rsocket-types';
 import {performance} from 'perf_hooks';
 import {reportPlatformFailures, reportPluginFailures} from './utils/metrics';
 import {notNull} from './utils/typeUtils';
@@ -22,7 +22,6 @@ import {registerPlugins} from './reducers/plugins';
 import createTableNativePlugin from './plugins/TableNativePlugin';
 import EventEmitter from 'events';
 import invariant from 'invariant';
-import {Responder} from 'rsocket-types/ReactiveSocketTypes';
 
 type Plugins = Array<string>;
 
@@ -98,11 +97,6 @@ const handleError = (
   }
 };
 
-export const MAX_MINIMUM_PLUGINS = 5;
-export const SHOW_REMAINING_PLUGIN_IF_LESS_THAN = 3;
-export const SAVED_PLUGINS_COUNT =
-  MAX_MINIMUM_PLUGINS + SHOW_REMAINING_PLUGIN_IF_LESS_THAN;
-
 export default class Client extends EventEmitter {
   app: App | undefined;
   connected: boolean;
@@ -111,9 +105,7 @@ export default class Client extends EventEmitter {
   sdkVersion: number;
   messageIdCounter: number;
   plugins: Plugins;
-  lessPlugins: Plugins | undefined;
-  showAllPlugins: boolean;
-  connection: RSocketClientSocket<any, any> | null | undefined;
+  connection: ReactiveSocket<any, any> | null | undefined;
   store: Store;
   activePlugins: Set<string>;
   device: Promise<BaseDevice>;
@@ -137,7 +129,7 @@ export default class Client extends EventEmitter {
   constructor(
     id: string,
     query: ClientQuery,
-    conn: RSocketClientSocket<any, any> | null | undefined,
+    conn: ReactiveSocket<any, any> | null | undefined,
     logger: Logger,
     store: Store,
     plugins?: Plugins | null | undefined,
@@ -146,7 +138,6 @@ export default class Client extends EventEmitter {
     super();
     this.connected = true;
     this.plugins = plugins ? plugins : [];
-    this.showAllPlugins = false;
     this.connection = conn;
     this.id = id;
     this.query = query;
@@ -186,29 +177,6 @@ export default class Client extends EventEmitter {
         },
       });
     }
-  }
-
-  /// Sort plugins by LRU order stored in lessPlugins; if not, sort by alphabet
-  byClientLRU(
-    pluginsCount: number,
-    a: typeof FlipperPlugin,
-    b: typeof FlipperPlugin,
-  ): number {
-    // Sanity check
-    if (this.lessPlugins != null) {
-      const showPluginsCount =
-        pluginsCount >= MAX_MINIMUM_PLUGINS + SHOW_REMAINING_PLUGIN_IF_LESS_THAN
-          ? MAX_MINIMUM_PLUGINS
-          : pluginsCount;
-      let idxA = this.lessPlugins.indexOf(a.id);
-      idxA = idxA < 0 || idxA >= showPluginsCount ? showPluginsCount : idxA;
-      let idxB = this.lessPlugins.indexOf(b.id);
-      idxB = idxB < 0 || idxB >= showPluginsCount ? showPluginsCount : idxB;
-      if (idxA !== idxB) {
-        return idxA > idxB ? 1 : -1;
-      }
-    }
-    return (a.title || a.id) > (b.title || b.id) ? 1 : -1;
   }
 
   /* All clients should have a corresponding Device in the store.

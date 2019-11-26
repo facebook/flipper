@@ -131,7 +131,6 @@ const StyledButton = styled('div')(
     padding: props.padded ? '0 15px' : '0 6px',
     height: props.compact === true ? 24 : 28,
     margin: 0,
-    marginLeft: props.inButtonGroup === true ? 0 : 10,
     minWidth: 34,
     display: 'inline-flex',
     alignItems: 'center',
@@ -146,6 +145,7 @@ const StyledButton = styled('div')(
       props.pulse && props.windowIsFocused ? `${pulse} 1s infinite` : '',
 
     '&:not(:first-child)': {
+      marginLeft: props.inButtonGroup === true ? 0 : 10,
       borderTopLeftRadius: props.inButtonGroup === true ? 0 : 4,
       borderBottomLeftRadius: props.inButtonGroup === true ? 0 : 4,
     },
@@ -185,10 +185,12 @@ const StyledButton = styled('div')(
     },
   }),
 );
+StyledButton.displayName = 'Button:StyledButton';
 
 const Icon = styled(Glyph)(({hasText}: {hasText: boolean}) => ({
   marginRight: hasText ? 3 : 0,
 }));
+Icon.displayName = 'Button:Icon';
 
 type OwnProps = {
   /**

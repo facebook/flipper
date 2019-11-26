@@ -19,7 +19,7 @@
 @property (nonatomic, readonly) CGSize size;
 @property (nonatomic, readonly) CGPoint position;
 @property (nonatomic, readonly) std::vector<SKComponentLayoutWrapper *> children;
-@property (nonatomic, readonly) id<CKInspectableView> rootNode;
+@property (nonatomic, weak, readonly) id<CKInspectableView> rootNode;
 // Null for layouts which are not direct children of a CKFlexboxComponent
 @property (nonatomic, readonly) BOOL isFlexboxChild;
 @property (nonatomic, readonly) CKFlexboxComponentChild flexboxChild;

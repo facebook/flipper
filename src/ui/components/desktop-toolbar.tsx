@@ -27,6 +27,8 @@ const DesktopDropdownContainer = styled('div')({
     borderBottom: 'none',
   },
 });
+DesktopDropdownContainer.displayName =
+  'DesktopDropdown:DesktopDropdownContainer';
 
 export function DesktopDropdown(props: {
   deactivate?: () => void;
@@ -57,6 +59,8 @@ const DesktopDropdownItemContainer = styled('div')(
     },
   }),
 );
+DesktopDropdownItemContainer.displayName =
+  'DesktopDropdownItem:DesktopDropdownItemContainer';
 
 type DesktopDropdownItemState = {hovered: boolean};
 
@@ -126,3 +130,4 @@ export const DesktopDropdownSelectedItem = styled(DesktopDropdownItem)({
     position: 'absolute',
   },
 });
+DesktopDropdownSelectedItem.displayName = 'DesktopDropdownSelectedItem';

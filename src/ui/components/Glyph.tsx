@@ -20,6 +20,7 @@ const ColoredIconBlack = styled('img')(({size}: {size: number}) => ({
   width: size,
   flexShrink: 0,
 }));
+ColoredIconBlack.displayName = 'Glyph:ColoredIconBlack';
 
 const ColoredIconCustom = styled('div')(
   (props: {size: number; color?: string; src: string}) => ({
@@ -35,6 +36,7 @@ const ColoredIconCustom = styled('div')(
     flexShrink: 0,
   }),
 );
+ColoredIconCustom.displayName = 'Glyph:ColoredIconCustom';
 
 function ColoredIcon(
   props: {
@@ -43,12 +45,13 @@ function ColoredIcon(
     size?: number;
     className?: string;
     color?: string;
+    style?: React.CSSProperties;
   },
   context: {
     glyphColor?: string;
   },
 ) {
-  const {color = context.glyphColor, name, size = 16, src} = props;
+  const {color = context.glyphColor, name, size = 16, src, style} = props;
 
   const isBlack =
     color == null ||
@@ -63,6 +66,7 @@ function ColoredIcon(
         src={src}
         size={size}
         className={props.className}
+        style={style}
       />
     );
   } else {
@@ -72,11 +76,12 @@ function ColoredIcon(
         size={size}
         src={src}
         className={props.className}
+        style={style}
       />
     );
   }
 }
-
+ColoredIcon.displayName = 'Glyph:ColoredIcon';
 ColoredIcon.contextTypes = {
   glyphColor: PropTypes.string,
 };
@@ -87,9 +92,11 @@ export default class Glyph extends React.PureComponent<{
   variant?: 'filled' | 'outline';
   className?: string;
   color?: string;
+  style?: React.CSSProperties;
+  title?: string;
 }> {
   render() {
-    const {name, size = 16, variant, color, className} = this.props;
+    const {name, size = 16, variant, color, className, style} = this.props;
 
     return (
       <ColoredIcon
@@ -102,6 +109,7 @@ export default class Glyph extends React.PureComponent<{
           size,
           typeof window !== 'undefined' ? window.devicePixelRatio : 1,
         )}
+        style={style}
       />
     );
   }

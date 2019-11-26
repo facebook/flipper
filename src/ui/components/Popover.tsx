@@ -19,6 +19,7 @@ const Anchor = styled('img')({
   left: '50%',
   transform: 'translate(-50%, calc(100% + 2px))',
 });
+Anchor.displayName = 'Popover.Anchor';
 
 type Opts = {
   minWidth?: number;
@@ -56,6 +57,7 @@ const PopoverContainer = styled(FlexColumn)((props: {opts?: Opts}) => ({
     backgroundColor: colors.white,
   },
 }));
+PopoverContainer.displayName = 'Popover:PopoverContainer';
 
 type Props = {
   children: React.ReactNode;
@@ -93,14 +95,17 @@ export default class Popover extends PureComponent<Props> {
   };
 
   render() {
-    return [
-      <Anchor src="./anchor.svg" key="anchor" />,
-      <PopoverContainer
-        innerRef={this._setRef}
-        key="popup"
-        opts={this.props.forceOpts || {}}>
-        {this.props.children}
-      </PopoverContainer>,
-    ];
+    return (
+      <>
+        <Anchor src="./anchor.svg" key="anchor" />
+        <PopoverContainer
+          innerRef={this._setRef}
+          key="popup"
+          opts={this.props.forceOpts || {}}>
+          {this.props.children}
+        </PopoverContainer>
+        ,
+      </>
+    );
   }
 }

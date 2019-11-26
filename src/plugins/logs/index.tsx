@@ -19,7 +19,6 @@ import {DeviceLogEntry} from '../../devices/BaseDevice';
 
 import {
   Text,
-  ManagedTable,
   ManagedTableClass,
   Button,
   colors,

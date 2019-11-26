@@ -11,7 +11,7 @@ import config from '../fb-stubs/config';
 import BaseDevice from '../devices/BaseDevice';
 import Client from '../Client';
 import {UninitializedClient} from '../UninitializedClient';
-import {FlipperBasePlugin} from '../plugin';
+import {FlipperBasePlugin, sortPluginsByName} from '../plugin';
 import {PluginNotification} from '../reducers/notifications';
 import {ActiveSheet, ACTIVE_SHEET_PLUGINS} from '../reducers/application';
 import {State as Store} from '../reducers';
@@ -28,31 +28,42 @@ import {
   FlipperPlugin,
   FlipperDevicePlugin,
   LoadingIndicator,
+  Button,
+  StarButton,
+  Heading,
+  Spacer,
+  ArchivedDevice,
+  SmallText,
+  Info,
 } from 'flipper';
 import React, {Component, PureComponent, Fragment} from 'react';
 import NotificationsHub from '../NotificationsHub';
 import {
   selectPlugin,
-  showMoreOrLessPlugins,
+  starPlugin,
   StaticView,
   setStaticView,
+  selectClient,
+  getAvailableClients,
+  getClientById,
 } from '../reducers/connections';
 import {setActiveSheet} from '../reducers/application';
 import UserAccount from './UserAccount';
 import {connect} from 'react-redux';
 import {BackgroundColorProperty} from 'csstype';
-import {
-  MAX_MINIMUM_PLUGINS,
-  SHOW_REMAINING_PLUGIN_IF_LESS_THAN,
-} from '../Client';
 import {StyledOtherComponent} from 'create-emotion-styled';
 import SupportRequestFormManager from '../fb-stubs/SupportRequestFormManager';
+import SupportRequestDetails from '../fb-stubs/SupportRequestDetails';
+import SupportRequestFormV2 from '../fb-stubs/SupportRequestFormV2';
+
+type FlipperPlugins = typeof FlipperPlugin[];
+type PluginsByCategory = [string, FlipperPlugins][];
 
 const ListItem = styled('div')(({active}: {active?: boolean}) => ({
   paddingLeft: 10,
   display: 'flex',
   alignItems: 'center',
-  marginBottom: 2,
+  marginBottom: 6,
   flexShrink: 0,
   backgroundColor: active ? colors.macOSTitleBarIconSelected : 'none',
   color: active ? colors.white : colors.macOSSidebarSectionItem,
@@ -63,23 +74,23 @@ const ListItem = styled('div')(({active}: {active?: boolean}) => ({
   },
 }));
 
-const SidebarHeader = styled(FlexBox)({
-  display: 'block',
-  alignItems: 'center',
-  padding: 3,
-  color: colors.macOSSidebarSectionTitle,
-  fontSize: 11,
-  fontWeight: 500,
-  marginLeft: 7,
-  textOverflow: 'ellipsis',
+const SidebarButton = styled(Button)(({small}: {small?: boolean}) => ({
+  fontWeight: 'bold',
+  fontSize: small ? 11 : 14,
+  width: '100%',
   overflow: 'hidden',
+  marginTop: small ? 0 : 20,
+  pointer: 'cursor',
+  border: 'none',
+  background: 'none',
+  padding: 0,
+  justifyContent: 'left',
   whiteSpace: 'nowrap',
-  flexShrink: 0,
-});
+}));
 
 const PluginShape = styled(FlexBox)(
   ({backgroundColor}: {backgroundColor?: BackgroundColorProperty}) => ({
-    marginRight: 5,
+    marginRight: 8,
     backgroundColor,
     borderRadius: 3,
     flexShrink: 0,
@@ -87,6 +98,7 @@ const PluginShape = styled(FlexBox)(
     height: 18,
     justifyContent: 'center',
     alignItems: 'center',
+    top: '-1px',
   }),
 );
 
@@ -129,23 +141,6 @@ const Plugins = styled(FlexColumn)({
   overflow: 'auto',
 });
 
-const PluginDebugger = styled(FlexBox)({
-  color: colors.blackAlpha50,
-  alignItems: 'center',
-  padding: 10,
-  flexShrink: 0,
-  whiteSpace: 'nowrap',
-  overflow: 'hidden',
-  textOverflow: 'ellipsis',
-});
-
-const PluginShowMoreOrLess = styled(ListItem)({
-  color: colors.blue,
-  fontSize: 10,
-  lineHeight: '10px',
-  paddingBottom: 5,
-});
-
 function PluginIcon({
   isActive,
   backgroundColor,
@@ -169,9 +164,13 @@ class PluginSidebarListItem extends Component<{
   isActive: boolean;
   plugin: typeof FlipperBasePlugin;
   app?: string | null | undefined;
+  helpRef?: any;
+  provided?: any;
+  onFavorite?: () => void;
+  starred?: boolean;
 }> {
   render() {
-    const {isActive, plugin} = this.props;
+    const {isActive, plugin, onFavorite, starred} = this.props;
     const app = this.props.app || 'Facebook';
     let iconColor: string | undefined = (brandColors as any)[app];
 
@@ -200,6 +199,9 @@ class PluginSidebarListItem extends Component<{
           color={colors.white}
         />
         <PluginName>{plugin.title || plugin.id}</PluginName>
+        {starred !== undefined && (
+          <StarButton onStar={onFavorite!} starred={starred} />
+        )}
       </ListItem>
     );
   }
@@ -229,6 +231,7 @@ type StateFromProps = {
   staticView: StaticView;
   selectedPlugin: string | null | undefined;
   selectedApp: string | null | undefined;
+  userStarredPlugins: Store['connections']['userStarredPlugins'];
   clients: Array<Client>;
   uninitializedClients: Array<{
     client: UninitializedClient;
@@ -245,15 +248,22 @@ type DispatchFromProps = {
     selectedApp: string | null;
     deepLinkPayload: string | null;
   }) => void;
+  selectClient: typeof selectClient;
   setActiveSheet: (activeSheet: ActiveSheet) => void;
   setStaticView: (payload: StaticView) => void;
-  showMoreOrLessPlugins: (payload: string) => void;
+  starPlugin: typeof starPlugin;
 };
 
 type Props = OwnProps & StateFromProps & DispatchFromProps;
-type State = {showSupportForm: boolean};
+type State = {
+  showSupportForm: boolean;
+  showAllPlugins: boolean;
+};
 class MainSidebar extends PureComponent<Props, State> {
-  state: State = {showSupportForm: GK.get('flipper_support_requests')};
+  state: State = {
+    showSupportForm: GK.get('flipper_support_requests'),
+    showAllPlugins: false,
+  };
   static getDerivedStateFromProps(props: Props, state: State) {
     if (
       !state.showSupportForm &&
@@ -270,214 +280,346 @@ class MainSidebar extends PureComponent<Props, State> {
   render() {
     const {
       selectedDevice,
+      selectClient,
       selectedPlugin,
-      staticView,
       selectedApp,
+      staticView,
       selectPlugin,
       setStaticView,
-      windowIsFocused,
       numNotifications,
+      uninitializedClients,
     } = this.props;
-    let {clients, uninitializedClients} = this.props;
-    clients = clients
-      .filter(
-        (client: Client) =>
-          selectedDevice && selectedDevice.supportsOS(client.query.os),
-      )
-      .sort((a, b) => (a.query.app || '').localeCompare(b.query.app));
-
-    const byPluginNameOrId = (
-      a: typeof FlipperBasePlugin,
-      b: typeof FlipperBasePlugin,
-    ) => ((a.title || a.id) > (b.title || b.id) ? 1 : -1);
+    const clients = getAvailableClients(selectedDevice, this.props.clients);
+    const client: Client | undefined = getClientById(clients, selectedApp);
 
     return (
-      <Sidebar
-        position="left"
-        width={200}
-        backgroundColor={
-          process.platform === 'darwin' && windowIsFocused ? 'transparent' : ''
-        }>
+      <Sidebar position="left" width={200} backgroundColor={colors.light02}>
         <Plugins>
-          {!GK.get('flipper_disable_notifications') && (
-            <ListItem
-              active={selectedPlugin === 'notifications'}
-              onClick={() =>
-                selectPlugin({
-                  selectedPlugin: 'notifications',
-                  selectedApp: null,
-                  deepLinkPayload: null,
-                })
-              }>
-              <PluginIcon
-                color={colors.light50}
-                name={
-                  numNotifications > 0
-                    ? NotificationsHub.icon || 'bell'
-                    : 'bell-null'
-                }
-                isActive={selectedPlugin === NotificationsHub.id}
-              />
-              <PluginName
-                count={numNotifications}
-                isActive={selectedPlugin === NotificationsHub.id}>
-                {NotificationsHub.title}
-              </PluginName>
-            </ListItem>
-          )}
-          {this.state.showSupportForm && (
-            <ListItem
-              active={
-                staticView != null && staticView === SupportRequestFormManager
-              }
-              onClick={() => setStaticView(SupportRequestFormManager)}>
-              <PluginIcon
-                color={colors.light50}
-                name={'app-dailies'}
-                isActive={
-                  staticView != null && staticView === SupportRequestFormManager
-                }
-              />
-              <PluginName
-                isActive={
-                  staticView != null && staticView === SupportRequestFormManager
-                }>
-                Litho Support Request
-              </PluginName>
-            </ListItem>
-          )}
-          {selectedDevice && (
-            <SidebarHeader>{selectedDevice.title}</SidebarHeader>
-          )}
-          {selectedDevice &&
-            Array.from(this.props.devicePlugins.values())
-              .filter(plugin => plugin.supportsDevice(selectedDevice))
-              .sort(byPluginNameOrId)
-              .map((plugin: typeof FlipperDevicePlugin) => (
-                <PluginSidebarListItem
-                  key={plugin.id}
-                  isActive={plugin.id === selectedPlugin}
-                  onClick={() =>
-                    selectPlugin({
-                      selectedPlugin: plugin.id,
-                      selectedApp: null,
-                      deepLinkPayload: null,
-                    })
-                  }
-                  plugin={plugin}
-                />
-              ))}
-          {clients
-            .filter(
-              (client: Client) =>
-                (selectedDevice &&
-                  client.query.device_id === selectedDevice.serial) ||
-                // Old android sdk versions don't know their device_id
-                // Display their plugins under all selected devices until they die out
-                client.query.device_id === 'unknown',
-            )
-            .map((client: Client) => {
-              const plugins = Array.from(
-                this.props.clientPlugins.values(),
-              ).filter(
-                (p: typeof FlipperPlugin) => client.plugins.indexOf(p.id) > -1,
-              );
-
-              const minShowPluginsCount =
-                plugins.length <
-                MAX_MINIMUM_PLUGINS + SHOW_REMAINING_PLUGIN_IF_LESS_THAN
-                  ? plugins.length
-                  : MAX_MINIMUM_PLUGINS;
-
-              return (
-                <React.Fragment key={client.id}>
-                  <SidebarHeader>{client.query.app}</SidebarHeader>
-                  {groupPluginsByCategory(
-                    plugins
-                      .sort(
-                        (a: typeof FlipperPlugin, b: typeof FlipperPlugin) =>
-                          client.byClientLRU(plugins.length, a, b),
-                      )
-                      .slice(
-                        0,
-                        client.showAllPlugins
-                          ? client.plugins.length
-                          : minShowPluginsCount,
-                      ),
-                  ).map(([category, plugins]) => (
-                    <Fragment key={category}>
-                      {category && (
-                        <ListItem>
-                          <CategoryName>{category}</CategoryName>
-                        </ListItem>
-                      )}
-                      {plugins.map(plugin => (
-                        <PluginSidebarListItem
-                          key={plugin.id}
-                          isActive={
-                            plugin.id === selectedPlugin &&
-                            selectedApp === client.id
-                          }
-                          onClick={() =>
-                            selectPlugin({
-                              selectedPlugin: plugin.id,
-                              selectedApp: client.id,
-                              deepLinkPayload: null,
-                            })
-                          }
-                          plugin={plugin}
-                          app={client.query.app}
-                        />
-                      ))}
-                    </Fragment>
-                  ))}
-                  {plugins.length > minShowPluginsCount && (
-                    <PluginShowMoreOrLess
-                      onClick={() =>
-                        this.props.showMoreOrLessPlugins(client.id)
-                      }>
-                      {client.showAllPlugins ? 'Show less' : 'Show more'}
-                    </PluginShowMoreOrLess>
+          {selectedDevice ? (
+            <>
+              <ListItem>
+                <SidebarButton>{selectedDevice.title}</SidebarButton>
+              </ListItem>
+              {this.showArchivedDeviceDetails(selectedDevice)}
+              {selectedDevice.devicePlugins.map(pluginName => {
+                const plugin = this.props.devicePlugins.get(pluginName)!;
+                return (
+                  <PluginSidebarListItem
+                    key={plugin.id}
+                    isActive={plugin.id === selectedPlugin}
+                    onClick={() =>
+                      selectPlugin({
+                        selectedPlugin: plugin.id,
+                        selectedApp: null,
+                        deepLinkPayload: null,
+                      })
+                    }
+                    plugin={plugin}
+                  />
+                );
+              })}
+              <ListItem>
+                <SidebarButton
+                  title="Select an app to see available plugins"
+                  compact={true}
+                  dropdown={clients.map(c => ({
+                    checked: client === c,
+                    label: c.query.app,
+                    type: 'checkbox',
+                    click: () => selectClient(c.id),
+                  }))}>
+                  {clients.length === 0 ? (
+                    <>
+                      <Glyph
+                        name="mobile-engagement"
+                        size={16}
+                        color={colors.red}
+                        style={{marginRight: 10}}
+                      />
+                      No clients connected
+                    </>
+                  ) : !client ? (
+                    'Select client'
+                  ) : (
+                    <>
+                      {client.query.app}
+                      <Glyph
+                        size={12}
+                        name="chevron-down"
+                        style={{marginLeft: 8}}
+                      />
+                    </>
                   )}
-                </React.Fragment>
-              );
-            })}
-          {uninitializedClients.map(entry => (
-            <React.Fragment key={JSON.stringify(entry.client)}>
-              <SidebarHeader>{entry.client.appName}</SidebarHeader>
-              {entry.errorMessage ? (
-                <ErrorIndicator name={'mobile-cross'} size={16} />
-              ) : (
-                <Spinner size={16} />
-              )}
-            </React.Fragment>
-          ))}
+                </SidebarButton>
+              </ListItem>
+              {this.renderClientPlugins(client)}
+              {uninitializedClients.map(entry => (
+                <ListItem key={JSON.stringify(entry.client)}>
+                  {entry.client.appName}
+                  {entry.errorMessage ? (
+                    <ErrorIndicator name={'mobile-cross'} size={16} />
+                  ) : (
+                    <Spinner size={16} />
+                  )}
+                </ListItem>
+              ))}
+            </>
+          ) : (
+            <ListItem
+              style={{
+                textAlign: 'center',
+                marginTop: 50,
+                flexDirection: 'column',
+              }}>
+              <Glyph name="mobile" size={32} color={colors.red}></Glyph>
+              <Spacer style={{height: 20}} />
+              <Heading>Select a device to get started</Heading>
+            </ListItem>
+          )}
         </Plugins>
-        <PluginDebugger
+        {!GK.get('flipper_disable_notifications') && (
+          <ListItem
+            active={selectedPlugin === 'notifications'}
+            onClick={() =>
+              selectPlugin({
+                selectedPlugin: 'notifications',
+                selectedApp: null,
+                deepLinkPayload: null,
+              })
+            }
+            style={{
+              borderTop: `1px solid ${colors.blackAlpha10}`,
+            }}>
+            <PluginIcon
+              color={colors.light50}
+              name={
+                numNotifications > 0
+                  ? NotificationsHub.icon || 'bell'
+                  : 'bell-null'
+              }
+              isActive={selectedPlugin === NotificationsHub.id}
+            />
+            <PluginName
+              count={numNotifications}
+              isActive={selectedPlugin === NotificationsHub.id}>
+              {NotificationsHub.title}
+            </PluginName>
+          </ListItem>
+        )}
+        {this.state.showSupportForm &&
+          (function() {
+            const supportRequestFormImpl = GK.get('support_requests_v2')
+              ? SupportRequestFormV2
+              : SupportRequestFormManager;
+            const active = staticView && staticView === supportRequestFormImpl;
+            return (
+              <ListItem
+                active={active}
+                onClick={() => setStaticView(supportRequestFormImpl)}>
+                <PluginIcon
+                  color={colors.light50}
+                  name={'app-dailies'}
+                  isActive={active}
+                />
+                <PluginName isActive={active}>Litho Support Request</PluginName>
+              </ListItem>
+            );
+          })()}
+        <ListItem
           onClick={() => this.props.setActiveSheet(ACTIVE_SHEET_PLUGINS)}>
-          <Glyph
+          <PluginIcon
             name="question-circle"
-            size={16}
-            variant="outline"
-            color={colors.blackAlpha30}
+            color={colors.light50}
+            isActive={false}
           />
-          &nbsp;Manage Plugins...
-        </PluginDebugger>
+          Manage Plugins
+        </ListItem>
         {config.showLogin && <UserAccount />}
       </Sidebar>
     );
   }
+
+  showArchivedDeviceDetails(selectedDevice: BaseDevice) {
+    if (!selectedDevice.isArchived || !selectedDevice.source) {
+      return null;
+    }
+    const {staticView, setStaticView} = this.props;
+    return (
+      <>
+        <ListItem>
+          <Info type="warning" small>
+            {selectedDevice.source ? 'Imported device' : 'Archived device'}
+          </Info>
+        </ListItem>
+        {this.state.showSupportForm &&
+          (selectedDevice as ArchivedDevice).supportRequestDetails && (
+            <ListItem
+              active={
+                staticView != null && staticView === SupportRequestDetails
+              }
+              onClick={() => setStaticView(SupportRequestDetails)}>
+              <PluginIcon
+                color={colors.light50}
+                name={'app-dailies'}
+                isActive={
+                  staticView != null && staticView === SupportRequestDetails
+                }
+              />
+              <PluginName
+                isActive={
+                  staticView != null && staticView === SupportRequestDetails
+                }>
+                Support Request Details
+              </PluginName>
+            </ListItem>
+          )}
+      </>
+    );
+  }
+
+  renderPluginsByCategory(
+    client: Client,
+    plugins: FlipperPlugins,
+    starred: boolean,
+    onFavorite: (pluginId: string) => void,
+  ) {
+    const {selectedPlugin, selectedApp, selectPlugin} = this.props;
+    return groupPluginsByCategory(plugins).map(([category, plugins]) => (
+      <Fragment key={category}>
+        {category && (
+          <ListItem>
+            <CategoryName>{category}</CategoryName>
+          </ListItem>
+        )}
+        {plugins.map(plugin => (
+          <PluginSidebarListItem
+            key={plugin.id}
+            isActive={plugin.id === selectedPlugin && selectedApp === client.id}
+            onClick={() =>
+              selectPlugin({
+                selectedPlugin: plugin.id,
+                selectedApp: client.id,
+                deepLinkPayload: null,
+              })
+            }
+            plugin={plugin}
+            app={client.query.app}
+            onFavorite={() => onFavorite(plugin.id)}
+            starred={starred}
+          />
+        ))}
+      </Fragment>
+    ));
+  }
+
+  renderClientPlugins(client?: Client) {
+    if (!client) {
+      return null;
+    }
+    const onFavorite = (plugin: string) => {
+      this.props.starPlugin({
+        selectedApp: client.id,
+        selectedPlugin: plugin,
+      });
+    };
+    const allPlugins = Array.from(this.props.clientPlugins.values()).filter(
+      (p: typeof FlipperPlugin) => client.plugins.indexOf(p.id) > -1,
+    );
+    const favoritePlugins: FlipperPlugins = getFavoritePlugins(
+      client,
+      allPlugins,
+      this.props.userStarredPlugins,
+      true,
+    );
+    const showAllPlugins =
+      this.state.showAllPlugins ||
+      favoritePlugins.length === 0 ||
+      // If the plugin is part of the hidden section, make sure sidebar is expanded
+      (client.plugins.includes(this.props.selectedPlugin!) &&
+        !favoritePlugins.find(
+          plugin => plugin.id === this.props.selectedPlugin,
+        ));
+    return (
+      <>
+        {favoritePlugins.length === 0 ? (
+          <ListItem>
+            <SmallText center>Star your favorite plugins!</SmallText>
+          </ListItem>
+        ) : (
+          <>
+            {this.renderPluginsByCategory(
+              client,
+              favoritePlugins,
+              true,
+              onFavorite,
+            )}
+            <ListItem>
+              <SidebarButton
+                small
+                compact
+                onClick={() =>
+                  this.setState(state => ({
+                    ...state,
+                    showAllPlugins: !state.showAllPlugins,
+                  }))
+                }>
+                {showAllPlugins ? 'Show less' : 'Show more'}
+                <Glyph
+                  size={8}
+                  name={showAllPlugins ? 'chevron-up' : 'chevron-down'}
+                  style={{
+                    marginLeft: 4,
+                  }}
+                />
+              </SidebarButton>
+            </ListItem>
+          </>
+        )}
+        <div
+          style={{
+            flex: 'auto' /*scroll this region, not the entire thing*/,
+            overflow: 'auto',
+            height: 'auto',
+          }}>
+          {showAllPlugins
+            ? this.renderPluginsByCategory(
+                client,
+                getFavoritePlugins(
+                  client,
+                  allPlugins,
+                  this.props.userStarredPlugins,
+                  false,
+                ),
+                false,
+                onFavorite,
+              )
+            : null}
+        </div>
+      </>
+    );
+  }
 }
 
-type PluginsByCategory = [string, (typeof FlipperPlugin)[]][];
+function getFavoritePlugins(
+  client: Client,
+  allPlugins: FlipperPlugins,
+  userStarredPlugins: Props['userStarredPlugins'],
+  favorite: boolean,
+): FlipperPlugins {
+  const appName = client.id;
+  return allPlugins.filter(plugin => {
+    const idx = userStarredPlugins[appName]
+      ? userStarredPlugins[appName].indexOf(plugin.id)
+      : -1;
+    return idx === -1 ? !favorite : favorite;
+  });
+}
 
-function groupPluginsByCategory(
-  plugins: (typeof FlipperPlugin)[],
-): PluginsByCategory {
-  // Pre condition: plugins are already sorted globally
-  const byCategory: {[cat: string]: (typeof FlipperPlugin)[]} = {};
+function groupPluginsByCategory(plugins: FlipperPlugins): PluginsByCategory {
+  const sortedPlugins = plugins.slice().sort(sortPluginsByName);
+  const byCategory: {[cat: string]: FlipperPlugins} = {};
   const res: PluginsByCategory = [];
-  plugins.forEach(plugin => {
+  sortedPlugins.forEach(plugin => {
     const category = plugin.category || '';
     (byCategory[category] || (byCategory[category] = [])).push(plugin);
   });
@@ -497,6 +639,7 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
       selectedDevice,
       selectedPlugin,
       selectedApp,
+      userStarredPlugins,
       clients,
       uninitializedClients,
       staticView,
@@ -515,6 +658,7 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
     staticView,
     selectedPlugin,
     selectedApp,
+    userStarredPlugins,
     clients,
     uninitializedClients,
     devicePlugins,
@@ -522,8 +666,9 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
   }),
   {
     selectPlugin,
+    selectClient,
     setStaticView,
     setActiveSheet,
-    showMoreOrLessPlugins,
+    starPlugin,
   },
 )(MainSidebar);

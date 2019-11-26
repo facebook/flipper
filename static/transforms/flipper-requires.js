@@ -44,6 +44,8 @@ module.exports = ({types: t}) => ({
           path.replaceWith(t.identifier('global.React'));
         } else if (args[0].value === 'react-dom') {
           path.replaceWith(t.identifier('global.ReactDOM'));
+        } else if (args[0].value === 'adbkit') {
+          path.replaceWith(t.identifier('global.adbkit'));
         } else if (
           // require a file not a pacakge
           args[0].value.indexOf('/') > -1 &&

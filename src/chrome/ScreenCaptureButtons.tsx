@@ -37,7 +37,7 @@ type State = {
   capturingScreenshot: boolean;
 };
 
-async function openFile(path: string | null) {
+export async function openFile(path: string | null) {
   if (!path) {
     return;
   }

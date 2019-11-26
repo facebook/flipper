@@ -9,8 +9,11 @@
 
 import styled from 'react-emotion';
 
-export default styled('div')({
+const VerticalRule = styled('div')({
   backgroundColor: '#c9ced4',
   width: 3,
   margin: '0',
 });
+VerticalRule.displayName = 'VerticalRule';
+
+export default VerticalRule;

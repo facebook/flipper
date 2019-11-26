@@ -18,7 +18,10 @@ export type FeedbackPrompt = {
   shouldPopup: boolean;
 };
 
-export async function submitRating(rating: number): Promise<void> {
+export async function submitRating(
+  rating: number,
+  sessionId: string | null,
+): Promise<void> {
   throw new Error('Method not implemented.');
 }
 export async function submitComment(
@@ -26,10 +29,11 @@ export async function submitComment(
   comment: string,
   selectedPredefinedComments: string[],
   allowUserInfoSharing: boolean,
+  sessionId: string | null,
 ): Promise<void> {
   throw new Error('Method not implemented.');
 }
-export async function dismiss(): Promise<void> {
+export async function dismiss(sessionId: string | null): Promise<void> {
   throw new Error('Method not implemented.');
 }
 export async function getPrompt(): Promise<FeedbackPrompt> {

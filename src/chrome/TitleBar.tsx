@@ -15,8 +15,8 @@ import {
   toggleLeftSidebarVisible,
   toggleRightSidebarVisible,
   ACTIVE_SHEET_BUG_REPORTER,
-  setFlipperRating,
   ACTIVE_SHEET_SETTINGS,
+  ACTIVE_SHEET_DOCTOR,
 } from '../reducers/application';
 import {
   colors,
@@ -69,7 +69,6 @@ type DispatchFromProps = {
   toggleLeftSidebarVisible: (visible?: boolean) => void;
   toggleRightSidebarVisible: (visible?: boolean) => void;
   setActiveSheet: (sheet: ActiveSheet) => void;
-  setFlipperRating: (rating: number) => void;
 };
 
 type StateFromProps = {
@@ -79,7 +78,6 @@ type StateFromProps = {
   rightSidebarAvailable: boolean;
   downloadingImportData: boolean;
   launcherMsg: LauncherMsg;
-  flipperRating: number | null;
   share: ShareType | null | undefined;
   navPluginIsActive: boolean;
 };
@@ -161,9 +159,7 @@ class TitleBar extends React.Component<Props, StateFromProps> {
           share != null ? share.statusComponent : undefined,
         )}
         <Spacer />
-        {config.showFlipperRating ? (
-          <RatingButton onRatingChanged={this.props.setFlipperRating} />
-        ) : null}
+        {config.showFlipperRating ? <RatingButton /> : null}
         <Version>{this.props.version + (isProduction() ? '' : '-dev')}</Version>
 
         {isAutoUpdaterEnabled() ? (
@@ -174,19 +170,26 @@ class TitleBar extends React.Component<Props, StateFromProps> {
             version={this.props.version}
           />
         )}
-        {config.bugReportButtonVisible && (
-          <Button
-            compact={true}
-            onClick={() => this.props.setActiveSheet(ACTIVE_SHEET_BUG_REPORTER)}
-            title="Report Bug"
-            icon="bug"
-          />
-        )}
+
         <Button
           icon="settings"
           title="Settings"
           compact={true}
           onClick={() => this.props.setActiveSheet(ACTIVE_SHEET_SETTINGS)}
+        />
+        {config.bugReportButtonVisible && (
+          <Button
+            compact={true}
+            onClick={() => this.props.setActiveSheet(ACTIVE_SHEET_BUG_REPORTER)}
+            title="Report Bug in Flipper"
+            icon="bug"
+          />
+        )}
+        <Button
+          icon="first-aid"
+          title="Doctor"
+          compact={true}
+          onClick={() => this.props.setActiveSheet(ACTIVE_SHEET_DOCTOR)}
         />
         <ButtonGroup>
           <Button
@@ -221,7 +224,6 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, State>(
       rightSidebarAvailable,
       downloadingImportData,
       launcherMsg,
-      flipperRating,
       share,
     },
     pluginStates,
@@ -232,7 +234,6 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, State>(
     rightSidebarAvailable,
     downloadingImportData,
     launcherMsg,
-    flipperRating,
     share,
     navPluginIsActive: Object.keys(pluginStates).some(key =>
       /#Navigation$/.test(key),
@@ -242,6 +243,5 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, State>(
     setActiveSheet,
     toggleLeftSidebarVisible,
     toggleRightSidebarVisible,
-    setFlipperRating,
   },
 )(TitleBar);

@@ -83,6 +83,7 @@ const TooltipBubble = styled('div')(
     color: props.options.color,
   }),
 );
+TooltipBubble.displayName = 'TooltipProvider:TooltipBubble';
 
 // vertical offset on bubble when position is 'below'
 const BUBBLE_BELOW_POSITION_VERTICAL_OFFSET = -10;
@@ -120,6 +121,7 @@ const TooltipTail = styled('div')(
     right: props.right,
   }),
 );
+TooltipTail.displayName = 'TooltipProvider:TooltipTail';
 
 type TooltipProps = {
   children: React.ReactNode;

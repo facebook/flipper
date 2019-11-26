@@ -18,6 +18,7 @@ const ButtonGroupContainer = styled('div')({
     marginLeft: 0,
   },
 });
+ButtonGroupContainer.displayName = 'ButtonGroup:ButtonGroupContainer';
 
 /**
  * Group a series of buttons together.

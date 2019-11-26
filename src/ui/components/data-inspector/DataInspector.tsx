@@ -34,18 +34,22 @@ const BaseContainer = styled('div')(
     userSelect: 'text',
   }),
 );
+BaseContainer.displayName = 'DataInspector:BaseContainer';
 
 const RecursiveBaseWrapper = styled('span')({
   color: colors.red,
 });
+RecursiveBaseWrapper.displayName = 'DataInspector:RecursiveBaseWrapper';
 
 const Wrapper = styled('span')({
   color: '#555',
 });
+Wrapper.displayName = 'DataInspector:Wrapper';
 
 const PropertyContainer = styled('span')({
   paddingTop: '2px',
 });
+PropertyContainer.displayName = 'DataInspector:PropertyContainer';
 
 const ExpandControl = styled('span')({
   color: '#6e6e6e',
@@ -54,10 +58,12 @@ const ExpandControl = styled('span')({
   marginRight: 5,
   whiteSpace: 'pre',
 });
+ExpandControl.displayName = 'DataInspector:ExpandControl';
 
 export const InspectorName = styled('span')({
   color: colors.grapeDark1,
 });
+InspectorName.displayName = 'DataInspector:InspectorName';
 
 const nameTooltipOptions: TooltipOptions = {
   position: 'toLeft',
@@ -260,7 +266,10 @@ const diffMetadataExtractor: DiffMetadataExtractor = (
     // Check if there's a difference between the original value and
     // the value from the diff prop
     // The property name still exists, but the values may be different.
-    return [{data: val, status: 'added'}, {data: diffVal, status: 'removed'}];
+    return [
+      {data: val, status: 'added'},
+      {data: diffVal, status: 'removed'},
+    ];
   }
 
   return Object.prototype.hasOwnProperty.call(data, key) ? [{data: val}] : [];
@@ -525,10 +534,12 @@ export default class DataInspector extends Component<DataInspectorProps> {
 
           switch (metadata.status) {
             case 'added':
-              propertyNodes.push(<Added>{dataInspectorNode}</Added>);
+              propertyNodes.push(<Added key={key}>{dataInspectorNode}</Added>);
               break;
             case 'removed':
-              propertyNodes.push(<Removed>{dataInspectorNode}</Removed>);
+              propertyNodes.push(
+                <Removed key={key}>{dataInspectorNode}</Removed>,
+              );
               break;
             default:
               propertyNodes.push(dataInspectorNode);

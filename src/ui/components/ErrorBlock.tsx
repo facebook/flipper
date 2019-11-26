@@ -20,6 +20,7 @@ export const ErrorBlockContainer = styled(CodeBlock)({
   padding: 10,
   whiteSpace: 'pre',
 });
+ErrorBlockContainer.displayName = 'ErrorBlock:ErrorBlockContainer';
 
 /**
  * Displaying error messages in a red box.

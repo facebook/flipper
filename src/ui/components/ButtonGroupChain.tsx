@@ -19,6 +19,7 @@ const IconContainer = styled('div')({
   alignItems: 'center',
   pointerEvents: 'none',
 });
+IconContainer.displayName = 'ButtonGroupChain:IconContainer';
 
 const ButtonGroupChainContainer = styled('div')(
   (props: {iconSize: number}) => ({
@@ -39,6 +40,7 @@ const ButtonGroupChainContainer = styled('div')(
     },
   }),
 );
+IconContainer.displayName = 'ButtonGroupChain:ButtonGroupChainContainer';
 
 type Props = {
   /**

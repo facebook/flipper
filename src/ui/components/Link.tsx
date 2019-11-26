@@ -20,6 +20,7 @@ const StyledLink = styled('span')({
     textDecoration: 'underline',
   },
 });
+StyledLink.displayName = 'Link:StyledLink';
 
 export default class Link extends Component<{
   href: string;

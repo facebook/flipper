@@ -12,12 +12,7 @@ import {
   registerPlugins,
   addGatekeepedPlugins,
 } from '../plugins';
-import {
-  FlipperBasePlugin,
-  FlipperPlugin,
-  FlipperDevicePlugin,
-  BaseAction,
-} from '../../plugin';
+import {FlipperPlugin, FlipperDevicePlugin, BaseAction} from '../../plugin';
 
 const testPlugin = class extends FlipperPlugin<any, BaseAction, any> {
   static id = 'TestPlugin';

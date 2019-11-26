@@ -24,6 +24,7 @@ const Inner = styled(FlexColumn)(
     width: '100%',
   }),
 );
+Inner.displayName = 'VirtualList:Inner';
 
 const Content = styled(FlexColumn)(({top}: {top: TopProperty<number>}) => ({
   alignItems: 'flex-start',
@@ -32,6 +33,7 @@ const Content = styled(FlexColumn)(({top}: {top: TopProperty<number>}) => ({
   minWidth: '100%',
   overflow: 'visible',
 }));
+Content.displayName = 'VirtualList:Content';
 
 type VirtualListProps = {
   data: Array<any>;

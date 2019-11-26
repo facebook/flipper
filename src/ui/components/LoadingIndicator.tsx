@@ -30,6 +30,8 @@ const LoadingIndicator = styled('div')((props: {size: number}) => ({
   borderLeftColor: 'rgba(0, 0, 0, 0.4)',
 }));
 
+LoadingIndicator.displayName = 'LoadingIndicator';
+
 LoadingIndicator.defaultProps = {
   size: 50,
 };

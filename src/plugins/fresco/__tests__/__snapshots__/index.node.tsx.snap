@@ -5,28 +5,28 @@ exports[`notifications for leaks 1`] = `
   <Styled(div)>
     CloseableReference leaked for
      
-    <Styled(span)
+    <Text
       code={true}
     >
       com.facebook.imagepipeline.memory.NativeMemoryChunk
-    </Styled(span)>
+    </Text>
     (identity hashcode: 
     deadbeef
     ).
   </Styled(div)>
   <Styled(div)>
-    <Styled(span)
+    <Text
       bold={true}
     >
       Stacktrace:
-    </Styled(span)>
+    </Text>
   </Styled(div)>
   <Styled(div)>
-    <Styled(span)
+    <Text
       code={true}
     >
       &lt;unavailable&gt;
-    </Styled(span)>
+    </Text>
   </Styled(div)>
 </React.Fragment>
 `;

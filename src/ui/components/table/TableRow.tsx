@@ -84,6 +84,7 @@ const TableBodyRowContainer = styled(FlexRow)(
     },
   }),
 );
+TableBodyRowContainer.displayName = 'TableRow:TableBodyRowContainer';
 
 const TableBodyColumnContainer = styled('div')(
   (props: {
@@ -105,6 +106,7 @@ const TableBodyColumnContainer = styled('div')(
     justifyContent: props.justifyContent,
   }),
 );
+TableBodyColumnContainer.displayName = 'TableRow:TableBodyColumnContainer';
 
 type Props = {
   columnSizes: TableColumnSizes;

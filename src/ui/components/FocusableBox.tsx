@@ -22,6 +22,7 @@ const FocusableBoxBorder = styled(Box)({
   right: '0',
   top: '0',
 });
+FocusableBoxBorder.displayName = 'FocusableBox:FocusableBoxBorder';
 
 type Props = {
   onBlur?: (e: React.FocusEvent) => void;

@@ -20,6 +20,7 @@ export const ACTIVE_SHEET_SELECT_PLUGINS_TO_EXPORT: 'SELECT_PLUGINS_TO_EXPORT' =
 export const ACTIVE_SHEET_SHARE_DATA: 'SHARE_DATA' = 'SHARE_DATA';
 export const ACTIVE_SHEET_SIGN_IN: 'SIGN_IN' = 'SIGN_IN';
 export const ACTIVE_SHEET_SETTINGS: 'SETTINGS' = 'SETTINGS';
+export const ACTIVE_SHEET_DOCTOR: 'DOCTOR' = 'DOCTOR';
 export const ACTIVE_SHEET_SHARE_DATA_IN_FILE: 'SHARE_DATA_IN_FILE' =
   'SHARE_DATA_IN_FILE';
 export const SET_EXPORT_STATUS_MESSAGE: 'SET_EXPORT_STATUS_MESSAGE' =
@@ -33,6 +34,7 @@ export type ActiveSheet =
   | typeof ACTIVE_SHEET_SHARE_DATA
   | typeof ACTIVE_SHEET_SIGN_IN
   | typeof ACTIVE_SHEET_SETTINGS
+  | typeof ACTIVE_SHEET_DOCTOR
   | typeof ACTIVE_SHEET_SHARE_DATA_IN_FILE
   | typeof ACTIVE_SHEET_SELECT_PLUGINS_TO_EXPORT
   | null;
@@ -77,7 +79,6 @@ export type State = {
   serverPorts: ServerPorts;
   downloadingImportData: boolean;
   launcherMsg: LauncherMsg;
-  flipperRating: number | null;
   statusMessages: Array<string>;
   xcodeCommandLineToolsDetected: boolean;
 };
@@ -118,12 +119,6 @@ export type Action =
       payload: {
         severity: 'warning' | 'error';
         message: string;
-      };
-    }
-  | {
-      type: 'SET_FLIPPER_RATING';
-      payload: {
-        rating: number;
       };
     }
   | {
@@ -169,7 +164,6 @@ export const initialState: () => State = () => ({
     severity: 'warning',
     message: '',
   },
-  flipperRating: null,
   statusMessages: [],
   xcodeCommandLineToolsDetected: false,
 });
@@ -241,11 +235,6 @@ export default function reducer(
     return {
       ...state,
       launcherMsg: action.payload,
-    };
-  } else if (action.type === 'SET_FLIPPER_RATING') {
-    return {
-      ...state,
-      flipperRating: action.payload.rating,
     };
   } else if (action.type === 'SET_EXPORT_STATUS_MESSAGE') {
     if (state.share) {
@@ -342,13 +331,6 @@ export const toggleRightSidebarVisible = (payload?: boolean): Action => ({
 export const toggleRightSidebarAvailable = (payload?: boolean): Action => ({
   type: 'rightSidebarAvailable',
   payload,
-});
-
-export const setFlipperRating = (rating: number): Action => ({
-  type: 'SET_FLIPPER_RATING',
-  payload: {
-    rating,
-  },
 });
 
 export const setExportURL = (result: string): Action => ({

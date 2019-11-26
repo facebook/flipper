@@ -20,5 +20,6 @@ const View = styled('div')((props: Props) => ({
   position: 'relative',
   width: props.grow ? '100%' : 'auto',
 }));
+View.displayName = 'View';
 
 export default View;

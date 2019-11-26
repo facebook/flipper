@@ -21,19 +21,6 @@ export function sendDidMountMessage(webview: WebviewTag) {
     payload: null,
   });
 }
-/**
- *
- * @param webview
- * @param text
- * This helper function is for appending a text in the questions input text field.
- * One should use it only for the pages backed by NTUsersFormContainer.react.js
- */
-export function appendTextInQuestionsField(webview: WebviewTag, text: string) {
-  webview.send('hostMessage', {
-    type: 'appendQuestionString',
-    payload: text,
-  });
-}
 
 /**
  *

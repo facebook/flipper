@@ -82,12 +82,10 @@ export abstract class FlipperBasePlugin<
   static icon: string | null = null;
   static gatekeeper: string | null = null;
   static entry: string | null = null;
-  static bugs:
-    | ({
-        email?: string;
-        url?: string;
-      })
-    | null = null;
+  static bugs: {
+    email?: string;
+    url?: string;
+  } | null = null;
   static keyboardActions: KeyboardActions | null;
   static screenshot: string | null;
   static defaultPersistedState: any;
@@ -266,4 +264,11 @@ export class FlipperPlugin<
     this.realClient.initPlugin(this.constructor.id);
     this.init();
   }
+}
+
+export function sortPluginsByName(
+  a: typeof FlipperBasePlugin,
+  b: typeof FlipperBasePlugin,
+): number {
+  return (a.title || a.id) > (b.title || b.id) ? 1 : -1;
 }

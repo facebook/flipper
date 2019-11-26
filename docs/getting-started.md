@@ -43,12 +43,25 @@ repositories {
 }
 
 dependencies {
-  debugImplementation 'com.facebook.flipper:flipper:0.27.0'
+  debugImplementation 'com.facebook.flipper:flipper:0.29.0'
   debugImplementation 'com.facebook.soloader:soloader:0.5.1'
 
-  releaseImplementation 'com.facebook.flipper:flipper-noop:0.27.0'
+  releaseImplementation 'com.facebook.flipper:flipper-noop:0.29.0'
 }
 ```
+
+<div class="warning">
+
+Please note that our `flipper-noop` package provides a limited subset of the
+APIs provided by the `flipper` package and does not provide any plugin stubs.
+It is recommended that you keep all Flipper instantiation code in a separate
+build variant to ensure it doesn't accidentally make it into your production
+builds. Check out [the sample
+app](https://github.com/facebook/flipper/tree/master/android/sample/src) to
+see how to organise your Flipper initialization into debug and release
+variants.
+
+</div>
 
 Now you can initialize Flipper in your Application's `onCreate` method, which involves
 initializing SoLoader (for loading the C++ part of Flipper) and starting a `FlipperClient`.
@@ -87,10 +100,10 @@ repositories {
 }
 
 dependencies {
-  debugImplementation 'com.facebook.flipper:flipper:0.27.1-SNAPSHOT'
+  debugImplementation 'com.facebook.flipper:flipper:0.29.1-SNAPSHOT'
   debugImplementation 'com.facebook.soloader:soloader:0.5.1'
 
-  releaseImplementation 'com.facebook.flipper:flipper-noop:0.27.1-SNAPSHOT'
+  releaseImplementation 'com.facebook.flipper:flipper-noop:0.29.1-SNAPSHOT'
 }
 ```
 
@@ -105,7 +118,7 @@ We support both Swift and Objective-C for Flipper with CocoaPods as build and di
 
 ```ruby
 project 'MyApp.xcodeproj'
-flipperkit_version = '0.27.0'
+flipperkit_version = '0.29.0'
 
 target 'MyApp' do
   platform :ios, '9.0'
@@ -167,7 +180,7 @@ end
 
 ```ruby
 project 'MyApp.xcodeproj'
-flipperkit_version = '0.27.0'
+flipperkit_version = '0.29.0'
 
 target 'MyApp' do
   platform :ios, '9.0'
@@ -310,6 +323,8 @@ Finally, you need to add plugins to your Flipper client. Above we have only adde
 
 _Inspired by [a blog post by Ram N](http://blog.nparashuram.com/2019/09/using-flipper-with-react-native.html)._
 
+_This version of the tutorial is written against React Native 0.61.4. You can find versions of this guide for older versions of React Native [here](https://github.com/facebook/flipper/blob/da25241f7fbb06dffd913958559044d758c54fb8/docs/getting-started.md#setup-your-react-native-app)_
+
 Integrating Flipper with React Native is a bit different than with a native app.
 
 ### Android
@@ -326,7 +341,6 @@ Add the following permissions to your `AndroidManifest.xml`. The SDK needs these
 `android/app/src/main/AndroidManifest.xml`
 
 ```xml
-<uses-permission android:name="android.permission.INTERNET" />
 <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 ```
 
@@ -358,6 +372,8 @@ android {
 
 dependencies {
   ...
+  implementation 'com.facebook.soloader:soloader:0.6.0+'
+
   debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
     exclude group:'com.facebook.yoga'
     exclude group:'com.facebook.flipper', module: 'fbjni'
@@ -367,7 +383,7 @@ dependencies {
 }
 ```
 
-Now, we create a new file inside `android/app/src/debug/java/com/yourappname/ReactNativeFlipper.java`.
+Now, we create a new file: `android/app/src/debug/java/com/yourappname/ReactNativeFlipper.java`. (Replace the `yourappname` namespace with something appropriate for your project)
 
 These are the suggested plugins integrations:
 
@@ -380,7 +396,7 @@ These are the suggested plugins integrations:
 - React devtools
 
 ```java
-package com.yourappname;
+package com.yourappname; // <--- use your own namespace chosen above!
 
 import android.content.Context;
 import com.facebook.flipper.android.AndroidFlipperClient;
@@ -401,6 +417,10 @@ import com.facebook.react.modules.network.NetworkingModule;
 import okhttp3.OkHttpClient;
 
 public class ReactNativeFlipper {
+
+  public static void initializeFlipper(Context context) {
+    ReactNativeFlipper.initializeFlipper(context, null);
+  }
 
   public static void initializeFlipper(Context context, final ReactInstanceManager reactInstanceManager) {
     if (!FlipperUtils.shouldEnableFlipper(context)) {
@@ -427,7 +447,7 @@ public class ReactNativeFlipper {
 
     // Fresco Plugin needs to ensure that ImagePipelineFactory is initialized
     // Hence we run if after all native modules have been initialized
-    ReactContext reactContext = reactInstanceManager.getCurrentReactContext();
+    ReactContext reactContext = reactInstanceManager == null ? null : reactInstanceManager.getCurrentReactContext();
     if (reactContext == null) {
       reactInstanceManager.addReactInstanceEventListener(
           new ReactInstanceManager.ReactInstanceEventListener() {
@@ -456,50 +476,48 @@ initializing SoLoader (for loading the C++ part of Flipper) and starting a `Flip
 For this, we edit the `android/app/src/main/java/com/yourappname/MainApplication.java` file.
 
 ```java
-package com.yourappname;
+package com.yourappname;// <--- use your own namespace chosen above!
 
 import ...
-import com.facebook.react.ReactInstanceManager;
+import com.facebook.react.ReactInstanceManager; // <---- add this import
 
 public class MainApplication extends Application implements ReactApplication {
   ...
 
   @Override
   public void onCreate() {
-    ...
-    initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
+    super.onCreate();
+    SoLoader.init(this, /* native exopackage */ false);
+    initializeFlipper(this, getReactNativeHost().getReactInstanceManager()); // <---- start flipper integration
   }
+}
+```
 
-  /**
-   * Loads Flipper in React Native templates. Call this in the onCreate method with something like
-   * initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
-   *
-   * @param context
-   */
+In the same file, modify the generated `initializeFlipper` method to
+
+```java
   private static void initializeFlipper(Context context, ReactInstanceManager reactInstanceManager) {
     if (BuildConfig.DEBUG) {
       try {
-        Class<?> aClass = Class.forName("com.yourappname.ReactNativeFlipper");
-        aClass
-          .getMethod("initializeFlipper", Context.class, ReactInstanceManager.class)
-          .invoke(null, context, reactInstanceManager);
+        /*
+         We use reflection here to pick up the class that initializes Flipper,
+        since Flipper library is not available in release mode
+        */
+        Class<?> aClass = Class.forName("com.yourappname.ReactNativeFlipper"); // <--- use your own namespace chosen above!
+        aClass.getMethod("initializeFlipper", Context.class, ReactInstanceManager.class).invoke(null, context, reactInstanceManager);
       } catch (ClassNotFoundException e) {
-        e.printStackTrace();
-      } catch (NoSuchMethodException e) {
-      e.printStackTrace();
-      } catch (IllegalAccessException e) {
-        e.printStackTrace();
-      } catch (InvocationTargetException e) {
-        e.printStackTrace();
+        /* All catch clauses as generated by RN */
+        ...
       }
     }
   }
-}
 ```
 
 Finally, open the Flipper desktop app, and run `yarn android` in your terminal.
 
 ### iOS
+
+_Make sure you are using [XCode 10](https://download.developer.apple.com/Developer_Tools/Xcode_10.3/Xcode_10.3.xip). The following guide doesn't work (yet) for XCode 11. Run `sudo xcode-select -s /Applications/Xcode_10.XXX/Contents/Developer/` to select the right xcode version._
 
 We support both Swift and Objective-C for Flipper with CocoaPods as build and distribution mechanism. For CocoaPods 1.7+ following is the configuration.
 
@@ -514,7 +532,7 @@ We support both Swift and Objective-C for Flipper with CocoaPods as build and di
 platform :ios, '9.0'
 
 def flipper_pods()
-  flipperkit_version = '0.25'
+  flipperkit_version = '0.27'
   pod 'FlipperKit', '~>' + flipperkit_version, :configuration => 'Debug'
   pod 'FlipperKit/FlipperKitLayoutPlugin', '~>' + flipperkit_version, :configuration => 'Debug'
   pod 'FlipperKit/SKIOSNetworkPlugin', '~>' + flipperkit_version, :configuration => 'Debug'
@@ -549,10 +567,12 @@ end
 target 'your-app-name' do
   ...
 
-  target 'your-app-nameTests' do
-    inherit! :complete
-    # Pods for testing
-  end
+
+  # Replace the existing yoga import with the following (adding modular_headers):
+  pod 'Yoga', :path => '../node_modules/react-native/ReactCommon/yoga', :modular_headers => true
+
+  ...
+  use_native_modules!
 
   # For enabling Flipper.
   # Note that if you use_framework!, flipper will not work.
@@ -565,14 +585,6 @@ end
 ```
 
 <!--END_DOCUSAURUS_CODE_TABS-->
-
-You need to compile your project with the `FB_SONARKIT_ENABLED=1` compiler flag. The above `post_install` hook adds this compiler flag to your project settings.
-
-<div class="warning">
-
-On the first run of `pod install`, `FB_SONARKIT_ENABLED=1` may not be added in the "Build Settings" of your project, but in all the subsequent runs of `pod install`, the above `post_install` hook successfully adds the compiler flag. So before running your app, make sure that `FB_SONARKIT_ENABLED=1` is present in `OTHER_CFLAGS` and `OTHER_SWIFT_FLAGS` for Objective-C and Swift projects respectively.
-
-</div>
 
 Install the dependencies by running `cd ios && pod install`. You can now import and initialize Flipper in your
 `ios/your-app-name/AppDelegate.m`.

@@ -30,24 +30,26 @@ import {List} from 'immutable';
 import algoliasearch from 'algoliasearch';
 import path from 'path';
 import fs from 'fs-extra';
-import {homedir} from 'os';
-import {PluginManager as PM} from 'live-plugin-manager';
 import {reportPlatformFailures, reportUsage} from '../utils/metrics';
 import restartFlipper from '../utils/restartFlipper';
+import {
+  PluginMap,
+  PluginDefinition,
+  registerInstalledPlugins,
+} from '../reducers/pluginManager';
+import {
+  PLUGIN_DIR,
+  readInstalledPlugins,
+  providePluginManager,
+  provideSearchIndex,
+  findPluginUpdates as _findPluginUpdates,
+  UpdateResult,
+} from '../utils/pluginManager';
+import {State as AppState} from '../reducers';
+import {connect} from 'react-redux';
+import {Dispatch, Action} from 'redux';
 
-const PLUGIN_DIR = path.join(homedir(), '.flipper', 'thirdparty');
-const ALGOLIA_APPLICATION_ID = 'OFCNCOG2CU';
-const ALGOLIA_API_KEY = 'f54e21fa3a2a0160595bb058179bfb1e';
 const TAG = 'PluginInstaller';
-const PluginManager = new PM({
-  ignoredDependencies: ['flipper', 'react', 'react-dom', '@types/*'],
-});
-
-export type PluginDefinition = {
-  name: string;
-  version: string;
-  description: string;
-};
 
 const EllipsisText = styled(Text)({
   overflow: 'hidden',
@@ -94,20 +96,49 @@ const RestartBar = styled(FlexColumn)({
   textAlign: 'center',
 });
 
-type Props = {
-  searchIndexFactory: () => algoliasearch.Index;
-  getInstalledPlugins: () => Promise<Map<string, PluginDefinition>>;
-  autoHeight: boolean;
+type PropsFromState = {
+  installedPlugins: PluginMap;
 };
 
-const defaultProps: Props = {
-  searchIndexFactory: () => {
-    const client = algoliasearch(ALGOLIA_APPLICATION_ID, ALGOLIA_API_KEY);
-    return client.initIndex('npm-search');
-  },
-  getInstalledPlugins: _getInstalledPlugins,
-  autoHeight: false,
+type DispatchFromProps = {
+  refreshInstalledPlugins: () => void;
 };
+
+type OwnProps = {
+  searchIndexFactory: () => algoliasearch.Index;
+  autoHeight: boolean;
+  findPluginUpdates: (
+    currentPlugins: PluginMap,
+  ) => Promise<[string, UpdateResult][]>;
+};
+
+type Props = OwnProps & PropsFromState & DispatchFromProps;
+
+const defaultProps: OwnProps = {
+  searchIndexFactory: provideSearchIndex,
+  autoHeight: false,
+  findPluginUpdates: _findPluginUpdates,
+};
+
+type UpdatablePlugin = {
+  updateStatus: UpdateResult;
+};
+
+type UpdatablePluginDefinition = PluginDefinition & UpdatablePlugin;
+
+// exported for testing
+export function annotatePluginsWithUpdates(
+  installedPlugins: Map<string, PluginDefinition>,
+  updates: Map<string, UpdateResult>,
+): Map<string, UpdatablePluginDefinition> {
+  const annotated: Array<[string, UpdatablePluginDefinition]> = Array.from(
+    installedPlugins.entries(),
+  ).map(([key, value]) => {
+    const updateStatus = updates.get(key) || {kind: 'up-to-date'};
+    return [key, {...value, updateStatus: updateStatus}];
+  });
+  return new Map(annotated);
+}
 
 const PluginInstaller = function props(props: Props) {
   const [restartRequired, setRestartRequired] = useState(false);
@@ -117,7 +148,9 @@ const PluginInstaller = function props(props: Props) {
     query,
     setQuery,
     props.searchIndexFactory,
-    props.getInstalledPlugins,
+    props.installedPlugins,
+    props.refreshInstalledPlugins,
+    props.findPluginUpdates,
   );
   const restartApp = useCallback(() => {
     restartFlipper();
@@ -155,7 +188,6 @@ const PluginInstaller = function props(props: Props) {
   );
 };
 PluginInstaller.defaultProps = defaultProps;
-export default PluginInstaller;
 
 const TableButton = styled(Button)({
   marginTop: 2,
@@ -169,43 +201,61 @@ const AlignedGlyph = styled(Glyph)({
   marginTop: 6,
 });
 
+function liftUpdatable(val: PluginDefinition): UpdatablePluginDefinition {
+  return {
+    ...val,
+    updateStatus: {kind: 'up-to-date'},
+  };
+}
+
 function InstallButton(props: {
   name: string;
   version: string;
   onInstall: () => void;
   installed: boolean;
+  updateStatus: UpdateResult;
 }) {
   type InstallAction =
     | {kind: 'Install'; error?: string}
     | {kind: 'Waiting'}
-    | {kind: 'Remove'; error?: string};
+    | {kind: 'Remove'; error?: string}
+    | {kind: 'Update'; error?: string};
 
   const catchError = (
-    actionKind: 'Install' | 'Remove',
+    actionKind: 'Install' | 'Remove' | 'Update',
     fn: () => Promise<void>,
   ) => async () => {
     try {
       await fn();
     } catch (err) {
+      console.error(err);
       setAction({kind: actionKind, error: err.toString()});
     }
   };
 
-  const performInstall = useCallback(
-    catchError('Install', async () => {
-      reportUsage(`${TAG}:install`, undefined, props.name);
+  const mkInstallCallback = (action: 'Install' | 'Update') =>
+    catchError(action, async () => {
+      reportUsage(
+        action === 'Install' ? `${TAG}:install` : `${TAG}:update`,
+        undefined,
+        props.name,
+      );
       setAction({kind: 'Waiting'});
       await fs.ensureDir(PLUGIN_DIR);
       // create empty watchman config (required by metro's file watcher)
       await fs.writeFile(path.join(PLUGIN_DIR, '.watchmanconfig'), '{}');
 
+      // Clean up existing destination files.
+      await fs.remove(path.join(PLUGIN_DIR, props.name));
+
+      const pluginManager = providePluginManager();
       // install the plugin and all it's dependencies into node_modules
-      PluginManager.options.pluginsPath = path.join(
+      pluginManager.options.pluginsPath = path.join(
         PLUGIN_DIR,
         props.name,
         'node_modules',
       );
-      await PluginManager.install(props.name);
+      await pluginManager.install(props.name);
 
       // move the plugin itself out of the node_modules folder
       const pluginDir = path.join(
@@ -223,9 +273,17 @@ function InstallButton(props: {
 
       props.onInstall();
       setAction({kind: 'Remove'});
-    }),
-    [props.name, props.version],
-  );
+    });
+
+  const performInstall = useCallback(mkInstallCallback('Install'), [
+    props.name,
+    props.version,
+  ]);
+
+  const performUpdate = useCallback(mkInstallCallback('Update'), [
+    props.name,
+    props.version,
+  ]);
 
   const performRemove = useCallback(
     catchError('Remove', async () => {
@@ -239,7 +297,11 @@ function InstallButton(props: {
   );
 
   const [action, setAction] = useState<InstallAction>(
-    props.installed ? {kind: 'Remove'} : {kind: 'Install'},
+    props.updateStatus.kind === 'update-available'
+      ? {kind: 'Update'}
+      : props.installed
+      ? {kind: 'Remove'}
+      : {kind: 'Install'},
   );
 
   if (action.kind === 'Waiting') {
@@ -250,12 +312,20 @@ function InstallButton(props: {
   const button = (
     <TableButton
       compact
-      type={action.kind === 'Install' ? 'primary' : undefined}
-      onClick={
-        action.kind === 'Install'
-          ? () => reportPlatformFailures(performInstall(), `${TAG}:install`)
-          : () => reportPlatformFailures(performRemove(), `${TAG}:remove`)
-      }>
+      type={action.kind !== 'Remove' ? 'primary' : undefined}
+      onClick={() => {
+        switch (action.kind) {
+          case 'Install':
+            reportPlatformFailures(performInstall(), `${TAG}:install`);
+            break;
+          case 'Remove':
+            reportPlatformFailures(performRemove(), `${TAG}:remove`);
+            break;
+          case 'Update':
+            reportPlatformFailures(performUpdate(), `${TAG}:update`);
+            break;
+        }
+      }}>
       {action.kind}
     </TableButton>
   );
@@ -284,31 +354,25 @@ function useNPMSearch(
   query: string,
   setQuery: (query: string) => void,
   searchClientFactory: () => algoliasearch.Index,
-  getInstalledPlugins: () => Promise<Map<string, PluginDefinition>>,
+  installedPlugins: Map<string, PluginDefinition>,
+  refreshInstalledPlugins: () => void,
+  findPluginUpdates: (
+    currentPlugins: PluginMap,
+  ) => Promise<[string, UpdateResult][]>,
 ): TableRows_immutable {
   const index = useMemo(searchClientFactory, []);
-  const [installedPlugins, setInstalledPlugins] = useState(
-    new Map<string, PluginDefinition>(),
-  );
-
-  const getAndSetInstalledPlugins = () =>
-    reportPlatformFailures(
-      getInstalledPlugins(),
-      `${TAG}:getInstalledPlugins`,
-    ).then(setInstalledPlugins);
 
   useEffect(() => {
     reportUsage(`${TAG}:open`);
-    getAndSetInstalledPlugins();
   }, []);
 
   const onInstall = useCallback(async () => {
-    getAndSetInstalledPlugins();
+    refreshInstalledPlugins();
     setRestartRequired(true);
   }, []);
 
   const createRow = useCallback(
-    (h: PluginDefinition) => ({
+    (h: UpdatablePluginDefinition) => ({
       key: h.name,
       columns: {
         name: {value: <EllipsisText>{h.name}</EllipsisText>},
@@ -334,6 +398,7 @@ function useNPMSearch(
               version={h.version}
               onInstall={onInstall}
               installed={installedPlugins.has(h.name)}
+              updateStatus={h.updateStatus}
             />
           ),
           align: 'center' as 'center',
@@ -343,7 +408,13 @@ function useNPMSearch(
     [installedPlugins],
   );
 
-  const [searchResults, setSearchResults] = useState<PluginDefinition[]>([]);
+  const [searchResults, setSearchResults] = useState<
+    UpdatablePluginDefinition[]
+  >([]);
+  const [
+    updateAnnotatedInstalledPlugins,
+    setUpdateAnnotatedInstalledPlugins,
+  ] = useState<Map<string, UpdatablePluginDefinition>>(new Map());
 
   useEffect(() => {
     (async () => {
@@ -356,41 +427,37 @@ function useNPMSearch(
         `${TAG}:queryIndex`,
       );
 
-      setSearchResults(hits.filter(hit => !installedPlugins.has(hit.name)));
+      setSearchResults(
+        hits.filter(hit => !installedPlugins.has(hit.name)).map(liftUpdatable),
+      );
       setQuery(query);
     })();
   }, [query, installedPlugins]);
 
-  const results = Array.from(installedPlugins.values()).concat(searchResults);
+  useEffect(() => {
+    (async () => {
+      const updates = new Map(await findPluginUpdates(installedPlugins));
+      setUpdateAnnotatedInstalledPlugins(
+        annotatePluginsWithUpdates(installedPlugins, updates),
+      );
+    })();
+  }, [installedPlugins]);
+
+  const results = Array.from(updateAnnotatedInstalledPlugins.values()).concat(
+    searchResults,
+  );
   return List(results.map(createRow));
 }
 
-async function _getInstalledPlugins(): Promise<Map<string, PluginDefinition>> {
-  const pluginDirExists = await fs.pathExists(PLUGIN_DIR);
-
-  if (!pluginDirExists) {
-    return new Map();
-  }
-  const dirs = await fs.readdir(PLUGIN_DIR);
-  const plugins = await Promise.all<[string, PluginDefinition]>(
-    dirs.map(
-      name =>
-        new Promise(async (resolve, reject) => {
-          if (!(await fs.lstat(path.join(PLUGIN_DIR, name))).isDirectory()) {
-            return resolve(undefined);
-          }
-
-          const packageJSON = await fs.readFile(
-            path.join(PLUGIN_DIR, name, 'package.json'),
-          );
-
-          try {
-            resolve([name, JSON.parse(packageJSON.toString())]);
-          } catch (e) {
-            reject(e);
-          }
-        }),
-    ),
-  );
-  return new Map(plugins.filter(Boolean));
-}
+export default connect<PropsFromState, DispatchFromProps, OwnProps, AppState>(
+  ({pluginManager: {installedPlugins}}) => ({
+    installedPlugins,
+  }),
+  (dispatch: Dispatch<Action<any>>) => ({
+    refreshInstalledPlugins: () => {
+      readInstalledPlugins().then(plugins =>
+        dispatch(registerInstalledPlugins(plugins)),
+      );
+    },
+  }),
+)(PluginInstaller);

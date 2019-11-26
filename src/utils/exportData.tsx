@@ -7,6 +7,9 @@
  * @format
  */
 
+import os from 'os';
+import path from 'path';
+import electron from 'electron';
 import {getInstance as getLogger} from '../fb-stubs/Logger';
 import {Store, MiddlewareAPI} from '../reducers';
 import {DeviceExport} from '../devices/BaseDevice';
@@ -32,9 +35,16 @@ import {tryCatchReportPlatformFailures} from './metrics';
 import {promisify} from 'util';
 import promiseTimeout from './promiseTimeout';
 import {Idler} from './Idler';
+import {setStaticView} from '../reducers/connections';
+import {
+  SupportFormV2State,
+  resetSupportFormV2State,
+} from '../reducers/supportForm';
+import {setSelectPluginsToExportActiveSheet} from '../reducers/application';
+
 export const IMPORT_FLIPPER_TRACE_EVENT = 'import-flipper-trace';
 export const EXPORT_FLIPPER_TRACE_EVENT = 'export-flipper-trace';
-export const EXPORT_FLIPPER_TRACE_TIME_EVENT = 'export-flipper-trace-time';
+export const EXPORT_FLIPPER_TRACE_TIME_SERIALIZATION_EVENT = `${EXPORT_FLIPPER_TRACE_EVENT}:serialization`;
 
 export type PluginStatesExportState = {
   [pluginKey: string]: string;
@@ -48,6 +58,7 @@ export type ExportType = {
     pluginStates: PluginStatesExportState;
     activeNotifications: Array<PluginNotification>;
   };
+  supportRequestDetails?: SupportFormV2State;
 };
 
 type ProcessPluginStatesOptions = {
@@ -193,7 +204,8 @@ const serializePluginStates = async (
     const keyArray = key.split('#');
     const pluginName = keyArray.pop();
     statusUpdate && statusUpdate(`Serialising ${pluginName}...`);
-
+    const serializationMarker = `${EXPORT_FLIPPER_TRACE_EVENT}:serialization-per-plugin`;
+    performance.mark(serializationMarker);
     const pluginClass = pluginName ? pluginsMap.get(pluginName) : null;
     if (pluginClass) {
       pluginExportState[key] = await pluginClass.serializePersistedState(
@@ -202,6 +214,9 @@ const serializePluginStates = async (
         idler,
         pluginName,
       );
+      getLogger().trackTimeSince(serializationMarker, serializationMarker, {
+        plugin: pluginName,
+      });
     }
   }
   return pluginExportState;
@@ -379,6 +394,7 @@ export const processStore = async (
 };
 
 export async function fetchMetadata(
+  clients: Client[],
   pluginStates: PluginStatesState,
   pluginsMap: Map<string, typeof FlipperDevicePlugin | typeof FlipperPlugin>,
   store: MiddlewareAPI,
@@ -387,7 +403,6 @@ export async function fetchMetadata(
 ): Promise<{pluginStates: PluginStatesState; errorArray: Array<Error>}> {
   const newPluginState = {...pluginStates};
   const errorArray: Array<Error> = [];
-  const clients = store.getState().connections.clients;
   const selectedDevice = store.getState().connections.selectedDevice;
   for (const client of clients) {
     if (
@@ -411,6 +426,8 @@ export async function fetchMetadata(
       const exportState = pluginClass ? pluginClass.exportPersistedState : null;
       if (exportState) {
         const key = pluginKey(client.id, plugin);
+        const fetchMetaDataMarker = `${EXPORT_FLIPPER_TRACE_EVENT}:fetch-meta-data-per-plugin`;
+        performance.mark(fetchMetaDataMarker);
         try {
           statusUpdate &&
             statusUpdate(`Fetching metadata for plugin ${plugin}...`);
@@ -426,9 +443,16 @@ export async function fetchMetadata(
 
             `Timed out while collecting data for ${plugin}`,
           );
+          getLogger().trackTimeSince(fetchMetaDataMarker, fetchMetaDataMarker, {
+            plugin,
+          });
           newPluginState[key] = data;
         } catch (e) {
           errorArray.push(e);
+          getLogger().trackTimeSince(fetchMetaDataMarker, fetchMetaDataMarker, {
+            plugin,
+            error: e,
+          });
           continue;
         }
       }
@@ -444,6 +468,9 @@ export async function getStoreExport(
 ): Promise<{exportData: ExportType | null; errorArray: Array<Error>}> {
   const state = store.getState();
   const {clients} = state.connections;
+  const client = clients.find(
+    client => client.id === state.connections.selectedApp,
+  );
   const {pluginStates} = state;
   const {plugins} = state;
   const {selectedDevice} = store.getState().connections;
@@ -452,6 +479,9 @@ export async function getStoreExport(
   }
   // TODO: T39612653 Make Client mockable. Currently rsocket logic is tightly coupled.
   // Not passing the entire state as currently Client is not mockable.
+  if (!client) {
+    throw new Error('Please select a client before exporting data.');
+  }
 
   const pluginsMap: Map<
     string,
@@ -464,13 +494,19 @@ export async function getStoreExport(
     pluginsMap.set(key, val);
   });
   statusUpdate && statusUpdate('Preparing to fetch metadata from client...');
+  const fetchMetaDataMarker = `${EXPORT_FLIPPER_TRACE_EVENT}:fetch-meta-data`;
+  performance.mark(fetchMetaDataMarker);
   const metadata = await fetchMetadata(
+    [client],
     pluginStates,
     pluginsMap,
     store,
     statusUpdate,
     idler,
   );
+  getLogger().trackTimeSince(fetchMetaDataMarker, fetchMetaDataMarker, {
+    plugins: store.getState().plugins.selectedPlugins,
+  });
   const {errorArray} = metadata;
   const newPluginState = metadata.pluginStates;
 
@@ -481,7 +517,7 @@ export async function getStoreExport(
       activeNotifications,
       device: selectedDevice,
       pluginStates: newPluginState,
-      clients: clients.map(client => client.toJSON()),
+      clients: [client.toJSON()],
       devicePlugins,
       clientPlugins,
       salt: uuid.v4(),
@@ -500,7 +536,7 @@ export function exportStore(
 ): Promise<{serializedString: string; errorArray: Array<Error>}> {
   getLogger().track('usage', EXPORT_FLIPPER_TRACE_EVENT);
   return new Promise(async (resolve, reject) => {
-    performance.mark(EXPORT_FLIPPER_TRACE_TIME_EVENT);
+    performance.mark(EXPORT_FLIPPER_TRACE_TIME_SERIALIZATION_EVENT);
     try {
       statusUpdate && statusUpdate('Preparing to export Flipper data...');
       const {exportData, errorArray} = await getStoreExport(
@@ -509,14 +545,15 @@ export function exportStore(
         idler,
       );
       if (exportData != null) {
+        exportData.supportRequestDetails = store.getState().supportForm?.supportFormV2;
         statusUpdate && statusUpdate('Serializing Flipper data...');
         const serializedString = JSON.stringify(exportData);
         if (serializedString.length <= 0) {
           reject(new Error('Serialize function returned empty string'));
         }
         getLogger().trackTimeSince(
-          EXPORT_FLIPPER_TRACE_TIME_EVENT,
-          EXPORT_FLIPPER_TRACE_TIME_EVENT,
+          EXPORT_FLIPPER_TRACE_TIME_SERIALIZATION_EVENT,
+          EXPORT_FLIPPER_TRACE_TIME_SERIALIZATION_EVENT,
           {
             plugins: store.getState().plugins.selectedPlugins,
           },
@@ -542,6 +579,7 @@ export const exportStoreToFile = (
     ({serializedString, errorArray}) => {
       return promisify(fs.writeFile)(exportFilePath, serializedString).then(
         () => {
+          store.dispatch(resetSupportFormV2State());
           return {errorArray};
         },
       );
@@ -549,10 +587,10 @@ export const exportStoreToFile = (
   );
 };
 
-export function importDataToStore(data: string, store: Store) {
+export function importDataToStore(source: string, data: string, store: Store) {
   getLogger().track('usage', IMPORT_FLIPPER_TRACE_EVENT);
   const json: ExportType = JSON.parse(data);
-  const {device, clients} = json;
+  const {device, clients, supportRequestDetails} = json;
   if (device == null) {
     return;
   }
@@ -567,6 +605,8 @@ export function importDataToStore(data: string, store: Store) {
           return {...l, date: new Date(l.date)};
         })
       : [],
+    source,
+    supportRequestDetails,
   );
   const devices = store.getState().connections.devices;
   const matchedDevices = devices.filter(
@@ -579,6 +619,7 @@ export function importDataToStore(data: string, store: Store) {
     });
     return;
   }
+  archivedDevice.loadDevicePlugins(store.getState().plugins.devicePlugins);
   store.dispatch({
     type: 'REGISTER_DEVICE',
     payload: archivedDevice,
@@ -626,6 +667,12 @@ export function importDataToStore(data: string, store: Store) {
       ),
     });
   });
+  if (supportRequestDetails) {
+    store.dispatch(
+      // Late require to avoid circular dependency issue
+      setStaticView(require('../fb-stubs/SupportRequestDetails').default),
+    );
+  }
 }
 
 export const importFileToStore = (file: string, store: Store) => {
@@ -634,7 +681,7 @@ export const importFileToStore = (file: string, store: Store) => {
       console.error(err);
       return;
     }
-    importDataToStore(data, store);
+    importDataToStore(file, data, store);
   });
 };
 
@@ -650,4 +697,36 @@ export function showOpenDialog(store: Store) {
       }, `${IMPORT_FLIPPER_TRACE_EVENT}:UI`);
     }
   });
+}
+
+export function startFileExport(dispatch: Store['dispatch']) {
+  electron.remote.dialog.showSaveDialog(
+    // @ts-ignore This appears to work but isn't allowed by the types
+    null,
+    {
+      title: 'FlipperExport',
+      defaultPath: path.join(os.homedir(), 'FlipperExport.flipper'),
+    },
+    async (file: string) => {
+      if (!file) {
+        return;
+      }
+      dispatch(
+        setSelectPluginsToExportActiveSheet({
+          type: 'file',
+          file: file,
+          closeOnFinish: false,
+        }),
+      );
+    },
+  );
+}
+
+export function startLinkExport(dispatch: Store['dispatch']) {
+  dispatch(
+    setSelectPluginsToExportActiveSheet({
+      type: 'link',
+      closeOnFinish: false,
+    }),
+  );
 }

@@ -32,7 +32,7 @@ import {setPersistor} from './utils/persistor';
 import React from 'react';
 import path from 'path';
 
-const store = createStore<StoreState, Actions, any, any>(
+export const store = createStore<StoreState, Actions, any, any>(
   reducers,
   window.__REDUX_DEVTOOLS_EXTENSION__
     ? window.__REDUX_DEVTOOLS_EXTENSION__({

@@ -28,7 +28,7 @@ gradle configuration:
 
 ```groovy
 dependencies {
-  debugImplementation 'com.facebook.flipper:flipper-litho-plugin:0.27.0'
+  debugImplementation 'com.facebook.flipper:flipper-litho-plugin:0.29.0'
   debugImplementation 'com.facebook.litho:litho-annotations:0.19.0'
   // ...
 }

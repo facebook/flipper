@@ -21,9 +21,11 @@ import {
 import GK from '../fb-stubs/GK';
 import * as UserFeedback from '../fb-stubs/UserFeedback';
 import {FeedbackPrompt} from '../fb-stubs/UserFeedback';
+import {connect} from 'react-redux';
+import {State as Store} from 'src/reducers';
 
-type Props = {
-  onRatingChanged: (rating: number) => void;
+type PropsFromState = {
+  sessionId: string | null;
 };
 
 type State = {
@@ -281,14 +283,14 @@ class FeedbackComponent extends Component<
   }
 }
 
-export default class RatingButton extends Component<Props, State> {
+class RatingButton extends Component<PropsFromState, State> {
   state: State = {
     promptData: null,
     isShown: false,
     hasTriggered: false,
   };
 
-  constructor(props: Props) {
+  constructor(props: PropsFromState) {
     super(props);
     if (GK.get('flipper_rating')) {
       UserFeedback.getPrompt().then(prompt => {
@@ -302,12 +304,12 @@ export default class RatingButton extends Component<Props, State> {
     const willBeShown = !this.state.isShown;
     this.setState({isShown: willBeShown, hasTriggered: true});
     if (!willBeShown) {
-      UserFeedback.dismiss();
+      UserFeedback.dismiss(this.props.sessionId);
     }
   }
 
   submitRating(rating: number) {
-    UserFeedback.submitRating(rating);
+    UserFeedback.submitRating(rating, this.props.sessionId);
   }
 
   submitComment(
@@ -321,6 +323,7 @@ export default class RatingButton extends Component<Props, State> {
       comment,
       selectedPredefinedComments,
       allowUserInfoSharing,
+      this.props.sessionId,
     );
   }
 
@@ -370,3 +373,7 @@ export default class RatingButton extends Component<Props, State> {
     );
   }
 }
+
+export default connect<{sessionId: string | null}, null, {}, Store>(
+  ({application: {sessionId}}) => ({sessionId}),
+)(RatingButton);

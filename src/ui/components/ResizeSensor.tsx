@@ -21,6 +21,7 @@ const IFrame = styled('iframe')({
   top: 0,
   left: 0,
 });
+IFrame.displayName = 'ResizeSensor:IFrame';
 
 /**
  * Listener for resize events.

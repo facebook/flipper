@@ -21,6 +21,7 @@ const TabList = styled(FlexRow)({
   justifyContent: 'center',
   alignItems: 'stretch',
 });
+TabList.displayName = 'Tabs:TabList';
 
 const TabListItem = styled('div')(
   (props: {
@@ -65,6 +66,7 @@ const TabListItem = styled('div')(
     },
   }),
 );
+TabListItem.displayName = 'Tabs:TabListItem';
 
 const TabListAddItem = styled(TabListItem)({
   borderRight: 'none',
@@ -72,6 +74,7 @@ const TabListAddItem = styled(TabListItem)({
   flexGrow: 0,
   fontWeight: 'bold',
 });
+TabListAddItem.displayName = 'Tabs:TabListAddItem';
 
 const CloseButton = styled('div')({
   color: '#000',
@@ -91,16 +94,19 @@ const CloseButton = styled('div')({
     color: '#fff',
   },
 });
+CloseButton.displayName = 'Tabs:CloseButton';
 
 const OrderableContainer = styled('div')({
   display: 'inline-block',
 });
+OrderableContainer.displayName = 'Tabs:OrderableContainer';
 
 const TabContent = styled('div')({
   height: '100%',
   overflow: 'auto',
   width: '100%',
 });
+TabContent.displayName = 'Tabs:TabContent';
 
 /**
  * A Tabs component.
@@ -155,8 +161,14 @@ export default function Tabs(props: {
    * Elements to insert after all tabs in the tab list.
    */
   after?: Array<React.ReactNode>;
+  /**
+   * By default tabs are rendered in mac-style tabs, with a negative offset.
+   * By setting classic mode the classic style is rendered.
+   */
+  classic?: boolean;
 }) {
-  const tabsContainer = useContext(TabsContext);
+  const tabsContainer =
+    props.classic === true ? false : useContext(TabsContext);
 
   const {onActive} = props;
   const active: string | undefined =

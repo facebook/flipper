@@ -7,6 +7,8 @@
  * @format
  */
 
+import {StatusMessageType} from '../reducers/application';
+
 export default function promiseTimeout<T>(
   ms: number,
   promise: Promise<T>,
@@ -22,4 +24,24 @@ export default function promiseTimeout<T>(
 
   // Returns a race between our timeout and the passed in promise
   return Promise.race([promise, timeout]);
+}
+
+export function showStatusUpdatesForPromise<T>(
+  promise: Promise<T>,
+  message: string,
+  sender: string,
+  addStatusMessage: (payload: StatusMessageType) => void,
+  removeStatusMessage: (payload: StatusMessageType) => void,
+): Promise<T> {
+  const statusMsg = {msg: message, sender};
+  addStatusMessage(statusMsg);
+  return promise
+    .then(result => {
+      removeStatusMessage(statusMsg);
+      return result;
+    })
+    .catch(e => {
+      removeStatusMessage(statusMsg);
+      throw e;
+    });
 }

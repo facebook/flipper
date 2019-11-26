@@ -29,5 +29,6 @@ const StatusIndicator = styled('div')(
     width: diameter,
   }),
 );
+StatusIndicator.displayName = 'StatusIndicator';
 
 export default StatusIndicator;

@@ -13,6 +13,9 @@ import styled from 'react-emotion';
 /**
  * A container displaying its children in a column
  */
-export default styled(FlexBox)({
+const FlexColumn = styled(FlexBox)({
   flexDirection: 'column',
 });
+FlexColumn.displayName = 'FlexColumn';
+
+export default FlexColumn;

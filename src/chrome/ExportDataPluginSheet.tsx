@@ -81,18 +81,15 @@ class ExportDataPluginSheet extends Component<Props> {
         selectedElements={getActivePersistentPlugins(
           pluginStates,
           plugins,
-        ).reduce(
-          (acc, plugin) => {
-            if (
-              plugins.selectedPlugins.length <= 0 ||
-              plugins.selectedPlugins.includes(plugin)
-            ) {
-              acc.add(plugin);
-            }
-            return acc;
-          },
-          new Set([]) as Set<string>,
-        )}
+        ).reduce((acc, plugin) => {
+          if (
+            plugins.selectedPlugins.length <= 0 ||
+            plugins.selectedPlugins.includes(plugin)
+          ) {
+            acc.add(plugin);
+          }
+          return acc;
+        }, new Set([]) as Set<string>)}
         onHide={onHide}
       />
     );

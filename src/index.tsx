@@ -24,9 +24,7 @@ export {PluginClient, Props} from './plugin';
 export {default as Client} from './Client';
 export {MetricType} from './utils/exportMetrics';
 export {clipboard} from 'electron';
-export {
-  default as SupportRequestFormManager,
-} from './fb-stubs/SupportRequestFormManager';
+export {default as SupportRequestFormManager} from './fb-stubs/SupportRequestFormManager';
 export {default as constants} from './fb-stubs/constants';
 export {connect} from 'react-redux';
 export {selectPlugin, StaticView} from './reducers/connections';
@@ -35,9 +33,7 @@ export {getPluginKey, getPersistedState} from './utils/pluginUtils';
 export {Idler} from './utils/Idler';
 export {Store, MiddlewareAPI} from './reducers/index';
 export {default as BaseDevice} from './devices/BaseDevice';
-export {
-  default as SidebarExtensions,
-} from './fb-stubs/LayoutInspectorSidebarExtensions';
+export {default as SidebarExtensions} from './fb-stubs/LayoutInspectorSidebarExtensions';
 export {
   DeviceLogListener,
   DeviceLogEntry,
@@ -55,9 +51,7 @@ export {default as KaiOSDevice} from './devices/KaiOSDevice';
 export {OS} from './devices/BaseDevice';
 export {default as Button} from './ui/components/Button';
 export {default as ToggleButton} from './ui/components/ToggleSwitch';
-export {
-  default as ButtonNavigationGroup,
-} from './ui/components/ButtonNavigationGroup';
+export {default as ButtonNavigationGroup} from './ui/components/ButtonNavigationGroup';
 export {default as ButtonGroup} from './ui/components/ButtonGroup';
 export {default as ButtonGroupChain} from './ui/components/ButtonGroupChain';
 export {colors, darkColors, brandColors} from './ui/components/colors';
@@ -90,15 +84,9 @@ export {
   DataValueExtractor,
   DataInspectorExpanded,
 } from './ui/components/data-inspector/DataInspector';
-export {
-  default as DataInspector,
-} from './ui/components/data-inspector/DataInspector';
-export {
-  default as ManagedDataInspector,
-} from './ui/components/data-inspector/ManagedDataInspector';
-export {
-  default as DataDescription,
-} from './ui/components/data-inspector/DataDescription';
+export {default as DataInspector} from './ui/components/data-inspector/DataInspector';
+export {default as ManagedDataInspector} from './ui/components/data-inspector/ManagedDataInspector';
+export {default as DataDescription} from './ui/components/data-inspector/DataDescription';
 export {default as Tabs} from './ui/components/Tabs';
 export {default as Tab} from './ui/components/Tab';
 export {default as Input} from './ui/components/Input';
@@ -114,9 +102,7 @@ export {default as Interactive} from './ui/components/Interactive';
 export {default as Orderable} from './ui/components/Orderable';
 export {default as VirtualList} from './ui/components/VirtualList';
 export {Component, PureComponent} from 'react';
-export {
-  default as ContextMenuProvider,
-} from './ui/components/ContextMenuProvider';
+export {default as ContextMenuProvider} from './ui/components/ContextMenuProvider';
 export {default as ContextMenu} from './ui/components/ContextMenu';
 export {FileListFile, FileListFiles} from './ui/components/FileList';
 export {default as FileList} from './ui/components/FileList';
@@ -162,12 +148,8 @@ export {
   SearchableProps,
   default as Searchable,
 } from './ui/components/searchable/Searchable';
-export {
-  default as SearchableTable,
-} from './ui/components/searchable/SearchableTable';
-export {
-  default as SearchableTable_immutable,
-} from './ui/components/searchable/SearchableTable_immutable';
+export {default as SearchableTable} from './ui/components/searchable/SearchableTable';
+export {default as SearchableTable_immutable} from './ui/components/searchable/SearchableTable_immutable';
 export {
   ElementID,
   ElementData,
@@ -176,12 +158,8 @@ export {
   ElementSearchResultSet,
 } from './ui/components/elements-inspector/ElementsInspector';
 export {Elements} from './ui/components/elements-inspector/elements';
-export {
-  ContextMenuExtension,
-} from './ui/components/elements-inspector/elements';
-export {
-  default as ElementsInspector,
-} from './ui/components/elements-inspector/ElementsInspector';
+export {ContextMenuExtension} from './ui/components/elements-inspector/elements';
+export {default as ElementsInspector} from './ui/components/elements-inspector/ElementsInspector';
 export {InspectorSidebar} from './ui/components/elements-inspector/sidebar';
 export {Console} from './ui/components/console';
 export {default as Sheet} from './ui/components/Sheet';

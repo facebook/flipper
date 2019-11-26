@@ -224,7 +224,7 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
       deepLinkPayload,
       pluginKey,
       isArchivedDevice,
-      selectedApp,
+      selectedApp: selectedApp || null,
     };
     return s;
   },

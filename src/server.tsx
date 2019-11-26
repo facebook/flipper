@@ -22,11 +22,10 @@ import EventEmitter from 'events';
 import invariant from 'invariant';
 import tls from 'tls';
 import net, {Socket} from 'net';
-import {RSocketClientSocket} from 'rsocket-core/RSocketClient';
 import {Responder, Payload, ReactiveSocket} from 'rsocket-types';
 
 type ClientInfo = {
-  connection: RSocketClientSocket<any, any> | null | undefined;
+  connection: ReactiveSocket<any, any> | null | undefined;
   client: Client;
 };
 
@@ -304,7 +303,7 @@ class Server extends EventEmitter {
   }
 
   async addConnection(
-    conn: RSocketClientSocket<any, any>,
+    conn: ReactiveSocket<any, any>,
     query: ClientQuery,
     csrQuery: ClientCsrQuery,
   ): Promise<Client> {

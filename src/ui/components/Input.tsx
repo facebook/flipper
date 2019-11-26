@@ -17,8 +17,6 @@ export const inputStyle = (compact: boolean) => ({
   fontSize: '1em',
   height: compact ? '17px' : '28px',
   lineHeight: compact ? '17px' : '28px',
-  marginRight: 5,
-
   '&:disabled': {
     backgroundColor: '#ddd',
     borderColor: '#ccc',
@@ -30,6 +28,8 @@ const Input = styled('input')(({compact}: {compact?: boolean}) => ({
   ...inputStyle(compact || false),
   padding: compact ? '0 5px' : '0 10px',
 }));
+
+Input.displayName = 'Input';
 
 Input.defaultProps = {
   type: 'text',

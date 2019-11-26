@@ -61,7 +61,7 @@ export function _push(
     deviceId,
     app,
     `echo "${contents}" > '${filename}' && chmod 644 '${filename}'`,
-  ).then(output => undefined);
+  ).then(_ => undefined);
 }
 
 export function _pull(

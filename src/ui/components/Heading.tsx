@@ -17,6 +17,7 @@ const LargeHeading = styled('div')({
   borderBottom: '1px solid #ddd',
   marginBottom: 10,
 });
+LargeHeading.displayName = 'Heading:LargeHeading';
 
 const SmallHeading = styled('div')({
   fontSize: 12,
@@ -25,6 +26,7 @@ const SmallHeading = styled('div')({
   marginBottom: 10,
   textTransform: 'uppercase',
 });
+SmallHeading.displayName = 'Heading:SmallHeading';
 
 /**
  * A heading component.

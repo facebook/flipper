@@ -62,7 +62,8 @@ public class SectionsFlipperPlugin implements FlipperPlugin, ChangesetListener {
       String surfaceId,
       String id,
       FlipperArray tree,
-      FlipperObject changesetData) {
+      FlipperObject changesetData,
+      StackTraceElement[] trace) {
     if (mConnection == null) {
       return;
     }
@@ -84,7 +85,9 @@ public class SectionsFlipperPlugin implements FlipperPlugin, ChangesetListener {
             .put("reason", reason)
             .put("surface_key", surfaceId)
             .put("tree_generation_timestamp", 10000) // TODO
-            .put("stack_trace", new FlipperArray.Builder().build())
+            .put("payload", new FlipperObject.Builder().build())
+            .put("stack_trace", getStackTrace(trace))
+            .put("skip_stack_trace_format", true)
             .put("payload", eventPayloadBuilder.build())
             .build());
 
@@ -121,5 +124,15 @@ public class SectionsFlipperPlugin implements FlipperPlugin, ChangesetListener {
             .put("duration", 0) // TODO
             .put("changeset", changesetData)
             .build());
+  }
+
+  private FlipperArray getStackTrace(StackTraceElement[] trace) {
+    final FlipperArray.Builder builder = new FlipperArray.Builder();
+
+    for (StackTraceElement element : trace) {
+      builder.put(element.toString() + "\n");
+    }
+
+    return builder.build();
   }
 }

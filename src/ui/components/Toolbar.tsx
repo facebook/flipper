@@ -34,9 +34,11 @@ const Toolbar = styled(FlexRow)(
     width: '100%',
   }),
 );
+Toolbar.displayName = 'Toolbar';
 
 export const Spacer = styled(FlexBox)({
   flexGrow: 1,
 });
+Spacer.displayName = 'Spacer';
 
 export default Toolbar;

@@ -66,8 +66,11 @@ if (typeof window !== 'undefined') {
   });
 }
 
-function queryDevices(store: Store, logger: Logger): Promise<void> {
-  checkXcodeVersionMismatch();
+async function queryDevices(store: Store, logger: Logger): Promise<void> {
+  if (!(await checkIfDevicesCanBeQueryied(store))) {
+    return;
+  }
+  await checkXcodeVersionMismatch();
   const {connections} = store.getState();
   const currentDeviceIDs: Set<string> = new Set(
     connections.devices
@@ -88,6 +91,7 @@ function queryDevices(store: Store, logger: Logger): Promise<void> {
             serial: udid,
           });
           const iOSDevice = new IOSDevice(udid, type, name);
+          iOSDevice.loadDevicePlugins(store.getState().plugins.devicePlugins);
           store.dispatch({
             type: 'REGISTER_DEVICE',
             payload: iOSDevice,
@@ -189,6 +193,32 @@ async function checkXcodeVersionMismatch() {
     }
   } catch (e) {
     console.error(e);
+  }
+}
+
+let canQueryDevices: boolean | undefined = undefined;
+
+async function checkIfDevicesCanBeQueryied(store: Store): Promise<boolean> {
+  if (canQueryDevices !== undefined) {
+    return canQueryDevices;
+  }
+  try {
+    const exec = promisify(child_process.exec);
+    // make sure we can use instruments (it will throw otherwise)
+    await exec('instruments -s devices');
+    return (canQueryDevices = true);
+  } catch (e) {
+    store.dispatch({
+      type: 'SERVER_ERROR',
+      payload: {
+        message:
+          'It looks like XCode was not installed properly. Further actions are required if you want to use an iOS emulator.',
+        details:
+          "You might want to run 'sudo xcode-select -s /Applications/Xcode.app/Contents/Developer'",
+        error: e,
+      },
+    });
+    return (canQueryDevices = false);
   }
 }
 

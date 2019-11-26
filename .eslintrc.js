@@ -55,7 +55,7 @@ module.exports = {
   },
   overrides: [
     {
-      files: ['*.tsx'],
+      files: ['*.tsx', '*.ts'],
       parser: '@typescript-eslint/parser',
       rules: {
         'prettier/prettier': [2, {...prettierConfig, parser: 'typescript'}],

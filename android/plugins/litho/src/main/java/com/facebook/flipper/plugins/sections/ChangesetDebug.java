@@ -40,7 +40,8 @@ public class ChangesetDebug implements ChangesetDebugListener {
         String surfaceId,
         String id,
         FlipperArray tree,
-        FlipperObject changesetData);
+        FlipperObject changesetData,
+        StackTraceElement[] trace);
   }
 
   public static void setListener(ChangesetListener listener) {
@@ -103,7 +104,8 @@ public class ChangesetDebug implements ChangesetDebugListener {
         surfaceId,
         sChangesetIdGenerator.incrementAndGet() + "-" + surfaceId,
         tree.build(),
-        changesetData.build());
+        changesetData.build(),
+        changesetDebugInfo.getStackTrace());
   }
 
   private static boolean isEventAsync(@ApplyNewChangeSet int source) {

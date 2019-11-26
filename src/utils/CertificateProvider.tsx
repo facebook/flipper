@@ -203,15 +203,18 @@ export default class CertificateProvider {
       const deviceIdPromise = appNamePromise.then(app =>
         this.getTargetAndroidDeviceId(app, destination, csr),
       );
-      return Promise.all([deviceIdPromise, appNamePromise, this.adb]).then(
-        ([deviceId, appName, adbClient]) =>
-          androidUtil.push(
-            adbClient,
-            deviceId,
-            appName,
-            destination + filename,
-            contents,
-          ),
+      return Promise.all([
+        deviceIdPromise,
+        appNamePromise,
+        this.adb,
+      ]).then(([deviceId, appName, adbClient]) =>
+        androidUtil.push(
+          adbClient,
+          deviceId,
+          appName,
+          destination + filename,
+          contents,
+        ),
       );
     }
     if (os === 'iOS' || os === 'windows' || os == 'MacOS') {

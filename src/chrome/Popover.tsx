@@ -163,35 +163,37 @@ export default class Popover extends PureComponent<Props> {
   };
 
   render() {
-    return [
-      <Anchor src="./anchor.svg" key="anchor" />,
-      <PopoverContainer innerRef={this._setRef} key="popup">
-        {this.props.sections.map(section => {
-          if (section.items.length > 0) {
-            return (
-              <Section key={section.title}>
-                <Heading>{section.title}</Heading>
-                {section.items.map(item => (
-                  <PopoverItem key={item.title}>
-                    <ItemImage>{item.icon}</ItemImage>
-                    <ItemContent>
-                      <ItemTitle>{item.title}</ItemTitle>
-                      <ItemSubtitle>{item.subtitle}</ItemSubtitle>
-                    </ItemContent>
-                    {item.onClick && (
-                      <Action onClick={item.onClick} compact={true}>
-                        Run
-                      </Action>
-                    )}
-                  </PopoverItem>
-                ))}
-              </Section>
-            );
-          } else {
-            return null;
-          }
-        })}
-      </PopoverContainer>,
-    ];
+    return (
+      <>
+        <Anchor src="./anchor.svg" key="anchor" />
+        <PopoverContainer innerRef={this._setRef} key="popup">
+          {this.props.sections.map(section => {
+            if (section.items.length > 0) {
+              return (
+                <Section key={section.title}>
+                  <Heading>{section.title}</Heading>
+                  {section.items.map(item => (
+                    <PopoverItem key={item.title}>
+                      <ItemImage>{item.icon}</ItemImage>
+                      <ItemContent>
+                        <ItemTitle>{item.title}</ItemTitle>
+                        <ItemSubtitle>{item.subtitle}</ItemSubtitle>
+                      </ItemContent>
+                      {item.onClick && (
+                        <Action onClick={item.onClick} compact={true}>
+                          Run
+                        </Action>
+                      )}
+                    </PopoverItem>
+                  ))}
+                </Section>
+              );
+            } else {
+              return null;
+            }
+          })}
+        </PopoverContainer>
+      </>
+    );
   }
 }

@@ -28,10 +28,22 @@ import plugins, {
   State as PluginsState,
   Action as PluginsAction,
 } from './plugins';
+import supportForm, {
+  State as SupportFormState,
+  Action as SupportFormAction,
+} from './supportForm';
 import settings, {
   Settings as SettingsState,
   Action as SettingsAction,
 } from './settings';
+import pluginManager, {
+  State as PluginManagerState,
+  Action as PluginManagerAction,
+} from './pluginManager';
+import healthchecks, {
+  Action as HealthcheckAction,
+  State as HealthcheckState,
+} from './healthchecks';
 import user, {State as UserState, Action as UserAction} from './user';
 import JsonFileStorage from '../utils/jsonFileReduxPersistStorage';
 import os from 'os';
@@ -41,8 +53,7 @@ import {persistReducer} from 'redux-persist';
 import {PersistPartial} from 'redux-persist/es/persistReducer';
 
 import {Store as ReduxStore, MiddlewareAPI as ReduxMiddlewareAPI} from 'redux';
-// @ts-ignore: explicitly need to import index.js, otherwise index.native.js is imported, because redux-persist assumes we are react-native, because we are using metro-bundler
-import storage from 'redux-persist/lib/storage/index.js';
+import storage from 'redux-persist/lib/storage';
 
 export type Actions =
   | ApplicationAction
@@ -52,16 +63,22 @@ export type Actions =
   | PluginsAction
   | UserAction
   | SettingsAction
+  | SupportFormAction
+  | PluginManagerAction
+  | HealthcheckAction
   | {type: 'INIT'};
 
 export type State = {
-  application: ApplicationState & PersistPartial;
+  application: ApplicationState;
   connections: DevicesState & PersistPartial;
   pluginStates: PluginStatesState;
   notifications: NotificationsState & PersistPartial;
   plugins: PluginsState;
   user: UserState & PersistPartial;
   settingsState: SettingsState & PersistPartial;
+  supportForm: SupportFormState;
+  pluginManager: PluginManagerState;
+  healthchecks: HealthcheckState;
 };
 
 export type Store = ReduxStore<State, Actions>;
@@ -76,14 +93,7 @@ const settingsStorage = new JsonFileStorage(
 );
 
 export default combineReducers<State, Actions>({
-  application: persistReducer<ApplicationState, Actions>(
-    {
-      key: 'application',
-      storage,
-      whitelist: ['flipperRating'],
-    },
-    application,
-  ),
+  application,
   connections: persistReducer<DevicesState, Actions>(
     {
       key: 'connections',
@@ -92,7 +102,7 @@ export default combineReducers<State, Actions>({
         'userPreferredDevice',
         'userPreferredPlugin',
         'userPreferredApp',
-        'userLRUPlugins',
+        'userStarredPlugins',
       ],
     },
     connections,
@@ -107,6 +117,8 @@ export default combineReducers<State, Actions>({
     notifications,
   ),
   plugins,
+  supportForm,
+  pluginManager,
   user: persistReducer(
     {
       key: 'user',
@@ -118,4 +130,5 @@ export default combineReducers<State, Actions>({
     {key: 'settings', storage: settingsStorage},
     settings,
   ),
+  healthchecks,
 });

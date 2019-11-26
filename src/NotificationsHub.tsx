@@ -22,10 +22,10 @@ import {
   colors,
 } from 'flipper';
 import {FlipperDevicePlugin, BaseAction} from './plugin';
-import {connect} from 'react-redux';
+import {connect, ReactReduxContext} from 'react-redux';
+import {store} from './init';
 import React, {Component, Fragment} from 'react';
 import {clipboard} from 'electron';
-import PropTypes from 'prop-types';
 import {
   PluginNotification,
   clearAllNotifications,
@@ -49,51 +49,54 @@ export default class Notifications<
   static icon = 'bell';
   static keyboardActions: KeyboardActions = ['clear'];
 
-  static contextTypes = {
-    store: PropTypes.object.isRequired,
-  };
-
   static supportsDevice() {
     return false;
   }
 
   onKeyboardAction = (action: string) => {
     if (action === 'clear') {
-      this.onClear();
+      this.onClear(store)();
     }
   };
 
-  onClear = () => {
-    (this.context.store as Store<StoreState>).dispatch(clearAllNotifications());
+  onClear = (store: Store<StoreState>) => () => {
+    store.dispatch(clearAllNotifications());
   };
 
   render() {
-    const {blacklistedPlugins, blacklistedCategories} = (this.context
-      .store as Store<StoreState>).getState().notifications;
     return (
-      <ConnectedNotificationsTable
-        onClear={this.onClear}
-        selectedID={this.props.deepLinkPayload}
-        onSelectPlugin={this.props.selectPlugin}
-        logger={this.props.logger}
-        defaultFilters={[
-          ...blacklistedPlugins.map(value => ({
-            value,
-            type: 'exclude',
-            key: 'plugin',
-          })),
-          ...blacklistedCategories.map(value => ({
-            value,
-            type: 'exclude',
-            key: 'category',
-          })),
-        ]}
-        actions={
-          <Fragment>
-            <Button onClick={this.onClear}>Clear</Button>
-          </Fragment>
-        }
-      />
+      <ReactReduxContext.Consumer>
+        {({store}) => {
+          const {blacklistedPlugins, blacklistedCategories} = (store as Store<
+            StoreState
+          >).getState().notifications;
+          return (
+            <ConnectedNotificationsTable
+              onClear={this.onClear(store)}
+              selectedID={this.props.deepLinkPayload}
+              onSelectPlugin={this.props.selectPlugin}
+              logger={this.props.logger}
+              defaultFilters={[
+                ...blacklistedPlugins.map(value => ({
+                  value,
+                  type: 'exclude',
+                  key: 'plugin',
+                })),
+                ...blacklistedCategories.map(value => ({
+                  value,
+                  type: 'exclude',
+                  key: 'category',
+                })),
+              ]}
+              actions={
+                <Fragment>
+                  <Button onClick={this.onClear(store)}>Clear</Button>
+                </Fragment>
+              }
+            />
+          );
+        }}
+      </ReactReduxContext.Consumer>
     );
   }
 }
