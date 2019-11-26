@@ -13,7 +13,8 @@ import {App} from './App.js';
 import {Logger} from './fb-interfaces/Logger';
 import {Store} from './reducers/index';
 import {setPluginState} from './reducers/pluginStates';
-import {ReactiveSocket} from 'rsocket-types';
+import {Payload, ConnectionStatus} from 'rsocket-types';
+import {Flowable, Single} from 'rsocket-flowable';
 import {performance} from 'perf_hooks';
 import {reportPlatformFailures, reportPluginFailures} from './utils/metrics';
 import {notNull} from './utils/typeUtils';
@@ -97,6 +98,13 @@ const handleError = (
   }
 };
 
+export interface FlipperClientConnection<D, M> {
+  connectionStatus(): Flowable<ConnectionStatus>;
+  close(): void;
+  fireAndForget(payload: Payload<D, M>): void;
+  requestResponse(payload: Payload<D, M>): Single<Payload<D, M>>;
+}
+
 export default class Client extends EventEmitter {
   app: App | undefined;
   connected: boolean;
@@ -105,7 +113,7 @@ export default class Client extends EventEmitter {
   sdkVersion: number;
   messageIdCounter: number;
   plugins: Plugins;
-  connection: ReactiveSocket<any, any> | null | undefined;
+  connection: FlipperClientConnection<any, any> | null | undefined;
   store: Store;
   activePlugins: Set<string>;
   device: Promise<BaseDevice>;
@@ -129,7 +137,7 @@ export default class Client extends EventEmitter {
   constructor(
     id: string,
     query: ClientQuery,
-    conn: ReactiveSocket<any, any> | null | undefined,
+    conn: FlipperClientConnection<any, any> | null | undefined,
     logger: Logger,
     store: Store,
     plugins?: Plugins | null | undefined,
