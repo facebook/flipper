@@ -23,7 +23,8 @@ import {
 } from '../reducers/application';
 import ListView from './ListView';
 import {Dispatch, Action} from 'redux';
-
+import {unsetShare} from '../reducers/application';
+import {FlexColumn, styled} from 'flipper';
 type OwnProps = {
   onHide: () => void;
 };
@@ -41,57 +42,71 @@ type DispatchFromProps = {
     file: string;
     closeOnFinish: boolean;
   }) => void;
+  unsetShare: () => void;
 };
 
 type Props = OwnProps & StateFromProps & DispatchFromProps;
+
+const Container = styled(FlexColumn)({
+  width: 700,
+  maxHeight: 700,
+});
+
 class ExportDataPluginSheet extends Component<Props> {
   render() {
     const {plugins, pluginStates, onHide} = this.props;
+    const onHideWithUnsettingShare = () => {
+      this.props.unsetShare();
+      onHide();
+    };
     return (
-      <ListView
-        type="multiple"
-        title="Select the plugins for which you want to export the data"
-        onSelect={selectedArray => {
-          this.props.selectedPlugins(selectedArray);
-          const {share} = this.props;
-          if (!share) {
-            console.error(
-              'applications.share is undefined, whereas it was expected to be defined',
-            );
-          } else {
-            switch (share.type) {
-              case 'link':
-                this.props.setActiveSheet(ACTIVE_SHEET_SHARE_DATA);
-                break;
-              case 'file': {
-                const file = share.file;
-                if (file) {
-                  this.props.setExportDataToFileActiveSheet({
-                    file,
-                    closeOnFinish: true,
-                  });
-                } else {
-                  console.error('share.file is undefined');
+      <Container>
+        <ListView
+          type="multiple"
+          title="Select the plugins for which you want to export the data"
+          onSelect={selectedArray => {
+            this.props.selectedPlugins(selectedArray);
+            const {share} = this.props;
+            if (!share) {
+              console.error(
+                'applications.share is undefined, whereas it was expected to be defined',
+              );
+            } else {
+              switch (share.type) {
+                case 'link':
+                  this.props.setActiveSheet(ACTIVE_SHEET_SHARE_DATA);
+                  break;
+                case 'file': {
+                  const file = share.file;
+                  if (file) {
+                    this.props.setExportDataToFileActiveSheet({
+                      file,
+                      closeOnFinish: true,
+                    });
+                  } else {
+                    console.error('share.file is undefined');
+                  }
                 }
               }
             }
-          }
-        }}
-        elements={getActivePersistentPlugins(pluginStates, plugins)}
-        selectedElements={getActivePersistentPlugins(
-          pluginStates,
-          plugins,
-        ).reduce((acc, plugin) => {
-          if (
-            plugins.selectedPlugins.length <= 0 ||
-            plugins.selectedPlugins.includes(plugin)
-          ) {
-            acc.add(plugin);
-          }
-          return acc;
-        }, new Set([]) as Set<string>)}
-        onHide={onHide}
-      />
+          }}
+          elements={getActivePersistentPlugins(pluginStates, plugins)}
+          selectedElements={getActivePersistentPlugins(
+            pluginStates,
+            plugins,
+          ).reduce((acc, plugin) => {
+            if (
+              plugins.selectedPlugins.length <= 0 ||
+              plugins.selectedPlugins.includes(plugin)
+            ) {
+              acc.add(plugin);
+            }
+            return acc;
+          }, new Set([]) as Set<string>)}
+          onHide={onHideWithUnsettingShare}
+          showNavButtons={true}
+        />
+      </Container>
     );
   }
 }
@@ -114,6 +129,9 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
       closeOnFinish: boolean;
     }) => {
       dispatch(getExportDataToFileActiveSheetAction(payload));
+    },
+    unsetShare: () => {
+      dispatch(unsetShare());
     },
   }),
 )(ExportDataPluginSheet);
