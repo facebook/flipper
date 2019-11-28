@@ -8,13 +8,14 @@
  */
 
 import {Actions} from './';
+export type MediaType = Array<{uri: string; description: string}>;
 export type SupportFormV2State = {
   title: string;
   description: string;
   commitHash: string;
   appName: string;
-  screenshots?: {image: string; description: string}[];
-  videos?: {url: string; description: string}[];
+  screenshots?: MediaType;
+  videos?: MediaType;
 };
 
 export type State = {
