@@ -83,7 +83,7 @@ async function launchHealthchecks(
             : result.hasProblem && !h.isRequired
             ? {
                 status: 'WARNING',
-                message: 'Doctor discovered a problem during the healthcech',
+                message: 'Doctor discovered a problem during the healthcheck',
                 helpUrl: result.helpUrl,
               }
             : {
