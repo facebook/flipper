@@ -68,7 +68,7 @@ export async function exportMetricsWithoutTrace(
     store.getState().connections.clients,
     pluginStates,
     pluginsMap,
-    store,
+    store.getState(),
   );
   const newPluginStates = metadata.pluginStates;
   const {errorArray} = metadata;

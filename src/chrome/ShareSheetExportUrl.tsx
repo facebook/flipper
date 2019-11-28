@@ -118,7 +118,7 @@ export default class ShareSheetExportUrl extends Component<Props, State> {
         }
       };
       const {serializedString, errorArray} = await reportPlatformFailures(
-        exportStore(store, this.idler, statusUpdate),
+        exportStore(store.getState(), this.idler, statusUpdate),
         `${EXPORT_FLIPPER_TRACE_EVENT}:UI_LINK`,
       );
       const uploadMarker = `${EXPORT_FLIPPER_TRACE_EVENT}:upload`;

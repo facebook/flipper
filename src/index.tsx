@@ -31,7 +31,7 @@ export {selectPlugin, StaticView} from './reducers/connections';
 export {writeBufferToFile, bufferToBlob} from './utils/screenshot';
 export {getPluginKey, getPersistedState} from './utils/pluginUtils';
 export {Idler} from './utils/Idler';
-export {Store, MiddlewareAPI} from './reducers/index';
+export {Store, MiddlewareAPI, State as ReduxState} from './reducers/index';
 export {default as BaseDevice} from './devices/BaseDevice';
 export {default as SidebarExtensions} from './fb-stubs/LayoutInspectorSidebarExtensions';
 export {

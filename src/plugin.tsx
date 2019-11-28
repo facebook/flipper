@@ -18,6 +18,7 @@ import BaseDevice from './devices/BaseDevice';
 import {serialize, deserialize} from './utils/serialization';
 import {Idler} from './utils/Idler';
 import {StaticView} from './reducers/connections';
+import {State as ReduxState} from './reducers';
 type Parameters = any;
 
 // This function is intended to be called from outside of the plugin.
@@ -103,7 +104,7 @@ export abstract class FlipperBasePlugin<
     | ((
         callClient: (method: string, params?: any) => Promise<any>,
         persistedState: StaticPersistedState | undefined,
-        store: MiddlewareAPI | undefined,
+        store: ReduxState | undefined,
         idler?: Idler,
         statusUpdate?: (msg: string) => void,
       ) => Promise<StaticPersistedState | undefined>)

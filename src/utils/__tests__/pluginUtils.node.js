@@ -15,7 +15,7 @@ import type {State as PluginsState} from '../../reducers/plugins.tsx';
 import type {State as PluginStatesState} from '../../reducers/pluginStates.tsx';
 import type {PluginDefinition} from '../../dispatcher/plugins.tsx';
 import {FlipperBasePlugin} from 'flipper';
-import type {MiddlewareAPI} from '../../reducers/index.tsx';
+import type {ReduxState} from '../../reducers/index.tsx';
 class MockFlipperPluginWithDefaultPersistedState extends FlipperBasePlugin<
   *,
   *,
@@ -32,7 +32,7 @@ class MockFlipperPluginWithExportPersistedState extends FlipperBasePlugin<
   static exportPersistedState = (
     callClient: (string, ?Object) => Promise<Object>,
     persistedState: ?{msg: string},
-    store: ?MiddlewareAPI,
+    store: ?ReduxState,
   ): Promise<?{msg: string}> => {
     return Promise.resolve({msg: 'MockFlipperPluginWithExportPersistedState'});
   };
