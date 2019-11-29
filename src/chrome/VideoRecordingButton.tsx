@@ -9,7 +9,7 @@
 
 import React, {Component} from 'react';
 import BaseDevice from '../devices/BaseDevice';
-import {Button} from 'flipper';
+import {Button, Glyph, colors} from 'flipper';
 import path from 'path';
 import os from 'os';
 
@@ -82,7 +82,13 @@ export default class VideoRecordingButton extends Component<Props, State> {
         selected={this.state.recording}
         title="Make Screen Recording"
         disabled={!selectedDevice || !recordingEnabled}
-        type="primary">
+        type={this.state.recording ? 'danger' : 'primary'}>
+        <Glyph
+          name={this.state.recording ? 'stop-playback' : 'camcorder'}
+          color={this.state.recording ? colors.red : colors.white}
+          variant="filled"
+          style={{marginRight: 8}}
+        />
         {this.state.recording ? 'Recording...' : 'Start Recording'}
       </Button>
     );

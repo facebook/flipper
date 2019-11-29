@@ -42,9 +42,8 @@ const HBox: React.FC<{
     shrink: 0,
   };
   const growStyle = {
-    width: '100%',
-    shrink: 1,
-    grow: 1,
+    flexShrink: 1,
+    flexGrow: 1,
     display: 'flex',
     flexDirection: 'column',
   } as const;

@@ -10,13 +10,14 @@
 import styled from 'react-emotion';
 import {colors} from './colors';
 
-export const inputStyle = (compact: boolean) => ({
+export const inputStyle = (compact: boolean, readOnly: boolean) => ({
   border: `1px solid ${colors.light15}`,
   borderRadius: 4,
   font: 'inherit',
   fontSize: '1em',
   height: compact ? '17px' : '28px',
   lineHeight: compact ? '17px' : '28px',
+  backgroundColor: readOnly ? colors.light02 : undefined,
   '&:disabled': {
     backgroundColor: '#ddd',
     borderColor: '#ccc',
@@ -24,10 +25,12 @@ export const inputStyle = (compact: boolean) => ({
   },
 });
 
-const Input = styled('input')(({compact}: {compact?: boolean}) => ({
-  ...inputStyle(compact || false),
-  padding: compact ? '0 5px' : '0 10px',
-}));
+const Input = styled('input')(
+  ({compact, readOnly}: {compact?: boolean; readOnly?: boolean}) => ({
+    ...inputStyle(compact || false, readOnly || false),
+    padding: compact ? '0 5px' : '0 10px',
+  }),
+);
 
 Input.displayName = 'Input';
 
