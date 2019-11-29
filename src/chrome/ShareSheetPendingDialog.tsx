@@ -37,8 +37,9 @@ const Uploading = styled(Text)({
 export default function(props: {
   statusMessage: string;
   statusUpdate: string | null;
-  onCancel: () => void;
-  onRunInBackground: () => void;
+  hideNavButtons?: boolean;
+  onCancel?: () => void;
+  onRunInBackground?: () => void;
 }) {
   return (
     <Container>
@@ -50,19 +51,32 @@ export default function(props: {
           </Uploading>
         ) : (
           <Uploading bold color={colors.macOSTitleBarIcon}>
-            {props.statusUpdate}
+            {props.statusMessage}
           </Uploading>
         )}
       </Center>
-      <FlexRow>
-        <Spacer />
-        <Button compact padded onClick={() => props.onCancel()}>
-          Cancel
-        </Button>
-        <Button compact padded type="primary" onClick={props.onRunInBackground}>
-          Run In Background
-        </Button>
-      </FlexRow>
+      {!props.hideNavButtons && props.onCancel && props.onRunInBackground && (
+        <FlexRow>
+          <Spacer />
+          <Button
+            compact
+            padded
+            onClick={() => {
+              props.onCancel && props.onCancel();
+            }}>
+            Cancel
+          </Button>
+          <Button
+            compact
+            padded
+            type="primary"
+            onClick={() => {
+              props.onRunInBackground && props.onRunInBackground();
+            }}>
+            Run In Background
+          </Button>
+        </FlexRow>
+      )}
     </Container>
   );
 }

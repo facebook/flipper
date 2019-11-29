@@ -59,7 +59,9 @@ exports[`ShareSheetPendingDialog is rendered without status update 1`] = `
     <span
       className="css-91luyc"
       color="#6f6f6f"
-    />
+    >
+      wubba lubba dub dub
+    </span>
   </div>
   <div
     className="css-a1glw"
