@@ -24,6 +24,13 @@ export type Settings = {
    * of Flipper.
    */
   enablePrefetching: Tristate;
+  jsApps: {
+    webAppLauncher: {
+      url: string;
+      height: number;
+      width: number;
+    };
+  };
 };
 
 export type Action =
@@ -37,6 +44,13 @@ const initialState: Settings = {
   androidHome: '/opt/android_sdk',
   enableAndroid: true,
   enablePrefetching: Tristate.Unset,
+  jsApps: {
+    webAppLauncher: {
+      url: 'http://localhost:8888',
+      height: 600,
+      width: 800,
+    },
+  },
 };
 
 export default function reducer(

@@ -21,6 +21,8 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {State as Store} from '../reducers';
 import {launchJsEmulator} from '../utils/js-client/serverUtils';
+import {updateSettings, Action} from '../reducers/settings';
+import {Settings} from '../reducers/settings';
 
 const Container = styled(FlexColumn)({
   padding: 20,
@@ -48,22 +50,33 @@ type OwnProps = {
   onHide: () => void;
 };
 
-type StateFromProps = {};
+type StateFromProps = {
+  settings: Settings;
+};
 
-type DispatchFromProps = {};
+type DispatchFromProps = {
+  updateSettings: (settings: Settings) => Action;
+};
 
 type State = {
   url: string;
-  width: number;
   height: number;
+  width: number;
 };
 
 type Props = OwnProps & StateFromProps & DispatchFromProps;
 class JSEmulatorLauncherSheet extends Component<Props, State> {
-  state: State = {
-    url: 'http://localhost:8888',
-    width: 800,
-    height: 600,
+  state: State = {...this.props.settings.jsApps.webAppLauncher};
+
+  applyChanges = async () => {
+    launchJsEmulator(this.state.url, this.state.height, this.state.width);
+    this.props.updateSettings({
+      ...this.props.settings,
+      jsApps: {
+        webAppLauncher: {...this.state},
+      },
+    });
+    this.props.onHide();
   };
 
   onUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -96,18 +109,7 @@ class JSEmulatorLauncherSheet extends Component<Props, State> {
           <Button compact padded onClick={this.props.onHide}>
             Cancel
           </Button>
-          <Button
-            type="primary"
-            compact
-            padded
-            onClick={() => {
-              launchJsEmulator(
-                this.state.url,
-                this.state.height,
-                this.state.width,
-              );
-              this.props.onHide();
-            }}>
+          <Button type="primary" compact padded onClick={this.applyChanges}>
             Launch
           </Button>
         </FlexRow>
@@ -117,6 +119,8 @@ class JSEmulatorLauncherSheet extends Component<Props, State> {
 }
 
 export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
-  () => ({}),
-  {},
+  ({settingsState}) => ({
+    settings: settingsState,
+  }),
+  {updateSettings},
 )(JSEmulatorLauncherSheet);
