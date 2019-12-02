@@ -7,13 +7,15 @@
  * @format
  */
 
-import React, {PureComponent, RefObject} from 'react';
+import React, {PureComponent} from 'react';
 import styled from 'react-emotion';
 import ReactMarkdown from 'react-markdown';
-import ReactDOM from 'react-dom';
 import {colors} from './colors';
 import {shell} from 'electron';
 
+const Container = styled('div')({
+  padding: 10,
+});
 const Row = styled('div')({
   marginTop: 5,
   marginBottom: 5,
@@ -75,20 +77,22 @@ class LinkReference extends PureComponent<{href: string}> {
 
 export function Markdown(props: {source: string}) {
   return (
-    <ReactMarkdown
-      source={props.source}
-      renderers={{
-        heading: Heading,
-        listItem: ListItem,
-        paragraph: Row,
-        strong: Strong,
-        emphasis: Emphasis,
-        inlineCode: Code,
-        code: CodeBlock,
-        blockquote: Quote,
-        link: LinkReference,
-        linkReference: LinkReference,
-      }}
-    />
+    <Container>
+      <ReactMarkdown
+        source={props.source}
+        renderers={{
+          heading: Heading,
+          listItem: ListItem,
+          paragraph: Row,
+          strong: Strong,
+          emphasis: Emphasis,
+          inlineCode: Code,
+          code: CodeBlock,
+          blockquote: Quote,
+          link: LinkReference,
+          linkReference: LinkReference,
+        }}
+      />
+    </Container>
   );
 }
