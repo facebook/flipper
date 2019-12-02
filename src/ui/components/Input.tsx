@@ -10,14 +10,19 @@
 import styled from 'react-emotion';
 import {colors} from './colors';
 
-export const inputStyle = (compact: boolean, readOnly: boolean) => ({
-  border: `1px solid ${colors.light15}`,
+export const inputStyle = (props: {
+  compact: boolean;
+  valid: boolean;
+  readOnly: boolean;
+}) => ({
+  border: `1px solid ${props.valid ? colors.light15 : colors.red}`,
   borderRadius: 4,
   font: 'inherit',
   fontSize: '1em',
-  height: compact ? '17px' : '28px',
-  lineHeight: compact ? '17px' : '28px',
-  backgroundColor: readOnly ? colors.light02 : undefined,
+
+  height: props.compact ? '17px' : '28px',
+  lineHeight: props.compact ? '17px' : '28px',
+  backgroundColor: props.readOnly ? colors.light02 : undefined,
   '&:disabled': {
     backgroundColor: '#ddd',
     borderColor: '#ccc',
@@ -26,8 +31,20 @@ export const inputStyle = (compact: boolean, readOnly: boolean) => ({
 });
 
 const Input = styled('input')(
-  ({compact, readOnly}: {compact?: boolean; readOnly?: boolean}) => ({
-    ...inputStyle(compact || false, readOnly || false),
+  ({
+    compact,
+    valid,
+    readOnly,
+  }: {
+    compact?: boolean;
+    valid?: boolean;
+    readOnly?: boolean;
+  }) => ({
+    ...inputStyle({
+      compact: compact || false,
+      valid: valid !== false,
+      readOnly: readOnly === true,
+    }),
     padding: compact ? '0 5px' : '0 10px',
   }),
 );
