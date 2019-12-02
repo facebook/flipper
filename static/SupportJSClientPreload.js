@@ -12,60 +12,56 @@
 // ==============
 const {remote, ipcRenderer} = require('electron');
 
-let FlipperMainWindowId = 0;
+const flipperState = {
+  mainWindowId: 0,
+  isClientInit: false,
+  plugins: null,
+  appName: 'JS App',
+};
 
 ipcRenderer.on('parent-window-id', (event, message) => {
-  FlipperMainWindowId = message;
+  flipperState.mainWindowId = message;
 });
 
-let FlipperIsClientInit = false;
-let FlipperMemoizedPlugins;
-
-function initClient(plugins) {
-  if (FlipperIsClientInit) {
+function initClient(plugins, appName) {
+  if (flipperState.isClientInit) {
     return;
   }
   if (plugins) {
-    FlipperMemoizedPlugins = plugins;
+    flipperState.plugins = plugins;
   }
-  if (FlipperMainWindowId != 0) {
-    ipcRenderer.sendTo(FlipperMainWindowId, 'from-js-emulator-init-client', {
-      command: 'initClient',
-      windowId: remote.getCurrentWebContents().id,
-      payload: {
-        plugins: plugins ? plugins : FlipperMemoizedPlugins,
-        appName: 'kite/weblite',
+  if (appName) {
+    flipperState.appName = appName;
+  }
+  if (flipperState.mainWindowId != 0) {
+    ipcRenderer.sendTo(
+      flipperState.mainWindowId,
+      'from-js-emulator-init-client',
+      {
+        command: 'initClient',
+        windowId: remote.getCurrentWebContents().id,
+        payload: {
+          plugins: flipperState.plugins,
+          appName: flipperState.appName,
+        },
       },
-    });
-    FlipperIsClientInit = true;
+    );
+    flipperState.isClientInit = true;
   }
 }
 
 window.FlipperWebviewBridge = {
   registerPlugins: function(plugins) {
-    console.log(plugins);
-    if (FlipperMainWindowId != 0) {
-      ipcRenderer.sendTo(FlipperMainWindowId, 'from-js-emulator', {
-        command: 'registerPlugins',
-        payload: plugins,
-      });
-    }
+    flipperState.plugins = plugins;
   },
-  start: function() {
-    console.log('start');
-
-    if (FlipperMainWindowId != 0) {
-      ipcRenderer.sendTo(FlipperMainWindowId, 'from-js-emulator', {
-        command: 'start',
-        payload: null,
-      });
-    }
+  start: function(appName) {
+    flipperState.appName = appName;
+    initClient();
   },
   sendFlipperObject: function(plugin, method, data) {
-    console.log(plugin, method, data);
     initClient();
-    if (FlipperMainWindowId != 0) {
-      ipcRenderer.sendTo(FlipperMainWindowId, 'from-js-emulator', {
+    if (flipperState.mainWindowId != 0) {
+      ipcRenderer.sendTo(flipperState.mainWindowId, 'from-js-emulator', {
         command: 'sendFlipperObject',
         payload: {
           api: plugin,

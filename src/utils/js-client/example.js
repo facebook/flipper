@@ -23,7 +23,7 @@ class FlipperManager {
     this.furyPlugin = new FuryPlugin();
     this.flipperClient.addPlugin(this.analyticsPlugin);
     this.flipperClient.addPlugin(this.furyPlugin);
-    this.flipperClient.start();
+    this.flipperClient.start('Example JS App');
   }
 }
 
