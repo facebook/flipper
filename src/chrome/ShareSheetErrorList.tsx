@@ -8,7 +8,7 @@
  */
 
 import React, {PureComponent} from 'react';
-import {FlexColumn, Text, styled} from 'flipper';
+import {FlexColumn, Text, styled} from '../ui';
 
 type Props = {
   errors: Array<Error>;

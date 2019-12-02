@@ -7,10 +7,11 @@
  * @format
  */
 
-import {DataValueExtractor, DataInspectorExpanded} from './DataInspector';
+import {DataInspectorExpanded} from './DataInspector';
 import {PureComponent} from 'react';
 import DataInspector from './DataInspector';
 import React from 'react';
+import {DataValueExtractor} from './DataPreview';
 
 type ManagedDataInspectorProps = {
   /**

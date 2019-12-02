@@ -17,9 +17,8 @@ import {
   Checkbox,
   colors,
   View,
-} from 'flipper';
+} from '../ui';
 import React, {Component} from 'react';
-import {ReactReduxContext} from 'react-redux';
 
 export type SelectionType = 'multiple' | 'single';
 

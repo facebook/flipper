@@ -22,7 +22,7 @@ import {
 import ShareSheetErrorList from './ShareSheetErrorList';
 import ShareSheetPendingDialog from './ShareSheetPendingDialog';
 import {ReactReduxContext} from 'react-redux';
-import {store} from '../init';
+import {store} from '../store';
 
 const Container = styled(FlexColumn)({
   padding: 20,

@@ -9,7 +9,7 @@
 
 import React, {Component} from 'react';
 import BaseDevice from '../devices/BaseDevice';
-import {Button, Glyph, colors} from 'flipper';
+import {Button, Glyph, colors} from '../ui';
 import path from 'path';
 import os from 'os';
 

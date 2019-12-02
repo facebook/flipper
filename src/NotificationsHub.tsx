@@ -23,7 +23,7 @@ import {
 } from 'flipper';
 import {FlipperDevicePlugin, BaseAction} from './plugin';
 import {connect, ReactReduxContext} from 'react-redux';
-import {store} from './init';
+import {store} from './store';
 import React, {Component, Fragment} from 'react';
 import {clipboard} from 'electron';
 import {

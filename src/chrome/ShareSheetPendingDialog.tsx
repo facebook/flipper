@@ -16,7 +16,7 @@ import {
   FlexRow,
   Text,
   LoadingIndicator,
-} from 'flipper';
+} from '../ui';
 import React from 'react';
 
 const Container = styled(FlexColumn)({

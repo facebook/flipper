@@ -44,6 +44,7 @@ const ICONS = {
   'mobile-engagement': [16],
   network: [12],
   'news-feed': [12],
+  'question-circle': [12],
   'question-circle-outline': [16],
   'star-outline': [12, 16, 24],
   trending: [12],

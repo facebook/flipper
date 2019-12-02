@@ -18,7 +18,7 @@ import {
 } from 'flipper';
 import React, {Component} from 'react';
 import {ReactReduxContext} from 'react-redux';
-import {store} from '../init';
+import {store} from '../store';
 import {
   setExportStatusComponent,
   unsetShare,
