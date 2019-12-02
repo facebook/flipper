@@ -212,7 +212,7 @@ need to use this. ContextMenu is what you probably want to use.</p>
 <tr><td><code>path</code></td><td><code>Array&lt;string&gt;</code></td><td>An array containing the current location of the data relative to its root.</td></tr>
 <tr><td><code>expandRoot</code></td><td><code>boolean</code></td><td>Whether to expand the root by default.</td></tr>
 <tr><td><code>expanded</code></td><td><code>{ [key: string]: boolean; }</code></td><td>An array of paths that are currently expanded.</td></tr>
-<tr><td><code>extractValue</code></td><td><code>( value: any, depth: number, ) =&gt; ⎮ { mutable: boolean; type: string; value: any; } ⎮ undefined ⎮ null</code></td><td>An optional callback that will explode a value into its type and value. Useful for inspecting serialised data.</td></tr>
+<tr><td><code>extractValue</code></td><td><code>DataValueExtractor</code></td><td>An optional callback that will explode a value into its type and value. Useful for inspecting serialised data.</td></tr>
 <tr><td><code>onExpanded</code></td><td><code>((expanded: DataInspectorExpanded) =&gt; void) ⎮ undefined ⎮ null</code></td><td>Callback whenever the current expanded paths is changed.</td></tr>
 <tr><td><code>setValue</code></td><td><code>DataInspectorSetValue ⎮ undefined ⎮ null</code></td><td>Callback when a value is edited.</td></tr>
 <tr><td><code>collapsed</code></td><td><code>boolean</code></td><td>Whether all objects and arrays should be collapsed by default.</td></tr>
@@ -229,7 +229,7 @@ need to use this. ContextMenu is what you probably want to use.</p>
 <tr><td><code>type</code></td><td><code>string</code></td><td></td></tr>
 <tr><td><code>value</code></td><td><code>any</code></td><td></td></tr>
 <tr><td><code>depth</code></td><td><code>number</code></td><td></td></tr>
-<tr><td><code>extractValue</code></td><td><code>DataValueExtractor</code></td><td></td></tr>
+<tr><td><code>extractValue</code></td><td><code>( value: any, depth: number, ) =&gt; ⎮ { mutable: boolean; type: string; value: any; } ⎮ undefined ⎮ null</code></td><td></td></tr>
 <tr><td><code>maxProperties</code></td><td><code>number</code></td><td></td></tr>
 </tbody>
 </table>
