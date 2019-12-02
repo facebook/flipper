@@ -8,7 +8,11 @@
  */
 
 import {Actions} from './';
-export type MediaType = Array<{uri: string; description: string}>;
+type SubmediaType =
+  | {uploadID: number; status: 'Uploaded'}
+  | {status: 'NotUploaded' | 'Uploading'};
+type MediaObject = SubmediaType & {description: string; path: string};
+export type MediaType = Array<MediaObject>;
 export type SupportFormV2State = {
   title: string;
   description: string;
