@@ -102,6 +102,7 @@
     "jest": "^24.7.1",
     "jest-fetch-mock": "^2.1.0",
     "prettier": "^1.19.1",
+    "react-async": "^10.0.0",
     "redux-mock-store": "^1.5.3",
     "ts-jest": "^24.1.0",
     "typescript": "^3.7.2"

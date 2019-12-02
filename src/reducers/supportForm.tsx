@@ -9,9 +9,12 @@
 
 import {Actions} from './';
 type SubmediaType =
-  | {uploadID: number; status: 'Uploaded'}
+  | {uploadID: string; status: 'Uploaded'}
   | {status: 'NotUploaded' | 'Uploading'};
-type MediaObject = SubmediaType & {description: string; path: string};
+type MediaObject = SubmediaType & {
+  description: string;
+  path: string;
+};
 export type MediaType = Array<MediaObject>;
 export type SupportFormV2State = {
   title: string;
