@@ -15,11 +15,11 @@ import {colors} from './colors';
 /**
  * Displays all children in a bordered, zebra styled vertical layout
  */
-const AlternatingRows: React.FC<{children: React.ReactNode[]}> = ({
-  children,
-}) => (
+const AlternatingRows: React.FC<{
+  children: React.ReactNode[] | React.ReactNode;
+}> = ({children}) => (
   <Bordered style={{flexDirection: 'column'}}>
-    {children.map((child, idx) => (
+    {(Array.isArray(children) ? children : [children]).map((child, idx) => (
       <div
         key={idx}
         style={{
