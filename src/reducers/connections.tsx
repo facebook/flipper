@@ -44,7 +44,7 @@ export type State = {
   userPreferredDevice: null | string;
   userPreferredPlugin: null | string;
   userPreferredApp: null | string;
-  userStarredPlugins: {[key: string]: Array<string>};
+  starredPlugins: string[];
   errors: FlipperError[];
   clients: Array<Client>;
   uninitializedClients: Array<{
@@ -148,7 +148,7 @@ const INITAL_STATE: State = {
   userPreferredDevice: null,
   userPreferredPlugin: null,
   userPreferredApp: null,
-  userStarredPlugins: {},
+  starredPlugins: [],
   errors: [],
   clients: [],
   uninitializedClients: [],
@@ -235,22 +235,17 @@ const reducer = (state: State = INITAL_STATE, action: Actions): State => {
     }
 
     case 'STAR_PLUGIN': {
-      const {selectedPlugin, selectedApp} = action.payload;
-      const starredPluginsForApp = [
-        ...(state.userStarredPlugins[selectedApp] || []),
-      ];
-      const idx = starredPluginsForApp.indexOf(selectedPlugin);
+      const {selectedPlugin} = action.payload;
+      const starredPlugins = state.starredPlugins.slice();
+      const idx = starredPlugins.indexOf(selectedPlugin);
       if (idx === -1) {
-        starredPluginsForApp.push(selectedPlugin);
+        starredPlugins.push(selectedPlugin);
       } else {
-        starredPluginsForApp.splice(idx, 1);
+        starredPlugins.splice(idx, 1);
       }
       return {
         ...state,
-        userStarredPlugins: {
-          ...state.userStarredPlugins,
-          [selectedApp]: starredPluginsForApp,
-        },
+        starredPlugins: starredPlugins,
       };
     }
 

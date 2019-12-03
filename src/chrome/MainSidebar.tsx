@@ -231,7 +231,7 @@ type StateFromProps = {
   staticView: StaticView;
   selectedPlugin: string | null | undefined;
   selectedApp: string | null | undefined;
-  userStarredPlugins: Store['connections']['userStarredPlugins'];
+  starredPlugins: Store['connections']['starredPlugins'];
   clients: Array<Client>;
   uninitializedClients: Array<{
     client: UninitializedClient;
@@ -526,9 +526,8 @@ class MainSidebar extends PureComponent<Props, State> {
       (p: typeof FlipperPlugin) => client.plugins.indexOf(p.id) > -1,
     );
     const favoritePlugins: FlipperPlugins = getFavoritePlugins(
-      client,
       allPlugins,
-      this.props.userStarredPlugins,
+      this.props.starredPlugins,
       true,
     );
     const showAllPlugins =
@@ -585,9 +584,8 @@ class MainSidebar extends PureComponent<Props, State> {
             ? this.renderPluginsByCategory(
                 client,
                 getFavoritePlugins(
-                  client,
                   allPlugins,
-                  this.props.userStarredPlugins,
+                  this.props.starredPlugins,
                   false,
                 ),
                 false,
@@ -601,16 +599,12 @@ class MainSidebar extends PureComponent<Props, State> {
 }
 
 function getFavoritePlugins(
-  client: Client,
   allPlugins: FlipperPlugins,
-  userStarredPlugins: Props['userStarredPlugins'],
+  starredPlugins: Props['starredPlugins'],
   favorite: boolean,
 ): FlipperPlugins {
-  const appName = client.id;
   return allPlugins.filter(plugin => {
-    const idx = userStarredPlugins[appName]
-      ? userStarredPlugins[appName].indexOf(plugin.id)
-      : -1;
+    const idx = starredPlugins.indexOf(plugin.id);
     return idx === -1 ? !favorite : favorite;
   });
 }
@@ -639,7 +633,7 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
       selectedDevice,
       selectedPlugin,
       selectedApp,
-      userStarredPlugins,
+      starredPlugins,
       clients,
       uninitializedClients,
       staticView,
@@ -658,7 +652,7 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
     staticView,
     selectedPlugin,
     selectedApp,
-    userStarredPlugins,
+    starredPlugins,
     clients,
     uninitializedClients,
     devicePlugins,
