@@ -8,7 +8,7 @@
  */
 
 import React, {PureComponent} from 'react';
-import {FlexColumn, Text, styled} from '../ui';
+import {Text, styled, Info, VBox} from '../ui';
 
 type Props = {
   errors: Array<Error>;
@@ -21,25 +21,6 @@ const ErrorMessage = styled(Text)({
   whiteSpace: 'pre-line',
   lineHeight: 1.35,
 });
-
-const Padder = styled('div')(
-  ({
-    paddingLeft,
-    paddingRight,
-    paddingBottom,
-    paddingTop,
-  }: {
-    paddingLeft?: number;
-    paddingRight?: number;
-    paddingBottom?: number;
-    paddingTop?: number;
-  }) => ({
-    paddingLeft: paddingLeft || 0,
-    paddingRight: paddingRight || 0,
-    paddingBottom: paddingBottom || 0,
-    paddingTop: paddingTop || 0,
-  }),
-);
 
 const Title = styled(Text)({
   marginBottom: 6,
@@ -65,18 +46,16 @@ export default class Popover extends PureComponent<Props> {
       return null;
     }
     return (
-      <>
-        <Padder paddingBottom={8}>
-          <FlexColumn>
-            <Title bold>
-              The following errors occurred while exporting your data
-            </Title>
-            {this.props.errors.map((e: Error) => (
-              <ErrorMessage code>{formatError(e)}</ErrorMessage>
-            ))}
-          </FlexColumn>
-        </Padder>
-      </>
+      <VBox>
+        <Info type="error">
+          <Title bold>
+            The following errors occurred while exporting your data
+          </Title>
+          {this.props.errors.map((e: Error) => (
+            <ErrorMessage code>{formatError(e)}</ErrorMessage>
+          ))}
+        </Info>
+      </VBox>
     );
   }
 }
