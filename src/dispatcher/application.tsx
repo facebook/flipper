@@ -14,13 +14,14 @@ import {Store} from '../reducers/index.js';
 import {Logger} from '../fb-interfaces/Logger';
 import {parseFlipperPorts} from '../utils/environmentVariables';
 import SupportRequestFormManager from '../fb-stubs/SupportRequestFormManager';
+import SupportRequestFormV2 from '../fb-stubs/SupportRequestFormV2';
 import {
   importDataToStore,
   importFileToStore,
   IMPORT_FLIPPER_TRACE_EVENT,
 } from '../utils/exportData';
 import {tryCatchReportPlatformFailures} from '../utils/metrics';
-
+import GK from '../fb-stubs/GK';
 import {selectPlugin} from '../reducers/connections';
 import qs from 'query-string';
 
@@ -84,7 +85,11 @@ export default (store: Store, logger: Logger) => {
         if (formParam && formParam.toUpperCase() === 'litho'.toUpperCase()) {
           // Right now we just support Litho
           logger.track('usage', 'support-form-source', {source: 'deeplink'});
-          store.dispatch(setStaticView(SupportRequestFormManager));
+          if (GK.get('support_requests_v2')) {
+            store.dispatch(setStaticView(SupportRequestFormV2));
+          } else {
+            store.dispatch(setStaticView(SupportRequestFormManager));
+          }
         }
         return;
       }
