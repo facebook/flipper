@@ -37,10 +37,11 @@ import promiseTimeout from './promiseTimeout';
 import {Idler} from './Idler';
 import {setStaticView} from '../reducers/connections';
 import {
-  SupportFormV2State,
   resetSupportFormV2State,
+  SupportFormRequestDetailsState,
 } from '../reducers/supportForm';
 import {setSelectPluginsToExportActiveSheet} from '../reducers/application';
+import {getCurrentAppName} from '../utils/clientUtils';
 
 export const IMPORT_FLIPPER_TRACE_EVENT = 'import-flipper-trace';
 export const EXPORT_FLIPPER_TRACE_EVENT = 'export-flipper-trace';
@@ -58,7 +59,7 @@ export type ExportType = {
     pluginStates: PluginStatesExportState;
     activeNotifications: Array<PluginNotification>;
   };
-  supportRequestDetails?: SupportFormV2State;
+  supportRequestDetails?: SupportFormRequestDetailsState;
 };
 
 type ProcessPluginStatesOptions = {
@@ -544,7 +545,11 @@ export function exportStore(
         idler,
       );
       if (exportData != null) {
-        exportData.supportRequestDetails = state.supportForm?.supportFormV2;
+        exportData.supportRequestDetails = {
+          ...state.supportForm?.supportFormV2,
+          appName: getCurrentAppName(state.connections.selectedApp),
+        };
+
         statusUpdate && statusUpdate('Serializing Flipper data...');
         const serializedString = JSON.stringify(exportData);
         if (serializedString.length <= 0) {

@@ -39,3 +39,11 @@ export function deviceFromClienID(id: string): string | undefined {
   const device = arr[1];
   return device;
 }
+
+export function getCurrentAppName(client: string | undefined | null): string {
+  if (client) {
+    return appNameFromClienID(client) || '';
+  } else {
+    return '';
+  }
+}

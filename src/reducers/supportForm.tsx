@@ -20,11 +20,13 @@ export type SupportFormV2State = {
   title: string;
   description: string;
   commitHash: string;
-  appName: string;
   screenshots?: MediaType;
   videos?: MediaType;
 };
 
+export type SupportFormRequestDetailsState = SupportFormV2State & {
+  appName: string;
+};
 export type State = {
   webState: NTUsersFormData | null;
   supportFormV2: SupportFormV2State;
