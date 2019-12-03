@@ -261,7 +261,7 @@ type State = {
 };
 class MainSidebar extends PureComponent<Props, State> {
   state: State = {
-    showSupportForm: GK.get('flipper_support_requests'),
+    showSupportForm: GK.get('support_requests_v2'),
     showAllPlugins: false,
   };
   static getDerivedStateFromProps(props: Props, state: State) {
@@ -408,14 +408,11 @@ class MainSidebar extends PureComponent<Props, State> {
         )}
         {this.state.showSupportForm &&
           (function() {
-            const supportRequestFormImpl = GK.get('support_requests_v2')
-              ? SupportRequestFormV2
-              : SupportRequestFormManager;
-            const active = staticView && staticView === supportRequestFormImpl;
+            const active = staticView && staticView === SupportRequestFormV2;
             return (
               <ListItem
                 active={active}
-                onClick={() => setStaticView(supportRequestFormImpl)}>
+                onClick={() => setStaticView(SupportRequestFormV2)}>
                 <PluginIcon
                   color={colors.light50}
                   name={'app-dailies'}
