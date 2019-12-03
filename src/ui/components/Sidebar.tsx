@@ -121,10 +121,14 @@ export default class Sidebar extends Component<SidebarProps, SidebarState> {
     position: 'left',
   };
 
-  componentWillReceiveProps(nextProps: SidebarProps) {
-    if (!this.state.userChange) {
-      this.setState({width: nextProps.width, height: nextProps.height});
+  static getDerivedStateFromProps(
+    nextProps: SidebarProps,
+    state: SidebarState,
+  ) {
+    if (!state.userChange) {
+      return {width: nextProps.width, height: nextProps.height};
     }
+    return null;
   }
 
   onResize = (width: number, height: number) => {

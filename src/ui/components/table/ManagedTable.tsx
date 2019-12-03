@@ -208,7 +208,7 @@ export class ManagedTable extends React.Component<
     document.removeEventListener('keydown', this.onKeyDown);
   }
 
-  componentWillReceiveProps(nextProps: ManagedTableProps) {
+  UNSAFE_componentWillReceiveProps(nextProps: ManagedTableProps) {
     // if columnSizes has changed
     if (nextProps.columnSizes !== this.props.columnSizes) {
       this.setState({

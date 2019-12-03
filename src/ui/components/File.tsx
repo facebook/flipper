@@ -50,10 +50,11 @@ export default class File extends Component<FileProps, FileState> {
     encoding: 'utf8',
   };
 
-  componentWillReceiveProps(nextProps: FileProps) {
+  static getDerivedStateFromProps(nextProps: FileProps) {
     if (nextProps.buffer != null) {
-      this.setState({content: nextProps.buffer, loaded: true});
+      return {content: nextProps.buffer, loaded: true};
     }
+    return null;
   }
 
   componentDidMount() {

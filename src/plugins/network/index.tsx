@@ -420,7 +420,7 @@ class NetworkTable extends PureComponent<NetworkTableProps, NetworkTableState> {
     );
   }
 
-  componentWillReceiveProps(nextProps: NetworkTableProps) {
+  UNSAFE_componentWillReceiveProps(nextProps: NetworkTableProps) {
     this.setState(calculateState(this.props, nextProps, this.state.sortedRows));
   }
 
