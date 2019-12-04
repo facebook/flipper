@@ -181,6 +181,7 @@ const reducer = (state: State = INITAL_STATE, action: Actions): State => {
       const {payload} = action;
       return updateSelection({
         ...state,
+        staticView: null,
         selectedDevice: payload,
         userPreferredDevice: payload
           ? payload.title
