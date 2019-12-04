@@ -378,9 +378,10 @@ function calculateState(
       }
     }
   } else if (props.responses !== nextProps.responses) {
-    // new response
+    // new or updated response
     const resId = Object.keys(nextProps.responses).find(
-      (responseId: RequestId) => !props.responses[responseId],
+      (responseId: RequestId) =>
+        props.responses[responseId] !== nextProps.responses[responseId],
     );
     if (resId) {
       const request = nextProps.requests[resId];
