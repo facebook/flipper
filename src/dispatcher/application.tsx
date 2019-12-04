@@ -56,6 +56,16 @@ export default (store: Store, logger: Logger) => {
     });
   });
 
+  // windowIsFocussed is initialized in the store before the app is fully ready.
+  // So wait until everything is up and running and then check and set the isFocussed state.
+  window.addEventListener('flipper-store-ready', () => {
+    const isFocussed = currentWindow.isFocused();
+    store.dispatch({
+      type: 'windowIsFocused',
+      payload: isFocussed,
+    });
+  });
+
   ipcRenderer.on(
     'flipper-protocol-handler',
     (_event: string, query: string) => {
