@@ -25,6 +25,7 @@ import {
   styled,
   colors,
   SupportRequestFormManager,
+  SupportRequestFormV2,
   constants,
   ReduxState,
 } from 'flipper';
@@ -82,7 +83,11 @@ export default class Layout extends FlipperPlugin<State, any, PersistedState> {
         <FlipperADButton
           type="primary"
           onClick={() => {
-            this.props.setStaticView(SupportRequestFormManager);
+            this.props.setStaticView(
+              GK.get('support_requests_v2')
+                ? SupportRequestFormV2
+                : SupportRequestFormManager,
+            );
           }}>
           Try it out
         </FlipperADButton>
