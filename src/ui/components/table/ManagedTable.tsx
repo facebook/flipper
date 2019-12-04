@@ -615,23 +615,28 @@ export class ManagedTable extends React.Component<
       .filter(notNull);
 
     return (
-      <TableRow
-        key={rows[index].key}
-        columnSizes={columnSizes}
-        columnKeys={columnKeys}
-        onMouseDown={e => this.onHighlight(e, rows[index], index)}
-        onMouseEnter={e => this.onMouseEnterRow(e, rows[index], index)}
-        multiline={multiline}
-        rowLineHeight={24}
-        highlighted={highlightedRows.has(rows[index].key)}
-        row={rows[index]}
-        index={index}
-        style={
-          rows[index].height ? {...style, height: rows[index].height} : style
-        }
-        onAddFilter={onAddFilter}
-        zebra={zebra}
-      />
+      <ContextMenu
+        buildItems={
+          this.props.buildContextMenuItems || this.buildContextMenuItems
+        }>
+        <TableRow
+          key={rows[index].key}
+          columnSizes={columnSizes}
+          columnKeys={columnKeys}
+          onMouseDown={e => this.onHighlight(e, rows[index], index)}
+          onMouseEnter={e => this.onMouseEnterRow(e, rows[index], index)}
+          multiline={multiline}
+          rowLineHeight={24}
+          highlighted={highlightedRows.has(rows[index].key)}
+          row={rows[index]}
+          index={index}
+          style={
+            rows[index].height ? {...style, height: rows[index].height} : style
+          }
+          onAddFilter={onAddFilter}
+          zebra={zebra}
+        />
+      </ContextMenu>
     );
   };
 
