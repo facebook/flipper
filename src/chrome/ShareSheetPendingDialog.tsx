@@ -21,7 +21,6 @@ import React from 'react';
 
 const Container = styled(FlexColumn)({
   padding: 20,
-  width: 500,
 });
 
 const Center = styled(FlexColumn)({
@@ -40,9 +39,10 @@ export default function(props: {
   hideNavButtons?: boolean;
   onCancel?: () => void;
   onRunInBackground?: () => void;
+  width?: number;
 }) {
   return (
-    <Container>
+    <Container style={{width: props.width}}>
       <Center>
         <LoadingIndicator size={30} />
         {props.statusUpdate && props.statusUpdate.length > 0 ? (

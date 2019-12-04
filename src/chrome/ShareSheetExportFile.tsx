@@ -180,6 +180,7 @@ export default class ShareSheetExportFile extends Component<Props, State> {
       <ReactReduxContext.Consumer>
         {({store}) => (
           <ShareSheetPendingDialog
+            width={500}
             statusUpdate={statusUpdate}
             statusMessage="Exporting Flipper trace..."
             onCancel={() => this.cancelAndHide(store)}
