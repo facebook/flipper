@@ -41,7 +41,7 @@ import {
   SupportFormRequestDetailsState,
 } from '../reducers/supportForm';
 import {setSelectPluginsToExportActiveSheet} from '../reducers/application';
-import {getCurrentAppName} from '../utils/clientUtils';
+import {deconstructClientId} from '../utils/clientUtils';
 
 export const IMPORT_FLIPPER_TRACE_EVENT = 'import-flipper-trace';
 export const EXPORT_FLIPPER_TRACE_EVENT = 'export-flipper-trace';
@@ -547,7 +547,10 @@ export function exportStore(
       if (exportData != null) {
         exportData.supportRequestDetails = {
           ...state.supportForm?.supportFormV2,
-          appName: getCurrentAppName(state.connections.selectedApp),
+          appName:
+            state.connections.selectedApp == null
+              ? ''
+              : deconstructClientId(state.connections.selectedApp).app,
         };
 
         statusUpdate && statusUpdate('Serializing Flipper data...');

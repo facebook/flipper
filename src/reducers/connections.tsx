@@ -40,7 +40,7 @@ export type State = {
   androidEmulators: Array<string>;
   selectedDevice: null | BaseDevice;
   selectedPlugin: null | string;
-  selectedApp: null | string | undefined;
+  selectedApp: null | string;
   userPreferredDevice: null | string;
   userPreferredPlugin: null | string;
   userPreferredApp: null | string;
@@ -229,7 +229,7 @@ const reducer = (state: State = INITAL_STATE, action: Actions): State => {
       return updateSelection({
         ...state,
         staticView: null,
-        selectedApp,
+        selectedApp: selectedApp || null,
         selectedPlugin,
         userPreferredPlugin: selectedPlugin || state.userPreferredPlugin,
       });

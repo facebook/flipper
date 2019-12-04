@@ -10,42 +10,28 @@
 import Client from '../Client';
 import BaseDevice from '../devices/BaseDevice';
 
+type ClientIdConstituents = {
+  app: string;
+  os: string;
+  device: string;
+  device_id: string;
+};
+
 export function currentActiveApps(
   clients: Array<Client>,
   selectedDevice: null | BaseDevice,
 ): Array<string> {
   const currentActiveApps: Array<string> = clients
     .map(({id}: {id: string}) => {
-      const appName = appNameFromClienID(id) || '';
-      const device = deviceFromClienID(id) || '';
-      return {appName, device};
+      const appName = deconstructClientId(id).app || '';
+      const os = deconstructClientId(id).os || '';
+      return {appName, os};
     })
     .filter(
-      ({device}: {device: string}) =>
-        device && selectedDevice && device == selectedDevice.os,
+      ({os}: {os: string}) => os && selectedDevice && os == selectedDevice.os,
     )
     .map(client => client.appName);
   return currentActiveApps;
-}
-
-export function appNameFromClienID(id: string): string | undefined {
-  const arr = id.split('#');
-  const appName = arr[0];
-  return appName;
-}
-
-export function deviceFromClienID(id: string): string | undefined {
-  const arr = id.split('#');
-  const device = arr[1];
-  return device;
-}
-
-export function getCurrentAppName(client: string | undefined | null): string {
-  if (client) {
-    return appNameFromClienID(client) || '';
-  } else {
-    return '';
-  }
 }
 
 export function buildClientId(clientInfo: {
@@ -55,4 +41,17 @@ export function buildClientId(clientInfo: {
   device_id: string;
 }): string {
   return `${clientInfo.app}#${clientInfo.os}#${clientInfo.device}#${clientInfo.device_id}`;
+}
+
+export function deconstructClientId(clientId: string): ClientIdConstituents {
+  if (!clientId || clientId.split('#').length !== 4) {
+    console.error(`Attempted to deconstruct invalid clientId: "${clientId}"`);
+  }
+  const [app, os, device, device_id] = clientId.split('#');
+  return {
+    app,
+    os,
+    device,
+    device_id,
+  };
 }
