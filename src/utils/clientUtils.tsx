@@ -47,3 +47,12 @@ export function getCurrentAppName(client: string | undefined | null): string {
     return '';
   }
 }
+
+export function buildClientId(clientInfo: {
+  app: string;
+  os: string;
+  device: string;
+  device_id: string;
+}): string {
+  return `${clientInfo.app}#${clientInfo.os}#${clientInfo.device}#${clientInfo.device_id}`;
+}

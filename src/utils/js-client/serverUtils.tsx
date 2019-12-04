@@ -17,6 +17,7 @@ import {Logger} from 'src/fb-interfaces/Logger';
 import {Payload, ConnectionStatus, ISubscriber} from 'rsocket-types';
 import {Flowable, Single} from 'rsocket-flowable';
 import Server from 'src/server';
+import {buildClientId} from '../clientUtils';
 
 const connections: Map<number, JSClientFlipperConnection<any>> = new Map();
 
@@ -59,7 +60,7 @@ export function initJsEmulatorIPC(
         device_id: jsDeviceId(windowId),
         sdk_version: 2, // hack to bybass callbacks in Client, will be fixed when JS Connection will be fully implemented
       };
-      const clientId = `${query.app}#${query.os}#${query.device}#${query.device_id}`;
+      const clientId = buildClientId(query);
 
       const client = new Client(
         clientId,
