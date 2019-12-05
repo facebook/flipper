@@ -80,7 +80,7 @@ class SignInSheet extends Component<Props, State> {
         this.props.onHide();
       } catch (error) {
         console.error(error);
-        this.setState({token: '', loading: false, error});
+        this.setState({token: '', loading: false, error: `${error}`});
       }
     }
   };
@@ -103,6 +103,7 @@ class SignInSheet extends Component<Props, State> {
           value={this.state.token}
           onChange={e => this.setState({token: e.target.value})}
         />
+        <br />
         {this.state.error && (
           <InfoText color={colors.red}>
             <strong>Error:</strong>&nbsp;{this.state.error}
