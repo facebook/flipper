@@ -130,7 +130,7 @@ export default class FileList extends Component<FileListProps, FileListState> {
     });
   }
 
-  componentWillReceiveProps(nextProps: FileListProps) {
+  UNSAFE_componentWillReceiveProps(nextProps: FileListProps) {
     if (nextProps.src !== this.props.src) {
       this.initialFetch(nextProps);
     }

@@ -16,10 +16,12 @@ import FlexRow from './FlexRow';
  * It takes two children, 'left' and 'right'. One is assumed to have a fixed (or minimum) size,
  * and the other will grow automatically
  */
-const HBoxContainer = styled(FlexRow)({
-  shrink: 0,
-  alignItems: 'center',
-});
+const HBoxContainer = styled(FlexRow)(
+  ({verticalAlign}: {verticalAlign: string}) => ({
+    shrink: 0,
+    alignItems: verticalAlign,
+  }),
+);
 
 HBoxContainer.displayName = 'HBoxContainer';
 
@@ -27,7 +29,8 @@ const HBox: React.FC<{
   children: [] | [React.ReactNode] | [React.ReactNode, React.ReactNode];
   grow?: 'left' | 'right' | 'auto';
   childWidth?: number;
-}> = ({children, grow, childWidth}) => {
+  verticalAlign?: 'center' | 'top';
+}> = ({children, grow, childWidth, verticalAlign}) => {
   if (children.length > 2) {
     throw new Error('HBox expects at most 2 children');
   }
@@ -39,31 +42,31 @@ const HBox: React.FC<{
     shrink: 0,
   };
   const growStyle = {
-    width: '100%',
-    shrink: 1,
-    grow: 1,
+    flexShrink: 1,
+    flexGrow: 1,
     display: 'flex',
     flexDirection: 'column',
   } as const;
+  const vAlign = verticalAlign === 'top' ? 'normal' : 'center';
 
   switch (grow) {
     case 'right':
       return (
-        <HBoxContainer>
+        <HBoxContainer verticalAlign={vAlign}>
           <div style={{...fixedStyle, marginRight: 8}}>{left}</div>
           <div style={growStyle}>{right}</div>
         </HBoxContainer>
       );
     case 'left':
       return (
-        <HBoxContainer>
+        <HBoxContainer verticalAlign={vAlign}>
           <div style={growStyle}>{left}</div>
           <div style={{...fixedStyle, marginLeft: 8}}>{right}</div>
         </HBoxContainer>
       );
     default:
       return (
-        <HBoxContainer>
+        <HBoxContainer verticalAlign={vAlign}>
           <div style={growStyle}>{left}</div>
           <div style={{...growStyle, marginLeft: 8}}>{right}</div>
         </HBoxContainer>
@@ -73,6 +76,7 @@ const HBox: React.FC<{
 HBox.defaultProps = {
   grow: 'right',
   childWidth: 0,
+  verticalAlign: 'center',
 };
 
 HBox.displayName = 'HBox';

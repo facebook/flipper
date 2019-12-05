@@ -15,6 +15,7 @@ import android.os.Build;
 import android.util.Log;
 import androidx.core.content.ContextCompat;
 import com.facebook.flipper.core.FlipperClient;
+import com.facebook.flipper.BuildConfig;
 
 public final class AndroidFlipperClient {
   private static boolean sIsInitialized = false;
@@ -25,6 +26,10 @@ public final class AndroidFlipperClient {
 
   public static synchronized FlipperClient getInstance(Context context) {
     if (!sIsInitialized) {
+      if (!BuildConfig.IS_INTERNAL_BUILD) {
+        Log.e("Flipper", "Attempted to initialize in non-internal build");
+        return null;
+      }
       checkRequiredPermissions(context);
       sFlipperThread = new FlipperThread("FlipperEventBaseThread");
       sFlipperThread.start();

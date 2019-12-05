@@ -11,7 +11,7 @@ import os from 'os';
 import path from 'path';
 import electron from 'electron';
 import {getInstance as getLogger} from '../fb-stubs/Logger';
-import {Store, MiddlewareAPI} from '../reducers';
+import {Store, State as ReduxState} from '../reducers';
 import {DeviceExport} from '../devices/BaseDevice';
 import {State as PluginStatesState} from '../reducers/pluginStates';
 import {PluginNotification} from '../reducers/notifications';
@@ -37,10 +37,11 @@ import promiseTimeout from './promiseTimeout';
 import {Idler} from './Idler';
 import {setStaticView} from '../reducers/connections';
 import {
-  SupportFormV2State,
   resetSupportFormV2State,
+  SupportFormRequestDetailsState,
 } from '../reducers/supportForm';
 import {setSelectPluginsToExportActiveSheet} from '../reducers/application';
+import {deconstructClientId} from '../utils/clientUtils';
 
 export const IMPORT_FLIPPER_TRACE_EVENT = 'import-flipper-trace';
 export const EXPORT_FLIPPER_TRACE_EVENT = 'export-flipper-trace';
@@ -58,7 +59,7 @@ export type ExportType = {
     pluginStates: PluginStatesExportState;
     activeNotifications: Array<PluginNotification>;
   };
-  supportRequestDetails?: SupportFormV2State;
+  supportRequestDetails?: SupportFormRequestDetailsState;
 };
 
 type ProcessPluginStatesOptions = {
@@ -397,13 +398,13 @@ export async function fetchMetadata(
   clients: Client[],
   pluginStates: PluginStatesState,
   pluginsMap: Map<string, typeof FlipperDevicePlugin | typeof FlipperPlugin>,
-  store: MiddlewareAPI,
+  state: ReduxState,
   statusUpdate?: (msg: string) => void,
   idler?: Idler,
 ): Promise<{pluginStates: PluginStatesState; errorArray: Array<Error>}> {
   const newPluginState = {...pluginStates};
   const errorArray: Array<Error> = [];
-  const selectedDevice = store.getState().connections.selectedDevice;
+  const selectedDevice = state.connections.selectedDevice;
   for (const client of clients) {
     if (
       !selectedDevice ||
@@ -412,7 +413,7 @@ export async function fetchMetadata(
     ) {
       continue;
     }
-    const selectedPlugins = store.getState().plugins.selectedPlugins;
+    const selectedPlugins = state.plugins.selectedPlugins;
     const selectedFilteredPlugins =
       selectedPlugins.length > 0
         ? client.plugins.filter(plugin => selectedPlugins.includes(plugin))
@@ -436,7 +437,7 @@ export async function fetchMetadata(
             exportState(
               callClient(client, plugin),
               newPluginState[key],
-              store,
+              state,
               idler,
               statusUpdate,
             ),
@@ -462,18 +463,17 @@ export async function fetchMetadata(
 }
 
 export async function getStoreExport(
-  store: MiddlewareAPI,
+  state: ReduxState,
   statusUpdate?: (msg: string) => void,
   idler?: Idler,
 ): Promise<{exportData: ExportType | null; errorArray: Array<Error>}> {
-  const state = store.getState();
   const {clients} = state.connections;
   const client = clients.find(
     client => client.id === state.connections.selectedApp,
   );
   const {pluginStates} = state;
   const {plugins} = state;
-  const {selectedDevice} = store.getState().connections;
+  const {selectedDevice} = state.connections;
   if (!selectedDevice) {
     throw new Error('Please select a device before exporting data.');
   }
@@ -500,18 +500,18 @@ export async function getStoreExport(
     [client],
     pluginStates,
     pluginsMap,
-    store,
+    state,
     statusUpdate,
     idler,
   );
   getLogger().trackTimeSince(fetchMetaDataMarker, fetchMetaDataMarker, {
-    plugins: store.getState().plugins.selectedPlugins,
+    plugins: state.plugins.selectedPlugins,
   });
   const {errorArray} = metadata;
   const newPluginState = metadata.pluginStates;
 
-  const {activeNotifications} = store.getState().notifications;
-  const {devicePlugins, clientPlugins} = store.getState().plugins;
+  const {activeNotifications} = state.notifications;
+  const {devicePlugins, clientPlugins} = state.plugins;
   const exportData = await processStore(
     {
       activeNotifications,
@@ -521,7 +521,7 @@ export async function getStoreExport(
       devicePlugins,
       clientPlugins,
       salt: uuid.v4(),
-      selectedPlugins: store.getState().plugins.selectedPlugins,
+      selectedPlugins: state.plugins.selectedPlugins,
       statusUpdate,
     },
     idler,
@@ -530,7 +530,7 @@ export async function getStoreExport(
 }
 
 export function exportStore(
-  store: MiddlewareAPI,
+  state: ReduxState,
   idler?: Idler,
   statusUpdate?: (msg: string) => void,
 ): Promise<{serializedString: string; errorArray: Array<Error>}> {
@@ -540,12 +540,19 @@ export function exportStore(
     try {
       statusUpdate && statusUpdate('Preparing to export Flipper data...');
       const {exportData, errorArray} = await getStoreExport(
-        store,
+        state,
         statusUpdate,
         idler,
       );
       if (exportData != null) {
-        exportData.supportRequestDetails = store.getState().supportForm?.supportFormV2;
+        exportData.supportRequestDetails = {
+          ...state.supportForm?.supportFormV2,
+          appName:
+            state.connections.selectedApp == null
+              ? ''
+              : deconstructClientId(state.connections.selectedApp).app,
+        };
+
         statusUpdate && statusUpdate('Serializing Flipper data...');
         const serializedString = JSON.stringify(exportData);
         if (serializedString.length <= 0) {
@@ -555,7 +562,7 @@ export function exportStore(
           EXPORT_FLIPPER_TRACE_TIME_SERIALIZATION_EVENT,
           EXPORT_FLIPPER_TRACE_TIME_SERIALIZATION_EVENT,
           {
-            plugins: store.getState().plugins.selectedPlugins,
+            plugins: state.plugins.selectedPlugins,
           },
         );
         resolve({serializedString, errorArray});
@@ -575,7 +582,7 @@ export const exportStoreToFile = (
   idler?: Idler,
   statusUpdate?: (msg: string) => void,
 ): Promise<{errorArray: Array<Error>}> => {
-  return exportStore(store, idler, statusUpdate).then(
+  return exportStore(store.getState(), idler, statusUpdate).then(
     ({serializedString, errorArray}) => {
       return promisify(fs.writeFile)(exportFilePath, serializedString).then(
         () => {
@@ -690,9 +697,8 @@ export function showOpenDialog(store: Store) {
     properties: ['openFile'],
     filters: [{extensions: ['flipper', 'json', 'txt'], name: 'Flipper files'}],
   };
-  remote.dialog.showOpenDialog(options).then(result => {
-    const filePaths = result.filePaths;
-    if (filePaths.length > 0) {
+  remote.dialog.showOpenDialog(options, (filePaths?: Array<string>) => {
+    if (filePaths !== undefined && filePaths.length > 0) {
       tryCatchReportPlatformFailures(() => {
         importFileToStore(filePaths[0], store);
       }, `${IMPORT_FLIPPER_TRACE_EVENT}:UI`);
@@ -701,17 +707,14 @@ export function showOpenDialog(store: Store) {
 }
 
 export function startFileExport(dispatch: Store['dispatch']) {
-  electron.remote.dialog
-    .showSaveDialog(
-      // @ts-ignore This appears to work but isn't allowed by the types
-      null,
-      {
-        title: 'FlipperExport',
-        defaultPath: path.join(os.homedir(), 'FlipperExport.flipper'),
-      },
-    )
-    .then(async (result: electron.SaveDialogReturnValue) => {
-      const file = result.filePath;
+  electron.remote.dialog.showSaveDialog(
+    // @ts-ignore This appears to work but isn't allowed by the types
+    null,
+    {
+      title: 'FlipperExport',
+      defaultPath: path.join(os.homedir(), 'FlipperExport.flipper'),
+    },
+    async (file: string) => {
       if (!file) {
         return;
       }
@@ -722,7 +725,8 @@ export function startFileExport(dispatch: Store['dispatch']) {
           closeOnFinish: false,
         }),
       );
-    });
+    },
+  );
 }
 
 export function startLinkExport(dispatch: Store['dispatch']) {

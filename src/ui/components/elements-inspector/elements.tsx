@@ -464,15 +464,7 @@ export class Elements extends PureComponent<ElementsProps, ElementsState> {
     };
   }
 
-  componentDidMount() {
-    this.setProps(this.props);
-  }
-
-  componentWillReceiveProps(nextProps: ElementsProps) {
-    this.setProps(nextProps);
-  }
-
-  setProps(props: ElementsProps) {
+  static getDerivedStateFromProps(props: ElementsProps) {
     const flatElements: FlatElements = [];
     const flatKeys: Array<ElementID> = [];
 
@@ -509,7 +501,7 @@ export class Elements extends PureComponent<ElementsProps, ElementsState> {
       seed(props.root, 1);
     }
 
-    this.setState({flatElements, flatKeys, maxDepth});
+    return {flatElements, flatKeys, maxDepth};
   }
 
   selectElement = (key: ElementID) => {

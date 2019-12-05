@@ -53,6 +53,7 @@ class FlipperConnectionManagerImpl : public FlipperConnectionManager {
 
  private:
   bool isOpen_ = false;
+  bool isStarted_ = false;
   Callbacks* callbacks_;
   DeviceData deviceData_;
   std::shared_ptr<FlipperState> flipperState_;

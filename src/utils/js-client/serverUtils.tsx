@@ -17,6 +17,7 @@ import {Logger} from 'src/fb-interfaces/Logger';
 import {Payload, ConnectionStatus, ISubscriber} from 'rsocket-types';
 import {Flowable, Single} from 'rsocket-flowable';
 import Server from 'src/server';
+import {buildClientId} from '../clientUtils';
 
 const connections: Map<number, JSClientFlipperConnection<any>> = new Map();
 
@@ -38,81 +39,87 @@ export function initJsEmulatorIPC(
     }
   >,
 ) {
-  ipcRenderer.on('from-js-emulator-init-client', (_event, message) => {
-    const {windowId} = message;
-    const {plugins, appName} = message.payload;
-    store.dispatch({
-      type: 'REGISTER_DEVICE',
-      payload: new JSDevice(jsDeviceId(windowId), 'jsEmulator', windowId),
-    });
-
-    const connection = new JSClientFlipperConnection(windowId);
-    connections.set(windowId, connection);
-    availablePlugins.set(windowId, plugins);
-
-    const query: ClientQuery = {
-      app: appName,
-      os: 'JSWebApp',
-      device: 'jsEmulator',
-      device_id: jsDeviceId(windowId),
-      sdk_version: 2, // hack to bybass callbacks in Client, will be fixed when JS Connection will be fully implemented
-    };
-    const clientId = `${query.app}#${query.os}#${query.device}#${query.device_id}`;
-
-    const client = new Client(
-      clientId,
-      query,
-      connection,
-      logger,
-      store,
-      plugins,
-    );
-
-    flipperConnections.set(clientId, {connection: connection, client: client});
-
-    connection.connectionStatus().subscribe({
-      onNext(payload) {
-        if (payload.kind == 'ERROR' || payload.kind == 'CLOSED') {
-          console.debug(`Device disconnected ${client.id}`, 'server');
-          flipperServer.removeConnection(client.id);
-          const toUnregister = new Set<string>();
-          toUnregister.add(jsDeviceId(windowId));
-          store.dispatch({
-            type: 'UNREGISTER_DEVICES',
-            payload: toUnregister,
-          });
-          connections.delete(windowId);
-          availablePlugins.delete(windowId);
-        }
-      },
-      onSubscribe(subscription) {
-        subscription.request(Number.MAX_SAFE_INTEGER);
-      },
-    });
-
-    client.init().then(() => {
-      console.log(client);
-      flipperServer.emit('new-client', client);
-      flipperServer.emit('clients-change');
-      client.emit('plugins-change');
-
-      ipcRenderer.on('from-js-emulator', (_event, message) => {
-        const {command, payload} = message;
-        if (command === 'sendFlipperObject') {
-          client.onMessage(
-            JSON.stringify({
-              params: {
-                api: payload.api,
-                method: payload.method,
-                params: JSON.parse(payload.params),
-              },
-              method: 'execute',
-            }),
-          );
-        }
+  ipcRenderer.on(
+    'from-js-emulator-init-client',
+    (_event: string, message: any) => {
+      const {windowId} = message;
+      const {plugins, appName} = message.payload;
+      store.dispatch({
+        type: 'REGISTER_DEVICE',
+        payload: new JSDevice(jsDeviceId(windowId), 'jsEmulator', windowId),
       });
-    });
-  });
+
+      const connection = new JSClientFlipperConnection(windowId);
+      connections.set(windowId, connection);
+      availablePlugins.set(windowId, plugins);
+
+      const query: ClientQuery = {
+        app: appName,
+        os: 'JSWebApp',
+        device: 'jsEmulator',
+        device_id: jsDeviceId(windowId),
+        sdk_version: 2, // hack to bybass callbacks in Client, will be fixed when JS Connection will be fully implemented
+      };
+      const clientId = buildClientId(query);
+
+      const client = new Client(
+        clientId,
+        query,
+        connection,
+        logger,
+        store,
+        plugins,
+      );
+
+      flipperConnections.set(clientId, {
+        connection: connection,
+        client: client,
+      });
+
+      connection.connectionStatus().subscribe({
+        onNext(payload) {
+          if (payload.kind == 'ERROR' || payload.kind == 'CLOSED') {
+            console.debug(`Device disconnected ${client.id}`, 'server');
+            flipperServer.removeConnection(client.id);
+            const toUnregister = new Set<string>();
+            toUnregister.add(jsDeviceId(windowId));
+            store.dispatch({
+              type: 'UNREGISTER_DEVICES',
+              payload: toUnregister,
+            });
+            connections.delete(windowId);
+            availablePlugins.delete(windowId);
+          }
+        },
+        onSubscribe(subscription) {
+          subscription.request(Number.MAX_SAFE_INTEGER);
+        },
+      });
+
+      client.init().then(() => {
+        console.log(client);
+        flipperServer.emit('new-client', client);
+        flipperServer.emit('clients-change');
+        client.emit('plugins-change');
+
+        ipcRenderer.on('from-js-emulator', (_event: string, message: any) => {
+          const {command, payload} = message;
+          if (command === 'sendFlipperObject') {
+            client.onMessage(
+              JSON.stringify({
+                params: {
+                  api: payload.api,
+                  method: payload.method,
+                  params: JSON.parse(payload.params),
+                },
+                method: 'execute',
+              }),
+            );
+          }
+        });
+      });
+    },
+  );
 }
 
 export function launchJsEmulator(url: string, height: number, width: number) {

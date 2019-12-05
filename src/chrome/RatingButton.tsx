@@ -95,7 +95,7 @@ const Spacer = styled(FlexColumn)({
 
 function dismissRow(dismiss: () => void) {
   return (
-    <DismissRow>
+    <DismissRow key="dismiss">
       <Spacer />
       <DismissButton onClick={dismiss}>Dismiss</DismissButton>
       <Spacer />
@@ -204,16 +204,19 @@ class FeedbackComponent extends Component<
     switch (this.state.nextAction) {
       case 'select-rating':
         body = [
-          <Row>{this.props.promptData.bodyText}</Row>,
-          <Row style={{margin: 'auto'}}>{stars}</Row>,
+          <Row key="bodyText">{this.props.promptData.bodyText}</Row>,
+          <Row key="stars" style={{margin: 'auto'}}>
+            {stars}
+          </Row>,
           dismissRow(this.props.dismiss),
         ];
         break;
       case 'leave-comment':
         const predefinedComments = Object.entries(
           this.state.predefinedComments,
-        ).map((c: [string, unknown]) => (
+        ).map((c: [string, unknown], idx: number) => (
           <PredefinedComment
+            key={idx}
             comment={c[0]}
             selected={Boolean(c[1])}
             onClick={() =>
@@ -227,8 +230,8 @@ class FeedbackComponent extends Component<
           />
         ));
         body = [
-          <Row>{predefinedComments}</Row>,
-          <Row>
+          <Row key="predefinedComments">{predefinedComments}</Row>,
+          <Row key="inputRow">
             <Input
               style={{height: 30, width: '100%'}}
               placeholder={this.props.promptData.commentPlaceholder}
@@ -240,14 +243,14 @@ class FeedbackComponent extends Component<
               autoFocus={true}
             />
           </Row>,
-          <Row>
+          <Row key="contactCheckbox">
             <Checkbox
               checked={this.state.allowUserInfoSharing}
               onChange={this.onAllowUserSharingChanged.bind(this)}
             />
             {'Tool owner can contact me '}
           </Row>,
-          <Row>
+          <Row key="submit">
             <Button onClick={() => this.onCommentSubmitted(this.state.comment)}>
               Submit
             </Button>
@@ -256,7 +259,7 @@ class FeedbackComponent extends Component<
         ];
         break;
       case 'finished':
-        body = [<Row>Thanks!</Row>];
+        body = [<Row key="thanks">Thanks!</Row>];
         break;
       default: {
         console.error('Illegal state: nextAction: ' + this.state.nextAction);
@@ -272,7 +275,7 @@ class FeedbackComponent extends Component<
           paddingTop: 10,
           paddingBottom: 10,
         }}>
-        <Row style={{color: 'black', fontSize: 20}}>
+        <Row key="heading" style={{color: 'black', fontSize: 20}}>
           {this.state.nextAction === 'finished'
             ? this.props.promptData.postSubmitHeading
             : this.props.promptData.preSubmitHeading}

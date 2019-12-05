@@ -16,7 +16,7 @@ jobs:
       with:
         java-version: 1.8
     - name: Build with Gradle
-      run: ./gradlew sample:assembleDebug
+      run: ./gradlew :sample:assembleDebug :sample:assembleRelease
     - name: Rename apk
       run: mv android/sample/build/outputs/apk/debug/sample-debug.apk SampleApp-android.apk
     - name: Upload

@@ -104,7 +104,6 @@ export default class Popover extends PureComponent<Props> {
           opts={this.props.forceOpts || {}}>
           {this.props.children}
         </PopoverContainer>
-        ,
       </>
     );
   }

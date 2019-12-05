@@ -26,6 +26,7 @@ import net, {Socket} from 'net';
 import {Responder, Payload, ReactiveSocket} from 'rsocket-types';
 import GK from './fb-stubs/GK';
 import {initJsEmulatorIPC} from './utils/js-client/serverUtils';
+import {buildClientId} from './utils/clientUtils';
 
 type ClientInfo = {
   connection: FlipperClientConnection<any, any> | null | undefined;
@@ -334,7 +335,12 @@ class Server extends EventEmitter {
       query.device_id = csrId;
       query.app = appNameWithUpdateHint(query);
 
-      const id = `${query.app}#${query.os}#${query.device}#${csrId}`;
+      const id = buildClientId({
+        app: query.app,
+        os: query.os,
+        device: query.device,
+        device_id: csrId,
+      });
       console.debug(`Device connected: ${id}`, 'server');
 
       const client = new Client(id, query, conn, this.logger, this.store);

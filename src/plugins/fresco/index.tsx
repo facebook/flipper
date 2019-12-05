@@ -19,7 +19,7 @@ import {
 } from './api';
 import {Fragment} from 'react';
 import {ImagesMap} from './ImagePool';
-import {MetricType, MiddlewareAPI} from 'flipper';
+import {MetricType, ReduxState} from 'flipper';
 import React from 'react';
 import ImagesCacheOverview from './ImagesCacheOverview';
 import {
@@ -101,7 +101,7 @@ export default class FlipperImagesPlugin extends FlipperPlugin<
   static exportPersistedState = (
     callClient: (method: string, params?: any) => Promise<any>,
     persistedState: PersistedState,
-    store?: MiddlewareAPI,
+    store?: ReduxState,
   ): Promise<PersistedState> => {
     const defaultPromise = Promise.resolve(persistedState);
     if (!persistedState) {

@@ -68,7 +68,7 @@ class ScreenCaptureButtons extends Component<Props, State> {
     this.checkIfRecordingIsAvailable();
   }
 
-  componentWillReceiveProps(nextProps: Props) {
+  UNSAFE_componentWillReceiveProps(nextProps: Props) {
     if (nextProps.selectedDevice !== this.props.selectedDevice) {
       this.checkIfRecordingIsAvailable(nextProps);
     }

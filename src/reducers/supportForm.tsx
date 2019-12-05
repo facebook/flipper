@@ -8,15 +8,25 @@
  */
 
 import {Actions} from './';
+type SubmediaType =
+  | {uploadID: string; status: 'Uploaded'}
+  | {status: 'NotUploaded' | 'Uploading'};
+type MediaObject = SubmediaType & {
+  description: string;
+  path: string;
+};
+export type MediaType = Array<MediaObject>;
 export type SupportFormV2State = {
   title: string;
   description: string;
   commitHash: string;
-  appName: string;
-  screenshots?: {image: string; description: string}[];
-  videos?: {url: string; description: string}[];
+  screenshots?: MediaType;
+  videos?: MediaType;
 };
 
+export type SupportFormRequestDetailsState = SupportFormV2State & {
+  appName: string;
+};
 export type State = {
   webState: NTUsersFormData | null;
   supportFormV2: SupportFormV2State;

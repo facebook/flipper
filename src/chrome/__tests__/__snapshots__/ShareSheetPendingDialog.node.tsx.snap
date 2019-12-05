@@ -2,7 +2,12 @@
 
 exports[`ShareSheetPendingDialog is rendered with status update 1`] = `
 <div
-  className="css-1uu1nb5"
+  className="css-ha9vz3"
+  style={
+    Object {
+      "width": undefined,
+    }
+  }
 >
   <div
     className="css-mgujkx"
@@ -47,7 +52,12 @@ exports[`ShareSheetPendingDialog is rendered with status update 1`] = `
 
 exports[`ShareSheetPendingDialog is rendered without status update 1`] = `
 <div
-  className="css-1uu1nb5"
+  className="css-ha9vz3"
+  style={
+    Object {
+      "width": undefined,
+    }
+  }
 >
   <div
     className="css-mgujkx"
@@ -59,7 +69,9 @@ exports[`ShareSheetPendingDialog is rendered without status update 1`] = `
     <span
       className="css-91luyc"
       color="#6f6f6f"
-    />
+    >
+      wubba lubba dub dub
+    </span>
   </div>
   <div
     className="css-a1glw"

@@ -21,9 +21,7 @@ class EventBase extends HybridClassBase {
   }
 
   EventBase() {
-    if (BuildConfig.IS_INTERNAL_BUILD) {
-      initHybrid();
-    }
+    initHybrid();
   }
 
   @DoNotStrip

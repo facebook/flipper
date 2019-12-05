@@ -164,16 +164,6 @@ class DevicesButton extends Component<Props> {
 
       // Launch JS emulator
       if (GK.get('flipper_js_client_emulator')) {
-        if (emulators.length > 0) {
-          dropdown.push(
-            {type: 'separator' as 'separator'},
-            {
-              label: 'Launch Android emulators',
-              enabled: false,
-            },
-            ...emulators,
-          );
-        }
         dropdown.push(
           {type: 'separator' as 'separator'},
           {
@@ -181,6 +171,17 @@ class DevicesButton extends Component<Props> {
             click: () =>
               this.props.setActiveSheet(ACTIVE_SHEET_JS_EMULATOR_LAUNCHER),
           },
+        );
+      }
+
+      if (emulators.length > 0) {
+        dropdown.push(
+          {type: 'separator' as 'separator'},
+          {
+            label: 'Launch Android emulators',
+            enabled: false,
+          },
+          ...emulators,
         );
       }
     }

@@ -37,7 +37,7 @@ const color = {
 };
 
 const bgColor = {
-  info: 'transparent',
+  info: colors.cyanTint,
   warning: colors.yellowTint,
   error: colors.redTint,
   spinning: 'transparent',
@@ -73,7 +73,7 @@ function Info({type, children, small}: InfoProps) {
             variant="filled"
           />
         )}
-        <>{children}</>
+        <div>{children}</div>
       </HBox>
     </InfoWrapper>
   );

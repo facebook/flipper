@@ -65,8 +65,9 @@ class LocationsButton extends Component<Props, State> {
     retreivingBookmarks: false,
   };
 
-  componentWillMount() {
+  componentDidMount() {
     document.addEventListener('keydown', this.keyDown);
+    this.updateBookmarks();
   }
 
   componentWillUnmount() {
@@ -100,10 +101,6 @@ class LocationsButton extends Component<Props, State> {
       this.setState({bookmarks});
     });
   };
-
-  componentDidMount() {
-    this.updateBookmarks();
-  }
 
   render() {
     const {currentURI} = this.props;

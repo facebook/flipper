@@ -212,7 +212,7 @@ export default class extends PureComponent<Props, State> {
 
   treeContainer: any = null;
 
-  componentWillReceiveProps(props: Props) {
+  UNSAFE_componentWillReceiveProps(props: Props) {
     if (this.props.data === props.data) {
       return;
     }

@@ -7,20 +7,21 @@
  * @format
  */
 
-import {remote, ipcRenderer, IpcRendererEvent} from 'electron';
+import {remote, ipcRenderer} from 'electron';
 import {toggleAction} from '../reducers/application';
 import {setStaticView} from '../reducers/connections';
 import {Store} from '../reducers/index.js';
 import {Logger} from '../fb-interfaces/Logger';
 import {parseFlipperPorts} from '../utils/environmentVariables';
 import SupportRequestFormManager from '../fb-stubs/SupportRequestFormManager';
+import SupportRequestFormV2 from '../fb-stubs/SupportRequestFormV2';
 import {
   importDataToStore,
   importFileToStore,
   IMPORT_FLIPPER_TRACE_EVENT,
 } from '../utils/exportData';
 import {tryCatchReportPlatformFailures} from '../utils/metrics';
-
+import GK from '../fb-stubs/GK';
 import {selectPlugin} from '../reducers/connections';
 import qs from 'query-string';
 
@@ -55,9 +56,19 @@ export default (store: Store, logger: Logger) => {
     });
   });
 
+  // windowIsFocussed is initialized in the store before the app is fully ready.
+  // So wait until everything is up and running and then check and set the isFocussed state.
+  window.addEventListener('flipper-store-ready', () => {
+    const isFocussed = currentWindow.isFocused();
+    store.dispatch({
+      type: 'windowIsFocused',
+      payload: isFocussed,
+    });
+  });
+
   ipcRenderer.on(
     'flipper-protocol-handler',
-    (_event: IpcRendererEvent, query: string) => {
+    (_event: string, query: string) => {
       const uri = new URL(query);
       if (query.startsWith('flipper://import')) {
         const {search} = new URL(query);
@@ -84,7 +95,11 @@ export default (store: Store, logger: Logger) => {
         if (formParam && formParam.toUpperCase() === 'litho'.toUpperCase()) {
           // Right now we just support Litho
           logger.track('usage', 'support-form-source', {source: 'deeplink'});
-          store.dispatch(setStaticView(SupportRequestFormManager));
+          if (GK.get('support_requests_v2')) {
+            store.dispatch(setStaticView(SupportRequestFormV2));
+          } else {
+            store.dispatch(setStaticView(SupportRequestFormManager));
+          }
         }
         return;
       }
@@ -102,14 +117,11 @@ export default (store: Store, logger: Logger) => {
     },
   );
 
-  ipcRenderer.on(
-    'open-flipper-file',
-    (_event: IpcRendererEvent, url: string) => {
-      tryCatchReportPlatformFailures(() => {
-        return importFileToStore(url, store);
-      }, `${IMPORT_FLIPPER_TRACE_EVENT}:Deeplink`);
-    },
-  );
+  ipcRenderer.on('open-flipper-file', (_event: string, url: string) => {
+    tryCatchReportPlatformFailures(() => {
+      return importFileToStore(url, store);
+    }, `${IMPORT_FLIPPER_TRACE_EVENT}:Deeplink`);
+  });
 
   if (process.env.FLIPPER_PORTS) {
     const portOverrides = parseFlipperPorts(process.env.FLIPPER_PORTS);

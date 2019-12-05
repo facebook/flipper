@@ -15,7 +15,10 @@ import FlexColumn from './FlexColumn';
 /**
  * Vertically arranged section that starts with a label and includes standard margins
  */
-const Labeled: React.FC<{title: string}> = ({title, children}) => (
+const Labeled: React.FC<{title: string | React.ReactNode}> = ({
+  title,
+  children,
+}) => (
   <VBox>
     <Label style={{marginBottom: 6}}>{title}</Label>
     <FlexColumn>{children}</FlexColumn>

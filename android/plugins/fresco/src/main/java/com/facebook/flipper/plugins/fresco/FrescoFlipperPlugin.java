@@ -9,8 +9,12 @@ package com.facebook.flipper.plugins.fresco;
 
 import android.graphics.Bitmap;
 import android.util.Base64;
+import android.util.Pair;
 import com.facebook.cache.common.CacheKey;
+import com.facebook.common.internal.ByteStreams;
 import com.facebook.common.internal.Predicate;
+import com.facebook.common.memory.PooledByteBuffer;
+import com.facebook.common.memory.PooledByteBufferInputStream;
 import com.facebook.common.memory.manager.DebugMemoryManager;
 import com.facebook.common.memory.manager.NoOpDebugMemoryManager;
 import com.facebook.common.references.CloseableReference;
@@ -38,6 +42,7 @@ import com.facebook.imagepipeline.debug.DebugImageTracker;
 import com.facebook.imagepipeline.debug.FlipperImageTracker;
 import com.facebook.imagepipeline.image.CloseableBitmap;
 import com.facebook.imagepipeline.image.CloseableImage;
+import com.facebook.imageutils.BitmapUtil;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -159,15 +164,17 @@ public class FrescoFlipperPlugin extends BufferingFlipperPlugin
 
             mPerfLogger.startMarker("Sonar.Fresco.listImages");
             final ImagePipelineFactory imagePipelineFactory = Fresco.getImagePipelineFactory();
-            final CountingMemoryCacheInspector.DumpInfo memoryCache =
+
+            final CountingMemoryCacheInspector.DumpInfo bitmapMemoryCache =
                 new CountingMemoryCacheInspector<>(
                         imagePipelineFactory.getBitmapCountingMemoryCache())
                     .dumpCacheContent();
-            responder.success(
-                getImageList(
-                    memoryCache,
-                    buildImageIdList(memoryCache.sharedEntries),
-                    buildImageIdList(memoryCache.lruEntries)));
+            final CountingMemoryCacheInspector.DumpInfo encodedMemoryCache =
+                new CountingMemoryCacheInspector<>(
+                        imagePipelineFactory.getEncodedCountingMemoryCache())
+                    .dumpCacheContent();
+
+            responder.success(getImageList(bitmapMemoryCache, encodedMemoryCache));
             mPerfLogger.endMarker("Sonar.Fresco.listImages");
           }
         });
@@ -190,15 +197,35 @@ public class FrescoFlipperPlugin extends BufferingFlipperPlugin
               mPerfLogger.cancelMarker("Sonar.Fresco.getImage");
               return;
             }
+
             final ImagePipelineFactory imagePipelineFactory = Fresco.getImagePipelineFactory();
+            // load from bitmap cache
             CloseableReference<CloseableImage> ref =
                 imagePipelineFactory.getBitmapCountingMemoryCache().get(cacheKey);
-            if (ref == null) {
-              respondError(responder, "no bitmap withId=" + imageId);
-              mPerfLogger.cancelMarker("Sonar.Fresco.getImage");
-              return;
+            if (ref != null) {
+              loadFromBitmapCache(ref, imageId, cacheKey, responder);
+            } else {
+              // try to load from encoded cache
+              CloseableReference<PooledByteBuffer> encodedRef =
+                  imagePipelineFactory.getEncodedCountingMemoryCache().get(cacheKey);
+
+              if (encodedRef != null) {
+                loadFromEncodedCache(encodedRef, imageId, cacheKey, responder);
+              } else {
+                respondError(responder, "no bitmap withId=" + imageId);
+                mPerfLogger.cancelMarker("Sonar.Fresco.getImage");
+                return;
+              }
             }
 
+            mPerfLogger.endMarker("Sonar.Fresco.getImage");
+          }
+
+          private void loadFromBitmapCache(
+              final CloseableReference<CloseableImage> ref,
+              final String imageId,
+              final CacheKey cacheKey,
+              final FlipperResponder responder) {
             if (ref.get() instanceof CloseableBitmap) {
               final CloseableBitmap bitmap = (CloseableBitmap) ref.get();
               String encodedBitmap =
@@ -212,7 +239,34 @@ public class FrescoFlipperPlugin extends BufferingFlipperPlugin
               // CloseableBitmap, this issue is tracked in the before mentioned task
               responder.success();
             }
-            mPerfLogger.endMarker("Sonar.Fresco.getImage");
+          }
+
+          private void loadFromEncodedCache(
+              final CloseableReference<PooledByteBuffer> encodedRef,
+              final String imageId,
+              final CacheKey cacheKey,
+              final FlipperResponder responder)
+              throws Exception {
+            byte[] encodedArray =
+                ByteStreams.toByteArray(new PooledByteBufferInputStream(encodedRef.get()));
+            Pair<Integer, Integer> dimensions = BitmapUtil.decodeDimensions(encodedArray);
+            if (dimensions == null) {
+              respondError(responder, "can not get dimensions withId=" + imageId);
+              return;
+            }
+
+            responder.success(
+                new FlipperObject.Builder()
+                    .put("imageId", imageId)
+                    .put("uri", mFlipperImageTracker.getUriString(cacheKey))
+                    .put("width", dimensions.first)
+                    .put("height", dimensions.second)
+                    .put("sizeBytes", encodedArray.length)
+                    .put(
+                        "data",
+                        "data:image/jpeg;base64,"
+                            + Base64.encodeToString(encodedArray, Base64.DEFAULT))
+                    .build());
           }
         });
 
@@ -285,33 +339,44 @@ public class FrescoFlipperPlugin extends BufferingFlipperPlugin
   }
 
   private FlipperObject getImageList(
-      CountingMemoryCacheInspector.DumpInfo memoryCache,
-      FlipperArray memoryCacheSharedEntries,
-      FlipperArray memoryCacheLRUEntries) {
+      final CountingMemoryCacheInspector.DumpInfo bitmapMemoryCache,
+      final CountingMemoryCacheInspector.DumpInfo encodedMemoryCache) {
     return new FlipperObject.Builder()
         .put(
             "levels",
             new FlipperArray.Builder()
-                .put(
-                    new FlipperObject.Builder()
-                        .put("cacheType", "On screen bitmaps")
-                        .put("sizeBytes", memoryCache.size - memoryCache.lruSize)
-                        .put("imageIds", memoryCacheSharedEntries)
-                        .build())
-                .put(
-                    new FlipperObject.Builder()
-                        .put("cacheType", "Bitmap memory cache")
-                        .put("clearKey", "memory")
-                        .put("sizeBytes", memoryCache.size)
-                        .put("maxSizeBytes", memoryCache.maxSize)
-                        .put("imageIds", memoryCacheLRUEntries)
-                        .build())
+                // bitmap
+                .put(getUsedStats("On screen bitmaps", bitmapMemoryCache))
+                .put(getCachedStats("Bitmap memory cache", bitmapMemoryCache))
+                // encoded
+                .put(getUsedStats("Used encoded images", encodedMemoryCache))
+                .put(getCachedStats("Cached encoded images", encodedMemoryCache))
                 // TODO (t31947642): list images on disk
                 .build())
         .build();
   }
 
-  private FlipperObject getImageData(
+  private FlipperObject getUsedStats(
+      final String cacheType, final CountingMemoryCacheInspector.DumpInfo memoryCache) {
+    return new FlipperObject.Builder()
+        .put("cacheType", cacheType)
+        .put("sizeBytes", memoryCache.size - memoryCache.lruSize)
+        .put("imageIds", buildImageIdList(memoryCache.sharedEntries))
+        .build();
+  }
+
+  private FlipperObject getCachedStats(
+      final String cacheType, final CountingMemoryCacheInspector.DumpInfo memoryCache) {
+    return new FlipperObject.Builder()
+        .put("cacheType", cacheType)
+        .put("clearKey", "memory")
+        .put("sizeBytes", memoryCache.size)
+        .put("maxSizeBytes", memoryCache.maxSize)
+        .put("imageIds", buildImageIdList(memoryCache.lruEntries))
+        .build();
+  }
+
+  private static FlipperObject getImageData(
       String imageID, String encodedBitmap, CloseableBitmap bitmap, String uriString) {
     return new FlipperObject.Builder()
         .put("imageId", imageID)
