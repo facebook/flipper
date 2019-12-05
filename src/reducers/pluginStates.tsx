@@ -8,6 +8,7 @@
  */
 
 import {Actions} from '.';
+import {deconstructPluginKey} from '../utils/clientUtils';
 
 export type State = {
   [pluginKey: string]: Object;
@@ -53,8 +54,9 @@ export default function reducer(
     return Object.keys(state).reduce((newState: State, pluginKey) => {
       // Only add the pluginState, if its from a plugin other than the one that
       // was removed. pluginKeys are in the form of ${clientID}#${pluginID}.
-      const clientId = pluginKey.slice(0, pluginKey.lastIndexOf('#'));
-      const pluginId = pluginKey.split('#').pop();
+      const plugin = deconstructPluginKey(pluginKey);
+      const clientId = plugin.client;
+      const pluginId = plugin.pluginName;
       if (
         clientId !== payload.clientId ||
         (pluginId && payload.devicePlugins.has(pluginId))

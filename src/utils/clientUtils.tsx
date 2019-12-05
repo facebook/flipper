@@ -10,12 +10,35 @@
 import Client from '../Client';
 import BaseDevice from '../devices/BaseDevice';
 
+/* A Client uniuely identifies an app running on some device.
+
+  Always use this utility to construct and parse clientId strings.
+ */
 export type ClientIdConstituents = {
   app: string;
   os: string;
   device: string;
   device_id: string;
 };
+
+/* A plugin key is a string uniquely identifying an instance of a plugin.
+   This can be a device plugin for a particular device, or a client plugin for a particular client (app).
+   In the device plugin case, the "client" is the device it's connected to.
+   In the client plugin case (normal plugins), the "client" is the app it's connected to.
+
+   Always use this utility to construct and parse pluginKey strings.
+ */
+type PluginKeyConstituents =
+  | {
+      type: 'device';
+      pluginName: string;
+      client: string;
+    }
+  | ({
+      type: 'client';
+      pluginName: string;
+      client: string;
+    } & ClientIdConstituents);
 
 export function currentActiveApps(
   clients: Array<Client>,
@@ -63,4 +86,32 @@ export function deconstructClientId(clientId: string): ClientIdConstituents {
     device,
     device_id,
   };
+}
+
+export function deconstructPluginKey(pluginKey: string): PluginKeyConstituents {
+  const parts = pluginKey.split('#');
+  if (parts.length === 2) {
+    // Device plugin
+    return {
+      type: 'device',
+      client: parts[0],
+      pluginName: parts[1],
+    };
+  } else {
+    // Client plugin
+    const lastHashIndex = pluginKey.lastIndexOf('#');
+    const clientId = pluginKey.slice(0, lastHashIndex);
+    const pluginName = pluginKey.slice(lastHashIndex + 1);
+    if (!pluginName) {
+      console.error(
+        `Attempted to deconstruct invalid pluginKey: "${pluginKey}"`,
+      );
+    }
+    return {
+      type: 'client',
+      ...deconstructClientId(clientId),
+      client: clientId,
+      pluginName: pluginName,
+    };
+  }
 }

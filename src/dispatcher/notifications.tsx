@@ -21,6 +21,7 @@ import {
 } from '../reducers/notifications';
 import {textContent} from '../utils/index';
 import GK from '../fb-stubs/GK';
+import {deconstructPluginKey} from '../utils/clientUtils';
 
 type NotificationEvents = 'show' | 'click' | 'close' | 'reply' | 'action';
 const NOTIFICATION_THROTTLE = 5 * 1000; // in milliseconds
@@ -106,18 +107,18 @@ export default (store: Store, logger: Logger) => {
     Object.keys(pluginStates).forEach(key => {
       if (knownPluginStates.get(key) !== pluginStates[key]) {
         knownPluginStates.set(key, pluginStates[key]);
-        const split = key.split('#');
-        const pluginId = split.pop();
-        const client = split.join('#');
+        const plugin = deconstructPluginKey(key);
+        const pluginName = plugin.pluginName;
+        const client = plugin.client;
 
-        if (!pluginId) {
+        if (!pluginName) {
           return;
         }
 
         const persistingPlugin:
           | undefined
           | typeof FlipperPlugin
-          | typeof FlipperDevicePlugin = pluginMap.get(pluginId);
+          | typeof FlipperDevicePlugin = pluginMap.get(pluginName);
         if (persistingPlugin && persistingPlugin.getActiveNotifications) {
           store.dispatch(
             setActiveNotifications({
@@ -125,7 +126,7 @@ export default (store: Store, logger: Logger) => {
                 pluginStates[key],
               ),
               client,
-              pluginId,
+              pluginId: pluginName,
             }),
           );
         }

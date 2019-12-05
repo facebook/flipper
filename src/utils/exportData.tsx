@@ -41,7 +41,7 @@ import {
   SupportFormRequestDetailsState,
 } from '../reducers/supportForm';
 import {setSelectPluginsToExportActiveSheet} from '../reducers/application';
-import {deconstructClientId} from '../utils/clientUtils';
+import {deconstructClientId, deconstructPluginKey} from '../utils/clientUtils';
 
 export const IMPORT_FLIPPER_TRACE_EVENT = 'import-flipper-trace';
 export const EXPORT_FLIPPER_TRACE_EVENT = 'export-flipper-trace';
@@ -138,8 +138,9 @@ export function processPluginStates(
   statusUpdate &&
     statusUpdate('Filtering the plugin states for the filtered Clients...');
   for (const key in allPluginStates) {
-    const keyArray = key.split('#');
-    const pluginName = keyArray.pop();
+    const plugin = deconstructPluginKey(key);
+
+    const pluginName = plugin.pluginName;
     if (
       pluginName &&
       selectedPlugins.length > 0 &&
@@ -147,17 +148,21 @@ export function processPluginStates(
     ) {
       continue;
     }
-    const filteredClients = clients.filter(client => {
-      // Remove the last entry related to plugin
-      return client.id.includes(keyArray.join('#'));
-    });
-    if (
-      filteredClients.length > 0 ||
-      (pluginName && devicePlugins.has(pluginName) && serial === keyArray[0])
-    ) {
-      // There need not be any client for device Plugins
-      pluginStates = {...pluginStates, [key]: allPluginStates[key]};
+    if (plugin.type === 'client') {
+      if (!clients.some(c => c.id.includes(plugin.client))) {
+        continue;
+      }
     }
+    if (plugin.type === 'device') {
+      if (
+        !pluginName ||
+        !devicePlugins.has(pluginName) ||
+        serial !== plugin.client
+      ) {
+        continue;
+      }
+    }
+    pluginStates = {...pluginStates, [key]: allPluginStates[key]};
   }
   return pluginStates;
 }
@@ -202,8 +207,7 @@ const serializePluginStates = async (
   });
   const pluginExportState: PluginStatesExportState = {};
   for (const key in pluginStates) {
-    const keyArray = key.split('#');
-    const pluginName = keyArray.pop();
+    const pluginName = deconstructPluginKey(key).pluginName;
     statusUpdate && statusUpdate(`Serialising ${pluginName}...`);
     const serializationMarker = `${EXPORT_FLIPPER_TRACE_EVENT}:serialization-per-plugin`;
     performance.mark(serializationMarker);
@@ -237,8 +241,7 @@ const deserializePluginStates = (
   });
   const pluginsState: PluginStatesState = {};
   for (const key in pluginStatesExportState) {
-    const keyArray = key.split('#');
-    const pluginName = keyArray.pop();
+    const pluginName = deconstructPluginKey(key).pluginName;
     if (!pluginName || !pluginsMap.get(pluginName)) {
       continue;
     }
@@ -655,12 +658,10 @@ export function importDataToStore(source: string, data: string, store: Store) {
   clients.forEach((client: {id: string; query: ClientQuery}) => {
     const clientPlugins: Array<string> = keys
       .filter(key => {
-        const arr = key.split('#');
-        arr.pop();
-        const clientPlugin = arr.join('#');
-        return client.id === clientPlugin;
+        const plugin = deconstructPluginKey(key);
+        return plugin.type === 'client' && client.id === plugin.client;
       })
-      .map(client => client.split('#').pop() || '');
+      .map(pluginKey => deconstructPluginKey(pluginKey).pluginName);
     store.dispatch({
       type: 'NEW_CLIENT',
       payload: new Client(
