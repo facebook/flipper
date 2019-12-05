@@ -21,14 +21,12 @@ import {
   styled,
   colors,
 } from 'flipper';
-import {FlipperDevicePlugin, BaseAction} from './plugin';
-import {connect, ReactReduxContext} from 'react-redux';
-import {store} from './store';
+import {FlipperDevicePlugin} from './plugin';
+import {connect} from 'react-redux';
 import React, {Component, Fragment} from 'react';
 import {clipboard} from 'electron';
 import {
   PluginNotification,
-  clearAllNotifications,
   updatePluginBlacklist,
   updateCategoryBlacklist,
 } from './reducers/notifications';
@@ -36,70 +34,6 @@ import {selectPlugin} from './reducers/connections';
 import {State as StoreState} from './reducers/index';
 import textContent from './utils/textContent';
 import createPaste from './fb-stubs/createPaste';
-import {KeyboardActions} from './MenuBar';
-import {Store} from 'redux';
-
-export default class Notifications<
-  S,
-  A extends BaseAction,
-  P
-> extends FlipperDevicePlugin<S, A, P> {
-  static id = 'notifications';
-  static title = 'Notifications';
-  static icon = 'bell';
-  static keyboardActions: KeyboardActions = ['clear'];
-
-  static supportsDevice() {
-    return false;
-  }
-
-  onKeyboardAction = (action: string) => {
-    if (action === 'clear') {
-      this.onClear(store)();
-    }
-  };
-
-  onClear = (store: Store<StoreState>) => () => {
-    store.dispatch(clearAllNotifications());
-  };
-
-  render() {
-    return (
-      <ReactReduxContext.Consumer>
-        {({store}) => {
-          const {blacklistedPlugins, blacklistedCategories} = (store as Store<
-            StoreState
-          >).getState().notifications;
-          return (
-            <ConnectedNotificationsTable
-              onClear={this.onClear(store)}
-              selectedID={this.props.deepLinkPayload}
-              onSelectPlugin={this.props.selectPlugin}
-              logger={this.props.logger}
-              defaultFilters={[
-                ...blacklistedPlugins.map(value => ({
-                  value,
-                  type: 'exclude',
-                  key: 'plugin',
-                })),
-                ...blacklistedCategories.map(value => ({
-                  value,
-                  type: 'exclude',
-                  key: 'category',
-                })),
-              ]}
-              actions={
-                <Fragment>
-                  <Button onClick={this.onClear(store)}>Clear</Button>
-                </Fragment>
-              }
-            />
-          );
-        }}
-      </ReactReduxContext.Consumer>
-    );
-  }
-}
 
 type OwnProps = {
   onClear: () => void;
