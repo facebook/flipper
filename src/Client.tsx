@@ -23,6 +23,7 @@ import {registerPlugins} from './reducers/plugins';
 import createTableNativePlugin from './plugins/TableNativePlugin';
 import EventEmitter from 'events';
 import invariant from 'invariant';
+import {getPluginKey} from './utils/pluginUtils';
 
 const MAX_BACKGROUND_TASK_TIME = 25;
 
@@ -89,11 +90,7 @@ type Params = {
 };
 type RequestMetadata = {method: string; id: number; params: Params | undefined};
 
-const handleError = (
-  store: Store,
-  deviceSerial: string | undefined,
-  error: ErrorType,
-) => {
+const handleError = (store: Store, device: BaseDevice, error: ErrorType) => {
   if (isProduction()) {
     return;
   }
@@ -104,7 +101,7 @@ const handleError = (
     return;
   }
 
-  const pluginKey = `${deviceSerial || ''}#CrashReporter`;
+  const pluginKey = getPluginKey(null, device, 'CrashReporter');
 
   const persistedState = {
     ...crashReporterPlugin.defaultPersistedState,
@@ -366,9 +363,7 @@ export default class Client extends EventEmitter {
           }: ${error.message} + \nDevice Stack Trace: ${error.stacktrace}`,
           'deviceError',
         );
-        this.deviceSerial().then(serial =>
-          handleError(this.store, serial, error),
-        );
+        this.device.then(device => handleError(this.store, device, error));
       } else if (method === 'refreshPlugins') {
         this.refreshPlugins();
       } else if (method === 'execute') {
@@ -383,7 +378,7 @@ export default class Client extends EventEmitter {
           this.store.getState().plugins.clientPlugins.get(params.api) ||
           this.store.getState().plugins.devicePlugins.get(params.api);
         if (persistingPlugin && persistingPlugin.persistedStateReducer) {
-          let pluginKey = `${this.id}#${params.api}`;
+          let pluginKey = getPluginKey(this.id, null, params.api);
           if (persistingPlugin.prototype instanceof FlipperDevicePlugin) {
             // For device plugins, we are just using the device id instead of client id as the prefix.
             this.deviceSerial().then(
@@ -450,9 +445,7 @@ export default class Client extends EventEmitter {
       reject(data.error);
       const {error} = data;
       if (error) {
-        this.deviceSerial().then(serial =>
-          handleError(this.store, serial, error),
-        );
+        this.device.then(device => handleError(this.store, device, error));
       }
     } else {
       // ???
