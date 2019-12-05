@@ -24,6 +24,48 @@ import createTableNativePlugin from './plugins/TableNativePlugin';
 import EventEmitter from 'events';
 import invariant from 'invariant';
 
+const MAX_BACKGROUND_TASK_TIME = 25;
+
+const pluginBackgroundStats = new Map<
+  string,
+  {
+    cpuTime: number; // Total time spend in persisted Reducer
+    messages: number; // amount of message received for this plugin
+    maxTime: number; // maximum time spend in a single reducer call
+  }
+>();
+
+if (window) {
+  // @ts-ignore
+  window.flipperPrintPluginBackgroundStats = () => {
+    console.table(
+      Array.from(pluginBackgroundStats.entries()).map(
+        ([plugin, {cpuTime, messages, maxTime}]) => ({
+          plugin,
+          cpuTime,
+          messages,
+          maxTime,
+        }),
+      ),
+    );
+  };
+}
+
+function addBackgroundStat(plugin: string, cpuTime: number) {
+  if (!pluginBackgroundStats.has(plugin)) {
+    pluginBackgroundStats.set(plugin, {cpuTime: 0, messages: 0, maxTime: 0});
+  }
+  const stat = pluginBackgroundStats.get(plugin)!;
+  stat.cpuTime += cpuTime;
+  stat.messages += 1;
+  stat.maxTime = Math.max(stat.maxTime, cpuTime);
+  if (cpuTime > MAX_BACKGROUND_TASK_TIME) {
+    console.warn(
+      `Plugin ${plugin} took too much time while doing background: ${cpuTime}ms. Handling background messages should take less than ${MAX_BACKGROUND_TASK_TIME}ms.`,
+    );
+  }
+}
+
 type Plugins = Array<string>;
 
 export type ClientQuery = {
@@ -333,6 +375,7 @@ export default class Client extends EventEmitter {
         const params: Params = data.params as Params;
         invariant(params, 'expected params');
 
+        const statName = `${params.api}.${params.method}`;
         const persistingPlugin:
           | typeof FlipperPlugin
           | typeof FlipperDevicePlugin
@@ -351,11 +394,13 @@ export default class Client extends EventEmitter {
             ...persistingPlugin.defaultPersistedState,
             ...this.store.getState().pluginStates[pluginKey],
           };
+          const reducerStartTime = Date.now();
           const newPluginState = persistingPlugin.persistedStateReducer(
             persistedState,
             params.method,
             params.params,
           );
+          addBackgroundStat(statName, Date.now() - reducerStartTime);
           if (persistedState !== newPluginState) {
             this.store.dispatch(
               setPluginState({
