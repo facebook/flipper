@@ -330,7 +330,7 @@ class NotificationsTable extends Component<Props & SearchableProps, State> {
   }
 }
 
-const ConnectedNotificationsTable = connect<
+export const ConnectedNotificationsTable = connect<
   StateFromProps,
   DispatchFromProps,
   OwnProps,

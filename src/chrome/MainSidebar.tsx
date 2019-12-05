@@ -37,7 +37,7 @@ import {
   Info,
 } from 'flipper';
 import React, {Component, PureComponent, Fragment} from 'react';
-import NotificationsHub from '../NotificationsHub';
+import NotificationScreen from '../chrome/NotificationScreen';
 import {
   selectPlugin,
   starPlugin,
@@ -286,7 +286,6 @@ class MainSidebar extends PureComponent<Props, State> {
       staticView,
       selectPlugin,
       setStaticView,
-      numNotifications,
       uninitializedClients,
     } = this.props;
     const clients = getAvailableClients(selectedDevice, this.props.clients);
@@ -377,38 +376,10 @@ class MainSidebar extends PureComponent<Props, State> {
             </ListItem>
           )}
         </Plugins>
-        {!GK.get('flipper_disable_notifications') && (
-          <ListItem
-            active={selectedPlugin === 'notifications'}
-            onClick={() =>
-              selectPlugin({
-                selectedPlugin: 'notifications',
-                selectedApp: null,
-                deepLinkPayload: null,
-              })
-            }
-            style={{
-              borderTop: `1px solid ${colors.blackAlpha10}`,
-            }}>
-            <PluginIcon
-              color={colors.light50}
-              name={
-                numNotifications > 0
-                  ? NotificationsHub.icon || 'bell'
-                  : 'bell-null'
-              }
-              isActive={selectedPlugin === NotificationsHub.id}
-            />
-            <PluginName
-              count={numNotifications}
-              isActive={selectedPlugin === NotificationsHub.id}>
-              {NotificationsHub.title}
-            </PluginName>
-          </ListItem>
-        )}
+        {this.renderNotificationsEntry()}
         {this.state.showSupportForm &&
           (function() {
-            const active = staticView && staticView === SupportRequestFormV2;
+            const active = isStaticViewActive(staticView, SupportRequestFormV2);
             return (
               <ListItem
                 active={active}
@@ -441,6 +412,10 @@ class MainSidebar extends PureComponent<Props, State> {
       return null;
     }
     const {staticView, setStaticView} = this.props;
+    const supportRequestDetailsactive = isStaticViewActive(
+      staticView,
+      SupportRequestDetails,
+    );
     return (
       <>
         <ListItem>
@@ -451,21 +426,14 @@ class MainSidebar extends PureComponent<Props, State> {
         {this.state.showSupportForm &&
           (selectedDevice as ArchivedDevice).supportRequestDetails && (
             <ListItem
-              active={
-                staticView != null && staticView === SupportRequestDetails
-              }
+              active={supportRequestDetailsactive}
               onClick={() => setStaticView(SupportRequestDetails)}>
               <PluginIcon
                 color={colors.light50}
                 name={'app-dailies'}
-                isActive={
-                  staticView != null && staticView === SupportRequestDetails
-                }
+                isActive={supportRequestDetailsactive}
               />
-              <PluginName
-                isActive={
-                  staticView != null && staticView === SupportRequestDetails
-                }>
+              <PluginName isActive={supportRequestDetailsactive}>
                 Support Request Details
               </PluginName>
             </ListItem>
@@ -593,6 +561,41 @@ class MainSidebar extends PureComponent<Props, State> {
       </>
     );
   }
+
+  renderNotificationsEntry() {
+    if (GK.get('flipper_disable_notifications')) {
+      return null;
+    }
+
+    const active = isStaticViewActive(
+      this.props.staticView,
+      NotificationScreen,
+    );
+    return (
+      <ListItem
+        active={active}
+        onClick={() => this.props.setStaticView(NotificationScreen)}
+        style={{
+          borderTop: `1px solid ${colors.blackAlpha10}`,
+        }}>
+        <PluginIcon
+          color={colors.light50}
+          name={this.props.numNotifications > 0 ? 'bell' : 'bell-null'}
+          isActive={active}
+        />
+        <PluginName count={this.props.numNotifications} isActive={active}>
+          Notifications
+        </PluginName>
+      </ListItem>
+    );
+  }
+}
+
+function isStaticViewActive(
+  current: StaticView,
+  selected: StaticView,
+): boolean {
+  return current && selected && current === selected;
 }
 
 function getFavoritePlugins(

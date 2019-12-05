@@ -19,14 +19,18 @@ import {Actions} from '.';
 const WelcomeScreen = isHeadless()
   ? require('../chrome/WelcomeScreenHeadless').default
   : require('../chrome/WelcomeScreen').default;
+import NotificationScreen from '../chrome/NotificationScreen';
 import SupportRequestForm from '../fb-stubs/SupportRequestFormManager';
 import SupportRequestFormV2 from '../fb-stubs/SupportRequestFormV2';
+import SupportRequestDetails from '../fb-stubs/SupportRequestDetails';
 
 export type StaticView =
   | null
   | typeof WelcomeScreen
+  | typeof NotificationScreen
   | typeof SupportRequestForm
-  | typeof SupportRequestFormV2;
+  | typeof SupportRequestFormV2
+  | typeof SupportRequestDetails;
 
 export type FlipperError = {
   occurrences?: number;
@@ -155,8 +159,6 @@ const INITAL_STATE: State = {
   deepLinkPayload: null,
   staticView: WelcomeScreen,
 };
-// Please sync with NotificationsHub
-const STATIC_PLUGINS_ID: Array<string> = ['notifications'];
 
 const reducer = (state: State = INITAL_STATE, action: Actions): State => {
   switch (action.type) {
@@ -560,7 +562,6 @@ function updateSelection(state: Readonly<State>): State {
   const availablePlugins: string[] = [
     ...(device?.devicePlugins || []),
     ...(client?.plugins || []),
-    ...STATIC_PLUGINS_ID,
   ];
 
   if (

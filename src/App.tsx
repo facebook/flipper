@@ -141,7 +141,9 @@ export class App extends React.Component<Props> {
         <FlexRow grow={true}>
           {this.props.leftSidebarVisible && <MainSidebar />}
           {this.props.staticView != null ? (
-            React.createElement(this.props.staticView)
+            React.createElement(this.props.staticView, {
+              logger: this.props.logger,
+            })
           ) : (
             <PluginContainer logger={this.props.logger} />
           )}
