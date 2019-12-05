@@ -10,7 +10,7 @@
 import Client from '../Client';
 import BaseDevice from '../devices/BaseDevice';
 
-type ClientIdConstituents = {
+export type ClientIdConstituents = {
   app: string;
   os: string;
   device: string;
@@ -40,6 +40,15 @@ export function buildClientId(clientInfo: {
   device: string;
   device_id: string;
 }): string {
+  for (const key of ['app', 'os', 'device', 'device_id'] as Array<
+    keyof ClientIdConstituents
+  >) {
+    if (!clientInfo[key]) {
+      console.error(
+        `Attempted to build clientId with invalid ${key}: "${clientInfo[key]}`,
+      );
+    }
+  }
   return `${clientInfo.app}#${clientInfo.os}#${clientInfo.device}#${clientInfo.device_id}`;
 }
 
