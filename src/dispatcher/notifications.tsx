@@ -13,7 +13,7 @@ import {PluginNotification} from '../reducers/notifications';
 import {FlipperPlugin, FlipperDevicePlugin} from '../plugin';
 import isHeadless from '../utils/isHeadless';
 import {ipcRenderer} from 'electron';
-import {selectPlugin} from '../reducers/connections';
+import {setStaticView} from '../reducers/connections';
 import {
   setActiveNotifications,
   updatePluginBlacklist,
@@ -22,6 +22,7 @@ import {
 import {textContent} from '../utils/index';
 import GK from '../fb-stubs/GK';
 import {deconstructPluginKey} from '../utils/clientUtils';
+import NotificationScreen from '../chrome/NotificationScreen';
 
 type NotificationEvents = 'show' | 'click' | 'close' | 'reply' | 'action';
 const NOTIFICATION_THROTTLE = 5 * 1000; // in milliseconds
@@ -44,13 +45,7 @@ export default (store: Store, logger: Logger) => {
       arg: null | string | number,
     ) => {
       if (eventName === 'click' || (eventName === 'action' && arg === 0)) {
-        store.dispatch(
-          selectPlugin({
-            selectedPlugin: 'notifications',
-            selectedApp: null,
-            deepLinkPayload: pluginNotification.notification.id,
-          }),
-        );
+        store.dispatch(setStaticView(NotificationScreen));
       } else if (eventName === 'action') {
         if (arg === 1 && pluginNotification.notification.category) {
           // Hide similar (category)
