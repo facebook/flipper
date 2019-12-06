@@ -44,10 +44,19 @@ bool ConnectionContextStore::hasRequiredFiles() {
 }
 
 std::string ConnectionContextStore::getCertificateSigningRequest() {
+  // Use in-memory CSR if already loaded
   if (csr != "") {
     return csr;
   }
-  resetFlipperDir();
+
+  // Attempt to load existing CSR from previous run of the app
+  csr = loadStringFromFile(absoluteFilePath(CSR_FILE_NAME));
+  if (csr != "") {
+    return csr;
+  }
+
+  // Clean all state and generate a new one
+  resetState();
   bool success = generateCertSigningRequest(
       deviceData_.appId.c_str(),
       absoluteFilePath(CSR_FILE_NAME).c_str(),
@@ -104,7 +113,11 @@ std::string ConnectionContextStore::getCertificateDirectoryPath() {
   return absoluteFilePath("");
 }
 
-bool ConnectionContextStore::resetFlipperDir() {
+bool ConnectionContextStore::resetState() {
+  // Clear in-memory state
+  csr = "";
+
+  // Delete state from disk
   std::string dirPath = absoluteFilePath("");
   struct stat info;
   if (stat(dirPath.c_str(), &info) != 0) {

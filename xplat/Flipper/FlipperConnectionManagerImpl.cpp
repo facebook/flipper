@@ -187,6 +187,10 @@ void FlipperConnectionManagerImpl::doCertificateExchange() {
           .get();
   connectingInsecurely->complete();
 
+  auto resettingState = flipperState_->start("Reset state");
+  contextStore_->resetState();
+  resettingState->complete();
+
   requestSignedCertFromFlipper();
 }
 
