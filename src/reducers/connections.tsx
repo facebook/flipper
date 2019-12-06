@@ -19,14 +19,18 @@ import {Actions} from '.';
 const WelcomeScreen = isHeadless()
   ? require('../chrome/WelcomeScreenHeadless').default
   : require('../chrome/WelcomeScreen').default;
+import NotificationScreen from '../chrome/NotificationScreen';
 import SupportRequestForm from '../fb-stubs/SupportRequestFormManager';
 import SupportRequestFormV2 from '../fb-stubs/SupportRequestFormV2';
+import SupportRequestDetails from '../fb-stubs/SupportRequestDetails';
 
 export type StaticView =
   | null
   | typeof WelcomeScreen
+  | typeof NotificationScreen
   | typeof SupportRequestForm
-  | typeof SupportRequestFormV2;
+  | typeof SupportRequestFormV2
+  | typeof SupportRequestDetails;
 
 export type FlipperError = {
   occurrences?: number;
@@ -40,11 +44,11 @@ export type State = {
   androidEmulators: Array<string>;
   selectedDevice: null | BaseDevice;
   selectedPlugin: null | string;
-  selectedApp: null | string | undefined;
+  selectedApp: null | string;
   userPreferredDevice: null | string;
   userPreferredPlugin: null | string;
   userPreferredApp: null | string;
-  userStarredPlugins: {[key: string]: Array<string>};
+  starredPlugins: string[];
   errors: FlipperError[];
   clients: Array<Client>;
   uninitializedClients: Array<{
@@ -148,15 +152,13 @@ const INITAL_STATE: State = {
   userPreferredDevice: null,
   userPreferredPlugin: null,
   userPreferredApp: null,
-  userStarredPlugins: {},
+  starredPlugins: [],
   errors: [],
   clients: [],
   uninitializedClients: [],
   deepLinkPayload: null,
   staticView: WelcomeScreen,
 };
-// Please sync with NotificationsHub
-const STATIC_PLUGINS_ID: Array<string> = ['notifications'];
 
 const reducer = (state: State = INITAL_STATE, action: Actions): State => {
   switch (action.type) {
@@ -169,10 +171,19 @@ const reducer = (state: State = INITAL_STATE, action: Actions): State => {
         selectedPlugin: payload != null ? null : selectedPlugin,
       };
     }
+
+    case 'RESET_SUPPORT_FORM_V2_STATE': {
+      return updateSelection({
+        ...state,
+        staticView: null,
+      });
+    }
+
     case 'SELECT_DEVICE': {
       const {payload} = action;
       return updateSelection({
         ...state,
+        staticView: null,
         selectedDevice: payload,
         userPreferredDevice: payload
           ? payload.title
@@ -219,29 +230,25 @@ const reducer = (state: State = INITAL_STATE, action: Actions): State => {
 
       return updateSelection({
         ...state,
-        selectedApp,
+        staticView: null,
+        selectedApp: selectedApp || null,
         selectedPlugin,
         userPreferredPlugin: selectedPlugin || state.userPreferredPlugin,
       });
     }
 
     case 'STAR_PLUGIN': {
-      const {selectedPlugin, selectedApp} = action.payload;
-      const starredPluginsForApp = [
-        ...(state.userStarredPlugins[selectedApp] || []),
-      ];
-      const idx = starredPluginsForApp.indexOf(selectedPlugin);
+      const {selectedPlugin} = action.payload;
+      const starredPlugins = state.starredPlugins.slice();
+      const idx = starredPlugins.indexOf(selectedPlugin);
       if (idx === -1) {
-        starredPluginsForApp.push(selectedPlugin);
+        starredPlugins.push(selectedPlugin);
       } else {
-        starredPluginsForApp.splice(idx, 1);
+        starredPlugins.splice(idx, 1);
       }
       return {
         ...state,
-        userStarredPlugins: {
-          ...state.userStarredPlugins,
-          [selectedApp]: starredPluginsForApp,
-        },
+        starredPlugins: starredPlugins,
       };
     }
 
@@ -519,6 +526,10 @@ function canBeDefaultDevice(device: BaseDevice) {
  * @param state
  */
 function updateSelection(state: Readonly<State>): State {
+  if (state.staticView && state.staticView !== WelcomeScreen) {
+    return state;
+  }
+
   const updates: Partial<State> = {
     staticView: null,
   };
@@ -551,7 +562,6 @@ function updateSelection(state: Readonly<State>): State {
   const availablePlugins: string[] = [
     ...(device?.devicePlugins || []),
     ...(client?.plugins || []),
-    ...STATIC_PLUGINS_ID,
   ];
 
   if (
@@ -569,7 +579,5 @@ function updateSelection(state: Readonly<State>): State {
     updates.selectedPlugin = DEFAULT_PLUGIN;
   }
 
-  const res = {...state, ...updates};
-  console.log(res.selectedDevice, res.selectedApp, res.selectedPlugin);
-  return res;
+  return {...state, ...updates};
 }

@@ -8,13 +8,25 @@
  */
 
 import {Actions} from './';
+type SubmediaType =
+  | {uploadID: string; status: 'Uploaded'}
+  | {status: 'NotUploaded' | 'Uploading'};
+type MediaObject = SubmediaType & {
+  description: string;
+  path: string;
+};
+export type MediaType = Array<MediaObject>;
 export type SupportFormV2State = {
   title: string;
   description: string;
   commitHash: string;
-  appName: string;
+  screenshots?: MediaType;
+  videos?: MediaType;
 };
 
+export type SupportFormRequestDetailsState = SupportFormV2State & {
+  appName: string;
+};
 export type State = {
   webState: NTUsersFormData | null;
   supportFormV2: SupportFormV2State;
@@ -27,6 +39,9 @@ export type Action =
   | {
       type: 'SET_SUPPORT_FORM_V2_STATE';
       payload: SupportFormV2State;
+    }
+  | {
+      type: 'RESET_SUPPORT_FORM_V2_STATE';
     };
 
 export type NTUsersFormData = {
@@ -66,6 +81,8 @@ export default function reducer(
       ...state,
       supportFormV2: action.payload,
     };
+  } else if (action.type === 'RESET_SUPPORT_FORM_V2_STATE') {
+    return initialState();
   } else {
     return state;
   }
@@ -81,4 +98,8 @@ export const setSupportFormState = (
 export const setSupportFormV2State = (payload: SupportFormV2State): Action => ({
   type: 'SET_SUPPORT_FORM_V2_STATE',
   payload,
+});
+
+export const resetSupportFormV2State = (): Action => ({
+  type: 'RESET_SUPPORT_FORM_V2_STATE',
 });

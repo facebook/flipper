@@ -10,32 +10,108 @@
 import Client from '../Client';
 import BaseDevice from '../devices/BaseDevice';
 
+/* A Client uniuely identifies an app running on some device.
+
+  Always use this utility to construct and parse clientId strings.
+ */
+export type ClientIdConstituents = {
+  app: string;
+  os: string;
+  device: string;
+  device_id: string;
+};
+
+/* A plugin key is a string uniquely identifying an instance of a plugin.
+   This can be a device plugin for a particular device, or a client plugin for a particular client (app).
+   In the device plugin case, the "client" is the device it's connected to.
+   In the client plugin case (normal plugins), the "client" is the app it's connected to.
+
+   Always use this utility to construct and parse pluginKey strings.
+ */
+type PluginKeyConstituents =
+  | {
+      type: 'device';
+      pluginName: string;
+      client: string;
+    }
+  | ({
+      type: 'client';
+      pluginName: string;
+      client: string;
+    } & ClientIdConstituents);
+
 export function currentActiveApps(
   clients: Array<Client>,
   selectedDevice: null | BaseDevice,
 ): Array<string> {
   const currentActiveApps: Array<string> = clients
     .map(({id}: {id: string}) => {
-      const appName = appNameFromClienID(id) || '';
-      const device = deviceFromClienID(id) || '';
-      return {appName, device};
+      const appName = deconstructClientId(id).app || '';
+      const os = deconstructClientId(id).os || '';
+      return {appName, os};
     })
     .filter(
-      ({device}: {device: string}) =>
-        device && selectedDevice && device == selectedDevice.os,
+      ({os}: {os: string}) => os && selectedDevice && os == selectedDevice.os,
     )
     .map(client => client.appName);
   return currentActiveApps;
 }
 
-export function appNameFromClienID(id: string): string | undefined {
-  const arr = id.split('#');
-  const appName = arr[0];
-  return appName;
+export function buildClientId(clientInfo: {
+  app: string;
+  os: string;
+  device: string;
+  device_id: string;
+}): string {
+  for (const key of ['app', 'os', 'device', 'device_id'] as Array<
+    keyof ClientIdConstituents
+  >) {
+    if (!clientInfo[key]) {
+      console.error(
+        `Attempted to build clientId with invalid ${key}: "${clientInfo[key]}`,
+      );
+    }
+  }
+  return `${clientInfo.app}#${clientInfo.os}#${clientInfo.device}#${clientInfo.device_id}`;
 }
 
-export function deviceFromClienID(id: string): string | undefined {
-  const arr = id.split('#');
-  const device = arr[1];
-  return device;
+export function deconstructClientId(clientId: string): ClientIdConstituents {
+  if (!clientId || clientId.split('#').length !== 4) {
+    console.error(`Attempted to deconstruct invalid clientId: "${clientId}"`);
+  }
+  const [app, os, device, device_id] = clientId.split('#');
+  return {
+    app,
+    os,
+    device,
+    device_id,
+  };
+}
+
+export function deconstructPluginKey(pluginKey: string): PluginKeyConstituents {
+  const parts = pluginKey.split('#');
+  if (parts.length === 2) {
+    // Device plugin
+    return {
+      type: 'device',
+      client: parts[0],
+      pluginName: parts[1],
+    };
+  } else {
+    // Client plugin
+    const lastHashIndex = pluginKey.lastIndexOf('#');
+    const clientId = pluginKey.slice(0, lastHashIndex);
+    const pluginName = pluginKey.slice(lastHashIndex + 1);
+    if (!pluginName) {
+      console.error(
+        `Attempted to deconstruct invalid pluginKey: "${pluginKey}"`,
+      );
+    }
+    return {
+      type: 'client',
+      ...deconstructClientId(clientId),
+      client: clientId,
+      pluginName: pluginName,
+    };
+  }
 }

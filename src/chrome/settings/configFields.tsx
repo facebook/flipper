@@ -7,7 +7,6 @@
  * @format
  */
 
-import electron from 'electron';
 import {FlexColumn, styled, Text, FlexRow, Input, colors, Glyph} from 'flipper';
 import React, {useState} from 'react';
 import {promises as fs} from 'fs';
@@ -88,18 +87,16 @@ export function FilePathConfigField(props: {
       />
       <FlexColumn
         onClick={() =>
-          remote.dialog
-            .showOpenDialog({
+          remote.dialog.showOpenDialog(
+            {
               properties: ['openDirectory', 'showHiddenFiles'],
               defaultPath: path.resolve('/'),
-            })
-            .then((result: electron.SaveDialogReturnValue) => {
-              if (result.filePath) {
-                const path: string = result.filePath.toString();
-                setValue(path);
-                props.onChange(path);
-              }
-            })
+            },
+            (paths: Array<string> | undefined) => {
+              paths && setValue(paths[0]);
+              paths && props.onChange(paths[0]);
+            },
+          )
         }>
         <CenteredGlyph name="dots-3-circle" variant="outline" />
       </FlexColumn>

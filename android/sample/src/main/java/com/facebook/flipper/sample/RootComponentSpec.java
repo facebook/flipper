@@ -77,6 +77,13 @@ public class RootComponentSpec {
                 .textSizeSp(20)
                 .clickHandler(RootComponent.openAlternateActivityOne(c)))
         .child(
+            Text.create(c)
+                .text("Crash this app")
+                .key("7")
+                .marginDip(YogaEdge.ALL, 10)
+                .textSizeSp(20)
+                .clickHandler(RootComponent.triggerCrash(c)))
+        .child(
             displayImage
                 ? FrescoImage.create(c)
                     .controller(controller)
@@ -112,6 +119,11 @@ public class RootComponentSpec {
   static void openAlternateActivityOne(final ComponentContext c) {
     final Intent intent = new Intent(c.getAndroidContext(), DeepLinkActivity.class);
     c.getAndroidContext().startActivity(intent);
+  }
+
+  @OnEvent(ClickEvent.class)
+  static void triggerCrash(final ComponentContext c) {
+    throw new RuntimeException("Artificially triggered crash from Flipper sample app");
   }
 
   @OnUpdateState

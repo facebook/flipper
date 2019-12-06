@@ -13,7 +13,8 @@ import {App} from './App.js';
 import {Logger} from './fb-interfaces/Logger';
 import {Store} from './reducers/index';
 import {setPluginState} from './reducers/pluginStates';
-import {RSocketClientSocket} from 'rsocket-core/RSocketClient';
+import {Payload, ConnectionStatus} from 'rsocket-types';
+import {Flowable, Single} from 'rsocket-flowable';
 import {performance} from 'perf_hooks';
 import {reportPlatformFailures, reportPluginFailures} from './utils/metrics';
 import {notNull} from './utils/typeUtils';
@@ -22,6 +23,49 @@ import {registerPlugins} from './reducers/plugins';
 import createTableNativePlugin from './plugins/TableNativePlugin';
 import EventEmitter from 'events';
 import invariant from 'invariant';
+import {getPluginKey} from './utils/pluginUtils';
+
+const MAX_BACKGROUND_TASK_TIME = 25;
+
+const pluginBackgroundStats = new Map<
+  string,
+  {
+    cpuTime: number; // Total time spend in persisted Reducer
+    messages: number; // amount of message received for this plugin
+    maxTime: number; // maximum time spend in a single reducer call
+  }
+>();
+
+if (window) {
+  // @ts-ignore
+  window.flipperPrintPluginBackgroundStats = () => {
+    console.table(
+      Array.from(pluginBackgroundStats.entries()).map(
+        ([plugin, {cpuTime, messages, maxTime}]) => ({
+          plugin,
+          cpuTime,
+          messages,
+          maxTime,
+        }),
+      ),
+    );
+  };
+}
+
+function addBackgroundStat(plugin: string, cpuTime: number) {
+  if (!pluginBackgroundStats.has(plugin)) {
+    pluginBackgroundStats.set(plugin, {cpuTime: 0, messages: 0, maxTime: 0});
+  }
+  const stat = pluginBackgroundStats.get(plugin)!;
+  stat.cpuTime += cpuTime;
+  stat.messages += 1;
+  stat.maxTime = Math.max(stat.maxTime, cpuTime);
+  if (cpuTime > MAX_BACKGROUND_TASK_TIME) {
+    console.warn(
+      `Plugin ${plugin} took too much time while doing background: ${cpuTime}ms. Handling background messages should take less than ${MAX_BACKGROUND_TASK_TIME}ms.`,
+    );
+  }
+}
 
 type Plugins = Array<string>;
 
@@ -46,11 +90,7 @@ type Params = {
 };
 type RequestMetadata = {method: string; id: number; params: Params | undefined};
 
-const handleError = (
-  store: Store,
-  deviceSerial: string | undefined,
-  error: ErrorType,
-) => {
+const handleError = (store: Store, device: BaseDevice, error: ErrorType) => {
   if (isProduction()) {
     return;
   }
@@ -61,7 +101,7 @@ const handleError = (
     return;
   }
 
-  const pluginKey = `${deviceSerial || ''}#CrashReporter`;
+  const pluginKey = getPluginKey(null, device, 'CrashReporter');
 
   const persistedState = {
     ...crashReporterPlugin.defaultPersistedState,
@@ -97,6 +137,13 @@ const handleError = (
   }
 };
 
+export interface FlipperClientConnection<D, M> {
+  connectionStatus(): Flowable<ConnectionStatus>;
+  close(): void;
+  fireAndForget(payload: Payload<D, M>): void;
+  requestResponse(payload: Payload<D, M>): Single<Payload<D, M>>;
+}
+
 export default class Client extends EventEmitter {
   app: App | undefined;
   connected: boolean;
@@ -105,7 +152,7 @@ export default class Client extends EventEmitter {
   sdkVersion: number;
   messageIdCounter: number;
   plugins: Plugins;
-  connection: RSocketClientSocket<any, any> | null | undefined;
+  connection: FlipperClientConnection<any, any> | null | undefined;
   store: Store;
   activePlugins: Set<string>;
   device: Promise<BaseDevice>;
@@ -129,7 +176,7 @@ export default class Client extends EventEmitter {
   constructor(
     id: string,
     query: ClientQuery,
-    conn: RSocketClientSocket<any, any> | null | undefined,
+    conn: FlipperClientConnection<any, any> | null | undefined,
     logger: Logger,
     store: Store,
     plugins?: Plugins | null | undefined,
@@ -316,15 +363,14 @@ export default class Client extends EventEmitter {
           }: ${error.message} + \nDevice Stack Trace: ${error.stacktrace}`,
           'deviceError',
         );
-        this.deviceSerial().then(serial =>
-          handleError(this.store, serial, error),
-        );
+        this.device.then(device => handleError(this.store, device, error));
       } else if (method === 'refreshPlugins') {
         this.refreshPlugins();
       } else if (method === 'execute') {
         const params: Params = data.params as Params;
         invariant(params, 'expected params');
 
+        const statName = `${params.api}.${params.method}`;
         const persistingPlugin:
           | typeof FlipperPlugin
           | typeof FlipperDevicePlugin
@@ -332,7 +378,7 @@ export default class Client extends EventEmitter {
           this.store.getState().plugins.clientPlugins.get(params.api) ||
           this.store.getState().plugins.devicePlugins.get(params.api);
         if (persistingPlugin && persistingPlugin.persistedStateReducer) {
-          let pluginKey = `${this.id}#${params.api}`;
+          let pluginKey = getPluginKey(this.id, null, params.api);
           if (persistingPlugin.prototype instanceof FlipperDevicePlugin) {
             // For device plugins, we are just using the device id instead of client id as the prefix.
             this.deviceSerial().then(
@@ -343,11 +389,13 @@ export default class Client extends EventEmitter {
             ...persistingPlugin.defaultPersistedState,
             ...this.store.getState().pluginStates[pluginKey],
           };
+          const reducerStartTime = Date.now();
           const newPluginState = persistingPlugin.persistedStateReducer(
             persistedState,
             params.method,
             params.params,
           );
+          addBackgroundStat(statName, Date.now() - reducerStartTime);
           if (persistedState !== newPluginState) {
             this.store.dispatch(
               setPluginState({
@@ -397,9 +445,7 @@ export default class Client extends EventEmitter {
       reject(data.error);
       const {error} = data;
       if (error) {
-        this.deviceSerial().then(serial =>
-          handleError(this.store, serial, error),
-        );
+        this.device.then(device => handleError(this.store, device, error));
       }
     } else {
       // ???

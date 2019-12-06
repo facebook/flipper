@@ -11,7 +11,6 @@ import {
   ElementID,
   Element,
   ElementSearchResultSet,
-  MiddlewareAPI,
   PluginClient,
   FlexColumn,
   FlexRow,
@@ -25,8 +24,9 @@ import {
   Text,
   styled,
   colors,
-  SupportRequestFormManager,
+  SupportRequestFormV2,
   constants,
+  ReduxState,
 } from 'flipper';
 import Inspector from './Inspector';
 import ToolbarIcon from './ToolbarIcon';
@@ -82,7 +82,7 @@ export default class Layout extends FlipperPlugin<State, any, PersistedState> {
         <FlipperADButton
           type="primary"
           onClick={() => {
-            this.props.setStaticView(SupportRequestFormManager);
+            this.props.setStaticView(SupportRequestFormV2);
           }}>
           Try it out
         </FlipperADButton>
@@ -97,7 +97,7 @@ export default class Layout extends FlipperPlugin<State, any, PersistedState> {
       allNodes: PersistedState;
     }>,
     persistedState: PersistedState | undefined,
-    store: MiddlewareAPI | undefined,
+    store: ReduxState | undefined,
   ): Promise<PersistedState | undefined> => {
     if (!store) {
       return persistedState;

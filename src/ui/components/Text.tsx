@@ -15,6 +15,7 @@ import {
   FontFamilyProperty,
   WhiteSpaceProperty,
   WordWrapProperty,
+  CursorProperty,
 } from 'csstype';
 
 /**
@@ -25,6 +26,7 @@ const Text = styled('span')(
     color?: ColorProperty;
     bold?: boolean;
     italic?: boolean;
+    underline?: boolean;
     align?: TextAlignProperty;
     size?: FontSizeProperty<number>;
     code?: boolean;
@@ -32,13 +34,16 @@ const Text = styled('span')(
     selectable?: boolean;
     wordWrap?: WordWrapProperty;
     whiteSpace?: WhiteSpaceProperty;
+    cursor?: CursorProperty;
   }) => ({
     color: props.color ? props.color : 'inherit',
+    cursor: props.cursor ? props.cursor : 'auto',
     display: 'inline',
     fontWeight: props.bold ? 'bold' : 'inherit',
     fontStyle: props.italic ? 'italic' : 'normal',
     textAlign: props.align || 'left',
     fontSize: props.size == null && props.code ? 12 : props.size,
+    textDecoration: props.underline ? 'underline' : 'initial',
     fontFamily: props.code
       ? 'SF Mono, Monaco, Andale Mono, monospace'
       : props.family,

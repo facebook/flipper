@@ -7,21 +7,26 @@
  * @format
  */
 
-import React, {PureComponent, RefObject} from 'react';
+import React, {PureComponent} from 'react';
 import styled from 'react-emotion';
 import ReactMarkdown from 'react-markdown';
-import ReactDOM from 'react-dom';
 import {colors} from './colors';
 import {shell} from 'electron';
 
+const Container = styled('div')({
+  padding: 10,
+});
 const Row = styled('div')({
   marginTop: 5,
   marginBottom: 5,
 });
 const Heading = styled('div')((props: {level: number}) => ({
-  fontSize: Math.max(10, 20 - (props.level - 1) * 4),
+  fontSize: props.level === 1 ? 18 : 12,
+  textTransform: props.level > 1 ? 'uppercase' : undefined,
+  color: props.level > 1 ? '#90949c' : undefined,
+  marginTop: 10,
   marginBottom: 10,
-  fontWeight: 'bold',
+  fontWeight: props.level > 1 ? 'bold' : 'normal',
 }));
 const ListItem = styled('li')({
   'list-style-type': 'circle',
@@ -30,6 +35,7 @@ const ListItem = styled('li')({
 });
 const Strong = styled('span')({
   fontWeight: 'bold',
+  color: '#1d2129',
 });
 const Emphasis = styled('span')({
   fontStyle: 'italic',
@@ -37,6 +43,7 @@ const Emphasis = styled('span')({
 const Quote = styled(Row)({
   padding: 10,
   backgroundColor: '#f1f2f3',
+  fontSize: 13,
 });
 const Code = styled('span')({
   fontFamily: '"Courier New", Courier, monospace',
@@ -57,7 +64,6 @@ class CodeBlock extends PureComponent<{value: string; language: string}> {
 }
 const Link = styled('span')({
   color: colors.blue,
-  textDecoration: 'underline',
 });
 class LinkReference extends PureComponent<{href: string}> {
   render() {
@@ -69,15 +75,11 @@ class LinkReference extends PureComponent<{href: string}> {
   }
 }
 
-export class Markdown extends PureComponent<{
-  source: string;
-}> {
-  containerRef: RefObject<HTMLDivElement> = React.createRef();
-
-  componentDidMount() {
-    ReactDOM.render(
+export function Markdown(props: {source: string}) {
+  return (
+    <Container>
       <ReactMarkdown
-        source={this.props.source}
+        source={props.source}
         renderers={{
           heading: Heading,
           listItem: ListItem,
@@ -90,12 +92,7 @@ export class Markdown extends PureComponent<{
           link: LinkReference,
           linkReference: LinkReference,
         }}
-      />,
-      this.containerRef.current,
-    );
-  }
-
-  render() {
-    return <div ref={this.containerRef}></div>;
-  }
+      />
+    </Container>
+  );
 }

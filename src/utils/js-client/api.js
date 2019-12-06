@@ -14,7 +14,7 @@ export type FlipperMethodID = string;
 export class FlipperBridge {
   registerPlugins: (plugins: Array<FlipperPluginID>) => void;
 
-  start: () => void;
+  start: (appName: string) => void;
 
   stop: () => void;
 
@@ -104,9 +104,9 @@ export class FlipperClient {
     return this.plugins.get(id);
   }
 
-  start() {
+  start(appName: string) {
     this._bridge.registerPlugins([...this.plugins.keys()]);
-    this._bridge.start();
+    this._bridge.start(appName);
   }
 
   stop() {

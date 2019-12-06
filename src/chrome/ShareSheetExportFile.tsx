@@ -22,17 +22,11 @@ import {
 import ShareSheetErrorList from './ShareSheetErrorList';
 import ShareSheetPendingDialog from './ShareSheetPendingDialog';
 import {ReactReduxContext} from 'react-redux';
-import {store} from '../init';
+import {store} from '../store';
 
 const Container = styled(FlexColumn)({
   padding: 20,
   width: 500,
-});
-
-const Center = styled(FlexColumn)({
-  alignItems: 'center',
-  paddingTop: 50,
-  paddingBottom: 50,
 });
 
 const ErrorMessage = styled(Text)({
@@ -186,6 +180,7 @@ export default class ShareSheetExportFile extends Component<Props, State> {
       <ReactReduxContext.Consumer>
         {({store}) => (
           <ShareSheetPendingDialog
+            width={500}
             statusUpdate={statusUpdate}
             statusMessage="Exporting Flipper trace..."
             onCancel={() => this.cancelAndHide(store)}

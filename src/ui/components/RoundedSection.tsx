@@ -11,6 +11,7 @@ import React from 'react';
 import styled from 'react-emotion';
 import {colors} from './colors';
 import Heading from './Heading';
+import FlexColumn from './FlexColumn';
 
 const Divider = styled('hr')({
   margin: '16px -20px 20px -20px',
@@ -38,7 +39,7 @@ const RoundedSection: React.FC<{title: string}> = ({title, children}) => (
   <Container>
     <Heading>{title}</Heading>
     <Divider />
-    {children}
+    <FlexColumn>{children}</FlexColumn>
   </Container>
 );
 

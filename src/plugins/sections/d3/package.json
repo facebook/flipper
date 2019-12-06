@@ -1,4 +1,5 @@
 {
+  "title": "sections-d3",
   "name": "d3",
   "version": "3.5.17",
   "description": "A JavaScript visualization library for HTML and SVG.",
@@ -57,7 +58,7 @@
     "jsdom": "^15.1.1",
     "seedrandom": "^3.0.5",
     "smash": "0.0",
-    "uglify-js": "^3.6.8",
+    "uglify-js": "^3.7.1",
     "vows": "0.8"
   },
   "scripts": {

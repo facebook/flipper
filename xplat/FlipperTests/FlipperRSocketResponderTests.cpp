@@ -44,7 +44,8 @@ TEST(FlipperRSocketResponderTests, testFireAndForgetWithoutIdParam) {
   responder.handleFireAndForget(rsocket::Payload(json), rsocket::StreamId(1));
   EXPECT_EQ(socket.messagesReceived.size(), 1);
   EXPECT_EQ(socket.messagesReceived[0]["my"], "message");
-  EXPECT_EQ(socket.respondersReceived, 0);
+  EXPECT_EQ(socket.respondersWithIdReceived, 0);
+  EXPECT_EQ(socket.respondersWithoutIdReceived, 1);
 }
 
 TEST(FlipperRSocketResponderTests, testFireAndForgetWithIdParam) {
@@ -60,7 +61,8 @@ TEST(FlipperRSocketResponderTests, testFireAndForgetWithIdParam) {
   EXPECT_EQ(socket.messagesReceived.size(), 1);
   EXPECT_EQ(socket.messagesReceived[0]["my"], "message");
   EXPECT_EQ(socket.messagesReceived[0]["id"], 7);
-  EXPECT_EQ(socket.respondersReceived, 1);
+  EXPECT_EQ(socket.respondersWithIdReceived, 1);
+  EXPECT_EQ(socket.respondersWithoutIdReceived, 0);
 }
 
 } // namespace test

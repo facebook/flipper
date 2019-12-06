@@ -10,8 +10,8 @@
 import styled from 'react-emotion';
 import {colors} from './colors';
 
-export const multilineStyle = {
-  border: `1px solid ${colors.light15}`,
+export const multilineStyle = (props: {valid: boolean}) => ({
+  border: `1px solid ${props.valid === false ? colors.red : colors.light15}`,
   borderRadius: 4,
   font: 'inherit',
   fontSize: '1em',
@@ -24,12 +24,12 @@ export const multilineStyle = {
     borderColor: '#ccc',
     cursor: 'not-allowed',
   },
-};
-
-const MultiLineInput = styled('textarea')({
-  ...multilineStyle,
-  padding: '0 10px',
 });
+
+const MultiLineInput = styled('textarea')((props: {valid?: boolean}) => ({
+  ...multilineStyle({valid: props.valid === undefined || props.valid}),
+  padding: '0 10px',
+}));
 MultiLineInput.displayName = 'MultiLineInput';
 
 export default MultiLineInput;

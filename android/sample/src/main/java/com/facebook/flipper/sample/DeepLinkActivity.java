@@ -9,7 +9,6 @@ package com.facebook.flipper.sample;
 
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
-import com.facebook.flipper.plugins.navigation.NavigationFlipperPlugin;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
@@ -20,7 +19,7 @@ public class DeepLinkActivity extends AppCompatActivity {
   @Override
   protected void onCreate(final Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    NavigationFlipperPlugin.getInstance().sendNavigationEvent("flipper://deep_link_activity/");
+    NavigationFacade.sendNavigationEvent("flipper://deep_link_activity/");
 
     final ComponentContext context = new ComponentContext(this);
 

@@ -16,13 +16,11 @@ import {init as initLogger} from './fb-stubs/Logger';
 import App from './App';
 import BugReporter from './fb-stubs/BugReporter';
 import setupPrefetcher from './fb-stubs/Prefetcher';
-import {createStore} from 'redux';
 import {persistStore} from 'redux-persist';
-import reducers, {Store, Actions, State as StoreState} from './reducers/index';
+import {Store} from './reducers/index';
 import dispatcher from './dispatcher/index';
 import TooltipProvider from './ui/components/TooltipProvider';
 import config from './utils/processConfig';
-import {stateSanitizer} from './utils/reduxDevToolsConfig';
 import {initLauncherHooks} from './utils/launcher';
 import initCrashReporter from './utils/electronCrashReporter';
 import fbConfig from './fb-stubs/config';
@@ -31,16 +29,7 @@ import WarningEmployee from './chrome/WarningEmployee';
 import {setPersistor} from './utils/persistor';
 import React from 'react';
 import path from 'path';
-
-export const store = createStore<StoreState, Actions, any, any>(
-  reducers,
-  window.__REDUX_DEVTOOLS_EXTENSION__
-    ? window.__REDUX_DEVTOOLS_EXTENSION__({
-        // @ts-ignore: stateSanitizer is not part of type definition.
-        stateSanitizer,
-      })
-    : undefined,
-);
+import {store} from './store';
 
 const logger = initLogger(store);
 const bugReporter = new BugReporter(logger, store);

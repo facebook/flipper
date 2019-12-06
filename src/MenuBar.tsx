@@ -8,9 +8,12 @@
  */
 
 import {FlipperPlugin, FlipperDevicePlugin} from './plugin';
-import {showOpenDialog} from './utils/exportData';
 import {
-  setSelectPluginsToExportActiveSheet,
+  showOpenDialog,
+  startFileExport,
+  startLinkExport,
+} from './utils/exportData';
+import {
   setActiveSheet,
   ACTIVE_SHEET_PLUGINS,
   ACTIVE_SHEET_SETTINGS,
@@ -21,8 +24,6 @@ import {Store} from './reducers/';
 import electron, {MenuItemConstructorOptions} from 'electron';
 import {notNull} from './utils/typeUtils';
 import constants from './fb-stubs/constants';
-import os from 'os';
-import path from 'path';
 import GK from './fb-stubs/GK';
 
 export type DefaultKeyboardAction = 'clear' | 'goToBottom' | 'createPaste';
@@ -107,7 +108,7 @@ export function setupMenuBar(
       const menu = applicationMenu.items.find(
         menuItem => menuItem.label === topLevelMenu,
       );
-      if (menu && menu.submenu) {
+      if (menu) {
         const menuItem = menu.submenu.items.find(
           menuItem => menuItem.label === label,
         );
@@ -186,44 +187,14 @@ function getTemplate(
     {
       label: 'File...',
       accelerator: 'CommandOrControl+E',
-      click: function() {
-        electron.remote.dialog
-          .showSaveDialog(
-            // @ts-ignore This appears to work but isn't allowed by the types
-            null,
-            {
-              title: 'FlipperExport',
-              defaultPath: path.join(os.homedir(), 'FlipperExport.flipper'),
-            },
-          )
-          .then(async (result: electron.SaveDialogReturnValue) => {
-            const file = result.filePath;
-            if (!file) {
-              return;
-            }
-            store.dispatch(
-              setSelectPluginsToExportActiveSheet({
-                type: 'file',
-                file: file,
-                closeOnFinish: false,
-              }),
-            );
-          });
-      },
+      click: () => startFileExport(store.dispatch),
     },
   ];
   if (constants.ENABLE_SHAREABLE_LINK) {
     exportSubmenu.push({
       label: 'Shareable Link',
       accelerator: 'CommandOrControl+Shift+E',
-      click: function() {
-        store.dispatch(
-          setSelectPluginsToExportActiveSheet({
-            type: 'link',
-            closeOnFinish: false,
-          }),
-        );
-      },
+      click: () => startLinkExport(store.dispatch),
     });
   }
   const fileSubmenu: MenuItemConstructorOptions[] = [
@@ -299,7 +270,7 @@ function getTemplate(
         {
           label: 'Select All',
           accelerator: 'CmdOrCtrl+A',
-          role: 'selectAll',
+          role: 'selectall',
         },
       ],
     },
@@ -413,7 +384,7 @@ function getTemplate(
   ];
 
   if (process.platform === 'darwin') {
-    const name = app.name;
+    const name = app.getName();
     template.unshift({
       label: name,
       submenu: [
@@ -440,7 +411,7 @@ function getTemplate(
         {
           label: 'Hide Others',
           accelerator: 'Command+Shift+H',
-          role: 'hideOthers',
+          role: 'hideothers',
         },
         {
           label: 'Show All',

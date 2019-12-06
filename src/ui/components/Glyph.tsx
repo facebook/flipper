@@ -93,6 +93,7 @@ export default class Glyph extends React.PureComponent<{
   className?: string;
   color?: string;
   style?: React.CSSProperties;
+  title?: string;
 }> {
   render() {
     const {name, size = 16, variant, color, className, style} = this.props;

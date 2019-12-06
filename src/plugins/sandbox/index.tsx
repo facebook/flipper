@@ -10,17 +10,18 @@
 import {FlipperPlugin} from 'flipper';
 import {FlexColumn} from 'flipper';
 import {ButtonGroup, Button, styled, colors} from 'flipper';
+import React, {ChangeEvent} from 'react';
 
 export type Sandbox = {
-  name: string,
-  value: string,
+  name: string;
+  value: string;
 };
 
-type SandboxState = {|
-  sandboxes: Array<Sandbox>,
-  customSandbox: string,
-  showFeedback: boolean,
-|};
+type SandboxState = {
+  sandboxes: Array<Sandbox>;
+  customSandbox: string;
+  showFeedback: boolean;
+};
 
 const BigButton = styled(Button)({
   flexGrow: 1,
@@ -33,8 +34,12 @@ const ButtonContainer = styled(FlexColumn)({
   padding: 20,
 });
 
-export default class SandboxView extends FlipperPlugin<SandboxState> {
-  state = {
+export default class SandboxView extends FlipperPlugin<
+  SandboxState,
+  any,
+  unknown
+> {
+  state: SandboxState = {
     sandboxes: [],
     customSandbox: '',
     showFeedback: false,
@@ -66,14 +71,6 @@ export default class SandboxView extends FlipperPlugin<SandboxState> {
     marginLeft: 15,
   });
 
-  reducers = {
-    UpdateSandboxes(state: SandboxState, results: Object) {
-      return {
-        sandboxes: results.results,
-      };
-    },
-  };
-
   init() {
     this.client.call('getSandbox', {}).then((results: Array<Sandbox>) => {
       this.dispatchAction({results, type: 'UpdateSandboxes'});
@@ -85,7 +82,7 @@ export default class SandboxView extends FlipperPlugin<SandboxState> {
       .call('setSandbox', {
         sandbox: sandbox,
       })
-      .then((result: Object) => {
+      .then((result: {result: boolean}) => {
         setTimeout(() => {
           this.setState({showFeedback: false});
         }, 3000);
@@ -93,7 +90,7 @@ export default class SandboxView extends FlipperPlugin<SandboxState> {
       });
   };
 
-  onChangeSandbox = (e: SyntheticInputEvent<>) => {
+  onChangeSandbox = (e: ChangeEvent<HTMLInputElement>) => {
     this.setState({customSandbox: e.target.value});
   };
 
@@ -101,7 +98,7 @@ export default class SandboxView extends FlipperPlugin<SandboxState> {
     return (
       <FlexColumn>
         <SandboxView.TextInputLayout>
-          <ButtonGroup flexgrow={true}>
+          <ButtonGroup>
             <SandboxView.TextInput
               type="text"
               placeholder="Sandbox URL (e.g. unixname.sb.facebook.com)"

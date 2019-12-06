@@ -120,7 +120,7 @@ export default class Orderable extends React.Component<
     return !this.state.movingOrder;
   }
 
-  componentWillReceiveProps(nextProps: OrderableProps) {
+  UNSAFE_componentWillReceiveProps(nextProps: OrderableProps) {
     this.setState({
       order: nextProps.order,
     });

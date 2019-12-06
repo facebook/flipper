@@ -13,12 +13,21 @@ export class CancelledPromiseError extends Error {
     this.name = 'CancelledPromiseError';
   }
 }
-export function getStringFromErrorLike(e: any) {
-  if (typeof e == 'string') {
+
+export function getStringFromErrorLike(e: any): string {
+  if (Array.isArray(e)) {
+    return e.map(getStringFromErrorLike).join(' ');
+  } else if (typeof e == 'string') {
     return e;
   } else if (e instanceof Error) {
-    return e.message;
+    return e.message || e.toString();
   } else {
-    return JSON.stringify(e);
+    try {
+      return JSON.stringify(e);
+    } catch (e) {
+      // Stringify might fail on arbitrary structures
+      // Last resort: toString it.
+      return '' + e;
+    }
   }
 }

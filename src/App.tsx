@@ -14,10 +14,12 @@ import TitleBar from './chrome/TitleBar';
 import MainSidebar from './chrome/MainSidebar';
 import BugReporterDialog from './chrome/BugReporterDialog';
 import ErrorBar from './chrome/ErrorBar';
+import DoctorBar from './chrome/DoctorBar';
 import ShareSheetExportUrl from './chrome/ShareSheetExportUrl';
 import SignInSheet from './chrome/SignInSheet';
 import ExportDataPluginSheet from './chrome/ExportDataPluginSheet';
 import ShareSheetExportFile from './chrome/ShareSheetExportFile';
+import JSEmulatorLauncherSheet from './chrome/JSEmulatorLauncherSheet';
 import PluginContainer from './PluginContainer';
 import Sheet from './chrome/Sheet';
 import {ipcRenderer, remote} from 'electron';
@@ -29,9 +31,11 @@ import {
   ACTIVE_SHEET_SHARE_DATA,
   ACTIVE_SHEET_SIGN_IN,
   ACTIVE_SHEET_SETTINGS,
+  ACTIVE_SHEET_DOCTOR,
   ACTIVE_SHEET_SHARE_DATA_IN_FILE,
   ACTIVE_SHEET_SELECT_PLUGINS_TO_EXPORT,
   ACTIVE_SHEET_PLUGIN_SHEET,
+  ACTIVE_SHEET_JS_EMULATOR_LAUNCHER,
 } from './reducers/application';
 import {Logger} from './fb-interfaces/Logger';
 import BugReporter from './fb-stubs/BugReporter';
@@ -40,6 +44,7 @@ import {StaticView, FlipperError} from './reducers/connections';
 import PluginManager from './chrome/PluginManager';
 import StatusBar from './chrome/StatusBar';
 import SettingsSheet from './chrome/SettingsSheet';
+import DoctorSheet from './chrome/DoctorSheet';
 const version = remote.app.getVersion();
 
 type OwnProps = {
@@ -89,6 +94,8 @@ export class App extends React.Component<Props> {
         return <SignInSheet onHide={onHide} />;
       case ACTIVE_SHEET_SETTINGS:
         return <SettingsSheet onHide={onHide} />;
+      case ACTIVE_SHEET_DOCTOR:
+        return <DoctorSheet onHide={onHide} />;
       case ACTIVE_SHEET_SELECT_PLUGINS_TO_EXPORT:
         return <ExportDataPluginSheet onHide={onHide} />;
       case ACTIVE_SHEET_SHARE_DATA:
@@ -117,6 +124,8 @@ export class App extends React.Component<Props> {
       case ACTIVE_SHEET_PLUGIN_SHEET:
         // Currently unused.
         return null;
+      case ACTIVE_SHEET_JS_EMULATOR_LAUNCHER:
+        return <JSEmulatorLauncherSheet onHide={onHide} />;
       default:
         return null;
     }
@@ -126,12 +135,15 @@ export class App extends React.Component<Props> {
     return (
       <FlexColumn grow={true}>
         <TitleBar version={version} />
+        <DoctorBar />
         <ErrorBar />
         <Sheet>{this.getSheet}</Sheet>
         <FlexRow grow={true}>
           {this.props.leftSidebarVisible && <MainSidebar />}
           {this.props.staticView != null ? (
-            React.createElement(this.props.staticView)
+            React.createElement(this.props.staticView, {
+              logger: this.props.logger,
+            })
           ) : (
             <PluginContainer logger={this.props.logger} />
           )}

@@ -30,7 +30,6 @@ import {connect} from 'react-redux';
 import {setPluginState} from './reducers/pluginStates';
 import {selectPlugin} from './reducers/connections';
 import {State as Store} from './reducers/index';
-import NotificationsHub from './NotificationsHub';
 import {activateMenuItems} from './MenuBar';
 
 const Container = styled(FlexColumn)({
@@ -196,11 +195,7 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
       | null = null;
 
     if (selectedPlugin) {
-      if (selectedPlugin === NotificationsHub.id) {
-        activePlugin = NotificationsHub;
-      } else if (selectedPlugin) {
-        activePlugin = devicePlugins.get(selectedPlugin) || null;
-      }
+      activePlugin = devicePlugins.get(selectedPlugin) || null;
       target = selectedDevice;
       if (selectedDevice && activePlugin) {
         pluginKey = getPluginKey(selectedDevice.serial, activePlugin.id);

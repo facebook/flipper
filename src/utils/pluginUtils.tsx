@@ -13,6 +13,7 @@ import {State as PluginStatesState} from '../reducers/pluginStates';
 import {pluginsClassMap} from './exportData';
 import {State as PluginsState} from '../reducers/plugins';
 import {PluginDefinition} from '../dispatcher/plugins';
+import {deconstructPluginKey} from './clientUtils';
 
 export function getPluginKey(
   selectedApp: string | null,
@@ -53,13 +54,15 @@ export function getActivePersistentPlugins(
     string,
     typeof FlipperDevicePlugin | typeof FlipperPlugin
   > = pluginsClassMap(plugins);
-  return getPersistentPlugins(plugins).filter(plugin => {
-    const pluginClass = pluginsMap.get(plugin);
-    const keys = Object.keys(pluginsState).map(key => key.split('#').pop());
+  return getPersistentPlugins(plugins).filter(pluginName => {
+    const pluginClass = pluginsMap.get(pluginName);
+    const pluginNames = Object.keys(pluginsState).map(
+      pluginKey => deconstructPluginKey(pluginKey).pluginName,
+    );
     return (
       (pluginClass && pluginClass.exportPersistedState != undefined) ||
-      plugin == 'DeviceLogs' ||
-      keys.includes(plugin)
+      pluginName == 'DeviceLogs' ||
+      pluginNames.includes(pluginName)
     );
   });
 }

@@ -11,7 +11,7 @@ export function getUser() {
   return Promise.reject();
 }
 
-export async function internGraphAPIRequest(
+export async function internGraphPOSTAPIRequest(
   endpoint: string,
   formFields: {
     [key: string]: any;

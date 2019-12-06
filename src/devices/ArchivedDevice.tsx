@@ -9,7 +9,7 @@
 
 import BaseDevice from './BaseDevice';
 import {DeviceType, OS, DeviceShell, DeviceLogEntry} from './BaseDevice';
-import {SupportRequestDetailsMetaData} from '../utils/exportData';
+import {SupportFormRequestDetailsState} from '../reducers/supportForm';
 
 function normalizeArchivedDeviceType(deviceType: DeviceType): DeviceType {
   let archivedDeviceType = deviceType;
@@ -29,7 +29,7 @@ export default class ArchivedDevice extends BaseDevice {
     os: OS,
     logEntries: Array<DeviceLogEntry>,
     source: string = '',
-    supportRequestDetails?: SupportRequestDetailsMetaData,
+    supportRequestDetails?: SupportFormRequestDetailsState,
   ) {
     super(serial, normalizeArchivedDeviceType(deviceType), title, os);
     this.logs = logEntries;
@@ -41,7 +41,7 @@ export default class ArchivedDevice extends BaseDevice {
 
   isArchived = true;
 
-  supportRequestDetails?: SupportRequestDetailsMetaData;
+  supportRequestDetails?: SupportFormRequestDetailsState;
 
   getLogs() {
     return this.logs;

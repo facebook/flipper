@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <Flipper/FireAndForgetBasedFlipperResponder.h>
 #include <Flipper/FlipperConnectionManager.h>
 
 namespace facebook {
@@ -43,7 +44,17 @@ class FlipperConnectionManagerMock : public FlipperConnectionManager {
       const folly::dynamic& message,
       std::unique_ptr<FlipperResponder> responder) override {
     if (responder) {
-      respondersReceived++;
+      const FireAndForgetBasedFlipperResponder* const r =
+          dynamic_cast<FireAndForgetBasedFlipperResponder*>(responder.get());
+      if (r) {
+        if (r->hasId()) {
+          ++respondersWithIdReceived;
+        } else {
+          ++respondersWithoutIdReceived;
+        }
+      } else {
+        ++respondersWithIdReceived;
+      }
     }
     callbacks->onMessageReceived(message, std::move(responder));
     messagesReceived.push_back(message);
@@ -58,7 +69,8 @@ class FlipperConnectionManagerMock : public FlipperConnectionManager {
   Callbacks* callbacks;
   std::vector<folly::dynamic> messages;
   std::vector<folly::dynamic> messagesReceived;
-  int respondersReceived = 0;
+  int respondersWithIdReceived = 0;
+  int respondersWithoutIdReceived = 0;
 };
 
 } // namespace test

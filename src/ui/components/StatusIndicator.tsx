@@ -7,7 +7,9 @@
  * @format
  */
 
-import {colors, styled} from 'flipper';
+import styled from 'react-emotion';
+import {colors} from './colors';
+
 import {BackgroundColorProperty, HeightProperty} from 'csstype';
 
 type Props = {

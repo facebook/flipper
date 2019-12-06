@@ -18,7 +18,7 @@ import {
 } from 'flipper';
 import React, {Component} from 'react';
 import {ReactReduxContext} from 'react-redux';
-import {store} from '../init';
+import {store} from '../store';
 import {
   setExportStatusComponent,
   unsetShare,
@@ -39,6 +39,7 @@ import CancellableExportStatus from './CancellableExportStatus';
 import {performance} from 'perf_hooks';
 import ShareSheetPendingDialog from './ShareSheetPendingDialog';
 import {getInstance as getLogger} from '../fb-stubs/Logger';
+import {resetSupportFormV2State} from '../reducers/supportForm';
 export const SHARE_FLIPPER_TRACE_EVENT = 'share-flipper-link';
 
 const Container = styled(FlexColumn)({
@@ -117,7 +118,7 @@ export default class ShareSheetExportUrl extends Component<Props, State> {
         }
       };
       const {serializedString, errorArray} = await reportPlatformFailures(
-        exportStore(store, this.idler, statusUpdate),
+        exportStore(store.getState(), this.idler, statusUpdate),
         `${EXPORT_FLIPPER_TRACE_EVENT}:UI_LINK`,
       );
       const uploadMarker = `${EXPORT_FLIPPER_TRACE_EVENT}:upload`;
@@ -142,6 +143,7 @@ export default class ShareSheetExportUrl extends Component<Props, State> {
           requireInteraction: true,
         });
       }
+      store.dispatch(resetSupportFormV2State());
       this.props.logger.trackTimeSince(mark, 'export:url-success');
     } catch (e) {
       if (!this.state.runInBackground) {
@@ -192,6 +194,7 @@ export default class ShareSheetExportUrl extends Component<Props, State> {
       <ReactReduxContext.Consumer>
         {({store}) => (
           <ShareSheetPendingDialog
+            width={500}
             statusUpdate={statusUpdate}
             statusMessage="Uploading Flipper trace..."
             onCancel={this.cancelAndHide(store)}

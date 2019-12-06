@@ -43,12 +43,25 @@ repositories {
 }
 
 dependencies {
-  debugImplementation 'com.facebook.flipper:flipper:0.28.0'
+  debugImplementation 'com.facebook.flipper:flipper:0.30.0'
   debugImplementation 'com.facebook.soloader:soloader:0.5.1'
 
-  releaseImplementation 'com.facebook.flipper:flipper-noop:0.28.0'
+  releaseImplementation 'com.facebook.flipper:flipper-noop:0.30.0'
 }
 ```
+
+<div class="warning">
+
+Please note that our `flipper-noop` package provides a limited subset of the
+APIs provided by the `flipper` package and does not provide any plugin stubs.
+It is recommended that you keep all Flipper instantiation code in a separate
+build variant to ensure it doesn't accidentally make it into your production
+builds. Check out [the sample
+app](https://github.com/facebook/flipper/tree/master/android/sample/src) to
+see how to organise your Flipper initialization into debug and release
+variants.
+
+</div>
 
 Now you can initialize Flipper in your Application's `onCreate` method, which involves
 initializing SoLoader (for loading the C++ part of Flipper) and starting a `FlipperClient`.
@@ -87,10 +100,10 @@ repositories {
 }
 
 dependencies {
-  debugImplementation 'com.facebook.flipper:flipper:0.28.1-SNAPSHOT'
+  debugImplementation 'com.facebook.flipper:flipper:0.30.1-SNAPSHOT'
   debugImplementation 'com.facebook.soloader:soloader:0.5.1'
 
-  releaseImplementation 'com.facebook.flipper:flipper-noop:0.28.1-SNAPSHOT'
+  releaseImplementation 'com.facebook.flipper:flipper-noop:0.30.1-SNAPSHOT'
 }
 ```
 
@@ -105,7 +118,7 @@ We support both Swift and Objective-C for Flipper with CocoaPods as build and di
 
 ```ruby
 project 'MyApp.xcodeproj'
-flipperkit_version = '0.28.0'
+flipperkit_version = '0.30.0'
 
 target 'MyApp' do
   platform :ios, '9.0'
@@ -167,7 +180,7 @@ end
 
 ```ruby
 project 'MyApp.xcodeproj'
-flipperkit_version = '0.28.0'
+flipperkit_version = '0.30.0'
 
 target 'MyApp' do
   platform :ios, '9.0'

@@ -16,17 +16,20 @@ import {RSocketServer} from 'rsocket-core';
 import RSocketTCPServer from 'rsocket-tcp-server';
 import {Single} from 'rsocket-flowable';
 import Client from './Client';
+import {FlipperClientConnection} from './Client';
 import {UninitializedClient} from './UninitializedClient';
 import {reportPlatformFailures} from './utils/metrics';
 import EventEmitter from 'events';
 import invariant from 'invariant';
 import tls from 'tls';
 import net, {Socket} from 'net';
-import {RSocketClientSocket} from 'rsocket-core/RSocketClient';
 import {Responder, Payload, ReactiveSocket} from 'rsocket-types';
+import GK from './fb-stubs/GK';
+import {initJsEmulatorIPC} from './utils/js-client/serverUtils';
+import {buildClientId} from './utils/clientUtils';
 
 type ClientInfo = {
-  connection: RSocketClientSocket<any, any> | null | undefined;
+  connection: FlipperClientConnection<any, any> | null | undefined;
   client: Client;
 };
 
@@ -84,6 +87,11 @@ class Server extends EventEmitter {
         return;
       });
     reportPlatformFailures(this.initialisePromise, 'initializeServer');
+
+    if (GK.get('flipper_js_client_emulator')) {
+      initJsEmulatorIPC(this.store, this.logger, this, this.connections);
+    }
+
     return this.initialisePromise;
   }
 
@@ -304,7 +312,7 @@ class Server extends EventEmitter {
   }
 
   async addConnection(
-    conn: RSocketClientSocket<any, any>,
+    conn: FlipperClientConnection<any, any>,
     query: ClientQuery,
     csrQuery: ClientCsrQuery,
   ): Promise<Client> {
@@ -327,7 +335,12 @@ class Server extends EventEmitter {
       query.device_id = csrId;
       query.app = appNameWithUpdateHint(query);
 
-      const id = `${query.app}#${query.os}#${query.device}#${csrId}`;
+      const id = buildClientId({
+        app: query.app,
+        os: query.os,
+        device: query.device,
+        device_id: csrId,
+      });
       console.debug(`Device connected: ${id}`, 'server');
 
       const client = new Client(id, query, conn, this.logger, this.store);

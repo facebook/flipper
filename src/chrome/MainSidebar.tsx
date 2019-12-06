@@ -30,12 +30,14 @@ import {
   LoadingIndicator,
   Button,
   StarButton,
-  ArchivedDevice,
   Heading,
   Spacer,
+  ArchivedDevice,
+  SmallText,
+  Info,
 } from 'flipper';
 import React, {Component, PureComponent, Fragment} from 'react';
-import NotificationsHub from '../NotificationsHub';
+import NotificationScreen from '../chrome/NotificationScreen';
 import {
   selectPlugin,
   starPlugin,
@@ -52,6 +54,7 @@ import {BackgroundColorProperty} from 'csstype';
 import {StyledOtherComponent} from 'create-emotion-styled';
 import SupportRequestFormManager from '../fb-stubs/SupportRequestFormManager';
 import SupportRequestDetails from '../fb-stubs/SupportRequestDetails';
+import SupportRequestFormV2 from '../fb-stubs/SupportRequestFormV2';
 
 type FlipperPlugins = typeof FlipperPlugin[];
 type PluginsByCategory = [string, FlipperPlugins][];
@@ -228,7 +231,7 @@ type StateFromProps = {
   staticView: StaticView;
   selectedPlugin: string | null | undefined;
   selectedApp: string | null | undefined;
-  userStarredPlugins: Store['connections']['userStarredPlugins'];
+  starredPlugins: Store['connections']['starredPlugins'];
   clients: Array<Client>;
   uninitializedClients: Array<{
     client: UninitializedClient;
@@ -258,7 +261,7 @@ type State = {
 };
 class MainSidebar extends PureComponent<Props, State> {
   state: State = {
-    showSupportForm: GK.get('flipper_support_requests'),
+    showSupportForm: GK.get('support_requests_v2'),
     showAllPlugins: false,
   };
   static getDerivedStateFromProps(props: Props, state: State) {
@@ -283,7 +286,6 @@ class MainSidebar extends PureComponent<Props, State> {
       staticView,
       selectPlugin,
       setStaticView,
-      numNotifications,
       uninitializedClients,
     } = this.props;
     const clients = getAvailableClients(selectedDevice, this.props.clients);
@@ -374,56 +376,23 @@ class MainSidebar extends PureComponent<Props, State> {
             </ListItem>
           )}
         </Plugins>
-        {!GK.get('flipper_disable_notifications') && (
-          <ListItem
-            active={selectedPlugin === 'notifications'}
-            onClick={() =>
-              selectPlugin({
-                selectedPlugin: 'notifications',
-                selectedApp: null,
-                deepLinkPayload: null,
-              })
-            }
-            style={{
-              borderTop: `1px solid ${colors.blackAlpha10}`,
-            }}>
-            <PluginIcon
-              color={colors.light50}
-              name={
-                numNotifications > 0
-                  ? NotificationsHub.icon || 'bell'
-                  : 'bell-null'
-              }
-              isActive={selectedPlugin === NotificationsHub.id}
-            />
-            <PluginName
-              count={numNotifications}
-              isActive={selectedPlugin === NotificationsHub.id}>
-              {NotificationsHub.title}
-            </PluginName>
-          </ListItem>
-        )}
-        {this.state.showSupportForm && (
-          <ListItem
-            active={
-              staticView != null && staticView === SupportRequestFormManager
-            }
-            onClick={() => setStaticView(SupportRequestFormManager)}>
-            <PluginIcon
-              color={colors.light50}
-              name={'app-dailies'}
-              isActive={
-                staticView != null && staticView === SupportRequestFormManager
-              }
-            />
-            <PluginName
-              isActive={
-                staticView != null && staticView === SupportRequestFormManager
-              }>
-              Litho Support Request
-            </PluginName>
-          </ListItem>
-        )}
+        {this.renderNotificationsEntry()}
+        {this.state.showSupportForm &&
+          (function() {
+            const active = isStaticViewActive(staticView, SupportRequestFormV2);
+            return (
+              <ListItem
+                active={active}
+                onClick={() => setStaticView(SupportRequestFormV2)}>
+                <PluginIcon
+                  color={colors.light50}
+                  name={'app-dailies'}
+                  isActive={active}
+                />
+                <PluginName isActive={active}>Litho Support Request</PluginName>
+              </ListItem>
+            );
+          })()}
         <ListItem
           onClick={() => this.props.setActiveSheet(ACTIVE_SHEET_PLUGINS)}>
           <PluginIcon
@@ -443,26 +412,28 @@ class MainSidebar extends PureComponent<Props, State> {
       return null;
     }
     const {staticView, setStaticView} = this.props;
+    const supportRequestDetailsactive = isStaticViewActive(
+      staticView,
+      SupportRequestDetails,
+    );
     return (
       <>
+        <ListItem>
+          <Info type="warning" small>
+            {selectedDevice.source ? 'Imported device' : 'Archived device'}
+          </Info>
+        </ListItem>
         {this.state.showSupportForm &&
           (selectedDevice as ArchivedDevice).supportRequestDetails && (
             <ListItem
-              active={
-                staticView != null && staticView === SupportRequestDetails
-              }
+              active={supportRequestDetailsactive}
               onClick={() => setStaticView(SupportRequestDetails)}>
               <PluginIcon
                 color={colors.light50}
                 name={'app-dailies'}
-                isActive={
-                  staticView != null && staticView === SupportRequestDetails
-                }
+                isActive={supportRequestDetailsactive}
               />
-              <PluginName
-                isActive={
-                  staticView != null && staticView === SupportRequestDetails
-                }>
+              <PluginName isActive={supportRequestDetailsactive}>
                 Support Request Details
               </PluginName>
             </ListItem>
@@ -520,9 +491,8 @@ class MainSidebar extends PureComponent<Props, State> {
       (p: typeof FlipperPlugin) => client.plugins.indexOf(p.id) > -1,
     );
     const favoritePlugins: FlipperPlugins = getFavoritePlugins(
-      client,
       allPlugins,
-      this.props.userStarredPlugins,
+      this.props.starredPlugins,
       true,
     );
     const showAllPlugins =
@@ -537,15 +507,7 @@ class MainSidebar extends PureComponent<Props, State> {
       <>
         {favoritePlugins.length === 0 ? (
           <ListItem>
-            <div
-              style={{
-                textAlign: 'center',
-                width: '100%',
-                color: colors.light30,
-                fontStyle: 'italic',
-              }}>
-              Star your favorite plugins!
-            </div>
+            <SmallText center>Star your favorite plugins!</SmallText>
           </ListItem>
         ) : (
           <>
@@ -587,9 +549,8 @@ class MainSidebar extends PureComponent<Props, State> {
             ? this.renderPluginsByCategory(
                 client,
                 getFavoritePlugins(
-                  client,
                   allPlugins,
-                  this.props.userStarredPlugins,
+                  this.props.starredPlugins,
                   false,
                 ),
                 false,
@@ -600,19 +561,50 @@ class MainSidebar extends PureComponent<Props, State> {
       </>
     );
   }
+
+  renderNotificationsEntry() {
+    if (GK.get('flipper_disable_notifications')) {
+      return null;
+    }
+
+    const active = isStaticViewActive(
+      this.props.staticView,
+      NotificationScreen,
+    );
+    return (
+      <ListItem
+        active={active}
+        onClick={() => this.props.setStaticView(NotificationScreen)}
+        style={{
+          borderTop: `1px solid ${colors.blackAlpha10}`,
+        }}>
+        <PluginIcon
+          color={colors.light50}
+          name={this.props.numNotifications > 0 ? 'bell' : 'bell-null'}
+          isActive={active}
+        />
+        <PluginName count={this.props.numNotifications} isActive={active}>
+          Notifications
+        </PluginName>
+      </ListItem>
+    );
+  }
+}
+
+function isStaticViewActive(
+  current: StaticView,
+  selected: StaticView,
+): boolean {
+  return current && selected && current === selected;
 }
 
 function getFavoritePlugins(
-  client: Client,
   allPlugins: FlipperPlugins,
-  userStarredPlugins: Props['userStarredPlugins'],
+  starredPlugins: Props['starredPlugins'],
   favorite: boolean,
 ): FlipperPlugins {
-  const appName = client.id;
   return allPlugins.filter(plugin => {
-    const idx = userStarredPlugins[appName]
-      ? userStarredPlugins[appName].indexOf(plugin.id)
-      : -1;
+    const idx = starredPlugins.indexOf(plugin.id);
     return idx === -1 ? !favorite : favorite;
   });
 }
@@ -641,7 +633,7 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
       selectedDevice,
       selectedPlugin,
       selectedApp,
-      userStarredPlugins,
+      starredPlugins,
       clients,
       uninitializedClients,
       staticView,
@@ -660,7 +652,7 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
     staticView,
     selectedPlugin,
     selectedApp,
-    userStarredPlugins,
+    starredPlugins,
     clients,
     uninitializedClients,
     devicePlugins,

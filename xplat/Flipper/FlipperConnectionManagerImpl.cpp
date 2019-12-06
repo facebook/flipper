@@ -91,6 +91,12 @@ FlipperConnectionManagerImpl::~FlipperConnectionManagerImpl() {
 }
 
 void FlipperConnectionManagerImpl::start() {
+  if (isStarted_) {
+    log("Already started");
+    return;
+  }
+  isStarted_ = true;
+
   auto step = flipperState_->start("Start connection thread");
 
   folly::makeFuture()
@@ -103,6 +109,10 @@ void FlipperConnectionManagerImpl::start() {
 }
 
 void FlipperConnectionManagerImpl::startSync() {
+  if (!isStarted_) {
+    log("Not started");
+    return;
+  }
   if (!isRunningInOwnThread()) {
     log(WRONG_THREAD_EXIT_MSG);
     return;
@@ -219,6 +229,10 @@ void FlipperConnectionManagerImpl::connectSecurely() {
 }
 
 void FlipperConnectionManagerImpl::reconnect() {
+  if (!isStarted_) {
+    log("Not started");
+    return;
+  }
   folly::makeFuture()
       .via(flipperEventBase_->getEventBase())
       .delayed(std::chrono::seconds(reconnectIntervalSeconds))
@@ -226,6 +240,12 @@ void FlipperConnectionManagerImpl::reconnect() {
 }
 
 void FlipperConnectionManagerImpl::stop() {
+  if (!isStarted_) {
+    log("Not started");
+    return;
+  }
+  isStarted_ = false;
+
   if (client_) {
     client_->disconnect();
   }

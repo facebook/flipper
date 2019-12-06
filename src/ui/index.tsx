@@ -161,8 +161,12 @@ export {default as Sheet} from './components/Sheet';
 export {StarButton} from './components/StarButton';
 export {Markdown} from './components/Markdown';
 
-export {default as BottomSpaced} from './components/BottomSpaced';
+export {default as VBox} from './components/VBox';
+export {default as HBox} from './components/HBox';
 export {default as SmallText} from './components/SmallText';
 export {default as Labeled} from './components/Labeled';
 export {default as RoundedSection} from './components/RoundedSection';
 export {default as CenteredView} from './components/CenteredView';
+export {default as Info} from './components/Info';
+export {default as Bordered} from './components/Bordered';
+export {default as AlternatingRows} from './components/AlternatingRows';

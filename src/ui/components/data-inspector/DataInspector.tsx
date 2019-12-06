@@ -15,13 +15,15 @@ import Tooltip from '../Tooltip';
 import styled from 'react-emotion';
 import createPaste from '../../../fb-stubs/createPaste';
 import {reportInteraction} from '../../../utils/InteractionTracker';
-import DataPreview from './DataPreview';
+import DataPreview, {DataValueExtractor, InspectorName} from './DataPreview';
 import {getSortedKeys} from './utils';
 import {colors} from '../colors';
 import {clipboard} from 'electron';
 import deepEqual from 'deep-equal';
 import React from 'react';
 import {TooltipOptions} from '../TooltipProvider.js';
+
+export {DataValueExtractor} from './DataPreview';
 
 const BaseContainer = styled('div')(
   (props: {depth?: number; disabled?: boolean}) => ({
@@ -60,27 +62,10 @@ const ExpandControl = styled('span')({
 });
 ExpandControl.displayName = 'DataInspector:ExpandControl';
 
-export const InspectorName = styled('span')({
-  color: colors.grapeDark1,
-});
-InspectorName.displayName = 'DataInspector:InspectorName';
-
 const nameTooltipOptions: TooltipOptions = {
   position: 'toLeft',
   showTail: true,
 };
-
-export type DataValueExtractor = (
-  value: any,
-  depth: number,
-) =>
-  | {
-      mutable: boolean;
-      type: string;
-      value: any;
-    }
-  | undefined
-  | null;
 
 export type DataInspectorSetValue = (path: Array<string>, val: any) => void;
 
