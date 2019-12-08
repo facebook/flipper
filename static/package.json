@@ -4,7 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
-    "@babel/core": "^7.7.2",
+    "@babel/core": "^7.7.5",
     "@babel/generator": "^7.7.2",
     "@babel/parser": "^7.7.3",
     "@babel/plugin-proposal-class-properties": "^7.7.0",
