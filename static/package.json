@@ -7,7 +7,7 @@
     "@babel/core": "^7.7.5",
     "@babel/generator": "^7.7.4",
     "@babel/parser": "^7.7.5",
-    "@babel/plugin-proposal-class-properties": "^7.7.0",
+    "@babel/plugin-proposal-class-properties": "^7.7.4",
     "@babel/plugin-proposal-object-rest-spread": "^7.6.2",
     "@babel/plugin-proposal-optional-chaining": "^7.6.0",
     "@babel/plugin-transform-flow-strip-types": "^7.6.3",
