@@ -68,7 +68,11 @@ function watchChanges(
       fs.watch(plugin.rootDir, {recursive: true}, (eventType, filename) => {
         // only recompile for changes in not hidden files. Watchman might create
         // a file called .watchman-cookie
-        if (!filename.startsWith('.') && !delayedCompilation[plugin.name]) {
+        if (
+          filename &&
+          !filename.startsWith('.') &&
+          !delayedCompilation[plugin.name]
+        ) {
           delayedCompilation[plugin.name] = setTimeout(() => {
             delayedCompilation[plugin.name] = null;
             // eslint-disable-next-line no-console
