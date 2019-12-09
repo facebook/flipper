@@ -199,7 +199,7 @@
     "rm-dist": "rimraf dist",
     "rm-modules": "rimraf node_modules static/node_modules",
     "rm-temp": "rimraf $TMPDIR/jest* $TMPDIR/react-native-packager*",
-    "reset": "yarn cache clean && yarn rm-dist && yarn rm-modules && yarn rm-temp",
+    "reset": "yarn rm-dist && yarn rm-temp && yarn cache clean && yarn rm-modules",
     "start": "cross-env NODE_ENV=development node scripts/start-dev-server.js",
     "build": "yarn rm-dist && cross-env NODE_ENV=production node scripts/build-release.js $@",
     "build-headless": "yarn rm-dist && mkdir dist && cross-env NODE_ENV=production node scripts/build-headless.js $@",
