@@ -240,7 +240,7 @@ class ElementsRow extends PureComponent<ElementsRowProps, ElementsRowState> {
 
   getContextMenu = (): Array<MenuItemConstructorOptions> => {
     const {props} = this;
-    const items: Array<MenuItemConstructorOptions> = [
+    let items: Array<MenuItemConstructorOptions> = [
       {
         type: 'separator',
       },
@@ -269,6 +269,16 @@ class ElementsRow extends PureComponent<ElementsRowProps, ElementsRowState> {
         },
       },
     ];
+    items = items.concat(
+      props.element.attributes.map(o => {
+        return {
+          label: `Copy ${o.name}`,
+          click: () => {
+            clipboard.writeText(o.value);
+          },
+        };
+      }),
+    );
 
     for (const extension of props.contextMenuExtensions) {
       items.push({
