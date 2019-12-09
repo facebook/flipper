@@ -40,6 +40,7 @@ public class FlipperOkhttpInterceptor implements Interceptor {
     this.plugin = plugin;
   }
 
+  /** If you want to change the number of bytes displayed for the body, use this constructor */
   public FlipperOkhttpInterceptor(NetworkFlipperPlugin plugin, long maxBodyBytes) {
     this.plugin = plugin;
     this.maxBodyBytes = maxBodyBytes;
