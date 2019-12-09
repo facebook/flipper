@@ -64,7 +64,7 @@ matrix:
       script:
         - cd iOS/Sample
         - IPHONESIMULATOR=$(xcodebuild -showsdks | grep -o "iphonesimulator[0-9]\\+\\.[0-9]\\+$")
-        - travis_wait xcodebuild clean build -workspace Sample.xcworkspace -scheme Sample -sdk $IPHONESIMULATOR -quiet > ./build.log
+        - travis_wait 30 xcodebuild clean build -workspace Sample.xcworkspace -scheme Sample -sdk $IPHONESIMULATOR -quiet > ./build.log
         - tail -100 ./build.log
 
     - language: objective-c
