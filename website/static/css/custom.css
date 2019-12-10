@@ -458,6 +458,11 @@ footer iframe {
   background-color: rgb(253, 245, 212);
   border-left: 4px solid rgb(241, 196, 15);
   padding: 12px;
+  margin-bottom: 16px;
+}
+
+.warning *:last-child {
+  margin-bottom: 0px;
 }
 
 .navListItem a[href='/docs/features/index.html'] {
