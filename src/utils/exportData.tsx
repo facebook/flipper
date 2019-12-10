@@ -42,6 +42,7 @@ import {
 } from '../reducers/supportForm';
 import {setSelectPluginsToExportActiveSheet} from '../reducers/application';
 import {deconstructClientId, deconstructPluginKey} from '../utils/clientUtils';
+import {performance} from 'perf_hooks';
 
 export const IMPORT_FLIPPER_TRACE_EVENT = 'import-flipper-trace';
 export const EXPORT_FLIPPER_TRACE_EVENT = 'export-flipper-trace';
