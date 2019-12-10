@@ -1083,12 +1083,13 @@ export default class DatabasesPlugin extends FlipperPlugin<
   buildSidebarRow = (key: string, val: any) => {
     let output = '';
     try {
-      output = (
-        <ManagedDataInspector
-          data={JSON.parse(val.props.children)}
-          expandRoot={true}
-        />
-      );
+      const parsed = JSON.parse(val.props.children);
+      for (const key in parsed) {
+        try {
+          parsed[key] = JSON.parse(parsed[key]);
+        } catch (err) {}
+      }
+      output = <ManagedDataInspector data={parsed} expandRoot={true} />;
     } catch (error) {
       output = val;
     }
