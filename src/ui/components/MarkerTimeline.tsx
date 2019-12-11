@@ -8,7 +8,7 @@
  */
 
 import {Component} from 'react';
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 import Text from './Text';
 import FlexRow from './FlexRow';
 import {colors} from './colors';
@@ -29,7 +29,11 @@ type Props = {
   maxGap: number;
 };
 
-const Markers = styled('div')((props: {totalTime: number}) => ({
+type MouseEventHandler = (
+  event: React.MouseEvent<HTMLDivElement, MouseEvent>,
+) => void;
+
+const Markers = styled.div<{totalTime: number}>(props => ({
   position: 'relative',
   margin: 10,
   height: props.totalTime,
@@ -45,69 +49,67 @@ const Markers = styled('div')((props: {totalTime: number}) => ({
 }));
 Markers.displayName = 'MarkerTimeline:Markers';
 
-const Point = styled(FlexRow)(
-  (props: {
-    positionY: number;
-    onClick: Function | undefined;
-    number: number | undefined;
-    threadColor: string;
-    selected: boolean;
-    cut: boolean;
-  }) => ({
+const Point = styled(FlexRow)<{
+  positionY: number;
+  onClick: MouseEventHandler | undefined;
+  number: number | undefined;
+  threadColor: string;
+  selected: boolean;
+  cut: boolean;
+}>(props => ({
+  position: 'absolute',
+  top: props.positionY,
+  left: 0,
+  right: 10,
+  cursor: props.onClick ? 'pointer' : 'default',
+  borderRadius: 3,
+  alignItems: 'flex-start',
+  lineHeight: '16px',
+  ':hover': {
+    background: `linear-gradient(to top, rgba(255,255,255,0) 0, #ffffff 10px)`,
+    paddingBottom: 5,
+    zIndex: 2,
+    '> span': {
+      whiteSpace: 'initial',
+    },
+  },
+  '::before': {
+    position: 'relative',
+    textAlign: 'center',
+    fontSize: 8,
+    fontWeight: 500,
+    content: props.number ? `'${props.number}'` : '""',
+    display: 'inline-block',
+    width: 9,
+    height: 9,
+    flexShrink: 0,
+    color: 'rgba(0,0,0,0.4)',
+    lineHeight: '9px',
+    borderRadius: '999em',
+    border: '1px solid rgba(0,0,0,0.2)',
+    backgroundColor: props.threadColor,
+    marginRight: 6,
+    zIndex: 3,
+    boxShadow: props.selected
+      ? `0 0 0 2px ${colors.macOSTitleBarIconSelected}`
+      : undefined,
+  },
+  '::after': {
+    content: props.cut ? '""' : undefined,
     position: 'absolute',
-    top: props.positionY,
+    width: 11,
+    top: -20,
     left: 0,
-    right: 10,
-    cursor: props.onClick ? 'pointer' : 'default',
-    borderRadius: 3,
-    alignItems: 'flex-start',
-    lineHeight: '16px',
-    ':hover': {
-      background: `linear-gradient(to top, rgba(255,255,255,0) 0, #ffffff 10px)`,
-      paddingBottom: 5,
-      zIndex: 2,
-      '> span': {
-        whiteSpace: 'initial',
-      },
-    },
-    '::before': {
-      position: 'relative',
-      textAlign: 'center',
-      fontSize: 8,
-      fontWeight: 500,
-      content: props.number ? `'${props.number}'` : '""',
-      display: 'inline-block',
-      width: 9,
-      height: 9,
-      flexShrink: 0,
-      color: 'rgba(0,0,0,0.4)',
-      lineHeight: '9px',
-      borderRadius: '999em',
-      border: '1px solid rgba(0,0,0,0.2)',
-      backgroundColor: props.threadColor,
-      marginRight: 6,
-      zIndex: 3,
-      boxShadow: props.selected
-        ? `0 0 0 2px ${colors.macOSTitleBarIconSelected}`
-        : undefined,
-    },
-    '::after': {
-      content: props.cut ? '""' : undefined,
-      position: 'absolute',
-      width: 11,
-      top: -20,
-      left: 0,
-      height: 2,
-      background: colors.white,
-      borderTop: `1px solid ${colors.light30}`,
-      borderBottom: `1px solid ${colors.light30}`,
-      transform: `skewY(-10deg)`,
-    },
-  }),
-);
+    height: 2,
+    background: colors.white,
+    borderTop: `1px solid ${colors.light30}`,
+    borderBottom: `1px solid ${colors.light30}`,
+    transform: `skewY(-10deg)`,
+  },
+}));
 Point.displayName = 'MakerTimeline:Point';
 
-const Time = styled('span')({
+const Time = styled.span({
   color: colors.light30,
   fontWeight: 300,
   marginRight: 4,

@@ -43,7 +43,7 @@ import {clipboard} from 'electron';
 import React from 'react';
 import {State} from 'src/reducers';
 
-const AppTitleBar = styled(FlexRow)(({focused}: {focused?: boolean}) => ({
+const AppTitleBar = styled(FlexRow)<{focused?: boolean}>(({focused}) => ({
   background: focused
     ? `linear-gradient(to bottom, ${colors.macOSTitleBarBackgroundTop} 0%, ${colors.macOSTitleBarBackgroundBottom} 100%)`
     : colors.macOSTitleBarBackgroundBlur,

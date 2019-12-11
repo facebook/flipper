@@ -8,7 +8,7 @@
  */
 
 import {PureComponent} from 'react';
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 import React from 'react';
 
 type CheckboxProps = {
@@ -18,7 +18,7 @@ type CheckboxProps = {
   onChange: (checked: boolean) => void;
 };
 
-const CheckboxContainer = styled('input')({
+const CheckboxContainer = styled.input({
   display: 'inline-block',
   marginRight: 5,
   verticalAlign: 'middle',

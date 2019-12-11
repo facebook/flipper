@@ -25,20 +25,20 @@ const Container = styled(FlexColumn)({
   width: 400,
 });
 
-const Title = styled('div')({
+const Title = styled.div({
   fontWeight: 500,
   marginTop: 8,
   marginLeft: 2,
   marginBottom: 8,
 });
 
-const URIContainer = styled('div')({
+const URIContainer = styled.div({
   marginLeft: 2,
   marginBottom: 8,
   overflowWrap: 'break-word',
 });
 
-const ButtonContainer = styled('div')({
+const ButtonContainer = styled.div({
   marginLeft: 'auto',
 });
 

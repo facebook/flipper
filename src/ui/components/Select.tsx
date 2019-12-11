@@ -9,10 +9,10 @@
 
 import {Component} from 'react';
 import Text from './Text';
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 import React from 'react';
 
-const Label = styled('label')({
+const Label = styled.label({
   display: 'flex',
   alignItems: 'center',
 });
@@ -24,7 +24,7 @@ const LabelText = styled(Text)({
 });
 LabelText.displayName = 'Select:LabelText';
 
-const SelectMenu = styled('select')((props: {grow?: boolean}) => ({
+const SelectMenu = styled.select<{grow?: boolean}>(props => ({
   flexGrow: props.grow ? 1 : 0,
 }));
 SelectMenu.displayName = 'Select:SelectMenu';

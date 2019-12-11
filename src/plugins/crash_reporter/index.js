@@ -79,7 +79,7 @@ type State = {
   crash: ?Crash,
 };
 
-const Padder = styled('div')(
+const Padder = styled.div(
   ({paddingLeft, paddingRight, paddingBottom, paddingTop}) => ({
     paddingLeft: paddingLeft || 0,
     paddingRight: paddingRight || 0,

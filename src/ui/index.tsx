@@ -7,7 +7,7 @@
  * @format
  */
 
-export {default as styled} from 'react-emotion';
+export {default as styled} from '@emotion/styled';
 export {default as Button} from './components/Button';
 export {default as ToggleButton} from './components/ToggleSwitch';
 export {default as ButtonNavigationGroup} from './components/ButtonNavigationGroup';

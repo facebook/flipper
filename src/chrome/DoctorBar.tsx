@@ -114,12 +114,12 @@ export default connect<StateFromProps, DispatchFromProps, {}, Store>(null, {
   finishHealthchecks,
 })(DoctorBar);
 
-const Container = styled('div')({
+const Container = styled.div({
   boxShadow: '2px 2px 2px #ccc',
   userSelect: 'text',
 });
 
-const WarningContainer = styled('div')({
+const WarningContainer = styled.div({
   backgroundColor: colors.orange,
   color: '#fff',
   maxHeight: '600px',

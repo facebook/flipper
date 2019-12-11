@@ -8,19 +8,19 @@
  */
 
 import React, {PureComponent} from 'react';
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 import ReactMarkdown from 'react-markdown';
 import {colors} from './colors';
 import {shell} from 'electron';
 
-const Container = styled('div')({
+const Container = styled.div({
   padding: 10,
 });
-const Row = styled('div')({
+const Row = styled.div({
   marginTop: 5,
   marginBottom: 5,
 });
-const Heading = styled('div')((props: {level: number}) => ({
+const Heading = styled.div<{level: number}>(props => ({
   fontSize: props.level === 1 ? 18 : 12,
   textTransform: props.level > 1 ? 'uppercase' : undefined,
   color: props.level > 1 ? '#90949c' : undefined,
@@ -28,16 +28,16 @@ const Heading = styled('div')((props: {level: number}) => ({
   marginBottom: 10,
   fontWeight: props.level > 1 ? 'bold' : 'normal',
 }));
-const ListItem = styled('li')({
+const ListItem = styled.li({
   'list-style-type': 'circle',
   'list-style-position': 'inside',
   marginLeft: 10,
 });
-const Strong = styled('span')({
+const Strong = styled.span({
   fontWeight: 'bold',
   color: '#1d2129',
 });
-const Emphasis = styled('span')({
+const Emphasis = styled.span({
   fontStyle: 'italic',
 });
 const Quote = styled(Row)({
@@ -45,7 +45,7 @@ const Quote = styled(Row)({
   backgroundColor: '#f1f2f3',
   fontSize: 13,
 });
-const Code = styled('span')({
+const Code = styled.span({
   fontFamily: '"Courier New", Courier, monospace',
   backgroundColor: '#f1f2f3',
 });
@@ -62,7 +62,7 @@ class CodeBlock extends PureComponent<{value: string; language: string}> {
     );
   }
 }
-const Link = styled('span')({
+const Link = styled.span({
   color: colors.blue,
 });
 class LinkReference extends PureComponent<{href: string}> {

@@ -51,7 +51,6 @@ import {setActiveSheet} from '../reducers/application';
 import UserAccount from './UserAccount';
 import {connect} from 'react-redux';
 import {BackgroundColorProperty} from 'csstype';
-import {StyledOtherComponent} from 'create-emotion-styled';
 import SupportRequestFormManager from '../fb-stubs/SupportRequestFormManager';
 import SupportRequestDetails from '../fb-stubs/SupportRequestDetails';
 import SupportRequestFormV2 from '../fb-stubs/SupportRequestFormV2';
@@ -59,7 +58,7 @@ import SupportRequestFormV2 from '../fb-stubs/SupportRequestFormV2';
 type FlipperPlugins = typeof FlipperPlugin[];
 type PluginsByCategory = [string, FlipperPlugins][];
 
-const ListItem = styled('div')(({active}: {active?: boolean}) => ({
+const ListItem = styled.div<{active?: boolean}>(({active}) => ({
   paddingLeft: 10,
   display: 'flex',
   alignItems: 'center',
@@ -74,7 +73,7 @@ const ListItem = styled('div')(({active}: {active?: boolean}) => ({
   },
 }));
 
-const SidebarButton = styled(Button)(({small}: {small?: boolean}) => ({
+const SidebarButton = styled(Button)<{small?: boolean}>(({small}) => ({
   fontWeight: 'bold',
   fontSize: small ? 11 : 14,
   width: '100%',
@@ -88,22 +87,22 @@ const SidebarButton = styled(Button)(({small}: {small?: boolean}) => ({
   whiteSpace: 'nowrap',
 }));
 
-const PluginShape = styled(FlexBox)(
-  ({backgroundColor}: {backgroundColor?: BackgroundColorProperty}) => ({
-    marginRight: 8,
-    backgroundColor,
-    borderRadius: 3,
-    flexShrink: 0,
-    width: 18,
-    height: 18,
-    justifyContent: 'center',
-    alignItems: 'center',
-    top: '-1px',
-  }),
-);
+const PluginShape = styled(FlexBox)<{
+  backgroundColor?: BackgroundColorProperty;
+}>(({backgroundColor}) => ({
+  marginRight: 8,
+  backgroundColor,
+  borderRadius: 3,
+  flexShrink: 0,
+  width: 18,
+  height: 18,
+  justifyContent: 'center',
+  alignItems: 'center',
+  top: '-1px',
+}));
 
-const PluginName = styled(Text)(
-  (props: {isActive?: boolean; count?: number}) => ({
+const PluginName = styled(Text)<{isActive?: boolean; count?: number}>(
+  props => ({
     minWidth: 0,
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap',
@@ -211,9 +210,7 @@ const Spinner = centerInSidebar(LoadingIndicator);
 
 const ErrorIndicator = centerInSidebar(Glyph);
 
-function centerInSidebar(
-  component: StyledOtherComponent<any, {}, any> | React.ComponentType<any>,
-) {
+function centerInSidebar(component: any) {
   return styled(component)({
     marginTop: '10px',
     marginBottom: '10px',

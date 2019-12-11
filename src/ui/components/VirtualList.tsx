@@ -10,12 +10,12 @@
 import FlexColumn from './FlexColumn';
 import {Component} from 'react';
 import View from './View';
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 import React from 'react';
 import {HeightProperty, TopProperty} from 'csstype';
 
-const Inner = styled(FlexColumn)(
-  ({height}: {height: HeightProperty<number>}) => ({
+const Inner = styled(FlexColumn)<{height: HeightProperty<number>}>(
+  ({height}) => ({
     alignItems: 'flex-start',
     height,
     minHeight: '100%',
@@ -26,7 +26,7 @@ const Inner = styled(FlexColumn)(
 );
 Inner.displayName = 'VirtualList:Inner';
 
-const Content = styled(FlexColumn)(({top}: {top: TopProperty<number>}) => ({
+const Content = styled(FlexColumn)<{top: TopProperty<number>}>(({top}) => ({
   alignItems: 'flex-start',
   height: '100%',
   marginTop: top,
@@ -65,9 +65,9 @@ export default class VirtualList extends Component<
     overscanCount: 10,
   };
 
-  ref: HTMLElement | undefined;
+  ref: HTMLElement | undefined | null;
 
-  setRef = (ref: HTMLElement) => {
+  setRef = (ref: HTMLElement | null) => {
     this.ref = ref;
   };
 
@@ -136,7 +136,7 @@ export default class VirtualList extends Component<
       <View
         grow={true}
         onScroll={this.handleScroll}
-        innerRef={this.setRef}
+        ref={this.setRef}
         scrollable={true}>
         {inner}
       </View>

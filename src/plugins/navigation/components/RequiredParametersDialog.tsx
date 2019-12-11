@@ -33,23 +33,23 @@ const Container = styled(FlexColumn)({
   width: 600,
 });
 
-const Title = styled('span')({
+const Title = styled.span({
   display: 'flex',
   marginTop: 8,
   marginLeft: 2,
   marginBottom: 8,
 });
 
-const Text = styled('span')({
+const Text = styled.span({
   lineHeight: 1.3,
 });
 
-const ErrorLabel = styled('span')({
+const ErrorLabel = styled.span({
   color: colors.yellow,
   lineHeight: 1.4,
 });
 
-const URIContainer = styled('div')({
+const URIContainer = styled.div({
   lineHeight: 1.3,
   marginLeft: 2,
   marginBottom: 8,
@@ -57,7 +57,7 @@ const URIContainer = styled('div')({
   overflowWrap: 'break-word',
 });
 
-const ButtonContainer = styled('div')({
+const ButtonContainer = styled.div({
   marginLeft: 'auto',
 });
 
@@ -68,7 +68,7 @@ const RequiredParameterInput = styled(Input)({
   width: '100%',
 });
 
-const WarningIconContainer = styled('span')({
+const WarningIconContainer = styled.span({
   marginRight: 8,
 });
 

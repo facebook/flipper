@@ -45,7 +45,7 @@ export default class SandboxView extends FlipperPlugin<
     showFeedback: false,
   };
 
-  static TextInput = styled('input')({
+  static TextInput = styled.input({
     border: `1px solid ${colors.light10}`,
     fontSize: '1em',
     padding: '0 5px',
@@ -55,7 +55,7 @@ export default class SandboxView extends FlipperPlugin<
     flexGrow: 1,
   });
 
-  static FeedbackMessage = styled('span')({
+  static FeedbackMessage = styled.span({
     fontSize: '1.2em',
     paddingTop: '10px',
     color: 'green',

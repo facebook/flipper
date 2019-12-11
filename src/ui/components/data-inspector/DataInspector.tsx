@@ -12,7 +12,7 @@ import {MenuTemplate} from '../ContextMenu';
 import {Component} from 'react';
 import ContextMenu from '../ContextMenu';
 import Tooltip from '../Tooltip';
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 import createPaste from '../../../fb-stubs/createPaste';
 import {reportInteraction} from '../../../utils/InteractionTracker';
 import DataPreview, {DataValueExtractor, InspectorName} from './DataPreview';
@@ -25,8 +25,8 @@ import {TooltipOptions} from '../TooltipProvider.js';
 
 export {DataValueExtractor} from './DataPreview';
 
-const BaseContainer = styled('div')(
-  (props: {depth?: number; disabled?: boolean}) => ({
+const BaseContainer = styled.div<{depth?: number; disabled?: boolean}>(
+  props => ({
     fontFamily: 'Menlo, monospace',
     fontSize: 11,
     lineHeight: '17px',
@@ -38,22 +38,22 @@ const BaseContainer = styled('div')(
 );
 BaseContainer.displayName = 'DataInspector:BaseContainer';
 
-const RecursiveBaseWrapper = styled('span')({
+const RecursiveBaseWrapper = styled.span({
   color: colors.red,
 });
 RecursiveBaseWrapper.displayName = 'DataInspector:RecursiveBaseWrapper';
 
-const Wrapper = styled('span')({
+const Wrapper = styled.span({
   color: '#555',
 });
 Wrapper.displayName = 'DataInspector:Wrapper';
 
-const PropertyContainer = styled('span')({
+const PropertyContainer = styled.span({
   paddingTop: '2px',
 });
 PropertyContainer.displayName = 'DataInspector:PropertyContainer';
 
-const ExpandControl = styled('span')({
+const ExpandControl = styled.span({
   color: '#6e6e6e',
   fontSize: 10,
   marginLeft: -11,
@@ -489,10 +489,10 @@ export default class DataInspector extends Component<DataInspectorProps> {
 
       const keys = getSortedKeys({...value, ...diffValue});
 
-      const Added = styled('div')({
+      const Added = styled.div({
         backgroundColor: colors.tealTint70,
       });
-      const Removed = styled('div')({
+      const Removed = styled.div({
         backgroundColor: colors.cherryTint70,
       });
 

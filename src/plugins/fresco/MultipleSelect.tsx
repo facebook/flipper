@@ -15,7 +15,7 @@ const Container = styled(Block)({
   marginLeft: '10px',
 });
 
-const List = styled(FlexColumn)((props: {visibleList: boolean}) => ({
+const List = styled(FlexColumn)<{visibleList: boolean}>(props => ({
   display: props.visibleList ? 'flex' : 'none',
   position: 'absolute',
   top: '32px',
@@ -30,7 +30,7 @@ const List = styled(FlexColumn)((props: {visibleList: boolean}) => ({
   borderRadius: 4,
 }));
 
-const ListItem = styled('label')({
+const ListItem = styled.label({
   cursor: 'pointer',
   display: 'flex',
   alignItems: 'center',
@@ -43,7 +43,7 @@ const ListItem = styled('label')({
   },
 });
 
-const Checkbox = styled('input')({
+const Checkbox = styled.input({
   display: 'inline-block',
   marginRight: 5,
   verticalAlign: 'middle',

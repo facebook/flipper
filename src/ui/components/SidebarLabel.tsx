@@ -9,7 +9,7 @@
 
 import {colors} from './colors';
 import Label from './Label';
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 
 const SidebarLabel = styled(Label)({
   color: colors.blackAlpha30,

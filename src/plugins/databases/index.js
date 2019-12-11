@@ -38,13 +38,13 @@ import dateFormat from 'dateformat';
 
 const PAGE_SIZE = 50;
 
-const BoldSpan = styled('span')({
+const BoldSpan = styled.span({
   fontSize: 12,
   color: '#90949c',
   fontWeight: 'bold',
   textTransform: 'uppercase',
 });
-const ErrorBar = styled('div')({
+const ErrorBar = styled.div({
   backgroundColor: colors.cherry,
   color: colors.white,
   lineHeight: '26px',

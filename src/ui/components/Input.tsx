@@ -7,7 +7,7 @@
  * @format
  */
 
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 import {colors} from './colors';
 
 export const inputStyle = (props: {
@@ -30,24 +30,18 @@ export const inputStyle = (props: {
   },
 });
 
-const Input = styled('input')(
-  ({
-    compact,
-    valid,
-    readOnly,
-  }: {
-    compact?: boolean;
-    valid?: boolean;
-    readOnly?: boolean;
-  }) => ({
-    ...inputStyle({
-      compact: compact || false,
-      valid: valid !== false,
-      readOnly: readOnly === true,
-    }),
-    padding: compact ? '0 5px' : '0 10px',
+const Input = styled.input<{
+  compact?: boolean;
+  valid?: boolean;
+  readOnly?: boolean;
+}>(({compact, valid, readOnly}) => ({
+  ...inputStyle({
+    compact: compact || false,
+    valid: valid !== false,
+    readOnly: readOnly === true,
   }),
-);
+  padding: compact ? '0 5px' : '0 10px',
+}));
 
 Input.displayName = 'Input';
 

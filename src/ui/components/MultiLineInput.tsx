@@ -7,7 +7,7 @@
  * @format
  */
 
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 import {colors} from './colors';
 
 export const multilineStyle = (props: {valid: boolean}) => ({
@@ -26,7 +26,7 @@ export const multilineStyle = (props: {valid: boolean}) => ({
   },
 });
 
-const MultiLineInput = styled('textarea')((props: {valid?: boolean}) => ({
+const MultiLineInput = styled.textarea<{valid?: boolean}>(props => ({
   ...multilineStyle({valid: props.valid === undefined || props.valid}),
   padding: '0 10px',
 }));

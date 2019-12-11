@@ -7,7 +7,8 @@
  * @format
  */
 
-export {default as styled, keyframes} from 'react-emotion';
+export {default as styled} from '@emotion/styled';
+export {keyframes} from 'emotion';
 export * from './ui/index';
 export {getStringFromErrorLike, textContent} from './utils/index';
 export {serialize, deserialize} from './utils/serialization';

@@ -10,7 +10,7 @@
 import Link from '../Link';
 import {DataInspectorSetValue} from './DataInspector';
 import {PureComponent} from 'react';
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 import {SketchPicker} from 'react-color';
 import {Component, Fragment} from 'react';
 import Popover from '../Popover';
@@ -18,37 +18,37 @@ import {colors} from '../colors';
 import Input from '../Input';
 import React, {KeyboardEvent} from 'react';
 
-const NullValue = styled('span')({
+const NullValue = styled.span({
   color: 'rgb(128, 128, 128)',
 });
 NullValue.displayName = 'DataDescription:NullValue';
 
-const UndefinedValue = styled('span')({
+const UndefinedValue = styled.span({
   color: 'rgb(128, 128, 128)',
 });
 UndefinedValue.displayName = 'DataDescription:UndefinedValue';
 
-const StringValue = styled('span')({
+const StringValue = styled.span({
   color: colors.cherryDark1,
 });
 StringValue.displayName = 'DataDescription:StringValue';
 
-const ColorValue = styled('span')({
+const ColorValue = styled.span({
   color: colors.blueGrey,
 });
 ColorValue.displayName = 'DataDescription:ColorValue';
 
-const SymbolValue = styled('span')({
+const SymbolValue = styled.span({
   color: 'rgb(196, 26, 22)',
 });
 SymbolValue.displayName = 'DataDescription:SymbolValue';
 
-const NumberValue = styled('span')({
+const NumberValue = styled.span({
   color: colors.tealDark1,
 });
 NumberValue.displayName = 'DataDescription:NumberValue';
 
-const ColorBox = styled('span')((props: {color: string}) => ({
+const ColorBox = styled.span<{color: string}>(props => ({
   backgroundColor: props.color,
   boxShadow: 'inset 0 0 1px rgba(0, 0, 0, 1)',
   display: 'inline-block',
@@ -59,18 +59,18 @@ const ColorBox = styled('span')((props: {color: string}) => ({
 }));
 ColorBox.displayName = 'DataDescription:ColorBox';
 
-const FunctionKeyword = styled('span')({
+const FunctionKeyword = styled.span({
   color: 'rgb(170, 13, 145)',
   fontStyle: 'italic',
 });
 FunctionKeyword.displayName = 'DataDescription:FunctionKeyword';
 
-const FunctionName = styled('span')({
+const FunctionName = styled.span({
   fontStyle: 'italic',
 });
 FunctionName.displayName = 'DataDescription:FunctionName';
 
-const ColorPickerDescription = styled('div')({
+const ColorPickerDescription = styled.div({
   display: 'inline',
   position: 'relative',
 });

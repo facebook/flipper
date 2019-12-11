@@ -8,12 +8,12 @@
  */
 
 import React from 'react';
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 import {colors} from './colors';
 import Text from './Text';
 import FlexRow from './FlexRow';
 
-export const StyledButton = styled('div')((props: {toggled: boolean}) => ({
+export const StyledButton = styled.div<{toggled: boolean}>(props => ({
   width: '30px',
   height: '16px',
   background: props.toggled ? colors.green : colors.grey,

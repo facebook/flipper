@@ -28,7 +28,7 @@ const Container = styled(FlexRow)({
   color: colors.blackAlpha80,
 });
 
-const ProfilePic = styled('img')({
+const ProfilePic = styled.img({
   borderRadius: '999em',
   flexShrink: 0,
   width: 24,
@@ -58,7 +58,7 @@ type Props = OwnProps & DispatchFromProps & StateFromProps;
 class UserAccount extends PureComponent<Props> {
   _ref: Element | null | undefined;
 
-  setRef = (ref: React.ReactInstance) => {
+  setRef = (ref: HTMLDivElement | null) => {
     const element = findDOMNode(ref);
     if (element instanceof HTMLElement) {
       this._ref = element;
@@ -90,7 +90,7 @@ class UserAccount extends PureComponent<Props> {
     const {user} = this.props;
     const name = user ? user.name : null;
     return name ? (
-      <Container innerRef={this.setRef} onClick={this.showDetails}>
+      <Container ref={this.setRef} onClick={this.showDetails}>
         <ProfilePic
           src={user.profile_picture ? user.profile_picture.uri : undefined}
         />

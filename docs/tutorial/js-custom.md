@@ -120,7 +120,7 @@ class Card extends React.Component<{
     cursor: 'pointer',
   }));
 
-  static Image = styled('div')({
+  static Image = styled.div({
     backgroundSize: 'cover',
     width: '100%',
     paddingTop: '100%',

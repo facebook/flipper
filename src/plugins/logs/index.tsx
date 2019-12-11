@@ -229,24 +229,22 @@ const HiddenScrollText = styled(Text)({
   },
 });
 
-const LogCount = styled('div')(
-  ({backgroundColor}: {backgroundColor: string}) => ({
-    backgroundColor,
-    borderRadius: '999em',
-    fontSize: 11,
-    marginTop: 4,
-    minWidth: 16,
-    height: 16,
-    color: colors.white,
-    textAlign: 'center',
-    lineHeight: '16px',
-    paddingLeft: 4,
-    paddingRight: 4,
-    textOverflow: 'ellipsis',
-    overflow: 'hidden',
-    whiteSpace: 'nowrap',
-  }),
-);
+const LogCount = styled.div<{backgroundColor: string}>(({backgroundColor}) => ({
+  backgroundColor,
+  borderRadius: '999em',
+  fontSize: 11,
+  marginTop: 4,
+  minWidth: 16,
+  height: 16,
+  color: colors.white,
+  textAlign: 'center',
+  lineHeight: '16px',
+  paddingLeft: 4,
+  paddingRight: 4,
+  textOverflow: 'ellipsis',
+  overflow: 'hidden',
+  whiteSpace: 'nowrap',
+}));
 
 function pad(chunk: any, len: number): string {
   let str = String(chunk);

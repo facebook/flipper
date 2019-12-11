@@ -10,7 +10,7 @@
 import {Component} from 'react';
 import Box from './Box';
 import {colors} from './colors';
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 import React from 'react';
 
 const FocusableBoxBorder = styled(Box)({

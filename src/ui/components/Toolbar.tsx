@@ -10,30 +10,31 @@
 import {colors} from './colors';
 import FlexRow from './FlexRow';
 import FlexBox from './FlexBox';
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 
 /**
  * A toolbar.
  */
-const Toolbar = styled(FlexRow)(
-  (props: {position?: 'bottom' | 'top'; compact?: boolean}) => ({
-    backgroundColor: colors.light02,
-    borderBottom:
-      props.position === 'bottom'
-        ? 'none'
-        : `1px solid ${colors.sectionHeaderBorder}`,
-    borderTop:
-      props.position === 'bottom'
-        ? `1px solid ${colors.sectionHeaderBorder}`
-        : 'none',
-    flexShrink: 0,
-    height: props.compact ? 28 : 42,
-    lineHeight: '32px',
-    alignItems: 'center',
-    padding: 6,
-    width: '100%',
-  }),
-);
+const Toolbar = styled(FlexRow)<{
+  position?: 'bottom' | 'top';
+  compact?: boolean;
+}>(props => ({
+  backgroundColor: colors.light02,
+  borderBottom:
+    props.position === 'bottom'
+      ? 'none'
+      : `1px solid ${colors.sectionHeaderBorder}`,
+  borderTop:
+    props.position === 'bottom'
+      ? `1px solid ${colors.sectionHeaderBorder}`
+      : 'none',
+  flexShrink: 0,
+  height: props.compact ? 28 : 42,
+  lineHeight: '32px',
+  alignItems: 'center',
+  padding: 6,
+  width: '100%',
+}));
 Toolbar.displayName = 'Toolbar';
 
 export const Spacer = styled(FlexBox)({

@@ -120,12 +120,12 @@ function ErrorTile({
   );
 }
 
-const ErrorBarContainer = styled('div')({
+const ErrorBarContainer = styled.div({
   boxShadow: '2px 2px 2px #ccc',
   userSelect: 'text',
 });
 
-const DismissAllErrors = styled('div')({
+const DismissAllErrors = styled.div({
   boxShadow: '2px 2px 2px #ccc',
   backgroundColor: colors.cherryDark3,
   color: '#fff',
@@ -143,12 +143,12 @@ const DismissAllErrors = styled('div')({
   alignItems: 'center',
 });
 
-const ErrorDetails = styled('div')({
+const ErrorDetails = styled.div({
   width: '100%',
   marginTop: 4,
 });
 
-const ErrorRows = styled('div')({
+const ErrorRows = styled.div({
   backgroundColor: colors.cherry,
   color: '#fff',
   maxHeight: '600px',
@@ -160,7 +160,7 @@ const ErrorRows = styled('div')({
   },
 });
 
-const ErrorRow = styled('div')({
+const ErrorRow = styled.div({
   padding: '4px 12px',
   borderBottom: '1px solid ' + colors.cherryDark3,
   verticalAlign: 'middle',

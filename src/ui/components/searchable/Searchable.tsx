@@ -18,7 +18,7 @@ import Text from '../Text';
 import FlexBox from '../FlexBox';
 import Glyph from '../Glyph';
 import FilterToken from './FilterToken';
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 import debounce from 'lodash.debounce';
 import ToggleButton from '../ToggleSwitch';
 import React from 'react';
@@ -40,24 +40,26 @@ export const SearchBox = styled(FlexBox)({
 });
 SearchBox.displayName = 'Searchable:SearchBox';
 
-export const SearchInput = styled(Input)(
-  (props: {focus?: boolean; regex?: boolean; isValidInput?: boolean}) => ({
-    border: props.focus ? '1px solid black' : 0,
-    ...(props.regex ? {fontFamily: 'monospace'} : {}),
-    padding: 0,
-    fontSize: '1em',
-    flexGrow: 1,
-    height: 'auto',
-    lineHeight: '100%',
-    marginLeft: 2,
-    width: '100%',
-    color: props.regex && !props.isValidInput ? colors.red : colors.black,
-    '&::-webkit-input-placeholder': {
-      color: colors.placeholder,
-      fontWeight: 300,
-    },
-  }),
-);
+export const SearchInput = styled(Input)<{
+  focus?: boolean;
+  regex?: boolean;
+  isValidInput?: boolean;
+}>(props => ({
+  border: props.focus ? '1px solid black' : 0,
+  ...(props.regex ? {fontFamily: 'monospace'} : {}),
+  padding: 0,
+  fontSize: '1em',
+  flexGrow: 1,
+  height: 'auto',
+  lineHeight: '100%',
+  marginLeft: 2,
+  width: '100%',
+  color: props.regex && !props.isValidInput ? colors.red : colors.black,
+  '&::-webkit-input-placeholder': {
+    color: colors.placeholder,
+    fontWeight: 300,
+  },
+}));
 SearchInput.displayName = 'Searchable:SearchInput';
 
 const Clear = styled(Text)({
@@ -153,7 +155,7 @@ const Searchable = (
       compiledRegex: null,
     };
 
-    _inputRef: HTMLInputElement | undefined;
+    _inputRef: HTMLInputElement | undefined | null;
 
     componentDidMount() {
       window.document.addEventListener('keydown', this.onKeyDown);
@@ -348,7 +350,7 @@ const Searchable = (
       }
     }, 200);
 
-    setInputRef = (ref: HTMLInputElement | undefined) => {
+    setInputRef = (ref: HTMLInputElement | null) => {
       this._inputRef = ref;
     };
 
@@ -470,7 +472,7 @@ const Searchable = (
               placeholder={placeholder}
               onChange={this.onChangeSearchTerm}
               value={this.state.searchTerm}
-              innerRef={this.setInputRef}
+              ref={this.setInputRef}
               onFocus={this.onInputFocus}
               onBlur={this.onInputBlur}
               isValidInput={

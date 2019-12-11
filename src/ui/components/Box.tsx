@@ -8,7 +8,7 @@
  */
 
 import FlexBox from './FlexBox';
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 
 const Box = styled(FlexBox)({
   height: '100%',

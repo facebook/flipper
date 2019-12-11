@@ -10,11 +10,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import electron, {MenuItemConstructorOptions} from 'electron';
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 import {colors} from './colors';
 import {connect} from 'react-redux';
 import {findDOMNode} from 'react-dom';
-import {keyframes} from 'react-emotion';
+import {keyframes} from 'emotion';
 import {State as Store} from '../../reducers/index';
 import Glyph, {IconSize} from './Glyph';
 
@@ -106,88 +106,85 @@ const pulse = keyframes({
   },
 });
 
-const StyledButton = styled('div')(
-  (props: {
-    windowIsFocused?: boolean;
-    compact?: boolean;
-    inButtonGroup?: boolean;
-    padded?: boolean;
-    pulse?: boolean;
-    disabled?: boolean;
-    dropdown?: Array<MenuItemConstructorOptions>;
-  }) => ({
-    backgroundColor:
-      props.windowIsFocused && !props.disabled
-        ? colors.white
-        : colors.macOSTitleBarButtonBackgroundBlur,
-    backgroundImage: backgroundImage(props),
-    borderStyle: 'solid',
-    borderWidth: 1,
+const StyledButton = styled.div<{
+  windowIsFocused?: boolean;
+  compact?: boolean;
+  inButtonGroup?: boolean;
+  padded?: boolean;
+  pulse?: boolean;
+  disabled?: boolean;
+  dropdown?: Array<MenuItemConstructorOptions>;
+}>(props => ({
+  backgroundColor:
+    props.windowIsFocused && !props.disabled
+      ? colors.white
+      : colors.macOSTitleBarButtonBackgroundBlur,
+  backgroundImage: backgroundImage(props),
+  borderStyle: 'solid',
+  borderWidth: 1,
+  borderColor: borderColor(props),
+  borderBottomColor: borderBottomColor(props),
+  color: color(props),
+  borderRadius: 4,
+  position: 'relative',
+  padding: props.padded ? '0 15px' : '0 6px',
+  height: props.compact === true ? 24 : 28,
+  margin: 0,
+  minWidth: 34,
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  flexShrink: 0,
+
+  boxShadow:
+    props.pulse && props.windowIsFocused
+      ? `0 0 0 ${colors.macOSTitleBarIconSelected}`
+      : '',
+  animation: props.pulse && props.windowIsFocused ? `${pulse} 1s infinite` : '',
+
+  '&:not(:first-child)': {
+    marginLeft: props.inButtonGroup === true ? 0 : 10,
+    borderTopLeftRadius: props.inButtonGroup === true ? 0 : 4,
+    borderBottomLeftRadius: props.inButtonGroup === true ? 0 : 4,
+  },
+
+  '&:not(:last-child)': {
+    borderTopRightRadius: props.inButtonGroup === true ? 0 : 4,
+    borderBottomRightRadius: props.inButtonGroup === true ? 0 : 4,
+    borderRight: props.inButtonGroup === true ? 0 : '',
+  },
+
+  '&:first-of-type': {
+    marginLeft: 0,
+  },
+
+  '&:active': props.disabled
+    ? null
+    : {
+        borderColor: colors.macOSTitleBarButtonBorder,
+        borderBottomColor: colors.macOSTitleBarButtonBorderBottom,
+        background: `linear-gradient(to bottom, ${colors.macOSTitleBarButtonBackgroundActiveHighlight} 1px, ${colors.macOSTitleBarButtonBackgroundActive} 0%, ${colors.macOSTitleBarButtonBorderBlur} 100%)`,
+      },
+
+  '&:disabled': {
     borderColor: borderColor(props),
     borderBottomColor: borderBottomColor(props),
-    color: color(props),
-    borderRadius: 4,
-    position: 'relative',
-    padding: props.padded ? '0 15px' : '0 6px',
-    height: props.compact === true ? 24 : 28,
-    margin: 0,
-    minWidth: 34,
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexShrink: 0,
+    pointerEvents: 'none',
+  },
 
-    boxShadow:
-      props.pulse && props.windowIsFocused
-        ? `0 0 0 ${colors.macOSTitleBarIconSelected}`
-        : '',
-    animation:
-      props.pulse && props.windowIsFocused ? `${pulse} 1s infinite` : '',
-
-    '&:not(:first-child)': {
-      marginLeft: props.inButtonGroup === true ? 0 : 10,
-      borderTopLeftRadius: props.inButtonGroup === true ? 0 : 4,
-      borderBottomLeftRadius: props.inButtonGroup === true ? 0 : 4,
-    },
-
-    '&:not(:last-child)': {
-      borderTopRightRadius: props.inButtonGroup === true ? 0 : 4,
-      borderBottomRightRadius: props.inButtonGroup === true ? 0 : 4,
-      borderRight: props.inButtonGroup === true ? 0 : '',
-    },
-
-    '&:first-of-type': {
-      marginLeft: 0,
-    },
-
-    '&:active': props.disabled
-      ? null
-      : {
-          borderColor: colors.macOSTitleBarButtonBorder,
-          borderBottomColor: colors.macOSTitleBarButtonBorderBottom,
-          background: `linear-gradient(to bottom, ${colors.macOSTitleBarButtonBackgroundActiveHighlight} 1px, ${colors.macOSTitleBarButtonBackgroundActive} 0%, ${colors.macOSTitleBarButtonBorderBlur} 100%)`,
-        },
-
-    '&:disabled': {
-      borderColor: borderColor(props),
-      borderBottomColor: borderBottomColor(props),
-      pointerEvents: 'none',
-    },
-
-    '&:hover::before': {
-      content: props.dropdown ? "''" : 'normal',
-      position: 'absolute',
-      bottom: 1,
-      right: 2,
-      borderStyle: 'solid',
-      borderWidth: '4px 3px 0 3px',
-      borderColor: `${colors.macOSTitleBarIcon} transparent transparent transparent`,
-    },
-  }),
-);
+  '&:hover::before': {
+    content: props.dropdown ? "''" : 'normal',
+    position: 'absolute',
+    bottom: 1,
+    right: 2,
+    borderStyle: 'solid',
+    borderWidth: '4px 3px 0 3px',
+    borderColor: `${colors.macOSTitleBarIcon} transparent transparent transparent`,
+  },
+}));
 StyledButton.displayName = 'Button:StyledButton';
 
-const Icon = styled(Glyph)(({hasText}: {hasText: boolean}) => ({
+const Icon = styled(Glyph)<{hasText: boolean}>(({hasText}) => ({
   marginRight: hasText ? 3 : 0,
 }));
 Icon.displayName = 'Button:Icon';

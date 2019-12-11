@@ -27,7 +27,7 @@ type Props = {
   size: IconSize;
 };
 
-const RippleEffect = styled('div')({
+const RippleEffect = styled.div({
   padding: 5,
   borderRadius: 100,
   backgroundPosition: 'center',
@@ -43,7 +43,7 @@ const RippleEffect = styled('div')({
   },
 });
 
-const IconButton = styled('div')({
+const IconButton = styled.div({
   ':active': {
     animation: `${shrinkAnimation} .25s ease forwards`,
   },

@@ -95,7 +95,7 @@ const Columns = {
   },
 };
 
-const Heading = styled('div')({
+const Heading = styled.div({
   fontWeight: 'bold',
   fontSize: 13,
   display: 'block',

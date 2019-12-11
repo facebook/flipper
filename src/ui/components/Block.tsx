@@ -7,12 +7,12 @@
  * @format
  */
 
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 
 /**
  * A Block styled div
  */
-const Block = styled('div')({
+const Block = styled.div({
   display: 'block',
 });
 Block.displayName = 'Block';

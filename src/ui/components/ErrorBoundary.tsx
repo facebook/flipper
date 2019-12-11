@@ -12,7 +12,7 @@ import {Component} from 'react';
 import Heading from './Heading';
 import Button from './Button';
 import View from './View';
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 import React from 'react';
 
 const ErrorBoundaryContainer = styled(View)({

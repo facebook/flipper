@@ -23,7 +23,7 @@ const InfoText = styled(Text)({
   paddingTop: 5,
 });
 
-const FileInputBox = styled(Input)(({isValid}: {isValid: boolean}) => ({
+const FileInputBox = styled(Input)<{isValid: boolean}>(({isValid}) => ({
   marginRight: 0,
   flexGrow: 1,
   fontFamily: 'monospace',
@@ -38,7 +38,7 @@ const CenteredGlyph = styled(Glyph)({
   marginLeft: 10,
 });
 
-const GreyedOutOverlay = styled('div')({
+const GreyedOutOverlay = styled.div({
   backgroundColor: '#EFEEEF',
   borderRadius: 4,
   opacity: 0.6,

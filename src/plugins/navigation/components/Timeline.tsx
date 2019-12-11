@@ -19,7 +19,7 @@ type Props = {
   onFavorite: (uri: URI) => void;
 };
 
-const TimelineLine = styled('div')({
+const TimelineLine = styled.div({
   width: 2,
   backgroundColor: colors.highlight,
   position: 'absolute',
@@ -27,7 +27,7 @@ const TimelineLine = styled('div')({
   bottom: 0,
 });
 
-const TimelineContainer = styled('div')({
+const TimelineContainer = styled.div({
   position: 'relative',
   paddingLeft: 25,
   overflowY: 'scroll',
@@ -43,7 +43,7 @@ const TimelineContainer = styled('div')({
   },
 });
 
-const NavigationEventContainer = styled('div')({
+const NavigationEventContainer = styled.div({
   display: 'flex',
   paddingTop: 25,
   paddingLeft: 25,
@@ -63,7 +63,7 @@ export default (props: Props) => {
   return events.length === 0 ? (
     <NoData>No Navigation Events to Show</NoData>
   ) : (
-    <TimelineContainer innerRef={timelineRef}>
+    <TimelineContainer ref={timelineRef}>
       <div>
         <TimelineLine />
         {events.map((event: NavigationEvent, idx: number) => {

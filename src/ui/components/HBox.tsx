@@ -8,7 +8,7 @@
  */
 
 import React from 'react';
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 import FlexRow from './FlexRow';
 
 /**
@@ -16,8 +16,8 @@ import FlexRow from './FlexRow';
  * It takes two children, 'left' and 'right'. One is assumed to have a fixed (or minimum) size,
  * and the other will grow automatically
  */
-const HBoxContainer = styled(FlexRow)(
-  ({verticalAlign}: {verticalAlign: string}) => ({
+const HBoxContainer = styled(FlexRow)<{verticalAlign: string}>(
+  ({verticalAlign}) => ({
     shrink: 0,
     alignItems: verticalAlign,
   }),

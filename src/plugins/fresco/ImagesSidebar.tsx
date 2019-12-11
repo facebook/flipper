@@ -29,7 +29,7 @@ type ImagesSidebarProps = {
 
 type ImagesSidebarState = {};
 
-const DataDescriptionKey = styled('span')({
+const DataDescriptionKey = styled.span({
   color: colors.grapeDark1,
 });
 

@@ -8,7 +8,7 @@
  */
 
 import View from './View';
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 
 /**
  * A container displaying its children horizontally and vertically centered.

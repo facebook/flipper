@@ -7,18 +7,18 @@
  * @format
  */
 
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 import {colors} from './colors';
 import Text from './Text';
 
 /**
  * Subtle text that should not draw attention
  */
-const SmallText = styled(Text)(({center}: {center?: boolean}) => ({
+const SmallText = styled(Text)<{center?: boolean}>(props => ({
   color: colors.light20,
   size: 10,
   fontStyle: 'italic',
-  textAlign: center ? 'center' : undefined,
+  textAlign: props.center ? 'center' : undefined,
   width: '100%',
 }));
 SmallText.displayName = 'SmallText';

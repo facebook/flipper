@@ -7,7 +7,7 @@
  * @format
  */
 
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 import {colors} from './colors';
 import {Component} from 'react';
 import PropTypes from 'prop-types';
@@ -52,37 +52,35 @@ export type TooltipOptions = {
   delay?: number; // in milliseconds
 };
 
-const TooltipBubble = styled('div')(
-  (props: {
-    top: TopProperty<number>;
-    left: LeftProperty<number>;
-    bottom: BottomProperty<number>;
-    right: RightProperty<number>;
-    options: {
-      backgroundColor: BackgroundColorProperty;
-      lineHeight: LineHeightProperty<number>;
-      padding: PaddingProperty<number>;
-      borderRadius: BorderRadiusProperty<number>;
-      width: WidthProperty<number>;
-      maxWidth: MaxWidthProperty<number>;
-      color: ColorProperty;
-    };
-  }) => ({
-    position: 'absolute',
-    zIndex: 99999999999,
-    backgroundColor: props.options.backgroundColor,
-    lineHeight: props.options.lineHeight,
-    padding: props.options.padding,
-    borderRadius: props.options.borderRadius,
-    width: props.options.width,
-    maxWidth: props.options.maxWidth,
-    top: props.top,
-    left: props.left,
-    bottom: props.bottom,
-    right: props.right,
-    color: props.options.color,
-  }),
-);
+const TooltipBubble = styled.div<{
+  top: TopProperty<number>;
+  left: LeftProperty<number>;
+  bottom: BottomProperty<number>;
+  right: RightProperty<number>;
+  options: {
+    backgroundColor: BackgroundColorProperty;
+    lineHeight: LineHeightProperty<number>;
+    padding: PaddingProperty<number>;
+    borderRadius: BorderRadiusProperty<number>;
+    width: WidthProperty<number>;
+    maxWidth: MaxWidthProperty<number>;
+    color: ColorProperty;
+  };
+}>(props => ({
+  position: 'absolute',
+  zIndex: 99999999999,
+  backgroundColor: props.options.backgroundColor,
+  lineHeight: props.options.lineHeight,
+  padding: props.options.padding,
+  borderRadius: props.options.borderRadius,
+  width: props.options.width,
+  maxWidth: props.options.maxWidth,
+  top: props.top,
+  left: props.left,
+  bottom: props.bottom,
+  right: props.right,
+  color: props.options.color,
+}));
 TooltipBubble.displayName = 'TooltipProvider:TooltipBubble';
 
 // vertical offset on bubble when position is 'below'
@@ -96,31 +94,29 @@ const TAIL_AB_POSITION_HORIZONTAL_OFFSET = 15;
 // vertical offset on tail when position is 'toLeft' or 'toRight'
 const TAIL_LR_POSITION_HORIZONTAL_OFFSET = 5;
 
-const TooltipTail = styled('div')(
-  (props: {
-    top: TopProperty<number>;
-    left: LeftProperty<number>;
-    bottom: BottomProperty<number>;
-    right: RightProperty<number>;
-    options: {
-      backgroundColor: BackgroundColorProperty;
-    };
-  }) => ({
-    position: 'absolute',
-    display: 'block',
-    whiteSpace: 'pre',
-    height: '10px',
-    width: '10px',
-    lineHeight: '0',
-    zIndex: 99999999998,
-    transform: 'rotate(45deg)',
-    backgroundColor: props.options.backgroundColor,
-    top: props.top,
-    left: props.left,
-    bottom: props.bottom,
-    right: props.right,
-  }),
-);
+const TooltipTail = styled.div<{
+  top: TopProperty<number>;
+  left: LeftProperty<number>;
+  bottom: BottomProperty<number>;
+  right: RightProperty<number>;
+  options: {
+    backgroundColor: BackgroundColorProperty;
+  };
+}>(props => ({
+  position: 'absolute',
+  display: 'block',
+  whiteSpace: 'pre',
+  height: '10px',
+  width: '10px',
+  lineHeight: '0',
+  zIndex: 99999999998,
+  transform: 'rotate(45deg)',
+  backgroundColor: props.options.backgroundColor,
+  top: props.top,
+  left: props.left,
+  bottom: props.bottom,
+  right: props.right,
+}));
 TooltipTail.displayName = 'TooltipProvider:TooltipTail';
 
 type TooltipProps = {

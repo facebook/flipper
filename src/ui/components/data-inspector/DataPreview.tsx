@@ -8,7 +8,7 @@
  */
 
 import DataDescription from './DataDescription';
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 import {getSortedKeys} from './utils';
 import {PureComponent} from 'react';
 import React from 'react';
@@ -26,12 +26,12 @@ export type DataValueExtractor = (
   | undefined
   | null;
 
-export const InspectorName = styled('span')({
+export const InspectorName = styled.span({
   color: colors.grapeDark1,
 });
 InspectorName.displayName = 'DataInspector:InspectorName';
 
-const PreviewContainer = styled('span')({
+const PreviewContainer = styled.span({
   fontStyle: 'italic',
 });
 PreviewContainer.displayName = 'DataPreview:PreviewContainer';

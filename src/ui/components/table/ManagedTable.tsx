@@ -19,7 +19,7 @@ import {
 } from './types';
 import {MenuTemplate} from '../ContextMenu';
 import React from 'react';
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import {VariableSizeList as List} from 'react-window';
 import {clipboard, MenuItemConstructorOptions} from 'electron';
@@ -144,7 +144,7 @@ type ManagedTableState = {
   shouldScrollToBottom: boolean;
 };
 
-const Container = styled(FlexColumn)((props: {canOverflow?: boolean}) => ({
+const Container = styled(FlexColumn)<{canOverflow?: boolean}>(props => ({
   overflow: props.canOverflow ? 'scroll' : 'visible',
   flexGrow: 1,
 }));

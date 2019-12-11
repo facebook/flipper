@@ -8,7 +8,7 @@
  */
 
 import React from 'react';
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 import {colors} from './colors';
 import FlexColumn from './FlexColumn';
 
@@ -19,7 +19,7 @@ const Container = styled(FlexColumn)({
 });
 Container.displayName = 'CenteredView:Container';
 
-const ContentWrapper = styled('div')({
+const ContentWrapper = styled.div({
   width: 500,
   marginLeft: 'auto',
   marginRight: 'auto',

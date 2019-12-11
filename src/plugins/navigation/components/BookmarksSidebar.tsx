@@ -32,7 +32,7 @@ const NoData = styled(FlexCenter)({
   color: colors.macOSTitleBarIcon,
 });
 
-const BookmarksList = styled('div')({
+const BookmarksList = styled.div({
   overflowY: 'scroll',
   overflowX: 'hidden',
   height: '100%',

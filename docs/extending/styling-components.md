@@ -12,13 +12,13 @@ For basic building blocks (views, texts, ...) you can use the styled object.
 ```javascript
 import {styled} from 'flipper';
 
-const MyView = styled('div')({
+const MyView = styled.div({
   fontSize: 10,
   color: colors.red
 });
-const MyText = styled('span')({ ... });
-const MyImage = styled('img')({ ... });
-const MyInput = styled('input')({ ... });
+const MyText = styled.span({ ... });
+const MyImage = styled.img({ ... });
+const MyInput = styled.input({ ... });
 ```
 
 ## Extending Flipper Components
@@ -46,7 +46,7 @@ The CSS-in-JS object passed to the styled components takes just any CSS rule, wi
 The style object can also be returned from a function for dynamic values. Props can be passed to the styled component using React.
 
 ```javascript
-const MyView = styled('div')(
+const MyView = styled.div(
   props => ({
     fontSize: 10,
     color:  => (props.disabled ? colors.red : colors.black),

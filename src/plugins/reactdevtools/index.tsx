@@ -14,7 +14,7 @@ import React from 'react';
 import getPort from 'get-port';
 import address from 'address';
 
-const Container = styled('div')({
+const Container = styled.div({
   display: 'flex',
   flex: '1 1 0%',
   justifyContent: 'center',

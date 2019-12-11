@@ -7,11 +7,11 @@
  * @format
  */
 
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 import {colors, darkColors} from './colors';
 import React from 'react';
 
-const DesktopDropdownContainer = styled('div')({
+const DesktopDropdownContainer = styled.div({
   borderBottom: `1px solid ${darkColors.dividers}`,
   lineHeight: '25px',
   marginTop: 5,
@@ -48,7 +48,7 @@ export function DesktopDropdown(props: {
   );
 }
 
-const DesktopDropdownItemContainer = styled('div')(
+const DesktopDropdownItemContainer = styled.div(
   (props: {onClick?: Function; onHover?: Function}) => ({
     listStyle: 'none',
     opacity: props.onClick || props.onHover ? 1 : 0.5,

@@ -17,7 +17,7 @@ exports[`ShareSheetPendingDialog is rendered with status update 1`] = `
       size={30}
     />
     <span
-      className="css-91luyc"
+      className="css-1r5zvq8"
       color="#6f6f6f"
     >
       Update
@@ -30,7 +30,7 @@ exports[`ShareSheetPendingDialog is rendered with status update 1`] = `
       className="css-12zzrdt"
     />
     <div
-      className="css-1qfnye7"
+      className="css-1ee9nwd"
       onClick={[Function]}
       onMouseDown={[Function]}
       onMouseUp={[Function]}
@@ -38,7 +38,7 @@ exports[`ShareSheetPendingDialog is rendered with status update 1`] = `
       Cancel
     </div>
     <div
-      className="css-1qfnye7"
+      className="css-1ee9nwd"
       onClick={[Function]}
       onMouseDown={[Function]}
       onMouseUp={[Function]}
@@ -67,7 +67,7 @@ exports[`ShareSheetPendingDialog is rendered without status update 1`] = `
       size={30}
     />
     <span
-      className="css-91luyc"
+      className="css-1r5zvq8"
       color="#6f6f6f"
     >
       wubba lubba dub dub
@@ -80,7 +80,7 @@ exports[`ShareSheetPendingDialog is rendered without status update 1`] = `
       className="css-12zzrdt"
     />
     <div
-      className="css-1qfnye7"
+      className="css-1ee9nwd"
       onClick={[Function]}
       onMouseDown={[Function]}
       onMouseUp={[Function]}
@@ -88,7 +88,7 @@ exports[`ShareSheetPendingDialog is rendered without status update 1`] = `
       Cancel
     </div>
     <div
-      className="css-1qfnye7"
+      className="css-1ee9nwd"
       onClick={[Function]}
       onMouseDown={[Function]}
       onMouseUp={[Function]}

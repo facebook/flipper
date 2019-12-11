@@ -19,7 +19,7 @@ import {State as Store} from '../reducers';
 
 import {ActiveSheet} from '../reducers/application';
 
-const DialogContainer = styled('div')(({state}: {state: TransitionStatus}) => ({
+const DialogContainer = styled.div<{state: TransitionStatus}>(({state}) => ({
   transform: `translate(-50%, ${
     state === 'entering' || state === 'exiting' || state === 'exited'
       ? 'calc(-100% - 20px)'

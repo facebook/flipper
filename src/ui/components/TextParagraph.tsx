@@ -7,12 +7,12 @@
  * @format
  */
 
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 
 /**
  * A TextParagraph component.
  */
-const TextParagraph = styled('div')({
+const TextParagraph = styled.div({
   marginBottom: 10,
 
   '&:last-child': {

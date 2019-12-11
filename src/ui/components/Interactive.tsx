@@ -15,7 +15,7 @@ import {
   maybeSnapTop,
   SNAP_SIZE,
 } from '../../utils/snap';
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 import invariant from 'invariant';
 import React from 'react';
 
@@ -72,7 +72,7 @@ type InteractiveProps = {
   onResize?: (width: number, height: number) => void;
   resizing?: boolean;
   resizable?: boolean | ResizingSides;
-  innerRef?: (elem: HTMLElement) => void;
+  innerRef?: (elem: HTMLElement | null) => void;
   style?: Object;
   className?: string;
   children?: React.ReactNode;
@@ -90,7 +90,7 @@ type InteractiveState = {
   resizingInitialCursor: CursorState | null | undefined;
 };
 
-const InteractiveContainer = styled('div')({
+const InteractiveContainer = styled.div({
   willChange: 'transform, height, width, z-index',
 });
 InteractiveContainer.displayName = 'Interactive:InteractiveContainer';
@@ -118,11 +118,11 @@ export default class Interactive extends React.Component<
   }
 
   globalMouse: boolean;
-  ref: HTMLElement | undefined;
+  ref?: HTMLElement | null;
 
-  nextTop: number | null | undefined;
-  nextLeft: number | null | undefined;
-  nextEvent: MouseEvent | null | undefined;
+  nextTop?: number | null;
+  nextLeft?: number | null;
+  nextEvent?: MouseEvent | null;
 
   static defaultProps = {
     minHeight: 0,
@@ -656,7 +656,7 @@ export default class Interactive extends React.Component<
     });
   }
 
-  setRef = (ref: HTMLElement) => {
+  setRef = (ref: HTMLElement | null) => {
     this.ref = ref;
 
     const {innerRef} = this.props;
@@ -706,7 +706,7 @@ export default class Interactive extends React.Component<
       <InteractiveContainer
         className={this.props.className}
         hidden={this.props.hidden}
-        innerRef={this.setRef}
+        ref={this.setRef}
         onMouseDown={this.startAction}
         onMouseMove={this.onLocalMouseMove}
         onMouseLeave={this.onMouseLeave} // eslint-disable-next-line

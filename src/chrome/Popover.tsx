@@ -18,7 +18,7 @@ import {
 } from 'flipper';
 import React, {PureComponent} from 'react';
 
-const Anchor = styled('img')({
+const Anchor = styled.img({
   zIndex: 6,
   position: 'absolute',
   bottom: 0,
@@ -100,13 +100,13 @@ const ItemImage = styled(FlexBox)({
   flexShrink: 0,
 });
 
-const ItemContent = styled('div')({
+const ItemContent = styled.div({
   minWidth: 0,
   paddingRight: 5,
   flexGrow: 1,
 });
 
-const Section = styled('div')({
+const Section = styled.div({
   borderBottom: `1px solid ${colors.light05}`,
   '&:last-child': {
     borderBottom: 'none',
@@ -142,7 +142,7 @@ type Props = {
 };
 
 export default class Popover extends PureComponent<Props> {
-  _ref: Element | null | undefined;
+  _ref?: Element | null;
 
   componentDidMount() {
     window.document.addEventListener('click', this.handleClick);
@@ -158,7 +158,7 @@ export default class Popover extends PureComponent<Props> {
     }
   };
 
-  _setRef = (ref?: Element) => {
+  _setRef = (ref: Element | null) => {
     this._ref = ref;
   };
 
@@ -166,7 +166,7 @@ export default class Popover extends PureComponent<Props> {
     return (
       <>
         <Anchor src="./anchor.svg" key="anchor" />
-        <PopoverContainer innerRef={this._setRef} key="popup">
+        <PopoverContainer ref={this._setRef} key="popup">
           {this.props.sections.map(section => {
             if (section.items.length > 0) {
               return (

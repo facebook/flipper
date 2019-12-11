@@ -13,7 +13,7 @@ import {colors} from './colors';
 import ManagedTable from './table/ManagedTable';
 import FlexRow from './FlexRow';
 import Glyph from './Glyph';
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 import React from 'react';
 import {BackgroundColorProperty} from 'csstype';
 import {
@@ -23,22 +23,17 @@ import {
   TableBodyColumn,
 } from './table/types';
 
-const Padder = styled('div')(
-  ({
-    padded,
-    backgroundColor,
-  }: {
-    padded?: boolean;
-    backgroundColor?: BackgroundColorProperty;
-  }) => ({
-    padding: padded ? 10 : 0,
-    backgroundColor,
-  }),
-);
+const Padder = styled.div<{
+  padded?: boolean;
+  backgroundColor?: BackgroundColorProperty;
+}>(({padded, backgroundColor}) => ({
+  padding: padded ? 10 : 0,
+  backgroundColor,
+}));
 Padder.displayName = 'StackTrace:Padder';
 
-const Container = styled('div')(
-  ({isCrash, padded}: {isCrash?: boolean; padded?: boolean}) => ({
+const Container = styled.div<{isCrash?: boolean; padded?: boolean}>(
+  ({isCrash, padded}) => ({
     backgroundColor: isCrash ? colors.redTint : 'transprent',
     border: padded
       ? `1px solid ${isCrash ? colors.red : colors.light15}`
@@ -49,7 +44,7 @@ const Container = styled('div')(
 );
 Container.displayName = 'StackTrace:Container';
 
-const Title = styled(FlexRow)(({isCrash}: {isCrash?: boolean}) => ({
+const Title = styled(FlexRow)<{isCrash?: boolean}>(({isCrash}) => ({
   color: isCrash ? colors.red : 'inherit',
   padding: 8,
   alignItems: 'center',
@@ -57,15 +52,15 @@ const Title = styled(FlexRow)(({isCrash}: {isCrash?: boolean}) => ({
 }));
 Title.displayName = 'StackTrace:Title';
 
-const Reason = styled(Text)(({isCrash}: {isCrash?: boolean}) => ({
+const Reason = styled(Text)<{isCrash?: boolean}>(({isCrash}) => ({
   color: isCrash ? colors.red : colors.light80,
   fontWeight: 'bold',
   fontSize: 13,
 }));
 Reason.displayName = 'StackTrace:Reason';
 
-const Line = styled(Text)(
-  ({isCrash, isBold}: {isCrash?: boolean; isBold?: boolean}) => ({
+const Line = styled(Text)<{isCrash?: boolean; isBold?: boolean}>(
+  ({isCrash, isBold}) => ({
     color: isCrash ? colors.red : colors.light80,
     fontWeight: isBold ? 'bold' : 'normal',
   }),

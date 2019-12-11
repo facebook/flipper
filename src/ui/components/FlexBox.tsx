@@ -8,7 +8,7 @@
  */
 
 import View from './View';
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 
 type Props = {
   /** Flexbox's shrink property. Set to `0`, to disable shrinking. */
@@ -18,7 +18,7 @@ type Props = {
 /**
  * A container using flexbox to layout its children
  */
-const FlexBox = styled(View)(({shrink}: Props) => ({
+const FlexBox = styled(View)<Props>(({shrink}) => ({
   display: 'flex',
   flexShrink: shrink == null || shrink ? 1 : 0,
 }));

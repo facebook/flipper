@@ -31,6 +31,8 @@ import React from 'react';
 import path from 'path';
 import {store} from './store';
 import {registerRecordingHooks} from './utils/pluginStateRecorder';
+import {cache} from 'emotion';
+import {CacheProvider} from '@emotion/core';
 
 const logger = initLogger(store);
 const bugReporter = new BugReporter(logger, store);
@@ -51,15 +53,17 @@ const AppFrame = () => {
     <TooltipProvider>
       <ContextMenuProvider>
         <Provider store={store}>
-          {warnEmployee ? (
-            <WarningEmployee
-              onClick={() => {
-                setWarnEmployee(false);
-              }}
-            />
-          ) : (
-            <App logger={logger} bugReporter={bugReporter} />
-          )}
+          <CacheProvider value={cache}>
+            {warnEmployee ? (
+              <WarningEmployee
+                onClick={() => {
+                  setWarnEmployee(false);
+                }}
+              />
+            ) : (
+              <App logger={logger} bugReporter={bugReporter} />
+            )}
+          </CacheProvider>
         </Provider>
       </ContextMenuProvider>
     </TooltipProvider>

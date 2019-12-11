@@ -7,29 +7,23 @@
  * @format
  */
 
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 import {inputStyle} from './Input';
 
-const Textarea = styled('textarea')(
-  ({
-    compact,
-    readOnly,
-    valid,
-  }: {
-    compact?: boolean;
-    readOnly?: boolean;
-    valid?: boolean;
-  }) => ({
-    ...inputStyle({
-      compact: compact || false,
-      readOnly: readOnly || false,
-      valid: valid !== false,
-    }),
-    lineHeight: 'normal',
-    padding: compact ? '5px' : '8px',
-    resize: 'none',
+const Textarea = styled.textarea<{
+  compact?: boolean;
+  readOnly?: boolean;
+  valid?: boolean;
+}>(({compact, readOnly, valid}) => ({
+  ...inputStyle({
+    compact: compact || false,
+    readOnly: readOnly || false,
+    valid: valid !== false,
   }),
-);
+  lineHeight: 'normal',
+  padding: compact ? '5px' : '8px',
+  resize: 'none',
+}));
 Textarea.displayName = 'Textarea';
 
 export default Textarea;

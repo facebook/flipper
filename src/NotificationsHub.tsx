@@ -319,7 +319,7 @@ type NotificationBoxProps = {
   severity: keyof typeof SEVERITY_COLOR_MAP;
 };
 
-const NotificationBox = styled(FlexRow)((props: NotificationBoxProps) => ({
+const NotificationBox = styled(FlexRow)<NotificationBoxProps>(props => ({
   backgroundColor: props.inactive ? 'transparent' : colors.white,
   opacity: props.inactive ? 0.5 : 1,
   alignItems: 'flex-start',
@@ -348,7 +348,7 @@ const NotificationBox = styled(FlexRow)((props: NotificationBoxProps) => ({
   },
 }));
 
-const Title = styled('div')({
+const Title = styled.div({
   minWidth: 150,
   color: colors.light80,
   flexShrink: 0,
@@ -358,8 +358,8 @@ const Title = styled('div')({
   fontSize: '1.1em',
 });
 
-const NotificationContent = styled(FlexColumn)(
-  (props: {isSelected?: boolean}) => ({
+const NotificationContent = styled(FlexColumn)<{isSelected?: boolean}>(
+  props => ({
     marginLeft: 6,
     marginRight: 10,
     flexGrow: 1,
@@ -379,7 +379,7 @@ const Actions = styled(FlexRow)({
   paddingTop: 8,
 });
 
-const NotificationButton = styled('div')({
+const NotificationButton = styled.div({
   border: `1px solid ${colors.light20}`,
   color: colors.light50,
   borderRadius: 4,

@@ -16,7 +16,7 @@ import FlexColumn from '../FlexColumn';
 import Glyph from '../Glyph';
 import {colors} from '../colors';
 import Text from '../Text';
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 import {clipboard, MenuItemConstructorOptions} from 'electron';
 import React, {MouseEvent, KeyboardEvent} from 'react';
 
@@ -51,7 +51,7 @@ const backgroundColorHover = (props: {selected: boolean; focused: boolean}) => {
   }
 };
 
-const ElementsRowContainer = styled(ContextMenu)((props: any) => ({
+const ElementsRowContainer = styled(ContextMenu)<any>(props => ({
   flexDirection: 'row',
   alignItems: 'center',
   backgroundColor: backgroundColor(props),
@@ -85,7 +85,7 @@ const ElementsRowDecoration = styled(FlexRow)({
 });
 ElementsRowDecoration.displayName = 'Elements:ElementsRowDecoration';
 
-const ElementsLine = styled('div')((props: {childrenCount: number}) => ({
+const ElementsLine = styled.div<{childrenCount: number}>(props => ({
   backgroundColor: colors.light20,
   height: props.childrenCount * ROW_HEIGHT - 4,
   position: 'absolute',
@@ -97,7 +97,7 @@ const ElementsLine = styled('div')((props: {childrenCount: number}) => ({
 }));
 ElementsLine.displayName = 'Elements:ElementsLine';
 
-const DecorationImage = styled('img')({
+const DecorationImage = styled.img({
   height: 12,
   marginRight: 5,
   width: 12,
@@ -121,12 +121,12 @@ const ElementsRowAttributeContainer = styled(NoShrinkText)({
 ElementsRowAttributeContainer.displayName =
   'Elements:ElementsRowAttributeContainer';
 
-const ElementsRowAttributeKey = styled('span')({
+const ElementsRowAttributeKey = styled.span({
   color: colors.tomato,
 });
 ElementsRowAttributeKey.displayName = 'Elements:ElementsRowAttributeKey';
 
-const ElementsRowAttributeValue = styled('span')({
+const ElementsRowAttributeValue = styled.span({
   color: colors.slateDark3,
 });
 ElementsRowAttributeValue.displayName = 'Elements:ElementsRowAttributeValue';
@@ -136,7 +136,7 @@ class PartialHighlight extends PureComponent<{
   highlighted: string | undefined | null;
   content: string;
 }> {
-  static HighlightedText = styled('span')((props: {selected: boolean}) => ({
+  static HighlightedText = styled.span<{selected: boolean}>(props => ({
     backgroundColor: colors.lemon,
     color: props.selected ? `${colors.grapeDark3} !important` : 'auto',
   }));

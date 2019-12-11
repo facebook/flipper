@@ -288,7 +288,7 @@ class ImageGrid extends PureComponent<{
   size: number;
   events: Array<ImageEventWithId>;
 }> {
-  static Content = styled('div')({
+  static Content = styled.div({
     paddingLeft: 15,
   });
 
@@ -348,12 +348,12 @@ class ImageGridHeader extends PureComponent<{
     zIndex: 3,
   });
 
-  static Heading = styled('span')({
+  static Heading = styled.span({
     fontSize: 22,
     fontWeight: 600,
   });
 
-  static Subtitle = styled('span')({
+  static Subtitle = styled.span({
     fontSize: 22,
     fontWeight: 300,
     marginLeft: 15,
@@ -392,7 +392,7 @@ class ImageItem extends PureComponent<{
   size: number;
   numberOfRequests: number;
 }> {
-  static Container = styled(FlexBox)((props: {size: number}) => ({
+  static Container = styled(FlexBox)<{size: number}>(props => ({
     float: 'left',
     alignItems: 'center',
     justifyContent: 'center',
@@ -405,18 +405,18 @@ class ImageItem extends PureComponent<{
     backgroundColor: colors.light02,
   }));
 
-  static Image = styled('img')({
+  static Image = styled.img({
     borderRadius: 4,
     maxHeight: '100%',
     maxWidth: '100%',
     objectFit: 'contain',
   });
 
-  static Loading = styled('span')({
+  static Loading = styled.span({
     padding: '0 0',
   });
 
-  static SelectedHighlight = styled('div')((props: {selected: boolean}) => ({
+  static SelectedHighlight = styled.div<{selected: boolean}>(props => ({
     borderColor: colors.highlight,
     borderStyle: 'solid',
     borderWidth: props.selected ? 3 : 0,
@@ -429,8 +429,8 @@ class ImageItem extends PureComponent<{
     top: 0,
   }));
 
-  static HoverOverlay = styled(FlexColumn)(
-    (props: {selected: boolean; size: number}) => ({
+  static HoverOverlay = styled(FlexColumn)<{selected: boolean; size: number}>(
+    props => ({
       alignItems: 'center',
       backgroundColor: colors.whiteAlpha80,
       bottom: props.selected ? 4 : 0,
@@ -449,16 +449,16 @@ class ImageItem extends PureComponent<{
     }),
   );
 
-  static MemoryLabel = styled('span')({
+  static MemoryLabel = styled.span({
     fontWeight: 600,
     marginBottom: 6,
   });
 
-  static SizeLabel = styled('span')({
+  static SizeLabel = styled.span({
     fontWeight: 300,
   });
 
-  static Events = styled('div')({
+  static Events = styled.div({
     position: 'absolute',
     top: -5,
     right: -5,

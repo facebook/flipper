@@ -8,13 +8,13 @@
  */
 
 import React from 'react';
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 import PropTypes from 'prop-types';
 import {getIconURL} from '../../utils/icons.js';
 
 export type IconSize = 8 | 10 | 12 | 16 | 18 | 20 | 24 | 32;
 
-const ColoredIconBlack = styled('img')(({size}: {size: number}) => ({
+const ColoredIconBlack = styled.img<{size: number}>(({size}) => ({
   height: size,
   verticalAlign: 'middle',
   width: size,
@@ -22,20 +22,22 @@ const ColoredIconBlack = styled('img')(({size}: {size: number}) => ({
 }));
 ColoredIconBlack.displayName = 'Glyph:ColoredIconBlack';
 
-const ColoredIconCustom = styled('div')(
-  (props: {size: number; color?: string; src: string}) => ({
-    height: props.size,
-    verticalAlign: 'middle',
-    width: props.size,
-    backgroundColor: props.color,
-    display: 'inline-block',
-    maskImage: `url('${props.src}')`,
-    maskSize: '100% 100%',
-    WebkitMaskImage: `url('${props.src}')`,
-    WebkitMaskSize: '100% 100%',
-    flexShrink: 0,
-  }),
-);
+const ColoredIconCustom = styled.div<{
+  size: number;
+  color?: string;
+  src: string;
+}>(props => ({
+  height: props.size,
+  verticalAlign: 'middle',
+  width: props.size,
+  backgroundColor: props.color,
+  display: 'inline-block',
+  maskImage: `url('${props.src}')`,
+  maskSize: '100% 100%',
+  WebkitMaskImage: `url('${props.src}')`,
+  WebkitMaskSize: '100% 100%',
+  flexShrink: 0,
+}));
 ColoredIconCustom.displayName = 'Glyph:ColoredIconCustom';
 
 function ColoredIcon(

@@ -15,7 +15,7 @@ import {
 } from './types';
 import React from 'react';
 import FilterRow from '../filter/FilterRow';
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 import FlexRow from '../FlexRow';
 import {colors} from '../colors';
 import {normaliseColumnWidth} from './utils';
@@ -58,8 +58,8 @@ const backgroundColor = (props: TableBodyRowContainerProps) => {
   }
 };
 
-const TableBodyRowContainer = styled(FlexRow)(
-  (props: TableBodyRowContainerProps) => ({
+const TableBodyRowContainer = styled(FlexRow)<TableBodyRowContainerProps>(
+  props => ({
     backgroundColor: backgroundColor(props),
     boxShadow: props.zebra ? 'none' : 'inset 0 -1px #E9EBEE',
     color: props.highlighted ? colors.white : props.color || undefined,
@@ -86,7 +86,11 @@ const TableBodyRowContainer = styled(FlexRow)(
 );
 TableBodyRowContainer.displayName = 'TableRow:TableBodyRowContainer';
 
-const TableBodyColumnContainer = styled('div')(
+const TableBodyColumnContainer = styled.div<{
+  width?: any;
+  multiline?: boolean;
+  justifyContent: JustifyContentProperty;
+}>(
   (props: {
     width?: any;
     multiline?: boolean;

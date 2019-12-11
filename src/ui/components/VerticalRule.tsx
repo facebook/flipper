@@ -7,9 +7,9 @@
  * @format
  */
 
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 
-const VerticalRule = styled('div')({
+const VerticalRule = styled.div({
   backgroundColor: '#c9ced4',
   width: 3,
   margin: '0',

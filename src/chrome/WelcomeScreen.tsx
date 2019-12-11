@@ -29,7 +29,7 @@ const Container = styled(FlexColumn)({
   backgroundColor: colors.light02,
 });
 
-const Welcome = styled(FlexColumn)(({isMounted}: {isMounted?: boolean}) => ({
+const Welcome = styled(FlexColumn)<{isMounted?: boolean}>(({isMounted}) => ({
   width: 460,
   background: colors.white,
   borderRadius: 10,
@@ -85,7 +85,7 @@ const Icon = styled(Glyph)({
   marginLeft: 6,
 });
 
-const Logo = styled('img')({
+const Logo = styled.img({
   width: 128,
   height: 128,
   alignSelf: 'center',

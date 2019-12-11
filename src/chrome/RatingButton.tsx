@@ -41,7 +41,7 @@ class PredefinedComment extends Component<{
   selected: boolean;
   onClick: (_: unknown) => unknown;
 }> {
-  static Container = styled('div')((props: {selected: boolean}) => {
+  static Container = styled.div<{selected: boolean}>(props => {
     return {
       border: '1px solid #f2f3f5',
       cursor: 'pointer',
@@ -82,7 +82,7 @@ const DismissRow = styled(Row)({
   marginTop: 10,
 });
 
-const DismissButton = styled('span')({
+const DismissButton = styled.span({
   '&:hover': {
     textDecoration: 'underline',
     cursor: 'pointer',

@@ -7,7 +7,7 @@
  * @format
  */
 
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 import {colors} from './colors';
 
 import {BackgroundColorProperty, HeightProperty} from 'csstype';
@@ -18,8 +18,8 @@ type Props = {
   title?: string;
 };
 
-const StatusIndicator = styled('div')(
-  ({statusColor, diameter = 10, title}: Props) => ({
+const StatusIndicator = styled.div<Props>(
+  ({statusColor, diameter = 10, title}) => ({
     alignSelf: 'center',
     backgroundColor: statusColor,
     border: `1px solid ${colors.blackAlpha30}`,
