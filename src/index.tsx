@@ -10,6 +10,7 @@
 export {default as styled, keyframes} from 'react-emotion';
 export * from './ui/index';
 export {getStringFromErrorLike, textContent} from './utils/index';
+export {serialize, deserialize} from './utils/serialization';
 export * from './utils/jsonTypes';
 export {default as GK} from './fb-stubs/GK';
 export {default as createPaste} from './fb-stubs/createPaste';

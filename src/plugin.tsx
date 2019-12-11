@@ -11,7 +11,7 @@ import {KeyboardActions} from './MenuBar';
 import {App} from './App';
 import {Logger} from './fb-interfaces/Logger';
 import Client from './Client';
-import {Store, MiddlewareAPI} from './reducers/index';
+import {Store} from './reducers/index';
 import {MetricType} from './utils/exportMetrics';
 import {ReactNode, Component} from 'react';
 import BaseDevice from './devices/BaseDevice';

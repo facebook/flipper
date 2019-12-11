@@ -30,6 +30,7 @@ import {setPersistor} from './utils/persistor';
 import React from 'react';
 import path from 'path';
 import {store} from './store';
+import {registerRecordingHooks} from './utils/pluginStateRecorder';
 
 const logger = initLogger(store);
 const bugReporter = new BugReporter(logger, store);
@@ -90,6 +91,7 @@ function init() {
   initLauncherHooks(config(), store);
   const sessionId = store.getState().application.sessionId;
   initCrashReporter(sessionId || '');
+  registerRecordingHooks(store);
   window.flipperGlobalStoreDispatch = store.dispatch;
 }
 

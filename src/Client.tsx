@@ -23,6 +23,7 @@ import {registerPlugins} from './reducers/plugins';
 import createTableNativePlugin from './plugins/TableNativePlugin';
 import EventEmitter from 'events';
 import invariant from 'invariant';
+import {flipperRecorderAddEvent} from './utils/pluginStateRecorder';
 import {getPluginKey} from './utils/pluginUtils';
 
 const MAX_BACKGROUND_TASK_TIME = 25;
@@ -390,6 +391,7 @@ export default class Client extends EventEmitter {
             ...this.store.getState().pluginStates[pluginKey],
           };
           const reducerStartTime = Date.now();
+          flipperRecorderAddEvent(pluginKey, params.method, params.params);
           const newPluginState = persistingPlugin.persistedStateReducer(
             persistedState,
             params.method,
