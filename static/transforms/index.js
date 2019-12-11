@@ -22,13 +22,20 @@ function transform({filename, options, src}) {
   let ast = babylon.parse(src, {
     filename,
     plugins: isTypeScript
-      ? ['jsx', 'typescript', 'classProperties', 'optionalChaining']
+      ? [
+          'jsx',
+          'typescript',
+          'classProperties',
+          'optionalChaining',
+          'nullishCoalescingOperator',
+        ]
       : [
           'jsx',
           ['flow', {all: true}],
           'classProperties',
           'objectRestSpread',
           'optionalChaining',
+          'nullishCoalescingOperator',
         ],
     sourceType: 'module',
   });
@@ -43,6 +50,7 @@ function transform({filename, options, src}) {
       require('../node_modules/@babel/plugin-proposal-class-properties'),
       require('../node_modules/@babel/plugin-transform-flow-strip-types'),
       require('../node_modules/@babel/plugin-proposal-optional-chaining'),
+      require('../node_modules/@babel/plugin-proposal-nullish-coalescing-operator'),
       require('./dynamic-requires.js'),
     );
   } else {
@@ -51,6 +59,7 @@ function transform({filename, options, src}) {
       require('../node_modules/@babel/plugin-proposal-class-properties'),
       require('../node_modules/@babel/plugin-transform-modules-commonjs'),
       require('../node_modules/@babel/plugin-proposal-optional-chaining'),
+      require('../node_modules/@babel/plugin-proposal-nullish-coalescing-operator'),
     );
   }
 
