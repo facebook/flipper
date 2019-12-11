@@ -25,6 +25,8 @@ import ListView from './ListView';
 import {Dispatch, Action} from 'redux';
 import {unsetShare} from '../reducers/application';
 import {FlexColumn, styled} from 'flipper';
+import Client from '../Client';
+
 type OwnProps = {
   onHide: () => void;
 };
@@ -33,6 +35,7 @@ type StateFromProps = {
   share: ShareType | null;
   plugins: PluginState;
   pluginStates: PluginStatesState;
+  selectedClient: Client | undefined;
 };
 
 type DispatchFromProps = {
@@ -54,11 +57,16 @@ const Container = styled(FlexColumn)({
 
 class ExportDataPluginSheet extends Component<Props> {
   render() {
-    const {plugins, pluginStates, onHide} = this.props;
+    const {plugins, pluginStates, onHide, selectedClient} = this.props;
     const onHideWithUnsettingShare = () => {
       this.props.unsetShare();
       onHide();
     };
+    const pluginsToExport = getActivePersistentPlugins(
+      pluginStates,
+      plugins,
+      selectedClient,
+    );
     return (
       <Container>
         <ListView
@@ -90,11 +98,8 @@ class ExportDataPluginSheet extends Component<Props> {
               }
             }
           }}
-          elements={getActivePersistentPlugins(pluginStates, plugins)}
-          selectedElements={getActivePersistentPlugins(
-            pluginStates,
-            plugins,
-          ).reduce((acc, plugin) => {
+          elements={pluginsToExport}
+          selectedElements={pluginsToExport.reduce((acc, plugin) => {
             if (
               plugins.selectedPlugins.length <= 0 ||
               plugins.selectedPlugins.includes(plugin)
@@ -112,11 +117,22 @@ class ExportDataPluginSheet extends Component<Props> {
 }
 
 export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
-  ({application: {share}, plugins, pluginStates}) => ({
-    share,
+  ({
+    application: {share},
     plugins,
     pluginStates,
-  }),
+    connections: {selectedApp, clients},
+  }) => {
+    const selectedClient = clients.find(o => {
+      return o.id === selectedApp;
+    });
+    return {
+      share,
+      plugins,
+      pluginStates,
+      selectedClient,
+    };
+  },
   (dispatch: Dispatch<Action<any>>) => ({
     selectedPlugins: (plugins: Array<string>) => {
       dispatch(actionForSelectedPlugins(plugins));

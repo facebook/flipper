@@ -73,7 +73,6 @@ export default function reducer(
         clientPlugins.set(p.id, p);
       }
     });
-
     return {
       ...state,
       devicePlugins,

@@ -14,6 +14,7 @@ import {pluginsClassMap} from './exportData';
 import {State as PluginsState} from '../reducers/plugins';
 import {PluginDefinition} from '../dispatcher/plugins';
 import {deconstructPluginKey} from './clientUtils';
+import Client from '../Client';
 
 export function getPluginKey(
   selectedApp: string | null,
@@ -46,24 +47,44 @@ export function getPersistedState<PersistedState>(
   return persistedState;
 }
 
+/**
+ *
+ * @param pluginsState  PluginsState of the Redux Store.
+ * @param plugins  Plugins from the state which has the mapping to Plugin's Class.
+ * @param selectedClient Optional paramater indicating the selected client.
+ * Returns active persistent plugin, which means plugins which has the data in redux store or has the `exportPersistedState` function defined which can return the plugin's data when called.
+ * If the selectedClient is defined then the active persistent plugins only for the selectedClient will be returned, otherwise it will return all active persistent plugins.
+ */
 export function getActivePersistentPlugins(
   pluginsState: PluginStatesState,
   plugins: PluginsState,
+  selectedClient?: Client,
 ): Array<string> {
   const pluginsMap: Map<
     string,
     typeof FlipperDevicePlugin | typeof FlipperPlugin
   > = pluginsClassMap(plugins);
-  return getPersistentPlugins(plugins).filter(pluginName => {
-    const pluginClass = pluginsMap.get(pluginName);
-    const pluginNames = Object.keys(pluginsState).map(
-      pluginKey => deconstructPluginKey(pluginKey).pluginName,
-    );
-    return (
-      (pluginClass && pluginClass.exportPersistedState != undefined) ||
-      pluginName == 'DeviceLogs' ||
-      pluginNames.includes(pluginName)
-    );
+  return getPersistentPlugins(plugins).filter(plugin => {
+    const pluginClass = pluginsMap.get(plugin);
+    const keys = Object.keys(pluginsState)
+      .filter(k => !selectedClient || k.includes(selectedClient.id))
+      .map(key => deconstructPluginKey(key).pluginName);
+    let result = plugin == 'DeviceLogs';
+    const pluginsWithExportPersistedState =
+      pluginClass && pluginClass.exportPersistedState != undefined;
+    const pluginsWithReduxData = keys.includes(plugin);
+    if (!result && selectedClient) {
+      // If there is a selected client, active persistent plugin is the plugin which is active for selectedClient and also persistent.
+      result =
+        selectedClient.plugins.includes(plugin) &&
+        (pluginsWithExportPersistedState || pluginsWithReduxData);
+    } else if (!result && !selectedClient) {
+      // If there is no selected client, active persistent plugin is the plugin which is just persistent.
+      result =
+        (pluginClass && pluginClass.exportPersistedState != undefined) ||
+        keys.includes(plugin);
+    }
+    return result;
   });
 }
 
