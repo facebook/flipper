@@ -1,0 +1,13 @@
+diff --git a/node_modules/firefox-client/lib/client.js b/node_modules/firefox-client/lib/client.js
+index 22b3179..11e8d7f 100644
+--- a/node_modules/firefox-client/lib/client.js
++++ b/node_modules/firefox-client/lib/client.js
+@@ -2,8 +2,6 @@ var net = require("net"),
+     events = require("events"),
+     extend = require("./extend");
+ 
+-var colors = require("colors");
+-
+ module.exports = Client;
+ 
+ // this is very unfortunate! and temporary. we can't

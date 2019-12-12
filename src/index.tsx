@@ -10,7 +10,7 @@
 export {default as styled} from '@emotion/styled';
 export {keyframes} from 'emotion';
 export * from './ui/index';
-export {getStringFromErrorLike, textContent} from './utils/index';
+export {getStringFromErrorLike, textContent, sleep} from './utils/index';
 export {serialize, deserialize} from './utils/serialization';
 export * from './utils/jsonTypes';
 export {default as GK} from './fb-stubs/GK';

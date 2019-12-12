@@ -1,0 +1,23 @@
+{
+  "name": "kaios-big-allocations",
+  "version": "1.0.0",
+  "main": "index.tsx",
+  "license": "MIT",
+  "title": "KaiOS: big allocations",
+  "icon": "apps",
+  "bugs": {
+    "email": "oncall+wa_kaios@xmail.facebook.com",
+    "url": "https://fb.workplace.com/groups/wa.kaios/"
+  },
+  "scripts": {
+    "postinstall": "patch-package"
+  },
+  "devDependencies": {
+    "patch-package": "^6.2.0",
+    "postinstall-postinstall": "^2.0.0"
+  },
+  "dependencies": {
+    "child-process-es6-promise": "^1.2.1",
+    "firefox-client": "0.3.0"
+  }
+}
