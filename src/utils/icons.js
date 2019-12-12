@@ -98,13 +98,20 @@ function getIconPartsFromName(icon) {
   return {trimmedName: trimmedName, variant: variant};
 }
 
+function getIconFileName(icon, size, density) {
+  return `${icon.trimmedName}-${icon.variant}-${size}@${density}x.png`;
+}
+
 // $FlowFixMe not using flow in this file
 function buildLocalIconPath(name, size, density) {
   const icon = getIconPartsFromName(name);
-  return path.join(
-    'icons',
-    `${icon.trimmedName}-${icon.variant}-${size}@${density}x.png`,
-  );
+  return path.join('icons', getIconFileName(icon, size, density));
+}
+
+// $FlowFixMe not using flow in this file
+function buildLocalIconURL(name, size, density) {
+  const icon = getIconPartsFromName(name);
+  return `icons/${getIconFileName(icon, size, density)}`;
 }
 
 // $FlowFixMe not using flow in this file
@@ -168,13 +175,17 @@ module.exports = {
       }
     }
 
-    const localPath = buildLocalIconPath(name, size, density);
     // resolve icon locally if possible
     if (
       remote &&
-      fs.existsSync(path.join(remote.app.getAppPath(), localPath))
+      fs.existsSync(
+        path.join(
+          remote.app.getAppPath(),
+          buildLocalIconPath(name, size, density),
+        ),
+      )
     ) {
-      return localPath;
+      return buildLocalIconURL(name, size, density);
     }
     return buildIconURL(name, requestedSize, density);
   },
