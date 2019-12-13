@@ -12,9 +12,10 @@ import {serialize} from './serialization';
 import {State as PluginStatesState} from '../reducers/pluginStates';
 import {Store} from '../reducers';
 import fs from 'fs';
-import {ExportType, fetchMetadata, pluginsClassMap} from './exportData';
+import {ExportType, fetchMetadata} from './exportData';
 import {deserializeObject} from './serialization';
 import {deconstructPluginKey} from './clientUtils';
+import {pluginsClassMap} from './pluginUtils';
 
 export type MetricType = {[metricName: string]: number};
 type MetricPluginType = {[pluginID: string]: MetricType};

@@ -10,11 +10,27 @@
 import {FlipperDevicePlugin, FlipperPlugin, FlipperBasePlugin} from '../plugin';
 import BaseDevice from '../devices/BaseDevice';
 import {State as PluginStatesState} from '../reducers/pluginStates';
-import {pluginsClassMap} from './exportData';
 import {State as PluginsState} from '../reducers/plugins';
 import {PluginDefinition} from '../dispatcher/plugins';
 import {deconstructPluginKey} from './clientUtils';
-import Client from '../Client';
+
+type Client = import('../Client').default;
+
+export function pluginsClassMap(
+  plugins: PluginsState,
+): Map<string, typeof FlipperDevicePlugin | typeof FlipperPlugin> {
+  const pluginsMap: Map<
+    string,
+    typeof FlipperDevicePlugin | typeof FlipperPlugin
+  > = new Map([]);
+  plugins.clientPlugins.forEach((val, key) => {
+    pluginsMap.set(key, val);
+  });
+  plugins.devicePlugins.forEach((val, key) => {
+    pluginsMap.set(key, val);
+  });
+  return pluginsMap;
+}
 
 export function getPluginKey(
   selectedApp: string | null,

@@ -81,10 +81,12 @@ const ICONS = {
   tree: [12],
   translate: [12],
   trash: [12, 16],
+  'trash-outline': [16],
   'star-slash': [16],
   'life-event-major': [16],
   target: [12, 16],
   tools: [12, 20],
+  underline: [12],
   'washing-machine': [12],
   'watch-tv': [12],
 };

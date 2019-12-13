@@ -15,8 +15,7 @@ import {Store, State as ReduxState} from '../reducers';
 import {DeviceExport} from '../devices/BaseDevice';
 import {State as PluginStatesState} from '../reducers/pluginStates';
 import {PluginNotification} from '../reducers/notifications';
-import {ClientExport, ClientQuery} from '../Client.js';
-import {State as PluginsState} from '../reducers/plugins';
+import Client, {ClientExport, ClientQuery} from '../Client';
 import {pluginKey} from '../reducers/pluginStates';
 import {
   FlipperDevicePlugin,
@@ -26,7 +25,6 @@ import {
 } from '../plugin';
 import {default as BaseDevice} from '../devices/BaseDevice';
 import {default as ArchivedDevice} from '../devices/ArchivedDevice';
-import {default as Client} from '../Client';
 import fs from 'fs';
 import uuid from 'uuid';
 import {remote, OpenDialogOptions} from 'electron';
@@ -105,22 +103,6 @@ export function processClients(
     client => client.query.device_id === serial,
   );
   return filteredClients;
-}
-
-export function pluginsClassMap(
-  plugins: PluginsState,
-): Map<string, typeof FlipperDevicePlugin | typeof FlipperPlugin> {
-  const pluginsMap: Map<
-    string,
-    typeof FlipperDevicePlugin | typeof FlipperPlugin
-  > = new Map([]);
-  plugins.clientPlugins.forEach((val, key) => {
-    pluginsMap.set(key, val);
-  });
-  plugins.devicePlugins.forEach((val, key) => {
-    pluginsMap.set(key, val);
-  });
-  return pluginsMap;
 }
 
 export function processPluginStates(
