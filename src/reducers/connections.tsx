@@ -23,6 +23,7 @@ import NotificationScreen from '../chrome/NotificationScreen';
 import SupportRequestForm from '../fb-stubs/SupportRequestFormManager';
 import SupportRequestFormV2 from '../fb-stubs/SupportRequestFormV2';
 import SupportRequestDetails from '../fb-stubs/SupportRequestDetails';
+import {produce} from 'immer';
 
 export type StaticView =
   | null
@@ -48,7 +49,7 @@ export type State = {
   userPreferredDevice: null | string;
   userPreferredPlugin: null | string;
   userPreferredApp: null | string;
-  starredPlugins: string[];
+  userStarredPlugins: {[client: string]: string[]};
   errors: FlipperError[];
   clients: Array<Client>;
   uninitializedClients: Array<{
@@ -152,7 +153,7 @@ const INITAL_STATE: State = {
   userPreferredDevice: null,
   userPreferredPlugin: null,
   userPreferredApp: null,
-  starredPlugins: [],
+  userStarredPlugins: {},
   errors: [],
   clients: [],
   uninitializedClients: [],
@@ -238,18 +239,20 @@ const reducer = (state: State = INITAL_STATE, action: Actions): State => {
     }
 
     case 'STAR_PLUGIN': {
-      const {selectedPlugin} = action.payload;
-      const starredPlugins = state.starredPlugins.slice();
-      const idx = starredPlugins.indexOf(selectedPlugin);
-      if (idx === -1) {
-        starredPlugins.push(selectedPlugin);
-      } else {
-        starredPlugins.splice(idx, 1);
-      }
-      return {
-        ...state,
-        starredPlugins: starredPlugins,
-      };
+      const {selectedPlugin, selectedApp} = action.payload;
+      return produce(state, draft => {
+        if (!draft.userStarredPlugins[selectedApp]) {
+          draft.userStarredPlugins[selectedApp] = [selectedPlugin];
+        } else {
+          const plugins = draft.userStarredPlugins[selectedApp];
+          const idx = plugins.indexOf(selectedPlugin);
+          if (idx === -1) {
+            plugins.push(selectedPlugin);
+          } else {
+            plugins.splice(idx, 1);
+          }
+        }
+      });
     }
 
     case 'SELECT_USER_PREFERRED_PLUGIN': {
