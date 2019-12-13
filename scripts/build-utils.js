@@ -66,7 +66,7 @@ function compile(buildFolder, entry) {
         ),
       },
       resolver: {
-        blacklistRE: /\/(sonar|flipper-public)\/(dist|doctor)\/|(\.native\.js$)/,
+        blacklistRE: /\/(sonar|flipper|flipper-public)\/(dist|doctor)\/|(\.native\.js$)/,
       },
     },
     {

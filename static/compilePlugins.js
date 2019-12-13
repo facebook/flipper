@@ -214,7 +214,7 @@ async function compilePlugin(
           },
           resolver: {
             sourceExts: ['tsx', 'ts', 'js'],
-            blacklistRE: /\/(sonar|flipper-public)\/(dist|doctor)\/|(\.native\.js$)/,
+            blacklistRE: /\/(sonar|flipper|flipper-public)\/(dist|doctor)\/|(\.native\.js$)/,
           },
         },
         {
