@@ -71,6 +71,7 @@ function watchChanges(
         if (
           filename &&
           !filename.startsWith('.') &&
+          !filename.includes('__tests__') &&
           !delayedCompilation[plugin.name]
         ) {
           delayedCompilation[plugin.name] = setTimeout(() => {
