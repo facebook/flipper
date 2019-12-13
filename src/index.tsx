@@ -9,6 +9,8 @@
 
 export {default as styled} from '@emotion/styled';
 export {keyframes} from 'emotion';
+export {produce} from 'immer';
+
 export * from './ui/index';
 export {getStringFromErrorLike, textContent, sleep} from './utils/index';
 export {serialize, deserialize} from './utils/serialization';

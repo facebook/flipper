@@ -68,7 +68,8 @@ Informs the plugin whether or not the client is archived, and therefore not curr
 Sometimes it's desirable for a plugin to be able to process incoming messages from the client even when inactive.
 
 To do this, define a static `persistedStateReducer` function in the plugin class:
-```
+
+```typescript
 static persistedStateReducer<PersistedState>(
     persistedState: PersistedState,
     method: string,
@@ -77,6 +78,26 @@ static persistedStateReducer<PersistedState>(
 ```
 
 The job of the `persistedStateReducer` is to merge incoming data into the state, so that next time the plugin is activated, the persisted state will be ready.
+
+The data that is produced from `persistedStateReducer` should be immutable, but also structurally sharing unchanged parts of the state with the previous state to avoid performance hiccups. To simplify this process we recommend using the [Immer](https://immerjs.github.io/immer/docs/introduction) package.
+Immer makes it possible to keep the reducer concise by directly supporting "writing" to the current state, and keeping track of that in the background.
+Also it will guarantee that there are no accidental data manipulations by freezing the produced state.
+
+You can directly `import {produce} from "flipper"` so there is no need to add Immer as additional dependency.
+
+A quick example:
+
+```typescript
+static persistedStateReducer(persistedState, method, data) {
+  return produce(persistedState, draft => {
+    if (method.name === "newRecord") {
+      draft.lastRecordReceived = Date.now();
+      draft.records.push(data);
+    }
+  });
+}
+```
+
 
 ## Notifications
 
