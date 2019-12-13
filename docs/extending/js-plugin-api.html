@@ -92,13 +92,27 @@
 <h2><a class="anchor" aria-hidden="true" id="background-plugins"></a><a href="#background-plugins" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Background Plugins</h2>
 <p>Sometimes it's desirable for a plugin to be able to process incoming messages from the client even when inactive.</p>
 <p>To do this, define a static <code>persistedStateReducer</code> function in the plugin class:</p>
-<pre><code class="hljs"><span class="hljs-keyword">static</span> persistedStateReducer&lt;PersistedState&gt;(
+<pre><code class="hljs css language-typescript"><span class="hljs-keyword">static</span> persistedStateReducer&lt;PersistedState&gt;(
     persistedState: PersistedState,
-    <span class="hljs-function"><span class="hljs-keyword">method</span>:</span> string,
-    data: Object
+    method: <span class="hljs-built_in">string</span>,
+    data: <span class="hljs-built_in">Object</span>
   ): PersistedState
 </code></pre>
 <p>The job of the <code>persistedStateReducer</code> is to merge incoming data into the state, so that next time the plugin is activated, the persisted state will be ready.</p>
+<p>The data that is produced from <code>persistedStateReducer</code> should be immutable, but also structurally sharing unchanged parts of the state with the previous state to avoid performance hiccups. To simplify this process we recommend using the <a href="https://immerjs.github.io/immer/docs/introduction">Immer</a> package.
+Immer makes it possible to keep the reducer concise by directly supporting &quot;writing&quot; to the current state, and keeping track of that in the background.
+Also it will guarantee that there are no accidental data manipulations by freezing the produced state.</p>
+<p>You can directly <code>import {produce} from &quot;flipper&quot;</code> so there is no need to add Immer as additional dependency.</p>
+<p>A quick example:</p>
+<pre><code class="hljs css language-typescript"><span class="hljs-keyword">static</span> persistedStateReducer(persistedState, method, data) {
+  <span class="hljs-keyword">return</span> produce(persistedState, <span class="hljs-function"><span class="hljs-params">draft</span> =&gt;</span> {
+    <span class="hljs-keyword">if</span> (method.name === <span class="hljs-string">"newRecord"</span>) {
+      draft.lastRecordReceived = <span class="hljs-built_in">Date</span>.now();
+      draft.records.push(data);
+    }
+  });
+}
+</code></pre>
 <h2><a class="anchor" aria-hidden="true" id="notifications"></a><a href="#notifications" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Notifications</h2>
 <p>Plugins can publish system notifications to alert the user of something. This is particularly useful when the plugin isn't the current active plugin. All notifications are aggregated in Flipper's notifications pane, accessible from the sidebar.</p>
 <p>A notification should provide actionable and high-signal information for important events the user is likely to take action on. Notifications are generated from the data in your persistedState. To trigger notifications you need to implement a static function <code>getActiveNotifications</code>. This function should return all currently active notifications. To invalidate a notification, you simply stop including it in the result.</p>
