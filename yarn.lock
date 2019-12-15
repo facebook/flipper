@@ -7141,10 +7141,10 @@ pkg-fetch@^2.6.4:
     semver "^6.3.0"
     unique-temp-dir "^1.0.0"
 
-pkg@^4.4.1:
-  version "4.4.1"
-  resolved "https://registry.yarnpkg.com/pkg/-/pkg-4.4.1.tgz#16790b2ab13485000f650b1f3fdfa5412af09f27"
-  integrity sha512-dT+wOFIwWIxuUbc5lxzGffZHEyMllf9b32l0RQTb5m/sIsU2qzBKQewHIgVDKcdOJGx2R/+dMdBbrup4UKTlJA==
+pkg@^4.4.2:
+  version "4.4.2"
+  resolved "https://registry.yarnpkg.com/pkg/-/pkg-4.4.2.tgz#c9c5bf13501d33df5cad02397a14f0bbf48aac15"
+  integrity sha512-FEFX43fzHVyEl7fBTTaKxjN3OsWowNfcDGO7+NaxfUsMTMvy8aQX6DscjgoTNnbOehObRK/UqMUGKXt3mvnArg==
   dependencies:
     "@babel/parser" "^7.7.5"
     "@babel/runtime" "^7.7.5"
