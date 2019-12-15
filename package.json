@@ -152,7 +152,7 @@
     "openssl-wrapper": "^0.3.4",
     "p-map": "^3.0.0",
     "patch-package": "^6.2.0",
-    "pkg": "^4.4.1",
+    "pkg": "4.4.1",
     "promise-retry": "^1.1.1",
     "promisify-child-process": "^3.1.1",
     "prop-types": "^15.6.0",
