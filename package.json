@@ -94,7 +94,7 @@
     "eslint-plugin-header": "^3.0.0",
     "eslint-plugin-import": "^2.19.0",
     "eslint-plugin-jsx-a11y": "^6.0.3",
-    "eslint-plugin-prettier": "^3.1.1",
+    "eslint-plugin-prettier": "3.1.1",
     "eslint-plugin-react": "^7.16.0",
     "eslint-plugin-relay": "^1.4.1",
     "flow-bin": "0.113.0",
