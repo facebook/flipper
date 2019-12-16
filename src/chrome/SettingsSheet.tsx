@@ -10,6 +10,11 @@
 import {FlexColumn, Button, styled, Text, FlexRow, Spacer} from 'flipper';
 import React, {Component} from 'react';
 import {updateSettings, Action} from '../reducers/settings';
+import {
+  Action as LauncherAction,
+  LauncherSettings,
+  updateLauncherSettings,
+} from '../reducers/launcherSettings';
 import {connect} from 'react-redux';
 import {State as Store} from '../reducers';
 import {Settings} from '../reducers/settings';
@@ -38,25 +43,30 @@ type OwnProps = {
 
 type StateFromProps = {
   settings: Settings;
+  launcherSettings: LauncherSettings;
   isXcodeDetected: boolean;
 };
 
 type DispatchFromProps = {
   updateSettings: (settings: Settings) => Action;
+  updateLauncherSettings: (settings: LauncherSettings) => LauncherAction;
 };
 
 type State = {
   updatedSettings: Settings;
+  updatedLauncherSettings: LauncherSettings;
 };
 
 type Props = OwnProps & StateFromProps & DispatchFromProps;
 class SettingsSheet extends Component<Props, State> {
   state: State = {
     updatedSettings: {...this.props.settings},
+    updatedLauncherSettings: {...this.props.launcherSettings},
   };
 
   applyChanges = async () => {
     this.props.updateSettings(this.state.updatedSettings);
+    this.props.updateLauncherSettings(this.state.updatedLauncherSettings);
     this.props.onHide();
     flush().then(() => {
       restartFlipper();
@@ -104,12 +114,21 @@ class SettingsSheet extends Component<Props, State> {
           />
         </ToggledSection>
         <LauncherSettingsPanel
-          enabledInConfig={this.state.updatedSettings.enablePrefetching}
-          onChange={v => {
+          isPrefetchingEnabled={this.state.updatedSettings.enablePrefetching}
+          onEnablePrefetchingChange={v => {
             this.setState({
               updatedSettings: {
                 ...this.state.updatedSettings,
                 enablePrefetching: v,
+              },
+            });
+          }}
+          isLocalPinIgnored={this.state.updatedLauncherSettings.ignoreLocalPin}
+          onIgnoreLocalPinChange={v => {
+            this.setState({
+              updatedLauncherSettings: {
+                ...this.state.updatedLauncherSettings,
+                ignoreLocalPin: v,
               },
             });
           }}
@@ -121,7 +140,13 @@ class SettingsSheet extends Component<Props, State> {
             Cancel
           </Button>
           <Button
-            disabled={isEqual(this.props.settings, this.state.updatedSettings)}
+            disabled={
+              isEqual(this.props.settings, this.state.updatedSettings) &&
+              isEqual(
+                this.props.launcherSettings,
+                this.state.updatedLauncherSettings,
+              )
+            }
             type="primary"
             compact
             padded
@@ -135,9 +160,10 @@ class SettingsSheet extends Component<Props, State> {
 }
 
 export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
-  ({settingsState, application}) => ({
+  ({settingsState, launcherSettingsState, application}) => ({
     settings: settingsState,
+    launcherSettings: launcherSettingsState,
     isXcodeDetected: application.xcodeCommandLineToolsDetected,
   }),
-  {updateSettings},
+  {updateSettings, updateLauncherSettings},
 )(SettingsSheet);

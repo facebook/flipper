@@ -36,6 +36,10 @@ import settings, {
   Settings as SettingsState,
   Action as SettingsAction,
 } from './settings';
+import launcherSettings, {
+  LauncherSettings as LauncherSettingsState,
+  Action as LauncherSettingsAction,
+} from './launcherSettings';
 import pluginManager, {
   State as PluginManagerState,
   Action as PluginManagerAction,
@@ -46,6 +50,8 @@ import healthchecks, {
 } from './healthchecks';
 import user, {State as UserState, Action as UserAction} from './user';
 import JsonFileStorage from '../utils/jsonFileReduxPersistStorage';
+import LauncherSettingsStorage from '../utils/launcherSettingsStorage';
+import {launcherConfigDir} from '../utils/launcher';
 import os from 'os';
 import {resolve} from 'path';
 import xdg from 'xdg-basedir';
@@ -63,6 +69,7 @@ export type Actions =
   | PluginsAction
   | UserAction
   | SettingsAction
+  | LauncherSettingsAction
   | SupportFormAction
   | PluginManagerAction
   | HealthcheckAction
@@ -76,6 +83,7 @@ export type State = {
   plugins: PluginsState;
   user: UserState & PersistPartial;
   settingsState: SettingsState & PersistPartial;
+  launcherSettingsState: LauncherSettingsState & PersistPartial;
   supportForm: SupportFormState;
   pluginManager: PluginManagerState;
   healthchecks: HealthcheckState;
@@ -90,6 +98,10 @@ const settingsStorage = new JsonFileStorage(
     'flipper',
     'settings.json',
   ),
+);
+
+const launcherSettingsStorage = new LauncherSettingsStorage(
+  resolve(launcherConfigDir(), 'flipper-launcher.toml'),
 );
 
 export default combineReducers<State, Actions>({
@@ -129,6 +141,16 @@ export default combineReducers<State, Actions>({
   settingsState: persistReducer(
     {key: 'settings', storage: settingsStorage},
     settings,
+  ),
+  launcherSettingsState: persistReducer(
+    {
+      key: 'launcherSettings',
+      storage: launcherSettingsStorage,
+      serialize: false,
+      // @ts-ignore: property is erroneously missing in redux-persist type definitions
+      deserialize: false,
+    },
+    launcherSettings,
   ),
   healthchecks,
 });
