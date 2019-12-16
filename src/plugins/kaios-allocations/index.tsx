@@ -23,7 +23,7 @@ import {
 import {sleep} from 'flipper';
 
 import util from 'util';
-import {exec} from 'child-process-es6-promise';
+import {exec} from 'promisify-child-process';
 
 import FirefoxClient from 'firefox-client';
 import BaseClientMethods from 'firefox-client/lib/client-methods';

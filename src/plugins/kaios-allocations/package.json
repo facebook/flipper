@@ -17,7 +17,7 @@
     "postinstall-postinstall": "^2.0.0"
   },
   "dependencies": {
-    "child-process-es6-promise": "^1.2.1",
-    "firefox-client": "0.3.0"
+    "firefox-client": "0.3.0",
+    "promisify-child-process": "3.1.1"
   }
 }
