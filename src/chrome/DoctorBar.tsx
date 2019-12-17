@@ -18,29 +18,23 @@ import {
 import {State as Store} from '../reducers/index';
 import {ButtonGroup, Button} from 'flipper';
 import {FlexColumn, FlexRow} from 'flipper';
-import runHealthchecks from '../utils/runHealthchecks';
+import runHealthchecks, {
+  HealthcheckSettings,
+  HealthcheckEventsHandler,
+} from '../utils/runHealthchecks';
 import {
   initHealthcheckReport,
-  updateHealthcheckReportItem,
+  updateHealthcheckReportItemStatus,
+  updateHealthcheckReportCategoryStatus,
   startHealthchecks,
   finishHealthchecks,
-  HealthcheckReport,
-  HealthcheckReportItem,
 } from '../reducers/healthchecks';
 
-type StateFromProps = {};
+type StateFromProps = HealthcheckSettings;
 
 type DispatchFromProps = {
   setActiveSheet: (payload: ActiveSheet) => void;
-  initHealthcheckReport: (report: HealthcheckReport) => void;
-  updateHealthcheckReportItem: (
-    categoryIdx: number,
-    itemIdx: number,
-    item: HealthcheckReportItem,
-  ) => void;
-  startHealthchecks: () => void;
-  finishHealthchecks: () => void;
-};
+} & HealthcheckEventsHandler;
 
 type State = {
   visible: boolean;
@@ -58,12 +52,7 @@ class DoctorBar extends Component<Props, State> {
     this.showMessageIfChecksFailed();
   }
   async showMessageIfChecksFailed() {
-    const result = await runHealthchecks({
-      initHealthcheckReport: this.props.initHealthcheckReport,
-      updateHealthcheckReportItem: this.props.updateHealthcheckReportItem,
-      startHealthchecks: this.props.startHealthchecks,
-      finishHealthchecks: this.props.finishHealthchecks,
-    });
+    const result = await runHealthchecks(this.props);
     if (!result) {
       this.setVisible(true);
     }
@@ -106,13 +95,19 @@ class DoctorBar extends Component<Props, State> {
   }
 }
 
-export default connect<StateFromProps, DispatchFromProps, {}, Store>(null, {
-  setActiveSheet,
-  initHealthcheckReport,
-  updateHealthcheckReportItem,
-  startHealthchecks,
-  finishHealthchecks,
-})(DoctorBar);
+export default connect<StateFromProps, DispatchFromProps, {}, Store>(
+  ({settingsState}) => ({
+    enableAndroid: settingsState.enableAndroid,
+  }),
+  {
+    setActiveSheet,
+    initHealthcheckReport,
+    updateHealthcheckReportItemStatus,
+    updateHealthcheckReportCategoryStatus,
+    startHealthchecks,
+    finishHealthchecks,
+  },
+)(DoctorBar);
 
 const Container = styled.div({
   boxShadow: '2px 2px 2px #ccc',

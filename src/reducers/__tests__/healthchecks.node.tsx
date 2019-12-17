@@ -14,7 +14,8 @@ import {
   HealthcheckReportCategory,
   HealthcheckReportItem,
   finishHealthchecks,
-  updateHealthcheckReportItem,
+  updateHealthcheckReportItemStatus,
+  updateHealthcheckReportCategoryStatus,
 } from '../healthchecks';
 
 const HEALTHCHECK_ITEM: HealthcheckReportItem = {
@@ -70,14 +71,14 @@ test('updateHealthcheck', () => {
   let res = reducer(undefined, initHealthcheckReport(report));
   res = reducer(
     res,
-    updateHealthcheckReportItem(0, 0, {
-      label: 'Updated Test Item',
+    updateHealthcheckReportItemStatus(0, 0, {
+      message: 'Updated Test Message',
       status: 'SUCCESS',
     }),
   );
   expect(res.healthcheckReport.isHealthcheckInProgress).toBeTruthy();
-  expect(res.healthcheckReport.categories[0].checks[0].label).toEqual(
-    'Updated Test Item',
+  expect(res.healthcheckReport.categories[0].checks[0].message).toEqual(
+    'Updated Test Message',
   );
   expect(res.healthcheckReport.categories[0].checks[0].status).toEqual(
     'SUCCESS',
@@ -88,4 +89,25 @@ test('updateHealthcheck', () => {
   expect(res.healthcheckReport.categories[1].checks[0].status).toEqual(
     'WARNING',
   );
+});
+
+test('updateHealthcheckCategoryStatus', () => {
+  const report = {
+    isHealthcheckInProgress: true,
+    categories: [HEALTHCHECK_CATEGORY, HEALTHCHECK_CATEGORY],
+  };
+  let res = reducer(undefined, initHealthcheckReport(report));
+  res = reducer(
+    res,
+    updateHealthcheckReportCategoryStatus(1, {
+      status: 'FAILED',
+      message: 'Error message',
+    }),
+  );
+  expect(res.healthcheckReport.isHealthcheckInProgress).toBeTruthy();
+  expect(res.healthcheckReport.categories[0].label).toEqual('Test Category');
+  expect(res.healthcheckReport.categories[0].status).toEqual('WARNING');
+  expect(res.healthcheckReport.categories[1].label).toEqual('Test Category');
+  expect(res.healthcheckReport.categories[1].status).toEqual('FAILED');
+  expect(res.healthcheckReport.categories[1].message).toEqual('Error message');
 });

@@ -86,6 +86,7 @@ const ICONS = {
   'life-event-major': [16],
   target: [12, 16],
   tools: [12, 20],
+  question: [16],
   underline: [12],
   'washing-machine': [12],
   'watch-tv': [12],

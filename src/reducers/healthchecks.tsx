@@ -8,6 +8,7 @@
  */
 
 import {Actions} from './';
+import {produce} from 'flipper';
 
 export type State = {
   healthcheckReport: HealthcheckReport;
@@ -19,11 +20,18 @@ export type Action =
       payload: HealthcheckReport;
     }
   | {
-      type: 'UPDATE_HEALTHCHECK_REPORT_ITEM';
+      type: 'UPDATE_HEALTHCHECK_REPORT_ITEM_STATUS';
       payload: {
         categoryIdx: number;
         itemIdx: number;
-        item: HealthcheckReportItem;
+        status: HealthcheckResult;
+      };
+    }
+  | {
+      type: 'UPDATE_HEALTHCHECK_REPORT_CATEGORY_STATUS';
+      payload: {
+        categoryIdx: number;
+        status: HealthcheckResult;
       };
     }
   | {
@@ -44,6 +52,7 @@ export type HealthcheckStatus =
   | 'IN_PROGRESS'
   | 'SUCCESS'
   | 'FAILED'
+  | 'SKIPPED'
   | 'WARNING';
 
 export type HealthcheckResult = {
@@ -58,73 +67,64 @@ export type HealthcheckReportItem = {
 
 export type HealthcheckReportCategory = {
   label: string;
-  status: HealthcheckStatus;
   checks: Array<HealthcheckReportItem>;
-};
+} & HealthcheckResult;
 
 export type HealthcheckReport = {
   isHealthcheckInProgress: boolean;
   categories: Array<HealthcheckReportCategory>;
 };
 
+const updateReportItem = produce(
+  (
+    draft: State,
+    payload: {
+      categoryIdx: number;
+      itemIdx: number;
+      status: HealthcheckResult;
+    },
+  ) => {
+    Object.assign(
+      draft.healthcheckReport.categories[payload.categoryIdx].checks[
+        payload.itemIdx
+      ],
+      payload.status,
+    );
+  },
+);
+
+const updateCategoryStatus = produce(
+  (draft: State, payload: {categoryIdx: number; status: HealthcheckResult}) => {
+    Object.assign(
+      draft.healthcheckReport.categories[payload.categoryIdx],
+      payload.status,
+    );
+  },
+);
+
+const initReport = produce((draft: State, report: HealthcheckReport) => {
+  draft.healthcheckReport = report;
+});
+
+const setIsInProgress = produce((draft: State, isInProgress: boolean) => {
+  draft.healthcheckReport.isHealthcheckInProgress = isInProgress;
+});
+
 export default function reducer(
-  state: State | undefined = INITIAL_STATE,
+  draft: State | undefined = INITIAL_STATE,
   action: Actions,
 ): State {
-  if (action.type === 'INIT_HEALTHCHECK_REPORT') {
-    return {
-      ...state,
-      healthcheckReport: action.payload,
-    };
-  } else if (action.type === 'START_HEALTHCHECKS') {
-    return {
-      ...state,
-      healthcheckReport: {
-        ...state.healthcheckReport,
-        isHealthcheckInProgress: true,
-      },
-    };
-  } else if (action.type === 'FINISH_HEALTHCHECKS') {
-    return {
-      ...state,
-      healthcheckReport: {
-        ...state.healthcheckReport,
-        isHealthcheckInProgress: false,
-      },
-    };
-  } else if (action.type === 'UPDATE_HEALTHCHECK_REPORT_ITEM') {
-    return {
-      ...state,
-      healthcheckReport: {
-        ...state.healthcheckReport,
-        categories: [
-          ...state.healthcheckReport.categories.slice(
-            0,
-            action.payload.categoryIdx,
-          ),
-          {
-            ...state.healthcheckReport.categories[action.payload.categoryIdx],
-            checks: [
-              ...state.healthcheckReport.categories[
-                action.payload.categoryIdx
-              ].checks.slice(0, action.payload.itemIdx),
-              {
-                ...action.payload.item,
-              },
-              ...state.healthcheckReport.categories[
-                action.payload.categoryIdx
-              ].checks.slice(action.payload.itemIdx + 1),
-            ],
-          },
-          ...state.healthcheckReport.categories.slice(
-            action.payload.categoryIdx + 1,
-          ),
-        ],
-      },
-    };
-  } else {
-    return state;
-  }
+  return action.type === 'INIT_HEALTHCHECK_REPORT'
+    ? initReport(draft, action.payload)
+    : action.type === 'START_HEALTHCHECKS'
+    ? setIsInProgress(draft, true)
+    : action.type === 'FINISH_HEALTHCHECKS'
+    ? setIsInProgress(draft, false)
+    : action.type === 'UPDATE_HEALTHCHECK_REPORT_ITEM_STATUS'
+    ? updateReportItem(draft, action.payload)
+    : action.type === 'UPDATE_HEALTHCHECK_REPORT_CATEGORY_STATUS'
+    ? updateCategoryStatus(draft, action.payload)
+    : draft;
 }
 
 export const initHealthcheckReport = (report: HealthcheckReport): Action => ({
@@ -132,16 +132,27 @@ export const initHealthcheckReport = (report: HealthcheckReport): Action => ({
   payload: report,
 });
 
-export const updateHealthcheckReportItem = (
+export const updateHealthcheckReportItemStatus = (
   categoryIdx: number,
   itemIdx: number,
-  item: HealthcheckReportItem,
+  status: HealthcheckResult,
 ): Action => ({
-  type: 'UPDATE_HEALTHCHECK_REPORT_ITEM',
+  type: 'UPDATE_HEALTHCHECK_REPORT_ITEM_STATUS',
   payload: {
     categoryIdx,
     itemIdx,
-    item,
+    status,
+  },
+});
+
+export const updateHealthcheckReportCategoryStatus = (
+  categoryIdx: number,
+  status: HealthcheckResult,
+): Action => ({
+  type: 'UPDATE_HEALTHCHECK_REPORT_CATEGORY_STATUS',
+  payload: {
+    categoryIdx,
+    status,
   },
 });
 

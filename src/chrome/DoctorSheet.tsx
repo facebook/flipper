@@ -28,27 +28,22 @@ import {
   HealthcheckReportItem,
   HealthcheckReport,
   initHealthcheckReport,
-  updateHealthcheckReportItem,
+  updateHealthcheckReportItemStatus,
+  updateHealthcheckReportCategoryStatus,
   startHealthchecks,
   finishHealthchecks,
 } from '../reducers/healthchecks';
-import runHealthchecks from '../utils/runHealthchecks';
+import runHealthchecks, {
+  HealthcheckSettings,
+  HealthcheckEventsHandler,
+} from '../utils/runHealthchecks';
 import {shell} from 'electron';
 
 type StateFromProps = {
   report: HealthcheckReport;
-};
+} & HealthcheckSettings;
 
-type DispatchFromProps = {
-  initHealthcheckReport: (report: HealthcheckReport) => void;
-  updateHealthcheckReportItem: (
-    categoryIdx: number,
-    itemIdx: number,
-    item: HealthcheckReportItem,
-  ) => void;
-  startHealthchecks: () => void;
-  finishHealthchecks: () => void;
-};
+type DispatchFromProps = HealthcheckEventsHandler;
 
 const Container = styled(FlexColumn)({
   padding: 20,
@@ -87,7 +82,7 @@ const SideContainer = styled(FlexBox)({
 
 const SideContainerText = styled(Text)({
   display: 'block',
-  'word-wrap': 'break-word',
+  wordWrap: 'break-word',
 });
 
 const HealthcheckLabel = styled(Text)({
@@ -102,6 +97,15 @@ function HealthcheckIcon(props: {check: HealthcheckResult}) {
   switch (props.check.status) {
     case 'IN_PROGRESS':
       return <LoadingIndicator size={16} title={props.check.message} />;
+    case 'SKIPPED':
+      return (
+        <Glyph
+          size={16}
+          name={'question'}
+          color={colors.grey}
+          title={props.check.message}
+        />
+      );
     case 'SUCCESS':
       return (
         <Glyph
@@ -196,40 +200,15 @@ class DoctorSheet extends Component<Props, State> {
         ...prevState,
       };
     });
-    await runHealthchecks({
-      initHealthcheckReport: this.props.initHealthcheckReport,
-      updateHealthcheckReportItem: this.props.updateHealthcheckReportItem,
-      startHealthchecks: this.props.startHealthchecks,
-      finishHealthchecks: this.props.finishHealthchecks,
-    });
+    await runHealthchecks(this.props);
   }
 
   hasProblems() {
     return this.props.report.categories.some(cat =>
-      cat.checks.some(chk => chk.status != 'SUCCESS'),
+      cat.checks.some(
+        chk => chk.status === 'FAILED' || chk.status === 'WARNING',
+      ),
     );
-  }
-
-  getHealthcheckCategoryReportItem(
-    state: HealthcheckReportCategory,
-  ): HealthcheckReportItem {
-    return {
-      label: state.label,
-      ...(state.checks.some(c => c.status === 'IN_PROGRESS')
-        ? {status: 'IN_PROGRESS'}
-        : state.checks.every(c => c.status === 'SUCCESS')
-        ? {status: 'SUCCESS'}
-        : state.checks.some(c => c.status === 'FAILED')
-        ? {
-            status: 'FAILED',
-            message: 'Doctor discovered problems with the current installation',
-          }
-        : {
-            status: 'WARNING',
-            message:
-              'Doctor discovered non-blocking problems with the current installation',
-          }),
-    };
   }
 
   render() {
@@ -242,10 +221,7 @@ class DoctorSheet extends Component<Props, State> {
               (category, categoryIdx) => {
                 return (
                   <CategoryContainer key={categoryIdx}>
-                    <HealthcheckDisplay
-                      check={this.getHealthcheckCategoryReportItem(category)}
-                      category={category}
-                    />
+                    <HealthcheckDisplay check={category} category={category} />
                     <CategoryContainer>
                       {category.checks.map((check, checkIdx) => (
                         <HealthcheckDisplay
@@ -295,12 +271,14 @@ class DoctorSheet extends Component<Props, State> {
 }
 
 export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
-  ({healthchecks: {healthcheckReport}}) => ({
+  ({healthchecks: {healthcheckReport}, settingsState}) => ({
     report: healthcheckReport,
+    enableAndroid: settingsState.enableAndroid,
   }),
   {
     initHealthcheckReport,
-    updateHealthcheckReportItem,
+    updateHealthcheckReportItemStatus,
+    updateHealthcheckReportCategoryStatus,
     startHealthchecks,
     finishHealthchecks,
   },
