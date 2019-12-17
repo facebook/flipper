@@ -207,7 +207,7 @@ export default class Client extends EventEmitter {
     const client = this;
     // node.js doesn't support requestIdleCallback
     this.rIC =
-      typeof window === 'undefined'
+      typeof window === 'undefined' || !window.requestIdleCallback
         ? (cb: Function, _: any) => {
             cb();
           }
