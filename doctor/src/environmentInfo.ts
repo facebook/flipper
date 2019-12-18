@@ -32,9 +32,6 @@ export type EnvironmentInfo = {
 };
 
 export async function getEnvInfo(): Promise<EnvironmentInfo> {
-  // Temporary fix for https://github.com/facebook/flipper/issues/667 until it properly fixed in 'envinfo'.
-  process.env.JAVA_OPTS =
-    '-XX:+IgnoreUnrecognizedVMOptions --add-modules java.se.ee';
   return JSON.parse(
     await run(
       {
