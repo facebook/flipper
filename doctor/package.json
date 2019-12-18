@@ -1,6 +1,6 @@
 {
   "name": "flipper-doctor",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Utility for checking for issues with a flipper installation",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",

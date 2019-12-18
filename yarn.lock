@@ -4147,10 +4147,10 @@ flatted@^2.0.0:
   resolved "https://registry.yarnpkg.com/flatted/-/flatted-2.0.1.tgz#69e57caa8f0eacbc281d2e2cb458d46fdb449e08"
   integrity sha512-a1hQMktqW9Nmqr5aktAux3JMNqaucxGcjtjWnZLHX7yyPCmlSV3M54nGYbqT8K+0GhF3NBgmJCc3ma+WOgX8Jg==
 
-flipper-doctor@^0.2.3:
-  version "0.2.3"
-  resolved "https://registry.yarnpkg.com/flipper-doctor/-/flipper-doctor-0.2.3.tgz#2678c3dc924c1dd69cda65aef9f43040f3b8e085"
-  integrity sha512-61BJUid7yWu/LzuYYuwdOgakQXWoEXV9+PwKPWwwup73u4k80nUdf+Hx4Ev0dMS/mjQuZ3KwmmxFdFhV/3iWTQ==
+flipper-doctor@^0.2.4:
+  version "0.2.4"
+  resolved "https://registry.yarnpkg.com/flipper-doctor/-/flipper-doctor-0.2.4.tgz#907c14282a9f65737f96505dfb0c5022109a10fe"
+  integrity sha512-MjX66Yd1dPSLcnOXIfqPaB5KXmd+A7f+99ashGhbRV+2Y8bXadN4kvYrUZ4gD177LmtMdNjISjm87kBt5t9pnw==
   dependencies:
     "@types/node" "^12.12.12"
     envinfo "^7.4.0"
