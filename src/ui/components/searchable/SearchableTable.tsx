@@ -30,6 +30,13 @@ type State = {
 const rowMatchesFilters = (filters: Array<Filter>, row: TableBodyRow) =>
   filters
     .map((filter: Filter) => {
+      // Check if there is column name and value. If not, ignore
+      if (
+        row.columns[filter.key] === undefined ||
+        row.columns[filter.key].value === undefined
+      ) {
+        return true;
+      }
       if (filter.type === 'enum' && row.type != null) {
         return filter.value.length === 0 || filter.value.indexOf(row.type) > -1;
       } else if (filter.type === 'include') {
