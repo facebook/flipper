@@ -7,7 +7,8 @@
  * @format
  */
 
-import {Idler} from '../Idler.tsx';
+import {Idler, TestIdler} from '../Idler.tsx';
+import {sleep} from '../promiseTimeout.tsx';
 
 test('Idler should interrupt', async () => {
   const idler = new Idler();
@@ -15,7 +16,9 @@ test('Idler should interrupt', async () => {
   try {
     for (; i < 500; i++) {
       if (i == 100) {
+        expect(idler.shouldIdle()).toBe(false);
         idler.cancel();
+        expect(idler.shouldIdle()).toBe(true);
       }
       await idler.idle();
     }
@@ -23,4 +26,48 @@ test('Idler should interrupt', async () => {
   } catch (e) {
     expect(i).toEqual(100);
   }
+});
+
+test('Idler should want to idle', async () => {
+  const idler = new Idler();
+  expect(idler.shouldIdle()).toBe(false);
+  await sleep(10);
+  expect(idler.shouldIdle()).toBe(false);
+  await sleep(200);
+  expect(idler.shouldIdle()).toBe(true);
+  await idler.idle();
+  expect(idler.shouldIdle()).toBe(false);
+});
+
+test('TestIdler can be controlled', async () => {
+  const idler = new TestIdler();
+
+  expect(idler.shouldIdle()).toBe(false);
+  expect(idler.shouldIdle()).toBe(true);
+  let resolved = false;
+  idler.idle().then(() => {
+    resolved = true;
+  });
+  expect(resolved).toBe(false);
+  await idler.next();
+  expect(resolved).toBe(true);
+
+  expect(idler.shouldIdle()).toBe(false);
+  expect(idler.shouldIdle()).toBe(true);
+  idler.idle();
+  await idler.next();
+
+  idler.cancel();
+  expect(idler.shouldIdle()).toBe(true);
+
+  let threw = false;
+  const p = idler.idle().catch(e => {
+    threw = true;
+    expect(e).toMatchInlineSnapshot(
+      `[CancelledPromiseError: Idler got killed]`,
+    );
+  });
+
+  await p;
+  expect(threw).toBe(true);
 });
