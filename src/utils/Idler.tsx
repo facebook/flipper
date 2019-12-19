@@ -25,7 +25,7 @@ export class Idler implements BaseIdler {
     return this.kill || performance.now() - this.lastIdle > this.interval;
   }
 
-  idle(): Promise<void> {
+  async idle(): Promise<void> {
     if (this.kill) {
       throw new CancelledPromiseError('Idler got killed');
     }
@@ -34,7 +34,7 @@ export class Idler implements BaseIdler {
       this.lastIdle = now;
       return new Promise(resolve => setTimeout(resolve, 0));
     }
-    return Promise.resolve();
+    return undefined;
   }
 
   cancel() {
