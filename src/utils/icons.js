@@ -77,6 +77,7 @@ const ICONS = {
   settings: [12],
   share: [16],
   star: [12, 16, 24],
+  stop: [16],
   'stop-playback': [16],
   tree: [12],
   translate: [12],
