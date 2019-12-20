@@ -622,10 +622,11 @@ The code below enables the following integrations:
 #import <FlipperKit/FlipperClient.h>
 #import <FlipperKitLayoutPlugin/FlipperKitLayoutPlugin.h>
 #import <FlipperKitLayoutPlugin/SKDescriptorMapper.h>
+#import <FlipperKitNetworkPlugin/FlipperKitNetworkPlugin.h>
+#import <FlipperKitNetworkPlugin/FlipperKitNetworkPlugin.h>
+#import <FlipperKitReactPlugin/FlipperKitReactPlugin.h>
 #import <FlipperKitUserDefaultsPlugin/FKUserDefaultsPlugin.h>
-#import <FlipperKitNetworkPlugin/FlipperKitNetworkPlugin.h>
 #import <SKIOSNetworkPlugin/SKIOSNetworkAdapter.h>
-#import <FlipperKitNetworkPlugin/FlipperKitNetworkPlugin.h>
 #endif
 #endif
 
