@@ -70,6 +70,7 @@ const argv = yargs
   })
   .version(global.__VERSION__)
   .help()
+  .strict()
   .parse(process.argv.slice(1));
 
 const {config, configPath, flipperDir} = setup(argv);
