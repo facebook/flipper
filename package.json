@@ -107,7 +107,7 @@
     "typescript": "^3.7.2"
   },
   "dependencies": {
-    "@emotion/core": "^10.0.22",
+    "@emotion/core": "^10.0.27",
     "@emotion/styled": "^10.0.23",
     "@iarna/toml": "^2.2.3",
     "@types/promise-retry": "^1.1.3",
