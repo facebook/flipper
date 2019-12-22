@@ -133,7 +133,7 @@
     "deep-equal": "^1.0.1",
     "detect-port": "^1.1.1",
     "electron-devtools-installer": "^2.2.0",
-    "emotion": "^10.0.23",
+    "emotion": "^10.0.27",
     "expand-tilde": "^2.0.2",
     "express": "^4.15.2",
     "flipper-doctor": "^0.2.4",
