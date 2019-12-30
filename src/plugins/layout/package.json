@@ -5,7 +5,7 @@
   "license": "MIT",
   "keywords": ["flipper-plugin"],
   "dependencies": {
-    "deep-equal": "^1.0.1",
+    "deep-equal": "^2.0.1",
     "lodash.clonedeep": "^4.5.0",
     "lodash.debounce": "^4.0.8"
   },
