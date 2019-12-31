@@ -19,6 +19,7 @@ const http = require('http');
 const path = require('path');
 const Metro = require('../static/node_modules/metro');
 const fs = require('fs');
+const Watchman = require('../static/watchman');
 
 const convertAnsi = new Convert();
 
@@ -67,7 +68,7 @@ function startMetroServer(app) {
       ),
     },
     resolver: {
-      blacklistRE: /\/(sonar|flipper|flipper-public)\/(dist|doctor)\/|(\.native\.js$)/,
+      blacklistRE: /(\/|\\)(sonar|flipper|flipper-public)(\/|\\)(dist|doctor)(\/|\\)|(\.native\.js$)/,
     },
     watch: true,
   }).then(metroBundlerServer => {
@@ -114,7 +115,7 @@ function startAssetServer(port) {
   });
 }
 
-function addWebsocket(server) {
+async function addWebsocket(server) {
   const io = socketIo(server);
 
   // notify connected clients that there's errors in the console
@@ -126,9 +127,17 @@ function addWebsocket(server) {
 
   // refresh the app on changes to the src folder
   // this can be removed once metroServer notifies us about file changes
-  fs.watch(path.join(__dirname, '..', 'src'), () => {
-    io.emit('refresh');
-  });
+  const watchman = new Watchman(path.resolve(__dirname, '..', 'src'));
+  await watchman.initialize();
+  await watchman.startWatchFiles(
+    '/',
+    resp => {
+      io.emit('refresh');
+    },
+    {
+      excludes: ['**/__tests__/**/*', '**/node_modules/**/*', '**/.*'],
+    },
+  );
 
   return io;
 }
@@ -186,7 +195,7 @@ function outputScreen(socket) {
 (async () => {
   const port = await detect(DEFAULT_PORT);
   const {app, server} = await startAssetServer(port);
-  const socket = addWebsocket(server);
+  const socket = await addWebsocket(server);
   await startMetroServer(app);
   outputScreen(socket);
   launchElectron({
