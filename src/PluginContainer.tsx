@@ -46,7 +46,7 @@ const Container = styled(FlexColumn)({
   backgroundColor: colors.white,
 });
 
-const SidebarContainer = styled(FlexRow)({
+export const SidebarContainer = styled(FlexRow)({
   backgroundColor: colors.light02,
   height: '100%',
   overflow: 'scroll',
