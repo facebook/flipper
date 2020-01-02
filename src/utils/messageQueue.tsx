@@ -17,19 +17,27 @@ import {
   Message,
 } from '../reducers/pluginMessageQueue';
 import {Idler, BaseIdler} from './Idler';
-import Client from '../Client';
 import {getPluginKey} from './pluginUtils';
 
 const MAX_BACKGROUND_TASK_TIME = 25;
 
-const pluginBackgroundStats = new Map<
-  string,
-  {
-    cpuTime: number; // Total time spend in persisted Reducer
-    messages: number; // amount of message received for this plugin
-    maxTime: number; // maximum time spend in a single reducer call
-  }
->();
+type StatEntry = {
+  cpuTime: number; // Total time spend in persisted Reducer
+  messages: number; // amount of message received for this plugin
+  maxTime: number; // maximum time spend in a single reducer call
+};
+
+const pluginBackgroundStats = new Map<string, StatEntry>();
+
+export function getPluginBackgroundStats(): {[plugin: string]: StatEntry} {
+  return Array.from(Object.entries(pluginBackgroundStats)).reduce(
+    (aggregated, [pluginName, data]) => {
+      aggregated[pluginName] = data;
+      return aggregated;
+    },
+    {} as {[plugin: string]: StatEntry},
+  );
+}
 
 if (window) {
   // @ts-ignore
@@ -135,7 +143,7 @@ export function processMessageLater(
   // if the plugin is active, and has no queued messaged, process the message immediately
   if (
     selectedPlugin === pluginKey &&
-    getMessages(store, pluginKey).length === 0
+    getPendingMessages(store, pluginKey).length === 0
   ) {
     processMessageImmediately(store, pluginKey, plugin, message);
   } else {
@@ -146,25 +154,26 @@ export function processMessageLater(
 }
 
 export async function processMessageQueue(
-  client: Client,
   plugin: {
     defaultPersistedState: any;
     name: string;
-    persistedStateReducer: PersistedStateReducer;
+    persistedStateReducer: PersistedStateReducer | null;
   },
   pluginKey: string,
   store: Store,
-  progressCallback?: (progress: string) => void,
+  progressCallback?: (progress: {current: number; total: number}) => void,
   idler: BaseIdler = new Idler(),
 ) {
-  const total = getMessages(store, pluginKey).length;
+  if (!plugin.persistedStateReducer) {
+    return;
+  }
+  const total = getPendingMessages(store, pluginKey).length;
   let progress = 0;
   do {
-    const messages = getMessages(store, pluginKey);
+    const messages = getPendingMessages(store, pluginKey);
     if (!messages.length) {
       break;
     }
-
     // there are messages to process! lets do so until we have to idle
     const persistedState =
       store.getState().pluginStates[pluginKey] ??
@@ -181,12 +190,10 @@ export async function processMessageQueue(
       offset++;
       progress++;
 
-      progressCallback?.(
-        `Processing events ${progress} / ${Math.max(
-          total,
-          progress,
-        )} (${Math.min(100, 100 * (progress / total))}%)`,
-      );
+      progressCallback?.({
+        total: Math.max(total, progress),
+        current: progress,
+      });
     } while (offset < messages.length && !idler.shouldIdle());
     // save progress
     // by writing progress away first and then idling, we make sure this logic is
@@ -205,11 +212,12 @@ export async function processMessageQueue(
     if (idler.isCancelled()) {
       return;
     }
+
     await idler.idle();
     // new messages might have arrived, so keep looping
-  } while (getMessages(store, pluginKey).length);
+  } while (getPendingMessages(store, pluginKey).length);
 }
 
-function getMessages(store: Store, pluginKey: string): Message[] {
+function getPendingMessages(store: Store, pluginKey: string): Message[] {
   return store.getState().pluginMessageQueue[pluginKey] || [];
 }

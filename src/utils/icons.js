@@ -63,6 +63,7 @@ const ICONS = {
   cross: [16],
   checkmark: [16],
   dashboard: [12],
+  'dashboard-outline': [24],
   desktop: [12],
   directions: [12],
   download: [16],

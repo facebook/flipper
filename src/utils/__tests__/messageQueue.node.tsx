@@ -123,7 +123,7 @@ test('queue - events are NOT processed immediately if plugin is NOT selected', a
 
         // process the message
         const pluginKey = getPluginKey(client.id, device, TestPlugin.id);
-        await processMessageQueue(client, TestPlugin, pluginKey, store);
+        await processMessageQueue(TestPlugin, pluginKey, store);
         expect(store.getState().pluginStates).toEqual({
           [pluginKey]: {
             count: 3,
@@ -163,7 +163,6 @@ test('queue - events processing will be paused', async () => {
         const idler = new TestIdler();
 
         const p = processMessageQueue(
-          client,
           TestPlugin,
           pluginKey,
           store,
@@ -224,7 +223,6 @@ test('queue - messages that arrive during processing will be queued', async () =
         const idler = new TestIdler();
 
         const p = processMessageQueue(
-          client,
           TestPlugin,
           pluginKey,
           store,
@@ -288,7 +286,6 @@ test('queue - processing can be cancelled', async () => {
         const idler = new TestIdler();
 
         const p = processMessageQueue(
-          client,
           TestPlugin,
           pluginKey,
           store,
