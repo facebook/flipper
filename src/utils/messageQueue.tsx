@@ -17,8 +17,7 @@ import {
   Message,
 } from '../reducers/pluginMessageQueue';
 import {Idler, BaseIdler} from './Idler';
-import {getPluginKey} from './pluginUtils';
-import {deconstructClientId} from './clientUtils';
+import {pluginIsStarred, getSelectedPluginKey} from '../reducers/connections';
 
 const MAX_BACKGROUND_TASK_TIME = 25;
 
@@ -138,14 +137,15 @@ export function processMessageLater(
   },
   message: {method: string; params?: any},
 ) {
-  const isSelected = pluginKey === getSelectedPluginKey(store.getState());
+  const isSelected =
+    pluginKey === getSelectedPluginKey(store.getState().connections);
   switch (true) {
     case isSelected && getPendingMessages(store, pluginKey).length === 0:
       processMessageImmediately(store, pluginKey, plugin, message);
       break;
     case isSelected:
     case plugin instanceof FlipperDevicePlugin:
-    case pluginIsStarred(store.getState(), plugin.id):
+    case pluginIsStarred(store.getState().connections, plugin.id):
       store.dispatch(
         queueMessage(
           pluginKey,
@@ -156,26 +156,6 @@ export function processMessageLater(
       );
       break;
   }
-}
-
-function getSelectedPluginKey(state: State): string | undefined {
-  return state.connections.selectedPlugin
-    ? getPluginKey(
-        state.connections.selectedApp,
-        state.connections.selectedDevice,
-        state.connections.selectedPlugin,
-      )
-    : undefined;
-}
-
-function pluginIsStarred(state: State, pluginId: string): boolean {
-  const {selectedApp} = state.connections;
-  if (!selectedApp) {
-    return false;
-  }
-  const appInfo = deconstructClientId(selectedApp);
-  const starred = state.connections.userStarredPlugins[appInfo.app];
-  return starred && starred.indexOf(pluginId) > -1;
 }
 
 export async function processMessageQueue(

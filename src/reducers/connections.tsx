@@ -7,6 +7,8 @@
  * @format
  */
 
+import {produce} from 'immer';
+
 import BaseDevice from '../devices/BaseDevice';
 import MacDevice from '../devices/MacDevice';
 import Client from '../Client';
@@ -23,7 +25,8 @@ import NotificationScreen from '../chrome/NotificationScreen';
 import SupportRequestForm from '../fb-stubs/SupportRequestFormManager';
 import SupportRequestFormV2 from '../fb-stubs/SupportRequestFormV2';
 import SupportRequestDetails from '../fb-stubs/SupportRequestDetails';
-import {produce} from 'immer';
+import {getPluginKey} from '../utils/pluginUtils';
+import {deconstructClientId} from '../utils/clientUtils';
 
 export type StaticView =
   | null
@@ -580,4 +583,24 @@ function updateSelection(state: Readonly<State>): State {
   }
 
   return {...state, ...updates};
+}
+
+export function getSelectedPluginKey(state: State): string | undefined {
+  return state.selectedPlugin
+    ? getPluginKey(
+        state.selectedApp,
+        state.selectedDevice,
+        state.selectedPlugin,
+      )
+    : undefined;
+}
+
+export function pluginIsStarred(state: State, pluginId: string): boolean {
+  const {selectedApp} = state;
+  if (!selectedApp) {
+    return false;
+  }
+  const appInfo = deconstructClientId(selectedApp);
+  const starred = state.userStarredPlugins[appInfo.app];
+  return starred && starred.indexOf(pluginId) > -1;
 }

@@ -33,7 +33,7 @@ import React, {PureComponent} from 'react';
 import {connect, ReactReduxContext} from 'react-redux';
 import {setPluginState} from './reducers/pluginStates';
 import {selectPlugin} from './reducers/connections';
-import {State as Store} from './reducers/index';
+import {State as Store, MiddlewareAPI} from './reducers/index';
 import {activateMenuItems} from './MenuBar';
 import {Message} from './reducers/pluginMessageQueue';
 import {Idler} from './utils/Idler';
@@ -146,6 +146,10 @@ class PluginContainer extends PureComponent<Props, State> {
 
   state = {progress: {current: 0, total: 0}};
 
+  get store(): MiddlewareAPI {
+    return this.context.store;
+  }
+
   componentWillUnmount() {
     if (this.plugin) {
       this.plugin._teardown();
@@ -179,7 +183,7 @@ class PluginContainer extends PureComponent<Props, State> {
         processMessageQueue(
           activePlugin,
           pluginKey,
-          this.context.store,
+          this.store,
           progress => {
             this.setState({progress});
           },

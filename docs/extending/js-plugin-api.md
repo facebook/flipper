@@ -80,7 +80,13 @@ static persistedStateReducer<PersistedState>(
 The job of the `persistedStateReducer` is to merge incoming data into the state, so that next time the plugin is activated, the persisted state will be ready.
 If a plugin has a `persistedStateReducer`, and the plugin is not open in flipper, incoming messages are queued until the plugin is opened.
 
-The amount of events that is cached for a plugin is controlled by the optional static field `maxQueueSize`, which by default is set to `10000` events.
+The number of events that are cached for a plugin is controlled by the optional static field `maxQueueSize`, which defaults to `10000` events.
+
+<div class="warning">
+
+Note that if a plugin is not starred by the user, it will not receive any messages when it is not selected by the user. Even when it has a `persistedStateReducer`. This prevents plugins that are not actively used by the user from wasting a lot of CPU / memory.
+
+</div>
 
 The data that is produced from `persistedStateReducer` should be immutable, but also structurally sharing unchanged parts of the state with the previous state to avoid performance hiccups. To simplify this process we recommend using the [Immer](https://immerjs.github.io/immer/docs/introduction) package.
 Immer makes it possible to keep the reducer concise by directly supporting "writing" to the current state, and keeping track of that in the background.
