@@ -469,23 +469,14 @@ async function processQueues(
 
 function getSelection(
   store: MiddlewareAPI,
-): {client: Client; device: BaseDevice} {
+): {client: Client | null; device: BaseDevice | null} {
   const state = store.getState();
   const {clients} = state.connections;
   const client = clients.find(
     client => client.id === state.connections.selectedApp,
   );
   const {selectedDevice} = state.connections;
-  // TODO: T59434642 remove these restrictions
-  if (!selectedDevice) {
-    throw new Error('Please select a device before exporting data.');
-  }
-  // TODO: T39612653 Make Client mockable. Currently rsocket logic is tightly coupled.
-  // Not passing the entire state as currently Client is not mockable.
-  if (!client) {
-    throw new Error('Please select a client before exporting data.');
-  }
-  return {client, device: selectedDevice};
+  return {client: client ?? null, device: selectedDevice};
 }
 
 export function determinePluginsToProcess(
@@ -498,10 +489,11 @@ export function determinePluginsToProcess(
 
   const pluginsToProcess: PluginsToProcess = [];
   const selectedPlugins = state.plugins.selectedPlugins;
-  const selectedFilteredPlugins =
-    selectedPlugins.length > 0
+  const selectedFilteredPlugins = client
+    ? selectedPlugins.length > 0
       ? client.plugins.filter(plugin => selectedPlugins.includes(plugin))
-      : client.plugins;
+      : client.plugins
+    : [];
   for (const client of clients) {
     if (!device || device.isArchived || !client.id.includes(device.serial)) {
       continue;
@@ -560,7 +552,7 @@ export async function getStoreExport(
       activeNotifications,
       device,
       pluginStates: newPluginState,
-      clients: [client.toJSON()],
+      clients: client ? [client.toJSON()] : [],
       devicePlugins,
       clientPlugins,
       salt: uuid.v4(),
@@ -609,8 +601,7 @@ export async function exportStore(
     );
     return {serializedString, errorArray};
   } else {
-    console.error('Make sure a device is connected');
-    throw new Error('No device is selected');
+    return {serializedString: '{}', errorArray: []};
   }
 }
 
