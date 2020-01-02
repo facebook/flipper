@@ -132,11 +132,17 @@ function downloadIcons(buildFolder) {
   }, []);
 
   return Promise.all(
-    iconURLs.map(({name, size, density}) =>
-      fetch(getIconURL(name, size, density))
+    iconURLs.map(({name, size, density}) => {
+      const url = getIconURL(name, size, density);
+      return fetch(url)
         .then(res => {
           if (res.status !== 200) {
-            throw new Error(`Could not download the icon: ${name}`);
+            throw new Error(
+              // eslint-disable-next-line prettier/prettier
+              `Could not download the icon ${name} from ${url}: got status ${
+                res.status
+              }`,
+            );
           }
           return res;
         })
@@ -150,9 +156,8 @@ function downloadIcons(buildFolder) {
               res.body.on('error', reject);
               fileStream.on('finish', resolve);
             }),
-        )
-        .catch(console.error),
-    ),
+        );
+    }),
   );
 }
 

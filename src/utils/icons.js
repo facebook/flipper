@@ -67,12 +67,31 @@ function buildIconURL(name, size, density) {
     if (!isProduction) {
       const existing = ICONS[name] || (ICONS[name] = []);
       if (!existing.includes(size)) {
-        existing.push(size);
-        existing.sort();
-        fs.writeFileSync(iconsPath, JSON.stringify(ICONS, null, 2), 'utf8');
-        console.warn(
-          `Added uncached icon "${name}: [${size}]" to /static/icons.json. Restart Flipper to apply the change.`,
-        );
+        // Check if that icon actually exists!
+        fetch(url)
+          .then(res => {
+            if (res.status === 200) {
+              // the icon exists
+              existing.push(size);
+              existing.sort();
+              fs.writeFileSync(
+                iconsPath,
+                JSON.stringify(ICONS, null, 2),
+                'utf8',
+              );
+              console.warn(
+                `Added uncached icon "${name}: [${size}]" to /static/icons.json. Restart Flipper to apply the change.`,
+              );
+            } else {
+              throw new Error(
+                // eslint-disable-next-line prettier/prettier
+                `Trying to use icon '${name}' with size ${size} and density ${density}, however the icon doesn't seem to exists at ${url}: ${
+                  res.status
+                }`,
+              );
+            }
+          })
+          .catch(e => console.error(e));
       }
     } else {
       console.warn(
