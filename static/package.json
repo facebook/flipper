@@ -16,6 +16,7 @@
     "@babel/plugin-transform-typescript": "^7.7.4",
     "@babel/preset-react": "^7.7.4",
     "expand-tilde": "^2.0.2",
+    "fb-watchman": "^2.0.0",
     "fix-path": "^2.1.0",
     "mem": "^6.0.0",
     "metro": "^0.57.0",
@@ -23,7 +24,8 @@
     "p-map": "^3.0.0",
     "recursive-readdir": "2.2.2",
     "xdg-basedir": "^4.0.0",
-    "yargs": "^15.0.1"
+    "yargs": "^15.0.1",
+    "uuid": "^3.3.2"
   },
   "resolutions": {
     "metro/temp": "0.9.0",
