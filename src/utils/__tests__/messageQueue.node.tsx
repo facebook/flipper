@@ -14,6 +14,10 @@ import {selectPlugin} from '../../reducers/connections';
 import {processMessageQueue} from '../messageQueue';
 import {getPluginKey} from '../pluginUtils';
 import {TestIdler} from '../Idler';
+import pluginMessageQueue, {
+  State,
+  queueMessage,
+} from '../../reducers/pluginMessageQueue';
 
 interface PersistedState {
   count: 1;
@@ -338,4 +342,40 @@ test('queue - make sure resetting plugin state clears the message queue', async 
       });
     },
   );
+});
+
+test('queue will be cleaned up when it exceeds maximum size', () => {
+  let state: State = {};
+  const pluginKey = 'test';
+  const queueSize = 5000;
+  let i = 0;
+  for (i = 0; i < queueSize; i++) {
+    state = pluginMessageQueue(
+      state,
+      queueMessage(pluginKey, 'test', {i}, queueSize),
+    );
+  }
+  // almost full
+  expect(state[pluginKey][0]).toEqual({method: 'test', params: {i: 0}});
+  expect(state[pluginKey].length).toBe(queueSize); // ~5000
+  expect(state[pluginKey][queueSize - 1]).toEqual({
+    method: 'test',
+    params: {i: queueSize - 1}, // ~4999
+  });
+
+  state = pluginMessageQueue(
+    state,
+    queueMessage(pluginKey, 'test', {i: ++i}, queueSize),
+  );
+
+  const newLength = Math.ceil(0.9 * queueSize) + 1; // ~4500
+  expect(state[pluginKey].length).toBe(newLength);
+  expect(state[pluginKey][0]).toEqual({
+    method: 'test',
+    params: {i: queueSize - newLength + 1}, // ~500
+  });
+  expect(state[pluginKey][newLength - 1]).toEqual({
+    method: 'test',
+    params: {i: i}, // ~50001
+  });
 });

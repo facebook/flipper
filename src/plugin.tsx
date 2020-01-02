@@ -20,6 +20,7 @@ import {Idler} from './utils/Idler';
 import {StaticView} from './reducers/connections';
 import {State as ReduxState} from './reducers';
 import {PersistedState} from './plugins/layout';
+import {DEFAULT_MAX_QUEUE_SIZE} from './reducers/pluginMessageQueue';
 type Parameters = any;
 
 // This function is intended to be called from outside of the plugin.
@@ -98,6 +99,7 @@ export abstract class FlipperBasePlugin<
   static screenshot: string | null;
   static defaultPersistedState: any;
   static persistedStateReducer: PersistedStateReducer | null;
+  static maxQueueSize: number = DEFAULT_MAX_QUEUE_SIZE;
   static metricsReducer:
     | ((persistedState: StaticPersistedState) => Promise<MetricType>)
     | null;

@@ -10,6 +10,8 @@
 import produce from 'immer';
 import {deconstructPluginKey} from '../utils/clientUtils';
 
+export const DEFAULT_MAX_QUEUE_SIZE = 10000;
+
 export type Message = {
   method: string;
   params: any;
@@ -24,6 +26,7 @@ export type Action =
       type: 'QUEUE_MESSAGE';
       payload: {
         pluginKey: string; // client + plugin
+        maxQueueSize: number;
       } & Message;
     }
   | {
@@ -46,16 +49,20 @@ export default function reducer(
 ): State {
   switch (action.type) {
     case 'QUEUE_MESSAGE': {
-      const {pluginKey, method, params} = action.payload;
-      return produce(state, draft => {
-        if (!draft[pluginKey]) {
-          draft[pluginKey] = [];
-        }
-        draft[pluginKey].push({
-          method,
-          params,
-        });
-      });
+      const {pluginKey, method, params, maxQueueSize} = action.payload;
+      // this is hit very often, so try to do it a bit optimal
+      const currentMessages = state[pluginKey] || [];
+      const newMessages =
+        currentMessages.length < maxQueueSize
+          ? currentMessages.slice()
+          : // throw away first 10% of the queue if it gets too full
+            (console.log(`Dropping events for plugin ${pluginKey}`),
+            currentMessages.slice(Math.floor(maxQueueSize / 10)));
+      newMessages.push({method, params});
+      return {
+        ...state,
+        [pluginKey]: newMessages,
+      };
     }
 
     case 'CLEAR_MESSAGE_QUEUE': {
@@ -94,9 +101,15 @@ export const queueMessage = (
   pluginKey: string,
   method: string,
   params: any,
+  maxQueueSize: number | undefined,
 ): Action => ({
   type: 'QUEUE_MESSAGE',
-  payload: {pluginKey, method, params},
+  payload: {
+    pluginKey,
+    method,
+    params,
+    maxQueueSize: maxQueueSize || DEFAULT_MAX_QUEUE_SIZE,
+  },
 });
 
 export const clearMessageQueue = (

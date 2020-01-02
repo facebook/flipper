@@ -128,6 +128,7 @@ export function processMessageLater(
     defaultPersistedState: any;
     name: string;
     persistedStateReducer: PersistedStateReducer | null;
+    maxQueueSize?: number;
   },
   message: {method: string; params?: any},
 ) {
@@ -149,7 +150,14 @@ export function processMessageLater(
   } else {
     // TODO: possible optimization: drop all messages for non-favorited plugins
     // TODO: possible optimization: drop messages if queue is too large
-    store.dispatch(queueMessage(pluginKey, message.method, message.params));
+    store.dispatch(
+      queueMessage(
+        pluginKey,
+        message.method,
+        message.params,
+        plugin.maxQueueSize,
+      ),
+    );
   }
 }
 
