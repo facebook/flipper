@@ -34,12 +34,12 @@ export function pluginsClassMap(
 }
 
 export function getPluginKey(
-  selectedApp: string | null,
+  selectedAppId: string | null,
   baseDevice: BaseDevice | null,
   pluginID: string,
 ): string {
-  if (selectedApp) {
-    return `${selectedApp}#${pluginID}`;
+  if (selectedAppId) {
+    return `${selectedAppId}#${pluginID}`;
   }
   if (baseDevice) {
     // If selected App is not defined, then the plugin is a device plugin

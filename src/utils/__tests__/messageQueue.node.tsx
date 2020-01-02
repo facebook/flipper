@@ -9,8 +9,8 @@
 
 import {FlipperPlugin} from '../../plugin';
 import {createMockFlipperWithPlugin} from '../../test-utils/createMockFlipperWithPlugin';
-import {GK} from 'flipper';
-import {selectPlugin} from '../../reducers/connections';
+import {GK, Store, Client} from 'flipper';
+import {selectPlugin, starPlugin} from '../../reducers/connections';
 import {processMessageQueue} from '../messageQueue';
 import {getPluginKey} from '../pluginUtils';
 import {TestIdler} from '../Idler';
@@ -46,6 +46,35 @@ class TestPlugin extends FlipperPlugin<any, any, any> {
   render() {
     return null;
   }
+}
+
+function starTestPlugin(store: Store, client: Client) {
+  store.dispatch(
+    starPlugin({
+      selectedPlugin: TestPlugin.id,
+      selectedApp: client.query.app,
+    }),
+  );
+}
+
+function selectDeviceLogs(store: Store) {
+  store.dispatch(
+    selectPlugin({
+      selectedPlugin: 'DeviceLogs',
+      selectedApp: null,
+      deepLinkPayload: null,
+    }),
+  );
+}
+
+function selectTestPlugin(store: Store, client: Client) {
+  store.dispatch(
+    selectPlugin({
+      selectedPlugin: TestPlugin.id,
+      selectedApp: client.query.app,
+      deepLinkPayload: null,
+    }),
+  );
 }
 
 test('will process event with GK disabled', async () => {
@@ -87,18 +116,12 @@ test('queue - events are processed immediately if plugin is selected', async () 
   );
 });
 
-test('queue - events are NOT processed immediately if plugin is NOT selected', async () => {
+test('queue - events are NOT processed immediately if plugin is NOT selected (but starred)', async () => {
   await createMockFlipperWithPlugin(
     TestPlugin,
     async ({client, device, store, sendMessage}) => {
       await GK.withWhitelistedGK('flipper_event_queue', async () => {
-        store.dispatch(
-          selectPlugin({
-            selectedPlugin: 'DeviceLogs',
-            selectedApp: null,
-            deepLinkPayload: null,
-          }),
-        );
+        selectDeviceLogs(store);
         expect(store.getState().connections.selectedPlugin).not.toBe(
           'TestPlugin',
         );
@@ -137,6 +160,32 @@ test('queue - events are NOT processed immediately if plugin is NOT selected', a
         expect(store.getState().pluginMessageQueue).toEqual({
           [pluginKey]: [],
         });
+
+        // unstar, but, messages still arrives because selected
+        starTestPlugin(store, client);
+        selectTestPlugin(store, client);
+        sendMessage('inc', {delta: 3});
+        // active, immediately processed
+        expect(store.getState().pluginStates).toEqual({
+          [pluginKey]: {
+            count: 6,
+          },
+        });
+
+        // different plugin, and not starred, message will never arrive
+        selectDeviceLogs(store);
+        sendMessage('inc', {delta: 4});
+        expect(store.getState().pluginMessageQueue).toEqual({
+          [pluginKey]: [],
+        });
+
+        // star again, plugin still not selected, message is queued
+        starTestPlugin(store, client);
+        sendMessage('inc', {delta: 5});
+
+        expect(store.getState().pluginMessageQueue).toEqual({
+          [pluginKey]: [{method: 'inc', params: {delta: 5}}],
+        });
       });
     },
   );
@@ -147,14 +196,7 @@ test('queue - events processing will be paused', async () => {
     TestPlugin,
     async ({client, device, store, sendMessage}) => {
       await GK.withWhitelistedGK('flipper_event_queue', async () => {
-        // select a different plugin
-        store.dispatch(
-          selectPlugin({
-            selectedPlugin: 'DeviceLogs',
-            selectedApp: null,
-            deepLinkPayload: null,
-          }),
-        );
+        selectDeviceLogs(store);
 
         sendMessage('inc', {});
         sendMessage('inc', {delta: 3});
@@ -208,14 +250,7 @@ test('queue - messages that arrive during processing will be queued', async () =
     TestPlugin,
     async ({client, device, store, sendMessage}) => {
       await GK.withWhitelistedGK('flipper_event_queue', async () => {
-        // select a different plugin
-        store.dispatch(
-          selectPlugin({
-            selectedPlugin: 'DeviceLogs',
-            selectedApp: null,
-            deepLinkPayload: null,
-          }),
-        );
+        selectDeviceLogs(store);
 
         sendMessage('inc', {});
         sendMessage('inc', {delta: 2});
@@ -269,14 +304,7 @@ test('queue - processing can be cancelled', async () => {
     TestPlugin,
     async ({client, device, store, sendMessage}) => {
       await GK.withWhitelistedGK('flipper_event_queue', async () => {
-        // select a different plugin
-        store.dispatch(
-          selectPlugin({
-            selectedPlugin: 'DeviceLogs',
-            selectedApp: null,
-            deepLinkPayload: null,
-          }),
-        );
+        selectDeviceLogs(store);
 
         sendMessage('inc', {});
         sendMessage('inc', {delta: 2});
@@ -317,14 +345,7 @@ test('queue - make sure resetting plugin state clears the message queue', async 
     TestPlugin,
     async ({client, device, store, sendMessage}) => {
       await GK.withWhitelistedGK('flipper_event_queue', async () => {
-        // select a different plugin
-        store.dispatch(
-          selectPlugin({
-            selectedPlugin: 'DeviceLogs',
-            selectedApp: null,
-            deepLinkPayload: null,
-          }),
-        );
+        selectDeviceLogs(store);
 
         sendMessage('inc', {});
         sendMessage('inc', {delta: 2});

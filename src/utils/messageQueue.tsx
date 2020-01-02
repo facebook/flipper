@@ -7,7 +7,7 @@
  * @format
  */
 
-import {PersistedStateReducer} from '../plugin';
+import {PersistedStateReducer, FlipperDevicePlugin} from '../plugin';
 import {State, MiddlewareAPI} from '../reducers/index';
 import {setPluginState} from '../reducers/pluginStates';
 import {flipperRecorderAddEvent} from './pluginStateRecorder';
@@ -18,6 +18,7 @@ import {
 } from '../reducers/pluginMessageQueue';
 import {Idler, BaseIdler} from './Idler';
 import {getPluginKey} from './pluginUtils';
+import {deconstructClientId} from './clientUtils';
 
 const MAX_BACKGROUND_TASK_TIME = 25;
 
@@ -137,33 +138,44 @@ export function processMessageLater(
   },
   message: {method: string; params?: any},
 ) {
-  // TODO: can we make this better?
-  const selection = store.getState().connections;
-  const selectedPlugin =
-    selection.selectedPlugin &&
-    getPluginKey(
-      selection.selectedApp,
-      selection.selectedDevice,
-      selection.selectedPlugin,
-    );
-  // if the plugin is active, and has no queued messaged, process the message immediately
-  if (
-    selectedPlugin === pluginKey &&
-    getPendingMessages(store, pluginKey).length === 0
-  ) {
-    processMessageImmediately(store, pluginKey, plugin, message);
-  } else {
-    // TODO: possible optimization: drop all messages for non-favorited plugins
-    // TODO: possible optimization: drop messages if queue is too large
-    store.dispatch(
-      queueMessage(
-        pluginKey,
-        message.method,
-        message.params,
-        plugin.maxQueueSize,
-      ),
-    );
+  const isSelected = pluginKey === getSelectedPluginKey(store.getState());
+  switch (true) {
+    case isSelected && getPendingMessages(store, pluginKey).length === 0:
+      processMessageImmediately(store, pluginKey, plugin, message);
+      break;
+    case isSelected:
+    case plugin instanceof FlipperDevicePlugin:
+    case pluginIsStarred(store.getState(), plugin.id):
+      store.dispatch(
+        queueMessage(
+          pluginKey,
+          message.method,
+          message.params,
+          plugin.maxQueueSize,
+        ),
+      );
+      break;
   }
+}
+
+function getSelectedPluginKey(state: State): string | undefined {
+  return state.connections.selectedPlugin
+    ? getPluginKey(
+        state.connections.selectedApp,
+        state.connections.selectedDevice,
+        state.connections.selectedPlugin,
+      )
+    : undefined;
+}
+
+function pluginIsStarred(state: State, pluginId: string): boolean {
+  const {selectedApp} = state.connections;
+  if (!selectedApp) {
+    return false;
+  }
+  const appInfo = deconstructClientId(selectedApp);
+  const starred = state.connections.userStarredPlugins[appInfo.app];
+  return starred && starred.indexOf(pluginId) > -1;
 }
 
 export async function processMessageQueue(
