@@ -92,7 +92,7 @@ export type State = {
   launcherSettingsState: LauncherSettingsState & PersistPartial;
   supportForm: SupportFormState;
   pluginManager: PluginManagerState;
-  healthchecks: HealthcheckState;
+  healthchecks: HealthcheckState & PersistPartial;
 };
 
 export type Store = ReduxStore<State, Actions>;
@@ -159,5 +159,12 @@ export default combineReducers<State, Actions>({
     },
     launcherSettings,
   ),
-  healthchecks,
+  healthchecks: persistReducer<HealthcheckState, Actions>(
+    {
+      key: 'healthchecks',
+      storage,
+      whitelist: ['acknowledgedProblems'],
+    },
+    healthchecks,
+  ),
 });

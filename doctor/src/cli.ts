@@ -17,8 +17,9 @@ import {getEnvInfo} from './environmentInfo';
   const results = await Promise.all(
     Object.entries(healthchecks).map(async ([key, category]) => [
       key,
-      category
-        ? {
+      category.isSkipped
+        ? category
+        : {
             label: category.label,
             results: await Promise.all(
               category.healthchecks.map(async ({label, run}) => ({
@@ -26,8 +27,7 @@ import {getEnvInfo} from './environmentInfo';
                 result: await run(environmentInfo),
               })),
             ),
-          }
-        : {},
+          },
     ]),
   );
 

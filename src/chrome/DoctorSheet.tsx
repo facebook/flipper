@@ -18,6 +18,7 @@ import {
   Spacer,
   Button,
   FlexBox,
+  Checkbox,
 } from 'flipper';
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
@@ -27,11 +28,12 @@ import {
   HealthcheckReportCategory,
   HealthcheckReportItem,
   HealthcheckReport,
-  initHealthcheckReport,
-  updateHealthcheckReportItemStatus,
-  updateHealthcheckReportCategoryStatus,
   startHealthchecks,
   finishHealthchecks,
+  updateHealthcheckResult,
+  acknowledgeProblems,
+  resetAcknowledgedProblems,
+  HealthcheckStatus,
 } from '../reducers/healthchecks';
 import runHealthchecks, {
   HealthcheckSettings,
@@ -40,10 +42,13 @@ import runHealthchecks, {
 import {shell} from 'electron';
 
 type StateFromProps = {
-  report: HealthcheckReport;
+  healthcheckReport: HealthcheckReport;
 } & HealthcheckSettings;
 
-type DispatchFromProps = HealthcheckEventsHandler;
+type DispatchFromProps = {
+  acknowledgeProblems: () => void;
+  resetAcknowledgedProblems: () => void;
+} & HealthcheckEventsHandler;
 
 const Container = styled(FlexColumn)({
   padding: 20,
@@ -57,6 +62,7 @@ const HealthcheckDisplayContainer = styled(FlexRow)({
 
 const HealthcheckListContainer = styled(FlexColumn)({
   marginBottom: 20,
+  width: 300,
 });
 
 const Title = styled(Text)({
@@ -77,7 +83,7 @@ const SideContainer = styled(FlexBox)({
   padding: 20,
   backgroundColor: colors.highlightBackground,
   border: '1px solid #b3b3b3',
-  width: 320,
+  width: 250,
 });
 
 const SideContainerText = styled(Text)({
@@ -89,9 +95,33 @@ const HealthcheckLabel = styled(Text)({
   paddingLeft: 5,
 });
 
+const SkipReasonLabel = styled(Text)({
+  paddingLeft: 21,
+  fontStyle: 'italic',
+});
+
+const CenteredContainer = styled.label({
+  display: 'flex',
+  alignItems: 'center',
+});
+
 type OwnProps = {
   onHide: () => void;
 };
+
+function CenteredCheckbox(props: {
+  checked: boolean;
+  text: string;
+  onChange: (checked: boolean) => void;
+}) {
+  const {checked, onChange, text} = props;
+  return (
+    <CenteredContainer>
+      <Checkbox checked={checked} onChange={onChange} />
+      {text}
+    </CenteredContainer>
+  );
+}
 
 function HealthcheckIcon(props: {check: HealthcheckResult}) {
   switch (props.check.status) {
@@ -115,21 +145,31 @@ function HealthcheckIcon(props: {check: HealthcheckResult}) {
           title={props.check.message}
         />
       );
-    case 'WARNING':
+    case 'FAILED':
       return (
         <Glyph
           size={16}
-          name={'caution'}
-          color={colors.yellow}
+          name={'cross'}
+          color={colors.red}
           title={props.check.message}
+        />
+      );
+    case 'FAILED_ACKNOWLEDGED':
+      return (
+        <Glyph
+          size={16}
+          name={'cross'}
+          color={colors.red}
+          title={props.check.message}
+          variant="outline"
         />
       );
     default:
       return (
         <Glyph
           size={16}
-          name={'cross'}
-          color={colors.red}
+          name={'caution'}
+          color={colors.yellow}
           title={props.check.message}
         />
       );
@@ -181,13 +221,79 @@ function SideMessageDisplay(props: {
   }
 }
 
-export type State = {};
+function hasProblems(status: HealthcheckStatus) {
+  return (
+    status === 'FAILED' ||
+    status === 'FAILED_ACKNOWLEDGED' ||
+    status === 'WARNING'
+  );
+}
+
+function hasFailedChecks(status: HealthcheckStatus) {
+  return status === 'FAILED' || status === 'FAILED_ACKNOWLEDGED';
+}
+
+function hasNewFailedChecks(status: HealthcheckStatus) {
+  return status === 'FAILED';
+}
+
+export type State = {
+  acknowledgeCheckboxVisible: boolean;
+  acknowledgeOnClose?: boolean;
+};
 
 type Props = OwnProps & StateFromProps & DispatchFromProps;
 class DoctorSheet extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
-    this.state = {};
+    this.state = {
+      acknowledgeCheckboxVisible: false,
+    };
+  }
+
+  static getDerivedStateFromProps(props: Props, state: State): State | null {
+    if (
+      !state.acknowledgeCheckboxVisible &&
+      hasFailedChecks(props.healthcheckReport.status)
+    ) {
+      return {
+        ...state,
+        acknowledgeCheckboxVisible: true,
+        acknowledgeOnClose:
+          state.acknowledgeOnClose === undefined
+            ? !hasNewFailedChecks(props.healthcheckReport.status)
+            : state.acknowledgeOnClose,
+      };
+    }
+
+    if (
+      state.acknowledgeCheckboxVisible &&
+      !hasFailedChecks(props.healthcheckReport.status)
+    ) {
+      return {
+        ...state,
+        acknowledgeCheckboxVisible: false,
+      };
+    }
+
+    return null;
+  }
+
+  componentWillUnmount(): void {
+    if (this.state.acknowledgeOnClose) {
+      this.props.acknowledgeProblems();
+    } else {
+      this.props.resetAcknowledgedProblems();
+    }
+  }
+
+  onAcknowledgeOnCloseChanged(acknowledge: boolean): void {
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        acknowledgeOnClose: acknowledge,
+      };
+    });
   }
 
   openHelpUrl(check: HealthcheckReportItem): void {
@@ -195,20 +301,7 @@ class DoctorSheet extends Component<Props, State> {
   }
 
   async runHealthchecks() {
-    this.setState(prevState => {
-      return {
-        ...prevState,
-      };
-    });
     await runHealthchecks(this.props);
-  }
-
-  hasProblems() {
-    return this.props.report.categories.some(cat =>
-      cat.checks.some(
-        chk => chk.status === 'FAILED' || chk.status === 'WARNING',
-      ),
-    );
   }
 
   render() {
@@ -217,25 +310,32 @@ class DoctorSheet extends Component<Props, State> {
         <Title>Doctor</Title>
         <FlexRow>
           <HealthcheckListContainer>
-            {Object.values(this.props.report.categories).map(
-              (category, categoryIdx) => {
+            {Object.values(this.props.healthcheckReport.categories).map(
+              (category: HealthcheckReportCategory, categoryIdx: number) => {
                 return (
                   <CategoryContainer key={categoryIdx}>
                     <HealthcheckDisplay check={category} category={category} />
-                    <CategoryContainer>
-                      {category.checks.map((check, checkIdx) => (
-                        <HealthcheckDisplay
-                          key={checkIdx}
-                          category={category}
-                          check={check}
-                          onClick={
-                            check.helpUrl
-                              ? () => this.openHelpUrl(check)
-                              : undefined
-                          }
-                        />
-                      ))}
-                    </CategoryContainer>
+                    {category.status !== 'SKIPPED' && (
+                      <CategoryContainer>
+                        {category.checks.map((check, checkIdx) => (
+                          <HealthcheckDisplay
+                            key={checkIdx}
+                            category={category}
+                            check={check}
+                            onClick={
+                              check.helpUrl
+                                ? () => this.openHelpUrl(check)
+                                : undefined
+                            }
+                          />
+                        ))}
+                      </CategoryContainer>
+                    )}
+                    {category.status === 'SKIPPED' && (
+                      <CategoryContainer>
+                        <SkipReasonLabel>{category.message}</SkipReasonLabel>
+                      </CategoryContainer>
+                    )}
                   </CategoryContainer>
                 );
               },
@@ -245,19 +345,28 @@ class DoctorSheet extends Component<Props, State> {
           <SideContainer shrink>
             <SideMessageDisplay
               isHealthcheckInProgress={
-                this.props.report.isHealthcheckInProgress
+                this.props.healthcheckReport.status === 'IN_PROGRESS'
               }
-              hasProblems={this.hasProblems()}
+              hasProblems={hasProblems(this.props.healthcheckReport.status)}
             />
           </SideContainer>
         </FlexRow>
         <FlexRow>
           <Spacer />
+          {this.state.acknowledgeCheckboxVisible && (
+            <CenteredCheckbox
+              checked={!!this.state.acknowledgeOnClose}
+              onChange={this.onAcknowledgeOnCloseChanged.bind(this)}
+              text={
+                'Do not show warning about these problems on Flipper startup'
+              }
+            />
+          )}
           <Button compact padded onClick={this.props.onHide}>
             Close
           </Button>
           <Button
-            disabled={this.props.report.isHealthcheckInProgress}
+            disabled={this.props.healthcheckReport.status === 'IN_PROGRESS'}
             type="primary"
             compact
             padded
@@ -272,14 +381,14 @@ class DoctorSheet extends Component<Props, State> {
 
 export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
   ({healthchecks: {healthcheckReport}, settingsState}) => ({
-    report: healthcheckReport,
+    healthcheckReport,
     enableAndroid: settingsState.enableAndroid,
   }),
   {
-    initHealthcheckReport,
-    updateHealthcheckReportItemStatus,
-    updateHealthcheckReportCategoryStatus,
     startHealthchecks,
     finishHealthchecks,
+    updateHealthcheckResult,
+    acknowledgeProblems,
+    resetAcknowledgedProblems,
   },
 )(DoctorSheet);

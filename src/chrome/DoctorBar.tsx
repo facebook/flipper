@@ -23,22 +23,21 @@ import runHealthchecks, {
   HealthcheckEventsHandler,
 } from '../utils/runHealthchecks';
 import {
-  initHealthcheckReport,
-  updateHealthcheckReportItemStatus,
-  updateHealthcheckReportCategoryStatus,
+  updateHealthcheckResult,
   startHealthchecks,
   finishHealthchecks,
+  HealthcheckStatus,
 } from '../reducers/healthchecks';
 
-type StateFromProps = HealthcheckSettings;
+type StateFromProps = {
+  healthcheckStatus: HealthcheckStatus;
+} & HealthcheckSettings;
 
 type DispatchFromProps = {
   setActiveSheet: (payload: ActiveSheet) => void;
 } & HealthcheckEventsHandler;
 
-type State = {
-  visible: boolean;
-};
+type State = {visible: boolean};
 
 type Props = DispatchFromProps & StateFromProps;
 class DoctorBar extends Component<Props, State> {
@@ -52,8 +51,8 @@ class DoctorBar extends Component<Props, State> {
     this.showMessageIfChecksFailed();
   }
   async showMessageIfChecksFailed() {
-    const result = await runHealthchecks(this.props);
-    if (!result) {
+    await runHealthchecks(this.props);
+    if (this.props.healthcheckStatus === 'FAILED') {
       this.setVisible(true);
     }
   }
@@ -66,9 +65,10 @@ class DoctorBar extends Component<Props, State> {
               <ButtonSection>
                 <ButtonGroup>
                   <Button
-                    onClick={() =>
-                      this.props.setActiveSheet(ACTIVE_SHEET_DOCTOR)
-                    }>
+                    onClick={() => {
+                      this.props.setActiveSheet(ACTIVE_SHEET_DOCTOR);
+                      this.setVisible(false);
+                    }}>
                     Show Problems
                   </Button>
                   <Button onClick={() => this.setVisible(false)}>
@@ -96,14 +96,18 @@ class DoctorBar extends Component<Props, State> {
 }
 
 export default connect<StateFromProps, DispatchFromProps, {}, Store>(
-  ({settingsState}) => ({
-    enableAndroid: settingsState.enableAndroid,
+  ({
+    settingsState: {enableAndroid},
+    healthchecks: {
+      healthcheckReport: {status},
+    },
+  }) => ({
+    enableAndroid,
+    healthcheckStatus: status,
   }),
   {
     setActiveSheet,
-    initHealthcheckReport,
-    updateHealthcheckReportItemStatus,
-    updateHealthcheckReportCategoryStatus,
+    updateHealthcheckResult,
     startHealthchecks,
     finishHealthchecks,
   },
