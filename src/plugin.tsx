@@ -138,6 +138,7 @@ export abstract class FlipperBasePlugin<
 
   // methods to be overriden by plugins
   init(): void {}
+
   static serializePersistedState: (
     persistedState: StaticPersistedState,
     statusUpdate?: (msg: string) => void,
@@ -156,20 +157,25 @@ export abstract class FlipperBasePlugin<
       pluginName != null ? `Serializing ${pluginName}` : undefined,
     );
   };
+
   static deserializePersistedState: (
     serializedString: string,
   ) => StaticPersistedState = (serializedString: string) => {
     return deserialize(serializedString);
   };
+
   teardown(): void {}
+
   computeNotifications(
     _props: Props<PersistedState>,
     _state: State,
   ): Array<Notification> {
     return [];
   }
+
   // methods to be overridden by subclasses
   _init(): void {}
+
   _teardown(): void {}
 
   dispatchAction(actionData: Actions) {
