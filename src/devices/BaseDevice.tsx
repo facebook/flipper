@@ -144,7 +144,7 @@ export default class BaseDevice {
     this.logListeners.delete(id);
   }
 
-  navigateToLocation(location: string) {
+  navigateToLocation(_location: string) {
     throw new Error('unimplemented');
   }
 
@@ -162,7 +162,7 @@ export default class BaseDevice {
     return false;
   }
 
-  async startScreenCapture(destination: string) {
+  async startScreenCapture(_destination: string) {
     throw new Error('startScreenCapture not implemented on BaseDevice ');
   }
 

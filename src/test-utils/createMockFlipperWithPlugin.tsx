@@ -73,7 +73,7 @@ export async function createMockFlipperWithPlugin(
 
   // yikes
   client._deviceSet = true;
-  // client.getDeviceSync = () => device;
+  client.getDeviceSync = () => device;
   client.device = {
     then() {
       return device;

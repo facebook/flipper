@@ -76,6 +76,8 @@
     "@types/react-redux": "^7.1.5",
     "@types/react-virtualized-auto-sizer": "^1.0.0",
     "@types/react-window": "^1.8.1",
+    "@types/redux-persist": "^4.3.1",
+    "@types/requestidlecallback": "^0.3.1",
     "@types/rsocket-core": "^0.0.3",
     "@types/testing-library__react": "^9.1.2",
     "@types/tmp": "^0.1.0",

@@ -30,17 +30,6 @@ declare global {
       init: () => void;
     };
 
-    // rIC not supportedin TS: https://github.com/Microsoft/TypeScript/issues/21309
-    requestIdleCallback: (
-      callback: (deadline: {
-        didTimeout: boolean;
-        timeRemaining: () => number;
-      }) => void,
-      opts?: {
-        timeout: number;
-      },
-    ) => RequestIdleHandle;
-    cancelIdleCallback: (handle: RequestIdleHandle) => void;
     ResizeObserver: ResizeObserver;
   }
 }

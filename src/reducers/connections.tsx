@@ -208,19 +208,15 @@ const reducer = (state: State = INITAL_STATE, action: Actions): State => {
     }
 
     case 'UNREGISTER_DEVICES': {
-      const {payload} = action;
-      const devices = state.devices.filter((device: BaseDevice) => {
-        if (payload.has(device.serial)) {
-          return false;
-        } else {
-          return true;
-        }
-      });
+      const deviceSerials = action.payload;
 
-      return updateSelection({
-        ...state,
-        devices,
-      });
+      return updateSelection(
+        produce(state, draft => {
+          draft.devices = draft.devices.filter(
+            device => !deviceSerials.has(device.serial),
+          );
+        }),
+      );
     }
     case 'SELECT_PLUGIN': {
       const {payload} = action;
@@ -380,6 +376,7 @@ const reducer = (state: State = INITAL_STATE, action: Actions): State => {
         errors,
       };
     }
+
     default:
       return state;
   }

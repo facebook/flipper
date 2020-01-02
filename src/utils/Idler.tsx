@@ -14,12 +14,13 @@ export interface BaseIdler {
   shouldIdle(): boolean;
   idle(): Promise<void>;
   cancel(): void;
+  isCancelled(): boolean;
 }
 
 export class Idler implements BaseIdler {
-  lastIdle = performance.now();
-  interval = 16;
-  kill = false;
+  private lastIdle = performance.now();
+  private interval = 16;
+  private kill = false;
 
   shouldIdle(): boolean {
     return this.kill || performance.now() - this.lastIdle > this.interval;
@@ -32,7 +33,15 @@ export class Idler implements BaseIdler {
     const now = performance.now();
     if (now - this.lastIdle > this.interval) {
       this.lastIdle = now;
-      return new Promise(resolve => setTimeout(resolve, 0));
+      return new Promise(resolve => {
+        if (typeof requestIdleCallback !== 'undefined') {
+          requestIdleCallback(() => {
+            resolve();
+          });
+        } else {
+          setTimeout(resolve, 0);
+        }
+      });
     }
     return undefined;
   }
@@ -40,14 +49,18 @@ export class Idler implements BaseIdler {
   cancel() {
     this.kill = true;
   }
+
+  isCancelled() {
+    return this.kill;
+  }
 }
 
 // This smills like we should be using generators :)
 export class TestIdler implements BaseIdler {
-  resolver?: () => void;
-  kill = false;
-  autoRun = false;
-  hasProgressed = false;
+  private resolver?: () => void;
+  private kill = false;
+  private autoRun = false;
+  private hasProgressed = false;
 
   shouldIdle() {
     if (this.kill) {
@@ -56,9 +69,12 @@ export class TestIdler implements BaseIdler {
     if (this.autoRun) {
       return false;
     }
-    // In turn we signal idle is needed and that it isn't
-    this.hasProgressed = !this.hasProgressed;
-    return !this.hasProgressed;
+    // In turns we signal that idling is needed and that it isn't
+    if (!this.hasProgressed) {
+      this.hasProgressed = true;
+      return false;
+    }
+    return true;
   }
 
   async idle() {
@@ -74,7 +90,7 @@ export class TestIdler implements BaseIdler {
     return new Promise<void>(resolve => {
       this.resolver = () => {
         this.resolver = undefined;
-        // this.hasProgressed = false;
+        this.hasProgressed = false;
         resolve();
       };
     });
@@ -101,5 +117,9 @@ export class TestIdler implements BaseIdler {
   run() {
     this.resolver?.();
     this.autoRun = true;
+  }
+
+  isCancelled() {
+    return this.kill;
   }
 }

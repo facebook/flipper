@@ -19,6 +19,7 @@ import {serialize, deserialize} from './utils/serialization';
 import {Idler} from './utils/Idler';
 import {StaticView} from './reducers/connections';
 import {State as ReduxState} from './reducers';
+import {PersistedState} from './plugins/layout';
 type Parameters = any;
 
 // This function is intended to be called from outside of the plugin.
@@ -69,6 +70,12 @@ export type BaseAction = {
   type: string;
 };
 
+export type PersistedStateReducer = (
+  persistedState: StaticPersistedState,
+  method: string,
+  data: any,
+) => StaticPersistedState;
+
 type StaticPersistedState = any;
 
 export abstract class FlipperBasePlugin<
@@ -90,13 +97,7 @@ export abstract class FlipperBasePlugin<
   static keyboardActions: KeyboardActions | null;
   static screenshot: string | null;
   static defaultPersistedState: any;
-  static persistedStateReducer:
-    | ((
-        persistedState: StaticPersistedState,
-        method: string,
-        data: any,
-      ) => StaticPersistedState)
-    | null;
+  static persistedStateReducer: PersistedStateReducer | null;
   static metricsReducer:
     | ((persistedState: StaticPersistedState) => Promise<MetricType>)
     | null;

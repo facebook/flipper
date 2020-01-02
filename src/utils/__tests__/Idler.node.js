@@ -18,6 +18,7 @@ test('Idler should interrupt', async () => {
       if (i == 100) {
         expect(idler.shouldIdle()).toBe(false);
         idler.cancel();
+        expect(idler.isCancelled()).toBe(true);
         expect(idler.shouldIdle()).toBe(true);
       }
       await idler.idle();
@@ -57,7 +58,9 @@ test('TestIdler can be controlled', async () => {
   idler.idle();
   await idler.next();
 
+  expect(idler.isCancelled()).toBe(false);
   idler.cancel();
+  expect(idler.isCancelled()).toBe(true);
   expect(idler.shouldIdle()).toBe(true);
 
   let threw = false;

@@ -25,48 +25,11 @@ import EventEmitter from 'events';
 import invariant from 'invariant';
 import {flipperRecorderAddEvent} from './utils/pluginStateRecorder';
 import {getPluginKey} from './utils/pluginUtils';
-
-const MAX_BACKGROUND_TASK_TIME = 25;
-
-const pluginBackgroundStats = new Map<
-  string,
-  {
-    cpuTime: number; // Total time spend in persisted Reducer
-    messages: number; // amount of message received for this plugin
-    maxTime: number; // maximum time spend in a single reducer call
-  }
->();
-
-if (window) {
-  // @ts-ignore
-  window.flipperPrintPluginBackgroundStats = () => {
-    console.table(
-      Array.from(pluginBackgroundStats.entries()).map(
-        ([plugin, {cpuTime, messages, maxTime}]) => ({
-          plugin,
-          cpuTime,
-          messages,
-          maxTime,
-        }),
-      ),
-    );
-  };
-}
-
-function addBackgroundStat(plugin: string, cpuTime: number) {
-  if (!pluginBackgroundStats.has(plugin)) {
-    pluginBackgroundStats.set(plugin, {cpuTime: 0, messages: 0, maxTime: 0});
-  }
-  const stat = pluginBackgroundStats.get(plugin)!;
-  stat.cpuTime += cpuTime;
-  stat.messages += 1;
-  stat.maxTime = Math.max(stat.maxTime, cpuTime);
-  if (cpuTime > MAX_BACKGROUND_TASK_TIME) {
-    console.warn(
-      `Plugin ${plugin} took too much time while doing background: ${cpuTime}ms. Handling background messages should take less than ${MAX_BACKGROUND_TASK_TIME}ms.`,
-    );
-  }
-}
+import {
+  processMessageImmediately,
+  processMessageLater,
+} from './utils/messageQueue';
+import GK from './fb-stubs/GK';
 
 type Plugins = Array<string>;
 
@@ -351,8 +314,6 @@ export default class Client extends EventEmitter {
       error?: ErrorType;
     } = rawData;
 
-    console.debug(data, 'message:receive');
-
     const {id, method} = data;
 
     if (id == null) {
@@ -371,39 +332,33 @@ export default class Client extends EventEmitter {
         const params: Params = data.params as Params;
         invariant(params, 'expected params');
 
-        const statName = `${params.api}.${params.method}`;
         const persistingPlugin:
           | typeof FlipperPlugin
           | typeof FlipperDevicePlugin
           | undefined =
           this.store.getState().plugins.clientPlugins.get(params.api) ||
           this.store.getState().plugins.devicePlugins.get(params.api);
+
         if (persistingPlugin && persistingPlugin.persistedStateReducer) {
-          let pluginKey = getPluginKey(this.id, null, params.api);
-          if (persistingPlugin.prototype instanceof FlipperDevicePlugin) {
-            // For device plugins, we are just using the device id instead of client id as the prefix.
-            this.deviceSerial().then(
-              serial => (pluginKey = `${serial}#${params.api}`),
-            );
-          }
-          const persistedState = {
-            ...persistingPlugin.defaultPersistedState,
-            ...this.store.getState().pluginStates[pluginKey],
-          };
-          const reducerStartTime = Date.now();
-          flipperRecorderAddEvent(pluginKey, params.method, params.params);
-          const newPluginState = persistingPlugin.persistedStateReducer(
-            persistedState,
-            params.method,
-            params.params,
+          const pluginKey = getPluginKey(
+            this.id,
+            this.getDeviceSync(),
+            params.api,
           );
-          addBackgroundStat(statName, Date.now() - reducerStartTime);
-          if (persistedState !== newPluginState) {
-            this.store.dispatch(
-              setPluginState({
-                pluginKey,
-                state: newPluginState,
-              }),
+          flipperRecorderAddEvent(pluginKey, params.method, params.params);
+          if (GK.get('flipper_event_queue')) {
+            processMessageLater(
+              this.store,
+              pluginKey,
+              persistingPlugin,
+              params,
+            );
+          } else {
+            processMessageImmediately(
+              this.store,
+              pluginKey,
+              persistingPlugin,
+              params,
             );
           }
         }
@@ -544,6 +499,17 @@ export default class Client extends EventEmitter {
             });
       }
     });
+  }
+
+  getDeviceSync(): BaseDevice {
+    let device: BaseDevice | undefined;
+    this.device.then(d => {
+      device = d;
+    });
+    if (!device) {
+      throw new Error('Device not ready yet');
+    }
+    return device!;
   }
 
   startTimingRequestResponse(data: RequestMetadata) {
