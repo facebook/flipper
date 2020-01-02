@@ -74,12 +74,12 @@ function processMessage(
   state: State,
   pluginKey: string,
   plugin: {
-    name: string;
+    id: string;
     persistedStateReducer: PersistedStateReducer | null;
   },
   message: {method: string; params?: any},
 ): State {
-  const statName = `${plugin.name}.${message.method}`;
+  const statName = `${plugin.id}.${message.method}`;
   const reducerStartTime = Date.now();
   flipperRecorderAddEvent(pluginKey, message.method, message.params);
   try {
@@ -91,7 +91,7 @@ function processMessage(
     addBackgroundStat(statName, Date.now() - reducerStartTime);
     return newPluginState;
   } catch (e) {
-    console.error(`Failed to process event for plugin ${plugin.name}`, e);
+    console.error(`Failed to process event for plugin ${plugin.id}`, e);
     return state;
   }
 }
@@ -101,7 +101,7 @@ export function processMessageImmediately(
   pluginKey: string,
   plugin: {
     defaultPersistedState: any;
-    name: string;
+    id: string;
     persistedStateReducer: PersistedStateReducer | null;
   },
   message: {method: string; params?: any},
@@ -131,7 +131,7 @@ export function processMessageLater(
   pluginKey: string,
   plugin: {
     defaultPersistedState: any;
-    name: string;
+    id: string;
     persistedStateReducer: PersistedStateReducer | null;
     maxQueueSize?: number;
   },
@@ -169,7 +169,7 @@ export function processMessageLater(
 export async function processMessageQueue(
   plugin: {
     defaultPersistedState: any;
-    name: string;
+    id: string;
     persistedStateReducer: PersistedStateReducer | null;
   },
   pluginKey: string,
