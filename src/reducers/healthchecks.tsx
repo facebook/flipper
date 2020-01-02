@@ -7,8 +7,8 @@
  * @format
  */
 
+import {produce} from 'immer';
 import {Actions} from './';
-import {produce} from 'flipper';
 
 export type State = {
   healthcheckReport: HealthcheckReport;

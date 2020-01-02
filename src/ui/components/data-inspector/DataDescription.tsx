@@ -159,7 +159,7 @@ class NumberTextEditor extends PureComponent<{
         compact={true}
         onChange={this.onNumberTextInputChange}
         onKeyDown={this.onNumberTextInputKeyDown}
-        innerRef={this.onNumberTextRef}
+        ref={this.onNumberTextRef}
         onBlur={this.onNumberTextBlur}
         value={this.props.value}
       />
