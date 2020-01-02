@@ -10,6 +10,7 @@
 import {createStore} from 'redux';
 import reducers, {Actions, State as StoreState} from './reducers/index';
 import {stateSanitizer} from './utils/reduxDevToolsConfig';
+import isProduction from './utils/isProduction';
 
 export const store = createStore<StoreState, Actions, any, any>(
   reducers,
@@ -20,3 +21,9 @@ export const store = createStore<StoreState, Actions, any, any>(
       })
     : undefined,
 );
+
+if (!isProduction()) {
+  // For debugging purposes only
+  // @ts-ignore
+  window.flipperStore = store;
+}

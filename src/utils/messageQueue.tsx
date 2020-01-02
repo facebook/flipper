@@ -8,7 +8,7 @@
  */
 
 import {PersistedStateReducer} from '../plugin';
-import {Store, State} from '../reducers/index';
+import {State, MiddlewareAPI} from '../reducers/index';
 import {setPluginState} from '../reducers/pluginStates';
 import {flipperRecorderAddEvent} from './pluginStateRecorder';
 import {
@@ -92,7 +92,7 @@ function processMessage(
 }
 
 export function processMessageImmediately(
-  store: Store,
+  store: MiddlewareAPI,
   pluginKey: string,
   plugin: {
     defaultPersistedState: any;
@@ -122,7 +122,7 @@ export function processMessageImmediately(
 }
 
 export function processMessageLater(
-  store: Store,
+  store: MiddlewareAPI,
   pluginKey: string,
   plugin: {
     defaultPersistedState: any;
@@ -168,7 +168,7 @@ export async function processMessageQueue(
     persistedStateReducer: PersistedStateReducer | null;
   },
   pluginKey: string,
-  store: Store,
+  store: MiddlewareAPI,
   progressCallback?: (progress: {current: number; total: number}) => void,
   idler: BaseIdler = new Idler(),
 ) {
@@ -226,6 +226,9 @@ export async function processMessageQueue(
   } while (getPendingMessages(store, pluginKey).length);
 }
 
-function getPendingMessages(store: Store, pluginKey: string): Message[] {
+function getPendingMessages(
+  store: MiddlewareAPI,
+  pluginKey: string,
+): Message[] {
   return store.getState().pluginMessageQueue[pluginKey] || [];
 }

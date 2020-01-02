@@ -177,9 +177,7 @@ async function exitActions(
           );
           outputAndExit(payload);
         } else {
-          const {serializedString, errorArray} = await exportStore(
-            store.getState(),
-          );
+          const {serializedString, errorArray} = await exportStore(store);
           errorArray.forEach(console.error);
           outputAndExit(serializedString);
         }
@@ -256,7 +254,7 @@ async function startFlipper(userArguments: UserArguments) {
               errorAndExit(e);
             });
         } else {
-          exportStore(store.getState())
+          exportStore(store)
             .then(({serializedString}) => {
               outputAndExit(serializedString);
             })

@@ -13,6 +13,7 @@ import {ShareType} from '../reducers/application';
 import {State as PluginState} from '../reducers/plugins';
 import {State as PluginStatesState} from '../reducers/pluginStates';
 import {State as Store} from '../reducers';
+import {State as PluginMessageQueueState} from '../reducers/pluginMessageQueue';
 import {ActiveSheet} from '../reducers/application';
 import {selectedPlugins as actionForSelectedPlugins} from '../reducers/plugins';
 import {getActivePersistentPlugins} from '../utils/pluginUtils';
@@ -35,6 +36,7 @@ type StateFromProps = {
   share: ShareType | null;
   plugins: PluginState;
   pluginStates: PluginStatesState;
+  pluginMessageQueue: PluginMessageQueueState;
   selectedClient: Client | undefined;
 };
 
@@ -57,13 +59,20 @@ const Container = styled(FlexColumn)({
 
 class ExportDataPluginSheet extends Component<Props> {
   render() {
-    const {plugins, pluginStates, onHide, selectedClient} = this.props;
+    const {
+      plugins,
+      pluginStates,
+      pluginMessageQueue,
+      onHide,
+      selectedClient,
+    } = this.props;
     const onHideWithUnsettingShare = () => {
       this.props.unsetShare();
       onHide();
     };
     const pluginsToExport = getActivePersistentPlugins(
       pluginStates,
+      pluginMessageQueue,
       plugins,
       selectedClient,
     );
@@ -121,6 +130,7 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
     application: {share},
     plugins,
     pluginStates,
+    pluginMessageQueue,
     connections: {selectedApp, clients},
   }) => {
     const selectedClient = clients.find(o => {
@@ -130,6 +140,7 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
       share,
       plugins,
       pluginStates,
+      pluginMessageQueue,
       selectedClient,
     };
   },
