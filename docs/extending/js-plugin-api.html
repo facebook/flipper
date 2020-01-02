@@ -98,7 +98,12 @@
     data: <span class="hljs-built_in">Object</span>
   ): PersistedState
 </code></pre>
-<p>The job of the <code>persistedStateReducer</code> is to merge incoming data into the state, so that next time the plugin is activated, the persisted state will be ready.</p>
+<p>The job of the <code>persistedStateReducer</code> is to merge incoming data into the state, so that next time the plugin is activated, the persisted state will be ready.
+If a plugin has a <code>persistedStateReducer</code>, and the plugin is not open in flipper, incoming messages are queued until the plugin is opened.</p>
+<p>The number of events that are cached for a plugin is controlled by the optional static field <code>maxQueueSize</code>, which defaults to <code>10000</code> events.</p>
+<div class="warning">
+<p>Note that if a plugin is not starred by the user, it will not receive any messages when it is not selected by the user. Even when it has a <code>persistedStateReducer</code>. This prevents plugins that are not actively used by the user from wasting a lot of CPU / memory.</p>
+</div>
 <p>The data that is produced from <code>persistedStateReducer</code> should be immutable, but also structurally sharing unchanged parts of the state with the previous state to avoid performance hiccups. To simplify this process we recommend using the <a href="https://immerjs.github.io/immer/docs/introduction">Immer</a> package.
 Immer makes it possible to keep the reducer concise by directly supporting &quot;writing&quot; to the current state, and keeping track of that in the background.
 Also it will guarantee that there are no accidental data manipulations by freezing the produced state.</p>
