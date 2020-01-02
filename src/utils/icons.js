@@ -16,88 +16,10 @@ const fs = require('fs');
 const path = require('path');
 const {remote} = require('electron');
 
-const ICONS = {
-  'app-dailies': [12],
-  'app-react': [12],
-  'arrow-right': [12],
-  'bell-null-outline': [12, 24],
-  'bell-null': [12],
-  'brush-paint': [12],
-  'building-city': [12],
-  'caution-octagon': [16],
-  'caution-triangle': [12, 16, 24],
-  'chevron-down-outline': [10],
-  'chevron-down': [8, 12],
-  'chevron-left': [12],
-  'chevron-right': [8, 12, 16],
-  'chevron-up': [8, 12],
-  'cross-circle': [12, 16, 24],
-  'dashboard-outline': [24],
-  'data-table': [16],
-  'dots-3-circle-outline': [16],
-  'face-unhappy-outline': [24],
-  'first-aid': [12],
-  'flash-default': [12],
-  'info-circle': [12, 16, 24],
-  'life-event-major': [16],
-  'magic-wand': [12, 20],
-  'magnifying-glass': [16, 20],
-  'minus-circle': [12],
-  'mobile-engagement': [16],
-  'news-feed': [12],
-  'question-circle-outline': [16],
-  'question-circle': [12],
-  'refresh-left': [16],
-  'share-external': [12, 16],
-  'star-outline': [12, 16, 24],
-  'star-slash': [16],
-  'stop-playback': [16],
-  'thought-bubble': [12],
-  'trash-outline': [16],
-  'triangle-down': [12],
-  'triangle-right': [12],
-  'washing-machine': [12],
-  'watch-tv': [12],
-  accessibility: [16],
-  apps: [12],
-  bell: [12],
-  bird: [12],
-  borders: [16],
-  box: [12],
-  bug: [12],
-  camcorder: [12, 16],
-  camera: [12, 16],
-  caution: [16],
-  checkmark: [16],
-  compose: [12],
-  copy: [12],
-  cross: [16],
-  dashboard: [12],
-  desktop: [12],
-  directions: [12],
-  download: [16],
-  internet: [12],
-  messages: [12],
-  mobile: [12, 16, 32],
-  network: [12],
-  pause: [16],
-  posts: [20],
-  power: [16],
-  profile: [12],
-  question: [16],
-  rocket: [20],
-  settings: [12],
-  share: [16],
-  star: [12, 16, 24],
-  stop: [16],
-  target: [12, 16],
-  tools: [12, 20],
-  translate: [12],
-  trash: [12, 16],
-  tree: [12],
-  trending: [12],
-  underline: [12],
-};
+const iconsPath = fs.existsSync(path.resolve(process.cwd(), 'icons.json'))
+  ? path.resolve(process.cwd(), 'icons.json') // development
+  : path.resolve(process.cwd(), 'static', 'icons.json'); // build
+const ICONS = JSON.parse(fs.readFileSync(iconsPath, {encoding: 'utf8'}));
 
 // Takes a string like 'star', or 'star-outline', and converts it to
 // {trimmedName: 'star', variant: 'filled'} or {trimmedName: 'star', variant: 'outline'}
@@ -118,7 +40,6 @@ function buildLocalIconPath(name, size, density) {
   return path.join('icons', getIconFileName(icon, size, density));
 }
 
-// $FlowFixMe not using flow in this file
 function buildLocalIconURL(name, size, density) {
   const icon = getIconPartsFromName(name);
   return `icons/${getIconFileName(icon, size, density)}`;
@@ -137,9 +58,27 @@ function buildIconURL(name, size, density) {
     typeof window !== 'undefined' &&
     (!ICONS[name] || !ICONS[name].includes(size))
   ) {
-    console.warn(
-      `Using uncached icon: "${name}: [${size}]" Add it to icons.js to preload it.`,
+    // From utils/isProduction
+    const isProduction = !/node_modules[\\/]electron[\\/]/.test(
+      // $FlowFixMe
+      process.execPath || remote.process.execPath,
     );
+
+    if (!isProduction) {
+      const existing = ICONS[name] || (ICONS[name] = []);
+      if (!existing.includes(size)) {
+        existing.push(size);
+        existing.sort();
+        fs.writeFileSync(iconsPath, JSON.stringify(ICONS, null, 2), 'utf8');
+        console.warn(
+          `Added uncached icon "${name}: [${size}]" to /static/icons.json. Restart Flipper to apply the change.`,
+        );
+      }
+    } else {
+      console.warn(
+        `Using uncached icon: "${name}: [${size}]". Add it to /static/icons.json to preload it.`,
+      );
+    }
   }
   return url;
 }

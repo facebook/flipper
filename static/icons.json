@@ -1,0 +1,295 @@
+{
+  "accessibility": [
+    16
+  ],
+  "app-dailies": [
+    12
+  ],
+  "app-react": [
+    12
+  ],
+  "apps": [
+    12
+  ],
+  "arrow-right": [
+    12
+  ],
+  "bell-null-outline": [
+    12,
+    24
+  ],
+  "bell-null": [
+    12
+  ],
+  "bell": [
+    12
+  ],
+  "bird": [
+    12
+  ],
+  "borders": [
+    16
+  ],
+  "box": [
+    12
+  ],
+  "brush-paint": [
+    12
+  ],
+  "bug": [
+    12
+  ],
+  "building-city": [
+    12
+  ],
+  "camcorder": [
+    12,
+    16
+  ],
+  "camera": [
+    12,
+    16
+  ],
+  "caution-octagon": [
+    16
+  ],
+  "caution-triangle": [
+    12,
+    16,
+    24
+  ],
+  "caution": [
+    16
+  ],
+  "checkmark": [
+    16
+  ],
+  "chevron-down-outline": [
+    10
+  ],
+  "chevron-down": [
+    12,
+    16,
+    8
+  ],
+  "chevron-left": [
+    12
+  ],
+  "chevron-right": [
+    8,
+    12,
+    16
+  ],
+  "chevron-up": [
+    8,
+    12
+  ],
+  "compose": [
+    12
+  ],
+  "copy": [
+    12
+  ],
+  "cross-circle": [
+    12,
+    16,
+    24
+  ],
+  "cross": [
+    16
+  ],
+  "dashboard-outline": [
+    24
+  ],
+  "dashboard": [
+    12
+  ],
+  "data-table": [
+    16
+  ],
+  "desktop": [
+    12
+  ],
+  "directions": [
+    12
+  ],
+  "dots-3-circle-outline": [
+    16
+  ],
+  "download": [
+    16
+  ],
+  "face-unhappy-outline": [
+    24
+  ],
+  "first-aid": [
+    12
+  ],
+  "flash-default": [
+    12
+  ],
+  "info-circle": [
+    12,
+    16,
+    24
+  ],
+  "internet": [
+    12
+  ],
+  "life-event-major": [
+    16
+  ],
+  "magic-wand": [
+    12,
+    20
+  ],
+  "magnifying-glass": [
+    16,
+    20
+  ],
+  "messages": [
+    12
+  ],
+  "minus-circle": [
+    12
+  ],
+  "mobile-engagement": [
+    16
+  ],
+  "mobile": [
+    12,
+    16,
+    32
+  ],
+  "network": [
+    12
+  ],
+  "news-feed": [
+    12
+  ],
+  "pause": [
+    16
+  ],
+  "posts": [
+    20
+  ],
+  "power": [
+    16
+  ],
+  "profile": [
+    12
+  ],
+  "question-circle-outline": [
+    16
+  ],
+  "question-circle": [
+    12
+  ],
+  "question": [
+    16
+  ],
+  "refresh-left": [
+    16
+  ],
+  "rocket": [
+    20
+  ],
+  "settings": [
+    12
+  ],
+  "share-external": [
+    12,
+    16
+  ],
+  "share": [
+    16
+  ],
+  "star-outline": [
+    12,
+    16,
+    24
+  ],
+  "star-slash": [
+    16
+  ],
+  "star": [
+    12,
+    16,
+    24
+  ],
+  "stop-playback": [
+    16
+  ],
+  "stop": [
+    16
+  ],
+  "target": [
+    12,
+    16
+  ],
+  "thought-bubble": [
+    12
+  ],
+  "tools": [
+    12,
+    20
+  ],
+  "translate": [
+    12
+  ],
+  "trash-outline": [
+    16
+  ],
+  "trash": [
+    12,
+    16
+  ],
+  "tree": [
+    12
+  ],
+  "trending": [
+    12
+  ],
+  "triangle-down": [
+    12
+  ],
+  "triangle-right": [
+    12
+  ],
+  "underline": [
+    12
+  ],
+  "washing-machine": [
+    12
+  ],
+  "watch-tv": [
+    12
+  ],
+  "gears-two": [
+    16
+  ],
+  "info-cursive": [
+    16
+  ],
+  "on-this-day": [
+    12
+  ],
+  "zoom-out": [
+    16
+  ],
+  "zoom-in": [
+    16
+  ],
+  "fast-forward": [
+    16
+  ],
+  "draft-outline": [
+    16
+  ],
+  "gradient": [
+    16
+  ],
+  "crop": [
+    16
+  ]
+}
