@@ -82,13 +82,18 @@ function processMessage(
   const statName = `${plugin.name}.${message.method}`;
   const reducerStartTime = Date.now();
   flipperRecorderAddEvent(pluginKey, message.method, message.params);
-  const newPluginState = plugin.persistedStateReducer!(
-    state,
-    message.method,
-    message.params,
-  );
-  addBackgroundStat(statName, Date.now() - reducerStartTime);
-  return newPluginState;
+  try {
+    const newPluginState = plugin.persistedStateReducer!(
+      state,
+      message.method,
+      message.params,
+    );
+    addBackgroundStat(statName, Date.now() - reducerStartTime);
+    return newPluginState;
+  } catch (e) {
+    console.error(`Failed to process event for plugin ${plugin.name}`, e);
+    return state;
+  }
 }
 
 export function processMessageImmediately(
@@ -190,10 +195,11 @@ export async function processMessageQueue(
     let offset = 0;
     let newPluginState = persistedState;
     do {
-      newPluginState = plugin.persistedStateReducer!(
+      newPluginState = processMessage(
         newPluginState,
-        messages[offset].method,
-        messages[offset].params,
+        pluginKey,
+        plugin,
+        messages[offset],
       );
       offset++;
       progress++;
