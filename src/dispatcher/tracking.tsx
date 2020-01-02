@@ -13,6 +13,7 @@ import {performance} from 'perf_hooks';
 import {Store} from '../reducers/index';
 import {Logger} from '../fb-interfaces/Logger';
 import Client from '../Client';
+import {getPluginBackgroundStats} from '../utils/messageQueue';
 
 export default (store: Store, logger: Logger) => {
   let droppedFrames: number = 0;
@@ -69,6 +70,7 @@ export default (store: Store, logger: Logger) => {
       os: selectedDevice.os,
       device: selectedDevice.title,
       plugin: selectedPlugin,
+      pluginStats: getPluginBackgroundStats(),
       app,
       sdkVersion,
     };
