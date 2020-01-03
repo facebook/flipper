@@ -16,9 +16,12 @@ const fs = require('fs');
 const path = require('path');
 const {remote} = require('electron');
 
-const iconsPath = fs.existsSync(path.resolve(process.cwd(), 'icons.json'))
-  ? path.resolve(process.cwd(), 'icons.json') // development
-  : path.resolve(process.cwd(), 'static', 'icons.json'); // build
+const staticPath = path.resolve(__dirname, '..', '..', 'static');
+const appPath = remote ? remote.app.getAppPath() : staticPath;
+const iconsPath = fs.existsSync(path.resolve(appPath, 'icons.json'))
+  ? path.resolve(appPath, 'icons.json')
+  : path.resolve(staticPath, 'icons.json');
+
 const ICONS = JSON.parse(fs.readFileSync(iconsPath, {encoding: 'utf8'}));
 
 // Takes a string like 'star', or 'star-outline', and converts it to
