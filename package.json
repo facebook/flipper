@@ -99,7 +99,7 @@
     "eslint-plugin-prettier": "^3.1.1",
     "eslint-plugin-react": "^7.16.0",
     "eslint-plugin-relay": "^1.4.1",
-    "flow-bin": "0.114.0",
+    "flow-bin": "0.115.0",
     "glob": "^7.1.2",
     "jest": "^24.7.1",
     "jest-fetch-mock": "^3.0.0",
