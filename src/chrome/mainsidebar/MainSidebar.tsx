@@ -7,20 +7,17 @@
  * @format
  */
 
-import config from '../fb-stubs/config';
-import BaseDevice from '../devices/BaseDevice';
-import Client from '../Client';
-import {UninitializedClient} from '../UninitializedClient';
-import {FlipperBasePlugin, sortPluginsByName} from '../plugin';
-import {PluginNotification} from '../reducers/notifications';
-import {ActiveSheet, ACTIVE_SHEET_PLUGINS} from '../reducers/application';
-import {State as Store} from '../reducers';
+import BaseDevice from '../../devices/BaseDevice';
+import Client from '../../Client';
+import {UninitializedClient} from '../../UninitializedClient';
+import {FlipperBasePlugin, sortPluginsByName} from '../../plugin';
+import {PluginNotification} from '../../reducers/notifications';
+import {ActiveSheet} from '../../reducers/application';
+import {State as Store} from '../../reducers';
 import {
   Sidebar,
-  FlexBox,
   colors,
   brandColors,
-  Text,
   Glyph,
   styled,
   FlexColumn,
@@ -37,7 +34,6 @@ import {
   Info,
 } from 'flipper';
 import React, {Component, PureComponent, Fragment} from 'react';
-import NotificationScreen from '../chrome/NotificationScreen';
 import {
   selectPlugin,
   starPlugin,
@@ -46,33 +42,20 @@ import {
   selectClient,
   getAvailableClients,
   getClientById,
-} from '../reducers/connections';
-import {setActiveSheet} from '../reducers/application';
-import UserAccount from './UserAccount';
+} from '../../reducers/connections';
+import {setActiveSheet} from '../../reducers/application';
 import {connect} from 'react-redux';
-import {BackgroundColorProperty} from 'csstype';
-import SupportRequestFormManager from '../fb-stubs/SupportRequestFormManager';
-import SupportRequestDetails from '../fb-stubs/SupportRequestDetails';
-import SupportRequestFormV2 from '../fb-stubs/SupportRequestFormV2';
-import WatchTools from '../fb-stubs/WatchTools';
-
-type FlipperPlugins = typeof FlipperPlugin[];
-type PluginsByCategory = [string, FlipperPlugins][];
-
-const ListItem = styled.div<{active?: boolean}>(({active}) => ({
-  paddingLeft: 10,
-  display: 'flex',
-  alignItems: 'center',
-  marginBottom: 6,
-  flexShrink: 0,
-  backgroundColor: active ? colors.macOSTitleBarIconSelected : 'none',
-  color: active ? colors.white : colors.macOSSidebarSectionItem,
-  lineHeight: '25px',
-  padding: '0 10px',
-  '&[disabled]': {
-    color: 'rgba(0, 0, 0, 0.5)',
-  },
-}));
+import SupportRequestFormManager from '../../fb-stubs/SupportRequestFormManager';
+import SupportRequestDetails from '../../fb-stubs/SupportRequestDetails';
+import MainSidebarUtils from './MainSidebarUtilsSection';
+import {
+  ListItem,
+  isStaticViewActive,
+  FlipperPlugins,
+  PluginsByCategory,
+  PluginName,
+  PluginIcon,
+} from './sidebarUtils';
 
 const SidebarButton = styled(Button)<{small?: boolean}>(({small}) => ({
   fontWeight: 'bold',
@@ -88,48 +71,6 @@ const SidebarButton = styled(Button)<{small?: boolean}>(({small}) => ({
   whiteSpace: 'nowrap',
 }));
 
-const PluginShape = styled(FlexBox)<{
-  backgroundColor?: BackgroundColorProperty;
-}>(({backgroundColor}) => ({
-  marginRight: 8,
-  backgroundColor,
-  borderRadius: 3,
-  flexShrink: 0,
-  width: 18,
-  height: 18,
-  justifyContent: 'center',
-  alignItems: 'center',
-  top: '-1px',
-}));
-
-const PluginName = styled(Text)<{isActive?: boolean; count?: number}>(
-  props => ({
-    minWidth: 0,
-    textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap',
-    overflow: 'hidden',
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    flexGrow: 1,
-    '::after': {
-      fontSize: 12,
-      display: props.count ? 'inline-block' : 'none',
-      padding: '0 8px',
-      lineHeight: '17px',
-      height: 17,
-      alignSelf: 'center',
-      content: `"${props.count}"`,
-      borderRadius: '999em',
-      color: props.isActive ? colors.macOSTitleBarIconSelected : colors.white,
-      backgroundColor: props.isActive
-        ? colors.white
-        : colors.macOSTitleBarIconSelected,
-      fontWeight: 500,
-    },
-  }),
-);
-
 const CategoryName = styled(PluginName)({
   color: colors.macOSSidebarSectionTitle,
   textTransform: 'uppercase',
@@ -140,24 +81,6 @@ const Plugins = styled(FlexColumn)({
   flexGrow: 1,
   overflow: 'auto',
 });
-
-function PluginIcon({
-  isActive,
-  backgroundColor,
-  name,
-  color,
-}: {
-  isActive: boolean;
-  backgroundColor?: string;
-  name: string;
-  color: string;
-}) {
-  return (
-    <PluginShape backgroundColor={backgroundColor}>
-      <Glyph size={12} name={name} color={isActive ? colors.white : color} />
-    </PluginShape>
-  );
-}
 
 class PluginSidebarListItem extends Component<{
   onClick: () => void;
@@ -254,28 +177,13 @@ type DispatchFromProps = {
 
 type Props = OwnProps & StateFromProps & DispatchFromProps;
 type State = {
-  showSupportForm: boolean;
-  showWatchDebugRoot: boolean;
   showAllPlugins: boolean;
 };
+
 class MainSidebar extends PureComponent<Props, State> {
   state: State = {
-    showSupportForm: GK.get('support_requests_v2'),
-    showWatchDebugRoot: GK.get('watch_team_flipper_clientless_access'),
     showAllPlugins: false,
   };
-  static getDerivedStateFromProps(props: Props, state: State) {
-    if (
-      !state.showSupportForm &&
-      props.staticView === SupportRequestFormManager
-    ) {
-      // Show SupportForm option even when GK is false and support form is shown.
-      // That means the user has used deeplink to open support form.
-      // Once the variable is true, it will be true for the whole session.
-      return {showSupportForm: true};
-    }
-    return state;
-  }
 
   render() {
     const {
@@ -283,9 +191,7 @@ class MainSidebar extends PureComponent<Props, State> {
       selectClient,
       selectedPlugin,
       selectedApp,
-      staticView,
       selectPlugin,
-      setStaticView,
       uninitializedClients,
     } = this.props;
     const clients = getAvailableClients(selectedDevice, this.props.clients);
@@ -376,52 +282,7 @@ class MainSidebar extends PureComponent<Props, State> {
             </ListItem>
           )}
         </Plugins>
-        {this.state.showWatchDebugRoot &&
-          (function() {
-            const active = isStaticViewActive(staticView, WatchTools);
-            return (
-              <ListItem
-                active={active}
-                style={{
-                  borderTop: `1px solid ${colors.blackAlpha10}`,
-                }}
-                onClick={() => setStaticView(WatchTools)}>
-                <PluginIcon
-                  color={colors.light50}
-                  name={'watch-tv'}
-                  isActive={active}
-                />
-                <PluginName isActive={active}>Watch</PluginName>
-              </ListItem>
-            );
-          })()}
-        {this.renderNotificationsEntry()}
-        {this.state.showSupportForm &&
-          (function() {
-            const active = isStaticViewActive(staticView, SupportRequestFormV2);
-            return (
-              <ListItem
-                active={active}
-                onClick={() => setStaticView(SupportRequestFormV2)}>
-                <PluginIcon
-                  color={colors.light50}
-                  name={'app-dailies'}
-                  isActive={active}
-                />
-                <PluginName isActive={active}>Litho Support Request</PluginName>
-              </ListItem>
-            );
-          })()}
-        <ListItem
-          onClick={() => this.props.setActiveSheet(ACTIVE_SHEET_PLUGINS)}>
-          <PluginIcon
-            name="question-circle"
-            color={colors.light50}
-            isActive={false}
-          />
-          Manage Plugins
-        </ListItem>
-        {config.showLogin && <UserAccount />}
+        <MainSidebarUtils />
       </Sidebar>
     );
   }
@@ -435,6 +296,9 @@ class MainSidebar extends PureComponent<Props, State> {
       staticView,
       SupportRequestDetails,
     );
+    const showSupportForm =
+      GK.get('support_requests_v2') ||
+      isStaticViewActive(staticView, SupportRequestFormManager);
     return (
       <>
         <ListItem>
@@ -442,7 +306,7 @@ class MainSidebar extends PureComponent<Props, State> {
             {selectedDevice.source ? 'Imported device' : 'Archived device'}
           </Info>
         </ListItem>
-        {this.state.showSupportForm &&
+        {showSupportForm &&
           (selectedDevice as ArchivedDevice).supportRequestDetails && (
             <ListItem
               active={supportRequestDetailsactive}
@@ -580,41 +444,6 @@ class MainSidebar extends PureComponent<Props, State> {
       </>
     );
   }
-
-  renderNotificationsEntry() {
-    if (GK.get('flipper_disable_notifications')) {
-      return null;
-    }
-
-    const active = isStaticViewActive(
-      this.props.staticView,
-      NotificationScreen,
-    );
-    return (
-      <ListItem
-        active={active}
-        onClick={() => this.props.setStaticView(NotificationScreen)}
-        style={{
-          borderTop: `1px solid ${colors.blackAlpha10}`,
-        }}>
-        <PluginIcon
-          color={colors.light50}
-          name={this.props.numNotifications > 0 ? 'bell' : 'bell-null'}
-          isActive={active}
-        />
-        <PluginName count={this.props.numNotifications} isActive={active}>
-          Notifications
-        </PluginName>
-      </ListItem>
-    );
-  }
-}
-
-function isStaticViewActive(
-  current: StaticView,
-  selected: StaticView,
-): boolean {
-  return current && selected && current === selected;
 }
 
 function getFavoritePlugins(

@@ -11,7 +11,8 @@ import React from 'react';
 import {FlexColumn, FlexRow} from 'flipper';
 import {connect} from 'react-redux';
 import TitleBar from './chrome/TitleBar';
-import MainSidebar from './chrome/MainSidebar';
+import MainSidebar from './chrome/mainsidebar/MainSidebar';
+import MainSidebar2 from './chrome/mainsidebar/MainSidebar2';
 import BugReporterDialog from './chrome/BugReporterDialog';
 import ErrorBar from './chrome/ErrorBar';
 import DoctorBar from './chrome/DoctorBar';
@@ -45,6 +46,8 @@ import PluginManager from './chrome/PluginManager';
 import StatusBar from './chrome/StatusBar';
 import SettingsSheet from './chrome/SettingsSheet';
 import DoctorSheet from './chrome/DoctorSheet';
+import GK from './fb-stubs/GK';
+
 const version = remote.app.getVersion();
 
 type OwnProps = {
@@ -139,7 +142,8 @@ export class App extends React.Component<Props> {
         <ErrorBar />
         <Sheet>{this.getSheet}</Sheet>
         <FlexRow grow={true}>
-          {this.props.leftSidebarVisible && <MainSidebar />}
+          {this.props.leftSidebarVisible &&
+            (GK.get('flipper_sidebar2') ? <MainSidebar2 /> : <MainSidebar />)}
           {this.props.staticView != null ? (
             React.createElement(this.props.staticView, {
               logger: this.props.logger,
