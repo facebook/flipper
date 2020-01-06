@@ -8,11 +8,12 @@
  */
 
 import {colors} from '../ui/components/colors';
-import {styled} from '../ui';
+import {styled, Glyph} from '../ui';
 import {connect} from 'react-redux';
 import {State} from '../reducers';
 import React, {ReactElement} from 'react';
 import Text from '../ui/components/Text';
+import {pluginIsStarred} from '../reducers/connections';
 
 const StatusBarContainer = styled(Text)({
   backgroundColor: colors.macOSTitleBarBackgroundBlur,
@@ -21,17 +22,18 @@ const StatusBarContainer = styled(Text)({
   padding: '0 10px',
   textOverflow: 'ellipsis',
   overflow: 'hidden',
+  textAlign: 'center',
 });
 
 type Props = {
-  statusMessage: string | null;
+  statusMessage: React.ReactNode | string | null;
 };
 
 export function statusBarView(props: Props): ReactElement | null {
   const {statusMessage} = props;
   if (statusMessage) {
     return (
-      <StatusBarContainer italic={true} whiteSpace="nowrap">
+      <StatusBarContainer whiteSpace="nowrap">
         {statusMessage}
       </StatusBarContainer>
     );
@@ -40,13 +42,45 @@ export function statusBarView(props: Props): ReactElement | null {
   }
 }
 
-export default connect<Props, void, {}, State>(
-  ({application: {statusMessages}}) => {
-    if (statusMessages.length > 0) {
-      return {statusMessage: statusMessages[statusMessages.length - 1]};
-    }
+export default connect<Props, void, {}, State>((state: State) => {
+  const {
+    application: {statusMessages},
+  } = state;
+  if (statusMessages.length > 0) {
+    return {statusMessage: statusMessages[statusMessages.length - 1]};
+  } else if (isPreviewingBackgroundPlugin(state)) {
     return {
-      statusMessage: null,
+      statusMessage: (
+        <>
+          <Glyph
+            name="caution-triangle"
+            color={colors.light20}
+            size={12}
+            variant="filled"
+            style={{marginRight: 8}}
+          />
+          The current plugin would like to send messages while it is in the
+          background. However, since this plugin is not starred, these messages
+          will be dropped. Star this plugin to unlock its full capabilities.
+        </>
+      ),
     };
-  },
-)(statusBarView);
+  }
+  return {
+    statusMessage: null,
+  };
+})(statusBarView);
+
+function isPreviewingBackgroundPlugin(state: State): boolean {
+  const {
+    connections: {selectedApp, selectedPlugin},
+  } = state;
+  if (!selectedPlugin || !selectedApp) {
+    return false;
+  }
+  const activePlugin = state.plugins.clientPlugins.get(selectedPlugin);
+  if (!activePlugin || !activePlugin.persistedStateReducer) {
+    return false;
+  }
+  return !pluginIsStarred(state.connections, selectedPlugin);
+}

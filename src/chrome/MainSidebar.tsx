@@ -54,6 +54,7 @@ import {BackgroundColorProperty} from 'csstype';
 import SupportRequestFormManager from '../fb-stubs/SupportRequestFormManager';
 import SupportRequestDetails from '../fb-stubs/SupportRequestDetails';
 import SupportRequestFormV2 from '../fb-stubs/SupportRequestFormV2';
+import WatchTools from '../fb-stubs/WatchTools';
 
 type FlipperPlugins = typeof FlipperPlugin[];
 type PluginsByCategory = [string, FlipperPlugins][];
@@ -254,11 +255,13 @@ type DispatchFromProps = {
 type Props = OwnProps & StateFromProps & DispatchFromProps;
 type State = {
   showSupportForm: boolean;
+  showWatchDebugRoot: boolean;
   showAllPlugins: boolean;
 };
 class MainSidebar extends PureComponent<Props, State> {
   state: State = {
     showSupportForm: GK.get('support_requests_v2'),
+    showWatchDebugRoot: GK.get('watch_team_flipper_clientless_access'),
     showAllPlugins: false,
   };
   static getDerivedStateFromProps(props: Props, state: State) {
@@ -373,6 +376,25 @@ class MainSidebar extends PureComponent<Props, State> {
             </ListItem>
           )}
         </Plugins>
+        {this.state.showWatchDebugRoot &&
+          (function() {
+            const active = isStaticViewActive(staticView, WatchTools);
+            return (
+              <ListItem
+                active={active}
+                style={{
+                  borderTop: `1px solid ${colors.blackAlpha10}`,
+                }}
+                onClick={() => setStaticView(WatchTools)}>
+                <PluginIcon
+                  color={colors.light50}
+                  name={'watch-tv'}
+                  isActive={active}
+                />
+                <PluginName isActive={active}>Watch</PluginName>
+              </ListItem>
+            );
+          })()}
         {this.renderNotificationsEntry()}
         {this.state.showSupportForm &&
           (function() {

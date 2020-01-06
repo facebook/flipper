@@ -9,7 +9,12 @@
 
 import {createStore} from 'redux';
 
-import {selectPlugin} from '../reducers/connections';
+import {
+  selectPlugin,
+  starPlugin,
+  selectDevice,
+  selectClient,
+} from '../reducers/connections';
 import BaseDevice from '../devices/BaseDevice';
 
 import reducers, {Store} from '../reducers/index';
@@ -38,7 +43,12 @@ export async function createMockFlipperWithPlugin(
   }) => Promise<void>,
 ) {
   const store = createStore(reducers);
-  const device = new BaseDevice('serial', 'physical', 'title', 'Android');
+  const device = new BaseDevice(
+    'serial',
+    'physical',
+    'MockAndroidDevice',
+    'Android',
+  );
   const logger = createStubLogger();
 
   store.dispatch(registerPlugins([pluginClazz]));
@@ -67,27 +77,38 @@ export async function createMockFlipperWithPlugin(
     null, // create a stub connection to avoid this plugin to be archived?
     logger,
     store,
-    [pluginClazz.name],
+    [pluginClazz.id],
     device,
   );
 
   // yikes
-  client._deviceSet = true;
-  // client.getDeviceSync = () => device;
+  client._deviceSet = device;
   client.device = {
     then() {
       return device;
     },
   } as any;
 
+  // As convenience, by default we select the new client, star the plugin, and select it
   store.dispatch({
     type: 'NEW_CLIENT',
     payload: client,
   });
 
+  store.dispatch(selectDevice(device));
+
+  store.dispatch(selectClient(client.id));
+
+  store.dispatch(
+    starPlugin({
+      selectedPlugin: pluginClazz.id,
+      selectedApp: client.query.app,
+    }),
+  );
+
   store.dispatch(
     selectPlugin({
-      selectedPlugin: pluginClazz.name,
+      selectedPlugin: pluginClazz.id,
       selectedApp: client.query.app,
       deepLinkPayload: null,
     }),

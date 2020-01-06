@@ -12,19 +12,26 @@ import {promisify} from 'util';
 import {EnvironmentInfo, getEnvInfo} from './environmentInfo';
 export {getEnvInfo} from './environmentInfo';
 
-type HealthcheckCategory = {
+export type HealthcheckCategory = {
   label: string;
+  isSkipped: false;
   isRequired: boolean;
   healthchecks: Healthcheck[];
 };
 
-type Healthchecks = {
-  common: HealthcheckCategory;
-  android: HealthcheckCategory;
-  ios?: HealthcheckCategory;
+export type SkippedHealthcheckCategory = {
+  label: string;
+  isSkipped: true;
+  skipReason: string;
 };
 
-type Healthcheck = {
+export type Healthchecks = {
+  common: HealthcheckCategory | SkippedHealthcheckCategory;
+  android: HealthcheckCategory | SkippedHealthcheckCategory;
+  ios: HealthcheckCategory | SkippedHealthcheckCategory;
+};
+
+export type Healthcheck = {
   label: string;
   isRequired?: boolean;
   run: (
@@ -35,7 +42,7 @@ type Healthcheck = {
   }>;
 };
 
-type CategoryResult = [
+export type CategoryResult = [
   string,
   {
     label: string;
@@ -52,6 +59,7 @@ export function getHealthchecks(): Healthchecks {
     common: {
       label: 'Common',
       isRequired: true,
+      isSkipped: false,
       healthchecks: [
         {
           label: 'OpenSSL Installed',
@@ -67,6 +75,7 @@ export function getHealthchecks(): Healthchecks {
     android: {
       label: 'Android',
       isRequired: false,
+      isSkipped: false,
       healthchecks: [
         {
           label: 'SDK Installed',
@@ -77,11 +86,12 @@ export function getHealthchecks(): Healthchecks {
         },
       ],
     },
-    ...(process.platform === 'darwin'
-      ? {
-          ios: {
-            label: 'iOS',
+    ios: {
+      label: 'iOS',
+      ...(process.platform === 'darwin'
+        ? {
             isRequired: false,
+            isSkipped: false,
             healthchecks: [
               {
                 label: 'SDK Installed',
@@ -118,44 +128,49 @@ export function getHealthchecks(): Healthchecks {
                 },
               },
             ],
-          },
-        }
-      : {}),
+          }
+        : {
+            isSkipped: true,
+            skipReason: `Healthcheck is skipped, because iOS development is not supported on the current platform "${process.platform}"`,
+          }),
+    },
   };
 }
 
-export async function runHealthchecks(): Promise<Array<CategoryResult>> {
+export async function runHealthchecks(): Promise<
+  Array<CategoryResult | SkippedHealthcheckCategory>
+> {
   const environmentInfo = await getEnvInfo();
   const healthchecks: Healthchecks = getHealthchecks();
-  const results: Array<CategoryResult> = (
-    await Promise.all(
-      Object.entries(healthchecks).map(async ([key, category]) => {
-        if (!category) {
-          return null;
-        }
-        const categoryResult: CategoryResult = [
-          key,
-          {
-            label: category.label,
-            results: await Promise.all(
-              category.healthchecks.map(async ({label, run, isRequired}) => ({
-                label,
-                isRequired: isRequired ?? true,
-                result: await run(environmentInfo).catch(e => {
-                  console.error(e);
-                  // TODO Improve result type to be: OK | Problem(message, fix...)
-                  return {
-                    hasProblem: true,
-                  };
-                }),
-              })),
-            ),
-          },
-        ];
-        return categoryResult;
-      }),
-    )
-  ).filter(notNull);
+  const results: Array<
+    CategoryResult | SkippedHealthcheckCategory
+  > = await Promise.all(
+    Object.entries(healthchecks).map(async ([key, category]) => {
+      if (category.isSkipped) {
+        return category;
+      }
+      const categoryResult: CategoryResult = [
+        key,
+        {
+          label: category.label,
+          results: await Promise.all(
+            category.healthchecks.map(async ({label, run, isRequired}) => ({
+              label,
+              isRequired: isRequired ?? true,
+              result: await run(environmentInfo).catch(e => {
+                console.error(e);
+                // TODO Improve result type to be: OK | Problem(message, fix...)
+                return {
+                  hasProblem: true,
+                };
+              }),
+            })),
+          ),
+        },
+      ];
+      return categoryResult;
+    }),
+  );
   return results;
 }
 
@@ -163,8 +178,4 @@ async function commandSucceeds(command: string): Promise<boolean> {
   return await promisify(exec)(command)
     .then(() => true)
     .catch(() => false);
-}
-
-export function notNull<T>(x: T | null | undefined): x is T {
-  return x !== null && x !== undefined;
 }

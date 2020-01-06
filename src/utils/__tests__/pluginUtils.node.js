@@ -14,8 +14,10 @@ import {
 import type {State as PluginsState} from '../../reducers/plugins.tsx';
 import type {State as PluginStatesState} from '../../reducers/pluginStates.tsx';
 import type {PluginDefinition} from '../../dispatcher/plugins.tsx';
+import type {State as PluginMessageQueueState} from '../../reducers/pluginStates.tsx';
 import {FlipperBasePlugin} from 'flipper';
 import type {ReduxState} from '../../reducers/index.tsx';
+
 class MockFlipperPluginWithDefaultPersistedState extends FlipperBasePlugin<
   *,
   *,
@@ -157,11 +159,12 @@ test('getActivePersistentPlugins, where the non persistent plugins getting exclu
     'serial#app#ClientPlugin1': {msg: 'ClientPlugin1'},
     'serial#app#ClientPlugin2': {msg: 'ClientPlugin2'},
   };
-  const list = getActivePersistentPlugins(plugins, state);
+  const queues: PluginMessageQueueState = {};
+  const list = getActivePersistentPlugins(plugins, queues, state);
   expect(list).toEqual(['ClientPlugin1', 'DevicePlugin2']);
 });
 
-test('getActivePersistentPlugins, where the plugins not in pluginState gets excluded', () => {
+test('getActivePersistentPlugins, where the plugins not in pluginState or queue gets excluded', () => {
   const state: PluginsState = {
     devicePlugins: new Map([
       ['DevicePlugin1', MockFlipperPluginWithDefaultPersistedState],
@@ -170,6 +173,7 @@ test('getActivePersistentPlugins, where the plugins not in pluginState gets excl
     clientPlugins: new Map([
       ['ClientPlugin1', MockFlipperPluginWithDefaultPersistedState],
       ['ClientPlugin2', MockFlipperPluginWithDefaultPersistedState],
+      ['ClientPlugin3', MockFlipperPluginWithDefaultPersistedState],
     ]),
     gatekeepedPlugins: [],
     disabledPlugins: [],
@@ -180,6 +184,11 @@ test('getActivePersistentPlugins, where the plugins not in pluginState gets excl
     'serial#app#DevicePlugin1': {msg: 'DevicePlugin1'},
     'serial#app#ClientPlugin2': {msg: 'ClientPlugin2'},
   };
-  const list = getActivePersistentPlugins(plugins, state);
-  expect(list).toEqual(['ClientPlugin2', 'DevicePlugin1']);
+  const queues: PluginMessageQueueState = {
+    'serial#app#ClientPlugin3': [
+      {method: 'msg', params: {msg: 'ClientPlugin3'}},
+    ],
+  };
+  const list = getActivePersistentPlugins(plugins, queues, state);
+  expect(list).toEqual(['ClientPlugin2', 'ClientPlugin3', 'DevicePlugin1']);
 });

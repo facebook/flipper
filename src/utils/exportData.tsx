@@ -11,7 +11,7 @@ import os from 'os';
 import path from 'path';
 import electron from 'electron';
 import {getInstance as getLogger} from '../fb-stubs/Logger';
-import {Store, State as ReduxState} from '../reducers';
+import {Store, State as ReduxState, MiddlewareAPI} from '../reducers';
 import {DeviceExport} from '../devices/BaseDevice';
 import {State as PluginStatesState} from '../reducers/pluginStates';
 import {PluginNotification} from '../reducers/notifications';
@@ -41,6 +41,7 @@ import {
 import {setSelectPluginsToExportActiveSheet} from '../reducers/application';
 import {deconstructClientId, deconstructPluginKey} from '../utils/clientUtils';
 import {performance} from 'perf_hooks';
+import {processMessageQueue} from './messageQueue';
 
 export const IMPORT_FLIPPER_TRACE_EVENT = 'import-flipper-trace';
 export const EXPORT_FLIPPER_TRACE_EVENT = 'export-flipper-trace';
@@ -81,6 +82,13 @@ type ProcessNotificationStatesOptions = {
 type SerializePluginStatesOptions = {
   pluginStates: PluginStatesState;
 };
+
+type PluginsToProcess = {
+  pluginKey: string;
+  plugin: string;
+  pluginClass: typeof FlipperPlugin | typeof FlipperDevicePlugin;
+  client: Client;
+}[];
 
 type AddSaltToDeviceSerialOptions = {
   salt: string;
@@ -381,115 +389,156 @@ export const processStore = async (
 };
 
 export async function fetchMetadata(
-  clients: Client[],
+  pluginsToProcess: PluginsToProcess,
   pluginStates: PluginStatesState,
-  pluginsMap: Map<string, typeof FlipperDevicePlugin | typeof FlipperPlugin>,
   state: ReduxState,
   statusUpdate?: (msg: string) => void,
   idler?: Idler,
 ): Promise<{pluginStates: PluginStatesState; errorArray: Array<Error>}> {
   const newPluginState = {...pluginStates};
   const errorArray: Array<Error> = [];
-  const selectedDevice = state.connections.selectedDevice;
-  for (const client of clients) {
-    if (
-      !selectedDevice ||
-      selectedDevice.isArchived ||
-      !client.id.includes(selectedDevice.serial)
-    ) {
-      continue;
-    }
-    const selectedPlugins = state.plugins.selectedPlugins;
-    const selectedFilteredPlugins =
-      selectedPlugins.length > 0
-        ? client.plugins.filter(plugin => selectedPlugins.includes(plugin))
-        : client.plugins;
-    for (const plugin of selectedFilteredPlugins) {
-      const pluginClass:
-        | typeof FlipperDevicePlugin
-        | typeof FlipperPlugin
-        | undefined
-        | null = plugin ? pluginsMap.get(plugin) : null;
-      const exportState = pluginClass ? pluginClass.exportPersistedState : null;
-      if (exportState) {
-        const key = pluginKey(client.id, plugin);
-        const fetchMetaDataMarker = `${EXPORT_FLIPPER_TRACE_EVENT}:fetch-meta-data-per-plugin`;
-        performance.mark(fetchMetaDataMarker);
-        try {
-          statusUpdate &&
-            statusUpdate(`Fetching metadata for plugin ${plugin}...`);
-          const data = await promiseTimeout(
-            240000, // Fetching MobileConfig data takes ~ 3 mins, thus keeping timeout at 4 mins.
-            exportState(
-              callClient(client, plugin),
-              newPluginState[key],
-              state,
-              idler,
-              statusUpdate,
-            ),
 
-            `Timed out while collecting data for ${plugin}`,
-          );
-          getLogger().trackTimeSince(fetchMetaDataMarker, fetchMetaDataMarker, {
-            plugin,
-          });
-          newPluginState[key] = data;
-        } catch (e) {
-          errorArray.push(e);
-          getLogger().trackTimeSince(fetchMetaDataMarker, fetchMetaDataMarker, {
-            plugin,
-            error: e,
-          });
-          continue;
-        }
+  for (const {plugin, pluginClass, client, pluginKey} of pluginsToProcess) {
+    const exportState = pluginClass ? pluginClass.exportPersistedState : null;
+    if (exportState) {
+      const fetchMetaDataMarker = `${EXPORT_FLIPPER_TRACE_EVENT}:fetch-meta-data-per-plugin`;
+      performance.mark(fetchMetaDataMarker);
+      try {
+        statusUpdate &&
+          statusUpdate(`Fetching metadata for plugin ${plugin}...`);
+        const data = await promiseTimeout(
+          240000, // Fetching MobileConfig data takes ~ 3 mins, thus keeping timeout at 4 mins.
+          exportState(
+            callClient(client, plugin),
+            newPluginState[pluginKey],
+            state,
+            idler,
+            statusUpdate,
+          ),
+          `Timed out while collecting data for ${plugin}`,
+        );
+        getLogger().trackTimeSince(fetchMetaDataMarker, fetchMetaDataMarker, {
+          plugin,
+        });
+        newPluginState[pluginKey] = data;
+      } catch (e) {
+        errorArray.push(e);
+        getLogger().trackTimeSince(fetchMetaDataMarker, fetchMetaDataMarker, {
+          plugin,
+          error: e,
+        });
+        continue;
       }
     }
   }
+
   return {pluginStates: newPluginState, errorArray};
 }
 
-export async function getStoreExport(
-  state: ReduxState,
+async function processQueues(
+  store: MiddlewareAPI,
+  pluginsToProcess: PluginsToProcess,
   statusUpdate?: (msg: string) => void,
   idler?: Idler,
-): Promise<{exportData: ExportType | null; errorArray: Array<Error>}> {
+) {
+  for (const {plugin, pluginKey, pluginClass} of pluginsToProcess) {
+    if (pluginClass.persistedStateReducer) {
+      const processQueueMarker = `${EXPORT_FLIPPER_TRACE_EVENT}:process-queue-per-plugin`;
+      performance.mark(processQueueMarker);
+
+      await processMessageQueue(
+        pluginClass,
+        pluginKey,
+        store,
+        ({current, total}) => {
+          statusUpdate?.(
+            `Processing event ${current} / ${total} (${Math.round(
+              (current / total) * 100,
+            )}%) for plugin ${plugin}`,
+          );
+        },
+        idler,
+      );
+
+      getLogger().trackTimeSince(processQueueMarker, processQueueMarker, {
+        plugin,
+      });
+    }
+  }
+}
+
+function getSelection(
+  store: MiddlewareAPI,
+): {client: Client | null; device: BaseDevice | null} {
+  const state = store.getState();
   const {clients} = state.connections;
   const client = clients.find(
     client => client.id === state.connections.selectedApp,
   );
-  const {pluginStates} = state;
-  const {plugins} = state;
   const {selectedDevice} = state.connections;
-  if (!selectedDevice) {
-    throw new Error('Please select a device before exporting data.');
-  }
-  // TODO: T39612653 Make Client mockable. Currently rsocket logic is tightly coupled.
-  // Not passing the entire state as currently Client is not mockable.
-  if (!client) {
-    throw new Error('Please select a client before exporting data.');
-  }
+  return {client: client ?? null, device: selectedDevice};
+}
 
-  const pluginsMap: Map<
-    string,
-    typeof FlipperDevicePlugin | typeof FlipperPlugin
-  > = new Map([]);
-  plugins.clientPlugins.forEach((val, key) => {
-    pluginsMap.set(key, val);
-  });
-  plugins.devicePlugins.forEach((val, key) => {
-    pluginsMap.set(key, val);
-  });
+export function determinePluginsToProcess(
+  store: MiddlewareAPI,
+): PluginsToProcess {
+  const state = store.getState();
+  const {plugins} = state;
+  const {clients} = state.connections;
+  const {client, device} = getSelection(store);
+
+  const pluginsToProcess: PluginsToProcess = [];
+  const selectedPlugins = state.plugins.selectedPlugins;
+  const selectedFilteredPlugins = client
+    ? selectedPlugins.length > 0
+      ? client.plugins.filter(plugin => selectedPlugins.includes(plugin))
+      : client.plugins
+    : [];
+  for (const client of clients) {
+    if (!device || device.isArchived || !client.id.includes(device.serial)) {
+      continue;
+    }
+    for (const plugin of selectedFilteredPlugins) {
+      const pluginClass =
+        plugins.clientPlugins.get(plugin) || plugins.devicePlugins.get(plugin);
+      if (pluginClass) {
+        const key = pluginKey(client.id, plugin);
+        pluginsToProcess.push({
+          pluginKey: key,
+          client,
+          plugin,
+          pluginClass,
+        });
+      }
+    }
+  }
+  return pluginsToProcess;
+}
+
+export async function getStoreExport(
+  store: MiddlewareAPI,
+  statusUpdate?: (msg: string) => void,
+  idler?: Idler,
+): Promise<{exportData: ExportType | null; errorArray: Array<Error>}> {
+  const pluginsToProcess = determinePluginsToProcess(store);
+
+  statusUpdate?.('Preparing to process data queues for plugins...');
+  await processQueues(store, pluginsToProcess, statusUpdate, idler);
+
   statusUpdate && statusUpdate('Preparing to fetch metadata from client...');
   const fetchMetaDataMarker = `${EXPORT_FLIPPER_TRACE_EVENT}:fetch-meta-data`;
   performance.mark(fetchMetaDataMarker);
+
+  const {device, client} = getSelection(store);
+  const state = store.getState();
   const metadata = await fetchMetadata(
-    [client],
-    pluginStates,
-    pluginsMap,
+    pluginsToProcess,
+    state.pluginStates,
     state,
     statusUpdate,
     idler,
   );
+
   getLogger().trackTimeSince(fetchMetaDataMarker, fetchMetaDataMarker, {
     plugins: state.plugins.selectedPlugins,
   });
@@ -501,9 +550,9 @@ export async function getStoreExport(
   const exportData = await processStore(
     {
       activeNotifications,
-      device: selectedDevice,
+      device,
       pluginStates: newPluginState,
-      clients: [client.toJSON()],
+      clients: client ? [client.toJSON()] : [],
       devicePlugins,
       clientPlugins,
       salt: uuid.v4(),
@@ -515,51 +564,45 @@ export async function getStoreExport(
   return {exportData, errorArray};
 }
 
-export function exportStore(
-  state: ReduxState,
+export async function exportStore(
+  store: MiddlewareAPI,
   idler?: Idler,
   statusUpdate?: (msg: string) => void,
 ): Promise<{serializedString: string; errorArray: Array<Error>}> {
   getLogger().track('usage', EXPORT_FLIPPER_TRACE_EVENT);
-  return new Promise(async (resolve, reject) => {
-    performance.mark(EXPORT_FLIPPER_TRACE_TIME_SERIALIZATION_EVENT);
-    try {
-      statusUpdate && statusUpdate('Preparing to export Flipper data...');
-      const {exportData, errorArray} = await getStoreExport(
-        state,
-        statusUpdate,
-        idler,
-      );
-      if (exportData != null) {
-        exportData.supportRequestDetails = {
-          ...state.supportForm?.supportFormV2,
-          appName:
-            state.connections.selectedApp == null
-              ? ''
-              : deconstructClientId(state.connections.selectedApp).app,
-        };
+  performance.mark(EXPORT_FLIPPER_TRACE_TIME_SERIALIZATION_EVENT);
+  statusUpdate && statusUpdate('Preparing to export Flipper data...');
+  const state = store.getState();
+  const {exportData, errorArray} = await getStoreExport(
+    store,
+    statusUpdate,
+    idler,
+  );
+  if (exportData != null) {
+    exportData.supportRequestDetails = {
+      ...state.supportForm?.supportFormV2,
+      appName:
+        state.connections.selectedApp == null
+          ? ''
+          : deconstructClientId(state.connections.selectedApp).app,
+    };
 
-        statusUpdate && statusUpdate('Serializing Flipper data...');
-        const serializedString = JSON.stringify(exportData);
-        if (serializedString.length <= 0) {
-          reject(new Error('Serialize function returned empty string'));
-        }
-        getLogger().trackTimeSince(
-          EXPORT_FLIPPER_TRACE_TIME_SERIALIZATION_EVENT,
-          EXPORT_FLIPPER_TRACE_TIME_SERIALIZATION_EVENT,
-          {
-            plugins: state.plugins.selectedPlugins,
-          },
-        );
-        resolve({serializedString, errorArray});
-      } else {
-        console.error('Make sure a device is connected');
-        reject(new Error('No device is selected'));
-      }
-    } catch (e) {
-      reject(e);
+    statusUpdate && statusUpdate('Serializing Flipper data...');
+    const serializedString = JSON.stringify(exportData);
+    if (serializedString.length <= 0) {
+      throw new Error('Serialize function returned empty string');
     }
-  });
+    getLogger().trackTimeSince(
+      EXPORT_FLIPPER_TRACE_TIME_SERIALIZATION_EVENT,
+      EXPORT_FLIPPER_TRACE_TIME_SERIALIZATION_EVENT,
+      {
+        plugins: state.plugins.selectedPlugins,
+      },
+    );
+    return {serializedString, errorArray};
+  } else {
+    return {serializedString: '{}', errorArray: []};
+  }
 }
 
 export const exportStoreToFile = (
@@ -568,7 +611,7 @@ export const exportStoreToFile = (
   idler?: Idler,
   statusUpdate?: (msg: string) => void,
 ): Promise<{errorArray: Array<Error>}> => {
-  return exportStore(store.getState(), idler, statusUpdate).then(
+  return exportStore(store, idler, statusUpdate).then(
     ({serializedString, errorArray}) => {
       return promisify(fs.writeFile)(exportFilePath, serializedString).then(
         () => {

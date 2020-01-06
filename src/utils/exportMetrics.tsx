@@ -12,7 +12,11 @@ import {serialize} from './serialization';
 import {State as PluginStatesState} from '../reducers/pluginStates';
 import {Store} from '../reducers';
 import fs from 'fs';
-import {ExportType, fetchMetadata} from './exportData';
+import {
+  ExportType,
+  fetchMetadata,
+  determinePluginsToProcess,
+} from './exportData';
 import {deserializeObject} from './serialization';
 import {deconstructPluginKey} from './clientUtils';
 import {pluginsClassMap} from './pluginUtils';
@@ -67,10 +71,10 @@ export async function exportMetricsWithoutTrace(
     string,
     typeof FlipperDevicePlugin | typeof FlipperPlugin
   > = pluginsClassMap(store.getState().plugins);
+  const pluginsToProcess = determinePluginsToProcess(store);
   const metadata = await fetchMetadata(
-    store.getState().connections.clients,
+    pluginsToProcess,
     pluginStates,
-    pluginsMap,
     store.getState(),
   );
   const newPluginStates = metadata.pluginStates;

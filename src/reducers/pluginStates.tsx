@@ -11,7 +11,7 @@ import {Actions} from '.';
 import {deconstructPluginKey} from '../utils/clientUtils';
 
 export type State = {
-  [pluginKey: string]: Object;
+  [pluginKey: string]: any;
 };
 
 export const pluginKey = (serial: string, pluginName: string): string => {

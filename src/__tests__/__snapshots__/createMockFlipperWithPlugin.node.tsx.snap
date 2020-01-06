@@ -21,7 +21,7 @@ Object {
       "logs": Array [],
       "os": "Android",
       "serial": "serial",
-      "title": "title",
+      "title": "MockAndroidDevice",
     },
   ],
   "errors": Array [],
@@ -31,15 +31,19 @@ Object {
     "logs": Array [],
     "os": "Android",
     "serial": "serial",
-    "title": "title",
+    "title": "MockAndroidDevice",
   },
   "selectedPlugin": "TestPlugin",
   "staticView": null,
   "uninitializedClients": Array [],
-  "userPreferredApp": null,
-  "userPreferredDevice": null,
+  "userPreferredApp": "TestApp#Android#unit_test#serial",
+  "userPreferredDevice": "MockAndroidDevice",
   "userPreferredPlugin": "TestPlugin",
-  "userStarredPlugins": Object {},
+  "userStarredPlugins": Object {
+    "TestApp": Array [
+      "TestPlugin",
+    ],
+  },
 }
 `;
 

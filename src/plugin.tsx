@@ -19,6 +19,8 @@ import {serialize, deserialize} from './utils/serialization';
 import {Idler} from './utils/Idler';
 import {StaticView} from './reducers/connections';
 import {State as ReduxState} from './reducers';
+import {PersistedState} from './plugins/layout';
+import {DEFAULT_MAX_QUEUE_SIZE} from './reducers/pluginMessageQueue';
 type Parameters = any;
 
 // This function is intended to be called from outside of the plugin.
@@ -69,6 +71,12 @@ export type BaseAction = {
   type: string;
 };
 
+export type PersistedStateReducer = (
+  persistedState: StaticPersistedState,
+  method: string,
+  data: any,
+) => StaticPersistedState;
+
 type StaticPersistedState = any;
 
 export abstract class FlipperBasePlugin<
@@ -90,13 +98,8 @@ export abstract class FlipperBasePlugin<
   static keyboardActions: KeyboardActions | null;
   static screenshot: string | null;
   static defaultPersistedState: any;
-  static persistedStateReducer:
-    | ((
-        persistedState: StaticPersistedState,
-        method: string,
-        data: any,
-      ) => StaticPersistedState)
-    | null;
+  static persistedStateReducer: PersistedStateReducer | null;
+  static maxQueueSize: number = DEFAULT_MAX_QUEUE_SIZE;
   static metricsReducer:
     | ((persistedState: StaticPersistedState) => Promise<MetricType>)
     | null;
@@ -135,6 +138,7 @@ export abstract class FlipperBasePlugin<
 
   // methods to be overriden by plugins
   init(): void {}
+
   static serializePersistedState: (
     persistedState: StaticPersistedState,
     statusUpdate?: (msg: string) => void,
@@ -153,20 +157,25 @@ export abstract class FlipperBasePlugin<
       pluginName != null ? `Serializing ${pluginName}` : undefined,
     );
   };
+
   static deserializePersistedState: (
     serializedString: string,
   ) => StaticPersistedState = (serializedString: string) => {
     return deserialize(serializedString);
   };
+
   teardown(): void {}
+
   computeNotifications(
     _props: Props<PersistedState>,
     _state: State,
   ): Array<Notification> {
     return [];
   }
+
   // methods to be overridden by subclasses
   _init(): void {}
+
   _teardown(): void {}
 
   dispatchAction(actionData: Actions) {

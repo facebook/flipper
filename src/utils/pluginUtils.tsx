@@ -11,6 +11,7 @@ import {FlipperDevicePlugin, FlipperPlugin, FlipperBasePlugin} from '../plugin';
 import BaseDevice from '../devices/BaseDevice';
 import {State as PluginStatesState} from '../reducers/pluginStates';
 import {State as PluginsState} from '../reducers/plugins';
+import {State as PluginMessageQueueState} from '../reducers/pluginMessageQueue';
 import {PluginDefinition} from '../dispatcher/plugins';
 import {deconstructPluginKey} from './clientUtils';
 
@@ -33,12 +34,12 @@ export function pluginsClassMap(
 }
 
 export function getPluginKey(
-  selectedApp: string | null,
+  selectedAppId: string | null,
   baseDevice: BaseDevice | null,
   pluginID: string,
 ): string {
-  if (selectedApp) {
-    return `${selectedApp}#${pluginID}`;
+  if (selectedAppId) {
+    return `${selectedAppId}#${pluginID}`;
   }
   if (baseDevice) {
     // If selected App is not defined, then the plugin is a device plugin
@@ -73,6 +74,7 @@ export function getPersistedState<PersistedState>(
  */
 export function getActivePersistentPlugins(
   pluginsState: PluginStatesState,
+  pluginsMessageQueue: PluginMessageQueueState,
   plugins: PluginsState,
   selectedClient?: Client,
 ): Array<string> {
@@ -82,7 +84,12 @@ export function getActivePersistentPlugins(
   > = pluginsClassMap(plugins);
   return getPersistentPlugins(plugins).filter(plugin => {
     const pluginClass = pluginsMap.get(plugin);
-    const keys = Object.keys(pluginsState)
+    const keys = [
+      ...new Set([
+        ...Object.keys(pluginsState),
+        ...Object.keys(pluginsMessageQueue),
+      ]),
+    ]
       .filter(k => !selectedClient || k.includes(selectedClient.id))
       .map(key => deconstructPluginKey(key).pluginName);
     let result = plugin == 'DeviceLogs';

@@ -7,28 +7,19 @@
  * @format
  */
 
-import {
-  HealthcheckResult,
-  HealthcheckReport,
-  HealthcheckReportCategory,
-} from '../reducers/healthchecks';
-import {getHealthchecks, getEnvInfo} from 'flipper-doctor';
+import {HealthcheckResult} from '../reducers/healthchecks';
+import {getHealthchecks, getEnvInfo, Healthchecks} from 'flipper-doctor';
 
 let healthcheckIsRunning: boolean;
-let runningHealthcheck: Promise<boolean>;
+let runningHealthcheck: Promise<void>;
 
 export type HealthcheckEventsHandler = {
-  initHealthcheckReport: (report: HealthcheckReport) => void;
-  updateHealthcheckReportItemStatus: (
+  updateHealthcheckResult: (
     categoryIdx: number,
     itemIdx: number,
-    status: HealthcheckResult,
+    result: HealthcheckResult,
   ) => void;
-  updateHealthcheckReportCategoryStatus: (
-    categoryIdx: number,
-    status: HealthcheckResult,
-  ) => void;
-  startHealthchecks: () => void;
+  startHealthchecks: (healthchecks: Healthchecks) => void;
   finishHealthchecks: () => void;
 };
 
@@ -38,132 +29,51 @@ export type HealthcheckSettings = {
 
 export type HealthcheckOptions = HealthcheckEventsHandler & HealthcheckSettings;
 
-async function launchHealthchecks(
-  options: HealthcheckOptions,
-): Promise<boolean> {
-  let healthchecksResult: boolean = true;
-  options.startHealthchecks();
-  try {
-    const inProgressResult: HealthcheckResult = {
-      status: 'IN_PROGRESS',
-      message: 'The healthcheck is in progress',
+async function launchHealthchecks(options: HealthcheckOptions): Promise<void> {
+  const healthchecks = getHealthchecks();
+  if (!options.enableAndroid) {
+    healthchecks.android = {
+      label: healthchecks.android.label,
+      isSkipped: true,
+      skipReason:
+        'Healthcheck is skipped, because "Android Development" option is disabled in the Flipper settings',
     };
-    const androidSkippedResult: HealthcheckResult = {
-      status: 'SKIPPED',
-      message:
-        'The healthcheck was skipped because Android development is disabled in the Flipper settings',
-    };
-    const failedResult: HealthcheckResult = {
-      status: 'FAILED',
-      message: 'The healthcheck failed',
-    };
-    const warningResult: HealthcheckResult = {
-      status: 'WARNING',
-      message: 'The optional healthcheck failed',
-    };
-    const succeededResult: HealthcheckResult = {
-      status: 'SUCCESS',
-      message: undefined,
-    };
-    const healthchecks = getHealthchecks();
-    const hcState: HealthcheckReport = {
-      isHealthcheckInProgress: true,
-      categories: Object.entries(healthchecks)
-        .map(([categoryKey, category]) => {
-          if (!category) {
-            return null;
-          }
-          const state: HealthcheckResult =
-            categoryKey === 'android' && !options.enableAndroid
-              ? androidSkippedResult
-              : inProgressResult;
-          return {
-            ...state,
-            label: category.label,
-            checks: category.healthchecks.map(x => ({
-              ...state,
-              label: x.label,
-            })),
-          };
-        })
-        .filter(x => !!x)
-        .map(x => x as HealthcheckReportCategory),
-    };
-    options.initHealthcheckReport(hcState);
-    const environmentInfo = await getEnvInfo();
-    const categories = Object.entries(healthchecks);
-    for (const [categoryIdx, [categoryKey, category]] of categories.entries()) {
-      if (!category) {
-        continue;
-      }
-      const isSkippedAndroidCategory =
-        categoryKey === 'android' && !options.enableAndroid;
-      const allResults: HealthcheckResult[] = [];
-      for (
-        let healthcheckIdx = 0;
-        healthcheckIdx < category.healthchecks.length;
-        healthcheckIdx++
-      ) {
-        const h = category.healthchecks[healthcheckIdx];
-        if (isSkippedAndroidCategory) {
-          options.updateHealthcheckReportItemStatus(
-            categoryIdx,
-            healthcheckIdx,
-            androidSkippedResult,
-          );
-          allResults.push(androidSkippedResult);
-        } else {
-          const result = await h.run(environmentInfo);
-          if (result.hasProblem && h.isRequired) {
-            healthchecksResult = false;
-          }
-          const status: HealthcheckResult =
-            result.hasProblem && h.isRequired
-              ? {
-                  ...failedResult,
-                  helpUrl: result.helpUrl,
-                }
-              : result.hasProblem && !h.isRequired
-              ? {
-                  ...warningResult,
-                  helpUrl: result.helpUrl,
-                }
-              : succeededResult;
-          options.updateHealthcheckReportItemStatus(
-            categoryIdx,
-            healthcheckIdx,
-            status,
-          );
-          allResults.push(status);
-        }
-      }
-      const categoryStatus = {
-        label: category.label,
-        ...(allResults.some(c => c.status === 'IN_PROGRESS')
-          ? inProgressResult
-          : allResults.every(c => c.status === 'SUCCESS')
-          ? succeededResult
-          : allResults.every(c => c.status === 'SKIPPED')
-          ? androidSkippedResult
-          : allResults.some(c => c.status === 'FAILED')
-          ? failedResult
-          : warningResult),
-      };
-      options.updateHealthcheckReportCategoryStatus(
-        categoryIdx,
-        categoryStatus,
-      );
-    }
-  } catch {
-  } finally {
-    options.finishHealthchecks();
   }
-  return healthchecksResult;
+  options.startHealthchecks(healthchecks);
+  const environmentInfo = await getEnvInfo();
+  const categories = Object.values(healthchecks);
+  for (const [categoryIdx, category] of categories.entries()) {
+    if (category.isSkipped) {
+      continue;
+    }
+    for (
+      let healthcheckIdx = 0;
+      healthcheckIdx < category.healthchecks.length;
+      healthcheckIdx++
+    ) {
+      const h = category.healthchecks[healthcheckIdx];
+      const checkResult = await h.run(environmentInfo);
+      const result: HealthcheckResult =
+        checkResult.hasProblem && h.isRequired
+          ? {
+              status: 'FAILED',
+              helpUrl: checkResult.helpUrl,
+            }
+          : checkResult.hasProblem && !h.isRequired
+          ? {
+              status: 'WARNING',
+              helpUrl: checkResult.helpUrl,
+            }
+          : {status: 'SUCCESS'};
+      options.updateHealthcheckResult(categoryIdx, healthcheckIdx, result);
+    }
+  }
+  options.finishHealthchecks();
 }
 
 export default async function runHealthchecks(
   options: HealthcheckOptions,
-): Promise<boolean> {
+): Promise<void> {
   if (healthcheckIsRunning) {
     return runningHealthcheck;
   }

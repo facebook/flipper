@@ -20,6 +20,10 @@ import pluginStates, {
   State as PluginStatesState,
   Action as PluginStatesAction,
 } from './pluginStates';
+import pluginMessageQueue, {
+  State as PluginMessageQueueState,
+  Action as PluginMessageQueueAction,
+} from './pluginMessageQueue';
 import notifications, {
   State as NotificationsState,
   Action as NotificationsAction,
@@ -65,6 +69,7 @@ export type Actions =
   | ApplicationAction
   | DevicesAction
   | PluginStatesAction
+  | PluginMessageQueueAction
   | NotificationsAction
   | PluginsAction
   | UserAction
@@ -79,6 +84,7 @@ export type State = {
   application: ApplicationState;
   connections: DevicesState & PersistPartial;
   pluginStates: PluginStatesState;
+  pluginMessageQueue: PluginMessageQueueState;
   notifications: NotificationsState & PersistPartial;
   plugins: PluginsState;
   user: UserState & PersistPartial;
@@ -86,7 +92,7 @@ export type State = {
   launcherSettingsState: LauncherSettingsState & PersistPartial;
   supportForm: SupportFormState;
   pluginManager: PluginManagerState;
-  healthchecks: HealthcheckState;
+  healthchecks: HealthcheckState & PersistPartial;
 };
 
 export type Store = ReduxStore<State, Actions>;
@@ -120,6 +126,7 @@ export default combineReducers<State, Actions>({
     connections,
   ),
   pluginStates,
+  pluginMessageQueue: pluginMessageQueue as any,
   notifications: persistReducer(
     {
       key: 'notifications',
@@ -152,5 +159,12 @@ export default combineReducers<State, Actions>({
     },
     launcherSettings,
   ),
-  healthchecks,
+  healthchecks: persistReducer<HealthcheckState, Actions>(
+    {
+      key: 'healthchecks',
+      storage,
+      whitelist: ['acknowledgedProblems'],
+    },
+    healthchecks,
+  ),
 });
