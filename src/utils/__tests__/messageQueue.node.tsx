@@ -63,6 +63,7 @@ function selectDeviceLogs(store: Store) {
       selectedPlugin: 'DeviceLogs',
       selectedApp: null,
       deepLinkPayload: null,
+      selectedDevice: store.getState().connections.selectedDevice!,
     }),
   );
 }
@@ -73,6 +74,7 @@ function selectTestPlugin(store: Store, client: Client) {
       selectedPlugin: TestPlugin.id,
       selectedApp: client.query.app,
       deepLinkPayload: null,
+      selectedDevice: store.getState().connections.selectedDevice!,
     }),
   );
 }
@@ -279,6 +281,7 @@ test('queue - messages that arrive during processing will be queued', async () =
             selectedPlugin: TestPlugin.id,
             selectedApp: client.id,
             deepLinkPayload: null,
+            selectedDevice: device,
           }),
         );
         expect(store.getState().connections.selectedPlugin).toBe('TestPlugin');

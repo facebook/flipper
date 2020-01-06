@@ -10,30 +10,24 @@
 import BaseDevice from '../../devices/BaseDevice';
 import Client from '../../Client';
 import {UninitializedClient} from '../../UninitializedClient';
-import {FlipperBasePlugin, sortPluginsByName} from '../../plugin';
+import {sortPluginsByName} from '../../plugin';
 import {PluginNotification} from '../../reducers/notifications';
 import {ActiveSheet} from '../../reducers/application';
 import {State as Store} from '../../reducers';
 import {
   Sidebar,
   colors,
-  brandColors,
   Glyph,
   styled,
-  FlexColumn,
   GK,
   FlipperPlugin,
   FlipperDevicePlugin,
-  LoadingIndicator,
   Button,
-  StarButton,
-  Heading,
-  Spacer,
   ArchivedDevice,
   SmallText,
   Info,
 } from 'flipper';
-import React, {Component, PureComponent, Fragment} from 'react';
+import React, {PureComponent, Fragment} from 'react';
 import {
   selectPlugin,
   starPlugin,
@@ -55,6 +49,12 @@ import {
   PluginsByCategory,
   PluginName,
   PluginIcon,
+  Plugins,
+  ErrorIndicator,
+  Spinner,
+  CategoryName,
+  PluginSidebarListItem,
+  NoDevices,
 } from './sidebarUtils';
 
 const SidebarButton = styled(Button)<{small?: boolean}>(({small}) => ({
@@ -70,78 +70,6 @@ const SidebarButton = styled(Button)<{small?: boolean}>(({small}) => ({
   justifyContent: 'left',
   whiteSpace: 'nowrap',
 }));
-
-const CategoryName = styled(PluginName)({
-  color: colors.macOSSidebarSectionTitle,
-  textTransform: 'uppercase',
-  fontSize: '0.9em',
-});
-
-const Plugins = styled(FlexColumn)({
-  flexGrow: 1,
-  overflow: 'auto',
-});
-
-class PluginSidebarListItem extends Component<{
-  onClick: () => void;
-  isActive: boolean;
-  plugin: typeof FlipperBasePlugin;
-  app?: string | null | undefined;
-  helpRef?: any;
-  provided?: any;
-  onFavorite?: () => void;
-  starred?: boolean;
-}> {
-  render() {
-    const {isActive, plugin, onFavorite, starred} = this.props;
-    const app = this.props.app || 'Facebook';
-    let iconColor: string | undefined = (brandColors as any)[app];
-
-    if (!iconColor) {
-      const pluginColors = [
-        colors.seaFoam,
-        colors.teal,
-        colors.lime,
-        colors.lemon,
-        colors.orange,
-        colors.tomato,
-        colors.cherry,
-        colors.pink,
-        colors.grape,
-      ];
-
-      iconColor = pluginColors[parseInt(app, 36) % pluginColors.length];
-    }
-
-    return (
-      <ListItem active={isActive} onClick={this.props.onClick}>
-        <PluginIcon
-          isActive={isActive}
-          name={plugin.icon || 'apps'}
-          backgroundColor={iconColor}
-          color={colors.white}
-        />
-        <PluginName>{plugin.title || plugin.id}</PluginName>
-        {starred !== undefined && (
-          <StarButton onStar={onFavorite!} starred={starred} />
-        )}
-      </ListItem>
-    );
-  }
-}
-
-const Spinner = centerInSidebar(LoadingIndicator);
-
-const ErrorIndicator = centerInSidebar(Glyph);
-
-function centerInSidebar(component: any) {
-  return styled(component)({
-    marginTop: '10px',
-    marginBottom: '10px',
-    marginLeft: 'auto',
-    marginRight: 'auto',
-  });
-}
 
 type OwnProps = {};
 
@@ -168,6 +96,7 @@ type DispatchFromProps = {
     selectedPlugin: string | null;
     selectedApp: string | null;
     deepLinkPayload: string | null;
+    selectedDevice: BaseDevice;
   }) => void;
   selectClient: typeof selectClient;
   setActiveSheet: (activeSheet: ActiveSheet) => void;
@@ -217,6 +146,7 @@ class MainSidebar extends PureComponent<Props, State> {
                         selectedPlugin: plugin.id,
                         selectedApp: null,
                         deepLinkPayload: null,
+                        selectedDevice,
                       })
                     }
                     plugin={plugin}
@@ -270,16 +200,7 @@ class MainSidebar extends PureComponent<Props, State> {
               ))}
             </>
           ) : (
-            <ListItem
-              style={{
-                textAlign: 'center',
-                marginTop: 50,
-                flexDirection: 'column',
-              }}>
-              <Glyph name="mobile" size={32} color={colors.red}></Glyph>
-              <Spacer style={{height: 20}} />
-              <Heading>Select a device to get started</Heading>
-            </ListItem>
+            <NoDevices />
           )}
         </Plugins>
         <MainSidebarUtils />
@@ -331,7 +252,12 @@ class MainSidebar extends PureComponent<Props, State> {
     starred: boolean,
     onFavorite: (pluginId: string) => void,
   ) {
-    const {selectedPlugin, selectedApp, selectPlugin} = this.props;
+    const {
+      selectedPlugin,
+      selectedApp,
+      selectPlugin,
+      selectedDevice,
+    } = this.props;
     return groupPluginsByCategory(plugins).map(([category, plugins]) => (
       <Fragment key={category}>
         {category && (
@@ -348,6 +274,7 @@ class MainSidebar extends PureComponent<Props, State> {
                 selectedPlugin: plugin.id,
                 selectedApp: client.id,
                 deepLinkPayload: null,
+                selectedDevice: selectedDevice!,
               })
             }
             plugin={plugin}

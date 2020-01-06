@@ -87,6 +87,7 @@ export type Action =
         selectedPlugin: null | string;
         selectedApp?: null | string;
         deepLinkPayload: null | string;
+        selectedDevice?: null | BaseDevice;
       };
     }
   | {
@@ -224,6 +225,10 @@ const reducer = (state: State = INITAL_STATE, action: Actions): State => {
     case 'SELECT_PLUGIN': {
       const {payload} = action;
       const {selectedPlugin, selectedApp} = payload;
+      const selectedDevice = payload.selectedDevice || state.selectedDevice;
+      if (!selectDevice) {
+        console.warn('Trying to select a plugin before a device was selected!');
+      }
       if (selectedPlugin) {
         performance.mark(`activePlugin-${selectedPlugin}`);
       }
@@ -234,6 +239,10 @@ const reducer = (state: State = INITAL_STATE, action: Actions): State => {
         selectedApp: selectedApp || null,
         selectedPlugin,
         userPreferredPlugin: selectedPlugin || state.userPreferredPlugin,
+        selectedDevice: selectedDevice!,
+        userPreferredDevice: selectedDevice
+          ? selectedDevice.title
+          : state.userPreferredDevice,
       });
     }
 
@@ -450,6 +459,7 @@ export const preferDevice = (payload: string): Action => ({
 export const selectPlugin = (payload: {
   selectedPlugin: null | string;
   selectedApp?: null | string;
+  selectedDevice?: BaseDevice | null;
   deepLinkPayload: null | string;
 }): Action => ({
   type: 'SELECT_PLUGIN',
@@ -517,7 +527,7 @@ export function getClientById(
   return clients.find(client => client.id === clientId);
 }
 
-function canBeDefaultDevice(device: BaseDevice) {
+export function canBeDefaultDevice(device: BaseDevice) {
   return !DEFAULT_DEVICE_BLACKLIST.some(
     blacklistedDevice => device instanceof blacklistedDevice,
   );

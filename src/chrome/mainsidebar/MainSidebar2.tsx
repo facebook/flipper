@@ -10,144 +10,128 @@
 import BaseDevice from '../../devices/BaseDevice';
 import Client from '../../Client';
 import {UninitializedClient} from '../../UninitializedClient';
-import {FlipperBasePlugin, sortPluginsByName} from '../../plugin';
+import {sortPluginsByName} from '../../plugin';
 import {PluginNotification} from '../../reducers/notifications';
 import {ActiveSheet} from '../../reducers/application';
 import {State as Store} from '../../reducers';
 import {
   Sidebar,
   colors,
-  brandColors,
   Glyph,
   styled,
-  FlexColumn,
   GK,
   FlipperPlugin,
   FlipperDevicePlugin,
-  LoadingIndicator,
-  Button,
-  StarButton,
-  Heading,
-  Spacer,
   ArchivedDevice,
   SmallText,
   Info,
+  HBox,
 } from 'flipper';
-import React, {Component, PureComponent, Fragment} from 'react';
+import React, {
+  PureComponent,
+  Fragment,
+  memo,
+  useCallback,
+  useState,
+} from 'react';
+import NotificationScreen from '../NotificationScreen';
 import {
   selectPlugin,
-  starPlugin,
+  starPlugin as starPluginAction,
   StaticView,
   setStaticView,
-  selectClient,
   getAvailableClients,
-  getClientById,
+  canBeDefaultDevice,
 } from '../../reducers/connections';
 import {setActiveSheet} from '../../reducers/application';
 import {connect} from 'react-redux';
 import SupportRequestFormManager from '../../fb-stubs/SupportRequestFormManager';
 import SupportRequestDetails from '../../fb-stubs/SupportRequestDetails';
-import MainSidebarUtils from './MainSidebarUtilsSection';
+import MainSidebarUtilsSection from './MainSidebarUtilsSection';
 import {
   ListItem,
-  isStaticViewActive,
-  FlipperPlugins,
-  PluginsByCategory,
   PluginName,
+  Plugins,
+  CategoryName,
   PluginIcon,
+  PluginSidebarListItem,
+  ErrorIndicator,
+  NoClients,
+  Spinner,
+  NoDevices,
+  getColorByApp,
 } from './sidebarUtils';
 
-const SidebarButton = styled(Button)<{small?: boolean}>(({small}) => ({
-  fontWeight: 'bold',
-  fontSize: small ? 11 : 14,
-  width: '100%',
-  overflow: 'hidden',
-  marginTop: small ? 0 : 20,
-  pointer: 'cursor',
+type FlipperPlugins = typeof FlipperPlugin[];
+type PluginsByCategory = [string, FlipperPlugins][];
+
+type SectionLevel = 1 | 2 | 3;
+
+const SidebarSectionButton = styled('button')<{
+  level: SectionLevel;
+  color: string;
+}>(({level, color}) => ({
+  fontWeight: level === 3 ? 'normal' : 'bold',
+  borderRadius: 0,
   border: 'none',
-  background: 'none',
-  padding: 0,
-  justifyContent: 'left',
-  whiteSpace: 'nowrap',
+  background: level === 1 ? colors.sectionHeaderBorder : 'transparent',
+  textAlign: level === 3 ? 'center' : 'left',
+  width: '100%',
+  fontSize: level === 3 ? 11 : 14,
+  color,
+  padding: `${level === 3 ? 0 : 8}px 10px 8px 9px`,
 }));
 
-const CategoryName = styled(PluginName)({
-  color: colors.macOSSidebarSectionTitle,
-  textTransform: 'uppercase',
-  fontSize: '0.9em',
-});
+const SidebarSectionBody = styled('div')<{
+  level: SectionLevel;
+  collapsed: boolean;
+}>(({collapsed}) => ({
+  flexShrink: 0,
+  overflow: 'hidden',
+  maxHeight: collapsed ? 0 : 1000, // might need increase if too many plugins...
+  transition: 'max-height 0.5s ease',
+}));
 
-const Plugins = styled(FlexColumn)({
-  flexGrow: 1,
-  overflow: 'auto',
-});
+const SidebarSection: React.FC<{
+  defaultCollapsed?: boolean;
+  title: string | React.ReactNode | ((collapsed: boolean) => React.ReactNode);
+  level: SectionLevel;
+  color?: string;
+}> = ({children, title, level, color, defaultCollapsed}) => {
+  const [collapsed, setCollapsed] = useState(!!defaultCollapsed);
+  color = color || colors.macOSTitleBarIconActive;
 
-class PluginSidebarListItem extends Component<{
-  onClick: () => void;
-  isActive: boolean;
-  plugin: typeof FlipperBasePlugin;
-  app?: string | null | undefined;
-  helpRef?: any;
-  provided?: any;
-  onFavorite?: () => void;
-  starred?: boolean;
-}> {
-  render() {
-    const {isActive, plugin, onFavorite, starred} = this.props;
-    const app = this.props.app || 'Facebook';
-    let iconColor: string | undefined = (brandColors as any)[app];
-
-    if (!iconColor) {
-      const pluginColors = [
-        colors.seaFoam,
-        colors.teal,
-        colors.lime,
-        colors.lemon,
-        colors.orange,
-        colors.tomato,
-        colors.cherry,
-        colors.pink,
-        colors.grape,
-      ];
-
-      iconColor = pluginColors[parseInt(app, 36) % pluginColors.length];
-    }
-
-    return (
-      <ListItem active={isActive} onClick={this.props.onClick}>
-        <PluginIcon
-          isActive={isActive}
-          name={plugin.icon || 'apps'}
-          backgroundColor={iconColor}
-          color={colors.white}
-        />
-        <PluginName>{plugin.title || plugin.id}</PluginName>
-        {starred !== undefined && (
-          <StarButton onStar={onFavorite!} starred={starred} />
-        )}
-      </ListItem>
-    );
-  }
-}
-
-const Spinner = centerInSidebar(LoadingIndicator);
-
-const ErrorIndicator = centerInSidebar(Glyph);
-
-function centerInSidebar(component: any) {
-  return styled(component)({
-    marginTop: '10px',
-    marginBottom: '10px',
-    marginLeft: 'auto',
-    marginRight: 'auto',
-  });
-}
+  return (
+    <>
+      <SidebarSectionButton
+        onClick={() => setCollapsed(s => !s)}
+        level={level}
+        color={color}>
+        <HBox grow="left">
+          {typeof title === 'function' ? title(collapsed) : title}
+          {level < 3 && (
+            <Glyph
+              name={collapsed ? 'chevron-down' : 'chevron-up'}
+              size={12}
+              color={color}
+            />
+          )}
+        </HBox>
+      </SidebarSectionButton>
+      <SidebarSectionBody level={level} collapsed={collapsed}>
+        {level === 1 && <div style={{height: 8}} />}
+        {children}
+      </SidebarSectionBody>
+    </>
+  );
+};
 
 type OwnProps = {};
 
 type StateFromProps = {
   numNotifications: number;
   windowIsFocused: boolean;
+  devices: BaseDevice[];
   selectedDevice: BaseDevice | null | undefined;
   staticView: StaticView;
   selectedPlugin: string | null | undefined;
@@ -163,132 +147,137 @@ type StateFromProps = {
   clientPlugins: Map<string, typeof FlipperPlugin>;
 };
 
+type SelectPlugin = (payload: {
+  selectedPlugin: string | null;
+  selectedApp?: string | null;
+  deepLinkPayload: string | null;
+  selectedDevice: BaseDevice;
+}) => void;
+
 type DispatchFromProps = {
-  selectPlugin: (payload: {
-    selectedPlugin: string | null;
-    selectedApp: string | null;
-    deepLinkPayload: string | null;
-  }) => void;
-  selectClient: typeof selectClient;
+  selectPlugin: SelectPlugin;
   setActiveSheet: (activeSheet: ActiveSheet) => void;
   setStaticView: (payload: StaticView) => void;
-  starPlugin: typeof starPlugin;
+  starPlugin: typeof starPluginAction;
 };
 
 type Props = OwnProps & StateFromProps & DispatchFromProps;
 type State = {
+  showSupportForm: boolean;
+  showWatchDebugRoot: boolean;
   showAllPlugins: boolean;
 };
 
-class MainSidebar extends PureComponent<Props, State> {
+class MainSidebar2 extends PureComponent<Props, State> {
   state: State = {
+    showSupportForm: GK.get('support_requests_v2'),
+    showWatchDebugRoot: GK.get('watch_team_flipper_clientless_access'),
     showAllPlugins: false,
   };
+  static getDerivedStateFromProps(props: Props, state: State) {
+    if (
+      !state.showSupportForm &&
+      props.staticView === SupportRequestFormManager
+    ) {
+      // Show SupportForm option even when GK is false and support form is shown.
+      // That means the user has used deeplink to open support form.
+      // Once the variable is true, it will be true for the whole session.
+      return {showSupportForm: true};
+    }
+    return state;
+  }
 
   render() {
-    const {
-      selectedDevice,
-      selectClient,
-      selectedPlugin,
-      selectedApp,
-      selectPlugin,
-      uninitializedClients,
-    } = this.props;
-    const clients = getAvailableClients(selectedDevice, this.props.clients);
-    const client: Client | undefined = getClientById(clients, selectedApp);
+    const devices = this.props.devices
+      .slice()
+      .sort((a, b) => a.title.localeCompare(b.title));
+    const renderableDevices = devices.filter(canBeDefaultDevice);
 
     return (
       <Sidebar position="left" width={200} backgroundColor={colors.light02}>
         <Plugins>
-          {selectedDevice ? (
-            <>
-              <ListItem>
-                <SidebarButton>{selectedDevice.title}</SidebarButton>
-              </ListItem>
-              {this.showArchivedDeviceDetails(selectedDevice)}
-              {selectedDevice.devicePlugins.map(pluginName => {
-                const plugin = this.props.devicePlugins.get(pluginName)!;
-                return (
-                  <PluginSidebarListItem
-                    key={plugin.id}
-                    isActive={plugin.id === selectedPlugin}
-                    onClick={() =>
-                      selectPlugin({
-                        selectedPlugin: plugin.id,
-                        selectedApp: null,
-                        deepLinkPayload: null,
-                      })
-                    }
-                    plugin={plugin}
-                  />
-                );
-              })}
-              <ListItem>
-                <SidebarButton
-                  title="Select an app to see available plugins"
-                  compact={true}
-                  dropdown={clients.map(c => ({
-                    checked: client === c,
-                    label: c.query.app,
-                    type: 'checkbox',
-                    click: () => selectClient(c.id),
-                  }))}>
-                  {clients.length === 0 ? (
-                    <>
-                      <Glyph
-                        name="mobile-engagement"
-                        size={16}
-                        color={colors.red}
-                        style={{marginRight: 10}}
-                      />
-                      No clients connected
-                    </>
-                  ) : !client ? (
-                    'Select client'
-                  ) : (
-                    <>
-                      {client.query.app}
-                      <Glyph
-                        size={12}
-                        name="chevron-down"
-                        style={{marginLeft: 8}}
-                      />
-                    </>
-                  )}
-                </SidebarButton>
-              </ListItem>
-              {this.renderClientPlugins(client)}
-              {uninitializedClients.map(entry => (
-                <ListItem key={JSON.stringify(entry.client)}>
-                  {entry.client.appName}
-                  {entry.errorMessage ? (
-                    <ErrorIndicator name={'mobile-cross'} size={16} />
-                  ) : (
-                    <Spinner size={16} />
-                  )}
-                </ListItem>
-              ))}
-            </>
+          {renderableDevices.length ? (
+            renderableDevices.map(device => this.renderDevice(device))
           ) : (
-            <ListItem
-              style={{
-                textAlign: 'center',
-                marginTop: 50,
-                flexDirection: 'column',
-              }}>
-              <Glyph name="mobile" size={32} color={colors.red}></Glyph>
-              <Spacer style={{height: 20}} />
-              <Heading>Select a device to get started</Heading>
-            </ListItem>
+            <NoDevices />
           )}
         </Plugins>
-        <MainSidebarUtils />
+        <MainSidebarUtilsSection />
       </Sidebar>
     );
   }
 
-  showArchivedDeviceDetails(selectedDevice: BaseDevice) {
-    if (!selectedDevice.isArchived || !selectedDevice.source) {
+  renderDevice(device: BaseDevice) {
+    const {
+      selectedPlugin,
+      selectPlugin,
+      uninitializedClients,
+      clientPlugins,
+      starPlugin,
+      userStarredPlugins,
+      selectedApp,
+      selectedDevice,
+    } = this.props;
+    const clients = getAvailableClients(device, this.props.clients);
+
+    return (
+      <SidebarSection title={device.title} key={device.serial} level={1}>
+        {this.showArchivedDeviceDetails(device)}
+        <SidebarSection level={2} title="Device" defaultCollapsed={true}>
+          {device.devicePlugins.map(pluginName => {
+            const plugin = this.props.devicePlugins.get(pluginName)!;
+            return (
+              <PluginSidebarListItem
+                key={plugin.id}
+                isActive={
+                  plugin.id === selectedPlugin && selectedDevice === device
+                }
+                onClick={() =>
+                  selectPlugin({
+                    selectedPlugin: plugin.id,
+                    selectedApp: null,
+                    deepLinkPayload: null,
+                    selectedDevice: device,
+                  })
+                }
+                plugin={plugin}
+              />
+            );
+          })}
+        </SidebarSection>
+        {uninitializedClients.map(entry => (
+          <ListItem key={JSON.stringify(entry.client)}>
+            {entry.client.appName}
+            {entry.errorMessage ? (
+              <ErrorIndicator name={'mobile-cross'} size={16} />
+            ) : (
+              <Spinner size={16} />
+            )}
+          </ListItem>
+        ))}
+        {clients.length === 0 ? (
+          <NoClients />
+        ) : (
+          clients.map(client => (
+            <PluginList
+              device={device}
+              key={client.id}
+              client={client}
+              clientPlugins={clientPlugins}
+              starPlugin={starPlugin}
+              userStarredPlugins={userStarredPlugins}
+              selectedPlugin={selectedPlugin}
+              selectedApp={selectedApp}
+              selectPlugin={selectPlugin}
+            />
+          ))
+        )}
+      </SidebarSection>
+    );
+  }
+
+  showArchivedDeviceDetails(device: BaseDevice) {
+    if (!device.isArchived || !device.source) {
       return null;
     }
     const {staticView, setStaticView} = this.props;
@@ -296,18 +285,15 @@ class MainSidebar extends PureComponent<Props, State> {
       staticView,
       SupportRequestDetails,
     );
-    const showSupportForm =
-      GK.get('support_requests_v2') ||
-      isStaticViewActive(staticView, SupportRequestFormManager);
     return (
       <>
         <ListItem>
           <Info type="warning" small>
-            {selectedDevice.source ? 'Imported device' : 'Archived device'}
+            {device.source ? 'Imported device' : 'Archived device'}
           </Info>
         </ListItem>
-        {showSupportForm &&
-          (selectedDevice as ArchivedDevice).supportRequestDetails && (
+        {this.state.showSupportForm &&
+          (device as ArchivedDevice).supportRequestDetails && (
             <ListItem
               active={supportRequestDetailsactive}
               onClick={() => setStaticView(SupportRequestDetails)}>
@@ -325,125 +311,40 @@ class MainSidebar extends PureComponent<Props, State> {
     );
   }
 
-  renderPluginsByCategory(
-    client: Client,
-    plugins: FlipperPlugins,
-    starred: boolean,
-    onFavorite: (pluginId: string) => void,
-  ) {
-    const {selectedPlugin, selectedApp, selectPlugin} = this.props;
-    return groupPluginsByCategory(plugins).map(([category, plugins]) => (
-      <Fragment key={category}>
-        {category && (
-          <ListItem>
-            <CategoryName>{category}</CategoryName>
-          </ListItem>
-        )}
-        {plugins.map(plugin => (
-          <PluginSidebarListItem
-            key={plugin.id}
-            isActive={plugin.id === selectedPlugin && selectedApp === client.id}
-            onClick={() =>
-              selectPlugin({
-                selectedPlugin: plugin.id,
-                selectedApp: client.id,
-                deepLinkPayload: null,
-              })
-            }
-            plugin={plugin}
-            app={client.query.app}
-            onFavorite={() => onFavorite(plugin.id)}
-            starred={starred}
-          />
-        ))}
-      </Fragment>
-    ));
-  }
-
-  renderClientPlugins(client?: Client) {
-    if (!client) {
+  renderNotificationsEntry() {
+    if (GK.get('flipper_disable_notifications')) {
       return null;
     }
-    const onFavorite = (plugin: string) => {
-      this.props.starPlugin({
-        selectedApp: client.query.app,
-        selectedPlugin: plugin,
-      });
-    };
-    const allPlugins = Array.from(this.props.clientPlugins.values()).filter(
-      (p: typeof FlipperPlugin) => client.plugins.indexOf(p.id) > -1,
+
+    const active = isStaticViewActive(
+      this.props.staticView,
+      NotificationScreen,
     );
-    const favoritePlugins: FlipperPlugins = getFavoritePlugins(
-      allPlugins,
-      this.props.userStarredPlugins[client.query.app],
-      true,
-    );
-    const showAllPlugins =
-      this.state.showAllPlugins ||
-      favoritePlugins.length === 0 ||
-      // If the plugin is part of the hidden section, make sure sidebar is expanded
-      (client.plugins.includes(this.props.selectedPlugin!) &&
-        !favoritePlugins.find(
-          plugin => plugin.id === this.props.selectedPlugin,
-        ));
     return (
-      <>
-        {favoritePlugins.length === 0 ? (
-          <ListItem>
-            <SmallText center>Star your favorite plugins!</SmallText>
-          </ListItem>
-        ) : (
-          <>
-            {this.renderPluginsByCategory(
-              client,
-              favoritePlugins,
-              true,
-              onFavorite,
-            )}
-            <ListItem>
-              <SidebarButton
-                small
-                compact
-                onClick={() =>
-                  this.setState(state => ({
-                    ...state,
-                    showAllPlugins: !state.showAllPlugins,
-                  }))
-                }>
-                {showAllPlugins ? 'Show less' : 'Show more'}
-                <Glyph
-                  size={8}
-                  name={showAllPlugins ? 'chevron-up' : 'chevron-down'}
-                  style={{
-                    marginLeft: 4,
-                  }}
-                />
-              </SidebarButton>
-            </ListItem>
-          </>
-        )}
-        <div
-          style={{
-            flex: 'auto' /*scroll this region, not the entire thing*/,
-            overflow: 'auto',
-            height: 'auto',
-          }}>
-          {showAllPlugins
-            ? this.renderPluginsByCategory(
-                client,
-                getFavoritePlugins(
-                  allPlugins,
-                  this.props.userStarredPlugins[client.query.app],
-                  false,
-                ),
-                false,
-                onFavorite,
-              )
-            : null}
-        </div>
-      </>
+      <ListItem
+        active={active}
+        onClick={() => this.props.setStaticView(NotificationScreen)}
+        style={{
+          borderTop: `1px solid ${colors.blackAlpha10}`,
+        }}>
+        <PluginIcon
+          color={colors.light50}
+          name={this.props.numNotifications > 0 ? 'bell' : 'bell-null'}
+          isActive={active}
+        />
+        <PluginName count={this.props.numNotifications} isActive={active}>
+          Notifications
+        </PluginName>
+      </ListItem>
     );
   }
+}
+
+function isStaticViewActive(
+  current: StaticView,
+  selected: StaticView,
+): boolean {
+  return current && selected && current === selected;
 }
 
 function getFavoritePlugins(
@@ -481,6 +382,7 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
   ({
     application: {windowIsFocused},
     connections: {
+      devices,
       selectedDevice,
       selectedPlugin,
       selectedApp,
@@ -499,6 +401,7 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
       ).length;
     })(),
     windowIsFocused,
+    devices,
     selectedDevice,
     staticView,
     selectedPlugin,
@@ -511,9 +414,167 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
   }),
   {
     selectPlugin,
-    selectClient,
     setStaticView,
     setActiveSheet,
-    starPlugin,
+    starPlugin: starPluginAction,
   },
-)(MainSidebar);
+)(MainSidebar2);
+
+const PluginList = memo(function PluginList({
+  client,
+  device,
+  clientPlugins,
+  starPlugin,
+  userStarredPlugins,
+  selectedPlugin,
+  selectedApp,
+  selectPlugin,
+}: {
+  client: Client;
+  device: BaseDevice;
+  clientPlugins: Map<string, typeof FlipperPlugin>;
+  starPlugin: typeof starPluginAction;
+  userStarredPlugins: Store['connections']['userStarredPlugins'];
+  selectedPlugin?: null | string;
+  selectPlugin: SelectPlugin;
+  selectedApp?: null | string;
+}) {
+  const onFavorite = useCallback(
+    (plugin: string) => {
+      starPlugin({
+        selectedApp: client.query.app,
+        selectedPlugin: plugin,
+      });
+    },
+    [client],
+  );
+
+  const allPlugins = Array.from(clientPlugins.values()).filter(
+    (p: typeof FlipperPlugin) => client.plugins.indexOf(p.id) > -1,
+  );
+  const favoritePlugins: FlipperPlugins = getFavoritePlugins(
+    allPlugins,
+    userStarredPlugins[client.query.app],
+    true,
+  );
+  const selectedNonFavoritePlugin =
+    selectedApp === client.id &&
+    client.plugins.includes(selectedPlugin!) &&
+    !favoritePlugins.find(plugin => plugin.id === selectedPlugin);
+  const allPluginsStarred = favoritePlugins.length === allPlugins.length;
+
+  return (
+    <SidebarSection
+      level={2}
+      key={client.id}
+      title={client.query.app}
+      color={getColorByApp(client.query.app)}>
+      {favoritePlugins.length === 0 ? (
+        <ListItem>
+          <SmallText center>Star your favorite plugins!</SmallText>
+        </ListItem>
+      ) : (
+        <PluginsByCategory
+          client={client}
+          device={device}
+          plugins={favoritePlugins}
+          starred={true}
+          onFavorite={onFavorite}
+          selectedPlugin={selectedPlugin}
+          selectedApp={selectedApp}
+          selectPlugin={selectPlugin}
+        />
+      )}
+      {!allPluginsStarred && (
+        <SidebarSection
+          level={3}
+          color={colors.light20}
+          defaultCollapsed={
+            favoritePlugins.length > 0 && !selectedNonFavoritePlugin
+          }
+          title={collapsed => (
+            <div>
+              {collapsed ? 'All plugins…' : 'Show less'}
+              <Glyph
+                color={colors.light20}
+                size={8}
+                name={collapsed ? 'chevron-down' : 'chevron-up'}
+                style={{
+                  marginLeft: 4,
+                }}
+              />
+            </div>
+          )}>
+          <PluginsByCategory
+            client={client}
+            device={device}
+            plugins={getFavoritePlugins(
+              allPlugins,
+              userStarredPlugins[client.query.app],
+              false,
+            )}
+            starred={false}
+            onFavorite={onFavorite}
+            selectedPlugin={selectedPlugin}
+            selectedApp={selectedApp}
+            selectPlugin={selectPlugin}
+          />
+        </SidebarSection>
+      )}
+    </SidebarSection>
+  );
+});
+
+const PluginsByCategory = memo(function PluginsByCategory({
+  client,
+  plugins,
+  starred,
+  onFavorite,
+  selectedPlugin,
+  selectedApp,
+  selectPlugin,
+  device,
+}: {
+  client: Client;
+  device: BaseDevice;
+  plugins: FlipperPlugins;
+  starred: boolean;
+  selectedPlugin?: null | string;
+  selectedApp?: null | string;
+  onFavorite: (pluginId: string) => void;
+  selectPlugin: SelectPlugin;
+}) {
+  return (
+    <>
+      {groupPluginsByCategory(plugins).map(([category, plugins]) => (
+        <Fragment key={category}>
+          {category && (
+            <ListItem>
+              <CategoryName>{category}</CategoryName>
+            </ListItem>
+          )}
+          {plugins.map(plugin => (
+            <PluginSidebarListItem
+              key={plugin.id}
+              isActive={
+                plugin.id === selectedPlugin && selectedApp === client.id
+              }
+              onClick={() =>
+                selectPlugin({
+                  selectedPlugin: plugin.id,
+                  selectedApp: client.id,
+                  deepLinkPayload: null,
+                  selectedDevice: device,
+                })
+              }
+              plugin={plugin}
+              app={client.query.app}
+              onFavorite={() => onFavorite(plugin.id)}
+              starred={starred}
+            />
+          ))}
+        </Fragment>
+      ))}
+    </>
+  );
+});

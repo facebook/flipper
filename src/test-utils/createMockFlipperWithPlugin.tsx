@@ -111,6 +111,7 @@ export async function createMockFlipperWithPlugin(
       selectedPlugin: pluginClazz.id,
       selectedApp: client.query.app,
       deepLinkPayload: null,
+      selectedDevice: device,
     }),
   );
 

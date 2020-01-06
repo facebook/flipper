@@ -73,7 +73,7 @@ function buildIconURL(name, size, density) {
         // Check if that icon actually exists!
         fetch(url)
           .then(res => {
-            if (res.status === 200) {
+            if (res.status === 200 && !existing.includes(size)) {
               // the icon exists
               existing.push(size);
               existing.sort();

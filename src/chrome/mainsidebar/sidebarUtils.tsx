@@ -7,8 +7,22 @@
  * @format
  */
 
-import {FlexBox, colors, Text, Glyph, styled, FlipperPlugin} from 'flipper';
-import React from 'react';
+import {
+  FlexBox,
+  colors,
+  Text,
+  Glyph,
+  styled,
+  FlipperPlugin,
+  FlexColumn,
+  LoadingIndicator,
+  FlipperBasePlugin,
+  StarButton,
+  brandColors,
+  Spacer,
+  Heading,
+} from 'flipper';
+import React, {Component} from 'react';
 import {StaticView} from '../../reducers/connections';
 import {BackgroundColorProperty} from 'csstype';
 
@@ -96,3 +110,109 @@ export function isStaticViewActive(
 ): boolean {
   return current && selected && current === selected;
 }
+
+export const CategoryName = styled(PluginName)({
+  color: colors.macOSSidebarSectionTitle,
+  textTransform: 'uppercase',
+  fontSize: '0.9em',
+});
+
+export const Plugins = styled(FlexColumn)({
+  flexGrow: 1,
+  overflow: 'auto',
+});
+
+export const Spinner = centerInSidebar(LoadingIndicator);
+
+export const ErrorIndicator = centerInSidebar(Glyph);
+
+export function centerInSidebar(component: any) {
+  return styled(component)({
+    marginTop: '10px',
+    marginBottom: '10px',
+    marginLeft: 'auto',
+    marginRight: 'auto',
+  });
+}
+
+export class PluginSidebarListItem extends Component<{
+  onClick: () => void;
+  isActive: boolean;
+  plugin: typeof FlipperBasePlugin;
+  app?: string | null | undefined;
+  helpRef?: any;
+  provided?: any;
+  onFavorite?: () => void;
+  starred?: boolean;
+}> {
+  render() {
+    const {isActive, plugin, onFavorite, starred} = this.props;
+    const iconColor = getColorByApp(this.props.app);
+
+    return (
+      <ListItem active={isActive} onClick={this.props.onClick}>
+        <PluginIcon
+          isActive={isActive}
+          name={plugin.icon || 'apps'}
+          backgroundColor={iconColor}
+          color={colors.white}
+        />
+        <PluginName>{plugin.title || plugin.id}</PluginName>
+        {starred !== undefined && (
+          <StarButton onStar={onFavorite!} starred={starred} />
+        )}
+      </ListItem>
+    );
+  }
+}
+
+export function getColorByApp(app?: string | null): string {
+  let iconColor: string | undefined = (brandColors as any)[app!];
+
+  if (!iconColor) {
+    if (!app) {
+      // Device plugin
+      iconColor = colors.macOSTitleBarIconBlur;
+    } else {
+      const pluginColors = [
+        colors.seaFoam,
+        colors.teal,
+        colors.lime,
+        colors.lemon,
+        colors.orange,
+        colors.tomato,
+        colors.cherry,
+        colors.pink,
+        colors.grape,
+      ];
+
+      iconColor = pluginColors[parseInt(app, 36) % pluginColors.length];
+    }
+  }
+  return iconColor;
+}
+
+export const NoDevices = () => (
+  <ListItem
+    style={{
+      textAlign: 'center',
+      marginTop: 50,
+      flexDirection: 'column',
+    }}>
+    <Glyph name="mobile" size={32} color={colors.red}></Glyph>
+    <Spacer style={{height: 20}} />
+    <Heading>Select a device to get started</Heading>
+  </ListItem>
+);
+
+export const NoClients = () => (
+  <ListItem>
+    <Glyph
+      name="mobile-engagement"
+      size={16}
+      color={colors.red}
+      style={{marginRight: 10}}
+    />
+    No clients connected
+  </ListItem>
+);

@@ -135,6 +135,7 @@ export class App extends React.Component<Props> {
   };
 
   render() {
+    const useNewSidebar = GK.get('flipper_sidebar2');
     return (
       <FlexColumn grow={true}>
         <TitleBar version={version} />
@@ -143,7 +144,7 @@ export class App extends React.Component<Props> {
         <Sheet>{this.getSheet}</Sheet>
         <FlexRow grow={true}>
           {this.props.leftSidebarVisible &&
-            (GK.get('flipper_sidebar2') ? <MainSidebar2 /> : <MainSidebar />)}
+            (useNewSidebar ? <MainSidebar2 /> : <MainSidebar />)}
           {this.props.staticView != null ? (
             React.createElement(this.props.staticView, {
               logger: this.props.logger,
