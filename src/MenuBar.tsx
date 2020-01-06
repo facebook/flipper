@@ -108,7 +108,7 @@ export function setupMenuBar(
       const menu = applicationMenu.items.find(
         menuItem => menuItem.label === topLevelMenu,
       );
-      if (menu) {
+      if (menu && menu.submenu) {
         const menuItem = menu.submenu.items.find(
           menuItem => menuItem.label === label,
         );
@@ -270,7 +270,7 @@ function getTemplate(
         {
           label: 'Select All',
           accelerator: 'CmdOrCtrl+A',
-          role: 'selectall',
+          role: 'selectAll',
         },
       ],
     },
@@ -384,7 +384,7 @@ function getTemplate(
   ];
 
   if (process.platform === 'darwin') {
-    const name = app.getName();
+    const name = app.name;
     template.unshift({
       label: name,
       submenu: [
@@ -411,7 +411,7 @@ function getTemplate(
         {
           label: 'Hide Others',
           accelerator: 'Command+Shift+H',
-          role: 'hideothers',
+          role: 'hideOthers',
         },
         {
           label: 'Show All',

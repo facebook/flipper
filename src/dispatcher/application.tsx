@@ -7,7 +7,7 @@
  * @format
  */
 
-import {remote, ipcRenderer} from 'electron';
+import {remote, ipcRenderer, IpcRendererEvent} from 'electron';
 import {toggleAction} from '../reducers/application';
 import {setStaticView} from '../reducers/connections';
 import {Store} from '../reducers/index.js';
@@ -68,7 +68,7 @@ export default (store: Store, logger: Logger) => {
 
   ipcRenderer.on(
     'flipper-protocol-handler',
-    (_event: string, query: string) => {
+    (_event: IpcRendererEvent, query: string) => {
       const uri = new URL(query);
       if (query.startsWith('flipper://import')) {
         const {search} = new URL(query);
@@ -117,11 +117,14 @@ export default (store: Store, logger: Logger) => {
     },
   );
 
-  ipcRenderer.on('open-flipper-file', (_event: string, url: string) => {
-    tryCatchReportPlatformFailures(() => {
-      return importFileToStore(url, store);
-    }, `${IMPORT_FLIPPER_TRACE_EVENT}:Deeplink`);
-  });
+  ipcRenderer.on(
+    'open-flipper-file',
+    (_event: IpcRendererEvent, url: string) => {
+      tryCatchReportPlatformFailures(() => {
+        return importFileToStore(url, store);
+      }, `${IMPORT_FLIPPER_TRACE_EVENT}:Deeplink`);
+    },
+  );
 
   if (process.env.FLIPPER_PORTS) {
     const portOverrides = parseFlipperPorts(process.env.FLIPPER_PORTS);

@@ -724,8 +724,9 @@ export function showOpenDialog(store: Store) {
     properties: ['openFile'],
     filters: [{extensions: ['flipper', 'json', 'txt'], name: 'Flipper files'}],
   };
-  remote.dialog.showOpenDialog(options, (filePaths?: Array<string>) => {
-    if (filePaths !== undefined && filePaths.length > 0) {
+  remote.dialog.showOpenDialog(options).then(result => {
+    const filePaths = result.filePaths;
+    if (filePaths.length > 0) {
       tryCatchReportPlatformFailures(() => {
         importFileToStore(filePaths[0], store);
       }, `${IMPORT_FLIPPER_TRACE_EVENT}:UI`);
@@ -734,14 +735,17 @@ export function showOpenDialog(store: Store) {
 }
 
 export function startFileExport(dispatch: Store['dispatch']) {
-  electron.remote.dialog.showSaveDialog(
-    // @ts-ignore This appears to work but isn't allowed by the types
-    null,
-    {
-      title: 'FlipperExport',
-      defaultPath: path.join(os.homedir(), 'FlipperExport.flipper'),
-    },
-    async (file: string) => {
+  electron.remote.dialog
+    .showSaveDialog(
+      // @ts-ignore This appears to work but isn't allowed by the types
+      null,
+      {
+        title: 'FlipperExport',
+        defaultPath: path.join(os.homedir(), 'FlipperExport.flipper'),
+      },
+    )
+    .then(async (result: electron.SaveDialogReturnValue) => {
+      const file = result.filePath;
       if (!file) {
         return;
       }
@@ -752,8 +756,7 @@ export function startFileExport(dispatch: Store['dispatch']) {
           closeOnFinish: false,
         }),
       );
-    },
-  );
+    });
 }
 
 export function startLinkExport(dispatch: Store['dispatch']) {

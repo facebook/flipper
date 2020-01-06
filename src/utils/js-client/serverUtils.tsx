@@ -9,7 +9,7 @@
 
 import Client, {ClientQuery} from '../../Client';
 import {FlipperClientConnection} from '../../Client';
-import {ipcRenderer, remote} from 'electron';
+import {ipcRenderer, remote, IpcRendererEvent} from 'electron';
 import JSDevice from '../../devices/JSDevice';
 import {Store} from 'src/reducers';
 import {Logger} from 'src/fb-interfaces/Logger';
@@ -41,7 +41,7 @@ export function initJsEmulatorIPC(
 ) {
   ipcRenderer.on(
     'from-js-emulator-init-client',
-    (_event: string, message: any) => {
+    (_event: IpcRendererEvent, message: any) => {
       const {windowId} = message;
       const {plugins, appName} = message.payload;
       store.dispatch({
@@ -102,21 +102,24 @@ export function initJsEmulatorIPC(
         flipperServer.emit('clients-change');
         client.emit('plugins-change');
 
-        ipcRenderer.on('from-js-emulator', (_event: string, message: any) => {
-          const {command, payload} = message;
-          if (command === 'sendFlipperObject') {
-            client.onMessage(
-              JSON.stringify({
-                params: {
-                  api: payload.api,
-                  method: payload.method,
-                  params: JSON.parse(payload.params),
-                },
-                method: 'execute',
-              }),
-            );
-          }
-        });
+        ipcRenderer.on(
+          'from-js-emulator',
+          (_event: IpcRendererEvent, message: any) => {
+            const {command, payload} = message;
+            if (command === 'sendFlipperObject') {
+              client.onMessage(
+                JSON.stringify({
+                  params: {
+                    api: payload.api,
+                    method: payload.method,
+                    params: JSON.parse(payload.params),
+                  },
+                  method: 'execute',
+                }),
+              );
+            }
+          },
+        );
       });
     },
   );

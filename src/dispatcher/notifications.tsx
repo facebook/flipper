@@ -12,8 +12,8 @@ import {Logger} from '../fb-interfaces/Logger';
 import {PluginNotification} from '../reducers/notifications';
 import {FlipperPlugin, FlipperDevicePlugin} from '../plugin';
 import isHeadless from '../utils/isHeadless';
-import {ipcRenderer} from 'electron';
 import {setStaticView} from '../reducers/connections';
+import {ipcRenderer, IpcRendererEvent} from 'electron';
 import {
   setActiveNotifications,
   updatePluginBlacklist,
@@ -39,6 +39,7 @@ export default (store: Store, logger: Logger) => {
   ipcRenderer.on(
     'notificationEvent',
     (
+      _event: IpcRendererEvent,
       _e: Error,
       eventName: NotificationEvents,
       pluginNotification: PluginNotification,
