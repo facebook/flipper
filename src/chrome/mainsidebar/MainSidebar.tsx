@@ -328,24 +328,26 @@ class MainSidebar extends PureComponent<Props, State> {
               onFavorite,
             )}
             <ListItem>
-              <SidebarButton
-                small
-                compact
-                onClick={() =>
-                  this.setState(state => ({
-                    ...state,
-                    showAllPlugins: !state.showAllPlugins,
-                  }))
-                }>
-                {showAllPlugins ? 'Show less' : 'Show more'}
-                <Glyph
-                  size={8}
-                  name={showAllPlugins ? 'chevron-up' : 'chevron-down'}
-                  style={{
-                    marginLeft: 4,
-                  }}
-                />
-              </SidebarButton>
+              {favoritePlugins.length === allPlugins.length ? null : (
+                <SidebarButton
+                  small
+                  compact
+                  onClick={() =>
+                    this.setState(state => ({
+                      ...state,
+                      showAllPlugins: !state.showAllPlugins,
+                    }))
+                  }>
+                  {showAllPlugins ? 'Show less' : 'Show more'}
+                  <Glyph
+                    size={8}
+                    name={showAllPlugins ? 'chevron-up' : 'chevron-down'}
+                    style={{
+                      marginLeft: 4,
+                    }}
+                  />
+                </SidebarButton>
+              )}
             </ListItem>
           </>
         )}
