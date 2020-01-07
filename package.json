@@ -141,7 +141,7 @@
     "expand-tilde": "^2.0.2",
     "express": "^4.15.2",
     "fb-watchman": "^2.0.0",
-    "flipper-doctor": "^0.4.1",
+    "flipper-doctor": "^0.6.0",
     "fs-extra": "^8.0.1",
     "immer": "^5.0.1",
     "immutable": "^4.0.0-rc.12",
