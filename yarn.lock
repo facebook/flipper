@@ -2334,6 +2334,13 @@ bs-logger@0.x:
   dependencies:
     fast-json-stable-stringify "2.x"
 
+bser@2.1.1:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/bser/-/bser-2.1.1.tgz#e6787da20ece9d07998533cfd9de6f5c38f4bc05"
+  integrity sha512-gQxTNE/GAfIIrmHLUE3oJyp5FO6HRBfhjnw4/wMmA63ZGDJnWBmgY/lyQBpnDUkGmAhbSe39tx2d/iTOAfglwQ==
+  dependencies:
+    node-int64 "^0.4.0"
+
 bser@^2.0.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/bser/-/bser-2.1.0.tgz#65fc784bf7f87c009b973c12db6546902fa9c7b5"
@@ -4054,6 +4061,13 @@ fb-watchman@^2.0.0:
   dependencies:
     bser "^2.0.0"
 
+fb-watchman@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/fb-watchman/-/fb-watchman-2.0.1.tgz#fc84fb39d2709cf3ff6d743706157bb5708a8a85"
+  integrity sha512-DkPJKQeY6kKwmuMretBhr7G6Vodr7bFwDYTXIkfG1gjvNpaxBTQV3PbXg6bR1c1UP4jPOX0jHUbbHANL9vRjVg==
+  dependencies:
+    bser "2.1.1"
+
 fbjs-css-vars@^1.0.0:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/fbjs-css-vars/-/fbjs-css-vars-1.0.2.tgz#216551136ae02fe255932c3ec8775f18e2c078b8"
@@ -4182,13 +4196,14 @@ flatted@^2.0.0:
   resolved "https://registry.yarnpkg.com/flatted/-/flatted-2.0.1.tgz#69e57caa8f0eacbc281d2e2cb458d46fdb449e08"
   integrity sha512-a1hQMktqW9Nmqr5aktAux3JMNqaucxGcjtjWnZLHX7yyPCmlSV3M54nGYbqT8K+0GhF3NBgmJCc3ma+WOgX8Jg==
 
-flipper-doctor@^0.4.1:
-  version "0.4.1"
-  resolved "https://registry.yarnpkg.com/flipper-doctor/-/flipper-doctor-0.4.1.tgz#bc4ce11a920e983da04e492ba04d5fe108659bb5"
-  integrity sha512-1N7wgM03i1aHgTgMiv4V1mWkfkfoAgbBQmt4ai7AW2rhb2ocmy6p+8I51L2rJEOVmsRP/oDafpdgVNm1ggHp4w==
+flipper-doctor@^0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/flipper-doctor/-/flipper-doctor-0.5.0.tgz#cd7cfabe9f6d09c7cff4303c4f37c28a02e597ac"
+  integrity sha512-GgkxZAHt+1SEIMXqBLEdtsZOacXyx5mFc5zllCTfdio0Zekx4Q1C9MG5vLPIOlGG7F0eUhzI9Ynkg6v1hcdOWw==
   dependencies:
     "@types/node" "^12.12.12"
     envinfo "^7.4.0"
+    fb-watchman "^2.0.1"
 
 flow-bin@0.114.0:
   version "0.114.0"
