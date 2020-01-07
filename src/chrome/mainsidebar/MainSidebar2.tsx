@@ -26,6 +26,7 @@ import {
   SmallText,
   Info,
   HBox,
+  LoadingIndicator,
 } from 'flipper';
 import React, {
   PureComponent,
@@ -55,9 +56,7 @@ import {
   CategoryName,
   PluginIcon,
   PluginSidebarListItem,
-  ErrorIndicator,
   NoClients,
-  Spinner,
   NoDevices,
   getColorByApp,
 } from './sidebarUtils';
@@ -80,6 +79,8 @@ const SidebarSectionButton = styled('button')<{
   fontSize: level === 3 ? 11 : 14,
   color,
   padding: `${level === 3 ? 0 : 8}px 10px 8px 9px`,
+  textTransform: 'capitalize',
+  fontVariantCaps: level === 2 ? 'all-small-caps' : 'normal',
 }));
 
 const SidebarSectionBody = styled('div')<{
@@ -88,8 +89,10 @@ const SidebarSectionBody = styled('div')<{
 }>(({collapsed}) => ({
   flexShrink: 0,
   overflow: 'hidden',
-  maxHeight: collapsed ? 0 : 1000, // might need increase if too many plugins...
-  transition: 'max-height 0.5s ease',
+  maxHeight: collapsed ? 0 : 2000, // might need increase if too many plugins...
+  transition: collapsed
+    ? 'max-height 0.5s ease-out'
+    : 'max-height 0.5s ease-in',
 }));
 
 const SidebarSection: React.FC<{
@@ -109,7 +112,7 @@ const SidebarSection: React.FC<{
         color={color}>
         <HBox grow="left">
           {typeof title === 'function' ? title(collapsed) : title}
-          {level < 3 && (
+          {level < 3 && children && (
             <Glyph
               name={collapsed ? 'chevron-down' : 'chevron-up'}
               size={12}
@@ -245,16 +248,6 @@ class MainSidebar2 extends PureComponent<Props, State> {
             );
           })}
         </SidebarSection>
-        {uninitializedClients.map(entry => (
-          <ListItem key={JSON.stringify(entry.client)}>
-            {entry.client.appName}
-            {entry.errorMessage ? (
-              <ErrorIndicator name={'mobile-cross'} size={16} />
-            ) : (
-              <Spinner size={16} />
-            )}
-          </ListItem>
-        ))}
         {clients.length === 0 ? (
           <NoClients />
         ) : (
@@ -272,6 +265,22 @@ class MainSidebar2 extends PureComponent<Props, State> {
             />
           ))
         )}
+        {uninitializedClients.map(entry => (
+          <SidebarSection
+            color={getColorByApp(entry.client.appName)}
+            key={JSON.stringify(entry.client)}
+            title={
+              <HBox grow="left">
+                {entry.client.appName}
+                {entry.errorMessage ? (
+                  <Glyph name={'mobile-cross'} size={16} />
+                ) : (
+                  <LoadingIndicator size={16} />
+                )}
+              </HBox>
+            }
+            level={2}></SidebarSection>
+        ))}
       </SidebarSection>
     );
   }
@@ -488,22 +497,18 @@ const PluginList = memo(function PluginList({
       {!allPluginsStarred && (
         <SidebarSection
           level={3}
-          color={colors.light20}
+          color={colors.macOSTitleBarIconBlur}
           defaultCollapsed={
             favoritePlugins.length > 0 && !selectedNonFavoritePlugin
           }
           title={collapsed => (
-            <div>
-              {collapsed ? 'All plugins…' : 'Show less'}
+            <ShowMoreButton>
               <Glyph
-                color={colors.light20}
+                color={colors.macOSTitleBarIconBlur}
                 size={8}
                 name={collapsed ? 'chevron-down' : 'chevron-up'}
-                style={{
-                  marginLeft: 4,
-                }}
               />
-            </div>
+            </ShowMoreButton>
           )}>
           <PluginsByCategory
             client={client}
@@ -577,4 +582,14 @@ const PluginsByCategory = memo(function PluginsByCategory({
       ))}
     </>
   );
+});
+
+const ShowMoreButton = styled('div')({
+  border: `1px solid ${colors.macOSTitleBarIconBlur}`,
+  width: 16,
+  height: 16,
+  borderRadius: 16,
+  marginLeft: 'auto',
+  marginRight: 'auto',
+  lineHeight: '12px',
 });

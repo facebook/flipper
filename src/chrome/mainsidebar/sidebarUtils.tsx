@@ -22,7 +22,7 @@ import {
   Spacer,
   Heading,
 } from 'flipper';
-import React, {Component} from 'react';
+import React, {useState, useCallback} from 'react';
 import {StaticView} from '../../reducers/connections';
 import {BackgroundColorProperty} from 'csstype';
 
@@ -135,7 +135,7 @@ export function centerInSidebar(component: any) {
   });
 }
 
-export class PluginSidebarListItem extends Component<{
+export const PluginSidebarListItem: React.FC<{
   onClick: () => void;
   isActive: boolean;
   plugin: typeof FlipperBasePlugin;
@@ -144,27 +144,33 @@ export class PluginSidebarListItem extends Component<{
   provided?: any;
   onFavorite?: () => void;
   starred?: boolean;
-}> {
-  render() {
-    const {isActive, plugin, onFavorite, starred} = this.props;
-    const iconColor = getColorByApp(this.props.app);
+}> = function(props) {
+  const {isActive, plugin, onFavorite, starred} = props;
+  const iconColor = getColorByApp(props.app);
+  const [hovered, setHovered] = useState(false);
 
-    return (
-      <ListItem active={isActive} onClick={this.props.onClick}>
-        <PluginIcon
-          isActive={isActive}
-          name={plugin.icon || 'apps'}
-          backgroundColor={iconColor}
-          color={colors.white}
-        />
-        <PluginName>{plugin.title || plugin.id}</PluginName>
-        {starred !== undefined && (
-          <StarButton onStar={onFavorite!} starred={starred} />
-        )}
-      </ListItem>
-    );
-  }
-}
+  const onEnter = useCallback(() => setHovered(true), []);
+  const onLeave = useCallback(() => setHovered(false), []);
+
+  return (
+    <ListItem
+      active={isActive}
+      onClick={props.onClick}
+      onMouseEnter={onEnter}
+      onMouseLeave={onLeave}>
+      <PluginIcon
+        isActive={isActive}
+        name={plugin.icon || 'apps'}
+        backgroundColor={iconColor}
+        color={colors.white}
+      />
+      <PluginName>{plugin.title || plugin.id}</PluginName>
+      {starred !== undefined && (hovered || isActive) && (
+        <StarButton onStar={onFavorite!} starred={starred} />
+      )}
+    </ListItem>
+  );
+};
 
 export function getColorByApp(app?: string | null): string {
   let iconColor: string | undefined = (brandColors as any)[app!];
