@@ -16,28 +16,33 @@ module.exports = class Watchman {
     this.rootDir = rootDir;
   }
 
-  async initialize() {
+  initialize() {
     if (this.client) {
       return;
     }
     this.client = new watchman.Client();
     this.client.setMaxListeners(250);
     return new Promise((resolve, reject) => {
+      const onError = err => {
+        this.client.removeAllListeners('error');
+        reject(err);
+        this.client.end();
+        delete this.client;
+      };
+      this.client.once('error', onError);
       this.client.capabilityCheck(
         {optional: [], required: ['relative_root']},
         error => {
           if (error) {
-            this.client.end();
-            delete this.client;
-            return reject(error);
+            onError(error);
+            return;
           }
           this.client.command(
             ['watch-project', this.rootDir],
             (error, resp) => {
               if (error) {
-                this.client.end();
-                delete this.client;
-                return reject(error);
+                onError(error);
+                return;
               }
               if ('warning' in resp) {
                 console.warn(resp.warning);

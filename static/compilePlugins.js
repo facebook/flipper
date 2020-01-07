@@ -21,6 +21,7 @@ const Watchman = require('./watchman');
 const DEFAULT_COMPILE_OPTIONS = {
   force: false,
   failSilently: true,
+  recompileOnChanges: true,
 };
 
 module.exports = async (
@@ -29,11 +30,14 @@ module.exports = async (
   pluginCache,
   options = DEFAULT_COMPILE_OPTIONS,
 ) => {
+  options = Object.assign({}, DEFAULT_COMPILE_OPTIONS, options);
   const plugins = pluginEntryPoints(pluginPaths);
   if (!fs.existsSync(pluginCache)) {
     fs.mkdirSync(pluginCache);
   }
-  watchChanges(plugins, reloadCallback, pluginCache, options);
+  if (options.recompileOnChanges) {
+    await startWatchChanges(plugins, reloadCallback, pluginCache, options);
+  }
   const compilations = pMap(
     Object.values(plugins),
     plugin => {
@@ -48,7 +52,24 @@ module.exports = async (
   return dynamicPlugins;
 };
 
-async function watchChanges(
+async function startWatchingPluginsUsingWatchman(plugins, onPluginChanged) {
+  const rootDir = path.resolve(__dirname, '..');
+  const watchman = new Watchman(rootDir);
+  await watchman.initialize();
+  await Promise.all(
+    plugins.map(plugin =>
+      watchman.startWatchFiles(
+        path.relative(rootDir, plugin.rootDir),
+        () => onPluginChanged(plugin),
+        {
+          excludes: ['**/__tests__/**/*', '**/node_modules/**/*', '**/.*'],
+        },
+      ),
+    ),
+  );
+}
+
+async function startWatchChanges(
   plugins,
   reloadCallback,
   pluginCache,
@@ -59,38 +80,31 @@ async function watchChanges(
 
   const delayedCompilation = {};
   const kCompilationDelayMillis = 1000;
-  const rootDir = path.resolve(__dirname, '..');
-  const watchman = new Watchman(rootDir);
-  await watchman.initialize();
-  Object.values(plugins)
+  const onPluginChanged = plugin => {
+    if (!delayedCompilation[plugin.name]) {
+      delayedCompilation[plugin.name] = setTimeout(() => {
+        delayedCompilation[plugin.name] = null;
+        // eslint-disable-next-line no-console
+        console.log(`🕵️‍  Detected changes in ${plugin.name}`);
+        const watchOptions = Object.assign(options, {force: true});
+        compilePlugin(plugin, pluginCache, watchOptions).then(reloadCallback);
+      }, kCompilationDelayMillis);
+    }
+  };
+  const filteredPlugins = Object.values(plugins)
     // no hot reloading for plugins in .flipper folder. This is to prevent
     // Flipper from reloading, while we are doing changes on thirdparty plugins.
     .filter(
       plugin => !plugin.rootDir.startsWith(path.join(HOME_DIR, '.flipper')),
-    )
-    .map(plugin =>
-      watchman.startWatchFiles(
-        path.relative(rootDir, plugin.rootDir),
-        resp => {
-          // only recompile for changes in not hidden files. Watchman might create
-          // a file called .watchman-cookie
-          if (!delayedCompilation[plugin.name]) {
-            delayedCompilation[plugin.name] = setTimeout(() => {
-              delayedCompilation[plugin.name] = null;
-              // eslint-disable-next-line no-console
-              console.log(`🕵️‍  Detected changes in ${plugin.name}`);
-              const watchOptions = Object.assign(options, {force: true});
-              compilePlugin(plugin, pluginCache, watchOptions).then(
-                reloadCallback,
-              );
-            }, kCompilationDelayMillis);
-          }
-        },
-        {
-          excludes: ['**/__tests__/**/*', '**/node_modules/**/*', '**/.*'],
-        },
-      ),
     );
+  try {
+    await startWatchingPluginsUsingWatchman(filteredPlugins, onPluginChanged);
+  } catch (err) {
+    console.error(
+      'Failed to start watching plugin files using Watchman, continue without hot reloading',
+      err,
+    );
+  }
 }
 function hash(string) {
   let hash = 0;

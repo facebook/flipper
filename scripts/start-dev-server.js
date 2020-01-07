@@ -127,17 +127,29 @@ async function addWebsocket(server) {
 
   // refresh the app on changes to the src folder
   // this can be removed once metroServer notifies us about file changes
-  const watchman = new Watchman(path.resolve(__dirname, '..', 'src'));
-  await watchman.initialize();
-  await watchman.startWatchFiles(
-    '/',
-    resp => {
-      io.emit('refresh');
-    },
-    {
-      excludes: ['**/__tests__/**/*', '**/node_modules/**/*', '**/.*'],
-    },
-  );
+  try {
+    const watchman = new Watchman(path.resolve(__dirname, '..', 'src'));
+    await watchman.initialize();
+    await watchman.startWatchFiles(
+      '',
+      () => {
+        io.emit('refresh');
+      },
+      {
+        excludes: [
+          '**/__tests__/**/*',
+          '**/node_modules/**/*',
+          '**/.*',
+          'plugins/**/*', // plugin changes are tracked separately, so exlcuding them here to avoid double reloading.
+        ],
+      },
+    );
+  } catch (err) {
+    console.error(
+      'Failed to start watching for changes using Watchman, continue without hot reloading',
+      err,
+    );
+  }
 
   return io;
 }

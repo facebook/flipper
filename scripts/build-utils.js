@@ -29,7 +29,7 @@ function compileDefaultPlugins(defaultPluginDir, skipAll = false) {
           path.join(__dirname, '..', 'src', 'fb', 'plugins'),
         ],
     defaultPluginDir,
-    {force: true, failSilently: false},
+    {force: true, failSilently: false, recompileOnChanges: false},
   )
     .then(defaultPlugins =>
       fs.writeFileSync(

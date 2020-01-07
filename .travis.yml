@@ -32,14 +32,6 @@ matrix:
       node_js:
         - "11"
 
-      before_install:
-        - cd ..
-        - git clone https://github.com/facebook/watchman.git
-        - cd watchman
-        - git checkout v4.9.0
-        - ./autogen.sh && ./configure && make && sudo make install
-        - cd ../flipper
-
       install:
         - yarn
 
