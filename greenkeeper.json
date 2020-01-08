@@ -2,7 +2,8 @@
   "groups": {
     "main": {
       "packages": [
-        "package.json"
+        "package.json",
+        "headless-tests/package.json"
       ]
     },
     "plugins": {
