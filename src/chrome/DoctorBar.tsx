@@ -23,14 +23,14 @@ import runHealthchecks, {
   HealthcheckEventsHandler,
 } from '../utils/runHealthchecks';
 import {
+  HealthcheckResult,
   updateHealthcheckResult,
   startHealthchecks,
   finishHealthchecks,
-  HealthcheckStatus,
 } from '../reducers/healthchecks';
 
 type StateFromProps = {
-  healthcheckStatus: HealthcheckStatus;
+  healthcheckResult: HealthcheckResult;
 } & HealthcheckSettings;
 
 type DispatchFromProps = {
@@ -52,7 +52,11 @@ class DoctorBar extends Component<Props, State> {
   }
   async showMessageIfChecksFailed() {
     await runHealthchecks(this.props);
-    if (this.props.healthcheckStatus === 'FAILED') {
+    if (
+      (this.props.healthcheckResult.status === 'FAILED' ||
+        this.props.healthcheckResult.status === 'WARNING') &&
+      !this.props.healthcheckResult.isAcknowledged
+    ) {
       this.setVisible(true);
     }
   }
@@ -99,11 +103,11 @@ export default connect<StateFromProps, DispatchFromProps, {}, Store>(
   ({
     settingsState: {enableAndroid},
     healthchecks: {
-      healthcheckReport: {status},
+      healthcheckReport: {result},
     },
   }) => ({
     enableAndroid,
-    healthcheckStatus: status,
+    healthcheckResult: result,
   }),
   {
     setActiveSheet,

@@ -15,8 +15,8 @@ let runningHealthcheck: Promise<void>;
 
 export type HealthcheckEventsHandler = {
   updateHealthcheckResult: (
-    categoryIdx: number,
-    itemIdx: number,
+    categoryKey: string,
+    itemKey: string,
     result: HealthcheckResult,
   ) => void;
   startHealthchecks: (healthchecks: Healthchecks) => void;
@@ -41,17 +41,11 @@ async function launchHealthchecks(options: HealthcheckOptions): Promise<void> {
   }
   options.startHealthchecks(healthchecks);
   const environmentInfo = await getEnvInfo();
-  const categories = Object.values(healthchecks);
-  for (const [categoryIdx, category] of categories.entries()) {
+  for (const [categoryKey, category] of Object.entries(healthchecks)) {
     if (category.isSkipped) {
       continue;
     }
-    for (
-      let healthcheckIdx = 0;
-      healthcheckIdx < category.healthchecks.length;
-      healthcheckIdx++
-    ) {
-      const h = category.healthchecks[healthcheckIdx];
+    for (const h of category.healthchecks) {
       const checkResult = await h.run(environmentInfo);
       const result: HealthcheckResult =
         checkResult.hasProblem && h.isRequired
@@ -65,7 +59,7 @@ async function launchHealthchecks(options: HealthcheckOptions): Promise<void> {
               helpUrl: checkResult.helpUrl,
             }
           : {status: 'SUCCESS'};
-      options.updateHealthcheckResult(categoryIdx, healthcheckIdx, result);
+      options.updateHealthcheckResult(categoryKey, h.key, result);
     }
   }
   options.finishHealthchecks();

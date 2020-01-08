@@ -22,7 +22,8 @@ import {getEnvInfo} from './environmentInfo';
         : {
             label: category.label,
             results: await Promise.all(
-              category.healthchecks.map(async ({label, run}) => ({
+              category.healthchecks.map(async ({key, label, run}) => ({
+                key,
                 label,
                 result: await run(environmentInfo),
               })),

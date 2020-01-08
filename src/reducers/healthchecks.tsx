@@ -27,8 +27,8 @@ export type Action =
   | {
       type: 'UPDATE_HEALTHCHECK_RESULT';
       payload: {
-        categoryIdx: number;
-        itemIdx: number;
+        categoryKey: string;
+        itemKey: string;
         result: HealthcheckResult;
       };
     }
@@ -41,157 +41,170 @@ export type Action =
 
 const INITIAL_STATE: State = {
   healthcheckReport: {
-    status: 'IN_PROGRESS',
-    categories: [],
+    result: {status: 'IN_PROGRESS'},
+    categories: {},
   },
   acknowledgedProblems: [],
 };
+
+type Dictionary<T> = {[key: string]: T};
 
 export type HealthcheckStatus =
   | 'IN_PROGRESS'
   | 'SUCCESS'
   | 'FAILED'
-  | 'FAILED_ACKNOWLEDGED'
   | 'SKIPPED'
   | 'WARNING';
 
 export type HealthcheckResult = {
   status: HealthcheckStatus;
+  isAcknowledged?: boolean;
   message?: string;
   helpUrl?: string;
 };
 
 export type HealthcheckReportItem = {
+  key: string;
   label: string;
-} & HealthcheckResult;
-
-export type HealthcheckReportCategory = {
-  label: string;
-  checks: Array<HealthcheckReportItem>;
-} & HealthcheckResult;
-
-export type HealthcheckReport = {
-  status: HealthcheckStatus;
-  categories: Array<HealthcheckReportCategory>;
+  result: HealthcheckResult;
 };
 
-function getHealthcheckIdentifier(
-  category: HealthcheckReportCategory,
-  item: HealthcheckReportItem,
-) {
-  return `${category.label} : ${item.label}`;
-}
+export type HealthcheckReportCategory = {
+  key: string;
+  label: string;
+  result: HealthcheckResult;
+  checks: Dictionary<HealthcheckReportItem>;
+};
+
+export type HealthcheckReport = {
+  result: HealthcheckResult;
+  categories: Dictionary<HealthcheckReportCategory>;
+};
 
 function recomputeHealthcheckStatus(draft: State): void {
-  draft.healthcheckReport.status = computeAggregatedStatus(
-    draft.healthcheckReport.categories.map(c => c.status),
+  draft.healthcheckReport.result = computeAggregatedResult(
+    Object.values(draft.healthcheckReport.categories).map(c => c.result),
   );
 }
 
-function computeAggregatedStatus(
-  statuses: HealthcheckStatus[],
-): HealthcheckStatus {
-  return statuses.some(s => s === 'IN_PROGRESS')
-    ? 'IN_PROGRESS'
-    : statuses.every(s => s === 'SUCCESS')
-    ? 'SUCCESS'
-    : statuses.some(s => s === 'FAILED')
-    ? 'FAILED'
-    : statuses.some(s => s === 'FAILED_ACKNOWLEDGED')
-    ? 'FAILED_ACKNOWLEDGED'
-    : statuses.some(s => s === 'WARNING')
-    ? 'WARNING'
-    : 'SKIPPED';
+function computeAggregatedResult(
+  results: HealthcheckResult[],
+): HealthcheckResult {
+  return results.some(r => r.status === 'IN_PROGRESS')
+    ? {status: 'IN_PROGRESS'}
+    : results.every(r => r.status === 'SUCCESS')
+    ? {status: 'SUCCESS'}
+    : results.some(r => r.status === 'FAILED' && !r.isAcknowledged)
+    ? {status: 'FAILED', isAcknowledged: false}
+    : results.some(r => r.status === 'FAILED')
+    ? {status: 'FAILED', isAcknowledged: true}
+    : results.some(r => r.status === 'WARNING' && !r.isAcknowledged)
+    ? {status: 'WARNING', isAcknowledged: false}
+    : results.some(r => r.status === 'WARNING')
+    ? {status: 'WARNING', isAcknowledged: true}
+    : {status: 'SKIPPED'};
 }
 
 const updateCheckResult = produce(
   (
     draft: State,
     {
-      categoryIdx,
-      itemIdx,
+      categoryKey,
+      itemKey,
       result,
     }: {
-      categoryIdx: number;
-      itemIdx: number;
+      categoryKey: string;
+      itemKey: string;
       result: HealthcheckResult;
     },
   ) => {
-    const category = draft.healthcheckReport.categories[categoryIdx];
-    const item = category.checks[itemIdx];
-    Object.assign(item, result);
-    if (
-      result.status === 'FAILED' &&
-      draft.acknowledgedProblems.includes(
-        getHealthcheckIdentifier(category, item),
-      )
-    ) {
-      item.status = 'FAILED_ACKNOWLEDGED';
-    }
+    const category = draft.healthcheckReport.categories[categoryKey];
+    const item = category.checks[itemKey];
+    Object.assign(item.result, result);
+    item.result.isAcknowledged = draft.acknowledgedProblems.includes(item.key);
   },
 );
 
+function createDict<T>(pairs: [string, T][]): Dictionary<T> {
+  const obj: Dictionary<T> = {};
+  for (const pair of pairs) {
+    obj[pair[0]] = pair[1];
+  }
+  return obj;
+}
+
 const start = produce((draft: State, healthchecks: Healthchecks) => {
   draft.healthcheckReport = {
-    status: 'IN_PROGRESS',
-    categories: Object.values(healthchecks)
-      .map(category => {
+    result: {status: 'IN_PROGRESS'},
+    categories: createDict<HealthcheckReportCategory>(
+      Object.entries(healthchecks).map(([categoryKey, category]) => {
         if (category.isSkipped) {
-          return {
-            status: 'SKIPPED',
-            label: category.label,
-            checks: [],
-            message: category.skipReason,
-          };
+          return [
+            categoryKey,
+            {
+              key: categoryKey,
+              result: {
+                status: 'SKIPPED',
+                message: category.skipReason,
+              },
+              label: category.label,
+              checks: createDict<HealthcheckReportItem>([]),
+            },
+          ];
         }
-        return {
-          status: 'IN_PROGRESS',
-          label: category.label,
-          checks: category.healthchecks.map(x => ({
-            status: 'IN_PROGRESS',
-            label: x.label,
-          })),
-        };
-      })
-      .filter(x => !!x)
-      .map(x => x as HealthcheckReportCategory),
+        return [
+          categoryKey,
+          {
+            key: categoryKey,
+            result: {status: 'IN_PROGRESS'},
+            label: category.label,
+            checks: createDict<HealthcheckReportItem>(
+              category.healthchecks.map(check => [
+                check.key,
+                {
+                  key: check.key,
+                  result: {status: 'IN_PROGRESS'},
+                  label: check.label,
+                },
+              ]),
+            ),
+          },
+        ];
+      }),
+    ),
   };
 });
 
 const finish = produce((draft: State) => {
-  draft.healthcheckReport.categories
-    .filter(cat => cat.status !== 'SKIPPED')
+  Object.values(draft.healthcheckReport.categories)
+    .filter(cat => cat.result.status !== 'SKIPPED')
     .forEach(cat => {
-      cat.message = undefined;
-      cat.status = computeAggregatedStatus(cat.checks.map(c => c.status));
+      cat.result.message = undefined;
+      cat.result = computeAggregatedResult(
+        Object.values(cat.checks).map(c => c.result),
+      );
     });
   recomputeHealthcheckStatus(draft);
-  if (draft.healthcheckReport.status === 'SUCCESS') {
+  if (draft.healthcheckReport.result.status === 'SUCCESS') {
     setAcknowledgedProblemsToEmpty(draft);
   }
 });
 
 const acknowledge = produce((draft: State) => {
   draft.acknowledgedProblems = ([] as string[]).concat(
-    ...draft.healthcheckReport.categories.map(cat =>
-      cat.checks
+    ...Object.values(draft.healthcheckReport.categories).map(cat =>
+      Object.values(cat.checks)
         .filter(
           chk =>
-            chk.status === 'FAILED' ||
-            chk.status === 'FAILED_ACKNOWLEDGED' ||
-            chk.status === 'WARNING',
+            chk.result.status === 'FAILED' || chk.result.status === 'WARNING',
         )
-        .map(chk => getHealthcheckIdentifier(cat, chk)),
+        .map(chk => chk.key),
     ),
   );
-  draft.healthcheckReport.categories.forEach(cat => {
-    if (cat.status === 'FAILED') {
-      cat.status = 'FAILED_ACKNOWLEDGED';
-    }
-    cat.checks.forEach(chk => {
-      if (chk.status == 'FAILED') {
-        chk.status = 'FAILED_ACKNOWLEDGED';
-      }
+  Object.values(draft.healthcheckReport.categories).forEach(cat => {
+    cat.result.isAcknowledged = true;
+    Object.values(cat.checks).forEach(chk => {
+      chk.result.isAcknowledged = true;
     });
   });
   recomputeHealthcheckStatus(draft);
@@ -199,14 +212,10 @@ const acknowledge = produce((draft: State) => {
 
 function setAcknowledgedProblemsToEmpty(draft: State) {
   draft.acknowledgedProblems = [];
-  draft.healthcheckReport.categories.forEach(cat => {
-    if (cat.status === 'FAILED_ACKNOWLEDGED') {
-      cat.status = 'FAILED';
-    }
-    cat.checks.forEach(chk => {
-      if (chk.status == 'FAILED_ACKNOWLEDGED') {
-        chk.status = 'FAILED';
-      }
+  Object.values(draft.healthcheckReport.categories).forEach(cat => {
+    cat.result.isAcknowledged = false;
+    Object.values(cat.checks).forEach(chk => {
+      chk.result.isAcknowledged = false;
     });
   });
 }
@@ -234,14 +243,14 @@ export default function reducer(
 }
 
 export const updateHealthcheckResult = (
-  categoryIdx: number,
-  itemIdx: number,
+  categoryKey: string,
+  itemKey: string,
   result: HealthcheckResult,
 ): Action => ({
   type: 'UPDATE_HEALTHCHECK_RESULT',
   payload: {
-    categoryIdx,
-    itemIdx,
+    categoryKey,
+    itemKey,
     result,
   },
 });

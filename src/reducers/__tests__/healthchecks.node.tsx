@@ -64,143 +64,106 @@ const HEALTHCHECKS: Healthchecks = {
 
 test('startHealthCheck', () => {
   const res = reducer(undefined, startHealthchecks(HEALTHCHECKS));
-  expect(res.healthcheckReport.status).toBe('IN_PROGRESS');
-  expect(res.healthcheckReport.categories.length).toBe(3);
-  expect(res.healthcheckReport.categories[0].status).toEqual('IN_PROGRESS');
-  expect(res.healthcheckReport.categories[0].label).toEqual('iOS');
-  expect(res.healthcheckReport.categories[0].checks.length).toEqual(1);
-  expect(res.healthcheckReport.categories[0].checks[0].label).toEqual(
-    'SDK Installed',
-  );
-  expect(res.healthcheckReport.categories[0].checks[0].status).toEqual(
-    'IN_PROGRESS',
-  );
+  expect(res).toMatchSnapshot();
 });
 
 test('updateHealthcheckResult', () => {
   let res = reducer(undefined, startHealthchecks(HEALTHCHECKS));
   res = reducer(
     res,
-    updateHealthcheckResult(0, 0, {
+    updateHealthcheckResult('android', 'android.sdk', {
       message: 'Updated Test Message',
+      isAcknowledged: false,
       status: 'SUCCESS',
     }),
   );
-  expect(res.healthcheckReport.status).toBe('IN_PROGRESS');
-  expect(res.healthcheckReport.categories[0].checks[0].message).toEqual(
-    'Updated Test Message',
-  );
-  expect(res.healthcheckReport.categories[0].checks[0].status).toEqual(
-    'SUCCESS',
-  );
-  expect(res.healthcheckReport.categories[0].status).toEqual('IN_PROGRESS');
-  expect(res.healthcheckReport.categories[1].checks[0].message).toBeUndefined();
-  expect(res.healthcheckReport.categories[1].checks[0].status).toEqual(
-    'IN_PROGRESS',
-  );
-  expect(res.healthcheckReport.categories[1].status).toEqual('IN_PROGRESS');
+  expect(res).toMatchSnapshot();
 });
 
 test('finish', () => {
   let res = reducer(undefined, startHealthchecks(HEALTHCHECKS));
   res = reducer(
     res,
-    updateHealthcheckResult(0, 0, {
+    updateHealthcheckResult('ios', 'ios.sdk', {
       message: 'Updated Test Message',
+      isAcknowledged: false,
       status: 'SUCCESS',
     }),
   );
   res = reducer(
     res,
-    updateHealthcheckResult(1, 0, {
+    updateHealthcheckResult('android', 'android.sdk', {
       message: 'Updated Test Message',
+      isAcknowledged: false,
       status: 'SUCCESS',
     }),
   );
   res = reducer(
     res,
-    updateHealthcheckResult(2, 0, {
+    updateHealthcheckResult('common', 'common.openssl', {
       message: 'Updated Test Message',
+      isAcknowledged: false,
       status: 'SUCCESS',
     }),
   );
   res = reducer(res, finishHealthchecks());
-  expect(res.healthcheckReport.status).toBe('SUCCESS');
-  expect(res.healthcheckReport.categories.map(c => c.status)).toEqual([
-    'SUCCESS',
-    'SUCCESS',
-    'SUCCESS',
-  ]);
+  expect(res).toMatchSnapshot();
 });
 
 test('statuses updated after healthchecks finished', () => {
   let res = reducer(undefined, startHealthchecks(HEALTHCHECKS));
   res = reducer(
     res,
-    updateHealthcheckResult(1, 0, {
+    updateHealthcheckResult('android', 'android.sdk', {
       message: 'Updated Test Message',
+      isAcknowledged: false,
       status: 'FAILED',
     }),
   );
   res = reducer(
     res,
-    updateHealthcheckResult(0, 0, {
+    updateHealthcheckResult('ios', 'ios.sdk', {
       message: 'Updated Test Message',
+      isAcknowledged: false,
       status: 'SUCCESS',
     }),
   );
   res = reducer(
     res,
-    updateHealthcheckResult(2, 0, {
+    updateHealthcheckResult('common', 'common.openssl', {
       message: 'Updated Test Message',
+      isAcknowledged: false,
       status: 'SUCCESS',
     }),
   );
   res = reducer(res, finishHealthchecks());
-  expect(res.healthcheckReport.status).toBe('FAILED');
-  expect(res.healthcheckReport.categories.map(c => c.status)).toEqual([
-    'SUCCESS',
-    'FAILED',
-    'SUCCESS',
-  ]);
-  expect(res.healthcheckReport.categories[1].checks[0].message).toEqual(
-    'Updated Test Message',
-  );
-  expect(res.healthcheckReport.categories[1].checks[0].status).toEqual(
-    'FAILED',
-  );
+  expect(res).toMatchSnapshot();
 });
 
 test('acknowledgeProblems', () => {
   let res = reducer(undefined, startHealthchecks(HEALTHCHECKS));
   res = reducer(
     res,
-    updateHealthcheckResult(0, 0, {
+    updateHealthcheckResult('ios', 'ios.sdk', {
+      isAcknowledged: false,
       status: 'FAILED',
     }),
   );
   res = reducer(
     res,
-    updateHealthcheckResult(1, 0, {
+    updateHealthcheckResult('android', 'android.sdk', {
+      isAcknowledged: false,
       status: 'SUCCESS',
     }),
   );
   res = reducer(
     res,
-    updateHealthcheckResult(2, 0, {
+    updateHealthcheckResult('common', 'common.openssl', {
+      isAcknowledged: false,
       status: 'FAILED',
     }),
   );
   res = reducer(res, finishHealthchecks());
   res = reducer(res, acknowledgeProblems());
-  expect(res.healthcheckReport.categories[0].status).toEqual(
-    'FAILED_ACKNOWLEDGED',
-  );
-  expect(res.healthcheckReport.categories[0].checks[0].status).toEqual(
-    'FAILED_ACKNOWLEDGED',
-  );
-  expect(res.healthcheckReport.categories[1].status).toEqual('SUCCESS');
-  expect(res.healthcheckReport.categories[2].status).toEqual(
-    'FAILED_ACKNOWLEDGED',
-  );
+  expect(res).toMatchSnapshot();
 });

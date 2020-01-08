@@ -33,6 +33,7 @@ export type Healthchecks = {
 };
 
 export type Healthcheck = {
+  key: string;
   label: string;
   isRequired?: boolean;
   run: (
@@ -48,6 +49,7 @@ export type CategoryResult = [
   {
     label: string;
     results: Array<{
+      key: string;
       label: string;
       isRequired: boolean;
       result: {hasProblem: boolean};
@@ -63,6 +65,7 @@ export function getHealthchecks(): Healthchecks {
       isSkipped: false,
       healthchecks: [
         {
+          key: 'common.openssl',
           label: 'OpenSSL Installed',
           run: async (_: EnvironmentInfo) => {
             const isAvailable = await commandSucceeds('openssl version');
@@ -72,6 +75,7 @@ export function getHealthchecks(): Healthchecks {
           },
         },
         {
+          key: 'common.watchman',
           label: 'Watchman Installed',
           run: async (_: EnvironmentInfo) => {
             const isAvailable = await isWatchmanAvailable();
@@ -88,6 +92,7 @@ export function getHealthchecks(): Healthchecks {
       isSkipped: false,
       healthchecks: [
         {
+          key: 'android.sdk',
           label: 'SDK Installed',
           isRequired: true,
           run: async (e: EnvironmentInfo) => ({
@@ -104,6 +109,7 @@ export function getHealthchecks(): Healthchecks {
             isSkipped: false,
             healthchecks: [
               {
+                key: 'ios.sdk',
                 label: 'SDK Installed',
                 isRequired: true,
                 run: async (e: EnvironmentInfo) => ({
@@ -111,6 +117,7 @@ export function getHealthchecks(): Healthchecks {
                 }),
               },
               {
+                key: 'ios.xcode',
                 label: 'XCode Installed',
                 isRequired: true,
                 run: async (e: EnvironmentInfo) => ({
@@ -118,6 +125,7 @@ export function getHealthchecks(): Healthchecks {
                 }),
               },
               {
+                key: 'ios.xcode-select',
                 label: 'xcode-select set',
                 isRequired: true,
                 run: async (_: EnvironmentInfo) => ({
@@ -125,6 +133,7 @@ export function getHealthchecks(): Healthchecks {
                 }),
               },
               {
+                key: 'ios.instruments',
                 label: 'Instruments exists',
                 isRequired: true,
                 run: async (_: EnvironmentInfo) => {
@@ -164,17 +173,20 @@ export async function runHealthchecks(): Promise<
         {
           label: category.label,
           results: await Promise.all(
-            category.healthchecks.map(async ({label, run, isRequired}) => ({
-              label,
-              isRequired: isRequired ?? true,
-              result: await run(environmentInfo).catch(e => {
-                console.error(e);
-                // TODO Improve result type to be: OK | Problem(message, fix...)
-                return {
-                  hasProblem: true,
-                };
+            category.healthchecks.map(
+              async ({key, label, run, isRequired}) => ({
+                key,
+                label,
+                isRequired: isRequired ?? true,
+                result: await run(environmentInfo).catch(e => {
+                  console.error(e);
+                  // TODO Improve result type to be: OK | Problem(message, fix...)
+                  return {
+                    hasProblem: true,
+                  };
+                }),
               }),
-            })),
+            ),
           ),
         },
       ];

@@ -26,14 +26,12 @@ import {State as Store} from '../reducers';
 import {
   HealthcheckResult,
   HealthcheckReportCategory,
-  HealthcheckReportItem,
   HealthcheckReport,
   startHealthchecks,
   finishHealthchecks,
   updateHealthcheckResult,
   acknowledgeProblems,
   resetAcknowledgedProblems,
-  HealthcheckStatus,
 } from '../reducers/healthchecks';
 import runHealthchecks, {
   HealthcheckSettings,
@@ -123,17 +121,18 @@ function CenteredCheckbox(props: {
   );
 }
 
-function HealthcheckIcon(props: {check: HealthcheckResult}) {
-  switch (props.check.status) {
+function HealthcheckIcon(props: {checkResult: HealthcheckResult}) {
+  const {checkResult: check} = props;
+  switch (props.checkResult.status) {
     case 'IN_PROGRESS':
-      return <LoadingIndicator size={16} title={props.check.message} />;
+      return <LoadingIndicator size={16} title={props.checkResult.message} />;
     case 'SKIPPED':
       return (
         <Glyph
           size={16}
           name={'question'}
           color={colors.grey}
-          title={props.check.message}
+          title={props.checkResult.message}
         />
       );
     case 'SUCCESS':
@@ -142,7 +141,7 @@ function HealthcheckIcon(props: {check: HealthcheckResult}) {
           size={16}
           name={'checkmark'}
           color={colors.green}
-          title={props.check.message}
+          title={props.checkResult.message}
         />
       );
     case 'FAILED':
@@ -151,17 +150,8 @@ function HealthcheckIcon(props: {check: HealthcheckResult}) {
           size={16}
           name={'cross'}
           color={colors.red}
-          title={props.check.message}
-        />
-      );
-    case 'FAILED_ACKNOWLEDGED':
-      return (
-        <Glyph
-          size={16}
-          name={'cross'}
-          color={colors.red}
-          title={props.check.message}
-          variant="outline"
+          title={props.checkResult.message}
+          variant={check.isAcknowledged ? 'outline' : 'filled'}
         />
       );
     default:
@@ -170,26 +160,26 @@ function HealthcheckIcon(props: {check: HealthcheckResult}) {
           size={16}
           name={'caution'}
           color={colors.yellow}
-          title={props.check.message}
+          title={props.checkResult.message}
         />
       );
   }
 }
 
 function HealthcheckDisplay(props: {
-  category: HealthcheckReportCategory;
-  check: HealthcheckReportItem;
+  label: string;
+  result: HealthcheckResult;
   onClick?: () => void;
 }) {
   return (
     <FlexColumn shrink>
-      <HealthcheckDisplayContainer shrink title={props.check.message}>
-        <HealthcheckIcon check={props.check} />
+      <HealthcheckDisplayContainer shrink title={props.result.message}>
+        <HealthcheckIcon checkResult={props.result} />
         <HealthcheckLabel
           underline={!!props.onClick}
           cursor={props.onClick && 'pointer'}
           onClick={props.onClick}>
-          {props.check.label}
+          {props.label}
         </HealthcheckLabel>
       </HealthcheckDisplayContainer>
     </FlexColumn>
@@ -221,20 +211,13 @@ function SideMessageDisplay(props: {
   }
 }
 
-function hasProblems(status: HealthcheckStatus) {
-  return (
-    status === 'FAILED' ||
-    status === 'FAILED_ACKNOWLEDGED' ||
-    status === 'WARNING'
-  );
+function hasProblems(result: HealthcheckResult) {
+  const {status} = result;
+  return status === 'FAILED' || status === 'WARNING';
 }
 
-function hasFailedChecks(status: HealthcheckStatus) {
-  return status === 'FAILED' || status === 'FAILED_ACKNOWLEDGED';
-}
-
-function hasNewFailedChecks(status: HealthcheckStatus) {
-  return status === 'FAILED';
+function hasNewProblems(result: HealthcheckResult) {
+  return hasProblems(result) && !result.isAcknowledged;
 }
 
 export type State = {
@@ -254,21 +237,21 @@ class DoctorSheet extends Component<Props, State> {
   static getDerivedStateFromProps(props: Props, state: State): State | null {
     if (
       !state.acknowledgeCheckboxVisible &&
-      hasFailedChecks(props.healthcheckReport.status)
+      hasProblems(props.healthcheckReport.result)
     ) {
       return {
         ...state,
         acknowledgeCheckboxVisible: true,
         acknowledgeOnClose:
           state.acknowledgeOnClose === undefined
-            ? !hasNewFailedChecks(props.healthcheckReport.status)
+            ? !hasNewProblems(props.healthcheckReport.result)
             : state.acknowledgeOnClose,
       };
     }
 
     if (
       state.acknowledgeCheckboxVisible &&
-      !hasFailedChecks(props.healthcheckReport.status)
+      !hasProblems(props.healthcheckReport.result)
     ) {
       return {
         ...state,
@@ -296,8 +279,8 @@ class DoctorSheet extends Component<Props, State> {
     });
   }
 
-  openHelpUrl(check: HealthcheckReportItem): void {
-    check.helpUrl && shell.openExternal(check.helpUrl);
+  openHelpUrl(helpUrl?: string): void {
+    helpUrl && shell.openExternal(helpUrl);
   }
 
   async runHealthchecks() {
@@ -311,29 +294,34 @@ class DoctorSheet extends Component<Props, State> {
         <FlexRow>
           <HealthcheckListContainer>
             {Object.values(this.props.healthcheckReport.categories).map(
-              (category: HealthcheckReportCategory, categoryIdx: number) => {
+              (category: HealthcheckReportCategory) => {
                 return (
-                  <CategoryContainer key={categoryIdx}>
-                    <HealthcheckDisplay check={category} category={category} />
-                    {category.status !== 'SKIPPED' && (
+                  <CategoryContainer key={category.key}>
+                    <HealthcheckDisplay
+                      label={category.label}
+                      result={category.result}
+                    />
+                    {category.result.status !== 'SKIPPED' && (
                       <CategoryContainer>
-                        {category.checks.map((check, checkIdx) => (
+                        {Object.values(category.checks).map(check => (
                           <HealthcheckDisplay
-                            key={checkIdx}
-                            category={category}
-                            check={check}
+                            key={check.key}
+                            label={check.label}
+                            result={check.result}
                             onClick={
-                              check.helpUrl
-                                ? () => this.openHelpUrl(check)
+                              check.result.helpUrl
+                                ? () => this.openHelpUrl(check.result.helpUrl)
                                 : undefined
                             }
                           />
                         ))}
                       </CategoryContainer>
                     )}
-                    {category.status === 'SKIPPED' && (
+                    {category.result.status === 'SKIPPED' && (
                       <CategoryContainer>
-                        <SkipReasonLabel>{category.message}</SkipReasonLabel>
+                        <SkipReasonLabel>
+                          {category.result.message}
+                        </SkipReasonLabel>
                       </CategoryContainer>
                     )}
                   </CategoryContainer>
@@ -345,9 +333,9 @@ class DoctorSheet extends Component<Props, State> {
           <SideContainer shrink>
             <SideMessageDisplay
               isHealthcheckInProgress={
-                this.props.healthcheckReport.status === 'IN_PROGRESS'
+                this.props.healthcheckReport.result.status === 'IN_PROGRESS'
               }
-              hasProblems={hasProblems(this.props.healthcheckReport.status)}
+              hasProblems={hasProblems(this.props.healthcheckReport.result)}
             />
           </SideContainer>
         </FlexRow>
@@ -366,7 +354,9 @@ class DoctorSheet extends Component<Props, State> {
             Close
           </Button>
           <Button
-            disabled={this.props.healthcheckReport.status === 'IN_PROGRESS'}
+            disabled={
+              this.props.healthcheckReport.result.status === 'IN_PROGRESS'
+            }
             type="primary"
             compact
             padded
