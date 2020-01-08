@@ -8,7 +8,7 @@
  */
 
 import {Actions} from './';
-import {produce} from 'flipper';
+import {produce} from 'immer';
 import {Healthchecks} from 'flipper-doctor';
 
 export type State = {

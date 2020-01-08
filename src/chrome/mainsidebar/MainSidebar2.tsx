@@ -91,7 +91,7 @@ const SidebarSectionBody = styled('div')<{
   overflow: 'hidden',
   maxHeight: collapsed ? 0 : 2000, // might need increase if too many plugins...
   transition: collapsed
-    ? 'max-height 0.5s ease-out'
+    ? 'max-height 0.3s ease-out'
     : 'max-height 0.5s ease-in',
 }));
 
