@@ -11,6 +11,7 @@ import {exec} from 'child_process';
 import {promisify} from 'util';
 import {EnvironmentInfo, getEnvInfo} from './environmentInfo';
 export {getEnvInfo} from './environmentInfo';
+import * as watchman from 'fb-watchman';
 
 export type HealthcheckCategory = {
   label: string;
@@ -65,6 +66,15 @@ export function getHealthchecks(): Healthchecks {
           label: 'OpenSSL Installed',
           run: async (_: EnvironmentInfo) => {
             const isAvailable = await commandSucceeds('openssl version');
+            return {
+              hasProblem: !isAvailable,
+            };
+          },
+        },
+        {
+          label: 'Watchman Installed',
+          run: async (_: EnvironmentInfo) => {
+            const isAvailable = await isWatchmanAvailable();
             return {
               hasProblem: !isAvailable,
             };
@@ -178,4 +188,26 @@ async function commandSucceeds(command: string): Promise<boolean> {
   return await promisify(exec)(command)
     .then(() => true)
     .catch(() => false);
+}
+
+async function isWatchmanAvailable(): Promise<boolean> {
+  const client = new watchman.Client();
+  return new Promise(resolve => {
+    const complete = (result: boolean) => {
+      resolve(result);
+      client.removeAllListeners('error');
+      client.end();
+    };
+    client.once('error', () => complete(false));
+    client.capabilityCheck(
+      {optional: [], required: ['relative_root']},
+      error => {
+        if (error) {
+          complete(false);
+          return;
+        }
+        complete(true);
+      },
+    );
+  });
 }

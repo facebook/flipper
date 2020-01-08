@@ -24,6 +24,7 @@ const HEALTHCHECKS: Healthchecks = {
     isRequired: true,
     healthchecks: [
       {
+        key: 'ios.sdk',
         label: 'SDK Installed',
         run: async (_env: EnvironmentInfo) => {
           return {hasProblem: false};
@@ -37,6 +38,7 @@ const HEALTHCHECKS: Healthchecks = {
     isRequired: true,
     healthchecks: [
       {
+        key: 'android.sdk',
         label: 'SDK Installed',
         run: async (_env: EnvironmentInfo) => {
           return {hasProblem: true};
@@ -50,6 +52,7 @@ const HEALTHCHECKS: Healthchecks = {
     isRequired: false,
     healthchecks: [
       {
+        key: 'common.openssl',
         label: 'OpenSSL Istalled',
         run: async (_env: EnvironmentInfo) => {
           return {hasProblem: false};
