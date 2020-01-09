@@ -34,6 +34,7 @@ import fs from 'fs';
 import os from 'os';
 import util from 'util';
 import path from 'path';
+import {promisify} from 'util';
 import type {Notification} from '../../plugin.tsx';
 import type {Store, DeviceLogEntry, OS, Props} from 'flipper';
 import {Component} from 'react';
@@ -372,16 +373,26 @@ function addFileWatcherForiOSCrashLogs(
     if (!filename || !checkFileExtension) {
       return;
     }
-    fs.readFile(path.join(dir, filename), 'utf8', function(err, data) {
-      if (store.getState().connections.selectedDevice?.os != 'iOS') {
-        // If the selected device is not iOS don't show crash notifications
+    const filepath = path.join(dir, filename);
+    promisify(fs.exists)(filepath).then(exists => {
+      if (!exists) {
         return;
       }
-      if (err) {
-        console.error(err);
-        return;
-      }
-      parseCrashLogAndUpdateState(store, util.format(data), setPersistedState);
+      fs.readFile(filepath, 'utf8', function(err, data) {
+        if (store.getState().connections.selectedDevice?.os != 'iOS') {
+          // If the selected device is not iOS don't show crash notifications
+          return;
+        }
+        if (err) {
+          console.error(err);
+          return;
+        }
+        parseCrashLogAndUpdateState(
+          store,
+          util.format(data),
+          setPersistedState,
+        );
+      });
     });
   });
 }
