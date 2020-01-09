@@ -212,6 +212,7 @@ type RefreshEvent = {
 
 type UpdateFavoritesEvent = {
   type: 'UpdateFavorites',
+  favorites: ?Array<string>,
 };
 
 type SortByChangedEvent = {
@@ -769,7 +770,7 @@ export default class DatabasesPlugin extends FlipperPlugin<
         state: DatabasesPluginState,
         event: UpdateFavoritesEvent,
       ): DatabasesPluginState => {
-        let newFavorites = state.favorites;
+        let newFavorites = event.favorites || state.favorites;
         if (
           state.query &&
           state.query !== null &&
@@ -783,6 +784,10 @@ export default class DatabasesPlugin extends FlipperPlugin<
             newFavorites = state.favorites.concat(value);
           }
         }
+        window.localStorage.setItem(
+          'favoritesQueries',
+          JSON.stringify(newFavorites),
+        );
         return {
           ...state,
           favorites: newFavorites,
@@ -940,6 +945,10 @@ export default class DatabasesPlugin extends FlipperPlugin<
         databases,
       });
     });
+    this.dispatchAction({
+      type: 'UpdateFavorites',
+      favorites: JSON.parse(localStorage.getItem('favoritesQueries')),
+    });
   }
 
   onDataClicked = () => {
@@ -1071,13 +1080,32 @@ export default class DatabasesPlugin extends FlipperPlugin<
   sidebarRows = (id: number, table: QueriedTable) => {
     const columns = table.columns;
     const row = table.rows[id];
-    const sidebarArray = [];
-    for (let i = 0; i < columns.length; i++) {
-      sidebarArray.push(
+    if (columns.length === 1) {
+      const sidebarArray = [];
+      try {
+        const parsed = JSON.parse(row.columns[columns[0]].value.props.children);
+        for (const key in parsed) {
+          try {
+            sidebarArray.push(
+              this.buildSidebarRow(key, {
+                props: {
+                  children: parsed[key],
+                },
+              }),
+            );
+          } catch (err) {}
+        }
+      } catch (e) {
+        sidebarArray.push(
+          this.buildSidebarRow(columns[0], row.columns[columns[0]].value),
+        );
+      }
+      return sidebarArray;
+    } else {
+      return columns.map((column, i) =>
         this.buildSidebarRow(columns[i], row.columns[columns[i]].value),
       );
     }
-    return sidebarArray;
   };
 
   buildSidebarRow = (key: string, val: any) => {
@@ -1089,7 +1117,9 @@ export default class DatabasesPlugin extends FlipperPlugin<
           parsed[key] = JSON.parse(parsed[key]);
         } catch (err) {}
       }
-      output = <ManagedDataInspector data={parsed} expandRoot={true} />;
+      output = (
+        <ManagedDataInspector data={parsed} expandRoot={false} collapsed />
+      );
     } catch (error) {
       output = val;
     }
