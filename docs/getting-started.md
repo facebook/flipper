@@ -61,6 +61,10 @@ app](https://github.com/facebook/flipper/tree/master/android/sample/src) to
 see how to organise your Flipper initialization into debug and release
 variants.
 
+Alternatively, have a look at the third-party
+[flipper-android-no-op](https://github.com/theGlenn/flipper-android-no-op)
+repository, which provides empty implementations for several Flipper plugins.
+
 </div>
 
 Now you can initialize Flipper in your Application's `onCreate` method, which involves
