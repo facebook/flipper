@@ -29,6 +29,8 @@ import {
   finishHealthchecks,
 } from '../reducers/healthchecks';
 
+import {reportUsage} from '../utils/metrics';
+
 type StateFromProps = {
   healthcheckResult: HealthcheckResult;
 } & HealthcheckSettings;
@@ -58,6 +60,7 @@ class DoctorBar extends Component<Props, State> {
       !this.props.healthcheckResult.isAcknowledged
     ) {
       this.setVisible(true);
+      reportUsage('doctor:warning:shown');
     }
   }
   render() {

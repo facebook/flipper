@@ -9,6 +9,7 @@
 
 import {HealthcheckResult} from '../reducers/healthchecks';
 import {getHealthchecks, getEnvInfo, Healthchecks} from 'flipper-doctor';
+import {logPlatformSuccessRate, reportPlatformFailures} from '../utils/metrics';
 
 let healthcheckIsRunning: boolean;
 let runningHealthcheck: Promise<void>;
@@ -41,12 +42,26 @@ async function launchHealthchecks(options: HealthcheckOptions): Promise<void> {
   }
   options.startHealthchecks(healthchecks);
   const environmentInfo = await getEnvInfo();
+  let hasProblems = false;
   for (const [categoryKey, category] of Object.entries(healthchecks)) {
     if (category.isSkipped) {
       continue;
     }
     for (const h of category.healthchecks) {
       const checkResult = await h.run(environmentInfo);
+      const metricName = `doctor:${h.key.replace('.', ':')}.healthcheck`; // e.g. "doctor:ios:xcode-select.healthcheck"
+      if (checkResult.hasProblem) {
+        hasProblems = true;
+        logPlatformSuccessRate(metricName, {
+          kind: 'failure',
+          supportedOperation: true,
+          error: null,
+        });
+      } else {
+        logPlatformSuccessRate(metricName, {
+          kind: 'success',
+        });
+      }
       const result: HealthcheckResult =
         checkResult.hasProblem && h.isRequired
           ? {
@@ -63,6 +78,17 @@ async function launchHealthchecks(options: HealthcheckOptions): Promise<void> {
     }
   }
   options.finishHealthchecks();
+  if (hasProblems) {
+    logPlatformSuccessRate('doctor.healthcheck', {
+      kind: 'failure',
+      supportedOperation: true,
+      error: null,
+    });
+  } else {
+    logPlatformSuccessRate('doctor.healthcheck', {
+      kind: 'success',
+    });
+  }
 }
 
 export default async function runHealthchecks(
@@ -71,6 +97,9 @@ export default async function runHealthchecks(
   if (healthcheckIsRunning) {
     return runningHealthcheck;
   }
-  runningHealthcheck = launchHealthchecks(options);
+  runningHealthcheck = reportPlatformFailures(
+    launchHealthchecks(options),
+    'doctor:runHealthchecks',
+  );
   return runningHealthcheck;
 }
