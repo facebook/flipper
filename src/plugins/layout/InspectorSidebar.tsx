@@ -94,68 +94,62 @@ type Props = {
   logger: Logger;
 };
 
-export default class Sidebar extends Component<Props> {
-  render() {
-    const {element} = this.props;
-    if (!element || !element.data) {
-      return <NoData grow>No data</NoData>;
-    }
+const Sidebar: React.FC<Props> = (props: Props) => {
+  const {element} = props;
+  if (!element || !element.data) {
+    return <NoData grow>No data</NoData>;
+  }
 
-    const sections: Array<any> =
-      (SidebarExtensions &&
-        SidebarExtensions.map(ext =>
-          ext(
-            this.props.client,
-            this.props.realClient,
-            element.id,
-            this.props.logger,
-          ),
-        )) ||
-      [];
+  const sections: Array<any> =
+    (SidebarExtensions &&
+      SidebarExtensions.map(ext =>
+        ext(props.client, props.realClient, element.id, props.logger),
+      )) ||
+    [];
 
-    for (const key in element.data) {
-      if (key === 'Extra Sections') {
-        for (const extraSection in element.data[key]) {
-          const section = element.data[key][extraSection];
-          let data = {};
+  for (const key in element.data) {
+    if (key === 'Extra Sections') {
+      for (const extraSection in element.data[key]) {
+        const section = element.data[key][extraSection];
+        let data = {};
 
-          // data might be sent as stringified JSON, we want to parse it for a nicer persentation.
-          if (typeof section === 'string') {
-            try {
-              data = JSON.parse(section);
-            } catch (e) {
-              // data was not a valid JSON, type is required to be an object
-              console.error(
-                `ElementsInspector unable to parse extra section: ${extraSection}`,
-              );
-              data = {};
-            }
-          } else {
-            data = section;
+        // data might be sent as stringified JSON, we want to parse it for a nicer persentation.
+        if (typeof section === 'string') {
+          try {
+            data = JSON.parse(section);
+          } catch (e) {
+            // data was not a valid JSON, type is required to be an object
+            console.error(
+              `ElementsInspector unable to parse extra section: ${extraSection}`,
+            );
+            data = {};
           }
-          sections.push(
-            <InspectorSidebarSection
-              tooltips={this.props.tooltips}
-              key={extraSection}
-              id={extraSection}
-              data={data}
-              onValueChanged={this.props.onValueChanged}
-            />,
-          );
+        } else {
+          data = section;
         }
-      } else {
         sections.push(
           <InspectorSidebarSection
-            tooltips={this.props.tooltips}
-            key={key}
-            id={key}
-            data={element.data[key]}
-            onValueChanged={this.props.onValueChanged}
+            tooltips={props.tooltips}
+            key={extraSection}
+            id={extraSection}
+            data={data}
+            onValueChanged={props.onValueChanged}
           />,
         );
       }
+    } else {
+      sections.push(
+        <InspectorSidebarSection
+          tooltips={props.tooltips}
+          key={key}
+          id={key}
+          data={element.data[key]}
+          onValueChanged={props.onValueChanged}
+        />,
+      );
     }
-
-    return sections;
   }
-}
+
+  return <>{sections}</>;
+};
+export default Sidebar;
