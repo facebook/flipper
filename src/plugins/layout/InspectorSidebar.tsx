@@ -22,6 +22,8 @@ import {Logger} from '../../fb-interfaces/Logger';
 import {Component} from 'react';
 import deepEqual from 'deep-equal';
 import React from 'react';
+import {useMemo, useEffect} from 'react';
+import {kebabCase} from 'lodash';
 
 const NoData = styled(FlexCenter)({
   fontSize: 18,
@@ -100,56 +102,74 @@ const Sidebar: React.FC<Props> = (props: Props) => {
     return <NoData grow>No data</NoData>;
   }
 
-  const sections: Array<any> =
+  const [sectionDefs, sectionKeys] = useMemo(() => {
+    const sectionKeys = [];
+    const sectionDefs = [];
+
+    for (const key in element.data) {
+      if (key === 'Extra Sections') {
+        for (const extraSection in element.data[key]) {
+          const section = element.data[key][extraSection];
+          let data = {};
+
+          // data might be sent as stringified JSON, we want to parse it for a nicer persentation.
+          if (typeof section === 'string') {
+            try {
+              data = JSON.parse(section);
+            } catch (e) {
+              // data was not a valid JSON, type is required to be an object
+              console.error(
+                `ElementsInspector unable to parse extra section: ${extraSection}`,
+              );
+              data = {};
+            }
+          } else {
+            data = section;
+          }
+          sectionKeys.push(kebabCase(extraSection));
+          sectionDefs.push({
+            key: extraSection,
+            id: extraSection,
+            data: data,
+          });
+        }
+      } else {
+        sectionKeys.push(kebabCase(key));
+        sectionDefs.push({
+          key,
+          id: key,
+          data: element.data[key],
+        });
+      }
+    }
+
+    return [sectionDefs, sectionKeys];
+  }, [props.element]);
+
+  const sections: Array<React.ReactNode> = (
     (SidebarExtensions &&
       SidebarExtensions.map(ext =>
         ext(props.client, props.realClient, element.id, props.logger),
       )) ||
-    [];
+    []
+  ).concat(
+    sectionDefs.map(def => (
+      <InspectorSidebarSection
+        tooltips={props.tooltips}
+        key={def.key}
+        id={def.id}
+        data={def.data}
+        onValueChanged={props.onValueChanged}
+      />
+    )),
+  );
 
-  for (const key in element.data) {
-    if (key === 'Extra Sections') {
-      for (const extraSection in element.data[key]) {
-        const section = element.data[key][extraSection];
-        let data = {};
-
-        // data might be sent as stringified JSON, we want to parse it for a nicer persentation.
-        if (typeof section === 'string') {
-          try {
-            data = JSON.parse(section);
-          } catch (e) {
-            // data was not a valid JSON, type is required to be an object
-            console.error(
-              `ElementsInspector unable to parse extra section: ${extraSection}`,
-            );
-            data = {};
-          }
-        } else {
-          data = section;
-        }
-        sections.push(
-          <InspectorSidebarSection
-            tooltips={props.tooltips}
-            key={extraSection}
-            id={extraSection}
-            data={data}
-            onValueChanged={props.onValueChanged}
-          />,
-        );
-      }
-    } else {
-      sections.push(
-        <InspectorSidebarSection
-          tooltips={props.tooltips}
-          key={key}
-          id={key}
-          data={element.data[key]}
-          onValueChanged={props.onValueChanged}
-        />,
-      );
-    }
-  }
-
+  useEffect(() => {
+    sectionKeys.map(key =>
+      props.logger.track('usage', `layout-sidebar-extension:${key}:loaded`),
+    );
+  }, [props.element?.data]);
   return <>{sections}</>;
 };
+
 export default Sidebar;
