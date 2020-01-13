@@ -11,7 +11,7 @@ const path = require('path');
 const fs = require('fs-extra');
 const builder = require('electron-builder');
 const Platform = builder.Platform;
-const cp = require('child-process-es6-promise');
+const cp = require('promisify-child-process');
 const {
   buildFolder,
   compile,
@@ -62,15 +62,16 @@ function modifyPackageManifest(buildFolder, versionNumber, hgRevision) {
   );
 }
 
-function buildDist(buildFolder) {
+async function buildDist(buildFolder) {
   const targetsRaw = [];
   const postBuildCallbacks = [];
 
   if (process.argv.indexOf('--mac') > -1) {
     targetsRaw.push(Platform.MAC.createTarget(['dir']));
     postBuildCallbacks.push(() =>
-      cp.spawn('zip', ['-yr9', '../Flipper-mac.zip', 'Flipper.app'], {
+      cp.spawn('zip', ['-qyr9', '../Flipper-mac.zip', 'Flipper.app'], {
         cwd: path.join(__dirname, '..', 'dist', 'mac'),
+        encoding: 'utf-8',
       }),
     );
   }
@@ -96,8 +97,8 @@ function buildDist(buildFolder) {
     electronDownload.cache = process.env.electron_config_cache;
   }
 
-  return builder
-    .build({
+  try {
+    await builder.build({
       publish: 'never',
       config: {
         appId: `com.facebook.sonar`,
@@ -110,9 +111,11 @@ function buildDist(buildFolder) {
       },
       projectDir: buildFolder,
       targets,
-    })
-    .then(() => Promise.all(postBuildCallbacks.map(p => p())))
-    .catch(die);
+    });
+    return await Promise.all(postBuildCallbacks.map(p => p()));
+  } catch (err) {
+    return die(err);
+  }
 }
 
 function copyStaticFolder(buildFolder) {

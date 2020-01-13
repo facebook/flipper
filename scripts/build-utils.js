@@ -12,7 +12,7 @@ const compilePlugins = require('../static/compilePlugins');
 const tmp = require('tmp');
 const path = require('path');
 const fs = require('fs-extra');
-const cp = require('child-process-es6-promise');
+const cp = require('promisify-child-process');
 
 function die(err) {
   console.error(err.stack);
