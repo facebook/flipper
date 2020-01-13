@@ -147,8 +147,8 @@ class TableHeadColumn extends PureComponent<{
       const {parentElement} = this.ref;
       invariant(parentElement, 'expected there to be parentElement');
 
-      const parentWidth = parentElement!.clientWidth;
-      const {childNodes} = parentElement!;
+      const parentWidth = parentElement.clientWidth;
+      const {childNodes} = parentElement;
 
       const lastElem = childNodes[childNodes.length - 1];
       const right =

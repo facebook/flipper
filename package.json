@@ -68,7 +68,7 @@
     "@types/expand-tilde": "^2.0.0",
     "@types/fb-watchman": "^2.0.0",
     "@types/fs-extra": "^8.0.0",
-    "@types/invariant": "^2.2.30",
+    "@types/invariant": "^2.2.31",
     "@types/jest": "^24.0.16",
     "@types/lodash.debounce": "^4.0.6",
     "@types/lodash.isequal": "^4.5.5",
