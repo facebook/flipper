@@ -193,6 +193,7 @@ need to use this. ContextMenu is what you probably want to use.</p>
 <tr><td><code>path</code></td><td><code>Array&lt;string&gt;</code></td><td></td></tr>
 <tr><td><code>type</code></td><td><code>string</code></td><td></td></tr>
 <tr><td><code>value</code></td><td><code>any</code></td><td></td></tr>
+<tr><td><code>extra</code></td><td><code>any</code></td><td></td></tr>
 <tr><td><code>setValue</code></td><td><code>DataInspectorSetValue ⎮ null ⎮ undefined</code></td><td></td></tr>
 </tbody>
 </table>
@@ -229,7 +230,7 @@ need to use this. ContextMenu is what you probably want to use.</p>
 <tr><td><code>type</code></td><td><code>string</code></td><td></td></tr>
 <tr><td><code>value</code></td><td><code>any</code></td><td></td></tr>
 <tr><td><code>depth</code></td><td><code>number</code></td><td></td></tr>
-<tr><td><code>extractValue</code></td><td><code>( value: any, depth: number, ) =&gt; ⎮ { mutable: boolean; type: string; value: any; } ⎮ undefined ⎮ null</code></td><td></td></tr>
+<tr><td><code>extractValue</code></td><td><code>( value: any, depth: number, ) =&gt; ⎮ { mutable: boolean; type: string; value: any; extra?: any; } ⎮ undefined ⎮ null</code></td><td></td></tr>
 <tr><td><code>maxProperties</code></td><td><code>number</code></td><td></td></tr>
 </tbody>
 </table>
