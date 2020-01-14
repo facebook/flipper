@@ -26,5 +26,5 @@ Pod::Spec.new do |spec|
   spec.pod_target_xcconfig = { "USE_HEADERMAP" => "NO",
                                "ARCHS" => "${ARCHS_STANDARD_64_BIT}",
                                "CLANG_CXX_LANGUAGE_STANDARD" => "c++14",
-                               "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)\" \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/Flipper-RSocket\" \"$(PODS_ROOT)/DoubleConversion\"" }
+                               "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)\" \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/Flipper-RSocket\" \"$(PODS_ROOT)/Flipper-DoubleConversion\"" }
 end

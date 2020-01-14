@@ -138,8 +138,8 @@ target 'MyApp' do
   # it's dependencies to be built as a static library and all other pods to
   # be dynamic.
   # $static_framework = ['FlipperKit', 'Flipper', 'Flipper-Folly',
-  #   'CocoaAsyncSocket', 'ComponentKit', 'DoubleConversion',
-  #   'glog', 'Flipper-PeerTalk', 'Flipper-RSocket', 'Yoga', 'YogaKit',
+  #   'CocoaAsyncSocket', 'ComponentKit', 'Flipper-DoubleConversion',
+  #   'Flipper-Glog', 'Flipper-PeerTalk', 'Flipper-RSocket', 'Yoga', 'YogaKit',
   #   'CocoaLibEvent', 'OpenSSL-Universal', 'boost-for-react-native']
   #
   # pre_install do |installer|
@@ -201,8 +201,8 @@ target 'MyApp' do
   # it's dependencies to be built as a static library and all other pods to
   # be dynamic.
   # $static_framework = ['FlipperKit', 'Flipper', 'Flipper-Folly',
-  #   'CocoaAsyncSocket', 'ComponentKit', 'DoubleConversion',
-  #   'glog', 'Flipper-PeerTalk', 'Flipper-RSocket', 'Yoga', 'YogaKit',
+  #   'CocoaAsyncSocket', 'ComponentKit', 'Flipper-DoubleConversion',
+  #   'Flipper-Glog', 'Flipper-PeerTalk', 'Flipper-RSocket', 'Yoga', 'YogaKit',
   #   'CocoaLibEvent', 'OpenSSL-Universal', 'boost-for-react-native']
   #
   # pre_install do |installer|

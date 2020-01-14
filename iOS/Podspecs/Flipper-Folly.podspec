@@ -5,7 +5,7 @@
 
 Pod::Spec.new do |spec|
   spec.name = 'Flipper-Folly'
-  spec.version = '2.1.0'
+  spec.version = '2.1.1'
   spec.license = { :type => 'Apache License, Version 2.0' }
   spec.homepage = 'https://github.com/facebook/folly'
   spec.summary = 'An open-source C++ library developed and used at Facebook.'
@@ -14,8 +14,8 @@ Pod::Spec.new do |spec|
                   :tag => "v2019.03.25.00"}
   spec.module_name = 'folly'
   spec.dependency 'boost-for-react-native'
-  spec.dependency 'DoubleConversion'
-  spec.dependency 'glog'
+  spec.dependency 'Flipper-Glog'
+  spec.dependency 'Flipper-DoubleConversion'
   spec.dependency 'OpenSSL-Universal', '1.0.2.19'
   spec.dependency 'CocoaLibEvent', '~> 1.0'
   spec.compiler_flags = '-DFOLLY_HAVE_PTHREAD=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_LIBGFLAGS=0 -DFOLLY_HAVE_LIBJEMALLOC=0 -DFOLLY_HAVE_PREADV=0 -DFOLLY_HAVE_PWRITEV=0 -DFOLLY_HAVE_TFO=0 -DFOLLY_USE_SYMBOLIZER=0
@@ -90,8 +90,7 @@ Pod::Spec.new do |spec|
   spec.pod_target_xcconfig = {  "USE_HEADERMAP" => "NO",
                                 "ARCHS" => "${ARCHS_STANDARD_64_BIT}",
                                 "CLANG_CXX_LANGUAGE_STANDARD" => "c++11",
-                                "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)\" \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/DoubleConversion\""
+                                "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)\" \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/Flipper-DoubleConversion\""
                               }
-  # Pinning to the same version as React.podspec.
   spec.platforms = { :ios => "8.0"}
 end

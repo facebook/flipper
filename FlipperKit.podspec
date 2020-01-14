@@ -40,7 +40,7 @@ Pod::Spec.new do |spec|
     # by other FlipperKit source files
     ss.private_header_files = 'iOS/FlipperKit/CppBridge/**/*.h'
     ss.preserve_path = 'iOS/FlipperKit/CppBridge/**/*.h'
-    header_search_paths = "\"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/FlipperKit/iOS/**/\""
+    header_search_paths = "\"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/Flipper-DoubleConversion\" \"$(PODS_ROOT)/FlipperKit/iOS/**/\""
     ss.pod_target_xcconfig = { "USE_HEADERMAP" => "NO",
                                 "ONLY_ACTIVE_ARCH": "YES",
                              "DEFINES_MODULE" => "YES",
@@ -55,7 +55,7 @@ Pod::Spec.new do |spec|
     # We set these files as private headers since they only need to be accessed
     # by other FlipperKit source files
     ss.private_header_files = 'iOS/FlipperKit/FBCxxFollyDynamicConvert/**/*.h'
-    header_search_paths = "\"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/DoubleConversion\""
+    header_search_paths = "\"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/Flipper-DoubleConversion\""
     ss.pod_target_xcconfig = { "USE_HEADERMAP" => "NO",
                                "ONLY_ACTIVE_ARCH": "YES",
                                "DEFINES_MODULE" => "YES",
