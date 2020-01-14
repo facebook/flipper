@@ -10,7 +10,7 @@
 const fbjs = require('eslint-config-fbjs');
 
 // enforces copyright header and @format directive to be present in every file
-const pattern = /^\*\n[\S\s]*Facebook[\S\s]* \* @format\n/;
+const pattern = /^\*\r?\n[\S\s]*Facebook[\S\s]* \* @format\r?\n/;
 
 const prettierConfig = {
   requirePragma: true,
