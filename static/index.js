@@ -97,7 +97,7 @@ let filePath = argv.file;
 
 // tracking
 setInterval(() => {
-  if (win && win.isFocused()) {
+  if (win) {
     win.webContents.send('trackUsage');
   }
 }, 60 * 1000);

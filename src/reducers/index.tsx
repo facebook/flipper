@@ -52,6 +52,10 @@ import healthchecks, {
   Action as HealthcheckAction,
   State as HealthcheckState,
 } from './healthchecks';
+import usageTracking, {
+  Action as TrackingAction,
+  State as TrackingState,
+} from './usageTracking';
 import user, {State as UserState, Action as UserAction} from './user';
 import JsonFileStorage from '../utils/jsonFileReduxPersistStorage';
 import LauncherSettingsStorage from '../utils/launcherSettingsStorage';
@@ -78,6 +82,7 @@ export type Actions =
   | SupportFormAction
   | PluginManagerAction
   | HealthcheckAction
+  | TrackingAction
   | {type: 'INIT'};
 
 export type State = {
@@ -93,6 +98,7 @@ export type State = {
   supportForm: SupportFormState;
   pluginManager: PluginManagerState;
   healthchecks: HealthcheckState & PersistPartial;
+  usageTracking: TrackingState;
 };
 
 export type Store = ReduxStore<State, Actions>;
@@ -167,4 +173,5 @@ export default combineReducers<State, Actions>({
     },
     healthchecks,
   ),
+  usageTracking,
 });

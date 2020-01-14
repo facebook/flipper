@@ -88,6 +88,7 @@ export type Action =
         selectedApp?: null | string;
         deepLinkPayload: null | string;
         selectedDevice?: null | BaseDevice;
+        time: number;
       };
     }
   | {
@@ -461,9 +462,10 @@ export const selectPlugin = (payload: {
   selectedApp?: null | string;
   selectedDevice?: BaseDevice | null;
   deepLinkPayload: null | string;
+  time?: number;
 }): Action => ({
   type: 'SELECT_PLUGIN',
-  payload,
+  payload: {...payload, time: payload.time ?? Date.now()},
 });
 
 export const starPlugin = (payload: {

@@ -90,13 +90,16 @@ type BooleanActionType =
   | 'leftSidebarVisible'
   | 'rightSidebarVisible'
   | 'rightSidebarAvailable'
-  | 'windowIsFocused'
   | 'downloadingImportData';
 
 export type Action =
   | {
       type: BooleanActionType;
       payload?: boolean;
+    }
+  | {
+      type: 'windowIsFocused';
+      payload: {isFocused: boolean; time: number};
     }
   | {
       type: 'SET_ACTIVE_SHEET';
@@ -169,6 +172,7 @@ export const initialState: () => State = () => ({
   },
   statusMessages: [],
   xcodeCommandLineToolsDetected: false,
+  trackingTimeline: [],
 });
 
 function statusMessage(sender: string, msg: string): string {
@@ -191,7 +195,6 @@ export default function reducer(
     action.type === 'leftSidebarVisible' ||
     action.type === 'rightSidebarVisible' ||
     action.type === 'rightSidebarAvailable' ||
-    action.type === 'windowIsFocused' ||
     action.type === 'downloadingImportData'
   ) {
     const newValue =
@@ -208,6 +211,11 @@ export default function reducer(
         [action.type]: newValue,
       };
     }
+  } else if (action.type === 'windowIsFocused') {
+    return {
+      ...state,
+      windowIsFocused: action.payload.isFocused,
+    };
   } else if (action.type === 'SET_ACTIVE_SHEET') {
     return {
       ...state,
