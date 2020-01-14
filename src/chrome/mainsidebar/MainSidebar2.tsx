@@ -34,6 +34,7 @@ import React, {
   memo,
   useCallback,
   useState,
+  useEffect,
 } from 'react';
 import NotificationScreen from '../NotificationScreen';
 import {
@@ -451,6 +452,16 @@ const PluginList = memo(function PluginList({
   selectPlugin: SelectPlugin;
   selectedApp?: null | string;
 }) {
+  // client is a mutable structure, so we need the event emitter to detect the addition of plugins....
+  const [_, setPluginsChanged] = useState(0);
+  useEffect(() => {
+    const listener = () => setPluginsChanged(v => v + 1);
+    client.on('plugins-change', listener);
+    return () => {
+      client.off('plugins-change', listener);
+    };
+  }, [client]);
+
   const onFavorite = useCallback(
     (plugin: string) => {
       starPlugin({
