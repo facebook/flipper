@@ -785,7 +785,7 @@ export default class DatabasesPlugin extends FlipperPlugin<
           }
         }
         window.localStorage.setItem(
-          'favoritesSQLQueries',
+          'plugin-database-favorites-sql-queries',
           JSON.stringify(newFavorites),
         );
         return {
@@ -947,7 +947,10 @@ export default class DatabasesPlugin extends FlipperPlugin<
     });
     this.dispatchAction({
       type: 'UpdateFavorites',
-      favorites: JSON.parse(localStorage.getItem('favoritesSQLQueries')),
+      favorites:
+        JSON.parse(
+          localStorage.getItem('plugin-database-favorites-sql-queries'),
+        ) || [],
     });
   }
 
@@ -979,6 +982,7 @@ export default class DatabasesPlugin extends FlipperPlugin<
   onFavoritesClicked = () => {
     this.dispatchAction({
       type: 'UpdateFavorites',
+      favorites: this.state.favorites,
     });
   };
 
