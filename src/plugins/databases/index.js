@@ -947,10 +947,9 @@ export default class DatabasesPlugin extends FlipperPlugin<
     });
     this.dispatchAction({
       type: 'UpdateFavorites',
-      favorites:
-        JSON.parse(
-          localStorage.getItem('plugin-database-favorites-sql-queries'),
-        ) || [],
+      favorites: JSON.parse(
+        localStorage.getItem('plugin-database-favorites-sql-queries') || '[]',
+      ),
     });
   }
 
@@ -1104,7 +1103,7 @@ export default class DatabasesPlugin extends FlipperPlugin<
       }
       return sidebarArray;
     } else {
-      return columns.map((column, i) =>
+      return columns.map<Object>((column, i) =>
         this.buildSidebarRow(columns[i], row.columns[columns[i]].value),
       );
     }
