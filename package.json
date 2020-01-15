@@ -44,8 +44,8 @@
   "resolutions": {
     "@jest-runner/electron/electron": "7.1.2",
     "adbkit/adbkit-logcat": "2",
-    "@types/react": "16.9.15",
-    "@types/react-dom": "^16.9.4"
+    "@types/react": "16.9.17",
+    "@types/react-dom": "16.9.4"
   },
   "jest": {
     "transform": {
@@ -73,7 +73,7 @@
     "@types/lodash.debounce": "^4.0.6",
     "@types/lodash.isequal": "^4.5.5",
     "@types/node": "^12.12.20",
-    "@types/react": "^16.9.15",
+    "@types/react": "^16.9.17",
     "@types/react-dom": "^16.9.4",
     "@types/react-redux": "^7.1.5",
     "@types/react-virtualized-auto-sizer": "^1.0.0",
