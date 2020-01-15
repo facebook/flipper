@@ -19,8 +19,9 @@ export interface BaseIdler {
 
 export class Idler implements BaseIdler {
   private lastIdle = performance.now();
-  private interval = 16;
   private kill = false;
+
+  constructor(private interval = 16) {}
 
   shouldIdle(): boolean {
     return this.kill || performance.now() - this.lastIdle > this.interval;

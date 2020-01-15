@@ -123,7 +123,7 @@ export function reportUsage(
   getInstance().track('usage', action, data, plugin);
 }
 
-function logPlatformSuccessRate(name: string, result: Result) {
+export function logPlatformSuccessRate(name: string, result: Result) {
   if (result.kind === 'success') {
     getInstance().track('success-rate', name, {value: 1});
   } else if (result.kind === 'cancelled') {

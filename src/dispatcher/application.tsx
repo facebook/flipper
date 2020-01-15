@@ -46,23 +46,23 @@ export default (store: Store, logger: Logger) => {
   currentWindow.on('focus', () => {
     store.dispatch({
       type: 'windowIsFocused',
-      payload: true,
+      payload: {isFocused: true, time: Date.now()},
     });
   });
   currentWindow.on('blur', () => {
     store.dispatch({
       type: 'windowIsFocused',
-      payload: false,
+      payload: {isFocused: false, time: Date.now()},
     });
   });
 
   // windowIsFocussed is initialized in the store before the app is fully ready.
   // So wait until everything is up and running and then check and set the isFocussed state.
   window.addEventListener('flipper-store-ready', () => {
-    const isFocussed = currentWindow.isFocused();
+    const isFocused = currentWindow.isFocused();
     store.dispatch({
       type: 'windowIsFocused',
-      payload: isFocussed,
+      payload: {isFocused: isFocused, time: Date.now()},
     });
   });
 

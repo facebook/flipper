@@ -332,8 +332,8 @@ export default class Client extends EventEmitter {
       } else if (method === 'refreshPlugins') {
         this.refreshPlugins();
       } else if (method === 'execute') {
-        const params: Params = data.params as Params;
-        invariant(params, 'expected params');
+        invariant(data.params, 'expected params');
+        const params: Params = data.params;
 
         const device = this.getDeviceSync();
         if (device) {

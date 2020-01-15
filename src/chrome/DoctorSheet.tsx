@@ -38,6 +38,7 @@ import runHealthchecks, {
   HealthcheckEventsHandler,
 } from '../utils/runHealthchecks';
 import {shell} from 'electron';
+import {reportUsage} from '../utils/metrics';
 
 type StateFromProps = {
   healthcheckReport: HealthcheckReport;
@@ -234,6 +235,10 @@ class DoctorSheet extends Component<Props, State> {
     };
   }
 
+  componentDidMount() {
+    reportUsage('doctor:report:opened');
+  }
+
   static getDerivedStateFromProps(props: Props, state: State): State | null {
     if (
       !state.acknowledgeCheckboxVisible &&
@@ -264,8 +269,16 @@ class DoctorSheet extends Component<Props, State> {
 
   componentWillUnmount(): void {
     if (this.state.acknowledgeOnClose) {
+      if (hasNewProblems(this.props.healthcheckReport.result)) {
+        reportUsage('doctor:report:closed:newProblems:acknowledged');
+      }
+      reportUsage('doctor:report:closed:acknowleged');
       this.props.acknowledgeProblems();
     } else {
+      if (hasNewProblems(this.props.healthcheckReport.result)) {
+        reportUsage('doctor:report:closed:newProblems:notAcknowledged');
+      }
+      reportUsage('doctor:report:closed:notAcknowledged');
       this.props.resetAcknowledgedProblems();
     }
   }

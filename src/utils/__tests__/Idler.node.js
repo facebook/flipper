@@ -30,7 +30,7 @@ test('Idler should interrupt', async () => {
 });
 
 test('Idler should want to idle', async () => {
-  const idler = new Idler();
+  const idler = new Idler(100);
   expect(idler.shouldIdle()).toBe(false);
   await sleep(10);
   expect(idler.shouldIdle()).toBe(false);

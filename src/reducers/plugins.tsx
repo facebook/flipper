@@ -10,6 +10,7 @@
 import {FlipperPlugin, FlipperDevicePlugin} from '../plugin';
 import {PluginDefinition} from '../dispatcher/plugins';
 import {Actions} from '.';
+import produce from 'immer';
 
 export type State = {
   devicePlugins: Map<string, typeof FlipperDevicePlugin>;
@@ -58,26 +59,22 @@ export default function reducer(
   action: Actions,
 ): State {
   if (action.type === 'REGISTER_PLUGINS') {
-    const {devicePlugins, clientPlugins} = state;
+    return produce(state, draft => {
+      const {devicePlugins, clientPlugins} = draft;
+      action.payload.forEach((p: P) => {
+        if (devicePlugins.has(p.id) || clientPlugins.has(p.id)) {
+          return;
+        }
 
-    action.payload.forEach((p: P) => {
-      if (devicePlugins.has(p.id) || clientPlugins.has(p.id)) {
-        return;
-      }
-
-      if (p.prototype instanceof FlipperDevicePlugin) {
-        // @ts-ignore doesn't know p must be typeof FlipperDevicePlugin here
-        devicePlugins.set(p.id, p);
-      } else if (p.prototype instanceof FlipperPlugin) {
-        // @ts-ignore doesn't know p must be typeof FlipperPlugin here
-        clientPlugins.set(p.id, p);
-      }
+        if (p.prototype instanceof FlipperDevicePlugin) {
+          // @ts-ignore doesn't know p must be typeof FlipperDevicePlugin here
+          devicePlugins.set(p.id, p);
+        } else if (p.prototype instanceof FlipperPlugin) {
+          // @ts-ignore doesn't know p must be typeof FlipperPlugin here
+          clientPlugins.set(p.id, p);
+        }
+      });
     });
-    return {
-      ...state,
-      devicePlugins,
-      clientPlugins,
-    };
   } else if (action.type === 'GATEKEEPED_PLUGINS') {
     return {
       ...state,

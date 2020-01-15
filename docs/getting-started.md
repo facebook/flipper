@@ -61,6 +61,10 @@ app](https://github.com/facebook/flipper/tree/master/android/sample/src) to
 see how to organise your Flipper initialization into debug and release
 variants.
 
+Alternatively, have a look at the third-party
+[flipper-android-no-op](https://github.com/theGlenn/flipper-android-no-op)
+repository, which provides empty implementations for several Flipper plugins.
+
 </div>
 
 Now you can initialize Flipper in your Application's `onCreate` method, which involves
@@ -134,8 +138,8 @@ target 'MyApp' do
   # it's dependencies to be built as a static library and all other pods to
   # be dynamic.
   # $static_framework = ['FlipperKit', 'Flipper', 'Flipper-Folly',
-  #   'CocoaAsyncSocket', 'ComponentKit', 'DoubleConversion',
-  #   'glog', 'Flipper-PeerTalk', 'Flipper-RSocket', 'Yoga', 'YogaKit',
+  #   'CocoaAsyncSocket', 'ComponentKit', 'Flipper-DoubleConversion',
+  #   'Flipper-Glog', 'Flipper-PeerTalk', 'Flipper-RSocket', 'Yoga', 'YogaKit',
   #   'CocoaLibEvent', 'OpenSSL-Universal', 'boost-for-react-native']
   #
   # pre_install do |installer|
@@ -197,8 +201,8 @@ target 'MyApp' do
   # it's dependencies to be built as a static library and all other pods to
   # be dynamic.
   # $static_framework = ['FlipperKit', 'Flipper', 'Flipper-Folly',
-  #   'CocoaAsyncSocket', 'ComponentKit', 'DoubleConversion',
-  #   'glog', 'Flipper-PeerTalk', 'Flipper-RSocket', 'Yoga', 'YogaKit',
+  #   'CocoaAsyncSocket', 'ComponentKit', 'Flipper-DoubleConversion',
+  #   'Flipper-Glog', 'Flipper-PeerTalk', 'Flipper-RSocket', 'Yoga', 'YogaKit',
   #   'CocoaLibEvent', 'OpenSSL-Universal', 'boost-for-react-native']
   #
   # pre_install do |installer|

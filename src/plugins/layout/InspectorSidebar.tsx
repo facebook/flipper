@@ -22,6 +22,8 @@ import {Logger} from '../../fb-interfaces/Logger';
 import {Component} from 'react';
 import deepEqual from 'deep-equal';
 import React from 'react';
+import {useMemo, useEffect} from 'react';
+import {kebabCase} from 'lodash';
 
 const NoData = styled(FlexCenter)({
   fontSize: 18,
@@ -94,24 +96,15 @@ type Props = {
   logger: Logger;
 };
 
-export default class Sidebar extends Component<Props> {
-  render() {
-    const {element} = this.props;
-    if (!element || !element.data) {
-      return <NoData grow>No data</NoData>;
-    }
+const Sidebar: React.FC<Props> = (props: Props) => {
+  const {element} = props;
+  if (!element || !element.data) {
+    return <NoData grow>No data</NoData>;
+  }
 
-    const sections: Array<any> =
-      (SidebarExtensions &&
-        SidebarExtensions.map(ext =>
-          ext(
-            this.props.client,
-            this.props.realClient,
-            element.id,
-            this.props.logger,
-          ),
-        )) ||
-      [];
+  const [sectionDefs, sectionKeys] = useMemo(() => {
+    const sectionKeys = [];
+    const sectionDefs = [];
 
     for (const key in element.data) {
       if (key === 'Extra Sections') {
@@ -133,29 +126,50 @@ export default class Sidebar extends Component<Props> {
           } else {
             data = section;
           }
-          sections.push(
-            <InspectorSidebarSection
-              tooltips={this.props.tooltips}
-              key={extraSection}
-              id={extraSection}
-              data={data}
-              onValueChanged={this.props.onValueChanged}
-            />,
-          );
+          sectionKeys.push(kebabCase(extraSection));
+          sectionDefs.push({
+            key: extraSection,
+            id: extraSection,
+            data: data,
+          });
         }
       } else {
-        sections.push(
-          <InspectorSidebarSection
-            tooltips={this.props.tooltips}
-            key={key}
-            id={key}
-            data={element.data[key]}
-            onValueChanged={this.props.onValueChanged}
-          />,
-        );
+        sectionKeys.push(kebabCase(key));
+        sectionDefs.push({
+          key,
+          id: key,
+          data: element.data[key],
+        });
       }
     }
 
-    return sections;
-  }
-}
+    return [sectionDefs, sectionKeys];
+  }, [props.element]);
+
+  const sections: Array<React.ReactNode> = (
+    (SidebarExtensions &&
+      SidebarExtensions.map(ext =>
+        ext(props.client, props.realClient, element.id, props.logger),
+      )) ||
+    []
+  ).concat(
+    sectionDefs.map(def => (
+      <InspectorSidebarSection
+        tooltips={props.tooltips}
+        key={def.key}
+        id={def.id}
+        data={def.data}
+        onValueChanged={props.onValueChanged}
+      />
+    )),
+  );
+
+  useEffect(() => {
+    sectionKeys.map(key =>
+      props.logger.track('usage', `layout-sidebar-extension:${key}:loaded`),
+    );
+  }, [props.element?.data]);
+  return <>{sections}</>;
+};
+
+export default Sidebar;

@@ -439,12 +439,13 @@ export default class DataInspector extends Component<DataInspectorProps> {
 
     let type;
     let value;
+    let extra;
     if (res) {
       if (!res.mutable) {
         setValue = null;
       }
 
-      ({type, value} = res);
+      ({type, value, extra} = res);
     } else {
       return null;
     }
@@ -566,6 +567,7 @@ export default class DataInspector extends Component<DataInspectorProps> {
           setValue={setValue}
           type={type}
           value={value}
+          extra={extra}
         />
       );
     } else {

@@ -142,7 +142,7 @@ class PluginContainer extends PureComponent<Props, State> {
   };
 
   idler?: Idler;
-  pluginBeingProcessed: string = '';
+  pluginBeingProcessed: string | null = null;
 
   state = {progress: {current: 0, total: 0}};
 
@@ -169,7 +169,7 @@ class PluginContainer extends PureComponent<Props, State> {
   processMessageQueue() {
     const {pluginKey, pendingMessages, activePlugin} = this.props;
     if (pluginKey !== this.pluginBeingProcessed) {
-      this.pluginBeingProcessed = pluginKey ?? '';
+      this.pluginBeingProcessed = pluginKey;
       this.cancelCurrentQueue();
       this.setState({progress: {current: 0, total: 0}});
       if (

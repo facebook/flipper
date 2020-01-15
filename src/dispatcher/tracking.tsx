@@ -14,6 +14,25 @@ import {Store} from '../reducers/index';
 import {Logger} from '../fb-interfaces/Logger';
 import Client from '../Client';
 import {getPluginBackgroundStats} from '../utils/messageQueue';
+import {
+  clearTimeline,
+  TrackingEvent,
+  State as UsageTrackingState,
+} from '../reducers/usageTracking';
+import produce from 'immer';
+
+const TIME_SPENT_EVENT = 'time-spent';
+
+type UsageInterval = {
+  plugin: string | null;
+  length: number;
+  focused: boolean;
+};
+
+export type UsageSummary = {
+  total: {focusedTime: number; unfocusedTime: number};
+  [pluginName: string]: {focusedTime: number; unfocusedTime: number};
+};
 
 export default (store: Store, logger: Logger) => {
   let droppedFrames: number = 0;
@@ -42,14 +61,40 @@ export default (store: Store, logger: Logger) => {
   }
 
   ipcRenderer.on('trackUsage', () => {
+    const state = store.getState();
     const {
       selectedDevice,
       selectedPlugin,
       selectedApp,
       clients,
-    } = store.getState().connections;
+    } = state.connections;
 
-    if (!selectedDevice || !selectedPlugin) {
+    const currentTime = Date.now();
+    const usageSummary = computeUsageSummary(state.usageTracking, currentTime);
+
+    store.dispatch(clearTimeline(currentTime));
+
+    logger.track('usage', TIME_SPENT_EVENT, usageSummary.total);
+    for (const key of Object.keys(usageSummary)) {
+      if (key === 'total') {
+        logger.track('usage', TIME_SPENT_EVENT, usageSummary.total);
+      }
+      logger.track('usage', TIME_SPENT_EVENT, usageSummary[key], key);
+    }
+
+    Object.entries(state.connections.userStarredPlugins).forEach(
+      ([app, plugins]) =>
+        logger.track('usage', 'starred-plugins', {
+          app: app,
+          starredPlugins: plugins,
+        }),
+    );
+
+    if (
+      !state.application.windowIsFocused ||
+      !selectedDevice ||
+      !selectedPlugin
+    ) {
       return;
     }
 
@@ -82,3 +127,62 @@ export default (store: Store, logger: Logger) => {
     logger.track('usage', 'ping', info);
   });
 };
+
+export function computeUsageSummary(
+  state: UsageTrackingState,
+  currentTime: number,
+) {
+  const intervals: UsageInterval[] = [];
+  let intervalStart = 0;
+  let isFocused = false;
+  let selectedPlugin: string | null = null;
+
+  function startInterval(event: TrackingEvent) {
+    intervalStart = event.time;
+    if (
+      event.type === 'TIMELINE_START' ||
+      event.type === 'WINDOW_FOCUS_CHANGE'
+    ) {
+      isFocused = event.isFocused;
+    }
+    if (event.type === 'PLUGIN_SELECTED') {
+      selectedPlugin = event.plugin;
+    }
+  }
+  function endInterval(time: number) {
+    const length = time - intervalStart;
+    intervals.push({length, plugin: selectedPlugin, focused: isFocused});
+  }
+
+  for (const event of state.timeline) {
+    if (
+      event.type === 'TIMELINE_START' ||
+      event.type === 'WINDOW_FOCUS_CHANGE' ||
+      event.type === 'PLUGIN_SELECTED'
+    ) {
+      if (event.type !== 'TIMELINE_START') {
+        endInterval(event.time);
+      }
+      startInterval(event);
+    }
+  }
+  endInterval(currentTime);
+
+  return intervals.reduce<UsageSummary>(
+    (acc: UsageSummary, x: UsageInterval) =>
+      produce(acc, draft => {
+        draft.total.focusedTime += x.focused ? x.length : 0;
+        draft.total.unfocusedTime += x.focused ? 0 : x.length;
+        const pluginName = x.plugin ?? 'none';
+        draft[pluginName] = draft[pluginName] ?? {
+          focusedTime: 0,
+          unfocusedTime: 0,
+        };
+        draft[pluginName].focusedTime += x.focused ? x.length : 0;
+        draft[pluginName].unfocusedTime += x.focused ? 0 : x.length;
+      }),
+    {
+      total: {focusedTime: 0, unfocusedTime: 0},
+    },
+  );
+}

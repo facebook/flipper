@@ -7,7 +7,7 @@
  * @format
  */
 
-import {User} from '../reducers/user';
+import {User, USER_UNAUTHORIZED, USER_NOT_SIGNEDIN} from '../reducers/user';
 import {ActiveSheet} from '../reducers/application';
 
 import {styled, FlexRow, Glyph, Text, colors} from 'flipper';
@@ -17,6 +17,8 @@ import {connect} from 'react-redux';
 import electron from 'electron';
 import {findDOMNode} from 'react-dom';
 import React, {PureComponent} from 'react';
+import {getUser} from '../fb-stubs/user';
+import config from '../fb-stubs/config';
 
 const Container = styled(FlexRow)({
   alignItems: 'center',
@@ -86,6 +88,18 @@ class UserAccount extends PureComponent<Props> {
     });
   };
 
+  openLogin = () => this.props.setActiveSheet(ACTIVE_SHEET_SIGN_IN);
+
+  componentDidMount() {
+    if (config.showLogin) {
+      getUser().catch(error => {
+        if (error === USER_UNAUTHORIZED || error === USER_NOT_SIGNEDIN) {
+          this.openLogin();
+        }
+      });
+    }
+  }
+
   render() {
     const {user} = this.props;
     const name = user ? user.name : null;
@@ -98,8 +112,7 @@ class UserAccount extends PureComponent<Props> {
         <Glyph name="chevron-down" size={10} variant="outline" />
       </Container>
     ) : (
-      <Container
-        onClick={() => this.props.setActiveSheet(ACTIVE_SHEET_SIGN_IN)}>
+      <Container onClick={this.openLogin}>
         <Glyph
           name="profile-circle"
           size={16}

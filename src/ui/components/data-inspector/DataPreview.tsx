@@ -22,6 +22,7 @@ export type DataValueExtractor = (
       mutable: boolean;
       type: string;
       value: any;
+      extra?: any;
     }
   | undefined
   | null;

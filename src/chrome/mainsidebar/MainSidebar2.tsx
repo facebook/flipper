@@ -34,6 +34,7 @@ import React, {
   memo,
   useCallback,
   useState,
+  useEffect,
 } from 'react';
 import NotificationScreen from '../NotificationScreen';
 import {
@@ -69,7 +70,8 @@ type SectionLevel = 1 | 2 | 3;
 const SidebarSectionButton = styled('button')<{
   level: SectionLevel;
   color: string;
-}>(({level, color}) => ({
+  collapsed: boolean;
+}>(({level, color, collapsed}) => ({
   fontWeight: level === 3 ? 'normal' : 'bold',
   borderRadius: 0,
   border: 'none',
@@ -86,13 +88,15 @@ const SidebarSectionButton = styled('button')<{
 const SidebarSectionBody = styled('div')<{
   level: SectionLevel;
   collapsed: boolean;
-}>(({collapsed}) => ({
+}>(({collapsed, level}) => ({
   flexShrink: 0,
   overflow: 'hidden',
   maxHeight: collapsed ? 0 : 2000, // might need increase if too many plugins...
   transition: collapsed
     ? 'max-height 0.3s ease-out'
     : 'max-height 0.5s ease-in',
+  borderBottom:
+    level === 2 ? `1px solid ${colors.sectionHeaderBorder}` : undefined,
 }));
 
 const SidebarSection: React.FC<{
@@ -109,7 +113,8 @@ const SidebarSection: React.FC<{
       <SidebarSectionButton
         onClick={() => setCollapsed(s => !s)}
         level={level}
-        color={color}>
+        color={color}
+        collapsed={collapsed}>
         <HBox grow="left">
           {typeof title === 'function' ? title(collapsed) : title}
           {level < 3 && children && (
@@ -122,7 +127,6 @@ const SidebarSection: React.FC<{
         </HBox>
       </SidebarSectionButton>
       <SidebarSectionBody level={level} collapsed={collapsed}>
-        {level === 1 && <div style={{height: 8}} />}
         {children}
       </SidebarSectionBody>
     </>
@@ -448,6 +452,16 @@ const PluginList = memo(function PluginList({
   selectPlugin: SelectPlugin;
   selectedApp?: null | string;
 }) {
+  // client is a mutable structure, so we need the event emitter to detect the addition of plugins....
+  const [_, setPluginsChanged] = useState(0);
+  useEffect(() => {
+    const listener = () => setPluginsChanged(v => v + 1);
+    client.on('plugins-change', listener);
+    return () => {
+      client.off('plugins-change', listener);
+    };
+  }, [client]);
+
   const onFavorite = useCallback(
     (plugin: string) => {
       starPlugin({

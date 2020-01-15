@@ -9,7 +9,7 @@
 
 import React from 'react';
 
-import {FlipperDevicePlugin, Device, KaiOSDevice} from 'flipper';
+import {FlipperDevicePlugin, Device, KaiOSDevice, sleep} from 'flipper';
 
 import {FlexColumn, Button, Toolbar, Panel} from 'flipper';
 
@@ -25,6 +25,7 @@ import {
 } from 'recharts';
 
 import adb from 'adbkit';
+import {exec} from 'promisify-child-process';
 
 const PALETTE = [
   '#FFD700',
@@ -74,33 +75,44 @@ export default class KaiOSGraphs extends FlipperDevicePlugin<State, any, any> {
     monitoring: false,
   };
 
-  intervalID: NodeJS.Timer | null = null;
-
   static supportsDevice(device: Device) {
     return device instanceof KaiOSDevice;
   }
 
-  onStartMonitor = () => {
-    if (this.intervalID) {
-      return;
+  async init() {
+    try {
+      await exec('adb root');
+    } catch (e) {
+      console.error('Error obtaining root on the device', e);
     }
+  }
 
-    this.intervalID = setInterval(this.updateFreeMem, 1000);
+  teardown() {
+    this.onStopMonitor();
+  }
 
-    this.setState({
-      monitoring: true,
-    });
+  onStartMonitor = () => {
+    this.setState(
+      {
+        monitoring: true,
+      },
+      () => {
+        // no await because monitoring runs in the background
+        this.monitorInBackground();
+      },
+    );
   };
 
   onStopMonitor = () => {
-    if (!this.intervalID) {
-      return;
-    } else {
-      clearInterval(this.intervalID);
-      this.intervalID = null;
-      this.setState({
-        monitoring: false,
-      });
+    this.setState({
+      monitoring: false,
+    });
+  };
+
+  monitorInBackground = async () => {
+    while (this.state.monitoring) {
+      await this.updateFreeMem();
+      await sleep(1000);
     }
   };
 

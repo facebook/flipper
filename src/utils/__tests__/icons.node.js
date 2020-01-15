@@ -8,27 +8,28 @@
  */
 
 import {buildLocalIconPath, buildIconURL} from '../icons';
+import * as path from 'path';
 
 test('filled icons get correct local path', () => {
-  const path = buildLocalIconPath('star', 12, 2);
-  expect(path).toBe('icons/star-filled-12@2x.png');
+  const iconPath = buildLocalIconPath('star', 12, 2);
+  expect(iconPath).toBe(path.join('icons', 'star-filled-12@2x.png'));
 });
 
 test('outline icons get correct local path', () => {
-  const path = buildLocalIconPath('star-outline', 12, 2);
-  expect(path).toBe('icons/star-outline-12@2x.png');
+  const iconPath = buildLocalIconPath('star-outline', 12, 2);
+  expect(iconPath).toBe(path.join('icons', 'star-outline-12@2x.png'));
 });
 
 test('filled icons get correct URL', () => {
-  const path = buildIconURL('star', 12, 2);
-  expect(path).toBe(
+  const iconUrl = buildIconURL('star', 12, 2);
+  expect(iconUrl).toBe(
     'https://external.xx.fbcdn.net/assets/?name=star&variant=filled&size=12&set=facebook_icons&density=2x',
   );
 });
 
 test('outline icons get correct URL', () => {
-  const path = buildIconURL('star-outline', 12, 2);
-  expect(path).toBe(
+  const iconUrl = buildIconURL('star-outline', 12, 2);
+  expect(iconUrl).toBe(
     'https://external.xx.fbcdn.net/assets/?name=star&variant=outline&size=12&set=facebook_icons&density=2x',
   );
 });

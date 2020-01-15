@@ -13,6 +13,7 @@ import fs from 'fs';
 const validSerializedData = fs
   .readFileSync('src/utils/__tests__/data/settings-v1-valid.json')
   .toString()
+  .replace(/\r\n/g, '\n')
   .trim();
 
 const validDeserializedData =
