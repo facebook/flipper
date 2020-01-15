@@ -61,18 +61,16 @@ export default (store: Store, logger: Logger) => {
   }
 
   ipcRenderer.on('trackUsage', () => {
+    const state = store.getState();
     const {
       selectedDevice,
       selectedPlugin,
       selectedApp,
       clients,
-    } = store.getState().connections;
+    } = state.connections;
 
     const currentTime = Date.now();
-    const usageSummary = computeUsageSummary(
-      store.getState().usageTracking,
-      currentTime,
-    );
+    const usageSummary = computeUsageSummary(state.usageTracking, currentTime);
 
     store.dispatch(clearTimeline(currentTime));
 
@@ -84,8 +82,16 @@ export default (store: Store, logger: Logger) => {
       logger.track('usage', TIME_SPENT_EVENT, usageSummary[key], key);
     }
 
+    Object.entries(state.connections.userStarredPlugins).forEach(
+      ([app, plugins]) =>
+        logger.track('usage', 'starred-plugins', {
+          app: app,
+          starredPlugins: plugins,
+        }),
+    );
+
     if (
-      !store.getState().application.windowIsFocused ||
+      !state.application.windowIsFocused ||
       !selectedDevice ||
       !selectedPlugin
     ) {
