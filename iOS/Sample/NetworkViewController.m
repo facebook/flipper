@@ -44,15 +44,13 @@
   [[[NSURLSession sharedSession] dataTaskWithRequest:urlRequest completionHandler:^(NSData *_Nullable data, NSURLResponse *_Nullable response, NSError *_Nullable dataTaskError) {
 
     if (dataTaskError || !data) {
-      UIAlertController *alertController = [weakSelf alertControllerForMessage:@"Received error in POST API response"];
-      [weakSelf presentViewController:alertController animated:true completion:nil];
+      [weakSelf showAlertWithMessage:@"Received error in POST API response"];
       return;
     }
     NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:data options:0 error:&dataTaskError];
     NSLog(@"MSG-POST: %@", dict[@"msg"]);
 
-    UIAlertController *alertController = [weakSelf alertControllerForMessage:@"Received response from POST API"];
-    [weakSelf presentViewController:alertController animated:true completion:nil];
+    [weakSelf showAlertWithMessage:@"Received response from POST API"];
 
   }] resume];
 }
@@ -61,17 +59,21 @@
   __weak NetworkViewController *weakSelf = self;
   [[[NSURLSession sharedSession] dataTaskWithURL:[NSURL URLWithString:@"https://demo9512366.mockable.io/FlipperGet"] completionHandler:^(NSData *_Nullable data, NSURLResponse *_Nullable response, NSError *_Nullable error) {
     if (error || !data) {
-      UIAlertController *alertController = [weakSelf alertControllerForMessage:@"Received error in GET API response"];
-      [weakSelf presentViewController:alertController animated:true completion:nil];
+      [weakSelf showAlertWithMessage:@"Received error in GET API response"];
       return;
     }
     NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:data options:0 error:&error];
     NSLog(@"MSG-GET: %@", dict[@"msg"]);
-    UIAlertController *alertController = [weakSelf alertControllerForMessage:@"Received response from GET API"];
-    [weakSelf presentViewController:alertController animated:true completion:nil];
+    [weakSelf showAlertWithMessage:@"Received response from GET API"];
   }] resume];
 }
 
+- (void)showAlertWithMessage:(nonnull NSString *)msg {
+  dispatch_async(dispatch_get_main_queue(), ^{
+    UIAlertController *alertController = [self alertControllerForMessage:msg];
+    [self presentViewController:alertController animated:true completion:nil];
+  });
+}
 
 - (UIAlertController *)alertControllerForMessage:(nonnull NSString *)msg {
   UIAlertController *controller = [UIAlertController alertControllerWithTitle:@"Flipper" message:msg preferredStyle:UIAlertControllerStyleAlert];
