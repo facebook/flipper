@@ -17,6 +17,20 @@ export default Flipper;
 const listeners = {}; // plugin#method -> callback
 const plugins = {}; // plugin -> Plugin
 
+function assertSerializable(data) {
+  if (
+    data === undefined ||
+    Array.isArray(data) ||
+    (data && typeof data === 'object')
+  ) {
+    return true;
+  }
+  throw new Error(
+    'Flipper: Expected serializable (undefined, an array or an object). Got: ' +
+      data,
+  );
+}
+
 class Connection {
   connected;
   pluginId;
@@ -30,15 +44,20 @@ class Connection {
     if (!this.connected) {
       throw new Error('Cannot send data, not connected');
     }
+    assertSerializable(data);
     Flipper.send(this.pluginId, method, JSON.stringify(data));
   }
 
   reportErrorWithMetadata(reason, stackTrace) {
-    Flipper.reportErrorWithMetadata(this.pluginId, reason, stackTrace);
+    Flipper.reportErrorWithMetadata(
+      this.pluginId,
+      '' + reason,
+      '' + stackTrace,
+    );
   }
 
   reportError(error) {
-    Flipper.reportError(this.pluginId, error);
+    Flipper.reportError(this.pluginId, '' + error);
   }
 
   receive(method, listener) {
@@ -59,6 +78,7 @@ class Responder {
   }
 
   success(response) {
+    assertSerializable(response);
     Flipper.respondSuccess(
       this.responderId,
       response == null ? null : JSON.stringify(response),
@@ -66,15 +86,13 @@ class Responder {
   }
 
   error(response) {
+    assertSerializable(response);
     Flipper.respondError(this.responderId, JSON.stringify(response));
   }
 }
 
 function startEventListeners() {
   const emitter = new NativeEventEmitter(Flipper);
-  emitter.removeAllListeners('react-native-flipper-plugin-connect');
-  emitter.removeAllListeners('react-native-flipper-plugin-disconnect');
-  emitter.removeAllListeners('react-native-flipper-receive-event');
 
   emitter.addListener('react-native-flipper-plugin-connect', event => {
     const {plugin} = event;
@@ -98,7 +116,8 @@ function startEventListeners() {
     const {plugin, method, params, responderId} = event;
     const key = plugin + '#' + method;
     if (listeners[key]) {
-      const responder = new Responder(responderId);
+      const responder =
+        responderId != null ? new Responder(responderId) : undefined;
       listeners[key](JSON.parse(params), responder);
     }
   });

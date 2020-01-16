@@ -32,12 +32,14 @@ public class FlipperReactNativeJavaScriptReceiver implements FlipperReceiver {
 
   @Override
   public void onReceive(FlipperObject params, FlipperResponder responder) throws Exception {
-    String responderId = manager.createResponderId(responder);
     WritableMap eventData = Arguments.createMap();
     eventData.putString("plugin", plugin);
     eventData.putString("method", method);
     eventData.putString("params", params.toJsonString());
-    eventData.putString("responderId", responderId);
+    if (responder != null) {
+      String responderId = manager.createResponderId(responder);
+      eventData.putString("responderId", responderId);
+    }
     module.sendJSEvent("react-native-flipper-receive-event", eventData);
   }
 }

@@ -72,10 +72,14 @@ public class FlipperReactNativeJavaScriptPluginManager {
   }
 
   public void send(String pluginId, String method, String data) {
+    FlipperReactNativeJavaScriptPlugin plugin = getPlugin(pluginId);
+    if (data == null) {
+      plugin.getConnection().send(method, (FlipperObject) null);
+      return;
+    }
     // Optimization: throwing raw strings around to the desktop would probably avoid some double
     // parsing...
     Object parsedData = parseJSON(data);
-    FlipperReactNativeJavaScriptPlugin plugin = getPlugin(pluginId);
     if (parsedData instanceof FlipperArray) {
       plugin.getConnection().send(method, (FlipperArray) parsedData);
     } else {
@@ -134,14 +138,17 @@ public class FlipperReactNativeJavaScriptPluginManager {
   }
 
   private static Object /* FlipperArray | FlipperObject */ parseJSON(String json) {
+    if (json == null) {
+      return null;
+    }
     // returns either a FlipperObject or Flipper array, pending the data
     try {
       JSONTokener tokener = new JSONTokener(json);
-      if (tokener.nextClean() == '[') {
-        tokener.back();
+      char firstChar = tokener.nextClean();
+      tokener.back();
+      if (firstChar == '[') {
         return new FlipperArray(new JSONArray(tokener));
       } else {
-        tokener.back();
         return new FlipperObject(new JSONObject(tokener));
       }
     } catch (JSONException e) {
