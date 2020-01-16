@@ -15,10 +15,17 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Exposes the react native modules that should be created per ReactApplicationContext. Note that an
+ * application context lives shorter than the application itself, e.g. reload creates a fresh one.
+ */
 public class FlipperPackage implements ReactPackage {
+  static FlipperModule flipperModule;
+
   @Override
   public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
-    return Arrays.<NativeModule>asList(new FlipperModule(reactContext));
+    return Arrays.<NativeModule>asList(
+        new FlipperModule(FlipperReactNativeJavaScriptPluginManager.getInstance(), reactContext));
   }
 
   @Override

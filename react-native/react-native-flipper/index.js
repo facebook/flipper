@@ -8,11 +8,14 @@
  */
 
 // $FlowFixMe
-import {NativeModules} from 'react-native';
+import {NativeModules, NativeEventEmitter} from 'react-native';
 
 const {Flipper} = NativeModules;
 
 export default Flipper;
+
+const listeners = {}; // plugin#method -> callback
+const plugins = {}; // plugin -> Plugin
 
 class Connection {
   connected;
@@ -42,10 +45,9 @@ class Connection {
     if (!this.connected) {
       throw new Error('Cannot receive data, not connected');
     }
-    Flipper.subscribe(this.pluginId, method, (data, responderId) => {
-      const responder = new Responder(responderId);
-      listener(JSON.parse(data), responder);
-    });
+
+    listeners[this.pluginId + '#' + method] = listener;
+    Flipper.subscribe(this.pluginId, method);
   }
 }
 
@@ -68,6 +70,40 @@ class Responder {
   }
 }
 
+function startEventListeners() {
+  const emitter = new NativeEventEmitter(Flipper);
+  emitter.removeAllListeners('react-native-flipper-plugin-connect');
+  emitter.removeAllListeners('react-native-flipper-plugin-disconnect');
+  emitter.removeAllListeners('react-native-flipper-receive-event');
+
+  emitter.addListener('react-native-flipper-plugin-connect', event => {
+    const {plugin} = event;
+    if (plugins[plugin]) {
+      const p = plugins[plugin];
+      p._connection.connected = true;
+      p.onConnect(p._connection);
+    }
+  });
+
+  emitter.addListener('react-native-flipper-plugin-disconnect', event => {
+    const {plugin} = event;
+    if (plugins[plugin]) {
+      const p = plugins[plugin];
+      p._connection.connected = false;
+      p.onDisconnect();
+    }
+  });
+
+  emitter.addListener('react-native-flipper-receive-event', event => {
+    const {plugin, method, params, responderId} = event;
+    const key = plugin + '#' + method;
+    if (listeners[key]) {
+      const responder = new Responder(responderId);
+      listeners[key](JSON.parse(params), responder);
+    }
+  });
+}
+
 // $FlowFixMe
 export function addPlugin(plugin) {
   if (!plugin || typeof plugin !== 'object') {
@@ -83,18 +119,10 @@ export function addPlugin(plugin) {
       ? !!plugin.runInBackground()
       : false;
   const id = plugin.getId();
-  const connection = new Connection(id);
+  plugin._connection = new Connection(id);
+  plugins[id] = plugin;
 
-  Flipper.registerPlugin(
-    id,
-    runInBackground,
-    function onConnect() {
-      connection.connected = true;
-      plugin.onConnect(connection);
-    },
-    function onDisconnect() {
-      connection.connected = false;
-      plugin.onDisconnect();
-    },
-  );
+  Flipper.registerPlugin(id, runInBackground);
 }
+
+startEventListeners();

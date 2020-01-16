@@ -57,12 +57,13 @@ declare namespace Flipper {
   }
 }
 
+/**
+ * Internal api to connect to the native Java module, not to be used directly
+ */
 declare module 'Flipper' {
   export function registerPlugin(
     pluginId: string,
     runInBackground: boolean,
-    onConnect: () => void,
-    onDisconnect: () => void,
   ): void;
   export function send(pluginId: string, method: string, data: string): void;
   export function reportErrorWithMetadata(
@@ -71,13 +72,13 @@ declare module 'Flipper' {
     stackTrace: string,
   ): void;
   export function reportError(pluginId: string, error: string): void;
-  export function subscribe(
-    pluginId: string,
-    method: string,
-    listener: (data: string, responderId: number) => void,
-  ): void;
+  export function subscribe(pluginId: string, method: string): void;
   export function respondSuccess(responderId: string, data?: string): void;
   export function respondError(responderId: string, error: string): void;
 }
 
+/**
+ * Register a new plugin
+ * @param plugin
+ */
 export function addPlugin(plugin: Flipper.FlipperPlugin): void;

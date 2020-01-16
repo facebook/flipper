@@ -71,7 +71,7 @@ const SidebarSectionButton = styled('button')<{
   level: SectionLevel;
   color: string;
   collapsed: boolean;
-}>(({level, color, collapsed}) => ({
+}>(({level, color}) => ({
   fontWeight: level === 3 ? 'normal' : 'bold',
   borderRadius: 0,
   border: 'none',
