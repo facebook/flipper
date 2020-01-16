@@ -118,6 +118,7 @@ export default (store: Store, logger: Logger) => {
       pluginStats: getPluginBackgroundStats(),
       app,
       sdkVersion,
+      isForeground: state.application.windowIsFocused,
     };
 
     // reset dropped frames counter
