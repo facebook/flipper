@@ -54,7 +54,7 @@
                 };
               }
             });
-        </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/flipper/blob/master/docs/extending/new-clients.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 class="postHeaderTitle">Implementing a Flipper Client</h1></header><article><div><span><p>In the GitHub repo, you'll find Flipper clients for Android, iOS and C++ code, but there's nothing to stop you from writing a FlipperClient for another device or OS.</p>
+        </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/flipper/blob/master/docs/extending/new-clients.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 id="__docusaurus" class="postHeaderTitle">Implementing a Flipper Client</h1></header><article><div><span><p>In the GitHub repo, you'll find Flipper clients for Android, iOS and C++ code, but there's nothing to stop you from writing a FlipperClient for another device or OS.</p>
 <p>Flipper clients communicate with the Flipper desktop app using JSON RPC messages over an <a href="http://rsocket.io/">RSocket</a> connection.</p>
 <p>This page documents the API, and you can use <a href="https://github.com/facebook/flipper/blob/master/xplat/Flipper/FlipperConnectionManagerImpl.cpp">FlipperConnectionManagerImpl.cpp</a> for reference.</p>
 <h2><a class="anchor" aria-hidden="true" id="establishing-a-connection"></a><a href="#establishing-a-connection" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Establishing a connection</h2>
@@ -85,13 +85,13 @@
 <p>The syntax used for these type definitions is <a href="https://flow.org/en/docs/types/objects/">Flow</a>. All requests/responses are JSON objects. Where no Response type is specified, it's a void call - no response is expected.</p>
 <h3><a class="anchor" aria-hidden="true" id="getplugins"></a><a href="#getplugins" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>getPlugins</h3>
 <p>Return the available plugins as a list of identifiers. A plugin identifier is a string which is matched with the plugin identifier of desktop javascript plugins. This allows the client to specify the plugins it supports.</p>
-<pre><code class="hljs">Request = {
+<pre><code class="hljs"><span class="hljs-built_in">Request</span> = {
   <span class="hljs-string">"method"</span>: <span class="hljs-string">"getPlugins"</span>,
 }
 
-Response = {
+<span class="hljs-built_in">Response</span> = {
   <span class="hljs-string">"success"</span>: {
-    <span class="hljs-string">"plugins"</span>: Array&lt;string&gt;
+    <span class="hljs-string">"plugins"</span>: <span class="hljs-built_in">Array</span>&lt;<span class="hljs-built_in">string</span>&gt;
   },
 }
 </code></pre>
@@ -100,7 +100,7 @@ Response = {
 <pre><code class="hljs">Request = {
   <span class="hljs-string">"method"</span>: <span class="hljs-string">"init"</span>,
   <span class="hljs-string">"params"</span>: {
-    <span class="hljs-string">"plugin"</span>: string,
+    <span class="hljs-string">"plugin"</span>: <span class="hljs-built_in">string</span>,
   },
 }
 </code></pre>
@@ -109,7 +109,7 @@ Response = {
 <pre><code class="hljs">Request = {
   <span class="hljs-string">"method"</span>: <span class="hljs-string">"deinit"</span>,
   <span class="hljs-string">"params"</span>: {
-    <span class="hljs-string">"plugin"</span>: string,
+    <span class="hljs-string">"plugin"</span>: <span class="hljs-built_in">string</span>,
   },
 }
 </code></pre>

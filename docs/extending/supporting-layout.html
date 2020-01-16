@@ -54,24 +54,24 @@
                 };
               }
             });
-        </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/flipper/blob/master/docs/extending/supporting-layout.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 class="postHeaderTitle">Implementing Layout Inspection</h1></header><article><div><span><p>To enable the Flipper layout inspector on a new platform, just implement a client plugin with id <code>Inspector</code> which implements the following interface:</p>
+        </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/flipper/blob/master/docs/extending/supporting-layout.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 id="__docusaurus" class="postHeaderTitle">Implementing Layout Inspection</h1></header><article><div><span><p>To enable the Flipper layout inspector on a new platform, just implement a client plugin with id <code>Inspector</code> which implements the following interface:</p>
 <p>Note that we're using <a href="https://flow.org/en/docs/types/objects/">Flow</a> syntax to specify this JSON API.</p>
 <h3><a class="anchor" aria-hidden="true" id="node"></a><a href="#node" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Node</h3>
-<pre><code class="hljs"><span class="hljs-keyword">type</span> NodeId = <span class="hljs-built_in">string</span>;
-
-<span class="hljs-keyword">type</span> InspectorValue = {
+<pre><code class="hljs">type NodeId = string;
+<span class="hljs-built_in">
+type </span>InspectorValue = {
   __type__: <span class="hljs-string">'auto'</span> | <span class="hljs-string">'text'</span> | <span class="hljs-string">'number'</span> | <span class="hljs-string">'boolean'</span> | <span class="hljs-string">'enum'</span> | <span class="hljs-string">'color'</span>,
-  __mutable__: <span class="hljs-built_in">boolean</span>,
-  value: <span class="hljs-built_in">number</span> | <span class="hljs-built_in">string</span> | <span class="hljs-built_in">boolean</span>,
+  __mutable__: boolean,
+  value: number | string | boolean,
 };
-
-<span class="hljs-keyword">type</span> Node = {
+<span class="hljs-built_in">
+type </span>Node = {
   id: NodeId,
-  name: <span class="hljs-built_in">string</span>,
-  data: ?{<span class="hljs-built_in">string</span>: <span class="hljs-built_in">Object</span>},
-  children: <span class="hljs-built_in">Array</span>&lt;NodeId&gt;,
-  attributes: ?<span class="hljs-built_in">Array</span>&lt;{name: <span class="hljs-built_in">string</span>, value: <span class="hljs-built_in">string</span>}&gt;,
-  decoration: ?<span class="hljs-built_in">string</span>,
+  name: string,
+  data: ?{string: Object},
+  children: Array&lt;NodeId&gt;,
+  attributes: ?Array&lt;{name: string, value: string}&gt;,
+  decoration: ?string,
 };
 </code></pre>
 <p>Node is the core data type of the layout inspector. The Flipper desktop plugin visualizes a tree of nodes with associated data and attributes. Any UI or data model which can be modeled as a tree of nodes can be inspected using the layout inspector. Data associated with the nodes can also be edited.</p>

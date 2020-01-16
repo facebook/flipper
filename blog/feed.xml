@@ -5,8 +5,8 @@
         <link>https://fbflipper.com//blog</link>
         <description>The best place to stay up-to-date with the latest Flipper news and events.</description>
         <lastBuildDate>Tue, 24 Oct 2017 06:00:00 GMT</lastBuildDate>
-        <docs>http://blogs.law.harvard.edu/tech/rss</docs>
-        <generator>Feed for Node.js</generator>
+        <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
+        <generator>https://github.com/jpmonette/feed</generator>
         <image>
             <title>Flipper Blog</title>
             <url>https://fbflipper.com//img/icon.png</url>

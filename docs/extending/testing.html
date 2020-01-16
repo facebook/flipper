@@ -54,11 +54,11 @@
                 };
               }
             });
-        </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/flipper/blob/master/docs/extending/testing.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 class="postHeaderTitle">Testing</h1></header><article><div><span><p>Developer tools are only used if they work. We have built APIs to test plugins.</p>
+        </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/flipper/blob/master/docs/extending/testing.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 id="__docusaurus" class="postHeaderTitle">Testing</h1></header><article><div><span><p>Developer tools are only used if they work. We have built APIs to test plugins.</p>
 <h2><a class="anchor" aria-hidden="true" id="android"></a><a href="#android" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Android</h2>
 <p>Start by creating your first test file in this directory <code>MyFlipperPluginTest.java</code>. In the test method body we create our plugin which we want to test as well as a <code>FlipperConnectionMock</code>. In this contrived example we simply assert that our plugin's connected status is what we expect.</p>
-<pre><code class="hljs css language-java"><span class="hljs-meta">@RunWith</span>(RobolectricTestRunner.class)
-<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MyFlipperPluginTest</span> </span>{
+<pre><code class="hljs css language-java"><span class="hljs-meta">@RunWith</span>(RobolectricTestRunner<span class="hljs-class">.<span class="hljs-keyword">class</span>)
+<span class="hljs-title">public</span> <span class="hljs-title">class</span> <span class="hljs-title">MyFlipperPluginTest</span> </span>{
 
   <span class="hljs-meta">@Test</span>
   <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">myTest</span><span class="hljs-params">()</span> </span>{
@@ -113,20 +113,20 @@ TEST(MyFlipperPluginTests, testDummy) {
 </code></pre>
 <p>Here is a simple test using these mock utilities to create a plugin, send some data, and assert that the result is as expected.</p>
 <pre><code class="hljs">TEST(MyFlipperPluginTests, testDummy) {
-<span class="hljs-symbol">  std:</span>:vector<span class="hljs-params">&lt;folly::dynamic&gt;</span> successfulResponses;
-  auto responder = <span class="hljs-symbol">std::</span>make_unique<span class="hljs-params">&lt;FlipperResponderMock&gt;</span>(&amp;successfulResponses);
-  auto conn = <span class="hljs-symbol">std::</span>make_shared<span class="hljs-params">&lt;FlipperConnectionMock&gt;</span>();
+  <span class="hljs-built_in">std</span>::<span class="hljs-built_in">vector</span>&lt;folly::dynamic&gt; successfulResponses;
+  <span class="hljs-keyword">auto</span> responder = <span class="hljs-built_in">std</span>::make_unique&lt;FlipperResponderMock&gt;(&amp;successfulResponses);
+  <span class="hljs-keyword">auto</span> conn = <span class="hljs-built_in">std</span>::make_shared&lt;FlipperConnectionMock&gt;();
 
   MyFlipperPlugin plugin;
   plugin.didConnect(conn);
-<span class="hljs-symbol">
-  folly:</span>:dynamic message = <span class="hljs-symbol">folly::</span><span class="hljs-symbol">dynamic::</span>object(<span class="hljs-string">"param1"</span>, <span class="hljs-string">"hello"</span>);
-<span class="hljs-symbol">  folly:</span>:dynamic expectedResponse = <span class="hljs-symbol">folly::</span><span class="hljs-symbol">dynamic::</span>object(<span class="hljs-string">"response"</span>, <span class="hljs-string">"Hi there"</span>);
 
-  auto receiver = conn-&gt;receivers_[<span class="hljs-string">"someMethod"</span>];
-  receiver(message, <span class="hljs-symbol">std::</span>move(responder));
+  folly::dynamic message = folly::dynamic::object(<span class="hljs-string">"param1"</span>, <span class="hljs-string">"hello"</span>);
+  folly::dynamic expectedResponse = folly::dynamic::object(<span class="hljs-string">"response"</span>, <span class="hljs-string">"Hi there"</span>);
 
-  EXPECT_EQ(successfulResponses.size(), <span class="hljs-number">1</span>);
+  <span class="hljs-keyword">auto</span> receiver = conn-&gt;receivers_[<span class="hljs-string">"someMethod"</span>];
+  receiver(message, <span class="hljs-built_in">std</span>::<span class="hljs-built_in">move</span>(responder));
+
+  EXPECT_EQ(successfulResponses.<span class="hljs-built_in">size</span>(), <span class="hljs-number">1</span>);
   EXPECT_EQ(successfulResponses.back(), expectedResponse);
 }
 </code></pre>
