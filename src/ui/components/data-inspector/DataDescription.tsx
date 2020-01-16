@@ -17,6 +17,7 @@ import Popover from '../Popover';
 import {colors} from '../colors';
 import Input from '../Input';
 import React, {KeyboardEvent} from 'react';
+import Glyph from '../Glyph';
 
 const NullValue = styled.span({
   color: 'rgb(128, 128, 128)',
@@ -595,7 +596,18 @@ class DataDescriptionContainer extends Component<{
       case 'text':
       case 'string':
         if (val.startsWith('http://') || val.startsWith('https://')) {
-          return <Link href={val}>{val}</Link>;
+          return (
+            <>
+              <Link href={val}>{val}</Link>
+              <Glyph
+                name="pencil"
+                variant="outline"
+                color={colors.light20}
+                size={16}
+                style={{cursor: 'pointer', marginLeft: 8}}
+              />
+            </>
+          );
         } else {
           return <StringValue>"{String(val || '')}"</StringValue>;
         }
