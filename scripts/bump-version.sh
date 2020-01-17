@@ -86,6 +86,9 @@ echo "Bumping version number for android related files..."
 echo "Bumping version number in package.json"
 jq '.version = $newVal' --arg newVal "$VERSION" "$SONAR_DIR"/package.json > tmp.$$.json && mv tmp.$$.json "$SONAR_DIR"/package.json
 
+#Update react-native-flipper to the very same version
+jq '.version = $newVal' --arg newVal "$VERSION" "$SONAR_DIR"/react-native/react-native-flipper/package.json > tmp.$$.json && mv tmp.$$.json "$SONAR_DIR"/react-native/react-native-flipper/package.json
+
 echo "Committing the files..."
 hg addremove
 

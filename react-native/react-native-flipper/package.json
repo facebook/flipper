@@ -1,7 +1,7 @@
 {
   "name": "react-native-flipper",
-  "title": "React Native Flipper",
-  "version": "1.0.0",
+  "title": "React Native Flipper Bindings",
+  "version": "0.0.1",
   "description": "TODO",
   "main": "index.js",
   "types": "index.d.ts",
@@ -10,15 +10,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/github_account/react-native-flipper.git",
-    "baseUrl": "https://github.com/github_account/react-native-flipper"
+    "url": "git+https://github.com/facebook/flipper.git",
+    "baseUrl": "https://github.com/facebook/flipper/tree/master/react-native/react-native-flipper"
   },
   "keywords": [
-    "react-native"
+    "react-native",
+    "flipper"
   ],
   "author": {
-    "name": "Your Name",
-    "email": "yourname@email.com"
+    "name": "Facebook Inc"
   },
   "license": "MIT",
   "licenseFilename": "LICENSE",
