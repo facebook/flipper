@@ -1,0 +1,13 @@
+{
+  "name": "ReactNativeTicTacToe",
+  "version": "1.0.0",
+  "main": "index.tsx",
+  "license": "MIT",
+  "keywords": ["flipper-plugin"],
+  "icon": "apps",
+  "title": "React Native Tic Tac Toe",
+  "category": "Examples",
+  "bugs": {
+    "email": "mweststrate@fb.com"
+  }
+}

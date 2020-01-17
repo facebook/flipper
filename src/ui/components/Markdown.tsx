@@ -19,6 +19,7 @@ const Container = styled.div({
 const Row = styled.div({
   marginTop: 5,
   marginBottom: 5,
+  lineHeight: 1.34,
 });
 const Heading = styled.div<{level: number}>(props => ({
   fontSize: props.level === 1 ? 18 : 12,

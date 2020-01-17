@@ -71,7 +71,7 @@ const SidebarSectionButton = styled('button')<{
   level: SectionLevel;
   color: string;
   collapsed: boolean;
-}>(({level, color, collapsed}) => ({
+}>(({level, color}) => ({
   fontWeight: level === 3 ? 'normal' : 'bold',
   borderRadius: 0,
   border: 'none',
@@ -119,7 +119,7 @@ const SidebarSection: React.FC<{
           {typeof title === 'function' ? title(collapsed) : title}
           {level < 3 && children && (
             <Glyph
-              name={collapsed ? 'chevron-down' : 'chevron-up'}
+              name={collapsed ? 'chevron-right' : 'chevron-up'}
               size={12}
               color={color}
             />
@@ -520,7 +520,7 @@ const PluginList = memo(function PluginList({
               <Glyph
                 color={colors.macOSTitleBarIconBlur}
                 size={8}
-                name={collapsed ? 'chevron-down' : 'chevron-up'}
+                name={collapsed ? 'chevron-right' : 'chevron-up'}
               />
             </ShowMoreButton>
           )}>

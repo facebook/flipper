@@ -111,7 +111,9 @@ compilePlugins(
   pluginPaths,
   path.join(flipperDir, 'plugins'),
 ).then(dynamicPlugins => {
-  process.env.PLUGINS = JSON.stringify(dynamicPlugins);
+  ipcMain.on('get-dynamic-plugins', event => {
+    event.returnValue = dynamicPlugins;
+  });
   pluginsCompiled = true;
   tryCreateWindow();
 });
