@@ -174,8 +174,13 @@ public class FrescoFlipperPlugin extends BufferingFlipperPlugin
                         imagePipelineFactory.getEncodedCountingMemoryCache())
                     .dumpCacheContent();
 
-            responder.success(getImageList(bitmapMemoryCache, encodedMemoryCache));
-            mPerfLogger.endMarker("Sonar.Fresco.listImages");
+            try {
+              responder.success(getImageList(bitmapMemoryCache, encodedMemoryCache));
+              mPerfLogger.endMarker("Sonar.Fresco.listImages");
+            } finally {
+              bitmapMemoryCache.release();
+              encodedMemoryCache.release();
+            }
           }
         });
 
@@ -202,20 +207,27 @@ public class FrescoFlipperPlugin extends BufferingFlipperPlugin
             // load from bitmap cache
             CloseableReference<CloseableImage> ref =
                 imagePipelineFactory.getBitmapCountingMemoryCache().get(cacheKey);
-            if (ref != null) {
-              loadFromBitmapCache(ref, imageId, cacheKey, responder);
-            } else {
-              // try to load from encoded cache
-              CloseableReference<PooledByteBuffer> encodedRef =
-                  imagePipelineFactory.getEncodedCountingMemoryCache().get(cacheKey);
-
-              if (encodedRef != null) {
-                loadFromEncodedCache(encodedRef, imageId, cacheKey, responder);
+            try {
+              if (ref != null) {
+                loadFromBitmapCache(ref, imageId, cacheKey, responder);
               } else {
-                respondError(responder, "no bitmap withId=" + imageId);
-                mPerfLogger.cancelMarker("Sonar.Fresco.getImage");
-                return;
+                // try to load from encoded cache
+                CloseableReference<PooledByteBuffer> encodedRef =
+                    imagePipelineFactory.getEncodedCountingMemoryCache().get(cacheKey);
+                try {
+                  if (encodedRef != null) {
+                    loadFromEncodedCache(encodedRef, imageId, cacheKey, responder);
+                  } else {
+                    respondError(responder, "no bitmap withId=" + imageId);
+                    mPerfLogger.cancelMarker("Sonar.Fresco.getImage");
+                    return;
+                  }
+                } finally {
+                  CloseableReference.closeSafely(encodedRef);
+                }
               }
+            } finally {
+              CloseableReference.closeSafely(ref);
             }
 
             mPerfLogger.endMarker("Sonar.Fresco.getImage");
