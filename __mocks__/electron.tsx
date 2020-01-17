@@ -20,4 +20,5 @@ module.exports = {
     },
     getCurrentWindow: () => ({isFocused: () => true}),
   },
+  ipcRenderer: {},
 };

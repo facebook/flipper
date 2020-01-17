@@ -21,7 +21,7 @@ import {
   addDisabledPlugins,
   addFailedPlugins,
 } from '../reducers/plugins';
-import {remote} from 'electron';
+import {ipcRenderer} from 'electron';
 import GK from '../fb-stubs/GK';
 import {FlipperBasePlugin} from '../plugin';
 import {setupMenuBar} from '../MenuBar';
@@ -110,9 +110,7 @@ function getBundledPlugins(): Array<PluginDefinition> {
 export function getDynamicPlugins() {
   let dynamicPlugins: Array<PluginDefinition> = [];
   try {
-    dynamicPlugins = JSON.parse(
-      (remote && remote.process.env.PLUGINS) || process.env.PLUGINS || '[]',
-    );
+    dynamicPlugins = ipcRenderer.sendSync('get-dynamic-plugins');
   } catch (e) {
     console.error(e);
   }

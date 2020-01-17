@@ -14,7 +14,7 @@ import dispatcher, {
   requirePlugin,
 } from '../plugins.tsx';
 import path from 'path';
-import {remote} from 'electron';
+import {ipcRenderer, remote} from 'electron';
 import {FlipperPlugin} from 'flipper';
 import reducers from '../../reducers/index.tsx';
 import {init as initLogger} from '../../fb-stubs/Logger.tsx';
@@ -31,24 +31,20 @@ test('dispatcher dispatches REGISTER_PLUGINS', () => {
   expect(actions.map(a => a.type)).toContain('REGISTER_PLUGINS');
 });
 
-test('getDynamicPlugins returns empty array', () => {
-  // $FlowFixMe process.env not defined in electron API spec
-  remote.process.env.PLUGINS = null;
+test('getDynamicPlugins returns empty array on errors', () => {
+  ipcRenderer.sendSync = jest.fn();
+  ipcRenderer.sendSync.mockImplementation(() => {
+    console.log('aaa');
+    throw new Error('ooops');
+  });
   const res = getDynamicPlugins();
   expect(res).toEqual([]);
 });
 
-test('getDynamicPlugins returns empty array for invalid JSON', () => {
-  // $FlowFixMe process.env not defined in electron API spec
-  remote.process.env.PLUGINS = 'invalid JOSN }}[]';
-  const res = getDynamicPlugins();
-  expect(res).toEqual([]);
-});
-
-test('getDynamicPlugins from env', () => {
+test('getDynamicPlugins from main process via ipc', () => {
   const plugins = [{name: 'test'}];
-  // $FlowFixMe process.env not defined in electron API spec
-  remote.process.env.PLUGINS = JSON.stringify(plugins);
+  ipcRenderer.sendSync = jest.fn();
+  ipcRenderer.sendSync.mockReturnValue(plugins);
   const res = getDynamicPlugins();
   expect(res).toEqual(plugins);
 });
