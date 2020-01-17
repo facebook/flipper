@@ -291,6 +291,7 @@ const Searchable = (
           this.state.focusedToken === -1 &&
           this.state.searchTerm === '' &&
           this._inputRef &&
+          lastFilter &&
           (lastFilter.type !== 'enum' || !lastFilter.persistent)
         ) {
           this._inputRef.blur();
@@ -483,6 +484,9 @@ const Searchable = (
               }
               regex={Boolean(this.state.regexEnabled && this.state.searchTerm)}
             />
+            {(this.state.searchTerm || this.state.filters.length > 0) && (
+              <Clear onClick={this.clear}>&times;</Clear>
+            )}
           </SearchBox>
           {this.props.allowRegexSearch ? (
             <ToggleButton
@@ -501,9 +505,6 @@ const Searchable = (
               }
             />
           ) : null}
-          {(this.state.searchTerm || this.state.filters.length > 0) && (
-            <Clear onClick={this.clear}>&times;</Clear>
-          )}
           {actions != null && <Actions>{actions}</Actions>}
         </SearchBar>,
         <Component
