@@ -113,6 +113,7 @@ type Props = {
   columns?: TableColumns;
   onFilterChange: (filters: Array<Filter>) => void;
   defaultFilters: Array<Filter>;
+  defaultSearchTerm: string;
   allowRegexSearch: boolean;
   allowBodySearch: boolean;
 };
@@ -148,7 +149,7 @@ const Searchable = (
     state: State = {
       filters: this.props.defaultFilters || [],
       focusedToken: -1,
-      searchTerm: '',
+      searchTerm: this.props.defaultSearchTerm ?? '',
       hasFocus: false,
       regexEnabled: false,
       bodySearchEnabled: false,
@@ -235,20 +236,31 @@ const Searchable = (
         if (this.props.onFilterChange != null) {
           this.props.onFilterChange(this.state.filters);
         }
-      } else if (prevProps.defaultFilters !== this.props.defaultFilters) {
-        const mergedFilters = [...this.state.filters];
-        this.props.defaultFilters.forEach((defaultFilter: Filter) => {
-          const filterIndex = mergedFilters.findIndex(
-            (f: Filter) => f.key === defaultFilter.key,
-          );
-          if (filterIndex > -1) {
-            mergedFilters[filterIndex] = defaultFilter;
-          } else {
-            mergedFilters.push(defaultFilter);
-          }
-        });
+      } else {
+        let mergedFilters = this.state.filters;
+        if (prevProps.defaultFilters !== this.props.defaultFilters) {
+          mergedFilters = [...this.state.filters];
+          this.props.defaultFilters.forEach((defaultFilter: Filter) => {
+            const filterIndex = mergedFilters.findIndex(
+              (f: Filter) => f.key === defaultFilter.key,
+            );
+            if (filterIndex > -1) {
+              mergedFilters[filterIndex] = defaultFilter;
+            } else {
+              mergedFilters.push(defaultFilter);
+            }
+          });
+        }
+        let newSearchTerm = this.state.searchTerm;
+        if (
+          prevProps.defaultSearchTerm !== this.props.defaultSearchTerm ||
+          prevProps.defaultFilters !== this.props.defaultFilters
+        ) {
+          newSearchTerm = this.props.defaultSearchTerm;
+        }
         this.setState({
           filters: mergedFilters,
+          searchTerm: newSearchTerm,
         });
       }
     }
