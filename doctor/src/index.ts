@@ -113,7 +113,10 @@ export function getHealthchecks(): Healthchecks {
                 label: 'SDK Installed',
                 isRequired: true,
                 run: async (e: EnvironmentInfo) => ({
-                  hasProblem: e.SDKs['iOS SDK'].Platforms.length === 0,
+                  hasProblem:
+                    !e.SDKs['iOS SDK'] ||
+                    !e.SDKs['iOS SDK'].Platforms ||
+                    !e.SDKs['iOS SDK'].Platforms.length,
                 }),
               },
               {
