@@ -55,12 +55,15 @@ class DoctorBar extends Component<Props, State> {
   async showMessageIfChecksFailed() {
     await runHealthchecks(this.props);
     if (
-      (this.props.healthcheckResult.status === 'FAILED' ||
-        this.props.healthcheckResult.status === 'WARNING') &&
-      !this.props.healthcheckResult.isAcknowledged
+      this.props.healthcheckResult.status === 'FAILED' ||
+      this.props.healthcheckResult.status === 'WARNING'
     ) {
-      this.setVisible(true);
-      reportUsage('doctor:warning:shown');
+      if (this.props.healthcheckResult.isAcknowledged) {
+        reportUsage('doctor:warning:suppressed');
+      } else {
+        this.setVisible(true);
+        reportUsage('doctor:warning:shown');
+      }
     }
   }
   render() {
