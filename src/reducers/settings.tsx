@@ -42,14 +42,10 @@ export type Action =
       payload: Settings;
     };
 
-function getWindowsSdkPath() {
-  const app = electron.app || electron.remote.app;
-  return `${app.getPath('userData')}\\android\\sdk`;
-}
+export const DEFAULT_ANDROID_SDK_PATH = getDefaultAndroidSdkPath();
 
 const initialState: Settings = {
-  androidHome:
-    os.platform() == 'win32' ? getWindowsSdkPath() : '/opt/android_sdk',
+  androidHome: getDefaultAndroidSdkPath(),
   enableAndroid: true,
   enablePrefetching: Tristate.Unset,
   jsApps: {
@@ -76,4 +72,13 @@ export function updateSettings(settings: Settings): Action {
     type: 'UPDATE_SETTINGS',
     payload: settings,
   };
+}
+
+function getDefaultAndroidSdkPath() {
+  return os.platform() === 'win32' ? getWindowsSdkPath() : '/opt/android_sdk';
+}
+
+function getWindowsSdkPath() {
+  const app = electron.app || electron.remote.app;
+  return `${app.getPath('home')}\\AppData\\Local\\android\\sdk`;
 }

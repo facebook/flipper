@@ -51,6 +51,7 @@ const GreyedOutOverlay = styled.div({
 
 export function FilePathConfigField(props: {
   label: string;
+  resetValue?: string;
   defaultValue: string;
   onChange: (path: string) => void;
   frozen?: boolean;
@@ -103,6 +104,16 @@ export function FilePathConfigField(props: {
         }>
         <CenteredGlyph name="dots-3-circle" variant="outline" />
       </FlexColumn>
+      {props.resetValue && (
+        <FlexColumn
+          title={`Reset to default path ${props.resetValue}`}
+          onClick={() => {
+            setValue(props.resetValue!);
+            props.onChange(props.resetValue!);
+          }}>
+          <CenteredGlyph name="undo" variant="outline" />
+        </FlexColumn>
+      )}
       {isValid ? null : (
         <CenteredGlyph name="caution-triangle" color={colors.yellow} />
       )}

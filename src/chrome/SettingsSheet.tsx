@@ -17,7 +17,7 @@ import {
 } from '../reducers/launcherSettings';
 import {connect} from 'react-redux';
 import {State as Store} from '../reducers';
-import {Settings} from '../reducers/settings';
+import {Settings, DEFAULT_ANDROID_SDK_PATH} from '../reducers/settings';
 import {flush} from '../utils/persistor';
 import ToggledSection from './settings/ToggledSection';
 import {FilePathConfigField, ConfigText} from './settings/configFields';
@@ -90,6 +90,7 @@ class SettingsSheet extends Component<Props, State> {
           }}>
           <FilePathConfigField
             label="Android SDK Location"
+            resetValue={DEFAULT_ANDROID_SDK_PATH}
             defaultValue={this.state.updatedSettings.androidHome}
             onChange={v => {
               this.setState({

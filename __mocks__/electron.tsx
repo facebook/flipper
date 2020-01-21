@@ -13,6 +13,7 @@ module.exports = {
       env: {},
     },
     app: {
+      getPath: (path: string) => `/${path}`,
       getAppPath: process.cwd,
       getVersion: () => '0.9.99',
       relaunch: () => {},
