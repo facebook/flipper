@@ -147,6 +147,17 @@ class DevicesButton extends Component<Props> {
     if (importedFiles.length > 1) {
       dropdown.push(...importedFiles);
     }
+    // Launch JS emulator
+    if (GK.get('flipper_js_client_emulator')) {
+      dropdown.push(
+        {type: 'separator' as 'separator'},
+        {
+          label: 'Launch JS Web App',
+          click: () =>
+            this.props.setActiveSheet(ACTIVE_SHEET_JS_EMULATOR_LAUNCHER),
+        },
+      );
+    }
     // Launch Android emulators
     if (androidEmulators.length > 0) {
       const emulators = Array.from(androidEmulators)
@@ -161,18 +172,6 @@ class DevicesButton extends Component<Props> {
           label: name,
           click: () => this.launchEmulator(name),
         }));
-
-      // Launch JS emulator
-      if (GK.get('flipper_js_client_emulator')) {
-        dropdown.push(
-          {type: 'separator' as 'separator'},
-          {
-            label: 'Launch JS Web App',
-            click: () =>
-              this.props.setActiveSheet(ACTIVE_SHEET_JS_EMULATOR_LAUNCHER),
-          },
-        );
-      }
 
       if (emulators.length > 0) {
         dropdown.push(
