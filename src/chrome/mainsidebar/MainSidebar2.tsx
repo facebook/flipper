@@ -67,6 +67,18 @@ type PluginsByCategory = [string, FlipperPlugins][];
 
 type SectionLevel = 1 | 2 | 3;
 
+const ShowMoreButton = styled('div')<{collapsed: boolean}>(({collapsed}) => ({
+  border: `1px solid ${colors.macOSTitleBarIconBlur}`,
+  width: 16,
+  height: 16,
+  borderRadius: 16,
+  marginLeft: 'auto',
+  marginRight: 'auto',
+  lineHeight: '12px',
+  transform: collapsed ? 'rotate(0deg)' : 'rotate(-180deg)',
+  transition: `transform 0.3s ease`,
+}));
+
 const SidebarSectionButton = styled('button')<{
   level: SectionLevel;
   color: string;
@@ -99,6 +111,13 @@ const SidebarSectionBody = styled('div')<{
     level === 2 ? `1px solid ${colors.sectionHeaderBorder}` : undefined,
 }));
 
+const SidebarSectionButtonGlyph = styled(Glyph)<{collapsed: boolean}>(
+  ({collapsed}) => ({
+    transform: collapsed ? 'rotate(90deg)' : 'rotate(180deg)',
+    transition: `transform 0.3s ease`,
+  }),
+);
+
 const SidebarSection: React.FC<{
   defaultCollapsed?: boolean;
   title: string | React.ReactNode | ((collapsed: boolean) => React.ReactNode);
@@ -118,10 +137,11 @@ const SidebarSection: React.FC<{
         <HBox grow="left">
           {typeof title === 'function' ? title(collapsed) : title}
           {level < 3 && children && (
-            <Glyph
-              name={collapsed ? 'chevron-right' : 'chevron-up'}
+            <SidebarSectionButtonGlyph
+              name="chevron-up"
               size={12}
               color={color}
+              collapsed={collapsed}
             />
           )}
         </HBox>
@@ -197,7 +217,7 @@ class MainSidebar2 extends PureComponent<Props, State> {
   render() {
     const {devices} = this.props;
     return (
-      <Sidebar position="left" width={200} backgroundColor={colors.light02}>
+      <Sidebar position="left" width={250} backgroundColor={colors.light02}>
         <Plugins>
           {devices.length ? (
             devices.map(device => this.renderDevice(device))
@@ -531,11 +551,11 @@ const PluginList = memo(function PluginList({
             favoritePlugins.length > 0 && !selectedNonFavoritePlugin
           }
           title={collapsed => (
-            <ShowMoreButton>
+            <ShowMoreButton collapsed={collapsed}>
               <Glyph
                 color={colors.macOSTitleBarIconBlur}
                 size={8}
-                name={collapsed ? 'chevron-right' : 'chevron-up'}
+                name="chevron-down"
               />
             </ShowMoreButton>
           )}>
@@ -611,14 +631,4 @@ const PluginsByCategory = memo(function PluginsByCategory({
       ))}
     </>
   );
-});
-
-const ShowMoreButton = styled('div')({
-  border: `1px solid ${colors.macOSTitleBarIconBlur}`,
-  width: 16,
-  height: 16,
-  borderRadius: 16,
-  marginLeft: 'auto',
-  marginRight: 'auto',
-  lineHeight: '12px',
 });
