@@ -195,19 +195,16 @@ class MainSidebar2 extends PureComponent<Props, State> {
   }
 
   render() {
-    const devices = this.props.devices
-      .slice()
-      .sort((a, b) => a.title.localeCompare(b.title));
-    const renderableDevices = devices.filter(canBeDefaultDevice);
-
+    const {devices} = this.props;
     return (
       <Sidebar position="left" width={200} backgroundColor={colors.light02}>
         <Plugins>
-          {renderableDevices.length ? (
-            renderableDevices.map(device => this.renderDevice(device))
+          {devices.length ? (
+            devices.map(device => this.renderDevice(device))
           ) : (
             <NoDevices />
           )}
+          {this.renderUnitializedClients()}
         </Plugins>
         <MainSidebarUtilsSection />
       </Sidebar>
@@ -218,7 +215,6 @@ class MainSidebar2 extends PureComponent<Props, State> {
     const {
       selectedPlugin,
       selectPlugin,
-      uninitializedClients,
       clientPlugins,
       starPlugin,
       userStarredPlugins,
@@ -228,30 +224,41 @@ class MainSidebar2 extends PureComponent<Props, State> {
     const clients = getAvailableClients(device, this.props.clients);
 
     return (
-      <SidebarSection title={device.title} key={device.serial} level={1}>
+      <SidebarSection
+        title={`${device.title} ${
+          device.isArchived ? (device.source ? '(imported)' : '(offline)') : ''
+        }`}
+        key={device.serial}
+        level={1}
+        defaultCollapsed={!canBeDefaultDevice(device)}>
         {this.showArchivedDeviceDetails(device)}
-        <SidebarSection level={2} title="Device" defaultCollapsed={true}>
-          {device.devicePlugins.map(pluginName => {
-            const plugin = this.props.devicePlugins.get(pluginName)!;
-            return (
-              <PluginSidebarListItem
-                key={plugin.id}
-                isActive={
-                  plugin.id === selectedPlugin && selectedDevice === device
-                }
-                onClick={() =>
-                  selectPlugin({
-                    selectedPlugin: plugin.id,
-                    selectedApp: null,
-                    deepLinkPayload: null,
-                    selectedDevice: device,
-                  })
-                }
-                plugin={plugin}
-              />
-            );
-          })}
-        </SidebarSection>
+        {device.devicePlugins.length > 0 ? (
+          <SidebarSection
+            level={2}
+            title="Device Plugins"
+            defaultCollapsed={true}>
+            {device.devicePlugins.map(pluginName => {
+              const plugin = this.props.devicePlugins.get(pluginName)!;
+              return (
+                <PluginSidebarListItem
+                  key={plugin.id}
+                  isActive={
+                    plugin.id === selectedPlugin && selectedDevice === device
+                  }
+                  onClick={() =>
+                    selectPlugin({
+                      selectedPlugin: plugin.id,
+                      selectedApp: null,
+                      deepLinkPayload: null,
+                      selectedDevice: device,
+                    })
+                  }
+                  plugin={plugin}
+                />
+              );
+            })}
+          </SidebarSection>
+        ) : null}
         {clients.length === 0 ? (
           <NoClients />
         ) : (
@@ -269,6 +276,14 @@ class MainSidebar2 extends PureComponent<Props, State> {
             />
           ))
         )}
+      </SidebarSection>
+    );
+  }
+
+  renderUnitializedClients() {
+    const {uninitializedClients} = this.props;
+    return uninitializedClients.length > 0 ? (
+      <SidebarSection title="Connecting..." key="unitializedClients" level={1}>
         {uninitializedClients.map(entry => (
           <SidebarSection
             color={getColorByApp(entry.client.appName)}
@@ -286,7 +301,7 @@ class MainSidebar2 extends PureComponent<Props, State> {
             level={2}></SidebarSection>
         ))}
       </SidebarSection>
-    );
+    ) : null;
   }
 
   showArchivedDeviceDetails(device: BaseDevice) {
@@ -300,7 +315,7 @@ class MainSidebar2 extends PureComponent<Props, State> {
     );
     return (
       <>
-        <ListItem>
+        <ListItem style={{marginTop: 8}}>
           <Info type="warning" small>
             {device.source ? 'Imported device' : 'Archived device'}
           </Info>

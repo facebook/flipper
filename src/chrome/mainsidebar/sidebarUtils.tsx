@@ -212,7 +212,7 @@ export const NoDevices = () => (
 );
 
 export const NoClients = () => (
-  <ListItem>
+  <ListItem style={{marginTop: 8}}>
     <Glyph
       name="mobile-engagement"
       size={16}
