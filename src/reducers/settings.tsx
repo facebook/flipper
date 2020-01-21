@@ -8,6 +8,8 @@
  */
 
 import {Actions} from './index';
+import os from 'os';
+import electron from 'electron';
 
 export enum Tristate {
   True,
@@ -40,8 +42,14 @@ export type Action =
       payload: Settings;
     };
 
+function getWindowsSdkPath() {
+  const app = electron.app || electron.remote.app;
+  return `${app.getPath('userData')}\\android\\sdk`;
+}
+
 const initialState: Settings = {
-  androidHome: '/opt/android_sdk',
+  androidHome:
+    os.platform() == 'win32' ? getWindowsSdkPath() : '/opt/android_sdk',
   enableAndroid: true,
   enablePrefetching: Tristate.Unset,
   jsApps: {
