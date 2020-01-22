@@ -79,9 +79,6 @@ export default (store: Store, logger: Logger) => {
 
     logger.track('usage', TIME_SPENT_EVENT, usageSummary.total);
     for (const key of Object.keys(usageSummary)) {
-      if (key === 'total') {
-        logger.track('usage', TIME_SPENT_EVENT, usageSummary.total);
-      }
       logger.track('usage', TIME_SPENT_EVENT, usageSummary[key], key);
     }
 
