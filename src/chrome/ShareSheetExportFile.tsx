@@ -22,7 +22,7 @@ import {
 import ShareSheetErrorList from './ShareSheetErrorList';
 import ShareSheetPendingDialog from './ShareSheetPendingDialog';
 import {ReactReduxContext} from 'react-redux';
-import {store} from '../store';
+import {MiddlewareAPI} from '../reducers/index';
 
 const Container = styled(FlexColumn)({
   padding: 20,
@@ -70,6 +70,12 @@ type State = {
 };
 
 export default class ShareSheetExportFile extends Component<Props, State> {
+  static contextType = ReactReduxContext;
+
+  get store(): MiddlewareAPI {
+    return this.context.store;
+  }
+
   state: State = {
     errorArray: [],
     result: {kind: 'pending'},
@@ -80,13 +86,13 @@ export default class ShareSheetExportFile extends Component<Props, State> {
   idler = new Idler();
 
   dispatchAndUpdateToolBarStatus(msg: string) {
-    store.dispatch(
+    this.store.dispatch(
       setExportStatusComponent(
         <CancellableExportStatus
           msg={msg}
           onCancel={() => {
             this.idler.cancel();
-            store.dispatch(unsetShare());
+            this.store.dispatch(unsetShare());
           }}
         />,
       ),
@@ -101,16 +107,21 @@ export default class ShareSheetExportFile extends Component<Props, State> {
         return;
       }
       const {errorArray} = await reportPlatformFailures(
-        exportStoreToFile(this.props.file, store, this.idler, (msg: string) => {
-          if (this.state.runInBackground) {
-            this.dispatchAndUpdateToolBarStatus(msg);
-          } else {
-            this.setState({statusUpdate: msg});
-          }
-        }),
+        exportStoreToFile(
+          this.props.file,
+          this.store,
+          this.idler,
+          (msg: string) => {
+            if (this.state.runInBackground) {
+              this.dispatchAndUpdateToolBarStatus(msg);
+            } else {
+              this.setState({statusUpdate: msg});
+            }
+          },
+        ),
         `${EXPORT_FLIPPER_TRACE_EVENT}:UI_FILE`,
       );
-      store.dispatch(unsetShare());
+      this.store.dispatch(unsetShare());
       if (this.state.runInBackground) {
         new Notification('Sharable Flipper trace created', {
           body: `Flipper trace exported to the ${this.props.file}`,
@@ -125,6 +136,7 @@ export default class ShareSheetExportFile extends Component<Props, State> {
         this.setState({errorArray: [], result: {kind: 'error', error: err}});
       }
       this.props.logger.trackTimeSince(mark, 'export:file-error');
+      throw err;
     }
   }
 
@@ -197,7 +209,7 @@ export default class ShareSheetExportFile extends Component<Props, State> {
     );
   }
 
-  cancelAndHide(store: any) {
+  cancelAndHide(store: MiddlewareAPI) {
     store.dispatch(unsetShare());
     this.props.onHide();
     this.idler.cancel();

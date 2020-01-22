@@ -607,7 +607,7 @@ export async function exportStore(
 
 export const exportStoreToFile = (
   exportFilePath: string,
-  store: Store,
+  store: MiddlewareAPI,
   idler?: Idler,
   statusUpdate?: (msg: string) => void,
 ): Promise<{errorArray: Array<Error>}> => {

@@ -18,7 +18,6 @@ import {
 } from 'flipper';
 import React, {Component} from 'react';
 import {ReactReduxContext} from 'react-redux';
-import {store} from '../store';
 import {
   setExportStatusComponent,
   unsetShare,
@@ -40,6 +39,8 @@ import {performance} from 'perf_hooks';
 import ShareSheetPendingDialog from './ShareSheetPendingDialog';
 import {getInstance as getLogger} from '../fb-stubs/Logger';
 import {resetSupportFormV2State} from '../reducers/supportForm';
+import {MiddlewareAPI} from '../reducers/index';
+
 export const SHARE_FLIPPER_TRACE_EVENT = 'share-flipper-link';
 
 const Container = styled(FlexColumn)({
@@ -83,6 +84,8 @@ type State = {
 };
 
 export default class ShareSheetExportUrl extends Component<Props, State> {
+  static contextType = ReactReduxContext;
+
   state: State = {
     errorArray: [],
     result: null,
@@ -90,16 +93,20 @@ export default class ShareSheetExportUrl extends Component<Props, State> {
     runInBackground: false,
   };
 
+  get store(): MiddlewareAPI {
+    return this.context.store;
+  }
+
   idler = new Idler();
 
   dispatchAndUpdateToolBarStatus(msg: string) {
-    store.dispatch(
+    this.store.dispatch(
       setExportStatusComponent(
         <CancellableExportStatus
           msg={msg}
           onCancel={() => {
             this.idler.cancel();
-            store.dispatch(unsetShare());
+            this.store.dispatch(unsetShare());
           }}
         />,
       ),
@@ -118,7 +125,7 @@ export default class ShareSheetExportUrl extends Component<Props, State> {
         }
       };
       const {serializedString, errorArray} = await reportPlatformFailures(
-        exportStore(store.getState(), this.idler, statusUpdate),
+        exportStore(this.store, this.idler, statusUpdate),
         `${EXPORT_FLIPPER_TRACE_EVENT}:UI_LINK`,
       );
       const uploadMarker = `${EXPORT_FLIPPER_TRACE_EVENT}:upload`;
@@ -131,19 +138,19 @@ export default class ShareSheetExportUrl extends Component<Props, State> {
         `${SHARE_FLIPPER_TRACE_EVENT}`,
       );
       getLogger().trackTimeSince(uploadMarker, uploadMarker, {
-        plugins: store.getState().plugins.selectedPlugins,
+        plugins: this.store.getState().plugins.selectedPlugins,
       });
       this.setState({errorArray, result});
       const flipperUrl = (result as DataExportResult).flipperUrl;
       if (flipperUrl) {
         clipboard.writeText(String(flipperUrl));
-        store.dispatch(setExportURL(flipperUrl));
+        this.store.dispatch(setExportURL(flipperUrl));
         new Notification('Sharable Flipper trace created', {
           body: 'URL copied to clipboard',
           requireInteraction: true,
         });
       }
-      store.dispatch(resetSupportFormV2State());
+      this.store.dispatch(resetSupportFormV2State());
       this.props.logger.trackTimeSince(mark, 'export:url-success');
     } catch (e) {
       if (!this.state.runInBackground) {
@@ -161,8 +168,9 @@ export default class ShareSheetExportUrl extends Component<Props, State> {
         }
         this.setState({result});
       }
-      store.dispatch(unsetShare());
+      this.store.dispatch(unsetShare());
       this.props.logger.trackTimeSince(mark, 'export:url-error');
+      throw e;
     }
   }
 
@@ -184,7 +192,7 @@ export default class ShareSheetExportUrl extends Component<Props, State> {
     }
   }
 
-  cancelAndHide = (store: any) => () => {
+  cancelAndHide = (store: MiddlewareAPI) => () => {
     store.dispatch(unsetShare());
     this.hideSheet();
   };
