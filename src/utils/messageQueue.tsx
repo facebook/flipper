@@ -22,12 +22,21 @@ import {pluginIsStarred, getSelectedPluginKey} from '../reducers/connections';
 const MAX_BACKGROUND_TASK_TIME = 25;
 
 type StatEntry = {
-  cpuTime: number; // Total time spend in persisted Reducer
-  messages: number; // amount of message received for this plugin
+  cpuTimeTotal: number; // Total time spend in persisted Reducer
+  cpuTimeDelta: number; // Time spend since previous tracking tick
+  messageCountTotal: number; // amount of message received for this plugin
+  messageCountDelta: number; // amout of messages received since previous tracking tick
   maxTime: number; // maximum time spend in a single reducer call
 };
 
 const pluginBackgroundStats = new Map<string, StatEntry>();
+
+export function resetPluginBackgroundStatsDelta() {
+  pluginBackgroundStats.forEach(stat => {
+    stat.cpuTimeDelta = 0;
+    stat.messageCountDelta = 0;
+  });
+}
 
 export function getPluginBackgroundStats(): {[plugin: string]: StatEntry} {
   return Array.from(Object.entries(pluginBackgroundStats)).reduce(
@@ -44,10 +53,21 @@ if (window) {
   window.flipperPrintPluginBackgroundStats = () => {
     console.table(
       Array.from(pluginBackgroundStats.entries()).map(
-        ([plugin, {cpuTime, messages, maxTime}]) => ({
+        ([
           plugin,
-          cpuTime,
-          messages,
+          {
+            cpuTimeDelta,
+            cpuTimeTotal,
+            messageCountDelta,
+            messageCountTotal,
+            maxTime,
+          },
+        ]) => ({
+          plugin,
+          cpuTimeTotal,
+          messageCountTotal,
+          cpuTimeDelta,
+          messageCountDelta,
           maxTime,
         }),
       ),
@@ -57,11 +77,19 @@ if (window) {
 
 function addBackgroundStat(plugin: string, cpuTime: number) {
   if (!pluginBackgroundStats.has(plugin)) {
-    pluginBackgroundStats.set(plugin, {cpuTime: 0, messages: 0, maxTime: 0});
+    pluginBackgroundStats.set(plugin, {
+      cpuTimeDelta: 0,
+      cpuTimeTotal: 0,
+      messageCountDelta: 0,
+      messageCountTotal: 0,
+      maxTime: 0,
+    });
   }
   const stat = pluginBackgroundStats.get(plugin)!;
-  stat.cpuTime += cpuTime;
-  stat.messages += 1;
+  stat.cpuTimeDelta += cpuTime;
+  stat.cpuTimeTotal += cpuTime;
+  stat.messageCountDelta += 1;
+  stat.messageCountTotal += 1;
   stat.maxTime = Math.max(stat.maxTime, cpuTime);
   if (cpuTime > MAX_BACKGROUND_TASK_TIME) {
     console.warn(

@@ -13,7 +13,10 @@ import {performance} from 'perf_hooks';
 import {Store} from '../reducers/index';
 import {Logger} from '../fb-interfaces/Logger';
 import Client from '../Client';
-import {getPluginBackgroundStats} from '../utils/messageQueue';
+import {
+  getPluginBackgroundStats,
+  resetPluginBackgroundStatsDelta,
+} from '../utils/messageQueue';
 import {
   clearTimeline,
   TrackingEvent,
@@ -90,6 +93,9 @@ export default (store: Store, logger: Logger) => {
         }),
     );
 
+    logger.track('usage', 'plugin-stats', getPluginBackgroundStats());
+    resetPluginBackgroundStatsDelta();
+
     if (
       !state.application.windowIsFocused ||
       !selectedDevice ||
@@ -115,7 +121,6 @@ export default (store: Store, logger: Logger) => {
       os: selectedDevice.os,
       device: selectedDevice.title,
       plugin: selectedPlugin,
-      pluginStats: getPluginBackgroundStats(),
       app,
       sdkVersion,
       isForeground: state.application.windowIsFocused,
