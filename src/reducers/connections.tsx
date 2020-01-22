@@ -104,10 +104,6 @@ export type Action =
       payload: Client;
     }
   | {
-      type: 'NEW_CLIENT_SANITY_CHECK';
-      payload: Client;
-    }
-  | {
       type: 'CLIENT_REMOVED';
       payload: string;
     }
@@ -291,25 +287,6 @@ const reducer = (state: State = INITAL_STATE, action: Actions): State => {
         selectedApp: payload,
         userPreferredApp: payload || state.userPreferredApp,
       });
-    }
-
-    case 'NEW_CLIENT_SANITY_CHECK': {
-      const {payload} = action;
-      // Check for clients initialised when there is no matching device
-      const clientIsStillConnected = state.clients.filter(
-        client => client.id == payload.query.device_id,
-      );
-      if (clientIsStillConnected) {
-        const matchingDeviceForClient = state.devices.filter(
-          device => payload.query.device_id === device.serial,
-        );
-        if (matchingDeviceForClient.length === 0) {
-          console.error(
-            `Client initialised for non-displayed device: ${payload.id}`,
-          );
-        }
-      }
-      return state;
     }
 
     case 'CLIENT_REMOVED': {
