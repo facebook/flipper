@@ -76,12 +76,6 @@ class ExportDataPluginSheet extends Component<Props, State> {
     };
   }
 
-  componentDidMount() {
-    if (this.props.plugins.selectedPlugins.length <= 0) {
-      this.props.setSelectedPlugins(this.state.availablePluginsToExport);
-    }
-  }
-
   render() {
     const {onHide} = this.props;
     const onHideWithUnsettingShare = () => {
@@ -119,13 +113,7 @@ class ExportDataPluginSheet extends Component<Props, State> {
             }
           }}
           onChange={selectedArray => {
-            if (selectedArray.length > 0) {
-              this.props.setSelectedPlugins(selectedArray);
-            } else {
-              this.props.setSelectedPlugins(
-                this.state.availablePluginsToExport,
-              );
-            }
+            this.props.setSelectedPlugins(selectedArray);
           }}
           elements={this.state.availablePluginsToExport}
           selectedElements={new Set(this.props.plugins.selectedPlugins)}

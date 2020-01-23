@@ -17,6 +17,7 @@ import {
   Checkbox,
   colors,
   View,
+  Tooltip,
 } from '../ui';
 import React, {Component} from 'react';
 
@@ -169,9 +170,22 @@ export default class ListView extends Component<Props, State> {
               <Button compact padded onClick={this.props.onHide}>
                 Close
               </Button>
-              <Button compact padded type="primary" onClick={onSubmit}>
-                Submit
-              </Button>
+              <Tooltip
+                title={
+                  this.state.selectedElements.size <= 0
+                    ? `Please select atleast one plugin`
+                    : null
+                }
+                options={{position: 'toRight'}}>
+                <Button
+                  compact
+                  padded
+                  type="primary"
+                  onClick={onSubmit}
+                  disabled={this.state.selectedElements.size <= 0}>
+                  Submit
+                </Button>
+              </Tooltip>
             </FlexRow>
           </Padder>
         )}
