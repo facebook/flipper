@@ -7,6 +7,7 @@
 
 package com.facebook.flipper.reactnative;
 
+import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
@@ -40,8 +41,9 @@ public class FlipperModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void registerPlugin(final String pluginId, final Boolean inBackground) {
-    this.manager.registerPlugin(this, pluginId, inBackground);
+  public void registerPlugin(
+      final String pluginId, final Boolean inBackground, final Callback statusCallback) {
+    this.manager.registerPlugin(this, pluginId, inBackground, statusCallback);
   }
 
   @ReactMethod

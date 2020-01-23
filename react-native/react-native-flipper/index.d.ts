@@ -64,6 +64,7 @@ declare module 'Flipper' {
   export function registerPlugin(
     pluginId: string,
     runInBackground: boolean,
+    statusCallback: (status: 'noflipper' | 'ok') => void,
   ): void;
   export function send(pluginId: string, method: string, data: string): void;
   export function reportErrorWithMetadata(

@@ -12,6 +12,7 @@ import com.facebook.flipper.core.FlipperArray;
 import com.facebook.flipper.core.FlipperClient;
 import com.facebook.flipper.core.FlipperObject;
 import com.facebook.flipper.core.FlipperResponder;
+import com.facebook.react.bridge.Callback;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
@@ -51,7 +52,15 @@ public class FlipperReactNativeJavaScriptPluginManager {
   }
 
   public void registerPlugin(
-      FlipperModule module, final String pluginId, final Boolean inBackground) {
+      FlipperModule module,
+      final String pluginId,
+      final Boolean inBackground,
+      final Callback statusCallback) {
+    if (this.flipperClient == null) {
+      // Flipper is not available in this build
+      statusCallback.invoke("noflipper");
+      return;
+    }
     FlipperReactNativeJavaScriptPlugin existing = getPlugin(pluginId);
     if (existing != null) {
       // Make sure events are emitted on the right application context
@@ -60,6 +69,7 @@ public class FlipperReactNativeJavaScriptPluginManager {
       if (existing.isConnected()) {
         existing.fireOnConnect();
       }
+      statusCallback.invoke("ok");
       return;
     }
     // we always create a new plugin class on the fly,
@@ -69,6 +79,7 @@ public class FlipperReactNativeJavaScriptPluginManager {
           // inner class with no new members
         };
     this.flipperClient.addPlugin(plugin);
+    statusCallback.invoke("ok");
   }
 
   public void send(String pluginId, String method, String data) {

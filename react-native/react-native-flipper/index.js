@@ -125,6 +125,10 @@ function startEventListeners() {
 
 // $FlowFixMe
 export function addPlugin(plugin) {
+  if (!Flipper) {
+    printNoFlipperWarning();
+    return;
+  }
   if (!plugin || typeof plugin !== 'object') {
     throw new Error('Expected plugin, got ' + plugin);
   }
@@ -141,7 +145,22 @@ export function addPlugin(plugin) {
   plugin._connection = new Connection(id);
   plugins[id] = plugin;
 
-  Flipper.registerPlugin(id, runInBackground);
+  Flipper.registerPlugin(id, runInBackground, status => {
+    if (status === 'noflipper') {
+      printNoFlipperWarning();
+    }
+  });
 }
 
-startEventListeners();
+function printNoFlipperWarning() {
+  // $FlowFixMe
+  if (typeof __DEV__ !== 'undefined' && __DEV__) {
+    console.warn(
+      'The native module for Flipper seems unavailable. Make sure `initializeFlipper(this, getReactNativeHost().getReactInstanceManager()` is called in MainApplication.java:onCreate, and that `react-native-flipper` is installed as yarn dependency',
+    );
+  }
+}
+
+if (Flipper) {
+  startEventListeners();
+}
