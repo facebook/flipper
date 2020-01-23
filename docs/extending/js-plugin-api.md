@@ -3,6 +3,12 @@ id: js-plugin-api
 title: JavaScript Plugin API
 ---
 
+<div class="warning">
+
+This page describes the JavaScript API that is used to implement plugins inside the Flipper Desktop application. For the JavaScript API that can be used inside React Native to communicate with the Flipper Desktop, see [Client Plugin API](create-plugin).
+
+</div>
+
 Provided a plugin is setup as defined in [JS Plugin Definiton](js-setup), the basic requirement of a Flipper plugin is that `index.tsx` exports a default class that extends `FlipperPlugin`.
 
 `FlipperPlugin` is an extension of `React.Component` with extra Flipper-related functionality. This means to define the UI of your plugin, you just need to implement this React component.
