@@ -27,6 +27,8 @@ import SupportRequestFormV2 from '../fb-stubs/SupportRequestFormV2';
 import SupportRequestDetails from '../fb-stubs/SupportRequestDetails';
 import {getPluginKey} from '../utils/pluginUtils';
 import {deconstructClientId} from '../utils/clientUtils';
+import {FlipperDevicePlugin} from '../plugin';
+import {RegisterPluginAction} from './plugins';
 
 export type StaticView =
   | null
@@ -141,7 +143,8 @@ export type Action =
   | {
       type: 'SELECT_CLIENT';
       payload: string;
-    };
+    }
+  | RegisterPluginAction;
 
 const DEFAULT_PLUGIN = 'DeviceLogs';
 const DEFAULT_DEVICE_BLACKLIST = [MacDevice];
@@ -365,6 +368,26 @@ const reducer = (state: State = INITAL_STATE, action: Actions): State => {
         ...state,
         errors,
       };
+    }
+
+    case 'REGISTER_PLUGINS': {
+      // plugins are registered after creating the base devices, so update them
+      const plugins = action.payload;
+      plugins.forEach(plugin => {
+        if (plugin.prototype instanceof FlipperDevicePlugin) {
+          // smell: devices are mutable
+          state.devices.forEach(device => {
+            // @ts-ignore
+            if (plugin.supportsDevice(device)) {
+              device.devicePlugins = [
+                ...(device.devicePlugins || []),
+                plugin.id,
+              ];
+            }
+          });
+        }
+      });
+      return state;
     }
 
     default:

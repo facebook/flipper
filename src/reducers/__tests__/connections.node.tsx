@@ -10,6 +10,8 @@
 import reducer from '../connections';
 import {State} from '../connections';
 import BaseDevice from '../../devices/BaseDevice';
+import MacDevice from '../../devices/MacDevice';
+import {FlipperDevicePlugin} from '../../plugin';
 
 test('REGISTER_DEVICE doesnt remove error', () => {
   const initialState: State = reducer(undefined, {
@@ -30,6 +32,27 @@ test('REGISTER_DEVICE doesnt remove error', () => {
   expect(endState.errors).toEqual([
     {message: 'something went wrong', occurrences: 1},
   ]);
+});
+
+test('triggering REGISTER_DEVICE before REGISTER_PLUGINS still registers device plugins', () => {
+  class TestDevicePlugin extends FlipperDevicePlugin<any, any, any> {
+    static id = 'test';
+    static supportsDevice() {
+      return true;
+    }
+  }
+
+  const stateWithDevice = reducer(undefined, {
+    type: 'REGISTER_DEVICE',
+    payload: new MacDevice(),
+  });
+
+  const endState = reducer(stateWithDevice, {
+    type: 'REGISTER_PLUGINS',
+    payload: [TestDevicePlugin],
+  });
+
+  expect(endState.devices[0].devicePlugins).toEqual(['test']);
 });
 
 test('errors are collected on a by name basis', () => {

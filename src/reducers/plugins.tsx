@@ -21,13 +21,15 @@ export type State = {
   selectedPlugins: Array<string>;
 };
 
-type P = typeof FlipperPlugin | typeof FlipperDevicePlugin;
+type PluginClass = typeof FlipperPlugin | typeof FlipperDevicePlugin;
+
+export type RegisterPluginAction = {
+  type: 'REGISTER_PLUGINS';
+  payload: Array<PluginClass>;
+};
 
 export type Action =
-  | {
-      type: 'REGISTER_PLUGINS';
-      payload: Array<P>;
-    }
+  | RegisterPluginAction
   | {
       type: 'GATEKEEPED_PLUGINS';
       payload: Array<PluginDefinition>;
@@ -61,7 +63,7 @@ export default function reducer(
   if (action.type === 'REGISTER_PLUGINS') {
     return produce(state, draft => {
       const {devicePlugins, clientPlugins} = draft;
-      action.payload.forEach((p: P) => {
+      action.payload.forEach((p: PluginClass) => {
         if (devicePlugins.has(p.id) || clientPlugins.has(p.id)) {
           return;
         }
@@ -105,7 +107,7 @@ export const selectedPlugins = (payload: Array<string>): Action => ({
   payload,
 });
 
-export const registerPlugins = (payload: Array<P>): Action => ({
+export const registerPlugins = (payload: Array<PluginClass>): Action => ({
   type: 'REGISTER_PLUGINS',
   payload,
 });
