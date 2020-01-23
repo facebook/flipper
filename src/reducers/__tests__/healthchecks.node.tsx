@@ -14,8 +14,7 @@ import {
   updateHealthcheckResult,
   acknowledgeProblems,
 } from '../healthchecks';
-import {Healthchecks} from 'flipper-doctor';
-import {EnvironmentInfo} from 'flipper-doctor/lib/environmentInfo';
+import {Healthchecks, EnvironmentInfo} from 'flipper-doctor';
 
 const HEALTHCHECKS: Healthchecks = {
   ios: {
@@ -27,7 +26,7 @@ const HEALTHCHECKS: Healthchecks = {
         key: 'ios.sdk',
         label: 'SDK Installed',
         run: async (_env: EnvironmentInfo) => {
-          return {hasProblem: false};
+          return {hasProblem: false, message: ''};
         },
       },
     ],
@@ -41,7 +40,7 @@ const HEALTHCHECKS: Healthchecks = {
         key: 'android.sdk',
         label: 'SDK Installed',
         run: async (_env: EnvironmentInfo) => {
-          return {hasProblem: true};
+          return {hasProblem: true, message: 'Error'};
         },
       },
     ],
@@ -55,7 +54,7 @@ const HEALTHCHECKS: Healthchecks = {
         key: 'common.openssl',
         label: 'OpenSSL Istalled',
         run: async (_env: EnvironmentInfo) => {
-          return {hasProblem: false};
+          return {hasProblem: false, message: ''};
         },
       },
     ],

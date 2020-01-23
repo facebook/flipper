@@ -88,6 +88,7 @@ const SideContainer = styled(FlexBox)({
 const SideContainerText = styled(Text)({
   display: 'block',
   wordWrap: 'break-word',
+  overflow: 'auto',
 });
 
 const HealthcheckLabel = styled(Text)({
@@ -170,6 +171,7 @@ function HealthcheckIcon(props: {checkResult: HealthcheckResult}) {
 function HealthcheckDisplay(props: {
   label: string;
   result: HealthcheckResult;
+  selected?: boolean;
   onClick?: () => void;
 }) {
   return (
@@ -177,6 +179,7 @@ function HealthcheckDisplay(props: {
       <HealthcheckDisplayContainer shrink title={props.result.message}>
         <HealthcheckIcon checkResult={props.result} />
         <HealthcheckLabel
+          bold={props.selected}
           underline={!!props.onClick}
           cursor={props.onClick && 'pointer'}
           onClick={props.onClick}>
@@ -187,27 +190,25 @@ function HealthcheckDisplay(props: {
   );
 }
 
-function SideMessageDisplay(props: {
-  isHealthcheckInProgress: boolean;
-  hasProblems: boolean;
-}) {
-  if (props.isHealthcheckInProgress) {
+function SideMessageDisplay(props: {children: React.ReactNode}) {
+  return <SideContainerText selectable>{props.children}</SideContainerText>;
+}
+
+function ResultMessage(props: {result: HealthcheckResult}) {
+  if (status === 'IN_PROGRESS') {
+    return <p>Doctor is running healthchecks...</p>;
+  } else if (hasProblems(props.result)) {
     return (
-      <SideContainerText selectable>
-        Doctor is running healthchecks...
-      </SideContainerText>
-    );
-  } else if (props.hasProblems) {
-    return (
-      <SideContainerText selectable>
-        Doctor has discovered problems with your installation.
-      </SideContainerText>
+      <p>
+        Doctor has discovered problems with your installation. Please click to
+        each item to get details.
+      </p>
     );
   } else {
     return (
-      <SideContainerText selectable>
+      <p>
         All good! Doctor has not discovered any issues with your installation.
-      </SideContainerText>
+      </p>
     );
   }
 }
@@ -224,6 +225,7 @@ function hasNewProblems(result: HealthcheckResult) {
 export type State = {
   acknowledgeCheckboxVisible: boolean;
   acknowledgeOnClose?: boolean;
+  selectedCheckKey?: string;
 };
 
 type Props = OwnProps & StateFromProps & DispatchFromProps;
@@ -296,8 +298,18 @@ class DoctorSheet extends Component<Props, State> {
     helpUrl && shell.openExternal(helpUrl);
   }
 
-  async runHealthchecks() {
+  async runHealthchecks(): Promise<void> {
     await runHealthchecks(this.props);
+  }
+
+  getCheckMessage(checkKey: string): string {
+    for (const cat of Object.values(this.props.healthcheckReport.categories)) {
+      const check = Object.values(cat.checks).find(chk => chk.key === checkKey);
+      if (check) {
+        return check.result.message || '';
+      }
+    }
+    return '';
   }
 
   render() {
@@ -319,12 +331,17 @@ class DoctorSheet extends Component<Props, State> {
                         {Object.values(category.checks).map(check => (
                           <HealthcheckDisplay
                             key={check.key}
+                            selected={check.key === this.state.selectedCheckKey}
                             label={check.label}
                             result={check.result}
-                            onClick={
-                              check.result.helpUrl
-                                ? () => this.openHelpUrl(check.result.helpUrl)
-                                : undefined
+                            onClick={() =>
+                              this.setState({
+                                ...this.state,
+                                selectedCheckKey:
+                                  this.state.selectedCheckKey === check.key
+                                    ? undefined
+                                    : check.key,
+                              })
                             }
                           />
                         ))}
@@ -344,12 +361,16 @@ class DoctorSheet extends Component<Props, State> {
           </HealthcheckListContainer>
           <Spacer />
           <SideContainer shrink>
-            <SideMessageDisplay
-              isHealthcheckInProgress={
-                this.props.healthcheckReport.result.status === 'IN_PROGRESS'
-              }
-              hasProblems={hasProblems(this.props.healthcheckReport.result)}
-            />
+            <SideMessageDisplay>
+              <SideContainerText selectable>
+                {this.state.selectedCheckKey && (
+                  <p>{this.getCheckMessage(this.state.selectedCheckKey)}</p>
+                )}
+                {!this.state.selectedCheckKey && (
+                  <ResultMessage result={this.props.healthcheckReport.result} />
+                )}
+              </SideContainerText>
+            </SideMessageDisplay>
           </SideContainer>
         </FlexRow>
         <FlexRow>

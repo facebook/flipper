@@ -66,14 +66,14 @@ async function launchHealthchecks(options: HealthcheckOptions): Promise<void> {
         checkResult.hasProblem && h.isRequired
           ? {
               status: 'FAILED',
-              helpUrl: checkResult.helpUrl,
+              message: checkResult.message,
             }
           : checkResult.hasProblem && !h.isRequired
           ? {
               status: 'WARNING',
-              helpUrl: checkResult.helpUrl,
+              message: checkResult.message,
             }
-          : {status: 'SUCCESS'};
+          : {status: 'SUCCESS', message: checkResult.message};
       options.updateHealthcheckResult(categoryKey, h.key, result);
     }
   }

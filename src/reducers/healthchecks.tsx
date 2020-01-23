@@ -60,7 +60,6 @@ export type HealthcheckResult = {
   status: HealthcheckStatus;
   isAcknowledged?: boolean;
   message?: string;
-  helpUrl?: string;
 };
 
 export type HealthcheckReportItem = {

@@ -10,8 +10,10 @@
 import {exec} from 'child_process';
 import {promisify} from 'util';
 import {EnvironmentInfo, getEnvInfo} from './environmentInfo';
-export {getEnvInfo} from './environmentInfo';
+export {EnvironmentInfo, getEnvInfo} from './environmentInfo';
 import * as watchman from 'fb-watchman';
+import * as fs from 'fs';
+import * as path from 'path';
 
 export type HealthcheckCategory = {
   label: string;
@@ -36,12 +38,12 @@ export type Healthcheck = {
   key: string;
   label: string;
   isRequired?: boolean;
-  run: (
-    env: EnvironmentInfo,
-  ) => Promise<{
-    hasProblem: boolean;
-    helpUrl?: string;
-  }>;
+  run: (env: EnvironmentInfo) => Promise<HealthchecRunResult>;
+};
+
+export type HealthchecRunResult = {
+  hasProblem: boolean;
+  message: string;
 };
 
 export type CategoryResult = [
@@ -68,9 +70,14 @@ export function getHealthchecks(): Healthchecks {
           key: 'common.openssl',
           label: 'OpenSSL Installed',
           run: async (_: EnvironmentInfo) => {
-            const isAvailable = await commandSucceeds('openssl version');
+            const result = await tryExecuteCommand('openssl version');
+            const hasProblem = result.hasProblem;
+            const message = hasProblem
+              ? `OpenSSL (https://wiki.openssl.org/index.php/Binaries) is not installed or not added to PATH. ${result.message}.`
+              : `OpenSSL (https://wiki.openssl.org/index.php/Binaries) is installed and added to PATH. ${result.message}.`;
             return {
-              hasProblem: !isAvailable,
+              hasProblem,
+              message,
             };
           },
         },
@@ -81,6 +88,9 @@ export function getHealthchecks(): Healthchecks {
             const isAvailable = await isWatchmanAvailable();
             return {
               hasProblem: !isAvailable,
+              message: isAvailable
+                ? 'Watchman file watching service (https://facebook.github.io/watchman/) is installed and added to PATH. Live reloading after changes during Flipper plugin development is enabled.'
+                : 'Watchman file watching service (https://facebook.github.io/watchman/) is not installed or not added to PATH. Live reloading after changes during Flipper plugin development is disabled.',
             };
           },
         },
@@ -95,9 +105,28 @@ export function getHealthchecks(): Healthchecks {
           key: 'android.sdk',
           label: 'SDK Installed',
           isRequired: true,
-          run: async (e: EnvironmentInfo) => ({
-            hasProblem: e.SDKs['Android SDK'] === 'Not Found',
-          }),
+          run: async (_: EnvironmentInfo) => {
+            if (process.env.ANDROID_HOME) {
+              const androidHome = process.env.ANDROID_HOME;
+              if (!fs.existsSync(androidHome)) {
+                return {
+                  hasProblem: true,
+                  message: `ANDROID_HOME points to a folder which does not exist: ${androidHome}.`,
+                };
+              }
+              const platformToolsDir = path.join(androidHome, 'platform-tools');
+              if (!fs.existsSync(path.join(androidHome, 'platform-tools'))) {
+                return {
+                  hasProblem: true,
+                  message: `Android SDK Platform Tools not found at the expected location "${platformToolsDir}". Probably they are not installed.`,
+                };
+              }
+              return await tryExecuteCommand(
+                path.join(platformToolsDir, 'adb') + ' version',
+              );
+            }
+            return await tryExecuteCommand('adb version');
+          },
         },
       ],
     },
@@ -112,40 +141,66 @@ export function getHealthchecks(): Healthchecks {
                 key: 'ios.sdk',
                 label: 'SDK Installed',
                 isRequired: true,
-                run: async (e: EnvironmentInfo) => ({
-                  hasProblem:
+                run: async (e: EnvironmentInfo) => {
+                  const hasProblem =
                     !e.SDKs['iOS SDK'] ||
                     !e.SDKs['iOS SDK'].Platforms ||
-                    !e.SDKs['iOS SDK'].Platforms.length,
-                }),
+                    !e.SDKs['iOS SDK'].Platforms.length;
+                  const message = hasProblem
+                    ? 'iOS SDK is not installed. You can install it using Xcode (https://developer.apple.com/xcode/).'
+                    : `iOS SDK is installed for the following platforms: ${JSON.stringify(
+                        e.SDKs['iOS SDK'].Platforms,
+                      )}.`;
+                  return {
+                    hasProblem,
+                    message,
+                  };
+                },
               },
               {
                 key: 'ios.xcode',
                 label: 'XCode Installed',
                 isRequired: true,
-                run: async (e: EnvironmentInfo) => ({
-                  hasProblem: e.IDEs == null || e.IDEs.Xcode == null,
-                }),
+                run: async (e: EnvironmentInfo) => {
+                  const hasProblem = e.IDEs == null || e.IDEs.Xcode == null;
+                  const message = hasProblem
+                    ? 'Xcode (https://developer.apple.com/xcode/) is not installed.'
+                    : `Xcode version ${e.IDEs.Xcode.version} is installed at "${e.IDEs.Xcode.path}".`;
+                  return {
+                    hasProblem,
+                    message,
+                  };
+                },
               },
               {
                 key: 'ios.xcode-select',
                 label: 'xcode-select set',
                 isRequired: true,
-                run: async (_: EnvironmentInfo) => ({
-                  hasProblem: !(await commandSucceeds('xcode-select -p')),
-                }),
+                run: async (_: EnvironmentInfo) => {
+                  const result = await tryExecuteCommand('xcode-select -p');
+                  const hasProblem = result.hasProblem;
+                  const message = hasProblem
+                    ? `Xcode version is not selected. You can select it using command "sudo xcode-select -switch <path/to/>Xcode.app". ${result.message}.`
+                    : `Xcode version is selected. ${result.message}.`;
+                  return {
+                    hasProblem,
+                    message,
+                  };
+                },
               },
               {
                 key: 'ios.instruments',
                 label: 'Instruments exists',
                 isRequired: true,
                 run: async (_: EnvironmentInfo) => {
-                  const hasInstruments = await commandSucceeds(
-                    'which instruments',
-                  );
-
+                  const result = await tryExecuteCommand('which instruments');
+                  const hasProblem = result.hasProblem;
+                  const message = hasProblem
+                    ? `Instruments not found. Please try to re-install Xcode (https://developer.apple.com/xcode/). ${result.message}.`
+                    : `Instruments are installed. ${result.message}.`;
                   return {
-                    hasProblem: !hasInstruments,
+                    hasProblem,
+                    message,
                   };
                 },
               },
@@ -153,7 +208,7 @@ export function getHealthchecks(): Healthchecks {
           }
         : {
             isSkipped: true,
-            skipReason: `Healthcheck is skipped, because iOS development is not supported on the current platform "${process.platform}"`,
+            skipReason: `Healthcheck is skipped, because iOS development is not supported on the current platform "${process.platform}".`,
           }),
     },
   };
@@ -199,10 +254,21 @@ export async function runHealthchecks(): Promise<
   return results;
 }
 
-async function commandSucceeds(command: string): Promise<boolean> {
-  return await promisify(exec)(command)
-    .then(() => true)
-    .catch(() => false);
+async function tryExecuteCommand(
+  command: string,
+): Promise<HealthchecRunResult> {
+  try {
+    const output = await promisify(exec)(command);
+    return {
+      hasProblem: false,
+      message: `Command "${command}" successfully executed with output: ${output.stdout}`,
+    };
+  } catch (err) {
+    return {
+      hasProblem: true,
+      message: `Command "${command}" failed to execute with output: ${err.message}`,
+    };
+  }
 }
 
 async function isWatchmanAvailable(): Promise<boolean> {
