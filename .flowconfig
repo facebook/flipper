@@ -10,6 +10,7 @@
 .*\.tsx
 .*/node_modules/.*
 <PROJECT_ROOT>/doctor/.*
+<PROJECT_ROOT>/react-native/ReactNativeFlipperExample/.*
 
 [libs]
 flow-typed

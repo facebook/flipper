@@ -8,7 +8,6 @@
  */
 
 import React, {useState, useEffect} from 'react';
-// $FlowFixMe 'react-native' won't resolve here, as this file is just an example..
 import {StyleSheet, View, Text, Button} from 'react-native';
 
 import {addPlugin} from 'react-native-flipper';

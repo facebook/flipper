@@ -23,7 +23,7 @@ The `addPlugin` accepts a `plugin` parameter, that registers a client plugin and
 
 ## Example
 
-An example plugin can be found in [examples/FlipperTicTacToe.js](examples/FlipperTicTacToe.js).
+An example plugin can be found in [examples/FlipperTicTacToe.js](../sample/FlipperTicTacToe.js).
 
 The corresponding Desktop plugin ships by default in Flipper, so importing the above file and dropping the `<FlipperTicTacToe />` component somewhere in your application should work out of the box.
 
