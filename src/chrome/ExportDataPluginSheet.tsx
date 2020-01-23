@@ -41,7 +41,7 @@ type StateFromProps = {
 };
 
 type DispatchFromProps = {
-  selectedPlugins: (payload: Array<string>) => void;
+  setSelectedPlugins: (payload: Array<string>) => void;
   setActiveSheet: (payload: ActiveSheet) => void;
   setExportDataToFileActiveSheet: (payload: {
     file: string;
@@ -57,32 +57,43 @@ const Container = styled(FlexColumn)({
   maxHeight: 700,
 });
 
-class ExportDataPluginSheet extends Component<Props> {
-  render() {
-    const {
-      plugins,
-      pluginStates,
-      pluginMessageQueue,
-      onHide,
-      selectedClient,
-    } = this.props;
-    const onHideWithUnsettingShare = () => {
-      this.props.unsetShare();
-      onHide();
-    };
-    const pluginsToExport = getActivePersistentPlugins(
+type State = {
+  availablePluginsToExport: Array<string>;
+};
+
+class ExportDataPluginSheet extends Component<Props, State> {
+  state: State = {availablePluginsToExport: []};
+  static getDerivedStateFromProps(props: Props, _state: State) {
+    const {plugins, pluginStates, pluginMessageQueue, selectedClient} = props;
+    const availablePluginsToExport = getActivePersistentPlugins(
       pluginStates,
       pluginMessageQueue,
       plugins,
       selectedClient,
     );
+    return {
+      availablePluginsToExport,
+    };
+  }
+
+  componentDidMount() {
+    if (this.props.plugins.selectedPlugins.length <= 0) {
+      this.props.setSelectedPlugins(this.state.availablePluginsToExport);
+    }
+  }
+
+  render() {
+    const {onHide} = this.props;
+    const onHideWithUnsettingShare = () => {
+      this.props.unsetShare();
+      onHide();
+    };
     return (
       <Container>
         <ListView
           type="multiple"
           title="Select the plugins for which you want to export the data"
-          onSelect={selectedArray => {
-            this.props.selectedPlugins(selectedArray);
+          onSubmit={() => {
             const {share} = this.props;
             if (!share) {
               console.error(
@@ -107,18 +118,18 @@ class ExportDataPluginSheet extends Component<Props> {
               }
             }
           }}
-          elements={pluginsToExport}
-          selectedElements={pluginsToExport.reduce((acc, plugin) => {
-            if (
-              plugins.selectedPlugins.length <= 0 ||
-              plugins.selectedPlugins.includes(plugin)
-            ) {
-              acc.add(plugin);
+          onChange={selectedArray => {
+            if (selectedArray.length > 0) {
+              this.props.setSelectedPlugins(selectedArray);
+            } else {
+              this.props.setSelectedPlugins(
+                this.state.availablePluginsToExport,
+              );
             }
-            return acc;
-          }, new Set([]) as Set<string>)}
+          }}
+          elements={this.state.availablePluginsToExport}
+          selectedElements={new Set(this.props.plugins.selectedPlugins)}
           onHide={onHideWithUnsettingShare}
-          showNavButtons={true}
         />
       </Container>
     );
@@ -145,7 +156,7 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
     };
   },
   (dispatch: Dispatch<Action<any>>) => ({
-    selectedPlugins: (plugins: Array<string>) => {
+    setSelectedPlugins: (plugins: Array<string>) => {
       dispatch(actionForSelectedPlugins(plugins));
     },
     setActiveSheet: (payload: ActiveSheet) => {

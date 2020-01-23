@@ -33,11 +33,11 @@ type SubType =
     };
 
 type Props = {
-  onSelect: (elements: Array<string>) => void;
+  onSubmit?: () => void;
+  onChange: (elements: Array<string>) => void;
   onHide: () => any;
   elements: Array<string>;
   title?: string;
-  showNavButtons: boolean;
 } & SubType;
 
 const Title = styled(Text)({
@@ -113,16 +113,12 @@ class RowComponent extends Component<RowComponentProps> {
 
 export default class ListView extends Component<Props, State> {
   state: State = {selectedElements: new Set([])};
-  static getDerivedStateFromProps(props: Props, state: State) {
-    if (state.selectedElements.size > 0) {
-      return null;
-    }
+  static getDerivedStateFromProps(props: Props, _state: State) {
     if (props.type === 'multiple') {
       return {selectedElements: props.selectedElements};
     } else if (props.type === 'single') {
       return {selectedElements: new Set([props.selectedElement])};
     }
-
     return null;
   }
 
@@ -138,21 +134,17 @@ export default class ListView extends Component<Props, State> {
     } else {
       if (selected) {
         selectedElements = new Set([...this.state.selectedElements, id]);
-        this.setState({
-          selectedElements: selectedElements,
-        });
+        this.props.onChange([...selectedElements]);
       } else {
         selectedElements = new Set([...this.state.selectedElements]);
         selectedElements.delete(id);
-        this.setState({selectedElements});
+        this.props.onChange([...selectedElements]);
       }
-    }
-    if (!this.props.showNavButtons) {
-      this.props.onSelect([...selectedElements]);
     }
   };
 
   render() {
+    const {onSubmit} = this.props;
     return (
       <Container>
         <FlexColumn>
@@ -170,20 +162,14 @@ export default class ListView extends Component<Props, State> {
             })}
           </RowComponentContainer>
         </FlexColumn>
-        {this.props.showNavButtons && (
+        {onSubmit && (
           <Padder paddingTop={8} paddingBottom={2}>
             <FlexRow>
               <Spacer />
               <Button compact padded onClick={this.props.onHide}>
                 Close
               </Button>
-              <Button
-                compact
-                padded
-                type="primary"
-                onClick={() => {
-                  this.props.onSelect([...this.state.selectedElements]);
-                }}>
+              <Button compact padded type="primary" onClick={onSubmit}>
                 Submit
               </Button>
             </FlexRow>
