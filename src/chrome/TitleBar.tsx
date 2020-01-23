@@ -42,6 +42,7 @@ import isProduction from '../utils/isProduction';
 import {clipboard} from 'electron';
 import React from 'react';
 import {State} from 'src/reducers';
+import {reportUsage} from '../utils/metrics';
 
 const AppTitleBar = styled(FlexRow)<{focused?: boolean}>(({focused}) => ({
   background: focused
@@ -175,7 +176,10 @@ class TitleBar extends React.Component<Props, StateFromProps> {
           icon="settings"
           title="Settings"
           compact={true}
-          onClick={() => this.props.setActiveSheet(ACTIVE_SHEET_SETTINGS)}
+          onClick={() => {
+            this.props.setActiveSheet(ACTIVE_SHEET_SETTINGS);
+            reportUsage('settings:opened:fromTitleBar');
+          }}
         />
         {config.bugReportButtonVisible && (
           <Button
@@ -189,7 +193,10 @@ class TitleBar extends React.Component<Props, StateFromProps> {
           icon="first-aid"
           title="Doctor"
           compact={true}
-          onClick={() => this.props.setActiveSheet(ACTIVE_SHEET_DOCTOR)}
+          onClick={() => {
+            this.props.setActiveSheet(ACTIVE_SHEET_DOCTOR);
+            reportUsage('doctor:report:opened:fromTitleBar');
+          }}
         />
         <ButtonGroup>
           <Button

@@ -14,6 +14,7 @@ import {
   setActiveSheet,
   ActiveSheet,
   ACTIVE_SHEET_DOCTOR,
+  ACTIVE_SHEET_SETTINGS,
 } from '../reducers/application';
 import {State as Store} from '../reducers/index';
 import {ButtonGroup, Button} from 'flipper';
@@ -23,23 +24,24 @@ import runHealthchecks, {
   HealthcheckEventsHandler,
 } from '../utils/runHealthchecks';
 import {
-  HealthcheckResult,
   updateHealthcheckResult,
   startHealthchecks,
   finishHealthchecks,
+  HealthcheckReport,
+  HealthcheckResult,
 } from '../reducers/healthchecks';
 
 import {reportUsage} from '../utils/metrics';
 
 type StateFromProps = {
-  healthcheckResult: HealthcheckResult;
+  healthcheckReport: HealthcheckReport;
 } & HealthcheckSettings;
 
 type DispatchFromProps = {
   setActiveSheet: (payload: ActiveSheet) => void;
 } & HealthcheckEventsHandler;
 
-type State = {visible: boolean};
+type State = {visible: boolean; message: string; showSettingsButton: boolean};
 
 type Props = DispatchFromProps & StateFromProps;
 class DoctorBar extends Component<Props, State> {
@@ -47,18 +49,41 @@ class DoctorBar extends Component<Props, State> {
     super(props);
     this.state = {
       visible: false,
+      message: '',
+      showSettingsButton: false,
     };
   }
   componentDidMount() {
     this.showMessageIfChecksFailed();
   }
+  static getDerivedStateFromProps(props: Props, state: State): State | null {
+    const failedCategories = Object.values(
+      props.healthcheckReport.categories,
+    ).filter(cat => hasProblems(cat.result));
+    if (failedCategories.length == 1) {
+      const failedCat = failedCategories[0];
+      if (failedCat.key === 'ios' || failedCat.key === 'android') {
+        return {
+          ...state,
+          message: `Doctor has discovered problems with your ${failedCat.label} setup. If you are not interested in ${failedCat.label} development you can disable it in Settings.`,
+          showSettingsButton: true,
+        };
+      }
+    }
+    if (failedCategories.length) {
+      return {
+        ...state,
+        message: 'Doctor has discovered problems with your installation.',
+        showSettingsButton: false,
+      };
+    }
+    return null;
+  }
   async showMessageIfChecksFailed() {
     await runHealthchecks(this.props);
-    if (
-      this.props.healthcheckResult.status === 'FAILED' ||
-      this.props.healthcheckResult.status === 'WARNING'
-    ) {
-      if (this.props.healthcheckResult.isAcknowledged) {
+    const result = this.props.healthcheckReport.result;
+    if (hasProblems(result)) {
+      if (result.isAcknowledged) {
         reportUsage('doctor:warning:suppressed');
       } else {
         this.setVisible(true);
@@ -76,18 +101,28 @@ class DoctorBar extends Component<Props, State> {
                 <ButtonGroup>
                   <Button
                     onClick={() => {
+                      reportUsage('doctor:report:opened:fromWarningBar');
                       this.props.setActiveSheet(ACTIVE_SHEET_DOCTOR);
                       this.setVisible(false);
                     }}>
                     Show Problems
                   </Button>
+                  {this.state.showSettingsButton && (
+                    <Button
+                      onClick={() => {
+                        reportUsage('settings:opened:fromWarningBar');
+                        this.props.setActiveSheet(ACTIVE_SHEET_SETTINGS);
+                      }}>
+                      Show Settings
+                    </Button>
+                  )}
                   <Button onClick={() => this.setVisible(false)}>
                     Dismiss
                   </Button>
                 </ButtonGroup>
               </ButtonSection>
               <FlexColumn style={{flexGrow: 1}}>
-                Doctor has discovered problems with your installation
+                {this.state.message}
               </FlexColumn>
             </FlexRow>
           </WarningContainer>
@@ -107,13 +142,12 @@ class DoctorBar extends Component<Props, State> {
 
 export default connect<StateFromProps, DispatchFromProps, {}, Store>(
   ({
-    settingsState: {enableAndroid},
-    healthchecks: {
-      healthcheckReport: {result},
-    },
+    settingsState: {enableAndroid, enableIOS},
+    healthchecks: {healthcheckReport},
   }) => ({
     enableAndroid,
-    healthcheckResult: result,
+    enableIOS,
+    healthcheckReport,
   }),
   {
     setActiveSheet,
@@ -149,3 +183,7 @@ const ButtonSection = styled(FlexColumn)({
   flexShrink: 0,
   flexGrow: 0,
 });
+
+function hasProblems(result: HealthcheckResult) {
+  return result.status === 'WARNING' || result.status === 'FAILED';
+}

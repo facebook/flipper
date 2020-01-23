@@ -201,7 +201,7 @@ function ResultMessage(props: {result: HealthcheckResult}) {
     return (
       <p>
         Doctor has discovered problems with your installation. Please click to
-        each item to get details.
+        an item to get its details.
       </p>
     );
   } else {
@@ -404,9 +404,13 @@ class DoctorSheet extends Component<Props, State> {
 }
 
 export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
-  ({healthchecks: {healthcheckReport}, settingsState}) => ({
+  ({
+    healthchecks: {healthcheckReport},
+    settingsState: {enableAndroid, enableIOS},
+  }) => ({
     healthcheckReport,
-    enableAndroid: settingsState.enableAndroid,
+    enableAndroid,
+    enableIOS,
   }),
   {
     startHealthchecks,

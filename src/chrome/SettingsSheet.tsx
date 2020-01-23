@@ -24,6 +24,10 @@ import {FilePathConfigField, ConfigText} from './settings/configFields';
 import isEqual from 'lodash.isequal';
 import restartFlipper from '../utils/restartFlipper';
 import LauncherSettingsPanel from '../fb-stubs/LauncherSettingsPanel';
+import {reportUsage} from '../utils/metrics';
+import os from 'os';
+
+const platform = os.platform();
 
 const Container = styled(FlexColumn)({
   padding: 20,
@@ -63,6 +67,10 @@ class SettingsSheet extends Component<Props, State> {
     updatedSettings: {...this.props.settings},
     updatedLauncherSettings: {...this.props.launcherSettings},
   };
+
+  componentDidMount() {
+    reportUsage('settings:opened');
+  }
 
   applyChanges = async () => {
     this.props.updateSettings(this.state.updatedSettings);
@@ -104,15 +112,26 @@ class SettingsSheet extends Component<Props, State> {
         </ToggledSection>
         <ToggledSection
           label="iOS Developer"
-          toggled={this.props.isXcodeDetected}
-          frozen>
+          toggled={
+            this.state.updatedSettings.enableIOS && platform === 'darwin'
+          }
+          frozen={platform !== 'darwin'}
+          onChange={v => {
+            this.setState({
+              updatedSettings: {...this.state.updatedSettings, enableIOS: v},
+            });
+          }}>
           {' '}
-          <ConfigText
-            content={
-              'Use xcode-select to enable or switch between xcode versions'
-            }
-            frozen
-          />
+          {platform === 'darwin' && (
+            <ConfigText
+              content={'Use "xcode-select" to switch between Xcode versions'}
+            />
+          )}
+          {platform !== 'darwin' && (
+            <ConfigText
+              content={'iOS development is only supported on MacOS'}
+            />
+          )}
         </ToggledSection>
         <LauncherSettingsPanel
           isPrefetchingEnabled={this.state.updatedSettings.enablePrefetching}

@@ -255,6 +255,9 @@ export default (store: Store, logger: Logger) => {
   if (process.platform !== 'darwin') {
     return;
   }
+  if (!store.getState().settingsState.enableIOS) {
+    return;
+  }
   isXcodeDetected()
     .then(isDetected => {
       store.dispatch(setXcodeDetected(isDetected));

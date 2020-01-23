@@ -26,6 +26,7 @@ export type HealthcheckEventsHandler = {
 
 export type HealthcheckSettings = {
   enableAndroid: boolean;
+  enableIOS: boolean;
 };
 
 export type HealthcheckOptions = HealthcheckEventsHandler & HealthcheckSettings;
@@ -38,6 +39,14 @@ async function launchHealthchecks(options: HealthcheckOptions): Promise<void> {
       isSkipped: true,
       skipReason:
         'Healthcheck is skipped, because "Android Development" option is disabled in the Flipper settings',
+    };
+  }
+  if (!options.enableIOS) {
+    healthchecks.ios = {
+      label: healthchecks.ios.label,
+      isSkipped: true,
+      skipReason:
+        'Healthcheck is skipped, because "iOS Development" option is disabled in the Flipper settings',
     };
   }
   options.startHealthchecks(healthchecks);

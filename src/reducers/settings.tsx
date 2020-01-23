@@ -20,6 +20,7 @@ export enum Tristate {
 export type Settings = {
   androidHome: string;
   enableAndroid: boolean;
+  enableIOS: boolean;
   /**
    * If unset, this will assume the value of the GK setting.
    * Note that this setting has no effect in the open source version
@@ -47,6 +48,7 @@ export const DEFAULT_ANDROID_SDK_PATH = getDefaultAndroidSdkPath();
 const initialState: Settings = {
   androidHome: getDefaultAndroidSdkPath(),
   enableAndroid: true,
+  enableIOS: os.platform() === 'darwin',
   enablePrefetching: Tristate.Unset,
   jsApps: {
     webAppLauncher: {
