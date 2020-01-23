@@ -38,14 +38,23 @@ export function resetPluginBackgroundStatsDelta() {
   });
 }
 
-export function getPluginBackgroundStats(): {[plugin: string]: StatEntry} {
-  return Array.from(Object.entries(pluginBackgroundStats)).reduce(
+export function getPluginBackgroundStats(): {
+  cpuTime: number; // amount of ms cpu used since the last stats (typically every minute)
+  byPlugin: {[plugin: string]: StatEntry};
+} {
+  let cpuTime: number = 0;
+  const byPlugin = Array.from(pluginBackgroundStats.entries()).reduce(
     (aggregated, [pluginName, data]) => {
+      cpuTime += data.cpuTimeDelta;
       aggregated[pluginName] = data;
       return aggregated;
     },
     {} as {[plugin: string]: StatEntry},
   );
+  return {
+    cpuTime,
+    byPlugin,
+  };
 }
 
 if (window) {
