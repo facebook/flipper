@@ -14,6 +14,7 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
+import javax.annotation.Nonnull;
 
 /**
  * The FlipperModule is a React Native Native Module. The instance handles incoming calls that
@@ -27,15 +28,16 @@ public class FlipperModule extends ReactContextBaseJavaModule {
 
   public static final String NAME = "Flipper";
 
-  private FlipperReactNativeJavaScriptPluginManager manager;
+  private final FlipperReactNativeJavaScriptPluginManager mManager;
 
-  public FlipperModule(
+  FlipperModule(
       FlipperReactNativeJavaScriptPluginManager manager, ReactApplicationContext reactContext) {
     super(reactContext);
-    this.manager = manager;
+    mManager = manager;
   }
 
   @Override
+  @Nonnull
   public String getName() {
     return NAME;
   }
@@ -43,41 +45,41 @@ public class FlipperModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void registerPlugin(
       final String pluginId, final Boolean inBackground, final Callback statusCallback) {
-    this.manager.registerPlugin(this, pluginId, inBackground, statusCallback);
+    mManager.registerPlugin(this, pluginId, inBackground, statusCallback);
   }
 
   @ReactMethod
   public void send(String pluginId, String method, String data) {
-    this.manager.send(pluginId, method, data);
+    mManager.send(pluginId, method, data);
   }
 
   @ReactMethod
   public void reportErrorWithMetadata(String pluginId, String reason, String stackTrace) {
-    this.manager.reportErrorWithMetadata(pluginId, reason, stackTrace);
+    mManager.reportErrorWithMetadata(pluginId, reason, stackTrace);
   }
 
   @ReactMethod
   public void reportError(String pluginId, String error) {
-    this.manager.reportError(pluginId, error);
+    mManager.reportError(pluginId, error);
   }
 
   @ReactMethod
   public void subscribe(String pluginId, String method) {
-    this.manager.subscribe(this, pluginId, method);
+    mManager.subscribe(this, pluginId, method);
   }
 
   @ReactMethod
   public void respondSuccess(String responderId, String data) {
-    this.manager.respondSuccess(responderId, data);
+    mManager.respondSuccess(responderId, data);
   }
 
   @ReactMethod
   public void respondError(String responderId, String data) {
-    this.manager.respondError(responderId, data);
+    mManager.respondError(responderId, data);
   }
 
-  public void sendJSEvent(String eventName, WritableMap params) {
-    ReactApplicationContext context = getReactApplicationContextIfActiveOrWarn();
+  void sendJSEvent(String eventName, WritableMap params) {
+    final ReactApplicationContext context = getReactApplicationContextIfActiveOrWarn();
     if (context != null) {
       context
           .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
