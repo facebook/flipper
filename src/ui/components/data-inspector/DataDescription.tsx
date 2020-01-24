@@ -31,6 +31,7 @@ UndefinedValue.displayName = 'DataDescription:UndefinedValue';
 
 const StringValue = styled.span({
   color: colors.cherryDark1,
+  wordWrap: 'break-word',
 });
 StringValue.displayName = 'DataDescription:StringValue';
 
