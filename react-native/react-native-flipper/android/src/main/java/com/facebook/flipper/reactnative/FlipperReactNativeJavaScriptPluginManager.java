@@ -56,7 +56,7 @@ final class FlipperReactNativeJavaScriptPluginManager {
       final String pluginId,
       final Boolean inBackground,
       final Callback statusCallback) {
-    if (this.flipperClient == null) {
+    if (mFlipperClient == null) {
       // Flipper is not available in this build
       statusCallback.invoke("noflipper");
       return;

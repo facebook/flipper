@@ -26,63 +26,61 @@ import com.facebook.react.bridge.WritableMap;
  * to the Flipper Desktop client.
  */
 public abstract class FlipperReactNativeJavaScriptPlugin implements FlipperPlugin {
-  String pluginId;
-  boolean inBackground;
-  FlipperConnection connection;
-  FlipperModule module;
+  private final String mPluginId;
+  private final boolean mInBackground;
+  private FlipperConnection mConnection;
+  private FlipperModule mModule;
 
-  public FlipperReactNativeJavaScriptPlugin(
-      FlipperModule module, String pluginId, boolean inBackground) {
-    this.pluginId = pluginId;
-    this.module = module;
-    this.inBackground = inBackground;
-    this.module = module;
+  FlipperReactNativeJavaScriptPlugin(FlipperModule module, String pluginId, boolean inBackground) {
+    mPluginId = pluginId;
+    mModule = module;
+    mInBackground = inBackground;
   }
 
   @Override
   public String getId() {
-    return pluginId;
+    return mPluginId;
   }
 
   @Override
-  public void onConnect(FlipperConnection connection) throws Exception {
-    this.connection = connection;
-    this.fireOnConnect();
+  public void onConnect(FlipperConnection connection) {
+    mConnection = connection;
+    fireOnConnect();
   }
 
-  public void fireOnConnect() {
+  void fireOnConnect() {
     if (!isConnected()) {
-      throw new RuntimeException("Plugin not connected " + pluginId);
+      throw new RuntimeException("Plugin not connected " + mPluginId);
     }
-    this.module.sendJSEvent("react-native-flipper-plugin-connect", getPluginParams());
+    mModule.sendJSEvent("react-native-flipper-plugin-connect", getPluginParams());
   }
 
   @Override
   public void onDisconnect() {
-    this.module.sendJSEvent("react-native-flipper-plugin-disconnect", getPluginParams());
-    this.connection = null;
+    mModule.sendJSEvent("react-native-flipper-plugin-disconnect", getPluginParams());
+    mConnection = null;
   }
 
   @Override
   public boolean runInBackground() {
-    return inBackground;
+    return mInBackground;
   }
 
-  public boolean isConnected() {
-    return connection != null;
+  boolean isConnected() {
+    return mConnection != null;
   }
 
-  public FlipperConnection getConnection() {
-    return connection;
+  FlipperConnection getConnection() {
+    return mConnection;
   }
 
-  public void setModule(FlipperModule module) {
-    this.module = module;
+  void setModule(FlipperModule module) {
+    mModule = module;
   }
 
-  WritableMap getPluginParams() {
-    WritableMap params = Arguments.createMap();
-    params.putString("plugin", pluginId);
+  private WritableMap getPluginParams() {
+    final WritableMap params = Arguments.createMap();
+    params.putString("plugin", mPluginId);
     return params;
   }
 }
