@@ -31,7 +31,7 @@ public class FlipperReactNativeJavaScriptReceiver implements FlipperReceiver {
   }
 
   @Override
-  public void onReceive(FlipperObject params, FlipperResponder responder) throws Exception {
+  public void onReceive(FlipperObject params, FlipperResponder responder) {
     WritableMap eventData = Arguments.createMap();
     eventData.putString("plugin", plugin);
     eventData.putString("method", method);

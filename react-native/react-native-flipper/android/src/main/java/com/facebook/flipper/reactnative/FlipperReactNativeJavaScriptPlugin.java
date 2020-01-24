@@ -58,7 +58,7 @@ public abstract class FlipperReactNativeJavaScriptPlugin implements FlipperPlugi
   }
 
   @Override
-  public void onDisconnect() throws Exception {
+  public void onDisconnect() {
     this.module.sendJSEvent("react-native-flipper-plugin-disconnect", getPluginParams());
     this.connection = null;
   }

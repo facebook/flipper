@@ -20,8 +20,6 @@ import java.util.List;
  * application context lives shorter than the application itself, e.g. reload creates a fresh one.
  */
 public class FlipperPackage implements ReactPackage {
-  static FlipperModule flipperModule;
-
   @Override
   public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
     return Arrays.<NativeModule>asList(
