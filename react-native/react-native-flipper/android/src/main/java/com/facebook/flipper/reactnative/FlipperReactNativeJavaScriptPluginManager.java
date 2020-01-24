@@ -11,6 +11,7 @@ import com.facebook.flipper.android.AndroidFlipperClient;
 import com.facebook.flipper.core.FlipperArray;
 import com.facebook.flipper.core.FlipperClient;
 import com.facebook.flipper.core.FlipperObject;
+import com.facebook.flipper.core.FlipperPlugin;
 import com.facebook.flipper.core.FlipperResponder;
 import com.facebook.react.bridge.Callback;
 import java.util.Map;
@@ -29,26 +30,25 @@ import org.json.JSONTokener;
  * <p>Note that this manager is not bound to a specific FlipperModule instance, as that might be
  * swapped in and out over time.
  */
-public class FlipperReactNativeJavaScriptPluginManager {
-  static FlipperReactNativeJavaScriptPluginManager instance;
+final class FlipperReactNativeJavaScriptPluginManager {
+  private static FlipperReactNativeJavaScriptPluginManager sInstance;
 
-  static FlipperReactNativeJavaScriptPluginManager getInstance() {
-    if (instance == null) {
-      instance = new FlipperReactNativeJavaScriptPluginManager();
+  static synchronized FlipperReactNativeJavaScriptPluginManager getInstance() {
+    if (sInstance == null) {
+      sInstance = new FlipperReactNativeJavaScriptPluginManager();
     }
-    return instance;
+    return sInstance;
   }
 
-  private final FlipperClient flipperClient;
+  private final FlipperClient mFlipperClient;
 
   // uniqueResponderId -> ResponderObject
-  private final Map<String, FlipperResponder> responders = new ConcurrentHashMap<>();
+  private final Map<String, FlipperResponder> mResponders = new ConcurrentHashMap<>();
   // generated the next responder id
-  private final AtomicLong responderId = new AtomicLong();
+  private final AtomicLong mResponderId = new AtomicLong();
 
   private FlipperReactNativeJavaScriptPluginManager() {
-    instance = this;
-    this.flipperClient = AndroidFlipperClient.getInstanceIfInitialized();
+    mFlipperClient = AndroidFlipperClient.getInstanceIfInitialized();
   }
 
   public void registerPlugin(
@@ -61,7 +61,7 @@ public class FlipperReactNativeJavaScriptPluginManager {
       statusCallback.invoke("noflipper");
       return;
     }
-    FlipperReactNativeJavaScriptPlugin existing = getPlugin(pluginId);
+    final FlipperReactNativeJavaScriptPlugin existing = getPlugin(pluginId);
     if (existing != null) {
       // Make sure events are emitted on the right application context
       existing.setModule(module);
@@ -74,23 +74,23 @@ public class FlipperReactNativeJavaScriptPluginManager {
     }
     // we always create a new plugin class on the fly,
     // as Flipper only allows one plugin per type to be registered!
-    FlipperReactNativeJavaScriptPlugin plugin =
+    final FlipperPlugin plugin =
         new FlipperReactNativeJavaScriptPlugin(module, pluginId, inBackground) {
           // inner class with no new members
         };
-    this.flipperClient.addPlugin(plugin);
+    mFlipperClient.addPlugin(plugin);
     statusCallback.invoke("ok");
   }
 
-  public void send(String pluginId, String method, String data) {
-    FlipperReactNativeJavaScriptPlugin plugin = getPlugin(pluginId);
+  void send(String pluginId, String method, String data) {
+    final FlipperReactNativeJavaScriptPlugin plugin = getPlugin(pluginId);
     if (data == null) {
       plugin.getConnection().send(method, (FlipperObject) null);
       return;
     }
     // Optimization: throwing raw strings around to the desktop would probably avoid some double
     // parsing...
-    Object parsedData = parseJSON(data);
+    final Object parsedData = parseJSON(data);
     if (parsedData instanceof FlipperArray) {
       plugin.getConnection().send(method, (FlipperArray) parsedData);
     } else {
@@ -98,28 +98,27 @@ public class FlipperReactNativeJavaScriptPluginManager {
     }
   }
 
-  public void reportErrorWithMetadata(String pluginId, String reason, String stackTrace) {
+  void reportErrorWithMetadata(String pluginId, String reason, String stackTrace) {
     getPlugin(pluginId).getConnection().reportErrorWithMetadata(reason, stackTrace);
   }
 
-  public void reportError(String pluginId, String error) {
+  void reportError(String pluginId, String error) {
     getPlugin(pluginId).getConnection().reportError(new Error(error));
   }
 
-  public void subscribe(FlipperModule module, String pluginId, String method) {
-    String key = pluginId + "#" + method;
-    FlipperReactNativeJavaScriptReceiver receiver =
+  void subscribe(FlipperModule module, String pluginId, String method) {
+    final FlipperReactNativeJavaScriptReceiver receiver =
         new FlipperReactNativeJavaScriptReceiver(this, module, pluginId, method);
     // Fresh connection should be the case for a new subscribe...
     getPlugin(pluginId).getConnection().receive(method, receiver);
   }
 
-  public void respondSuccess(String responderId, String data) {
-    FlipperResponder responder = responders.remove(responderId);
+  void respondSuccess(String responderId, String data) {
+    final FlipperResponder responder = mResponders.remove(responderId);
     if (data == null) {
       responder.success();
     } else {
-      Object parsedData = parseJSON(data);
+      final Object parsedData = parseJSON(data);
       if (parsedData instanceof FlipperArray) {
         responder.success((FlipperArray) parsedData);
       } else {
@@ -128,9 +127,9 @@ public class FlipperReactNativeJavaScriptPluginManager {
     }
   }
 
-  public void respondError(String responderId, String data) {
-    FlipperResponder responder = responders.remove(responderId);
-    Object parsedData = parseJSON(data);
+  void respondError(String responderId, String data) {
+    final FlipperResponder responder = mResponders.remove(responderId);
+    final Object parsedData = parseJSON(data);
     if (parsedData instanceof FlipperArray) {
       responder.success((FlipperArray) parsedData);
     } else {
@@ -138,13 +137,13 @@ public class FlipperReactNativeJavaScriptPluginManager {
     }
   }
 
-  FlipperReactNativeJavaScriptPlugin getPlugin(String pluginId) {
-    return this.flipperClient.<FlipperReactNativeJavaScriptPlugin>getPlugin(pluginId);
+  private FlipperReactNativeJavaScriptPlugin getPlugin(String pluginId) {
+    return mFlipperClient.getPlugin(pluginId);
   }
 
-  public String createResponderId(FlipperResponder responder) {
-    String id = String.valueOf(responderId.incrementAndGet());
-    responders.put(id, responder);
+  String createResponderId(FlipperResponder responder) {
+    final String id = String.valueOf(mResponderId.incrementAndGet());
+    mResponders.put(id, responder);
     return id;
   }
 
@@ -154,15 +153,15 @@ public class FlipperReactNativeJavaScriptPluginManager {
     }
     // returns either a FlipperObject or Flipper array, pending the data
     try {
-      JSONTokener tokener = new JSONTokener(json);
-      char firstChar = tokener.nextClean();
+      final JSONTokener tokener = new JSONTokener(json);
+      final char firstChar = tokener.nextClean();
       tokener.back();
       if (firstChar == '[') {
         return new FlipperArray(new JSONArray(tokener));
       } else {
         return new FlipperObject(new JSONObject(tokener));
       }
-    } catch (JSONException e) {
+    } catch (final JSONException e) {
       throw new RuntimeException(e);
     }
   }
