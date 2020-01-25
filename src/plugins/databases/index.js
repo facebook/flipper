@@ -1361,7 +1361,11 @@ export default class DatabasesPlugin extends FlipperPlugin<
               </ButtonGroup>
               <Spacer />
               <ButtonGroup>
-                <Button onClick={this.onExecuteClicked} title={'Execute SQL [Ctrl+Return]'}>Execute</Button>
+                <Button
+                  onClick={this.onExecuteClicked}
+                  title={'Execute SQL [Ctrl+Return]'}>
+                  Execute
+                </Button>
               </ButtonGroup>
             </Toolbar>
           </div>
