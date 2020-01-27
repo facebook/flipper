@@ -39,7 +39,7 @@ import com.facebook.flipper.plugins.inspector.descriptors.utils.AccessibilityEva
 import com.facebook.flipper.plugins.inspector.descriptors.utils.AccessibilityRoleUtil;
 import com.facebook.flipper.plugins.inspector.descriptors.utils.AccessibilityUtil;
 import com.facebook.flipper.plugins.inspector.descriptors.utils.EnumMapping;
-import com.facebook.stetho.common.android.ResourcesUtil;
+import com.facebook.flipper.plugins.inspector.descriptors.utils.stethocopies.ResourcesUtil;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;

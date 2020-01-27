@@ -21,7 +21,6 @@ android {
         implementation project(':android')
         implementation deps.fresco
         implementation deps.frescoFlipper
-        implementation deps.frescoStetho
         compileOnly deps.jsr305
     }
 }
