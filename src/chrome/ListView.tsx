@@ -37,7 +37,7 @@ type Props = {
   onSubmit?: () => void;
   onChange: (elements: Array<string>) => void;
   onHide: () => any;
-  elements: Array<string>;
+  elements: Array<{label: string; id: string}>;
   title?: string;
 } & SubType;
 
@@ -80,14 +80,15 @@ const Padder = styled.div<{
 }));
 
 type RowComponentProps = {
-  name: string;
+  id: string;
+  label: string;
   selected: boolean;
   onChange: (name: string, selected: boolean) => void;
 };
 
 class RowComponent extends Component<RowComponentProps> {
   render() {
-    const {name, selected, onChange} = this.props;
+    const {id, label, selected, onChange} = this.props;
     return (
       <FlexColumn>
         <Padder
@@ -96,12 +97,12 @@ class RowComponent extends Component<RowComponentProps> {
           paddingBottom={8}
           paddingLeft={8}>
           <FlexRow>
-            <Text> {name} </Text>
+            <Text> {label} </Text>
             <Spacer />
             <Checkbox
               checked={selected}
               onChange={selected => {
-                onChange(name, selected);
+                onChange(id, selected);
               }}
             />
           </FlexRow>
@@ -151,10 +152,11 @@ export default class ListView extends Component<Props, State> {
         <FlexColumn>
           {this.props.title && <Title>{this.props.title}</Title>}
           <RowComponentContainer>
-            {this.props.elements.map(id => {
+            {this.props.elements.map(({id, label}) => {
               return (
                 <RowComponent
-                  name={id}
+                  id={id}
+                  label={label}
                   key={id}
                   selected={this.state.selectedElements.has(id)}
                   onChange={this.handleChange}

@@ -19,7 +19,6 @@ import {serialize, deserialize} from './utils/serialization';
 import {Idler} from './utils/Idler';
 import {StaticView} from './reducers/connections';
 import {State as ReduxState} from './reducers';
-import {PersistedState} from './plugins/layout';
 import {DEFAULT_MAX_QUEUE_SIZE} from './reducers/pluginMessageQueue';
 type Parameters = any;
 
@@ -274,11 +273,4 @@ export class FlipperPlugin<
     this.realClient.initPlugin(this.constructor.id);
     this.init();
   }
-}
-
-export function sortPluginsByName(
-  a: typeof FlipperBasePlugin,
-  b: typeof FlipperBasePlugin,
-): number {
-  return (a.title || a.id) > (b.title || b.id) ? 1 : -1;
 }

@@ -42,6 +42,7 @@ import {setSelectPluginsToExportActiveSheet} from '../reducers/application';
 import {deconstructClientId, deconstructPluginKey} from '../utils/clientUtils';
 import {performance} from 'perf_hooks';
 import {processMessageQueue} from './messageQueue';
+import {getPluginTitle} from './pluginUtils';
 
 export const IMPORT_FLIPPER_TRACE_EVENT = 'import-flipper-trace';
 export const EXPORT_FLIPPER_TRACE_EVENT = 'export-flipper-trace';
@@ -85,7 +86,8 @@ type SerializePluginStatesOptions = {
 
 type PluginsToProcess = {
   pluginKey: string;
-  plugin: string;
+  pluginId: string;
+  pluginName: string;
   pluginClass: typeof FlipperPlugin | typeof FlipperDevicePlugin;
   client: Client;
 }[];
@@ -398,33 +400,39 @@ export async function fetchMetadata(
   const newPluginState = {...pluginStates};
   const errorArray: Array<Error> = [];
 
-  for (const {plugin, pluginClass, client, pluginKey} of pluginsToProcess) {
+  for (const {
+    pluginName,
+    pluginId,
+    pluginClass,
+    client,
+    pluginKey,
+  } of pluginsToProcess) {
     const exportState = pluginClass ? pluginClass.exportPersistedState : null;
     if (exportState) {
       const fetchMetaDataMarker = `${EXPORT_FLIPPER_TRACE_EVENT}:fetch-meta-data-per-plugin`;
       performance.mark(fetchMetaDataMarker);
       try {
         statusUpdate &&
-          statusUpdate(`Fetching metadata for plugin ${plugin}...`);
+          statusUpdate(`Fetching metadata for plugin ${pluginName}...`);
         const data = await promiseTimeout(
           240000, // Fetching MobileConfig data takes ~ 3 mins, thus keeping timeout at 4 mins.
           exportState(
-            callClient(client, plugin),
+            callClient(client, pluginId),
             newPluginState[pluginKey],
             state,
             idler,
             statusUpdate,
           ),
-          `Timed out while collecting data for ${plugin}`,
+          `Timed out while collecting data for ${pluginName}`,
         );
         getLogger().trackTimeSince(fetchMetaDataMarker, fetchMetaDataMarker, {
-          plugin,
+          pluginId,
         });
         newPluginState[pluginKey] = data;
       } catch (e) {
         errorArray.push(e);
         getLogger().trackTimeSince(fetchMetaDataMarker, fetchMetaDataMarker, {
-          plugin,
+          pluginId,
           error: e,
         });
         continue;
@@ -441,7 +449,12 @@ async function processQueues(
   statusUpdate?: (msg: string) => void,
   idler?: Idler,
 ) {
-  for (const {plugin, pluginKey, pluginClass} of pluginsToProcess) {
+  for (const {
+    pluginName,
+    pluginId,
+    pluginKey,
+    pluginClass,
+  } of pluginsToProcess) {
     if (pluginClass.persistedStateReducer) {
       const processQueueMarker = `${EXPORT_FLIPPER_TRACE_EVENT}:process-queue-per-plugin`;
       performance.mark(processQueueMarker);
@@ -454,14 +467,14 @@ async function processQueues(
           statusUpdate?.(
             `Processing event ${current} / ${total} (${Math.round(
               (current / total) * 100,
-            )}%) for plugin ${plugin}`,
+            )}%) for plugin ${pluginName}`,
           );
         },
         idler,
       );
 
       getLogger().trackTimeSince(processQueueMarker, processQueueMarker, {
-        plugin,
+        pluginId,
       });
     }
   }
@@ -506,7 +519,8 @@ export function determinePluginsToProcess(
         pluginsToProcess.push({
           pluginKey: key,
           client,
-          plugin,
+          pluginId: plugin,
+          pluginName: getPluginTitle(pluginClass),
           pluginClass,
         });
       }

@@ -18,33 +18,45 @@ import type {State as PluginMessageQueueState} from '../../reducers/pluginStates
 import {FlipperBasePlugin} from 'flipper';
 import type {ReduxState} from '../../reducers/index.tsx';
 
-class MockFlipperPluginWithDefaultPersistedState extends FlipperBasePlugin<
-  *,
-  *,
-  {msg: string},
-> {
-  static defaultPersistedState = {msg: 'MockFlipperPluginWithPersistedState'};
-}
-
-class MockFlipperPluginWithExportPersistedState extends FlipperBasePlugin<
-  *,
-  *,
-  {msg: string},
-> {
-  static exportPersistedState = (
-    callClient: (string, ?Object) => Promise<Object>,
-    persistedState: ?{msg: string},
-    store: ?ReduxState,
-  ): Promise<?{msg: string}> => {
-    return Promise.resolve({msg: 'MockFlipperPluginWithExportPersistedState'});
+function createMockFlipperPluginWithDefaultPersistedState(id: string) {
+  return class MockFlipperPluginWithDefaultPersistedState extends FlipperBasePlugin<
+    *,
+    *,
+    {msg: string},
+  > {
+    static id = id;
+    static defaultPersistedState = {msg: 'MockFlipperPluginWithPersistedState'};
   };
 }
 
-class MockFlipperPluginWithNoPersistedState extends FlipperBasePlugin<
-  *,
-  *,
-  *,
-> {}
+function createMockFlipperPluginWithExportPersistedState(id: string) {
+  return class MockFlipperPluginWithExportPersistedState extends FlipperBasePlugin<
+    *,
+    *,
+    {msg: string},
+  > {
+    static id = id;
+    static exportPersistedState = (
+      callClient: (string, ?Object) => Promise<Object>,
+      persistedState: ?{msg: string},
+      store: ?ReduxState,
+    ): Promise<?{msg: string}> => {
+      return Promise.resolve({
+        msg: 'MockFlipperPluginWithExportPersistedState',
+      });
+    };
+  };
+}
+
+function createMockFlipperPluginWithNoPersistedState(id: string) {
+  return class MockFlipperPluginWithNoPersistedState extends FlipperBasePlugin<
+    *,
+    *,
+    *,
+  > {
+    static id = id;
+  };
+}
 
 function mockPluginState(
   gatekeepedPlugins: Array<PluginDefinition>,
@@ -53,12 +65,24 @@ function mockPluginState(
 ): PluginsState {
   return {
     devicePlugins: new Map([
-      ['DevicePlugin1', MockFlipperPluginWithDefaultPersistedState],
-      ['DevicePlugin2', MockFlipperPluginWithDefaultPersistedState],
+      [
+        'DevicePlugin1',
+        createMockFlipperPluginWithDefaultPersistedState('DevicePlugin1'),
+      ],
+      [
+        'DevicePlugin2',
+        createMockFlipperPluginWithDefaultPersistedState('DevicePlugin2'),
+      ],
     ]),
     clientPlugins: new Map([
-      ['ClientPlugin1', MockFlipperPluginWithDefaultPersistedState],
-      ['ClientPlugin2', MockFlipperPluginWithDefaultPersistedState],
+      [
+        'ClientPlugin1',
+        createMockFlipperPluginWithDefaultPersistedState('ClientPlugin1'),
+      ],
+      [
+        'ClientPlugin2',
+        createMockFlipperPluginWithDefaultPersistedState('ClientPlugin2'),
+      ],
     ]),
     gatekeepedPlugins,
     disabledPlugins,
@@ -98,12 +122,24 @@ test('getPersistentPlugins with no plugins getting excluded', () => {
 test('getPersistentPlugins, where the plugins with exportPersistedState not getting excluded', () => {
   const state: PluginsState = {
     devicePlugins: new Map([
-      ['DevicePlugin1', MockFlipperPluginWithExportPersistedState],
-      ['DevicePlugin2', MockFlipperPluginWithExportPersistedState],
+      [
+        'DevicePlugin1',
+        createMockFlipperPluginWithExportPersistedState('DevicePlugin1'),
+      ],
+      [
+        'DevicePlugin2',
+        createMockFlipperPluginWithExportPersistedState('DevicePlugin2'),
+      ],
     ]),
     clientPlugins: new Map([
-      ['ClientPlugin1', MockFlipperPluginWithExportPersistedState],
-      ['ClientPlugin2', MockFlipperPluginWithExportPersistedState],
+      [
+        'ClientPlugin1',
+        createMockFlipperPluginWithExportPersistedState('ClientPlugin1'),
+      ],
+      [
+        'ClientPlugin2',
+        createMockFlipperPluginWithExportPersistedState('ClientPlugin2'),
+      ],
     ]),
     gatekeepedPlugins: [],
     disabledPlugins: [],
@@ -122,12 +158,24 @@ test('getPersistentPlugins, where the plugins with exportPersistedState not gett
 test('getPersistentPlugins, where the non persistent plugins getting excluded', () => {
   const state: PluginsState = {
     devicePlugins: new Map([
-      ['DevicePlugin1', MockFlipperPluginWithNoPersistedState],
-      ['DevicePlugin2', MockFlipperPluginWithDefaultPersistedState],
+      [
+        'DevicePlugin1',
+        createMockFlipperPluginWithNoPersistedState('DevicePlugin1'),
+      ],
+      [
+        'DevicePlugin2',
+        createMockFlipperPluginWithDefaultPersistedState('DevicePlugin2'),
+      ],
     ]),
     clientPlugins: new Map([
-      ['ClientPlugin1', MockFlipperPluginWithDefaultPersistedState],
-      ['ClientPlugin2', MockFlipperPluginWithNoPersistedState],
+      [
+        'ClientPlugin1',
+        createMockFlipperPluginWithDefaultPersistedState('ClientPlugin1'),
+      ],
+      [
+        'ClientPlugin2',
+        createMockFlipperPluginWithNoPersistedState('ClientPlugin2'),
+      ],
     ]),
     gatekeepedPlugins: [],
     disabledPlugins: [],
@@ -141,12 +189,24 @@ test('getPersistentPlugins, where the non persistent plugins getting excluded', 
 test('getActivePersistentPlugins, where the non persistent plugins getting excluded', () => {
   const state: PluginsState = {
     devicePlugins: new Map([
-      ['DevicePlugin1', MockFlipperPluginWithNoPersistedState],
-      ['DevicePlugin2', MockFlipperPluginWithDefaultPersistedState],
+      [
+        'DevicePlugin1',
+        createMockFlipperPluginWithNoPersistedState('DevicePlugin1'),
+      ],
+      [
+        'DevicePlugin2',
+        createMockFlipperPluginWithDefaultPersistedState('DevicePlugin2'),
+      ],
     ]),
     clientPlugins: new Map([
-      ['ClientPlugin1', MockFlipperPluginWithDefaultPersistedState],
-      ['ClientPlugin2', MockFlipperPluginWithNoPersistedState],
+      [
+        'ClientPlugin1',
+        createMockFlipperPluginWithDefaultPersistedState('ClientPlugin1'),
+      ],
+      [
+        'ClientPlugin2',
+        createMockFlipperPluginWithNoPersistedState('ClientPlugin2'),
+      ],
     ]),
     gatekeepedPlugins: [],
     disabledPlugins: [],
@@ -161,19 +221,43 @@ test('getActivePersistentPlugins, where the non persistent plugins getting exclu
   };
   const queues: PluginMessageQueueState = {};
   const list = getActivePersistentPlugins(plugins, queues, state);
-  expect(list).toEqual(['ClientPlugin1', 'DevicePlugin2']);
+  expect(list).toEqual([
+    {
+      id: 'ClientPlugin1',
+      label: 'ClientPlugin1',
+    },
+    {
+      id: 'DevicePlugin2',
+      label: 'DevicePlugin2',
+    },
+  ]);
 });
 
 test('getActivePersistentPlugins, where the plugins not in pluginState or queue gets excluded', () => {
   const state: PluginsState = {
     devicePlugins: new Map([
-      ['DevicePlugin1', MockFlipperPluginWithDefaultPersistedState],
-      ['DevicePlugin2', MockFlipperPluginWithDefaultPersistedState],
+      [
+        'DevicePlugin1',
+        createMockFlipperPluginWithDefaultPersistedState('DevicePlugin1'),
+      ],
+      [
+        'DevicePlugin2',
+        createMockFlipperPluginWithDefaultPersistedState('DevicePlugin2'),
+      ],
     ]),
     clientPlugins: new Map([
-      ['ClientPlugin1', MockFlipperPluginWithDefaultPersistedState],
-      ['ClientPlugin2', MockFlipperPluginWithDefaultPersistedState],
-      ['ClientPlugin3', MockFlipperPluginWithDefaultPersistedState],
+      [
+        'ClientPlugin1',
+        createMockFlipperPluginWithDefaultPersistedState('ClientPlugin1'),
+      ],
+      [
+        'ClientPlugin2',
+        createMockFlipperPluginWithDefaultPersistedState('ClientPlugin2'),
+      ],
+      [
+        'ClientPlugin3',
+        createMockFlipperPluginWithDefaultPersistedState('ClientPlugin3'),
+      ],
     ]),
     gatekeepedPlugins: [],
     disabledPlugins: [],
@@ -190,5 +274,18 @@ test('getActivePersistentPlugins, where the plugins not in pluginState or queue 
     ],
   };
   const list = getActivePersistentPlugins(plugins, queues, state);
-  expect(list).toEqual(['ClientPlugin2', 'ClientPlugin3', 'DevicePlugin1']);
+  expect(list).toEqual([
+    {
+      id: 'ClientPlugin2',
+      label: 'ClientPlugin2',
+    },
+    {
+      id: 'ClientPlugin3',
+      label: 'ClientPlugin3',
+    },
+    {
+      id: 'DevicePlugin1',
+      label: 'DevicePlugin1',
+    },
+  ]);
 });

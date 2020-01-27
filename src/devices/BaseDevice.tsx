@@ -9,7 +9,7 @@
 
 import stream from 'stream';
 import {FlipperDevicePlugin} from 'flipper';
-import {sortPluginsByName} from '../plugin';
+import {sortPluginsByName} from '../utils/pluginUtils';
 
 export type LogLevel =
   | 'unknown'

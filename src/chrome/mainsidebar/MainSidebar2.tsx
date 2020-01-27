@@ -10,7 +10,7 @@
 import BaseDevice from '../../devices/BaseDevice';
 import Client from '../../Client';
 import {UninitializedClient} from '../../UninitializedClient';
-import {sortPluginsByName} from '../../plugin';
+import {sortPluginsByName} from '../../utils/pluginUtils';
 import {PluginNotification} from '../../reducers/notifications';
 import {ActiveSheet} from '../../reducers/application';
 import {State as Store} from '../../reducers';

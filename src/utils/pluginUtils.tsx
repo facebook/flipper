@@ -77,38 +77,46 @@ export function getActivePersistentPlugins(
   pluginsMessageQueue: PluginMessageQueueState,
   plugins: PluginsState,
   selectedClient?: Client,
-): Array<string> {
+): {id: string; label: string}[] {
   const pluginsMap: Map<
     string,
     typeof FlipperDevicePlugin | typeof FlipperPlugin
   > = pluginsClassMap(plugins);
-  return getPersistentPlugins(plugins).filter(plugin => {
-    const pluginClass = pluginsMap.get(plugin);
-    const keys = [
-      ...new Set([
-        ...Object.keys(pluginsState),
-        ...Object.keys(pluginsMessageQueue),
-      ]),
-    ]
-      .filter(k => !selectedClient || k.includes(selectedClient.id))
-      .map(key => deconstructPluginKey(key).pluginName);
-    let result = plugin == 'DeviceLogs';
-    const pluginsWithExportPersistedState =
-      pluginClass && pluginClass.exportPersistedState != undefined;
-    const pluginsWithReduxData = keys.includes(plugin);
-    if (!result && selectedClient) {
-      // If there is a selected client, active persistent plugin is the plugin which is active for selectedClient and also persistent.
-      result =
-        selectedClient.plugins.includes(plugin) &&
-        (pluginsWithExportPersistedState || pluginsWithReduxData);
-    } else if (!result && !selectedClient) {
-      // If there is no selected client, active persistent plugin is the plugin which is just persistent.
-      result =
-        (pluginClass && pluginClass.exportPersistedState != undefined) ||
-        keys.includes(plugin);
-    }
-    return result;
-  });
+  return getPersistentPlugins(plugins)
+    .map(pluginName => pluginsMap.get(pluginName)!)
+    .sort(sortPluginsByName)
+    .map(plugin => {
+      const keys = [
+        ...new Set([
+          ...Object.keys(pluginsState),
+          ...Object.keys(pluginsMessageQueue),
+        ]),
+      ]
+        .filter(k => !selectedClient || k.includes(selectedClient.id))
+        .map(key => deconstructPluginKey(key).pluginName);
+      let result = plugin.id == 'DeviceLogs';
+      const pluginsWithExportPersistedState =
+        plugin && plugin.exportPersistedState != undefined;
+      const pluginsWithReduxData = keys.includes(plugin.id);
+      if (!result && selectedClient) {
+        // If there is a selected client, active persistent plugin is the plugin which is active for selectedClient and also persistent.
+        result =
+          selectedClient.plugins.includes(plugin.id) &&
+          (pluginsWithExportPersistedState || pluginsWithReduxData);
+      } else if (!result && !selectedClient) {
+        // If there is no selected client, active persistent plugin is the plugin which is just persistent.
+        result =
+          (plugin && plugin.exportPersistedState != undefined) ||
+          keys.includes(plugin.id);
+      }
+      return (result
+        ? {
+            id: plugin.id,
+            label: getPluginTitle(plugin),
+          }
+        : undefined)!;
+    })
+    .filter(Boolean);
 }
 
 export function getPersistentPlugins(plugins: PluginsState): Array<string> {
@@ -143,4 +151,28 @@ export function getPersistentPlugins(plugins: PluginsState): Array<string> {
           pluginClass.exportPersistedState != undefined))
     );
   });
+}
+
+export function getPluginTitle(pluginClass: typeof FlipperBasePlugin) {
+  return pluginClass.title || pluginClass.id;
+}
+
+export function sortPluginsByName(
+  a: typeof FlipperBasePlugin,
+  b: typeof FlipperBasePlugin,
+): number {
+  // make sure Device plugins are sorted before normal plugins
+  if (
+    a.prototype instanceof FlipperDevicePlugin &&
+    !(b.prototype instanceof FlipperDevicePlugin)
+  ) {
+    return -1;
+  }
+  if (
+    b.prototype instanceof FlipperDevicePlugin &&
+    !(a.prototype instanceof FlipperDevicePlugin)
+  ) {
+    return 1;
+  }
+  return getPluginTitle(a) > getPluginTitle(b) ? 1 : -1;
 }

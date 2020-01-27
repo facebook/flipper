@@ -23,6 +23,7 @@ import {textContent} from '../utils/index';
 import GK from '../fb-stubs/GK';
 import {deconstructPluginKey} from '../utils/clientUtils';
 import NotificationScreen from '../chrome/NotificationScreen';
+import {getPluginTitle} from '../utils/pluginUtils';
 
 type NotificationEvents = 'show' | 'click' | 'close' | 'reply' | 'action';
 const NOTIFICATION_THROTTLE = 5 * 1000; // in milliseconds
@@ -173,7 +174,9 @@ export default (store: Store, logger: Logger) => {
               },
               {
                 type: 'button',
-                text: `Hide all ${plugin != null ? plugin.title : ''}`,
+                text: `Hide all ${
+                  plugin != null ? getPluginTitle(plugin) : ''
+                }`,
               },
             ],
             closeButtonText: 'Hide',

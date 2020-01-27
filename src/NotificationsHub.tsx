@@ -34,6 +34,7 @@ import {selectPlugin} from './reducers/connections';
 import {State as StoreState} from './reducers/index';
 import textContent from './utils/textContent';
 import createPaste from './fb-stubs/createPaste';
+import {getPluginTitle} from './utils/pluginUtils';
 
 type OwnProps = {
   onClear: () => void;
@@ -429,7 +430,7 @@ class NotificationItem extends Component<
     const items = [];
     if (props.onHidePlugin && props.plugin) {
       items.push({
-        label: `Hide ${props.plugin.title || props.plugin.id} plugin`,
+        label: `Hide ${getPluginTitle(props.plugin)} plugin`,
         click: this.props.onHidePlugin,
       });
     }
@@ -534,7 +535,7 @@ class NotificationItem extends Component<
                 <FlexRow>
                   {action && (
                     <Button onClick={this.openDeeplink}>
-                      Open in {plugin.title}
+                      Open in {getPluginTitle(plugin)}
                     </Button>
                   )}
                   <ButtonGroup>
@@ -543,7 +544,7 @@ class NotificationItem extends Component<
                     )}
                     {onHidePlugin && (
                       <Button onClick={onHidePlugin}>
-                        Hide {plugin.title}
+                        Hide {getPluginTitle(plugin)}
                       </Button>
                     )}
                   </ButtonGroup>

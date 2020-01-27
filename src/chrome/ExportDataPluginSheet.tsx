@@ -58,12 +58,12 @@ const Container = styled(FlexColumn)({
 });
 
 type State = {
-  availablePluginsToExport: Array<string>;
+  availablePluginsToExport: Array<{id: string; label: string}>;
 };
 
 class ExportDataPluginSheet extends Component<Props, State> {
   state: State = {availablePluginsToExport: []};
-  static getDerivedStateFromProps(props: Props, _state: State) {
+  static getDerivedStateFromProps(props: Props, _state: State): State {
     const {plugins, pluginStates, pluginMessageQueue, selectedClient} = props;
     const availablePluginsToExport = getActivePersistentPlugins(
       pluginStates,

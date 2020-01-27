@@ -27,6 +27,7 @@ import {
 } from 'flipper';
 import {StaticView} from '../../reducers/connections';
 import {BackgroundColorProperty} from 'csstype';
+import {getPluginTitle} from '../../utils/pluginUtils';
 
 export type FlipperPlugins = typeof FlipperPlugin[];
 export type PluginsByCategory = [string, FlipperPlugins][];
@@ -167,7 +168,7 @@ export const PluginSidebarListItem: React.FC<{
         backgroundColor={starred === false ? colors.light20 : iconColor}
         color={colors.white}
       />
-      <PluginName>{plugin.title || plugin.id}</PluginName>
+      <PluginName>{getPluginTitle(plugin)}</PluginName>
       {starred !== undefined && (!starred || isActive) && (
         <ToggleButton
           onClick={onFavorite}
