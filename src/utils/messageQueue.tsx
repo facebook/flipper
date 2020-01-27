@@ -143,10 +143,7 @@ export function processMessageImmediately(
   },
   message: {method: string; params?: any},
 ) {
-  const persistedState: any =
-    store.getState().pluginStates[pluginKey] ??
-    plugin.defaultPersistedState ??
-    {};
+  const persistedState = getCurrentPluginState(store, plugin, pluginKey);
   const newPluginState = processMessage(
     persistedState,
     pluginKey,
@@ -217,10 +214,7 @@ export async function processMessageQueue(
       break;
     }
     // there are messages to process! lets do so until we have to idle
-    const persistedState =
-      store.getState().pluginStates[pluginKey] ??
-      plugin.defaultPersistedState ??
-      {};
+    const persistedState = getCurrentPluginState(store, plugin, pluginKey);
     let offset = 0;
     let newPluginState = persistedState;
     do {
@@ -266,4 +260,16 @@ function getPendingMessages(
   pluginKey: string,
 ): Message[] {
   return store.getState().pluginMessageQueue[pluginKey] || [];
+}
+
+function getCurrentPluginState(
+  store: MiddlewareAPI,
+  plugin: {defaultPersistedState: any},
+  pluginKey: string,
+) {
+  // possible optimization: don't spread default state here by put proper default state when initializing clients
+  return {
+    ...plugin.defaultPersistedState,
+    ...store.getState().pluginStates[pluginKey],
+  };
 }
