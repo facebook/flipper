@@ -7,6 +7,9 @@
 
 package com.facebook.flipper.plugins.inspector.descriptors;
 
+import android.content.Context;
+import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.Window;
 import com.facebook.flipper.core.FlipperDynamic;
@@ -14,11 +17,18 @@ import com.facebook.flipper.core.FlipperObject;
 import com.facebook.flipper.plugins.inspector.Named;
 import com.facebook.flipper.plugins.inspector.NodeDescriptor;
 import com.facebook.flipper.plugins.inspector.Touch;
+import java.lang.reflect.Field;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.annotation.Nullable;
 
 public class WindowDescriptor extends NodeDescriptor<Window> {
+  private static Class internalRStyleableClass;
+  private static Object internalRStyleable;
+  private static Field[] internalRStyleableFields;
+  private static Field internalRStyleableWindowField;
 
   @Override
   public void init(Window node) {}
@@ -45,7 +55,59 @@ public class WindowDescriptor extends NodeDescriptor<Window> {
 
   @Override
   public List<Named<FlipperObject>> getData(Window node) {
-    return Collections.EMPTY_LIST;
+    FlipperObject.Builder windowAttrs = new FlipperObject.Builder();
+    try {
+      if (internalRStyleableClass == null) {
+        internalRStyleableClass = Class.forName("com.android.internal.R$styleable");
+        internalRStyleable = internalRStyleableClass.newInstance();
+        internalRStyleableFields = internalRStyleableClass.getDeclaredFields();
+        internalRStyleableWindowField = internalRStyleableClass.getDeclaredField("Window");
+        internalRStyleableWindowField.setAccessible(true);
+      }
+
+      Context c = node.getContext();
+
+      int[] windowStyleable = (int[]) internalRStyleableWindowField.get(internalRStyleable);
+
+      Map<Integer, String> indexToName = new HashMap<>();
+      for (Field f : internalRStyleableFields) {
+        if (!f.getName().startsWith("Window_")) {
+          continue;
+        }
+        if (f.getType() != int.class) {
+          continue;
+        }
+        indexToName.put(f.getInt(internalRStyleable), f.getName());
+      }
+
+      int index = 0;
+      TypedValue typedValue = new TypedValue();
+      for (int attr : windowStyleable) {
+        String fieldName = indexToName.get(index);
+        ++index;
+        if (fieldName == null) {
+          continue;
+        }
+
+        if (c.getTheme().resolveAttribute(attr, typedValue, true)) {
+          String strValue = TypedValue.coerceToString(typedValue.type, typedValue.data);
+          if (strValue == null) {
+            strValue = "null";
+          } else if (strValue.startsWith("@")) {
+            int resId = Integer.parseInt(strValue.substring(1));
+            if (resId == 0) {
+              strValue = "null";
+            } else {
+              strValue = c.getResources().getResourceName(resId);
+            }
+          }
+          windowAttrs.put(fieldName.substring(7), strValue); // 7 is the length of "Window_"
+        }
+      }
+    } catch (Throwable ignored) {
+      Log.d("WindowDescriptor", "Failed to generate a window descriptor!", ignored);
+    }
+    return Collections.singletonList(new Named<>("Window", windowAttrs.build()));
   }
 
   @Override
