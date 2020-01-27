@@ -9,6 +9,7 @@
 
 import {ipcRenderer} from 'electron';
 import {performance} from 'perf_hooks';
+import EventEmitter from 'events';
 
 import {Store} from '../reducers/index';
 import {Logger} from '../fb-interfaces/Logger';
@@ -37,6 +38,8 @@ export type UsageSummary = {
   [pluginName: string]: {focusedTime: number; unfocusedTime: number};
 };
 
+export const fpsEmitter = new EventEmitter();
+
 export default (store: Store, logger: Logger) => {
   let droppedFrames: number = 0;
   let largeFrameDrops: number = 0;
@@ -46,7 +49,9 @@ export default (store: Store, logger: Logger) => {
   ) {
     const now = performance.now();
     requestAnimationFrame(() => droppedFrameDetection(now, isWindowFocused));
-    const dropped = Math.round((now - past) / (1000 / 60) - 1);
+    const delta = now - past;
+    const dropped = Math.round(delta / (1000 / 60) - 1);
+    fpsEmitter.emit('fps', delta > 1000 ? 0 : Math.round(1000 / (now - past)));
     if (!isWindowFocused() || dropped < 1) {
       return;
     }

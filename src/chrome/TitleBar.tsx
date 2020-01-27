@@ -43,6 +43,7 @@ import {clipboard} from 'electron';
 import React from 'react';
 import {State} from 'src/reducers';
 import {reportUsage} from '../utils/metrics';
+import FpsGraph from './FpsGraph';
 
 const AppTitleBar = styled(FlexRow)<{focused?: boolean}>(({focused}) => ({
   background: focused
@@ -160,6 +161,9 @@ class TitleBar extends React.Component<Props, StateFromProps> {
           share != null ? share.statusComponent : undefined,
         )}
         <Spacer />
+
+        {!isProduction() && <FpsGraph height={20} width={60} />}
+
         {config.showFlipperRating ? <RatingButton /> : null}
         <Version>{this.props.version + (isProduction() ? '' : '-dev')}</Version>
 
