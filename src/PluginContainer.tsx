@@ -28,7 +28,12 @@ import {
   VBox,
   View,
 } from 'flipper';
-import {StaticView, setStaticView} from './reducers/connections';
+import {
+  StaticView,
+  setStaticView,
+  pluginIsStarred,
+  starPlugin,
+} from './reducers/connections';
 import React, {PureComponent} from 'react';
 import {connect, ReactReduxContext} from 'react-redux';
 import {setPluginState} from './reducers/pluginStates';
@@ -38,6 +43,7 @@ import {activateMenuItems} from './MenuBar';
 import {Message} from './reducers/pluginMessageQueue';
 import {Idler} from './utils/Idler';
 import {processMessageQueue} from './utils/messageQueue';
+import {ToggleButton, SmallText} from './ui';
 
 const Container = styled(FlexColumn)({
   width: 0,
@@ -95,6 +101,7 @@ type StateFromProps = {
   selectedApp: string | null;
   isArchivedDevice: boolean;
   pendingMessages: Message[] | undefined;
+  pluginIsEnabled: boolean;
 };
 
 type DispatchFromProps = {
@@ -105,6 +112,7 @@ type DispatchFromProps = {
   }) => any;
   setPluginState: (payload: {pluginKey: string; state: any}) => void;
   setStaticView: (payload: StaticView) => void;
+  starPlugin: typeof starPlugin;
 };
 
 type Props = StateFromProps & DispatchFromProps & OwnProps;
@@ -167,12 +175,18 @@ class PluginContainer extends PureComponent<Props, State> {
   }
 
   processMessageQueue() {
-    const {pluginKey, pendingMessages, activePlugin} = this.props;
+    const {
+      pluginKey,
+      pendingMessages,
+      activePlugin,
+      pluginIsEnabled,
+    } = this.props;
     if (pluginKey !== this.pluginBeingProcessed) {
       this.pluginBeingProcessed = pluginKey;
       this.cancelCurrentQueue();
       this.setState({progress: {current: 0, total: 0}});
       if (
+        pluginIsEnabled &&
         activePlugin &&
         activePlugin.persistedStateReducer &&
         pluginKey &&
@@ -200,16 +214,62 @@ class PluginContainer extends PureComponent<Props, State> {
   }
 
   render() {
-    const {activePlugin, pluginKey, target, pendingMessages} = this.props;
+    const {
+      activePlugin,
+      pluginKey,
+      target,
+      pendingMessages,
+      pluginIsEnabled,
+    } = this.props;
     if (!activePlugin || !target || !pluginKey) {
       console.warn(`No selected plugin. Rendering empty!`);
       return null;
     }
+
+    if (!pluginIsEnabled) {
+      return this.renderPluginEnabler();
+    }
     if (!pendingMessages || pendingMessages.length === 0) {
       return this.renderPlugin();
-    } else {
-      return this.renderPluginLoader();
     }
+    return this.renderPluginLoader();
+  }
+
+  renderPluginEnabler() {
+    const activePlugin = this.props.activePlugin!;
+    return (
+      <View grow>
+        <Waiting>
+          <VBox>
+            <FlexRow>
+              <Label
+                style={{
+                  fontSize: '16px',
+                  color: colors.light30,
+                  textTransform: 'uppercase',
+                }}>
+                {activePlugin.title}
+              </Label>
+            </FlexRow>
+          </VBox>
+          <VBox>
+            <ToggleButton
+              toggled={false}
+              onClick={() => {
+                this.props.starPlugin({
+                  selectedPlugin: activePlugin.id,
+                  selectedApp: (this.props.target as Client).query.app,
+                });
+              }}
+              large
+            />
+          </VBox>
+          <VBox>
+            <SmallText>Click to enable this plugin</SmallText>
+          </VBox>
+        </Waiting>
+      </View>
+    );
   }
 
   renderPluginLoader() {
@@ -319,6 +379,7 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
       selectedApp,
       clients,
       deepLinkPayload,
+      userStarredPlugins,
     },
     pluginStates,
     plugins: {devicePlugins, clientPlugins},
@@ -330,24 +391,33 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
       | typeof FlipperDevicePlugin
       | typeof FlipperPlugin
       | null = null;
+    let pluginIsEnabled = false;
 
     if (selectedPlugin) {
       activePlugin = devicePlugins.get(selectedPlugin) || null;
       target = selectedDevice;
       if (selectedDevice && activePlugin) {
         pluginKey = getPluginKey(selectedDevice.serial, activePlugin.id);
+        pluginIsEnabled = true;
       } else {
         target =
           clients.find((client: Client) => client.id === selectedApp) || null;
         activePlugin = clientPlugins.get(selectedPlugin) || null;
         if (activePlugin && target) {
           pluginKey = getPluginKey(target.id, activePlugin.id);
+          pluginIsEnabled = pluginIsStarred(
+            {selectedApp, userStarredPlugins},
+            activePlugin.id,
+          );
         }
       }
     }
     const isArchivedDevice = !selectedDevice
       ? false
       : selectedDevice instanceof ArchivedDevice;
+    if (isArchivedDevice) {
+      pluginIsEnabled = true;
+    }
 
     const pendingMessages = pluginKey
       ? pluginMessageQueue[pluginKey]
@@ -362,6 +432,7 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
       isArchivedDevice,
       selectedApp: selectedApp || null,
       pendingMessages,
+      pluginIsEnabled,
     };
     return s;
   },
@@ -369,5 +440,6 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
     setPluginState,
     selectPlugin,
     setStaticView,
+    starPlugin,
   },
 )(PluginContainer);

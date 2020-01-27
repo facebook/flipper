@@ -607,7 +607,13 @@ export function getSelectedPluginKey(state: State): string | undefined {
     : undefined;
 }
 
-export function pluginIsStarred(state: State, pluginId: string): boolean {
+export function pluginIsStarred(
+  state: {
+    selectedApp: string | null;
+    userStarredPlugins: State['userStarredPlugins'];
+  },
+  pluginId: string,
+): boolean {
   const {selectedApp} = state;
   if (!selectedApp) {
     return false;

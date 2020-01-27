@@ -60,6 +60,7 @@ import {
   NoClients,
   NoDevices,
   getColorByApp,
+  getFavoritePlugins,
 } from './sidebarUtils';
 
 type FlipperPlugins = typeof FlipperPlugin[];
@@ -126,6 +127,13 @@ const SidebarSection: React.FC<{
 }> = ({children, title, level, color, defaultCollapsed}) => {
   const [collapsed, setCollapsed] = useState(!!defaultCollapsed);
   color = color || colors.macOSTitleBarIconActive;
+
+  useEffect(() => {
+    // if default collapsed changed to false, propagate that
+    if (!defaultCollapsed && collapsed) {
+      setCollapsed(!collapsed);
+    }
+  }, [defaultCollapsed]);
 
   return (
     <>
@@ -395,20 +403,6 @@ function isStaticViewActive(
   return current && selected && current === selected;
 }
 
-function getFavoritePlugins(
-  allPlugins: FlipperPlugins,
-  starredPlugins: undefined | string[],
-  favorite: boolean,
-): FlipperPlugins {
-  if (!starredPlugins || !starredPlugins.length) {
-    return favorite ? [] : allPlugins;
-  }
-  return allPlugins.filter(plugin => {
-    const idx = starredPlugins.indexOf(plugin.id);
-    return idx === -1 ? !favorite : favorite;
-  });
-}
-
 function groupPluginsByCategory(plugins: FlipperPlugins): PluginsByCategory {
   const sortedPlugins = plugins.slice().sort(sortPluginsByName);
   const byCategory: {[cat: string]: FlipperPlugins} = {};
@@ -511,6 +505,8 @@ const PluginList = memo(function PluginList({
     (p: typeof FlipperPlugin) => client.plugins.indexOf(p.id) > -1,
   );
   const favoritePlugins: FlipperPlugins = getFavoritePlugins(
+    device,
+    client,
     allPlugins,
     userStarredPlugins[client.query.app],
     true,
@@ -529,7 +525,7 @@ const PluginList = memo(function PluginList({
       color={getColorByApp(client.query.app)}>
       {favoritePlugins.length === 0 ? (
         <ListItem>
-          <SmallText center>Star your favorite plugins!</SmallText>
+          <SmallText center>No plugins enabled</SmallText>
         </ListItem>
       ) : (
         <PluginsByCategory
@@ -563,6 +559,8 @@ const PluginList = memo(function PluginList({
             client={client}
             device={device}
             plugins={getFavoritePlugins(
+              device,
+              client,
               allPlugins,
               userStarredPlugins[client.query.app],
               false,
@@ -624,7 +622,7 @@ const PluginsByCategory = memo(function PluginsByCategory({
               plugin={plugin}
               app={client.query.app}
               onFavorite={() => onFavorite(plugin.id)}
-              starred={starred}
+              starred={device.isArchived ? undefined : starred}
             />
           ))}
         </Fragment>

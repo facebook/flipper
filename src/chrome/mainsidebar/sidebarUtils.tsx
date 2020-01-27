@@ -7,6 +7,7 @@
  * @format
  */
 
+import React from 'react';
 import {
   FlexBox,
   colors,
@@ -17,32 +18,39 @@ import {
   FlexColumn,
   LoadingIndicator,
   FlipperBasePlugin,
-  StarButton,
+  ToggleButton,
   brandColors,
   Spacer,
   Heading,
+  Client,
+  BaseDevice,
 } from 'flipper';
-import React, {useState, useCallback} from 'react';
 import {StaticView} from '../../reducers/connections';
 import {BackgroundColorProperty} from 'csstype';
 
 export type FlipperPlugins = typeof FlipperPlugin[];
 export type PluginsByCategory = [string, FlipperPlugins][];
 
-export const ListItem = styled.div<{active?: boolean}>(({active}) => ({
-  paddingLeft: 10,
-  display: 'flex',
-  alignItems: 'center',
-  marginBottom: 6,
-  flexShrink: 0,
-  backgroundColor: active ? colors.macOSTitleBarIconSelected : 'none',
-  color: active ? colors.white : colors.macOSSidebarSectionItem,
-  lineHeight: '25px',
-  padding: '0 10px',
-  '&[disabled]': {
-    color: 'rgba(0, 0, 0, 0.5)',
-  },
-}));
+export const ListItem = styled.div<{active?: boolean; disabled?: boolean}>(
+  ({active, disabled}) => ({
+    paddingLeft: 10,
+    display: 'flex',
+    alignItems: 'center',
+    marginBottom: 6,
+    flexShrink: 0,
+    backgroundColor: active ? colors.macOSTitleBarIconSelected : 'none',
+    color: disabled
+      ? 'rgba(0, 0, 0, 0.5)'
+      : active
+      ? colors.white
+      : colors.macOSSidebarSectionItem,
+    lineHeight: '25px',
+    padding: '0 10px',
+    '&[disabled]': {
+      color: 'rgba(0, 0, 0, 0.5)',
+    },
+  }),
+);
 
 export function PluginIcon({
   isActive,
@@ -143,30 +151,29 @@ export const PluginSidebarListItem: React.FC<{
   helpRef?: any;
   provided?: any;
   onFavorite?: () => void;
-  starred?: boolean;
+  starred?: boolean; // undefined means: not starrable
 }> = function(props) {
   const {isActive, plugin, onFavorite, starred} = props;
   const iconColor = getColorByApp(props.app);
-  const [hovered, setHovered] = useState(false);
-
-  const onEnter = useCallback(() => setHovered(true), []);
-  const onLeave = useCallback(() => setHovered(false), []);
 
   return (
     <ListItem
       active={isActive}
       onClick={props.onClick}
-      onMouseEnter={onEnter}
-      onMouseLeave={onLeave}>
+      disabled={starred === false}>
       <PluginIcon
         isActive={isActive}
         name={plugin.icon || 'apps'}
-        backgroundColor={iconColor}
+        backgroundColor={starred === false ? colors.light20 : iconColor}
         color={colors.white}
       />
       <PluginName>{plugin.title || plugin.id}</PluginName>
-      {starred !== undefined && (hovered || isActive) && (
-        <StarButton onStar={onFavorite!} starred={starred} />
+      {starred !== undefined && (!starred || isActive) && (
+        <ToggleButton
+          onClick={onFavorite}
+          toggled={starred}
+          tooltip="Click to enable / disable this plugin"
+        />
       )}
     </ListItem>
   );
@@ -222,3 +229,28 @@ export const NoClients = () => (
     No clients connected
   </ListItem>
 );
+
+export function getFavoritePlugins(
+  device: BaseDevice,
+  client: Client,
+  allPlugins: FlipperPlugins,
+  starredPlugins: undefined | string[],
+  returnFavoredPlugins: boolean, // if false, unfavoried plugins are returned
+): FlipperPlugins {
+  if (device.isArchived) {
+    if (!returnFavoredPlugins) {
+      return [];
+    }
+    // for archived plugins, all stored plugins are enabled
+    return allPlugins.filter(
+      plugin => client.plugins.indexOf(plugin.id) !== -1,
+    );
+  }
+  if (!starredPlugins || !starredPlugins.length) {
+    return returnFavoredPlugins ? [] : allPlugins;
+  }
+  return allPlugins.filter(plugin => {
+    const idx = starredPlugins.indexOf(plugin.id);
+    return idx === -1 ? !returnFavoredPlugins : returnFavoredPlugins;
+  });
+}

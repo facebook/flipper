@@ -332,5 +332,19 @@
   ],
   "checkmark-circle-outline": [
     24
+  ],
+  "target-outline": [
+    16,
+    24
+  ],
+  "internet-outline": [
+    24,
+    32
+  ],
+  "profile-outline": [
+    32
+  ],
+  "app-react-outline": [
+    16
   ]
 }

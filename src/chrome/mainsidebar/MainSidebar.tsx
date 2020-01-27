@@ -55,6 +55,7 @@ import {
   CategoryName,
   PluginSidebarListItem,
   NoDevices,
+  getFavoritePlugins,
 } from './sidebarUtils';
 
 const SidebarButton = styled(Button)<{small?: boolean}>(({small}) => ({
@@ -187,7 +188,7 @@ class MainSidebar extends PureComponent<Props, State> {
                   )}
                 </SidebarButton>
               </ListItem>
-              {this.renderClientPlugins(client)}
+              {this.renderClientPlugins(selectedDevice, client)}
               {uninitializedClients.map(entry => (
                 <ListItem key={JSON.stringify(entry.client)}>
                   {entry.client.appName}
@@ -287,7 +288,7 @@ class MainSidebar extends PureComponent<Props, State> {
     ));
   }
 
-  renderClientPlugins(client?: Client) {
+  renderClientPlugins(device: BaseDevice, client?: Client) {
     if (!client) {
       return null;
     }
@@ -301,6 +302,8 @@ class MainSidebar extends PureComponent<Props, State> {
       (p: typeof FlipperPlugin) => client.plugins.indexOf(p.id) > -1,
     );
     const favoritePlugins: FlipperPlugins = getFavoritePlugins(
+      device,
+      client,
       allPlugins,
       this.props.userStarredPlugins[client.query.app],
       true,
@@ -317,7 +320,7 @@ class MainSidebar extends PureComponent<Props, State> {
       <>
         {favoritePlugins.length === 0 ? (
           <ListItem>
-            <SmallText center>Star your favorite plugins!</SmallText>
+            <SmallText center>No plugins enabled</SmallText>
           </ListItem>
         ) : (
           <>
@@ -361,6 +364,8 @@ class MainSidebar extends PureComponent<Props, State> {
             ? this.renderPluginsByCategory(
                 client,
                 getFavoritePlugins(
+                  device,
+                  client,
                   allPlugins,
                   this.props.userStarredPlugins[client.query.app],
                   false,
@@ -373,20 +378,6 @@ class MainSidebar extends PureComponent<Props, State> {
       </>
     );
   }
-}
-
-function getFavoritePlugins(
-  allPlugins: FlipperPlugins,
-  starredPlugins: undefined | string[],
-  favorite: boolean,
-): FlipperPlugins {
-  if (!starredPlugins || !starredPlugins.length) {
-    return favorite ? [] : allPlugins;
-  }
-  return allPlugins.filter(plugin => {
-    const idx = starredPlugins.indexOf(plugin.id);
-    return idx === -1 ? !favorite : favorite;
-  });
 }
 
 function groupPluginsByCategory(plugins: FlipperPlugins): PluginsByCategory {
