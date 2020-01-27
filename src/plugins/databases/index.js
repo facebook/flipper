@@ -1012,6 +1012,15 @@ export default class DatabasesPlugin extends FlipperPlugin<
     this.dispatchAction({type: 'Execute'});
   };
 
+  onQueryTextareaKeyPress = (event: KeyboardEvent) => {
+    // Implement ctrl+enter as a shortcut for clicking 'Execute'.
+    if (event.key === '\n' && event.ctrlKey) {
+      event.preventDefault();
+      event.stopPropagation();
+      this.onExecuteClicked();
+    }
+  };
+
   onFavoriteClicked = (selected: any) => {
     this.setState({query: selected.target.value});
   };
@@ -1304,6 +1313,7 @@ export default class DatabasesPlugin extends FlipperPlugin<
                   marginBottom: '1%',
                 }}
                 onChange={this.onQueryChanged.bind(this)}
+                onKeyPress={this.onQueryTextareaKeyPress}
                 placeholder="Type query here.."
                 value={
                   this.state.query !== null &&
@@ -1351,7 +1361,11 @@ export default class DatabasesPlugin extends FlipperPlugin<
               </ButtonGroup>
               <Spacer />
               <ButtonGroup>
-                <Button onClick={this.onExecuteClicked}>Execute</Button>
+                <Button
+                  onClick={this.onExecuteClicked}
+                  title={'Execute SQL [Ctrl+Return]'}>
+                  Execute
+                </Button>
               </ButtonGroup>
             </Toolbar>
           </div>
