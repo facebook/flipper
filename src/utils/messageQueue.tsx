@@ -174,6 +174,7 @@ export function processMessageLater(
   const isSelected =
     pluginKey === getSelectedPluginKey(store.getState().connections);
   switch (true) {
+    case plugin.id === 'Navigation': // Navigation events are always processed, to make sure the navbar stays up to date
     case isSelected && getPendingMessages(store, pluginKey).length === 0:
       processMessageImmediately(store, pluginKey, plugin, message);
       break;
@@ -189,6 +190,7 @@ export function processMessageLater(
         ),
       );
       break;
+    // In all other cases, messages will be dropped...
   }
 }
 
