@@ -3,11 +3,27 @@ id: debugging
 title: Debugging
 ---
 
+## Built-in Developer Tools
+
 Flipper is built on Electron which itself is built on Chromium. This means we can debug Flipper using Chrome's developer tools. Flipper will also automatically install the React devtools extension allowing you to have better insight into what is going on in your plugin.
 
 You can open the dev tools from the menu with `View` > `Toggle Developer Tools` or pressing ⌥⌘I on a Mac.
 
 In addition to helping you with the JavaScript, the JS console will also display uncaught exceptions thrown from the client plugin in response to Flipper method calls.
+
+## Google Chrome Developer Tools
+
+As an alternative to using built-in Developer Tools you can also attach to the running Flipper instance from Google Chrome Developer Tools. Sometimes this is useful, because the version of Dev Tools in Google Chrome is more recent than the embedded one, and it is possible to easily install additional extensions if required.
+
+To attach the running Flipper instance open new tab in Google Chrome, navigate to "http://localhost:9122" and choose "Flipper" in the opened list.
+
+![Attach From Google Chrome](/docs/assets/debugging-from-google-chrome.png)
+
+## Visual Studio Code
+
+If you prefer to use the same editor for both coding and debugging, you can attach to the running Flipper instance for debugging right from Visual Studio Code. To do this, start Flipper in development mode (`yarn start`), select `Debug and Run` tab in VSCode, and run task `Attach to Running Renderer`. By default this task is set as the first one,so you can just press `F5` to run it.
+
+![Attach From Visual Studio Code](/docs/assets/debugging-from-vscode.png)
 
 ## Plugin missing
 
