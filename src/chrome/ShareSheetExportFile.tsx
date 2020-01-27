@@ -110,6 +110,7 @@ export default class ShareSheetExportFile extends Component<Props, State> {
         exportStoreToFile(
           this.props.file,
           this.store,
+          false,
           this.idler,
           (msg: string) => {
             if (this.state.runInBackground) {

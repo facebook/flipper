@@ -580,6 +580,7 @@ export async function getStoreExport(
 
 export async function exportStore(
   store: MiddlewareAPI,
+  includeSupportDetails?: boolean,
   idler?: Idler,
   statusUpdate?: (msg: string) => void,
 ): Promise<{serializedString: string; errorArray: Array<Error>}> {
@@ -593,13 +594,15 @@ export async function exportStore(
     idler,
   );
   if (exportData != null) {
-    exportData.supportRequestDetails = {
-      ...state.supportForm?.supportFormV2,
-      appName:
-        state.connections.selectedApp == null
-          ? ''
-          : deconstructClientId(state.connections.selectedApp).app,
-    };
+    if (includeSupportDetails) {
+      exportData.supportRequestDetails = {
+        ...state.supportForm?.supportFormV2,
+        appName:
+          state.connections.selectedApp == null
+            ? ''
+            : deconstructClientId(state.connections.selectedApp).app,
+      };
+    }
 
     statusUpdate && statusUpdate('Serializing Flipper data...');
     const serializedString = JSON.stringify(exportData);
@@ -622,10 +625,11 @@ export async function exportStore(
 export const exportStoreToFile = (
   exportFilePath: string,
   store: MiddlewareAPI,
+  includeSupportDetails: boolean,
   idler?: Idler,
   statusUpdate?: (msg: string) => void,
 ): Promise<{errorArray: Array<Error>}> => {
-  return exportStore(store, idler, statusUpdate).then(
+  return exportStore(store, includeSupportDetails, idler, statusUpdate).then(
     ({serializedString, errorArray}) => {
       return promisify(fs.writeFile)(exportFilePath, serializedString).then(
         () => {
