@@ -15,6 +15,7 @@ import Glyph from '../ui/components/Glyph';
 import {colors, brandColors} from '../ui/components/colors';
 import isProduction from '../utils/isProduction';
 import isHeadless from '../utils/isHeadless';
+import constants from '../fb-stubs/constants';
 const {shell, remote} = !isHeadless()
   ? require('electron')
   : {shell: undefined, remote: undefined};
@@ -138,7 +139,7 @@ export default class WelcomeScreen extends PureComponent<Props, State> {
             onClick={() =>
               shell &&
               shell.openExternal(
-                'https://fbflipper.com/docs/getting-started.html',
+                'https://fbflipper.com/docs/features/index.html',
               )
             }>
             <Icon size={20} name="rocket" color={brandColors.Flipper} />
@@ -177,8 +178,7 @@ export default class WelcomeScreen extends PureComponent<Props, State> {
           </Item>
           <Item
             onClick={() =>
-              shell &&
-              shell.openExternal('https://github.com/facebook/flipper/issues')
+              shell && shell.openExternal(constants.FEEDBACK_GROUP_LINK)
             }>
             <Icon size={20} name="posts" color={brandColors.Flipper} />
             <FlexColumn>

@@ -25,4 +25,6 @@ export default Object.freeze({
   ENABLE_SHAREABLE_LINK: false,
 
   IS_PUBLIC_BUILD: true,
+
+  FEEDBACK_GROUP_LINK: 'https://github.com/facebook/flipper/issues',
 });
