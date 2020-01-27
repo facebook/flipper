@@ -10,8 +10,8 @@
 package com.facebook.flipper.plugins.inspector.descriptors.utils.stethocopies;
 
 import android.content.res.Resources;
-import com.facebook.stetho.common.LogUtil;
 
+import android.util.Log;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -28,7 +28,7 @@ public class ResourcesUtil {
       return getIdString(r, resourceId);
     } catch (Resources.NotFoundException e) {
       String idString = getFallbackIdString(resourceId);
-      LogUtil.w("Unknown identifier encountered on " + idContext + ": " + idString);
+      Log.w(ResourcesUtil.class.getCanonicalName(), "Unknown identifier encountered on " + idContext + ": " + idString);
       return idString;
     }
   }

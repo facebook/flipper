@@ -11,8 +11,6 @@ package com.facebook.flipper.plugins.inspector.descriptors.utils.stethocopies;
 
 import android.app.Activity;
 import android.os.Build;
-import com.facebook.stetho.common.ReflectionUtil;
-import com.facebook.stetho.common.Util;
 
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
