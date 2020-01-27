@@ -18,6 +18,7 @@ const chalk = require('chalk');
 const http = require('http');
 const path = require('path');
 const Metro = require('../static/node_modules/metro');
+const MetroResolver = require('../static/node_modules/metro-resolver');
 const fs = require('fs');
 const Watchman = require('../static/watchman');
 
@@ -69,6 +70,16 @@ function startMetroServer(app) {
     },
     resolver: {
       blacklistRE: /(\/|\\)(sonar|flipper|flipper-public)(\/|\\)(dist|doctor)(\/|\\)|(\.native\.js$)/,
+      resolveRequest: (context, moduleName, platform) => {
+        if (moduleName.startsWith('./localhost:3000')) {
+          moduleName = moduleName.replace('./localhost:3000', '.');
+        }
+        return MetroResolver.resolve(
+          {...context, resolveRequest: null},
+          moduleName,
+          platform,
+        );
+      },
     },
     watch: true,
   }).then(metroBundlerServer => {

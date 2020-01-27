@@ -6,7 +6,8 @@
       "type": "chrome",
       "request": "attach",
       "port": 9222,
-      "webRoot": "${workspaceRoot}"
+      "webRoot": "/",
+      "url": "http://localhost:3000/index.dev.html"
     },
     {
       "type": "node",
