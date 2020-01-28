@@ -192,7 +192,7 @@ class PluginContainer extends PureComponent<Props, State> {
         pluginKey &&
         pendingMessages?.length
       ) {
-        // this.setState({progress: {current: 0, total: 0}});
+        const start = Date.now();
         this.idler = new Idler();
         processMessageQueue(
           activePlugin,
@@ -202,7 +202,18 @@ class PluginContainer extends PureComponent<Props, State> {
             this.setState({progress});
           },
           this.idler,
-        );
+        ).then(completed => {
+          const duration = Date.now() - start;
+          this.props.logger.track(
+            'duration',
+            'queue-processing-before-plugin-open',
+            {
+              completed,
+              duration,
+            },
+            activePlugin.id,
+          );
+        });
       }
     }
   }

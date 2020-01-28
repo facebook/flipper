@@ -204,9 +204,9 @@ export async function processMessageQueue(
   store: MiddlewareAPI,
   progressCallback?: (progress: {current: number; total: number}) => void,
   idler: BaseIdler = new Idler(),
-) {
+): Promise<boolean> {
   if (!plugin.persistedStateReducer) {
-    return;
+    return true;
   }
   const total = getPendingMessages(store, pluginKey).length;
   let progress = 0;
@@ -249,12 +249,13 @@ export async function processMessageQueue(
     }
 
     if (idler.isCancelled()) {
-      return;
+      return false;
     }
 
     await idler.idle();
     // new messages might have arrived, so keep looping
   } while (getPendingMessages(store, pluginKey).length);
+  return true;
 }
 
 function getPendingMessages(
