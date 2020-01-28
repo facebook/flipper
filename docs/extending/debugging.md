@@ -15,7 +15,7 @@ In addition to helping you with the JavaScript, the JS console will also display
 
 As an alternative to using built-in Developer Tools you can also attach to the running Flipper instance from Google Chrome Developer Tools. Sometimes this is useful, because the version of Dev Tools in Google Chrome is more recent than the embedded one, and it is possible to easily install additional extensions if required.
 
-To attach the running Flipper instance open new tab in Google Chrome, navigate to "http://localhost:9122" and choose "Flipper" in the opened list.
+To attach the running Flipper instance open new tab in Google Chrome, navigate to "http://localhost:9222" and choose "Flipper" in the opened list.
 
 ![Attach From Google Chrome](/docs/assets/debugging-from-google-chrome.png)
 
