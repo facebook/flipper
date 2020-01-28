@@ -44,6 +44,10 @@ static CKFlexboxComponentChild findFlexboxLayoutParams(CKComponent *parent, CKCo
 @implementation SKComponentLayoutWrapper
 
 + (instancetype)newFromRoot:(id<CKInspectableView>)root {
+  return [self newFromRoot:root parentKey:@""];
+}
+
++ (instancetype)newFromRoot:(id<CKInspectableView>)root parentKey:(NSString *)parentKey {
   const CKComponentLayout layout = [root mountedLayout];
   // Check if there is a cached wrapper.
   if (layout.component) {
@@ -59,7 +63,7 @@ static CKFlexboxComponentChild findFlexboxLayoutParams(CKComponent *parent, CKCo
   SKComponentLayoutWrapper *const wrapper =
   [[SKComponentLayoutWrapper alloc] initWithLayout:layout
                                           position:CGPointMake(0, 0)
-                                         parentKey:[NSString stringWithFormat: @"%d.", component.treeNode.nodeIdentifier]
+                                         parentKey:[NSString stringWithFormat: @"%@%d.", parentKey, component.treeNode.nodeIdentifier]
                                       reuseWrapper:reuseWrapper
                                               rootNode: root];
   // Cache the result.
