@@ -21,7 +21,7 @@ To attach the running Flipper instance open new tab in Google Chrome, navigate t
 
 ## Visual Studio Code
 
-If you prefer to use the same editor for both coding and debugging, you can attach to the running Flipper instance for debugging right from Visual Studio Code. To do this, start Flipper in development mode (`yarn start`), select `Debug and Run` tab in VSCode, and run task `Attach to Running Renderer`. By default this task is set as the first one,so you can just press `F5` to run it.
+If you prefer to use the same editor for both coding and debugging, you can attach to the running Flipper instance for debugging right from Visual Studio Code. First of all, you need to install extension "Debugger for Chrome". Then, to start debugging, launch Flipper in development mode (`yarn start`), select `Debug and Run` tab in VSCode, and run task `Attach to Running Renderer`. By default this task is set as the first one, so you can just press `F5` to run it.
 
 ![Attach From Visual Studio Code](/docs/assets/debugging-from-vscode.png)
 
