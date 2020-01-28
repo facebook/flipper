@@ -10,10 +10,12 @@
 import {remote, ipcRenderer, IpcRendererEvent} from 'electron';
 import {toggleAction} from '../reducers/application';
 import {setStaticView} from '../reducers/connections';
+import {selectedPlugins as setSelectedPlugins} from '../reducers/plugins';
+import {starPlugin as setStarPlugin} from '../reducers/connections';
+import {setSupportFormV2State, Groups} from '../reducers/supportForm';
 import {Store} from '../reducers/index.js';
 import {Logger} from '../fb-interfaces/Logger';
 import {parseFlipperPorts} from '../utils/environmentVariables';
-import SupportRequestFormManager from '../fb-stubs/SupportRequestFormManager';
 import SupportRequestFormV2 from '../fb-stubs/SupportRequestFormV2';
 import {
   importDataToStore,
@@ -21,7 +23,8 @@ import {
   IMPORT_FLIPPER_TRACE_EVENT,
 } from '../utils/exportData';
 import {tryCatchReportPlatformFailures} from '../utils/metrics';
-import GK from '../fb-stubs/GK';
+import {deconstructClientId} from '../utils/clientUtils';
+import {defaultSelectedPluginsForGroup} from '../fb-stubs/utils/supportForm';
 import {selectPlugin} from '../reducers/connections';
 import qs from 'query-string';
 
@@ -92,14 +95,9 @@ export default (store: Store, logger: Logger) => {
         uri.pathname.includes('support-form')
       ) {
         const formParam = uri.searchParams.get('form');
-        if (formParam && formParam.toUpperCase() === 'litho'.toUpperCase()) {
-          // Right now we just support Litho
-          logger.track('usage', 'support-form-source', {source: 'deeplink'});
-          if (GK.get('support_requests_v2')) {
-            store.dispatch(setStaticView(SupportRequestFormV2));
-          } else {
-            store.dispatch(setStaticView(SupportRequestFormManager));
-          }
+        const grps = deeplinkFormParamToGroups(formParam);
+        if (grps) {
+          handleSupportFormDeeplinks(grps);
         }
         return;
       }
@@ -116,6 +114,66 @@ export default (store: Store, logger: Logger) => {
       }
     },
   );
+
+  function deeplinkFormParamToGroups(formParam: string | null): Groups | null {
+    if (!formParam) {
+      return null;
+    }
+    if (formParam.toLowerCase() === 'litho') {
+      return 'Litho Support';
+    } else if (formParam.toLowerCase() === 'graphql_android') {
+      return 'GraphQL Android Support';
+    } else if (formParam.toLowerCase() === 'graphql_ios') {
+      return 'GraphQL iOS Support';
+    }
+    return null;
+  }
+
+  function handleSupportFormDeeplinks(grp: Groups) {
+    logger.track('usage', 'support-form-source', {source: 'deeplink'});
+    // TODO: Incorporate grp info in analytics.
+    store.dispatch(setStaticView(SupportRequestFormV2));
+    const selectedApp = store.getState().connections.selectedApp;
+    if (
+      (grp === 'GraphQL Android Support' || grp === 'GraphQL iOS Support') &&
+      selectedApp
+    ) {
+      // Enable GraphQL plugin if grp to be posted is the GraphQL one.
+      // TODO: Handle the case where GraphQL plugin is not supported by Client
+      const {app} = deconstructClientId(selectedApp);
+      const graphQLEnabled: boolean = store
+        .getState()
+        .connections.userStarredPlugins[app].includes('GraphQL');
+      if (!graphQLEnabled) {
+        store.dispatch(
+          setStarPlugin({
+            selectedApp: app,
+            selectedPlugin: 'GraphQL',
+          }),
+        );
+      }
+    }
+    store.dispatch(
+      setSupportFormV2State({
+        ...store.getState().supportForm.supportFormV2,
+        selectedGroup: grp,
+      }),
+    );
+    const selectedClient = store.getState().connections.clients.find(o => {
+      return o.id === store.getState().connections.selectedApp;
+    });
+    store.dispatch(
+      setSelectedPlugins(
+        defaultSelectedPluginsForGroup(
+          grp,
+          store.getState().pluginStates,
+          store.getState().pluginMessageQueue,
+          store.getState().plugins,
+          selectedClient,
+        ),
+      ),
+    );
+  }
 
   ipcRenderer.on(
     'open-flipper-file',
