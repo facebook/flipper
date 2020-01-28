@@ -33,11 +33,16 @@ type SubType =
       type: 'single';
     };
 
+export type Element = {
+  label: string;
+  id: string;
+  unselectable?: {toolTipMessage: string};
+};
 type Props = {
   onSubmit?: () => void;
   onChange: (elements: Array<string>) => void;
   onHide: () => any;
-  elements: Array<{label: string; id: string}>;
+  elements: Array<Element>;
   title?: string;
 } & SubType;
 
@@ -84,30 +89,36 @@ type RowComponentProps = {
   label: string;
   selected: boolean;
   onChange: (name: string, selected: boolean) => void;
+  disable: boolean;
+  toolTipMessage?: string;
 };
 
 class RowComponent extends Component<RowComponentProps> {
   render() {
-    const {id, label, selected, onChange} = this.props;
+    const {id, label, selected, onChange, disable, toolTipMessage} = this.props;
     return (
       <FlexColumn>
-        <Padder
-          paddingRight={8}
-          paddingTop={8}
-          paddingBottom={8}
-          paddingLeft={8}>
-          <FlexRow>
-            <Text> {label} </Text>
-            <Spacer />
-            <Checkbox
-              checked={selected}
-              onChange={selected => {
-                onChange(id, selected);
-              }}
-            />
-          </FlexRow>
-        </Padder>
-        <Line />
+        <Tooltip
+          title={disable ? toolTipMessage : null}
+          options={{position: 'toRight'}}>
+          <Padder
+            paddingRight={8}
+            paddingTop={8}
+            paddingBottom={8}
+            paddingLeft={8}>
+            <FlexRow>
+              <Text> {label} </Text>
+              <Spacer />
+              <Checkbox
+                checked={selected}
+                onChange={selected => {
+                  onChange(id, selected);
+                }}
+              />
+            </FlexRow>
+          </Padder>
+          <Line />
+        </Tooltip>
       </FlexColumn>
     );
   }
@@ -129,9 +140,11 @@ export default class ListView extends Component<Props, State> {
     if (this.props.type === 'single') {
       if (!selected) {
         this.setState({selectedElements: selectedElements});
+        this.props.onChange([...selectedElements]);
       } else {
         selectedElements.add(id);
         this.setState({selectedElements: selectedElements});
+        this.props.onChange([...selectedElements]);
       }
     } else {
       if (selected) {
@@ -152,7 +165,7 @@ export default class ListView extends Component<Props, State> {
         <FlexColumn>
           {this.props.title && <Title>{this.props.title}</Title>}
           <RowComponentContainer>
-            {this.props.elements.map(({id, label}) => {
+            {this.props.elements.map(({id, label, unselectable}) => {
               return (
                 <RowComponent
                   id={id}
@@ -160,6 +173,8 @@ export default class ListView extends Component<Props, State> {
                   key={id}
                   selected={this.state.selectedElements.has(id)}
                   onChange={this.handleChange}
+                  disable={unselectable != null}
+                  toolTipMessage={unselectable?.toolTipMessage}
                 />
               );
             })}

@@ -93,7 +93,9 @@ function MainSidebarUtilsSection({
                 name={'app-dailies'}
                 isActive={active}
               />
-              <PluginName isActive={active}>Litho Support Request</PluginName>
+              <PluginName isActive={active}>
+                Litho/GraphQL Support Request
+              </PluginName>
             </ListItem>
           );
         })()}
