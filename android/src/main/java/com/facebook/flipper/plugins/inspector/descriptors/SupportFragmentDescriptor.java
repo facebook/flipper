@@ -15,7 +15,7 @@ import com.facebook.flipper.core.FlipperObject;
 import com.facebook.flipper.plugins.inspector.Named;
 import com.facebook.flipper.plugins.inspector.NodeDescriptor;
 import com.facebook.flipper.plugins.inspector.Touch;
-import com.facebook.stetho.common.android.ResourcesUtil;
+import com.facebook.flipper.plugins.inspector.descriptors.utils.stethocopies.ResourcesUtil;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
