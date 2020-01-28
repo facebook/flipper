@@ -15,6 +15,12 @@ type MediaObject = SubmediaType & {
   description: string;
   path: string;
 };
+
+export type Groups =
+  | 'Litho Support'
+  | 'GraphQL Android Support'
+  | 'GraphQL iOS Support';
+
 export type MediaType = Array<MediaObject>;
 export type SupportFormV2State = {
   title: string;
@@ -22,6 +28,7 @@ export type SupportFormV2State = {
   commitHash: string;
   screenshots?: MediaType;
   videos?: MediaType;
+  selectedGroup: Groups;
 };
 
 export type SupportFormRequestDetailsState = SupportFormV2State & {
@@ -64,6 +71,7 @@ export const initialState: () => State = () => ({
     ].join('\n'),
     commitHash: '',
     appName: '',
+    selectedGroup: 'Litho Support',
   },
 });
 export default function reducer(
