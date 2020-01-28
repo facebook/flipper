@@ -202,6 +202,8 @@ export default class Client extends EventEmitter {
     }
     reportPlatformFailures(
       new Promise<BaseDevice>((resolve, reject) => {
+        let unsubscribe: () => void = () => {};
+
         const device = this.store
           .getState()
           .connections.devices.find(
@@ -212,7 +214,13 @@ export default class Client extends EventEmitter {
           return;
         }
 
-        const unsubscribe = this.store.subscribe(() => {
+        const timeout = setTimeout(() => {
+          unsubscribe();
+          const error = `Timed out waiting for device for client ${this.id}`;
+          console.error(error);
+          reject(error);
+        }, 5000);
+        unsubscribe = this.store.subscribe(() => {
           const newDeviceList = this.store.getState().connections.devices;
           if (newDeviceList === this.lastSeenDeviceList) {
             return;
@@ -222,16 +230,11 @@ export default class Client extends EventEmitter {
             device => device.serial === this.query.device_id,
           );
           if (matchingDevice) {
+            clearTimeout(timeout);
             resolve(matchingDevice);
             unsubscribe();
           }
         });
-        setTimeout(() => {
-          unsubscribe();
-          const error = `Timed out waiting for device for client ${this.id}`;
-          console.error(error);
-          reject(error);
-        }, 5000);
       }),
       'client-setMatchingDevice',
     ).then(device => {
