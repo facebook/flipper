@@ -164,8 +164,9 @@ export default class FilterToken extends PureComponent<Props> {
         window: electron.remote.getCurrentWindow(),
         // @ts-ignore: async is private API
         async: true,
-        x: left,
-        y: bottom + 8,
+        // Note: Electron requires the x/y parameters to be integer values for marshalling
+        x: Math.round(left),
+        y: Math.round(bottom + 8),
       });
     }
   };
