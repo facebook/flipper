@@ -51,3 +51,23 @@ export function showStatusUpdatesForPromise<T>(
       throw e;
     });
 }
+
+export function showStatusUpdatesForDuration(
+  message: string,
+  sender: string,
+  duration: number,
+  addStatusMessage: (payload: StatusMessageType) => void,
+  removeStatusMessage: (payload: StatusMessageType) => void,
+): void {
+  showStatusUpdatesForPromise(
+    new Promise((resolve, _reject) => {
+      setTimeout(function() {
+        resolve();
+      }, duration);
+    }),
+    message,
+    sender,
+    addStatusMessage,
+    removeStatusMessage,
+  );
+}

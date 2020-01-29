@@ -13,6 +13,7 @@ import {setStaticView} from '../reducers/connections';
 import {selectedPlugins as setSelectedPlugins} from '../reducers/plugins';
 import {starPlugin as setStarPlugin} from '../reducers/connections';
 import {setSupportFormV2State, Groups} from '../reducers/supportForm';
+import {addStatusMessage, removeStatusMessage} from '../reducers/application';
 import {Store} from '../reducers/index.js';
 import {Logger} from '../fb-interfaces/Logger';
 import {parseFlipperPorts} from '../utils/environmentVariables';
@@ -27,6 +28,7 @@ import {deconstructClientId} from '../utils/clientUtils';
 import {defaultSelectedPluginsForGroup} from '../fb-stubs/utils/supportForm';
 import {selectPlugin} from '../reducers/connections';
 import qs from 'query-string';
+import {showStatusUpdatesForDuration} from '../utils/promiseTimeout';
 
 export const uriComponents = (url: string): Array<string> => {
   if (!url) {
@@ -141,15 +143,38 @@ export default (store: Store, logger: Logger) => {
       // Enable GraphQL plugin if grp to be posted is the GraphQL one.
       // TODO: Handle the case where GraphQL plugin is not supported by Client
       const {app} = deconstructClientId(selectedApp);
-      const graphQLEnabled: boolean = store
+      const selectedClient = store
         .getState()
-        .connections.userStarredPlugins[app].includes('GraphQL');
-      if (!graphQLEnabled) {
+        .connections.clients.find(client => client.id === selectedApp);
+      const enabledPlugins: Array<string> | null = store.getState().connections
+        .userStarredPlugins[app];
+      const graphQLEnabled =
+        enabledPlugins != null && enabledPlugins.includes('GraphQL');
+      if (
+        selectedClient &&
+        selectedClient.plugins.includes('GraphQL') &&
+        !graphQLEnabled
+      ) {
         store.dispatch(
           setStarPlugin({
             selectedApp: app,
             selectedPlugin: 'GraphQL',
           }),
+        );
+      } else if (
+        !selectedClient ||
+        !selectedClient.plugins.includes('GraphQL')
+      ) {
+        showStatusUpdatesForDuration(
+          'The current client does not support GraphQL plugin. Please change the app from the dropdown in the support form',
+          'Deeplink',
+          10000,
+          payload => {
+            store.dispatch(addStatusMessage(payload));
+          },
+          payload => {
+            store.dispatch(removeStatusMessage(payload));
+          },
         );
       }
     }
