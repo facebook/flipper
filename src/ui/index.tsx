@@ -62,6 +62,7 @@ export {default as MultiLineInput} from './components/MultiLineInput';
 export {default as Textarea} from './components/Textarea';
 export {default as Select} from './components/Select';
 export {default as Checkbox} from './components/Checkbox';
+export {default as Radio} from './components/Radio';
 
 // code
 export {default as CodeBlock} from './components/CodeBlock';

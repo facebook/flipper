@@ -15,6 +15,7 @@ import {
   Button,
   Spacer,
   Checkbox,
+  Radio,
   colors,
   View,
   Tooltip,
@@ -91,11 +92,20 @@ type RowComponentProps = {
   onChange: (name: string, selected: boolean) => void;
   disable: boolean;
   toolTipMessage?: string;
+  type: SelectionType;
 };
 
 class RowComponent extends Component<RowComponentProps> {
   render() {
-    const {id, label, selected, onChange, disable, toolTipMessage} = this.props;
+    const {
+      id,
+      label,
+      selected,
+      onChange,
+      disable,
+      toolTipMessage,
+      type,
+    } = this.props;
     return (
       <FlexColumn>
         <Tooltip
@@ -109,12 +119,22 @@ class RowComponent extends Component<RowComponentProps> {
             <FlexRow>
               <Text> {label} </Text>
               <Spacer />
-              <Checkbox
-                checked={selected}
-                onChange={selected => {
-                  onChange(id, selected);
-                }}
-              />
+              {type === 'multiple' && (
+                <Checkbox
+                  checked={selected}
+                  onChange={selected => {
+                    onChange(id, selected);
+                  }}
+                />
+              )}
+              {type === 'single' && (
+                <Radio
+                  checked={selected}
+                  onChange={selected => {
+                    onChange(id, selected);
+                  }}
+                />
+              )}
             </FlexRow>
           </Padder>
           <Line />
@@ -159,7 +179,7 @@ export default class ListView extends Component<Props, State> {
   };
 
   render() {
-    const {onSubmit} = this.props;
+    const {onSubmit, type} = this.props;
     return (
       <Container>
         <FlexColumn>
@@ -171,6 +191,7 @@ export default class ListView extends Component<Props, State> {
                   id={id}
                   label={label}
                   key={id}
+                  type={type}
                   selected={this.state.selectedElements.has(id)}
                   onChange={this.handleChange}
                   disable={unselectable != null}
