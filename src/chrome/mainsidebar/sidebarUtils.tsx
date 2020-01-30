@@ -7,7 +7,7 @@
  * @format
  */
 
-import React from 'react';
+import React, {useRef, useEffect} from 'react';
 import {
   FlexBox,
   colors,
@@ -156,9 +156,21 @@ export const PluginSidebarListItem: React.FC<{
 }> = function(props) {
   const {isActive, plugin, onFavorite, starred} = props;
   const iconColor = getColorByApp(props.app);
+  const domRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const node = domRef.current;
+    if (isActive && node) {
+      const rect = node.getBoundingClientRect();
+      if (rect.top < 0 || rect.bottom > document.documentElement.clientHeight) {
+        node.scrollIntoView();
+      }
+    }
+  }, [isActive]);
 
   return (
     <ListItem
+      ref={domRef}
       active={isActive}
       onClick={props.onClick}
       disabled={starred === false}>

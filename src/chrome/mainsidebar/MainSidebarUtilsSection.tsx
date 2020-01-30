@@ -59,8 +59,7 @@ function MainSidebarUtilsSection({
   }
 
   return (
-    <>
-      {' '}
+    <div style={{flexShrink: 0, borderTop: `1px solid ${colors.blackAlpha10}`}}>
       {showWatchDebugRoot &&
         (function() {
           const active = isStaticViewActive(staticView, WatchTools);
@@ -108,7 +107,7 @@ function MainSidebarUtilsSection({
         Manage Plugins
       </ListItem>
       {config.showLogin && <UserAccount />}
-    </>
+    </div>
   );
 }
 
@@ -162,12 +161,7 @@ const RenderNotificationsEntry = connect<
 
   const active = isStaticViewActive(staticView, NotificationScreen);
   return (
-    <ListItem
-      active={active}
-      onClick={() => setStaticView(NotificationScreen)}
-      style={{
-        borderTop: `1px solid ${colors.blackAlpha10}`,
-      }}>
+    <ListItem active={active} onClick={() => setStaticView(NotificationScreen)}>
       <PluginIcon
         color={colors.light50}
         name={numNotifications > 0 ? 'bell' : 'bell-null'}
