@@ -55,6 +55,7 @@ type Props = OwnProps & StateFromProps & DispatchFromProps;
 const Container = styled(FlexColumn)({
   width: 700,
   maxHeight: 700,
+  padding: 8,
 });
 
 type State = {

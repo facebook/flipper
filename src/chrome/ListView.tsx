@@ -19,6 +19,7 @@ import {
   colors,
   View,
   Tooltip,
+  Glyph,
 } from '../ui';
 import React, {Component} from 'react';
 
@@ -56,7 +57,7 @@ type State = {
 };
 
 const Container = styled(FlexColumn)({
-  padding: 8,
+  padding: '8 0',
 });
 
 const Line = styled(View)({
@@ -90,7 +91,7 @@ type RowComponentProps = {
   label: string;
   selected: boolean;
   onChange: (name: string, selected: boolean) => void;
-  disable: boolean;
+  disabled: boolean;
   toolTipMessage?: string;
   type: SelectionType;
 };
@@ -102,25 +103,35 @@ class RowComponent extends Component<RowComponentProps> {
       label,
       selected,
       onChange,
-      disable,
+      disabled,
       toolTipMessage,
       type,
     } = this.props;
     return (
       <FlexColumn>
         <Tooltip
-          title={disable ? toolTipMessage : null}
+          title={disabled ? toolTipMessage : null}
           options={{position: 'toRight'}}>
           <Padder
-            paddingRight={8}
+            paddingRight={0}
             paddingTop={8}
             paddingBottom={8}
-            paddingLeft={8}>
-            <FlexRow>
-              <Text> {label} </Text>
+            paddingLeft={0}>
+            <FlexRow style={{alignItems: 'center'}}>
+              <Text color={disabled ? colors.light20 : undefined}>{label}</Text>
               <Spacer />
+              {disabled && (
+                <Glyph
+                  name="caution-triangle"
+                  color={colors.light20}
+                  size={12}
+                  variant="filled"
+                  style={{marginRight: 5}}
+                />
+              )}
               {type === 'multiple' && (
                 <Checkbox
+                  disabled={disabled}
                   checked={selected}
                   onChange={selected => {
                     onChange(id, selected);
@@ -129,6 +140,7 @@ class RowComponent extends Component<RowComponentProps> {
               )}
               {type === 'single' && (
                 <Radio
+                  disabled={disabled}
                   checked={selected}
                   onChange={selected => {
                     onChange(id, selected);
@@ -194,7 +206,7 @@ export default class ListView extends Component<Props, State> {
                   type={type}
                   selected={this.state.selectedElements.has(id)}
                   onChange={this.handleChange}
-                  disable={unselectable != null}
+                  disabled={unselectable != null}
                   toolTipMessage={unselectable?.toolTipMessage}
                 />
               );

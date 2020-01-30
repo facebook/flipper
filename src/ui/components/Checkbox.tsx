@@ -16,6 +16,7 @@ type CheckboxProps = {
   checked: boolean;
   /** Called when a state change is triggered */
   onChange: (checked: boolean) => void;
+  disabled?: boolean;
 };
 
 const CheckboxContainer = styled.input({
@@ -39,6 +40,7 @@ export default class Checkbox extends PureComponent<CheckboxProps> {
         type="checkbox"
         checked={this.props.checked}
         onChange={this.onChange}
+        disabled={this.props.disabled}
       />
     );
   }

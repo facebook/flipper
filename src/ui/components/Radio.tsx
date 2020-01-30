@@ -16,6 +16,7 @@ type RadioProps = {
   checked: boolean;
   /** Called when a state change is triggered */
   onChange: (selected: boolean) => void;
+  disabled?: boolean;
 };
 
 const RadioboxContainer = styled.input({
@@ -39,6 +40,7 @@ export default class Radio extends PureComponent<RadioProps> {
         type="radio"
         checked={this.props.checked}
         onChange={this.onChange}
+        disabled={this.props.disabled}
       />
     );
   }
