@@ -17,6 +17,8 @@ import androidx.core.content.ContextCompat;
 import com.facebook.flipper.core.FlipperClient;
 import com.facebook.flipper.BuildConfig;
 
+import javax.annotation.Nullable;
+
 public final class AndroidFlipperClient {
   private static boolean sIsInitialized = false;
   private static FlipperThread sFlipperThread;
@@ -55,7 +57,7 @@ public final class AndroidFlipperClient {
     return FlipperClientImpl.getInstance();
   }
 
-  public static synchronized FlipperClient getInstanceIfInitialized() {
+  public static synchronized @Nullable FlipperClient getInstanceIfInitialized() {
     if (!sIsInitialized) {
       return null;
     }
