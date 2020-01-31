@@ -1311,6 +1311,7 @@ export default class DatabasesPlugin extends FlipperPlugin<
                   marginLeft: 16,
                   marginTop: '1%',
                   marginBottom: '1%',
+                  resize: 'vertical',
                 }}
                 onChange={this.onQueryChanged.bind(this)}
                 onKeyPress={this.onQueryTextareaKeyPress}
