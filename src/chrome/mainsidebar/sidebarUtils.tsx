@@ -16,7 +16,6 @@ import {
   styled,
   FlipperPlugin,
   FlexColumn,
-  LoadingIndicator,
   FlipperBasePlugin,
   ToggleButton,
   brandColors,
@@ -24,8 +23,8 @@ import {
   Heading,
   Client,
   BaseDevice,
+  StaticView,
 } from 'flipper';
-import {StaticView} from '../../reducers/connections';
 import {BackgroundColorProperty} from 'csstype';
 import {getPluginTitle} from '../../utils/pluginUtils';
 
@@ -71,7 +70,7 @@ export function PluginIcon({
   );
 }
 
-export const PluginShape = styled(FlexBox)<{
+const PluginShape = styled(FlexBox)<{
   backgroundColor?: BackgroundColorProperty;
 }>(({backgroundColor}) => ({
   marginRight: 8,
@@ -130,19 +129,6 @@ export const Plugins = styled(FlexColumn)({
   flexGrow: 1,
   overflow: 'auto',
 });
-
-export const Spinner = centerInSidebar(LoadingIndicator);
-
-export const ErrorIndicator = centerInSidebar(Glyph);
-
-export function centerInSidebar(component: any) {
-  return styled(component)({
-    marginTop: '10px',
-    marginBottom: '10px',
-    marginLeft: 'auto',
-    marginRight: 'auto',
-  });
-}
 
 export const PluginSidebarListItem: React.FC<{
   onClick: () => void;
