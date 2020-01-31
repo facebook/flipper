@@ -191,6 +191,7 @@ async function checkXcodeVersionMismatch(store: Store) {
             message: errorMessage,
             details:
               "You might want to run 'sudo xcode-select -s /Applications/Xcode.app/Contents/Developer'",
+            urgent: true,
           },
         });
         // Fire a console.error as well, so that it gets reported to the backend.

@@ -7,7 +7,6 @@
  * @format
  */
 
-import electron from 'electron';
 import isProduction from './isProduction';
 import processConfig from './processConfig';
 

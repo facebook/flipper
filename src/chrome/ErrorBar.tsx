@@ -37,10 +37,13 @@ const ErrorBar = memo(function ErrorBar(props: Props) {
     0,
   );
 
+  const urgentErrors = props.errors.filter(e => e.urgent);
+
   return (
     <ErrorBarContainer>
-      <ErrorRows className={collapsed ? 'collapsed' : ''}>
-        {props.errors.map((error, index) => (
+      <ErrorRows
+        className={collapsed && urgentErrors.length === 0 ? 'collapsed' : ''}>
+        {(collapsed ? urgentErrors : props.errors).map((error, index) => (
           <ErrorTile
             onDismiss={() => props.dismissError(index)}
             key={index}
@@ -81,16 +84,18 @@ function ErrorTile({
 }) {
   const [collapsed, setCollapsed] = useState(true);
   return (
-    <ErrorRow>
+    <ErrorRow className={`${error.urgent ? 'urgent' : ''}`}>
       <FlexRow style={{flexDirection: 'row-reverse'}}>
         <ButtonSection>
           <ButtonGroup>
             {(error.details || error.error) && (
-              <Button onClick={() => setCollapsed(s => !s)}>
-                {collapsed ? `▼ ` : '▲ '} Details
-              </Button>
+              <Button
+                onClick={() => setCollapsed(s => !s)}
+                icon={collapsed ? `chevron-down` : 'chevron-up'}
+                iconSize={12}
+              />
             )}
-            <Button onClick={onDismiss}>Dismiss</Button>
+            <Button onClick={onDismiss} icon="cross-circle" iconSize={12} />
           </ButtonGroup>
         </ButtonSection>
         {error.occurrences! > 1 && (
@@ -149,22 +154,28 @@ const ErrorDetails = styled.div({
 });
 
 const ErrorRows = styled.div({
-  backgroundColor: colors.cherry,
   color: '#fff',
   maxHeight: '600px',
   overflowY: 'auto',
   overflowX: 'hidden',
   transition: 'max-height 0.3s ease',
+  borderBottom: '1px solid #b3b3b3',
   '&.collapsed': {
     maxHeight: '0px',
+    borderBottom: 'none',
   },
 });
 
 const ErrorRow = styled.div({
   padding: '4px 12px',
-  borderBottom: '1px solid ' + colors.cherryDark3,
   verticalAlign: 'middle',
   lineHeight: '28px',
+  backgroundColor: colors.yellowTint,
+  color: colors.yellow,
+  '&.urgent': {
+    backgroundColor: colors.redTint,
+    color: colors.red,
+  },
 });
 
 const ButtonSection = styled(FlexColumn)({
@@ -174,15 +185,16 @@ const ButtonSection = styled(FlexColumn)({
 });
 
 const ErrorCounter = styled(FlexColumn)({
-  backgroundColor: colors.cherryDark3,
-  color: colors.cherry,
-  width: 24,
-  height: 24,
-  borderRadius: 24,
-  marginTop: 2,
-  lineHeight: '24px',
+  border: `1px solid ${colors.light20}`,
+  color: colors.light20,
+  width: 20,
+  height: 20,
+  borderRadius: 20,
+  marginTop: 4,
+  lineHeight: '18px',
   textAlign: 'center',
   flexShrink: 0,
   flexGrow: 0,
   marginLeft: '8px',
+  fontSize: '10px',
 });

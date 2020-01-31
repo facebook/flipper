@@ -46,10 +46,12 @@ export default (store: Store, logger: Logger) => {
       err.code === 'EADDRINUSE'
         ? "Couldn't start websocket server. Looks like you have multiple copies of Flipper running."
         : err.message || 'Unknown error';
+    const urgent = err.code === 'EADDRINUSE';
 
     store.dispatch({
       type: 'SERVER_ERROR',
       payload: {message},
+      urgent,
     });
   });
 

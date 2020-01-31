@@ -43,6 +43,7 @@ export type FlipperError = {
   message: string;
   details?: string;
   error?: Error | string;
+  urgent?: boolean; // if true this error should always popup up
 };
 
 export type State = {
