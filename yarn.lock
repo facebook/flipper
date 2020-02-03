@@ -7987,6 +7987,15 @@ rsocket-core@^0.0.18:
     rsocket-flowable "^0.0.14"
     rsocket-types "^0.0.16"
 
+rsocket-core@^0.0.19:
+  version "0.0.19"
+  resolved "https://registry.yarnpkg.com/rsocket-core/-/rsocket-core-0.0.19.tgz#0b4fb1bb1f4c86f747426c310ed1557cdd3145d1"
+  integrity sha512-WYPQb6TiRzIO+BhwUZN+aDTQ0KywU+eMrb4NbJPQi58ult+r+8h94RAfesWa35gfYQb8Tl40UR7scJqYfZXE2A==
+  dependencies:
+    fbjs "^1.0.0"
+    rsocket-flowable "^0.0.14"
+    rsocket-types "^0.0.16"
+
 rsocket-flowable@^0.0.14:
   version "0.0.14"
   resolved "https://registry.yarnpkg.com/rsocket-flowable/-/rsocket-flowable-0.0.14.tgz#5195dbd2972a98afe4a4ee082904fbc5890bc630"
