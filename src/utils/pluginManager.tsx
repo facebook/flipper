@@ -12,7 +12,7 @@ import fs from 'fs-extra';
 import {homedir} from 'os';
 import {PluginMap, PluginDefinition} from '../reducers/pluginManager';
 import {PluginManager as PM} from 'live-plugin-manager';
-import algoliasearch from 'algoliasearch';
+import {default as algoliasearch, SearchIndex} from 'algoliasearch';
 import NpmApi, {Package} from 'npm-api';
 import semver from 'semver';
 
@@ -28,7 +28,7 @@ export function providePluginManager(): PM {
 }
 
 // TODO(T57014856): This should be private, too.
-export function provideSearchIndex(): algoliasearch.Index {
+export function provideSearchIndex(): SearchIndex {
   const client = algoliasearch(ALGOLIA_APPLICATION_ID, ALGOLIA_API_KEY);
   return client.initIndex('npm-search');
 }

@@ -27,7 +27,8 @@ import {
 } from 'flipper';
 import React, {useCallback, useState, useMemo, useEffect} from 'react';
 import {List} from 'immutable';
-import algoliasearch from 'algoliasearch';
+import {SearchIndex} from 'algoliasearch';
+import {SearchResponse} from '@algolia/client-search';
 import path from 'path';
 import fs from 'fs-extra';
 import {reportPlatformFailures, reportUsage} from '../utils/metrics';
@@ -105,7 +106,7 @@ type DispatchFromProps = {
 };
 
 type OwnProps = {
-  searchIndexFactory: () => algoliasearch.Index;
+  searchIndexFactory: () => SearchIndex;
   autoHeight: boolean;
   findPluginUpdates: (
     currentPlugins: PluginMap,
@@ -353,7 +354,7 @@ function useNPMSearch(
   setRestartRequired: (restart: boolean) => void,
   query: string,
   setQuery: (query: string) => void,
-  searchClientFactory: () => algoliasearch.Index,
+  searchClientFactory: () => SearchIndex,
   installedPlugins: Map<string, PluginDefinition>,
   refreshInstalledPlugins: () => void,
   findPluginUpdates: (
@@ -419,11 +420,11 @@ function useNPMSearch(
   useEffect(() => {
     (async () => {
       const {hits} = await reportPlatformFailures(
-        index.search({
+        index.search<PluginDefinition>('', {
           query,
           filters: 'keywords:flipper-plugin',
           hitsPerPage: 20,
-        }),
+        }) as Promise<SearchResponse<PluginDefinition>>,
         `${TAG}:queryIndex`,
       );
 
