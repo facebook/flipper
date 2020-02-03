@@ -41,3 +41,16 @@ To cross-compile for Linux (required for internal CI), run
 stack docker pull
 stack build --docker
 ```
+
+This is a moving target, but if you don't end up with a static binary, add
+`ghc-options: -optl-static -optl-pthread -fPIC` to your executables section.
+
+The binary can get quite large. Enabling split objects in your global config
+can be quite effective in reducing it:
+
+`~/.stack/config.yaml`:
+
+```
+build:
+  split-objs: true
+```
