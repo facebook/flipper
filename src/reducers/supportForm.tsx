@@ -7,7 +7,21 @@
  * @format
  */
 
-import {Actions} from './';
+import {Actions, Store} from './';
+import {setStaticView} from './connections';
+import SupportRequestFormV2 from '../fb-stubs/SupportRequestFormV2';
+import {deconstructClientId} from '../utils/clientUtils';
+import {starPlugin as setStarPlugin} from './connections';
+import {showStatusUpdatesForDuration} from '../utils/promiseTimeout';
+import {selectedPlugins as setSelectedPlugins} from './plugins';
+import {getEnabledOrExportPersistedStatePlugins} from '../utils/pluginUtils';
+import {addStatusMessage, removeStatusMessage} from './application';
+import constants from '../fb-stubs/constants';
+const {
+  GRAPHQL_IOS_SUPPORT_GROUP_ID,
+  GRAPHQL_ANDROID_SUPPORT_GROUP_ID,
+  LITHO_SUPPORT_GROUP_ID,
+} = constants;
 type SubmediaType =
   | {uploadID: string; status: 'Uploaded'}
   | {status: 'NotUploaded' | 'Uploading'};
@@ -16,10 +30,159 @@ type MediaObject = SubmediaType & {
   path: string;
 };
 
-export type Groups =
+export class Group {
+  constructor(
+    name: GroupNames,
+    workplaceGroupID: number,
+    requiredPlugins: Array<string>,
+    defaultPlugins: Array<string>,
+  ) {
+    this.name = name;
+    this.requiredPlugins = requiredPlugins;
+    this.defaultPlugins = defaultPlugins;
+    this.workplaceGroupID = workplaceGroupID;
+  }
+  readonly name: GroupNames;
+  requiredPlugins: Array<string>;
+  defaultPlugins: Array<string>;
+  workplaceGroupID: number;
+
+  getValidationMessage(selectedPlugins: Array<string>): string | null {
+    const nonSelectedPlugin: Array<string> = [];
+    for (const plugin of this.requiredPlugins) {
+      if (!selectedPlugins.includes(plugin)) {
+        nonSelectedPlugin.push(plugin);
+      }
+    }
+    if (nonSelectedPlugin.length <= 0) {
+      return null;
+    }
+    let str = 'should be exported if you want to submit to this group.';
+    if (nonSelectedPlugin.length == 1) {
+      str = `the ${nonSelectedPlugin.pop()} plugin ${str}`;
+    } else {
+      const lastPlugin = nonSelectedPlugin.pop();
+      str = `the ${nonSelectedPlugin.join(',')} and ${lastPlugin} ${str}`;
+    }
+    return str;
+  }
+
+  handleSupportFormDeeplinks(store: Store) {
+    // TODO: Incorporate grp info in analytics.
+    store.dispatch(setStaticView(SupportRequestFormV2));
+    const selectedApp = store.getState().connections.selectedApp;
+    const selectedClient = store.getState().connections.clients.find(o => {
+      return o.id === store.getState().connections.selectedApp;
+    });
+    if (selectedApp) {
+      const {app} = deconstructClientId(selectedApp);
+      const enabledPlugins: Array<string> | null = store.getState().connections
+        .userStarredPlugins[app];
+      const unsupportedPlugins = [];
+      for (const requiredPlugin of this.requiredPlugins) {
+        const requiredPluginEnabled =
+          enabledPlugins != null && enabledPlugins.includes(requiredPlugin);
+        if (
+          selectedClient &&
+          selectedClient.plugins.includes(requiredPlugin) &&
+          !requiredPluginEnabled
+        ) {
+          store.dispatch(
+            setStarPlugin({
+              selectedApp: app,
+              selectedPlugin: requiredPlugin,
+            }),
+          );
+        } else if (
+          !selectedClient ||
+          !selectedClient.plugins.includes(requiredPlugin)
+        ) {
+          unsupportedPlugins.push(requiredPlugin);
+        }
+      }
+      if (unsupportedPlugins.length > 0) {
+        showStatusUpdatesForDuration(
+          `The current client does not support ${unsupportedPlugins.join(
+            ', ',
+          )}. Please change the app from the dropdown in the support form.`,
+          'Deeplink',
+          10000,
+          payload => {
+            store.dispatch(addStatusMessage(payload));
+          },
+          payload => {
+            store.dispatch(removeStatusMessage(payload));
+          },
+        );
+      }
+    } else {
+      showStatusUpdatesForDuration(
+        'Please select an app and the device from the dropdown.',
+        'Deeplink',
+        10000,
+        payload => {
+          store.dispatch(addStatusMessage(payload));
+        },
+        payload => {
+          store.dispatch(removeStatusMessage(payload));
+        },
+      );
+    }
+    store.dispatch(
+      setSupportFormV2State({
+        ...store.getState().supportForm.supportFormV2,
+        selectedGroup: this,
+      }),
+    );
+    const pluginsList = selectedClient
+      ? getEnabledOrExportPersistedStatePlugins(
+          store.getState().connections.userStarredPlugins,
+          selectedClient,
+          store.getState().plugins,
+        )
+      : [];
+
+    store.dispatch(
+      setSelectedPlugins(
+        this.defaultPlugins.filter(s => {
+          return pluginsList.map(s => s.id).includes(s);
+        }),
+      ),
+    );
+  }
+}
+
+export type GroupNames =
   | 'Litho Support'
   | 'GraphQL Android Support'
   | 'GraphQL iOS Support';
+
+export const LITHO_GROUP = new Group(
+  'Litho Support',
+  LITHO_SUPPORT_GROUP_ID,
+  ['Inspector'],
+  ['Inspector', 'Sections', 'DeviceLogs'],
+);
+
+export const GRAPHQL_ANDROID_GROUP = new Group(
+  'GraphQL Android Support',
+  GRAPHQL_ANDROID_SUPPORT_GROUP_ID,
+  ['GraphQL'],
+  ['GraphQL', 'DeviceLogs'],
+);
+
+export const GRAPHQL_IOS_GROUP = new Group(
+  'GraphQL iOS Support',
+  GRAPHQL_IOS_SUPPORT_GROUP_ID,
+  ['GraphQL'],
+  ['GraphQL', 'DeviceLogs'],
+);
+
+export const SUPPORTED_GROUPS: Array<Group> = [
+  LITHO_GROUP,
+  GRAPHQL_ANDROID_GROUP,
+  GRAPHQL_IOS_GROUP,
+];
 
 export type MediaType = Array<MediaObject>;
 export type SupportFormV2State = {
@@ -28,7 +191,7 @@ export type SupportFormV2State = {
   commitHash: string;
   screenshots?: MediaType;
   videos?: MediaType;
-  selectedGroup: Groups;
+  selectedGroup: Group;
 };
 
 export type SupportFormRequestDetailsState = SupportFormV2State & {
@@ -71,7 +234,7 @@ export const initialState: () => State = () => ({
     ].join('\n'),
     commitHash: '',
     appName: '',
-    selectedGroup: 'Litho Support',
+    selectedGroup: LITHO_GROUP,
   },
 });
 export default function reducer(
