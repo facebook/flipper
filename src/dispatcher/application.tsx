@@ -191,10 +191,9 @@ export default (store: Store, logger: Logger) => {
       setSelectedPlugins(
         defaultSelectedPluginsForGroup(
           grp,
-          store.getState().pluginStates,
-          store.getState().pluginMessageQueue,
           store.getState().plugins,
           selectedClient,
+          store.getState().connections.userStarredPlugins,
         ),
       ),
     );

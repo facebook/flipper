@@ -8,17 +8,14 @@
  */
 
 import {Groups} from '../../reducers/supportForm';
-import {State as PluginStatesState} from '../../reducers/pluginStates';
-import {State as PluginMessageQueueState} from '../../reducers/pluginMessageQueue';
 import {State as PluginState} from '../../reducers/plugins';
 import Client from '../../Client';
 
 export function defaultSelectedPluginsForGroup(
   _grp: Groups,
-  _pluginStates: PluginStatesState,
-  _pluginMessageQueue: PluginMessageQueueState,
   _plugins: PluginState,
   _selectedClient: Client | undefined,
+  _userStarredPlugins: {[client: string]: Array<string>},
 ): Array<string> {
   return [];
 }

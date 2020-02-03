@@ -13,7 +13,7 @@ import {State as PluginStatesState} from '../reducers/pluginStates';
 import {State as PluginsState} from '../reducers/plugins';
 import {State as PluginMessageQueueState} from '../reducers/pluginMessageQueue';
 import {PluginDefinition} from '../dispatcher/plugins';
-import {deconstructPluginKey} from './clientUtils';
+import {deconstructPluginKey, deconstructClientId} from './clientUtils';
 
 type Client = import('../Client').default;
 
@@ -62,6 +62,68 @@ export function getPersistedState<PersistedState>(
     ...pluginStates[pluginKey],
   };
   return persistedState;
+}
+
+/**
+ *
+ * @param starredPlugin  starredPlugin is the dictionary of client and its enabled plugin
+ * @param client Optional paramater indicating the selected client.
+ * @param plugins  Plugins from the state which has the mapping to Plugin's Class.
+
+ * Returns plugins which are enabled or which has exportPersistedState function defined for the passed client.
+ * Note all device plugins are enabled.
+ */
+
+export function getEnabledOrExportPersistedStatePlugins(
+  starredPlugin: {
+    [client: string]: string[];
+  },
+  client: Client,
+  plugins: PluginsState,
+): Array<{id: string; label: string}> {
+  const appName = deconstructClientId(client.id).app;
+  const pluginsMap: Map<
+    string,
+    typeof FlipperDevicePlugin | typeof FlipperPlugin
+  > = pluginsClassMap(plugins);
+  // Enabled Plugins with no exportPersistedState function defined
+  const enabledPlugins = starredPlugin[appName]
+    ? starredPlugin[appName]
+        .map(pluginName => pluginsMap.get(pluginName)!)
+        .filter(plugin => {
+          return !plugin.exportPersistedState;
+        })
+        .sort(sortPluginsByName)
+        .map(plugin => {
+          return {id: plugin.id, label: getPluginTitle(plugin)};
+        })
+    : [];
+  // Device Plugins
+  const devicePlugins = Array.from(plugins.devicePlugins.keys())
+    .filter(plugin => {
+      return client.plugins.includes(plugin);
+    })
+    .map(plugin => {
+      return {
+        id: plugin,
+        label: getPluginTitle(plugins.devicePlugins.get(plugin)!),
+      };
+    });
+  // Plugins which have defined exportPersistedState.
+  const exportPersistedStatePlugins = client.plugins
+    .filter(name => {
+      return pluginsMap.get(name)?.exportPersistedState != null;
+    })
+    .map(name => {
+      const plugin = pluginsMap.get(name)!;
+      return {id: plugin.id, label: getPluginTitle(plugin)};
+    });
+  return [
+    ...devicePlugins,
+    ...enabledPlugins,
+    ...exportPersistedStatePlugins,
+    {id: 'DeviceLogs', label: 'Logs'},
+  ];
 }
 
 /**
