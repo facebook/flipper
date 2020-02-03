@@ -250,12 +250,9 @@ class MainSidebar2 extends PureComponent<Props, State> {
       selectedDevice,
     } = this.props;
     const clients = getAvailableClients(device, this.props.clients);
-
     return (
       <SidebarSection
-        title={`${device.title} ${
-          device.isArchived ? (device.source ? '(imported)' : '(offline)') : ''
-        }`}
+        title={device.displayTitle()}
         key={device.serial}
         level={1}
         defaultCollapsed={!canBeDefaultDevice(device)}>

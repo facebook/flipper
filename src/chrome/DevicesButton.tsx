@@ -77,15 +77,13 @@ class DevicesButton extends Component<Props> {
     let icon = 'minus-circle';
 
     if (selectedDevice && selectedDevice.isArchived) {
-      buttonLabel = `${selectedDevice.title || 'Unknown device'} ${
-        selectedDevice.source ? '(imported)' : '(offline)'
-      }`;
+      buttonLabel = `${selectedDevice.displayTitle() || 'Unknown device'}`;
       icon = 'box';
     } else if (selectedDevice && selectedDevice.deviceType === 'physical') {
-      buttonLabel = selectedDevice.title || 'Unknown device';
+      buttonLabel = selectedDevice.displayTitle() || 'Unknown device';
       icon = 'mobile';
     } else if (selectedDevice && selectedDevice.deviceType === 'emulator') {
-      buttonLabel = selectedDevice.title || 'Unknown emulator';
+      buttonLabel = selectedDevice.displayTitle() || 'Unknown emulator';
       icon = 'desktop';
     }
 
@@ -102,7 +100,7 @@ class DevicesButton extends Component<Props> {
         .map((device: BaseDevice) => ({
           click: () => selectDevice(device),
           checked: device === selectedDevice,
-          label: `📱 ${device.title}`,
+          label: `📱 ${device.displayTitle()}`,
           type: 'checkbox',
         })),
     ];
@@ -120,7 +118,7 @@ class DevicesButton extends Component<Props> {
         .map((device: BaseDevice) => ({
           click: () => selectDevice(device),
           checked: device === selectedDevice,
-          label: device.title,
+          label: device.displayTitle(),
           type: 'checkbox',
         })),
     ];
@@ -138,9 +136,7 @@ class DevicesButton extends Component<Props> {
         .map((device: BaseDevice) => ({
           click: () => selectDevice(device),
           checked: device === selectedDevice,
-          label: `📦 ${device.title} ${
-            device.source ? '(imported)' : '(offline)'
-          }`,
+          label: `📦 ${device.displayTitle()}`,
           type: 'checkbox',
         })),
     ];

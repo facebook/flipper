@@ -90,6 +90,10 @@ export default class BaseDevice {
     return os.toLowerCase() === this.os.toLowerCase();
   }
 
+  displayTitle(): string {
+    return this.title;
+  }
+
   toJSON(): DeviceExport {
     return {
       os: this.os,

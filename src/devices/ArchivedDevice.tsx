@@ -41,6 +41,10 @@ export default class ArchivedDevice extends BaseDevice {
 
   isArchived = true;
 
+  displayTitle(): string {
+    return `${this.title} ${this.source ? '(Imported)' : '(Offline)'}`;
+  }
+
   supportRequestDetails?: SupportFormRequestDetailsState;
 
   getLogs() {
