@@ -17,6 +17,11 @@ import {selectedPlugins as setSelectedPlugins} from './plugins';
 import {getEnabledOrExportPersistedStatePlugins} from '../utils/pluginUtils';
 import {addStatusMessage, removeStatusMessage} from './application';
 import constants from '../fb-stubs/constants';
+import {getInstance} from '../fb-stubs/Logger';
+import {logPlatformSuccessRate} from '../utils/metrics';
+
+export const SUPPORT_FORM_PREFIX = 'support-form-v2';
+
 const {
   GRAPHQL_IOS_SUPPORT_GROUP_ID,
   GRAPHQL_ANDROID_SUPPORT_GROUP_ID,
@@ -68,12 +73,16 @@ export class Group {
   }
 
   handleSupportFormDeeplinks(store: Store) {
-    // TODO: Incorporate grp info in analytics.
+    getInstance().track('usage', 'support-form-source', {
+      source: 'deeplink',
+      group: this.name,
+    });
     store.dispatch(setStaticView(SupportRequestFormV2));
     const selectedApp = store.getState().connections.selectedApp;
     const selectedClient = store.getState().connections.clients.find(o => {
       return o.id === store.getState().connections.selectedApp;
     });
+    let errorMessage: string | undefined = undefined;
     if (selectedApp) {
       const {app} = deconstructClientId(selectedApp);
       const enabledPlugins: Array<string> | null = store.getState().connections
@@ -101,10 +110,16 @@ export class Group {
         }
       }
       if (unsupportedPlugins.length > 0) {
+        errorMessage = `The current client does not support ${unsupportedPlugins.join(
+          ', ',
+        )}. Please change the app from the dropdown in the support form.`;
+        logPlatformSuccessRate(`${SUPPORT_FORM_PREFIX}-deeplink`, {
+          kind: 'failure',
+          supportedOperation: true,
+          error: errorMessage,
+        });
         showStatusUpdatesForDuration(
-          `The current client does not support ${unsupportedPlugins.join(
-            ', ',
-          )}. Please change the app from the dropdown in the support form.`,
+          errorMessage,
           'Deeplink',
           10000,
           payload => {
@@ -116,6 +131,8 @@ export class Group {
         );
       }
     } else {
+      errorMessage =
+        'Selected app is null, thus the deeplink failed to enable required plugin.';
       showStatusUpdatesForDuration(
         'Please select an app and the device from the dropdown.',
         'Deeplink',
@@ -148,6 +165,16 @@ export class Group {
           return pluginsList.map(s => s.id).includes(s);
         }),
       ),
+    );
+    logPlatformSuccessRate(
+      `${SUPPORT_FORM_PREFIX}-deeplink`,
+      errorMessage
+        ? {
+            kind: 'failure',
+            supportedOperation: true,
+            error: errorMessage,
+          }
+        : {kind: 'success'},
     );
   }
 }

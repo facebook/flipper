@@ -28,11 +28,14 @@ import {
   PluginName,
   ListItem,
 } from './sidebarUtils';
+import {Group} from '../../reducers/supportForm';
+import {getInstance} from '../../fb-stubs/Logger';
 
 type OwnProps = {};
 
 type StateFromProps = {
   staticView: StaticView;
+  selectedGroup: Group;
 };
 
 type DispatchFromProps = {
@@ -44,6 +47,7 @@ type Props = OwnProps & StateFromProps & DispatchFromProps;
 
 function MainSidebarUtilsSection({
   staticView,
+  selectedGroup,
   setActiveSheet,
   setStaticView,
 }: Props) {
@@ -86,7 +90,13 @@ function MainSidebarUtilsSection({
           return (
             <ListItem
               active={active}
-              onClick={() => setStaticView(SupportRequestFormV2)}>
+              onClick={() => {
+                getInstance().track('usage', 'support-form-source', {
+                  source: 'sidebar',
+                  group: selectedGroup.name,
+                });
+                setStaticView(SupportRequestFormV2);
+              }}>
               <PluginIcon
                 color={colors.light50}
                 name={'app-dailies'}
@@ -112,8 +122,9 @@ function MainSidebarUtilsSection({
 }
 
 export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
-  ({connections: {staticView}}) => ({
+  ({connections: {staticView}, supportForm: {supportFormV2}}) => ({
     staticView,
+    selectedGroup: supportFormV2.selectedGroup,
   }),
   {
     setStaticView,
