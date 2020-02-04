@@ -102,10 +102,8 @@ class ScreenCaptureButtons extends Component<Props, State> {
       return;
     }
     const videoPath = path.join(CAPTURE_LOCATION, getFileName('mp4'));
-    await selectedDevice.startScreenCapture(videoPath);
-
-    this.setState({
-      recording: true,
+    await selectedDevice.startScreenCapture(videoPath).catch(e => {
+      console.error(e);
     });
   };
 
@@ -114,18 +112,23 @@ class ScreenCaptureButtons extends Component<Props, State> {
     if (!selectedDevice) {
       return;
     }
-    const path = await selectedDevice.stopScreenCapture();
-    this.setState({
-      recording: false,
+    const path = await selectedDevice.stopScreenCapture().catch(e => {
+      console.error(e);
     });
-    openFile(path);
+    path ? openFile(path) : 0;
   };
 
   onRecordingClicked = () => {
     if (this.state.recording) {
       this.stopRecording();
+      this.setState({
+        recording: false,
+      });
     } else {
       this.startRecording();
+      this.setState({
+        recording: true,
+      });
     }
   };
 
