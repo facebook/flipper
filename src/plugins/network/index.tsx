@@ -397,7 +397,8 @@ function calculateState(
   }
 
   rows.sort(
-    (a: TableBodyRow, b: TableBodyRow) => Number(a.sortKey) - Number(b.sortKey),
+    (a: TableBodyRow, b: TableBodyRow) =>
+      (a.sortKey as number) - (b.sortKey as number),
   );
 
   return {
