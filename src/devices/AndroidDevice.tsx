@@ -132,21 +132,6 @@ export default class AndroidDevice extends BaseDevice {
     }
   }
 
-  private async isValidFile(filePath: string): Promise<boolean> {
-    const fileSize = await this.adb
-      .shell(this.serial, `touch "${filePath}" && ls -l "${filePath}"`)
-      .then(adb.util.readAll)
-      .then((output: Buffer) =>
-        output
-          .toString()
-          .trim()
-          .split(' '),
-      )
-      .then(output => Number(output[5]));
-
-    return fileSize > 0;
-  }
-
   async startScreenCapture(destination: string) {
     await this.executeShell(
       `mkdir -p "${DEVICE_RECORDING_DIR}" && echo -n > "${DEVICE_RECORDING_DIR}/.nomedia"`,
@@ -156,28 +141,14 @@ export default class AndroidDevice extends BaseDevice {
       .shell(this.serial, `screenrecord --bugreport "${recordingLocation}"`)
       .then(adb.util.readAll)
       .then(
-        output =>
-          new Promise(async (resolve, _) => {
-            const isValid = await this.isValidFile(recordingLocation);
-            if (!isValid) {
-              const outputMessage = output.toString().trim();
-              // throw error immediately
-              throw new Error(
-                'Recording was not properly started: \n' + outputMessage,
-              );
-            }
-            resolve();
-          }),
-      )
-      .then(
         _ =>
-          new Promise((resolve, reject) => {
+          new Promise((resolve, reject) =>
             this.adb.pull(this.serial, recordingLocation).then(stream => {
               stream.on('end', resolve);
               stream.on('error', reject);
               stream.pipe(createWriteStream(destination));
-            });
-          }),
+            }),
+          ),
       )
       .then(_ => destination);
   }
