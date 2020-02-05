@@ -19,8 +19,12 @@ import {addStatusMessage, removeStatusMessage} from './application';
 import constants from '../fb-stubs/constants';
 import {getInstance} from '../fb-stubs/Logger';
 import {logPlatformSuccessRate} from '../utils/metrics';
-
+import {getActivePersistentPlugins} from '../utils/pluginUtils';
 export const SUPPORT_FORM_PREFIX = 'support-form-v2';
+import {State as PluginStatesState} from './pluginStates';
+import {State as PluginsState} from '../reducers/plugins';
+import {State as PluginMessageQueueState} from '../reducers/pluginMessageQueue';
+import Client from '../Client';
 
 const {
   GRAPHQL_IOS_SUPPORT_GROUP_ID,
@@ -176,6 +180,40 @@ export class Group {
           }
         : {kind: 'success'},
     );
+  }
+
+  getWarningMessage(
+    plugins: PluginsState,
+    pluginsState: PluginStatesState,
+    pluginsMessageQueue: PluginMessageQueueState,
+    client: Client,
+  ): string | null {
+    const activePersistentPlugins = getActivePersistentPlugins(
+      pluginsState,
+      pluginsMessageQueue,
+      plugins,
+      client,
+    );
+    const emptyPlugins: Array<string> = [];
+    for (const plugin of this.requiredPlugins) {
+      if (
+        !activePersistentPlugins.find(o => {
+          return o.id === plugin;
+        })
+      ) {
+        emptyPlugins.push(plugin);
+      }
+    }
+    const commonStr = 'Are you sure you want to submit?';
+    if (emptyPlugins.length == 1) {
+      return `There is no data in ${emptyPlugins.pop()} plugin. ${commonStr}`;
+    } else if (emptyPlugins.length > 1) {
+      return `The following plugins have no data: ${emptyPlugins.join(
+        ',',
+      )}. ${commonStr}`;
+    }
+
+    return null;
   }
 }
 
