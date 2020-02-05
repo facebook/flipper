@@ -163,7 +163,7 @@
     "query-string": "^6.10.1",
     "react": "16.12.0",
     "react-color": "^2.11.7",
-    "react-debounce-render": "^5.0.0",
+    "react-debounce-render": "^6.0.0",
     "react-devtools-core": "^4.0.6",
     "react-dom": "^16.12.0",
     "react-markdown": "^4.2.2",
