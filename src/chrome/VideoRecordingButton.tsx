@@ -46,9 +46,14 @@ export default class VideoRecordingButton extends Component<Props, State> {
       .toISOString()
       .replace(/:/g, '')}.mp4`;
     const videoPath = path.join(flipperDirectory, fileName);
-    await selectedDevice.startScreenCapture(videoPath);
     this.setState({
       recording: true,
+    });
+    selectedDevice.startScreenCapture(videoPath).catch(e => {
+      console.error('Screen recording failed:', e);
+      this.setState({
+        recording: false,
+      });
     });
   };
 

@@ -166,7 +166,7 @@ export default class BaseDevice {
     return false;
   }
 
-  async startScreenCapture(_destination: string) {
+  async startScreenCapture(_destination: string): Promise<void> {
     throw new Error('startScreenCapture not implemented on BaseDevice ');
   }
 
