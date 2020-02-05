@@ -43,6 +43,7 @@ import {deconstructClientId, deconstructPluginKey} from '../utils/clientUtils';
 import {performance} from 'perf_hooks';
 import {processMessageQueue} from './messageQueue';
 import {getPluginTitle} from './pluginUtils';
+import {logPlatformSuccessRate} from './metrics';
 
 export const IMPORT_FLIPPER_TRACE_EVENT = 'import-flipper-trace';
 export const EXPORT_FLIPPER_TRACE_EVENT = 'export-flipper-trace';
@@ -616,6 +617,15 @@ export async function exportStore(
         plugins: state.plugins.selectedPlugins,
       },
     );
+    if (errorArray.length > 0) {
+      const errorStr = errorArray.join(', ');
+      logPlatformSuccessRate('export-store-task', {
+        kind: 'failure',
+        supportedOperation: true,
+        error: errorStr,
+      });
+      console.error('Export Store Task Failures: ', errorStr);
+    }
     return {serializedString, errorArray};
   } else {
     return {serializedString: '{}', errorArray: []};
