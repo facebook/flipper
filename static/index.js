@@ -74,12 +74,18 @@ const argv = yargs
 
 const {config, configPath, flipperDir} = setup(argv);
 
+const skipLoadingEmbeddedPlugins = process.env.FLIPPER_NO_EMBEDDED_PLUGINS;
+
 const pluginPaths = config.pluginPaths
-  .concat(
+  .concat([
     path.join(configPath, '..', 'thirdparty'),
-    path.join(__dirname, '..', 'src', 'plugins'),
-    path.join(__dirname, '..', 'src', 'fb', 'plugins'),
-  )
+    ...(skipLoadingEmbeddedPlugins
+      ? []
+      : [
+          path.join(__dirname, '..', 'src', 'plugins'),
+          path.join(__dirname, '..', 'src', 'fb', 'plugins'),
+        ]),
+  ])
   .map(expandTilde)
   .filter(fs.existsSync);
 

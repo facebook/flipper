@@ -17,6 +17,7 @@ import NpmApi, {Package} from 'npm-api';
 import semver from 'semver';
 import decompress from 'decompress';
 import decompressTargz from 'decompress-targz';
+import decompressUnzip from 'decompress-unzip';
 import tmp from 'tmp';
 
 const ALGOLIA_APPLICATION_ID = 'OFCNCOG2CU';
@@ -68,27 +69,42 @@ export async function installPluginFromFile(packagePath: string) {
   const tmpDir = tmp.dirSync().name;
   try {
     const files = await decompress(packagePath, tmpDir, {
-      plugins: [decompressTargz()],
+      plugins: [decompressTargz(), decompressUnzip()],
     });
     if (!files.length) {
       throw new Error('The package is not in tar.gz format or is empty');
     }
+
+    // npm packages are tar.gz archives containing folder 'package' inside
     const packageDir = path.join(tmpDir, 'package');
-    if (!(await fs.pathExists(packageDir))) {
+    const isNpmPackage = await fs.pathExists(packageDir);
+
+    // vsix packages are zip archives containing folder 'extension' inside
+    const extensionDir = path.join(tmpDir, 'extension');
+    const isVsix = await fs.pathExists(extensionDir);
+
+    if (!isNpmPackage && !isVsix) {
       throw new Error(
-        'Package format is invalid: directory "package" not found',
+        'Package format is invalid: directory "package" or "extensions" not found in the archive root',
       );
     }
-    const packageJsonPath = path.join(packageDir, 'package.json');
+
+    const packageRoot = isNpmPackage ? packageDir : extensionDir;
+
+    // otherwise both npm and vsix are quite similar, so we can use the same logic for installing them
+    const packageJsonPath = path.join(packageRoot, 'package.json');
     if (!(await fs.pathExists(packageJsonPath))) {
       throw new Error(
-        'Package format is invalid: file "package/package.json" not found',
+        `Package format is invalid: file "${path.relative(
+          tmpDir,
+          packageJsonPath,
+        )}" not found`,
       );
     }
     const packageJson = await fs.readJSON(packageJsonPath);
     const name = packageJson.name as string;
     await installPlugin(name, pluginManager =>
-      pluginManager.installFromPath(packageDir).then(() => {}),
+      pluginManager.installFromPath(packageRoot).then(() => {}),
     );
   } finally {
     if (fs.existsSync(tmpDir)) {
