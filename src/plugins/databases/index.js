@@ -1371,31 +1371,35 @@ export default class DatabasesPlugin extends FlipperPlugin<
             </Toolbar>
           </div>
         ) : null}
-        <FlexColumn grow={true}>
-          {this.state.viewMode === 'data'
-            ? renderTable(this.state.currentPage, this)
-            : null}
-          {this.state.viewMode === 'structure' ? this.renderStructure() : null}
-          {this.state.viewMode === 'SQL'
-            ? this.renderQuery(this.state.queryResult)
-            : null}
-          {this.state.viewMode === 'tableInfo' ? (
-            <Textarea
-              style={{
-                width: '98%',
-                height: '100%',
-                marginLeft: '1%',
-                marginTop: '1%',
-                marginBottom: '1%',
-                readOnly: true,
-              }}
-              value={sqlFormatter.format(this.state.tableInfo)}
-            />
-          ) : null}
-          {this.state.viewMode === 'queryHistory'
-            ? renderQueryHistory(this.state.queryHistory)
-            : null}
-        </FlexColumn>
+        <FlexRow grow={true}>
+          <FlexColumn grow={true}>
+            {this.state.viewMode === 'data'
+              ? renderTable(this.state.currentPage, this)
+              : null}
+            {this.state.viewMode === 'structure'
+              ? this.renderStructure()
+              : null}
+            {this.state.viewMode === 'SQL'
+              ? this.renderQuery(this.state.queryResult)
+              : null}
+            {this.state.viewMode === 'tableInfo' ? (
+              <Textarea
+                style={{
+                  width: '98%',
+                  height: '100%',
+                  marginLeft: '1%',
+                  marginTop: '1%',
+                  marginBottom: '1%',
+                  readOnly: true,
+                }}
+                value={sqlFormatter.format(this.state.tableInfo)}
+              />
+            ) : null}
+            {this.state.viewMode === 'queryHistory'
+              ? renderQueryHistory(this.state.queryHistory)
+              : null}
+          </FlexColumn>
+        </FlexRow>
         <Toolbar position="bottom" style={{paddingLeft: 8}}>
           <FlexRow grow={true}>
             {this.state.viewMode === 'SQL' && this.state.executionTime !== 0 ? (
