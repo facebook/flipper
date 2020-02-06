@@ -101,6 +101,8 @@ public class ViewDescriptor extends NodeDescriptor<View> {
 
   @Override
   public List<Named<FlipperObject>> getData(View node) {
+    final int[] positionOnScreen = new int[2];
+    node.getLocationOnScreen(positionOnScreen);
     final FlipperObject.Builder viewProps =
         new FlipperObject.Builder()
             .put("height", InspectorValue.mutable(node.getHeight()))
@@ -147,7 +149,13 @@ public class ViewDescriptor extends NodeDescriptor<View> {
                 "pivot",
                 new FlipperObject.Builder()
                     .put("x", InspectorValue.mutable(node.getPivotX()))
-                    .put("y", InspectorValue.mutable(node.getPivotY())));
+                    .put("y", InspectorValue.mutable(node.getPivotY())))
+            .put(
+                "positionOnScreen",
+                new FlipperObject.Builder()
+                    .put("x", positionOnScreen[0])
+                    .put("y", positionOnScreen[1])
+                    .build());
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
       viewProps
