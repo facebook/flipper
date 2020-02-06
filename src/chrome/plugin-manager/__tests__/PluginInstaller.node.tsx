@@ -8,7 +8,7 @@
  */
 
 import {annotatePluginsWithUpdates} from '../PluginInstaller';
-import {UpdateResult} from '../../utils/pluginManager';
+import {UpdateResult} from '../../../utils/pluginManager';
 
 test('annotatePluginsWithUpdates', async () => {
   const installedPlugins = new Map([

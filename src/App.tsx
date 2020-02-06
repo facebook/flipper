@@ -41,7 +41,7 @@ import {Logger} from './fb-interfaces/Logger';
 import BugReporter from './fb-stubs/BugReporter';
 import {State as Store} from './reducers/index';
 import {StaticView, FlipperError} from './reducers/connections';
-import PluginManager from './chrome/PluginManager';
+import PluginManager from './chrome/plugin-manager/PluginManager';
 import StatusBar from './chrome/StatusBar';
 import SettingsSheet from './chrome/SettingsSheet';
 import DoctorSheet from './chrome/DoctorSheet';

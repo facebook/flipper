@@ -34,7 +34,6 @@ test('dispatcher dispatches REGISTER_PLUGINS', () => {
 test('getDynamicPlugins returns empty array on errors', () => {
   ipcRenderer.sendSync = jest.fn();
   ipcRenderer.sendSync.mockImplementation(() => {
-    console.log('aaa');
     throw new Error('ooops');
   });
   const res = getDynamicPlugins();

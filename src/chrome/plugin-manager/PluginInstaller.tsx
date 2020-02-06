@@ -31,13 +31,13 @@ import {SearchIndex} from 'algoliasearch';
 import {SearchResponse} from '@algolia/client-search';
 import path from 'path';
 import fs from 'fs-extra';
-import {reportPlatformFailures, reportUsage} from '../utils/metrics';
-import restartFlipper from '../utils/restartFlipper';
+import {reportPlatformFailures, reportUsage} from '../../utils/metrics';
+import restartFlipper from '../../utils/restartFlipper';
 import {
   PluginMap,
   PluginDefinition,
   registerInstalledPlugins,
-} from '../reducers/pluginManager';
+} from '../../reducers/pluginManager';
 import {
   PLUGIN_DIR,
   readInstalledPlugins,
@@ -45,8 +45,8 @@ import {
   provideSearchIndex,
   findPluginUpdates as _findPluginUpdates,
   UpdateResult,
-} from '../utils/pluginManager';
-import {State as AppState} from '../reducers';
+} from '../../utils/pluginManager';
+import {State as AppState} from '../../reducers';
 import {connect} from 'react-redux';
 import {Dispatch, Action} from 'redux';
 

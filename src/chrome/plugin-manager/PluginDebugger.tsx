@@ -7,9 +7,9 @@
  * @format
  */
 
-import {PluginDefinition} from '../dispatcher/plugins';
-import Client from '../Client';
-import {TableBodyRow} from '../ui/components/table/types';
+import {PluginDefinition} from '../../dispatcher/plugins';
+import Client from '../../Client';
+import {TableBodyRow} from '../../ui/components/table/types';
 import React, {Component, Fragment} from 'react';
 import {connect} from 'react-redux';
 import {
@@ -22,8 +22,8 @@ import {
   FlipperDevicePlugin,
   Bordered,
 } from 'flipper';
-import StatusIndicator from '../ui/components/StatusIndicator';
-import {State as Store} from '../reducers';
+import StatusIndicator from '../../ui/components/StatusIndicator';
+import {State as Store} from '../../reducers';
 
 const InfoText = styled(Text)({
   lineHeight: '130%',
