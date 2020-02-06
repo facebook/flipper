@@ -18,6 +18,7 @@ import uuid from 'uuid/v1';
 import path from 'path';
 import {promisify} from 'util';
 import {exec} from 'child_process';
+import {default as promiseTimeout} from '../utils/promiseTimeout';
 
 type IOSLogLevel = 'Default' | 'Info' | 'Debug' | 'Error' | 'Fault';
 
@@ -185,17 +186,39 @@ export default class IOSDevice extends BaseDevice {
 
   async startScreenCapture(destination: string) {
     this.recordingProcess = exec(
-      `xcrun simctl io booted recordVideo "${destination}"`,
+      `xcrun simctl io booted recordVideo --codec=h264 --force ${destination}`,
     );
     this.recordingLocation = destination;
   }
 
-  async stopScreenCaputre(): Promise<string | null> {
+  async stopScreenCapture(): Promise<string | null> {
     if (this.recordingProcess && this.recordingLocation) {
-      this.recordingProcess.kill('SIGINT');
-      const {recordingLocation} = this;
-      this.recordingLocation = undefined;
-      return recordingLocation;
+      const prom = new Promise<void>((resolve, _reject) => {
+        this.recordingProcess!.on(
+          'exit',
+          async (_code: number | null, _signal: NodeJS.Signals | null) => {
+            resolve();
+          },
+        );
+        this.recordingProcess!.kill('SIGINT');
+      });
+
+      const output: string | null = await promiseTimeout<void>(
+        5000,
+        prom,
+        'Timed out to stop a screen capture.',
+      )
+        .then(() => {
+          const {recordingLocation} = this;
+          this.recordingLocation = undefined;
+          return recordingLocation!;
+        })
+        .catch(_e => {
+          this.recordingLocation = undefined;
+          console.error(_e);
+          return null;
+        });
+      return output;
     }
     return null;
   }
