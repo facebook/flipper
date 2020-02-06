@@ -9,7 +9,6 @@
 
 import React, {useState} from 'react';
 import FlexRow from './FlexRow';
-import FlexColumn from './FlexColumn';
 import Glyph from './Glyph';
 import Input from './Input';
 import electron from 'electron';
@@ -17,15 +16,20 @@ import styled from '@emotion/styled';
 import {colors} from './colors';
 import Electron from 'electron';
 import fs from 'fs';
+import {Tooltip} from '..';
 
 const CenteredGlyph = styled(Glyph)({
-  flexGrow: 0,
   margin: 'auto',
-  marginLeft: 10,
+  marginLeft: 4,
 });
 
 const Container = styled(FlexRow)({
   width: '100%',
+  marginRight: 4,
+});
+
+const GlyphContainer = styled(FlexRow)({
+  width: 20,
 });
 
 const FileInputBox = styled(Input)<{isValid: boolean}>(({isValid}) => ({
@@ -49,7 +53,7 @@ export interface Props {
 }
 
 const defaultProps: Props = {
-  onPathChanged: () => {},
+  onPathChanged: _ => {},
   placeholderText: '',
   defaultPath: '/',
   showHiddenFiles: false,
@@ -97,7 +101,7 @@ export default function FileSelector({
           onChange(e.target.value);
         }}
       />
-      <FlexColumn
+      <GlyphContainer
         onClick={() =>
           electron.remote.dialog
             .showOpenDialog(options)
@@ -112,14 +116,18 @@ export default function FileSelector({
           variant="outline"
           title="Open file selection dialog"
         />
-      </FlexColumn>
-      {isValid ? null : (
-        <CenteredGlyph
-          name="caution-triangle"
-          color={colors.yellow}
-          title="Path is invalid"
-        />
-      )}
+      </GlyphContainer>
+      <GlyphContainer>
+        {isValid ? null : (
+          <Tooltip title="The specified path is invalid or such file does not exist">
+            <CenteredGlyph
+              name="caution-triangle"
+              color={colors.yellow}
+              size={16}
+            />
+          </Tooltip>
+        )}
+      </GlyphContainer>
     </Container>
   );
 }

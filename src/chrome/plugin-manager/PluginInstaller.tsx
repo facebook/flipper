@@ -25,7 +25,6 @@ import {
   LoadingIndicator,
   Tooltip,
 } from 'flipper';
-import {default as FileSelector} from '../../ui/components/FileSelector';
 import React, {useCallback, useState, useMemo, useEffect} from 'react';
 import {List} from 'immutable';
 import {SearchIndex} from 'algoliasearch';
@@ -42,14 +41,15 @@ import {
 import {
   PLUGIN_DIR,
   readInstalledPlugins,
-  providePluginManager,
   provideSearchIndex,
   findPluginUpdates as _findPluginUpdates,
   UpdateResult,
+  installPluginFromNpm,
 } from '../../utils/pluginManager';
 import {State as AppState} from '../../reducers';
 import {connect} from 'react-redux';
 import {Dispatch, Action} from 'redux';
+import PluginPackageInstaller from './PluginPackageInstaller';
 
 const TAG = 'PluginInstaller';
 
@@ -145,15 +145,18 @@ export function annotatePluginsWithUpdates(
 const PluginInstaller = function props(props: Props) {
   const [restartRequired, setRestartRequired] = useState(false);
   const [query, setQuery] = useState('');
-  const [_localPackagePath, setLocalPackagePath] = useState('');
-  const [isLocalPackagePathValid, setIsLocalPackagePathValud] = useState(false);
+
+  const onInstall = useCallback(async () => {
+    props.refreshInstalledPlugins();
+    setRestartRequired(true);
+  }, []);
+
   const rows = useNPMSearch(
-    setRestartRequired,
     query,
     setQuery,
     props.searchIndexFactory,
     props.installedPlugins,
-    props.refreshInstalledPlugins,
+    onInstall,
     props.findPluginUpdates,
   );
   const restartApp = useCallback(() => {
@@ -190,26 +193,7 @@ const PluginInstaller = function props(props: Props) {
           rows={rows}
         />
       </Container>
-      <Toolbar>
-        <FileSelector
-          placeholderText="Specify path to a Flipper package or just drag and drop it here..."
-          onPathChanged={e => {
-            setLocalPackagePath(e.path);
-            setIsLocalPackagePathValud(e.isValid);
-          }}
-        />
-        <Button
-          compact
-          type="primary"
-          disabled={!isLocalPackagePathValid}
-          title={
-            isLocalPackagePathValid
-              ? 'Click to install the specified plugin package'
-              : 'Cannot install plugin package by the specified path'
-          }>
-          Install
-        </Button>
-      </Toolbar>
+      <PluginPackageInstaller onInstall={onInstall} />
     </>
   );
 };
@@ -267,35 +251,8 @@ function InstallButton(props: {
         props.name,
       );
       setAction({kind: 'Waiting'});
-      await fs.ensureDir(PLUGIN_DIR);
-      // create empty watchman config (required by metro's file watcher)
-      await fs.writeFile(path.join(PLUGIN_DIR, '.watchmanconfig'), '{}');
 
-      // Clean up existing destination files.
-      await fs.remove(path.join(PLUGIN_DIR, props.name));
-
-      const pluginManager = providePluginManager();
-      // install the plugin and all it's dependencies into node_modules
-      pluginManager.options.pluginsPath = path.join(
-        PLUGIN_DIR,
-        props.name,
-        'node_modules',
-      );
-      await pluginManager.install(props.name);
-
-      // move the plugin itself out of the node_modules folder
-      const pluginDir = path.join(
-        PLUGIN_DIR,
-        props.name,
-        'node_modules',
-        props.name,
-      );
-      const pluginFiles = await fs.readdir(pluginDir);
-      await Promise.all(
-        pluginFiles.map(f =>
-          fs.move(path.join(pluginDir, f), path.join(pluginDir, '..', '..', f)),
-        ),
-      );
+      await installPluginFromNpm(props.name);
 
       props.onInstall();
       setAction({kind: 'Remove'});
@@ -376,12 +333,11 @@ function InstallButton(props: {
 }
 
 function useNPMSearch(
-  setRestartRequired: (restart: boolean) => void,
   query: string,
   setQuery: (query: string) => void,
   searchClientFactory: () => SearchIndex,
   installedPlugins: Map<string, PluginDefinition>,
-  refreshInstalledPlugins: () => void,
+  onInstall: () => Promise<void>,
   findPluginUpdates: (
     currentPlugins: PluginMap,
   ) => Promise<[string, UpdateResult][]>,
@@ -390,11 +346,6 @@ function useNPMSearch(
 
   useEffect(() => {
     reportUsage(`${TAG}:open`);
-  }, []);
-
-  const onInstall = useCallback(async () => {
-    refreshInstalledPlugins();
-    setRestartRequired(true);
   }, []);
 
   const createRow = useCallback(

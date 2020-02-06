@@ -13,6 +13,13 @@ export declare class PluginManager {
     name: string,
     version?: string,
   ): Promise<LivePluginManager.IPluginInfo>;
+  installFromPath(
+    location: string,
+    options?: {
+      force: boolean;
+    },
+  ): Promise<LivePluginManager.IPluginInfo>;
+
   readonly options: LivePluginManager.PluginManagerOptions;
 }
 
