@@ -27,7 +27,9 @@ const convertAnsi = new Convert();
 const DEFAULT_PORT = process.env.PORT || 3000;
 const STATIC_DIR = path.join(__dirname, '..', 'static');
 
-function launchElectron({bundleURL, electronURL}) {
+let shutdownElectron = undefined;
+
+function launchElectron({devServerURL, bundleURL, electronURL}) {
   const args = [
     path.join(STATIC_DIR, 'index.js'),
     '--remote-debugging-port=9222',
@@ -41,17 +43,27 @@ function launchElectron({bundleURL, electronURL}) {
       SONAR_ROOT: process.cwd(),
       BUNDLE_URL: bundleURL,
       ELECTRON_URL: electronURL,
+      DEV_SERVER_URL: devServerURL,
     },
     stdio: 'inherit',
   });
 
-  proc.on('close', () => {
+  const electronCloseListener = () => {
     process.exit();
-  });
+  };
 
-  process.on('exit', () => {
+  const processExitListener = () => {
     proc.kill();
-  });
+  };
+
+  proc.on('close', electronCloseListener);
+  process.on('exit', processExitListener);
+
+  return () => {
+    proc.off('close', electronCloseListener);
+    process.off('exit', processExitListener);
+    proc.kill();
+  };
 }
 
 function startMetroServer(app) {
@@ -103,6 +115,18 @@ function startAssetServer(port) {
     res.header('Expires', '-1');
     res.header('Pragma', 'no-cache');
     next();
+  });
+
+  app.post('/_restartElectron', (req, res) => {
+    if (shutdownElectron) {
+      shutdownElectron();
+    }
+    shutdownElectron = launchElectron({
+      devServerURL: `http://localhost:${port}`,
+      bundleURL: `http://localhost:${port}/src/init.bundle`,
+      electronURL: `http://localhost:${port}/index.dev.html`,
+    });
+    res.end();
   });
 
   app.get('/', (req, res) => {
@@ -221,7 +245,8 @@ function outputScreen(socket) {
   const socket = await addWebsocket(server);
   await startMetroServer(app);
   outputScreen(socket);
-  launchElectron({
+  shutdownElectron = launchElectron({
+    devServerURL: `http://localhost:${port}`,
     bundleURL: `http://localhost:${port}/src/init.bundle`,
     electronURL: `http://localhost:${port}/index.dev.html`,
   });

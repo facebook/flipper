@@ -15,10 +15,10 @@ export default function restart() {
     remote.app.relaunch();
     remote.app.exit();
   } else {
-    // Relaunching the process doesn't work in dev mode
-    // because it just launches an empty electron shell.
-    // Instead, approximate it by doing a refresh.
-    // Should be roughly equivalent but there may be some differences.
-    remote.getCurrentWindow().reload();
+    // Relaunching the process with the standard way doesn't work in dev mode.
+    // So instead we're sending a signal to dev server to kill the current instance of electron and launch new.
+    fetch(`${remote.process.env.DEV_SERVER_URL}/_restartElectron`, {
+      method: 'POST',
+    });
   }
 }
