@@ -25,6 +25,7 @@ import {
   LoadingIndicator,
   Tooltip,
 } from 'flipper';
+import {default as FileSelector} from '../../ui/components/FileSelector';
 import React, {useCallback, useState, useMemo, useEffect} from 'react';
 import {List} from 'immutable';
 import {SearchIndex} from 'algoliasearch';
@@ -144,6 +145,8 @@ export function annotatePluginsWithUpdates(
 const PluginInstaller = function props(props: Props) {
   const [restartRequired, setRestartRequired] = useState(false);
   const [query, setQuery] = useState('');
+  const [_localPackagePath, setLocalPackagePath] = useState('');
+  const [isLocalPackagePathValid, setIsLocalPackagePathValud] = useState(false);
   const rows = useNPMSearch(
     setRestartRequired,
     query,
@@ -158,34 +161,56 @@ const PluginInstaller = function props(props: Props) {
   }, []);
 
   return (
-    <Container>
-      {restartRequired && (
-        <RestartBar onClick={restartApp}>
-          To activate this plugin, Flipper needs to restart. Click here to
-          restart!
-        </RestartBar>
-      )}
+    <>
+      <Container>
+        {restartRequired && (
+          <RestartBar onClick={restartApp}>
+            To activate this plugin, Flipper needs to restart. Click here to
+            restart!
+          </RestartBar>
+        )}
+        <Toolbar>
+          <SearchBox>
+            <SearchInput
+              onChange={e => setQuery(e.target.value)}
+              value={query}
+              placeholder="Search Flipper plugins..."
+            />
+          </SearchBox>
+        </Toolbar>
+        <ManagedTable_immutable
+          rowLineHeight={28}
+          floating={false}
+          multiline={true}
+          columnSizes={columnSizes}
+          columns={columns}
+          highlightableRows={false}
+          highlightedRows={new Set()}
+          autoHeight={props.autoHeight}
+          rows={rows}
+        />
+      </Container>
       <Toolbar>
-        <SearchBox>
-          <SearchInput
-            onChange={e => setQuery(e.target.value)}
-            value={query}
-            placeholder="Search Flipper plugins..."
-          />
-        </SearchBox>
+        <FileSelector
+          placeholderText="Specify path to a Flipper package or just drag and drop it here..."
+          onPathChanged={e => {
+            setLocalPackagePath(e.path);
+            setIsLocalPackagePathValud(e.isValid);
+          }}
+        />
+        <Button
+          compact
+          type="primary"
+          disabled={!isLocalPackagePathValid}
+          title={
+            isLocalPackagePathValid
+              ? 'Click to install the specified plugin package'
+              : 'Cannot install plugin package by the specified path'
+          }>
+          Install
+        </Button>
       </Toolbar>
-      <ManagedTable_immutable
-        rowLineHeight={28}
-        floating={false}
-        multiline={true}
-        columnSizes={columnSizes}
-        columns={columns}
-        highlightableRows={false}
-        highlightedRows={new Set()}
-        autoHeight={props.autoHeight}
-        rows={rows}
-      />
-    </Container>
+    </>
   );
 };
 PluginInstaller.defaultProps = defaultProps;

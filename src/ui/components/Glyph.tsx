@@ -48,12 +48,20 @@ function ColoredIcon(
     className?: string;
     color?: string;
     style?: React.CSSProperties;
+    title?: string;
   },
   context: {
     glyphColor?: string;
   },
 ) {
-  const {color = context.glyphColor, name, size = 16, src, style} = props;
+  const {
+    color = context.glyphColor,
+    name,
+    size = 16,
+    src,
+    style,
+    title,
+  } = props;
 
   const isBlack =
     color == null ||
@@ -69,6 +77,7 @@ function ColoredIcon(
         size={size}
         className={props.className}
         style={style}
+        title={title}
       />
     );
   } else {
@@ -79,6 +88,7 @@ function ColoredIcon(
         src={src}
         className={props.className}
         style={style}
+        title={title}
       />
     );
   }
@@ -98,7 +108,15 @@ export default class Glyph extends React.PureComponent<{
   title?: string;
 }> {
   render() {
-    const {name, size = 16, variant, color, className, style} = this.props;
+    const {
+      name,
+      size = 16,
+      variant,
+      color,
+      className,
+      style,
+      title,
+    } = this.props;
 
     return (
       <ColoredIcon
@@ -106,6 +124,7 @@ export default class Glyph extends React.PureComponent<{
         className={className}
         color={color}
         size={size}
+        title={title}
         src={getIconURL(
           variant === 'outline' ? `${name}-outline` : name,
           size,
