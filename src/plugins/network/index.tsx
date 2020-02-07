@@ -39,6 +39,7 @@ type PersistedState = {
 
 type State = {
   selectedIds: Array<RequestId>;
+  searchTerm: string;
 };
 
 const COLUMN_SIZE = {
@@ -166,9 +167,26 @@ export default class extends FlipperPlugin<State, any, PersistedState> {
     }
   };
 
-  state = {
-    selectedIds: this.props.deepLinkPayload ? [this.props.deepLinkPayload] : [],
+  parseDeepLinkPayload = (deepLinkPayload: string | null) => {
+    const searchTermDelim = 'searchTerm=';
+    if (deepLinkPayload === null) {
+      return {
+        selectedIds: [],
+        searchTerm: '',
+      };
+    } else if (deepLinkPayload.startsWith(searchTermDelim)) {
+      return {
+        selectedIds: [],
+        searchTerm: deepLinkPayload.slice(searchTermDelim.length),
+      };
+    }
+    return {
+      selectedIds: [deepLinkPayload],
+      searchTerm: '',
+    };
   };
+
+  state = this.parseDeepLinkPayload(this.props.deepLinkPayload);
 
   onRowHighlighted = (selectedIds: Array<RequestId>) =>
     this.setState({selectedIds});
@@ -229,6 +247,7 @@ export default class extends FlipperPlugin<State, any, PersistedState> {
           highlightedRows={
             this.state.selectedIds ? new Set(this.state.selectedIds) : null
           }
+          searchTerm={this.state.searchTerm}
         />
         <DetailSidebar width={500}>{this.renderSidebar()}</DetailSidebar>
       </FlexColumn>
@@ -243,6 +262,7 @@ type NetworkTableProps = {
   copyRequestCurlCommand: () => void;
   onRowHighlighted: (keys: TableHighlightedRows) => void;
   highlightedRows: Set<string> | null | undefined;
+  searchTerm: string;
 };
 
 type NetworkTableState = {
@@ -481,6 +501,7 @@ class NetworkTable extends PureComponent<NetworkTableProps, NetworkTableState> {
           allowBodySearch={true}
           zebra={false}
           actions={<Button onClick={this.props.clear}>Clear Table</Button>}
+          defaultSearchTerm={this.props.searchTerm}
         />
       </NetworkTable.ContextMenu>
     );
