@@ -29,7 +29,6 @@ export {PluginClient, Props} from './plugin';
 export {default as Client} from './Client';
 export {MetricType} from './utils/exportMetrics';
 export {clipboard} from 'electron';
-export {default as SupportRequestFormManager} from './fb-stubs/SupportRequestFormManager';
 export {default as SupportRequestFormV2} from './fb-stubs/SupportRequestFormV2';
 export {default as constants} from './fb-stubs/constants';
 export {connect} from 'react-redux';

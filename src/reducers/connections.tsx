@@ -22,7 +22,6 @@ const WelcomeScreen = isHeadless()
   ? require('../chrome/WelcomeScreenHeadless').default
   : require('../chrome/WelcomeScreen').default;
 import NotificationScreen from '../chrome/NotificationScreen';
-import SupportRequestForm from '../fb-stubs/SupportRequestFormManager';
 import SupportRequestFormV2 from '../fb-stubs/SupportRequestFormV2';
 import SupportRequestDetails from '../fb-stubs/SupportRequestDetails';
 import {getPluginKey} from '../utils/pluginUtils';
@@ -34,7 +33,6 @@ export type StaticView =
   | null
   | typeof WelcomeScreen
   | typeof NotificationScreen
-  | typeof SupportRequestForm
   | typeof SupportRequestFormV2
   | typeof SupportRequestDetails;
 

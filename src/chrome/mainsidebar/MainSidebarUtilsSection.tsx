@@ -19,7 +19,6 @@ import NotificationScreen from '../NotificationScreen';
 import {StaticView, setStaticView} from '../../reducers/connections';
 import {setActiveSheet} from '../../reducers/application';
 import UserAccount from '../UserAccount';
-import SupportRequestFormManager from '../../fb-stubs/SupportRequestFormManager';
 import SupportRequestFormV2 from '../../fb-stubs/SupportRequestFormV2';
 import WatchTools from '../../fb-stubs/WatchTools';
 import {
@@ -55,9 +54,7 @@ function MainSidebarUtilsSection({
 
   const hasSeenSupportForm = useRef(false);
   const showSupportForm =
-    GK.get('support_requests_v2') ||
-    isStaticViewActive(staticView, SupportRequestFormManager) ||
-    hasSeenSupportForm.current;
+    GK.get('support_requests_v2') || hasSeenSupportForm.current;
   if (showSupportForm) {
     hasSeenSupportForm.current = true;
   }

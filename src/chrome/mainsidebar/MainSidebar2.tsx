@@ -47,7 +47,6 @@ import {
 } from '../../reducers/connections';
 import {setActiveSheet} from '../../reducers/application';
 import {connect} from 'react-redux';
-import SupportRequestFormManager from '../../fb-stubs/SupportRequestFormManager';
 import SupportRequestDetails from '../../fb-stubs/SupportRequestDetails';
 import MainSidebarUtilsSection from './MainSidebarUtilsSection';
 import {
@@ -209,18 +208,6 @@ class MainSidebar2 extends PureComponent<Props, State> {
     showWatchDebugRoot: GK.get('watch_team_flipper_clientless_access'),
     showAllPlugins: false,
   };
-  static getDerivedStateFromProps(props: Props, state: State) {
-    if (
-      !state.showSupportForm &&
-      props.staticView === SupportRequestFormManager
-    ) {
-      // Show SupportForm option even when GK is false and support form is shown.
-      // That means the user has used deeplink to open support form.
-      // Once the variable is true, it will be true for the whole session.
-      return {showSupportForm: true};
-    }
-    return state;
-  }
 
   render() {
     const {devices} = this.props;
