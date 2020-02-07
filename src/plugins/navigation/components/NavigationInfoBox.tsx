@@ -32,7 +32,7 @@ type Props = {
   date: Date | null;
 };
 
-const ScreenshotContainer = styled('div')({
+const ScreenshotContainer = styled.div({
   width: 200,
   minWidth: 200,
   overflow: 'hidden',
@@ -45,19 +45,19 @@ const ScreenshotContainer = styled('div')({
   },
 });
 
-const NoData = styled('div')({
+const NoData = styled.div({
   color: colors.light30,
   fontSize: 14,
   position: 'relative',
 });
 
-const NavigationDataContainer = styled('div')({
+const NavigationDataContainer = styled.div({
   alignItems: 'flex-start',
   flexGrow: 1,
   position: 'relative',
 });
 
-const Footer = styled('div')({
+const Footer = styled.div({
   width: '100%',
   padding: '10px',
   borderTop: `1px ${colors.blueGreyTint90} solid`,
@@ -65,16 +65,16 @@ const Footer = styled('div')({
   alignItems: 'center',
 });
 
-const Seperator = styled('div')({
+const Seperator = styled.div({
   flexGrow: 1,
 });
 
-const TimeContainer = styled('div')({
+const TimeContainer = styled.div({
   color: colors.light30,
   fontSize: 14,
 });
 
-const NavigationInfoBoxContainer = styled('div')({
+const NavigationInfoBoxContainer = styled.div({
   display: 'flex',
   height: BOX_HEIGHT,
   borderRadius: 10,
@@ -85,7 +85,7 @@ const NavigationInfoBoxContainer = styled('div')({
   boxShadow: '1px 1px 5px rgba(0,0,0,0.1)',
 });
 
-const Header = styled('div')({
+const Header = styled.div({
   fontSize: 18,
   fontWeight: 500,
   userSelect: 'text',
@@ -95,11 +95,11 @@ const Header = styled('div')({
   display: 'flex',
 });
 
-const ClassNameContainer = styled('div')({
+const ClassNameContainer = styled.div({
   color: colors.light30,
 });
 
-const ParametersContainer = styled('div')({
+const ParametersContainer = styled.div({
   height: 150,
   '&>*': {
     height: 150,
@@ -112,7 +112,7 @@ const NoParamters = styled(FlexCenter)({
   color: colors.light10,
 });
 
-const TimelineCircle = styled('div')({
+const TimelineCircle = styled.div({
   width: 18,
   height: 18,
   top: 11,
@@ -123,7 +123,7 @@ const TimelineCircle = styled('div')({
   position: 'absolute',
 });
 
-const TimelineMiniCircle = styled('div')({
+const TimelineMiniCircle = styled.div({
   width: 12,
   height: 12,
   top: 1,

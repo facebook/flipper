@@ -10,7 +10,7 @@
 import React, {useState, useCallback} from 'react';
 import {colors} from './colors';
 import Glyph from './Glyph';
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 
 const DownscaledGlyph = styled(Glyph)({
   maskSize: '12px 12px',

@@ -7,7 +7,7 @@
  * @format
  */
 
-import {User} from '../reducers/user';
+import {User, USER_UNAUTHORIZED, USER_NOT_SIGNEDIN} from '../reducers/user';
 import {ActiveSheet} from '../reducers/application';
 
 import {styled, FlexRow, Glyph, Text, colors} from 'flipper';
@@ -17,6 +17,8 @@ import {connect} from 'react-redux';
 import electron from 'electron';
 import {findDOMNode} from 'react-dom';
 import React, {PureComponent} from 'react';
+import {getUser} from '../fb-stubs/user';
+import config from '../fb-stubs/config';
 
 const Container = styled(FlexRow)({
   alignItems: 'center',
@@ -28,7 +30,7 @@ const Container = styled(FlexRow)({
   color: colors.blackAlpha80,
 });
 
-const ProfilePic = styled('img')({
+const ProfilePic = styled.img({
   borderRadius: '999em',
   flexShrink: 0,
   width: 24,
@@ -58,7 +60,7 @@ type Props = OwnProps & DispatchFromProps & StateFromProps;
 class UserAccount extends PureComponent<Props> {
   _ref: Element | null | undefined;
 
-  setRef = (ref: React.ReactInstance) => {
+  setRef = (ref: HTMLDivElement | null) => {
     const element = findDOMNode(ref);
     if (element instanceof HTMLElement) {
       this._ref = element;
@@ -86,11 +88,23 @@ class UserAccount extends PureComponent<Props> {
     });
   };
 
+  openLogin = () => this.props.setActiveSheet(ACTIVE_SHEET_SIGN_IN);
+
+  componentDidMount() {
+    if (config.showLogin) {
+      getUser().catch(error => {
+        if (error === USER_UNAUTHORIZED || error === USER_NOT_SIGNEDIN) {
+          this.openLogin();
+        }
+      });
+    }
+  }
+
   render() {
     const {user} = this.props;
     const name = user ? user.name : null;
     return name ? (
-      <Container innerRef={this.setRef} onClick={this.showDetails}>
+      <Container ref={this.setRef} onClick={this.showDetails}>
         <ProfilePic
           src={user.profile_picture ? user.profile_picture.uri : undefined}
         />
@@ -98,8 +112,7 @@ class UserAccount extends PureComponent<Props> {
         <Glyph name="chevron-down" size={10} variant="outline" />
       </Container>
     ) : (
-      <Container
-        onClick={() => this.props.setActiveSheet(ACTIVE_SHEET_SIGN_IN)}>
+      <Container onClick={this.openLogin}>
         <Glyph
           name="profile-circle"
           size={16}

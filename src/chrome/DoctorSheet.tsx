@@ -18,6 +18,7 @@ import {
   Spacer,
   Button,
   FlexBox,
+  Checkbox,
 } from 'flipper';
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
@@ -25,30 +26,28 @@ import {State as Store} from '../reducers';
 import {
   HealthcheckResult,
   HealthcheckReportCategory,
-  HealthcheckReportItem,
   HealthcheckReport,
-  initHealthcheckReport,
-  updateHealthcheckReportItem,
   startHealthchecks,
   finishHealthchecks,
+  updateHealthcheckResult,
+  acknowledgeProblems,
+  resetAcknowledgedProblems,
 } from '../reducers/healthchecks';
-import runHealthchecks from '../utils/runHealthchecks';
+import runHealthchecks, {
+  HealthcheckSettings,
+  HealthcheckEventsHandler,
+} from '../utils/runHealthchecks';
 import {shell} from 'electron';
+import {reportUsage} from '../utils/metrics';
 
 type StateFromProps = {
-  report: HealthcheckReport;
-};
+  healthcheckReport: HealthcheckReport;
+} & HealthcheckSettings;
 
 type DispatchFromProps = {
-  initHealthcheckReport: (report: HealthcheckReport) => void;
-  updateHealthcheckReportItem: (
-    categoryIdx: number,
-    itemIdx: number,
-    item: HealthcheckReportItem,
-  ) => void;
-  startHealthchecks: () => void;
-  finishHealthchecks: () => void;
-};
+  acknowledgeProblems: () => void;
+  resetAcknowledgedProblems: () => void;
+} & HealthcheckEventsHandler;
 
 const Container = styled(FlexColumn)({
   padding: 20,
@@ -62,6 +61,7 @@ const HealthcheckDisplayContainer = styled(FlexRow)({
 
 const HealthcheckListContainer = styled(FlexColumn)({
   marginBottom: 20,
+  width: 300,
 });
 
 const Title = styled(Text)({
@@ -82,154 +82,234 @@ const SideContainer = styled(FlexBox)({
   padding: 20,
   backgroundColor: colors.highlightBackground,
   border: '1px solid #b3b3b3',
-  width: 320,
+  width: 250,
 });
 
 const SideContainerText = styled(Text)({
   display: 'block',
-  'word-wrap': 'break-word',
+  wordWrap: 'break-word',
+  overflow: 'auto',
 });
 
 const HealthcheckLabel = styled(Text)({
   paddingLeft: 5,
 });
 
+const SkipReasonLabel = styled(Text)({
+  paddingLeft: 21,
+  fontStyle: 'italic',
+});
+
+const CenteredContainer = styled.label({
+  display: 'flex',
+  alignItems: 'center',
+});
+
 type OwnProps = {
   onHide: () => void;
 };
 
-function HealthcheckIcon(props: {check: HealthcheckResult}) {
-  switch (props.check.status) {
+function CenteredCheckbox(props: {
+  checked: boolean;
+  text: string;
+  onChange: (checked: boolean) => void;
+}) {
+  const {checked, onChange, text} = props;
+  return (
+    <CenteredContainer>
+      <Checkbox checked={checked} onChange={onChange} />
+      {text}
+    </CenteredContainer>
+  );
+}
+
+function HealthcheckIcon(props: {checkResult: HealthcheckResult}) {
+  const {checkResult: check} = props;
+  switch (props.checkResult.status) {
     case 'IN_PROGRESS':
-      return <LoadingIndicator size={16} title={props.check.message} />;
+      return <LoadingIndicator size={16} title={props.checkResult.message} />;
+    case 'SKIPPED':
+      return (
+        <Glyph
+          size={16}
+          name={'question'}
+          color={colors.grey}
+          title={props.checkResult.message}
+        />
+      );
     case 'SUCCESS':
       return (
         <Glyph
           size={16}
           name={'checkmark'}
           color={colors.green}
-          title={props.check.message}
+          title={props.checkResult.message}
         />
       );
-    case 'WARNING':
+    case 'FAILED':
       return (
         <Glyph
           size={16}
-          name={'caution'}
-          color={colors.yellow}
-          title={props.check.message}
+          name={'cross'}
+          color={colors.red}
+          title={props.checkResult.message}
+          variant={check.isAcknowledged ? 'outline' : 'filled'}
         />
       );
     default:
       return (
         <Glyph
           size={16}
-          name={'cross'}
-          color={colors.red}
-          title={props.check.message}
+          name={'caution'}
+          color={colors.yellow}
+          title={props.checkResult.message}
         />
       );
   }
 }
 
 function HealthcheckDisplay(props: {
-  category: HealthcheckReportCategory;
-  check: HealthcheckReportItem;
+  label: string;
+  result: HealthcheckResult;
+  selected?: boolean;
   onClick?: () => void;
 }) {
   return (
     <FlexColumn shrink>
-      <HealthcheckDisplayContainer shrink title={props.check.message}>
-        <HealthcheckIcon check={props.check} />
+      <HealthcheckDisplayContainer shrink title={props.result.message}>
+        <HealthcheckIcon checkResult={props.result} />
         <HealthcheckLabel
+          bold={props.selected}
           underline={!!props.onClick}
           cursor={props.onClick && 'pointer'}
           onClick={props.onClick}>
-          {props.check.label}
+          {props.label}
         </HealthcheckLabel>
       </HealthcheckDisplayContainer>
     </FlexColumn>
   );
 }
 
-function SideMessageDisplay(props: {
-  isHealthcheckInProgress: boolean;
-  hasProblems: boolean;
-}) {
-  if (props.isHealthcheckInProgress) {
+function SideMessageDisplay(props: {children: React.ReactNode}) {
+  return <SideContainerText selectable>{props.children}</SideContainerText>;
+}
+
+function ResultMessage(props: {result: HealthcheckResult}) {
+  if (status === 'IN_PROGRESS') {
+    return <p>Doctor is running healthchecks...</p>;
+  } else if (hasProblems(props.result)) {
     return (
-      <SideContainerText selectable>
-        Doctor is running healthchecks...
-      </SideContainerText>
-    );
-  } else if (props.hasProblems) {
-    return (
-      <SideContainerText selectable>
-        Doctor has discovered problems with your installation.
-      </SideContainerText>
+      <p>
+        Doctor has discovered problems with your installation. Please click to
+        an item to get its details.
+      </p>
     );
   } else {
     return (
-      <SideContainerText selectable>
+      <p>
         All good! Doctor has not discovered any issues with your installation.
-      </SideContainerText>
+      </p>
     );
   }
 }
 
-export type State = {};
+function hasProblems(result: HealthcheckResult) {
+  const {status} = result;
+  return status === 'FAILED' || status === 'WARNING';
+}
+
+function hasNewProblems(result: HealthcheckResult) {
+  return hasProblems(result) && !result.isAcknowledged;
+}
+
+export type State = {
+  acknowledgeCheckboxVisible: boolean;
+  acknowledgeOnClose?: boolean;
+  selectedCheckKey?: string;
+};
 
 type Props = OwnProps & StateFromProps & DispatchFromProps;
 class DoctorSheet extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
-    this.state = {};
+    this.state = {
+      acknowledgeCheckboxVisible: false,
+    };
   }
 
-  openHelpUrl(check: HealthcheckReportItem): void {
-    check.helpUrl && shell.openExternal(check.helpUrl);
+  componentDidMount() {
+    reportUsage('doctor:report:opened');
   }
 
-  async runHealthchecks() {
+  static getDerivedStateFromProps(props: Props, state: State): State | null {
+    if (
+      !state.acknowledgeCheckboxVisible &&
+      hasProblems(props.healthcheckReport.result)
+    ) {
+      return {
+        ...state,
+        acknowledgeCheckboxVisible: true,
+        acknowledgeOnClose:
+          state.acknowledgeOnClose === undefined
+            ? !hasNewProblems(props.healthcheckReport.result)
+            : state.acknowledgeOnClose,
+      };
+    }
+
+    if (
+      state.acknowledgeCheckboxVisible &&
+      !hasProblems(props.healthcheckReport.result)
+    ) {
+      return {
+        ...state,
+        acknowledgeCheckboxVisible: false,
+      };
+    }
+
+    return null;
+  }
+
+  componentWillUnmount(): void {
+    if (this.state.acknowledgeOnClose) {
+      if (hasNewProblems(this.props.healthcheckReport.result)) {
+        reportUsage('doctor:report:closed:newProblems:acknowledged');
+      }
+      reportUsage('doctor:report:closed:acknowleged');
+      this.props.acknowledgeProblems();
+    } else {
+      if (hasNewProblems(this.props.healthcheckReport.result)) {
+        reportUsage('doctor:report:closed:newProblems:notAcknowledged');
+      }
+      reportUsage('doctor:report:closed:notAcknowledged');
+      this.props.resetAcknowledgedProblems();
+    }
+  }
+
+  onAcknowledgeOnCloseChanged(acknowledge: boolean): void {
     this.setState(prevState => {
       return {
         ...prevState,
+        acknowledgeOnClose: acknowledge,
       };
     });
-    await runHealthchecks({
-      initHealthcheckReport: this.props.initHealthcheckReport,
-      updateHealthcheckReportItem: this.props.updateHealthcheckReportItem,
-      startHealthchecks: this.props.startHealthchecks,
-      finishHealthchecks: this.props.finishHealthchecks,
-    });
   }
 
-  hasProblems() {
-    return this.props.report.categories.some(cat =>
-      cat.checks.some(chk => chk.status != 'SUCCESS'),
-    );
+  openHelpUrl(helpUrl?: string): void {
+    helpUrl && shell.openExternal(helpUrl);
   }
 
-  getHealthcheckCategoryReportItem(
-    state: HealthcheckReportCategory,
-  ): HealthcheckReportItem {
-    return {
-      label: state.label,
-      ...(state.checks.some(c => c.status === 'IN_PROGRESS')
-        ? {status: 'IN_PROGRESS'}
-        : state.checks.every(c => c.status === 'SUCCESS')
-        ? {status: 'SUCCESS'}
-        : state.checks.some(c => c.status === 'FAILED')
-        ? {
-            status: 'FAILED',
-            message: 'Doctor discovered problems with the current installation',
-          }
-        : {
-            status: 'WARNING',
-            message:
-              'Doctor discovered non-blocking problems with the current installation',
-          }),
-    };
+  async runHealthchecks(): Promise<void> {
+    await runHealthchecks(this.props);
+  }
+
+  getCheckMessage(checkKey: string): string {
+    for (const cat of Object.values(this.props.healthcheckReport.categories)) {
+      const check = Object.values(cat.checks).find(chk => chk.key === checkKey);
+      if (check) {
+        return check.result.message || '';
+      }
+    }
+    return '';
   }
 
   render() {
@@ -238,28 +318,42 @@ class DoctorSheet extends Component<Props, State> {
         <Title>Doctor</Title>
         <FlexRow>
           <HealthcheckListContainer>
-            {Object.values(this.props.report.categories).map(
-              (category, categoryIdx) => {
+            {Object.values(this.props.healthcheckReport.categories).map(
+              (category: HealthcheckReportCategory) => {
                 return (
-                  <CategoryContainer key={categoryIdx}>
+                  <CategoryContainer key={category.key}>
                     <HealthcheckDisplay
-                      check={this.getHealthcheckCategoryReportItem(category)}
-                      category={category}
+                      label={category.label}
+                      result={category.result}
                     />
-                    <CategoryContainer>
-                      {category.checks.map((check, checkIdx) => (
-                        <HealthcheckDisplay
-                          key={checkIdx}
-                          category={category}
-                          check={check}
-                          onClick={
-                            check.helpUrl
-                              ? () => this.openHelpUrl(check)
-                              : undefined
-                          }
-                        />
-                      ))}
-                    </CategoryContainer>
+                    {category.result.status !== 'SKIPPED' && (
+                      <CategoryContainer>
+                        {Object.values(category.checks).map(check => (
+                          <HealthcheckDisplay
+                            key={check.key}
+                            selected={check.key === this.state.selectedCheckKey}
+                            label={check.label}
+                            result={check.result}
+                            onClick={() =>
+                              this.setState({
+                                ...this.state,
+                                selectedCheckKey:
+                                  this.state.selectedCheckKey === check.key
+                                    ? undefined
+                                    : check.key,
+                              })
+                            }
+                          />
+                        ))}
+                      </CategoryContainer>
+                    )}
+                    {category.result.status === 'SKIPPED' && (
+                      <CategoryContainer>
+                        <SkipReasonLabel>
+                          {category.result.message}
+                        </SkipReasonLabel>
+                      </CategoryContainer>
+                    )}
                   </CategoryContainer>
                 );
               },
@@ -267,21 +361,36 @@ class DoctorSheet extends Component<Props, State> {
           </HealthcheckListContainer>
           <Spacer />
           <SideContainer shrink>
-            <SideMessageDisplay
-              isHealthcheckInProgress={
-                this.props.report.isHealthcheckInProgress
-              }
-              hasProblems={this.hasProblems()}
-            />
+            <SideMessageDisplay>
+              <SideContainerText selectable>
+                {this.state.selectedCheckKey && (
+                  <p>{this.getCheckMessage(this.state.selectedCheckKey)}</p>
+                )}
+                {!this.state.selectedCheckKey && (
+                  <ResultMessage result={this.props.healthcheckReport.result} />
+                )}
+              </SideContainerText>
+            </SideMessageDisplay>
           </SideContainer>
         </FlexRow>
         <FlexRow>
           <Spacer />
+          {this.state.acknowledgeCheckboxVisible && (
+            <CenteredCheckbox
+              checked={!!this.state.acknowledgeOnClose}
+              onChange={this.onAcknowledgeOnCloseChanged.bind(this)}
+              text={
+                'Do not show warning about these problems on Flipper startup'
+              }
+            />
+          )}
           <Button compact padded onClick={this.props.onHide}>
             Close
           </Button>
           <Button
-            disabled={this.props.report.isHealthcheckInProgress}
+            disabled={
+              this.props.healthcheckReport.result.status === 'IN_PROGRESS'
+            }
             type="primary"
             compact
             padded
@@ -295,13 +404,19 @@ class DoctorSheet extends Component<Props, State> {
 }
 
 export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
-  ({healthchecks: {healthcheckReport}}) => ({
-    report: healthcheckReport,
+  ({
+    healthchecks: {healthcheckReport},
+    settingsState: {enableAndroid, enableIOS},
+  }) => ({
+    healthcheckReport,
+    enableAndroid,
+    enableIOS,
   }),
   {
-    initHealthcheckReport,
-    updateHealthcheckReportItem,
     startHealthchecks,
     finishHealthchecks,
+    updateHealthcheckResult,
+    acknowledgeProblems,
+    resetAcknowledgedProblems,
   },
 )(DoctorSheet);

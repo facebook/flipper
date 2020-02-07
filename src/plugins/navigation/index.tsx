@@ -8,7 +8,7 @@
  * @flow strict-local
  */
 
-import {FlipperPlugin, bufferToBlob, FlexColumn} from 'flipper';
+import {FlipperPlugin, FlexColumn, bufferToBlob} from 'flipper';
 import {
   BookmarksSidebar,
   SaveBookmarkDialog,

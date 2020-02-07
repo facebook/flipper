@@ -7,9 +7,9 @@
  * @format
  */
 
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 
-const HorizontalRule = styled('div')({
+const HorizontalRule = styled.div({
   backgroundColor: '#c9ced4',
   height: 1,
   margin: '5px 0',

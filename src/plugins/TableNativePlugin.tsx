@@ -10,7 +10,7 @@
 import ManagedDataInspector from '../ui/components/data-inspector/ManagedDataInspector';
 import Panel from '../ui/components/Panel';
 import {colors} from '../ui/components/colors';
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 import Text from '../ui/components/Text';
 import Toolbar from '../ui/components/Toolbar';
 import Spacer from '../ui/components/Toolbar';
@@ -98,7 +98,7 @@ const NonWrappingText = styled(Text)({
   userSelect: 'none',
 });
 
-const BooleanValue = styled(NonWrappingText)((props: {active?: boolean}) => ({
+const BooleanValue = styled(NonWrappingText)<{active?: boolean}>(props => ({
   '&::before': {
     content: '""',
     display: 'inline-block',
@@ -111,7 +111,7 @@ const BooleanValue = styled(NonWrappingText)((props: {active?: boolean}) => ({
   },
 }));
 
-const Label = styled('span')({
+const Label = styled.span({
   fontSize: 12,
   color: '#90949c',
   fontWeight: 'bold',

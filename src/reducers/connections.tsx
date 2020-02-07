@@ -7,6 +7,8 @@
  * @format
  */
 
+import {produce} from 'immer';
+
 import BaseDevice from '../devices/BaseDevice';
 import MacDevice from '../devices/MacDevice';
 import Client from '../Client';
@@ -19,20 +21,29 @@ import {Actions} from '.';
 const WelcomeScreen = isHeadless()
   ? require('../chrome/WelcomeScreenHeadless').default
   : require('../chrome/WelcomeScreen').default;
+import NotificationScreen from '../chrome/NotificationScreen';
 import SupportRequestForm from '../fb-stubs/SupportRequestFormManager';
 import SupportRequestFormV2 from '../fb-stubs/SupportRequestFormV2';
+import SupportRequestDetails from '../fb-stubs/SupportRequestDetails';
+import {getPluginKey} from '../utils/pluginUtils';
+import {deconstructClientId} from '../utils/clientUtils';
+import {FlipperDevicePlugin} from '../plugin';
+import {RegisterPluginAction} from './plugins';
 
 export type StaticView =
   | null
   | typeof WelcomeScreen
+  | typeof NotificationScreen
   | typeof SupportRequestForm
-  | typeof SupportRequestFormV2;
+  | typeof SupportRequestFormV2
+  | typeof SupportRequestDetails;
 
 export type FlipperError = {
   occurrences?: number;
   message: string;
   details?: string;
   error?: Error | string;
+  urgent?: boolean; // if true this error should always popup up
 };
 
 export type State = {
@@ -40,11 +51,11 @@ export type State = {
   androidEmulators: Array<string>;
   selectedDevice: null | BaseDevice;
   selectedPlugin: null | string;
-  selectedApp: null | string | undefined;
+  selectedApp: null | string;
   userPreferredDevice: null | string;
   userPreferredPlugin: null | string;
   userPreferredApp: null | string;
-  userStarredPlugins: {[key: string]: Array<string>};
+  userStarredPlugins: {[client: string]: string[]};
   errors: FlipperError[];
   clients: Array<Client>;
   uninitializedClients: Array<{
@@ -79,6 +90,8 @@ export type Action =
         selectedPlugin: null | string;
         selectedApp?: null | string;
         deepLinkPayload: null | string;
+        selectedDevice?: null | BaseDevice;
+        time: number;
       };
     }
   | {
@@ -91,10 +104,6 @@ export type Action =
     }
   | {
       type: 'NEW_CLIENT';
-      payload: Client;
-    }
-  | {
-      type: 'NEW_CLIENT_SANITY_CHECK';
       payload: Client;
     }
   | {
@@ -135,7 +144,8 @@ export type Action =
   | {
       type: 'SELECT_CLIENT';
       payload: string;
-    };
+    }
+  | RegisterPluginAction;
 
 const DEFAULT_PLUGIN = 'DeviceLogs';
 const DEFAULT_DEVICE_BLACKLIST = [MacDevice];
@@ -155,8 +165,6 @@ const INITAL_STATE: State = {
   deepLinkPayload: null,
   staticView: WelcomeScreen,
 };
-// Please sync with NotificationsHub
-const STATIC_PLUGINS_ID: Array<string> = ['notifications'];
 
 const reducer = (state: State = INITAL_STATE, action: Actions): State => {
   switch (action.type) {
@@ -181,6 +189,7 @@ const reducer = (state: State = INITAL_STATE, action: Actions): State => {
       const {payload} = action;
       return updateSelection({
         ...state,
+        staticView: null,
         selectedDevice: payload,
         userPreferredDevice: payload
           ? payload.title
@@ -204,23 +213,23 @@ const reducer = (state: State = INITAL_STATE, action: Actions): State => {
     }
 
     case 'UNREGISTER_DEVICES': {
-      const {payload} = action;
-      const devices = state.devices.filter((device: BaseDevice) => {
-        if (payload.has(device.serial)) {
-          return false;
-        } else {
-          return true;
-        }
-      });
+      const deviceSerials = action.payload;
 
-      return updateSelection({
-        ...state,
-        devices,
-      });
+      return updateSelection(
+        produce(state, draft => {
+          draft.devices = draft.devices.filter(
+            device => !deviceSerials.has(device.serial),
+          );
+        }),
+      );
     }
     case 'SELECT_PLUGIN': {
       const {payload} = action;
       const {selectedPlugin, selectedApp} = payload;
+      const selectedDevice = payload.selectedDevice || state.selectedDevice;
+      if (!selectDevice) {
+        console.warn('Trying to select a plugin before a device was selected!');
+      }
       if (selectedPlugin) {
         performance.mark(`activePlugin-${selectedPlugin}`);
       }
@@ -228,30 +237,31 @@ const reducer = (state: State = INITAL_STATE, action: Actions): State => {
       return updateSelection({
         ...state,
         staticView: null,
-        selectedApp,
+        selectedApp: selectedApp || null,
         selectedPlugin,
         userPreferredPlugin: selectedPlugin || state.userPreferredPlugin,
+        selectedDevice: selectedDevice!,
+        userPreferredDevice: selectedDevice
+          ? selectedDevice.title
+          : state.userPreferredDevice,
       });
     }
 
     case 'STAR_PLUGIN': {
       const {selectedPlugin, selectedApp} = action.payload;
-      const starredPluginsForApp = [
-        ...(state.userStarredPlugins[selectedApp] || []),
-      ];
-      const idx = starredPluginsForApp.indexOf(selectedPlugin);
-      if (idx === -1) {
-        starredPluginsForApp.push(selectedPlugin);
-      } else {
-        starredPluginsForApp.splice(idx, 1);
-      }
-      return {
-        ...state,
-        userStarredPlugins: {
-          ...state.userStarredPlugins,
-          [selectedApp]: starredPluginsForApp,
-        },
-      };
+      return produce(state, draft => {
+        if (!draft.userStarredPlugins[selectedApp]) {
+          draft.userStarredPlugins[selectedApp] = [selectedPlugin];
+        } else {
+          const plugins = draft.userStarredPlugins[selectedApp];
+          const idx = plugins.indexOf(selectedPlugin);
+          if (idx === -1) {
+            plugins.push(selectedPlugin);
+          } else {
+            plugins.splice(idx, 1);
+          }
+        }
+      });
     }
 
     case 'SELECT_USER_PREFERRED_PLUGIN': {
@@ -281,25 +291,6 @@ const reducer = (state: State = INITAL_STATE, action: Actions): State => {
         selectedApp: payload,
         userPreferredApp: payload || state.userPreferredApp,
       });
-    }
-
-    case 'NEW_CLIENT_SANITY_CHECK': {
-      const {payload} = action;
-      // Check for clients initialised when there is no matching device
-      const clientIsStillConnected = state.clients.filter(
-        client => client.id == payload.query.device_id,
-      );
-      if (clientIsStillConnected) {
-        const matchingDeviceForClient = state.devices.filter(
-          device => payload.query.device_id === device.serial,
-        );
-        if (matchingDeviceForClient.length === 0) {
-          console.error(
-            `Client initialised for non-displayed device: ${payload.id}`,
-          );
-        }
-      }
-      return state;
     }
 
     case 'CLIENT_REMOVED': {
@@ -379,6 +370,27 @@ const reducer = (state: State = INITAL_STATE, action: Actions): State => {
         errors,
       };
     }
+
+    case 'REGISTER_PLUGINS': {
+      // plugins are registered after creating the base devices, so update them
+      const plugins = action.payload;
+      plugins.forEach(plugin => {
+        if (plugin.prototype instanceof FlipperDevicePlugin) {
+          // smell: devices are mutable
+          state.devices.forEach(device => {
+            // @ts-ignore
+            if (plugin.supportsDevice(device)) {
+              device.devicePlugins = [
+                ...(device.devicePlugins || []),
+                plugin.id,
+              ];
+            }
+          });
+        }
+      });
+      return state;
+    }
+
     default:
       return state;
   }
@@ -449,10 +461,12 @@ export const preferDevice = (payload: string): Action => ({
 export const selectPlugin = (payload: {
   selectedPlugin: null | string;
   selectedApp?: null | string;
+  selectedDevice?: BaseDevice | null;
   deepLinkPayload: null | string;
+  time?: number;
 }): Action => ({
   type: 'SELECT_PLUGIN',
-  payload,
+  payload: {...payload, time: payload.time ?? Date.now()},
 });
 
 export const starPlugin = (payload: {
@@ -516,7 +530,7 @@ export function getClientById(
   return clients.find(client => client.id === clientId);
 }
 
-function canBeDefaultDevice(device: BaseDevice) {
+export function canBeDefaultDevice(device: BaseDevice) {
   return !DEFAULT_DEVICE_BLACKLIST.some(
     blacklistedDevice => device instanceof blacklistedDevice,
   );
@@ -564,7 +578,6 @@ function updateSelection(state: Readonly<State>): State {
   const availablePlugins: string[] = [
     ...(device?.devicePlugins || []),
     ...(client?.plugins || []),
-    ...STATIC_PLUGINS_ID,
   ];
 
   if (
@@ -583,4 +596,30 @@ function updateSelection(state: Readonly<State>): State {
   }
 
   return {...state, ...updates};
+}
+
+export function getSelectedPluginKey(state: State): string | undefined {
+  return state.selectedPlugin
+    ? getPluginKey(
+        state.selectedApp,
+        state.selectedDevice,
+        state.selectedPlugin,
+      )
+    : undefined;
+}
+
+export function pluginIsStarred(
+  state: {
+    selectedApp: string | null;
+    userStarredPlugins: State['userStarredPlugins'];
+  },
+  pluginId: string,
+): boolean {
+  const {selectedApp} = state;
+  if (!selectedApp) {
+    return false;
+  }
+  const appInfo = deconstructClientId(selectedApp);
+  const starred = state.userStarredPlugins[appInfo.app];
+  return starred && starred.indexOf(pluginId) > -1;
 }

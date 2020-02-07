@@ -29,4 +29,22 @@ export default class GK {
   static serializeGKs() {
     return '';
   }
+
+  static async withWhitelistedGK(
+    id: GKID,
+    callback: () => Promise<void> | void,
+  ) {
+    whitelistedGKs.push(id);
+    try {
+      const p = callback();
+      if (p) {
+        await p;
+      }
+    } finally {
+      const idx = whitelistedGKs.indexOf(id);
+      if (idx !== -1) {
+        whitelistedGKs.splice(idx, 1);
+      }
+    }
+  }
 }

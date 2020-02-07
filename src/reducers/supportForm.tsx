@@ -7,16 +7,261 @@
  * @format
  */
 
-import {Actions} from './';
+import {Actions, Store} from './';
+import {setStaticView} from './connections';
+import SupportRequestFormV2 from '../fb-stubs/SupportRequestFormV2';
+import {deconstructClientId} from '../utils/clientUtils';
+import {starPlugin as setStarPlugin} from './connections';
+import {showStatusUpdatesForDuration} from '../utils/promiseTimeout';
+import {selectedPlugins as setSelectedPlugins} from './plugins';
+import {getEnabledOrExportPersistedStatePlugins} from '../utils/pluginUtils';
+import {addStatusMessage, removeStatusMessage} from './application';
+import constants from '../fb-stubs/constants';
+import {getInstance} from '../fb-stubs/Logger';
+import {logPlatformSuccessRate} from '../utils/metrics';
+import {getActivePersistentPlugins} from '../utils/pluginUtils';
+export const SUPPORT_FORM_PREFIX = 'support-form-v2';
+import {State as PluginStatesState} from './pluginStates';
+import {State as PluginsState} from '../reducers/plugins';
+import {State as PluginMessageQueueState} from '../reducers/pluginMessageQueue';
+import Client from '../Client';
+
+const {
+  GRAPHQL_IOS_SUPPORT_GROUP_ID,
+  GRAPHQL_ANDROID_SUPPORT_GROUP_ID,
+  LITHO_SUPPORT_GROUP_ID,
+} = constants;
+type SubmediaType =
+  | {uploadID: string; status: 'Uploaded'}
+  | {status: 'NotUploaded' | 'Uploading'};
+type MediaObject = SubmediaType & {
+  description: string;
+  path: string;
+};
+
+export class Group {
+  constructor(
+    name: GroupNames,
+    workplaceGroupID: number,
+    requiredPlugins: Array<string>,
+    defaultPlugins: Array<string>,
+  ) {
+    this.name = name;
+    this.requiredPlugins = requiredPlugins;
+    this.defaultPlugins = defaultPlugins;
+    this.workplaceGroupID = workplaceGroupID;
+  }
+  readonly name: GroupNames;
+  requiredPlugins: Array<string>;
+  defaultPlugins: Array<string>;
+  workplaceGroupID: number;
+
+  getValidationMessage(selectedPlugins: Array<string>): string | null {
+    const nonSelectedPlugin: Array<string> = [];
+    for (const plugin of this.requiredPlugins) {
+      if (!selectedPlugins.includes(plugin)) {
+        nonSelectedPlugin.push(plugin);
+      }
+    }
+    if (nonSelectedPlugin.length <= 0) {
+      return null;
+    }
+    let str = 'should be exported if you want to submit to this group.';
+    if (nonSelectedPlugin.length == 1) {
+      str = `the ${nonSelectedPlugin.pop()} plugin ${str}`;
+    } else {
+      const lastPlugin = nonSelectedPlugin.pop();
+      str = `the ${nonSelectedPlugin.join(',')} and ${lastPlugin} ${str}`;
+    }
+    return str;
+  }
+
+  handleSupportFormDeeplinks(store: Store) {
+    getInstance().track('usage', 'support-form-source', {
+      source: 'deeplink',
+      group: this.name,
+    });
+    store.dispatch(setStaticView(SupportRequestFormV2));
+    const selectedApp = store.getState().connections.selectedApp;
+    const selectedClient = store.getState().connections.clients.find(o => {
+      return o.id === store.getState().connections.selectedApp;
+    });
+    let errorMessage: string | undefined = undefined;
+    if (selectedApp) {
+      const {app} = deconstructClientId(selectedApp);
+      const enabledPlugins: Array<string> | null = store.getState().connections
+        .userStarredPlugins[app];
+      const unsupportedPlugins = [];
+      for (const requiredPlugin of this.requiredPlugins) {
+        const requiredPluginEnabled =
+          enabledPlugins != null && enabledPlugins.includes(requiredPlugin);
+        if (
+          selectedClient &&
+          selectedClient.plugins.includes(requiredPlugin) &&
+          !requiredPluginEnabled
+        ) {
+          store.dispatch(
+            setStarPlugin({
+              selectedApp: app,
+              selectedPlugin: requiredPlugin,
+            }),
+          );
+        } else if (
+          !selectedClient ||
+          !selectedClient.plugins.includes(requiredPlugin)
+        ) {
+          unsupportedPlugins.push(requiredPlugin);
+        }
+      }
+      if (unsupportedPlugins.length > 0) {
+        errorMessage = `The current client does not support ${unsupportedPlugins.join(
+          ', ',
+        )}. Please change the app from the dropdown in the support form.`;
+        logPlatformSuccessRate(`${SUPPORT_FORM_PREFIX}-deeplink`, {
+          kind: 'failure',
+          supportedOperation: true,
+          error: errorMessage,
+        });
+        showStatusUpdatesForDuration(
+          errorMessage,
+          'Deeplink',
+          10000,
+          payload => {
+            store.dispatch(addStatusMessage(payload));
+          },
+          payload => {
+            store.dispatch(removeStatusMessage(payload));
+          },
+        );
+      }
+    } else {
+      errorMessage =
+        'Selected app is null, thus the deeplink failed to enable required plugin.';
+      showStatusUpdatesForDuration(
+        'Please select an app and the device from the dropdown.',
+        'Deeplink',
+        10000,
+        payload => {
+          store.dispatch(addStatusMessage(payload));
+        },
+        payload => {
+          store.dispatch(removeStatusMessage(payload));
+        },
+      );
+    }
+    store.dispatch(
+      setSupportFormV2State({
+        ...store.getState().supportForm.supportFormV2,
+        selectedGroup: this,
+      }),
+    );
+    const pluginsList = selectedClient
+      ? getEnabledOrExportPersistedStatePlugins(
+          store.getState().connections.userStarredPlugins,
+          selectedClient,
+          store.getState().plugins,
+        )
+      : [];
+
+    store.dispatch(
+      setSelectedPlugins(
+        this.defaultPlugins.filter(s => {
+          return pluginsList.map(s => s.id).includes(s);
+        }),
+      ),
+    );
+    logPlatformSuccessRate(
+      `${SUPPORT_FORM_PREFIX}-deeplink`,
+      errorMessage
+        ? {
+            kind: 'failure',
+            supportedOperation: true,
+            error: errorMessage,
+          }
+        : {kind: 'success'},
+    );
+  }
+
+  getWarningMessage(
+    plugins: PluginsState,
+    pluginsState: PluginStatesState,
+    pluginsMessageQueue: PluginMessageQueueState,
+    client: Client,
+  ): string | null {
+    const activePersistentPlugins = getActivePersistentPlugins(
+      pluginsState,
+      pluginsMessageQueue,
+      plugins,
+      client,
+    );
+    const emptyPlugins: Array<string> = [];
+    for (const plugin of this.requiredPlugins) {
+      if (
+        !activePersistentPlugins.find(o => {
+          return o.id === plugin;
+        })
+      ) {
+        emptyPlugins.push(plugin);
+      }
+    }
+    const commonStr = 'Are you sure you want to submit?';
+    if (emptyPlugins.length == 1) {
+      return `There is no data in ${emptyPlugins.pop()} plugin. ${commonStr}`;
+    } else if (emptyPlugins.length > 1) {
+      return `The following plugins have no data: ${emptyPlugins.join(
+        ',',
+      )}. ${commonStr}`;
+    }
+
+    return null;
+  }
+}
+
+export type GroupNames =
+  | 'Litho Support'
+  | 'GraphQL Android Support'
+  | 'GraphQL iOS Support';
+
+export const LITHO_GROUP = new Group(
+  'Litho Support',
+  LITHO_SUPPORT_GROUP_ID,
+  ['Inspector'],
+  ['Inspector', 'Sections', 'DeviceLogs'],
+);
+
+export const GRAPHQL_ANDROID_GROUP = new Group(
+  'GraphQL Android Support',
+  GRAPHQL_ANDROID_SUPPORT_GROUP_ID,
+  ['GraphQL'],
+  ['GraphQL', 'DeviceLogs'],
+);
+
+export const GRAPHQL_IOS_GROUP = new Group(
+  'GraphQL iOS Support',
+  GRAPHQL_IOS_SUPPORT_GROUP_ID,
+  ['GraphQL'],
+  ['GraphQL', 'DeviceLogs'],
+);
+
+export const SUPPORTED_GROUPS: Array<Group> = [
+  LITHO_GROUP,
+  GRAPHQL_ANDROID_GROUP,
+  GRAPHQL_IOS_GROUP,
+];
+
+export type MediaType = Array<MediaObject>;
 export type SupportFormV2State = {
   title: string;
   description: string;
   commitHash: string;
-  appName: string;
-  screenshots?: {image: string; description: string}[];
-  videos?: {url: string; description: string}[];
+  screenshots?: MediaType;
+  videos?: MediaType;
+  selectedGroup: Group;
 };
 
+export type SupportFormRequestDetailsState = SupportFormV2State & {
+  appName: string;
+};
 export type State = {
   webState: NTUsersFormData | null;
   supportFormV2: SupportFormV2State;
@@ -54,6 +299,7 @@ export const initialState: () => State = () => ({
     ].join('\n'),
     commitHash: '',
     appName: '',
+    selectedGroup: LITHO_GROUP,
   },
 });
 export default function reducer(

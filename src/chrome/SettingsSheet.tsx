@@ -10,15 +10,24 @@
 import {FlexColumn, Button, styled, Text, FlexRow, Spacer} from 'flipper';
 import React, {Component} from 'react';
 import {updateSettings, Action} from '../reducers/settings';
+import {
+  Action as LauncherAction,
+  LauncherSettings,
+  updateLauncherSettings,
+} from '../reducers/launcherSettings';
 import {connect} from 'react-redux';
 import {State as Store} from '../reducers';
-import {Settings} from '../reducers/settings';
+import {Settings, DEFAULT_ANDROID_SDK_PATH} from '../reducers/settings';
 import {flush} from '../utils/persistor';
 import ToggledSection from './settings/ToggledSection';
 import {FilePathConfigField, ConfigText} from './settings/configFields';
 import isEqual from 'lodash.isequal';
 import restartFlipper from '../utils/restartFlipper';
 import LauncherSettingsPanel from '../fb-stubs/LauncherSettingsPanel';
+import {reportUsage} from '../utils/metrics';
+import os from 'os';
+
+const platform = os.platform();
 
 const Container = styled(FlexColumn)({
   padding: 20,
@@ -38,25 +47,34 @@ type OwnProps = {
 
 type StateFromProps = {
   settings: Settings;
+  launcherSettings: LauncherSettings;
   isXcodeDetected: boolean;
 };
 
 type DispatchFromProps = {
   updateSettings: (settings: Settings) => Action;
+  updateLauncherSettings: (settings: LauncherSettings) => LauncherAction;
 };
 
 type State = {
   updatedSettings: Settings;
+  updatedLauncherSettings: LauncherSettings;
 };
 
 type Props = OwnProps & StateFromProps & DispatchFromProps;
 class SettingsSheet extends Component<Props, State> {
   state: State = {
     updatedSettings: {...this.props.settings},
+    updatedLauncherSettings: {...this.props.launcherSettings},
   };
+
+  componentDidMount() {
+    reportUsage('settings:opened');
+  }
 
   applyChanges = async () => {
     this.props.updateSettings(this.state.updatedSettings);
+    this.props.updateLauncherSettings(this.state.updatedLauncherSettings);
     this.props.onHide();
     flush().then(() => {
       restartFlipper();
@@ -80,6 +98,7 @@ class SettingsSheet extends Component<Props, State> {
           }}>
           <FilePathConfigField
             label="Android SDK Location"
+            resetValue={DEFAULT_ANDROID_SDK_PATH}
             defaultValue={this.state.updatedSettings.androidHome}
             onChange={v => {
               this.setState({
@@ -93,23 +112,43 @@ class SettingsSheet extends Component<Props, State> {
         </ToggledSection>
         <ToggledSection
           label="iOS Developer"
-          toggled={this.props.isXcodeDetected}
-          frozen>
+          toggled={
+            this.state.updatedSettings.enableIOS && platform === 'darwin'
+          }
+          frozen={platform !== 'darwin'}
+          onChange={v => {
+            this.setState({
+              updatedSettings: {...this.state.updatedSettings, enableIOS: v},
+            });
+          }}>
           {' '}
-          <ConfigText
-            content={
-              'Use xcode-select to enable or switch between xcode versions'
-            }
-            frozen
-          />
+          {platform === 'darwin' && (
+            <ConfigText
+              content={'Use "xcode-select" to switch between Xcode versions'}
+            />
+          )}
+          {platform !== 'darwin' && (
+            <ConfigText
+              content={'iOS development is only supported on MacOS'}
+            />
+          )}
         </ToggledSection>
         <LauncherSettingsPanel
-          enabledInConfig={this.state.updatedSettings.enablePrefetching}
-          onChange={v => {
+          isPrefetchingEnabled={this.state.updatedSettings.enablePrefetching}
+          onEnablePrefetchingChange={v => {
             this.setState({
               updatedSettings: {
                 ...this.state.updatedSettings,
                 enablePrefetching: v,
+              },
+            });
+          }}
+          isLocalPinIgnored={this.state.updatedLauncherSettings.ignoreLocalPin}
+          onIgnoreLocalPinChange={v => {
+            this.setState({
+              updatedLauncherSettings: {
+                ...this.state.updatedLauncherSettings,
+                ignoreLocalPin: v,
               },
             });
           }}
@@ -121,7 +160,13 @@ class SettingsSheet extends Component<Props, State> {
             Cancel
           </Button>
           <Button
-            disabled={isEqual(this.props.settings, this.state.updatedSettings)}
+            disabled={
+              isEqual(this.props.settings, this.state.updatedSettings) &&
+              isEqual(
+                this.props.launcherSettings,
+                this.state.updatedLauncherSettings,
+              )
+            }
             type="primary"
             compact
             padded
@@ -135,9 +180,10 @@ class SettingsSheet extends Component<Props, State> {
 }
 
 export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
-  ({settingsState, application}) => ({
+  ({settingsState, launcherSettingsState, application}) => ({
     settings: settingsState,
+    launcherSettings: launcherSettingsState,
     isXcodeDetected: application.xcodeCommandLineToolsDetected,
   }),
-  {updateSettings},
+  {updateSettings, updateLauncherSettings},
 )(SettingsSheet);

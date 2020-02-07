@@ -8,14 +8,14 @@
  */
 
 import {Component} from 'react';
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 import electron, {MenuItemConstructorOptions} from 'electron';
 import React from 'react';
 import PropTypes from 'prop-types';
 
 type MenuTemplate = Array<MenuItemConstructorOptions>;
 
-const Container = styled('div')({
+const Container = styled.div({
   display: 'contents',
 });
 Container.displayName = 'ContextMenuProvider:Container';

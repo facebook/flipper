@@ -9,6 +9,7 @@ package com.facebook.flipper.core;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nullable;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -89,8 +90,12 @@ public class FlipperArray {
   }
 
   @Override
-  public boolean equals(Object o) {
-    return mJson.toString().equals(o.toString());
+  public boolean equals(@Nullable Object o) {
+    if (o == null) {
+      return false;
+    } else {
+      return mJson.toString().equals(o.toString());
+    }
   }
 
   @Override

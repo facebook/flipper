@@ -19,8 +19,8 @@ class FlipperWebviewBridgeImpl extends FlipperBridge {
       window.FlipperWebviewBridge.registerPlugins(plugins);
   };
 
-  start = () => {
-    window.FlipperWebviewBridge && window.FlipperWebviewBridge.start();
+  start = (appName: string) => {
+    window.FlipperWebviewBridge && window.FlipperWebviewBridge.start(appName);
   };
 
   stop = () => {
@@ -42,22 +42,22 @@ class FlipperWebviewBridgeImpl extends FlipperBridge {
     handler: any => void,
   ) => {
     this._subscriptions.set(plugin + method, handler);
-    window.FlipperWebviewBridge &&
-      window.FlipperWebviewBridge.subscribe(plugin, method);
   };
 
   isAvailable = () => {
     return window.FlipperWebviewBridge != null;
   };
 
-  handleMessage(plugin: FlipperPluginID, method: FlipperMethodID, data: any) {
-    const handler: ?(any) => void = this._subscriptions.get(plugin + method);
-    handler && handler(data);
+  receive(plugin: FlipperPluginID, method: FlipperMethodID, data: string) {
+    const handler = this._subscriptions.get(plugin + method);
+    handler && handler(JSON.parse(data));
   }
 }
 
 export function newWebviewClient(): FlipperClient {
   const bridge = new FlipperWebviewBridgeImpl();
-  window.FlipperBridgeClientSide = bridge;
+  window.flipper = {
+    FlipperWebviewMessageReceiver: bridge,
+  };
   return new FlipperClient(bridge);
 }

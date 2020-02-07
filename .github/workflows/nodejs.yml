@@ -1,15 +1,16 @@
 name: Node CI
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
 
     strategy:
       matrix:
         node-version: [10.x, 12.x]
+        os: ['ubuntu-latest', 'windows-latest']
 
     steps:
     - uses: actions/checkout@v1
@@ -23,5 +24,9 @@ jobs:
       run: yarn lint
     - name: test
       run: yarn test
-    - name: build
+    - name: build linux
+      if: matrix.os == 'ubuntu-latest'
       run: yarn build --linux
+    - name: build windows
+      if: matrix.os == 'windows-latest'
+      run: yarn build --win

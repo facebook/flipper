@@ -9,10 +9,10 @@
 
 import React, {PureComponent} from 'react';
 import FlexColumn from './FlexColumn';
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 import {colors} from './colors';
 
-const Anchor = styled('img')({
+const Anchor = styled.img({
   zIndex: 6,
   position: 'absolute',
   bottom: 0,
@@ -26,7 +26,7 @@ type Opts = {
   skewLeft?: boolean;
 };
 
-const PopoverContainer = styled(FlexColumn)((props: {opts?: Opts}) => ({
+const PopoverContainer = styled(FlexColumn)<{opts?: Opts}>(props => ({
   backgroundColor: colors.white,
   borderRadius: 7,
   border: '1px solid rgba(0,0,0,0.3)',
@@ -66,7 +66,7 @@ type Props = {
 };
 
 export default class Popover extends PureComponent<Props> {
-  _ref: Element | undefined;
+  _ref?: Element | null;
 
   componentDidMount() {
     window.document.addEventListener('click', this.handleClick);
@@ -90,7 +90,7 @@ export default class Popover extends PureComponent<Props> {
     }
   };
 
-  _setRef = (ref: Element | undefined) => {
+  _setRef = (ref: Element | null) => {
     this._ref = ref;
   };
 
@@ -99,12 +99,11 @@ export default class Popover extends PureComponent<Props> {
       <>
         <Anchor src="./anchor.svg" key="anchor" />
         <PopoverContainer
-          innerRef={this._setRef}
+          ref={this._setRef}
           key="popup"
           opts={this.props.forceOpts || {}}>
           {this.props.children}
         </PopoverContainer>
-        ,
       </>
     );
   }

@@ -8,7 +8,7 @@
  */
 
 import {Rect} from '../../utils/geometry';
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 import {Component} from 'react';
 import React from 'react';
 
@@ -38,26 +38,26 @@ type TabSizes = {
   [key: string]: Rect;
 };
 
-const OrderableContainer = styled('div')({
+const OrderableContainer = styled.div({
   position: 'relative',
 });
 OrderableContainer.displayName = 'Orderable:OrderableContainer';
 
-const OrderableItemContainer = styled('div')(
-  (props: {orientation: 'vertical' | 'horizontal'}) => ({
-    display: props.orientation === 'vertical' ? 'block' : 'inline-block',
-  }),
-);
+const OrderableItemContainer = styled.div<{
+  orientation: 'vertical' | 'horizontal';
+}>(props => ({
+  display: props.orientation === 'vertical' ? 'block' : 'inline-block',
+}));
 OrderableItemContainer.displayName = 'Orderable:OrderableItemContainer';
 
 class OrderableItem extends Component<{
   orientation: OrderableOrientation;
   id: string;
   children?: React.ReactNode;
-  addRef: (key: string, ref: HTMLElement) => void;
+  addRef: (key: string, ref: HTMLElement | null) => void;
   startMove: (KEY: string, event: React.MouseEvent) => void;
 }> {
-  addRef = (ref: HTMLElement) => {
+  addRef = (ref: HTMLElement | null) => {
     this.props.addRef(this.props.id, ref);
   };
 
@@ -70,7 +70,7 @@ class OrderableItem extends Component<{
       <OrderableItemContainer
         orientation={this.props.orientation}
         key={this.props.id}
-        innerRef={this.addRef}
+        ref={this.addRef}
         onMouseDown={this.startMove}>
         {this.props.children}
       </OrderableItemContainer>
@@ -98,9 +98,9 @@ export default class Orderable extends React.Component<
   mouseKey: 'offsetX' | 'offsetY' = 'offsetX';
   screenKey: 'screenX' | 'screenY' = 'screenX';
 
-  containerRef: HTMLElement | undefined;
+  containerRef: HTMLElement | undefined | null;
   tabRefs: {
-    [key: string]: HTMLElement | undefined;
+    [key: string]: HTMLElement | undefined | null;
   };
 
   static defaultProps = {
@@ -120,7 +120,7 @@ export default class Orderable extends React.Component<
     return !this.state.movingOrder;
   }
 
-  componentWillReceiveProps(nextProps: OrderableProps) {
+  UNSAFE_componentWillReceiveProps(nextProps: OrderableProps) {
     this.setState({
       order: nextProps.order,
     });
@@ -377,11 +377,11 @@ export default class Orderable extends React.Component<
     this.reset();
   }
 
-  addRef = (key: string, elem: HTMLElement | undefined) => {
+  addRef = (key: string, elem: HTMLElement | null) => {
     this.tabRefs[key] = elem;
   };
 
-  setContainerRef = (ref: HTMLElement) => {
+  setContainerRef = (ref: HTMLElement | null) => {
     this.containerRef = ref;
   };
 
@@ -406,7 +406,7 @@ export default class Orderable extends React.Component<
     return (
       <OrderableContainer
         className={this.props.className}
-        innerRef={this.setContainerRef}>
+        ref={this.setContainerRef}>
         {order.map(key => {
           const item = items[key];
           if (item) {

@@ -8,11 +8,11 @@
  */
 
 import TooltipProvider, {TooltipOptions} from './TooltipProvider';
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 
-const TooltipContainer = styled('div')({
+const TooltipContainer = styled.div({
   display: 'contents',
 });
 TooltipContainer.displayName = 'Tooltip:TooltipContainer';
@@ -38,7 +38,7 @@ export default class Tooltip extends Component<TooltipProps, TooltipState> {
     TOOLTIP_PROVIDER: TooltipProvider;
   };
 
-  ref: HTMLDivElement | undefined;
+  ref: HTMLDivElement | undefined | null;
 
   state = {
     open: false,
@@ -66,14 +66,14 @@ export default class Tooltip extends Component<TooltipProps, TooltipState> {
     this.setState({open: false});
   };
 
-  setRef = (ref: HTMLDivElement | undefined) => {
+  setRef = (ref: HTMLDivElement | null) => {
     this.ref = ref;
   };
 
   render() {
     return (
       <TooltipContainer
-        innerRef={this.setRef}
+        ref={this.setRef}
         onMouseEnter={this.onMouseEnter}
         onMouseLeave={this.onMouseLeave}>
         {this.props.children}

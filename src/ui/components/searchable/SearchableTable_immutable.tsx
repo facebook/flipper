@@ -103,7 +103,7 @@ class SearchableManagedTable_immutable extends PureComponent<Props, State> {
     this.props.defaultFilters.map(this.props.addFilter);
   }
 
-  componentWillReceiveProps(nextProps: Props) {
+  UNSAFE_componentWillReceiveProps(nextProps: Props) {
     if (
       nextProps.searchTerm !== this.props.searchTerm ||
       nextProps.regexEnabled != this.props.regexEnabled ||

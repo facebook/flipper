@@ -136,7 +136,7 @@ export async function makeObjectSerializable(
   let prevStackLength = stack.length;
   let accumulator = prevStackLength;
   while (stack.length > 0) {
-    if (idler) {
+    if (idler && idler.shouldIdle()) {
       await idler.idle();
     }
     const element = stack[stack.length - 1];

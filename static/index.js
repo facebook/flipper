@@ -74,12 +74,18 @@ const argv = yargs
 
 const {config, configPath, flipperDir} = setup(argv);
 
+const skipLoadingEmbeddedPlugins = process.env.FLIPPER_NO_EMBEDDED_PLUGINS;
+
 const pluginPaths = config.pluginPaths
-  .concat(
+  .concat([
     path.join(configPath, '..', 'thirdparty'),
-    path.join(__dirname, '..', 'src', 'plugins'),
-    path.join(__dirname, '..', 'src', 'fb', 'plugins'),
-  )
+    ...(skipLoadingEmbeddedPlugins
+      ? []
+      : [
+          path.join(__dirname, '..', 'src', 'plugins'),
+          path.join(__dirname, '..', 'src', 'fb', 'plugins'),
+        ]),
+  ])
   .map(expandTilde)
   .filter(fs.existsSync);
 
@@ -97,7 +103,7 @@ let filePath = argv.file;
 
 // tracking
 setInterval(() => {
-  if (win && win.isFocused()) {
+  if (win) {
     win.webContents.send('trackUsage');
   }
 }, 60 * 1000);
@@ -111,7 +117,9 @@ compilePlugins(
   pluginPaths,
   path.join(flipperDir, 'plugins'),
 ).then(dynamicPlugins => {
-  process.env.PLUGINS = JSON.stringify(dynamicPlugins);
+  ipcMain.on('get-dynamic-plugins', event => {
+    event.returnValue = dynamicPlugins;
+  });
   pluginsCompiled = true;
   tryCreateWindow();
 });

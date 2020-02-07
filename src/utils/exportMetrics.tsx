@@ -12,8 +12,14 @@ import {serialize} from './serialization';
 import {State as PluginStatesState} from '../reducers/pluginStates';
 import {Store} from '../reducers';
 import fs from 'fs';
-import {ExportType, fetchMetadata, pluginsClassMap} from './exportData';
+import {
+  ExportType,
+  fetchMetadata,
+  determinePluginsToProcess,
+} from './exportData';
 import {deserializeObject} from './serialization';
+import {deconstructPluginKey} from './clientUtils';
+import {pluginsClassMap} from './pluginUtils';
 
 export type MetricType = {[metricName: string]: number};
 type MetricPluginType = {[pluginID: string]: MetricType};
@@ -27,30 +33,31 @@ async function exportMetrics(
   const metrics: ExportMetricType = {};
   for (const key in pluginStates) {
     const pluginStateData = pluginStates[key];
-    const arr = key.split('#');
-    const pluginName = arr.pop();
+
+    const plugin = deconstructPluginKey(key);
+    const pluginName = plugin.pluginName;
     if (
       pluginName === undefined ||
       (selectedPlugins.length > 0 && !selectedPlugins.includes(pluginName))
     ) {
       continue;
     }
-    const clientID = arr.join('#');
-    const plugin = pluginsMap.get(pluginName);
+    const client = plugin.client;
+    const pluginClass = pluginsMap.get(pluginName);
     const metricsReducer:
       | (<U>(persistedState: U) => Promise<MetricType>)
       | null
-      | undefined = plugin && plugin.metricsReducer;
+      | undefined = pluginClass && pluginClass.metricsReducer;
     if (pluginsMap.has(pluginName) && metricsReducer) {
       const metricsObject = await metricsReducer(pluginStateData);
       const pluginObject: MetricPluginType = {};
       pluginObject[pluginName] = metricsObject;
-      if (!metrics[clientID]) {
-        metrics[clientID] = pluginObject;
+      if (!metrics[client]) {
+        metrics[client] = pluginObject;
         continue;
       }
-      const mergedMetrics = {...metrics[clientID], ...pluginObject};
-      metrics[clientID] = mergedMetrics;
+      const mergedMetrics = {...metrics[client], ...pluginObject};
+      metrics[client] = mergedMetrics;
     }
   }
   return Promise.resolve(await serialize(metrics));
@@ -64,11 +71,11 @@ export async function exportMetricsWithoutTrace(
     string,
     typeof FlipperDevicePlugin | typeof FlipperPlugin
   > = pluginsClassMap(store.getState().plugins);
+  const pluginsToProcess = determinePluginsToProcess(store);
   const metadata = await fetchMetadata(
-    store.getState().connections.clients,
+    pluginsToProcess,
     pluginStates,
-    pluginsMap,
-    store,
+    store.getState(),
   );
   const newPluginStates = metadata.pluginStates;
   const {errorArray} = metadata;

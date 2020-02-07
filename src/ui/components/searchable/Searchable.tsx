@@ -18,7 +18,7 @@ import Text from '../Text';
 import FlexBox from '../FlexBox';
 import Glyph from '../Glyph';
 import FilterToken from './FilterToken';
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 import debounce from 'lodash.debounce';
 import ToggleButton from '../ToggleSwitch';
 import React from 'react';
@@ -40,24 +40,26 @@ export const SearchBox = styled(FlexBox)({
 });
 SearchBox.displayName = 'Searchable:SearchBox';
 
-export const SearchInput = styled(Input)(
-  (props: {focus?: boolean; regex?: boolean; isValidInput?: boolean}) => ({
-    border: props.focus ? '1px solid black' : 0,
-    ...(props.regex ? {fontFamily: 'monospace'} : {}),
-    padding: 0,
-    fontSize: '1em',
-    flexGrow: 1,
-    height: 'auto',
-    lineHeight: '100%',
-    marginLeft: 2,
-    width: '100%',
-    color: props.regex && !props.isValidInput ? colors.red : colors.black,
-    '&::-webkit-input-placeholder': {
-      color: colors.placeholder,
-      fontWeight: 300,
-    },
-  }),
-);
+export const SearchInput = styled(Input)<{
+  focus?: boolean;
+  regex?: boolean;
+  isValidInput?: boolean;
+}>(props => ({
+  border: props.focus ? '1px solid black' : 0,
+  ...(props.regex ? {fontFamily: 'monospace'} : {}),
+  padding: 0,
+  fontSize: '1em',
+  flexGrow: 1,
+  height: 'auto',
+  lineHeight: '100%',
+  marginLeft: 2,
+  width: '100%',
+  color: props.regex && !props.isValidInput ? colors.red : colors.black,
+  '&::-webkit-input-placeholder': {
+    color: colors.placeholder,
+    fontWeight: 300,
+  },
+}));
 SearchInput.displayName = 'Searchable:SearchInput';
 
 const Clear = styled(Text)({
@@ -111,6 +113,7 @@ type Props = {
   columns?: TableColumns;
   onFilterChange: (filters: Array<Filter>) => void;
   defaultFilters: Array<Filter>;
+  defaultSearchTerm: string;
   allowRegexSearch: boolean;
   allowBodySearch: boolean;
 };
@@ -146,14 +149,14 @@ const Searchable = (
     state: State = {
       filters: this.props.defaultFilters || [],
       focusedToken: -1,
-      searchTerm: '',
+      searchTerm: this.props.defaultSearchTerm ?? '',
       hasFocus: false,
       regexEnabled: false,
       bodySearchEnabled: false,
       compiledRegex: null,
     };
 
-    _inputRef: HTMLInputElement | undefined;
+    _inputRef: HTMLInputElement | undefined | null;
 
     componentDidMount() {
       window.document.addEventListener('keydown', this.onKeyDown);
@@ -233,20 +236,31 @@ const Searchable = (
         if (this.props.onFilterChange != null) {
           this.props.onFilterChange(this.state.filters);
         }
-      } else if (prevProps.defaultFilters !== this.props.defaultFilters) {
-        const mergedFilters = [...this.state.filters];
-        this.props.defaultFilters.forEach((defaultFilter: Filter) => {
-          const filterIndex = mergedFilters.findIndex(
-            (f: Filter) => f.key === defaultFilter.key,
-          );
-          if (filterIndex > -1) {
-            mergedFilters[filterIndex] = defaultFilter;
-          } else {
-            mergedFilters.push(defaultFilter);
-          }
-        });
+      } else {
+        let mergedFilters = this.state.filters;
+        if (prevProps.defaultFilters !== this.props.defaultFilters) {
+          mergedFilters = [...this.state.filters];
+          this.props.defaultFilters.forEach((defaultFilter: Filter) => {
+            const filterIndex = mergedFilters.findIndex(
+              (f: Filter) => f.key === defaultFilter.key,
+            );
+            if (filterIndex > -1) {
+              mergedFilters[filterIndex] = defaultFilter;
+            } else {
+              mergedFilters.push(defaultFilter);
+            }
+          });
+        }
+        let newSearchTerm = this.state.searchTerm;
+        if (
+          prevProps.defaultSearchTerm !== this.props.defaultSearchTerm ||
+          prevProps.defaultFilters !== this.props.defaultFilters
+        ) {
+          newSearchTerm = this.props.defaultSearchTerm;
+        }
         this.setState({
           filters: mergedFilters,
+          searchTerm: newSearchTerm,
         });
       }
     }
@@ -289,6 +303,7 @@ const Searchable = (
           this.state.focusedToken === -1 &&
           this.state.searchTerm === '' &&
           this._inputRef &&
+          lastFilter &&
           (lastFilter.type !== 'enum' || !lastFilter.persistent)
         ) {
           this._inputRef.blur();
@@ -304,6 +319,7 @@ const Searchable = (
         this.removeFilter(this.state.focusedToken);
       } else if (e.key === 'Enter' && this.hasFocus() && this._inputRef) {
         this.matchTags(this._inputRef.value, true);
+        this.setState({searchTerm: ''});
       }
     };
 
@@ -348,7 +364,7 @@ const Searchable = (
       }
     }, 200);
 
-    setInputRef = (ref: HTMLInputElement | undefined) => {
+    setInputRef = (ref: HTMLInputElement | null) => {
       this._inputRef = ref;
     };
 
@@ -470,7 +486,7 @@ const Searchable = (
               placeholder={placeholder}
               onChange={this.onChangeSearchTerm}
               value={this.state.searchTerm}
-              innerRef={this.setInputRef}
+              ref={this.setInputRef}
               onFocus={this.onInputFocus}
               onBlur={this.onInputBlur}
               isValidInput={
@@ -480,6 +496,9 @@ const Searchable = (
               }
               regex={Boolean(this.state.regexEnabled && this.state.searchTerm)}
             />
+            {(this.state.searchTerm || this.state.filters.length > 0) && (
+              <Clear onClick={this.clear}>&times;</Clear>
+            )}
           </SearchBox>
           {this.props.allowRegexSearch ? (
             <ToggleButton
@@ -498,9 +517,6 @@ const Searchable = (
               }
             />
           ) : null}
-          {(this.state.searchTerm || this.state.filters.length > 0) && (
-            <Clear onClick={this.clear}>&times;</Clear>
-          )}
           {actions != null && <Actions>{actions}</Actions>}
         </SearchBar>,
         <Component

@@ -11,7 +11,7 @@ const path = require('path');
 const fs = require('fs-extra');
 const builder = require('electron-builder');
 const Platform = builder.Platform;
-const cp = require('child-process-es6-promise');
+const cp = require('promisify-child-process');
 const {
   buildFolder,
   compile,
@@ -62,15 +62,16 @@ function modifyPackageManifest(buildFolder, versionNumber, hgRevision) {
   );
 }
 
-function buildDist(buildFolder) {
+async function buildDist(buildFolder) {
   const targetsRaw = [];
   const postBuildCallbacks = [];
 
   if (process.argv.indexOf('--mac') > -1) {
     targetsRaw.push(Platform.MAC.createTarget(['dir']));
     postBuildCallbacks.push(() =>
-      cp.spawn('zip', ['-yr9', '../Flipper-mac.zip', 'Flipper.app'], {
+      cp.spawn('zip', ['-qyr9', '../Flipper-mac.zip', 'Flipper.app'], {
         cwd: path.join(__dirname, '..', 'dist', 'mac'),
+        encoding: 'utf-8',
       }),
     );
   }
@@ -96,8 +97,8 @@ function buildDist(buildFolder) {
     electronDownload.cache = process.env.electron_config_cache;
   }
 
-  return builder
-    .build({
+  try {
+    await builder.build({
       publish: 'never',
       config: {
         appId: `com.facebook.sonar`,
@@ -110,9 +111,11 @@ function buildDist(buildFolder) {
       },
       projectDir: buildFolder,
       targets,
-    })
-    .then(() => Promise.all(postBuildCallbacks.map(p => p())))
-    .catch(die);
+    });
+    return await Promise.all(postBuildCallbacks.map(p => p()));
+  } catch (err) {
+    return die(err);
+  }
 }
 
 function copyStaticFolder(buildFolder) {
@@ -132,11 +135,17 @@ function downloadIcons(buildFolder) {
   }, []);
 
   return Promise.all(
-    iconURLs.map(({name, size, density}) =>
-      fetch(getIconURL(name, size, density))
+    iconURLs.map(({name, size, density}) => {
+      const url = getIconURL(name, size, density);
+      return fetch(url)
         .then(res => {
           if (res.status !== 200) {
-            throw new Error(`Could not download the icon: ${name}`);
+            throw new Error(
+              // eslint-disable-next-line prettier/prettier
+              `Could not download the icon ${name} from ${url}: got status ${
+                res.status
+              }`,
+            );
           }
           return res;
         })
@@ -150,9 +159,8 @@ function downloadIcons(buildFolder) {
               res.body.on('error', reject);
               fileStream.on('finish', resolve);
             }),
-        )
-        .catch(console.error),
-    ),
+        );
+    }),
   );
 }
 

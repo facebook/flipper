@@ -7,7 +7,7 @@
  * @format
  */
 
-export {default as styled} from 'react-emotion';
+export {default as styled} from '@emotion/styled';
 export {default as Button} from './components/Button';
 export {default as ToggleButton} from './components/ToggleSwitch';
 export {default as ButtonNavigationGroup} from './components/ButtonNavigationGroup';
@@ -62,6 +62,7 @@ export {default as MultiLineInput} from './components/MultiLineInput';
 export {default as Textarea} from './components/Textarea';
 export {default as Select} from './components/Select';
 export {default as Checkbox} from './components/Checkbox';
+export {default as Radio} from './components/Radio';
 
 // code
 export {default as CodeBlock} from './components/CodeBlock';
@@ -169,3 +170,4 @@ export {default as RoundedSection} from './components/RoundedSection';
 export {default as CenteredView} from './components/CenteredView';
 export {default as Info} from './components/Info';
 export {default as Bordered} from './components/Bordered';
+export {default as AlternatingRows} from './components/AlternatingRows';

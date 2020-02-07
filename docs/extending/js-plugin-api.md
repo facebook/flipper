@@ -3,6 +3,12 @@ id: js-plugin-api
 title: JavaScript Plugin API
 ---
 
+<div class="warning">
+
+This page describes the JavaScript API that is used to implement plugins inside the Flipper Desktop application. For the JavaScript API that can be used inside React Native to communicate with the Flipper Desktop, see [Client Plugin API](create-plugin).
+
+</div>
+
 Provided a plugin is setup as defined in [JS Plugin Definiton](js-setup), the basic requirement of a Flipper plugin is that `index.tsx` exports a default class that extends `FlipperPlugin`.
 
 `FlipperPlugin` is an extension of `React.Component` with extra Flipper-related functionality. This means to define the UI of your plugin, you just need to implement this React component.
@@ -68,7 +74,8 @@ Informs the plugin whether or not the client is archived, and therefore not curr
 Sometimes it's desirable for a plugin to be able to process incoming messages from the client even when inactive.
 
 To do this, define a static `persistedStateReducer` function in the plugin class:
-```
+
+```typescript
 static persistedStateReducer<PersistedState>(
     persistedState: PersistedState,
     method: string,
@@ -77,6 +84,35 @@ static persistedStateReducer<PersistedState>(
 ```
 
 The job of the `persistedStateReducer` is to merge incoming data into the state, so that next time the plugin is activated, the persisted state will be ready.
+If a plugin has a `persistedStateReducer`, and the plugin is not open in flipper, incoming messages are queued until the plugin is opened.
+
+The number of events that are cached for a plugin is controlled by the optional static field `maxQueueSize`, which defaults to `10000` events.
+
+<div class="warning">
+
+Note that if a plugin is not starred by the user, it will not receive any messages when it is not selected by the user. Even when it has a `persistedStateReducer`. This prevents plugins that are not actively used by the user from wasting a lot of CPU / memory.
+
+</div>
+
+The data that is produced from `persistedStateReducer` should be immutable, but also structurally sharing unchanged parts of the state with the previous state to avoid performance hiccups. To simplify this process we recommend using the [Immer](https://immerjs.github.io/immer/docs/introduction) package.
+Immer makes it possible to keep the reducer concise by directly supporting "writing" to the current state, and keeping track of that in the background.
+Also it will guarantee that there are no accidental data manipulations by freezing the produced state.
+
+You can directly `import {produce} from "flipper"` so there is no need to add Immer as additional dependency.
+
+A quick example:
+
+```typescript
+static persistedStateReducer(persistedState, method, data) {
+  return produce(persistedState, draft => {
+    if (method.name === "newRecord") {
+      draft.lastRecordReceived = Date.now();
+      draft.records.push(data);
+    }
+  });
+}
+```
+
 
 ## Notifications
 

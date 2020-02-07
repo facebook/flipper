@@ -7,11 +7,11 @@
  * @format
  */
 
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 import {Component} from 'react';
 import React from 'react';
 
-const Overlay = styled('div')({
+const Overlay = styled.div({
   alignItems: 'center',
   backgroundColor: 'rgba(0, 0, 0, 0.6)',
   bottom: 0,
@@ -29,9 +29,9 @@ export default class ModalOverlay extends Component<{
   onClose: () => void;
   children?: React.ReactNode;
 }> {
-  ref: HTMLElement | null | undefined;
+  ref?: HTMLElement | null;
 
-  setRef = (ref: HTMLElement) => {
+  setRef = (ref: HTMLElement | null) => {
     this.ref = ref;
   };
 
@@ -45,7 +45,7 @@ export default class ModalOverlay extends Component<{
     const {props} = this;
 
     return (
-      <Overlay innerRef={this.setRef} onClick={this.onClick}>
+      <Overlay ref={this.setRef} onClick={this.onClick}>
         {props.children}
       </Overlay>
     );

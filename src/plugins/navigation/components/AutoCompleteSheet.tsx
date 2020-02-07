@@ -22,7 +22,7 @@ type Props = {
 
 const MAX_ITEMS = 5;
 
-const AutoCompleteSheetContainer = styled('div')({
+const AutoCompleteSheetContainer = styled.div({
   width: '100%',
   position: 'absolute',
   top: 'calc(100% - 3px)',
@@ -33,7 +33,7 @@ const AutoCompleteSheetContainer = styled('div')({
   boxShadow: '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)',
 });
 
-const SheetItem = styled('div')({
+const SheetItem = styled.div({
   padding: 5,
   textOverflow: 'ellipsis',
   overflowX: 'hidden',
@@ -46,7 +46,7 @@ const SheetItem = styled('div')({
   },
 });
 
-const SheetItemIcon = styled('span')({
+const SheetItemIcon = styled.span({
   padding: 8,
 });
 

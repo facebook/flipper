@@ -38,13 +38,13 @@ import dateFormat from 'dateformat';
 
 const PAGE_SIZE = 50;
 
-const BoldSpan = styled('span')({
+const BoldSpan = styled.span({
   fontSize: 12,
   color: '#90949c',
   fontWeight: 'bold',
   textTransform: 'uppercase',
 });
-const ErrorBar = styled('div')({
+const ErrorBar = styled.div({
   backgroundColor: colors.cherry,
   color: colors.white,
   lineHeight: '26px',
@@ -212,6 +212,7 @@ type RefreshEvent = {
 
 type UpdateFavoritesEvent = {
   type: 'UpdateFavorites',
+  favorites: ?Array<string>,
 };
 
 type SortByChangedEvent = {
@@ -769,7 +770,7 @@ export default class DatabasesPlugin extends FlipperPlugin<
         state: DatabasesPluginState,
         event: UpdateFavoritesEvent,
       ): DatabasesPluginState => {
-        let newFavorites = state.favorites;
+        let newFavorites = event.favorites || state.favorites;
         if (
           state.query &&
           state.query !== null &&
@@ -783,6 +784,10 @@ export default class DatabasesPlugin extends FlipperPlugin<
             newFavorites = state.favorites.concat(value);
           }
         }
+        window.localStorage.setItem(
+          'plugin-database-favorites-sql-queries',
+          JSON.stringify(newFavorites),
+        );
         return {
           ...state,
           favorites: newFavorites,
@@ -940,6 +945,12 @@ export default class DatabasesPlugin extends FlipperPlugin<
         databases,
       });
     });
+    this.dispatchAction({
+      type: 'UpdateFavorites',
+      favorites: JSON.parse(
+        localStorage.getItem('plugin-database-favorites-sql-queries') || '[]',
+      ),
+    });
   }
 
   onDataClicked = () => {
@@ -970,6 +981,7 @@ export default class DatabasesPlugin extends FlipperPlugin<
   onFavoritesClicked = () => {
     this.dispatchAction({
       type: 'UpdateFavorites',
+      favorites: this.state.favorites,
     });
   };
 
@@ -998,6 +1010,15 @@ export default class DatabasesPlugin extends FlipperPlugin<
 
   onExecuteClicked = () => {
     this.dispatchAction({type: 'Execute'});
+  };
+
+  onQueryTextareaKeyPress = (event: KeyboardEvent) => {
+    // Implement ctrl+enter as a shortcut for clicking 'Execute'.
+    if (event.key === '\n' && event.ctrlKey) {
+      event.preventDefault();
+      event.stopPropagation();
+      this.onExecuteClicked();
+    }
   };
 
   onFavoriteClicked = (selected: any) => {
@@ -1071,23 +1092,45 @@ export default class DatabasesPlugin extends FlipperPlugin<
   sidebarRows = (id: number, table: QueriedTable) => {
     const columns = table.columns;
     const row = table.rows[id];
-    const sidebarArray = [];
-    for (let i = 0; i < columns.length; i++) {
-      sidebarArray.push(
+    if (columns.length === 1) {
+      const sidebarArray = [];
+      // TODO(T60896483): Narrow the scope of this try/catch block.
+      try {
+        const parsed = JSON.parse(row.columns[columns[0]].value.props.children);
+        for (const key in parsed) {
+          sidebarArray.push(
+            this.buildSidebarRow(key, {
+              props: {
+                children: parsed[key],
+              },
+            }),
+          );
+        }
+      } catch (e) {
+        sidebarArray.push(
+          this.buildSidebarRow(columns[0], row.columns[columns[0]].value),
+        );
+      }
+      return sidebarArray;
+    } else {
+      return columns.map<Object>((column, i) =>
         this.buildSidebarRow(columns[i], row.columns[columns[i]].value),
       );
     }
-    return sidebarArray;
   };
 
   buildSidebarRow = (key: string, val: any) => {
     let output = '';
+    // TODO(T60896483): Narrow the scope of this try/catch block.
     try {
+      const parsed = JSON.parse(val.props.children);
+      for (const key in parsed) {
+        try {
+          parsed[key] = JSON.parse(parsed[key]);
+        } catch (err) {}
+      }
       output = (
-        <ManagedDataInspector
-          data={JSON.parse(val.props.children)}
-          expandRoot={true}
-        />
+        <ManagedDataInspector data={parsed} expandRoot={false} collapsed />
       );
     } catch (error) {
       output = val;
@@ -1268,8 +1311,10 @@ export default class DatabasesPlugin extends FlipperPlugin<
                   marginLeft: 16,
                   marginTop: '1%',
                   marginBottom: '1%',
+                  resize: 'vertical',
                 }}
                 onChange={this.onQueryChanged.bind(this)}
+                onKeyPress={this.onQueryTextareaKeyPress}
                 placeholder="Type query here.."
                 value={
                   this.state.query !== null &&
@@ -1317,36 +1362,44 @@ export default class DatabasesPlugin extends FlipperPlugin<
               </ButtonGroup>
               <Spacer />
               <ButtonGroup>
-                <Button onClick={this.onExecuteClicked}>Execute</Button>
+                <Button
+                  onClick={this.onExecuteClicked}
+                  title={'Execute SQL [Ctrl+Return]'}>
+                  Execute
+                </Button>
               </ButtonGroup>
             </Toolbar>
           </div>
         ) : null}
-        <FlexColumn grow={true}>
-          {this.state.viewMode === 'data'
-            ? renderTable(this.state.currentPage, this)
-            : null}
-          {this.state.viewMode === 'structure' ? this.renderStructure() : null}
-          {this.state.viewMode === 'SQL'
-            ? this.renderQuery(this.state.queryResult)
-            : null}
-          {this.state.viewMode === 'tableInfo' ? (
-            <Textarea
-              style={{
-                width: '98%',
-                height: '100%',
-                marginLeft: '1%',
-                marginTop: '1%',
-                marginBottom: '1%',
-                readOnly: true,
-              }}
-              value={sqlFormatter.format(this.state.tableInfo)}
-            />
-          ) : null}
-          {this.state.viewMode === 'queryHistory'
-            ? renderQueryHistory(this.state.queryHistory)
-            : null}
-        </FlexColumn>
+        <FlexRow grow={true}>
+          <FlexColumn grow={true}>
+            {this.state.viewMode === 'data'
+              ? renderTable(this.state.currentPage, this)
+              : null}
+            {this.state.viewMode === 'structure'
+              ? this.renderStructure()
+              : null}
+            {this.state.viewMode === 'SQL'
+              ? this.renderQuery(this.state.queryResult)
+              : null}
+            {this.state.viewMode === 'tableInfo' ? (
+              <Textarea
+                style={{
+                  width: '98%',
+                  height: '100%',
+                  marginLeft: '1%',
+                  marginTop: '1%',
+                  marginBottom: '1%',
+                  readOnly: true,
+                }}
+                value={sqlFormatter.format(this.state.tableInfo)}
+              />
+            ) : null}
+            {this.state.viewMode === 'queryHistory'
+              ? renderQueryHistory(this.state.queryHistory)
+              : null}
+          </FlexColumn>
+        </FlexRow>
         <Toolbar position="bottom" style={{paddingLeft: 8}}>
           <FlexRow grow={true}>
             {this.state.viewMode === 'SQL' && this.state.executionTime !== 0 ? (

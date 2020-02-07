@@ -166,6 +166,9 @@
       },
       "tutorial/js-table": {
         "title": "Showing a table"
+      },
+      "tutorial/react-native": {
+        "title": "Building a React Native Plugin"
       }
     },
     "links": {

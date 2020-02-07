@@ -27,3 +27,6 @@ libs/*/bin/**/*.class
 
 # Mac OS X
 *.DS_Store
+
+# Automatically generated
+docs/extending/ui-components.md

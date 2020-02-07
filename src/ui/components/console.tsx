@@ -16,7 +16,7 @@ import Text from './Text';
 import ManagedDataInspector from './data-inspector/ManagedDataInspector';
 import Input from './Input';
 import View from './View';
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 import {TableBodyRow, TableRows} from './table/types';
 import {PluginClient} from '../../plugin';
 

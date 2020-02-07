@@ -8,19 +8,19 @@
  */
 
 import React from 'react';
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 import {colors} from './colors';
 import Heading from './Heading';
 import FlexColumn from './FlexColumn';
 
-const Divider = styled('hr')({
+const Divider = styled.hr({
   margin: '16px -20px 20px -20px',
   border: 'none',
   borderTop: `1px solid ${colors.light05}`,
 });
 Divider.displayName = 'RoundedSection:Divider';
 
-const Container = styled('div')({
+const Container = styled.div({
   background: colors.white,
   borderRadius: 10,
   boxShadow: '0 1px 3px rgba(0,0,0,0.25)',

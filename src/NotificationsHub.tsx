@@ -21,14 +21,12 @@ import {
   styled,
   colors,
 } from 'flipper';
-import {FlipperDevicePlugin, BaseAction} from './plugin';
-import {connect, ReactReduxContext} from 'react-redux';
-import {store} from './init';
+import {FlipperDevicePlugin} from './plugin';
+import {connect} from 'react-redux';
 import React, {Component, Fragment} from 'react';
 import {clipboard} from 'electron';
 import {
   PluginNotification,
-  clearAllNotifications,
   updatePluginBlacklist,
   updateCategoryBlacklist,
 } from './reducers/notifications';
@@ -36,70 +34,7 @@ import {selectPlugin} from './reducers/connections';
 import {State as StoreState} from './reducers/index';
 import textContent from './utils/textContent';
 import createPaste from './fb-stubs/createPaste';
-import {KeyboardActions} from './MenuBar';
-import {Store} from 'redux';
-
-export default class Notifications<
-  S,
-  A extends BaseAction,
-  P
-> extends FlipperDevicePlugin<S, A, P> {
-  static id = 'notifications';
-  static title = 'Notifications';
-  static icon = 'bell';
-  static keyboardActions: KeyboardActions = ['clear'];
-
-  static supportsDevice() {
-    return false;
-  }
-
-  onKeyboardAction = (action: string) => {
-    if (action === 'clear') {
-      this.onClear(store)();
-    }
-  };
-
-  onClear = (store: Store<StoreState>) => () => {
-    store.dispatch(clearAllNotifications());
-  };
-
-  render() {
-    return (
-      <ReactReduxContext.Consumer>
-        {({store}) => {
-          const {blacklistedPlugins, blacklistedCategories} = (store as Store<
-            StoreState
-          >).getState().notifications;
-          return (
-            <ConnectedNotificationsTable
-              onClear={this.onClear(store)}
-              selectedID={this.props.deepLinkPayload}
-              onSelectPlugin={this.props.selectPlugin}
-              logger={this.props.logger}
-              defaultFilters={[
-                ...blacklistedPlugins.map(value => ({
-                  value,
-                  type: 'exclude',
-                  key: 'plugin',
-                })),
-                ...blacklistedCategories.map(value => ({
-                  value,
-                  type: 'exclude',
-                  key: 'category',
-                })),
-              ]}
-              actions={
-                <Fragment>
-                  <Button onClick={this.onClear(store)}>Clear</Button>
-                </Fragment>
-              }
-            />
-          );
-        }}
-      </ReactReduxContext.Consumer>
-    );
-  }
-}
+import {getPluginTitle} from './utils/pluginUtils';
 
 type OwnProps = {
   onClear: () => void;
@@ -330,7 +265,7 @@ class NotificationsTable extends Component<Props & SearchableProps, State> {
   }
 }
 
-const ConnectedNotificationsTable = connect<
+export const ConnectedNotificationsTable = connect<
   StateFromProps,
   DispatchFromProps,
   OwnProps,
@@ -385,7 +320,7 @@ type NotificationBoxProps = {
   severity: keyof typeof SEVERITY_COLOR_MAP;
 };
 
-const NotificationBox = styled(FlexRow)((props: NotificationBoxProps) => ({
+const NotificationBox = styled(FlexRow)<NotificationBoxProps>(props => ({
   backgroundColor: props.inactive ? 'transparent' : colors.white,
   opacity: props.inactive ? 0.5 : 1,
   alignItems: 'flex-start',
@@ -414,7 +349,7 @@ const NotificationBox = styled(FlexRow)((props: NotificationBoxProps) => ({
   },
 }));
 
-const Title = styled('div')({
+const Title = styled.div({
   minWidth: 150,
   color: colors.light80,
   flexShrink: 0,
@@ -424,8 +359,8 @@ const Title = styled('div')({
   fontSize: '1.1em',
 });
 
-const NotificationContent = styled(FlexColumn)(
-  (props: {isSelected?: boolean}) => ({
+const NotificationContent = styled(FlexColumn)<{isSelected?: boolean}>(
+  props => ({
     marginLeft: 6,
     marginRight: 10,
     flexGrow: 1,
@@ -445,7 +380,7 @@ const Actions = styled(FlexRow)({
   paddingTop: 8,
 });
 
-const NotificationButton = styled('div')({
+const NotificationButton = styled.div({
   border: `1px solid ${colors.light20}`,
   color: colors.light50,
   borderRadius: 4,
@@ -495,7 +430,7 @@ class NotificationItem extends Component<
     const items = [];
     if (props.onHidePlugin && props.plugin) {
       items.push({
-        label: `Hide ${props.plugin.title || props.plugin.id} plugin`,
+        label: `Hide ${getPluginTitle(props.plugin)} plugin`,
         click: this.props.onHidePlugin,
       });
     }
@@ -600,7 +535,7 @@ class NotificationItem extends Component<
                 <FlexRow>
                   {action && (
                     <Button onClick={this.openDeeplink}>
-                      Open in {plugin.title}
+                      Open in {getPluginTitle(plugin)}
                     </Button>
                   )}
                   <ButtonGroup>
@@ -609,7 +544,7 @@ class NotificationItem extends Component<
                     )}
                     {onHidePlugin && (
                       <Button onClick={onHidePlugin}>
-                        Hide {plugin.title}
+                        Hide {getPluginTitle(plugin)}
                       </Button>
                     )}
                   </ButtonGroup>

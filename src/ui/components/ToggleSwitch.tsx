@@ -7,33 +7,35 @@
  * @format
  */
 
-import React from 'react';
-import styled from 'react-emotion';
+import React, {useState, useRef, useEffect} from 'react';
+import styled from '@emotion/styled';
 import {colors} from './colors';
 import Text from './Text';
 import FlexRow from './FlexRow';
 
-export const StyledButton = styled('div')((props: {toggled: boolean}) => ({
-  width: '30px',
-  height: '16px',
-  background: props.toggled ? colors.green : colors.grey,
-  display: 'block',
-  borderRadius: '100px',
-  position: 'relative',
-  marginLeft: '15px',
-  flexShrink: 0,
-  '&::after': {
-    content: '""',
-    position: 'absolute',
-    top: '3px',
-    left: props.toggled ? '18px' : '3px',
-    width: '10px',
-    height: '10px',
-    background: 'white',
+export const StyledButton = styled.div<{toggled: boolean; large: boolean}>(
+  ({large, toggled}) => ({
+    width: large ? 60 : 30,
+    height: large ? 32 : 16,
+    background: toggled ? colors.green : colors.grey,
+    display: 'block',
     borderRadius: '100px',
-    transition: 'all cubic-bezier(0.3, 1.5, 0.7, 1) 0.3s',
-  },
-}));
+    position: 'relative',
+    marginLeft: large ? 0 : 15, // margins in components should die :-/
+    flexShrink: 0,
+    '&::after': {
+      content: '""',
+      position: 'absolute',
+      top: large ? 6 : 3,
+      left: large ? (toggled ? 34 : 6) : toggled ? 18 : 3,
+      width: large ? 20 : 10,
+      height: large ? 20 : 10,
+      background: 'white',
+      borderRadius: '100px',
+      transition: 'all cubic-bezier(0.3, 1.5, 0.7, 1) 0.3s',
+    },
+  }),
+);
 StyledButton.displayName = 'ToggleSwitch:StyledButton';
 
 const Container = styled(FlexRow)({
@@ -60,6 +62,7 @@ type Props = {
   className?: string;
   label?: string;
   tooltip?: string;
+  large?: boolean;
 };
 
 /**
@@ -72,16 +75,34 @@ type Props = {
  * <ToggleButton onClick={handler} toggled={boolean}/>
  * ```
  */
-export default class ToggleButton extends React.Component<Props> {
-  render() {
-    return (
-      <Container onClick={this.props.onClick} title={this.props.tooltip}>
-        <StyledButton
-          className={this.props.className}
-          toggled={this.props.toggled || false}
-        />
-        {this.props.label && <Label>{this.props.label}</Label>}
-      </Container>
-    );
-  }
+export default function ToggleButton(props: Props) {
+  const unmounted = useRef(false);
+  const [switching, setSwitching] = useState(false);
+  useEffect(
+    () => () => {
+      // suppress switching after unmount
+      unmounted.current = true;
+    },
+    [],
+  );
+  return (
+    <Container
+      onClick={e => {
+        setSwitching(true);
+        setTimeout(() => {
+          props?.onClick?.(e);
+          if (unmounted.current === false) {
+            setSwitching(false);
+          }
+        }, 300);
+      }}
+      title={props.tooltip}>
+      <StyledButton
+        large={!!props.large}
+        className={props.className}
+        toggled={switching ? !props.toggled : !!props.toggled}
+      />
+      {props.label && <Label>{props.label}</Label>}
+    </Container>
+  );
 }

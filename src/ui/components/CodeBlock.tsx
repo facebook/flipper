@@ -7,9 +7,9 @@
  * @format
  */
 
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 
-const CodeBlock = styled('div')({
+const CodeBlock = styled.div({
   fontFamily: 'monospace',
 });
 CodeBlock.displayName = 'CodeBlock';

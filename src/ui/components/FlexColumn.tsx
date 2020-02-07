@@ -8,7 +8,7 @@
  */
 
 import FlexBox from './FlexBox';
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 
 /**
  * A container displaying its children in a column

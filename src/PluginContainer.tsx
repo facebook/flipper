@@ -23,15 +23,27 @@ import {
   colors,
   styled,
   ArchivedDevice,
+  Glyph,
+  Label,
+  VBox,
+  View,
 } from 'flipper';
-import {StaticView, setStaticView} from './reducers/connections';
+import {
+  StaticView,
+  setStaticView,
+  pluginIsStarred,
+  starPlugin,
+} from './reducers/connections';
 import React, {PureComponent} from 'react';
-import {connect} from 'react-redux';
+import {connect, ReactReduxContext} from 'react-redux';
 import {setPluginState} from './reducers/pluginStates';
 import {selectPlugin} from './reducers/connections';
-import {State as Store} from './reducers/index';
-import NotificationsHub from './NotificationsHub';
+import {State as Store, MiddlewareAPI} from './reducers/index';
 import {activateMenuItems} from './MenuBar';
+import {Message} from './reducers/pluginMessageQueue';
+import {Idler} from './utils/Idler';
+import {processMessageQueue} from './utils/messageQueue';
+import {ToggleButton, SmallText} from './ui';
 
 const Container = styled(FlexColumn)({
   width: 0,
@@ -40,11 +52,41 @@ const Container = styled(FlexColumn)({
   backgroundColor: colors.white,
 });
 
-const SidebarContainer = styled(FlexRow)({
+export const SidebarContainer = styled(FlexRow)({
   backgroundColor: colors.light02,
   height: '100%',
   overflow: 'scroll',
 });
+
+const Waiting = styled(FlexColumn)({
+  width: '100%',
+  height: '100%',
+  flexGrow: 1,
+  background: colors.light02,
+  alignItems: 'center',
+  justifyContent: 'center',
+  textAlign: 'center',
+});
+
+function ProgressBar({progress}: {progress: number}) {
+  return (
+    <ProgressBarContainer>
+      <ProgressBarBar progress={progress} />
+    </ProgressBarContainer>
+  );
+}
+
+const ProgressBarContainer = styled.div({
+  border: `1px solid ${colors.cyan}`,
+  borderRadius: 4,
+  width: 300,
+});
+
+const ProgressBarBar = styled.div<{progress: number}>(({progress}) => ({
+  background: colors.cyan,
+  width: `${Math.min(100, Math.round(progress * 100))}%`,
+  height: 8,
+}));
 
 type OwnProps = {
   logger: Logger;
@@ -58,6 +100,8 @@ type StateFromProps = {
   deepLinkPayload: string | null;
   selectedApp: string | null;
   isArchivedDevice: boolean;
+  pendingMessages: Message[] | undefined;
+  pluginIsEnabled: boolean;
 };
 
 type DispatchFromProps = {
@@ -68,11 +112,18 @@ type DispatchFromProps = {
   }) => any;
   setPluginState: (payload: {pluginKey: string; state: any}) => void;
   setStaticView: (payload: StaticView) => void;
+  starPlugin: typeof starPlugin;
 };
 
 type Props = StateFromProps & DispatchFromProps & OwnProps;
 
-class PluginContainer extends PureComponent<Props> {
+type State = {
+  progress: {current: number; total: number};
+};
+
+class PluginContainer extends PureComponent<Props, State> {
+  static contextType = ReactReduxContext;
+
   plugin:
     | FlipperPlugin<any, any, any>
     | FlipperDevicePlugin<any, any, any>
@@ -98,14 +149,169 @@ class PluginContainer extends PureComponent<Props> {
     }
   };
 
+  idler?: Idler;
+  pluginBeingProcessed: string | null = null;
+
+  state = {progress: {current: 0, total: 0}};
+
+  get store(): MiddlewareAPI {
+    return this.context.store;
+  }
+
   componentWillUnmount() {
     if (this.plugin) {
       this.plugin._teardown();
       this.plugin = null;
     }
+    this.cancelCurrentQueue();
+  }
+
+  componentDidMount() {
+    this.processMessageQueue();
+  }
+
+  componentDidUpdate() {
+    this.processMessageQueue();
+  }
+
+  processMessageQueue() {
+    const {
+      pluginKey,
+      pendingMessages,
+      activePlugin,
+      pluginIsEnabled,
+    } = this.props;
+    if (pluginKey !== this.pluginBeingProcessed) {
+      this.pluginBeingProcessed = pluginKey;
+      this.cancelCurrentQueue();
+      this.setState({progress: {current: 0, total: 0}});
+      if (
+        pluginIsEnabled &&
+        activePlugin &&
+        activePlugin.persistedStateReducer &&
+        pluginKey &&
+        pendingMessages?.length
+      ) {
+        const start = Date.now();
+        this.idler = new Idler();
+        processMessageQueue(
+          activePlugin,
+          pluginKey,
+          this.store,
+          progress => {
+            this.setState({progress});
+          },
+          this.idler,
+        ).then(completed => {
+          const duration = Date.now() - start;
+          this.props.logger.track(
+            'duration',
+            'queue-processing-before-plugin-open',
+            {
+              completed,
+              duration,
+            },
+            activePlugin.id,
+          );
+        });
+      }
+    }
+  }
+
+  cancelCurrentQueue() {
+    if (this.idler && !this.idler.isCancelled()) {
+      this.idler.cancel();
+    }
   }
 
   render() {
+    const {
+      activePlugin,
+      pluginKey,
+      target,
+      pendingMessages,
+      pluginIsEnabled,
+    } = this.props;
+    if (!activePlugin || !target || !pluginKey) {
+      console.warn(`No selected plugin. Rendering empty!`);
+      return null;
+    }
+
+    if (!pluginIsEnabled) {
+      return this.renderPluginEnabler();
+    }
+    if (!pendingMessages || pendingMessages.length === 0) {
+      return this.renderPlugin();
+    }
+    return this.renderPluginLoader();
+  }
+
+  renderPluginEnabler() {
+    const activePlugin = this.props.activePlugin!;
+    return (
+      <View grow>
+        <Waiting>
+          <VBox>
+            <FlexRow>
+              <Label
+                style={{
+                  fontSize: '16px',
+                  color: colors.light30,
+                  textTransform: 'uppercase',
+                }}>
+                {activePlugin.title}
+              </Label>
+            </FlexRow>
+          </VBox>
+          <VBox>
+            <ToggleButton
+              toggled={false}
+              onClick={() => {
+                this.props.starPlugin({
+                  selectedPlugin: activePlugin.id,
+                  selectedApp: (this.props.target as Client).query.app,
+                });
+              }}
+              large
+            />
+          </VBox>
+          <VBox>
+            <SmallText>Click to enable this plugin</SmallText>
+          </VBox>
+        </Waiting>
+      </View>
+    );
+  }
+
+  renderPluginLoader() {
+    return (
+      <View grow>
+        <Waiting>
+          <VBox>
+            <Glyph
+              name="dashboard"
+              variant="outline"
+              size={24}
+              color={colors.light30}
+            />
+          </VBox>
+          <VBox>
+            <Label>
+              Processing {this.state.progress.total} events for{' '}
+              {this.props.activePlugin?.id ?? 'plugin'}
+            </Label>
+          </VBox>
+          <VBox>
+            <ProgressBar
+              progress={this.state.progress.current / this.state.progress.total}
+            />
+          </VBox>
+        </Waiting>
+      </View>
+    );
+  }
+
+  renderPlugin() {
     const {
       pluginState,
       setPluginState,
@@ -184,9 +390,11 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
       selectedApp,
       clients,
       deepLinkPayload,
+      userStarredPlugins,
     },
     pluginStates,
     plugins: {devicePlugins, clientPlugins},
+    pluginMessageQueue,
   }) => {
     let pluginKey = null;
     let target = null;
@@ -194,28 +402,37 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
       | typeof FlipperDevicePlugin
       | typeof FlipperPlugin
       | null = null;
+    let pluginIsEnabled = false;
 
     if (selectedPlugin) {
-      if (selectedPlugin === NotificationsHub.id) {
-        activePlugin = NotificationsHub;
-      } else if (selectedPlugin) {
-        activePlugin = devicePlugins.get(selectedPlugin) || null;
-      }
+      activePlugin = devicePlugins.get(selectedPlugin) || null;
       target = selectedDevice;
       if (selectedDevice && activePlugin) {
         pluginKey = getPluginKey(selectedDevice.serial, activePlugin.id);
+        pluginIsEnabled = true;
       } else {
         target =
           clients.find((client: Client) => client.id === selectedApp) || null;
         activePlugin = clientPlugins.get(selectedPlugin) || null;
         if (activePlugin && target) {
           pluginKey = getPluginKey(target.id, activePlugin.id);
+          pluginIsEnabled = pluginIsStarred(
+            {selectedApp, userStarredPlugins},
+            activePlugin.id,
+          );
         }
       }
     }
     const isArchivedDevice = !selectedDevice
       ? false
       : selectedDevice instanceof ArchivedDevice;
+    if (isArchivedDevice) {
+      pluginIsEnabled = true;
+    }
+
+    const pendingMessages = pluginKey
+      ? pluginMessageQueue[pluginKey]
+      : undefined;
 
     const s: StateFromProps = {
       pluginState: pluginStates[pluginKey as string],
@@ -225,6 +442,8 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
       pluginKey,
       isArchivedDevice,
       selectedApp: selectedApp || null,
+      pendingMessages,
+      pluginIsEnabled,
     };
     return s;
   },
@@ -232,5 +451,6 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
     setPluginState,
     selectPlugin,
     setStaticView,
+    starPlugin,
   },
 )(PluginContainer);

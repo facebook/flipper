@@ -9,7 +9,7 @@
 
 import stream from 'stream';
 import {FlipperDevicePlugin} from 'flipper';
-import {sortPluginsByName} from '../plugin';
+import {sortPluginsByName} from '../utils/pluginUtils';
 
 export type LogLevel =
   | 'unknown'
@@ -52,7 +52,7 @@ export type DeviceExport = {
   logs: Array<DeviceLogEntry>;
 };
 
-export type OS = 'iOS' | 'Android' | 'Windows' | 'MacOS';
+export type OS = 'iOS' | 'Android' | 'Windows' | 'MacOS' | 'JSWebApp';
 
 export default class BaseDevice {
   constructor(serial: string, deviceType: DeviceType, title: string, os: OS) {
@@ -88,6 +88,10 @@ export default class BaseDevice {
 
   supportsOS(os: OS) {
     return os.toLowerCase() === this.os.toLowerCase();
+  }
+
+  displayTitle(): string {
+    return this.title;
   }
 
   toJSON(): DeviceExport {
@@ -144,7 +148,7 @@ export default class BaseDevice {
     this.logListeners.delete(id);
   }
 
-  navigateToLocation(location: string) {
+  navigateToLocation(_location: string) {
     throw new Error('unimplemented');
   }
 
@@ -162,7 +166,7 @@ export default class BaseDevice {
     return false;
   }
 
-  async startScreenCapture(destination: string) {
+  async startScreenCapture(_destination: string): Promise<void> {
     throw new Error('startScreenCapture not implemented on BaseDevice ');
   }
 

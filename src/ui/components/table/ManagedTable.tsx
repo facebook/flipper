@@ -19,7 +19,7 @@ import {
 } from './types';
 import {MenuTemplate} from '../ContextMenu';
 import React from 'react';
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import {VariableSizeList as List} from 'react-window';
 import {clipboard, MenuItemConstructorOptions} from 'electron';
@@ -144,7 +144,7 @@ type ManagedTableState = {
   shouldScrollToBottom: boolean;
 };
 
-const Container = styled(FlexColumn)((props: {canOverflow?: boolean}) => ({
+const Container = styled(FlexColumn)<{canOverflow?: boolean}>(props => ({
   overflow: props.canOverflow ? 'scroll' : 'visible',
   flexGrow: 1,
 }));
@@ -208,7 +208,7 @@ export class ManagedTable extends React.Component<
     document.removeEventListener('keydown', this.onKeyDown);
   }
 
-  componentWillReceiveProps(nextProps: ManagedTableProps) {
+  UNSAFE_componentWillReceiveProps(nextProps: ManagedTableProps) {
     // if columnSizes has changed
     if (nextProps.columnSizes !== this.props.columnSizes) {
       this.setState({
@@ -615,23 +615,28 @@ export class ManagedTable extends React.Component<
       .filter(notNull);
 
     return (
-      <TableRow
-        key={rows[index].key}
-        columnSizes={columnSizes}
-        columnKeys={columnKeys}
-        onMouseDown={e => this.onHighlight(e, rows[index], index)}
-        onMouseEnter={e => this.onMouseEnterRow(e, rows[index], index)}
-        multiline={multiline}
-        rowLineHeight={24}
-        highlighted={highlightedRows.has(rows[index].key)}
-        row={rows[index]}
-        index={index}
-        style={
-          rows[index].height ? {...style, height: rows[index].height} : style
-        }
-        onAddFilter={onAddFilter}
-        zebra={zebra}
-      />
+      <ContextMenu
+        buildItems={
+          this.props.buildContextMenuItems || this.buildContextMenuItems
+        }>
+        <TableRow
+          key={rows[index].key}
+          columnSizes={columnSizes}
+          columnKeys={columnKeys}
+          onMouseDown={e => this.onHighlight(e, rows[index], index)}
+          onMouseEnter={e => this.onMouseEnterRow(e, rows[index], index)}
+          multiline={multiline}
+          rowLineHeight={24}
+          highlighted={highlightedRows.has(rows[index].key)}
+          row={rows[index]}
+          index={index}
+          style={
+            rows[index].height ? {...style, height: rows[index].height} : style
+          }
+          onAddFilter={onAddFilter}
+          zebra={zebra}
+        />
+      </ContextMenu>
     );
   };
 

@@ -14,14 +14,14 @@ import yargs, {Argv} from 'yargs';
 import dispatcher from '../src/dispatcher/index';
 import reducers, {Actions, State} from '../src/reducers/index';
 import {init as initLogger} from '../src/fb-stubs/Logger';
-import {exportStore, pluginsClassMap} from '../src/utils/exportData';
+import {exportStore} from '../src/utils/exportData';
 import {
   exportMetricsWithoutTrace,
   exportMetricsFromTrace,
 } from '../src/utils/exportMetrics';
 import {listDevices} from '../src/utils/listDevices';
 import setup from '../static/setup.js';
-import {getPersistentPlugins} from '../src/utils/pluginUtils';
+import {getPersistentPlugins, pluginsClassMap} from '../src/utils/pluginUtils';
 import {serialize} from '../src/utils/serialization';
 import {getStringFromErrorLike} from '../src/utils/index';
 import AndroidDevice from '../src/devices/AndroidDevice';

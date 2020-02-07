@@ -7,20 +7,23 @@
  * @format
  */
 
-import {remote, ipcRenderer} from 'electron';
+import {remote, ipcRenderer, IpcRendererEvent} from 'electron';
 import {toggleAction} from '../reducers/application';
-import {setStaticView} from '../reducers/connections';
+import {
+  Group,
+  GRAPHQL_ANDROID_GROUP,
+  GRAPHQL_IOS_GROUP,
+  LITHO_GROUP,
+} from '../reducers/supportForm';
 import {Store} from '../reducers/index.js';
 import {Logger} from '../fb-interfaces/Logger';
 import {parseFlipperPorts} from '../utils/environmentVariables';
-import SupportRequestFormManager from '../fb-stubs/SupportRequestFormManager';
 import {
   importDataToStore,
   importFileToStore,
   IMPORT_FLIPPER_TRACE_EVENT,
 } from '../utils/exportData';
 import {tryCatchReportPlatformFailures} from '../utils/metrics';
-
 import {selectPlugin} from '../reducers/connections';
 import qs from 'query-string';
 
@@ -45,19 +48,29 @@ export default (store: Store, logger: Logger) => {
   currentWindow.on('focus', () => {
     store.dispatch({
       type: 'windowIsFocused',
-      payload: true,
+      payload: {isFocused: true, time: Date.now()},
     });
   });
   currentWindow.on('blur', () => {
     store.dispatch({
       type: 'windowIsFocused',
-      payload: false,
+      payload: {isFocused: false, time: Date.now()},
+    });
+  });
+
+  // windowIsFocussed is initialized in the store before the app is fully ready.
+  // So wait until everything is up and running and then check and set the isFocussed state.
+  window.addEventListener('flipper-store-ready', () => {
+    const isFocused = currentWindow.isFocused();
+    store.dispatch({
+      type: 'windowIsFocused',
+      payload: {isFocused: isFocused, time: Date.now()},
     });
   });
 
   ipcRenderer.on(
     'flipper-protocol-handler',
-    (_event: string, query: string) => {
+    (_event: IpcRendererEvent, query: string) => {
       const uri = new URL(query);
       if (query.startsWith('flipper://import')) {
         const {search} = new URL(query);
@@ -81,10 +94,9 @@ export default (store: Store, logger: Logger) => {
         uri.pathname.includes('support-form')
       ) {
         const formParam = uri.searchParams.get('form');
-        if (formParam && formParam.toUpperCase() === 'litho'.toUpperCase()) {
-          // Right now we just support Litho
-          logger.track('usage', 'support-form-source', {source: 'deeplink'});
-          store.dispatch(setStaticView(SupportRequestFormManager));
+        const grp = deeplinkFormParamToGroups(formParam);
+        if (grp) {
+          grp.handleSupportFormDeeplinks(store);
         }
         return;
       }
@@ -102,11 +114,28 @@ export default (store: Store, logger: Logger) => {
     },
   );
 
-  ipcRenderer.on('open-flipper-file', (_event: string, url: string) => {
-    tryCatchReportPlatformFailures(() => {
-      return importFileToStore(url, store);
-    }, `${IMPORT_FLIPPER_TRACE_EVENT}:Deeplink`);
-  });
+  function deeplinkFormParamToGroups(formParam: string | null): Group | null {
+    if (!formParam) {
+      return null;
+    }
+    if (formParam.toLowerCase() === 'litho') {
+      return LITHO_GROUP;
+    } else if (formParam.toLowerCase() === 'graphql_android') {
+      return GRAPHQL_ANDROID_GROUP;
+    } else if (formParam.toLowerCase() === 'graphql_ios') {
+      return GRAPHQL_IOS_GROUP;
+    }
+    return null;
+  }
+
+  ipcRenderer.on(
+    'open-flipper-file',
+    (_event: IpcRendererEvent, url: string) => {
+      tryCatchReportPlatformFailures(() => {
+        return importFileToStore(url, store);
+      }, `${IMPORT_FLIPPER_TRACE_EVENT}:Deeplink`);
+    },
+  );
 
   if (process.env.FLIPPER_PORTS) {
     const portOverrides = parseFlipperPorts(process.env.FLIPPER_PORTS);

@@ -17,7 +17,7 @@ type Props = {
   size: IconSize;
 };
 
-const FavoriteButtonContainer = styled('div')({
+const FavoriteButtonContainer = styled.div({
   position: 'relative',
   '>:first-child': {
     position: 'absolute',

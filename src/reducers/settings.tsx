@@ -8,6 +8,8 @@
  */
 
 import {Actions} from './index';
+import os from 'os';
+import electron from 'electron';
 
 export enum Tristate {
   True,
@@ -18,12 +20,20 @@ export enum Tristate {
 export type Settings = {
   androidHome: string;
   enableAndroid: boolean;
+  enableIOS: boolean;
   /**
    * If unset, this will assume the value of the GK setting.
    * Note that this setting has no effect in the open source version
    * of Flipper.
    */
   enablePrefetching: Tristate;
+  jsApps: {
+    webAppLauncher: {
+      url: string;
+      height: number;
+      width: number;
+    };
+  };
 };
 
 export type Action =
@@ -33,10 +43,20 @@ export type Action =
       payload: Settings;
     };
 
+export const DEFAULT_ANDROID_SDK_PATH = getDefaultAndroidSdkPath();
+
 const initialState: Settings = {
-  androidHome: '/opt/android_sdk',
+  androidHome: getDefaultAndroidSdkPath(),
   enableAndroid: true,
+  enableIOS: os.platform() === 'darwin',
   enablePrefetching: Tristate.Unset,
+  jsApps: {
+    webAppLauncher: {
+      url: 'http://localhost:8888',
+      height: 600,
+      width: 800,
+    },
+  },
 };
 
 export default function reducer(
@@ -54,4 +74,13 @@ export function updateSettings(settings: Settings): Action {
     type: 'UPDATE_SETTINGS',
     payload: settings,
   };
+}
+
+function getDefaultAndroidSdkPath() {
+  return os.platform() === 'win32' ? getWindowsSdkPath() : '/opt/android_sdk';
+}
+
+function getWindowsSdkPath() {
+  const app = electron.app || electron.remote.app;
+  return `${app.getPath('home')}\\AppData\\Local\\android\\sdk`;
 }

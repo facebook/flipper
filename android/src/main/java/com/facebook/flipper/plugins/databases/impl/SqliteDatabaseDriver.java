@@ -89,24 +89,28 @@ public class SqliteDatabaseDriver extends DatabaseDriver<SqliteDatabaseDescripto
 
   @Override
   public List<String> getTableNames(SqliteDatabaseDescriptor databaseDescriptor) {
-    SQLiteDatabase database =
-        sqliteDatabaseConnectionProvider.openDatabase(databaseDescriptor.file);
     try {
-      Cursor cursor =
-          database.rawQuery(
-              "SELECT name FROM " + SCHEMA_TABLE + " WHERE type IN (?, ?)",
-              new String[] {"table", "view"});
+      SQLiteDatabase database =
+          sqliteDatabaseConnectionProvider.openDatabase(databaseDescriptor.file);
       try {
-        List<String> tableNames = new ArrayList<>();
-        while (cursor.moveToNext()) {
-          tableNames.add(cursor.getString(0));
+        Cursor cursor =
+            database.rawQuery(
+                "SELECT name FROM " + SCHEMA_TABLE + " WHERE type IN (?, ?)",
+                new String[] {"table", "view"});
+        try {
+          List<String> tableNames = new ArrayList<>();
+          while (cursor.moveToNext()) {
+            tableNames.add(cursor.getString(0));
+          }
+          return tableNames;
+        } finally {
+          cursor.close();
         }
-        return tableNames;
       } finally {
-        cursor.close();
+        database.close();
       }
-    } finally {
-      database.close();
+    } catch (SQLiteException ex) {
+      return Collections.emptyList();
     }
   }
 

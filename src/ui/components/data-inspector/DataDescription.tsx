@@ -10,45 +10,47 @@
 import Link from '../Link';
 import {DataInspectorSetValue} from './DataInspector';
 import {PureComponent} from 'react';
-import styled from 'react-emotion';
-import {SketchPicker} from 'react-color';
+import styled from '@emotion/styled';
+import {SketchPicker, CompactPicker} from 'react-color';
 import {Component, Fragment} from 'react';
 import Popover from '../Popover';
 import {colors} from '../colors';
 import Input from '../Input';
 import React, {KeyboardEvent} from 'react';
+import Glyph from '../Glyph';
 
-const NullValue = styled('span')({
+const NullValue = styled.span({
   color: 'rgb(128, 128, 128)',
 });
 NullValue.displayName = 'DataDescription:NullValue';
 
-const UndefinedValue = styled('span')({
+const UndefinedValue = styled.span({
   color: 'rgb(128, 128, 128)',
 });
 UndefinedValue.displayName = 'DataDescription:UndefinedValue';
 
-const StringValue = styled('span')({
+const StringValue = styled.span({
   color: colors.cherryDark1,
+  wordWrap: 'break-word',
 });
 StringValue.displayName = 'DataDescription:StringValue';
 
-const ColorValue = styled('span')({
+const ColorValue = styled.span({
   color: colors.blueGrey,
 });
 ColorValue.displayName = 'DataDescription:ColorValue';
 
-const SymbolValue = styled('span')({
+const SymbolValue = styled.span({
   color: 'rgb(196, 26, 22)',
 });
 SymbolValue.displayName = 'DataDescription:SymbolValue';
 
-const NumberValue = styled('span')({
+const NumberValue = styled.span({
   color: colors.tealDark1,
 });
 NumberValue.displayName = 'DataDescription:NumberValue';
 
-const ColorBox = styled('span')((props: {color: string}) => ({
+const ColorBox = styled.span<{color: string}>(props => ({
   backgroundColor: props.color,
   boxShadow: 'inset 0 0 1px rgba(0, 0, 0, 1)',
   display: 'inline-block',
@@ -59,18 +61,18 @@ const ColorBox = styled('span')((props: {color: string}) => ({
 }));
 ColorBox.displayName = 'DataDescription:ColorBox';
 
-const FunctionKeyword = styled('span')({
+const FunctionKeyword = styled.span({
   color: 'rgb(170, 13, 145)',
   fontStyle: 'italic',
 });
 FunctionKeyword.displayName = 'DataDescription:FunctionKeyword';
 
-const FunctionName = styled('span')({
+const FunctionName = styled.span({
   fontStyle: 'italic',
 });
 FunctionName.displayName = 'DataDescription:FunctionName';
 
-const ColorPickerDescription = styled('div')({
+const ColorPickerDescription = styled.div({
   display: 'inline',
   position: 'relative',
 });
@@ -80,6 +82,7 @@ type DataDescriptionProps = {
   path?: Array<string>;
   type: string;
   value: any;
+  extra?: any;
   setValue: DataInspectorSetValue | null | undefined;
 };
 
@@ -159,7 +162,7 @@ class NumberTextEditor extends PureComponent<{
         compact={true}
         onChange={this.onNumberTextInputChange}
         onKeyDown={this.onNumberTextInputKeyDown}
-        innerRef={this.onNumberTextRef}
+        ref={this.onNumberTextRef}
         onBlur={this.onNumberTextBlur}
         value={this.props.value}
       />
@@ -207,7 +210,7 @@ export default class DataDescription extends PureComponent<
   };
 
   _renderEditing() {
-    const {type} = this.props;
+    const {type, extra} = this.props;
     const {origValue, value} = this.state;
 
     if (
@@ -230,6 +233,16 @@ export default class DataDescription extends PureComponent<
       return <ColorEditor value={value} commit={this.commit} />;
     }
 
+    if (type === 'color_lite') {
+      return (
+        <ColorEditor
+          value={value}
+          colorSet={extra.colorSet}
+          commit={this.commit}
+        />
+      );
+    }
+
     return null;
   }
 
@@ -240,7 +253,8 @@ export default class DataDescription extends PureComponent<
       type === 'text' ||
       type === 'number' ||
       type === 'enum' ||
-      type === 'color'
+      type === 'color' ||
+      type === 'color_lite'
     );
   }
 
@@ -260,6 +274,7 @@ export default class DataDescription extends PureComponent<
         <DataDescriptionPreview
           type={this.props.type}
           value={this.props.value}
+          extra={this.props.extra}
           editable={Boolean(this.props.setValue)}
           commit={this.commit}
           onEdit={this.onEditStart}
@@ -271,6 +286,7 @@ export default class DataDescription extends PureComponent<
 
 class ColorEditor extends Component<{
   value: any;
+  colorSet?: Array<string | number>;
   commit: (opts: DescriptionCommitOptions) => void;
 }> {
   onBlur = () => {
@@ -320,6 +336,25 @@ class ColorEditor extends Component<{
     this.props.commit({clear: false, keep: true, value: val, set: true});
   };
 
+  onChangeLite = ({
+    rgb: {a, b, g, r},
+  }: {
+    rgb: {a: number; b: number; g: number; r: number};
+  }) => {
+    const prev = this.props.value;
+
+    if (typeof prev !== 'number') {
+      return;
+    }
+    // compute RRGGBBAA value
+    let val = (Math.round(a * 255) & 0xff) << 24;
+    val |= (r & 0xff) << 16;
+    val |= (g & 0xff) << 8;
+    val |= b & 0xff;
+
+    this.props.commit({clear: false, keep: true, value: val, set: true});
+  };
+
   render() {
     const colorInfo = parseColor(this.props.value);
     if (!colorInfo) {
@@ -331,45 +366,73 @@ class ColorEditor extends Component<{
         <DataDescriptionPreview
           type="color"
           value={this.props.value}
+          extra={this.props.colorSet}
           editable={false}
           commit={this.props.commit}
         />
         <Popover onDismiss={this.onBlur}>
-          <SketchPicker
-            color={colorInfo}
-            presetColors={[
-              colors.blue,
-              colors.green,
-              colors.red,
-              colors.blueGrey,
-              colors.slate,
-              colors.aluminum,
-              colors.seaFoam,
-              colors.teal,
-              colors.lime,
-              colors.lemon,
-              colors.orange,
-              colors.tomato,
-              colors.cherry,
-              colors.pink,
-              colors.grape,
-            ]}
-            onChange={(color: {
-              hex: string;
-              hsl: {
-                a?: number;
-                h: number;
-                l: number;
-                s: number;
-              };
-              rgb: {a?: number; b: number; g: number; r: number};
-            }) => {
-              this.onChange({
-                hex: color.hex,
-                rgb: {...color.rgb, a: color.rgb.a || 1},
-              });
-            }}
-          />
+          {this.props.colorSet ? (
+            <CompactPicker
+              color={colorInfo}
+              colors={this.props.colorSet
+                .filter(x => x != 0)
+                .map(parseColor)
+                .map(rgba => {
+                  if (!rgba) {
+                    return '';
+                  }
+                  return `rgba(${rgba.r}, ${rgba.g}, ${rgba.b}, ${rgba.a})`;
+                })}
+              onChange={(color: {
+                hex: string;
+                hsl: {
+                  a?: number;
+                  h: number;
+                  l: number;
+                  s: number;
+                };
+                rgb: {a?: number; b: number; g: number; r: number};
+              }) => {
+                this.onChangeLite({rgb: {...color.rgb, a: color.rgb.a || 0}});
+              }}
+            />
+          ) : (
+            <SketchPicker
+              color={colorInfo}
+              presetColors={[
+                colors.blue,
+                colors.green,
+                colors.red,
+                colors.blueGrey,
+                colors.slate,
+                colors.aluminum,
+                colors.seaFoam,
+                colors.teal,
+                colors.lime,
+                colors.lemon,
+                colors.orange,
+                colors.tomato,
+                colors.cherry,
+                colors.pink,
+                colors.grape,
+              ]}
+              onChange={(color: {
+                hex: string;
+                hsl: {
+                  a?: number;
+                  h: number;
+                  l: number;
+                  s: number;
+                };
+                rgb: {a?: number; b: number; g: number; r: number};
+              }) => {
+                this.onChange({
+                  hex: color.hex,
+                  rgb: {...color.rgb, a: color.rgb.a || 1},
+                });
+              }}
+            />
+          )}
         </Popover>
       </ColorPickerDescription>
     );
@@ -379,6 +442,7 @@ class ColorEditor extends Component<{
 class DataDescriptionPreview extends Component<{
   type: string;
   value: any;
+  extra?: any;
   editable: boolean;
   commit: (opts: DescriptionCommitOptions) => void;
   onEdit?: () => void;
@@ -513,10 +577,38 @@ class DataDescriptionContainer extends Component<{
         }
       }
 
+      case 'color_lite': {
+        const colorInfo = parseColor(val);
+        if (typeof val === 'number' && val === 0) {
+          return <UndefinedValue>(not set)</UndefinedValue>;
+        } else if (colorInfo) {
+          const {a, b, g, r} = colorInfo;
+          return [
+            <ColorBox key="color-box" color={`rgba(${r}, ${g}, ${b}, ${a})`} />,
+            <ColorValue key="value">
+              rgba({r}, {g}, {b}, {a === 1 ? '1' : a.toFixed(2)})
+            </ColorValue>,
+          ];
+        } else {
+          return <span>Malformed color</span>;
+        }
+      }
+
       case 'text':
       case 'string':
         if (val.startsWith('http://') || val.startsWith('https://')) {
-          return <Link href={val}>{val}</Link>;
+          return (
+            <>
+              <Link href={val}>{val}</Link>
+              <Glyph
+                name="pencil"
+                variant="outline"
+                color={colors.light20}
+                size={16}
+                style={{cursor: 'pointer', marginLeft: 8}}
+              />
+            </>
+          );
         } else {
           return <StringValue>"{String(val || '')}"</StringValue>;
         }

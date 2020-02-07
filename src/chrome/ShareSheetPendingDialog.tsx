@@ -16,12 +16,11 @@ import {
   FlexRow,
   Text,
   LoadingIndicator,
-} from 'flipper';
+} from '../ui';
 import React from 'react';
 
 const Container = styled(FlexColumn)({
   padding: 20,
-  width: 500,
 });
 
 const Center = styled(FlexColumn)({
@@ -37,11 +36,13 @@ const Uploading = styled(Text)({
 export default function(props: {
   statusMessage: string;
   statusUpdate: string | null;
-  onCancel: () => void;
-  onRunInBackground: () => void;
+  hideNavButtons?: boolean;
+  onCancel?: () => void;
+  onRunInBackground?: () => void;
+  width?: number;
 }) {
   return (
-    <Container>
+    <Container style={{width: props.width}}>
       <Center>
         <LoadingIndicator size={30} />
         {props.statusUpdate && props.statusUpdate.length > 0 ? (
@@ -50,19 +51,32 @@ export default function(props: {
           </Uploading>
         ) : (
           <Uploading bold color={colors.macOSTitleBarIcon}>
-            {props.statusUpdate}
+            {props.statusMessage}
           </Uploading>
         )}
       </Center>
-      <FlexRow>
-        <Spacer />
-        <Button compact padded onClick={() => props.onCancel()}>
-          Cancel
-        </Button>
-        <Button compact padded type="primary" onClick={props.onRunInBackground}>
-          Run In Background
-        </Button>
-      </FlexRow>
+      {!props.hideNavButtons && props.onCancel && props.onRunInBackground && (
+        <FlexRow>
+          <Spacer />
+          <Button
+            compact
+            padded
+            onClick={() => {
+              props.onCancel && props.onCancel();
+            }}>
+            Cancel
+          </Button>
+          <Button
+            compact
+            padded
+            type="primary"
+            onClick={() => {
+              props.onRunInBackground && props.onRunInBackground();
+            }}>
+            Run In Background
+          </Button>
+        </FlexRow>
+      )}
     </Container>
   );
 }

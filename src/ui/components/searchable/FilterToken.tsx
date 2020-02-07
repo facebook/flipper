@@ -10,15 +10,14 @@
 import {Filter} from '../filter/types';
 import {PureComponent} from 'react';
 import Text from '../Text';
-import styled from 'react-emotion';
-import {findDOMNode} from 'react-dom';
+import styled from '@emotion/styled';
 import {colors} from '../colors';
 import electron, {MenuItemConstructorOptions} from 'electron';
 import React from 'react';
 import {ColorProperty} from 'csstype';
 
-const Token = styled(Text)(
-  (props: {focused?: boolean; color?: ColorProperty}) => ({
+const Token = styled(Text)<{focused?: boolean; color?: ColorProperty}>(
+  props => ({
     display: 'inline-flex',
     alignItems: 'center',
     backgroundColor: props.focused
@@ -41,26 +40,27 @@ const Token = styled(Text)(
 );
 Token.displayName = 'FilterToken:Token';
 
-const Key = styled(Text)(
-  (props: {type: 'exclude' | 'include' | 'enum'; focused?: boolean}) => ({
-    position: 'relative',
-    fontWeight: 500,
-    paddingRight: 12,
-    textTransform: 'capitalize',
-    lineHeight: '21px',
-    '&:after': {
-      content: props.type === 'exclude' ? '"≠"' : '"="',
-      paddingLeft: 5,
-      position: 'absolute',
-      top: -1,
-      right: 0,
-      fontSize: 14,
-    },
-    '&:active:after': {
-      backgroundColor: colors.macOSHighlightActive,
-    },
-  }),
-);
+const Key = styled(Text)<{
+  type: 'exclude' | 'include' | 'enum';
+  focused?: boolean;
+}>(props => ({
+  position: 'relative',
+  fontWeight: 500,
+  paddingRight: 12,
+  textTransform: 'capitalize',
+  lineHeight: '21px',
+  '&:after': {
+    content: props.type === 'exclude' ? '"≠"' : '"="',
+    paddingLeft: 5,
+    position: 'absolute',
+    top: -1,
+    right: 0,
+    fontSize: 14,
+  },
+  '&:active:after': {
+    backgroundColor: colors.macOSHighlightActive,
+  },
+}));
 Key.displayName = 'FilterToken:Key';
 
 const Value = styled(Text)({
@@ -73,7 +73,7 @@ const Value = styled(Text)({
 });
 Value.displayName = 'FilterToken:Value';
 
-const Chevron = styled('div')((props: {focused?: boolean}) => ({
+const Chevron = styled.div<{focused?: boolean}>(props => ({
   border: 0,
   paddingLeft: 3,
   paddingRight: 1,
@@ -104,7 +104,7 @@ type Props = {
 };
 
 export default class FilterToken extends PureComponent<Props> {
-  _ref: Element | undefined;
+  _ref?: Element | null;
 
   onMouseDown = () => {
     if (
@@ -164,8 +164,9 @@ export default class FilterToken extends PureComponent<Props> {
         window: electron.remote.getCurrentWindow(),
         // @ts-ignore: async is private API
         async: true,
-        x: left,
-        y: bottom + 8,
+        // Note: Electron requires the x/y parameters to be integer values for marshalling
+        x: Math.round(left),
+        y: Math.round(bottom + 8),
       });
     }
   };
@@ -202,11 +203,8 @@ export default class FilterToken extends PureComponent<Props> {
     }
   };
 
-  setRef = (ref: React.ReactInstance) => {
-    const element = findDOMNode(ref);
-    if (element instanceof HTMLElement) {
-      this._ref = element;
-    }
+  setRef = (ref: HTMLSpanElement | null) => {
+    this._ref = ref;
   };
 
   render() {
@@ -240,7 +238,7 @@ export default class FilterToken extends PureComponent<Props> {
         onMouseDown={this.onMouseDown}
         focused={this.props.focused}
         color={color}
-        innerRef={this.setRef}>
+        ref={this.setRef}>
         <Key type={this.props.filter.type} focused={this.props.focused}>
           {filter.key}
         </Key>

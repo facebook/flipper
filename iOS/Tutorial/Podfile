@@ -1,6 +1,6 @@
 project 'Tutorial.xcodeproj'
 swift_version = "4.1"
-flipperkit_version = '0.29.0'
+flipperkit_version = '0.30.2'
 use_frameworks!
 
 target 'Tutorial' do
@@ -18,8 +18,8 @@ target 'Tutorial' do
   # it's dependencies to be static and all other pods to
   # be dynamic.
   $static_framework = ['FlipperKit', 'Flipper', 'Flipper-Folly',
-    'CocoaAsyncSocket', 'ComponentKit', 'DoubleConversion',
-    'glog', 'Flipper-PeerTalk', 'Flipper-RSocket', 'Yoga', 'YogaKit',
+    'CocoaAsyncSocket', 'ComponentKit', 'Flipper-DoubleConversion',
+    'Flipper-Glog', 'Flipper-PeerTalk', 'Flipper-RSocket', 'Yoga', 'YogaKit',
     'CocoaLibEvent', 'OpenSSL-Universal', 'boost-for-react-native']
 
   pre_install do |installer|

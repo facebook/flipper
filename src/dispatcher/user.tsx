@@ -9,7 +9,7 @@
 
 import {Store} from '../reducers/index';
 import {Logger} from '../fb-interfaces/Logger';
-import {login} from '../reducers/user';
+import {login, logout} from '../reducers/user';
 import {getUser, logoutUser} from '../fb-stubs/user';
 
 export default (store: Store, logger: Logger) => {
@@ -17,7 +17,10 @@ export default (store: Store, logger: Logger) => {
     .then(user => {
       store.dispatch(login(user));
     })
-    .catch(console.debug);
+    .catch(e => {
+      store.dispatch(logout());
+      console.error(e);
+    });
 
   let prevUserName = store.getState().user.name;
   store.subscribe(() => {

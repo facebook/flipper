@@ -7,11 +7,11 @@
  * @format
  */
 
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 import {Component} from 'react';
 import React from 'react';
 
-const IFrame = styled('iframe')({
+const IFrame = styled.iframe({
   height: '100%',
   width: '100%',
   border: 'none',
@@ -30,26 +30,26 @@ export default class ResizeSensor extends Component<{
   /** Callback when resize happened */
   onResize: (e: UIEvent) => void;
 }> {
-  iframe: HTMLIFrameElement | undefined;
+  iframe: HTMLIFrameElement | undefined | null;
 
-  setRef = (ref: HTMLIFrameElement | undefined) => {
+  setRef = (ref: HTMLIFrameElement | null) => {
     this.iframe = ref;
   };
 
   render() {
-    return <IFrame innerRef={this.setRef} />;
+    return <IFrame ref={this.setRef} />;
   }
 
   componentDidMount() {
     const {iframe} = this;
-    if (iframe != null && iframe.contentWindow != null) {
+    if (iframe && iframe.contentWindow != null) {
       iframe.contentWindow.addEventListener('resize', this.handleResize);
     }
   }
 
   componentWillUnmount() {
     const {iframe} = this;
-    if (iframe != null && iframe.contentWindow != null) {
+    if (iframe && iframe.contentWindow != null) {
       iframe.contentWindow.removeEventListener('resize', this.handleResize);
     }
   }

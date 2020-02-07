@@ -17,7 +17,7 @@ type Props = {
   onClick: () => void;
 };
 
-const ToolbarIcon = styled('div')({
+const ToolbarIcon = styled.div({
   marginRight: 9,
   marginTop: -3,
   marginLeft: 4,

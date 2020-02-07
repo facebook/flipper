@@ -18,14 +18,18 @@ const chalk = require('chalk');
 const http = require('http');
 const path = require('path');
 const Metro = require('../static/node_modules/metro');
+const MetroResolver = require('../static/node_modules/metro-resolver');
 const fs = require('fs');
+const Watchman = require('../static/watchman');
 
 const convertAnsi = new Convert();
 
 const DEFAULT_PORT = process.env.PORT || 3000;
 const STATIC_DIR = path.join(__dirname, '..', 'static');
 
-function launchElectron({bundleURL, electronURL}) {
+let shutdownElectron = undefined;
+
+function launchElectron({devServerURL, bundleURL, electronURL}) {
   const args = [
     path.join(STATIC_DIR, 'index.js'),
     '--remote-debugging-port=9222',
@@ -39,17 +43,27 @@ function launchElectron({bundleURL, electronURL}) {
       SONAR_ROOT: process.cwd(),
       BUNDLE_URL: bundleURL,
       ELECTRON_URL: electronURL,
+      DEV_SERVER_URL: devServerURL,
     },
     stdio: 'inherit',
   });
 
-  proc.on('close', () => {
+  const electronCloseListener = () => {
     process.exit();
-  });
+  };
 
-  process.on('exit', () => {
+  const processExitListener = () => {
     proc.kill();
-  });
+  };
+
+  proc.on('close', electronCloseListener);
+  process.on('exit', processExitListener);
+
+  return () => {
+    proc.off('close', electronCloseListener);
+    process.off('exit', processExitListener);
+    proc.kill();
+  };
 }
 
 function startMetroServer(app) {
@@ -67,7 +81,17 @@ function startMetroServer(app) {
       ),
     },
     resolver: {
-      blacklistRE: /\/(sonar|flipper)\/dist\/|(\.native\.js$)/,
+      blacklistRE: /(\/|\\)(sonar|flipper|flipper-public)(\/|\\)(dist|doctor)(\/|\\)|(\.native\.js$)/,
+      resolveRequest: (context, moduleName, platform) => {
+        if (moduleName.startsWith('./localhost:3000')) {
+          moduleName = moduleName.replace('./localhost:3000', '.');
+        }
+        return MetroResolver.resolve(
+          {...context, resolveRequest: null},
+          moduleName,
+          platform,
+        );
+      },
     },
     watch: true,
   }).then(metroBundlerServer => {
@@ -93,6 +117,18 @@ function startAssetServer(port) {
     next();
   });
 
+  app.post('/_restartElectron', (req, res) => {
+    if (shutdownElectron) {
+      shutdownElectron();
+    }
+    shutdownElectron = launchElectron({
+      devServerURL: `http://localhost:${port}`,
+      bundleURL: `http://localhost:${port}/src/init.bundle`,
+      electronURL: `http://localhost:${port}/index.dev.html`,
+    });
+    res.end();
+  });
+
   app.get('/', (req, res) => {
     fs.readFile(path.join(STATIC_DIR, 'index.dev.html'), (err, content) => {
       res.end(content);
@@ -114,7 +150,7 @@ function startAssetServer(port) {
   });
 }
 
-function addWebsocket(server) {
+async function addWebsocket(server) {
   const io = socketIo(server);
 
   // notify connected clients that there's errors in the console
@@ -126,9 +162,29 @@ function addWebsocket(server) {
 
   // refresh the app on changes to the src folder
   // this can be removed once metroServer notifies us about file changes
-  fs.watch(path.join(__dirname, '..', 'src'), () => {
-    io.emit('refresh');
-  });
+  try {
+    const watchman = new Watchman(path.resolve(__dirname, '..', 'src'));
+    await watchman.initialize();
+    await watchman.startWatchFiles(
+      '',
+      () => {
+        io.emit('refresh');
+      },
+      {
+        excludes: [
+          '**/__tests__/**/*',
+          '**/node_modules/**/*',
+          '**/.*',
+          'plugins/**/*', // plugin changes are tracked separately, so exlcuding them here to avoid double reloading.
+        ],
+      },
+    );
+  } catch (err) {
+    console.error(
+      'Failed to start watching for changes using Watchman, continue without hot reloading',
+      err,
+    );
+  }
 
   return io;
 }
@@ -186,10 +242,11 @@ function outputScreen(socket) {
 (async () => {
   const port = await detect(DEFAULT_PORT);
   const {app, server} = await startAssetServer(port);
-  const socket = addWebsocket(server);
+  const socket = await addWebsocket(server);
   await startMetroServer(app);
   outputScreen(socket);
-  launchElectron({
+  shutdownElectron = launchElectron({
+    devServerURL: `http://localhost:${port}`,
     bundleURL: `http://localhost:${port}/src/init.bundle`,
     electronURL: `http://localhost:${port}/index.dev.html`,
   });

@@ -2,7 +2,8 @@
   "groups": {
     "main": {
       "packages": [
-        "package.json"
+        "package.json",
+        "headless-tests/package.json"
       ]
     },
     "plugins": {
@@ -12,6 +13,8 @@
         "src/plugins/databases/package.json",
         "src/plugins/example/package.json",
         "src/plugins/fresco/package.json",
+        "src/plugins/kaios-allocations/package.json",
+        "src/plugins/kaios-ram/package.json",
         "src/plugins/layout/package.json",
         "src/plugins/leak_canary/package.json",
         "src/plugins/logs/package.json",

@@ -6,7 +6,15 @@
       "type": "chrome",
       "request": "attach",
       "port": 9222,
-      "webRoot": "${workspaceRoot}"
-    }
+      "webRoot": "/",
+      "url": "http://localhost:3000/index.dev.html"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch Current Jest Suite",
+      "program": "${workspaceFolder}/node_modules/.bin/jest",
+      "args": ["--runInBand", "${relativeFile}"]
+   }
   ]
 }

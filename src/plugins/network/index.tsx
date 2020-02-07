@@ -468,9 +468,10 @@ function calculateState(
       }
     }
   } else if (props.responses !== nextProps.responses) {
-    // new response
+    // new or updated response
     const resId = Object.keys(nextProps.responses).find(
-      (responseId: RequestId) => !props.responses[responseId],
+      (responseId: RequestId) =>
+        props.responses[responseId] !== nextProps.responses[responseId],
     );
     if (resId) {
       const request = nextProps.requests[resId];
@@ -486,7 +487,8 @@ function calculateState(
   }
 
   rows.sort(
-    (a: TableBodyRow, b: TableBodyRow) => Number(a.sortKey) - Number(b.sortKey),
+    (a: TableBodyRow, b: TableBodyRow) =>
+      (a.sortKey as number) - (b.sortKey as number),
   );
 
   return {
@@ -511,7 +513,7 @@ class NetworkTable extends PureComponent<NetworkTableProps, NetworkTableState> {
     );
   }
 
-  componentWillReceiveProps(nextProps: NetworkTableProps) {
+  UNSAFE_componentWillReceiveProps(nextProps: NetworkTableProps) {
     this.setState(calculateState(this.props, nextProps, this.state.sortedRows));
   }
 

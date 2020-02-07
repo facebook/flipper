@@ -70,7 +70,7 @@ async function queryDevices(store: Store, logger: Logger): Promise<void> {
   if (!(await checkIfDevicesCanBeQueryied(store))) {
     return;
   }
-  await checkXcodeVersionMismatch();
+  await checkXcodeVersionMismatch(store);
   const {connections} = store.getState();
   const currentDeviceIDs: Set<string> = new Set(
     connections.devices
@@ -169,7 +169,7 @@ function queryDevicesForever(store: Store, logger: Logger) {
 }
 
 let xcodeVersionMismatchFound = false;
-async function checkXcodeVersionMismatch() {
+async function checkXcodeVersionMismatch(store: Store) {
   if (xcodeVersionMismatchFound) {
     return;
   }
@@ -184,9 +184,18 @@ async function checkXcodeVersionMismatch() {
       );
       const runningVersion = match && match.length > 0 ? match[0].trim() : null;
       if (runningVersion && runningVersion !== xcodeCLIVersion) {
-        console.error(
-          `Xcode version mismatch: Simulator is running from "${runningVersion}" while Xcode CLI is "${xcodeCLIVersion}". Running "xcode-select --switch ${runningVersion}" can fix this.`,
-        );
+        const errorMessage = `Xcode version mismatch: Simulator is running from "${runningVersion}" while Xcode CLI is "${xcodeCLIVersion}". Running "xcode-select --switch ${runningVersion}" can fix this.`;
+        store.dispatch({
+          type: 'SERVER_ERROR',
+          payload: {
+            message: errorMessage,
+            details:
+              "You might want to run 'sudo xcode-select -s /Applications/Xcode.app/Contents/Developer'",
+            urgent: true,
+          },
+        });
+        // Fire a console.error as well, so that it gets reported to the backend.
+        console.error(errorMessage);
         xcodeVersionMismatchFound = true;
         break;
       }
@@ -245,6 +254,9 @@ export async function getActiveDevicesAndSimulators(): Promise<
 export default (store: Store, logger: Logger) => {
   // monitoring iOS devices only available on MacOS.
   if (process.platform !== 'darwin') {
+    return;
+  }
+  if (!store.getState().settingsState.enableIOS) {
     return;
   }
   isXcodeDetected()

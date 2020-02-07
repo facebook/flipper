@@ -16,76 +16,13 @@ const fs = require('fs');
 const path = require('path');
 const {remote} = require('electron');
 
-const ICONS = {
-  'app-dailies': [12],
-  'app-react': [12],
-  'arrow-right': [12],
-  bell: [12],
-  'bell-null-outline': [12, 24],
-  'bell-null': [12],
-  'building-city': [12],
-  'brush-paint': [12],
-  'caution-octagon': [16],
-  'caution-triangle': [12, 16, 24],
-  'chevron-down-outline': [10],
-  'chevron-down': [8, 12],
-  'chevron-up': [8, 12],
-  'chevron-right': [8, 12, 16],
-  compose: [12],
-  'cross-circle': [12, 16, 24],
-  'dots-3-circle-outline': [16],
-  'first-aid': [12],
-  'flash-default': [12],
-  'info-circle': [12, 16, 24],
-  'magic-wand': [12, 20],
-  'magnifying-glass': [16, 20],
-  'minus-circle': [12],
-  'plus-circle': [16],
-  'mobile-engagement': [16],
-  network: [12],
-  'news-feed': [12],
-  'question-circle-outline': [16],
-  'star-outline': [12, 16, 24],
-  trending: [12],
-  'triangle-down': [12],
-  'triangle-right': [12],
-  'thought-bubble': [12],
-  accessibility: [16],
-  apps: [12],
-  bird: [12],
-  borders: [16],
-  box: [12],
-  bug: [12],
-  camcorder: [12],
-  camera: [12],
-  caution: [16],
-  cross: [16],
-  checkmark: [16],
-  dashboard: [12],
-  desktop: [12],
-  directions: [12],
-  download: [16],
-  internet: [12],
-  messages: [12],
-  mobile: [12, 16, 32],
-  posts: [20],
-  power: [16],
-  profile: [12],
-  'refresh-left': [16],
-  rocket: [20],
-  settings: [12],
-  share: [16],
-  star: [12, 16, 24],
-  tree: [12],
-  translate: [12],
-  trash: [12, 16],
-  'star-slash': [16],
-  'life-event-major': [16],
-  target: [12, 16],
-  tools: [12, 20],
-  'washing-machine': [12],
-  'watch-tv': [12],
-};
+const staticPath = path.resolve(__dirname, '..', '..', 'static');
+const appPath = remote ? remote.app.getAppPath() : staticPath;
+const iconsPath = fs.existsSync(path.resolve(appPath, 'icons.json'))
+  ? path.resolve(appPath, 'icons.json')
+  : path.resolve(staticPath, 'icons.json');
+
+const ICONS = JSON.parse(fs.readFileSync(iconsPath, {encoding: 'utf8'}));
 
 // Takes a string like 'star', or 'star-outline', and converts it to
 // {trimmedName: 'star', variant: 'filled'} or {trimmedName: 'star', variant: 'outline'}
@@ -96,13 +33,19 @@ function getIconPartsFromName(icon) {
   return {trimmedName: trimmedName, variant: variant};
 }
 
+function getIconFileName(icon, size, density) {
+  return `${icon.trimmedName}-${icon.variant}-${size}@${density}x.png`;
+}
+
 // $FlowFixMe not using flow in this file
 function buildLocalIconPath(name, size, density) {
   const icon = getIconPartsFromName(name);
-  return path.join(
-    'icons',
-    `${icon.trimmedName}-${icon.variant}-${size}@${density}x.png`,
-  );
+  return path.join('icons', getIconFileName(icon, size, density));
+}
+
+function buildLocalIconURL(name, size, density) {
+  const icon = getIconPartsFromName(name);
+  return `icons/${getIconFileName(icon, size, density)}`;
 }
 
 // $FlowFixMe not using flow in this file
@@ -118,9 +61,46 @@ function buildIconURL(name, size, density) {
     typeof window !== 'undefined' &&
     (!ICONS[name] || !ICONS[name].includes(size))
   ) {
-    console.warn(
-      `Using uncached icon: "${name}: [${size}]" Add it to icons.js to preload it.`,
+    // From utils/isProduction
+    const isProduction = !/node_modules[\\/]electron[\\/]/.test(
+      // $FlowFixMe
+      process.execPath || remote.process.execPath,
     );
+
+    if (!isProduction) {
+      const existing = ICONS[name] || (ICONS[name] = []);
+      if (!existing.includes(size)) {
+        // Check if that icon actually exists!
+        fetch(url)
+          .then(res => {
+            if (res.status === 200 && !existing.includes(size)) {
+              // the icon exists
+              existing.push(size);
+              existing.sort();
+              fs.writeFileSync(
+                iconsPath,
+                JSON.stringify(ICONS, null, 2),
+                'utf8',
+              );
+              console.warn(
+                `Added uncached icon "${name}: [${size}]" to /static/icons.json. Restart Flipper to apply the change.`,
+              );
+            } else {
+              throw new Error(
+                // eslint-disable-next-line prettier/prettier
+                `Trying to use icon '${name}' with size ${size} and density ${density}, however the icon doesn't seem to exists at ${url}: ${
+                  res.status
+                }`,
+              );
+            }
+          })
+          .catch(e => console.error(e));
+      }
+    } else {
+      console.warn(
+        `Using uncached icon: "${name}: [${size}]". Add it to /static/icons.json to preload it.`,
+      );
+    }
   }
   return url;
 }
@@ -166,13 +146,17 @@ module.exports = {
       }
     }
 
-    const localPath = buildLocalIconPath(name, size, density);
     // resolve icon locally if possible
     if (
       remote &&
-      fs.existsSync(path.join(remote.app.getAppPath(), localPath))
+      fs.existsSync(
+        path.join(
+          remote.app.getAppPath(),
+          buildLocalIconPath(name, size, density),
+        ),
+      )
     ) {
-      return localPath;
+      return buildLocalIconURL(name, size, density);
     }
     return buildIconURL(name, requestedSize, density);
   },

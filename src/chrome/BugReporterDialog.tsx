@@ -44,7 +44,7 @@ const Center = styled(Text)({
   paddingRight: 20,
 });
 
-const Title = styled('div')({
+const Title = styled.div({
   fontWeight: 500,
   marginTop: 8,
   marginLeft: 2,
@@ -66,7 +66,7 @@ const DescriptionTextarea = styled(Textarea)({
   flexGrow: 1,
 });
 
-const SubmitButtonContainer = styled('div')({
+const SubmitButtonContainer = styled.div({
   marginLeft: 'auto',
 });
 
@@ -118,8 +118,8 @@ class BugReporterDialog extends Component<Props, State> {
     error: null,
   };
 
-  titleRef?: HTMLElement;
-  descriptionRef?: HTMLElement;
+  titleRef?: HTMLElement | null;
+  descriptionRef?: HTMLElement | null;
 
   onDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     this.setState({description: e.target.value});
@@ -184,11 +184,11 @@ class BugReporterDialog extends Component<Props, State> {
     );
   };
 
-  setTitleRef = (ref: HTMLElement) => {
+  setTitleRef = (ref: HTMLElement | null) => {
     this.titleRef = ref;
   };
 
-  setDescriptionRef = (ref: HTMLElement) => {
+  setDescriptionRef = (ref: HTMLElement | null) => {
     this.descriptionRef = ref;
   };
 
@@ -240,7 +240,7 @@ class BugReporterDialog extends Component<Props, State> {
           <TitleInput
             placeholder="Title"
             value={title}
-            innerRef={this.setTitleRef}
+            ref={this.setTitleRef}
             onChange={this.onTitleChange}
             disabled={submitting}
           />
@@ -248,7 +248,7 @@ class BugReporterDialog extends Component<Props, State> {
           <DescriptionTextarea
             placeholder="Describe your problem in as much detail as possible."
             value={description}
-            innerRef={this.setDescriptionRef}
+            ref={this.setDescriptionRef}
             onChange={this.onDescriptionChange}
             disabled={submitting}
           />

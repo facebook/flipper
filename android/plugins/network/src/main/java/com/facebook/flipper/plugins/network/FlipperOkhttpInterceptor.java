@@ -37,6 +37,11 @@ import okio.BufferedSource;
 public class FlipperOkhttpInterceptor
     implements Interceptor, BufferingFlipperPlugin.ConnectionListener {
 
+  // By default, limit body size (request or response) reporting to 100KB to avoid OOM
+  private static final long DEFAULT_MAX_BODY_BYTES = 100 * 1024;
+
+  private long maxBodyBytes = DEFAULT_MAX_BODY_BYTES;
+
   public @Nullable NetworkFlipperPlugin plugin;
 
   private Map<String, Map<String,ResponseInfo>> mockResponseMap = new HashMap<>();
@@ -57,6 +62,12 @@ public class FlipperOkhttpInterceptor
       mockResponseMap.put(requestUrl, subMap);
     }
     subMap.put(method, response);
+  }
+
+  /** If you want to change the number of bytes displayed for the body, use this constructor */
+  public FlipperOkhttpInterceptor(NetworkFlipperPlugin plugin, long maxBodyBytes) {
+    this.plugin = plugin;
+    this.maxBodyBytes = maxBodyBytes;
   }
 
   @Override
@@ -106,10 +117,11 @@ public class FlipperOkhttpInterceptor
     return builder.build();
   }
 
-  private static byte[] bodyToByteArray(final Request request) throws IOException {
+  private static byte[] bodyToByteArray(final Request request, final long maxBodyBytes)
+      throws IOException {
     final Buffer buffer = new Buffer();
     request.body().writeTo(buffer);
-    return buffer.readByteArray();
+    return buffer.readByteArray(Math.min(buffer.size(), maxBodyBytes));
   }
 
   private RequestInfo convertRequest(Request request, String identifier) throws IOException {
@@ -121,7 +133,7 @@ public class FlipperOkhttpInterceptor
     info.method = request.method();
     info.uri = request.url().toString();
     if (request.body() != null) {
-      info.body = bodyToByteArray(request);
+      info.body = bodyToByteArray(request, maxBodyBytes);
     }
 
     return info;
@@ -136,7 +148,7 @@ public class FlipperOkhttpInterceptor
     info.statusCode = response.code();
     info.headers = headers;
     BufferedSource source = body.source();
-    source.request(Long.MAX_VALUE);
+    source.request(maxBodyBytes);
     Buffer buffer = source.buffer().clone();
     info.body = buffer.readByteArray();
     return info;

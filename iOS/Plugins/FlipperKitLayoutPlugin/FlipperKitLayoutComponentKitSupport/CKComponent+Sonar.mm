@@ -244,16 +244,6 @@ static CK::StaticMutex _mutex = CK_MUTEX_INITIALIZER;
   return ((CKComponent *(*)(CKComponent *, SEL, id))objc_msgSend)(self, resultSelector, state);
 }
 
-- (std::vector<CKComponent *>)sonar_renderChildren:(id)state {
-  [self setMutableDataFromStorage];
-  SEL resultSelector = NSSelectorFromString([[self class] swizzledMethodNameForRender]);
-#if defined(__aarch64__)
-  return ((std::vector<CKComponent *>(*)(CKComponent *, SEL, id))objc_msgSend)(self, resultSelector, state);
-#else
-  return ((std::vector<CKComponent *>(*)(CKComponent *, SEL, id))objc_msgSend_stret)(self, resultSelector, state);
-#endif
-}
-
 - (NSDictionary<NSString *, SKNodeDataChanged> *)sonar_getDataMutationsChanged {
   return @{};
 }
@@ -271,9 +261,6 @@ static CK::StaticMutex _mutex = CK_MUTEX_INITIALIZER;
       if ([self respondsToSelector:@selector(render:)]) {
         SEL replacement = [[self class] registerNewImplementation:@selector(sonar_render:)];
         [[self class] swizzleOriginalSEL:@selector(render:) to:replacement];
-      } else if ([self respondsToSelector:@selector(renderChildren:)]) {
-        SEL replacement = [[self class] registerNewImplementation:@selector(sonar_renderChildren:)];
-        [[self class] swizzleOriginalSEL:@selector(renderChildren:) to:replacement];
       } else {
         CKAssert(NO, @"Only CKRenderLayoutComponent and CKRenderLayoutWithChildrenComponent children are now able to be live editable");
       }

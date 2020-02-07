@@ -20,6 +20,10 @@ import pluginStates, {
   State as PluginStatesState,
   Action as PluginStatesAction,
 } from './pluginStates';
+import pluginMessageQueue, {
+  State as PluginMessageQueueState,
+  Action as PluginMessageQueueAction,
+} from './pluginMessageQueue';
 import notifications, {
   State as NotificationsState,
   Action as NotificationsAction,
@@ -36,6 +40,10 @@ import settings, {
   Settings as SettingsState,
   Action as SettingsAction,
 } from './settings';
+import launcherSettings, {
+  LauncherSettings as LauncherSettingsState,
+  Action as LauncherSettingsAction,
+} from './launcherSettings';
 import pluginManager, {
   State as PluginManagerState,
   Action as PluginManagerAction,
@@ -44,8 +52,14 @@ import healthchecks, {
   Action as HealthcheckAction,
   State as HealthcheckState,
 } from './healthchecks';
+import usageTracking, {
+  Action as TrackingAction,
+  State as TrackingState,
+} from './usageTracking';
 import user, {State as UserState, Action as UserAction} from './user';
 import JsonFileStorage from '../utils/jsonFileReduxPersistStorage';
+import LauncherSettingsStorage from '../utils/launcherSettingsStorage';
+import {launcherConfigDir} from '../utils/launcher';
 import os from 'os';
 import {resolve} from 'path';
 import xdg from 'xdg-basedir';
@@ -59,26 +73,32 @@ export type Actions =
   | ApplicationAction
   | DevicesAction
   | PluginStatesAction
+  | PluginMessageQueueAction
   | NotificationsAction
   | PluginsAction
   | UserAction
   | SettingsAction
+  | LauncherSettingsAction
   | SupportFormAction
   | PluginManagerAction
   | HealthcheckAction
+  | TrackingAction
   | {type: 'INIT'};
 
 export type State = {
   application: ApplicationState;
   connections: DevicesState & PersistPartial;
   pluginStates: PluginStatesState;
+  pluginMessageQueue: PluginMessageQueueState;
   notifications: NotificationsState & PersistPartial;
   plugins: PluginsState;
   user: UserState & PersistPartial;
   settingsState: SettingsState & PersistPartial;
+  launcherSettingsState: LauncherSettingsState & PersistPartial;
   supportForm: SupportFormState;
   pluginManager: PluginManagerState;
-  healthchecks: HealthcheckState;
+  healthchecks: HealthcheckState & PersistPartial;
+  usageTracking: TrackingState;
 };
 
 export type Store = ReduxStore<State, Actions>;
@@ -90,6 +110,10 @@ const settingsStorage = new JsonFileStorage(
     'flipper',
     'settings.json',
   ),
+);
+
+const launcherSettingsStorage = new LauncherSettingsStorage(
+  resolve(launcherConfigDir(), 'flipper-launcher.toml'),
 );
 
 export default combineReducers<State, Actions>({
@@ -108,6 +132,7 @@ export default combineReducers<State, Actions>({
     connections,
   ),
   pluginStates,
+  pluginMessageQueue: pluginMessageQueue as any,
   notifications: persistReducer(
     {
       key: 'notifications',
@@ -130,5 +155,23 @@ export default combineReducers<State, Actions>({
     {key: 'settings', storage: settingsStorage},
     settings,
   ),
-  healthchecks,
+  launcherSettingsState: persistReducer(
+    {
+      key: 'launcherSettings',
+      storage: launcherSettingsStorage,
+      serialize: false,
+      // @ts-ignore: property is erroneously missing in redux-persist type definitions
+      deserialize: false,
+    },
+    launcherSettings,
+  ),
+  healthchecks: persistReducer<HealthcheckState, Actions>(
+    {
+      key: 'healthchecks',
+      storage,
+      whitelist: ['acknowledgedProblems'],
+    },
+    healthchecks,
+  ),
+  usageTracking,
 });

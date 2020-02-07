@@ -45,14 +45,14 @@ const Waiting = styled(FlexBox)(props => ({
   textAlign: 'center',
 }));
 
-const InfoText = styled('div')(props => ({
+const InfoText = styled.div(props => ({
   marginTop: 10,
   marginBottom: 10,
   fontWeight: '500',
   color: colors.light30,
 }));
 
-const InfoBox = styled('div')(props => ({
+const InfoBox = styled.div(props => ({
   maxWidth: 400,
   margin: 'auto',
   textAlign: 'center',

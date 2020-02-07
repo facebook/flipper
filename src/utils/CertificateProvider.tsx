@@ -407,7 +407,7 @@ export default class CertificateProvider {
             );
           });
       })
-      .then(csrFromDevice => csrFromDevice === csr);
+      .then(csrFromDevice => csrFromDevice === this.santitizeString(csr));
   }
 
   santitizeString(csrString: string): string {

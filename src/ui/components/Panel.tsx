@@ -8,7 +8,7 @@
  */
 
 import React from 'react';
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 import FlexColumn from './FlexColumn';
 import FlexBox from './FlexBox';
 import {colors} from './colors';
@@ -85,16 +85,17 @@ export default class Panel extends React.Component<
     collapsable: true,
   };
 
-  static PanelContainer = styled(FlexColumn)(
-    (props: {floating?: boolean; collapsed?: boolean}) => ({
-      flexShrink: 0,
-      padding: props.floating ? 10 : 0,
-      borderBottom: props.collapsed ? 'none' : BORDER,
-    }),
-  );
+  static PanelContainer = styled(FlexColumn)<{
+    floating?: boolean;
+    collapsed?: boolean;
+  }>(props => ({
+    flexShrink: 0,
+    padding: props.floating ? 10 : 0,
+    borderBottom: props.collapsed ? 'none' : BORDER,
+  }));
 
-  static PanelHeader = styled(FlexBox)(
-    (props: {floating?: boolean; padded?: boolean}) => ({
+  static PanelHeader = styled(FlexBox)<{floating?: boolean; padded?: boolean}>(
+    props => ({
       backgroundColor: '#f6f7f9',
       border: props.floating ? BORDER : 'none',
       borderBottom: BORDER,
@@ -111,8 +112,8 @@ export default class Panel extends React.Component<
     }),
   );
 
-  static PanelBody = styled(FlexColumn)(
-    (props: {floating?: boolean; padded?: boolean}) => ({
+  static PanelBody = styled(FlexColumn)<{floating?: boolean; padded?: boolean}>(
+    props => ({
       backgroundColor: '#fff',
       border: props.floating ? BORDER : 'none',
       borderBottomLeftRadius: 2,

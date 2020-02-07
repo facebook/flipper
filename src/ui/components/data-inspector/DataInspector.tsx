@@ -12,10 +12,10 @@ import {MenuTemplate} from '../ContextMenu';
 import {Component} from 'react';
 import ContextMenu from '../ContextMenu';
 import Tooltip from '../Tooltip';
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 import createPaste from '../../../fb-stubs/createPaste';
 import {reportInteraction} from '../../../utils/InteractionTracker';
-import DataPreview from './DataPreview';
+import DataPreview, {DataValueExtractor, InspectorName} from './DataPreview';
 import {getSortedKeys} from './utils';
 import {colors} from '../colors';
 import {clipboard} from 'electron';
@@ -23,8 +23,10 @@ import deepEqual from 'deep-equal';
 import React from 'react';
 import {TooltipOptions} from '../TooltipProvider.js';
 
-const BaseContainer = styled('div')(
-  (props: {depth?: number; disabled?: boolean}) => ({
+export {DataValueExtractor} from './DataPreview';
+
+const BaseContainer = styled.div<{depth?: number; disabled?: boolean}>(
+  props => ({
     fontFamily: 'Menlo, monospace',
     fontSize: 11,
     lineHeight: '17px',
@@ -36,22 +38,22 @@ const BaseContainer = styled('div')(
 );
 BaseContainer.displayName = 'DataInspector:BaseContainer';
 
-const RecursiveBaseWrapper = styled('span')({
+const RecursiveBaseWrapper = styled.span({
   color: colors.red,
 });
 RecursiveBaseWrapper.displayName = 'DataInspector:RecursiveBaseWrapper';
 
-const Wrapper = styled('span')({
+const Wrapper = styled.span({
   color: '#555',
 });
 Wrapper.displayName = 'DataInspector:Wrapper';
 
-const PropertyContainer = styled('span')({
+const PropertyContainer = styled.span({
   paddingTop: '2px',
 });
 PropertyContainer.displayName = 'DataInspector:PropertyContainer';
 
-const ExpandControl = styled('span')({
+const ExpandControl = styled.span({
   color: '#6e6e6e',
   fontSize: 10,
   marginLeft: -11,
@@ -60,27 +62,10 @@ const ExpandControl = styled('span')({
 });
 ExpandControl.displayName = 'DataInspector:ExpandControl';
 
-export const InspectorName = styled('span')({
-  color: colors.grapeDark1,
-});
-InspectorName.displayName = 'DataInspector:InspectorName';
-
 const nameTooltipOptions: TooltipOptions = {
   position: 'toLeft',
   showTail: true,
 };
-
-export type DataValueExtractor = (
-  value: any,
-  depth: number,
-) =>
-  | {
-      mutable: boolean;
-      type: string;
-      value: any;
-    }
-  | undefined
-  | null;
 
 export type DataInspectorSetValue = (path: Array<string>, val: any) => void;
 
@@ -454,12 +439,13 @@ export default class DataInspector extends Component<DataInspectorProps> {
 
     let type;
     let value;
+    let extra;
     if (res) {
       if (!res.mutable) {
         setValue = null;
       }
 
-      ({type, value} = res);
+      ({type, value, extra} = res);
     } else {
       return null;
     }
@@ -504,10 +490,10 @@ export default class DataInspector extends Component<DataInspectorProps> {
 
       const keys = getSortedKeys({...value, ...diffValue});
 
-      const Added = styled('div')({
+      const Added = styled.div({
         backgroundColor: colors.tealTint70,
       });
-      const Removed = styled('div')({
+      const Removed = styled.div({
         backgroundColor: colors.cherryTint70,
       });
 
@@ -581,6 +567,7 @@ export default class DataInspector extends Component<DataInspectorProps> {
           setValue={setValue}
           type={type}
           value={value}
+          extra={extra}
         />
       );
     } else {

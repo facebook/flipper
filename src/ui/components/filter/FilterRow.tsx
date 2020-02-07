@@ -11,10 +11,10 @@ import {Filter} from './types.js';
 import React, {PureComponent} from 'react';
 import ContextMenu from '../ContextMenu';
 import textContent from '../../../utils/textContent';
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 import {colors} from '../colors';
 
-const FilterText = styled('div')({
+const FilterText = styled.div({
   display: 'flex',
   alignSelf: 'baseline',
   userSelect: 'none',

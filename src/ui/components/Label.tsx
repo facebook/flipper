@@ -7,9 +7,9 @@
  * @format
  */
 
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 
-const Label = styled('div')({
+const Label = styled.div({
   fontSize: 12,
   fontWeight: 'bold',
 });

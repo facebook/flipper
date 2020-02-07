@@ -7,13 +7,13 @@
  * @format
  */
 
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 import {colors} from './colors';
 import {Component} from 'react';
 import {shell} from 'electron';
 import React from 'react';
 
-const StyledLink = styled('span')({
+const StyledLink = styled.span({
   color: colors.highlight,
   '&:hover': {
     cursor: 'pointer',
@@ -25,6 +25,7 @@ StyledLink.displayName = 'Link:StyledLink';
 export default class Link extends Component<{
   href: string;
   children?: React.ReactNode;
+  style?: React.CSSProperties;
 }> {
   onClick = () => {
     shell.openExternal(this.props.href);
@@ -32,7 +33,9 @@ export default class Link extends Component<{
 
   render() {
     return (
-      <StyledLink onClick={this.onClick}>{this.props.children}</StyledLink>
+      <StyledLink onClick={this.onClick} style={this.props.style}>
+        {this.props.children || this.props.href}
+      </StyledLink>
     );
   }
 }

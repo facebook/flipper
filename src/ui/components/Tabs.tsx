@@ -8,7 +8,7 @@
  */
 
 import FlexColumn from './FlexColumn';
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 import Orderable from './Orderable';
 import FlexRow from './FlexRow';
 import {colors} from './colors';
@@ -23,49 +23,47 @@ const TabList = styled(FlexRow)({
 });
 TabList.displayName = 'Tabs:TabList';
 
-const TabListItem = styled('div')(
-  (props: {
-    active?: boolean;
-    width?: WidthProperty<number>;
-    container?: boolean;
-  }) => ({
-    background: props.container
-      ? props.active
-        ? 'linear-gradient(to bottom, #67a6f7 0%, #0072FA 100%)'
-        : `linear-gradient(to bottom, white 0%,${colors.macOSTitleBarButtonBackgroundBlur} 100%)`
-      : props.active
-      ? colors.light15
-      : colors.light02,
-    borderBottom: props.container ? '1px solid #B8B8B8' : '1px solid #dddfe2',
-    boxShadow:
-      props.active && props.container
-        ? 'inset 0px 0px 3px rgba(0,0,0,0.25)'
-        : 'none',
-    color: props.container && props.active ? colors.white : colors.dark80,
-    flex: props.container ? 'unset' : 1,
-    top: props.container ? -11 : 0,
-    fontWeight: 500,
-    fontSize: 13,
-    lineHeight: props.container ? '22px' : '28px',
-    overflow: 'hidden',
-    padding: '0 10px',
-    position: 'relative',
-    textAlign: 'center',
-    textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap',
-    '&:first-child': {
-      borderTopLeftRadius: props.container ? 3 : 0,
-      borderBottomLeftRadius: props.container ? 3 : 0,
-    },
-    '&:last-child': {
-      borderTopRightRadius: props.container ? 3 : 0,
-      borderBottomRightRadius: props.container ? 3 : 0,
-    },
-    '&:hover': {
-      backgroundColor: props.active ? colors.light15 : colors.light05,
-    },
-  }),
-);
+const TabListItem = styled.div<{
+  active?: boolean;
+  width?: WidthProperty<number>;
+  container?: boolean;
+}>(props => ({
+  background: props.container
+    ? props.active
+      ? 'linear-gradient(to bottom, #67a6f7 0%, #0072FA 100%)'
+      : `linear-gradient(to bottom, white 0%,${colors.macOSTitleBarButtonBackgroundBlur} 100%)`
+    : props.active
+    ? colors.light15
+    : colors.light02,
+  borderBottom: props.container ? '1px solid #B8B8B8' : '1px solid #dddfe2',
+  boxShadow:
+    props.active && props.container
+      ? 'inset 0px 0px 3px rgba(0,0,0,0.25)'
+      : 'none',
+  color: props.container && props.active ? colors.white : colors.dark80,
+  flex: props.container ? 'unset' : 1,
+  top: props.container ? -11 : 0,
+  fontWeight: 500,
+  fontSize: 13,
+  lineHeight: props.container ? '22px' : '28px',
+  overflow: 'hidden',
+  padding: '0 10px',
+  position: 'relative',
+  textAlign: 'center',
+  textOverflow: 'ellipsis',
+  whiteSpace: 'nowrap',
+  '&:first-child': {
+    borderTopLeftRadius: props.container ? 3 : 0,
+    borderBottomLeftRadius: props.container ? 3 : 0,
+  },
+  '&:last-child': {
+    borderTopRightRadius: props.container ? 3 : 0,
+    borderBottomRightRadius: props.container ? 3 : 0,
+  },
+  '&:hover': {
+    backgroundColor: props.active ? colors.light15 : colors.light05,
+  },
+}));
 TabListItem.displayName = 'Tabs:TabListItem';
 
 const TabListAddItem = styled(TabListItem)({
@@ -76,7 +74,7 @@ const TabListAddItem = styled(TabListItem)({
 });
 TabListAddItem.displayName = 'Tabs:TabListAddItem';
 
-const CloseButton = styled('div')({
+const CloseButton = styled.div({
   color: '#000',
   float: 'right',
   fontSize: 10,
@@ -96,12 +94,12 @@ const CloseButton = styled('div')({
 });
 CloseButton.displayName = 'Tabs:CloseButton';
 
-const OrderableContainer = styled('div')({
+const OrderableContainer = styled.div({
   display: 'inline-block',
 });
 OrderableContainer.displayName = 'Tabs:OrderableContainer';
 
-const TabContent = styled('div')({
+const TabContent = styled.div({
   height: '100%',
   overflow: 'auto',
   width: '100%',
@@ -233,7 +231,7 @@ export default function Tabs(props: {
         continue;
       }
 
-      let closeButton: HTMLDivElement | undefined;
+      let closeButton: HTMLDivElement | undefined | null;
 
       tabs[key] = (
         <TabListItem
@@ -253,7 +251,7 @@ export default function Tabs(props: {
           {comp.props.label}
           {closable && (
             <CloseButton // eslint-disable-next-line react/jsx-no-bind
-              innerRef={ref => (closeButton = ref)} // eslint-disable-next-line react/jsx-no-bind
+              ref={ref => (closeButton = ref)} // eslint-disable-next-line react/jsx-no-bind
               onMouseDown={() => {
                 if (isActive && onActive) {
                   const index = keys.indexOf(key);

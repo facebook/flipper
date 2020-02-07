@@ -14,7 +14,7 @@ const IndentedSection = styled(FlexColumn)({
   paddingLeft: 50,
   paddingBottom: 10,
 });
-const GreyedOutOverlay = styled('div')({
+const GreyedOutOverlay = styled.div({
   backgroundColor: '#EFEEEF',
   borderRadius: 4,
   opacity: 0.6,

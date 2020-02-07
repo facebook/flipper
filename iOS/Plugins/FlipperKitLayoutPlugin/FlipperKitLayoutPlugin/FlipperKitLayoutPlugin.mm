@@ -72,7 +72,12 @@
 
 - (void)didConnect:(id<FlipperConnection>)connection {
   _connection = connection;
-
+  
+  if (!_rootNode) {
+    // TODO: T61384369 get rid off this if condition.
+    _rootNode = [UIApplication sharedApplication];
+  }
+  
   [SKInvalidation enableInvalidations];
 
   // Run setup logic for each descriptor

@@ -12,7 +12,7 @@ const compilePlugins = require('../static/compilePlugins');
 const tmp = require('tmp');
 const path = require('path');
 const fs = require('fs-extra');
-const cp = require('child-process-es6-promise');
+const cp = require('promisify-child-process');
 
 function die(err) {
   console.error(err.stack);
@@ -29,7 +29,7 @@ function compileDefaultPlugins(defaultPluginDir, skipAll = false) {
           path.join(__dirname, '..', 'src', 'fb', 'plugins'),
         ],
     defaultPluginDir,
-    {force: true, failSilently: false},
+    {force: true, failSilently: false, recompileOnChanges: false},
   )
     .then(defaultPlugins =>
       fs.writeFileSync(
@@ -66,7 +66,7 @@ function compile(buildFolder, entry) {
         ),
       },
       resolver: {
-        blacklistRE: /\/(sonar|flipper-public)\/dist\/|(\.native\.js$)/,
+        blacklistRE: /(\/|\\)(sonar|flipper|flipper-public)(\/|\\)(dist|doctor)(\/|\\)|(\.native\.js$)/,
       },
     },
     {

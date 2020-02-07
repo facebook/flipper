@@ -7,18 +7,21 @@
  * @format
  */
 
-import React, {PureComponent, RefObject} from 'react';
-import styled from 'react-emotion';
+import React, {PureComponent} from 'react';
+import styled from '@emotion/styled';
 import ReactMarkdown from 'react-markdown';
-import ReactDOM from 'react-dom';
 import {colors} from './colors';
 import {shell} from 'electron';
 
-const Row = styled('div')({
+const Container = styled.div({
+  padding: 10,
+});
+const Row = styled.div({
   marginTop: 5,
   marginBottom: 5,
+  lineHeight: 1.34,
 });
-const Heading = styled('div')((props: {level: number}) => ({
+const Heading = styled.div<{level: number}>(props => ({
   fontSize: props.level === 1 ? 18 : 12,
   textTransform: props.level > 1 ? 'uppercase' : undefined,
   color: props.level > 1 ? '#90949c' : undefined,
@@ -26,16 +29,16 @@ const Heading = styled('div')((props: {level: number}) => ({
   marginBottom: 10,
   fontWeight: props.level > 1 ? 'bold' : 'normal',
 }));
-const ListItem = styled('li')({
+const ListItem = styled.li({
   'list-style-type': 'circle',
   'list-style-position': 'inside',
   marginLeft: 10,
 });
-const Strong = styled('span')({
+const Strong = styled.span({
   fontWeight: 'bold',
   color: '#1d2129',
 });
-const Emphasis = styled('span')({
+const Emphasis = styled.span({
   fontStyle: 'italic',
 });
 const Quote = styled(Row)({
@@ -43,7 +46,7 @@ const Quote = styled(Row)({
   backgroundColor: '#f1f2f3',
   fontSize: 13,
 });
-const Code = styled('span')({
+const Code = styled.span({
   fontFamily: '"Courier New", Courier, monospace',
   backgroundColor: '#f1f2f3',
 });
@@ -60,7 +63,7 @@ class CodeBlock extends PureComponent<{value: string; language: string}> {
     );
   }
 }
-const Link = styled('span')({
+const Link = styled.span({
   color: colors.blue,
 });
 class LinkReference extends PureComponent<{href: string}> {
@@ -75,20 +78,22 @@ class LinkReference extends PureComponent<{href: string}> {
 
 export function Markdown(props: {source: string}) {
   return (
-    <ReactMarkdown
-      source={props.source}
-      renderers={{
-        heading: Heading,
-        listItem: ListItem,
-        paragraph: Row,
-        strong: Strong,
-        emphasis: Emphasis,
-        inlineCode: Code,
-        code: CodeBlock,
-        blockquote: Quote,
-        link: LinkReference,
-        linkReference: LinkReference,
-      }}
-    />
+    <Container>
+      <ReactMarkdown
+        source={props.source}
+        renderers={{
+          heading: Heading,
+          listItem: ListItem,
+          paragraph: Row,
+          strong: Strong,
+          emphasis: Emphasis,
+          inlineCode: Code,
+          code: CodeBlock,
+          blockquote: Quote,
+          link: LinkReference,
+          linkReference: LinkReference,
+        }}
+      />
+    </Container>
   );
 }

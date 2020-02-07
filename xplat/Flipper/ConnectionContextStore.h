@@ -27,13 +27,13 @@ public:
   std::string getCertificateDirectoryPath();
   std::string getDeviceId();
   void storeConnectionConfig(folly::dynamic& config);
+  bool resetState();
 
  private:
   DeviceData deviceData_;
   std::string csr = "";
 
   std::string absoluteFilePath(const char* filename);
-  bool resetFlipperDir();
 };
 
 } // namespace flipper

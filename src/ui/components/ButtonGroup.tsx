@@ -7,11 +7,11 @@
  * @format
  */
 
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 
-const ButtonGroupContainer = styled('div')({
+const ButtonGroupContainer = styled.div({
   display: 'inline-flex',
   marginLeft: 10,
   '&:first-child': {

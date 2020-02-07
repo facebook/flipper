@@ -10,17 +10,36 @@
 import {FlipperDevicePlugin, FlipperPlugin, FlipperBasePlugin} from '../plugin';
 import BaseDevice from '../devices/BaseDevice';
 import {State as PluginStatesState} from '../reducers/pluginStates';
-import {pluginsClassMap} from './exportData';
 import {State as PluginsState} from '../reducers/plugins';
+import {State as PluginMessageQueueState} from '../reducers/pluginMessageQueue';
 import {PluginDefinition} from '../dispatcher/plugins';
+import {deconstructPluginKey, deconstructClientId} from './clientUtils';
+
+type Client = import('../Client').default;
+
+export function pluginsClassMap(
+  plugins: PluginsState,
+): Map<string, typeof FlipperDevicePlugin | typeof FlipperPlugin> {
+  const pluginsMap: Map<
+    string,
+    typeof FlipperDevicePlugin | typeof FlipperPlugin
+  > = new Map([]);
+  plugins.clientPlugins.forEach((val, key) => {
+    pluginsMap.set(key, val);
+  });
+  plugins.devicePlugins.forEach((val, key) => {
+    pluginsMap.set(key, val);
+  });
+  return pluginsMap;
+}
 
 export function getPluginKey(
-  selectedApp: string | null,
+  selectedAppId: string | null,
   baseDevice: BaseDevice | null,
   pluginID: string,
 ): string {
-  if (selectedApp) {
-    return `${selectedApp}#${pluginID}`;
+  if (selectedAppId) {
+    return `${selectedAppId}#${pluginID}`;
   }
   if (baseDevice) {
     // If selected App is not defined, then the plugin is a device plugin
@@ -45,23 +64,121 @@ export function getPersistedState<PersistedState>(
   return persistedState;
 }
 
-export function getActivePersistentPlugins(
-  pluginsState: PluginStatesState,
+/**
+ *
+ * @param starredPlugin  starredPlugin is the dictionary of client and its enabled plugin
+ * @param client Optional paramater indicating the selected client.
+ * @param plugins  Plugins from the state which has the mapping to Plugin's Class.
+
+ * Returns plugins which are enabled or which has exportPersistedState function defined for the passed client.
+ * Note all device plugins are enabled.
+ */
+
+export function getEnabledOrExportPersistedStatePlugins(
+  starredPlugin: {
+    [client: string]: string[];
+  },
+  client: Client,
   plugins: PluginsState,
-): Array<string> {
+): Array<{id: string; label: string}> {
+  const appName = deconstructClientId(client.id).app;
   const pluginsMap: Map<
     string,
     typeof FlipperDevicePlugin | typeof FlipperPlugin
   > = pluginsClassMap(plugins);
-  return getPersistentPlugins(plugins).filter(plugin => {
-    const pluginClass = pluginsMap.get(plugin);
-    const keys = Object.keys(pluginsState).map(key => key.split('#').pop());
-    return (
-      (pluginClass && pluginClass.exportPersistedState != undefined) ||
-      plugin == 'DeviceLogs' ||
-      keys.includes(plugin)
-    );
-  });
+  // Enabled Plugins with no exportPersistedState function defined
+  const enabledPlugins = starredPlugin[appName]
+    ? starredPlugin[appName]
+        .map(pluginName => pluginsMap.get(pluginName)!)
+        .filter(plugin => {
+          return !plugin.exportPersistedState;
+        })
+        .sort(sortPluginsByName)
+        .map(plugin => {
+          return {id: plugin.id, label: getPluginTitle(plugin)};
+        })
+    : [];
+  // Device Plugins
+  const devicePlugins = Array.from(plugins.devicePlugins.keys())
+    .filter(plugin => {
+      return client.plugins.includes(plugin);
+    })
+    .map(plugin => {
+      return {
+        id: plugin,
+        label: getPluginTitle(plugins.devicePlugins.get(plugin)!),
+      };
+    });
+  // Plugins which have defined exportPersistedState.
+  const exportPersistedStatePlugins = client.plugins
+    .filter(name => {
+      return pluginsMap.get(name)?.exportPersistedState != null;
+    })
+    .map(name => {
+      const plugin = pluginsMap.get(name)!;
+      return {id: plugin.id, label: getPluginTitle(plugin)};
+    });
+  return [
+    ...devicePlugins,
+    ...enabledPlugins,
+    ...exportPersistedStatePlugins,
+    {id: 'DeviceLogs', label: 'Logs'},
+  ];
+}
+
+/**
+ *
+ * @param pluginsState  PluginsState of the Redux Store.
+ * @param plugins  Plugins from the state which has the mapping to Plugin's Class.
+ * @param selectedClient Optional paramater indicating the selected client.
+ * Returns active persistent plugin, which means plugins which has the data in redux store or has the `exportPersistedState` function defined which can return the plugin's data when called.
+ * If the selectedClient is defined then the active persistent plugins only for the selectedClient will be returned, otherwise it will return all active persistent plugins.
+ */
+export function getActivePersistentPlugins(
+  pluginsState: PluginStatesState,
+  pluginsMessageQueue: PluginMessageQueueState,
+  plugins: PluginsState,
+  selectedClient?: Client,
+): {id: string; label: string}[] {
+  const pluginsMap: Map<
+    string,
+    typeof FlipperDevicePlugin | typeof FlipperPlugin
+  > = pluginsClassMap(plugins);
+  return getPersistentPlugins(plugins)
+    .map(pluginName => pluginsMap.get(pluginName)!)
+    .sort(sortPluginsByName)
+    .map(plugin => {
+      const keys = [
+        ...new Set([
+          ...Object.keys(pluginsState),
+          ...Object.keys(pluginsMessageQueue),
+        ]),
+      ]
+        .filter(k => !selectedClient || k.includes(selectedClient.id))
+        .map(key => deconstructPluginKey(key).pluginName);
+      let result = plugin.id == 'DeviceLogs';
+      const pluginsWithExportPersistedState =
+        plugin && plugin.exportPersistedState != undefined;
+      const pluginsWithReduxData = keys.includes(plugin.id);
+      if (!result && selectedClient) {
+        // If there is a selected client, active persistent plugin is the plugin which is active for selectedClient and also persistent.
+        result =
+          selectedClient.plugins.includes(plugin.id) &&
+          (pluginsWithExportPersistedState || pluginsWithReduxData);
+      } else if (!result && !selectedClient) {
+        // If there is no selected client, active persistent plugin is the plugin which is just persistent.
+        result =
+          (plugin && plugin.exportPersistedState != undefined) ||
+          keys.includes(plugin.id);
+      }
+      return (result
+        ? {
+            id: plugin.id,
+            label: getPluginTitle(plugin),
+          }
+        : undefined)!;
+    })
+    .filter(Boolean);
 }
 
 export function getPersistentPlugins(plugins: PluginsState): Array<string> {
@@ -96,4 +213,28 @@ export function getPersistentPlugins(plugins: PluginsState): Array<string> {
           pluginClass.exportPersistedState != undefined))
     );
   });
+}
+
+export function getPluginTitle(pluginClass: typeof FlipperBasePlugin) {
+  return pluginClass.title || pluginClass.id;
+}
+
+export function sortPluginsByName(
+  a: typeof FlipperBasePlugin,
+  b: typeof FlipperBasePlugin,
+): number {
+  // make sure Device plugins are sorted before normal plugins
+  if (
+    a.prototype instanceof FlipperDevicePlugin &&
+    !(b.prototype instanceof FlipperDevicePlugin)
+  ) {
+    return -1;
+  }
+  if (
+    b.prototype instanceof FlipperDevicePlugin &&
+    !(a.prototype instanceof FlipperDevicePlugin)
+  ) {
+    return 1;
+  }
+  return getPluginTitle(a) > getPluginTitle(b) ? 1 : -1;
 }

@@ -21,17 +21,18 @@ const StatusBarContainer = styled(Text)({
   padding: '0 10px',
   textOverflow: 'ellipsis',
   overflow: 'hidden',
+  textAlign: 'center',
 });
 
 type Props = {
-  statusMessage: string | null;
+  statusMessage: React.ReactNode | string | null;
 };
 
 export function statusBarView(props: Props): ReactElement | null {
   const {statusMessage} = props;
   if (statusMessage) {
     return (
-      <StatusBarContainer italic={true} whiteSpace="nowrap">
+      <StatusBarContainer whiteSpace="nowrap">
         {statusMessage}
       </StatusBarContainer>
     );
@@ -40,13 +41,14 @@ export function statusBarView(props: Props): ReactElement | null {
   }
 }
 
-export default connect<Props, void, {}, State>(
-  ({application: {statusMessages}}) => {
-    if (statusMessages.length > 0) {
-      return {statusMessage: statusMessages[statusMessages.length - 1]};
-    }
-    return {
-      statusMessage: null,
-    };
-  },
-)(statusBarView);
+export default connect<Props, void, {}, State>((state: State) => {
+  const {
+    application: {statusMessages},
+  } = state;
+  if (statusMessages.length > 0) {
+    return {statusMessage: statusMessages[statusMessages.length - 1]};
+  }
+  return {
+    statusMessage: null,
+  };
+})(statusBarView);

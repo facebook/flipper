@@ -11,13 +11,15 @@ import {KeyboardActions} from './MenuBar';
 import {App} from './App';
 import {Logger} from './fb-interfaces/Logger';
 import Client from './Client';
-import {Store, MiddlewareAPI} from './reducers/index';
+import {Store} from './reducers/index';
 import {MetricType} from './utils/exportMetrics';
 import {ReactNode, Component} from 'react';
 import BaseDevice from './devices/BaseDevice';
 import {serialize, deserialize} from './utils/serialization';
 import {Idler} from './utils/Idler';
 import {StaticView} from './reducers/connections';
+import {State as ReduxState} from './reducers';
+import {DEFAULT_MAX_QUEUE_SIZE} from './reducers/pluginMessageQueue';
 type Parameters = any;
 
 // This function is intended to be called from outside of the plugin.
@@ -68,6 +70,12 @@ export type BaseAction = {
   type: string;
 };
 
+export type PersistedStateReducer = (
+  persistedState: StaticPersistedState,
+  method: string,
+  data: any,
+) => StaticPersistedState;
+
 type StaticPersistedState = any;
 
 export abstract class FlipperBasePlugin<
@@ -89,13 +97,8 @@ export abstract class FlipperBasePlugin<
   static keyboardActions: KeyboardActions | null;
   static screenshot: string | null;
   static defaultPersistedState: any;
-  static persistedStateReducer:
-    | ((
-        persistedState: StaticPersistedState,
-        method: string,
-        data: any,
-      ) => StaticPersistedState)
-    | null;
+  static persistedStateReducer: PersistedStateReducer | null;
+  static maxQueueSize: number = DEFAULT_MAX_QUEUE_SIZE;
   static metricsReducer:
     | ((persistedState: StaticPersistedState) => Promise<MetricType>)
     | null;
@@ -103,7 +106,7 @@ export abstract class FlipperBasePlugin<
     | ((
         callClient: (method: string, params?: any) => Promise<any>,
         persistedState: StaticPersistedState | undefined,
-        store: MiddlewareAPI | undefined,
+        store: ReduxState | undefined,
         idler?: Idler,
         statusUpdate?: (msg: string) => void,
       ) => Promise<StaticPersistedState | undefined>)
@@ -134,6 +137,7 @@ export abstract class FlipperBasePlugin<
 
   // methods to be overriden by plugins
   init(): void {}
+
   static serializePersistedState: (
     persistedState: StaticPersistedState,
     statusUpdate?: (msg: string) => void,
@@ -152,20 +156,25 @@ export abstract class FlipperBasePlugin<
       pluginName != null ? `Serializing ${pluginName}` : undefined,
     );
   };
+
   static deserializePersistedState: (
     serializedString: string,
   ) => StaticPersistedState = (serializedString: string) => {
     return deserialize(serializedString);
   };
+
   teardown(): void {}
+
   computeNotifications(
     _props: Props<PersistedState>,
     _state: State,
   ): Array<Notification> {
     return [];
   }
+
   // methods to be overridden by subclasses
   _init(): void {}
+
   _teardown(): void {}
 
   dispatchAction(actionData: Actions) {
@@ -264,11 +273,4 @@ export class FlipperPlugin<
     this.realClient.initPlugin(this.constructor.id);
     this.init();
   }
-}
-
-export function sortPluginsByName(
-  a: typeof FlipperBasePlugin,
-  b: typeof FlipperBasePlugin,
-): number {
-  return (a.title || a.id) > (b.title || b.id) ? 1 : -1;
 }

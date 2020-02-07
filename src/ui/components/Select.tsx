@@ -9,10 +9,10 @@
 
 import {Component} from 'react';
 import Text from './Text';
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 import React from 'react';
 
-const Label = styled('label')({
+const Label = styled.label({
   display: 'flex',
   alignItems: 'center',
 });
@@ -24,7 +24,7 @@ const LabelText = styled(Text)({
 });
 LabelText.displayName = 'Select:LabelText';
 
-const SelectMenu = styled('select')((props: {grow?: boolean}) => ({
+const SelectMenu = styled.select<{grow?: boolean}>(props => ({
   flexGrow: props.grow ? 1 : 0,
 }));
 SelectMenu.displayName = 'Select:SelectMenu';
@@ -51,6 +51,9 @@ export default class Select extends Component<{
   label?: string;
   /** Select box should take all available space */
   grow?: boolean;
+
+  /** Whether the user can interact with the select and change the selcted option */
+  disabled?: boolean;
 }> {
   selectID: string = Math.random().toString(36);
 
@@ -64,7 +67,7 @@ export default class Select extends Component<{
   };
 
   render() {
-    const {className, options, selected, label, grow} = this.props;
+    const {className, options, selected, label, grow, disabled} = this.props;
 
     let select = (
       <SelectMenu
@@ -72,6 +75,7 @@ export default class Select extends Component<{
         id={this.selectID}
         onChange={this.onChange}
         className={className}
+        disabled={disabled}
         value={selected || ''}>
         {Object.keys(options).map((key, index) => (
           <option value={key} key={index}>

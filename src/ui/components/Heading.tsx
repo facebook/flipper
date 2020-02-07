@@ -7,10 +7,10 @@
  * @format
  */
 
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 import React from 'react';
 
-const LargeHeading = styled('div')({
+const LargeHeading = styled.div({
   fontSize: 18,
   fontWeight: 'bold',
   lineHeight: '20px',
@@ -19,7 +19,7 @@ const LargeHeading = styled('div')({
 });
 LargeHeading.displayName = 'Heading:LargeHeading';
 
-const SmallHeading = styled('div')({
+const SmallHeading = styled.div({
   fontSize: 12,
   color: '#90949c',
   fontWeight: 'bold',

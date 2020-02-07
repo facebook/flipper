@@ -11,7 +11,7 @@ import Interactive from './Interactive';
 import FlexColumn from './FlexColumn';
 import {colors} from './colors';
 import {Component} from 'react';
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 import {
   BackgroundClipProperty,
   HeightProperty,
@@ -27,25 +27,22 @@ SidebarInteractiveContainer.displayName = 'Sidebar:SidebarInteractiveContainer';
 
 type SidebarPosition = 'left' | 'top' | 'right' | 'bottom';
 
-const SidebarContainer = styled(FlexColumn)(
-  (props: {
-    position: 'right' | 'top' | 'left' | 'bottom';
-    backgroundColor?: BackgroundClipProperty;
-    overflow?: boolean;
-  }) => ({
-    backgroundColor:
-      props.backgroundColor || colors.macOSTitleBarBackgroundBlur,
-    borderLeft: props.position === 'right' ? '1px solid #b3b3b3' : 'none',
-    borderTop: props.position === 'bottom' ? '1px solid #b3b3b3' : 'none',
-    borderRight: props.position === 'left' ? '1px solid #b3b3b3' : 'none',
-    borderBottom: props.position === 'top' ? '1px solid #b3b3b3' : 'none',
-    height: '100%',
-    overflowX: 'hidden',
-    overflowY: 'auto',
-    textOverflow: props.overflow ? 'ellipsis' : 'auto',
-    whiteSpace: props.overflow ? 'nowrap' : 'normal',
-  }),
-);
+const SidebarContainer = styled(FlexColumn)<{
+  position: 'right' | 'top' | 'left' | 'bottom';
+  backgroundColor?: BackgroundClipProperty;
+  overflow?: boolean;
+}>(props => ({
+  backgroundColor: props.backgroundColor || colors.macOSTitleBarBackgroundBlur,
+  borderLeft: props.position === 'right' ? '1px solid #b3b3b3' : 'none',
+  borderTop: props.position === 'bottom' ? '1px solid #b3b3b3' : 'none',
+  borderRight: props.position === 'left' ? '1px solid #b3b3b3' : 'none',
+  borderBottom: props.position === 'top' ? '1px solid #b3b3b3' : 'none',
+  height: '100%',
+  overflowX: 'hidden',
+  overflowY: 'auto',
+  textOverflow: props.overflow ? 'ellipsis' : 'auto',
+  whiteSpace: props.overflow ? 'nowrap' : 'normal',
+}));
 SidebarContainer.displayName = 'Sidebar:SidebarContainer';
 
 type SidebarProps = {
@@ -121,10 +118,14 @@ export default class Sidebar extends Component<SidebarProps, SidebarState> {
     position: 'left',
   };
 
-  componentWillReceiveProps(nextProps: SidebarProps) {
-    if (!this.state.userChange) {
-      this.setState({width: nextProps.width, height: nextProps.height});
+  static getDerivedStateFromProps(
+    nextProps: SidebarProps,
+    state: SidebarState,
+  ) {
+    if (!state.userChange) {
+      return {width: nextProps.width, height: nextProps.height};
     }
+    return null;
   }
 
   onResize = (width: number, height: number) => {

@@ -7,7 +7,7 @@
  * @format
  */
 
-import {default as styled} from 'react-emotion';
+import {default as styled} from '@emotion/styled';
 import {colors} from '../colors';
 import {default as Text} from '../Text';
 import React from 'react';
@@ -37,7 +37,7 @@ const NonWrappingText = styled(Text)({
 });
 NonWrappingText.displayName = 'TypeBasedValueRenderer:NonWrappingText';
 
-const BooleanValue = styled(NonWrappingText)((props: {active?: boolean}) => ({
+const BooleanValue = styled(NonWrappingText)<{active?: boolean}>(props => ({
   '&::before': {
     content: '""',
     display: 'inline-block',

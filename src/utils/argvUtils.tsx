@@ -7,12 +7,10 @@
  * @format
  */
 
-import electron from 'electron';
 import isProduction from './isProduction';
+import processConfig from './processConfig';
 
 export const isAutoUpdaterEnabled = () =>
-  // TODO(T39788540): Centralise config access and avoid parsing multiple times.
-  JSON.parse(electron.remote.process.env.CONFIG || process.env.CONFIG || '{}')
-    .updaterEnabled &&
+  processConfig().updaterEnabled &&
   isProduction() &&
   process.platform === 'darwin';

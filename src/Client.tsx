@@ -13,7 +13,8 @@ import {App} from './App.js';
 import {Logger} from './fb-interfaces/Logger';
 import {Store} from './reducers/index';
 import {setPluginState} from './reducers/pluginStates';
-import {ReactiveSocket} from 'rsocket-types';
+import {Payload, ConnectionStatus} from 'rsocket-types';
+import {Flowable, Single} from 'rsocket-flowable';
 import {performance} from 'perf_hooks';
 import {reportPlatformFailures, reportPluginFailures} from './utils/metrics';
 import {notNull} from './utils/typeUtils';
@@ -22,6 +23,13 @@ import {registerPlugins} from './reducers/plugins';
 import createTableNativePlugin from './plugins/TableNativePlugin';
 import EventEmitter from 'events';
 import invariant from 'invariant';
+import {flipperRecorderAddEvent} from './utils/pluginStateRecorder';
+import {getPluginKey} from './utils/pluginUtils';
+import {
+  processMessageImmediately,
+  processMessageLater,
+} from './utils/messageQueue';
+import GK from './fb-stubs/GK';
 
 type Plugins = Array<string>;
 
@@ -46,11 +54,7 @@ type Params = {
 };
 type RequestMetadata = {method: string; id: number; params: Params | undefined};
 
-const handleError = (
-  store: Store,
-  deviceSerial: string | undefined,
-  error: ErrorType,
-) => {
+const handleError = (store: Store, device: BaseDevice, error: ErrorType) => {
   if (isProduction()) {
     return;
   }
@@ -61,7 +65,7 @@ const handleError = (
     return;
   }
 
-  const pluginKey = `${deviceSerial || ''}#CrashReporter`;
+  const pluginKey = getPluginKey(null, device, 'CrashReporter');
 
   const persistedState = {
     ...crashReporterPlugin.defaultPersistedState,
@@ -97,6 +101,13 @@ const handleError = (
   }
 };
 
+export interface FlipperClientConnection<D, M> {
+  connectionStatus(): Flowable<ConnectionStatus>;
+  close(): void;
+  fireAndForget(payload: Payload<D, M>): void;
+  requestResponse(payload: Payload<D, M>): Single<Payload<D, M>>;
+}
+
 export default class Client extends EventEmitter {
   app: App | undefined;
   connected: boolean;
@@ -105,12 +116,12 @@ export default class Client extends EventEmitter {
   sdkVersion: number;
   messageIdCounter: number;
   plugins: Plugins;
-  connection: ReactiveSocket<any, any> | null | undefined;
+  connection: FlipperClientConnection<any, any> | null | undefined;
   store: Store;
   activePlugins: Set<string>;
   device: Promise<BaseDevice>;
   _deviceResolve: (device: BaseDevice) => void = _ => {};
-  _deviceSet: boolean = false;
+  _deviceSet: false | BaseDevice = false;
   logger: Logger;
   lastSeenDeviceList: Array<BaseDevice>;
   broadcastCallbacks: Map<string, Map<string, Set<Function>>>;
@@ -129,7 +140,7 @@ export default class Client extends EventEmitter {
   constructor(
     id: string,
     query: ClientQuery,
-    conn: ReactiveSocket<any, any> | null | undefined,
+    conn: FlipperClientConnection<any, any> | null | undefined,
     logger: Logger,
     store: Store,
     plugins?: Plugins | null | undefined,
@@ -155,11 +166,14 @@ export default class Client extends EventEmitter {
       : new Promise((resolve, _reject) => {
           this._deviceResolve = resolve;
         });
+    if (device) {
+      this._deviceSet = device;
+    }
 
     const client = this;
     // node.js doesn't support requestIdleCallback
     this.rIC =
-      typeof window === 'undefined'
+      typeof window === 'undefined' || !window.requestIdleCallback
         ? (cb: Function, _: any) => {
             cb();
           }
@@ -188,6 +202,8 @@ export default class Client extends EventEmitter {
     }
     reportPlatformFailures(
       new Promise<BaseDevice>((resolve, reject) => {
+        let unsubscribe: () => void = () => {};
+
         const device = this.store
           .getState()
           .connections.devices.find(
@@ -198,7 +214,13 @@ export default class Client extends EventEmitter {
           return;
         }
 
-        const unsubscribe = this.store.subscribe(() => {
+        const timeout = setTimeout(() => {
+          unsubscribe();
+          const error = `Timed out waiting for device for client ${this.id}`;
+          console.error(error);
+          reject(error);
+        }, 5000);
+        unsubscribe = this.store.subscribe(() => {
           const newDeviceList = this.store.getState().connections.devices;
           if (newDeviceList === this.lastSeenDeviceList) {
             return;
@@ -208,20 +230,15 @@ export default class Client extends EventEmitter {
             device => device.serial === this.query.device_id,
           );
           if (matchingDevice) {
+            clearTimeout(timeout);
             resolve(matchingDevice);
             unsubscribe();
           }
         });
-        setTimeout(() => {
-          unsubscribe();
-          const error = `Timed out waiting for device for client ${this.id}`;
-          console.error(error);
-          reject(error);
-        }, 5000);
       }),
       'client-setMatchingDevice',
     ).then(device => {
-      this._deviceSet = true;
+      this._deviceSet = device;
       this._deviceResolve(device);
     });
   }
@@ -303,8 +320,6 @@ export default class Client extends EventEmitter {
       error?: ErrorType;
     } = rawData;
 
-    console.debug(data, 'message:receive');
-
     const {id, method} = data;
 
     if (id == null) {
@@ -316,46 +331,45 @@ export default class Client extends EventEmitter {
           }: ${error.message} + \nDevice Stack Trace: ${error.stacktrace}`,
           'deviceError',
         );
-        this.deviceSerial().then(serial =>
-          handleError(this.store, serial, error),
-        );
+        this.device.then(device => handleError(this.store, device, error));
       } else if (method === 'refreshPlugins') {
         this.refreshPlugins();
       } else if (method === 'execute') {
-        const params: Params = data.params as Params;
-        invariant(params, 'expected params');
+        invariant(data.params, 'expected params');
+        const params: Params = data.params;
 
-        const persistingPlugin:
-          | typeof FlipperPlugin
-          | typeof FlipperDevicePlugin
-          | undefined =
-          this.store.getState().plugins.clientPlugins.get(params.api) ||
-          this.store.getState().plugins.devicePlugins.get(params.api);
-        if (persistingPlugin && persistingPlugin.persistedStateReducer) {
-          let pluginKey = `${this.id}#${params.api}`;
-          if (persistingPlugin.prototype instanceof FlipperDevicePlugin) {
-            // For device plugins, we are just using the device id instead of client id as the prefix.
-            this.deviceSerial().then(
-              serial => (pluginKey = `${serial}#${params.api}`),
-            );
-          }
-          const persistedState = {
-            ...persistingPlugin.defaultPersistedState,
-            ...this.store.getState().pluginStates[pluginKey],
-          };
-          const newPluginState = persistingPlugin.persistedStateReducer(
-            persistedState,
-            params.method,
-            params.params,
-          );
-          if (persistedState !== newPluginState) {
-            this.store.dispatch(
-              setPluginState({
+        const device = this.getDeviceSync();
+        if (device) {
+          const persistingPlugin:
+            | typeof FlipperPlugin
+            | typeof FlipperDevicePlugin
+            | undefined =
+            this.store.getState().plugins.clientPlugins.get(params.api) ||
+            this.store.getState().plugins.devicePlugins.get(params.api);
+
+          if (persistingPlugin && persistingPlugin.persistedStateReducer) {
+            const pluginKey = getPluginKey(this.id, device, params.api);
+            flipperRecorderAddEvent(pluginKey, params.method, params.params);
+            if (GK.get('flipper_event_queue')) {
+              processMessageLater(
+                this.store,
                 pluginKey,
-                state: newPluginState,
-              }),
-            );
+                persistingPlugin,
+                params,
+              );
+            } else {
+              processMessageImmediately(
+                this.store,
+                pluginKey,
+                persistingPlugin,
+                params,
+              );
+            }
           }
+        } else {
+          console.warn(
+            `Received a message for plugin ${params.api}.${params.method}, which will be ignored because the device has not connected yet`,
+          );
         }
         const apiCallbacks = this.broadcastCallbacks.get(params.api);
         if (!apiCallbacks) {
@@ -397,9 +411,7 @@ export default class Client extends EventEmitter {
       reject(data.error);
       const {error} = data;
       if (error) {
-        this.deviceSerial().then(serial =>
-          handleError(this.store, serial, error),
-        );
+        this.device.then(device => handleError(this.store, device, error));
       }
     } else {
       // ???
@@ -496,6 +508,10 @@ export default class Client extends EventEmitter {
             });
       }
     });
+  }
+
+  getDeviceSync(): BaseDevice | undefined {
+    return this._deviceSet || undefined;
   }
 
   startTimingRequestResponse(data: RequestMetadata) {

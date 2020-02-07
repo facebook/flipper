@@ -8,13 +8,13 @@
  */
 
 import React from 'react';
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 import PropTypes from 'prop-types';
 import {getIconURL} from '../../utils/icons.js';
 
 export type IconSize = 8 | 10 | 12 | 16 | 18 | 20 | 24 | 32;
 
-const ColoredIconBlack = styled('img')(({size}: {size: number}) => ({
+const ColoredIconBlack = styled.img<{size: number}>(({size}) => ({
   height: size,
   verticalAlign: 'middle',
   width: size,
@@ -22,20 +22,22 @@ const ColoredIconBlack = styled('img')(({size}: {size: number}) => ({
 }));
 ColoredIconBlack.displayName = 'Glyph:ColoredIconBlack';
 
-const ColoredIconCustom = styled('div')(
-  (props: {size: number; color?: string; src: string}) => ({
-    height: props.size,
-    verticalAlign: 'middle',
-    width: props.size,
-    backgroundColor: props.color,
-    display: 'inline-block',
-    maskImage: `url('${props.src}')`,
-    maskSize: '100% 100%',
-    WebkitMaskImage: `url('${props.src}')`,
-    WebkitMaskSize: '100% 100%',
-    flexShrink: 0,
-  }),
-);
+const ColoredIconCustom = styled.div<{
+  size: number;
+  color?: string;
+  src: string;
+}>(props => ({
+  height: props.size,
+  verticalAlign: 'middle',
+  width: props.size,
+  backgroundColor: props.color,
+  display: 'inline-block',
+  maskImage: `url('${props.src}')`,
+  maskSize: '100% 100%',
+  WebkitMaskImage: `url('${props.src}')`,
+  WebkitMaskSize: '100% 100%',
+  flexShrink: 0,
+}));
 ColoredIconCustom.displayName = 'Glyph:ColoredIconCustom';
 
 function ColoredIcon(
@@ -46,12 +48,20 @@ function ColoredIcon(
     className?: string;
     color?: string;
     style?: React.CSSProperties;
+    title?: string;
   },
   context: {
     glyphColor?: string;
   },
 ) {
-  const {color = context.glyphColor, name, size = 16, src, style} = props;
+  const {
+    color = context.glyphColor,
+    name,
+    size = 16,
+    src,
+    style,
+    title,
+  } = props;
 
   const isBlack =
     color == null ||
@@ -67,6 +77,7 @@ function ColoredIcon(
         size={size}
         className={props.className}
         style={style}
+        title={title}
       />
     );
   } else {
@@ -77,6 +88,7 @@ function ColoredIcon(
         src={src}
         className={props.className}
         style={style}
+        title={title}
       />
     );
   }
@@ -96,7 +108,15 @@ export default class Glyph extends React.PureComponent<{
   title?: string;
 }> {
   render() {
-    const {name, size = 16, variant, color, className, style} = this.props;
+    const {
+      name,
+      size = 16,
+      variant,
+      color,
+      className,
+      style,
+      title,
+    } = this.props;
 
     return (
       <ColoredIcon
@@ -104,6 +124,7 @@ export default class Glyph extends React.PureComponent<{
         className={className}
         color={color}
         size={size}
+        title={title}
         src={getIconURL(
           variant === 'outline' ? `${name}-outline` : name,
           size,

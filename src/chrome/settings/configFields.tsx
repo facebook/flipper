@@ -7,6 +7,7 @@
  * @format
  */
 
+import electron from 'electron';
 import {FlexColumn, styled, Text, FlexRow, Input, colors, Glyph} from 'flipper';
 import React, {useState} from 'react';
 import {promises as fs} from 'fs';
@@ -23,7 +24,7 @@ const InfoText = styled(Text)({
   paddingTop: 5,
 });
 
-const FileInputBox = styled(Input)(({isValid}: {isValid: boolean}) => ({
+const FileInputBox = styled(Input)<{isValid: boolean}>(({isValid}) => ({
   marginRight: 0,
   flexGrow: 1,
   fontFamily: 'monospace',
@@ -38,7 +39,7 @@ const CenteredGlyph = styled(Glyph)({
   marginLeft: 10,
 });
 
-const GreyedOutOverlay = styled('div')({
+const GreyedOutOverlay = styled.div({
   backgroundColor: '#EFEEEF',
   borderRadius: 4,
   opacity: 0.6,
@@ -50,6 +51,7 @@ const GreyedOutOverlay = styled('div')({
 
 export function FilePathConfigField(props: {
   label: string;
+  resetValue?: string;
   defaultValue: string;
   onChange: (path: string) => void;
   frozen?: boolean;
@@ -87,19 +89,31 @@ export function FilePathConfigField(props: {
       />
       <FlexColumn
         onClick={() =>
-          remote.dialog.showOpenDialog(
-            {
+          remote.dialog
+            .showOpenDialog({
               properties: ['openDirectory', 'showHiddenFiles'],
               defaultPath: path.resolve('/'),
-            },
-            (paths: Array<string> | undefined) => {
-              paths && setValue(paths[0]);
-              paths && props.onChange(paths[0]);
-            },
-          )
+            })
+            .then((result: electron.SaveDialogReturnValue) => {
+              if (result.filePath) {
+                const path: string = result.filePath.toString();
+                setValue(path);
+                props.onChange(path);
+              }
+            })
         }>
         <CenteredGlyph name="dots-3-circle" variant="outline" />
       </FlexColumn>
+      {props.resetValue && (
+        <FlexColumn
+          title={`Reset to default path ${props.resetValue}`}
+          onClick={() => {
+            setValue(props.resetValue!);
+            props.onChange(props.resetValue!);
+          }}>
+          <CenteredGlyph name="undo" variant="outline" />
+        </FlexColumn>
+      )}
       {isValid ? null : (
         <CenteredGlyph name="caution-triangle" color={colors.yellow} />
       )}

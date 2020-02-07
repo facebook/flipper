@@ -32,7 +32,15 @@ const rowMatchesFilters = (filters: Array<Filter>, row: TableBodyRow) =>
     .map((filter: Filter) => {
       if (filter.type === 'enum' && row.type != null) {
         return filter.value.length === 0 || filter.value.indexOf(row.type) > -1;
-      } else if (filter.type === 'include') {
+      }
+      // Check if there is column name and value in case of mistyping.
+      if (
+        row.columns[filter.key] === undefined ||
+        row.columns[filter.key].value === undefined
+      ) {
+        return false;
+      }
+      if (filter.type === 'include') {
         return (
           textContent(row.columns[filter.key].value).toLowerCase() ===
           filter.value.toLowerCase()
@@ -112,7 +120,7 @@ class SearchableManagedTable extends PureComponent<Props, State> {
     this.props.defaultFilters.map(this.props.addFilter);
   }
 
-  componentWillReceiveProps(nextProps: Props) {
+  UNSAFE_componentWillReceiveProps(nextProps: Props) {
     if (
       nextProps.searchTerm !== this.props.searchTerm ||
       nextProps.regexEnabled != this.props.regexEnabled ||

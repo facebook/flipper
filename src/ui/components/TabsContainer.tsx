@@ -8,9 +8,9 @@
  */
 
 import React from 'react';
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 
-const Container = styled('div')({
+const Container = styled.div({
   backgroundColor: '#E3E3E3',
   borderRadius: 4,
   boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.1)',

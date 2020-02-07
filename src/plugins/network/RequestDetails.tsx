@@ -297,7 +297,7 @@ class HeaderInspector extends Component<
   }
 }
 
-const BodyContainer = styled('div')({
+const BodyContainer = styled.div({
   paddingTop: 10,
   paddingBottom: 20,
 });
@@ -384,7 +384,7 @@ type ImageWithSizeState = {
 };
 
 class ImageWithSize extends Component<ImageWithSizeProps, ImageWithSizeState> {
-  static Image = styled('img')({
+  static Image = styled.img({
     objectFit: 'scale-down',
     maxWidth: '100%',
     marginBottom: 10,
@@ -437,7 +437,7 @@ class ImageFormatter {
 }
 
 class VideoFormatter {
-  static Video = styled('video')({
+  static Video = styled.video({
     maxWidth: 500,
     maxHeight: 500,
   });

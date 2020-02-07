@@ -12,8 +12,8 @@ import {Logger} from '../fb-interfaces/Logger';
 import {PluginNotification} from '../reducers/notifications';
 import {FlipperPlugin, FlipperDevicePlugin} from '../plugin';
 import isHeadless from '../utils/isHeadless';
-import {ipcRenderer} from 'electron';
-import {selectPlugin} from '../reducers/connections';
+import {setStaticView} from '../reducers/connections';
+import {ipcRenderer, IpcRendererEvent} from 'electron';
 import {
   setActiveNotifications,
   updatePluginBlacklist,
@@ -21,6 +21,9 @@ import {
 } from '../reducers/notifications';
 import {textContent} from '../utils/index';
 import GK from '../fb-stubs/GK';
+import {deconstructPluginKey} from '../utils/clientUtils';
+import NotificationScreen from '../chrome/NotificationScreen';
+import {getPluginTitle} from '../utils/pluginUtils';
 
 type NotificationEvents = 'show' | 'click' | 'close' | 'reply' | 'action';
 const NOTIFICATION_THROTTLE = 5 * 1000; // in milliseconds
@@ -37,19 +40,14 @@ export default (store: Store, logger: Logger) => {
   ipcRenderer.on(
     'notificationEvent',
     (
+      _event: IpcRendererEvent,
       _e: Error,
       eventName: NotificationEvents,
       pluginNotification: PluginNotification,
       arg: null | string | number,
     ) => {
       if (eventName === 'click' || (eventName === 'action' && arg === 0)) {
-        store.dispatch(
-          selectPlugin({
-            selectedPlugin: 'notifications',
-            selectedApp: null,
-            deepLinkPayload: pluginNotification.notification.id,
-          }),
-        );
+        store.dispatch(setStaticView(NotificationScreen));
       } else if (eventName === 'action') {
         if (arg === 1 && pluginNotification.notification.category) {
           // Hide similar (category)
@@ -106,18 +104,18 @@ export default (store: Store, logger: Logger) => {
     Object.keys(pluginStates).forEach(key => {
       if (knownPluginStates.get(key) !== pluginStates[key]) {
         knownPluginStates.set(key, pluginStates[key]);
-        const split = key.split('#');
-        const pluginId = split.pop();
-        const client = split.join('#');
+        const plugin = deconstructPluginKey(key);
+        const pluginName = plugin.pluginName;
+        const client = plugin.client;
 
-        if (!pluginId) {
+        if (!pluginName) {
           return;
         }
 
         const persistingPlugin:
           | undefined
           | typeof FlipperPlugin
-          | typeof FlipperDevicePlugin = pluginMap.get(pluginId);
+          | typeof FlipperDevicePlugin = pluginMap.get(pluginName);
         if (persistingPlugin && persistingPlugin.getActiveNotifications) {
           store.dispatch(
             setActiveNotifications({
@@ -125,7 +123,7 @@ export default (store: Store, logger: Logger) => {
                 pluginStates[key],
               ),
               client,
-              pluginId,
+              pluginId: pluginName,
             }),
           );
         }
@@ -176,7 +174,9 @@ export default (store: Store, logger: Logger) => {
               },
               {
                 type: 'button',
-                text: `Hide all ${plugin != null ? plugin.title : ''}`,
+                text: `Hide all ${
+                  plugin != null ? getPluginTitle(plugin) : ''
+                }`,
               },
             ],
             closeButtonText: 'Hide',

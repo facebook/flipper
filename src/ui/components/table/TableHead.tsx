@@ -19,14 +19,14 @@ import {normaliseColumnWidth, isPercentage} from './utils';
 import {PureComponent} from 'react';
 import ContextMenu from '../ContextMenu';
 import Interactive from '../Interactive';
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 import {colors} from '../colors';
 import FlexRow from '../FlexRow';
 import invariant from 'invariant';
 import {MenuItemConstructorOptions} from 'electron';
 import React from 'react';
 
-const TableHeaderArrow = styled('span')({
+const TableHeaderArrow = styled.span({
   float: 'right',
 });
 TableHeaderArrow.displayName = 'TableHead:TableHeaderArrow';
@@ -41,13 +41,13 @@ const TableHeaderColumnInteractive = styled(Interactive)({
 TableHeaderColumnInteractive.displayName =
   'TableHead:TableHeaderColumnInteractive';
 
-const TableHeaderColumnContainer = styled('div')({
+const TableHeaderColumnContainer = styled.div({
   padding: '0 8px',
 });
 TableHeaderColumnContainer.displayName = 'TableHead:TableHeaderColumnContainer';
 
-const TableHeadContainer = styled(FlexRow)(
-  (props: {horizontallyScrollable?: boolean}) => ({
+const TableHeadContainer = styled(FlexRow)<{horizontallyScrollable?: boolean}>(
+  props => ({
     borderBottom: `1px solid ${colors.sectionHeaderBorder}`,
     color: colors.light50,
     flexShrink: 0,
@@ -62,8 +62,8 @@ const TableHeadContainer = styled(FlexRow)(
 );
 TableHeadContainer.displayName = 'TableHead:TableHeadContainer';
 
-const TableHeadColumnContainer = styled('div')(
-  (props: {width: string | number}) => ({
+const TableHeadColumnContainer = styled.div<{width: string | number}>(
+  props => ({
     position: 'relative',
     backgroundColor: colors.white,
     flexShrink: props.width === 'flex' ? 1 : 0,
@@ -109,7 +109,7 @@ class TableHeadColumn extends PureComponent<{
   title?: string;
   horizontallyScrollable?: boolean;
 }> {
-  ref: HTMLElement | undefined;
+  ref: HTMLElement | undefined | null;
 
   componentDidMount() {
     if (this.props.horizontallyScrollable && this.ref) {
@@ -147,8 +147,8 @@ class TableHeadColumn extends PureComponent<{
       const {parentElement} = this.ref;
       invariant(parentElement, 'expected there to be parentElement');
 
-      const parentWidth = parentElement!.clientWidth;
-      const {childNodes} = parentElement!;
+      const parentWidth = parentElement.clientWidth;
+      const {childNodes} = parentElement;
 
       const lastElem = childNodes[childNodes.length - 1];
       const right =
@@ -164,7 +164,7 @@ class TableHeadColumn extends PureComponent<{
     onColumnResize(id, normalizedWidth);
   };
 
-  setRef = (ref: HTMLElement) => {
+  setRef = (ref: HTMLElement | null) => {
     this.ref = ref;
   };
 
@@ -192,7 +192,7 @@ class TableHeadColumn extends PureComponent<{
         width={width}
         title={title}
         onClick={sortable === true ? this.onClick : undefined}
-        innerRef={this.setRef}>
+        ref={this.setRef}>
         {children}
       </TableHeadColumnContainer>
     );

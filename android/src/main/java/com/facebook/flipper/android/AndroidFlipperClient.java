@@ -14,8 +14,9 @@ import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.util.Log;
 import androidx.core.content.ContextCompat;
-import com.facebook.flipper.core.FlipperClient;
 import com.facebook.flipper.BuildConfig;
+import com.facebook.flipper.core.FlipperClient;
+import javax.annotation.Nullable;
 
 public final class AndroidFlipperClient {
   private static boolean sIsInitialized = false;
@@ -55,6 +56,7 @@ public final class AndroidFlipperClient {
     return FlipperClientImpl.getInstance();
   }
 
+  @Nullable
   public static synchronized FlipperClient getInstanceIfInitialized() {
     if (!sIsInitialized) {
       return null;

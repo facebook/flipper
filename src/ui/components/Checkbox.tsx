@@ -8,7 +8,7 @@
  */
 
 import {PureComponent} from 'react';
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 import React from 'react';
 
 type CheckboxProps = {
@@ -16,9 +16,10 @@ type CheckboxProps = {
   checked: boolean;
   /** Called when a state change is triggered */
   onChange: (checked: boolean) => void;
+  disabled?: boolean;
 };
 
-const CheckboxContainer = styled('input')({
+const CheckboxContainer = styled.input({
   display: 'inline-block',
   marginRight: 5,
   verticalAlign: 'middle',
@@ -39,6 +40,7 @@ export default class Checkbox extends PureComponent<CheckboxProps> {
         type="checkbox"
         checked={this.props.checked}
         onChange={this.onChange}
+        disabled={this.props.disabled}
       />
     );
   }

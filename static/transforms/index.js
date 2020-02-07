@@ -19,16 +19,23 @@ function transform({filename, options, src}) {
     options.projectRoot && !__dirname.startsWith(options.projectRoot);
   const isTypeScript = filename.endsWith('.tsx');
 
-  let ast = babylon.parse(src, {
+  const ast = babylon.parse(src, {
     filename,
     plugins: isTypeScript
-      ? ['jsx', 'typescript', 'classProperties', 'optionalChaining']
+      ? [
+          'jsx',
+          'typescript',
+          'classProperties',
+          'optionalChaining',
+          'nullishCoalescingOperator',
+        ]
       : [
           'jsx',
           ['flow', {all: true}],
           'classProperties',
           'objectRestSpread',
           'optionalChaining',
+          'nullishCoalescingOperator',
         ],
     sourceType: 'module',
   });
@@ -43,6 +50,7 @@ function transform({filename, options, src}) {
       require('../node_modules/@babel/plugin-proposal-class-properties'),
       require('../node_modules/@babel/plugin-transform-flow-strip-types'),
       require('../node_modules/@babel/plugin-proposal-optional-chaining'),
+      require('../node_modules/@babel/plugin-proposal-nullish-coalescing-operator'),
       require('./dynamic-requires.js'),
     );
   } else {
@@ -51,6 +59,7 @@ function transform({filename, options, src}) {
       require('../node_modules/@babel/plugin-proposal-class-properties'),
       require('../node_modules/@babel/plugin-transform-modules-commonjs'),
       require('../node_modules/@babel/plugin-proposal-optional-chaining'),
+      require('../node_modules/@babel/plugin-proposal-nullish-coalescing-operator'),
     );
   }
 
@@ -77,7 +86,7 @@ function transform({filename, options, src}) {
   } else {
     plugins.push(require('./import-react.js'));
   }
-  ast = babel.transformFromAst(ast, src, {
+  const transformed = babel.transformFromAst(ast, src, {
     ast: true,
     babelrc: !filename.includes('node_modules'),
     code: false,
@@ -88,10 +97,10 @@ function transform({filename, options, src}) {
     plugins,
     presets,
     sourceMaps: true,
-  }).ast;
+  });
 
   const result = generate(
-    ast,
+    transformed.ast,
     {
       filename,
       sourceFileName: filename,
@@ -100,7 +109,7 @@ function transform({filename, options, src}) {
     src,
   );
   return {
-    ast,
+    ast: transformed.ast,
     code: result.code,
     filename,
     map: result.map,

@@ -7,7 +7,7 @@
  * @format
  */
 
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 import React from 'react';
 
 import {colors} from './colors';
@@ -37,14 +37,14 @@ const color = {
 };
 
 const bgColor = {
-  info: 'transparent',
+  info: colors.cyanTint,
   warning: colors.yellowTint,
   error: colors.redTint,
   spinning: 'transparent',
 };
 
-const InfoWrapper = styled(FlexColumn)(
-  ({type, small}: Pick<InfoProps, 'type' | 'small'>) => ({
+const InfoWrapper = styled(FlexColumn)<Pick<InfoProps, 'type' | 'small'>>(
+  ({type, small}) => ({
     padding: small ? '0 4px' : 10,
     borderRadius: 4,
     color: color[type],
@@ -73,7 +73,7 @@ function Info({type, children, small}: InfoProps) {
             variant="filled"
           />
         )}
-        <>{children}</>
+        <div>{children}</div>
       </HBox>
     </InfoWrapper>
   );

@@ -19,6 +19,7 @@ import {PersistedState as NavPluginState} from '../plugins/navigation/types';
 import BaseDevice from '../devices/BaseDevice';
 import {State as PluginState} from 'src/reducers/pluginStates';
 import {platform} from 'os';
+import {getPluginKey} from '../utils/pluginUtils';
 
 type State = {
   bookmarks: Array<Bookmark>;
@@ -65,8 +66,9 @@ class LocationsButton extends Component<Props, State> {
     retreivingBookmarks: false,
   };
 
-  componentWillMount() {
+  componentDidMount() {
     document.addEventListener('keydown', this.keyDown);
+    this.updateBookmarks();
   }
 
   componentWillUnmount() {
@@ -100,10 +102,6 @@ class LocationsButton extends Component<Props, State> {
       this.setState({bookmarks});
     });
   };
-
-  componentDidMount() {
-    this.updateBookmarks();
-  }
 
   render() {
     const {currentURI} = this.props;
@@ -156,10 +154,12 @@ class LocationsButton extends Component<Props, State> {
   }
 }
 
-const mapStateFromPluginStatesToProps = (pluginStates: PluginState) => {
-  const pluginKey = Object.keys(pluginStates).find(key =>
-    /#Navigation$/.test(key),
-  );
+const mapStateFromPluginStatesToProps = (
+  pluginStates: PluginState,
+  selectedDevice: BaseDevice | null,
+  selectedApp: string | null,
+) => {
+  const pluginKey = getPluginKey(selectedApp, selectedDevice, 'Navigation');
   let currentURI: string | undefined;
   if (pluginKey) {
     const navPluginState = pluginStates[pluginKey] as
@@ -173,8 +173,12 @@ const mapStateFromPluginStatesToProps = (pluginStates: PluginState) => {
 };
 
 export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
-  ({connections: {selectedDevice}, pluginStates}) => ({
+  ({connections: {selectedDevice, selectedApp}, pluginStates}) => ({
     selectedDevice,
-    ...mapStateFromPluginStatesToProps(pluginStates),
+    ...mapStateFromPluginStatesToProps(
+      pluginStates,
+      selectedDevice,
+      selectedApp,
+    ),
   }),
 )(LocationsButton);

@@ -26,6 +26,8 @@ export const ACTIVE_SHEET_SHARE_DATA_IN_FILE: 'SHARE_DATA_IN_FILE' =
 export const SET_EXPORT_STATUS_MESSAGE: 'SET_EXPORT_STATUS_MESSAGE' =
   'SET_EXPORT_STATUS_MESSAGE';
 export const UNSET_SHARE: 'UNSET_SHARE' = 'UNSET_SHARE';
+export const ACTIVE_SHEET_JS_EMULATOR_LAUNCHER: 'ACTIVE_SHEET_JS_EMULATOR_LAUNCHER' =
+  'ACTIVE_SHEET_JS_EMULATOR_LAUNCHER';
 
 export type ActiveSheet =
   | typeof ACTIVE_SHEET_PLUGIN_SHEET
@@ -37,6 +39,7 @@ export type ActiveSheet =
   | typeof ACTIVE_SHEET_DOCTOR
   | typeof ACTIVE_SHEET_SHARE_DATA_IN_FILE
   | typeof ACTIVE_SHEET_SELECT_PLUGINS_TO_EXPORT
+  | typeof ACTIVE_SHEET_JS_EMULATOR_LAUNCHER
   | null;
 
 export type LauncherMsg = {
@@ -87,13 +90,16 @@ type BooleanActionType =
   | 'leftSidebarVisible'
   | 'rightSidebarVisible'
   | 'rightSidebarAvailable'
-  | 'windowIsFocused'
   | 'downloadingImportData';
 
 export type Action =
   | {
       type: BooleanActionType;
       payload?: boolean;
+    }
+  | {
+      type: 'windowIsFocused';
+      payload: {isFocused: boolean; time: number};
     }
   | {
       type: 'SET_ACTIVE_SHEET';
@@ -166,6 +172,7 @@ export const initialState: () => State = () => ({
   },
   statusMessages: [],
   xcodeCommandLineToolsDetected: false,
+  trackingTimeline: [],
 });
 
 function statusMessage(sender: string, msg: string): string {
@@ -188,7 +195,6 @@ export default function reducer(
     action.type === 'leftSidebarVisible' ||
     action.type === 'rightSidebarVisible' ||
     action.type === 'rightSidebarAvailable' ||
-    action.type === 'windowIsFocused' ||
     action.type === 'downloadingImportData'
   ) {
     const newValue =
@@ -205,6 +211,11 @@ export default function reducer(
         [action.type]: newValue,
       };
     }
+  } else if (action.type === 'windowIsFocused') {
+    return {
+      ...state,
+      windowIsFocused: action.payload.isFocused,
+    };
   } else if (action.type === 'SET_ACTIVE_SHEET') {
     return {
       ...state,

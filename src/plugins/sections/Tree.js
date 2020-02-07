@@ -13,7 +13,7 @@ import {Glyph, PureComponent, styled, Toolbar, Spacer, colors} from 'flipper';
 import {Tree} from 'react-d3-tree';
 import {Fragment} from 'react';
 
-const Legend = styled('div')(props => ({
+const Legend = styled.div(props => ({
   color: colors.dark50,
   marginLeft: 20,
   '&::before': {
@@ -29,7 +29,7 @@ const Legend = styled('div')(props => ({
   },
 }));
 
-const Label = styled('div')({
+const Label = styled.div({
   position: 'relative',
   top: -7,
   left: 7,
@@ -43,7 +43,7 @@ const Label = styled('div')({
   display: 'inline-block',
 });
 
-const Container = styled('div')({
+const Container = styled.div({
   width: '100%',
   height: '100%',
   overflow: 'hidden',
@@ -53,11 +53,11 @@ const Container = styled('div')({
     '10px 10px,10px 10px,100px 100px,100px 100px,100px 100px,100px 100px,100px 100px,100px 100px',
 });
 
-const LabelContainer = styled('div')({
+const LabelContainer = styled.div({
   display: 'flex',
 });
 
-const IconButton = styled('div')({
+const IconButton = styled.div({
   position: 'relative',
   left: 5,
   top: -8,
@@ -212,7 +212,7 @@ export default class extends PureComponent<Props, State> {
 
   treeContainer: any = null;
 
-  componentWillReceiveProps(props: Props) {
+  UNSAFE_componentWillReceiveProps(props: Props) {
     if (this.props.data === props.data) {
       return;
     }

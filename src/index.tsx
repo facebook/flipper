@@ -7,12 +7,17 @@
  * @format
  */
 
-export {default as styled, keyframes} from 'react-emotion';
+export {default as styled} from '@emotion/styled';
+export {keyframes} from 'emotion';
+export {produce} from 'immer';
+
 export * from './ui/index';
-export {getStringFromErrorLike, textContent} from './utils/index';
+export {getStringFromErrorLike, textContent, sleep} from './utils/index';
+export {serialize, deserialize} from './utils/serialization';
+export * from './utils/jsonTypes';
 export {default as GK} from './fb-stubs/GK';
 export {default as createPaste} from './fb-stubs/createPaste';
-export {internGraphAPIRequest, graphQLQuery} from './fb-stubs/user';
+export {internGraphPOSTAPIRequest, graphQLQuery} from './fb-stubs/user';
 export {
   FlipperBasePlugin,
   FlipperPlugin,
@@ -25,13 +30,14 @@ export {default as Client} from './Client';
 export {MetricType} from './utils/exportMetrics';
 export {clipboard} from 'electron';
 export {default as SupportRequestFormManager} from './fb-stubs/SupportRequestFormManager';
+export {default as SupportRequestFormV2} from './fb-stubs/SupportRequestFormV2';
 export {default as constants} from './fb-stubs/constants';
 export {connect} from 'react-redux';
 export {selectPlugin, StaticView} from './reducers/connections';
 export {writeBufferToFile, bufferToBlob} from './utils/screenshot';
 export {getPluginKey, getPersistedState} from './utils/pluginUtils';
 export {Idler} from './utils/Idler';
-export {Store, MiddlewareAPI} from './reducers/index';
+export {Store, MiddlewareAPI, State as ReduxState} from './reducers/index';
 export {default as BaseDevice} from './devices/BaseDevice';
 export {default as SidebarExtensions} from './fb-stubs/LayoutInspectorSidebarExtensions';
 export {

@@ -28,7 +28,7 @@ type State = {
   prevURIFromAbove: URI;
 };
 
-const IconContainer = styled('div')({
+const IconContainer = styled.div({
   display: 'inline-flex',
   height: '16px',
   alignItems: 'center',
@@ -44,13 +44,13 @@ const IconContainer = styled('div')({
   },
 });
 
-const ToolbarContainer = styled('div')({
+const ToolbarContainer = styled.div({
   '.drop-shadow': {
     boxShadow: '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)',
   },
 });
 
-const SearchInputContainer = styled('div')({
+const SearchInputContainer = styled.div({
   width: '100%',
   marginLeft: 5,
   marginRight: 9,

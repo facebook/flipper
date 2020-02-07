@@ -7,13 +7,13 @@
  * @format
  */
 
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 import {colors} from './colors';
 
 /**
  * Puts a gray border around something
  */
-const Bordered = styled('div')({
+const Bordered = styled.div({
   borderRadius: 4,
   overflow: 'hidden',
   border: `1px solid ${colors.macOSTitleBarButtonBorder}`,

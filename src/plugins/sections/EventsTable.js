@@ -73,7 +73,7 @@ const Row = styled(FlexRow)(props => ({
   },
 }));
 
-const Label = styled('div')({
+const Label = styled.div({
   width: LABEL_WIDTH,
   paddingLeft: 10,
   paddingRight: 10,
@@ -88,7 +88,7 @@ const Label = styled('div')({
   zIndex: 2,
 });
 
-const Content = styled('div')({
+const Content = styled.div({
   textOverflow: 'ellipsis',
   overflow: 'hidden',
   fontSize: 11,
@@ -98,7 +98,7 @@ const Content = styled('div')({
   color: colors.light50,
 });
 
-const Record = styled('div')(({highlighted}) => ({
+const Record = styled.div(({highlighted}) => ({
   border: `1px solid ${colors.light15}`,
   boxShadow: highlighted
     ? `inset 0 0 0 2px ${colors.macOSTitleBarIconSelected}`
@@ -116,7 +116,7 @@ const Record = styled('div')(({highlighted}) => ({
   alignItems: 'center',
 }));
 
-const Empty = styled('div')({
+const Empty = styled.div({
   width: WIDTH,
   padding: '10px 5px',
   marginRight: PADDING,

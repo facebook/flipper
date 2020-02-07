@@ -103,6 +103,22 @@ Start up an android emulator and run the following in the project root:
 ./gradlew :sample:installDebug
 ```
 
+## React Native SDK + Sample app
+
+```
+cd react-native/ReactNativeFlipperExample
+yarn
+yarn android
+```
+
+Note that the first 2 steps need to be done only once.
+
+Alternatively, the app can be started on `iOS` by running `yarn ios`.
+
+#### Troubleshooting
+
+Older yarn versions might show an error / hang with the message 'Waiting for the other yarn instance to finish'. If that happens, run the command `yarn` first separately in the directory `react-native/react-native-flipper`.
+
 ## Documentation
 
 Find the full documentation for this project at [fbflipper.com](https://fbflipper.com/docs).

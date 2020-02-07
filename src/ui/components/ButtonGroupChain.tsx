@@ -9,10 +9,10 @@
 
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 import Glyph from './Glyph';
 
-const IconContainer = styled('div')({
+const IconContainer = styled.div({
   width: 0,
   zIndex: 1,
   display: 'inline-flex',
@@ -21,25 +21,23 @@ const IconContainer = styled('div')({
 });
 IconContainer.displayName = 'ButtonGroupChain:IconContainer';
 
-const ButtonGroupChainContainer = styled('div')(
-  (props: {iconSize: number}) => ({
-    display: 'inline-flex',
-    marginLeft: 10,
-    '&:first-child>*:not(:first-child):nth-child(odd)': {
-      paddingLeft: props.iconSize + 6,
-    },
-    '&:first-child>*': {
-      borderRightStyle: 'none',
-      borderLeftStyle: 'none',
-    },
-    '&:first-child>:first-child': {
-      borderLeftStyle: 'solid',
-    },
-    '&:first-child>:last-child': {
-      borderRightStyle: 'solid',
-    },
-  }),
-);
+const ButtonGroupChainContainer = styled.div<{iconSize: number}>(props => ({
+  display: 'inline-flex',
+  marginLeft: 10,
+  '&:first-child>*:not(:first-child):nth-child(odd)': {
+    paddingLeft: props.iconSize + 6,
+  },
+  '&:first-child>*': {
+    borderRightStyle: 'none',
+    borderLeftStyle: 'none',
+  },
+  '&:first-child>:first-child': {
+    borderLeftStyle: 'solid',
+  },
+  '&:first-child>:last-child': {
+    borderRightStyle: 'solid',
+  },
+}));
 IconContainer.displayName = 'ButtonGroupChain:ButtonGroupChainContainer';
 
 type Props = {

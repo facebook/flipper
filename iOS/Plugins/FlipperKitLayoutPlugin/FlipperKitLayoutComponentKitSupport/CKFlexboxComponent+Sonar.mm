@@ -79,7 +79,6 @@ static NSDictionary<NSNumber *, NSString *> *CKFlexboxWrapEnumMap;
               @"alignItems": SKMutableObject(CKFlexboxAlignItemsEnumMap[@(style.alignItems)]),
               @"alignContent": SKMutableObject(CKFlexboxAlignContentEnumMap[@(style.alignContent)]),
               @"wrap": SKMutableObject(CKFlexboxWrapEnumMap[@(style.wrap)]),
-              @"margin": SKMutableObject(flexboxRect(style.margin)),
               @"padding": SKMutableObject(flexboxRect(style.padding)),
             }]];
 }
@@ -141,22 +140,6 @@ static NSDictionary<NSNumber *, NSString *> *CKFlexboxWrapEnumMap;
                  break;
                }
              }
-             return [NSValue value:&style withObjCType:@encode(CKFlexboxComponentStyle)];
-           },
-           @"CKFlexboxComponent.margin.bottom": ^(NSString *value) {
-             style.margin.bottom = relativeStructDimension(value);
-             return [NSValue value:&style withObjCType:@encode(CKFlexboxComponentStyle)];
-           },
-           @"CKFlexboxComponent.margin.top": ^(NSString *value) {
-             style.margin.top = relativeStructDimension(value);
-             return [NSValue value:&style withObjCType:@encode(CKFlexboxComponentStyle)];
-           },
-           @"CKFlexboxComponent.margin.end": ^(NSString *value) {
-             style.margin.end = relativeStructDimension(value);
-             return [NSValue value:&style withObjCType:@encode(CKFlexboxComponentStyle)];
-           },
-           @"CKFlexboxComponent.margin.start": ^(NSString *value) {
-             style.margin.start = relativeStructDimension(value);
              return [NSValue value:&style withObjCType:@encode(CKFlexboxComponentStyle)];
            },
            @"CKFlexboxComponent.padding.bottom": ^(NSString *value) {

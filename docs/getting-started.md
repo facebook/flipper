@@ -43,10 +43,10 @@ repositories {
 }
 
 dependencies {
-  debugImplementation 'com.facebook.flipper:flipper:0.29.0'
+  debugImplementation 'com.facebook.flipper:flipper:0.30.2'
   debugImplementation 'com.facebook.soloader:soloader:0.5.1'
 
-  releaseImplementation 'com.facebook.flipper:flipper-noop:0.29.0'
+  releaseImplementation 'com.facebook.flipper:flipper-noop:0.30.2'
 }
 ```
 
@@ -60,6 +60,10 @@ builds. Check out [the sample
 app](https://github.com/facebook/flipper/tree/master/android/sample/src) to
 see how to organise your Flipper initialization into debug and release
 variants.
+
+Alternatively, have a look at the third-party
+[flipper-android-no-op](https://github.com/theGlenn/flipper-android-no-op)
+repository, which provides empty implementations for several Flipper plugins.
 
 </div>
 
@@ -100,10 +104,10 @@ repositories {
 }
 
 dependencies {
-  debugImplementation 'com.facebook.flipper:flipper:0.29.1-SNAPSHOT'
+  debugImplementation 'com.facebook.flipper:flipper:0.30.3-SNAPSHOT'
   debugImplementation 'com.facebook.soloader:soloader:0.5.1'
 
-  releaseImplementation 'com.facebook.flipper:flipper-noop:0.29.1-SNAPSHOT'
+  releaseImplementation 'com.facebook.flipper:flipper-noop:0.30.3-SNAPSHOT'
 }
 ```
 
@@ -118,7 +122,7 @@ We support both Swift and Objective-C for Flipper with CocoaPods as build and di
 
 ```ruby
 project 'MyApp.xcodeproj'
-flipperkit_version = '0.29.0'
+flipperkit_version = '0.30.2'
 
 target 'MyApp' do
   platform :ios, '9.0'
@@ -134,8 +138,8 @@ target 'MyApp' do
   # it's dependencies to be built as a static library and all other pods to
   # be dynamic.
   # $static_framework = ['FlipperKit', 'Flipper', 'Flipper-Folly',
-  #   'CocoaAsyncSocket', 'ComponentKit', 'DoubleConversion',
-  #   'glog', 'Flipper-PeerTalk', 'Flipper-RSocket', 'Yoga', 'YogaKit',
+  #   'CocoaAsyncSocket', 'ComponentKit', 'Flipper-DoubleConversion',
+  #   'Flipper-Glog', 'Flipper-PeerTalk', 'Flipper-RSocket', 'Yoga', 'YogaKit',
   #   'CocoaLibEvent', 'OpenSSL-Universal', 'boost-for-react-native']
   #
   # pre_install do |installer|
@@ -180,7 +184,7 @@ end
 
 ```ruby
 project 'MyApp.xcodeproj'
-flipperkit_version = '0.29.0'
+flipperkit_version = '0.30.2'
 
 target 'MyApp' do
   platform :ios, '9.0'
@@ -197,8 +201,8 @@ target 'MyApp' do
   # it's dependencies to be built as a static library and all other pods to
   # be dynamic.
   # $static_framework = ['FlipperKit', 'Flipper', 'Flipper-Folly',
-  #   'CocoaAsyncSocket', 'ComponentKit', 'DoubleConversion',
-  #   'glog', 'Flipper-PeerTalk', 'Flipper-RSocket', 'Yoga', 'YogaKit',
+  #   'CocoaAsyncSocket', 'ComponentKit', 'Flipper-DoubleConversion',
+  #   'Flipper-Glog', 'Flipper-PeerTalk', 'Flipper-RSocket', 'Yoga', 'YogaKit',
   #   'CocoaLibEvent', 'OpenSSL-Universal', 'boost-for-react-native']
   #
   # pre_install do |installer|
@@ -323,7 +327,13 @@ Finally, you need to add plugins to your Flipper client. Above we have only adde
 
 _Inspired by [a blog post by Ram N](http://blog.nparashuram.com/2019/09/using-flipper-with-react-native.html)._
 
-_This version of the tutorial is written against React Native 0.61.4. You can find versions of this guide for older versions of React Native [here](https://github.com/facebook/flipper/blob/da25241f7fbb06dffd913958559044d758c54fb8/docs/getting-started.md#setup-your-react-native-app)_
+<div class="warning">
+
+This version of the tutorial is written against **React Native 0.61.5**.
+
+You can find versions of this guide for older versions of React Native [here](https://github.com/facebook/flipper/blob/da25241f7fbb06dffd913958559044d758c54fb8/docs/getting-started.md#setup-your-react-native-app).
+</div>
+
 
 Integrating Flipper with React Native is a bit different than with a native app.
 
@@ -336,15 +346,7 @@ First, add this line to your `android/gradle.properties`:
 FLIPPER_VERSION=0.23.4
 ```
 
-Add the following permissions to your `AndroidManifest.xml`. The SDK needs these to communicate with the desktop app on localhost via adb. It won't make any external internet requests.
-
-`android/app/src/main/AndroidManifest.xml`
-
-```xml
-<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-```
-
-It's recommended that you add the following activity to the manifest too, which can help diagnose integration issues and other problems:
+It's recommended that you add the following activity to your `AndroidManifest.xml`, which can help diagnose integration issues and other problems:
 
 ```xml
 <activity android:name="com.facebook.flipper.android.diagnostics.FlipperDiagnosticActivity"
@@ -356,8 +358,12 @@ You should also explicitly depend on [`soloader`](https://github.com/facebook/so
 instead of relying on transitive dependency resolution which is getting deprecated
 with Gradle 5.
 
+<div class="warning">
+
 We provide a "no-op" implementation of some oft-used Flipper interfaces you can
-use to make it easier to strip Flipper from your release builds.
+use to make it easier to strip Flipper from your release builds. See instructions in [Setup your Android app](setup-your-android-app).
+
+</div>
 
 `android/app/build.gradle`
 
@@ -365,8 +371,11 @@ use to make it easier to strip Flipper from your release builds.
 android {
   packagingOptions {
     ...
-    // This line is required to prevent React Native from crash
-    pickFirst '**/libc++_shared.so'
+    // This line is required to prevent a build failure due to duplicate libs
+    pickFirst "lib/armeabi-v7a/libc++_shared.so"
+    pickFirst "lib/arm64-v8a/libc++_shared.so"
+    pickFirst "lib/x86/libc++_shared.so"
+    pickFirst "lib/x86_64/libc++_shared.so"
   }
 }
 
@@ -383,7 +392,7 @@ dependencies {
 }
 ```
 
-Now, we create a new file: `android/app/src/debug/java/com/yourappname/ReactNativeFlipper.java`. (Replace the `yourappname` namespace with something appropriate for your project)
+Now, we create a new file: `android/app/src/debug/java/com/yourappname/ReactNativeFlipper.java`. (Replace the `yourappname` namespace with your app name)
 
 These are the suggested plugins integrations:
 
@@ -396,7 +405,7 @@ These are the suggested plugins integrations:
 - React devtools
 
 ```java
-package com.yourappname; // <--- use your own namespace chosen above!
+package com.yourappname; // <--- use your own namespace, same as before!
 
 import android.content.Context;
 import com.facebook.flipper.android.AndroidFlipperClient;
@@ -476,7 +485,7 @@ initializing SoLoader (for loading the C++ part of Flipper) and starting a `Flip
 For this, we edit the `android/app/src/main/java/com/yourappname/MainApplication.java` file.
 
 ```java
-package com.yourappname;// <--- use your own namespace chosen above!
+package com.yourappname;// <--- use your own namespace, same as before!
 
 import ...
 import com.facebook.react.ReactInstanceManager; // <---- add this import
@@ -503,11 +512,16 @@ In the same file, modify the generated `initializeFlipper` method to
          We use reflection here to pick up the class that initializes Flipper,
         since Flipper library is not available in release mode
         */
-        Class<?> aClass = Class.forName("com.yourappname.ReactNativeFlipper"); // <--- use your own namespace chosen above!
+        Class<?> aClass = Class.forName("com.yourappname.ReactNativeFlipper"); // <--- use your own namespace, same as before!
         aClass.getMethod("initializeFlipper", Context.class, ReactInstanceManager.class).invoke(null, context, reactInstanceManager);
       } catch (ClassNotFoundException e) {
-        /* All catch clauses as generated by RN */
-        ...
+        e.printStackTrace();
+      } catch (NoSuchMethodException e) {
+        e.printStackTrace();
+      } catch (IllegalAccessException e) {
+        e.printStackTrace();
+      } catch (InvocationTargetException e) {
+        e.printStackTrace();
       }
     }
   }
@@ -517,9 +531,13 @@ Finally, open the Flipper desktop app, and run `yarn android` in your terminal.
 
 ### iOS
 
-_Make sure you are using [XCode 10](https://download.developer.apple.com/Developer_Tools/Xcode_10.3/Xcode_10.3.xip). The following guide doesn't work (yet) for XCode 11. Run `sudo xcode-select -s /Applications/Xcode_10.XXX/Contents/Developer/` to select the right xcode version._
+We support both Swift and Objective-C for Flipper with CocoaPods as build and distribution mechanism. For CocoaPods 1.7+, follow this configuration.
 
-We support both Swift and Objective-C for Flipper with CocoaPods as build and distribution mechanism. For CocoaPods 1.7+ following is the configuration.
+<div class="warning">
+
+If you can't build your app after adding Flipper, you may need to configure the Swift compiler. To do so, adding an empty Swift file in your project is the easiest way.
+
+</div>
 
 #### CocoaPods
 
@@ -532,11 +550,12 @@ We support both Swift and Objective-C for Flipper with CocoaPods as build and di
 platform :ios, '9.0'
 
 def flipper_pods()
-  flipperkit_version = '0.27'
+  flipperkit_version = '0.30.2'
   pod 'FlipperKit', '~>' + flipperkit_version, :configuration => 'Debug'
   pod 'FlipperKit/FlipperKitLayoutPlugin', '~>' + flipperkit_version, :configuration => 'Debug'
   pod 'FlipperKit/SKIOSNetworkPlugin', '~>' + flipperkit_version, :configuration => 'Debug'
   pod 'FlipperKit/FlipperKitUserDefaultsPlugin', '~>' + flipperkit_version, :configuration => 'Debug'
+  pod 'FlipperKit/FlipperKitReactPlugin', '~>' + flipperkit_version, :configuration => 'Debug'
 end
 
 # Post Install processing for Flipper
@@ -602,14 +621,16 @@ The code below enables the following integrations:
 
 ```objective-c
 ...
-#ifdef DEBUG
-  #import <FlipperKit/FlipperClient.h>
-  #import <FlipperKitLayoutPlugin/FlipperKitLayoutPlugin.h>
-  #import <FlipperKitLayoutPlugin/SKDescriptorMapper.h>
-  #import <FlipperKitUserDefaultsPlugin/FKUserDefaultsPlugin.h>
-  #import <FlipperKitNetworkPlugin/FlipperKitNetworkPlugin.h>
-  #import <SKIOSNetworkPlugin/SKIOSNetworkAdapter.h>
-  #import <FlipperKitNetworkPlugin/FlipperKitNetworkPlugin.h>
+#if DEBUG
+#ifdef FB_SONARKIT_ENABLED
+#import <FlipperKit/FlipperClient.h>
+#import <FlipperKitLayoutPlugin/FlipperKitLayoutPlugin.h>
+#import <FlipperKitLayoutPlugin/SKDescriptorMapper.h>
+#import <FlipperKitNetworkPlugin/FlipperKitNetworkPlugin.h>
+#import <FlipperKitReactPlugin/FlipperKitReactPlugin.h>
+#import <FlipperKitUserDefaultsPlugin/FKUserDefaultsPlugin.h>
+#import <SKIOSNetworkPlugin/SKIOSNetworkAdapter.h>
+#endif
 #endif
 
 @implementation AppDelegate
@@ -621,17 +642,60 @@ The code below enables the following integrations:
 }
 
 - (void) initializeFlipper:(UIApplication *)application {
-  #ifdef DEBUG
+  #if DEBUG
+  #ifdef FB_SONARKIT_ENABLED
     FlipperClient *client = [FlipperClient sharedClient];
     SKDescriptorMapper *layoutDescriptorMapper = [[SKDescriptorMapper alloc] initWithDefaults];
     [client addPlugin: [[FlipperKitLayoutPlugin alloc] initWithRootNode: application withDescriptorMapper: layoutDescriptorMapper]];
-    [client addPlugin:[[FKUserDefaultsPlugin alloc] initWithSuiteName:nil]]; [client start];
+    [client addPlugin: [[FKUserDefaultsPlugin alloc] initWithSuiteName:nil]];
+    [client addPlugin: [FlipperKitReactPlugin new]];
     [client addPlugin: [[FlipperKitNetworkPlugin alloc] initWithNetworkAdapter:[SKIOSNetworkAdapter new]]];
     [client start];
+  #endif
   #endif
 }
 
 @end
+```
+
+<!--Swift-->
+
+```swift
+...
+#if DEBUG
+#if FB_SONARKIT_ENABLED
+import FlipperKit
+#endif
+#endif
+
+@UIApplicationMain
+class AppDelegate: UIResponder, UIApplicationDelegate {
+
+  func application(
+      _ application: UIApplication,
+      didFinishLaunchingWithOptions
+      launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+    ) -> Bool {
+    initializeFlipper(with: application)
+    ...
+  }
+
+  private func initializeFlipper(with application: UIApplication) {
+    #if DEBUG
+    #if FB_SONARKIT_ENABLED
+      let client = FlipperClient.shared()
+      let layoutDescriptorMapper = SKDescriptorMapper(defaults: ())
+      FlipperKitLayoutComponentKitSupport.setUpWith(layoutDescriptorMapper)
+      client?.add(FlipperKitLayoutPlugin(rootNode: application, with: layoutDescriptorMapper!))
+      client?.add(FKUserDefaultsPlugin(suiteName: nil))
+      client?.add(FlipperKitReactPlugin())
+      client?.add(FlipperKitNetworkPlugin(networkAdapter: SKIOSNetworkAdapter()))
+      client?.add(FlipperReactPerformancePlugin.sharedInstance())
+      client?.start()
+    #endif
+    #endif
+  }
+}
 ```
 
 <!--END_DOCUSAURUS_CODE_TABS-->
