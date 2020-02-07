@@ -53,19 +53,30 @@ module.exports = async (
 };
 
 async function startWatchingPluginsUsingWatchman(plugins, onPluginChanged) {
-  const rootDir = path.resolve(__dirname, '..');
-  const watchman = new Watchman(rootDir);
-  await watchman.initialize();
+  // Initializing a watchman for each folder containing plugins
+  const watchmanRootMap = {};
   await Promise.all(
-    plugins.map(plugin =>
-      watchman.startWatchFiles(
-        path.relative(rootDir, plugin.rootDir),
+    plugins.map(async plugin => {
+      const watchmanRoot = path.resolve(plugin.rootDir, '..');
+      if (!watchmanRootMap[watchmanRoot]) {
+        watchmanRootMap[watchmanRoot] = new Watchman(watchmanRoot);
+        await watchmanRootMap[watchmanRoot].initialize();
+      }
+    }),
+  );
+  // Start watching plugins using the initialized watchmans
+  await Promise.all(
+    plugins.map(async plugin => {
+      const watchmanRoot = path.resolve(plugin.rootDir, '..');
+      const watchman = watchmanRootMap[watchmanRoot];
+      await watchman.startWatchFiles(
+        path.relative(watchmanRoot, plugin.rootDir),
         () => onPluginChanged(plugin),
         {
           excludes: ['**/__tests__/**/*', '**/node_modules/**/*', '**/.*'],
         },
-      ),
-    ),
+      );
+    }),
   );
 }
 
