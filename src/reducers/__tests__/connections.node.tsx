@@ -8,7 +8,7 @@
  */
 
 import reducer from '../connections';
-import {State} from '../connections';
+import {State, selectPlugin} from '../connections';
 import BaseDevice from '../../devices/BaseDevice';
 import MacDevice from '../../devices/MacDevice';
 import {FlipperDevicePlugin} from '../../plugin';
@@ -118,4 +118,12 @@ test('errors are collected on a by name basis', () => {
       },
     ]
   `);
+});
+
+test('selectPlugin sets deepLinkPayload correctly', () => {
+  const state = reducer(
+    undefined,
+    selectPlugin({selectedPlugin: 'myPlugin', deepLinkPayload: 'myPayload'}),
+  );
+  expect(state.deepLinkPayload).toBe('myPayload');
 });

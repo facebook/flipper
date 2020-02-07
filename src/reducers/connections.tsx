@@ -223,7 +223,7 @@ const reducer = (state: State = INITAL_STATE, action: Actions): State => {
     }
     case 'SELECT_PLUGIN': {
       const {payload} = action;
-      const {selectedPlugin, selectedApp} = payload;
+      const {selectedPlugin, selectedApp, deepLinkPayload} = payload;
       const selectedDevice = payload.selectedDevice || state.selectedDevice;
       if (!selectDevice) {
         console.warn('Trying to select a plugin before a device was selected!');
@@ -242,6 +242,7 @@ const reducer = (state: State = INITAL_STATE, action: Actions): State => {
         userPreferredDevice: selectedDevice
           ? selectedDevice.title
           : state.userPreferredDevice,
+        deepLinkPayload: deepLinkPayload,
       });
     }
 
