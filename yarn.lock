@@ -1574,10 +1574,10 @@
     "@types/rsocket-flowable" "*"
     "@types/rsocket-types" "*"
 
-"@types/rsocket-core@^0.0.3":
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/@types/rsocket-core/-/rsocket-core-0.0.3.tgz#7a2d188002aaa62690fa97bd92138434e6b31cda"
-  integrity sha512-dCVQF0manLKbkcAggnafCR7Nkl5wBm3mqydcSUOA8JWeGeSp2k4aXTImhASkgFdyulB/RzGSUEIPOaJR4sB3qA==
+"@types/rsocket-core@^0.0.4":
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/@types/rsocket-core/-/rsocket-core-0.0.4.tgz#4671edb58232e3d09bcb78c4ef62243643a00a61"
+  integrity sha512-s9WkhGvk9+DDf2oV6XdwSCm3ypEYLZt+0a8uVDosyGcysV7cD5ntIqtFleGO1UcyJXTGrt5unZJQ2z9DTGeKFA==
   dependencies:
     "@types/node" "*"
     "@types/rsocket-flowable" "*"
