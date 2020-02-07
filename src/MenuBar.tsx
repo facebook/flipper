@@ -215,21 +215,19 @@ function getTemplate(
       submenu: exportSubmenu,
     },
   ];
-  if (GK.get('support_requests_v2')) {
-    const supportRequestSubmenu = [
-      {
-        label: 'Create...',
-        click: function() {
-          // Dispatch an action to open the export screen of Support Request form
-          store.dispatch(setStaticView(SupportRequestFormV2));
-        },
+  const supportRequestSubmenu = [
+    {
+      label: 'Create...',
+      click: function() {
+        // Dispatch an action to open the export screen of Support Request form
+        store.dispatch(setStaticView(SupportRequestFormV2));
       },
-    ];
-    fileSubmenu.push({
-      label: 'Support Requests',
-      submenu: supportRequestSubmenu,
-    });
-  }
+    },
+  ];
+  fileSubmenu.push({
+    label: 'Support Requests',
+    submenu: supportRequestSubmenu,
+  });
 
   const template: MenuItemConstructorOptions[] = [
     {

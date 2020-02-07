@@ -52,13 +52,6 @@ function MainSidebarUtilsSection({
 }: Props) {
   const showWatchDebugRoot = GK.get('watch_team_flipper_clientless_access');
 
-  const hasSeenSupportForm = useRef(false);
-  const showSupportForm =
-    GK.get('support_requests_v2') || hasSeenSupportForm.current;
-  if (showSupportForm) {
-    hasSeenSupportForm.current = true;
-  }
-
   return (
     <div style={{flexShrink: 0, borderTop: `1px solid ${colors.blackAlpha10}`}}>
       {showWatchDebugRoot &&
@@ -81,30 +74,29 @@ function MainSidebarUtilsSection({
           );
         })()}
       <RenderNotificationsEntry />
-      {showSupportForm &&
-        (function() {
-          const active = isStaticViewActive(staticView, SupportRequestFormV2);
-          return (
-            <ListItem
-              active={active}
-              onClick={() => {
-                getInstance().track('usage', 'support-form-source', {
-                  source: 'sidebar',
-                  group: selectedGroup.name,
-                });
-                setStaticView(SupportRequestFormV2);
-              }}>
-              <PluginIcon
-                color={colors.light50}
-                name={'app-dailies'}
-                isActive={active}
-              />
-              <PluginName isActive={active}>
-                Litho/GraphQL Support Request
-              </PluginName>
-            </ListItem>
-          );
-        })()}
+      {(function() {
+        const active = isStaticViewActive(staticView, SupportRequestFormV2);
+        return (
+          <ListItem
+            active={active}
+            onClick={() => {
+              getInstance().track('usage', 'support-form-source', {
+                source: 'sidebar',
+                group: selectedGroup.name,
+              });
+              setStaticView(SupportRequestFormV2);
+            }}>
+            <PluginIcon
+              color={colors.light50}
+              name={'app-dailies'}
+              isActive={active}
+            />
+            <PluginName isActive={active}>
+              Litho/GraphQL Support Request
+            </PluginName>
+          </ListItem>
+        );
+      })()}
       <ListItem onClick={() => setActiveSheet(ACTIVE_SHEET_PLUGINS)}>
         <PluginIcon
           name="question-circle"

@@ -197,14 +197,12 @@ type DispatchFromProps = {
 
 type Props = OwnProps & StateFromProps & DispatchFromProps;
 type State = {
-  showSupportForm: boolean;
   showWatchDebugRoot: boolean;
   showAllPlugins: boolean;
 };
 
 class MainSidebar2 extends PureComponent<Props, State> {
   state: State = {
-    showSupportForm: GK.get('support_requests_v2'),
     showWatchDebugRoot: GK.get('watch_team_flipper_clientless_access'),
     showAllPlugins: false,
   };
@@ -332,21 +330,20 @@ class MainSidebar2 extends PureComponent<Props, State> {
             {device.source ? 'Imported device' : 'Archived device'}
           </Info>
         </ListItem>
-        {this.state.showSupportForm &&
-          (device as ArchivedDevice).supportRequestDetails && (
-            <ListItem
-              active={supportRequestDetailsactive}
-              onClick={() => setStaticView(SupportRequestDetails)}>
-              <PluginIcon
-                color={colors.light50}
-                name={'app-dailies'}
-                isActive={supportRequestDetailsactive}
-              />
-              <PluginName isActive={supportRequestDetailsactive}>
-                Support Request Details
-              </PluginName>
-            </ListItem>
-          )}
+        {(device as ArchivedDevice).supportRequestDetails && (
+          <ListItem
+            active={supportRequestDetailsactive}
+            onClick={() => setStaticView(SupportRequestDetails)}>
+            <PluginIcon
+              color={colors.light50}
+              name={'app-dailies'}
+              isActive={supportRequestDetailsactive}
+            />
+            <PluginName isActive={supportRequestDetailsactive}>
+              Support Request Details
+            </PluginName>
+          </ListItem>
+        )}
       </>
     );
   }
