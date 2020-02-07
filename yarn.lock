@@ -8231,10 +8231,10 @@ roarr@^2.14.4:
     semver-compare "^1.0.0"
     sprintf-js "^1.1.2"
 
-rsocket-core@^0.0.18:
-  version "0.0.18"
-  resolved "https://registry.yarnpkg.com/rsocket-core/-/rsocket-core-0.0.18.tgz#195cb45f301a5962f9702e7d634957aecd2788ce"
-  integrity sha512-CUMJbAfjiHXrkcw9/9iQ7t8a0KOCboJN9sv8ekpq2jTGmvWYCiPRdXJ3SBCB5gcWda2ExYICryAEbT3qe8fSaA==
+rsocket-core@^0.0.19:
+  version "0.0.19"
+  resolved "https://registry.yarnpkg.com/rsocket-core/-/rsocket-core-0.0.19.tgz#0b4fb1bb1f4c86f747426c310ed1557cdd3145d1"
+  integrity sha512-WYPQb6TiRzIO+BhwUZN+aDTQ0KywU+eMrb4NbJPQi58ult+r+8h94RAfesWa35gfYQb8Tl40UR7scJqYfZXE2A==
   dependencies:
     fbjs "^1.0.0"
     rsocket-flowable "^0.0.14"
@@ -8247,24 +8247,24 @@ rsocket-flowable@^0.0.14:
   dependencies:
     fbjs "^1.0.0"
 
-rsocket-tcp-client@^0.0.18:
-  version "0.0.18"
-  resolved "https://registry.yarnpkg.com/rsocket-tcp-client/-/rsocket-tcp-client-0.0.18.tgz#4c5e618c35bb3904b05d5d02aabe8d59e8e20985"
-  integrity sha512-gx2J/tN1t5O1JM8i4NKeWUtvKx/DlpxKOfEVw+kV0qm37T/9QvOMpQmeqTpRxEBaYvLHBYmX2ysZev3CuaZ1Mw==
+rsocket-tcp-client@^0.0.19:
+  version "0.0.19"
+  resolved "https://registry.yarnpkg.com/rsocket-tcp-client/-/rsocket-tcp-client-0.0.19.tgz#950bc8b940706fc9e43bc6ab82f21446ceb747bd"
+  integrity sha512-0qpn2vFiAclkmFJRoC+X/R432+no45jtdLoF2glvEUBy/Eh0JFa076TsBr08/RoLjnD9M9qHUq6iZcWIlAHLSQ==
   dependencies:
     fbjs "^1.0.0"
-    rsocket-core "^0.0.18"
+    rsocket-core "^0.0.19"
     rsocket-flowable "^0.0.14"
 
-rsocket-tcp-server@^0.0.18:
-  version "0.0.18"
-  resolved "https://registry.yarnpkg.com/rsocket-tcp-server/-/rsocket-tcp-server-0.0.18.tgz#2d87072f21410f272a0bee95683af6c70a2477ac"
-  integrity sha512-823my8JEcXvkPHEmm0c3k0/di3ZncmsETetlk6GNPrxpjPAigTxaLfoW/gA25IuUG4YPhBHPpzVHRQOMSu61Bw==
+rsocket-tcp-server@^0.0.19:
+  version "0.0.19"
+  resolved "https://registry.yarnpkg.com/rsocket-tcp-server/-/rsocket-tcp-server-0.0.19.tgz#f2dfe121e3dce6b53c91cc41cce4c7f8a40ba8e9"
+  integrity sha512-xhwCy+v7H11BSDBADjzGL8iPQ/RYSnKFVHwQQG/aLg/nMGOBwdhl7t9d62J9ysSxJgSUonJFrRkMyXjgSZ9kMg==
   dependencies:
     fbjs "^1.0.0"
-    rsocket-core "^0.0.18"
+    rsocket-core "^0.0.19"
     rsocket-flowable "^0.0.14"
-    rsocket-tcp-client "^0.0.18"
+    rsocket-tcp-client "^0.0.19"
     rsocket-types "^0.0.16"
 
 rsocket-types@^0.0.16:
