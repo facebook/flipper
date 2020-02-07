@@ -8,6 +8,31 @@
  */
 
 import fs from 'fs';
+import path from 'path';
+import {BaseDevice} from 'flipper';
+import {reportPlatformFailures} from './metrics';
+import expandTilde from 'expand-tilde';
+import {remote} from 'electron';
+import config from '../utils/processConfig';
+
+// TODO: refactor so this doesn't need to be exported
+export const CAPTURE_LOCATION = expandTilde(
+  config().screenCapturePath || remote.app.getPath('desktop'),
+);
+
+// TODO: refactor so this doesn't need to be exported
+export function getFileName(extension: 'png' | 'mp4'): string {
+  // Windows does not like `:` in its filenames. Yes, I know ...
+  return `screencap-${new Date().toISOString().replace(/:/g, '')}.${extension}`;
+}
+
+export function capture(device: BaseDevice): Promise<string> {
+  const pngPath = path.join(CAPTURE_LOCATION, getFileName('png'));
+  return reportPlatformFailures(
+    device.screenshot().then(buffer => writeBufferToFile(pngPath, buffer)),
+    'captureScreenshot',
+  );
+}
 
 /**
  * Writes a buffer to a specified file path.

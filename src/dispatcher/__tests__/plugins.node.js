@@ -21,9 +21,14 @@ import {init as initLogger} from '../../fb-stubs/Logger.tsx';
 import configureStore from 'redux-mock-store';
 import {TEST_PASSING_GK, TEST_FAILING_GK} from '../../fb-stubs/GK.tsx';
 import TestPlugin from './TestPlugin';
+import {resetConfigForTesting} from '../../utils/processConfig.tsx';
 
 const mockStore = configureStore([])(reducers(undefined, {type: 'INIT'}));
 const logger = initLogger(mockStore);
+
+beforeEach(() => {
+  resetConfigForTesting();
+});
 
 test('dispatcher dispatches REGISTER_PLUGINS', () => {
   dispatcher(mockStore, logger);

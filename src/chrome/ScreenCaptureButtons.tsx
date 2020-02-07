@@ -18,10 +18,7 @@ import config from '../utils/processConfig';
 import BaseDevice from '../devices/BaseDevice';
 import {State as Store} from '../reducers';
 import open from 'open';
-
-const CAPTURE_LOCATION = expandTilde(
-  config().screenCapturePath || remote.app.getPath('desktop'),
-);
+import {capture, CAPTURE_LOCATION, getFileName} from '../utils/screenshot';
 
 type OwnProps = {};
 
@@ -47,11 +44,6 @@ export async function openFile(path: string | null) {
   } catch (e) {
     console.error(`Opening ${path} failed with error ${e}.`);
   }
-}
-
-function getFileName(extension: 'png' | 'mp4'): string {
-  // Windows does not like `:` in its filenames. Yes, I know ...
-  return `screencap-${new Date().toISOString().replace(/:/g, '')}.${extension}`;
 }
 
 type Props = OwnProps & StateFromProps & DispatchFromProps;
@@ -82,17 +74,10 @@ class ScreenCaptureButtons extends Component<Props, State> {
     this.setState({recordingEnabled});
   };
 
-  captureScreenshot: Promise<void> | any = () => {
+  captureScreenshot: Promise<void> | any = async () => {
     const {selectedDevice} = this.props;
-    const pngPath = path.join(CAPTURE_LOCATION, getFileName('png'));
     if (selectedDevice != null) {
-      reportPlatformFailures(
-        selectedDevice
-          .screenshot()
-          .then(buffer => writeBufferToFile(pngPath, buffer))
-          .then(path => openFile(path)),
-        'captureScreenshot',
-      );
+      await capture(selectedDevice);
     }
   };
 

@@ -7,25 +7,27 @@
  * @format
  */
 
-export function getUser() {
-  return Promise.reject();
+import {User} from '../reducers/user';
+
+export async function getUser(): Promise<User> {
+  throw new Error('Feature not implemented');
 }
 
 export async function internGraphPOSTAPIRequest(
-  endpoint: string,
-  formFields: {
+  _endpoint: string,
+  _formFields: {
     [key: string]: any;
   } = {},
 ): Promise<any> {
-  return Promise.reject();
+  throw new Error('Feature not implemented');
 }
 
-export async function graphQLQuery(query: string) {
-  return Promise.reject();
+export async function graphQLQuery(_query: string) {
+  throw new Error('Feature not implemented');
 }
 
 export function logoutUser(): Promise<void> {
-  return Promise.reject();
+  throw new Error('Feature not implemented');
 }
 
 export type DataExportResult = {
@@ -44,12 +46,19 @@ export type DataExportError = {
 };
 
 export async function shareFlipperData(
-  trace: string,
+  _trace: string,
 ): Promise<DataExportError | DataExportResult> {
   new Notification('Feature not implemented');
-  return Promise.reject();
+  throw new Error('Feature not implemented');
 }
 
-export async function writeKeychain(token: string) {
-  return Promise.reject();
+export async function writeKeychain(_token: string) {
+  throw new Error('Feature not implemented');
+}
+
+export async function uploadFlipperMedia(
+  _path: string,
+  _kind: 'Image' | 'Video',
+): Promise<string> {
+  throw new Error('Feature not implemented');
 }
