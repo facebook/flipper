@@ -30,10 +30,10 @@ import org.json.JSONTokener;
  * <p>Note that this manager is not bound to a specific FlipperModule instance, as that might be
  * swapped in and out over time.
  */
-final class FlipperReactNativeJavaScriptPluginManager {
+public final class FlipperReactNativeJavaScriptPluginManager {
   private static FlipperReactNativeJavaScriptPluginManager sInstance;
 
-  static synchronized FlipperReactNativeJavaScriptPluginManager getInstance() {
+  public static synchronized FlipperReactNativeJavaScriptPluginManager getInstance() {
     if (sInstance == null) {
       sInstance = new FlipperReactNativeJavaScriptPluginManager();
     }

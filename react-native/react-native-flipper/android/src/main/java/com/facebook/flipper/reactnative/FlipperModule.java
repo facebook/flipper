@@ -30,7 +30,7 @@ public class FlipperModule extends ReactContextBaseJavaModule {
 
   private final FlipperReactNativeJavaScriptPluginManager mManager;
 
-  FlipperModule(
+  public FlipperModule(
       FlipperReactNativeJavaScriptPluginManager manager, ReactApplicationContext reactContext) {
     super(reactContext);
     mManager = manager;
