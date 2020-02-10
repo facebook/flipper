@@ -43,10 +43,10 @@ repositories {
 }
 
 dependencies {
-  debugImplementation 'com.facebook.flipper:flipper:0.30.2'
+  debugImplementation 'com.facebook.flipper:flipper:0.31.0'
   debugImplementation 'com.facebook.soloader:soloader:0.5.1'
 
-  releaseImplementation 'com.facebook.flipper:flipper-noop:0.30.2'
+  releaseImplementation 'com.facebook.flipper:flipper-noop:0.31.0'
 }
 ```
 
@@ -122,7 +122,7 @@ We support both Swift and Objective-C for Flipper with CocoaPods as build and di
 
 ```ruby
 project 'MyApp.xcodeproj'
-flipperkit_version = '0.30.2'
+flipperkit_version = '0.31.0'
 
 target 'MyApp' do
   platform :ios, '9.0'
@@ -184,7 +184,7 @@ end
 
 ```ruby
 project 'MyApp.xcodeproj'
-flipperkit_version = '0.30.2'
+flipperkit_version = '0.31.0'
 
 target 'MyApp' do
   platform :ios, '9.0'
@@ -550,7 +550,7 @@ If you can't build your app after adding Flipper, you may need to configure the 
 platform :ios, '9.0'
 
 def flipper_pods()
-  flipperkit_version = '0.30.2'
+  flipperkit_version = '0.31.0'
   pod 'FlipperKit', '~>' + flipperkit_version, :configuration => 'Debug'
   pod 'FlipperKit/FlipperKitLayoutPlugin', '~>' + flipperkit_version, :configuration => 'Debug'
   pod 'FlipperKit/SKIOSNetworkPlugin', '~>' + flipperkit_version, :configuration => 'Debug'
