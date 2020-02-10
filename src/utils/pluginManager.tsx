@@ -29,7 +29,7 @@ export const PLUGIN_DIR = path.join(homedir(), '.flipper', 'thirdparty');
 // refactor is done.
 export function providePluginManager(): PM {
   return new PM({
-    ignoredDependencies: ['flipper', 'react', 'react-dom', '@types/*'],
+    ignoredDependencies: [/^flipper$/, /^react$/, /^react-dom$/, /^@types/],
   });
 }
 
