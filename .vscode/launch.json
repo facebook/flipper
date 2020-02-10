@@ -22,5 +22,14 @@
       "program": "${workspaceFolder}/node_modules/.bin/jest",
       "args": ["--runInBand", "${relativeFile}"]
    }
-  ]
+  ],
+  "compounds": [
+    {
+        "name": "Attach to All",
+        "configurations": [
+            "Attach to Running Main",
+            "Attach to Running Renderer"
+        ]
+    }
+]
 }
