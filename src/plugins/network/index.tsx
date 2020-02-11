@@ -501,6 +501,7 @@ class NetworkTable extends PureComponent<NetworkTableProps, NetworkTableState> {
           allowBodySearch={true}
           zebra={false}
           actions={<Button onClick={this.props.clear}>Clear Table</Button>}
+          clearSearchTerm={this.props.searchTerm !== ''}
           defaultSearchTerm={this.props.searchTerm}
         />
       </NetworkTable.ContextMenu>

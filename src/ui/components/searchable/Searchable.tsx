@@ -113,6 +113,7 @@ type Props = {
   columns?: TableColumns;
   onFilterChange: (filters: Array<Filter>) => void;
   defaultFilters: Array<Filter>;
+  clearSearchTerm: boolean;
   defaultSearchTerm: string;
   allowRegexSearch: boolean;
   allowBodySearch: boolean;
@@ -144,6 +145,7 @@ const Searchable = (
 
     static defaultProps = {
       placeholder: 'Search...',
+      clearSearchTerm: false,
     };
 
     state: State = {
@@ -204,7 +206,9 @@ const Searchable = (
             }
           });
         }
-        const searchTerm = savedState.searchTerm || this.state.searchTerm;
+        const searchTerm = this.props.clearSearchTerm
+          ? this.props.defaultSearchTerm
+          : savedState.searchTerm || this.state.searchTerm;
         this.setState({
           searchTerm: searchTerm,
           filters: savedState.filters || this.state.filters,
