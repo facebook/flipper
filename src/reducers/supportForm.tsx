@@ -25,6 +25,7 @@ import {State as PluginStatesState} from './pluginStates';
 import {State as PluginsState} from '../reducers/plugins';
 import {State as PluginMessageQueueState} from '../reducers/pluginMessageQueue';
 import Client from '../Client';
+import {OS} from '../devices/BaseDevice';
 
 const {
   GRAPHQL_IOS_SUPPORT_GROUP_ID,
@@ -39,41 +40,67 @@ type MediaObject = SubmediaType & {
   path: string;
 };
 
+export type GroupValidationErrors = {
+  plugins: string | null;
+  os: string | null;
+};
+
 export class Group {
   constructor(
     name: GroupNames,
     workplaceGroupID: number,
     requiredPlugins: Array<string>,
     defaultPlugins: Array<string>,
+    supportedOS: Array<OS>,
   ) {
     this.name = name;
     this.requiredPlugins = requiredPlugins;
     this.defaultPlugins = defaultPlugins;
     this.workplaceGroupID = workplaceGroupID;
+    this.supportedOS = supportedOS;
   }
   readonly name: GroupNames;
   requiredPlugins: Array<string>;
   defaultPlugins: Array<string>;
   workplaceGroupID: number;
+  supportedOS: Array<OS>;
 
-  getValidationMessage(selectedPlugins: Array<string>): string | null {
+  getValidationMessage(
+    selectedPlugins: Array<string>,
+    selectedOS: OS | null,
+  ): GroupValidationErrors {
     const nonSelectedPlugin: Array<string> = [];
     for (const plugin of this.requiredPlugins) {
       if (!selectedPlugins.includes(plugin)) {
         nonSelectedPlugin.push(plugin);
       }
     }
-    if (nonSelectedPlugin.length <= 0) {
-      return null;
-    }
-    let str = 'should be exported if you want to submit to this group.';
+
+    // Plugin validation
+    let str: string | null =
+      'should be exported if you want to submit to this group. Make sure, if your selected app supports those plugins, if so then enable it and select it from the plugin selection.';
     if (nonSelectedPlugin.length == 1) {
       str = `the ${nonSelectedPlugin.pop()} plugin ${str}`;
-    } else {
+    } else if (nonSelectedPlugin.length > 1) {
       const lastPlugin = nonSelectedPlugin.pop();
       str = `the ${nonSelectedPlugin.join(',')} and ${lastPlugin} ${str}`;
+    } else {
+      // nonSelectedPlugin is empty
+      str = null;
     }
-    return str;
+
+    // OS validation
+    let osError: string | null = null;
+    if (!selectedOS) {
+      osError = 'Please select an app from the drop down.';
+    } else if (!this.supportedOS.includes(selectedOS)) {
+      osError = `The group ${
+        this.name
+      } supports exports from ${this.supportedOS.join(
+        ', ',
+      )}. But your selected device's OS is ${selectedOS}, which is unsupported.`;
+    }
+    return {plugins: str, os: osError};
   }
 
   handleSupportFormDeeplinks(store: Store) {
@@ -227,6 +254,7 @@ export const LITHO_GROUP = new Group(
   LITHO_SUPPORT_GROUP_ID,
   ['Inspector'],
   ['Inspector', 'Sections', 'DeviceLogs'],
+  ['Android'],
 );
 
 export const GRAPHQL_ANDROID_GROUP = new Group(
@@ -234,6 +262,7 @@ export const GRAPHQL_ANDROID_GROUP = new Group(
   GRAPHQL_ANDROID_SUPPORT_GROUP_ID,
   ['GraphQL'],
   ['GraphQL', 'DeviceLogs'],
+  ['Android'],
 );
 
 export const GRAPHQL_IOS_GROUP = new Group(
@@ -241,6 +270,7 @@ export const GRAPHQL_IOS_GROUP = new Group(
   GRAPHQL_IOS_SUPPORT_GROUP_ID,
   ['GraphQL'],
   ['GraphQL', 'DeviceLogs'],
+  ['iOS'],
 );
 
 export const SUPPORTED_GROUPS: Array<Group> = [
