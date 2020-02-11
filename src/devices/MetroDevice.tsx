@@ -113,6 +113,31 @@ const metroLogLevelMapping: {[key: string]: LogLevel} = {
   debug: 'debug',
 };
 
+function getLoglevelFromMessageType(
+  type: ReportableEvent['type'],
+): LogLevel | null {
+  switch (type) {
+    case 'bundle_build_done':
+    case 'bundle_build_started':
+    case 'initialize_done':
+      return 'debug';
+    case 'bundle_build_failed':
+    case 'bundling_error':
+    case 'global_cache_error':
+    case 'hmr_client_error':
+      return 'error';
+    case 'bundle_transform_progressed':
+      return null; // Don't show at all
+    case 'client_log':
+      return null; // Handled separately
+    case 'dep_graph_loaded':
+    case 'dep_graph_loading':
+    case 'global_cache_disabled':
+    default:
+      return 'verbose';
+  }
+}
+
 export default class MetroDevice extends BaseDevice {
   ws: WebSocket;
 
@@ -134,9 +159,23 @@ export default class MetroDevice extends BaseDevice {
         type,
         tag: message.type,
         message: message.data
-          .map(v => (v && typeof v === 'object' ? JSON.stringify(v) : v))
+          .map(v =>
+            v && typeof v === 'object' ? JSON.stringify(v, null, 2) : v,
+          )
           .join(' '),
       });
+    } else {
+      const level = getLoglevelFromMessageType(message.type);
+      if (level !== null) {
+        this.addLogEntry({
+          date: new Date(),
+          pid: 0,
+          tid: 0,
+          type: level,
+          tag: message.type,
+          message: JSON.stringify(message, null, 2),
+        });
+      }
     }
   };
 
