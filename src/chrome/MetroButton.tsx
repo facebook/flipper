@@ -7,9 +7,17 @@
  * @format
  */
 
-import React, {useCallback} from 'react';
-import {Button, ButtonGroup, MetroDevice, connect} from 'flipper';
+import React, {useCallback, useEffect, useState} from 'react';
+import {
+  Button,
+  ButtonGroup,
+  MetroDevice,
+  connect,
+  colors,
+  styled,
+} from 'flipper';
 import {State} from '../reducers';
+import {MetroReportableEvent} from '../devices/MetroDevice';
 
 type LogEntry = {};
 
@@ -17,103 +25,42 @@ export type PersistedState = {
   logs: LogEntry[];
 };
 
-/*
-Flow types for events 
-
-/
-  A tagged union of all the actions that may happen and we may want to
-  report to the tool user.
- /
-export type ReportableEvent =
-  | {
-      port: number,
-      projectRoots: $ReadOnlyArray<string>,
-      type: 'initialize_started',
-      ...
-    }
-  | {type: 'initialize_done', ...}
-  | {
-      type: 'initialize_failed',
-      port: number,
-      error: Error,
-      ...
-    }
-  | {
-      buildID: string,
-      type: 'bundle_build_done',
-      ...
-    }
-  | {
-      buildID: string,
-      type: 'bundle_build_failed',
-      ...
-    }
-  | {
-      buildID: string,
-      bundleDetails: BundleDetails,
-      type: 'bundle_build_started',
-      ...
-    }
-  | {
-      error: Error,
-      type: 'bundling_error',
-      ...
-    }
-  | {type: 'dep_graph_loading', ...}
-  | {type: 'dep_graph_loaded', ...}
-  | {
-      buildID: string,
-      type: 'bundle_transform_progressed',
-      transformedFileCount: number,
-      totalFileCount: number,
-      ...
-    }
-  | {
-      type: 'global_cache_error',
-      error: Error,
-      ...
-    }
-  | {
-      type: 'global_cache_disabled',
-      reason: GlobalCacheDisabledReason,
-      ...
-    }
-  | {type: 'transform_cache_reset', ...}
-  | {
-      type: 'worker_stdout_chunk',
-      chunk: string,
-      ...
-    }
-  | {
-      type: 'worker_stderr_chunk',
-      chunk: string,
-      ...
-    }
-  | {
-      type: 'hmr_client_error',
-      error: Error,
-      ...
-    }
-  | {
-      type: 'client_log',
-      level:
-        | 'trace'
-        | 'info'
-        | 'warn'
-        | 'error'
-        | 'log'
-        | 'group'
-        | 'groupCollapsed'
-        | 'groupEnd'
-        | 'debug',
-      data: Array<mixed>,
-      ...
-    };
-*/
-
 type Props = {
   device: MetroDevice;
 };
+
+function ProgressBar({
+  progress,
+  width,
+  color,
+}: {
+  progress: number;
+  width: number;
+  color: string;
+}) {
+  return (
+    <ProgressBarContainer width={width} color={color}>
+      <ProgressBarBar progress={progress} color={color} />
+    </ProgressBarContainer>
+  );
+}
+
+const ProgressBarContainer = styled.div<{width: number; color: string}>(
+  ({width, color}) => ({
+    border: `1px solid ${color}`,
+    borderRadius: 4,
+    height: 6,
+    width: width,
+  }),
+);
+
+const ProgressBarBar = styled.div<{progress: number; color: string}>(
+  ({progress, color}) => ({
+    background: color,
+    width: `${Math.min(100, Math.round(progress * 100))}%`,
+    height: 4,
+  }),
+);
 
 function MetroButton({device}: Props) {
   const sendCommand = useCallback(
@@ -130,6 +77,29 @@ function MetroButton({device}: Props) {
     },
     [device],
   );
+  const [progress, setProgress] = useState(1);
+  const [hasBuildError, setHasBuildError] = useState(false);
+
+  useEffect(() => {
+    function metroEventListener(event: MetroReportableEvent) {
+      if (event.type === 'bundle_build_started') {
+        setHasBuildError(false);
+        setProgress(0);
+      } else if (event.type === 'bundle_build_failed') {
+        setHasBuildError(true);
+        setProgress(1);
+      } else if (event.type === 'bundle_build_done') {
+        setHasBuildError(false);
+        setProgress(1);
+      } else if (event.type === 'bundle_transform_progressed') {
+        setProgress(event.transformedFileCount / event.totalFileCount);
+      }
+    }
+    device.metroEventEmitter.on('event', metroEventListener);
+    return () => {
+      device.metroEventEmitter.off('event', metroEventListener);
+    };
+  }, [device]);
 
   return (
     <ButtonGroup>
@@ -139,8 +109,15 @@ function MetroButton({device}: Props) {
         compact
         onClick={() => {
           sendCommand('reload');
-        }}
-      />
+        }}>
+        {progress < 1 ? (
+          <ProgressBar
+            progress={100 * progress}
+            color={hasBuildError ? colors.red : colors.cyan}
+            width={20}
+          />
+        ) : null}
+      </Button>
       <Button
         title="Open the React Native Dev Menu on the device"
         icon="navicon"

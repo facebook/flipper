@@ -10,6 +10,7 @@
 import BaseDevice, {LogLevel} from './BaseDevice';
 import ArchivedDevice from './ArchivedDevice';
 import {v4} from 'uuid';
+import {EventEmitter} from 'events';
 
 // From xplat/js/metro/packages/metro/src/lib/reporting.js
 export type BundleDetails = {
@@ -29,7 +30,7 @@ export type GlobalCacheDisabledReason = 'too_many_errors' | 'too_many_misses';
  *
  * Based on xplat/js/metro/packages/metro/src/lib/TerminalReporter.js
  */
-type ReportableEvent =
+export type MetroReportableEvent =
   | {
       port: number;
       projectRoots: ReadonlyArray<string>;
@@ -114,7 +115,7 @@ const metroLogLevelMapping: {[key: string]: LogLevel} = {
 };
 
 function getLoglevelFromMessageType(
-  type: ReportableEvent['type'],
+  type: MetroReportableEvent['type'],
 ): LogLevel | null {
   switch (type) {
     case 'bundle_build_done':
@@ -140,6 +141,7 @@ function getLoglevelFromMessageType(
 
 export default class MetroDevice extends BaseDevice {
   ws: WebSocket;
+  metroEventEmitter = new EventEmitter();
 
   constructor(serial: string, ws: WebSocket) {
     super(serial, 'emulator', 'React Native', 'Metro');
@@ -149,7 +151,7 @@ export default class MetroDevice extends BaseDevice {
   }
 
   _handleWSMessage = ({data}: any) => {
-    const message: ReportableEvent = JSON.parse(data);
+    const message: MetroReportableEvent = JSON.parse(data);
     if (message.type === 'client_log') {
       const type: LogLevel = metroLogLevelMapping[message.level] || 'unknown';
       this.addLogEntry({
@@ -177,6 +179,7 @@ export default class MetroDevice extends BaseDevice {
         });
       }
     }
+    this.metroEventEmitter.emit('event', message);
   };
 
   archive() {
