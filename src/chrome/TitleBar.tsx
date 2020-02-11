@@ -42,9 +42,10 @@ import {isAutoUpdaterEnabled} from '../utils/argvUtils';
 import isProduction from '../utils/isProduction';
 import {clipboard} from 'electron';
 import React from 'react';
-import {State} from 'src/reducers';
+import {State} from '../reducers';
 import {reportUsage} from '../utils/metrics';
 import FpsGraph from './FpsGraph';
+import MetroButton from './MetroButton';
 
 const AppTitleBar = styled(FlexRow)<{focused?: boolean}>(({focused}) => ({
   background: focused
@@ -83,6 +84,7 @@ type StateFromProps = {
   launcherMsg: LauncherMsg;
   share: ShareType | null | undefined;
   navPluginIsActive: boolean;
+  isMetroActive: boolean;
 };
 
 const VersionText = styled(Text)({
@@ -144,7 +146,7 @@ function statusMessageComponent(
 type Props = OwnProps & DispatchFromProps & StateFromProps;
 class TitleBar extends React.Component<Props, StateFromProps> {
   render() {
-    const {navPluginIsActive, share} = this.props;
+    const {navPluginIsActive, share, isMetroActive} = this.props;
     return (
       <AppTitleBar focused={this.props.windowIsFocused} className="toolbar">
         {navPluginIsActive ? (
@@ -155,6 +157,8 @@ class TitleBar extends React.Component<Props, StateFromProps> {
         ) : (
           <DevicesButton />
         )}
+
+        {isMetroActive ? <MetroButton /> : null}
 
         <ScreenCaptureButtons />
         {statusMessageComponent(
@@ -238,7 +242,7 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, State>(
       launcherMsg,
       share,
     },
-    connections: {selectedDevice, selectedApp},
+    connections: {selectedDevice, selectedApp, devices},
     pluginStates,
   }) => {
     const navigationPluginKey = getPluginKey(
@@ -247,6 +251,9 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, State>(
       'Navigation',
     );
     const navPluginIsActive = !!pluginStates[navigationPluginKey];
+    const isMetroActive = !!devices.find(
+      device => device.os === 'Metro' && !device.isArchived,
+    );
 
     return {
       windowIsFocused,
@@ -257,6 +264,7 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, State>(
       launcherMsg,
       share,
       navPluginIsActive,
+      isMetroActive,
     };
   },
   {

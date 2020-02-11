@@ -7,24 +7,15 @@
  * @format
  */
 
-import React from 'react';
-import {
-  FlipperDevicePlugin,
-  Device,
-  View,
-  Button,
-  Toolbar,
-  ButtonGroup,
-  MetroDevice,
-} from 'flipper';
+import React, {useCallback} from 'react';
+import {Button, ButtonGroup, MetroDevice, connect} from 'flipper';
+import {State} from '../reducers';
 
 type LogEntry = {};
 
 export type PersistedState = {
   logs: LogEntry[];
 };
-
-type State = {};
 
 /*
 Flow types for events 
@@ -120,52 +111,50 @@ export type ReportableEvent =
     };
 */
 
-export default class MetroPlugin extends FlipperDevicePlugin<
-  State,
-  any,
-  PersistedState
-> {
-  static supportsDevice(device: Device) {
-    return device.os === 'Metro';
-  }
+type Props = {
+  device: MetroDevice;
+};
 
-  get ws(): WebSocket {
-    return (this.device as MetroDevice).ws;
-  }
+function MetroButton({device}: Props) {
+  const sendCommand = useCallback(
+    (command: string) => {
+      if (device.ws) {
+        device.ws.send(
+          JSON.stringify({
+            version: 2,
+            type: 'command',
+            command,
+          }),
+        );
+      }
+    },
+    [device],
+  );
 
-  sendCommand(command: string) {
-    if (this.ws) {
-      this.ws.send(
-        JSON.stringify({
-          version: 2,
-          type: 'command',
-          command,
-        }),
-      );
-    }
-  }
-
-  render() {
-    return (
-      <View>
-        <Toolbar>
-          <ButtonGroup>
-            Work-in-progress
-            <Button
-              onClick={() => {
-                this.sendCommand('reload');
-              }}>
-              Reload RN
-            </Button>
-            <Button
-              onClick={() => {
-                this.sendCommand('devMenu');
-              }}>
-              Dev Menu
-            </Button>
-          </ButtonGroup>
-        </Toolbar>
-      </View>
-    );
-  }
+  return (
+    <ButtonGroup>
+      <Button
+        title="Reload React Native App"
+        icon="arrows-circle"
+        compact
+        onClick={() => {
+          sendCommand('reload');
+        }}
+      />
+      <Button
+        title="Open the React Native Dev Menu on the device"
+        icon="navicon"
+        compact
+        onClick={() => {
+          sendCommand('devMenu');
+        }}
+      />
+    </ButtonGroup>
+  );
 }
+
+export default connect<Props, {}, {}, State>(({connections: {devices}}) => ({
+  device: devices.find(
+    device => device.os === 'Metro' && !device.isArchived,
+  ) as MetroDevice,
+}))(MetroButton);
