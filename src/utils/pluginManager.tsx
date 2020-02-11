@@ -9,6 +9,7 @@
 
 import path from 'path';
 import fs from 'fs-extra';
+import {promisify} from 'util';
 import {homedir} from 'os';
 import {PluginMap, PluginDefinition} from '../reducers/pluginManager';
 import {PluginManager as PM} from 'live-plugin-manager';
@@ -20,23 +21,30 @@ import decompressTargz from 'decompress-targz';
 import decompressUnzip from 'decompress-unzip';
 import tmp from 'tmp';
 
+const getTmpDir = promisify(tmp.dir) as () => Promise<string>;
+
 const ALGOLIA_APPLICATION_ID = 'OFCNCOG2CU';
 const ALGOLIA_API_KEY = 'f54e21fa3a2a0160595bb058179bfb1e';
 
 export const PLUGIN_DIR = path.join(homedir(), '.flipper', 'thirdparty');
 
-// TODO(T57014856): The use should be constrained to just this module when the
-// refactor is done.
-export function providePluginManager(): PM {
+function providePluginManager(): PM {
   return new PM({
-    ignoredDependencies: [/^flipper$/, /^react$/, /^react-dom$/, /^@types/],
+    ignoredDependencies: [/^flipper$/, /^react$/, /^react-dom$/, /^@types\//],
   });
 }
 
-async function installPlugin(
-  name: string,
-  installFn: (pluginManager: PM) => Promise<void>,
-) {
+function providePluginManagerNoDependencies(): PM {
+  return new PM({ignoredDependencies: [/.*/]});
+}
+
+async function installPlugin(pluginDir: string) {
+  const packageJSONPath = path.join(pluginDir, 'package.json');
+  const packageJSON = JSON.parse(
+    (await fs.readFile(packageJSONPath)).toString(),
+  );
+  const name = packageJSON.name;
+
   await fs.ensureDir(PLUGIN_DIR);
   // create empty watchman config (required by metro's file watcher)
   await fs.writeFile(path.join(PLUGIN_DIR, '.watchmanconfig'), '{}');
@@ -45,28 +53,63 @@ async function installPlugin(
   await fs.remove(destinationDir);
 
   const pluginManager = providePluginManager();
-  // install the plugin and all it's dependencies into node_modules
-  pluginManager.options.pluginsPath = path.join(destinationDir, 'node_modules');
-  await installFn(pluginManager);
+  // install the plugin dependencies into node_modules
+  const nodeModulesDir = path.join(destinationDir, 'node_modules');
+  pluginManager.options.pluginsPath = nodeModulesDir;
+  const pluginInfo = await pluginManager.installFromPath(pluginDir);
 
-  // move the plugin itself out of the node_modules folder
-  const pluginDir = path.join(PLUGIN_DIR, name, 'node_modules', name);
-  const pluginFiles = await fs.readdir(pluginDir);
+  const itselfDir = path.join(nodeModulesDir, name);
+
+  // copying plugin files into the destination folder
+  const pluginFiles = await fs.readdir(itselfDir);
   await Promise.all(
     pluginFiles.map(f =>
-      fs.move(path.join(pluginDir, f), path.join(pluginDir, '..', '..', f)),
+      fs.move(path.join(itselfDir, f), path.join(destinationDir, f)),
     ),
   );
+
+  // live-plugin-manager also installs plugin itself into the target dir, it's better remove it
+  await fs.remove(itselfDir);
+
+  return pluginInfo;
+}
+
+async function getPluginRootDir(dir: string) {
+  // npm packages are tar.gz archives containing folder 'package' inside
+  const packageDir = path.join(dir, 'package');
+  const isNpmPackage = await fs.pathExists(packageDir);
+
+  // vsix packages are zip archives containing folder 'extension' inside
+  const extensionDir = path.join(dir, 'extension');
+  const isVsix = await fs.pathExists(extensionDir);
+
+  if (!isNpmPackage && !isVsix) {
+    throw new Error(
+      'Package format is invalid: directory "package" or "extensions" not found in the archive root',
+    );
+  }
+
+  return isNpmPackage ? packageDir : extensionDir;
 }
 
 export async function installPluginFromNpm(name: string) {
-  await installPlugin(name, pluginManager =>
-    pluginManager.install(name).then(() => {}),
-  );
+  const tmpDir = await getTmpDir();
+  try {
+    await fs.ensureDir(tmpDir);
+    const plugManNoDep = providePluginManagerNoDependencies();
+    plugManNoDep.options.pluginsPath = tmpDir;
+    await plugManNoDep.install(name);
+    const pluginDir = path.join(tmpDir, name);
+    return await installPlugin(pluginDir);
+  } finally {
+    if (await fs.pathExists(tmpDir)) {
+      await fs.remove(tmpDir);
+    }
+  }
 }
 
 export async function installPluginFromFile(packagePath: string) {
-  const tmpDir = tmp.dirSync().name;
+  const tmpDir = await getTmpDir();
   try {
     const files = await decompress(packagePath, tmpDir, {
       plugins: [decompressTargz(), decompressUnzip()],
@@ -74,41 +117,11 @@ export async function installPluginFromFile(packagePath: string) {
     if (!files.length) {
       throw new Error('The package is not in tar.gz format or is empty');
     }
-
-    // npm packages are tar.gz archives containing folder 'package' inside
-    const packageDir = path.join(tmpDir, 'package');
-    const isNpmPackage = await fs.pathExists(packageDir);
-
-    // vsix packages are zip archives containing folder 'extension' inside
-    const extensionDir = path.join(tmpDir, 'extension');
-    const isVsix = await fs.pathExists(extensionDir);
-
-    if (!isNpmPackage && !isVsix) {
-      throw new Error(
-        'Package format is invalid: directory "package" or "extensions" not found in the archive root',
-      );
-    }
-
-    const packageRoot = isNpmPackage ? packageDir : extensionDir;
-
-    // otherwise both npm and vsix are quite similar, so we can use the same logic for installing them
-    const packageJsonPath = path.join(packageRoot, 'package.json');
-    if (!(await fs.pathExists(packageJsonPath))) {
-      throw new Error(
-        `Package format is invalid: file "${path.relative(
-          tmpDir,
-          packageJsonPath,
-        )}" not found`,
-      );
-    }
-    const packageJson = await fs.readJSON(packageJsonPath);
-    const name = packageJson.name as string;
-    await installPlugin(name, pluginManager =>
-      pluginManager.installFromPath(packageRoot).then(() => {}),
-    );
+    const pluginDir = await getPluginRootDir(tmpDir);
+    return await installPlugin(pluginDir);
   } finally {
-    if (fs.existsSync(tmpDir)) {
-      fs.removeSync(tmpDir);
+    if (await fs.pathExists(tmpDir)) {
+      await fs.remove(tmpDir);
     }
   }
 }
