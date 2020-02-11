@@ -23,6 +23,7 @@ const METRO_DEVICE_ID = 'metro'; // there is always only one activve
 
 async function isMetroRunning(): Promise<boolean> {
   try {
+    // TODO: this prints a log error without connection, fix that
     const contents = await (await global.fetch(METRO_URL)).text();
     return METRO_MESSAGE.some(msg => contents.includes(msg));
   } catch (e) {

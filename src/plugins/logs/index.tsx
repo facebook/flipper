@@ -394,7 +394,9 @@ export default class LogTable extends FlipperDevicePlugin<
   batchTimer: NodeJS.Timeout | undefined;
 
   static supportsDevice(device: Device) {
-    return device.os === 'iOS' || device.os === 'Android';
+    return (
+      device.os === 'iOS' || device.os === 'Android' || device.os === 'Metro'
+    );
   }
 
   onKeyboardAction = (action: string) => {
