@@ -28,6 +28,7 @@ import {
   styled,
   Text,
   LoadingIndicator,
+  getPluginKey,
 } from 'flipper';
 import {connect} from 'react-redux';
 import RatingButton from './RatingButton';
@@ -237,19 +238,27 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, State>(
       launcherMsg,
       share,
     },
+    connections: {selectedDevice, selectedApp},
     pluginStates,
-  }) => ({
-    windowIsFocused,
-    leftSidebarVisible,
-    rightSidebarVisible,
-    rightSidebarAvailable,
-    downloadingImportData,
-    launcherMsg,
-    share,
-    navPluginIsActive: Object.keys(pluginStates).some(key =>
-      /#Navigation$/.test(key),
-    ),
-  }),
+  }) => {
+    const navigationPluginKey = getPluginKey(
+      selectedApp,
+      selectedDevice,
+      'Navigation',
+    );
+    const navPluginIsActive = !!pluginStates[navigationPluginKey];
+
+    return {
+      windowIsFocused,
+      leftSidebarVisible,
+      rightSidebarVisible,
+      rightSidebarAvailable,
+      downloadingImportData,
+      launcherMsg,
+      share,
+      navPluginIsActive,
+    };
+  },
   {
     setActiveSheet,
     toggleLeftSidebarVisible,
