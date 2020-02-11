@@ -8,6 +8,7 @@
  */
 
 import androidDevice from './androidDevice';
+import metroDevice from './metroDevice';
 import iOSDevice from './iOSDevice';
 import desktopDevice from './desktopDevice';
 import application from './application';
@@ -28,6 +29,7 @@ export default function(store: Store, logger: Logger): () => Promise<void> {
     application,
     store.getState().settingsState.enableAndroid ? androidDevice : null,
     iOSDevice,
+    metroDevice,
     desktopDevice,
     tracking,
     server,

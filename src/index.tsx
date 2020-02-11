@@ -50,6 +50,7 @@ export {createTablePlugin} from './createTablePlugin';
 export {default as DetailSidebar} from './chrome/DetailSidebar';
 export {default as Device} from './devices/BaseDevice';
 export {default as AndroidDevice} from './devices/AndroidDevice';
+export {default as MetroDevice} from './devices/MetroDevice';
 export {default as ArchivedDevice} from './devices/ArchivedDevice';
 export {default as IOSDevice} from './devices/IOSDevice';
 export {default as KaiOSDevice} from './devices/KaiOSDevice';

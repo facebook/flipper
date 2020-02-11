@@ -127,3 +127,19 @@ test('selectPlugin sets deepLinkPayload correctly', () => {
   );
   expect(state.deepLinkPayload).toBe('myPayload');
 });
+
+test('UNREGISTER_DEVICE removes device', () => {
+  const device = new BaseDevice('serial', 'physical', 'title', 'Android');
+  const initialState: State = reducer(undefined, {
+    type: 'REGISTER_DEVICE',
+    payload: new BaseDevice('serial', 'physical', 'title', 'Android'),
+  });
+
+  expect(initialState.devices).toEqual([device]);
+  const endState = reducer(initialState, {
+    type: 'UNREGISTER_DEVICES',
+    payload: new Set(['serial']),
+  });
+
+  expect(endState.devices).toEqual([]);
+});
