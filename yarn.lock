@@ -1365,9 +1365,9 @@
   integrity sha512-hRJD2ahnnpLgsj6KWMYSrmXkM3rm2Dl1qkx6IOFD5FnuNPXJIG5L0dhgKXCYTRMGzU4n0wImQ/xfmRc4POUFlg==
 
 "@types/istanbul-lib-report@*":
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/@types/istanbul-lib-report/-/istanbul-lib-report-1.1.1.tgz#e5471e7fa33c61358dd38426189c037a58433b8c"
-  integrity sha512-3BUTyMzbZa2DtDI2BkERNC6jJw2Mr2Y0oGI7mRxYNBPxppbtEK1F66u3bKwU2g+wxwWI7PAoRpJnOY1grJqzHg==
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@types/istanbul-lib-report/-/istanbul-lib-report-3.0.0.tgz#c14c24f18ea8190c118ee7562b7ff99a36552686"
+  integrity sha512-plGgXAPfVKFoYfa9NpYDAkseG+g6Jr294RqeqcqDixSbU34MZVJRi/P+7Y8GDpzkEwLaGZZOpKIEmeVZNtKsrg==
   dependencies:
     "@types/istanbul-lib-coverage" "*"
 
@@ -1380,11 +1380,12 @@
     "@types/istanbul-lib-report" "*"
 
 "@types/jest@^25.1.0":
-  version "25.1.0"
-  resolved "https://registry.yarnpkg.com/@types/jest/-/jest-25.1.0.tgz#b3955aa0be6057c65c0bfb11ac2ef1e078598d76"
-  integrity sha512-MYX8LpNQboef1NDZQTchM5poL8WITRVG/4/1XLK/Xsamjptsvgb8ELTRoXixBARi+a81mMT4n2hooqaydEOE9A==
+  version "25.1.2"
+  resolved "https://registry.yarnpkg.com/@types/jest/-/jest-25.1.2.tgz#1c4c8770c27906c7d8def5d2033df9dbd39f60da"
+  integrity sha512-EsPIgEsonlXmYV7GzUqcvORsSS9Gqxw/OvkGwHfAdpjduNRxMlhsav0O5Kb0zijc/eXSO/uW6SJt9nwull8AUQ==
   dependencies:
     jest-diff "^25.1.0"
+    pretty-format "^25.1.0"
 
 "@types/json-schema@^7.0.3":
   version "7.0.3"
@@ -1664,9 +1665,9 @@
   integrity sha512-8oDqyLC7eD4HM307boe2QWKyuzdzWBj56xI/imSl2cpL+U3tCMaTAkMJ4ee5JBZ/FsOJlvRGeIShiZDAl1qERA==
 
 "@types/yargs-parser@*":
-  version "13.1.0"
-  resolved "https://registry.yarnpkg.com/@types/yargs-parser/-/yargs-parser-13.1.0.tgz#c563aa192f39350a1d18da36c5a8da382bbd8228"
-  integrity sha512-gCubfBUZ6KxzoibJ+SCUc/57Ms1jz5NjHe4+dI2krNmU5zCPAphyLJYyTOg06ueIyfj+SaCUqmzun7ImlxDcKg==
+  version "15.0.0"
+  resolved "https://registry.yarnpkg.com/@types/yargs-parser/-/yargs-parser-15.0.0.tgz#cb3f9f741869e20cce330ffbeb9271590483882d"
+  integrity sha512-FA/BWv8t8ZWJ+gEOnLLd8ygxH/2UFbAvgEonyfN6yWGLKc7zVjbpl2Y4CTjid9h2RfgPP6SEt6uHwEOply00yw==
 
 "@types/yargs@^13.0.0":
   version "13.0.3"
@@ -1676,9 +1677,9 @@
     "@types/yargs-parser" "*"
 
 "@types/yargs@^15.0.0":
-  version "15.0.2"
-  resolved "https://registry.yarnpkg.com/@types/yargs/-/yargs-15.0.2.tgz#0bf292a0369493cee030e2e4f4ff84f5982b028d"
-  integrity sha512-hFkuAp58M2xOc1QgJhkFrLMnqa8KWTFRTnzrI1zlEcOfg3DZ0eH3aPAo/N6QlVVu8E4KS4xD1jtEG3rdQYFmIg==
+  version "15.0.3"
+  resolved "https://registry.yarnpkg.com/@types/yargs/-/yargs-15.0.3.tgz#41453a0bc7ab393e995d1f5451455638edbd2baf"
+  integrity sha512-XCMQRK6kfpNBixHLyHUsGmXrpEmFFxzMrcnSXFMziHd8CoNJo8l16FkHyQq4x+xbM7E2XL83/O78OD8u+iZTdQ==
   dependencies:
     "@types/yargs-parser" "*"
 
@@ -1926,9 +1927,9 @@ ansi-styles@^3.2.0, ansi-styles@^3.2.1:
     color-convert "^1.9.0"
 
 ansi-styles@^4.0.0:
-  version "4.2.0"
-  resolved "https://registry.yarnpkg.com/ansi-styles/-/ansi-styles-4.2.0.tgz#5681f0dcf7ae5880a7841d8831c4724ed9cc0172"
-  integrity sha512-7kFQgnEaMdRtwf6uSfUnVr9gSGC7faurn+J/Mv90/W+iTtN0405/nLdopfMWwchyxhbGYl6TC4Sccn9TUkGAgg==
+  version "4.2.1"
+  resolved "https://registry.yarnpkg.com/ansi-styles/-/ansi-styles-4.2.1.tgz#90ae75c424d008d2624c5bf29ead3177ebfcf359"
+  integrity sha512-9VGjrMsG1vePxcSweQsN20KY/c4zN0h9fLjqAbwbPfahM3t+NL+M9HC8xeXG2I8pX5NoamTGNuomEUFI7fcUjA==
   dependencies:
     "@types/color-name" "^1.1.1"
     color-convert "^2.0.1"
