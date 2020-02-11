@@ -235,6 +235,27 @@ class MainSidebar2 extends PureComponent<Props, State> {
       selectedDevice,
     } = this.props;
     const clients = getAvailableClients(device, this.props.clients);
+    const devicePluginsItems = device.devicePlugins.map(pluginName => {
+      const plugin = this.props.devicePlugins.get(pluginName)!;
+      return (
+        <PluginSidebarListItem
+          key={plugin.id}
+          isActive={plugin.id === selectedPlugin && selectedDevice === device}
+          onClick={() =>
+            selectPlugin({
+              selectedPlugin: plugin.id,
+              selectedApp: null,
+              deepLinkPayload: null,
+              selectedDevice: device,
+            })
+          }
+          plugin={plugin}
+        />
+      );
+    });
+    const wrapDevicePlugins =
+      clients.length > 0 && device.devicePlugins.length > 1 && !device.source;
+
     return (
       <SidebarSection
         title={device.displayTitle()}
@@ -242,50 +263,29 @@ class MainSidebar2 extends PureComponent<Props, State> {
         level={1}
         defaultCollapsed={!canBeDefaultDevice(device)}>
         {this.showArchivedDeviceDetails(device)}
-        {device.devicePlugins.length > 0 ? (
+        {wrapDevicePlugins ? (
           <SidebarSection
             level={2}
             title="Device Plugins"
             defaultCollapsed={true}>
-            {device.devicePlugins.map(pluginName => {
-              const plugin = this.props.devicePlugins.get(pluginName)!;
-              return (
-                <PluginSidebarListItem
-                  key={plugin.id}
-                  isActive={
-                    plugin.id === selectedPlugin && selectedDevice === device
-                  }
-                  onClick={() =>
-                    selectPlugin({
-                      selectedPlugin: plugin.id,
-                      selectedApp: null,
-                      deepLinkPayload: null,
-                      selectedDevice: device,
-                    })
-                  }
-                  plugin={plugin}
-                />
-              );
-            })}
+            {devicePluginsItems}
           </SidebarSection>
-        ) : null}
-        {clients.length === 0 ? (
-          <NoClients />
         ) : (
-          clients.map(client => (
-            <PluginList
-              device={device}
-              key={client.id}
-              client={client}
-              clientPlugins={clientPlugins}
-              starPlugin={starPlugin}
-              userStarredPlugins={userStarredPlugins}
-              selectedPlugin={selectedPlugin}
-              selectedApp={selectedApp}
-              selectPlugin={selectPlugin}
-            />
-          ))
+          <div style={{marginTop: 6}}>{devicePluginsItems}</div>
         )}
+        {clients.map(client => (
+          <PluginList
+            device={device}
+            key={client.id}
+            client={client}
+            clientPlugins={clientPlugins}
+            starPlugin={starPlugin}
+            userStarredPlugins={userStarredPlugins}
+            selectedPlugin={selectedPlugin}
+            selectedApp={selectedApp}
+            selectPlugin={selectPlugin}
+          />
+        ))}
       </SidebarSection>
     );
   }
