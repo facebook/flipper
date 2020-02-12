@@ -38,7 +38,7 @@ function providePluginManagerNoDependencies(): PM {
   return new PM({ignoredDependencies: [/.*/]});
 }
 
-async function installPlugin(pluginDir: string) {
+async function installPluginFromTempDir(pluginDir: string) {
   const packageJSONPath = path.join(pluginDir, 'package.json');
   const packageJSON = JSON.parse(
     (await fs.readFile(packageJSONPath)).toString(),
@@ -51,27 +51,25 @@ async function installPlugin(pluginDir: string) {
   const destinationDir = path.join(PLUGIN_DIR, name);
   // Clean up existing destination files.
   await fs.remove(destinationDir);
+  await fs.ensureDir(destinationDir);
 
-  const pluginManager = providePluginManager();
-  // install the plugin dependencies into node_modules
-  const nodeModulesDir = path.join(destinationDir, 'node_modules');
-  pluginManager.options.pluginsPath = nodeModulesDir;
-  const pluginInfo = await pluginManager.installFromPath(pluginDir);
-
-  const itselfDir = path.join(nodeModulesDir, name);
-
+  const isPreBundled = await fs.pathExists(path.join(pluginDir, 'dist'));
+  if (!isPreBundled) {
+    const pluginManager = providePluginManager();
+    // install the plugin dependencies into node_modules
+    const nodeModulesDir = path.join(destinationDir, 'node_modules');
+    pluginManager.options.pluginsPath = nodeModulesDir;
+    await pluginManager.installFromPath(pluginDir);
+    // live-plugin-manager also installs plugin itself into the target dir, it's better remove it
+    await fs.remove(path.join(nodeModulesDir, name));
+  }
   // copying plugin files into the destination folder
-  const pluginFiles = await fs.readdir(itselfDir);
+  const pluginFiles = await fs.readdir(pluginDir);
   await Promise.all(
-    pluginFiles.map(f =>
-      fs.move(path.join(itselfDir, f), path.join(destinationDir, f)),
-    ),
+    pluginFiles
+      .filter(f => f !== 'node_modules')
+      .map(f => fs.move(path.join(pluginDir, f), path.join(destinationDir, f))),
   );
-
-  // live-plugin-manager also installs plugin itself into the target dir, it's better remove it
-  await fs.remove(itselfDir);
-
-  return pluginInfo;
 }
 
 async function getPluginRootDir(dir: string) {
@@ -99,8 +97,8 @@ export async function installPluginFromNpm(name: string) {
     const plugManNoDep = providePluginManagerNoDependencies();
     plugManNoDep.options.pluginsPath = tmpDir;
     await plugManNoDep.install(name);
-    const pluginDir = path.join(tmpDir, name);
-    return await installPlugin(pluginDir);
+    const pluginTempDir = path.join(tmpDir, name);
+    await installPluginFromTempDir(pluginTempDir);
   } finally {
     if (await fs.pathExists(tmpDir)) {
       await fs.remove(tmpDir);
@@ -118,7 +116,7 @@ export async function installPluginFromFile(packagePath: string) {
       throw new Error('The package is not in tar.gz format or is empty');
     }
     const pluginDir = await getPluginRootDir(tmpDir);
-    return await installPlugin(pluginDir);
+    await installPluginFromTempDir(pluginDir);
   } finally {
     if (await fs.pathExists(tmpDir)) {
       await fs.remove(tmpDir);

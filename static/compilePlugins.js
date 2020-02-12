@@ -210,9 +210,17 @@ async function compilePlugin(
   pluginCache,
   options,
 ) {
+  const isPreBundled = fs.existsSync(path.join(rootDir, 'dist'));
+  const result = Object.assign({}, packageJSON, {rootDir, name, entry});
+  if (isPreBundled) {
+    // eslint-disable-next-line no-console
+    console.log(`🥫  Using pre-built version of ${name}...`);
+    result.out = path.resolve(rootDir, result.main);
+    return result;
+  }
   const fileName = `${name}@${packageJSON.version || '0.0.0'}.js`;
   const out = path.join(pluginCache, fileName);
-  const result = Object.assign({}, packageJSON, {rootDir, name, entry, out});
+  result.out = out;
   // check if plugin needs to be compiled
   const rootDirCtime = await mostRecentlyChanged(rootDir);
   if (

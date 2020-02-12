@@ -80,7 +80,7 @@ export default (store: Store, logger: Logger) => {
 };
 
 function getBundledPlugins(): Array<PluginDefinition> {
-  if (!isProduction()) {
+  if (!isProduction() || process.env.FLIPPER_NO_EMBEDDED_PLUGINS) {
     // Plugins are only bundled in production builds
     return [];
   }
