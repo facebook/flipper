@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include "FlipperConnection.h"
 #include <string>
+#include "FlipperConnection.h"
 
 namespace facebook {
 namespace flipper {
@@ -38,7 +38,8 @@ class FlipperPlugin {
   virtual void didDisconnect() = 0;
 
   /**
-   Returns true if the plugin is meant to be run in background too, otherwise it returns false.
+   Returns true if the plugin is meant to be run in background too, otherwise it
+   returns false.
    */
   virtual bool runInBackground() {
     return false;

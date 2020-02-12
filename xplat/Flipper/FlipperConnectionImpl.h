@@ -18,7 +18,9 @@ namespace flipper {
 
 class FlipperConnectionImpl : public FlipperConnection {
  public:
-  FlipperConnectionImpl(FlipperConnectionManager* socket, const std::string& name)
+  FlipperConnectionImpl(
+      FlipperConnectionManager* socket,
+      const std::string& name)
       : socket_(socket), name_(name) {}
 
   void call(

@@ -7,9 +7,9 @@
 
 #pragma once
 
-#include <string>
-#include <folly/io/async/SSLContext.h>
 #include <folly/dynamic.h>
+#include <folly/io/async/SSLContext.h>
+#include <string>
 #include "FlipperInitConfig.h"
 
 using namespace folly;
@@ -18,8 +18,7 @@ namespace facebook {
 namespace flipper {
 
 class ConnectionContextStore {
-
-public:
+ public:
   ConnectionContextStore(DeviceData deviceData);
   bool hasRequiredFiles();
   std::string getCertificateSigningRequest();

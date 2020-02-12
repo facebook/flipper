@@ -7,10 +7,10 @@
 
 #pragma once
 
-#include "FlipperResponder.h"
 #include <folly/json.h>
 #include <functional>
 #include <string>
+#include "FlipperResponder.h"
 
 namespace facebook {
 namespace flipper {

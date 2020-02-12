@@ -12,7 +12,7 @@
 namespace facebook {
 namespace flipper {
 
-  void log(const std::string& message);
+void log(const std::string& message);
 
 } // namespace flipper
 } // namespace facebook
