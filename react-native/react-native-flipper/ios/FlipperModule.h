@@ -5,8 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTBridgeModule.h>
+#import <React/RCTEventEmitter.h>
 
-@interface Flipper : NSObject <RCTBridgeModule>
+@interface FlipperModule : RCTEventEmitter
 
 @end
