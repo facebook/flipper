@@ -86,3 +86,15 @@ debugImplementation('com.facebook.flipper:flipper:*') {
   exclude group: 'com.squareup.okhttp3'
 }
 ```
+
+## iOS
+
+### Build errors in React Native
+
+If you experience errors such as `Undefined symbol: associated type descriptor for FloatLiteralType` or `Undefined symbol: __swift_FORCE_LOAD_$_swiftCompatibility50` after going through the [Getting Started](/docs/getting-started.html) tutorial you must create a `.swift` file, to do so you can do as follow:
+
+1. Open your project in Xcode;
+1. Right-click on your project's name on the left side and choose `New File`;
+1. In that new dialog you may choose `Swift File` under the category `Source`;
+1. Put in any name under `Save As:` (such as `Swift`) and tap `Create`;
+1. Now you can run your build normally.
