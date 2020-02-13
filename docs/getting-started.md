@@ -261,6 +261,21 @@ On the first run of `pod install`, `FB_SONARKIT_ENABLED=1` may not be added in t
 
 </div>
 
+### For pure Objective-C projects
+
+For pure Objective-C projects, add the following things in your settings:
+
+1. `/usr/lib/swift` as the first entry of the `LD_RUNPATH_SEARCH_PATHS`
+2. Add the following in `LIBRARY_SEARCH_PATHS`
+
+```
+					"\"$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)\"",
+					"\"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)\"",	
+```
+
+This is done to overcome a bug with Xcode 11 which fails to compile swift code when bitcode is enabled. Flipper transitively depends on YogaKit which is written in Swift. More about this issue can be found [here](https://twitter.com/krzyzanowskim/status/1151549874653081601?s=21) and [here](https://github.com/Carthage/Carthage/issues/2825).
+
+
 Install the dependencies by running `pod install`. You can now import and initialize Flipper in your
 AppDelegate.
 
