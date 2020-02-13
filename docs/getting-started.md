@@ -44,7 +44,7 @@ repositories {
 
 dependencies {
   debugImplementation 'com.facebook.flipper:flipper:0.31.1'
-  debugImplementation 'com.facebook.soloader:soloader:0.5.1'
+  debugImplementation 'com.facebook.soloader:soloader:0.8.2'
 
   releaseImplementation 'com.facebook.flipper:flipper-noop:0.31.1'
 }
@@ -105,7 +105,7 @@ repositories {
 
 dependencies {
   debugImplementation 'com.facebook.flipper:flipper:0.31.2-SNAPSHOT'
-  debugImplementation 'com.facebook.soloader:soloader:0.5.1'
+  debugImplementation 'com.facebook.soloader:soloader:0.8.2'
 
   releaseImplementation 'com.facebook.flipper:flipper-noop:0.31.2-SNAPSHOT'
 }

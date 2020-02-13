@@ -81,7 +81,7 @@ dependencies {
     //noinspection GradleDynamicVersion
     implementation 'com.facebook.react:react-native:+'  // From node_modules
 
-    implementation 'com.facebook.soloader:soloader:0.6.0+'
+    implementation 'com.facebook.soloader:soloader:0.8.2'
 
     implementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
         exclude group:'com.facebook.yoga'
