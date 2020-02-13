@@ -14,7 +14,6 @@ import {Store} from './reducers/index';
 import CertificateProvider from './utils/CertificateProvider';
 import {RSocketServer} from 'rsocket-core';
 import RSocketTCPServer from 'rsocket-tcp-server';
-import {Single} from 'rsocket-flowable';
 import Client from './Client';
 import {FlipperClientConnection} from './Client';
 import {UninitializedClient} from './UninitializedClient';
@@ -27,6 +26,13 @@ import {Responder, Payload, ReactiveSocket} from 'rsocket-types';
 import GK from './fb-stubs/GK';
 import {initJsEmulatorIPC} from './utils/js-client/serverUtils';
 import {buildClientId} from './utils/clientUtils';
+import {Single} from 'rsocket-flowable';
+import WebSocket from 'ws';
+import JSDevice from './devices/JSDevice';
+import {WebsocketClientFlipperConnection} from './utils/js-client/websocketClientFlipperConnection';
+import querystring from 'querystring';
+import {IncomingMessage} from 'http';
+const ws = window.require('ws'); // Electron tries to get you to use browser's ws instead, so can't use import.
 
 type ClientInfo = {
   connection: FlipperClientConnection<any, any> | null | undefined;
@@ -86,6 +92,9 @@ class Server extends EventEmitter {
         this.insecureServer = this.startServer(insecure);
         return;
       });
+    if (GK.get('comet_enable_flipper_connection')) {
+      this.startWsServer(8333);
+    }
     reportPlatformFailures(this.initialisePromise, 'initializeServer');
 
     if (GK.get('flipper_js_client_emulator')) {
@@ -136,6 +145,90 @@ class Server extends EventEmitter {
         }),
       });
       rsServer && rsServer.start();
+    });
+  }
+
+  startWsServer(port: number) {
+    const wss = new ws.Server({
+      host: 'localhost',
+      port,
+      verifyClient: (info: {
+        origin: string;
+        req: IncomingMessage;
+        secure: boolean;
+      }) => {
+        return info.origin.startsWith('chrome-extension://');
+      },
+    });
+    wss.on('connection', (ws: WebSocket, message: any) => {
+      const clients: {[app: string]: Promise<Client>} = {};
+      const query = querystring.decode(message.url.split('?')[1]);
+      const deviceId: string =
+        typeof query.deviceId === 'string' ? query.deviceId : 'webbrowser';
+      this.store.dispatch({
+        type: 'REGISTER_DEVICE',
+        payload: new JSDevice(deviceId, 'Web Browser', 1),
+      });
+
+      const cleanup = () => {
+        Object.values(clients).map(p =>
+          p.then(c => this.removeConnection(c.id)),
+        );
+        this.store.dispatch({
+          type: 'UNREGISTER_DEVICES',
+          payload: new Set([deviceId]),
+        });
+      };
+
+      ws.on('message', (rawMessage: any) => {
+        const message = JSON.parse(rawMessage.toString());
+        switch (message.type) {
+          case 'connect': {
+            const app = message.app;
+            const plugins = message.plugins;
+            const client = this.addConnection(
+              new WebsocketClientFlipperConnection(ws, app, plugins),
+              {
+                app,
+                os: 'JSWebApp',
+                device: 'device',
+                device_id: deviceId,
+                sdk_version: 1,
+              },
+              {},
+            );
+            clients[app] = client;
+            client.then(c => {
+              ws.on('message', (m: any) => {
+                const parsed = JSON.parse(m.toString());
+                if (parsed.app === app) {
+                  c.onMessage(JSON.stringify(parsed.payload));
+                }
+              });
+            });
+            break;
+          }
+          case 'disconnect': {
+            const app = message.app;
+            (clients[app] || Promise.resolve()).then(c => {
+              this.removeConnection(c.id);
+              delete clients[app];
+            });
+            break;
+          }
+        }
+      });
+
+      ws.on('close', () => {
+        cleanup();
+      });
+
+      ws.on('error', () => {
+        cleanup();
+      });
+    });
+    wss.on('error', (_ws: WebSocket) => {
+      console.error('error from wss');
     });
   }
 
