@@ -91,10 +91,21 @@ debugImplementation('com.facebook.flipper:flipper:*') {
 
 ### Build errors in React Native
 
-If you experience errors such as `Undefined symbol: associated type descriptor for FloatLiteralType` or `Undefined symbol: __swift_FORCE_LOAD_$_swiftCompatibility50` after going through the [Getting Started](/docs/getting-started.html) tutorial you must create a `.swift` file, to do so you can do as follow:
+If you experience errors such as `Undefined symbol: associated type descriptor for FloatLiteralType` or `Undefined symbol: __swift_FORCE_LOAD_$_swiftCompatibility50` after going through the [Getting Started](/docs/getting-started.html) tutorial you must do as follows:
 
 1. Open your project in Xcode;
-1. Right-click on your project's name on the left side and choose `New File`;
-1. In that new dialog you may choose `Swift File` under the category `Source`;
-1. Put in any name under `Save As:` (such as `Swift`) and tap `Create`;
+1. Click in your project's name on the left side;
+1. Make sure that you choose your project under `PROJECT` on the screen that has been opened;
+1. Go to the tab `Build Settings`;
+1. Search for `LD_RUNPATH_SEARCH_PATHS`;
+1. Double-click `Runpath Search Paths` and, in the dialog that opens, click on the plus button at the bottom-left corner and paste `/usr/lib/swift $(inherited)` there;
+1. Now search for `LIBRARY_SEARCH_PATHS`;
+1. Double-click `Library Search Paths` and, in the dialog that opens, add the following items:
+    ```
+    "$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)"
+    "$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)"
+    "$(inherited)"
+    ```
+
+    _Note: all of them should be added as `non-recursive` (the default)._
 1. Now you can run your build normally.
