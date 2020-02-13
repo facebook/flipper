@@ -9,9 +9,7 @@ package com.facebook.flipper.sample;
 
 import com.facebook.flipper.plugins.navigation.NavigationFlipperPlugin;
 
-/**
- * Limited interface to the navigation plugin which is only available for debug builds.
- */
+/** Limited interface to the navigation plugin which is only available for debug builds. */
 public class NavigationFacade {
   private NavigationFacade() {}
 

@@ -7,9 +7,7 @@
 
 package com.facebook.flipper.sample;
 
-/**
- * No-op implementation of an ad-hoc interface. See debug/ for the real implementation.
- */
+/** No-op implementation of an ad-hoc interface. See debug/ for the real implementation. */
 public class NavigationFacade {
   private NavigationFacade() {}
 
