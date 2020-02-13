@@ -4882,6 +4882,13 @@ hoist-non-react-statics@^3.3.0:
   dependencies:
     react-is "^16.7.0"
 
+hoist-non-react-statics@^3.3.2:
+  version "3.3.2"
+  resolved "https://registry.yarnpkg.com/hoist-non-react-statics/-/hoist-non-react-statics-3.3.2.tgz#ece0acaf71d62c2969c2ec59feff42a4b1a85b45"
+  integrity sha512-/gGivxi8JPKWNm/W0jSmzcMPpfpPLc3dY/6GxhX2hQ9iGj3aDfklV4ET7NjKpSinLpJ5vafa9iiGIEZg10SfBw==
+  dependencies:
+    react-is "^16.7.0"
+
 homedir-polyfill@^1.0.1:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/homedir-polyfill/-/homedir-polyfill-1.0.3.tgz#743298cef4e5af3e194161fbadcc2151d3a058e8"
@@ -7634,11 +7641,12 @@ react-color@^2.11.7:
     reactcss "^1.2.0"
     tinycolor2 "^1.4.1"
 
-react-debounce-render@^5.0.0:
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/react-debounce-render/-/react-debounce-render-5.0.0.tgz#ed5a30b40b0f1e52da83c7add33334a6cde7cead"
-  integrity sha512-3u4oUcZ1i9bOtENfnHW5f2x74b+01teKG24+NbuKSklCQhknWq/euyYiBnuRFhyJdaniVmtNqtLL66+2jCHXLw==
+react-debounce-render@^6.0.0:
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/react-debounce-render/-/react-debounce-render-6.0.0.tgz#5865d727479126edc9d14b71cfcbfd47d852846e"
+  integrity sha512-JlseqWoAvvAZWtqK0ZMraRT1e4LyYanx3LP0Hc6ejuO9OPtEPx1aCMyZLLoB2XOL+b4a1BHFiKLQ2VOhMCBe4A==
   dependencies:
+    hoist-non-react-statics "^3.3.2"
     lodash.debounce "^4.0.8"
 
 react-devtools-core@^4.0.6:
