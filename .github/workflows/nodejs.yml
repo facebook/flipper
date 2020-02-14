@@ -9,8 +9,8 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [10.x, 12.x]
-        os: ['ubuntu-latest', 'windows-latest']
+        node-version: [12.x]
+        os: ['ubuntu-latest', 'windows-latest', 'macos-latest']
 
     steps:
     - uses: actions/checkout@v1
@@ -27,6 +27,27 @@ jobs:
     - name: build linux
       if: matrix.os == 'ubuntu-latest'
       run: yarn build --linux
+    - name: build macos
+      if: matrix.os == 'macos-latest'
+      run: yarn build --mac
     - name: build windows
       if: matrix.os == 'windows-latest'
       run: yarn build --win
+    - name: upload linux artifact
+      uses: actions/upload-artifact@v1
+      if: matrix.os == 'ubuntu-latest'
+      with:
+        name: Flipper-linux.zip
+        path: dist/Flipper-linux.zip
+    - name: upload windows artifact
+      uses: actions/upload-artifact@v1
+      if: matrix.os == 'windows-latest'
+      with:
+        name: Flipper-win.zip
+        path: dist/Flipper-win.zip
+    - name: upload mac artifact
+      uses: actions/upload-artifact@v1
+      if: matrix.os == 'macos-latest'
+      with:
+        name: Flipper-mac.zip
+        path: dist/Flipper-mac.zip
