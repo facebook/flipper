@@ -27,6 +27,14 @@ We actively welcome your pull requests.
 5. Make sure your code lints.
 6. If you haven't already, complete the Contributor License Agreement ("CLA").
 
+### Verifying changes to Flipper
+
+![GitHub Actions artifact downloads](static/actions-artifacts.png)
+
+After opening a pull request or pushing to a branch, the CI will generate
+build artifacts for you for Linux, MacOS and Windows. You can download them
+from the GitHub Actions checks on your Pull Request.
+
 ## Contributor License Agreement ("CLA")
 
 In order to accept your pull request, we need you to submit a CLA. You only need
