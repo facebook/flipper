@@ -65,6 +65,12 @@ export class Group {
   workplaceGroupID: number;
   supportedOS: Array<OS>;
 
+  getPluginsToSelect(): Array<string> {
+    return Array.from(
+      new Set([...this.defaultPlugins, ...this.requiredPlugins]),
+    );
+  }
+
   getValidationMessage(
     selectedPlugins: Array<string>,
     selectedOS: OS | null,
@@ -192,7 +198,7 @@ export class Group {
 
     store.dispatch(
       setSelectedPlugins(
-        this.defaultPlugins.filter(s => {
+        this.getPluginsToSelect().filter(s => {
           return pluginsList.map(s => s.id).includes(s);
         }),
       ),
@@ -253,7 +259,7 @@ export const LITHO_GROUP = new Group(
   'Litho Support',
   LITHO_SUPPORT_GROUP_ID,
   ['Inspector'],
-  ['Inspector', 'Sections', 'DeviceLogs'],
+  ['Sections', 'DeviceLogs'],
   ['Android'],
 );
 
@@ -261,7 +267,7 @@ export const GRAPHQL_ANDROID_GROUP = new Group(
   'GraphQL Android Support',
   GRAPHQL_ANDROID_SUPPORT_GROUP_ID,
   ['GraphQL'],
-  ['GraphQL', 'DeviceLogs'],
+  ['DeviceLogs'],
   ['Android'],
 );
 
@@ -269,7 +275,7 @@ export const GRAPHQL_IOS_GROUP = new Group(
   'GraphQL iOS Support',
   GRAPHQL_IOS_SUPPORT_GROUP_ID,
   ['GraphQL'],
-  ['GraphQL', 'DeviceLogs'],
+  ['DeviceLogs'],
   ['iOS'],
 );
 
