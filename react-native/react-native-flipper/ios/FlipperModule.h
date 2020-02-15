@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// Flipper requires Swift, feel free to delete this file if you do not plan to use Flipper.
+#import <React/RCTEventEmitter.h>
 
-import Foundation
+@interface FlipperModule : RCTEventEmitter
+
+@end

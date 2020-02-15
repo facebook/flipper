@@ -6,6 +6,7 @@
 require "json"
 
 package = JSON.parse(File.read(File.join(__dir__, "package.json")))
+compiler_flags = '-DFB_SONARKIT_ENABLED=1'
 
 Pod::Spec.new do |s|
   s.name         = "react-native-flipper"
@@ -22,10 +23,8 @@ Pod::Spec.new do |s|
   s.source       = { :git => "https://github.com/github_account/react-native-flipper.git", :tag => "#{s.version}" }
 
   s.source_files = "ios/**/*.{h,m,swift}"
+  s.pod_target_xcconfig = { "HEADER_SEARCH_PATHS" => "\"${PODS_ROOT}/Headers/Public/FlipperKit\"" }
   s.requires_arc = true
-
+  s.compiler_flags = compiler_flags
   s.dependency "React"
-  # ...
-  # s.dependency "..."
 end
-

@@ -1,14 +1,15 @@
-platform :ios, '9.0'
+platform :ios, '10.0'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
 # Add Flipper Pods
 def flipper_pods()
-  flipperkit_version = '0.30.0'
-  pod 'FlipperKit', '~>' + flipperkit_version, :configuration => 'Debug'
-  pod 'FlipperKit/FlipperKitLayoutPlugin', '~>' + flipperkit_version, :configuration => 'Debug'
-  pod 'FlipperKit/SKIOSNetworkPlugin', '~>' + flipperkit_version, :configuration => 'Debug'
-  pod 'FlipperKit/FlipperKitUserDefaultsPlugin', '~>' + flipperkit_version, :configuration => 'Debug'
-  pod 'FlipperKit/FlipperKitReactPlugin', '~>' + flipperkit_version, :configuration => 'Debug'
+  flipperkit_version = '0.31.1'
+  pod 'FlipperKit', :path => "../../../FlipperKit.podspec", :configuration => 'Debug'
+  pod 'FlipperKit/FlipperKitLayoutPlugin', :path => "../../../FlipperKit.podspec", :configuration => 'Debug'
+  pod 'FlipperKit/SKIOSNetworkPlugin', :path => "../../../FlipperKit.podspec", :configuration => 'Debug'
+  pod 'FlipperKit/FlipperKitUserDefaultsPlugin', :path => "../../../FlipperKit.podspec", :configuration => 'Debug'
+  pod 'FlipperKit/FlipperKitReactPlugin', :path => "../../../FlipperKit.podspec", :configuration => 'Debug'
+  pod 'Flipper', :path => "../../../Flipper.podspec", :configuration => 'Debug'
 end
 
 # Post Install processing for Flipper
@@ -70,12 +71,7 @@ target 'ReactNativeFlipperExample' do
   pod 'glog', :podspec => '../node_modules/react-native/third-party-podspecs/glog.podspec'
   pod 'Folly', :podspec => '../node_modules/react-native/third-party-podspecs/Folly.podspec'
 
-  target 'ReactNativeFlipperExampleTests' do
-    inherit! :complete
-    # Pods for testing
-  end
-
-  use_native_modules!
+  pod 'react-native-flipper', :path => "../../react-native-flipper/react-native-flipper.podspec", :configuration => 'Debug'
 
   # For enabling Flipper.
   # Note that if you use_frameworks!, flipper will no work.
@@ -83,14 +79,5 @@ target 'ReactNativeFlipperExample' do
   flipper_pods()
   post_install do |installer|
     flipper_post_install(installer)
-  end
-end
-
-target 'ReactNativeFlipperExample-tvOS' do
-  # Pods for ReactNativeFlipperExample-tvOS
-
-  target 'ReactNativeFlipperExample-tvOSTests' do
-    inherit! :search_paths
-    # Pods for testing
   end
 end

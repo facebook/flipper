@@ -44,4 +44,9 @@
     conn_->receive([method UTF8String], lambda);
 }
 
+- (void)errorWithMessage:(NSString *)message stackTrace:(NSString *)stacktrace {
+  conn_->error([message UTF8String], [stacktrace UTF8String]);
+}
+
+
 @end

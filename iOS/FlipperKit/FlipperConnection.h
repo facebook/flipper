@@ -28,4 +28,9 @@ plugin with a matching identifier.
 */
 - (void)receive:(NSString *)method withBlock:(SonarReceiver)receiver;
 
+/**
+Report an error to the Flipper desktop app
+*/
+- (void)errorWithMessage:(NSString *)message stackTrace:(NSString *)stacktrace;
+
 @end
