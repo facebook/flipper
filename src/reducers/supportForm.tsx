@@ -266,7 +266,7 @@ export const LITHO_GROUP = new Group(
 export const GRAPHQL_ANDROID_GROUP = new Group(
   'GraphQL Android Support',
   GRAPHQL_ANDROID_SUPPORT_GROUP_ID,
-  ['GraphQL'],
+  ['GraphQL', 'Network'],
   ['DeviceLogs'],
   ['Android'],
 );
@@ -274,7 +274,7 @@ export const GRAPHQL_ANDROID_GROUP = new Group(
 export const GRAPHQL_IOS_GROUP = new Group(
   'GraphQL iOS Support',
   GRAPHQL_IOS_SUPPORT_GROUP_ID,
-  ['GraphQL'],
+  ['GraphQL', 'Network'],
   ['DeviceLogs'],
   ['iOS'],
 );
