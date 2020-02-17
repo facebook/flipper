@@ -16,8 +16,8 @@ enum {
   FKPortForwardingFrameTypeClosePipe = 203,
 };
 
-static dispatch_data_t NSDataToGCDData(NSData *data) {
-  __block NSData *retainedData = data;
+static dispatch_data_t NSDataToGCDData(NSData* data) {
+  __block NSData* retainedData = data;
   return dispatch_data_create(data.bytes, data.length, nil, ^{
     retainedData = nil;
   });

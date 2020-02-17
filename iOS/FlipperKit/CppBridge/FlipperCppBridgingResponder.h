@@ -13,6 +13,7 @@ SonarCppBridgingResponder is a simple ObjC wrapper around FlipperResponder
 that forwards messages to the underlying C++ responder. This class allows
 pure Objective-C plugins to send messages to the underlying responder.
 */
-@interface FlipperCppBridgingResponder : NSObject <FlipperResponder>
-- (instancetype)initWithCppResponder:(std::shared_ptr<facebook::flipper::FlipperResponder>)responder;
+@interface FlipperCppBridgingResponder : NSObject<FlipperResponder>
+- (instancetype)initWithCppResponder:
+    (std::shared_ptr<facebook::flipper::FlipperResponder>)responder;
 @end

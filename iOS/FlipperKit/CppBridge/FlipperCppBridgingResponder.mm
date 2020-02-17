@@ -13,8 +13,8 @@
   std::shared_ptr<facebook::flipper::FlipperResponder> responder_;
 }
 
-- (instancetype)initWithCppResponder:(std::shared_ptr<facebook::flipper::FlipperResponder>)responder
-{
+- (instancetype)initWithCppResponder:
+    (std::shared_ptr<facebook::flipper::FlipperResponder>)responder {
   if (!responder) {
     return nil;
   }
@@ -28,8 +28,14 @@
 
 #pragma mark - FlipperResponder
 
-- (void)success:(NSDictionary *)response { responder_->success(facebook::cxxutils::convertIdToFollyDynamic(response, true)); }
+- (void)success:(NSDictionary*)response {
+  responder_->success(
+      facebook::cxxutils::convertIdToFollyDynamic(response, true));
+}
 
-- (void)error:(NSDictionary *)response { responder_->error(facebook::cxxutils::convertIdToFollyDynamic(response, true)); }
+- (void)error:(NSDictionary*)response {
+  responder_->error(
+      facebook::cxxutils::convertIdToFollyDynamic(response, true));
+}
 
 @end

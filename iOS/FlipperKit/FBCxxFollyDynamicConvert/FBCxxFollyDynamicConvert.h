@@ -15,6 +15,7 @@ namespace facebook {
 namespace cxxutils {
 
 folly::dynamic convertIdToFollyDynamic(id json, bool nullifyNanAndInf = false);
-id convertFollyDynamicToId(const folly::dynamic &dyn);
+id convertFollyDynamicToId(const folly::dynamic& dyn);
 
-} }
+} // namespace cxxutils
+} // namespace facebook

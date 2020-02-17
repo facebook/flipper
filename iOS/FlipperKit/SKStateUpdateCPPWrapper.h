@@ -13,13 +13,15 @@
 /*
  * This class exists to bridge the gap between Objective C and C++.
  * A SKStateUpdateCPPWrapper instance allows for wrapping an Objective-C object
- * and passing it to the pure C++ SonarClient, so it can be triggered when updates occur.
+ * and passing it to the pure C++ SonarClient, so it can be triggered when
+ * updates occur.
  */
 class SKStateUpdateCPPWrapper : public FlipperStateUpdateListener {
-public:
+ public:
   SKStateUpdateCPPWrapper(id<FlipperStateUpdateListener> delegate_);
   void onUpdate();
-private:
+
+ private:
   __weak id<FlipperStateUpdateListener> delegate_;
 };
 

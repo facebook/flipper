@@ -9,7 +9,8 @@
 
 #include "SKStateUpdateCPPWrapper.h"
 
-SKStateUpdateCPPWrapper::SKStateUpdateCPPWrapper(id<FlipperStateUpdateListener> controller) {
+SKStateUpdateCPPWrapper::SKStateUpdateCPPWrapper(
+    id<FlipperStateUpdateListener> controller) {
   delegate_ = controller;
 }
 

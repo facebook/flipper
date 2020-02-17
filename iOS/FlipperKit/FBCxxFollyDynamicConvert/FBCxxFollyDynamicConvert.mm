@@ -16,8 +16,7 @@ namespace cxxutils {
  * The implementation is taken from RCTFollyConvert(https://fburl.com/vzw8ql2q)
  */
 
-id convertFollyDynamicToId(const folly::dynamic &dyn)
-{
+id convertFollyDynamicToId(const folly::dynamic& dyn) {
   // I could imagine an implementation which avoids copies by wrapping the
   // dynamic in a derived class of NSDictionary.  We can do that if profiling
   // implies it will help.
@@ -32,10 +31,13 @@ id convertFollyDynamicToId(const folly::dynamic &dyn)
     case folly::dynamic::DOUBLE:
       return @(dyn.getDouble());
     case folly::dynamic::STRING:
-      return [[NSString alloc] initWithBytes:dyn.c_str() length:dyn.size() encoding:NSUTF8StringEncoding];
+      return [[NSString alloc] initWithBytes:dyn.c_str()
+                                      length:dyn.size()
+                                    encoding:NSUTF8StringEncoding];
     case folly::dynamic::ARRAY: {
-      NSMutableArray *array = [[NSMutableArray alloc] initWithCapacity:dyn.size()];
-      for (auto &elem : dyn) {
+      NSMutableArray* array =
+          [[NSMutableArray alloc] initWithCapacity:dyn.size()];
+      for (auto& elem : dyn) {
         id obj = convertFollyDynamicToId(elem);
         if (obj) {
           [array addObject:obj];
@@ -44,8 +46,9 @@ id convertFollyDynamicToId(const folly::dynamic &dyn)
       return array;
     }
     case folly::dynamic::OBJECT: {
-      NSMutableDictionary *dict = [[NSMutableDictionary alloc] initWithCapacity:dyn.size()];
-      for (auto &elem : dyn.items()) {
+      NSMutableDictionary* dict =
+          [[NSMutableDictionary alloc] initWithCapacity:dyn.size()];
+      for (auto& elem : dyn.items()) {
         id obj = convertFollyDynamicToId(elem.second);
         if (obj) {
           dict[convertFollyDynamicToId(elem.first)] = obj;
@@ -56,12 +59,11 @@ id convertFollyDynamicToId(const folly::dynamic &dyn)
   }
 }
 
-folly::dynamic convertIdToFollyDynamic(id json, bool nullifyNanAndInf)
-{
+folly::dynamic convertIdToFollyDynamic(id json, bool nullifyNanAndInf) {
   if (json == nil || json == (id)kCFNull) {
     return nullptr;
   } else if ([json isKindOfClass:[NSNumber class]]) {
-    const char *objCType = [json objCType];
+    const char* objCType = [json objCType];
     switch (objCType[0]) {
       // This is a c++ bool or C99 _Bool.  On some platforms, BOOL is a bool.
       case _C_BOOL:
@@ -109,8 +111,8 @@ folly::dynamic convertIdToFollyDynamic(id json, bool nullifyNanAndInf)
         //   fall through
     }
   } else if ([json isKindOfClass:[NSString class]]) {
-    NSData *data = [json dataUsingEncoding:NSUTF8StringEncoding];
-    return std::string(reinterpret_cast<const char *>(data.bytes), data.length);
+    NSData* data = [json dataUsingEncoding:NSUTF8StringEncoding];
+    return std::string(reinterpret_cast<const char*>(data.bytes), data.length);
   } else if ([json isKindOfClass:[NSArray class]]) {
     folly::dynamic array = folly::dynamic::array;
     for (id element in json) {
@@ -120,8 +122,11 @@ folly::dynamic convertIdToFollyDynamic(id json, bool nullifyNanAndInf)
   } else if ([json isKindOfClass:[NSDictionary class]]) {
     __block folly::dynamic object = folly::dynamic::object();
 
-    [json enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSString *value, __unused BOOL *stop) {
-      object.insert(convertIdToFollyDynamic(key, nullifyNanAndInf), convertIdToFollyDynamic(value, nullifyNanAndInf));
+    [json enumerateKeysAndObjectsUsingBlock:^(
+              NSString* key, NSString* value, __unused BOOL* stop) {
+      object.insert(
+          convertIdToFollyDynamic(key, nullifyNanAndInf),
+          convertIdToFollyDynamic(value, nullifyNanAndInf));
     }];
 
     return object;

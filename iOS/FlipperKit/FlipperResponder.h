@@ -8,18 +8,19 @@
 #import <Foundation/Foundation.h>
 
 /**
-Acts as a hook for providing return values to remote called from Sonar desktop plugins.
+Acts as a hook for providing return values to remote called from Sonar desktop
+plugins.
 */
 @protocol FlipperResponder
 
 /**
 Respond with a successful return value.
 */
-- (void)success:(NSDictionary *)response;
+- (void)success:(NSDictionary*)response;
 
 /**
 Respond with an error.
 */
-- (void)error:(NSDictionary *)response;
+- (void)error:(NSDictionary*)response;
 
 @end

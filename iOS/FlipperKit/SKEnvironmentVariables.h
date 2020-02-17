@@ -8,11 +8,12 @@
 #ifdef FB_SONARKIT_ENABLED
 
 /*
- * This class exists to retreive configuration values stored in environment variables.
+ * This class exists to retreive configuration values stored in environment
+ * variables.
  */
 @interface SKEnvironmentVariables : NSObject
-    + (int)getInsecurePort;
-    + (int)getSecurePort;
++ (int)getInsecurePort;
++ (int)getSecurePort;
 @end
 
 #endif

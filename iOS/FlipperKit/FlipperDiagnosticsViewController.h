@@ -7,19 +7,20 @@
 
 #ifdef FB_SONARKIT_ENABLED
 
-#include "FlipperStateUpdateListener.h"
 #import <UIKit/UIKit.h>
+#include "FlipperStateUpdateListener.h"
 
-@interface StateTableDataSource : NSObject <UITableViewDataSource>
-@property (strong, nonatomic) NSArray<NSDictionary *> *elements;
+@interface StateTableDataSource : NSObject<UITableViewDataSource>
+@property(strong, nonatomic) NSArray<NSDictionary*>* elements;
 @end
 
-@interface FlipperDiagnosticsViewController : UIViewController<FlipperStateUpdateListener>
-@property(strong, nonatomic) StateTableDataSource *tableDataSource;
-@property(strong, nonatomic) UILabel *stateLabel;
-@property(strong, nonatomic) UITableView *stateTable;
-@property(strong, nonatomic) UIScrollView *scrollView;
-@property(strong, nonatomic) UILabel *logLabel;
+@interface FlipperDiagnosticsViewController
+    : UIViewController<FlipperStateUpdateListener>
+@property(strong, nonatomic) StateTableDataSource* tableDataSource;
+@property(strong, nonatomic) UILabel* stateLabel;
+@property(strong, nonatomic) UITableView* stateTable;
+@property(strong, nonatomic) UIScrollView* scrollView;
+@property(strong, nonatomic) UILabel* logLabel;
 
 - (void)onUpdate;
 @end

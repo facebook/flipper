@@ -16,6 +16,6 @@
 
 @interface FlipperClient (Testing)
 
-- (instancetype)initWithCppClient:(facebook::flipper::FlipperClient *)cppClient;
+- (instancetype)initWithCppClient:(facebook::flipper::FlipperClient*)cppClient;
 
 @end
