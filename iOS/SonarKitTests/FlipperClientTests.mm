@@ -17,7 +17,7 @@
 @implementation FlipperClientTests
 
 - (void)testStartingClientDoesntCrashOrHang {
-  FlipperClient *client = [FlipperClient sharedClient];
+  FlipperClient* client = [FlipperClient sharedClient];
   [client start];
 }
 
