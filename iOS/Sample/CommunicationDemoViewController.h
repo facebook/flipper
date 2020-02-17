@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface CommunicationDemoViewController : UIViewController<UITableViewDataSource>
+@interface CommunicationDemoViewController
+    : UIViewController<UITableViewDataSource>
 
 @end

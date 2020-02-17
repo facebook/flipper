@@ -8,22 +8,23 @@
 #import "UserDefaultsViewController.h"
 
 @interface UserDefaultsViewController ()
-@property (weak, nonatomic) IBOutlet UITextField *valueTextField;
-@property (weak, nonatomic) IBOutlet UITextField *keyTextField;
-@property (nonatomic, strong) NSUserDefaults *userDefaults;
+@property(weak, nonatomic) IBOutlet UITextField* valueTextField;
+@property(weak, nonatomic) IBOutlet UITextField* keyTextField;
+@property(nonatomic, strong) NSUserDefaults* userDefaults;
 @end
 
 @implementation UserDefaultsViewController
 
-- (instancetype)initWithCoder:(NSCoder *)aDecoder {
-    if (self = [super initWithCoder:aDecoder]) {
-        _userDefaults = [[NSUserDefaults alloc] initWithSuiteName:nil];
-    }
-    return self;
+- (instancetype)initWithCoder:(NSCoder*)aDecoder {
+  if (self = [super initWithCoder:aDecoder]) {
+    _userDefaults = [[NSUserDefaults alloc] initWithSuiteName:nil];
+  }
+  return self;
 }
 
 - (IBAction)tappedSave:(id)sender {
-    [self.userDefaults setObject:self.valueTextField.text forKey:self.keyTextField.text];
+  [self.userDefaults setObject:self.valueTextField.text
+                        forKey:self.keyTextField.text];
 }
 
 @end

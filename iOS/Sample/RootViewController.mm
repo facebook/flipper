@@ -20,19 +20,19 @@
 
 @interface RootViewController ()
 
-@property (strong, nonatomic) CKComponentHostingView *rootCKHostingView;
+@property(strong, nonatomic) CKComponentHostingView* rootCKHostingView;
 
 @end
 
 @implementation RootViewController
 
-- (instancetype)init
-{
+- (instancetype)init {
   if (self = [super init]) {
     _rootCKHostingView = [[CKComponentHostingView alloc]
-                          initWithComponentProvider:[self class]
-                          sizeRangeProvider:
-                          [CKComponentFlexibleSizeRangeProvider providerWithFlexibility:CKComponentSizeRangeFlexibleHeight]];
+        initWithComponentProvider:[self class]
+                sizeRangeProvider:[CKComponentFlexibleSizeRangeProvider
+                                      providerWithFlexibility:
+                                          CKComponentSizeRangeFlexibleHeight]];
 
     [self.view addSubview:_rootCKHostingView];
     [self loadViewIfNeeded];
@@ -46,54 +46,45 @@
   self.edgesForExtendedLayout = UIRectEdgeNone;
 }
 
-- (void)viewDidLayoutSubviews
-{
+- (void)viewDidLayoutSubviews {
   [super viewDidLayoutSubviews];
   _rootCKHostingView.frame = self.view.bounds;
 }
 
-+ (CKComponent *)componentForModel:(id<NSObject>)model context:(id<NSObject>)context {
++ (CKComponent*)componentForModel:(id<NSObject>)model
+                          context:(id<NSObject>)context {
   return [CKBackgroundLayoutComponent
-   newWithComponent:
-   [CKFlexboxComponent
-    newWithView:{
-    }
-    size:{}
-    style:{}
-    children: {
-      {
-        [CKButtonComponent
-         newWithAction:nil
-         options:{
-           .titles = @"Purple",
-           .titleColors = UIColor.purpleColor,
-         }
-         ]
-      },
-      {
-        [CKButtonComponent
-         newWithAction:nil
-         options:{
-           .titles = @"Brown",
-           .titleColors = UIColor.brownColor,
-         }
-         ]
-      },
-      {
-        [CKButtonComponent
-         newWithAction:nil
-         options:{
-           .titles = @"Cyan",
-           .titleColors = UIColor.cyanColor,
-         }
-         ]
-      },
-    }]
-   background:
-   [CKImageComponent
-    newWithImage:[UIImage imageNamed:@"sonarpattern"]
-    attributes:{}
-    size:{}]];
+      newWithComponent:
+          [CKFlexboxComponent newWithView:{}
+              size:{}
+              style:{}
+              children:{
+                           {[CKButtonComponent
+                               newWithAction:nil
+                                     options:{
+                                                 .titles = @"Purple",
+                                                 .titleColors =
+                                                     UIColor.purpleColor,
+                                             }]},
+                           {[CKButtonComponent
+                               newWithAction:nil
+                                     options:{
+                                                 .titles = @"Brown",
+                                                 .titleColors =
+                                                     UIColor.brownColor,
+                                             }]},
+                           {[CKButtonComponent
+                               newWithAction:nil
+                                     options:{
+                                                 .titles = @"Cyan",
+                                                 .titleColors =
+                                                     UIColor.cyanColor,
+                                             }]},
+                       }]
+            background:[CKImageComponent
+                           newWithImage:[UIImage imageNamed:@"sonarpattern"]
+                             attributes:{}
+                                   size:{}]];
 }
 
 @end
