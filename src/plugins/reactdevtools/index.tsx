@@ -7,9 +7,19 @@
  * @format
  */
 
+// import {ReactReduxContext} from 'react-redux';
 import ReactDevToolsStandalone from 'react-devtools-core/standalone';
-import {FlipperPlugin, AndroidDevice, styled, View, Toolbar} from 'flipper';
-import React from 'react';
+import {
+  FlipperPlugin,
+  AndroidDevice,
+  styled,
+  View,
+  Toolbar,
+  MetroDevice,
+  ReduxState,
+  connect,
+} from 'flipper';
+import React, {useEffect} from 'react';
 import getPort from 'get-port';
 import address from 'address';
 
@@ -54,7 +64,30 @@ function detachDevTools(devToolsNode: HTMLElement) {
 
 const CONNECTED = 'DevTools connected';
 
-export default class extends FlipperPlugin<
+type GrabMetroDeviceStoreProps = {metroDevice: MetroDevice};
+type GrabMetroDeviceOwnProps = {onHasDevice(device: MetroDevice): void};
+
+// Utility component to grab the metroDevice from the store if there is one
+const GrabMetroDevice = connect<
+  GrabMetroDeviceStoreProps,
+  {},
+  GrabMetroDeviceOwnProps,
+  ReduxState
+>(({connections: {devices}}) => ({
+  metroDevice: devices.find(
+    device => device.os === 'Metro' && !device.isArchived,
+  ) as MetroDevice,
+}))(function({
+  metroDevice,
+  onHasDevice,
+}: GrabMetroDeviceStoreProps & GrabMetroDeviceOwnProps) {
+  useEffect(() => {
+    onHasDevice(metroDevice);
+  }, [metroDevice]);
+  return null;
+});
+
+export default class ReactDevTools extends FlipperPlugin<
   {
     status: string;
   },
@@ -64,6 +97,7 @@ export default class extends FlipperPlugin<
   pollHandle?: NodeJS.Timeout;
   containerRef: React.RefObject<HTMLDivElement> = React.createRef();
   triedToAutoConnect = false;
+  metroDevice?: MetroDevice;
 
   state = {
     status: 'initializing',
@@ -98,7 +132,7 @@ export default class extends FlipperPlugin<
   }
 
   setStatus(status: string) {
-    console.log(`[ReactDevtoolsPlugin] ${status}`);
+    // console.log(`[ReactDevtoolsPlugin] ${status}`);
     if (status.startsWith('The server is listening on')) {
       this.setState({status: status + ' Waiting for connection...'});
     } else {
@@ -114,9 +148,14 @@ export default class extends FlipperPlugin<
         if (!this.triedToAutoConnect) {
           this.triedToAutoConnect = true;
           this.setStatus(
-            "The DevTools didn't connect yet. Please open the DevMenu or Reload to connect",
+            "The DevTools didn't connect yet. Please open the DevMenu in the React Native app, or Reload it to connect",
           );
-          // TODO: send reload command
+          if (this.metroDevice) {
+            this.setStatus(
+              "Sending 'reload' to the Metro to force the DevTools to connect...",
+            );
+            this.metroDevice?.sendCommand('reload');
+          }
         }
         this.startPollForConnection();
       }
@@ -124,32 +163,37 @@ export default class extends FlipperPlugin<
   }
 
   async initializeDevTools(devToolsNode: HTMLElement) {
-    this.setStatus('Waiting for port 8097');
-    const port = await getPort({port: 8097}); // default port for dev tools
-    this.setStatus('Starting DevTools server on ' + port);
-    ReactDevToolsStandalone.setContentDOMNode(devToolsNode)
-      .setStatusListener(status => {
-        this.setStatus(status);
-      })
-      .startServer(port);
-    this.setStatus('Waiting for device');
-    const device = await this.getDevice();
+    try {
+      this.setStatus('Waiting for port 8097');
+      const port = await getPort({port: 8097}); // default port for dev tools
+      this.setStatus('Starting DevTools server on ' + port);
+      ReactDevToolsStandalone.setContentDOMNode(devToolsNode)
+        .setStatusListener(status => {
+          this.setStatus(status);
+        })
+        .startServer(port);
+      this.setStatus('Waiting for device');
+      const device = await this.getDevice();
 
-    if (device) {
-      const host =
-        device.deviceType === 'physical'
-          ? address.ip()
-          : device instanceof AndroidDevice
-          ? '10.0.2.2' // Host IP for Android emulator host system
-          : 'localhost';
-      this.setStatus(`Updating config to ${host}:${port}`);
-      this.client.call('config', {port, host});
+      if (device) {
+        const host =
+          device.deviceType === 'physical'
+            ? address.ip()
+            : device instanceof AndroidDevice
+            ? '10.0.2.2' // Host IP for Android emulator host system
+            : 'localhost';
+        this.setStatus(`Updating config to ${host}:${port}`);
+        this.client.call('config', {port, host});
 
-      if (['quest', 'go', 'pacific'].includes(device.title.toLowerCase())) {
-        const device = await this.getDevice();
-        this.setStatus(`Setting up reverse port mapping: ${port}:${port}`);
-        (device as AndroidDevice).reverse([port, port]);
+        if (['quest', 'go', 'pacific'].includes(device.title.toLowerCase())) {
+          const device = await this.getDevice();
+          this.setStatus(`Setting up reverse port mapping: ${port}:${port}`);
+          (device as AndroidDevice).reverse([port, port]);
+        }
       }
+    } catch (e) {
+      console.error(e);
+      this.setStatus('Failed to initialize DevTools: ' + e);
     }
   }
 
@@ -160,6 +204,11 @@ export default class extends FlipperPlugin<
           <Toolbar>{this.state.status}</Toolbar>
         ) : null}
         <Container ref={this.containerRef} />
+        <GrabMetroDevice
+          onHasDevice={device => {
+            this.metroDevice = device;
+          }}
+        />
       </View>
     );
   }

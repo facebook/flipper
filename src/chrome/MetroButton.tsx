@@ -65,15 +65,7 @@ const ProgressBarBar = styled.div<{progress: number; color: string}>(
 function MetroButton({device}: Props) {
   const sendCommand = useCallback(
     (command: string) => {
-      if (device.ws) {
-        device.ws.send(
-          JSON.stringify({
-            version: 2,
-            type: 'command',
-            command,
-          }),
-        );
-      }
+      device.sendCommand(command);
     },
     [device],
   );

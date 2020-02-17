@@ -150,7 +150,7 @@ export default class MetroDevice extends BaseDevice {
     ws.onmessage = this._handleWSMessage;
   }
 
-  _handleWSMessage = ({data}: any) => {
+  private _handleWSMessage = ({data}: any) => {
     const message: MetroReportableEvent = JSON.parse(data);
     if (message.type === 'client_log') {
       const type: LogLevel = metroLogLevelMapping[message.level] || 'unknown';
@@ -181,6 +181,21 @@ export default class MetroDevice extends BaseDevice {
     }
     this.metroEventEmitter.emit('event', message);
   };
+
+  sendCommand(command: string, params?: any) {
+    if (this.ws) {
+      this.ws.send(
+        JSON.stringify({
+          version: 2,
+          type: 'command',
+          command,
+          params,
+        }),
+      );
+    } else {
+      console.warn('Cannot send command, no connection', command);
+    }
+  }
 
   archive() {
     return new ArchivedDevice(
