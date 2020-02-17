@@ -148,6 +148,10 @@ export class App extends React.Component<Props> {
           ) : (
             <PluginContainer logger={this.props.logger} />
           )}
+          <div
+            id="flipper-out-of-contents-container"
+            style={{width: '100%', display: 'none'}}
+          />
         </FlexRow>
         <StatusBar />
       </FlexColumn>
