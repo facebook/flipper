@@ -14,13 +14,17 @@
 
 using facebook::flipper::FlipperCppWrapperPlugin;
 
-@interface DummyPlugin : NSObject <FlipperPlugin>
+@interface DummyPlugin : NSObject<FlipperPlugin>
 @end
 
 @implementation DummyPlugin
-- (NSString *)identifier { return @"Dummy"; }
-- (void)didConnect:(id<FlipperConnection>)connection {}
-- (void)didDisconnect {}
+- (NSString*)identifier {
+  return @"Dummy";
+}
+- (void)didConnect:(id<FlipperConnection>)connection {
+}
+- (void)didDisconnect {
+}
 @end
 
 @interface FlipperCppBridgingTests : XCTestCase
@@ -29,10 +33,10 @@ using facebook::flipper::FlipperCppWrapperPlugin;
 @implementation FlipperCppBridgingTests
 
 - (void)testCppWrapperRetainsObjCPlugin {
-  NSObject<FlipperPlugin> *dummyPlugin = [DummyPlugin new];
-  auto retainCountBefore = CFGetRetainCount((void *)dummyPlugin);
+  NSObject<FlipperPlugin>* dummyPlugin = [DummyPlugin new];
+  auto retainCountBefore = CFGetRetainCount((void*)dummyPlugin);
   FlipperCppWrapperPlugin wrapperPlugin(dummyPlugin);
-  auto retainCountAfter = CFGetRetainCount((void *)dummyPlugin);
+  auto retainCountAfter = CFGetRetainCount((void*)dummyPlugin);
   XCTAssertTrue(retainCountAfter > retainCountBefore);
 }
 

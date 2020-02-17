@@ -8,10 +8,10 @@
 #import <XCTest/XCTest.h>
 #if FB_SONARKIT_ENABLED
 
-#import <FlipperKit/FlipperPlugin.h>
-#import <FlipperKit/FlipperClient.h>
 #import <FlipperKit/FlipperClient+Testing.h>
+#import <FlipperKit/FlipperClient.h>
 #import <FlipperKit/FlipperConnection.h>
+#import <FlipperKit/FlipperPlugin.h>
 #import <FlipperKitTestUtils/BlockBasedSonarPlugin.h>
 #import <FlipperKitTestUtils/FlipperResponderMock.h>
 #import <FlipperTestLib/FlipperConnectionManagerMock.h>
@@ -26,35 +26,41 @@
 @end
 
 @implementation FlipperUtilTests {
-    FlipperResponderMock *responder;
+  FlipperResponderMock* responder;
 }
 
-
 - (void)setUp {
-    responder = [FlipperResponderMock new];
+  responder = [FlipperResponderMock new];
 }
 
 - (void)testPerformOnMainThreadSuccess {
-    FlipperPerformBlockOnMainThread(^{}, responder);
-    NSAssert([responder.successes count] == 0, @"No successes are output");
-    NSAssert([responder.errors count] == 0, @"No errors are output");
+  FlipperPerformBlockOnMainThread(
+      ^{
+      },
+      responder);
+  NSAssert([responder.successes count] == 0, @"No successes are output");
+  NSAssert([responder.errors count] == 0, @"No errors are output");
 }
 
 - (void)testPerformOnMainThreadStdException {
-    FlipperPerformBlockOnMainThread(^{
+  FlipperPerformBlockOnMainThread(
+      ^{
         throw new std::exception();
-    }, responder);
-    NSAssert([responder.successes count] == 0, @"No successes are output");
-    NSAssert([responder.errors count] == 1, @"1 error is output");
+      },
+      responder);
+  NSAssert([responder.successes count] == 0, @"No successes are output");
+  NSAssert([responder.errors count] == 1, @"1 error is output");
 }
 
 - (void)testPerformOnMainThreadNSException {
-    FlipperPerformBlockOnMainThread(^{
-        NSArray *a = [NSArray init];
+  FlipperPerformBlockOnMainThread(
+      ^{
+        NSArray* a = [NSArray init];
         [a objectAtIndex:1];
-    }, responder);
-    NSAssert([responder.successes count] == 0, @"No successes are output");
-    NSAssert([responder.errors count] == 1, @"1 error is output");
+      },
+      responder);
+  NSAssert([responder.successes count] == 0, @"No successes are output");
+  NSAssert([responder.errors count] == 1, @"1 error is output");
 }
 
 @end
