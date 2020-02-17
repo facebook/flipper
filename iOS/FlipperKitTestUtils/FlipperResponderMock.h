@@ -11,7 +11,7 @@
 
 @interface FlipperResponderMock : NSObject<FlipperResponder>
 
-@property (nonatomic, readonly) NSArray<NSDictionary *> *successes;
-@property (nonatomic, readonly) NSArray<NSDictionary *> *errors;
+@property(nonatomic, readonly) NSArray<NSDictionary*>* successes;
+@property(nonatomic, readonly) NSArray<NSDictionary*>* errors;
 
 @end

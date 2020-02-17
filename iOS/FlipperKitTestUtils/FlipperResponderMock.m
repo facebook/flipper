@@ -9,8 +9,7 @@
 
 @implementation FlipperResponderMock
 
-- (instancetype)init
-{
+- (instancetype)init {
   if (self = [super init]) {
     _successes = @[];
     _errors = @[];
@@ -18,13 +17,11 @@
   return self;
 }
 
-- (void)success:(NSDictionary *)response
-{
+- (void)success:(NSDictionary*)response {
   _successes = [_successes arrayByAddingObject:response];
 }
 
-- (void)error:(NSDictionary *)response
-{
+- (void)error:(NSDictionary*)response {
   _errors = [_errors arrayByAddingObject:response];
 }
 

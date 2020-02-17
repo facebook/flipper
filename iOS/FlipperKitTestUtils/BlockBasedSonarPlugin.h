@@ -16,7 +16,12 @@ typedef void (^DisconnectBlock)();
 
 @interface BlockBasedSonarPlugin : NSObject<FlipperPlugin>
 
-- (instancetype)initIdentifier:(NSString *)identifier connect:(ConnectBlock)connect disconnect:(DisconnectBlock)disconnect;
-- (instancetype)initIdentifier:(NSString *)identifier connect:(ConnectBlock)connect disconnect:(DisconnectBlock)disconnect runInBackground:(BOOL)runInBackground;
+- (instancetype)initIdentifier:(NSString*)identifier
+                       connect:(ConnectBlock)connect
+                    disconnect:(DisconnectBlock)disconnect;
+- (instancetype)initIdentifier:(NSString*)identifier
+                       connect:(ConnectBlock)connect
+                    disconnect:(DisconnectBlock)disconnect
+               runInBackground:(BOOL)runInBackground;
 
 @end

@@ -11,8 +11,10 @@
 
 @interface FlipperConnectionMock : NSObject<FlipperConnection>
 
-@property (nonatomic, assign, getter=isConnected) BOOL connected;
-@property (nonatomic, readonly) NSDictionary<NSString *, SonarReceiver> *receivers;
-@property (nonatomic, readonly) NSDictionary<NSString *, NSArray<NSDictionary *> *> *sent;
+@property(nonatomic, assign, getter=isConnected) BOOL connected;
+@property(nonatomic, readonly)
+    NSDictionary<NSString*, SonarReceiver>* receivers;
+@property(nonatomic, readonly)
+    NSDictionary<NSString*, NSArray<NSDictionary*>*>* sent;
 
 @end
