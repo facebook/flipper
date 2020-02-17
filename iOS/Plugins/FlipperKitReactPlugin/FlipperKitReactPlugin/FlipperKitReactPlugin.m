@@ -13,6 +13,7 @@
 #import <FlipperKit/FlipperConnection.h>
 #import <FlipperKit/FlipperResponder.h>
 
+// This class is no longer needed, but kept here for backward compatibility
 @implementation FlipperKitReactPlugin
 
 - (NSString*)identifier {
@@ -20,10 +21,6 @@
 }
 
 - (void)didConnect:(id<FlipperConnection>)connection {
-  [connection receive:@"config"
-            withBlock:^(NSDictionary* params, id<FlipperResponder> responder){
-                // set received port and host to dev tools
-            }];
 }
 
 - (void)didDisconnect {

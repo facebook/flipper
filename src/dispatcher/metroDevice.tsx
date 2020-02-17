@@ -31,7 +31,11 @@ async function isMetroRunning(): Promise<boolean> {
   }
 }
 
-async function registerDevice(ws: WebSocket, store: Store, logger: Logger) {
+async function registerDevice(
+  ws: WebSocket | undefined,
+  store: Store,
+  logger: Logger,
+) {
   const metroDevice = new MetroDevice(METRO_DEVICE_ID, ws);
   logger.track('usage', 'register-device', {
     os: 'Metro',
@@ -117,6 +121,7 @@ export default (store: Store, logger: Logger) => {
             urgent: true,
           },
         });
+        registerDevice(undefined, store, logger);
         // Note: no scheduleNext, we won't retry until restart
       }, 5000);
     } else {

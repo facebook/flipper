@@ -140,14 +140,16 @@ function getLoglevelFromMessageType(
 }
 
 export default class MetroDevice extends BaseDevice {
-  ws: WebSocket;
+  ws?: WebSocket;
   metroEventEmitter = new EventEmitter();
 
-  constructor(serial: string, ws: WebSocket) {
+  constructor(serial: string, ws: WebSocket | undefined) {
     super(serial, 'emulator', 'React Native', 'Metro');
-    this.ws = ws;
     this.devicePlugins = [];
-    ws.onmessage = this._handleWSMessage;
+    if (ws) {
+      this.ws = ws;
+      ws.onmessage = this._handleWSMessage;
+    }
   }
 
   private _handleWSMessage = ({data}: any) => {

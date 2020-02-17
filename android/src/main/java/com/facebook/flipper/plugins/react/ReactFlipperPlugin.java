@@ -7,17 +7,14 @@
 
 package com.facebook.flipper.plugins.react;
 
-import androidx.annotation.Nullable;
 import com.facebook.flipper.core.FlipperConnection;
-import com.facebook.flipper.core.FlipperObject;
 import com.facebook.flipper.core.FlipperPlugin;
-import com.facebook.flipper.core.FlipperReceiver;
-import com.facebook.flipper.core.FlipperResponder;
 
+// This plugin is not needed, but kept here for backward compatilibty
+@Deprecated
 public class ReactFlipperPlugin implements FlipperPlugin {
 
   public static final String ID = "React";
-  @Nullable private FlipperConnection mConnection;
 
   @Override
   public String getId() {
@@ -25,22 +22,10 @@ public class ReactFlipperPlugin implements FlipperPlugin {
   }
 
   @Override
-  public void onConnect(FlipperConnection connection) {
-    mConnection = connection;
-    connection.receive(
-        "config",
-        new FlipperReceiver() {
-          @Override
-          public void onReceive(final FlipperObject params, FlipperResponder responder) {
-            // set received host and port in react-native
-          }
-        });
-  }
+  public void onConnect(FlipperConnection connection) {}
 
   @Override
-  public void onDisconnect() {
-    mConnection = null;
-  }
+  public void onDisconnect() {}
 
   @Override
   public boolean runInBackground() {
