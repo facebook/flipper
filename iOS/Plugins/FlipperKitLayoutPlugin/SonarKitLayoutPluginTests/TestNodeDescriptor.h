@@ -9,5 +9,5 @@
 
 #import "TestNode.h"
 
-@interface TestNodeDescriptor : SKNodeDescriptor<TestNode *>
+@interface TestNodeDescriptor : SKNodeDescriptor<TestNode*>
 @end

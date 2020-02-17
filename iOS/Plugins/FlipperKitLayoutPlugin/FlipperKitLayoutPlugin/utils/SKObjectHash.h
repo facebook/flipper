@@ -12,8 +12,8 @@
  as keys in C++ STL
  */
 class SKObjectHash {
-public:
-  size_t operator()(const NSObject *x) const {
+ public:
+  size_t operator()(const NSObject* x) const {
     return (size_t)[x hash];
   }
 };

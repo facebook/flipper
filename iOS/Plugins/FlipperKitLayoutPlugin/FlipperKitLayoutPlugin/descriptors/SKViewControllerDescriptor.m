@@ -13,37 +13,34 @@
 
 @implementation SKViewControllerDescriptor
 
-- (NSString *)identifierForNode:(UIViewController *)node {
-  return [NSString stringWithFormat: @"%p", node];
+- (NSString*)identifierForNode:(UIViewController*)node {
+  return [NSString stringWithFormat:@"%p", node];
 }
 
-- (NSUInteger)childCountForNode:(UIViewController *)node {
+- (NSUInteger)childCountForNode:(UIViewController*)node {
   return 1;
 }
 
-- (id)childForNode:(UIViewController *)node atIndex:(NSUInteger)index {
+- (id)childForNode:(UIViewController*)node atIndex:(NSUInteger)index {
   return node.view;
 }
 
-- (void)setHighlightedForNode:(UIViewController *)node {
+- (void)setHighlightedForNode:(UIViewController*)node {
 }
 
-- (NSArray<SKNamed<NSString *> *> *)attributesForNode:(UIViewController *)node {
-  return @[
-           [SKNamed newWithName: @"addr"
-                      withValue: [NSString stringWithFormat: @"%p", node]]
-           ];
+- (NSArray<SKNamed<NSString*>*>*)attributesForNode:(UIViewController*)node {
+  return @[ [SKNamed newWithName:@"addr"
+                       withValue:[NSString stringWithFormat:@"%p", node]] ];
 }
 
-- (void)setHighlighted:(BOOL)highlighted forNode:(UIViewController *)node {
-  SKNodeDescriptor *descriptor = [self descriptorForClass: [UIView class]];
-  [descriptor setHighlighted: highlighted forNode: node.view];
+- (void)setHighlighted:(BOOL)highlighted forNode:(UIViewController*)node {
+  SKNodeDescriptor* descriptor = [self descriptorForClass:[UIView class]];
+  [descriptor setHighlighted:highlighted forNode:node.view];
 }
 
-- (void)hitTest:(SKTouch *)touch forNode:(UIViewController *)node {
-  [touch continueWithChildIndex: 0 withOffset: (CGPoint){ 0, 0}];
+- (void)hitTest:(SKTouch*)touch forNode:(UIViewController*)node {
+  [touch continueWithChildIndex:0 withOffset:(CGPoint){0, 0}];
 }
-
 
 @end
 

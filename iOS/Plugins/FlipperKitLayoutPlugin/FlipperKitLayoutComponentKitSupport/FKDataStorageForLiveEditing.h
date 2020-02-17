@@ -7,11 +7,12 @@
 
 #import <ComponentKit/CKTreeNodeTypes.h>
 
- /** DataStorage uses to map global IDs of nodes to data which we want to store
+/** DataStorage uses to map global IDs of nodes to data which we want to store
 to prodice live editing*/
 @interface FKDataStorageForLiveEditing : NSObject
 
 - (id)dataForTreeNodeIdentifier:(CKTreeNodeIdentifier)treeNodeIdentifier;
-- (void)setData:(id)value forTreeNodeIdentifier:(CKTreeNodeIdentifier)treeNodeIdentifier;
+- (void)setData:(id)value
+    forTreeNodeIdentifier:(CKTreeNodeIdentifier)treeNodeIdentifier;
 
 @end

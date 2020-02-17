@@ -12,36 +12,33 @@
 #import <FlipperKit/FlipperResponder.h>
 #import "Plugins.h"
 
-@implementation FlipperKitBloksPlugin
-{
+@implementation FlipperKitBloksPlugin {
   id<FlipperConnection> _connection;
 }
 
 - (void)didConnect:(id<FlipperConnection>)connection {
-    _connection = connection;
+  _connection = connection;
 }
 
 - (void)didDisconnect {
-    _connection = nil;
+  _connection = nil;
 }
 
-- (NSString *)identifier {
-    return @"flipper-plugin-bloks";
+- (NSString*)identifier {
+  return @"flipper-plugin-bloks";
 }
 
 - (BOOL)runInBackground {
-    return YES;
+  return YES;
 }
 
-- (void)logAction:(NSString *)action
-         withData:(NSDictionary *)data {
-    [_connection send:action withParams:data];
+- (void)logAction:(NSString*)action withData:(NSDictionary*)data {
+  [_connection send:action withParams:data];
 }
 
 @end
 
-void IGBloksFlipperPluginInit(FlipperClient *client)
-{
+void IGBloksFlipperPluginInit(FlipperClient* client) {
   [client addPlugin:[FlipperKitBloksPlugin new]];
 }
 

@@ -7,8 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
-@protocol FKTextSearchable <NSObject>
+@protocol FKTextSearchable<NSObject>
 
-- (NSString *)searchableText;
+- (NSString*)searchableText;
 
 @end

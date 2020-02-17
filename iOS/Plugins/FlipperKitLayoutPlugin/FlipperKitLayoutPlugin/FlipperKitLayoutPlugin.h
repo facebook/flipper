@@ -11,20 +11,21 @@
 
 #import <FlipperKit/FlipperPlugin.h>
 
-#import "SKTapListener.h"
-#import "SKInvalidation.h"
 #import "SKDescriptorMapper.h"
+#import "SKInvalidation.h"
+#import "SKTapListener.h"
 
-@interface FlipperKitLayoutPlugin : NSObject<FlipperPlugin, SKInvalidationDelegate>
+@interface FlipperKitLayoutPlugin
+    : NSObject<FlipperPlugin, SKInvalidationDelegate>
 
 - (instancetype)initWithRootNode:(id<NSObject>)rootNode
-            withDescriptorMapper:(SKDescriptorMapper *)mapper;
+            withDescriptorMapper:(SKDescriptorMapper*)mapper;
 
 - (instancetype)initWithRootNode:(id<NSObject>)rootNode
                  withTapListener:(id<SKTapListener>)tapListener
-            withDescriptorMapper:(SKDescriptorMapper *)mapper;
+            withDescriptorMapper:(SKDescriptorMapper*)mapper;
 
-@property (nonatomic, readonly, strong) SKDescriptorMapper *descriptorMapper;
+@property(nonatomic, readonly, strong) SKDescriptorMapper* descriptorMapper;
 
 @end
 

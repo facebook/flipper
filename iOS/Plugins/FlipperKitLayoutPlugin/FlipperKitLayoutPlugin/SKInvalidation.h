@@ -21,6 +21,6 @@
 
 + (void)enableInvalidations;
 
-@property (nonatomic, weak) id<SKInvalidationDelegate> delegate;
+@property(nonatomic, weak) id<SKInvalidationDelegate> delegate;
 
 @end

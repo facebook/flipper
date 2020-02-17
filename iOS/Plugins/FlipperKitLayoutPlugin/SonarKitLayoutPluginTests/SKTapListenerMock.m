@@ -7,9 +7,8 @@
 
 #import "SKTapListenerMock.h"
 
-@implementation SKTapListenerMock
-{
-  NSMutableArray<SKTapReceiver> *_tapReceivers;
+@implementation SKTapListenerMock {
+  NSMutableArray<SKTapReceiver>* _tapReceivers;
 }
 
 @synthesize isMounted;
@@ -23,7 +22,7 @@
 }
 
 - (void)listenForTapWithBlock:(SKTapReceiver)receiver {
-  [_tapReceivers addObject: receiver];
+  [_tapReceivers addObject:receiver];
 }
 
 - (void)tapAt:(CGPoint)point {

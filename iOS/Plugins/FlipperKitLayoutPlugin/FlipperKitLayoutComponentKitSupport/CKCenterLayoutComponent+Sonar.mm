@@ -14,17 +14,27 @@
 
 #import "CKComponent+Sonar.h"
 
-static NSDictionary<NSString *, NSObject *> *CKCenterLayoutComponentCenteringOptionsParser(CKCenterLayoutComponentCenteringOptions centeringOptions) {
-  NSMutableDictionary<NSString *, NSObject *> *centeringDict = [NSMutableDictionary new];
-  centeringDict[@"centeringX"] = SKMutableObject(@((BOOL)(centeringOptions & CKCenterLayoutComponentCenteringX)));
-  centeringDict[@"centeringY"] = SKMutableObject(@((BOOL)(centeringOptions & CKCenterLayoutComponentCenteringY)));
+static NSDictionary<NSString*, NSObject*>*
+CKCenterLayoutComponentCenteringOptionsParser(
+    CKCenterLayoutComponentCenteringOptions centeringOptions) {
+  NSMutableDictionary<NSString*, NSObject*>* centeringDict =
+      [NSMutableDictionary new];
+  centeringDict[@"centeringX"] = SKMutableObject(
+      @((BOOL)(centeringOptions & CKCenterLayoutComponentCenteringX)));
+  centeringDict[@"centeringY"] = SKMutableObject(
+      @((BOOL)(centeringOptions & CKCenterLayoutComponentCenteringY)));
   return centeringDict;
 }
 
-static NSDictionary<NSString *, NSObject *> *CKCenterLayoutComponentSizingOptionsParser(CKCenterLayoutComponentSizingOptions sizingOptions) {
-  NSMutableDictionary<NSString *, NSObject *> *centeringDict = [NSMutableDictionary new];
-  centeringDict[@"sizingMinimumX"] = SKMutableObject(@((BOOL)(sizingOptions & CKCenterLayoutComponentSizingOptionMinimumX)));
-  centeringDict[@"sizingMinimumY"] = SKMutableObject(@((BOOL)(sizingOptions & CKCenterLayoutComponentSizingOptionMinimumY)));
+static NSDictionary<NSString*, NSObject*>*
+CKCenterLayoutComponentSizingOptionsParser(
+    CKCenterLayoutComponentSizingOptions sizingOptions) {
+  NSMutableDictionary<NSString*, NSObject*>* centeringDict =
+      [NSMutableDictionary new];
+  centeringDict[@"sizingMinimumX"] = SKMutableObject(
+      @((BOOL)(sizingOptions & CKCenterLayoutComponentSizingOptionMinimumX)));
+  centeringDict[@"sizingMinimumY"] = SKMutableObject(
+      @((BOOL)(sizingOptions & CKCenterLayoutComponentSizingOptionMinimumY)));
   return centeringDict;
 }
 
@@ -40,12 +50,20 @@ struct CKCenterLayoutComponentOptionsStruct {
 FB_LINKABLE(CKCenterLayoutComponent_Sonar)
 @implementation CKCenterLayoutComponent (Sonar)
 
-- (NSArray<SKNamed<NSDictionary<NSString *, NSObject *> *> *> *)sonar_additionalDataOverride
-{
-  return @[[SKNamed newWithName:@"CKCenterLayoutComponent" withValue:@{
-                                                                       @"centeringOptions": SKMutableObject(CKCenterLayoutComponentCenteringOptionsParser((CKCenterLayoutComponentCenteringOptions)[[self valueForKey:@"_centeringOptions"] longValue])),
-                                                                       @"sizingOptions": SKMutableObject(CKCenterLayoutComponentSizingOptionsParser((CKCenterLayoutComponentSizingOptions)[[self valueForKey:@"_sizingOptions"] longValue]))
-                                                                       }]];
+- (NSArray<SKNamed<NSDictionary<NSString*, NSObject*>*>*>*)
+    sonar_additionalDataOverride {
+  return @[ [SKNamed
+      newWithName:@"CKCenterLayoutComponent"
+        withValue:@{
+          @"centeringOptions" :
+              SKMutableObject(CKCenterLayoutComponentCenteringOptionsParser(
+                  (CKCenterLayoutComponentCenteringOptions)[
+                      [self valueForKey:@"_centeringOptions"] longValue])),
+          @"sizingOptions" :
+              SKMutableObject(CKCenterLayoutComponentSizingOptionsParser(
+                  (CKCenterLayoutComponentSizingOptions)[
+                      [self valueForKey:@"_sizingOptions"] longValue]))
+        }] ];
 }
 
 - (void)setMutableData:(id)data {
@@ -55,15 +73,19 @@ FB_LINKABLE(CKCenterLayoutComponent_Sonar)
   [self setValue:@(value.sizingOptions) forKey:@"_sizingOptions"];
 }
 
-- (NSDictionary<NSString *, SKNodeDataChanged> *)sonar_getDataMutationsChanged {
+- (NSDictionary<NSString*, SKNodeDataChanged>*)sonar_getDataMutationsChanged {
   __block CKCenterLayoutComponentOptionsStruct options;
-  options.centeringOptions = (CKCenterLayoutComponentCenteringOptions)[[self valueForKey:@"_centeringOptions"] longValue];
-  options.sizingOptions = (CKCenterLayoutComponentSizingOptions)[[self valueForKey:@"_sizingOptions"] longValue];
+  options.centeringOptions = (CKCenterLayoutComponentCenteringOptions)[
+      [self valueForKey:@"_centeringOptions"] longValue];
+  options.sizingOptions = (CKCenterLayoutComponentSizingOptions)[
+      [self valueForKey:@"_sizingOptions"] longValue];
   return @{
-           @"CKCenterLayoutComponent.centeringOptions.centeringX": ^(NSNumber *value) {
-             options.centeringOptions ^= CKCenterLayoutComponentCenteringX;
-             return [NSValue value:&options withObjCType:@encode(CKCenterLayoutComponentOptionsStruct)];
-           },
+    @"CKCenterLayoutComponent.centeringOptions.centeringX" : ^(NSNumber* value){
+        options.centeringOptions ^= CKCenterLayoutComponentCenteringX;
+  return [NSValue value:&options
+           withObjCType:@encode(CKCenterLayoutComponentOptionsStruct)];
+}
+,
            @"CKCenterLayoutComponent.centeringOptions.centeringY": ^(NSNumber *value) {
              options.centeringOptions ^= CKCenterLayoutComponentCenteringY;
              return [NSValue value:&options withObjCType:@encode(CKCenterLayoutComponentOptionsStruct)];
@@ -76,7 +98,8 @@ FB_LINKABLE(CKCenterLayoutComponent_Sonar)
              options.sizingOptions ^= CKCenterLayoutComponentSizingOptionMinimumY;
              return [NSValue value:&options withObjCType:@encode(CKCenterLayoutComponentOptionsStruct)];
            },
-           };
+}
+;
 }
 
 @end

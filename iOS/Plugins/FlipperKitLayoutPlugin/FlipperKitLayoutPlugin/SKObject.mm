@@ -10,86 +10,80 @@
 #import "SKObject.h"
 
 SKObject::SKObject(CGRect rect) {
-  _actual = @{
-              @"origin": SKObject(rect.origin),
-              @"size": SKObject(rect.size)
-              };
+  _actual = @{@"origin" : SKObject(rect.origin), @"size" : SKObject(rect.size)};
 }
 
 SKObject::SKObject(CGSize size) {
-  _actual = @{
-              @"height": @(size.height),
-              @"width": @(size.width)
-              };
+  _actual = @{@"height" : @(size.height), @"width" : @(size.width)};
 }
 
 SKObject::SKObject(CGPoint point) {
-  _actual = @{
-              @"x": @(point.x),
-              @"y": @(point.y)
-              };
+  _actual = @{@"x" : @(point.x), @"y" : @(point.y)};
 }
 
 SKObject::SKObject(UIEdgeInsets insets) {
   _actual = @{
-              @"top": @(insets.top),
-              @"bottom": @(insets.bottom),
-              @"left": @(insets.left),
-              @"right": @(insets.right),
-              };
+    @"top" : @(insets.top),
+    @"bottom" : @(insets.bottom),
+    @"left" : @(insets.left),
+    @"right" : @(insets.right),
+  };
 }
 
 SKObject::SKObject(CGAffineTransform transform) {
   _actual = @{
-              @"a": @(transform.a),
-              @"b": @(transform.b),
-              @"c": @(transform.c),
-              @"d": @(transform.d),
-              @"tx": @(transform.tx),
-              @"ty": @(transform.ty),
-              };
+    @"a" : @(transform.a),
+    @"b" : @(transform.b),
+    @"c" : @(transform.c),
+    @"d" : @(transform.d),
+    @"tx" : @(transform.tx),
+    @"ty" : @(transform.ty),
+  };
 }
 
-SKObject::SKObject(id<SKSonarValueCoder> value) : _actual([value sonarValue]) { }
+SKObject::SKObject(id<SKSonarValueCoder> value) : _actual([value sonarValue]) {}
 
-SKObject::SKObject(id value) : _actual(value) { }
+SKObject::SKObject(id value) : _actual(value) {}
 
-static NSString *_objectType(id<NSObject> object) {
-  if ([object isKindOfClass: [NSDictionary class]]) {
-    return (NSString *)((NSDictionary *)object)[@"__type__"];
+static NSString* _objectType(id<NSObject> object) {
+  if ([object isKindOfClass:[NSDictionary class]]) {
+    return (NSString*)((NSDictionary*)object)[@"__type__"];
   }
 
   return nil;
 }
 
 static id<NSObject> _objectValue(id<NSObject> object) {
-  if ([object isKindOfClass: [NSDictionary class]]) {
-    return ((NSDictionary *)object)[@"value"];
+  if ([object isKindOfClass:[NSDictionary class]]) {
+    return ((NSDictionary*)object)[@"value"];
   }
 
   return object;
 }
 
-static NSDictionary<NSString *, id<NSObject>> *_SKValue(id<NSObject> object, BOOL isMutable) {
-  NSString *type = _objectType(object);
+static NSDictionary<NSString*, id<NSObject>>* _SKValue(
+    id<NSObject> object,
+    BOOL isMutable) {
+  NSString* type = _objectType(object);
   id<NSObject> value = _objectValue(object);
 
   return @{
-           @"__type__": (type != nil ? type : @"auto"),
-           @"__mutable__": @(isMutable),
-           @"value": (value != nil ? value : [NSNull null]),
-           };
+    @"__type__" : (type != nil ? type : @"auto"),
+    @"__mutable__" : @(isMutable),
+    @"value" : (value != nil ? value : [NSNull null]),
+  };
 }
 
-static NSDictionary *_SKMutable(const NSDictionary<NSString *, id<NSObject>> *skObject) {
-  NSMutableDictionary *mutableObject = [NSMutableDictionary new];
-  for (NSString *key: skObject) {
+static NSDictionary* _SKMutable(
+    const NSDictionary<NSString*, id<NSObject>>* skObject) {
+  NSMutableDictionary* mutableObject = [NSMutableDictionary new];
+  for (NSString* key : skObject) {
     id<NSObject> value = skObject[key];
 
     if (_objectType(value) != nil) {
       mutableObject[key] = _SKValue(value, YES);
-    } else if ([value isKindOfClass: [NSDictionary class]]) {
-      auto objectValue = (NSDictionary<NSString *, id<NSObject>>*) value;
+    } else if ([value isKindOfClass:[NSDictionary class]]) {
+      auto objectValue = (NSDictionary<NSString*, id<NSObject>>*)value;
       mutableObject[key] = _SKMutable(objectValue);
     } else {
       mutableObject[key] = _SKValue(value, YES);
@@ -104,8 +98,9 @@ void SKMutableObject::convertToMutable() {
     return;
   }
 
-  if (_objectType(_actual) == nil && [_actual isKindOfClass: [NSDictionary class]]) {
-    auto object = (const NSDictionary<NSString *, id<NSObject>> *)_actual;
+  if (_objectType(_actual) == nil &&
+      [_actual isKindOfClass:[NSDictionary class]]) {
+    auto object = (const NSDictionary<NSString*, id<NSObject>>*)_actual;
     _actual = _SKMutable(object);
   } else {
     _actual = _SKValue(_actual, YES);

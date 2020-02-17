@@ -14,7 +14,10 @@
 @property(strong, nonatomic) NSURLResponse* response;
 @property(strong, nonatomic) NSString* body;
 
-- (instancetype)initWithIndentifier:(int64_t)identifier timestamp:(uint64_t)timestamp response:(NSURLResponse *)response data:(NSData *)data;
-- (void)setBodyFromData:(NSData * _Nullable)data;
+- (instancetype)initWithIndentifier:(int64_t)identifier
+                          timestamp:(uint64_t)timestamp
+                           response:(NSURLResponse*)response
+                               data:(NSData*)data;
+- (void)setBodyFromData:(NSData* _Nullable)data;
 
 @end

@@ -13,8 +13,7 @@
 
 #import "Plugins.h"
 
-void FlipperKitReactPluginInit(FlipperClient *client)
-{
+void FlipperKitReactPluginInit(FlipperClient* client) {
   [client addPlugin:[FlipperKitReactPlugin new]];
 }
 

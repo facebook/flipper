@@ -12,31 +12,28 @@
 #import <dispatch/dispatch.h>
 
 namespace facebook {
-  namespace flipper {
-    class DispatchQueue
-    {
-    public:
-      virtual void async(dispatch_block_t block) = 0;
-      virtual ~DispatchQueue() { }
-    };
+namespace flipper {
+class DispatchQueue {
+ public:
+  virtual void async(dispatch_block_t block) = 0;
+  virtual ~DispatchQueue() {}
+};
 
-    class GCDQueue: public DispatchQueue
-    {
-    public:
-      GCDQueue(dispatch_queue_t underlyingQueue)
-      :_underlyingQueue(underlyingQueue) { }
+class GCDQueue : public DispatchQueue {
+ public:
+  GCDQueue(dispatch_queue_t underlyingQueue)
+      : _underlyingQueue(underlyingQueue) {}
 
-      void async(dispatch_block_t block) override
-      {
-        dispatch_async(_underlyingQueue, block);
-      }
-
-      virtual ~GCDQueue() { }
-
-    private:
-      dispatch_queue_t _underlyingQueue;
-    };
+  void async(dispatch_block_t block) override {
+    dispatch_async(_underlyingQueue, block);
   }
-}
+
+  virtual ~GCDQueue() {}
+
+ private:
+  dispatch_queue_t _underlyingQueue;
+};
+} // namespace flipper
+} // namespace facebook
 
 #endif

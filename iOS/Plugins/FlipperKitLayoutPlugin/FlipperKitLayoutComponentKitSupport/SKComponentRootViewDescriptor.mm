@@ -22,28 +22,30 @@
 
 @implementation SKComponentRootViewDescriptor
 
-- (NSString *)identifierForNode:(CKComponentRootView *)node {
-  return [NSString stringWithFormat: @"%p", node];
+- (NSString*)identifierForNode:(CKComponentRootView*)node {
+  return [NSString stringWithFormat:@"%p", node];
 }
 
-- (NSUInteger)childCountForNode:(CKComponentRootView *)node {
+- (NSUInteger)childCountForNode:(CKComponentRootView*)node {
   const auto state = CKGetAttachStateForView(node);
   return state == nil ? 0 : 1;
 }
 
-- (id)childForNode:(CKComponentRootView *)node atIndex:(NSUInteger)index {
+- (id)childForNode:(CKComponentRootView*)node atIndex:(NSUInteger)index {
   auto const attachState = CKGetAttachStateForView(node);
-  return [SKComponentLayoutWrapper newFromRoot:node
-                                     parentKey:[NSString stringWithFormat:@"%d.", attachState.scopeIdentifier]];
+  return [SKComponentLayoutWrapper
+      newFromRoot:node
+        parentKey:[NSString
+                      stringWithFormat:@"%d.", attachState.scopeIdentifier]];
 }
 
-- (void)setHighlighted:(BOOL)highlighted forNode:(CKComponentRootView *)node {
-  SKNodeDescriptor *viewDescriptor = [self descriptorForClass: [UIView class]];
-  [viewDescriptor setHighlighted: highlighted forNode: node];
+- (void)setHighlighted:(BOOL)highlighted forNode:(CKComponentRootView*)node {
+  SKNodeDescriptor* viewDescriptor = [self descriptorForClass:[UIView class]];
+  [viewDescriptor setHighlighted:highlighted forNode:node];
 }
 
-- (void)hitTest:(SKTouch *)touch forNode:(CKComponentRootView *)node {
-  [touch continueWithChildIndex: 0 withOffset: (CGPoint){ 0, 0 }];
+- (void)hitTest:(SKTouch*)touch forNode:(CKComponentRootView*)node {
+  [touch continueWithChildIndex:0 withOffset:(CGPoint){0, 0}];
 }
 
 @end

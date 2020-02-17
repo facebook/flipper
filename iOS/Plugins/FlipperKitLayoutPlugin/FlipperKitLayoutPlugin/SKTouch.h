@@ -9,17 +9,17 @@
 
 #import "SKDescriptorMapper.h"
 
-typedef void (^SKTouchFinishDelegate)(NSArray<NSString *> *path);
+typedef void (^SKTouchFinishDelegate)(NSArray<NSString*>* path);
 
 @interface SKTouch : NSObject
 
 - (instancetype)initWithTouchPoint:(CGPoint)touchPoint
-                       withRootNode:(id<NSObject>)node
-              withDescriptorMapper:(SKDescriptorMapper *)mapper
-                    finishWithBlock:(SKTouchFinishDelegate)d;
+                      withRootNode:(id<NSObject>)node
+              withDescriptorMapper:(SKDescriptorMapper*)mapper
+                   finishWithBlock:(SKTouchFinishDelegate)d;
 
 - (void)continueWithChildIndex:(NSUInteger)childIndex
-                     withOffset:(CGPoint)offset;
+                    withOffset:(CGPoint)offset;
 
 - (void)finish;
 

@@ -17,23 +17,28 @@
 FB_LINKABLE(CKRatioLayoutComponent_Sonar)
 @implementation CKRatioLayoutComponent (Sonar)
 
-- (NSArray<SKNamed<NSDictionary<NSString *, NSObject *> *> *> *)sonar_additionalDataOverride
-{
-  return @[[SKNamed newWithName:@"CKRatioLayoutComponent" withValue:@{@"ratio": SKMutableObject((NSNumber *)[self valueForKey:@"_ratio"])}]];
+- (NSArray<SKNamed<NSDictionary<NSString*, NSObject*>*>*>*)
+    sonar_additionalDataOverride {
+  return @[ [SKNamed
+      newWithName:@"CKRatioLayoutComponent"
+        withValue:@{
+          @"ratio" : SKMutableObject((NSNumber*)[self valueForKey:@"_ratio"])
+        }] ];
 }
 
 - (void)setMutableData:(id)data {
   [self setValue:data forKey:@"_ratio"];
 }
 
-- (NSDictionary<NSString *, SKNodeDataChanged> *)sonar_getDataMutationsChanged {
-  return @{
-           @"CKRatioLayoutComponent.ratio": ^(NSNumber *value) {
-             CGFloat ratio = [(NSNumber *)[self valueForKey:@"_ratio"] floatValue];
-             ratio = value.floatValue;
-             return [NSNumber numberWithFloat:ratio];
-           },
-           };
+- (NSDictionary<NSString*, SKNodeDataChanged>*)sonar_getDataMutationsChanged {
+  return @{@"CKRatioLayoutComponent.ratio" : ^(NSNumber* value){
+      CGFloat ratio = [(NSNumber*)[self valueForKey:@"_ratio"] floatValue];
+  ratio = value.floatValue;
+  return [NSNumber numberWithFloat:ratio];
+}
+,
+}
+;
 }
 
 @end

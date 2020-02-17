@@ -8,7 +8,7 @@
 #import <ComponentKit/CKComponent.h>
 #import <ComponentKit/CKFlexboxComponent.h>
 
-NSString *relativeDimension(CKRelativeDimension dimension);
-NSDictionary<NSString *, NSString *> *flexboxRect(CKFlexboxSpacing spacing);
-CKRelativeDimension relativeStructDimension(NSString *dimension);
-NSDictionary<NSString *, NSString *> *ckcomponentSize(CKComponentSize size);
+NSString* relativeDimension(CKRelativeDimension dimension);
+NSDictionary<NSString*, NSString*>* flexboxRect(CKFlexboxSpacing spacing);
+CKRelativeDimension relativeStructDimension(NSString* dimension);
+NSDictionary<NSString*, NSString*>* ckcomponentSize(CKComponentSize size);

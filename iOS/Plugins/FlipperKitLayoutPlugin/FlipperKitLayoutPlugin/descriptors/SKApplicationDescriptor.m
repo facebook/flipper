@@ -9,38 +9,40 @@
 
 #import "SKApplicationDescriptor.h"
 
+#import <objc/runtime.h>
 #import "SKDescriptorMapper.h"
 #import "SKHiddenWindow.h"
-#import <objc/runtime.h>
 
 @implementation SKApplicationDescriptor
 
-- (NSString *)identifierForNode:(UIApplication *)node {
-  return [NSString stringWithFormat: @"%p", node];
+- (NSString*)identifierForNode:(UIApplication*)node {
+  return [NSString stringWithFormat:@"%p", node];
 }
 
-- (NSUInteger)childCountForNode:(UIApplication *)node {
-  return [[self visibleChildrenForNode: node] count];
+- (NSUInteger)childCountForNode:(UIApplication*)node {
+  return [[self visibleChildrenForNode:node] count];
 }
 
-- (id)childForNode:(UIApplication *)node atIndex:(NSUInteger)index {
-  return [self visibleChildrenForNode: node][index];
+- (id)childForNode:(UIApplication*)node atIndex:(NSUInteger)index {
+  return [self visibleChildrenForNode:node][index];
 }
 
-- (void)setHighlighted:(BOOL)highlighted forNode:(UIApplication *)node {
-  SKNodeDescriptor *windowDescriptor = [self descriptorForClass: [UIWindow class]];
-  [windowDescriptor setHighlighted: highlighted forNode: [node keyWindow]];
+- (void)setHighlighted:(BOOL)highlighted forNode:(UIApplication*)node {
+  SKNodeDescriptor* windowDescriptor =
+      [self descriptorForClass:[UIWindow class]];
+  [windowDescriptor setHighlighted:highlighted forNode:[node keyWindow]];
 }
 
-- (void)hitTest:(SKTouch *)touch forNode:(UIApplication *)node {
-  for (NSInteger index = [self childCountForNode: node] - 1; index >= 0; index--) {
-    UIWindow *child = [self childForNode: node atIndex: index];
+- (void)hitTest:(SKTouch*)touch forNode:(UIApplication*)node {
+  for (NSInteger index = [self childCountForNode:node] - 1; index >= 0;
+       index--) {
+    UIWindow* child = [self childForNode:node atIndex:index];
     if (child.isHidden || child.alpha <= 0) {
       continue;
     }
 
-    if ([touch containedIn: child.frame]) {
-      [touch continueWithChildIndex: index withOffset: child.frame.origin];
+    if ([touch containedIn:child.frame]) {
+      [touch continueWithChildIndex:index withOffset:child.frame.origin];
       return;
     }
   }
@@ -48,16 +50,17 @@
   [touch finish];
 }
 
-- (NSArray<UIWindow *> *)visibleChildrenForNode:(UIApplication *)node {
-  NSMutableArray<UIWindow *> *children = [NSMutableArray new];
-  for (UIWindow *window in node.windows) {
-    if ([window isKindOfClass: [SKHiddenWindow class]]
-        || [window isKindOfClass:objc_lookUpClass("FBAccessibilityOverlayWindow")]
-        || [window isKindOfClass:objc_lookUpClass("UITextEffectsWindow")]
-        || [window isKindOfClass:objc_lookUpClass("FBStatusBarTrackingWindow")]) {
+- (NSArray<UIWindow*>*)visibleChildrenForNode:(UIApplication*)node {
+  NSMutableArray<UIWindow*>* children = [NSMutableArray new];
+  for (UIWindow* window in node.windows) {
+    if ([window isKindOfClass:[SKHiddenWindow class]] ||
+        [window
+            isKindOfClass:objc_lookUpClass("FBAccessibilityOverlayWindow")] ||
+        [window isKindOfClass:objc_lookUpClass("UITextEffectsWindow")] ||
+        [window isKindOfClass:objc_lookUpClass("FBStatusBarTrackingWindow")]) {
       continue;
     }
-    [children addObject: window];
+    [children addObject:window];
   }
   return children;
 }

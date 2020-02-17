@@ -7,13 +7,12 @@
 
 #if FB_SONARKIT_ENABLED
 
-#import <Foundation/Foundation.h>
 #import <FlipperKit/FlipperPlugin.h>
+#import <Foundation/Foundation.h>
 
 @interface FlipperKitBloksPlugin : NSObject<FlipperPlugin>
 
-- (void)logAction:(NSString *)action
-         withData:(NSDictionary *)data;
+- (void)logAction:(NSString*)action withData:(NSDictionary*)data;
 
 @end
 

@@ -9,6 +9,6 @@
 
 #import "SKNodeDescriptor.h"
 
-@interface SKApplicationDescriptor : SKNodeDescriptor<UIApplication *>
+@interface SKApplicationDescriptor : SKNodeDescriptor<UIApplication*>
 
 @end

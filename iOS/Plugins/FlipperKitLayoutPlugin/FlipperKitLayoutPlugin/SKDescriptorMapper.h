@@ -13,10 +13,10 @@
 
 - (instancetype)initWithDefaults;
 
-- (SKNodeDescriptor *)descriptorForClass:(Class)cls;
+- (SKNodeDescriptor*)descriptorForClass:(Class)cls;
 
-- (void)registerDescriptor:(SKNodeDescriptor *)descriptor forClass:(Class)cls;
+- (void)registerDescriptor:(SKNodeDescriptor*)descriptor forClass:(Class)cls;
 
-- (NSArray<SKNodeDescriptor *> *)allDescriptors;
+- (NSArray<SKNodeDescriptor*>*)allDescriptors;
 
 @end

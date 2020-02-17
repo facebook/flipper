@@ -15,7 +15,8 @@
 
 - (instancetype)initWithQueue:(dispatch_queue_t)queue NS_DESIGNATED_INITIALIZER;
 
-- (void)send:(NSString *)method sonarObject:(NSDictionary<NSString *, id> *)sonarObject;
+- (void)send:(NSString*)method
+    sonarObject:(NSDictionary<NSString*, id>*)sonarObject;
 
 @end
 

@@ -13,7 +13,6 @@
 #import <ComponentKit/CKComponentHostingView.h>
 #import <ComponentKit/CKComponentHostingViewInternal.h>
 #import <ComponentKit/CKComponentLayout.h>
-#import <ComponentKit/CKComponentHostingViewInternal.h>
 
 #import <FlipperKitLayoutPlugin/SKDescriptorMapper.h>
 
@@ -21,25 +20,25 @@
 
 @implementation SKComponentHostingViewDescriptor
 
-- (NSString *)identifierForNode:(CKComponentHostingView *)node {
-  return [NSString stringWithFormat: @"%p", node];
+- (NSString*)identifierForNode:(CKComponentHostingView*)node {
+  return [NSString stringWithFormat:@"%p", node];
 }
 
-- (NSUInteger)childCountForNode:(CKComponentHostingView *)node {
+- (NSUInteger)childCountForNode:(CKComponentHostingView*)node {
   return node.mountedLayout.component ? 1 : 0;
 }
 
-- (id)childForNode:(CKComponentHostingView *)node atIndex:(NSUInteger)index {
+- (id)childForNode:(CKComponentHostingView*)node atIndex:(NSUInteger)index {
   return [SKComponentLayoutWrapper newFromRoot:node];
 }
 
-- (void)setHighlighted:(BOOL)highlighted forNode:(CKComponentHostingView *)node {
-  SKNodeDescriptor *viewDescriptor = [self descriptorForClass: [UIView class]];
-  [viewDescriptor setHighlighted: highlighted forNode: node];
+- (void)setHighlighted:(BOOL)highlighted forNode:(CKComponentHostingView*)node {
+  SKNodeDescriptor* viewDescriptor = [self descriptorForClass:[UIView class]];
+  [viewDescriptor setHighlighted:highlighted forNode:node];
 }
 
-- (void)hitTest:(SKTouch *)touch forNode:(CKComponentHostingView *)node {
-  [touch continueWithChildIndex: 0 withOffset: (CGPoint){ 0, 0 }];
+- (void)hitTest:(SKTouch*)touch forNode:(CKComponentHostingView*)node {
+  [touch continueWithChildIndex:0 withOffset:(CGPoint){0, 0}];
 }
 
 @end

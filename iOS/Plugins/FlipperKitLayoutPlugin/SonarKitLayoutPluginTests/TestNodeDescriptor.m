@@ -9,27 +9,27 @@
 
 @implementation TestNodeDescriptor
 
-- (NSString *)identifierForNode:(TestNode *)node {
+- (NSString*)identifierForNode:(TestNode*)node {
   return node.nodeName;
 }
 
-- (NSUInteger)childCountForNode:(TestNode *)node {
+- (NSUInteger)childCountForNode:(TestNode*)node {
   return [node.children count];
 }
 
-- (id)childForNode:(TestNode *)node atIndex:(NSUInteger)index {
-  return [node.children objectAtIndex: index];
+- (id)childForNode:(TestNode*)node atIndex:(NSUInteger)index {
+  return [node.children objectAtIndex:index];
 }
 
-- (void)setHighlighted:(BOOL)highlighted forNode:(TestNode *)node {
+- (void)setHighlighted:(BOOL)highlighted forNode:(TestNode*)node {
   node.highlighted = highlighted;
 }
 
-- (void)hitTest:(SKTouch *)touch forNode:(TestNode *)node {
+- (void)hitTest:(SKTouch*)touch forNode:(TestNode*)node {
   NSUInteger index = [node.children count] - 1;
-  for (TestNode *childNode in [node.children reverseObjectEnumerator]) {
-    if ([touch containedIn: childNode.frame]) {
-      [touch continueWithChildIndex: index withOffset: node.frame.origin];
+  for (TestNode* childNode in [node.children reverseObjectEnumerator]) {
+    if ([touch containedIn:childNode.frame]) {
+      [touch continueWithChildIndex:index withOffset:node.frame.origin];
       return;
     }
 
@@ -39,12 +39,13 @@
   [touch finish];
 }
 
-- (NSDictionary<NSString *, SKNodeUpdateData> *)dataMutationsForNode:(TestNode *)node {
-  return @{
-           @"TestNode.name": ^(NSString *newName) {
-             node.nodeName = newName;
-           }
-           };
+- (NSDictionary<NSString*, SKNodeUpdateData>*)dataMutationsForNode:
+    (TestNode*)node {
+  return @{@"TestNode.name" : ^(NSString* newName){
+      node.nodeName = newName;
+}
+}
+;
 }
 
 @end

@@ -11,6 +11,6 @@
 
 @class UIButton;
 
-@interface SKButtonDescriptor : SKNodeDescriptor<UIButton *>
+@interface SKButtonDescriptor : SKNodeDescriptor<UIButton*>
 
 @end

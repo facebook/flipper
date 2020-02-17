@@ -14,7 +14,8 @@
   std::mutex _mutex;
 }
 
-- (void)setData:(id)value forTreeNodeIdentifier:(CKTreeNodeIdentifier)treeNodeIdentifier {
+- (void)setData:(id)value
+    forTreeNodeIdentifier:(CKTreeNodeIdentifier)treeNodeIdentifier {
   std::lock_guard<std::mutex> lock(_mutex);
   _data[treeNodeIdentifier] = value;
 }

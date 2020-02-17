@@ -11,8 +11,9 @@
 
 @class SKComponentLayoutWrapper;
 
-@interface SKComponentLayoutDescriptor: SKNodeDescriptor<SKComponentLayoutWrapper *>
+@interface SKComponentLayoutDescriptor
+    : SKNodeDescriptor<SKComponentLayoutWrapper*>
 
-- (void)addSubDescriptors:(NSArray<SKSubDescriptor *>*)subDescriptors;
+- (void)addSubDescriptors:(NSArray<SKSubDescriptor*>*)subDescriptors;
 
 @end

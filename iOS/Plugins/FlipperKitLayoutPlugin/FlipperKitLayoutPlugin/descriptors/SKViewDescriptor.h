@@ -11,7 +11,7 @@
 
 #import "SKNodeDescriptor.h"
 
-@interface SKViewDescriptor : SKNodeDescriptor<UIView *>
+@interface SKViewDescriptor : SKNodeDescriptor<UIView*>
 
 @end
 

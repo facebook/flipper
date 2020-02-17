@@ -15,8 +15,8 @@ typedef void (^SKNodeUpdateData)(id value);
 
 /**
  A SKNodeDescriptor is an object which know how to expose an Object of type T
- to SonarKitLayoutPlugin. This class is the extension point for SonarKitLayoutPlugin and
- is how custom objects or data can be exposed to Sonar.
+ to SonarKitLayoutPlugin. This class is the extension point for
+ SonarKitLayoutPlugin and is how custom objects or data can be exposed to Sonar.
  */
 @interface SKNodeDescriptor<__covariant T> : NSObject
 
@@ -27,34 +27,35 @@ typedef void (^SKNodeUpdateData)(id value);
 - (void)setUp;
 
 /**
- Initializes the node-descriptor with a SKDescriptorMapper which contains mappings
- between Class -> SKNodeDescriptor<Class>.
+ Initializes the node-descriptor with a SKDescriptorMapper which contains
+ mappings between Class -> SKNodeDescriptor<Class>.
  */
-- (instancetype)initWithDescriptorMapper:(SKDescriptorMapper *)mapper;
+- (instancetype)initWithDescriptorMapper:(SKDescriptorMapper*)mapper;
 
 /**
  Gets the node-descriptor registered for a specific class.
  */
-- (SKNodeDescriptor *)descriptorForClass:(Class)cls;
+- (SKNodeDescriptor*)descriptorForClass:(Class)cls;
 
 /**
   A globally unique ID used to identify a node in the hierarchy. This is used
-  in the communication between SonarKitLayoutPlugin and the Sonar desktop application
-  in order to identify nodes.
+  in the communication between SonarKitLayoutPlugin and the Sonar desktop
+  application in order to identify nodes.
  */
-- (NSString *)identifierForNode:(T)node;
+- (NSString*)identifierForNode:(T)node;
 
 /**
-  An ID which is equal between reflowing components is needed to get the identifier of root
-  node of a tree which need to be invalidated on FlipperKitLayoutPlugin side.
+  An ID which is equal between reflowing components is needed to get the
+  identifier of root node of a tree which need to be invalidated on
+  FlipperKitLayoutPlugin side.
 */
-- (NSString *)identifierForInvalidation:(T)node;
+- (NSString*)identifierForInvalidation:(T)node;
 
 /**
-  The name used to identify this node in the Sonar desktop application. This is what
-  will be visible in the hierarchy.
+  The name used to identify this node in the Sonar desktop application. This is
+  what will be visible in the hierarchy.
  */
-- (NSString *)nameForNode:(T)node;
+- (NSString*)nameForNode:(T)node;
 
 /**
   The number of children this node exposes in the layout hierarchy.
@@ -67,29 +68,30 @@ typedef void (^SKNodeUpdateData)(id value);
 - (id)childForNode:(T)node atIndex:(NSUInteger)index;
 
 /**
- Get the data to show for this node in the sidebar of the Sonar application. The objects
- will be shown in order by SKNamed.name as their header.
+ Get the data to show for this node in the sidebar of the Sonar application. The
+ objects will be shown in order by SKNamed.name as their header.
  */
-- (NSArray<SKNamed<NSDictionary *> *> *)dataForNode:(T)node;
+- (NSArray<SKNamed<NSDictionary*>*>*)dataForNode:(T)node;
 
 /**
- Get the attributes for this node. Attributes will be showed in the Sonar application right
- next to the name of the node.
+ Get the attributes for this node. Attributes will be showed in the Sonar
+ application right next to the name of the node.
  */
-- (NSArray<SKNamed<NSString *> *> *)attributesForNode:(T)node;
+- (NSArray<SKNamed<NSString*>*>*)attributesForNode:(T)node;
 
 /**
- A mapping of the path for a specific value, and a block responsible for updating
- its corresponding value for a specific node.
+ A mapping of the path for a specific value, and a block responsible for
+ updating its corresponding value for a specific node.
 
- The paths (string) is dependent on what `dataForNode` returns (e.g "SKNodeDescriptor.name").
+ The paths (string) is dependent on what `dataForNode` returns (e.g
+ "SKNodeDescriptor.name").
  */
-- (NSDictionary<NSString *, SKNodeUpdateData> *)dataMutationsForNode:(T)node;
+- (NSDictionary<NSString*, SKNodeUpdateData>*)dataMutationsForNode:(T)node;
 
 /**
  This is used in order to highlight any specific node which is currently
- selected in the Sonar application. The plugin automatically takes care of de-selecting
- the previously highlighted node.
+ selected in the Sonar application. The plugin automatically takes care of
+ de-selecting the previously highlighted node.
  */
 - (void)setHighlighted:(BOOL)highlighted forNode:(T)node;
 
@@ -98,7 +100,7 @@ typedef void (^SKNodeUpdateData)(id value);
  one of the children of the node, or finish the hit testing on this
  node.
  */
-- (void)hitTest:(SKTouch *)point forNode:(T)node;
+- (void)hitTest:(SKTouch*)point forNode:(T)node;
 
 /**
  Invalidate a specific node. This is called once a node is removed or added
@@ -110,12 +112,12 @@ typedef void (^SKNodeUpdateData)(id value);
  The decoration for this node. Valid values are defined in the Sonar
  applictation.
  */
-- (NSString *)decorationForNode:(T)node;
+- (NSString*)decorationForNode:(T)node;
 
 /**
  Whether the node matches the given query.
  Used for layout search.
  */
-- (BOOL)matchesQuery:(NSString *)query forNode:(T)node;
+- (BOOL)matchesQuery:(NSString*)query forNode:(T)node;
 
 @end

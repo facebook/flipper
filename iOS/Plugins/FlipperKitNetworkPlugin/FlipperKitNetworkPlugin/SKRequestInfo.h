@@ -7,13 +7,16 @@
 
 #import <Foundation/Foundation.h>
 
-@interface SKRequestInfo: NSObject
+@interface SKRequestInfo : NSObject
 @property(assign, readwrite) int64_t identifier;
 @property(assign, readwrite) uint64_t timestamp;
 @property(strong, nonatomic) NSURLRequest* request;
 @property(strong, nonatomic) NSString* body;
 
-- (instancetype)initWithIdentifier:(int64_t)identifier timestamp:(uint64_t)timestamp request:(NSURLRequest*)request data:(NSData *)data;
-- (void)setBodyFromData:(NSData * _Nullable)data;
+- (instancetype)initWithIdentifier:(int64_t)identifier
+                         timestamp:(uint64_t)timestamp
+                           request:(NSURLRequest*)request
+                              data:(NSData*)data;
+- (void)setBodyFromData:(NSData* _Nullable)data;
 
 @end

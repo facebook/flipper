@@ -13,12 +13,11 @@
 
 #import <FlipperKitHighlightOverlay/SKHighlightOverlay.h>
 
-@implementation SKTapListenerImpl
-{
-  NSMutableArray<SKTapReceiver> *_receiversWaitingForInput;
-  UITapGestureRecognizer *_gestureRecognizer;
+@implementation SKTapListenerImpl {
+  NSMutableArray<SKTapReceiver>* _receiversWaitingForInput;
+  UITapGestureRecognizer* _gestureRecognizer;
 
-  SKHiddenWindow *_overlayWindow;
+  SKHiddenWindow* _overlayWindow;
 }
 
 @synthesize isMounted = _isMounted;
@@ -27,7 +26,8 @@
   if (self = [super init]) {
     _receiversWaitingForInput = [NSMutableArray new];
 
-    _gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget: self action: nil];
+    _gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self
+                                                                 action:nil];
     _gestureRecognizer.delegate = self;
 
     _isMounted = NO;
@@ -37,7 +37,7 @@
     _overlayWindow.windowLevel = UIWindowLevelAlert;
     _overlayWindow.backgroundColor = [SKHighlightOverlay overlayColor];
 
-    [_overlayWindow addGestureRecognizer: _gestureRecognizer];
+    [_overlayWindow addGestureRecognizer:_gestureRecognizer];
   }
 
   return self;
@@ -48,7 +48,7 @@
     return;
   }
 
-  [_overlayWindow setFrame: frame];
+  [_overlayWindow setFrame:frame];
   [_overlayWindow makeKeyAndVisible];
   _overlayWindow.hidden = NO;
 
@@ -68,15 +68,16 @@
 }
 
 - (void)listenForTapWithBlock:(SKTapReceiver)receiver {
-  [_receiversWaitingForInput addObject: receiver];
+  [_receiversWaitingForInput addObject:receiver];
 }
 
-- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
+- (BOOL)gestureRecognizer:(UIGestureRecognizer*)gestureRecognizer
+       shouldReceiveTouch:(UITouch*)touch {
   if ([_receiversWaitingForInput count] == 0) {
     return YES;
   }
 
-  CGPoint touchPoint = [touch locationInView: _overlayWindow];
+  CGPoint touchPoint = [touch locationInView:_overlayWindow];
 
   for (SKTapReceiver recv in _receiversWaitingForInput) {
     recv(touchPoint);

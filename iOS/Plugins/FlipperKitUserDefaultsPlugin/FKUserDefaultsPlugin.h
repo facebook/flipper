@@ -5,15 +5,15 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <Foundation/Foundation.h>
 #import <FlipperKit/FlipperPlugin.h>
+#import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface FKUserDefaultsPlugin : NSObject <FlipperPlugin>
+@interface FKUserDefaultsPlugin : NSObject<FlipperPlugin>
 
-- (instancetype)initWithSuiteName:(nullable NSString *)suiteName;
-    
+- (instancetype)initWithSuiteName:(nullable NSString*)suiteName;
+
 @end
 
 NS_ASSUME_NONNULL_END

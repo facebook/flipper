@@ -10,13 +10,13 @@
 #import <UIKit/UIKit.h>
 
 #import "SKInvalidation.h"
-#import "UIView+SKInvalidation.h"
 #import "UICollectionView+SKInvalidation.h"
+#import "UIView+SKInvalidation.h"
 
 @implementation SKInvalidation
 
 + (instancetype)sharedInstance {
-  static SKInvalidation *sInstance = nil;
+  static SKInvalidation* sInstance = nil;
 
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
@@ -32,24 +32,28 @@
     [UIView enableInvalidation];
     [UICollectionView enableInvalidations];
 
-    [[NSNotificationCenter defaultCenter] addObserver:self
-        selector:@selector(windowDidBecomeVisible:)
-            name:UIWindowDidBecomeVisibleNotification
-          object:nil];
+    [[NSNotificationCenter defaultCenter]
+        addObserver:self
+           selector:@selector(windowDidBecomeVisible:)
+               name:UIWindowDidBecomeVisibleNotification
+             object:nil];
 
-    [[NSNotificationCenter defaultCenter] addObserver:self
-        selector:@selector(windowDidBecomeHidden:)
-            name:UIWindowDidBecomeHiddenNotification
-          object:nil];
+    [[NSNotificationCenter defaultCenter]
+        addObserver:self
+           selector:@selector(windowDidBecomeHidden:)
+               name:UIWindowDidBecomeHiddenNotification
+             object:nil];
   });
 }
 
 + (void)windowDidBecomeVisible:(NSNotification*)notification {
-  [[SKInvalidation sharedInstance].delegate invalidateNode:[notification.object nextResponder]];
+  [[SKInvalidation sharedInstance].delegate
+      invalidateNode:[notification.object nextResponder]];
 }
 
 + (void)windowDidBecomeHidden:(NSNotification*)notification {
-  [[SKInvalidation sharedInstance].delegate invalidateNode:[notification.object nextResponder]];
+  [[SKInvalidation sharedInstance].delegate
+      invalidateNode:[notification.object nextResponder]];
 }
 
 @end

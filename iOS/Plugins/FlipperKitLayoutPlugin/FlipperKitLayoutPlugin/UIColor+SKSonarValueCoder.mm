@@ -12,7 +12,7 @@
 FB_LINKABLE(UIColor_SonarValueCoder)
 @implementation UIColor (SonarValueCoder)
 
-+ (instancetype)fromSonarValue:(NSNumber *)sonarValue {
++ (instancetype)fromSonarValue:(NSNumber*)sonarValue {
   NSUInteger intColor = [sonarValue integerValue];
 
   CGFloat r, g, b, a;
@@ -22,10 +22,10 @@ FB_LINKABLE(UIColor_SonarValueCoder)
   r = CGFloat((intColor >> 16) & 0xFF) / 255;
   a = CGFloat((intColor >> 24) & 0xFF) / 255;
 
-  return [[UIColor alloc] initWithRed: r green: g blue: b alpha: a];
+  return [[UIColor alloc] initWithRed:r green:g blue:b alpha:a];
 }
 
-- (NSDictionary<NSString *, id<NSObject>> *)sonarValue {
+- (NSDictionary<NSString*, id<NSObject>>*)sonarValue {
   CGColorSpaceRef colorSpace = CGColorGetColorSpace([self CGColor]);
   CGColorSpaceModel colorSpaceModel = CGColorSpaceGetModel(colorSpace);
 
@@ -35,7 +35,7 @@ FB_LINKABLE(UIColor_SonarValueCoder)
     case kCGColorSpaceModelUnknown:
     case kCGColorSpaceModelRGB: {
       CGFloat r, g, b, a;
-      [self getRed: &r green: &g blue: &b alpha: &a];
+      [self getRed:&r green:&g blue:&b alpha:&a];
 
       red = (NSUInteger)(r * 255) & 0xFF;
       green = (NSUInteger)(g * 255) & 0xFF;
@@ -45,7 +45,7 @@ FB_LINKABLE(UIColor_SonarValueCoder)
 
     case kCGColorSpaceModelMonochrome: {
       CGFloat a, w;
-      [self getWhite: &w alpha: &a];
+      [self getWhite:&w alpha:&a];
 
       red = green = blue = (NSUInteger)(w * 255) & 0xFF;
       alpha = (NSUInteger)(a * 255) & 0xFF;
@@ -56,11 +56,8 @@ FB_LINKABLE(UIColor_SonarValueCoder)
   }
 
   NSUInteger intColor = (alpha << 24) | (red << 16) | (green << 8) | blue;
-  return @{
-           @"__type__": @"color",
-           @"__mutable__": @NO,
-           @"value": @(intColor)
-           };
+  return
+      @{@"__type__" : @"color", @"__mutable__" : @NO, @"value" : @(intColor)};
 }
 
 @end

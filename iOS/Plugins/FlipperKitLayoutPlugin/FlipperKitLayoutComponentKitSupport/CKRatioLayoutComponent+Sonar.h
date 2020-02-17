@@ -12,4 +12,3 @@ FB_LINK_REQUIRE_CATEGORY(CKRatioLayoutComponent_Sonar)
 @interface CKRatioLayoutComponent (Sonar)
 
 @end
-

@@ -11,11 +11,11 @@
 
 @implementation SKNamed
 
-+ (instancetype)newWithName:(NSString *)name withValue:(id)value {
-  return [[SKNamed alloc] initWithName: name withValue: value];
++ (instancetype)newWithName:(NSString*)name withValue:(id)value {
+  return [[SKNamed alloc] initWithName:name withValue:value];
 }
 
-- (instancetype)initWithName:(NSString *)name withValue:(id)value {
+- (instancetype)initWithName:(NSString*)name withValue:(id)value {
   if (self = [super init]) {
     _name = name;
     _value = value;
@@ -24,7 +24,7 @@
   return self;
 }
 
-- (NSString *)description {
+- (NSString*)description {
   return [NSString stringWithFormat:@"%@: %@", _name, _value];
 }
 

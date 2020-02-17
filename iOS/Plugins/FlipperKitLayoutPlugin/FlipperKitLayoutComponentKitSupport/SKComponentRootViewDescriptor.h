@@ -9,6 +9,7 @@
 
 @class CKComponentRootView;
 
-@interface SKComponentRootViewDescriptor : SKNodeDescriptor<CKComponentRootView *>
+@interface SKComponentRootViewDescriptor
+    : SKNodeDescriptor<CKComponentRootView*>
 
 @end

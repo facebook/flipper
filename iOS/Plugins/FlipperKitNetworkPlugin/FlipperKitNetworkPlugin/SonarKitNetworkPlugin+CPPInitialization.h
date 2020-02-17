@@ -8,11 +8,14 @@
 #if FB_SONARKIT_ENABLED
 
 #pragma once
+#import <memory>
 #import "FlipperKitNetworkPlugin.h"
 #import "SKDispatchQueue.h"
-#import <memory>
 
-@interface FlipperKitNetworkPlugin(CPPInitialization)
-- (instancetype)initWithNetworkAdapter:(id<SKNetworkAdapterDelegate>)adapter dispatchQueue:(std::shared_ptr<facebook::flipper::DispatchQueue>)queue;
+@interface FlipperKitNetworkPlugin (CPPInitialization)
+- (instancetype)initWithNetworkAdapter:(id<SKNetworkAdapterDelegate>)adapter
+                         dispatchQueue:
+                             (std::shared_ptr<facebook::flipper::DispatchQueue>)
+                                 queue;
 @end
 #endif

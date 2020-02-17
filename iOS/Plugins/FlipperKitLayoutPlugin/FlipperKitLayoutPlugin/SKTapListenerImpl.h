@@ -7,6 +7,7 @@
 
 #import "SKTapListener.h"
 
-@interface SKTapListenerImpl : NSObject<SKTapListener, UIGestureRecognizerDelegate>
+@interface SKTapListenerImpl
+    : NSObject<SKTapListener, UIGestureRecognizerDelegate>
 
 @end

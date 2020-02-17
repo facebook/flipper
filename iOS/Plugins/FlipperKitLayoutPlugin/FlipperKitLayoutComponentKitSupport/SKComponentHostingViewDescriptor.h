@@ -9,6 +9,7 @@
 
 @class CKComponentHostingView;
 
-@interface SKComponentHostingViewDescriptor : SKNodeDescriptor<CKComponentHostingView *>
+@interface SKComponentHostingViewDescriptor
+    : SKNodeDescriptor<CKComponentHostingView*>
 
 @end

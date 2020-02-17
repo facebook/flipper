@@ -12,7 +12,7 @@
 + (instancetype)sharedInstance;
 + (UIColor*)overlayColor;
 
-- (void)mountInView:(UIView *)view withFrame:(CGRect)frame;
+- (void)mountInView:(UIView*)view withFrame:(CGRect)frame;
 - (void)unmount;
 
 @end

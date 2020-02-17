@@ -11,6 +11,6 @@
 FB_LINK_REQUIRE_CATEGORY(CKStatelessComponent_Sonar)
 @interface CKStatelessComponent (Sonar)
 
-- (NSString *)sonar_componentNameOverride;
+- (NSString*)sonar_componentNameOverride;
 
 @end

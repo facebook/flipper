@@ -12,14 +12,14 @@
 
 @interface SKSearchResultNode : NSObject
 
-@property (nonatomic, copy, readonly) NSString *nodeId;
+@property(nonatomic, copy, readonly) NSString* nodeId;
 
-- (instancetype)initWithNode:(NSString *)nodeId
+- (instancetype)initWithNode:(NSString*)nodeId
                      asMatch:(BOOL)isMatch
-                 withElement:(NSDictionary *)element
-                 andChildren:(NSArray<SKSearchResultNode *> *)children;
+                 withElement:(NSDictionary*)element
+                 andChildren:(NSArray<SKSearchResultNode*>*)children;
 
-- (NSDictionary *)toNSDictionary;
+- (NSDictionary*)toNSDictionary;
 
 @end
 #endif /* SKSearchResultNode_h */

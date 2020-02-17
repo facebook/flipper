@@ -9,16 +9,15 @@
 
 #import "SKHighlightOverlay.h"
 
-@implementation SKHighlightOverlay
-{
-  CALayer *_overlayLayer;
+@implementation SKHighlightOverlay {
+  CALayer* _overlayLayer;
 }
 
 + (instancetype)sharedInstance {
-  static SKHighlightOverlay *sharedInstance = nil;
+  static SKHighlightOverlay* sharedInstance = nil;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-      sharedInstance = [self new];
+    sharedInstance = [self new];
   });
   return sharedInstance;
 }
@@ -32,12 +31,12 @@
   return self;
 }
 
-- (void)mountInView:(UIView *)view withFrame:(CGRect)frame {
+- (void)mountInView:(UIView*)view withFrame:(CGRect)frame {
   [CATransaction begin];
   [CATransaction setValue:(id)kCFBooleanTrue
                    forKey:kCATransactionDisableActions];
   _overlayLayer.frame = frame;
-  [view.layer addSublayer: _overlayLayer];
+  [view.layer addSublayer:_overlayLayer];
   [CATransaction commit];
 }
 
@@ -46,7 +45,10 @@
 }
 
 + (UIColor*)overlayColor {
-  return [UIColor colorWithRed:136.0 / 255.0 green:117.0 / 255.0 blue:197.0 / 255.0 alpha:0.6];
+  return [UIColor colorWithRed:136.0 / 255.0
+                         green:117.0 / 255.0
+                          blue:197.0 / 255.0
+                         alpha:0.6];
 }
 
 @end

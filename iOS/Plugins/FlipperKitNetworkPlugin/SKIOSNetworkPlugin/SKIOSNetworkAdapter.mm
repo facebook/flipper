@@ -13,8 +13,8 @@
 
 @implementation SKIOSNetworkAdapter
 @synthesize delegate = _delegate;
-- (instancetype)init{
-  if (self=[super init]){
+- (instancetype)init {
+  if (self = [super init]) {
     _delegate = nil;
   }
   return self;

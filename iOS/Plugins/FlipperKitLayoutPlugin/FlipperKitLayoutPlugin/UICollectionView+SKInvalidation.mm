@@ -18,16 +18,20 @@ FB_LINKABLE(UICollectionView_SKInvalidation)
 + (void)enableInvalidations {
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    swizzleMethods([self class], @selector(cellForItemAtIndexPath:), @selector(swizzle_cellForItemAtIndexPath:));
+    swizzleMethods(
+        [self class],
+        @selector(cellForItemAtIndexPath:),
+        @selector(swizzle_cellForItemAtIndexPath:));
   });
 }
 
-- (UICollectionViewCell *)swizzle_cellForItemAtIndexPath:(NSIndexPath *)indexPath {
+- (UICollectionViewCell*)swizzle_cellForItemAtIndexPath:
+    (NSIndexPath*)indexPath {
   dispatch_async(dispatch_get_main_queue(), ^{
-    [[SKInvalidation sharedInstance].delegate invalidateNode: self];
+    [[SKInvalidation sharedInstance].delegate invalidateNode:self];
   });
 
-  return [self swizzle_cellForItemAtIndexPath: indexPath];
+  return [self swizzle_cellForItemAtIndexPath:indexPath];
 }
 
 @end

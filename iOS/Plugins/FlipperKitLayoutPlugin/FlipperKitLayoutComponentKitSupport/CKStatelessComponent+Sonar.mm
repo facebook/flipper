@@ -17,8 +17,7 @@
 FB_LINKABLE(CKStatelessComponent_Sonar)
 @implementation CKStatelessComponent (Sonar)
 
-- (NSString *)sonar_componentNameOverride
-{
+- (NSString*)sonar_componentNameOverride {
   return [self description];
 }
 

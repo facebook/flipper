@@ -9,59 +9,61 @@
 
 #import "SKViewDescriptor.h"
 
+#import <FlipperKitHighlightOverlay/SKHighlightOverlay.h>
+#import <YogaKit/UIView+Yoga.h>
 #import "SKDescriptorMapper.h"
 #import "SKNamed.h"
 #import "SKObject.h"
 #import "SKYogaKitHelper.h"
 #import "UIColor+SKSonarValueCoder.h"
-#import <YogaKit/UIView+Yoga.h>
-#import <FlipperKitHighlightOverlay/SKHighlightOverlay.h>
 
 @implementation SKViewDescriptor
 
-static NSDictionary *YGDirectionEnumMap = nil;
-static NSDictionary *YGFlexDirectionEnumMap = nil;
-static NSDictionary *YGJustifyEnumMap = nil;
-static NSDictionary *YGAlignEnumMap = nil;
-static NSDictionary *YGPositionTypeEnumMap = nil;
-static NSDictionary *YGWrapEnumMap = nil;
-static NSDictionary *YGOverflowEnumMap = nil;
-static NSDictionary *YGDisplayEnumMap = nil;
-static NSDictionary *YGUnitEnumMap = nil;
+static NSDictionary* YGDirectionEnumMap = nil;
+static NSDictionary* YGFlexDirectionEnumMap = nil;
+static NSDictionary* YGJustifyEnumMap = nil;
+static NSDictionary* YGAlignEnumMap = nil;
+static NSDictionary* YGPositionTypeEnumMap = nil;
+static NSDictionary* YGWrapEnumMap = nil;
+static NSDictionary* YGOverflowEnumMap = nil;
+static NSDictionary* YGDisplayEnumMap = nil;
+static NSDictionary* YGUnitEnumMap = nil;
 
-- (instancetype)initWithDescriptorMapper:(SKDescriptorMapper *)mapper {
-  if (self = [super initWithDescriptorMapper: mapper]) {
+- (instancetype)initWithDescriptorMapper:(SKDescriptorMapper*)mapper {
+  if (self = [super initWithDescriptorMapper:mapper]) {
     initEnumDictionaries();
   }
 
   return self;
 }
 
-- (NSString *)identifierForNode:(UIView *)node {
-  return [NSString stringWithFormat: @"%p", node];
+- (NSString*)identifierForNode:(UIView*)node {
+  return [NSString stringWithFormat:@"%p", node];
 }
 
-- (NSUInteger)childCountForNode:(UIView *)node {
-  return [[self validChildrenForNode: node] count];
+- (NSUInteger)childCountForNode:(UIView*)node {
+  return [[self validChildrenForNode:node] count];
 }
 
-- (id)childForNode:(UIView *)node atIndex:(NSUInteger)index {
-  return [[self validChildrenForNode:node] objectAtIndex: index];
+- (id)childForNode:(UIView*)node atIndex:(NSUInteger)index {
+  return [[self validChildrenForNode:node] objectAtIndex:index];
 }
 
-- (NSArray *)validChildrenForNode:(UIView *)node {
-  NSMutableArray *validChildren = [NSMutableArray new];
+- (NSArray*)validChildrenForNode:(UIView*)node {
+  NSMutableArray* validChildren = [NSMutableArray new];
 
   // Use UIViewControllers for children which responds to a different
   // viewController than their parent
-  for (UIView *child in node.subviews) {
-    BOOL responderIsUIViewController = [child.nextResponder isKindOfClass: [UIViewController class]];
+  for (UIView* child in node.subviews) {
+    BOOL responderIsUIViewController =
+        [child.nextResponder isKindOfClass:[UIViewController class]];
 
     if (!child.isHidden) {
-      if (responderIsUIViewController && child.nextResponder != node.nextResponder) {
-        [validChildren addObject: child.nextResponder];
+      if (responderIsUIViewController &&
+          child.nextResponder != node.nextResponder) {
+        [validChildren addObject:child.nextResponder];
       } else {
-        [validChildren addObject: child];
+        [validChildren addObject:child];
       }
     }
   }
@@ -69,121 +71,165 @@ static NSDictionary *YGUnitEnumMap = nil;
   return validChildren;
 }
 
-- (NSArray<SKNamed<NSDictionary *> *> *)dataForNode:(UIView *)node {
-  return [NSArray arrayWithObjects:
-          [SKNamed newWithName: @"UIView"
-                     withValue: @{
-                                  @"frame": SKMutableObject(node.frame),
-                                  @"bounds": SKObject(node.bounds),
-                                  @"center": SKObject(node.center),
-                                  @"layoutMargins": SKObject(node.layoutMargins),
-                                  @"clipsToBounds": @(node.clipsToBounds),
-                                  @"alpha": SKMutableObject(@(node.alpha)),
-                                  @"tag": @(node.tag),
-                                  @"backgroundColor": SKMutableObject(node.backgroundColor)
-                                  }],
-          [SKNamed newWithName: @"CALayer"
-                     withValue: @{
-                                  @"shadowColor": SKMutableObject([UIColor colorWithCGColor:node.layer.shadowColor]),
-                                  @"shadowOpacity": SKMutableObject(@(node.layer.shadowOpacity)),
-                                  @"shadowRadius": SKMutableObject(@(node.layer.shadowRadius)),
-                                  @"shadowOffset": SKMutableObject(node.layer.shadowOffset),
-                                  @"backgroundColor": SKMutableObject([UIColor colorWithCGColor:node.layer.backgroundColor]),
-                                  @"borderColor": SKMutableObject([UIColor colorWithCGColor:node.layer.borderColor]),
-                                  @"borderWidth": SKMutableObject(@(node.layer.borderWidth)),
-                                  @"cornerRadius": SKMutableObject(@(node.layer.cornerRadius)),
-                                  @"masksToBounds": SKMutableObject(@(node.layer.masksToBounds)),
-                                  }],
-          [SKNamed newWithName: @"Accessibility"
-                     withValue: @{
-                                  @"isAccessibilityElement": SKMutableObject(@(node.isAccessibilityElement)),
-                                  @"accessibilityLabel": SKMutableObject(node.accessibilityLabel ?: @""),
-                                  @"accessibilityIdentifier": SKMutableObject(node.accessibilityIdentifier ?: @""),
-                                  @"accessibilityValue": SKMutableObject(node.accessibilityValue ?: @""),
-                                  @"accessibilityHint": SKMutableObject(node.accessibilityHint ?: @""),
-                                  @"accessibilityTraits": AccessibilityTraitsDict(node.accessibilityTraits),
-                                  @"accessibilityViewIsModal": SKMutableObject(@(node.accessibilityViewIsModal)),
-                                  @"shouldGroupAccessibilityChildren": SKMutableObject(@(node.shouldGroupAccessibilityChildren)),
-                                  }],
-          !node.isYogaEnabled ? nil :
-          [SKNamed newWithName: @"YGLayout"
-                     withValue: @{
-                                  @"direction": SKMutableObject(YGDirectionEnumMap[@(node.yoga.direction)]),
-                                  @"justifyContent": SKMutableObject(YGJustifyEnumMap[@(node.yoga.justifyContent)]),
-                                  @"aligns": @{
-                                      @"alignContent": SKMutableObject(YGAlignEnumMap[@(node.yoga.alignContent)]),
-                                      @"alignItems": SKMutableObject(YGAlignEnumMap[@(node.yoga.alignItems)]),
-                                      @"alignSelf": SKMutableObject(YGAlignEnumMap[@(node.yoga.alignSelf)]),
-                                      },
-                                  @"position": @{
-                                      @"type": SKMutableObject(YGPositionTypeEnumMap[@(node.yoga.position)]),
-                                      @"left": SKYGValueObject(node.yoga.left),
-                                      @"top": SKYGValueObject(node.yoga.top),
-                                      @"right": SKYGValueObject(node.yoga.right),
-                                      @"bottom": SKYGValueObject(node.yoga.bottom),
-                                      @"start": SKYGValueObject(node.yoga.start),
-                                      @"end": SKYGValueObject(node.yoga.end),
-                                      },
-                                  @"overflow": SKMutableObject(YGOverflowEnumMap[@(node.yoga.overflow)]),
-                                  @"display": SKMutableObject(YGDisplayEnumMap[@(node.yoga.display)]),
-                                  @"flex": @{
-                                      @"flexDirection": SKMutableObject(YGFlexDirectionEnumMap[@(node.yoga.flexDirection)]),
-                                      @"flexWrap": SKMutableObject(YGWrapEnumMap[@(node.yoga.flexWrap)]),
-                                      @"flexGrow": SKMutableObject(@(node.yoga.flexGrow)),
-                                      @"flexShrink": SKMutableObject(@(node.yoga.flexShrink)),
-                                      @"flexBasis": SKYGValueObject(node.yoga.flexBasis),
-                                      },
-                                  @"margin": @{
-                                      @"left": SKYGValueObject(node.yoga.marginLeft),
-                                      @"top": SKYGValueObject(node.yoga.marginTop),
-                                      @"right": SKYGValueObject(node.yoga.marginRight),
-                                      @"bottom": SKYGValueObject(node.yoga.marginBottom),
-                                      @"start": SKYGValueObject(node.yoga.marginStart),
-                                      @"end": SKYGValueObject(node.yoga.marginEnd),
-                                      @"horizontal": SKYGValueObject(node.yoga.marginHorizontal),
-                                      @"vertical": SKYGValueObject(node.yoga.marginVertical),
-                                      @"all": SKYGValueObject(node.yoga.margin),
-                                      },
-                                  @"padding": @{
-                                      @"left": SKYGValueObject(node.yoga.paddingLeft),
-                                      @"top": SKYGValueObject(node.yoga.paddingTop),
-                                      @"right": SKYGValueObject(node.yoga.paddingRight),
-                                      @"bottom": SKYGValueObject(node.yoga.paddingBottom),
-                                      @"start": SKYGValueObject(node.yoga.paddingStart),
-                                      @"end": SKYGValueObject(node.yoga.paddingEnd),
-                                      @"horizontal": SKYGValueObject(node.yoga.paddingHorizontal),
-                                      @"vertical": SKYGValueObject(node.yoga.paddingVertical),
-                                      @"all": SKYGValueObject(node.yoga.padding),
-                                      },
-                                  @"border": @{
-                                      @"leftWidth": SKMutableObject(@(node.yoga.borderLeftWidth)),
-                                      @"topWidth": SKMutableObject(@(node.yoga.borderTopWidth)),
-                                      @"rightWidth": SKMutableObject(@(node.yoga.borderRightWidth)),
-                                      @"bottomWidth": SKMutableObject(@(node.yoga.borderBottomWidth)),
-                                      @"startWidth": SKMutableObject(@(node.yoga.borderStartWidth)),
-                                      @"endWidth": SKMutableObject(@(node.yoga.borderEndWidth)),
-                                      @"all": SKMutableObject(@(node.yoga.borderWidth)),
-                                      },
-                                  @"dimensions": @{
-                                      @"width": SKYGValueObject(node.yoga.width),
-                                      @"height": SKYGValueObject(node.yoga.height),
-                                      @"minWidth": SKYGValueObject(node.yoga.minWidth),
-                                      @"minHeight": SKYGValueObject(node.yoga.minHeight),
-                                      @"maxWidth": SKYGValueObject(node.yoga.maxWidth),
-                                      @"maxHeight": SKYGValueObject(node.yoga.maxHeight),
-                                      },
-                                  @"aspectRatio": SKMutableObject(@(node.yoga.aspectRatio)),
-                                  @"resolvedDirection": SKObject(YGDirectionEnumMap[@(node.yoga.resolvedDirection)]),
-                                  }],
+- (NSArray<SKNamed<NSDictionary*>*>*)dataForNode:(UIView*)node {
+  return [NSArray
+      arrayWithObjects:
+          [SKNamed
+              newWithName:@"UIView"
+                withValue:@{
+                  @"frame" : SKMutableObject(node.frame),
+                  @"bounds" : SKObject(node.bounds),
+                  @"center" : SKObject(node.center),
+                  @"layoutMargins" : SKObject(node.layoutMargins),
+                  @"clipsToBounds" : @(node.clipsToBounds),
+                  @"alpha" : SKMutableObject(@(node.alpha)),
+                  @"tag" : @(node.tag),
+                  @"backgroundColor" : SKMutableObject(node.backgroundColor)
+                }],
+          [SKNamed
+              newWithName:@"CALayer"
+                withValue:@{
+                  @"shadowColor" : SKMutableObject(
+                      [UIColor colorWithCGColor:node.layer.shadowColor]),
+                  @"shadowOpacity" :
+                      SKMutableObject(@(node.layer.shadowOpacity)),
+                  @"shadowRadius" : SKMutableObject(@(node.layer.shadowRadius)),
+                  @"shadowOffset" : SKMutableObject(node.layer.shadowOffset),
+                  @"backgroundColor" : SKMutableObject(
+                      [UIColor colorWithCGColor:node.layer.backgroundColor]),
+                  @"borderColor" : SKMutableObject(
+                      [UIColor colorWithCGColor:node.layer.borderColor]),
+                  @"borderWidth" : SKMutableObject(@(node.layer.borderWidth)),
+                  @"cornerRadius" : SKMutableObject(@(node.layer.cornerRadius)),
+                  @"masksToBounds" :
+                      SKMutableObject(@(node.layer.masksToBounds)),
+                }],
+          [SKNamed newWithName:@"Accessibility"
+                     withValue:@{
+                       @"isAccessibilityElement" :
+                           SKMutableObject(@(node.isAccessibilityElement)),
+                       @"accessibilityLabel" :
+                           SKMutableObject(node.accessibilityLabel ?: @""),
+                       @"accessibilityIdentifier" :
+                           SKMutableObject(node.accessibilityIdentifier ?: @""),
+                       @"accessibilityValue" :
+                           SKMutableObject(node.accessibilityValue ?: @""),
+                       @"accessibilityHint" :
+                           SKMutableObject(node.accessibilityHint ?: @""),
+                       @"accessibilityTraits" :
+                           AccessibilityTraitsDict(node.accessibilityTraits),
+                       @"accessibilityViewIsModal" :
+                           SKMutableObject(@(node.accessibilityViewIsModal)),
+                       @"shouldGroupAccessibilityChildren" : SKMutableObject(
+                           @(node.shouldGroupAccessibilityChildren)),
+                     }],
+          !node.isYogaEnabled
+              ? nil
+              : [SKNamed
+                    newWithName:@"YGLayout"
+                      withValue:@{
+                        @"direction" : SKMutableObject(
+                            YGDirectionEnumMap[@(node.yoga.direction)]),
+                        @"justifyContent" : SKMutableObject(
+                            YGJustifyEnumMap[@(node.yoga.justifyContent)]),
+                        @"aligns" : @{
+                          @"alignContent" : SKMutableObject(
+                              YGAlignEnumMap[@(node.yoga.alignContent)]),
+                          @"alignItems" : SKMutableObject(
+                              YGAlignEnumMap[@(node.yoga.alignItems)]),
+                          @"alignSelf" : SKMutableObject(
+                              YGAlignEnumMap[@(node.yoga.alignSelf)]),
+                        },
+                        @"position" : @{
+                          @"type" : SKMutableObject(
+                              YGPositionTypeEnumMap[@(node.yoga.position)]),
+                          @"left" : SKYGValueObject(node.yoga.left),
+                          @"top" : SKYGValueObject(node.yoga.top),
+                          @"right" : SKYGValueObject(node.yoga.right),
+                          @"bottom" : SKYGValueObject(node.yoga.bottom),
+                          @"start" : SKYGValueObject(node.yoga.start),
+                          @"end" : SKYGValueObject(node.yoga.end),
+                        },
+                        @"overflow" : SKMutableObject(
+                            YGOverflowEnumMap[@(node.yoga.overflow)]),
+                        @"display" : SKMutableObject(
+                            YGDisplayEnumMap[@(node.yoga.display)]),
+                        @"flex" : @{
+                          @"flexDirection" :
+                              SKMutableObject(YGFlexDirectionEnumMap[
+                                  @(node.yoga.flexDirection)]),
+                          @"flexWrap" : SKMutableObject(
+                              YGWrapEnumMap[@(node.yoga.flexWrap)]),
+                          @"flexGrow" : SKMutableObject(@(node.yoga.flexGrow)),
+                          @"flexShrink" :
+                              SKMutableObject(@(node.yoga.flexShrink)),
+                          @"flexBasis" : SKYGValueObject(node.yoga.flexBasis),
+                        },
+                        @"margin" : @{
+                          @"left" : SKYGValueObject(node.yoga.marginLeft),
+                          @"top" : SKYGValueObject(node.yoga.marginTop),
+                          @"right" : SKYGValueObject(node.yoga.marginRight),
+                          @"bottom" : SKYGValueObject(node.yoga.marginBottom),
+                          @"start" : SKYGValueObject(node.yoga.marginStart),
+                          @"end" : SKYGValueObject(node.yoga.marginEnd),
+                          @"horizontal" :
+                              SKYGValueObject(node.yoga.marginHorizontal),
+                          @"vertical" :
+                              SKYGValueObject(node.yoga.marginVertical),
+                          @"all" : SKYGValueObject(node.yoga.margin),
+                        },
+                        @"padding" : @{
+                          @"left" : SKYGValueObject(node.yoga.paddingLeft),
+                          @"top" : SKYGValueObject(node.yoga.paddingTop),
+                          @"right" : SKYGValueObject(node.yoga.paddingRight),
+                          @"bottom" : SKYGValueObject(node.yoga.paddingBottom),
+                          @"start" : SKYGValueObject(node.yoga.paddingStart),
+                          @"end" : SKYGValueObject(node.yoga.paddingEnd),
+                          @"horizontal" :
+                              SKYGValueObject(node.yoga.paddingHorizontal),
+                          @"vertical" :
+                              SKYGValueObject(node.yoga.paddingVertical),
+                          @"all" : SKYGValueObject(node.yoga.padding),
+                        },
+                        @"border" : @{
+                          @"leftWidth" :
+                              SKMutableObject(@(node.yoga.borderLeftWidth)),
+                          @"topWidth" :
+                              SKMutableObject(@(node.yoga.borderTopWidth)),
+                          @"rightWidth" :
+                              SKMutableObject(@(node.yoga.borderRightWidth)),
+                          @"bottomWidth" :
+                              SKMutableObject(@(node.yoga.borderBottomWidth)),
+                          @"startWidth" :
+                              SKMutableObject(@(node.yoga.borderStartWidth)),
+                          @"endWidth" :
+                              SKMutableObject(@(node.yoga.borderEndWidth)),
+                          @"all" : SKMutableObject(@(node.yoga.borderWidth)),
+                        },
+                        @"dimensions" : @{
+                          @"width" : SKYGValueObject(node.yoga.width),
+                          @"height" : SKYGValueObject(node.yoga.height),
+                          @"minWidth" : SKYGValueObject(node.yoga.minWidth),
+                          @"minHeight" : SKYGValueObject(node.yoga.minHeight),
+                          @"maxWidth" : SKYGValueObject(node.yoga.maxWidth),
+                          @"maxHeight" : SKYGValueObject(node.yoga.maxHeight),
+                        },
+                        @"aspectRatio" :
+                            SKMutableObject(@(node.yoga.aspectRatio)),
+                        @"resolvedDirection" : SKObject(
+                            YGDirectionEnumMap[@(node.yoga.resolvedDirection)]),
+                      }],
           nil];
 }
 
-- (NSDictionary<NSString *, SKNodeUpdateData> *)dataMutationsForNode:(UIView *)node {
+- (NSDictionary<NSString*, SKNodeUpdateData>*)dataMutationsForNode:
+    (UIView*)node {
   return @{
     // UIView
-    @"UIView.alpha": ^(NSNumber *value) {
-      node.alpha = [value floatValue];
-    },
+    @"UIView.alpha" : ^(NSNumber* value){
+        node.alpha = [value floatValue];
+}
+,
     @"UIView.backgroundColor": ^(NSNumber *value) {
       node.backgroundColor = [UIColor fromSonarValue: value];
     },
@@ -415,43 +461,43 @@ static NSDictionary *YGUnitEnumMap = nil;
     @"Accessibility.shouldGroupAccessibilityChildren": ^(NSNumber *value) {
       node.shouldGroupAccessibilityChildren = [value boolValue];
     },
-  };
+}
+;
 }
 
-- (NSArray<SKNamed<NSString *> *> *)attributesForNode:(UIView *)node {
-  return @[
-           [SKNamed newWithName: @"addr"
-                      withValue: [NSString stringWithFormat: @"%p", node]]
-           ];
+- (NSArray<SKNamed<NSString*>*>*)attributesForNode:(UIView*)node {
+  return @[ [SKNamed newWithName:@"addr"
+                       withValue:[NSString stringWithFormat:@"%p", node]] ];
 }
 
-- (void)setHighlighted:(BOOL)highlighted forNode:(UIView *)node {
-  SKHighlightOverlay *overlay = [SKHighlightOverlay sharedInstance];
+- (void)setHighlighted:(BOOL)highlighted forNode:(UIView*)node {
+  SKHighlightOverlay* overlay = [SKHighlightOverlay sharedInstance];
   if (highlighted == YES) {
-    [overlay mountInView: node withFrame: node.bounds];
+    [overlay mountInView:node withFrame:node.bounds];
   } else {
     [overlay unmount];
   }
 }
 
-- (void)hitTest:(SKTouch *)touch forNode:(UIView *)node {
-  for (NSInteger index = [self childCountForNode: node] - 1; index >= 0; index--) {
-    id<NSObject> childNode = [self childForNode: node atIndex: index];
-    UIView *viewForNode = nil;
+- (void)hitTest:(SKTouch*)touch forNode:(UIView*)node {
+  for (NSInteger index = [self childCountForNode:node] - 1; index >= 0;
+       index--) {
+    id<NSObject> childNode = [self childForNode:node atIndex:index];
+    UIView* viewForNode = nil;
 
-    if ([childNode isKindOfClass: [UIViewController class]]) {
-      UIViewController *child = (UIViewController *)childNode;
+    if ([childNode isKindOfClass:[UIViewController class]]) {
+      UIViewController* child = (UIViewController*)childNode;
       viewForNode = child.view;
     } else {
-      viewForNode = (UIView *)childNode;
+      viewForNode = (UIView*)childNode;
     }
 
     if (viewForNode.isHidden || viewForNode.alpha <= 0) {
       continue;
     }
 
-    if ([touch containedIn: viewForNode.frame]) {
-      [touch continueWithChildIndex: index withOffset: viewForNode.frame.origin ];
+    if ([touch containedIn:viewForNode.frame]) {
+      [touch continueWithChildIndex:index withOffset:viewForNode.frame.origin];
       return;
     }
   }
@@ -463,73 +509,73 @@ static void initEnumDictionaries() {
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     YGDirectionEnumMap = @{
-                           @(YGDirectionInherit): @"inherit",
-                           @(YGDirectionLTR): @"LTR",
-                           @(YGDirectionRTL): @"RTL",
-                           };
+      @(YGDirectionInherit) : @"inherit",
+      @(YGDirectionLTR) : @"LTR",
+      @(YGDirectionRTL) : @"RTL",
+    };
 
     YGFlexDirectionEnumMap = @{
-                               @(YGFlexDirectionColumn): @"column",
-                               @(YGFlexDirectionColumnReverse): @"column-reverse",
-                               @(YGFlexDirectionRow): @"row",
-                               @(YGFlexDirectionRowReverse): @"row-reverse",
-                               };
+      @(YGFlexDirectionColumn) : @"column",
+      @(YGFlexDirectionColumnReverse) : @"column-reverse",
+      @(YGFlexDirectionRow) : @"row",
+      @(YGFlexDirectionRowReverse) : @"row-reverse",
+    };
 
     YGJustifyEnumMap = @{
-                         @(YGJustifyFlexStart): @"flex-start",
-                         @(YGJustifyCenter): @"center",
-                         @(YGJustifyFlexEnd): @"flex-end",
-                         @(YGJustifySpaceBetween): @"space-between",
-                         @(YGJustifySpaceAround): @"space-around",
-                         };
+      @(YGJustifyFlexStart) : @"flex-start",
+      @(YGJustifyCenter) : @"center",
+      @(YGJustifyFlexEnd) : @"flex-end",
+      @(YGJustifySpaceBetween) : @"space-between",
+      @(YGJustifySpaceAround) : @"space-around",
+    };
 
     YGAlignEnumMap = @{
-                       @(YGAlignAuto): @"auto",
-                       @(YGAlignFlexStart): @"flex-start",
-                       @(YGAlignCenter): @"end",
-                       @(YGAlignFlexEnd): @"flex-end",
-                       @(YGAlignStretch): @"stretch",
-                       @(YGAlignBaseline): @"baseline",
-                       @(YGAlignSpaceBetween): @"space-between",
-                       @(YGAlignSpaceAround): @"space-around",
-                       };
+      @(YGAlignAuto) : @"auto",
+      @(YGAlignFlexStart) : @"flex-start",
+      @(YGAlignCenter) : @"end",
+      @(YGAlignFlexEnd) : @"flex-end",
+      @(YGAlignStretch) : @"stretch",
+      @(YGAlignBaseline) : @"baseline",
+      @(YGAlignSpaceBetween) : @"space-between",
+      @(YGAlignSpaceAround) : @"space-around",
+    };
 
     YGPositionTypeEnumMap = @{
-                              @(YGPositionTypeRelative): @"relative",
-                              @(YGPositionTypeAbsolute): @"absolute",
-                              };
+      @(YGPositionTypeRelative) : @"relative",
+      @(YGPositionTypeAbsolute) : @"absolute",
+    };
 
     YGWrapEnumMap = @{
-                      @(YGWrapNoWrap): @"no-wrap",
-                      @(YGWrapWrap): @"wrap",
-                      @(YGWrapWrapReverse): @"wrap-reverse",
-                      };
+      @(YGWrapNoWrap) : @"no-wrap",
+      @(YGWrapWrap) : @"wrap",
+      @(YGWrapWrapReverse) : @"wrap-reverse",
+    };
 
     YGOverflowEnumMap = @{
-                          @(YGOverflowVisible): @"visible",
-                          @(YGOverflowHidden): @"hidden",
-                          @(YGOverflowScroll): @"scroll",
-                          };
+      @(YGOverflowVisible) : @"visible",
+      @(YGOverflowHidden) : @"hidden",
+      @(YGOverflowScroll) : @"scroll",
+    };
 
     YGDisplayEnumMap = @{
-                         @(YGDisplayFlex): @"flex",
-                         @(YGDisplayNone): @"none",
-                         };
+      @(YGDisplayFlex) : @"flex",
+      @(YGDisplayNone) : @"none",
+    };
 
     YGUnitEnumMap = @{
-                      @(YGUnitUndefined): @"undefined",
-                      @(YGUnitPoint): @"point",
-                      @(YGUnitPercent): @"percent",
-                      @(YGUnitAuto): @"auto",
-                      };
+      @(YGUnitUndefined) : @"undefined",
+      @(YGUnitPoint) : @"point",
+      @(YGUnitPercent) : @"percent",
+      @(YGUnitAuto) : @"auto",
+    };
   });
 }
 
-static NSDictionary *SKYGValueObject(YGValue value) {
+static NSDictionary* SKYGValueObject(YGValue value) {
   return @{
-           @"value": SKMutableObject(@(value.value)),
-           @"unit": SKMutableObject(YGUnitEnumMap[@(value.unit)]),
-           };
+    @"value" : SKMutableObject(@(value.value)),
+    @"unit" : SKMutableObject(YGUnitEnumMap[@(value.unit)]),
+  };
 }
 
 /*
@@ -537,36 +583,60 @@ static NSDictionary *SKYGValueObject(YGValue value) {
  e.g. originalTraits = UIAccessibilityTraitButton | UIAccessibilityTraitSelected
       toggleTraits = UIAccessibilityTraitImage
       toggleValue = YES
-      return value = UIAccessibilityTraitButton | UIAccessibilityTraitSelected | UIAccessibilityTraitImage
+      return value = UIAccessibilityTraitButton | UIAccessibilityTraitSelected |
+ UIAccessibilityTraitImage
  */
-static UIAccessibilityTraits AccessibilityTraitsToggle(UIAccessibilityTraits originalTraits, UIAccessibilityTraits toggleTraits, BOOL toggleValue) {
-  // NEGATE all bits of toggleTraits from originalTraits and OR it against either toggleTraits or 0 (UIAccessibilityTraitNone) based on toggleValue
-  UIAccessibilityTraits bitsValue = toggleValue ? toggleTraits : UIAccessibilityTraitNone;
+static UIAccessibilityTraits AccessibilityTraitsToggle(
+    UIAccessibilityTraits originalTraits,
+    UIAccessibilityTraits toggleTraits,
+    BOOL toggleValue) {
+  // NEGATE all bits of toggleTraits from originalTraits and OR it against
+  // either toggleTraits or 0 (UIAccessibilityTraitNone) based on toggleValue
+  UIAccessibilityTraits bitsValue =
+      toggleValue ? toggleTraits : UIAccessibilityTraitNone;
   return (originalTraits & ~(toggleTraits)) | bitsValue;
 }
 
-static NSDictionary *AccessibilityTraitsDict(UIAccessibilityTraits accessibilityTraits) {
-  NSMutableDictionary *traitsDict = [NSMutableDictionary new];
+static NSDictionary* AccessibilityTraitsDict(
+    UIAccessibilityTraits accessibilityTraits) {
+  NSMutableDictionary* traitsDict = [NSMutableDictionary new];
   [traitsDict addEntriesFromDictionary:@{
-                                         @"UIAccessibilityTraitButton": SKMutableObject(@(!!(accessibilityTraits & UIAccessibilityTraitButton))),
-                                         @"UIAccessibilityTraitLink": SKMutableObject(@(!!(accessibilityTraits & UIAccessibilityTraitLink))),
-                                         @"UIAccessibilityTraitHeader": SKMutableObject(@(!!(accessibilityTraits & UIAccessibilityTraitHeader))),
-                                         @"UIAccessibilityTraitSearchField": SKMutableObject(@(!!(accessibilityTraits & UIAccessibilityTraitSearchField))),
-                                         @"UIAccessibilityTraitImage": SKMutableObject(@(!!(accessibilityTraits & UIAccessibilityTraitImage))),
-                                         @"UIAccessibilityTraitSelected": SKMutableObject(@(!!(accessibilityTraits & UIAccessibilityTraitSelected))),
-                                         @"UIAccessibilityTraitPlaysSound": SKMutableObject(@(!!(accessibilityTraits & UIAccessibilityTraitPlaysSound))),
-                                         @"UIAccessibilityTraitKeyboardKey": SKMutableObject(@(!!(accessibilityTraits & UIAccessibilityTraitKeyboardKey))),
-                                         @"UIAccessibilityTraitStaticText": SKMutableObject(@(!!(accessibilityTraits & UIAccessibilityTraitStaticText))),
-                                         @"UIAccessibilityTraitSummaryElement": SKMutableObject(@(!!(accessibilityTraits & UIAccessibilityTraitSummaryElement))),
-                                         @"UIAccessibilityTraitNotEnabled": SKMutableObject(@(!!(accessibilityTraits & UIAccessibilityTraitNotEnabled))),
-                                         @"UIAccessibilityTraitUpdatesFrequently": SKMutableObject(@(!!(accessibilityTraits & UIAccessibilityTraitUpdatesFrequently))),
-                                         @"UIAccessibilityTraitStartsMediaSession": SKMutableObject(@(!!(accessibilityTraits & UIAccessibilityTraitStartsMediaSession))),
-                                         @"UIAccessibilityTraitAdjustable": SKMutableObject(@(!!(accessibilityTraits & UIAccessibilityTraitAdjustable))),
-                                         @"UIAccessibilityTraitAllowsDirectInteraction": SKMutableObject(@(!!(accessibilityTraits & UIAccessibilityTraitAllowsDirectInteraction))),
-                                         @"UIAccessibilityTraitCausesPageTurn": SKMutableObject(@(!!(accessibilityTraits & UIAccessibilityTraitCausesPageTurn))),
-                                         }];
+    @"UIAccessibilityTraitButton" : SKMutableObject(
+        @(!!(accessibilityTraits & UIAccessibilityTraitButton))),
+    @"UIAccessibilityTraitLink" :
+        SKMutableObject(@(!!(accessibilityTraits & UIAccessibilityTraitLink))),
+    @"UIAccessibilityTraitHeader" : SKMutableObject(
+        @(!!(accessibilityTraits & UIAccessibilityTraitHeader))),
+    @"UIAccessibilityTraitSearchField" : SKMutableObject(
+        @(!!(accessibilityTraits & UIAccessibilityTraitSearchField))),
+    @"UIAccessibilityTraitImage" :
+        SKMutableObject(@(!!(accessibilityTraits & UIAccessibilityTraitImage))),
+    @"UIAccessibilityTraitSelected" : SKMutableObject(
+        @(!!(accessibilityTraits & UIAccessibilityTraitSelected))),
+    @"UIAccessibilityTraitPlaysSound" : SKMutableObject(
+        @(!!(accessibilityTraits & UIAccessibilityTraitPlaysSound))),
+    @"UIAccessibilityTraitKeyboardKey" : SKMutableObject(
+        @(!!(accessibilityTraits & UIAccessibilityTraitKeyboardKey))),
+    @"UIAccessibilityTraitStaticText" : SKMutableObject(
+        @(!!(accessibilityTraits & UIAccessibilityTraitStaticText))),
+    @"UIAccessibilityTraitSummaryElement" : SKMutableObject(
+        @(!!(accessibilityTraits & UIAccessibilityTraitSummaryElement))),
+    @"UIAccessibilityTraitNotEnabled" : SKMutableObject(
+        @(!!(accessibilityTraits & UIAccessibilityTraitNotEnabled))),
+    @"UIAccessibilityTraitUpdatesFrequently" : SKMutableObject(
+        @(!!(accessibilityTraits & UIAccessibilityTraitUpdatesFrequently))),
+    @"UIAccessibilityTraitStartsMediaSession" : SKMutableObject(
+        @(!!(accessibilityTraits & UIAccessibilityTraitStartsMediaSession))),
+    @"UIAccessibilityTraitAdjustable" : SKMutableObject(
+        @(!!(accessibilityTraits & UIAccessibilityTraitAdjustable))),
+    @"UIAccessibilityTraitAllowsDirectInteraction" : SKMutableObject(@(
+        !!(accessibilityTraits & UIAccessibilityTraitAllowsDirectInteraction))),
+    @"UIAccessibilityTraitCausesPageTurn" : SKMutableObject(
+        @(!!(accessibilityTraits & UIAccessibilityTraitCausesPageTurn))),
+  }];
   if (@available(iOS 10.0, *)) {
-    traitsDict[@"UIAccessibilityTraitTabBar"] = SKMutableObject(@(!!(accessibilityTraits & UIAccessibilityTraitTabBar)));
+    traitsDict[@"UIAccessibilityTraitTabBar"] = SKMutableObject(
+        @(!!(accessibilityTraits & UIAccessibilityTraitTabBar)));
   }
   return traitsDict;
 }

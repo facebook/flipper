@@ -16,14 +16,18 @@ void swizzleMethods(Class cls, SEL original, SEL swissled) {
   Method originalMethod = class_getInstanceMethod(cls, original);
   Method swissledMethod = class_getInstanceMethod(cls, swissled);
 
-  BOOL didAddMethod = class_addMethod(cls, original,
-                                      method_getImplementation(swissledMethod),
-                                      method_getTypeEncoding(swissledMethod));
+  BOOL didAddMethod = class_addMethod(
+      cls,
+      original,
+      method_getImplementation(swissledMethod),
+      method_getTypeEncoding(swissledMethod));
 
   if (didAddMethod) {
-    class_replaceMethod(cls, swissled,
-                        method_getImplementation(originalMethod),
-                        method_getTypeEncoding(originalMethod));
+    class_replaceMethod(
+        cls,
+        swissled,
+        method_getImplementation(originalMethod),
+        method_getTypeEncoding(originalMethod));
   } else {
     method_exchangeImplementations(originalMethod, swissledMethod);
   }

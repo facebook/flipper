@@ -9,17 +9,18 @@
 
 #import <vector>
 
-#import "SKBufferingPlugin.h"
 #import <FlipperKit/FlipperConnection.h>
-#import "SKDispatchQueue.h"
 #import "SKBufferingPlugin+CPPInitialization.h"
+#import "SKBufferingPlugin.h"
+#import "SKDispatchQueue.h"
 
 static const NSUInteger bufferSize = 500;
 
-@interface SKBufferingPlugin()
+@interface SKBufferingPlugin ()
 
 @property(assign, nonatomic) std::vector<CachedEvent> ringBuffer;
-@property(assign, nonatomic) std::shared_ptr<facebook::flipper::DispatchQueue> connectionAccessQueue;
+@property(assign, nonatomic) std::shared_ptr<facebook::flipper::DispatchQueue>
+    connectionAccessQueue;
 @property(strong, nonatomic) id<FlipperConnection> connection;
 
 @end
@@ -35,12 +36,13 @@ static const NSUInteger bufferSize = 500;
 - (instancetype)initWithQueue:(dispatch_queue_t)queue {
   if (self = [super init]) {
     _ringBuffer.reserve(bufferSize);
-    _connectionAccessQueue = std::make_shared<facebook::flipper::GCDQueue>(queue);
+    _connectionAccessQueue =
+        std::make_shared<facebook::flipper::GCDQueue>(queue);
   }
   return self;
 }
 
-- (NSString *)identifier {
+- (NSString*)identifier {
   // Note: This must match with the javascript pulgin identifier!!
   return @"Network";
 }
@@ -62,9 +64,8 @@ static const NSUInteger bufferSize = 500;
   return YES;
 }
 
-
-- (void)send:(NSString *)method
- sonarObject:(NSDictionary<NSString *, id> *)sonarObject {
+- (void)send:(NSString*)method
+    sonarObject:(NSDictionary<NSString*, id>*)sonarObject {
   _connectionAccessQueue->async(^{
     if (self->_connection) {
       [self->_connection send:method withParams:sonarObject];
@@ -72,17 +73,15 @@ static const NSUInteger bufferSize = 500;
       if (self->_ringBuffer.size() == bufferSize) {
         return;
       }
-      self->_ringBuffer.push_back({
-        .method = method,
-        .sonarObject = sonarObject
-      });
+      self->_ringBuffer.push_back(
+          {.method = method, .sonarObject = sonarObject});
     }
   });
 }
 
 - (void)sendBufferedEvents {
   NSAssert(_connection, @"connection object cannot be nil");
-  for (const auto &event : _ringBuffer) {
+  for (const auto& event : _ringBuffer) {
     [_connection send:event.method withParams:event.sonarObject];
   }
   _ringBuffer.clear();
@@ -90,22 +89,23 @@ static const NSUInteger bufferSize = 500;
 
 @end
 
-@implementation SKBufferingPlugin(CPPInitialization)
+@implementation SKBufferingPlugin (CPPInitialization)
 
-- (instancetype)initWithVectorEventSize:(NSUInteger)size connectionAccessQueue:(std::shared_ptr<facebook::flipper::DispatchQueue>)connectionAccessQueue {
-    if (self = [super init]) {
-      _ringBuffer.reserve(size);
-      _connectionAccessQueue = connectionAccessQueue;
-    }
-    return self;
+- (instancetype)initWithVectorEventSize:(NSUInteger)size
+                  connectionAccessQueue:
+                      (std::shared_ptr<facebook::flipper::DispatchQueue>)
+                          connectionAccessQueue {
+  if (self = [super init]) {
+    _ringBuffer.reserve(size);
+    _connectionAccessQueue = connectionAccessQueue;
+  }
+  return self;
 }
-- (instancetype)initWithDispatchQueue:(std::shared_ptr<facebook::flipper::DispatchQueue>)queue {
-    return [self initWithVectorEventSize:bufferSize
-                      connectionAccessQueue:queue];
-
+- (instancetype)initWithDispatchQueue:
+    (std::shared_ptr<facebook::flipper::DispatchQueue>)queue {
+  return [self initWithVectorEventSize:bufferSize connectionAccessQueue:queue];
 }
 
 @end
-
 
 #endif

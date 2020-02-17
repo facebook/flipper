@@ -7,12 +7,12 @@
 
 #if FB_SONARKIT_ENABLED
 
-#import <Foundation/Foundation.h>
 #import <FlipperKitNetworkPlugin/SKNetworkReporter.h>
+#import <Foundation/Foundation.h>
 
 @interface SKIOSNetworkAdapter : NSObject<SKNetworkAdapterDelegate>
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
-@property (weak, nonatomic) id<SKNetworkReporterDelegate> delegate;
+@property(weak, nonatomic) id<SKNetworkReporterDelegate> delegate;
 
 @end
 

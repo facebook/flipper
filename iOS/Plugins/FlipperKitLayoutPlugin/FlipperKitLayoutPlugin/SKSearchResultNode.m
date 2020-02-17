@@ -8,48 +8,48 @@
 #import "SKSearchResultNode.h"
 
 @implementation SKSearchResultNode {
-  NSString *_nodeId;
+  NSString* _nodeId;
   BOOL _isMatch;
-  NSDictionary *_element;
-  NSArray<SKSearchResultNode *> *_children;
+  NSDictionary* _element;
+  NSArray<SKSearchResultNode*>* _children;
 }
 
-- (instancetype)initWithNode:(NSString *)nodeId
+- (instancetype)initWithNode:(NSString*)nodeId
                      asMatch:(BOOL)isMatch
-                 withElement:(NSDictionary *)element
-                 andChildren:(NSArray<SKSearchResultNode *> *)children {
+                 withElement:(NSDictionary*)element
+                 andChildren:(NSArray<SKSearchResultNode*>*)children {
   self = [super init];
   if (self) {
-      _nodeId = nodeId;
-      _isMatch = isMatch;
-      _element = element;
-      _children = children;
+    _nodeId = nodeId;
+    _isMatch = isMatch;
+    _element = element;
+    _children = children;
   }
   return self;
 }
 
-- (NSDictionary *)toNSDictionary {
+- (NSDictionary*)toNSDictionary {
   if (_element == nil) {
-      return nil;
+    return nil;
   }
-  NSMutableArray<NSDictionary *> *childArray;
+  NSMutableArray<NSDictionary*>* childArray;
   if (_children) {
     childArray = [NSMutableArray new];
-    for (SKSearchResultNode *child in _children) {
-      NSDictionary *childDict = [child toNSDictionary];
+    for (SKSearchResultNode* child in _children) {
+      NSDictionary* childDict = [child toNSDictionary];
       if (childDict) {
-          [childArray addObject:childDict];
+        [childArray addObject:childDict];
       }
     }
   } else {
     childArray = nil;
   }
   return @{
-          @"id": _nodeId,
-          @"isMatch": @(_isMatch),
-          @"element": _element,
-          @"children": childArray ?: [NSNull null]
-          };
+    @"id" : _nodeId,
+    @"isMatch" : @(_isMatch),
+    @"element" : _element,
+    @"children" : childArray ?: [NSNull null]
+  };
 }
 
 @end

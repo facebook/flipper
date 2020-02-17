@@ -10,15 +10,15 @@
 #import "SKSubDescriptor.h"
 #import "SKComponentLayoutWrapper.h"
 
-@implementation SKSubDescriptor
-{
+@implementation SKSubDescriptor {
 }
 
-- (NSDictionary<NSString *, NSObject *> *)getDataForNode:(SKComponentLayoutWrapper *)node {
+- (NSDictionary<NSString*, NSObject*>*)getDataForNode:
+    (SKComponentLayoutWrapper*)node {
   return @{};
 }
 
-- (NSString *)getName {
+- (NSString*)getName {
   return @"";
 }
 

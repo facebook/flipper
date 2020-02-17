@@ -9,9 +9,9 @@
 
 @interface SKNamed<__covariant T> : NSObject
 
-+ (instancetype)newWithName:(NSString *)name withValue:(T)value;
++ (instancetype)newWithName:(NSString*)name withValue:(T)value;
 
-@property (nonatomic, readonly) NSString *name;
-@property (nonatomic, readonly) T value;
+@property(nonatomic, readonly) NSString* name;
+@property(nonatomic, readonly) T value;
 
 @end

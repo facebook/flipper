@@ -9,12 +9,11 @@
 
 @implementation TestNode
 
-- (instancetype)initWithName:(NSString *)name {
-  return [self initWithName: name
-                  withFrame: CGRectZero];
+- (instancetype)initWithName:(NSString*)name {
+  return [self initWithName:name withFrame:CGRectZero];
 }
 
-- (instancetype)initWithName:(NSString *)name withFrame:(CGRect)frame {
+- (instancetype)initWithName:(NSString*)name withFrame:(CGRect)frame {
   if (self = [super init]) {
     _nodeName = name;
     _frame = frame;

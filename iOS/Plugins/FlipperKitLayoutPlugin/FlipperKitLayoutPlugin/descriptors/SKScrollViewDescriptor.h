@@ -9,6 +9,6 @@
 
 #import "SKNodeDescriptor.h"
 
-@interface SKScrollViewDescriptor : SKNodeDescriptor<UIScrollView *>
+@interface SKScrollViewDescriptor : SKNodeDescriptor<UIScrollView*>
 
 @end

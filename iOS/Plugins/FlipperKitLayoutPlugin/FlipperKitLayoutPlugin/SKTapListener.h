@@ -11,7 +11,7 @@ typedef void (^SKTapReceiver)(CGPoint touchPoint);
 
 @protocol SKTapListener
 
-@property (nonatomic, readonly) BOOL isMounted;
+@property(nonatomic, readonly) BOOL isMounted;
 
 - (void)mountWithFrame:(CGRect)frame;
 

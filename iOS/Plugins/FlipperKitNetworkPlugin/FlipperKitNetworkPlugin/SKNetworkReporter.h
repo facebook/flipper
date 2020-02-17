@@ -11,13 +11,13 @@
 
 @protocol SKNetworkReporterDelegate
 
-- (void)didObserveRequest:(SKRequestInfo *)request;
-- (void)didObserveResponse:(SKResponseInfo *)response;
+- (void)didObserveRequest:(SKRequestInfo*)request;
+- (void)didObserveResponse:(SKResponseInfo*)response;
 
 @end
 
 @protocol SKNetworkAdapterDelegate
 
-@property (weak, nonatomic) id<SKNetworkReporterDelegate> delegate;
+@property(weak, nonatomic) id<SKNetworkReporterDelegate> delegate;
 
 @end

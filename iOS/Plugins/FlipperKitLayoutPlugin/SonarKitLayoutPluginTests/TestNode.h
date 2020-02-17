@@ -9,13 +9,13 @@
 
 @interface TestNode : NSObject
 
-@property (nonatomic, copy) NSString *nodeName;
-@property (nonatomic, copy) NSArray<TestNode *> *children;
+@property(nonatomic, copy) NSString* nodeName;
+@property(nonatomic, copy) NSArray<TestNode*>* children;
 
-@property (nonatomic, assign) BOOL highlighted;
-@property (nonatomic, assign) CGRect frame;
+@property(nonatomic, assign) BOOL highlighted;
+@property(nonatomic, assign) CGRect frame;
 
-- (instancetype)initWithName:(NSString *)name;
-- (instancetype)initWithName:(NSString *)name withFrame:(CGRect)frame;
+- (instancetype)initWithName:(NSString*)name;
+- (instancetype)initWithName:(NSString*)name withFrame:(CGRect)frame;
 
 @end
