@@ -9,8 +9,9 @@
 
 declare module 'react-devtools-core/standalone' {
   interface DevTools {
-    setContentDOMNode(node: HTMLElement): DevTools;
-    startServer(port: number): DevTools;
+    setContentDOMNode(node: HTMLElement): this;
+    startServer(port: number): this;
+    setStatusListener(listener: (message: string) => void): this;
   }
   const DevTools: DevTools;
   export default DevTools;
