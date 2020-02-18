@@ -12,6 +12,8 @@
  * Everything here is expected to be VM-neutral.
  */
 
+// clang-format off
+
 #ifndef JNI_H_
 #define JNI_H_
 

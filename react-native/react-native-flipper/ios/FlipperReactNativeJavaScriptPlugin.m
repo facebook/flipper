@@ -12,16 +12,14 @@
 
 #import "FlipperModule.h"
 
-@implementation FlipperReactNativeJavaScriptPlugin
-{
-  NSString *_pluginId;
+@implementation FlipperReactNativeJavaScriptPlugin {
+  NSString* _pluginId;
   BOOL _inBackground;
 }
 
-- (instancetype)initWithFlipperModule:(FlipperModule *)module
-                             pluginId:(NSString *)pluginId
-                         inBackground:(BOOL)inBackground
-{
+- (instancetype)initWithFlipperModule:(FlipperModule*)module
+                             pluginId:(NSString*)pluginId
+                         inBackground:(BOOL)inBackground {
   if (self = [super init]) {
     _module = module;
     _pluginId = pluginId;
@@ -30,43 +28,36 @@
   return self;
 }
 
-- (NSString *)identifier
-{
+- (NSString*)identifier {
   return _pluginId;
 }
 
-- (BOOL)runInBackground
-{
+- (BOOL)runInBackground {
   return _inBackground;
 }
 
-- (void)didConnect:(id<FlipperConnection>)connection
-{
+- (void)didConnect:(id<FlipperConnection>)connection {
   _connection = connection;
   [self fireOnConnect];
 }
 
-- (void)didDisconnect
-{
+- (void)didDisconnect {
   _connection = nil;
   [_module sendEventWithName:@"react-native-flipper-plugin-disconnect"
                         body:[self pluginParams]];
 }
 
-- (BOOL)isConnected
-{
+- (BOOL)isConnected {
   return _connection != nil;
 }
 
-- (void)fireOnConnect
-{
+- (void)fireOnConnect {
   [_module sendEventWithName:@"react-native-flipper-plugin-connect"
                         body:[self pluginParams]];
 }
 
-- (id)pluginParams
-{
-  return @{@"plugin": _pluginId};
+- (id)pluginParams {
+  return @{@"plugin" : _pluginId};
 }
 
 @end

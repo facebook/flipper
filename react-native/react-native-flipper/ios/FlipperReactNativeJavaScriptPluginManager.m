@@ -5,34 +5,30 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-
 #import "FlipperReactNativeJavaScriptPluginManager.h"
-#import <FlipperKit/FlipperPlugin.h>
 #import <FlipperKit/FlipperClient.h>
+#import <FlipperKit/FlipperPlugin.h>
 #import <React/RCTUtils.h>
 #import "FlipperModule.h"
 #import "FlipperReactNativeJavaScriptPlugin.h"
 
 static uint32_t FlipperResponderKeyGenerator = 0;
 
-@implementation FlipperReactNativeJavaScriptPluginManager
-{
-  __weak FlipperClient *_flipperClient;
-  NSMutableDictionary<NSString *, id<FlipperResponder>> *_responders;
+@implementation FlipperReactNativeJavaScriptPluginManager {
+  __weak FlipperClient* _flipperClient;
+  NSMutableDictionary<NSString*, id<FlipperResponder>>* _responders;
 }
 
-+ (instancetype)sharedInstance
-{
-  static FlipperReactNativeJavaScriptPluginManager *sharedInstance = nil;
++ (instancetype)sharedInstance {
+  static FlipperReactNativeJavaScriptPluginManager* sharedInstance = nil;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-      sharedInstance = [self new];
+    sharedInstance = [self new];
   });
   return sharedInstance;
 }
 
-- (instancetype)init
-{
+- (instancetype)init {
   if (self = [super init]) {
     _flipperClient = [FlipperClient sharedClient];
     _responders = [NSMutableDictionary new];
@@ -40,18 +36,18 @@ static uint32_t FlipperResponderKeyGenerator = 0;
   return self;
 }
 
-- (void)registerPluginWithModule:(FlipperModule *)module
-                        pluginId:(NSString *)pluginId
+- (void)registerPluginWithModule:(FlipperModule*)module
+                        pluginId:(NSString*)pluginId
                     inBackground:(BOOL)inBackground
-                  statusCallback:(RCTResponseSenderBlock)statusCallback
-{
+                  statusCallback:(RCTResponseSenderBlock)statusCallback {
   if (_flipperClient == nil) {
     // Flipper is not available in this build
-    statusCallback(@[@"noflipper"]);
+    statusCallback(@[ @"noflipper" ]);
     return;
   }
 
-  FlipperReactNativeJavaScriptPlugin *existingPlugin = [self jsPluginWithIdentifier:pluginId];
+  FlipperReactNativeJavaScriptPlugin* existingPlugin =
+      [self jsPluginWithIdentifier:pluginId];
   if (existingPlugin != nil) {
     existingPlugin.module = module;
 
@@ -59,86 +55,95 @@ static uint32_t FlipperResponderKeyGenerator = 0;
       [existingPlugin fireOnConnect];
     }
 
-    statusCallback(@[@"ok"]);
+    statusCallback(@[ @"ok" ]);
     return;
   }
 
-  FlipperReactNativeJavaScriptPlugin *newPlugin =
-    [[FlipperReactNativeJavaScriptPlugin alloc] initWithFlipperModule:module
-                                                             pluginId:pluginId
-                                                         inBackground:inBackground];
+  FlipperReactNativeJavaScriptPlugin* newPlugin =
+      [[FlipperReactNativeJavaScriptPlugin alloc]
+          initWithFlipperModule:module
+                       pluginId:pluginId
+                   inBackground:inBackground];
   [_flipperClient addPlugin:newPlugin];
-  statusCallback(@[@"ok"]);
+  statusCallback(@[ @"ok" ]);
 }
 
-- (void)sendWithPluginId:(NSString *)pluginId method:(NSString *)method data:(NSString *)data
-{
-  [[self jsPluginWithIdentifier:pluginId].connection send:method
-                                               withParams:RCTJSONParse(data, NULL)];
+- (void)sendWithPluginId:(NSString*)pluginId
+                  method:(NSString*)method
+                    data:(NSString*)data {
+  [[self jsPluginWithIdentifier:pluginId].connection
+            send:method
+      withParams:RCTJSONParse(data, NULL)];
 }
 
-- (void)reportErrorWithMetadata:(NSString *)reason
-                     stackTrace:(NSString *)stackTrace
-                       pluginId:(NSString *)pluginId
-{
-  [[self jsPluginWithIdentifier:pluginId].connection errorWithMessage:reason stackTrace:stackTrace];
+- (void)reportErrorWithMetadata:(NSString*)reason
+                     stackTrace:(NSString*)stackTrace
+                       pluginId:(NSString*)pluginId {
+  [[self jsPluginWithIdentifier:pluginId].connection
+      errorWithMessage:reason
+            stackTrace:stackTrace];
 }
 
-- (void)reportError:(NSString *)error pluginId:(NSString *)pluginId
-{
-  
+- (void)reportError:(NSString*)error pluginId:(NSString*)pluginId {
   // Stacktrace
-  NSMutableArray<NSString *> *callstack = NSThread.callStackSymbols.mutableCopy;
-  NSMutableString *callstackString = callstack.firstObject.mutableCopy;
+  NSMutableArray<NSString*>* callstack = NSThread.callStackSymbols.mutableCopy;
+  NSMutableString* callstackString = callstack.firstObject.mutableCopy;
   [callstack removeObject:callstack.firstObject];
-  for (NSString *stack in callstack) {
+  for (NSString* stack in callstack) {
     [callstackString appendFormat:@"\n %@", stack];
   }
-  
-  [[self jsPluginWithIdentifier:pluginId].connection errorWithMessage:error stackTrace:callstackString];
+
+  [[self jsPluginWithIdentifier:pluginId].connection
+      errorWithMessage:error
+            stackTrace:callstackString];
 }
 
-- (void)subscribeWithModule:(FlipperModule *)module
-                   pluginId:(NSString *)pluginId
-                     method:(NSString *)method
-{
+- (void)subscribeWithModule:(FlipperModule*)module
+                   pluginId:(NSString*)pluginId
+                     method:(NSString*)method {
   __weak __typeof(self) weakSelf = self;
-  [[self jsPluginWithIdentifier: pluginId].connection receive:method withBlock:^(NSDictionary * params, id<FlipperResponder> responder) {
-    __typeof(self) strongSelf = weakSelf;
+  [[self jsPluginWithIdentifier:pluginId].connection
+        receive:method
+      withBlock:^(NSDictionary* params, id<FlipperResponder> responder) {
+        __typeof(self) strongSelf = weakSelf;
 
-    NSMutableDictionary *body = [NSMutableDictionary dictionaryWithDictionary:@{
-      @"plugin": pluginId,
-      @"method": method,
-      @"params": RCTJSONStringify(params, NULL),
-    }];
+        NSMutableDictionary* body =
+            [NSMutableDictionary dictionaryWithDictionary:@{
+              @"plugin" : pluginId,
+              @"method" : method,
+              @"params" : RCTJSONStringify(params, NULL),
+            }];
 
-    if (responder != nil) {
-      NSString *responderId = [NSString stringWithFormat:@"%d", FlipperResponderKeyGenerator++];
-      strongSelf->_responders[responderId] = responder;
-      body[@"responderId"] = responderId;
-    }
+        if (responder != nil) {
+          NSString* responderId =
+              [NSString stringWithFormat:@"%d", FlipperResponderKeyGenerator++];
+          strongSelf->_responders[responderId] = responder;
+          body[@"responderId"] = responderId;
+        }
 
-    [module sendEventWithName:@"react-native-flipper-receive-event" body:body];
-  }];
+        [module sendEventWithName:@"react-native-flipper-receive-event"
+                             body:body];
+      }];
 }
 
-- (void)respondSuccessWithResponderId:(NSString *)responderId data:(NSString *)data
-{
+- (void)respondSuccessWithResponderId:(NSString*)responderId
+                                 data:(NSString*)data {
   id<FlipperResponder> responder = _responders[responderId];
   [responder success:RCTJSONParse(data, NULL)];
   [_responders removeObjectForKey:responderId];
 }
 
-- (void)respondErrorWithResponderId:(NSString *)responderId data:(NSString *)data
-{
+- (void)respondErrorWithResponderId:(NSString*)responderId
+                               data:(NSString*)data {
   id<FlipperResponder> responder = _responders[responderId];
   [responder error:RCTJSONParse(data, NULL)];
   [_responders removeObjectForKey:responderId];
 }
 
-- (FlipperReactNativeJavaScriptPlugin *)jsPluginWithIdentifier:(NSString *)pluginId
-{
-  return (FlipperReactNativeJavaScriptPlugin *)[_flipperClient pluginWithIdentifier:pluginId];
+- (FlipperReactNativeJavaScriptPlugin*)jsPluginWithIdentifier:
+    (NSString*)pluginId {
+  return (FlipperReactNativeJavaScriptPlugin*)[_flipperClient
+      pluginWithIdentifier:pluginId];
 }
 
 @end

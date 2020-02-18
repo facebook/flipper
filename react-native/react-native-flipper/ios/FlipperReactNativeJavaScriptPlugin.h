@@ -5,8 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <FlipperKit/FlipperPlugin.h>
 #import <FlipperKit/FlipperConnection.h>
+#import <FlipperKit/FlipperPlugin.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -14,11 +14,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface FlipperReactNativeJavaScriptPlugin : NSObject<FlipperPlugin>
 
-@property (nonatomic, weak) FlipperModule *module;
-@property (nonatomic, strong, readonly) id<FlipperConnection> connection;
+@property(nonatomic, weak) FlipperModule* module;
+@property(nonatomic, strong, readonly) id<FlipperConnection> connection;
 
-- (instancetype)initWithFlipperModule:(FlipperModule *)module
-                             pluginId:(NSString *)pluginId
+- (instancetype)initWithFlipperModule:(FlipperModule*)module
+                             pluginId:(NSString*)pluginId
                          inBackground:(BOOL)inBackground;
 
 - (BOOL)isConnected;

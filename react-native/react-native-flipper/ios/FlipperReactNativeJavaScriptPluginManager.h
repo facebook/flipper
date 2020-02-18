@@ -17,26 +17,29 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (instancetype)sharedInstance;
 
-- (void)registerPluginWithModule:(FlipperModule *)module
-                        pluginId:(NSString *)pluginId
+- (void)registerPluginWithModule:(FlipperModule*)module
+                        pluginId:(NSString*)pluginId
                     inBackground:(BOOL)inBackground
                   statusCallback:(RCTResponseSenderBlock)statusCallback;
 
-- (void)sendWithPluginId:(NSString *)pluginId method:(NSString *)method data:(NSString *)data;
+- (void)sendWithPluginId:(NSString*)pluginId
+                  method:(NSString*)method
+                    data:(NSString*)data;
 
-- (void)reportErrorWithMetadata:(NSString *)reason
-                     stackTrace:(NSString *)stackTrace
-                       pluginId:(NSString *)pluginId;
+- (void)reportErrorWithMetadata:(NSString*)reason
+                     stackTrace:(NSString*)stackTrace
+                       pluginId:(NSString*)pluginId;
 
-- (void)reportError:(NSString *)error pluginId:(NSString *)pluginId;
+- (void)reportError:(NSString*)error pluginId:(NSString*)pluginId;
 
-- (void)subscribeWithModule:(FlipperModule *)module
-                   pluginId:(NSString *)pluginId
-                     method:(NSString *)method;
+- (void)subscribeWithModule:(FlipperModule*)module
+                   pluginId:(NSString*)pluginId
+                     method:(NSString*)method;
 
-- (void)respondSuccessWithResponderId:(NSString *)responderId data:(NSString *)data;
+- (void)respondSuccessWithResponderId:(NSString*)responderId
+                                 data:(NSString*)data;
 
-- (void)respondErrorWithResponderId:(NSString *)responderId data:(NSString *)data;
+- (void)respondErrorWithResponderId:(NSString*)responderId data:(NSString*)data;
 
 @end
 
