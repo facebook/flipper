@@ -95,7 +95,6 @@ list(APPEND SRC_FILES ${FOLLY_DIR}/io/async/HHWheelTimer.cpp
                       ${FOLLY_DIR}/SocketAddress.cpp
                       ${FOLLY_DIR}/Executor.cpp
                       ${FOLLY_DIR}/FileUtil.cpp
-                      ${FOLLY_DIR}/lang/ColdClass.cpp
                       ${FOLLY_DIR}/lang/Assume.cpp
                       ${FOLLY_DIR}/json.cpp
                       ${FOLLY_DIR}/Unicode.cpp
