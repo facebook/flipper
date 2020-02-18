@@ -140,7 +140,6 @@ task finalizeFollyWithDemangle(dependsOn: [prepareFolly], type: Copy) {
     into "$externalDir/folly/folly/detail/"
 }
 
-
 // HACK to fix template issue with newest NDK
 task finalizeFollyWithFileUtil(dependsOn: [prepareFolly], type: Copy) {
     from './overrides/Folly/'
@@ -148,11 +147,7 @@ task finalizeFollyWithFileUtil(dependsOn: [prepareFolly], type: Copy) {
     into "$externalDir/folly/folly/"
 }
 
-//TODO: Get rid off this hack.
-task finalizeFolly(dependsOn: [finalizeFollyWithDemangle, finalizeFollyWithFileUtil], type: Copy) {
-    from './overrides/Folly/'
-   include 'AsyncServerSocket.cpp'
-   into "$externalDir/folly/folly/io/async/"
+task finalizeFolly(dependsOn: [finalizeFollyWithDemangle, finalizeFollyWithFileUtil]) {
 }
 
 task downloadLibEvent(dependsOn: [], type: Download) {
