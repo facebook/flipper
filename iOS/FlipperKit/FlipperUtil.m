@@ -10,7 +10,7 @@
 #import "FlipperResponder.h"
 
 void FlipperPerformBlockOnMainThread(
-    void (^block)(),
+    void (^block)(void),
     id<FlipperResponder> responder) {
   if ([NSThread isMainThread]) {
     @try {

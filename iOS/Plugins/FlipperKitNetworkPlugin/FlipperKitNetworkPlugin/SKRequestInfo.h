@@ -10,13 +10,13 @@
 @interface SKRequestInfo : NSObject
 @property(assign, readwrite) int64_t identifier;
 @property(assign, readwrite) uint64_t timestamp;
-@property(strong, nonatomic) NSURLRequest* request;
-@property(strong, nonatomic) NSString* body;
+@property(strong, nonatomic) NSURLRequest* _Nullable request;
+@property(strong, nonatomic) NSString* _Nullable body;
 
-- (instancetype)initWithIdentifier:(int64_t)identifier
-                         timestamp:(uint64_t)timestamp
-                           request:(NSURLRequest*)request
-                              data:(NSData*)data;
+- (instancetype _Nonnull)initWithIdentifier:(int64_t)identifier
+                                  timestamp:(uint64_t)timestamp
+                                    request:(NSURLRequest* _Nullable)request
+                                       data:(NSData* _Nullable)data;
 - (void)setBodyFromData:(NSData* _Nullable)data;
 
 @end

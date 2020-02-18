@@ -46,7 +46,6 @@
                           @"currentTitleColor" :
                               SKMutableObject(node.currentTitleColor),
                         }]];
-
   return data;
 }
 

@@ -120,7 +120,7 @@ static NSString* const kSKCellIdentifier =
 }
 
 - (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation {
-  return UIInterfaceOrientationMaskPortrait;
+  return UIInterfaceOrientationPortrait;
 }
 
 @end

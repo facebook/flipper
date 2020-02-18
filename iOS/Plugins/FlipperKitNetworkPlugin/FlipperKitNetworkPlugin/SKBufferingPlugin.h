@@ -13,7 +13,7 @@
 
 @interface SKBufferingPlugin : NSObject<FlipperPlugin>
 
-- (instancetype)initWithQueue:(dispatch_queue_t)queue NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithQueue:(dispatch_queue_t)queue;
 
 - (void)send:(NSString*)method
     sonarObject:(NSDictionary<NSString*, id>*)sonarObject;

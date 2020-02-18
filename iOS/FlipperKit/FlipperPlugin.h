@@ -11,7 +11,7 @@
 
 SK_EXTERN_C_BEGIN
 void FlipperPerformBlockOnMainThread(
-    void (^block)(),
+    void (^block)(void),
     id<FlipperResponder> responder);
 SK_EXTERN_C_END
 

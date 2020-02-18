@@ -177,7 +177,7 @@ static CK::StaticMutex _mutex = CK_MUTEX_INITIALIZER;
         NSMutableArray<NSDictionary<NSString*, NSObject*>*>* responders =
             [NSMutableArray new];
 
-        for (const auto action : _actions) {
+        for (const auto& action : _actions) {
           if ((action.first & [controlEvent integerValue]) == 0) {
             continue;
           }
