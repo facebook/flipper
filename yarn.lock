@@ -1575,10 +1575,10 @@
     "@types/rsocket-flowable" "*"
     "@types/rsocket-types" "*"
 
-"@types/rsocket-core@^0.0.4":
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/@types/rsocket-core/-/rsocket-core-0.0.4.tgz#4671edb58232e3d09bcb78c4ef62243643a00a61"
-  integrity sha512-s9WkhGvk9+DDf2oV6XdwSCm3ypEYLZt+0a8uVDosyGcysV7cD5ntIqtFleGO1UcyJXTGrt5unZJQ2z9DTGeKFA==
+"@types/rsocket-core@^0.0.5":
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/@types/rsocket-core/-/rsocket-core-0.0.5.tgz#5c5605af821a56cbce1777a420583511f3d31974"
+  integrity sha512-ARlWAs7kJGFezpaK7wGZWB5XhEqMP4NlWBqae43goLR31fLU/VmaCmlIgVOFxj5xwNO6EcUlFQBZNVNxr3Qk3Q==
   dependencies:
     "@types/node" "*"
     "@types/rsocket-flowable" "*"
