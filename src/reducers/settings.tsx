@@ -34,6 +34,13 @@ export type Settings = {
       width: number;
     };
   };
+  reactNative: {
+    shortcuts: {
+      enabled: boolean;
+      reload: string;
+      openDevMenu: string;
+    };
+  };
 };
 
 export type Action =
@@ -55,6 +62,13 @@ const initialState: Settings = {
       url: 'http://localhost:8888',
       height: 600,
       width: 800,
+    },
+  },
+  reactNative: {
+    shortcuts: {
+      enabled: true,
+      reload: 'Alt+Shift+R',
+      openDevMenu: 'Alt+Shift+D',
     },
   },
 };
