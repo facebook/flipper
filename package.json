@@ -81,7 +81,7 @@
     "@types/react-window": "^1.8.1",
     "@types/redux-persist": "^4.3.1",
     "@types/requestidlecallback": "^0.3.1",
-    "@types/rsocket-core": "^0.0.4",
+    "@types/rsocket-core": "^0.0.5",
     "@types/testing-library__react": "^9.1.2",
     "@types/tmp": "^0.1.0",
     "@types/uuid": "^3.4.5",
