@@ -6,6 +6,11 @@
         "headless-tests/package.json"
       ]
     },
+    "doctor": {
+      "packages": [
+        "doctor/package.json"
+      ]
+    },
     "plugins": {
       "packages": [
         "src/plugins/cpu/package.json",
