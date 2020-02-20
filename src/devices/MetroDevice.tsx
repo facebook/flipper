@@ -201,7 +201,7 @@ export default class MetroDevice extends BaseDevice {
 
   archive() {
     return new ArchivedDevice(
-      this.serial + v4(),
+      this.serial,
       this.deviceType,
       this.title,
       this.os,

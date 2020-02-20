@@ -204,9 +204,22 @@ const reducer = (state: State = INITAL_STATE, action: Actions): State => {
     case 'REGISTER_DEVICE': {
       const {payload} = action;
 
+      const newDevices = state.devices.slice();
+      const existing = state.devices.findIndex(
+        device => device.serial === payload.serial,
+      );
+      if (existing !== -1) {
+        console.debug(
+          `Got a new device instance for already existing serial ${payload.serial}`,
+        );
+        newDevices[existing] = payload;
+      } else {
+        newDevices.push(payload);
+      }
+
       return updateSelection({
         ...state,
-        devices: state.devices.concat(payload),
+        devices: newDevices,
       });
     }
 

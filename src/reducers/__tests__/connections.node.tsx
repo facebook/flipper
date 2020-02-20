@@ -12,6 +12,7 @@ import {State, selectPlugin} from '../connections';
 import BaseDevice from '../../devices/BaseDevice';
 import MacDevice from '../../devices/MacDevice';
 import {FlipperDevicePlugin} from '../../plugin';
+import MetroDevice from '../../devices/MetroDevice';
 
 test('REGISTER_DEVICE doesnt remove error', () => {
   const initialState: State = reducer(undefined, {
@@ -32,6 +33,55 @@ test('REGISTER_DEVICE doesnt remove error', () => {
   expect(endState.errors).toEqual([
     {message: 'something went wrong', occurrences: 1},
   ]);
+});
+
+test('doing a double REGISTER_DEVICE keeps the last', () => {
+  const device1 = new BaseDevice('serial', 'physical', 'title', 'Android');
+  const device2 = new BaseDevice('serial', 'physical', 'title2', 'Android');
+  const initialState: State = reducer(undefined, {
+    type: 'REGISTER_DEVICE',
+    payload: device1,
+  });
+  expect(initialState.devices.length).toBe(1);
+  expect(initialState.devices[0]).toBe(device1);
+
+  const endState = reducer(initialState, {
+    type: 'REGISTER_DEVICE',
+    payload: device2,
+  });
+  expect(endState.devices.length).toBe(1);
+  expect(endState.devices[0]).toBe(device2);
+});
+
+test('register, remove, re-register a metro device works correctly', () => {
+  const device1 = new MetroDevice('http://localhost:8081', undefined);
+  let state: State = reducer(undefined, {
+    type: 'REGISTER_DEVICE',
+    payload: device1,
+  });
+  expect(state.devices.length).toBe(1);
+  expect(state.devices[0].displayTitle()).toBe('React Native');
+
+  const archived = device1.archive();
+  state = reducer(state, {
+    type: 'UNREGISTER_DEVICES',
+    payload: new Set([device1.serial]),
+  });
+  expect(state.devices.length).toBe(0);
+
+  state = reducer(state, {
+    type: 'REGISTER_DEVICE',
+    payload: archived,
+  });
+  expect(state.devices.length).toBe(1);
+  expect(state.devices[0].displayTitle()).toBe('React Native (Offline)');
+
+  state = reducer(state, {
+    type: 'REGISTER_DEVICE',
+    payload: new MetroDevice('http://localhost:8081', undefined),
+  });
+  expect(state.devices.length).toBe(1);
+  expect(state.devices[0].displayTitle()).toBe('React Native');
 });
 
 test('triggering REGISTER_DEVICE before REGISTER_PLUGINS still registers device plugins', () => {

@@ -20,7 +20,6 @@ const METRO_URL = `http://${METRO_HOST}:${METRO_PORT}`;
 const METRO_LOGS_ENDPOINT = `ws://${METRO_HOST}:${METRO_PORT}/events`;
 const METRO_MESSAGE = ['React Native packager is running', 'Metro is running'];
 const QUERY_INTERVAL = 5000;
-const METRO_DEVICE_ID = 'metro'; // there is always only one activve
 
 async function isMetroRunning(): Promise<boolean> {
   return new Promise(resolve => {
@@ -50,7 +49,7 @@ async function registerDevice(
   store: Store,
   logger: Logger,
 ) {
-  const metroDevice = new MetroDevice(METRO_DEVICE_ID, ws);
+  const metroDevice = new MetroDevice(METRO_URL, ws);
   logger.track('usage', 'register-device', {
     os: 'Metro',
     name: metroDevice.title,
@@ -60,7 +59,7 @@ async function registerDevice(
   store.dispatch({
     type: 'REGISTER_DEVICE',
     payload: metroDevice,
-    serial: METRO_DEVICE_ID,
+    serial: METRO_URL,
   });
 
   registerDeviceCallbackOnPlugins(
@@ -74,20 +73,20 @@ async function registerDevice(
 async function unregisterDevices(store: Store, logger: Logger) {
   logger.track('usage', 'unregister-device', {
     os: 'Metro',
-    serial: METRO_DEVICE_ID,
+    serial: METRO_URL,
   });
 
   let archivedDevice: ArchivedDevice | undefined = undefined;
   const device = store
     .getState()
-    .connections.devices.find(device => device.serial === METRO_DEVICE_ID);
+    .connections.devices.find(device => device.serial === METRO_URL);
   if (device && !device.isArchived) {
     archivedDevice = device.archive();
   }
 
   store.dispatch({
     type: 'UNREGISTER_DEVICES',
-    payload: new Set([METRO_DEVICE_ID]),
+    payload: new Set([METRO_URL]),
   });
 
   if (archivedDevice) {
@@ -102,6 +101,7 @@ async function unregisterDevices(store: Store, logger: Logger) {
 export default (store: Store, logger: Logger) => {
   let timeoutHandle: NodeJS.Timeout;
   let ws: WebSocket | undefined;
+  let unregistered = false;
 
   async function tryConnectToMetro() {
     if (ws) {
@@ -118,10 +118,13 @@ export default (store: Store, logger: Logger) => {
       };
 
       _ws.onclose = _ws.onerror = () => {
-        clearTimeout(guard);
-        ws = undefined;
-        unregisterDevices(store, logger);
-        scheduleNext();
+        if (!unregistered) {
+          unregistered = true;
+          clearTimeout(guard);
+          ws = undefined;
+          unregisterDevices(store, logger);
+          scheduleNext();
+        }
       };
 
       const guard = setTimeout(() => {
