@@ -12,6 +12,7 @@ import {Logger} from '../fb-interfaces/Logger';
 import {registerDeviceCallbackOnPlugins} from '../utils/onRegisterDevice';
 import MetroDevice from '../devices/MetroDevice';
 import {ArchivedDevice} from 'flipper';
+import http from 'http';
 
 const METRO_PORT = 8081;
 const METRO_HOST = 'localhost';
@@ -22,13 +23,26 @@ const QUERY_INTERVAL = 5000;
 const METRO_DEVICE_ID = 'metro'; // there is always only one activve
 
 async function isMetroRunning(): Promise<boolean> {
-  try {
-    // TODO: this prints a log error without connection, fix that
-    const contents = await (await global.fetch(METRO_URL)).text();
-    return METRO_MESSAGE.some(msg => contents.includes(msg));
-  } catch (e) {
-    return false;
-  }
+  return new Promise(resolve => {
+    // We use Node's http library, rather than fetch api, as the latter cannot supress network errors being shown in the devtools console
+    // which generates a lot of noise
+    http
+      .get(METRO_URL, resp => {
+        let data = '';
+        resp
+          .on('data', chunk => {
+            data += chunk;
+          })
+          .on('end', () => {
+            const isMetro = METRO_MESSAGE.some(msg => data.includes(msg));
+            resolve(isMetro);
+          });
+      })
+      .on('error', err => {
+        console.debug('Could not connect to METRO ' + err);
+        resolve(false);
+      });
+  });
 }
 
 async function registerDevice(
