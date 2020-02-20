@@ -19,6 +19,7 @@ import com.facebook.flipper.plugins.inspector.ApplicationWrapper;
 import com.facebook.flipper.plugins.inspector.Named;
 import com.facebook.flipper.plugins.inspector.NodeDescriptor;
 import com.facebook.flipper.plugins.inspector.Touch;
+import com.facebook.flipper.plugins.inspector.descriptors.utils.ContextDescriptorUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -204,7 +205,8 @@ public class ApplicationDescriptor extends NodeDescriptor<ApplicationWrapper> {
 
   @Override
   public List<Named<FlipperObject>> getData(ApplicationWrapper node) {
-    return Collections.EMPTY_LIST;
+    return Collections.singletonList(
+        new Named<>("Theme", ContextDescriptorUtils.themeData(node.getApplication())));
   }
 
   @Override

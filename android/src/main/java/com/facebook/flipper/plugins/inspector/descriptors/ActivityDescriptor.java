@@ -14,6 +14,7 @@ import com.facebook.flipper.core.FlipperObject;
 import com.facebook.flipper.plugins.inspector.Named;
 import com.facebook.flipper.plugins.inspector.NodeDescriptor;
 import com.facebook.flipper.plugins.inspector.Touch;
+import com.facebook.flipper.plugins.inspector.descriptors.utils.ContextDescriptorUtils;
 import com.facebook.flipper.plugins.inspector.descriptors.utils.stethocopies.FragmentActivityAccessor;
 import com.facebook.flipper.plugins.inspector.descriptors.utils.stethocopies.FragmentCompat;
 import com.facebook.flipper.plugins.inspector.descriptors.utils.stethocopies.FragmentManagerAccessor;
@@ -65,7 +66,7 @@ public class ActivityDescriptor extends NodeDescriptor<Activity> {
 
   @Override
   public List<Named<FlipperObject>> getData(Activity node) {
-    return Collections.EMPTY_LIST;
+    return Collections.singletonList(new Named<>("Theme", ContextDescriptorUtils.themeData(node)));
   }
 
   @Override
