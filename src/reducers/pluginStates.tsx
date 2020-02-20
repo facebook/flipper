@@ -39,7 +39,7 @@ export default function reducer(
 ): State {
   if (action.type === 'SET_PLUGIN_STATE') {
     const newPluginState = action.payload.state;
-    if (newPluginState && newPluginState !== state) {
+    if (newPluginState && newPluginState !== state[action.payload.pluginKey]) {
       return {
         ...state,
         [action.payload.pluginKey]: {
