@@ -7,10 +7,9 @@
  * @format
  */
 
-import TooltipProvider, {TooltipOptions} from './TooltipProvider';
+import {TooltipOptions, TooltipContext} from './TooltipProvider';
 import styled from '@emotion/styled';
-import React, {Component} from 'react';
-import PropTypes from 'prop-types';
+import React, {useContext, useCallback, useRef, useEffect} from 'react';
 
 const TooltipContainer = styled.div({
   display: 'contents',
@@ -25,59 +24,40 @@ type TooltipProps = {
   options?: TooltipOptions;
 };
 
-type TooltipState = {
-  open: boolean;
-};
+export default function Tooltip(props: TooltipProps) {
+  const tooltipManager = useContext(TooltipContext);
+  const ref = useRef<HTMLDivElement | null>();
+  const isOpen = useRef<boolean>(false);
 
-export default class Tooltip extends Component<TooltipProps, TooltipState> {
-  static contextTypes = {
-    TOOLTIP_PROVIDER: PropTypes.object,
-  };
+  useEffect(
+    () => () => {
+      if (isOpen.current) {
+        tooltipManager.close();
+      }
+    },
+    [],
+  );
 
-  context!: {
-    TOOLTIP_PROVIDER: TooltipProvider;
-  };
-
-  ref: HTMLDivElement | undefined | null;
-
-  state = {
-    open: false,
-  };
-
-  componentWillUnmount() {
-    if (this.state.open === true) {
-      this.context.TOOLTIP_PROVIDER.close();
+  const onMouseEnter = useCallback(() => {
+    if (ref.current && props.title) {
+      tooltipManager.open(ref.current, props.title, props.options || {});
+      isOpen.current = true;
     }
-  }
+  }, []);
 
-  onMouseEnter = () => {
-    if (this.ref != null) {
-      this.context.TOOLTIP_PROVIDER.open(
-        this.ref,
-        this.props.title,
-        this.props.options || {},
-      );
-      this.setState({open: true});
+  const onMouseLeave = useCallback(() => {
+    if (isOpen.current) {
+      tooltipManager.close();
+      isOpen.current = false;
     }
-  };
+  }, []);
 
-  onMouseLeave = () => {
-    this.context.TOOLTIP_PROVIDER.close();
-    this.setState({open: false});
-  };
-
-  setRef = (ref: HTMLDivElement | null) => {
-    this.ref = ref;
-  };
-
-  render() {
-    return (
-      <TooltipContainer
-        ref={this.setRef}
-        onMouseEnter={this.onMouseEnter}
-        onMouseLeave={this.onMouseLeave}>
-        {this.props.children}
-      </TooltipContainer>
-    );
-  }
+  return (
+    <TooltipContainer
+      ref={ref as any}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}>
+      {props.children}
+    </TooltipContainer>
+  );
 }

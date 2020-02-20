@@ -9,8 +9,7 @@
 
 import styled from '@emotion/styled';
 import {colors} from './colors';
-import {Component} from 'react';
-import PropTypes from 'prop-types';
+import {memo, createContext, useMemo, useState, useRef} from 'react';
 import {
   TopProperty,
   LeftProperty,
@@ -134,163 +133,168 @@ type TooltipState = {
   timeoutID: ReturnType<typeof setTimeout> | null | undefined;
 };
 
-export default class TooltipProvider extends Component<
-  TooltipProps,
-  TooltipState
-> {
-  static childContextTypes = {
-    TOOLTIP_PROVIDER: PropTypes.object,
-  };
-
-  state: TooltipState = {
-    tooltip: null,
-    timeoutID: undefined,
-  };
-
-  getChildContext() {
-    return {TOOLTIP_PROVIDER: this};
-  }
-
+interface TooltipManager {
   open(
     container: HTMLDivElement,
     title: React.ReactNode,
     options: TooltipOptions,
-  ) {
-    const node = container.childNodes[0];
-    if (node == null || !(node instanceof HTMLElement)) {
-      return;
-    }
+  ): void;
+  close(): void;
+}
 
-    if (options.delay) {
-      this.state.timeoutID = setTimeout(() => {
-        this.setState({
-          tooltip: {
-            rect: node.getBoundingClientRect(),
-            title,
-            options: options,
-          },
+export const TooltipContext = createContext<TooltipManager>(undefined as any);
+
+const TooltipProvider: React.FC<{}> = memo(function TooltipProvider({
+  children,
+}) {
+  const timeoutID = useRef<NodeJS.Timeout>();
+  const [tooltip, setTooltip] = useState<TooltipObject | undefined>(undefined);
+  const tooltipManager = useMemo(
+    () => ({
+      open(
+        container: HTMLDivElement,
+        title: React.ReactNode,
+        options: TooltipOptions,
+      ) {
+        if (timeoutID.current) {
+          clearTimeout(timeoutID.current);
+        }
+        const node = container.childNodes[0];
+        if (node == null || !(node instanceof HTMLElement)) {
+          return;
+        }
+        if (options.delay) {
+          timeoutID.current = setTimeout(() => {
+            setTooltip({
+              rect: node.getBoundingClientRect(),
+              title,
+              options: options,
+            });
+          }, options.delay);
+          return;
+        }
+        setTooltip({
+          rect: node.getBoundingClientRect(),
+          title,
+          options: options,
         });
-      }, options.delay);
-      return;
-    }
-
-    this.setState({
-      tooltip: {
-        rect: node.getBoundingClientRect(),
-        title,
-        options: options,
       },
-    });
+      close() {
+        if (timeoutID.current) {
+          clearTimeout(timeoutID.current);
+        }
+        setTooltip(undefined);
+      },
+    }),
+    [],
+  );
+
+  return (
+    <>
+      {tooltip && tooltip.title ? <Tooltip tooltip={tooltip} /> : null}
+      <TooltipContext.Provider value={tooltipManager}>
+        {children}
+      </TooltipContext.Provider>
+    </>
+  );
+});
+
+function Tooltip({tooltip}: {tooltip: TooltipObject}) {
+  return (
+    <>
+      {getTooltipTail(tooltip)}
+      {getTooltipBubble(tooltip)}
+    </>
+  );
+}
+
+export default TooltipProvider;
+
+function getTooltipTail(tooltip: TooltipObject) {
+  const opts = Object.assign(defaultOptions, tooltip.options);
+  if (!opts.showTail) {
+    return null;
   }
 
-  close() {
-    if (this.state.timeoutID) {
-      clearTimeout(this.state.timeoutID);
+  let left: LeftProperty<number> = 'auto';
+  let top: TopProperty<number> = 'auto';
+  let bottom: BottomProperty<number> = 'auto';
+  let right: RightProperty<number> = 'auto';
+
+  if (opts.position === 'below') {
+    left = tooltip.rect.left + TAIL_AB_POSITION_HORIZONTAL_OFFSET;
+    top = tooltip.rect.bottom;
+  } else if (opts.position === 'above') {
+    left = tooltip.rect.left + TAIL_AB_POSITION_HORIZONTAL_OFFSET;
+    bottom = window.innerHeight - tooltip.rect.top;
+  } else if (opts.position === 'toRight') {
+    left = tooltip.rect.right + TAIL_LR_POSITION_HORIZONTAL_OFFSET;
+    top = tooltip.rect.top;
+  } else if (opts.position === 'toLeft') {
+    right =
+      window.innerWidth -
+      tooltip.rect.left +
+      TAIL_LR_POSITION_HORIZONTAL_OFFSET;
+    top = tooltip.rect.top;
+  }
+
+  return (
+    <TooltipTail
+      key="tail"
+      top={top}
+      left={left}
+      bottom={bottom}
+      right={right}
+      options={opts}
+    />
+  );
+}
+
+function getTooltipBubble(tooltip: TooltipObject) {
+  const opts = Object.assign(defaultOptions, tooltip.options);
+  let left: LeftProperty<number> = 'auto';
+  let top: TopProperty<number> = 'auto';
+  let bottom: BottomProperty<number> = 'auto';
+  let right: RightProperty<number> = 'auto';
+
+  if (opts.position === 'below') {
+    left = tooltip.rect.left;
+    top = tooltip.rect.bottom;
+    if (opts.showTail) {
+      top += BUBBLE_SHOWTAIL_OFFSET;
     }
-    this.setState({tooltip: null});
-  }
-
-  getTooltipTail(tooltip: TooltipObject) {
-    const opts = Object.assign(defaultOptions, tooltip.options);
-    if (!opts.showTail) {
-      return null;
+  } else if (opts.position === 'above') {
+    bottom = window.innerHeight - tooltip.rect.top;
+    if (opts.showTail) {
+      bottom += BUBBLE_SHOWTAIL_OFFSET;
     }
-
-    let left: LeftProperty<number> = 'auto';
-    let top: TopProperty<number> = 'auto';
-    let bottom: BottomProperty<number> = 'auto';
-    let right: RightProperty<number> = 'auto';
-
-    if (opts.position === 'below') {
-      left = tooltip.rect.left + TAIL_AB_POSITION_HORIZONTAL_OFFSET;
-      top = tooltip.rect.bottom;
-    } else if (opts.position === 'above') {
-      left = tooltip.rect.left + TAIL_AB_POSITION_HORIZONTAL_OFFSET;
-      bottom = window.innerHeight - tooltip.rect.top;
-    } else if (opts.position === 'toRight') {
-      left = tooltip.rect.right + TAIL_LR_POSITION_HORIZONTAL_OFFSET;
-      top = tooltip.rect.top;
-    } else if (opts.position === 'toLeft') {
-      right =
-        window.innerWidth -
-        tooltip.rect.left +
-        TAIL_LR_POSITION_HORIZONTAL_OFFSET;
-      top = tooltip.rect.top;
+    left = tooltip.rect.left;
+  } else if (opts.position === 'toRight') {
+    left = tooltip.rect.right + BUBBLE_LR_POSITION_HORIZONTAL_OFFSET;
+    if (opts.showTail) {
+      left += BUBBLE_SHOWTAIL_OFFSET;
     }
-
-    return (
-      <TooltipTail
-        key="tail"
-        top={top}
-        left={left}
-        bottom={bottom}
-        right={right}
-        options={opts}
-      />
-    );
-  }
-
-  getTooltipBubble(tooltip: TooltipObject) {
-    const opts = Object.assign(defaultOptions, tooltip.options);
-    let left: LeftProperty<number> = 'auto';
-    let top: TopProperty<number> = 'auto';
-    let bottom: BottomProperty<number> = 'auto';
-    let right: RightProperty<number> = 'auto';
-
-    if (opts.position === 'below') {
-      left = tooltip.rect.left;
-      top = tooltip.rect.bottom;
-      if (opts.showTail) {
-        top += BUBBLE_SHOWTAIL_OFFSET;
-      }
-    } else if (opts.position === 'above') {
-      bottom = window.innerHeight - tooltip.rect.top;
-      if (opts.showTail) {
-        bottom += BUBBLE_SHOWTAIL_OFFSET;
-      }
-      left = tooltip.rect.left;
-    } else if (opts.position === 'toRight') {
-      left = tooltip.rect.right + BUBBLE_LR_POSITION_HORIZONTAL_OFFSET;
-      if (opts.showTail) {
-        left += BUBBLE_SHOWTAIL_OFFSET;
-      }
-      top = tooltip.rect.top + BUBBLE_BELOW_POSITION_VERTICAL_OFFSET;
-    } else if (opts.position === 'toLeft') {
-      right =
-        window.innerWidth -
-        tooltip.rect.left +
-        BUBBLE_LR_POSITION_HORIZONTAL_OFFSET;
-      if (opts.showTail) {
-        right += BUBBLE_SHOWTAIL_OFFSET;
-      }
-      top = tooltip.rect.top + BUBBLE_BELOW_POSITION_VERTICAL_OFFSET;
+    top = tooltip.rect.top + BUBBLE_BELOW_POSITION_VERTICAL_OFFSET;
+  } else if (opts.position === 'toLeft') {
+    right =
+      window.innerWidth -
+      tooltip.rect.left +
+      BUBBLE_LR_POSITION_HORIZONTAL_OFFSET;
+    if (opts.showTail) {
+      right += BUBBLE_SHOWTAIL_OFFSET;
     }
-
-    return (
-      <TooltipBubble
-        key="bubble"
-        top={top}
-        left={left}
-        bottom={bottom}
-        right={right}
-        options={opts}>
-        {tooltip.title}
-      </TooltipBubble>
-    );
+    top = tooltip.rect.top + BUBBLE_BELOW_POSITION_VERTICAL_OFFSET;
   }
 
-  getTooltipElement() {
-    const {tooltip} = this.state;
-    return (
-      tooltip &&
-      tooltip.title && [
-        this.getTooltipTail(tooltip),
-        this.getTooltipBubble(tooltip),
-      ]
-    );
-  }
-
-  render() {
-    return [this.getTooltipElement(), this.props.children];
-  }
+  return (
+    <TooltipBubble
+      key="bubble"
+      top={top}
+      left={left}
+      bottom={bottom}
+      right={right}
+      options={opts}>
+      {tooltip.title}
+    </TooltipBubble>
+  );
 }
