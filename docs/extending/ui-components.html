@@ -778,8 +778,8 @@ Supported types: info | spinning | warning | error</p>
 <tbody>
 <tr><td><code>columnSizes</code></td><td><code>TableColumnSizes</code></td><td></td></tr>
 <tr><td><code>columnKeys</code></td><td><code>TableColumnKeys</code></td><td></td></tr>
-<tr><td><code>onMouseDown</code></td><td><code>(e: React.MouseEvent) =&gt; any</code></td><td></td></tr>
-<tr><td><code>onMouseEnter</code></td><td><code>(e: React.MouseEvent) =&gt; void</code></td><td></td></tr>
+<tr><td><code>onMouseDown</code></td><td><code>(e: React.MouseEvent, row: TableBodyRow, index: number) =&gt; void</code></td><td></td></tr>
+<tr><td><code>onMouseEnter</code></td><td><code>( e: React.MouseEvent, row: TableBodyRow, index: number, ) =&gt; void</code></td><td></td></tr>
 <tr><td><code>multiline</code></td><td><code>boolean</code></td><td></td></tr>
 <tr><td><code>rowLineHeight</code></td><td><code>number</code></td><td></td></tr>
 <tr><td><code>highlighted</code></td><td><code>boolean</code></td><td></td></tr>
