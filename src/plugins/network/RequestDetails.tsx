@@ -132,7 +132,11 @@ export default class RequestDetails extends Component<
 
     return (
       <RequestDetails.Container>
-        <Panel heading={'Request'} floating={false} padded={false}>
+        <Panel
+          key="request"
+          heading={'Request'}
+          floating={false}
+          padded={false}>
           <ManagedTable
             multiline={true}
             columnSizes={KeyValueColumnSizes}
@@ -154,13 +158,18 @@ export default class RequestDetails extends Component<
         ) : null}
 
         {request.headers.length > 0 ? (
-          <Panel heading={'Request Headers'} floating={false} padded={false}>
+          <Panel
+            key="headers"
+            heading={'Request Headers'}
+            floating={false}
+            padded={false}>
             <HeaderInspector headers={request.headers} />
           </Panel>
         ) : null}
 
         {request.data != null ? (
           <Panel
+            key="requestData"
             heading={'Request Body'}
             floating={false}
             padded={!formattedText}>
@@ -170,29 +179,35 @@ export default class RequestDetails extends Component<
             />
           </Panel>
         ) : null}
-        {response
-          ? [
-              response.headers.length > 0 ? (
-                <Panel
-                  heading={'Response Headers'}
-                  floating={false}
-                  padded={false}>
-                  <HeaderInspector headers={response.headers} />
-                </Panel>
-              ) : null,
+        {response ? (
+          <>
+            {response.headers.length > 0 ? (
               <Panel
-                heading={'Response Body'}
+                key={'responseheaders'}
+                heading={'Response Headers'}
                 floating={false}
-                padded={!formattedText}>
-                <ResponseBodyInspector
-                  formattedText={formattedText}
-                  request={request}
-                  response={response}
-                />
-              </Panel>,
-            ]
-          : null}
-        <Panel heading={'Options'} floating={false} collapsed={true}>
+                padded={false}>
+                <HeaderInspector headers={response.headers} />
+              </Panel>
+            ) : null}
+            <Panel
+              key={'responsebody'}
+              heading={'Response Body'}
+              floating={false}
+              padded={!formattedText}>
+              <ResponseBodyInspector
+                formattedText={formattedText}
+                request={request}
+                response={response}
+              />
+            </Panel>
+          </>
+        ) : null}
+        <Panel
+          key="options"
+          heading={'Options'}
+          floating={false}
+          collapsed={true}>
           <Select
             grow
             label="Body"
@@ -202,7 +217,11 @@ export default class RequestDetails extends Component<
           />
         </Panel>
         {response && response.insights ? (
-          <Panel heading={'Insights'} floating={false} collapsed={true}>
+          <Panel
+            key="insights"
+            heading={'Insights'}
+            floating={false}
+            collapsed={true}>
             <InsightsInspector insights={response.insights} />
           </Panel>
         ) : null}
