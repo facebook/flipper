@@ -115,8 +115,12 @@ TableBodyColumnContainer.displayName = 'TableRow:TableBodyColumnContainer';
 type Props = {
   columnSizes: TableColumnSizes;
   columnKeys: TableColumnKeys;
-  onMouseDown: (e: React.MouseEvent) => any;
-  onMouseEnter?: (e: React.MouseEvent) => void;
+  onMouseDown: (e: React.MouseEvent, row: TableBodyRow, index: number) => void;
+  onMouseEnter?: (
+    e: React.MouseEvent,
+    row: TableBodyRow,
+    index: number,
+  ) => void;
   multiline?: boolean;
   rowLineHeight: number;
   highlighted: boolean;
@@ -132,6 +136,14 @@ export default class TableRow extends React.PureComponent<Props> {
     zebra: true,
   };
 
+  handleMouseDown = (e: React.MouseEvent) => {
+    this.props.onMouseDown(e, this.props.row, this.props.index);
+  };
+
+  handleMouseEnter = (e: React.MouseEvent) => {
+    this.props.onMouseEnter?.(e, this.props.row, this.props.index);
+  };
+
   render() {
     const {
       index,
@@ -142,8 +154,6 @@ export default class TableRow extends React.PureComponent<Props> {
       multiline,
       columnKeys,
       columnSizes,
-      onMouseEnter,
-      onMouseDown,
       zebra,
       onAddFilter,
     } = this.props;
@@ -157,8 +167,8 @@ export default class TableRow extends React.PureComponent<Props> {
         multiline={multiline}
         even={index % 2 === 0}
         zebra={zebra}
-        onMouseDown={onMouseDown}
-        onMouseEnter={onMouseEnter}
+        onMouseDown={this.handleMouseDown}
+        onMouseEnter={this.handleMouseEnter}
         style={style}
         highlightOnHover={row.highlightOnHover}
         data-key={row.key}

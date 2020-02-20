@@ -34,6 +34,9 @@ import {DEFAULT_ROW_HEIGHT} from './types';
 import textContent from '../../../utils/textContent';
 import {notNull} from '../../../utils/typeUtils';
 
+const EMPTY_OBJECT = {};
+Object.freeze(EMPTY_OBJECT);
+
 export type ManagedTableProps = {
   /**
    * Column definitions.
@@ -140,6 +143,7 @@ type ManagedTableState = {
   highlightedRows: Set<string>;
   sortOrder?: TableRowSortOrder;
   columnOrder: TableColumnOrder;
+  columnKeys: string[];
   columnSizes: TableColumnSizes;
   shouldScrollToBottom: boolean;
 };
@@ -172,20 +176,6 @@ export class ManagedTable extends React.Component<
     );
   };
 
-  state: ManagedTableState = {
-    columnOrder:
-      JSON.parse(window.localStorage.getItem(this.getTableKey()) || 'null') ||
-      this.props.columnOrder ||
-      Object.keys(this.props.columns).map(key => ({key, visible: true})),
-    columnSizes:
-      this.props.tableKey && globalTableState[this.props.tableKey]
-        ? globalTableState[this.props.tableKey]
-        : this.props.columnSizes || {},
-    highlightedRows: this.props.highlightedRows || new Set(),
-    sortOrder: this.props.initialSortOrder || undefined,
-    shouldScrollToBottom: Boolean(this.props.stickyBottom),
-  };
-
   tableRef = React.createRef<List>();
 
   scrollRef: {
@@ -199,6 +189,25 @@ export class ManagedTable extends React.Component<
   // measure the size of the table. This is why we are using this flag to
   // trigger actions on the first update instead.
   firstUpdate = true;
+
+  constructor(props: ManagedTableProps) {
+    super(props);
+    const columnOrder =
+      JSON.parse(window.localStorage.getItem(this.getTableKey()) || 'null') ||
+      this.props.columnOrder ||
+      Object.keys(this.props.columns).map(key => ({key, visible: true}));
+    this.state = {
+      columnOrder,
+      columnKeys: this.computeColumnKeys(columnOrder),
+      columnSizes:
+        this.props.tableKey && globalTableState[this.props.tableKey]
+          ? globalTableState[this.props.tableKey]
+          : this.props.columnSizes || {},
+      highlightedRows: this.props.highlightedRows || new Set(),
+      sortOrder: this.props.initialSortOrder || undefined,
+      shouldScrollToBottom: Boolean(this.props.stickyBottom),
+    };
+  }
 
   componentDidMount() {
     document.addEventListener('keydown', this.onKeyDown);
@@ -233,6 +242,7 @@ export class ManagedTable extends React.Component<
       }
       this.setState({
         columnOrder: nextProps.columnOrder,
+        columnKeys: this.computeColumnKeys(nextProps.columnOrder),
       });
     }
 
@@ -275,6 +285,10 @@ export class ManagedTable extends React.Component<
       this.setState({shouldScrollToBottom: true});
     }
     this.firstUpdate = false;
+  }
+
+  computeColumnKeys(columnOrder: TableColumnOrder) {
+    return columnOrder.map(k => (k.visible ? k.key : null)).filter(notNull);
   }
 
   scrollToHighlightedRows = () => {
@@ -609,34 +623,24 @@ export class ManagedTable extends React.Component<
 
   getRow = ({index, style}: {index: number; style: React.CSSProperties}) => {
     const {onAddFilter, multiline, zebra, rows} = this.props;
-    const {columnOrder, columnSizes, highlightedRows} = this.state;
-    const columnKeys: Array<string> = columnOrder
-      .map(k => (k.visible ? k.key : null))
-      .filter(notNull);
+    const {columnKeys, columnSizes, highlightedRows} = this.state;
 
     return (
-      <ContextMenu
-        buildItems={
-          this.props.buildContextMenuItems || this.buildContextMenuItems
-        }>
-        <TableRow
-          key={rows[index].key}
-          columnSizes={columnSizes}
-          columnKeys={columnKeys}
-          onMouseDown={e => this.onHighlight(e, rows[index], index)}
-          onMouseEnter={e => this.onMouseEnterRow(e, rows[index], index)}
-          multiline={multiline}
-          rowLineHeight={24}
-          highlighted={highlightedRows.has(rows[index].key)}
-          row={rows[index]}
-          index={index}
-          style={
-            rows[index].height ? {...style, height: rows[index].height} : style
-          }
-          onAddFilter={onAddFilter}
-          zebra={zebra}
-        />
-      </ContextMenu>
+      <TableRow
+        key={rows[index].key}
+        columnSizes={columnSizes}
+        columnKeys={columnKeys}
+        onMouseDown={this.onHighlight}
+        onMouseEnter={this.onMouseEnterRow}
+        multiline={multiline}
+        rowLineHeight={24}
+        highlighted={highlightedRows.has(rows[index].key)}
+        row={rows[index]}
+        index={index}
+        style={style}
+        onAddFilter={onAddFilter}
+        zebra={zebra}
+      />
     );
   };
 
@@ -686,7 +690,14 @@ export class ManagedTable extends React.Component<
         )}
         <Container>
           {this.props.autoHeight ? (
-            this.props.rows.map((_, index) => this.getRow({index, style: {}}))
+            <ContextMenu
+              buildItems={
+                this.props.buildContextMenuItems || this.buildContextMenuItems
+              }>
+              {this.props.rows.map((_, index) =>
+                this.getRow({index, style: EMPTY_OBJECT}),
+              )}
+            </ContextMenu>
           ) : (
             <AutoSizer>
               {({width, height}) => (

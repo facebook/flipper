@@ -21,13 +21,13 @@ export type LogLevel =
   | 'fatal';
 
 export type DeviceLogEntry = {
-  date: Date;
-  pid: number;
-  tid: number;
-  app?: string;
-  type: LogLevel;
-  tag: string;
-  message: string;
+  readonly date: Date;
+  readonly pid: number;
+  readonly tid: number;
+  readonly app?: string;
+  readonly type: LogLevel;
+  readonly tag: string;
+  readonly message: string;
 };
 
 export type DeviceShell = {

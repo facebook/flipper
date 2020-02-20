@@ -40,20 +40,20 @@ import {MenuTemplate} from 'src/ui/components/ContextMenu';
 
 const LOG_WATCHER_LOCAL_STORAGE_KEY = 'LOG_WATCHER_LOCAL_STORAGE_KEY';
 
-type Entries = Array<{
-  row: TableBodyRow;
-  entry: DeviceLogEntry;
+type Entries = ReadonlyArray<{
+  readonly row: TableBodyRow;
+  readonly entry: DeviceLogEntry;
 }>;
 
 type BaseState = {
-  rows: Array<TableBodyRow>;
-  entries: Entries;
-  key2entry: {[key: string]: DeviceLogEntry};
+  readonly rows: ReadonlyArray<TableBodyRow>;
+  readonly entries: Entries;
+  readonly key2entry: {readonly [key: string]: DeviceLogEntry};
 };
 
 type AdditionalState = {
-  highlightedRows: Set<string>;
-  counters: Array<Counter>;
+  readonly highlightedRows: ReadonlySet<string>;
+  readonly counters: ReadonlyArray<Counter>;
 };
 
 type State = BaseState & AdditionalState;
@@ -95,7 +95,7 @@ const COLUMN_SIZE = {
   tag: 120,
   app: 200,
   message: 'flex',
-};
+} as const;
 
 const COLUMNS = {
   type: {
@@ -119,7 +119,7 @@ const COLUMNS = {
   message: {
     value: 'Message',
   },
-};
+} as const;
 
 const INITIAL_COLUMN_ORDER = [
   {
@@ -150,7 +150,7 @@ const INITIAL_COLUMN_ORDER = [
     key: 'message',
     visible: true,
   },
-];
+] as const;
 
 const LOG_TYPES: {
   [level: string]: {
@@ -260,7 +260,7 @@ export function addEntriesToState(
     rows: [],
     entries: [],
     key2entry: {},
-  },
+  } as const,
 ): BaseState {
   const rows = [...state.rows];
   const entries = [...state.entries];
@@ -421,7 +421,7 @@ export default class LogTable extends FlipperDevicePlugin<
 
   calculateHighlightedRows = (
     deepLinkPayload: string | null,
-    rows: Array<TableBodyRow>,
+    rows: ReadonlyArray<TableBodyRow>,
   ): Set<string> => {
     const highlightedRows = new Set<string>();
     if (!deepLinkPayload) {
@@ -459,7 +459,10 @@ export default class LogTable extends FlipperDevicePlugin<
   columnOrder: TableColumnOrder;
   logListener: Symbol | undefined;
 
-  batch: Entries = [];
+  batch: Array<{
+    readonly row: TableBodyRow;
+    readonly entry: DeviceLogEntry;
+  }> = [];
   queued: boolean = false;
   counter: number = 0;
 

@@ -24,20 +24,20 @@ import {
 import React from 'react';
 
 export type Counter = {
-  expression: RegExp;
-  count: number;
-  notify: boolean;
-  label: string;
+  readonly expression: RegExp;
+  readonly count: number;
+  readonly notify: boolean;
+  readonly label: string;
 };
 
 type Props = {
-  onChange: (counters: Array<Counter>) => void;
-  counters: Array<Counter>;
+  readonly onChange: (counters: ReadonlyArray<Counter>) => void;
+  readonly counters: ReadonlyArray<Counter>;
 };
 
 type State = {
-  input: string;
-  highlightedRow: string | null;
+  readonly input: string;
+  readonly highlightedRow: string | null;
 };
 
 const ColumnSizes = {
