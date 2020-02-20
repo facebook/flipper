@@ -150,12 +150,8 @@ public class ViewDescriptor extends NodeDescriptor<View> {
                 new FlipperObject.Builder()
                     .put("x", InspectorValue.mutable(node.getPivotX()))
                     .put("y", InspectorValue.mutable(node.getPivotY())))
-            .put(
-                "positionOnScreen",
-                new FlipperObject.Builder()
-                    .put("x", positionOnScreen[0])
-                    .put("y", positionOnScreen[1])
-                    .build());
+            .put("positionOnScreenX", positionOnScreen[0])
+            .put("positionOnScreenY", positionOnScreen[1]);
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
       viewProps
