@@ -155,6 +155,9 @@ dependencies {
 <pre><code class="hljs">                    <span class="hljs-string">"\"</span><span class="hljs-variable">$(TOOLCHAIN_DIR)</span>/usr/lib/swift/<span class="hljs-variable">$(PLATFORM_NAME)</span>\<span class="hljs-string">""</span>,
                     <span class="hljs-string">"\"</span><span class="hljs-variable">$(TOOLCHAIN_DIR)</span>/usr/lib/swift-<span class="hljs-number">5.0</span>/<span class="hljs-variable">$(PLATFORM_NAME)</span>\<span class="hljs-string">""</span>,  
 </code></pre>
+<ol start="3">
+<li>If after the above two steps there are still error's like <code>Undefined symbol _swift_getFunctionReplacement</code> then set <code>DEAD_CODE_STRIPPING</code> to <code>YES</code>. Reference for this fix is <a href="https://forums.swift.org/t/undefined-symbol-swift-getfunctionreplacement/30495/4">here</a></li>
+</ol>
 <p>This is done to overcome a bug with Xcode 11 which fails to compile swift code when bitcode is enabled. Flipper transitively depends on YogaKit which is written in Swift. More about this issue can be found <a href="https://twitter.com/krzyzanowskim/status/1151549874653081601?s=21">here</a> and <a href="https://github.com/Carthage/Carthage/issues/2825">here</a>.</p>
 <p>Install the dependencies by running <code>pod install</code>. You can now import and initialize Flipper in your
 AppDelegate.</p>
@@ -348,6 +351,7 @@ initializing SoLoader (for loading the C++ part of Flipper) and starting a <code
 </span></div></div></div></div>
 <p>Install the dependencies by running <code>cd ios &amp;&amp; pod install</code>. You can now import and initialize Flipper in your
 <code>ios/your-app-name/AppDelegate.m</code>.</p>
+<p>For pure Objective-C projects there is an additional setup, please follow these <a href="#for-pure-objective-c-projects">steps</a></p>
 <p>The code below enables the following integrations:</p>
 <ul>
 <li>Layout Inspector</li>
