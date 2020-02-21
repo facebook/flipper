@@ -11,6 +11,11 @@
         "doctor/package.json"
       ]
     },
+    "pkg": {
+      "packages": [
+        "pkg/package.json"
+      ]
+    },
     "plugins": {
       "packages": [
         "src/plugins/cpu/package.json",
