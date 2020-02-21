@@ -10,6 +10,7 @@
 import {DeviceType} from '../devices/BaseDevice';
 import {exec} from 'promisify-child-process';
 import {notNull} from '../utils/typeUtils';
+import {killOrphanedInstrumentsProcesses} from '../utils/processCleanup';
 
 const errorMessage = 'Physical iOS devices not yet supported';
 
@@ -24,6 +25,7 @@ function isAvailable(): boolean {
 }
 
 async function targets(): Promise<Array<DeviceTarget>> {
+  await killOrphanedInstrumentsProcesses();
   const {stdout} = await exec('instruments -s devices');
   if (!stdout) {
     return [];
