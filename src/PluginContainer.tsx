@@ -417,7 +417,8 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
         if (activePlugin && target) {
           pluginKey = getPluginKey(target.id, activePlugin.id);
           pluginIsEnabled = pluginIsStarred(
-            {selectedApp, userStarredPlugins},
+            userStarredPlugins,
+            selectedApp,
             activePlugin.id,
           );
         }

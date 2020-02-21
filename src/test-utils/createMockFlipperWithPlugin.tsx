@@ -40,63 +40,72 @@ export async function createMockFlipperWithPlugin(
     device: BaseDevice;
     store: Store;
     sendMessage(method: string, params: any): void;
+    createDevice(serial: string): BaseDevice;
+    createClient(device: BaseDevice, name: string): Client;
   }) => Promise<void>,
 ) {
   const store = createStore(reducers);
-  const device = new BaseDevice(
-    'serial',
-    'physical',
-    'MockAndroidDevice',
-    'Android',
-  );
   const logger = createStubLogger();
-
   store.dispatch(registerPlugins([pluginClazz]));
 
-  store.dispatch({
-    type: 'REGISTER_DEVICE',
-    payload: device,
-  });
+  function createDevice(serial: string): BaseDevice {
+    const device = new BaseDevice(
+      serial,
+      'physical',
+      'MockAndroidDevice',
+      'Android',
+    );
+    store.dispatch({
+      type: 'REGISTER_DEVICE',
+      payload: device,
+    });
+    return device;
+  }
 
-  const query: ClientQuery = {
-    app: 'TestApp',
-    os: 'Android',
-    device: 'unit_test',
-    device_id: device.serial,
-  };
-  const id = buildClientId({
-    app: query.app,
-    os: query.os,
-    device: query.device,
-    device_id: query.device_id,
-  });
+  function createClient(device: BaseDevice, name: string): Client {
+    const query: ClientQuery = {
+      app: name,
+      os: 'Android',
+      device: device.title,
+      device_id: device.serial,
+    };
+    const id = buildClientId({
+      app: query.app,
+      os: query.os,
+      device: query.device,
+      device_id: query.device_id,
+    });
 
-  const client = new Client(
-    id,
-    query,
-    null, // create a stub connection to avoid this plugin to be archived?
-    logger,
-    store,
-    [pluginClazz.id],
-    device,
-  );
+    const client = new Client(
+      id,
+      query,
+      null, // create a stub connection to avoid this plugin to be archived?
+      logger,
+      store,
+      [pluginClazz.id],
+      device,
+    );
 
-  // yikes
-  client._deviceSet = device;
-  client.device = {
-    then() {
-      return device;
-    },
-  } as any;
+    // yikes
+    client._deviceSet = device;
+    client.device = {
+      then() {
+        return device;
+      },
+    } as any;
 
-  // As convenience, by default we select the new client, star the plugin, and select it
-  store.dispatch({
-    type: 'NEW_CLIENT',
-    payload: client,
-  });
+    // As convenience, by default we select the new client, star the plugin, and select it
+    store.dispatch({
+      type: 'NEW_CLIENT',
+      payload: client,
+    });
+    return client;
+  }
+
+  const device = createDevice('serial');
+  const client = createClient(device, 'TestApp');
 
   store.dispatch(selectDevice(device));
-
   store.dispatch(selectClient(client.id));
 
   store.dispatch(
@@ -131,5 +140,7 @@ export async function createMockFlipperWithPlugin(
         }),
       );
     },
+    createDevice,
+    createClient,
   });
 }

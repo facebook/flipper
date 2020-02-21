@@ -5,10 +5,10 @@ Object {
   "androidEmulators": Array [],
   "clients": Array [
     Object {
-      "id": "TestApp#Android#unit_test#serial",
+      "id": "TestApp#Android#MockAndroidDevice#serial",
       "query": Object {
         "app": "TestApp",
-        "device": "unit_test",
+        "device": "MockAndroidDevice",
         "device_id": "serial",
         "os": "Android",
       },
@@ -25,7 +25,7 @@ Object {
     },
   ],
   "errors": Array [],
-  "selectedApp": "TestApp#Android#unit_test#serial",
+  "selectedApp": "TestApp#Android#MockAndroidDevice#serial",
   "selectedDevice": Object {
     "deviceType": "physical",
     "logs": Array [],
@@ -36,7 +36,7 @@ Object {
   "selectedPlugin": "TestPlugin",
   "staticView": null,
   "uninitializedClients": Array [],
-  "userPreferredApp": "TestApp#Android#unit_test#serial",
+  "userPreferredApp": "TestApp#Android#MockAndroidDevice#serial",
   "userPreferredDevice": "MockAndroidDevice",
   "userPreferredPlugin": "TestPlugin",
   "userStarredPlugins": Object {

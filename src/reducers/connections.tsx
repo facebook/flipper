@@ -621,17 +621,14 @@ export function getSelectedPluginKey(state: State): string | undefined {
 }
 
 export function pluginIsStarred(
-  state: {
-    selectedApp: string | null;
-    userStarredPlugins: State['userStarredPlugins'];
-  },
+  userStarredPlugins: State['userStarredPlugins'],
+  app: string | null,
   pluginId: string,
 ): boolean {
-  const {selectedApp} = state;
-  if (!selectedApp) {
+  if (!app) {
     return false;
   }
-  const appInfo = deconstructClientId(selectedApp);
-  const starred = state.userStarredPlugins[appInfo.app];
+  const appInfo = deconstructClientId(app);
+  const starred = userStarredPlugins[appInfo.app];
   return starred && starred.indexOf(pluginId) > -1;
 }

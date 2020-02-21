@@ -53,7 +53,7 @@ test('can create a Fake flipper', async () => {
       sendMessage('inc', {});
       expect(store.getState().pluginStates).toMatchInlineSnapshot(`
         Object {
-          "TestApp#Android#unit_test#serial#TestPlugin": Object {
+          "TestApp#Android#MockAndroidDevice#serial#TestPlugin": Object {
             "count": 1,
           },
         }

@@ -18,6 +18,7 @@ import {
 } from '../reducers/pluginMessageQueue';
 import {Idler, BaseIdler} from './Idler';
 import {pluginIsStarred, getSelectedPluginKey} from '../reducers/connections';
+import {deconstructPluginKey} from './clientUtils';
 
 const MAX_BACKGROUND_TASK_TIME = 25;
 
@@ -180,7 +181,11 @@ export function processMessageLater(
       break;
     case isSelected:
     case plugin instanceof FlipperDevicePlugin:
-    case pluginIsStarred(store.getState().connections, plugin.id):
+    case pluginIsStarred(
+      store.getState().connections.userStarredPlugins,
+      deconstructPluginKey(pluginKey).client,
+      plugin.id,
+    ):
       store.dispatch(
         queueMessage(
           pluginKey,
