@@ -17,6 +17,7 @@
 #import <ComponentKit/CKComponentRootViewInternal.h>
 
 #import <FlipperKitLayoutPlugin/SKDescriptorMapper.h>
+#import <FlipperKitLayoutPlugin/SKObject.h>
 
 #import "SKComponentLayoutWrapper.h"
 
@@ -37,6 +38,15 @@
       newFromRoot:node
         parentKey:[NSString
                       stringWithFormat:@"%d.", attachState.scopeIdentifier]];
+}
+
+- (NSArray<SKNamed<NSDictionary*>*>*)dataForNode:(CKComponentRootView*)node {
+  auto const attachState = CKGetAttachStateForView(node);
+  return @[ [SKNamed
+      newWithName:@"Identity"
+        withValue:@{
+          @"scopeRootIdentifier" : SKObject{@(attachState.scopeIdentifier)}
+        }] ];
 }
 
 - (void)setHighlighted:(BOOL)highlighted forNode:(CKComponentRootView*)node {
