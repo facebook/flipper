@@ -296,12 +296,12 @@ export default class Inspector extends Component<Props> {
     this.props.onSelect(selectedKey);
   });
 
-  onElementHovered = debounce((key: ElementID | null | undefined) =>
+  onElementHovered = debounce((key: ElementID | null | undefined) => {
     this.props.client.call(this.call().SET_HIGHLIGHTED, {
       id: key,
       isAlignmentMode: this.props.inAlignmentMode,
-    }),
-  );
+    });
+  });
 
   onElementExpanded = (
     id: ElementID,

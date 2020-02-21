@@ -27,6 +27,7 @@ import {
   SupportRequestFormV2,
   constants,
   ReduxState,
+  ArchivedDevice,
 } from 'flipper';
 import Inspector from './Inspector';
 import ToolbarIcon from './ToolbarIcon';
@@ -34,6 +35,8 @@ import InspectorSidebar from './InspectorSidebar';
 import Search from './Search';
 import ProxyArchiveClient from './ProxyArchiveClient';
 import React from 'react';
+import {VisualizerPortal} from 'flipper';
+import {getFlipperMediaCDN} from 'flipper';
 
 type State = {
   init: boolean;
@@ -42,7 +45,11 @@ type State = {
   inAlignmentMode: boolean;
   selectedElement: ElementID | null | undefined;
   selectedAXElement: ElementID | null | undefined;
+  highlightedElement: ElementID | null;
   searchResults: ElementSearchResultSet | null;
+  visualizerWindow: Window | null;
+  visualizerScreenshot: string | null;
+  screenDimensions: {width: number; height: number} | null;
 };
 
 export type ElementMap = {[key: string]: Element};
@@ -125,6 +132,10 @@ export default class Layout extends FlipperPlugin<State, any, PersistedState> {
     return JSON.parse(serializedString);
   };
 
+  teardown() {
+    this.state.visualizerWindow?.close();
+  }
+
   static defaultPersistedState = {
     rootElement: null,
     rootAXElement: null,
@@ -140,6 +151,10 @@ export default class Layout extends FlipperPlugin<State, any, PersistedState> {
     selectedElement: null,
     selectedAXElement: null,
     searchResults: null,
+    visualizerWindow: null,
+    highlightedElement: null,
+    visualizerScreenshot: null,
+    screenDimensions: null,
   };
 
   init() {
@@ -159,6 +174,22 @@ export default class Layout extends FlipperPlugin<State, any, PersistedState> {
         this.onToggleTargetMode();
       }
     });
+
+    if (this.props.isArchivedDevice) {
+      this.getDevice()
+        .then(d => {
+          const handle = (d as ArchivedDevice).getArchivedScreenshotHandle();
+          if (!handle) {
+            throw new Error('No screenshot attached.');
+          }
+          return handle;
+        })
+        .then(handle => getFlipperMediaCDN(handle, 'Image'))
+        .then(url => this.setState({visualizerScreenshot: url}))
+        .catch(_ => {
+          // Not all exports have screenshots. This is ok.
+        });
+    }
 
     this.setState({
       init: true,
@@ -180,7 +211,9 @@ export default class Layout extends FlipperPlugin<State, any, PersistedState> {
 
   getClient(): PluginClient {
     return this.props.isArchivedDevice
-      ? new ProxyArchiveClient(this.props.persistedState)
+      ? new ProxyArchiveClient(this.props.persistedState, (id: string) => {
+          this.setState({highlightedElement: id});
+        })
       : this.client;
   }
   onToggleAlignmentMode = () => {
@@ -191,6 +224,34 @@ export default class Layout extends FlipperPlugin<State, any, PersistedState> {
       });
     }
     this.setState({inAlignmentMode: !this.state.inAlignmentMode});
+  };
+
+  onToggleVisualizer = () => {
+    if (this.state.visualizerWindow) {
+      this.state.visualizerWindow.close();
+    } else {
+      const screenDimensions = this.state.screenDimensions;
+      if (!screenDimensions) {
+        return;
+      }
+      const visualizerWindow = window.open(
+        '',
+        'visualizer',
+        `width=${screenDimensions.width},height=${screenDimensions.height}`,
+      );
+      if (!visualizerWindow) {
+        return;
+      }
+      visualizerWindow.onunload = () => {
+        this.setState({visualizerWindow: null});
+      };
+      visualizerWindow.onresize = () => {
+        this.setState({visualizerWindow: visualizerWindow});
+      };
+      visualizerWindow.onload = () => {
+        this.setState({visualizerWindow: visualizerWindow});
+      };
+    }
   };
 
   onDataValueChanged = (path: Array<string>, value: any) => {
@@ -205,6 +266,47 @@ export default class Layout extends FlipperPlugin<State, any, PersistedState> {
     });
   };
   showFlipperADBar: boolean = false;
+
+  getScreenDimensions(): {width: number; height: number} | null {
+    if (this.state.screenDimensions) {
+      return this.state.screenDimensions;
+    }
+
+    requestIdleCallback(() => {
+      // Walk the layout tree from root node down until a node with width and height is found.
+      // Assume these are the dimensions of the screen.
+      let elementId = this.props.persistedState.rootElement;
+      while (elementId != null) {
+        const element = this.props.persistedState.elements[elementId];
+        if (!element) {
+          return null;
+        }
+        if (element.data.View?.width) {
+          break;
+        }
+        elementId = element.children[0];
+      }
+      if (elementId == null) {
+        return null;
+      }
+      const element = this.props.persistedState.elements[elementId];
+      if (
+        element == null ||
+        typeof element.data.View?.width != 'object' ||
+        typeof element.data.View?.height != 'object'
+      ) {
+        return null;
+      }
+      const screenDimensions = {
+        width: element.data.View?.width.value,
+        height: element.data.View?.height.value,
+      };
+      this.setState({screenDimensions});
+    });
+
+    return null;
+  }
+
   render() {
     const inspectorProps = {
       client: this.getClient(),
@@ -248,6 +350,8 @@ export default class Layout extends FlipperPlugin<State, any, PersistedState> {
 
     const showAnalyzeYogaPerformanceButton = GK.get('flipper_yogaperformance');
 
+    const screenDimensions = this.getScreenDimensions();
+
     return (
       <FlexColumn grow={true}>
         {this.state.init && (
@@ -277,6 +381,15 @@ export default class Layout extends FlipperPlugin<State, any, PersistedState> {
                   active={this.state.inAlignmentMode}
                 />
               )}
+              {this.props.isArchivedDevice &&
+                this.state.visualizerScreenshot && (
+                  <ToolbarIcon
+                    onClick={this.onToggleVisualizer}
+                    title="Toggle visual recreation of layout"
+                    icon="mobile"
+                    active={!!this.state.visualizerWindow}
+                  />
+                )}
 
               <Search
                 client={this.getClient()}
@@ -317,6 +430,19 @@ export default class Layout extends FlipperPlugin<State, any, PersistedState> {
                 </Button>
               ) : null}
             </DetailSidebar>
+            {this.state.visualizerWindow &&
+              screenDimensions &&
+              (this.state.visualizerScreenshot ? (
+                <VisualizerPortal
+                  container={this.state.visualizerWindow.document.body}
+                  elements={this.props.persistedState.elements}
+                  highlightedElement={this.state.highlightedElement}
+                  screenshotURL={this.state.visualizerScreenshot}
+                  screenDimensions={screenDimensions}
+                />
+              ) : (
+                'Loading...'
+              ))}
           </>
         )}
       </FlexColumn>

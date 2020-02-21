@@ -268,6 +268,7 @@ function tryCreateWindow() {
         experimentalFeatures: true,
         nodeIntegration: true,
         webviewTag: true,
+        nativeWindowOpen: true,
       },
     });
     win.once('ready-to-show', () => win.show());

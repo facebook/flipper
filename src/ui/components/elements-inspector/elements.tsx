@@ -635,7 +635,9 @@ export class Elements extends PureComponent<ElementsProps, ElementsState> {
         key={row.key}
         even={isEven}
         onElementExpanded={onElementExpanded}
-        onElementHovered={onElementHovered}
+        onElementHovered={(key: string | null | undefined) => {
+          onElementHovered && onElementHovered(key);
+        }}
         onElementSelected={onElementSelected}
         selected={selected === row.key}
         focused={focused === row.key}

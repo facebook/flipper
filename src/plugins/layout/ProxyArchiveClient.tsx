@@ -84,10 +84,15 @@ export function searchNodes(
 }
 
 class ProxyArchiveClient {
-  constructor(persistedState: PersistedState) {
+  constructor(
+    persistedState: PersistedState,
+    onElementHighlighted?: (id: string) => void,
+  ) {
     this.persistedState = cloneDeep(persistedState);
+    this.onElementHighlighted = onElementHighlighted;
   }
   persistedState: PersistedState;
+  onElementHighlighted: ((id: string) => void) | undefined;
   subscribe(_method: string, _callback: (params: any) => void): void {
     return;
   }
@@ -174,6 +179,11 @@ class ProxyArchiveClient {
       }
       case 'isConsoleEnabled': {
         return Promise.resolve(false);
+      }
+      case 'setHighlighted': {
+        const id = paramaters?.id;
+        this.onElementHighlighted && this.onElementHighlighted(id);
+        return Promise.resolve();
       }
       default: {
         return Promise.resolve();

@@ -62,3 +62,9 @@ export async function uploadFlipperMedia(
 ): Promise<string> {
   throw new Error('Feature not implemented');
 }
+export async function getFlipperMediaCDN(
+  _uploadID: string,
+  _kind: 'Image' | 'Video',
+): Promise<string> {
+  throw new Error('Feature not implemented');
+}

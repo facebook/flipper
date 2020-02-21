@@ -77,6 +77,7 @@ test('test generateClientIndentifierWithSalt helper function', () => {
     'TestiPhone',
     'iOS',
     [],
+    null,
   );
   const identifier = generateClientIdentifier(device, 'app');
   const saltIdentifier = generateClientIdentifierWithSalt(identifier, 'salt');
@@ -91,6 +92,7 @@ test('test generateClientFromClientWithSalt helper function', () => {
     'TestiPhone',
     'iOS',
     [],
+    null,
   );
   const client = generateClientFromDevice(device, 'app');
   const saltedClient = generateClientFromClientWithSalt(client, 'salt');
@@ -121,6 +123,7 @@ test('test generateClientFromDevice helper function', () => {
     'TestiPhone',
     'iOS',
     [],
+    null,
   );
   const client = generateClientFromDevice(device, 'app');
   expect(client).toEqual({
@@ -141,6 +144,7 @@ test('test generateClientIdentifier helper function', () => {
     'TestiPhone',
     'iOS',
     [],
+    null,
   );
   const identifier = generateClientIdentifier(device, 'app');
   expect(identifier).toEqual('app#iOS#archivedEmulator#serial');
@@ -173,7 +177,14 @@ test('test processStore function for empty state', () => {
 test('test processStore function for an iOS device connected', async () => {
   const json = await processStore({
     activeNotifications: [],
-    device: new ArchivedDevice('serial', 'emulator', 'TestiPhone', 'iOS', []),
+    device: new ArchivedDevice(
+      'serial',
+      'emulator',
+      'TestiPhone',
+      'iOS',
+      [],
+      null,
+    ),
     pluginStates: {},
     clients: [],
     devicePlugins: new Map(),
@@ -209,6 +220,7 @@ test('test processStore function for an iOS device connected with client plugin 
     'TestiPhone',
     'iOS',
     [],
+    null,
   );
   const clientIdentifier = generateClientIdentifier(device, 'testapp');
   const json = await processStore({
@@ -246,6 +258,7 @@ test('test processStore function to have only the client for the selected device
     'TestiPhone',
     'iOS',
     [],
+    null,
   );
   const unselectedDevice = new ArchivedDevice(
     'identifier',
@@ -253,6 +266,7 @@ test('test processStore function to have only the client for the selected device
     'TestiPhone',
     'iOS',
     [],
+    null,
   );
 
   const unselectedDeviceClientIdentifier = generateClientIdentifier(
@@ -313,6 +327,7 @@ test('test processStore function to have multiple clients for the selected devic
     'TestiPhone',
     'iOS',
     [],
+    null,
   );
 
   const clientIdentifierApp1 = generateClientIdentifier(
@@ -379,6 +394,7 @@ test('test processStore function for device plugin state and no clients', async 
     'TestiPhone',
     'iOS',
     [],
+    null,
   );
   const json = await processStore({
     activeNotifications: [],
@@ -416,6 +432,7 @@ test('test processStore function for unselected device plugin state and no clien
     'TestiPhone',
     'iOS',
     [],
+    null,
   );
   const json = await processStore({
     activeNotifications: [],
@@ -449,6 +466,7 @@ test('test processStore function for notifications for selected device', async (
     'TestiPhone',
     'iOS',
     [],
+    null,
   );
   const client = generateClientFromDevice(selectedDevice, 'testapp1');
   const notification = generateNotifications(
@@ -498,6 +516,7 @@ test('test processStore function for notifications for unselected device', async
     'TestiPhone',
     'iOS',
     [],
+    null,
   );
   const unselectedDevice = new ArchivedDevice(
     'identifier',
@@ -505,6 +524,7 @@ test('test processStore function for notifications for unselected device', async
     'TestiPhone',
     'iOS',
     [],
+    null,
   );
 
   const client = generateClientFromDevice(selectedDevice, 'testapp1');
@@ -552,6 +572,7 @@ test('test processStore function for selected plugins', async () => {
     'TestiPhone',
     'iOS',
     [],
+    null,
   );
 
   const client = generateClientFromDevice(selectedDevice, 'app');
@@ -602,6 +623,7 @@ test('test processStore function for no selected plugins', async () => {
     'TestiPhone',
     'iOS',
     [],
+    null,
   );
   const client = generateClientFromDevice(selectedDevice, 'app');
   const pluginstates = {

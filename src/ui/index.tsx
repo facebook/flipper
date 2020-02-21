@@ -155,6 +155,7 @@ export {Elements} from './components/elements-inspector/elements';
 export {ContextMenuExtension} from './components/elements-inspector/elements';
 export {default as ElementsInspector} from './components/elements-inspector/ElementsInspector';
 export {InspectorSidebar} from './components/elements-inspector/sidebar';
+export {VisualizerPortal} from './components/elements-inspector/Visualizer';
 
 export {Console} from './components/console';
 

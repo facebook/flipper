@@ -206,6 +206,7 @@ export default class MetroDevice extends BaseDevice {
       this.title,
       this.os,
       [...this.logEntries],
+      null,
     );
   }
 }

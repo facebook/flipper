@@ -89,6 +89,7 @@ export default class AndroidDevice extends BaseDevice {
       this.title,
       this.os,
       [...this.logEntries],
+      null,
     );
   }
 

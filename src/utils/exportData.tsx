@@ -274,6 +274,7 @@ const addSaltToDeviceSerial = async (
     device.title,
     device.os,
     selectedPlugins.includes('DeviceLogs') ? device.getLogs() : [],
+    deviceScreenshot,
   );
   statusUpdate &&
     statusUpdate('Adding salt to the selected device id in the client data...');
@@ -674,11 +675,12 @@ export const exportStoreToFile = (
 export function importDataToStore(source: string, data: string, store: Store) {
   getLogger().track('usage', IMPORT_FLIPPER_TRACE_EVENT);
   const json: ExportType = JSON.parse(data);
-  const {device, clients, supportRequestDetails} = json;
+  const {device, clients, supportRequestDetails, deviceScreenshot} = json;
   if (device == null) {
     return;
   }
   const {serial, deviceType, title, os, logs} = device;
+
   const archivedDevice = new ArchivedDevice(
     serial,
     deviceType,
@@ -689,6 +691,7 @@ export function importDataToStore(source: string, data: string, store: Store) {
           return {...l, date: new Date(l.date)};
         })
       : [],
+    deviceScreenshot,
     source,
     supportRequestDetails,
   );

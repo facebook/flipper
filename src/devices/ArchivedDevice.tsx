@@ -28,6 +28,7 @@ export default class ArchivedDevice extends BaseDevice {
     title: string,
     os: OS,
     logEntries: Array<DeviceLogEntry>,
+    screenshotHandle: string | null,
     source: string = '',
     supportRequestDetails?: SupportFormRequestDetailsState,
   ) {
@@ -35,10 +36,11 @@ export default class ArchivedDevice extends BaseDevice {
     this.logs = logEntries;
     this.source = source;
     this.supportRequestDetails = supportRequestDetails;
+    this.archivedScreenshotHandle = screenshotHandle;
   }
 
   logs: Array<DeviceLogEntry>;
-
+  archivedScreenshotHandle: string | null;
   isArchived = true;
 
   displayTitle(): string {
@@ -58,5 +60,9 @@ export default class ArchivedDevice extends BaseDevice {
 
   spawnShell(): DeviceShell | undefined | null {
     return null;
+  }
+
+  getArchivedScreenshotHandle(): string | null {
+    return this.archivedScreenshotHandle;
   }
 }
