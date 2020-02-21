@@ -7,4 +7,8 @@
  * @format
  */
 
-export const PKG = 'flipper-pkg';
+import {PKG} from '.';
+
+(async () => {
+  console.log(`Hello, ${PKG}.`);
+})();
