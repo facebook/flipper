@@ -106,7 +106,7 @@ const Line = styled(View)({
 });
 
 const Container = styled(FlexColumn)({
-  overflow: 'scroll',
+  overflow: 'auto',
   flexShrink: 0,
 });
 
@@ -129,8 +129,12 @@ const FlexGrowColumn = styled(FlexColumn)({
   flexGrow: 1,
 });
 
+const PluginRootContainer = styled(FlexColumn)({
+  height: '100%',
+});
+
 const ScrollableColumn = styled(FlexGrowColumn)({
-  overflow: 'scroll',
+  overflow: 'auto',
   height: 'auto',
 });
 
@@ -732,7 +736,7 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin<
       };
       const showReason = crash.reason !== UNKNOWN_CRASH_REASON;
       return (
-        <FlexColumn>
+        <PluginRootContainer>
           {this.device.os == 'Android' ? (
             <CrashReporterBar
               crashSelector={crashSelector}
@@ -773,7 +777,7 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin<
               })}
             </ContextMenu>
           </ScrollableColumn>
-        </FlexColumn>
+        </PluginRootContainer>
       );
     }
     const crashSelector = {
