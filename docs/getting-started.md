@@ -272,6 +272,7 @@ For pure Objective-C projects, add the following things in your settings:
 					"\"$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)\"",
 					"\"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)\"",	
 ```
+3. If after the above two steps there are still error's like `Undefined symbol _swift_getFunctionReplacement` then set `DEAD_CODE_STRIPPING` to `YES`. Reference for this fix is [here](https://forums.swift.org/t/undefined-symbol-swift-getfunctionreplacement/30495/4)
 
 This is done to overcome a bug with Xcode 11 which fails to compile swift code when bitcode is enabled. Flipper transitively depends on YogaKit which is written in Swift. More about this issue can be found [here](https://twitter.com/krzyzanowskim/status/1151549874653081601?s=21) and [here](https://github.com/Carthage/Carthage/issues/2825).
 
@@ -622,6 +623,8 @@ end
 
 Install the dependencies by running `cd ios && pod install`. You can now import and initialize Flipper in your
 `ios/your-app-name/AppDelegate.m`.
+
+For pure Objective-C projects there is an additional setup, please follow these [steps](#for-pure-objective-c-projects)
 
 The code below enables the following integrations:
 
