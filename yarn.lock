@@ -6209,10 +6209,10 @@ levn@^0.3.0, levn@~0.3.0:
     prelude-ls "~1.1.2"
     type-check "~0.3.2"
 
-line-replace@^1.0.2:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/line-replace/-/line-replace-1.0.2.tgz#b1995da54060d671c449196fa228395f0faaea47"
-  integrity sha1-sZldpUBg1nHESRlvoig5Xw+q6kc=
+line-replace@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/line-replace/-/line-replace-1.0.3.tgz#6970df2a0e93e52e5d418a1da5787e5cee151ec1"
+  integrity sha512-2f/Od+55wuPNto23mgxliWU19xOrHZo6joqtNYQraInC1xwsWBN1uN352tuIUCAHsUZKSgbNjwZjWi19C0nmfg==
 
 linked-list@0.1.0:
   version "0.1.0"
