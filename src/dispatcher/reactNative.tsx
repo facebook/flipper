@@ -6,6 +6,7 @@
  *
  * @format
  */
+
 import {remote} from 'electron';
 import {MetroDevice} from 'flipper';
 import {Store} from 'src/reducers';
