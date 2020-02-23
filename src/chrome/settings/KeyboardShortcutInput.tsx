@@ -94,10 +94,10 @@ const KeyboardShortcutInput = (props: {
   onChange?: (value: string) => void;
 }) => {
   const getInitialStateFromProps = (): PressedKeys => ({
-    metaKey: props.value && props.value.includes(ACCELERATORS.COMMAND),
-    altKey: props.value && props.value.includes(ACCELERATORS.ALT),
-    ctrlKey: props.value && props.value.includes(ACCELERATORS.CONTROL),
-    shiftKey: props.value && props.value.includes(ACCELERATORS.SHIFT),
+    metaKey: Boolean(props.value && props.value.includes(ACCELERATORS.COMMAND)),
+    altKey: Boolean(props.value && props.value.includes(ACCELERATORS.ALT)),
+    ctrlKey: Boolean(props.value && props.value.includes(ACCELERATORS.CONTROL)),
+    shiftKey: Boolean(props.value && props.value.includes(ACCELERATORS.SHIFT)),
     character:
       props.value &&
       props.value.replace(
