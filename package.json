@@ -150,7 +150,7 @@
     "immer": "^5.3.5",
     "immutable": "^4.0.0-rc.12",
     "invariant": "^2.2.2",
-    "line-replace": "^1.0.2",
+    "line-replace": "1.0.2",
     "live-plugin-manager": "^0.14.0",
     "lodash.debounce": "^4.0.8",
     "lodash.isequal": "^4.5.0",
