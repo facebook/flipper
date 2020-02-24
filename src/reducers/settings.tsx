@@ -66,7 +66,7 @@ const initialState: Settings = {
   },
   reactNative: {
     shortcuts: {
-      enabled: true,
+      enabled: false,
       reload: 'Alt+Shift+R',
       openDevMenu: 'Alt+Shift+D',
     },
