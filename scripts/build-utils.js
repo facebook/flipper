@@ -9,10 +9,22 @@
 
 const Metro = require('../static/node_modules/metro');
 const compilePlugins = require('../static/compilePlugins');
+const util = require('util');
 const tmp = require('tmp');
 const path = require('path');
 const fs = require('fs-extra');
 const cp = require('promisify-child-process');
+const recursiveReaddir = require('recursive-readdir');
+
+function mostRecentlyChanged(dir, ignores) {
+  return util
+    .promisify(recursiveReaddir)(dir, ignores)
+    .then(files =>
+      files
+        .map(f => fs.lstatSync(f).ctime)
+        .reduce((a, b) => (a > b ? a : b), new Date(0)),
+    );
+}
 
 function die(err) {
   console.error(err.stack);
@@ -81,9 +93,19 @@ function compile(buildFolder, entry) {
 }
 
 async function compileMain() {
+  const staticDir = path.resolve(__dirname, '..', 'static');
+  const out = path.join(staticDir, 'main.bundle.js');
+  // check if main needs to be compiled
+  if (await fs.pathExists(out)) {
+    const staticDirCtime = await mostRecentlyChanged(staticDir, ['*.bundle.*']);
+    const bundleCtime = (await fs.lstat(out)).ctime;
+    if (staticDirCtime < bundleCtime) {
+      console.log(`🥫  Using cached version of main bundle...`);
+      return;
+    }
+  }
   console.log(`⚙️  Compiling main bundle...`);
   try {
-    const staticDir = path.resolve(__dirname, '..', 'static');
     const config = Object.assign({}, await Metro.loadConfig(), {
       reporter: {update: () => {}},
       projectRoot: staticDir,
@@ -105,7 +127,7 @@ async function compileMain() {
     await Metro.runBuild(config, {
       platform: 'web',
       entry: path.join(staticDir, 'main.ts'),
-      out: path.join(staticDir, 'main.bundle.js'),
+      out,
       dev: false,
       minify: false,
       sourceMap: true,
@@ -116,7 +138,6 @@ async function compileMain() {
     die(err);
   }
 }
-
 function buildFolder() {
   // eslint-disable-next-line no-console
   console.log('Creating build directory');
@@ -130,7 +151,6 @@ function buildFolder() {
     });
   }).catch(die);
 }
-
 function getVersionNumber() {
   let {version} = require('../package.json');
   const buildNumber = process.argv.join(' ').match(/--version=(\d+)/);
@@ -139,7 +159,6 @@ function getVersionNumber() {
   }
   return version;
 }
-
 // Asynchronously determine current mercurial revision as string or `null` in case of any error.
 function genMercurialRevision() {
   return cp
@@ -147,7 +166,6 @@ function genMercurialRevision() {
     .catch(err => null)
     .then(res => (res && res.stdout) || null);
 }
-
 module.exports = {
   buildFolder,
   compile,
