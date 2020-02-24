@@ -7,11 +7,26 @@
  * @format
  */
 
-const path = require('path');
-const os = require('os');
-const fs = require('fs');
+import path from 'path';
+import os from 'os';
+import fs from 'fs';
 
-module.exports = function(argv) {
+export type Config = {
+  pluginPaths?: string[];
+  disabledPlugins?: string[];
+  lastWindowPosition?: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  };
+  updater?: boolean | undefined;
+  launcherMsg?: string | undefined;
+  updaterEnabled?: boolean;
+  launcherEnabled?: boolean;
+};
+
+export default function setup(argv: any) {
   // ensure .flipper folder and config exist
   const flipperDir = path.join(os.homedir(), '.flipper');
   if (!fs.existsSync(flipperDir)) {
@@ -19,16 +34,15 @@ module.exports = function(argv) {
   }
 
   const configPath = path.join(flipperDir, 'config.json');
-  let config = {
+  let config: Config = {
     pluginPaths: [],
     disabledPlugins: [],
-    lastWindowPosition: {},
   };
 
   try {
     config = {
       ...config,
-      ...JSON.parse(fs.readFileSync(configPath)),
+      ...JSON.parse(fs.readFileSync(configPath).toString()),
     };
   } catch (e) {
     // file not readable or not parsable, overwrite it with the new config
@@ -46,4 +60,4 @@ module.exports = function(argv) {
   };
 
   return {config, configPath, flipperDir};
-};
+}

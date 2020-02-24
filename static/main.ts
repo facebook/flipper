@@ -10,23 +10,25 @@
 const [s, ns] = process.hrtime();
 let launchStartTime = s * 1e3 + ns / 1e6;
 
-const {app, BrowserWindow, ipcMain, Notification} = require('electron');
-const path = require('path');
-const url = require('url');
-const fs = require('fs');
-const fixPath = require('fix-path');
-const {exec} = require('child_process');
+import {app, BrowserWindow, ipcMain, Notification} from 'electron';
+import path from 'path';
+import url from 'url';
+import fs from 'fs';
+import fixPath from 'fix-path';
+import {exec} from 'child_process';
 const compilePlugins = require('./compilePlugins');
-const setup = require('./setup');
+import setup from './setup';
 const delegateToLauncher = require('./launcher');
 const expandTilde = require('expand-tilde');
 const yargs = require('yargs');
+
+const VERSION: string = (global as any).__VERSION__;
 
 // Adds system PATH folders to process.env.PATH for MacOS production bundles.
 fixPath();
 
 // disable electron security warnings: https://github.com/electron/electron/blob/master/docs/tutorial/security.md#security-native-capabilities-and-your-responsibility
-process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = true;
+process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true';
 
 if (process.platform === 'darwin') {
   // If we are running on macOS and the app is called Flipper, we add a comment
@@ -68,7 +70,7 @@ const argv = yargs
       '[Internal] Used to provide a user message from the launcher to the user.',
     type: 'string',
   })
-  .version(global.__VERSION__)
+  .version(VERSION)
   .help()
   .parse(process.argv.slice(1));
 
@@ -95,11 +97,11 @@ process.env.CONFIG = JSON.stringify({
 });
 
 // possible reference to main app window
-let win;
+let win: BrowserWindow;
 let appReady = false;
 let pluginsCompiled = false;
-let deeplinkURL = argv.url;
-let filePath = argv.file;
+let deeplinkURL: string = argv.url;
+let filePath: string = argv.file;
 
 // tracking
 setInterval(() => {
@@ -130,7 +132,7 @@ const gotTheLock = app.requestSingleInstanceLock();
 if (!gotTheLock) {
   app.quit();
 } else {
-  app.on('second-instance', (event, commandLine, workingDirectory) => {
+  app.on('second-instance', (_event, _commandLine, _workingDirectory) => {
     // Someone tried to run a second instance, we should focus our window.
     if (win) {
       if (win.isMinimized()) {
@@ -195,7 +197,7 @@ app.on('ready', () => {
   });
 });
 
-ipcMain.on('componentDidMount', event => {
+ipcMain.on('componentDidMount', _event => {
   if (deeplinkURL) {
     win.webContents.send('flipper-protocol-handler', deeplinkURL);
     deeplinkURL = null;
@@ -226,6 +228,8 @@ ipcMain.on(
       // Forwarding notification events to renderer process
       // https://electronjs.org/docs/api/notification#instance-events
       ['show', 'click', 'close', 'reply', 'action'].forEach(eventName => {
+        // TODO: refactor this to make typescript happy
+        // @ts-ignore
         n.on(eventName, (event, ...args) => {
           e.sender.send(
             'notificationEvent',
@@ -259,10 +263,10 @@ function tryCreateWindow() {
       minWidth: 800,
       minHeight: 600,
       center: true,
-      backgroundThrottling: false,
       titleBarStyle: 'hiddenInset',
       vibrancy: 'sidebar',
       webPreferences: {
+        backgroundThrottling: false,
         webSecurity: false,
         scrollBounce: true,
         experimentalFeatures: true,
@@ -272,15 +276,15 @@ function tryCreateWindow() {
       },
     });
     win.once('ready-to-show', () => win.show());
-    win.once('close', ({sender}) => {
+    win.once('close', () => {
       if (process.env.NODE_ENV === 'development') {
         // Removes as a default protocol for debug builds. Because even when the
         // production application is installed, and one tries to deeplink through
         // browser, it still looks for the debug one and tries to open electron
         app.removeAsDefaultProtocolClient('flipper');
       }
-      const [x, y] = sender.getPosition();
-      const [width, height] = sender.getSize();
+      const [x, y] = win.getPosition();
+      const [width, height] = win.getSize();
       // save window position and size
       fs.writeFileSync(
         configPath,
@@ -295,7 +299,11 @@ function tryCreateWindow() {
         }),
       );
     });
-    if (config.lastWindowPosition.x && config.lastWindowPosition.y) {
+    if (
+      config.lastWindowPosition &&
+      config.lastWindowPosition.x &&
+      config.lastWindowPosition.y
+    ) {
       win.setPosition(config.lastWindowPosition.x, config.lastWindowPosition.y);
     }
     const entryUrl =

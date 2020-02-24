@@ -20,7 +20,7 @@ import {
   exportMetricsFromTrace,
 } from '../src/utils/exportMetrics';
 import {listDevices} from '../src/utils/listDevices';
-import setup from '../static/setup.js';
+import setup from '../static/setup';
 import {getPersistentPlugins, pluginsClassMap} from '../src/utils/pluginUtils';
 import {serialize} from '../src/utils/serialization';
 import {getStringFromErrorLike} from '../src/utils/index';

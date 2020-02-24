@@ -104,7 +104,7 @@ async function compileMain() {
     });
     await Metro.runBuild(config, {
       platform: 'web',
-      entry: path.join(staticDir, 'main.js'),
+      entry: path.join(staticDir, 'main.ts'),
       out: path.join(staticDir, 'main.bundle.js'),
       dev: false,
       minify: false,
