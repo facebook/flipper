@@ -24,7 +24,7 @@
     "mkdirp": "^1.0.0",
     "p-map": "^3.0.0",
     "recursive-readdir": "2.2.2",
-    "uuid": "^3.3.2",
+    "uuid": "^7.0.0",
     "xdg-basedir": "^4.0.0",
     "yargs": "^15.0.1"
   },
