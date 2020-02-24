@@ -98,7 +98,7 @@ public class InspectorFlipperPluginTest {
             new FlipperObject.Builder()
                 .put("id", "com.facebook.flipper")
                 .put("name", "com.facebook.flipper")
-                .put("data", new FlipperObject.Builder())
+                .put("data", new FlipperObject.Builder().put("Theme", new FlipperObject.Builder()))
                 .put("children", new FlipperArray.Builder().put("test"))
                 .put("attributes", new FlipperArray.Builder())
                 .put("decoration", (String) null)

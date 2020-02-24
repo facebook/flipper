@@ -38,6 +38,7 @@ import com.facebook.flipper.plugins.inspector.Touch;
 import com.facebook.flipper.plugins.inspector.descriptors.utils.AccessibilityEvaluationUtil;
 import com.facebook.flipper.plugins.inspector.descriptors.utils.AccessibilityRoleUtil;
 import com.facebook.flipper.plugins.inspector.descriptors.utils.AccessibilityUtil;
+import com.facebook.flipper.plugins.inspector.descriptors.utils.ContextDescriptorUtils;
 import com.facebook.flipper.plugins.inspector.descriptors.utils.EnumMapping;
 import com.facebook.flipper.plugins.inspector.descriptors.utils.stethocopies.ResourcesUtil;
 import java.lang.reflect.Field;
@@ -186,7 +187,9 @@ public class ViewDescriptor extends NodeDescriptor<View> {
       viewProps.put("foreground", fromDrawable(node.getForeground()));
     }
 
-    return Arrays.asList(new Named<>("View", viewProps.build()));
+    return Arrays.asList(
+        new Named<>("View", viewProps.build()),
+        new Named<>("Theme", ContextDescriptorUtils.themeData(node.getContext())));
   }
 
   @Override
