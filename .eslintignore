@@ -1,3 +1,5 @@
+*.d.ts
+*.bundle.js
 src/fb/plugins/relaydevtools/relay-devtools/*
 latest
 resources

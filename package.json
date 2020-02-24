@@ -206,7 +206,8 @@
     "rm-dist": "rimraf dist",
     "rm-modules": "rimraf node_modules static/node_modules",
     "rm-temp": "rimraf $TMPDIR/jest* $TMPDIR/react-native-packager*",
-    "reset": "yarn rm-dist && yarn rm-temp && yarn cache clean && yarn rm-modules",
+    "rm-bundle": "rimraf static/main.bundle.*",
+    "reset": "yarn rm-dist && yarn rm-temp && yarn cache clean && yarn rm-modules && yarn rm-bundle",
     "start": "cross-env NODE_ENV=development node scripts/start-dev-server.js --inspect=9229",
     "start:break": "cross-env NODE_ENV=development node scripts/start-dev-server.js --inspect-brk=9229",
     "start:no-embedded-plugins": "cross-env NODE_ENV=development cross-env FLIPPER_NO_EMBEDDED_PLUGINS=true node scripts/start-dev-server.js",
@@ -217,7 +218,7 @@
     "test:debug": "node --inspect node_modules/.bin/jest --runInBand",
     "test-electron": "jest --testPathPattern=\"electron\\.(js|tsx)$\" --testEnvironment=@jest-runner/electron/environment --runner=@jest-runner/electron --no-cache",
     "test-with-device": "USE_ELECTRON_STUBS=1 jest --testPathPattern=\"device\\.(js|tsx)$\" --detectOpenHandles --no-cache",
-    "lint": "eslint . --ext .js,.tsx && flow check && tsc --noemit"
+    "lint": "eslint . --ext .js,.ts,.tsx && flow check && tsc --noemit"
   },
   "optionalDependencies": {
     "7zip-bin-mac": "^1.0.1"
