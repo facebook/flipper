@@ -92,7 +92,7 @@ function compile(buildFolder, entry) {
     .catch(die);
 }
 
-async function compileMain() {
+async function compileMain({dev}) {
   const staticDir = path.resolve(__dirname, '..', 'static');
   const out = path.join(staticDir, 'main.bundle.js');
   // check if main needs to be compiled
@@ -128,7 +128,7 @@ async function compileMain() {
       platform: 'web',
       entry: path.join(staticDir, 'main.ts'),
       out,
-      dev: false,
+      dev,
       minify: false,
       sourceMap: true,
       resetCache: true,
@@ -158,8 +158,7 @@ function getVersionNumber() {
     version = [...version.split('.').slice(0, 2), buildNumber[1]].join('.');
   }
   return version;
-}
-// Asynchronously determine current mercurial revision as string or `null` in case of any error.
+} // Asynchronously determine current mercurial revision as string or `null` in case of any error.
 function genMercurialRevision() {
   return cp
     .spawn('hg', ['log', '-r', '.', '-T', '{node}'], {encoding: 'utf8'})

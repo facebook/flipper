@@ -124,7 +124,7 @@ function startAssetServer(port) {
     }
     shutdownElectron = launchElectron({
       devServerURL: `http://localhost:${port}`,
-      bundleURL: `http://localhost:${port}/src/init.bundle`,
+      bundleURL: `http://localhost:${port}/src/init.bundle?dev=true&platform=web&minify=false&excludeSource=false`,
       electronURL: `http://localhost:${port}/index.dev.html`,
     });
     res.end();
@@ -246,7 +246,7 @@ function outputScreen(socket) {
   const socket = await addWebsocket(server);
   await startMetroServer(app);
   outputScreen(socket);
-  await compileMain();
+  await compileMain({dev: true});
   shutdownElectron = launchElectron({
     devServerURL: `http://localhost:${port}`,
     bundleURL: `http://localhost:${port}/src/init.bundle`,

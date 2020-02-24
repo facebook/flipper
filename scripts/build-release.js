@@ -169,7 +169,7 @@ function downloadIcons(buildFolder) {
   const dir = await buildFolder();
   // eslint-disable-next-line no-console
   console.log('Created build directory', dir);
-  await compileMain();
+  await compileMain({dev: false});
   copyStaticFolder(dir);
   await downloadIcons(dir);
   await compileDefaultPlugins(path.join(dir, 'defaultPlugins'));
