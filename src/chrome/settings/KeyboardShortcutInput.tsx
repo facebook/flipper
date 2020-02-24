@@ -242,7 +242,7 @@ const KeyboardShortcutInput = (props: {
             character: '',
           })
         }>
-        <CenteredGlyph name="undo" variant="outline" />
+        <CenteredGlyph name="cross" variant="outline" />
       </FlexColumn>
     </Container>
   );
