@@ -19,4 +19,4 @@ jobs:
       uses: actions/upload-artifact@v1
       with:
         name: sample-app.apk
-        path: dist/Flipper-mac.zip
+        path: android/sample/build/outputs/apk/debug/sample-debug.apk
