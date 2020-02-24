@@ -106,7 +106,7 @@ function getVersionNumber() {
 // Asynchronously determine current mercurial revision as string or `null` in case of any error.
 function genMercurialRevision() {
   return cp
-    .spawn('hg', ['log', '-r', '.', '-T', '{node}'])
+    .spawn('hg', ['log', '-r', '.', '-T', '{node}'], {encoding: 'utf8'})
     .catch(err => null)
     .then(res => (res && res.stdout) || null);
 }
