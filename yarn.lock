@@ -4368,10 +4368,10 @@ flipper-doctor@^0.7.0:
     envinfo "^7.4.0"
     fb-watchman "^2.0.1"
 
-flow-bin@0.118.0:
-  version "0.118.0"
-  resolved "https://registry.yarnpkg.com/flow-bin/-/flow-bin-0.118.0.tgz#fb706364a58c682d67a2ca7df39396467dc397d1"
-  integrity sha512-jlbUu0XkbpXeXhan5xyTqVK1jmEKNxE8hpzznI3TThHTr76GiFwK0iRzhDo4KNy+S9h/KxHaqVhTP86vA6wHCg==
+flow-bin@0.119.0:
+  version "0.119.0"
+  resolved "https://registry.yarnpkg.com/flow-bin/-/flow-bin-0.119.0.tgz#f72523b4843caf7302576f7ad3f63637070b69f1"
+  integrity sha512-fCVv++rjBsx/q6YVeB3F+A/owztjUO5PyBLwhGZdK5igVmiFQ8RKBTR9T2mb+SQRLZJJhl/xwPLhNzr3dBba6w==
 
 flow-parser@0.*:
   version "0.110.0"
