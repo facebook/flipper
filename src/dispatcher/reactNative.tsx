@@ -21,6 +21,10 @@ type ShortcutEventCommand =
 export default (store: Store) => {
   const settings = store.getState().settingsState.reactNative;
 
+  if (!settings.shortcuts.enabled) {
+    return;
+  }
+
   const shortcuts: ShortcutEventCommand[] = [
     settings.shortcuts.reload && {
       shortcut: settings.shortcuts.reload,
