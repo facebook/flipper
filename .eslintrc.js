@@ -23,6 +23,7 @@ const prettierConfig = {
 
 module.exports = {
   parser: 'babel-eslint',
+  root: true,
   extends: 'fbjs',
   plugins: [...fbjs.plugins, 'header', 'prettier', '@typescript-eslint'],
   rules: {

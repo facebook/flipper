@@ -2,43 +2,64 @@
   "name": "flipper-pkg",
   "version": "0.0.0",
   "description": "Utility for building and publishing Flipper plugins",
+  "repository": "facebook/flipper",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "license": "MIT",
+  "bin": {
+    "flipper-pkg": "./bin/run"
+  },
+  "bugs": "https://github.com/facebook/flipper/issues",
+  "dependencies": {
+    "@oclif/command": "^1",
+    "@oclif/config": "^1",
+    "@oclif/plugin-help": "^2",
+    "@types/node": "^10",
+    "listr": "^0.14.3",
+    "tslib": "^1"
+  },
   "devDependencies": {
+    "@oclif/dev-cli": "^1",
     "@types/jest": "^24.0.21",
-    "@typescript-eslint/eslint-plugin": "^2.8.0",
-    "eslint": "^6.6.0",
-    "eslint-plugin-babel": "^5.3.0",
-    "eslint-plugin-flowtype": "^4.5.2",
-    "eslint-plugin-header": "^3.0.0",
-    "eslint-plugin-jsx-a11y": "^6.2.3",
-    "eslint-plugin-prettier": "^3.1.1",
-    "eslint-plugin-react": "^7.16.0",
+    "@types/listr": "^0.14.2",
+    "globby": "^10",
     "jest": "^24.9.0",
     "prettier": "^1.19.1",
     "ts-jest": "^24.1.0",
+    "ts-node": "^8",
     "tslint-config-prettier": "^1.18.0",
     "typescript": "^3.7.2"
   },
   "scripts": {
     "build": "tsc",
+    "postpack": "rm -f oclif.manifest.json",
+    "prepack": "rm -rf lib && tsc -b && oclif-dev manifest && oclif-dev readme",
     "prepare": "yarn run build",
     "prepublishOnly": "yarn test && yarn run lint",
     "preversion": "yarn run lint",
     "test": "jest --config jestconfig.json",
-    "lint": "eslint -c ../../sonar/.eslintrc.js src/**/* --ext .js,.ts  && tsc --noemit",
-    "fix": "eslint -c ../../sonar/.eslintrc.js src/**/* --fix --ext .js,.ts",
-    "run": "yarn run build && node lib/cli.js"
+    "run": "bin/run",
+    "version": "oclif-dev readme && git add README.md"
+  },
+  "engines": {
+    "node": ">=8.0.0"
   },
   "files": [
+    "/bin",
+    "/npm-shrinkwrap.json",
+    "/oclif.manifest.json",
     "lib/**/*"
   ],
+  "homepage": "https://github.com/facebook/flipper",
   "keywords": [
     "Flipper"
   ],
   "author": "Facebook, Inc",
-  "dependencies": {
-    "@types/node": "^12.12.12"
+  "oclif": {
+    "commands": "./lib/commands",
+    "bin": "flipper-pkg",
+    "plugins": [
+      "@oclif/plugin-help"
+    ]
   }
 }

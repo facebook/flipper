@@ -1,12 +1,14 @@
 {
   "compilerOptions": {
-    "lib": ["es7", "dom", "es2017"],
-    "target": "es5",
+    "target": "es2017",
     "module": "commonjs",
     "declaration": true,
-    "outDir": "./lib",
-    "strict": true
+    "outDir": "lib",
+    "rootDir": "src",
+    "strict": true,
+    "importHelpers": true
   },
-  "include": ["src"],
-  "exclude": ["node_modules", "**/__tests__/*"]
+  "include": [
+    "src/**/*"
+  ]
 }
