@@ -2,6 +2,7 @@ node_modules
 dist
 website/build
 yarn-error.log
+static/main.bundle.*
 
 # iOS / Xcode
 *.xcworkspace

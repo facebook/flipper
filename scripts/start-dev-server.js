@@ -17,6 +17,7 @@ const Convert = require('ansi-to-html');
 const chalk = require('chalk');
 const http = require('http');
 const path = require('path');
+const {compileMain} = require('./build-utils');
 const Metro = require('../static/node_modules/metro');
 const MetroResolver = require('../static/node_modules/metro-resolver');
 const fs = require('fs');
@@ -245,6 +246,7 @@ function outputScreen(socket) {
   const socket = await addWebsocket(server);
   await startMetroServer(app);
   outputScreen(socket);
+  await compileMain();
   shutdownElectron = launchElectron({
     devServerURL: `http://localhost:${port}`,
     bundleURL: `http://localhost:${port}/src/init.bundle`,

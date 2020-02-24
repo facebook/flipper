@@ -78,7 +78,10 @@ module.exports = function(babel) {
 
         const source = path.node.arguments[0].value;
 
-        if (BUILTINS.includes(source)) {
+        if (
+          BUILTINS.includes(source) ||
+          BUILTINS.some(moduleName => source.startsWith(`${moduleName}/`))
+        ) {
           path.node.callee.name = 'electronRequire';
         }
 

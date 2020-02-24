@@ -15,6 +15,7 @@ const cp = require('promisify-child-process');
 const {
   buildFolder,
   compile,
+  compileMain,
   die,
   compileDefaultPlugins,
   getVersionNumber,
@@ -168,6 +169,7 @@ function downloadIcons(buildFolder) {
   const dir = await buildFolder();
   // eslint-disable-next-line no-console
   console.log('Created build directory', dir);
+  await compileMain();
   copyStaticFolder(dir);
   await downloadIcons(dir);
   await compileDefaultPlugins(path.join(dir, 'defaultPlugins'));

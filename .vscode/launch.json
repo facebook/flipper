@@ -13,7 +13,8 @@
       "name": "Attach to Running Main",
       "type": "node",
       "request": "attach",
-      "port": 9229
+      "port": 9229,
+      "sourceMaps": true
     },
     {
       "type": "node",
@@ -21,7 +22,14 @@
       "name": "Launch Current Jest Suite",
       "program": "${workspaceFolder}/node_modules/.bin/jest",
       "args": ["--runInBand", "${relativeFile}"]
-   }
+   },
+   {
+    "type": "node",
+    "request": "launch",
+    "name": "Launch Current Script",
+    "program": "${file}",
+    "cwd": "${workspaceFolder}"
+ }
   ],
   "compounds": [
     {

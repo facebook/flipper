@@ -46,9 +46,7 @@ function compileDefaultPlugins(defaultPluginDir, skipAll = false) {
 }
 
 function compile(buildFolder, entry) {
-  // eslint-disable-next-line no-console
-  console.log('Building main bundle', entry);
-
+  console.log(`⚙️  Compiling renderer bundle...`);
   const projectRoots = path.join(__dirname, '..');
   return Metro.runBuild(
     {
@@ -77,7 +75,46 @@ function compile(buildFolder, entry) {
       entry,
       out: path.join(buildFolder, 'bundle.js'),
     },
-  ).catch(die);
+  )
+    .then(() => console.log('✅  Compiled renderer bundle.'))
+    .catch(die);
+}
+
+async function compileMain() {
+  console.log(`⚙️  Compiling main bundle...`);
+  try {
+    const staticDir = path.resolve(__dirname, '..', 'static');
+    const config = Object.assign({}, await Metro.loadConfig(), {
+      reporter: {update: () => {}},
+      projectRoot: staticDir,
+      watchFolders: [staticDir],
+      transformer: {
+        babelTransformerPath: path.join(
+          __dirname,
+          '..',
+          'static',
+          'transforms',
+          'index.js',
+        ),
+      },
+      resolver: {
+        sourceExts: ['tsx', 'ts', 'js'],
+        blacklistRE: /(\/|\\)(sonar|flipper|flipper-public)(\/|\\)(dist|doctor)(\/|\\)|(\.native\.js$)/,
+      },
+    });
+    await Metro.runBuild(config, {
+      platform: 'web',
+      entry: path.join(staticDir, 'main.js'),
+      out: path.join(staticDir, 'main.bundle.js'),
+      dev: false,
+      minify: false,
+      sourceMap: true,
+      resetCache: true,
+    });
+    console.log('✅  Compiled main bundle.');
+  } catch (err) {
+    die(err);
+  }
 }
 
 function buildFolder() {
@@ -114,6 +151,7 @@ function genMercurialRevision() {
 module.exports = {
   buildFolder,
   compile,
+  compileMain,
   die,
   compileDefaultPlugins,
   getVersionNumber,

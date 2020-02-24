@@ -12,12 +12,24 @@ const babylon = require('@babel/parser');
 const babel = require('@babel/core');
 const fs = require('fs');
 const path = require('path');
+const staticDir = path.resolve(__dirname, '..');
 
 function transform({filename, options, src}) {
-  const presets = [require('../node_modules/@babel/preset-react')];
   const isPlugin =
     options.projectRoot && !__dirname.startsWith(options.projectRoot);
-  const isTypeScript = filename.endsWith('.tsx');
+  const isMain =
+    options.projectRoot &&
+    options.projectRoot === staticDir &&
+    !options.isTestRunner;
+  const isTypeScript = filename.endsWith('.tsx') || filename.endsWith('.ts');
+  const presets = [
+    isMain
+      ? [
+          require('../node_modules/@babel/preset-env'),
+          {targets: {electron: require('electron/package.json').version}},
+        ]
+      : require('../node_modules/@babel/preset-react'),
+  ];
 
   const ast = babylon.parse(src, {
     filename,
@@ -75,11 +87,21 @@ function transform({filename, options, src}) {
     plugins.push(require('./electron-stubs.js'));
   }
   if (!options.isTestRunner) {
-    // Replacing require statements with electronRequire to prevent metro from
-    // resolving them. electronRequire are resolved during runtime by electron.
-    // As the tests are not bundled by metro and run in @jest-runner/electron,
-    // electron imports are working out of the box.
-    plugins.push(require('./electron-requires.js'));
+    if (isMain) {
+      // For the main Electron process ("static" folder), to avoid issues with
+      // native node modules, we prevent Metro from resolving any installed modules.
+      // Instead all of them are just resolved from "node_modules" as usual.
+      plugins.push(require('./electron-requires-main'));
+      // Metro bundler messes up "global.process", so we're changing all its occurrences to "global.electronProcess" instead.
+      // https://github.com/facebook/metro/blob/7e6b3114fc4a9b07a8c0dd3797b1e0c55a4c32ad/packages/metro/src/lib/getPreludeCode.js#L24
+      plugins.push(require('./electron-process'));
+    } else {
+      // Replacing require statements with electronRequire to prevent metro from
+      // resolving them. electronRequire are resolved during runtime by electron.
+      // As the tests are not bundled by metro and run in @jest-runner/electron,
+      // electron imports are working out of the box.
+      plugins.push(require('./electron-requires'));
+    }
   }
   if (isPlugin) {
     plugins.push(require('./flipper-requires.js'));
@@ -97,6 +119,7 @@ function transform({filename, options, src}) {
     plugins,
     presets,
     sourceMaps: true,
+    retainLines: !!options.isTestRunner,
   });
 
   const result = generate(
@@ -105,6 +128,7 @@ function transform({filename, options, src}) {
       filename,
       sourceFileName: filename,
       sourceMaps: true,
+      retainLines: !!options.isTestRunner,
     },
     src,
   );
