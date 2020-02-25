@@ -61,7 +61,7 @@ export type State = {
     deviceId?: string;
     errorMessage?: string;
   }>;
-  deepLinkPayload: null | string;
+  deepLinkPayload: string | null;
   staticView: StaticView;
 };
 
@@ -142,6 +142,10 @@ export type Action =
   | {
       type: 'SELECT_CLIENT';
       payload: string;
+    }
+  | {
+      type: 'SET_DEEPLINK_PAYLOAD';
+      payload: null | string;
     }
   | RegisterPluginAction;
 
@@ -382,7 +386,9 @@ const reducer = (state: State = INITAL_STATE, action: Actions): State => {
         errors,
       };
     }
-
+    case 'SET_DEEPLINK_PAYLOAD': {
+      return {...state, deepLinkPayload: action.payload};
+    }
     case 'REGISTER_PLUGINS': {
       // plugins are registered after creating the base devices, so update them
       const plugins = action.payload;
@@ -497,6 +503,11 @@ export const dismissError = (index: number): Action => ({
 export const selectClient = (clientId: string): Action => ({
   type: 'SELECT_CLIENT',
   payload: clientId,
+});
+
+export const setDeeplinkPayload = (payload: string | null): Action => ({
+  type: 'SET_DEEPLINK_PAYLOAD',
+  payload,
 });
 
 export function getAvailableClients(

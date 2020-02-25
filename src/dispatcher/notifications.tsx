@@ -12,7 +12,7 @@ import {Logger} from '../fb-interfaces/Logger';
 import {PluginNotification} from '../reducers/notifications';
 import {FlipperPlugin, FlipperDevicePlugin} from '../plugin';
 import isHeadless from '../utils/isHeadless';
-import {setStaticView} from '../reducers/connections';
+import {setStaticView, setDeeplinkPayload} from '../reducers/connections';
 import {ipcRenderer, IpcRendererEvent} from 'electron';
 import {
   setActiveNotifications,
@@ -41,12 +41,14 @@ export default (store: Store, logger: Logger) => {
     'notificationEvent',
     (
       _event: IpcRendererEvent,
-      _e: Error,
       eventName: NotificationEvents,
       pluginNotification: PluginNotification,
       arg: null | string | number,
     ) => {
       if (eventName === 'click' || (eventName === 'action' && arg === 0)) {
+        store.dispatch(
+          setDeeplinkPayload(pluginNotification.notification.action ?? null),
+        );
         store.dispatch(setStaticView(NotificationScreen));
       } else if (eventName === 'action') {
         if (arg === 1 && pluginNotification.notification.category) {

@@ -260,7 +260,7 @@ const Searchable = (
           prevProps.defaultSearchTerm !== this.props.defaultSearchTerm ||
           prevProps.defaultFilters !== this.props.defaultFilters
         ) {
-          newSearchTerm = this.props.defaultSearchTerm;
+          newSearchTerm = this.props.defaultSearchTerm ?? '';
         }
         this.setState({
           filters: mergedFilters,
