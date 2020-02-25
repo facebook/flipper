@@ -8,7 +8,7 @@
  */
 
 const [s, ns] = process.hrtime();
-let launchStartTime = s * 1e3 + ns / 1e6;
+let launchStartTime: number | undefined = s * 1e3 + ns / 1e6;
 
 import {app, BrowserWindow, ipcMain, Notification} from 'electron';
 import path from 'path';
@@ -19,8 +19,8 @@ import {exec} from 'child_process';
 const compilePlugins = require('./compilePlugins');
 import setup from './setup';
 const delegateToLauncher = require('./launcher');
-const expandTilde = require('expand-tilde');
-const yargs = require('yargs');
+import expandTilde from 'expand-tilde';
+import yargs from 'yargs';
 
 const VERSION: string = (global as any).__VERSION__;
 
@@ -47,28 +47,30 @@ if (process.platform === 'darwin') {
 
 const argv = yargs
   .usage('$0 [args]')
-  .option('file', {
-    describe: 'Define a file to open on startup.',
-    type: 'string',
-  })
-  .option('url', {
-    describe: 'Define a flipper:// URL to open on startup.',
-    type: 'string',
-  })
-  .option('updater', {
-    default: true,
-    describe: 'Toggle the built-in update mechanism.',
-    type: 'boolean',
-  })
-  .option('launcher', {
-    default: true,
-    describe: 'Toggle delegating to the update launcher on startup.',
-    type: 'boolean',
-  })
-  .option('launcher-msg', {
-    describe:
-      '[Internal] Used to provide a user message from the launcher to the user.',
-    type: 'string',
+  .options({
+    file: {
+      describe: 'Define a file to open on startup.',
+      type: 'string',
+    },
+    url: {
+      describe: 'Define a flipper:// URL to open on startup.',
+      type: 'string',
+    },
+    updater: {
+      default: true,
+      describe: 'Toggle the built-in update mechanism.',
+      type: 'boolean',
+    },
+    launcher: {
+      default: true,
+      describe: 'Toggle delegating to the update launcher on startup.',
+      type: 'boolean',
+    },
+    'launcher-msg': {
+      describe:
+        '[Internal] Used to provide a user message from the launcher to the user.',
+      type: 'string',
+    },
   })
   .version(VERSION)
   .help()
@@ -78,7 +80,7 @@ const {config, configPath, flipperDir} = setup(argv);
 
 const skipLoadingEmbeddedPlugins = process.env.FLIPPER_NO_EMBEDDED_PLUGINS;
 
-const pluginPaths = config.pluginPaths
+const pluginPaths = (config.pluginPaths ?? [])
   .concat([
     path.join(configPath, '..', 'thirdparty'),
     ...(skipLoadingEmbeddedPlugins
@@ -100,8 +102,8 @@ process.env.CONFIG = JSON.stringify({
 let win: BrowserWindow;
 let appReady = false;
 let pluginsCompiled = false;
-let deeplinkURL: string = argv.url;
-let filePath: string = argv.file;
+let deeplinkURL: string | undefined = argv.url;
+let filePath: string | undefined = argv.file;
 
 // tracking
 setInterval(() => {
@@ -118,7 +120,7 @@ compilePlugins(
   },
   pluginPaths,
   path.join(flipperDir, 'plugins'),
-).then(dynamicPlugins => {
+).then((dynamicPlugins: string[]) => {
   ipcMain.on('get-dynamic-plugins', event => {
     event.returnValue = dynamicPlugins;
   });
@@ -169,14 +171,14 @@ app.on('will-finish-launching', () => {
     argv.file = path;
     if (win) {
       win.webContents.send('open-flipper-file', filePath);
-      filePath = null;
+      filePath = undefined;
     }
   });
 });
 
 app.on('ready', () => {
   // If we delegate to the launcher, shut down this instance of the app.
-  delegateToLauncher(argv).then(hasLauncherInvoked => {
+  delegateToLauncher(argv).then((hasLauncherInvoked: boolean) => {
     if (hasLauncherInvoked) {
       app.quit();
       return;
@@ -200,12 +202,12 @@ app.on('ready', () => {
 ipcMain.on('componentDidMount', _event => {
   if (deeplinkURL) {
     win.webContents.send('flipper-protocol-handler', deeplinkURL);
-    deeplinkURL = null;
+    deeplinkURL = undefined;
   }
   if (filePath) {
     // When flipper app is not running, the windows object might not exist in the callback of `open-file`, but after ``componentDidMount` it will definitely exist.
     win.webContents.send('open-flipper-file', filePath);
-    filePath = null;
+    filePath = undefined;
   }
 });
 
@@ -214,7 +216,7 @@ ipcMain.on('getLaunchTime', event => {
     event.sender.send('getLaunchTime', launchStartTime);
     // set launchTime to null to only report it once, to prevents reporting wrong
     // launch times for example after reloading the renderer process
-    launchStartTime = null;
+    launchStartTime = undefined;
   }
 });
 
@@ -258,8 +260,8 @@ function tryCreateWindow() {
     win = new BrowserWindow({
       show: false,
       title: 'Flipper',
-      width: config.lastWindowPosition.width || 1400,
-      height: config.lastWindowPosition.height || 1000,
+      width: config.lastWindowPosition?.width || 1400,
+      height: config.lastWindowPosition?.height || 1000,
       minWidth: 800,
       minHeight: 600,
       center: true,
