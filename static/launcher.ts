@@ -7,13 +7,13 @@
  * @format
  */
 
-const os = require('os');
-const fs = require('fs');
-const path = require('path');
-const promisify = require('util').promisify;
-const {spawn} = require('child_process');
-const xdg = require('xdg-basedir');
-const mkdirp = require('mkdirp');
+import os from 'os';
+import fs from 'fs';
+import path from 'path';
+import {promisify} from 'util';
+import {spawn} from 'child_process';
+import xdg from 'xdg-basedir';
+import mkdirp from 'mkdirp';
 
 const isProduction = () =>
   !/node_modules[\\/]electron[\\/]/.test(process.execPath);
@@ -31,7 +31,7 @@ const isLauncherInstalled = () => {
   return false;
 };
 
-const startLauncher = argv => {
+const startLauncher = (argv: {file?: string; url?: string}) => {
   const args = [];
   if (argv.file) {
     args.push('--file', argv.file);
@@ -45,7 +45,7 @@ const startLauncher = argv => {
 };
 
 const checkIsCycle = async () => {
-  const dir = path.join(xdg.cache, 'flipper');
+  const dir = path.join(xdg.cache!, 'flipper');
   const filePath = path.join(dir, 'last-launcher-run');
   // This isn't monotonically increasing, so there's a change we get time drift
   // between the checks, but the worst case here is that we do two roundtrips
@@ -54,7 +54,10 @@ const checkIsCycle = async () => {
 
   let backThen;
   try {
-    backThen = parseInt(await promisify(fs.readFile)(filePath), 10);
+    backThen = parseInt(
+      (await promisify(fs.readFile)(filePath)).toString(),
+      10,
+    );
   } catch (e) {
     backThen = 0;
   }
@@ -71,7 +74,11 @@ const checkIsCycle = async () => {
  * Runs the launcher if required and returns a boolean based on whether
  * it has. You should shut down this instance of the app in that case.
  */
-module.exports = async function delegateToLauncher(argv) {
+export default async function delegateToLauncher(argv: {
+  launcher: boolean;
+  file?: string;
+  url?: string;
+}) {
   if (argv.launcher && isProduction() && isLauncherInstalled()) {
     if (await checkIsCycle()) {
       console.error(
@@ -89,4 +96,4 @@ module.exports = async function delegateToLauncher(argv) {
   }
 
   return false;
-};
+}

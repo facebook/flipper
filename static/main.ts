@@ -18,7 +18,7 @@ import fixPath from 'fix-path';
 import {exec} from 'child_process';
 const compilePlugins = require('./compilePlugins');
 import setup from './setup';
-const delegateToLauncher = require('./launcher');
+import delegateToLauncher from './launcher';
 import expandTilde from 'expand-tilde';
 import yargs from 'yargs';
 
