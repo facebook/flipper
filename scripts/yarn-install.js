@@ -12,6 +12,7 @@ const util = require('util');
 const glob = util.promisify(require('glob'));
 const exec = util.promisify(require('child_process').exec);
 const PACKAGES = [
+  'headless-tests',
   'static',
   'src/plugins/*',
   'src/fb/plugins/*',

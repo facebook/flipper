@@ -7,13 +7,4 @@
  * @format
  */
 
-const defaultConsoleError = console.error;
-
-console.error = function(...args) {
-  defaultConsoleError(
-    'console.error used in a test. This will be an error in the near future.',
-  );
-  defaultConsoleError(...args);
-};
-
 global.fetch = require('jest-fetch-mock');
