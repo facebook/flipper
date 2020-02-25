@@ -126,6 +126,7 @@ export default (store: Store, logger: Logger) => {
       app,
       sdkVersion,
       isForeground: state.application.windowIsFocused,
+      usedJSHeapSize: (window.performance as any).memory.usedJSHeapSize,
     };
 
     // reset dropped frames counter
