@@ -71,14 +71,14 @@ function generateClientFromDevice(
 }
 
 test('test generateClientIndentifierWithSalt helper function', () => {
-  const device = new ArchivedDevice(
-    'serial',
-    'emulator',
-    'TestiPhone',
-    'iOS',
-    [],
-    null,
-  );
+  const device = new ArchivedDevice({
+    serial: 'serial',
+    deviceType: 'emulator',
+    title: 'TestiPhone',
+    os: 'iOS',
+    logEntries: [],
+    screenshotHandle: null,
+  });
   const identifier = generateClientIdentifier(device, 'app');
   const saltIdentifier = generateClientIdentifierWithSalt(identifier, 'salt');
   expect(saltIdentifier).toEqual('app#iOS#archivedEmulator#salt-serial');
@@ -86,14 +86,14 @@ test('test generateClientIndentifierWithSalt helper function', () => {
 });
 
 test('test generateClientFromClientWithSalt helper function', () => {
-  const device = new ArchivedDevice(
-    'serial',
-    'emulator',
-    'TestiPhone',
-    'iOS',
-    [],
-    null,
-  );
+  const device = new ArchivedDevice({
+    serial: 'serial',
+    deviceType: 'emulator',
+    title: 'TestiPhone',
+    os: 'iOS',
+    logEntries: [],
+    screenshotHandle: null,
+  });
   const client = generateClientFromDevice(device, 'app');
   const saltedClient = generateClientFromClientWithSalt(client, 'salt');
   expect(saltedClient).toEqual({
@@ -117,14 +117,14 @@ test('test generateClientFromClientWithSalt helper function', () => {
 });
 
 test('test generateClientFromDevice helper function', () => {
-  const device = new ArchivedDevice(
-    'serial',
-    'emulator',
-    'TestiPhone',
-    'iOS',
-    [],
-    null,
-  );
+  const device = new ArchivedDevice({
+    serial: 'serial',
+    deviceType: 'emulator',
+    title: 'TestiPhone',
+    os: 'iOS',
+    logEntries: [],
+    screenshotHandle: null,
+  });
   const client = generateClientFromDevice(device, 'app');
   expect(client).toEqual({
     id: 'app#iOS#archivedEmulator#serial',
@@ -138,14 +138,14 @@ test('test generateClientFromDevice helper function', () => {
 });
 
 test('test generateClientIdentifier helper function', () => {
-  const device = new ArchivedDevice(
-    'serial',
-    'emulator',
-    'TestiPhone',
-    'iOS',
-    [],
-    null,
-  );
+  const device = new ArchivedDevice({
+    serial: 'serial',
+    deviceType: 'emulator',
+    title: 'TestiPhone',
+    os: 'iOS',
+    logEntries: [],
+    screenshotHandle: null,
+  });
   const identifier = generateClientIdentifier(device, 'app');
   expect(identifier).toEqual('app#iOS#archivedEmulator#serial');
 });
@@ -177,14 +177,14 @@ test('test processStore function for empty state', () => {
 test('test processStore function for an iOS device connected', async () => {
   const json = await processStore({
     activeNotifications: [],
-    device: new ArchivedDevice(
-      'serial',
-      'emulator',
-      'TestiPhone',
-      'iOS',
-      [],
-      null,
-    ),
+    device: new ArchivedDevice({
+      serial: 'serial',
+      deviceType: 'emulator',
+      title: 'TestiPhone',
+      os: 'iOS',
+      logEntries: [],
+      screenshotHandle: null,
+    }),
     pluginStates: {},
     clients: [],
     devicePlugins: new Map(),
@@ -214,14 +214,14 @@ test('test processStore function for an iOS device connected', async () => {
 });
 
 test('test processStore function for an iOS device connected with client plugin data', async () => {
-  const device = new ArchivedDevice(
-    'serial',
-    'emulator',
-    'TestiPhone',
-    'iOS',
-    [],
-    null,
-  );
+  const device = new ArchivedDevice({
+    serial: 'serial',
+    deviceType: 'emulator',
+    title: 'TestiPhone',
+    os: 'iOS',
+    logEntries: [],
+    screenshotHandle: null,
+  });
   const clientIdentifier = generateClientIdentifier(device, 'testapp');
   const json = await processStore({
     activeNotifications: [],
@@ -252,22 +252,22 @@ test('test processStore function for an iOS device connected with client plugin 
 });
 
 test('test processStore function to have only the client for the selected device', async () => {
-  const selectedDevice = new ArchivedDevice(
-    'serial',
-    'emulator',
-    'TestiPhone',
-    'iOS',
-    [],
-    null,
-  );
-  const unselectedDevice = new ArchivedDevice(
-    'identifier',
-    'emulator',
-    'TestiPhone',
-    'iOS',
-    [],
-    null,
-  );
+  const selectedDevice = new ArchivedDevice({
+    serial: 'serial',
+    deviceType: 'emulator',
+    title: 'TestiPhone',
+    os: 'iOS',
+    logEntries: [],
+    screenshotHandle: null,
+  });
+  const unselectedDevice = new ArchivedDevice({
+    serial: 'identifier',
+    deviceType: 'emulator',
+    title: 'TestiPhone',
+    os: 'iOS',
+    logEntries: [],
+    screenshotHandle: null,
+  });
 
   const unselectedDeviceClientIdentifier = generateClientIdentifier(
     unselectedDevice,
@@ -321,14 +321,14 @@ test('test processStore function to have only the client for the selected device
 });
 
 test('test processStore function to have multiple clients for the selected device', async () => {
-  const selectedDevice = new ArchivedDevice(
-    'serial',
-    'emulator',
-    'TestiPhone',
-    'iOS',
-    [],
-    null,
-  );
+  const selectedDevice = new ArchivedDevice({
+    serial: 'serial',
+    deviceType: 'emulator',
+    title: 'TestiPhone',
+    os: 'iOS',
+    logEntries: [],
+    screenshotHandle: null,
+  });
 
   const clientIdentifierApp1 = generateClientIdentifier(
     selectedDevice,
@@ -388,14 +388,14 @@ test('test processStore function to have multiple clients for the selected devic
 
 test('test processStore function for device plugin state and no clients', async () => {
   // Test case to verify that device plugin data is exported even if there are no clients
-  const selectedDevice = new ArchivedDevice(
-    'serial',
-    'emulator',
-    'TestiPhone',
-    'iOS',
-    [],
-    null,
-  );
+  const selectedDevice = new ArchivedDevice({
+    serial: 'serial',
+    deviceType: 'emulator',
+    title: 'TestiPhone',
+    os: 'iOS',
+    logEntries: [],
+    screenshotHandle: null,
+  });
   const json = await processStore({
     activeNotifications: [],
     device: selectedDevice,
@@ -426,14 +426,14 @@ test('test processStore function for device plugin state and no clients', async 
 
 test('test processStore function for unselected device plugin state and no clients', async () => {
   // Test case to verify that device plugin data is exported even if there are no clients
-  const selectedDevice = new ArchivedDevice(
-    'serial',
-    'emulator',
-    'TestiPhone',
-    'iOS',
-    [],
-    null,
-  );
+  const selectedDevice = new ArchivedDevice({
+    serial: 'serial',
+    deviceType: 'emulator',
+    title: 'TestiPhone',
+    os: 'iOS',
+    logEntries: [],
+    screenshotHandle: null,
+  });
   const json = await processStore({
     activeNotifications: [],
     device: selectedDevice,
@@ -460,14 +460,14 @@ test('test processStore function for unselected device plugin state and no clien
 
 test('test processStore function for notifications for selected device', async () => {
   // Test case to verify that device plugin data is exported even if there are no clients
-  const selectedDevice = new ArchivedDevice(
-    'serial',
-    'emulator',
-    'TestiPhone',
-    'iOS',
-    [],
-    null,
-  );
+  const selectedDevice = new ArchivedDevice({
+    serial: 'serial',
+    deviceType: 'emulator',
+    title: 'TestiPhone',
+    os: 'iOS',
+    logEntries: [],
+    screenshotHandle: null,
+  });
   const client = generateClientFromDevice(selectedDevice, 'testapp1');
   const notification = generateNotifications(
     'notificationID',
@@ -510,22 +510,22 @@ test('test processStore function for notifications for selected device', async (
 
 test('test processStore function for notifications for unselected device', async () => {
   // Test case to verify that device plugin data is exported even if there are no clients
-  const selectedDevice = new ArchivedDevice(
-    'serial',
-    'emulator',
-    'TestiPhone',
-    'iOS',
-    [],
-    null,
-  );
-  const unselectedDevice = new ArchivedDevice(
-    'identifier',
-    'emulator',
-    'TestiPhone',
-    'iOS',
-    [],
-    null,
-  );
+  const selectedDevice = new ArchivedDevice({
+    serial: 'serial',
+    deviceType: 'emulator',
+    title: 'TestiPhone',
+    os: 'iOS',
+    logEntries: [],
+    screenshotHandle: null,
+  });
+  const unselectedDevice = new ArchivedDevice({
+    serial: 'identifier',
+    deviceType: 'emulator',
+    title: 'TestiPhone',
+    os: 'iOS',
+    logEntries: [],
+    screenshotHandle: null,
+  });
 
   const client = generateClientFromDevice(selectedDevice, 'testapp1');
   const unselectedclient = generateClientFromDevice(
@@ -566,14 +566,14 @@ test('test processStore function for notifications for unselected device', async
 });
 
 test('test processStore function for selected plugins', async () => {
-  const selectedDevice = new ArchivedDevice(
-    'serial',
-    'emulator',
-    'TestiPhone',
-    'iOS',
-    [],
-    null,
-  );
+  const selectedDevice = new ArchivedDevice({
+    serial: 'serial',
+    deviceType: 'emulator',
+    title: 'TestiPhone',
+    os: 'iOS',
+    logEntries: [],
+    screenshotHandle: null,
+  });
 
   const client = generateClientFromDevice(selectedDevice, 'app');
   const pluginstates = {
@@ -617,14 +617,14 @@ test('test processStore function for selected plugins', async () => {
 });
 
 test('test processStore function for no selected plugins', async () => {
-  const selectedDevice = new ArchivedDevice(
-    'serial',
-    'emulator',
-    'TestiPhone',
-    'iOS',
-    [],
-    null,
-  );
+  const selectedDevice = new ArchivedDevice({
+    serial: 'serial',
+    deviceType: 'emulator',
+    title: 'TestiPhone',
+    os: 'iOS',
+    logEntries: [],
+    screenshotHandle: null,
+  });
   const client = generateClientFromDevice(selectedDevice, 'app');
   const pluginstates = {
     [generateClientIdentifier(selectedDevice, 'app') + '#TestDevicePlugin1']: {

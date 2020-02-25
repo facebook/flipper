@@ -22,21 +22,26 @@ function normalizeArchivedDeviceType(deviceType: DeviceType): DeviceType {
 }
 
 export default class ArchivedDevice extends BaseDevice {
-  constructor(
-    serial: string,
-    deviceType: DeviceType,
-    title: string,
-    os: OS,
-    logEntries: Array<DeviceLogEntry>,
-    screenshotHandle: string | null,
-    source: string = '',
-    supportRequestDetails?: SupportFormRequestDetailsState,
-  ) {
-    super(serial, normalizeArchivedDeviceType(deviceType), title, os);
-    this.logs = logEntries;
-    this.source = source;
-    this.supportRequestDetails = supportRequestDetails;
-    this.archivedScreenshotHandle = screenshotHandle;
+  constructor(options: {
+    serial: string;
+    deviceType: DeviceType;
+    title: string;
+    os: OS;
+    logEntries: Array<DeviceLogEntry>;
+    screenshotHandle: string | null;
+    source?: string;
+    supportRequestDetails?: SupportFormRequestDetailsState;
+  }) {
+    super(
+      options.serial,
+      normalizeArchivedDeviceType(options.deviceType),
+      options.title,
+      options.os,
+    );
+    this.logs = options.logEntries;
+    this.source = options.source || '';
+    this.supportRequestDetails = options.supportRequestDetails;
+    this.archivedScreenshotHandle = options.screenshotHandle;
   }
 
   logs: Array<DeviceLogEntry>;

@@ -83,14 +83,14 @@ export default class AndroidDevice extends BaseDevice {
   }
 
   archive(): ArchivedDevice {
-    return new ArchivedDevice(
-      this.serial,
-      this.deviceType,
-      this.title,
-      this.os,
-      [...this.logEntries],
-      null,
-    );
+    return new ArchivedDevice({
+      serial: this.serial,
+      deviceType: this.deviceType,
+      title: this.title,
+      os: this.os,
+      logEntries: [...this.logEntries],
+      screenshotHandle: null,
+    });
   }
 
   navigateToLocation(location: string) {

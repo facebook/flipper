@@ -268,14 +268,14 @@ const addSaltToDeviceSerial = async (
   } = options;
   const {serial} = device;
   const newSerial = salt + '-' + serial;
-  const newDevice = new ArchivedDevice(
-    newSerial,
-    device.deviceType,
-    device.title,
-    device.os,
-    selectedPlugins.includes('DeviceLogs') ? device.getLogs() : [],
-    deviceScreenshot,
-  );
+  const newDevice = new ArchivedDevice({
+    serial: newSerial,
+    deviceType: device.deviceType,
+    title: device.title,
+    os: device.os,
+    logEntries: selectedPlugins.includes('DeviceLogs') ? device.getLogs() : [],
+    screenshotHandle: deviceScreenshot,
+  });
   statusUpdate &&
     statusUpdate('Adding salt to the selected device id in the client data...');
   const updatedClients = clients.map((client: ClientExport) => {
@@ -681,20 +681,20 @@ export function importDataToStore(source: string, data: string, store: Store) {
   }
   const {serial, deviceType, title, os, logs} = device;
 
-  const archivedDevice = new ArchivedDevice(
+  const archivedDevice = new ArchivedDevice({
     serial,
     deviceType,
     title,
     os,
-    logs
+    logEntries: logs
       ? logs.map(l => {
           return {...l, date: new Date(l.date)};
         })
       : [],
-    deviceScreenshot,
+    screenshotHandle: deviceScreenshot,
     source,
     supportRequestDetails,
-  );
+  });
   const devices = store.getState().connections.devices;
   const matchedDevices = devices.filter(
     availableDevice => availableDevice.serial === serial,
