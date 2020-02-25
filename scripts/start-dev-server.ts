@@ -7,30 +7,38 @@
  * @format
  */
 
-const electronBinary = require('electron');
-const codeFrame = require('babel-code-frame');
-const socketIo = require('socket.io');
-const express = require('express');
-const detect = require('detect-port');
-const child = require('child_process');
-const Convert = require('ansi-to-html');
-const chalk = require('chalk');
-const http = require('http');
-const path = require('path');
+const electronBinary: string = require('electron') as any;
+import codeFrame from 'babel-code-frame';
+import socketIo from 'socket.io';
+import express, {Express} from 'express';
+import detect from 'detect-port';
+import child from 'child_process';
+import AnsiToHtmlConverter from 'ansi-to-html';
+import chalk from 'chalk';
+import http from 'http';
+import path from 'path';
+import fs from 'fs';
+const Watchman = require('../static/watchman');
 const {compileMain} = require('./build-utils');
 const Metro = require('../static/node_modules/metro');
 const MetroResolver = require('../static/node_modules/metro-resolver');
-const fs = require('fs');
-const Watchman = require('../static/watchman');
 
-const convertAnsi = new Convert();
+const ansiToHtmlConverter = new AnsiToHtmlConverter();
 
-const DEFAULT_PORT = process.env.PORT || 3000;
+const DEFAULT_PORT = (process.env.PORT || 3000) as number;
 const STATIC_DIR = path.join(__dirname, '..', 'static');
 
-let shutdownElectron = undefined;
+let shutdownElectron: (() => void) | undefined = undefined;
 
-function launchElectron({devServerURL, bundleURL, electronURL}) {
+function launchElectron({
+  devServerURL,
+  bundleURL,
+  electronURL,
+}: {
+  devServerURL: string;
+  bundleURL: string;
+  electronURL: string;
+}) {
   const args = [
     path.join(STATIC_DIR, 'index.js'),
     '--remote-debugging-port=9222',
@@ -67,7 +75,7 @@ function launchElectron({devServerURL, bundleURL, electronURL}) {
   };
 }
 
-function startMetroServer(app) {
+function startMetroServer(app: Express) {
   const projectRoot = path.join(__dirname, '..');
   return Metro.runMetro({
     projectRoot,
@@ -83,7 +91,7 @@ function startMetroServer(app) {
     },
     resolver: {
       blacklistRE: /(\/|\\)(sonar|flipper|flipper-public)(\/|\\)(dist|doctor)(\/|\\)|(\.native\.js$)/,
-      resolveRequest: (context, moduleName, platform) => {
+      resolveRequest: (context: any, moduleName: string, platform: string) => {
         if (moduleName.startsWith('./localhost:3000')) {
           moduleName = moduleName.replace('./localhost:3000', '.');
         }
@@ -95,12 +103,14 @@ function startMetroServer(app) {
       },
     },
     watch: true,
-  }).then(metroBundlerServer => {
+  }).then((metroBundlerServer: any) => {
     app.use(metroBundlerServer.processRequest.bind(metroBundlerServer));
   });
 }
 
-function startAssetServer(port) {
+function startAssetServer(
+  port: number,
+): Promise<{app: Express; server: http.Server}> {
   const app = express();
 
   app.use((req, res, next) => {
@@ -138,7 +148,7 @@ function startAssetServer(port) {
 
   app.use(express.static(STATIC_DIR));
 
-  app.use(function(err, req, res, next) {
+  app.use(function(err: any, req: any, res: any, _next: any) {
     knownErrors[req.url] = err;
     outputScreen();
     res.status(500).send('Something broke, check the console!');
@@ -146,18 +156,18 @@ function startAssetServer(port) {
 
   const server = http.createServer(app);
 
-  return new Promise((resolve, reject) => {
+  return new Promise(resolve => {
     server.listen(port, 'localhost', () => resolve({app, server}));
   });
 }
 
-async function addWebsocket(server) {
+async function addWebsocket(server: http.Server) {
   const io = socketIo(server);
 
   // notify connected clients that there's errors in the console
   io.on('connection', client => {
     if (hasErrors()) {
-      client.emit('hasErrors', convertAnsi.toHtml(buildErrorScreen()));
+      client.emit('hasErrors', ansiToHtmlConverter.toHtml(buildErrorScreen()));
     }
   });
 
@@ -190,7 +200,7 @@ async function addWebsocket(server) {
   return io;
 }
 
-const knownErrors = {};
+const knownErrors: {[key: string]: any} = {};
 
 function hasErrors() {
   return Object.keys(knownErrors).length > 0;
@@ -226,14 +236,14 @@ function buildErrorScreen() {
   return lines.join('\n');
 }
 
-function outputScreen(socket) {
+function outputScreen(socket?: socketIo.Server) {
   // output screen
   if (hasErrors()) {
     const errorScreen = buildErrorScreen();
     console.error(errorScreen);
 
     // notify live clients of errors
-    socket.emit('hasErrors', convertAnsi.toHtml(errorScreen));
+    socket?.emit('hasErrors', ansiToHtmlConverter.toHtml(errorScreen));
   } else {
     // eslint-disable-next-line no-console
     console.log(chalk.green('✔ No known errors'));
