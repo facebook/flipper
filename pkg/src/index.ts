@@ -7,4 +7,5 @@
  * @format
  */
 
+export {run} from '@oclif/command';
 export const PKG = 'flipper-pkg';
