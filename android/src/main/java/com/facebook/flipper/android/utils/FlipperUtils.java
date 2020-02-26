@@ -17,7 +17,11 @@ public final class FlipperUtils {
   private FlipperUtils() {}
 
   public static boolean shouldEnableFlipper(final Context context) {
-    return BuildConfig.IS_INTERNAL_BUILD && !isEndToEndTest() && isMainProcess(context);
+    return BuildConfig.IS_INTERNAL_BUILD
+        && !isEndToEndTest()
+        && isMainProcess(context)
+        // Flipper has issue with ASAN build. They cannot be concurrently enabled.
+        && !BuildConfig.IS_ASAN_BUILD;
   }
 
   private static boolean isEndToEndTest() {
