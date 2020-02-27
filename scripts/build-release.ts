@@ -67,7 +67,7 @@ async function buildDist(buildFolder: string) {
   const postBuildCallbacks: (() => void)[] = [];
 
   if (process.argv.indexOf('--mac') > -1) {
-    targetsRaw.push(Platform.MAC.createTarget(['dir']));
+    targetsRaw.push(Platform.MAC.createTarget(['dir', 'dmg']));
     postBuildCallbacks.push(() =>
       spawn('zip', ['-qyr9', '../Flipper-mac.zip', 'Flipper.app'], {
         cwd: path.join(__dirname, '..', 'dist', 'mac'),
