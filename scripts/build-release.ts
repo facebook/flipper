@@ -21,11 +21,7 @@ import {
   genMercurialRevision,
 } from './build-utils';
 import fetch from 'node-fetch';
-const {
-  ICONS,
-  buildLocalIconPath,
-  getIconURL,
-} = require('../src/utils/icons.js');
+import {ICONS, buildLocalIconPath, getIconURL} from '../src/utils/icons';
 
 function generateManifest(versionNumber: string) {
   const filePath = path.join(__dirname, '..', 'dist');
@@ -129,12 +125,16 @@ function copyStaticFolder(buildFolder: string) {
 }
 
 function downloadIcons(buildFolder: string) {
-  const iconURLs = Object.entries(ICONS).reduce((acc, [name, sizes]) => {
+  const iconURLs = Object.entries(ICONS).reduce<
+    {
+      name: string;
+      size: number;
+      density: number;
+    }[]
+  >((acc, [name, sizes]) => {
     acc.push(
       // get icons in @1x and @2x
-      // @ts-ignore
       ...sizes.map(size => ({name, size, density: 1})),
-      // @ts-ignore
       ...sizes.map(size => ({name, size, density: 2})),
     );
     return acc;

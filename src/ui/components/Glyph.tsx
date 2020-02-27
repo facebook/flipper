@@ -10,7 +10,7 @@
 import React from 'react';
 import styled from '@emotion/styled';
 import PropTypes from 'prop-types';
-import {getIconURL} from '../../utils/icons.js';
+import {getIconURL} from '../../utils/icons';
 
 export type IconSize = 8 | 10 | 12 | 16 | 18 | 20 | 24 | 32;
 
