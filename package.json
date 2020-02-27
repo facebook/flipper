@@ -27,7 +27,7 @@
     },
     "dmg": {
       "background": "dmgBackground.png",
-      "icon": "icon.png",
+      "icon": "icon.icns",
       "iconSize": 155,
       "window": {
         "width": 660,
