@@ -7,11 +7,10 @@
  * @format
  */
 
-const path = require('path');
-const fs = require('fs-extra');
-const builder = require('electron-builder');
-const Platform = builder.Platform;
-const cp = require('promisify-child-process');
+import path from 'path';
+import fs from 'fs-extra';
+import {Platform, Arch, ElectronDownloadOptions, build} from 'electron-builder';
+import {spawn} from 'promisify-child-process';
 const {
   buildFolder,
   compile,
@@ -21,14 +20,14 @@ const {
   getVersionNumber,
   genMercurialRevision,
 } = require('./build-utils.js');
-const fetch = require('node-fetch');
+import fetch from 'node-fetch';
 const {
   ICONS,
   buildLocalIconPath,
   getIconURL,
 } = require('../src/utils/icons.js');
 
-function generateManifest(versionNumber) {
+function generateManifest(versionNumber: string) {
   const filePath = path.join(__dirname, '..', 'dist');
   if (!fs.existsSync(filePath)) {
     fs.mkdirSync(filePath);
@@ -42,7 +41,11 @@ function generateManifest(versionNumber) {
   );
 }
 
-function modifyPackageManifest(buildFolder, versionNumber, hgRevision) {
+function modifyPackageManifest(
+  buildFolder: string,
+  versionNumber: string,
+  hgRevision: string,
+) {
   // eslint-disable-next-line no-console
   console.log('Creating package.json manifest');
   const manifest = require('../package.json');
@@ -63,14 +66,14 @@ function modifyPackageManifest(buildFolder, versionNumber, hgRevision) {
   );
 }
 
-async function buildDist(buildFolder) {
-  const targetsRaw = [];
-  const postBuildCallbacks = [];
+async function buildDist(buildFolder: string) {
+  const targetsRaw: Map<Platform, Map<Arch, string[]>>[] = [];
+  const postBuildCallbacks: (() => void)[] = [];
 
   if (process.argv.indexOf('--mac') > -1) {
     targetsRaw.push(Platform.MAC.createTarget(['dir']));
     postBuildCallbacks.push(() =>
-      cp.spawn('zip', ['-qyr9', '../Flipper-mac.zip', 'Flipper.app'], {
+      spawn('zip', ['-qyr9', '../Flipper-mac.zip', 'Flipper.app'], {
         cwd: path.join(__dirname, '..', 'dist', 'mac'),
         encoding: 'utf-8',
       }),
@@ -87,19 +90,19 @@ async function buildDist(buildFolder) {
   }
 
   // merge all target maps into a single map
-  let targetsMerged = [];
+  let targetsMerged: [Platform, Map<Arch, string[]>][] = [];
   for (const target of targetsRaw) {
     targetsMerged = targetsMerged.concat(Array.from(target));
   }
   const targets = new Map(targetsMerged);
 
-  const electronDownload = {};
+  const electronDownloadOptions: ElectronDownloadOptions = {};
   if (process.env.electron_config_cache) {
-    electronDownload.cache = process.env.electron_config_cache;
+    electronDownloadOptions.cache = process.env.electron_config_cache;
   }
 
   try {
-    await builder.build({
+    await build({
       publish: 'never',
       config: {
         appId: `com.facebook.sonar`,
@@ -107,7 +110,7 @@ async function buildDist(buildFolder) {
           buildResources: path.join(__dirname, '..', 'static'),
           output: path.join(__dirname, '..', 'dist'),
         },
-        electronDownload,
+        electronDownload: electronDownloadOptions,
         npmRebuild: false,
       },
       projectDir: buildFolder,
@@ -119,17 +122,19 @@ async function buildDist(buildFolder) {
   }
 }
 
-function copyStaticFolder(buildFolder) {
+function copyStaticFolder(buildFolder: string) {
   fs.copySync(path.join(__dirname, '..', 'static'), buildFolder, {
     dereference: true,
   });
 }
 
-function downloadIcons(buildFolder) {
+function downloadIcons(buildFolder: string) {
   const iconURLs = Object.entries(ICONS).reduce((acc, [name, sizes]) => {
     acc.push(
       // get icons in @1x and @2x
+      // @ts-ignore
       ...sizes.map(size => ({name, size, density: 1})),
+      // @ts-ignore
       ...sizes.map(size => ({name, size, density: 2})),
     );
     return acc;

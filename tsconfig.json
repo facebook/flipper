@@ -10,7 +10,8 @@
     "jsx": "react",
     "moduleResolution": "node",
     "baseUrl": ".",
-    "downlevelIteration": true,
+    "downlevelIteration": true,    
+    "skipLibCheck": true,
     "paths": {
       "flipper": ["./src/index.tsx"],
       "live-plugin-manager": ["./types/live-plugin-manager.d.tsx"]

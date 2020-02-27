@@ -7,10 +7,10 @@
  * @format
  */
 
-const fs = require('fs');
-const path = require('path');
-const lineReplace = require('line-replace');
-const yazl = require('yazl');
+import fs from 'fs';
+import path from 'path';
+import lineReplace from 'line-replace';
+import yazl from 'yazl';
 const {exec: createBinary} = require('pkg');
 const {
   buildFolder,
@@ -22,10 +22,14 @@ const {
 
 const PLUGINS_FOLDER_NAME = 'plugins';
 
-function preludeBundle(dir, versionNumber, buildRevision) {
+function preludeBundle(
+  dir: string,
+  versionNumber: string,
+  buildRevision: string,
+) {
   const revisionStr =
     buildRevision == null ? '' : `global.__REVISION__="${buildRevision}";`;
-  return new Promise((resolve, reject) =>
+  return new Promise(resolve =>
     lineReplace({
       file: path.join(dir, 'bundle.js'),
       line: 1,
@@ -36,8 +40,8 @@ function preludeBundle(dir, versionNumber, buildRevision) {
   );
 }
 
-async function createZip(buildDir, distDir, targets) {
-  return new Promise((resolve, reject) => {
+async function createZip(buildDir: string, distDir: string, targets: string[]) {
+  return new Promise(resolve => {
     const zip = new yazl.ZipFile();
 
     // add binaries for each target
@@ -64,9 +68,8 @@ async function createZip(buildDir, distDir, targets) {
 }
 
 (async () => {
-  const targets = {};
-  let platformPostfix;
-
+  const targets: {mac?: string; linux?: string; win?: string} = {};
+  let platformPostfix: string = '';
   if (process.argv.indexOf('--mac') > -1) {
     targets.mac = 'node10-macos-x64';
     platformPostfix = '-macos';
@@ -79,13 +82,13 @@ async function createZip(buildDir, distDir, targets) {
     targets.win = 'node10-win-x64';
     platformPostfix = '-win';
   }
-  if (targets.length === 0) {
+  const length = Object.keys(targets).length;
+  if (length === 0) {
     throw new Error('No targets specified. eg. --mac, --win, or --linux');
-  } else if (Object.keys(targets).length > 1) {
+  } else if (length > 1) {
     // platformPostfix is automatically added by pkg
     platformPostfix = '';
   }
-
   // Compiling all plugins takes a long time. Use this flag for quicker
   // developement iteration by not including any plugins.
   const skipPlugins = process.argv.indexOf('--no-plugins') > -1;

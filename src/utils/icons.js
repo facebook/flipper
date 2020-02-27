@@ -7,7 +7,6 @@
  * @format
  */
 
-/* This file needs to be plain JS to be imported by scripts/build-release.js */
 /* eslint-disable import/no-commonjs */
 
 const AVAILABLE_SIZES = [8, 10, 12, 16, 18, 20, 24, 32];
