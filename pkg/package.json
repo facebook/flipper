@@ -31,6 +31,7 @@
     "prettier": "^1.19.1",
     "ts-jest": "^24.1.0",
     "ts-node": "^8",
+    "tslint": "^6.0.0",
     "tslint-config-prettier": "^1.18.0",
     "typescript": "^3.7.2"
   },
@@ -41,6 +42,7 @@
     "prepare": "yarn run build",
     "prepublishOnly": "yarn test && yarn run lint",
     "preversion": "yarn run lint",
+    "lint": "tslint -p .",
     "test": "jest --config jestconfig.json",
     "run": "bin/run",
     "version": "oclif-dev readme && git add README.md"
