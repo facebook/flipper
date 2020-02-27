@@ -18,8 +18,8 @@ import chalk from 'chalk';
 import http from 'http';
 import path from 'path';
 import fs from 'fs';
+import {compileMain} from './build-utils';
 const Watchman = require('../static/watchman');
-const {compileMain} = require('./build-utils');
 const Metro = require('../static/node_modules/metro');
 const MetroResolver = require('../static/node_modules/metro-resolver');
 

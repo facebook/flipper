@@ -12,20 +12,20 @@ import path from 'path';
 import lineReplace from 'line-replace';
 import yazl from 'yazl';
 const {exec: createBinary} = require('pkg');
-const {
+import {
   buildFolder,
   compile,
   compileDefaultPlugins,
   getVersionNumber,
   genMercurialRevision,
-} = require('./build-utils.js');
+} from './build-utils';
 
 const PLUGINS_FOLDER_NAME = 'plugins';
 
 function preludeBundle(
   dir: string,
   versionNumber: string,
-  buildRevision: string,
+  buildRevision: string | null,
 ) {
   const revisionStr =
     buildRevision == null ? '' : `global.__REVISION__="${buildRevision}";`;

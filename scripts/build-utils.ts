@@ -9,29 +9,34 @@
 
 const Metro = require('../static/node_modules/metro');
 const compilePlugins = require('../static/compilePlugins');
-const util = require('util');
-const tmp = require('tmp');
-const path = require('path');
-const fs = require('fs-extra');
-const cp = require('promisify-child-process');
-const recursiveReaddir = require('recursive-readdir');
+import util from 'util';
+import tmp from 'tmp';
+import path from 'path';
+import fs from 'fs-extra';
+import {spawn} from 'promisify-child-process';
+import recursiveReaddir from 'recursive-readdir';
 
-function mostRecentlyChanged(dir, ignores) {
-  return util
-    .promisify(recursiveReaddir)(dir, ignores)
-    .then(files =>
-      files
-        .map(f => fs.lstatSync(f).ctime)
-        .reduce((a, b) => (a > b ? a : b), new Date(0)),
-    );
+async function mostRecentlyChanged(
+  dir: string,
+  ignores: string[],
+): Promise<Date> {
+  const files = await util.promisify<string, string[], string[]>(
+    recursiveReaddir,
+  )(dir, ignores);
+  return files
+    .map(f => fs.lstatSync(f).ctime)
+    .reduce((a, b) => (a > b ? a : b), new Date(0));
 }
 
-function die(err) {
+export function die(err: Error) {
   console.error(err.stack);
   process.exit(1);
 }
 
-function compileDefaultPlugins(defaultPluginDir, skipAll = false) {
+export function compileDefaultPlugins(
+  defaultPluginDir: string,
+  skipAll: boolean = false,
+) {
   return compilePlugins(
     null,
     skipAll
@@ -43,7 +48,7 @@ function compileDefaultPlugins(defaultPluginDir, skipAll = false) {
     defaultPluginDir,
     {force: true, failSilently: false, recompileOnChanges: false},
   )
-    .then(defaultPlugins =>
+    .then((defaultPlugins: any[]) =>
       fs.writeFileSync(
         path.join(defaultPluginDir, 'index.json'),
         JSON.stringify(
@@ -57,7 +62,7 @@ function compileDefaultPlugins(defaultPluginDir, skipAll = false) {
     .catch(die);
 }
 
-function compile(buildFolder, entry) {
+export function compile(buildFolder: string, entry: string) {
   console.log(`⚙️  Compiling renderer bundle...`);
   const projectRoots = path.join(__dirname, '..');
   return Metro.runBuild(
@@ -92,7 +97,7 @@ function compile(buildFolder, entry) {
     .catch(die);
 }
 
-async function compileMain({dev}) {
+export async function compileMain({dev}: {dev: boolean}) {
   const staticDir = path.resolve(__dirname, '..', 'static');
   const out = path.join(staticDir, 'main.bundle.js');
   // check if main needs to be compiled
@@ -138,10 +143,10 @@ async function compileMain({dev}) {
     die(err);
   }
 }
-function buildFolder() {
+export function buildFolder(): Promise<string> {
   // eslint-disable-next-line no-console
   console.log('Creating build directory');
-  return new Promise((resolve, reject) => {
+  return new Promise<string>((resolve, reject) => {
     tmp.dir({prefix: 'flipper-build-'}, (err, buildFolder) => {
       if (err) {
         reject(err);
@@ -149,28 +154,30 @@ function buildFolder() {
         resolve(buildFolder);
       }
     });
-  }).catch(die);
+  }).catch(e => {
+    die(e);
+    return '';
+  });
 }
-function getVersionNumber() {
+export function getVersionNumber() {
   let {version} = require('../package.json');
   const buildNumber = process.argv.join(' ').match(/--version=(\d+)/);
   if (buildNumber && buildNumber.length > 0) {
     version = [...version.split('.').slice(0, 2), buildNumber[1]].join('.');
   }
   return version;
-} // Asynchronously determine current mercurial revision as string or `null` in case of any error.
-function genMercurialRevision() {
-  return cp
-    .spawn('hg', ['log', '-r', '.', '-T', '{node}'], {encoding: 'utf8'})
-    .catch(err => null)
-    .then(res => (res && res.stdout) || null);
 }
-module.exports = {
-  buildFolder,
-  compile,
-  compileMain,
-  die,
-  compileDefaultPlugins,
-  getVersionNumber,
-  genMercurialRevision,
-};
+
+// Asynchronously determine current mercurial revision as string or `null` in case of any error.
+export function genMercurialRevision(): Promise<string | null> {
+  return spawn('hg', ['log', '-r', '.', '-T', '{node}'], {encoding: 'utf8'})
+    .then(
+      res =>
+        (res &&
+          (typeof res.stdout === 'string'
+            ? res.stdout
+            : res.stdout?.toString())) ||
+        null,
+    )
+    .catch(() => null);
+}

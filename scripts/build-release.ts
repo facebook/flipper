@@ -11,7 +11,7 @@ import path from 'path';
 import fs from 'fs-extra';
 import {Platform, Arch, ElectronDownloadOptions, build} from 'electron-builder';
 import {spawn} from 'promisify-child-process';
-const {
+import {
   buildFolder,
   compile,
   compileMain,
@@ -19,7 +19,7 @@ const {
   compileDefaultPlugins,
   getVersionNumber,
   genMercurialRevision,
-} = require('./build-utils.js');
+} from './build-utils';
 import fetch from 'node-fetch';
 const {
   ICONS,
@@ -44,7 +44,7 @@ function generateManifest(versionNumber: string) {
 function modifyPackageManifest(
   buildFolder: string,
   versionNumber: string,
-  hgRevision: string,
+  hgRevision: string | null,
 ) {
   // eslint-disable-next-line no-console
   console.log('Creating package.json manifest');
