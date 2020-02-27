@@ -41,7 +41,7 @@
   ],
   "author": "Facebook, Inc",
   "dependencies": {
-    "@types/node": "^12.12.12",
+    "@types/node": "^13.7.5",
     "envinfo": "^7.4.0",
     "fb-watchman": "^2.0.1"
   }
