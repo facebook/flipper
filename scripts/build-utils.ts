@@ -8,7 +8,7 @@
  */
 
 const Metro = require('../static/node_modules/metro');
-const compilePlugins = require('../static/compilePlugins');
+import compilePlugins from '../static/compilePlugins';
 import util from 'util';
 import tmp from 'tmp';
 import path from 'path';
@@ -48,7 +48,7 @@ export function compileDefaultPlugins(
     defaultPluginDir,
     {force: true, failSilently: false, recompileOnChanges: false},
   )
-    .then((defaultPlugins: any[]) =>
+    .then(defaultPlugins =>
       fs.writeFileSync(
         path.join(defaultPluginDir, 'index.json'),
         JSON.stringify(

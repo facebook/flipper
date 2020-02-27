@@ -8,28 +8,54 @@
  * @flow strict-local
  */
 
-const path = require('path');
-const fs = require('fs');
+import path from 'path';
+import fs from 'fs';
 const Metro = require('metro');
-const util = require('util');
-const recursiveReaddir = require('recursive-readdir');
-const expandTilde = require('expand-tilde');
-const pMap = require('p-map');
-const HOME_DIR = require('os').homedir();
+import util from 'util';
+import recursiveReaddir from 'recursive-readdir';
+import expandTilde from 'expand-tilde';
+import pMap from 'p-map';
+import {homedir} from 'os';
 const Watchman = require('./watchman');
 
-const DEFAULT_COMPILE_OPTIONS = {
+const HOME_DIR = homedir();
+
+const DEFAULT_COMPILE_OPTIONS: CompileOptions = {
   force: false,
   failSilently: true,
   recompileOnChanges: true,
 };
 
-module.exports = async (
-  reloadCallback,
-  pluginPaths,
-  pluginCache,
-  options = DEFAULT_COMPILE_OPTIONS,
-) => {
+export type CompileOptions = {
+  force: boolean;
+  failSilently: boolean;
+  recompileOnChanges: boolean;
+};
+
+type DynamicCompileOptions = CompileOptions & {force: boolean};
+
+export type PluginManifest = {
+  version: string;
+  name: string;
+  main?: string;
+  [key: string]: any;
+};
+
+type PluginInfo = {
+  rootDir: string;
+  name: string;
+  entry: string;
+  manifest: PluginManifest;
+};
+
+export type CompiledPluginInfo = PluginManifest & {out: string};
+
+export default async function(
+  reloadCallback: (() => void) | null,
+  pluginPaths: string[],
+  pluginCache: string,
+  options: CompileOptions = DEFAULT_COMPILE_OPTIONS,
+) {
   options = Object.assign({}, DEFAULT_COMPILE_OPTIONS, options);
   const plugins = pluginEntryPoints(pluginPaths);
   if (!fs.existsSync(pluginCache)) {
@@ -41,20 +67,27 @@ module.exports = async (
   const compilations = pMap(
     Object.values(plugins),
     plugin => {
-      const dynamicOptions = Object.assign(options, {force: false});
+      const dynamicOptions: DynamicCompileOptions = Object.assign(options, {
+        force: false,
+      });
       return compilePlugin(plugin, pluginCache, dynamicOptions);
     },
     {concurrency: 4},
   );
 
-  const dynamicPlugins = (await compilations).filter(c => c != null);
+  const dynamicPlugins = (await compilations).filter(
+    c => c !== null,
+  ) as CompiledPluginInfo[];
   console.log('✅  Compiled all plugins.');
   return dynamicPlugins;
-};
+}
 
-async function startWatchingPluginsUsingWatchman(plugins, onPluginChanged) {
+async function startWatchingPluginsUsingWatchman(
+  plugins: PluginInfo[],
+  onPluginChanged: (plugin: PluginInfo) => void,
+) {
   // Initializing a watchman for each folder containing plugins
-  const watchmanRootMap = {};
+  const watchmanRootMap: {[key: string]: any} = {};
   await Promise.all(
     plugins.map(async plugin => {
       const watchmanRoot = path.resolve(plugin.rootDir, '..');
@@ -81,24 +114,26 @@ async function startWatchingPluginsUsingWatchman(plugins, onPluginChanged) {
 }
 
 async function startWatchChanges(
-  plugins,
-  reloadCallback,
-  pluginCache,
-  options = DEFAULT_COMPILE_OPTIONS,
+  plugins: {[key: string]: PluginInfo},
+  reloadCallback: (() => void) | null,
+  pluginCache: string,
+  options: CompileOptions = DEFAULT_COMPILE_OPTIONS,
 ) {
   // eslint-disable-next-line no-console
   console.log('🕵️‍  Watching for plugin changes');
 
-  const delayedCompilation = {};
+  const delayedCompilation: {[key: string]: NodeJS.Timeout | null} = {};
   const kCompilationDelayMillis = 1000;
-  const onPluginChanged = plugin => {
+  const onPluginChanged = (plugin: PluginInfo) => {
     if (!delayedCompilation[plugin.name]) {
       delayedCompilation[plugin.name] = setTimeout(() => {
         delayedCompilation[plugin.name] = null;
         // eslint-disable-next-line no-console
         console.log(`🕵️‍  Detected changes in ${plugin.name}`);
         const watchOptions = Object.assign(options, {force: true});
-        compilePlugin(plugin, pluginCache, watchOptions).then(reloadCallback);
+        compilePlugin(plugin, pluginCache, watchOptions).then(
+          reloadCallback ?? (() => {}),
+        );
       }, kCompilationDelayMillis);
     }
   };
@@ -117,7 +152,7 @@ async function startWatchChanges(
     );
   }
 }
-function hash(string) {
+function hash(string: string) {
   let hash = 0;
   if (string.length === 0) {
     return hash;
@@ -131,7 +166,7 @@ function hash(string) {
   return hash;
 }
 const fileToIdMap = new Map();
-const createModuleIdFactory = () => filePath => {
+const createModuleIdFactory = () => (filePath: string) => {
   if (filePath === '__prelude__') {
     return 0;
   }
@@ -142,7 +177,7 @@ const createModuleIdFactory = () => filePath => {
   }
   return id;
 };
-function pluginEntryPoints(additionalPaths = []) {
+function pluginEntryPoints(additionalPaths: string[] = []) {
   const defaultPluginPath = path.join(HOME_DIR, '.flipper', 'node_modules');
   const entryPoints = entryPointForPluginFolder(defaultPluginPath);
   if (typeof additionalPaths === 'string') {
@@ -156,7 +191,7 @@ function pluginEntryPoints(additionalPaths = []) {
   });
   return entryPoints;
 }
-function entryPointForPluginFolder(pluginPath) {
+function entryPointForPluginFolder(pluginPath: string) {
   pluginPath = expandTilde(pluginPath);
   if (!fs.existsSync(pluginPath)) {
     return {};
@@ -174,13 +209,14 @@ function entryPointForPluginFolder(pluginPath) {
       } catch (e) {}
       if (packageJSON) {
         try {
-          const pkg = JSON.parse(packageJSON);
-          return {
-            packageJSON: pkg,
+          const pkg = JSON.parse(packageJSON) as PluginManifest;
+          const plugin: PluginInfo = {
+            manifest: pkg,
             name: pkg.name,
             entry: path.join(pluginPath, name, pkg.main || 'index.js'),
             rootDir: path.join(pluginPath, name),
           };
+          return plugin;
         } catch (e) {
           console.error(
             `Could not load plugin "${pluginPath}", because package.json is invalid.`,
@@ -189,92 +225,95 @@ function entryPointForPluginFolder(pluginPath) {
           return null;
         }
       }
+      return null;
     })
     .filter(Boolean)
-    .reduce((acc, cv) => {
-      acc[cv.name] = cv;
+    .reduce<{[key: string]: PluginInfo}>((acc, cv) => {
+      acc[cv!.name] = cv!;
       return acc;
     }, {});
 }
-function mostRecentlyChanged(dir) {
-  return util
-    .promisify(recursiveReaddir)(dir)
-    .then(files =>
-      files
-        .map(f => fs.lstatSync(f).ctime)
-        .reduce((a, b) => (a > b ? a : b), new Date(0)),
-    );
+async function mostRecentlyChanged(dir: string) {
+  const files = await util.promisify<string, string[]>(recursiveReaddir)(dir);
+  return files
+    .map(f => fs.lstatSync(f).ctime)
+    .reduce((a, b) => (a > b ? a : b), new Date(0));
 }
 async function compilePlugin(
-  {rootDir, name, entry, packageJSON},
-  pluginCache,
-  options,
-) {
+  pluginInfo: PluginInfo,
+  pluginCache: string,
+  options: DynamicCompileOptions,
+): Promise<CompiledPluginInfo | null> {
+  const {rootDir, manifest, entry, name} = pluginInfo;
   const isPreBundled = fs.existsSync(path.join(rootDir, 'dist'));
-  const result = Object.assign({}, packageJSON, {rootDir, name, entry});
   if (isPreBundled) {
     // eslint-disable-next-line no-console
     console.log(`🥫  Using pre-built version of ${name}...`);
-    result.out = path.resolve(rootDir, result.main);
-    return result;
-  }
-  const fileName = `${name}@${packageJSON.version || '0.0.0'}.js`;
-  const out = path.join(pluginCache, fileName);
-  result.out = out;
-  // check if plugin needs to be compiled
-  const rootDirCtime = await mostRecentlyChanged(rootDir);
-  if (
-    !options.force &&
-    fs.existsSync(out) &&
-    rootDirCtime < fs.lstatSync(out).ctime
-  ) {
-    // eslint-disable-next-line no-console
-    console.log(`🥫  Using cached version of ${name}...`);
-    return result;
+    const out = path.join(
+      rootDir,
+      manifest.main ?? path.join('dist', 'index.js'),
+    );
+    return Object.assign({}, pluginInfo.manifest, {out});
   } else {
-    console.log(`⚙️  Compiling ${name}...`); // eslint-disable-line no-console
-    try {
-      await Metro.runBuild(
-        {
-          reporter: {update: () => {}},
-          projectRoot: rootDir,
-          watchFolders: [__dirname, rootDir],
-          serializer: {
-            getRunModuleStatement: moduleID =>
-              `module.exports = global.__r(${moduleID}).default;`,
-            createModuleIdFactory,
+    const out = path.join(
+      pluginCache,
+      `${name}@${manifest.version || '0.0.0'}.js`,
+    );
+    const result = Object.assign({}, pluginInfo.manifest, {out});
+    const rootDirCtime = await mostRecentlyChanged(rootDir);
+    if (
+      !options.force &&
+      fs.existsSync(out) &&
+      rootDirCtime < fs.lstatSync(out).ctime
+    ) {
+      // eslint-disable-next-line no-console
+      console.log(`🥫  Using cached version of ${name}...`);
+      return result;
+    } else {
+      console.log(`⚙️  Compiling ${name}...`); // eslint-disable-line no-console
+      try {
+        await Metro.runBuild(
+          {
+            reporter: {update: () => {}},
+            projectRoot: rootDir,
+            watchFolders: [__dirname, rootDir],
+            serializer: {
+              getRunModuleStatement: (moduleID: string) =>
+                `module.exports = global.__r(${moduleID}).default;`,
+              createModuleIdFactory,
+            },
+            transformer: {
+              babelTransformerPath: path.join(
+                __dirname,
+                'transforms',
+                'index.js',
+              ),
+            },
+            resolver: {
+              sourceExts: ['tsx', 'ts', 'js'],
+              blacklistRE: /(\/|\\)(sonar|flipper|flipper-public)(\/|\\)(dist|doctor)(\/|\\)|(\.native\.js$)/,
+            },
           },
-          transformer: {
-            babelTransformerPath: path.join(
-              __dirname,
-              'transforms',
-              'index.js',
-            ),
+          {
+            entry: entry.replace(rootDir, '.'),
+            out,
+            dev: false,
+            sourceMap: true,
+            minify: false,
           },
-          resolver: {
-            sourceExts: ['tsx', 'ts', 'js'],
-            blacklistRE: /(\/|\\)(sonar|flipper|flipper-public)(\/|\\)(dist|doctor)(\/|\\)|(\.native\.js$)/,
-          },
-        },
-        {
-          entry: entry.replace(rootDir, '.'),
-          out,
-          dev: false,
-          sourceMap: true,
-          minify: false,
-        },
-      );
-    } catch (e) {
-      if (options.failSilently) {
-        console.error(
-          `❌  Plugin ${name} is ignored, because it could not be compiled.`,
         );
-        console.error(e);
-        return null;
-      } else {
-        throw e;
+      } catch (e) {
+        if (options.failSilently) {
+          console.error(
+            `❌  Plugin ${name} is ignored, because it could not be compiled.`,
+          );
+          console.error(e);
+          return null;
+        } else {
+          throw e;
+        }
       }
+      return result;
     }
-    return result;
   }
 }

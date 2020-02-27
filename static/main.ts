@@ -16,7 +16,7 @@ import url from 'url';
 import fs from 'fs';
 import fixPath from 'fix-path';
 import {exec} from 'child_process';
-const compilePlugins = require('./compilePlugins');
+import compilePlugins from './compilePlugins';
 import setup from './setup';
 import delegateToLauncher from './launcher';
 import expandTilde from 'expand-tilde';
@@ -120,7 +120,7 @@ compilePlugins(
   },
   pluginPaths,
   path.join(flipperDir, 'plugins'),
-).then((dynamicPlugins: string[]) => {
+).then(dynamicPlugins => {
   ipcMain.on('get-dynamic-plugins', event => {
     event.returnValue = dynamicPlugins;
   });
