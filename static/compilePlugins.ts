@@ -16,7 +16,7 @@ import recursiveReaddir from 'recursive-readdir';
 import expandTilde from 'expand-tilde';
 import pMap from 'p-map';
 import {homedir} from 'os';
-const Watchman = require('./watchman');
+import Watchman from './watchman';
 
 const HOME_DIR = homedir();
 
@@ -87,7 +87,7 @@ async function startWatchingPluginsUsingWatchman(
   onPluginChanged: (plugin: PluginInfo) => void,
 ) {
   // Initializing a watchman for each folder containing plugins
-  const watchmanRootMap: {[key: string]: any} = {};
+  const watchmanRootMap: {[key: string]: Watchman} = {};
   await Promise.all(
     plugins.map(async plugin => {
       const watchmanRoot = path.resolve(plugin.rootDir, '..');

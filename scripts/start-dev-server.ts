@@ -19,7 +19,7 @@ import http from 'http';
 import path from 'path';
 import fs from 'fs';
 import {compileMain} from './build-utils';
-const Watchman = require('../static/watchman');
+import Watchman from '../static/watchman';
 const Metro = require('../static/node_modules/metro');
 const MetroResolver = require('../static/node_modules/metro-resolver');
 

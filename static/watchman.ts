@@ -7,37 +7,39 @@
  * @format
  */
 
-const watchman = require('fb-watchman');
-const uuid = require('uuid');
-const path = require('path');
+import {Client} from 'fb-watchman';
+import uuid from 'uuid';
+import path from 'path';
 
-module.exports = class Watchman {
-  constructor(rootDir) {
-    this.rootDir = rootDir;
-  }
+export default class Watchman {
+  constructor(private rootDir: string) {}
 
-  initialize() {
+  private client?: Client;
+  private watch?: any;
+  private relativeRoot?: string;
+
+  async initialize(): Promise<void> {
     if (this.client) {
       return;
     }
-    this.client = new watchman.Client();
+    this.client = new Client();
     this.client.setMaxListeners(250);
-    return new Promise((resolve, reject) => {
-      const onError = err => {
-        this.client.removeAllListeners('error');
+    await new Promise((resolve, reject) => {
+      const onError = (err: Error) => {
+        this.client!.removeAllListeners('error');
         reject(err);
-        this.client.end();
+        this.client!.end();
         delete this.client;
       };
-      this.client.once('error', onError);
-      this.client.capabilityCheck(
+      this.client!.once('error', onError);
+      this.client!.capabilityCheck(
         {optional: [], required: ['relative_root']},
         error => {
           if (error) {
             onError(error);
             return;
           }
-          this.client.command(
+          this.client!.command(
             ['watch-project', this.rootDir],
             (error, resp) => {
               if (error) {
@@ -57,7 +59,11 @@ module.exports = class Watchman {
     });
   }
 
-  async startWatchFiles(relativeDir, handler, options) {
+  async startWatchFiles(
+    relativeDir: string,
+    handler: (resp: any) => void,
+    options: {excludes: string[]},
+  ): Promise<void> {
     if (!this.watch) {
       throw new Error(
         'Watchman is not initialized, please call "initialize" function and wait for the returned promise completion before calling "startWatchFiles".',
@@ -65,7 +71,7 @@ module.exports = class Watchman {
     }
     options = Object.assign({excludes: []}, options);
     return new Promise((resolve, reject) => {
-      this.client.command(['clock', this.watch], (error, resp) => {
+      this.client!.command(['clock', this.watch], (error, resp) => {
         if (error) {
           return reject(error);
         }
@@ -76,7 +82,7 @@ module.exports = class Watchman {
           expression: [
             'allof',
             ['not', ['type', 'd']],
-            ...options.excludes.map(e => ['not', ['match', e, 'wholename']]),
+            ...options!.excludes.map(e => ['not', ['match', e, 'wholename']]),
           ],
           fields: ['name'],
           since: clock,
@@ -87,22 +93,19 @@ module.exports = class Watchman {
 
         const id = uuid.v4();
 
-        this.client.command(
-          ['subscribe', this.watch, id, sub],
-          (error, resp) => {
-            if (error) {
-              return reject(error);
+        this.client!.command(['subscribe', this.watch, id, sub], error => {
+          if (error) {
+            return reject(error);
+          }
+          this.client!.on('subscription', resp => {
+            if (resp.subscription !== id || !resp.files) {
+              return;
             }
-            this.client.on('subscription', resp => {
-              if (resp.subscription !== id || !resp.files) {
-                return;
-              }
-              handler(resp);
-            });
-            resolve();
-          },
-        );
+            handler(resp);
+          });
+          resolve();
+        });
       });
     });
   }
-};
+}
