@@ -27,7 +27,16 @@
     "type": "node",
     "request": "launch",
     "name": "Launch Current Script",
-    "program": "${file}",
+    "args": ["${file}"],
+    "env": {
+      "TS_NODE_FILES": "true",
+    },
+    "protocol": "inspector",
+    "internalConsoleOptions": "openOnSessionStart",
+    "runtimeArgs": [
+      "--require",
+      "ts-node/register"
+    ],
     "cwd": "${workspaceFolder}"
  }
   ],

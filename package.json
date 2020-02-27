@@ -211,7 +211,7 @@
   },
   "scripts": {
     "preinstall": "yarn config set ignore-engines",
-    "postinstall": "node scripts/yarn-install.js && patch-package",
+    "postinstall": "cross-env TS_NODE_FILES=true node --require ts-node/register scripts/yarn-install.ts && patch-package",
     "rm-dist": "rimraf dist",
     "rm-modules": "rimraf node_modules static/node_modules",
     "rm-temp": "rimraf $TMPDIR/jest* $TMPDIR/react-native-packager*",
@@ -222,7 +222,7 @@
     "start:no-embedded-plugins": "cross-env NODE_ENV=development cross-env FLIPPER_NO_EMBEDDED_PLUGINS=true TS_NODE_FILES=true node --require ts-node/register scripts/start-dev-server.ts",
     "build": "yarn rm-dist && cross-env NODE_ENV=production TS_NODE_FILES=true node --require ts-node/register scripts/build-release.ts $@",
     "build-headless": "yarn rm-dist && mkdir dist && cross-env NODE_ENV=production TS_NODE_FILES=true node --require ts-node/register scripts/build-headless.ts $@",
-    "fix": "eslint . --fix --ext .js,.tsx",
+    "fix": "eslint . --fix --ext .js,.ts,.tsx",
     "test": "jest --testPathPattern=\"node\\.(js|tsx)$\" --no-cache",
     "test:debug": "node --inspect node_modules/.bin/jest --runInBand",
     "test-electron": "jest --testPathPattern=\"electron\\.(js|tsx)$\" --testEnvironment=@jest-runner/electron/environment --runner=@jest-runner/electron --no-cache",

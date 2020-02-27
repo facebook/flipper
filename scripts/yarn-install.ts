@@ -7,10 +7,12 @@
  * @format
  */
 
-const path = require('path');
-const util = require('util');
-const glob = util.promisify(require('glob'));
-const exec = util.promisify(require('child_process').exec);
+import path from 'path';
+import util from 'util';
+import globImport from 'glob';
+import {exec as execImport} from 'child_process';
+const glob = util.promisify(globImport);
+const exec = util.promisify(execImport);
 const PACKAGES = [
   'headless-tests',
   'static',
@@ -30,9 +32,11 @@ Promise.all(
   ),
 )
   .then(async packages => {
-    packages = packages.reduce((acc, cv) => acc.concat(cv), []);
-    console.log(`Installing dependencies for ${packages.length} plugins`);
-    for (const pkg of packages) {
+    const flattenPackages = packages.reduce((acc, cv) => acc.concat(cv), []);
+    console.log(
+      `Installing dependencies for ${flattenPackages.length} plugins`,
+    );
+    for (const pkg of flattenPackages) {
       const {stderr} = await exec(
         // This script is itself executed by yarn (as postinstall script),
         // therefore another yarn instance is running, while we are trying to
