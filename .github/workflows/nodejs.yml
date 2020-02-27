@@ -45,9 +45,15 @@ jobs:
       with:
         name: Flipper-win.zip
         path: dist/Flipper-win.zip
-    - name: upload mac artifact
+    - name: upload mac zip artifact
       uses: actions/upload-artifact@v1
       if: matrix.os == 'macos-latest'
       with:
         name: Flipper-mac.zip
         path: dist/Flipper-mac.zip
+    - name: upload mac dmg artifact
+      uses: actions/upload-artifact@v1
+      if: matrix.os == 'macos-latest'
+      with:
+        name: Flipper-mac.dmg
+        path: dist/Flipper-mac.dmg
