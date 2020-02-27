@@ -22,6 +22,7 @@ import com.facebook.flipper.plugins.inspector.Named;
 import com.facebook.flipper.plugins.inspector.NodeDescriptor;
 import com.facebook.flipper.plugins.inspector.Touch;
 import com.facebook.flipper.plugins.inspector.descriptors.ObjectDescriptor;
+import com.facebook.flipper.plugins.inspector.descriptors.utils.ContextDescriptorUtils;
 import com.facebook.litho.Component;
 import com.facebook.litho.DebugComponent;
 import com.facebook.litho.DebugLayoutNode;
@@ -161,6 +162,10 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
     if (stateData != null) {
       data.add(new Named<>("State", stateData));
     }
+
+    data.add(
+        new Named<>(
+            "Theme", ContextDescriptorUtils.themeData(node.getContext().getAndroidContext())));
 
     return data;
   }
