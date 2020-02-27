@@ -25,6 +25,27 @@
         "NSUserNotificationAlertStyle": "alert"
       }
     },
+    "dmg": {
+      "background": "dmgBackground.png",
+      "icon": "icon.png",
+      "iconSize": 155,
+      "window": {
+        "width": 660,
+        "height": 400
+      },
+      "contents": [
+        {
+          "x": 123,
+          "y": 172
+        },
+        {
+          "x": 539,
+          "y": 168,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    },
     "win": {
       "publisherName": "Facebook, Inc.",
       "sign": null
