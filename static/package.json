@@ -2,7 +2,7 @@
   "name": "flipper-static",
   "version": "1.0.0",
   "main": "index.js",
-  "license": "MIT",  
+  "license": "MIT",
   "dependencies": {
     "@babel/core": "^7.8.3",
     "@babel/generator": "^7.8.3",
@@ -24,7 +24,7 @@
     "mkdirp": "^1.0.0",
     "p-map": "^3.0.0",
     "recursive-readdir": "2.2.2",
-    "uuid": "^7.0.0",
+    "uuid": "^7.0.1",
     "xdg-basedir": "^4.0.0",
     "yargs": "^15.0.1"
   },

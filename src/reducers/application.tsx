@@ -8,7 +8,7 @@
  */
 
 import {remote} from 'electron';
-import uuidv1 from 'uuid/v1';
+import {v1 as uuidv1} from 'uuid';
 import {ReactElement} from 'react';
 import CancellableExportStatus from '../chrome/CancellableExportStatus';
 import {Actions} from './';

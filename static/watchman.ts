@@ -8,7 +8,7 @@
  */
 
 import {Client} from 'fb-watchman';
-import uuid from 'uuid';
+import {v4 as uuid} from 'uuid';
 import path from 'path';
 
 export default class Watchman {
@@ -76,35 +76,39 @@ export default class Watchman {
           return reject(error);
         }
 
-        const {clock} = resp;
+        try {
+          const {clock} = resp;
 
-        const sub = {
-          expression: [
-            'allof',
-            ['not', ['type', 'd']],
-            ...options!.excludes.map(e => ['not', ['match', e, 'wholename']]),
-          ],
-          fields: ['name'],
-          since: clock,
-          relative_root: this.relativeRoot
-            ? path.join(this.relativeRoot, relativeDir)
-            : relativeDir,
-        };
+          const sub = {
+            expression: [
+              'allof',
+              ['not', ['type', 'd']],
+              ...options!.excludes.map(e => ['not', ['match', e, 'wholename']]),
+            ],
+            fields: ['name'],
+            since: clock,
+            relative_root: this.relativeRoot
+              ? path.join(this.relativeRoot, relativeDir)
+              : relativeDir,
+          };
 
-        const id = uuid.v4();
+          const id = uuid();
 
-        this.client!.command(['subscribe', this.watch, id, sub], error => {
-          if (error) {
-            return reject(error);
-          }
-          this.client!.on('subscription', resp => {
-            if (resp.subscription !== id || !resp.files) {
-              return;
+          this.client!.command(['subscribe', this.watch, id, sub], error => {
+            if (error) {
+              return reject(error);
             }
-            handler(resp);
+            this.client!.on('subscription', resp => {
+              if (resp.subscription !== id || !resp.files) {
+                return;
+              }
+              handler(resp);
+            });
+            resolve();
           });
-          resolve();
-        });
+        } catch (err) {
+          reject(err);
+        }
       });
     });
   }

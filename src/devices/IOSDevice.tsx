@@ -14,7 +14,7 @@ import JSONStream from 'JSONStream';
 import {Transform} from 'stream';
 import electron from 'electron';
 import fs from 'fs';
-import uuid from 'uuid/v1';
+import {v1 as uuid} from 'uuid';
 import path from 'path';
 import {promisify} from 'util';
 import {exec} from 'child_process';
