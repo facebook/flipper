@@ -26,7 +26,7 @@ import {
 import {default as BaseDevice} from '../devices/BaseDevice';
 import {default as ArchivedDevice} from '../devices/ArchivedDevice';
 import fs from 'fs';
-import uuid from 'uuid';
+import {v4 as uuidv4} from 'uuid';
 import {remote, OpenDialogOptions} from 'electron';
 import {readCurrentRevision} from './packageMetadata';
 import {tryCatchReportPlatformFailures} from './metrics';
@@ -591,7 +591,7 @@ export async function getStoreExport(
       clients: client ? [client.toJSON()] : [],
       devicePlugins,
       clientPlugins,
-      salt: uuid.v4(),
+      salt: uuidv4(),
       selectedPlugins: state.plugins.selectedPlugins,
       statusUpdate,
     },
@@ -605,7 +605,11 @@ export async function exportStore(
   includeSupportDetails?: boolean,
   idler?: Idler,
   statusUpdate?: (msg: string) => void,
-): Promise<{serializedString: string; errorArray: Array<Error>}> {
+): Promise<{
+  serializedString: string;
+  errorArray: Array<Error>;
+  exportStoreData: ExportType | null;
+}> {
   getLogger().track('usage', EXPORT_FLIPPER_TRACE_EVENT);
   performance.mark(EXPORT_FLIPPER_TRACE_TIME_SERIALIZATION_EVENT);
   statusUpdate && statusUpdate('Preparing to export Flipper data...');
@@ -647,9 +651,13 @@ export async function exportStore(
       });
       console.error('Export Store Task Failures: ', errorStr);
     }
-    return {serializedString, errorArray};
+    return {serializedString, errorArray, exportStoreData: exportData};
   } else {
-    return {serializedString: '{}', errorArray: []};
+    return {
+      serializedString: '{}',
+      errorArray: [],
+      exportStoreData: exportData,
+    };
   }
 }
 
