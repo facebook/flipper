@@ -1,4 +1,4 @@
-name: Node CI
+name: PKG Node CI
 
 on: [push, pull_request]
 
