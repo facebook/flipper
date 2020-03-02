@@ -9,22 +9,16 @@
 
 import {Command, flags} from '@oclif/command';
 import {promises as fs} from 'fs';
-import {mkdirp, pathExists, readJSON} from 'fs-extra';
+import {mkdirp, pathExists, readJSON, ensureDir} from 'fs-extra';
 import * as inquirer from 'inquirer';
 import * as path from 'path';
-
-interface BundleArgs {
-  inputDirectory: string;
-  outputFile: string;
-}
-
-async function bundle(_args: BundleArgs) {
-  throw new Error('Not implemented.');
-}
+import * as yarn from '../utils/yarn';
+import cli from 'cli-ux';
+import runBuild from '../utils/runBuild';
 
 async function deriveOutputFileName(inputDirectory: string): Promise<string> {
   const packageJson = await readJSON(path.join(inputDirectory, 'package.json'));
-  return `${packageJson.name || ''}-${packageJson.version}.vsix`;
+  return `${packageJson.name || ''}-${packageJson.version}.tgz`;
 }
 
 export default class Bundle extends Command {
@@ -97,11 +91,37 @@ export default class Bundle extends Command {
       output = path.join(dir, file);
     }
 
-    const bundleArgs: BundleArgs = {
-      inputDirectory: args.directory,
-      outputFile: output,
-    };
-    this.log('Bundling: ', bundleArgs);
-    bundle(bundleArgs);
+    const inputDirectory = path.resolve(args.directory);
+    const outputFile = path.resolve(output);
+
+    this.log(`⚙️  Bundling ${inputDirectory} to ${outputFile}...`);
+
+    cli.action.start('Installing dependencies');
+    await yarn.install(inputDirectory);
+    cli.action.stop();
+
+    cli.action.start('Reading package.json');
+    const packageJson = await readJSON(
+      path.join(inputDirectory, 'package.json'),
+    );
+    const entry =
+      packageJson.main ??
+      ((await pathExists(path.join(inputDirectory, 'index.tsx')))
+        ? 'index.tsx'
+        : 'index.jsx');
+    const bundleMain = packageJson.bundleMain ?? path.join('dist', 'index.js');
+    const out = path.resolve(inputDirectory, bundleMain);
+    cli.action.stop(`done. Entry: ${entry}. Bundle main: ${bundleMain}.`);
+
+    cli.action.start(`Compiling`);
+    await ensureDir(path.dirname(out));
+    await runBuild(inputDirectory, entry, out);
+    cli.action.stop();
+
+    cli.action.start(`Packing to ${outputFile}`);
+    await yarn.pack(inputDirectory, outputFile);
+    cli.action.stop();
+
+    this.log(`✅  Bundled ${inputDirectory} to ${outputFile}`);
   }
 }

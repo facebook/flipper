@@ -29,7 +29,7 @@
     "name": "Launch Current Script",
     "args": ["${file}"],
     "env": {
-      "TS_NODE_FILES": "true",
+      "TS_NODE_FILES": "true"
     },
     "protocol": "inspector",
     "internalConsoleOptions": "openOnSessionStart",

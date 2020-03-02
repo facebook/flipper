@@ -38,6 +38,7 @@ export type PluginManifest = {
   version: string;
   name: string;
   main?: string;
+  bundleMain?: string;
   [key: string]: any;
 };
 
@@ -245,14 +246,12 @@ async function compilePlugin(
   options: DynamicCompileOptions,
 ): Promise<CompiledPluginInfo | null> {
   const {rootDir, manifest, entry, name} = pluginInfo;
-  const isPreBundled = fs.existsSync(path.join(rootDir, 'dist'));
-  if (isPreBundled) {
+  const bundleMain = manifest.bundleMain ?? path.join('dist', 'index.js');
+  const bundlePath = path.join(rootDir, bundleMain);
+  if (fs.existsSync(bundlePath)) {
     // eslint-disable-next-line no-console
-    console.log(`🥫  Using pre-built version of ${name}...`);
-    const out = path.join(
-      rootDir,
-      manifest.main ?? path.join('dist', 'index.js'),
-    );
+    const out = path.join(rootDir, bundleMain);
+    console.log(`🥫  Using pre-built version of ${name}: ${out}...`);
     return Object.assign({}, pluginInfo.manifest, {out});
   } else {
     const out = path.join(

@@ -6,7 +6,9 @@
     "outDir": "lib",
     "rootDir": "src",
     "strict": true,
-    "importHelpers": true
+    "importHelpers": true,
+    "esModuleInterop": true,
+    "allowJs": true
   },
   "include": [
     "src/**/*"
