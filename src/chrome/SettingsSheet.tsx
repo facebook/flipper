@@ -27,8 +27,6 @@ import LauncherSettingsPanel from '../fb-stubs/LauncherSettingsPanel';
 import {reportUsage} from '../utils/metrics';
 import os from 'os';
 
-const platform = os.platform();
-
 const Container = styled(FlexColumn)({
   padding: 20,
   width: 800,
@@ -43,6 +41,7 @@ const Title = styled(Text)({
 
 type OwnProps = {
   onHide: () => void;
+  platform: NodeJS.Platform;
 };
 
 type StateFromProps = {
@@ -113,21 +112,22 @@ class SettingsSheet extends Component<Props, State> {
         <ToggledSection
           label="iOS Developer"
           toggled={
-            this.state.updatedSettings.enableIOS && platform === 'darwin'
+            this.state.updatedSettings.enableIOS &&
+            this.props.platform === 'darwin'
           }
-          frozen={platform !== 'darwin'}
+          frozen={this.props.platform !== 'darwin'}
           onChange={v => {
             this.setState({
               updatedSettings: {...this.state.updatedSettings, enableIOS: v},
             });
           }}>
           {' '}
-          {platform === 'darwin' && (
+          {this.props.platform === 'darwin' && (
             <ConfigText
               content={'Use "xcode-select" to switch between Xcode versions'}
             />
           )}
-          {platform !== 'darwin' && (
+          {this.props.platform !== 'darwin' && (
             <ConfigText
               content={'iOS development is only supported on MacOS'}
             />

@@ -94,7 +94,7 @@ export class App extends React.Component<Props> {
       case ACTIVE_SHEET_SIGN_IN:
         return <SignInSheet onHide={onHide} />;
       case ACTIVE_SHEET_SETTINGS:
-        return <SettingsSheet onHide={onHide} />;
+        return <SettingsSheet platform={process.platform} onHide={onHide} />;
       case ACTIVE_SHEET_DOCTOR:
         return <DoctorSheet onHide={onHide} />;
       case ACTIVE_SHEET_SELECT_PLUGINS_TO_EXPORT:
