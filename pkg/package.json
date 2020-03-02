@@ -16,7 +16,7 @@
     "@oclif/plugin-help": "^2",
     "@types/fs-extra": "^8.1.0",
     "@types/inquirer": "^6.5.0",
-    "@types/node": "^10",
+    "@types/node": "^13.7.5",
     "fs-extra": "^8.1.0",
     "inquirer": "^7.0.4",
     "listr": "^0.14.3",
