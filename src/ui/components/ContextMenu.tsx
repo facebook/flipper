@@ -7,9 +7,9 @@
  * @format
  */
 
-import * as React from 'react';
+import {createElement, useContext, useCallback} from 'react';
+import {ContextMenuContext} from './ContextMenuProvider';
 import FlexColumn from './FlexColumn';
-import PropTypes from 'prop-types';
 import {MenuItemConstructorOptions} from 'electron';
 
 export type MenuTemplate = Array<MenuItemConstructorOptions>;
@@ -22,7 +22,7 @@ type Props<C> = {
   /** Nodes that should have a context menu */
   children: React.ReactNode;
   /** The component that is used to wrap the children. Defaults to `FlexColumn`. */
-  component: React.ComponentType<any> | string;
+  component?: React.ComponentType<any> | string;
   onMouseDown?: (e: React.MouseEvent) => any;
 } & C;
 
@@ -33,39 +33,27 @@ type Props<C> = {
  *
  * Separators can be added by `{type: 'separator'}`
  */
-export default class ContextMenu<C = any> extends React.Component<Props<C>> {
-  static defaultProps = {
-    component: FlexColumn,
-  };
-
-  static contextTypes = {
-    appendToContextMenu: PropTypes.func,
-  };
-
-  onContextMenu = () => {
-    if (typeof this.context.appendToContextMenu === 'function') {
-      if (this.props.items != null) {
-        this.context.appendToContextMenu(this.props.items);
-      } else if (this.props.buildItems != null) {
-        this.context.appendToContextMenu(this.props.buildItems());
-      }
+export default function ContextMenu<C>({
+  items,
+  buildItems,
+  component,
+  children,
+  ...otherProps
+}: Props<C>) {
+  const contextMenuManager = useContext(ContextMenuContext);
+  const onContextMenu = useCallback(() => {
+    if (items != null) {
+      contextMenuManager?.appendToContextMenu(items);
+    } else if (buildItems != null) {
+      contextMenuManager?.appendToContextMenu(buildItems());
     }
-  };
-
-  render() {
-    const {
-      items: _items,
-      buildItems: _buildItems,
-      component,
-      ...props
-    } = this.props;
-    return React.createElement(
-      component,
-      {
-        onContextMenu: this.onContextMenu,
-        ...props,
-      },
-      this.props.children,
-    );
-  }
+  }, []);
+  return createElement(
+    component || FlexColumn,
+    {
+      onContextMenu,
+      ...otherProps,
+    },
+    children,
+  );
 }
