@@ -1,4 +1,4 @@
-name: Publish Sample App
+name: Publish Android Sample App On Release
 
 on:
   release:
