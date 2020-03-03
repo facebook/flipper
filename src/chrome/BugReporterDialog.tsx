@@ -256,7 +256,7 @@ class BugReporterDialog extends Component<Props, State> {
             <InfoBox>
               <Icon color={colors.light50} name="info-circle" />
               <span>
-                If you bug is related to the{' '}
+                If your bug is related to the{' '}
                 <strong>
                   {(activePlugin && activePlugin.title) || activePlugin.id}{' '}
                   plugin
