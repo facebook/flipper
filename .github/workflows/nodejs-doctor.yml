@@ -15,9 +15,6 @@ jobs:
     - name: install
       working-directory: doctor
       run: yarn
-    - name: lint
-      working-directory: doctor
-      run: yarn lint
     - name: test
       working-directory: doctor
       run: yarn test
