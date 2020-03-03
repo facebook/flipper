@@ -24,13 +24,13 @@
   },
   "scripts": {
     "build": "tsc",
-    "prepare": "npm run build",
-    "prepublishOnly": "npm test && npm run lint",
-    "preversion": "npm run lint",
+    "prepare": "yarn run build",
+    "prepublishOnly": "yarn test && yarn run lint",
+    "preversion": "yarn run lint",
     "test": "jest --config jestconfig.json --passWithNoTests",
     "lint": "eslint -c ../../sonar/.eslintrc.js src/**/* --ext .js,.ts  && tsc --noemit",
     "fix": "eslint -c ../../sonar/.eslintrc.js src/**/* --fix --ext .js,.ts",
-    "run": "npm run build && node lib/cli.js"
+    "run": "yarn run build && node lib/cli.js"
   },
   "files": [
     "lib/**/*"
