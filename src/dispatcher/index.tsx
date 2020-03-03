@@ -7,6 +7,7 @@
  * @format
  */
 
+import {remote} from 'electron';
 import androidDevice from './androidDevice';
 import metroDevice from './metroDevice';
 import iOSDevice from './iOSDevice';
@@ -18,6 +19,7 @@ import notifications from './notifications';
 import plugins from './plugins';
 import user from './user';
 import pluginManager from './pluginManager';
+import reactNative from './reactNative';
 
 import {Logger} from '../fb-interfaces/Logger';
 import {Store} from '../reducers/index';
@@ -25,6 +27,12 @@ import {Dispatcher} from './types';
 import {notNull} from '../utils/typeUtils';
 
 export default function(store: Store, logger: Logger): () => Promise<void> {
+  // This only runs in development as when the reload
+  // kicks in it doesn't unregister the shortcuts
+  if (process.env.NODE_ENV === 'development') {
+    remote.globalShortcut.unregisterAll();
+  }
+
   const dispatchers: Array<Dispatcher> = [
     application,
     store.getState().settingsState.enableAndroid ? androidDevice : null,
@@ -37,6 +45,7 @@ export default function(store: Store, logger: Logger): () => Promise<void> {
     plugins,
     user,
     pluginManager,
+    reactNative,
   ].filter(notNull);
   const globalCleanup = dispatchers
     .map(dispatcher => dispatcher(store, logger))
