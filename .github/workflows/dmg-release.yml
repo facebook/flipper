@@ -15,7 +15,7 @@ jobs:
       with:
         node-version: '12.x'
     - name: Build
-      run: yarn build --mac-dmg
+      run: yarn build --mac --mac-dmg
     - name: Upload
       uses: skx/github-action-publish-binaries@master
       env:
