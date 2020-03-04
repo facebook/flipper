@@ -216,7 +216,7 @@
     "socket.io": "^2.0.4",
     "string-natural-compare": "^3.0.0",
     "tmp": "0.0.33",
-    "uuid": "^7.0.1",
+    "uuid": "7.0.1",
     "websocket": "^1.0.31",
     "which": "^2.0.1",
     "ws": "^7.2.0",
