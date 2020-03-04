@@ -12,6 +12,7 @@
 #import <FlipperKitHighlightOverlay/SKHighlightOverlay.h>
 #import <YogaKit/UIView+Yoga.h>
 #import "SKDescriptorMapper.h"
+#import "SKHiddenWindow.h"
 #import "SKNamed.h"
 #import "SKObject.h"
 #import "SKYogaKitHelper.h"
@@ -492,7 +493,10 @@ static NSDictionary* YGUnitEnumMap = nil;
       viewForNode = (UIView*)childNode;
     }
 
-    if (viewForNode.isHidden || viewForNode.alpha <= 0) {
+    if (viewForNode.isHidden || viewForNode.alpha <= 0 ||
+        [[viewForNode class] isEqual:[SKHiddenWindow class]]) {
+      /*SKHiddenWindow is the pink overlay which is added in window to capture
+       the gestures.*/
       continue;
     }
 
