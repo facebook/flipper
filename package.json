@@ -177,7 +177,7 @@
     "fb-watchman": "^2.0.0",
     "flipper-doctor": "^0.7.0",
     "fs-extra": "^8.0.1",
-    "immer": "^5.3.5",
+    "immer": "^6.0.1",
     "immutable": "^4.0.0-rc.12",
     "invariant": "^2.2.2",
     "line-replace": "^1.0.2",
