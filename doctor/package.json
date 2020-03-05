@@ -29,7 +29,8 @@
     "preversion": "yarn run lint",
     "test": "jest --config jestconfig.json --passWithNoTests",
     "lint": "eslint -c ../.eslintrc.js src/**/* --ext .js,.ts  && tsc --noemit",
-    "fix": "eslint -c ../.eslintrc.js src/**/* --fix --ext .js,.ts"
+    "fix": "eslint -c ../.eslintrc.js src/**/* --fix --ext .js,.ts",
+    "run": "yarn run build && node lib/cli.js"
   },
   "files": [
     "lib/**/*"
