@@ -15,9 +15,6 @@ jobs:
     - name: install
       working-directory: pkg
       run: yarn
-    - name: lint
-      working-directory: pkg
-      run: yarn lint
     - name: test
       working-directory: pkg
       run: yarn test
