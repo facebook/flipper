@@ -15,12 +15,12 @@ Pod::Spec.new do |s|
   s.description  = <<-DESC
                   react-native-flipper
                    DESC
-  s.homepage     = "https://github.com/github_account/react-native-flipper"
+  s.homepage     = "https://fbflipper.com/"
   s.license      = "MIT"
-  # s.license    = { :type => "MIT", :file => "FILE_LICENSE" }
-  s.authors      = { "Your Name" => "yourname@email.com" }
-  s.platforms    = { :ios => "9.0" }
-  s.source       = { :git => "https://github.com/github_account/react-native-flipper.git", :tag => "#{s.version}" }
+  s.license    = { :type => "MIT", :file => "LICENSE" }
+  s.authors      = { "Michel Weststrate" => "mweststrate@fb.com" }
+  s.platforms    = { :ios => "10.0" }
+  s.source       = { :git => "https://github.com/facebook/flipper.git", :tag => "#{s.version}" }
 
   s.source_files = "ios/**/*.{h,m,swift}"
   s.pod_target_xcconfig = { "HEADER_SEARCH_PATHS" => "\"${PODS_ROOT}/Headers/Public/FlipperKit\"" }

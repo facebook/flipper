@@ -156,7 +156,7 @@ function printNoFlipperWarning() {
   // $FlowFixMe
   if (typeof __DEV__ !== 'undefined' && __DEV__) {
     console.warn(
-      'The native module for Flipper seems unavailable. Make sure `initializeFlipper(this, getReactNativeHost().getReactInstanceManager()` is called in MainApplication.java:onCreate, and that `react-native-flipper` is installed as yarn dependency',
+      'The native module for Flipper seems unavailable. Please verify that `react-native-flipper` is installed as yarn dependency to your project and, for iOS, that `pod install` is run in the `ios` directory.',
     );
   }
 }

@@ -1,15 +1,13 @@
 platform :ios, '10.0'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
-# Add Flipper Pods
-def flipper_pods()
-  flipperkit_version = '0.31.1'
-  pod 'FlipperKit', :path => "../../../FlipperKit.podspec", :configuration => 'Debug'
-  pod 'FlipperKit/FlipperKitLayoutPlugin', :path => "../../../FlipperKit.podspec", :configuration => 'Debug'
-  pod 'FlipperKit/SKIOSNetworkPlugin', :path => "../../../FlipperKit.podspec", :configuration => 'Debug'
-  pod 'FlipperKit/FlipperKitUserDefaultsPlugin', :path => "../../../FlipperKit.podspec", :configuration => 'Debug'
-  pod 'FlipperKit/FlipperKitReactPlugin', :path => "../../../FlipperKit.podspec", :configuration => 'Debug'
-  pod 'Flipper', :path => "../../../Flipper.podspec", :configuration => 'Debug'
+def add_flipper_pods!
+  version = '~> 0.32.2'
+  pod 'FlipperKit', version, :configuration => 'Debug'
+  pod 'FlipperKit/FlipperKitLayoutPlugin', version, :configuration => 'Debug'
+  pod 'FlipperKit/SKIOSNetworkPlugin', version, :configuration => 'Debug'
+  pod 'FlipperKit/FlipperKitUserDefaultsPlugin', version, :configuration => 'Debug'
+  pod 'FlipperKit/FlipperKitReactPlugin', version, :configuration => 'Debug'
 end
 
 # Post Install processing for Flipper
@@ -21,22 +19,7 @@ def flipper_post_install(installer)
       end
     end
   end
-  file_name = Dir.glob("*.xcodeproj")[0]
-  app_project = Xcodeproj::Project.open(file_name)
-  app_project.native_targets.each do |target|
-    target.build_configurations.each do |config|
-      cflags = config.build_settings['OTHER_CFLAGS'] || '$(inherited) '
-      unless cflags.include? '-DFB_SONARKIT_ENABLED=1'
-        puts 'Adding -DFB_SONARKIT_ENABLED=1 in OTHER_CFLAGS...'
-        cflags << '-DFB_SONARKIT_ENABLED=1'
-      end
-      config.build_settings['OTHER_CFLAGS'] = cflags
-    end
-    app_project.save
-  end
-  installer.pods_project.save
 end
-
 
 target 'ReactNativeFlipperExample' do
   # Pods for ReactNativeFlipperExample
@@ -71,13 +54,28 @@ target 'ReactNativeFlipperExample' do
   pod 'glog', :podspec => '../node_modules/react-native/third-party-podspecs/glog.podspec'
   pod 'Folly', :podspec => '../node_modules/react-native/third-party-podspecs/Folly.podspec'
 
-  pod 'react-native-flipper', :path => "../../react-native-flipper/react-native-flipper.podspec", :configuration => 'Debug'
+  target 'ReactNativeFlipperExampleTests' do
+    inherit! :complete
+    # Pods for testing
+  end
 
-  # For enabling Flipper.
-  # Note that if you use_frameworks!, flipper will no work.
-  # Disable these lines if you are doing use_frameworks!
-  flipper_pods()
+  use_native_modules!
+
+  # Enables Flipper.
+  #
+  # Note that if you have use_frameworks! enabled, Flipper will not work and
+  # you should disable these next few lines.
+  add_flipper_pods!
   post_install do |installer|
     flipper_post_install(installer)
+  end
+end
+
+target 'ReactNativeFlipperExample-tvOS' do
+  # Pods for ReactNativeFlipperExample-tvOS
+
+  target 'ReactNativeFlipperExample-tvOSTests' do
+    inherit! :search_paths
+    # Pods for testing
   end
 end
