@@ -36,7 +36,7 @@
     _overlayWindow.hidden = YES;
     _overlayWindow.windowLevel = UIWindowLevelAlert;
     _overlayWindow.backgroundColor = [SKHighlightOverlay overlayColor];
-      
+
     [_overlayWindow addGestureRecognizer:_gestureRecognizer];
   }
 
