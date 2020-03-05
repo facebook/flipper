@@ -30,8 +30,8 @@
     "@types/node": "^13.7.5",
     "cli-ux": "^5.4.5",
     "fs-extra": "^8.1.0",
-    "inquirer": "^7.0.4",
     "metro": "^0.58.0",
+    "inquirer": "^7.0.5",
     "tslib": "^1"
   },
   "devDependencies": {
