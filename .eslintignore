@@ -10,3 +10,4 @@ lib
 !.eslintrc.js
 dist
 website/build
+react-native/ReactNativeFlipperExample

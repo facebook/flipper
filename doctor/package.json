@@ -6,8 +6,8 @@
   "types": "lib/index.d.ts",
   "license": "MIT",
   "devDependencies": {
-    "@types/jest": "^24.0.21",
     "@types/fb-watchman": "2.0.0",
+    "@types/jest": "^24.0.21",
     "@typescript-eslint/eslint-plugin": "^2.8.0",
     "eslint": "^6.6.0",
     "eslint-plugin-babel": "^5.3.0",
@@ -24,13 +24,12 @@
   },
   "scripts": {
     "build": "tsc",
-    "prepare": "npm run build",
-    "prepublishOnly": "npm test && npm run lint",
-    "preversion": "npm run lint",
+    "prepare": "yarn run build",
+    "prepublishOnly": "yarn test && yarn run lint",
+    "preversion": "yarn run lint",
     "test": "jest --config jestconfig.json --passWithNoTests",
     "lint": "eslint -c ../.eslintrc.js src/**/* --ext .js,.ts  && tsc --noemit",
-    "fix": "eslint -c ../.eslintrc.js src/**/* --fix --ext .js,.ts",
-    "run": "npm run build && node lib/cli.js"
+    "fix": "eslint -c ../.eslintrc.js src/**/* --fix --ext .js,.ts"
   },
   "files": [
     "lib/**/*"
@@ -41,7 +40,7 @@
   ],
   "author": "Facebook, Inc",
   "dependencies": {
-    "@types/node": "^12.12.12",
+    "@types/node": "^13.7.7",
     "envinfo": "^7.4.0",
     "fb-watchman": "^2.0.1"
   }

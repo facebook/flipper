@@ -2,31 +2,31 @@
 
 exports[`notifications for leaks 1`] = `
 <React.Fragment>
-  <ForwardRef(render)>
+  <Styled(div)>
     CloseableReference leaked for
      
-    <ForwardRef(render)
+    <Text
       code={true}
     >
       com.facebook.imagepipeline.memory.NativeMemoryChunk
-    </ForwardRef(render)>
+    </Text>
     (identity hashcode: 
     deadbeef
     ).
-  </ForwardRef(render)>
-  <ForwardRef(render)>
-    <ForwardRef(render)
+  </Styled(div)>
+  <Styled(div)>
+    <Text
       bold={true}
     >
       Stacktrace:
-    </ForwardRef(render)>
-  </ForwardRef(render)>
-  <ForwardRef(render)>
-    <ForwardRef(render)
+    </Text>
+  </Styled(div)>
+  <Styled(div)>
+    <Text
       code={true}
     >
       &lt;unavailable&gt;
-    </ForwardRef(render)>
-  </ForwardRef(render)>
+    </Text>
+  </Styled(div)>
 </React.Fragment>
 `;

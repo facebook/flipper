@@ -11,6 +11,7 @@ import {ImageData} from './api';
 import {ImageEventWithId} from './index';
 import {
   Component,
+  ContextMenu,
   DataDescription,
   Text,
   Panel,
@@ -21,6 +22,7 @@ import {
   styled,
 } from 'flipper';
 import React from 'react';
+import {clipboard, MenuItemConstructorOptions} from 'electron';
 
 type ImagesSidebarProps = {
   image: ImageData;
@@ -59,6 +61,14 @@ export default class ImagesSidebar extends Component<
     if (!this.props.image.uri) {
       return null;
     }
+
+    const contextMenuItems: MenuItemConstructorOptions[] = [
+      {
+        label: 'Copy URI',
+        click: () => clipboard.writeText(this.props.image.uri!),
+      },
+    ];
+
     return (
       <Panel heading="Sources" floating={false}>
         <FlexRow>
@@ -69,11 +79,13 @@ export default class ImagesSidebar extends Component<
             <span key="sep">:&nbsp;</span>
           </FlexColumn>
           <WordBreakFlexColumn>
-            <DataDescription
-              type="string"
-              value={this.props.image.uri}
-              setValue={null}
-            />
+            <ContextMenu component="span" items={contextMenuItems}>
+              <DataDescription
+                type="string"
+                value={this.props.image.uri}
+                setValue={null}
+              />
+            </ContextMenu>
           </WordBreakFlexColumn>
         </FlexRow>
       </Panel>

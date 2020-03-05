@@ -67,7 +67,11 @@ async function buildDist(buildFolder: string) {
   const postBuildCallbacks: (() => void)[] = [];
 
   if (process.argv.indexOf('--mac') > -1) {
-    targetsRaw.push(Platform.MAC.createTarget(['dir', 'dmg']));
+    targetsRaw.push(Platform.MAC.createTarget(['dir']));
+    // You can build mac apps on Linux but can't build dmgs, so we separate those.
+    if (process.argv.indexOf('--mac-dmg') > -1) {
+      targetsRaw.push(Platform.MAC.createTarget(['dmg']));
+    }
     postBuildCallbacks.push(() =>
       spawn('zip', ['-qyr9', '../Flipper-mac.zip', 'Flipper.app'], {
         cwd: path.join(__dirname, '..', 'dist', 'mac'),
@@ -107,7 +111,7 @@ async function buildDist(buildFolder: string) {
           output: path.join(__dirname, '..', 'dist'),
         },
         electronDownload: electronDownloadOptions,
-        npmRebuild: false,
+        npmRebuild: false
       },
       projectDir: buildFolder,
       targets,

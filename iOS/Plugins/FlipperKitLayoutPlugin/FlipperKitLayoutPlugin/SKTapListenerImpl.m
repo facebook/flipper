@@ -36,7 +36,7 @@
     _overlayWindow.hidden = YES;
     _overlayWindow.windowLevel = UIWindowLevelAlert;
     _overlayWindow.backgroundColor = [SKHighlightOverlay overlayColor];
-
+      
     [_overlayWindow addGestureRecognizer:_gestureRecognizer];
   }
 
@@ -51,7 +51,7 @@
   [_overlayWindow setFrame:frame];
   [_overlayWindow makeKeyAndVisible];
   _overlayWindow.hidden = NO;
-
+  [[UIApplication sharedApplication].delegate.window addSubview:_overlayWindow];
   _isMounted = YES;
 }
 
@@ -63,7 +63,6 @@
   [_receiversWaitingForInput removeAllObjects];
   [_overlayWindow removeFromSuperview];
   _overlayWindow.hidden = YES;
-
   _isMounted = NO;
 }
 

@@ -362,7 +362,7 @@
   if (active) {
     [_tapListener mountWithFrame:[[UIScreen mainScreen] bounds]];
     __block id<NSObject> rootNode = _rootNode;
-
+      
     [_tapListener listenForTapWithBlock:^(CGPoint touchPoint) {
       SKTouch* touch = [[SKTouch alloc]
             initWithTouchPoint:touchPoint

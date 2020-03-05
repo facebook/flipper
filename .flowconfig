@@ -2,6 +2,7 @@
 .*/scripts/.*
 .*/coverage/.*
 .*/build/.*
+.*/pkg/.*
 .*/dist/.*
 .*/static/.*
 <PROJECT_ROOT>/src/fb/plugins/relaydevtools/relay-devtools/DevtoolsUI.js$

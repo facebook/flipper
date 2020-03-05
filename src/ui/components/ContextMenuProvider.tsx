@@ -7,52 +7,50 @@
  * @format
  */
 
-import {Component} from 'react';
 import styled from '@emotion/styled';
 import electron, {MenuItemConstructorOptions} from 'electron';
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, {useRef, memo, createContext, useMemo, useCallback} from 'react';
 
 type MenuTemplate = Array<MenuItemConstructorOptions>;
+interface ContextMenuManager {
+  appendToContextMenu(items: MenuTemplate): void;
+}
 
 const Container = styled.div({
   display: 'contents',
 });
 Container.displayName = 'ContextMenuProvider:Container';
 
+export const ContextMenuContext = createContext<ContextMenuManager | undefined>(
+  undefined,
+);
 /**
  * Flipper's root is already wrapped with this component, so plugins should not
  * need to use this. ContextMenu is what you probably want to use.
  */
-export default class ContextMenuProvider extends Component<{
-  children: React.ReactNode;
-}> {
-  static childContextTypes = {
-    appendToContextMenu: PropTypes.func,
-  };
+const ContextMenuProvider: React.FC<{}> = memo(function ContextMenuProvider({
+  children,
+}) {
+  const menuTemplate = useRef<MenuTemplate>([]);
+  const contextMenuManager = useMemo(
+    () => ({
+      appendToContextMenu(items: MenuTemplate) {
+        menuTemplate.current = menuTemplate.current.concat(items);
+      },
+    }),
+    [],
+  );
+  const onContextMenu = useCallback(() => {
+    const menu = electron.remote.Menu.buildFromTemplate(menuTemplate.current);
+    menuTemplate.current = [];
+    menu.popup({window: electron.remote.getCurrentWindow()});
+  }, []);
 
-  getChildContext() {
-    return {appendToContextMenu: this.appendToContextMenu};
-  }
+  return (
+    <ContextMenuContext.Provider value={contextMenuManager}>
+      <Container onContextMenu={onContextMenu}>{children}</Container>
+    </ContextMenuContext.Provider>
+  );
+});
 
-  _menuTemplate: MenuTemplate = [];
-
-  appendToContextMenu = (items: MenuTemplate) => {
-    this._menuTemplate = this._menuTemplate.concat(items);
-  };
-
-  onContextMenu = () => {
-    const menu = electron.remote.Menu.buildFromTemplate(this._menuTemplate);
-    this._menuTemplate = [];
-    // @ts-ignore: async is private electron API
-    menu.popup({window: electron.remote.getCurrentWindow(), async: true});
-  };
-
-  render() {
-    return (
-      <Container onContextMenu={this.onContextMenu}>
-        {this.props.children}
-      </Container>
-    );
-  }
-}
+export default ContextMenuProvider;
