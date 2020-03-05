@@ -4,6 +4,9 @@ website/build
 yarn-error.log
 static/main.bundle.*
 
+# conflicts with FB internal infra
+.watchmanconfig
+
 # iOS / Xcode
 *.xcworkspace
 **/Pods/
