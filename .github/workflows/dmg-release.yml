@@ -1,0 +1,24 @@
+name: Publish DMG App On Release
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  build:
+
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '12.x'
+    - name: Build
+      run: yarn build --mac --mac-dmg
+    - name: Upload
+      uses: skx/github-action-publish-binaries@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        args: 'dist/Flipper-mac.dmg'
