@@ -1,5 +1,6 @@
 {
   "name": "flipper",
+  "license": "MIT",
   "version": "0.32.2",
   "versionDate": "2018-4-12",
   "description": "Mobile development tool",
