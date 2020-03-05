@@ -28,8 +28,8 @@
     "prepublishOnly": "yarn test && yarn run lint",
     "preversion": "yarn run lint",
     "test": "jest --config jestconfig.json --passWithNoTests",
-    "lint": "eslint -c ../../sonar/.eslintrc.js src/**/* --ext .js,.ts  && tsc --noemit",
-    "fix": "eslint -c ../../sonar/.eslintrc.js src/**/* --fix --ext .js,.ts",
+    "lint": "eslint -c ../.eslintrc.js src/**/* --ext .js,.ts  && tsc --noemit",
+    "fix": "eslint -c ../.eslintrc.js src/**/* --fix --ext .js,.ts",
     "run": "yarn run build && node lib/cli.js"
   },
   "files": [

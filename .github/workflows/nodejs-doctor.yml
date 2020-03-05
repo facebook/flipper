@@ -1,0 +1,23 @@
+name: Doctor Node CI
+
+on: [push, pull_request]
+
+jobs:
+  build:
+
+    runs-on: 'ubuntu-latest'
+
+    steps:
+    - uses: actions/checkout@v1
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '12.x'
+    - name: install
+      working-directory: doctor
+      run: yarn
+    - name: test
+      working-directory: doctor
+      run: yarn test
+    - name: run
+      working-directory: doctor
+      run: yarn run run
