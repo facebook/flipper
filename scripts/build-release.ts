@@ -111,7 +111,7 @@ async function buildDist(buildFolder: string) {
           output: path.join(__dirname, '..', 'dist'),
         },
         electronDownload: electronDownloadOptions,
-        npmRebuild: false
+        npmRebuild: false,
       },
       projectDir: buildFolder,
       targets,
