@@ -109,10 +109,10 @@ static CK::StaticMutex _mutex = CK_MUTEX_INITIALIZER;
   auto const canBeReusedCounter = self.flipper_canBeReusedCounter;
   if (canBeReusedCounter > 0) {
     return [NSString stringWithFormat:@"%@ (Can be reused x%lu)",
-                                      self.className,
+                                      NSStringFromClass([self class]),
                                       (unsigned long)canBeReusedCounter];
   }
-  return self.className;
+  return NSStringFromClass([self class]);
 }
 
 - (NSString*)sonar_getDecoration {
