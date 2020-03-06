@@ -222,14 +222,12 @@ static NSDictionary* YGUnitEnumMap = nil;
           nil];
 }
 
-- (NSDictionary<NSString*, SKNodeUpdateData>*)dataMutationsForNode:
-    (UIView*)node {
-  return @{
+- (NSDictionary<NSString*, SKNodeUpdateData>*)dataMutationsForNode:(UIView*)node {
+  NSDictionary<NSString*, SKNodeUpdateData> *dataMutations = @{
     // UIView
     @"UIView.alpha" : ^(NSNumber* value){
         node.alpha = [value floatValue];
-}
-,
+    },
     @"UIView.backgroundColor": ^(NSNumber *value) {
       node.backgroundColor = [UIColor fromSonarValue: value];
     },
@@ -452,17 +450,21 @@ static NSDictionary* YGUnitEnumMap = nil;
     @"Accessibility.accessibilityTraits.UIAccessibilityTraitCausesPageTurn": ^(NSNumber *value) {
       node.accessibilityTraits = AccessibilityTraitsToggle(node.accessibilityTraits, UIAccessibilityTraitCausesPageTurn, [value boolValue]);
     },
-    @"Accessibility.accessibilityTraits.UIAccessibilityTraitTabBar": ^(NSNumber *value) {
-      node.accessibilityTraits = AccessibilityTraitsToggle(node.accessibilityTraits, UIAccessibilityTraitTabBar, [value boolValue]);
-    },
     @"Accessibility.accessibilityViewIsModal": ^(NSNumber *value) {
       node.accessibilityViewIsModal = [value boolValue];
     },
     @"Accessibility.shouldGroupAccessibilityChildren": ^(NSNumber *value) {
       node.shouldGroupAccessibilityChildren = [value boolValue];
     },
-}
-;
+  };
+  if (@available(iOS 10.0, *)) {
+    NSMutableDictionary<NSString*, SKNodeUpdateData> *latestDataMutations = [dataMutations mutableCopy];
+    latestDataMutations[@"Accessibility.accessibilityTraits.UIAccessibilityTraitTabBar"] = ^(NSNumber *value) {
+      node.accessibilityTraits = AccessibilityTraitsToggle(node.accessibilityTraits, UIAccessibilityTraitTabBar, [value boolValue]);
+    };
+    dataMutations = latestDataMutations;
+  }
+  return dataMutations;
 }
 
 - (NSArray<SKNamed<NSString*>*>*)attributesForNode:(UIView*)node {
