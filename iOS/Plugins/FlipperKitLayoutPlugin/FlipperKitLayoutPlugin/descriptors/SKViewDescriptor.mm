@@ -225,7 +225,7 @@ static NSDictionary* YGUnitEnumMap = nil;
 
 - (NSDictionary<NSString*, SKNodeUpdateData>*)dataMutationsForNode:
     (UIView*)node {
-  return @{
+  NSDictionary<NSString*, SKNodeUpdateData>* dataMutations = @{
     // UIView
     @"UIView.alpha" : ^(NSNumber* value){
         node.alpha = [value floatValue];
@@ -453,9 +453,6 @@ static NSDictionary* YGUnitEnumMap = nil;
     @"Accessibility.accessibilityTraits.UIAccessibilityTraitCausesPageTurn": ^(NSNumber *value) {
       node.accessibilityTraits = AccessibilityTraitsToggle(node.accessibilityTraits, UIAccessibilityTraitCausesPageTurn, [value boolValue]);
     },
-    @"Accessibility.accessibilityTraits.UIAccessibilityTraitTabBar": ^(NSNumber *value) {
-      node.accessibilityTraits = AccessibilityTraitsToggle(node.accessibilityTraits, UIAccessibilityTraitTabBar, [value boolValue]);
-    },
     @"Accessibility.accessibilityViewIsModal": ^(NSNumber *value) {
       node.accessibilityViewIsModal = [value boolValue];
     },
@@ -464,6 +461,20 @@ static NSDictionary* YGUnitEnumMap = nil;
     },
 }
 ;
+if (@available(iOS 10.0, *)) {
+  NSMutableDictionary<NSString*, SKNodeUpdateData>* latestDataMutations =
+      [dataMutations mutableCopy];
+  latestDataMutations
+      [@"Accessibility.accessibilityTraits.UIAccessibilityTraitTabBar"] =
+          ^(NSNumber* value) {
+            node.accessibilityTraits = AccessibilityTraitsToggle(
+                node.accessibilityTraits,
+                UIAccessibilityTraitTabBar,
+                [value boolValue]);
+          };
+  dataMutations = latestDataMutations;
+}
+return dataMutations;
 }
 
 - (NSArray<SKNamed<NSString*>*>*)attributesForNode:(UIView*)node {
