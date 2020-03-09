@@ -8,11 +8,9 @@ static/main.bundle.*
 .watchmanconfig
 
 # iOS / Xcode
-*.xcworkspace
 **/Pods/
 **/xcuserdata/
 build/
-Podfile.lock
 
 android/third-party/external/
 
