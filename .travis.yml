@@ -33,9 +33,10 @@ matrix:
         - "11"
 
       install:
+        - cd desktop
         - yarn
 
-      script:
+      script:        
         - yarn lint
         - yarn test
         - yarn build --linux --version=$TRAVIS_BUILD_NUMBER

@@ -2,46 +2,50 @@
   "groups": {
     "main": {
       "packages": [
-        "package.json",
-        "headless-tests/package.json"
+        "desktop/package.json",
+        "desktop/headless-tests/package.json"
+      ]
+    },
+    "static" : {
+      "packages": [
+        "desktop/static/package.json"
       ]
     },
     "doctor": {
       "packages": [
-        "doctor/package.json"
+        "desktop/doctor/package.json"
       ]
     },
     "pkg": {
       "packages": [
-        "pkg/package.json"
+        "desktop/pkg/package.json"
       ]
     },
     "plugins": {
       "packages": [
-        "src/plugins/cpu/package.json",
-        "src/plugins/crash_reporter/package.json",
-        "src/plugins/databases/package.json",
-        "src/plugins/example/package.json",
-        "src/plugins/fresco/package.json",
-        "src/plugins/kaios-allocations/package.json",
-        "src/plugins/kaios-ram/package.json",
-        "src/plugins/layout/package.json",
-        "src/plugins/leak_canary/package.json",
-        "src/plugins/logs/package.json",
-        "src/plugins/navigation/package.json",
-        "src/plugins/network/package.json",
-        "src/plugins/reactdevtools/package.json",
-        "src/plugins/sandbox/package.json",
-        "src/plugins/seamammals/package.json",
-        "src/plugins/sections/d3/package.json",
-        "src/plugins/sections/package.json",
-        "src/plugins/shared_preferences/package.json",
-        "src/utils/js-client/package.json"
+        "desktop/src/plugins/cpu/package.json",
+        "desktop/src/plugins/crash_reporter/package.json",
+        "desktop/src/plugins/databases/package.json",
+        "desktop/src/plugins/example/package.json",
+        "desktop/src/plugins/fresco/package.json",
+        "desktop/src/plugins/kaios-allocations/package.json",
+        "desktop/src/plugins/kaios-ram/package.json",
+        "desktop/src/plugins/layout/package.json",
+        "desktop/src/plugins/leak_canary/package.json",
+        "desktop/src/plugins/logs/package.json",
+        "desktop/src/plugins/navigation/package.json",
+        "desktop/src/plugins/network/package.json",
+        "desktop/src/plugins/reactdevtools/package.json",
+        "desktop/src/plugins/sandbox/package.json",
+        "desktop/src/plugins/seamammals/package.json",
+        "desktop/src/plugins/sections/d3/package.json",
+        "desktop/src/plugins/sections/package.json",
+        "desktop/src/plugins/shared_preferences/package.json",
+        "desktop/src/utils/js-client/package.json"
       ]
     },
     "website": {
-      "packages": [
-        "static/package.json",
+      "packages": [        
         "website/package.json"
       ]
     }

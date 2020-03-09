@@ -90,7 +90,7 @@ function startMetroServer(app: Express) {
       ),
     },
     resolver: {
-      blacklistRE: /(\/|\\)(sonar|flipper|flipper-public)(\/|\\)(dist|doctor)(\/|\\)|(\.native\.js$)/,
+      blacklistRE: /(\/|\\)(sonar|flipper|flipper-public)(\/|\\)(desktop)(\/|\\)(dist|doctor)(\/|\\)|(\.native\.js$)/,
       resolveRequest: (context: any, moduleName: string, platform: string) => {
         if (moduleName.startsWith('./localhost:3000')) {
           moduleName = moduleName.replace('./localhost:3000', '.');

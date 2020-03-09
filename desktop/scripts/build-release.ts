@@ -24,12 +24,12 @@ import fetch from 'node-fetch';
 import {ICONS, buildLocalIconPath, getIconURL} from '../src/utils/icons';
 
 function generateManifest(versionNumber: string) {
-  const filePath = path.join(__dirname, '..', 'dist');
+  const filePath = path.join(__dirname, '..', '..', 'dist');
   if (!fs.existsSync(filePath)) {
     fs.mkdirSync(filePath);
   }
   fs.writeFileSync(
-    path.join(__dirname, '../dist/manifest.json'),
+    path.join(__dirname, '..', '..', 'dist', 'manifest.json'),
     JSON.stringify({
       package: 'com.facebook.sonar',
       version_name: versionNumber,
@@ -74,7 +74,7 @@ async function buildDist(buildFolder: string) {
     }
     postBuildCallbacks.push(() =>
       spawn('zip', ['-qyr9', '../Flipper-mac.zip', 'Flipper.app'], {
-        cwd: path.join(__dirname, '..', 'dist', 'mac'),
+        cwd: path.join(__dirname, '..', '..', 'dist', 'mac'),
         encoding: 'utf-8',
       }),
     );
@@ -108,7 +108,7 @@ async function buildDist(buildFolder: string) {
         appId: `com.facebook.sonar`,
         directories: {
           buildResources: path.join(__dirname, '..', 'static'),
-          output: path.join(__dirname, '..', 'dist'),
+          output: path.join(__dirname, '..', '..', 'dist'),
         },
         electronDownload: electronDownloadOptions,
         npmRebuild: false,

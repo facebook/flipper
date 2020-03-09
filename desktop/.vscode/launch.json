@@ -36,8 +36,7 @@
     "runtimeArgs": [
       "--require",
       "ts-node/register"
-    ],
-    "cwd": "${workspaceFolder}"
+    ]
  }
   ],
   "compounds": [

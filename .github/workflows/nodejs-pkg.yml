@@ -7,17 +7,20 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    env:
+      pkg-directory: ./desktop/pkg
+
     steps:
     - uses: actions/checkout@v1
     - uses: actions/setup-node@v1
       with:
         node-version: '12.x'
     - name: install
-      working-directory: pkg
+      working-directory: ${{env.pkg-directory}}
       run: yarn
     - name: test
-      working-directory: pkg
+      working-directory: ${{env.pkg-directory}}
       run: yarn test
     - name: run
-      working-directory: pkg
+      working-directory: ${{env.pkg-directory}}
       run: bin/run
