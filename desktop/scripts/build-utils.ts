@@ -7,7 +7,7 @@
  * @format
  */
 
-const Metro = require('../static/node_modules/metro');
+import Metro from 'metro';
 import compilePlugins from '../static/compilePlugins';
 import util from 'util';
 import tmp from 'tmp';
@@ -15,6 +15,8 @@ import path from 'path';
 import fs from 'fs-extra';
 import {spawn} from 'promisify-child-process';
 import recursiveReaddir from 'recursive-readdir';
+
+const projectRoot = path.join(__dirname, '..');
 
 async function mostRecentlyChanged(
   dir: string,
@@ -64,12 +66,11 @@ export function compileDefaultPlugins(
 
 export function compile(buildFolder: string, entry: string) {
   console.log(`⚙️  Compiling renderer bundle...`);
-  const projectRoots = path.join(__dirname, '..');
   return Metro.runBuild(
     {
       reporter: {update: () => {}},
-      projectRoot: projectRoots,
-      watchFolders: [projectRoots],
+      projectRoot: projectRoot,
+      watchFolders: [projectRoot],
       serializer: {},
       transformer: {
         babelTransformerPath: path.join(
@@ -98,7 +99,7 @@ export function compile(buildFolder: string, entry: string) {
 }
 
 export async function compileMain({dev}: {dev: boolean}) {
-  const staticDir = path.resolve(__dirname, '..', 'static');
+  const staticDir = path.resolve(projectRoot, 'static');
   const out = path.join(staticDir, 'main.bundle.js');
   // check if main needs to be compiled
   if (await fs.pathExists(out)) {
@@ -114,7 +115,7 @@ export async function compileMain({dev}: {dev: boolean}) {
     const config = Object.assign({}, await Metro.loadConfig(), {
       reporter: {update: () => {}},
       projectRoot: staticDir,
-      watchFolders: [staticDir],
+      watchFolders: [projectRoot],
       transformer: {
         babelTransformerPath: path.join(
           __dirname,

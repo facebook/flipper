@@ -56,7 +56,6 @@ test('getDynamicPlugins from main process via ipc', () => {
 test('checkDisabled', () => {
   const disabledPlugin = 'pluginName';
   const config = {disabledPlugins: [disabledPlugin]};
-  // $FlowFixMe process.env not defined in electron API spec
   remote.process.env.CONFIG = JSON.stringify(config);
   const disabled = checkDisabled([]);
 
@@ -108,10 +107,8 @@ test('checkGK for failing plugin', () => {
 });
 
 test('requirePlugin returns null for invalid requires', () => {
-  const plugin = requirePlugin(
-    [],
-    require,
-  )({
+  const requireFn = requirePlugin([], require);
+  const plugin = requireFn({
     name: 'pluginID',
     out: 'this/path/does not/exist',
   });
@@ -122,10 +119,8 @@ test('requirePlugin returns null for invalid requires', () => {
 test('requirePlugin loads plugin', () => {
   const name = 'pluginID';
   const homepage = 'https://fb.workplace.com/groups/flippersupport/';
-  const plugin = requirePlugin(
-    [],
-    require,
-  )({
+  const requireFn = requirePlugin([], require);
+  const plugin = requireFn({
     name,
     homepage,
     out: path.join(__dirname, 'TestPlugin.js'),

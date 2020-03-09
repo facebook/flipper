@@ -7,10 +7,4 @@
  * @format
  */
 
-import {Store} from '../reducers/index';
-import {Logger} from '../fb-interfaces/Logger';
-
-export type Dispatcher = (
-  store: Store,
-  logger: Logger,
-) => (() => Promise<void>) | null | void;
+declare module 'metro';

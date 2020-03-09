@@ -20,8 +20,8 @@ import path from 'path';
 import fs from 'fs';
 import {compileMain} from './build-utils';
 import Watchman from '../static/watchman';
-const Metro = require('../static/node_modules/metro');
-const MetroResolver = require('../static/node_modules/metro-resolver');
+import Metro from 'metro';
+import MetroResolver from 'metro-resolver';
 
 const ansiToHtmlConverter = new AnsiToHtmlConverter();
 

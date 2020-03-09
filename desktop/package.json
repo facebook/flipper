@@ -122,6 +122,7 @@
     "electron-builder": "^22.3.2",
     "eslint": "^6.7.0",
     "eslint-config-fbjs": "^3.1.1",
+    "eslint-import-resolver-typescript": "^2.0.0",
     "eslint-plugin-babel": "^5.3.0",
     "eslint-plugin-flowtype": "^4.3.0",
     "eslint-plugin-header": "^3.0.0",
@@ -134,6 +135,8 @@
     "glob": "^7.1.2",
     "jest": "^25.1.0",
     "jest-fetch-mock": "^3.0.0",
+    "metro": "^0.58.0",
+    "metro-resolver": "^0.58.0",
     "prettier": "^1.19.1",
     "react-async": "^10.0.0",
     "recursive-readdir": "^2.2.2",
@@ -250,7 +253,9 @@
     "test-electron": "jest --testPathPattern=\"electron\\.(js|tsx)$\" --testEnvironment=@jest-runner/electron/environment --runner=@jest-runner/electron --no-cache",
     "test-with-device": "USE_ELECTRON_STUBS=1 jest --testPathPattern=\"device\\.(js|tsx)$\" --detectOpenHandles --no-cache",
     "tsc": "tsc --noemit",
-    "lint": "eslint . --ext .js,.ts,.tsx && flow check && yarn tsc",
+    "eslint": "eslint . --ext .js,.ts,.tsx",
+    "flow": "flow check",
+    "lint": "yarn eslint && yarn flow && yarn tsc",
     "everything": "yarn reset && yarn install && yarn lint && yarn test && yarn test-electron && yarn build --mac --win --linux && yarn build-headless --mac --linux && yarn start"
   },
   "optionalDependencies": {

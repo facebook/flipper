@@ -21,7 +21,7 @@ import {colors} from '../colors';
 import {clipboard} from 'electron';
 import deepEqual from 'deep-equal';
 import React from 'react';
-import {TooltipOptions} from '../TooltipProvider.js';
+import {TooltipOptions} from '../TooltipProvider';
 
 export {DataValueExtractor} from './DataPreview';
 

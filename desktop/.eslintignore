@@ -1,4 +1,3 @@
-*.d.ts
 *.bundle.js
 src/fb/plugins/relaydevtools/relay-devtools/*
 latest
@@ -9,4 +8,4 @@ flow-typed
 lib
 !.eslintrc.js
 dist
-website/build
+static/index.js

@@ -7,7 +7,7 @@
  * @format
  */
 
-import {ImageId, ImageData} from './api.js';
+import {ImageId, ImageData} from './api';
 
 export type ImagesMap = {[imageId in ImageId]: ImageData};
 

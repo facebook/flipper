@@ -10,7 +10,7 @@
 import {createTablePlugin} from '../createTablePlugin';
 import {FlipperPlugin} from '../plugin';
 import {List, Map as ImmutableMap} from 'immutable';
-import {TableRows_immutable} from '../ui/components/table/types.js';
+import {TableRows_immutable} from '../ui/components/table/types';
 
 const PROPS = {
   method: 'method',

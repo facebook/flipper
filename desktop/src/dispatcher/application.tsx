@@ -15,7 +15,7 @@ import {
   GRAPHQL_IOS_GROUP,
   LITHO_GROUP,
 } from '../reducers/supportForm';
-import {Store} from '../reducers/index.js';
+import {Store} from '../reducers/index';
 import {Logger} from '../fb-interfaces/Logger';
 import {parseFlipperPorts} from '../utils/environmentVariables';
 import {
