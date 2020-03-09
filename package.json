@@ -187,7 +187,7 @@
     "mkdirp": "^1.0.0",
     "node-fetch": "^2.3.0",
     "npm-api": "^1.0.0",
-    "open": "^7.0.0",
+    "open": "^7.0.3",
     "openssl-wrapper": "^0.3.4",
     "p-map": "^4.0.0",
     "patch-package": "^6.2.0",
