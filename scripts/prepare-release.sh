@@ -98,7 +98,7 @@ echo "Bumping version number for android related files..."
 "$SONAR_DIR"/scripts/bump.sh "$VERSION"
 
 # Generate changelog
-./generate-changelog.js
+"$SONAR_DIR"/scripts/generate-changelog.js
 
 # Create commit
 echo "Committing the files..."
