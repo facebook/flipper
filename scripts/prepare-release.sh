@@ -38,6 +38,7 @@ fi
 
 echo "✨ Making a new release..."
 
+REVISION="$1"
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 SONAR_DIR="$DIR/../"
 FLIPPERKIT_PODSPEC_PATH="$SONAR_DIR/FlipperKit.podspec"
@@ -49,8 +50,22 @@ FLIPPERKIT_VERSION_TAG='flipperkit_version'
 OLD_VERSION_POD_ARG=$(< "$FLIPPER_PODSPEC_PATH" grep "$FLIPPERKIT_VERSION_TAG =" )
 OLD_VERSION="${OLD_VERSION_POD_ARG##* }"
 
-echo "The currently released version is $OLD_VERSION. What should the version of the next release be?"
-read -r VERSION
+# if we got called with a rev argument, we got triggered from our automatic sandcastle job
+if [ "$REVISION" != "" ]; 
+then
+  # In future, bump majors instead of minors?
+  echo "Automatically bumping version to next minor in package.json"
+  npm -C "$SONAR_DIR" version minor
+  VERSION=$(jq -r '.version' "$SONAR_DIR"/package.json)
+else
+  echo "The currently released version is $OLD_VERSION. What should the version of the next release be?"
+  read -r VERSION
+fi
+
+echo "Preparing release $VERSION..."
+
+# Update react-native-flipper to the very same version
+npm -C "$SONAR_DIR"react-native/react-native-flipper version "$VERSION"
 
 # This could be one expression with GNU sed, but I guess we want to support the BSD crap, too.
 SNAPSHOT_MINOR_VERSION=$(echo "$VERSION" | sed -Ee 's/([0-9]+)\.([0-9]+)\.([0-9]+)/\3 + 1/' | bc)
@@ -82,27 +97,37 @@ echo "Bumping version number for android related files..."
 # Update Android related files
 "$SONAR_DIR"/scripts/bump.sh "$VERSION"
 
-#Update Package.json
-echo "Bumping version number in package.json"
-jq '.version = $newVal' --arg newVal "$VERSION" "$SONAR_DIR"/package.json > tmp.$$.json && mv tmp.$$.json "$SONAR_DIR"/package.json
+# Generate changelog
+./generate-changelog.js
 
-#Update react-native-flipper to the very same version
-jq '.version = $newVal' --arg newVal "$VERSION" "$SONAR_DIR"/react-native/react-native-flipper/package.json > tmp.$$.json && mv tmp.$$.json "$SONAR_DIR"/react-native/react-native-flipper/package.json
-
-#Generate changelog
-"$SONAR_DIR"/scripts/generate-changelog.js
-
+# Create commit
 echo "Committing the files..."
 hg addremove
+hg commit -m "$(echo -e "Flipper Release: v${VERSION}\n\n\
+Summary:\nReleasing version $VERSION\n\n\
+Test Plan:\n\
+* Wait until this build is green\n\
+* Find the release id as explained here: https://our.internmc.facebook.com/intern/wiki/Flipper_Internals/Oncall_Runbook/#testing-the-release-vers and run:
+* \`env FLIPPERVERSION=XXXX /Applications/Flipper.app/Contents/MacOS/Flipper\`\n\
+* ...or, alternatively, run \`yarn build --mac && dist/mac/Flipper.app/Contents/MacOS/Flipper\`\n\
+* Perform exploratory tests\n\n\
+Reviewers: flipper\n\n\
+Tags: accept2ship"
+)"
 
-hg commit -m "Flipper Release: v$VERSION"
-
+# Create snapshot commit
 RELEASE_REV="$(hg log -r . --template "{node}\\n")"
 
 echo "Release commit made as $RELEASE_REV, creating new snapshot version $SNAPSHOT_VERSION..."
 "$SONAR_DIR"/scripts/bump.sh --snapshot "$SNAPSHOT_VERSION"
 
-hg commit -m "Flipper Bump: v$SNAPSHOT_VERSION"
+hg commit -m "$(echo -e "Flipper Snapshot Bump: v${SNAPSHOT_VERSION}\n\n\
+Summary:\nReleasing snapshot version $SNAPSHOT_VERSION\n\n\
+Test Plan:\nN/A\n\n\
+Reviewers: flipper\n\n\
+Tags: accept2ship"
+)"
 
+# Submit diffs
 echo "Submitting diffs for review..."
 jf submit -n -r.^::.
