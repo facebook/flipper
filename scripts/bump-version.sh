@@ -89,6 +89,9 @@ jq '.version = $newVal' --arg newVal "$VERSION" "$SONAR_DIR"/package.json > tmp.
 #Update react-native-flipper to the very same version
 jq '.version = $newVal' --arg newVal "$VERSION" "$SONAR_DIR"/react-native/react-native-flipper/package.json > tmp.$$.json && mv tmp.$$.json "$SONAR_DIR"/react-native/react-native-flipper/package.json
 
+#Generate changelog
+"$SONAR_DIR"/scripts/generate-changelog.js
+
 echo "Committing the files..."
 hg addremove
 
