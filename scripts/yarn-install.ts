@@ -11,10 +11,8 @@ import path from 'path';
 import util from 'util';
 import globImport from 'glob';
 import {exec as execImport} from 'child_process';
-import {exists as existsImport, copyFile} from 'fs';
 const glob = util.promisify(globImport);
 const exec = util.promisify(execImport);
-const exists = util.promisify(existsImport);
 const PACKAGES = [
   'headless-tests',
   'static',
@@ -27,9 +25,6 @@ const YARN_PATH =
   process.argv.length > 2
     ? path.join(__dirname, process.argv[2])
     : 'yarn' + (WINDOWS ? '.cmd' : '');
-
-prepareWatchmanConfig(path.join(__dirname, '..'));
-prepareWatchmanConfig(path.join(__dirname, '..', 'static'));
 
 Promise.all(
   PACKAGES.map(pattern =>
@@ -68,15 +63,3 @@ Promise.all(
     console.error(err);
     process.exit(1);
   });
-
-async function prepareWatchmanConfig(dir: string) {
-  const hasGit = exists(path.join(__dirname, '..', '.git'));
-  const hasWatchmanConfig = exists(path.join(dir, '.watchmanconfig'));
-  if ((await hasGit) && !(await hasWatchmanConfig)) {
-    console.log(`Creating .watchmanconfig in ${dir}`);
-    await util.promisify(copyFile)(
-      path.join(dir, '_watchmanconfig'),
-      path.join(dir, '.watchmanconfig'),
-    );
-  }
-}

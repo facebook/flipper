@@ -232,7 +232,7 @@
     ]
   },
   "scripts": {
-    "preinstall": "yarn config set ignore-engines",
+    "preinstall": "node scripts/prepare-watchman-config.js && yarn config set ignore-engines",
     "postinstall": "cross-env TS_NODE_FILES=true node --require ts-node/register scripts/yarn-install.ts && patch-package",
     "rm-dist": "rimraf dist",
     "rm-modules": "rimraf node_modules static/node_modules",
