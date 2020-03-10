@@ -11,8 +11,8 @@
   },
   "dependencies": {
     "react": "16.11.0",
-    "react-native": "0.62.0-rc.3",
-    "react-native-flipper": "^0.32.2"
+    "react-native": "0.62.0-rc.5",
+    "react-native-flipper": "^0.33.1"
   },
   "devDependencies": {
     "@babel/core": "^7.6.2",
