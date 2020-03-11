@@ -217,6 +217,13 @@ static CK::StaticMutex _mutex = CK_MUTEX_INITIALIZER;
     }
   }
 
+  if (auto const i = self.uniqueIdentifier) {
+    [data addObject:[SKNamed newWithName:@"Identity"
+                               withValue:@{
+                                 @"uniqueIdentifier" : SKObject{i},
+                               }]];
+  }
+
   // Only add accessibility panel if accessibilityContext is not default
   CKComponentAccessibilityContext accessibilityContext =
       [self viewConfiguration].accessibilityContext();
