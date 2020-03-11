@@ -38,7 +38,8 @@ fi
 
 echo "✨ Making a new release..."
 
-REVISION="$1"
+# When starting this job from SandcastleFlipperAutoReleaseCommand, we pass in the revision to release
+SANDCASTLE_REVISION="$1"
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 SONAR_DIR="$DIR/../"
 FLIPPERKIT_PODSPEC_PATH="$SONAR_DIR/FlipperKit.podspec"
@@ -51,7 +52,7 @@ OLD_VERSION_POD_ARG=$(< "$FLIPPER_PODSPEC_PATH" grep "$FLIPPERKIT_VERSION_TAG ="
 OLD_VERSION="${OLD_VERSION_POD_ARG##* }"
 
 # if we got called with a rev argument, we got triggered from our automatic sandcastle job
-if [ "$REVISION" != "" ]; 
+if [ "$SANDCASTLE_REVISION" != "" ]; 
 then
   # In future, bump majors instead of minors?
   echo "Automatically bumping version to next minor in package.json"
@@ -128,6 +129,13 @@ Reviewers: flipper\n\n\
 Tags: accept2ship"
 )"
 
-# Submit diffs
-echo "Submitting diffs for review..."
-jf submit -n -r.^::.
+if [ "$SANDCASTLE_REVISION" == "" ]; 
+then
+  # Submit diffs, we only do this when running locally.
+  # From SandcastleFlipperAutoReleaseCommand, the diffs are submitted 
+  # later by using the bot context
+  echo "Submitting diffs for review..."
+  jf submit -n -r.^::.
+else
+  echo "Skip submitting diffs, as this diffs should be submitted by SC"
+fi
