@@ -5561,10 +5561,10 @@ ignore@^5.1.1:
   resolved "https://registry.yarnpkg.com/ignore/-/ignore-5.1.4.tgz#84b7b3dbe64552b6ef0eca99f6743dbec6d97adf"
   integrity sha512-MzbUSahkTW1u7JpKKjY7LCARd1fU5W2rLdxlM4kdkayuCwZImjkpluF9CM1aLewYJguPDqewLam18Y6AU69A8A==
 
-immer@^5.3.5:
-  version "5.3.5"
-  resolved "https://registry.yarnpkg.com/immer/-/immer-5.3.5.tgz#6af4e1b74957b7d7ff9de6e170f59fa8e93e7462"
-  integrity sha512-bX74RWLu00PmYdyUnxjqSaszr/qPgO72okXU+CSAD+LIZOe7sgeva/bUn4Rn4wVoSg9wbsBXmU+TPEOKeaXO9g==
+immer@^6.0.0:
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/immer/-/immer-6.0.0.tgz#39cf65c7720c6ec4bdbd9ced0960b8ff126f3cd6"
+  integrity sha512-vqOfnW3+VEV6vVxniMLPxTI+tEz1w7POYwOE1okOfnOS9Zl/mCObxino2lxiDC5l9o4NdWy+Rkxk9Em6ThBZBA==
 
 immutable@^4.0.0-rc.12:
   version "4.0.0-rc.12"

@@ -8,3 +8,5 @@
  */
 
 global.fetch = require('jest-fetch-mock');
+
+require('immer').enableMapSet();

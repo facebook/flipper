@@ -33,9 +33,12 @@ import {store} from './store';
 import {registerRecordingHooks} from './utils/pluginStateRecorder';
 import {cache} from 'emotion';
 import {CacheProvider} from '@emotion/core';
+import {enableMapSet} from 'immer';
 
 const logger = initLogger(store);
 const bugReporter = new BugReporter(logger, store);
+
+enableMapSet();
 
 GK.init();
 
