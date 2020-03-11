@@ -95,7 +95,7 @@ async function createZip(buildDir: string, distDir: string, targets: string[]) {
 
   process.env.BUILD_HEADLESS = 'true';
   const buildDir = await buildFolder();
-  const distDir = path.join(__dirname, '..', 'dist');
+  const distDir = path.join(__dirname, '..', '..', 'dist');
   // eslint-disable-next-line no-console
   console.log('Created build directory', buildDir);
   await compile(buildDir, path.join(__dirname, '..', 'headless', 'index.tsx'));

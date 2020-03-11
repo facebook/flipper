@@ -12,7 +12,8 @@ const util = require('util');
 const {exists: existsImport, copyFile} = require('fs');
 const exists = util.promisify(existsImport);
 
-const rootDir = path.resolve(__dirname, '..');
+const desktopRootDir = path.resolve(__dirname, '..');
+const rootDir = path.resolve(desktopRootDir, '..');
 const hasGit = exists(path.join(rootDir, '.git'));
 
 async function prepareWatchmanConfig(dir) {
@@ -27,4 +28,4 @@ async function prepareWatchmanConfig(dir) {
 }
 
 prepareWatchmanConfig(rootDir);
-prepareWatchmanConfig(path.join(rootDir, 'static'));
+prepareWatchmanConfig(path.join(desktopRootDir, 'static'));

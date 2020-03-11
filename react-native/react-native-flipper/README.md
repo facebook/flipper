@@ -27,4 +27,4 @@ An example plugin can be found in [examples/FlipperTicTacToe.js](../sample/Flipp
 
 The corresponding Desktop plugin ships by default in Flipper, so importing the above file and dropping the `<FlipperTicTacToe />` component somewhere in your application should work out of the box.
 
-The sources of the corresponding Desktop plugin can be found [here](../../src/plugins/rn-tic-tac-toe).
+The sources of the corresponding Desktop plugin can be found [here](../../desktop/src/plugins/rn-tic-tac-toe).
