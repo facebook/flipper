@@ -24,7 +24,6 @@
 @property(nonatomic, readonly) BOOL isFlexboxChild;
 @property(nonatomic, readonly) CKFlexboxComponentChild flexboxChild;
 
-+ (instancetype)newFromRoot:(id<CKInspectableView>)root;
 + (instancetype)newFromRoot:(id<CKInspectableView>)root
                   parentKey:(NSString*)parentKey;
 

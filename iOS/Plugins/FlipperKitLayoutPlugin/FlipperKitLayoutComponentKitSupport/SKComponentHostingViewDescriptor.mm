@@ -29,7 +29,9 @@
 }
 
 - (id)childForNode:(CKComponentHostingView*)node atIndex:(NSUInteger)index {
-  return [SKComponentLayoutWrapper newFromRoot:node];
+  return [SKComponentLayoutWrapper
+      newFromRoot:node
+        parentKey:[NSString stringWithFormat:@"%@.", node.uniqueIdentifier]];
 }
 
 - (void)setHighlighted:(BOOL)highlighted forNode:(CKComponentHostingView*)node {

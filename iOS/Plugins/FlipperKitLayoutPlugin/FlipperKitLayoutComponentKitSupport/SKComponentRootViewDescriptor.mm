@@ -33,11 +33,9 @@
 }
 
 - (id)childForNode:(CKComponentRootView*)node atIndex:(NSUInteger)index {
-  auto const attachState = CKGetAttachStateForView(node);
   return [SKComponentLayoutWrapper
       newFromRoot:node
-        parentKey:[NSString
-                      stringWithFormat:@"%d.", attachState.scopeIdentifier]];
+        parentKey:[NSString stringWithFormat:@"%@.", node.uniqueIdentifier]];
 }
 
 - (NSArray<SKNamed<NSDictionary*>*>*)dataForNode:(CKComponentRootView*)node {

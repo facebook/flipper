@@ -47,10 +47,6 @@ static CKFlexboxComponentChild findFlexboxLayoutParams(
 
 @implementation SKComponentLayoutWrapper
 
-+ (instancetype)newFromRoot:(id<CKInspectableView>)root {
-  return [self newFromRoot:root parentKey:@""];
-}
-
 + (instancetype)newFromRoot:(id<CKInspectableView>)root
                   parentKey:(NSString*)parentKey {
   const CKComponentLayout layout = [root mountedLayout];
