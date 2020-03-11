@@ -56,7 +56,6 @@ test('getDynamicPlugins from main process via ipc', () => {
 test('checkDisabled', () => {
   const disabledPlugin = 'pluginName';
   const config = {disabledPlugins: [disabledPlugin]};
-  // $FlowFixMe process.env not defined in electron API spec
   remote.process.env.CONFIG = JSON.stringify(config);
   const disabled = checkDisabled([]);
 
