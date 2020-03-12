@@ -453,6 +453,11 @@ static NSDictionary* YGUnitEnumMap = nil;
     @"Accessibility.accessibilityTraits.UIAccessibilityTraitCausesPageTurn": ^(NSNumber *value) {
       node.accessibilityTraits = AccessibilityTraitsToggle(node.accessibilityTraits, UIAccessibilityTraitCausesPageTurn, [value boolValue]);
     },
+    @"Accessibility.accessibilityTraits.UIAccessibilityTraitTabBar": ^(NSNumber *value) {
+      if (@available(iOS 10.0, *)) {
+        node.accessibilityTraits = AccessibilityTraitsToggle(node.accessibilityTraits, UIAccessibilityTraitTabBar, [value boolValue]);
+      }
+    },
     @"Accessibility.accessibilityViewIsModal": ^(NSNumber *value) {
       node.accessibilityViewIsModal = [value boolValue];
     },
