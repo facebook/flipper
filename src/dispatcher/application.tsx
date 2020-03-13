@@ -43,7 +43,7 @@ export const uriComponents = (url: string): Array<string> => {
   return [];
 };
 
-export default (store: Store, logger: Logger) => {
+export default (store: Store, _logger: Logger) => {
   const currentWindow = remote.getCurrentWindow();
   currentWindow.on('focus', () => {
     store.dispatch({

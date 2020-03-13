@@ -13,7 +13,7 @@ import {Logger} from '../fb-interfaces/Logger';
 import MacDevice from '../devices/MacDevice';
 import WindowsDevice from '../devices/WindowsDevice';
 
-export default (store: Store, logger: Logger) => {
+export default (store: Store, _logger: Logger) => {
   let device;
   if (process.platform === 'darwin') {
     device = new MacDevice();

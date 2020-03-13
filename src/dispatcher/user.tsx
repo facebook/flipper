@@ -12,7 +12,7 @@ import {Logger} from '../fb-interfaces/Logger';
 import {login, logout} from '../reducers/user';
 import {getUser, logoutUser} from '../fb-stubs/user';
 
-export default (store: Store, logger: Logger) => {
+export default (store: Store, _logger: Logger) => {
   getUser()
     .then(user => {
       store.dispatch(login(user));

@@ -38,7 +38,7 @@ export type PluginDefinition = {
   entry?: string;
 };
 
-export default (store: Store, logger: Logger) => {
+export default (store: Store, _logger: Logger) => {
   // expose Flipper and exact globally for dynamically loaded plugins
   const globalObject: any = typeof window === 'undefined' ? global : window;
   globalObject.React = React;
