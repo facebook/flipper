@@ -9,7 +9,6 @@
 
 import BaseDevice, {LogLevel} from './BaseDevice';
 import ArchivedDevice from './ArchivedDevice';
-import {v4} from 'uuid';
 import {EventEmitter} from 'events';
 
 // From xplat/js/metro/packages/metro/src/lib/reporting.js

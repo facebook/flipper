@@ -7,14 +7,10 @@
  * @format
  */
 
-import {Button, ButtonGroup, writeBufferToFile} from 'flipper';
+import {Button, ButtonGroup} from 'flipper';
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
-import expandTilde from 'expand-tilde';
-import {remote} from 'electron';
 import path from 'path';
-import {reportPlatformFailures} from '../utils/metrics';
-import config from '../utils/processConfig';
 import BaseDevice from '../devices/BaseDevice';
 import {State as Store} from '../reducers';
 import open from 'open';

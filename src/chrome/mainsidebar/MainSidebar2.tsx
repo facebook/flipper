@@ -56,7 +56,6 @@ import {
   CategoryName,
   PluginIcon,
   PluginSidebarListItem,
-  NoClients,
   NoDevices,
   getColorByApp,
   getFavoritePlugins,

@@ -7,7 +7,7 @@
  * @format
  */
 
-import React, {useRef} from 'react';
+import React from 'react';
 import {connect} from 'react-redux';
 import {colors, GK} from 'flipper';
 
