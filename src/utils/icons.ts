@@ -10,23 +10,27 @@
 import fs from 'fs';
 import path from 'path';
 import {remote} from 'electron';
+import {getStaticPath} from './pathUtils';
 
 const AVAILABLE_SIZES = [8, 10, 12, 16, 18, 20, 24, 32];
 const DENSITIES = [1, 1.5, 2, 3, 4];
 
-const staticPath = path.resolve(__dirname, '..', '..', 'static');
-const appPath = remote ? remote.app.getAppPath() : staticPath;
-const iconsPath = fs.existsSync(path.resolve(appPath, 'icons.json'))
-  ? path.resolve(appPath, 'icons.json')
-  : path.resolve(staticPath, 'icons.json');
+function getIconsPath() {
+  return path.resolve(getStaticPath(), 'icons.json');
+}
 
 export type Icons = {
   [key: string]: number[];
 };
 
-export const ICONS: Icons = JSON.parse(
-  fs.readFileSync(iconsPath, {encoding: 'utf8'}),
-);
+let _icons: Icons | undefined;
+
+export function getIcons(): Icons {
+  return (
+    _icons! ??
+    (_icons = JSON.parse(fs.readFileSync(getIconsPath(), {encoding: 'utf8'})))
+  );
+}
 
 // Takes a string like 'star', or 'star-outline', and converts it to
 // {trimmedName: 'star', variant: 'filled'} or {trimmedName: 'star', variant: 'outline'}
@@ -73,7 +77,7 @@ export function buildIconURL(name: string, size: number, density: number) {
     }&size=${size}&set=facebook_icons&density=${density}x`;
   if (
     typeof window !== 'undefined' &&
-    (!ICONS[name] || !ICONS[name].includes(size))
+    (!getIcons()[name] || !getIcons()[name].includes(size))
   ) {
     // From utils/isProduction
     const isProduction = !/node_modules[\\/]electron[\\/]/.test(
@@ -82,7 +86,7 @@ export function buildIconURL(name: string, size: number, density: number) {
     );
 
     if (!isProduction) {
-      const existing = ICONS[name] || (ICONS[name] = []);
+      const existing = getIcons()[name] || (getIcons()[name] = []);
       if (!existing.includes(size)) {
         // Check if that icon actually exists!
         fetch(url)
@@ -92,8 +96,8 @@ export function buildIconURL(name: string, size: number, density: number) {
               existing.push(size);
               existing.sort();
               fs.writeFileSync(
-                iconsPath,
-                JSON.stringify(ICONS, null, 2),
+                getIconsPath(),
+                JSON.stringify(getIcons(), null, 2),
                 'utf8',
               );
               console.warn(

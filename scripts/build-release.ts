@@ -21,7 +21,7 @@ import {
   genMercurialRevision,
 } from './build-utils';
 import fetch from 'node-fetch';
-import {ICONS, buildLocalIconPath, getIconURL} from '../src/utils/icons';
+import {getIcons, buildLocalIconPath, getIconURL} from '../src/utils/icons';
 
 function generateManifest(versionNumber: string) {
   const filePath = path.join(__dirname, '..', 'dist');
@@ -129,7 +129,7 @@ function copyStaticFolder(buildFolder: string) {
 }
 
 function downloadIcons(buildFolder: string) {
-  const iconURLs = Object.entries(ICONS).reduce<
+  const iconURLs = Object.entries(getIcons()).reduce<
     {
       name: string;
       size: number;
