@@ -13,11 +13,14 @@ import {
   AndroidDevice,
   styled,
   View,
-  Toolbar,
   MetroDevice,
   ReduxState,
   connect,
   Device,
+  CenteredView,
+  RoundedSection,
+  Text,
+  Button,
 } from 'flipper';
 import React, {useEffect} from 'react';
 import getPort from 'get-port';
@@ -88,6 +91,13 @@ const GrabMetroDevice = connect<
 
 const SUPPORTED_OCULUS_DEVICE_TYPES = ['quest', 'go', 'pacific'];
 
+enum ConnectionStatus {
+  Initializing = 'Initializing...',
+  WaitingForReload = 'Waiting for connection from device...',
+  Connected = 'Connected',
+  Error = 'Error',
+}
+
 export default class ReactDevTools extends FlipperDevicePlugin<
   {
     status: string;
@@ -101,7 +111,7 @@ export default class ReactDevTools extends FlipperDevicePlugin<
 
   pollHandle?: NodeJS.Timeout;
   containerRef: React.RefObject<HTMLDivElement> = React.createRef();
-  triedToAutoConnect = false;
+  connectionStatus: ConnectionStatus = ConnectionStatus.Initializing;
   metroDevice?: MetroDevice;
   isMounted = true;
 
@@ -110,23 +120,7 @@ export default class ReactDevTools extends FlipperDevicePlugin<
   };
 
   componentDidMount() {
-    let devToolsNode = findDevToolsNode();
-    if (!devToolsNode) {
-      devToolsNode = createDevToolsNode();
-      this.initializeDevTools(devToolsNode);
-    } else {
-      this.setStatus(
-        'DevTools have been initialized, waiting for connection...',
-      );
-      if (devToolsNode.innerHTML) {
-        this.setStatus(CONNECTED);
-      } else {
-        this.startPollForConnection();
-      }
-    }
-
-    attachDevTools(this.containerRef?.current!, devToolsNode);
-    this.startPollForConnection();
+    this.bootDevTools();
   }
 
   componentWillUnmount() {
@@ -138,7 +132,8 @@ export default class ReactDevTools extends FlipperDevicePlugin<
     devToolsNode && detachDevTools(devToolsNode);
   }
 
-  setStatus(status: string) {
+  setStatus(connectionStatus: ConnectionStatus, status: string) {
+    this.connectionStatus = connectionStatus;
     if (!this.isMounted) {
       return;
     }
@@ -149,42 +144,84 @@ export default class ReactDevTools extends FlipperDevicePlugin<
     }
   }
 
-  startPollForConnection() {
+  devtoolsHaveStarted() {
+    return !!findDevToolsNode()?.innerHTML;
+  }
+
+  bootDevTools() {
+    let devToolsNode = findDevToolsNode();
+    if (!devToolsNode) {
+      devToolsNode = createDevToolsNode();
+    }
+    this.initializeDevTools(devToolsNode);
+    this.setStatus(
+      ConnectionStatus.Initializing,
+      'DevTools have been initialized, waiting for connection...',
+    );
+    if (this.devtoolsHaveStarted()) {
+      this.setStatus(ConnectionStatus.Connected, CONNECTED);
+    } else {
+      this.startPollForConnection();
+    }
+
+    attachDevTools(this.containerRef?.current!, devToolsNode);
+    this.startPollForConnection();
+  }
+
+  startPollForConnection(delay = 3000) {
     this.pollHandle = setTimeout(() => {
-      if (!this.isMounted) {
-        return false;
-      }
-      if (findDevToolsNode()?.innerHTML) {
-        this.setStatus(CONNECTED);
-      } else {
-        if (!this.triedToAutoConnect) {
-          this.triedToAutoConnect = true;
+      switch (true) {
+        // Closed already, ignore
+        case !this.isMounted:
+          return;
+        // Found DevTools!
+        case this.devtoolsHaveStarted():
+          this.setStatus(ConnectionStatus.Connected, CONNECTED);
+          return;
+        // Waiting for connection, but we do have an active Metro connection, lets force a reload to enter Dev Mode on app
+        // prettier-ignore
+        case this.connectionStatus === ConnectionStatus.Initializing && !!this.metroDevice?.ws:
           this.setStatus(
-            "The DevTools didn't connect yet. Please open the DevMenu in the React Native app, or Reload it to connect",
+            ConnectionStatus.WaitingForReload,
+            "Sending 'reload' to Metro to force the DevTools to connect...",
           );
-          if (this.metroDevice && this.metroDevice.ws) {
-            this.setStatus(
-              "Sending 'reload' to the Metro to force the DevTools to connect...",
-            );
-            this.metroDevice?.sendCommand('reload');
-          }
-        }
-        this.startPollForConnection();
+          this.metroDevice!.sendCommand('reload');
+          this.startPollForConnection(10000);
+          return;
+        // Waiting for initial connection, but no WS bridge available
+        case this.connectionStatus === ConnectionStatus.Initializing:
+          this.setStatus(
+            ConnectionStatus.WaitingForReload,
+            "The DevTools didn't connect yet. Please trigger the DevMenu in the React Native app, or Reload it to connect",
+          );
+          this.startPollForConnection(10000);
+          return;
+        // Still nothing? Users might not have done manual action, or some other tools have picked it up?
+        case this.connectionStatus === ConnectionStatus.WaitingForReload:
+          this.setStatus(
+            ConnectionStatus.WaitingForReload,
+            "The DevTools didn't connect yet. Please verify your React Native app is in development mode, and that no other instance of the React DevTools are attached to the app already.",
+          );
+          this.startPollForConnection();
+          return;
       }
-    }, 3000);
+    }, delay);
   }
 
   async initializeDevTools(devToolsNode: HTMLElement) {
     try {
-      this.setStatus('Waiting for port 8097');
+      this.setStatus(ConnectionStatus.Initializing, 'Waiting for port 8097');
       const port = await getPort({port: 8097}); // default port for dev tools
-      this.setStatus('Starting DevTools server on ' + port);
+      this.setStatus(
+        ConnectionStatus.Initializing,
+        'Starting DevTools server on ' + port,
+      );
       ReactDevToolsStandalone.setContentDOMNode(devToolsNode)
         .setStatusListener(status => {
-          this.setStatus(status);
+          this.setStatus(ConnectionStatus.Initializing, status);
         })
         .startServer(port);
-      this.setStatus('Waiting for device');
+      this.setStatus(ConnectionStatus.Initializing, 'Waiting for device');
       const device = this.device;
 
       if (device) {
@@ -192,22 +229,26 @@ export default class ReactDevTools extends FlipperDevicePlugin<
           device.deviceType === 'physical' ||
           SUPPORTED_OCULUS_DEVICE_TYPES.includes(device.title.toLowerCase())
         ) {
-          this.setStatus(`Setting up reverse port mapping: ${port}:${port}`);
+          this.setStatus(
+            ConnectionStatus.Initializing,
+            `Setting up reverse port mapping: ${port}:${port}`,
+          );
           (device as AndroidDevice).reverse([port, port]);
         }
       }
     } catch (e) {
       console.error(e);
-      this.setStatus('Failed to initialize DevTools: ' + e);
+      this.setStatus(
+        ConnectionStatus.Error,
+        'Failed to initialize DevTools: ' + e,
+      );
     }
   }
 
   render() {
     return (
       <View grow>
-        {this.state.status !== CONNECTED ? (
-          <Toolbar>{this.state.status}</Toolbar>
-        ) : null}
+        {!this.devtoolsHaveStarted() ? this.renderStatus() : null}
         <Container ref={this.containerRef} />
         <GrabMetroDevice
           onHasDevice={device => {
@@ -215,6 +256,28 @@ export default class ReactDevTools extends FlipperDevicePlugin<
           }}
         />
       </View>
+    );
+  }
+
+  renderStatus() {
+    return (
+      <CenteredView>
+        <RoundedSection title={this.connectionStatus}>
+          <Text>{this.state.status}</Text>
+          {(this.connectionStatus === ConnectionStatus.WaitingForReload &&
+            this.metroDevice?.ws) ||
+          this.connectionStatus === ConnectionStatus.Error ? (
+            <Button
+              style={{width: 200, margin: '10px auto 0 auto'}}
+              onClick={() => {
+                this.metroDevice?.sendCommand('reload');
+                this.bootDevTools();
+              }}>
+              Retry
+            </Button>
+          ) : null}
+        </RoundedSection>
+      </CenteredView>
     );
   }
 }
