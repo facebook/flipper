@@ -17,10 +17,12 @@ export function getStaticPath() {
   if (_staticPath) {
     return _staticPath;
   }
+  _staticPath = path.resolve(__dirname, '..', '..', 'static');
+  if (fs.existsSync(_staticPath)) {
+    return _staticPath;
+  }
   if (remote && fs.existsSync(remote.app.getAppPath())) {
-    _staticPath = path.join(remote.app.getAppPath(), 'static');
-  } else {
-    _staticPath = path.resolve(__dirname, '..', '..', 'static');
+    _staticPath = path.join(remote.app.getAppPath());
   }
   if (!fs.existsSync(_staticPath)) {
     throw new Error('Static path does not exist: ' + _staticPath);
