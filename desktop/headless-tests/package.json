@@ -12,13 +12,13 @@
     }
   },
   "devDependencies": {
-    "jest": "^24.7.1"
+    "jest": "^25.1.0"
   },
   "license": "MIT",
   "dependencies": {
     "@babel/preset-env": "^7.8.3",
     "@babel/preset-flow": "^7.8.3",
-    "babel-jest": "^24.8.0",
+    "babel-jest": "^25.1.0",
     "canonical-json": "^0.0.4",
     "lodash.memoize": "^4.1.2"
   }
