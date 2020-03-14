@@ -74,15 +74,15 @@ export function compile(buildFolder: string, entry: string) {
       serializer: {},
       transformer: {
         babelTransformerPath: path.join(
-          __dirname,
-          '..',
+          projectRoot,
           'static',
           'transforms',
           'index.js',
         ),
       },
       resolver: {
-        blacklistRE: /(\/|\\)(sonar|flipper|flipper-public)(\/|\\)(desktop)(\/|\\)(dist|doctor)(\/|\\)|(\.native\.js$)/,
+        resolverMainFields: ['flipper:source', 'module', 'main'],
+        blacklistRE: /\.native\.js$/,
       },
     },
     {
@@ -118,8 +118,7 @@ export async function compileMain({dev}: {dev: boolean}) {
       watchFolders: [projectRoot],
       transformer: {
         babelTransformerPath: path.join(
-          __dirname,
-          '..',
+          projectRoot,
           'static',
           'transforms',
           'index.js',
@@ -127,7 +126,8 @@ export async function compileMain({dev}: {dev: boolean}) {
       },
       resolver: {
         sourceExts: ['tsx', 'ts', 'js'],
-        blacklistRE: /(\/|\\)(sonar|flipper|flipper-public)(\/|\\)(desktop)(\/|\\)(dist|doctor)(\/|\\)|(\.native\.js$)/,
+        resolverMainFields: ['flipper:source', 'module', 'main'],
+        blacklistRE: /\.native\.js$/,
       },
     });
     await Metro.runBuild(config, {

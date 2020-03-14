@@ -82,15 +82,15 @@ function startMetroServer(app: Express) {
     watchFolders: [projectRoot],
     transformer: {
       babelTransformerPath: path.join(
-        __dirname,
-        '..',
+        projectRoot,
         'static',
         'transforms',
         'index.js',
       ),
     },
     resolver: {
-      blacklistRE: /(\/|\\)(sonar|flipper|flipper-public)(\/|\\)(desktop)(\/|\\)(dist|doctor)(\/|\\)|(\.native\.js$)/,
+      resolverMainFields: ['flipper:source', 'module', 'main'],
+      blacklistRE: /\.native\.js$/,
       resolveRequest: (context: any, moduleName: string, platform: string) => {
         if (moduleName.startsWith('./localhost:3000')) {
           moduleName = moduleName.replace('./localhost:3000', '.');
@@ -134,7 +134,7 @@ function startAssetServer(
     }
     shutdownElectron = launchElectron({
       devServerURL: `http://localhost:${port}`,
-      bundleURL: `http://localhost:${port}/src/init.bundle?dev=true&platform=web&minify=false&excludeSource=false`,
+      bundleURL: `http://localhost:${port}/src/init.bundle`,
       electronURL: `http://localhost:${port}/index.dev.html`,
     });
     res.end();
@@ -174,16 +174,20 @@ async function addWebsocket(server: http.Server) {
   // refresh the app on changes to the src folder
   // this can be removed once metroServer notifies us about file changes
   try {
-    const watchman = new Watchman(path.resolve(__dirname, '..', 'src'));
+    const watchman = new Watchman(path.resolve(__dirname, '..'));
     await watchman.initialize();
-    await watchman.startWatchFiles(
-      '',
-      () => {
-        io.emit('refresh');
-      },
-      {
-        excludes: ['**/__tests__/**/*', '**/node_modules/**/*', '**/.*'],
-      },
+    await Promise.all(
+      ['src', 'pkg', 'doctor'].map(dir =>
+        watchman.startWatchFiles(
+          dir,
+          () => {
+            io.emit('refresh');
+          },
+          {
+            excludes: ['**/__tests__/**/*', '**/node_modules/**/*', '**/.*'],
+          },
+        ),
+      ),
     );
   } catch (err) {
     console.error(

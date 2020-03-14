@@ -13,11 +13,13 @@
     "downlevelIteration": true,    
     "skipLibCheck": true,
     "paths": {
-      "flipper": ["./src/index.tsx"],
+      "flipper": ["./src"],
+      "flipper-doctor": ["./doctor/src"],
+      "flipper-pkg": ["./pkg/src"],
       "live-plugin-manager": ["./types/live-plugin-manager.d.tsx"]
     },
     "strict": true
   },
-  "include": ["src/**/*", "static/**/*", "scripts/**/*", "types/*", "headless/*", "plugins/**/*"],
+  "include": ["src/**/*", "doctor/**/*", "pkg/**/*", "static/**/*", "scripts/**/*", "types/**/*", "headless/**/*", "plugins/**/*"],
   "exclude": ["node_modules", "**/*.spec.ts"]
 }

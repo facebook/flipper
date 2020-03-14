@@ -3,6 +3,7 @@
   "version": "0.7.0",
   "description": "Utility for checking for issues with a flipper installation",
   "main": "lib/index.js",
+  "flipper:source": "src",
   "types": "lib/index.d.ts",
   "license": "MIT",
   "devDependencies": {

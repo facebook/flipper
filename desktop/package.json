@@ -9,6 +9,7 @@
   "icon": "icon.png",
   "category": "facebook-intern",
   "privileged": true,
+  "license": "MIT",
   "build": {
     "appId": "flipper",
     "productName": "Flipper",
@@ -77,7 +78,9 @@
       "<rootDir>/static/globalTestSetup.js"
     ],
     "moduleNameMapper": {
-      "^flipper$": "<rootDir>/src/index.tsx"
+      "^flipper$": "<rootDir>/src",
+      "^flipper-doctor$": "<rootDir>/doctor/src",
+      "^flipper-pkg$": "<rootDir>/pkg/src"
     },
     "clearMocks": true
   },
