@@ -43,9 +43,9 @@ This repository includes all parts of Flipper. This includes:
 * native Flipper SDKs for Android (`/android`)
 * Plugins:
   * Logs (`/desktop/src/device-plugins/logs`)
-  * Layout inspector (`/desktop/src/plugins/layout`)
-  * Network inspector (`/desktop/src/plugins/network`)
-  * Shared Preferences/NSUserDefaults inspector (`/desktop/src/plugins/shared_preferences`)
+  * Layout inspector (`/desktop/plugins/layout`)
+  * Network inspector (`/desktop/plugins/network`)
+  * Shared Preferences/NSUserDefaults inspector (`/desktop/plugins/shared_preferences`)
 * website and documentation (`/website` / `/docs`)
 
 # Getting started

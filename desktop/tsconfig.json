@@ -18,6 +18,6 @@
     },
     "strict": true
   },
-  "include": ["src/**/*", "static/**/*", "scripts/**/*", "types/*", "headless/*"],
+  "include": ["src/**/*", "static/**/*", "scripts/**/*", "types/*", "headless/*", "plugins/**/*"],
   "exclude": ["node_modules", "**/*.spec.ts"]
 }

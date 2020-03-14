@@ -12,6 +12,7 @@ const path = require('path');
 const replaceFBStubs = fs.existsSync(
   path.join(__dirname, '..', '..', 'src', 'fb'),
 );
+const isFBFile = filePath => filePath.includes(`${path.sep}fb${path.sep}`);
 
 const requireFromFolder = (folder, path) =>
   new RegExp(folder + '/[A-Za-z0-9.-_]+(.js)?$', 'g').test(path);
@@ -20,7 +21,7 @@ module.exports = function(babel) {
   return {
     name: 'replace-dynamic-requires',
     visitor: {
-      CallExpression(path) {
+      CallExpression(path, state) {
         if (
           replaceFBStubs &&
           path.node.type === 'CallExpression' &&
@@ -28,9 +29,12 @@ module.exports = function(babel) {
           path.node.callee.name === 'require' &&
           path.node.arguments.length > 0
         ) {
-          if (requireFromFolder('fb', path.node.arguments[0].value)) {
+          if (
+            requireFromFolder('fb', path.node.arguments[0].value) &&
+            !isFBFile(state.file.opts.filename)
+          ) {
             throw new Error(
-              'Do not require directly from fb/, but rather from fb-stubs/ to not break flow-typing and make sure stubs are up-to-date.',
+              'For files which are not under fb/ do not require directly from fb/, but rather from fb-stubs/ to not break flow-typing and make sure stubs are up-to-date.',
             );
           } else if (
             requireFromFolder('fb-stubs', path.node.arguments[0].value)

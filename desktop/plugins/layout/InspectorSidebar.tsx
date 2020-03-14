@@ -16,9 +16,9 @@ import {
   PluginClient,
   SidebarExtensions,
   Element,
+  Client,
+  Logger,
 } from 'flipper';
-import Client from '../../Client';
-import {Logger} from '../../fb-interfaces/Logger';
 import {Component} from 'react';
 import deepEqual from 'deep-equal';
 import React from 'react';

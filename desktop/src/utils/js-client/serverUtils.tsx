@@ -11,12 +11,12 @@ import Client, {ClientQuery} from '../../Client';
 import {FlipperClientConnection} from '../../Client';
 import {ipcRenderer, remote, IpcRendererEvent} from 'electron';
 import JSDevice from '../../devices/JSDevice';
-import {Store} from 'src/reducers';
-import {Logger} from 'src/fb-interfaces/Logger';
+import {Store} from '../../reducers';
+import {Logger} from '../../fb-interfaces/Logger';
 
 import {Payload, ConnectionStatus, ISubscriber} from 'rsocket-types';
 import {Flowable, Single} from 'rsocket-flowable';
-import Server from 'src/server';
+import Server from '../../server';
 import {buildClientId} from '../clientUtils';
 
 const connections: Map<number, JSClientFlipperConnection<any>> = new Map();

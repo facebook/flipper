@@ -18,9 +18,9 @@ const PACKAGES = [
   'static',
   'doctor',
   'pkg',
-  'src/plugins/*',
-  'src/fb/plugins/*',
-  'src/fb/plugins/layout/*',
+  'plugins/*',
+  'plugins/fb/*',
+  'plugins/fb/layout/*',
 ];
 const WINDOWS = /^win/.test(process.platform);
 const YARN_PATH =

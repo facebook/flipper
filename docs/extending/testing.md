@@ -97,7 +97,7 @@ TEST(MyFlipperPluginTests, testDummy) {
 ## Testing the Flipper Desktop Plugin
 
 Tests should be put in the `__tests__` directory of your plugin sources, and be created using Jest.
-An example test suite can be found [here](https://github.com/facebook/flipper/blob/master/desktop/src/plugins/layout/__tests__/ProxyArchiveClient.node.tsx).
+An example test suite can be found [here](https://github.com/facebook/flipper/blob/master/desktop/plugins/layout/__tests__/ProxyArchiveClient.node.tsx).
 
 Flipper exposes an API to generate unit tests that can verify _regressions_ and real life scenarios.
 To generate a unit test:

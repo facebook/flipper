@@ -182,12 +182,7 @@ async function addWebsocket(server: http.Server) {
         io.emit('refresh');
       },
       {
-        excludes: [
-          '**/__tests__/**/*',
-          '**/node_modules/**/*',
-          '**/.*',
-          'plugins/**/*', // plugin changes are tracked separately, so exlcuding them here to avoid double reloading.
-        ],
+        excludes: ['**/__tests__/**/*', '**/node_modules/**/*', '**/.*'],
       },
     );
   } catch (err) {

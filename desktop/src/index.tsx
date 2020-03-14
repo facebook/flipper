@@ -24,6 +24,7 @@ export {
   FlipperDevicePlugin,
   callClient,
   Notification,
+  BaseAction,
 } from './plugin';
 export {PluginClient, Props} from './plugin';
 export {default as Client} from './Client';
@@ -171,3 +172,5 @@ export {Console} from './ui/components/console';
 export {default as Sheet} from './ui/components/Sheet';
 export {KeyboardActions} from './MenuBar';
 export {getFlipperMediaCDN} from './fb-stubs/user';
+export {Rect} from './utils/geometry';
+export {Logger} from './fb-interfaces/Logger';

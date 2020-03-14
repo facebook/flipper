@@ -129,7 +129,7 @@ export default createTablePlugin<Row>({
   buildRow,
 });
 ```
-*See [index.tsx](https://github.com/facebook/flipper/blob/master/desktop/src/plugins/seamammals/index.tsx)*
+*See [index.tsx](https://github.com/facebook/flipper/blob/master/desktop/plugins/seamammals/index.tsx)*
 
 The `method` we define here corresponds to the name
 of the function we call on the native side to inform

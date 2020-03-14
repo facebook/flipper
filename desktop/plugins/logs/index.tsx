@@ -12,10 +12,11 @@ import {
   TableColumnOrder,
   TableColumnSizes,
   TableColumns,
+  Props as PluginProps,
+  BaseAction,
+  DeviceLogEntry,
 } from 'flipper';
 import {Counter} from './LogWatcher';
-import {Props as PluginProps, BaseAction} from '../../plugin';
-import {DeviceLogEntry} from '../../devices/BaseDevice';
 
 import {
   Text,

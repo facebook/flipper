@@ -92,8 +92,8 @@ const pluginPaths = (config.pluginPaths ?? [])
     ...(skipLoadingEmbeddedPlugins
       ? []
       : [
-          path.join(__dirname, '..', 'src', 'plugins'),
-          path.join(__dirname, '..', 'src', 'fb', 'plugins'),
+          path.join(__dirname, '..', 'plugins'),
+          path.join(__dirname, '..', 'plugins', 'fb'),
         ]),
   ])
   .map(expandTilde)

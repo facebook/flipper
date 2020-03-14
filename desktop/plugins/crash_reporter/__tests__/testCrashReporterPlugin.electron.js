@@ -7,7 +7,7 @@
  * @format
  */
 
-import BaseDevice from '../../../devices/BaseDevice.tsx';
+import BaseDevice from '../../../src/devices/BaseDevice.tsx';
 import CrashReporterPlugin from '../../crash_reporter';
 import type {PersistedState, Crash} from '../../crash_reporter';
 import {
@@ -16,7 +16,10 @@ import {
   parsePath,
   shouldShowCrashNotification,
 } from '../../crash_reporter';
-import {getPluginKey, getPersistedState} from '../../../utils/pluginUtils.tsx';
+import {
+  getPluginKey,
+  getPersistedState,
+} from '../../../src/utils/pluginUtils.tsx';
 
 function setDefaultPersistedState(defaultState: PersistedState) {
   CrashReporterPlugin.defaultPersistedState = defaultState;

@@ -10,8 +10,7 @@
 import FrescoPlugin from '../index';
 import {PersistedState, ImageEventWithId} from '../index';
 import {AndroidCloseableReferenceLeakEvent} from '../api';
-import {MetricType} from 'flipper';
-import {Notification} from '../../../plugin';
+import {MetricType, Notification} from 'flipper';
 import {ImagesMap} from '../ImagePool';
 
 type ScanDisplayTime = {[scan_number: number]: number};

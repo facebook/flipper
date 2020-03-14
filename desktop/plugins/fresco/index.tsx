@@ -30,10 +30,11 @@ import {
   colors,
   styled,
   isProduction,
+  Notification,
+  BaseAction,
 } from 'flipper';
 import ImagesSidebar from './ImagesSidebar';
 import ImagePool from './ImagePool';
-import {Notification, BaseAction} from '../../plugin';
 
 export type ImageEventWithId = ImageEvent & {eventId: number};
 

@@ -44,8 +44,8 @@ export function compileDefaultPlugins(
     skipAll
       ? []
       : [
-          path.join(__dirname, '..', 'src', 'plugins'),
-          path.join(__dirname, '..', 'src', 'fb', 'plugins'),
+          path.join(__dirname, '..', 'plugins'),
+          path.join(__dirname, '..', 'plugins', 'fb'),
         ],
     defaultPluginDir,
     {force: true, failSilently: false, recompileOnChanges: false},

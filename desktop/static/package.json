@@ -33,6 +33,7 @@
     "ws": "7.2.0"
   },
   "devDependencies": {
-    "@babel/preset-env": "^7.8.3"
+    "@babel/preset-env": "^7.8.3",
+    "@types/electron-devtools-installer": "^2.2.0"
   }
 }

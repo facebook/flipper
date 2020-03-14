@@ -14,8 +14,8 @@ import {State as Store} from '../reducers';
 import {
   readBookmarksFromDB,
   writeBookmarkToDB,
-} from '../plugins/navigation/util/indexedDB';
-import {PersistedState as NavPluginState} from '../plugins/navigation/types';
+} from '../../plugins/navigation/util/indexedDB';
+import {PersistedState as NavPluginState} from '../../plugins/navigation/types';
 import BaseDevice from '../devices/BaseDevice';
 import {State as PluginState} from 'src/reducers/pluginStates';
 import {platform} from 'os';

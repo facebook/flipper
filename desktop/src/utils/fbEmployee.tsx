@@ -8,7 +8,8 @@
  */
 
 import util from 'util';
-const exec = util.promisify(require('child_process').exec);
+import {exec as execImport} from 'child_process';
+const exec = util.promisify(execImport);
 
 const cmd = 'klist --json';
 const endWith = '@THEFACEBOOK.COM';
