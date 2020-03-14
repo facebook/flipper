@@ -11,7 +11,7 @@ import Server from '../server';
 
 import {Store} from '../reducers/index';
 import {Logger} from '../fb-interfaces/Logger';
-import Client from '../Client.js';
+import Client from '../Client';
 import {UninitializedClient} from '../UninitializedClient';
 
 export default (store: Store, logger: Logger) => {

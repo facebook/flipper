@@ -10,7 +10,7 @@
 
 import path from 'path';
 import fs from 'fs';
-const Metro = require('metro');
+import Metro from 'metro';
 import util from 'util';
 import recursiveReaddir from 'recursive-readdir';
 import expandTilde from 'expand-tilde';

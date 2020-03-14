@@ -9,30 +9,28 @@
 
 // Very incomplete stub with only the methods we use defined.
 declare module 'npm-api' {
-    export default class NpmApi {
-        constructor(...args: any[]);
+  export default class NpmApi {
+    constructor(...args: any[]);
 
-        list(...args: any[]): any;
+    list(...args: any[]): any;
 
-        maintainer(...args: any[]): any;
+    maintainer(...args: any[]): any;
 
-        repo(name: string): Repository;
+    repo(name: string): Repository;
 
-        reset(...args: any[]): any;
+    reset(...args: any[]): any;
 
-        use(...args: any[]): any;
+    use(...args: any[]): any;
 
-        view(...args: any[]): any;
+    view(...args: any[]): any;
+  }
 
-    }
+  export class Repository {
+    package(): Promise<Package>;
+  }
 
-    export class Repository {
-        package(): Promise<Package>;
-    }
-
-    export interface Package {
-        name: string;
-        version: string;
-    }
-
+  export interface Package {
+    name: string;
+    version: string;
+  }
 }

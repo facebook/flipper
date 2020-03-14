@@ -25,7 +25,13 @@ module.exports = {
   parser: 'babel-eslint',
   root: true,
   extends: 'fbjs',
-  plugins: [...fbjs.plugins, 'header', 'prettier', '@typescript-eslint'],
+  plugins: [
+    ...fbjs.plugins,
+    'header',
+    'prettier',
+    '@typescript-eslint',
+    'import',
+  ],
   rules: {
     // disable rules from eslint-config-fbjs
     'react/react-in-jsx-scope': 0, // not needed with our metro implementation
@@ -53,6 +59,16 @@ module.exports = {
     'header/header': [2, 'block', {pattern}],
     'prettier/prettier': [2, prettierConfig],
     'flowtype/object-type-delimiter': [0],
+
+    // import
+    'import/no-unresolved': [2, {commonjs: true, amd: true}],
+  },
+  settings: {
+    'import/resolver': {
+      typescript: {
+        extensions: ['.js', '.jsx', '.ts', '.tsx'],
+      },
+    },
   },
   overrides: [
     {

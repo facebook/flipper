@@ -7,7 +7,7 @@
  * @format
  */
 
-import {Filter} from './types.js';
+import {Filter} from './types';
 import React, {PureComponent} from 'react';
 import ContextMenu from '../ContextMenu';
 import textContent from '../../../utils/textContent';

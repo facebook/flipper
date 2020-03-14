@@ -7,7 +7,7 @@
  * @format
  */
 
-const Metro = require('metro'); // no typings :(
+import Metro from 'metro';
 import * as path from 'path';
 
 function hash(string: string) {

@@ -8,7 +8,7 @@
  */
 
 declare module 'ansi-to-html' {
-    export default class Filter {
-      toHtml: (input: string) => string;
-    }
+  export default class Filter {
+    toHtml: (input: string) => string;
+  }
 }

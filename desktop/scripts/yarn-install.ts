@@ -16,6 +16,8 @@ const exec = util.promisify(execImport);
 const PACKAGES = [
   'headless-tests',
   'static',
+  'doctor',
+  'pkg',
   'src/plugins/*',
   'src/fb/plugins/*',
   'src/fb/plugins/layout/*',

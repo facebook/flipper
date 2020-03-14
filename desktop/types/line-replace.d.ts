@@ -8,11 +8,16 @@
  */
 
 declare module 'line-replace' {
-    export default function(args: {
-        file: string; 
-        line: number; 
-        text: string; 
-        addNewLine: boolean; 
-        callback: (args: {file: string; line: number; replacedText: string; text: string}) => void;
-    }): void;
+  export default function(args: {
+    file: string;
+    line: number;
+    text: string;
+    addNewLine: boolean;
+    callback: (args: {
+      file: string;
+      line: number;
+      replacedText: string;
+      text: string;
+    }) => void;
+  }): void;
 }

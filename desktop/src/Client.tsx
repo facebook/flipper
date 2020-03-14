@@ -9,7 +9,7 @@
 
 import {FlipperPlugin, FlipperDevicePlugin} from './plugin';
 import BaseDevice, {OS} from './devices/BaseDevice';
-import {App} from './App.js';
+import {App} from './App';
 import {Logger} from './fb-interfaces/Logger';
 import {Store} from './reducers/index';
 import {setPluginState} from './reducers/pluginStates';
