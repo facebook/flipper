@@ -12,7 +12,7 @@ main () {
 
   source "$ROOT_DIR/xplat/js/env-utils/setup_env_vars.sh"
 
-  export SONAR_DIR="$ROOT_DIR/xplat/infinity"
+  export SONAR_DIR="$ROOT_DIR/xplat/sonar"
   export PATH="$SONAR_DIR/node_modules/.bin:$ROOT_DIR/xplat/third-party/node/bin:$ROOT_DIR/xplat/third-party/yarn:$PATH"
 }
 

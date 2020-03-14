@@ -5,16 +5,16 @@
 .*/pkg/.*
 .*/dist/.*
 .*/static/.*
-<PROJECT_ROOT>/src/fb/plugins/relaydevtools/relay-devtools/DevtoolsUI.js$
+<PROJECT_ROOT>/desktop/src/fb/plugins/relaydevtools/relay-devtools/DevtoolsUI.js$
 .*/website/.*
-<PROJECT_ROOT>/src/plugins/sections/d3/d3.js$
+<PROJECT_ROOT>/desktop/src/plugins/sections/d3/d3.js$
 .*\.tsx
 .*/node_modules/.*
-<PROJECT_ROOT>/doctor/.*
+<PROJECT_ROOT>/desktop/doctor/.*
 <PROJECT_ROOT>/react-native/ReactNativeFlipperExample/.*
 
 [libs]
-flow-typed
+desktop/flow-typed
 
 [options]
 esproposal.export_star_as=enable

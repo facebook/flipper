@@ -81,7 +81,7 @@ export function compile(buildFolder: string, entry: string) {
         ),
       },
       resolver: {
-        blacklistRE: /(\/|\\)(sonar|flipper|flipper-public)(\/|\\)(dist|doctor)(\/|\\)|(\.native\.js$)/,
+        blacklistRE: /(\/|\\)(sonar|flipper|flipper-public)(\/|\\)(desktop)(\/|\\)(dist|doctor)(\/|\\)|(\.native\.js$)/,
       },
     },
     {
@@ -126,7 +126,7 @@ export async function compileMain({dev}: {dev: boolean}) {
       },
       resolver: {
         sourceExts: ['tsx', 'ts', 'js'],
-        blacklistRE: /(\/|\\)(sonar|flipper|flipper-public)(\/|\\)(dist|doctor)(\/|\\)|(\.native\.js$)/,
+        blacklistRE: /(\/|\\)(sonar|flipper|flipper-public)(\/|\\)(desktop)(\/|\\)(dist|doctor)(\/|\\)|(\.native\.js$)/,
       },
     });
     await Metro.runBuild(config, {

@@ -59,6 +59,6 @@ you can also specify a title to show in the Flipper sidebar and an icon to displ
   }
 }
 ```
-*See [package.json](https://github.com/facebook/flipper/blob/master/src/plugins/seamammals/package.json)*
+*See [package.json](https://github.com/facebook/flipper/blob/master/desktop/src/plugins/seamammals/package.json)*
 
 Now that our package has been set up, we are ready to build a UI for our plugin. Either by using a standardized table-based plugin, or by creating a custom UI.

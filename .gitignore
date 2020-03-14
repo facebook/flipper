@@ -2,7 +2,10 @@ node_modules
 dist
 website/build
 yarn-error.log
-static/main.bundle.*
+bundle.js
+bundle.map
+*.bundle.js
+*.bundle.map
 
 # conflicts with FB internal infra
 .watchmanconfig

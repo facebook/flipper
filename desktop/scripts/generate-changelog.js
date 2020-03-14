@@ -17,14 +17,15 @@ const path = require('path');
 const fs = require('fs');
 const cp = require('child_process');
 
-const root = path.join(__dirname, '..');
+const desktopRoot = path.resolve(__dirname, '..');
+const root = path.resolve(desktopRoot, '..');
 
-const version = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8')).version;
+const version = JSON.parse(fs.readFileSync(path.join(desktopRoot, 'package.json'), 'utf8')).version;
 
 const now = new Date();
 const date = `${now.getDate()}/${now.getMonth() + 1}/${now.getFullYear()}`;
 const newlineMarker = '__NEWLINE_MARKER__';
-const fChangelog = path.join(root, 'CHANGELOG.md');
+const fChangelog = path.resolve(root, 'CHANGELOG.md');
 
 const lastCommit = cp
   .execSync(`hg log --limit 1 --template '{node}'`, {cwd: root})
