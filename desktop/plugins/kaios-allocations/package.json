@@ -17,7 +17,7 @@
     "postinstall-postinstall": "^2.0.0"
   },
   "dependencies": {
-    "firefox-client": "0.3.0",
+    "firefox-client": "1.0.0",
     "promisify-child-process": "^3.1.1"
   },
   "greenkeeper": {
