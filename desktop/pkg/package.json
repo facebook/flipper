@@ -36,11 +36,11 @@
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1",
-    "@types/jest": "^24.0.21",
-    "globby": "^10",
-    "jest": "^24.9.0",
+    "@types/jest": "^25.1.4",
+    "globby": "^11.0.0",
+    "jest": "^25.1.0",
     "prettier": "^1.19.1",
-    "ts-jest": "^24.1.0",
+    "ts-jest": "^25.2.1",
     "ts-node": "^8",
     "typescript": "^3.7.2"
   },
