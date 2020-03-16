@@ -131,12 +131,17 @@ export default class ShareSheetExportUrl extends Component<Props, State> {
       const uploadMarker = `${EXPORT_FLIPPER_TRACE_EVENT}:upload`;
       performance.mark(uploadMarker);
       statusUpdate('Uploading Flipper Trace...');
-      // TODO(T55169042): Implement error handling. Result is not tested
-      // its result type right now, causing the upload indicator to stall forever.
       const result = await reportPlatformFailures(
         shareFlipperData(serializedString),
         `${SHARE_FLIPPER_TRACE_EVENT}`,
       );
+
+      if ((result as DataExportError).error != undefined) {
+        const res = result as DataExportError;
+        const err = new Error(res.error);
+        err.stack = res.stacktrace;
+        throw err;
+      }
       getLogger().trackTimeSince(uploadMarker, uploadMarker, {
         plugins: this.store.getState().plugins.selectedPlugins,
       });
@@ -153,23 +158,21 @@ export default class ShareSheetExportUrl extends Component<Props, State> {
       this.store.dispatch(resetSupportFormV2State());
       this.props.logger.trackTimeSince(mark, 'export:url-success');
     } catch (e) {
+      const result: DataExportError = {
+        error_class: 'EXPORT_ERROR',
+        error: e,
+        stacktrace: '',
+      };
       if (!this.state.runInBackground) {
-        const result: DataExportError = {
-          error_class: 'EXPORT_ERROR',
-          error: '',
-          stacktrace: '',
-        };
-
         if (e instanceof Error) {
           result.error = e.message;
           result.stacktrace = e.stack || '';
-        } else {
-          result.error = e;
         }
+        // Show the error in UI.
         this.setState({result});
       }
       this.store.dispatch(unsetShare());
-      this.props.logger.trackTimeSince(mark, 'export:url-error');
+      this.props.logger.trackTimeSince(mark, 'export:url-error', result);
       throw e;
     }
   }
@@ -221,7 +224,7 @@ export default class ShareSheetExportUrl extends Component<Props, State> {
 
   render() {
     const {result, statusUpdate, errorArray} = this.state;
-    if (!result || !(result as DataExportResult).flipperUrl) {
+    if (!result) {
       return this.renderPending(statusUpdate);
     }
 
