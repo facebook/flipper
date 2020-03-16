@@ -39,7 +39,9 @@ Promise.all(
       `Installing dependencies for ${flattenPackages.length} plugins`,
     );
     for (const pkg of flattenPackages) {
-      const {stderr} = await exec(
+      console.log(`Installing dependencies for ${pkg}...`);
+      // @ts-ignore
+      const {stderr, error} = await exec(
         // This script is itself executed by yarn (as postinstall script),
         // therefore another yarn instance is running, while we are trying to
         // install the plugin dependencies. We are setting a different port
@@ -52,16 +54,18 @@ Promise.all(
         },
       );
       if (stderr) {
+        if (error && error.code !== 0) {
+          console.warn(`❌ Installing dependencies for ${pkg} failed`);
+          throw stderr;
+        }
         console.warn(stderr);
-      } else {
-        console.log(`Installed dependencies for ${pkg}`);
       }
     }
   })
   // eslint-disable-next-line
   .then(() => console.log('📦  Installed all plugin dependencies!'))
   .catch(err => {
-    console.error('❌  Installing plugin dependencies failed.');
     console.error(err);
+    console.error('❌  Installing plugin dependencies failed.');
     process.exit(1);
   });
