@@ -30,8 +30,6 @@
 #import "Utils.h"
 
 @implementation SKComponentLayoutDescriptor {
-  NSDictionary<NSNumber*, NSString*>* CKFlexboxAlignSelfEnumMap;
-  NSDictionary<NSNumber*, NSString*>* CKFlexboxPositionTypeEnumMap;
   NSArray<SKSubDescriptor*>* _registeredSubdescriptors;
 }
 
@@ -41,27 +39,6 @@
   if (!_registeredSubdescriptors) {
     _registeredSubdescriptors = [NSArray new];
   }
-
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    [self initEnumMaps];
-  });
-}
-
-- (void)initEnumMaps {
-  CKFlexboxAlignSelfEnumMap = @{
-    @(CKFlexboxAlignSelfAuto) : @"auto",
-    @(CKFlexboxAlignSelfStart) : @"start",
-    @(CKFlexboxAlignSelfEnd) : @"end",
-    @(CKFlexboxAlignSelfCenter) : @"center",
-    @(CKFlexboxAlignSelfBaseline) : @"baseline",
-    @(CKFlexboxAlignSelfStretch) : @"stretch",
-  };
-
-  CKFlexboxPositionTypeEnumMap = @{
-    @(CKFlexboxPositionTypeRelative) : @"relative",
-    @(CKFlexboxPositionTypeAbsolute) : @"absolute",
-  };
 }
 
 - (NSString*)identifierForNode:(SKComponentLayoutWrapper*)node {
@@ -142,9 +119,9 @@
     @"margin" : flexboxRect(child.margin),
     @"flexBasis" : relativeDimension(child.flexBasis),
     @"padding" : flexboxRect(child.padding),
-    @"alignSelf" : CKFlexboxAlignSelfEnumMap[@(child.alignSelf)],
+    @"alignSelf" : stringForAlignSelf(child.alignSelf),
     @"position" : @{
-      @"type" : CKFlexboxPositionTypeEnumMap[@(child.position.type)],
+      @"type" : stringForFlexboxPositionType(child.position.type),
       @"start" : relativeDimension(child.position.start),
       @"top" : relativeDimension(child.position.top),
       @"end" : relativeDimension(child.position.end),
@@ -229,6 +206,34 @@
   return string != nil && substring != nil &&
       [string rangeOfString:substring options:NSCaseInsensitiveSearch]
           .location != NSNotFound;
+}
+
+static NSString* stringForAlignSelf(CKFlexboxAlignSelf alignSelf) {
+  switch (alignSelf) {
+    case CKFlexboxAlignSelfAuto:
+      return @"auto";
+    case CKFlexboxAlignSelfStart:
+      return @"start";
+    case CKFlexboxAlignSelfEnd:
+      return @"end";
+    case CKFlexboxAlignSelfCenter:
+      return @"center";
+    case CKFlexboxAlignSelfBaseline:
+      return @"baseline";
+    case CKFlexboxAlignSelfStretch:
+      return @"stretch";
+  }
+  return @"unknown";
+}
+
+static NSString* stringForFlexboxPositionType(CKFlexboxPositionType type) {
+  switch (type) {
+    case CKFlexboxPositionTypeRelative:
+      return @"relative";
+    case CKFlexboxPositionTypeAbsolute:
+      return @"absolute";
+  }
+  return @"unknown";
 }
 
 @end
