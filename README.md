@@ -66,7 +66,7 @@ Please refer to our [Getting Started guide](https://fbflipper.com/docs/getting-s
 
 ```
 git clone https://github.com/facebook/flipper.git
-cd flipper
+cd flipper/desktop
 yarn
 yarn start
 ```
@@ -119,7 +119,7 @@ Alternatively, the app can be started on `iOS` by running `yarn ios`.
 
 Older yarn versions might show an error / hang with the message 'Waiting for the other yarn instance to finish'. If that happens, run the command `yarn` first separately in the directory `react-native/react-native-flipper`.
 
-## Documentation
+# Documentation
 
 Find the full documentation for this project at [fbflipper.com](https://fbflipper.com/docs).
 

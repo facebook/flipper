@@ -91,7 +91,7 @@ Make sure you have a recent version of node.js and yarn installed on your system
 
 ```
 git clone https://github.com/facebook/flipper.git
-cd flipper
+cd flipper/desktop
 yarn
 yarn start
 ```
