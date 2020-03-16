@@ -207,7 +207,6 @@ app.on('ready', () => {
   });
 });
 
-	
 function configureSession() {
   session.defaultSession.webRequest.onBeforeSendHeaders(
     {
