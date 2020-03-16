@@ -16,6 +16,7 @@ import {
   ipcMain,
   Notification,
   globalShortcut,
+  session,
 } from 'electron';
 import path from 'path';
 import url from 'url';
@@ -191,6 +192,7 @@ app.on('ready', () => {
     }
     appReady = true;
     app.commandLine.appendSwitch('scroll-bounce');
+    configureSession();
     tryCreateWindow();
     // if in development install the react devtools extension
     if (process.env.NODE_ENV === 'development') {
@@ -204,6 +206,21 @@ app.on('ready', () => {
     }
   });
 });
+
+	
+function configureSession() {
+  session.defaultSession.webRequest.onBeforeSendHeaders(
+    {
+      urls: ['*://*/*'],
+    },
+    (details, callback) => {
+      // setting Origin to always be 'localhost' to avoid issues when dev version and release version behaves differently.
+      details.requestHeaders.origin = 'https://localhost:3000';
+      details.requestHeaders.referer = 'https://localhost:3000/index.dev.html';
+      callback({cancel: false, requestHeaders: details.requestHeaders});
+    },
+  );
+}
 
 app.on('will-quit', () => {
   globalShortcut.unregisterAll();
