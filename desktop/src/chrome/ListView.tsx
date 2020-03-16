@@ -46,6 +46,7 @@ type Props = {
   onHide: () => any;
   elements: Array<Element>;
   title?: string;
+  leftPadding?: number;
 } & SubType;
 
 const Title = styled(Text)({
@@ -94,6 +95,7 @@ type RowComponentProps = {
   disabled: boolean;
   toolTipMessage?: string;
   type: SelectionType;
+  leftPadding?: number;
 };
 
 class RowComponent extends Component<RowComponentProps> {
@@ -106,6 +108,7 @@ class RowComponent extends Component<RowComponentProps> {
       disabled,
       toolTipMessage,
       type,
+      leftPadding,
     } = this.props;
     return (
       <FlexColumn>
@@ -116,7 +119,7 @@ class RowComponent extends Component<RowComponentProps> {
             paddingRight={0}
             paddingTop={8}
             paddingBottom={8}
-            paddingLeft={0}>
+            paddingLeft={leftPadding || 0}>
             <FlexRow style={{alignItems: 'center'}}>
               <Text color={disabled ? colors.light20 : undefined}>{label}</Text>
               <Spacer />
@@ -191,7 +194,7 @@ export default class ListView extends Component<Props, State> {
   };
 
   render() {
-    const {onSubmit, type} = this.props;
+    const {onSubmit, type, leftPadding} = this.props;
     return (
       <Container>
         <FlexColumn>
@@ -208,6 +211,7 @@ export default class ListView extends Component<Props, State> {
                   onChange={this.handleChange}
                   disabled={unselectable != null}
                   toolTipMessage={unselectable?.toolTipMessage}
+                  leftPadding={leftPadding}
                 />
               );
             })}
@@ -217,9 +221,11 @@ export default class ListView extends Component<Props, State> {
           <Padder paddingTop={8} paddingBottom={2}>
             <FlexRow>
               <Spacer />
-              <Button compact padded onClick={this.props.onHide}>
-                Close
-              </Button>
+              <Padder paddingRight={8}>
+                <Button compact padded onClick={this.props.onHide}>
+                  Close
+                </Button>
+              </Padder>
               <Tooltip
                 title={
                   this.state.selectedElements.size <= 0

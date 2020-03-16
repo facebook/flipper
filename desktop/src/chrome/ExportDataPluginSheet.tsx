@@ -25,7 +25,7 @@ import {
 import ListView from './ListView';
 import {Dispatch, Action} from 'redux';
 import {unsetShare} from '../reducers/application';
-import {FlexColumn, styled} from 'flipper';
+import {FlexColumn, styled} from '../ui';
 import Client from '../Client';
 
 type OwnProps = {
@@ -34,10 +34,8 @@ type OwnProps = {
 
 type StateFromProps = {
   share: ShareType | null;
-  plugins: PluginState;
-  pluginStates: PluginStatesState;
-  pluginMessageQueue: PluginMessageQueueState;
-  selectedClient: Client | undefined;
+  selectedPlugins: Array<string>;
+  availablePluginsToExport: Array<{id: string; label: string}>;
 };
 
 type DispatchFromProps = {
@@ -58,25 +56,7 @@ const Container = styled(FlexColumn)({
   padding: 8,
 });
 
-type State = {
-  availablePluginsToExport: Array<{id: string; label: string}>;
-};
-
-class ExportDataPluginSheet extends Component<Props, State> {
-  state: State = {availablePluginsToExport: []};
-  static getDerivedStateFromProps(props: Props, _state: State): State {
-    const {plugins, pluginStates, pluginMessageQueue, selectedClient} = props;
-    const availablePluginsToExport = getActivePersistentPlugins(
-      pluginStates,
-      pluginMessageQueue,
-      plugins,
-      selectedClient,
-    );
-    return {
-      availablePluginsToExport,
-    };
-  }
-
+class ExportDataPluginSheet extends Component<Props, {}> {
   render() {
     const {onHide} = this.props;
     const onHideWithUnsettingShare = () => {
@@ -88,6 +68,7 @@ class ExportDataPluginSheet extends Component<Props, State> {
         <ListView
           type="multiple"
           title="Select the plugins for which you want to export the data"
+          leftPadding={8}
           onSubmit={() => {
             const {share} = this.props;
             if (!share) {
@@ -116,8 +97,8 @@ class ExportDataPluginSheet extends Component<Props, State> {
           onChange={selectedArray => {
             this.props.setSelectedPlugins(selectedArray);
           }}
-          elements={this.state.availablePluginsToExport}
-          selectedElements={new Set(this.props.plugins.selectedPlugins)}
+          elements={this.props.availablePluginsToExport}
+          selectedElements={new Set(this.props.selectedPlugins)}
           onHide={onHideWithUnsettingShare}
         />
       </Container>
@@ -136,12 +117,16 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
     const selectedClient = clients.find(o => {
       return o.id === selectedApp;
     });
-    return {
-      share,
-      plugins,
+    const availablePluginsToExport = getActivePersistentPlugins(
       pluginStates,
       pluginMessageQueue,
+      plugins,
       selectedClient,
+    );
+    return {
+      share,
+      selectedPlugins: plugins.selectedPlugins,
+      availablePluginsToExport,
     };
   },
   (dispatch: Dispatch<Action<any>>) => ({
