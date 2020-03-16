@@ -46,7 +46,7 @@ export default class Popover extends PureComponent<Props> {
       return null;
     }
     return (
-      <VBox>
+      <VBox scrollable={true} maxHeight={300}>
         <Info type="error">
           <Title bold>
             The following errors occurred while exporting your data

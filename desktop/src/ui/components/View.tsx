@@ -12,6 +12,7 @@ import styled from '@emotion/styled';
 type Props = {
   grow?: boolean;
   scrollable?: boolean;
+  maxHeight?: number;
 };
 
 const View = styled.div<Props>(props => ({
@@ -19,6 +20,7 @@ const View = styled.div<Props>(props => ({
   overflow: props.scrollable ? 'auto' : 'visible',
   position: 'relative',
   width: props.grow ? '100%' : 'auto',
+  maxHeight: props.maxHeight,
 }));
 View.displayName = 'View';
 
