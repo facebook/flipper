@@ -42,6 +42,7 @@ echo "✨ Making a new release..."
 SANDCASTLE_REVISION="$1"
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 SONAR_DIR="$DIR/../"
+DESKTOP_DIR="$SONAR_DIR/desktop"
 FLIPPERKIT_PODSPEC_PATH="$SONAR_DIR/FlipperKit.podspec"
 FLIPPER_PODSPEC_PATH="$SONAR_DIR/Flipper.podspec"
 TUTORIAL_PODFILE_PATH="$SONAR_DIR/iOS/Tutorial/Podfile"
@@ -56,8 +57,8 @@ if [ "$SANDCASTLE_REVISION" != "" ];
 then
   # In future, bump majors instead of minors?
   echo "Automatically bumping version to next minor in package.json"
-  npm -C "$SONAR_DIR" version minor
-  VERSION=$(jq -r '.version' "$SONAR_DIR"/package.json)
+  npm -C "$DESKTOP_DIR" version minor
+  VERSION=$(jq -r '.version' "$DESKTOP_DIR"/package.json)
 else
   echo "The currently released version is $OLD_VERSION. What should the version of the next release be?"
   read -r VERSION
@@ -99,7 +100,7 @@ echo "Bumping version number for android related files..."
 "$SONAR_DIR"/scripts/bump.sh "$VERSION"
 
 # Generate changelog
-"$SONAR_DIR"/scripts/generate-changelog.js
+"$DESKTOP_DIR"/scripts/generate-changelog.js
 
 # Create commit
 echo "Committing the files..."
