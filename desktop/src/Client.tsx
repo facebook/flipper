@@ -21,7 +21,7 @@ import {notNull} from './utils/typeUtils';
 import {default as isProduction} from './utils/isProduction';
 import {registerPlugins} from './reducers/plugins';
 import createTableNativePlugin from './plugins/TableNativePlugin';
-import EventEmitter from 'events';
+import {EventEmitter} from 'events';
 import invariant from 'invariant';
 import {flipperRecorderAddEvent} from './utils/pluginStateRecorder';
 import {getPluginKey} from './utils/pluginUtils';

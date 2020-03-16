@@ -18,7 +18,7 @@ import Client from './Client';
 import {FlipperClientConnection} from './Client';
 import {UninitializedClient} from './UninitializedClient';
 import {reportPlatformFailures} from './utils/metrics';
-import EventEmitter from 'events';
+import {EventEmitter} from 'events';
 import invariant from 'invariant';
 import tls from 'tls';
 import net, {Socket} from 'net';

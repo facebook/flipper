@@ -9,7 +9,7 @@
 
 import {ipcRenderer} from 'electron';
 import {performance} from 'perf_hooks';
-import EventEmitter from 'events';
+import {EventEmitter} from 'events';
 
 import {Store} from '../reducers/index';
 import {Logger} from '../fb-interfaces/Logger';
