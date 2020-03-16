@@ -14,6 +14,7 @@ import {getInstance as getLogger} from '../fb-stubs/Logger';
 import {Store, State as ReduxState, MiddlewareAPI} from '../reducers';
 import {DeviceExport} from '../devices/BaseDevice';
 import {State as PluginStatesState} from '../reducers/pluginStates';
+import {State as PluginsState} from '../reducers/plugins';
 import {PluginNotification} from '../reducers/notifications';
 import Client, {ClientExport, ClientQuery} from '../Client';
 import {pluginKey} from '../reducers/pluginStates';
@@ -502,38 +503,32 @@ async function processQueues(
   }
 }
 
-function getSelection(
-  store: MiddlewareAPI,
-): {client: Client | null; device: BaseDevice | null} {
-  const state = store.getState();
-  const {clients} = state.connections;
-  const client = clients.find(
-    client => client.id === state.connections.selectedApp,
-  );
-  const {selectedDevice} = state.connections;
-  return {client: client ?? null, device: selectedDevice};
-}
-
 export function determinePluginsToProcess(
-  store: MiddlewareAPI,
+  clients: Array<Client>,
+  selectedDevice: null | BaseDevice,
+  plugins: PluginsState,
 ): PluginsToProcess {
-  const state = store.getState();
-  const {plugins} = state;
-  const {clients} = state.connections;
-  const {client, device} = getSelection(store);
-
   const pluginsToProcess: PluginsToProcess = [];
-  const selectedPlugins = state.plugins.selectedPlugins;
-  const selectedFilteredPlugins = client
-    ? selectedPlugins.length > 0
-      ? client.plugins.filter(plugin => selectedPlugins.includes(plugin))
-      : client.plugins
-    : [];
+  const selectedPlugins = plugins.selectedPlugins;
+
   for (const client of clients) {
-    if (!device || device.isArchived || !client.id.includes(device.serial)) {
+    if (
+      !selectedDevice ||
+      selectedDevice.isArchived ||
+      client.query.device_id !== selectedDevice.serial
+    ) {
       continue;
     }
+    const selectedFilteredPlugins = client
+      ? selectedPlugins.length > 0
+        ? client.plugins.filter(plugin => selectedPlugins.includes(plugin))
+        : client.plugins
+      : [];
     for (const plugin of selectedFilteredPlugins) {
+      if (!client.plugins.includes(plugin)) {
+        // Ignore clients which doesn't support the selected plugins.
+        continue;
+      }
       const pluginClass =
         plugins.clientPlugins.get(plugin) || plugins.devicePlugins.get(plugin);
       if (pluginClass) {
@@ -556,7 +551,13 @@ export async function getStoreExport(
   statusUpdate?: (msg: string) => void,
   idler?: Idler,
 ): Promise<{exportData: ExportType | null; errorArray: Array<Error>}> {
-  const pluginsToProcess = determinePluginsToProcess(store);
+  const state = store.getState();
+  const {clients, selectedApp, selectedDevice} = state.connections;
+  const pluginsToProcess = determinePluginsToProcess(
+    clients,
+    selectedDevice,
+    state.plugins,
+  );
 
   statusUpdate?.('Preparing to process data queues for plugins...');
   await processQueues(store, pluginsToProcess, statusUpdate, idler);
@@ -565,8 +566,7 @@ export async function getStoreExport(
   const fetchMetaDataMarker = `${EXPORT_FLIPPER_TRACE_EVENT}:fetch-meta-data`;
   performance.mark(fetchMetaDataMarker);
 
-  const {device, client} = getSelection(store);
-  const state = store.getState();
+  const client = clients.find(client => client.id === selectedApp);
   const metadata = await fetchMetadata(
     pluginsToProcess,
     state.pluginStates,
@@ -586,7 +586,7 @@ export async function getStoreExport(
   const exportData = await processStore(
     {
       activeNotifications,
-      device,
+      device: selectedDevice,
       pluginStates: newPluginState,
       clients: client ? [client.toJSON()] : [],
       devicePlugins,

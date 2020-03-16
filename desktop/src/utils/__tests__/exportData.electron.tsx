@@ -12,16 +12,31 @@ try {
 } catch (e) {
   jest.mock('../../fb-stubs/Logger');
 }
-
+import {State} from '../../reducers/index';
+import configureStore from 'redux-mock-store';
 import {default as BaseDevice} from '../../devices/BaseDevice';
 import {default as ArchivedDevice} from '../../devices/ArchivedDevice';
-import {processStore} from '../exportData';
+import {processStore, determinePluginsToProcess} from '../exportData';
 import {FlipperPlugin, FlipperDevicePlugin} from '../../plugin';
 import {Notification} from '../../plugin';
-import {ClientExport} from '../../Client';
+import {default as Client, ClientExport} from '../../Client';
+import {State as PluginsState} from '../../reducers/plugins';
 
 class TestPlugin extends FlipperPlugin<any, any, any> {}
+TestPlugin.title = 'TestPlugin';
+TestPlugin.id = 'TestPlugin';
 class TestDevicePlugin extends FlipperDevicePlugin<any, any, any> {}
+TestDevicePlugin.title = 'TestDevicePlugin';
+TestDevicePlugin.id = 'TestDevicePlugin';
+const logger = {
+  track: () => {},
+  info: () => {},
+  warn: () => {},
+  error: () => {},
+  debug: () => {},
+  trackTimeSince: () => {},
+};
+const mockStore = configureStore<State, {}>([])();
 
 function generateNotifications(
   id: string,
@@ -671,4 +686,266 @@ test('test processStore function for no selected plugins', async () => {
   expect(clients).toEqual([generateClientFromClientWithSalt(client, 'salt')]);
   const {activeNotifications} = json.store;
   expect(activeNotifications).toEqual([]);
+});
+
+test('test determinePluginsToProcess for mutilple clients having plugins present', async () => {
+  const device1 = new BaseDevice('serial1', 'emulator', 'TestiPhone', 'iOS');
+  const client1 = new Client(
+    generateClientIdentifier(device1, 'app'),
+    {app: 'app', os: 'iOS', device: 'TestiPhone', device_id: 'serial1'},
+    null,
+    logger,
+    mockStore,
+    ['TestPlugin', 'TestDevicePlugin'],
+  );
+  const client2 = new Client(
+    generateClientIdentifier(device1, 'app2'),
+    {app: 'app2', os: 'iOS', device: 'TestiPhone', device_id: 'serial1'},
+    null,
+    logger,
+    mockStore,
+    ['TestDevicePlugin'],
+  );
+  const client3 = new Client(
+    generateClientIdentifier(device1, 'app3'),
+    {app: 'app3', os: 'iOS', device: 'TestiPhone', device_id: 'serial1'},
+    null,
+    logger,
+    mockStore,
+    ['TestPlugin', 'TestDevicePlugin'],
+  );
+  const plugins: PluginsState = {
+    clientPlugins: new Map([
+      ['TestPlugin', TestPlugin],
+      ['RandomPlugin', TestPlugin],
+    ]),
+    devicePlugins: new Map([['TestDevicePlugin', TestDevicePlugin]]),
+    gatekeepedPlugins: [],
+    disabledPlugins: [],
+    failedPlugins: [],
+    selectedPlugins: ['TestPlugin'],
+  };
+  const op = determinePluginsToProcess(
+    [client1, client2, client3],
+    device1,
+    plugins,
+  );
+  expect(op).toBeDefined();
+  expect(op).toEqual([
+    {
+      pluginKey: `${client1.id}#TestPlugin`,
+      pluginId: 'TestPlugin',
+      pluginName: 'TestPlugin',
+      pluginClass: TestPlugin,
+      client: client1,
+    },
+    {
+      pluginKey: `${client3.id}#TestPlugin`,
+      pluginId: 'TestPlugin',
+      pluginName: 'TestPlugin',
+      pluginClass: TestPlugin,
+      client: client3,
+    },
+  ]);
+});
+
+test('test determinePluginsToProcess for no selected plugin present in any clients', async () => {
+  const device1 = new BaseDevice('serial1', 'emulator', 'TestiPhone', 'iOS');
+  const client1 = new Client(
+    generateClientIdentifier(device1, 'app'),
+    {app: 'app', os: 'iOS', device: 'TestiPhone', device_id: 'serial1'},
+    null,
+    logger,
+    mockStore,
+    ['TestPlugin', 'TestDevicePlugin'],
+  );
+  const client2 = new Client(
+    generateClientIdentifier(device1, 'app2'),
+    {app: 'app2', os: 'iOS', device: 'TestiPhone', device_id: 'serial1'},
+    null,
+    logger,
+    mockStore,
+    ['TestDevicePlugin'],
+  );
+  const plugins: PluginsState = {
+    clientPlugins: new Map([
+      ['TestPlugin', TestPlugin],
+      ['RandomPlugin', TestPlugin],
+    ]),
+    devicePlugins: new Map([['TestDevicePlugin', TestDevicePlugin]]),
+    gatekeepedPlugins: [],
+    disabledPlugins: [],
+    failedPlugins: [],
+    selectedPlugins: ['RandomPlugin'],
+  };
+  const op = determinePluginsToProcess([client1, client2], device1, plugins);
+  expect(op).toBeDefined();
+  expect(op).toEqual([]);
+});
+
+test('test determinePluginsToProcess for multiple clients on same device', async () => {
+  const device1 = new BaseDevice('serial1', 'emulator', 'TestiPhone', 'iOS');
+  const client1 = new Client(
+    generateClientIdentifier(device1, 'app'),
+    {app: 'app', os: 'iOS', device: 'TestiPhone', device_id: 'serial1'},
+    null,
+    logger,
+    mockStore,
+    ['TestPlugin', 'TestDevicePlugin'],
+  );
+  const client2 = new Client(
+    generateClientIdentifier(device1, 'app2'),
+    {app: 'app2', os: 'iOS', device: 'TestiPhone', device_id: 'serial1'},
+    null,
+    logger,
+    mockStore,
+    ['TestDevicePlugin'],
+  );
+  const plugins: PluginsState = {
+    clientPlugins: new Map([['TestPlugin', TestPlugin]]),
+    devicePlugins: new Map([['TestDevicePlugin', TestDevicePlugin]]),
+    gatekeepedPlugins: [],
+    disabledPlugins: [],
+    failedPlugins: [],
+    selectedPlugins: ['TestPlugin'],
+  };
+  const op = determinePluginsToProcess([client1, client2], device1, plugins);
+  expect(op).toBeDefined();
+  expect(op.length).toEqual(1);
+  expect(op).toEqual([
+    {
+      pluginKey: `${client1.id}#TestPlugin`,
+      pluginId: 'TestPlugin',
+      pluginName: 'TestPlugin',
+      pluginClass: TestPlugin,
+      client: client1,
+    },
+  ]);
+});
+
+test('test determinePluginsToProcess for multiple clients on different device', async () => {
+  const device1 = new BaseDevice('serial1', 'emulator', 'TestiPhone', 'iOS');
+  const device2 = new BaseDevice('serial2', 'emulator', 'TestiPhone', 'iOS');
+  const client1Device1 = new Client(
+    generateClientIdentifier(device1, 'app'),
+    {app: 'app', os: 'iOS', device: 'TestiPhone', device_id: 'serial1'},
+    null,
+    logger,
+    mockStore,
+    ['TestPlugin', 'TestDevicePlugin'],
+  );
+  const client2Device1 = new Client(
+    generateClientIdentifier(device1, 'app2'),
+    {app: 'app1', os: 'iOS', device: 'TestiPhone', device_id: 'serial1'},
+    null,
+    logger,
+    mockStore,
+    ['TestDevicePlugin'],
+  );
+  const client1Device2 = new Client(
+    generateClientIdentifier(device2, 'app'),
+    {app: 'app', os: 'iOS', device: 'TestiPhone', device_id: 'serial2'},
+    null,
+    logger,
+    mockStore,
+    ['TestPlugin', 'TestDevicePlugin'],
+  );
+  const client2Device2 = new Client(
+    generateClientIdentifier(device2, 'app2'),
+    {app: 'app1', os: 'iOS', device: 'TestiPhone', device_id: 'serial2'},
+    null,
+    logger,
+    mockStore,
+    ['TestDevicePlugin'],
+  );
+  const plugins: PluginsState = {
+    clientPlugins: new Map([['TestPlugin', TestPlugin]]),
+    devicePlugins: new Map([['TestDevicePlugin', TestDevicePlugin]]),
+    gatekeepedPlugins: [],
+    disabledPlugins: [],
+    failedPlugins: [],
+    selectedPlugins: ['TestPlugin'],
+  };
+  const op = determinePluginsToProcess(
+    [client1Device1, client2Device1, client1Device2, client2Device2],
+    device2,
+    plugins,
+  );
+  expect(op).toBeDefined();
+  expect(op.length).toEqual(1);
+  expect(op).toEqual([
+    {
+      pluginKey: `${client1Device2.id}#TestPlugin`,
+      pluginId: 'TestPlugin',
+      pluginName: 'TestPlugin',
+      pluginClass: TestPlugin,
+      client: client1Device2,
+    },
+  ]);
+});
+
+test('test determinePluginsToProcess to ignore archived clients', async () => {
+  const selectedDevice = new BaseDevice(
+    'serial',
+    'emulator',
+    'TestiPhone',
+    'iOS',
+  );
+  const archivedDevice = new ArchivedDevice({
+    serial: 'serial-archived',
+    deviceType: 'emulator',
+    title: 'TestiPhone',
+    os: 'iOS',
+    logEntries: [],
+    screenshotHandle: null,
+  });
+  const logger = {
+    track: () => {},
+    info: () => {},
+    warn: () => {},
+    error: () => {},
+    debug: () => {},
+    trackTimeSince: () => {},
+  };
+  const mockStore = configureStore<State, {}>([])();
+  const client = new Client(
+    generateClientIdentifier(selectedDevice, 'app'),
+    {app: 'app', os: 'iOS', device: 'TestiPhone', device_id: 'serial'},
+    null,
+    logger,
+    mockStore,
+    ['TestPlugin', 'TestDevicePlugin'],
+  );
+  const archivedClient = new Client(
+    generateClientIdentifier(archivedDevice, 'app'),
+    {app: 'app', os: 'iOS', device: 'TestiPhone', device_id: 'serial-archived'},
+    null,
+    logger,
+    mockStore,
+    ['TestPlugin', 'TestDevicePlugin'],
+  );
+  const plugins: PluginsState = {
+    clientPlugins: new Map([['TestPlugin', TestPlugin]]),
+    devicePlugins: new Map([['TestDevicePlugin', TestDevicePlugin]]),
+    gatekeepedPlugins: [],
+    disabledPlugins: [],
+    failedPlugins: [],
+    selectedPlugins: ['TestPlugin'],
+  };
+  const op = determinePluginsToProcess(
+    [client, archivedClient],
+    selectedDevice,
+    plugins,
+  );
+  expect(op).toBeDefined();
+  expect(op.length).toEqual(1);
+  expect(op).toEqual([
+    {
+      pluginKey: `${client.id}#TestPlugin`,
+      pluginId: 'TestPlugin',
+      pluginName: 'TestPlugin',
+      pluginClass: TestPlugin,
+      client: client,
+    },
+  ]);
 });
