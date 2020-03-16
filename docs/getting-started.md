@@ -113,7 +113,7 @@ dependencies {
 
 ## Setup your iOS app
 
-We support both Swift and Objective-C for Flipper with CocoaPods as build and distribution mechanism. For CocoaPods 1.7+ following is the configuration.
+We support both Swift and Objective-C for Flipper with CocoaPods as build and distribution mechanism. For CocoaPods 1.9+ following is the configuration.
 
 ### CocoaPods
 
@@ -147,7 +147,7 @@ target 'MyApp' do
   #   installer.pod_targets.each do |pod|
   #       if $static_framework.include?(pod.name)
   #         def pod.build_type;
-  #           Pod::Target::BuildType.static_library
+  #           Pod::BuildType.static_library
   #         end
   #       end
   #     end
@@ -210,7 +210,7 @@ target 'MyApp' do
   #   installer.pod_targets.each do |pod|
   #       if $static_framework.include?(pod.name)
   #         def pod.build_type;
-  #           Pod::Target::BuildType.static_library
+  #           Pod::BuildType.static_library
   #         end
   #       end
   #     end
@@ -547,7 +547,7 @@ Finally, open the Flipper desktop app, and run `yarn android` in your terminal.
 
 ### iOS
 
-We support both Swift and Objective-C for Flipper with CocoaPods as build and distribution mechanism. For CocoaPods 1.7+, follow this configuration.
+We support both Swift and Objective-C for Flipper with CocoaPods as build and distribution mechanism. For CocoaPods 1.9+, follow this configuration.
 
 <div class="warning">
 
