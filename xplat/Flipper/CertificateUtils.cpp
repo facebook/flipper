@@ -1,16 +1,17 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the LICENSE
- * file in the root directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 #include "CertificateUtils.h"
 
 #include <fcntl.h>
+#include <folly/portability/Fcntl.h>
+#include <folly/portability/SysStat.h>
 #include <openssl/pem.h>
 #include <openssl/rsa.h>
-#include <folly/portability/SysStat.h>
-#include <folly/portability/Fcntl.h>
 #include <cstring>
 
 void free(

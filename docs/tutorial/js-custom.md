@@ -11,10 +11,10 @@ Displaying your data in a table might work for many use-cases. However, dependin
 For our sea mammals app, we might not only want to see them listed as image URLs in a table but render the actual images in nice little cards. When selecting one of the cards we still want to display all details in the sidebar.
 ![Custom cards UI for our sea mammals plugin](/docs/assets/js-custom.png)
 
-Currently, the default export in our `index.js` is from `createTablePlugin`. Now we are going to replace this with a custom React component extending `FlipperPlugin`.
+Currently, the default export in our `index.tsx` is from `createTablePlugin`. Now we are going to replace this with a custom React component extending `FlipperPlugin`.
 
 ```js
-export default class SeaMammals extends FlipperPlugin {
+export default class SeaMammals extends FlipperPlugin<State, any, PersistedState> {
   static Container = styled(FlexRow)({
     backgroundColor: colors.macOSTitleBarBackgroundBlur,
     flexWrap: 'wrap',
@@ -43,20 +43,19 @@ The plugin is quite useless when we don't display any actual data. We are adding
 For the default state we define an empty object because we don't have any data, yet. When receiving data, we simply add it to the existing object, using the ID as a key. Learn more about [persistedState](extending/js-plugin-api.md#persistedstate) in our guide.
 
 ```js
-static defaultPersistedState = {
+static defaultPersistedState: PersistedState = {
   data: [],
 };
 
-static persistedStateReducer = (
+static persistedStateReducer<PersistedState>(
   persistedState: PersistedState,
   method: string,
   payload: Row,
-) => {
+) {
   if (method === 'newRow') {
-    return {
-      ...persistedState,
+    return return Object.assign({}, persistedState, {,
       [payload.id]: payload,
-    };
+    });
   }
   return persistedState;
 };
@@ -103,10 +102,9 @@ The `Card` component is responsible for rendering the actual image and title. Th
 
 ```js
 class Card extends React.Component<{
-  ...Row,
   onSelect: () => void,
   selected: boolean,
-}> {
+} & Row> {
   static Container = styled(FlexColumn)(props => ({
     margin: 10,
     borderRadius: 5,
@@ -122,7 +120,7 @@ class Card extends React.Component<{
     cursor: 'pointer',
   }));
 
-  static Image = styled('div')({
+  static Image = styled.div({
     backgroundSize: 'cover',
     width: '100%',
     paddingTop: '100%',

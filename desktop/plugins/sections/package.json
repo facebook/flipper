@@ -1,0 +1,19 @@
+{
+  "name": "flipper-plugin-sections",
+  "title": "Sections",
+  "bugs": {
+    "email": "oncall+ios_componentkit@xmail.facebook.com",
+    "url": "https://fb.workplace.com/groups/componentkit/"
+  },
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "keywords": ["flipper-plugin"],
+  "gatekeeper": "flipper_sections_plugin",
+  "dependencies": {
+    "react-d3-tree": "^1.12.1"
+  },
+  "resolutions": {
+    "react-d3-tree/d3": "file:./d3"
+  }
+}

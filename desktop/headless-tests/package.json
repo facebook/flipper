@@ -1,0 +1,25 @@
+{
+  "name": "headless-tests",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "test:debug": "node --inspect node_modules/.bin/jest --runInBand"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.jsx?$": "babel-jest"
+    }
+  },
+  "devDependencies": {
+    "jest": "^24.7.1"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@babel/preset-env": "^7.8.3",
+    "@babel/preset-flow": "^7.8.3",
+    "babel-jest": "^24.8.0",
+    "canonical-json": "^0.0.4",
+    "lodash.memoize": "^4.1.2"
+  }
+}

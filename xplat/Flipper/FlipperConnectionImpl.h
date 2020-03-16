@@ -1,9 +1,10 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the LICENSE
- * file in the root directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 #pragma once
 
 #include <map>
@@ -17,7 +18,9 @@ namespace flipper {
 
 class FlipperConnectionImpl : public FlipperConnection {
  public:
-  FlipperConnectionImpl(FlipperConnectionManager* socket, const std::string& name)
+  FlipperConnectionImpl(
+      FlipperConnectionManager* socket,
+      const std::string& name)
       : socket_(socket), name_(name) {}
 
   void call(

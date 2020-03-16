@@ -1,0 +1,16 @@
+{
+  "name": "LeakCanary",
+  "version": "1.0.0",
+  "main": "index.tsx",
+  "license": "MIT",
+  "keywords": [
+    "flipper-plugin"
+  ],
+  "dependencies": {},
+  "devDependencies": {},
+  "icon": "bird",
+  "title": "LeakCanary",
+  "bugs": {
+    "email": "jhli@fb.com"
+  }
+}

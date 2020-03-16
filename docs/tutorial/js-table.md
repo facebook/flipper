@@ -3,57 +3,7 @@ id: js-table
 title: Showing a table
 ---
 
-Now that we have the native side covered, let's display the data we're sending
-on the desktop side.
-
 ![Android Tutorial App](assets/android-tutorial-desktop.png)
-
-## Dynamic Plugin loading
-
-By default, Flipper will start with the plugins it was bundled with. You can
-configure it to also look for plugins in custom directories. To do that,
-modify the `~/.flipper/config.json` file that is created the first time
-you start Flipper and add a newly created directory the `pluginPaths` attribute.
-
-Your file will then look something like this:
-
-```json
-{
-  "pluginPaths": [
-    "~/.flipper/custom-plugins/"
-  ],
-  ...
-}
-```
-
-## Creating the Plugin Package
-
-With the loading part out of the way, we can create the new plugin. For that, first
-create a new folder inside the custom plugins directory. Then use `yarn init` (`npm init` if that's more your style)
-to initialise a new JavaScript package:
-
-```bash
-$ cd ~/.flipper/custom-plugins/
-$ mkdir sea-mammals
-$ cd sea-mammals
-$ yarn init
-```
-
-When choosing the package name, remember to use the name we have specified on the native side as ID.
-In our case, that is "sea-mammals". Once done, open the `package.json`. In addition to the name,
-you can also specify a title to show in the Flipper sidebar and an icon to display here. For instance:
-
-```json
-{
-  "name": "sea-mammals",
-  "version": "1.0.0",
-  "main": "index.js",
-  "license": "MIT",
-  "icon": "apps",
-  "title": "Sea Mammals"
-}
-```
-*See [package.json](https://github.com/facebook/flipper/blob/7dae5771d96ea76b75796d3b3a2c78746e581e3f/src/plugins/seamammals/package.json)*
 
 ## Building a Table
 
@@ -171,7 +121,7 @@ Now that we've build all the individual pieces, we
 just need to hook it all up using `createTablePlugin`:
 
 ```javascript
-export default createTablePlugin({
+export default createTablePlugin<Row>({
   method: 'newRow',
   columns,
   columnSizes,
@@ -179,7 +129,7 @@ export default createTablePlugin({
   buildRow,
 });
 ```
-*See [index.js](https://github.com/facebook/flipper/blob/7dae5771d96ea76b75796d3b3a2c78746e581e3f/src/plugins/seamammals/index.js)*
+*See [index.tsx](https://github.com/facebook/flipper/blob/master/desktop/plugins/seamammals/index.tsx)*
 
 The `method` we define here corresponds to the name
 of the function we call on the native side to inform

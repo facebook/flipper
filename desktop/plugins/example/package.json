@@ -1,0 +1,13 @@
+{
+  "name": "flipper-plugin-example",
+  "version": "1.0.0",
+  "description": "An example for a Flipper plugin",
+  "main": "index.tsx",
+  "license": "MIT",
+  "keywords": ["flipper-plugin"],
+  "title": "Example Plugin",
+  "icon": "apps",
+  "bugs": {
+    "url": "https://fbflipper.com/"
+  }
+}

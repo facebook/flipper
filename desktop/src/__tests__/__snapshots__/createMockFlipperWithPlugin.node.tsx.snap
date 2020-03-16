@@ -1,0 +1,61 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`can create a Fake flipper 1`] = `
+Object {
+  "androidEmulators": Array [],
+  "clients": Array [
+    Object {
+      "id": "TestApp#Android#MockAndroidDevice#serial",
+      "query": Object {
+        "app": "TestApp",
+        "device": "MockAndroidDevice",
+        "device_id": "serial",
+        "os": "Android",
+      },
+    },
+  ],
+  "deepLinkPayload": null,
+  "devices": Array [
+    Object {
+      "deviceType": "physical",
+      "logs": Array [],
+      "os": "Android",
+      "serial": "serial",
+      "title": "MockAndroidDevice",
+    },
+  ],
+  "errors": Array [],
+  "selectedApp": "TestApp#Android#MockAndroidDevice#serial",
+  "selectedDevice": Object {
+    "deviceType": "physical",
+    "logs": Array [],
+    "os": "Android",
+    "serial": "serial",
+    "title": "MockAndroidDevice",
+  },
+  "selectedPlugin": "TestPlugin",
+  "staticView": null,
+  "uninitializedClients": Array [],
+  "userPreferredApp": "TestApp#Android#MockAndroidDevice#serial",
+  "userPreferredDevice": "MockAndroidDevice",
+  "userPreferredPlugin": "TestPlugin",
+  "userStarredPlugins": Object {
+    "TestApp": Array [
+      "TestPlugin",
+    ],
+  },
+}
+`;
+
+exports[`can create a Fake flipper 2`] = `
+Object {
+  "clientPlugins": Map {
+    "TestPlugin" => [Function],
+  },
+  "devicePlugins": Map {},
+  "disabledPlugins": Array [],
+  "failedPlugins": Array [],
+  "gatekeepedPlugins": Array [],
+  "selectedPlugins": Array [],
+}
+`;

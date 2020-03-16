@@ -1,9 +1,8 @@
-/*
- *  Copyright (c) Facebook, Inc. and its affiliates.
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- *  This source code is licensed under the MIT license found in the LICENSE
- *  file in the root directory of this source tree.
- *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 body,
@@ -55,18 +54,46 @@ h6 {
 .landing-btn {
   display: inline-block;
   padding: 7px 20px;
-  border-radius: 6px;
   margin: 0 10px;
+  border-radius: 6px;
   border: 1px solid #777;
 }
 
-.landing-btn:hover {
+.splash .landing-btn.landing-btn-label {
+  background-color: #0066af;
+  border-color: #0066af;
+}
+
+.landing-btn-left {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  margin-right: 0;
+  padding-right: 10px;
+}
+
+.landing-btn-middle {
+  border-radius: 0;
+  margin: 0;
+  padding: 7px 10px;
+}
+
+.landing-btn-right {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  margin-left: 0;
+  padding-left: 10px;
+}
+
+.landing-btn.primary:hover {
+  background-color: #0066af;
+  border-color: #0066af;
 }
 
 .landing-btn.primary {
   background-color: #008cf2;
   color: white;
   border-color: #008cf2;
+  color: white;
 }
 
 .splash .landing-btn {
@@ -431,6 +458,11 @@ footer iframe {
   background-color: rgb(253, 245, 212);
   border-left: 4px solid rgb(241, 196, 15);
   padding: 12px;
+  margin-bottom: 16px;
+}
+
+.warning *:last-child {
+  margin-bottom: 0px;
 }
 
 .navListItem a[href='/docs/features/index.html'] {

@@ -1,9 +1,10 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the LICENSE
- * file in the root directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.flipper.plugins.inspector;
 
 import android.app.Application;
@@ -53,10 +54,7 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
   }
 
   public InspectorFlipperPlugin(Context context, DescriptorMapping descriptorMapping) {
-    this(
-        new ApplicationWrapper(getAppContextFromContext(context)),
-        descriptorMapping,
-        null);
+    this(new ApplicationWrapper(getAppContextFromContext(context)), descriptorMapping, null);
   }
 
   public InspectorFlipperPlugin(
@@ -64,10 +62,7 @@ public class InspectorFlipperPlugin implements FlipperPlugin {
       DescriptorMapping descriptorMapping,
       @Nullable List<ExtensionCommand> extensions) {
 
-    this(
-        new ApplicationWrapper(getAppContextFromContext(context)),
-        descriptorMapping,
-        extensions);
+    this(new ApplicationWrapper(getAppContextFromContext(context)), descriptorMapping, extensions);
   }
 
   // Package visible for testing

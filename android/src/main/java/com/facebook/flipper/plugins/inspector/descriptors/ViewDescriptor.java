@@ -1,9 +1,10 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the LICENSE
- * file in the root directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.flipper.plugins.inspector.descriptors;
 
 import static com.facebook.flipper.plugins.inspector.InspectorValue.Type.Color;
@@ -26,7 +27,6 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import androidx.core.view.MarginLayoutParamsCompat;
 import androidx.core.view.ViewCompat;
-import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import com.facebook.flipper.core.ErrorReportingRunnable;
 import com.facebook.flipper.core.FlipperDynamic;
 import com.facebook.flipper.core.FlipperObject;
@@ -38,9 +38,9 @@ import com.facebook.flipper.plugins.inspector.Touch;
 import com.facebook.flipper.plugins.inspector.descriptors.utils.AccessibilityEvaluationUtil;
 import com.facebook.flipper.plugins.inspector.descriptors.utils.AccessibilityRoleUtil;
 import com.facebook.flipper.plugins.inspector.descriptors.utils.AccessibilityUtil;
+import com.facebook.flipper.plugins.inspector.descriptors.utils.ContextDescriptorUtils;
 import com.facebook.flipper.plugins.inspector.descriptors.utils.EnumMapping;
-import com.facebook.flipper.plugins.inspector.descriptors.utils.ViewAccessibilityHelper;
-import com.facebook.stetho.common.android.ResourcesUtil;
+import com.facebook.flipper.plugins.inspector.descriptors.utils.stethocopies.ResourcesUtil;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -87,21 +87,7 @@ public class ViewDescriptor extends NodeDescriptor<View> {
 
   @Override
   public String getAXName(View node) throws Exception {
-    AccessibilityNodeInfoCompat nodeInfo = ViewAccessibilityHelper.createNodeInfoFromView(node);
-    if (nodeInfo != null) {
-
-      CharSequence name = nodeInfo.getClassName();
-      nodeInfo.recycle();
-
-      if (name != null && name != "") {
-        return name.toString();
-      }
-    }
-
-    // A node may have no name if a custom role description was set, but no
-    // role, or if the AccessibilityNodeInfo could not be generated. If this is
-    // the case name just give this node a generic name.
-    return "AccessibilityNode";
+    return node.getClass().getSimpleName();
   }
 
   @Override
@@ -116,6 +102,8 @@ public class ViewDescriptor extends NodeDescriptor<View> {
 
   @Override
   public List<Named<FlipperObject>> getData(View node) {
+    final int[] positionOnScreen = new int[2];
+    node.getLocationOnScreen(positionOnScreen);
     final FlipperObject.Builder viewProps =
         new FlipperObject.Builder()
             .put("height", InspectorValue.mutable(node.getHeight()))
@@ -162,7 +150,9 @@ public class ViewDescriptor extends NodeDescriptor<View> {
                 "pivot",
                 new FlipperObject.Builder()
                     .put("x", InspectorValue.mutable(node.getPivotX()))
-                    .put("y", InspectorValue.mutable(node.getPivotY())));
+                    .put("y", InspectorValue.mutable(node.getPivotY())))
+            .put("positionOnScreenX", positionOnScreen[0])
+            .put("positionOnScreenY", positionOnScreen[1]);
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
       viewProps
@@ -197,7 +187,9 @@ public class ViewDescriptor extends NodeDescriptor<View> {
       viewProps.put("foreground", fromDrawable(node.getForeground()));
     }
 
-    return Arrays.asList(new Named<>("View", viewProps.build()));
+    return Arrays.asList(
+        new Named<>("View", viewProps.build()),
+        new Named<>("Theme", ContextDescriptorUtils.themeData(node.getContext())));
   }
 
   @Override

@@ -1,5 +1,5 @@
 name:                bump
-version:             0.1.0.1
+version:             0.2.1
 
 dependencies:
   - base >= 4.7 && < 5
@@ -12,5 +12,3 @@ executables:
   bump:
     source-dirs:      .
     main:             bump.hs
-    ghc-options:      -O2 -optl-s
-    ld-options:       -static -fuse-ld=gold

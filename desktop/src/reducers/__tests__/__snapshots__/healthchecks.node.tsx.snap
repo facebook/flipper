@@ -1,0 +1,335 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`acknowledgeProblems 1`] = `
+Object {
+  "acknowledgedProblems": Array [
+    "ios.sdk",
+    "common.openssl",
+  ],
+  "healthcheckReport": Object {
+    "categories": Object {
+      "android": Object {
+        "checks": Object {
+          "android.sdk": Object {
+            "key": "android.sdk",
+            "label": "SDK Installed",
+            "result": Object {
+              "isAcknowledged": true,
+              "status": "SUCCESS",
+            },
+          },
+        },
+        "key": "android",
+        "label": "Android",
+        "result": Object {
+          "isAcknowledged": true,
+          "status": "SUCCESS",
+        },
+      },
+      "common": Object {
+        "checks": Object {
+          "common.openssl": Object {
+            "key": "common.openssl",
+            "label": "OpenSSL Istalled",
+            "result": Object {
+              "isAcknowledged": true,
+              "status": "FAILED",
+            },
+          },
+        },
+        "key": "common",
+        "label": "Common",
+        "result": Object {
+          "isAcknowledged": true,
+          "status": "FAILED",
+        },
+      },
+      "ios": Object {
+        "checks": Object {
+          "ios.sdk": Object {
+            "key": "ios.sdk",
+            "label": "SDK Installed",
+            "result": Object {
+              "isAcknowledged": true,
+              "status": "FAILED",
+            },
+          },
+        },
+        "key": "ios",
+        "label": "iOS",
+        "result": Object {
+          "isAcknowledged": true,
+          "status": "FAILED",
+        },
+      },
+    },
+    "result": Object {
+      "isAcknowledged": true,
+      "status": "FAILED",
+    },
+  },
+}
+`;
+
+exports[`finish 1`] = `
+Object {
+  "acknowledgedProblems": Array [],
+  "healthcheckReport": Object {
+    "categories": Object {
+      "android": Object {
+        "checks": Object {
+          "android.sdk": Object {
+            "key": "android.sdk",
+            "label": "SDK Installed",
+            "result": Object {
+              "isAcknowledged": false,
+              "message": "Updated Test Message",
+              "status": "SUCCESS",
+            },
+          },
+        },
+        "key": "android",
+        "label": "Android",
+        "result": Object {
+          "isAcknowledged": false,
+          "status": "SUCCESS",
+        },
+      },
+      "common": Object {
+        "checks": Object {
+          "common.openssl": Object {
+            "key": "common.openssl",
+            "label": "OpenSSL Istalled",
+            "result": Object {
+              "isAcknowledged": false,
+              "message": "Updated Test Message",
+              "status": "SUCCESS",
+            },
+          },
+        },
+        "key": "common",
+        "label": "Common",
+        "result": Object {
+          "isAcknowledged": false,
+          "status": "SUCCESS",
+        },
+      },
+      "ios": Object {
+        "checks": Object {
+          "ios.sdk": Object {
+            "key": "ios.sdk",
+            "label": "SDK Installed",
+            "result": Object {
+              "isAcknowledged": false,
+              "message": "Updated Test Message",
+              "status": "SUCCESS",
+            },
+          },
+        },
+        "key": "ios",
+        "label": "iOS",
+        "result": Object {
+          "isAcknowledged": false,
+          "status": "SUCCESS",
+        },
+      },
+    },
+    "result": Object {
+      "status": "SUCCESS",
+    },
+  },
+}
+`;
+
+exports[`startHealthCheck 1`] = `
+Object {
+  "acknowledgedProblems": Array [],
+  "healthcheckReport": Object {
+    "categories": Object {
+      "android": Object {
+        "checks": Object {
+          "android.sdk": Object {
+            "key": "android.sdk",
+            "label": "SDK Installed",
+            "result": Object {
+              "status": "IN_PROGRESS",
+            },
+          },
+        },
+        "key": "android",
+        "label": "Android",
+        "result": Object {
+          "status": "IN_PROGRESS",
+        },
+      },
+      "common": Object {
+        "checks": Object {
+          "common.openssl": Object {
+            "key": "common.openssl",
+            "label": "OpenSSL Istalled",
+            "result": Object {
+              "status": "IN_PROGRESS",
+            },
+          },
+        },
+        "key": "common",
+        "label": "Common",
+        "result": Object {
+          "status": "IN_PROGRESS",
+        },
+      },
+      "ios": Object {
+        "checks": Object {
+          "ios.sdk": Object {
+            "key": "ios.sdk",
+            "label": "SDK Installed",
+            "result": Object {
+              "status": "IN_PROGRESS",
+            },
+          },
+        },
+        "key": "ios",
+        "label": "iOS",
+        "result": Object {
+          "status": "IN_PROGRESS",
+        },
+      },
+    },
+    "result": Object {
+      "status": "IN_PROGRESS",
+    },
+  },
+}
+`;
+
+exports[`statuses updated after healthchecks finished 1`] = `
+Object {
+  "acknowledgedProblems": Array [],
+  "healthcheckReport": Object {
+    "categories": Object {
+      "android": Object {
+        "checks": Object {
+          "android.sdk": Object {
+            "key": "android.sdk",
+            "label": "SDK Installed",
+            "result": Object {
+              "isAcknowledged": false,
+              "message": "Updated Test Message",
+              "status": "FAILED",
+            },
+          },
+        },
+        "key": "android",
+        "label": "Android",
+        "result": Object {
+          "isAcknowledged": false,
+          "status": "FAILED",
+        },
+      },
+      "common": Object {
+        "checks": Object {
+          "common.openssl": Object {
+            "key": "common.openssl",
+            "label": "OpenSSL Istalled",
+            "result": Object {
+              "isAcknowledged": false,
+              "message": "Updated Test Message",
+              "status": "SUCCESS",
+            },
+          },
+        },
+        "key": "common",
+        "label": "Common",
+        "result": Object {
+          "status": "SUCCESS",
+        },
+      },
+      "ios": Object {
+        "checks": Object {
+          "ios.sdk": Object {
+            "key": "ios.sdk",
+            "label": "SDK Installed",
+            "result": Object {
+              "isAcknowledged": false,
+              "message": "Updated Test Message",
+              "status": "SUCCESS",
+            },
+          },
+        },
+        "key": "ios",
+        "label": "iOS",
+        "result": Object {
+          "status": "SUCCESS",
+        },
+      },
+    },
+    "result": Object {
+      "isAcknowledged": false,
+      "status": "FAILED",
+    },
+  },
+}
+`;
+
+exports[`updateHealthcheckResult 1`] = `
+Object {
+  "acknowledgedProblems": Array [],
+  "healthcheckReport": Object {
+    "categories": Object {
+      "android": Object {
+        "checks": Object {
+          "android.sdk": Object {
+            "key": "android.sdk",
+            "label": "SDK Installed",
+            "result": Object {
+              "isAcknowledged": false,
+              "message": "Updated Test Message",
+              "status": "SUCCESS",
+            },
+          },
+        },
+        "key": "android",
+        "label": "Android",
+        "result": Object {
+          "status": "IN_PROGRESS",
+        },
+      },
+      "common": Object {
+        "checks": Object {
+          "common.openssl": Object {
+            "key": "common.openssl",
+            "label": "OpenSSL Istalled",
+            "result": Object {
+              "status": "IN_PROGRESS",
+            },
+          },
+        },
+        "key": "common",
+        "label": "Common",
+        "result": Object {
+          "status": "IN_PROGRESS",
+        },
+      },
+      "ios": Object {
+        "checks": Object {
+          "ios.sdk": Object {
+            "key": "ios.sdk",
+            "label": "SDK Installed",
+            "result": Object {
+              "status": "IN_PROGRESS",
+            },
+          },
+        },
+        "key": "ios",
+        "label": "iOS",
+        "result": Object {
+          "status": "IN_PROGRESS",
+        },
+      },
+    },
+    "result": Object {
+      "status": "IN_PROGRESS",
+    },
+  },
+}
+`;

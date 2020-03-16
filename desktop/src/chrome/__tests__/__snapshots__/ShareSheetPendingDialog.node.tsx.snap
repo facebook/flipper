@@ -1,0 +1,101 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ShareSheetPendingDialog is rendered with status update 1`] = `
+<div
+  className="css-ha9vz3"
+  style={
+    Object {
+      "width": undefined,
+    }
+  }
+>
+  <div
+    className="css-mgujkx"
+  >
+    <div
+      className="css-1hed33k"
+      size={30}
+    />
+    <span
+      className="css-1r5zvq8"
+      color="#6f6f6f"
+    >
+      Update
+    </span>
+  </div>
+  <div
+    className="css-a1glw"
+  >
+    <div
+      className="css-12zzrdt"
+    />
+    <div
+      className="css-1ee9nwd"
+      onClick={[Function]}
+      onMouseDown={[Function]}
+      onMouseUp={[Function]}
+    >
+      Cancel
+    </div>
+    <div
+      className="css-1ee9nwd"
+      onClick={[Function]}
+      onMouseDown={[Function]}
+      onMouseUp={[Function]}
+      type="primary"
+    >
+      Run In Background
+    </div>
+  </div>
+</div>
+`;
+
+exports[`ShareSheetPendingDialog is rendered without status update 1`] = `
+<div
+  className="css-ha9vz3"
+  style={
+    Object {
+      "width": undefined,
+    }
+  }
+>
+  <div
+    className="css-mgujkx"
+  >
+    <div
+      className="css-1hed33k"
+      size={30}
+    />
+    <span
+      className="css-1r5zvq8"
+      color="#6f6f6f"
+    >
+      wubba lubba dub dub
+    </span>
+  </div>
+  <div
+    className="css-a1glw"
+  >
+    <div
+      className="css-12zzrdt"
+    />
+    <div
+      className="css-1ee9nwd"
+      onClick={[Function]}
+      onMouseDown={[Function]}
+      onMouseUp={[Function]}
+    >
+      Cancel
+    </div>
+    <div
+      className="css-1ee9nwd"
+      onClick={[Function]}
+      onMouseDown={[Function]}
+      onMouseUp={[Function]}
+      type="primary"
+    >
+      Run In Background
+    </div>
+  </div>
+</div>
+`;

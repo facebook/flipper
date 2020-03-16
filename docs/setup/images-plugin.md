@@ -9,6 +9,17 @@ could easily be added. Send us a PR!
 
 ## Fresco and Android
 
+The Fresco images plugin is shipped as a separate Maven artifact:
+
+```groovy
+dependencies {
+  debugImplementation 'com.facebook.flipper:flipper-fresco-plugin:0.30.1'
+}
+```
+
+After including the plugin in your dependencies, you can add it to the
+client:
+
 ```java
 import com.facebook.flipper.plugins.fresco.FrescoFlipperPlugin;
 

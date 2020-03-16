@@ -1,9 +1,10 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the LICENSE
- * file in the root directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.flipper.plugins.inspector.descriptors;
 
 import static androidx.core.view.ViewGroupCompat.LAYOUT_MODE_CLIP_BOUNDS;
@@ -23,7 +24,7 @@ import com.facebook.flipper.plugins.inspector.InspectorValue;
 import com.facebook.flipper.plugins.inspector.Named;
 import com.facebook.flipper.plugins.inspector.NodeDescriptor;
 import com.facebook.flipper.plugins.inspector.Touch;
-import com.facebook.stetho.common.android.FragmentCompatUtil;
+import com.facebook.flipper.plugins.inspector.descriptors.utils.stethocopies.FragmentCompatUtil;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;

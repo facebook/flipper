@@ -1,9 +1,10 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the LICENSE
- * file in the root directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.flipper.sample;
 
 import android.content.Intent;
@@ -23,6 +24,7 @@ import com.facebook.litho.annotations.OnUpdateState;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.fresco.FrescoImage;
 import com.facebook.litho.widget.Text;
+import com.facebook.yoga.YogaEdge;
 
 @LayoutSpec
 public class RootComponentSpec {
@@ -34,41 +36,61 @@ public class RootComponentSpec {
     return Column.create(c)
         .child(
             Text.create(c)
-                .text("Tap to hit get request")
+                .text("Send GET request")
                 .key("1")
+                .marginDip(YogaEdge.ALL, 10)
                 .textSizeSp(20)
                 .clickHandler(RootComponent.hitGetRequest(c)))
         .child(
             Text.create(c)
-                .text("Tap to hit post request")
+                .text("Send POST request")
                 .key("2")
+                .marginDip(YogaEdge.ALL, 10)
                 .textSizeSp(20)
                 .clickHandler(RootComponent.hitPostRequest(c)))
         .child(
             Text.create(c)
                 .text("Trigger Notification")
                 .key("3")
+                .marginDip(YogaEdge.ALL, 10)
                 .textSizeSp(20)
                 .clickHandler(RootComponent.triggerNotification(c)))
         .child(
             Text.create(c)
                 .text("Diagnose connection issues")
                 .key("4")
+                .marginDip(YogaEdge.ALL, 10)
                 .textSizeSp(20)
                 .clickHandler(RootComponent.openDiagnostics(c)))
         .child(
             Text.create(c)
                 .text("Load Fresco image")
                 .key("5")
+                .marginDip(YogaEdge.ALL, 10)
                 .textSizeSp(20)
                 .clickHandler(RootComponent.loadImage(c)))
         .child(
             Text.create(c)
                 .text("Navigate to another page")
-                .key("5")
+                .key("6")
+                .marginDip(YogaEdge.ALL, 10)
                 .textSizeSp(20)
                 .clickHandler(RootComponent.openAlternateActivityOne(c)))
-        .child(displayImage ? FrescoImage.create(c).controller(controller) : null)
+        .child(
+            Text.create(c)
+                .text("Crash this app")
+                .key("7")
+                .marginDip(YogaEdge.ALL, 10)
+                .textSizeSp(20)
+                .clickHandler(RootComponent.triggerCrash(c)))
+        .child(
+            displayImage
+                ? FrescoImage.create(c)
+                    .controller(controller)
+                    .marginDip(YogaEdge.ALL, 10)
+                    .widthDip(150)
+                    .heightDip(150)
+                : null)
         .build();
   }
 
@@ -97,6 +119,11 @@ public class RootComponentSpec {
   static void openAlternateActivityOne(final ComponentContext c) {
     final Intent intent = new Intent(c.getAndroidContext(), DeepLinkActivity.class);
     c.getAndroidContext().startActivity(intent);
+  }
+
+  @OnEvent(ClickEvent.class)
+  static void triggerCrash(final ComponentContext c) {
+    throw new RuntimeException("Artificially triggered crash from Flipper sample app");
   }
 
   @OnUpdateState

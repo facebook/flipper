@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.flipper.sample;
 
 import android.content.Context;
@@ -16,6 +17,7 @@ import com.facebook.flipper.plugins.inspector.DescriptorMapping;
 import com.facebook.flipper.plugins.inspector.InspectorFlipperPlugin;
 import com.facebook.flipper.plugins.leakcanary.LeakCanaryFlipperPlugin;
 import com.facebook.flipper.plugins.litho.LithoFlipperDescriptors;
+import com.facebook.flipper.plugins.navigation.NavigationFlipperPlugin;
 import com.facebook.flipper.plugins.network.FlipperOkhttpInterceptor;
 import com.facebook.flipper.plugins.network.NetworkFlipperPlugin;
 import com.facebook.flipper.plugins.sharedpreferences.SharedPreferencesFlipperPlugin;
@@ -53,6 +55,7 @@ public final class FlipperInitializer {
     client.addPlugin(new ExampleFlipperPlugin());
     client.addPlugin(CrashReporterPlugin.getInstance());
     client.addPlugin(new DatabasesFlipperPlugin(context));
+    client.addPlugin(NavigationFlipperPlugin.getInstance());
     client.start();
 
     final OkHttpClient okHttpClient =

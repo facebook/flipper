@@ -1,0 +1,6 @@
+**
+!src/**/*
+__tests__
+.DS_Store
+src/plugins/**/*
+src/fb/**/*

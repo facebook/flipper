@@ -1,7 +1,9 @@
 /**
- * Copyright 2018-present Facebook.
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
  * @format
  */
 
@@ -20,12 +22,12 @@ Flipper has a lot of built in React components to build UIs. You can import them
 
 const TARGET = __dirname + '/../docs/extending/ui-components.md';
 
-glob(__dirname + '/../src/ui/components/**/*.js', (err, files) => {
+glob(__dirname + '/../src/ui/components/**/*.tsx', (err, files) => {
   const content = files
     .map(f => [f, fs.readFileSync(f)])
     .map(([name, file]) => {
       try {
-        const doc = reactDocs.parse(file);
+        const doc = reactDocs.parse(file, null, null, {filename: name});
         console.log(`✅  ${name}`);
         return doc;
       } catch (e) {
@@ -51,7 +53,7 @@ function parseHOC(name, file) {
   try {
     const ast = babylon.parse(file.toString(), {
       sourceType: 'module',
-      plugins: ['flow', 'objectRestSpread', 'classProperties'],
+      plugins: ['typescript', 'objectRestSpread', 'classProperties'],
     });
 
     // find the default export from the file
@@ -85,20 +87,20 @@ function generateMarkdown(component) {
     props = '| Property | Type | Description |\n';
     props += '|---------|------|-------------|\n';
     Object.keys(component.props).forEach(prop => {
-      let {flowType, description} = component.props[prop];
+      let {tsType, description} = component.props[prop];
 
       let type = '';
-      if (flowType) {
-        if (flowType.nullable) {
+      if (tsType) {
+        if (tsType.nullable) {
           type += '?';
         }
 
         type +=
-          flowType.name === 'signature' ||
-          flowType.name === 'union' ||
-          flowType.name === 'Array'
-            ? flowType.raw
-            : flowType.name;
+          tsType.name === 'signature' ||
+          tsType.name === 'union' ||
+          tsType.name === 'Array'
+            ? tsType.raw
+            : tsType.name;
       }
 
       // escape pipes and new lines because they will break tables

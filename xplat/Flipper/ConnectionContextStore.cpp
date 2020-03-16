@@ -1,9 +1,10 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the LICENSE
- * file in the root directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 #include "ConnectionContextStore.h"
 #include <folly/json.h>
 #include <folly/portability/SysStat.h>
@@ -43,10 +44,19 @@ bool ConnectionContextStore::hasRequiredFiles() {
 }
 
 std::string ConnectionContextStore::getCertificateSigningRequest() {
+  // Use in-memory CSR if already loaded
   if (csr != "") {
     return csr;
   }
-  resetFlipperDir();
+
+  // Attempt to load existing CSR from previous run of the app
+  csr = loadStringFromFile(absoluteFilePath(CSR_FILE_NAME));
+  if (csr != "") {
+    return csr;
+  }
+
+  // Clean all state and generate a new one
+  resetState();
   bool success = generateCertSigningRequest(
       deviceData_.appId.c_str(),
       absoluteFilePath(CSR_FILE_NAME).c_str(),
@@ -85,7 +95,7 @@ std::string ConnectionContextStore::getDeviceId() {
     auto maybeDeviceId = folly::parseJson(config)["deviceId"];
     return maybeDeviceId.isString() ? maybeDeviceId.getString()
                                     : deviceData_.deviceId;
-  } catch (std::exception& e) {
+  } catch (std::exception&) {
     return deviceData_.deviceId;
   }
 }
@@ -103,7 +113,11 @@ std::string ConnectionContextStore::getCertificateDirectoryPath() {
   return absoluteFilePath("");
 }
 
-bool ConnectionContextStore::resetFlipperDir() {
+bool ConnectionContextStore::resetState() {
+  // Clear in-memory state
+  csr = "";
+
+  // Delete state from disk
   std::string dirPath = absoluteFilePath("");
   struct stat info;
   if (stat(dirPath.c_str(), &info) != 0) {

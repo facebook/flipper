@@ -36,8 +36,11 @@
       "tutorial/intro",
       "tutorial/ios",
       "tutorial/android",
+      "tutorial/react-native",
+      "tutorial/js-setup",
       "tutorial/js-table",
-      "tutorial/js-custom"
+      "tutorial/js-custom",
+      "tutorial/js-publishing"
     ],
     "Plugin Development": [
       "extending/js-setup",

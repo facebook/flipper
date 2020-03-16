@@ -1,8 +1,8 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the LICENSE
- * file in the root directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 apply plugin: 'com.android.library'
@@ -18,6 +18,7 @@ android {
         minSdkVersion rootProject.minSdkVersion
         targetSdkVersion rootProject.targetSdkVersion
         buildConfigField "boolean", "IS_INTERNAL_BUILD", 'true'
+        buildConfigField "boolean", "IS_ASAN_BUILD", 'false'
 
         ndk {
             abiFilters 'x86', 'x86_64', 'armeabi-v7a', 'arm64-v8a'
@@ -25,14 +26,19 @@ android {
 
         externalNativeBuild {
             cmake {
-                arguments '-DANDROID_TOOLCHAIN=clang', '-DANDROID_STL=c++_shared'
-                targets 'flipper', 'event', 'event_extra', 'event_core'
+                arguments '-DANDROID_TOOLCHAIN=clang', '-DANDROID_STL=c++_static'
+                targets 'flipper', 'event_shared', 'event_extra_shared', 'event_core_shared'
             }
         }
     }
 
     lintOptions {
         abortOnError false
+    }
+
+    configurations {
+        extractHeaders
+        extractJNI
     }
 
     sourceSets {
@@ -51,22 +57,13 @@ android {
     }
 
     dependencies {
-        compileOnly deps.lithoAnnotations
         compileOnly deps.proguardAnnotations
-        implementation project(':fbjni')
+        implementation 'com.facebook.fbjni:fbjni:0.0.2'
+        extractHeaders 'com.facebook.fbjni:fbjni:0.0.2:headers'
+        extractJNI 'com.facebook.fbjni:fbjni:0.0.2'
         implementation deps.soloader
         implementation deps.jsr305
         implementation deps.supportAppCompat
-        implementation deps.stetho
-        implementation deps.okhttp3
-        implementation deps.lithoCore
-        implementation deps.lithoSectionsDebug
-        implementation deps.lithoSectionsCore
-        implementation deps.lithoWidget
-        implementation deps.fresco
-        implementation deps.frescoFlipper
-        implementation deps.frescoStetho
-        compileOnly deps.leakcanary
 
         testImplementation deps.mockito
         testImplementation deps.robolectric
@@ -87,3 +84,36 @@ task sourcesJar(type: Jar) {
 }
 
 artifacts.add('archives', sourcesJar)
+
+task extractAARHeaders {
+    doLast {
+        configurations.extractHeaders.files.each {
+            def file = it.absoluteFile
+            copy {
+                from zipTree(file)
+                into "$buildDir/$file.name"
+                include "**/*.h"
+            }
+        }
+    }
+}
+
+task extractJNIFiles {
+    doLast {
+        configurations.extractJNI.files.each {
+            def file = it.absoluteFile
+            copy {
+                from zipTree(file)
+                into "$buildDir/$file.name"
+                include "jni/**/*"
+            }
+        }
+    }
+}
+
+tasks.whenTaskAdded { task ->
+    if (task.name.contains('externalNativeBuild')) {
+        task.dependsOn(extractAARHeaders)
+        task.dependsOn(extractJNIFiles)
+    }
+}

@@ -1,8 +1,8 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the LICENSE
- * file in the root directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 // Set up everything required for releasing on Bintray
@@ -12,14 +12,12 @@ ext {
     bintrayName = "${GROUP}:${POM_ARTIFACT_ID}"
     bintrayDescription = POM_DESCRIPTION
     projectUrl = POM_URL
-    issuesUrl = 'https://github.com/facebook/litho/issues'
+    issuesUrl = POM_ISSUES_URL
     scmUrl = POM_SCM_URL
     scmConnection = POM_SCM_CONNECTION
     scmDeveloperConnection = POM_SCM_DEV_CONNECTION
 
     publishedGroupId = GROUP
-    libraryName = 'litho'
-    artifact = 'litho'
 
     developerId = POM_DEVELOPER_ID
     developerName = POM_DEVELOPER_NAME

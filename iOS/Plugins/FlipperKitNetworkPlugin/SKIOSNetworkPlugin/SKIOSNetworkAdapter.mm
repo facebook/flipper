@@ -1,10 +1,10 @@
 /*
- *  Copyright (c) 2018-present, Facebook, Inc. and its affiliates.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- *  This source code is licensed under the MIT license found in the LICENSE
- *  file in the root directory of this source tree.
- *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 #if FB_SONARKIT_ENABLED
 
 #import "SKIOSNetworkAdapter.h"
@@ -13,8 +13,8 @@
 
 @implementation SKIOSNetworkAdapter
 @synthesize delegate = _delegate;
-- (instancetype)init{
-  if (self=[super init]){
+- (instancetype)init {
+  if (self = [super init]) {
     _delegate = nil;
   }
   return self;

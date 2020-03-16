@@ -1,9 +1,10 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the LICENSE
- * file in the root directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.flipper.plugins.sharedpreferences;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -101,8 +102,7 @@ public class SharedPreferencesFlipperPlugin implements FlipperPlugin {
     }
     mSharedPreferences = new HashMap<>(descriptors.size());
     for (SharedPreferencesDescriptor descriptor : descriptors) {
-      SharedPreferences preferences =
-          context.getSharedPreferences(descriptor.name, descriptor.mode);
+      SharedPreferences preferences = descriptor.getSharedPreferences(context);
       preferences.registerOnSharedPreferenceChangeListener(onSharedPreferenceChangeListener);
       mSharedPreferences.put(preferences, descriptor);
     }
@@ -251,6 +251,10 @@ public class SharedPreferencesFlipperPlugin implements FlipperPlugin {
       }
       this.name = name;
       this.mode = mode;
+    }
+
+    public SharedPreferences getSharedPreferences(Context context) {
+      return context.getSharedPreferences(name, mode);
     }
   }
 }

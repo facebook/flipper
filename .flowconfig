@@ -1,17 +1,22 @@
 [ignore]
-.*/scripts/.*
 .*/coverage/.*
 .*/build/.*
 .*/dist/.*
-.*/static/.*
-<PROJECT_ROOT>/src/fb/plugins/relaydevtools/relay-devtools/DevtoolsUI.js$
-.*/website/.*
-<PROJECT_ROOT>/src/plugins/sections/d3/d3.js$
 .*\.tsx
+.*\.ts
 .*/node_modules/.*
+<PROJECT_ROOT>/scripts/.*
+<PROJECT_ROOT>/desktop/scripts/.*
+<PROJECT_ROOT>/desktop/static/.*
+<PROJECT_ROOT>/desktop/pkg/.*
+<PROJECT_ROOT>/desktop/doctor/.*
+<PROJECT_ROOT>/desktop/plugins/fb/relaydevtools/relay-devtools/DevtoolsUI.js$
+<PROJECT_ROOT>/website/.*
+<PROJECT_ROOT>/desktop/plugins/sections/d3/d3.js$
+<PROJECT_ROOT>/react-native/ReactNativeFlipperExample/.*
 
 [libs]
-flow-typed
+desktop/flow-typed
 
 [options]
 esproposal.export_star_as=enable
@@ -20,10 +25,7 @@ module.use_strict=true
 emoji=true
 all=true
 include_warnings=true
-module.name_mapper='^.*plugin\.flow\.js$' -> 'plugin'
-module.name_mapper='^.*plugin\.tsx$' -> 'plugin'
 module.name_mapper='^\(.*\)\.tsx$' -> 'TsStub'
-module.name_mapper='flipper' -> '<PROJECT_ROOT>/src/index.js'
 suppress_type=$FlowFixMe
 module.system=haste
 
@@ -37,4 +39,4 @@ untyped-import
 untyped-type-import
 
 [version]
-0.104.0
+0.120.1

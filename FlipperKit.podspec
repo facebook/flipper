@@ -1,7 +1,11 @@
+# Copyright (c) Facebook, Inc. and its affiliates.
+#
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
+
 folly_compiler_flags = '-DDEBUG=1 -DFLIPPER_OSS=1 -DFB_SONARKIT_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_LIBGFLAGS=0 -DFOLLY_HAVE_LIBJEMALLOC=0 -DFOLLY_HAVE_PREADV=0 -DFOLLY_HAVE_PWRITEV=0 -DFOLLY_HAVE_TFO=0 -DFOLLY_USE_SYMBOLIZER=0'
-yoga_version = '~> 1.14'
-yogakit_version = '~> 1.14'
-flipperkit_version = '0.23.4'
+yogakit_version = '~> 1.18'
+flipperkit_version = '0.33.1'
 Pod::Spec.new do |spec|
   spec.name = 'FlipperKit'
   spec.version = flipperkit_version
@@ -13,7 +17,7 @@ Pod::Spec.new do |spec|
   spec.source = { :git => 'https://github.com/facebook/Sonar.git',
                   :tag=> "v"+flipperkit_version }
   spec.module_name = 'FlipperKit'
-  spec.platforms = { :ios => "8.4" }
+  spec.platforms = { :ios => "9.0" }
   spec.default_subspecs = "Core"
 
   # This subspec is necessary since FBDefines.h is imported as <FBDefines/FBDefines.h>
@@ -36,7 +40,7 @@ Pod::Spec.new do |spec|
     # by other FlipperKit source files
     ss.private_header_files = 'iOS/FlipperKit/CppBridge/**/*.h'
     ss.preserve_path = 'iOS/FlipperKit/CppBridge/**/*.h'
-    header_search_paths = "\"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/FlipperKit/iOS/**/\""
+    header_search_paths = "\"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/Flipper-DoubleConversion\" \"$(PODS_ROOT)/FlipperKit/iOS/**/\""
     ss.pod_target_xcconfig = { "USE_HEADERMAP" => "NO",
                                 "ONLY_ACTIVE_ARCH": "YES",
                              "DEFINES_MODULE" => "YES",
@@ -46,12 +50,12 @@ Pod::Spec.new do |spec|
   spec.subspec 'FBCxxFollyDynamicConvert' do |ss|
     ss.header_dir = 'FBCxxFollyDynamicConvert'
     ss.compiler_flags = folly_compiler_flags
-    ss.dependency 'Flipper-Folly', '~> 2.0'
+    ss.dependency 'Flipper-Folly', '~> 2.1'
     ss.source_files = 'iOS/FlipperKit/FBCxxFollyDynamicConvert/**/*.{h,mm}'
     # We set these files as private headers since they only need to be accessed
     # by other FlipperKit source files
     ss.private_header_files = 'iOS/FlipperKit/FBCxxFollyDynamicConvert/**/*.h'
-    header_search_paths = "\"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/DoubleConversion\""
+    header_search_paths = "\"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/Flipper-DoubleConversion\""
     ss.pod_target_xcconfig = { "USE_HEADERMAP" => "NO",
                                "ONLY_ACTIVE_ARCH": "YES",
                                "DEFINES_MODULE" => "YES",
@@ -83,6 +87,13 @@ Pod::Spec.new do |spec|
                                "HEADER_SEARCH_PATHS" => header_search_paths }
   end
 
+  spec.subspec 'FlipperKitHighlightOverlay' do |ss|
+    ss.header_dir = 'FlipperKitHighlightOverlay'
+    ss.compiler_flags = folly_compiler_flags
+    ss.source_files = 'iOS/Plugins/FlipperKitPluginUtils/FlipperKitHighlightOverlay/SKHighlightOverlay.{h,mm}'
+    ss.public_header_files = 'iOS/Plugins/FlipperKitPluginUtils/FlipperKitHighlightOverlay/SKHighlightOverlay.h'
+  end
+
   spec.subspec 'FlipperKitLayoutTextSearchable' do |ss|
     ss.header_dir = 'FlipperKitLayoutTextSearchable'
     ss.compiler_flags = folly_compiler_flags
@@ -94,7 +105,7 @@ Pod::Spec.new do |spec|
     ss.header_dir = "FlipperKitLayoutPlugin"
     ss.dependency             'FlipperKit/Core'
     ss.dependency             'FlipperKit/FlipperKitLayoutTextSearchable'
-    ss.dependency             'Yoga', yoga_version
+    ss.dependency             'FlipperKit/FlipperKitHighlightOverlay'
     ss.dependency             'YogaKit', yogakit_version
     ss.compiler_flags       = folly_compiler_flags
     ss.public_header_files  = 'iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutPlugin/FlipperKitLayoutPlugin.h',
@@ -105,7 +116,6 @@ Pod::Spec.new do |spec|
                               'iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutPlugin/SKNodeDescriptor.h',
                               'iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutPlugin/SKNamed.h',
                               'iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutPlugin/SKObject.h',
-                              'iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutPlugin/SKHighlightOverlay.h',
                               'iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutPlugin/UIColor+SKSonarValueCoder.h',
                               'iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutPlugin/utils/SKObjectHash.h',
                               'iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutPlugin/utils/SKSwizzle.h',
@@ -117,10 +127,10 @@ Pod::Spec.new do |spec|
   spec.subspec "FlipperKitLayoutComponentKitSupport" do |ss|
     ss.header_dir = "FlipperKitLayoutComponentKitSupport"
     ss.dependency             'FlipperKit/Core'
-    ss.dependency             'Yoga', yoga_version
     ss.dependency             'ComponentKit', '~> 0.0'
     ss.dependency             'FlipperKit/FlipperKitLayoutPlugin'
     ss.dependency             'FlipperKit/FlipperKitLayoutTextSearchable'
+    ss.dependency             'FlipperKit/FlipperKitHighlightOverlay'
     ss.compiler_flags       = folly_compiler_flags
     ss.public_header_files = 'iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutComponentKitSupport/FlipperKitLayoutComponentKitSupport.h',
                              'iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutComponentKitSupport/SKSubDescriptor.h'
@@ -167,6 +177,15 @@ Pod::Spec.new do |spec|
     ss.compiler_flags       = folly_compiler_flags
     ss.public_header_files = 'iOS/Plugins/FlipperKitExamplePlugin/FlipperKitExamplePlugin.h'
     ss.source_files         = "iOS/Plugins/FlipperKitExamplePlugin/**/*.{h,mm}"
+    ss.pod_target_xcconfig = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)\"/Headers/Private/FlipperKit/**" }
+  end
+
+  spec.subspec "FlipperKitReactPlugin" do |ss|
+    ss.header_dir = "FlipperKitReactPlugin"
+    ss.dependency 'FlipperKit/Core'
+    ss.compiler_flags       = folly_compiler_flags
+    ss.public_header_files = 'iOS/Plugins/FlipperKitReactPlugin/FlipperKitReactPlugin.h'
+    ss.source_files         = "iOS/Plugins/FlipperKitReactPlugin/**/FlipperKitReactPlugin.{h,m}"
     ss.pod_target_xcconfig = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)\"/Headers/Private/FlipperKit/**" }
   end
 end

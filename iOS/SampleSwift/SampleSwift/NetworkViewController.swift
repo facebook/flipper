@@ -1,4 +1,9 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 import UIKit
 
@@ -18,9 +23,9 @@ class NetworkViewController: UIViewController {
         return
       }
 
-      let dict = try! JSONSerialization.jsonObject(with: dataUnwrapped, options: JSONSerialization.ReadingOptions.init(rawValue: 0)) as! [String: String]
+      let dict = try? JSONSerialization.jsonObject(with: dataUnwrapped, options: JSONSerialization.ReadingOptions.init(rawValue: 0)) as? [String: String]
       // As sonar cannot detect print() in Logs
-      NSLog("MSG-GET: \(dict["msg"] ?? "Did not find msg key in the received response")")
+      NSLog("MSG-GET: \(dict?["msg"] ?? "Did not find msg key in the received response")")
       strongSelf.showAlert(message: "Received response from GET API, please check the sonar network plugin for detailed response")
     }
     dataTask.resume()
@@ -50,9 +55,9 @@ class NetworkViewController: UIViewController {
         return
       }
 
-      let dict = try! JSONSerialization.jsonObject(with: dataUnwrapped, options: JSONSerialization.ReadingOptions.init(rawValue: 0)) as! [String: String]
+      let dict = try? JSONSerialization.jsonObject(with: dataUnwrapped, options: JSONSerialization.ReadingOptions.init(rawValue: 0)) as? [String: String]
       // As sonar cannot detect print() in Logs
-      NSLog("MSG-POST: \(dict["msg"] ?? "Did not find msg key in the received response")")
+      NSLog("MSG-POST: \(dict?["msg"] ?? "Did not find msg key in the received response")")
       strongSelf.showAlert(message: "Received response from POST API, please check the sonar network plugin for detailed response")
     }
     dataTask.resume()
@@ -80,9 +85,11 @@ class NetworkViewController: UIViewController {
   }
 
   func showAlert(message: String) {
-    let alertController = UIAlertController.init(title: "Flipper", message: message, preferredStyle: .alert);
-    let alertAction = UIAlertAction(title: "Okay", style: UIAlertActionStyle.default, handler: nil)
-    alertController.addAction(alertAction)
-    present(alertController, animated: true, completion: nil)
+    DispatchQueue.main.async {
+      let alertController = UIAlertController.init(title: "Flipper", message: message, preferredStyle: .alert);
+      let alertAction = UIAlertAction(title: "Okay", style: UIAlertAction.Style.default, handler: nil)
+      alertController.addAction(alertAction)
+      self.present(alertController, animated: true, completion: nil)
+    }
   }
 }

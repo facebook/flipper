@@ -1,16 +1,18 @@
 /*
- *  Copyright (c) 2006-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- *  This source code is licensed under the MIT license found in the LICENSE
- *  file in the root directory of this source tree.
- *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 /*
  * JNI specification, as defined by Sun:
  * http://java.sun.com/javase/6/docs/technotes/guides/jni/spec/jniTOC.html
  *
  * Everything here is expected to be VM-neutral.
  */
+
+// clang-format off
 
 #ifndef JNI_H_
 #define JNI_H_

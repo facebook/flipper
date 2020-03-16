@@ -1,9 +1,10 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the LICENSE
- * file in the root directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.flipper.android;
 
 import android.content.Context;
@@ -13,7 +14,9 @@ import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.util.Log;
 import androidx.core.content.ContextCompat;
+import com.facebook.flipper.BuildConfig;
 import com.facebook.flipper.core.FlipperClient;
+import javax.annotation.Nullable;
 
 public final class AndroidFlipperClient {
   private static boolean sIsInitialized = false;
@@ -24,6 +27,10 @@ public final class AndroidFlipperClient {
 
   public static synchronized FlipperClient getInstance(Context context) {
     if (!sIsInitialized) {
+      if (!BuildConfig.IS_INTERNAL_BUILD) {
+        Log.e("Flipper", "Attempted to initialize in non-internal build");
+        return null;
+      }
       checkRequiredPermissions(context);
       sFlipperThread = new FlipperThread("FlipperEventBaseThread");
       sFlipperThread.start();
@@ -49,6 +56,7 @@ public final class AndroidFlipperClient {
     return FlipperClientImpl.getInstance();
   }
 
+  @Nullable
   public static synchronized FlipperClient getInstanceIfInitialized() {
     if (!sIsInitialized) {
       return null;

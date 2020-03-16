@@ -1,18 +1,19 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the LICENSE
- * file in the root directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 #pragma once
 
-#include "FlipperInitConfig.h"
-#include "FlipperConnectionManager.h"
-#include "FlipperState.h"
 #include <folly/Executor.h>
 #include <folly/io/async/EventBase.h>
 #include <rsocket/RSocket.h>
 #include <mutex>
+#include "FlipperConnectionManager.h"
+#include "FlipperInitConfig.h"
+#include "FlipperState.h"
 
 namespace facebook {
 namespace flipper {
@@ -27,7 +28,10 @@ class FlipperConnectionManagerImpl : public FlipperConnectionManager {
   friend ConnectionEvents;
 
  public:
-  FlipperConnectionManagerImpl(FlipperInitConfig config, std::shared_ptr<FlipperState> state, std::shared_ptr<ConnectionContextStore> contextStore);
+  FlipperConnectionManagerImpl(
+      FlipperInitConfig config,
+      std::shared_ptr<FlipperState> state,
+      std::shared_ptr<ConnectionContextStore> contextStore);
 
   ~FlipperConnectionManagerImpl();
 
@@ -49,6 +53,7 @@ class FlipperConnectionManagerImpl : public FlipperConnectionManager {
 
  private:
   bool isOpen_ = false;
+  bool isStarted_ = false;
   Callbacks* callbacks_;
   DeviceData deviceData_;
   std::shared_ptr<FlipperState> flipperState_;

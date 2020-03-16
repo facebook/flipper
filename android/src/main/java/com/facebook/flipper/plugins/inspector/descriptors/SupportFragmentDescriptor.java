@@ -1,9 +1,10 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the LICENSE
- * file in the root directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.flipper.plugins.inspector.descriptors;
 
 import android.os.Bundle;
@@ -14,7 +15,7 @@ import com.facebook.flipper.core.FlipperObject;
 import com.facebook.flipper.plugins.inspector.Named;
 import com.facebook.flipper.plugins.inspector.NodeDescriptor;
 import com.facebook.flipper.plugins.inspector.Touch;
-import com.facebook.stetho.common.android.ResourcesUtil;
+import com.facebook.flipper.plugins.inspector.descriptors.utils.stethocopies.ResourcesUtil;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;

@@ -1,8 +1,8 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the LICENSE
- * file in the root directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 import org.apache.tools.ant.filters.ReplaceTokens
@@ -11,7 +11,7 @@ import org.apache.tools.ant.filters.ReplaceTokens
 // Increment this when making changes to any of the native
 // dependencies.
 // !!!
-final def CACHE_REVISION = 27
+final def CACHE_REVISION = 30
 
 final def externalDir = new File("$projectDir/external")
 final def downloadsDir = new File("$externalDir/downloads")
@@ -117,7 +117,7 @@ task prepareBoost(dependsOn: [downloadBoost], type: Copy) {
 }
 
 task downloadFolly(dependsOn: createNativeDepsDirectories, type: Download) {
-    src 'https://github.com/facebook/folly/archive/v2019.06.10.00.tar.gz'
+    src 'https://github.com/facebook/folly/archive/v2020.02.17.00.tar.gz'
     onlyIfNewer true
     overwrite false
     dest new File(downloadsDir, 'folly-' + getDownloadFileName(src))
@@ -127,8 +127,8 @@ task prepareFolly(dependsOn: [downloadFolly], type: Copy) {
     onlyIf { isCacheOutOfDate(CACHE_REVISION) }
     from tarTree(downloadFolly.dest)
     from './overrides/Folly/'
-    include 'folly-2019.06.10.00/folly/**/*', 'build.gradle', 'CMakeLists.txt', 'ApplicationManifest.xml'
-    eachFile { it.path = it.path - "folly-2019.06.10.00/" }
+    include 'folly-2020.02.17.00/folly/**/*', 'build.gradle', 'CMakeLists.txt', 'ApplicationManifest.xml'
+    eachFile { it.path = it.path - "folly-2020.02.17.00/" }
     includeEmptyDirs = false
     into "$externalDir/folly/"
 }
@@ -140,15 +140,18 @@ task finalizeFollyWithDemangle(dependsOn: [prepareFolly], type: Copy) {
     into "$externalDir/folly/folly/detail/"
 }
 
-//TODO: Get rid off this hack.
-task finalizeFolly(dependsOn: [finalizeFollyWithDemangle], type: Copy) {
+// HACK to fix template issue with newest NDK
+task finalizeFollyWithFileUtil(dependsOn: [prepareFolly], type: Copy) {
     from './overrides/Folly/'
-   include 'AsyncServerSocket.cpp'
-   into "$externalDir/folly/folly/io/async/"
+    include 'FileUtil.cpp'
+    into "$externalDir/folly/folly/"
+}
+
+task finalizeFolly(dependsOn: [finalizeFollyWithDemangle, finalizeFollyWithFileUtil]) {
 }
 
 task downloadLibEvent(dependsOn: [], type: Download) {
-    src 'https://github.com/priteshrnandgaonkar/libevent/archive/release-2.1.9.tar.gz'
+    src 'https://github.com/libevent/libevent/releases/download/release-2.1.11-stable/libevent-2.1.11-stable.tar.gz'
     onlyIfNewer true
     overwrite false
     dest new File(downloadsDir, 'libevent-' + getDownloadFileName(src))
@@ -158,16 +161,22 @@ task prepareLibEvent(dependsOn: [downloadLibEvent], type: Copy) {
     onlyIf { isCacheOutOfDate(CACHE_REVISION) }
     from tarTree(downloadLibEvent.dest)
     from './overrides/LibEvent/'
-    include 'libevent-release-2.1.9/**/*', 'build.gradle', 'ApplicationManifest.xml'
+    include 'libevent-2.1.11-stable/**/*', 'build.gradle', 'ApplicationManifest.xml'
     includeEmptyDirs = false
     into "$externalDir/LibEvent"
 }
 
-task finalizeLibEvent(dependsOn: [prepareLibEvent], type: Copy) {
+task prepareLibEvent2(dependsOn: [prepareLibEvent], type: Copy) {
     from './overrides/LibEvent/'
     include 'event-config.h'
     includeEmptyDirs = false
-    into "$externalDir/LibEvent/libevent-release-2.1.9/include/event2/"
+    into "$externalDir/LibEvent/libevent-2.1.11-stable/include/event2/"
+}
+
+task finalizeLibEvent(dependsOn: [prepareLibEvent2], type: Copy) {
+    from './overrides/LibEvent/'
+    include 'CMakeLists.txt'
+    into "$externalDir/LibEvent/libevent-2.1.11-stable/"
 }
 
 task downloadOpenSSLSource(dependsOn: [], type: Download) {

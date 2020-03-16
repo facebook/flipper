@@ -1,9 +1,12 @@
 /**
- * Copyright 2018-present Facebook.
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
  * @format
  */
+
 const repoUrl = 'https://github.com/facebook/flipper';
 
 const siteConfig = {
@@ -45,6 +48,7 @@ const siteConfig = {
     'https://buttons.github.io/buttons.js',
     'https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js',
     '/js/code-blocks-buttons.js',
+    '/js/google-analytics.js',
   ],
   repoUrl,
   stylesheets: [],

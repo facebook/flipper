@@ -8,6 +8,17 @@ To use the network plugin, you need to add the plugin to your Flipper client ins
 
 ## Android
 
+The network plugin is shipped as a separate Maven artifact:
+
+```groovy
+dependencies {
+  debugImplementation 'com.facebook.flipper:flipper-network-plugin:0.33.1'
+}
+```
+
+Once added to your dependencies, you can instantiate the plugin and add it to
+the client:
+
 ```java
 import com.facebook.flipper.plugins.network.NetworkFlipperPlugin;
 

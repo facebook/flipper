@@ -1,9 +1,10 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the LICENSE
- * file in the root directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 #include "FlipperConnectionManagerImpl.h"
 #include <folly/String.h>
 #include <folly/futures/Future.h>
@@ -34,11 +35,10 @@ static constexpr int maxPayloadSize = 0xFFFFFF;
 // Not a public-facing version number.
 // Used for compatibility checking with desktop flipper.
 // To be bumped for every core platform interface change.
-static constexpr int sdkVersion = 2;
+static constexpr int sdkVersion = 3;
 
 namespace facebook {
 namespace flipper {
-
 
 class ConnectionEvents : public rsocket::RSocketConnectionEvents {
  private:
@@ -91,6 +91,12 @@ FlipperConnectionManagerImpl::~FlipperConnectionManagerImpl() {
 }
 
 void FlipperConnectionManagerImpl::start() {
+  if (isStarted_) {
+    log("Already started");
+    return;
+  }
+  isStarted_ = true;
+
   auto step = flipperState_->start("Start connection thread");
 
   folly::makeFuture()
@@ -103,6 +109,10 @@ void FlipperConnectionManagerImpl::start() {
 }
 
 void FlipperConnectionManagerImpl::startSync() {
+  if (!isStarted_) {
+    log("Not started");
+    return;
+  }
   if (!isRunningInOwnThread()) {
     log(WRONG_THREAD_EXIT_MSG);
     return;
@@ -177,6 +187,10 @@ void FlipperConnectionManagerImpl::doCertificateExchange() {
           .get();
   connectingInsecurely->complete();
 
+  auto resettingState = flipperState_->start("Reset state");
+  contextStore_->resetState();
+  resettingState->complete();
+
   requestSignedCertFromFlipper();
 }
 
@@ -189,10 +203,13 @@ void FlipperConnectionManagerImpl::connectSecurely() {
   if (deviceId.compare("unknown")) {
     loadingDeviceId->complete();
   }
-  parameters.payload = rsocket::Payload(
-      folly::toJson(folly::dynamic::object("os", deviceData_.os)(
-          "device", deviceData_.device)("device_id", deviceId)(
-          "app", deviceData_.app)("sdk_version", sdkVersion)));
+
+  parameters.payload = rsocket::Payload(folly::toJson(folly::dynamic::object(
+      "csr", contextStore_->getCertificateSigningRequest().c_str())(
+      "csr_path", contextStore_->getCertificateDirectoryPath().c_str())(
+      "os", deviceData_.os)("device", deviceData_.device)(
+      "device_id", deviceId)("app", deviceData_.app)(
+      "sdk_version", sdkVersion)));
   address.setFromHostPort(deviceData_.host, securePort);
 
   std::shared_ptr<folly::SSLContext> sslContext =
@@ -216,6 +233,10 @@ void FlipperConnectionManagerImpl::connectSecurely() {
 }
 
 void FlipperConnectionManagerImpl::reconnect() {
+  if (!isStarted_) {
+    log("Not started");
+    return;
+  }
   folly::makeFuture()
       .via(flipperEventBase_->getEventBase())
       .delayed(std::chrono::seconds(reconnectIntervalSeconds))
@@ -223,6 +244,12 @@ void FlipperConnectionManagerImpl::reconnect() {
 }
 
 void FlipperConnectionManagerImpl::stop() {
+  if (!isStarted_) {
+    log("Not started");
+    return;
+  }
+  isStarted_ = false;
+
   if (client_) {
     client_->disconnect();
   }
@@ -356,7 +383,6 @@ rsocket::Payload toRSocketPayload(dynamic data) {
             "Error: Skipping sending message larger than max rsocket payload: ") +
         json.substr(0, 100) + "...";
     log(logMessage);
-    DCHECK_LE(payloadLength, maxPayloadSize);
     throw std::length_error(logMessage);
   }
 

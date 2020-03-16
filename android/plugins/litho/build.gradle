@@ -1,0 +1,35 @@
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+apply plugin: 'com.android.library'
+apply plugin: 'maven'
+
+android {
+    compileSdkVersion rootProject.compileSdkVersion
+    buildToolsVersion rootProject.buildToolsVersion
+
+    defaultConfig {
+        minSdkVersion rootProject.minSdkVersion
+        targetSdkVersion rootProject.targetSdkVersion
+    }
+
+    dependencies {
+        compileOnly deps.lithoAnnotations
+        implementation project(':android')
+        implementation deps.lithoCore
+        implementation deps.lithoSectionsDebug
+        implementation deps.lithoSectionsCore
+        implementation deps.lithoWidget
+        implementation deps.supportAppCompat
+        compileOnly deps.jsr305
+
+        testImplementation deps.junit
+        testImplementation deps.robolectric
+    }
+}
+
+apply from: rootProject.file('gradle/release.gradle')

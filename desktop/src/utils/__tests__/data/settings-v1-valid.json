@@ -1,0 +1,10 @@
+{
+  "androidHome": "/opt/android_sdk",
+  "something": {
+    "else": 4
+  },
+  "_persist": {
+    "version": -1,
+    "rehydrated": true
+  }
+}

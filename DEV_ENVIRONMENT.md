@@ -10,13 +10,19 @@ The flipper desktop source uses Flow, TypeScript, and ESLint. Feel free to use y
  * ESLint
  * Flow Language Support
  * TypeScript and JavaScript Language Features (enabled by default)
- 
+
 **Settings**:
 ```json
 {
     "flow.useNPMPackagedFlow": true,
     "javascript.validate.enable": false,
-    "eslint.autoFixOnSave": true
+    "eslint.autoFixOnSave": true,
+    "eslint.validate": [
+        "javascript",
+        "javascriptreact",
+        "typescript",
+        {"language":"typescriptreact", "autoFix": true}
+    ],
 }
 ```
 

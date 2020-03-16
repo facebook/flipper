@@ -5,22 +5,30 @@ title: JavaScript Plugin Definition
 
 All JavaScript Flipper plugins must be self-contained in a directory. This directory must contain at a minimum the following two files:
 * package.json
-* index.js
+* index.tsx
 
-The best way to initialize a JS plugin is to create a directory, and run `yarn init` inside it. Make sure your package name is the same as the identifier of the client plugin. After that create an `index.js` file which will be the entry point to your plugin. An example `package.json` file could look like this:
+The best way to initialize a JS plugin is to create a directory, and run `yarn init` inside it. Make sure your package name is the same as the identifier of the client plugin, e.g. if your Java plugin returns `myplugin` from its `getId()` method, the `name` field in your `package.json` should also be `myplugin`.
+
+Plugins can be written in plain ES6 JavaScript, [Flow](https://flow.org/) or [TypeScript](https://www.typescriptlang.org/) but we recommend you use TypeScript for the best development experience. We also recommend you use the file extension `.tsx` when using TypeScript which adds support for inline React expressions.
+
+After `yarn init` finishes, create an `index.tsx` file which will be the entry point to your plugin. An example `package.json` file could look like this:
 
 Example `package.json`:
 ```
 {
   "name": "myplugin",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "index.tsx",
   "license": "MIT",
+  "keywords": ["flipper-plugin"],
   "dependencies": {},
   "title": "My Plugin",
   "icon": "apps",
   "bugs": {
     "email": "you@example.com"
+  },
+  "dependencies": {
+    "flipper": "latest"
   }
 }
 ```
@@ -35,9 +43,9 @@ Important attributes of `package.json`:
 
 `bugs` Specify an email and/or url, where plugin bugs should be reported.
 
-In `index.js` you will define the plugin in JavaScript. This file must export a default class that extends `FlipperPlugin`. Browse our [JS API docs](js-plugin-api) to see what you can do, and make sure to check out our [UI Component Library](ui-components.md) for lots of pre-made components.
+In `index.tsx` you will define the plugin in JavaScript. This file must export a default class that extends `FlipperPlugin`. Browse our [JS API docs](js-plugin-api) to see what you can do, and make sure to check out our [UI Component Library](ui-components.md) for lots of pre-made components.
 
-Example `index.js`:
+Example `index.tsx`:
 ```js
 import {FlipperPlugin} from 'flipper';
 
@@ -64,16 +72,16 @@ Plugin File Structure:
 ~ flipper-plugins/
     my-plugin/
       package.json
-      index.js
+      index.tsx
 ```
 
 ### npm dependencies
 
-If you need any dependencies in your plugin, you can install them using `yarn add`. The Flipper UI components exported from `flipper`, as well as `react` and `react-dom` don't need to be installed as dependencies. Our plugin-loader makes these dependencies available to your plugin.
+If you need any dependencies in your plugin, you can install them using `yarn add`.
 
 ### ES6, babel-transforms and bundling
 
-Our plugin-loader is capable of all ES6 goodness, flow annotations and JSX and applies the required babel-transforms without you having to care about this. Also you don't need to bundle your plugin, you can simply use ES6 imports and it will work out of the box.
+Our plugin-loader is capable of all ES6 goodness, Flow annotations, TypeScript, and JSX and applies the required babel-transforms without you having to care about this. You don't need to bundle your plugin, you can simply use ES6 imports and it will work out of the box.
 
 ## Working on the core
 
@@ -83,7 +91,7 @@ Make sure you have a recent version of node.js and yarn installed on your system
 
 ```
 git clone https://github.com/facebook/flipper.git
-cd flipper
+cd flipper/desktop
 yarn
 yarn start
 ```

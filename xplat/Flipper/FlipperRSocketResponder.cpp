@@ -1,9 +1,10 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the LICENSE
- * file in the root directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 #include "FlipperRSocketResponder.h"
 #include <folly/json.h>
 #include <rsocket/RSocket.h>
@@ -25,10 +26,13 @@ void FlipperRSocketResponder::handleFireAndForget(
   const auto payload = request.moveDataToString();
   std::unique_ptr<FireAndForgetBasedFlipperResponder> responder;
   auto message = folly::parseJson(payload);
-  if (message.find("id") != message.items().end()) {
-    auto id = message["id"].getInt();
+  auto idItr = message.find("id");
+  if (idItr == message.items().end()) {
     responder =
-        std::make_unique<FireAndForgetBasedFlipperResponder>(websocket_, id);
+        std::make_unique<FireAndForgetBasedFlipperResponder>(websocket_);
+  } else {
+    responder = std::make_unique<FireAndForgetBasedFlipperResponder>(
+        websocket_, idItr->second.getInt());
   }
 
   websocket_->onMessageReceived(

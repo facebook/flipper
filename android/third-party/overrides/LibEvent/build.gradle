@@ -1,8 +1,8 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the LICENSE
- * file in the root directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 apply plugin: 'com.android.library'
@@ -30,7 +30,7 @@ android {
     }
     externalNativeBuild {
         cmake {
-            path 'libevent-release-2.1.9/CMakeLists.txt'
+            path 'libevent-2.1.11-stable/CMakeLists.txt'
         }
     }
 }

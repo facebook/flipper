@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the LICENSE
- * file in the root directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.flipper.plugins.inspector;
 
 import static com.facebook.flipper.plugins.inspector.ThrowableMessageMatcher.hasThrowableWithMessage;
@@ -97,7 +98,7 @@ public class InspectorFlipperPluginTest {
             new FlipperObject.Builder()
                 .put("id", "com.facebook.flipper")
                 .put("name", "com.facebook.flipper")
-                .put("data", new FlipperObject.Builder())
+                .put("data", new FlipperObject.Builder().put("Theme", new FlipperObject.Builder()))
                 .put("children", new FlipperArray.Builder().put("test"))
                 .put("attributes", new FlipperArray.Builder())
                 .put("decoration", (String) null)

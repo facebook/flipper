@@ -1,23 +1,23 @@
 /*
- *  Copyright (c) 2018-present, Facebook, Inc. and its affiliates.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- *  This source code is licensed under the MIT license found in the LICENSE
- *  file in the root directory of this source tree.
- *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 #if FB_SONARKIT_ENABLED
 
 #import "SKTapListenerImpl.h"
 
-#import "SKHighlightOverlay.h"
 #import "SKHiddenWindow.h"
 
-@implementation SKTapListenerImpl
-{
-  NSMutableArray<SKTapReceiver> *_receiversWaitingForInput;
-  UITapGestureRecognizer *_gestureRecognizer;
+#import <FlipperKitHighlightOverlay/SKHighlightOverlay.h>
 
-  SKHiddenWindow *_overlayWindow;
+@implementation SKTapListenerImpl {
+  NSMutableArray<SKTapReceiver>* _receiversWaitingForInput;
+  UITapGestureRecognizer* _gestureRecognizer;
+
+  SKHiddenWindow* _overlayWindow;
 }
 
 @synthesize isMounted = _isMounted;
@@ -26,7 +26,8 @@
   if (self = [super init]) {
     _receiversWaitingForInput = [NSMutableArray new];
 
-    _gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget: self action: nil];
+    _gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self
+                                                                 action:nil];
     _gestureRecognizer.delegate = self;
 
     _isMounted = NO;
@@ -36,7 +37,7 @@
     _overlayWindow.windowLevel = UIWindowLevelAlert;
     _overlayWindow.backgroundColor = [SKHighlightOverlay overlayColor];
 
-    [_overlayWindow addGestureRecognizer: _gestureRecognizer];
+    [_overlayWindow addGestureRecognizer:_gestureRecognizer];
   }
 
   return self;
@@ -47,10 +48,10 @@
     return;
   }
 
-  [_overlayWindow setFrame: frame];
+  [_overlayWindow setFrame:frame];
   [_overlayWindow makeKeyAndVisible];
   _overlayWindow.hidden = NO;
-
+  [[UIApplication sharedApplication].delegate.window addSubview:_overlayWindow];
   _isMounted = YES;
 }
 
@@ -62,20 +63,20 @@
   [_receiversWaitingForInput removeAllObjects];
   [_overlayWindow removeFromSuperview];
   _overlayWindow.hidden = YES;
-
   _isMounted = NO;
 }
 
 - (void)listenForTapWithBlock:(SKTapReceiver)receiver {
-  [_receiversWaitingForInput addObject: receiver];
+  [_receiversWaitingForInput addObject:receiver];
 }
 
-- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
+- (BOOL)gestureRecognizer:(UIGestureRecognizer*)gestureRecognizer
+       shouldReceiveTouch:(UITouch*)touch {
   if ([_receiversWaitingForInput count] == 0) {
     return YES;
   }
 
-  CGPoint touchPoint = [touch locationInView: _overlayWindow];
+  CGPoint touchPoint = [touch locationInView:_overlayWindow];
 
   for (SKTapReceiver recv in _receiversWaitingForInput) {
     recv(touchPoint);

@@ -1,0 +1,12 @@
+{
+  "name": "DeviceCPU",
+  "version": "1.0.0",
+  "main": "index.tsx",
+  "license": "MIT",
+  "keywords": ["flipper-plugin"],
+  "title": "CPU",
+  "icon": "underline",
+  "bugs": {
+    "email": "barney@fb.com"
+  }
+}

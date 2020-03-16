@@ -17,11 +17,6 @@ labels: 'Type: Bug Report'
   Steps to reproduce the behavior.
 -->
 
-## Expected Behavior
-<!--
-  A clear and concise description of what you expected to happen.
--->
-
 ## Environment
 <!--
   Tell us about your Android/iOS Version, Flipper Desktop version,

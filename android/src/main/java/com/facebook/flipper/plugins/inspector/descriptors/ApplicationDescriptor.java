@@ -1,9 +1,10 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the LICENSE
- * file in the root directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.flipper.plugins.inspector.descriptors;
 
 import android.app.Activity;
@@ -18,6 +19,7 @@ import com.facebook.flipper.plugins.inspector.ApplicationWrapper;
 import com.facebook.flipper.plugins.inspector.Named;
 import com.facebook.flipper.plugins.inspector.NodeDescriptor;
 import com.facebook.flipper.plugins.inspector.Touch;
+import com.facebook.flipper.plugins.inspector.descriptors.utils.ContextDescriptorUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -112,7 +114,7 @@ public class ApplicationDescriptor extends NodeDescriptor<ApplicationWrapper> {
             });
         editedDelegates.add((ViewGroup) view);
       } else if (hasDelegateAlready && mConnection != null) {
-        FlipperObject params = 
+        FlipperObject params =
             new FlipperObject.Builder()
                 .put("type", "usage")
                 .put("eventName", "accessibility:hasDelegateAlready")
@@ -203,7 +205,8 @@ public class ApplicationDescriptor extends NodeDescriptor<ApplicationWrapper> {
 
   @Override
   public List<Named<FlipperObject>> getData(ApplicationWrapper node) {
-    return Collections.EMPTY_LIST;
+    return Collections.singletonList(
+        new Named<>("Theme", ContextDescriptorUtils.themeData(node.getApplication())));
   }
 
   @Override

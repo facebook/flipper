@@ -1,15 +1,16 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the LICENSE
- * file in the root directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 #pragma once
 
-#include "FlipperResponder.h"
 #include <folly/json.h>
 #include <functional>
 #include <string>
+#include "FlipperResponder.h"
 
 namespace facebook {
 namespace flipper {

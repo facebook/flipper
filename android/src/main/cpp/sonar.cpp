@@ -1,9 +1,10 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the LICENSE
- * file in the root directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 #include <memory>
 
 #ifdef FLIPPER_OSS
@@ -12,16 +13,16 @@
 #include <fb/fbjni.h>
 #endif
 
-#include <folly/json.h>
 #include <folly/io/async/EventBase.h>
 #include <folly/io/async/EventBaseManager.h>
+#include <folly/json.h>
 
 #include <Flipper/FlipperClient.h>
-#include <Flipper/FlipperConnectionManager.h>
 #include <Flipper/FlipperConnection.h>
+#include <Flipper/FlipperConnectionManager.h>
 #include <Flipper/FlipperResponder.h>
-#include <Flipper/FlipperStateUpdateListener.h>
 #include <Flipper/FlipperState.h>
+#include <Flipper/FlipperStateUpdateListener.h>
 
 using namespace facebook;
 using namespace facebook::flipper;
@@ -29,8 +30,6 @@ using namespace facebook::flipper;
 namespace {
 
 void handleException(const std::exception& e) {
-  // TODO: T35898390, report and log the exception in scribe
-  // TODO: T35898500, send flipper notification
   std::string message = "Exception caught in C++ and suppressed: ";
   message += e.what();
   __android_log_write(ANDROID_LOG_ERROR, "FLIPPER", message.c_str());
@@ -38,7 +37,8 @@ void handleException(const std::exception& e) {
 
 class JEventBase : public jni::HybridClass<JEventBase> {
  public:
-  constexpr static auto kJavaDescriptor = "Lcom/facebook/flipper/android/EventBase;";
+  constexpr static auto kJavaDescriptor =
+      "Lcom/facebook/flipper/android/EventBase;";
 
   static void registerNatives() {
     registerHybrid({
@@ -70,86 +70,113 @@ class JEventBase : public jni::HybridClass<JEventBase> {
 
 class JFlipperObject : public jni::JavaClass<JFlipperObject> {
  public:
-  constexpr static auto kJavaDescriptor = "Lcom/facebook/flipper/core/FlipperObject;";
+  constexpr static auto kJavaDescriptor =
+      "Lcom/facebook/flipper/core/FlipperObject;";
 
   static jni::local_ref<JFlipperObject> create(const folly::dynamic& json) {
     return newInstance(folly::toJson(json));
   }
 
   std::string toJsonString() {
-    static const auto method = javaClassStatic()->getMethod<std::string()>("toJsonString");
+    static const auto method =
+        javaClassStatic()->getMethod<std::string()>("toJsonString");
     return method(self())->toStdString();
   }
 };
 
 class JFlipperArray : public jni::JavaClass<JFlipperArray> {
  public:
-  constexpr static auto kJavaDescriptor = "Lcom/facebook/flipper/core/FlipperArray;";
+  constexpr static auto kJavaDescriptor =
+      "Lcom/facebook/flipper/core/FlipperArray;";
 
   static jni::local_ref<JFlipperArray> create(const folly::dynamic& json) {
     return newInstance(folly::toJson(json));
   }
 
   std::string toJsonString() {
-    static const auto method = javaClassStatic()->getMethod<std::string()>("toJsonString");
+    static const auto method =
+        javaClassStatic()->getMethod<std::string()>("toJsonString");
     return method(self())->toStdString();
   }
 };
 
 class JFlipperResponder : public jni::JavaClass<JFlipperResponder> {
  public:
-  constexpr static auto kJavaDescriptor = "Lcom/facebook/flipper/core/FlipperResponder;";
+  constexpr static auto kJavaDescriptor =
+      "Lcom/facebook/flipper/core/FlipperResponder;";
 };
 
-class JFlipperResponderImpl : public jni::HybridClass<JFlipperResponderImpl, JFlipperResponder> {
+class JFlipperResponderImpl
+    : public jni::HybridClass<JFlipperResponderImpl, JFlipperResponder> {
  public:
-  constexpr static auto kJavaDescriptor = "Lcom/facebook/flipper/android/FlipperResponderImpl;";
+  constexpr static auto kJavaDescriptor =
+      "Lcom/facebook/flipper/android/FlipperResponderImpl;";
 
   static void registerNatives() {
     registerHybrid({
-      makeNativeMethod("successObject", JFlipperResponderImpl::successObject),
-      makeNativeMethod("successArray", JFlipperResponderImpl::successArray),
-      makeNativeMethod("error", JFlipperResponderImpl::error),
+        makeNativeMethod("successObject", JFlipperResponderImpl::successObject),
+        makeNativeMethod("successArray", JFlipperResponderImpl::successArray),
+        makeNativeMethod("error", JFlipperResponderImpl::error),
     });
   }
 
   void successObject(jni::alias_ref<JFlipperObject> json) {
-    _responder->success(json ? folly::parseJson(json->toJsonString()) : folly::dynamic::object());
+    _responder->success(
+        json ? folly::parseJson(json->toJsonString())
+             : folly::dynamic::object());
   }
 
   void successArray(jni::alias_ref<JFlipperArray> json) {
-    _responder->success(json ? folly::parseJson(json->toJsonString()) : folly::dynamic::object());
+    _responder->success(
+        json ? folly::parseJson(json->toJsonString())
+             : folly::dynamic::object());
   }
 
   void error(jni::alias_ref<JFlipperObject> json) {
-    _responder->error(json ? folly::parseJson(json->toJsonString()) : folly::dynamic::object());
+    _responder->error(
+        json ? folly::parseJson(json->toJsonString())
+             : folly::dynamic::object());
   }
 
  private:
   friend HybridBase;
   std::shared_ptr<FlipperResponder> _responder;
 
-  JFlipperResponderImpl(std::shared_ptr<FlipperResponder> responder): _responder(std::move(responder)) {}
+  JFlipperResponderImpl(std::shared_ptr<FlipperResponder> responder)
+      : _responder(std::move(responder)) {}
 };
 
 class JFlipperReceiver : public jni::JavaClass<JFlipperReceiver> {
  public:
-  constexpr static auto kJavaDescriptor = "Lcom/facebook/flipper/core/FlipperReceiver;";
+  constexpr static auto kJavaDescriptor =
+      "Lcom/facebook/flipper/core/FlipperReceiver;";
 
-  void receive(const folly::dynamic params, std::shared_ptr<FlipperResponder> responder) const {
-    static const auto method = javaClassStatic()->getMethod<void(jni::alias_ref<JFlipperObject::javaobject>, jni::alias_ref<JFlipperResponder::javaobject>)>("onReceive");
-    method(self(), JFlipperObject::create(std::move(params)), JFlipperResponderImpl::newObjectCxxArgs(responder));
+  void receive(
+      const folly::dynamic params,
+      std::shared_ptr<FlipperResponder> responder) const {
+    static const auto method =
+        javaClassStatic()
+            ->getMethod<void(
+                jni::alias_ref<JFlipperObject::javaobject>,
+                jni::alias_ref<JFlipperResponder::javaobject>)>("onReceive");
+    method(
+        self(),
+        JFlipperObject::create(std::move(params)),
+        JFlipperResponderImpl::newObjectCxxArgs(responder));
   }
 };
 
 class JFlipperConnection : public jni::JavaClass<JFlipperConnection> {
  public:
-  constexpr static auto kJavaDescriptor = "Lcom/facebook/flipper/core/FlipperConnection;";
+  constexpr static auto kJavaDescriptor =
+      "Lcom/facebook/flipper/core/FlipperConnection;";
 };
 
-class JFlipperConnectionImpl : public jni::HybridClass<JFlipperConnectionImpl, JFlipperConnection> {
+class JFlipperConnectionImpl
+    : public jni::HybridClass<JFlipperConnectionImpl, JFlipperConnection> {
  public:
-  constexpr static auto kJavaDescriptor = "Lcom/facebook/flipper/android/FlipperConnectionImpl;";
+  constexpr static auto kJavaDescriptor =
+      "Lcom/facebook/flipper/android/FlipperConnectionImpl;";
 
   static void registerNatives() {
     registerHybrid({
@@ -163,12 +190,20 @@ class JFlipperConnectionImpl : public jni::HybridClass<JFlipperConnectionImpl, J
     });
   }
 
-  void sendObject(const std::string method, jni::alias_ref<JFlipperObject> json) {
-    _connection->send(std::move(method), json ? folly::parseJson(json->toJsonString()) : folly::dynamic::object());
+  void sendObject(
+      const std::string method,
+      jni::alias_ref<JFlipperObject> json) {
+    _connection->send(
+        std::move(method),
+        json ? folly::parseJson(json->toJsonString())
+             : folly::dynamic::object());
   }
 
   void sendArray(const std::string method, jni::alias_ref<JFlipperArray> json) {
-    _connection->send(std::move(method), json ? folly::parseJson(json->toJsonString()) : folly::dynamic::object());
+    _connection->send(
+        std::move(method),
+        json ? folly::parseJson(json->toJsonString())
+             : folly::dynamic::object());
   }
 
   void reportErrorWithMetadata(
@@ -182,26 +217,35 @@ class JFlipperConnectionImpl : public jni::HybridClass<JFlipperConnectionImpl, J
         throwable->toString(), throwable->getStackTrace()->toString());
   }
 
-  void receive(const std::string method, jni::alias_ref<JFlipperReceiver> receiver) {
+  void receive(
+      const std::string method,
+      jni::alias_ref<JFlipperReceiver> receiver) {
     auto global = make_global(receiver);
-    _connection->receive(std::move(method), [global] (const folly::dynamic& params, std::shared_ptr<FlipperResponder> responder) {
-      global->receive(params, responder);
-    });
+    _connection->receive(
+        std::move(method),
+        [global](
+            const folly::dynamic& params,
+            std::shared_ptr<FlipperResponder> responder) {
+          global->receive(params, responder);
+        });
   }
 
  private:
   friend HybridBase;
   std::shared_ptr<FlipperConnection> _connection;
 
-  JFlipperConnectionImpl(std::shared_ptr<FlipperConnection> connection): _connection(std::move(connection)) {}
+  JFlipperConnectionImpl(std::shared_ptr<FlipperConnection> connection)
+      : _connection(std::move(connection)) {}
 };
 
 class JFlipperPlugin : public jni::JavaClass<JFlipperPlugin> {
  public:
-  constexpr static auto kJavaDescriptor = "Lcom/facebook/flipper/core/FlipperPlugin;";
+  constexpr static auto kJavaDescriptor =
+      "Lcom/facebook/flipper/core/FlipperPlugin;";
 
   std::string identifier() const {
-    static const auto method = javaClassStatic()->getMethod<std::string()>("getId");
+    static const auto method =
+        javaClassStatic()->getMethod<std::string()>("getId");
     try {
       return method(self())->toStdString();
 
@@ -233,7 +277,8 @@ class JFlipperPlugin : public jni::JavaClass<JFlipperPlugin> {
   }
 
   void didDisconnect() {
-    static const auto method = javaClassStatic()->getMethod<void()>("onDisconnect");
+    static const auto method =
+        javaClassStatic()->getMethod<void()>("onDisconnect");
     try {
       method(self());
     } catch (const std::exception& e) {
@@ -245,26 +290,28 @@ class JFlipperPlugin : public jni::JavaClass<JFlipperPlugin> {
     }
   }
 
-    bool runInBackground() {
-      static const auto method =
-          javaClassStatic()->getMethod<jboolean()>("runInBackground");
-      try {
-        return method(self()) == JNI_TRUE;
-      } catch (const std::exception& e) {
-        handleException(e);
-        return false;
-      } catch (const std::exception* e) {
-        if (e) {
-          handleException(*e);
-        }
-        return false;
+  bool runInBackground() {
+    static const auto method =
+        javaClassStatic()->getMethod<jboolean()>("runInBackground");
+    try {
+      return method(self()) == JNI_TRUE;
+    } catch (const std::exception& e) {
+      handleException(e);
+      return false;
+    } catch (const std::exception* e) {
+      if (e) {
+        handleException(*e);
       }
+      return false;
     }
+  }
 };
 
-class JFlipperStateUpdateListener : public jni::JavaClass<JFlipperStateUpdateListener> {
+class JFlipperStateUpdateListener
+    : public jni::JavaClass<JFlipperStateUpdateListener> {
  public:
-  constexpr static auto  kJavaDescriptor = "Lcom/facebook/flipper/core/FlipperStateUpdateListener;";
+  constexpr static auto kJavaDescriptor =
+      "Lcom/facebook/flipper/core/FlipperStateUpdateListener;";
 
   void onUpdate() {
     try {
@@ -323,11 +370,12 @@ class JFlipperStateUpdateListener : public jni::JavaClass<JFlipperStateUpdateLis
 
 class AndroidFlipperStateUpdateListener : public FlipperStateUpdateListener {
  public:
-  AndroidFlipperStateUpdateListener(jni::alias_ref<JFlipperStateUpdateListener> stateListener);
+  AndroidFlipperStateUpdateListener(
+      jni::alias_ref<JFlipperStateUpdateListener> stateListener);
   void onUpdate();
 
-  private:
-   jni::global_ref<JFlipperStateUpdateListener> jStateListener;
+ private:
+  jni::global_ref<JFlipperStateUpdateListener> jStateListener;
 };
 
 class JFlipperPluginWrapper : public FlipperPlugin {
@@ -346,31 +394,35 @@ class JFlipperPluginWrapper : public FlipperPlugin {
     jplugin->didDisconnect();
   }
 
-    virtual bool runInBackground() override {
-        return jplugin->runInBackground();
-    }
+  virtual bool runInBackground() override {
+    return jplugin->runInBackground();
+  }
 
-  JFlipperPluginWrapper(jni::global_ref<JFlipperPlugin> plugin): jplugin(plugin) {}
+  JFlipperPluginWrapper(jni::global_ref<JFlipperPlugin> plugin)
+      : jplugin(plugin) {}
 };
 
 struct JStateSummary : public jni::JavaClass<JStateSummary> {
-public:
-  constexpr static auto kJavaDescriptor = "Lcom/facebook/flipper/core/StateSummary;";
+ public:
+  constexpr static auto kJavaDescriptor =
+      "Lcom/facebook/flipper/core/StateSummary;";
 
   static jni::local_ref<JStateSummary> create() {
     return newInstance();
   }
 
   void addEntry(std::string name, std::string state) {
-    static const auto method = javaClassStatic()->getMethod<void(std::string, std::string)>("addEntry");
+    static const auto method =
+        javaClassStatic()->getMethod<void(std::string, std::string)>(
+            "addEntry");
     return method(self(), name, state);
   }
-
 };
 
 class JFlipperClient : public jni::HybridClass<JFlipperClient> {
  public:
-  constexpr static auto kJavaDescriptor = "Lcom/facebook/flipper/android/FlipperClientImpl;";
+  constexpr static auto kJavaDescriptor =
+      "Lcom/facebook/flipper/android/FlipperClientImpl;";
 
   static void registerNatives() {
     registerHybrid({
@@ -389,7 +441,8 @@ class JFlipperClient : public jni::HybridClass<JFlipperClient> {
     });
   }
 
-  static jni::alias_ref<JFlipperClient::javaobject> getInstance(jni::alias_ref<jclass>) {
+  static jni::alias_ref<JFlipperClient::javaobject> getInstance(
+      jni::alias_ref<jclass>) {
     try {
       static auto client = make_global(newObjectCxxArgs());
       return client;
@@ -449,7 +502,8 @@ class JFlipperClient : public jni::HybridClass<JFlipperClient> {
     }
   }
 
-  void subscribeForUpdates(jni::alias_ref<JFlipperStateUpdateListener> stateListener) {
+  void subscribeForUpdates(
+      jni::alias_ref<JFlipperStateUpdateListener> stateListener) {
     try {
       auto client = FlipperClient::instance();
       mStateListener =
@@ -586,7 +640,8 @@ jint JNI_OnLoad(JavaVM* vm, void*) {
   });
 }
 
-AndroidFlipperStateUpdateListener::AndroidFlipperStateUpdateListener(jni::alias_ref<JFlipperStateUpdateListener> stateListener) {
+AndroidFlipperStateUpdateListener::AndroidFlipperStateUpdateListener(
+    jni::alias_ref<JFlipperStateUpdateListener> stateListener) {
   jStateListener = jni::make_global(stateListener);
 }
 

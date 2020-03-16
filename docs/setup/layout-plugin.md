@@ -20,6 +20,21 @@ client.addPlugin(new InspectorFlipperPlugin(mApplicationContext, descriptorMappi
 
 ### With Litho Support
 
+Litho support is provided via an optional plugin.
+
+You also need to compile in the `litho-annotations` package, as Flipper reflects
+on them at runtime. So ensure to not just include them as `compileOnly` in your
+gradle configuration:
+
+```groovy
+dependencies {
+  debugImplementation 'com.facebook.flipper:flipper-litho-plugin:0.33.1'
+  debugImplementation 'com.facebook.litho:litho-annotations:0.19.0'
+  // ...
+}
+```
+
+
 If you want to enable Litho support in the layout inspector, you need to augment
 the descriptor with Litho-specific settings and add some addition dependencies.
 
@@ -40,18 +55,6 @@ LithoFlipperDescriptors.add(descriptorMapping);
 
 client.addPlugin(new InspectorFlipperPlugin(mApplicationContext, descriptorMapping));
 ```
-
-You also need to compile in the `litho-annotations` package, as Flipper reflects
-on them at runtime. So ensure to not just include them as `compileOnly` in your
-gradle configuration:
-
-```groovy
-dependencies {
-  debugImplementation 'com.facebook.litho:litho-annotations:0.19.0'
-  // ...
-}
-```
-
 
 ### Blocking fullscreen views (Android only)
 

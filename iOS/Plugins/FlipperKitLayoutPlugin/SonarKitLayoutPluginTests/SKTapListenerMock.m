@@ -1,15 +1,14 @@
 /*
- *  Copyright (c) 2018-present, Facebook, Inc. and its affiliates.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- *  This source code is licensed under the MIT license found in the LICENSE
- *  file in the root directory of this source tree.
- *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 #import "SKTapListenerMock.h"
 
-@implementation SKTapListenerMock
-{
-  NSMutableArray<SKTapReceiver> *_tapReceivers;
+@implementation SKTapListenerMock {
+  NSMutableArray<SKTapReceiver>* _tapReceivers;
 }
 
 @synthesize isMounted;
@@ -23,7 +22,7 @@
 }
 
 - (void)listenForTapWithBlock:(SKTapReceiver)receiver {
-  [_tapReceivers addObject: receiver];
+  [_tapReceivers addObject:receiver];
 }
 
 - (void)tapAt:(CGPoint)point {

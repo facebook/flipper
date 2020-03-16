@@ -1,9 +1,10 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the LICENSE
- * file in the root directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.flipper.plugins.inspector.descriptors;
 
 import android.app.Activity;
@@ -13,9 +14,10 @@ import com.facebook.flipper.core.FlipperObject;
 import com.facebook.flipper.plugins.inspector.Named;
 import com.facebook.flipper.plugins.inspector.NodeDescriptor;
 import com.facebook.flipper.plugins.inspector.Touch;
-import com.facebook.stetho.common.android.FragmentActivityAccessor;
-import com.facebook.stetho.common.android.FragmentCompat;
-import com.facebook.stetho.common.android.FragmentManagerAccessor;
+import com.facebook.flipper.plugins.inspector.descriptors.utils.ContextDescriptorUtils;
+import com.facebook.flipper.plugins.inspector.descriptors.utils.stethocopies.FragmentActivityAccessor;
+import com.facebook.flipper.plugins.inspector.descriptors.utils.stethocopies.FragmentCompat;
+import com.facebook.flipper.plugins.inspector.descriptors.utils.stethocopies.FragmentManagerAccessor;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -64,7 +66,7 @@ public class ActivityDescriptor extends NodeDescriptor<Activity> {
 
   @Override
   public List<Named<FlipperObject>> getData(Activity node) {
-    return Collections.EMPTY_LIST;
+    return Collections.singletonList(new Named<>("Theme", ContextDescriptorUtils.themeData(node)));
   }
 
   @Override

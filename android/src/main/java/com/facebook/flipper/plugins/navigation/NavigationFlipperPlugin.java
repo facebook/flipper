@@ -1,9 +1,10 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the LICENSE
- * file in the root directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.flipper.plugins.navigation;
 
 import androidx.annotation.Nullable;
@@ -12,6 +13,7 @@ import com.facebook.flipper.core.FlipperObject;
 import com.facebook.flipper.core.FlipperPlugin;
 import com.facebook.flipper.core.FlipperReceiver;
 import com.facebook.flipper.core.FlipperResponder;
+import java.util.Date;
 
 public class NavigationFlipperPlugin implements FlipperPlugin {
 
@@ -21,9 +23,21 @@ public class NavigationFlipperPlugin implements FlipperPlugin {
 
   private NavigationFlipperPlugin() {}
 
+  @Deprecated
   public void sendNavigationEvent(@Nullable String keyURI) {
+    sendNavigationEvent(keyURI, null, null);
+  }
+
+  public void sendNavigationEvent(
+      @Nullable String keyURI, @Nullable String className, @Nullable Date date) {
     if (mConnection != null) {
-      mConnection.send("nav_event", new FlipperObject.Builder().put("uri", keyURI).build());
+      FlipperObject sendObject =
+          new FlipperObject.Builder()
+              .put("uri", keyURI)
+              .put("date", date != null ? date : new Date())
+              .put("class", className)
+              .build();
+      mConnection.send("nav_event", sendObject);
     }
   }
 
