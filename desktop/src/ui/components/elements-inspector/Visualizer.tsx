@@ -56,7 +56,10 @@ const VisualizerContainer = styled.div({
   userSelect: 'none',
 });
 
-const DeviceImage = styled.img(({width, height}) => ({
+const DeviceImage = styled.img<{
+  width?: number | string;
+  height?: number | string;
+}>(({width, height}) => ({
   width,
   height,
   userSelect: 'none',
