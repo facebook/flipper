@@ -14,6 +14,7 @@
 @interface SKComponentLayoutDescriptor
     : SKNodeDescriptor<SKComponentLayoutWrapper*>
 
-- (void)addSubDescriptors:(NSArray<SKSubDescriptor*>*)subDescriptors;
++ (void)registerSubDescriptor:(SKSubDescriptor)descriptor
+                      forName:(NSString*)name;
 
 @end

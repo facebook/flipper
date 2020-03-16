@@ -115,50 +115,17 @@ Sometimes all you need is to extend the functionality of an existing descriptor.
 
 ### Subdescriptors
 
-If you want to extend the `SKComponentKitLayoutDescriptor` and add an additional section based on the nodes of the `SKComponentLayoutDescriptor`, you will have to subclass `SKSubDescriptor`.
+If you want to extend the `SKComponentKitLayoutDescriptor` and add an additional section based on the nodes of the `SKComponentLayoutDescriptor`, you can use `SKSubDescriptor`.
 
 ```objc
-#import <FlipperKitLayoutComponentKitSupport/SKSubDescriptor.h>
+#import <FlipperKitLayoutComponentKitSupport/SKComponentLayoutWrapper.h>
 
-@interface YourSubDescriptor: SKSubDescriptor
-
-@end
-
-
-@implementation YourSubDescriptor
-
-- (NSString *) getName {
-  return @"Section Name";
+NSString *YourSubDescriptor(SKComponentLayoutWrapper *)node {
+	return @"Meta data";
 }
 
-- (NSString *)getDataForNode:(SKComponentLayoutWrapper *)node {
-	return @"Meta data"
-}
-
-@end
-
-#endif
+// At setup time, you must register it:
+[SKComponentLayoutDescriptor registerSubDescriptor:&YourSubDescriptor forName:@"Section Name"];
 ```
 
-Once you have implemented the descriptor, you will have to setup the Layout plugin as follows.
-
-<!--DOCUSAURUS_CODE_TABS-->
-<!--Objective-C-->
-```objc
-NSArray<SKSubDescriptor *> *registeredSubDescriptors = @[ yourSubDescriptors ];
-SKDescriptorMapper *layoutDescriptorMapper = [[SKDescriptorMapper alloc] initWithDefaults];
-[FlipperKitLayoutComponentKitSupport setUpWithDescriptorMapper: layoutDescriptorMapper subDescriptors: registeredSubDescriptors];
-[client addPlugin: [[FlipperKitLayoutPlugin alloc] initWithRootNode: application
-                                           withDescriptorMapper: layoutDescriptorMapper]];
-```
-<!--Swift-->
-```swift
-let subDescriptors = [ yourSubDescriptors ]
-let layoutDescriptorMapper = SKDescriptorMapper(defaults: ())
-FlipperKitLayoutComponentKitSupport.setUpWith(layoutDescriptorMapper, subDescriptors: subDescriptors)
-client?.add(FlipperKitLayoutPlugin(rootNode: application, with: layoutDescriptorMapper!))
-
-```
-<!--END_DOCUSAURUS_CODE_TABS-->
-
-
+Swift support is not yet available because you must access `SKComponentLayoutWrapper` to implement a subdescriptor.

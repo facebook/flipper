@@ -9,6 +9,9 @@
 
 #import "SKComponentLayoutDescriptor.h"
 
+#import <utility>
+#import <vector>
+
 #import <ComponentKit/CKComponent.h>
 #import <ComponentKit/CKComponentAccessibility.h>
 #import <ComponentKit/CKComponentActionInternal.h>
@@ -29,15 +32,18 @@
 #import "SKSubDescriptor.h"
 #import "Utils.h"
 
-@implementation SKComponentLayoutDescriptor {
-  NSArray<SKSubDescriptor*>* _registeredSubdescriptors;
+@implementation SKComponentLayoutDescriptor
+
+static std::vector<std::pair<NSString*, SKSubDescriptor>>& subDescriptors() {
+  // Avoid a global constructor; we want to lazily initialize this when needed.
+  static std::vector<std::pair<NSString*, SKSubDescriptor>> d;
+  return d;
 }
 
-- (void)setUp {
-  [super setUp];
-
-  if (!_registeredSubdescriptors) {
-    _registeredSubdescriptors = [NSArray new];
++ (void)registerSubDescriptor:(SKSubDescriptor)descriptor
+                      forName:(NSString*)name {
+  if (name && descriptor) {
+    subDescriptors().push_back({name, descriptor});
   }
 }
 
@@ -90,8 +96,8 @@
   NSMutableDictionary<NSString*, NSObject*>* extraData =
       [[NSMutableDictionary alloc] init];
 
-  for (SKSubDescriptor* s in _registeredSubdescriptors) {
-    [extraData setObject:[s getDataForNode:node] forKey:[s getName]];
+  for (const auto& pair : subDescriptors()) {
+    [extraData setObject:pair.second(node) forKey:pair.first];
   }
   if (extraData.count > 0) {
     [data addObject:[SKNamed newWithName:@"Extra Sections"
@@ -100,10 +106,6 @@
 
   [data addObjectsFromArray:[node.component sonar_getData]];
   return data;
-}
-
-- (void)addSubDescriptors:(nonnull NSArray<SKSubDescriptor*>*)subDescriptors {
-  _registeredSubdescriptors = subDescriptors;
 }
 
 - (NSDictionary<NSString*, NSObject*>*)propsForFlexboxChild:

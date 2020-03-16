@@ -10,20 +10,8 @@
 @class SKComponentLayoutWrapper;
 
 /**
- A SKSubDescriptor is an object which knows how to expose an Object of type T
- to the SKLayoutDescriptor. This class is for frameworks wanting to pass data
+ A SKSubDescriptor is a function which knows how to expose additional data
+ to SKLayoutDescriptor. This class is for frameworks wanting to pass data
  along through the Layout Descriptor.
  */
-@interface SKSubDescriptor : NSObject
-
-/**
- This is the SubDescriptor name.
- */
-- (NSString*)getName;
-
-/**
- This is the data the SubDescriptor wants to pass up to the SKLayoutDescriptor.
- */
-- (NSString*)getDataForNode:(SKComponentLayoutWrapper*)node;
-
-@end
+typedef NSString* (*SKSubDescriptor)(SKComponentLayoutWrapper* node);

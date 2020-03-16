@@ -8,13 +8,9 @@
 #import <Foundation/Foundation.h>
 
 #import <FlipperKitLayoutPlugin/SKDescriptorMapper.h>
-#import "SKSubDescriptor.h"
 
 @interface FlipperKitLayoutComponentKitSupport : NSObject
 
 + (void)setUpWithDescriptorMapper:(SKDescriptorMapper*)mapper;
-
-+ (void)setUpWithDescriptorMapper:(SKDescriptorMapper*)mapper
-                   subDescriptors:(NSArray<SKSubDescriptor*>*)subDescriptors;
 
 @end
