@@ -9,7 +9,7 @@
 
 import {TableHighlightedRows, TableRows, TableBodyRow} from 'flipper';
 import {padStart} from 'lodash';
-import React from 'react';
+import React, {createContext} from 'react';
 import {MenuItemConstructorOptions} from 'electron';
 
 import {
@@ -25,7 +25,7 @@ import {
   SearchableTable,
   FlipperPlugin,
 } from 'flipper';
-import {Request, RequestId, Response} from './types';
+import {Request, RequestId, Response, Route} from './types';
 import {convertRequestToCurlCommand, getHeaderValue, decodeBody} from './utils';
 import RequestDetails from './RequestDetails';
 import {clipboard} from 'electron';
@@ -90,12 +90,27 @@ const TextEllipsis = styled(Text)({
   paddingTop: 4,
 });
 
+// State management
+export interface NetworkRouteManager {
+  addRoute(): void;
+  modifyRoute(id: string, routeChange: Partial<Route>): void;
+  removeRoute(id: string): void;
+}
+const nullNetworkRouteManager: NetworkRouteManager = {
+  addRoute() {},
+  modifyRoute(_id: string, _routeChange: Partial<Route>) {},
+  removeRoute(_id: string) {},
+};
+export const NetworkRouteContext = createContext<NetworkRouteManager>(
+  nullNetworkRouteManager,
+);
+
 export default class extends FlipperPlugin<State, any, PersistedState> {
   static keyboardActions: Array<DefaultKeyboardAction> = ['clear'];
   static subscribed = [];
   static defaultPersistedState = {
-    requests: new Map(),
-    responses: new Map(),
+    requests: {},
+    responses: {},
   };
 
   static metricsReducer(persistedState: PersistedState) {
@@ -238,18 +253,20 @@ export default class extends FlipperPlugin<State, any, PersistedState> {
 
     return (
       <FlexColumn grow={true}>
-        <NetworkTable
-          requests={requests || {}}
-          responses={responses || {}}
-          clear={this.clearLogs}
-          copyRequestCurlCommand={this.copyRequestCurlCommand}
-          onRowHighlighted={this.onRowHighlighted}
-          highlightedRows={
-            this.state.selectedIds ? new Set(this.state.selectedIds) : null
-          }
-          searchTerm={this.state.searchTerm}
-        />
-        <DetailSidebar width={500}>{this.renderSidebar()}</DetailSidebar>
+        <NetworkRouteContext.Provider value={nullNetworkRouteManager}>
+          <NetworkTable
+            requests={requests || {}}
+            responses={responses || {}}
+            clear={this.clearLogs}
+            copyRequestCurlCommand={this.copyRequestCurlCommand}
+            onRowHighlighted={this.onRowHighlighted}
+            highlightedRows={
+              this.state.selectedIds ? new Set(this.state.selectedIds) : null
+            }
+            searchTerm={this.state.searchTerm}
+          />
+          <DetailSidebar width={500}>{this.renderSidebar()}</DetailSidebar>
+        </NetworkRouteContext.Provider>
       </FlexColumn>
     );
   }
