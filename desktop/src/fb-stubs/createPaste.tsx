@@ -8,7 +8,7 @@
  */
 
 export default function createPaste(
-  input: string,
+  _input: string,
 ): Promise<string | undefined> {
-  return Promise.reject('Not implemented!');
+  return Promise.reject(new Error('Not implemented!'));
 }

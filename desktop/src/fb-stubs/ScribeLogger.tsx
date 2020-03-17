@@ -15,6 +15,6 @@ export type ScribeMessage = {
 import {Logger} from '../fb-interfaces/Logger';
 
 export default class ScribeLogger {
-  constructor(logger: Logger) {}
-  send(message: ScribeMessage) {}
+  constructor(_logger: Logger) {}
+  send(_message: ScribeMessage) {}
 }
