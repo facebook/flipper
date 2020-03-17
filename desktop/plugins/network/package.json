@@ -3,12 +3,14 @@
   "version": "1.0.0",
   "main": "index.tsx",
   "license": "MIT",
-  "keywords": ["flipper-plugin"],
+  "keywords": [
+    "flipper-plugin"
+  ],
   "dependencies": {
-    "pako": "^1.0.11",
     "@types/pako": "^1.0.1",
-    "xml-beautifier": "^0.4.0",
-    "lodash": "^4.17.11"
+    "lodash": "^4.17.11",
+    "pako": "^1.0.11",
+    "xml-beautifier": "^0.4.0"
   },
   "icon": "internet",
   "title": "Network",
