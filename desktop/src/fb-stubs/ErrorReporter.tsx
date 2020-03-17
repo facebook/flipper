@@ -12,7 +12,7 @@
  * The recommended way to use this, is to instantiate it inside Logger,
  * so that all logged errors get reported to this class.
  */
-export function cleanStack(stack: string, loc?: string) {}
+export function cleanStack(_stack: string, _loc?: string) {}
 import ScribeLogger from './ScribeLogger';
 
 export type ObjectError =
@@ -23,6 +23,6 @@ export type ObjectError =
     };
 
 export default class ErrorReporter {
-  constructor(scribeLogger: ScribeLogger) {}
-  report(err: ObjectError) {}
+  constructor(_scribeLogger: ScribeLogger) {}
+  report(_err: ObjectError) {}
 }

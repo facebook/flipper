@@ -11,8 +11,8 @@ import {Logger} from '../fb-interfaces/Logger';
 import {Store} from '../reducers/index';
 
 export default class BugReporter {
-  constructor(logManager: Logger, store: Store) {}
-  async report(title: string, body: string): Promise<number> {
+  constructor(_logManager: Logger, _store: Store) {}
+  async report(_title: string, _body: string): Promise<number> {
     return Promise.resolve(-1);
   }
 }
