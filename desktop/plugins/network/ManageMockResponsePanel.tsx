@@ -95,22 +95,49 @@ function _duplicateIds(routes: {[id: string]: Route}): Array<RequestId> {
 function _buildRows(
   routes: {[id: string]: Route},
   duplicatedIds: Array<string>,
+  handleRemoveId: (id: string) => void,
 ) {
   return Object.entries(routes).map(([id, route]) => ({
     columns: {
       route: {
-        value: duplicatedIds.includes(id) ? (
-          <FlexRow>
-            <Icon name="caution-triangle" color={colors.yellow} />
-            <TextEllipsis>{route.requestUrl}</TextEllipsis>
-          </FlexRow>
-        ) : (
-          <TextEllipsis>{route.requestUrl}</TextEllipsis>
+        value: (
+          <RouteRow
+            key={id}
+            text={route.requestUrl}
+            showWarning={duplicatedIds.includes(id)}
+            handleRemoveId={() => handleRemoveId(id)}
+          />
         ),
       },
     },
     key: id,
   }));
+}
+
+function RouteRow(props: {
+  text: string;
+  showWarning: boolean;
+  handleRemoveId: () => void;
+}) {
+  const [showCloseButton, setShowCloseButton] = useState(false);
+  return (
+    <FlexRow
+      grow={true}
+      onMouseEnter={() => setShowCloseButton(true)}
+      onMouseLeave={() => setShowCloseButton(false)}>
+      <FlexRow grow={true}>
+        {props.showWarning && (
+          <Icon name="caution-triangle" color={colors.yellow} />
+        )}
+        <TextEllipsis>{props.text}</TextEllipsis>
+      </FlexRow>
+      {showCloseButton && (
+        <FlexRow onClick={props.handleRemoveId}>
+          <Icon name="cross-circle" color={colors.red} />
+        </FlexRow>
+      )}
+    </FlexRow>
+  );
 }
 
 function ManagedMockResponseRightPanel(props: {
@@ -173,7 +200,10 @@ export function ManageMockResponsePanel(props: Props) {
           multiline={true}
           columnSizes={ColumnSizes}
           columns={Columns}
-          rows={_buildRows(routes, duplicatedIds)}
+          rows={_buildRows(routes, duplicatedIds, id => {
+            networkRouteManager.removeRoute(id);
+            setSelectedId(null);
+          })}
           stickyBottom={true}
           autoHeight={false}
           floating={false}
