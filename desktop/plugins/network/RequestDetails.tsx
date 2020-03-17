@@ -184,7 +184,9 @@ export default class RequestDetails extends Component<
             {response.headers.length > 0 ? (
               <Panel
                 key={'responseheaders'}
-                heading={'Response Headers'}
+                heading={
+                  response.isMock ? 'Response Body (Mock)' : 'Response Body'
+                }
                 floating={false}
                 padded={false}>
                 <HeaderInspector headers={response.headers} />
