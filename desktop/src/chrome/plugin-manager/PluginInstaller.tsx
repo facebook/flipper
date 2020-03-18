@@ -401,6 +401,7 @@ function useNPMSearch(
 
   useEffect(() => {
     (async () => {
+      let cancelled = false;
       const {hits} = await reportPlatformFailures(
         index.search<PluginDefinition>('', {
           query,
@@ -409,11 +410,17 @@ function useNPMSearch(
         }) as Promise<SearchResponse<PluginDefinition>>,
         `${TAG}:queryIndex`,
       );
-
+      if (cancelled) {
+        return;
+      }
       setSearchResults(
         hits.filter(hit => !installedPlugins.has(hit.name)).map(liftUpdatable),
       );
-      setQuery(query);
+
+      // Clean up: if query changes while we're searching, abandon results.
+      return () => {
+        cancelled = true;
+      };
     })();
   }, [query, installedPlugins]);
 
