@@ -352,7 +352,13 @@ function useNPMSearch(
     (h: UpdatablePluginDefinition) => ({
       key: h.name,
       columns: {
-        name: {value: <EllipsisText>{h.name}</EllipsisText>},
+        name: {
+          value: (
+            <EllipsisText>
+              {h.name.replace(/^flipper-plugin-/, '')}
+            </EllipsisText>
+          ),
+        },
         version: {
           value: <EllipsisText>{h.version}</EllipsisText>,
           align: 'flex-end' as 'flex-end',
