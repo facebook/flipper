@@ -7,7 +7,7 @@
  * @format
  */
 
-import React, {PureComponent} from 'react';
+import React, {PureComponent, CSSProperties} from 'react';
 import styled from '@emotion/styled';
 import ReactMarkdown from 'react-markdown';
 import {colors} from './colors';
@@ -76,9 +76,9 @@ class LinkReference extends PureComponent<{href: string}> {
   }
 }
 
-export function Markdown(props: {source: string}) {
+export function Markdown(props: {source: string; style?: CSSProperties}) {
   return (
-    <Container>
+    <Container style={props.style}>
       <ReactMarkdown
         source={props.source}
         renderers={{

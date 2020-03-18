@@ -17,6 +17,7 @@ import {
   setActiveSheet,
   ACTIVE_SHEET_PLUGINS,
   ACTIVE_SHEET_SETTINGS,
+  ACTIVE_SHEET_CHANGELOG,
 } from './reducers/application';
 import {setStaticView} from './reducers/connections';
 import SupportRequestFormV2 from './fb-stubs/SupportRequestFormV2';
@@ -374,6 +375,12 @@ function getTemplate(
           label: 'Report problems',
           click: function() {
             shell.openExternal('https://github.com/facebook/flipper/issues');
+          },
+        },
+        {
+          label: 'Changelog',
+          click() {
+            store.dispatch(setActiveSheet(ACTIVE_SHEET_CHANGELOG));
           },
         },
       ],

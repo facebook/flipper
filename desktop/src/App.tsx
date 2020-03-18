@@ -36,6 +36,7 @@ import {
   ACTIVE_SHEET_SELECT_PLUGINS_TO_EXPORT,
   ACTIVE_SHEET_PLUGIN_SHEET,
   ACTIVE_SHEET_JS_EMULATOR_LAUNCHER,
+  ACTIVE_SHEET_CHANGELOG,
 } from './reducers/application';
 import {Logger} from './fb-interfaces/Logger';
 import BugReporter from './fb-stubs/BugReporter';
@@ -45,6 +46,7 @@ import PluginManager from './chrome/plugin-manager/PluginManager';
 import StatusBar from './chrome/StatusBar';
 import SettingsSheet from './chrome/SettingsSheet';
 import DoctorSheet from './chrome/DoctorSheet';
+import ChangelogSheet from './chrome/ChangelogSheet';
 
 const version = remote.app.getVersion();
 
@@ -97,6 +99,8 @@ export class App extends React.Component<Props> {
         return <SettingsSheet platform={process.platform} onHide={onHide} />;
       case ACTIVE_SHEET_DOCTOR:
         return <DoctorSheet onHide={onHide} />;
+      case ACTIVE_SHEET_CHANGELOG:
+        return <ChangelogSheet onHide={onHide} />;
       case ACTIVE_SHEET_SELECT_PLUGINS_TO_EXPORT:
         return <ExportDataPluginSheet onHide={onHide} />;
       case ACTIVE_SHEET_SHARE_DATA:
