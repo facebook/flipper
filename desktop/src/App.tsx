@@ -37,6 +37,8 @@ import {
   ACTIVE_SHEET_PLUGIN_SHEET,
   ACTIVE_SHEET_JS_EMULATOR_LAUNCHER,
   ACTIVE_SHEET_CHANGELOG,
+  setActiveSheet,
+  ACTIVE_SHEET_CHANGELOG_RECENT_ONLY,
 } from './reducers/application';
 import {Logger} from './fb-interfaces/Logger';
 import BugReporter from './fb-stubs/BugReporter';
@@ -46,7 +48,7 @@ import PluginManager from './chrome/plugin-manager/PluginManager';
 import StatusBar from './chrome/StatusBar';
 import SettingsSheet from './chrome/SettingsSheet';
 import DoctorSheet from './chrome/DoctorSheet';
-import ChangelogSheet from './chrome/ChangelogSheet';
+import ChangelogSheet, {hasNewChangesToShow} from './chrome/ChangelogSheet';
 
 const version = remote.app.getVersion();
 
@@ -63,7 +65,11 @@ type StateFromProps = {
   staticView: StaticView;
 };
 
-type Props = StateFromProps & OwnProps;
+type DispatchProps = {
+  setActiveSheet: typeof setActiveSheet;
+};
+
+type Props = StateFromProps & OwnProps & DispatchProps;
 
 export class App extends React.Component<Props> {
   componentDidMount() {
@@ -79,6 +85,10 @@ export class App extends React.Component<Props> {
     });
     ipcRenderer.send('getLaunchTime');
     ipcRenderer.send('componentDidMount');
+
+    if (hasNewChangesToShow(window.localStorage)) {
+      this.props.setActiveSheet(ACTIVE_SHEET_CHANGELOG_RECENT_ONLY);
+    }
   }
 
   getSheet = (onHide: () => any) => {
@@ -101,6 +111,8 @@ export class App extends React.Component<Props> {
         return <DoctorSheet onHide={onHide} />;
       case ACTIVE_SHEET_CHANGELOG:
         return <ChangelogSheet onHide={onHide} />;
+      case ACTIVE_SHEET_CHANGELOG_RECENT_ONLY:
+        return <ChangelogSheet onHide={onHide} recent />;
       case ACTIVE_SHEET_SELECT_PLUGINS_TO_EXPORT:
         return <ExportDataPluginSheet onHide={onHide} />;
       case ACTIVE_SHEET_SHARE_DATA:
@@ -163,7 +175,7 @@ export class App extends React.Component<Props> {
   }
 }
 
-export default connect<StateFromProps, {}, OwnProps, Store>(
+export default connect<StateFromProps, DispatchProps, OwnProps, Store>(
   ({
     application: {leftSidebarVisible, activeSheet, share},
     connections: {errors, staticView},
@@ -174,4 +186,7 @@ export default connect<StateFromProps, {}, OwnProps, Store>(
     errors,
     staticView,
   }),
+  {
+    setActiveSheet,
+  },
 )(App);

@@ -14,10 +14,21 @@ import path from 'path';
 import {reportUsage} from '../utils/metrics';
 import {getStaticPath} from '../utils/pathUtils';
 
-const changelog: string = readFileSync(
-  path.join(getStaticPath(), 'CHANGELOG.md'),
-  'utf8',
-);
+const changelogKey = 'FlipperChangelogStatus';
+
+type ChangelogStatus = {
+  lastHeader: string;
+};
+
+let getChangelogFromDisk = (): string => {
+  const changelogFromDisk: string = readFileSync(
+    path.join(getStaticPath(), 'CHANGELOG.md'),
+    'utf8',
+  ).trim();
+
+  getChangelogFromDisk = () => changelogFromDisk;
+  return changelogFromDisk;
+};
 
 const Container = styled(FlexColumn)({
   padding: 20,
@@ -43,15 +54,24 @@ const changelogSectionStyle = {
 
 type Props = {
   onHide: () => void;
+  recent?: boolean;
 };
 
 export default class ChangelogSheet extends Component<Props, {}> {
   componentDidMount() {
-    reportUsage('changelog:opened');
+    if (!this.props.recent) {
+      // opened through the menu
+      reportUsage('changelog:opened');
+    }
   }
 
   componentWillUnmount(): void {
-    reportUsage('changelog:closed');
+    if (this.props.recent) {
+      markChangelogRead(window.localStorage, getChangelogFromDisk());
+    }
+    if (!this.props.recent) {
+      reportUsage('changelog:closed');
+    }
   }
 
   render() {
@@ -59,7 +79,17 @@ export default class ChangelogSheet extends Component<Props, {}> {
       <Container>
         <Title>Changelog</Title>
         <FlexRow>
-          <Markdown source={changelog} style={changelogSectionStyle} />
+          <Markdown
+            source={
+              this.props.recent
+                ? getRecentChangelog(
+                    window.localStorage,
+                    getChangelogFromDisk(),
+                  )
+                : getChangelogFromDisk()
+            }
+            style={changelogSectionStyle}
+          />
         </FlexRow>
         <FlexRow>
           <Button type="primary" compact padded onClick={this.props.onHide}>
@@ -69,4 +99,72 @@ export default class ChangelogSheet extends Component<Props, {}> {
       </Container>
     );
   }
+}
+
+function getChangelogStatus(
+  localStorage: Storage,
+): ChangelogStatus | undefined {
+  return JSON.parse(localStorage.getItem(changelogKey) || '{}');
+}
+
+function getFirstHeader(changelog: string): string {
+  const match = changelog.match(/(^|\n)(#.*?)\n/);
+  if (match) {
+    return match[2];
+  }
+  return '';
+}
+
+export function hasNewChangesToShow(
+  localStorage: Storage | undefined,
+  changelog: string = getChangelogFromDisk(),
+): boolean {
+  if (!localStorage) {
+    return false;
+  }
+  const status = getChangelogStatus(localStorage);
+  if (!status || !status.lastHeader) {
+    return true;
+  }
+  const firstHeader = getFirstHeader(changelog);
+  if (firstHeader && firstHeader !== status.lastHeader) {
+    return true;
+  }
+  return false;
+}
+
+export /*for test*/ function getRecentChangelog(
+  localStorage: Storage | undefined,
+  changelog: string,
+): string {
+  if (!localStorage) {
+    return 'Changelog not available';
+  }
+  const status = getChangelogStatus(localStorage);
+  if (!status || !status.lastHeader) {
+    return changelog.trim();
+  }
+  const lastHeaderIndex = changelog.indexOf(status.lastHeader);
+  if (lastHeaderIndex === -1) {
+    return changelog.trim();
+  } else {
+    return changelog.substr(0, lastHeaderIndex).trim();
+  }
+}
+
+export /*for test*/ function markChangelogRead(
+  localStorage: Storage | undefined,
+  changelog: string,
+) {
+  if (!localStorage) {
+    return;
+  }
+  const firstHeader = getFirstHeader(changelog);
+  if (!firstHeader) {
+    return;
+  }
+  const status: ChangelogStatus = {
+    lastHeader: firstHeader,
+  };
+  localStorage.setItem(changelogKey, JSON.stringify(status));
 }
