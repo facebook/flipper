@@ -396,7 +396,9 @@ export default class LogTable extends FlipperDevicePlugin<
 
   static supportsDevice(device: Device) {
     return (
-      device.os === 'iOS' || device.os === 'Android' || device.os === 'Metro'
+      device.os === 'Android' ||
+      device.os === 'Metro' ||
+      (device.os === 'iOS' && device.deviceType !== 'physical')
     );
   }
 
