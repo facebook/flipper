@@ -8,7 +8,7 @@
  */
 
 import React from 'react';
-import {FlexColumn, FlexRow} from 'flipper';
+import {FlexColumn, FlexRow, styled} from 'flipper';
 import {connect} from 'react-redux';
 import TitleBar from './chrome/TitleBar';
 import MainSidebar2 from './chrome/mainsidebar/MainSidebar2';
@@ -68,6 +68,11 @@ type StateFromProps = {
 type DispatchProps = {
   setActiveSheet: typeof setActiveSheet;
 };
+
+const MainContent = styled(FlexRow)({
+  height: 'calc(100vh - 38px)',
+});
+MainContent.displayName = 'App:MainContent';
 
 type Props = StateFromProps & OwnProps & DispatchProps;
 
@@ -155,7 +160,7 @@ export class App extends React.Component<Props> {
         <DoctorBar />
         <ErrorBar />
         <Sheet>{this.getSheet}</Sheet>
-        <FlexRow grow={true}>
+        <MainContent>
           {this.props.leftSidebarVisible && <MainSidebar2 />}
           {this.props.staticView != null ? (
             React.createElement(this.props.staticView, {
@@ -168,7 +173,7 @@ export class App extends React.Component<Props> {
             id="flipper-out-of-contents-container"
             style={{width: '100%', display: 'none'}}
           />
-        </FlexRow>
+        </MainContent>
         <StatusBar />
       </FlexColumn>
     );
