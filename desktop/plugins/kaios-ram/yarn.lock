@@ -46,10 +46,10 @@
   resolved "https://registry.yarnpkg.com/@types/recharts-scale/-/recharts-scale-1.0.0.tgz#348c9220d6d9062c44a9d585d686644a97f7e25d"
   integrity sha512-HR/PrCcxYb2YHviTqH7CMdL1TUhUZLTUKzfrkMhxm1HTa5mg/QtP8XMiuSPz6dZ6wecazAOu8aYZ5DqkNlgHHQ==
 
-"@types/recharts@1.8.6":
-  version "1.8.6"
-  resolved "https://registry.yarnpkg.com/@types/recharts/-/recharts-1.8.6.tgz#1368e174a21e6b12d1344dba0ae0eea68f8706f0"
-  integrity sha512-UnuLpnXbpyLzxYJ6PuRMBR6K7X0Ih60M/PVaUwT6jtvJXqlVEmU5ABx0etgzG2DkOnYhpHvD9tjOjyrdUKrUPQ==
+"@types/recharts@1.8.8":
+  version "1.8.8"
+  resolved "https://registry.yarnpkg.com/@types/recharts/-/recharts-1.8.8.tgz#ac4a675f3046267747596e695e3670f9224484ae"
+  integrity sha512-jURFuxPA+oLP4c8hZiD09MHsgfrR8ZuvRSsTlEUN4azlX+AQwnTTug0WTA0brKKXs5pPvMPGv2x0lPye6SzJSA==
   dependencies:
     "@types/d3-shape" "*"
     "@types/react" "*"
