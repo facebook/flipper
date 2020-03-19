@@ -24,6 +24,8 @@ import {
   State as UsageTrackingState,
 } from '../reducers/usageTracking';
 import produce from 'immer';
+import {BaseDevice} from 'flipper';
+import {deconstructClientId} from '../utils/clientUtils';
 
 const TIME_SPENT_EVENT = 'time-spent';
 
@@ -43,6 +45,17 @@ export const fpsEmitter = new EventEmitter();
 export default (store: Store, logger: Logger) => {
   let droppedFrames: number = 0;
   let largeFrameDrops: number = 0;
+
+  const oldExitData = loadExitData();
+  if (oldExitData) {
+    const timeSinceLastStartup =
+      Date.now() - parseInt(oldExitData.lastSeen, 10);
+    logger.track('usage', 'restart', {
+      ...oldExitData,
+      timeSinceLastStartup,
+    });
+  }
+
   function droppedFrameDetection(
     past: DOMHighResTimeStamp,
     isWindowFocused: () => boolean,
@@ -76,6 +89,8 @@ export default (store: Store, logger: Logger) => {
       selectedApp,
       clients,
     } = state.connections;
+
+    persistExitData({selectedDevice, selectedPlugin, selectedApp});
 
     const currentTime = Date.now();
     const usageSummary = computeUsageSummary(state.usageTracking, currentTime);
@@ -193,5 +208,53 @@ export function computeUsageSummary(
     {
       total: {focusedTime: 0, unfocusedTime: 0},
     },
+  );
+}
+
+const flipperExitDataKey = 'FlipperExitData';
+
+interface ExitData {
+  lastSeen: string;
+  deviceOs: string;
+  deviceType: string;
+  deviceTitle: string;
+  plugin: string;
+  app: string;
+}
+
+function loadExitData(): ExitData | undefined {
+  if (!window.localStorage) {
+    return undefined;
+  }
+  const data = window.localStorage.getItem(flipperExitDataKey);
+  if (data) {
+    try {
+      return JSON.parse(data);
+    } catch (e) {
+      console.warn('Failed to parse flipperExitData', e);
+    }
+  }
+  return undefined;
+}
+
+export function persistExitData(state: {
+  selectedDevice: BaseDevice | null;
+  selectedPlugin: string | null;
+  selectedApp: string | null;
+}) {
+  if (!window.localStorage) {
+    return;
+  }
+  const exitData: ExitData = {
+    lastSeen: '' + Date.now(),
+    deviceOs: state.selectedDevice ? state.selectedDevice.os : '',
+    deviceType: state.selectedDevice ? state.selectedDevice.deviceType : '',
+    deviceTitle: state.selectedDevice ? state.selectedDevice.title : '',
+    plugin: state.selectedPlugin || '',
+    app: state.selectedApp ? deconstructClientId(state.selectedApp).app : '',
+  };
+  window.localStorage.setItem(
+    flipperExitDataKey,
+    JSON.stringify(exitData, null, 2),
   );
 }
