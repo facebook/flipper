@@ -378,7 +378,7 @@ const Searchable = (
       );
       if (filterIndex > -1) {
         const filters = [...this.state.filters];
-        const defaultFilter: Filter = this.props.defaultFilters[filterIndex];
+        const defaultFilter: Filter = this.props.defaultFilters?.[filterIndex];
         const filter = filters[filterIndex];
         if (
           defaultFilter != null &&
