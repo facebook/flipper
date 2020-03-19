@@ -78,7 +78,7 @@ const StyledInput = styled(Input)({
   flexGrow: 5,
 });
 
-const HeaderInput = styled(Input)({
+const HeaderStyledInput = styled(Input)({
   width: '100%',
   height: 20,
   marginTop: 6,
@@ -139,14 +139,32 @@ const HeadersColumns = {
   },
 };
 
+const selectedHighlight = {backgroundColor: colors.highlight};
+
+function HeaderInput(props: {
+  initialValue: string;
+  isSelected: boolean;
+  onUpdate: (newValue: string) => void;
+}) {
+  const [value, setValue] = useState(props.initialValue);
+  return (
+    <HeaderStyledInput
+      type="text"
+      placeholder="Name"
+      value={value}
+      style={props.isSelected ? selectedHighlight : undefined}
+      onChange={event => setValue(event.target.value)}
+      onBlur={() => props.onUpdate(value)}
+    />
+  );
+}
+
 function _buildMockResponseHeaderRows(
   routeId: string,
   route: Route,
   selectedHeaderId: string | null,
   networkRouteManager: NetworkRouteManager,
 ) {
-  const selectedHighlight = {backgroundColor: colors.highlight};
-
   return Object.entries(route.responseHeaders).map(([id, header]) => {
     const selected = selectedHeaderId === id;
     return {
@@ -154,18 +172,13 @@ function _buildMockResponseHeaderRows(
         name: {
           value: (
             <HeaderInput
-              type="text"
-              placeholder="Name"
-              value={header.key}
-              style={selected ? selectedHighlight : {}}
-              onChange={event => {
-                if (!selected) {
-                  return;
-                }
+              initialValue={header.key}
+              isSelected={selected}
+              onUpdate={(newValue: string) => {
                 const newHeaders = produce(
                   route.responseHeaders,
                   draftHeaders => {
-                    draftHeaders[id].key = event.target.value;
+                    draftHeaders[id].key = newValue;
                   },
                 );
                 networkRouteManager.modifyRoute(routeId, {
@@ -178,18 +191,13 @@ function _buildMockResponseHeaderRows(
         value: {
           value: (
             <HeaderInput
-              type="text"
-              placeholder="Value"
-              value={header.value}
-              style={selected ? selectedHighlight : {}}
-              onChange={event => {
-                if (!selected) {
-                  return;
-                }
+              initialValue={header.value}
+              isSelected={selected}
+              onUpdate={(newValue: string) => {
                 const newHeaders = produce(
                   route.responseHeaders,
                   draftHeaders => {
-                    draftHeaders[id].value = event.target.value;
+                    draftHeaders[id].value = newValue;
                   },
                 );
                 networkRouteManager.modifyRoute(routeId, {
