@@ -214,8 +214,8 @@ function configureSession() {
     },
     (details, callback) => {
       // setting Origin to always be 'localhost' to avoid issues when dev version and release version behaves differently.
-      details.requestHeaders.origin = 'https://localhost:3000';
-      details.requestHeaders.referer = 'https://localhost:3000/index.dev.html';
+      details.requestHeaders.origin = 'http://localhost:3000';
+      details.requestHeaders.referer = 'http://localhost:3000/index.dev.html';
       callback({cancel: false, requestHeaders: details.requestHeaders});
     },
   );
