@@ -20,7 +20,7 @@
     "fb-watchman": "^2.0.0",
     "fix-path": "^3.0.0",
     "mem": "^6.0.0",
-    "metro": "^0.58.0",
+    "metro": "^0.59.0",
     "mkdirp": "^1.0.0",
     "p-map": "^4.0.0",
     "recursive-readdir": "2.2.2",
