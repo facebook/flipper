@@ -134,15 +134,13 @@ function getOutputDir(pluginName: string) {
   const outDir = path.join(process.cwd(), '..');
   const fbPluginDir = path.join(
     outDir,
-    'src',
-    'fb',
     'plugins',
+    'fb',
     pluginName.toLowerCase(),
     '__tests__',
   );
   const defaultPluginDir = path.join(
     outDir,
-    'src',
     'plugins',
     pluginName.toLowerCase(),
     '__tests__',

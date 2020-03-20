@@ -9,7 +9,7 @@
  */
 
 import path from 'path';
-import fs from 'fs';
+import fs from 'fs-extra';
 import Metro from 'metro';
 import util from 'util';
 import recursiveReaddir from 'recursive-readdir';
@@ -17,6 +17,7 @@ import expandTilde from 'expand-tilde';
 import pMap from 'p-map';
 import {homedir} from 'os';
 import Watchman from './watchman';
+import getWatchFolders from './get-watch-folders';
 
 const HOME_DIR = homedir();
 
@@ -59,8 +60,8 @@ export default async function(
 ) {
   options = Object.assign({}, DEFAULT_COMPILE_OPTIONS, options);
   const plugins = pluginEntryPoints(pluginPaths);
-  if (!fs.existsSync(pluginCache)) {
-    fs.mkdirSync(pluginCache);
+  if (!(await fs.pathExists(pluginCache))) {
+    await fs.mkdir(pluginCache);
   }
   if (options.recompileOnChanges) {
     await startWatchChanges(plugins, reloadCallback, pluginCache, options);
@@ -248,7 +249,7 @@ async function compilePlugin(
   const {rootDir, manifest, entry, name} = pluginInfo;
   const bundleMain = manifest.bundleMain ?? path.join('dist', 'index.js');
   const bundlePath = path.join(rootDir, bundleMain);
-  if (fs.existsSync(bundlePath)) {
+  if (await fs.pathExists(bundlePath)) {
     // eslint-disable-next-line no-console
     const out = path.join(rootDir, bundleMain);
     console.log(`🥫  Using pre-built version of ${name}: ${out}...`);
@@ -262,8 +263,8 @@ async function compilePlugin(
     const rootDirCtime = await mostRecentlyChanged(rootDir);
     if (
       !options.force &&
-      fs.existsSync(out) &&
-      rootDirCtime < fs.lstatSync(out).ctime
+      (await fs.pathExists(out)) &&
+      rootDirCtime < (await fs.lstat(out)).ctime
     ) {
       // eslint-disable-next-line no-console
       console.log(`🥫  Using cached version of ${name}...`);
@@ -275,7 +276,7 @@ async function compilePlugin(
           {
             reporter: {update: () => {}},
             projectRoot: rootDir,
-            watchFolders: [__dirname, rootDir],
+            watchFolders: [__dirname].concat(await getWatchFolders(rootDir)),
             serializer: {
               getRunModuleStatement: (moduleID: string) =>
                 `module.exports = global.__r(${moduleID}).default;`,
@@ -290,7 +291,7 @@ async function compilePlugin(
             },
             resolver: {
               sourceExts: ['tsx', 'ts', 'js'],
-              blacklistRE: /(\/|\\)(sonar|flipper|flipper-public)(\/|\\)(dist|doctor)(\/|\\)|(\.native\.js$)/,
+              blacklistRE: /\.native\.js$/,
             },
           },
           {

@@ -22,7 +22,7 @@ import GK from '../fb-stubs/GK';
 import * as UserFeedback from '../fb-stubs/UserFeedback';
 import {FeedbackPrompt} from '../fb-stubs/UserFeedback';
 import {connect} from 'react-redux';
-import {State as Store} from 'src/reducers';
+import {State as Store} from 'app/src/reducers';
 
 type PropsFromState = {
   sessionId: string | null;

@@ -17,7 +17,7 @@ export function getStaticPath() {
   if (_staticPath) {
     return _staticPath;
   }
-  _staticPath = path.resolve(__dirname, '..', '..', 'static');
+  _staticPath = path.resolve(__dirname, '..', '..', '..', 'static');
   if (fs.existsSync(_staticPath)) {
     return _staticPath;
   }

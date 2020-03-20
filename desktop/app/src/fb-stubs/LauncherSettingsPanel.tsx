@@ -7,7 +7,7 @@
  * @format
  */
 
-import {Tristate} from 'src/reducers/settings';
+import {Tristate} from 'app/src/reducers/settings';
 
 export default function(_props: {
   isPrefetchingEnabled: Tristate;

@@ -14,7 +14,7 @@ import yazl from 'yazl';
 const {exec: createBinary} = require('pkg');
 import {
   buildFolder,
-  compile,
+  compileHeadless,
   compileDefaultPlugins,
   getVersionNumber,
   genMercurialRevision,
@@ -98,7 +98,7 @@ async function createZip(buildDir: string, distDir: string, targets: string[]) {
   const distDir = path.join(__dirname, '..', '..', 'dist');
   // eslint-disable-next-line no-console
   console.log('Created build directory', buildDir);
-  await compile(buildDir, path.join(__dirname, '..', 'headless', 'index.tsx'));
+  await compileHeadless(buildDir);
   const versionNumber = getVersionNumber();
   const buildRevision = await genMercurialRevision();
   await preludeBundle(buildDir, versionNumber, buildRevision);

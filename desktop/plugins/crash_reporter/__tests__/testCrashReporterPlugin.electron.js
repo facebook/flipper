@@ -7,7 +7,7 @@
  * @format
  */
 
-import BaseDevice from '../../../src/devices/BaseDevice.tsx';
+import {BaseDevice} from 'flipper';
 import CrashReporterPlugin from '../../crash_reporter';
 import type {PersistedState, Crash} from '../../crash_reporter';
 import {
@@ -16,10 +16,7 @@ import {
   parsePath,
   shouldShowCrashNotification,
 } from '../../crash_reporter';
-import {
-  getPluginKey,
-  getPersistedState,
-} from '../../../src/utils/pluginUtils.tsx';
+import {getPluginKey, getPersistedState} from 'flipper';
 
 function setDefaultPersistedState(defaultState: PersistedState) {
   CrashReporterPlugin.defaultPersistedState = defaultState;

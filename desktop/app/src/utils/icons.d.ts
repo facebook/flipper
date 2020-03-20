@@ -7,7 +7,7 @@
  * @format
  */
 
-import {IconSize} from 'src/ui/components/Glyph';
+import {IconSize} from '../ui/components/Glyph';
 
 declare function getIconURL(
   name: string,

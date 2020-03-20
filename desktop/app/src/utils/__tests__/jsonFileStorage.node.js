@@ -11,7 +11,7 @@ import JsonFileStorage from '../jsonFileReduxPersistStorage.tsx';
 import fs from 'fs';
 
 const validSerializedData = fs
-  .readFileSync('src/utils/__tests__/data/settings-v1-valid.json')
+  .readFileSync('app/src/utils/__tests__/data/settings-v1-valid.json')
   .toString()
   .replace(/\r\n/g, '\n')
   .trim();
@@ -20,7 +20,7 @@ const validDeserializedData =
   '{"androidHome":"\\"/opt/android_sdk\\"","something":"{\\"else\\":4}","_persist":"{\\"version\\":-1,\\"rehydrated\\":true}"}';
 
 const storage = new JsonFileStorage(
-  'src/utils/__tests__/data/settings-v1-valid.json',
+  'app/src/utils/__tests__/data/settings-v1-valid.json',
 );
 
 test('A valid settings file gets parsed correctly', () => {

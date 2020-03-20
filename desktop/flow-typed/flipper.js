@@ -43,6 +43,8 @@ declare module 'flipper' {
     supportsMethod(method: string): Promise<boolean>;
   }
 
+  declare type Logger = Logger;
+
   declare type PluginTarget = BaseDevice | Client;
 
   declare type Notification = {|

@@ -9,7 +9,7 @@
 
 import {remote} from 'electron';
 import {MetroDevice} from 'flipper';
-import {Store} from 'src/reducers';
+import {Store} from 'app/src/reducers';
 
 type ShortcutEventCommand =
   | {

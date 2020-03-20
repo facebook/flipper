@@ -35,7 +35,7 @@ import {convertRequestToCurlCommand, getHeaderValue, decodeBody} from './utils';
 import RequestDetails from './RequestDetails';
 import {clipboard} from 'electron';
 import {URL} from 'url';
-import {DefaultKeyboardAction} from 'src/MenuBar';
+import {DefaultKeyboardAction} from 'app/src/MenuBar';
 import {MockResponseDialog} from './MockResponseDialog';
 
 type PersistedState = {

@@ -8,7 +8,7 @@
  */
 
 import {PluginClient, Client, ElementID} from 'flipper';
-import {Logger} from 'src/fb-interfaces/Logger';
+import {Logger} from 'app/src/fb-interfaces/Logger';
 
 export default [] as Array<
   (
