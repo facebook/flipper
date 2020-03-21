@@ -100,7 +100,7 @@ export async function compileHeadless(buildFolder: string) {
     path.join(pluginsDir, 'fb', 'layout', 'sidebar_extensions'),
     path.join(pluginsDir, 'fb', 'mobileconfig'),
     path.join(pluginsDir, 'fb', 'watch'),
-  ].filter(fs.pathExists);
+  ].filter(fs.pathExistsSync);
   try {
     await compile(
       buildFolder,
@@ -122,7 +122,7 @@ export async function compileRenderer(buildFolder: string) {
     path.join(pluginsDir, 'fb', 'layout', 'sidebar_extensions'),
     path.join(pluginsDir, 'fb', 'mobileconfig'),
     path.join(pluginsDir, 'fb', 'watch'),
-  ].filter(fs.pathExists);
+  ].filter(fs.pathExistsSync);
   try {
     await compile(
       buildFolder,
