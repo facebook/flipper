@@ -83,7 +83,7 @@ async function startMetroServer(app: Express) {
     path.join(pluginsDir, 'fb', 'layout', 'sidebar_extensions'),
     path.join(pluginsDir, 'fb', 'mobileconfig'),
     path.join(pluginsDir, 'fb', 'watch'),
-  ].filter(fs.pathExists);
+  ].filter(fs.pathExistsSync);
   const metroBundlerServer = await Metro.runMetro({
     projectRoot: appDir,
     watchFolders,
