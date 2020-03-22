@@ -10,7 +10,7 @@
 const fs = require('fs');
 const path = require('path');
 const replaceFBStubs = fs.existsSync(
-  path.join(__dirname, '..', '..', 'src', 'fb'),
+  path.join(__dirname, '..', '..', 'app', 'src', 'fb'),
 );
 const isFBFile = filePath => filePath.includes(`${path.sep}fb${path.sep}`);
 

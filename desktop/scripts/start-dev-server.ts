@@ -17,16 +17,17 @@ import AnsiToHtmlConverter from 'ansi-to-html';
 import chalk from 'chalk';
 import http from 'http';
 import path from 'path';
-import fs from 'fs';
+import fs from 'fs-extra';
 import {compileMain} from './build-utils';
 import Watchman from '../static/watchman';
 import Metro from 'metro';
 import MetroResolver from 'metro-resolver';
+import {default as getWatchFolders} from '../static/get-watch-folders';
+import {staticDir, pluginsDir, appDir} from './paths';
 
 const ansiToHtmlConverter = new AnsiToHtmlConverter();
 
 const DEFAULT_PORT = (process.env.PORT || 3000) as number;
-const STATIC_DIR = path.join(__dirname, '..', 'static');
 
 let shutdownElectron: (() => void) | undefined = undefined;
 
@@ -40,13 +41,13 @@ function launchElectron({
   electronURL: string;
 }) {
   const args = [
-    path.join(STATIC_DIR, 'index.js'),
+    path.join(staticDir, 'index.js'),
     '--remote-debugging-port=9222',
     ...process.argv,
   ];
 
   const proc = child.spawn(electronBinary, args, {
-    cwd: STATIC_DIR,
+    cwd: staticDir,
     env: {
       ...process.env,
       SONAR_ROOT: process.cwd(),
@@ -75,18 +76,19 @@ function launchElectron({
   };
 }
 
-function startMetroServer(app: Express) {
-  const projectRoot = path.join(__dirname, '..');
-  return Metro.runMetro({
-    projectRoot,
-    watchFolders: [projectRoot],
+async function startMetroServer(app: Express) {
+  const watchFolders = [
+    ...(await getWatchFolders(appDir)),
+    path.join(pluginsDir, 'navigation'),
+    path.join(pluginsDir, 'fb', 'layout', 'sidebar_extensions'),
+    path.join(pluginsDir, 'fb', 'mobileconfig'),
+    path.join(pluginsDir, 'fb', 'watch'),
+  ].filter(fs.pathExistsSync);
+  const metroBundlerServer = await Metro.runMetro({
+    projectRoot: appDir,
+    watchFolders,
     transformer: {
-      babelTransformerPath: path.join(
-        projectRoot,
-        'static',
-        'transforms',
-        'index.js',
-      ),
+      babelTransformerPath: path.join(staticDir, 'transforms', 'index.js'),
     },
     resolver: {
       resolverMainFields: ['flipper:source', 'module', 'main'],
@@ -103,9 +105,8 @@ function startMetroServer(app: Express) {
       },
     },
     watch: true,
-  }).then((metroBundlerServer: any) => {
-    app.use(metroBundlerServer.processRequest.bind(metroBundlerServer));
   });
+  app.use(metroBundlerServer.processRequest.bind(metroBundlerServer));
 }
 
 function startAssetServer(
@@ -141,12 +142,12 @@ function startAssetServer(
   });
 
   app.get('/', (req, res) => {
-    fs.readFile(path.join(STATIC_DIR, 'index.dev.html'), (err, content) => {
+    fs.readFile(path.join(staticDir, 'index.dev.html'), (err, content) => {
       res.end(content);
     });
   });
 
-  app.use(express.static(STATIC_DIR));
+  app.use(express.static(staticDir));
 
   app.use(function(err: any, req: any, res: any, _next: any) {
     knownErrors[req.url] = err;

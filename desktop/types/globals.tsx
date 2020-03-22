@@ -9,7 +9,7 @@
 
 import {StoreEnhancerStoreCreator} from 'redux';
 import {ResizeObserver} from './ResizeObserver.d';
-import {Store} from '../src/reducers';
+import {Store} from '../app/src/reducers';
 
 export {};
 type RequestIdleHandle = number;

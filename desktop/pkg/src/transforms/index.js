@@ -63,7 +63,7 @@ function transform({filename, options, src}) {
 
   if (
     fs.existsSync(
-      path.resolve(path.dirname(path.dirname(__dirname)), 'src', 'fb'),
+      path.resolve(path.dirname(path.dirname(__dirname)), 'app', 'src', 'fb'),
     )
   ) {
     plugins.push(require('./fb-stubs.js'));

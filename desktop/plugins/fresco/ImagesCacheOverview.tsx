@@ -43,13 +43,13 @@ type ToggleProps = {
   toggled: boolean;
 };
 
-const ToolbarToggleButton = styled(ToggleButton)(_props => ({
+const ToolbarToggleButton = styled(ToggleButton)(() => ({
   alignSelf: 'center',
   marginRight: 4,
   minWidth: 30,
 }));
 
-const ToggleLabel = styled(Text)(_props => ({
+const ToggleLabel = styled(Text)(() => ({
   whiteSpace: 'nowrap',
 }));
 

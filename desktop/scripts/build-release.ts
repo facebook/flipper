@@ -13,7 +13,7 @@ import {Platform, Arch, ElectronDownloadOptions, build} from 'electron-builder';
 import {spawn} from 'promisify-child-process';
 import {
   buildFolder,
-  compile,
+  compileRenderer,
   compileMain,
   die,
   compileDefaultPlugins,
@@ -21,7 +21,7 @@ import {
   genMercurialRevision,
 } from './build-utils';
 import fetch from 'node-fetch';
-import {getIcons, buildLocalIconPath, getIconURL} from '../src/utils/icons';
+import {getIcons, buildLocalIconPath, getIconURL} from '../app/src/utils/icons';
 
 function generateManifest(versionNumber: string) {
   const filePath = path.join(__dirname, '..', '..', 'dist');
@@ -182,7 +182,7 @@ function downloadIcons(buildFolder: string) {
   copyStaticFolder(dir);
   await downloadIcons(dir);
   await compileDefaultPlugins(path.join(dir, 'defaultPlugins'));
-  await compile(dir, path.join(__dirname, '..', 'src', 'init.tsx'));
+  await compileRenderer(dir);
   const versionNumber = getVersionNumber();
   const hgRevision = await genMercurialRevision();
   modifyPackageManifest(dir, versionNumber, hgRevision);

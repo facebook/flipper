@@ -15,8 +15,8 @@ import path from 'path';
 import fs from 'fs-extra';
 import {spawn} from 'promisify-child-process';
 import recursiveReaddir from 'recursive-readdir';
-
-const projectRoot = path.join(__dirname, '..');
+import {default as getWatchFolders} from '../static/get-watch-folders';
+import {appDir, staticDir, pluginsDir, headlessDir} from './paths';
 
 async function mostRecentlyChanged(
   dir: string,
@@ -41,12 +41,7 @@ export function compileDefaultPlugins(
 ) {
   return compilePlugins(
     null,
-    skipAll
-      ? []
-      : [
-          path.join(__dirname, '..', 'plugins'),
-          path.join(__dirname, '..', 'plugins', 'fb'),
-        ],
+    skipAll ? [] : [pluginsDir, path.join(pluginsDir, 'fb')],
     defaultPluginDir,
     {force: true, failSilently: false, recompileOnChanges: false},
   )
@@ -64,21 +59,20 @@ export function compileDefaultPlugins(
     .catch(die);
 }
 
-export function compile(buildFolder: string, entry: string) {
-  console.log(`⚙️  Compiling renderer bundle...`);
-  return Metro.runBuild(
+async function compile(
+  buildFolder: string,
+  projectRoot: string,
+  watchFolders: string[],
+  entry: string,
+) {
+  await Metro.runBuild(
     {
       reporter: {update: () => {}},
-      projectRoot: projectRoot,
-      watchFolders: [projectRoot],
+      projectRoot,
+      watchFolders,
       serializer: {},
       transformer: {
-        babelTransformerPath: path.join(
-          projectRoot,
-          'static',
-          'transforms',
-          'index.js',
-        ),
+        babelTransformerPath: path.join(staticDir, 'transforms', 'index.js'),
       },
       resolver: {
         resolverMainFields: ['flipper:source', 'module', 'main'],
@@ -93,13 +87,56 @@ export function compile(buildFolder: string, entry: string) {
       entry,
       out: path.join(buildFolder, 'bundle.js'),
     },
-  )
-    .then(() => console.log('✅  Compiled renderer bundle.'))
-    .catch(die);
+  );
+}
+
+export async function compileHeadless(buildFolder: string) {
+  console.log(`⚙️  Compiling headless bundle...`);
+  const watchFolders = [
+    headlessDir,
+    ...(await getWatchFolders(staticDir)),
+    ...(await getWatchFolders(appDir)),
+    path.join(pluginsDir, 'navigation'),
+    path.join(pluginsDir, 'fb', 'layout', 'sidebar_extensions'),
+    path.join(pluginsDir, 'fb', 'mobileconfig'),
+    path.join(pluginsDir, 'fb', 'watch'),
+  ].filter(fs.pathExistsSync);
+  try {
+    await compile(
+      buildFolder,
+      headlessDir,
+      watchFolders,
+      path.join(headlessDir, 'index.tsx'),
+    );
+    console.log('✅  Compiled headless bundle.');
+  } catch (err) {
+    die(err);
+  }
+}
+
+export async function compileRenderer(buildFolder: string) {
+  console.log(`⚙️  Compiling renderer bundle...`);
+  const watchFolders = [
+    ...(await getWatchFolders(appDir)),
+    path.join(pluginsDir, 'navigation'),
+    path.join(pluginsDir, 'fb', 'layout', 'sidebar_extensions'),
+    path.join(pluginsDir, 'fb', 'mobileconfig'),
+    path.join(pluginsDir, 'fb', 'watch'),
+  ].filter(fs.pathExistsSync);
+  try {
+    await compile(
+      buildFolder,
+      appDir,
+      watchFolders,
+      path.join(appDir, 'src', 'init.tsx'),
+    );
+    console.log('✅  Compiled renderer bundle.');
+  } catch (err) {
+    die(err);
+  }
 }
 
 export async function compileMain({dev}: {dev: boolean}) {
-  const staticDir = path.resolve(projectRoot, 'static');
   const out = path.join(staticDir, 'main.bundle.js');
   // check if main needs to be compiled
   if (await fs.pathExists(out)) {
@@ -110,19 +147,14 @@ export async function compileMain({dev}: {dev: boolean}) {
       return;
     }
   }
-  console.log(`⚙️  Compiling main bundle...`);
+  console.log(`⚙️  Compiling main bundle... ${staticDir}`);
   try {
     const config = Object.assign({}, await Metro.loadConfig(), {
       reporter: {update: () => {}},
       projectRoot: staticDir,
-      watchFolders: [projectRoot],
+      watchFolders: await getWatchFolders(staticDir),
       transformer: {
-        babelTransformerPath: path.join(
-          projectRoot,
-          'static',
-          'transforms',
-          'index.js',
-        ),
+        babelTransformerPath: path.join(staticDir, 'transforms', 'index.js'),
       },
       resolver: {
         sourceExts: ['tsx', 'ts', 'js'],

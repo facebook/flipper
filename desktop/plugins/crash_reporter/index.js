@@ -35,7 +35,7 @@ import os from 'os';
 import util from 'util';
 import path from 'path';
 import {promisify} from 'util';
-import type {Notification} from '../../src/plugin.tsx';
+import type {Notification} from 'flipper';
 import type {Store, DeviceLogEntry, OS, Props} from 'flipper';
 import {Component} from 'react';
 

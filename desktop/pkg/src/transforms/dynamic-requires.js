@@ -16,7 +16,7 @@ function isDynamicRequire(node) {
   );
 }
 
-module.exports = function(babel) {
+module.exports = function(babel, state) {
   const t = babel.types;
 
   return {
@@ -27,7 +27,11 @@ module.exports = function(babel) {
           return;
         }
 
-        path.replaceWith(t.identifier('triggerDynamicRequireError'));
+        path.replaceWith(
+          t.identifier(
+            'triggerDynamicRequireError_' + state.file.opts.filename,
+          ),
+        );
       },
     },
   };

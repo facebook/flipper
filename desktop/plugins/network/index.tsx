@@ -7,14 +7,14 @@
  * @format
  */
 
-import {TableHighlightedRows, TableRows, TableBodyRow} from 'flipper';
 import {padStart} from 'lodash';
-import React from 'react';
+import React, {createContext} from 'react';
 import {MenuItemConstructorOptions} from 'electron';
 
 import {
   ContextMenu,
   FlexColumn,
+  FlexRow,
   Button,
   Text,
   Glyph,
@@ -24,13 +24,19 @@ import {
   styled,
   SearchableTable,
   FlipperPlugin,
+  Sheet,
+  TableHighlightedRows,
+  TableRows,
+  TableBodyRow,
+  produce,
 } from 'flipper';
-import {Request, RequestId, Response} from './types';
+import {Request, RequestId, Response, Route} from './types';
 import {convertRequestToCurlCommand, getHeaderValue, decodeBody} from './utils';
 import RequestDetails from './RequestDetails';
 import {clipboard} from 'electron';
 import {URL} from 'url';
-import {DefaultKeyboardAction} from 'src/MenuBar';
+import {DefaultKeyboardAction} from 'app/src/MenuBar';
+import {MockResponseDialog} from './MockResponseDialog';
 
 type PersistedState = {
   requests: {[id: string]: Request};
@@ -40,6 +46,10 @@ type PersistedState = {
 type State = {
   selectedIds: Array<RequestId>;
   searchTerm: string;
+  routes: {[id: string]: Route};
+  nextRouteId: number;
+  isMockResponseSupported: boolean;
+  showMockResponseDialog: boolean;
 };
 
 const COLUMN_SIZE = {
@@ -72,6 +82,12 @@ const COLUMNS = {
   duration: {value: 'Duration'},
 };
 
+const mockingStyle = {
+  backgroundColor: colors.yellowTint,
+  color: colors.yellow,
+  fontWeight: 500,
+};
+
 export function formatBytes(count: number): string {
   if (count > 1024 * 1024) {
     return (count / (1024.0 * 1024)).toFixed(1) + ' MB';
@@ -90,13 +106,29 @@ const TextEllipsis = styled(Text)({
   paddingTop: 4,
 });
 
+// State management
+export interface NetworkRouteManager {
+  addRoute(): void;
+  modifyRoute(id: string, routeChange: Partial<Route>): void;
+  removeRoute(id: string): void;
+}
+const nullNetworkRouteManager: NetworkRouteManager = {
+  addRoute() {},
+  modifyRoute(_id: string, _routeChange: Partial<Route>) {},
+  removeRoute(_id: string) {},
+};
+export const NetworkRouteContext = createContext<NetworkRouteManager>(
+  nullNetworkRouteManager,
+);
+
 export default class extends FlipperPlugin<State, any, PersistedState> {
   static keyboardActions: Array<DefaultKeyboardAction> = ['clear'];
   static subscribed = [];
   static defaultPersistedState = {
-    requests: new Map(),
-    responses: new Map(),
+    requests: {},
+    responses: {},
   };
+  networkRouteManager: NetworkRouteManager = nullNetworkRouteManager;
 
   static metricsReducer(persistedState: PersistedState) {
     const failures = Object.values(persistedState.responses).reduce(function(
@@ -161,13 +193,85 @@ export default class extends FlipperPlugin<State, any, PersistedState> {
     );
   }
 
+  constructor(props: any) {
+    super(props);
+    this.state = {
+      selectedIds: [],
+      searchTerm: '',
+      routes: {},
+      nextRouteId: 0,
+      isMockResponseSupported: false,
+      showMockResponseDialog: false,
+    };
+  }
+
+  init() {
+    this.client.supportsMethod('mockResponses').then(result =>
+      this.setState({
+        routes: {},
+        isMockResponseSupported: result,
+        showMockResponseDialog: false,
+      }),
+    );
+    this.informClientMockChange({});
+    this.setState(this.parseDeepLinkPayload(this.props.deepLinkPayload));
+
+    // declare new variable to be called inside the interface
+    const setState = this.setState.bind(this);
+    const informClientMockChange = this.informClientMockChange.bind(this);
+    this.networkRouteManager = {
+      addRoute() {
+        setState(
+          produce((draftState: State) => {
+            const nextRouteId = draftState.nextRouteId;
+            draftState.routes[nextRouteId.toString()] = {
+              requestUrl: '/',
+              requestMethod: 'GET',
+              responseData: '',
+              responseHeaders: {},
+            };
+            draftState.nextRouteId = nextRouteId + 1;
+          }),
+        );
+      },
+      modifyRoute(id: string, routeChange: Partial<Route>) {
+        setState(
+          produce((draftState: State) => {
+            if (!draftState.routes.hasOwnProperty(id)) {
+              return;
+            }
+            draftState.routes[id] = {...draftState.routes[id], ...routeChange};
+            informClientMockChange(draftState.routes);
+          }),
+        );
+      },
+      removeRoute(id: string) {
+        setState(
+          produce((draftState: State) => {
+            if (draftState.routes.hasOwnProperty(id)) {
+              delete draftState.routes[id];
+            }
+            informClientMockChange(draftState.routes);
+          }),
+        );
+      },
+    };
+  }
+
+  teardown() {
+    // Remove mock response inside client
+    this.informClientMockChange({});
+  }
+
   onKeyboardAction = (action: string) => {
     if (action === 'clear') {
       this.clearLogs();
     }
   };
 
-  parseDeepLinkPayload = (deepLinkPayload: string | null) => {
+  parseDeepLinkPayload = (
+    deepLinkPayload: string | null,
+  ): Pick<State, 'selectedIds' | 'searchTerm'> => {
     const searchTermDelim = 'searchTerm=';
     if (deepLinkPayload === null) {
       return {
@@ -185,8 +289,6 @@ export default class extends FlipperPlugin<State, any, PersistedState> {
       searchTerm: '',
     };
   };
-
-  state = this.parseDeepLinkPayload(this.props.deepLinkPayload);
 
   onRowHighlighted = (selectedIds: Array<RequestId>) =>
     this.setState({selectedIds});
@@ -212,6 +314,52 @@ export default class extends FlipperPlugin<State, any, PersistedState> {
     this.props.setPersistedState({responses: {}, requests: {}});
   };
 
+  informClientMockChange = (routes: {[id: string]: Route}) => {
+    const existedIdSet: {[id: string]: {[method: string]: boolean}} = {};
+    const filteredRoutes: {[id: string]: Route} = Object.entries(routes).reduce(
+      (accRoutes, [id, route]) => {
+        if (existedIdSet.hasOwnProperty(route.requestUrl)) {
+          if (
+            existedIdSet[route.requestUrl].hasOwnProperty(route.requestMethod)
+          ) {
+            return accRoutes;
+          }
+          existedIdSet[route.requestUrl] = {
+            ...existedIdSet[route.requestUrl],
+            [route.requestMethod]: true,
+          };
+          return Object.assign({[id]: route}, accRoutes);
+        } else {
+          existedIdSet[route.requestUrl] = {
+            [route.requestMethod]: true,
+          };
+          return Object.assign({[id]: route}, accRoutes);
+        }
+      },
+      {},
+    );
+
+    if (this.state.isMockResponseSupported) {
+      const routesValuesArray = Object.values(filteredRoutes);
+      this.client.call('mockResponses', {
+        routes: routesValuesArray.map((route: Route) => ({
+          requestUrl: route.requestUrl,
+          method: route.requestMethod,
+          data: route.responseData,
+          headers: [...Object.values(route.responseHeaders)],
+        })),
+      });
+    }
+  };
+
+  onMockButtonPressed = () => {
+    this.setState({showMockResponseDialog: true});
+  };
+
+  onCloseButtonPressed = () => {
+    this.setState({showMockResponseDialog: false});
+  };
+
   renderSidebar = () => {
     const {requests, responses} = this.props.persistedState;
     const {selectedIds} = this.state;
@@ -235,21 +383,33 @@ export default class extends FlipperPlugin<State, any, PersistedState> {
 
   render() {
     const {requests, responses} = this.props.persistedState;
+    const {
+      selectedIds,
+      searchTerm,
+      routes,
+      isMockResponseSupported,
+      showMockResponseDialog,
+    } = this.state;
 
     return (
       <FlexColumn grow={true}>
-        <NetworkTable
-          requests={requests || {}}
-          responses={responses || {}}
-          clear={this.clearLogs}
-          copyRequestCurlCommand={this.copyRequestCurlCommand}
-          onRowHighlighted={this.onRowHighlighted}
-          highlightedRows={
-            this.state.selectedIds ? new Set(this.state.selectedIds) : null
-          }
-          searchTerm={this.state.searchTerm}
-        />
-        <DetailSidebar width={500}>{this.renderSidebar()}</DetailSidebar>
+        <NetworkRouteContext.Provider value={this.networkRouteManager}>
+          <NetworkTable
+            requests={requests || {}}
+            responses={responses || {}}
+            routes={routes}
+            onMockButtonPressed={this.onMockButtonPressed}
+            onCloseButtonPressed={this.onCloseButtonPressed}
+            showMockResponseDialog={showMockResponseDialog}
+            clear={this.clearLogs}
+            copyRequestCurlCommand={this.copyRequestCurlCommand}
+            onRowHighlighted={this.onRowHighlighted}
+            highlightedRows={selectedIds ? new Set(selectedIds) : null}
+            searchTerm={searchTerm}
+            isMockResponseSupported={isMockResponseSupported}
+          />
+          <DetailSidebar width={500}>{this.renderSidebar()}</DetailSidebar>
+        </NetworkRouteContext.Provider>
       </FlexColumn>
     );
   }
@@ -258,15 +418,21 @@ export default class extends FlipperPlugin<State, any, PersistedState> {
 type NetworkTableProps = {
   requests: {[id: string]: Request};
   responses: {[id: string]: Response};
+  routes: {[id: string]: Route};
   clear: () => void;
   copyRequestCurlCommand: () => void;
   onRowHighlighted: (keys: TableHighlightedRows) => void;
   highlightedRows: Set<string> | null | undefined;
   searchTerm: string;
+  onMockButtonPressed: () => void;
+  onCloseButtonPressed: () => void;
+  showMockResponseDialog: boolean;
+  isMockResponseSupported: boolean;
 };
 
 type NetworkTableState = {
   sortedRows: TableRows;
+  routes: {[id: string]: Route};
 };
 
 function formatTimestamp(timestamp: number): string {
@@ -292,6 +458,7 @@ function buildRow(
   const url = new URL(request.url);
   const domain = url.host + url.pathname;
   const friendlyName = getHeaderValue(request.headers, 'X-FB-Friendly-Name');
+  const style = response && response.isMock ? mockingStyle : undefined;
 
   let copyText = `# HTTP request for ${domain} (ID: ${request.id})
 ## Request
@@ -369,6 +536,7 @@ ${response.headers
     sortKey: request.timestamp,
     copyText,
     highlightOnHover: true,
+    style: style,
     requestBody: requestData,
     responseBody: responseData,
   };
@@ -383,7 +551,6 @@ function calculateState(
   rows: TableRows = [],
 ): NetworkTableState {
   rows = [...rows];
-
   if (Object.keys(nextProps.requests).length === 0) {
     // cleared
     rows = [];
@@ -423,6 +590,7 @@ function calculateState(
 
   return {
     sortedRows: rows,
+    routes: nextProps.routes,
   };
 }
 
@@ -433,13 +601,7 @@ class NetworkTable extends PureComponent<NetworkTableProps, NetworkTableState> {
 
   constructor(props: NetworkTableProps) {
     super(props);
-    this.state = calculateState(
-      {
-        requests: {},
-        responses: {},
-      },
-      props,
-    );
+    this.state = calculateState({requests: {}, responses: {}}, props);
   }
 
   UNSAFE_componentWillReceiveProps(nextProps: NetworkTableProps) {
@@ -481,30 +643,52 @@ class NetworkTable extends PureComponent<NetworkTableProps, NetworkTableState> {
 
   render() {
     return (
-      <NetworkTable.ContextMenu
-        items={this.contextMenuItems()}
-        component={FlexColumn}>
-        <SearchableTable
-          virtual={true}
-          multiline={false}
-          multiHighlight={true}
-          stickyBottom={true}
-          floating={false}
-          columnSizes={COLUMN_SIZE}
-          columns={COLUMNS}
-          columnOrder={COLUMN_ORDER}
-          rows={this.state.sortedRows}
-          onRowHighlighted={this.props.onRowHighlighted}
-          highlightedRows={this.props.highlightedRows}
-          rowLineHeight={26}
-          allowRegexSearch={true}
-          allowBodySearch={true}
-          zebra={false}
-          actions={<Button onClick={this.props.clear}>Clear Table</Button>}
-          clearSearchTerm={this.props.searchTerm !== ''}
-          defaultSearchTerm={this.props.searchTerm}
-        />
-      </NetworkTable.ContextMenu>
+      <>
+        <NetworkTable.ContextMenu
+          items={this.contextMenuItems()}
+          component={FlexColumn}>
+          <SearchableTable
+            virtual={true}
+            multiline={false}
+            multiHighlight={true}
+            stickyBottom={true}
+            floating={false}
+            columnSizes={COLUMN_SIZE}
+            columns={COLUMNS}
+            columnOrder={COLUMN_ORDER}
+            rows={this.state.sortedRows}
+            onRowHighlighted={this.props.onRowHighlighted}
+            highlightedRows={this.props.highlightedRows}
+            rowLineHeight={26}
+            allowRegexSearch={true}
+            allowBodySearch={true}
+            zebra={false}
+            clearSearchTerm={this.props.searchTerm !== ''}
+            defaultSearchTerm={this.props.searchTerm}
+            actions={
+              <FlexRow>
+                <Button onClick={this.props.clear}>Clear Table</Button>
+                {this.props.isMockResponseSupported && (
+                  <Button onClick={this.props.onMockButtonPressed}>Mock</Button>
+                )}
+              </FlexRow>
+            }
+          />
+        </NetworkTable.ContextMenu>
+        {this.props.showMockResponseDialog ? (
+          <Sheet>
+            {onHide => (
+              <MockResponseDialog
+                routes={this.state.routes}
+                onHide={() => {
+                  onHide();
+                  this.props.onCloseButtonPressed();
+                }}
+              />
+            )}
+          </Sheet>
+        ) : null}
+      </>
     );
   }
 }

@@ -13,7 +13,7 @@
     "downlevelIteration": true,    
     "skipLibCheck": true,
     "paths": {
-      "flipper": ["./src"],
+      "flipper": ["./app/src"],
       "flipper-doctor": ["./doctor/src"],
       "flipper-pkg": ["./pkg/src"],
       "live-plugin-manager": ["./types/live-plugin-manager.d.tsx"]

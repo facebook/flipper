@@ -8,6 +8,7 @@
     "strict": true,
     "importHelpers": true,
     "esModuleInterop": true,
+    "skipLibCheck": true,
     "allowJs": true
   },
   "include": [

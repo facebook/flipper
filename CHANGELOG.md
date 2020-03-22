@@ -1,3 +1,3 @@
-# Pre-history
+# Changelog
 
-Please see our [releases GitHub page](https://github.com/facebook/flipper/releases) for a full list of changes of old releases.
+See [static/desktop/CHANGELOG.md](static/desktop/CHANGELOG.md)

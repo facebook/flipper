@@ -16,7 +16,7 @@ const staticDir = path.resolve(__dirname, '..');
 
 function transform({filename, options, src}) {
   const isPlugin =
-    options.projectRoot && !__dirname.startsWith(options.projectRoot);
+    options.projectRoot && options.projectRoot.includes('/desktop/plugins/');
   const isMain =
     options.projectRoot &&
     options.projectRoot === staticDir &&
@@ -77,7 +77,7 @@ function transform({filename, options, src}) {
 
   if (
     fs.existsSync(
-      path.resolve(path.dirname(path.dirname(__dirname)), 'src', 'fb'),
+      path.resolve(path.dirname(path.dirname(__dirname)), 'app', 'src', 'fb'),
     )
   ) {
     plugins.push(require('./fb-stubs.js'));
