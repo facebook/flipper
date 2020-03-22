@@ -22,7 +22,7 @@
     "@babel/plugin-transform-flow-strip-types": "^7.9.0",
     "@babel/plugin-transform-modules-commonjs": "^7.9.0",
     "@babel/plugin-transform-typescript": "^7.9.0",
-    "@babel/preset-react": "^7.8.3",
+    "@babel/preset-react": "^7.9.1",
     "@oclif/command": "^1",
     "@oclif/config": "^1",
     "@oclif/plugin-help": "^2",
