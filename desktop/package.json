@@ -160,7 +160,7 @@
     "recursive-readdir": "^2.2.2",
     "redux-mock-store": "^1.5.3",
     "ts-jest": "^25.1.0",
-    "ts-node": "^8.6.2",
+    "ts-node": "^8.8.1",
     "typescript": "^3.7.2"
   },
   "scripts": {
