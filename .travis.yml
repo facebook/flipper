@@ -89,7 +89,7 @@ matrix:
       script:
         - cd iOS/SampleSwift
         - IPHONESIMULATOR=$(xcodebuild -showsdks | grep -o "iphonesimulator[0-9]\\+\\.[0-9]\\+$")
-        - travis_wait xcodebuild build -workspace SampleSwift.xcworkspace -scheme SampleSwift -sdk $IPHONESIMULATOR -quiet > ./build.log
+        - travis_wait 30 xcodebuild build -workspace SampleSwift.xcworkspace -scheme SampleSwift -sdk $IPHONESIMULATOR -quiet > ./build.log
         - tail -100 ./build.log
 
     - language: objective-c
@@ -101,6 +101,7 @@ matrix:
       before_install:
         - gem install cocoapods
         - pod --version
+        - rm -f iOS/Tutorial/Podfile.lock
         - rm -f iOS/Tutorial/build.log
         - pod repo update --silent
 
@@ -111,5 +112,5 @@ matrix:
       script:
         - cd iOS/Tutorial
         - IPHONESIMULATOR=$(xcodebuild -showsdks | grep -o "iphonesimulator[0-9]\\+\\.[0-9]\\+$")
-        - travis_wait xcodebuild build -workspace Tutorial.xcworkspace -scheme Tutorial -sdk $IPHONESIMULATOR -quiet > ./build.log
+        - travis_wait 30 xcodebuild build -workspace Tutorial.xcworkspace -scheme Tutorial -sdk $IPHONESIMULATOR -quiet > ./build.log
         - tail -100 ./build.log
