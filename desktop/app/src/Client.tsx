@@ -121,7 +121,6 @@ export default class Client extends EventEmitter {
   logger: Logger;
   lastSeenDeviceList: Array<BaseDevice>;
   broadcastCallbacks: Map<string, Map<string, Set<Function>>>;
-  rIC: any;
 
   requestCallbacks: Map<
     number,
@@ -167,14 +166,6 @@ export default class Client extends EventEmitter {
     }
 
     const client = this;
-    // node.js doesn't support requestIdleCallback
-    this.rIC =
-      typeof window === 'undefined' || !window.requestIdleCallback
-        ? (cb: Function, _: any) => {
-            cb();
-          }
-        : window.requestIdleCallback.bind(window);
-
     if (conn) {
       conn.connectionStatus().subscribe({
         onNext(payload) {

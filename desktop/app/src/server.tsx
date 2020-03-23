@@ -252,7 +252,10 @@ class Server extends EventEmitter {
       socket,
       {app, os, device, device_id, sdk_version},
       {csr, csr_path},
-    );
+    ).then(client => {
+      return (resolvedClient = client);
+    });
+    let resolvedClient: Client | undefined;
 
     socket.connectionStatus().subscribe({
       onNext(payload) {
@@ -269,12 +272,15 @@ class Server extends EventEmitter {
     });
 
     return {
-      fireAndForget: (payload: {data: string}) =>
-        client.then(client => {
-          client.rIC(() => client.onMessage(payload.data), {
-            timeout: 500,
+      fireAndForget: (payload: {data: string}) => {
+        if (resolvedClient) {
+          resolvedClient.onMessage(payload.data);
+        } else {
+          client.then(client => {
+            client.onMessage(payload.data);
           });
-        }),
+        }
+      },
     };
   };
 
