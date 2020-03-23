@@ -70,6 +70,9 @@ function rowMatchesSearchTerm(
   const rowValues = Object.keys(row.columns).map(key =>
     textContent(row.columns[key].value),
   );
+  if (row.filterValue != null) {
+    rowValues.push(row.filterValue);
+  }
   if (isRegex) {
     return rowMatchesRegex(rowValues, searchTerm);
   }

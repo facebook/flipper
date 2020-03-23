@@ -85,6 +85,9 @@ function rowMatchesSearchTerm(
       rowValues.push(row.responseBody);
     }
   }
+  if (row.filterValue != null) {
+    rowValues.push(row.filterValue);
+  }
   if (isRegex) {
     return rowMatchesRegex(rowValues, searchTerm);
   }
