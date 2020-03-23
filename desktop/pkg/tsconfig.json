@@ -1,17 +1,10 @@
 {
+  "extends": "../tsconfig.base.json",
   "compilerOptions": {
-    "target": "es2017",
-    "module": "commonjs",
-    "declaration": true,
     "outDir": "lib",
     "rootDir": "src",
-    "strict": true,
-    "importHelpers": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
     "allowJs": true
   },
-  "include": [
-    "src/**/*"
-  ]
+  "include": ["src"],
+  "exclude": ["node_modules", "**/__tests__/*"]
 }

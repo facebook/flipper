@@ -24,7 +24,7 @@
     "typescript": "^3.7.2"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc -b",
     "prepare": "yarn run build",
     "prepublishOnly": "yarn test && yarn run lint",
     "preversion": "yarn run lint",

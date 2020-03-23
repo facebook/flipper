@@ -46,7 +46,7 @@
     "typescript": "^3.7.2"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc -b",
     "postpack": "rm -f oclif.manifest.json",
     "prepack": "rm -rf lib && tsc -b && oclif-dev manifest && oclif-dev readme",
     "prepare": "yarn run build",
