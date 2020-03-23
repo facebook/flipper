@@ -15,7 +15,7 @@ import BaseDevice from '../devices/BaseDevice';
 import {Logger} from '../fb-interfaces/Logger';
 import {registerDeviceCallbackOnPlugins} from '../utils/onRegisterDevice';
 import {getAdbClient} from '../utils/adbClient';
-import {default as which} from 'which';
+import which from 'which';
 import {promisify} from 'util';
 import {ServerPorts} from '../reducers/application';
 import {Client as ADBClient} from 'adbkit';
@@ -24,29 +24,47 @@ function createDevice(
   adbClient: ADBClient,
   device: any,
   ports?: ServerPorts,
-): Promise<AndroidDevice> {
-  return new Promise(resolve => {
+): Promise<AndroidDevice | undefined> {
+  return new Promise((resolve, reject) => {
     const type =
       device.type !== 'device' || device.id.startsWith('emulator')
         ? 'emulator'
         : 'physical';
 
-    adbClient.getProperties(device.id).then(async props => {
-      let name = props['ro.product.model'];
-      if (type === 'emulator') {
-        name = (await getRunningEmulatorName(device.id)) || name;
-      }
-      const isKaiOSDevice = Object.keys(props).some(
-        name => name.startsWith('kaios') || name.startsWith('ro.kaios'),
-      );
-      const androidLikeDevice = new (isKaiOSDevice
-        ? KaiOSDevice
-        : AndroidDevice)(device.id, type, name, adbClient);
-      if (ports) {
-        androidLikeDevice.reverse([ports.secure, ports.insecure]);
-      }
-      resolve(androidLikeDevice);
-    });
+    adbClient
+      .getProperties(device.id)
+      .then(async props => {
+        try {
+          let name = props['ro.product.model'];
+          if (type === 'emulator') {
+            name = (await getRunningEmulatorName(device.id)) || name;
+          }
+          const isKaiOSDevice = Object.keys(props).some(
+            name => name.startsWith('kaios') || name.startsWith('ro.kaios'),
+          );
+          const androidLikeDevice = new (isKaiOSDevice
+            ? KaiOSDevice
+            : AndroidDevice)(device.id, type, name, adbClient);
+          if (ports) {
+            await androidLikeDevice.reverse([ports.secure, ports.insecure]);
+          }
+          resolve(androidLikeDevice);
+        } catch (e) {
+          reject(e);
+        }
+      })
+      .catch(e => {
+        if (
+          e &&
+          e.message &&
+          e.message === `Failure: 'device still connecting'`
+        ) {
+          console.debug('Device still connecting: ' + device.id);
+        } else {
+          console.error('Failed to initialize device: ' + device.id, e);
+        }
+        resolve(undefined); // not ready yet, we will find it in the next tick
+      });
   });
 }
 
@@ -55,9 +73,10 @@ export async function getActiveAndroidDevices(
 ): Promise<Array<BaseDevice>> {
   const client = await getAdbClient(store);
   const androidDevices = await client.listDevices();
-  return await Promise.all(
+  const devices = await Promise.all(
     androidDevices.map(device => createDevice(client, device)),
   );
+  return devices.filter(Boolean) as any;
 }
 
 function getRunningEmulatorName(
@@ -149,7 +168,7 @@ export default (store: Store, logger: Logger) => {
           })
           .catch((err: {code: string}) => {
             if (err.code === 'ECONNREFUSED') {
-              // adb server isn't running
+              console.warn('adb server not running');
             } else {
               throw err;
             }
@@ -166,6 +185,9 @@ export default (store: Store, logger: Logger) => {
       deviceData,
       store.getState().application.serverPorts,
     );
+    if (!androidDevice) {
+      return;
+    }
     logger.track('usage', 'register-device', {
       os: 'Android',
       name: androidDevice.title,

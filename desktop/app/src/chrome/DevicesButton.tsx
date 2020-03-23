@@ -17,7 +17,7 @@ import {
   ActiveSheet,
   ACTIVE_SHEET_JS_EMULATOR_LAUNCHER,
 } from '../reducers/application';
-import {default as which} from 'which';
+import which from 'which';
 import {showOpenDialog} from '../utils/exportData';
 import BaseDevice from '../devices/BaseDevice';
 import React, {Component} from 'react';
