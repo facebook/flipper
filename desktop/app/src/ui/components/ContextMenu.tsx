@@ -47,7 +47,7 @@ export default function ContextMenu<C>({
     } else if (buildItems != null) {
       contextMenuManager?.appendToContextMenu(buildItems());
     }
-  }, []);
+  }, [items, buildItems]);
   return createElement(
     component || FlexColumn,
     {
