@@ -35,7 +35,7 @@ export function decodeBody(container: Request | Response): string {
     // we need to decode the bytes here to display the correct unicode characters.
     return decodeURIComponent(escape(b64Decoded));
   } catch (e) {
-    console.warn('Discarding malformed body:', escape(b64Decoded));
+    console.warn('Discarding malformed body, size: ' + b64Decoded.length);
     return '';
   }
 }
