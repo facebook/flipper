@@ -9,7 +9,8 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {Element, styled} from '../../../ui';
+import {Element} from './ElementsInspector';
+import styled from '@emotion/styled';
 
 export function VisualizerPortal(props: {
   container: HTMLElement;

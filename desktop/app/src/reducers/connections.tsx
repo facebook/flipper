@@ -466,10 +466,15 @@ export const selectDevice = (payload: BaseDevice): Action => ({
   payload,
 });
 
-export const setStaticView = (payload: StaticView): Action => ({
-  type: 'SET_STATIC_VIEW',
-  payload,
-});
+export const setStaticView = (payload: StaticView): Action => {
+  if (!payload) {
+    throw new Error('Cannot set empty static view');
+  }
+  return {
+    type: 'SET_STATIC_VIEW',
+    payload,
+  };
+};
 
 export const preferDevice = (payload: string): Action => ({
   type: 'PREFER_DEVICE',

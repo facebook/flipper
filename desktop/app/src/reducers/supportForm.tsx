@@ -9,7 +9,6 @@
 
 import {Actions, Store} from './';
 import {setStaticView} from './connections';
-import SupportRequestFormV2 from '../fb-stubs/SupportRequestFormV2';
 import {deconstructClientId} from '../utils/clientUtils';
 import {starPlugin as setStarPlugin} from './connections';
 import {showStatusUpdatesForDuration} from '../utils/promiseTimeout';
@@ -114,7 +113,9 @@ export class Group {
       source: 'deeplink',
       group: this.name,
     });
-    store.dispatch(setStaticView(SupportRequestFormV2));
+    store.dispatch(
+      setStaticView(require('../fb-stubs/SupportRequestFormV2').default),
+    );
     const selectedApp = store.getState().connections.selectedApp;
     const selectedClient = store.getState().connections.clients.find(o => {
       return o.id === store.getState().connections.selectedApp;
