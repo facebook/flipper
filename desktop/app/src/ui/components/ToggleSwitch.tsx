@@ -47,6 +47,7 @@ Container.displayName = 'ToggleSwitch:Container';
 const Label = styled(Text)({
   marginLeft: 7,
   marginRight: 7,
+  lineHeight: 1.3,
 });
 Label.displayName = 'ToggleSwitch:Label';
 
