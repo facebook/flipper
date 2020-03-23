@@ -9,7 +9,7 @@
 
 import {FlipperPlugin} from '../../plugin';
 import {createMockFlipperWithPlugin} from '../../test-utils/createMockFlipperWithPlugin';
-import {GK, Store, Client} from '../../';
+import {Store, Client} from '../../';
 import {
   selectPlugin,
   starPlugin,
@@ -84,41 +84,22 @@ function selectTestPlugin(store: Store, client: Client) {
   );
 }
 
-test('will process event with GK disabled', async () => {
+test('queue - events are processed immediately if plugin is selected', async () => {
   await createMockFlipperWithPlugin(
     TestPlugin,
     async ({store, sendMessage}) => {
       expect(store.getState().connections.selectedPlugin).toBe('TestPlugin');
       sendMessage('inc', {});
       expect(store.getState().pluginStates).toMatchInlineSnapshot(`
-        Object {
-          "TestApp#Android#MockAndroidDevice#serial#TestPlugin": Object {
-            "count": 1,
-          },
-        }
-      `);
-    },
-  );
-});
-
-test('queue - events are processed immediately if plugin is selected', async () => {
-  await createMockFlipperWithPlugin(
-    TestPlugin,
-    async ({store, sendMessage}) => {
-      await GK.withWhitelistedGK('flipper_event_queue', () => {
-        expect(store.getState().connections.selectedPlugin).toBe('TestPlugin');
-        sendMessage('inc', {});
-        expect(store.getState().pluginStates).toMatchInlineSnapshot(`
           Object {
             "TestApp#Android#MockAndroidDevice#serial#TestPlugin": Object {
               "count": 1,
             },
           }
         `);
-        expect(store.getState().pluginMessageQueue).toMatchInlineSnapshot(
-          `Object {}`,
-        );
-      });
+      expect(store.getState().pluginMessageQueue).toMatchInlineSnapshot(
+        `Object {}`,
+      );
     },
   );
 });
@@ -127,18 +108,15 @@ test('queue - events are NOT processed immediately if plugin is NOT selected (bu
   await createMockFlipperWithPlugin(
     TestPlugin,
     async ({client, device, store, sendMessage}) => {
-      await GK.withWhitelistedGK('flipper_event_queue', async () => {
-        selectDeviceLogs(store);
-        expect(store.getState().connections.selectedPlugin).not.toBe(
-          'TestPlugin',
-        );
+      selectDeviceLogs(store);
+      expect(store.getState().connections.selectedPlugin).not.toBe(
+        'TestPlugin',
+      );
 
-        sendMessage('inc', {});
-        sendMessage('inc', {delta: 2});
-        expect(store.getState().pluginStates).toMatchInlineSnapshot(
-          `Object {}`,
-        );
-        expect(store.getState().pluginMessageQueue).toMatchInlineSnapshot(`
+      sendMessage('inc', {});
+      sendMessage('inc', {delta: 2});
+      expect(store.getState().pluginStates).toMatchInlineSnapshot(`Object {}`);
+      expect(store.getState().pluginMessageQueue).toMatchInlineSnapshot(`
           Object {
             "TestApp#Android#MockAndroidDevice#serial#TestPlugin": Array [
               Object {
@@ -155,44 +133,43 @@ test('queue - events are NOT processed immediately if plugin is NOT selected (bu
           }
         `);
 
-        // process the message
-        const pluginKey = getPluginKey(client.id, device, TestPlugin.id);
-        await processMessageQueue(TestPlugin, pluginKey, store);
-        expect(store.getState().pluginStates).toEqual({
-          [pluginKey]: {
-            count: 3,
-          },
-        });
+      // process the message
+      const pluginKey = getPluginKey(client.id, device, TestPlugin.id);
+      await processMessageQueue(TestPlugin, pluginKey, store);
+      expect(store.getState().pluginStates).toEqual({
+        [pluginKey]: {
+          count: 3,
+        },
+      });
 
-        expect(store.getState().pluginMessageQueue).toEqual({
-          [pluginKey]: [],
-        });
+      expect(store.getState().pluginMessageQueue).toEqual({
+        [pluginKey]: [],
+      });
 
-        // unstar, but, messages still arrives because selected
-        starTestPlugin(store, client);
-        selectTestPlugin(store, client);
-        sendMessage('inc', {delta: 3});
-        // active, immediately processed
-        expect(store.getState().pluginStates).toEqual({
-          [pluginKey]: {
-            count: 6,
-          },
-        });
+      // unstar, but, messages still arrives because selected
+      starTestPlugin(store, client);
+      selectTestPlugin(store, client);
+      sendMessage('inc', {delta: 3});
+      // active, immediately processed
+      expect(store.getState().pluginStates).toEqual({
+        [pluginKey]: {
+          count: 6,
+        },
+      });
 
-        // different plugin, and not starred, message will never arrive
-        selectDeviceLogs(store);
-        sendMessage('inc', {delta: 4});
-        expect(store.getState().pluginMessageQueue).toEqual({
-          [pluginKey]: [],
-        });
+      // different plugin, and not starred, message will never arrive
+      selectDeviceLogs(store);
+      sendMessage('inc', {delta: 4});
+      expect(store.getState().pluginMessageQueue).toEqual({
+        [pluginKey]: [],
+      });
 
-        // star again, plugin still not selected, message is queued
-        starTestPlugin(store, client);
-        sendMessage('inc', {delta: 5});
+      // star again, plugin still not selected, message is queued
+      starTestPlugin(store, client);
+      sendMessage('inc', {delta: 5});
 
-        expect(store.getState().pluginMessageQueue).toEqual({
-          [pluginKey]: [{method: 'inc', params: {delta: 5}}],
-        });
+      expect(store.getState().pluginMessageQueue).toEqual({
+        [pluginKey]: [{method: 'inc', params: {delta: 5}}],
       });
     },
   );
@@ -202,23 +179,20 @@ test('queue - events are queued for plugins that are favorite when app is not se
   await createMockFlipperWithPlugin(
     TestPlugin,
     async ({device, store, sendMessage, createClient}) => {
-      await GK.withWhitelistedGK('flipper_event_queue', async () => {
-        selectDeviceLogs(store);
-        expect(store.getState().connections.selectedPlugin).not.toBe(
-          'TestPlugin',
-        );
+      selectDeviceLogs(store);
+      expect(store.getState().connections.selectedPlugin).not.toBe(
+        'TestPlugin',
+      );
 
-        const client2 = createClient(device, 'TestApp2');
-        store.dispatch(selectClient(client2.id));
+      const client2 = createClient(device, 'TestApp2');
+      store.dispatch(selectClient(client2.id));
 
-        // Now we send a message to the second client, it should arrive,
-        // as the plugin was enabled already on the first client as well
-        sendMessage('inc', {delta: 2});
-        expect(store.getState().pluginStates).toMatchInlineSnapshot(
-          `Object {}`,
-        );
-        expect(store.getState().pluginMessageQueue).toMatchInlineSnapshot(
-          `
+      // Now we send a message to the second client, it should arrive,
+      // as the plugin was enabled already on the first client as well
+      sendMessage('inc', {delta: 2});
+      expect(store.getState().pluginStates).toMatchInlineSnapshot(`Object {}`);
+      expect(store.getState().pluginMessageQueue).toMatchInlineSnapshot(
+        `
           Object {
             "TestApp#Android#MockAndroidDevice#serial#TestPlugin": Array [
               Object {
@@ -230,8 +204,7 @@ test('queue - events are queued for plugins that are favorite when app is not se
             ],
           }
         `,
-        );
-      });
+      );
     },
   );
 });
@@ -240,25 +213,22 @@ test('queue - events are queued for plugins that are favorite when app is select
   await createMockFlipperWithPlugin(
     TestPlugin,
     async ({client, store, sendMessage, createDevice, createClient}) => {
-      await GK.withWhitelistedGK('flipper_event_queue', async () => {
-        selectDeviceLogs(store);
-        expect(store.getState().connections.selectedPlugin).not.toBe(
-          'TestPlugin',
-        );
+      selectDeviceLogs(store);
+      expect(store.getState().connections.selectedPlugin).not.toBe(
+        'TestPlugin',
+      );
 
-        const device2 = createDevice('serial2');
-        const client2 = createClient(device2, client.query.app); // same app id
-        store.dispatch(selectDevice(device2));
-        store.dispatch(selectClient(client2.id));
+      const device2 = createDevice('serial2');
+      const client2 = createClient(device2, client.query.app); // same app id
+      store.dispatch(selectDevice(device2));
+      store.dispatch(selectClient(client2.id));
 
-        // Now we send a message to the second client, it should arrive,
-        // as the plugin was enabled already on the first client as well
-        sendMessage('inc', {delta: 2});
-        expect(store.getState().pluginStates).toMatchInlineSnapshot(
-          `Object {}`,
-        );
-        expect(store.getState().pluginMessageQueue).toMatchInlineSnapshot(
-          `
+      // Now we send a message to the second client, it should arrive,
+      // as the plugin was enabled already on the first client as well
+      sendMessage('inc', {delta: 2});
+      expect(store.getState().pluginStates).toMatchInlineSnapshot(`Object {}`);
+      expect(store.getState().pluginMessageQueue).toMatchInlineSnapshot(
+        `
           Object {
             "TestApp#Android#MockAndroidDevice#serial#TestPlugin": Array [
               Object {
@@ -270,8 +240,7 @@ test('queue - events are queued for plugins that are favorite when app is select
             ],
           }
         `,
-        );
-      });
+      );
     },
   );
 });
@@ -280,52 +249,50 @@ test('queue - events processing will be paused', async () => {
   await createMockFlipperWithPlugin(
     TestPlugin,
     async ({client, device, store, sendMessage}) => {
-      await GK.withWhitelistedGK('flipper_event_queue', async () => {
-        selectDeviceLogs(store);
+      selectDeviceLogs(store);
 
-        sendMessage('inc', {});
-        sendMessage('inc', {delta: 3});
-        sendMessage('inc', {delta: 5});
+      sendMessage('inc', {});
+      sendMessage('inc', {delta: 3});
+      sendMessage('inc', {delta: 5});
 
-        // process the message
-        const pluginKey = getPluginKey(client.id, device, TestPlugin.id);
+      // process the message
+      const pluginKey = getPluginKey(client.id, device, TestPlugin.id);
 
-        // controlled idler will signal and and off that idling is needed
-        const idler = new TestIdler();
+      // controlled idler will signal and and off that idling is needed
+      const idler = new TestIdler();
 
-        const p = processMessageQueue(
-          TestPlugin,
-          pluginKey,
-          store,
-          undefined,
-          idler,
-        );
+      const p = processMessageQueue(
+        TestPlugin,
+        pluginKey,
+        store,
+        undefined,
+        idler,
+      );
 
-        expect(store.getState().pluginStates).toEqual({
-          [pluginKey]: {
-            count: 4,
-          },
-        });
-
-        expect(store.getState().pluginMessageQueue).toEqual({
-          [pluginKey]: [{method: 'inc', params: {delta: 5}}],
-        });
-
-        await idler.next();
-        expect(store.getState().pluginStates).toEqual({
-          [pluginKey]: {
-            count: 9,
-          },
-        });
-
-        expect(store.getState().pluginMessageQueue).toEqual({
-          [pluginKey]: [],
-        });
-
-        // don't idle anymore
-        idler.run();
-        await p;
+      expect(store.getState().pluginStates).toEqual({
+        [pluginKey]: {
+          count: 4,
+        },
       });
+
+      expect(store.getState().pluginMessageQueue).toEqual({
+        [pluginKey]: [{method: 'inc', params: {delta: 5}}],
+      });
+
+      await idler.next();
+      expect(store.getState().pluginStates).toEqual({
+        [pluginKey]: {
+          count: 9,
+        },
+      });
+
+      expect(store.getState().pluginMessageQueue).toEqual({
+        [pluginKey]: [],
+      });
+
+      // don't idle anymore
+      idler.run();
+      await p;
     },
   );
 });
@@ -334,53 +301,51 @@ test('queue - messages that arrive during processing will be queued', async () =
   await createMockFlipperWithPlugin(
     TestPlugin,
     async ({client, device, store, sendMessage}) => {
-      await GK.withWhitelistedGK('flipper_event_queue', async () => {
-        selectDeviceLogs(store);
+      selectDeviceLogs(store);
 
-        sendMessage('inc', {});
-        sendMessage('inc', {delta: 2});
-        sendMessage('inc', {delta: 3});
+      sendMessage('inc', {});
+      sendMessage('inc', {delta: 2});
+      sendMessage('inc', {delta: 3});
 
-        // process the message
-        const pluginKey = getPluginKey(client.id, device, TestPlugin.id);
+      // process the message
+      const pluginKey = getPluginKey(client.id, device, TestPlugin.id);
 
-        const idler = new TestIdler();
+      const idler = new TestIdler();
 
-        const p = processMessageQueue(
-          TestPlugin,
-          pluginKey,
-          store,
-          undefined,
-          idler,
-        );
+      const p = processMessageQueue(
+        TestPlugin,
+        pluginKey,
+        store,
+        undefined,
+        idler,
+      );
 
-        // first message is consumed
-        expect(store.getState().pluginMessageQueue[pluginKey].length).toBe(1);
-        expect(store.getState().pluginStates[pluginKey].count).toBe(3);
+      // first message is consumed
+      expect(store.getState().pluginMessageQueue[pluginKey].length).toBe(1);
+      expect(store.getState().pluginStates[pluginKey].count).toBe(3);
 
-        // Select the current plugin as active, still, messages should end up in the queue
-        store.dispatch(
-          selectPlugin({
-            selectedPlugin: TestPlugin.id,
-            selectedApp: client.id,
-            deepLinkPayload: null,
-            selectedDevice: device,
-          }),
-        );
-        expect(store.getState().connections.selectedPlugin).toBe('TestPlugin');
+      // Select the current plugin as active, still, messages should end up in the queue
+      store.dispatch(
+        selectPlugin({
+          selectedPlugin: TestPlugin.id,
+          selectedApp: client.id,
+          deepLinkPayload: null,
+          selectedDevice: device,
+        }),
+      );
+      expect(store.getState().connections.selectedPlugin).toBe('TestPlugin');
 
-        sendMessage('inc', {delta: 4});
-        // should not be processed yet
-        expect(store.getState().pluginMessageQueue[pluginKey].length).toBe(2);
-        expect(store.getState().pluginStates[pluginKey].count).toBe(3);
+      sendMessage('inc', {delta: 4});
+      // should not be processed yet
+      expect(store.getState().pluginMessageQueue[pluginKey].length).toBe(2);
+      expect(store.getState().pluginStates[pluginKey].count).toBe(3);
 
-        await idler.next();
-        expect(store.getState().pluginMessageQueue[pluginKey].length).toBe(0);
-        expect(store.getState().pluginStates[pluginKey].count).toBe(10);
+      await idler.next();
+      expect(store.getState().pluginMessageQueue[pluginKey].length).toBe(0);
+      expect(store.getState().pluginStates[pluginKey].count).toBe(10);
 
-        idler.run();
-        await p;
-      });
+      idler.run();
+      await p;
     },
   );
 });
@@ -389,39 +354,37 @@ test('queue - processing can be cancelled', async () => {
   await createMockFlipperWithPlugin(
     TestPlugin,
     async ({client, device, store, sendMessage}) => {
-      await GK.withWhitelistedGK('flipper_event_queue', async () => {
-        selectDeviceLogs(store);
+      selectDeviceLogs(store);
 
-        sendMessage('inc', {});
-        sendMessage('inc', {delta: 2});
-        sendMessage('inc', {delta: 3});
-        sendMessage('inc', {delta: 4});
-        sendMessage('inc', {delta: 5});
+      sendMessage('inc', {});
+      sendMessage('inc', {delta: 2});
+      sendMessage('inc', {delta: 3});
+      sendMessage('inc', {delta: 4});
+      sendMessage('inc', {delta: 5});
 
-        // process the message
-        const pluginKey = getPluginKey(client.id, device, TestPlugin.id);
+      // process the message
+      const pluginKey = getPluginKey(client.id, device, TestPlugin.id);
 
-        const idler = new TestIdler();
+      const idler = new TestIdler();
 
-        const p = processMessageQueue(
-          TestPlugin,
-          pluginKey,
-          store,
-          undefined,
-          idler,
-        );
+      const p = processMessageQueue(
+        TestPlugin,
+        pluginKey,
+        store,
+        undefined,
+        idler,
+      );
 
-        // first message is consumed
-        await idler.next();
-        expect(store.getState().pluginMessageQueue[pluginKey].length).toBe(1);
-        expect(store.getState().pluginStates[pluginKey].count).toBe(10);
+      // first message is consumed
+      await idler.next();
+      expect(store.getState().pluginMessageQueue[pluginKey].length).toBe(1);
+      expect(store.getState().pluginStates[pluginKey].count).toBe(10);
 
-        idler.cancel();
+      idler.cancel();
 
-        expect(store.getState().pluginMessageQueue[pluginKey].length).toBe(1);
-        expect(store.getState().pluginStates[pluginKey].count).toBe(10);
-        await p;
-      });
+      expect(store.getState().pluginMessageQueue[pluginKey].length).toBe(1);
+      expect(store.getState().pluginStates[pluginKey].count).toBe(10);
+      await p;
     },
   );
 });
@@ -430,23 +393,21 @@ test('queue - make sure resetting plugin state clears the message queue', async 
   await createMockFlipperWithPlugin(
     TestPlugin,
     async ({client, device, store, sendMessage}) => {
-      await GK.withWhitelistedGK('flipper_event_queue', async () => {
-        selectDeviceLogs(store);
+      selectDeviceLogs(store);
 
-        sendMessage('inc', {});
-        sendMessage('inc', {delta: 2});
+      sendMessage('inc', {});
+      sendMessage('inc', {delta: 2});
 
-        const pluginKey = getPluginKey(client.id, device, TestPlugin.id);
+      const pluginKey = getPluginKey(client.id, device, TestPlugin.id);
 
-        expect(store.getState().pluginMessageQueue[pluginKey].length).toBe(2);
+      expect(store.getState().pluginMessageQueue[pluginKey].length).toBe(2);
 
-        store.dispatch({
-          type: 'CLEAR_PLUGIN_STATE',
-          payload: {clientId: client.id, devicePlugins: new Set()},
-        });
-
-        expect(store.getState().pluginMessageQueue[pluginKey]).toBe(undefined);
+      store.dispatch({
+        type: 'CLEAR_PLUGIN_STATE',
+        payload: {clientId: client.id, devicePlugins: new Set()},
       });
+
+      expect(store.getState().pluginMessageQueue[pluginKey]).toBe(undefined);
     },
   );
 });

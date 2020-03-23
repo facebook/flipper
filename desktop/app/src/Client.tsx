@@ -25,11 +25,7 @@ import {EventEmitter} from 'events';
 import invariant from 'invariant';
 import {flipperRecorderAddEvent} from './utils/pluginStateRecorder';
 import {getPluginKey} from './utils/pluginUtils';
-import {
-  processMessageImmediately,
-  processMessageLater,
-} from './utils/messageQueue';
-import GK from './fb-stubs/GK';
+import {processMessageLater} from './utils/messageQueue';
 
 type Plugins = Array<string>;
 
@@ -350,21 +346,12 @@ export default class Client extends EventEmitter {
           if (persistingPlugin && persistingPlugin.persistedStateReducer) {
             const pluginKey = getPluginKey(this.id, device, params.api);
             flipperRecorderAddEvent(pluginKey, params.method, params.params);
-            if (GK.get('flipper_event_queue')) {
-              processMessageLater(
-                this.store,
-                pluginKey,
-                persistingPlugin,
-                params,
-              );
-            } else {
-              processMessageImmediately(
-                this.store,
-                pluginKey,
-                persistingPlugin,
-                params,
-              );
-            }
+            processMessageLater(
+              this.store,
+              pluginKey,
+              persistingPlugin,
+              params,
+            );
           }
         } else {
           console.warn(
