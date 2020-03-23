@@ -132,7 +132,7 @@
     "@types/ws": "^7.2.0",
     "@types/yazl": "^2.4.2",
     "@typescript-eslint/eslint-plugin": "^2.19.2",
-    "@typescript-eslint/parser": "^2.19.2",
+    "@typescript-eslint/parser": "^2.25.0",
     "babel-code-frame": "^6.26.0",
     "babel-eslint": "^10.0.1",
     "electron": "8.0.1",
