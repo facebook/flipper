@@ -20,7 +20,7 @@
       "type": "node",
       "request": "launch",
       "name": "Launch Current Jest Suite",
-      "program": "${workspaceFolder}/node_modules/.bin/jest",
+      "program": "${workspaceFolder}/desktop/node_modules/.bin/jest",
       "args": ["--runInBand", "${relativeFile}"]
     },
     {
