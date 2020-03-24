@@ -65,6 +65,7 @@ public class NetworkFlipperPlugin extends BufferingFlipperPlugin implements Netw
                     .put("status", responseInfo.statusCode)
                     .put("reason", responseInfo.statusReason)
                     .put("headers", toFlipperObject(responseInfo.headers))
+                    .put("isMock", responseInfo.isMock)
                     .put("data", toBase64(responseInfo.body))
                     .build();
 
