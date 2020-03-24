@@ -29,10 +29,11 @@ export default async (packageDir: string) => {
         }
       }
     }
-    if (packageDir === '/') {
+    const nextDir = path.dirname(packageDir);
+    if (!nextDir || nextDir === '/' || nextDir === packageDir) {
       break;
     }
-    packageDir = path.dirname(packageDir);
+    packageDir = nextDir;
   }
   return watchDirs;
 };
