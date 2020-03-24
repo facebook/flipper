@@ -51,14 +51,14 @@ function initClient(plugins, appName) {
 }
 
 window.FlipperWebviewBridge = {
-  registerPlugins: function(plugins) {
+  registerPlugins: function (plugins) {
     flipperState.plugins = plugins;
   },
-  start: function(appName) {
+  start: function (appName) {
     flipperState.appName = appName;
     initClient();
   },
-  sendFlipperObject: function(plugin, method, data) {
+  sendFlipperObject: function (plugin, method, data) {
     initClient();
     if (flipperState.mainWindowId != 0) {
       ipcRenderer.sendTo(flipperState.mainWindowId, 'from-js-emulator', {

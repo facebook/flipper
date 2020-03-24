@@ -41,7 +41,7 @@ export default (store: Store, logger: Logger) => {
     });
   });
 
-  server.addListener('error', err => {
+  server.addListener('error', (err) => {
     const message: string =
       err.code === 'EADDRINUSE'
         ? "Couldn't start websocket server. Looks like you have multiple copies of Flipper running."

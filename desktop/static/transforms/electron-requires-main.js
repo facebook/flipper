@@ -17,7 +17,7 @@ function isRequire(node) {
   );
 }
 
-module.exports = function(babel, options) {
+module.exports = function (babel, options) {
   return {
     name: 'change-electron-to-electronRequire-in-main',
     visitor: {

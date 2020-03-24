@@ -88,7 +88,7 @@ export default function ToggleButton(props: Props) {
   );
   return (
     <Container
-      onClick={e => {
+      onClick={(e) => {
         setSwitching(true);
         setTimeout(() => {
           props?.onClick?.(e);

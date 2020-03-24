@@ -25,8 +25,8 @@ export default class AndroidDevice extends BaseDevice {
     super(serial, deviceType, title, 'Android');
     this.adb = adb;
     this.icon = 'icons/android.svg';
-    this.adb.openLogcat(this.serial).then(reader => {
-      reader.on('entry', entry => {
+    this.adb.openLogcat(this.serial).then((reader) => {
+      reader.on('entry', (entry) => {
         let type: LogLevel = 'unknown';
         if (entry.priority === Priority.VERBOSE) {
           type = 'verbose';
@@ -69,7 +69,7 @@ export default class AndroidDevice extends BaseDevice {
 
   reverse(ports: [number, number]): Promise<void> {
     return Promise.all(
-      ports.map(port =>
+      ports.map((port) =>
         this.adb.reverse(this.serial, `tcp:${port}`, `tcp:${port}`),
       ),
     ).then(() => {
@@ -100,7 +100,7 @@ export default class AndroidDevice extends BaseDevice {
 
   screenshot(): Promise<Buffer> {
     return new Promise((resolve, reject) => {
-      this.adb.screencap(this.serial).then(stream => {
+      this.adb.screencap(this.serial).then((stream) => {
         const chunks: Array<Buffer> = [];
         stream
           .on('data', (chunk: Buffer) => chunks.push(chunk))
@@ -137,13 +137,8 @@ export default class AndroidDevice extends BaseDevice {
     const fileSize = await this.adb
       .shell(this.serial, `du "${filePath}"`)
       .then(adb.util.readAll)
-      .then((output: Buffer) =>
-        output
-          .toString()
-          .trim()
-          .split('\t'),
-      )
-      .then(x => Number(x[0]));
+      .then((output: Buffer) => output.toString().trim().split('\t'))
+      .then((x) => Number(x[0]));
 
     // 4 is what an empty file (touch file) already takes up, so it's
     // definitely not a valid video file.
@@ -158,7 +153,7 @@ export default class AndroidDevice extends BaseDevice {
     this.recordingProcess = this.adb
       .shell(this.serial, `screenrecord --bugreport "${recordingLocation}"`)
       .then(adb.util.readAll)
-      .then(async output => {
+      .then(async (output) => {
         const isValid = await this.isValidFile(recordingLocation);
         if (!isValid) {
           const outputMessage = output.toString().trim();
@@ -168,18 +163,18 @@ export default class AndroidDevice extends BaseDevice {
         }
       })
       .then(
-        _ =>
+        (_) =>
           new Promise((resolve, reject) => {
-            this.adb.pull(this.serial, recordingLocation).then(stream => {
+            this.adb.pull(this.serial, recordingLocation).then((stream) => {
               stream.on('end', resolve);
               stream.on('error', reject);
               stream.pipe(createWriteStream(destination));
             });
           }),
       )
-      .then(_ => destination);
+      .then((_) => destination);
 
-    return this.recordingProcess.then(_ => {});
+    return this.recordingProcess.then((_) => {});
   }
 
   async stopScreenCapture(): Promise<string> {

@@ -49,7 +49,7 @@ export default class VideoRecordingButton extends Component<Props, State> {
     this.setState({
       recording: true,
     });
-    selectedDevice.startScreenCapture(videoPath).catch(e => {
+    selectedDevice.startScreenCapture(videoPath).catch((e) => {
       console.error('Screen recording failed:', e);
       this.setState({
         recording: false,

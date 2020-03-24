@@ -95,7 +95,7 @@ class SettingsSheet extends Component<Props, State> {
         <ToggledSection
           label="Android Developer"
           toggled={enableAndroid}
-          onChange={v => {
+          onChange={(v) => {
             this.setState({
               updatedSettings: {
                 ...this.state.updatedSettings,
@@ -107,7 +107,7 @@ class SettingsSheet extends Component<Props, State> {
             label="Android SDK Location"
             resetValue={DEFAULT_ANDROID_SDK_PATH}
             defaultValue={androidHome}
-            onChange={v => {
+            onChange={(v) => {
               this.setState({
                 updatedSettings: {
                   ...this.state.updatedSettings,
@@ -121,7 +121,7 @@ class SettingsSheet extends Component<Props, State> {
           label="iOS Developer"
           toggled={enableIOS && this.props.platform === 'darwin'}
           frozen={this.props.platform !== 'darwin'}
-          onChange={v => {
+          onChange={(v) => {
             this.setState({
               updatedSettings: {...this.state.updatedSettings, enableIOS: v},
             });
@@ -140,7 +140,7 @@ class SettingsSheet extends Component<Props, State> {
         </ToggledSection>
         <LauncherSettingsPanel
           isPrefetchingEnabled={enablePrefetching}
-          onEnablePrefetchingChange={v => {
+          onEnablePrefetchingChange={(v) => {
             this.setState({
               updatedSettings: {
                 ...this.state.updatedSettings,
@@ -149,7 +149,7 @@ class SettingsSheet extends Component<Props, State> {
             });
           }}
           isLocalPinIgnored={this.state.updatedLauncherSettings.ignoreLocalPin}
-          onIgnoreLocalPinChange={v => {
+          onIgnoreLocalPinChange={(v) => {
             this.setState({
               updatedLauncherSettings: {
                 ...this.state.updatedLauncherSettings,
@@ -161,8 +161,8 @@ class SettingsSheet extends Component<Props, State> {
         <ToggledSection
           label="React Native keyboard shortcuts"
           toggled={reactNative.shortcuts.enabled}
-          onChange={enabled => {
-            this.setState(prevState => ({
+          onChange={(enabled) => {
+            this.setState((prevState) => ({
               updatedSettings: {
                 ...prevState.updatedSettings,
                 reactNative: {
@@ -178,8 +178,8 @@ class SettingsSheet extends Component<Props, State> {
           <KeyboardShortcutInput
             label="Reload application"
             value={reactNative.shortcuts.reload}
-            onChange={reload => {
-              this.setState(prevState => ({
+            onChange={(reload) => {
+              this.setState((prevState) => ({
                 updatedSettings: {
                   ...prevState.updatedSettings,
                   reactNative: {
@@ -196,8 +196,8 @@ class SettingsSheet extends Component<Props, State> {
           <KeyboardShortcutInput
             label="Open developer menu"
             value={reactNative.shortcuts.openDevMenu}
-            onChange={openDevMenu => {
-              this.setState(prevState => ({
+            onChange={(openDevMenu) => {
+              this.setState((prevState) => ({
                 updatedSettings: {
                   ...prevState.updatedSettings,
                   reactNative: {

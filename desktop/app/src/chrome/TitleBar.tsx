@@ -252,7 +252,7 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, State>(
     );
     const navPluginIsActive = !!pluginStates[navigationPluginKey];
     const isMetroActive = !!devices.find(
-      device => device.os === 'Metro' && !device.isArchived,
+      (device) => device.os === 'Metro' && !device.isArchived,
     );
 
     return {

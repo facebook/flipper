@@ -26,7 +26,7 @@ async function mostRecentlyChanged(
     recursiveReaddir,
   )(dir, ignores);
   return files
-    .map(f => fs.lstatSync(f).ctime)
+    .map((f) => fs.lstatSync(f).ctime)
     .reduce((a, b) => (a > b ? a : b), new Date(0));
 }
 
@@ -45,7 +45,7 @@ export function compileDefaultPlugins(
     defaultPluginDir,
     {force: true, failSilently: false, recompileOnChanges: false},
   )
-    .then(defaultPlugins =>
+    .then((defaultPlugins) =>
       fs.writeFileSync(
         path.join(defaultPluginDir, 'index.json'),
         JSON.stringify(
@@ -187,7 +187,7 @@ export function buildFolder(): Promise<string> {
         resolve(buildFolder);
       }
     });
-  }).catch(e => {
+  }).catch((e) => {
     die(e);
     return '';
   });
@@ -205,7 +205,7 @@ export function getVersionNumber() {
 export function genMercurialRevision(): Promise<string | null> {
   return spawn('hg', ['log', '-r', '.', '-T', '{node}'], {encoding: 'utf8'})
     .then(
-      res =>
+      (res) =>
         (res &&
           (typeof res.stdout === 'string'
             ? res.stdout

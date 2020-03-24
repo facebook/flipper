@@ -47,7 +47,7 @@ export default class ImagesSidebar extends Component<
     return (
       <div>
         {this.renderUri()}
-        {this.props.events.map(e => (
+        {this.props.events.map((e) => (
           <EventDetails key={e.eventId} event={e} />
         ))}
       </div>
@@ -115,7 +115,7 @@ class EventDetails extends Component<{
           <DataDescription
             type="number"
             value={event.startTime}
-            setValue={function(path: Array<string>, val: any) {}}
+            setValue={function (path: Array<string>, val: any) {}}
           />
         </p>
         <p>
@@ -124,7 +124,7 @@ class EventDetails extends Component<{
           <DataDescription
             type="number"
             value={event.endTime}
-            setValue={function(path: Array<string>, val: any) {}}
+            setValue={function (path: Array<string>, val: any) {}}
           />
         </p>
         <p>
@@ -133,7 +133,7 @@ class EventDetails extends Component<{
           <DataDescription
             type="string"
             value={event.source}
-            setValue={function(path: Array<string>, val: any) {}}
+            setValue={function (path: Array<string>, val: any) {}}
           />
         </p>
         <p>
@@ -162,7 +162,7 @@ class EventDetails extends Component<{
         <DataDescription
           type="string"
           value={viewport.width + 'x' + viewport.height}
-          setValue={function(path: Array<string>, val: any) {}}
+          setValue={function (path: Array<string>, val: any) {}}
         />
       </p>
     );

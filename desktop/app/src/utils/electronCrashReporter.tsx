@@ -23,13 +23,13 @@ const tmpName = promisify(tmpNameCallback) as (
 // The tempPath set should be persistent across app restarts.
 const tempPathPromise: Promise<string> = tmpName({
   template: '/tmp/tmp-XXXXXX',
-}).then(name => resolve(name, '..', 'flipper'));
+}).then((name) => resolve(name, '..', 'flipper'));
 
 export default function initCrashReporter(sessionId: string): Promise<void> {
   const flipperVersion = remote.app.getVersion();
-  return tempPathPromise.then(tempPath => {
+  return tempPathPromise.then((tempPath) => {
     return promisify(exists)(tempPath)
-      .then(pathExists => {
+      .then((pathExists) => {
         if (!pathExists) {
           return promisify(mkdir)(tempPath);
         }

@@ -98,7 +98,7 @@ const NonWrappingText = styled(Text)({
   userSelect: 'none',
 });
 
-const BooleanValue = styled(NonWrappingText)<{active?: boolean}>(props => ({
+const BooleanValue = styled(NonWrappingText)<{active?: boolean}>((props) => ({
   '&::before': {
     content: '""',
     display: 'inline-block',
@@ -339,7 +339,7 @@ export default function createTableNativePlugin(id: string, title: string) {
       if (!this.props.persistedState.tableMetadata) {
         this.client
           .call('getMetadata')
-          .then(metadata => {
+          .then((metadata) => {
             this.props.setPersistedState({
               tableMetadata: {
                 ...metadata,
@@ -347,7 +347,7 @@ export default function createTableNativePlugin(id: string, title: string) {
               },
             });
           })
-          .catch(e => this.setState({error: e}));
+          .catch((e) => this.setState({error: e}));
       }
     };
 
@@ -380,13 +380,13 @@ export default function createTableNativePlugin(id: string, title: string) {
             Object.keys(this.props.persistedState.tableMetadata.columns)) ||
           []
         )
-          .map(key => textContent(row.columns[key].value))
+          .map((key) => textContent(row.columns[key].value))
           .join('\t');
 
       if (this.state.selectedIds.length > 0) {
         // create paste from selection
         paste = this.props.persistedState.rows
-          .filter(row => this.state.selectedIds.indexOf(row.key) > -1)
+          .filter((row) => this.state.selectedIds.indexOf(row.key) > -1)
           .map(mapFn)
           .join('\n');
       } else {
@@ -413,7 +413,7 @@ export default function createTableNativePlugin(id: string, title: string) {
         );
         return rows;
       }
-      return rows.map(r => {
+      return rows.map((r) => {
         return {
           ...r,
           columns: Object.keys(r.columns).reduce((map, columnName) => {

@@ -59,13 +59,13 @@ export function FilePathConfigField(props: {
   const [value, setValue] = useState(props.defaultValue);
   const [isValid, setIsValid] = useState(true);
   fs.stat(value)
-    .then(stat => stat.isDirectory())
-    .then(valid => {
+    .then((stat) => stat.isDirectory())
+    .then((valid) => {
       if (valid !== isValid) {
         setIsValid(valid);
       }
     })
-    .catch(_ => setIsValid(false));
+    .catch((_) => setIsValid(false));
 
   return (
     <ConfigFieldContainer>
@@ -74,17 +74,17 @@ export function FilePathConfigField(props: {
         placeholder={props.label}
         value={value}
         isValid={isValid}
-        onChange={e => {
+        onChange={(e) => {
           setValue(e.target.value);
           props.onChange(e.target.value);
           fs.stat(e.target.value)
-            .then(stat => stat.isDirectory())
-            .then(valid => {
+            .then((stat) => stat.isDirectory())
+            .then((valid) => {
               if (valid !== isValid) {
                 setIsValid(valid);
               }
             })
-            .catch(_ => setIsValid(false));
+            .catch((_) => setIsValid(false));
         }}
       />
       <FlexColumn

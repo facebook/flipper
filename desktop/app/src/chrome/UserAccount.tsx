@@ -92,7 +92,7 @@ class UserAccount extends PureComponent<Props> {
 
   componentDidMount() {
     if (config.showLogin) {
-      getUser().catch(error => {
+      getUser().catch((error) => {
         if (error === USER_UNAUTHORIZED || error === USER_NOT_SIGNEDIN) {
           this.openLogin();
         }

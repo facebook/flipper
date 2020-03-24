@@ -14,7 +14,7 @@ import Text from './Text';
 /**
  * Subtle text that should not draw attention
  */
-const SmallText = styled(Text)<{center?: boolean}>(props => ({
+const SmallText = styled(Text)<{center?: boolean}>((props) => ({
   color: colors.light20,
   size: 10,
   fontStyle: 'italic',

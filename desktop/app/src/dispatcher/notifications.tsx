@@ -103,7 +103,7 @@ export default (store: Store, logger: Logger) => {
       ...devicePlugins,
     ]);
 
-    Object.keys(pluginStates).forEach(key => {
+    Object.keys(pluginStates).forEach((key) => {
       if (knownPluginStates.get(key) !== pluginStates[key]) {
         knownPluginStates.set(key, pluginStates[key]);
         const plugin = deconstructPluginKey(key);

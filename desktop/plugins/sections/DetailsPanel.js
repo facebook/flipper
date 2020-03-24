@@ -64,7 +64,7 @@ export default class DetailsPanel extends Component<Props> {
             floating={false}
             heading={'Changesets'}>
             <MarkerTimeline
-              points={changeSets.map(p => ({
+              points={changeSets.map((p) => ({
                 label:
                   p.type === 'CHANGESET_GENERATED' ? 'Generated' : 'Rendered',
                 time: Math.round((p.timestamp || 0) - firstChangeSet),
@@ -72,9 +72,9 @@ export default class DetailsPanel extends Component<Props> {
                   p.type === 'CHANGESET_GENERATED' ? colors.lemon : colors.teal,
                 key: p.identifier,
               }))}
-              onClick={ids =>
+              onClick={(ids) =>
                 this.props.onFocusChangeSet(
-                  changeSets.find(c => c.identifier === ids[0]),
+                  changeSets.find((c) => c.identifier === ids[0]),
                 )
               }
               selected={this.props.focusedChangeSet?.identifier}

@@ -65,7 +65,7 @@ function isRequire(node) {
   );
 }
 
-module.exports = function(babel) {
+module.exports = function (babel) {
   const t = babel.types;
 
   return {
@@ -80,7 +80,7 @@ module.exports = function(babel) {
 
         if (
           BUILTINS.includes(source) ||
-          BUILTINS.some(moduleName => source.startsWith(`${moduleName}/`))
+          BUILTINS.some((moduleName) => source.startsWith(`${moduleName}/`))
         ) {
           path.node.callee.name = 'electronRequire';
         }

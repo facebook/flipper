@@ -44,7 +44,7 @@ export const SearchInput = styled(Input)<{
   focus?: boolean;
   regex?: boolean;
   isValidInput?: boolean;
-}>(props => ({
+}>((props) => ({
   border: props.focus ? '1px solid black' : 0,
   ...(props.regex ? {fontFamily: 'monospace'} : {}),
   padding: 0,
@@ -186,9 +186,9 @@ const Searchable = (
         if (defaultFilters != null) {
           // merge default filter with persisted filters
           const savedStateFilters = savedState.filters;
-          defaultFilters.forEach(defaultFilter => {
+          defaultFilters.forEach((defaultFilter) => {
             const filterIndex = savedStateFilters.findIndex(
-              f => f.key === defaultFilter.key,
+              (f) => f.key === defaultFilter.key,
             );
             const savedDefaultFilter = savedStateFilters[filterIndex];
             if (filterIndex > -1 && savedDefaultFilter.type === 'enum') {
@@ -196,11 +196,11 @@ const Searchable = (
                 savedDefaultFilter.enum = defaultFilter.enum;
               }
               const filters = new Set(
-                savedDefaultFilter.enum.map(filter => filter.value),
+                savedDefaultFilter.enum.map((filter) => filter.value),
               );
               savedStateFilters[
                 filterIndex
-              ].value = savedDefaultFilter.value.filter(value =>
+              ].value = savedDefaultFilter.value.filter((value) =>
                 filters.has(value),
               );
             }
@@ -281,9 +281,7 @@ const Searchable = (
         // the table (in case there is more than one table rendered at a time)
         return (
           'TABLE_COLUMNS_' +
-          Object.keys(this.props.columns)
-            .join('_')
-            .toUpperCase()
+          Object.keys(this.props.columns).join('_').toUpperCase()
         );
       }
     };
@@ -374,7 +372,7 @@ const Searchable = (
 
     addFilter = (filter: Filter) => {
       const filterIndex = this.state.filters.findIndex(
-        f => f.key === filter.key,
+        (f) => f.key === filter.key,
       );
       if (filterIndex > -1) {
         const filters = [...this.state.filters];
@@ -457,7 +455,7 @@ const Searchable = (
     clear = () =>
       this.setState({
         filters: this.state.filters.filter(
-          f => f.type === 'enum' && f.persistent === true,
+          (f) => f.type === 'enum' && f.persistent === true,
         ),
         searchTerm: '',
       });

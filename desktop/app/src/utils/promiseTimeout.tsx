@@ -24,7 +24,7 @@ export default function promiseTimeout<T>(
 }
 
 export function sleep(ms: number): Promise<void> {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     const id = setTimeout(() => {
       clearTimeout(id);
       resolve();
@@ -42,11 +42,11 @@ export function showStatusUpdatesForPromise<T>(
   const statusMsg = {msg: message, sender};
   addStatusMessage(statusMsg);
   return promise
-    .then(result => {
+    .then((result) => {
       removeStatusMessage(statusMsg);
       return result;
     })
-    .catch(e => {
+    .catch((e) => {
       removeStatusMessage(statusMsg);
       throw e;
     });
@@ -61,7 +61,7 @@ export function showStatusUpdatesForDuration(
 ): void {
   showStatusUpdatesForPromise(
     new Promise((resolve, _reject) => {
-      setTimeout(function() {
+      setTimeout(function () {
         resolve();
       }, duration);
     }),

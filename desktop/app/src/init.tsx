@@ -46,7 +46,7 @@ const AppFrame = () => {
   const [warnEmployee, setWarnEmployee] = useState(false);
   useEffect(() => {
     if (fbConfig.warnFBEmployees) {
-      isFBEmployee().then(isEmployee => {
+      isFBEmployee().then((isEmployee) => {
         setWarnEmployee(isEmployee);
       });
     }
@@ -85,7 +85,7 @@ function setProcessState(store: Store) {
   // it exists
   process.env.PATH =
     ['emulator', 'tools', 'platform-tools']
-      .map(directory => path.resolve(androidHome, directory))
+      .map((directory) => path.resolve(androidHome, directory))
       .join(':') + `:${process.env.PATH}`;
 
   window.requestIdleCallback(() => {

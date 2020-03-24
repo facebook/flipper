@@ -11,13 +11,13 @@ export function parseFlipperPorts(
   envVar: string,
 ): {insecure: number; secure: number} | undefined {
   const components = envVar.split(',');
-  const ports = components.map(x => parseInt(x, 10));
+  const ports = components.map((x) => parseInt(x, 10));
 
   // Malformed numbers will get parsed to NaN which is not > 0
   if (
     ports.length === 2 &&
-    components.every(x => /^[0-9]+$/.test(x)) &&
-    ports.every(x => x > 0)
+    components.every((x) => /^[0-9]+$/.test(x)) &&
+    ports.every((x) => x > 0)
   ) {
     return {
       insecure: ports[0],

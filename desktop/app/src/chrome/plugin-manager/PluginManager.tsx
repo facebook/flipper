@@ -23,7 +23,7 @@ const Row = styled(FlexColumn)({
 
 type Tabs = 'Plugin Status' | 'Install Plugins';
 
-export default function(props: {onHide: () => any}) {
+export default function (props: {onHide: () => any}) {
   const [tab, setTab] = useState<Tabs>('Plugin Status');
   return (
     <Container>

@@ -33,11 +33,11 @@ export function reportPlatformFailures<T>(
   name: string,
 ): Promise<T> {
   return promise.then(
-    fulfilledValue => {
+    (fulfilledValue) => {
       logPlatformSuccessRate(name, {kind: 'success'});
       return fulfilledValue;
     },
-    rejectionReason => {
+    (rejectionReason) => {
       if (rejectionReason instanceof CancelledPromiseError) {
         logPlatformSuccessRate(name, {
           kind: 'cancelled',
@@ -67,11 +67,11 @@ export function reportPluginFailures<T>(
   plugin: string,
 ): Promise<T> {
   return promise.then(
-    fulfilledValue => {
+    (fulfilledValue) => {
       logPluginSuccessRate(name, plugin, {kind: 'success'});
       return fulfilledValue;
     },
-    rejectionReason => {
+    (rejectionReason) => {
       if (rejectionReason instanceof CancelledPromiseError) {
         logPluginSuccessRate(name, plugin, {
           kind: 'cancelled',

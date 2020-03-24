@@ -152,7 +152,7 @@ class PluginDebugger extends Component<Props> {
           : p.entry
         : 'Native Plugin';
 
-    this.props.gatekeepedPlugins.forEach(plugin =>
+    this.props.gatekeepedPlugins.forEach((plugin) =>
       rows.push(
         this.buildRow(
           plugin.name,
@@ -164,7 +164,7 @@ class PluginDebugger extends Component<Props> {
       ),
     );
 
-    this.props.devicePlugins.forEach(plugin =>
+    this.props.devicePlugins.forEach((plugin) =>
       rows.push(
         this.buildRow(
           plugin.id,
@@ -176,7 +176,7 @@ class PluginDebugger extends Component<Props> {
       ),
     );
 
-    this.props.clientPlugins.forEach(plugin =>
+    this.props.clientPlugins.forEach((plugin) =>
       rows.push(
         this.buildRow(
           plugin.id,
@@ -188,7 +188,7 @@ class PluginDebugger extends Component<Props> {
       ),
     );
 
-    this.props.disabledPlugins.forEach(plugin =>
+    this.props.disabledPlugins.forEach((plugin) =>
       rows.push(
         this.buildRow(
           plugin.name,

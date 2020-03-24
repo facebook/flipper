@@ -88,14 +88,14 @@ export default class Panel extends React.Component<
   static PanelContainer = styled(FlexColumn)<{
     floating?: boolean;
     collapsed?: boolean;
-  }>(props => ({
+  }>((props) => ({
     flexShrink: 0,
     padding: props.floating ? 10 : 0,
     borderBottom: props.collapsed ? 'none' : BORDER,
   }));
 
   static PanelHeader = styled(FlexBox)<{floating?: boolean; padded?: boolean}>(
-    props => ({
+    (props) => ({
       backgroundColor: '#f6f7f9',
       border: props.floating ? BORDER : 'none',
       borderBottom: BORDER,
@@ -113,7 +113,7 @@ export default class Panel extends React.Component<
   );
 
   static PanelBody = styled(FlexColumn)<{floating?: boolean; padded?: boolean}>(
-    props => ({
+    (props) => ({
       backgroundColor: '#fff',
       border: props.floating ? BORDER : 'none',
       borderBottomLeftRadius: 2,

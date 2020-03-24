@@ -14,10 +14,10 @@ import {getUser, logoutUser} from '../fb-stubs/user';
 
 export default (store: Store, _logger: Logger) => {
   getUser()
-    .then(user => {
+    .then((user) => {
       store.dispatch(login(user));
     })
-    .catch(e => {
+    .catch((e) => {
       store.dispatch(logout());
       console.error(e);
     });

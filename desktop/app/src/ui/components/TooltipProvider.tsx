@@ -65,7 +65,7 @@ const TooltipBubble = styled.div<{
     maxWidth: MaxWidthProperty<number>;
     color: ColorProperty;
   };
-}>(props => ({
+}>((props) => ({
   position: 'absolute',
   zIndex: 99999999999,
   backgroundColor: props.options.backgroundColor,
@@ -101,7 +101,7 @@ const TooltipTail = styled.div<{
   options: {
     backgroundColor: BackgroundColorProperty;
   };
-}>(props => ({
+}>((props) => ({
   position: 'absolute',
   display: 'block',
   whiteSpace: 'pre',

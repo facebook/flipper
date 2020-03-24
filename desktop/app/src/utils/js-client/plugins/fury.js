@@ -83,7 +83,7 @@ export class FuryPlugin extends FlipperPlugin {
       id: reqContext.currentSeqId + '/' + eventType,
       time: new Date().getTime(),
       eventType: eventType,
-      callStack: stack.map(frame => {
+      callStack: stack.map((frame) => {
         return {
           className: frame.getTypeName() || '',
           methodName: frame.getFunctionName() || '',

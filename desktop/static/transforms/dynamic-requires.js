@@ -16,7 +16,7 @@ function isDynamicRequire(node) {
   );
 }
 
-module.exports = function(babel) {
+module.exports = function (babel) {
   const t = babel.types;
 
   return {

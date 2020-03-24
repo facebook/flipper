@@ -14,7 +14,7 @@ const electronStubs = babylon.parseExpression(
   fs.readFileSync('static/electron-stubs.notjs').toString(),
 );
 
-module.exports = function(babel) {
+module.exports = function (babel) {
   return {
     name: 'replace-electron-requires-with-stubs',
     visitor: {

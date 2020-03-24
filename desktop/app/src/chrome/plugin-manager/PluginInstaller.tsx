@@ -175,7 +175,7 @@ const PluginInstaller = function props(props: Props) {
         <Toolbar>
           <SearchBox>
             <SearchInput
-              onChange={e => setQuery(e.target.value)}
+              onChange={(e) => setQuery(e.target.value)}
               value={query}
               placeholder="Search Flipper plugins..."
             />
@@ -414,7 +414,9 @@ function useNPMSearch(
         return;
       }
       setSearchResults(
-        hits.filter(hit => !installedPlugins.has(hit.name)).map(liftUpdatable),
+        hits
+          .filter((hit) => !installedPlugins.has(hit.name))
+          .map(liftUpdatable),
       );
 
       // Clean up: if query changes while we're searching, abandon results.
@@ -445,7 +447,7 @@ export default connect<PropsFromState, DispatchFromProps, OwnProps, AppState>(
   }),
   (dispatch: Dispatch<Action<any>>) => ({
     refreshInstalledPlugins: () => {
-      readInstalledPlugins().then(plugins =>
+      readInstalledPlugins().then((plugins) =>
         dispatch(registerInstalledPlugins(plugins)),
       );
     },

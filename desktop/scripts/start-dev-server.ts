@@ -149,7 +149,7 @@ function startAssetServer(
 
   app.use(express.static(staticDir));
 
-  app.use(function(err: any, req: any, res: any, _next: any) {
+  app.use(function (err: any, req: any, res: any, _next: any) {
     knownErrors[req.url] = err;
     outputScreen();
     res.status(500).send('Something broke, check the console!');
@@ -157,7 +157,7 @@ function startAssetServer(
 
   const server = http.createServer(app);
 
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     server.listen(port, 'localhost', () => resolve({app, server}));
   });
 }
@@ -166,7 +166,7 @@ async function addWebsocket(server: http.Server) {
   const io = socketIo(server);
 
   // notify connected clients that there's errors in the console
-  io.on('connection', client => {
+  io.on('connection', (client) => {
     if (hasErrors()) {
       client.emit('hasErrors', ansiToHtmlConverter.toHtml(buildErrorScreen()));
     }
@@ -178,7 +178,7 @@ async function addWebsocket(server: http.Server) {
     const watchman = new Watchman(path.resolve(__dirname, '..'));
     await watchman.initialize();
     await Promise.all(
-      ['src', 'pkg', 'doctor'].map(dir =>
+      ['src', 'pkg', 'doctor'].map((dir) =>
         watchman.startWatchFiles(
           dir,
           () => {

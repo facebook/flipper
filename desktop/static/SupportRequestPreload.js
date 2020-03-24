@@ -9,11 +9,11 @@
 
 const {ipcRenderer} = require('electron');
 
-global.sendToHost = message => {
+global.sendToHost = (message) => {
   ipcRenderer.sendToHost(message);
 };
 
-global.setupToReceiveHostMessage = callback => {
+global.setupToReceiveHostMessage = (callback) => {
   ipcRenderer.on('hostMessage', (event, message) => {
     callback(message);
   });

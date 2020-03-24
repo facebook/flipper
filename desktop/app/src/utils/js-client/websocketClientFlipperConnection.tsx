@@ -29,12 +29,12 @@ export class WebsocketClientFlipperConnection<M>
   }
 
   connectionStatus(): Flowable<ConnectionStatus> {
-    return new Flowable<ConnectionStatus>(subscriber => {
+    return new Flowable<ConnectionStatus>((subscriber) => {
       subscriber.onSubscribe({
         cancel: () => {
           this.connStatusSubscribers.delete(subscriber);
         },
-        request: _ => {
+        request: (_) => {
           this.connStatusSubscribers.add(subscriber);
           subscriber.onNext(this.connStatus);
         },
@@ -44,7 +44,7 @@ export class WebsocketClientFlipperConnection<M>
 
   close(): void {
     this.connStatus = {kind: 'CLOSED'};
-    this.connStatusSubscribers.forEach(subscriber => {
+    this.connStatusSubscribers.forEach((subscriber) => {
       subscriber.onNext(this.connStatus);
     });
     this.websocket.send(JSON.stringify({type: 'disconnect', app: this.app}));
@@ -62,7 +62,7 @@ export class WebsocketClientFlipperConnection<M>
 
   // TODO: fully implement and return actual result
   requestResponse(payload: Payload<string, M>): Single<Payload<string, M>> {
-    return new Single(subscriber => {
+    return new Single((subscriber) => {
       const method =
         payload.data != null ? JSON.parse(payload.data).method : 'not-defined';
       subscriber.onSubscribe(() => {});

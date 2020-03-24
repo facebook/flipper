@@ -78,7 +78,7 @@ export default class Inspector extends Component<Props> {
     const elements: Array<Element> = Object.values(
       this.props.persistedState.AXelements,
     );
-    const focusedElement = elements.find(i =>
+    const focusedElement = elements.find((i) =>
       Boolean(
         i.data.Accessibility && i.data.Accessibility['accessibility-focused'],
       ),
@@ -115,7 +115,7 @@ export default class Inspector extends Component<Props> {
         nodes: Array<{id: ElementID; children: Array<ElementID>}>;
       }) => {
         const ids = nodes
-          .map(n => [n.id, ...(n.children || [])])
+          .map((n) => [n.id, ...(n.children || [])])
           .reduce((acc, cv) => acc.concat(cv), []);
         this.invalidate(ids);
       },
@@ -279,7 +279,7 @@ export default class Inspector extends Component<Props> {
           selected: false,
         },
       );
-      elements.forEach(e => this.updateElement(e.id, e));
+      elements.forEach((e) => this.updateElement(e.id, e));
       return elements;
     } else {
       return [];
@@ -287,7 +287,7 @@ export default class Inspector extends Component<Props> {
   }
 
   async getAndExpandPath(path: Array<ElementID>) {
-    await Promise.all(path.map(id => this.getChildren(id, {})));
+    await Promise.all(path.map((id) => this.getChildren(id, {})));
     this.onElementSelected(path[path.length - 1]);
   }
 
@@ -312,9 +312,9 @@ export default class Inspector extends Component<Props> {
     if (shouldExpand) {
       this.updateElement(id, {expanded: shouldExpand});
     }
-    this.getChildren(id, {}).then(children => {
+    this.getChildren(id, {}).then((children) => {
       if (deep) {
-        children.forEach(child =>
+        children.forEach((child) =>
           this.onElementExpanded(child.id, deep, shouldExpand),
         );
       }

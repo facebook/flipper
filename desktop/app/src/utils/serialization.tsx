@@ -14,9 +14,12 @@ export async function serialize(
   statusUpdate?: (msg: string) => void,
   statusMsg?: string,
 ): Promise<string> {
-  return makeObjectSerializable(obj, idler, statusUpdate, statusMsg).then(obj =>
-    JSON.stringify(obj),
-  );
+  return makeObjectSerializable(
+    obj,
+    idler,
+    statusUpdate,
+    statusMsg,
+  ).then((obj) => JSON.stringify(obj));
 }
 
 export function deserialize(str: string): any {
@@ -201,10 +204,9 @@ export async function makeObjectSerializable(
     const percentage = (numIterations / accumulator) * 100;
     statusUpdate &&
       statusUpdate(
-        `${statusMsg ||
-          'Serializing Flipper '}: ${numIterations} / ${accumulator} (${percentage.toFixed(
-          2,
-        )}%) `,
+        `${
+          statusMsg || 'Serializing Flipper '
+        }: ${numIterations} / ${accumulator} (${percentage.toFixed(2)}%) `,
       );
     prevStackLength = stack.length;
   }
@@ -223,7 +225,7 @@ export function deserializeObject(obj: any): any {
       case 'Map': {
         return new Map(
           // @ts-ignore
-          [...obj.data].map(item => [...item].map(deserializeObject)),
+          [...obj.data].map((item) => [...item].map(deserializeObject)),
         );
       }
       case 'Set': {

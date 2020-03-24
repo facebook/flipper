@@ -94,7 +94,7 @@ class ExportDataPluginSheet extends Component<Props, {}> {
               }
             }
           }}
-          onChange={selectedArray => {
+          onChange={(selectedArray) => {
             this.props.setSelectedPlugins(selectedArray);
           }}
           elements={this.props.availablePluginsToExport}
@@ -114,7 +114,7 @@ export default connect<StateFromProps, DispatchFromProps, OwnProps, Store>(
     pluginMessageQueue,
     connections: {selectedApp, clients},
   }) => {
-    const selectedClient = clients.find(o => {
+    const selectedClient = clients.find((o) => {
       return o.id === selectedApp;
     });
     const availablePluginsToExport = getActivePersistentPlugins(

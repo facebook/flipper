@@ -153,7 +153,7 @@ function HeaderInput(props: {
       placeholder="Name"
       value={value}
       style={props.isSelected ? selectedHighlight : undefined}
-      onChange={event => setValue(event.target.value)}
+      onChange={(event) => setValue(event.target.value)}
       onBlur={() => props.onUpdate(value)}
     />
   );
@@ -177,7 +177,7 @@ function _buildMockResponseHeaderRows(
               onUpdate={(newValue: string) => {
                 const newHeaders = produce(
                   route.responseHeaders,
-                  draftHeaders => {
+                  (draftHeaders) => {
                     draftHeaders[id].key = newValue;
                   },
                 );
@@ -196,7 +196,7 @@ function _buildMockResponseHeaderRows(
               onUpdate={(newValue: string) => {
                 const newHeaders = produce(
                   route.responseHeaders,
-                  draftHeaders => {
+                  (draftHeaders) => {
                     draftHeaders[id].value = newValue;
                   },
                 );
@@ -213,7 +213,7 @@ function _buildMockResponseHeaderRows(
               onClick={() => {
                 const newHeaders = produce(
                   route.responseHeaders,
-                  draftHeaders => {
+                  (draftHeaders) => {
                     delete draftHeaders[id];
                   },
                 );
@@ -257,7 +257,7 @@ export function MockResponseDetails({id, route, isDuplicated}: Props) {
           type="text"
           placeholder="URL"
           value={requestUrl}
-          onChange={event =>
+          onChange={(event) =>
             networkRouteManager.modifyRoute(id, {
               requestUrl: event.target.value,
             })
@@ -275,7 +275,7 @@ export function MockResponseDetails({id, route, isDuplicated}: Props) {
       <StyledText />
       <Tabs
         active={activeTab}
-        onActive={newActiveTab => {
+        onActive={(newActiveTab) => {
           if (newActiveTab != null) {
             setActiveTab(newActiveTab);
           }
@@ -287,7 +287,7 @@ export function MockResponseDetails({id, route, isDuplicated}: Props) {
             autoComplete="off"
             spellCheck={false}
             value={responseData}
-            onChange={event =>
+            onChange={(event) =>
               networkRouteManager.modifyRoute(id, {
                 responseData: event.target.value,
               })

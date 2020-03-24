@@ -54,12 +54,12 @@ const rowMatchesFilters = (filters: Array<Filter>, row: TableBodyRow) =>
         return true;
       }
     })
-    .every(x => x === true);
+    .every((x) => x === true);
 
 function rowMatchesRegex(values: Array<string>, regex: string): boolean {
   try {
     const re = new RegExp(regex);
-    return values.some(x => re.test(x));
+    return values.some((x) => re.test(x));
   } catch (e) {
     return false;
   }
@@ -74,7 +74,7 @@ function rowMatchesSearchTerm(
   if (searchTerm == null || searchTerm.length === 0) {
     return true;
   }
-  const rowValues = Object.keys(row.columns).map(key =>
+  const rowValues = Object.keys(row.columns).map((key) =>
     textContent(row.columns[key].value),
   );
   if (isBodySearchEnabled) {
@@ -91,7 +91,7 @@ function rowMatchesSearchTerm(
   if (isRegex) {
     return rowMatchesRegex(rowValues, searchTerm);
   }
-  return rowValues.some(x =>
+  return rowValues.some((x) =>
     x.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 }

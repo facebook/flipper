@@ -36,7 +36,7 @@ export function DesktopDropdown(props: {
 }) {
   return (
     <DesktopDropdownContainer>
-      {React.Children.map(props.children, child => {
+      {React.Children.map(props.children, (child) => {
         return (
           child &&
           React.cloneElement(child, {

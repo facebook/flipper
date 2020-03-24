@@ -90,7 +90,9 @@ class Server extends EventEmitter {
     const {insecure, secure} = this.store.getState().application.serverPorts;
     this.initialisePromise = this.certificateProvider
       .loadSecureServerConfig()
-      .then(options => (this.secureServer = this.startServer(secure, options)))
+      .then(
+        (options) => (this.secureServer = this.startServer(secure, options)),
+      )
       .then(() => {
         this.insecureServer = this.startServer(insecure);
         return;
@@ -116,12 +118,12 @@ class Server extends EventEmitter {
       let rsServer: RSocketServer<any, any> | undefined; // eslint-disable-line prefer-const
       const serverFactory = (onConnect: (socket: Socket) => void) => {
         const transportServer = sslConfig
-          ? tls.createServer(sslConfig, socket => {
+          ? tls.createServer(sslConfig, (socket) => {
               onConnect(socket);
             })
           : net.createServer(onConnect);
         transportServer
-          .on('error', err => {
+          .on('error', (err) => {
             server.emit('error', err);
             console.error(`Error opening server on port ${port}`, 'server');
             reject(err);
@@ -174,8 +176,8 @@ class Server extends EventEmitter {
       });
 
       const cleanup = () => {
-        Object.values(clients).map(p =>
-          p.then(c => this.removeConnection(c.id)),
+        Object.values(clients).map((p) =>
+          p.then((c) => this.removeConnection(c.id)),
         );
         this.store.dispatch({
           type: 'UNREGISTER_DEVICES',
@@ -201,7 +203,7 @@ class Server extends EventEmitter {
               {},
             );
             clients[app] = client;
-            client.then(c => {
+            client.then((c) => {
               ws.on('message', (m: any) => {
                 const parsed = JSON.parse(m.toString());
                 if (parsed.app === app) {
@@ -213,7 +215,7 @@ class Server extends EventEmitter {
           }
           case 'disconnect': {
             const app = message.app;
-            (clients[app] || Promise.resolve()).then(c => {
+            (clients[app] || Promise.resolve()).then((c) => {
               this.removeConnection(c.id);
               delete clients[app];
             });
@@ -252,7 +254,7 @@ class Server extends EventEmitter {
       socket,
       {app, os, device, device_id, sdk_version},
       {csr, csr_path},
-    ).then(client => {
+    ).then((client) => {
       return (resolvedClient = client);
     });
     let resolvedClient: Client | undefined;
@@ -260,7 +262,7 @@ class Server extends EventEmitter {
     socket.connectionStatus().subscribe({
       onNext(payload) {
         if (payload.kind == 'ERROR' || payload.kind == 'CLOSED') {
-          client.then(client => {
+          client.then((client) => {
             console.debug(`Device disconnected ${client.id}`, 'server');
             server.removeConnection(client.id);
           });
@@ -276,7 +278,7 @@ class Server extends EventEmitter {
         if (resolvedClient) {
           resolvedClient.onMessage(payload.data);
         } else {
-          client.then(client => {
+          client.then((client) => {
             client.onMessage(payload.data);
           });
         }
@@ -306,7 +308,7 @@ class Server extends EventEmitter {
         payload: Payload<string, any>,
       ): Single<Payload<string, any>> => {
         if (typeof payload.data !== 'string') {
-          return new Single(_ => {});
+          return new Single((_) => {});
         }
 
         let rawData;
@@ -318,7 +320,7 @@ class Server extends EventEmitter {
             'clientMessage',
             'server',
           );
-          return new Single(_ => {});
+          return new Single((_) => {});
         }
 
         const json: {
@@ -330,7 +332,7 @@ class Server extends EventEmitter {
           console.debug('CSR received from device', 'server');
 
           const {csr, destination} = json;
-          return new Single(subscriber => {
+          return new Single((subscriber) => {
             subscriber.onSubscribe(undefined);
             reportPlatformFailures(
               this.certificateProvider.processCertificateSigningRequest(
@@ -340,7 +342,7 @@ class Server extends EventEmitter {
               ),
               'processCertificateSigningRequest',
             )
-              .then(result => {
+              .then((result) => {
                 subscriber.onComplete({
                   data: JSON.stringify({
                     deviceId: result.deviceId,
@@ -352,13 +354,13 @@ class Server extends EventEmitter {
                   deviceId: result.deviceId,
                 });
               })
-              .catch(e => {
+              .catch((e) => {
                 subscriber.onError(e);
                 this.emit('client-setup-error', {client, error: e});
               });
           });
         }
-        return new Single(_ => {});
+        return new Single((_) => {});
       },
 
       // Leaving this here for a while for backwards compatibility,
@@ -388,7 +390,7 @@ class Server extends EventEmitter {
           const {csr, destination} = json;
           this.certificateProvider
             .processCertificateSigningRequest(csr, clientData.os, destination)
-            .catch(e => {
+            .catch((e) => {
               console.error(e);
             });
         }
@@ -398,11 +400,12 @@ class Server extends EventEmitter {
 
   close(): Promise<void> {
     if (this.initialisePromise) {
-      return this.initialisePromise.then(_ => {
+      return this.initialisePromise.then((_) => {
         return Promise.all([
-          this.secureServer && this.secureServer.then(server => server.stop()),
+          this.secureServer &&
+            this.secureServer.then((server) => server.stop()),
           this.insecureServer &&
-            this.insecureServer.then(server => server.stop()),
+            this.insecureServer.then((server) => server.stop()),
         ]).then(() => undefined);
       });
     }
@@ -424,7 +427,7 @@ class Server extends EventEmitter {
     // otherwise, use given device_id
     const {csr_path, csr} = csrQuery;
     return (csr_path && csr
-      ? this.certificateProvider.extractAppNameFromCSR(csr).then(appName => {
+      ? this.certificateProvider.extractAppNameFromCSR(csr).then((appName) => {
           return this.certificateProvider.getTargetDeviceId(
             query.os,
             appName,
@@ -433,7 +436,7 @@ class Server extends EventEmitter {
           );
         })
       : Promise.resolve(query.device_id)
-    ).then(csrId => {
+    ).then((csrId) => {
       query.device_id = csrId;
       query.app = appNameWithUpdateHint(query);
 
@@ -517,7 +520,7 @@ class ConnectionTracker {
     const time = Date.now();
     let entry = this.connectionAttempts.get(key) || [];
     entry.push(time);
-    entry = entry.filter(t => t >= time - this.timeWindowMillis);
+    entry = entry.filter((t) => t >= time - this.timeWindowMillis);
 
     this.connectionAttempts.set(key, entry);
     if (entry.length >= this.connectionProblemThreshold) {

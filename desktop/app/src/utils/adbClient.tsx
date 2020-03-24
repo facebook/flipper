@@ -37,7 +37,7 @@ function createClient(store: Store): Promise<Client> {
       adbkit.createClient(adbConfig()),
     ),
     'createADBClient.shell',
-  ).catch(err => {
+  ).catch((err) => {
     console.error(
       'Failed to create adb client using shell adb command. Trying with adbkit.\n' +
         err.toString(),

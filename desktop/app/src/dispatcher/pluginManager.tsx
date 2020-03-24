@@ -13,7 +13,7 @@ import {registerInstalledPlugins} from '../reducers/pluginManager';
 import {readInstalledPlugins} from '../utils/pluginManager';
 
 function refreshInstalledPlugins(store: Store) {
-  readInstalledPlugins().then(plugins =>
+  readInstalledPlugins().then((plugins) =>
     store.dispatch(registerInstalledPlugins(plugins)),
   );
 }

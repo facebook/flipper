@@ -167,12 +167,12 @@ export default class Popover extends PureComponent<Props> {
       <>
         <Anchor src="./anchor.svg" key="anchor" />
         <PopoverContainer ref={this._setRef} key="popup">
-          {this.props.sections.map(section => {
+          {this.props.sections.map((section) => {
             if (section.items.length > 0) {
               return (
                 <Section key={section.title}>
                   <Heading>{section.title}</Heading>
-                  {section.items.map(item => (
+                  {section.items.map((item) => (
                     <PopoverItem key={item.title}>
                       <ItemImage>{item.icon}</ItemImage>
                       <ItemContent>

@@ -15,7 +15,7 @@ type Props = {
   maxHeight?: number;
 };
 
-const View = styled.div<Props>(props => ({
+const View = styled.div<Props>((props) => ({
   height: props.grow ? '100%' : 'auto',
   overflow: props.scrollable ? 'auto' : 'visible',
   position: 'relative',

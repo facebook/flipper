@@ -101,8 +101,8 @@ export default class CertificateProvider {
     }
     this.ensureOpenSSLIsAvailable();
     return this.certificateSetup
-      .then(_ => this.getCACertificate())
-      .then(caCert =>
+      .then((_) => this.getCACertificate())
+      .then((caCert) =>
         this.deployFileToMobileApp(
           appDirectory,
           deviceCAcertFile,
@@ -111,8 +111,8 @@ export default class CertificateProvider {
           os,
         ),
       )
-      .then(_ => this.generateClientCertificate(csr))
-      .then(clientCert =>
+      .then((_) => this.generateClientCertificate(csr))
+      .then((clientCert) =>
         this.deployFileToMobileApp(
           appDirectory,
           deviceClientCertFile,
@@ -121,9 +121,9 @@ export default class CertificateProvider {
           os,
         ),
       )
-      .then(_ => this.extractAppNameFromCSR(csr))
-      .then(appName => this.getTargetDeviceId(os, appName, appDirectory, csr))
-      .then(deviceId => {
+      .then((_) => this.extractAppNameFromCSR(csr))
+      .then((appName) => this.getTargetDeviceId(os, appName, appDirectory, csr))
+      .then((deviceId) => {
         return {
           deviceId,
         };
@@ -170,7 +170,7 @@ export default class CertificateProvider {
   generateClientCertificate(csr: string): Promise<string> {
     console.debug('Creating new client cert', logTag);
 
-    return this.writeToTempFile(csr).then(path => {
+    return this.writeToTempFile(csr).then((path) => {
       return openssl('x509', {
         req: true,
         in: path,
@@ -200,7 +200,7 @@ export default class CertificateProvider {
     const appNamePromise = this.extractAppNameFromCSR(csr);
 
     if (os === 'Android') {
-      const deviceIdPromise = appNamePromise.then(app =>
+      const deviceIdPromise = appNamePromise.then((app) =>
         this.getTargetAndroidDeviceId(app, destination, csr),
       );
       return Promise.all([
@@ -219,18 +219,18 @@ export default class CertificateProvider {
     }
     if (os === 'iOS' || os === 'windows' || os == 'MacOS') {
       return promisify(fs.writeFile)(destination + filename, contents).catch(
-        err => {
+        (err) => {
           if (os === 'iOS') {
             // Writing directly to FS failed. It's probably a physical device.
             const relativePathInsideApp = this.getRelativePathInAppContainer(
               destination,
             );
             return appNamePromise
-              .then(appName =>
+              .then((appName) =>
                 this.getTargetiOSDeviceId(appName, destination, csr),
               )
-              .then(udid => {
-                return appNamePromise.then(appName =>
+              .then((udid) => {
+                return appNamePromise.then((appName) =>
                   this.pushFileToiOSDevice(
                     udid,
                     appName,
@@ -258,7 +258,7 @@ export default class CertificateProvider {
     filename: string,
     contents: string,
   ): Promise<void> {
-    return tmpDir({unsafeCleanup: true}).then(dir => {
+    return tmpDir({unsafeCleanup: true}).then((dir) => {
       const filePath = path.resolve(dir, filename);
       promisify(fs.writeFile)(filePath, contents).then(() =>
         iosUtil.push(udid, filePath, bundleId, destination),
@@ -272,22 +272,22 @@ export default class CertificateProvider {
     csr: string,
   ): Promise<string> {
     return this.adb
-      .then(client => client.listDevices())
-      .then(devices => {
+      .then((client) => client.listDevices())
+      .then((devices) => {
         if (devices.length === 0) {
           throw new Error('No Android devices found');
         }
-        const deviceMatchList = devices.map(device =>
+        const deviceMatchList = devices.map((device) =>
           this.androidDeviceHasMatchingCSR(
             deviceCsrFilePath,
             device.id,
             appName,
             csr,
           )
-            .then(isMatch => {
+            .then((isMatch) => {
               return {id: device.id, isMatch, error: null};
             })
-            .catch(e => {
+            .catch((e) => {
               console.error(
                 `Unable to check for matching CSR in ${device.id}:${appName}`,
                 logTag,
@@ -295,10 +295,10 @@ export default class CertificateProvider {
               return {id: device.id, isMatch: false, error: e};
             }),
         );
-        return Promise.all(deviceMatchList).then(devices => {
-          const matchingIds = devices.filter(m => m.isMatch).map(m => m.id);
+        return Promise.all(deviceMatchList).then((devices) => {
+          const matchingIds = devices.filter((m) => m.isMatch).map((m) => m.id);
           if (matchingIds.length == 0) {
-            const erroredDevice = devices.find(d => d.error);
+            const erroredDevice = devices.find((d) => d.error);
             if (erroredDevice) {
               throw erroredDevice.error;
             }
@@ -325,22 +325,22 @@ export default class CertificateProvider {
       // It's a simulator, the deviceId is in the filepath.
       return Promise.resolve(matches[1]);
     }
-    return iosUtil.targets().then(targets => {
+    return iosUtil.targets().then((targets) => {
       if (targets.length === 0) {
         throw new Error('No iOS devices found');
       }
-      const deviceMatchList = targets.map(target =>
+      const deviceMatchList = targets.map((target) =>
         this.iOSDeviceHasMatchingCSR(
           deviceCsrFilePath,
           target.udid,
           appName,
           csr,
-        ).then(isMatch => {
+        ).then((isMatch) => {
           return {id: target.udid, isMatch};
         }),
       );
-      return Promise.all(deviceMatchList).then(devices => {
-        const matchingIds = devices.filter(m => m.isMatch).map(m => m.id);
+      return Promise.all(deviceMatchList).then((devices) => {
+        const matchingIds = devices.filter((m) => m.isMatch).map((m) => m.id);
         if (matchingIds.length == 0) {
           throw new Error(`No matching device found for app: ${appName}`);
         }
@@ -356,7 +356,7 @@ export default class CertificateProvider {
     csr: string,
   ): Promise<boolean> {
     return this.adb
-      .then(adbClient =>
+      .then((adbClient) =>
         androidUtil.pull(
           adbClient,
           deviceId,
@@ -364,7 +364,7 @@ export default class CertificateProvider {
           directory + csrFileName,
         ),
       )
-      .then(deviceCsr => {
+      .then((deviceCsr) => {
         // Santitize both of the string before comparation
         // The csr string extraction on client side return string in both way
         return (
@@ -384,14 +384,14 @@ export default class CertificateProvider {
       path.resolve(directory, csrFileName),
     );
     return tmpDir({unsafeCleanup: true})
-      .then(dir => {
+      .then((dir) => {
         return iosUtil
           .pull(deviceId, originalFile, bundleId, path.join(dir, csrFileName))
           .then(() => dir);
       })
-      .then(dir => {
+      .then((dir) => {
         return promisify(fs.readdir)(dir)
-          .then(items => {
+          .then((items) => {
             if (items.length > 1) {
               throw new Error('Conflict in temp dir');
             }
@@ -400,14 +400,14 @@ export default class CertificateProvider {
             }
             return items[0];
           })
-          .then(fileName => {
+          .then((fileName) => {
             const copiedFile = path.resolve(dir, fileName);
-            return promisify(fs.readFile)(copiedFile).then(data =>
+            return promisify(fs.readFile)(copiedFile).then((data) =>
               this.santitizeString(data.toString()),
             );
           });
       })
-      .then(csrFromDevice => csrFromDevice === this.santitizeString(csr));
+      .then((csrFromDevice) => csrFromDevice === this.santitizeString(csr));
   }
 
   santitizeString(csrString: string): string {
@@ -416,20 +416,20 @@ export default class CertificateProvider {
 
   extractAppNameFromCSR(csr: string): Promise<string> {
     return this.writeToTempFile(csr)
-      .then(path =>
+      .then((path) =>
         openssl('req', {
           in: path,
           noout: true,
           subject: true,
           nameopt: true,
           RFC2253: false,
-        }).then(subject => {
+        }).then((subject) => {
           return [path, subject];
         }),
       )
       .then(([path, subject]) => {
-        return new Promise<string>(function(resolve, reject) {
-          fs.unlink(path, err => {
+        return new Promise<string>(function (resolve, reject) {
+          fs.unlink(path, (err) => {
             if (err) {
               reject(err);
             } else {
@@ -438,14 +438,14 @@ export default class CertificateProvider {
           });
         });
       })
-      .then(subject => {
+      .then((subject) => {
         const matches = subject.trim().match(x509SubjectCNRegex);
         if (!matches || matches.length < 2) {
           throw new Error(`Cannot extract CN from ${subject}`);
         }
         return matches[1];
       })
-      .then(appName => {
+      .then((appName) => {
         if (!appName.match(allowedAppNameRegex)) {
           throw new Error(
             `Disallowed app name in CSR: ${appName}. Only alphanumeric characters and '.' allowed.`,
@@ -490,22 +490,19 @@ export default class CertificateProvider {
       in: filename,
     })
       .then(() => undefined)
-      .catch(e => {
+      .catch((e) => {
         console.warn(`Certificate will expire soon: ${filename}`, logTag);
         throw e;
       })
-      .then(_ =>
+      .then((_) =>
         openssl('x509', {
           enddate: true,
           in: filename,
           noout: true,
         }),
       )
-      .then(endDateOutput => {
-        const dateString = endDateOutput
-          .trim()
-          .split('=')[1]
-          .trim();
+      .then((endDateOutput) => {
+        const dateString = endDateOutput.trim().split('=')[1].trim();
         const expiryDate = Date.parse(dateString);
         if (isNaN(expiryDate)) {
           console.error(
@@ -526,7 +523,7 @@ export default class CertificateProvider {
       [key: string]: any;
     } = {CAfile: caCert};
     options[serverCert] = false;
-    return openssl('verify', options).then(output => {
+    return openssl('verify', options).then((output) => {
       const verified = output.match(/[^:]+: OK/);
       if (!verified) {
         // This should never happen, but if it does, we need to notice so we can
@@ -542,7 +539,7 @@ export default class CertificateProvider {
     }
     console.log('Generating new CA', logTag);
     return openssl('genrsa', {out: caKey, '2048': false})
-      .then(_ =>
+      .then((_) =>
         openssl('req', {
           new: true,
           x509: true,
@@ -551,7 +548,7 @@ export default class CertificateProvider {
           out: caCert,
         }),
       )
-      .then(_ => undefined);
+      .then((_) => undefined);
   }
 
   ensureServerCertExists(): Promise<void> {
@@ -572,11 +569,11 @@ export default class CertificateProvider {
 
   generateServerCertificate(): Promise<void> {
     return this.ensureCertificateAuthorityExists()
-      .then(_ => {
+      .then((_) => {
         console.warn('Creating new server cert', logTag);
       })
-      .then(_ => openssl('genrsa', {out: serverKey, '2048': false}))
-      .then(_ =>
+      .then((_) => openssl('genrsa', {out: serverKey, '2048': false}))
+      .then((_) =>
         openssl('req', {
           new: true,
           key: serverKey,
@@ -584,7 +581,7 @@ export default class CertificateProvider {
           subj: serverSubject,
         }),
       )
-      .then(_ =>
+      .then((_) =>
         openssl('x509', {
           req: true,
           in: serverCsr,
@@ -595,12 +592,12 @@ export default class CertificateProvider {
           out: serverCert,
         }),
       )
-      .then(_ => undefined);
+      .then((_) => undefined);
   }
 
   writeToTempFile(content: string): Promise<string> {
-    return tmpFile().then(path =>
-      promisify(fs.writeFile)(path, content).then(_ => path),
+    return tmpFile().then((path) =>
+      promisify(fs.writeFile)(path, content).then((_) => path),
     );
   }
 }

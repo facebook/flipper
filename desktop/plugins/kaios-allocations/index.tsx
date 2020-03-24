@@ -32,11 +32,11 @@ import extend from 'firefox-client/lib/extend';
 // This uses legacy `extend` from `firefox-client`, since this seems to be what the implementation expects
 // It's probably possible to rewrite this in a modern way and properly type it, but for now leaving this as it is
 const ClientMethods: any = extend(BaseClientMethods, {
-  initialize: function(client: any, actor: any) {
+  initialize: function (client: any, actor: any) {
     this.client = client;
     this.actor = actor;
 
-    this.cb = function(this: typeof ClientMethods, message: any) {
+    this.cb = function (this: typeof ClientMethods, message: any) {
       if (message.from === this.actor) {
         this.emit(message.type, message);
       }
@@ -45,7 +45,7 @@ const ClientMethods: any = extend(BaseClientMethods, {
     this.client.on('message', this.cb);
   },
 
-  disconnect: function() {
+  disconnect: function () {
     this.client.removeListener('message', this.cb);
   },
 });
@@ -57,32 +57,32 @@ function Memory(this: typeof ClientMethods, client: any, actor: any): any {
 // Repetitive, it is probably better to refactor this
 // to use API like `runCommand(commandName, params): Promise`
 Memory.prototype = extend(ClientMethods, {
-  attach: function(cb: any) {
-    this.request('attach', function(err: any, resp: any) {
+  attach: function (cb: any) {
+    this.request('attach', function (err: any, resp: any) {
       cb(err, resp);
     });
   },
 
-  getState: function(cb: any) {
-    this.request('getState', function(err: any, resp: any) {
+  getState: function (cb: any) {
+    this.request('getState', function (err: any, resp: any) {
       cb(err, resp);
     });
   },
 
-  takeCensus: function(cb: any) {
-    this.request('takeCensus', function(err: any, resp: any) {
+  takeCensus: function (cb: any) {
+    this.request('takeCensus', function (err: any, resp: any) {
       cb(err, resp);
     });
   },
 
-  getAllocations: function(cb: any) {
-    this.request('getAllocations', function(err: any, resp: any) {
+  getAllocations: function (cb: any) {
+    this.request('getAllocations', function (err: any, resp: any) {
       cb(err, resp);
     });
   },
 
-  startRecordingAllocations: function(options: any, cb: any) {
-    this.request('startRecordingAllocations', {options}, function(
+  startRecordingAllocations: function (options: any, cb: any) {
+    this.request('startRecordingAllocations', {options}, function (
       err: any,
       resp: any,
     ) {
@@ -90,20 +90,20 @@ Memory.prototype = extend(ClientMethods, {
     });
   },
 
-  stopRecordingAllocations: function(cb: any) {
-    this.request('stopRecordingAllocations', function(err: any, resp: any) {
+  stopRecordingAllocations: function (cb: any) {
+    this.request('stopRecordingAllocations', function (err: any, resp: any) {
       cb(err, resp);
     });
   },
 
-  measure: function(cb: any) {
-    this.request('measure', function(err: any, resp: any) {
+  measure: function (cb: any) {
+    this.request('measure', function (err: any, resp: any) {
       cb(err, resp);
     });
   },
 
-  getAllocationsSettings: function(cb: any) {
-    this.request('getAllocationsSettings', function(err: any, resp: any) {
+  getAllocationsSettings: function (cb: any) {
+    this.request('getAllocationsSettings', function (err: any, resp: any) {
       cb(err, resp);
     });
   },
@@ -338,7 +338,7 @@ export default class AllocationsPlugin extends FlipperDevicePlugin<
   };
 
   buildMemRows = () => {
-    return this.state.allocationData.map(info => {
+    return this.state.allocationData.map((info) => {
       return {
         columns: {
           timestamp: {

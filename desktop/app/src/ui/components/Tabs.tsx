@@ -27,7 +27,7 @@ const TabListItem = styled.div<{
   active?: boolean;
   width?: WidthProperty<number>;
   container?: boolean;
-}>(props => ({
+}>((props) => ({
   background: props.container
     ? props.active
       ? 'linear-gradient(to bottom, #67a6f7 0%, #0072FA 100%)'
@@ -251,7 +251,7 @@ export default function Tabs(props: {
           {comp.props.label}
           {closable && (
             <CloseButton // eslint-disable-next-line react/jsx-no-bind
-              ref={ref => (closeButton = ref)} // eslint-disable-next-line react/jsx-no-bind
+              ref={(ref) => (closeButton = ref)} // eslint-disable-next-line react/jsx-no-bind
               onMouseDown={() => {
                 if (isActive && onActive) {
                   const index = keys.indexOf(key);

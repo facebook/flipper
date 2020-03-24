@@ -33,8 +33,8 @@ async function targets(): Promise<Array<DeviceTarget>> {
   return stdout
     .toString()
     .split('\n')
-    .map(line => line.trim())
-    .map(line => /(.+) \([^(]+\) \[(.*)\]( \(Simulator\))?/.exec(line))
+    .map((line) => line.trim())
+    .map((line) => /(.+) \([^(]+\) \[(.*)\]( \(Simulator\))?/.exec(line))
     .filter(notNull)
     .filter(
       ([_match, name, _udid, isSim]) =>

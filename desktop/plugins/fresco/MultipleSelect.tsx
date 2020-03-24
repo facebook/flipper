@@ -15,7 +15,7 @@ const Container = styled(Block)({
   marginLeft: '10px',
 });
 
-const List = styled(FlexColumn)<{visibleList: boolean}>(props => ({
+const List = styled(FlexColumn)<{visibleList: boolean}>((props) => ({
   display: props.visibleList ? 'flex' : 'none',
   position: 'absolute',
   top: '32px',

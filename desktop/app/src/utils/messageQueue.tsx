@@ -33,7 +33,7 @@ type StatEntry = {
 const pluginBackgroundStats = new Map<string, StatEntry>();
 
 export function resetPluginBackgroundStatsDelta() {
-  pluginBackgroundStats.forEach(stat => {
+  pluginBackgroundStats.forEach((stat) => {
     stat.cpuTimeDelta = 0;
     stat.messageCountDelta = 0;
   });

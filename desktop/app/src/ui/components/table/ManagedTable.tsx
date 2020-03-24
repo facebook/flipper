@@ -148,7 +148,7 @@ type ManagedTableState = {
   shouldScrollToBottom: boolean;
 };
 
-const Container = styled(FlexColumn)<{canOverflow?: boolean}>(props => ({
+const Container = styled(FlexColumn)<{canOverflow?: boolean}>((props) => ({
   overflow: props.canOverflow ? 'scroll' : 'visible',
   flexGrow: 1,
 }));
@@ -169,10 +169,7 @@ export class ManagedTable extends React.Component<
 
   getTableKey = (): string => {
     return (
-      'TABLE_COLUMNS_' +
-      Object.keys(this.props.columns)
-        .join('_')
-        .toUpperCase()
+      'TABLE_COLUMNS_' + Object.keys(this.props.columns).join('_').toUpperCase()
     );
   };
 
@@ -195,7 +192,7 @@ export class ManagedTable extends React.Component<
     const columnOrder =
       JSON.parse(window.localStorage.getItem(this.getTableKey()) || 'null') ||
       this.props.columnOrder ||
-      Object.keys(this.props.columns).map(key => ({key, visible: true}));
+      Object.keys(this.props.columns).map((key) => ({key, visible: true}));
     this.state = {
       columnOrder,
       columnKeys: this.computeColumnKeys(columnOrder),
@@ -288,7 +285,7 @@ export class ManagedTable extends React.Component<
   }
 
   computeColumnKeys(columnOrder: TableColumnOrder) {
-    return columnOrder.map(k => (k.visible ? k.key : null)).filter(notNull);
+    return columnOrder.map((k) => (k.visible ? k.key : null)).filter(notNull);
   }
 
   scrollToHighlightedRows = () => {
@@ -335,7 +332,7 @@ export class ManagedTable extends React.Component<
       const {highlightedRows} = this.state;
       const lastItemKey = Array.from(this.state.highlightedRows).pop();
       const lastItemIndex = this.props.rows.findIndex(
-        row => row.key === lastItemKey,
+        (row) => row.key === lastItemKey,
       );
       const newIndex = Math.min(
         rows.length - 1,
@@ -516,8 +513,8 @@ export class ManagedTable extends React.Component<
             {
               label: 'Copy cell',
               submenu: this.state.columnOrder
-                .filter(c => c.visible)
-                .map(c => c.key)
+                .filter((c) => c.visible)
+                .map((c) => c.key)
                 .map((column, index) => ({
                   label: this.props.columns[column].value,
                   click: () => {
@@ -559,9 +556,9 @@ export class ManagedTable extends React.Component<
 
   getHeaderText = (): string => {
     return this.state.columnOrder
-      .filter(c => c.visible)
-      .map(c => c.key)
-      .map(key => this.props.columns[key].value)
+      .filter((c) => c.visible)
+      .map((c) => c.key)
+      .map((key) => this.props.columns[key].value)
       .join('\t');
   };
 
@@ -572,7 +569,7 @@ export class ManagedTable extends React.Component<
       return '';
     }
     return this.props.rows
-      .filter(row => highlightedRows.has(row.key))
+      .filter((row) => highlightedRows.has(row.key))
       .map(
         (row: TableBodyRow) =>
           row.copyText || this.getTextContentOfRow(row.key).join('\t'),
@@ -581,7 +578,7 @@ export class ManagedTable extends React.Component<
   };
 
   getTextContentOfRow = (key: string): Array<string> => {
-    const row = this.props.rows.find(row => row.key === key);
+    const row = this.props.rows.find((row) => row.key === key);
     if (!row) {
       return [];
     }
@@ -708,7 +705,7 @@ export class ManagedTable extends React.Component<
                   }>
                   <List
                     itemCount={rows.length}
-                    itemSize={index =>
+                    itemSize={(index) =>
                       (rows[index] && rows[index].height) ||
                       rowLineHeight ||
                       DEFAULT_ROW_HEIGHT

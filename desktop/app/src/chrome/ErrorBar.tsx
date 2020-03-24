@@ -37,7 +37,7 @@ const ErrorBar = memo(function ErrorBar(props: Props) {
     0,
   );
 
-  const urgentErrors = props.errors.filter(e => e.urgent);
+  const urgentErrors = props.errors.filter((e) => e.urgent);
 
   return (
     <ErrorBarContainer>
@@ -52,7 +52,7 @@ const ErrorBar = memo(function ErrorBar(props: Props) {
         ))}
       </ErrorRows>
       <DismissAllErrors
-        onClick={() => setCollapsed(c => !c)}
+        onClick={() => setCollapsed((c) => !c)}
         title="Show / hide errors">
         <Glyph
           color={colors.white}
@@ -90,7 +90,7 @@ function ErrorTile({
           <ButtonGroup>
             {(error.details || error.error) && (
               <Button
-                onClick={() => setCollapsed(s => !s)}
+                onClick={() => setCollapsed((s) => !s)}
                 icon={collapsed ? `chevron-down` : 'chevron-up'}
                 iconSize={12}
               />

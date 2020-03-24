@@ -24,7 +24,7 @@ const ToolbarIcon = styled.div({
   position: 'relative', // for settings popover positioning
 });
 
-export default function(props: Props) {
+export default function (props: Props) {
   return (
     <ToolbarIcon onClick={props.onClick} title={props.title}>
       <Glyph

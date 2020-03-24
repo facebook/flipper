@@ -18,7 +18,7 @@ import styled from '@emotion/styled';
 const Toolbar = styled(FlexRow)<{
   position?: 'bottom' | 'top';
   compact?: boolean;
-}>(props => ({
+}>((props) => ({
   backgroundColor: colors.light02,
   borderBottom:
     props.position === 'bottom'

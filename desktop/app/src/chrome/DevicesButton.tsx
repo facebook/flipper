@@ -48,13 +48,13 @@ class DevicesButton extends Component<Props> {
     // On Linux, you must run the emulator from the directory it's in because
     // reasons ...
     which('emulator')
-      .then(emulatorPath => {
+      .then((emulatorPath) => {
         if (emulatorPath) {
           const child = spawn(emulatorPath, [`@${name}`], {
             detached: true,
             cwd: dirname(emulatorPath),
           });
-          child.stderr.on('data', data => {
+          child.stderr.on('data', (data) => {
             console.error(`Android emulator error: ${data}`);
           });
           child.on('error', console.error);
@@ -96,7 +96,7 @@ class DevicesButton extends Component<Props> {
         enabled: false,
       },
       ...devices
-        .filter(device => device.deviceType === 'physical')
+        .filter((device) => device.deviceType === 'physical')
         .map((device: BaseDevice) => ({
           click: () => selectDevice(device),
           checked: device === selectedDevice,
@@ -114,7 +114,7 @@ class DevicesButton extends Component<Props> {
         enabled: false,
       },
       ...devices
-        .filter(device => device.deviceType === 'emulator')
+        .filter((device) => device.deviceType === 'emulator')
         .map((device: BaseDevice) => ({
           click: () => selectDevice(device),
           checked: device === selectedDevice,
@@ -132,7 +132,7 @@ class DevicesButton extends Component<Props> {
         enabled: false,
       },
       ...devices
-        .filter(device => device.isArchived)
+        .filter((device) => device.isArchived)
         .map((device: BaseDevice) => ({
           click: () => selectDevice(device),
           checked: device === selectedDevice,

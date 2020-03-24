@@ -8,7 +8,7 @@
  */
 
 declare module 'download-tarball' {
-  export default function(options: {
+  export default function (options: {
     url: string;
     dir: string;
     gotOpts?: any;

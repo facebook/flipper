@@ -9,7 +9,7 @@
 
 import {Tristate} from 'app/src/reducers/settings';
 
-export default function(_props: {
+export default function (_props: {
   isPrefetchingEnabled: Tristate;
   onEnablePrefetchingChange: (v: Tristate) => void;
   isLocalPinIgnored: boolean;

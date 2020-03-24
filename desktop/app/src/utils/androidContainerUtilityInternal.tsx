@@ -61,7 +61,7 @@ export function _push(
     deviceId,
     app,
     `echo "${contents}" > '${filename}' && chmod 644 '${filename}'`,
-  ).then(_ => undefined);
+  ).then((_) => undefined);
 }
 
 export function _pull(
@@ -83,8 +83,8 @@ function executeCommandAsApp(
   return client
     .shell(deviceId, `echo '${command}' | run-as '${app}'`)
     .then(adbkit.util.readAll)
-    .then(buffer => buffer.toString())
-    .then(output => {
+    .then((buffer) => buffer.toString())
+    .then((output) => {
       if (output.match(appNotDebuggableRegex)) {
         throw new Error(
           `Android app ${app} is not debuggable. To use it with Flipper, add android:debuggable="true" to the application section of AndroidManifest.xml`,

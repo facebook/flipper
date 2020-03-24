@@ -26,7 +26,7 @@ export const multilineStyle = (props: {valid: boolean}) => ({
   },
 });
 
-const MultiLineInput = styled.textarea<{valid?: boolean}>(props => ({
+const MultiLineInput = styled.textarea<{valid?: boolean}>((props) => ({
   ...multilineStyle({valid: props.valid === undefined || props.valid}),
   padding: '0 10px',
 }));

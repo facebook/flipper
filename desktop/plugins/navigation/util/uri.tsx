@@ -25,10 +25,7 @@ export const filterOptionalParameters = (uri: string) => {
 
 export const parseURIParameters = (query: string) => {
   // get parameters from query string and store in Map
-  const parameters = query
-    .split('?')
-    .splice(1)
-    .join('');
+  const parameters = query.split('?').splice(1).join('');
   const parametersObj = querystring.parse(parameters);
   const parametersMap = new Map<string, string>();
   for (const key in parametersObj) {

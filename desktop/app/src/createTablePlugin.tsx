@@ -154,7 +154,7 @@ export function createTablePlugin<T extends RowData>(props: Props<T>) {
       let paste = '';
       const mapFn = (row: TableBodyRow) =>
         Object.keys(props.columns)
-          .map(key => textContent(row.columns[key].value))
+          .map((key) => textContent(row.columns[key].value))
           .join('\t');
 
       if (this.state.selectedIds.length > 0) {

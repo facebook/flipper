@@ -116,7 +116,7 @@ async function buildDist(buildFolder: string) {
       projectDir: buildFolder,
       targets,
     });
-    return await Promise.all(postBuildCallbacks.map(p => p()));
+    return await Promise.all(postBuildCallbacks.map((p) => p()));
   } catch (err) {
     return die(err);
   }
@@ -138,8 +138,8 @@ function downloadIcons(buildFolder: string) {
   >((acc, [name, sizes]) => {
     acc.push(
       // get icons in @1x and @2x
-      ...sizes.map(size => ({name, size, density: 1})),
-      ...sizes.map(size => ({name, size, density: 2})),
+      ...sizes.map((size) => ({name, size, density: 1})),
+      ...sizes.map((size) => ({name, size, density: 2})),
     );
     return acc;
   }, []);
@@ -148,7 +148,7 @@ function downloadIcons(buildFolder: string) {
     iconURLs.map(({name, size, density}) => {
       const url = getIconURL(name, size, density);
       return fetch(url)
-        .then(res => {
+        .then((res) => {
           if (res.status !== 200) {
             throw new Error(
               // eslint-disable-next-line prettier/prettier
@@ -160,7 +160,7 @@ function downloadIcons(buildFolder: string) {
           return res;
         })
         .then(
-          res =>
+          (res) =>
             new Promise((resolve, reject) => {
               const fileStream = fs.createWriteStream(
                 path.join(buildFolder, buildLocalIconPath(name, size, density)),

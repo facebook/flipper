@@ -100,8 +100,8 @@ function getBundledPlugins(): Array<PluginDefinition> {
   }
 
   return bundledPlugins
-    .filter(plugin => notNull(plugin.out))
-    .map(plugin => ({
+    .filter((plugin) => notNull(plugin.out))
+    .map((plugin) => ({
       ...plugin,
       out: path.join(pluginPath, plugin.out!),
     }));
@@ -164,7 +164,7 @@ export const requirePlugin = (
       }
 
       // set values from package.json as static variables on class
-      Object.keys(pluginDefinition).forEach(key => {
+      Object.keys(pluginDefinition).forEach((key) => {
         if (key === 'name') {
           plugin.id = plugin.id || pluginDefinition.name;
         } else if (key === 'id') {

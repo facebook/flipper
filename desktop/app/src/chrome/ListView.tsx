@@ -136,7 +136,7 @@ class RowComponent extends Component<RowComponentProps> {
                 <Checkbox
                   disabled={disabled}
                   checked={selected}
-                  onChange={selected => {
+                  onChange={(selected) => {
                     onChange(id, selected);
                   }}
                 />
@@ -145,7 +145,7 @@ class RowComponent extends Component<RowComponentProps> {
                 <Radio
                   disabled={disabled}
                   checked={selected}
-                  onChange={selected => {
+                  onChange={(selected) => {
                     onChange(id, selected);
                   }}
                 />

@@ -81,7 +81,7 @@ export default function PluginPackageInstaller({
     <Toolbar>
       <FileSelector
         placeholderText="Specify path to a Flipper package or just drag and drop it here..."
-        onPathChanged={e => {
+        onPathChanged={(e) => {
           setPath(e.path);
           setIsPathValid(e.isValid);
           setError(undefined);

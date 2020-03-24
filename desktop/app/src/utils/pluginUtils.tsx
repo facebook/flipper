@@ -89,21 +89,21 @@ export function getEnabledOrExportPersistedStatePlugins(
   // Enabled Plugins with no exportPersistedState function defined
   const enabledPlugins = starredPlugin[appName]
     ? starredPlugin[appName]
-        .map(pluginName => pluginsMap.get(pluginName)!)
-        .filter(plugin => {
+        .map((pluginName) => pluginsMap.get(pluginName)!)
+        .filter((plugin) => {
           return !plugin.exportPersistedState;
         })
         .sort(sortPluginsByName)
-        .map(plugin => {
+        .map((plugin) => {
           return {id: plugin.id, label: getPluginTitle(plugin)};
         })
     : [];
   // Device Plugins
   const devicePlugins = Array.from(plugins.devicePlugins.keys())
-    .filter(plugin => {
+    .filter((plugin) => {
       return client.plugins.includes(plugin);
     })
-    .map(plugin => {
+    .map((plugin) => {
       return {
         id: plugin,
         label: getPluginTitle(plugins.devicePlugins.get(plugin)!),
@@ -111,10 +111,10 @@ export function getEnabledOrExportPersistedStatePlugins(
     });
   // Plugins which have defined exportPersistedState.
   const exportPersistedStatePlugins = client.plugins
-    .filter(name => {
+    .filter((name) => {
       return pluginsMap.get(name)?.exportPersistedState != null;
     })
-    .map(name => {
+    .map((name) => {
       const plugin = pluginsMap.get(name)!;
       return {id: plugin.id, label: getPluginTitle(plugin)};
     });
@@ -145,17 +145,17 @@ export function getActivePersistentPlugins(
     typeof FlipperDevicePlugin | typeof FlipperPlugin
   > = pluginsClassMap(plugins);
   return getPersistentPlugins(plugins)
-    .map(pluginName => pluginsMap.get(pluginName)!)
+    .map((pluginName) => pluginsMap.get(pluginName)!)
     .sort(sortPluginsByName)
-    .map(plugin => {
+    .map((plugin) => {
       const keys = [
         ...new Set([
           ...Object.keys(pluginsState),
           ...Object.keys(pluginsMessageQueue),
         ]),
       ]
-        .filter(k => !selectedClient || k.includes(selectedClient.id))
-        .map(key => deconstructPluginKey(key).pluginName);
+        .filter((k) => !selectedClient || k.includes(selectedClient.id))
+        .map((key) => deconstructPluginKey(key).pluginName);
       let result = plugin.id == 'DeviceLogs';
       const pluginsWithExportPersistedState =
         plugin && plugin.exportPersistedState != undefined;
@@ -204,7 +204,7 @@ export function getPersistentPlugins(plugins: PluginsState): Array<string> {
 
   const activePlugins = [...pluginsMap.keys()];
 
-  return activePlugins.filter(plugin => {
+  return activePlugins.filter((plugin) => {
     const pluginClass = pluginsMap.get(plugin);
     return (
       plugin == 'DeviceLogs' ||

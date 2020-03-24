@@ -12,12 +12,12 @@ const path = require('path');
 const replaceFBStubs = fs.existsSync(
   path.join(__dirname, '..', '..', 'app', 'src', 'fb'),
 );
-const isFBFile = filePath => filePath.includes(`${path.sep}fb${path.sep}`);
+const isFBFile = (filePath) => filePath.includes(`${path.sep}fb${path.sep}`);
 
 const requireFromFolder = (folder, path) =>
   new RegExp(folder + '/[A-Za-z0-9.-_]+(.js)?$', 'g').test(path);
 
-module.exports = function(babel) {
+module.exports = function (babel) {
   return {
     name: 'replace-dynamic-requires',
     visitor: {

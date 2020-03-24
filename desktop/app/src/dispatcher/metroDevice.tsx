@@ -22,22 +22,22 @@ const METRO_MESSAGE = ['React Native packager is running', 'Metro is running'];
 const QUERY_INTERVAL = 5000;
 
 async function isMetroRunning(): Promise<boolean> {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     // We use Node's http library, rather than fetch api, as the latter cannot supress network errors being shown in the devtools console
     // which generates a lot of noise
     http
-      .get(METRO_URL, resp => {
+      .get(METRO_URL, (resp) => {
         let data = '';
         resp
-          .on('data', chunk => {
+          .on('data', (chunk) => {
             data += chunk;
           })
           .on('end', () => {
-            const isMetro = METRO_MESSAGE.some(msg => data.includes(msg));
+            const isMetro = METRO_MESSAGE.some((msg) => data.includes(msg));
             resolve(isMetro);
           });
       })
-      .on('error', err => {
+      .on('error', (err) => {
         console.debug('Could not connect to METRO ' + err);
         resolve(false);
       });
@@ -79,7 +79,7 @@ async function unregisterDevices(store: Store, logger: Logger) {
   let archivedDevice: ArchivedDevice | undefined = undefined;
   const device = store
     .getState()
-    .connections.devices.find(device => device.serial === METRO_URL);
+    .connections.devices.find((device) => device.serial === METRO_URL);
   if (device && !device.isArchived) {
     archivedDevice = device.archive();
   }

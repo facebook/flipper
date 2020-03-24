@@ -7,7 +7,7 @@
  * @format
  */
 
-module.exports = function(babel, options) {
+module.exports = function (babel, options) {
   return {
     name: 'change-process-to-electronProcess',
     visitor: {

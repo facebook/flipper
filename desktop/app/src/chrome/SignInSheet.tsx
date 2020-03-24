@@ -101,7 +101,7 @@ class SignInSheet extends Component<Props, State> {
           disabled={this.state.loading}
           placeholder="Nuclide Access Token"
           value={this.state.token}
-          onChange={e => this.setState({token: e.target.value})}
+          onChange={(e) => this.setState({token: e.target.value})}
         />
         <br />
         {this.state.error && (

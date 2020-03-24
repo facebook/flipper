@@ -29,7 +29,7 @@ function preludeBundle(
 ) {
   const revisionStr =
     buildRevision == null ? '' : `global.__REVISION__="${buildRevision}";`;
-  return new Promise(resolve =>
+  return new Promise((resolve) =>
     lineReplace({
       file: path.join(dir, 'bundle.js'),
       line: 1,
@@ -41,18 +41,18 @@ function preludeBundle(
 }
 
 async function createZip(buildDir: string, distDir: string, targets: string[]) {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     const zip = new yazl.ZipFile();
 
     // add binaries for each target
-    targets.forEach(target => {
+    targets.forEach((target) => {
       const binary = `flipper-${target === 'mac' ? 'macos' : target}`;
       zip.addFile(path.join(buildDir, binary), binary);
     });
 
     // add plugins
     const pluginDir = path.join(buildDir, PLUGINS_FOLDER_NAME);
-    fs.readdirSync(pluginDir).forEach(file => {
+    fs.readdirSync(pluginDir).forEach((file) => {
       zip.addFile(
         path.join(pluginDir, file),
         path.join(PLUGINS_FOLDER_NAME, file),

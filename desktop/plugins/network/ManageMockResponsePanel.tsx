@@ -200,7 +200,7 @@ export function ManageMockResponsePanel(props: Props) {
           multiline={true}
           columnSizes={ColumnSizes}
           columns={Columns}
-          rows={_buildRows(routes, duplicatedIds, id => {
+          rows={_buildRows(routes, duplicatedIds, (id) => {
             networkRouteManager.removeRoute(id);
             setSelectedId(null);
           })}
@@ -208,7 +208,7 @@ export function ManageMockResponsePanel(props: Props) {
           autoHeight={false}
           floating={false}
           zebra={false}
-          onRowHighlighted={selectedIds => {
+          onRowHighlighted={(selectedIds) => {
             const newSelectedId =
               selectedIds.length === 1 ? selectedIds[0] : null;
             setSelectedId(newSelectedId);

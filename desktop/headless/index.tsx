@@ -283,7 +283,7 @@ async function startFlipper(userArguments: UserArguments) {
     async (userArguments: UserArguments) => {
       if (userArguments.listDevices) {
         const devices = await listDevices(store);
-        const mapped = devices.map(device => {
+        const mapped = devices.map((device) => {
           return {
             os: device.os,
             title: device.title,
@@ -310,7 +310,7 @@ async function startFlipper(userArguments: UserArguments) {
       if (selectedDeviceID) {
         const devices = await listDevices(store);
         const matchedDevice = devices.find(
-          device => device.serial === selectedDeviceID,
+          (device) => device.serial === selectedDeviceID,
         );
         if (matchedDevice) {
           if (matchedDevice instanceof AndroidDevice) {
@@ -338,7 +338,7 @@ async function startFlipper(userArguments: UserArguments) {
     },
     async (userArguments: UserArguments, store: Store) => {
       const {selectPlugins} = userArguments;
-      const selectedPlugins = selectPlugins.filter(selectPlugin => {
+      const selectedPlugins = selectPlugins.filter((selectPlugin) => {
         return selectPlugin != undefined;
       });
       if (selectedPlugins) {

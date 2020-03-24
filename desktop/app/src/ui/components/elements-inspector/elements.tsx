@@ -51,7 +51,7 @@ const backgroundColorHover = (props: {selected: boolean; focused: boolean}) => {
   }
 };
 
-const ElementsRowContainer = styled(ContextMenu)<any>(props => ({
+const ElementsRowContainer = styled(ContextMenu)<any>((props) => ({
   flexDirection: 'row',
   alignItems: 'center',
   backgroundColor: backgroundColor(props),
@@ -85,7 +85,7 @@ const ElementsRowDecoration = styled(FlexRow)({
 });
 ElementsRowDecoration.displayName = 'Elements:ElementsRowDecoration';
 
-const ElementsLine = styled.div<{childrenCount: number}>(props => ({
+const ElementsLine = styled.div<{childrenCount: number}>((props) => ({
   backgroundColor: colors.light20,
   height: props.childrenCount * ROW_HEIGHT - 4,
   position: 'absolute',
@@ -136,7 +136,7 @@ class PartialHighlight extends PureComponent<{
   highlighted: string | undefined | null;
   content: string;
 }> {
-  static HighlightedText = styled.span<{selected: boolean}>(props => ({
+  static HighlightedText = styled.span<{selected: boolean}>((props) => ({
     backgroundColor: colors.lemon,
     color: props.selected ? `${colors.grapeDark3} !important` : 'auto',
   }));
@@ -270,7 +270,7 @@ class ElementsRow extends PureComponent<ElementsRowProps, ElementsRowState> {
       },
     ];
     items = items.concat(
-      props.element.attributes.map(o => {
+      props.element.attributes.map((o) => {
         return {
           label: `Copy ${o.name}`,
           click: () => {
@@ -341,7 +341,7 @@ class ElementsRow extends PureComponent<ElementsRowProps, ElementsRowState> {
     }
 
     const attributes = element.attributes
-      ? element.attributes.map(attr => (
+      ? element.attributes.map((attr) => (
           <ElementsRowAttribute
             key={attr.name}
             name={attr.name}

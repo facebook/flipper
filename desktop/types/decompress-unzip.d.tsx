@@ -8,5 +8,5 @@
  */
 
 declare module 'decompress-unzip' {
-  export default function(): any;
+  export default function (): any;
 }

@@ -85,7 +85,7 @@ const PluginShape = styled(FlexBox)<{
 }));
 
 export const PluginName = styled(Text)<{isActive?: boolean; count?: number}>(
-  props => ({
+  (props) => ({
     minWidth: 0,
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap',
@@ -139,7 +139,7 @@ export const PluginSidebarListItem: React.FC<{
   provided?: any;
   onFavorite?: () => void;
   starred?: boolean; // undefined means: not starrable
-}> = function(props) {
+}> = function (props) {
   const {isActive, plugin, onFavorite, starred} = props;
   const iconColor = getColorByApp(props.app);
   const domRef = useRef<HTMLDivElement>(null);
@@ -242,13 +242,13 @@ export function getFavoritePlugins(
     }
     // for archived plugins, all stored plugins are enabled
     return allPlugins.filter(
-      plugin => client.plugins.indexOf(plugin.id) !== -1,
+      (plugin) => client.plugins.indexOf(plugin.id) !== -1,
     );
   }
   if (!starredPlugins || !starredPlugins.length) {
     return returnFavoredPlugins ? [] : allPlugins;
   }
-  return allPlugins.filter(plugin => {
+  return allPlugins.filter((plugin) => {
     const idx = starredPlugins.indexOf(plugin.id);
     return idx === -1 ? !returnFavoredPlugins : returnFavoredPlugins;
   });

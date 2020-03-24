@@ -24,7 +24,7 @@ const prettierConfig = {
 module.exports = {
   parser: 'babel-eslint',
   root: true,
-  extends: 'fbjs',
+  extends: ['fbjs', 'prettier'],
   plugins: [
     ...fbjs.plugins,
     'header',
@@ -43,8 +43,6 @@ module.exports = {
     'prefer-const': [2, {destructuring: 'all'}],
     'prefer-spread': 1,
     'prefer-rest-params': 1,
-    'max-len': 0, // lets prettier take care of this
-    indent: 0, // lets prettier take care of this
     'no-console': 0, // we're setting window.console in App.js
     'no-multi-spaces': 2,
     'prefer-promise-reject-errors': 1,

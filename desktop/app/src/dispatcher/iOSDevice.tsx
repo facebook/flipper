@@ -62,7 +62,7 @@ const portForwarders: Array<ChildProcess> = GK.get('flipper_ios_device_support')
 
 if (typeof window !== 'undefined') {
   window.addEventListener('beforeunload', () => {
-    portForwarders.forEach(process => process.kill());
+    portForwarders.forEach((process) => process.kill());
   });
 }
 
@@ -74,12 +74,12 @@ async function queryDevices(store: Store, logger: Logger): Promise<void> {
   const {connections} = store.getState();
   const currentDeviceIDs: Set<string> = new Set(
     connections.devices
-      .filter(device => device instanceof IOSDevice)
-      .map(device => device.serial),
+      .filter((device) => device instanceof IOSDevice)
+      .map((device) => device.serial),
   );
   return Promise.all([getActiveSimulators(), getActiveDevices()])
     .then(([a, b]) => a.concat(b))
-    .then(activeDevices => {
+    .then((activeDevices) => {
       for (const {udid, type, name} of activeDevices) {
         if (currentDeviceIDs.has(udid)) {
           currentDeviceIDs.delete(udid);
@@ -106,7 +106,7 @@ async function queryDevices(store: Store, logger: Logger): Promise<void> {
       }
 
       if (currentDeviceIDs.size > 0) {
-        currentDeviceIDs.forEach(id =>
+        currentDeviceIDs.forEach((id) =>
           logger.track('usage', 'unregister-device', {os: 'iOS', serial: id}),
         );
         store.dispatch({
@@ -136,9 +136,9 @@ function getActiveSimulators(): Promise<Array<IOSDeviceParams>> {
 
       return simulators
         .filter(
-          simulator => simulator.state === 'Booted' && isAvailable(simulator),
+          (simulator) => simulator.state === 'Booted' && isAvailable(simulator),
         )
-        .map(simulator => {
+        .map((simulator) => {
           return {
             udid: simulator.udid,
             type: 'emulator',
@@ -146,11 +146,11 @@ function getActiveSimulators(): Promise<Array<IOSDeviceParams>> {
           } as IOSDeviceParams;
         });
     })
-    .catch(_ => []);
+    .catch((_) => []);
 }
 
 function getActiveDevices(): Promise<Array<IOSDeviceParams>> {
-  return iosUtil.targets().catch(e => {
+  return iosUtil.targets().catch((e) => {
     console.error(e.message);
     return [];
   });
@@ -163,7 +163,7 @@ function queryDevicesForever(store: Store, logger: Logger) {
       // to avoid simultaneous queries which can cause multiple user input prompts.
       setTimeout(() => queryDevicesForever(store, logger), 3000);
     })
-    .catch(err => {
+    .catch((err) => {
       console.error(err);
     });
 }
@@ -233,8 +233,8 @@ async function checkIfDevicesCanBeQueryied(store: Store): Promise<boolean> {
 
 async function isXcodeDetected(): Promise<boolean> {
   return promisify(child_process.exec)('xcode-select -p')
-    .then(_ => true)
-    .catch(_ => false);
+    .then((_) => true)
+    .catch((_) => false);
 }
 
 export async function getActiveDevicesAndSimulators(): Promise<
@@ -245,7 +245,7 @@ export async function getActiveDevicesAndSimulators(): Promise<
     getActiveDevices(),
   ]);
   const allDevices = activeDevices[0].concat(activeDevices[1]);
-  return allDevices.map(device => {
+  return allDevices.map((device) => {
     const {udid, type, name} = device;
     return new IOSDevice(udid, type, name);
   });
@@ -260,11 +260,11 @@ export default (store: Store, logger: Logger) => {
     return;
   }
   isXcodeDetected()
-    .then(isDetected => {
+    .then((isDetected) => {
       store.dispatch(setXcodeDetected(isDetected));
       return isDetected;
     })
-    .then(isDetected =>
+    .then((isDetected) =>
       isDetected ? queryDevicesForever(store, logger) : Promise.resolve(),
     );
 };

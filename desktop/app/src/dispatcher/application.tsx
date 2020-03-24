@@ -35,10 +35,7 @@ export const uriComponents = (url: string): Array<string> => {
     /^flipper:\/\/([^\/]*)\/([^\/]*)\/?(.*)$/,
   );
   if (match) {
-    return match
-      .map(decodeURIComponent)
-      .slice(1)
-      .filter(Boolean);
+    return match.map(decodeURIComponent).slice(1).filter(Boolean);
   }
   return [];
 };
@@ -79,8 +76,8 @@ export default (store: Store, _logger: Logger) => {
         return (
           typeof url === 'string' &&
           fetch(url)
-            .then(res => res.text())
-            .then(data => importDataToStore(url, data, store))
+            .then((res) => res.text())
+            .then((data) => importDataToStore(url, data, store))
             .then(() => {
               store.dispatch(toggleAction('downloadingImportData', false));
             })

@@ -131,7 +131,7 @@ export default class extends FlipperPlugin<State, any, PersistedState> {
   networkRouteManager: NetworkRouteManager = nullNetworkRouteManager;
 
   static metricsReducer(persistedState: PersistedState) {
-    const failures = Object.values(persistedState.responses).reduce(function(
+    const failures = Object.values(persistedState.responses).reduce(function (
       previous,
       values,
     ) {
@@ -206,7 +206,7 @@ export default class extends FlipperPlugin<State, any, PersistedState> {
   }
 
   init() {
-    this.client.supportsMethod('mockResponses').then(result =>
+    this.client.supportsMethod('mockResponses').then((result) =>
       this.setState({
         routes: {},
         isMockResponseSupported: result,
@@ -677,7 +677,7 @@ class NetworkTable extends PureComponent<NetworkTableProps, NetworkTableState> {
         </NetworkTable.ContextMenu>
         {this.props.showMockResponseDialog ? (
           <Sheet>
-            {onHide => (
+            {(onHide) => (
               <MockResponseDialog
                 routes={this.state.routes}
                 onHide={() => {

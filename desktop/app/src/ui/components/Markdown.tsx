@@ -21,7 +21,7 @@ const Row = styled.div({
   marginBottom: 5,
   lineHeight: 1.34,
 });
-const Heading = styled.div<{level: number}>(props => ({
+const Heading = styled.div<{level: number}>((props) => ({
   fontSize: props.level === 1 ? 18 : 12,
   textTransform: props.level > 1 ? 'uppercase' : undefined,
   color: props.level > 1 ? '#90949c' : undefined,

@@ -8,5 +8,5 @@
  */
 
 declare module 'xml-beautifier' {
-  export default function(xml: string, indent?: string): string;
+  export default function (xml: string, indent?: string): string;
 }

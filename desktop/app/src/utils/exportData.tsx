@@ -116,7 +116,7 @@ export function processClients(
   statusUpdate &&
     statusUpdate(`Filtering Clients for the device id ${serial}...`);
   const filteredClients = clients.filter(
-    client => client.query.device_id === serial,
+    (client) => client.query.device_id === serial,
   );
   return filteredClients;
 }
@@ -148,7 +148,7 @@ export function processPluginStates(
       continue;
     }
     if (plugin.type === 'client') {
-      if (!clients.some(c => c.id.includes(plugin.client))) {
+      if (!clients.some((c) => c.id.includes(plugin.client))) {
         continue;
       }
     }
@@ -178,8 +178,8 @@ export function processNotificationStates(
   } = options;
   statusUpdate &&
     statusUpdate('Filtering the notifications for the filtered Clients...');
-  const activeNotifications = allActiveNotifications.filter(notif => {
-    const filteredClients = clients.filter(client =>
+  const activeNotifications = allActiveNotifications.filter((notif) => {
+    const filteredClients = clients.filter((client) =>
       notif.client ? client.id.includes(notif.client) : false,
     );
     return (
@@ -307,7 +307,7 @@ const addSaltToDeviceSerial = async (
     statusUpdate(
       'Adding salt to the selected device id in the notification data...',
     );
-  const updatedPluginNotifications = pluginNotification.map(notif => {
+  const updatedPluginNotifications = pluginNotification.map((notif) => {
     if (!notif.client || !notif.client.includes(serial)) {
       throw new Error(
         `Error while exporting, plugin state (${notif.pluginId}) does not have ${serial} in it`,
@@ -360,7 +360,7 @@ export const processStore = async (
   if (device) {
     const {serial} = device;
     statusUpdate && statusUpdate('Capturing screenshot');
-    const deviceScreenshot = await capture(device).catch(e => {
+    const deviceScreenshot = await capture(device).catch((e) => {
       console.warn('Failed to capture device screenshot when exporting. ' + e);
       return null;
     });
@@ -392,7 +392,7 @@ export const processStore = async (
     statusUpdate && statusUpdate('Uploading screenshot');
     const deviceScreenshotLink =
       deviceScreenshot &&
-      (await uploadFlipperMedia(deviceScreenshot, 'Image').catch(e => {
+      (await uploadFlipperMedia(deviceScreenshot, 'Image').catch((e) => {
         console.warn('Failed to upload device screenshot when exporting. ' + e);
         return null;
       }));
@@ -521,7 +521,7 @@ export function determinePluginsToProcess(
     }
     const selectedFilteredPlugins = client
       ? selectedPlugins.length > 0
-        ? client.plugins.filter(plugin => selectedPlugins.includes(plugin))
+        ? client.plugins.filter((plugin) => selectedPlugins.includes(plugin))
         : client.plugins
       : [];
     for (const plugin of selectedFilteredPlugins) {
@@ -566,7 +566,7 @@ export async function getStoreExport(
   const fetchMetaDataMarker = `${EXPORT_FLIPPER_TRACE_EVENT}:fetch-meta-data`;
   performance.mark(fetchMetaDataMarker);
 
-  const client = clients.find(client => client.id === selectedApp);
+  const client = clients.find((client) => client.id === selectedApp);
   const metadata = await fetchMetadata(
     pluginsToProcess,
     state.pluginStates,
@@ -695,7 +695,7 @@ export function importDataToStore(source: string, data: string, store: Store) {
     title,
     os,
     logEntries: logs
-      ? logs.map(l => {
+      ? logs.map((l) => {
           return {...l, date: new Date(l.date)};
         })
       : [],
@@ -705,7 +705,7 @@ export function importDataToStore(source: string, data: string, store: Store) {
   });
   const devices = store.getState().connections.devices;
   const matchedDevices = devices.filter(
-    availableDevice => availableDevice.serial === serial,
+    (availableDevice) => availableDevice.serial === serial,
   );
   if (matchedDevices.length > 0) {
     store.dispatch({
@@ -731,7 +731,7 @@ export function importDataToStore(source: string, data: string, store: Store) {
     store.getState().plugins.devicePlugins,
   );
   const keys = Object.keys(processedPluginStates);
-  keys.forEach(key => {
+  keys.forEach((key) => {
     store.dispatch({
       type: 'SET_PLUGIN_STATE',
       payload: {
@@ -742,11 +742,11 @@ export function importDataToStore(source: string, data: string, store: Store) {
   });
   clients.forEach((client: {id: string; query: ClientQuery}) => {
     const clientPlugins: Array<string> = keys
-      .filter(key => {
+      .filter((key) => {
         const plugin = deconstructPluginKey(key);
         return plugin.type === 'client' && client.id === plugin.client;
       })
-      .map(pluginKey => deconstructPluginKey(pluginKey).pluginName);
+      .map((pluginKey) => deconstructPluginKey(pluginKey).pluginName);
     store.dispatch({
       type: 'NEW_CLIENT',
       payload: new Client(
@@ -783,7 +783,7 @@ export function showOpenDialog(store: Store) {
     properties: ['openFile'],
     filters: [{extensions: ['flipper', 'json', 'txt'], name: 'Flipper files'}],
   };
-  remote.dialog.showOpenDialog(options).then(result => {
+  remote.dialog.showOpenDialog(options).then((result) => {
     const filePaths = result.filePaths;
     if (filePaths.length > 0) {
       tryCatchReportPlatformFailures(() => {

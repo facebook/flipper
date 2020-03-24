@@ -52,7 +52,7 @@ type PluginInfo = {
 
 export type CompiledPluginInfo = PluginManifest & {out: string};
 
-export default async function(
+export default async function (
   reloadCallback: (() => void) | null,
   pluginPaths: string[],
   pluginCache: string,
@@ -68,7 +68,7 @@ export default async function(
   }
   const compilations = pMap(
     Object.values(plugins),
-    plugin => {
+    (plugin) => {
       const dynamicOptions: DynamicCompileOptions = Object.assign(options, {
         force: false,
       });
@@ -78,7 +78,7 @@ export default async function(
   );
 
   const dynamicPlugins = (await compilations).filter(
-    c => c !== null,
+    (c) => c !== null,
   ) as CompiledPluginInfo[];
   console.log('✅  Compiled all plugins.');
   return dynamicPlugins;
@@ -91,7 +91,7 @@ async function startWatchingPluginsUsingWatchman(
   // Initializing a watchman for each folder containing plugins
   const watchmanRootMap: {[key: string]: Watchman} = {};
   await Promise.all(
-    plugins.map(async plugin => {
+    plugins.map(async (plugin) => {
       const watchmanRoot = path.resolve(plugin.rootDir, '..');
       if (!watchmanRootMap[watchmanRoot]) {
         watchmanRootMap[watchmanRoot] = new Watchman(watchmanRoot);
@@ -101,7 +101,7 @@ async function startWatchingPluginsUsingWatchman(
   );
   // Start watching plugins using the initialized watchmans
   await Promise.all(
-    plugins.map(async plugin => {
+    plugins.map(async (plugin) => {
       const watchmanRoot = path.resolve(plugin.rootDir, '..');
       const watchman = watchmanRootMap[watchmanRoot];
       await watchman.startWatchFiles(
@@ -143,7 +143,7 @@ async function startWatchChanges(
     // no hot reloading for plugins in .flipper folder. This is to prevent
     // Flipper from reloading, while we are doing changes on thirdparty plugins.
     .filter(
-      plugin => !plugin.rootDir.startsWith(path.join(HOME_DIR, '.flipper')),
+      (plugin) => !plugin.rootDir.startsWith(path.join(HOME_DIR, '.flipper')),
     );
   try {
     await startWatchingPluginsUsingWatchman(filteredPlugins, onPluginChanged);
@@ -185,9 +185,9 @@ function pluginEntryPoints(additionalPaths: string[] = []) {
   if (typeof additionalPaths === 'string') {
     additionalPaths = [additionalPaths];
   }
-  additionalPaths.forEach(additionalPath => {
+  additionalPaths.forEach((additionalPath) => {
     const additionalPlugins = entryPointForPluginFolder(additionalPath);
-    Object.keys(additionalPlugins).forEach(key => {
+    Object.keys(additionalPlugins).forEach((key) => {
       entryPoints[key] = additionalPlugins[key];
     });
   });
@@ -200,9 +200,9 @@ function entryPointForPluginFolder(pluginPath: string) {
   }
   return fs
     .readdirSync(pluginPath)
-    .filter(name => fs.lstatSync(path.join(pluginPath, name)).isDirectory())
+    .filter((name) => fs.lstatSync(path.join(pluginPath, name)).isDirectory())
     .filter(Boolean)
-    .map(name => {
+    .map((name) => {
       let packageJSON;
       try {
         packageJSON = fs
@@ -238,7 +238,7 @@ function entryPointForPluginFolder(pluginPath: string) {
 async function mostRecentlyChanged(dir: string) {
   const files = await util.promisify<string, string[]>(recursiveReaddir)(dir);
   return files
-    .map(f => fs.lstatSync(f).ctime)
+    .map((f) => fs.lstatSync(f).ctime)
     .reduce((a, b) => (a > b ? a : b), new Date(0));
 }
 async function compilePlugin(

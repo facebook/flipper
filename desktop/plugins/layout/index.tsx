@@ -177,16 +177,16 @@ export default class Layout extends FlipperPlugin<State, any, PersistedState> {
 
     if (this.props.isArchivedDevice) {
       this.getDevice()
-        .then(d => {
+        .then((d) => {
           const handle = (d as ArchivedDevice).getArchivedScreenshotHandle();
           if (!handle) {
             throw new Error('No screenshot attached.');
           }
           return handle;
         })
-        .then(handle => getFlipperMediaCDN(handle, 'Image'))
-        .then(url => this.setState({visualizerScreenshot: url}))
-        .catch(_ => {
+        .then((handle) => getFlipperMediaCDN(handle, 'Image'))
+        .then((url) => this.setState({visualizerScreenshot: url}))
+        .catch((_) => {
           // Not all exports have screenshots. This is ok.
         });
     }
@@ -332,7 +332,7 @@ export default class Layout extends FlipperPlugin<State, any, PersistedState> {
     const inspector = (
       <Inspector
         {...inspectorProps}
-        onSelect={selectedElement => this.setState({selectedElement})}
+        onSelect={(selectedElement) => this.setState({selectedElement})}
         showsSidebar={!this.state.inAXMode}
       />
     );
@@ -340,7 +340,7 @@ export default class Layout extends FlipperPlugin<State, any, PersistedState> {
     const axInspector = this.state.inAXMode && (
       <Inspector
         {...inspectorProps}
-        onSelect={selectedAXElement => this.setState({selectedAXElement})}
+        onSelect={(selectedAXElement) => this.setState({selectedAXElement})}
         showsSidebar={true}
         ax
       />
@@ -395,7 +395,7 @@ export default class Layout extends FlipperPlugin<State, any, PersistedState> {
                 client={this.getClient()}
                 setPersistedState={this.props.setPersistedState}
                 persistedState={this.props.persistedState}
-                onSearchResults={searchResults =>
+                onSearchResults={(searchResults) =>
                   this.setState({searchResults})
                 }
                 inAXMode={this.state.inAXMode}

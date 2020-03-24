@@ -193,7 +193,7 @@ export default class LeakCanary<PersistedState> extends FlipperPlugin<
                   floating={false}
                   accessory={leak.retainedSize}>
                   <ElementsInspector
-                    onElementSelected={eid => {
+                    onElementSelected={(eid) => {
                       this._selectElement(idx, eid);
                     }}
                     onElementHovered={() => {}}
