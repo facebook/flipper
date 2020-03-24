@@ -10,7 +10,7 @@
     "generate-uidocs": "node ./generate-uidocs.js"
   },
   "devDependencies": {
-    "@babel/parser": "^7.8.3",
+    "@babel/parser": "^7.9.4",
     "docblock-parser": "^1.0.0",
     "docusaurus": "^1.11.1",
     "glob": "^7.1.3",
