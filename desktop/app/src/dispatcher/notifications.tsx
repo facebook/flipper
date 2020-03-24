@@ -119,15 +119,23 @@ export default (store: Store, logger: Logger) => {
           | typeof FlipperPlugin
           | typeof FlipperDevicePlugin = pluginMap.get(pluginName);
         if (persistingPlugin && persistingPlugin.getActiveNotifications) {
-          store.dispatch(
-            setActiveNotifications({
-              notifications: persistingPlugin.getActiveNotifications(
-                pluginStates[key],
-              ),
-              client,
-              pluginId: pluginName,
-            }),
-          );
+          try {
+            const notifications = persistingPlugin.getActiveNotifications(
+              pluginStates[key],
+            );
+            store.dispatch(
+              setActiveNotifications({
+                notifications,
+                client,
+                pluginId: pluginName,
+              }),
+            );
+          } catch (e) {
+            console.error(
+              'Failed to compute notifications for plugin ' + pluginName,
+              e,
+            );
+          }
         }
       }
     });
