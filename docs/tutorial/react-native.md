@@ -12,7 +12,7 @@ This tutorial requires React Native 0.62 or higher.
 Once you have connected Flipper to a React Native application,
 writing your own Flipper plugin can be done without reaching into the native world.
 
-To expose Flipper to the JavaScript world, the React Native Native Module `react-native-flipper` needs to be installed in the hosting application by running `yarn add react-native-flipper`. If you are creating develop a plugin that is distributed as NPM package, make sure to add this to the installation instruction of your package as well!
+To expose Flipper to the JavaScript world, the React Native Native Module `react-native-flipper` needs to be installed in the hosting application by running `yarn add react-native-flipper` and `cd ios && pod install`. If you are creating develop a plugin that is distributed as NPM package, make sure to add this to the installation instruction of your package as well!
 
 Registering a new plugin is done by importing `addPlugin` from `"react-native-flipper"` and providing it an object that at least implements the method  `getId` (the plugin id that should be used in the desktop plugin as well to make the connection) and two event handlers for the `onConnect` and `onDisconnect` events.
 
