@@ -10,6 +10,7 @@ package com.facebook.flipper.plugins.common;
 import com.facebook.flipper.core.FlipperConnection;
 import com.facebook.flipper.core.FlipperObject;
 import com.facebook.flipper.core.FlipperPlugin;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -24,17 +25,35 @@ public abstract class BufferingFlipperPlugin implements FlipperPlugin {
 
   private @Nullable RingBuffer<CachedFlipperEvent> mEventQueue;
   private @Nullable FlipperConnection mConnection;
+  private @Nullable MockResponseConnectionListener
+      mMockResponseConnectionListenerConnectionListener;
+
+  public synchronized void setConnectionListener(@Nonnull MockResponseConnectionListener listener) {
+    this.mMockResponseConnectionListenerConnectionListener = listener;
+  }
+
+  public synchronized void removeConnectionListener() {
+    this.mMockResponseConnectionListenerConnectionListener = null;
+  }
 
   @Override
   public synchronized void onConnect(FlipperConnection connection) {
     mConnection = connection;
 
     sendBufferedEvents();
+
+    if (this.mMockResponseConnectionListenerConnectionListener != null) {
+      this.mMockResponseConnectionListenerConnectionListener.onConnect(connection);
+    }
   }
 
   @Override
   public synchronized void onDisconnect() {
     mConnection = null;
+
+    if (this.mMockResponseConnectionListenerConnectionListener != null) {
+      this.mMockResponseConnectionListenerConnectionListener.onDisconnect();
+    }
   }
 
   @Override
@@ -78,5 +97,11 @@ public abstract class BufferingFlipperPlugin implements FlipperPlugin {
       this.method = method;
       this.flipperObject = flipperObject;
     }
+  }
+
+  public interface MockResponseConnectionListener {
+    void onConnect(FlipperConnection connection);
+
+    void onDisconnect();
   }
 }
