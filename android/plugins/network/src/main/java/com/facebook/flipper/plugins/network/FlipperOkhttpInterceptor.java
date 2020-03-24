@@ -42,9 +42,9 @@ public class FlipperOkhttpInterceptor
   // By default, limit body size (request or response) reporting to 100KB to avoid OOM
   private static final long DEFAULT_MAX_BODY_BYTES = 100 * 1024;
 
-  private long maxBodyBytes = DEFAULT_MAX_BODY_BYTES;
+  private final long mMaxBodyBytes;
 
-  public @Nullable NetworkFlipperPlugin plugin;
+  private final NetworkFlipperPlugin mPlugin;
 
   private static class PartialRequestInfo extends Pair<String, String> {
     PartialRequestInfo(String url, String method) {
@@ -54,20 +54,15 @@ public class FlipperOkhttpInterceptor
 
   // pair of request url and method
   private Map<PartialRequestInfo, ResponseInfo> mMockResponseMap = new HashMap<>(0);
-  private boolean mIsMockResponseSupported = false;
-
-  public FlipperOkhttpInterceptor() {
-    this.plugin = null;
-  }
+  private boolean mIsMockResponseSupported;
 
   public FlipperOkhttpInterceptor(NetworkFlipperPlugin plugin) {
-    this.plugin = plugin;
+    this(plugin, DEFAULT_MAX_BODY_BYTES, false);
   }
 
   /** If you want to change the number of bytes displayed for the body, use this constructor */
   public FlipperOkhttpInterceptor(NetworkFlipperPlugin plugin, long maxBodyBytes) {
-    this.plugin = plugin;
-    this.maxBodyBytes = maxBodyBytes;
+    this(plugin, maxBodyBytes, false);
   }
 
   /**
@@ -75,57 +70,54 @@ public class FlipperOkhttpInterceptor
    * short circuit: https://square.github.io/okhttp/interceptors/ *
    */
   public FlipperOkhttpInterceptor(NetworkFlipperPlugin plugin, boolean isMockResponseSupported) {
-    this.plugin = plugin;
-    mIsMockResponseSupported = isMockResponseSupported;
-    if (isMockResponseSupported) {
-      this.plugin.setConnectionListener(this);
-    }
+    this(plugin, DEFAULT_MAX_BODY_BYTES, isMockResponseSupported);
   }
 
   public FlipperOkhttpInterceptor(
       NetworkFlipperPlugin plugin, long maxBodyBytes, boolean isMockResponseSupported) {
-    this.plugin = plugin;
-    this.maxBodyBytes = maxBodyBytes;
+    mPlugin = plugin;
+    mMaxBodyBytes = maxBodyBytes;
     mIsMockResponseSupported = isMockResponseSupported;
     if (isMockResponseSupported) {
-      this.plugin.setConnectionListener(this);
+      mPlugin.setConnectionListener(this);
     }
   }
 
   @Override
   public Response intercept(Interceptor.Chain chain) throws IOException {
-    Request request = chain.request();
-    String identifier = UUID.randomUUID().toString();
-    plugin.reportRequest(convertRequest(request, identifier));
+    final Request request = chain.request();
+    final String identifier = UUID.randomUUID().toString();
+    mPlugin.reportRequest(convertRequest(request, identifier));
 
     // Check if there is a mock response
-    Response mockResponse = mIsMockResponseSupported ? getMockResponse(request) : null;
-    Response response = mockResponse != null ? mockResponse : chain.proceed(request);
-
-    ResponseBody body = response.body();
-    ResponseInfo responseInfo = convertResponse(response, body, identifier);
+    final Response mockResponse = mIsMockResponseSupported ? getMockResponse(request) : null;
+    final Response response = mockResponse != null ? mockResponse : chain.proceed(request);
+    final ResponseBody body = response.body();
+    final ResponseInfo responseInfo = convertResponse(response, body, identifier);
     responseInfo.isMock = mockResponse != null;
-    plugin.reportResponse(responseInfo);
+    mPlugin.reportResponse(responseInfo);
     return response;
   }
 
   private static byte[] bodyToByteArray(final Request request, final long maxBodyBytes)
       throws IOException {
     final Buffer buffer = new Buffer();
-    request.body().writeTo(buffer);
+    if (request.body() != null) {
+      request.body().writeTo(buffer);
+    }
     return buffer.readByteArray(Math.min(buffer.size(), maxBodyBytes));
   }
 
   private RequestInfo convertRequest(Request request, String identifier) throws IOException {
-    List<NetworkReporter.Header> headers = convertHeader(request.headers());
-    RequestInfo info = new RequestInfo();
+    final List<NetworkReporter.Header> headers = convertHeader(request.headers());
+    final RequestInfo info = new RequestInfo();
     info.requestId = identifier;
     info.timeStamp = System.currentTimeMillis();
     info.headers = headers;
     info.method = request.method();
     info.uri = request.url().toString();
     if (request.body() != null) {
-      info.body = bodyToByteArray(request, maxBodyBytes);
+      info.body = bodyToByteArray(request, mMaxBodyBytes);
     }
 
     return info;
@@ -133,24 +125,32 @@ public class FlipperOkhttpInterceptor
 
   private ResponseInfo convertResponse(Response response, ResponseBody body, String identifier)
       throws IOException {
-    List<NetworkReporter.Header> headers = convertHeader(response.headers());
-    ResponseInfo info = new ResponseInfo();
+    final List<NetworkReporter.Header> headers = convertHeader(response.headers());
+    final ResponseInfo info = new ResponseInfo();
     info.requestId = identifier;
     info.timeStamp = response.receivedResponseAtMillis();
     info.statusCode = response.code();
     info.headers = headers;
-    BufferedSource source = body.source();
-    source.request(maxBodyBytes);
-    Buffer buffer = source.buffer().clone();
-    info.body = buffer.readByteArray();
+    Buffer buffer = null;
+    try {
+      final BufferedSource source = body.source();
+      source.request(mMaxBodyBytes);
+      buffer = source.buffer().clone();
+      info.body = buffer.readByteArray();
+    } finally {
+      if (buffer != null) {
+        buffer.close();
+      }
+    }
+
     return info;
   }
 
-  private List<NetworkReporter.Header> convertHeader(Headers headers) {
-    List<NetworkReporter.Header> list = new ArrayList<>();
+  private static List<NetworkReporter.Header> convertHeader(Headers headers) {
+    final List<NetworkReporter.Header> list = new ArrayList<>(headers.size());
 
-    Set<String> keys = headers.names();
-    for (String key : keys) {
+    final Set<String> keys = headers.names();
+    for (final String key : keys) {
       list.add(new NetworkReporter.Header(key, headers.get(key)));
     }
     return list;
