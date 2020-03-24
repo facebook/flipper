@@ -36,7 +36,7 @@ public final class FlipperInitializer {
     final DescriptorMapping descriptorMapping = DescriptorMapping.withDefaults();
 
     final NetworkFlipperPlugin networkPlugin = new NetworkFlipperPlugin();
-    final FlipperOkhttpInterceptor interceptor = new FlipperOkhttpInterceptor(networkPlugin);
+    final FlipperOkhttpInterceptor interceptor = new FlipperOkhttpInterceptor(networkPlugin, true);
 
     // Normally, you would want to make this dependent on a BuildConfig flag, but
     // for this demo application we can safely assume that you always want to debug.
@@ -60,7 +60,7 @@ public final class FlipperInitializer {
 
     final OkHttpClient okHttpClient =
         new OkHttpClient.Builder()
-            .addNetworkInterceptor(interceptor)
+            .addInterceptor(interceptor)
             .connectTimeout(60, TimeUnit.SECONDS)
             .readTimeout(60, TimeUnit.SECONDS)
             .writeTimeout(10, TimeUnit.MINUTES)
