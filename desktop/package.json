@@ -69,7 +69,7 @@
   },
   "resolutions": {
     "@jest-runner/electron/electron": "8.0.1",
-    "adbkit/adbkit-logcat": "2",
+    "adbkit-logcat": "2.0.1",
     "@types/react": "16.9.17",
     "@types/react-dom": "16.9.4"
   },

@@ -3346,15 +3346,10 @@ acorn@^7.1.0:
   resolved "https://registry.yarnpkg.com/acorn/-/acorn-7.1.0.tgz#949d36f2c292535da602283586c2477c57eb2d6c"
   integrity sha512-kL5CuoXA/dgxlBbVrflsflzQ3PAas7RYZB52NOm/6839iVYJgKMJ3cQJD+t2i5+qFa8h3MDpEOJiS64E8JLnSQ==
 
-adbkit-logcat@2, adbkit-logcat@^2.0.1:
+adbkit-logcat@2.0.1, adbkit-logcat@^1.1.0, adbkit-logcat@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/adbkit-logcat/-/adbkit-logcat-2.0.1.tgz#d4986b9fc7cfda42733389d46a52124abef43ca5"
   integrity sha512-MznVzzEzcrWhIaIyblll+a0AL1TICJe/yuaia7HDYTAtiNabR/9amJkAnLt30U8/W7MVBc3mvU1jB/6MJ/TYHw==
-
-adbkit-logcat@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/adbkit-logcat/-/adbkit-logcat-1.1.0.tgz#01d7f9b0cef9093a30bcb3b007efff301508962f"
-  integrity sha1-Adf5sM75CTowvLOwB+//MBUIli8=
 
 adbkit-monkey@~1.0.1:
   version "1.0.1"
