@@ -12,7 +12,8 @@
       "features/shared-preferences-plugin",
       "features/leak-canary-plugin",
       "features/crash-reporter-plugin",
-      "features/share-flipper-data"
+      "features/share-flipper-data",
+      "features/react-native"
     ]
   },
   "setup": {

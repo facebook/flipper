@@ -90,6 +90,9 @@
       "features/network-plugin": {
         "title": "Network"
       },
+      "features/react-native": {
+        "title": "React Native Support"
+      },
       "features/sandbox-plugin": {
         "title": "Sandbox"
       },
