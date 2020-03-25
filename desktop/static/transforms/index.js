@@ -12,18 +12,19 @@ const babylon = require('@babel/parser');
 const babel = require('@babel/core');
 const fs = require('fs');
 const path = require('path');
-const staticDir = path.resolve(__dirname, '..');
+const rootDir = path.resolve(__dirname, '..', '..');
+const staticDir = path.join(rootDir, 'static');
+const appDir = path.join(rootDir, 'app');
+const headlessDir = path.join(rootDir, 'headless');
 
 function transform({filename, options, src}) {
+  const isMain = options.projectRoot && options.projectRoot === staticDir;
   const isPlugin =
-    options.projectRoot && options.projectRoot.includes('/desktop/plugins/');
-  const isMain =
     options.projectRoot &&
-    options.projectRoot === staticDir &&
-    !options.isTestRunner;
+    ![staticDir, appDir, headlessDir].includes(options.projectRoot);
   const isTypeScript = filename.endsWith('.tsx') || filename.endsWith('.ts');
   const presets = [
-    isMain
+    isMain && !options.isTestRunner
       ? [
           require('../node_modules/@babel/preset-env'),
           {targets: {electron: require('electron/package.json').version}},
