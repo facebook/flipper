@@ -50,6 +50,7 @@
       "extending/styling-components",
       "extending/search-and-filter",
       "extending/create-plugin",
+      "extending/client-plugin-lifecycle",
       "extending/send-data",
       "extending/error-handling",
       "extending/testing",

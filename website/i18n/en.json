@@ -12,6 +12,9 @@
       "extending/arch": {
         "title": "Architecture"
       },
+      "extending/client-plugin-lifecycle": {
+        "title": "Client Plugin Lifecycle"
+      },
       "extending/create-plugin": {
         "title": "Client Plugin API"
       },
