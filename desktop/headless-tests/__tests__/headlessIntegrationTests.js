@@ -60,13 +60,13 @@ const runHeadless = memoize((args: Array<string>): Promise<{
     console.info(`Running ${params.bin} ${args.join(' ')}`);
     const process = spawn(params.bin, args, {});
     process.stdout.setEncoding('utf8');
-    process.stdout.on('data', (chunk) => {
+    process.stdout.on('data', chunk => {
       stdoutChunks.push(chunk);
     });
-    process.stderr.on('data', (chunk) => {
+    process.stderr.on('data', chunk => {
       stderrChunks.push(chunk);
     });
-    process.stdout.on('end', (chunk) => {
+    process.stdout.on('end', chunk => {
       const stdout = stdoutChunks.join('');
       const stderr = stderrChunks.join('');
       try {
@@ -89,7 +89,7 @@ const runHeadless = memoize((args: Array<string>): Promise<{
 });
 
 function getPluginState(app: string, plugin: string): Promise<string> {
-  return runHeadless(basicArgs).then((result) => {
+  return runHeadless(basicArgs).then(result => {
     const pluginStates = result.output.store.pluginStates;
     for (const pluginId of Object.keys(pluginStates)) {
       const matches = /([^#]+)#([^#]+)#([^#]+)#([^#]+)#([^#]+)/.exec(pluginId);
@@ -110,10 +110,8 @@ function getPluginState(app: string, plugin: string): Promise<string> {
 test(
   'Flipper app appears in exported clients',
   () => {
-    return runHeadless(basicArgs).then((result) => {
-      expect(result.output.clients.map((c) => c.query.app)).toContain(
-        'Flipper',
-      );
+    return runHeadless(basicArgs).then(result => {
+      expect(result.output.clients.map(c => c.query.app)).toContain('Flipper');
     });
   },
   TEST_TIMEOUT_MS,
@@ -122,7 +120,7 @@ test(
 test(
   'Output includes fileVersion',
   () => {
-    return runHeadless(basicArgs).then((result) => {
+    return runHeadless(basicArgs).then(result => {
       expect(result.output.fileVersion).toMatch(/[0-9]+\.[0-9]+\.[0-9]+/);
     });
   },
@@ -132,7 +130,7 @@ test(
 test(
   'Output includes device',
   () => {
-    return runHeadless(basicArgs).then((result) => {
+    return runHeadless(basicArgs).then(result => {
       expect(result.output.device).toBeTruthy();
     });
   },
@@ -142,7 +140,7 @@ test(
 test(
   'Output includes flipperReleaseRevision',
   () => {
-    return runHeadless(basicArgs).then((result) => {
+    return runHeadless(basicArgs).then(result => {
       expect(result.output.flipperReleaseRevision).toBeTruthy();
     });
   },
@@ -152,7 +150,7 @@ test(
 test(
   'Output includes store',
   () => {
-    return runHeadless(basicArgs).then((result) => {
+    return runHeadless(basicArgs).then(result => {
       expect(result.output.store).toBeTruthy();
     });
   },
@@ -174,7 +172,7 @@ function stripNode(node: any, path: Array<string>) {
   }
   if (path[0] === '*') {
     if (Array.isArray(node)) {
-      return node.map((e) => stripNode(e, path.slice(1)));
+      return node.map(e => stripNode(e, path.slice(1)));
     }
     return Object.entries(node).reduce((acc, [key, val]) => {
       acc[key] = stripNode(val, path.slice(1));
@@ -228,12 +226,12 @@ test('test layout snapshot stripping', () => {
 });
 
 test('Sample app layout hierarchy matches snapshot', () => {
-  return getPluginState('Flipper', 'Inspector').then((result) => {
+  return getPluginState('Flipper', 'Inspector').then(result => {
     const state = JSON.parse(result);
     expect(state.rootAXElement).toBe('com.facebook.flipper.sample');
     expect(state.rootElement).toBe('com.facebook.flipper.sample');
     const canonicalizedElements = Object.values(state.elements)
-      .map((e) => {
+      .map(e => {
         const stableizedElements = stripUnstableLayoutAttributes(e);
         return stringify(stableizedElements);
       })

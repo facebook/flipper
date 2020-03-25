@@ -30,7 +30,7 @@ export default class extends React.Component<Props> {
     if (this.props.skipStackTraceFormat) {
       return (
         <StackTrace backgroundColor={colors.white}>
-          {this.props.data.map((stack_trace_line) => {
+          {this.props.data.map(stack_trace_line => {
             return {
               caller: stack_trace_line,
             };
@@ -43,10 +43,10 @@ export default class extends React.Component<Props> {
       <StackTrace backgroundColor={colors.white}>
         {/* We need to filter out from the stack trace any reference to the plugin such that the information is more coincised and focused */}
         {this.props.data
-          .filter((stack_trace_line) => {
+          .filter(stack_trace_line => {
             return !stack_trace_line.includes('FlipperKitSectionsPlugin');
           })
-          .map((stack_trace_line) => {
+          .map(stack_trace_line => {
             const trace = REGEX.exec(stack_trace_line)?.groups;
             return {
               bold: !isSystemLibrary(trace?.library),

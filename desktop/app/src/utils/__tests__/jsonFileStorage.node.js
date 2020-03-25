@@ -26,7 +26,7 @@ const storage = new JsonFileStorage(
 test('A valid settings file gets parsed correctly', () => {
   return storage
     .getItem('anykey')
-    .then((result) => expect(result).toEqual(validDeserializedData));
+    .then(result => expect(result).toEqual(validDeserializedData));
 });
 
 test('deserialize works as expected', () => {

@@ -29,7 +29,7 @@ const Container = styled(FlexRow)({
   flexGrow: 1,
 });
 
-const SurfaceContainer = styled(FlexColumn)((props) => ({
+const SurfaceContainer = styled(FlexColumn)(props => ({
   position: 'relative',
   '::after': {
     display: props.scrolled ? 'block' : 'none',
@@ -50,7 +50,7 @@ const TimeContainer = styled(FlexColumn)({
   flexShrink: 1,
 });
 
-const Row = styled(FlexRow)((props) => ({
+const Row = styled(FlexRow)(props => ({
   alignItems: 'center',
   paddingBottom: 3,
   marginTop: 3,
@@ -174,7 +174,7 @@ export default class extends Component<Props, State> {
     let nextGenerationId = null;
 
     const index = this.props.generations.findIndex(
-      (g) => g.id === this.props.focusedGenerationId,
+      g => g.id === this.props.focusedGenerationId,
     );
 
     const direction = e.key === 'ArrowRight' ? 1 : -1;
@@ -206,14 +206,14 @@ export default class extends Component<Props, State> {
     return (
       <Container>
         <SurfaceContainer scrolled={this.state.scrolled}>
-          {[...surfaces].map((surface) => (
+          {[...surfaces].map(surface => (
             <Row key={surface}>
               <Label title={surface}>{surface}</Label>
             </Row>
           ))}
         </SurfaceContainer>
         <TimeContainer onScroll={this.onScroll}>
-          {[...surfaces].map((surface) => (
+          {[...surfaces].map(surface => (
             <Row key={surface} showTimeline>
               {this.props.generations.map((record: TreeGeneration) =>
                 record.surface_key === surface ? (

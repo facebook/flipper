@@ -39,7 +39,7 @@ class FlipperWebviewBridgeImpl extends FlipperBridge {
   subscribe = (
     plugin: FlipperPluginID,
     method: FlipperMethodID,
-    handler: (any) => void,
+    handler: any => void,
   ) => {
     this._subscriptions.set(plugin + method, handler);
   };

@@ -378,7 +378,7 @@ function addFileWatcherForiOSCrashLogs(
       return;
     }
     const filepath = path.join(dir, filename);
-    promisify(fs.exists)(filepath).then((exists) => {
+    promisify(fs.exists)(filepath).then(exists => {
       if (!exists) {
         return;
       }
@@ -572,7 +572,7 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin<
   static getActiveNotifications = (
     persistedState: PersistedState,
   ): Array<Notification> => {
-    const filteredCrashes = persistedState.crashes.filter((crash) => {
+    const filteredCrashes = persistedState.crashes.filter(crash => {
       const ignore = !crash.name && !crash.reason;
       const unknownCrashCause = crash.reason === UNKNOWN_CRASH_REASON;
       if (ignore || unknownCrashCause) {
@@ -679,7 +679,7 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin<
     let deeplinkedCrash = null;
     if (this.props.deepLinkPayload) {
       const id = this.props.deepLinkPayload;
-      const index = this.props.persistedState.crashes.findIndex((elem) => {
+      const index = this.props.persistedState.crashes.findIndex(elem => {
         return elem.notificationID === id;
       });
       if (index >= 0) {
@@ -714,18 +714,18 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin<
       );
 
       const orderedIDs = crashes.map(
-        (persistedCrash) => persistedCrash.notificationID,
+        persistedCrash => persistedCrash.notificationID,
       );
       const selectedCrashID = crash.notificationID;
-      const onCrashChange = (id) => {
+      const onCrashChange = id => {
         const newSelectedCrash = crashes.find(
-          (element) => element.notificationID === id,
+          element => element.notificationID === id,
         );
         this.setState({crash: newSelectedCrash});
       };
 
       const callstackString = crash.callstack || '';
-      const children = callstackString.split('\n').map((str) => {
+      const children = callstackString.split('\n').map(str => {
         return {message: str};
       });
       const crashSelector: CrashSelectorProps = {
@@ -767,7 +767,7 @@ export default class CrashReporterPlugin extends FlipperDevicePlugin<
                 },
               ]}>
               <Line />
-              {children.map((child) => {
+              {children.map(child => {
                 return (
                   <StackTraceComponent
                     key={child.message}

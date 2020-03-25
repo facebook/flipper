@@ -72,7 +72,7 @@ export class FlipperConnection {
   }
 
   receive(method: FlipperMethodID, receiver: FlipperReceiver<*>) {
-    this._bridge.subscribe(this.pluginId, method, (data) => {
+    this._bridge.subscribe(this.pluginId, method, data => {
       receiver(data, new FlipperResponder(this.pluginId, method, this._bridge));
     });
   }

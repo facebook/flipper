@@ -9,7 +9,7 @@
 
 import type {PluginClient, Value} from 'flipper';
 
-type ClientCall<Params, Response> = (Params) => Promise<Response>;
+type ClientCall<Params, Response> = Params => Promise<Response>;
 
 type DatabaseListRequest = {};
 
@@ -78,22 +78,24 @@ export class DatabaseClient {
     this.client = pluginClient;
   }
 
-  getDatabases: ClientCall<DatabaseListRequest, DatabaseListResponse> = (
-    params,
-  ) => this.client.call('databaseList', {});
+  getDatabases: ClientCall<
+    DatabaseListRequest,
+    DatabaseListResponse,
+  > = params => this.client.call('databaseList', {});
 
-  getTableData: ClientCall<QueryTableRequest, QueryTableResponse> = (params) =>
+  getTableData: ClientCall<QueryTableRequest, QueryTableResponse> = params =>
     this.client.call('getTableData', params);
 
   getTableStructure: ClientCall<
     GetTableStructureRequest,
     GetTableStructureResponse,
-  > = (params) => this.client.call('getTableStructure', params);
+  > = params => this.client.call('getTableStructure', params);
 
-  getExecution: ClientCall<ExecuteSqlRequest, ExecuteSqlResponse> = (params) =>
+  getExecution: ClientCall<ExecuteSqlRequest, ExecuteSqlResponse> = params =>
     this.client.call('execute', params);
 
-  getTableInfo: ClientCall<GetTableInfoRequest, GetTableInfoResponse> = (
-    params,
-  ) => this.client.call('getTableInfo', params);
+  getTableInfo: ClientCall<
+    GetTableInfoRequest,
+    GetTableInfoResponse,
+  > = params => this.client.call('getTableInfo', params);
 }
