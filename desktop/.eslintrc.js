@@ -13,6 +13,10 @@ const fbjs = require('eslint-config-fbjs');
 const pattern = /^\*\r?\n[\S\s]*Facebook[\S\s]* \* @format\r?\n/;
 
 const prettierConfig = {
+  // arrowParens=always is the default for Prettier 2.0, but other configs
+  // at Facebook appear to be leaking into this file, which is still on
+  // Prettier 1.x at the moment, so it is best to be explicit.
+  arrowParens: 'always',
   requirePragma: true,
   singleQuote: true,
   trailingComma: 'all',
