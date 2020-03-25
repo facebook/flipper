@@ -250,7 +250,7 @@ function renderTable(page: ?Page, component: DatabasesPlugin) {
     <ManagedTable
       tableKey={`databases-${page.databaseId}-${page.table}`}
       floating={false}
-      columnOrder={page.columns.map(name => ({
+      columnOrder={page.columns.map((name) => ({
         key: name,
         visible: true,
       }))}
@@ -281,7 +281,7 @@ function renderDatabaseColumns(structure: ?Structure) {
     <FlexRow grow={true}>
       <ManagedTable
         floating={false}
-        columnOrder={structure.columns.map(name => ({
+        columnOrder={structure.columns.map((name) => ({
           key: name,
           visible: true,
         }))}
@@ -305,7 +305,7 @@ function renderDatabaseIndexes(structure: ?Structure) {
     <FlexRow grow={true}>
       <ManagedTable
         floating={false}
-        columnOrder={structure.indexesColumns.map(name => ({
+        columnOrder={structure.indexesColumns.map((name) => ({
           key: name,
           visible: true,
         }))}
@@ -686,7 +686,7 @@ export default class DatabasesPlugin extends FlipperPlugin<
               databaseId: state.selectedDatabase,
               value: this.state.query.value,
             })
-            .then(data => {
+            .then((data) => {
               this.setState({
                 error: null,
                 executionTime: Date.now() - timeBefore,
@@ -709,7 +709,7 @@ export default class DatabasesPlugin extends FlipperPlugin<
                 });
               }
             })
-            .catch(e => {
+            .catch((e) => {
               this.setState({error: e});
             });
         }
@@ -864,7 +864,7 @@ export default class DatabasesPlugin extends FlipperPlugin<
           table: table,
           start: newState.pageRowNumber,
         })
-        .then(data => {
+        .then((data) => {
           this.dispatchAction({
             type: 'UpdatePage',
             databaseId: databaseId,
@@ -876,7 +876,7 @@ export default class DatabasesPlugin extends FlipperPlugin<
             total: data.total,
           });
         })
-        .catch(e => {
+        .catch((e) => {
           this.setState({error: e});
         });
     }
@@ -891,7 +891,7 @@ export default class DatabasesPlugin extends FlipperPlugin<
           databaseId: databaseId,
           table: table,
         })
-        .then(data => {
+        .then((data) => {
           this.dispatchAction({
             type: 'UpdateStructure',
             databaseId: databaseId,
@@ -902,7 +902,7 @@ export default class DatabasesPlugin extends FlipperPlugin<
             indexesValues: data.indexesValues,
           });
         })
-        .catch(e => {
+        .catch((e) => {
           this.setState({error: e});
         });
     }
@@ -917,19 +917,19 @@ export default class DatabasesPlugin extends FlipperPlugin<
           databaseId: databaseId,
           table: table,
         })
-        .then(data => {
+        .then((data) => {
           this.dispatchAction({
             type: 'UpdateTableInfo',
             tableInfo: data.definition,
           });
         })
-        .catch(e => {
+        .catch((e) => {
           this.setState({error: e});
         });
     }
 
     if (!previousState.outdatedDatabaseList && newState.outdatedDatabaseList) {
-      this.databaseClient.getDatabases({}).then(databases => {
+      this.databaseClient.getDatabases({}).then((databases) => {
         this.dispatchAction({
           type: 'UpdateDatabases',
           databases,
@@ -940,7 +940,7 @@ export default class DatabasesPlugin extends FlipperPlugin<
 
   init() {
     this.databaseClient = new DatabaseClient(this.client);
-    this.databaseClient.getDatabases({}).then(databases => {
+    this.databaseClient.getDatabases({}).then((databases) => {
       this.dispatchAction({
         type: 'UpdateDatabases',
         databases,
@@ -987,7 +987,7 @@ export default class DatabasesPlugin extends FlipperPlugin<
   };
 
   onDatabaseSelected = (selected: string) => {
-    const dbId = this.state.databases.find(x => x.name === selected)?.id || 0;
+    const dbId = this.state.databases.find((x) => x.name === selected)?.id || 0;
     this.dispatchAction({
       database: dbId,
       type: 'UpdateSelectedDatabase',
@@ -1164,7 +1164,7 @@ export default class DatabasesPlugin extends FlipperPlugin<
           <ManagedTable
             floating={false}
             multiline={true}
-            columnOrder={columns.map(name => ({
+            columnOrder={columns.map((name) => ({
               key: name,
               visible: true,
             }))}
@@ -1175,7 +1175,7 @@ export default class DatabasesPlugin extends FlipperPlugin<
             zebra={true}
             rows={rows}
             horizontallyScrollable={true}
-            onRowHighlighted={highlightedRows => {
+            onRowHighlighted={(highlightedRows) => {
               this.setState({
                 queryResult: {
                   table: {
@@ -1267,7 +1267,7 @@ export default class DatabasesPlugin extends FlipperPlugin<
             <BoldSpan style={{marginRight: 16}}>Database</BoldSpan>
             <Select
               options={this.state.databases
-                .map(x => x.name)
+                .map((x) => x.name)
                 .reduce((obj, item) => {
                   obj[item] = item;
                   return obj;
@@ -1293,7 +1293,7 @@ export default class DatabasesPlugin extends FlipperPlugin<
               <BoldSpan style={{marginRight: 16}}>Database</BoldSpan>
               <Select
                 options={this.state.databases
-                  .map(x => x.name)
+                  .map((x) => x.name)
                   .reduce((obj, item) => {
                     obj[item] = item;
                     return obj;
@@ -1343,7 +1343,7 @@ export default class DatabasesPlugin extends FlipperPlugin<
                 />
                 {this.state.favorites !== null ? (
                   <Button
-                    dropdown={this.state.favorites.map(option => {
+                    dropdown={this.state.favorites.map((option) => {
                       return {
                         click: () => {
                           this.setState({

@@ -21,5 +21,5 @@ test('transform electron requires to inlined stubs', () => {
   const transformed = transform(src, babelOptions).ast;
   const body = transformed.program.body[0];
   expect(body.type).toBe('ExpressionStatement');
-  expect(body.expression.properties.map(p => p.key.name)).toContain('remote');
+  expect(body.expression.properties.map((p) => p.key.name)).toContain('remote');
 });

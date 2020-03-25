@@ -31,8 +31,8 @@
     "@types/node": "^13.7.5",
     "cli-ux": "^5.4.5",
     "fs-extra": "^8.1.0",
-    "inquirer": "^7.0.5",
     "metro": "^0.58.0",
+    "inquirer": "^7.0.5",
     "tslib": "^1"
   },
   "devDependencies": {
@@ -40,7 +40,7 @@
     "@types/jest": "^24.0.21",
     "globby": "^10",
     "jest": "^24.9.0",
-    "prettier": "2.0.2",
+    "prettier": "^2.0.0",
     "ts-jest": "^24.1.0",
     "ts-node": "^8",
     "typescript": "^3.7.2"

@@ -33,7 +33,7 @@ beforeEach(() => {
 test('dispatcher dispatches REGISTER_PLUGINS', () => {
   dispatcher(mockStore, logger);
   const actions = mockStore.getActions();
-  expect(actions.map(a => a.type)).toContain('REGISTER_PLUGINS');
+  expect(actions.map((a) => a.type)).toContain('REGISTER_PLUGINS');
 });
 
 test('getDynamicPlugins returns empty array on errors', () => {
