@@ -57,7 +57,7 @@
     "react": "16.13.0",
     "react-color": "^2.11.7",
     "react-debounce-render": "^6.0.0",
-    "react-devtools-core": "^4.0.6",
+    "react-devtools-core": "^4.6.0",
     "react-dom": "^16.13.0",
     "react-markdown": "^4.2.2",
     "react-player": "^1.15.2",
