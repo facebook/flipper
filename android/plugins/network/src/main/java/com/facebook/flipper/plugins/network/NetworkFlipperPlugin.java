@@ -34,18 +34,24 @@ public class NetworkFlipperPlugin extends BufferingFlipperPlugin implements Netw
   }
 
   @Override
-  public void reportRequest(RequestInfo requestInfo) {
-    final FlipperObject request =
-        new FlipperObject.Builder()
-            .put("id", requestInfo.requestId)
-            .put("timestamp", requestInfo.timeStamp)
-            .put("method", requestInfo.method)
-            .put("url", requestInfo.uri)
-            .put("headers", toFlipperObject(requestInfo.headers))
-            .put("data", toBase64(requestInfo.body))
-            .build();
+  public void reportRequest(final RequestInfo requestInfo) {
+    (new ErrorReportingRunnable(getConnection()) {
+          @Override
+          protected void runOrThrow() throws Exception {
+            final FlipperObject request =
+                new FlipperObject.Builder()
+                    .put("id", requestInfo.requestId)
+                    .put("timestamp", requestInfo.timeStamp)
+                    .put("method", requestInfo.method)
+                    .put("url", requestInfo.uri)
+                    .put("headers", toFlipperObject(requestInfo.headers))
+                    .put("data", toBase64(requestInfo.body))
+                    .build();
 
-    send("newRequest", request);
+            send("newRequest", request);
+          }
+        })
+        .run();
   }
 
   @Override
