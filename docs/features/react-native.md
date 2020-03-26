@@ -28,6 +28,7 @@ Beyond the React Native specific Flipper plugins described above, with Flipper y
 
 * Device logs
 * Device crash reporter
+* Inspecting network requests
 * Inspecting app local databases
 * Inspecting device preferences
 * Inspecting cached images
