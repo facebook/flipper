@@ -35,7 +35,7 @@ import {IncomingMessage} from 'http';
 import {isTest} from './utils/isProduction';
 // Electron tries to get you to use browser's ws instead, so can't use import.
 // @ts-ignore
-const ws = isTest() ? require('ws') : window.require('ws');
+const ws = isTest() ? require('ws') : require('../../node_modules/ws/index.js');
 
 type ClientInfo = {
   connection: FlipperClientConnection<any, any> | null | undefined;
