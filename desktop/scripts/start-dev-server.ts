@@ -182,7 +182,7 @@ async function addWebsocket(server: http.Server) {
     const watchman = new Watchman(path.resolve(__dirname, '..'));
     await watchman.initialize();
     await Promise.all(
-      ['src', 'pkg', 'doctor'].map((dir) =>
+      ['app', 'pkg', 'doctor'].map((dir) =>
         watchman.startWatchFiles(
           dir,
           () => {
