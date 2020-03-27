@@ -1,3 +1,3 @@
 # Changelog
 
-See [static/desktop/CHANGELOG.md](static/desktop/CHANGELOG.md)
+See [desktop/static/CHANGELOG.md](desktop/static/CHANGELOG.md)
