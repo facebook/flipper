@@ -26,6 +26,7 @@ import invariant from 'invariant';
 import {flipperRecorderAddEvent} from './utils/pluginStateRecorder';
 import {getPluginKey} from './utils/pluginUtils';
 import {processMessageLater} from './utils/messageQueue';
+import {sideEffect} from './utils/sideEffect';
 
 type Plugins = Array<string>;
 
@@ -207,21 +208,25 @@ export default class Client extends EventEmitter {
           console.error(error);
           reject(error);
         }, 5000);
-        unsubscribe = this.store.subscribe(() => {
-          const newDeviceList = this.store.getState().connections.devices;
-          if (newDeviceList === this.lastSeenDeviceList) {
-            return;
-          }
-          this.lastSeenDeviceList = this.store.getState().connections.devices;
-          const matchingDevice = newDeviceList.find(
-            (device) => device.serial === this.query.device_id,
-          );
-          if (matchingDevice) {
-            clearTimeout(timeout);
-            resolve(matchingDevice);
-            unsubscribe();
-          }
-        });
+        unsubscribe = sideEffect(
+          this.store,
+          {name: 'waitForDevice', throttleMs: 100},
+          (state) => state.connections.devices,
+          (newDeviceList) => {
+            if (newDeviceList === this.lastSeenDeviceList) {
+              return;
+            }
+            this.lastSeenDeviceList = newDeviceList;
+            const matchingDevice = newDeviceList.find(
+              (device) => device.serial === this.query.device_id,
+            );
+            if (matchingDevice) {
+              clearTimeout(timeout);
+              resolve(matchingDevice);
+              unsubscribe();
+            }
+          },
+        );
       }),
       'client-setMatchingDevice',
     ).then((device) => {
