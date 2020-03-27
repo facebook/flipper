@@ -7,8 +7,6 @@
  * @format
  */
 
-global.electronRequire = require;
-global.electronResolve = require.resolve;
-global.electronProcess = process;
+const isFB = false;
 
-require('./main.bundle.js');
+export default isFB;

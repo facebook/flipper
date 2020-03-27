@@ -8,7 +8,7 @@
  */
 
 import {transform} from '@babel/core';
-import electronStubs from '../electron-stubs';
+const electronStubs = require('../electron-stubs');
 
 const babelOptions = {
   ast: true,
@@ -18,8 +18,17 @@ const babelOptions = {
 
 test('transform electron requires to inlined stubs', () => {
   const src = 'require("electron")';
-  const transformed = transform(src, babelOptions).ast;
-  const body = transformed.program.body[0];
+  const transformed = transform(src, babelOptions)!.ast;
+  const body = transformed!.program.body[0];
   expect(body.type).toBe('ExpressionStatement');
-  expect(body.expression.properties.map((p) => p.key.name)).toContain('remote');
+  if (body.type !== 'ExpressionStatement') {
+    return;
+  }
+  expect(body.expression.type).toBe('ObjectExpression');
+  if (body.expression.type !== 'ObjectExpression') {
+    return;
+  }
+  expect(body.expression.properties.map((p) => (p as any).key.name)).toContain(
+    'remote',
+  );
 });

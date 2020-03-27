@@ -270,7 +270,8 @@ async function compilePlugin(
       console.log(`🥫  Using cached version of ${name}...`);
       return result;
     } else {
-      console.log(`⚙️  Compiling ${name}...`); // eslint-disable-line no-console
+      // eslint-disable-line no-console
+      console.log(`⚙️  Compiling ${name}...`);
       try {
         await Metro.runBuild(
           {
@@ -283,11 +284,9 @@ async function compilePlugin(
               createModuleIdFactory,
             },
             transformer: {
-              babelTransformerPath: path.join(
-                __dirname,
-                'transforms',
-                'index.js',
-              ),
+              babelTransformerPath: global.electronResolve
+                ? global.electronResolve('flipper-babel-transformer') // when compilation is executing in Electron main process
+                : require.resolve('flipper-babel-transformer'), // when compilation is is executing in Node.js script
             },
             resolver: {
               sourceExts: ['tsx', 'ts', 'js'],

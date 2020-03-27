@@ -22,14 +22,13 @@ import {
 } from './build-utils';
 import fetch from 'node-fetch';
 import {getIcons, buildLocalIconPath, getIconURL} from '../app/src/utils/icons';
+import isFB from './isFB';
+import copyPackageWithDependencies from './copy-package-with-dependencies';
+import {staticDir, distDir} from './paths';
 
-function generateManifest(versionNumber: string) {
-  const filePath = path.join(__dirname, '..', '..', 'dist');
-  if (!fs.existsSync(filePath)) {
-    fs.mkdirSync(filePath);
-  }
-  fs.writeFileSync(
-    path.join(__dirname, '..', '..', 'dist', 'manifest.json'),
+async function generateManifest(versionNumber: string) {
+  await fs.writeFile(
+    path.join(distDir, 'manifest.json'),
     JSON.stringify({
       package: 'com.facebook.sonar',
       version_name: versionNumber,
@@ -37,7 +36,7 @@ function generateManifest(versionNumber: string) {
   );
 }
 
-function modifyPackageManifest(
+async function modifyPackageManifest(
   buildFolder: string,
   versionNumber: string,
   hgRevision: string | null,
@@ -56,7 +55,7 @@ function modifyPackageManifest(
   if (hgRevision != null) {
     manifest.revision = hgRevision;
   }
-  fs.writeFileSync(
+  await fs.writeFile(
     path.join(buildFolder, 'package.json'),
     JSON.stringify(manifest, null, '  '),
   );
@@ -74,7 +73,7 @@ async function buildDist(buildFolder: string) {
     }
     postBuildCallbacks.push(() =>
       spawn('zip', ['-qyr9', '../Flipper-mac.zip', 'Flipper.app'], {
-        cwd: path.join(__dirname, '..', '..', 'dist', 'mac'),
+        cwd: path.join(distDir, 'mac'),
         encoding: 'utf-8',
       }),
     );
@@ -107,8 +106,8 @@ async function buildDist(buildFolder: string) {
       config: {
         appId: `com.facebook.sonar`,
         directories: {
-          buildResources: path.join(__dirname, '..', 'static'),
-          output: path.join(__dirname, '..', '..', 'dist'),
+          buildResources: buildFolder,
+          output: distDir,
         },
         electronDownload: electronDownloadOptions,
         npmRebuild: false,
@@ -122,10 +121,8 @@ async function buildDist(buildFolder: string) {
   }
 }
 
-function copyStaticFolder(buildFolder: string) {
-  fs.copySync(path.join(__dirname, '..', 'static'), buildFolder, {
-    dereference: true,
-  });
+async function copyStaticFolder(buildFolder: string) {
+  await copyPackageWithDependencies(staticDir, buildFolder);
 }
 
 function downloadIcons(buildFolder: string) {
@@ -175,18 +172,25 @@ function downloadIcons(buildFolder: string) {
 }
 
 (async () => {
+  if (isFB) {
+    process.env.FLIPPER_FB = 'true';
+  }
   const dir = await buildFolder();
   // eslint-disable-next-line no-console
   console.log('Created build directory', dir);
+
   await compileMain({dev: false});
-  copyStaticFolder(dir);
+  await copyStaticFolder(dir);
   await downloadIcons(dir);
-  await compileDefaultPlugins(path.join(dir, 'defaultPlugins'));
+  if (!process.argv.includes('--no-embedded-plugins')) {
+    await compileDefaultPlugins(path.join(dir, 'defaultPlugins'));
+  }
   await compileRenderer(dir);
   const versionNumber = getVersionNumber();
   const hgRevision = await genMercurialRevision();
-  modifyPackageManifest(dir, versionNumber, hgRevision);
-  generateManifest(versionNumber);
+  await modifyPackageManifest(dir, versionNumber, hgRevision);
+  await fs.ensureDir(distDir);
+  await generateManifest(versionNumber);
   await buildDist(dir);
   // eslint-disable-next-line no-console
   console.log('✨  Done');

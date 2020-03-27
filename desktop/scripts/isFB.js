@@ -5,10 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
+ * @ts-check
  */
 
-global.electronRequire = require;
-global.electronResolve = require.resolve;
-global.electronProcess = process;
+const fs = require('fs-extra');
+const path = require('path');
 
-require('./main.bundle.js');
+const isFB = fs.pathExistsSync(path.resolve(__dirname, '..', 'static', 'fb'));
+
+module.exports = isFB;

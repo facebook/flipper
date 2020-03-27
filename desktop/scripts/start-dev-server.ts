@@ -8,7 +8,7 @@
  */
 
 const electronBinary: string = require('electron') as any;
-import codeFrame from 'babel-code-frame';
+import codeFrame from '@babel/code-frame';
 import socketIo from 'socket.io';
 import express, {Express} from 'express';
 import detect from 'detect-port';
@@ -23,7 +23,8 @@ import Watchman from '../static/watchman';
 import Metro from 'metro';
 import MetroResolver from 'metro-resolver';
 import {default as getWatchFolders} from '../static/get-watch-folders';
-import {staticDir, pluginsDir, appDir} from './paths';
+import {staticDir, pluginsDir, appDir, babelTransformationsDir} from './paths';
+import isFB from './isFB';
 
 const ansiToHtmlConverter = new AnsiToHtmlConverter();
 
@@ -40,6 +41,9 @@ function launchElectron({
   bundleURL: string;
   electronURL: string;
 }) {
+  if (process.argv.includes('--no-embedded-plugins')) {
+    process.env.FLIPPER_NO_EMBEDDED_PLUGINS = 'true';
+  }
   const args = [
     path.join(staticDir, 'index.js'),
     '--remote-debugging-port=9222',
@@ -88,7 +92,7 @@ async function startMetroServer(app: Express) {
     projectRoot: appDir,
     watchFolders,
     transformer: {
-      babelTransformerPath: path.join(staticDir, 'transforms', 'index.js'),
+      babelTransformerPath: path.join(babelTransformationsDir, 'transform-app'),
     },
     resolver: {
       resolverMainFields: ['flipper:source', 'module', 'main'],
@@ -251,6 +255,9 @@ function outputScreen(socket?: socketIo.Server) {
 }
 
 (async () => {
+  if (isFB && process.env.FLIPPER_FB === undefined) {
+    process.env.FLIPPER_FB = 'true';
+  }
   const port = await detect(DEFAULT_PORT);
   const {app, server} = await startAssetServer(port);
   const socket = await addWebsocket(server);

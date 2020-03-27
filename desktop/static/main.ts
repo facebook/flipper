@@ -25,6 +25,7 @@ import fixPath from 'fix-path';
 import {exec} from 'child_process';
 import compilePlugins from './compilePlugins';
 import setup from './setup';
+import isFB from './fb-stubs/isFB';
 import delegateToLauncher from './launcher';
 import expandTilde from 'expand-tilde';
 import yargs from 'yargs';
@@ -84,6 +85,10 @@ const argv = yargs
   .parse(process.argv.slice(1));
 
 const {config, configPath, flipperDir} = setup(argv);
+
+if (isFB && process.env.FLIPPER_FB === undefined) {
+  process.env.FLIPPER_FB = 'true';
+}
 
 const skipLoadingEmbeddedPlugins = process.env.FLIPPER_NO_EMBEDDED_PLUGINS;
 

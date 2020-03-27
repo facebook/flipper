@@ -7,8 +7,12 @@
  * @format
  */
 
-global.electronRequire = require;
-global.electronResolve = require.resolve;
-global.electronProcess = process;
+import {default as transform} from './transform-plugin';
+import {default as getCacheKey} from './get-cache-key';
 
-require('./main.bundle.js');
+module.exports = {
+  transform,
+  getCacheKey,
+};
+
+export default transform;

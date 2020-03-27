@@ -10,6 +10,7 @@
 <PROJECT_ROOT>/desktop/static/.*
 <PROJECT_ROOT>/desktop/pkg/.*
 <PROJECT_ROOT>/desktop/doctor/.*
+<PROJECT_ROOT>/desktop/babel-transformer/.*
 <PROJECT_ROOT>/desktop/plugins/fb/relaydevtools/relay-devtools/DevtoolsUI.js$
 <PROJECT_ROOT>/website/.*
 <PROJECT_ROOT>/desktop/plugins/sections/d3/d3.js$

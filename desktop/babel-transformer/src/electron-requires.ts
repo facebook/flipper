@@ -7,6 +7,9 @@
  * @format
  */
 
+import {CallExpression, identifier} from '@babel/types';
+import {NodePath} from '@babel/traverse';
+
 const BUILTINS = [
   'electron',
   'buffer',
@@ -55,40 +58,30 @@ const IGNORED_MODULES = [
   './src/adb',
 ];
 
-function isRequire(node) {
-  return (
-    node.type === 'CallExpression' &&
-    node.callee.type === 'Identifier' &&
-    node.callee.name === 'require' &&
-    node.arguments.length === 1 &&
-    node.arguments[0].type === 'StringLiteral'
-  );
-}
-
-module.exports = function (babel) {
-  const t = babel.types;
-
-  return {
-    name: 'infinity-import-react',
-    visitor: {
-      CallExpression(path) {
-        if (!isRequire(path.node)) {
-          return;
-        }
-
-        const source = path.node.arguments[0].value;
-
+module.exports = () => ({
+  name: 'infinity-import-react',
+  visitor: {
+    CallExpression(path: NodePath<CallExpression>) {
+      const node = path.node;
+      if (
+        node.type === 'CallExpression' &&
+        node.callee.type === 'Identifier' &&
+        node.callee.name === 'require' &&
+        node.arguments.length === 1 &&
+        node.arguments[0].type === 'StringLiteral'
+      ) {
+        const source = node.arguments[0].value;
         if (
           BUILTINS.includes(source) ||
           BUILTINS.some((moduleName) => source.startsWith(`${moduleName}/`))
         ) {
-          path.node.callee.name = 'electronRequire';
+          node.callee.name = 'electronRequire';
         }
 
         if (IGNORED_MODULES.includes(source)) {
-          path.replaceWith(t.identifier('triggerReferenceError'));
+          path.replaceWith(identifier('triggerReferenceError'));
         }
-      },
+      }
     },
-  };
-};
+  },
+});

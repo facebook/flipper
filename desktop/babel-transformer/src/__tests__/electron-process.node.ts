@@ -8,7 +8,7 @@
  */
 
 import {transform} from '@babel/core';
-import electronProcess from '../electron-process';
+const electronProcess = require('../electron-process');
 
 const babelOptions = {
   ast: true,
@@ -18,19 +18,19 @@ const babelOptions = {
 
 test('transform "process.exit(0);"', () => {
   const src = 'process.exit(0);';
-  const code = transform(src, babelOptions).code;
+  const code = transform(src, babelOptions)!.code;
   expect(code).toMatchInlineSnapshot(`"electronProcess.exit(0);"`);
 });
 
 test('transform "global.process.exit(0);"', () => {
   const src = 'global.process.exit(0);';
-  const code = transform(src, babelOptions).code;
+  const code = transform(src, babelOptions)!.code;
   expect(code).toMatchInlineSnapshot(`"global.electronProcess.exit(0);"`);
 });
 
 test('transform "process.ENV.TEST = "true";"', () => {
   const src = 'process.ENV.TEST = "true";';
-  const code = transform(src, babelOptions).code;
+  const code = transform(src, babelOptions)!.code;
   expect(code).toMatchInlineSnapshot(
     `"electronProcess.ENV.TEST = \\"true\\";"`,
   );
@@ -43,7 +43,7 @@ test('do not transform if process bound in an upper scope', () => {
       process.ENV[i] = i;
     }
     `;
-  const code = transform(src, babelOptions).code;
+  const code = transform(src, babelOptions)!.code;
   expect(code).toMatchInlineSnapshot(`
     "const process = {};
 
@@ -58,7 +58,7 @@ test('do not transform if process bound to the current scope', () => {
     const process = {};     
     process.ENV.TEST = "true";
     `;
-  const code = transform(src, babelOptions).code;
+  const code = transform(src, babelOptions)!.code;
   expect(code).toMatchInlineSnapshot(`
     "const process = {};
     process.ENV.TEST = \\"true\\";"

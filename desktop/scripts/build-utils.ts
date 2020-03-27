@@ -16,7 +16,13 @@ import fs from 'fs-extra';
 import {spawn} from 'promisify-child-process';
 import recursiveReaddir from 'recursive-readdir';
 import {default as getWatchFolders} from '../static/get-watch-folders';
-import {appDir, staticDir, pluginsDir, headlessDir} from './paths';
+import {
+  appDir,
+  staticDir,
+  pluginsDir,
+  headlessDir,
+  babelTransformationsDir,
+} from './paths';
 
 async function mostRecentlyChanged(
   dir: string,
@@ -72,7 +78,10 @@ async function compile(
       watchFolders,
       serializer: {},
       transformer: {
-        babelTransformerPath: path.join(staticDir, 'transforms', 'index.js'),
+        babelTransformerPath: path.join(
+          babelTransformationsDir,
+          'transform-app',
+        ),
       },
       resolver: {
         resolverMainFields: ['flipper:source', 'module', 'main'],
@@ -138,6 +147,7 @@ export async function compileRenderer(buildFolder: string) {
 
 export async function compileMain({dev}: {dev: boolean}) {
   const out = path.join(staticDir, 'main.bundle.js');
+  process.env.FLIPPER_ELECTRON_VERSION = require('electron/package.json').version;
   // check if main needs to be compiled
   if (await fs.pathExists(out)) {
     const staticDirCtime = await mostRecentlyChanged(staticDir, ['*.bundle.*']);
@@ -147,14 +157,17 @@ export async function compileMain({dev}: {dev: boolean}) {
       return;
     }
   }
-  console.log(`⚙️  Compiling main bundle... ${staticDir}`);
+  console.log('⚙️  Compiling main bundle...');
   try {
     const config = Object.assign({}, await Metro.loadConfig(), {
       reporter: {update: () => {}},
       projectRoot: staticDir,
       watchFolders: await getWatchFolders(staticDir),
       transformer: {
-        babelTransformerPath: path.join(staticDir, 'transforms', 'index.js'),
+        babelTransformerPath: path.join(
+          babelTransformationsDir,
+          'transform-main',
+        ),
       },
       resolver: {
         sourceExts: ['tsx', 'ts', 'js'],
