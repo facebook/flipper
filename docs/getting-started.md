@@ -343,7 +343,7 @@ Finally, you need to add plugins to your Flipper client. Above we have only adde
 
 <div class="warning">
 
-This version of the tutorial is written against **React Native 0.62.0**.
+This tutorial is for React Native applications using version **0.62.0**, please refer to the following if you are using a different version:
 
 * [Flipper on RN < 0.61.5 tutorial](https://github.com/facebook/flipper/blob/da25241f7fbb06dffd913958559044d758c54fb8/docs/getting-started.md#setup-your-react-native-app)
 * [Flipper on RN 0.61.5 - 0.62 tutorial](https://github.com/facebook/flipper/blob/4297b3061f14ceca4d184aa3eebd0731b5bf20f5/docs/getting-started.md#setup-your-react-native-app)
